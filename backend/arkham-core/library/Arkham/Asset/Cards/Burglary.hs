@@ -13,7 +13,7 @@ import Arkham.Investigate
 
 newtype Burglary = Burglary AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 burglary :: AssetCard Burglary
 burglary = asset Burglary Cards.burglary

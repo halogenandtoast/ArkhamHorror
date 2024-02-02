@@ -18,7 +18,7 @@ import Arkham.Treachery.Runner
 
 newtype ThePitBelow = ThePitBelow TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 thePitBelow :: TreacheryCard ThePitBelow
 thePitBelow = treachery ThePitBelow Cards.thePitBelow

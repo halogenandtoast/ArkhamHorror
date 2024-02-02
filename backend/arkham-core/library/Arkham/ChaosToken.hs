@@ -11,7 +11,7 @@ import GHC.Records
 
 newtype ChaosTokenId = ChaosTokenId {getChaosTokenId :: UUID}
   deriving stock (Data)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Ord, Random, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Ord, Random, NoThunks, NFData)
 
 data ChaosTokenModifier
   = PositiveModifier Int
@@ -22,7 +22,7 @@ data ChaosTokenModifier
   | AutoSuccessModifier
   | NoModifier
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Monoid ChaosTokenModifier where
   mempty = NoModifier
@@ -51,7 +51,7 @@ instance Semigroup ChaosTokenModifier where
 
 data ChaosTokenValue = ChaosTokenValue ChaosTokenFace ChaosTokenModifier
   deriving stock (Show, Eq, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 chaosTokenValue :: ChaosTokenValue -> Maybe Int
 chaosTokenValue (ChaosTokenValue _ modifier) = chaosTokenModifierToInt modifier
@@ -71,7 +71,7 @@ data ChaosToken = ChaosToken
   , chaosTokenFace :: ChaosTokenFace
   }
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance HasField "face" ChaosToken ChaosTokenFace where
   getField = chaosTokenFace
@@ -96,7 +96,7 @@ data ChaosTokenFace
   | CurseToken
   | BlessToken
   deriving stock (Bounded, Enum, Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance IsLabel "skull" ChaosTokenFace where
   fromLabel = Skull

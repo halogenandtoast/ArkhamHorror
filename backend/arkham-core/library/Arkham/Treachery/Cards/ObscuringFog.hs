@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype ObscuringFog = ObscuringFog TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 obscuringFog :: TreacheryCard ObscuringFog
 obscuringFog = treachery ObscuringFog Cards.obscuringFog

@@ -16,7 +16,7 @@ data Name = Name
   , nameSubtitle :: Maybe Text
   }
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 class Named a where
   toName :: a -> Name
@@ -67,7 +67,7 @@ data Labeled a = Labeled
   , unLabel :: a
   }
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance ToJSON a => ToJSON (Labeled a) where
   toJSON l = object ["getLabel" .= getLabel l, "unLabel" .= unLabel l]

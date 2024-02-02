@@ -8,7 +8,7 @@ import Arkham.Asset.Runner
 
 newtype ForbiddenKnowledge = ForbiddenKnowledge AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 forbiddenKnowledge :: AssetCard ForbiddenKnowledge
 forbiddenKnowledge =

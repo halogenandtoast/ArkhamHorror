@@ -17,7 +17,7 @@ import Arkham.Trait
 
 newtype CustomAmmunition3 = CustomAmmunition3 EventAttrs
   deriving anyclass (IsEvent, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 customAmmunition3 :: EventCard CustomAmmunition3
 customAmmunition3 = event CustomAmmunition3 Cards.customAmmunition3

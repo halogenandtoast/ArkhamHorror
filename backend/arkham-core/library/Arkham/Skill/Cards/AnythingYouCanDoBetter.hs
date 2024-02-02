@@ -12,7 +12,7 @@ import Arkham.Skill.Runner
 
 newtype AnythingYouCanDoBetter = AnythingYouCanDoBetter SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 anythingYouCanDoBetter :: SkillCard AnythingYouCanDoBetter
 anythingYouCanDoBetter =

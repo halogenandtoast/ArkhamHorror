@@ -12,7 +12,7 @@ import Arkham.SkillType
 
 newtype PrivateRoom = PrivateRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 privateRoom :: LocationCard PrivateRoom
 privateRoom = location PrivateRoom Cards.privateRoom 4 (Static 0)

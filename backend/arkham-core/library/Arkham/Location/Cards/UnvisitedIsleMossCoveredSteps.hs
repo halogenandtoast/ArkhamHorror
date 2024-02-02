@@ -23,7 +23,7 @@ import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype UnvisitedIsleMossCoveredSteps = UnvisitedIsleMossCoveredSteps LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 unvisitedIsleMossCoveredSteps :: LocationCard UnvisitedIsleMossCoveredSteps
 unvisitedIsleMossCoveredSteps = location UnvisitedIsleMossCoveredSteps Cards.unvisitedIsleMossCoveredSteps 4 (PerPlayer 2)
@@ -63,7 +63,7 @@ instance RunMessage UnvisitedIsleMossCoveredSteps where
 
 newtype UnvisitedIsleMossCoveredStepsEffect = UnvisitedIsleMossCoveredStepsEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 unvisitedIsleMossCoveredStepsEffect :: EffectArgs -> UnvisitedIsleMossCoveredStepsEffect
 unvisitedIsleMossCoveredStepsEffect = cardEffect UnvisitedIsleMossCoveredStepsEffect Cards.unvisitedIsleMossCoveredSteps

@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype TheSecretMustBeKept = TheSecretMustBeKept TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theSecretMustBeKept :: TreacheryCard TheSecretMustBeKept
 theSecretMustBeKept = treachery TheSecretMustBeKept Cards.theSecretMustBeKept

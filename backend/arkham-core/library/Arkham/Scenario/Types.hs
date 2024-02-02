@@ -39,6 +39,7 @@ class
   , Eq a
   , Show a
   , NoThunks a
+  , NFData a
   , HasModifiersFor a
   , RunMessage a
   , HasChaosTokenValue a
@@ -77,6 +78,9 @@ data instance Field Scenario :: Type -> Type where
   ScenarioTurn :: Field Scenario Int
 
 deriving stock instance Show (Field Scenario typ)
+
+instance NFData (Field Scenario typ) where
+  rnf = rwhnf
 
 data ScenarioAttrs = ScenarioAttrs
   { scenarioName :: Name
@@ -123,7 +127,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 setStandaloneCampaignLog :: CampaignLog -> ScenarioAttrs -> ScenarioAttrs
 setStandaloneCampaignLog standaloneCampaignLog attrs =
@@ -217,6 +221,9 @@ instance Sourceable ScenarioAttrs where
 
 data Scenario where
   Scenario :: IsScenario a => a -> Scenario
+
+instance NFData Scenario where
+  rnf (Scenario a) = rnf a
 
 instance NoThunks Scenario where
   noThunks ctx (Scenario a) = noThunks ctx a

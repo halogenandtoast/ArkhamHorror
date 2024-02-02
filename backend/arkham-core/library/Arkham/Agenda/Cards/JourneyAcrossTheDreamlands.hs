@@ -14,7 +14,7 @@ import Arkham.Trait (Trait (Port))
 
 newtype JourneyAcrossTheDreamlands = JourneyAcrossTheDreamlands AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 journeyAcrossTheDreamlands :: AgendaCard JourneyAcrossTheDreamlands
 journeyAcrossTheDreamlands = agenda (1, A) JourneyAcrossTheDreamlands Cards.journeyAcrossTheDreamlands (Static 7)

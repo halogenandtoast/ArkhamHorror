@@ -14,7 +14,7 @@ import Arkham.Window qualified as Window
 
 newtype RandolphCarterExpertDreamer = RandolphCarterExpertDreamer AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 randolphCarterExpertDreamer :: AssetCard RandolphCarterExpertDreamer
 randolphCarterExpertDreamer = ally RandolphCarterExpertDreamer Cards.randolphCarterExpertDreamer (3, 2)

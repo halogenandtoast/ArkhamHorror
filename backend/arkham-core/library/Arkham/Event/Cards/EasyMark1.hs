@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype EasyMark1 = EasyMark1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 easyMark1 :: EventCard EasyMark1
 easyMark1 =

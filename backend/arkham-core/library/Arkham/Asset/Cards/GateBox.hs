@@ -15,7 +15,7 @@ import Arkham.Movement
 
 newtype GateBox = GateBox AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 gateBox :: AssetCard GateBox
 gateBox = asset GateBox Cards.gateBox

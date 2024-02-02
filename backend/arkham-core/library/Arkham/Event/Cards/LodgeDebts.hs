@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype LodgeDebts = LodgeDebts EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 lodgeDebts :: EventCard LodgeDebts
 lodgeDebts =

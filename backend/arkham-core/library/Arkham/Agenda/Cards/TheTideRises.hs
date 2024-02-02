@@ -19,7 +19,7 @@ import Arkham.Projection
 
 newtype TheTideRises = TheTideRises AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theTideRises :: AgendaCard TheTideRises
 theTideRises = agenda (1, A) TheTideRises Cards.theTideRises (Static 5)

@@ -16,7 +16,7 @@ import Arkham.Window qualified as Window
 
 newtype BlindingLight2 = BlindingLight2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 blindingLight2 :: EventCard BlindingLight2
 blindingLight2 = event BlindingLight2 Cards.blindingLight2
@@ -34,7 +34,7 @@ instance RunMessage BlindingLight2 where
 
 newtype BlindingLight2Effect = BlindingLight2Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 blindingLight2Effect :: EffectArgs -> BlindingLight2Effect
 blindingLight2Effect = cardEffect BlindingLight2Effect Cards.blindingLight2

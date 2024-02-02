@@ -11,7 +11,7 @@ import Arkham.Matcher
 
 newtype CrypticResearch4 = CrypticResearch4 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 crypticResearch4 :: EventCard CrypticResearch4
 crypticResearch4 = event CrypticResearch4 Cards.crypticResearch4

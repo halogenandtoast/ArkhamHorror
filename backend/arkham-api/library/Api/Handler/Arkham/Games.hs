@@ -23,6 +23,7 @@ import Arkham.GameEnv
 import Arkham.Id
 import Arkham.Message
 import Conduit
+import Control.DeepSeq
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
 import Control.Monad.Random.Class (getRandom)
@@ -200,7 +201,7 @@ updateGame response gameId userId writeChannel = do
       <*> get404 gameId
   mLastStep <- runDB $ getBy $ UniqueStep gameId arkhamGameStep
   let
-    gameJson@Game {..} = arkhamGameCurrentData
+    gameJson@Game {..} = force arkhamGameCurrentData
     currentQueue =
       maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
 

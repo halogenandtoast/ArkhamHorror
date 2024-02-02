@@ -13,4 +13,4 @@ data Customization
   | IrrefutableProof -- 6
   | AlternativeHypothesis -- 7
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, NoThunks, NFData)

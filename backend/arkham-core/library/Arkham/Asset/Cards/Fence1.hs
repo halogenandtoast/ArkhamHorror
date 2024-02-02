@@ -21,7 +21,7 @@ import Arkham.Window qualified as Window
 
 newtype Fence1 = Fence1 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 fence1 :: AssetCard Fence1
 fence1 = asset Fence1 Cards.fence1
@@ -53,7 +53,7 @@ instance RunMessage Fence1 where
 
 newtype Fence1Effect = Fence1Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 fence1Effect :: EffectArgs -> Fence1Effect
 fence1Effect = cardEffect Fence1Effect Cards.fence1

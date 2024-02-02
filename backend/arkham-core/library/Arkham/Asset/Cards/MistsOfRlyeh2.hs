@@ -24,7 +24,7 @@ import Arkham.Window qualified as Window
 
 newtype MistsOfRlyeh2 = MistsOfRlyeh2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 mistsOfRlyeh2 :: AssetCard MistsOfRlyeh2
 mistsOfRlyeh2 = asset MistsOfRlyeh2 Cards.mistsOfRlyeh2
@@ -51,7 +51,7 @@ instance RunMessage MistsOfRlyeh2 where
 
 newtype MistsOfRlyeh2Effect = MistsOfRlyeh2Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 mistsOfRlyeh2Effect :: EffectArgs -> MistsOfRlyeh2Effect
 mistsOfRlyeh2Effect = cardEffect MistsOfRlyeh2Effect Cards.mistsOfRlyeh2

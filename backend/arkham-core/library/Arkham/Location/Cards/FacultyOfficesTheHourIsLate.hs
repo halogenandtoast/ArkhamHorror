@@ -10,7 +10,7 @@ import Arkham.Location.Runner
 
 newtype FacultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 facultyOfficesTheHourIsLate :: LocationCard FacultyOfficesTheHourIsLate
 facultyOfficesTheHourIsLate =

@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype OBannionsThug = OBannionsThug EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 oBannionsThug :: EnemyCard OBannionsThug
 oBannionsThug = enemy OBannionsThug Cards.oBannionsThug (4, Static 2, 2) (2, 0)

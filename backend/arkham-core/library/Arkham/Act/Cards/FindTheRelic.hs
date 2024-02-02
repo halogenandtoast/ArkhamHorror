@@ -15,7 +15,7 @@ import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype FindTheRelic = FindTheRelic ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 findTheRelic :: ActCard FindTheRelic
 findTheRelic = act (3, A) FindTheRelic Cards.findTheRelic Nothing

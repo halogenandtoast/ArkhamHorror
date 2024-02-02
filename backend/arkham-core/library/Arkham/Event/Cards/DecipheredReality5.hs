@@ -17,7 +17,7 @@ import Arkham.Projection
 
 newtype DecipheredReality5 = DecipheredReality5 EventAttrs
   deriving anyclass (IsEvent, HasAbilities, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 decipheredReality5 :: EventCard DecipheredReality5
 decipheredReality5 = event DecipheredReality5 Cards.decipheredReality5

@@ -13,7 +13,7 @@ import Arkham.Trait
 
 newtype Scavenging = Scavenging AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 scavenging :: AssetCard Scavenging
 scavenging = asset Scavenging Cards.scavenging

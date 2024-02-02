@@ -9,7 +9,7 @@ import GHC.OverloadedLabels
 
 data DamageType = HorrorType | DamageType
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance IsLabel "horror" DamageType where
   fromLabel = HorrorType

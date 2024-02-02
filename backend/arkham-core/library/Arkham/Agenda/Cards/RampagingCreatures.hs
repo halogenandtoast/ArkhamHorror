@@ -15,7 +15,7 @@ import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 
 newtype RampagingCreatures = RampagingCreatures AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 rampagingCreatures :: AgendaCard RampagingCreatures
 rampagingCreatures = agenda (1, A) RampagingCreatures Cards.rampagingCreatures (Static 5)

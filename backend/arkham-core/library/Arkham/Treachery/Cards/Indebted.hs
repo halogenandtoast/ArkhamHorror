@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype Indebted = Indebted TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 indebted :: TreacheryCard Indebted
 indebted = treachery Indebted Cards.indebted

@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TownHall = TownHall LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 townHall :: LocationCard TownHall
 townHall = location TownHall Cards.townHall 4 (PerPlayer 1)

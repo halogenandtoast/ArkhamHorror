@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype SellYourSoul = SellYourSoul TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 sellYourSoul :: TreacheryCard SellYourSoul
 sellYourSoul = treachery SellYourSoul Cards.sellYourSoul

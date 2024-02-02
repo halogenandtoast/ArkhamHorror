@@ -16,7 +16,7 @@ import Arkham.Trait
 
 newtype SwampLeech = SwampLeech EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 swampLeech :: EnemyCard SwampLeech
 swampLeech =

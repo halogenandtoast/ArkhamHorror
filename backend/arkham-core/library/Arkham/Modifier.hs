@@ -288,7 +288,7 @@ data ModifierType
     Ethereal -- from Ethereal Form
   | Explosion -- from Dyanamite Blast
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 _UpkeepResources :: Prism' ModifierType Int
 _UpkeepResources = prism' UpkeepResources $ \case
@@ -341,7 +341,7 @@ data Modifier = Modifier
   , modifierActiveDuringSetup :: Bool
   }
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data ActionTarget
   = FirstOneOfPerformed [Action]
@@ -349,7 +349,7 @@ data ActionTarget
   | EnemyAction Action EnemyMatcher
   | IsAnyAction
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance IsLabel "draw" ActionTarget where
   fromLabel = IsAction #draw

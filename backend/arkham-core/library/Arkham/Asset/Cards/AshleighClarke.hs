@@ -10,7 +10,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype AshleighClarke = AshleighClarke AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 ashleighClarke :: AssetCard AshleighClarke
 ashleighClarke = asset AshleighClarke Cards.ashleighClarke

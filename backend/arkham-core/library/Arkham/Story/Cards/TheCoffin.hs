@@ -14,7 +14,7 @@ import Arkham.Story.Runner
 
 newtype TheCoffin = TheCoffin StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theCoffin :: StoryCard TheCoffin
 theCoffin = story TheCoffin Cards.theCoffin

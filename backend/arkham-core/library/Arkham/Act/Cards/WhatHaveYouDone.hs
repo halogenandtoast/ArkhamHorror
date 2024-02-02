@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype WhatHaveYouDone = WhatHaveYouDone ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 whatHaveYouDone :: ActCard WhatHaveYouDone
 whatHaveYouDone = act (3, A) WhatHaveYouDone Cards.whatHaveYouDone Nothing

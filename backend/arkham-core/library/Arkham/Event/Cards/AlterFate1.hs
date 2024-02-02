@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype AlterFate1 = AlterFate1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 alterFate1 :: EventCard AlterFate1
 alterFate1 = event AlterFate1 Cards.alterFate1

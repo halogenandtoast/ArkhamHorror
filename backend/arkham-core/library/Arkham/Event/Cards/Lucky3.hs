@@ -11,7 +11,7 @@ import Arkham.SkillTest.Base
 
 newtype Lucky3 = Lucky3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 lucky3 :: EventCard Lucky3
 lucky3 = event Lucky3 Cards.lucky3

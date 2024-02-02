@@ -13,7 +13,7 @@ import Arkham.Matcher hiding (InvestigatorDefeated)
 
 newtype HumanityFading = HumanityFading AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 humanityFading :: AgendaCard HumanityFading
 humanityFading = agenda (3, A) HumanityFading Cards.humanityFading (Static 7)

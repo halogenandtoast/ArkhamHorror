@@ -6,7 +6,7 @@ import Data.Text qualified as T
 
 newtype CardCode = CardCode {unCardCode :: Text}
   deriving stock (Data)
-  deriving newtype (Show, Ord, Hashable, IsString, NoThunks)
+  deriving newtype (Show, Ord, Hashable, IsString, NoThunks, NFData)
 
 -- these card codes get a `b` added after the normal designator
 exceptionCardCodes :: [Text]

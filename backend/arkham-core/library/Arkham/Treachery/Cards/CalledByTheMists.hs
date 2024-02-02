@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype CalledByTheMists = CalledByTheMists TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 calledByTheMists :: TreacheryCard CalledByTheMists
 calledByTheMists = treachery CalledByTheMists Cards.calledByTheMists

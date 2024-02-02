@@ -49,7 +49,7 @@ addRandomBasicWeaknessIfNeeded playerCount deck = do
         then notElem MultiplayerOnly . cdDeckRestrictions
         else const True
   runWriterT $ do
-    Deck <$> flip
+    mkDeck <$> flip
       filterM
       (unDeck deck)
       \card -> do
@@ -83,7 +83,7 @@ getScenarioDeck k =
 getEncounterDiscard :: HasGame m => ScenarioEncounterDeckKey -> m [EncounterCard]
 getEncounterDiscard RegularEncounterDeck = scenarioField ScenarioDiscard
 getEncounterDiscard k =
-  scenarioFieldMap ScenarioEncounterDecks (view (at k . non (Deck [], []) . _2))
+  scenarioFieldMap ScenarioEncounterDecks (view (at k . non (mkDeck [], []) . _2))
 
 withStandalone
   :: HasGame m => (CampaignId -> m a) -> (ScenarioId -> m a) -> m a
@@ -141,7 +141,7 @@ getEncounterDeckHandler a = do
     other ->
       EncounterDeckHandler
         { deckLens = encounterDeckLensFromKey other
-        , discardLens = encounterDecksL . at other . non (Deck [], []) . _2
+        , discardLens = encounterDecksL . at other . non (mkDeck [], []) . _2
         }
 
 toEncounterDeckModifier :: ModifierType -> Maybe ScenarioEncounterDeckKey
@@ -150,4 +150,4 @@ toEncounterDeckModifier _ = Nothing
 
 encounterDeckLensFromKey :: ScenarioEncounterDeckKey -> Lens' ScenarioAttrs (Deck EncounterCard)
 encounterDeckLensFromKey RegularEncounterDeck = encounterDeckL
-encounterDeckLensFromKey k = encounterDecksL . at k . non (Deck [], []) . _1
+encounterDeckLensFromKey k = encounterDecksL . at k . non (mkDeck [], []) . _1

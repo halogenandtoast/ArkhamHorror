@@ -16,7 +16,7 @@ import Arkham.SkillTest.Base
 
 newtype EmergencyRoom = EmergencyRoom LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 emergencyRoom :: LocationCard EmergencyRoom
 emergencyRoom = location EmergencyRoom Cards.emergencyRoom 2 (PerPlayer 1)

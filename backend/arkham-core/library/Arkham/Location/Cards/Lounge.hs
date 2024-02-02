@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype Lounge = Lounge LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 lounge :: LocationCard Lounge
 lounge = location Lounge Cards.lounge 2 (PerPlayer 2)

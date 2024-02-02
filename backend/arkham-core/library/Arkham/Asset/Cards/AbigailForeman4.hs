@@ -17,7 +17,7 @@ import Arkham.Window qualified as Window
 
 newtype AbigailForeman4 = AbigailForeman4 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 abigailForeman4 :: AssetCard AbigailForeman4
 abigailForeman4 = ally AbigailForeman4 Cards.abigailForeman4 (1, 2)

@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype KeeperOfSecrets = KeeperOfSecrets EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 keeperOfSecrets :: EnemyCard KeeperOfSecrets
 keeperOfSecrets =

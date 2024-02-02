@@ -17,7 +17,7 @@ import Arkham.Window qualified as Window
 
 newtype WishEater = WishEater AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 wishEater :: AssetCard WishEater
 wishEater = asset WishEater Cards.wishEater

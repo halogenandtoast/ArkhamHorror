@@ -41,7 +41,7 @@ import Arkham.Trait qualified as Trait
 
 newtype TheLastKing = TheLastKing ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theLastKing :: Difficulty -> TheLastKing
 theLastKing difficulty =

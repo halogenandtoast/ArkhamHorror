@@ -15,7 +15,7 @@ import Arkham.Projection
 
 newtype EnchantedWoodsTheMoonTree = EnchantedWoodsTheMoonTree LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 enchantedWoodsTheMoonTree :: LocationCard EnchantedWoodsTheMoonTree
 enchantedWoodsTheMoonTree = location EnchantedWoodsTheMoonTree Cards.enchantedWoodsTheMoonTree 3 (PerPlayer 1)

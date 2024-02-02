@@ -19,7 +19,7 @@ import Arkham.Trait (Trait (Cultist, Guest, Innocent))
 
 newtype TheTrueCulpritV7 = TheTrueCulpritV7 AgendaAttrs
   deriving anyclass (IsAgenda)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theTrueCulpritV7 :: AgendaCard TheTrueCulpritV7
 theTrueCulpritV7 = agenda (3, A) TheTrueCulpritV7 Cards.theTrueCulpritV7 (Static 8)

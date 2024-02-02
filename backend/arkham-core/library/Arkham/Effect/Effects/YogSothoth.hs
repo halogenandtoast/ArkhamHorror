@@ -11,7 +11,7 @@ import Arkham.Game.Helpers
 
 newtype YogSothoth = YogSothoth EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 yogSothoth :: EffectArgs -> YogSothoth
 yogSothoth = YogSothoth . uncurry4 (baseAttrs "02323")

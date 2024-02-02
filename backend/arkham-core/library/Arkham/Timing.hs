@@ -9,7 +9,7 @@ import GHC.OverloadedLabels
 
 data Timing = When | AtIf | After
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance IsLabel "when" Timing where
   fromLabel = When

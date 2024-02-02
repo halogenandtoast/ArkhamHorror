@@ -15,11 +15,11 @@ import Arkham.Skill.Runner
 
 newtype Metadata = Metadata {moveCount :: Int}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype Nimble = Nimble (SkillAttrs `With` Metadata)
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 nimble :: SkillCard Nimble
 nimble =

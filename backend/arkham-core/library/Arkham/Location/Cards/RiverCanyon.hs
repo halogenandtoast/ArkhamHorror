@@ -18,7 +18,7 @@ import Arkham.Matcher
 
 newtype RiverCanyon = RiverCanyon LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 riverCanyon :: LocationCard RiverCanyon
 riverCanyon = location RiverCanyon Cards.riverCanyon 4 (PerPlayer 1)

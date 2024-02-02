@@ -16,7 +16,7 @@ data SpawnAt
   | SpawnEngagedWith InvestigatorMatcher
   | NoSpawn
   deriving stock (Show, Eq, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance IsString SpawnAt where
   fromString = SpawnAt . fromString

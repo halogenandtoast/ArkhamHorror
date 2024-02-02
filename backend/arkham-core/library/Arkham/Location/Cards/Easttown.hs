@@ -10,7 +10,7 @@ import Arkham.Location.Runner
 
 newtype Easttown = Easttown LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 easttown :: LocationCard Easttown
 easttown = location Easttown Cards.easttown 2 (PerPlayer 1)

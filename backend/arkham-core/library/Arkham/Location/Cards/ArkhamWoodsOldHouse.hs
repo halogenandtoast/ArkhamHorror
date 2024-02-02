@@ -9,7 +9,7 @@ import Arkham.Location.Runner
 
 newtype ArkhamWoodsOldHouse = ArkhamWoodsOldHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 arkhamWoodsOldHouse :: LocationCard ArkhamWoodsOldHouse
 arkhamWoodsOldHouse =

@@ -11,7 +11,7 @@ import Arkham.Enemy.Runner
 
 newtype SebastienMoreau = SebastienMoreau EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 sebastienMoreau :: EnemyCard SebastienMoreau
 sebastienMoreau = enemy SebastienMoreau Cards.sebastienMoreau (3, Static 5, 3) (2, 2)

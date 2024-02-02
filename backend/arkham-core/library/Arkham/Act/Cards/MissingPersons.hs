@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype MissingPersons = MissingPersons ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 missingPersons :: ActCard MissingPersons
 missingPersons =

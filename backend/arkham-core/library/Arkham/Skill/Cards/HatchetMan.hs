@@ -18,7 +18,7 @@ import Arkham.Skill.Runner
 
 newtype HatchetMan = HatchetMan SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 hatchetMan :: SkillCard HatchetMan
 hatchetMan = skill HatchetMan Cards.hatchetMan
@@ -42,7 +42,7 @@ instance RunMessage HatchetMan where
 
 newtype HatchetManEffect = HatchetManEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 hatchetManEffect :: EffectArgs -> HatchetManEffect
 hatchetManEffect = cardEffect HatchetManEffect Cards.hatchetMan

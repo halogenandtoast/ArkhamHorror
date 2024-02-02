@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 newtype HordeOfNight = HordeOfNight EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 hordeOfNight :: EnemyCard HordeOfNight
 hordeOfNight = enemy HordeOfNight Cards.hordeOfNight (1, Static 1, 1) (1, 1)

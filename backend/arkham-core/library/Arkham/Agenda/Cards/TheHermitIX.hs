@@ -19,11 +19,11 @@ import Arkham.Trait (Trait (WitchHouse))
 
 newtype Metadata = Metadata {foundCardCount :: Int}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype TheHermitIX = TheHermitIX (AgendaAttrs `With` Metadata)
   deriving anyclass (IsAgenda)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theHermitIX :: AgendaCard TheHermitIX
 theHermitIX =

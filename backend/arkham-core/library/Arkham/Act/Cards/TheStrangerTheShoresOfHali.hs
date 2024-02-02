@@ -20,7 +20,7 @@ import Arkham.Window (getBatchId)
 
 newtype TheStrangerTheShoresOfHali = TheStrangerTheShoresOfHali ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theStrangerTheShoresOfHali :: ActCard TheStrangerTheShoresOfHali
 theStrangerTheShoresOfHali =
@@ -56,7 +56,7 @@ instance RunMessage TheStrangerTheShoresOfHali where
 
 newtype TheStrangerTheShoresOfHaliEffect = TheStrangerTheShoresOfHaliEffect EffectAttrs
   deriving anyclass (IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theStrangerTheShoresOfHaliEffect :: EffectArgs -> TheStrangerTheShoresOfHaliEffect
 theStrangerTheShoresOfHaliEffect = cardEffect TheStrangerTheShoresOfHaliEffect Cards.theStrangerTheShoresOfHali

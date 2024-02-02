@@ -8,7 +8,7 @@ import Arkham.Prelude
 
 newtype PoliceBadge2 = PoliceBadge2 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 policeBadge2 :: AssetCard PoliceBadge2
 policeBadge2 = asset PoliceBadge2 Cards.policeBadge2

@@ -18,7 +18,7 @@ data ScenarioDeckKey
   | CosmosDeck -- Before the Black Throne
   | LeadsDeck -- Murder at the Excelsior Hotel
   deriving stock (Show, Ord, Eq, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 $(deriveJSON defaultOptions ''ScenarioDeckKey)
 
@@ -29,7 +29,7 @@ data ScenarioEncounterDeckKey
   = RegularEncounterDeck
   | SpectralEncounterDeck -- The Wages of Sin
   deriving stock (Show, Ord, Eq, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 $(deriveJSON defaultOptions ''ScenarioEncounterDeckKey)
 

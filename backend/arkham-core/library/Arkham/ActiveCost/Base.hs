@@ -19,15 +19,15 @@ data ActiveCost = ActiveCost
   , activeCostSealedChaosTokens :: [ChaosToken]
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 data IsPlayAction = IsPlayAction | NotPlayAction
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 data ActiveCostTarget
   = ForCard IsPlayAction Card
   | ForAbility Ability
   | ForCost Card -- used when the active cost will not determine an effect
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)

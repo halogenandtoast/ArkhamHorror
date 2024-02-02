@@ -22,6 +22,7 @@ instance Ord Card
 instance ToJSON Card
 instance FromJSON Card
 instance NoThunks Card
+instance NFData Card
 
 class MonadRandom m => CardGen m where
   genEncounterCard :: HasCardDef a => a -> m EncounterCard

@@ -13,7 +13,7 @@ import Arkham.Location.Runner
 
 newtype Schoolhouse_212 = Schoolhouse_212 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 schoolhouse_212 :: LocationCard Schoolhouse_212
 schoolhouse_212 = location Schoolhouse_212 Cards.schoolhouse_212 4 (Static 1)

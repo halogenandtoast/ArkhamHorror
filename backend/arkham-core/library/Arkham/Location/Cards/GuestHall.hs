@@ -10,7 +10,7 @@ import Arkham.Location.Runner
 
 newtype GuestHall = GuestHall LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 guestHall :: LocationCard GuestHall
 guestHall = location GuestHall Cards.guestHall 1 (Static 0)

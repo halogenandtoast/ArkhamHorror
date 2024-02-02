@@ -17,7 +17,7 @@ import Arkham.Window qualified as Window
 
 newtype Montmartre209 = Montmartre209 EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 montmartre209 :: EffectArgs -> Montmartre209
 montmartre209 = Montmartre209 . uncurry4 (baseAttrs "03209")

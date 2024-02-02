@@ -57,7 +57,7 @@ import Data.List.NonEmpty qualified as NE
 
 newtype BeyondTheGatesOfSleep = BeyondTheGatesOfSleep ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 beyondTheGatesOfSleep :: Difficulty -> BeyondTheGatesOfSleep
 beyondTheGatesOfSleep difficulty =

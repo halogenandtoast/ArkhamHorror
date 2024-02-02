@@ -16,7 +16,7 @@ import Arkham.Projection
 
 newtype CallingInFavors = CallingInFavors EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 callingInFavors :: EventCard CallingInFavors
 callingInFavors = event CallingInFavors Cards.callingInFavors

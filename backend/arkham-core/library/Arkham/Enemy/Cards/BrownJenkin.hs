@@ -15,7 +15,7 @@ import Arkham.Trait (Trait (Creature))
 
 newtype BrownJenkin = BrownJenkin EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 brownJenkin :: EnemyCard BrownJenkin
 brownJenkin = enemy BrownJenkin Cards.brownJenkin (1, Static 1, 4) (1, 1)

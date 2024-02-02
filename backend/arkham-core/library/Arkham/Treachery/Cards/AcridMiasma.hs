@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype AcridMiasma = AcridMiasma TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 acridMiasma :: TreacheryCard AcridMiasma
 acridMiasma = treachery AcridMiasma Cards.acridMiasma

@@ -15,7 +15,7 @@ import Arkham.Projection
 
 newtype AdministrationOffice_130 = AdministrationOffice_130 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 administrationOffice_130 :: LocationCard AdministrationOffice_130
 administrationOffice_130 =

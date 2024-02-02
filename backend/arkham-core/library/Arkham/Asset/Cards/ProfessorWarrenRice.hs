@@ -10,7 +10,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ProfessorWarrenRice = ProfessorWarrenRice AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 professorWarrenRice :: AssetCard ProfessorWarrenRice
 professorWarrenRice =

@@ -14,7 +14,7 @@ import Arkham.Window (defaultWindows)
 
 newtype ThePallidMask = ThePallidMask AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 thePallidMask :: AssetCard ThePallidMask
 thePallidMask =

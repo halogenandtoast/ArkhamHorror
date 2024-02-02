@@ -14,7 +14,7 @@ import Arkham.Skill.Runner
 
 newtype SealOfTheElderSign5 = SealOfTheElderSign5 SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 instance HasModifiersFor SealOfTheElderSign5 where
   getModifiersFor (InvestigatorTarget _) (SealOfTheElderSign5 attrs) = do

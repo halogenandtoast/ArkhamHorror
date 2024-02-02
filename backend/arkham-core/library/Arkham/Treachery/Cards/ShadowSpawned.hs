@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype ShadowSpawned = ShadowSpawned TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 shadowSpawned :: TreacheryCard ShadowSpawned
 shadowSpawned = treachery ShadowSpawned Cards.shadowSpawned

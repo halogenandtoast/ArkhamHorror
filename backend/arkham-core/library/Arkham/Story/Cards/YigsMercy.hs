@@ -20,7 +20,7 @@ import Arkham.Trait qualified as Trait
 
 newtype YigsMercy = YigsMercy StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 yigsMercy :: StoryCard YigsMercy
 yigsMercy = story YigsMercy Cards.yigsMercy

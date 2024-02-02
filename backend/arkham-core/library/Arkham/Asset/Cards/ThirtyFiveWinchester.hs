@@ -15,7 +15,7 @@ import Arkham.Effect.Runner
 
 newtype ThirtyFiveWinchester = ThirtyFiveWinchester AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 thirtyFiveWinchester :: AssetCard ThirtyFiveWinchester
 thirtyFiveWinchester = asset ThirtyFiveWinchester Cards.thirtyFiveWinchester
@@ -37,7 +37,7 @@ instance RunMessage ThirtyFiveWinchester where
 
 newtype ThirtyFiveWinchesterEffect = ThirtyFiveWinchesterEffect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 thirtyFiveWinchesterEffect :: EffectArgs -> ThirtyFiveWinchesterEffect
 thirtyFiveWinchesterEffect = cardEffect ThirtyFiveWinchesterEffect Cards.thirtyFiveWinchester

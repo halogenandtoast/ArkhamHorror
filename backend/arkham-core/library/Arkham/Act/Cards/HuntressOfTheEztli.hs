@@ -23,7 +23,7 @@ import Arkham.Trait (Trait (Ruins))
 
 newtype HuntressOfTheEztli = HuntressOfTheEztli ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 huntressOfTheEztli :: ActCard HuntressOfTheEztli
 huntressOfTheEztli =

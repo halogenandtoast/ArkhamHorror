@@ -12,7 +12,7 @@ import Arkham.Id
 
 newtype Improvisation = Improvisation EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 improvisation :: EventCard Improvisation
 improvisation = event Improvisation Cards.improvisation

@@ -16,7 +16,7 @@ import Arkham.Skill.Runner
 
 newtype Daredevil2 = Daredevil2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 daredevil2 :: SkillCard Daredevil2
 daredevil2 = skill Daredevil2 Cards.daredevil2

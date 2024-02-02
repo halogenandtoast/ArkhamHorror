@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype OtherworldlyCompass2 = OtherworldlyCompass2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 otherworldlyCompass2 :: AssetCard OtherworldlyCompass2
 otherworldlyCompass2 = asset OtherworldlyCompass2 Cards.otherworldlyCompass2

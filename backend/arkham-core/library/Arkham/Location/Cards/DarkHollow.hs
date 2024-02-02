@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype DarkHollow = DarkHollow LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 darkHollow :: LocationCard DarkHollow
 darkHollow = location DarkHollow Cards.darkHollow 3 (PerPlayer 1)

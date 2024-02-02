@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype LiquidCourage1 = LiquidCourage1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 liquidCourage1 :: AssetCard LiquidCourage1
 liquidCourage1 = asset LiquidCourage1 Cards.liquidCourage1

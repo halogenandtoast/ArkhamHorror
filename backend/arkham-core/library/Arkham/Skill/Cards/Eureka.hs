@@ -13,7 +13,7 @@ import Arkham.Skill.Runner
 
 newtype Eureka = Eureka SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 eureka :: SkillCard Eureka
 eureka = skill Eureka Cards.eureka

@@ -13,7 +13,7 @@ import Arkham.Projection
 
 newtype AbyssalTome2 = AbyssalTome2 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 abyssalTome2 :: AssetCard AbyssalTome2
 abyssalTome2 = asset AbyssalTome2 Cards.abyssalTome2

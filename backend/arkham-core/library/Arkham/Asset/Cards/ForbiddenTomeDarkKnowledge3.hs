@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype ForbiddenTomeDarkKnowledge3 = ForbiddenTomeDarkKnowledge3 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 forbiddenTomeDarkKnowledge3 :: AssetCard ForbiddenTomeDarkKnowledge3
 forbiddenTomeDarkKnowledge3 =

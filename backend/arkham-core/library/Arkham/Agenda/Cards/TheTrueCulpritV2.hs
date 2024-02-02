@@ -19,7 +19,7 @@ import Arkham.Projection
 
 newtype TheTrueCulpritV2 = TheTrueCulpritV2 AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theTrueCulpritV2 :: AgendaCard TheTrueCulpritV2
 theTrueCulpritV2 = agenda (3, A) TheTrueCulpritV2 Cards.theTrueCulpritV2 (Static 8)

@@ -17,7 +17,7 @@ import Arkham.Projection
 
 newtype Repossession = Repossession ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 repossession :: ActCard Repossession
 repossession = act (3, A) Repossession Cards.repossession Nothing

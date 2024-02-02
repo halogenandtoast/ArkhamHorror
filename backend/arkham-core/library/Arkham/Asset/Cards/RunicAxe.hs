@@ -10,7 +10,7 @@ import Arkham.Asset.Runner
 
 newtype RunicAxe = RunicAxe AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 runicAxe :: AssetCard RunicAxe
 runicAxe = asset RunicAxe Cards.runicAxe

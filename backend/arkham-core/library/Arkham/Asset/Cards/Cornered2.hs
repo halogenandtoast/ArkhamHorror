@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype Cornered2 = Cornered2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 cornered2 :: AssetCard Cornered2
 cornered2 = asset Cornered2 Cards.cornered2

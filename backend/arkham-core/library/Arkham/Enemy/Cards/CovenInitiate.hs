@@ -14,7 +14,7 @@ import Arkham.Trait (Trait (Hex))
 
 newtype CovenInitiate = CovenInitiate EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 covenInitiate :: EnemyCard CovenInitiate
 covenInitiate = enemy CovenInitiate Cards.covenInitiate (2, Static 2, 2) (0, 1)

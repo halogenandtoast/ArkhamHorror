@@ -19,7 +19,7 @@ import Arkham.Treachery.Cards qualified as Cards
 newtype GavriellaMizrah = GavriellaMizrah InvestigatorAttrs
   deriving stock (Show, Eq, Generic)
   deriving anyclass (IsInvestigator, ToJSON, FromJSON)
-  deriving newtype (Entity, NoThunks)
+  deriving newtype (Entity, NoThunks, NFData)
 
 gavriellaMizrah :: InvestigatorCard GavriellaMizrah
 gavriellaMizrah =

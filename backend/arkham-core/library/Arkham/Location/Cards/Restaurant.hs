@@ -18,7 +18,7 @@ import Arkham.Projection
 
 newtype Restaurant = Restaurant LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 restaurant :: LocationCard Restaurant
 restaurant = location Restaurant Cards.restaurant 4 (PerPlayer 1)
@@ -48,7 +48,7 @@ instance RunMessage Restaurant where
 
 newtype RestaurantEffect = RestaurantEffect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 restaurantEffect :: EffectArgs -> RestaurantEffect
 restaurantEffect = cardEffect RestaurantEffect Cards.restaurant

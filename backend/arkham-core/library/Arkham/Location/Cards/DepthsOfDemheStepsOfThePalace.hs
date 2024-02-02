@@ -16,7 +16,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype DepthsOfDemheStepsOfThePalace = DepthsOfDemheStepsOfThePalace LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 depthsOfDemheStepsOfThePalace :: LocationCard DepthsOfDemheStepsOfThePalace
 depthsOfDemheStepsOfThePalace =

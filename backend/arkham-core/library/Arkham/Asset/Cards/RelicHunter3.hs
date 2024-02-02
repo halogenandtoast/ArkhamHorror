@@ -11,7 +11,7 @@ import Arkham.Card
 
 newtype RelicHunter3 = RelicHunter3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 relicHunter3 :: AssetCard RelicHunter3
 relicHunter3 = asset RelicHunter3 Cards.relicHunter3

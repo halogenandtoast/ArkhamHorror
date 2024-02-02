@@ -50,7 +50,7 @@ data LocationAttrs = LocationAttrs
   , locationMeta :: Value
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance IsLocationMatcher LocationAttrs where
   toLocationMatcher = LocationWithId . locationId

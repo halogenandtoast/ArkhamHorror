@@ -17,7 +17,7 @@ import Arkham.Trait
 
 newtype GareDOrsay = GareDOrsay LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 gareDOrsay :: LocationCard GareDOrsay
 gareDOrsay = location GareDOrsay Cards.gareDOrsay 4 (PerPlayer 1)

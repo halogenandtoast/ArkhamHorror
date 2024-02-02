@@ -17,7 +17,7 @@ import Arkham.Window qualified as Window
 
 newtype NineOfRods3 = NineOfRods3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 nineOfRods3 :: AssetCard NineOfRods3
 nineOfRods3 = asset NineOfRods3 Cards.nineOfRods3

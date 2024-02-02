@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TheOrganistHopelessIDefiedHim = TheOrganistHopelessIDefiedHim EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 instance HasModifiersFor TheOrganistHopelessIDefiedHim where
   getModifiersFor target (TheOrganistHopelessIDefiedHim attrs)

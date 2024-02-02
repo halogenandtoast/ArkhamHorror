@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype BindMonster2 = BindMonster2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 bindMonster2 :: EventCard BindMonster2
 bindMonster2 = event BindMonster2 Cards.bindMonster2

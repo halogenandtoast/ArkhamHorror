@@ -37,7 +37,7 @@ import Data.IntMap.Strict qualified as IntMap
 
 newtype ThreadsOfFate = ThreadsOfFate ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 threadsOfFate :: Difficulty -> ThreadsOfFate
 threadsOfFate difficulty =
@@ -140,7 +140,7 @@ instance RunMessage ThreadsOfFate where
           , Treacheries.falseLead
           , Treacheries.falseLead
           ]
-      encounterDeck <- Deck <$> shuffleM (unDeck gatheredCards <> midnightMasks)
+      encounterDeck <- mkDeck <$> shuffleM (unDeck gatheredCards <> midnightMasks)
 
       (rivertownId, placeRivertown) <- placeLocationCard Locations.rivertown
       placeOtherLocations <-

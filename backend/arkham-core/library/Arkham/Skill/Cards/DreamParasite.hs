@@ -12,7 +12,7 @@ import Arkham.Skill.Runner
 
 newtype DreamParasite = DreamParasite SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 dreamParasite :: SkillCard DreamParasite
 dreamParasite = skill DreamParasite Cards.dreamParasite

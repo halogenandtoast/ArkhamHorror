@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype MrPeabody = MrPeabody AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 mrPeabody :: AssetCard MrPeabody
 mrPeabody = ally MrPeabody Cards.mrPeabody (2, 2)

@@ -16,7 +16,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype BleakPlainsStarsOfAldebaran = BleakPlainsStarsOfAldebaran LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 bleakPlainsStarsOfAldebaran :: LocationCard BleakPlainsStarsOfAldebaran
 bleakPlainsStarsOfAldebaran =

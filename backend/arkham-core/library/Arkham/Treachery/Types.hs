@@ -32,6 +32,7 @@ class
   , Eq a
   , Show a
   , NoThunks a
+  , NFData a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -77,7 +78,7 @@ data TreacheryAttrs = TreacheryAttrs
   , treacheryDiscardedBy :: Maybe InvestigatorId
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance AsId TreacheryAttrs where
   type IdOf TreacheryAttrs = TreacheryId
@@ -251,6 +252,9 @@ is (CardIdTarget cardId) t = cardId == toCardId t
 is _ _ = False
 
 data Treachery = forall a. IsTreachery a => Treachery a
+
+instance NFData Treachery where
+  rnf (Treachery a) = rnf a
 
 instance NoThunks Treachery where
   noThunks ctx (Treachery a) = noThunks ctx a

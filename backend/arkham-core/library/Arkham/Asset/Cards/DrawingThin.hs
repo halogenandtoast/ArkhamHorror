@@ -13,7 +13,7 @@ import Arkham.Timing qualified as Timing
 
 newtype DrawingThin = DrawingThin AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 drawingThin :: AssetCard DrawingThin
 drawingThin = asset DrawingThin Cards.drawingThin

@@ -12,7 +12,7 @@ import Arkham.Prelude
 
 newtype SwiftReflexes = SwiftReflexes EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 swiftReflexes :: EventCard SwiftReflexes
 swiftReflexes = event SwiftReflexes Cards.swiftReflexes

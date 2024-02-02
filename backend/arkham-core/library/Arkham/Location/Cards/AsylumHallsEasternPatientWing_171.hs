@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype AsylumHallsEasternPatientWing_171 = AsylumHallsEasternPatientWing_171 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 asylumHallsEasternPatientWing_171
   :: LocationCard AsylumHallsEasternPatientWing_171

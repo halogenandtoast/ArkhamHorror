@@ -17,7 +17,7 @@ import Arkham.Window qualified as Window
 
 newtype NightmareBauble3 = NightmareBauble3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 nightmareBauble3 :: AssetCard NightmareBauble3
 nightmareBauble3 = asset NightmareBauble3 Cards.nightmareBauble3

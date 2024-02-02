@@ -13,7 +13,7 @@ import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 
 newtype AbandonedSite = AbandonedSite LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 abandonedSite :: LocationCard AbandonedSite
 abandonedSite =

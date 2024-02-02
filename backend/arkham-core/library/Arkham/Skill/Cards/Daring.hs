@@ -19,7 +19,7 @@ import Arkham.Skill.Runner
 
 newtype Daring = Daring SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 daring :: SkillCard Daring
 daring = skill Daring Cards.daring

@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype EerieGlade = EerieGlade LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 eerieGlade :: LocationCard EerieGlade
 eerieGlade = location EerieGlade Cards.eerieGlade 4 (PerPlayer 1)

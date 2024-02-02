@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype CrypticWritings = CrypticWritings EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 crypticWritings :: EventCard CrypticWritings
 crypticWritings = event CrypticWritings Cards.crypticWritings

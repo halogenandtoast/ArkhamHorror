@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype DimensionalGap = DimensionalGap LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 dimensionalGap :: LocationCard DimensionalGap
 dimensionalGap = location DimensionalGap Cards.dimensionalGap 3 (PerPlayer 1)

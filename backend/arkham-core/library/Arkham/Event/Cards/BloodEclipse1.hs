@@ -13,7 +13,7 @@ import Arkham.Helpers.Modifiers
 
 newtype BloodEclipse1 = BloodEclipse1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 bloodEclipse1 :: EventCard BloodEclipse1
 bloodEclipse1 = event BloodEclipse1 Cards.bloodEclipse1

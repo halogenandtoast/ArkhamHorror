@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype LodgeCatacombs = LodgeCatacombs LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 lodgeCatacombs :: LocationCard LodgeCatacombs
 lodgeCatacombs = location LodgeCatacombs Cards.lodgeCatacombs 4 (Static 0)

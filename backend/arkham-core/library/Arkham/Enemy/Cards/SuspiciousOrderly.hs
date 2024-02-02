@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype SuspiciousOrderly = SuspiciousOrderly EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 suspiciousOrderly :: EnemyCard SuspiciousOrderly
 suspiciousOrderly =

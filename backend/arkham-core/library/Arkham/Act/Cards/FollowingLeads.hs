@@ -25,7 +25,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype FollowingLeads = FollowingLeads ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 followingLeads :: ActCard FollowingLeads
 followingLeads = act (2, A) FollowingLeads Cards.followingLeads Nothing

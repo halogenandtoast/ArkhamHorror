@@ -13,7 +13,7 @@ import Arkham.Trait (Trait (Port))
 
 newtype TheDoomThatCameBefore = TheDoomThatCameBefore ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theDoomThatCameBefore :: ActCard TheDoomThatCameBefore
 theDoomThatCameBefore = act (2, A) TheDoomThatCameBefore Cards.theDoomThatCameBefore Nothing

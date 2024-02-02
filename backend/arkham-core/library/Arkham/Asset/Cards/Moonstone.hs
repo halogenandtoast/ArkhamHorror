@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype Moonstone = Moonstone AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 moonstone :: AssetCard Moonstone
 moonstone = asset Moonstone Cards.moonstone

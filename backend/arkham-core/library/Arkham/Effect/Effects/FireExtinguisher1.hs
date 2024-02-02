@@ -12,7 +12,7 @@ import Arkham.Matcher hiding (EnemyEvaded)
 
 newtype FireExtinguisher1 = FireExtinguisher1 EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 fireExtinguisher1 :: EffectArgs -> FireExtinguisher1
 fireExtinguisher1 = FireExtinguisher1 . uncurry4 (baseAttrs "02114")

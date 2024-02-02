@@ -10,11 +10,11 @@ import Data.Aeson.TH
 
 data Direction = Above | Below | LeftOf | RightOf
   deriving stock (Show, Eq, Ord, Enum, Bounded, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data GridDirection = GridUp | GridDown | GridLeft | GridRight
   deriving stock (Show, Eq, Ord, Enum, Bounded, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 oppositeDirection :: GridDirection -> GridDirection
 oppositeDirection = \case

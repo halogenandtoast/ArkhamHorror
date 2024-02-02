@@ -21,7 +21,7 @@ import Arkham.Window qualified as Window
 
 newtype ShadowsDeepen = ShadowsDeepen AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 shadowsDeepen :: AgendaCard ShadowsDeepen
 shadowsDeepen = agenda (2, A) ShadowsDeepen Cards.shadowsDeepen (Static 7)

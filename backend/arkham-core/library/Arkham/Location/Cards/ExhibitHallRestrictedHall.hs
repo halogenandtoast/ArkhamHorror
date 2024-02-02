@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype ExhibitHallRestrictedHall = ExhibitHallRestrictedHall LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 exhibitHallRestrictedHall :: LocationCard ExhibitHallRestrictedHall
 exhibitHallRestrictedHall =

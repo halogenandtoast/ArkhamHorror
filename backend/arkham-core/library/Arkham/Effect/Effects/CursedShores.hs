@@ -11,7 +11,7 @@ import Arkham.Effect.Runner
 
 newtype CursedShores = CursedShores EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 cursedShores :: EffectArgs -> CursedShores
 cursedShores = CursedShores . uncurry4 (baseAttrs "81007")

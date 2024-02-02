@@ -24,7 +24,7 @@ data EncounterCard = MkEncounterCard
   , ecOwner :: Maybe InvestigatorId
   }
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance HasCardCode EncounterCard where
   toCardCode = ecCardCode
@@ -42,13 +42,12 @@ instance HasOriginalCardCode EncounterCard where
   toOriginalCardCode = ecOriginalCardCode
 
 lookupEncounterCard :: CardDef -> CardId -> EncounterCard
-lookupEncounterCard cardDef cardId =
+lookupEncounterCard !cardDef !cardId =
   MkEncounterCard
     { ecId = cardId
     , ecCardCode = toCardCode cardDef
     , ecOriginalCardCode = toCardCode cardDef
-    , ecIsFlipped =
-        Just $ isJust (cdRevealedName cardDef) && cdDoubleSided cardDef
+    , ecIsFlipped = Just $ isJust (cdRevealedName cardDef) && cdDoubleSided cardDef
     , ecAddedPeril = False
     , ecOwner = Nothing
     }

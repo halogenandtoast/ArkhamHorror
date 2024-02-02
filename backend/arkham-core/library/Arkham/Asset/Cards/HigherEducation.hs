@@ -8,7 +8,7 @@ import Arkham.Prelude
 
 newtype HigherEducation = HigherEducation AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 higherEducation :: AssetCard HigherEducation
 higherEducation = asset HigherEducation Cards.higherEducation

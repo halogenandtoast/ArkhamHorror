@@ -21,11 +21,11 @@ import Arkham.SkillType
 
 newtype Metadata = Metadata {choice :: Maybe Int}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype BaitAndSwitch3 = BaitAndSwitch3 (EventAttrs `With` Metadata)
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 baitAndSwitch3 :: EventCard BaitAndSwitch3
 baitAndSwitch3 =

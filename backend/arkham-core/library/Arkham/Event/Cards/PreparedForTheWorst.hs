@@ -14,7 +14,7 @@ import Arkham.Trait
 
 newtype PreparedForTheWorst = PreparedForTheWorst EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 preparedForTheWorst :: EventCard PreparedForTheWorst
 preparedForTheWorst = event PreparedForTheWorst Cards.preparedForTheWorst

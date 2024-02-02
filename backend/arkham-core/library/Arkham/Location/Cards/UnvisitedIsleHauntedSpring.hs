@@ -20,7 +20,7 @@ import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype UnvisitedIsleHauntedSpring = UnvisitedIsleHauntedSpring LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 unvisitedIsleHauntedSpring :: LocationCard UnvisitedIsleHauntedSpring
 unvisitedIsleHauntedSpring = location UnvisitedIsleHauntedSpring Cards.unvisitedIsleHauntedSpring 2 (PerPlayer 2)

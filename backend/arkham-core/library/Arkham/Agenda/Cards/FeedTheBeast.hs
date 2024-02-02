@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype FeedTheBeast = FeedTheBeast AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 feedTheBeast :: AgendaCard FeedTheBeast
 feedTheBeast = agenda (3, A) FeedTheBeast Cards.feedTheBeast (Static 7)

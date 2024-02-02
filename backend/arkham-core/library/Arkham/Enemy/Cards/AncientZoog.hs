@@ -14,7 +14,7 @@ import Arkham.Trait (Trait (Zoog))
 
 newtype AncientZoog = AncientZoog EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 ancientZoog :: EnemyCard AncientZoog
 ancientZoog =

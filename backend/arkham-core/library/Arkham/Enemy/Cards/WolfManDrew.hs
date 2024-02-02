@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype WolfManDrew = WolfManDrew EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 wolfManDrew :: EnemyCard WolfManDrew
 wolfManDrew = enemyWith WolfManDrew Cards.wolfManDrew (4, Static 4, 2) (2, 0) (spawnAtL ?~ "Downtown")

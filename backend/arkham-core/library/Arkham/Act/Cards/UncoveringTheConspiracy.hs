@@ -16,7 +16,7 @@ import Arkham.Trait
 
 newtype UncoveringTheConspiracy = UncoveringTheConspiracy ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 uncoveringTheConspiracy :: ActCard UncoveringTheConspiracy
 uncoveringTheConspiracy = act (1, A) UncoveringTheConspiracy Cards.uncoveringTheConspiracy Nothing

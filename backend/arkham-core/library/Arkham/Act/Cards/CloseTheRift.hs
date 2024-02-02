@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype CloseTheRift = CloseTheRift ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 closeTheRift :: ActCard CloseTheRift
 closeTheRift =

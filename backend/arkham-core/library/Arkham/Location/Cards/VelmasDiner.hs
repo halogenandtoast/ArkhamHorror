@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype VelmasDiner = VelmasDiner LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 velmasDiner :: LocationCard VelmasDiner
 velmasDiner = location VelmasDiner Cards.velmasDiner 2 (Static 0)

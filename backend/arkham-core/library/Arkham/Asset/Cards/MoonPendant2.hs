@@ -19,7 +19,7 @@ import Arkham.Window (defaultWindows)
 
 newtype MoonPendant2 = MoonPendant2 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 moonPendant2 :: AssetCard MoonPendant2
 moonPendant2 = asset MoonPendant2 Cards.moonPendant2

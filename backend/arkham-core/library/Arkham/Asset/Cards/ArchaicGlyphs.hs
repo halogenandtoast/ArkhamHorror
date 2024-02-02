@@ -15,11 +15,11 @@ import Arkham.SkillType
 
 newtype Metadata = Metadata {discarding :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype ArchaicGlyphs = ArchaicGlyphs (AssetAttrs `With` Metadata)
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 archaicGlyphs :: AssetCard ArchaicGlyphs
 archaicGlyphs =

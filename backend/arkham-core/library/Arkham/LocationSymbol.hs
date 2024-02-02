@@ -23,6 +23,6 @@ data LocationSymbol
   | Trefoil
   | NoSymbol
   deriving stock (Show, Ord, Eq, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 $(deriveJSON defaultOptions ''LocationSymbol)

@@ -44,6 +44,7 @@ library:
     - case-insensitive
     - conduit
     - containers
+    - deepseq
     - directory
     - errors
     - esqueleto

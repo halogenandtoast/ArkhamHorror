@@ -28,6 +28,7 @@ class
   , Eq a
   , Show a
   , NoThunks a
+  , NFData a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -66,7 +67,7 @@ data EffectAttrs = EffectAttrs
   , effectExtraMetadata :: Value
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 finishedL :: Lens' EffectAttrs Bool
 finishedL = lens effectFinished $ \m x -> m {effectFinished = x}
@@ -164,6 +165,9 @@ instance Sourceable EffectAttrs where
   isSource _ _ = False
 
 data Effect = forall a. IsEffect a => Effect a
+
+instance NFData Effect where
+  rnf (Effect a) = rnf a
 
 instance NoThunks Effect where
   noThunks ctx (Effect a) = noThunks ctx a

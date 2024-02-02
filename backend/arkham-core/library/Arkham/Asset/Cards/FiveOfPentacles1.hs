@@ -16,7 +16,7 @@ import Arkham.Window (defaultWindows)
 
 newtype FiveOfPentacles1 = FiveOfPentacles1 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 fiveOfPentacles1 :: AssetCard FiveOfPentacles1
 fiveOfPentacles1 =

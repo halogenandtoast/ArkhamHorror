@@ -14,7 +14,7 @@ import Arkham.Movement
 
 newtype Pathfinder1 = Pathfinder1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 pathfinder1 :: AssetCard Pathfinder1
 pathfinder1 = asset Pathfinder1 Cards.pathfinder1

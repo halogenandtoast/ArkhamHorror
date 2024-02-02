@@ -11,7 +11,7 @@ import Arkham.Event.Runner
 
 newtype ImOuttaHere = ImOuttaHere EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 imOuttaHere :: EventCard ImOuttaHere
 imOuttaHere = event ImOuttaHere Cards.imOuttaHere

@@ -254,7 +254,7 @@ data CampaignLogKey
   | YouHaveTranslatedTheTome
   | YouHaveInterpretedTheDreams
   deriving stock (Eq, Show, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 $(deriveJSON defaultOptions ''CampaignLogKey)
 
@@ -263,7 +263,7 @@ instance FromJSONKey CampaignLogKey
 
 data Recorded a = Recorded a | CrossedOut a
   deriving stock (Show, Ord, Eq, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance ToJSON a => ToJSON (Recorded a) where
   toJSON (Recorded a) = object ["tag" .= String "Recorded", "contents" .= a]
@@ -301,7 +301,18 @@ instance ToGameLoggerFormat CampaignLogKey where
     go' (x : xs) | isUpper x = ' ' : toLower x : go' xs
     go' (x : xs) = x : go' xs
 
-class (ToJSON a, FromJSON a, Eq a, Show a, Typeable a) => Recordable a where
+class
+  ( ToJSON a
+  , FromJSON a
+  , Eq a
+  , Show a
+  , Typeable a
+  , NFData a
+  , NFData (RecordableType a)
+  , NFData (Recorded a)
+  ) =>
+  Recordable a
+  where
   recordableType :: RecordableType a
 
 instance Recordable CardCode where
@@ -319,6 +330,10 @@ crossedOut a = SomeRecorded (recordableType @a) (CrossedOut a)
 data RecordableType a where
   RecordableCardCode :: RecordableType CardCode
   RecordableMemento :: RecordableType Memento
+
+instance NFData (RecordableType a) where
+  rnf RecordableCardCode = ()
+  rnf RecordableMemento = ()
 
 data SomeRecordableType where
   SomeRecordableType :: RecordableType a -> SomeRecordableType
@@ -342,6 +357,9 @@ data SomeRecorded where
 
 deriving stock instance Show SomeRecorded
 deriving via AllowThunk SomeRecorded instance NoThunks SomeRecorded
+
+instance NFData SomeRecorded where
+  rnf (SomeRecorded rType rVal) = rnf rType `seq` rnf rVal
 
 instance Eq SomeRecorded where
   (SomeRecorded _ (a :: a)) == (SomeRecorded _ (b :: b)) = case eqT @a @b of

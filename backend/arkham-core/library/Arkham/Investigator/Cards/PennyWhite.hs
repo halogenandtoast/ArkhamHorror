@@ -25,7 +25,7 @@ import Arkham.SkillTest.Base
 newtype PennyWhite = PennyWhite InvestigatorAttrs
   deriving stock (Show, Eq, Generic)
   deriving anyclass (IsInvestigator, ToJSON, FromJSON)
-  deriving newtype (Entity, NoThunks)
+  deriving newtype (Entity, NoThunks, NFData)
 
 pennyWhite :: InvestigatorCard PennyWhite
 pennyWhite =
@@ -97,7 +97,7 @@ instance RunMessage PennyWhite where
 
 newtype PennyWhiteEffect = PennyWhiteEffect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 pennyWhiteEffect :: EffectArgs -> PennyWhiteEffect
 pennyWhiteEffect = cardEffect PennyWhiteEffect Cards.pennyWhite

@@ -13,7 +13,7 @@ import Arkham.Scenario.Runner
 
 newtype PointOfNoReturn = PointOfNoReturn ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 pointOfNoReturn :: Difficulty -> PointOfNoReturn
 pointOfNoReturn difficulty =

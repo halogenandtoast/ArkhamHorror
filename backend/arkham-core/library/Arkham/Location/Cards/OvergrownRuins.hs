@@ -17,7 +17,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype OvergrownRuins = OvergrownRuins LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 overgrownRuins :: LocationCard OvergrownRuins
 overgrownRuins = location OvergrownRuins Cards.overgrownRuins 5 (PerPlayer 1)

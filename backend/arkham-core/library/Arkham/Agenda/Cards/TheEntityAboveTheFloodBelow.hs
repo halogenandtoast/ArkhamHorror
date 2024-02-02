@@ -21,7 +21,7 @@ import Arkham.Trait
 
 newtype TheEntityAboveTheFloodBelow = TheEntityAboveTheFloodBelow AgendaAttrs
   deriving anyclass (IsAgenda)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theEntityAboveTheFloodBelow :: AgendaCard TheEntityAboveTheFloodBelow
 theEntityAboveTheFloodBelow =

@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype OfferYouCannotRefuse = OfferYouCannotRefuse TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 offerYouCannotRefuse :: TreacheryCard OfferYouCannotRefuse
 offerYouCannotRefuse = treachery OfferYouCannotRefuse Cards.offerYouCannotRefuse

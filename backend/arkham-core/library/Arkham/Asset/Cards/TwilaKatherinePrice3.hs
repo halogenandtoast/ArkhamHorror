@@ -17,7 +17,7 @@ import Arkham.Window qualified as Window
 
 newtype TwilaKatherinePrice3 = TwilaKatherinePrice3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 twilaKatherinePrice3 :: AssetCard TwilaKatherinePrice3
 twilaKatherinePrice3 = ally TwilaKatherinePrice3 Cards.twilaKatherinePrice3 (1, 2)

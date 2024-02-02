@@ -19,7 +19,7 @@ import Arkham.ScenarioLogKey
 
 newtype ChapelOfStAubertThePathIsOpen = ChapelOfStAubertThePathIsOpen LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 chapelOfStAubertThePathIsOpen :: LocationCard ChapelOfStAubertThePathIsOpen
 chapelOfStAubertThePathIsOpen =

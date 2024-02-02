@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype Sacrifice1 = Sacrifice1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 sacrifice1 :: EventCard Sacrifice1
 sacrifice1 = event Sacrifice1 Cards.sacrifice1

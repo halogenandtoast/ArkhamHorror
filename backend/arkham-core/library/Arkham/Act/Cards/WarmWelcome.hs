@@ -18,7 +18,7 @@ import Arkham.Placement
 
 newtype WarmWelcome = WarmWelcome ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 warmWelcome :: ActCard WarmWelcome
 warmWelcome = act (1, A) WarmWelcome Cards.warmWelcome (Just $ GroupClueCost (PerPlayer 3) Anywhere)

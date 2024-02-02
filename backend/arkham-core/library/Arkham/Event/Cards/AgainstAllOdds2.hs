@@ -20,7 +20,7 @@ import Arkham.Window qualified as Window
 
 newtype AgainstAllOdds2 = AgainstAllOdds2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 againstAllOdds2 :: EventCard AgainstAllOdds2
 againstAllOdds2 = event AgainstAllOdds2 Cards.againstAllOdds2

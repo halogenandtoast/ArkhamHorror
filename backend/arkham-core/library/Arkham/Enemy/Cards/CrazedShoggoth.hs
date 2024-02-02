@@ -15,7 +15,7 @@ import Arkham.Trait
 
 newtype CrazedShoggoth = CrazedShoggoth EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 crazedShoggoth :: EnemyCard CrazedShoggoth
 crazedShoggoth =

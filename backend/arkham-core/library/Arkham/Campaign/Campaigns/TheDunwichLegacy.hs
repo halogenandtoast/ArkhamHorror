@@ -17,7 +17,7 @@ import Arkham.Id
 import Arkham.Resolution
 
 newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor, NoThunks)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor, NoThunks, NFData)
 
 instance IsCampaign TheDunwichLegacy where
   nextStep a = case campaignStep (toAttrs a) of

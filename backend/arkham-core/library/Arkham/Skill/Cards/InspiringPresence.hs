@@ -16,7 +16,7 @@ import Arkham.Skill.Runner
 
 newtype InspiringPresence = InspiringPresence SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 inspiringPresence :: SkillCard InspiringPresence
 inspiringPresence = skill InspiringPresence Cards.inspiringPresence

@@ -76,7 +76,7 @@ data AbilityType
   | Cosmos
   | ForcedWhen {criteria :: Criterion, abilityType :: AbilityType}
   deriving stock (Show, Ord, Eq, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 abilityTypeCostL :: Traversal' AbilityType Cost
 abilityTypeCostL f = \case

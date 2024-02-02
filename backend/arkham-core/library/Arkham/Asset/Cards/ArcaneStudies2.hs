@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype ArcaneStudies2 = ArcaneStudies2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 arcaneStudies2 :: AssetCard ArcaneStudies2
 arcaneStudies2 = asset ArcaneStudies2 Cards.arcaneStudies2

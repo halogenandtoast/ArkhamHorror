@@ -28,7 +28,7 @@ data Placement
   | Global
   | OutOfPlay OutOfPlayZone
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 placementToAttached :: Placement -> Maybe Target
 placementToAttached = \case
@@ -80,7 +80,7 @@ data TreacheryPlacement
   | TreacheryNextToAgenda
   | TreacheryLimbo
   deriving stock (Show, Eq, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 $(deriveJSON defaultOptions ''Placement)
 $(deriveJSON defaultOptions ''TreacheryPlacement)

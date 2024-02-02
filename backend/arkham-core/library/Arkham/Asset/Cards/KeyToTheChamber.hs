@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype KeyToTheChamber = KeyToTheChamber AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 keyToTheChamber :: AssetCard KeyToTheChamber
 keyToTheChamber =

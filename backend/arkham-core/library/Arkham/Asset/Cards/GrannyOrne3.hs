@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype GrannyOrne3 = GrannyOrne3 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 grannyOrne3 :: AssetCard GrannyOrne3
 grannyOrne3 = ally GrannyOrne3 Cards.grannyOrne3 (1, 3)

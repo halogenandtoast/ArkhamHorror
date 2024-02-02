@@ -17,7 +17,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheCityFloods = TheCityFloods AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theCityFloods :: AgendaCard TheCityFloods
 theCityFloods = agenda (3, A) TheCityFloods Cards.theCityFloods (Static 8)

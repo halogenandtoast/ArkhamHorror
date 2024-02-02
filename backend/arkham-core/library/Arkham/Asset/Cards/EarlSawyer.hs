@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype EarlSawyer = EarlSawyer AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 earlSawyer :: AssetCard EarlSawyer
 earlSawyer = ally EarlSawyer Cards.earlSawyer (3, 2)

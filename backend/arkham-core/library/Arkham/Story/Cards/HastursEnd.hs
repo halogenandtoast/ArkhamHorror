@@ -12,7 +12,7 @@ import Arkham.Story.Runner
 
 newtype HastursEnd = HastursEnd StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 hastursEnd :: StoryCard HastursEnd
 hastursEnd = story HastursEnd Cards.hastursEnd

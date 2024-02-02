@@ -11,7 +11,7 @@ import Arkham.Window qualified as Window
 
 newtype ZoeysCross = ZoeysCross AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 zoeysCross :: AssetCard ZoeysCross
 zoeysCross = asset ZoeysCross Cards.zoeysCross

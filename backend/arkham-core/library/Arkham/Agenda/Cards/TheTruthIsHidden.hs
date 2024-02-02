@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype TheTruthIsHidden = TheTruthIsHidden AgendaAttrs
   deriving anyclass (IsAgenda)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theTruthIsHidden :: AgendaCard TheTruthIsHidden
 theTruthIsHidden =

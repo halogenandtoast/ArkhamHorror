@@ -15,7 +15,7 @@ import Arkham.Location.Runner
 
 newtype Infirmary = Infirmary LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 infirmary :: LocationCard Infirmary
 infirmary = location Infirmary Cards.infirmary 3 (PerPlayer 1)

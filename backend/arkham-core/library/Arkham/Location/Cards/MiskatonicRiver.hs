@@ -12,7 +12,7 @@ import Arkham.Location.Runner
 
 newtype MiskatonicRiver = MiskatonicRiver LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 miskatonicRiver :: LocationCard MiskatonicRiver
 miskatonicRiver = location MiskatonicRiver Cards.miskatonicRiver 5 (Static 0)

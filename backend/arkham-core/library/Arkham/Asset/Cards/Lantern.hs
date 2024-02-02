@@ -16,7 +16,7 @@ import Arkham.Projection
 
 newtype Lantern = Lantern AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 lantern :: AssetCard Lantern
 lantern = asset Lantern Cards.lantern

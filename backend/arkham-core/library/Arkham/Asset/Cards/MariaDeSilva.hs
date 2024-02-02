@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype MariaDeSilva = MariaDeSilva AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 mariaDeSilva :: AssetCard MariaDeSilva
 mariaDeSilva = asset MariaDeSilva Cards.mariaDeSilva

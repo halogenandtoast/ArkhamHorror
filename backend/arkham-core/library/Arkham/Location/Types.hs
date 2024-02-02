@@ -46,6 +46,7 @@ class
   , Eq a
   , Show a
   , NoThunks a
+  , NFData a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -137,6 +138,9 @@ updateLocation updates attrs = foldr go attrs updates
 
 instance ToJSON (Field Location typ) where
   toJSON = toJSON . show
+
+instance NFData (Field Location typ) where
+  rnf = rwhnf
 
 instance FromJSON (SomeField Location) where
   parseJSON = withText "Field Location" $ \case
@@ -287,6 +291,9 @@ locationAbility ability = case abilitySource ability of
 
 data Location = forall a. IsLocation a => Location a
 
+instance NFData Location where
+  rnf (Location a) = rnf a
+
 instance NoThunks Location where
   noThunks ctx (Location a) = noThunks ctx a
   wNoThunks ctx (Location a) = wNoThunks ctx a
@@ -304,6 +311,9 @@ instance Data (SomeField Location) where
   gunfold _ _ _ = error "gunfold(Location)"
   toConstr _ = error "toConstr(Location)"
   dataTypeOf _ = error "dataTypeOf(Location)"
+
+instance NFData (SomeField Location) where
+  rnf _ = ()
 
 instance Typeable a => Data (Field Location a) where
   gunfold _ _ _ = error "gunfold(Location)"

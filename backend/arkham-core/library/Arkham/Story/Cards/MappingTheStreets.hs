@@ -16,7 +16,7 @@ import Arkham.Story.Runner
 
 newtype MappingTheStreets = MappingTheStreets StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 mappingTheStreets :: StoryCard MappingTheStreets
 mappingTheStreets = story MappingTheStreets Cards.mappingTheStreets

@@ -27,6 +27,7 @@ class
   , Eq a
   , Show a
   , NoThunks a
+  , NFData a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -59,7 +60,7 @@ data ActAttrs = ActAttrs
   , actMeta :: Value
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance HasField "ability" ActAttrs (Int -> Source) where
   getField = toAbilitySource
@@ -162,6 +163,9 @@ instance HasAbilities ActAttrs where
     Nothing -> []
 
 data Act = forall a. IsAct a => Act a
+
+instance NFData Act where
+  rnf (Act a) = rnf a
 
 instance NoThunks Act where
   noThunks ctx (Act a) = noThunks ctx a

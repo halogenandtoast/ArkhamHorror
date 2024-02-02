@@ -14,7 +14,7 @@ import Arkham.Trait
 
 newtype BookOfShadows3 = BookOfShadows3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 bookOfShadows3 :: AssetCard BookOfShadows3
 bookOfShadows3 = asset BookOfShadows3 Cards.bookOfShadows3

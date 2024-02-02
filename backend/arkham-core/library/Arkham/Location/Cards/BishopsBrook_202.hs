@@ -15,7 +15,7 @@ import Arkham.Projection
 
 newtype BishopsBrook_202 = BishopsBrook_202 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 bishopsBrook_202 :: LocationCard BishopsBrook_202
 bishopsBrook_202 =

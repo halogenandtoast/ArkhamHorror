@@ -17,7 +17,7 @@ import Arkham.Window qualified as Window
 
 newtype WingedOne = WingedOne EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 wingedOne :: EnemyCard WingedOne
 wingedOne = enemy WingedOne Cards.wingedOne (3, Static 3, 4) (3, 1)

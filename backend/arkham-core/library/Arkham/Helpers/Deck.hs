@@ -17,13 +17,13 @@ import Arkham.Target
 import Control.Lens (non, _1)
 import Data.Map.Strict qualified as Map
 
-withDeck :: ([a] -> [a]) -> Deck a -> Deck a
-withDeck f (Deck xs) = Deck (f xs)
+withDeck :: NFData a => ([a] -> [a]) -> Deck a -> Deck a
+withDeck f (unDeck -> xs) = mkDeck (f xs)
 
-withDeckM :: Functor f => ([a] -> f [a]) -> Deck a -> f (Deck a)
-withDeckM f (Deck xs) = Deck <$> f xs
+withDeckM :: (NFData a, Functor f) => ([a] -> f [a]) -> Deck a -> f (Deck a)
+withDeckM f (unDeck -> xs) = mkDeck <$> f xs
 
-removeEachFromDeck :: HasCardDef a => Deck a -> [CardDef] -> Deck a
+removeEachFromDeck :: (NFData a, HasCardDef a) => Deck a -> [CardDef] -> Deck a
 removeEachFromDeck deck removals = flip withDeck deck $ \cards ->
   foldl' (\cs m -> deleteFirstMatch ((== m) . toCardDef) cs) cards removals
 
@@ -40,7 +40,7 @@ getDeck = \case
     other ->
       scenarioFieldMap
         ScenarioEncounterDecks
-        (map EncounterCard . unDeck . view (at other . non (Deck [], []) . _1))
+        (map EncounterCard . unDeck . view (at other . non (mkDeck [], []) . _1))
 
 initDeckTrauma :: Deck PlayerCard -> InvestigatorId -> PlayerId -> Target -> [Message]
 initDeckTrauma deck' iid pid target =

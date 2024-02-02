@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype EtherealForm = EtherealForm EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 etherealForm :: EventCard EtherealForm
 etherealForm = event EtherealForm Cards.etherealForm

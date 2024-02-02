@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype ShardsOfTheVoid3 = ShardsOfTheVoid3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 shardsOfTheVoid3 :: AssetCard ShardsOfTheVoid3
 shardsOfTheVoid3 = asset ShardsOfTheVoid3 Cards.shardsOfTheVoid3

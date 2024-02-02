@@ -15,7 +15,7 @@ import Arkham.Skill.Runner
 
 newtype TrueUnderstanding = TrueUnderstanding SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 trueUnderstanding :: SkillCard TrueUnderstanding
 trueUnderstanding = skill TrueUnderstanding Cards.trueUnderstanding

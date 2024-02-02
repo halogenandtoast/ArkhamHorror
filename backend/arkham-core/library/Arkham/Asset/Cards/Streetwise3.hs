@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype Streetwise3 = Streetwise3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 streetwise3 :: AssetCard Streetwise3
 streetwise3 = asset Streetwise3 Cards.streetwise3

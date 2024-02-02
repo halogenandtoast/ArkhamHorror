@@ -23,7 +23,7 @@ import Arkham.Zone
 
 newtype TheLoversVI = TheLoversVI AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theLoversVI :: AgendaCard TheLoversVI
 theLoversVI = agenda (1, A) TheLoversVI Cards.theLoversVI (Static 8)
@@ -56,7 +56,7 @@ instance RunMessage TheLoversVI where
 
 newtype TheLoversVIEffect = TheLoversVIEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theLoversVIEffect :: EffectArgs -> TheLoversVIEffect
 theLoversVIEffect = cardEffect TheLoversVIEffect Cards.theLoversVI

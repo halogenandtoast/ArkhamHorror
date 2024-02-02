@@ -26,6 +26,7 @@ class
   , Eq a
   , Show a
   , NoThunks a
+  , NFData a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -52,7 +53,7 @@ data StoryAttrs = StoryAttrs
   , storyRemoveAfterResolution :: Bool
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 storyWith
   :: (StoryAttrs -> a)
@@ -130,6 +131,9 @@ instance Sourceable StoryAttrs where
   isSource _ _ = False
 
 data Story = forall a. IsStory a => Story a
+
+instance NFData Story where
+  rnf (Story a) = rnf a
 
 instance NoThunks Story where
   noThunks ctx (Story a) = noThunks ctx a

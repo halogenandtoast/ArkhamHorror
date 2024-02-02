@@ -19,7 +19,7 @@ import Arkham.Treachery.Runner
 
 newtype DarkFuture = DarkFuture TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 darkFuture :: TreacheryCard DarkFuture
 darkFuture = treachery DarkFuture Cards.darkFuture

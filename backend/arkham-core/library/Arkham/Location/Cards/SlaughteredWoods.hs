@@ -13,7 +13,7 @@ import Arkham.Prelude
 
 newtype SlaughteredWoods = SlaughteredWoods LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 slaughteredWoods :: LocationCard SlaughteredWoods
 slaughteredWoods = location SlaughteredWoods Cards.slaughteredWoods 2 (PerPlayer 1)

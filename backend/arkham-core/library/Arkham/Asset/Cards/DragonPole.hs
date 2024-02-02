@@ -15,7 +15,7 @@ import Arkham.Projection
 
 newtype DragonPole = DragonPole AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 dragonPole :: AssetCard DragonPole
 dragonPole = asset DragonPole Cards.dragonPole

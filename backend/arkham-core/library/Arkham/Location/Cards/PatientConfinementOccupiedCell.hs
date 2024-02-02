@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype PatientConfinementOccupiedCell = PatientConfinementOccupiedCell LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 patientConfinementOccupiedCell :: LocationCard PatientConfinementOccupiedCell
 patientConfinementOccupiedCell =

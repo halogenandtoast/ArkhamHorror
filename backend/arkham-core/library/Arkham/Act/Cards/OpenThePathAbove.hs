@@ -14,7 +14,7 @@ import Arkham.Resolution
 
 newtype OpenThePathAbove = OpenThePathAbove ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 openThePathAbove :: ActCard OpenThePathAbove
 openThePathAbove = act (3, A) OpenThePathAbove Cards.openThePathAbove Nothing

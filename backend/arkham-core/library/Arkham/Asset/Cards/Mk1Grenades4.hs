@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype Mk1Grenades4 = Mk1Grenades4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 mk1Grenades4 :: AssetCard Mk1Grenades4
 mk1Grenades4 = assetWith Mk1Grenades4 Cards.mk1Grenades4 (whenNoUsesL ?~ DiscardWhenNoUses)

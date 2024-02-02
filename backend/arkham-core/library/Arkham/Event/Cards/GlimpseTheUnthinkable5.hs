@@ -16,7 +16,7 @@ import Arkham.Projection
 
 newtype GlimpseTheUnthinkable5 = GlimpseTheUnthinkable5 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 glimpseTheUnthinkable5 :: EventCard GlimpseTheUnthinkable5
 glimpseTheUnthinkable5 =

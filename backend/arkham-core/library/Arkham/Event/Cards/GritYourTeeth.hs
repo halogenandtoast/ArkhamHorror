@@ -14,7 +14,7 @@ import Arkham.Event.Runner
 
 newtype GritYourTeeth = GritYourTeeth EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 gritYourTeeth :: EventCard GritYourTeeth
 gritYourTeeth = event GritYourTeeth Cards.gritYourTeeth

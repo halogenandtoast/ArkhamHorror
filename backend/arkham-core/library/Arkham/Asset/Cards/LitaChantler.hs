@@ -13,7 +13,7 @@ import Arkham.Window qualified as Window
 
 newtype LitaChantler = LitaChantler AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 litaChantler :: AssetCard LitaChantler
 litaChantler = allyWith LitaChantler Cards.litaChantler (3, 3) (isStoryL .~ True)

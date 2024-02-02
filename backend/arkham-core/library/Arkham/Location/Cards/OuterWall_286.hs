@@ -18,7 +18,7 @@ import Arkham.Projection
 
 newtype OuterWall_286 = OuterWall_286 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 outerWall_286 :: LocationCard OuterWall_286
 outerWall_286 = location OuterWall_286 Cards.outerWall_286 4 (PerPlayer 1)

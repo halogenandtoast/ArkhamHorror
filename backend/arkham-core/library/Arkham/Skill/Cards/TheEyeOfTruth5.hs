@@ -21,7 +21,7 @@ import Arkham.Treachery.Types (Field (..))
 
 newtype TheEyeOfTruth5 = TheEyeOfTruth5 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theEyeOfTruth5 :: SkillCard TheEyeOfTruth5
 theEyeOfTruth5 = skill TheEyeOfTruth5 Cards.theEyeOfTruth5
@@ -44,7 +44,7 @@ instance RunMessage TheEyeOfTruth5 where
 
 newtype TheEyeOfTruth5Effect = TheEyeOfTruth5Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theEyeOfTruth5Effect :: EffectArgs -> TheEyeOfTruth5Effect
 theEyeOfTruth5Effect = cardEffect TheEyeOfTruth5Effect Cards.theEyeOfTruth5

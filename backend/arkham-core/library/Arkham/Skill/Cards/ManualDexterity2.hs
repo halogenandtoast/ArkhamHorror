@@ -9,7 +9,7 @@ import Arkham.Skill.Runner
 
 newtype ManualDexterity2 = ManualDexterity2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 manualDexterity2 :: SkillCard ManualDexterity2
 manualDexterity2 = skill ManualDexterity2 Cards.manualDexterity2

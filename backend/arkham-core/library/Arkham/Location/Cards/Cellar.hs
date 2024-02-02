@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype Cellar = Cellar LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 cellar :: LocationCard Cellar
 cellar = location Cellar Cards.cellar 4 (PerPlayer 2)

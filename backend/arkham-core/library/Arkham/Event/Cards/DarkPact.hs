@@ -16,7 +16,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype DarkPact = DarkPact EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 darkPact :: EventCard DarkPact
 darkPact = event DarkPact Cards.darkPact

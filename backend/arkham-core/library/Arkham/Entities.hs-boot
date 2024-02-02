@@ -8,6 +8,7 @@ import Arkham.Prelude
 
 data Entities
 
+instance NFData Entities
 instance NoThunks Entities
 instance Monoid Entities
 instance Eq Entities

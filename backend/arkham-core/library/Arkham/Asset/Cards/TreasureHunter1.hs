@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype TreasureHunter1 = TreasureHunter1 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 treasureHunter1 :: AssetCard TreasureHunter1
 treasureHunter1 = ally TreasureHunter1 Cards.treasureHunter1 (2, 2)

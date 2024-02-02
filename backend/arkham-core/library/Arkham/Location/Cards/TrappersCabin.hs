@@ -16,7 +16,7 @@ import Arkham.Matcher
 
 newtype TrappersCabin = TrappersCabin LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 trappersCabin :: LocationCard TrappersCabin
 trappersCabin = location TrappersCabin Cards.trappersCabin 3 (Static 0)

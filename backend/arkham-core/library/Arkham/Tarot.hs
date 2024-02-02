@@ -14,19 +14,19 @@ tarotDeck = NE.fromList [minBound .. maxBound]
 
 data TarotCardScope = GlobalTarot | InvestigatorTarot InvestigatorId
   deriving stock (Show, Eq, Ord, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, NoThunks, NFData)
 
 data TarotReading = Chaos | Balance | Choice | Destiny
   deriving stock (Show, Eq, Ord, Bounded, Enum, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 data TarotCardFacing = Upright | Reversed
   deriving stock (Show, Eq, Ord, Bounded, Enum, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 data TarotCard = TarotCard {facing :: TarotCardFacing, arcana :: TarotCardArcana}
   deriving stock (Show, Eq, Ord, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 toTarotArcana :: TarotCard -> TarotCardArcana
 toTarotArcana (TarotCard _ arcana) = arcana
@@ -55,4 +55,4 @@ data TarotCardArcana
   | JudgementXX
   | TheWorldXXI
   deriving stock (Show, Eq, Ord, Bounded, Enum, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)

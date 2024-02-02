@@ -127,11 +127,11 @@ data CardType
   | InvestigatorType
   | ScenarioType
   deriving stock (Eq, Show, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data CardSubType = Weakness | BasicWeakness
   deriving stock (Eq, Show, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 encounterCardTypes :: [CardType]
 encounterCardTypes =

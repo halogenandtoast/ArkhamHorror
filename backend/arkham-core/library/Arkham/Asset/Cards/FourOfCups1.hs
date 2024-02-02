@@ -17,7 +17,7 @@ import Arkham.Window (defaultWindows)
 
 newtype FourOfCups1 = FourOfCups1 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 fourOfCups1 :: AssetCard FourOfCups1
 fourOfCups1 =

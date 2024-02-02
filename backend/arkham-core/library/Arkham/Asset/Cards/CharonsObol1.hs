@@ -11,7 +11,7 @@ import Arkham.Matcher
 
 newtype CharonsObol1 = CharonsObol1 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 instance HasModifiersFor CharonsObol1 where
   getModifiersFor (InvestigatorTarget iid) (CharonsObol1 attrs)

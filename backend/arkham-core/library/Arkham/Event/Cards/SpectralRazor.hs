@@ -16,7 +16,7 @@ import Arkham.Matcher
 
 newtype SpectralRazor = SpectralRazor EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 spectralRazor :: EventCard SpectralRazor
 spectralRazor = event SpectralRazor Cards.spectralRazor
@@ -51,7 +51,7 @@ instance RunMessage SpectralRazor where
 
 newtype SpectralRazorEffect = SpectralRazorEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 spectralRazorEffect :: EffectArgs -> SpectralRazorEffect
 spectralRazorEffect = cardEffect SpectralRazorEffect Cards.spectralRazor

@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype VaultOfEarthlyDemise = VaultOfEarthlyDemise TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 vaultOfEarthlyDemise :: TreacheryCard VaultOfEarthlyDemise
 vaultOfEarthlyDemise =

@@ -18,7 +18,7 @@ import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype AtTheStationInShadowedTalons = AtTheStationInShadowedTalons ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 atTheStationInShadowedTalons :: ActCard AtTheStationInShadowedTalons
 atTheStationInShadowedTalons =

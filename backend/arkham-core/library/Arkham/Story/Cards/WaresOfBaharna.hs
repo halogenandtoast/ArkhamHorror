@@ -14,7 +14,7 @@ import Arkham.Trait (Trait (Item, Supply))
 
 newtype WaresOfBaharna = WaresOfBaharna StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 waresOfBaharna :: StoryCard WaresOfBaharna
 waresOfBaharna = story WaresOfBaharna Cards.waresOfBaharna

@@ -17,7 +17,7 @@ import Arkham.Trait
 
 newtype TheyreGettingOut = TheyreGettingOut AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theyreGettingOut :: AgendaCard TheyreGettingOut
 theyreGettingOut = agenda (3, A) TheyreGettingOut Cards.theyreGettingOut (Static 10)

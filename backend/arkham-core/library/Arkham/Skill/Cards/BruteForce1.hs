@@ -16,7 +16,7 @@ import Arkham.Skill.Runner
 
 newtype BruteForce1 = BruteForce1 SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 bruteForce1 :: SkillCard BruteForce1
 bruteForce1 = skill BruteForce1 Cards.bruteForce1

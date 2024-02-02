@@ -17,7 +17,7 @@ import Arkham.Matcher
 
 newtype MissDoyle1 = MissDoyle1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 missDoyle1 :: AssetCard MissDoyle1
 missDoyle1 = ally MissDoyle1 Cards.missDoyle1 (2, 2)

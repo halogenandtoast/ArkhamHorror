@@ -14,7 +14,7 @@ import Arkham.Trait qualified as Trait
 
 newtype StickToThePlan3 = StickToThePlan3 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 stickToThePlan3 :: AssetCard StickToThePlan3
 stickToThePlan3 = asset StickToThePlan3 Cards.stickToThePlan3

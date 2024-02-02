@@ -16,7 +16,7 @@ import Arkham.Trait (Trait (Witch))
 
 newtype PriestessOfTheCoven = PriestessOfTheCoven EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 priestessOfTheCoven :: EnemyCard PriestessOfTheCoven
 priestessOfTheCoven =

@@ -17,7 +17,7 @@ import Arkham.Window qualified as Window
 
 newtype TheFool03 = TheFool03 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theFool03 :: AssetCard TheFool03
 theFool03 = asset TheFool03 Cards.theFool03

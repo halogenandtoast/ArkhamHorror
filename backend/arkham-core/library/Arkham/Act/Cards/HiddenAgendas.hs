@@ -21,7 +21,7 @@ import Arkham.Trait (Trait (Monster))
 
 newtype HiddenAgendas = HiddenAgendas ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 hiddenAgendas :: ActCard HiddenAgendas
 hiddenAgendas = act (1, A) HiddenAgendas Cards.hiddenAgendas Nothing

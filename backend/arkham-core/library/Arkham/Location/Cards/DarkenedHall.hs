@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype DarkenedHall = DarkenedHall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 darkenedHall :: LocationCard DarkenedHall
 darkenedHall = location DarkenedHall Cards.darkenedHall 4 (Static 0)

@@ -19,7 +19,7 @@ import Arkham.Trait
 
 newtype TheReallyBadOnesV1 = TheReallyBadOnesV1 ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 theReallyBadOnesV1 :: ActCard TheReallyBadOnesV1
 theReallyBadOnesV1 =

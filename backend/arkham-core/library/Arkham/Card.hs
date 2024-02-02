@@ -196,7 +196,7 @@ data Card
   | EncounterCard EncounterCard
   | VengeanceCard Card
   deriving stock (Show, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Eq Card where
   a == b = toCardId a == toCardId b

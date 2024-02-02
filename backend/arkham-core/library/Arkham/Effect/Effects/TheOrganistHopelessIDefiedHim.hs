@@ -11,7 +11,7 @@ import Arkham.Game.Helpers
 
 newtype TheOrganistHopelessIDefiedHim = TheOrganistHopelessIDefiedHim EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theOrganistHopelessIDefiedHim :: EffectArgs -> TheOrganistHopelessIDefiedHim
 theOrganistHopelessIDefiedHim =

@@ -22,7 +22,7 @@ data Supply
   | Pocketknife
   | Pickaxe
   deriving stock (Show, Eq, Bounded, Enum, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 prologueSupplies :: [Supply]
 prologueSupplies =

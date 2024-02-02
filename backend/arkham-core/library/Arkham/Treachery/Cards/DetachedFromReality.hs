@@ -18,7 +18,7 @@ import Arkham.Treachery.Runner
 
 newtype DetachedFromReality = DetachedFromReality TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 detachedFromReality :: TreacheryCard DetachedFromReality
 detachedFromReality = treachery DetachedFromReality Cards.detachedFromReality

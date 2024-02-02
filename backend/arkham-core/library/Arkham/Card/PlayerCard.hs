@@ -24,7 +24,7 @@ data PlayerCard = MkPlayerCard
   , pcCustomizations :: IntMap Int
   }
   deriving stock (Show, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Eq PlayerCard where
   pc1 == pc2 = pcId pc1 == pcId pc2

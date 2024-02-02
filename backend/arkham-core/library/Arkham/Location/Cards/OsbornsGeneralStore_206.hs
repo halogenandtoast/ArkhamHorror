@@ -13,7 +13,7 @@ import Arkham.Location.Runner
 
 newtype OsbornsGeneralStore_206 = OsbornsGeneralStore_206 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 osbornsGeneralStore_206 :: LocationCard OsbornsGeneralStore_206
 osbornsGeneralStore_206 =

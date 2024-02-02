@@ -13,7 +13,7 @@ import Arkham.Projection
 
 newtype TheBlackFan3 = TheBlackFan3 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theBlackFan3 :: AssetCard TheBlackFan3
 theBlackFan3 = asset TheBlackFan3 Cards.theBlackFan3

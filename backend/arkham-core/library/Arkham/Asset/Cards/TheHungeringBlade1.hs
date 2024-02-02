@@ -15,7 +15,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheHungeringBlade1 = TheHungeringBlade1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theHungeringBlade1 :: AssetCard TheHungeringBlade1
 theHungeringBlade1 = asset TheHungeringBlade1 Cards.theHungeringBlade1

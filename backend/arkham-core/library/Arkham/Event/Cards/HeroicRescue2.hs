@@ -19,7 +19,7 @@ import Arkham.Window qualified as Window
 
 newtype HeroicRescue2 = HeroicRescue2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 heroicRescue2 :: EventCard HeroicRescue2
 heroicRescue2 = event HeroicRescue2 Cards.heroicRescue2

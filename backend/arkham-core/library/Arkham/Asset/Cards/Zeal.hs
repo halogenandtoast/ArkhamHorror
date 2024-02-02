@@ -17,7 +17,7 @@ import Arkham.Projection
 
 newtype Zeal = Zeal AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 zeal :: AssetCard Zeal
 zeal = asset Zeal Cards.zeal

@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype GrandRue = GrandRue LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 grandRue :: LocationCard GrandRue
 grandRue = location GrandRue Cards.grandRue 1 (PerPlayer 1)

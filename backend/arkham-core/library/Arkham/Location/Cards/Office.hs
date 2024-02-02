@@ -18,7 +18,7 @@ import Arkham.Trait (Trait (SilverTwilight))
 
 newtype Office = Office LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 office :: LocationCard Office
 office = location Office Cards.office 4 (PerPlayer 1)

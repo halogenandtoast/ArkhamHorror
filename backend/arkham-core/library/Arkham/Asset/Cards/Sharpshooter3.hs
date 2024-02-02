@@ -18,7 +18,7 @@ import Arkham.Trait (Trait (Firearm))
 
 newtype Sharpshooter3 = Sharpshooter3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 sharpshooter3 :: AssetCard Sharpshooter3
 sharpshooter3 = asset Sharpshooter3 Cards.sharpshooter3

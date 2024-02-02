@@ -16,7 +16,7 @@ import Arkham.Projection
 
 newtype ArcaneInsight4 = ArcaneInsight4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 arcaneInsight4 :: AssetCard ArcaneInsight4
 arcaneInsight4 = asset ArcaneInsight4 Cards.arcaneInsight4

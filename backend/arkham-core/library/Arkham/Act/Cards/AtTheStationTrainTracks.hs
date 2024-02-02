@@ -17,7 +17,7 @@ import Arkham.Placement
 
 newtype AtTheStationTrainTracks = AtTheStationTrainTracks ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 atTheStationTrainTracks :: ActCard AtTheStationTrainTracks
 atTheStationTrainTracks =

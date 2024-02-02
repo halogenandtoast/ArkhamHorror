@@ -15,7 +15,7 @@ import Arkham.Placement
 
 newtype HarlanIsInDanger = HarlanIsInDanger ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 harlanIsInDanger :: ActCard HarlanIsInDanger
 harlanIsInDanger =

@@ -19,7 +19,7 @@ import Arkham.Timing qualified as Timing
 
 newtype StoneArchways = StoneArchways LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 stoneArchways :: LocationCard StoneArchways
 stoneArchways =

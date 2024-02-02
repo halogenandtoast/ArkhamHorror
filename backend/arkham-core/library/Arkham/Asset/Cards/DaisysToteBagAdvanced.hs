@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype DaisysToteBagAdvanced = DaisysToteBagAdvanced AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 daisysToteBagAdvanced :: AssetCard DaisysToteBagAdvanced
 daisysToteBagAdvanced = asset DaisysToteBagAdvanced Cards.daisysToteBagAdvanced

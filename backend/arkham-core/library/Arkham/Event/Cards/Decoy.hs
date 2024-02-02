@@ -20,7 +20,7 @@ import Data.Aeson.KeyMap qualified as KeyMap
 
 newtype Decoy = Decoy EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 decoy :: EventCard Decoy
 decoy = event Decoy Cards.decoy

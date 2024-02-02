@@ -11,7 +11,7 @@ import Arkham.Treachery.Runner
 
 newtype SearchingForIzzie = SearchingForIzzie TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 searchingForIzzie :: TreacheryCard SearchingForIzzie
 searchingForIzzie = treachery SearchingForIzzie Cards.searchingForIzzie

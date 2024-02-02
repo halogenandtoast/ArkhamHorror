@@ -9,7 +9,7 @@ import Arkham.Skill.Runner
 
 newtype Guts = Guts SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 guts :: SkillCard Guts
 guts = skill Guts Cards.guts

@@ -12,7 +12,7 @@ import Arkham.Trait
 
 newtype MrPeabody = MrPeabody EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 mrPeabody :: EffectArgs -> MrPeabody
 mrPeabody = MrPeabody . uncurry4 (baseAttrs "03141")

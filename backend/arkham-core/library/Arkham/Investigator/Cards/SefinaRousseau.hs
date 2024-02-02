@@ -11,7 +11,7 @@ import Arkham.Investigator.Runner
 
 newtype SefinaRousseau = SefinaRousseau InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 sefinaRousseau :: InvestigatorCard SefinaRousseau
 sefinaRousseau =
@@ -57,6 +57,6 @@ instance RunMessage SefinaRousseau where
             $ [RemoveCardFromHand iid (toCardId event), PlaceUnderneath (toTarget iid) [event]]
           | event <- events
           ]
-      pure . SefinaRousseau $ attrs & discardL .~ discard' & handL .~ hand & deckL .~ Deck deck
+      pure . SefinaRousseau $ attrs & discardL .~ discard' & handL .~ hand & deckL .~ mkDeck deck
     InvestigatorMulligan iid | iid == toId attrs -> pure i
     _ -> SefinaRousseau <$> runMessage msg attrs

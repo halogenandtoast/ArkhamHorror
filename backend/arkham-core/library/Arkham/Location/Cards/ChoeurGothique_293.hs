@@ -18,7 +18,7 @@ import Arkham.Matcher
 
 newtype ChoeurGothique_293 = ChoeurGothique_293 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 choeurGothique_293 :: LocationCard ChoeurGothique_293
 choeurGothique_293 =

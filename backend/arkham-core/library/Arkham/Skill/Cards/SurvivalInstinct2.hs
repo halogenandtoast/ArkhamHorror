@@ -16,7 +16,7 @@ import Arkham.Skill.Runner
 
 newtype SurvivalInstinct2 = SurvivalInstinct2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 survivalInstinct2 :: SkillCard SurvivalInstinct2
 survivalInstinct2 = skill SurvivalInstinct2 Cards.survivalInstinct2

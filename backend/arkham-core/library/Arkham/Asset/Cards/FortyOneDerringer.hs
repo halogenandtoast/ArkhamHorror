@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 
 newtype FortyOneDerringer = FortyOneDerringer AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 fortyOneDerringer :: AssetCard FortyOneDerringer
 fortyOneDerringer = asset FortyOneDerringer Cards.fortyOneDerringer

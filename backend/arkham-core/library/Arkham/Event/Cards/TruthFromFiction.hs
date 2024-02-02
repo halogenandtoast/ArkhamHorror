@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype TruthFromFiction = TruthFromFiction EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 truthFromFiction :: EventCard TruthFromFiction
 truthFromFiction = event TruthFromFiction Cards.truthFromFiction

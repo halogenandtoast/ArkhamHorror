@@ -31,7 +31,7 @@ data Metadata = Metadata
   , yithians :: Set InvestigatorId
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 instance Semigroup Metadata where
   Metadata a1 b1 <> Metadata a2 b2 = Metadata (a1 <> a2) (b1 <> b2)
@@ -40,7 +40,7 @@ instance Monoid Metadata where
   mempty = Metadata mempty mempty
 
 newtype TheForgottenAge = TheForgottenAge (CampaignAttrs `With` Metadata)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor, NoThunks, NFData)
 
 instance IsCampaign TheForgottenAge where
   nextStep a = case campaignStep (toAttrs a) of
@@ -200,7 +200,7 @@ instance RunMessage TheForgottenAge where
       let
         withPoisoned =
           flip mapMaybe (mapToList $ campaignDecks attrs)
-            $ \(iid, Deck cards) ->
+            $ \(iid, unDeck -> cards) ->
               if any (`cardMatch` CardWithTitle "Poisoned") cards
                 then Just iid
                 else Nothing
@@ -280,7 +280,7 @@ instance RunMessage TheForgottenAge where
       let
         withPoisoned =
           flip mapMaybe (mapToList $ campaignDecks attrs)
-            $ \(iid, Deck cards) ->
+            $ \(iid, unDeck -> cards) ->
               if any (`cardMatch` CardWithTitle "Poisoned") cards
                 then Just iid
                 else Nothing
@@ -484,7 +484,7 @@ instance RunMessage TheForgottenAge where
         useProvisions = take (length iids) provisions
         withPoisoned =
           flip mapMaybe (mapToList $ campaignDecks attrs)
-            $ \(iid, Deck cards) ->
+            $ \(iid, unDeck -> cards) ->
               if any (`cardMatch` CardWithTitle "Poisoned") cards
                 then Just iid
                 else Nothing
@@ -537,7 +537,7 @@ instance RunMessage TheForgottenAge where
       let
         withPoisoned =
           flip mapMaybe (mapToList $ campaignDecks attrs)
-            $ \(iid, Deck cards) ->
+            $ \(iid, unDeck -> cards) ->
               if any (`cardMatch` CardWithTitle "Poisoned") cards
                 then Just iid
                 else Nothing
@@ -701,7 +701,7 @@ instance RunMessage TheForgottenAge where
       let
         withPoisoned =
           flip mapMaybe (mapToList $ campaignDecks attrs)
-            $ \(iid, Deck cards) ->
+            $ \(iid, unDeck -> cards) ->
               if any (`cardMatch` CardWithTitle "Poisoned") cards
                 then Just iid
                 else Nothing
@@ -726,7 +726,7 @@ instance RunMessage TheForgottenAge where
       let
         withPoisoned =
           flip mapMaybe (mapToList $ campaignDecks attrs)
-            $ \(iid, Deck cards) ->
+            $ \(iid, unDeck -> cards) ->
               if any (`cardMatch` CardWithTitle "Poisoned") cards
                 then Just iid
                 else Nothing

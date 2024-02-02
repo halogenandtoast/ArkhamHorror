@@ -15,7 +15,7 @@ import Arkham.Trait
 
 newtype Bandolier2 = Bandolier2 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 bandolier2 :: AssetCard Bandolier2
 bandolier2 = assetWith Bandolier2 Cards.bandolier2 (healthL ?~ 1)

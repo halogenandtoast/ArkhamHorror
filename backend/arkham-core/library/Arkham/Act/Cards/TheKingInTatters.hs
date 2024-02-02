@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TheKingInTatters = TheKingInTatters ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theKingInTatters :: ActCard TheKingInTatters
 theKingInTatters = act (3, A) TheKingInTatters Cards.theKingInTatters Nothing

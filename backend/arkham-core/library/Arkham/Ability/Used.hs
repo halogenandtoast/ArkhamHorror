@@ -16,4 +16,4 @@ data UsedAbility = UsedAbility
   , usedAbilityTraits :: Set Trait
   }
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)

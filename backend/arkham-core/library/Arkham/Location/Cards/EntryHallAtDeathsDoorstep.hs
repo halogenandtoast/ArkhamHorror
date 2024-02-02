@@ -14,7 +14,7 @@ import Arkham.Location.Runner
 
 newtype EntryHallAtDeathsDoorstep = EntryHallAtDeathsDoorstep LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 entryHallAtDeathsDoorstep :: LocationCard EntryHallAtDeathsDoorstep
 entryHallAtDeathsDoorstep = location EntryHallAtDeathsDoorstep Cards.entryHallAtDeathsDoorstep 3 (Static 0)

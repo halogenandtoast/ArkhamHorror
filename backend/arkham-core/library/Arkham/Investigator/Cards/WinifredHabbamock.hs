@@ -21,7 +21,7 @@ import Arkham.SkillTestResult
 
 newtype WinifredHabbamock = WinifredHabbamock InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 winifredHabbamock :: InvestigatorCard WinifredHabbamock
 winifredHabbamock =
@@ -53,7 +53,7 @@ instance RunMessage WinifredHabbamock where
 
 newtype WinifredHabbamockEffect = WinifredHabbamockEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 winifredHabbamockEffect :: EffectArgs -> WinifredHabbamockEffect
 winifredHabbamockEffect = cardEffect WinifredHabbamockEffect Cards.winifredHabbamock

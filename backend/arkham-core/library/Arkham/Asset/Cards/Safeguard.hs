@@ -12,7 +12,7 @@ import Arkham.Window qualified as Window
 
 newtype Safeguard = Safeguard AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 safeguard :: AssetCard Safeguard
 safeguard = asset Safeguard Cards.safeguard

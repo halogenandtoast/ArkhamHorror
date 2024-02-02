@@ -17,7 +17,7 @@ import Arkham.Projection
 
 newtype ParlorCar = ParlorCar LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 parlorCar :: LocationCard ParlorCar
 parlorCar =

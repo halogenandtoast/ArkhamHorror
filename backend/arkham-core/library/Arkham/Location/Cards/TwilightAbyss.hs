@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TwilightAbyss = TwilightAbyss LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 twilightAbyss :: LocationCard TwilightAbyss
 twilightAbyss = location TwilightAbyss Cards.twilightAbyss 2 (PerPlayer 2)

@@ -14,7 +14,7 @@ import Arkham.Window qualified as Window
 
 newtype TheChthonianStone3 = TheChthonianStone3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theChthonianStone3 :: AssetCard TheChthonianStone3
 theChthonianStone3 = assetWith TheChthonianStone3 Cards.theChthonianStone3 (whenNoUsesL ?~ ReturnToHandWhenNoUses)

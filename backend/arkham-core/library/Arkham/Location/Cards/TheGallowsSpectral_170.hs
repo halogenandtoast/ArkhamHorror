@@ -20,7 +20,7 @@ import Arkham.Trait (Trait (Geist), toTraits)
 
 newtype TheGallowsSpectral_170 = TheGallowsSpectral_170 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theGallowsSpectral_170 :: LocationCard TheGallowsSpectral_170
 theGallowsSpectral_170 = location TheGallowsSpectral_170 Cards.theGallowsSpectral_170 0 (Static 0)

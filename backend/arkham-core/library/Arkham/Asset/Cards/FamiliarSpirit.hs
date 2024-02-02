@@ -13,7 +13,7 @@ import Arkham.Trait
 
 newtype FamiliarSpirit = FamiliarSpirit AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 familiarSpirit :: AssetCard FamiliarSpirit
 familiarSpirit = ally FamiliarSpirit Cards.familiarSpirit (1, 1)

@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype DescentIntoMadness = DescentIntoMadness TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 descentIntoMadness :: TreacheryCard DescentIntoMadness
 descentIntoMadness = treachery DescentIntoMadness Cards.descentIntoMadness

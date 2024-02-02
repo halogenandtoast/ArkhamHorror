@@ -15,7 +15,7 @@ import Arkham.Window qualified as Window
 
 newtype TheGoldPocketWatch4 = TheGoldPocketWatch4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theGoldPocketWatch4 :: AssetCard TheGoldPocketWatch4
 theGoldPocketWatch4 = asset TheGoldPocketWatch4 Cards.theGoldPocketWatch4

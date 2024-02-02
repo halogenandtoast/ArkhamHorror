@@ -277,7 +277,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       Nothing
                       (Window.defaultWindows investigatorId)
                       : msgs
-                  , Deck (before <> rest)
+                  , mkDeck (before <> rest)
                   )
               _ -> do
                 card <- setOwner investigatorId =<< genCard cardDef
@@ -311,7 +311,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          | card <- permanentCards
          ]
       <> [TakeStartingResources investigatorId]
-    pure $ a & (deckL .~ Deck deck''') & bondedCardsL .~ bondedCards
+    pure $ a & (deckL .~ mkDeck deck''') & bondedCardsL .~ bondedCards
   DrawStartingHand iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     if any (`elem` modifiers') [CannotDrawCards, CannotManipulateDeck]
@@ -326,7 +326,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           $ a
           & (discardL .~ discard)
           & (handL .~ hand)
-          & (deckL .~ Deck deck)
+          & (deckL .~ mkDeck deck)
   ReturnToHand iid (AssetTarget aid) | iid == investigatorId -> do
     pure $ a & (slotsL %~ removeFromSlots aid)
   ReturnToHand iid (CardTarget card) | iid == investigatorId -> do
@@ -490,15 +490,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (tokensL %~ setTokens Resource startingResources)
       & (discardL .~ discard)
       & (handL .~ hand <> additionalHandCards)
-      & (deckL .~ Deck deck)
+      & (deckL .~ mkDeck deck)
       & (mulligansTakenL +~ 1)
   ShuffleDiscardBackIn iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     if null investigatorDiscard || CardsCannotLeaveYourDiscardPile `elem` modifiers'
       then pure a
       else do
-        deck <- shuffleM (investigatorDiscard <> coerce investigatorDeck)
-        pure $ a & discardL .~ [] & deckL .~ Deck deck
+        deck <- shuffleM (investigatorDiscard <> unDeck investigatorDeck)
+        pure $ a & discardL .~ [] & deckL .~ mkDeck deck
   Resign iid | iid == investigatorId -> do
     isLead <- (== iid) <$> getLeadInvestigatorId
     pushAll $ [ChooseLeadInvestigator | isLead] <> resolve (Msg.InvestigatorResigned iid)
@@ -687,13 +687,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push $ After msg
     pure
       $ a
-      & (deckL .~ Deck deck')
+      & (deckL .~ mkDeck deck')
       & (slotsL %~ removeFromSlots aid)
   ShuffleIntoDeck (Deck.InvestigatorDeck iid) (EventTarget eid) | iid == investigatorId -> do
     card <- fromJustNote "missing card" . preview _PlayerCard <$> field EventCard eid
     deck' <- shuffleM (card : unDeck investigatorDeck)
     push $ After msg
-    pure $ a & (deckL .~ Deck deck')
+    pure $ a & (deckL .~ mkDeck deck')
   ShuffleIntoDeck (Deck.InvestigatorDeck iid) (SkillTarget aid) | iid == investigatorId -> do
     card <- fromJustNote "missing card" . preview _PlayerCard <$> field SkillCard aid
     if toCardCode card == "06113"
@@ -701,7 +701,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       else do
         deck' <- shuffleM (card : unDeck investigatorDeck)
         push $ After msg
-        pure $ a & (deckL .~ Deck deck')
+        pure $ a & (deckL .~ mkDeck deck')
   Discarded (AssetTarget aid) _ (PlayerCard card) -> do
     -- TODO: This message is ugly, we should do something different
     -- TODO: There are a number of messages here that mean the asset is no longer in play, we should consolidate to a singular message
@@ -1467,13 +1467,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ a
       & (handL %~ filter (/= card))
       & (discardL %~ filter ((/= card) . PlayerCard))
-      & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+      & (deckL %~ mkDeck . filter ((/= card) . PlayerCard) . unDeck)
   ObtainCard card -> do
     pure
       $ a
       & (handL %~ filter (/= card))
       & (discardL %~ filter ((/= card) . PlayerCard))
-      & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+      & (deckL %~ mkDeck . filter ((/= card) . PlayerCard) . unDeck)
   PutCampaignCardIntoPlay iid cardDef -> do
     let mcard = find ((== cardDef) . toCardDef) (unDeck investigatorDeck)
     case mcard of
@@ -1561,7 +1561,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   RemoveCampaignCard cardDef -> do
     pure
       $ a
-      & (deckL %~ Deck . filter ((/= toCardCode cardDef) . toCardCode) . unDeck)
+      & (deckL %~ mkDeck . filter ((/= toCardCode cardDef) . toCardCode) . unDeck)
   RemoveAllCopiesOfCardFromGame iid cardCode | iid == investigatorId -> do
     assets <- selectList $ assetControlledBy iid
     for_ assets $ \assetId -> do
@@ -1569,13 +1569,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       when (cardCode == cardCode') (push $ RemoveFromGame (AssetTarget assetId))
     pure
       $ a
-      & (deckL %~ Deck . filter ((/= cardCode) . toCardCode) . unDeck)
+      & (deckL %~ mkDeck . filter ((/= cardCode) . toCardCode) . unDeck)
       & (discardL %~ filter ((/= cardCode) . toCardCode))
       & (handL %~ filter ((/= cardCode) . toCardCode))
   PutCardIntoPlay _ card _ _ -> do
     pure
       $ a
-      & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+      & (deckL %~ mkDeck . filter ((/= card) . PlayerCard) . unDeck)
       & (discardL %~ filter ((/= card) . PlayerCard))
       & (handL %~ filter (/= card))
   Msg.InvestigatorDamage iid _ damage horror | iid == investigatorId -> do
@@ -1894,7 +1894,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         pure
           $ a
           & deckL
-          .~ Deck xs
+          .~ mkDeck xs
           & discardL
           %~ (reverse discards <>)
           & bondedCardsL
@@ -1916,7 +1916,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (Deck.InvestigatorDeck iid')
             (Just $ PlayerCard x)
             (map PlayerCard revealed)
-        pure $ a & deckL .~ Deck xs
+        pure $ a & deckL .~ mkDeck xs
   DrawCards cardDraw | cardDrawInvestigator cardDraw == toId a && cardDrawAction cardDraw -> do
     let
       iid = investigatorId
@@ -2058,7 +2058,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                        ]
                  )
               <> [CheckHandSize iid | checkHandSize]
-            pure $ a & handL %~ (<> map PlayerCard allDrawn) & deckL .~ Deck deck'
+            pure $ a & handL %~ (<> map PlayerCard allDrawn) & deckL .~ mkDeck deck'
   InvestigatorDrewPlayerCard iid card -> do
     windowMsg <-
       checkWindows [mkAfter (Window.DrawCard iid (PlayerCard card) $ Deck.InvestigatorDeck iid)]
@@ -2125,14 +2125,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   LoadDeck iid deck | iid == investigatorId -> do
     shuffled <- shuffleM $ flip map (unDeck deck) $ \card ->
       card {pcOwner = Just iid}
-    pure $ a & deckL .~ Deck shuffled
+    pure $ a & deckL .~ mkDeck shuffled
   InvestigatorCommittedCard iid card | iid == investigatorId -> do
     commitedCardWindows <- Helpers.windows [Window.CommittedCard iid card]
     pushAll $ FocusCards [card] : commitedCardWindows <> [UnfocusCards]
     pure
       $ a
       & (handL %~ filter (/= card))
-      & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+      & (deckL %~ mkDeck . filter ((/= card) . PlayerCard) . unDeck)
   PlaceUnderneath target cards | isTarget a target -> do
     update <-
       fmap appEndo
@@ -2142,7 +2142,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               pure
                 $ Endo
                 $ (slotsL %~ maybe id removeFromSlots mAssetId)
-                . (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+                . (deckL %~ mkDeck . filter ((/= card) . PlayerCard) . unDeck)
           )
           cards
     pure $ a & cardsUnderneathL <>~ cards & update
@@ -2155,7 +2155,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               pure
                 $ Endo
                 $ (slotsL %~ maybe id removeFromSlots mAssetId)
-                . (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+                . (deckL %~ mkDeck . filter ((/= card) . PlayerCard) . unDeck)
                 . (handL %~ filter (/= card))
           )
           cards
@@ -2497,7 +2497,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       PlayerCard pc ->
         pure
           $ a
-          & (deckL %~ Deck . (pc :) . unDeck)
+          & (deckL %~ mkDeck . (pc :) . unDeck)
           & handL
           %~ filter (/= card)
           & discardL
@@ -2511,7 +2511,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     PlayerCard pc ->
       pure
         $ a
-        & (deckL %~ Deck . filter (/= pc) . unDeck)
+        & (deckL %~ mkDeck . filter (/= pc) . unDeck)
         & handL
         %~ filter (/= card)
         & discardL
@@ -2524,7 +2524,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       PlayerCard pc ->
         pure
           $ a
-          & (deckL %~ Deck . (<> [pc]) . unDeck)
+          & (deckL %~ mkDeck . (<> [pc]) . unDeck)
           & handL
           %~ filter (/= card)
           & discardL
@@ -2538,7 +2538,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     PlayerCard pc ->
       pure
         $ a
-        & (deckL %~ Deck . filter (/= pc) . unDeck)
+        & (deckL %~ mkDeck . filter (/= pc) . unDeck)
         & handL
         %~ filter (/= card)
         & discardL
@@ -2582,7 +2582,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure
       $ a
       & deckL
-      .~ Deck deck
+      .~ mkDeck deck
       & handL
       %~ filter (`notElem` cards)
       & cardsUnderneathL
@@ -2689,7 +2689,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let zoneCards = mapToList (a ^. foundCardsL)
     updates <- fmap (appEndo . mconcat) $ for zoneCards $ \(zone, cards) -> case zone of
       Zone.FromDeck -> do
-        deck' <- Deck <$> shuffleM (unDeck investigatorDeck <> onlyPlayerCards cards)
+        deck' <- mkDeck <$> shuffleM (unDeck investigatorDeck <> onlyPlayerCards cards)
         pure $ Endo $ deckL .~ deck'
       _ -> error "Unhandled zone, this was added for Shocking Discovery only which is FromDeck"
     pure $ a & searchL .~ Nothing & updates
@@ -2750,7 +2750,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         & searchL
         ?~ InvestigatorSearch searchType iid source target cardSources cardMatcher foundStrategy foundCards
         & deckL
-        .~ Deck deck
+        .~ mkDeck deck
   ResolveSearch iid | iid == investigatorId -> do
     case investigatorSearch of
       Just
@@ -2943,7 +2943,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & tokensL %~ removeAllTokens Clue
   RemoveFromBearersDeckOrDiscard card -> do
     if pcOwner card == Just investigatorId
-      then pure $ a & (discardL %~ filter (/= card)) & (deckL %~ Deck . filter (/= card) . unDeck)
+      then pure $ a & (discardL %~ filter (/= card)) & (deckL %~ mkDeck . filter (/= card) . unDeck)
       else pure a
   RemovePlayerCardFromGame addToRemovedFromGame card -> do
     when addToRemovedFromGame $ push $ RemovedFromGame card
@@ -2955,7 +2955,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           %~ filter (/= pc)
           & handL
           %~ filter (/= card)
-          & (deckL %~ Deck . filter (/= pc) . unDeck)
+          & (deckL %~ mkDeck . filter (/= pc) . unDeck)
           & foundCardsL
           . each
           %~ filter (/= card)

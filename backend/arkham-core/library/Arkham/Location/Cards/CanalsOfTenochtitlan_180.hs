@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype CanalsOfTenochtitlan_180 = CanalsOfTenochtitlan_180 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 canalsOfTenochtitlan_180 :: LocationCard CanalsOfTenochtitlan_180
 canalsOfTenochtitlan_180 =

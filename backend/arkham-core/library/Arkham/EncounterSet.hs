@@ -136,6 +136,6 @@ data EncounterSet
   | SinsOfThePast
   | Test
   deriving stock (Show, Eq, Ord, Bounded, Enum, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 $(deriveJSON defaultOptions ''EncounterSet)

@@ -14,7 +14,7 @@ import Arkham.Trait
 
 newtype SignMagick = SignMagick AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 signMagick :: AssetCard SignMagick
 signMagick =

@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype GreteWagner3 = GreteWagner3 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 greteWagner3 :: AssetCard GreteWagner3
 greteWagner3 = ally GreteWagner3 Cards.greteWagner3 (4, 2)

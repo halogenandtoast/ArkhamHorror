@@ -25,7 +25,7 @@ import Arkham.Scenarios.ExtracurricularActivity.FlavorText
 newtype ExtracurricularActivity = ExtracurricularActivity ScenarioAttrs
   deriving stock (Generic)
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, NoThunks, Eq)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, NoThunks, NFData, Eq)
 
 extracurricularActivity :: Difficulty -> ExtracurricularActivity
 extracurricularActivity difficulty =

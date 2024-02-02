@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype LightingBox = LightingBox LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 lightingBox :: LocationCard LightingBox
 lightingBox = location LightingBox Cards.lightingBox 4 (PerPlayer 1)

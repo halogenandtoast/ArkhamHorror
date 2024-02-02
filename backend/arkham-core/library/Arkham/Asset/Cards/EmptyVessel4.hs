@@ -15,7 +15,7 @@ import Arkham.Matcher qualified as Matcher
 
 newtype EmptyVessel4 = EmptyVessel4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 emptyVessel4 :: AssetCard EmptyVessel4
 emptyVessel4 = asset EmptyVessel4 Cards.emptyVessel4

@@ -20,7 +20,7 @@ import Arkham.Trait (Trait (Witch))
 
 newtype HereticsGravesSpectral_172 = HereticsGravesSpectral_172 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 hereticsGravesSpectral_172 :: LocationCard HereticsGravesSpectral_172
 hereticsGravesSpectral_172 = location HereticsGravesSpectral_172 Cards.hereticsGravesSpectral_172 4 (Static 0)

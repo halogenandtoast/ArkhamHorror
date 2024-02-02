@@ -20,7 +20,7 @@ import Arkham.Treachery.Runner
 
 newtype UnhallowedCountry = UnhallowedCountry TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 unhallowedCountry :: TreacheryCard UnhallowedCountry
 unhallowedCountry = treachery UnhallowedCountry Cards.unhallowedCountry

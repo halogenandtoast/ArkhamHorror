@@ -19,7 +19,7 @@ baseTreachery
   -> Maybe (EncounterSet, Int)
   -> Maybe CardSubType
   -> CardDef
-baseTreachery cardCode name mEncounterSet isWeakness =
+baseTreachery !cardCode !name !mEncounterSet !isWeakness =
   (emptyCardDef cardCode name (if isJust isWeakness then PlayerTreacheryType else TreacheryType))
     { cdCardSubType = isWeakness
     , cdClassSymbols = if isJust isWeakness then singleton Neutral else mempty
@@ -29,20 +29,20 @@ baseTreachery cardCode name mEncounterSet isWeakness =
     }
 
 surge :: CardDef -> CardDef
-surge def = def {cdKeywords = insertSet Keyword.Surge (cdKeywords def)}
+surge !def = def {cdKeywords = insertSet Keyword.Surge (cdKeywords def)}
 
 peril :: CardDef -> CardDef
-peril def = def {cdKeywords = insertSet Keyword.Peril (cdKeywords def)}
+peril !def = def {cdKeywords = insertSet Keyword.Peril (cdKeywords def)}
 
 weakness :: CardCode -> Name -> CardDef
-weakness cardCode name = baseTreachery cardCode name Nothing (Just Weakness)
+weakness !cardCode !name = baseTreachery cardCode name Nothing (Just Weakness)
 
 basicWeakness :: CardCode -> Name -> CardDef
 basicWeakness cardCode name =
   baseTreachery cardCode name Nothing (Just BasicWeakness)
 
 treachery :: CardCode -> Name -> EncounterSet -> Int -> CardDef
-treachery cardCode name encounterSet encounterSetQuantity =
+treachery !cardCode !name !encounterSet !encounterSetQuantity =
   baseTreachery
     cardCode
     name

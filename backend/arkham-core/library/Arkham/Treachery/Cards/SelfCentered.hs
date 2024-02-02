@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype SelfCentered = SelfCentered TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 selfCentered :: TreacheryCard SelfCentered
 selfCentered = treachery SelfCentered Cards.selfCentered

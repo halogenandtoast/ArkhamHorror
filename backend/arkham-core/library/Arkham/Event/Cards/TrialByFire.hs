@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype TrialByFire = TrialByFire EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 trialByFire :: EventCard TrialByFire
 trialByFire = event TrialByFire Cards.trialByFire

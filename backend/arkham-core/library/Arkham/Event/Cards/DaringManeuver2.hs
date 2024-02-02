@@ -13,7 +13,7 @@ import Arkham.Event.Runner
 
 newtype DaringManeuver2 = DaringManeuver2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 daringManeuver2 :: EventCard DaringManeuver2
 daringManeuver2 =

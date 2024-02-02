@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype ToughCrowd = ToughCrowd TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 toughCrowd :: TreacheryCard ToughCrowd
 toughCrowd = treachery ToughCrowd Cards.toughCrowd

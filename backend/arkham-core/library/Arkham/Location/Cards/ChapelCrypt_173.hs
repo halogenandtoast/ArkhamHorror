@@ -16,7 +16,7 @@ import Arkham.Matcher
 
 newtype ChapelCrypt_173 = ChapelCrypt_173 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 chapelCrypt_173 :: LocationCard ChapelCrypt_173
 chapelCrypt_173 = location ChapelCrypt_173 Cards.chapelCrypt_173 6 (Static 0)

@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype BaronSamedi = BaronSamedi AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 baronSamedi :: AssetCard BaronSamedi
 baronSamedi = assetWith BaronSamedi Cards.baronSamedi (canLeavePlayByNormalMeansL .~ False)

@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype YourHouse = YourHouse LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 yourHouse :: LocationCard YourHouse
 yourHouse = location YourHouse Cards.yourHouse 2 (PerPlayer 1)

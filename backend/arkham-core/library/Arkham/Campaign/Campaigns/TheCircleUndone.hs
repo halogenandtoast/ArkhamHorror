@@ -28,7 +28,7 @@ import Arkham.Name
 import Arkham.Trait (Trait (SilverTwilight))
 
 newtype TheCircleUndone = TheCircleUndone CampaignAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor, NoThunks, NFData)
 
 instance IsCampaign TheCircleUndone where
   nextStep a = case campaignStep (toAttrs a) of

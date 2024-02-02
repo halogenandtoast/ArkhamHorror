@@ -19,7 +19,7 @@ import Arkham.Window qualified as Window
 
 newtype PnakoticManuscripts5 = PnakoticManuscripts5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 pnakoticManuscripts5 :: AssetCard PnakoticManuscripts5
 pnakoticManuscripts5 = asset PnakoticManuscripts5 Cards.pnakoticManuscripts5
@@ -71,7 +71,7 @@ instance RunMessage PnakoticManuscripts5 where
 
 newtype PnakoticManuscripts5Effect = PnakoticManuscripts5Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 pnakoticManuscripts5Effect :: EffectArgs -> PnakoticManuscripts5Effect
 pnakoticManuscripts5Effect =

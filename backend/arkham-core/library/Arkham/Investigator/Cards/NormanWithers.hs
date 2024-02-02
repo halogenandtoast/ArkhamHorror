@@ -14,11 +14,11 @@ import Arkham.Projection
 
 newtype Metadata = Metadata {playedFromTopOfDeck :: Bool}
   deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype NormanWithers = NormanWithers (InvestigatorAttrs `With` Metadata)
   deriving anyclass (IsInvestigator)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 normanWithers :: InvestigatorCard NormanWithers
 normanWithers =

@@ -14,7 +14,7 @@ import Arkham.SkillType
 
 newtype StrangeSolutionFreezingVariant4 = StrangeSolutionFreezingVariant4 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 strangeSolutionFreezingVariant4 :: AssetCard StrangeSolutionFreezingVariant4
 strangeSolutionFreezingVariant4 =

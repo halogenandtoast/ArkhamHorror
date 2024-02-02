@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TrackShoes = TrackShoes AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 trackShoes :: AssetCard TrackShoes
 trackShoes = asset TrackShoes Cards.trackShoes

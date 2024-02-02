@@ -14,7 +14,7 @@ import Arkham.Matcher hiding (FastPlayerWindow)
 
 newtype SmokingPipe = SmokingPipe AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 smokingPipe :: AssetCard SmokingPipe
 smokingPipe = asset SmokingPipe Cards.smokingPipe

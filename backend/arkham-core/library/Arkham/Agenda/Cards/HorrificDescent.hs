@@ -16,7 +16,7 @@ import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 
 newtype HorrificDescent = HorrificDescent AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 horrificDescent :: AgendaCard HorrificDescent
 horrificDescent =

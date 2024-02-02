@@ -25,7 +25,7 @@ import Data.Aeson.TH
 
 data DiscardSignifier = AnyPlayerDiscard | DiscardOf Who
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 pattern AnyHorrorOnThis :: Criterion
 pattern AnyHorrorOnThis <- HorrorOnThis (GreaterThan (Static 0))
@@ -197,7 +197,7 @@ data Criterion
   | DuringAction
   | AffectedByTarot
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Not Criterion where
   not_ = Negate
@@ -287,7 +287,7 @@ data EnemyCriterion
   | ThisEnemy EnemyMatcher
   | EnemyMatchesCriteria [EnemyCriterion]
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Semigroup EnemyCriterion where
   EnemyMatchesCriteria xs <> EnemyMatchesCriteria ys =
@@ -298,7 +298,7 @@ instance Semigroup EnemyCriterion where
 
 data UnderZone = UnderActDeck | UnderAgendaDeck | UnderZones [UnderZone]
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Semigroup UnderZone where
   UnderZones xs <> UnderZones ys = UnderZones $ xs <> ys

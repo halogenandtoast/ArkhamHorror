@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype TerrorInTheNight = TerrorInTheNight TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 terrorInTheNight :: TreacheryCard TerrorInTheNight
 terrorInTheNight = treachery TerrorInTheNight Cards.terrorInTheNight

@@ -54,7 +54,7 @@ Because this logic needs to be known by locations we store in the
 
 newtype BeforeTheBlackThrone = BeforeTheBlackThrone ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 beforeTheBlackThrone :: Difficulty -> BeforeTheBlackThrone
 beforeTheBlackThrone difficulty = scenario BeforeTheBlackThrone "05325" "Before the Black Throne" difficulty []

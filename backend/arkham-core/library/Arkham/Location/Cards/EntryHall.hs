@@ -14,7 +14,7 @@ import Arkham.Trait
 
 newtype EntryHall = EntryHall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 entryHall :: LocationCard EntryHall
 entryHall =

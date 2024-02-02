@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 newtype BeingsOfIb = BeingsOfIb EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 beingsOfIb :: EnemyCard BeingsOfIb
 beingsOfIb = enemy BeingsOfIb Cards.beingsOfIb (4, Static 1, 4) (0, 1)

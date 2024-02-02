@@ -8,7 +8,7 @@ data ArkhamKey
   | TabletKey
   | ElderThingKey
   deriving stock (Show, Eq, Ord, Generic, Data)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
   deriving anyclass (ToJSON, FromJSON)
 
 keyName :: ArkhamKey -> Text

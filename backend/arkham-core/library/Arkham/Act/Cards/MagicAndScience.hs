@@ -23,7 +23,7 @@ import Data.Monoid (Last (..))
 
 newtype MagicAndScience = MagicAndScience ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 magicAndScience :: ActCard MagicAndScience
 magicAndScience =

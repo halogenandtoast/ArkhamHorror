@@ -15,7 +15,7 @@ import Arkham.ScenarioLogKey
 
 newtype FoulSwamp = FoulSwamp LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 foulSwamp :: LocationCard FoulSwamp
 foulSwamp = location FoulSwamp Cards.foulSwamp 2 (Static 0)

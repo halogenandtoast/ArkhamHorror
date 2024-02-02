@@ -16,7 +16,7 @@ import Arkham.GameValue
 
 newtype ReturnToPredatorOrPrey = ReturnToPredatorOrPrey AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 returnToPredatorOrPrey :: AgendaCard ReturnToPredatorOrPrey
 returnToPredatorOrPrey =

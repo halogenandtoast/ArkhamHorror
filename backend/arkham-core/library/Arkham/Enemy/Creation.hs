@@ -17,7 +17,7 @@ data EnemyCreationMethod
   | SpawnEngagedWithPrey
   | SpawnViaSpawnInstruction
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 class IsEnemyCreationMethod a where
   toEnemyCreationMethod :: a -> EnemyCreationMethod
@@ -47,7 +47,7 @@ data EnemyCreation msg = MkEnemyCreation
   , enemyCreationInvestigator :: Maybe InvestigatorId
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 instance HasField "enemy" (EnemyCreation msg) EnemyId where
   getField = enemyCreationEnemyId

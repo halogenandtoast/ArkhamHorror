@@ -37,7 +37,7 @@ import Arkham.Trait (Trait (Spectral), toTraits)
 
 newtype TheWagesOfSin = TheWagesOfSin ScenarioAttrs
   deriving anyclass (IsScenario)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 instance HasModifiersFor TheWagesOfSin where
   getModifiersFor (InvestigatorTarget iid) (TheWagesOfSin a) = do
@@ -159,7 +159,7 @@ instance RunMessage TheWagesOfSin where
           ]
 
       pushAll
-        $ [ SetEncounterDeck $ Deck encounterDeck
+        $ [ SetEncounterDeck $ mkDeck encounterDeck
           , SetAgendaDeck
           , SetActDeck
           ]
@@ -176,7 +176,7 @@ instance RunMessage TheWagesOfSin where
               & (setAsideCardsL .~ setAsideCards)
               & (agendaStackL . at 1 ?~ agendas)
               & (actStackL . at 1 ?~ acts)
-              & (encounterDecksL . at SpectralEncounterDeck ?~ (Deck spectralEncounterDeck, mempty))
+              & (encounterDecksL . at SpectralEncounterDeck ?~ (mkDeck spectralEncounterDeck, mempty))
           )
     ResolveChaosToken _ tokenFace iid -> do
       case tokenFace of

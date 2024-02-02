@@ -14,7 +14,7 @@ import Arkham.Trait
 
 newtype TrueSurvivor3 = TrueSurvivor3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 trueSurvivor3 :: EventCard TrueSurvivor3
 trueSurvivor3 = event TrueSurvivor3 Cards.trueSurvivor3

@@ -19,7 +19,7 @@ import Arkham.Matcher
 
 newtype Followed = Followed EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 followed :: EventCard Followed
 followed = event Followed Cards.followed
@@ -39,7 +39,7 @@ instance RunMessage Followed where
 
 newtype FollowedEffect = FollowedEffect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 followedEffect :: EffectArgs -> FollowedEffect
 followedEffect = cardEffect FollowedEffect Cards.followed

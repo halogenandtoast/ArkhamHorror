@@ -129,7 +129,7 @@ runGameMessage msg g = case msg of
     (iid', !deck) <- loadDecklist decklist
     let investigator = lookupInvestigator iid' playerId
     let iid = toId investigator
-    push $ InitDeck iid (Deck deck)
+    push $ InitDeck iid (mkDeck deck)
     let activeInvestigatorF =
           if gameActiveInvestigatorId g `elem` replaceIds then set activeInvestigatorIdL iid else id
         turnPlayerInvestigatorF =

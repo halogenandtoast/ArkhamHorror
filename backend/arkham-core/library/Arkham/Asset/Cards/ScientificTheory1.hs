@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype ScientificTheory1 = ScientificTheory1 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 scientificTheory1 :: AssetCard ScientificTheory1
 scientificTheory1 =

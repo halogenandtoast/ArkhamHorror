@@ -18,7 +18,7 @@ import Arkham.Projection
 import Data.Aeson (Result (..))
 
 newtype TheDreamEaters = TheDreamEaters CampaignAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor, NoThunks, NFData)
 
 theDreamEaters :: Difficulty -> TheDreamEaters
 theDreamEaters difficulty =

@@ -19,7 +19,7 @@ import Arkham.Trait (Trait (Sanctum))
 
 newtype LodgeJailor = LodgeJailor EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 lodgeJailor :: EnemyCard LodgeJailor
 lodgeJailor =

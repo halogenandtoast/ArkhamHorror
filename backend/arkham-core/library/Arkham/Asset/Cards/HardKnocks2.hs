@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype HardKnocks2 = HardKnocks2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 hardKnocks2 :: AssetCard HardKnocks2
 hardKnocks2 = asset HardKnocks2 Cards.hardKnocks2

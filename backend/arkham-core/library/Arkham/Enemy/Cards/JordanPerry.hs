@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype JordanPerry = JordanPerry EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 jordanPerry :: EnemyCard JordanPerry
 jordanPerry = enemy JordanPerry Cards.jordanPerry (2, Static 8, 2) (1, 1)

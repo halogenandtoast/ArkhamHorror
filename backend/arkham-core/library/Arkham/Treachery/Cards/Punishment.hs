@@ -17,7 +17,7 @@ import Arkham.Treachery.Runner
 
 newtype Punishment = Punishment TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 punishment :: TreacheryCard Punishment
 punishment = treachery Punishment Cards.punishment

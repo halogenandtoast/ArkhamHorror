@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype PathOfThorns = PathOfThorns LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 pathOfThorns :: LocationCard PathOfThorns
 pathOfThorns = location PathOfThorns Cards.pathOfThorns 3 (PerPlayer 1)

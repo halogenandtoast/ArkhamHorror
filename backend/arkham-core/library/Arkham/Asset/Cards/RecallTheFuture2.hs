@@ -18,11 +18,11 @@ import Arkham.Window qualified as Window
 
 newtype Metadata = Metadata {chosenChaosToken :: Maybe ChaosTokenFace}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype RecallTheFuture2 = RecallTheFuture2 (AssetAttrs `With` Metadata)
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 recallTheFuture2 :: AssetCard RecallTheFuture2
 recallTheFuture2 = asset (RecallTheFuture2 . (`with` Metadata Nothing)) Cards.recallTheFuture2

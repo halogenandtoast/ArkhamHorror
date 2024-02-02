@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype FireAxe = FireAxe AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 fireAxe :: AssetCard FireAxe
 fireAxe = asset FireAxe Cards.fireAxe

@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype EztliExhibit = EztliExhibit LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 eztliExhibit :: LocationCard EztliExhibit
 eztliExhibit = location EztliExhibit Cards.eztliExhibit 3 (PerPlayer 2)

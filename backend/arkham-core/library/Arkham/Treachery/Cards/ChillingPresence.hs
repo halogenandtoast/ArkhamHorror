@@ -19,7 +19,7 @@ import Arkham.Treachery.Runner
 
 newtype ChillingPresence = ChillingPresence TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 chillingPresence :: TreacheryCard ChillingPresence
 chillingPresence = treachery ChillingPresence Cards.chillingPresence
@@ -61,7 +61,7 @@ instance RunMessage ChillingPresence where
 
 newtype ChillingPresenceEffect = ChillingPresenceEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 chillingPresenceEffect :: EffectArgs -> ChillingPresenceEffect
 chillingPresenceEffect = cardEffect ChillingPresenceEffect Cards.chillingPresence

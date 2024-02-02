@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype ToweringBeasts = ToweringBeasts TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 toweringBeasts :: TreacheryCard ToweringBeasts
 toweringBeasts = treachery ToweringBeasts Cards.toweringBeasts

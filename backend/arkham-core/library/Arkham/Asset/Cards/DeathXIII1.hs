@@ -17,7 +17,7 @@ import Arkham.Window (defaultWindows)
 
 newtype DeathXIII1 = DeathXIII1 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 deathXiii1 :: AssetCard DeathXIII1
 deathXiii1 =

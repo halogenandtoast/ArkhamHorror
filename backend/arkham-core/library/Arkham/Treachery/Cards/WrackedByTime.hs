@@ -18,11 +18,11 @@ import Arkham.Treachery.Runner
 
 newtype Metadata = Metadata {damagedAssets :: Set AssetId}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype WrackedByTime = WrackedByTime (TreacheryAttrs `With` Metadata)
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 wrackedByTime :: TreacheryCard WrackedByTime
 wrackedByTime =

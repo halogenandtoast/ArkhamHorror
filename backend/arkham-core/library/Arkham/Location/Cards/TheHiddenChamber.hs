@@ -21,7 +21,7 @@ import Arkham.Projection
 
 newtype TheHiddenChamber = TheHiddenChamber LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 theHiddenChamber :: LocationCard TheHiddenChamber
 theHiddenChamber =

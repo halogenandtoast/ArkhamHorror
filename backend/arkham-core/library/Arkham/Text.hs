@@ -7,14 +7,14 @@ import Arkham.Prelude
 import Data.Aeson.TH
 
 newtype Tooltip = Tooltip Text
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Ord, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Ord, NoThunks, NFData)
 
 data FlavorText = FlavorText
   { flavorTitle :: Maybe Text
   , flavorBody :: [Text]
   }
   deriving stock (Show, Eq, Ord, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Semigroup FlavorText where
   FlavorText mTitle1 body1 <> FlavorText mTitle2 body2 = FlavorText (mTitle1 <|> mTitle2) (body1 <> body2)

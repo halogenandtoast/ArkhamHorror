@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype FrozenSpring = FrozenSpring LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 frozenSpring :: LocationCard FrozenSpring
 frozenSpring = location FrozenSpring Cards.frozenSpring 3 (PerPlayer 1)

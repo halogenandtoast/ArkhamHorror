@@ -31,7 +31,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype APhantomOfTruth = APhantomOfTruth ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 aPhantomOfTruth :: Difficulty -> APhantomOfTruth
 aPhantomOfTruth difficulty =
@@ -237,7 +237,7 @@ instance RunMessage APhantomOfTruth where
           , EncounterSet.AgentsOfHastur
           ]
       midnightMasks <- gatherTheMidnightMasks conviction doubt
-      encounterDeck <- Deck <$> shuffleM (unDeck gatheredCards <> midnightMasks)
+      encounterDeck <- mkDeck <$> shuffleM (unDeck gatheredCards <> midnightMasks)
 
       setAsideCards <- genCards [theOrganist]
 

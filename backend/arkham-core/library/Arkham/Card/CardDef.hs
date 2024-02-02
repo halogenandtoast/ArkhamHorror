@@ -35,29 +35,29 @@ data DeckRestriction
   | MultiplayerOnly
   | PurchaseAtDeckCreation
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data AttackOfOpportunityModifier
   = DoesNotProvokeAttacksOfOpportunity
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data EventChoicesRepeatable
   = EventChoicesRepeatable
   | EventChoicesNotRepeatable
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data EventChoice = EventChooseN Int EventChoicesRepeatable
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data CardLimit
   = LimitPerInvestigator Int
   | LimitPerTrait Trait Int
   | MaxPerGame Int
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 $(deriveJSON defaultOptions ''DeckRestriction)
 $(deriveJSON defaultOptions ''AttackOfOpportunityModifier)
@@ -77,7 +77,7 @@ data IsRevelation
   | IsRevelation
   | CannotBeCanceledRevelation
   deriving stock (Show, Eq, Ord, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 isRevelation :: IsRevelation -> Bool
 isRevelation = \case
@@ -91,7 +91,7 @@ data PurchaseTrauma
   | PurchasePhysicalTrauma Int
   | PurchaseAnyTrauma Int
   deriving stock (Show, Eq, Ord, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 data CardDef = CardDef
   { cdCardCode :: CardCode
@@ -146,7 +146,7 @@ data CardDef = CardDef
   , cdCustomizations :: Map Customization Int
   }
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Exists CardDef where
   exists def = case cdCardType def of

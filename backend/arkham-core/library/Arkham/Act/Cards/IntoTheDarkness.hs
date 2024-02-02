@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype IntoTheDarkness = IntoTheDarkness ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 intoTheDarkness :: ActCard IntoTheDarkness
 intoTheDarkness = act (2, A) IntoTheDarkness Cards.intoTheDarkness Nothing

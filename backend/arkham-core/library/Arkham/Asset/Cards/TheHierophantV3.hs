@@ -15,7 +15,7 @@ import Arkham.Window (defaultWindows)
 
 newtype TheHierophantV3 = TheHierophantV3 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theHierophantV3 :: AssetCard TheHierophantV3
 theHierophantV3 = asset TheHierophantV3 Cards.theHierophantV3

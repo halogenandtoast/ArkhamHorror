@@ -14,7 +14,7 @@ import Arkham.Investigate
 
 newtype ReadTheSigns = ReadTheSigns EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 readTheSigns :: EventCard ReadTheSigns
 readTheSigns = event ReadTheSigns Cards.readTheSigns

@@ -9,7 +9,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype Celephais = Celephais LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 celephais :: LocationCard Celephais
 celephais = location Celephais Cards.celephais 2 (PerPlayer 1)

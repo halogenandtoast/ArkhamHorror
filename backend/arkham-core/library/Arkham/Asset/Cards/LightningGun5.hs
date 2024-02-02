@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 newtype LightningGun5 = LightningGun5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 lightningGun5 :: AssetCard LightningGun5
 lightningGun5 = asset LightningGun5 Cards.lightningGun5

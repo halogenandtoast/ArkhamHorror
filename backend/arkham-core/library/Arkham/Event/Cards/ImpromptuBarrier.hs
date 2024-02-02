@@ -18,11 +18,11 @@ import Arkham.Zone
 
 newtype Metadata = Metadata {fromDiscard :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype ImpromptuBarrier = ImpromptuBarrier (EventAttrs `With` Metadata)
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 impromptuBarrier :: EventCard ImpromptuBarrier
 impromptuBarrier =

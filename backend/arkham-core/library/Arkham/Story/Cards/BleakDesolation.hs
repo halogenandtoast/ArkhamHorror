@@ -14,7 +14,7 @@ import Arkham.Story.Runner
 
 newtype BleakDesolation = BleakDesolation StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 bleakDesolation :: StoryCard BleakDesolation
 bleakDesolation = story BleakDesolation Cards.bleakDesolation

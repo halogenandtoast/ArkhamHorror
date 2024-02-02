@@ -29,7 +29,7 @@ data Ability = Ability
   , abilityDisplayAsAction :: Bool
   }
   deriving stock (Show, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data AbilityMetadata
   = IntMetadata Int
@@ -39,7 +39,7 @@ data AbilityMetadata
   | SkillChoiceMetadata SkillType
   | NoAbilityMetadata
   deriving stock (Eq, Show, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Eq Ability where
   a == b =

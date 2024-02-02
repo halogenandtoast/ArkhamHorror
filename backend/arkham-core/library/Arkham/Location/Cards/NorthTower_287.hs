@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype NorthTower_287 = NorthTower_287 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 northTower_287 :: LocationCard NorthTower_287
 northTower_287 = location NorthTower_287 Cards.northTower_287 2 (PerPlayer 2)

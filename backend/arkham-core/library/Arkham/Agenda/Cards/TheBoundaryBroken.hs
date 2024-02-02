@@ -17,7 +17,7 @@ import Arkham.Matcher
 
 newtype TheBoundaryBroken = TheBoundaryBroken AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theBoundaryBroken :: AgendaCard TheBoundaryBroken
 theBoundaryBroken =

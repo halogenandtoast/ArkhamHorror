@@ -15,7 +15,7 @@ import Arkham.SkillType
 
 newtype HenryDeveau = HenryDeveau AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 henryDeveau :: AssetCard HenryDeveau
 henryDeveau =

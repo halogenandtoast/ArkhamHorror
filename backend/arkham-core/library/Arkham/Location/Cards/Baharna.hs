@@ -14,7 +14,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype Baharna = Baharna LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 baharna :: LocationCard Baharna
 baharna = location Baharna Cards.baharna 2 (PerPlayer 1)

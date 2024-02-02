@@ -9,7 +9,7 @@ import Arkham.Prelude
 
 newtype Acolyte = Acolyte EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 acolyte :: EnemyCard Acolyte
 acolyte = enemyWith Acolyte Cards.acolyte (3, Static 1, 2) (1, 0) (spawnAtL ?~ SpawnAt EmptyLocation)

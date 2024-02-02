@@ -16,7 +16,7 @@ import Arkham.Trait
 
 newtype AstoundingRevelation = AstoundingRevelation EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 astoundingRevelation :: EventCard AstoundingRevelation
 astoundingRevelation = event AstoundingRevelation Cards.astoundingRevelation

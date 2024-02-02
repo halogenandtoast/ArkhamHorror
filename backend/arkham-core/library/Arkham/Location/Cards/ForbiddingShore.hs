@@ -17,7 +17,7 @@ import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype ForbiddingShore = ForbiddingShore LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 forbiddingShore :: LocationCard ForbiddingShore
 forbiddingShore = location ForbiddingShore Cards.forbiddingShore 3 (PerPlayer 1)

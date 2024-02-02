@@ -18,7 +18,7 @@ import Arkham.Projection
 
 newtype WellConnected = WellConnected AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 wellConnected :: AssetCard WellConnected
 wellConnected =
@@ -41,7 +41,7 @@ instance RunMessage WellConnected where
 
 newtype WellConnectedEffect = WellConnectedEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 wellConnectedEffect :: EffectArgs -> WellConnectedEffect
 wellConnectedEffect = cardEffect WellConnectedEffect Cards.wellConnected

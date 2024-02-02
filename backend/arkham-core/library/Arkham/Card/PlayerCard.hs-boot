@@ -5,6 +5,7 @@ import Arkham.Prelude
 data PlayerCard
 
 instance NoThunks PlayerCard
+instance NFData PlayerCard
 instance Data PlayerCard
 instance Ord PlayerCard
 instance FromJSON PlayerCard

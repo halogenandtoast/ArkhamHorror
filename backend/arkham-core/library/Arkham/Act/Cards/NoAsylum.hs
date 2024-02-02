@@ -18,7 +18,7 @@ import Arkham.Trait
 
 newtype NoAsylum = NoAsylum ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 noAsylum :: ActCard NoAsylum
 noAsylum = act (4, A) NoAsylum Cards.noAsylum Nothing

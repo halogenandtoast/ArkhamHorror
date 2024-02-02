@@ -17,7 +17,7 @@ import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 
 newtype DrawnIn = DrawnIn AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 drawnIn :: AgendaCard DrawnIn
 drawnIn = agenda (4, A) DrawnIn Cards.drawnIn (Static 3)

@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype YithianPresence = YithianPresence TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 yithianPresence :: TreacheryCard YithianPresence
 yithianPresence = treachery YithianPresence Cards.yithianPresence

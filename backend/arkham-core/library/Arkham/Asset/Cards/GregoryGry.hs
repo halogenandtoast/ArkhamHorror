@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype GregoryGry = GregoryGry AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 gregoryGry :: AssetCard GregoryGry
 gregoryGry = ally GregoryGry Cards.gregoryGry (1, 2)
@@ -42,7 +42,7 @@ instance RunMessage GregoryGry where
 
 newtype GregoryGryEffect = GregoryGryEffect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 gregoryGryEffect :: EffectArgs -> GregoryGryEffect
 gregoryGryEffect = cardEffect GregoryGryEffect Cards.gregoryGry

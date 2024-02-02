@@ -10,6 +10,6 @@ data RevealStrategy
   = Reveal Int
   | RevealAndChoose Int Int
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 $(deriveJSON defaultOptions ''RevealStrategy)

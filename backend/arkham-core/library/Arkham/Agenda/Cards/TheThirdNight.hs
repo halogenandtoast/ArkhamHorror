@@ -16,7 +16,7 @@ import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype TheThirdNight = TheThirdNight AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theThirdNight :: AgendaCard TheThirdNight
 theThirdNight = agenda (3, A) TheThirdNight Cards.theThirdNight (Static 5)

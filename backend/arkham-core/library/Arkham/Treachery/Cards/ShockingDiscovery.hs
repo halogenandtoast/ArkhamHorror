@@ -19,7 +19,7 @@ import Arkham.Window (getBatchId)
 
 newtype ShockingDiscovery = ShockingDiscovery TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 shockingDiscovery :: TreacheryCard ShockingDiscovery
 shockingDiscovery = treachery ShockingDiscovery Cards.shockingDiscovery

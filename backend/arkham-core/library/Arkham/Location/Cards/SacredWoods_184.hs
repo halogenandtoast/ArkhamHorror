@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype SacredWoods_184 = SacredWoods_184 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 sacredWoods_184 :: LocationCard SacredWoods_184
 sacredWoods_184 =

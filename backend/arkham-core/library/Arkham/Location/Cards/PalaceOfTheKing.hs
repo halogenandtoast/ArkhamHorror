@@ -18,7 +18,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype PalaceOfTheKing = PalaceOfTheKing LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 palaceOfTheKing :: LocationCard PalaceOfTheKing
 palaceOfTheKing =

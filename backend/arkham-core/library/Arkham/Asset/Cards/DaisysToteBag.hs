@@ -12,7 +12,7 @@ import Arkham.Trait
 
 newtype DaisysToteBag = DaisysToteBag AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 daisysToteBag :: AssetCard DaisysToteBag
 daisysToteBag = asset DaisysToteBag Cards.daisysToteBag

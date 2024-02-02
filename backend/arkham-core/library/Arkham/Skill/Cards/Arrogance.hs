@@ -13,7 +13,7 @@ import Arkham.Skill.Runner
 
 newtype Arrogance = Arrogance SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 arrogance :: SkillCard Arrogance
 arrogance = skill Arrogance Cards.arrogance

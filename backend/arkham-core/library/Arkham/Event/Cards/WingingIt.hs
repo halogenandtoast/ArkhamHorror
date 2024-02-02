@@ -17,7 +17,7 @@ import Arkham.Zone qualified as Zone
 
 newtype WingingIt = WingingIt EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 wingingIt :: EventCard WingingIt
 wingingIt = event WingingIt Cards.wingingIt

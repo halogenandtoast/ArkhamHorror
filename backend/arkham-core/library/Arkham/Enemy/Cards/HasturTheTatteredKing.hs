@@ -16,7 +16,7 @@ import Arkham.Projection
 
 newtype HasturTheTatteredKing = HasturTheTatteredKing EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 hasturTheTatteredKing :: EnemyCard HasturTheTatteredKing
 hasturTheTatteredKing =

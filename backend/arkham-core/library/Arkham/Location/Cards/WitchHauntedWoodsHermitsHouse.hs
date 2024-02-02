@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype WitchHauntedWoodsHermitsHouse = WitchHauntedWoodsHermitsHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 witchHauntedWoodsHermitsHouse :: LocationCard WitchHauntedWoodsHermitsHouse
 witchHauntedWoodsHermitsHouse = location WitchHauntedWoodsHermitsHouse Cards.witchHauntedWoodsHermitsHouse 4 (PerPlayer 2)

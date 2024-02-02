@@ -15,7 +15,7 @@ import Arkham.Projection
 
 newtype TrophyRoomSpectral = TrophyRoomSpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 trophyRoomSpectral :: LocationCard TrophyRoomSpectral
 trophyRoomSpectral =

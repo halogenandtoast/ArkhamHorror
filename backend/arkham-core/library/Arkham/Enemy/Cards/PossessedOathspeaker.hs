@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype PossessedOathspeaker = PossessedOathspeaker EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 possessedOathspeaker :: EnemyCard PossessedOathspeaker
 possessedOathspeaker = enemy PossessedOathspeaker Cards.possessedOathspeaker (4, PerPlayer 5, 3) (2, 2)

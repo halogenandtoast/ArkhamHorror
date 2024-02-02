@@ -12,7 +12,7 @@ data SkillType
   | SkillCombat
   | SkillAgility
   deriving stock (Show, Eq, Bounded, Enum, Generic, Ord, Data)
-  deriving anyclass (ToJSON, FromJSON, Hashable, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, Hashable, NoThunks, NFData)
 
 allSkills :: [SkillType]
 allSkills = [minBound ..]
@@ -35,7 +35,7 @@ instance IsLabel "agility" SkillType where
 
 data SkillIcon = SkillIcon SkillType | WildIcon | WildMinusIcon
   deriving stock (Show, Eq, Generic, Ord, Data)
-  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, NoThunks, NFData)
 
 instance IsLabel "willpower" SkillIcon where
   fromLabel = SkillIcon SkillWillpower

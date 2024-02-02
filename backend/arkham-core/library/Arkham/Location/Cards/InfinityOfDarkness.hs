@@ -21,7 +21,7 @@ import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 
 newtype InfinityOfDarkness = InfinityOfDarkness LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 infinityOfDarkness :: LocationCard InfinityOfDarkness
 infinityOfDarkness =

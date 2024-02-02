@@ -13,7 +13,7 @@ import Arkham.Matcher hiding (NonAttackDamageEffect)
 
 newtype ManoAMano1 = ManoAMano1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 manoAMano1 :: EventCard ManoAMano1
 manoAMano1 = event ManoAMano1 Cards.manoAMano1

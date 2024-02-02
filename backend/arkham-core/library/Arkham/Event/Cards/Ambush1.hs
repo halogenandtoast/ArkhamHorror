@@ -20,7 +20,7 @@ import Arkham.Window qualified as Window
 
 newtype Ambush1 = Ambush1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 ambush1 :: EventCard Ambush1
 ambush1 = event Ambush1 Cards.ambush1

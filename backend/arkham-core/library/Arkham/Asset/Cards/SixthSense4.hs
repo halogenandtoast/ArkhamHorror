@@ -21,7 +21,7 @@ import Arkham.Window qualified as Window
 
 newtype SixthSense4 = SixthSense4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 sixthSense4 :: AssetCard SixthSense4
 sixthSense4 = asset SixthSense4 Cards.sixthSense4
@@ -47,7 +47,7 @@ instance RunMessage SixthSense4 where
 
 newtype SixthSense4Effect = SixthSense4Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 sixthSense4Effect :: EffectArgs -> SixthSense4Effect
 sixthSense4Effect = cardEffect SixthSense4Effect Cards.sixthSense4

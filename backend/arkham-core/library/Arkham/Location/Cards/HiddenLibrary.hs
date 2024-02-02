@@ -15,7 +15,7 @@ import Arkham.Trait
 
 newtype HiddenLibrary = HiddenLibrary LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 hiddenLibrary :: LocationCard HiddenLibrary
 hiddenLibrary = location HiddenLibrary Cards.hiddenLibrary 4 (PerPlayer 3)

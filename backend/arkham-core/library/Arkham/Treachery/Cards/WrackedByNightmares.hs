@@ -12,7 +12,7 @@ import Arkham.Treachery.Runner
 
 newtype WrackedByNightmares = WrackedByNightmares TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 wrackedByNightmares :: TreacheryCard WrackedByNightmares
 wrackedByNightmares = treachery WrackedByNightmares Cards.wrackedByNightmares

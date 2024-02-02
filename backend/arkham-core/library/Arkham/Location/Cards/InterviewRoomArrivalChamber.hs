@@ -16,7 +16,7 @@ import Arkham.Trait (Trait (Yithian))
 
 newtype InterviewRoomArrivalChamber = InterviewRoomArrivalChamber LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 interviewRoomArrivalChamber :: LocationCard InterviewRoomArrivalChamber
 interviewRoomArrivalChamber =

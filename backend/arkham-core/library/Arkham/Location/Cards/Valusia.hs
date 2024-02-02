@@ -16,7 +16,7 @@ import Arkham.Matcher hiding (DiscoverClues)
 
 newtype Valusia = Valusia LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 valusia :: LocationCard Valusia
 valusia = location Valusia Cards.valusia 4 (Static 2)

@@ -13,7 +13,7 @@ data DefeatedBy
   | DefeatedByDamageAndHorror Source
   | DefeatedByOther Source
   deriving stock (Show, Eq, Ord, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 wasDefeatedByHorror :: DefeatedBy -> Bool
 wasDefeatedByHorror = \case

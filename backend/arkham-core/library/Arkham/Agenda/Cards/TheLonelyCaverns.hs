@@ -16,7 +16,7 @@ import Arkham.Prelude
 
 newtype TheLonelyCaverns = TheLonelyCaverns AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theLonelyCaverns :: AgendaCard TheLonelyCaverns
 theLonelyCaverns =

@@ -12,7 +12,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ArkhamWoodsWoodenBridge = ArkhamWoodsWoodenBridge LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 arkhamWoodsWoodenBridge :: LocationCard ArkhamWoodsWoodenBridge
 arkhamWoodsWoodenBridge = location ArkhamWoodsWoodenBridge Cards.arkhamWoodsWoodenBridge 3 (PerPlayer 1)

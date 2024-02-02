@@ -13,7 +13,7 @@ import Arkham.Timing qualified as Timing
 
 newtype Suggestion4 = Suggestion4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 suggestion4 :: AssetCard Suggestion4
 suggestion4 = asset Suggestion4 Cards.suggestion4

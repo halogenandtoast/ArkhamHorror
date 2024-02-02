@@ -36,7 +36,7 @@ import Arkham.Trait (Trait (SilverTwilight, Spectral))
 
 newtype AtDeathsDoorstep = AtDeathsDoorstep ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 atDeathsDoorstep :: Difficulty -> AtDeathsDoorstep
 atDeathsDoorstep difficulty =

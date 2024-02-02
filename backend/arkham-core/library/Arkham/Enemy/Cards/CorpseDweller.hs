@@ -13,7 +13,7 @@ import Arkham.Trait
 
 newtype CorpseDweller = CorpseDweller EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 corpseDweller :: EnemyCard CorpseDweller
 corpseDweller =

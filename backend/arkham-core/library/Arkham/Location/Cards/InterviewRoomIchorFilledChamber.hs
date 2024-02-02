@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype InterviewRoomIchorFilledChamber = InterviewRoomIchorFilledChamber LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 interviewRoomIchorFilledChamber :: LocationCard InterviewRoomIchorFilledChamber
 interviewRoomIchorFilledChamber =

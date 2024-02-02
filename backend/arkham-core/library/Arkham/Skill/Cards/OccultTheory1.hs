@@ -16,7 +16,7 @@ import Arkham.Skill.Runner
 
 newtype OccultTheory1 = OccultTheory1 SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 occultTheory1 :: SkillCard OccultTheory1
 occultTheory1 = skill OccultTheory1 Cards.occultTheory1

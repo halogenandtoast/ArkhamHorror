@@ -12,7 +12,7 @@ import Data.Aeson.TH
 
 data EnemyAttackType = AttackOfOpportunity | RegularAttack | AlertAttack
   deriving stock (Show, Eq, Ord, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data EnemyAttackDetails = EnemyAttackDetails
   { attackTarget :: Target
@@ -24,7 +24,7 @@ data EnemyAttackDetails = EnemyAttackDetails
   , attackCanBeCanceled :: Bool
   }
   deriving stock (Show, Eq, Ord, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 enemyAttack
   :: (Targetable target, Sourceable source, IdOf enemy ~ EnemyId, AsId enemy)

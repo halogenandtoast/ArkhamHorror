@@ -21,7 +21,7 @@ import Arkham.Trait (Trait (Void))
 
 newtype CosmicIngress = CosmicIngress LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 cosmicIngress :: LocationCard CosmicIngress
 cosmicIngress =

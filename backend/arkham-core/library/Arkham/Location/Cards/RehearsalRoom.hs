@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype RehearsalRoom = RehearsalRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 rehearsalRoom :: LocationCard RehearsalRoom
 rehearsalRoom = location RehearsalRoom Cards.rehearsalRoom 1 (PerPlayer 1)

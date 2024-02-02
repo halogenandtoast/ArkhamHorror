@@ -14,7 +14,7 @@ import Arkham.Placement
 
 newtype GravediggersShovel2 = GravediggersShovel2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 gravediggersShovel2 :: AssetCard GravediggersShovel2
 gravediggersShovel2 = asset GravediggersShovel2 Cards.gravediggersShovel2

@@ -50,14 +50,11 @@ defaultCampaignRunner msg a = case msg of
     pure a
   SetChaosTokensForScenario -> a <$ push (SetChaosTokens $ campaignChaosBag $ toAttrs a)
   AddCampaignCardToDeck iid cardDef -> do
-    card <- genPlayerCard cardDef
-    pure $ updateAttrs a $ \attrs ->
-      attrs
-        & storyCardsL
-        %~ insertWith
-          (<>)
-          iid
-          [card {pcOwner = Just iid}]
+    !card <- genPlayerCard cardDef
+    pure
+      $ updateAttrs a
+      $ storyCardsL
+      %~ insertWith (<>) iid [card {pcOwner = Just iid}]
   RemoveCampaignCard cardDef -> do
     pure $ updateAttrs a $ \attrs ->
       attrs
@@ -79,13 +76,13 @@ defaultCampaignRunner msg a = case msg of
   RemoveAllChaosTokens token -> pure $ updateAttrs a (chaosBagL %~ filter (/= token))
   InitDeck iid deck -> do
     playerCount <- getPlayerCount
-    (!deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded playerCount deck
+    (unDeck -> !deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded playerCount deck
     pid <- getPlayer iid
-    let purchaseTrauma = initDeckTrauma deck' iid pid CampaignTarget
+    let purchaseTrauma = initDeckTrauma (mkDeck deck') iid pid CampaignTarget
     pushAll
       $ map (AddCampaignCardToDeck iid) randomWeaknesses
       <> purchaseTrauma
-    let !result = updateAttrs a $ decksL %~ insertMap iid deck'
+    let !result = updateAttrs a (decksL %~ insertMap iid (mkDeck $ force deck'))
     pure result
   ResolveAmounts iid choiceMap (LabeledTarget "Purchase Trauma" CampaignTarget) -> do
     let physical = getChoiceAmount "Physical" choiceMap
@@ -102,7 +99,7 @@ defaultCampaignRunner msg a = case msg of
           (unDeck deck)
           (unDeck oldDeck)
 
-    let purchaseTrauma = initDeckTrauma (Deck deckDiff) iid pid CampaignTarget
+    let purchaseTrauma = initDeckTrauma (mkDeck deckDiff) iid pid CampaignTarget
     -- We remove the random weakness if the upgrade deck still has it listed
     -- since this will have been added at the beginning of the campaign
     playerCount <- getPlayerCount
@@ -117,7 +114,7 @@ defaultCampaignRunner msg a = case msg of
   ResetGame -> do
     for_ (mapToList $ campaignDecks $ toAttrs a) $ \(iid, deck) -> do
       let investigatorStoryCards = findWithDefault [] iid (campaignStoryCards $ toAttrs a)
-      push (LoadDeck iid . Deck $ unDeck deck <> investigatorStoryCards)
+      push (LoadDeck iid . mkDeck $ unDeck deck <> investigatorStoryCards)
     pure a
   CrossOutRecord key -> do
     let
@@ -222,4 +219,7 @@ defaultCampaignRunner msg a = case msg of
   SetCampaignLog newLog -> do
     pushAll $ map HandleOption (toList $ campaignLogOptions newLog)
     pure $ updateAttrs a $ logL .~ newLog
-  _ -> pure a
+  _ ->
+    liftIO (noThunks [] a) >>= \case
+      Nothing -> pure a
+      Just thunk -> error $ "Thunks found in campaign state: " <> show thunk

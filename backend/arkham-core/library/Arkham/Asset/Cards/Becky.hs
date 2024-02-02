@@ -14,7 +14,7 @@ import Arkham.Asset.Runner
 
 newtype Becky = Becky AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 becky :: AssetCard Becky
 becky = asset Becky Cards.becky

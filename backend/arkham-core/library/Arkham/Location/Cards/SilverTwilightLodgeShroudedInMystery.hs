@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype SilverTwilightLodgeShroudedInMystery = SilverTwilightLodgeShroudedInMystery LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 silverTwilightLodgeShroudedInMystery :: LocationCard SilverTwilightLodgeShroudedInMystery
 silverTwilightLodgeShroudedInMystery =

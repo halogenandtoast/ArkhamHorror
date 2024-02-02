@@ -20,7 +20,7 @@ import Arkham.Window qualified as Window
 
 newtype TheChariotVII = TheChariotVII AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theChariotVII :: AgendaCard TheChariotVII
 theChariotVII = agenda (1, A) TheChariotVII Cards.theChariotVII (Static 7)

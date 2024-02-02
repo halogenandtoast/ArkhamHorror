@@ -29,7 +29,7 @@ import GHC.Records
 
 data Result b a = Success a | Failure b
   deriving stock (Show, Eq, Ord, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data Window = Window
   { windowTiming :: Timing
@@ -37,7 +37,7 @@ data Window = Window
   , windowBatchId :: Maybe BatchId
   }
   deriving stock (Show, Eq, Ord, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance HasField "timing" Window Timing where
   getField = windowTiming
@@ -230,7 +230,7 @@ data WindowType
   | -- used to avoid checking a window
     DoNotCheckWindow
   deriving stock (Show, Ord, Eq, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 $( do
     result <- deriveJSON defaultOptions ''Result

@@ -15,7 +15,7 @@ import Arkham.Trait (Trait (Humanoid))
 
 newtype SummonedBeast = SummonedBeast EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 summonedBeast :: EnemyCard SummonedBeast
 summonedBeast = enemy SummonedBeast Cards.summonedBeast (5, PerPlayer 6, 2) (2, 2)

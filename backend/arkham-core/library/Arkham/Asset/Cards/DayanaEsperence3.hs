@@ -15,7 +15,7 @@ import Arkham.Window qualified as Window
 
 newtype DayanaEsperence3 = DayanaEsperence3 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 dayanaEsperence3 :: AssetCard DayanaEsperence3
 dayanaEsperence3 = ally DayanaEsperence3 Cards.dayanaEsperence3 (3, 1)

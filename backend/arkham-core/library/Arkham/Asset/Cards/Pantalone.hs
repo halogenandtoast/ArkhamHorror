@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype Pantalone = Pantalone AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 pantalone :: AssetCard Pantalone
 pantalone = asset Pantalone Cards.pantalone

@@ -16,7 +16,7 @@ import Arkham.Token qualified as Token
 
 newtype FamilyInheritance = FamilyInheritance AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 familyInheritance :: AssetCard FamilyInheritance
 familyInheritance =

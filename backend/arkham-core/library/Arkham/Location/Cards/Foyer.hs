@@ -12,7 +12,7 @@ import Arkham.Location.Runner
 
 newtype Foyer = Foyer LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 foyer :: LocationCard Foyer
 foyer = location Foyer Cards.foyer 2 (PerPlayer 1)

@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype CarolynFern = CarolynFern InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 carolynFern :: InvestigatorCard CarolynFern
 carolynFern =

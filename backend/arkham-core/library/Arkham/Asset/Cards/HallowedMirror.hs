@@ -10,7 +10,7 @@ import Arkham.Helpers.Investigator (getCanShuffleDeck, searchBonded)
 
 newtype HallowedMirror = HallowedMirror AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 hallowedMirror :: AssetCard HallowedMirror
 hallowedMirror = asset HallowedMirror Cards.hallowedMirror

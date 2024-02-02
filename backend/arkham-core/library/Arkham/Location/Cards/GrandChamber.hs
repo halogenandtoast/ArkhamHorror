@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype GrandChamber = GrandChamber LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 grandChamber :: LocationCard GrandChamber
 grandChamber =

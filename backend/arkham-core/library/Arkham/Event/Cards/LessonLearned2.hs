@@ -11,7 +11,7 @@ import Arkham.Event.Runner
 
 newtype LessonLearned2 = LessonLearned2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 lessonLearned2 :: EventCard LessonLearned2
 lessonLearned2 = event LessonLearned2 Cards.lessonLearned2

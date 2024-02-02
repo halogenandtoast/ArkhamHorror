@@ -16,7 +16,7 @@ import Arkham.Skill.Runner
 
 newtype SurveyTheArea1 = SurveyTheArea1 SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 surveyTheArea1 :: SkillCard SurveyTheArea1
 surveyTheArea1 = skill SurveyTheArea1 Cards.surveyTheArea1

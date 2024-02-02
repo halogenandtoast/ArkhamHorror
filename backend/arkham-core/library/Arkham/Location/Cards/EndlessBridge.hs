@@ -18,7 +18,7 @@ import Control.Monad.Extra (findM)
 
 newtype EndlessBridge = EndlessBridge LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 endlessBridge :: LocationCard EndlessBridge
 endlessBridge = location EndlessBridge Cards.endlessBridge 4 (Static 2)

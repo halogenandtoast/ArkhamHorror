@@ -17,7 +17,7 @@ import Arkham.Window qualified as Window
 
 newtype CoverUp = CoverUp TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 coverUp :: TreacheryCard CoverUp
 coverUp = treacheryWith CoverUp Cards.coverUp (tokensL %~ setTokens Clue 3)

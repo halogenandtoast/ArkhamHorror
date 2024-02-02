@@ -20,7 +20,7 @@ import Arkham.Window qualified as Window
 
 newtype Haste2 = Haste2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 haste2 :: AssetCard Haste2
 haste2 = asset Haste2 Cards.haste2

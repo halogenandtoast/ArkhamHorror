@@ -13,7 +13,7 @@ import Arkham.Timing qualified as Timing
 
 newtype AdministrationBuilding = AdministrationBuilding LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 administrationBuilding :: LocationCard AdministrationBuilding
 administrationBuilding =

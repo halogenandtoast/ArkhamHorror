@@ -217,7 +217,7 @@ data Trait
   | Yoth
   | Zoog
   deriving stock (Show, Eq, Generic, Ord, Enum, Bounded, Read, Data)
-  deriving anyclass (ToJSON, FromJSON, Hashable, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, Hashable, NoThunks, NFData)
 
 class HasTraits a where
   toTraits :: a -> Set Trait

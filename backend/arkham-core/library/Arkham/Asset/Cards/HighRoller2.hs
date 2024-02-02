@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype HighRoller2 = HighRoller2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 highRoller2 :: AssetCard HighRoller2
 highRoller2 = asset HighRoller2 Cards.highRoller2
@@ -40,7 +40,7 @@ instance RunMessage HighRoller2 where
 
 newtype HighRoller2Effect = HighRoller2Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 highRoller2Effect :: EffectArgs -> HighRoller2Effect
 highRoller2Effect = cardEffect HighRoller2Effect Cards.highRoller2

@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype SwordCane = SwordCane AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 swordCane :: AssetCard SwordCane
 swordCane = asset SwordCane Cards.swordCane

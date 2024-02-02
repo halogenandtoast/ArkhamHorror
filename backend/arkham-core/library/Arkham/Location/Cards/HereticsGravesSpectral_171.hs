@@ -20,7 +20,7 @@ import Arkham.SkillType
 
 newtype HereticsGravesSpectral_171 = HereticsGravesSpectral_171 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 hereticsGravesSpectral_171 :: LocationCard HereticsGravesSpectral_171
 hereticsGravesSpectral_171 = location HereticsGravesSpectral_171 Cards.hereticsGravesSpectral_171 7 (Static 0)
@@ -48,11 +48,11 @@ instance RunMessage HereticsGravesSpectral_171 where
 
 newtype Metadata = Metadata {inNextTurn :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype HereticsGravesSpectral_171Effect = HereticsGravesSpectral_171Effect (EffectAttrs `With` Metadata)
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 hereticsGravesSpectral_171Effect :: EffectArgs -> HereticsGravesSpectral_171Effect
 hereticsGravesSpectral_171Effect =

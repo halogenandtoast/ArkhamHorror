@@ -10,7 +10,7 @@ import Data.Aeson.TH
 
 data CanIgnoreAbilityLimit = CanIgnoreAbilityLimit | CanNotIgnoreAbilityLimit
   deriving stock (Eq, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data AbilityLimit
   = PerInvestigatorLimit AbilityLimitType Int
@@ -19,7 +19,7 @@ data AbilityLimit
   | MaxPer CardDef AbilityLimitType Int
   | NoLimit
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 abilityLimitType :: AbilityLimit -> Maybe AbilityLimitType
 abilityLimitType (PerInvestigatorLimit t _) = Just t
@@ -46,7 +46,7 @@ data AbilityLimitType
   | PerDepthLevel
   | PerCampaign
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 $(deriveJSON defaultOptions ''AbilityLimitType)
 $(deriveJSON defaultOptions ''AbilityLimit)

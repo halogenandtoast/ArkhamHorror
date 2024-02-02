@@ -15,7 +15,7 @@ import Arkham.Window qualified as Window
 
 newtype OnYourOwn3_Exceptional = OnYourOwn3_Exceptional AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 onYourOwn3_Exceptional :: AssetCard OnYourOwn3_Exceptional
 onYourOwn3_Exceptional = asset OnYourOwn3_Exceptional Cards.onYourOwn3_Exceptional

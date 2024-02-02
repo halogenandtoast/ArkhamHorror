@@ -16,7 +16,7 @@ import Arkham.Matcher
 
 newtype Library = Library LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 library :: LocationCard Library
 library = location Library Cards.library 6 (PerPlayer 1)

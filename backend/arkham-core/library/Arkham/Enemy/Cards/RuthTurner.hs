@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype RuthTurner = RuthTurner EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 ruthTurner :: EnemyCard RuthTurner
 ruthTurner = enemyWith RuthTurner Cards.ruthTurner (2, Static 4, 5) (1, 0) (spawnAtL ?~ "St. Mary's Hospital")

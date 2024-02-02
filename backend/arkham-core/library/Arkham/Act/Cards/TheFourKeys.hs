@@ -17,7 +17,7 @@ import Arkham.Resolution
 
 newtype TheFourKeys = TheFourKeys ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theFourKeys :: ActCard TheFourKeys
 theFourKeys = act (3, A) TheFourKeys Cards.theFourKeys Nothing

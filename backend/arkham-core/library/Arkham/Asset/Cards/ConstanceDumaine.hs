@@ -10,7 +10,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype ConstanceDumaine = ConstanceDumaine AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 constanceDumaine :: AssetCard ConstanceDumaine
 constanceDumaine = asset ConstanceDumaine Cards.constanceDumaine

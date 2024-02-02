@@ -8,7 +8,7 @@ import Arkham.Treachery.Runner
 
 newtype WondrousLands = WondrousLands TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 wondrousLands :: TreacheryCard WondrousLands
 wondrousLands = treachery WondrousLands Cards.wondrousLands

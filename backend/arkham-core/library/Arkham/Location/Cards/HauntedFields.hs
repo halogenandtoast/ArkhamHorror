@@ -17,7 +17,7 @@ import Arkham.Trait (Trait (Spectral))
 
 newtype HauntedFields = HauntedFields LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 hauntedFields :: LocationCard HauntedFields
 hauntedFields = location HauntedFields Cards.hauntedFields 3 (PerPlayer 2)

@@ -18,7 +18,7 @@ import Arkham.Trait
 
 newtype BlastedHeath_248 = BlastedHeath_248 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 blastedHeath_248 :: LocationCard BlastedHeath_248
 blastedHeath_248 =

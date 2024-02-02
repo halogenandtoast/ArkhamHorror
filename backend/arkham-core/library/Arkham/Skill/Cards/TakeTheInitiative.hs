@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype TakeTheInitiative = TakeTheInitiative SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 takeTheInitiative :: SkillCard TakeTheInitiative
 takeTheInitiative = skill TakeTheInitiative Cards.takeTheInitiative

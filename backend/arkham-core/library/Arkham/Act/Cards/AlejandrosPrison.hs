@@ -11,7 +11,7 @@ import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype AlejandrosPrison = AlejandrosPrison ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 alejandrosPrison :: ActCard AlejandrosPrison
 alejandrosPrison = act (3, C) AlejandrosPrison Cards.alejandrosPrison Nothing

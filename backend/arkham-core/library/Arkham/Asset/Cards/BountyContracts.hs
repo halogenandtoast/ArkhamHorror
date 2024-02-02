@@ -19,7 +19,7 @@ import Arkham.Window qualified as Window
 
 newtype BountyContracts = BountyContracts AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 bountyContracts :: AssetCard BountyContracts
 bountyContracts = asset BountyContracts Cards.bountyContracts

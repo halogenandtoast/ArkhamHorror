@@ -13,14 +13,14 @@ import GHC.Records
 
 data CardDrawRules = ShuffleBackInEachWeakness | AfterDrawDiscard Int
   deriving stock (Show, Eq, Ord, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data CardDrawState
   = UnresolvedCardDraw
   | InProgress [Card]
   | ResolvedCardDraw [Card]
   deriving stock (Show, Eq, Ord, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data CardDraw = CardDraw
   { cardDrawId :: CardDrawId
@@ -33,7 +33,7 @@ data CardDraw = CardDraw
   , cardDrawRules :: Set CardDrawRules
   }
   deriving stock (Show, Eq, Ord, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance HasField "investigator" CardDraw InvestigatorId where
   getField = cardDrawInvestigator

@@ -43,7 +43,7 @@ import Arkham.Trait (Trait (Geist, Ghoul, Madness, Pact))
 
 newtype ThePallidMask = ThePallidMask ScenarioAttrs
   deriving anyclass (IsScenario)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 -- Locations are placed directional, printed on the cards the following
 -- directions are possible:

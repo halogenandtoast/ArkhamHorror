@@ -32,7 +32,7 @@ data Action
   | Explore
   | Circle
   deriving stock (Show, Eq, Ord, Enum, Bounded, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON, Hashable, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, Hashable, NoThunks, NFData)
 
 instance IsLabel "activate" Action where
   fromLabel = Activate

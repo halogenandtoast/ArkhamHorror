@@ -16,7 +16,7 @@ import Arkham.Trait (Trait (Item))
 
 newtype CityOfTheGreatRace = CityOfTheGreatRace AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 cityOfTheGreatRace :: AgendaCard CityOfTheGreatRace
 cityOfTheGreatRace =

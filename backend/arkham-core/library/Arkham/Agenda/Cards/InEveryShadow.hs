@@ -20,7 +20,7 @@ import Arkham.Window qualified as Window
 
 newtype InEveryShadow = InEveryShadow AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 inEveryShadow :: AgendaCard InEveryShadow
 inEveryShadow = agenda (3, A) InEveryShadow Cards.inEveryShadow (Static 7)

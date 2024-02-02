@@ -18,7 +18,7 @@ import Arkham.Trait
 
 newtype CharlesRossEsq = CharlesRossEsq AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 charlesRossEsq :: AssetCard CharlesRossEsq
 charlesRossEsq = ally CharlesRossEsq Cards.charlesRossEsq (1, 2)
@@ -47,7 +47,7 @@ instance RunMessage CharlesRossEsq where
 
 newtype CharlesRossEsqEffect = CharlesRossEsqEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 charlesRossEsqEffect :: EffectArgs -> CharlesRossEsqEffect
 charlesRossEsqEffect = cardEffect CharlesRossEsqEffect Cards.charlesRossEsq

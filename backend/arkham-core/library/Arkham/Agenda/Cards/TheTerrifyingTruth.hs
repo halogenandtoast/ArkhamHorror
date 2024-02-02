@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TheTerrifyingTruth = TheTerrifyingTruth AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theTerrifyingTruth :: AgendaCard TheTerrifyingTruth
 theTerrifyingTruth =

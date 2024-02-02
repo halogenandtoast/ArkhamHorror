@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype Vault = Vault LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 vault :: LocationCard Vault
 vault = location Vault Cards.vault 4 (PerPlayer 1)

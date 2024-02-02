@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype SeekingAnswers2 = SeekingAnswers2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 seekingAnswers2 :: EventCard SeekingAnswers2
 seekingAnswers2 = event SeekingAnswers2 Cards.seekingAnswers2

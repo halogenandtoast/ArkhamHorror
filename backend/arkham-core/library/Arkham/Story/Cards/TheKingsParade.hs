@@ -15,7 +15,7 @@ import Arkham.Story.Runner
 
 newtype TheKingsParade = TheKingsParade StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theKingsParade :: StoryCard TheKingsParade
 theKingsParade = story TheKingsParade Cards.theKingsParade

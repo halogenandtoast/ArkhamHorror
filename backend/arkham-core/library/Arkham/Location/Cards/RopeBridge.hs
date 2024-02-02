@@ -21,7 +21,7 @@ import Arkham.Timing qualified as Timing
 
 newtype RopeBridge = RopeBridge LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 ropeBridge :: LocationCard RopeBridge
 ropeBridge = location RopeBridge Cards.ropeBridge 2 (PerPlayer 1)

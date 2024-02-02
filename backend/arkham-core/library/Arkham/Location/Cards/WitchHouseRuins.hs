@@ -14,7 +14,7 @@ import Arkham.Message qualified as Msg
 
 newtype WitchHouseRuins = WitchHouseRuins LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 witchHouseRuins :: LocationCard WitchHouseRuins
 witchHouseRuins = location WitchHouseRuins Cards.witchHouseRuins 2 (Static 0)

@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype SalemGaol1692 = SalemGaol1692 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 salemGaol1692 :: LocationCard SalemGaol1692
 salemGaol1692 = location SalemGaol1692 Cards.salemGaol1692 3 (PerPlayer 1)

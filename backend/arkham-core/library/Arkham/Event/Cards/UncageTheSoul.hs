@@ -20,7 +20,7 @@ import Arkham.Window qualified as Window
 
 newtype UncageTheSoul = UncageTheSoul EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 uncageTheSoul :: EventCard UncageTheSoul
 uncageTheSoul = event UncageTheSoul Cards.uncageTheSoul
@@ -52,7 +52,7 @@ instance RunMessage UncageTheSoul where
 
 newtype UncageTheSoulEffect = UncageTheSoulEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 uncageTheSoulEffect :: EffectArgs -> UncageTheSoulEffect
 uncageTheSoulEffect = cardEffect UncageTheSoulEffect Cards.uncageTheSoul

@@ -13,7 +13,7 @@ import Arkham.Skill.Runner
 
 newtype AllIn5 = AllIn5 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 allIn5 :: SkillCard AllIn5
 allIn5 = skill AllIn5 Cards.allIn5

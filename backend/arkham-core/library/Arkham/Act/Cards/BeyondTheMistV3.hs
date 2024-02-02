@@ -20,7 +20,7 @@ import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype BeyondTheMistV3 = BeyondTheMistV3 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 beyondTheMistV3 :: ActCard BeyondTheMistV3
 beyondTheMistV3 = act (3, A) BeyondTheMistV3 Cards.beyondTheMistV3 Nothing

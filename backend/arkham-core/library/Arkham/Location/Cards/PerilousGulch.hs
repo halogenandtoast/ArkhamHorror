@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype PerilousGulch = PerilousGulch LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 perilousGulch :: LocationCard PerilousGulch
 perilousGulch = location PerilousGulch Cards.perilousGulch 4 (PerPlayer 1)

@@ -12,7 +12,7 @@ import Arkham.Modifier qualified as Modifier
 
 newtype ConstanceDumaine = ConstanceDumaine EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 constanceDumaine :: EnemyCard ConstanceDumaine
 constanceDumaine =

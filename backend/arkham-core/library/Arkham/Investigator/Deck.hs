@@ -8,7 +8,7 @@ import Data.Aeson.TH
 
 data InvestigatorDeckKey = HunchDeck
   deriving stock (Show, Ord, Eq, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 $(deriveJSON (defaultOptions {tagSingleConstructors = True}) ''InvestigatorDeckKey)
 

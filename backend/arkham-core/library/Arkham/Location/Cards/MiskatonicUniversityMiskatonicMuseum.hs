@@ -15,7 +15,7 @@ import Arkham.Location.Runner
 
 newtype MiskatonicUniversityMiskatonicMuseum = MiskatonicUniversityMiskatonicMuseum LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 miskatonicUniversityMiskatonicMuseum
   :: LocationCard MiskatonicUniversityMiskatonicMuseum

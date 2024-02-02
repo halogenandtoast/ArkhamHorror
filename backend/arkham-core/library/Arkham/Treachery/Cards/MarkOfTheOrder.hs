@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype MarkOfTheOrder = MarkOfTheOrder TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 markOfTheOrder :: TreacheryCard MarkOfTheOrder
 markOfTheOrder = treachery MarkOfTheOrder Cards.markOfTheOrder

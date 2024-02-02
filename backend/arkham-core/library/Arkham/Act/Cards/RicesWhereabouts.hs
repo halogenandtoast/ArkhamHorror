@@ -26,7 +26,7 @@ import Data.List.Extra (firstJust)
 
 newtype RicesWhereabouts = RicesWhereabouts ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 ricesWhereabouts :: ActCard RicesWhereabouts
 ricesWhereabouts = act (2, A) RicesWhereabouts Cards.ricesWhereabouts Nothing

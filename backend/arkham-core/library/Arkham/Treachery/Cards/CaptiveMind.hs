@@ -17,7 +17,7 @@ import Arkham.Treachery.Runner
 
 newtype CaptiveMind = CaptiveMind TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 captiveMind :: TreacheryCard CaptiveMind
 captiveMind = treachery CaptiveMind Cards.captiveMind

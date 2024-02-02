@@ -13,7 +13,7 @@ import Arkham.ScenarioLogKey
 
 newtype Room225 = Room225 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 room225 :: LocationCard Room225
 room225 = locationWith Room225 Cards.room225 3 (PerPlayer 1) (labelL .~ "room225")

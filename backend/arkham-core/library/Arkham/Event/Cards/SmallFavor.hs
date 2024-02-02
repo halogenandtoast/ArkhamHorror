@@ -21,7 +21,7 @@ import Data.Aeson.KeyMap qualified as KeyMap
 
 newtype SmallFavor = SmallFavor EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 smallFavor :: EventCard SmallFavor
 smallFavor = event SmallFavor Cards.smallFavor

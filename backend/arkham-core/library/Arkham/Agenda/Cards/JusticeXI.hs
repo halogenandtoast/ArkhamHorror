@@ -24,7 +24,7 @@ import Arkham.Window qualified as Window
 
 newtype JusticeXI = JusticeXI AgendaAttrs
   deriving anyclass (IsAgenda)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 justiceXI :: AgendaCard JusticeXI
 justiceXI = agenda (1, A) JusticeXI Cards.justiceXI (Static 8)

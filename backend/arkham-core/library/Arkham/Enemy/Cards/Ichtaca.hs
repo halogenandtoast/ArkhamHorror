@@ -15,7 +15,7 @@ import Arkham.SkillType
 
 newtype Ichtaca = Ichtaca EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 ichtaca :: EnemyCard Ichtaca
 ichtaca = enemy Ichtaca Cards.ichtaca (5, Static 4, 4) (2, 0)

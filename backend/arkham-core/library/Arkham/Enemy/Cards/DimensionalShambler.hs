@@ -17,7 +17,7 @@ import Arkham.RequestedChaosTokenStrategy
 
 newtype DimensionalShambler = DimensionalShambler EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 dimensionalShambler :: EnemyCard DimensionalShambler
 dimensionalShambler = enemy DimensionalShambler Cards.dimensionalShambler (4, PerPlayer 4, 3) (2, 2)

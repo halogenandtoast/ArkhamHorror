@@ -20,7 +20,7 @@ import Arkham.Timing qualified as Timing
 
 newtype BoaConstrictor = BoaConstrictor EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 boaConstrictor :: EnemyCard BoaConstrictor
 boaConstrictor =
@@ -46,7 +46,7 @@ instance RunMessage BoaConstrictor where
 
 newtype BoaConstrictorEffect = BoaConstrictorEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 boaConstrictorEffect :: EffectArgs -> BoaConstrictorEffect
 boaConstrictorEffect = cardEffect BoaConstrictorEffect Cards.boaConstrictor

@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype InnerSanctum = InnerSanctum LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 innerSanctum :: LocationCard InnerSanctum
 innerSanctum = location InnerSanctum Cards.innerSanctum 4 (PerPlayer 1)

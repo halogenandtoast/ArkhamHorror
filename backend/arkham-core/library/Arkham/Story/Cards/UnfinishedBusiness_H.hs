@@ -22,7 +22,7 @@ import Arkham.Timing qualified as Timing
 
 newtype UnfinishedBusiness_H = UnfinishedBusiness_H StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 unfinishedBusiness_H :: StoryCard UnfinishedBusiness_H
 unfinishedBusiness_H = story UnfinishedBusiness_H Cards.unfinishedBusiness_H

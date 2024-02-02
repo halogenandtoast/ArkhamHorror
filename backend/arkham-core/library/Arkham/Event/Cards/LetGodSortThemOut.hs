@@ -13,7 +13,7 @@ import Arkham.Helpers.Modifiers
 
 newtype LetGodSortThemOut = LetGodSortThemOut EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 letGodSortThemOut :: EventCard LetGodSortThemOut
 letGodSortThemOut = event LetGodSortThemOut Cards.letGodSortThemOut

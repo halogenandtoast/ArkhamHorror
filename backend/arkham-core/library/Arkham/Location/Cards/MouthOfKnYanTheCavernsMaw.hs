@@ -19,7 +19,7 @@ import Arkham.Scenario.Deck
 
 newtype MouthOfKnYanTheCavernsMaw = MouthOfKnYanTheCavernsMaw LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 mouthOfKnYanTheCavernsMaw :: LocationCard MouthOfKnYanTheCavernsMaw
 mouthOfKnYanTheCavernsMaw = location MouthOfKnYanTheCavernsMaw Cards.mouthOfKnYanTheCavernsMaw 2 (Static 0)

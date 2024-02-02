@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype SophieItWasAllMyFault = SophieItWasAllMyFault AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 sophieItWasAllMyFault :: AssetCard SophieItWasAllMyFault
 sophieItWasAllMyFault =

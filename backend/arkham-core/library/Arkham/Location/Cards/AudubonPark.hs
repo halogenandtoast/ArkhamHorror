@@ -13,7 +13,7 @@ import Arkham.Timing qualified as Timing
 
 newtype AudubonPark = AudubonPark LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 audubonPark :: LocationCard AudubonPark
 audubonPark = location AudubonPark Cards.audubonPark 3 (PerPlayer 1)

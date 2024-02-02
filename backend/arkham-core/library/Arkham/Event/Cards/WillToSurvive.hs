@@ -16,7 +16,7 @@ import Arkham.Helpers.Modifiers
 
 newtype WillToSurvive = WillToSurvive EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 willToSurvive :: EventCard WillToSurvive
 willToSurvive = event WillToSurvive Cards.willToSurvive
@@ -32,7 +32,7 @@ instance RunMessage WillToSurvive where
 
 newtype WillToSurviveEffect = WillToSurviveEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 willToSurviveEffect :: EffectArgs -> WillToSurviveEffect
 willToSurviveEffect = WillToSurviveEffect . uncurry4 (baseAttrs "60512")

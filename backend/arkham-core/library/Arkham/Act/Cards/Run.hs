@@ -17,11 +17,11 @@ import Arkham.Timing qualified as Timing
 
 newtype Metadata = Metadata {advancingInvestigator :: Maybe InvestigatorId}
   deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype Run = Run (ActAttrs `With` Metadata)
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 run :: ActCard Run
 run = act (1, A) (Run . (`with` (Metadata Nothing))) Cards.run Nothing

@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype TheDevilXV = TheDevilXV AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theDevilXv :: AssetCard TheDevilXV
 theDevilXv = asset TheDevilXV Cards.theDevilXv

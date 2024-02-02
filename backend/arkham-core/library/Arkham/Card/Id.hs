@@ -6,7 +6,7 @@ import Data.UUID (nil)
 
 newtype CardId = CardId UUID
   deriving stock (Data)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, NoThunks, NFData)
 
 -- exports the constructor, but we only want to use this in CardGen
 unsafeMakeCardId :: UUID -> CardId

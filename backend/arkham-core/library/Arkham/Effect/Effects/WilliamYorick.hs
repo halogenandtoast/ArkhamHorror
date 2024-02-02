@@ -14,7 +14,7 @@ import Arkham.Projection
 
 newtype WilliamYorick = WilliamYorick EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 williamYorick :: EffectArgs -> WilliamYorick
 williamYorick = WilliamYorick . uncurry4 (baseAttrs "03005")

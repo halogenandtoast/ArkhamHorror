@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype PatricesViolin = PatricesViolin AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 patricesViolin :: AssetCard PatricesViolin
 patricesViolin = asset PatricesViolin Cards.patricesViolin

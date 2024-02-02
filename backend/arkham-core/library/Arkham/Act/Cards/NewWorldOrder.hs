@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype NewWorldOrder = NewWorldOrder ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 newWorldOrder :: ActCard NewWorldOrder
 newWorldOrder = act (2, A) NewWorldOrder Cards.newWorldOrder Nothing

@@ -14,7 +14,7 @@ import Arkham.Scenario.Deck
 
 newtype LockedInside = LockedInside AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 lockedInside :: AgendaCard LockedInside
 lockedInside = agenda (1, A) LockedInside Cards.lockedInside (Static 2)

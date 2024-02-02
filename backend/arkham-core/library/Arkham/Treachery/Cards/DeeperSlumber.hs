@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype DeeperSlumber = DeeperSlumber TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 deeperSlumber :: TreacheryCard DeeperSlumber
 deeperSlumber = treachery DeeperSlumber Cards.deeperSlumber

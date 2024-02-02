@@ -11,7 +11,7 @@ import Arkham.Projection
 
 newtype MaskedCarnevaleGoer_21 = MaskedCarnevaleGoer_21 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, Targetable)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, Targetable)
 
 maskedCarnevaleGoer_21 :: AssetCard MaskedCarnevaleGoer_21
 maskedCarnevaleGoer_21 =

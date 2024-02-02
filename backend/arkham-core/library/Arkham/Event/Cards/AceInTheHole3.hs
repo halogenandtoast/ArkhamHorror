@@ -11,7 +11,7 @@ import Arkham.Event.Runner
 
 newtype AceInTheHole3 = AceInTheHole3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 aceInTheHole3 :: EventCard AceInTheHole3
 aceInTheHole3 = event AceInTheHole3 Cards.aceInTheHole3

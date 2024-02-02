@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner hiding (EnemyFight)
 
 newtype Shadowed = Shadowed TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 shadowed :: TreacheryCard Shadowed
 shadowed = treachery Shadowed Cards.shadowed

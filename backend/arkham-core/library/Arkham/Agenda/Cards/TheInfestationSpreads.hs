@@ -21,7 +21,7 @@ import Arkham.Scenarios.WakingNightmare.Helpers
 
 newtype TheInfestationSpreads = TheInfestationSpreads AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theInfestationSpreads :: AgendaCard TheInfestationSpreads
 theInfestationSpreads = agenda (2, A) TheInfestationSpreads Cards.theInfestationSpreads (Static 6)

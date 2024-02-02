@@ -12,7 +12,7 @@ import Arkham.Trait (Trait (Basement))
 
 newtype Stairwell = Stairwell LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 stairwell :: LocationCard Stairwell
 stairwell = location Stairwell Cards.stairwell 3 (PerPlayer 1)

@@ -20,11 +20,11 @@ import Data.Data.Lens (biplate)
 
 newtype Meta = Meta {active :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype TonyMorgan = TonyMorgan (InvestigatorAttrs `With` Meta)
   deriving anyclass (IsInvestigator)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 tonyMorgan :: InvestigatorCard TonyMorgan
 tonyMorgan =

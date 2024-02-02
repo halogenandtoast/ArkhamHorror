@@ -20,7 +20,7 @@ import Arkham.Trait
 
 newtype DrElliHorowitz = DrElliHorowitz AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 drElliHorowitz :: AssetCard DrElliHorowitz
 drElliHorowitz = ally DrElliHorowitz Cards.drElliHorowitz (1, 2)

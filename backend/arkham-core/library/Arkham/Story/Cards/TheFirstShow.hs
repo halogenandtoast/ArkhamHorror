@@ -11,7 +11,7 @@ import Arkham.Story.Runner
 
 newtype TheFirstShow = TheFirstShow StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theFirstShow :: StoryCard TheFirstShow
 theFirstShow = story TheFirstShow Cards.theFirstShow

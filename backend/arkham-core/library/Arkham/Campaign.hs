@@ -11,12 +11,7 @@ import Arkham.Difficulty
 import Arkham.Id
 
 instance RunMessage Campaign where
-  runMessage msg (Campaign a) = do
-    !result <- runMessage msg a
-    mThunk <- liftIO $ noThunks [show msg] result
-    case mThunk of
-      Nothing -> pure $ Campaign result
-      Just thunk -> error $ "Thunks found in Campaign: " <> show thunk
+  runMessage msg (Campaign a) = Campaign <$> runMessage msg a
 
 lookupCampaign :: CampaignId -> Difficulty -> Campaign
 lookupCampaign cid = case lookup cid allCampaigns of

@@ -16,7 +16,7 @@ import Arkham.Matcher
 
 newtype EasttownArkhamPoliceStation = EasttownArkhamPoliceStation LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 easttownArkhamPoliceStation :: LocationCard EasttownArkhamPoliceStation
 easttownArkhamPoliceStation = location EasttownArkhamPoliceStation Cards.easttownArkhamPoliceStation 4 (PerPlayer 2)

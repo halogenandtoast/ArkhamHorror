@@ -14,7 +14,7 @@ import Arkham.Trait
 
 newtype AlejandroVela = AlejandroVela AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 alejandroVela :: AssetCard AlejandroVela
 alejandroVela = ally AlejandroVela Cards.alejandroVela (2, 2)

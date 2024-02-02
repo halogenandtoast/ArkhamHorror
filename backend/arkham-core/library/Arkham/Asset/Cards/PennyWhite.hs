@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype PennyWhite = PennyWhite AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 pennyWhite :: AssetCard PennyWhite
 pennyWhite = allyWith PennyWhite Cards.pennyWhite (3, 2) (isStoryL .~ True)

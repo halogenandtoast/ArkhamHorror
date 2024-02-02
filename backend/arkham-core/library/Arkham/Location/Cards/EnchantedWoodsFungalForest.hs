@@ -16,7 +16,7 @@ import Arkham.RequestedChaosTokenStrategy
 
 newtype EnchantedWoodsFungalForest = EnchantedWoodsFungalForest LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 enchantedWoodsFungalForest :: LocationCard EnchantedWoodsFungalForest
 enchantedWoodsFungalForest = location EnchantedWoodsFungalForest Cards.enchantedWoodsFungalForest 5 (PerPlayer 1)

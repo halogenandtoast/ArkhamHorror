@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype TheCrawlingMist = TheCrawlingMist EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 theCrawlingMist :: EnemyCard TheCrawlingMist
 theCrawlingMist =

@@ -45,6 +45,7 @@ class
   ( Typeable a
   , ToJSON a
   , FromJSON a
+  , NFData a
   , Eq a
   , Show a
   , HasAbilities a
@@ -55,6 +56,7 @@ class
   , EntityId a ~ InvestigatorId
   , EntityAttrs a ~ InvestigatorAttrs
   , NoThunks a
+  , NFData a
   ) =>
   IsInvestigator a
 
@@ -107,6 +109,9 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorSupplies :: Field Investigator [Supply]
 
 deriving stock instance Show (Field Investigator val)
+
+instance NFData (Field Investigator val) where
+  rnf = rwhnf
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId
@@ -163,7 +168,7 @@ data InvestigatorAttrs = InvestigatorAttrs
     investigatorDiscarding :: Maybe (HandDiscard Message)
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data InvestigatorSearch = InvestigatorSearch
   { searchingType :: SearchType
@@ -176,7 +181,7 @@ data InvestigatorSearch = InvestigatorSearch
   , searchingFoundCards :: Map Zone [Card]
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 investigatorDoom :: InvestigatorAttrs -> Int
 investigatorDoom = countTokens Doom . investigatorTokens
@@ -195,7 +200,7 @@ investigatorSanityDamage = countTokens Horror . investigatorTokens
 
 data DrawingCards = DrawingCards Deck.DeckSignifier Int [Card]
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 instance HasTraits InvestigatorAttrs where
   toTraits = investigatorTraits
@@ -275,6 +280,9 @@ instance HasField "ability" InvestigatorAttrs (Int -> Source) where
   getField this = toAbilitySource this
 
 data Investigator = forall a. IsInvestigator a => Investigator a
+
+instance NFData Investigator where
+  rnf (Investigator a) = rnf a
 
 instance NoThunks Investigator where
   noThunks ctx (Investigator a) = noThunks ctx a

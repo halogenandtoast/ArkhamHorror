@@ -22,7 +22,7 @@ import Arkham.Timing qualified as Timing
 
 newtype NarrowShaft = NarrowShaft LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 narrowShaft :: LocationCard NarrowShaft
 narrowShaft =

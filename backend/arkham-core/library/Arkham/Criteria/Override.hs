@@ -9,6 +9,6 @@ import Data.Aeson.TH
 
 newtype CriteriaOverride = CriteriaOverride Criterion
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 $(deriveJSON defaultOptions ''CriteriaOverride)

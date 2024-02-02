@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype GreatLibrary = GreatLibrary LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 greatLibrary :: LocationCard GreatLibrary
 greatLibrary = location GreatLibrary Cards.greatLibrary 2 (Static 4)

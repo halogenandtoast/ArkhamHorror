@@ -19,7 +19,7 @@ import Arkham.Window qualified as Window
 
 newtype EldritchInspiration1 = EldritchInspiration1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 eldritchInspiration1 :: EventCard EldritchInspiration1
 eldritchInspiration1 = event EldritchInspiration1 Cards.eldritchInspiration1

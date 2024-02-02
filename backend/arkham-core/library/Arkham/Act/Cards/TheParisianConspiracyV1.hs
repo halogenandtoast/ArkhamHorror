@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype TheParisianConspiracyV1 = TheParisianConspiracyV1 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theParisianConspiracyV1 :: ActCard TheParisianConspiracyV1
 theParisianConspiracyV1 =

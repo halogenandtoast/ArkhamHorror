@@ -13,7 +13,7 @@ import Arkham.SkillTestResult
 
 newtype Stealth3 = Stealth3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 stealth3 :: AssetCard Stealth3
 stealth3 = asset Stealth3 Cards.stealth3

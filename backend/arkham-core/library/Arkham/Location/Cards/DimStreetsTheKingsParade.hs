@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype DimStreetsTheKingsParade = DimStreetsTheKingsParade LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 dimStreetsTheKingsParade :: LocationCard DimStreetsTheKingsParade
 dimStreetsTheKingsParade =

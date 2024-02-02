@@ -8,11 +8,13 @@ data Enemy
 
 instance Data Enemy
 instance Typeable typ => Data (Field Enemy typ)
+instance NFData (Field Enemy typ)
 instance NoThunks (Field Enemy typ)
 instance Ord (Field Enemy typ)
 instance Show (Field Enemy typ)
 instance ToJSON (Field Enemy typ)
 instance Data (SomeField Enemy)
+instance NFData (SomeField Enemy)
 instance Ord (SomeField Enemy)
 instance FromJSON (SomeField Enemy)
 instance FromJSON (Field Enemy Int)

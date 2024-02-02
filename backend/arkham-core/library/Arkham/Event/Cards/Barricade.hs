@@ -17,7 +17,7 @@ import Arkham.Projection
 
 newtype Barricade = Barricade EventAttrs
   deriving anyclass (IsEvent)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 barricade :: EventCard Barricade
 barricade = event Barricade Cards.barricade

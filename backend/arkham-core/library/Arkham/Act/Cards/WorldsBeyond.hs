@@ -19,7 +19,7 @@ import Arkham.Timing qualified as Timing
 
 newtype WorldsBeyond = WorldsBeyond ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 worldsBeyond :: ActCard WorldsBeyond
 worldsBeyond =

@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype SpawnOfHali = SpawnOfHali EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 spawnOfHali :: EnemyCard SpawnOfHali
 spawnOfHali =

@@ -13,7 +13,7 @@ import Arkham.Prelude
 
 newtype GeneBeauregard3 = GeneBeauregard3 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 geneBeauregard3 :: AssetCard GeneBeauregard3
 geneBeauregard3 = ally GeneBeauregard3 Cards.geneBeauregard3 (2, 2)

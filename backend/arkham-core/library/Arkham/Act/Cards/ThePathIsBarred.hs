@@ -19,7 +19,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ThePathIsBarred = ThePathIsBarred ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 thePathIsBarred :: ActCard ThePathIsBarred
 thePathIsBarred =

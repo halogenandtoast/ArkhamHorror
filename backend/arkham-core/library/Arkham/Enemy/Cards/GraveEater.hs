@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype GraveEater = GraveEater EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 graveEater :: EnemyCard GraveEater
 graveEater = enemy GraveEater Cards.graveEater (2, Static 2, 2) (1, 1)

@@ -15,7 +15,7 @@ import Arkham.Window qualified as Window
 
 newtype IveHadWorse2 = IveHadWorse2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 iveHadWorse2 :: EventCard IveHadWorse2
 iveHadWorse2 = event IveHadWorse2 Cards.iveHadWorse2

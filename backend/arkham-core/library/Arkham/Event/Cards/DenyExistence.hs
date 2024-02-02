@@ -12,7 +12,7 @@ import Arkham.Window
 
 newtype DenyExistence = DenyExistence EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 denyExistence :: EventCard DenyExistence
 denyExistence = event DenyExistence Cards.denyExistence

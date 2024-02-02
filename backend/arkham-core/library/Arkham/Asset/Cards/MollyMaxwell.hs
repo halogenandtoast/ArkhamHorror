@@ -15,7 +15,7 @@ import Arkham.Trait (toTraits)
 
 newtype MollyMaxwell = MollyMaxwell AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 mollyMaxwell :: AssetCard MollyMaxwell
 mollyMaxwell = ally MollyMaxwell Cards.mollyMaxwell (2, 4)

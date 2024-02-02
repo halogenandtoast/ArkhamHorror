@@ -5,6 +5,7 @@ import Arkham.Prelude
 data Placement
 
 instance NoThunks Placement
+instance NFData Placement
 instance Data Placement
 instance Show Placement
 instance Eq Placement

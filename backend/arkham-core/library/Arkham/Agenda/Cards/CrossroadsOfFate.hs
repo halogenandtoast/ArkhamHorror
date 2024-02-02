@@ -12,7 +12,7 @@ import Arkham.GameValue
 
 newtype CrossroadsOfFate = CrossroadsOfFate AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 crossroadsOfFate :: AgendaCard CrossroadsOfFate
 crossroadsOfFate = agenda (2, A) CrossroadsOfFate Cards.crossroadsOfFate (Static 10)

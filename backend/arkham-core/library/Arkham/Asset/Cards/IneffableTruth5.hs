@@ -19,7 +19,7 @@ import Arkham.Window qualified as Window
 
 newtype IneffableTruth5 = IneffableTruth5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 ineffableTruth5 :: AssetCard IneffableTruth5
 ineffableTruth5 = asset IneffableTruth5 Cards.ineffableTruth5
@@ -46,7 +46,7 @@ instance RunMessage IneffableTruth5 where
 
 newtype IneffableTruth5Effect = IneffableTruth5Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 ineffableTruth5Effect :: EffectArgs -> IneffableTruth5Effect
 ineffableTruth5Effect = cardEffect IneffableTruth5Effect Cards.ineffableTruth5

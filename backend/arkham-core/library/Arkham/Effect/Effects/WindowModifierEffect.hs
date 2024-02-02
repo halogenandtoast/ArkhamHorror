@@ -14,7 +14,7 @@ import Arkham.Window (Window)
 
 newtype WindowModifierEffect = WindowModifierEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 windowModifierEffect :: EffectArgs -> WindowModifierEffect
 windowModifierEffect = WindowModifierEffect . uncurry4 (baseAttrs "wmode")

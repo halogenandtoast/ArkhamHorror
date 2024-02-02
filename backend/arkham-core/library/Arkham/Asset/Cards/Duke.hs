@@ -18,7 +18,7 @@ import Arkham.Projection
 
 newtype Duke = Duke AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 duke :: AssetCard Duke
 duke = allyWith Duke Cards.duke (2, 3) (slotsL .~ mempty)

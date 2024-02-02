@@ -19,7 +19,7 @@ import Arkham.Treachery.Runner
 
 newtype NoxiousFumes = NoxiousFumes TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 noxiousFumes :: TreacheryCard NoxiousFumes
 noxiousFumes = treachery NoxiousFumes Cards.noxiousFumes

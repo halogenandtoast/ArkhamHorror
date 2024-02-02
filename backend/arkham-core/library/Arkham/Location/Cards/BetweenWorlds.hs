@@ -18,7 +18,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype BetweenWorlds = BetweenWorlds LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 betweenWorlds :: LocationCard BetweenWorlds
 betweenWorlds = location BetweenWorlds Cards.betweenWorlds 3 (Static 1)

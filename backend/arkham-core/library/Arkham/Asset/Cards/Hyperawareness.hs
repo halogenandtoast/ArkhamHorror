@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype Hyperawareness = Hyperawareness AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 hyperawareness :: AssetCard Hyperawareness
 hyperawareness = asset Hyperawareness Cards.hyperawareness

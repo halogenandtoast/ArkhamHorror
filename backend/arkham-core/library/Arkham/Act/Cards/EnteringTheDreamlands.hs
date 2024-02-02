@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype EnteringTheDreamlands = EnteringTheDreamlands ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 enteringTheDreamlands :: ActCard EnteringTheDreamlands
 enteringTheDreamlands = act (1, A) EnteringTheDreamlands Cards.enteringTheDreamlands Nothing

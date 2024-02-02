@@ -9,7 +9,7 @@ import Arkham.Location.Cards qualified as Locations
 
 newtype Trapped = Trapped ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 trapped :: ActCard Trapped
 trapped = act (1, A) Trapped Cards.trapped (groupClueCost $ PerPlayer 2)

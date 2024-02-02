@@ -14,7 +14,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype Heretic_E = Heretic_E EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 heretic_E :: EnemyCard Heretic_E
 heretic_E = enemy Heretic_E Cards.heretic_E (4, Static 2, 3) (1, 1)

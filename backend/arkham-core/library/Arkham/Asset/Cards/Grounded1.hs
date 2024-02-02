@@ -13,7 +13,7 @@ import Arkham.Trait
 
 newtype Grounded1 = Grounded1 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 grounded1 :: AssetCard Grounded1
 grounded1 = assetWith Grounded1 Cards.grounded1 (sanityL ?~ 1)

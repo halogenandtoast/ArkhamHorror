@@ -14,7 +14,7 @@ import Arkham.ScenarioLogKey
 
 newtype ScientistOfYith = ScientistOfYith EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 scientistOfYith :: EnemyCard ScientistOfYith
 scientistOfYith =

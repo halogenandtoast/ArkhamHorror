@@ -14,7 +14,7 @@ import Arkham.Trait (Trait (Zoog))
 
 newtype EnchantedWoodsVillageOfZoogs = EnchantedWoodsVillageOfZoogs LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 enchantedWoodsVillageOfZoogs :: LocationCard EnchantedWoodsVillageOfZoogs
 enchantedWoodsVillageOfZoogs = location EnchantedWoodsVillageOfZoogs Cards.enchantedWoodsVillageOfZoogs 3 (PerPlayer 1)

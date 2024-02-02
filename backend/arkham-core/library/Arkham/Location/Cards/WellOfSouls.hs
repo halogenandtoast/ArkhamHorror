@@ -19,7 +19,7 @@ import Arkham.Timing qualified as Timing
 
 newtype WellOfSouls = WellOfSouls LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 wellOfSouls :: LocationCard WellOfSouls
 wellOfSouls =

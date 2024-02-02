@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype GuidingSpirit1 = GuidingSpirit1 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 guidingSpirit1 :: AssetCard GuidingSpirit1
 guidingSpirit1 = assetWith GuidingSpirit1 Cards.guidingSpirit1 (sanityL ?~ 3)

@@ -45,7 +45,7 @@ import Arkham.Window qualified as Window
 
 newtype ShatteredAeons = ShatteredAeons ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 shatteredAeons :: Difficulty -> ShatteredAeons
 shatteredAeons difficulty =

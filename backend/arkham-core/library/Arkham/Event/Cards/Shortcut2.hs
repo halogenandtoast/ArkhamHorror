@@ -15,7 +15,7 @@ import Arkham.Placement
 
 newtype Shortcut2 = Shortcut2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 shortcut2 :: EventCard Shortcut2
 shortcut2 = event Shortcut2 Cards.shortcut2

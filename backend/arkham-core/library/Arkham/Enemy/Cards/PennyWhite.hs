@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype PennyWhite = PennyWhite EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 pennyWhite :: EnemyCard PennyWhite
 pennyWhite = enemy PennyWhite Cards.pennyWhite (4, Static 5, 3) (0, 2)

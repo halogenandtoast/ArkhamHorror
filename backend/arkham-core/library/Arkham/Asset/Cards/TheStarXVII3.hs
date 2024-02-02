@@ -15,7 +15,7 @@ import Arkham.Window (defaultWindows)
 
 newtype TheStarXVII3 = TheStarXVII3 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theStarXvii3 :: AssetCard TheStarXVII3
 theStarXvii3 = asset TheStarXVII3 Cards.theStarXvii3

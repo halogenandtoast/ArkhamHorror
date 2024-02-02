@@ -70,11 +70,11 @@ data ScenarioLogKey
   | ThePoliceDon'tBelieveYou
   | ThePoliceAreOnYourSide
   deriving stock (Eq, Show, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data ScenarioCountKey = CurrentDepth | SignOfTheGods
   deriving stock (Eq, Show, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance ToGameLoggerFormat ScenarioLogKey where
   format = \case

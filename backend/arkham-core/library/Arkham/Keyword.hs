@@ -34,7 +34,7 @@ data Keyword
   | Veiled
   | Customizable
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 class HasKeywords a where
   toKeywords :: a -> Set Keyword

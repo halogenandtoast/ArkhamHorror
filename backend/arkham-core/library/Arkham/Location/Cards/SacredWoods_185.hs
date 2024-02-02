@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype SacredWoods_185 = SacredWoods_185 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 sacredWoods_185 :: LocationCard SacredWoods_185
 sacredWoods_185 = locationWith SacredWoods_185 Cards.sacredWoods_185 6 (PerPlayer 1) (labelL .~ "star")

@@ -13,7 +13,7 @@ import Arkham.Projection
 
 newtype DynamiteBlast2 = DynamiteBlast2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 dynamiteBlast2 :: EventCard DynamiteBlast2
 dynamiteBlast2 = event DynamiteBlast2 Cards.dynamiteBlast2

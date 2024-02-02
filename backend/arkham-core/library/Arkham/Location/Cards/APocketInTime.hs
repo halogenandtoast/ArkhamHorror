@@ -17,7 +17,7 @@ import Arkham.Window qualified as Window
 
 newtype APocketInTime = APocketInTime LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 aPocketInTime :: LocationCard APocketInTime
 aPocketInTime = location APocketInTime Cards.aPocketInTime 5 (PerPlayer 1)

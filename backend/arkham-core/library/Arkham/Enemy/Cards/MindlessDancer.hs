@@ -16,7 +16,7 @@ import Arkham.Window qualified as Window
 
 newtype MindlessDancer = MindlessDancer EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 mindlessDancer :: EnemyCard MindlessDancer
 mindlessDancer =

@@ -15,7 +15,7 @@ import Arkham.Window qualified as Window
 
 newtype SealOfTheSeventhSign5 = SealOfTheSeventhSign5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 sealOfTheSeventhSign5 :: AssetCard SealOfTheSeventhSign5
 sealOfTheSeventhSign5 =

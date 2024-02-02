@@ -13,7 +13,7 @@ import Arkham.Timing qualified as Timing
 
 newtype RitualSite = RitualSite LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 ritualSite :: LocationCard RitualSite
 ritualSite = location RitualSite Cards.ritualSite 3 (PerPlayer 2)

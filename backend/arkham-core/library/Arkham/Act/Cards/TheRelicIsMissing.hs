@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype TheRelicIsMissing = TheRelicIsMissing ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 theRelicIsMissing :: ActCard TheRelicIsMissing
 theRelicIsMissing =

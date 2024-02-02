@@ -33,11 +33,11 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 data Metadata = Metadata {brownJenkinDefeated :: Bool, nahabDefeated :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype TheSecretName = TheSecretName (ScenarioAttrs `With` Metadata)
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theSecretName :: Difficulty -> TheSecretName
 theSecretName difficulty =

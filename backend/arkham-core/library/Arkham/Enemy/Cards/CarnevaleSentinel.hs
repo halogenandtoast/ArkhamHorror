@@ -17,7 +17,7 @@ import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 
 newtype CarnevaleSentinel = CarnevaleSentinel EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 -- TODO: Should use spawnAtL for this
 carnevaleSentinel :: EnemyCard CarnevaleSentinel

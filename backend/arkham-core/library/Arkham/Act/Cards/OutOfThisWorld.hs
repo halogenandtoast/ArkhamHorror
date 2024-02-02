@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype OutOfThisWorld = OutOfThisWorld ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 outOfThisWorld :: ActCard OutOfThisWorld
 outOfThisWorld =

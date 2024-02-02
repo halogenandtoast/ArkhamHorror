@@ -14,7 +14,7 @@ import Arkham.Story.Runner
 
 newtype AMomentsRest = AMomentsRest StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 aMomentsRest :: StoryCard AMomentsRest
 aMomentsRest = story AMomentsRest Cards.aMomentsRest

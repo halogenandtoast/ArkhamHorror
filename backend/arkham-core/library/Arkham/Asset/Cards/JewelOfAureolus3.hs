@@ -15,7 +15,7 @@ import Arkham.Window qualified as Window
 
 newtype JewelOfAureolus3 = JewelOfAureolus3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 jewelOfAureolus3 :: AssetCard JewelOfAureolus3
 jewelOfAureolus3 = asset JewelOfAureolus3 Cards.jewelOfAureolus3

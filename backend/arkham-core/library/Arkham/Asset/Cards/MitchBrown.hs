@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype MitchBrown = MitchBrown AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 mitchBrown :: AssetCard MitchBrown
 mitchBrown = ally MitchBrown Cards.mitchBrown (2, 2)

@@ -14,7 +14,7 @@ import Arkham.Modifier qualified as Modifier
 
 newtype ScreechingByakhee = ScreechingByakhee EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 screechingByakhee :: EnemyCard ScreechingByakhee
 screechingByakhee =

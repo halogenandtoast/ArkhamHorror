@@ -19,7 +19,7 @@ import Arkham.Window qualified as Window
 
 newtype AzureFlame = AzureFlame AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 azureFlame :: AssetCard AzureFlame
 azureFlame = asset AzureFlame Cards.azureFlame
@@ -46,7 +46,7 @@ instance RunMessage AzureFlame where
 
 newtype AzureFlameEffect = AzureFlameEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 azureFlameEffect :: EffectArgs -> AzureFlameEffect
 azureFlameEffect = cardEffect AzureFlameEffect Cards.azureFlame

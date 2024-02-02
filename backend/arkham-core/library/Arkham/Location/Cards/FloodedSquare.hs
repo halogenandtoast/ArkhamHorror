@@ -17,7 +17,7 @@ import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 
 newtype FloodedSquare = FloodedSquare LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 floodedSquare :: LocationCard FloodedSquare
 floodedSquare =

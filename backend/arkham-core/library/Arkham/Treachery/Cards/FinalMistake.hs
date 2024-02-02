@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype FinalMistake = FinalMistake TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 finalMistake :: TreacheryCard FinalMistake
 finalMistake = treachery FinalMistake Cards.finalMistake

@@ -398,7 +398,7 @@ drawOpeningHand
   :: (HasCallStack, HasGame m) => InvestigatorAttrs -> Int -> m ([PlayerCard], [Card], [PlayerCard])
 drawOpeningHand a n = do
   replaceWeaknesses <- not <$> hasModifier a CannotReplaceWeaknesses
-  pure $ go replaceWeaknesses n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
+  pure $ go replaceWeaknesses n (a ^. discardL, a ^. handL, unDeck (a ^. deckL))
  where
   go _ 0 (d, h, cs) = (d, h, cs)
   go _ _ (_, _, []) =

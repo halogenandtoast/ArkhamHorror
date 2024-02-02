@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype RiftSeeker = RiftSeeker EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 riftSeeker :: EnemyCard RiftSeeker
 riftSeeker = enemy RiftSeeker Cards.riftSeeker (3, Static 3, 4) (1, 1)

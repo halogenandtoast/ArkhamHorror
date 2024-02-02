@@ -19,9 +19,11 @@ data SomeField a where
        , Typeable typ
        , Typeable a
        , Show typ
+       , NFData typ
        , Eq typ
        , Data a
        , Data (Field a typ)
+       , NFData (Field a typ)
        , Show (Field a typ)
        , ToJSON (Field a typ)
        )
@@ -43,22 +45,36 @@ deriving via AllowThunk (SomeField a) instance NoThunks (SomeField a)
 
 data Update a where
   Update
-    :: (Show typ, Eq typ, Typeable typ, FromJSON typ, ToJSON typ, Show (Field a typ), ToJSON (Field a typ))
+    :: ( Show typ
+       , Eq typ
+       , Typeable typ
+       , FromJSON typ
+       , ToJSON typ
+       , NFData typ
+       , Show (Field a typ)
+       , ToJSON (Field a typ)
+       , NFData (Field a typ)
+       )
     => Field a typ
     -> typ
     -> Update a
   IncrementBy
-    :: (Show (Field a Int), ToJSON (Field a Int))
+    :: (Show (Field a Int), ToJSON (Field a Int), NFData (Field a Int))
     => Field a Int
     -> Int
     -> Update a
   DecrementBy
-    :: (Show (Field a Int), ToJSON (Field a Int))
+    :: (Show (Field a Int), ToJSON (Field a Int), NFData (Field a Int))
     => Field a Int
     -> Int
     -> Update a
 
 deriving via AllowThunk (Update a) instance NoThunks (Update a)
+
+instance NFData (Update a) where
+  rnf (Update f v) = rnf f `seq` rnf v
+  rnf (IncrementBy f v) = rnf f `seq` rnf v
+  rnf (DecrementBy f v) = rnf f `seq` rnf v
 
 instance Show (Update a) where
   show (Update f v) = show f <> " = " <> show v
@@ -108,11 +124,13 @@ instance FromJSON (SomeField a) => FromJSON (Update a) where
 (?=.)
   :: ( Show typ
      , Eq typ
+     , NFData typ
      , Typeable typ
      , FromJSON typ
      , ToJSON typ
      , Show (Field a (Maybe typ))
      , ToJSON (Field a (Maybe typ))
+     , NFData (Field a (Maybe typ))
      )
   => Field a (Maybe typ)
   -> typ
@@ -122,11 +140,13 @@ instance FromJSON (SomeField a) => FromJSON (Update a) where
 (=.)
   :: ( Show typ
      , Eq typ
+     , NFData typ
      , Typeable typ
      , FromJSON typ
      , ToJSON typ
      , Show (Field a typ)
      , ToJSON (Field a typ)
+     , NFData (Field a typ)
      )
   => Field a typ
   -> typ

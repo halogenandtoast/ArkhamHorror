@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype YogSothoth = YogSothoth EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 yogSothoth :: EnemyCard YogSothoth
 yogSothoth = enemyWith YogSothoth Cards.yogSothoth (4, Static 4, 0) (1, 5) (evadeL .~ Nothing)

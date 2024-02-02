@@ -13,7 +13,7 @@ import Arkham.Trait (Trait (Port))
 
 newtype SeekOutTheNight = SeekOutTheNight ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 seekOutTheNight :: ActCard SeekOutTheNight
 seekOutTheNight = act (2, A) SeekOutTheNight Cards.seekOutTheNight Nothing

@@ -23,7 +23,7 @@ import Arkham.Treachery.Types
 
 newtype StrangeOccurences = StrangeOccurences ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 strangeOccurences :: ActCard StrangeOccurences
 strangeOccurences =

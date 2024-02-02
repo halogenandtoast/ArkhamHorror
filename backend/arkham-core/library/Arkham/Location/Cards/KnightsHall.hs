@@ -17,7 +17,7 @@ import Arkham.ScenarioLogKey
 
 newtype KnightsHall = KnightsHall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 knightsHall :: LocationCard KnightsHall
 knightsHall = location KnightsHall Cards.knightsHall 2 (PerPlayer 1)

@@ -15,7 +15,7 @@ import Arkham.Token
 
 newtype KeyOfYs = KeyOfYs AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 keyOfYs :: AssetCard KeyOfYs
 keyOfYs =

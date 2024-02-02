@@ -8,7 +8,7 @@ import Arkham.Event.Runner
 
 newtype Dodge = Dodge EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 dodge :: EventCard Dodge
 dodge = event Dodge Cards.dodge

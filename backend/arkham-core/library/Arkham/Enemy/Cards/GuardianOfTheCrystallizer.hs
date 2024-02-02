@@ -16,7 +16,7 @@ import Arkham.Placement
 
 newtype GuardianOfTheCrystallizer = GuardianOfTheCrystallizer EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 guardianOfTheCrystallizer :: EnemyCard GuardianOfTheCrystallizer
 guardianOfTheCrystallizer =

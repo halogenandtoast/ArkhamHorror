@@ -11,7 +11,7 @@ import Arkham.Story.Runner
 
 newtype EngramsOath = EngramsOath StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 engramsOath :: StoryCard EngramsOath
 engramsOath = story EngramsOath Cards.engramsOath

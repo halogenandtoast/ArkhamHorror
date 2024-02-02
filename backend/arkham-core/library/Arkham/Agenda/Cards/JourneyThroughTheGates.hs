@@ -17,7 +17,7 @@ import Arkham.Trait (Trait (Steps))
 
 newtype JourneyThroughTheGates = JourneyThroughTheGates AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 journeyThroughTheGates :: AgendaCard JourneyThroughTheGates
 journeyThroughTheGates = agenda (1, A) JourneyThroughTheGates Cards.journeyThroughTheGates (Static 19)

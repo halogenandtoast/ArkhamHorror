@@ -17,7 +17,7 @@ import Arkham.Trait
 
 newtype AsylumHallsEasternPatientWing_170 = AsylumHallsEasternPatientWing_170 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 asylumHallsEasternPatientWing_170
   :: LocationCard AsylumHallsEasternPatientWing_170

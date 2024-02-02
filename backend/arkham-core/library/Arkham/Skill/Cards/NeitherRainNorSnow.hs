@@ -16,7 +16,7 @@ import Arkham.Window qualified as Window
 
 newtype NeitherRainNorSnow = NeitherRainNorSnow SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 neitherRainNorSnow :: SkillCard NeitherRainNorSnow
 neitherRainNorSnow = skill NeitherRainNorSnow Cards.neitherRainNorSnow

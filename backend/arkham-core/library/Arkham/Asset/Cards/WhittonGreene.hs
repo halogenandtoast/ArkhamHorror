@@ -17,7 +17,7 @@ import Arkham.Trait
 
 newtype WhittonGreene = WhittonGreene AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 whittonGreene :: AssetCard WhittonGreene
 whittonGreene = ally WhittonGreene Cards.whittonGreene (2, 2)

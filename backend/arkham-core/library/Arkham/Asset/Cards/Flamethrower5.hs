@@ -17,7 +17,7 @@ import Arkham.Matcher
 
 newtype Flamethrower5 = Flamethrower5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 flamethrower5 :: AssetCard Flamethrower5
 flamethrower5 = asset Flamethrower5 Cards.flamethrower5

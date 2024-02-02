@@ -18,11 +18,11 @@ import Arkham.Trait (Trait (Spectral))
 
 newtype Metadata = Metadata {usedLocationIds :: [LocationId]}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype InPursuitOfTheLiving = InPursuitOfTheLiving (ActAttrs `With` Metadata)
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 inPursuitOfTheLiving :: ActCard InPursuitOfTheLiving
 inPursuitOfTheLiving = act (2, A) (InPursuitOfTheLiving . (`with` Metadata [])) Cards.inPursuitOfTheLiving Nothing

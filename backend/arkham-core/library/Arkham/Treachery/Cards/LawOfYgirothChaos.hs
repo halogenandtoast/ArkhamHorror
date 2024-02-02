@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype LawOfYgirothChaos = LawOfYgirothChaos TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 lawOfYgirothChaos :: TreacheryCard LawOfYgirothChaos
 lawOfYgirothChaos = treachery LawOfYgirothChaos Cards.lawOfYgirothChaos

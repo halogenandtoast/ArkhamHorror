@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype YoungDeepOne = YoungDeepOne EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 youngDeepOne :: EnemyCard YoungDeepOne
 youngDeepOne =

@@ -18,7 +18,7 @@ import Arkham.Message qualified as Msg
 
 newtype HistoricalSocietyReadingRoom = HistoricalSocietyReadingRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 historicalSocietyReadingRoom :: LocationCard HistoricalSocietyReadingRoom
 historicalSocietyReadingRoom = location HistoricalSocietyReadingRoom Cards.historicalSocietyReadingRoom 5 (Static 1)

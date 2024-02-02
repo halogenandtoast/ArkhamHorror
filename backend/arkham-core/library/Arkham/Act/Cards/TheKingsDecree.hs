@@ -13,7 +13,7 @@ import Arkham.Trait (Trait (Port))
 
 newtype TheKingsDecree = TheKingsDecree ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theKingsDecree :: ActCard TheKingsDecree
 theKingsDecree = act (2, A) TheKingsDecree Cards.theKingsDecree Nothing

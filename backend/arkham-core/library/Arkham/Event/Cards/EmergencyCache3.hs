@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype EmergencyCache3 = EmergencyCache3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 emergencyCache3 :: EventCard EmergencyCache3
 emergencyCache3 = event EmergencyCache3 Cards.emergencyCache3

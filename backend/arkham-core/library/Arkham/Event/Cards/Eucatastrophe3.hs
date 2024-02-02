@@ -17,7 +17,7 @@ import Arkham.Window qualified as Window
 
 newtype Eucatastrophe3 = Eucatastrophe3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 eucatastrophe3 :: EventCard Eucatastrophe3
 eucatastrophe3 =

@@ -16,12 +16,12 @@ import Arkham.SkillType
 
 newtype Metadata = Metadata {chosenSkills :: Set SkillType}
   deriving stock (Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
   deriving newtype (Show, Eq)
 
 newtype MadnessCoils = MadnessCoils (AgendaAttrs `With` Metadata)
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 madnessCoils :: AgendaCard MadnessCoils
 madnessCoils =

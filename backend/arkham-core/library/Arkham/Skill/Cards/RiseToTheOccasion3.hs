@@ -14,7 +14,7 @@ import Arkham.Skill.Runner
 
 newtype RiseToTheOccasion3 = RiseToTheOccasion3 SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 riseToTheOccasion3 :: SkillCard RiseToTheOccasion3
 riseToTheOccasion3 = skill RiseToTheOccasion3 Cards.riseToTheOccasion3

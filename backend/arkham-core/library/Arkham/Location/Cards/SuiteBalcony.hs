@@ -17,7 +17,7 @@ import Arkham.Trait (Trait (Humanoid))
 
 newtype SuiteBalcony = SuiteBalcony LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 suiteBalcony :: LocationCard SuiteBalcony
 suiteBalcony = location SuiteBalcony Cards.suiteBalcony 2 (PerPlayer 1)

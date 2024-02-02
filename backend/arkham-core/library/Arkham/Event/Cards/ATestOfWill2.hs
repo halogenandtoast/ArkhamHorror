@@ -12,7 +12,7 @@ import Arkham.SkillType
 
 newtype ATestOfWill2 = ATestOfWill2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 aTestOfWill2 :: EventCard ATestOfWill2
 aTestOfWill2 = event ATestOfWill2 Cards.aTestOfWill2

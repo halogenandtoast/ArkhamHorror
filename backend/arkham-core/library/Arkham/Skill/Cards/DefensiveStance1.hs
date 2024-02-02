@@ -16,7 +16,7 @@ import Arkham.Skill.Runner
 
 newtype DefensiveStance1 = DefensiveStance1 SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 defensiveStance1 :: SkillCard DefensiveStance1
 defensiveStance1 = skill DefensiveStance1 Cards.defensiveStance1

@@ -31,6 +31,7 @@ class
   , Show a
   , Eq a
   , NoThunks a
+  , NFData a
   , ToJSON a
   , FromJSON a
   , HasModifiersFor a
@@ -65,7 +66,7 @@ data CampaignAttrs = CampaignAttrs
   , campaignMeta :: Value
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance HasModifiersFor CampaignAttrs where
   getModifiersFor (InvestigatorTarget iid) attrs =
@@ -146,7 +147,7 @@ addRandomBasicWeaknessIfNeeded !playerCount !deck = do
         (toCardDef card == randomWeakness)
         (sample (NE.fromList $ filter weaknessFilter allBasicWeaknesses) >>= tell . pure)
       pure $ toCardDef card /= randomWeakness
-    pure $ Deck deck'
+    pure $ mkDeck deck'
 
 campaignWith
   :: (CampaignAttrs -> a)
@@ -193,6 +194,9 @@ instance Targetable Campaign where
   toTarget _ = CampaignTarget
 
 data Campaign = forall a. IsCampaign a => Campaign a
+
+instance NFData Campaign where
+  rnf (Campaign a) = rnf a
 
 instance NoThunks Campaign where
   noThunks ctx (Campaign a) = noThunks ctx a

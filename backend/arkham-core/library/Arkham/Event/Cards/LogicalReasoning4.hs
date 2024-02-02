@@ -16,7 +16,7 @@ import Arkham.Trait
 
 newtype LogicalReasoning4 = LogicalReasoning4 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 logicalReasoning4 :: EventCard LogicalReasoning4
 logicalReasoning4 = event LogicalReasoning4 Cards.logicalReasoning4

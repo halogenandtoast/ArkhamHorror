@@ -44,6 +44,7 @@ class
   , Eq a
   , Show a
   , NoThunks a
+  , NFData a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -83,6 +84,9 @@ data instance Field Enemy :: Type -> Type where
 deriving stock instance Show (Field Enemy typ)
 deriving stock instance Ord (Field Enemy typ)
 deriving via AllowThunk (Field Enemy typ) instance NoThunks (Field Enemy typ)
+
+instance NFData (Field Enemy typ) where
+  rnf = rwhnf
 
 instance ToJSON (Field Enemy typ) where
   toJSON = toJSON . show
@@ -257,6 +261,9 @@ instance HasField "ability" EnemyAttrs (Int -> Source) where
 
 data Enemy = forall a. IsEnemy a => Enemy a
 
+instance NFData Enemy where
+  rnf (Enemy a) = rnf a
+
 instance NoThunks Enemy where
   noThunks ctx (Enemy a) = noThunks ctx a
   wNoThunks ctx (Enemy a) = wNoThunks ctx a
@@ -295,6 +302,9 @@ instance Data (SomeField Enemy) where
   gunfold _ _ _ = error "gunfold(Enemy)"
   toConstr _ = error "toConstr(Enemy)"
   dataTypeOf _ = error "dataTypeOf(Enemy)"
+
+instance NFData (SomeField Enemy) where
+  rnf a = a `seq` ()
 
 instance Typeable a => Data (Field Enemy a) where
   gunfold _ _ _ = error "gunfold(Enemy)"

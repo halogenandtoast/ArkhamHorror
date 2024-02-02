@@ -15,7 +15,7 @@ import Arkham.Trait (Trait (Item))
 
 newtype LonnieRitter = LonnieRitter AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 lonnieRitter :: AssetCard LonnieRitter
 lonnieRitter = ally LonnieRitter Cards.lonnieRitter (2, 3)

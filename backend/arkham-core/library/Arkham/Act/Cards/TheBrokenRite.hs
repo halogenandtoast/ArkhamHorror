@@ -19,7 +19,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TheBrokenRite = TheBrokenRite ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theBrokenRite :: ActCard TheBrokenRite
 theBrokenRite = act (4, A) TheBrokenRite Cards.theBrokenRite Nothing

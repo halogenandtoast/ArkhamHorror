@@ -10,7 +10,7 @@ import Arkham.Matcher
 
 newtype MindWipe3 = MindWipe3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 mindWipe3 :: EventCard MindWipe3
 mindWipe3 = event MindWipe3 Cards.mindWipe3

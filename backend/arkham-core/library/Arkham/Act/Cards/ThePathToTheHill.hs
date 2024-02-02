@@ -13,7 +13,7 @@ import Arkham.Matcher hiding (RevealLocation)
 
 newtype ThePathToTheHill = ThePathToTheHill ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 thePathToTheHill :: ActCard ThePathToTheHill
 thePathToTheHill = act (1, A) ThePathToTheHill Cards.thePathToTheHill Nothing

@@ -10,7 +10,7 @@ import Arkham.Effect.Runner
 
 newtype NarrowShaft = NarrowShaft EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 narrowShaft :: EffectArgs -> NarrowShaft
 narrowShaft = NarrowShaft . uncurry4 (baseAttrs "03254")

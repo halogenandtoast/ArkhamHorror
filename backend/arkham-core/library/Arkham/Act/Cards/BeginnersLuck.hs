@@ -23,7 +23,7 @@ import Arkham.Window qualified as Window
 
 newtype BeginnersLuck = BeginnersLuck ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 -- Advancement is forced
 beginnersLuck :: ActCard BeginnersLuck

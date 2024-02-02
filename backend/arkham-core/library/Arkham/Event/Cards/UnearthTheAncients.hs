@@ -18,11 +18,11 @@ import Arkham.Window (defaultWindows)
 
 newtype Metadata = Metadata {chosenCard :: Maybe Card}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype UnearthTheAncients = UnearthTheAncients (EventAttrs `With` Metadata)
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 unearthTheAncients :: EventCard UnearthTheAncients
 unearthTheAncients = event (UnearthTheAncients . (`with` Metadata Nothing)) Cards.unearthTheAncients

@@ -19,7 +19,7 @@ import Arkham.Trait
 
 newtype AChanceEncounter = AChanceEncounter EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 aChanceEncounter :: EventCard AChanceEncounter
 aChanceEncounter = event AChanceEncounter Cards.aChanceEncounter
@@ -50,7 +50,7 @@ instance RunMessage AChanceEncounter where
 
 newtype AChanceEncounterEffect = AChanceEncounterEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 aChanceEncounterEffect :: EffectArgs -> AChanceEncounterEffect
 aChanceEncounterEffect = cardEffect AChanceEncounterEffect Cards.aChanceEncounter

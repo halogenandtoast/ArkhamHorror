@@ -3714,7 +3714,7 @@ putGame !g = do
   -- we want to retain the card database between puts
   ref <- view gameRefL
   g' <- readGame
-  let !g'' = g {gameCards = gameCards g' <> gameCards g}
+  let !g'' = force $ g {gameCards = gameCards g' <> gameCards g}
   mThunk <- liftIO $ noThunks [] g''
   case mThunk of
     Nothing -> liftIO $ atomicWriteIORef ref g''
@@ -3765,6 +3765,11 @@ runMessages
   -> m ()
 runMessages mLogger = do
   g <- readGame
+  mThunk <- liftIO $ noThunks [] g
+  case mThunk of
+    Nothing -> pure ()
+    Just thunk -> error $ "runMessages: " <> show thunk
+
   debugLevel <- getDebugLevel
   when (debugLevel == 2) $ peekQueue >>= pPrint >> putStrLn "\n"
 

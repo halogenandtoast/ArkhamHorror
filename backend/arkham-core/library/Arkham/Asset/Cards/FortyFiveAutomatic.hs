@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 newtype FortyFiveAutomatic = FortyFiveAutomatic AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 fortyFiveAutomatic :: AssetCard FortyFiveAutomatic
 fortyFiveAutomatic = asset FortyFiveAutomatic Cards.fortyFiveAutomatic

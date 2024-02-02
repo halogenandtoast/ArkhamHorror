@@ -28,7 +28,7 @@ import Arkham.Scenarios.TheSearchForKadath.Helpers
 
 newtype TheSearchForKadath = TheSearchForKadath ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theSearchForKadath :: Difficulty -> TheSearchForKadath
 theSearchForKadath difficulty =

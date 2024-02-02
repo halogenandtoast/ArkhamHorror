@@ -13,7 +13,7 @@ import Arkham.Location.Runner
 
 newtype HouseInTheReeds_210 = HouseInTheReeds_210 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 houseInTheReeds_210 :: LocationCard HouseInTheReeds_210
 houseInTheReeds_210 = location HouseInTheReeds_210 Cards.houseInTheReeds_210 2 (PerPlayer 1)

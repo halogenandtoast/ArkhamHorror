@@ -15,7 +15,7 @@ import Arkham.Scenarios.WakingNightmare.Helpers
 
 newtype LookingForAnswers = LookingForAnswers ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 lookingForAnswers :: ActCard LookingForAnswers
 lookingForAnswers = act (1, A) LookingForAnswers Cards.lookingForAnswers (groupClueCost $ PerPlayer 4)

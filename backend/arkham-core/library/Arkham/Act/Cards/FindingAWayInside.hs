@@ -16,7 +16,7 @@ import Arkham.Matcher hiding (RevealLocation)
 
 newtype FindingAWayInside = FindingAWayInside ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 findingAWayInside :: ActCard FindingAWayInside
 findingAWayInside =

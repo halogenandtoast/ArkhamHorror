@@ -16,7 +16,7 @@ import Arkham.Window qualified as Window
 
 newtype OliveMcBride = OliveMcBride AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 oliveMcBride :: AssetCard OliveMcBride
 oliveMcBride = ally OliveMcBride Cards.oliveMcBride (1, 3)

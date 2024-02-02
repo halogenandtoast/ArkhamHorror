@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype StMarysHospital = StMarysHospital LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 stMarysHospital :: LocationCard StMarysHospital
 stMarysHospital = location StMarysHospital Cards.stMarysHospital 2 (PerPlayer 1)

@@ -17,7 +17,7 @@ import Arkham.Matcher hiding (DuringTurn)
 
 newtype InvestigatingTheWitchHouse = InvestigatingTheWitchHouse ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 investigatingTheWitchHouse :: ActCard InvestigatingTheWitchHouse
 investigatingTheWitchHouse =

@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype MadPatient = MadPatient EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 madPatient :: EnemyCard MadPatient
 madPatient =

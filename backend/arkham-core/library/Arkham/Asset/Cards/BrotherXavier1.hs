@@ -11,7 +11,7 @@ import Arkham.Projection
 
 newtype BrotherXavier1 = BrotherXavier1 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 brotherXavier1 :: AssetCard BrotherXavier1
 brotherXavier1 = ally BrotherXavier1 Cards.brotherXavier1 (3, 3)

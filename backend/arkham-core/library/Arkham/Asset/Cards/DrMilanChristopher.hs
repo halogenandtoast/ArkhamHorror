@@ -9,7 +9,7 @@ import Arkham.Matcher
 
 newtype DrMilanChristopher = DrMilanChristopher AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 drMilanChristopher :: AssetCard DrMilanChristopher
 drMilanChristopher = ally DrMilanChristopher Cards.drMilanChristopher (1, 2)

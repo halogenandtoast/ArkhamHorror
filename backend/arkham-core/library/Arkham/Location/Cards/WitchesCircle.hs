@@ -18,7 +18,7 @@ import Arkham.Trait (Trait (Witch))
 
 newtype WitchesCircle = WitchesCircle LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 witchesCircle :: LocationCard WitchesCircle
 witchesCircle = location WitchesCircle Cards.witchesCircle 3 (PerPlayer 3)

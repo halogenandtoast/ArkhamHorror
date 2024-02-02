@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 
 newtype Versatile2 = Versatile2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 versatile2 :: AssetCard Versatile2
 versatile2 =

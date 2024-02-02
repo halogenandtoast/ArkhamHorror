@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 
 newtype Knife = Knife AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 knife :: AssetCard Knife
 knife = asset Knife Cards.knife

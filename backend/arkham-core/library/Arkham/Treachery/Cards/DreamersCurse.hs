@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype DreamersCurse = DreamersCurse TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 dreamersCurse :: TreacheryCard DreamersCurse
 dreamersCurse = treachery DreamersCurse Cards.dreamersCurse

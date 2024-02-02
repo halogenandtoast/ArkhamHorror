@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype InsatiableBloodlust = InsatiableBloodlust TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 insatiableBloodlust :: TreacheryCard InsatiableBloodlust
 insatiableBloodlust = treachery InsatiableBloodlust Cards.insatiableBloodlust

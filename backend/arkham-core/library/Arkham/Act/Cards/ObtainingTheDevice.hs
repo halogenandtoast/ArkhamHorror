@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ObtainingTheDevice = ObtainingTheDevice ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 obtainingTheDevice :: ActCard ObtainingTheDevice
 obtainingTheDevice = act (2, A) ObtainingTheDevice Cards.obtainingTheDevice Nothing

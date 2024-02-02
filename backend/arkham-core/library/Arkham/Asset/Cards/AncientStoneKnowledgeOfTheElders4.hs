@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype AncientStoneKnowledgeOfTheElders4 = AncientStoneKnowledgeOfTheElders4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 ancientStoneKnowledgeOfTheElders4
   :: AssetCard AncientStoneKnowledgeOfTheElders4

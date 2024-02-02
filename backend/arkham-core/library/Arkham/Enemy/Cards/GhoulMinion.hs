@@ -11,7 +11,7 @@ import Arkham.Enemy.Runner
 
 newtype GhoulMinion = GhoulMinion EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 ghoulMinion :: EnemyCard GhoulMinion
 ghoulMinion = enemy GhoulMinion Cards.ghoulMinion (2, Static 2, 2) (1, 1)

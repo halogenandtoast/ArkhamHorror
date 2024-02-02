@@ -12,7 +12,7 @@ import Arkham.Location.Runner
 
 newtype HazuthKleg = HazuthKleg LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 hazuthKleg :: LocationCard HazuthKleg
 hazuthKleg = location HazuthKleg Cards.hazuthKleg 4 (PerPlayer 1)

@@ -43,11 +43,11 @@ import Arkham.Zone
 
 newtype Metadata = Metadata {resolution4Count :: Int}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype TheDoomOfEztli = TheDoomOfEztli (ScenarioAttrs `With` Metadata)
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 {- | The Doom of Eztli
 

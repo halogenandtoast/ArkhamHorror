@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype CruelInterrogations = CruelInterrogations TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 cruelInterrogations :: TreacheryCard CruelInterrogations
 cruelInterrogations = treachery CruelInterrogations Cards.cruelInterrogations

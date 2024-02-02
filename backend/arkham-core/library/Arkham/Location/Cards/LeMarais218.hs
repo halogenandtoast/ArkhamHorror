@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype LeMarais218 = LeMarais218 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 leMarais218 :: LocationCard LeMarais218
 leMarais218 = location LeMarais218 Cards.leMarais218 1 (PerPlayer 1)

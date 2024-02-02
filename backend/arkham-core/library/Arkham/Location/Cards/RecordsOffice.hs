@@ -16,7 +16,7 @@ import Arkham.Window (defaultWindows)
 
 newtype RecordsOffice = RecordsOffice LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 recordsOffice :: LocationCard RecordsOffice
 recordsOffice = location RecordsOffice Cards.recordsOffice 3 (PerPlayer 2)

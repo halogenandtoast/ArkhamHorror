@@ -13,7 +13,7 @@ import Arkham.Timing qualified as Timing
 
 newtype AnalyticalMind = AnalyticalMind AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 analyticalMind :: AssetCard AnalyticalMind
 analyticalMind = asset AnalyticalMind Cards.analyticalMind

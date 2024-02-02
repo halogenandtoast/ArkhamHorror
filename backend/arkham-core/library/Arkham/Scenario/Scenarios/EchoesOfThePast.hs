@@ -35,7 +35,7 @@ import Data.List (replicate)
 
 newtype EchoesOfThePast = EchoesOfThePast ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 echoesOfThePast :: Difficulty -> EchoesOfThePast
 echoesOfThePast difficulty =
@@ -131,7 +131,7 @@ instance RunMessage EchoesOfThePast where
         splitAt (length investigatorIds - 1)
           <$> traverse genEncounterCard (replicate 3 Enemies.seekerOfCarcosa)
       encounterDeck <-
-        Deck
+        mkDeck
           <$> shuffleM
             (unDeck partialEncounterDeck <> midnightMasks <> seekersToShuffle)
 

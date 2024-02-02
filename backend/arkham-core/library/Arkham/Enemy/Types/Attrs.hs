@@ -45,7 +45,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyDiscardedBy :: Maybe InvestigatorId
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 enemyDamage :: EnemyAttrs -> Int
 enemyDamage = countTokens Damage . enemyTokens

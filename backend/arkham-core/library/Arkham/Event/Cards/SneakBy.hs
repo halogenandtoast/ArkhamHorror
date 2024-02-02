@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype SneakBy = SneakBy EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 sneakBy :: EventCard SneakBy
 sneakBy = event SneakBy Cards.sneakBy

@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype DanielChesterfield = DanielChesterfield EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 danielChesterfield :: EnemyCard DanielChesterfield
 danielChesterfield =

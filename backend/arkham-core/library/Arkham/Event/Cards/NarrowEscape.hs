@@ -14,7 +14,7 @@ import Arkham.Event.Runner
 
 newtype NarrowEscape = NarrowEscape EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 narrowEscape :: EventCard NarrowEscape
 narrowEscape = event NarrowEscape Cards.narrowEscape

@@ -17,7 +17,7 @@ import Arkham.Skill.Runner
 
 newtype EssenceOfTheDream = EssenceOfTheDream SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 essenceOfTheDream :: SkillCard EssenceOfTheDream
 essenceOfTheDream = skill EssenceOfTheDream Cards.essenceOfTheDream

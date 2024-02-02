@@ -22,7 +22,7 @@ import Arkham.Trait
 
 newtype PastAndPresent = PastAndPresent ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 pastAndPresent :: ActCard PastAndPresent
 pastAndPresent = act (2, A) PastAndPresent Cards.pastAndPresent Nothing

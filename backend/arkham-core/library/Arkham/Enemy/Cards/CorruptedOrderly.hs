@@ -12,7 +12,7 @@ import Arkham.Window qualified as Window
 
 newtype CorruptedOrderly = CorruptedOrderly EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 corruptedOrderly :: EnemyCard CorruptedOrderly
 corruptedOrderly = enemy CorruptedOrderly Cards.corruptedOrderly (2, Static 2, 2) (1, 1)
@@ -35,7 +35,7 @@ instance RunMessage CorruptedOrderly where
 
 newtype CorruptedOrderlyEffect = CorruptedOrderlyEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 corruptedOrderlyEffect :: EffectArgs -> CorruptedOrderlyEffect
 corruptedOrderlyEffect = cardEffect CorruptedOrderlyEffect Cards.corruptedOrderly

@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype LivingRoom = LivingRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 livingRoom :: LocationCard LivingRoom
 livingRoom = location LivingRoom Cards.livingRoom 3 (Static 0)

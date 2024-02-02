@@ -15,7 +15,7 @@ import Arkham.Trait
 
 newtype SpiritAthame1 = SpiritAthame1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 spiritAthame1 :: AssetCard SpiritAthame1
 spiritAthame1 = asset SpiritAthame1 Cards.spiritAthame1

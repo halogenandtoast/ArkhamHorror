@@ -12,7 +12,7 @@ import Arkham.Investigator.Runner
 
 newtype CalvinWright = CalvinWright InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 calvinWright :: InvestigatorCard CalvinWright
 calvinWright =

@@ -21,7 +21,7 @@ import Arkham.SkillType
 
 newtype Banish1 = Banish1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 banish1 :: EventCard Banish1
 banish1 =
@@ -39,7 +39,7 @@ instance RunMessage Banish1 where
 
 newtype Banish1Effect = Banish1Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 banish1Effect :: EffectArgs -> Banish1Effect
 banish1Effect = cardEffect Banish1Effect Cards.banish1

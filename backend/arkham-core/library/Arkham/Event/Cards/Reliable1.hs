@@ -19,7 +19,7 @@ import Arkham.Trait
 
 newtype Reliable1 = Reliable1 EventAttrs
   deriving anyclass (IsEvent, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 reliable1 :: EventCard Reliable1
 reliable1 = event Reliable1 Cards.reliable1

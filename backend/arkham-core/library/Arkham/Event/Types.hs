@@ -32,6 +32,7 @@ class
   , Eq a
   , Show a
   , NoThunks a
+  , NFData a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -82,7 +83,7 @@ data EventAttrs = EventAttrs
   , eventTarget :: Maybe Target
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 allEventCards :: Map CardCode CardDef
 allEventCards = allPlayerEventCards
@@ -173,6 +174,9 @@ instance Sourceable EventAttrs where
   isSource _ _ = False
 
 data Event = forall a. IsEvent a => Event a
+
+instance NFData Event where
+  rnf (Event a) = rnf a
 
 instance NoThunks Event where
   noThunks ctx (Event a) = noThunks ctx a

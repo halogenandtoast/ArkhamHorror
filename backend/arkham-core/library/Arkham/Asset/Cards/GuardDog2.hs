@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype GuardDog2 = GuardDog2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 guardDog2 :: AssetCard GuardDog2
 guardDog2 = ally GuardDog2 Cards.guardDog2 (4, 2)

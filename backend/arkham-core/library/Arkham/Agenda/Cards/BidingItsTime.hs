@@ -21,7 +21,7 @@ import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 
 newtype BidingItsTime = BidingItsTime AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 bidingItsTime :: AgendaCard BidingItsTime
 bidingItsTime = agenda (2, A) BidingItsTime Cards.bidingItsTime (Static 6)

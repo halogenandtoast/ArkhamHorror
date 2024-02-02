@@ -33,7 +33,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype InTheClutchesOfChaos = InTheClutchesOfChaos ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 inTheClutchesOfChaos :: Difficulty -> InTheClutchesOfChaos
 inTheClutchesOfChaos difficulty =
@@ -117,7 +117,7 @@ instance RunMessage InTheClutchesOfChaos where
           ]
 
       encounterDeck <-
-        Deck
+        mkDeck
           <$> shuffleM
             ( unDeck gatheredCards <> (guard carlSanfordPossessesTheSecretsOfTheUniverse *> midnightMasks)
             )

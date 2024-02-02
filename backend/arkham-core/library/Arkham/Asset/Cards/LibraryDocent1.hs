@@ -23,7 +23,7 @@ import Data.Monoid (First (..))
 
 newtype LibraryDocent1 = LibraryDocent1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 libraryDocent1 :: AssetCard LibraryDocent1
 libraryDocent1 = ally LibraryDocent1 Cards.libraryDocent1 (1, 2)
@@ -88,7 +88,7 @@ instance RunMessage LibraryDocent1 where
 
 newtype LibraryDocent1Effect = LibraryDocent1Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 libraryDocent1Effect :: EffectArgs -> LibraryDocent1Effect
 libraryDocent1Effect = cardEffect LibraryDocent1Effect Cards.libraryDocent1

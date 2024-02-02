@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype InLostCarcosa = InLostCarcosa ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 inLostCarcosa :: ActCard InLostCarcosa
 inLostCarcosa = act (1, A) InLostCarcosa Cards.inLostCarcosa Nothing

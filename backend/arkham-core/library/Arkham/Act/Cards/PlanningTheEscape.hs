@@ -19,7 +19,7 @@ import Arkham.Trait
 
 newtype PlanningTheEscape = PlanningTheEscape ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 planningTheEscape :: ActCard PlanningTheEscape
 planningTheEscape =

@@ -17,7 +17,7 @@ import Arkham.Projection
 
 newtype SummonedHound1 = SummonedHound1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 summonedHound1 :: AssetCard SummonedHound1
 summonedHound1 = assetWith SummonedHound1 Cards.summonedHound1 $ healthL ?~ 3

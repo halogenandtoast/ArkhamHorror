@@ -10,7 +10,7 @@ import Arkham.Story.Runner
 
 newtype AShrineToTheGods = AShrineToTheGods StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 aShrineToTheGods :: StoryCard AShrineToTheGods
 aShrineToTheGods = story AShrineToTheGods Cards.aShrineToTheGods

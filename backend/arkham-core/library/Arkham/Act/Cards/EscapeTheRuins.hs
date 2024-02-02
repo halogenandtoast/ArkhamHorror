@@ -18,7 +18,7 @@ import Arkham.Trait
 
 newtype EscapeTheRuins = EscapeTheRuins ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 escapeTheRuins :: ActCard EscapeTheRuins
 escapeTheRuins = act (3, A) EscapeTheRuins Cards.escapeTheRuins Nothing

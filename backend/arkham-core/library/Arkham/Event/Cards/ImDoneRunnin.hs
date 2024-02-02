@@ -17,7 +17,7 @@ import Arkham.Matcher hiding (EnemyEvaded)
 
 newtype ImDoneRunnin = ImDoneRunnin EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 imDoneRunnin :: EventCard ImDoneRunnin
 imDoneRunnin = event ImDoneRunnin Cards.imDoneRunnin
@@ -35,7 +35,7 @@ instance RunMessage ImDoneRunnin where
 
 newtype ImDoneRunninEffect = ImDoneRunninEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 imDoneRunninEffect :: EffectArgs -> ImDoneRunninEffect
 imDoneRunninEffect = cardEffect ImDoneRunninEffect Cards.imDoneRunnin

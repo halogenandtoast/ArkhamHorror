@@ -16,7 +16,7 @@ import Arkham.Window
 
 newtype ATestOfWill1 = ATestOfWill1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 aTestOfWill1 :: EventCard ATestOfWill1
 aTestOfWill1 = event ATestOfWill1 Cards.aTestOfWill1

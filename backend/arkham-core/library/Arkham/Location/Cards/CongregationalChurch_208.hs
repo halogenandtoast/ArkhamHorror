@@ -17,7 +17,7 @@ import Arkham.Trait
 
 newtype CongregationalChurch_208 = CongregationalChurch_208 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 congregationalChurch_208 :: LocationCard CongregationalChurch_208
 congregationalChurch_208 =

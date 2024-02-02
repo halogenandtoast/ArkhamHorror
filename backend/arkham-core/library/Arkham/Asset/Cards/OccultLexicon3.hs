@@ -16,7 +16,7 @@ import Arkham.Window qualified as Window
 
 newtype OccultLexicon3 = OccultLexicon3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 occultLexicon3 :: AssetCard OccultLexicon3
 occultLexicon3 = asset OccultLexicon3 Cards.occultLexicon3

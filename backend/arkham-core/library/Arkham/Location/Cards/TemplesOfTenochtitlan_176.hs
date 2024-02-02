@@ -18,7 +18,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TemplesOfTenochtitlan_176 = TemplesOfTenochtitlan_176 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 templesOfTenochtitlan_176 :: LocationCard TemplesOfTenochtitlan_176
 templesOfTenochtitlan_176 =

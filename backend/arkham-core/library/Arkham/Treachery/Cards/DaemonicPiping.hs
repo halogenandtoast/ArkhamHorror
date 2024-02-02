@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype DaemonicPiping = DaemonicPiping TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 daemonicPiping :: TreacheryCard DaemonicPiping
 daemonicPiping = treachery DaemonicPiping Cards.daemonicPiping

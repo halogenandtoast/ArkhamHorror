@@ -17,7 +17,7 @@ import Arkham.Window qualified as Window
 
 newtype NexusOfNKai = NexusOfNKai LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 nexusOfNKai :: LocationCard NexusOfNKai
 nexusOfNKai = location NexusOfNKai Cards.nexusOfNKai 4 (PerPlayer 1)

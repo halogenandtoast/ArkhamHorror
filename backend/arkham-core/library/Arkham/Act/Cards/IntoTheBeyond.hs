@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype IntoTheBeyond = IntoTheBeyond ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 intoTheBeyond :: ActCard IntoTheBeyond
 intoTheBeyond = act (2, A) IntoTheBeyond Cards.intoTheBeyond Nothing

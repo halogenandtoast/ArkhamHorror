@@ -13,7 +13,7 @@ import Arkham.Location.Runner
 
 newtype Northside = Northside LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 northside :: LocationCard Northside
 northside = location Northside Cards.northside 3 (PerPlayer 2)

@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype DescentIntoDark = DescentIntoDark ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 descentIntoDark :: ActCard DescentIntoDark
 descentIntoDark = act (2, A) DescentIntoDark Cards.descentIntoDark Nothing

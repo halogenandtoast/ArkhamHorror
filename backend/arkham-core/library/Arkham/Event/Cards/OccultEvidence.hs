@@ -22,7 +22,7 @@ import Arkham.Trait (Trait (Research))
 
 newtype OccultEvidence = OccultEvidence EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 occultEvidence :: EventCard OccultEvidence
 occultEvidence = event OccultEvidence Cards.occultEvidence

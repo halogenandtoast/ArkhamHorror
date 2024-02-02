@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype Somniphobia = Somniphobia TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 somniphobia :: TreacheryCard Somniphobia
 somniphobia = treachery Somniphobia Cards.somniphobia

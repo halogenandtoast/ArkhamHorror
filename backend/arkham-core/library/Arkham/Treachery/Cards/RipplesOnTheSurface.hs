@@ -18,7 +18,7 @@ import Arkham.Treachery.Runner
 
 newtype RipplesOnTheSurface = RipplesOnTheSurface TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 ripplesOnTheSurface :: TreacheryCard RipplesOnTheSurface
 ripplesOnTheSurface = treachery RipplesOnTheSurface Cards.ripplesOnTheSurface

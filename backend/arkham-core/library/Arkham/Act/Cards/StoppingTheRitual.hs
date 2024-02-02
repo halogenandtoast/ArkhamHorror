@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype StoppingTheRitual = StoppingTheRitual ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 stoppingTheRitual :: ActCard StoppingTheRitual
 stoppingTheRitual =

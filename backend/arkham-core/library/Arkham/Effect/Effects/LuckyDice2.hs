@@ -12,11 +12,11 @@ import Arkham.Game.Helpers
 
 newtype LuckyDice2 = LuckyDice2 (EffectAttrs `With` Metadata)
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 newtype Metadata = Metadata {alreadyTriggered :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 luckyDice2 :: EffectArgs -> LuckyDice2
 luckyDice2 = LuckyDice2 . (`with` Metadata False) . uncurry4 (baseAttrs "02230")

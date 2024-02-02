@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 
 newtype ThirtyTwoColt2 = ThirtyTwoColt2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 thirtyTwoColt2 :: AssetCard ThirtyTwoColt2
 thirtyTwoColt2 = asset ThirtyTwoColt2 Cards.thirtyTwoColt2

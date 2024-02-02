@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype BalconySpectral = BalconySpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 balconySpectral :: LocationCard BalconySpectral
 balconySpectral =

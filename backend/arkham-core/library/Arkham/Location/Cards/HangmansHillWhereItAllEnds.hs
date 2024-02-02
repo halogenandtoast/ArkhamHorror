@@ -16,7 +16,7 @@ import Arkham.Trait (Trait (Witch))
 
 newtype HangmansHillWhereItAllEnds = HangmansHillWhereItAllEnds LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 hangmansHillWhereItAllEnds :: LocationCard HangmansHillWhereItAllEnds
 hangmansHillWhereItAllEnds = location HangmansHillWhereItAllEnds Cards.hangmansHillWhereItAllEnds 2 (Static 0)

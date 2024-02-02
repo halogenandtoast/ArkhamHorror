@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype ArtStudent = ArtStudent AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 artStudent :: AssetCard ArtStudent
 artStudent = ally ArtStudent Cards.artStudent (1, 2)

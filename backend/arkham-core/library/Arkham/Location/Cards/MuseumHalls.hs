@@ -16,7 +16,7 @@ import Arkham.Scenario.Deck
 
 newtype MuseumHalls = MuseumHalls LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 museumHalls :: LocationCard MuseumHalls
 museumHalls =

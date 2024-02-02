@@ -15,7 +15,7 @@ import Arkham.Trait
 
 newtype Scrying3 = Scrying3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 scrying3 :: AssetCard Scrying3
 scrying3 = asset Scrying3 Cards.scrying3

@@ -20,7 +20,7 @@ import Arkham.SkillType
 
 newtype Backstab3 = Backstab3 EventAttrs
   deriving anyclass (IsEvent, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 backstab3 :: EventCard Backstab3
 backstab3 = event Backstab3 Cards.backstab3
@@ -48,7 +48,7 @@ instance RunMessage Backstab3 where
 
 newtype Backstab3Effect = Backstab3Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 backstab3Effect :: EffectArgs -> Backstab3Effect
 backstab3Effect = cardEffect Backstab3Effect Cards.backstab3

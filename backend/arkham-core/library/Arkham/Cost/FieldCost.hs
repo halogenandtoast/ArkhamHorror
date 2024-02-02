@@ -30,6 +30,8 @@ data FieldCost where
        , FromJSON (SomeField rec)
        , Projection rec
        , Query matcher
+       , NFData (Field rec Int)
+       , NFData matcher
        )
     => matcher
     -> fld
@@ -37,6 +39,9 @@ data FieldCost where
 
 deriving stock instance Show FieldCost
 deriving via AllowThunk FieldCost instance NoThunks FieldCost
+
+instance NFData FieldCost where
+  rnf (FieldCost matcher fld) = rnf matcher `seq` rnf fld
 
 instance Data FieldCost where
   gunfold _ _ _ = error "gunfold(FieldCost)"
@@ -94,6 +99,8 @@ data MaybeFieldCost where
        , FromJSON (SomeField rec)
        , Projection rec
        , Query matcher
+       , NFData (Field rec (Maybe Int))
+       , NFData matcher
        )
     => matcher
     -> fld
@@ -101,6 +108,9 @@ data MaybeFieldCost where
 
 deriving stock instance Show MaybeFieldCost
 deriving via AllowThunk MaybeFieldCost instance NoThunks MaybeFieldCost
+
+instance NFData MaybeFieldCost where
+  rnf (MaybeFieldCost matcher fld) = rnf matcher `seq` rnf fld
 
 instance Data MaybeFieldCost where
   gunfold _ _ _ = error "gunfold(MaybeFieldCost)"

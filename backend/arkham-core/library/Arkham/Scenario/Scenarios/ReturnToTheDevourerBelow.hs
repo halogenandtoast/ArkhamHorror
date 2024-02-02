@@ -24,7 +24,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 newtype ReturnToTheDevourerBelow = ReturnToTheDevourerBelow TheDevourerBelow
   deriving stock (Generic)
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, NoThunks, Eq)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, NoThunks, NFData, Eq)
 
 returnToTheDevourerBelow :: Difficulty -> ReturnToTheDevourerBelow
 returnToTheDevourerBelow difficulty =

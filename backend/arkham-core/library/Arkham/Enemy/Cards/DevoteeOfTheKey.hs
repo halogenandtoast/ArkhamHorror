@@ -14,7 +14,7 @@ import Arkham.Projection
 
 newtype DevoteeOfTheKey = DevoteeOfTheKey EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 devoteeOfTheKey :: EnemyCard DevoteeOfTheKey
 devoteeOfTheKey =

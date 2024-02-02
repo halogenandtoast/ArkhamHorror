@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype Balcony = Balcony LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 balcony :: LocationCard Balcony
 balcony = location Balcony Cards.balcony 2 (PerPlayer 1)

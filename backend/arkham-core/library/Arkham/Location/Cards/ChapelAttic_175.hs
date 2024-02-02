@@ -20,7 +20,7 @@ import Arkham.Window qualified as Window
 
 newtype ChapelAttic_175 = ChapelAttic_175 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 chapelAttic_175 :: LocationCard ChapelAttic_175
 chapelAttic_175 = location ChapelAttic_175 Cards.chapelAttic_175 4 (Static 0)

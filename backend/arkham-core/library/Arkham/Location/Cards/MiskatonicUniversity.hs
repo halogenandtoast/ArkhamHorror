@@ -15,7 +15,7 @@ import Arkham.Trait
 
 newtype MiskatonicUniversity = MiskatonicUniversity LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 miskatonicUniversity :: LocationCard MiskatonicUniversity
 miskatonicUniversity =

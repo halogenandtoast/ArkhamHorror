@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 newtype JennyBarnes = JennyBarnes InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 jennyBarnes :: InvestigatorCard JennyBarnes
 jennyBarnes =

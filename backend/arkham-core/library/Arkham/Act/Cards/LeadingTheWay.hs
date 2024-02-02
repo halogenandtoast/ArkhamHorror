@@ -16,7 +16,7 @@ import Arkham.Resolution
 
 newtype LeadingTheWay = LeadingTheWay ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 leadingTheWay :: ActCard LeadingTheWay
 leadingTheWay = act (3, A) LeadingTheWay Cards.leadingTheWay Nothing

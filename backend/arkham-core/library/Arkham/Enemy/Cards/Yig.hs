@@ -14,7 +14,7 @@ import Arkham.Trait (Trait (Serpent))
 
 newtype Yig = Yig EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 yig :: EnemyCard Yig
 yig = enemy Yig Cards.yig (4, Static 6, 4) (3, 3)

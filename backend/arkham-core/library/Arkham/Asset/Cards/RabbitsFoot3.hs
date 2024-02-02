@@ -15,7 +15,7 @@ import Arkham.Window qualified as Window
 
 newtype RabbitsFoot3 = RabbitsFoot3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 rabbitsFoot3 :: AssetCard RabbitsFoot3
 rabbitsFoot3 = asset RabbitsFoot3 Cards.rabbitsFoot3

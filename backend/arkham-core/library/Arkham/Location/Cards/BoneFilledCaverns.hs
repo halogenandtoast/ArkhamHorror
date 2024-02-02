@@ -20,11 +20,11 @@ import Arkham.Scenarios.ThePallidMask.Helpers
 
 newtype Metadata = Metadata {affectedInvestigator :: Maybe InvestigatorId}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype BoneFilledCaverns = BoneFilledCaverns (LocationAttrs `With` Metadata)
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 boneFilledCaverns :: LocationCard BoneFilledCaverns
 boneFilledCaverns =

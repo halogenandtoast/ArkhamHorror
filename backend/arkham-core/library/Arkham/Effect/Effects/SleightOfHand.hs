@@ -11,7 +11,7 @@ import Arkham.Matcher
 
 newtype SleightOfHand = SleightOfHand EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 sleightOfHand :: EffectArgs -> SleightOfHand
 sleightOfHand = SleightOfHand . uncurry4 (baseAttrs "03029")

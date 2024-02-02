@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype NoStoneUnturned5 = NoStoneUnturned5 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 noStoneUnturned5 :: EventCard NoStoneUnturned5
 noStoneUnturned5 = event NoStoneUnturned5 Cards.noStoneUnturned5

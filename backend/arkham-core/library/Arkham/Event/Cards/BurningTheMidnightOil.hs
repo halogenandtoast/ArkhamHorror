@@ -12,7 +12,7 @@ import Arkham.Investigate
 
 newtype BurningTheMidnightOil = BurningTheMidnightOil EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 burningTheMidnightOil :: EventCard BurningTheMidnightOil
 burningTheMidnightOil = event BurningTheMidnightOil Cards.burningTheMidnightOil

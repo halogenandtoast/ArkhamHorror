@@ -16,7 +16,7 @@ import Arkham.Placement
 
 newtype HidingSpot = HidingSpot EventAttrs
   deriving anyclass (IsEvent)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 hidingSpot :: EventCard HidingSpot
 hidingSpot = event HidingSpot Cards.hidingSpot

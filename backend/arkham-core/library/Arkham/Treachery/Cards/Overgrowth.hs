@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype Overgrowth = Overgrowth TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 overgrowth :: TreacheryCard Overgrowth
 overgrowth = treachery Overgrowth Cards.overgrowth

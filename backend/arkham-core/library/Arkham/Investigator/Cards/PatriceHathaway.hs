@@ -17,7 +17,7 @@ import Arkham.Projection
 
 newtype PatriceHathaway = PatriceHathaway InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 patriceHathaway :: InvestigatorCard PatriceHathaway
 patriceHathaway =

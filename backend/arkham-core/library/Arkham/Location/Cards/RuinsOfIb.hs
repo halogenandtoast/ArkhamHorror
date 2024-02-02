@@ -10,7 +10,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype RuinsOfIb = RuinsOfIb LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 ruinsOfIb :: LocationCard RuinsOfIb
 ruinsOfIb = locationWith RuinsOfIb Cards.ruinsOfIb 1 (PerPlayer 1) (canBeFlippedL .~ True)

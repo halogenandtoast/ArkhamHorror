@@ -11,7 +11,7 @@ import Arkham.Story.Runner
 
 newtype AboveAndBelow = AboveAndBelow StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 aboveAndBelow :: StoryCard AboveAndBelow
 aboveAndBelow = story AboveAndBelow Cards.aboveAndBelow

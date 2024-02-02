@@ -14,7 +14,7 @@ import Arkham.SkillTest.Type
 
 newtype MoneyTalks2 = MoneyTalks2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 moneyTalks2 :: EventCard MoneyTalks2
 moneyTalks2 =

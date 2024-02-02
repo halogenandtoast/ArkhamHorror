@@ -14,7 +14,7 @@ import Arkham.SkillType
 
 newtype FortyFiveThompsonGuardian3 = FortyFiveThompsonGuardian3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 fortyFiveThompsonGuardian3 :: AssetCard FortyFiveThompsonGuardian3
 fortyFiveThompsonGuardian3 = asset FortyFiveThompsonGuardian3 Cards.fortyFiveThompsonGuardian3

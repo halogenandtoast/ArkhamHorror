@@ -15,7 +15,7 @@ import Arkham.Treachery.Runner
 
 newtype TheCultsSearch = TheCultsSearch TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theCultsSearch :: TreacheryCard TheCultsSearch
 theCultsSearch = treachery TheCultsSearch Cards.theCultsSearch

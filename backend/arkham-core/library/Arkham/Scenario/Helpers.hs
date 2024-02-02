@@ -52,7 +52,7 @@ buildEncounterDeckWith
   -> [EncounterSet]
   -> m (Deck EncounterCard)
 buildEncounterDeckWith f encounterSets =
-  Deck
+  mkDeck
     <$> ( shuffleM
             . f
             . excludeBSides

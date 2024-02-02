@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype Gondola = Gondola LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 gondola :: LocationCard Gondola
 gondola = location Gondola Cards.gondola 5 (Static 0)

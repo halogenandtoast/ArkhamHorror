@@ -13,7 +13,7 @@ import Arkham.Investigate
 
 newtype Flashlight = Flashlight AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 flashlight :: AssetCard Flashlight
 flashlight = asset Flashlight Cards.flashlight

@@ -13,7 +13,7 @@ import Arkham.Timing qualified as Timing
 
 newtype LeatherCoat1 = LeatherCoat1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 leatherCoat1 :: AssetCard LeatherCoat1
 leatherCoat1 = assetWith LeatherCoat1 Cards.leatherCoat1 (healthL ?~ 4)

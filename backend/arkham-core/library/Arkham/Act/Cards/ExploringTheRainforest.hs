@@ -15,7 +15,7 @@ import Arkham.Trait
 
 newtype ExploringTheRainforest = ExploringTheRainforest ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 exploringTheRainforest :: ActCard ExploringTheRainforest
 exploringTheRainforest =

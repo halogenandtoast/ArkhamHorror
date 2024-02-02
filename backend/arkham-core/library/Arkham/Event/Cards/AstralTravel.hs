@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype AstralTravel = AstralTravel EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 astralTravel :: EventCard AstralTravel
 astralTravel = event AstralTravel Cards.astralTravel

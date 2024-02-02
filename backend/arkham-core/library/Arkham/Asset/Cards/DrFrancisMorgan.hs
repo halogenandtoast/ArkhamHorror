@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype DrFrancisMorgan = DrFrancisMorgan AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 drFrancisMorgan :: AssetCard DrFrancisMorgan
 drFrancisMorgan = ally DrFrancisMorgan Cards.drFrancisMorgan (4, 1)

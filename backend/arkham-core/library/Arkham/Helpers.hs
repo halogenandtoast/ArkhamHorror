@@ -1,7 +1,6 @@
-module Arkham.Helpers where
+module Arkham.Helpers (toLabel, replaceNonLetters, foldTokens, drawCard, draw, Deck, mkDeck, unDeck, Bag, mkBag, unBag) where
 
 import Arkham.Prelude hiding (toLower, toUpper, unpack)
-
 import Data.Char (isLetter, toLower, toUpper)
 import Data.Foldable (foldr, foldrM)
 import Data.Foldable qualified as Foldable
@@ -47,8 +46,11 @@ newtype Deck a = Deck {unDeck :: [a]}
     , MonoFoldable
     , SemiSequence
     , GrowingAppend
-    , NoThunks
+    , NoThunks, NFData
     )
+
+mkDeck :: NFData a => [a] -> Deck a
+mkDeck xs = Deck $ force xs
 
 type instance Element (Deck a) = a
 
@@ -58,11 +60,14 @@ instance Show (Deck a) where
 newtype Bag a = Bag {unBag :: [a]}
   deriving newtype (Semigroup, Monoid, ToJSON, FromJSON)
 
+mkBag :: NFData a => [a] -> Bag a
+mkBag xs = Bag $ force xs
+
 instance Show (Bag a) where
   show _ = "<Bag>"
 
-instance IsSequence (Deck a) where
-  fromList = Deck
+instance NFData a => IsSequence (Deck a) where
+  fromList = mkDeck
 
 instance MonoFunctor (Deck a)
 instance MonoTraversable (Deck a)

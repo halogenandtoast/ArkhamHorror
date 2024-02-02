@@ -13,7 +13,7 @@ import Arkham.Projection
 
 newtype FrankElwoodsRoom = FrankElwoodsRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 frankElwoodsRoom :: LocationCard FrankElwoodsRoom
 frankElwoodsRoom =

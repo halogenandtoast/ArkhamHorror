@@ -34,7 +34,7 @@ import Arkham.Trait qualified as Trait
 
 newtype BlackStarsRise = BlackStarsRise ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 blackStarsRise :: Difficulty -> BlackStarsRise
 blackStarsRise difficulty =

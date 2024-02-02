@@ -43,7 +43,7 @@ import Arkham.Zone
 
 newtype TheDepthsOfYoth = TheDepthsOfYoth ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theDepthsOfYoth :: Difficulty -> TheDepthsOfYoth
 theDepthsOfYoth difficulty =

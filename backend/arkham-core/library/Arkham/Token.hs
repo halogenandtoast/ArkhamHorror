@@ -16,7 +16,7 @@ data Token
   | Bounty
   | Offering
   deriving stock (Show, Eq, Ord, Generic, Data)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)
 
 instance IsLabel "damage" Token where
@@ -35,7 +35,7 @@ instance IsLabel "doom" Token where
   fromLabel = Doom
 
 newtype Tokens = Tokens (Map Token Int)
-  deriving newtype (Show, Eq, Ord, ToJSON, FromJSON, Monoid, Semigroup, NoThunks)
+  deriving newtype (Show, Eq, Ord, ToJSON, FromJSON, Monoid, Semigroup, NoThunks, NFData)
 
 type instance Index Tokens = Token
 type instance IxValue Tokens = Int

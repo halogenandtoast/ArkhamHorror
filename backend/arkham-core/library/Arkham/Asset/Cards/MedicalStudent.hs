@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype MedicalStudent = MedicalStudent AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 medicalStudent :: AssetCard MedicalStudent
 medicalStudent = ally MedicalStudent Cards.medicalStudent (1, 1)

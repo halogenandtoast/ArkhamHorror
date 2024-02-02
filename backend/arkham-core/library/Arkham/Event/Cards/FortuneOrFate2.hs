@@ -13,7 +13,7 @@ import Arkham.Window qualified as Window
 
 newtype FortuneOrFate2 = FortuneOrFate2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 fortuneOrFate2 :: EventCard FortuneOrFate2
 fortuneOrFate2 = event FortuneOrFate2 Cards.fortuneOrFate2

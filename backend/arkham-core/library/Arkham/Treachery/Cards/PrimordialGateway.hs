@@ -18,7 +18,7 @@ import Arkham.Treachery.Runner
 
 newtype PrimordialGateway = PrimordialGateway TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 primordialGateway :: TreacheryCard PrimordialGateway
 primordialGateway = treachery PrimordialGateway Cards.primordialGateway

@@ -13,7 +13,7 @@ import Arkham.Location.Runner
 
 newtype BurnedRuins_204 = BurnedRuins_204 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 burnedRuins_204 :: LocationCard BurnedRuins_204
 burnedRuins_204 = location BurnedRuins_204 Cards.burnedRuins_204 3 (Static 3)

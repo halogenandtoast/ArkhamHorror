@@ -11,7 +11,7 @@ import Arkham.Story.Runner
 
 newtype LagneauPerdu = LagneauPerdu StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 lagneauPerdu :: StoryCard LagneauPerdu
 lagneauPerdu = story LagneauPerdu Cards.lagneauPerdu

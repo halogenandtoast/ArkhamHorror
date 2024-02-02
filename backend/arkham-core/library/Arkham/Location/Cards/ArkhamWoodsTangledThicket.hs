@@ -9,7 +9,7 @@ import Arkham.Location.Runner
 
 newtype ArkhamWoodsTangledThicket = ArkhamWoodsTangledThicket LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 arkhamWoodsTangledThicket :: LocationCard ArkhamWoodsTangledThicket
 arkhamWoodsTangledThicket =

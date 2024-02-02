@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype Atychiphobia = Atychiphobia TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 atychiphobia :: TreacheryCard Atychiphobia
 atychiphobia = treachery Atychiphobia Cards.atychiphobia

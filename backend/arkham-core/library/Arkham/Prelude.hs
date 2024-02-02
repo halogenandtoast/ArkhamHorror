@@ -8,6 +8,7 @@ module Arkham.Prelude (
 import ClassyPrelude as X hiding (foldlM, on, (\\))
 import Data.Type.Equality as X (type (~))
 
+import Control.DeepSeq as X
 import Control.Lens as X (
   Lens',
   Traversal',
@@ -211,6 +212,7 @@ deleteFirstMatch f (b' : as) = b' : deleteFirstMatch f as
 
 data With a b = With a b
   deriving stock (Generic)
+  deriving anyclass (NFData)
 
 instance (NoThunks a, NoThunks b) => NoThunks (With a b)
 
@@ -304,7 +306,7 @@ withIndex1 = withIndexN 1
 
 newtype Max0 a = Max0 {getMax0 :: a}
   deriving stock (Eq, Ord, Show, Read, Generic)
-  deriving anyclass (Hashable, ToJSON, FromJSON, NoThunks)
+  deriving anyclass (Hashable, ToJSON, FromJSON, NoThunks, NFData)
 
 instance (Ord a, Num a) => Semigroup (Max0 a) where
   Max0 a <> Max0 b = Max0 $ max 0 (max a b)

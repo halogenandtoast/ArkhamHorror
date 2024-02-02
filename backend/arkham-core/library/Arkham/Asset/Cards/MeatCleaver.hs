@@ -16,7 +16,7 @@ import Arkham.SkillType
 
 newtype MeatCleaver = MeatCleaver AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 meatCleaver :: AssetCard MeatCleaver
 meatCleaver = asset MeatCleaver Cards.meatCleaver

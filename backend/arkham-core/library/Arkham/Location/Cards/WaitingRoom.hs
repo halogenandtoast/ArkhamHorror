@@ -13,7 +13,7 @@ import Arkham.Token
 
 newtype WaitingRoom = WaitingRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 waitingRoom :: LocationCard WaitingRoom
 waitingRoom = location WaitingRoom Cards.waitingRoom 3 (PerPlayer 1)

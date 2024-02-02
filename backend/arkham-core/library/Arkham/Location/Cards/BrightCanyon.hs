@@ -12,7 +12,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype BrightCanyon = BrightCanyon LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 brightCanyon :: LocationCard BrightCanyon
 brightCanyon = symbolLabel $ location BrightCanyon Cards.brightCanyon 2 (PerPlayer 2)

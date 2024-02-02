@@ -9,7 +9,7 @@ import Arkham.Prelude
 
 newtype BeatCop = BeatCop AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 beatCop :: AssetCard BeatCop
 beatCop = ally BeatCop Cards.beatCop (2, 2)

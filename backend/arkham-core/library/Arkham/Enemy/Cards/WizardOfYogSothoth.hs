@@ -16,7 +16,7 @@ import Arkham.Trait
 
 newtype WizardOfYogSothoth = WizardOfYogSothoth EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 wizardOfYogSothoth :: EnemyCard WizardOfYogSothoth
 wizardOfYogSothoth =

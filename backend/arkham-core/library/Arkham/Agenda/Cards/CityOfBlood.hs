@@ -17,7 +17,7 @@ import Arkham.Zone
 
 newtype CityOfBlood = CityOfBlood AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 cityOfBlood :: AgendaCard CityOfBlood
 cityOfBlood = agenda (4, A) CityOfBlood Cards.cityOfBlood (Static 4)

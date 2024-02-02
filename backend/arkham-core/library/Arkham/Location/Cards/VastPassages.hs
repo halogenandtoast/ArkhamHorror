@@ -15,7 +15,7 @@ import Arkham.Location.Runner
 
 newtype VastPassages = VastPassages LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 vastPassages :: LocationCard VastPassages
 vastPassages = location VastPassages Cards.vastPassages 2 (PerPlayer 1)

@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype TheShadowOfTheEclipse = TheShadowOfTheEclipse AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theShadowOfTheEclipse :: AgendaCard TheShadowOfTheEclipse
 theShadowOfTheEclipse =

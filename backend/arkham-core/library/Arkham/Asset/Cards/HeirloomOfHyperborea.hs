@@ -10,7 +10,7 @@ import Arkham.Matcher qualified as Matcher
 
 newtype HeirloomOfHyperborea = HeirloomOfHyperborea AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 heirloomOfHyperborea :: AssetCard HeirloomOfHyperborea
 heirloomOfHyperborea = asset HeirloomOfHyperborea Cards.heirloomOfHyperborea

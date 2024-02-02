@@ -14,7 +14,7 @@ import Arkham.Treachery.Runner
 
 newtype LostInTime = LostInTime TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 lostInTime :: TreacheryCard LostInTime
 lostInTime = treachery LostInTime Cards.lostInTime

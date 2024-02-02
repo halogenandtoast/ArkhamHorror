@@ -16,7 +16,7 @@ import Arkham.Matcher
 
 newtype Montmartre210 = Montmartre210 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 montmartre210 :: LocationCard Montmartre210
 montmartre210 = location Montmartre210 Cards.montmartre210 2 (PerPlayer 1)

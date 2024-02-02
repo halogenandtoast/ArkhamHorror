@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype ClarityOfMind3 = ClarityOfMind3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 clarityOfMind3 :: AssetCard ClarityOfMind3
 clarityOfMind3 = asset ClarityOfMind3 Cards.clarityOfMind3

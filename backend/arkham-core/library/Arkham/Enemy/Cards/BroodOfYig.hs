@@ -14,7 +14,7 @@ import Arkham.Helpers.Modifiers
 
 newtype BroodOfYig = BroodOfYig EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 broodOfYig :: EnemyCard BroodOfYig
 broodOfYig = enemy BroodOfYig Cards.broodOfYig (2, Static 3, 2) (1, 1)

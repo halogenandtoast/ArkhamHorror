@@ -17,7 +17,7 @@ import Arkham.SkillType
 
 newtype Curiosity = Curiosity SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 curiosity :: SkillCard Curiosity
 curiosity =

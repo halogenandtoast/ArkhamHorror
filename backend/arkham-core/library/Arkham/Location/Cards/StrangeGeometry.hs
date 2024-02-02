@@ -17,7 +17,7 @@ import Control.Monad.Extra (findM)
 
 newtype StrangeGeometry = StrangeGeometry LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 strangeGeometry :: LocationCard StrangeGeometry
 strangeGeometry = location StrangeGeometry Cards.strangeGeometry 4 (Static 1)

@@ -11,7 +11,7 @@ import Arkham.SkillType
 
 newtype CrystallineElderSign3 = CrystallineElderSign3 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 crystallineElderSign3 :: AssetCard CrystallineElderSign3
 crystallineElderSign3 = asset CrystallineElderSign3 Cards.crystallineElderSign3

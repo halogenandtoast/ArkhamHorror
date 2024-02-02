@@ -19,7 +19,7 @@ import Arkham.Window hiding (DrawCard, PlaceUnderneath)
 
 newtype FoolMeOnce1 = FoolMeOnce1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 foolMeOnce1 :: EventCard FoolMeOnce1
 foolMeOnce1 = event FoolMeOnce1 Cards.foolMeOnce1

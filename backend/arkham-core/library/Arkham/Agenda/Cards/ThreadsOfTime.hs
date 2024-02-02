@@ -13,7 +13,7 @@ import Arkham.Prelude
 
 newtype ThreadsOfTime = ThreadsOfTime AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 threadsOfTime :: AgendaCard ThreadsOfTime
 threadsOfTime = agenda (1, A) ThreadsOfTime Cards.threadsOfTime (Static 6)

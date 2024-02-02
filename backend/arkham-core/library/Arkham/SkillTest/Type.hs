@@ -12,6 +12,6 @@ data SkillTestType
   | AndSkillTest [SkillType]
   | ResourceSkillTest
   deriving stock (Show, Eq, Ord, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 $(deriveJSON defaultOptions ''SkillTestType)

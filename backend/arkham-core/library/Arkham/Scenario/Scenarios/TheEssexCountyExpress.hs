@@ -36,7 +36,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 newtype TheEssexCountyExpress = TheEssexCountyExpress ScenarioAttrs
   deriving stock (Generic)
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, NoThunks, Eq)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, NoThunks, NFData, Eq)
 
 theEssexCountyExpress :: Difficulty -> TheEssexCountyExpress
 theEssexCountyExpress difficulty =

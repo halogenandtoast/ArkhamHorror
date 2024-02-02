@@ -20,7 +20,7 @@ import Arkham.Trait (Trait (Research))
 
 newtype SurprisingFind1 = SurprisingFind1 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 surprisingFind1 :: SkillCard SurprisingFind1
 surprisingFind1 = skill SurprisingFind1 Cards.surprisingFind1
@@ -54,7 +54,7 @@ instance RunMessage SurprisingFind1 where
 
 newtype SurprisingFind1Effect = SurprisingFind1Effect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 surprisingFind1Effect :: EffectArgs -> SurprisingFind1Effect
 surprisingFind1Effect = cardEffect SurprisingFind1Effect Cards.surprisingFind1

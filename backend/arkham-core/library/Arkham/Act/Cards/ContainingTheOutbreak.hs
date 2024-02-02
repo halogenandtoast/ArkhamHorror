@@ -18,7 +18,7 @@ import Arkham.Scenarios.WakingNightmare.Helpers
 
 newtype ContainingTheOutbreak = ContainingTheOutbreak ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 containingTheOutbreak :: ActCard ContainingTheOutbreak
 containingTheOutbreak = act (3, A) ContainingTheOutbreak Cards.containingTheOutbreak Nothing

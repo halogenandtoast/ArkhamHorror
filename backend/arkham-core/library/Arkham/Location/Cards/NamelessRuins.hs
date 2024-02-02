@@ -10,7 +10,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype NamelessRuins = NamelessRuins LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 namelessRuins :: LocationCard NamelessRuins
 namelessRuins = location NamelessRuins Cards.namelessRuins 5 (PerPlayer 1)

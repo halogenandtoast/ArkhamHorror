@@ -17,7 +17,7 @@ import Arkham.Matcher
 
 newtype VengeanceAwaits = VengeanceAwaits AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 vengeanceAwaits :: AgendaCard VengeanceAwaits
 vengeanceAwaits =

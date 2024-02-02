@@ -15,7 +15,7 @@ import Arkham.Investigate
 
 newtype Pilfer = Pilfer EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 pilfer :: EventCard Pilfer
 pilfer = event Pilfer Cards.pilfer

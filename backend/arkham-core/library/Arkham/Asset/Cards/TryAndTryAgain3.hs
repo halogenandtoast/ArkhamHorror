@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TryAndTryAgain3 = TryAndTryAgain3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 tryAndTryAgain3 :: AssetCard TryAndTryAgain3
 tryAndTryAgain3 = asset TryAndTryAgain3 Cards.tryAndTryAgain3

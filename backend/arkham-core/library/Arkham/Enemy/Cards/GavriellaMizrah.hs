@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype GavriellaMizrah = GavriellaMizrah EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 gavriellaMizrah :: EnemyCard GavriellaMizrah
 gavriellaMizrah = enemy GavriellaMizrah Cards.gavriellaMizrah (5, Static 4, 2) (2, 0)

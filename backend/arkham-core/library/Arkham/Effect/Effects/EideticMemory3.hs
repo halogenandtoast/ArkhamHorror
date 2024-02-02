@@ -13,7 +13,7 @@ import Arkham.Projection
 
 newtype EideticMemory3 = EideticMemory3 EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 eideticMemory3 :: EffectArgs -> EideticMemory3
 eideticMemory3 = EideticMemory3 . uncurry4 (baseAttrs "03306")

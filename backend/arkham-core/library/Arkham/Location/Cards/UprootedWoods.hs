@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype UprootedWoods = UprootedWoods LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 uprootedWoods :: LocationCard UprootedWoods
 uprootedWoods = location UprootedWoods Cards.uprootedWoods 2 (PerPlayer 1)

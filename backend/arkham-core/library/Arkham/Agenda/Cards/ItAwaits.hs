@@ -17,7 +17,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype ItAwaits = ItAwaits AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 itAwaits :: AgendaCard ItAwaits
 itAwaits =

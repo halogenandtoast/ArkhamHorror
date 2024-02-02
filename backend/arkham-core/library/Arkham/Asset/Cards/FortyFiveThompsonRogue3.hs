@@ -14,7 +14,7 @@ import Arkham.Projection
 
 newtype FortyFiveThompsonRogue3 = FortyFiveThompsonRogue3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 fortyFiveThompsonRogue3 :: AssetCard FortyFiveThompsonRogue3
 fortyFiveThompsonRogue3 = asset FortyFiveThompsonRogue3 Cards.fortyFiveThompsonRogue3

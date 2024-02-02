@@ -12,7 +12,7 @@ import Arkham.SkillType
 
 newtype TrenchCoat = TrenchCoat AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 trenchCoat :: AssetCard TrenchCoat
 trenchCoat = assetWith TrenchCoat Cards.trenchCoat (healthL ?~ 2)

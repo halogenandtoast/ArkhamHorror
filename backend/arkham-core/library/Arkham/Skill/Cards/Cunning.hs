@@ -17,7 +17,7 @@ import Arkham.SkillType
 
 newtype Cunning = Cunning SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 cunning :: SkillCard Cunning
 cunning =

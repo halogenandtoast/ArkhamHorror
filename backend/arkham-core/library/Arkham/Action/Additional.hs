@@ -14,7 +14,7 @@ import GHC.OverloadedLabels
 
 data ActionRestriction = AbilitiesOnly | NoRestriction
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data AdditionalActionType
   = TraitRestrictedAdditionalAction Trait ActionRestriction
@@ -23,11 +23,11 @@ data AdditionalActionType
   | AnyAdditionalAction
   | BountyAction -- Tony Morgan
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data AdditionalAction = AdditionalAction {label :: Text, source :: Source, kind :: AdditionalActionType}
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 additionalActionType :: AdditionalAction -> AdditionalActionType
 additionalActionType (AdditionalAction _ _ aType) = aType

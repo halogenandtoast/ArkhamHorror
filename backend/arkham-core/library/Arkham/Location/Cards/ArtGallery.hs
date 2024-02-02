@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ArtGallery = ArtGallery LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 artGallery :: LocationCard ArtGallery
 artGallery = location ArtGallery Cards.artGallery 2 (PerPlayer 1)

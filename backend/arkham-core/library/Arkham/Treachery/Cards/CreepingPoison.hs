@@ -13,7 +13,7 @@ import Arkham.Treachery.Runner
 
 newtype CreepingPoison = CreepingPoison TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 creepingPoison :: TreacheryCard CreepingPoison
 creepingPoison = treachery CreepingPoison Cards.creepingPoison

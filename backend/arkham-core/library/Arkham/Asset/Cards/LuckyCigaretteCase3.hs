@@ -15,7 +15,7 @@ import Arkham.Window qualified as Window
 
 newtype LuckyCigaretteCase3 = LuckyCigaretteCase3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 luckyCigaretteCase3 :: AssetCard LuckyCigaretteCase3
 luckyCigaretteCase3 = asset LuckyCigaretteCase3 Cards.luckyCigaretteCase3

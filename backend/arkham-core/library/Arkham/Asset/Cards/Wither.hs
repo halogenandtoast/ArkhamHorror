@@ -18,7 +18,7 @@ import Arkham.Window qualified as Window
 
 newtype Wither = Wither AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 wither :: AssetCard Wither
 wither = asset Wither Cards.wither
@@ -44,7 +44,7 @@ instance RunMessage Wither where
 
 newtype WitherEffect = WitherEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 witherEffect :: EffectArgs -> WitherEffect
 witherEffect = cardEffect WitherEffect Cards.wither

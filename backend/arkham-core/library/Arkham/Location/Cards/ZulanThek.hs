@@ -11,7 +11,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype ZulanThek = ZulanThek LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 zulanThek :: LocationCard ZulanThek
 zulanThek = location ZulanThek Cards.zulanThek 4 (PerPlayer 1)

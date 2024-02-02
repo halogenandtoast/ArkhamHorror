@@ -7,7 +7,7 @@ import Arkham.Story.Runner
 
 newtype EndlessSecrets = EndlessSecrets StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 endlessSecrets :: StoryCard EndlessSecrets
 endlessSecrets = story EndlessSecrets Cards.endlessSecrets

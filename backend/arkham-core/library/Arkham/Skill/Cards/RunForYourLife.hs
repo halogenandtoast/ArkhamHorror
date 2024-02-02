@@ -11,7 +11,7 @@ import Arkham.Skill.Runner
 
 newtype RunForYourLife = RunForYourLife SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 runForYourLife :: SkillCard RunForYourLife
 runForYourLife = skill RunForYourLife Cards.runForYourLife

@@ -14,7 +14,7 @@ import Arkham.Placement
 
 newtype InconspicuousZoog = InconspicuousZoog EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 inconspicuousZoog :: EnemyCard InconspicuousZoog
 inconspicuousZoog =

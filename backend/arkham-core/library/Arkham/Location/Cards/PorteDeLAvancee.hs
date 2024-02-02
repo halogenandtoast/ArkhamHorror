@@ -15,7 +15,7 @@ import Arkham.Matcher
 
 newtype PorteDeLAvancee = PorteDeLAvancee LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 porteDeLAvancee :: LocationCard PorteDeLAvancee
 porteDeLAvancee =

@@ -14,7 +14,7 @@ import Arkham.Window (Window)
 
 newtype ChaosTokenEffect = ChaosTokenEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 chaosTokenEffect :: EffectArgs -> ChaosTokenEffect
 chaosTokenEffect = ChaosTokenEffect . uncurry4 (baseAttrs "tokef")

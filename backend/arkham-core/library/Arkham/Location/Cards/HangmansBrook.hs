@@ -15,7 +15,7 @@ import Arkham.Location.Runner
 
 newtype HangmansBrook = HangmansBrook LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 hangmansBrook :: LocationCard HangmansBrook
 hangmansBrook = location HangmansBrook Cards.hangmansBrook 4 (PerPlayer 1)

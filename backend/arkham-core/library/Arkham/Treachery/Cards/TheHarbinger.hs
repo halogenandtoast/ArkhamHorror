@@ -17,7 +17,7 @@ import Arkham.Treachery.Runner
 
 newtype TheHarbinger = TheHarbinger TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theHarbinger :: TreacheryCard TheHarbinger
 theHarbinger = treachery TheHarbinger Cards.theHarbinger

@@ -14,7 +14,7 @@ import Arkham.Window qualified as Window
 
 newtype Counterspell2 = Counterspell2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 counterspell2 :: EventCard Counterspell2
 counterspell2 = event Counterspell2 Cards.counterspell2

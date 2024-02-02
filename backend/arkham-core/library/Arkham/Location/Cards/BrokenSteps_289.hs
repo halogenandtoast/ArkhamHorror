@@ -21,7 +21,7 @@ import Arkham.Trait
 
 newtype BrokenSteps_289 = BrokenSteps_289 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 brokenSteps_289 :: LocationCard BrokenSteps_289
 brokenSteps_289 = location BrokenSteps_289 Cards.brokenSteps_289 4 (Static 0)

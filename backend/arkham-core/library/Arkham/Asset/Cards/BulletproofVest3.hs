@@ -7,7 +7,7 @@ import Arkham.Asset.Runner
 
 newtype BulletproofVest3 = BulletproofVest3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 bulletproofVest3 :: AssetCard BulletproofVest3
 bulletproofVest3 = assetWith BulletproofVest3 Cards.bulletproofVest3 (healthL ?~ 4)

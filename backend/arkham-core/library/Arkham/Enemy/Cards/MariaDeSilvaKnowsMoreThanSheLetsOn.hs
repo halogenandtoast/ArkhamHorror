@@ -11,7 +11,7 @@ import Arkham.Enemy.Runner
 
 newtype MariaDeSilvaKnowsMoreThanSheLetsOn = MariaDeSilvaKnowsMoreThanSheLetsOn EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 mariaDeSilvaKnowsMoreThanSheLetsOn
   :: EnemyCard MariaDeSilvaKnowsMoreThanSheLetsOn

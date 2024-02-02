@@ -15,15 +15,15 @@ import Arkham.SkillType
 
 data RifleStatus = NotJammed | Jammed
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype Metadata = Metadata {rifleStatus :: RifleStatus}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype OldHuntingRifle3 = OldHuntingRifle3 (AssetAttrs `With` Metadata)
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 oldHuntingRifle3 :: AssetCard OldHuntingRifle3
 oldHuntingRifle3 =

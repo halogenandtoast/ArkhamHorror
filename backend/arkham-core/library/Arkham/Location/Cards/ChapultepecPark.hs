@@ -10,7 +10,7 @@ import Arkham.Prelude
 
 newtype ChapultepecPark = ChapultepecPark LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 chapultepecPark :: LocationCard ChapultepecPark
 chapultepecPark = locationWith ChapultepecPark Cards.chapultepecPark 1 (Static 0) (labelL .~ "triangle")

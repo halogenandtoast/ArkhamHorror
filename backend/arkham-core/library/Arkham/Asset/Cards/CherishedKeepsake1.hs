@@ -13,7 +13,7 @@ import Arkham.Timing qualified as Timing
 
 newtype CherishedKeepsake1 = CherishedKeepsake1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 cherishedKeepsake1 :: AssetCard CherishedKeepsake1
 cherishedKeepsake1 =

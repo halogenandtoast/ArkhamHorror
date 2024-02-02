@@ -15,7 +15,7 @@ import Arkham.Projection
 
 newtype SceneOfTheCrime = SceneOfTheCrime EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 sceneOfTheCrime :: EventCard SceneOfTheCrime
 sceneOfTheCrime = event SceneOfTheCrime Cards.sceneOfTheCrime

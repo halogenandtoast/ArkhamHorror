@@ -11,7 +11,7 @@ import Arkham.Event.Runner
 
 newtype WardOfProtection2 = WardOfProtection2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 wardOfProtection2 :: EventCard WardOfProtection2
 wardOfProtection2 = event WardOfProtection2 Cards.wardOfProtection2

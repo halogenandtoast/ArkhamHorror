@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype WhispersInYourHeadDoubt = WhispersInYourHeadDoubt TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 whispersInYourHeadDoubt :: TreacheryCard WhispersInYourHeadDoubt
 whispersInYourHeadDoubt =

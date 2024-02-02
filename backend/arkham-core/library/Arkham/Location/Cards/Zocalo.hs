@@ -10,7 +10,7 @@ import Arkham.Prelude
 
 newtype Zocalo = Zocalo LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 zocalo :: LocationCard Zocalo
 zocalo = locationWith Zocalo Cards.zocalo 3 (Static 0) (labelL .~ "diamond")

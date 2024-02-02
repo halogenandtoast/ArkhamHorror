@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype StrangeSolutionEmpoweringElixir4 = StrangeSolutionEmpoweringElixir4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 strangeSolutionEmpoweringElixir4 :: AssetCard StrangeSolutionEmpoweringElixir4
 strangeSolutionEmpoweringElixir4 =

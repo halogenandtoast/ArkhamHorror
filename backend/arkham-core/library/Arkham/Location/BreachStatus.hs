@@ -12,7 +12,7 @@ data BreachStatus
   = Breaches Int
   | Incursion Int
   deriving stock (Show, Eq, Ord, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 countBreaches :: BreachStatus -> Int
 countBreaches (Breaches n) = n

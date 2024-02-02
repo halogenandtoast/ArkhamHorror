@@ -15,7 +15,7 @@ import Arkham.Window qualified as Window
 
 newtype FleshWard = FleshWard AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 fleshWard :: AssetCard FleshWard
 fleshWard = assetWith FleshWard Cards.fleshWard ((healthL ?~ 1) . (sanityL ?~ 1))

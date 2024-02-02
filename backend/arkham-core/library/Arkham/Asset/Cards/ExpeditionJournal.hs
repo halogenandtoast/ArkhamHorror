@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 
 newtype ExpeditionJournal = ExpeditionJournal AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 expeditionJournal :: AssetCard ExpeditionJournal
 expeditionJournal = asset ExpeditionJournal Cards.expeditionJournal

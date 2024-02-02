@@ -12,7 +12,7 @@ import Arkham.Location.Runner
 
 newtype Theatre = Theatre LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 theatre :: LocationCard Theatre
 theatre = location Theatre Cards.theatre 2 (Static 0)

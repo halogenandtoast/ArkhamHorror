@@ -13,7 +13,7 @@ import Arkham.Projection
 
 newtype AkachiOnyele = AkachiOnyele InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 instance HasModifiersFor AkachiOnyele where
   getModifiersFor (AssetTarget aid) (AkachiOnyele attrs) = do

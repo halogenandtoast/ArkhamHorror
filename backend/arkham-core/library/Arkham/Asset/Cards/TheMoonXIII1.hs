@@ -17,7 +17,7 @@ import Arkham.Window (defaultWindows)
 
 newtype TheMoonXIII1 = TheMoonXIII1 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theMoonXiii1 :: AssetCard TheMoonXIII1
 theMoonXiii1 =

@@ -17,7 +17,7 @@ import Arkham.Message qualified as Msg
 
 newtype StreetsOfVenice = StreetsOfVenice LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 streetsOfVenice :: LocationCard StreetsOfVenice
 streetsOfVenice =

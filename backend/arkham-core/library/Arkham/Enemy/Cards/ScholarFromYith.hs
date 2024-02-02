@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ScholarFromYith = ScholarFromYith EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 scholarFromYith :: EnemyCard ScholarFromYith
 scholarFromYith =

@@ -68,7 +68,7 @@ data Source
   | TarotSource TarotCard
   | BatchSource BatchId
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 _AssetSource :: Prism' Source AssetId
 _AssetSource = prism' AssetSource $ \case

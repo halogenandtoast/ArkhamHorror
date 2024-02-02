@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype DiscoveringTheTruth = DiscoveringTheTruth ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 discoveringTheTruth :: ActCard DiscoveringTheTruth
 discoveringTheTruth =

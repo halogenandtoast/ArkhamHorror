@@ -28,6 +28,7 @@ class
   , Eq a
   , Show a
   , NoThunks a
+  , NFData a
   , HasAbilities a
   , HasModifiersFor a
   , RunMessage a
@@ -56,7 +57,7 @@ data SkillAttrs = SkillAttrs
   , skillPlacement :: Placement
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance HasField "controller" SkillAttrs InvestigatorId where
   getField = skillOwner
@@ -137,6 +138,9 @@ skill f cardDef =
     }
 
 data Skill = forall a. IsSkill a => Skill a
+
+instance NFData Skill where
+  rnf (Skill a) = rnf a
 
 instance NoThunks Skill where
   noThunks ctx (Skill a) = noThunks ctx a

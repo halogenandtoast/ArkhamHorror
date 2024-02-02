@@ -12,7 +12,7 @@ import Arkham.Treachery.Runner
 
 newtype LockedDoor = LockedDoor TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 lockedDoor :: TreacheryCard LockedDoor
 lockedDoor = treachery LockedDoor Cards.lockedDoor

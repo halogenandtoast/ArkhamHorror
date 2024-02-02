@@ -14,7 +14,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype Intruders = Intruders AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 intruders :: AgendaCard Intruders
 intruders = agenda (2, A) Intruders Cards.intruders (Static 9)

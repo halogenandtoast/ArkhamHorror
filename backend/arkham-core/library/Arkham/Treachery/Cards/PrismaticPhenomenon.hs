@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype PrismaticPhenomenon = PrismaticPhenomenon TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 prismaticPhenomenon :: TreacheryCard PrismaticPhenomenon
 prismaticPhenomenon = treachery PrismaticPhenomenon Cards.prismaticPhenomenon

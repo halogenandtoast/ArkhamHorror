@@ -15,7 +15,7 @@ import Arkham.Matcher hiding (EnemyEvaded)
 
 newtype ArchaicGlyphsProphecyForetold3 = ArchaicGlyphsProphecyForetold3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 instance HasAbilities ArchaicGlyphsProphecyForetold3 where
   getAbilities (ArchaicGlyphsProphecyForetold3 a) = [investigateAbility a 1 (assetUseCost a Charge 1) ControlsThis]

@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype GoatSpawn = GoatSpawn EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 goatSpawn :: EnemyCard GoatSpawn
 goatSpawn = enemy GoatSpawn Cards.goatSpawn (3, Static 3, 2) (1, 0)

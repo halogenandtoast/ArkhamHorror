@@ -15,7 +15,7 @@ import Arkham.SkillType
 
 newtype BilliardsRoom = BilliardsRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 billiardsRoom :: LocationCard BilliardsRoom
 billiardsRoom = location BilliardsRoom Cards.billiardsRoom 3 (Static 0)

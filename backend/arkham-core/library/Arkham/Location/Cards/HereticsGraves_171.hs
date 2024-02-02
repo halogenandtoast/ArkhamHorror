@@ -17,7 +17,7 @@ import Arkham.SkillType
 
 newtype HereticsGraves_171 = HereticsGraves_171 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 hereticsGraves_171 :: LocationCard HereticsGraves_171
 hereticsGraves_171 = location HereticsGraves_171 Cards.hereticsGraves_171 7 (Static 0)

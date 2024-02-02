@@ -25,7 +25,7 @@ import Arkham.Story.Runner
 
 newtype PennysFate = PennysFate StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 pennysFate :: StoryCard PennysFate
 pennysFate = story PennysFate Cards.pennysFate
@@ -70,7 +70,7 @@ instance RunMessage PennysFate where
 
 newtype PennysFateEffect = PennysFateEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 pennysFateEffect :: EffectArgs -> PennysFateEffect
 pennysFateEffect = cardEffect PennysFateEffect Cards.pennysFate

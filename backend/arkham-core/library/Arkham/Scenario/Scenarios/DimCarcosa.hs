@@ -38,7 +38,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype DimCarcosa = DimCarcosa ScenarioAttrs
   deriving anyclass (IsScenario)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 dimCarcosa :: Difficulty -> DimCarcosa
 dimCarcosa difficulty =

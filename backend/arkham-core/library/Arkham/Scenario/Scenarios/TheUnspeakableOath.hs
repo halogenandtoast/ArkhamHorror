@@ -37,7 +37,7 @@ import Arkham.Window qualified as Window
 
 newtype TheUnspeakableOath = TheUnspeakableOath ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theUnspeakableOath :: Difficulty -> TheUnspeakableOath
 theUnspeakableOath difficulty =
@@ -164,7 +164,7 @@ instance RunMessage TheUnspeakableOath where
           partition (`cardMatch` CardWithTrait Monster) (unDeck gatheredCards)
         (lunatics, deck'') =
           partition (`cardMatch` CardWithTrait Lunatic) deck'
-        encounterDeck = Deck deck''
+        encounterDeck = mkDeck deck''
       investigatorIds <- allInvestigatorIds
       constanceInterviewed <- interviewed Assets.constanceDumaine
       courageMessages <-

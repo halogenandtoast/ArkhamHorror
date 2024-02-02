@@ -13,7 +13,7 @@ import Arkham.Skill.Runner
 
 newtype StrokeOfLuck2 = StrokeOfLuck2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 strokeOfLuck2 :: SkillCard StrokeOfLuck2
 strokeOfLuck2 = skill StrokeOfLuck2 Cards.strokeOfLuck2

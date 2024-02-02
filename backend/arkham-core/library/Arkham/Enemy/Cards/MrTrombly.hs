@@ -14,7 +14,7 @@ import Arkham.Trait (Trait (Staff))
 
 newtype MrTrombly = MrTrombly EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 mrTrombly :: EnemyCard MrTrombly
 mrTrombly = enemyWith MrTrombly Cards.mrTrombly (4, Static 5, 4) (2, 1) (spawnAtL ?~ "Foyer")

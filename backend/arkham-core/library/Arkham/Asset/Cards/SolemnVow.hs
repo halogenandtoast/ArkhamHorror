@@ -15,7 +15,7 @@ import Arkham.Projection
 
 newtype SolemnVow = SolemnVow AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 solemnVow :: AssetCard SolemnVow
 solemnVow = asset SolemnVow Cards.solemnVow

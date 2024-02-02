@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype TrainTracks = TrainTracks LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 trainTracks :: LocationCard TrainTracks
 trainTracks = location TrainTracks Cards.trainTracks 3 (PerPlayer 1)

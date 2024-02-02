@@ -50,7 +50,7 @@ data Entities = Entities
   , entitiesStories :: EntityMap Story
   }
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance ToJSON Entities where
   toJSON = genericToJSON $ aesonOptions $ Just "entities"

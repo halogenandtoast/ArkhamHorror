@@ -14,7 +14,7 @@ import Arkham.SkillType
 
 newtype GetOverHere = GetOverHere EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 getOverHere :: EventCard GetOverHere
 getOverHere = event GetOverHere Cards.getOverHere

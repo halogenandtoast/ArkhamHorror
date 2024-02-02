@@ -12,7 +12,7 @@ import Arkham.Treachery.Runner
 
 newtype ThreadsOfReality = ThreadsOfReality TreacheryAttrs
   deriving anyclass (IsTreachery)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 threadsOfReality :: TreacheryCard ThreadsOfReality
 threadsOfReality = treachery ThreadsOfReality Cards.threadsOfReality

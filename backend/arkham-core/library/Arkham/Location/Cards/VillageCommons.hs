@@ -13,7 +13,7 @@ import Arkham.Location.Runner
 
 newtype VillageCommons = VillageCommons LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 villageCommons :: LocationCard VillageCommons
 villageCommons = location VillageCommons Cards.villageCommons 3 (Static 0)

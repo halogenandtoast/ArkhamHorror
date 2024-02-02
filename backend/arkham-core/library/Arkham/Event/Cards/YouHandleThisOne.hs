@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype YouHandleThisOne = YouHandleThisOne EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 youHandleThisOne :: EventCard YouHandleThisOne
 youHandleThisOne = event YouHandleThisOne Cards.youHandleThisOne

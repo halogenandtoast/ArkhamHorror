@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype DigDeep2 = DigDeep2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 digDeep2 :: AssetCard DigDeep2
 digDeep2 = asset DigDeep2 Cards.digDeep2

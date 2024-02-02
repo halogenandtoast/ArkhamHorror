@@ -18,7 +18,7 @@ import Arkham.Trait (Trait (SilverTwilight))
 
 newtype JosefsPlan = JosefsPlan StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 josefsPlan :: StoryCard JosefsPlan
 josefsPlan = story JosefsPlan Cards.josefsPlan
@@ -37,7 +37,7 @@ instance RunMessage JosefsPlan where
 
 newtype JosefsPlanEffect = JosefsPlanEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 josefsPlanEffect :: EffectArgs -> JosefsPlanEffect
 josefsPlanEffect = cardEffect JosefsPlanEffect Cards.josefsPlan

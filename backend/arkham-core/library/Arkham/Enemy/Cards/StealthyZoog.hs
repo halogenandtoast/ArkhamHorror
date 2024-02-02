@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype StealthyZoog = StealthyZoog EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 stealthyZoog :: EnemyCard StealthyZoog
 stealthyZoog =

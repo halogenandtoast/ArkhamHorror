@@ -13,7 +13,7 @@ import Arkham.Location.Runner
 
 newtype VictorianHallsSpectral = VictorianHallsSpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 victorianHallsSpectral :: LocationCard VictorianHallsSpectral
 victorianHallsSpectral =

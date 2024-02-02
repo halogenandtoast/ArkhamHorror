@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype EmergencyAid = EmergencyAid EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 emergencyAid :: EventCard EmergencyAid
 emergencyAid = event EmergencyAid Cards.emergencyAid

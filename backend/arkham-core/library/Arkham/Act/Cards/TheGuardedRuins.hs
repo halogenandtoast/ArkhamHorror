@@ -17,7 +17,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheGuardedRuins = TheGuardedRuins ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 theGuardedRuins :: ActCard TheGuardedRuins
 theGuardedRuins =

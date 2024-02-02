@@ -10,7 +10,7 @@ import Arkham.Story.Runner
 
 newtype TheLikenessOfOld = TheLikenessOfOld StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theLikenessOfOld :: StoryCard TheLikenessOfOld
 theLikenessOfOld = story TheLikenessOfOld Cards.theLikenessOfOld

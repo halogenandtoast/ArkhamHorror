@@ -14,11 +14,11 @@ import Arkham.SkillType
 
 newtype Metadata = Metadata {justPlayed :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype Lupara3 = Lupara3 (AssetAttrs `With` Metadata)
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 lupara3 :: AssetCard Lupara3
 lupara3 = asset (Lupara3 . (`with` Metadata True)) Cards.lupara3

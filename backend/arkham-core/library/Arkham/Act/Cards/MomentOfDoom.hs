@@ -20,7 +20,7 @@ import Arkham.Timing qualified as Timing
 
 newtype MomentOfDoom = MomentOfDoom ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 momentOfDoom :: ActCard MomentOfDoom
 momentOfDoom = act (3, A) MomentOfDoom Cards.momentOfDoom Nothing

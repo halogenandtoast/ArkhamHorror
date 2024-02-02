@@ -20,7 +20,7 @@ import Arkham.Trait qualified as Trait
 
 newtype CosmicGate = CosmicGate LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 cosmicGate :: LocationCard CosmicGate
 cosmicGate =

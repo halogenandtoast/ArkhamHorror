@@ -13,7 +13,7 @@ import Arkham.Trait (Trait (Port))
 
 newtype TheIsleOfOriab = TheIsleOfOriab ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theIsleOfOriab :: ActCard TheIsleOfOriab
 theIsleOfOriab = act (2, A) TheIsleOfOriab Cards.theIsleOfOriab Nothing

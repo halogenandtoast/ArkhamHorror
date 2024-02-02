@@ -17,7 +17,7 @@ import Arkham.SkillType ()
 
 newtype Uptown_296 = Uptown_296 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 uptown_296 :: LocationCard Uptown_296
 uptown_296 = location Uptown_296 Cards.uptown_296 3 (Static 0)

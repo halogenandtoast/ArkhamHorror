@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype PlateauOfLeng = PlateauOfLeng LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 plateauOfLeng :: LocationCard PlateauOfLeng
 plateauOfLeng = location PlateauOfLeng Cards.plateauOfLeng 3 (Static 1)

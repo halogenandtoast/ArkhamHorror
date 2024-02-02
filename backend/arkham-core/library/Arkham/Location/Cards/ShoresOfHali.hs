@@ -14,7 +14,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype ShoresOfHali = ShoresOfHali LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 shoresOfHali :: LocationCard ShoresOfHali
 shoresOfHali =

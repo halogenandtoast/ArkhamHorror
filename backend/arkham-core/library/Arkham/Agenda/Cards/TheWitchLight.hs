@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TheWitchLight = TheWitchLight AgendaAttrs
   deriving anyclass (IsAgenda)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theWitchLight :: AgendaCard TheWitchLight
 theWitchLight = agenda (3, A) TheWitchLight Cards.theWitchLight (Static 8)

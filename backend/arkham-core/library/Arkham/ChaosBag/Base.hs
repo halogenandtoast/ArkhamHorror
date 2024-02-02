@@ -14,7 +14,7 @@ data ChaosBag = ChaosBag
   , chaosBagForceDraw :: Maybe ChaosTokenFace
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 allChaosBagChaosTokens :: ChaosBag -> [ChaosToken]
 allChaosBagChaosTokens ChaosBag {..} =

@@ -22,7 +22,7 @@ import Arkham.Window qualified as Window
 
 newtype RobesOfEndlessNight2 = RobesOfEndlessNight2 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 robesOfEndlessNight2 :: AssetCard RobesOfEndlessNight2
 robesOfEndlessNight2 =

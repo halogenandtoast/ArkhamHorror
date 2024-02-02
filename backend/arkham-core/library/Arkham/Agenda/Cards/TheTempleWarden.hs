@@ -13,7 +13,7 @@ import Arkham.Matcher hiding (InvestigatorDefeated)
 
 newtype TheTempleWarden = TheTempleWarden AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theTempleWarden :: AgendaCard TheTempleWarden
 theTempleWarden =

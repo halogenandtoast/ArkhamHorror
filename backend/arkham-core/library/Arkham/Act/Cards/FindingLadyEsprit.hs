@@ -24,7 +24,7 @@ import Data.Set qualified as Set
 
 newtype FindingLadyEsprit = FindingLadyEsprit ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 findingLadyEsprit :: ActCard FindingLadyEsprit
 findingLadyEsprit =

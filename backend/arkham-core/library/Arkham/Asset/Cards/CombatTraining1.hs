@@ -13,7 +13,7 @@ import Arkham.SkillType
 
 newtype CombatTraining1 = CombatTraining1 AssetAttrs
   deriving anyclass (IsAsset)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 combatTraining1 :: AssetCard CombatTraining1
 combatTraining1 =

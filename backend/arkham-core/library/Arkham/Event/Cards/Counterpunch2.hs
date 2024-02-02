@@ -17,7 +17,7 @@ import Arkham.Window qualified as Window
 
 newtype Counterpunch2 = Counterpunch2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 counterpunch2 :: EventCard Counterpunch2
 counterpunch2 = event Counterpunch2 Cards.counterpunch2

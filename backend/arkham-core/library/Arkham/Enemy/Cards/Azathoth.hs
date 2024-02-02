@@ -8,7 +8,7 @@ import Arkham.Prelude
 
 newtype Azathoth = Azathoth EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 azathoth :: EnemyCard Azathoth
 azathoth =

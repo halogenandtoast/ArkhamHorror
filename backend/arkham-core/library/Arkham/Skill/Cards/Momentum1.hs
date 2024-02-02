@@ -15,7 +15,7 @@ import Arkham.Skill.Runner
 
 newtype Momentum1 = Momentum1 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 momentum1 :: SkillCard Momentum1
 momentum1 = skill Momentum1 Cards.momentum1
@@ -29,7 +29,7 @@ instance RunMessage Momentum1 where
 
 newtype Momentum1Effect = Momentum1Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 momentum1Effect :: EffectArgs -> Momentum1Effect
 momentum1Effect = cardEffect Momentum1Effect Cards.momentum1

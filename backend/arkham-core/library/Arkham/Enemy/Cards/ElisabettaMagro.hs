@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype ElisabettaMagro = ElisabettaMagro EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 elisabettaMagro :: EnemyCard ElisabettaMagro
 elisabettaMagro = enemy ElisabettaMagro Cards.elisabettaMagro (3, Static 4, 4) (1, 1)

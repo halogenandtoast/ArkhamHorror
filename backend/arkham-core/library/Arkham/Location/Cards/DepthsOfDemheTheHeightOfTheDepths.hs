@@ -16,7 +16,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype DepthsOfDemheTheHeightOfTheDepths = DepthsOfDemheTheHeightOfTheDepths LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 instance HasModifiersFor DepthsOfDemheTheHeightOfTheDepths where
   getModifiersFor (InvestigatorTarget iid) (DepthsOfDemheTheHeightOfTheDepths a) = do

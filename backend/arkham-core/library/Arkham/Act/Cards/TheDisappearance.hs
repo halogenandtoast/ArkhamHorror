@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TheDisappearance = TheDisappearance ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theDisappearance :: ActCard TheDisappearance
 theDisappearance = act (1, A) TheDisappearance Cards.theDisappearance Nothing

@@ -16,7 +16,7 @@ import Arkham.Treachery.Runner
 
 newtype WhispersOfHypnos = WhispersOfHypnos TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 whispersOfHypnos :: TreacheryCard WhispersOfHypnos
 whispersOfHypnos = treachery WhispersOfHypnos Cards.whispersOfHypnos
@@ -47,7 +47,7 @@ instance RunMessage WhispersOfHypnos where
 
 newtype WhispersOfHypnosEffect = WhispersOfHypnosEffect EffectAttrs
   deriving anyclass (IsEffect, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 whispersOfHypnosEffect :: EffectArgs -> WhispersOfHypnosEffect
 whispersOfHypnosEffect = cardEffect WhispersOfHypnosEffect Cards.whispersOfHypnos

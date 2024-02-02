@@ -10,7 +10,7 @@ import Arkham.Story.Runner
 
 newtype CylindersOfKadatheron = CylindersOfKadatheron StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 cylindersOfKadatheron :: StoryCard CylindersOfKadatheron
 cylindersOfKadatheron = story CylindersOfKadatheron Cards.cylindersOfKadatheron

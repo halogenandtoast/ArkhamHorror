@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 
 newtype BlastedHeath_249 = BlastedHeath_249 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 blastedHeath_249 :: LocationCard BlastedHeath_249
 blastedHeath_249 =

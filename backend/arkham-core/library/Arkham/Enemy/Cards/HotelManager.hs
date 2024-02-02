@@ -15,7 +15,7 @@ import Arkham.Trait (Trait (Guest))
 
 newtype HotelManager = HotelManager EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 hotelManager :: EnemyCard HotelManager
 hotelManager = enemy HotelManager Cards.hotelManager (3, PerPlayer 6, 4) (2, 2)

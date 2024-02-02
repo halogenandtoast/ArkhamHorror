@@ -85,14 +85,14 @@ instance HasGame GameAppT where
 instance CardGen GameAppT where
   genEncounterCard a = do
     cardId <- unsafeMakeCardId <$> getRandom
-    let card = lookupEncounterCard (toCardDef a) cardId
+    let !card = lookupEncounterCard (toCardDef a) cardId
     ref <- asks appGame
     atomicModifyIORef' ref $ \g ->
       (g {gameCards = Map.insert cardId (EncounterCard card) (gameCards g)}, ())
     pure card
   genPlayerCard a = do
     cardId <- unsafeMakeCardId <$> getRandom
-    let card = lookupPlayerCard (toCardDef a) cardId
+    let !card = lookupPlayerCard (toCardDef a) cardId
     ref <- asks appGame
     atomicModifyIORef' ref $ \g ->
       (g {gameCards = Map.insert cardId (PlayerCard card) (gameCards g)}, ())

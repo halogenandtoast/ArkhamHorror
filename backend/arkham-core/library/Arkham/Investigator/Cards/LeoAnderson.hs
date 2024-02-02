@@ -14,11 +14,11 @@ import Arkham.Window (duringTurnWindow)
 
 newtype Meta = Meta {responseCard :: Maybe Card}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype LeoAnderson = LeoAnderson (InvestigatorAttrs `With` Meta)
   deriving anyclass (IsInvestigator)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 leoAnderson :: InvestigatorCard LeoAnderson
 leoAnderson =

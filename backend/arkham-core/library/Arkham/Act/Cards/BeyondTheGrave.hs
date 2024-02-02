@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype BeyondTheGrave = BeyondTheGrave ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 beyondTheGrave :: ActCard BeyondTheGrave
 beyondTheGrave = act (2, A) BeyondTheGrave Cards.beyondTheGrave Nothing

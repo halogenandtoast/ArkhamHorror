@@ -14,7 +14,7 @@ import Arkham.Placement
 
 newtype PitWarden = PitWarden EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 pitWarden :: EnemyCard PitWarden
 pitWarden =

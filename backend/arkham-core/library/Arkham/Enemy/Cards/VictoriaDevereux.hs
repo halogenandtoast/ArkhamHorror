@@ -13,7 +13,7 @@ import Arkham.Enemy.Runner
 
 newtype VictoriaDevereux = VictoriaDevereux EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 victoriaDevereux :: EnemyCard VictoriaDevereux
 victoriaDevereux =

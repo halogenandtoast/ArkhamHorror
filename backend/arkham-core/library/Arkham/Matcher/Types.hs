@@ -123,7 +123,7 @@ data InvestigatorMatcher
   | InvestigatorIfThen InvestigatorMatcher InvestigatorMatcher InvestigatorMatcher
   | InvestigatorCanTarget Target
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Plated InvestigatorMatcher
 
@@ -148,7 +148,7 @@ data PreyMatcher
   | BearerOf EnemyId
   | RestrictedBearerOf EnemyId InvestigatorMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data AssetMatcher
   = AssetWithTitle Text
@@ -205,7 +205,7 @@ data AssetMatcher
   | AssetWithPlacement Placement
   | AssetWithPerformableAbility AbilityMatcher [ModifierType]
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Not AssetMatcher where
   not_ = NotAsset
@@ -297,7 +297,7 @@ data EnemyMatcher
   | SwarmingEnemy
   | EnemyWithHealth
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Semigroup EnemyMatcher where
   AnyEnemy <> x = x
@@ -343,7 +343,7 @@ data EventMatcher
   | NotEvent EventMatcher
   | EventWithPlacement Placement
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Semigroup EventMatcher where
   EventMatches xs <> EventMatches ys = EventMatches (xs <> ys)
@@ -431,7 +431,7 @@ data LocationMatcher
   | -- | Must be replaced
     ThatLocation
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Plated LocationMatcher
 
@@ -506,7 +506,7 @@ data SkillMatcher
   | AnySkill
   | NotSkill SkillMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Semigroup SkillMatcher where
   AnySkill <> x = x
@@ -543,7 +543,7 @@ data TreacheryMatcher
   | TreacheryOneOf [TreacheryMatcher]
   | NotTreachery TreacheryMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Semigroup TreacheryMatcher where
   AnyTreachery <> x = x
@@ -582,7 +582,7 @@ data ExtendedCardMatcher
   | CanCancelAllEffects ExtendedCardMatcher
   | CardWithoutModifier ModifierType
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Semigroup ExtendedCardMatcher where
   ExtendedCardMatches xs <> ExtendedCardMatches ys =
@@ -651,7 +651,7 @@ data CardMatcher
   | CardWithOddNumberOfWordsInTitle
   | CardWithEvenNumberOfWordsInTitle
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance IsString CardMatcher where
   fromString = CardWithTitle . fromString
@@ -717,11 +717,11 @@ instance IsCardMatcher CardType where
 data DiscardedPlayerCardMatcher
   = DiscardedCardMatcher InvestigatorMatcher CardMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data MovesVia = MovedViaHunter | MovedViaOther
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
   deriving anyclass (ToJSON, FromJSON)
 
 type FromWhere = Where
@@ -862,15 +862,15 @@ data WindowMatcher
   | WouldTriggerChaosTokenRevealEffectOnCard Who CardMatcher [ChaosTokenFace]
   | Exhausts Timing Who TargetMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data PhaseStepMatcher = EnemiesAttackStep | HuntersMoveStep
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data ExploreMatcher = SuccessfulExplore LocationMatcher | FailedExplore CardMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data DefeatedByMatcher
   = ByHorror
@@ -881,7 +881,7 @@ data DefeatedByMatcher
   | ByAnyOf [DefeatedByMatcher]
   | DefeatedByMatches [DefeatedByMatcher]
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Monoid DefeatedByMatcher where
   mempty = ByAny
@@ -912,7 +912,7 @@ data SkillTestMatcher
   | NotSkillTest SkillTestMatcher
   | SkillTestFromRevelation
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data SourceMatcher
   = SourceWithTrait Trait
@@ -929,7 +929,7 @@ data SourceMatcher
   | SourceIs Source
   | SourceWithCard CardMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance IsLabel "investigator" SourceMatcher where
   fromLabel = SourceIsType InvestigatorType
@@ -952,7 +952,7 @@ data TargetMatcher
   | AgendaTargetMatches AgendaMatcher
   | ScenarioCardTarget
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Semigroup TargetMatcher where
   AnyTarget <> x = x
@@ -967,7 +967,7 @@ data TargetListMatcher
   | ExcludesTarget TargetMatcher
   | AnyTargetList
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Semigroup SkillTestMatcher where
   AnySkillTest <> x = x
@@ -983,7 +983,7 @@ data SkillTestResultMatcher
   | AnyResult
   | ResultOneOf [SkillTestResultMatcher]
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data ValueMatcher
   = LessThan GameValue
@@ -993,11 +993,11 @@ data ValueMatcher
   | EqualTo GameValue
   | AnyValue
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data SkillTestTypeMatcher = InvestigationSkillTest LocationMatcher | AnySkillTestType
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance IsLabel "investigation" SkillTestTypeMatcher where
   fromLabel = InvestigationSkillTest Anywhere
@@ -1010,7 +1010,7 @@ data SkillTestValueMatcher
   | GreaterThanBaseValue
   | AnySkillTestValue
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data ChaosTokenMatcher
   = WithNegativeModifier
@@ -1023,7 +1023,7 @@ data ChaosTokenMatcher
   | WouldReduceYourSkillValueToZero
   | IsInfestationToken ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance IsLabel "skull" ChaosTokenMatcher where
   fromLabel = ChaosTokenFaceIs Skull
@@ -1056,7 +1056,7 @@ instance Monoid ChaosTokenMatcher where
 
 data PhaseMatcher = AnyPhase | IsMythosPhase | IsEnemyPhase | IsInvestigationPhase | IsUpkeepPhase
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance IsLabel "mythos" PhaseMatcher where
   fromLabel = IsMythosPhase
@@ -1074,11 +1074,11 @@ data WindowMythosStepMatcher
   = WhenAllDrawEncounterCard
   | AfterCheckDoomThreshold
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data CounterMatcher = HorrorCounter | DamageCounter | ClueCounter | DoomCounter | ResourceCounter
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance IsLabel "clue" CounterMatcher where
   fromLabel = ClueCounter
@@ -1090,7 +1090,7 @@ data ActionMatcher
   | ActionMatches [ActionMatcher]
   | RepeatableAction
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Semigroup ActionMatcher where
   AnyAction <> x = x
@@ -1154,7 +1154,7 @@ data AbilityMatcher
   | PerformableAbility [ModifierType]
   | TriggeredAbility
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Semigroup AbilityMatcher where
   AnyAbility <> x = x
@@ -1173,7 +1173,7 @@ data CardListMatcher
   | AnyCards
   | DifferentLengthIsAtLeast Int CardMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance IsLabel "item" CardListMatcher where
   fromLabel = HasCard #item
@@ -1185,7 +1185,7 @@ data DeckMatcher
   | DeckIs DeckSignifier
   | DeckOneOf [DeckMatcher]
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data AgendaMatcher
   = AgendaWithId AgendaId
@@ -1200,7 +1200,7 @@ data AgendaMatcher
   | AgendaCanWheelOfFortuneX
   | FinalAgenda
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Semigroup AgendaMatcher where
   AnyAgenda <> x = x
@@ -1220,14 +1220,14 @@ data ActMatcher
   | ActOneOf [ActMatcher]
   | ActCanWheelOfFortuneX
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data DamageEffectMatcher
   = AttackDamageEffect
   | NonAttackDamageEffect
   | AnyDamageEffect
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data EnemyAttackMatcher
   = AnyEnemyAttack
@@ -1235,19 +1235,19 @@ data EnemyAttackMatcher
   | AttackViaAlert
   | CancelableEnemyAttack EnemyAttackMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data ScenarioMatcher = TheScenario
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data CampaignMatcher = TheCampaign
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data EffectMatcher = AnyEffect | EffectWithCardCode CardCode
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data SkillTypeMatcher
   = AnySkillType
@@ -1255,7 +1255,7 @@ data SkillTypeMatcher
   | IsSkillType SkillType
   | SkillTypeOneOf [SkillType]
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data RemoveDoomMatchers = RemoveDoomMatchers
   { removeDoomLocations :: LocationMatcher
@@ -1269,7 +1269,7 @@ data RemoveDoomMatchers = RemoveDoomMatchers
   , removeDoomSkills :: SkillMatcher
   }
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 newtype RemainingActMatcher = RemainingActMatcher {unRemainingActMatcher :: ActMatcher}
   deriving stock (Show, Eq, Ord)
@@ -1280,7 +1280,7 @@ data StoryMatcher
   | StoryMatchAll [StoryMatcher]
   | StoryIs CardCode
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Semigroup StoryMatcher where
   StoryMatchAll xs <> StoryMatchAll ys = StoryMatchAll (xs <> ys)
@@ -1290,11 +1290,11 @@ instance Semigroup StoryMatcher where
 
 data AspectMatcher = AspectIs Aspect
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data HistoryMatcher = DefeatedEnemiesWithTotalHealth ValueMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 $( do
     ability <- deriveJSON defaultOptions ''AbilityMatcher

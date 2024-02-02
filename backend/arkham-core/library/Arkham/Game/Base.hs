@@ -33,11 +33,15 @@ deriving anyclass instance NoThunks Diff.Patch
 deriving anyclass instance NoThunks Diff.Operation
 deriving anyclass instance NoThunks Diff.Pointer
 deriving anyclass instance NoThunks Diff.Key
+deriving anyclass instance NFData Diff.Patch
+deriving anyclass instance NFData Diff.Operation
+deriving anyclass instance NFData Diff.Pointer
+deriving anyclass instance NFData Diff.Key
 deriving via AllowThunk Key instance NoThunks Key
 
 data GameState = IsPending [PlayerId] | IsActive | IsOver
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data Game = Game
   { gamePhaseHistory :: Map InvestigatorId History
@@ -107,7 +111,7 @@ data Game = Game
   , gameCurrentBatchId :: Maybe BatchId
   }
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 makeLensesWith suffixedFields ''Game
 

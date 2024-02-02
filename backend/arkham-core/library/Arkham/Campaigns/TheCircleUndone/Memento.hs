@@ -12,4 +12,4 @@ data Memento
   | WispOfSpectralMist
   | CornHuskDoll
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)

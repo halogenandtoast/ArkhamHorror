@@ -18,7 +18,7 @@ import Arkham.Trait
 
 newtype ColdSpringGlen_244 = ColdSpringGlen_244 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 coldSpringGlen_244 :: LocationCard ColdSpringGlen_244
 coldSpringGlen_244 =

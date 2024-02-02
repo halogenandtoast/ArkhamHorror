@@ -11,7 +11,7 @@ import Arkham.Projection
 
 newtype BrotherhoodCultist = BrotherhoodCultist EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 brotherhoodCultist :: EnemyCard BrotherhoodCultist
 brotherhoodCultist = enemy BrotherhoodCultist Cards.brotherhoodCultist (2, Static 3, 2) (0, 1)

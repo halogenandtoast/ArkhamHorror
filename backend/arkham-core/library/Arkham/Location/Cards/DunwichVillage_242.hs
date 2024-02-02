@@ -16,7 +16,7 @@ import Arkham.Trait
 
 newtype DunwichVillage_242 = DunwichVillage_242 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 dunwichVillage_242 :: LocationCard DunwichVillage_242
 dunwichVillage_242 =

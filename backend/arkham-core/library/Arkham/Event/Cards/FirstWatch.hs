@@ -13,11 +13,11 @@ import Arkham.Event.Runner
 import Arkham.Id
 
 newtype FirstWatchMetadata = FirstWatchMetadata {firstWatchPairings :: [(InvestigatorId, EncounterCard)]}
-  deriving newtype (Show, Eq, ToJSON, FromJSON, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, NoThunks, NFData)
 
 newtype FirstWatch = FirstWatch (EventAttrs `With` FirstWatchMetadata)
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 firstWatch :: EventCard FirstWatch
 firstWatch =

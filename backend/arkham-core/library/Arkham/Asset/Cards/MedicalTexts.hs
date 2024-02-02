@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype MedicalTexts = MedicalTexts AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 medicalTexts :: AssetCard MedicalTexts
 medicalTexts = asset MedicalTexts Cards.medicalTexts

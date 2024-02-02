@@ -15,7 +15,7 @@ import Arkham.Trait (Trait (Relic, Ritual, Spell))
 
 newtype IlekVad = IlekVad LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 ilekVad :: LocationCard IlekVad
 ilekVad = locationWith IlekVad Cards.ilekVad 2 (PerPlayer 1) (canBeFlippedL .~ True)

@@ -12,7 +12,7 @@ import Arkham.Game.Helpers
 
 newtype ExposeWeakness1 = ExposeWeakness1 EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 exposeWeakness1 :: EffectArgs -> ExposeWeakness1
 exposeWeakness1 = ExposeWeakness1 . uncurry4 (baseAttrs "02228")

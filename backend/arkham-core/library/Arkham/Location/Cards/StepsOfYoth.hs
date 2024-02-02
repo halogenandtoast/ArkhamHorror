@@ -16,7 +16,7 @@ import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 
 newtype StepsOfYoth = StepsOfYoth LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 stepsOfYoth :: LocationCard StepsOfYoth
 stepsOfYoth = symbolLabel $ location StepsOfYoth Cards.stepsOfYoth 3 (Static 0)

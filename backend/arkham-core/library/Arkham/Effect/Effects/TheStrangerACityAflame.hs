@@ -14,7 +14,7 @@ import Arkham.Timing qualified as Timing
 
 newtype TheStrangerACityAflame = TheStrangerACityAflame EffectAttrs
   deriving anyclass (IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theStrangerACityAflame :: EffectArgs -> TheStrangerACityAflame
 theStrangerACityAflame = TheStrangerACityAflame . uncurry4 (baseAttrs "03047a")

@@ -96,7 +96,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         hand <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
         discard <- field InvestigatorDiscard iid
         let deck' = deck <> hand <> discard
-        push $ LoadDeck iid (Deck deck')
+        push $ LoadDeck iid (mkDeck deck')
     pure a
   Setup -> a <$ pushAllEnd [BeginGame, BeginRound, Begin InvestigationPhase]
   BeginRound -> do
@@ -399,7 +399,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   ShuffleCardsIntoTopOfDeck Deck.EncounterDeck n (onlyEncounterCards -> cards) -> do
     let (cards', rest) = draw n scenarioEncounterDeck
     shuffled <- shuffleM (cards <> cards')
-    pure $ a & encounterDeckL .~ Deck (shuffled <> unDeck rest)
+    pure $ a & encounterDeckL .~ mkDeck (shuffled <> unDeck rest)
   PutCardOnTopOfDeck _ Deck.EncounterDeck card -> case card of
     EncounterCard ec -> do
       let
@@ -630,7 +630,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
               [mkWindow Timing.When Window.EncounterDeckRunsOutOfCards]
           pushAll [windows', ShuffleEncounterDiscardBackIn]
         pushAll [UnsetActiveCard, InvestigatorDrewEncounterCard iid card]
-        pure $ a & (deckLens handler .~ Deck encounterDeck)
+        pure $ a & (deckLens handler .~ mkDeck encounterDeck)
   Search searchType iid _ EncounterDeckTarget _ _ _ -> do
     if searchType == Searching
       then
@@ -745,7 +745,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
 
     pushBatch batchId (FoundCards foundCards)
 
-    pure $ a & (encounterDeckL .~ Deck encounterDeck)
+    pure $ a & (encounterDeckL .~ mkDeck encounterDeck)
   Discarded (AssetTarget _) _ card@(EncounterCard ec) -> do
     handler <- getEncounterDeckHandler $ toCardId card
     -- TODO: determine why this was only specified for Asset
@@ -805,10 +805,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       [] -> do
         push (RequestedEncounterCard source (Just iid) Nothing)
         encounterDeck <- shuffleM (discards <> scenarioDiscard)
-        pure $ a & encounterDeckL .~ Deck encounterDeck & discardL .~ mempty
+        pure $ a & encounterDeckL .~ mkDeck encounterDeck & discardL .~ mempty
       (x : xs) -> do
         push (RequestedEncounterCard source (Just iid) (Just x))
-        pure $ a & encounterDeckL .~ Deck xs & discardL %~ (reverse discards <>)
+        pure $ a & encounterDeckL .~ mkDeck xs & discardL %~ (reverse discards <>)
   DiscardUntilN n iid source target Deck.EncounterDeck matcher -> do
     push $ DiscardUntilN n iid source target (Deck.EncounterDeckByKey RegularEncounterDeck) matcher
     pure a
@@ -819,10 +819,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       [] -> do
         push (RequestedEncounterCards target matches)
         encounterDeck <- shuffleM (discards <> scenarioDiscard)
-        pure $ a & encounterDeckL .~ Deck encounterDeck & discardL .~ mempty
+        pure $ a & encounterDeckL .~ mkDeck encounterDeck & discardL .~ mempty
       xs -> do
         push (RequestedEncounterCards target matches)
-        pure $ a & encounterDeckL .~ Deck xs & discardL %~ (reverse discards <>)
+        pure $ a & encounterDeckL .~ mkDeck xs & discardL %~ (reverse discards <>)
   FoundAndDrewEncounterCard iid cardSource card -> do
     let
       cardId = toCardId card
@@ -839,7 +839,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         _ -> id
     shuffled <- shuffleM encounterDeck
     push (InvestigatorDrewEncounterCard iid card)
-    pure $ a & (encounterDeckL .~ Deck shuffled) & (discardL .~ discard) & encounterDecksF
+    pure $ a & (encounterDeckL .~ mkDeck shuffled) & (discardL .~ discard) & encounterDecksF
   FoundEncounterCardFrom iid target cardSource card -> do
     let
       cardId = toCardId card
@@ -852,7 +852,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         _ -> unDeck scenarioEncounterDeck
     shuffled <- shuffleM encounterDeck
     push (FoundEncounterCard iid target card)
-    pure $ a & (encounterDeckL .~ Deck shuffled) & (discardL .~ discard)
+    pure $ a & (encounterDeckL .~ mkDeck shuffled) & (discardL .~ discard)
   FindEncounterCard iid target zones matcher -> do
     let
       matchingDiscards =
@@ -992,7 +992,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
               mtarget
               (card : discardedCards)
           ]
-        pure $ a & deckLens handler .~ Deck cards & discardLens handler %~ (card :)
+        pure $ a & deckLens handler .~ mkDeck cards & discardLens handler %~ (card :)
   SpawnEnemyAt card@(EncounterCard ec) _ -> do
     pure $ a & discardL %~ filter (/= ec) & setAsideCardsL %~ filter (/= card)
   SpawnEnemyAtEngagedWith (EncounterCard ec) _ _ -> do

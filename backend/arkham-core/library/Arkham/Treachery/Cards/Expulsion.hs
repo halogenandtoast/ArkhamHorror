@@ -17,7 +17,7 @@ import Arkham.Treachery.Runner
 
 newtype Expulsion = Expulsion TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 expulsion :: TreacheryCard Expulsion
 expulsion = treachery Expulsion Cards.expulsion

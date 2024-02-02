@@ -11,7 +11,7 @@ import Arkham.Matcher
 
 newtype ClaspOfBlackOnyx = ClaspOfBlackOnyx AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 instance HasModifiersFor ClaspOfBlackOnyx where
   getModifiersFor (InvestigatorHandTarget _) (ClaspOfBlackOnyx attrs) =

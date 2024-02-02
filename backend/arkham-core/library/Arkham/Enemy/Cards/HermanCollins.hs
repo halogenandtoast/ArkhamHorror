@@ -14,7 +14,7 @@ import Arkham.Matcher
 
 newtype HermanCollins = HermanCollins EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 hermanCollins :: EnemyCard HermanCollins
 hermanCollins = enemyWith HermanCollins Cards.hermanCollins (3, Static 4, 4) (1, 1) (spawnAtL ?~ "Graveyard")

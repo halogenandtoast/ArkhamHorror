@@ -15,7 +15,7 @@ import Arkham.Projection
 
 newtype WitchHauntings = WitchHauntings ActAttrs
   deriving anyclass (IsAct)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 witchHauntings :: ActCard WitchHauntings
 witchHauntings = act (2, A) WitchHauntings Cards.witchHauntings Nothing

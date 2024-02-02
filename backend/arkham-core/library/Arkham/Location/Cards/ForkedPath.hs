@@ -17,7 +17,7 @@ import Arkham.Timing qualified as Timing
 
 newtype ForkedPath = ForkedPath LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 forkedPath :: LocationCard ForkedPath
 forkedPath = symbolLabel $ location ForkedPath Cards.forkedPath 2 (PerPlayer 2)

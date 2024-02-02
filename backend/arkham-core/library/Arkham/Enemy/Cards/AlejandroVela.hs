@@ -18,7 +18,7 @@ import Arkham.Story.Cards qualified as Story
 
 newtype AlejandroVela = AlejandroVela EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 alejandroVela :: EnemyCard AlejandroVela
 alejandroVela = enemy AlejandroVela Cards.alejandroVela (6, PerPlayer 4, 3) (1, 2)
@@ -49,7 +49,7 @@ instance RunMessage AlejandroVela where
 
 newtype AlejandroVelaEffect = AlejandroVelaEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 alejandroVelaEffect :: EffectArgs -> AlejandroVelaEffect
 alejandroVelaEffect = cardEffect AlejandroVelaEffect Cards.alejandroVela

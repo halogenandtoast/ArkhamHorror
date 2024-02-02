@@ -18,7 +18,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype SerpentOfTenochtitlan = SerpentOfTenochtitlan EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 serpentOfTenochtitlan :: EnemyCard SerpentOfTenochtitlan
 serpentOfTenochtitlan =

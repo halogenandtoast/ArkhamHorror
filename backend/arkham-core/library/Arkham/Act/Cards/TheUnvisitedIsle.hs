@@ -19,7 +19,7 @@ import Data.Map.Strict qualified as Map
 
 newtype TheUnvisitedIsle = TheUnvisitedIsle ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 theUnvisitedIsle :: ActCard TheUnvisitedIsle
 theUnvisitedIsle = act (1, A) TheUnvisitedIsle Cards.theUnvisitedIsle (Just $ GroupClueCost (PerPlayer 3) Anywhere)

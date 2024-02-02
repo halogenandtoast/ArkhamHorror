@@ -19,7 +19,7 @@ import Arkham.Trait (Trait (Sanctum, SilverTwilight))
 
 newtype EndsAndMeans = EndsAndMeans AgendaAttrs
   deriving anyclass (IsAgenda)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 endsAndMeans :: AgendaCard EndsAndMeans
 endsAndMeans = agenda (2, A) EndsAndMeans Cards.endsAndMeans (Static 10)

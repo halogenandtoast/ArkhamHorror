@@ -15,7 +15,7 @@ import Arkham.Window qualified as Window
 
 newtype Relentless = Relentless AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 relentless :: AssetCard Relentless
 relentless = asset Relentless Cards.relentless

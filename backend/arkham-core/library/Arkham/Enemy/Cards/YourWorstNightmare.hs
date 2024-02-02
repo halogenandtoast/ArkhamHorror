@@ -13,7 +13,7 @@ import Arkham.Matcher
 
 newtype YourWorstNightmare = YourWorstNightmare EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 yourWorstNightmare :: EnemyCard YourWorstNightmare
 yourWorstNightmare = enemyWith YourWorstNightmare Cards.yourWorstNightmare (2, Static 3, 2) (0, 2)

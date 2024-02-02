@@ -12,7 +12,7 @@ import Arkham.Matcher
 
 newtype TheMaskedHunter = TheMaskedHunter EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 theMaskedHunter :: EnemyCard TheMaskedHunter
 theMaskedHunter =

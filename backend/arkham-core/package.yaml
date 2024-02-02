@@ -46,6 +46,7 @@ library:
     - monoidal-containers
     - mtl >= 2.3.1
     - nothunks
+    - deepseq
     - parsec
     - pretty-simple
     - process

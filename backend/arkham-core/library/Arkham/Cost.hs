@@ -90,7 +90,7 @@ data Payment
   | NoPayment
   | SupplyPayment Supply
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 data Cost
   = ActionCost Int
@@ -152,7 +152,7 @@ data Cost
   | ShuffleAttachedCardIntoDeckCost Target CardMatcher
   | OptionalCost Cost
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 assetUseCost :: (Entity a, EntityId a ~ AssetId) => a -> UseType -> Int -> Cost
 assetUseCost a uType n = UseCost (AssetWithId $ toId a) uType n
@@ -168,7 +168,7 @@ removeCost = RemoveCost . toTarget
 
 data DynamicUseCostValue = DrawnCardsValue
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 displayCostType :: Cost -> Text
 displayCostType = \case
@@ -346,7 +346,7 @@ data CostZone
   | FromPlayAreaOf InvestigatorMatcher
   | CostZones [CostZone]
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 instance Semigroup CostZone where
   CostZones xs <> CostZones ys = CostZones (xs <> ys)

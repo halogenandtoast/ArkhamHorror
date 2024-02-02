@@ -12,7 +12,7 @@ import Arkham.SkillType
 
 newtype BloodPact3 = BloodPact3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 bloodPact3 :: AssetCard BloodPact3
 bloodPact3 = asset BloodPact3 Cards.bloodPact3

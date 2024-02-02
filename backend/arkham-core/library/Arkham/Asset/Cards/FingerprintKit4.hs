@@ -12,7 +12,7 @@ import Arkham.Investigate
 
 newtype FingerprintKit4 = FingerprintKit4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 fingerprintKit4 :: AssetCard FingerprintKit4
 fingerprintKit4 = asset FingerprintKit4 Cards.fingerprintKit4

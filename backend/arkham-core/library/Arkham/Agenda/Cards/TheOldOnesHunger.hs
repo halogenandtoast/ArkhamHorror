@@ -13,7 +13,7 @@ import Arkham.Scenario.Deck
 
 newtype TheOldOnesHunger = TheOldOnesHunger AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 theOldOnesHunger :: AgendaCard TheOldOnesHunger
 theOldOnesHunger =

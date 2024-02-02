@@ -14,7 +14,7 @@ import Arkham.Matcher hiding (AssetCard)
 
 newtype SegmentOfOnyx1 = SegmentOfOnyx1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 segmentOfOnyx1 :: AssetCard SegmentOfOnyx1
 segmentOfOnyx1 = asset SegmentOfOnyx1 Cards.segmentOfOnyx1

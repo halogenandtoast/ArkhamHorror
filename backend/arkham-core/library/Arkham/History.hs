@@ -15,7 +15,7 @@ data DefeatedEnemyAttrs = DefeatedEnemyAttrs
   , defeatedEnemyHealth :: Int
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON, NoThunks)
+  deriving anyclass (FromJSON, ToJSON, NoThunks, NFData)
 
 data History = History
   { historyTreacheriesDrawn :: [CardCode]
@@ -29,7 +29,7 @@ data History = History
   , historyPlayedCards :: [Card]
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON, NoThunks)
+  deriving anyclass (FromJSON, ToJSON, NoThunks, NFData)
 
 instance Semigroup History where
   h <> g =

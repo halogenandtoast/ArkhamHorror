@@ -12,7 +12,7 @@ import Arkham.Skill.Runner
 
 newtype UnexpectedCourage2 = UnexpectedCourage2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 unexpectedCourage2 :: SkillCard UnexpectedCourage2
 unexpectedCourage2 = skill UnexpectedCourage2 Cards.unexpectedCourage2

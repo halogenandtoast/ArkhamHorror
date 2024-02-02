@@ -12,11 +12,11 @@ import Arkham.Asset.Runner
 
 newtype Metadata = Metadata {empowered :: Bool}
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, NoThunks)
+  deriving anyclass (ToJSON, FromJSON, NoThunks, NFData)
 
 newtype EnchantedBladeGuardian3 = EnchantedBladeGuardian3 (AssetAttrs `With` Metadata)
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 enchantedBladeGuardian3 :: AssetCard EnchantedBladeGuardian3
 enchantedBladeGuardian3 = asset (EnchantedBladeGuardian3 . (`with` Metadata False)) Cards.enchantedBladeGuardian3

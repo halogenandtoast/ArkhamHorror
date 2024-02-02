@@ -9,7 +9,7 @@ import Arkham.Prelude
 
 newtype Fieldwork = Fieldwork AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 fieldwork :: AssetCard Fieldwork
 fieldwork = asset Fieldwork Cards.fieldwork
@@ -27,7 +27,7 @@ instance RunMessage Fieldwork where
 
 newtype FieldworkEffect = FieldworkEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 fieldworkEffect :: EffectArgs -> FieldworkEffect
 fieldworkEffect = cardEffect FieldworkEffect Cards.fieldwork

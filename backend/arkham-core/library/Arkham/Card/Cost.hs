@@ -16,6 +16,6 @@ toPrintedCost DiscardAmountCost = 0
 
 data CardCost = StaticCost Int | DynamicCost | DiscardAmountCost
   deriving stock (Show, Eq, Ord, Data, Generic)
-  deriving anyclass (NoThunks)
+  deriving anyclass (NoThunks, NFData)
 
 $(deriveJSON defaultOptions ''CardCost)

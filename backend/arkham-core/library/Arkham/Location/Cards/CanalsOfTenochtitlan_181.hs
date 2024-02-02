@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 
 newtype CanalsOfTenochtitlan_181 = CanalsOfTenochtitlan_181 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 canalsOfTenochtitlan_181 :: LocationCard CanalsOfTenochtitlan_181
 canalsOfTenochtitlan_181 =

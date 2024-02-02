@@ -19,7 +19,7 @@ import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 
 newtype DarkKnowledgeV2 = DarkKnowledgeV2 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 darkKnowledgeV2 :: ActCard DarkKnowledgeV2
 darkKnowledgeV2 = act (1, A) DarkKnowledgeV2 Cards.darkKnowledgeV2 Nothing

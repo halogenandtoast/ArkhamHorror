@@ -15,7 +15,7 @@ import Arkham.Skill.Runner
 
 newtype SelfSacrifice = SelfSacrifice SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 selfSacrifice :: SkillCard SelfSacrifice
 selfSacrifice = skill SelfSacrifice Cards.selfSacrifice

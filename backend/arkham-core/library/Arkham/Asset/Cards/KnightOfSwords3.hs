@@ -15,7 +15,7 @@ import Arkham.Window (defaultWindows)
 
 newtype KnightOfSwords3 = KnightOfSwords3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 knightOfSwords3 :: AssetCard KnightOfSwords3
 knightOfSwords3 =

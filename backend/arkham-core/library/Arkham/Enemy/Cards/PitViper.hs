@@ -16,7 +16,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype PitViper = PitViper EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 pitViper :: EnemyCard PitViper
 pitViper = enemy PitViper Cards.pitViper (3, Static 1, 3) (1, 0)

@@ -18,7 +18,7 @@ import Arkham.Treachery.Runner
 
 newtype ViolentOutburst = ViolentOutburst TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 violentOutburst :: TreacheryCard ViolentOutburst
 violentOutburst = treachery ViolentOutburst Cards.violentOutburst

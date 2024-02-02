@@ -17,7 +17,7 @@ import Arkham.Matcher
 
 newtype Backstage = Backstage LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 backstage :: LocationCard Backstage
 backstage = location Backstage Cards.backstage 3 (Static 1)

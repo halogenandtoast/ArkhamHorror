@@ -8,7 +8,7 @@ import Arkham.Prelude
 
 newtype GreyWeaver = GreyWeaver EnemyAttrs
   deriving anyclass (IsEnemy)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData, HasAbilities)
 
 greyWeaver :: EnemyCard GreyWeaver
 greyWeaver =

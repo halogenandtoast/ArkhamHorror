@@ -20,7 +20,7 @@ import Arkham.Window
 
 newtype PassengerCar_171 = PassengerCar_171 LocationAttrs
   deriving anyclass (IsLocation)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 passengerCar_171 :: LocationCard PassengerCar_171
 passengerCar_171 =

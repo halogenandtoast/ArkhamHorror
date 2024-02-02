@@ -18,7 +18,7 @@ import Arkham.Trait
 
 newtype HorrorsUnleashed = HorrorsUnleashed AgendaAttrs
   deriving anyclass (IsAgenda)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, NoThunks, NFData)
 
 horrorsUnleashed :: AgendaCard HorrorsUnleashed
 horrorsUnleashed = agenda (3, A) HorrorsUnleashed Cards.horrorsUnleashed (Static 7)

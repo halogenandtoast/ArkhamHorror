@@ -20,7 +20,7 @@ newtype QueueT msg m a = QueueT {unQueueT :: ReaderT (Queue msg) m a}
   deriving newtype
     (Functor, Applicative, Monad, MonadIO, MonadRandom, MonadReader (Queue msg), MonadTrans)
 
-instance MonadIO m => HasQueue msg (QueueT msg m) where
+instance (NFData msg, MonadIO m) => HasQueue msg (QueueT msg m) where
   messageQueue = ask
   pushAll (reverse -> msgs) = withQueue_ (msgs <>)
 
@@ -36,7 +36,7 @@ instance CardGen m => CardGen (QueueT msg m) where
 
 newtype Queue msg = Queue {queueToRef :: IORef [msg]}
 
-class MonadIO m => HasQueue msg m | m -> msg where
+class (NFData msg, MonadIO m) => HasQueue msg m | m -> msg where
   messageQueue :: m (Queue msg)
   pushAll :: [msg] -> m ()
   pushAll = withQueue_ . (<>)
@@ -47,7 +47,7 @@ newQueue msgs = Queue <$> newIORef msgs
 withQueue :: HasQueue msg m => ([msg] -> ([msg], r)) -> m r
 withQueue body = do
   queue <- messageQueue
-  liftIO $ atomicModifyIORef' (queueToRef queue) body
+  liftIO $ atomicModifyIORef' (queueToRef queue) $ first force . body
 
 withQueue_ :: HasQueue msg m => ([msg] -> [msg]) -> m ()
 withQueue_ body = withQueue ((,()) . body)

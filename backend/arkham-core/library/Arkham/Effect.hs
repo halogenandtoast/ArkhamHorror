@@ -93,7 +93,6 @@ import Arkham.Event.Events (
   imDoneRunninEffect,
   letMeHandleThisEffect,
   marksmanship1Effect,
-  mindOverMatter2Effect,
   mystifyingSongEffect,
   pilfer3Effect,
   slipAwayEffect,
@@ -144,6 +143,16 @@ import Arkham.Treachery.Treacheries (
   mysteriesOfTheLodgeEffect,
   whispersOfHypnosEffect,
  )
+
+noop :: CardCode -> EffectArgs -> NoEffect
+noop cCode = NoEffect . uncurry4 (baseAttrs cCode)
+
+newtype NoEffect = NoEffect EffectAttrs
+  deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance RunMessage NoEffect where
+  runMessage msg (NoEffect a) = NoEffect <$> runMessage msg a
 
 createEffect
   :: MonadRandom m
@@ -359,7 +368,7 @@ allEffects =
     , ("60101", SomeEffect nathanielChoEffect)
     , ("60103", SomeEffect tommyMalloyEffect)
     , ("60220", SomeEffect libraryDocent1Effect)
-    , ("60226", SomeEffect mindOverMatter2Effect)
+    , ("60226", SomeEffect $ noop "60226")
     , ("60232", SomeEffect miskatonicArchaeologyFunding4Effect)
     , ("60301", SomeEffect winifredHabbamockEffect)
     , ("60305", SomeEffect lockpicksEffect)

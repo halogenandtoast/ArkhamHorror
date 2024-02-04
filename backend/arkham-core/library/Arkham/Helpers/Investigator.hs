@@ -61,28 +61,24 @@ skillValueFor skill maction tempModifiers iid = go 2 skill
     foldrM applyModifier base tempModifiers
    where
     canBeIncreased = SkillCannotBeIncreased skill `notElem` tempModifiers
-    matchingSkills = skill : mapMaybe maybeAdditionalSkill tempModifiers
+    matchingSkills = s : mapMaybe maybeAdditionalSkill tempModifiers -- must be the skill we are looking at
     maybeAdditionalSkill = \case
       SkillModifiersAffectOtherSkill s' t | t == skill -> Just s'
       _ -> Nothing
-    applyModifier (AnySkillValue m) n
-      | canBeIncreased || m < 0 =
-          pure $ max 0 (n + m)
+    applyModifier (AnySkillValue m) n | canBeIncreased || m < 0 = pure $ max 0 (n + m)
     applyModifier (AddSkillValue sv) n | canBeIncreased = do
       m <- getSkillValue sv iid
       pure $ max 0 (n + m)
     applyModifier (AddSkillToOtherSkill svAdd svType) n | canBeIncreased && svType `elem` matchingSkills = do
       m <- go (depth - 1) svAdd
       pure $ max 0 (n + m)
-    applyModifier (SkillModifier skillType m) n
-      | canBeIncreased || m < 0 =
-          pure $ if skillType `elem` matchingSkills then max 0 (n + m) else n
-    applyModifier (ActionSkillModifier action skillType m) n
-      | canBeIncreased || m < 0 =
-          pure
-            $ if skillType `elem` matchingSkills && Just action == maction
-              then max 0 (n + m)
-              else n
+    applyModifier (SkillModifier skillType m) n | canBeIncreased || m < 0 = do
+      pure $ if skillType `elem` matchingSkills then max 0 (n + m) else n
+    applyModifier (ActionSkillModifier action skillType m) n | canBeIncreased || m < 0 = do
+      pure
+        $ if skillType `elem` matchingSkills && Just action == maction
+          then max 0 (n + m)
+          else n
     applyModifier _ n = pure n
 
 baseSkillValueFor

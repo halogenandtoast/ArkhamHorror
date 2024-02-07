@@ -67,6 +67,7 @@ import Arkham.Asset.Assets (
   sixthSense4Effect,
   sixthSenseEffect,
   thirtyFiveWinchesterEffect,
+  twilightBladeEffect,
   wellConnected3Effect,
   wellConnectedEffect,
   wither4Effect,
@@ -95,6 +96,7 @@ import Arkham.Event.Events (
   marksmanship1Effect,
   mystifyingSongEffect,
   pilfer3Effect,
+  slipAway2Effect,
   slipAwayEffect,
   spectralRazorEffect,
   stormOfSpirits3Effect,
@@ -124,6 +126,7 @@ import Arkham.Skill.Skills (
   defiance2Effect,
   defianceEffect,
   hatchetManEffect,
+  momentum1Effect,
   prescientEffect,
   surprisingFind1Effect,
   theEyeOfTruth5Effect,
@@ -350,6 +353,7 @@ allEffects =
     , ("06082", SomeEffect corruptedOrderlyEffect)
     , ("06089", SomeEffect whispersOfHypnosEffect)
     , ("06114", SomeEffect followedEffect)
+    , ("06115", SomeEffect momentum1Effect)
     , ("06162", SomeEffect gregoryGryEffect)
     , ("06195", SomeEffect thirtyFiveWinchesterEffect)
     , ("06201", SomeEffect spectralRazorEffect)
@@ -360,6 +364,7 @@ allEffects =
     , ("07012", SomeEffect showmanshipEffect)
     , ("09041", SomeEffect empiricalHypothesisEffect)
     , ("50008", SomeEffect mindWipe3)
+    , ("50013", SomeEffect twilightBladeEffect)
     , ("50044", SomeEffect jeremiahPierce)
     , ("52007", SomeEffect alchemicalTransmutation2Effect)
     , ("52008", SomeEffect stormOfSpirits3Effect)
@@ -373,6 +378,7 @@ allEffects =
     , ("60301", SomeEffect winifredHabbamockEffect)
     , ("60305", SomeEffect lockpicksEffect)
     , ("60323", SomeEffect cheapShot2Effect)
+    , ("60324", SomeEffect slipAway2Effect)
     , ("60328", SomeEffect pilfer3Effect)
     , ("60329", SomeEffect backstab3Effect)
     , ("60330", SomeEffect copycat3Effect)

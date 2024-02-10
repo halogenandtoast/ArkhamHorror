@@ -6,12 +6,13 @@ module Arkham.Ability (
 import Arkham.Prelude
 
 import Arkham.Ability.Limit as X
-import Arkham.Ability.Type as X hiding (abilityType)
+import Arkham.Ability.Type as X
 import Arkham.Ability.Types as X
 import Arkham.Ability.Used as X
 import Arkham.Cost as X
 import Arkham.Criteria as X
 
+import Arkham.Ability.Types qualified
 import Arkham.Action
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
@@ -182,7 +183,7 @@ mkAbility entity idx type' =
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability
 applyAbilityModifiers a@Ability {abilityType} modifiers =
-  a {abilityType = applyAbilityTypeModifiers abilityType modifiers}
+  a {Arkham.Ability.Types.abilityType = applyAbilityTypeModifiers abilityType modifiers}
 
 overrideAbilityCriteria :: CriteriaOverride -> Ability -> Ability
 overrideAbilityCriteria (CriteriaOverride override) ab =
@@ -372,4 +373,4 @@ defaultAbilityLimit = \case
 
 decreaseAbilityActionCost :: Ability -> Int -> Ability
 decreaseAbilityActionCost ab n =
-  ab {abilityType = modifyCost (`decreaseActionCost` n) (abilityType ab)}
+  ab {Arkham.Ability.Types.abilityType = modifyCost (`decreaseActionCost` n) (abilityType ab)}

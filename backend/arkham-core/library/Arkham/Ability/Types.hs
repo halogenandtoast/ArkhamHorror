@@ -5,7 +5,7 @@ module Arkham.Ability.Types where
 import Arkham.Prelude
 
 import Arkham.Ability.Limit
-import Arkham.Ability.Type hiding (abilityType)
+import Arkham.Ability.Type
 import Arkham.Card.EncounterCard
 import Arkham.Criteria (Criterion)
 import Arkham.Json
@@ -50,7 +50,7 @@ abilityLimitL :: Lens' Ability AbilityLimit
 abilityLimitL = lens abilityLimit $ \m x -> m {abilityLimit = x}
 
 abilityTypeL :: Lens' Ability AbilityType
-abilityTypeL = lens abilityType $ \m x -> m {abilityType = x}
+abilityTypeL = lens abilityType $ \m x -> m {Arkham.Ability.Types.abilityType = x}
 
 abilityMetadataL :: Lens' Ability (Maybe AbilityMetadata)
 abilityMetadataL = lens abilityMetadata $ \m x -> m {abilityMetadata = x}

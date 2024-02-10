@@ -23,6 +23,7 @@ default-extensions:
 - PatternSynonyms
 - RecordWildCards
 - StrictData
+- TypeAbstractions
 - TypeFamilies
 - TypeFamilyDependencies
 - TypeOperators

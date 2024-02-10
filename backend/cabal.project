@@ -1,1 +1,3 @@
 packages: */*.cabal
+profiling: True
+profiling-detail: late

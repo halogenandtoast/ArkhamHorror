@@ -1,8 +1,5 @@
 module Arkham.Skill.Cards where
 
-import Arkham.Prelude
-
-import Arkham.Action qualified as Action
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
@@ -12,6 +9,7 @@ import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Trait
 
@@ -195,8 +193,7 @@ doubleOrNothing =
 
 deduction2 :: CardDef
 deduction2 =
-  ( skill "02150" "Deduction" [#intellect, #intellect] Seeker
-  )
+  (skill "02150" "Deduction" [#intellect, #intellect] Seeker)
     { cdCardTraits = setFromList [Practiced, Expert]
     , cdLevel = 2
     }
@@ -210,12 +207,7 @@ defiance =
 
 riseToTheOccasion :: CardDef
 riseToTheOccasion =
-  ( skill
-      "02192"
-      "Rise to the Occasion"
-      [#wild, #wild, #wild]
-      Survivor
-  )
+  (skill "02192" "Rise to the Occasion" [#wild, #wild, #wild] Survivor)
     { cdCardTraits = singleton Innate
     , cdCommitRestrictions = [OnlyYourTest, MinSkillTestValueDifference 2]
     }
@@ -285,27 +277,13 @@ theHomeFront =
 
 resourceful :: CardDef
 resourceful =
-  ( skill
-      "03039"
-      "Resourceful"
-      [#intellect, #combat, #agility]
-      Survivor
-  )
+  (skill "03039" "Resourceful" [#intellect, #combat, #agility] Survivor)
     { cdCardTraits = singleton Innate
     }
 
 sayYourPrayers :: CardDef
 sayYourPrayers =
-  ( skill
-      "03116"
-      "Say Your Prayers"
-      [ #willpower
-      , #willpower
-      , #willpower
-      , #willpower
-      ]
-      Neutral
-  )
+  (skill "03116" "Say Your Prayers" [#willpower, #willpower, #willpower, #willpower] Neutral)
     { cdCardTraits = singleton Desperate
     , cdCommitRestrictions =
         [ MaxOnePerTest
@@ -315,16 +293,7 @@ sayYourPrayers =
 
 desperateSearch :: CardDef
 desperateSearch =
-  ( skill
-      "03117"
-      "Desperate Search"
-      [ #intellect
-      , #intellect
-      , #intellect
-      , #intellect
-      ]
-      Neutral
-  )
+  (skill "03117" "Desperate Search" [#intellect, #intellect, #intellect, #intellect] Neutral)
     { cdCardTraits = singleton Desperate
     , cdCommitRestrictions =
         [ MaxOnePerTest
@@ -334,12 +303,7 @@ desperateSearch =
 
 recklessAssault :: CardDef
 recklessAssault =
-  ( skill
-      "03118"
-      "Reckless Assault"
-      [#combat, #combat, #combat, #combat]
-      Neutral
-  )
+  (skill "03118" "Reckless Assault" [#combat, #combat, #combat, #combat] Neutral)
     { cdCardTraits = singleton Desperate
     , cdCommitRestrictions =
         [ MaxOnePerTest
@@ -349,12 +313,7 @@ recklessAssault =
 
 runForYourLife :: CardDef
 runForYourLife =
-  ( skill
-      "03119"
-      "Run For Your Life"
-      [#agility, #agility, #agility, #agility]
-      Neutral
-  )
+  (skill "03119" "Run For Your Life" [#agility, #agility, #agility, #agility] Neutral)
     { cdCardTraits = singleton Desperate
     , cdCommitRestrictions =
         [ MaxOnePerTest
@@ -503,7 +462,7 @@ daring :: CardDef
 daring =
   (skill "06111" "Daring" [#wild, #wild, #wild] Guardian)
     { cdCardTraits = singleton Innate
-    , cdCommitRestrictions = [OnlyTestWithActions [Action.Fight, Action.Evade]]
+    , cdCommitRestrictions = [OnlyTestWithActions [#fight, #evade]]
     }
 
 essenceOfTheDream :: CardDef

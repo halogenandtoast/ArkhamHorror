@@ -18,7 +18,7 @@ constanceDumaine = asset ConstanceDumaine Cards.constanceDumaine
 instance HasAbilities ConstanceDumaine where
   getAbilities (ConstanceDumaine a) =
     [ restrictedAbility a 1 OnSameLocation parleyAction_
-    , mkAbility a 2 $ forced $ LastClueRemovedFromAsset #when $ AssetWithId $ toId a
+    , groupLimit PerGame $ mkAbility a 2 $ forced $ LastClueRemovedFromAsset #when $ AssetWithId $ toId a
     ]
 
 instance RunMessage ConstanceDumaine where
@@ -28,12 +28,8 @@ instance RunMessage ConstanceDumaine where
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       modifiers <- getModifiers (InvestigatorTarget iid)
-      when
-        (assetClues attrs > 0 && CannotTakeControlOfClues `notElem` modifiers)
-        $ pushAll
-          [ RemoveClues (attrs.ability 1) (toTarget attrs) 1
-          , GainClues iid (attrs.ability 1) 1
-          ]
+      when (assetClues attrs > 0 && CannotTakeControlOfClues `notElem` modifiers) do
+        pushAll [RemoveClues (attrs.ability 1) (toTarget attrs) 1, GainClues iid (attrs.ability 1) 1]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       engramsOath <- genCard Story.engramsOath

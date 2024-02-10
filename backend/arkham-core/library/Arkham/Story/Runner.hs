@@ -16,7 +16,6 @@ import Arkham.Target as X
 
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Scenario
-import Arkham.Placement
 import Arkham.Scenario.Types (Field (..))
 
 afterStoryResolution :: HasQueue Message m => StoryAttrs -> [Message] -> m ()
@@ -35,10 +34,7 @@ instance RunMessage Story where
 instance RunMessage StoryAttrs where
   runMessage msg attrs = case msg of
     ResolvedStory _ story' | story' == toId attrs -> do
-      when (storyPlacement attrs == Unplaced)
-        $ push
-        $ RemoveStory
-        $ toId attrs
+      pushWhen (storyRemoveAfterResolution attrs) $ RemoveStory (toId attrs)
       pure attrs
     ResolveStory iid DoNotResolveIt story' | story' == toId attrs -> do
       player <- getPlayer iid

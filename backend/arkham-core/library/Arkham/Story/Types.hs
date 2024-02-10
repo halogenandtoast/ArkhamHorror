@@ -48,6 +48,7 @@ data StoryAttrs = StoryAttrs
   , storyOtherSide :: Maybe Target
   , storyFlipped :: Bool
   , storyMeta :: Value
+  , storyRemoveAfterResolution :: Bool
   }
   deriving stock (Show, Eq, Generic)
 
@@ -69,6 +70,7 @@ storyWith f cardDef g =
             , storyOtherSide = mTarget
             , storyFlipped = False
             , storyMeta = Null
+            , storyRemoveAfterResolution = True
             }
     }
 
@@ -92,7 +94,15 @@ instance ToJSON StoryAttrs where
   toEncoding = genericToEncoding $ aesonOptions $ Just "story"
 
 instance FromJSON StoryAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "story"
+  parseJSON = withObject "StoryAttrs" $ \o -> do
+    storyId <- o .: "id"
+    storyCardId <- o .: "cardId"
+    storyPlacement <- o .: "placement"
+    storyOtherSide <- o .: "otherSide"
+    storyFlipped <- o .: "flipped"
+    storyMeta <- o .: "meta"
+    storyRemoveAfterResolution <- o .:? "removeAfterResolution" .!= True
+    pure StoryAttrs {..}
 
 instance Entity StoryAttrs where
   type EntityId StoryAttrs = StoryId

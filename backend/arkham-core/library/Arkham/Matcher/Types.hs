@@ -446,6 +446,9 @@ instance Be InvestigatorMatcher InvestigatorMatcher where
 instance Be LocationMatcher LocationMatcher where
   be = id
 
+instance Be LocationId LocationMatcher where
+  be = LocationWithId
+
 instance IsString LocationMatcher where
   fromString = LocationWithTitle . fromString
 
@@ -1120,6 +1123,7 @@ data AbilityMatcher
   | AssetAbility AssetMatcher
   | HauntedAbility
   | PerformableAbility [ModifierType]
+  | TriggeredAbility
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup AbilityMatcher where

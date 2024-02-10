@@ -8,7 +8,15 @@ newtype CardCode = CardCode {unCardCode :: Text}
   deriving stock (Data)
   deriving newtype (Show, Ord, Hashable, IsString)
 
+-- these card codes get a `b` added after the normal designator
+exceptionCardCodes :: [Text]
+exceptionCardCodes = ["03047a", "03047b", "03047c", "03279a", "03279b"]
+
+-- We special case the stranger since ADB calls them a b c
 instance Eq CardCode where
+  (CardCode a) == (CardCode b)
+    | a `elem` exceptionCardCodes || b `elem` exceptionCardCodes =
+        a == b || (a <> "b") == b || a == (b <> "b")
   (CardCode a) == (CardCode b) =
     a == b || (toBase a == toBase b && complements (sideOf a) (sideOf b))
    where

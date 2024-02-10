@@ -367,9 +367,12 @@ withInvestigatorConnectionData inner@(With target _) = case target of
     skills <- selectList (SkillWithPlacement $ InPlayArea $ toId investigator')
     events <-
       selectList
-        ( eventControlledBy (toId investigator')
-            <> oneOf (map EventWithPlacement [Limbo, Unplaced, InPlayArea (toId investigator')])
-        )
+        $ eventControlledBy (toId investigator')
+        <> oneOf
+          ( map
+              EventWithPlacement
+              [Limbo, Unplaced, InPlayArea (toId investigator'), InThreatArea (toId investigator')]
+          )
     treacheries <- selectList (treacheryInThreatAreaOf $ toId investigator')
     mLocation <- field InvestigatorLocation (toId investigator')
     let
@@ -1138,6 +1141,7 @@ abilityMatches a@Ability {..} = \case
   AssetAbility assetMatcher -> do
     abilities <- concatMap getAbilities <$> (traverse getAsset =<< selectList assetMatcher)
     pure $ a `elem` abilities
+  TriggeredAbility -> pure $ isTriggeredAbility a
   AbilityOnCardControlledBy iid -> do
     let
       sourceMatch = \case

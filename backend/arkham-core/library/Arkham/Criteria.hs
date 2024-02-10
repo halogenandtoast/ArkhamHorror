@@ -109,6 +109,11 @@ pattern InYourThreatArea <- InThreatAreaOf You
   where
     InYourThreatArea = InThreatAreaOf You
 
+pattern DuringAnySkillTest :: Criterion
+pattern DuringAnySkillTest <- DuringSkillTest AnySkillTest
+  where
+    DuringAnySkillTest = DuringSkillTest AnySkillTest
+
 data Criterion
   = AssetExists AssetMatcher
   | EventExists EventMatcher
@@ -215,6 +220,9 @@ atYourLocation matcher = exists (AtYourLocation <> matcher)
 
 class Exists a where
   exists :: a -> Criterion
+
+notExists :: Exists a => a -> Criterion
+notExists = not_ . exists
 
 instance Exists EventMatcher where
   exists = EventExists

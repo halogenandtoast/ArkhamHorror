@@ -711,9 +711,8 @@ runGameMessage msg g = case msg of
       & (entitiesL . agendasL %~ insertMap newAgendaId newAgenda . deleteMap aid1)
   ReplaceAct aid1 card -> do
     actDeckId <- field ActDeckId aid1
-    let
-      newActId = ActId (toCardCode card)
-      newAct = lookupAct newActId actDeckId (toCardId card)
+    let newActId = ActId (toCardCode card)
+    let newAct = lookupAct newActId actDeckId (toCardId card)
     pure
       $ g
       & (entitiesL . actsL %~ insertMap newActId newAct . deleteMap aid1)
@@ -1693,6 +1692,7 @@ runGameMessage msg g = case msg of
                       $ SkillLabel skillType []
                       : [ SkillLabel skillType' [ReplaceSkillTestSkill (FromSkillType skillType) (ToSkillType skillType')]
                         | skillType' <- setToList availableSkills
+                        , skillType' /= skillType
                         ]
                   ]
                     <> windows'
@@ -1717,6 +1717,7 @@ runGameMessage msg g = case msg of
                           $ SkillLabel base []
                           : [ SkillLabel skillType' [ReplaceSkillTestSkill (FromSkillType base) (ToSkillType skillType')]
                             | skillType' <- skillsTypes
+                            , skillType' /= base
                             ]
                     )
                     skillsWithChoice
@@ -1744,6 +1745,7 @@ runGameMessage msg g = case msg of
   ReadStory iid card storyMode mtarget -> do
     placement <- case mtarget of
       Just (EnemyTarget eid) -> field EnemyPlacement eid
+      Just (AssetTarget aid) -> field AssetPlacement aid
       Just _ -> error "no known placement for non-enemy target"
       Nothing -> pure Unplaced
     push $ ReadStoryWithPlacement iid card storyMode mtarget placement

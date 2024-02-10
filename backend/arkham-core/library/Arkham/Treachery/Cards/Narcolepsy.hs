@@ -31,8 +31,8 @@ instance HasModifiersFor Narcolepsy where
 instance HasAbilities Narcolepsy where
   getAbilities (Narcolepsy a) =
     [ restrictedAbility a 1 OnSameLocation actionAbility
-    , restrictedAbility a 2 ControlsThis
-        $ ForcedAbility
+    , restrictedAbility a 2 (InThreatAreaOf You)
+        $ forced
         $ oneOf [InvestigatorTakeDamage #after You AnySource, InvestigatorTakeHorror #after You AnySource]
     ]
 

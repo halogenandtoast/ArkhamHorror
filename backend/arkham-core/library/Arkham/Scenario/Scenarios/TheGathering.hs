@@ -1,7 +1,5 @@
 module Arkham.Scenario.Scenarios.TheGathering where
 
-import Arkham.Prelude
-
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -16,6 +14,7 @@ import Arkham.Exception
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted
+import Arkham.Prelude
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner hiding (
@@ -35,7 +34,10 @@ newtype TheGathering = TheGathering ScenarioAttrs
 theGathering :: Difficulty -> TheGathering
 theGathering difficulty =
   scenario TheGathering "01104" "The Gathering" difficulty
-    $ ["   .   attic   .     ", " study hallway parlor", "   .   cellar  .     "]
+    $ [ "   .   attic   .     "
+      , " study hallway parlor"
+      , "   .   cellar  .     "
+      ]
 
 instance HasChaosTokenValue TheGathering where
   getChaosTokenValue iid chaosTokenFace (TheGathering attrs) = case chaosTokenFace of

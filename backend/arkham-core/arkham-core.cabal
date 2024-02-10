@@ -970,7 +970,6 @@ library
       Arkham.Effect.Effects.LeMarais218
       Arkham.Effect.Effects.LuckyDice2
       Arkham.Effect.Effects.MeatCleaver
-      Arkham.Effect.Effects.Mesmerize
       Arkham.Effect.Effects.MindWipe3
       Arkham.Effect.Effects.Montmartre209
       Arkham.Effect.Effects.MrPeabody
@@ -2940,7 +2939,8 @@ test-suite spec
   build-tool-depends:
       cards-discover:cards-discover
   build-depends:
-      arkham-core
+      HUnit
+    , arkham-core
     , base
     , containers
     , hspec

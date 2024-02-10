@@ -45,14 +45,13 @@ instance HasChaosTokenValue LeoAnderson where
 instance RunMessage LeoAnderson where
   runMessage msg i@(LeoAnderson (attrs `With` meta)) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' payment -> do
-      let source = toAbilitySource attrs 1
       results <- selectList (InHandOf (InvestigatorWithId iid) <> #ally)
       resources <- getSpendableResources iid
       cards <-
         filterM
           (getIsPlayableWithResources iid GameSource (resources + 1) UnpaidCost [duringTurnWindow iid])
           results
-      let choose c = UseCardAbilityChoiceTarget iid source 1 (CardTarget c) windows' payment
+      let choose c = UseCardAbilityChoiceTarget iid (toSource attrs) 1 (CardTarget c) windows' payment
       player <- getPlayer iid
       push $ chooseOne player [targetLabel (toCardId c) [choose c] | c <- cards]
       pure i

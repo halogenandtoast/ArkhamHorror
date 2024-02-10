@@ -1,13 +1,9 @@
-module Arkham.Asset.Cards.Bandolier (
-  Bandolier (..),
-  bandolier,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Bandolier (Bandolier (..), bandolier) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype Bandolier = Bandolier AssetAttrs

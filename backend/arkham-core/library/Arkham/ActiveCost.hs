@@ -72,7 +72,7 @@ addActiveCostCost cost ac = ac & costsL <>~ cost
 
 activeCostSource :: ActiveCost -> Source
 activeCostSource ac = case activeCostTarget ac of
-  ForAbility a -> abilitySource a
+  ForAbility a -> toSource a
   ForCard _ c -> CardSource c
   ForCost c -> CardSource c
 
@@ -862,30 +862,17 @@ payCost msg c iid skipAdditionalCosts cost = do
           player
           [ targetLabel
             asset
-            [ PayCost
-                acId
-                iid
-                skipAdditionalCosts
-                (ReturnAssetToHandCost asset)
-            ]
+            [PayCost acId iid skipAdditionalCosts (ReturnAssetToHandCost asset)]
           | asset <- assets
           ]
       pure c
     ReturnAssetToHandCost assetId -> do
       card <- field AssetCard assetId
-      controller <-
-        fieldMap
-          AssetController
-          (fromJustNote "Missing controller")
-          assetId
+      controller <- fieldMap AssetController (fromJustNote "Missing controller") assetId
       push $ ReturnToHand controller $ AssetTarget assetId
       withPayment $ ReturnToHandPayment card
     DiscardHandCost -> do
-      handCards <-
-        fieldMap
-          InvestigatorHand
-          (mapMaybe (preview _PlayerCard))
-          iid
+      handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
       push $ DiscardHand iid (activeCostSource c)
       withPayment $ DiscardCardPayment $ map PlayerCard handCards
     DiscardFromCost x zone cardMatcher -> do
@@ -902,22 +889,16 @@ payCost msg c iid skipAdditionalCosts cost = do
               <$> traverse (field AssetCard) assets
           CostZones zs -> concatMapM getCards zs
       cards <- getCards zone
-      c
-        <$ push
-          ( chooseN
-              player
-              x
-              [ targetLabel
-                (toCardId card)
-                [ PayCost
-                    acId
-                    iid
-                    skipAdditionalCosts
-                    (DiscardCost zone' $ CardTarget card)
-                ]
-              | (zone', card) <- cards
-              ]
-          )
+      push
+        $ chooseN
+          player
+          x
+          [ targetLabel
+            (toCardId card)
+            [PayCost acId iid skipAdditionalCosts (DiscardCost zone' $ CardTarget card)]
+          | (zone', card) <- cards
+          ]
+      pure c
     SkillIconCost x skillTypes -> do
       handCards <-
         fieldMap

@@ -1,4 +1,3 @@
-{-# LANGUAGE StrictData #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Arkham.Game.Base where
@@ -8,7 +7,7 @@ import Arkham.Prelude
 import {-# SOURCE #-} Arkham.Ability.Types
 import Arkham.ActiveCost.Base
 import Arkham.Campaign.Types (Campaign)
-import {-# SOURCE #-} Arkham.Card (CardCode, CardId, Card)
+import {-# SOURCE #-} Arkham.Card (Card, CardCode, CardId)
 import Arkham.ChaosToken
 import {-# SOURCE #-} Arkham.Entities
 import Arkham.Game.Settings
@@ -28,6 +27,7 @@ import Data.These
 import GHC.Records
 
 type GameMode = These Campaign Scenario
+
 data GameState = IsPending [PlayerId] | IsActive | IsOver
   deriving stock (Eq, Show)
 

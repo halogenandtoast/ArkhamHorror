@@ -72,7 +72,7 @@ watchEffect(() => selectedTab.value = props.playerId)
     </ul>
     <Tab
       v-for="investigator in investigators"
-      :key="investigator.playerId"
+      :key="investigator.id"
       :index="investigator.playerId"
       :selectedTab="selectedTab"
       :playerClass="investigator.class"

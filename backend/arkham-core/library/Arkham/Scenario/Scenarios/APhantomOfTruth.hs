@@ -1,9 +1,4 @@
-module Arkham.Scenario.Scenarios.APhantomOfTruth (
-  APhantomOfTruth (..),
-  aPhantomOfTruth,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.APhantomOfTruth (APhantomOfTruth (..), aPhantomOfTruth) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -25,6 +20,7 @@ import Arkham.Helpers
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Prelude
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
@@ -88,12 +84,8 @@ gatherTheMidnightMasks :: CardGen m => Int -> Int -> m [EncounterCard]
 gatherTheMidnightMasks conviction doubt = do
   traverse genEncounterCard
     $ if conviction > doubt
-      then
-        [ Treacheries.huntingShadow
-        , Treacheries.huntingShadow
-        , Treacheries.huntingShadow
-        ]
-      else [Treacheries.falseLead, Treacheries.falseLead]
+      then replicate 3 Treacheries.huntingShadow
+      else replicate 2 Treacheries.falseLead
 
 cultistEffect :: (HasGame m, HasQueue Message m) => m ()
 cultistEffect = do

@@ -67,6 +67,7 @@ import Arkham.Asset.Assets (
   sixthSense4Effect,
   sixthSenseEffect,
   thirtyFiveWinchesterEffect,
+  twilightBladeEffect,
   wellConnected3Effect,
   wellConnectedEffect,
   wither4Effect,
@@ -93,9 +94,9 @@ import Arkham.Event.Events (
   imDoneRunninEffect,
   letMeHandleThisEffect,
   marksmanship1Effect,
-  mindOverMatter2Effect,
   mystifyingSongEffect,
   pilfer3Effect,
+  slipAway2Effect,
   slipAwayEffect,
   spectralRazorEffect,
   stormOfSpirits3Effect,
@@ -125,6 +126,7 @@ import Arkham.Skill.Skills (
   defiance2Effect,
   defianceEffect,
   hatchetManEffect,
+  momentum1Effect,
   prescientEffect,
   surprisingFind1Effect,
   theEyeOfTruth5Effect,
@@ -140,9 +142,20 @@ import Arkham.Story.Stories (
 import Arkham.Treachery.Treacheries (
   arcaneBarrierEffect,
   chillingPresenceEffect,
+  mesmerizeEffect,
   mysteriesOfTheLodgeEffect,
   whispersOfHypnosEffect,
  )
+
+noop :: CardCode -> EffectArgs -> NoEffect
+noop cCode = NoEffect . uncurry4 (baseAttrs cCode)
+
+newtype NoEffect = NoEffect EffectAttrs
+  deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance RunMessage NoEffect where
+  runMessage msg (NoEffect a) = NoEffect <$> runMessage msg a
 
 createEffect
   :: MonadRandom m
@@ -340,6 +353,7 @@ allEffects =
     , ("06082", SomeEffect corruptedOrderlyEffect)
     , ("06089", SomeEffect whispersOfHypnosEffect)
     , ("06114", SomeEffect followedEffect)
+    , ("06115", SomeEffect momentum1Effect)
     , ("06162", SomeEffect gregoryGryEffect)
     , ("06195", SomeEffect thirtyFiveWinchesterEffect)
     , ("06201", SomeEffect spectralRazorEffect)
@@ -350,6 +364,7 @@ allEffects =
     , ("07012", SomeEffect showmanshipEffect)
     , ("09041", SomeEffect empiricalHypothesisEffect)
     , ("50008", SomeEffect mindWipe3)
+    , ("50013", SomeEffect twilightBladeEffect)
     , ("50044", SomeEffect jeremiahPierce)
     , ("52007", SomeEffect alchemicalTransmutation2Effect)
     , ("52008", SomeEffect stormOfSpirits3Effect)
@@ -358,11 +373,12 @@ allEffects =
     , ("60101", SomeEffect nathanielChoEffect)
     , ("60103", SomeEffect tommyMalloyEffect)
     , ("60220", SomeEffect libraryDocent1Effect)
-    , ("60226", SomeEffect mindOverMatter2Effect)
+    , ("60226", SomeEffect $ noop "60226")
     , ("60232", SomeEffect miskatonicArchaeologyFunding4Effect)
     , ("60301", SomeEffect winifredHabbamockEffect)
     , ("60305", SomeEffect lockpicksEffect)
     , ("60323", SomeEffect cheapShot2Effect)
+    , ("60324", SomeEffect slipAway2Effect)
     , ("60328", SomeEffect pilfer3Effect)
     , ("60329", SomeEffect backstab3Effect)
     , ("60330", SomeEffect copycat3Effect)
@@ -382,7 +398,7 @@ allEffects =
     , ("81001", SomeEffect curseOfTheRougarouTabletToken)
     , ("81007", SomeEffect cursedShores)
     , ("82026", SomeEffect gildedVolto)
-    , ("82035", SomeEffect mesmerize)
+    , ("82035", SomeEffect mesmerizeEffect)
     , ("84014", SomeEffect restaurantEffect)
     , ("84042", SomeEffect chillingPresenceEffect)
     , ("90002", SomeEffect daisysToteBagAdvanced)

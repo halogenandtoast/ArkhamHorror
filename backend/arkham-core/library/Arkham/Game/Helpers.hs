@@ -206,7 +206,8 @@ preventedByInvestigatorModifiers
   :: HasGame m => InvestigatorId -> Ability -> m Bool
 preventedByInvestigatorModifiers iid ability = do
   modifiers <- getModifiers (InvestigatorTarget iid)
-  anyM prevents modifiers
+  isForced <- isForcedAbility iid ability
+  if isForced then pure False else anyM prevents modifiers
  where
   prevents = \case
     CannotTakeAction x -> preventsAbility x
@@ -561,15 +562,9 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
       else do
         takenActions <- field InvestigatorActionsTaken iid
         performedActions <- field InvestigatorActionsPerformed iid
-        let
-          modifiedActionCost =
-            foldr (applyActionCostModifier takenActions performedActions actions) n modifiers
+        let modifiedActionCost = foldr (applyActionCostModifier takenActions performedActions actions) n modifiers
         additionalActions <- field InvestigatorAdditionalActions iid
-        additionalActionCount <-
-          length
-            <$> filterM
-              (additionalActionCovers source actions)
-              additionalActions
+        additionalActionCount <- countM (additionalActionCovers source actions) additionalActions
         actionCount <- field InvestigatorRemainingActions iid
         pure $ (actionCount + additionalActionCount) >= modifiedActionCost
   AssetClueCost _ aMatcher gv -> do
@@ -708,10 +703,11 @@ getActionsWith iid window f = do
     abilityFilters =
       mapMaybe
         ( \case
-            CannotTriggerAbilityMatching m -> Just m
+            CannotTriggerAbilityMatching m -> Just (Matcher.TriggeredAbility <> m)
             _ -> Nothing
         )
         modifiersForFilter
+
   unfilteredActions <- map f <$> getAllAbilities
   actions' <-
     if null abilityFilters
@@ -720,41 +716,39 @@ getActionsWith iid window f = do
         ignored <- select (mconcat abilityFilters)
         pure $ filter (`notMember` ignored) unfilteredActions
   actionsWithSources <-
-    concat <$> for
-      actions'
-      \action -> do
-        case abilitySource action of
-          ProxySource (AgendaMatcherSource m) base -> do
-            sources <- selectListMap AgendaSource m
-            pure
-              $ map
-                (\source -> action {abilitySource = ProxySource source base})
-                sources
-          ProxySource (ActMatcherSource m) base -> do
-            sources <- selectListMap ActSource m
-            pure
-              $ map
-                (\source -> action {abilitySource = ProxySource source base})
-                sources
-          ProxySource (AssetMatcherSource m) base -> do
-            sources <- selectListMap AssetSource m
-            pure
-              $ map
-                (\source -> action {abilitySource = ProxySource source base})
-                sources
-          ProxySource (LocationMatcherSource m) base -> do
-            sources <- selectListMap LocationSource m
-            pure
-              $ map
-                (\source -> action {abilitySource = ProxySource source base})
-                sources
-          ProxySource (EnemyMatcherSource m) base -> do
-            sources <- selectListMap EnemySource m
-            pure
-              $ map
-                (\source -> action {abilitySource = ProxySource source base})
-                sources
-          _ -> pure [action]
+    concat <$> for actions' \action -> do
+      case abilitySource action of
+        ProxySource (AgendaMatcherSource m) base -> do
+          sources <- selectListMap AgendaSource m
+          pure
+            $ map
+              (\source -> action {abilitySource = ProxySource source base})
+              sources
+        ProxySource (ActMatcherSource m) base -> do
+          sources <- selectListMap ActSource m
+          pure
+            $ map
+              (\source -> action {abilitySource = ProxySource source base})
+              sources
+        ProxySource (AssetMatcherSource m) base -> do
+          sources <- selectListMap AssetSource m
+          pure
+            $ map
+              (\source -> action {abilitySource = ProxySource source base})
+              sources
+        ProxySource (LocationMatcherSource m) base -> do
+          sources <- selectListMap LocationSource m
+          pure
+            $ map
+              (\source -> action {abilitySource = ProxySource source base})
+              sources
+        ProxySource (EnemyMatcherSource m) base -> do
+          sources <- selectListMap EnemySource m
+          pure
+            $ map
+              (\source -> action {abilitySource = ProxySource source base})
+              sources
+        _ -> pure [action]
 
   actions'' <-
     catMaybes <$> for
@@ -796,6 +790,7 @@ getActionsWith iid window f = do
                     || isForced
                     || isReactionAbility ability
                 )
+
         pure
           $ if any prevents investigatorModifiers
             || any blankPrevents modifiers'
@@ -1261,14 +1256,13 @@ passesCriteria iid mcard source windows' = \case
   Criteria.Never -> pure False
   Criteria.InYourHand -> do
     hand <-
-      liftA2
-        (<>)
-        (fieldMap InvestigatorHand (map toCardId) iid)
-        (map toCardId <$> getAsIfInHandCards iid)
+      liftA2 (<>) (fieldMap InvestigatorHand (map toCardId) iid) (map toCardId <$> getAsIfInHandCards iid)
     case source of
       EventSource eid -> do
-        cardId <- field InHandEventCardId eid
-        pure $ cardId `elem` hand
+        mCardId <- fieldMay InHandEventCardId eid
+        case mCardId of
+          Nothing -> pure False
+          Just cardId -> pure $ cardId `elem` hand
       AssetSource aid -> do
         inPlay <- selectAny $ Matcher.AssetWithId aid
         if inPlay
@@ -1277,10 +1271,7 @@ passesCriteria iid mcard source windows' = \case
             -- todo we should make a cleaner method for this
             cardId <- field InHandAssetCardId aid
             pure $ cardId `elem` hand
-      TreacherySource tid -> do
-        member tid
-          <$> select
-            (Matcher.TreacheryInHandOf $ Matcher.InvestigatorWithId iid)
+      TreacherySource tid -> member tid <$> select (Matcher.treacheryInHandOf iid)
       _ -> error $ "source not handled for in your hand: " <> show source
   Criteria.InYourDiscard -> do
     discard <- fieldMap InvestigatorDiscard (map toCardId) iid
@@ -1291,8 +1282,7 @@ passesCriteria iid mcard source windows' = \case
           then pure False
           else do
             -- todo we should make a cleaner method for this
-            cardId <- field InDiscardAssetCardId aid
-            pure $ cardId `elem` discard
+            fieldMap InDiscardAssetCardId (`elem` discard) aid
       InvestigatorSource _ -> case mcard of
         Just (card, _) -> pure $ toCardId card `elem` discard
         _ -> error "No card available to check"
@@ -1800,8 +1790,13 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
         _ -> noMatch
     Matcher.GameBegins timing -> guardTiming timing $ pure . (== Window.GameBegins)
     Matcher.InvestigatorTakeDamage timing whoMatcher sourceMatcher ->
-      guardTiming timing $ \case
+      guardTiming timing \case
         Window.TakeDamage source' _ (InvestigatorTarget who) _ ->
+          andM
+            [ sourceMatches source' sourceMatcher
+            , matchWho iid who whoMatcher
+            ]
+        Window.DealtDamage source' _ (InvestigatorTarget who) _ ->
           andM
             [ sourceMatches source' sourceMatcher
             , matchWho iid who whoMatcher

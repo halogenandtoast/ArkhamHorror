@@ -645,14 +645,7 @@ theNecronomicon =
 
 heirloomOfHyperborea :: CardDef
 heirloomOfHyperborea =
-  ( asset
-      "01012"
-      ( "Heirloom of Hyperborea"
-          <:> "Artifact from Another Life"
-      )
-      3
-      Neutral
-  )
+  (asset "01012" ("Heirloom of Hyperborea" <:> "Artifact from Another Life") 3 Neutral)
     { cdSkills = [#willpower, #combat, #wild]
     , cdCardTraits = setFromList [Item, Relic]
     , cdUnique = True
@@ -787,12 +780,7 @@ researchLibrarian =
 
 drMilanChristopher :: CardDef
 drMilanChristopher =
-  ( asset
-      "01033"
-      ("Dr. Milan Christopher" <:> "Professor of Entomology")
-      4
-      Seeker
-  )
+  (asset "01033" ("Dr. Milan Christopher" <:> "Professor of Entomology") 4 Seeker)
     { cdSkills = [#intellect]
     , cdCardTraits = setFromList [Ally, Miskatonic]
     , cdUnique = True
@@ -1054,8 +1042,7 @@ digDeep =
 
 aquinnah1 :: CardDef
 aquinnah1 =
-  ( asset "01082" ("Aquinnah" <:> "The Forgotten Daughter") 5 Survivor
-  )
+  (asset "01082" ("Aquinnah" <:> "The Forgotten Daughter") 5 Survivor)
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Ally]
     , cdLevel = 1
@@ -1255,12 +1242,7 @@ kukri =
 
 drHenryArmitage :: CardDef
 drHenryArmitage =
-  ( storyAsset
-      "02040"
-      ("Dr. Henry Armitage" <:> "The Head Librarian")
-      2
-      ArmitagesFate
-  )
+  (storyAsset "02040" ("Dr. Henry Armitage" <:> "The Head Librarian") 2 ArmitagesFate)
     { cdSkills = [#wild, #wild]
     , cdCardTraits = setFromList [Ally, Miskatonic]
     , cdUnique = True
@@ -1276,12 +1258,7 @@ alchemicalConcoction =
 
 jazzMulligan :: CardDef
 jazzMulligan =
-  ( storyAsset
-      "02060"
-      ("\"Jazz\" Mulligan" <:> "The Head Janitor")
-      0
-      ExtracurricularActivity
-  )
+  (storyAsset "02060" ("\"Jazz\" Mulligan" <:> "The Head Janitor") 0 ExtracurricularActivity)
     { cdCardTraits = setFromList [Ally, Miskatonic]
     , cdUnique = True
     , cdCardType = EncounterAssetType
@@ -1289,11 +1266,7 @@ jazzMulligan =
 
 professorWarrenRice :: CardDef
 professorWarrenRice =
-  ( storyAsset
-      "02061"
-      ("Professor Warren Rice" <:> "Professor of Languages")
-      3
-      ExtracurricularActivity
+  ( storyAsset "02061" ("Professor Warren Rice" <:> "Professor of Languages") 3 ExtracurricularActivity
   )
     { cdSkills = [#intellect, #wild]
     , cdCardTraits = setFromList [Ally, Miskatonic]
@@ -1303,12 +1276,7 @@ professorWarrenRice =
 
 peterClover :: CardDef
 peterClover =
-  ( storyAsset
-      "02079"
-      ("Peter Clover" <:> "Holding All the Cards")
-      0
-      TheHouseAlwaysWins
-  )
+  (storyAsset "02079" ("Peter Clover" <:> "Holding All the Cards") 0 TheHouseAlwaysWins)
     { cdCardTraits = setFromList [Humanoid, Criminal]
     , cdUnique = True
     , cdCardType = EncounterAssetType
@@ -1316,12 +1284,7 @@ peterClover =
 
 drFrancisMorgan :: CardDef
 drFrancisMorgan =
-  ( storyAsset
-      "02080"
-      ("Dr. Francis Morgan" <:> "Professor of Archaeology")
-      3
-      TheHouseAlwaysWins
-  )
+  (storyAsset "02080" ("Dr. Francis Morgan" <:> "Professor of Archaeology") 3 TheHouseAlwaysWins)
     { cdSkills = [#combat, #wild]
     , cdCardTraits = setFromList [Ally, Miskatonic]
     , cdUnique = True
@@ -1391,12 +1354,7 @@ painkillers =
 
 haroldWalsted :: CardDef
 haroldWalsted =
-  ( storyAsset
-      "02138"
-      ("Harold Walsted" <:> "Curator of the Museum")
-      0
-      TheMiskatonicMuseum
-  )
+  (storyAsset "02138" ("Harold Walsted" <:> "Curator of the Museum") 0 TheMiskatonicMuseum)
     { cdCardTraits = setFromList [Ally, Miskatonic]
     , cdUnique = True
     , cdCardType = EncounterAssetType
@@ -1404,8 +1362,7 @@ haroldWalsted =
 
 adamLynch :: CardDef
 adamLynch =
-  ( storyAsset "02139" ("Adam Lynch" <:> "Museum Security") 0 TheMiskatonicMuseum
-  )
+  (storyAsset "02139" ("Adam Lynch" <:> "Museum Security") 0 TheMiskatonicMuseum)
     { cdCardTraits = setFromList [Ally, Miskatonic]
     , cdUnique = True
     , cdCardType = EncounterAssetType
@@ -1413,12 +1370,7 @@ adamLynch =
 
 theNecronomiconOlausWormiusTranslation :: CardDef
 theNecronomiconOlausWormiusTranslation =
-  ( storyAsset
-      "02140"
-      ("The Necronomicon" <:> "Olaus Wormius Translation")
-      2
-      TheMiskatonicMuseum
-  )
+  (storyAsset "02140" ("The Necronomicon" <:> "Olaus Wormius Translation") 2 TheMiskatonicMuseum)
     { cdSkills = [#intellect]
     , cdCardTraits = setFromList [Item, Tome]
     , cdSlots = [#hand]
@@ -1553,12 +1505,7 @@ keyToTheChamber =
 
 zebulonWhateley :: CardDef
 zebulonWhateley =
-  ( storyAsset
-      "02217"
-      ("Zebulon Whateley" <:> "Recalling Ancient Things")
-      3
-      BloodOnTheAltar
-  )
+  (storyAsset "02217" ("Zebulon Whateley" <:> "Recalling Ancient Things") 3 BloodOnTheAltar)
     { cdCardTraits = setFromList [Ally, Dunwich]
     , cdSkills = [#willpower, #wild]
     , cdUnique = True
@@ -1567,12 +1514,7 @@ zebulonWhateley =
 
 earlSawyer :: CardDef
 earlSawyer =
-  ( storyAsset
-      "02218"
-      ("Earl Sawyer" <:> "Smarter Than He Lets On")
-      3
-      BloodOnTheAltar
-  )
+  (storyAsset "02218" ("Earl Sawyer" <:> "Smarter Than He Lets On") 3 BloodOnTheAltar)
     { cdCardTraits = setFromList [Ally, Dunwich]
     , cdSkills = [#agility, #wild]
     , cdUnique = True
@@ -1581,12 +1523,7 @@ earlSawyer =
 
 powderOfIbnGhazi :: CardDef
 powderOfIbnGhazi =
-  ( storyAsset
-      "02219"
-      ("Powder of Ibn-Ghazi" <:> "Seeing Things Unseen")
-      0
-      BloodOnTheAltar
-  )
+  (storyAsset "02219" ("Powder of Ibn-Ghazi" <:> "Seeing Things Unseen") 0 BloodOnTheAltar)
     { cdCardTraits = singleton Item
     }
 
@@ -1713,12 +1650,7 @@ lightningGun5 =
 
 drWilliamTMaleson :: CardDef
 drWilliamTMaleson =
-  ( asset
-      "02302"
-      ("Dr. William T. Maleson" <:> "Working on Something Big")
-      1
-      Seeker
-  )
+  (asset "02302" ("Dr. William T. Maleson" <:> "Working on Something Big") 1 Seeker)
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Ally, Miskatonic]
     , cdUnique = True
@@ -1758,8 +1690,7 @@ shrivelling5 =
 
 aquinnah3 :: CardDef
 aquinnah3 =
-  ( asset "02308" ("Aquinnah" <:> "The Forgotten Daughter") 4 Survivor
-  )
+  (asset "02308" ("Aquinnah" <:> "The Forgotten Daughter") 4 Survivor)
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Ally]
     , cdLevel = 3
@@ -1924,8 +1855,7 @@ gravediggersShovel =
 
 constanceDumaine :: CardDef
 constanceDumaine =
-  ( storyAsset "03076a" ("Constance Dumaine" <:> "Sociable Hostess") 0 TheLastKing
-  )
+  (storyAsset "03076a" ("Constance Dumaine" <:> "Sociable Hostess") 0 TheLastKing)
     { cdCardTraits = singleton Bystander
     , cdUnique = True
     , cdCardType = EncounterAssetType
@@ -1955,12 +1885,7 @@ ishimaruHaruko =
 
 sebastienMoreau :: CardDef
 sebastienMoreau =
-  ( storyAsset
-      "03079"
-      ("Sebastien Moreau" <:> "Impassioned Producer")
-      0
-      TheLastKing
-  )
+  (storyAsset "03079" ("Sebastien Moreau" <:> "Impassioned Producer") 0 TheLastKing)
     { cdCardTraits = singleton Bystander
     , cdUnique = True
     , cdCardType = EncounterAssetType
@@ -1970,12 +1895,7 @@ sebastienMoreau =
 
 ashleighClarke :: CardDef
 ashleighClarke =
-  ( storyAsset
-      "03080"
-      ("Ashleigh Clarke" <:> "Talented Entertainer")
-      0
-      TheLastKing
-  )
+  (storyAsset "03080" ("Ashleigh Clarke" <:> "Talented Entertainer") 0 TheLastKing)
     { cdCardTraits = singleton Bystander
     , cdUnique = True
     , cdCardType = EncounterAssetType
@@ -2055,12 +1975,7 @@ plucky1 =
 
 mrPeabody :: CardDef
 mrPeabody =
-  ( storyAsset
-      "03141"
-      ("Mr. Peabody" <:> "Historical Society Curator")
-      0
-      EchoesOfThePast
-  )
+  (storyAsset "03141" ("Mr. Peabody" <:> "Historical Society Curator") 0 EchoesOfThePast)
     { cdCardTraits = setFromList [Ally, HistoricalSociety]
     , cdCost = Nothing
     , cdUnique = True
@@ -2070,11 +1985,7 @@ mrPeabody =
 
 claspOfBlackOnyx :: CardDef
 claspOfBlackOnyx =
-  ( storyWeakness
-      "03142"
-      ("Clasp of Black Onyx" <:> "A Gift Unlooked For")
-      EchoesOfThePast
-  )
+  (storyWeakness "03142" ("Clasp of Black Onyx" <:> "A Gift Unlooked For") EchoesOfThePast)
     { cdCardTraits = setFromList [Item, Relic]
     , cdCost = Just (StaticCost 1)
     , cdRevelation = NoRevelation
@@ -2083,12 +1994,7 @@ claspOfBlackOnyx =
 
 theTatteredCloak :: CardDef
 theTatteredCloak =
-  ( storyAsset
-      "03143"
-      ("The Tattered Cloak" <:> "Regalia Dementia")
-      2
-      EchoesOfThePast
-  )
+  (storyAsset "03143" ("The Tattered Cloak" <:> "Regalia Dementia") 2 EchoesOfThePast)
     { cdSkills = [#willpower, #combat, #agility]
     , cdCardTraits = setFromList [Item, Clothing]
     , cdSlots = [#body]
@@ -2104,12 +2010,7 @@ trenchKnife =
 
 charlesRossEsq :: CardDef
 charlesRossEsq =
-  ( asset
-      "03149"
-      ("Charles Ross, Esq." <:> "Acquisitions and Solicitation")
-      2
-      Seeker
-  )
+  (asset "03149" ("Charles Ross, Esq." <:> "Acquisitions and Solicitation") 2 Seeker)
     { cdSkills = [#intellect]
     , cdCardTraits = setFromList [Ally, Patron]
     , cdUnique = True
@@ -2136,12 +2037,7 @@ bookOfShadows1 =
 
 danielChesterfield :: CardDef
 danielChesterfield =
-  ( storyAsset
-      "03182a"
-      ( "Daniel Chesterfield" <:> "He's Not Doing All Too Well"
-      )
-      0
-      TheUnspeakableOath
+  ( storyAsset "03182a" ("Daniel Chesterfield" <:> "He's Not Doing All Too Well") 0 TheUnspeakableOath
   )
     { cdCardTraits = setFromList [Ally, Lunatic]
     , cdCost = Nothing
@@ -2359,8 +2255,7 @@ mitchBrown =
 
 jakeWilliams :: CardDef
 jakeWilliams =
-  ( asset "04008" ("Jake Williams" <:> "Loyal Companion") 3 Neutral
-  )
+  (asset "04008" ("Jake Williams" <:> "Loyal Companion") 3 Neutral)
     { cdSkills = [#intellect, #wild]
     , cdCardTraits = setFromList [Ally, Wayfarer]
     , cdSlots = [#ally]
@@ -2371,14 +2266,7 @@ jakeWilliams =
 finnsTrustyThirtyEight :: CardDef
 finnsTrustyThirtyEight =
   fast
-    $ ( asset
-          "04011"
-          ( "Finn's Trusty .38"
-              <:> "Never Leave Home Without It"
-          )
-          2
-          Neutral
-      )
+    $ (asset "04011" ("Finn's Trusty .38" <:> "Never Leave Home Without It") 2 Neutral)
       { cdSkills = [#agility, #wild]
       , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
       , cdSlots = [#hand]
@@ -2443,8 +2331,7 @@ ancientStone1 =
 
 toothOfEztli :: CardDef
 toothOfEztli =
-  ( asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker
-  )
+  (asset "04023" ("Tooth of Eztli" <:> "Mortal Reminder") 3 Seeker)
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Item, Relic]
     , cdSlots = [#accessory]
@@ -2488,9 +2375,7 @@ theChthonianStone =
         singleton
           $ Keyword.Seal
           $ ChaosTokenMatchesAny
-          $ map
-            ChaosTokenFaceIs
-            [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
+          $ map ChaosTokenFaceIs [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
     }
 
 protectiveIncantation1 :: CardDef
@@ -2523,12 +2408,7 @@ backpack =
 
 alejandroVela :: CardDef
 alejandroVela =
-  ( storyAsset
-      "04051"
-      ("Alejandro Vela" <:> "Renowned Historian")
-      2
-      TheUntamedWilds
-  )
+  (storyAsset "04051" ("Alejandro Vela" <:> "Renowned Historian") 2 TheUntamedWilds)
     { cdSkills = [#willpower, #intellect, #wild]
     , cdCardTraits = setFromList [Ally, Wayfarer]
     , cdSlots = [#ally]
@@ -2537,14 +2417,7 @@ alejandroVela =
 
 relicOfAgesADeviceOfSomeSort :: CardDef
 relicOfAgesADeviceOfSomeSort =
-  ( storyAsset
-      "04061"
-      ( "Relic of Ages"
-          <:> "\8230A Device, of Some Sort"
-      )
-      2
-      TheDoomOfEztli
-  )
+  (storyAsset "04061" ("Relic of Ages" <:> "\8230A Device, of Some Sort") 2 TheDoomOfEztli)
     { cdSkills = [#wild, #wild, #wild]
     , cdCardTraits = setFromList [Item, Relic]
     , cdUnique = True
@@ -2584,12 +2457,7 @@ arcaneResearch =
 
 harlanEarnstone :: CardDef
 harlanEarnstone =
-  ( storyAsset
-      "04118b"
-      ("Harlan Earnstone" <:> "Historical Theorist")
-      0
-      ThreadsOfFate
-  )
+  (storyAsset "04118b" ("Harlan Earnstone" <:> "Historical Theorist") 0 ThreadsOfFate)
     { cdCardTraits = setFromList [Bystander, Miskatonic]
     , cdCost = Nothing
     , cdUnique = True
@@ -2597,12 +2465,7 @@ harlanEarnstone =
 
 henryDeveau :: CardDef
 henryDeveau =
-  ( storyAsset
-      "04125b"
-      ("Henry Deveau" <:> "Friend of Alejandro")
-      0
-      ThreadsOfFate
-  )
+  (storyAsset "04125b" ("Henry Deveau" <:> "Friend of Alejandro") 0 ThreadsOfFate)
     { cdCardTraits = singleton Bystander
     , cdCost = Nothing
     , cdUnique = True
@@ -2683,14 +2546,7 @@ cornered2 =
 
 relicOfAgesForestallingTheFuture :: CardDef
 relicOfAgesForestallingTheFuture =
-  ( storyAsset
-      "04191"
-      ( "Relic of Ages"
-          <:> "Forestalling the Future"
-      )
-      2
-      TheBoundaryBeyond
-  )
+  (storyAsset "04191" ("Relic of Ages" <:> "Forestalling the Future") 2 TheBoundaryBeyond)
     { cdSkills = [#wild, #wild, #wild]
     , cdCardTraits = setFromList [Item, Relic]
     , cdUnique = True
@@ -2784,9 +2640,7 @@ crystallineElderSign3 =
         singleton
           $ Keyword.Seal
           $ ChaosTokenMatchesAny
-          $ map
-            ChaosTokenFaceIs
-            [Token.PlusOne, Token.ElderSign]
+          $ map ChaosTokenFaceIs [Token.PlusOne, Token.ElderSign]
     , cdLevel = 3
     }
 
@@ -2801,12 +2655,7 @@ onYourOwn3 =
 
 theCustodian :: CardDef
 theCustodian =
-  ( storyAsset
-      "04256"
-      ("The Custodian" <:> "Curious Yithian")
-      0
-      TheCityOfArchives
-  )
+  (storyAsset "04256" ("The Custodian" <:> "Curious Yithian") 0 TheCityOfArchives)
     { cdCardTraits = setFromList [Ally, Yithian]
     , cdUnique = True
     , cdCost = Nothing
@@ -3179,12 +3028,7 @@ grislyTotem =
 
 theBlackBook :: CardDef
 theBlackBook =
-  ( storyAsset
-      "05150"
-      ("The Black Book" <:> "Signed in Blood")
-      3
-      TheSecretName
-  )
+  (storyAsset "05150" ("The Black Book" <:> "Signed in Blood") 3 TheSecretName)
     { cdSkills = [#willpower, #intellect, #wild]
     , cdCardTraits = setFromList [Item, Tome, Relic]
     , cdSlots = [#hand]
@@ -4514,9 +4358,7 @@ theChthonianStone3 =
         singleton
           $ Keyword.Seal
           $ ChaosTokenMatchesAny
-          $ map
-            ChaosTokenFaceIs
-            [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
+          $ map ChaosTokenFaceIs [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
     }
 
 onYourOwn3_Exceptional :: CardDef

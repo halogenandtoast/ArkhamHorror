@@ -10,7 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Discover
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Movement
 
@@ -41,7 +40,7 @@ instance HasAbilities ForbiddenTomeSecretsRevealed3 where
 instance RunMessage ForbiddenTomeSecretsRevealed3 where
   runMessage msg a@(ForbiddenTomeSecretsRevealed3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      lids <- accessibleLocations iid
+      lids <- getAccessibleLocations iid attrs
       player <- getPlayer iid
       pushAll
         [ chooseOrRunOne player

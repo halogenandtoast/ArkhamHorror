@@ -47,8 +47,8 @@ instance RunMessage BaitAndSwitch3 where
   runMessage msg e@(BaitAndSwitch3 (attrs@EventAttrs {..} `With` meta)) =
     case msg of
       InvestigatorPlayEvent iid eid mTarget ws _ | eid == eventId -> do
-        choice1Enemies <- selectList (baitAndSwitch3Matcher iid attrs 1)
-        choice2Enemies <- selectList (baitAndSwitch3Matcher iid attrs 2)
+        choice1Enemies <- select (baitAndSwitch3Matcher iid attrs 1)
+        choice2Enemies <- select (baitAndSwitch3Matcher iid attrs 2)
         player <- getPlayer iid
         push
           $ chooseOrRunOne player
@@ -86,7 +86,7 @@ instance RunMessage BaitAndSwitch3 where
         pure $ BaitAndSwitch3 (attrs `with` Metadata (Just n))
       Successful (Action.Evade, EnemyTarget eid) iid _ target _
         | isTarget attrs target -> do
-            nonElite <- member eid <$> select NonEliteEnemy
+            nonElite <- elem eid <$> select NonEliteEnemy
             case choice meta of
               Just 1 ->
                 pushAll
@@ -104,7 +104,7 @@ instance RunMessage BaitAndSwitch3 where
             pure e
       WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _)
         | isTarget attrs target -> do
-            choices <- selectList ConnectedLocation
+            choices <- select ConnectedLocation
             player <- getPlayer iid
             let
               enemyMoveChoices =

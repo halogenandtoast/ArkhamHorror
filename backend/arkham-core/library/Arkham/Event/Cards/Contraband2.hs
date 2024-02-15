@@ -22,7 +22,7 @@ contraband2 = event Contraband2 Cards.contraband2
 instance RunMessage Contraband2 where
   runMessage msg e@(Contraband2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      investigatorIds <- selectList $ affectsOthers $ colocatedWith iid
+      investigatorIds <- select $ affectsOthers $ colocatedWith iid
 
       ammoAssets <-
         selectWithField AssetUses

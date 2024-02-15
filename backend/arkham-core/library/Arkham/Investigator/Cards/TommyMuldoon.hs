@@ -100,8 +100,8 @@ instance RunMessage TommyMuldoon where
       , n `elem` [1, 11] -> do
           hasDamage <- fieldSome InvestigatorDamage iid
           hasHorror <- fieldSome InvestigatorHorror iid
-          assetsWithHealth <- selectList (AssetWithHealth <> assetControlledBy iid)
-          assetsWithSanity <- selectList (AssetWithSanity <> assetControlledBy iid)
+          assetsWithHealth <- select (AssetWithHealth <> assetControlledBy iid)
+          assetsWithSanity <- select (AssetWithSanity <> assetControlledBy iid)
           player <- getPlayer iid
 
           when ((hasDamage && notNull assetsWithHealth) || (hasHorror && notNull assetsWithSanity)) $ do
@@ -123,8 +123,8 @@ instance RunMessage TommyMuldoon where
     HandleAbilityOption iid _ n
       | attrs `is` iid
       , n `elem` [2, 22] -> do
-          assetsWithDamage <- selectList (AssetWithDamage <> assetControlledBy iid)
-          assetsWithHorror <- selectList (AssetWithHorror <> assetControlledBy iid)
+          assetsWithDamage <- select (AssetWithDamage <> assetControlledBy iid)
+          assetsWithHorror <- select (AssetWithHorror <> assetControlledBy iid)
           player <- getPlayer iid
           pushWhen (notNull assetsWithDamage || notNull assetsWithHorror)
             $ chooseOrRunOne player

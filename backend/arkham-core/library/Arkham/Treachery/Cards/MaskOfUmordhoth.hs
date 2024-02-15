@@ -21,7 +21,7 @@ maskOfUmordhoth = treachery MaskOfUmordhoth Cards.maskOfUmordhoth
 
 instance HasModifiersFor MaskOfUmordhoth where
   getModifiersFor (EnemyTarget eid) (MaskOfUmordhoth attrs) | treacheryOnEnemy eid attrs = do
-    isUnique <- member eid <$> select UniqueEnemy
+    isUnique <- elem eid <$> select UniqueEnemy
     let keyword = if isUnique then Keyword.Retaliate else Keyword.Aloof
     pure $ toModifiers attrs [HealthModifier 2, AddKeyword keyword]
   getModifiersFor _ _ = pure []
@@ -29,7 +29,7 @@ instance HasModifiersFor MaskOfUmordhoth where
 instance RunMessage MaskOfUmordhoth where
   runMessage msg t@(MaskOfUmordhoth attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      enemies <- selectList $ FarthestEnemyFrom iid $ EnemyWithTrait Cultist
+      enemies <- select $ FarthestEnemyFrom iid $ EnemyWithTrait Cultist
       case enemies of
         [] ->
           pushAll

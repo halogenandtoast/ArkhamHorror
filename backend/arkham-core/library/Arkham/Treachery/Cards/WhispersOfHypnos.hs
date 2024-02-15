@@ -25,7 +25,7 @@ instance RunMessage WhispersOfHypnos where
   runMessage msg t@(WhispersOfHypnos attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       player <- getPlayer iid
-      effects <- selectList $ effectFrom Cards.whispersOfHypnos
+      effects <- select $ effectFrom Cards.whispersOfHypnos
       usedSkills <- forMaybeM effects $ \effect -> do
         meta <- field EffectMeta effect
         pure $ case meta of

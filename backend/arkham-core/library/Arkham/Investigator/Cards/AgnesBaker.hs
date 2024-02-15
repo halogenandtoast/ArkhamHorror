@@ -35,7 +35,7 @@ instance RunMessage AgnesBaker where
   runMessage msg i@(AgnesBaker attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      targets <- selectList $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource source
+      targets <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource source
       player <- getPlayer iid
       push $ chooseOne player $ targetLabels targets (only . nonAttackEnemyDamage source 1)
       pure i

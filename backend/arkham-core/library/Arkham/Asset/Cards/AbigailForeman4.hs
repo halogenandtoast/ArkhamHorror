@@ -59,7 +59,7 @@ getAbility (_ : rest) = getAbility rest
 instance RunMessage AbigailForeman4 where
   runMessage msg a@(AbigailForeman4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      as <- selectList $ assetControlledBy iid <> #tome <> AssetWithPlacement (InPlayArea iid)
+      as <- select $ assetControlledBy iid <> #tome <> AssetWithPlacement (InPlayArea iid)
       mAttachedAsset <- selectOne $ AssetAttachedToAsset $ AssetWithId $ toId attrs
       player <- getPlayer iid
       push

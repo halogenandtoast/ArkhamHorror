@@ -25,7 +25,7 @@ expulsion = treachery Expulsion Cards.expulsion
 instance RunMessage Expulsion where
   runMessage msg t@(Expulsion attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      nearestCultists <- selectList $ NearestEnemy $ EnemyWithTrait Cultist
+      nearestCultists <- select $ NearestEnemy $ EnemyWithTrait Cultist
       if null nearestCultists
         then push $ gainSurge attrs
         else do

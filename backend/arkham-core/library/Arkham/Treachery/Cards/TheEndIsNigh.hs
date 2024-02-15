@@ -32,7 +32,7 @@ instance RunMessage TheEndIsNigh where
       pure t
     FailedThisSkillTest _ (isSource attrs -> True) -> do
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
-      cultists <- selectList $ EnemyWithTrait Cultist
+      cultists <- select $ EnemyWithTrait Cultist
       if null cultists
         then push $ PlaceDoom (toSource attrs) (toTarget azathoth) 1
         else do

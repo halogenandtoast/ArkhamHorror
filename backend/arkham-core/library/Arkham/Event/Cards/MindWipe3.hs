@@ -18,7 +18,7 @@ mindWipe3 = event MindWipe3 Cards.mindWipe3
 instance RunMessage MindWipe3 where
   runMessage msg e@(MindWipe3 attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      enemyIds <- selectList $ enemiesColocatedWith iid <> NonEliteEnemy
+      enemyIds <- select $ enemiesColocatedWith iid <> NonEliteEnemy
       unless (null enemyIds) $ do
         player <- getPlayer iid
         push

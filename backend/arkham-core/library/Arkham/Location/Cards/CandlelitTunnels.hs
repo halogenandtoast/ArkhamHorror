@@ -67,7 +67,7 @@ instance RunMessage CandlelitTunnels where
       pure l
     PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
       player <- getPlayer iid
-      locations <- selectList UnrevealedLocation
+      locations <- select UnrevealedLocation
       unless (null locations)
         $ push
         $ chooseOne

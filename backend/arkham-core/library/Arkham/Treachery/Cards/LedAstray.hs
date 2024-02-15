@@ -23,7 +23,7 @@ ledAstray = treachery LedAstray Cards.ledAstray
 instance RunMessage LedAstray where
   runMessage msg t@(LedAstray attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      cultists <- selectListMap EnemyTarget $ EnemyWithTrait Cultist
+      cultists <- selectMap EnemyTarget $ EnemyWithTrait Cultist
       hasNoClues <- fieldP InvestigatorClues (== 0) iid
       let
         advanceAgenda = [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]

@@ -23,9 +23,7 @@ instance HasAbilities EsotericAtlas2 where
     [ controlledAbility
         a
         1
-        ( exists
-            $ oneOf [LocationWithDistanceFrom n (RevealedLocation <> CanEnterLocation You) | n <- [1 .. 3]]
-        )
+        (CanMoveTo $ oneOf [LocationWithDistanceFrom n RevealedLocation | n <- [1 .. 3]])
         $ actionAbilityWithCost (assetUseCost a Secret 1)
     ]
 
@@ -33,8 +31,8 @@ instance RunMessage EsotericAtlas2 where
   runMessage msg a@(EsotericAtlas2 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       locations <-
-        selectList
-          $ oneOf [LocationWithDistanceFrom n (RevealedLocation <> canEnterLocation iid) | n <- [1 .. 3]]
+        getCanMoveToMatchingLocations iid (attrs.ability 1)
+          $ oneOf [LocationWithDistanceFrom n RevealedLocation | n <- [1 .. 3]]
       player <- getPlayer iid
       push
         $ chooseOne

@@ -14,7 +14,6 @@ import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Effect.Runner
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Location
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Movement
 import Arkham.SkillTest.Base
@@ -76,7 +75,7 @@ instance RunMessage MistsOfRlyeh2Effect where
           mSkillTestResult <- fmap skillTestResult <$> getSkillTest
           case mSkillTestResult of
             Just (SucceededBy _ _) -> do
-              unblockedConnectedLocationIds <- accessibleLocations iid
+              unblockedConnectedLocationIds <- getAccessibleLocations iid attrs
               player <- getPlayer iid
               let
                 moveOptions =

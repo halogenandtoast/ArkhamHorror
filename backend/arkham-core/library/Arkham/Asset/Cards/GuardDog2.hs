@@ -57,7 +57,7 @@ instance RunMessage GuardDog2 where
   runMessage msg a@(GuardDog2 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       enemies <-
-        selectList $ EnemyAt (locationWithInvestigator iid) <> CanEngageEnemy (toSource attrs)
+        select $ EnemyAt (locationWithInvestigator iid) <> CanEngageEnemy (toSource attrs)
       player <- getPlayer iid
       push
         $ chooseOrRunOne

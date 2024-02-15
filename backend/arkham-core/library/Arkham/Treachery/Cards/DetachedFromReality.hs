@@ -27,20 +27,23 @@ instance RunMessage DetachedFromReality where
   runMessage msg t@(DetachedFromReality attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       mWondrousJourney <- selectOne $ locationIs Locations.dreamGateWondrousJourney
-      enemies <- selectList $ enemyEngagedWith iid
+      enemies <- select $ enemyEngagedWith iid
       case mWondrousJourney of
         Just wondrousJourney -> do
           currentLocation <- field InvestigatorLocation iid
           pointlessReality <- genCard Locations.dreamGatePointlessReality
+          canLeaveCurrentLocation <- getCanLeaveCurrentLocation iid attrs
           pushAll $ ReplaceLocation wondrousJourney pointlessReality Swap
             : map (DisengageEnemy iid) enemies
               <> [ MoveTo $ move (toAbilitySource attrs 1) iid wondrousJourney
-                 | currentLocation /= Just wondrousJourney
+                 | currentLocation /= Just wondrousJourney && canLeaveCurrentLocation
                  ]
         Nothing -> do
           (dreamGate, placement) <- placeLocationCard Locations.dreamGatePointlessReality
+          canLeaveCurrentLocation <- getCanLeaveCurrentLocation iid attrs
           pushAll
             $ map (DisengageEnemy iid) enemies
-            <> [placement, MoveTo $ move (toAbilitySource attrs 1) iid dreamGate]
+            <> [placement]
+            <> [MoveTo $ move (toAbilitySource attrs 1) iid dreamGate | canLeaveCurrentLocation]
       pure t
     _ -> DetachedFromReality <$> runMessage msg attrs

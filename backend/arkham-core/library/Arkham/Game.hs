@@ -161,12 +161,13 @@ import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (each, non, over, set)
 import Control.Monad.Random (StdGen)
-import Control.Monad.Reader (local, runReader)
+import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (state)
 import Data.Aeson (Result (..))
 import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (emptyArray, parse)
+import Data.List qualified as List
 import Data.List.Extra (groupOn)
 import Data.Map.Monoidal (getMonoidalMap)
 import Data.Map.Monoidal qualified as MonoidalMap
@@ -334,7 +335,7 @@ withLocationConnectionData
   -> m (With (With Location ModifierData) LocationMetadata)
 withLocationConnectionData inner@(With target _) = do
   matcher <- getConnectedMatcher target
-  lmConnectedLocations <- selectList matcher
+  lmConnectedLocations <- select matcher
   lmInvestigators <- select $ investigatorAt $ toId target
   lmEnemies <- select $ EnemyAt $ IncludeEmptySpace $ LocationWithId $ toId target
   lmAssets <- select $ AssetAtLocation $ toId target
@@ -362,18 +363,18 @@ withInvestigatorConnectionData
 withInvestigatorConnectionData inner@(With target _) = case target of
   WithDeckSize investigator' -> do
     additionalActions <- getAdditionalActions (toAttrs investigator')
-    engagedEnemies <- selectList (enemyEngagedWith $ toId investigator')
-    assets <- selectList (AssetWithPlacement $ InPlayArea $ toId investigator')
-    skills <- selectList (SkillWithPlacement $ InPlayArea $ toId investigator')
+    engagedEnemies <- select (enemyEngagedWith $ toId investigator')
+    assets <- select (AssetWithPlacement $ InPlayArea $ toId investigator')
+    skills <- select (SkillWithPlacement $ InPlayArea $ toId investigator')
     events <-
-      selectList
+      select
         $ eventControlledBy (toId investigator')
         <> oneOf
           ( map
               EventWithPlacement
               [Limbo, Unplaced, InPlayArea (toId investigator'), InThreatArea (toId investigator')]
           )
-    treacheries <- selectList (treacheryInThreatAreaOf $ toId investigator')
+    treacheries <- select (treacheryInThreatAreaOf $ toId investigator')
     mLocation <- field InvestigatorLocation (toId investigator')
     let
       additionalData =
@@ -403,7 +404,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
           Just _ -> do
             location <- getLocation locationId
             matcher <- getConnectedMatcher location
-            selectList (AccessibleLocation <> matcher)
+            select (AccessibleLocation <> matcher)
         pure
           $ inner
           `with` ConnectionData connectedLocationIds
@@ -666,8 +667,8 @@ getInvestigatorsMatching matcher = do
             getInvalid
             mempty
             modifiers'
-      locations <- guardYourLocation $ \_ -> selectList matcher'
-      pure $ any (`notMember` invalidLocations) locations
+      locations <- guardYourLocation $ \_ -> select matcher'
+      pure $ any (`notElem` invalidLocations) locations
     InvestigatorWithSupply s -> fieldP InvestigatorSupplies (elem s) . toId
     AliveInvestigator -> \i -> do
       let attrs = toAttrs i
@@ -760,13 +761,13 @@ getInvestigatorsMatching matcher = do
     HasMostMatchingAsset assetMatcher -> \i -> do
       selfCount <-
         length
-          <$> selectList
+          <$> select
             (assetMatcher <> AssetControlledBy (InvestigatorWithId $ toId i))
       allCounts <-
         traverse
           ( \iid' ->
               length
-                <$> selectList
+                <$> select
                   (assetMatcher <> AssetControlledBy (InvestigatorWithId iid'))
           )
           =<< getInvestigatorIds
@@ -812,6 +813,22 @@ getInvestigatorsMatching matcher = do
     LeadInvestigator -> \i -> (== toId i) . gameLeadInvestigatorId <$> getGame
     InvestigatorWithTitle title -> pure . (`hasTitle` title)
     DefeatedInvestigator -> pure . attr investigatorDefeated
+    InvestigatorCanMoveTo source locationMatcher -> \i -> do
+      case source of
+        CardCostSource cardId -> do
+          -- we need to remove the card from hand
+          g <- getGame
+          flip
+            runReaderT
+            ( g
+                & entitiesL
+                . investigatorsL
+                . ix (toId i)
+                %~ overAttrs (Investigator.handL %~ filter ((/= cardId) . toCardId))
+            )
+            $ do
+              notNull <$> getCanMoveToMatchingLocations (toId i) source locationMatcher
+        _ -> notNull <$> getCanMoveToMatchingLocations (toId i) source locationMatcher
     InvestigatorAt locationMatcher -> \i -> do
       mlid <- field InvestigatorLocation (toId i)
       case mlid of
@@ -819,7 +836,7 @@ getInvestigatorsMatching matcher = do
         Just lid ->
           if lid == LocationId nil
             then pure False
-            else member lid <$> select locationMatcher
+            else elem lid <$> select locationMatcher
     InvestigatorWithId iid -> pure . (== iid) . toId
     InvestigatorIs cardCode -> pure . (== cardCode) . toCardCode
     InvestigatorWithLowestSkill skillType -> \i ->
@@ -922,12 +939,12 @@ getInvestigatorsMatching matcher = do
       case damageType of
         DamageType -> do
           if CannotAffectOtherPlayersWithPlayerEffectsExceptDamage `elem` mods
-            then member (toId i) <$> select (matcher' <> You <> InvestigatorWithAnyDamage)
-            else member (toId i) <$> select (matcher' <> InvestigatorWithAnyDamage)
+            then elem (toId i) <$> select (matcher' <> You <> InvestigatorWithAnyDamage)
+            else elem (toId i) <$> select (matcher' <> InvestigatorWithAnyDamage)
         HorrorType -> do
           if CannotHealHorror `elem` mods
-            then member (toId i) <$> select (matcher' <> You <> InvestigatorWithAnyHorror)
-            else member (toId i) <$> select (matcher' <> InvestigatorWithAnyHorror)
+            then elem (toId i) <$> select (matcher' <> You <> InvestigatorWithAnyHorror)
+            else elem (toId i) <$> select (matcher' <> InvestigatorWithAnyHorror)
     InvestigatorWithMostCardsInPlayArea -> \i ->
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
     InvestigatorWithKey key -> \i ->
@@ -951,7 +968,7 @@ isHighestAmongst
   -> (InvestigatorId -> m Int)
   -> m Bool
 isHighestAmongst iid matcher f = do
-  allIds <- selectList matcher
+  allIds <- select matcher
   if iid `elem` allIds
     then do
       highestCount <- getMax0 <$> foldMapM (fmap Max0 . f) allIds
@@ -966,7 +983,7 @@ isLowestAmongst
   -> (InvestigatorId -> m Int)
   -> m Bool
 isLowestAmongst iid matcher f = do
-  allIds <- selectList matcher
+  allIds <- select matcher
   if iid `elem` allIds
     then do
       highestCount <- getMin <$> foldMapM (fmap Min . f) allIds
@@ -993,7 +1010,7 @@ getAgendasMatching matcher = do
       field AgendaDoom . toId >=> (`gameValueMatches` gameValueMatcher)
     AgendaWithTreachery treacheryMatcher -> \agenda -> do
       treacheries <- select treacheryMatcher
-      pure $ any (`member` treacheries) (agendaTreacheries $ toAttrs agenda)
+      pure $ any (`elem` treacheries) (agendaTreacheries $ toAttrs agenda)
     AgendaWithSequence s -> pure . (== s) . attr agendaSequence
     AgendaWithSide s ->
       pure . (== s) . AS.agendaSide . attr agendaSequence
@@ -1023,7 +1040,7 @@ getActsMatching matcher = do
     ActWithDeckId n -> pure . (== n) . attr actDeckId
     ActWithTreachery treacheryMatcher -> \act -> do
       treacheries <- select treacheryMatcher
-      pure $ any (`member` treacheries) (actTreacheries $ toAttrs act)
+      pure $ any (`elem` treacheries) (actTreacheries $ toAttrs act)
     ActCanWheelOfFortuneX -> pure . not . attr actUsedWheelOfFortuneX
     NotAct matcher' -> fmap not . matcherFilter matcher'
 
@@ -1087,11 +1104,11 @@ getTreacheriesMatching matcher = do
     TreacheryWithCardId cardId -> pure . (== cardId) . toCardId
     TreacheryIs cardCode -> pure . (== cardCode) . toCardCode
     TreacheryAt locationMatcher -> \treachery -> do
-      targets <- selectListMap (Just . LocationTarget) locationMatcher
+      targets <- selectMap (Just . LocationTarget) locationMatcher
       let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
       pure $ treacheryTarget `elem` targets
     TreacheryOnEnemy enemyMatcher -> \treachery -> do
-      targets <- selectListMap (Just . EnemyTarget) enemyMatcher
+      targets <- selectMap (Just . EnemyTarget) enemyMatcher
       let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
       pure $ treacheryTarget `elem` targets
     TreacheryIsAttachedTo target -> \treachery -> do
@@ -1100,16 +1117,16 @@ getTreacheriesMatching matcher = do
     TreacheryInHandOf investigatorMatcher -> \treachery -> do
       iids <- select investigatorMatcher
       pure $ case treacheryPlacement (toAttrs treachery) of
-        Placement.TreacheryInHandOf iid -> iid `member` iids
+        Placement.TreacheryInHandOf iid -> iid `elem` iids
         _ -> False
     TreacheryInThreatAreaOf investigatorMatcher -> \treachery -> do
-      targets <- selectListMap (Just . InvestigatorTarget) investigatorMatcher
+      targets <- selectMap (Just . InvestigatorTarget) investigatorMatcher
       let treacheryTarget = attr treacheryAttachedTarget treachery
       pure $ treacheryTarget `elem` targets
     TreacheryOwnedBy investigatorMatcher -> \treachery -> do
       iids <- select investigatorMatcher
       pure $ case attr treacheryOwner treachery of
-        Just iid -> iid `member` iids
+        Just iid -> iid `elem` iids
         Nothing -> False
     TreacheryWithHorror gameValueMatcher -> \t -> do
       horror <- fieldMap TreacheryTokens (Token.countTokens #horror) (toId t)
@@ -1139,26 +1156,26 @@ abilityMatches a@Ability {..} = \case
   AnyAbility -> pure True
   HauntedAbility -> pure $ abilityType == Haunted
   AssetAbility assetMatcher -> do
-    abilities <- concatMap getAbilities <$> (traverse getAsset =<< selectList assetMatcher)
+    abilities <- concatMap getAbilities <$> (traverse getAsset =<< select assetMatcher)
     pure $ a `elem` abilities
   TriggeredAbility -> pure $ isTriggeredAbility a
   AbilityOnCardControlledBy iid -> do
     let
       sourceMatch = \case
-        AssetSource aid -> member aid <$> select (assetControlledBy iid)
-        EventSource eid -> member eid <$> select (eventControlledBy iid)
+        AssetSource aid -> elem aid <$> select (assetControlledBy iid)
+        EventSource eid -> elem eid <$> select (eventControlledBy iid)
         InvestigatorSource iid' -> pure $ iid == iid'
         AbilitySource s _ -> sourceMatch s
         ProxySource s _ -> sourceMatch s
         _ -> pure False
     sourceMatch abilitySource
   AbilityOnLocation locationMatcher -> case abilitySource of
-    LocationSource lid' -> member lid' <$> select locationMatcher
-    ProxySource (LocationSource lid') _ -> member lid' <$> select locationMatcher
+    LocationSource lid' -> elem lid' <$> select locationMatcher
+    ProxySource (LocationSource lid') _ -> elem lid' <$> select locationMatcher
     _ -> pure False
   AbilityOnStory storyMatcher -> case abilitySource of
-    StorySource sid' -> member sid' <$> select storyMatcher
-    ProxySource (StorySource sid') _ -> member sid' <$> select storyMatcher
+    StorySource sid' -> elem sid' <$> select storyMatcher
+    ProxySource (StorySource sid') _ -> elem sid' <$> select storyMatcher
     _ -> pure False
   AbilityIsAction action -> pure $ action `elem` abilityActions a
   AbilityIsActionAbility -> pure $ abilityIsActionAbility a
@@ -1272,31 +1289,31 @@ getGameAbilities = do
 replaceMatcherSources :: HasGame m => Ability -> m [Ability]
 replaceMatcherSources ability = case abilitySource ability of
   ProxySource (AgendaMatcherSource m) base -> do
-    sources <- selectListMap AgendaSource m
+    sources <- selectMap AgendaSource m
     pure
       $ map
         (\source -> ability {abilitySource = ProxySource source base})
         sources
   ProxySource (ActMatcherSource m) base -> do
-    sources <- selectListMap ActSource m
+    sources <- selectMap ActSource m
     pure
       $ map
         (\source -> ability {abilitySource = ProxySource source base})
         sources
   ProxySource (AssetMatcherSource m) base -> do
-    sources <- selectListMap AssetSource m
+    sources <- selectMap AssetSource m
     pure
       $ map
         (\source -> ability {abilitySource = ProxySource source base})
         sources
   ProxySource (LocationMatcherSource m) base -> do
-    sources <- selectListMap LocationSource m
+    sources <- selectMap LocationSource m
     pure
       $ map
         (\source -> ability {abilitySource = ProxySource source base})
         sources
   ProxySource (EnemyMatcherSource m) base -> do
-    sources <- selectListMap EnemySource m
+    sources <- selectMap EnemySource m
     pure
       $ map
         (\source -> ability {abilitySource = ProxySource source base})
@@ -1314,9 +1331,8 @@ getLocationsMatching lmatcher = do
       _ -> (allowEmpty, lmatcher, if allowEmpty then const True else (/= "xempty") . toCardCode)
 
   ls <- filter isEmptySpaceFilter . toList . view (entitiesL . locationsL) <$> getGame
-  flip runReaderT g
-    $ local (\g' -> g' {gameAllowEmptySpaces = doAllowEmpty})
-    $ case lmatcher' of
+  flip runReaderT (g {gameAllowEmptySpaces = doAllowEmpty}) $ do
+    case lmatcher' of
       ThatLocation -> error "ThatLocation must be resolved in criteria"
       IncludeEmptySpace _ -> error "should be unwrapped above"
       LocationWithCardId cardId ->
@@ -1407,18 +1423,18 @@ getLocationsMatching lmatcher = do
       LocationWithEnemy enemyMatcher -> do
         enemies <- select enemyMatcher
         filterM
-          (fmap (notNull . intersection enemies) . select . enemyAt . toId)
+          (fmap (notNull . List.intersect enemies) . select . enemyAt . toId)
           ls
       LocationWithAsset assetMatcher -> do
         assets <- select assetMatcher
         flip filterM ls $ \l -> do
           lmAssets <- select $ AssetAtLocation $ toId l
-          pure . notNull $ intersection assets lmAssets
+          pure . notNull $ List.intersect assets lmAssets
       LocationWithInvestigator whoMatcher -> do
         investigators <- select whoMatcher
         flip filterM ls $ \l -> do
           lmInvestigators <- select $ investigatorAt $ toId l
-          pure . notNull $ intersection investigators lmInvestigators
+          pure . notNull $ List.intersect investigators lmInvestigators
       RevealedLocation ->
         filter isRevealed . toList . view (entitiesL . locationsL) <$> getGame
       UnrevealedLocation -> pure $ filter (not . isRevealed) ls
@@ -1478,6 +1494,10 @@ getLocationsMatching lmatcher = do
         iid <- selectJust investigatorMatcher
         cannotEnter <- mapMaybe (preview _CannotEnter) <$> getModifiers iid
         pure $ filter ((`notElem` cannotEnter) . toId) ls
+      CanMoveToLocation investigatorMatcher source matcher -> do
+        iid <- selectJust investigatorMatcher
+        inner <- select matcher
+        filterM (andM . sequence [pure . (`elem` inner), getCanMoveTo iid source] . toId) ls
       NearestLocationToLocation start matcher -> do
         matchingLocationIds <- map toId <$> getLocationsMatching matcher
         matches' <-
@@ -1610,7 +1630,7 @@ getLocationsMatching lmatcher = do
         -- logic is to get each adjacent location and determine which is closest to
         -- the destination
         let extraConnectionsMap = mempty
-        connectedLocationIds <- selectList $ ConnectedFrom $ LocationWithId start
+        connectedLocationIds <- select $ ConnectedFrom $ LocationWithId start
         matches' <-
           if start == destination || destination `elem` connectedLocationIds
             then pure $ singleton destination
@@ -1728,20 +1748,20 @@ getAssetsMatching matcher = do
     AssetWithPlacement placement ->
       pure $ filter ((== placement) . attr assetPlacement) as
     AssetControlledBy investigatorMatcher -> do
-      iids <- selectList investigatorMatcher
+      iids <- select investigatorMatcher
       filterM (fieldP AssetController (maybe False (`elem` iids)) . toId) as
     AssetOwnedBy investigatorMatcher -> do
-      iids <- selectList investigatorMatcher
+      iids <- select investigatorMatcher
       filterM (fieldP AssetOwner (maybe False (`elem` iids)) . toId) as
     AssetAttachedToAsset assetMatcher -> do
-      placements <- selectList assetMatcher
+      placements <- select assetMatcher
       let
         isValid a = case assetPlacement (toAttrs a) of
           AttachedToAsset placementId _ -> placementId `elem` placements
           _ -> False
       pure $ filter isValid as
     AssetWithAttachedEvent eventMatcher -> do
-      events <- selectList eventMatcher
+      events <- select eventMatcher
       aids <- flip mapMaybeM events $ \eid -> do
         placement <- field EventPlacement eid
         pure $ case placementToAttached placement of
@@ -1766,7 +1786,7 @@ getAssetsMatching matcher = do
               $ setToList
                 skillIcons
           )
-      pure $ filter ((`member` valids) . toId) as
+      pure $ filter ((`elem` valids) . toId) as
     AssetCardMatch cardMatcher ->
       pure $ filter ((`cardMatch` cardMatcher) . toCard) as
     UniqueAsset ->
@@ -1855,7 +1875,7 @@ getAssetsMatching matcher = do
       filterM isSanityDamageable assets
     AssetWithDifferentTitleFromAtLeastOneCardInHand who extendedCardMatcher assetMatcher ->
       do
-        iids <- selectList who
+        iids <- select who
         handCards <-
           concatMapM
             ( fieldMapM
@@ -1876,14 +1896,14 @@ getAssetsMatching matcher = do
     AssetWithPerformableAbility abilityMatcher modifiers' -> flip filterM as $ \asset -> do
       iid <- view activeInvestigatorIdL <$> getGame
       let adjustAbility ab = applyAbilityModifiers ab modifiers'
-      abilities <- selectListMap adjustAbility $ abilityMatcher <> AssetAbility (AssetWithId $ toId asset)
+      abilities <- selectMap adjustAbility $ abilityMatcher <> AssetAbility (AssetWithId $ toId asset)
       notNull
         <$> filterM
           ( \ab -> anyM (\w -> getCanPerformAbility iid w ab) (Window.defaultWindows iid)
           )
           abilities
     ClosestAsset start assetMatcher -> flip filterM as $ \asset -> do
-      aids <- selectList assetMatcher
+      aids <- select assetMatcher
       if toId asset `elem` aids
         then do
           mlid <- field AssetLocation (toId asset)
@@ -1952,7 +1972,7 @@ getEventsMatching matcher = do
     EventWithPlacement placement ->
       pure $ filter ((== placement) . attr eventPlacement) as
     EventControlledBy investigatorMatcher -> do
-      iids <- selectList investigatorMatcher
+      iids <- select investigatorMatcher
       pure $ filter ((`elem` iids) . ownerOfEvent) as
     EventWithoutModifier modifierType -> do
       filterM (fmap (notElem modifierType) . getModifiers . toId) as
@@ -1963,12 +1983,12 @@ getEventsMatching matcher = do
     EventOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
     AnyEvent -> pure as
     EventAt locationMatcher -> do
-      lids <- selectList locationMatcher
+      lids <- select locationMatcher
       flip filterM as $ \a -> do
         mlid <- Helpers.placementLocation a.placement
         pure $ maybe False (`elem` lids) mlid
     EventAttachedToAsset assetMatcher -> do
-      assets <- selectListMap AssetTarget assetMatcher
+      assets <- selectMap AssetTarget assetMatcher
       let
         attached = \case
           AttachedToAsset aid _ -> AssetTarget aid `elem` assets
@@ -1998,7 +2018,7 @@ getSkillsMatching matcher = do
         as
     SkillWithTrait t -> filterM (fmap (member t) . field SkillTraits . toId) as
     SkillControlledBy investigatorMatcher -> do
-      iids <- selectList investigatorMatcher
+      iids <- select investigatorMatcher
       pure $ filter ((`elem` iids) . attr skillOwner) as
     SkillWithPlacement placement ->
       pure $ filter ((== placement) . attr skillPlacement) as
@@ -2118,7 +2138,7 @@ enemyMatcherFilter = \case
   OutOfPlayEnemy _ matcher -> enemyMatcherFilter matcher
   EnemyWithCardId cardId -> pure . (== cardId) . toCardId
   EnemyCanEnter locationMatcher -> \enemy -> do
-    locations <- selectList locationMatcher
+    locations <- select locationMatcher
     flip anyM locations $ \lid -> do
       mods <- getModifiers lid
       flip noneM mods \case
@@ -2136,15 +2156,15 @@ enemyMatcherFilter = \case
   EnemyWithAsset assetMatcher -> \enemy -> do
     assets <- select assetMatcher
     lmAssets <- select $ EnemyAsset $ toId enemy
-    pure . notNull $ intersection assets lmAssets
+    pure . notNull $ List.intersect assets lmAssets
   FarthestEnemyFromAll enemyMatcher -> \enemy -> do
     locations <- select $ FarthestLocationFromAll $ LocationWithEnemy enemyMatcher
     enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)
     pure $ case enemyLocation of
-      Just lid -> lid `member` locations
+      Just lid -> lid `elem` locations
       Nothing -> False
   FarthestEnemyFrom iid enemyMatcher -> \enemy -> do
-    eids <- selectList enemyMatcher
+    eids <- select enemyMatcher
     if toId enemy `elem` eids
       then do
         milid <- field InvestigatorLocation iid
@@ -2165,7 +2185,7 @@ enemyMatcherFilter = \case
           _ -> pure False
       else pure False
   NearestEnemyTo iid enemyMatcher -> \enemy -> do
-    eids <- selectList enemyMatcher
+    eids <- select enemyMatcher
     if toId enemy `elem` eids
       then do
         milid <- field InvestigatorLocation iid
@@ -2186,7 +2206,7 @@ enemyMatcherFilter = \case
           _ -> pure False
       else pure False
   NearestEnemyToLocation ilid enemyMatcher -> \enemy -> do
-    eids <- selectList enemyMatcher
+    eids <- select enemyMatcher
     if toId enemy `elem` eids
       then do
         enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)
@@ -2252,7 +2272,7 @@ enemyMatcherFilter = \case
   EnemyInHandOf investigatorMatcher -> \enemy -> do
     iids <- select investigatorMatcher
     pure $ case enemyPlacement (toAttrs enemy) of
-      Placement.StillInHand iid -> iid `member` iids
+      Placement.StillInHand iid -> iid `elem` iids
       _ -> False
   EnemyIsEngagedWith investigatorMatcher -> \enemy -> do
     iids <- select investigatorMatcher
@@ -2290,7 +2310,7 @@ enemyMatcherFilter = \case
     enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)
     case enemyLocation of
       Nothing -> pure False
-      Just loc -> member loc <$> select locationMatcher
+      Just loc -> elem loc <$> select locationMatcher
   CanFightEnemy source -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers (InvestigatorTarget iid)
@@ -2319,7 +2339,7 @@ enemyMatcherFilter = \case
         [o] -> overrideAbilityCriteria o
         _ -> error "multiple overrides found"
     excluded <-
-      member (toId enemy)
+      elem (toId enemy)
         <$> select (mconcat $ EnemyWithModifier CannotBeAttacked : enemyFilters)
     if excluded
       then pure False
@@ -2349,7 +2369,7 @@ enemyMatcherFilter = \case
           modifiers'
       window = mkWindow #when Window.NonFast
     excluded <-
-      member (toId enemy)
+      elem (toId enemy)
         <$> select (mconcat $ EnemyWithModifier CannotBeAttacked : enemyFilters)
     if excluded
       then pure False
@@ -2394,7 +2414,7 @@ enemyMatcherFilter = \case
         [o] -> overrideAbilityCriteria o
         _ -> error "multiple overrides found"
     excluded <-
-      member (toId enemy)
+      elem (toId enemy)
         <$> select (mconcat $ EnemyWithModifier CannotBeEvaded : enemyFilters)
     if excluded
       then pure False
@@ -2422,7 +2442,7 @@ enemyMatcherFilter = \case
           modifiers'
       window = mkWindow #when Window.NonFast
     excluded <-
-      member (toId enemy)
+      elem (toId enemy)
         <$> select (mconcat $ EnemyWithModifier CannotBeEvaded : enemyFilters)
     if excluded
       then pure False
@@ -2467,7 +2487,7 @@ enemyMatcherFilter = \case
         [o] -> overrideAbilityCriteria o
         _ -> error "multiple overrides found"
     excluded <-
-      member (toId enemy)
+      elem (toId enemy)
         <$> select (mconcat $ EnemyWithModifier CannotBeEngaged : enemyFilters)
     if excluded
       then pure False
@@ -2495,7 +2515,7 @@ enemyMatcherFilter = \case
           modifiers'
       window = mkWindow #when Window.NonFast
     excluded <-
-      member (toId enemy)
+      elem (toId enemy)
         <$> select (mconcat $ EnemyWithModifier CannotBeEngaged : enemyFilters)
     if excluded
       then pure False
@@ -2522,7 +2542,7 @@ enemyMatcherFilter = \case
     matches' <- guardYourLocation $ \start -> do
       getShortestPath
         start
-        (fmap (any (`elem` matchingEnemyIds)) . selectList . enemyAt)
+        (fmap (any (`elem` matchingEnemyIds)) . select . enemyAt)
         mempty
     if null matches'
       then pure $ toId enemy `elem` matchingEnemyIds
@@ -2618,7 +2638,7 @@ instance Projection Location where
       LocationAbilities -> pure $ getAbilities l
       LocationPrintedSymbol -> pure locationSymbol
       LocationVengeance -> pure $ cdVengeancePoints $ toCardDef attrs
-      LocationConnectedLocations -> select (ConnectedFrom $ LocationWithId lid)
+      LocationConnectedLocations -> setFromList <$> select (ConnectedFrom $ LocationWithId lid)
 
 instance Projection Asset where
   getAttrs aid = toAttrs <$> getAsset aid
@@ -2776,7 +2796,7 @@ getEnemyField f e = do
       _ -> do
         isMassive <- fieldP EnemyKeywords (member Keyword.Massive) enemyId
         if isMassive
-          then select (InvestigatorAt $ locationWithEnemy enemyId)
+          then setFromList <$> select (InvestigatorAt $ locationWithEnemy enemyId)
           else pure mempty
     EnemyPlacement -> pure enemyPlacement
     EnemySealedChaosTokens -> pure enemySealedChaosTokens
@@ -2953,12 +2973,12 @@ instance Projection Investigator where
       InvestigatorHand -> do
         -- Include in hand treacheries
         ts <-
-          selectListMapM
+          selectMapM
             (fmap toCard . getTreachery)
             (TreacheryInHandOf (InvestigatorWithId iid))
         -- Include enemies still in hand
         es <-
-          selectListMapM
+          selectMapM
             (fmap toCard . getEnemy)
             (EnemyWithPlacement (StillInHand iid))
         pure $ investigatorHand <> ts <> es
@@ -2994,7 +3014,7 @@ instance Query ChaosTokenMatcher where
           if isInfestation
             then getInfestationTokens
             else getBagChaosTokens
-    setFromList <$> filterM (go matcher) tokens
+    filterM (go matcher) tokens
    where
     includeSealed = case matcher of
       IncludeSealed _ -> True
@@ -3043,19 +3063,19 @@ instance Query ChaosTokenMatcher where
       IsInfestationToken m -> go m
 
 instance Query AssetMatcher where
-  select = fmap (setFromList . map toId) . getAssetsMatching
+  select = fmap (map toId) . getAssetsMatching
 
 instance Query EventMatcher where
-  select = fmap (setFromList . map toId) . getEventsMatching
+  select = fmap (map toId) . getEventsMatching
 
 instance Query LocationMatcher where
-  select = fmap (setFromList . map toId) . getLocationsMatching
+  select = fmap (map toId) . getLocationsMatching
 
 instance Query EnemyMatcher where
-  select = fmap (setFromList . map toId) . getEnemiesMatching
+  select = fmap (map toId) . getEnemiesMatching
 
 instance Query InvestigatorMatcher where
-  select = fmap (setFromList . map toId) . getInvestigatorsMatching
+  select = fmap (map toId) . getInvestigatorsMatching
 
 instance Query PreyMatcher where
   select = \case
@@ -3075,7 +3095,7 @@ instance Query PreyMatcher where
 instance Query ExtendedCardMatcher where
   select matcher = do
     g <- getGame
-    setFromList <$> filterM (`matches'` matcher) (Map.elems $ gameCards g)
+    filterM (`matches'` matcher) (Map.elems $ gameCards g)
    where
     matches' :: HasGame m => Card -> ExtendedCardMatcher -> m Bool
     matches' c = \case
@@ -3111,12 +3131,12 @@ instance Query ExtendedCardMatcher where
               (Window.defaultWindows iid)
       HandCardWithDifferentTitleFromAtLeastOneAsset who assetMatcher cardMatcher ->
         do
-          iids <- selectList who
+          iids <- select who
           handCards <-
             concatMapM
               (fieldMap InvestigatorHand (filter (`cardMatch` (CardWithType AssetType <> cardMatcher))))
               iids
-          assets <- selectList assetMatcher
+          assets <- select assetMatcher
           cards <- case assets of
             [x] -> do
               assetName <- fieldMap AssetCard (cdName . toCardDef) x
@@ -3138,7 +3158,7 @@ instance Query ExtendedCardMatcher where
           Nothing -> pure False
           Just iid -> do
             let windows' = Window.defaultWindows iid
-            results <- selectList matcher'
+            results <- select matcher'
             availableResources <- getSpendableResources iid
             playable <-
               filterM
@@ -3151,7 +3171,7 @@ instance Query ExtendedCardMatcher where
           Nothing -> pure False
           Just iid -> do
             let windows' = Window.defaultWindows iid
-            results <- selectList matcher'
+            results <- select matcher'
             playable <- filterM (getIsPlayable iid GameSource costStatus windows') results
             pure $ c `elem` playable
       PlayableCardWithCriteria override matcher' -> do
@@ -3159,7 +3179,7 @@ instance Query ExtendedCardMatcher where
         activeInvestigator <- selectJust ActiveInvestigator
         let iid = fromMaybe activeInvestigator mTurnInvestigator
         let windows' = Window.defaultWindows iid
-        results <- selectList matcher'
+        results <- select matcher'
         playable <-
           filterM
             ( \r -> Helpers.withModifiers
@@ -3260,11 +3280,11 @@ instance Query ExtendedCardMatcher where
                   VengeanceCard _ -> error "vengeance card"
       BasicCardMatch cm -> pure $ c `cardMatch` cm
       InHandOf who -> do
-        iids <- selectList who
+        iids <- select who
         cards <- concat <$> traverse (field InvestigatorHand) iids
         pure $ c `elem` cards
       InDeckOf who -> do
-        iids <- selectList who
+        iids <- select who
         cards <-
           concat
             <$> traverse
@@ -3272,7 +3292,7 @@ instance Query ExtendedCardMatcher where
               iids
         pure $ c `elem` cards
       TopOfDeckOf who -> do
-        iids <- selectList who
+        iids <- select who
         cards <-
           concatMap (take 1)
             <$> traverse
@@ -3287,16 +3307,16 @@ instance Query ExtendedCardMatcher where
           )
       CardWithCopyInHand who -> do
         let name = toName c
-        iids <- selectList who
+        iids <- select who
         names <- concatMapM (fieldMap InvestigatorHand (map toName)) iids
         pure $ count (== name) names > 1
       InDiscardOf who -> do
-        iids <- selectList who
+        iids <- select who
         discards <-
           concatMapM (fieldMap InvestigatorDiscard (map PlayerCard)) iids
         pure $ c `elem` discards
       InPlayAreaOf who -> do
-        iids <- selectList who
+        iids <- select who
         cards <- concatForM iids $ \i -> do
           assets <- selectFields AssetCard (AssetWithPlacement $ InPlayArea i)
           events <- selectFields EventCard (EventWithPlacement $ InPlayArea i)
@@ -3304,7 +3324,7 @@ instance Query ExtendedCardMatcher where
           pure $ assets <> events <> skills
         pure $ c `elem` cards
       CardIsBeneathInvestigator who -> do
-        iids <- selectList who
+        iids <- select who
         cards <- concatMapM (field InvestigatorCardsUnderneath) iids
         pure $ c `elem` cards
       ExtendedCardWithOneOf ms -> anyM (matches' c) ms
@@ -3448,38 +3468,38 @@ distanceAggregates hmap = unionsWith (<>) (map convert $ mapToList hmap)
   convert = uncurry singletonMap . second pure . swap
 
 instance Query AgendaMatcher where
-  select = fmap (setFromList . map toId) . getAgendasMatching
+  select = fmap (map toId) . getAgendasMatching
 
 instance Query ActMatcher where
-  select = fmap (setFromList . map toId) . getActsMatching
+  select = fmap (map toId) . getActsMatching
 
 instance Query RemainingActMatcher where
-  select = fmap (setFromList . map toCardCode) . getRemainingActsMatching
+  select = fmap (map toCardCode) . getRemainingActsMatching
 
 instance Query AbilityMatcher where
-  select = fmap setFromList . getAbilitiesMatching
+  select = getAbilitiesMatching
 
 instance Query SkillMatcher where
-  select = fmap (setFromList . map toId) . getSkillsMatching
+  select = fmap (map toId) . getSkillsMatching
 
 instance Query StoryMatcher where
-  select = fmap (setFromList . map toId) . getStoriesMatching
+  select = fmap (map toId) . getStoriesMatching
 
 instance Query TreacheryMatcher where
-  select = fmap (setFromList . map toId) . getTreacheriesMatching
+  select = fmap (map toId) . getTreacheriesMatching
 
 -- wait what?
 instance Query CardMatcher where
   select _ = pure mempty
 
 instance Query CampaignMatcher where
-  select = fmap (setFromList . map toId) . getCampaignsMatching
+  select = fmap (map toId) . getCampaignsMatching
 
 instance Query EffectMatcher where
-  select = fmap (setFromList . map toId) . getEffectsMatching
+  select = fmap (map toId) . getEffectsMatching
 
 instance Query ScenarioMatcher where
-  select = fmap (setFromList . map toId) . getScenariosMatching
+  select = fmap (map toId) . getScenariosMatching
 
 instance Projection Agenda where
   getAttrs aid = toAttrs <$> getAgenda aid

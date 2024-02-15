@@ -44,7 +44,7 @@ instance HasAbilities DaisyWalkerParallel where
 instance RunMessage DaisyWalkerParallel where
   runMessage msg i@(DaisyWalkerParallel attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' _ -> do
-      tomeAssets <- selectList $ assetControlledBy iid <> withTrait Tome
+      tomeAssets <- select $ assetControlledBy iid <> withTrait Tome
       allAbilities <- getAllAbilities
       let abilitiesForAsset aid = filter (isSource aid . abilitySource) allAbilities
       let pairs' = filter (notNull . snd) $ map (toSnd abilitiesForAsset) tomeAssets

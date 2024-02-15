@@ -40,7 +40,7 @@ instance RunMessage RoyalEmissary where
   runMessage msg e@(RoyalEmissary attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      investigators <- selectList $ investigatorMatcher attrs
+      investigators <- select $ investigatorMatcher attrs
       pushAll $ map (\investigator -> assignHorror investigator source 1) investigators
       pure e
     _ -> RoyalEmissary <$> runMessage msg attrs

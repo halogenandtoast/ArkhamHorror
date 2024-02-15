@@ -29,7 +29,7 @@ instance RunMessage LockedDoor where
   runMessage msg t@(LockedDoor attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       locations <-
-        selectList $ LocationWithMostClues $ LocationWithoutTreachery $ treacheryIs Cards.lockedDoor
+        select $ LocationWithMostClues $ LocationWithoutTreachery $ treacheryIs Cards.lockedDoor
       player <- getPlayer iid
       pushIfAny locations
         $ chooseOrRunOne player

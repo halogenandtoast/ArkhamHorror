@@ -78,13 +78,13 @@ instance RunMessage TheCosmosBeckons where
       pure a
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       cosmicIngress <- getJustLocationByName "Cosmic Ingress"
-      emptySpace <- selectList $ IncludeEmptySpace $ locationIs Locations.emptySpace
+      emptySpace <- select $ IncludeEmptySpace $ locationIs Locations.emptySpace
       emptySpaceCards <- getEmptySpaceCards
       cosmosLocations <-
-        selectList
+        select
           $ NotLocation
           $ LocationMatchAny [LocationWithTitle "Hideous Palace", LocationWithTitle "Cosmic Ingress"]
-      enemies <- selectList $ EnemyAt $ NotLocation $ LocationWithTitle "Hideous Palace"
+      enemies <- select $ EnemyAt $ NotLocation $ LocationWithTitle "Hideous Palace"
       enemyCards <- traverse (field Field.EnemyCard) enemies
 
       cosmosCards <- traverse (field Field.LocationCard) cosmosLocations

@@ -20,7 +20,7 @@ alterFate1 = event AlterFate1 Cards.alterFate1
 instance RunMessage AlterFate1 where
   runMessage msg e@(AlterFate1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      treacheries <- selectList $ NotTreachery (TreacheryOnEnemy EliteEnemy) <> TreacheryIsNonWeakness
+      treacheries <- select $ NotTreachery (TreacheryOnEnemy EliteEnemy) <> TreacheryIsNonWeakness
       player <- getPlayer iid
       pushAll
         [ chooseOne

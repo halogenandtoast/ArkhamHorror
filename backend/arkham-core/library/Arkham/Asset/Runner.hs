@@ -50,7 +50,7 @@ hasUses = any (> 0) . toList . assetUses
 
 instance RunMessage Asset where
   runMessage msg x@(Asset a) = do
-    inPlay <- member (toId x) <$> select AnyAsset
+    inPlay <- elem (toId x) <$> select AnyAsset
     modifiers' <- if inPlay then getModifiers (toTarget x) else pure []
     let msg' = if any (`elem` modifiers') [Blank, BlankExceptForcedAbilities] then Blanked msg else msg
     Asset <$> runMessage msg' a
@@ -199,7 +199,7 @@ instance RunMessage AssetAttrs where
     Exile target | a `isTarget` target -> do
       a <$ pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]
     RemoveFromPlay source | isSource a source -> do
-      attachedAssets <- selectList $ AssetAttachedToAsset $ AssetWithId (toId a)
+      attachedAssets <- select $ AssetAttachedToAsset $ AssetWithId (toId a)
       windowMsg <-
         checkWindows
           ( (`mkWindow` Window.LeavePlay (toTarget a))

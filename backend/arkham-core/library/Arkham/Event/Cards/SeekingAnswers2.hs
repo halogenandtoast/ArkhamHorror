@@ -32,7 +32,7 @@ instance RunMessage SeekingAnswers2 where
       pure e
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
       lids <-
-        selectList
+        select
           $ LocationMatchAny [locationWithInvestigator iid, ConnectedLocation]
           <> locationWithDiscoverableCluesBy iid
       player <- getPlayer iid

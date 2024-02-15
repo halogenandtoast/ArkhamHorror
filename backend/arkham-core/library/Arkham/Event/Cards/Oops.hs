@@ -29,7 +29,7 @@ instance RunMessage Oops where
   runMessage msg e@(Oops attrs) = case msg of
     InvestigatorPlayEvent iid eid _ (toEnemyId -> enemy) _ | eid == toId attrs -> do
       player <- getPlayer iid
-      enemies <- filter (/= enemy) <$> selectList (enemyAtLocationWith iid)
+      enemies <- filter (/= enemy) <$> select (enemyAtLocationWith iid)
       let
         damageMsg = case enemies of
           [] -> error "event should not have been playable"

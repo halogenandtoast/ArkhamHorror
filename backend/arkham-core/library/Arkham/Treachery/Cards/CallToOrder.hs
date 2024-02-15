@@ -31,7 +31,7 @@ instance RunMessage CallToOrder where
       if null cultists
         then push $ gainSurge attrs
         else do
-          locations <- selectList $ LocationWithMostClues EmptyLocation
+          locations <- select $ LocationWithMostClues EmptyLocation
           choices <- for locations $ \location -> do
             creations <- traverse (\cultist -> createEnemy cultist (SpawnAtLocation location)) cultists
             pure $ targetLabel location $ map toMessage creations

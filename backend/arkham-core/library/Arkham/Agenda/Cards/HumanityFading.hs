@@ -26,7 +26,7 @@ instance HasModifiersFor HumanityFading where
 instance RunMessage HumanityFading where
   runMessage msg a@(HumanityFading attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      iids <- selectList UneliminatedInvestigator
+      iids <- select UneliminatedInvestigator
       pushAll $ map (InvestigatorDefeated (toSource attrs)) iids
       pure a
     _ -> HumanityFading <$> runMessage msg attrs

@@ -47,9 +47,9 @@ instance RunMessage AtTheStationInShadowedTalons where
       pure a
     NextAdvanceActStep aid 1 | aid == actId attrs && onSide D attrs -> do
       lead <- getLeadPlayer
-      huntingNightgaunts <- selectList $ enemyIs Enemies.huntingNightgaunt
+      huntingNightgaunts <- select $ enemyIs Enemies.huntingNightgaunt
       farthestHuntingNightGaunts <-
-        selectList
+        select
           $ FarthestEnemyFromAll
           $ enemyIs
             Enemies.huntingNightgaunt
@@ -75,7 +75,7 @@ instance RunMessage AtTheStationInShadowedTalons where
            ]
       pure a
     FoundEncounterCard _ target card | isTarget attrs target -> do
-      locations <- selectList $ FarthestLocationFromAll Anywhere
+      locations <- select $ FarthestLocationFromAll Anywhere
       lead <- getLeadPlayer
       push
         $ chooseOrRunOne

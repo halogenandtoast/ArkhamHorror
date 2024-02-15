@@ -40,7 +40,7 @@ instance HasAbilities EztliGuardian where
 instance RunMessage EztliGuardian where
   runMessage msg e@(EztliGuardian attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      adjacentInvestigators <- selectList $ investigatorMatcher $ toId attrs
+      adjacentInvestigators <- select $ investigatorMatcher $ toId attrs
       insertAfterMatching
         [ EnemyWillAttack
           $ (enemyAttack (toId attrs) attrs iid)

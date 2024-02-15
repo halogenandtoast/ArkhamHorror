@@ -30,13 +30,13 @@ instance RunMessage HuntedDown where
         else do
           mDestinationId <- field InvestigatorLocation iid
           for_ mDestinationId $ \destinationId -> do
-            messages <- for (setToList enemiesToMove) $ \eid -> do
+            messages <- for enemiesToMove $ \eid -> do
               mLocationId <- selectOne $ LocationWithEnemy $ EnemyWithId eid
               case mLocationId of
                 Nothing -> pure Nothing
                 Just locationId -> do
                   closestLocationIds <-
-                    selectList
+                    select
                       $ ClosestPathLocation locationId destinationId
                   case closestLocationIds of
                     [] -> pure Nothing

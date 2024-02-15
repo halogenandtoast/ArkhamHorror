@@ -28,12 +28,12 @@ instance RunMessage FirstAid where
       withDamage <- select $ HealableInvestigator source #damage $ colocatedWith iid
       player <- getPlayer iid
       choices <- for (toList $ withHorror <> withDamage) \i -> do
-        mHealHorror <- runMaybeT $ guard (i `member` withHorror) *> MaybeT (getHealHorrorMessage source 1 i)
+        mHealHorror <- runMaybeT $ guard (i `elem` withHorror) *> MaybeT (getHealHorrorMessage source 1 i)
         pure
           $ targetLabel i
           . only
           $ chooseOrRunOne player
-          $ [DamageLabel i [HealDamage (toTarget i) source 1] | i `member` withDamage]
+          $ [DamageLabel i [HealDamage (toTarget i) source 1] | i `elem` withDamage]
           <> [HorrorLabel i [healHorror] | healHorror <- toList mHealHorror]
       pushIfAny choices $ chooseOne player choices
       pure a

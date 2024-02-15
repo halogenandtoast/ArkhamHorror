@@ -76,7 +76,7 @@ instance RunMessage TheRougarou where
       UseCardAbility _ source 1 _ _ | isSource attrs source -> do
         damageThreshold <- getPlayerCountValue (PerPlayer 1)
         lead <- getLeadPlayer
-        farthestLocationIds <- selectList $ FarthestLocationFromAll Anywhere
+        farthestLocationIds <- select $ FarthestLocationFromAll Anywhere
         case farthestLocationIds of
           [] -> error "can't happen"
           [x] -> push (MoveUntil x (EnemyTarget enemyId))

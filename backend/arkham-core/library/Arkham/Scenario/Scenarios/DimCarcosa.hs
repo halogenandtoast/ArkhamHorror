@@ -56,7 +56,7 @@ dimCarcosa difficulty =
 
 instance HasModifiersFor DimCarcosa where
   getModifiersFor (EnemyTarget eid) (DimCarcosa a) = do
-    isHastur <- member eid <$> select (EnemyWithTitle "Hastur")
+    isHastur <- elem eid <$> select (EnemyWithTitle "Hastur")
     knowTheSecret <- remembered KnowTheSecret
     pure $ toModifiers a [CannotBeDefeated | isHastur && not knowTheSecret]
   getModifiersFor (InvestigatorTarget _) (DimCarcosa a) = do
@@ -290,7 +290,7 @@ instance RunMessage DimCarcosa where
         (Just action, Just (EnemyTarget eid))
           | action `elem` [Action.Fight, Action.Evade] -> do
               isMonsterOrAncientOne <-
-                member eid <$> select (EnemyOneOf $ map EnemyWithTrait [Monster, AncientOne])
+                elem eid <$> select (EnemyOneOf $ map EnemyWithTrait [Monster, AncientOne])
               pushWhen isMonsterOrAncientOne
                 $ LoseActions iid (ChaosTokenEffectSource ElderThing) 1
         _ -> pure ()
@@ -302,7 +302,7 @@ instance RunMessage DimCarcosa where
       doubt <- getDoubt
       gainXp <- toGainXp attrs $ getXpWithBonus 5
       possessed <-
-        selectList
+        select
           $ InvestigatorWithTreacheryInHand
           $ TreacheryOneOf
           $ map

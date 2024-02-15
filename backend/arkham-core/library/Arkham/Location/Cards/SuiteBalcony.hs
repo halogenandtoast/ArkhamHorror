@@ -37,7 +37,7 @@ instance HasAbilities SuiteBalcony where
 instance RunMessage SuiteBalcony where
   runMessage msg l@(SuiteBalcony attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <- selectList $ enemyAt (toId attrs) <> EnemyWithTrait Humanoid
+      enemies <- select $ enemyAt (toId attrs) <> EnemyWithTrait Humanoid
       player <- getPlayer iid
       let chooseSkill skill enemy = SkillLabel skill [beginSkillTest iid (toAbilitySource attrs 1) (toTarget enemy) skill 4]
       push

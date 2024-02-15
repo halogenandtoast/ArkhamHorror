@@ -71,7 +71,7 @@ instance HasChaosTokenValue BeforeTheBlackThrone where
 
 readInvestigatorDefeat :: HasGame m => m [Message]
 readInvestigatorDefeat = do
-  defeatedInvestigatorIds <- selectList DefeatedInvestigator
+  defeatedInvestigatorIds <- select DefeatedInvestigator
   if null defeatedInvestigatorIds
     then pure []
     else do

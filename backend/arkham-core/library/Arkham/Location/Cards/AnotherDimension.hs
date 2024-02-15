@@ -40,8 +40,8 @@ instance RunMessage AnotherDimension where
   runMessage msg l@(AnotherDimension attrs) = case msg of
     UseCardAbility _ source 1 [(windowType -> LeavePlay (LocationTarget lid))] _
       | isSource attrs source -> do
-          investigatorIds <- selectList $ InvestigatorAt $ LocationWithId lid
-          enemyIds <- selectList $ UnengagedEnemy <> EnemyAt (LocationWithId lid)
+          investigatorIds <- select $ InvestigatorAt $ LocationWithId lid
+          enemyIds <- select $ UnengagedEnemy <> EnemyAt (LocationWithId lid)
           pushAll
             $ [ MoveTo $ uncancellableMove $ move attrs iid (toId attrs)
               | iid <- investigatorIds

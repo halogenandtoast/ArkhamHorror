@@ -35,7 +35,7 @@ instance RunMessage GhostlyPresence where
       mNahab <- selectOne $ enemyIs Enemies.nahab
       for_ mNahab $ \nahab -> do
         lead <- getLeadPlayer
-        iids <- selectList $ InvestigatorAt $ locationWithEnemy nahab
+        iids <- select $ InvestigatorAt $ locationWithEnemy nahab
         atSiteOfTheSacrifice <-
           selectAny $ locationIs Locations.siteOfTheSacrifice <> locationWithEnemy nahab
         pushAll

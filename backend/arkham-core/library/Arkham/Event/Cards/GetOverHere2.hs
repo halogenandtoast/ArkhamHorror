@@ -26,7 +26,7 @@ instance RunMessage GetOverHere2 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- getJustLocation iid
       let m = LocationWithId lid
-      enemies <- selectList $ NonEliteEnemy <> EnemyAt (LocationMatchAny [m, ConnectedFrom m])
+      enemies <- select $ NonEliteEnemy <> EnemyAt (LocationMatchAny [m, ConnectedFrom m])
       player <- getPlayer iid
       push
         $ chooseOne

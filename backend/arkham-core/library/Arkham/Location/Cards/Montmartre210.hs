@@ -44,8 +44,8 @@ instance HasAbilities Montmartre210 where
 instance RunMessage Montmartre210 where
   runMessage msg a@(Montmartre210 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      ammoAssets <- selectList $ AssetControlledBy You <> AssetWithUses Ammo
-      supplyAssets <- selectList $ AssetControlledBy You <> AssetWithUses Supply
+      ammoAssets <- select $ AssetControlledBy You <> AssetWithUses Ammo
+      supplyAssets <- select $ AssetControlledBy You <> AssetWithUses Supply
       player <- getPlayer iid
       push
         $ chooseOne player

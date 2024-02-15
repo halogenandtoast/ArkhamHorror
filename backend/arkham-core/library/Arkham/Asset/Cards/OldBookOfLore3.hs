@@ -36,7 +36,7 @@ instance HasAbilities OldBookOfLore3 where
 instance RunMessage OldBookOfLore3 where
   runMessage msg a@(OldBookOfLore3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigators <- selectList $ affectsOthers $ colocatedWith iid
+      investigators <- select $ affectsOthers $ colocatedWith iid
       let source = toAbilitySource attrs 1
       player <- getPlayer iid
       push

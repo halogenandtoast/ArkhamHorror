@@ -39,8 +39,8 @@ instance RunMessage Mk1Grenades4 where
             $ if eid == eid'
               then [EnemyDamage eid' $ delayDamage $ attack source 2]
               else [EnemyDamage eid' $ delayDamage $ isDirect $ attack source 2]
-      iids <- selectList $ colocatedWith iid <> NotInvestigator (InvestigatorWithId iid)
-      eids <- selectList $ enemyAtLocationWith iid
+      iids <- select $ colocatedWith iid <> NotInvestigator (InvestigatorWithId iid)
+      eids <- select $ enemyAtLocationWith iid
       player <- getPlayer iid
       pushAll
         $ [ chooseOneAtATime player

@@ -23,7 +23,7 @@ galvanize1 = event Galvanize1 Cards.galvanize1
 instance RunMessage Galvanize1 where
   runMessage msg e@(Galvanize1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      assets <- selectList $ assetControlledBy iid <> AssetExhausted <> AssetWithClass Guardian
+      assets <- select $ assetControlledBy iid <> AssetExhausted <> AssetWithClass Guardian
       player <- getPlayer iid
       pushAll
         $ [ chooseOrRunOne player

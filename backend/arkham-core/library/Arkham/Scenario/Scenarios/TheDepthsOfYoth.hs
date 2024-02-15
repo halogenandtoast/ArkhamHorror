@@ -331,7 +331,7 @@ instance RunMessage TheDepthsOfYoth where
           push $ assignHorror iid (ChaosTokenEffectSource Skull) 1
         Cultist -> do
           serpents <-
-            selectList
+            select
               $ EnemyWithTrait Serpent
               <> oneOf [enemyAtLocationWith iid, EnemyAt $ ConnectedFrom (locationWithInvestigator iid)]
           for_ serpents \serpent -> do

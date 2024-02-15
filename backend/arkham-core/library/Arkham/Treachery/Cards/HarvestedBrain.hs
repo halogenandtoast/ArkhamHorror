@@ -29,8 +29,8 @@ instance RunMessage HarvestedBrain where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       case treacheryAttachedTarget attrs of
         Just (LocationTarget lid) -> do
-          investigators <- selectList $ investigatorAt lid
-          otherInvestigators <- selectList $ NotInvestigator $ investigatorAt lid
+          investigators <- select $ investigatorAt lid
+          otherInvestigators <- select $ NotInvestigator $ investigatorAt lid
           otherInvestigatorsWithPlayers <- traverse (traverseToSnd getPlayer) otherInvestigators
           pushAll
             $ [assignDamageAndHorror investigator (toAbilitySource attrs 1) 1 1 | investigator <- investigators]

@@ -47,7 +47,7 @@ instance RunMessage TheTrueCulpritV3 where
     case msg of
       UseThisAbility iid (ProxySource originalSource (isSource attrs -> True)) 1 -> do
         staffWithIsElite <-
-          selectList (EnemyWithTrait Staff <> enemyAtLocationWith iid)
+          select (EnemyWithTrait Staff <> enemyAtLocationWith iid)
             >>= traverse (traverseToSnd (<=~> EliteEnemy))
         player <- getPlayer iid
         push

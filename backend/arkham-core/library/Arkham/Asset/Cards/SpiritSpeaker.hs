@@ -30,9 +30,9 @@ instance HasAbilities SpiritSpeaker where
 instance RunMessage SpiritSpeaker where
   runMessage msg a@(SpiritSpeaker attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      assetIds <- selectList $ AssetControlledBy You <> AssetWithUseType Charge
+      assetIds <- select $ AssetControlledBy You <> AssetWithUseType Charge
       discardableAssetIds <-
-        selectList $ assetControlledBy iid <> AssetWithUseType Charge <> DiscardableAsset
+        select $ assetControlledBy iid <> AssetWithUseType Charge <> DiscardableAsset
       assetIdsWithChargeCounts <- forToSnd assetIds $ fieldMap AssetUses (findWithDefault 0 Charge)
       player <- getPlayer iid
       push

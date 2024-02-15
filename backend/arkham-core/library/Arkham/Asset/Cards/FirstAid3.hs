@@ -43,15 +43,15 @@ getInvestigatorChoices :: HasGame m => InvestigatorId -> PlayerId -> Source -> m
 getInvestigatorChoices iid player source = do
   horrorInvestigators <- select $ HealableInvestigator source #horror $ colocatedWith iid
   damageInvestigators <- select $ HealableInvestigator source #damage $ colocatedWith iid
-  for (setToList $ horrorInvestigators <> damageInvestigators) $ \i -> do
+  for (horrorInvestigators <> damageInvestigators) $ \i -> do
     let target = toTarget i
     mHealHorror <- runMaybeT do
-      guard $ i `member` horrorInvestigators
+      guard $ i `elem` horrorInvestigators
       MaybeT $ getHealHorrorMessage source 1 i
     pure
       $ targetLabel i
       $ [ chooseOneAtATime player
-            $ [damageComponentLabel target source | i `member` damageInvestigators]
+            $ [damageComponentLabel target source | i `elem` damageInvestigators]
             <> [componentLabel HorrorToken target [healHorror] | healHorror <- maybeToList mHealHorror]
         ]
 
@@ -60,13 +60,13 @@ getAssetChoices iid player source = do
   horrorAssets <- select $ healableAsset source #horror (locationWithInvestigator iid)
   damageAssets <- select $ healableAsset source #damage (locationWithInvestigator iid)
 
-  pure $ flip map (setToList $ horrorAssets <> damageAssets) \asset' -> do
+  pure $ flip map (horrorAssets <> damageAssets) \asset' -> do
     targetLabel
       asset'
       [ chooseOneAtATime player
-          $ [damageComponentLabel asset' source | asset' `member` damageAssets]
+          $ [damageComponentLabel asset' source | asset' `elem` damageAssets]
           <> [ componentLabel HorrorToken asset' [HealHorror (toTarget asset') source 1]
-             | asset' `member` horrorAssets
+             | asset' `elem` horrorAssets
              ]
       ]
 

@@ -1,10 +1,9 @@
 module Arkham.Treachery.Cards.OnWingsOfDarkness where
 
-import Arkham.Prelude
-
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -21,18 +20,13 @@ instance RunMessage OnWingsOfDarkness where
     Revelation iid (isSource attrs -> True) -> do
       push $ revelationSkillTest iid attrs #agility 4
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
-      centralLocations <- selectList $ LocationWithTrait Central
-      enemiesToDisengage <- selectList $ enemyEngagedWith iid <> EnemyWithoutTrait Nightgaunt
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      centralLocations <- getCanMoveToMatchingLocations iid attrs $ LocationWithTrait Central
+      enemiesToDisengage <- select $ enemyEngagedWith iid <> EnemyWithoutTrait Nightgaunt
       player <- getPlayer iid
       pushAll
         $ assignDamageAndHorror iid attrs 1 1
         : map (DisengageEnemy iid) enemiesToDisengage
-          <> [ chooseOne
-                player
-                [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
-                | lid <- centralLocations
-                ]
-             ]
+          <> [chooseOne player $ targetLabels centralLocations (only . MoveTo . move attrs iid)]
       pure t
     _ -> OnWingsOfDarkness <$> runMessage msg attrs

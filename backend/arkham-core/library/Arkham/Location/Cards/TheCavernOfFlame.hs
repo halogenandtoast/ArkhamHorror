@@ -37,7 +37,7 @@ instance HasAbilities TheCavernOfFlame where
 instance RunMessage TheCavernOfFlame where
   runMessage msg l@(TheCavernOfFlame attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      investigators <- selectList $ investigatorAt (toId attrs)
+      investigators <- select $ investigatorAt (toId attrs)
       lead <- getLeadPlayer
       push
         $ chooseOrRunOneAtATime

@@ -25,7 +25,7 @@ imDoneRunnin = event ImDoneRunnin Cards.imDoneRunnin
 instance RunMessage ImDoneRunnin where
   runMessage msg e@(ImDoneRunnin attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      enemies <- selectList $ EnemyAt (locationWithInvestigator iid)
+      enemies <- select $ EnemyAt (locationWithInvestigator iid)
       pushAll
         $ map (Ready . EnemyTarget) enemies
         <> [EngageEnemy iid enemy Nothing False | enemy <- enemies]

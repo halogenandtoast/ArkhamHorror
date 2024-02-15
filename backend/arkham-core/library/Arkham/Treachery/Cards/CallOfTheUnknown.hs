@@ -43,7 +43,7 @@ instance RunMessage CallOfTheUnknown where
       pure t
     UseCardAbility iid source 1 windows' payment | isSource attrs source -> do
       targets <-
-        selectListMap LocationTarget
+        selectMap LocationTarget
           $ NotLocation
           $ locationWithInvestigator
             iid

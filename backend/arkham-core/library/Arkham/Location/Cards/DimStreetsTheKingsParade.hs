@@ -52,7 +52,7 @@ instance RunMessage DimStreetsTheKingsParade where
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
           hastur <- selectJust $ EnemyWithTitle "Hastur"
-          investigatorIds <- selectList $ investigatorEngagedWith hastur
+          investigatorIds <- select $ investigatorEngagedWith hastur
           pushAll
             $ Exhaust (EnemyTarget hastur)
             : [DisengageEnemy iid' hastur | iid' <- investigatorIds]

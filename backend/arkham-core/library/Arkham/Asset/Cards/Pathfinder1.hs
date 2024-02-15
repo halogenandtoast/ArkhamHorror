@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Helpers.Location
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Movement
 
@@ -31,7 +30,7 @@ instance HasAbilities Pathfinder1 where
 instance RunMessage Pathfinder1 where
   runMessage msg a@(Pathfinder1 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      locations <- accessibleLocations iid
+      locations <- getAccessibleLocations iid (attrs.ability 1)
       player <- getPlayer iid
       push
         $ chooseOne player

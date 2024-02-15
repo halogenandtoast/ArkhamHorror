@@ -23,8 +23,8 @@ instance RunMessage BoughtInBlood where
   runMessage msg t@(BoughtInBlood attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       inPlay <-
-        selectList $ AssetControlledBy (InvestigatorWithId iid) <> AllyAsset
-      inHand <- selectListMap toCardId $ InHandOf You <> BasicCardMatch IsAlly
+        select $ AssetControlledBy (InvestigatorWithId iid) <> AllyAsset
+      inHand <- selectMap toCardId $ InHandOf You <> BasicCardMatch IsAlly
       case (inPlay, inHand) of
         ([], []) -> push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
         (inPlay', inHand') -> do

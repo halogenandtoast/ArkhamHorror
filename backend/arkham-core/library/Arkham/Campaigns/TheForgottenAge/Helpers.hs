@@ -74,7 +74,7 @@ getIsPoisoned :: HasGame m => InvestigatorId -> m Bool
 getIsPoisoned iid = selectAny $ treacheryIs Treacheries.poisoned <> treacheryInThreatAreaOf iid
 
 getUnpoisoned :: HasGame m => m [InvestigatorId]
-getUnpoisoned = selectList $ NotInvestigator $ HasMatchingTreachery $ treacheryIs $ Treacheries.poisoned
+getUnpoisoned = select $ NotInvestigator $ HasMatchingTreachery $ treacheryIs $ Treacheries.poisoned
 
 getSetAsidePoisoned :: HasGame m => m Card
 getSetAsidePoisoned =

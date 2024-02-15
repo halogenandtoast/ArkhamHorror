@@ -27,7 +27,7 @@ instance HasAbilities StrayCat where
 instance RunMessage StrayCat where
   runMessage msg a@(StrayCat attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <- selectList $ enemyAtLocationWith iid <> NonEliteEnemy
+      enemies <- select $ enemyAtLocationWith iid <> NonEliteEnemy
       player <- getPlayer iid
       push $ chooseOne player $ targetLabels enemies (only . EnemyEvaded iid)
       pure a

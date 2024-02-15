@@ -24,9 +24,9 @@ instance RunMessage BeastOfTheBayou where
         Nothing -> pushAll [PlaceDoomOnAgenda]
         Just eid -> do
           locationId <- selectJust $ locationWithEnemy eid
-          connectedLocationIds <- selectList $ accessibleFrom locationId
+          connectedLocationIds <- select $ accessibleFrom locationId
           investigatorIds <-
-            selectList
+            select
               $ InvestigatorAt
               $ LocationMatchAny
               $ map

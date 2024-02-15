@@ -48,7 +48,7 @@ instance HasAbilities PuzzleBox where
 instance RunMessage PuzzleBox where
   runMessage msg a@(PuzzleBox attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      others <- selectList $ NotInvestigator (InvestigatorWithId iid)
+      others <- select $ NotInvestigator (InvestigatorWithId iid)
       player <- getPlayer iid
       push
         $ chooseOne player [targetLabel other [TakeControlOfAsset other (toId attrs)] | other <- others]

@@ -22,10 +22,10 @@ logicalReasoning = event LogicalReasoning Cards.logicalReasoning
 instance RunMessage LogicalReasoning where
   runMessage msg e@(LogicalReasoning attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      iids <- selectList =<< guardAffectsColocated iid
+      iids <- select =<< guardAffectsColocated iid
       options <- for iids \iid' -> do
         mHealHorror <- getHealHorrorMessage attrs 2 iid'
-        terrors <- selectList $ TreacheryWithTrait Terror <> treacheryInThreatAreaOf iid'
+        terrors <- select $ TreacheryWithTrait Terror <> treacheryInThreatAreaOf iid'
         player <- getPlayer iid'
         pure
           ( iid'

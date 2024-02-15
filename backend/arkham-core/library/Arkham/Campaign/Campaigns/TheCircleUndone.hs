@@ -94,7 +94,7 @@ instance RunMessage TheCircleUndone where
              ]
       pure c
     ForPlayer player (CampaignStep PrologueStep) -> do
-      taken <- selectList Anyone
+      taken <- select Anyone
       let
         availablePrologueInvestigators =
           filter
@@ -114,7 +114,7 @@ instance RunMessage TheCircleUndone where
           ]
       pure c
     CampaignStep (PrologueStepPart 2) -> do
-      taken <- selectListMap unInvestigatorId Anyone
+      taken <- selectMap unInvestigatorId Anyone
       let
         prologueInvestigatorsNotTaken =
           map cdCardCode allPrologueInvestigators

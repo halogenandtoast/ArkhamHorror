@@ -48,7 +48,7 @@ instance RunMessage RecoverTheRelic where
       lead <- getLeadPlayer
       deckCount <- getActDecksInPlayCount
       relicOfAges <- selectJust $ assetIs Assets.relicOfAgesADeviceOfSomeSort
-      iids <- selectList $ NearestToEnemy $ EnemyWithAsset $ assetIs Assets.relicOfAgesADeviceOfSomeSort
+      iids <- select $ NearestToEnemy $ EnemyWithAsset $ assetIs Assets.relicOfAgesADeviceOfSomeSort
       let
         takeControlMessage =
           chooseOrRunOne

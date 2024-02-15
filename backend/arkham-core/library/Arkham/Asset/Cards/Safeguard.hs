@@ -26,7 +26,7 @@ instance HasAbilities Safeguard where
               (affectsOthers NotYou)
               AnySource
               YourLocation
-              (AccessibleFrom YourLocation <> CanEnterLocation You)
+              (CanMoveToLocation You (toSource a) $ AccessibleFrom YourLocation <> CanEnterLocation You)
           )
           (exhaust a)
     ]

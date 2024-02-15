@@ -55,12 +55,12 @@ instance RunMessage JourneyToTheNexus where
       if depth >= 5 && not isStandalone
         then push R2
         else do
-          allDefeated <- selectList $ NotInvestigator $ InvestigatorAt $ locationIs Locations.stepsOfYoth
-          enemies <- selectList AnyEnemy
+          allDefeated <- select $ NotInvestigator $ InvestigatorAt $ locationIs Locations.stepsOfYoth
+          enemies <- select AnyEnemy
           explorationDeck <- getExplorationDeck
           stepsOfYoth <- selectJust $ locationIs Locations.stepsOfYoth
           stepsOfYothCard <- field LocationCard stepsOfYoth
-          otherLocations <- selectList $ NotLocation $ LocationWithId stepsOfYoth
+          otherLocations <- select $ NotLocation $ LocationWithId stepsOfYoth
           locationCards <- traverse (field LocationCard) otherLocations
           let notStepsOfYoth = locationCards <> explorationDeck
           (newStart, rest) <- do

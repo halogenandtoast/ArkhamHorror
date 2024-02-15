@@ -22,7 +22,7 @@ instance RunMessage ScroungeForSupplies where
   runMessage msg e@(ScroungeForSupplies attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <-
-        selectList
+        select
           $ InDiscardOf (InvestigatorWithId iid)
           <> BasicCardMatch
             (CardWithLevel 0)

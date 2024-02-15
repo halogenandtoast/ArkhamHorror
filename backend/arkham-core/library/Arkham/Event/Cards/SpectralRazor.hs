@@ -24,8 +24,8 @@ spectralRazor = event SpectralRazor Cards.spectralRazor
 instance RunMessage SpectralRazor where
   runMessage msg e@(SpectralRazor attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      fightableEnemies <- selectList $ CanFightEnemy (toSource attrs)
-      engageableEnemies <- selectList $ CanEngageEnemy (toSource attrs)
+      fightableEnemies <- select $ CanFightEnemy (toSource attrs)
+      engageableEnemies <- select $ CanEngageEnemy (toSource attrs)
 
       case (fightableEnemies, engageableEnemies) of
         ([], []) -> error "invalid call"

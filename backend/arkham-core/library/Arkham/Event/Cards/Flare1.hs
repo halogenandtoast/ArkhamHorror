@@ -21,7 +21,7 @@ flare1 = event Flare1 Cards.flare1
 instance RunMessage Flare1 where
   runMessage msg e@(Flare1 attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      investigators <- selectList $ affectsOthers can.manipulate.deck
+      investigators <- select $ affectsOthers can.manipulate.deck
       fightableEnemies <- getFightableEnemyIds iid attrs
       player <- getPlayer iid
 

@@ -33,7 +33,7 @@ instance RunMessage MrTrombly where
   runMessage msg e@(MrTrombly attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       enemies <-
-        selectList
+        select
           $ EnemyWithTrait Staff
           <> NotEnemy (EnemyWithId $ toId attrs)
           <> oneOf [HunterEnemy, PatrolEnemy]

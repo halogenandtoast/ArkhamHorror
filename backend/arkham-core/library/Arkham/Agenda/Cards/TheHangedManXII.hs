@@ -30,7 +30,7 @@ instance RunMessage TheHangedManXII where
     case msg of
       AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
         flippableLocations <-
-          selectList $ LocationWithoutModifier CannotBeFlipped <> NotLocation (LocationWithTrait Spectral)
+          select $ LocationWithoutModifier CannotBeFlipped <> NotLocation (LocationWithTrait Spectral)
         lead <- getLead
         spectralWatcher <- getSetAsideCard Enemies.theSpectralWatcher
         hangmansBrook <- getJustLocationByName "Hangman's Brook"

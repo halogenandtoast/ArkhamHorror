@@ -15,6 +15,7 @@ data Movement = Movement
   , moveDestination :: Destination
   , moveMeans :: MovementMeans
   , moveCancelable :: Bool
+  , movePayAdditionalCosts :: Bool
   }
   deriving stock (Show, Eq)
 
@@ -40,6 +41,7 @@ move (toSource -> moveSource) (toTarget -> moveTarget) lid =
     , moveDestination = ToLocation lid
     , moveMeans = Direct
     , moveCancelable = True
+    , movePayAdditionalCosts = True
     }
 
 moveToMatch
@@ -55,6 +57,7 @@ moveToMatch (toSource -> moveSource) (toTarget -> moveTarget) matcher =
     , moveDestination = ToLocationMatching matcher
     , moveMeans = Direct
     , moveCancelable = True
+    , movePayAdditionalCosts = True
     }
 
 moveToLocationMatcher :: Movement -> LocationMatcher

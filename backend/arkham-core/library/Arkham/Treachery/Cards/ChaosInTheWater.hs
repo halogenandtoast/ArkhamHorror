@@ -23,7 +23,7 @@ instance RunMessage ChaosInTheWater where
   runMessage msg t@(ChaosInTheWater attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       innocentRevelerIds <-
-        selectList
+        select
           (AssetControlledBy You <> assetIs Assets.innocentReveler)
       investigatorsWithRevelers <-
         catMaybes

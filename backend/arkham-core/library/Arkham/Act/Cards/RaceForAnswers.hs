@@ -27,7 +27,7 @@ instance RunMessage RaceForAnswers where
   runMessage msg a@(RaceForAnswers attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       locations <-
-        selectList
+        select
           $ RevealedLocation
           <> LocationWithTitle
             "Historical Society"

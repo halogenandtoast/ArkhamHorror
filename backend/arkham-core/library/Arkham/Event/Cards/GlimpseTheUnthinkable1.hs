@@ -31,7 +31,7 @@ instance RunMessage GlimpseTheUnthinkable1 where
       pure e
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
       cards <-
-        selectList
+        select
           $ InHandOf (InvestigatorWithId iid)
           <> BasicCardMatch NonWeakness
       player <- getPlayer iid
@@ -47,7 +47,7 @@ instance RunMessage GlimpseTheUnthinkable1 where
       let
         n = getChoiceAmount "Number of cards to discard" choices
       cards <-
-        selectList
+        select
           $ InHandOf (InvestigatorWithId iid)
           <> BasicCardMatch NonWeakness
       drawing <- drawCards iid attrs n

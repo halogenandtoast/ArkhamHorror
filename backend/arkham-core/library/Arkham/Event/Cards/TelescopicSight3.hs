@@ -80,7 +80,7 @@ instance HasAbilities TelescopicSight3 where
 instance RunMessage TelescopicSight3 where
   runMessage msg e@(TelescopicSight3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      assets <- selectList $ assetControlledBy iid <> AssetInTwoHandSlots
+      assets <- select $ assetControlledBy iid <> AssetInTwoHandSlots
       player <- getPlayer iid
       push
         $ chooseOne

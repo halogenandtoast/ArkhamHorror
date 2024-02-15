@@ -260,7 +260,7 @@ instance RunMessage EchoesOfThePast where
     ResolveChaosToken _ token iid | token `elem` [Cultist, Tablet, ElderThing] -> do
       case token of
         Cultist -> do
-          matches <- selectListMap EnemyTarget (NearestEnemy AnyEnemy)
+          matches <- selectMap EnemyTarget (NearestEnemy AnyEnemy)
           player <- getPlayer iid
           push
             $ chooseOne
@@ -278,7 +278,7 @@ instance RunMessage EchoesOfThePast where
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ | isEasyStandard attrs -> do
       case chaosTokenFace token of
         Cultist -> do
-          matches <- selectListMap EnemyTarget (NearestEnemy AnyEnemy)
+          matches <- selectMap EnemyTarget (NearestEnemy AnyEnemy)
           player <- getPlayer iid
           push
             $ chooseOne

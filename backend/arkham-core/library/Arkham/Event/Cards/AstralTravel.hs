@@ -11,6 +11,7 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Game.Helpers
 import Arkham.Matcher hiding (MoveAction)
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Trait qualified as Trait
@@ -26,7 +27,7 @@ astralTravel = event AstralTravel Cards.astralTravel
 instance RunMessage AstralTravel where
   runMessage msg e@(AstralTravel attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      locations <- selectList $ RevealedLocation <> Unblocked <> NotYourLocation <> canEnterLocation iid
+      locations <- getCanMoveToMatchingLocations iid attrs $ RevealedLocation
       player <- getPlayer iid
       pushAll
         [ chooseOne player [targetLabel lid [MoveAction iid lid Free False] | lid <- locations]
@@ -37,7 +38,7 @@ instance RunMessage AstralTravel where
       push $ ResetChaosTokens (toSource attrs)
       let faces = [Skull, Cultist, Tablet, ElderThing, AutoFail]
       when (any ((`elem` faces) . chaosTokenFace) tokens) $ do
-        targets <- selectList $ oneOf (AssetWithTrait <$> [Trait.Item, Trait.Ally])
+        targets <- select $ oneOf (AssetWithTrait <$> [Trait.Item, Trait.Ally])
         player <- getPlayer (eventOwner attrs)
         push
           $ If (Window.RevealChaosTokenEventEffect (eventOwner attrs) tokens (toId attrs))

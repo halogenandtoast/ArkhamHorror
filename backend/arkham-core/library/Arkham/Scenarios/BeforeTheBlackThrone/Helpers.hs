@@ -72,7 +72,7 @@ getCanMoveLocationLeft lid = do
 
 commitRitualSuicide :: (HasGame m, Sourceable source) => source -> m [Message]
 commitRitualSuicide (toSource -> source) = do
-  cultists <- selectList $ EnemyWithTrait Cultist
+  cultists <- select $ EnemyWithTrait Cultist
   doom <- getSum <$> foldMapM (fieldMap EnemyDoom Sum) cultists
   azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
   pure

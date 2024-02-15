@@ -35,9 +35,9 @@ instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
       pure a
     NextAdvanceActStep aid 1 | aid == actId attrs && onSide B attrs -> do
       lead <- getLeadPlayer
-      brotherhoodCultists <- selectList $ enemyIs Enemies.brotherhoodCultist
+      brotherhoodCultists <- select $ enemyIs Enemies.brotherhoodCultist
       farthestBrotherhoodCultists <-
-        selectList $ FarthestEnemyFromAll $ enemyIs Enemies.brotherhoodCultist
+        select $ FarthestEnemyFromAll $ enemyIs Enemies.brotherhoodCultist
       deckCount <- getActDecksInPlayCount
       relicOfAges <- getSetAsideCard Assets.relicOfAgesADeviceOfSomeSort
       assetId <- getRandom
@@ -53,7 +53,7 @@ instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
            ]
       pure a
     FoundEncounterCard _ target card | isTarget attrs target -> do
-      locations <- selectList $ FarthestLocationFromAll Anywhere
+      locations <- select $ FarthestLocationFromAll Anywhere
       lead <- getLeadPlayer
       push
         $ chooseOrRunOne lead

@@ -47,7 +47,7 @@ instance RunMessage AgencyBackup5 where
   runMessage msg a@(AgencyBackup5 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      targets <- selectList $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource source
+      targets <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource source
       player <- getPlayer iid
       push
         $ chooseOne player [targetLabel target [EnemyDamage target $ nonAttack source 1] | target <- targets]

@@ -37,7 +37,7 @@ instance RunMessage StrangeSolutionEmpoweringElixir4 where
   runMessage msg a@(StrangeSolutionEmpoweringElixir4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      investigators <- selectList $ affectsOthers $ colocatedWith iid
+      investigators <- select $ affectsOthers $ colocatedWith iid
       choices <- forMaybeM investigators $ \i -> do
         mGainResources <- gainResourcesIfCan i source 2
         mDrawCards <- drawCardsIfCan i source 1

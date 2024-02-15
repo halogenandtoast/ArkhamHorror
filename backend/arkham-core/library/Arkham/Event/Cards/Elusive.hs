@@ -1,12 +1,12 @@
 module Arkham.Event.Cards.Elusive where
 
-import Arkham.Prelude
-
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Prelude
 
 newtype Elusive = Elusive EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -18,17 +18,12 @@ elusive = event Elusive Cards.elusive
 instance RunMessage Elusive where
   runMessage msg e@(Elusive attrs) = case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
-      canMove <- iid <=~> InvestigatorCanMove
-      enemies <- selectList $ enemyEngagedWith iid
-      targets <- selectList $ EmptyLocation <> RevealedLocation <> canEnterLocation iid
+      enemies <- select $ enemyEngagedWith iid
+      targets <- getCanMoveToMatchingLocations iid attrs $ LocationWithoutEnemies <> RevealedLocation
       player <- getPlayer iid
       pushAll
         $ map (DisengageEnemy iid) enemies
-        <> [ chooseOrRunOne player
-            $ targetLabels targets (only . MoveTo . move (toSource attrs) iid)
-           | notNull targets
-           , canMove
-           ]
+        <> [chooseOrRunOne player $ targetLabels targets (only . MoveTo . move attrs iid) | notNull targets]
         <> map EnemyCheckEngagement enemies
       pure e
     _ -> Elusive <$> runMessage msg attrs

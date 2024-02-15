@@ -3,7 +3,6 @@ module Arkham.Asset.Cards.CatBurglar1 (CatBurglar1 (..), catBurglar1) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Movement
 import Arkham.Prelude
@@ -23,16 +22,16 @@ instance HasModifiersFor CatBurglar1 where
 instance HasAbilities CatBurglar1 where
   getAbilities (CatBurglar1 a) =
     [ doesNotProvokeAttacksOfOpportunity
-        $ controlledAbility a 1 (oneOf [exists EnemyEngagedWithYou, exists AccessibleLocation])
+        $ controlledAbility a 1 (oneOf [exists EnemyEngagedWithYou, CanMoveTo ConnectedLocation])
         $ actionAbilityWithCost (exhaust a)
     ]
 
 instance RunMessage CatBurglar1 where
   runMessage msg (CatBurglar1 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      engagedEnemyIds <- selectList $ enemyEngagedWith iid
+      engagedEnemyIds <- select $ enemyEngagedWith iid
       canDisengage <- iid <=~> InvestigatorCanDisengage
-      accessibleLocationIds <- accessibleLocations iid
+      accessibleLocationIds <- getAccessibleLocations iid attrs
       player <- getPlayer iid
       pushAll
         $ [DisengageEnemy iid eid | canDisengage, eid <- engagedEnemyIds]

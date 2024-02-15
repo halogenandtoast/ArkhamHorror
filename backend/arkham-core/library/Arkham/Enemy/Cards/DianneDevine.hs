@@ -33,7 +33,7 @@ instance RunMessage DianneDevine where
   runMessage msg e@(DianneDevine attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       lead <- getLeadPlayer
-      locations <- selectList $ LocationWithAsset $ AssetWithFewestClues $ AssetWithTrait Bystander
+      locations <- select $ LocationWithAsset $ AssetWithFewestClues $ AssetWithTrait Bystander
       pushWhen (notNull locations)
         $ chooseOne lead
         $ targetLabels locations (only . EnemyMove (toId attrs))

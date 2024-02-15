@@ -50,7 +50,7 @@ instance HasModifiersFor NoAsylum where
     targets <- select UnrevealedLocation
     pure
       [ toModifier attrs (TraitRestrictedModifier ArkhamAsylum Blank)
-      | lid `member` targets
+      | lid `elem` targets
       ]
   getModifiersFor _ _ = pure []
 

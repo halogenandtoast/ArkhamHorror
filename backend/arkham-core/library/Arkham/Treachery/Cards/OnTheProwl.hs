@@ -26,9 +26,9 @@ instance RunMessage OnTheProwl where
       t <$ case mrougarou of
         Nothing -> pure ()
         Just eid -> do
-          locationIds <- setToList <$> nonBayouLocations
-          locationsWithClueCounts <- for locationIds $
-            \lid -> (lid,) <$> field LocationClues lid
+          locationIds <- nonBayouLocations
+          locationsWithClueCounts <- for locationIds
+            $ \lid -> (lid,) <$> field LocationClues lid
           let
             sortedLocationsWithClueCounts = sortOn snd locationsWithClueCounts
           case sortedLocationsWithClueCounts of
@@ -37,13 +37,13 @@ instance RunMessage OnTheProwl where
               let
                 (matches', _) =
                   span ((== c) . snd) sortedLocationsWithClueCounts
-              in
+               in
                 case matches' of
                   [(x, _)] -> push (MoveUntil x (EnemyTarget eid))
                   xs -> do
                     player <- getPlayer iid
-                    push $
-                      chooseOne
+                    push
+                      $ chooseOne
                         player
                         [ targetLabel x [MoveUntil x (EnemyTarget eid)]
                         | (x, _) <- xs

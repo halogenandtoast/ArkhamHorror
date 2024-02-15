@@ -28,7 +28,7 @@ instance HasAbilities WrackedByNightmares where
 instance RunMessage WrackedByNightmares where
   runMessage msg t@(WrackedByNightmares attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      assets <- selectList $ assetControlledBy iid
+      assets <- select $ assetControlledBy iid
       pushAll $ map (Exhaust . toTarget) assets <> [attachTreachery attrs iid]
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do

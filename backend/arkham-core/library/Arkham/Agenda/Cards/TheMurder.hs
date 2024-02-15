@@ -64,7 +64,7 @@ instance RunMessage TheMurder where
       NextAdvanceAgendaStep aid 1 | aid == toId attrs -> do
         room225 <- getJustLocationByName "Room 225"
         x <- count id <$> traverse (fmap not . remembered) [CleanedUpTheBlood, HidTheBody, TidiedUpTheRoom]
-        arkhamOfficers <- selectList $ enemyIs Enemies.arkhamOfficer
+        arkhamOfficers <- select $ enemyIs Enemies.arkhamOfficer
         lead <- getLeadPlayer
         pushAll
           $ [PlaceClues (toSource aid) (toTarget room225) x]

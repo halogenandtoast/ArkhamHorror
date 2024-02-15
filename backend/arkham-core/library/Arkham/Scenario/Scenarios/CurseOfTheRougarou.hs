@@ -188,7 +188,7 @@ instance RunMessage CurseOfTheRougarou where
           for_ mrougarou \eid -> push $ EnemyWillAttack $ enemyAttack eid attrs iid
         else do
           lid <- getJustLocation iid
-          connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId lid
+          connectedLocationIds <- select $ AccessibleFrom $ LocationWithId lid
           mrougarou <-
             selectOne
               $ enemyIs Enemies.theRougarou

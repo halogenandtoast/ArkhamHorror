@@ -31,7 +31,7 @@ instance HasAbilities LiquidCourage where
 instance RunMessage LiquidCourage where
   runMessage msg a@(LiquidCourage attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      iids <- selectList $ HealableInvestigator (toSource attrs) HorrorType $ colocatedWith iid
+      iids <- select $ HealableInvestigator (toSource attrs) HorrorType $ colocatedWith iid
       player <- getPlayer iid
       pushIfAny iids
         $ chooseOrRunOne

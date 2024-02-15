@@ -1,19 +1,14 @@
-module Arkham.Asset.Cards.Duke (
-  Duke (..),
-  duke,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Duke (Duke (..), duke) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.Location
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype Duke = Duke AssetAttrs
@@ -48,13 +43,14 @@ instance HasAbilities Duke where
 instance RunMessage Duke where
   runMessage msg a@(Duke attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ chooseFightEnemy iid (toAbilitySource attrs 1) #combat
+      push $ chooseFightEnemy iid (attrs.ability 1) #combat
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 windows' _ -> do
-      let source = toAbilitySource attrs 2
+      let source = attrs.ability 2
       lid <- getJustLocation iid
       accessibleLocationIds <-
-        traverse (traverseToSnd (mkInvestigateLocation iid attrs)) =<< accessibleLocations iid
+        traverse (traverseToSnd (mkInvestigateLocation iid attrs))
+          =<< getAccessibleLocations iid (attrs.ability 2)
       investigateAbilities <-
         filterM
           ( andM

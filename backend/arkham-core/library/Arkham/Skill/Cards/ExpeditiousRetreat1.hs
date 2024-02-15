@@ -40,7 +40,7 @@ instance RunMessage ExpeditiousRetreat1 where
       case (mAction, mSource, mInvestigator) of
         (Just Action.Evade, Just (AbilitySource (EnemySource eid) AbilityAttack), Just iid) -> do
           enemies <-
-            selectList $ enemyAtLocationWith iid <> NotEnemy (EnemyWithId eid) <> CanEvadeEnemy (toSource iid)
+            select $ enemyAtLocationWith iid <> NotEnemy (EnemyWithId eid) <> CanEvadeEnemy (toSource iid)
           player <- getPlayer iid
           pushIfAny enemies $ chooseOne player $ targetLabels enemies (only . EnemyEvaded iid)
         _ -> pure ()

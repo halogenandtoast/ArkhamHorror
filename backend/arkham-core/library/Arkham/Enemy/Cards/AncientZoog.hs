@@ -46,7 +46,7 @@ instance HasAbilities AncientZoog where
 instance RunMessage AncientZoog where
   runMessage msg e@(AncientZoog attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      zoogs <- selectList $ EnemyWithTrait Zoog <> SwarmingEnemy <> NotEnemy IsSwarm
+      zoogs <- select $ EnemyWithTrait Zoog <> SwarmingEnemy <> NotEnemy IsSwarm
       lead <- getLead
       for_ zoogs $ \zoog ->
         push $ PlaceSwarmCards lead zoog 1

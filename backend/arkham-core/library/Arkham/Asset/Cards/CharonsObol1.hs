@@ -16,7 +16,7 @@ newtype CharonsObol1 = CharonsObol1 AssetAttrs
 instance HasModifiersFor CharonsObol1 where
   getModifiersFor (InvestigatorTarget iid) (CharonsObol1 attrs)
     | controlledBy attrs iid = do
-        isDefeated <- member iid <$> select DefeatedInvestigator
+        isDefeated <- elem iid <$> select DefeatedInvestigator
         pure
           $ toModifiers attrs
           $ KilledIfDefeated

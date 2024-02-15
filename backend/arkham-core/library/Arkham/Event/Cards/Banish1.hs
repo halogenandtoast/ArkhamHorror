@@ -60,7 +60,7 @@ instance RunMessage Banish1Effect where
                     | any (`elem` faces) [Skull, Cultist, Tablet, ElderThing]
                     ]
 
-          locations <- selectList (LocationCanBeEnteredBy eid)
+          locations <- select (LocationCanBeEnteredBy eid)
           player <- getPlayer iid
           let locationMsgs =
                 if null locations

@@ -22,7 +22,7 @@ instance RunMessage NoStoneUnturned5 where
   runMessage msg e@(NoStoneUnturned5 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       iids <-
-        selectList
+        select
           $ affectsOthers
           $ colocatedWith iid
           <> can.manipulate.deck

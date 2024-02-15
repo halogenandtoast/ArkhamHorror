@@ -44,7 +44,7 @@ instance RunMessage CreatureOutOfDemhe where
   runMessage msg e@(CreatureOutOfDemhe attrs) = case msg of
     UseCardAbility _ source 1 [(windowType -> Window.FlipLocation _ lid)] _
       | isSource attrs source -> do
-          iids <- selectList $ InvestigatorAt $ LocationWithId lid
+          iids <- select $ InvestigatorAt $ LocationWithId lid
           pushAll $ map (InitiateEnemyAttack . enemyAttack (toId attrs) attrs) iids
           pure e
     _ -> CreatureOutOfDemhe <$> runMessage msg attrs

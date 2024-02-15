@@ -37,12 +37,12 @@ instance RunMessage Venturer where
   runMessage msg a@(Venturer attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       supplyAssets <-
-        selectList
+        select
           $ AssetWithUseType Supply
           <> AssetControlledBy (affectsOthers $ colocatedWith iid)
           <> NotAsset (AssetWithId $ toId attrs)
       ammoAssets <-
-        selectList
+        select
           $ AssetWithUseType Ammo
           <> AssetControlledBy
             (affectsOthers $ colocatedWith iid)

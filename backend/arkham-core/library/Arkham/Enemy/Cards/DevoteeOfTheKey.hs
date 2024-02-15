@@ -38,7 +38,7 @@ instance RunMessage DevoteeOfTheKey where
               [toDiscard (toAbilitySource attrs 1) attrs, PlaceDoomOnAgenda, PlaceDoomOnAgenda]
           else do
             lead <- getLeadPlayer
-            choices <- selectList $ ClosestPathLocation loc sentinelPeak
+            choices <- select $ ClosestPathLocation loc sentinelPeak
             case choices of
               [] -> error "should not happen"
               xs -> push $ chooseOrRunOne lead $ targetLabels xs (only . EnemyMove (toId attrs))

@@ -53,7 +53,7 @@ instance HasAbilities MalevolentSpirit where
 instance RunMessage MalevolentSpirit where
   runMessage msg e@(MalevolentSpirit attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      spectralLocations <- selectList $ LocationWithTrait Spectral
+      spectralLocations <- select $ LocationWithTrait Spectral
       lead <- getLeadPlayer
       pushAll
         $ [ CancelNext (toSource attrs) EnemyDefeatedMessage

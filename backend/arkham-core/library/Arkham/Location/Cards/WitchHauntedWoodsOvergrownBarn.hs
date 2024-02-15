@@ -46,7 +46,7 @@ instance RunMessage WitchHauntedWoodsOvergrownBarn where
   runMessage msg l@(WitchHauntedWoodsOvergrownBarn attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 [(windowType -> Window.EnemyWouldSpawnAt enemyId _)] _ ->
       do
-        iids <- selectList $ investigatorAt $ toId attrs
+        iids <- select $ investigatorAt $ toId attrs
         replaceMessageMatching
           ( \case
               When (EnemySpawn _ _ eid) -> eid == enemyId

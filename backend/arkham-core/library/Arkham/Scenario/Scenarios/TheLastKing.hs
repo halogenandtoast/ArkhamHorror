@@ -200,7 +200,7 @@ instance RunMessage TheLastKing where
       case chaosTokenFace token of
         Skull -> do
           targets <-
-            selectListMap EnemyTarget
+            selectMap EnemyTarget
               $ if isEasyStandard attrs
                 then EnemyWithTrait Trait.Lunatic
                 else EnemyWithMostRemainingHealth $ EnemyWithTrait Trait.Lunatic
@@ -235,9 +235,9 @@ instance RunMessage TheLastKing where
           investigatorIds
           (field InvestigatorName)
       lead <- getLeadPlayer
-      clueCounts <- traverse (field ActClues) =<< selectList AnyAct
+      clueCounts <- traverse (field ActClues) =<< select AnyAct
       vipsSlain <-
-        selectListMap toCardCode
+        selectMap toCardCode
           $ VictoryDisplayCardMatch
           $ CardWithTrait
             Trait.Lunatic

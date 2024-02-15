@@ -33,7 +33,7 @@ instance HasAbilities BilliardsRoomSpectral where
 instance RunMessage BilliardsRoomSpectral where
   runMessage msg l@(BilliardsRoomSpectral attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      assets <- selectList $ assetControlledBy iid <> DiscardableAsset
+      assets <- select $ assetControlledBy iid <> DiscardableAsset
       player <- getPlayer iid
       push
         $ chooseOrRunOne player

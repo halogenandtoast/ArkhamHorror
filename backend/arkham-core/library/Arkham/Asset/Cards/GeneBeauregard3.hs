@@ -64,7 +64,7 @@ instance RunMessage GeneBeauregard3 where
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 1 -> do
       yourLocation <- selectJust $ locationWithInvestigator iid <> LocationWithAnyClues
-      connected <- selectList ConnectedLocation
+      connected <- select ConnectedLocation
       player <- getPlayer iid
       push
         $ chooseOrRunOne
@@ -74,7 +74,7 @@ instance RunMessage GeneBeauregard3 where
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 2 -> do
       yourLocation <- selectJust $ locationWithInvestigator iid <> LocationWithAnyClues
-      connected <- selectList ConnectedLocation
+      connected <- select ConnectedLocation
       player <- getPlayer iid
       push
         $ chooseOrRunOne
@@ -83,8 +83,8 @@ instance RunMessage GeneBeauregard3 where
 
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 3 -> do
-      enemies <- selectList $ enemyAtLocationWith iid <> NonEliteEnemy
-      connected <- selectList ConnectedLocation
+      enemies <- select $ enemyAtLocationWith iid <> NonEliteEnemy
+      connected <- select ConnectedLocation
       player <- getPlayer iid
       push
         $ chooseOrRunOne
@@ -97,7 +97,7 @@ instance RunMessage GeneBeauregard3 where
 
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 4 -> do
-      enemies <- selectList $ EnemyAt ConnectedLocation <> NonEliteEnemy
+      enemies <- select $ EnemyAt ConnectedLocation <> NonEliteEnemy
       location <- getJustLocation iid
       player <- getPlayer iid
       push

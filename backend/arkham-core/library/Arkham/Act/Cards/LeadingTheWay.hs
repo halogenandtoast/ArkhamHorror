@@ -24,7 +24,7 @@ leadingTheWay = act (3, A) LeadingTheWay Cards.leadingTheWay Nothing
 instance HasModifiersFor LeadingTheWay where
   getModifiersFor (LocationTarget lid) (LeadingTheWay attrs) = do
     isBlockedPassage <-
-      member lid
+      elem lid
         <$> select (locationIs Locations.blockedPassage)
     pure $ toModifiers attrs [Blank | isBlockedPassage]
   getModifiersFor _ _ = pure []

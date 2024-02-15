@@ -33,7 +33,7 @@ instance RunMessage GrandGuignol where
   runMessage msg a@(GrandGuignol attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       nonWeaknessCards <-
-        selectListMap toCardId (BasicCardMatch NonWeakness <> InHandOf (InvestigatorWithId iid))
+        selectMap toCardId (BasicCardMatch NonWeakness <> InHandOf (InvestigatorWithId iid))
       drawing <- drawCards iid (toAbilitySource attrs 1) (length nonWeaknessCards)
       player <- getPlayer iid
       push

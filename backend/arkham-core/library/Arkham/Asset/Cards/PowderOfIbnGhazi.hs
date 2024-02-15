@@ -53,7 +53,7 @@ instance RunMessage PowderOfIbnGhazi where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       player <- getPlayer iid
       targets <-
-        selectListMap EnemyTarget
+        selectMap EnemyTarget
           $ EnemyWithTitle "Brood of Yog-Sothoth"
           <> EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
           <> ExhaustedEnemy

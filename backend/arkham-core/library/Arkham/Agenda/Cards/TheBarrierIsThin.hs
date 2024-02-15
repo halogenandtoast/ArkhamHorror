@@ -32,7 +32,7 @@ instance RunMessage TheBarrierIsThin where
   runMessage msg a@(TheBarrierIsThin attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       tenochtitlanLocations <-
-        selectList $ LocationWithTrait Tenochtitlan <> LocationWithoutClues
+        select $ LocationWithTrait Tenochtitlan <> LocationWithoutClues
       iids <- getInvestigatorIds
       timeCollapsing <- getSetAsideCard Agendas.timeCollapsing
       theReturnTrip <- getSetAsideCard Acts.theReturnTrip
@@ -47,7 +47,7 @@ instance RunMessage TheBarrierIsThin where
            ]
       pure a
     NextAdvanceAgendaStep aid 1 | aid == toId attrs && onSide B attrs -> do
-      presentDayLocations <- selectList $ LocationWithTrait PresentDay
+      presentDayLocations <- select $ LocationWithTrait PresentDay
       (leadInvestigatorId, lead) <- getLeadInvestigatorPlayer
       push
         $ chooseOneAtATime

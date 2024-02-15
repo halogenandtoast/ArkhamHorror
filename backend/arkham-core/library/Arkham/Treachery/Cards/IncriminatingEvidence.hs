@@ -42,7 +42,7 @@ instance HasAbilities IncriminatingEvidence where
 instance RunMessage IncriminatingEvidence where
   runMessage msg t@(IncriminatingEvidence attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      nonCrimeScenes <- selectList $ NearestLocationToYou $ NotLocation $ LocationWithTrait CrimeScene
+      nonCrimeScenes <- select $ NearestLocationToYou $ NotLocation $ LocationWithTrait CrimeScene
       player <- getPlayer iid
       pushIfAny nonCrimeScenes
         $ chooseOrRunOne player

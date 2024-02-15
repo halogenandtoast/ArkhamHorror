@@ -26,7 +26,7 @@ instance HasModifiersFor HidingSpot where
     case eventAttachedTarget attrs of
       Just (LocationTarget lid) -> do
         enemies <- select $ EnemyAt $ LocationWithId lid
-        pure $ toModifiers attrs [AddKeyword Aloof | eid `member` enemies]
+        pure $ toModifiers attrs [AddKeyword Aloof | eid `elem` enemies]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
@@ -40,7 +40,7 @@ instance HasAbilities HidingSpot where
 instance RunMessage HidingSpot where
   runMessage msg e@(HidingSpot attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      locations <- selectList Anywhere
+      locations <- select Anywhere
       player <- getPlayer iid
       push $ chooseOne player $ targetLabels locations (only . PlaceEvent iid eid . AttachedToLocation)
       pure e

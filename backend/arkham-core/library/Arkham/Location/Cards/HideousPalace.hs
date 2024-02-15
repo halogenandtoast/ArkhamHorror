@@ -57,7 +57,7 @@ instance RunMessage HideousPalace where
       push $ PlaceClues (toAbilitySource attrs 1) (toTarget attrs) cluesToAdd
       pure l
     UseCardAbility _ source@(ProxySource (LocationSource lid) (isSource attrs -> True)) 1 _ _ -> do
-      investigators <- selectList $ investigatorAt lid
+      investigators <- select $ investigatorAt lid
       card <- field Field.LocationCard lid
       pushAll
         $ [Move $ move (toAbilitySource source 1) iid (toId attrs) | iid <- investigators]

@@ -34,7 +34,7 @@ instance RunMessage BookOfShadows1 where
   runMessage msg a@(BookOfShadows1 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       spellAssetIds <-
-        selectList
+        select
           (AssetControlledBy You <> AssetWithTrait Spell)
       player <- getPlayer iid
       unless (null spellAssetIds)

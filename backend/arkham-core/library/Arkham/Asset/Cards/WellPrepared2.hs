@@ -37,7 +37,7 @@ instance RunMessage WellPrepared2 where
       matchingIcons <- getSkillTestMatchingSkillIcons
 
       assetIds <-
-        selectList
+        select
           $ NotAsset (AssetWithId $ toId attrs)
           <> AssetControlledBy (InvestigatorWithId iid)
           <> AssetWithMatchingSkillTestIcon

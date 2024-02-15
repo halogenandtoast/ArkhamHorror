@@ -54,7 +54,7 @@ instance HasAbilities CosmicGate where
 instance RunMessage CosmicGate where
   runMessage msg l@(CosmicGate attrs) = case msg of
     RunCosmos iid lid msgs | lid == toId attrs -> do
-      revealedLocations <- selectList RevealedLocation
+      revealedLocations <- select RevealedLocation
       positions <- mapMaybeM findLocationInCosmos revealedLocations
       allEmpty <-
         concatMapM
@@ -83,9 +83,9 @@ instance RunMessage CosmicGate where
 
       pure l
     UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do
-      investigators <- selectList $ investigatorAt (toId attrs)
+      investigators <- select $ investigatorAt (toId attrs)
       otherLocations <-
-        selectList $ LocationWithTrait Trait.Void <> NotLocation (LocationWithId $ toId attrs)
+        select $ LocationWithTrait Trait.Void <> NotLocation (LocationWithId $ toId attrs)
       player <- getPlayer iid
       push
         $ chooseSome1

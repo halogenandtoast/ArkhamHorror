@@ -31,7 +31,7 @@ instance HasAbilities AstoundingRevelation where
 instance RunMessage AstoundingRevelation where
   runMessage msg e@(AstoundingRevelation attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      secretAssets <- selectList $ assetControlledBy iid <> AssetWithUseType Secret
+      secretAssets <- select $ assetControlledBy iid <> AssetWithUseType Secret
       player <- getPlayer iid
       push
         $ chooseOne player

@@ -77,7 +77,7 @@ gavriellasFateEffect = cardEffect GavriellasFateEffect Cards.gavriellasFate
 
 instance HasModifiersFor GavriellasFateEffect where
   getModifiersFor (AssetTarget aid) (GavriellasFateEffect a) = do
-    isGavriella <- member aid <$> select (assetIs Assets.gavriellaMizrah)
+    isGavriella <- elem aid <$> select (assetIs Assets.gavriellaMizrah)
     pure $ toModifiers a [DoNotTakeUpSlot AllySlot | isGavriella]
   getModifiersFor _ _ = pure []
 

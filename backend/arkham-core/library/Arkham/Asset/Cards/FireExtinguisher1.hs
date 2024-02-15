@@ -48,7 +48,7 @@ fireExtinguisher1Effect = cardEffect FireExtinguisher1Effect Cards.fireExtinguis
 instance RunMessage FireExtinguisher1Effect where
   runMessage msg e@(FireExtinguisher1Effect attrs) = case msg of
     PassedSkillTest iid (Just Action.Evade) _ (Initiator (EnemyTarget _)) _ _ | SkillTestTarget == attrs.target -> do
-      evasions <- selectListMap (EnemyEvaded iid) $ enemyEngagedWith iid
+      evasions <- selectMap (EnemyEvaded iid) $ enemyEngagedWith iid
       pushAll $ evasions <> [disable attrs]
       pure e
     SkillTestEnds _ _ -> e <$ push (disable attrs)

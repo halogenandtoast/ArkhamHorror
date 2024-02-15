@@ -41,7 +41,7 @@ instance RunMessage MassHysteria where
       pure t
     RevelationChoice iid source 2 | isSource attrs source -> do
       locationId <- fromJustNote "impossible" <$> field InvestigatorLocation iid
-      maskedCarnevaleGoers <- selectList (AssetWithTitle "Masked Carnevale-Goer")
+      maskedCarnevaleGoers <- select (AssetWithTitle "Masked Carnevale-Goer")
       clockwiseLocations <- getClockwiseLocations locationId
       shuffled <- shuffleM maskedCarnevaleGoers
       pushAll

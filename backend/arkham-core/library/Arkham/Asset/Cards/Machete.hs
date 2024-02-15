@@ -18,7 +18,7 @@ instance HasModifiersFor Machete where
     mods <- runMaybeT $ do
       (isAbilitySource attrs 1 -> True) <- MaybeT getSkillTestSource
       EnemyTarget eid <- MaybeT getSkillTestTarget
-      engagedEnemies <- lift $ selectList $ enemyEngagedWith iid
+      engagedEnemies <- lift $ select $ enemyEngagedWith iid
       guard $ engagedEnemies == [eid]
       iid' <- MaybeT getSkillTestInvestigator
       guard $ iid == iid'

@@ -24,7 +24,7 @@ instance RunMessage FineDining where
   runMessage msg t@(FineDining attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       clueCount <- field InvestigatorClues iid
-      bystanders <- selectListMap AssetTarget $ AssetWithTrait Bystander
+      bystanders <- selectMap AssetTarget $ AssetWithTrait Bystander
       let damageMsg = InvestigatorAssignDamage iid source DamageAny 1 1
       player <- getPlayer iid
       push

@@ -40,7 +40,7 @@ instance RunMessage TheParisianConspiracyV2 where
           <$> getSetAsideCardsMatching (CardWithTitle "The Organist")
       case advanceMode of
         AdvancedWithClues -> do
-          locationIds <- selectList $ FarthestLocationFromAll Anywhere
+          locationIds <- select $ FarthestLocationFromAll Anywhere
           lead <- getLeadPlayer
           choices <- for locationIds $ \lid -> do
             createTheOrganist <- createEnemyAt_ theOrganist lid Nothing

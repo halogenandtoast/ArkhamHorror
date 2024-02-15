@@ -144,7 +144,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       [] -> error "There were no locations with that name"
       (card : _) -> push (PlaceLocation locationId card)
   PlaceDoomOnAgenda -> do
-    agendaIds <- selectList Matcher.AnyAgenda
+    agendaIds <- select Matcher.AnyAgenda
     case agendaIds of
       [] -> pure a
       [x] -> a <$ push (PlaceTokens (toSource a) (AgendaTarget x) Doom 1)
@@ -198,7 +198,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       ?~ actStack'
       & (completedActStackL . at n ?~ (oldAct : completedActStack))
   SetCurrentActDeck n stack@(current : _) -> do
-    actIds <- selectList $ Matcher.ActWithDeckId n
+    actIds <- select $ Matcher.ActWithDeckId n
     pushAll
       $ [toDiscard GameSource (ActTarget actId) | actId <- actIds]
       <> [AddAct n current]
@@ -207,7 +207,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & (actStackL . at n ?~ stack)
       & (setAsideCardsL %~ filter (`notElem` stack))
   SetCurrentAgendaDeck n stack@(current : _) -> do
-    agendaIds <- selectList $ Matcher.AgendaWithDeckId n
+    agendaIds <- select $ Matcher.AgendaWithDeckId n
     pushAll
       $ [toDiscard GameSource (AgendaTarget agendaId) | agendaId <- agendaIds]
       <> [AddAgenda n current]
@@ -287,7 +287,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   -- See: Vengeance Awaits / The Devourer Below - right now the assumption
   -- is that the act deck has been replaced.
   CheckForRemainingInvestigators -> do
-    investigatorIds <- selectList Matcher.UneliminatedInvestigator
+    investigatorIds <- select Matcher.UneliminatedInvestigator
     when (null investigatorIds && not scenarioInResolution) $ do
       push $ HandleNoRemainingInvestigators scenarioNoRemainingInvestigatorsHandler
     pure a
@@ -384,8 +384,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   RemoveCardFromScenarioDeck key card ->
     pure $ a & (decksL . ix key %~ filter (/= card))
   ChooseRandomLocation target exclusions -> do
-    locationIds <-
-      setToList . (`difference` exclusions) <$> select Matcher.Anywhere
+    locationIds <- (\\ exclusions) <$> select Matcher.Anywhere
     case nonEmpty locationIds of
       Nothing -> error "no locations?"
       Just lids -> do
@@ -871,7 +870,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           else []
     matchingVoidEnemies <-
       if Zone.FromOutOfPlayArea Zone.VoidZone `elem` zones
-        then selectList $ Matcher.OutOfPlayEnemy Zone.VoidZone Matcher.AnyEnemy
+        then select $ Matcher.OutOfPlayEnemy Zone.VoidZone Matcher.AnyEnemy
         else pure []
 
     voidEnemiesWithCards <-
@@ -1069,7 +1068,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         ((`notElem` cards) . EncounterCard)
   RemoveLocation lid -> do
     investigatorIds <-
-      selectList $ Matcher.InvestigatorAt $ Matcher.LocationWithId lid
+      select $ Matcher.InvestigatorAt $ Matcher.LocationWithId lid
     windowMsgs <- for investigatorIds $ \iid ->
       checkWindows
         $ ( `mkWindow`
@@ -1083,26 +1082,26 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   RemoveAllDoomFromPlay matchers -> do
     let Matcher.RemoveDoomMatchers {..} = matchers
     locations <-
-      selectListMap
+      selectMap
         LocationTarget
         (removeDoomLocations <> Matcher.LocationWithAnyDoom)
-    investigators <- selectListMap InvestigatorTarget removeDoomInvestigators
+    investigators <- selectMap InvestigatorTarget removeDoomInvestigators
     enemies <-
-      selectListMap
+      selectMap
         EnemyTarget
         (removeDoomEnemies <> Matcher.EnemyWithAnyDoom <> Matcher.EnemyWithoutModifier DoNotRemoveDoom)
     assets <-
-      selectListMap
+      selectMap
         AssetTarget
         (removeDoomAssets <> Matcher.AssetWithAnyDoom)
-    acts <- selectListMap ActTarget removeDoomActs
+    acts <- selectMap ActTarget removeDoomActs
     agendas <-
-      selectListMap
+      selectMap
         AgendaTarget
         (removeDoomAgendas <> Matcher.AgendaWithAnyDoom)
-    treacheries <- selectListMap TreacheryTarget removeDoomTreacheries
-    events <- selectListMap EventTarget removeDoomEvents
-    skills <- selectListMap SkillTarget removeDoomSkills
+    treacheries <- selectMap TreacheryTarget removeDoomTreacheries
+    events <- selectMap EventTarget removeDoomEvents
+    skills <- selectMap SkillTarget removeDoomSkills
     pushAll
       [ RemoveAllDoom (toSource a) target
       | target <-

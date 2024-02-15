@@ -38,7 +38,7 @@ instance RunMessage TryAndTryAgain3 where
   runMessage msg a@(TryAndTryAgain3 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       committedSkillCards <-
-        selectListMapM (field SkillCard)
+        selectMapM (field SkillCard)
           $ skillControlledBy iid
       player <- getPlayer iid
       pushAll

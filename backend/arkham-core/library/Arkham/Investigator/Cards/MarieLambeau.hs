@@ -54,8 +54,8 @@ instance HasChaosTokenValue MarieLambeau where
 instance RunMessage MarieLambeau where
   runMessage msg i@(MarieLambeau attrs) = case msg of
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
-      controlledAssets <- selectList $ assetControlledBy iid
-      controlledEvents <- selectList $ eventControlledBy iid
+      controlledAssets <- select $ assetControlledBy iid
+      controlledEvents <- select $ eventControlledBy iid
       assetsWithDoom <- toTarget <$$> filterM (<=~> AssetWithAnyDoom) controlledAssets
       eventsWithDoom <- toTarget <$$> filterM (<=~> EventWithAnyDoom) controlledEvents
 

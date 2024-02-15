@@ -48,7 +48,7 @@ instance RunMessage SnareTrap2 where
       push $ PlaceEvent iid eid (AttachedToLocation lid)
       pure e
     UseCardAbility iid (isSource attrs -> True) 1 [windowType -> Window.EnemyEnters enemyId _] _ -> do
-      iids <- selectList $ investigatorEngagedWith enemyId
+      iids <- select $ investigatorEngagedWith enemyId
       pushAll
         $ Exhaust (EnemyTarget enemyId)
         : map (`DisengageEnemy` enemyId) iids

@@ -58,7 +58,7 @@ instance HasChaosTokenValue BloodOnTheAltar where
       Skull -> do
         numLocations <-
           countM (fieldMap LocationCardsUnderneath null)
-            =<< selectList Anywhere
+            =<< select Anywhere
         pure $ toChaosTokenValue attrs Skull (min 4 numLocations) numLocations
       Cultist -> pure $ toChaosTokenValue attrs Cultist 2 4
       Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
@@ -89,7 +89,7 @@ standaloneChaosTokens =
 
 getRemoveNecronomicon :: HasGame m => m [Message]
 getRemoveNecronomicon = do
-  defeatedInvestigatorIds <- selectList DefeatedInvestigator
+  defeatedInvestigatorIds <- select DefeatedInvestigator
   mNecronomiconOwner <- getOwner Assets.theNecronomiconOlausWormiusTranslation
   pure
     [ RemoveCampaignCard Assets.theNecronomiconOlausWormiusTranslation

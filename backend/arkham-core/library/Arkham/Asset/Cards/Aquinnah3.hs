@@ -47,7 +47,7 @@ instance RunMessage Aquinnah3 where
       healthDamage' <- field EnemyHealthDamage enemyId
       sanityDamage' <- field EnemySanityDamage enemyId
       enemyIds <-
-        selectList
+        select
           $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
 
       when (null enemyIds) (error "enemies have to be present")

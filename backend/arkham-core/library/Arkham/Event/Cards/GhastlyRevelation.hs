@@ -29,8 +29,8 @@ instance RunMessage GhastlyRevelation where
       pure e
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
       clues <- field InvestigatorClues iid
-      otherInvestigators <- selectList $ affectsOthers $ notInvestigator iid
-      locations <- selectList Anywhere
+      otherInvestigators <- select $ affectsOthers $ notInvestigator iid
+      locations <- select Anywhere
       player <- getPlayer iid
       push
         $ chooseOrRunOne player

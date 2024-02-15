@@ -42,7 +42,7 @@ instance RunMessage Lantern where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = toAbilitySource attrs 2
-      enemies <- selectList $ enemyAtLocationWith iid
+      enemies <- select $ enemyAtLocationWith iid
       player <- getPlayer iid
       push
         $ chooseOne player [targetLabel enemy [EnemyDamage enemy $ nonAttack source 1] | enemy <- enemies]

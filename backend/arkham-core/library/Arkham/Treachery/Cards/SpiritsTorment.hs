@@ -43,7 +43,7 @@ instance RunMessage SpiritsTorment where
         $ \lid -> push $ AttachTreachery (toId attrs) (LocationTarget lid)
       pure t
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      hasActions <- member iid <$> select InvestigatorWithAnyActionsRemaining
+      hasActions <- elem iid <$> select InvestigatorWithAnyActionsRemaining
       player <- getPlayer iid
       push
         $ if hasActions

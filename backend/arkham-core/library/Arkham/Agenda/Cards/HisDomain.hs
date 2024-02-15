@@ -41,7 +41,7 @@ instance HasAbilities HisDomain where
 instance RunMessage HisDomain where
   runMessage msg a@(HisDomain attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      investigatorIds <- selectList UneliminatedInvestigator
+      investigatorIds <- select UneliminatedInvestigator
       a
         <$ pushAll
           ( SetNoRemainingInvestigatorsHandler (toTarget attrs)

@@ -47,7 +47,7 @@ instance RunMessage UnsolvedCase where
       pure e
     PlayThisEvent iid eid | eid == toId attrs -> do
       hasClues <- fieldMap InvestigatorClues (> 0) iid
-      highestShroud <- selectList $ HighestShroud Anywhere
+      highestShroud <- select $ HighestShroud Anywhere
       player <- getPlayer iid
       pushAll
         [ chooseOrRunOne

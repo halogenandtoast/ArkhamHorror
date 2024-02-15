@@ -29,10 +29,10 @@ copycat3 = skill Copycat3 Cards.copycat3
 instance RunMessage Copycat3 where
   runMessage msg s@(Copycat3 attrs) = case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
-      iids <- selectList $ NotInvestigator $ InvestigatorWithId iid
+      iids <- select $ NotInvestigator $ InvestigatorWithId iid
       iidsWithCommittableCards <- flip mapMaybeM iids $ \iid' -> do
         committableCards <-
-          selectList
+          select
             $ CommittableCard iid
             $ InDiscardOf (InvestigatorWithId iid')
             <> BasicCardMatch Matcher.SkillCard

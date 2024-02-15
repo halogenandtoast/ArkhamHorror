@@ -45,7 +45,7 @@ instance RunMessage SomethingStirs where
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       maxDoom <- fieldMax LocationDoom Anywhere
-      targets <- selectList $ LocationWithDoom $ EqualTo (Static maxDoom)
+      targets <- select $ LocationWithDoom $ EqualTo (Static maxDoom)
       harbingerOfValusia <- getSetAsideCard Enemies.harbingerOfValusia
       lead <- getLeadPlayer
       choices <- for targets $ \target -> do

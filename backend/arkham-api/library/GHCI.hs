@@ -6,7 +6,7 @@ module GHCI (
   module X,
 ) where
 
-import Import.NoFoundation as X hiding (selectList)
+import Import.NoFoundation as X
 
 import Api.Arkham.Helpers
 import Application
@@ -26,7 +26,7 @@ import Data.These
 import Data.Time
 import Data.UUID (UUID)
 import Data.UUID qualified as UUID
-import Database.Persist.Postgresql hiding (selectList)
+import Database.Persist.Postgresql
 
 instance IsString UUID where
   fromString = fromJust . UUID.fromString

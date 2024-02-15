@@ -243,7 +243,7 @@ instance RunMessage BlackStarsRise where
               & (agendaStackL . at 2 ?~ agendas2)
           )
     PlaceDoomOnAgenda -> do
-      agendaIds <- selectList AnyAgenda
+      agendaIds <- select AnyAgenda
       lead <- getLeadPlayer
       push
         $ chooseOne
@@ -254,12 +254,12 @@ instance RunMessage BlackStarsRise where
       pure s
     PassedSkillTest _ _ _ (ChaosTokenTarget token) _ n | n < 1 -> do
       when (chaosTokenFace token == Tablet) $ do
-        targets <- selectListMap AgendaTarget AnyAgenda
+        targets <- selectMap AgendaTarget AnyAgenda
         pushAll [PlaceTokens (toSource attrs) target Doom 1 | target <- targets]
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       when (chaosTokenFace token == Tablet) $ do
-        targets <- selectListMap AgendaTarget AnyAgenda
+        targets <- selectMap AgendaTarget AnyAgenda
         pushAll [PlaceTokens (toSource attrs) target Doom 1 | target <- targets]
       when (chaosTokenFace token == ElderThing) $ do
         push

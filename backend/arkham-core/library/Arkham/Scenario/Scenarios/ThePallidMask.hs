@@ -251,7 +251,7 @@ instance RunMessage ThePallidMask where
     SetupStep (isTarget attrs -> True) 1 -> do
       lead <- getLeadPlayer
       leadId <- getLeadInvestigatorId
-      catacombs <- selectList UnrevealedLocation
+      catacombs <- select UnrevealedLocation
       youOpenedASecretPassageway <- remembered YouOpenedASecretPassageway
       pushWhen youOpenedASecretPassageway
         $ chooseOne lead
@@ -284,7 +284,7 @@ instance RunMessage ThePallidMask where
           if isEasyStandard attrs
             then do
               enemies <-
-                selectList
+                select
                   (ReadyEnemy <> EnemyOneOf (map EnemyWithTrait [Ghoul, Geist]))
               unless (null enemies)
                 $ push
@@ -295,7 +295,7 @@ instance RunMessage ThePallidMask where
                   ]
             else do
               enemies <-
-                selectList
+                select
                   (ReadyEnemy <> EnemyOneOf (map EnemyWithTrait [Ghoul, Geist]))
               unless (null enemies)
                 $ push

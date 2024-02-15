@@ -78,7 +78,7 @@ instance RunMessage DianaStanley where
           _ -> error $ "Unhandled source for Diana Stanley: " <> show source
       (removeMsg, card) <- getSource source
       canLeavePlay <- case source of
-        AssetSource aid -> member aid <$> select AssetCanLeavePlayByNormalMeans
+        AssetSource aid -> elem aid <$> select AssetCanLeavePlayByNormalMeans
         _ -> pure $ not (cdPermanent $ toCardDef card)
       drawing <- drawCards iid (toAbilitySource attrs 1) 1
       pushAll

@@ -42,7 +42,7 @@ instance HasAbilities PriestessOfTheCoven where
 instance RunMessage PriestessOfTheCoven where
   runMessage msg e@(PriestessOfTheCoven attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      iids <- selectList $ InvestigatorAt $ locationWithEnemy $ toId attrs
+      iids <- select $ InvestigatorAt $ locationWithEnemy $ toId attrs
       pushAll
         $ Ready (toTarget attrs)
         : map (InitiateEnemyAttack . enemyAttack (toId attrs) attrs) iids

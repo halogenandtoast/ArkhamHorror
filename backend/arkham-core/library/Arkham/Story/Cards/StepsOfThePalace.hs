@@ -23,7 +23,7 @@ instance RunMessage StepsOfThePalace where
   runMessage msg s@(StepsOfThePalace attrs) = case msg of
     ResolveStory iid _ story' | story' == toId attrs -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
-      investigatorIds <- selectList $ investigatorEngagedWith hastur
+      investigatorIds <- select $ investigatorEngagedWith hastur
       n <- perPlayer 1
       pushAll
         $ [ Msg.EnemyDamage hastur $ storyDamage iid n

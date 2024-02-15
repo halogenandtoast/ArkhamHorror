@@ -31,7 +31,7 @@ instance HasAbilities SummonedHound1 where
 instance RunMessage SummonedHound1 where
   runMessage msg a@(SummonedHound1 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) _ -> do
-      fightableEnemies <- selectList $ CanFightEnemy (toSource attrs)
+      fightableEnemies <- select $ CanFightEnemy (toSource attrs)
       player <- getPlayer iid
       mLocation <- field InvestigatorLocation iid
       let doFight = chooseFightEnemy iid attrs #combat

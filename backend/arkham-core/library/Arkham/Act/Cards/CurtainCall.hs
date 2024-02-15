@@ -60,7 +60,7 @@ instance RunMessage CurtainCall where
       pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       targets <-
-        selectListMap LocationTarget
+        selectMap LocationTarget
           $ LocationWithoutHorror
           <> AccessibleTo LocationWithAnyHorror
       pushAll $ map (\t -> PlaceHorror (toAbilitySource attrs 3) t 1) targets

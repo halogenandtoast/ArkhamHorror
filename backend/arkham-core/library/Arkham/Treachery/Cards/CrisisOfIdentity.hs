@@ -26,16 +26,16 @@ instance RunMessage CrisisOfIdentity where
     Revelation iid source | isSource attrs source -> do
       role <- field InvestigatorClass iid
       assets <-
-        selectList
+        select
           $ assetControlledBy iid
           <> AssetWithClass role
           <> DiscardableAsset
       events <-
-        selectList
+        select
           $ EventControlledBy (InvestigatorWithId iid)
           <> EventWithClass role
       skills <-
-        selectList
+        select
           $ SkillControlledBy (InvestigatorWithId iid)
           <> SkillWithClass role
       pushAll

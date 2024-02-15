@@ -44,7 +44,7 @@ instance RunMessage TheTrueCulpritV10 where
     case msg of
       UseThisAbility iid p@(ProxySource _ (isSource attrs -> True)) 1 -> do
         player <- getPlayer iid
-        leadAssets <- selectList $ AssetWithTrait Lead <> assetControlledBy iid
+        leadAssets <- select $ AssetWithTrait Lead <> assetControlledBy iid
         pushAll
           $ [ chooseOne
                 player

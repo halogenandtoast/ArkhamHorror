@@ -71,7 +71,7 @@ instance RunMessage SmallFavor where
         upToTwoAway = foldl' updateUpToTwoAway False modifiers'
 
       enemies <-
-        selectList
+        select
           $ NonEliteEnemy
           <> EnemyOneOf
             ( EnemyAt (locationWithInvestigator iid)

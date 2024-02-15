@@ -33,7 +33,7 @@ instance RunMessage OldBookOfLore where
   runMessage msg a@(OldBookOfLore attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      investigators <- selectList =<< guardAffectsColocated iid
+      investigators <- select =<< guardAffectsColocated iid
       player <- getPlayer iid
       push
         $ chooseOne player

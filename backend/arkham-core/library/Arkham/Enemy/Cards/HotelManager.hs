@@ -36,9 +36,9 @@ instance RunMessage HotelManager where
   runMessage msg e@(HotelManager attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       lead <- getLeadPlayer
-      edibleGuests <- selectList $ EnemyAt (locationWithEnemy $ toId attrs) <> EnemyWithTrait Guest
+      edibleGuests <- select $ EnemyAt (locationWithEnemy $ toId attrs) <> EnemyWithTrait Guest
       otherGuests <-
-        selectList $ NotEnemy (EnemyAt $ locationWithEnemy $ toId attrs) <> EnemyWithTrait Guest
+        select $ NotEnemy (EnemyAt $ locationWithEnemy $ toId attrs) <> EnemyWithTrait Guest
       pushAll
         $ ( guard (notNull edibleGuests)
               *> [ chooseOrRunOne

@@ -79,14 +79,14 @@ instance RunMessage InAzathothsDomain where
       pure a
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       hideousPalace <- getJustLocationByName "Hideous Palace"
-      emptySpace <- selectList $ IncludeEmptySpace $ locationIs Locations.emptySpace
+      emptySpace <- select $ IncludeEmptySpace $ locationIs Locations.emptySpace
       emptySpaceCards <- getEmptySpaceCards
       cosmosLocations <-
-        selectList
+        select
           $ NotLocation
           $ LocationMatchAny
             [LocationWithTitle "Court of the Great Old Ones", LocationWithTitle "Hideous Palace"]
-      enemies <- selectList $ EnemyAt $ NotLocation $ LocationWithTitle "Court of the Great Old Ones"
+      enemies <- select $ EnemyAt $ NotLocation $ LocationWithTitle "Court of the Great Old Ones"
       enemyCards <- traverse (field Field.EnemyCard) enemies
 
       cosmosCards <- traverse (field Field.LocationCard) cosmosLocations

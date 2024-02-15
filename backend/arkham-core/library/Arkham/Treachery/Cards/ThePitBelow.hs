@@ -47,7 +47,7 @@ instance RunMessage ThePitBelow where
       pure t
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       iids <-
-        selectList
+        select
           $ InvestigatorAt
           $ LocationWithTreachery
           $ TreacheryWithId (toId attrs)

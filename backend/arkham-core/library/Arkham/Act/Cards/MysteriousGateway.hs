@@ -26,7 +26,7 @@ instance RunMessage MysteriousGateway where
   runMessage msg a@(MysteriousGateway attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       lead <- getLeadPlayer
-      investigatorIds <- selectList $ InvestigatorAt $ LocationWithTitle "Guest Hall"
+      investigatorIds <- select $ InvestigatorAt $ LocationWithTitle "Guest Hall"
       (holeInTheWallId, placeHoleInTheWall) <- placeSetAsideLocation Locations.holeInTheWall
       pushAll
         [ placeHoleInTheWall

@@ -19,7 +19,7 @@ instance RunMessage DreamlikeHorrors where
   runMessage msg s@(DreamlikeHorrors attrs) = case msg of
     ResolveStory iid ResolveIt story' | story' == toId attrs -> do
       enemies <-
-        selectList $ at_ (locationIs Locations.skaiRiver) <> EnemyWithTrait Creature <> not_ IsSwarm
+        select $ at_ (locationIs Locations.skaiRiver) <> EnemyWithTrait Creature <> not_ IsSwarm
       if null enemies
         then push $ DiscardUntilFirst iid (toSource attrs) Deck.EncounterDeck (basic $ CardWithTrait Creature)
         else do

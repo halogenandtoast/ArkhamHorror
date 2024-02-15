@@ -49,7 +49,7 @@ instance RunMessage CorpseTaker where
               pure $ CorpseTaker $ attrs & tokensL %~ removeAllTokens Doom
             else do
               lead <- getLeadPlayer
-              locations <- selectList $ ClosestPathLocation loc location
+              locations <- select $ ClosestPathLocation loc location
               pushWhen (notNull locations)
                 $ chooseOrRunOne lead
                 $ targetLabels locations (only . EnemyMove (toId attrs))

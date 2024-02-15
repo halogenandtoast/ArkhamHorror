@@ -34,7 +34,7 @@ instance RunMessage PrivateRoom where
           canAfford <- getCanAffordCost iid (attrs.ability 1) [] [] cost
           when canAfford $ do
             player <- getPlayer iid
-            investigators <- selectList $ investigatorAt (toId attrs)
+            investigators <- select $ investigatorAt (toId attrs)
             randolph <- getSetAsideCard Assets.randolphCarterChainedToTheWakingWorld
             push
               $ chooseOne

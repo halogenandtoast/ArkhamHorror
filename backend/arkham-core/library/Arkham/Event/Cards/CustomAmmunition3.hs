@@ -41,7 +41,7 @@ instance RunMessage CustomAmmunition3 where
   runMessage msg e@(CustomAmmunition3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       assets <-
-        selectList
+        select
           $ AssetControlledBy (affectsOthers $ colocatedWith iid)
           <> AssetWithTrait Firearm
           <> NotAsset

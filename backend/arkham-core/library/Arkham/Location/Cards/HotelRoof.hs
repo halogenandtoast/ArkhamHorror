@@ -52,7 +52,7 @@ instance RunMessage HotelRoof where
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       rooms <-
-        selectList
+        select
           $ oneOf [locationIs Locations.room212, locationIs Locations.room225, locationIs Locations.room245]
       player <- getPlayer iid
       push $ chooseOne player $ targetLabels rooms (only . MoveTo . move (toAbilitySource attrs 1) iid)

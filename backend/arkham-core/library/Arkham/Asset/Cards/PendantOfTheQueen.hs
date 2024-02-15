@@ -58,7 +58,7 @@ instance RunMessage PendantOfTheQueen where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       canMove <- iid <=~> InvestigatorCanMove
       locations <-
-        selectList
+        select
           $ RevealedLocation
           <> oneOf
             ( (LocationWithDiscoverableCluesBy (InvestigatorWithId iid) <> LocationWithAnyClues)
@@ -77,7 +77,7 @@ instance RunMessage PendantOfTheQueen where
       discoverChoice <-
         lid <=~> (LocationWithDiscoverableCluesBy (InvestigatorWithId iid) <> LocationWithAnyClues)
       enemies <-
-        selectList $ EnemyAt (LocationWithId lid) <> EnemyWithEvade <> EnemyWithoutModifier CannotBeEvaded
+        select $ EnemyAt (LocationWithId lid) <> EnemyWithEvade <> EnemyWithoutModifier CannotBeEvaded
       player <- getPlayer iid
 
       push

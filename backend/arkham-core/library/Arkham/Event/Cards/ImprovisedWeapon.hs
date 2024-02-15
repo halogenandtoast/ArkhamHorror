@@ -24,7 +24,7 @@ improvisedWeapon = event ImprovisedWeapon Cards.improvisedWeapon
 instance RunMessage ImprovisedWeapon where
   runMessage msg e@(ImprovisedWeapon attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ zone | eid == toId attrs -> do
-      enemyIds <- selectList $ CanFightEnemy (toSource attrs)
+      enemyIds <- select $ CanFightEnemy (toSource attrs)
       player <- getPlayer iid
       pushAll
         $ [ skillTestModifier attrs (InvestigatorTarget iid) (DamageDealt 1)

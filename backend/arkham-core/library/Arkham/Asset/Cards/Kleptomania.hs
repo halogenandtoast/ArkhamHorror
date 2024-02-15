@@ -39,9 +39,9 @@ instance RunMessage Kleptomania where
       push $ putCardIntoPlay iid attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      assets <- selectList $ AssetOwnedBy (notInvestigator iid <> colocatedWith iid) <> #item
+      assets <- select $ AssetOwnedBy (notInvestigator iid <> colocatedWith iid) <> #item
       investigators <-
-        selectList $ notInvestigator iid <> colocatedWith iid <> InvestigatorWithResources (atLeast 2)
+        select $ notInvestigator iid <> colocatedWith iid <> InvestigatorWithResources (atLeast 2)
       player <- getPlayer iid
       push
         $ chooseOne player

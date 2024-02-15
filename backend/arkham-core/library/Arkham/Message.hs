@@ -451,7 +451,7 @@ data Message
   | StandaloneSetup
   | ChoosePlayer InvestigatorId ChoosePlayerChoice
   | ChoosePlayerOrder [InvestigatorId] [InvestigatorId]
-  | ChooseRandomLocation Target (Set LocationId)
+  | ChooseRandomLocation Target [LocationId]
   | ChosenRandomLocation Target LocationId
   | ChooseChaosTokenGroups Source InvestigatorId ChaosBagStep
   | CommitCard InvestigatorId Card
@@ -467,6 +467,7 @@ data Message
   | CreatedCost ActiveCostId
   | CancelCost ActiveCostId
   | SetCost ActiveCostId Cost
+  | PayAdditionalCost InvestigatorId BatchId Cost
   | PayCosts ActiveCostId
   | PayCost ActiveCostId InvestigatorId Bool Cost
   | PayCostFinished ActiveCostId

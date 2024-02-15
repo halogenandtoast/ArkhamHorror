@@ -25,7 +25,7 @@ instance RunMessage ArrowsFromTheTrees where
       allyCount <- countAllies iid
       investigatorAssetPairs <- do
         others <-
-          selectList
+          select
             $ NotInvestigator (InvestigatorWithId iid)
             <> InvestigatorAt (LocationWithTrait Ancient)
         forToSnd others countAllies

@@ -60,7 +60,7 @@ instance RunMessage SwiftByakhee where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       enemyLocation <- field EnemyLocation (toId attrs)
       for_ enemyLocation $ \loc -> do
-        prey <- selectList (enemyPrey attrs)
+        prey <- select (enemyPrey attrs)
         preyWithLocationsAndDistances <- fmap catMaybes $ for prey $ \preyId -> do
           mlid <- selectOne $ locationWithInvestigator preyId
           case mlid of

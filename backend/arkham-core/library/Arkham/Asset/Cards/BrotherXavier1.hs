@@ -35,7 +35,7 @@ instance HasAbilities BrotherXavier1 where
 instance RunMessage BrotherXavier1 where
   runMessage msg a@(BrotherXavier1 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <- selectList $ EnemyAt $ locationWithInvestigator iid
+      enemies <- select $ EnemyAt $ locationWithInvestigator iid
       player <- getPlayer iid
       push
         $ chooseOrRunOne

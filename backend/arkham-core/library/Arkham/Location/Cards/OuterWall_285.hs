@@ -41,7 +41,7 @@ instance HasAbilities OuterWall_285 where
 instance RunMessage OuterWall_285 where
   runMessage msg l@(OuterWall_285 attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      iids <- selectList $ investigatorAt $ toId attrs
+      iids <- select $ investigatorAt $ toId attrs
       pushAll
         [InvestigatorAssignDamage iid source DamageAny 1 0 | iid <- iids]
       pure l

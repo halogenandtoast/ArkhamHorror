@@ -182,7 +182,7 @@ instance RunMessage TheWagesOfSin where
       case tokenFace of
         Skull | isHardExpert attrs -> push $ DrawAnotherChaosToken iid
         Tablet -> do
-          heretics <- selectList $ EnemyWithTitle "Heretic"
+          heretics <- select $ EnemyWithTitle "Heretic"
           for_ heretics $ \heretic -> do
             push $ roundModifiers (ChaosTokenEffectSource Tablet) heretic [EnemyFight 1, EnemyEvade 1]
         ElderThing | isHardExpert attrs -> do
@@ -195,7 +195,7 @@ instance RunMessage TheWagesOfSin where
       case chaosTokenFace token of
         Tablet -> do
           abilities <-
-            selectList
+            select
               $ AbilityOnStory (StoryWithTitle "Unfinished Business" <> StoryWithPlacement (InThreatArea iid))
               <> AbilityIsForcedAbility
           unless (null abilities) $ do

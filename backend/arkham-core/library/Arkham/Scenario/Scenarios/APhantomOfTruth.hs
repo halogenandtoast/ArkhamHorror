@@ -90,7 +90,7 @@ gatherTheMidnightMasks conviction doubt = do
 cultistEffect :: (HasGame m, HasQueue Message m) => m ()
 cultistEffect = do
   lead <- getLeadPlayer
-  byakhee <- selectList $ EnemyWithTrait Byakhee <> UnengagedEnemy
+  byakhee <- select $ EnemyWithTrait Byakhee <> UnengagedEnemy
   byakheePairs <- forToSnd byakhee investigatorsNearestToEnemy
   let
     minDistance =

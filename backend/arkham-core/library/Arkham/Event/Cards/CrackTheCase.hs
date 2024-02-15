@@ -25,7 +25,7 @@ instance RunMessage CrackTheCase where
   runMessage msg e@(CrackTheCase attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- getJustLocation iid
-      iids <- selectList $ affectsOthers $ investigatorAt lid <> can.gain.resources
+      iids <- select $ affectsOthers $ investigatorAt lid <> can.gain.resources
       shroud <- field LocationShroud lid
       player <- getPlayer iid
       pushAll

@@ -40,7 +40,7 @@ instance RunMessage TheChamberOfStillRemains where
       lead <- getLeadPlayer
       chamberOfTime <- selectJust $ locationIs Locations.chamberOfTime
       relicOfAges <- selectJust $ assetIs Assets.relicOfAgesRepossessThePast
-      investigators <- selectList $ investigatorAt chamberOfTime
+      investigators <- select $ investigatorAt chamberOfTime
       yig <- genCard Enemies.yig
       createYig <- createEnemyAt_ yig chamberOfTime Nothing
       pushAll

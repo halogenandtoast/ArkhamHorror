@@ -25,7 +25,7 @@ getXpWithBonus bonus = do
   victoryPileVictory <- toVictory =<< scenarioField ScenarioVictoryDisplay
   locationVictory <-
     toVictory
-      =<< selectList (RevealedLocation <> LocationWithoutClues)
+      =<< select (RevealedLocation <> LocationWithoutClues)
   let initialAmount = bonus + getSum (victoryPileVictory <> locationVictory)
   investigatorIds <- allInvestigatorIds
   for investigatorIds $ \iid -> do

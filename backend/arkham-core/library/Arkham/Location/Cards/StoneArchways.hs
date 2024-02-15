@@ -37,7 +37,7 @@ stoneArchways =
 instance HasModifiersFor StoneArchways where
   getModifiersFor (LocationTarget lid) (StoneArchways attrs) = do
     isUnrevealedAdjacent <-
-      member lid
+      elem lid
         <$> select
           ( UnrevealedLocation
               <> LocationMatchAny

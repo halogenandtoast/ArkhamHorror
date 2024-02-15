@@ -20,7 +20,7 @@ instance HasAbilities PiperOfAzathoth where
 instance RunMessage PiperOfAzathoth where
   runMessage msg e@(PiperOfAzathoth attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      investigators <- selectList $ at_ (locationWithEnemy e) <> not_ (investigatorEngagedWith e)
+      investigators <- select $ at_ (locationWithEnemy e) <> not_ (investigatorEngagedWith e)
       pushAll $ map (toMessage . enemyAttack attrs (toAbilitySource attrs 1)) investigators
       pure e
     _ -> PiperOfAzathoth <$> runMessage msg attrs

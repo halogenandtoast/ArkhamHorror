@@ -63,7 +63,7 @@ instance RunMessage DexterDrake where
   runMessage msg i@(DexterDrake attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (toCardPaid -> card) -> do
       cards <-
-        selectList
+        select
           $ ExtendedCardWithOneOf
             [ PlayableCardWithCostReduction
                 1

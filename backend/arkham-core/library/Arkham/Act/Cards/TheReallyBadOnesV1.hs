@@ -30,7 +30,7 @@ instance HasModifiersFor TheReallyBadOnesV1 where
     targets <- select UnrevealedLocation
     pure
       [ toModifier attrs (TraitRestrictedModifier ArkhamAsylum Blank)
-      | lid `member` targets
+      | lid `elem` targets
       ]
   getModifiersFor _ _ = pure []
 
@@ -38,7 +38,7 @@ instance RunMessage TheReallyBadOnesV1 where
   runMessage msg a@(TheReallyBadOnesV1 attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       lead <- getLeadPlayer
-      investigators <- selectList $ InvestigatorAt $ locationIs Locations.patientConfinementDanielsCell
+      investigators <- select $ InvestigatorAt $ locationIs Locations.patientConfinementDanielsCell
       danielChesterfield <- genCard Assets.danielChesterfield
       enemiesUnderAct <- filter ((== EnemyType) . toCardType) <$> scenarioField ScenarioCardsUnderActDeck
       pushAll

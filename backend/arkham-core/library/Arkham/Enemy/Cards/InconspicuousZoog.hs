@@ -48,7 +48,7 @@ instance RunMessage InconspicuousZoog where
         _ -> False
       case enemyPlacement attrs of
         AsSwarm host _ -> do
-          connectingLocations <- selectList ConnectedLocation
+          connectingLocations <- select ConnectedLocation
           player <- getPlayer iid
           pushIfAny connectingLocations
             $ chooseOrRunOne

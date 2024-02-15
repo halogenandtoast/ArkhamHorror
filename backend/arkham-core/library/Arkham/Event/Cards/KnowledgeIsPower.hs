@@ -40,7 +40,7 @@ instance RunMessage KnowledgeIsPower where
   runMessage msg e@(KnowledgeIsPower attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       assets <-
-        selectList
+        select
           $ assetControlledBy iid
           <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Tome]
           <> AssetWithPerformableAbility
@@ -91,7 +91,7 @@ instance RunMessage KnowledgeIsPower where
             (ab {abilityDoesNotProvokeAttacksOfOpportunity = True})
             [IgnoreAllCosts]
       abilities <-
-        selectListMap adjustAbility
+        selectMap adjustAbility
           $ AssetAbility (AssetWithId aid)
           <> AbilityOneOf [AbilityIsActionAbility, AbilityIsFastAbility]
       abilities' <-

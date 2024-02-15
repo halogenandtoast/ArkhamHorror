@@ -7,8 +7,8 @@ where
 import Arkham.Prelude
 
 import Arkham.Card
+import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
@@ -58,7 +58,7 @@ instance RunMessage DreamGatePointlessReality where
       push $ RemoveLocation (toId attrs)
       here <- fieldMap InvestigatorLocation (== Just (toId attrs)) iid
       when here do
-        revealedLocations <- selectList (RevealedLocation <> NotLocation (LocationWithId $ toId attrs))
+        revealedLocations <- getCanMoveToMatchingLocations iid (attrs.ability 1) RevealedLocation
         when (notNull revealedLocations) $ do
           player <- getPlayer iid
           push

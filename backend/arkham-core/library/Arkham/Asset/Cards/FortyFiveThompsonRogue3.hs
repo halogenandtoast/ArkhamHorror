@@ -36,7 +36,7 @@ instance RunMessage FortyFiveThompsonRogue3 where
         Just (EnemyTarget eid) -> do
           fightValue <- fieldJust EnemyFight eid
           when (n >= fightValue) $ do
-            enemies <- selectList $ enemyAtLocationWith iid <> NotEnemy (EnemyWithId eid)
+            enemies <- select $ enemyAtLocationWith iid <> NotEnemy (EnemyWithId eid)
             canDealDamage <- withoutModifier iid CannotDealDamage
             player <- getPlayer iid
             push

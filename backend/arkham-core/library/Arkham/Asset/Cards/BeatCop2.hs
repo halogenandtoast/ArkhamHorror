@@ -32,7 +32,7 @@ instance HasAbilities BeatCop2 where
 instance RunMessage BeatCop2 where
   runMessage msg a@(BeatCop2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <- selectList $ enemyAtLocationWith iid
+      enemies <- select $ enemyAtLocationWith iid
       player <- getPlayer iid
       push
         $ chooseOrRunOne player

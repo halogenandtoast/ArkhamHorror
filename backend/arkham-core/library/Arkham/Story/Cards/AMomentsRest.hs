@@ -23,7 +23,7 @@ instance RunMessage AMomentsRest where
   runMessage msg s@(AMomentsRest attrs) = case msg of
     ResolveStory iid _ story' | story' == toId attrs -> do
       enemies <-
-        selectList
+        select
           $ EnemyOneOf [NotEnemy ExhaustedEnemy, EnemyIsEngagedWith Anyone]
       ruinsOfCarcosa <- selectJust $ locationIs Locations.ruinsOfCarcosaAMomentsRest
       mHealHorror <- getHealHorrorMessage (toSource attrs) 5 iid

@@ -26,7 +26,7 @@ theCloverClub = agenda (1, A) TheCloverClub Cards.theCloverClub (Static 4)
 instance HasModifiersFor TheCloverClub where
   getModifiersFor (EnemyTarget eid) (TheCloverClub attrs) | onSide A attrs =
     do
-      isCriminal <- member eid <$> select (EnemyWithTrait Criminal)
+      isCriminal <- elem eid <$> select (EnemyWithTrait Criminal)
       pure $ toModifiers attrs [AddKeyword Aloof | isCriminal]
   getModifiersFor _ _ = pure []
 
@@ -51,7 +51,7 @@ instance RunMessage TheCloverClub where
       lead <- getLeadPlayer
       completedExtracurricularActivity <-
         elem "02041" <$> getCompletedScenarios
-      enemyIds <- selectList $ EnemyWithTrait Criminal
+      enemyIds <- select $ EnemyWithTrait Criminal
 
       let
         continueMessages =

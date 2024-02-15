@@ -22,7 +22,7 @@ empireOfTheUndead =
 instance RunMessage EmpireOfTheUndead where
   runMessage msg a@(EmpireOfTheUndead attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      investigatorIds <- selectList UneliminatedInvestigator
+      investigatorIds <- select UneliminatedInvestigator
       a
         <$ pushAll
           ( [InvestigatorDefeated (toSource attrs) iid | iid <- investigatorIds]

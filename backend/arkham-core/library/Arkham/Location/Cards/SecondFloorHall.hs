@@ -8,6 +8,7 @@ import Arkham.Prelude
 
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
+import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
@@ -31,7 +32,7 @@ instance HasAbilities SecondFloorHall where
 instance RunMessage SecondFloorHall where
   runMessage msg l@(SecondFloorHall attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      accessibleLocationIds <- accessibleLocations iid
+      accessibleLocationIds <- getAccessibleLocations iid (attrs.ability 1)
       player <- getPlayer iid
       push
         $ chooseOne

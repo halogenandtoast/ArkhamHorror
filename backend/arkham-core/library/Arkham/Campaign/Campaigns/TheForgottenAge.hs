@@ -819,7 +819,7 @@ instance RunMessage TheForgottenAge where
       pure c
     CampaignStep (InterludeStepPart 5 _ 3) -> do
       theBraziersAreLit <- getHasRecord TheBraziersAreLit
-      hasMap <- selectList $ InvestigatorWithSupply Map
+      hasMap <- select $ InvestigatorWithSupply Map
       when (theBraziersAreLit && notNull hasMap) $ do
         players <- allPlayers
         pushAll $ story players readingSigns : map (\iid -> GainXP iid CampaignSource 2) hasMap

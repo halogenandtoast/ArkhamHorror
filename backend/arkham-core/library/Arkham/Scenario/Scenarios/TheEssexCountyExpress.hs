@@ -81,7 +81,7 @@ standaloneChaosTokens =
 
 readInvestigatorDefeat :: HasGame m => m [Message]
 readInvestigatorDefeat = do
-  defeatedInvestigatorIds <- selectList DefeatedInvestigator
+  defeatedInvestigatorIds <- select DefeatedInvestigator
   mNecronomiconOwner <- getOwner Assets.theNecronomiconOlausWormiusTranslation
   mDrHenryArmitageOwner <- getOwner Assets.drHenryArmitage
   mProfessorWarrenRiceOwner <- getOwner Assets.professorWarrenRice
@@ -217,7 +217,7 @@ instance RunMessage TheEssexCountyExpress where
             )
       ResolveChaosToken _ Tablet iid | isEasyStandard attrs -> do
         closestCultists <-
-          selectList
+          select
             $ NearestEnemyTo iid
             $ EnemyWithTrait
               Trait.Cultist
@@ -231,7 +231,7 @@ instance RunMessage TheEssexCountyExpress where
                 player
                 [targetLabel x [PlaceTokens (toSource attrs) (EnemyTarget x) Doom 1] | x <- xs]
       ResolveChaosToken _ Tablet _ | isHardExpert attrs -> do
-        cultists <- selectList $ EnemyWithTrait Trait.Cultist
+        cultists <- select $ EnemyWithTrait Trait.Cultist
         pushAll [PlaceTokens (toSource attrs) (EnemyTarget eid) Doom 1 | eid <- cultists]
         pure s
       FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
@@ -248,7 +248,7 @@ instance RunMessage TheEssexCountyExpress where
       ScenarioResolution (Resolution 1) -> do
         msgs <- readInvestigatorDefeat
         players <- allPlayers
-        defeatedInvestigatorIds <- selectList DefeatedInvestigator
+        defeatedInvestigatorIds <- select DefeatedInvestigator
         xp <- getXp
         pushAll
           $ msgs
@@ -264,7 +264,7 @@ instance RunMessage TheEssexCountyExpress where
       ScenarioResolution (Resolution 2) -> do
         msgs <- readInvestigatorDefeat
         players <- allPlayers
-        defeatedInvestigatorIds <- selectList DefeatedInvestigator
+        defeatedInvestigatorIds <- select DefeatedInvestigator
         xp <- getXp
         pushAll
           $ msgs

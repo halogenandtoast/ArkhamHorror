@@ -29,7 +29,7 @@ instance RunMessage MaskedCarnevaleGoer_18 where
     Flip _ source (isTarget attrs -> True) -> do
       location <- fieldJust AssetLocation (toId attrs)
       let elisabettaMagro = lookupCard Enemies.elisabettaMagro (toCardId attrs)
-      investigators <- selectList $ investigatorAt location
+      investigators <- select $ investigatorAt location
       lead <- getLeadPlayer
       (enemyId, createElisabettaMagro) <- createEnemyAt elisabettaMagro location Nothing
       pushAll [createElisabettaMagro, Flipped (toSource attrs) elisabettaMagro]

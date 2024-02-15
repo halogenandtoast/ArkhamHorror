@@ -55,7 +55,7 @@ instance RunMessage TetsuoMori where
   runMessage msg a@(TetsuoMori attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       iids <-
-        selectList
+        select
           $ affectsOthers
           $ colocatedWith iid
           <> AnyInvestigator

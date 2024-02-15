@@ -48,7 +48,7 @@ instance RunMessage Lantern2 where
           case assetPlacement attrs of
             OutOfPlay RemovedZone -> 2
             _ -> 1
-      enemies <- selectList $ enemyAtLocationWith iid
+      enemies <- select $ enemyAtLocationWith iid
       player <- getPlayer iid
       push
         $ chooseOne player [targetLabel enemy [EnemyDamage enemy $ nonAttack source n] | enemy <- enemies]

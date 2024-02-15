@@ -29,7 +29,7 @@ instance RunMessage TerrorInTheNight where
     FailedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n ->
       do
         aid <- selectJust AnyAgenda
-        other <- selectList $ treacheryIs Cards.terrorInTheNight
+        other <- select $ treacheryIs Cards.terrorInTheNight
         iids <- getInvestigatorIds
         attached <-
           filterM

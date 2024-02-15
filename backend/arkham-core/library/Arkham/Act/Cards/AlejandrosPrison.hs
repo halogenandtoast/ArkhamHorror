@@ -42,7 +42,7 @@ instance RunMessage AlejandrosPrison where
       lead <- getLeadPlayer
       deckCount <- getActDecksInPlayCount
       alejandroVela <- selectJust $ assetIs Assets.alejandroVela
-      iids <- selectList $ NearestToLocation $ LocationWithAsset $ assetIs Assets.alejandroVela
+      iids <- select $ NearestToLocation $ LocationWithAsset $ assetIs Assets.alejandroVela
       let
         takeControlMessage =
           chooseOrRunOne lead [targetLabel iid [TakeControlOfAsset iid alejandroVela] | iid <- iids]

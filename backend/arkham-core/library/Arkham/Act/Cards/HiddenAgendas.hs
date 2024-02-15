@@ -37,8 +37,8 @@ instance RunMessage HiddenAgendas where
       masterBedroom <- selectJust $ locationIs Locations.masterBedroom
       trophyRoom <- selectJust $ locationIs Locations.trophyRoom
 
-      enemyIds <- selectList $ enemyAt entryHall
-      investigatorIds <- selectList $ investigatorAt entryHall
+      enemyIds <- select $ enemyAt entryHall
+      investigatorIds <- select $ investigatorAt entryHall
 
       entryHallSpectral <- getSetAsideCard Locations.entryHallSpectral
       victorianHallsSpectral <- getSetAsideCard Locations.victorianHallsSpectral
@@ -81,7 +81,7 @@ instance RunMessage HiddenAgendas where
 
       pure a
     NextAdvanceActStep aid 0 | aid == toId a -> do
-      locations <- selectList $ LocationWithInvestigator Anyone
+      locations <- select $ LocationWithInvestigator Anyone
       pushAll $ map (RevealLocation Nothing) locations
       pure a
     NextAdvanceActStep aid n | aid == toId a -> do

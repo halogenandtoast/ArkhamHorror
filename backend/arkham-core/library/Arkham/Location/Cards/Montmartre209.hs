@@ -56,7 +56,7 @@ instance RunMessage Montmartre209Effect where
               UnpaidCost
               [mkWhen (Window.DuringTurn iid)]
           )
-          =<< selectList (TopOfDeckOf UneliminatedInvestigator)
+          =<< select (TopOfDeckOf UneliminatedInvestigator)
       player <- getPlayer iid
       pushAll
         [ chooseOne player

@@ -37,7 +37,7 @@ instance HasAbilities RiftSeeker where
 instance RunMessage RiftSeeker where
   runMessage msg e@(RiftSeeker attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      agendas <- selectListMap AgendaTarget AnyAgenda
+      agendas <- selectMap AgendaTarget AnyAgenda
       player <- getPlayer iid
       push
         $ chooseOne

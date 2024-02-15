@@ -47,7 +47,7 @@ instance RunMessage PhysicsClassroom where
       PhysicsClassroom <$> runMessage msg (attrs & labelL .~ "physicsClassroom")
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       locations <-
-        selectList
+        select
           $ locationWithDiscoverableCluesBy iid
           <> RevealedLocation
           <> LocationWithAnyClues

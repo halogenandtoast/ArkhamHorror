@@ -75,8 +75,8 @@ instance RunMessage Timelock where
       do
         lid <- getJustLocation iid
         card <- field LocationCard lid
-        iids <- selectList $ colocatedWith iid
-        enemyIds <- selectList $ UnengagedEnemy <> enemyAt lid
+        iids <- select $ colocatedWith iid
+        enemyIds <- select $ UnengagedEnemy <> enemyAt lid
         aPocketInTime <- selectJust $ locationIs Locations.aPocketInTime
         relic <- selectJust $ AssetWithTitle "Relic of Ages"
         pushAll

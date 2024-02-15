@@ -32,7 +32,7 @@ instance RunMessage UnboundBeast where
   runMessage msg e@(UnboundBeast attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       summonedHounds <-
-        selectList (assetIs Assets.summonedHound1) >>= traverse \hound -> do
+        select (assetIs Assets.summonedHound1) >>= traverse \hound -> do
           controller <- field AssetController hound
           card <- field AssetCard hound
           pure (hound, card, controller)

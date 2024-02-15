@@ -56,8 +56,7 @@ instance RunMessage UrsulaDowns where
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       pure $ UrsulaDowns $ attrs `with` Metadata True
     SkillTestEnds _ _ | moveAfterTest metadata -> do
-      lid <- getJustLocation (toId attrs)
-      targets <- selectList $ accessibleFrom lid
+      targets <- getAccessibleLocations (toId attrs) attrs
       player <- getPlayer (toId attrs)
       pushWhen (notNull targets)
         $ chooseOne player

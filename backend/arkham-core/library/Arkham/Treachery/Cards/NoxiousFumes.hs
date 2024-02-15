@@ -27,7 +27,7 @@ noxiousFumes = treachery NoxiousFumes Cards.noxiousFumes
 instance RunMessage NoxiousFumes where
   runMessage msg t@(NoxiousFumes attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      investigators <- selectList $ colocatedWith iid
+      investigators <- select $ colocatedWith iid
       investigatorPlayers <- traverse (traverseToSnd getPlayer) investigators
 
       pushAll
@@ -41,7 +41,7 @@ instance RunMessage NoxiousFumes where
 
       pure t
     PassedSkillTest iid _ (isSource attrs -> True) Initiator {} (SkillSkillTest SkillAgility) _ -> do
-      accessibleLocationIds <- accessibleLocations iid
+      accessibleLocationIds <- getAccessibleLocations iid attrs
       player <- getPlayer iid
       push
         $ chooseOne

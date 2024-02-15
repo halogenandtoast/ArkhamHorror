@@ -23,17 +23,17 @@ checkWindow = checkWindows . pure
 checkWindows :: HasGame m => [Window] -> m Message
 checkWindows windows' = do
   mBatchId <- getCurrentBatchId
-  iids <- selectList UneliminatedInvestigator
+  iids <- select UneliminatedInvestigator
   let windows'' = map (\w -> w {windowBatchId = windowBatchId w <|> mBatchId}) windows'
   if null iids
     then do
-      iids' <- selectList Anyone
+      iids' <- select Anyone
       pure $ CheckWindow iids' windows''
     else pure $ CheckWindow iids windows''
 
 windows :: HasGame m => [WindowType] -> m [Message]
 windows windows' = do
-  iids <- selectList UneliminatedInvestigator
+  iids <- select UneliminatedInvestigator
   pure $ do
     timing <- [Timing.When, Timing.AtIf, Timing.After]
     [CheckWindow iids $ map (mkWindow timing) windows']
@@ -41,7 +41,7 @@ windows windows' = do
 wouldWindows :: (MonadRandom m, HasGame m) => WindowType -> m (BatchId, [Message])
 wouldWindows window = do
   batchId <- getRandom
-  iids <- selectList UneliminatedInvestigator
+  iids <- select UneliminatedInvestigator
   pure
     ( batchId
     , [ CheckWindow iids [Window timing window (Just batchId)]
@@ -51,7 +51,7 @@ wouldWindows window = do
 
 frame :: HasGame m => WindowType -> m (Message, Message, Message)
 frame window = do
-  iids <- selectList UneliminatedInvestigator
+  iids <- select UneliminatedInvestigator
   let (whenWindow, atIfWindow, afterWindow) = timings window
   pure
     (CheckWindow iids [whenWindow], CheckWindow iids [atIfWindow], CheckWindow iids [afterWindow])
@@ -119,7 +119,7 @@ wouldDoEach n msg outerWouldWindow wouldWindow outerWindow window = do
 
 splitWithWindows :: HasGame m => Message -> [WindowType] -> m [Message]
 splitWithWindows msg windows' = do
-  iids <- selectList UneliminatedInvestigator
+  iids <- select UneliminatedInvestigator
   pure
     $ [CheckWindow iids $ map (mkWindow Timing.When) windows']
     <> [msg]

@@ -26,7 +26,7 @@ callingInFavors = event CallingInFavors Cards.callingInFavors
 instance RunMessage CallingInFavors where
   runMessage msg e@(CallingInFavors attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      allies <- selectList $ #ally <> assetControlledBy iid
+      allies <- select $ #ally <> assetControlledBy iid
       targetsWithCosts <- for allies \ally -> do
         cardDef <- field AssetCardDef ally
         pure (AssetTarget ally, maybe 0 toPrintedCost $ cdCost cardDef)

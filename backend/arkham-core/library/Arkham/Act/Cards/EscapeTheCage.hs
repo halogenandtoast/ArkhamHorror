@@ -41,9 +41,9 @@ instance RunMessage EscapeTheCage where
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       entryHall <- selectJust $ LocationWithTitle "Entry Hall"
       entryHallSilverTwilight <-
-        selectList $ enemyAt entryHall <> EnemyWithTrait SilverTwilight
+        select $ enemyAt entryHall <> EnemyWithTrait SilverTwilight
       enemiesToMove <-
-        selectList
+        select
           $ ReadyEnemy
           <> EnemyWithTrait SilverTwilight
           <> NotEnemy

@@ -27,7 +27,7 @@ instance RunMessage UltimateChaos where
       push $ revelationSkillTest iid attrs #willpower 4
       pure t
     AfterRevelation iid tid | tid == toId attrs -> do
-      instances <- selectList $ treacheryIs Cards.ultimateChaos
+      instances <- select $ treacheryIs Cards.ultimateChaos
       when (length instances >= 3) $ do
         azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
         investigators <- getInvestigators

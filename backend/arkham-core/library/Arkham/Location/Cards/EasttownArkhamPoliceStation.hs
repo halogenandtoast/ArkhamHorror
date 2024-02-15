@@ -35,10 +35,10 @@ instance RunMessage EasttownArkhamPoliceStation where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       ammoAssets <-
         map (Ammo,)
-          <$> selectList (AssetControlledBy You <> AssetWithUseType Ammo)
+          <$> select (AssetControlledBy You <> AssetWithUseType Ammo)
       supplyAssets <-
         map (Supply,)
-          <$> selectList (AssetControlledBy You <> AssetWithUseType Supply)
+          <$> select (AssetControlledBy You <> AssetWithUseType Supply)
       player <- getPlayer iid
       push
         $ chooseOne

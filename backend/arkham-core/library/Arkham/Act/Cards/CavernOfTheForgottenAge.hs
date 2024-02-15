@@ -53,8 +53,8 @@ instance RunMessage CavernOfTheForgottenAge where
       withChalk <- getHasSupply iid Chalk
       unless withChalk $ do
         lid <- getJustLocation iid
-        investigators <- selectList $ investigatorAt lid
-        enemies <- selectList $ enemyAt lid
+        investigators <- select $ investigatorAt lid
+        enemies <- select $ enemyAt lid
         singleSided <-
           lid
             <=~> ( SingleSidedLocation
@@ -71,11 +71,11 @@ instance RunMessage CavernOfTheForgottenAge where
           if isConnectedToMouthOfKnYan
             then pure [mouthOfKnYan]
             else
-              selectList
+              select
                 $ NearestLocationToLocation mouthOfKnYan
                 $ ConnectedTo
                 $ LocationWithId lid
-        locations <- selectList Anywhere
+        locations <- select Anywhere
         pushAll
           $ [PlaceClues (toSource attrs) (toTarget l) 1 | l <- locations]
           <> ( guard singleSided

@@ -28,7 +28,7 @@ instance RunMessage ChaosInTheCloverClub where
   runMessage msg a@(ChaosInTheCloverClub attrs@AgendaAttrs {..}) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       criminals <-
-        selectList $ EnemyWithTrait Criminal <> EnemyAt (LocationWithEnemy $ EnemyWithTrait Abomination)
+        select $ EnemyWithTrait Criminal <> EnemyAt (LocationWithEnemy $ EnemyWithTrait Abomination)
       pushAll $ map (toDiscard attrs) criminals
       pure a
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do

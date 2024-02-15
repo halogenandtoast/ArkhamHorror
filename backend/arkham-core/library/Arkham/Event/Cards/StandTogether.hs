@@ -20,7 +20,7 @@ standTogether = event StandTogether Cards.standTogether
 instance RunMessage StandTogether where
   runMessage msg e@(StandTogether attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      investigators <- selectList $ notInvestigator iid <> colocatedWith iid
+      investigators <- select $ notInvestigator iid <> colocatedWith iid
       player <- getPlayer iid
       choices <- for investigators $ \iid' -> do
         gainResources <- gainResourcesIfCan iid' (toSource attrs) 2

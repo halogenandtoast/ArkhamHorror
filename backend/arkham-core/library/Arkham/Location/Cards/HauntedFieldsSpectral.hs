@@ -37,7 +37,7 @@ instance HasAbilities HauntedFieldsSpectral where
 instance RunMessage HauntedFieldsSpectral where
   runMessage msg l@(HauntedFieldsSpectral attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      enemies <- selectList $ NearestEnemy $ EnemyWithTrait Spectral
+      enemies <- select $ NearestEnemy $ EnemyWithTrait Spectral
       unless (null enemies) $ do
         player <- getPlayer iid
         push

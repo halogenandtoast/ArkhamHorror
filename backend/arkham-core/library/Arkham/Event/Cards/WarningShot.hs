@@ -21,14 +21,14 @@ instance RunMessage WarningShot where
   runMessage msg e@(WarningShot attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       eids <-
-        selectList
+        select
           $ NonEliteEnemy
           <> EnemyAt
             (locationWithInvestigator iid)
 
       lids <-
         nub <$> concatForM eids \eid' -> do
-          selectList
+          select
             $ ConnectedLocation
             <> LocationCanBeEnteredBy eid'
       player <- getPlayer iid

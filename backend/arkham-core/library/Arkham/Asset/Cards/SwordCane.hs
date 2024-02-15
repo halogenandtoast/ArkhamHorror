@@ -36,8 +36,8 @@ instance RunMessage SwordCane where
     UseCardAbility iid (isSource attrs -> True) 1 windows' payments -> do
       runMessage (UseCardAbility iid (toSource attrs) 2 windows' payments) a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      fightableEnemies <- selectList $ CanFightEnemy (toSource attrs)
-      evadeableEnemies <- selectList $ CanEvadeEnemy (toSource attrs)
+      fightableEnemies <- select $ CanFightEnemy (toSource attrs)
+      evadeableEnemies <- select $ CanEvadeEnemy (toSource attrs)
       player <- getPlayer iid
       let doEvade = chooseOne player [SkillLabel sk [chooseEvadeEnemy iid attrs sk] | sk <- [#willpower, #agility]]
       let doFight = chooseOne player [SkillLabel sk [chooseFightEnemy iid attrs sk] | sk <- [#willpower, #combat]]

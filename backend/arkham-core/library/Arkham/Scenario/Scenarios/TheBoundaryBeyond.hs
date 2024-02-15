@@ -305,7 +305,7 @@ instance RunMessage TheBoundaryBeyond where
       pure s
     ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
       targets <-
-        selectListMap LocationTarget
+        selectMap LocationTarget
           $ NearestLocationToYou
           $ LocationWithTrait
             Trait.Ancient
@@ -320,7 +320,7 @@ instance RunMessage TheBoundaryBeyond where
       player <- getPlayer iid
       case chaosTokenFace token of
         Cultist -> do
-          targets <- selectListMap EnemyTarget $ EnemyWithTrait Trait.Cultist
+          targets <- selectMap EnemyTarget $ EnemyWithTrait Trait.Cultist
           when (notNull targets)
             $ if isEasyStandard attrs
               then
@@ -331,7 +331,7 @@ instance RunMessage TheBoundaryBeyond where
               else pushAll $ map (\t -> PlaceTokens (toSource attrs) t Doom 1) targets
         Tablet -> do
           serpents <-
-            selectList
+            select
               $ EnemyWithTrait Trait.Serpent
               <> EnemyAt
                 (locationWithInvestigator iid)
@@ -349,7 +349,7 @@ instance RunMessage TheBoundaryBeyond where
                   [EnemyAttack $ enemyAttack serpent attrs iid | serpent <- serpents]
         ElderThing | isEasyStandard attrs -> do
           targets <-
-            selectListMap LocationTarget
+            selectMap LocationTarget
               $ NearestLocationToYou
               $ LocationWithTrait Trait.Ancient
           unless (null targets)
@@ -376,7 +376,7 @@ instance RunMessage TheBoundaryBeyond where
         Nothing -> getRecordCount TheHarbingerIsStillAlive
       step <- getCurrentActStep
       locations <-
-        selectListMap LocationTarget
+        selectMap LocationTarget
           $ LocationWithTrait Trait.Tenochtitlan
           <> LocationWithoutClues
 

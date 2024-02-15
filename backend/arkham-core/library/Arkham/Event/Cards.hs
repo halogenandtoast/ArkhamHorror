@@ -421,7 +421,7 @@ elusive =
         Just
           $ Criteria.AnyCriterion
             [ Criteria.exists EnemyEngagedWithYou
-            , Criteria.exists $ RevealedLocation <> LocationWithoutEnemies <> NotYourLocation
+            , Criteria.CanMoveTo $ RevealedLocation <> LocationWithoutEnemies
             ]
     , cdAlternateCardCodes = ["01550"]
     }
@@ -627,8 +627,11 @@ shortcut =
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria =
         Just
-          $ Criteria.exists AccessibleLocation
-          <> Criteria.exists (affectsOthers $ can.move <> InvestigatorAt YourLocation)
+          $ Criteria.exists
+          $ affectsOthers
+          $ can.move
+          <> InvestigatorAt YourLocation
+          <> InvestigatorCanMoveTo ThisCard AccessibleLocation
     }
 
 seekingAnswers :: CardDef
@@ -2298,7 +2301,11 @@ heroicRescue2 =
         Just
           $ EnemyWouldAttack
             #when
-            (affectsOthers $ NotYou <> oneOf [InvestigatorAt YourLocation, InvestigatorAt ConnectedLocation])
+            ( affectsOthers
+                $ NotYou
+                <> oneOf
+                  [InvestigatorAt YourLocation, InvestigatorAt (CanMoveToLocation You ThisCard ConnectedLocation)]
+            )
             AnyEnemyAttack
             NonEliteEnemy
     , cdLevel = 2

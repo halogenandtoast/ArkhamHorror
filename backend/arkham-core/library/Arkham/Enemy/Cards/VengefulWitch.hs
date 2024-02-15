@@ -45,7 +45,7 @@ instance RunMessage VengefulWitch where
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       damage <- field EnemyHealthDamage (toId attrs)
       horror <- field EnemySanityDamage (toId attrs)
-      investigators <- selectList $ InvestigatorAt $ locationWithEnemy (toId attrs)
+      investigators <- select $ InvestigatorAt $ locationWithEnemy (toId attrs)
       pushAll
         [InvestigatorDirectDamage iid (toSource attrs) damage horror | iid <- investigators]
       pure e

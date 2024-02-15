@@ -40,7 +40,7 @@ instance RunMessage HallsOfPnakotusNorthernCorridors where
   runMessage msg l@(HallsOfPnakotusNorthernCorridors attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       otherHalls <-
-        selectList
+        select
           $ LocationWithTitle "Halls of Pnakotus"
           <> NotLocation
             (LocationWithId $ toId attrs)

@@ -60,7 +60,7 @@ instance RunMessage MomentOfDoom where
       mlid <- field InvestigatorLocation iid
       for_ mlid $ \lid -> do
         yig <- selectJust $ enemyIs Enemies.yig
-        iids <- selectList $ colocatedWith iid <> InvestigatorWithAnyClues
+        iids <- select $ colocatedWith iid <> InvestigatorWithAnyClues
         player <- getPlayer iid
         unless (null iids)
           $ push

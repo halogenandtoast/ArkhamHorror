@@ -153,12 +153,12 @@ getHealthDamageableAssets
   -> m (Set AssetId)
 getHealthDamageableAssets _ _ 0 _ _ = pure mempty
 getHealthDamageableAssets iid matcher _ damageTargets horrorTargets = do
-  allAssets <- selectList $ matcher <> AssetCanBeAssignedDamageBy iid
+  allAssets <- select $ matcher <> AssetCanBeAssignedDamageBy iid
   excludes <- do
     modifiers <- getModifiers iid
     excludeMatchers <- forMaybeM modifiers $ \case
       NoMoreThanOneDamageOrHorrorAmongst excludeMatcher -> do
-        excludes <- selectListMap AssetTarget excludeMatcher
+        excludes <- selectMap AssetTarget excludeMatcher
         pure $ do
           guard $ any (`elem` excludes) (damageTargets <> horrorTargets)
           pure excludeMatcher
@@ -166,7 +166,7 @@ getHealthDamageableAssets iid matcher _ damageTargets horrorTargets = do
     case excludeMatchers of
       [] -> pure mempty
       xs -> select (AssetOneOf xs)
-  pure $ setFromList $ filter (`notMember` excludes) allAssets
+  pure $ setFromList $ filter (`notElem` excludes) allAssets
 
 getSanityDamageableAssets
   :: HasGame m
@@ -178,12 +178,12 @@ getSanityDamageableAssets
   -> m (Set AssetId)
 getSanityDamageableAssets _ _ 0 _ _ = pure mempty
 getSanityDamageableAssets iid matcher _ damageTargets horrorTargets = do
-  allAssets <- selectList $ matcher <> AssetCanBeAssignedHorrorBy iid
+  allAssets <- select $ matcher <> AssetCanBeAssignedHorrorBy iid
   excludes <- do
     modifiers <- getModifiers iid
     excludeMatchers <- forMaybeM modifiers $ \case
       NoMoreThanOneDamageOrHorrorAmongst excludeMatcher -> do
-        excludes <- selectListMap AssetTarget excludeMatcher
+        excludes <- selectMap AssetTarget excludeMatcher
         pure $ do
           guard $ any (`elem` excludes) (damageTargets <> horrorTargets)
           pure excludeMatcher
@@ -191,7 +191,7 @@ getSanityDamageableAssets iid matcher _ damageTargets horrorTargets = do
     case excludeMatchers of
       [] -> pure mempty
       xs -> select (AssetOneOf xs)
-  pure $ setFromList $ filter (`notMember` excludes) allAssets
+  pure $ setFromList $ filter (`notElem` excludes) allAssets
 
 runWindow
   :: (HasGame m, HasQueue Message m) => InvestigatorAttrs -> [Window] -> [Ability] -> [Card] -> m ()
@@ -561,7 +561,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   TakeControlOfAsset iid aid | iid /= investigatorId -> do
     pure $ a & (slotsL %~ removeFromSlots aid)
   ChooseAndDiscardAsset iid source assetMatcher | iid == investigatorId -> do
-    discardableAssetIds <- selectList $ assetMatcher <> DiscardableAsset <> assetControlledBy iid
+    discardableAssetIds <- select $ assetMatcher <> DiscardableAsset <> assetControlledBy iid
     player <- getPlayer iid
     push
       $ chooseOrRunOne player
@@ -750,7 +750,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [] -> CanFightEnemy source
         [o] -> CanFightEnemyWithOverride o
         _ -> error "multiple overrides found"
-    enemyIds <- selectList $ foldr applyMatcherModifiers (canFightMatcher <> enemyMatcher) modifiers
+    enemyIds <- select $ foldr applyMatcherModifiers (canFightMatcher <> enemyMatcher) modifiers
     player <- getPlayer iid
     push
       $ chooseOne
@@ -805,7 +805,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   FailedAttackEnemy iid eid | iid == investigatorId -> do
     doesNotDamageOtherInvestigators <- hasModifier a DoesNotDamageOtherInvestigator
     unless doesNotDamageOtherInvestigators $ do
-      investigatorIds <- selectList $ InvestigatorEngagedWith $ EnemyWithId eid
+      investigatorIds <- select $ InvestigatorEngagedWith $ EnemyWithId eid
       case investigatorIds of
         [x] | x /= iid -> push (InvestigatorDamageInvestigator iid x)
         _ -> pure ()
@@ -843,7 +843,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [] -> CanEvadeEnemy source
         [o] -> CanEvadeEnemyWithOverride o
         _ -> error "multiple overrides found"
-    enemyIds <- selectList $ foldr applyMatcherModifiers (canEvadeMatcher <> enemyMatcher) modifiers
+    enemyIds <- select $ foldr applyMatcherModifiers (canEvadeMatcher <> enemyMatcher) modifiers
     player <- getPlayer iid
     push
       $ chooseOne
@@ -864,7 +864,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [] -> CanEngageEnemy source
         [o] -> CanEngageEnemyWithOverride o
         _ -> error "multiple overrides found"
-    enemyIds <- selectList $ canEngageMatcher <> enemyMatcher
+    enemyIds <- select $ canEngageMatcher <> enemyMatcher
     player <- getPlayer iid
     push
       $ chooseOne
@@ -917,12 +917,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveAction iid lid _cost False | iid == investigatorId -> do
     from <- fromMaybe (LocationId nil) <$> field InvestigatorLocation iid
     afterWindowMsg <- Helpers.checkWindows [mkAfter $ Window.MoveAction iid from lid]
-    pushAll $ resolve (Move (move (toSource a) iid lid)) <> [afterWindowMsg]
+    -- exclude additional costs because they will have been paid by the action
+    pushAll $ resolve (Move ((move (toSource a) iid lid) {movePayAdditionalCosts = False}))
+      <> [afterWindowMsg]
     pure a
   Move movement | isTarget a (moveTarget movement) -> do
     case moveDestination movement of
       ToLocationMatching matcher -> do
-        lids <- selectList matcher
+        lids <- getCanMoveToMatchingLocations investigatorId (moveSource movement) matcher
         player <- getPlayer investigatorId
         push
           $ chooseOrRunOne player
@@ -934,6 +936,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           source = moveSource movement
           iid = investigatorId
         mFromLocation <- field InvestigatorLocation iid
+
+        leaveCosts <- case mFromLocation of
+          Nothing -> pure mempty
+          Just lid ->
+            if movePayAdditionalCosts movement
+              then do
+                mods' <- getModifiers lid
+                pure $ mconcat [c | AdditionalCostToLeave c <- mods']
+              else pure mempty
+
+        -- TODO: we might care about other sources here
+        enterCosts <- do
+          if movePayAdditionalCosts movement
+            then do
+              mods' <- getModifiers destinationLocationId
+              pure $ mconcat [c | AdditionalCostToEnter c <- mods']
+            else pure mempty
 
         let
           (whenMoves, atIfMoves, afterMoves) = timings (Window.Moves iid source mFromLocation destinationLocationId)
@@ -967,9 +986,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         pushBatched batchId
           $ maybeToList mRunWhenLeaving
           <> maybeToList mRunAtIfLeaving
+          <> [PayAdditionalCost iid batchId leaveCosts]
           <> [MoveFrom source iid fromLocationId | fromLocationId <- maybeToList mFromLocation]
           <> maybeToList mRunAfterLeaving
-          <> [runWhenEntering, runAtIfEntering, runWhenMoves, runAtIfMoves]
+          <> [ runWhenEntering
+             , runAtIfEntering
+             , PayAdditionalCost iid batchId enterCosts
+             , runWhenMoves
+             , runAtIfMoves
+             ]
           <> [MoveTo $ move source iid destinationLocationId]
           <> [runAfterEnteringMoves]
     pure a
@@ -1147,7 +1172,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           damageTargets
           horrorTargets
     mustBeDamagedFirstBeforeInvestigator <-
-      selectList
+      select
         ( AssetCanBeAssignedHorrorBy iid
             <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
         )
@@ -1279,8 +1304,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               pure $ damageInvestigator : map damageAsset healthDamageableAssets
             DamageFirst def -> do
               validAssets <-
-                setToList
-                  . intersection (setFromList healthDamageableAssets)
+                List.intersect healthDamageableAssets
                   <$> select (matcher <> AssetControlledBy You <> assetIs def)
               pure
                 $ if null validAssets
@@ -1317,7 +1341,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 <> map damageAsset sanityDamageableAssets
             DamageAny -> do
               mustBeDamagedFirstBeforeInvestigator <-
-                selectList
+                select
                   ( AssetCanBeAssignedHorrorBy iid
                       <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
                   )
@@ -1328,7 +1352,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 <> map damageAsset sanityDamageableAssets
             DamageFromHastur -> do
               mustBeDamagedFirstBeforeInvestigator <-
-                selectList
+                select
                   ( AssetCanBeAssignedHorrorBy iid
                       <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
                   )
@@ -1339,8 +1363,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 <> map damageAsset sanityDamageableAssets
             DamageFirst def -> do
               validAssets <-
-                setToList
-                  . intersection (setFromList sanityDamageableAssets)
+                List.intersect sanityDamageableAssets
                   <$> select (matcher <> AssetControlledBy You <> assetIs def)
               pure
                 $ if null validAssets
@@ -1505,7 +1528,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       FitsSlots -> push (InvestigatorPlayedAsset iid aid)
       MissingSlots missingSlotTypes -> do
         assetsThatCanProvideSlots <-
-          selectList
+          select
             $ assetControlledBy iid
             <> DiscardableAsset
             <> AssetOneOf (map AssetInSlot missingSlotTypes)
@@ -1563,7 +1586,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ a
       & (deckL %~ Deck . filter ((/= toCardCode cardDef) . toCardCode) . unDeck)
   RemoveAllCopiesOfCardFromGame iid cardCode | iid == investigatorId -> do
-    assets <- selectList $ assetControlledBy iid
+    assets <- select $ assetControlledBy iid
     for_ assets $ \assetId -> do
       cardCode' <- field AssetCardCode assetId
       when (cardCode == cardCode') (push $ RemoveFromGame (AssetTarget assetId))
@@ -1708,7 +1731,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveTo movement | isTarget a (moveTarget movement) -> do
     case moveDestination movement of
       ToLocationMatching matcher -> do
-        lids <- selectList matcher
+        lids <- select matcher
         player <- getPlayer investigatorId
         push
           $ chooseOrRunOne
@@ -1719,7 +1742,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         let iid = investigatorId
 
         moveWith <-
-          selectList (InvestigatorWithModifier (CanMoveWith $ InvestigatorWithId iid) <> colocatedWith iid)
+          select (InvestigatorWithModifier (CanMoveWith $ InvestigatorWithId iid) <> colocatedWith iid)
+            >>= filterM (\iid' -> getCanMoveTo iid' (moveSource movement) lid)
             >>= traverse (traverseToSnd getPlayer)
 
         afterMoveButBeforeEnemyEngagement <-
@@ -1747,7 +1771,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -- [AsIfAt]: enemies don't move to threat with AsIf, so we use actual location here
     -- This might not be correct and we should still check engagement and let
     -- that handle whether or not to move to threat area
-    enemies <- selectList $ EnemyAt $ LocationWithId investigatorLocation
+    enemies <- select $ EnemyAt $ LocationWithId investigatorLocation
     a <$ pushAll [EnemyCheckEngagement eid | eid <- enemies]
   AddSlot iid slotType slot | iid == investigatorId -> do
     let
@@ -1761,7 +1785,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push $ RefillSlots iid
     pure $ a & slotsL . ix slotType %~ deleteFirstMatch (isSource a . slotSource)
   RefillSlots iid | iid == investigatorId -> do
-    assetIds <- selectList $ AssetWithPlacement (InPlayArea iid)
+    assetIds <- select $ AssetWithPlacement (InPlayArea iid)
 
     requirements <- concatForM assetIds $ \assetId -> do
       assetCard <- field AssetCard assetId
@@ -2206,7 +2230,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         else do
           committableTreacheries <-
             filterM (field TreacheryCanBeCommitted)
-              =<< selectList (treacheryInHandOf investigatorId)
+              =<< select (treacheryInHandOf investigatorId)
           treacheryCards <- traverse (field TreacheryCard) committableTreacheries
           let asIfInHandForCommit = mapMaybe (preview _CanCommitToSkillTestsAsIfInHand) modifiers'
           flip filterM (asIfInHandForCommit <> investigatorHand <> treacheryCards) $ \case
@@ -2317,7 +2341,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           else do
             committableTreacheries <-
               filterM (field TreacheryCanBeCommitted)
-                =<< selectList (treacheryInHandOf investigatorId)
+                =<< select (treacheryInHandOf investigatorId)
             treacheryCards <- traverse (field TreacheryCard) committableTreacheries
             let asIfInHandForCommit = mapMaybe (preview _CanCommitToSkillTestsAsIfInHand) modifiers'
             flip filterM (asIfInHandForCommit <> investigatorHand <> treacheryCards) $ \case
@@ -3167,7 +3191,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         )
   UseCardAbility iid (isSource a -> True) 500 _ _ -> do
     otherInvestigators <-
-      selectList $ colocatedWith investigatorId <> NotInvestigator (InvestigatorWithId investigatorId)
+      select $ colocatedWith investigatorId <> NotInvestigator (InvestigatorWithId investigatorId)
     case nonEmpty otherInvestigators of
       Nothing -> error "No other investigators"
       Just (x :| xs) -> do

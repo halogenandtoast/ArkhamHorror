@@ -27,7 +27,7 @@ instance RunMessage SpiderOfLeng where
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       lead <- getLead
       player <- getLeadPlayer
-      swarmsOfSpiders <- selectList $ enemyIs Cards.swarmOfSpiders
+      swarmsOfSpiders <- select $ enemyIs Cards.swarmOfSpiders
       if null swarmsOfSpiders
         then push $ findEncounterCard lead attrs [FromEncounterDeck, FromEncounterDiscard] Cards.swarmOfSpiders
         else do

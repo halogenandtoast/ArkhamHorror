@@ -36,7 +36,7 @@ instance HasAbilities NorthsideTrainStation where
 instance RunMessage NorthsideTrainStation where
   runMessage msg l@(NorthsideTrainStation attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      locationIds <- selectList $ LocationWithTrait Arkham
+      locationIds <- select $ LocationWithTrait Arkham
       player <- getPlayer iid
       push
         $ chooseOne

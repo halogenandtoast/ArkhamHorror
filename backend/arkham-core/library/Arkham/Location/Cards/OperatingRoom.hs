@@ -21,7 +21,7 @@ instance HasAbilities OperatingRoom where
 instance RunMessage OperatingRoom where
   runMessage msg l@(OperatingRoom attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigators <- selectList $ affectsOthers $ investigatorAt attrs.id
+      investigators <- select $ affectsOthers $ investigatorAt attrs.id
       player <- getPlayer iid
       push
         $ chooseOrRunOne

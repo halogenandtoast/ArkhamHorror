@@ -33,7 +33,7 @@ instance HasAbilities PorteDeLAvancee where
 instance RunMessage PorteDeLAvancee where
   runMessage msg l@(PorteDeLAvancee attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      agendas <- selectList AgendaWithAnyDoom
+      agendas <- select AgendaWithAnyDoom
       agendasWithOtherAgendas <- forToSnd agendas (selectJust . NotAgenda . AgendaWithId)
       player <- getPlayer iid
       push

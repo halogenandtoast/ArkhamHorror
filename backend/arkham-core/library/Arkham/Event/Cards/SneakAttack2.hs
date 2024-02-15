@@ -22,7 +22,7 @@ sneakAttack2 = event SneakAttack2 Cards.sneakAttack2
 instance RunMessage SneakAttack2 where
   runMessage msg e@(SneakAttack2 attrs) = case msg of
     InvestigatorPlayEvent you eid _ _ _ | eid == toId attrs -> do
-      enemies <- selectList $ EnemyNotEngagedWithYou <> enemiesColocatedWith you
+      enemies <- select $ EnemyNotEngagedWithYou <> enemiesColocatedWith you
       pushAll
         $ [EnemyDamage enemy $ nonAttack attrs 2 | enemy <- enemies]
       pure e

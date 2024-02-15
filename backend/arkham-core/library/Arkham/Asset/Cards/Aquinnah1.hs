@@ -44,7 +44,7 @@ instance RunMessage Aquinnah1 where
         _ -> error "unhandled"
       healthDamage' <- field EnemyHealthDamage enemyId
       sanityDamage' <- field EnemySanityDamage enemyId
-      enemies <- selectList $ enemyAtLocationWith iid <> NotEnemy (EnemyWithId enemyId)
+      enemies <- select $ enemyAtLocationWith iid <> NotEnemy (EnemyWithId enemyId)
 
       when (null enemies) (error "other enemies had to be present")
 

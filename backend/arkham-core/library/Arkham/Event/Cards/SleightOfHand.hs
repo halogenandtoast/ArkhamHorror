@@ -19,7 +19,7 @@ sleightOfHand = event SleightOfHand Cards.sleightOfHand
 instance RunMessage SleightOfHand where
   runMessage msg e@(SleightOfHand attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      cards <- selectList $ PlayableCard Cost.PaidCost $ inHandOf iid <> basic #item
+      cards <- select $ PlayableCard Cost.PaidCost $ inHandOf iid <> basic #item
       player <- getPlayer iid
       push
         $ chooseOne

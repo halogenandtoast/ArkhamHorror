@@ -39,7 +39,7 @@ instance RunMessage EndsAndMeans where
   runMessage msg a@(EndsAndMeans attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       mPuzzleBox <- selectOne (assetIs Assets.puzzleBox)
-      acts <- selectList AnyAct
+      acts <- select AnyAct
       summonedBeast <- getSetAsideCard Enemies.summonedBeast
       createSummonedBeast <-
         createEnemyAtLocationMatching_ summonedBeast
@@ -54,7 +54,7 @@ instance RunMessage EndsAndMeans where
         <> [RemoveFromGame (toTarget puzzleBox) | puzzleBox <- maybeToList mPuzzleBox]
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 (defeatedEnemy -> enemy) _ -> do
-      enemiesWithDoom <- selectList $ EnemyAt (locationWithEnemy enemy) <> EnemyWithAnyDoom
+      enemiesWithDoom <- select $ EnemyAt (locationWithEnemy enemy) <> EnemyWithAnyDoom
       pushAll
         $ concat
           [[RemoveDoom (toSource attrs) (toTarget enemy') 1, PlaceDoomOnAgenda] | enemy' <- enemiesWithDoom]

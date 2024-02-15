@@ -37,7 +37,7 @@ instance RunMessage DeVermisMysteriis2 where
   runMessage msg a@(DeVermisMysteriis2 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' _ -> do
       let windows'' = nub $ windows' <> [mkWhen (Window.DuringTurn iid), mkWhen Window.FastPlayerWindow]
-      cards <- selectList $ cardMatcher (InvestigatorWithId iid)
+      cards <- select $ cardMatcher (InvestigatorWithId iid)
 
       player <- getPlayer iid
       push

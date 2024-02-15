@@ -25,7 +25,7 @@ instance RunMessage StarsOfAldebaran where
   runMessage msg s@(StarsOfAldebaran attrs) = case msg of
     ResolveStory iid _ story' | story' == toId attrs -> do
       healMessages <- map snd <$> getInvestigatorsWithHealHorror attrs 3 Anyone
-      enemies <- selectList $ NotEnemy $ EnemyWithTitle "Hastur"
+      enemies <- select $ NotEnemy $ EnemyWithTitle "Hastur"
       bleakPlains <- selectJust $ locationIs Locations.bleakPlainsStarsOfAldebaran
       let
         damageEnemy enemy =

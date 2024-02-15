@@ -26,7 +26,7 @@ instance RunMessage GlimpseTheUnthinkable5 where
   runMessage msg e@(GlimpseTheUnthinkable5 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       cards <-
-        selectList
+        select
           $ InHandOf (InvestigatorWithId iid)
           <> BasicCardMatch NonWeakness
       player <- getPlayer iid
@@ -47,7 +47,7 @@ instance RunMessage GlimpseTheUnthinkable5 where
       let toDraw = handLimit - (handCards - n)
 
       cards <-
-        selectList
+        select
           $ InHandOf (InvestigatorWithId iid)
           <> BasicCardMatch NonWeakness
       drawing <- drawCards iid attrs toDraw

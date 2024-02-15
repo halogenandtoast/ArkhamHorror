@@ -33,7 +33,7 @@ instance HasAbilities RuinsOfIb where
 instance RunMessage RuinsOfIb where
   runMessage msg l@(RuinsOfIb attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      assets <- selectList $ assetControlledBy iid <> DiscardableAsset
+      assets <- select $ assetControlledBy iid <> DiscardableAsset
       player <- getPlayer iid
       push
         $ chooseOne player [targetLabel asset [toDiscardBy iid (attrs.ability 1) asset] | asset <- assets]

@@ -58,7 +58,7 @@ instance RunMessage TemplesOfTenochtitlan_177 where
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       lead <- getLeadPlayer
       targets <-
-        selectListMap EnemyTarget
+        selectMap EnemyTarget
           $ NearestEnemyToLocation (toId attrs) AnyEnemy
       unless (null targets)
         $ push

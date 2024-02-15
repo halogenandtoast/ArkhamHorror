@@ -38,7 +38,7 @@ instance RunMessage StormOfSpirits where
           if eid == eid'
             then EnemyDamage eid' $ delayDamage $ attack attrs 2
             else EnemyDamage eid' $ delayDamage $ isDirect $ attack attrs 2
-      eids <- selectList $ enemyAtLocationWith iid
+      eids <- select $ enemyAtLocationWith iid
       pushAll $ map toMsg eids <> map (checkDefeated attrs) eids
       pure e
     _ -> StormOfSpirits <$> runMessage msg attrs
@@ -56,7 +56,7 @@ instance RunMessage StormOfSpiritsEffect where
       let triggers = chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
       when triggers $ do
         enemy <- fromJustNote "must be enemy" . join . fmap (preview _EnemyTarget) <$> getSkillTestTarget
-        iids <- selectList $ InvestigatorAt $ locationWithEnemy enemy
+        iids <- select $ InvestigatorAt $ locationWithEnemy enemy
         pushAll
           [ If
               (Window.RevealChaosTokenEffect iid token (toId attrs))

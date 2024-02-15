@@ -41,7 +41,7 @@ instance RunMessage StrangeSolutionRestorativeConcoction4 where
   runMessage msg a@(StrangeSolutionRestorativeConcoction4 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       targets <-
-        selectListMap InvestigatorTarget
+        selectMap InvestigatorTarget
           $ HealableInvestigator (toSource attrs) DamageType
           $ colocatedWith iid
       player <- getPlayer iid

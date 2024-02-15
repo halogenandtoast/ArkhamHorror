@@ -43,7 +43,7 @@ instance RunMessage EyesInTheDark where
           (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      iids <- selectList UneliminatedInvestigator
+      iids <- select UneliminatedInvestigator
       pushAll
         $ concatMap
           ( \iid ->

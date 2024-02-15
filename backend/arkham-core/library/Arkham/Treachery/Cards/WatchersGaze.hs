@@ -23,7 +23,7 @@ instance RunMessage WatchersGaze where
   runMessage msg t@(WatchersGaze attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       innocentRevelerIds <-
-        selectList
+        select
           (AssetControlledBy You <> assetIs Assets.innocentReveler)
       investigatorsWithRevelers <-
         catMaybes

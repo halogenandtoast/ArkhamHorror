@@ -66,6 +66,3 @@ placementLocation = \case
   StillInHand _ -> pure Nothing
   StillInDiscard _ -> pure Nothing
   AsSwarm eid _ -> field EnemyLocation eid
-
-accessibleLocations :: HasGame m => InvestigatorId -> m [LocationId]
-accessibleLocations iid = selectList $ AccessibleFrom (locationWithInvestigator iid) <> canEnterLocation iid

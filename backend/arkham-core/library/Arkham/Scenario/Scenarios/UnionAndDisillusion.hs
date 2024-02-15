@@ -246,7 +246,7 @@ instance RunMessage UnionAndDisillusion where
             (if horror == 0 then 1 else 0)
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Tablet)) _ _ -> do
-      enemies <- selectList $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Spectral
+      enemies <- select $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Spectral
       player <- getPlayer iid
       unless (null enemies) $ do
         push

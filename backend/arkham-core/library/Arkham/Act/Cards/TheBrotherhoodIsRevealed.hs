@@ -64,7 +64,7 @@ instance RunMessage TheBrotherhoodIsRevealed where
         deckCount <- getActDecksInPlayCount
         ichtaca <- getSetAsideCard Assets.ichtacaTheForgottenGuardian
         lid <- maybe (selectJust $ locationIs Locations.blackCave) pure (mariaDeSilvasLocation metadata)
-        iids <- selectList $ NearestToLocation $ LocationWithId lid
+        iids <- select $ NearestToLocation $ LocationWithId lid
         -- TODO: we need to know the prey details
         let
           takeControlMessage =

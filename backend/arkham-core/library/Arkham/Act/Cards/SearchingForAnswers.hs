@@ -37,7 +37,7 @@ instance RunMessage SearchingForAnswers where
       | isSource attrs source ->
           a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      unrevealedLocationIds <- selectList UnrevealedLocation
+      unrevealedLocationIds <- select UnrevealedLocation
       hiddenChamber <- selectJust (LocationWithTitle "The Hidden Chamber")
       silasBishop <- genCard Enemies.silasBishop
       createSilasBishop <- createEnemyAt_ silasBishop hiddenChamber Nothing

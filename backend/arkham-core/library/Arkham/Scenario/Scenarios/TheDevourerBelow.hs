@@ -151,7 +151,7 @@ instance RunMessage TheDevourerBelow where
           )
     ResolveChaosToken _ Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2
-      closestEnemyIds <- selectList $ NearestEnemy AnyEnemy
+      closestEnemyIds <- select $ NearestEnemy AnyEnemy
       player <- getPlayer iid
       case closestEnemyIds of
         [] -> pure ()

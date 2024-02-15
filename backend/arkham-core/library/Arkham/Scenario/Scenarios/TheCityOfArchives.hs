@@ -95,11 +95,11 @@ instance RunMessage TheCityOfArchives where
       pure s
     CheckWindow _ [Window Timing.When (Window.DrawingStartingHand iid) _] -> do
       uniqueItemAssetCards <-
-        selectList
+        select
           $ InDeckOf (InvestigatorWithId iid)
           <> BasicCardMatch
             (CardWithTrait Item <> CardIsUnique)
-      uniqueItemAssets <- selectList $ AssetWithTrait Item <> UniqueAsset
+      uniqueItemAssets <- select $ AssetWithTrait Item <> UniqueAsset
 
       mAlejandro <-
         selectOne

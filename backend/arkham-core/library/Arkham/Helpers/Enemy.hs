@@ -105,19 +105,19 @@ canEnterLocation eid lid = do
 getFightableEnemyIds :: (HasGame m, Sourceable source) => InvestigatorId -> source -> m [EnemyId]
 getFightableEnemyIds iid (toSource -> source) = do
   fightAnywhereEnemyIds <-
-    selectList AnyEnemy >>= filterM \eid -> do
+    select AnyEnemy >>= filterM \eid -> do
       modifiers' <- getModifiers (EnemyTarget eid)
       pure $ Modifier.CanBeFoughtAsIfAtYourLocation `elem` modifiers'
   locationId <- getJustLocation iid
   enemyIds <-
-    union (setFromList fightAnywhereEnemyIds)
+    nub
+      . (<> fightAnywhereEnemyIds)
       <$> select (EnemyAt $ LocationWithId locationId)
   investigatorEnemyIds <- select $ EnemyIsEngagedWith $ InvestigatorWithId iid
   aloofEnemyIds <- select $ AloofEnemy <> EnemyAt (LocationWithId locationId)
   let
     potentials =
-      setToList
-        (investigatorEnemyIds `union` (enemyIds `difference` aloofEnemyIds))
+      nub (investigatorEnemyIds <> (enemyIds \\ aloofEnemyIds))
   flip filterM potentials $ \eid -> do
     modifiers' <- getModifiers (EnemyTarget eid)
     not
@@ -135,7 +135,7 @@ getEnemyAccessibleLocations :: HasGame m => EnemyId -> m [LocationId]
 getEnemyAccessibleLocations eid = do
   location <- fieldMap EnemyLocation (fromJustNote "must be at a location") eid
   matcher <- getConnectedMatcher location
-  connectedLocationIds <- selectList matcher
+  connectedLocationIds <- select matcher
   filterM (canEnterLocation eid) connectedLocationIds
 
 getUniqueEnemy :: HasGame m => CardDef -> m EnemyId
@@ -155,13 +155,13 @@ defeatEnemy enemyId investigatorId (toSource -> source) = do
 
 enemyEngagedInvestigators :: HasGame m => EnemyId -> m [InvestigatorId]
 enemyEngagedInvestigators eid = do
-  asIfEngaged <- selectList $ InvestigatorWithModifier (AsIfEngagedWith eid)
+  asIfEngaged <- select $ InvestigatorWithModifier (AsIfEngagedWith eid)
   placement <- field EnemyPlacement eid
   others <- case placement of
     InThreatArea iid -> pure [iid]
     AtLocation lid -> do
       isMassive <- fieldMap EnemyKeywords (elem Keyword.Massive) eid
-      if isMassive then selectList (investigatorAt lid) else pure []
+      if isMassive then select (investigatorAt lid) else pure []
     AsSwarm eid' _ -> enemyEngagedInvestigators eid'
     _ -> pure []
   pure . nub $ asIfEngaged <> others

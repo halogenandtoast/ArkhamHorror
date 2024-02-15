@@ -56,7 +56,7 @@ instance RunMessage TheManInThePallidMask where
         -- an ability, we handle it here
         canBeDefeated <- case enemyLocation of
           Just lid ->
-            notMember lid <$> select (locationIs Locations.tombOfShadows)
+            notElem lid <$> select (locationIs Locations.tombOfShadows)
           _ -> pure True
         when canBeDefeated $ do
           pushAllM $ defeatEnemy (toId attrs) iid attrs

@@ -25,7 +25,7 @@ instance RunMessage InspiringPresence where
   runMessage msg s@(InspiringPresence attrs) = case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
       assets <-
-        selectList
+        select
           $ AssetAt
             (LocationWithInvestigator $ InvestigatorWithId $ skillOwner attrs)
           <> AllyAsset

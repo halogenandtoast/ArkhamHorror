@@ -19,6 +19,7 @@ import Arkham.Message
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.Source
+import Data.List qualified as List
 
 getTheOrganist :: HasGame m => m EnemyId
 getTheOrganist = selectJust $ EnemyWithTitle "The Organist"
@@ -40,7 +41,7 @@ investigatorsNearestToEnemy eid = do
   investigatorIdWithLocationId <-
     fmap catMaybes
       . traverse (\i -> fmap (i,) <$> field InvestigatorLocation i)
-      =<< selectList UneliminatedInvestigator
+      =<< select UneliminatedInvestigator
 
   mappings <-
     catMaybes
@@ -64,10 +65,10 @@ moveOrganistAwayFromNearestInvestigator = do
   organist <- getTheOrganist
   lead <- getLeadPlayer
   (minDistance, iids) <- investigatorsNearestToTheOrganist
-  everywhere <- selectList Anywhere
+  everywhere <- select Anywhere
 
   lids <-
-    setFromList . concat <$> for iids \iid -> do
+    concat <$> for iids \iid -> do
       currentLocation <-
         fieldMap
           InvestigatorLocation
@@ -80,7 +81,7 @@ moveOrganistAwayFromNearestInvestigator = do
       pure $ map fst $ filter ((> minDistance) . snd) rs
   withNoInvestigators <- select LocationWithoutInvestigators
   let
-    forced = lids `intersect` withNoInvestigators
+    forced = lids `List.intersect` withNoInvestigators
     targets = toList $ if null forced then lids else forced
   pure
     $ chooseOrRunOne
@@ -95,9 +96,9 @@ disengageEachEnemyAndMoveToConnectingLocation source = do
   enemyPairs <-
     forToSnd
       iids
-      (selectList . EnemyIsEngagedWith . InvestigatorWithId)
+      (select . EnemyIsEngagedWith . InvestigatorWithId)
   locationPairs <- for iids $ \iid -> do
-    locations <- selectList $ AccessibleFrom $ LocationWithInvestigator $ InvestigatorWithId iid
+    locations <- select $ AccessibleFrom $ LocationWithInvestigator $ InvestigatorWithId iid
     player <- getPlayer iid
     pure (iid, player, locations)
   pure

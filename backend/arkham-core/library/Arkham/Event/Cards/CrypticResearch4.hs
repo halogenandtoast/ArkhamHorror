@@ -20,7 +20,7 @@ instance RunMessage CrypticResearch4 where
   runMessage msg e@(CrypticResearch4 attrs) = case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
       iids <-
-        selectList
+        select
           =<< guardAffectsOthers iid (colocatedWith iid <> can.draw.cards)
       investigators <- forToSnd iids $ \iid' -> drawCards iid' attrs 3
       player <- getPlayer iid

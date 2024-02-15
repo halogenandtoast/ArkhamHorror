@@ -39,7 +39,7 @@ instance RunMessage TheInfestationSpreads where
       AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
         corruptedOrderlies <- getSetAsideCardsMatching (cardIs Enemies.corruptedOrderly)
         suspiciousOrderlies <-
-          zipWith ((,)) corruptedOrderlies <$> selectList (enemyIs Enemies.suspiciousOrderly)
+          zipWith ((,)) corruptedOrderlies <$> select (enemyIs Enemies.suspiciousOrderly)
         discarded <-
           scenarioFieldMap ScenarioDiscard (filter (`cardMatch` (cardIs Enemies.suspiciousOrderly)))
         inDeck <-

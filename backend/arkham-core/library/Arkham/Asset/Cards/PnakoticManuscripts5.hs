@@ -51,7 +51,7 @@ instance RunMessage PnakoticManuscripts5 where
       push $ skillTestModifier (toAbilitySource attrs 1) iid DoNotDrawChaosTokensForSkillChecks
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      iids <- selectList $ affectsOthers $ colocatedWith iid
+      iids <- select $ affectsOthers $ colocatedWith iid
       player <- getPlayer iid
       push
         $ chooseOrRunOne

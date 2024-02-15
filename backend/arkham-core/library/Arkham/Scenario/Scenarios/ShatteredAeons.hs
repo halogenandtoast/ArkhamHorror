@@ -283,7 +283,7 @@ instance RunMessage ShatteredAeons where
         if isEasyStandard attrs
           then do
             player <- getPlayer iid
-            cultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
+            cultists <- select $ NearestEnemy $ EnemyWithTrait Trait.Cultist
             unless (null cultists)
               $ push
               $ chooseOne
@@ -292,7 +292,7 @@ instance RunMessage ShatteredAeons where
                 | cultist <- cultists
                 ]
           else do
-            cultists <- selectList $ EnemyWithTrait Trait.Cultist
+            cultists <- select $ EnemyWithTrait Trait.Cultist
             pushAll
               $ [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget cultist) Doom 1 | cultist <- cultists]
       pure s
@@ -300,7 +300,7 @@ instance RunMessage ShatteredAeons where
       when (chaosTokenFace token == Cultist) $ do
         if isEasyStandard attrs
           then do
-            cultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
+            cultists <- select $ NearestEnemy $ EnemyWithTrait Trait.Cultist
             unless (null cultists) $ do
               player <- getPlayer iid
               push
@@ -310,7 +310,7 @@ instance RunMessage ShatteredAeons where
                   | cultist <- cultists
                   ]
           else do
-            cultists <- selectList $ EnemyWithTrait Trait.Cultist
+            cultists <- select $ EnemyWithTrait Trait.Cultist
             pushAll
               $ [PlaceTokens (ChaosTokenEffectSource Cultist) (EnemyTarget cultist) Doom 1 | cultist <- cultists]
       when (chaosTokenFace token == Tablet && isHardExpert attrs) $ do

@@ -53,7 +53,7 @@ instance RunMessage Office where
   runMessage msg l@(Office attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       enemies <-
-        selectList
+        select
           $ NearestEnemyToLocation
             (toId attrs)
             ( EnemyWithTrait SilverTwilight

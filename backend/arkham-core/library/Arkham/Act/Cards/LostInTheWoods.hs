@@ -38,7 +38,7 @@ instance HasModifiersFor LostInTheWoods where
         ]
   getModifiersFor (InvestigatorTarget iid) (LostInTheWoods a) = do
     lids <-
-      selectList
+      select
         $ LocationIsInFrontOf (NotInvestigator $ InvestigatorWithId iid)
     pure $ toModifiers a $ map CannotEnter lids
   getModifiersFor _ _ = pure []
@@ -64,7 +64,7 @@ instance RunMessage LostInTheWoods where
       lead <- getLeadInvestigatorId
       arkhamWoods <-
         shuffleM
-          =<< selectList (SetAsideCardMatch $ CardWithTitle "Arkham Woods")
+          =<< select (SetAsideCardMatch $ CardWithTitle "Arkham Woods")
       placements <- traverse placeLocation arkhamWoods
 
       goatSpawn <- getSetAsideCardsMatching $ cardIs Enemies.goatSpawn

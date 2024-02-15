@@ -15,7 +15,7 @@ broodTitle :: Text
 broodTitle = nameTitle . toName $ Cards.broodOfYogSothoth
 
 getBroodOfYogSothoth :: HasGame m => m [EnemyId]
-getBroodOfYogSothoth = selectList $ EnemyWithTitle broodTitle
+getBroodOfYogSothoth = select $ EnemyWithTitle broodTitle
 
 getSetAsideBroodOfYogSothoth :: HasGame m => m [Card]
 getSetAsideBroodOfYogSothoth = getSetAsideCardsMatching $ CardWithTitle broodTitle

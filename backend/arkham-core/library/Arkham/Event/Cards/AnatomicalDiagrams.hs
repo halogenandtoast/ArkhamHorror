@@ -24,7 +24,7 @@ instance RunMessage AnatomicalDiagrams where
   runMessage msg e@(AnatomicalDiagrams attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <-
-        selectListMap EnemyTarget $ EnemyAt YourLocation <> NonEliteEnemy
+        selectMap EnemyTarget $ EnemyAt YourLocation <> NonEliteEnemy
       player <- getPlayer iid
       e
         <$ pushAll

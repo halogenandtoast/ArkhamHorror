@@ -29,7 +29,7 @@ instance RunMessage ArchaicGlyphsProphecyForetold3 where
       pushM $ mkInvestigate iid (toAbilitySource attrs 1) <&> setTarget attrs
       pure a
     Successful (Action.Investigate, LocationTarget lid) iid _ (isTarget attrs -> True) _ -> do
-      enemies <- selectList $ enemyEngagedWith iid
+      enemies <- select $ enemyEngagedWith iid
       player <- getPlayer iid
       pushAll
         $ toMessage (viaInvestigate $ discover iid lid (toAbilitySource attrs 1) 1)

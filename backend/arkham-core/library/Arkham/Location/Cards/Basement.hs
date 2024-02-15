@@ -40,7 +40,7 @@ instance HasAbilities Basement where
 instance RunMessage Basement where
   runMessage msg l@(Basement attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      humanoids <- selectList $ EnemyWithTrait Humanoid <> NotEnemy (enemyAt $ toId attrs)
+      humanoids <- select $ EnemyWithTrait Humanoid <> NotEnemy (enemyAt $ toId attrs)
       when (notNull humanoids) $ do
         player <- getPlayer iid
         push

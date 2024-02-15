@@ -34,8 +34,8 @@ instance RunMessage EncephalonSignal where
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       player <- getPlayer iid
-      investigators <- selectList $ colocatedWith iid
-      humanoids <- selectList $ enemyAtLocationWith iid <> EnemyWithTrait Humanoid
+      investigators <- select $ colocatedWith iid
+      humanoids <- select $ enemyAtLocationWith iid <> EnemyWithTrait Humanoid
       push
         $ chooseOne
           player

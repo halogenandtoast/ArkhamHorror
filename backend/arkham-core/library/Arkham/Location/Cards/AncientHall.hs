@@ -26,7 +26,7 @@ instance HasAbilities AncientHall where
 instance RunMessage AncientHall where
   runMessage msg l@(AncientHall attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      iids <- selectList $ investigatorAt (toId attrs) <> InvestigatorCanSpendResources (Static 3)
+      iids <- select $ investigatorAt (toId attrs) <> InvestigatorCanSpendResources (Static 3)
       lead <- getLeadPlayer
       let flipClue = FlipClues (toTarget attrs) 1
       if null iids

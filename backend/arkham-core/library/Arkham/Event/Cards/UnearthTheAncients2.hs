@@ -34,7 +34,7 @@ unearthTheAncients2 = event (UnearthTheAncients2 . (`with` Metadata [])) Cards.u
 instance RunMessage UnearthTheAncients2 where
   runMessage msg e@(UnearthTheAncients2 (attrs `With` metadata)) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      assets <- selectList $ InHandOf (InvestigatorWithId iid) <> BasicCardMatch (#seeker <> #asset)
+      assets <- select $ InHandOf (InvestigatorWithId iid) <> BasicCardMatch (#seeker <> #asset)
       player <- getPlayer iid
       pushAll
         [ chooseUpToN player 2 "Do not choose any more assets"

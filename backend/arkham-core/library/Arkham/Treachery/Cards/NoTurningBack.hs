@@ -53,7 +53,7 @@ instance RunMessage NoTurningBack where
   runMessage msg t@(NoTurningBack attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       targets <-
-        selectList
+        select
           $ LocationMatchAny
             [ locationWithInvestigator iid
             , ConnectedFrom (locationWithInvestigator iid)

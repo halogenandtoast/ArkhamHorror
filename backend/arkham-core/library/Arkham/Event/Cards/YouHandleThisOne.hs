@@ -21,7 +21,7 @@ instance RunMessage YouHandleThisOne where
   runMessage msg e@(YouHandleThisOne attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <-
-        selectListMap InvestigatorTarget
+        selectMap InvestigatorTarget
           $ NotInvestigator (InvestigatorWithId iid)
       player <- getPlayer iid
       pushAll

@@ -327,7 +327,7 @@ instance RunMessage ThreadsOfFate where
           push $ InvestigatorDirectDamage iid (ChaosTokenSource token) 1 0
         Tablet | isEasyStandard attrs && n < 1 -> do
           targets <-
-            selectListMap EnemyTarget
+            selectMap EnemyTarget
               $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
           player <- getPlayer iid
           unless (null targets) $ do
@@ -337,7 +337,7 @@ instance RunMessage ThreadsOfFate where
                 [TargetLabel target [PlaceDoom (ChaosTokenEffectSource Tablet) target 1] | target <- targets]
         Tablet | isHardExpert attrs && n < 2 -> do
           targets <-
-            selectListMap EnemyTarget
+            selectMap EnemyTarget
               $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
           pushAll [PlaceDoom (ChaosTokenEffectSource Tablet) target 1 | target <- targets]
         _ -> pure ()
@@ -350,7 +350,7 @@ instance RunMessage ThreadsOfFate where
           push $ InvestigatorDirectDamage iid (ChaosTokenSource token) 1 0
         Tablet | isEasyStandard attrs -> do
           targets <-
-            selectListMap EnemyTarget
+            selectMap EnemyTarget
               $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
           unless (null targets) $ do
             player <- getPlayer iid
@@ -360,7 +360,7 @@ instance RunMessage ThreadsOfFate where
                 [TargetLabel target [PlaceDoom (ChaosTokenEffectSource Tablet) target 1] | target <- targets]
         Tablet | isHardExpert attrs -> do
           targets <-
-            selectListMap EnemyTarget
+            selectMap EnemyTarget
               $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
           pushAll [PlaceDoom (ChaosTokenEffectSource Tablet) target 1 | target <- targets]
         ElderThing -> do

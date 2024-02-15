@@ -48,10 +48,10 @@ getInvestigators :: HasGame m => m [InvestigatorId]
 getInvestigators = getInvestigatorIds
 
 getInvestigatorIds :: HasGame m => m [InvestigatorId]
-getInvestigatorIds = selectList UneliminatedInvestigator
+getInvestigatorIds = select UneliminatedInvestigator
 
 allInvestigatorIds :: HasGame m => m [InvestigatorId]
-allInvestigatorIds = selectList Anyone
+allInvestigatorIds = select Anyone
 
 allInvestigators :: HasGame m => m [InvestigatorId]
 allInvestigators = allInvestigatorIds
@@ -120,7 +120,7 @@ maybeGetSetAsideEncounterCard def = do
           else lookupCard (toCardCode def) (toCardId card)
 
 getSetAsideCardsMatching :: HasGame m => CardMatcher -> m [Card]
-getSetAsideCardsMatching = selectList . SetAsideCardMatch
+getSetAsideCardsMatching = select . SetAsideCardMatch
 
 getJustLocationByName :: (HasCallStack, HasGame m) => Name -> m LocationId
 getJustLocationByName name =
@@ -134,4 +134,4 @@ getLocationByName name = selectOne matcher
     (title, Nothing) -> LocationWithTitle title
 
 enemiesAt :: (HasGame m, IsLocationMatcher locationMatcher) => locationMatcher -> m [EnemyId]
-enemiesAt = selectList . EnemyAt . toLocationMatcher
+enemiesAt = select . EnemyAt . toLocationMatcher

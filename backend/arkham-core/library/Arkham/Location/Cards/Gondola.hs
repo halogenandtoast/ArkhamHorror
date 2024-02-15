@@ -12,6 +12,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Data.List qualified as List
 
 newtype Gondola = Gondola LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -31,7 +32,7 @@ instance HasAbilities Gondola where
 instance RunMessage Gondola where
   runMessage msg l@(Gondola attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
-      locationIds <- setToList . deleteSet (toId attrs) <$> select Anywhere
+      locationIds <- List.delete (toId attrs) <$> select Anywhere
       pushAll
         $ MoveAllTo (toSource attrs) (toId attrs)
         : [RemoveLocation lid | lid <- locationIds]

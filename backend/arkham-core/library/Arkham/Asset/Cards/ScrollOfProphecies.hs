@@ -28,7 +28,7 @@ instance HasAbilities ScrollOfProphecies where
 instance RunMessage ScrollOfProphecies where
   runMessage msg a@(ScrollOfProphecies attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      investigatorIds <- selectList $ affectsOthers $ colocatedWith iid
+      investigatorIds <- select $ affectsOthers $ colocatedWith iid
       investigators <- forToSnd investigatorIds $ \i -> drawCards i (toAbilitySource attrs 1) 3
       player <- getPlayer iid
       push

@@ -22,7 +22,7 @@ brokenRails = treachery BrokenRails Cards.brokenRails
 instance RunMessage BrokenRails where
   runMessage msg t@(BrokenRails attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      investigatorIds <- selectList $ colocatedWith iid
+      investigatorIds <- select $ colocatedWith iid
       investigatorsWhoMustDiscard <-
         filterM
           (fieldP InvestigatorDamage (>= 4))

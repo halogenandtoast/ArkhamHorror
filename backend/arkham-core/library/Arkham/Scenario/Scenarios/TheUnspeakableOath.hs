@@ -95,7 +95,7 @@ investigatorDefeat :: HasGame m => m [Message]
 investigatorDefeat = do
   investigatorIds <- allInvestigatorIds
   players <- allPlayers
-  defeatedInvestigatorIds <- selectList DefeatedInvestigator
+  defeatedInvestigatorIds <- select DefeatedInvestigator
   if null defeatedInvestigatorIds
     then pure []
     else

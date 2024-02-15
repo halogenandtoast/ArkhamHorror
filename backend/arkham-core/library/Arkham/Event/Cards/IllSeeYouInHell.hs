@@ -22,7 +22,7 @@ instance RunMessage IllSeeYouInHell where
   runMessage msg e@(IllSeeYouInHell attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <-
-        selectList
+        select
           $ EnemyIsEngagedWith (InvestigatorWithId iid)
           <> NonEliteEnemy
       defeatEnemyMessages <-

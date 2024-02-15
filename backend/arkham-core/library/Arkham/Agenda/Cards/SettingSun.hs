@@ -29,7 +29,7 @@ instance RunMessage SettingSun where
       push $ Explore iid source (oneOf $ map CardWithPrintedLocationSymbol locationSymbols)
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      iids <- selectList UneliminatedInvestigator
+      iids <- select UneliminatedInvestigator
       pushAll $ map Resign iids
       pure a
     _ -> SettingSun <$> runMessage msg attrs

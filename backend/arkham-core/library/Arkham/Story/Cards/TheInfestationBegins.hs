@@ -31,7 +31,7 @@ theInfestationBegins = story TheInfestationBegins Cards.theInfestationBegins
 instance RunMessage TheInfestationBegins where
   runMessage msg s@(TheInfestationBegins attrs) = case msg of
     ResolveStory _ ResolveIt story' | story' == toId attrs -> do
-      locationsWithMostClues <- selectList $ LocationWithMostClues Anywhere
+      locationsWithMostClues <- select $ LocationWithMostClues Anywhere
       lead <- getLeadPlayer
       playerCount <- getPlayerCount
       pushAll
@@ -46,7 +46,7 @@ instance RunMessage TheInfestationBegins where
         $ TheInfestationBegins
         $ attrs {storyFlipped = True, storyMeta = toJSON initInfestationBag}
     DoStep _ (ResolveStory _ ResolveIt story') | story' == toId attrs -> do
-      locationsWithMostClues <- selectList $ LocationWithMostClues $ NotLocation InfestedLocation
+      locationsWithMostClues <- select $ LocationWithMostClues $ NotLocation InfestedLocation
       lead <- getLeadPlayer
       pushAll
         [ chooseOrRunOne
@@ -101,14 +101,14 @@ instance RunMessage TheInfestationBegins where
         Tablet -> do
           pure ()
         Cultist -> do
-          infestedLocations <- selectList InfestedLocation
+          infestedLocations <- select InfestedLocation
           adjacentLocations <-
             nub
               . concat
               <$> for
                 infestedLocations
                 ( \location ->
-                    selectList
+                    select
                       $ NotLocation (oneOf [InfestedLocation, LocationWithHorror $ atLeast 1])
                       <> ConnectedFrom (LocationWithId location)
                 )
@@ -136,7 +136,7 @@ instance RunMessage TheInfestationBegins where
     FoundEncounterCard _iid (isTarget attrs -> True) (toCard -> card) -> do
       investigators <- getInvestigators
       locations <-
-        nub . concat <$> for investigators \i -> selectList (NearestLocationTo i InfestedLocation)
+        nub . concat <$> for investigators \i -> select (NearestLocationTo i InfestedLocation)
       lead <- getLeadPlayer
       locationsWithCreation <- for locations $ \location -> do
         (location,) <$> createEnemyAt_ card location Nothing

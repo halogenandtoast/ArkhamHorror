@@ -32,7 +32,7 @@ instance HasAbilities OozeAndFilth where
 instance RunMessage OozeAndFilth where
   runMessage msg t@(OozeAndFilth attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      targetAgendas <- selectListMap AgendaTarget AnyAgenda
+      targetAgendas <- selectMap AgendaTarget AnyAgenda
       player <- getPlayer iid
       push
         $ chooseOrRunOne

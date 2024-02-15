@@ -24,13 +24,13 @@ spacesBetween = treachery SpacesBetween Cards.spacesBetween
 instance RunMessage SpacesBetween where
   runMessage msg t@(SpacesBetween attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
-      nonSentinelHillLocations <- selectList $ LocationWithoutTrait SentinelHill
+      nonSentinelHillLocations <- select $ LocationWithoutTrait SentinelHill
       msgs <-
         concatMapM'
           ( \flipLocation -> do
               let locationMatcher = LocationWithId flipLocation
-              investigatorIds <- selectList $ InvestigatorAt locationMatcher
-              enemyIds <- selectList $ EnemyAt locationMatcher <> UnengagedEnemy
+              investigatorIds <- select $ InvestigatorAt locationMatcher
+              enemyIds <- select $ EnemyAt locationMatcher <> UnengagedEnemy
               destination <-
                 fromJustNote "must be connected to a sentinel location"
                   <$> selectOne

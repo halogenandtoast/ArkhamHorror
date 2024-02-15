@@ -41,7 +41,7 @@ instance RunMessage MasterBedroom where
   runMessage msg l@(MasterBedroom attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       enemies <-
-        selectList
+        select
           $ NearestEnemyToLocation
             (toId attrs)
             ( EnemyWithTrait SilverTwilight

@@ -30,13 +30,13 @@ instance HasAbilities BetweenWorlds where
 instance RunMessage BetweenWorlds where
   runMessage msg l@(BetweenWorlds attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      iids <- selectList $ investigatorAt (toId attrs)
+      iids <- select $ investigatorAt (toId attrs)
       if null iids
         then do
           let
             asTreachery =
               lookupEncounterCard Treacheries.betweenWorlds (toCardId attrs)
-          enemies <- selectList $ enemyAt (toId attrs)
+          enemies <- select $ enemyAt (toId attrs)
           pushAll
             $ [EnemyMove enemy (toId attrs) | enemy <- enemies]
             <> [RemoveLocation (toId attrs), AddToEncounterDiscard asTreachery]

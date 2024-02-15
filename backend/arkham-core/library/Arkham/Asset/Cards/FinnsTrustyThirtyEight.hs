@@ -28,7 +28,7 @@ instance HasModifiersFor FinnsTrustyThirtyEight where
     case (mSource, mTarget, miid) of
       (Just source, Just (EnemyTarget eid), Just iid')
         | isSource attrs source && iid == iid' -> do
-            engagedEnemies <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId iid
+            engagedEnemies <- select $ EnemyIsEngagedWith $ InvestigatorWithId iid
             pure $ toModifiers attrs [DamageDealt 1 | eid `notElem` engagedEnemies]
       _ -> pure []
   getModifiersFor _ _ = pure []

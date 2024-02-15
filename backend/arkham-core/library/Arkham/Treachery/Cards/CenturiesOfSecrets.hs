@@ -39,7 +39,7 @@ instance RunMessage CenturiesOfSecrets where
     DiscardedTopOfEncounterDeck iid cards _ (isTarget attrs -> True) -> do
       when (any (`cardMatch` CardWithTrait Curse) cards) $ do
         assetIds <-
-          selectList $ AssetControlledBy (InvestigatorWithId iid) <> AllyAsset
+          select $ AssetControlledBy (InvestigatorWithId iid) <> AllyAsset
         pushAll
           $ InvestigatorDirectDamage iid (toSource attrs) 1 0
           : [Msg.AssetDamage aid (toSource attrs) 1 0 | aid <- assetIds]

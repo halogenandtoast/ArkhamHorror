@@ -7,7 +7,7 @@ where
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Helpers.Location
+import Arkham.Game.Helpers
 import Arkham.Message
 import Arkham.Movement
 import Arkham.Skill.Cards qualified as Cards
@@ -22,14 +22,13 @@ newtype Nimble = Nimble (SkillAttrs `With` Metadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 nimble :: SkillCard Nimble
-nimble =
-  skill (Nimble . (`with` Metadata 0)) Cards.nimble
+nimble = skill (Nimble . (`with` Metadata 0)) Cards.nimble
 
 instance RunMessage Nimble where
   runMessage msg s@(Nimble (attrs `With` meta)) = case msg of
     After (PassedSkillTest _ _ _ SkillTestInitiatorTarget {} _ (min 3 -> n)) | n > 0 -> do
       let iid = skillOwner attrs
-      connectingLocation <- notNull <$> accessibleLocations iid
+      connectingLocation <- notNull <$> getAccessibleLocations iid attrs
       if connectingLocation
         then do
           push $ ResolveSkill (toId attrs)
@@ -37,7 +36,7 @@ instance RunMessage Nimble where
         else pure s
     ResolveSkill sId | sId == toId attrs && moveCount meta > 0 -> do
       let iid = skillOwner attrs
-      connectingLocations <- accessibleLocations iid
+      connectingLocations <- getAccessibleLocations iid attrs
       player <- getPlayer iid
       unless (null connectingLocations) $ do
         push

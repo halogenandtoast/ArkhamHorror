@@ -75,7 +75,7 @@ instance RunMessage BloodRite where
                ]
       pure e
     UseCardAbility iid source 1 _ (DiscardCardPayment xs) | isSource attrs source -> do
-      enemyIds <- selectList $ enemyAtLocationWith iid
+      enemyIds <- select $ enemyAtLocationWith iid
       canDealDamage <- withoutModifier iid CannotDealDamage
       player <- getPlayer iid
       pushAll

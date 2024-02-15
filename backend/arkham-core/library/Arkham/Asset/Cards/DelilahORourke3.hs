@@ -40,7 +40,7 @@ instance RunMessage DelilahORourke3 where
   runMessage msg a@(DelilahORourke3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (totalResourcePayment -> n) -> do
       enemies <-
-        selectList (enemyAtLocationWith iid) >>= mapMaybeM \e -> do
+        select (enemyAtLocationWith iid) >>= mapMaybeM \e -> do
           exhausted <- e <=~> ExhaustedEnemy
           runMaybeT $ do
             evadeVal <- MaybeT $ field Field.EnemyEvade e

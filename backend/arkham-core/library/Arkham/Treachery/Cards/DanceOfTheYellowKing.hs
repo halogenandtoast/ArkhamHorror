@@ -33,7 +33,7 @@ instance RunMessage DanceOfTheYellowKing where
           else gainSurge attrs
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
-      lunatics <- selectList $ NearestEnemy $ EnemyWithTrait Lunatic
+      lunatics <- select $ NearestEnemy $ EnemyWithTrait Lunatic
       mlid <- field InvestigatorLocation iid
       for_ mlid $ \lid -> do
         player <- getPlayer iid

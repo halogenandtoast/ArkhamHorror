@@ -45,7 +45,7 @@ instance HasChaosTokenValue LeoAnderson where
 instance RunMessage LeoAnderson where
   runMessage msg i@(LeoAnderson (attrs `With` meta)) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' payment -> do
-      results <- selectList (InHandOf (InvestigatorWithId iid) <> #ally)
+      results <- select (InHandOf (InvestigatorWithId iid) <> #ally)
       resources <- getSpendableResources iid
       cards <-
         filterM

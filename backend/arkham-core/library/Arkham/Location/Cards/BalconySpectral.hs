@@ -29,7 +29,7 @@ instance HasAbilities BalconySpectral where
 instance RunMessage BalconySpectral where
   runMessage msg l@(BalconySpectral attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      assets <- selectList $ assetControlledBy iid <> AssetWithHealth
+      assets <- select $ assetControlledBy iid <> AssetWithHealth
       player <- getPlayer iid
       push
         $ chooseOneAtATime player

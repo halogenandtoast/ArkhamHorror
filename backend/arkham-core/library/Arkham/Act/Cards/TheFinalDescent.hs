@@ -38,7 +38,7 @@ instance RunMessage TheFinalDescent where
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       investigators <- getInvestigators
-      steps <- selectList $ LocationWithTrait Steps
+      steps <- select $ LocationWithTrait Steps
       placeEnchantedWoods <-
         placeLabeledLocations_ "enchantedWoods"
           . take 6

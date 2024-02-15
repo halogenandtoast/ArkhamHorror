@@ -52,7 +52,7 @@ instance HasAbilities ChapultepecHill_178 where
 instance RunMessage ChapultepecHill_178 where
   runMessage msg l@(ChapultepecHill_178 attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      iids <- selectList $ investigatorAt (toId attrs)
+      iids <- select $ investigatorAt (toId attrs)
       for_ iids $ \iid ->
         pushAll
           [ toMessage $ randomDiscard iid (toAbilitySource attrs 1)

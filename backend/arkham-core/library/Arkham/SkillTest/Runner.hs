@@ -283,7 +283,7 @@ instance RunMessage SkillTest where
       -- player <- getPlayer skillTestInvestigator
       investigatorsToResolveFailure <-
         (`notNullOr` [skillTestInvestigator])
-          <$> selectList (InvestigatorWithModifier ResolvesFailedEffects)
+          <$> select (InvestigatorWithModifier ResolvesFailedEffects)
 
       let needsChoice = skillTestResolveFailureInvestigator `notElem` investigatorsToResolveFailure
       let
@@ -480,7 +480,7 @@ instance RunMessage SkillTest where
         FailedBy _ n -> do
           investigatorsToResolveFailure <-
             (`notNullOr` [skillTestInvestigator])
-              <$> selectList (InvestigatorWithModifier ResolvesFailedEffects)
+              <$> select (InvestigatorWithModifier ResolvesFailedEffects)
 
           let needsChoice = skillTestResolveFailureInvestigator `notElem` investigatorsToResolveFailure
 
@@ -570,7 +570,7 @@ instance RunMessage SkillTest where
         FailedBy _ n -> do
           investigatorsToResolveFailure <-
             (`notNullOr` [skillTestInvestigator])
-              <$> selectList (InvestigatorWithModifier ResolvesFailedEffects)
+              <$> select (InvestigatorWithModifier ResolvesFailedEffects)
 
           let needsChoice = skillTestResolveFailureInvestigator `notElem` investigatorsToResolveFailure
 
@@ -675,12 +675,12 @@ instance RunMessage SkillTest where
         FailedBy _ n ->
           do
             hauntedAbilities <- case (skillTestTarget, skillTestAction) of
-              (LocationTarget lid, Just Action.Investigate) -> selectList $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
+              (LocationTarget lid, Just Action.Investigate) -> select $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
               _ -> pure []
 
             investigatorsToResolveFailure <-
               (`notNullOr` [skillTestInvestigator])
-                <$> selectList (InvestigatorWithModifier ResolvesFailedEffects)
+                <$> select (InvestigatorWithModifier ResolvesFailedEffects)
 
             let needsChoice = skillTestResolveFailureInvestigator `notElem` investigatorsToResolveFailure
 

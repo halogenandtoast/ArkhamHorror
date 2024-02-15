@@ -24,7 +24,7 @@ instance RunMessage Eavesdrop where
   runMessage msg e@(Eavesdrop attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <-
-        selectListMap EnemyTarget
+        selectMap EnemyTarget
           $ UnengagedEnemy
           <> EnemyWithEvade
           <> EnemyAt

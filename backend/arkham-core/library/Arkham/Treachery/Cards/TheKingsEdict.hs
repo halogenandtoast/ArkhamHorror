@@ -20,9 +20,9 @@ theKingsEdict = treachery TheKingsEdict Cards.theKingsEdict
 instance RunMessage TheKingsEdict where
   runMessage msg t@(TheKingsEdict attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
-      cultists <- selectList $ EnemyWithTrait Cultist
+      cultists <- select $ EnemyWithTrait Cultist
       cultistsWithClues <-
-        selectList $ EnemyWithTrait Cultist <> EnemyAt LocationWithAnyClues
+        select $ EnemyWithTrait Cultist <> EnemyAt LocationWithAnyClues
       msgs <- case cultistsWithClues of
         [] -> pure [gainSurge attrs]
         xs -> concatForM xs $ \cultist -> do

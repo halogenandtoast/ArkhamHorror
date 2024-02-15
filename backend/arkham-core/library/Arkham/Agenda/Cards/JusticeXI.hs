@@ -60,7 +60,7 @@ instance RunMessage JusticeXI where
       n <- getSpendableClueCount iids
       targetAmount <- perPlayer 3
       actId <- selectJust AnyAct
-      allLocations <- selectList LocationWithAnyClues
+      allLocations <- select LocationWithAnyClues
       missingPersons <- getRecordedCardCodes MissingPersons
       noCluesOnEntryHall <-
         (== 0)
@@ -79,7 +79,7 @@ instance RunMessage JusticeXI where
           then pure $ map (RemoveAllClues (toSource attrs) . toTarget) iids
           else do
             lead <- getLeadPlayer
-            lids <- selectList $ FarthestLocationFromAll (NotLocation "Entry Hall")
+            lids <- select $ FarthestLocationFromAll (NotLocation "Entry Hall")
             josefMeiger <- getSetAsideCard Enemies.josefMeiger
             pure
               [ SpendClues targetAmount iids

@@ -42,7 +42,7 @@ instance RunMessage TemperanceXIV where
       let mWitch = find (`cardMatch` CardWithTrait Witch) discard
       lead <- getLeadPlayer
       for_ mWitch $ \witch -> do
-        investigators <- selectList InvestigatorWithMostCardsInPlayArea
+        investigators <- select InvestigatorWithMostCardsInPlayArea
         push
           $ chooseOrRunOne
             lead

@@ -34,7 +34,7 @@ instance RunMessage SerpentsIre where
   runMessage msg t@(SerpentsIre (attrs `With` meta)) = case msg of
     Revelation iid source | isSource attrs source -> do
       serpents <-
-        selectList $ OutOfPlayEnemy PursuitZone $ EnemyWithTrait Serpent
+        select $ OutOfPlayEnemy PursuitZone $ EnemyWithTrait Serpent
       fightValue <-
         maybeFieldMax
           (OutOfPlayEnemyField PursuitZone EnemyFight)

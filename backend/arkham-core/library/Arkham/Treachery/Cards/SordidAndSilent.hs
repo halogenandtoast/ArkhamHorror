@@ -37,7 +37,7 @@ instance RunMessage SordidAndSilent where
     UseCardAbility _ source 1 _ _ | isSource attrs source ->
       case treacheryAttachedTarget attrs of
         Just (LocationTarget lid) -> do
-          iids <- selectList $ InvestigatorAt $ LocationWithId lid
+          iids <- select $ InvestigatorAt $ LocationWithId lid
           pushAll
             [ InvestigatorAssignDamage iid source DamageAny 0 1
             | iid <- iids

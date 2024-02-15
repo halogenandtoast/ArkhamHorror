@@ -59,7 +59,7 @@ instance RunMessage WatchersGrasp where
       pure t
     RevelationChoice _ (isSource attrs -> True) _ -> do
       theSpectralWatcher <- selectJust (enemyIs Enemies.theSpectralWatcher)
-      iids <- selectList $ investigatorEngagedWith theSpectralWatcher
+      iids <- select $ investigatorEngagedWith theSpectralWatcher
 
       modifiers' <- getModifiers (EnemyTarget theSpectralWatcher)
       unless (CannotAttack `elem` modifiers') $ do

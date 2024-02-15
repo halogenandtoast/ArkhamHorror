@@ -26,7 +26,7 @@ instance RunMessage ZoogBurrow where
       push $ revelationSkillTest iid attrs #agility 3
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      zoogs <- selectList $ NearestEnemyTo iid $ EnemyWithTrait Zoog <> SwarmingEnemy <> NotEnemy IsSwarm
+      zoogs <- select $ NearestEnemyTo iid $ EnemyWithTrait Zoog <> SwarmingEnemy <> NotEnemy IsSwarm
       if null zoogs
         then push $ findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Zoog
         else do

@@ -21,7 +21,7 @@ instance HasAbilities MrPeabody where
 instance RunMessage MrPeabody where
   runMessage msg a@(MrPeabody attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      locations <- selectList Anywhere
+      locations <- select Anywhere
       player <- getPlayer iid
       push
         $ chooseOne

@@ -38,7 +38,7 @@ getDamageAndHorror (_ : xs) = getDamageAndHorror xs
 instance RunMessage DelayTheInevitable where
   runMessage msg e@(DelayTheInevitable attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      iids <- selectList $ affectsOthers $ colocatedWith iid
+      iids <- select $ affectsOthers $ colocatedWith iid
       player <- getPlayer iid
       push
         $ chooseOrRunOne

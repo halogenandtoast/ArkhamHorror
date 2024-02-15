@@ -33,5 +33,5 @@ spec = withApp $ do
     it "leaves the user table empty" $ do
       get HomeR
       statusIs 200
-      users <- runDB $ selectList ([] :: [Filter User]) []
+      users <- runDB $ select ([] :: [Filter User]) []
       assertEq "user table empty" 0 $ length users

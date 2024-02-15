@@ -24,9 +24,9 @@ instance RunMessage Teamwork where
       push $ ResolveEvent iid eid mtarget windows'
       pure e
     ResolveEvent iid eid mtarget windows' | eid == eventId -> do
-      investigators <- selectList $ colocatedWith iid
+      investigators <- select $ colocatedWith iid
       assetsWithInvestigator <- concatForM investigators \investigator -> do
-        selectListMap (investigator,)
+        selectMap (investigator,)
           $ assetControlledBy investigator
           <> oneOf (map AssetWithTrait [Ally, Item])
       player <- getPlayer iid

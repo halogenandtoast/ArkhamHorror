@@ -35,7 +35,7 @@ instance RunMessage BookOfShadows3 where
       push $ AddSlot iid #arcane (slot attrs)
       BookOfShadows3 <$> runMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      spellAssets <- selectList $ assetControlledBy iid <> withTrait Spell
+      spellAssets <- select $ assetControlledBy iid <> withTrait Spell
       player <- getPlayer iid
       pushIfAny spellAssets
         $ chooseOne player

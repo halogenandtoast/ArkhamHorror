@@ -23,7 +23,7 @@ instance RunMessage TrueSurvivor3 where
   runMessage msg e@(TrueSurvivor3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       targets <-
-        selectList
+        select
           $ InDiscardOf (InvestigatorWithId iid)
           <> BasicCardMatch
             (CardWithTrait Innate)

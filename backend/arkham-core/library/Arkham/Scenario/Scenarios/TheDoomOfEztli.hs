@@ -116,7 +116,7 @@ standaloneCampaignLog =
 
 investigatorDefeat :: HasGame m => ScenarioAttrs -> m [Message]
 investigatorDefeat attrs = do
-  defeatedInvestigatorIds <- selectList DefeatedInvestigator
+  defeatedInvestigatorIds <- select DefeatedInvestigator
   if null defeatedInvestigatorIds
     then pure []
     else do

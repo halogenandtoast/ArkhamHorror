@@ -23,7 +23,7 @@ instance RunMessage LucidDreaming2 where
   runMessage msg e@(LucidDreaming2 attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       cards <-
-        selectList $ oneOf [InHandOf (InvestigatorWithId iid), InPlayAreaOf (InvestigatorWithId iid)]
+        select $ oneOf [InHandOf (InvestigatorWithId iid), InPlayAreaOf (InvestigatorWithId iid)]
       player <- getPlayer iid
       push
         $ chooseOne

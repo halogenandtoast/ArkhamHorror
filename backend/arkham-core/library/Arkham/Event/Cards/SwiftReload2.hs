@@ -26,7 +26,7 @@ swiftReload2 = event SwiftReload2 Cards.swiftReload2
 instance RunMessage SwiftReload2 where
   runMessage msg e@(SwiftReload2 attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      firearms <- selectList $ assetControlledBy iid <> AssetWithTrait Firearm <> AssetNotAtUsesX
+      firearms <- select $ assetControlledBy iid <> AssetWithTrait Firearm <> AssetNotAtUsesX
       player <- getPlayer iid
       push
         $ chooseOne

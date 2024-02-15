@@ -29,7 +29,7 @@ instance RunMessage PatricesViolin where
   runMessage msg a@(PatricesViolin attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       investigators <-
-        selectList $ affectsOthers $ colocatedWith iid <> oneOf [can.gain.resources, can.draw.cards]
+        select $ affectsOthers $ colocatedWith iid <> oneOf [can.gain.resources, can.draw.cards]
       player <- getPlayer iid
       push
         $ chooseOrRunOne player

@@ -39,7 +39,7 @@ instance RunMessage TheyreGettingOut where
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       lead <- getLeadPlayer
-      enemiesToMove <- selectList $ UnengagedEnemy <> withTrait Ghoul <> NotEnemy (EnemyAt "Parlor")
+      enemiesToMove <- select $ UnengagedEnemy <> withTrait Ghoul <> NotEnemy (EnemyAt "Parlor")
 
       pushIfAny enemiesToMove
         $ chooseOneAtATime lead

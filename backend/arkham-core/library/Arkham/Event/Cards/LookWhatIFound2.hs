@@ -24,7 +24,7 @@ instance RunMessage LookWhatIFound2 where
       pure e
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
       locations <-
-        selectList
+        select
           $ LocationMatchAny [YourLocation, ConnectedLocation]
           <> LocationWithAnyClues
       player <- getPlayer iid

@@ -63,7 +63,7 @@ instance RunMessage OverTheThreshold where
         catMaybes <$> for
           spectralEnemies
           \(enemy, damage) -> do
-            humanoids <- selectList $ EnemyWithTrait Humanoid <> EnemyAt (locationWithEnemy enemy)
+            humanoids <- select $ EnemyWithTrait Humanoid <> EnemyAt (locationWithEnemy enemy)
             pure $ guard (notNull humanoids) $> (enemy, damage, humanoids)
       lead <- getLeadPlayer
       pushWhen (notNull enemyPairs)

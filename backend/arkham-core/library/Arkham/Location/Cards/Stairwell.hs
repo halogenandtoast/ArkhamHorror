@@ -29,7 +29,7 @@ instance RunMessage Stairwell where
   runMessage msg l@(Stairwell attrs) =
     case msg of
       UseThisAbility iid (isSource attrs -> True) 1 -> do
-        basementLocations <- selectList $ LocationWithTrait Basement
+        basementLocations <- select $ LocationWithTrait Basement
         player <- getPlayer iid
         push
           $ chooseOne

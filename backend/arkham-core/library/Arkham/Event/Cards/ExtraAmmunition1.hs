@@ -21,7 +21,7 @@ instance RunMessage ExtraAmmunition1 where
   runMessage msg e@(ExtraAmmunition1 attrs) = case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
       investigatorTargets <- guardAffectsColocated iid
-      firearms <- selectList $ AssetWithTrait Firearm <> AssetControlledBy investigatorTargets
+      firearms <- select $ AssetWithTrait Firearm <> AssetControlledBy investigatorTargets
       player <- getPlayer iid
       push $ chooseOrRunOne player [targetLabel firearm [AddUses firearm Ammo 3] | firearm <- firearms]
       pure e

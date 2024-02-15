@@ -25,11 +25,11 @@ instance RunMessage Enraptured where
     PassedSkillTest _ (Just Action.Investigate) _ (isTarget attrs -> True) _ _ ->
       do
         chargeAssets <-
-          selectList
+          select
             $ assetControlledBy (skillOwner attrs)
             <> AssetWithUseType Uses.Charge
         secretAssets <-
-          selectList
+          select
             $ assetControlledBy (skillOwner attrs)
             <> AssetWithUseType Uses.Secret
         player <- getPlayer (skillOwner attrs)

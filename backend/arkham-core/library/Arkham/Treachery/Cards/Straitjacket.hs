@@ -30,7 +30,7 @@ instance RunMessage Straitjacket where
           <> assetIs Assets.straitjacket
       unless alreadyInStraitJacket $ do
         returnableAssets <-
-          selectList
+          select
             $ assetControlledBy iid
             <> AssetCanLeavePlayByNormalMeans
             <> AssetOneOf [AssetInSlot BodySlot, AssetInSlot HandSlot]

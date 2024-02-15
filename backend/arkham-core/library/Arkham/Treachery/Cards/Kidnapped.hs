@@ -47,7 +47,7 @@ instance RunMessage Kidnapped where
           ]
       pure t
     FailedSkillTest iid _ _ (SkillTestInitiatorTarget target) _ _ | isTarget attrs target -> do
-      allies <- selectList (AssetControlledBy You <> AllyAsset)
+      allies <- select (AssetControlledBy You <> AllyAsset)
       if null allies
         then push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
         else do

@@ -45,7 +45,7 @@ instance HasAbilities DayanaEsperence3 where
 instance RunMessage DayanaEsperence3 where
   runMessage msg a@(DayanaEsperence3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      cards <- selectList $ InHandOf You <> BasicCardMatch (NonWeakness <> #spell <> #event)
+      cards <- select $ InHandOf You <> BasicCardMatch (NonWeakness <> #spell <> #event)
 
       player <- getPlayer iid
       push

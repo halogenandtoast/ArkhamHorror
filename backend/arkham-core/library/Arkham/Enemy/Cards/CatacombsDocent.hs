@@ -39,7 +39,7 @@ instance RunMessage CatacombsDocent where
       push $ parley iid attrs attrs #intellect 4
       pure e
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
-      unrevealedLocations <- selectList UnrevealedLocation
+      unrevealedLocations <- select UnrevealedLocation
       player <- getPlayer iid
       push
         $ chooseOne

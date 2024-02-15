@@ -53,10 +53,10 @@ instance RunMessage MagicAndScience where
       (leadInvestigatorId, lead) <- getLeadInvestigatorPlayer
       chamberOfTime <- selectJust $ locationIs Locations.chamberOfTime
       relicOfAges <- selectJust $ assetIs Assets.relicOfAgesADeviceOfSomeSort
-      investigators <- selectList $ investigatorAt chamberOfTime
+      investigators <- select $ investigatorAt chamberOfTime
       entryway <- selectJust $ locationIs Locations.entryway
       otherLocations <-
-        selectList
+        select
           $ NotLocation
           $ LocationMatchAny
             [LocationWithId chamberOfTime, LocationWithId entryway]

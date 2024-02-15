@@ -23,7 +23,7 @@ instance RunMessage WaresOfBaharna where
   runMessage msg s@(WaresOfBaharna attrs) = case msg of
     ResolveStory _ ResolveIt story' | story' == toId attrs -> do
       investigators <-
-        selectList
+        select
           $ at_ (locationIs Locations.baharna)
           <> DiscardWith (HasCard $ hasAnyTrait [Item, Supply])
           <> can.have.cards.leaveDiscard

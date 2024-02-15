@@ -38,7 +38,7 @@ instance RunMessage TheTerrifyingTruth where
   runMessage msg a@(TheTerrifyingTruth attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       storyCards <-
-        selectList
+        select
           (UnderScenarioReferenceMatch $ CardWithType StoryType)
       result <- case storyCards of
         [] -> pure $ AdvanceAgenda (toId attrs)

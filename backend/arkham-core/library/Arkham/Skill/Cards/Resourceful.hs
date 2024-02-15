@@ -24,7 +24,7 @@ instance RunMessage Resourceful where
   runMessage msg s@(Resourceful attrs) = case msg of
     PassedSkillTest _ _ _ target _ _ | isTarget attrs target -> do
       targets <-
-        selectList
+        select
           ( InDiscardOf (InvestigatorWithId $ skillOwner attrs)
               <> BasicCardMatch
                 (CardWithClass Survivor <> NotCard (CardWithTitle "Resourceful"))

@@ -94,7 +94,7 @@ instance RunMessage DancersMist where
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       startId <- fieldJust InvestigatorLocation iid
-      accessibleLocationIds <- selectList $ AccessibleFrom $ LocationWithId startId
+      accessibleLocationIds <- select $ AccessibleFrom $ LocationWithId startId
       player <- getPlayer iid
       push
         $ chooseOne

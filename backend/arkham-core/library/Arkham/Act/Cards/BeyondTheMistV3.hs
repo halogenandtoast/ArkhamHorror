@@ -51,7 +51,7 @@ instance RunMessage BeyondTheMistV3 where
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       geistTrap <- getJustLocationByName "The Geist-Trap"
-      investigatorsAtUnvisitedIsles <- selectList $ InvestigatorAt (LocationWithTitle "Unvisited Isle")
+      investigatorsAtUnvisitedIsles <- select $ InvestigatorAt (LocationWithTitle "Unvisited Isle")
       players <- getPlayerCount
       lodgeNeophytes <-
         take (if players > 2 then 2 else 1) <$> getSetAsideCardsMatching (cardIs Enemies.lodgeNeophyte)

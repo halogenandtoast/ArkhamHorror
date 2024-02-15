@@ -45,7 +45,7 @@ instance RunMessage LonnieRitter where
   runMessage msg a@(LonnieRitter attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       items <-
-        selectList
+        select
           $ HealableAsset (toSource attrs) DamageType
           $ AssetWithTrait Item
           <> AssetControlledBy (affectsOthers $ InvestigatorAt $ locationWithInvestigator iid)

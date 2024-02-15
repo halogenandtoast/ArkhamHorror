@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Movement
 import Arkham.Placement
@@ -38,7 +39,7 @@ instance RunMessage Shortcut2 where
       push $ PlaceEvent iid eid (AttachedToLocation lid)
       pure e
     UseThisAbility iid (ProxySource _ (isSource attrs -> True)) 1 -> do
-      connectingLocations <- selectList $ AccessibleLocation
+      connectingLocations <- getAccessibleLocations iid attrs
       player <- getPlayer iid
       push $ chooseOne player $ targetLabels connectingLocations (only . Move . move (toSource attrs) iid)
       pure e

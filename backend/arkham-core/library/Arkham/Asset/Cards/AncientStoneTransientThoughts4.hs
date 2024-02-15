@@ -41,7 +41,7 @@ instance RunMessage AncientStoneTransientThoughts4 where
       pushAll $ replicate n $ UseCardAbilityStep iid (toSource attrs) 1 ws p 1
       pure a
     UseCardAbilityStep iid (isSource attrs -> True) 1 _ _ 1 -> do
-      targets <- selectList $ AccessibleFrom $ locationWithInvestigator iid
+      targets <- select $ AccessibleFrom $ locationWithInvestigator iid
       player <- getPlayer iid
       pushWhen (notNull targets)
         $ chooseOne player

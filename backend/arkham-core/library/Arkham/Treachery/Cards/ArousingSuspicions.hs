@@ -23,7 +23,7 @@ instance RunMessage ArousingSuspicions where
   runMessage msg t@(ArousingSuspicions attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       criminals <-
-        selectList
+        select
           $ enemyAtLocationWith iid
           <> EnemyWithTrait Criminal
           <> EnemyWithoutModifier CannotPlaceDoomOnThis

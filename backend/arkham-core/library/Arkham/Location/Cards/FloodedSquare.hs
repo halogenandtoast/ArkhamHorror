@@ -50,7 +50,7 @@ instance RunMessage FloodedSquare where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       mCounterClockwiseLocation <- getCounterClockwiseLocation (toId attrs)
       for_ mCounterClockwiseLocation $ \counterClockwiseLocation -> do
-        nonEliteEnemies <- selectList $ NonEliteEnemy <> enemyAt counterClockwiseLocation
+        nonEliteEnemies <- select $ NonEliteEnemy <> enemyAt counterClockwiseLocation
         player <- getPlayer iid
         push
           $ chooseOne

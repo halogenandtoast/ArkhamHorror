@@ -23,7 +23,7 @@ instance RunMessage DelveTooDeep where
     PlayThisEvent iid eid | eid == toId attrs -> do
       investigators <-
         traverse (traverseToSnd getPlayer)
-          =<< selectList
+          =<< select
           =<< guardAffectsOthers iid UneliminatedInvestigator
       eachInvestigator <- getInvestigators
       pushAll

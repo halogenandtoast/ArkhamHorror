@@ -68,7 +68,7 @@ instance RunMessage MedicalStudent where
             $ HealableAsset (toSource attrs) #damage
             $ AssetAt (locationWithInvestigator iid)
             <> AssetControlledBy (affectsOthers Anyone)
-        let allAssets = setToList $ horrorAssets <> damageAssets
+        let allAssets = horrorAssets <> damageAssets
         pure $ flip map allAssets $ \asset' ->
           let target = AssetTarget asset'
            in targetLabel
@@ -78,13 +78,13 @@ instance RunMessage MedicalStudent where
                         DamageToken
                         target
                         [HealDamage target (toSource attrs) 1]
-                      | asset' `member` damageAssets
+                      | asset' `elem` damageAssets
                       ]
                     <> [ componentLabel
                         HorrorToken
                         target
                         [HealHorror target (toSource attrs) 1]
-                       | asset' `member` horrorAssets
+                       | asset' `elem` horrorAssets
                        ]
                 ]
 
@@ -99,11 +99,11 @@ instance RunMessage MedicalStudent where
             $ colocatedWith iid
         let
           allInvestigators =
-            setToList $ horrorInvestigators <> damageInvestigators
+            horrorInvestigators <> damageInvestigators
         for allInvestigators $ \i -> do
           let target = InvestigatorTarget i
           mHealHorror <-
-            if i `member` horrorInvestigators
+            if i `elem` horrorInvestigators
               then getHealHorrorMessage attrs 1 i
               else pure Nothing
           pure
@@ -114,7 +114,7 @@ instance RunMessage MedicalStudent where
                       DamageToken
                       target
                       [HealDamage target (toSource attrs) 1]
-                    | i `member` damageInvestigators
+                    | i `elem` damageInvestigators
                     ]
                   <> [ componentLabel HorrorToken target [healHorror]
                      | healHorror <- maybeToList mHealHorror

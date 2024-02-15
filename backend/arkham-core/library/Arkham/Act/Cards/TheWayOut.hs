@@ -51,14 +51,14 @@ instance RunMessage TheWayOut where
       lead <- getLeadPlayer
       theGateToHell <- selectJust $ locationIs $ Locations.theGateToHell
       locations <-
-        selectList
+        select
           $ FarthestLocationFromLocation theGateToHell Anywhere
       locationsWithInvestigatorsAndEnemiesAndConnectedLocations <-
         for locations $ \location -> do
-          investigators <- selectList $ InvestigatorAt $ LocationWithId location
-          enemies <- selectList $ EnemyAt $ LocationWithId location
+          investigators <- select $ InvestigatorAt $ LocationWithId location
+          enemies <- select $ EnemyAt $ LocationWithId location
           connectedLocations <-
-            selectList
+            select
               $ AccessibleFrom
               $ LocationWithId
                 location

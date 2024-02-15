@@ -22,7 +22,7 @@ theTempleWarden =
 instance RunMessage TheTempleWarden where
   runMessage msg a@(TheTempleWarden attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      iids <- selectList UneliminatedInvestigator
+      iids <- select UneliminatedInvestigator
       pushAll $ map (InvestigatorDefeated (toSource attrs)) iids
       pure a
     _ -> TheTempleWarden <$> runMessage msg attrs

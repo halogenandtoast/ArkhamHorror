@@ -52,7 +52,7 @@ instance RunMessage BidingItsTime where
       when (toCardCode card /= CardCode "02255") (throwIO $ InvalidState "wrong card")
       lead <- getLead
       location <- fieldJust InvestigatorLocation lead
-      investigators <- selectList $ colocatedWith lead
+      investigators <- select $ colocatedWith lead
       enemyCreation <- createEnemy card location
       pushAll
         $ toMessage enemyCreation

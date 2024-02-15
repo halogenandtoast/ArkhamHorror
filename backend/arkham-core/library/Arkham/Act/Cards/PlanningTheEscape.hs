@@ -30,7 +30,7 @@ instance HasModifiersFor PlanningTheEscape where
     targets <- select UnrevealedLocation
     pure
       [ toModifier attrs (TraitRestrictedModifier ArkhamAsylum Blank)
-      | lid `member` targets
+      | lid `elem` targets
       ]
   getModifiersFor _ _ = pure []
 
@@ -89,7 +89,7 @@ instance RunMessage PlanningTheEscape where
     RequestedEncounterCard source _ mcard | isSource attrs source -> do
       lead <- getLeadPlayer
       for_ mcard $ \card -> do
-        investigators <- selectList (InvestigatorWithLowestSkill SkillWillpower)
+        investigators <- select (InvestigatorWithLowestSkill SkillWillpower)
         case investigators of
           [] -> error "Should have at least one investigator"
           xs ->

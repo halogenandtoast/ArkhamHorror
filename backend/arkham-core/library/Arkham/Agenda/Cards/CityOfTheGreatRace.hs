@@ -40,7 +40,7 @@ instance RunMessage CityOfTheGreatRace where
           then do
             lead <- getLeadPlayer
             custodian <- selectJust $ assetIs Assets.theCustodian
-            locationWithMostClues <- selectList $ LocationWithMostClues Anywhere
+            locationWithMostClues <- select $ LocationWithMostClues Anywhere
             pure
               $ [ chooseOrRunOne
                     lead

@@ -25,7 +25,7 @@ decipheredReality5 = event DecipheredReality5 Cards.decipheredReality5
 instance RunMessage DecipheredReality5 where
   runMessage msg e@(DecipheredReality5 attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      locationIds <- selectList RevealedLocation
+      locationIds <- select RevealedLocation
       maxShroud <- maximum . ncons 0 <$> traverse (field LocationShroud) locationIds
       investigation <- mkInvestigate iid attrs <&> setTarget attrs
 
@@ -38,7 +38,7 @@ instance RunMessage DecipheredReality5 where
       -- Deciphered Reality is not a replacement effect; its effect doesn’t use
       -- any form of ‘instead’ or ‘but,’ so its effect is in addition to the
       -- standard rewards for successfully investigating.
-      locationIds <- selectList RevealedLocation
+      locationIds <- select RevealedLocation
       pushAll
         $ Successful (Action.Investigate, actionTarget) iid source target n
         : [ InvestigatorDiscoverClues iid lid' (toSource attrs) 1 Nothing

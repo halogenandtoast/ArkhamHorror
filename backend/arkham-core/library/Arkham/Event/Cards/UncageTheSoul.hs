@@ -30,7 +30,7 @@ instance RunMessage UncageTheSoul where
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       let windows'' = nub $ windows' <> map mkWhen [Window.DuringTurn iid, Window.NonFast, Window.FastPlayerWindow]
       availableResources <- getSpendableResources iid
-      results <- selectList $ inHandOf iid <> basic (oneOf [CardWithTrait Spell, CardWithTrait Ritual])
+      results <- select $ inHandOf iid <> basic (oneOf [CardWithTrait Spell, CardWithTrait Ritual])
       cards <-
         filterM
           (getIsPlayableWithResources iid GameSource (availableResources + 3) UnpaidCost windows'')

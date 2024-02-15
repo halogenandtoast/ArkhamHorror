@@ -28,6 +28,7 @@ import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheMidnightMasks.Story
 import Arkham.Token
 import Arkham.Trait qualified as Trait
+import Data.List qualified as List
 
 newtype TheMidnightMasks = TheMidnightMasks ScenarioAttrs
   deriving stock (Generic)
@@ -59,18 +60,17 @@ instance HasChaosTokenValue TheMidnightMasks where
     Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-allCultists :: Set CardCode
+allCultists :: [CardCode]
 allCultists =
-  setFromList
-    $ map
-      toCardCode
-      [ Enemies.wolfManDrew
-      , Enemies.hermanCollins
-      , Enemies.peterWarren
-      , Enemies.victoriaDevereux
-      , Enemies.ruthTurner
-      , Enemies.theMaskedHunter
-      ]
+  map
+    toCardCode
+    [ Enemies.wolfManDrew
+    , Enemies.hermanCollins
+    , Enemies.peterWarren
+    , Enemies.victoriaDevereux
+    , Enemies.ruthTurner
+    , Enemies.theMaskedHunter
+    ]
 
 instance RunMessage TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs) = case msg of
@@ -162,7 +162,7 @@ instance RunMessage TheMidnightMasks where
               & (agendaStackL . at 1 ?~ agendas)
           )
     ResolveChaosToken _ Cultist iid | isEasyStandard attrs -> do
-      closestCultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
+      closestCultists <- select $ NearestEnemy $ EnemyWithTrait Trait.Cultist
       player <- getPlayer iid
       case closestCultists of
         [] -> pure ()
@@ -173,7 +173,7 @@ instance RunMessage TheMidnightMasks where
             $ [targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom 1] | x <- xs]
       pure s
     ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
-      cultists <- selectList $ EnemyWithTrait Trait.Cultist
+      cultists <- select $ EnemyWithTrait Trait.Cultist
       case cultists of
         [] -> push $ DrawAnotherChaosToken iid
         xs -> pushAll [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget eid) Doom 1 | eid <- xs]
@@ -189,12 +189,12 @@ instance RunMessage TheMidnightMasks where
       pure s
     ScenarioResolution (Resolution n) -> do
       players <- allPlayers
-      victoryDisplay <- mapSet toCardCode <$> select (VictoryDisplayCardMatch AnyCard)
+      victoryDisplay <- selectMap toCardCode (VictoryDisplayCardMatch AnyCard)
       gainXp <- toGainXp attrs getXp
       let
         resolution = if n == 1 then resolution1 else resolution2
-        cultistsWeInterrogated = allCultists `intersection` victoryDisplay
-        cultistsWhoGotAway = allCultists `difference` cultistsWeInterrogated
+        cultistsWeInterrogated = allCultists `List.intersect` victoryDisplay
+        cultistsWhoGotAway = allCultists \\ cultistsWeInterrogated
         ghoulPriestDefeated = toCardCode Enemies.ghoulPriest `elem` victoryDisplay
       pushAll
         $ [ story players resolution

@@ -30,7 +30,7 @@ instance RunMessage CorpseDweller where
     EnemySpawn miid lid eid | eid == toId attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       let iid = fromMaybe leadInvestigatorId miid
-      humanoids <- selectList $ EnemyWithTrait Humanoid <> enemyAt lid
+      humanoids <- select $ EnemyWithTrait Humanoid <> enemyAt lid
       player <- getPlayer iid
       push
         $ chooseOrRunOne player

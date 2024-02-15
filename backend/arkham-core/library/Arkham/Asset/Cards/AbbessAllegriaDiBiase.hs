@@ -36,7 +36,7 @@ instance RunMessage AbbessAllegriaDiBiase where
       abbessLocation <- fieldJust AssetLocation attrs
       if location == abbessLocation
         then do
-          connectedLocations <- selectList $ accessibleFrom location
+          connectedLocations <- select $ accessibleFrom location
           player <- getPlayer iid
           push
             $ chooseOrRunOne player

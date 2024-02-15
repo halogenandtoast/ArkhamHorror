@@ -22,7 +22,7 @@ instance RunMessage EmergencyCache3 where
   runMessage msg e@(EmergencyCache3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       supplyAssets <-
-        selectList
+        select
           $ AssetControlledBy (affectsOthers $ colocatedWith iid)
           <> AssetWithUses Supply
           <> AssetNotAtUseLimit

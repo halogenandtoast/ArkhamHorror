@@ -33,7 +33,7 @@ instance RunMessage SinisterSolution where
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       player <- getPlayer iid
-      investigators <- selectList $ NotInvestigator $ InvestigatorWithId iid
+      investigators <- select $ NotInvestigator $ InvestigatorWithId iid
       push
         $ chooseOrRunOne player
         $ targetLabels investigators

@@ -49,7 +49,7 @@ instance RunMessage AncientStoneKnowledgeOfTheElders4 where
           msg
           (attrs {assetPrintedUses = Uses Secret (Static n), assetUses = singletonMap Secret n})
     UseCardAbility iid (isSource attrs -> True) 1 _ (getDamage -> damage) -> do
-      enemies <- selectList $ EnemyAt $ locationWithInvestigator iid
+      enemies <- select $ EnemyAt $ locationWithInvestigator iid
       player <- getPlayer iid
       push
         $ chooseOrRunOne player

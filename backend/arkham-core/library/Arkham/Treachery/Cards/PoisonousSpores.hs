@@ -38,12 +38,12 @@ instance RunMessage PoisonousSpores where
       case treacheryPlacement attrs of
         TreacheryAttachedTo (LocationTarget lid) -> do
           takesHorror <-
-            selectList
+            select
               $ investigatorAt lid
               <> HasMatchingTreachery
                 (treacheryIs Treacheries.poisoned)
           gainsPoisoned <-
-            selectList
+            select
               $ investigatorAt lid
               <> NotInvestigator
                 (HasMatchingTreachery $ treacheryIs Treacheries.poisoned)

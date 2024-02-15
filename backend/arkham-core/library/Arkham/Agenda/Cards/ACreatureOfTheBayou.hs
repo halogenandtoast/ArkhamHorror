@@ -36,7 +36,7 @@ instance RunMessage ACreatureOfTheBayou where
               ]
         Just eid -> do
           lead <- getLeadPlayer
-          targets <- setToList <$> nonBayouLocations
+          targets <- nonBayouLocations
           nonBayouLocationsWithClueCounts <-
             sortOn snd
               <$> forToSnd targets (field LocationClues)

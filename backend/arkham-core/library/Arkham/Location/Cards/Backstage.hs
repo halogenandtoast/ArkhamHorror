@@ -50,7 +50,7 @@ instance RunMessage Backstage where
         zip [backstageDoorwayCount ..]
           . take 2
           <$> ( shuffleM
-                  =<< selectList
+                  =<< select
                     (SetAsideCardMatch $ CardWithTitle "Backstage Doorway")
               )
       msgs <-

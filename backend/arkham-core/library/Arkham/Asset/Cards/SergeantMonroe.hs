@@ -61,7 +61,7 @@ instance RunMessage SergeantMonroe where
     UseCardAbility iid (isSource attrs -> True) 1 windows' _ -> do
       let damage = getDamage windows'
       let horror = getHorror windows'
-      enemies <- selectList $ enemyAtLocationWith iid <> EnemyWithoutTrait Innocent
+      enemies <- select $ enemyAtLocationWith iid <> EnemyWithoutTrait Innocent
       player <- getPlayer iid
       let deal n =
             chooseOrRunOne player

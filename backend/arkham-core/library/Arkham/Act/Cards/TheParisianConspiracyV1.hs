@@ -46,7 +46,7 @@ instance RunMessage TheParisianConspiracyV1 where
             ]
         _ -> do
           investigatorIds <- getInvestigatorIds
-          locationIds <- selectList $ FarthestLocationFromAll Anywhere
+          locationIds <- select $ FarthestLocationFromAll Anywhere
           lead <- getLeadPlayer
 
           choices <- for locationIds $ \lid -> do

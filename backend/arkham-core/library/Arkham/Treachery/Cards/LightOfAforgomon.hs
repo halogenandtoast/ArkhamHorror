@@ -28,13 +28,13 @@ instance RunMessage LightOfAforgomon where
   runMessage msg (LightOfAforgomon attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       targetActs <-
-        selectListMap ActTarget
+        selectMap ActTarget
           $ NotAct
           $ ActWithTreachery
           $ treacheryIs
             Cards.lightOfAforgomon
       targetAgendas <-
-        selectListMap AgendaTarget
+        selectMap AgendaTarget
           $ NotAgenda
           $ AgendaWithTreachery
           $ treacheryIs Cards.lightOfAforgomon

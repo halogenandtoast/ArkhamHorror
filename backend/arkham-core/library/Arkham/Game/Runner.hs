@@ -340,10 +340,50 @@ runGameMessage msg g = case msg of
     pure $ g & activeCostL %~ insertMap (activeCostId activeCost) activeCost
   CancelCost acId -> do
     pure $ g & activeCostL %~ deleteMap acId
+  PayAdditionalCost iid batchId cost -> do
+    acId <- getRandom
+    let
+      activeCost =
+        ActiveCost
+          { activeCostId = acId
+          , activeCostCosts = cost
+          , activeCostPayments = Cost.NoPayment
+          , activeCostTarget = ForAdditionalCost batchId
+          , activeCostWindows = []
+          , activeCostInvestigator = iid
+          , activeCostSealedChaosTokens = []
+          }
+    push $ CreatedCost acId
+    pure $ g & activeCostL %~ insertMap acId activeCost
   PayForAbility ability windows' -> do
     acId <- getRandom
     iid <- toId <$> getActiveInvestigator
     modifiers' <- getModifiers (AbilityTarget iid ability)
+    -- TODO: we might want to check the ability index and source
+    let
+      isMovement = abilityIs ability #move
+
+    leaveCosts <-
+      if isMovement
+        then do
+          mlocation <- getMaybeLocation iid
+          case mlocation of
+            Nothing -> pure []
+            Just lid -> do
+              mods' <- getModifiers lid
+              pure [c | AdditionalCostToLeave c <- mods']
+        else pure []
+
+    -- TODO: we might care about other sources here
+    enterCosts <-
+      if isMovement
+        then case abilitySource ability of
+          LocationSource lid -> do
+            mods' <- getModifiers lid
+            pure [c | AdditionalCostToEnter c <- mods']
+          _ -> pure []
+        else pure []
+
     let
       costF =
         case find isSetCost modifiers' of
@@ -359,7 +399,8 @@ runGameMessage msg g = case msg of
       activeCost =
         ActiveCost
           { activeCostId = acId
-          , activeCostCosts = mconcat (costF (abilityCost ability) : additionalCosts)
+          , activeCostCosts =
+              mconcat (costF (abilityCost ability) : additionalCosts ++ leaveCosts ++ enterCosts)
           , activeCostPayments = Cost.NoPayment
           , activeCostTarget = ForAbility ability
           , activeCostWindows = windows'
@@ -546,7 +587,7 @@ runGameMessage msg g = case msg of
                 }
     -- todo: should we just run this in place?
     lead <- getLead
-    enemies <- selectList $ enemyAt lid
+    enemies <- select $ enemyAt lid
     afterPutIntoPlayWindow <-
       checkWindows
         [mkAfter (Window.PutLocationIntoPlay lead lid)]
@@ -613,7 +654,7 @@ runGameMessage msg g = case msg of
       Discard _ _ (EnemyTarget eid') -> eid == eid'
       _ -> False
     enemy <- getEnemy eid
-    swarms <- selectList $ SwarmOf eid
+    swarms <- select $ SwarmOf eid
 
     case attr enemyPlacement enemy of
       AsSwarm _ c -> case toCardOwner c of
@@ -650,15 +691,15 @@ runGameMessage msg g = case msg of
     pushM $ checkWindows [mkWhen (Window.LeavePlay $ toTarget lid)]
     pure g
   RemovedLocation lid -> do
-    treacheries <- selectList $ TreacheryAt $ LocationWithId lid
+    treacheries <- select $ TreacheryAt $ LocationWithId lid
     pushAll $ concatMap (resolve . toDiscard GameSource) treacheries
-    enemies <- selectList $ enemyAt lid
+    enemies <- select $ enemyAt lid
     pushAll $ concatMap (resolve . toDiscard GameSource) enemies
-    events <- selectList $ eventAt lid
+    events <- select $ eventAt lid
     pushAll $ concatMap (resolve . toDiscard GameSource) events
-    assets <- selectList $ assetAt lid
+    assets <- select $ assetAt lid
     pushAll $ concatMap (resolve . toDiscard GameSource) assets
-    investigators <- selectList $ investigatorAt lid
+    investigators <- select $ investigatorAt lid
     -- since we handle the would be defeated window in the previous message we
     -- skip directly to the is defeated message even though we would normally
     -- not want to do this
@@ -922,11 +963,11 @@ runGameMessage msg g = case msg of
       & (entitiesL . enemiesL %~ deleteMap enemyId)
       & (outOfPlayEntitiesL . at outOfPlayZone . non mempty . enemiesL . at enemyId ?~ enemy)
   PlaceInBonded _ (toCardId -> cardId) -> do
-    assets <- selectList $ AssetWithCardId cardId
-    events <- selectList $ EventWithCardId cardId
-    skills <- selectList $ SkillWithCardId cardId
-    enemies <- selectList $ EnemyWithCardId cardId
-    treacheries <- selectList $ TreacheryWithCardId cardId
+    assets <- select $ AssetWithCardId cardId
+    events <- select $ EventWithCardId cardId
+    skills <- select $ SkillWithCardId cardId
+    enemies <- select $ EnemyWithCardId cardId
+    treacheries <- select $ TreacheryWithCardId cardId
     pushAll $ map (RemovedFromPlay . AssetSource) assets
     pushAll $ map (RemovedFromPlay . EventSource) events
     pushAll $ map (RemovedFromPlay . SkillSource) skills
@@ -1252,7 +1293,7 @@ runGameMessage msg g = case msg of
     modifiers' <- getModifiers (attackTarget details)
     cannotBeAttacked <- flip anyM modifiers' $ \case
       CannotBeAttackedBy matcher ->
-        member (attackEnemy details) <$> select matcher
+        elem (attackEnemy details) <$> select matcher
       _ -> pure False
     if not cannotBeAttacked
       then do
@@ -1269,7 +1310,7 @@ runGameMessage msg g = case msg of
             modifiers2' <- getModifiers (attackTarget details2)
             cannotBeAttacked2 <- flip anyM modifiers2' $ \case
               CannotBeAttackedBy matcher ->
-                member (attackEnemy details2) <$> select matcher
+                elem (attackEnemy details2) <$> select matcher
               _ -> pure False
             if not cannotBeAttacked2
               then
@@ -1908,7 +1949,7 @@ runGameMessage msg g = case msg of
             <> [After (EnemySpawn Nothing lid enemyId)]
       SpawnAtLocationMatching locationMatcher -> do
         windows' <- windows [Window.EnemyAttemptsToSpawnAt enemyId locationMatcher]
-        matches' <- selectList locationMatcher
+        matches' <- select locationMatcher
         case matches' of
           [] -> push (toDiscard GameSource (toTarget enemyId))
           lids -> do

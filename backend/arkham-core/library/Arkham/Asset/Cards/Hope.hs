@@ -36,7 +36,7 @@ instance HasAbilities Hope where
 instance RunMessage Hope where
   runMessage msg a@(Hope attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      otherCats <- selectList $ oneOf [assetIs Cards.zeal, assetIs Cards.augur]
+      otherCats <- select $ oneOf [assetIs Cards.zeal, assetIs Cards.augur]
       for_ otherCats $ push . toDiscardBy iid (toAbilitySource attrs 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

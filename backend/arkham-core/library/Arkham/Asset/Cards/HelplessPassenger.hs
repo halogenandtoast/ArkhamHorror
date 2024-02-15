@@ -57,7 +57,7 @@ instance RunMessage HelplessPassenger where
       | isSource attrs source ->
           a <$ push (TakeControlOfAsset iid assetId)
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      investigatorIds <- selectList UneliminatedInvestigator
+      investigatorIds <- select UneliminatedInvestigator
       a
         <$ pushAll
           [ InvestigatorAssignDamage iid' source DamageAny 0 1

@@ -37,7 +37,7 @@ instance HasModifiersFor Lure2 where
 instance RunMessage Lure2 where
   runMessage msg e@(Lure2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lids <- selectList $ LocationMatchAny [locationWithInvestigator iid, ConnectedLocation]
+      lids <- select $ LocationMatchAny [locationWithInvestigator iid, ConnectedLocation]
       player <- getPlayer iid
       push
         $ chooseOne player [targetLabel lid [PlaceEvent iid eid $ AttachedToLocation lid] | lid <- lids]

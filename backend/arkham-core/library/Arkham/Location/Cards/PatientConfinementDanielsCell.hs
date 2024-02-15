@@ -43,7 +43,7 @@ instance HasAbilities PatientConfinementDanielsCell where
 instance RunMessage PatientConfinementDanielsCell where
   runMessage msg l@(PatientConfinementDanielsCell attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      actIds <- selectList AnyAct
+      actIds <- select AnyAct
       l
         <$ pushAll
           (map (\aid -> AdvanceAct aid source AdvancedWithOther) actIds)

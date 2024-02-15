@@ -63,7 +63,7 @@ instance HasAbilities LakeXochimilco_182 where
 instance RunMessage LakeXochimilco_182 where
   runMessage msg l@(LakeXochimilco_182 attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      iids <- selectList $ investigatorAt (toId attrs)
+      iids <- select $ investigatorAt (toId attrs)
       pushAll [SetActions iid (toSource attrs) 0 | iid <- iids]
       pure l
     _ -> LakeXochimilco_182 <$> runMessage msg attrs

@@ -44,7 +44,7 @@ instance RunMessage HistoricalSocietyReadingRoom where
       push $ Msg.RevealLocation Nothing (toId attrs)
       pure l
     Successful (Action.Investigate, _) iid (isAbilitySource attrs 1 -> True) _ _ -> do
-      enemies <- selectListMap EnemyTarget $ EnemyWithDoom $ atLeast 1
+      enemies <- selectMap EnemyTarget $ EnemyWithDoom $ atLeast 1
       player <- getPlayer iid
       pushIfAny enemies
         $ chooseOrRunOne player

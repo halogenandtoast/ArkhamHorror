@@ -282,7 +282,7 @@ instance RunMessage CarnevaleOfHorrors where
     ResolveChaosToken token Tablet iid | isHardExpert attrs -> do
       lid <- getJustLocation iid
       closestInnocentRevelers <-
-        selectList
+        select
           $ ClosestAsset lid
           $ assetIs
             Assets.innocentReveler
@@ -326,7 +326,7 @@ instance RunMessage CarnevaleOfHorrors where
           player <- getPlayer iid
           lid <- getJustLocation iid
           closestInnocentRevelers <-
-            selectList
+            select
               $ ClosestAsset lid
               $ assetIs
                 Assets.innocentReveler

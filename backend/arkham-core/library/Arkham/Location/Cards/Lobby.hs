@@ -38,7 +38,7 @@ instance RunMessage Lobby where
       lobbyDoorways <-
         zip [lobbyDoorwayCount ..]
           . take 2
-          <$> (shuffleM =<< selectList (SetAsideCardMatch $ CardWithTitle "Lobby Doorway"))
+          <$> (shuffleM =<< select (SetAsideCardMatch $ CardWithTitle "Lobby Doorway"))
       msgs <- for lobbyDoorways \(idx, lobbyDoorway) -> do
         (locationId, placement) <- placeLocation lobbyDoorway
         pure [placement, SetLocationLabel locationId $ "lobbyDoorway" <> tshow (idx + 1)]

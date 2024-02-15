@@ -48,7 +48,7 @@ instance RunMessage PastAndPresent where
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       tenochtitlanLocations <-
-        selectList $ LocationWithTrait Tenochtitlan <> LocationWithoutClues
+        select $ LocationWithTrait Tenochtitlan <> LocationWithoutClues
       iids <- getInvestigatorIds
       timeCollapsing <- getSetAsideCard Agendas.timeCollapsing
       theReturnTrip <- getSetAsideCard Acts.theReturnTrip
@@ -63,7 +63,7 @@ instance RunMessage PastAndPresent where
            ]
       pure a
     NextAdvanceActStep aid 1 | aid == toId attrs && onSide B attrs -> do
-      presentDayLocations <- selectList $ LocationWithTrait PresentDay
+      presentDayLocations <- select $ LocationWithTrait PresentDay
       (leadInvestigatorId, lead) <- getLeadInvestigatorPlayer
       push
         $ chooseOneAtATime

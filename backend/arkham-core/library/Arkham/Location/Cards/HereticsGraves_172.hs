@@ -49,7 +49,7 @@ instance RunMessage HereticsGraves_172 where
       pushAll $ map AddToEncounterDiscard cards
       pure l
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      enemies <- selectList $ EnemyWithTrait Witch
+      enemies <- select $ EnemyWithTrait Witch
       pushAll [HealDamage (toTarget enemy) (toSource attrs) 1 | enemy <- enemies]
       pure l
     _ -> HereticsGraves_172 <$> runMessage msg attrs

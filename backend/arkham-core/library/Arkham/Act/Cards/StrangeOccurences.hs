@@ -70,7 +70,7 @@ instance RunMessage StrangeOccurences where
       isTownHall <- selectAny $ locationIs Locations.townHall <> IsIchtacasDestination
       ichtaca <- genCard Assets.ichtacaTheForgottenGuardian
       iids <-
-        selectList
+        select
           $ NearestToLocation
           $ locationIs
           $ if isTownHall

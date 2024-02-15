@@ -45,7 +45,7 @@ instance RunMessage InvestigatingTheWitchHouse where
       iids <- getInvestigatorIds
       lid <- selectJust $ locationIs Locations.walterGilmansRoom
       keziahsRoom <- getSetAsideCard Locations.keziahsRoom
-      otherLocations <- selectList $ NotLocation $ LocationWithId lid
+      otherLocations <- select $ NotLocation $ LocationWithId lid
       theBlackBook <- getSetAsideCard Assets.theBlackBook
       strangeGeometries <- getSetAsideCardsMatching (CardWithTitle "Strange Geometry")
       pushAll

@@ -30,7 +30,7 @@ instance HasAbilities DrShivaniMaheswaran where
 instance RunMessage DrShivaniMaheswaran where
   runMessage msg a@(DrShivaniMaheswaran attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      suspiciousOrderlies <- selectList suspiciousOrderlyMatcher
+      suspiciousOrderlies <- select suspiciousOrderlyMatcher
       player <- getPlayer iid
       push $ chooseOrRunOne player $ targetLabels suspiciousOrderlies (only . EnemyEvaded iid)
       pure a

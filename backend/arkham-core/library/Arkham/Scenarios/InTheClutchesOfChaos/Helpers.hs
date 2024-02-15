@@ -27,7 +27,7 @@ sampleLocations n = do
          , "silverTwilightLodge"
          , "southChurch"
          ]
-  selectList $ LocationMatchAny $ map LocationWithLabel lbls
+  select $ LocationMatchAny $ map LocationWithLabel lbls
 
 sampleLocation :: (HasGame m, MonadRandom m) => m LocationId
 sampleLocation = do

@@ -25,9 +25,7 @@ instance HasModifiersFor Serannian where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Serannian where
-  getAbilities (Serannian attrs) =
-    veiled attrs []
+  getAbilities (Serannian attrs) = veiled attrs []
 
 instance RunMessage Serannian where
-  runMessage msg (Serannian attrs) =
-    Serannian <$> runMessage msg attrs
+  runMessage msg (Serannian attrs) = Serannian <$> runMessage msg attrs

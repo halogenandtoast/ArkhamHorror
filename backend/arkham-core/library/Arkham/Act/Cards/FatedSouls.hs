@@ -36,7 +36,7 @@ instance RunMessage FatedSouls where
       watcher <- selectJust (OutOfPlayEnemy SetAsideZone $ enemyIs Enemies.theSpectralWatcher)
       watchersGrasp <- getSetAsideCardsMatching $ cardIs Treacheries.watchersGrasp
       watchersGaze <- getSetAsideCardsMatching $ cardIs Treacheries.watchersGaze
-      locations <- selectList $ LocationIsInFrontOf Anyone
+      locations <- select $ LocationIsInFrontOf Anyone
       (geistTrap, placeGeistTrap) <- placeSetAsideLocation Locations.theGeistTrap
       sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
       pushAll

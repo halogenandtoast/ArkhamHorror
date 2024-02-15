@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Movement
@@ -22,15 +23,10 @@ cheatDeath5 = eventWith CheatDeath5 Cards.cheatDeath5 $ afterPlayL .~ RemoveThis
 instance RunMessage CheatDeath5 where
   runMessage msg e@(CheatDeath5 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      enemies <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId iid
-      treacheries <- selectList $ TreacheryInThreatAreaOf $ InvestigatorWithId iid
-      locations <-
-        selectList
-          $ RevealedLocation
-          <> LocationWithoutEnemies
-          <> NotLocation (locationWithInvestigator iid)
-          <> canEnterLocation iid
-      yourTurn <- member iid <$> select TurnInvestigator
+      enemies <- select $ EnemyIsEngagedWith $ InvestigatorWithId iid
+      treacheries <- select $ TreacheryInThreatAreaOf $ InvestigatorWithId iid
+      locations <- getCanMoveToMatchingLocations iid attrs $ LocationWithoutEnemies
+      yourTurn <- elem iid <$> select TurnInvestigator
 
       replaceMessageMatching
         \case

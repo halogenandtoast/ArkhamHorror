@@ -103,7 +103,7 @@ standaloneChaosTokens =
 
 readInvestigatorDefeat :: HasGame m => ScenarioAttrs -> m [Message]
 readInvestigatorDefeat a = do
-  defeatedInvestigatorIds <- selectList DefeatedInvestigator
+  defeatedInvestigatorIds <- select DefeatedInvestigator
   if null defeatedInvestigatorIds
     then pure []
     else do

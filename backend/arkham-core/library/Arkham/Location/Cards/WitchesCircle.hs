@@ -42,7 +42,7 @@ instance RunMessage WitchesCircle where
       pure l
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       lead <- getLeadPlayer
-      enemiesToMove <- selectList $ enemyMatcher (toId attrs)
+      enemiesToMove <- select $ enemyMatcher (toId attrs)
 
       pushWhen (notNull enemiesToMove)
         $ chooseOneAtATime lead

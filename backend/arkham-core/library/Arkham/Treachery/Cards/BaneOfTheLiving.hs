@@ -43,7 +43,7 @@ instance RunMessage BaneOfTheLiving where
            ]
       pure t
     RevelationChoice iid (isSource attrs -> True) 1 -> do
-      stories <- selectList $ StoryWithTitle "Unfinished Business"
+      stories <- select $ StoryWithTitle "Unfinished Business"
       storiesWithCardId <- for stories $ \story' -> do
         storyCard <- field StoryCard story'
         pure (story', toCardId storyCard)

@@ -33,7 +33,7 @@ instance HasAbilities WellMaintained1 where
 instance RunMessage WellMaintained1 where
   runMessage msg e@(WellMaintained1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      assets <- selectList $ assetControlledBy iid <> AssetWithTrait Item
+      assets <- select $ assetControlledBy iid <> AssetWithTrait Item
       player <- getPlayer iid
       push
         $ chooseOne
@@ -46,7 +46,7 @@ instance RunMessage WellMaintained1 where
       case eventPlacement attrs of
         AttachedToAsset aid _ -> do
           otherUpgrades <-
-            selectList
+            select
               $ EventAttachedToAsset (AssetWithId aid)
               <> NotEvent (EventWithId (toId attrs))
               <> EventWithTrait Upgrade

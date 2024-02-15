@@ -516,7 +516,7 @@ getInvestigatorsWithHealHorror
   -> InvestigatorMatcher
   -> m [(InvestigatorId, Message)]
 getInvestigatorsWithHealHorror a n =
-  selectList . affectsOthers >=> mapMaybeM (traverseToSndM (getHealHorrorMessage a n))
+  select . affectsOthers >=> mapMaybeM (traverseToSndM (getHealHorrorMessage a n))
 
 additionalActionCovers
   :: HasGame m => Source -> [Action] -> AdditionalAction -> m Bool

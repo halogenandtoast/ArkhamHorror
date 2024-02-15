@@ -37,7 +37,7 @@ instance RunMessage PassageIntoTheVeil where
           (if huntingHorrorAtYourLocation then 5 else 3)
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
-      assetIds <- selectList $ AssetControlledBy (InvestigatorWithId iid) <> AllyAsset
+      assetIds <- select $ AssetControlledBy (InvestigatorWithId iid) <> AllyAsset
       player <- getPlayer iid
       push
         $ chooseOne

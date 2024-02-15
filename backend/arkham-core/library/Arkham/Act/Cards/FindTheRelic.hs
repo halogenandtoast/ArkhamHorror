@@ -52,7 +52,7 @@ instance RunMessage FindTheRelic where
       deckCount <- getActDecksInPlayCount
       relicOfAges <- selectJust $ assetIs Assets.relicOfAgesADeviceOfSomeSort
       iids <-
-        selectList
+        select
           $ NearestToLocation
           $ LocationWithAsset
           $ assetIs

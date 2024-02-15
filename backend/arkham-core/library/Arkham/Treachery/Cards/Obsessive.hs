@@ -40,7 +40,7 @@ instance RunMessage Obsessive where
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       cards <-
-        selectList
+        select
           $ InHandOf (InvestigatorWithId iid)
           <> BasicCardMatch
             (NonWeakness <> CardWithoutKeyword Keyword.Hidden)

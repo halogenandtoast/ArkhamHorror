@@ -52,7 +52,7 @@ instance RunMessage TheCarnevaleConspiracy where
   runMessage msg a@(TheCarnevaleConspiracy attrs@ActAttrs {..}) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       maskedCarnevaleGoers <-
-        selectList
+        select
           (AssetWithTitle "Masked Carnevale-Goer")
       filteredMaskedCarnevaleGoers <-
         flip filterM maskedCarnevaleGoers $ \aid -> do
@@ -73,7 +73,7 @@ instance RunMessage TheCarnevaleConspiracy where
       (leadInvestigatorId, lead) <- getLeadInvestigatorPlayer
       cnidathqua <- getSetAsideCard Enemies.cnidathqua
       maskedCarnevaleGoers <-
-        selectList
+        select
           (AssetWithTitle "Masked Carnevale-Goer")
       let
         flipMsg = case maskedCarnevaleGoers of

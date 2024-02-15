@@ -48,7 +48,7 @@ instance RunMessage RivertownAbandonedWarehouse where
   runMessage msg l@(RivertownAbandonedWarehouse attrs) = case msg of
     UseCardAbility iid source 1 _ payments | isSource attrs source -> do
       let doomToRemove = willpowerCount payments
-      cultists <- selectList $ EnemyWithTrait Cultist
+      cultists <- select $ EnemyWithTrait Cultist
       player <- getPlayer iid
       unless (null cultists)
         $ push

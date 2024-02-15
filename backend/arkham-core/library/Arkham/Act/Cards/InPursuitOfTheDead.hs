@@ -50,7 +50,7 @@ instance RunMessage InPursuitOfTheDead where
           let hereticLocations = [theGallows, hereticsGraves, chapelAttic, chapelCrypt]
 
           otherLocations <-
-            selectList
+            select
               $ locationNotOneOf hereticLocations
 
           mementosDiscovered <- getMementosDiscoveredCount

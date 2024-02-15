@@ -47,9 +47,9 @@ instance RunMessage StrangeGeometry where
         Nothing -> error "could not find label"
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       locationsWithMostClues <-
-        selectList $ LocationWithMostClues $ NotLocation $ LocationWithId $ toId attrs
-      investigators <- selectList $ investigatorAt $ toId attrs
-      enemies <- selectList $ UnengagedEnemy <> enemyAt (toId attrs)
+        select $ LocationWithMostClues $ NotLocation $ LocationWithId $ toId attrs
+      investigators <- select $ investigatorAt $ toId attrs
+      enemies <- select $ UnengagedEnemy <> enemyAt (toId attrs)
       lead <- getLeadPlayer
       let source = toAbilitySource attrs 1
       pushAll

@@ -46,7 +46,7 @@ instance RunMessage SummonedBeast where
   runMessage msg e@(SummonedBeast attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       lead <- getLead
-      humanoids <- selectList $ EnemyAt (locationWithEnemy $ toId attrs) <> EnemyWithTrait Humanoid
+      humanoids <- select $ EnemyAt (locationWithEnemy $ toId attrs) <> EnemyWithTrait Humanoid
       doom <- selectSum EnemyDoom $ EnemyOneOf $ map EnemyWithId humanoids
       defeatMessages <- for humanoids $ \humanoid -> do
         defeatEnemy humanoid lead (toAbilitySource attrs 1)

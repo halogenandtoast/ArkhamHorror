@@ -27,7 +27,7 @@ aChanceEncounter = event AChanceEncounter Cards.aChanceEncounter
 instance RunMessage AChanceEncounter where
   runMessage msg e@(AChanceEncounter attrs) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      investigatorIds <- selectList $ affectsOthers can.have.cards.leaveDiscard
+      investigatorIds <- select $ affectsOthers can.have.cards.leaveDiscard
       discards <- concatMapM (fieldMap InvestigatorDiscard (map PlayerCard)) investigatorIds
       let filteredDiscards = filter (elem Ally . toTraits) discards
       player <- getPlayer iid

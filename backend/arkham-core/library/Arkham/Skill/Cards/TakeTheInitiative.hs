@@ -24,7 +24,7 @@ takeTheInitiative = skill TakeTheInitiative Cards.takeTheInitiative
 instance HasModifiersFor TakeTheInitiative where
   getModifiersFor target (TakeTheInitiative a) | isTarget a target = do
     -- we want to include investigators that were eliminated
-    iids <- selectList Anyone
+    iids <- select Anyone
     histories <- traverse (getHistory PhaseHistory) iids
     let total = sum $ map historyActionsCompleted histories
     pure

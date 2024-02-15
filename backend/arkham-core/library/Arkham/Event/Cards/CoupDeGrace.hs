@@ -24,7 +24,7 @@ instance RunMessage CoupDeGrace where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       isTurn <- iid <=~> TurnInvestigator
       enemies <-
-        selectList
+        select
           $ EnemyAt (locationWithInvestigator iid)
           <> EnemyCanBeDamagedBySource (toSource attrs)
       player <- getPlayer iid

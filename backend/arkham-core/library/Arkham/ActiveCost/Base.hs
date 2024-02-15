@@ -29,5 +29,6 @@ data ActiveCostTarget
   = ForCard IsPlayAction Card
   | ForAbility Ability
   | ForCost Card -- used when the active cost will not determine an effect
+  | ForAdditionalCost BatchId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

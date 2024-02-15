@@ -34,7 +34,7 @@ instance RunMessage AcridMiasma where
       pure t
     -- not revelation but puts card into active
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      moveHunters <- selectListMap HunterMove HunterEnemy
+      moveHunters <- selectMap HunterMove HunterEnemy
       player <- getPlayer iid
       push
         $ chooseOrRunOne player

@@ -356,7 +356,7 @@ instance RunMessage Scenario where
     UseThisAbility _ source@(TarotSource card@(TarotCard Upright StrengthVIII)) 1 -> do
       investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
       msgs <- forMaybeM investigators $ \investigator -> do
-        results <- selectList (Matcher.InHandOf (Matcher.InvestigatorWithId investigator) <> #asset)
+        results <- select (Matcher.InHandOf (Matcher.InvestigatorWithId investigator) <> #asset)
         resources <- getSpendableResources investigator
         cards <-
           filterM
@@ -398,7 +398,7 @@ instance RunMessage Scenario where
           let investigator = fromMaybe lead mInvestigator
           player <- getPlayer investigator
 
-          agendas <- selectList Matcher.AnyAgenda
+          agendas <- select Matcher.AnyAgenda
           push
             $ chooseOrRunOne
               player
@@ -542,7 +542,7 @@ instance RunMessage Scenario where
               ]
         Reversed -> do
           defeatedInvestigators <-
-            filterM (`affectedByTarot` card) =<< selectList Matcher.DefeatedInvestigator
+            filterM (`affectedByTarot` card) =<< select Matcher.DefeatedInvestigator
           defeatedInvestigatorPlayers <- traverse (traverseToSnd getPlayer) defeatedInvestigators
           pushAll
             $ [ chooseOne
@@ -582,10 +582,10 @@ instance RunMessage Scenario where
       pure result
     PreScenarioSetup -> do
       result <- go
-      observed <- selectList $ Matcher.DeckWith $ Matcher.HasCard $ Matcher.cardIs Assets.observed4
+      observed <- select $ Matcher.DeckWith $ Matcher.HasCard $ Matcher.cardIs Assets.observed4
       for_ observed $ \iid -> do
         push $ DrawAndChooseTarot iid Upright 3
-      damned <- selectList $ Matcher.DeckWith $ Matcher.HasCard $ Matcher.cardIs Treacheries.damned
+      damned <- select $ Matcher.DeckWith $ Matcher.HasCard $ Matcher.cardIs Treacheries.damned
       for_ damned $ \iid -> do
         push $ DrawAndChooseTarot iid Reversed 1
       pure result

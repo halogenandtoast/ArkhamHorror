@@ -57,7 +57,7 @@ instance RunMessage AncientStoneMindsInHarmony4 where
         getInvestigatorsWithHealHorror attrs amount $ colocatedWith iid
 
       assets <-
-        selectListMap AssetTarget
+        selectMap AssetTarget
           $ HealableAsset (toSource attrs) HorrorType
           $ AssetAt (locationWithInvestigator iid)
 

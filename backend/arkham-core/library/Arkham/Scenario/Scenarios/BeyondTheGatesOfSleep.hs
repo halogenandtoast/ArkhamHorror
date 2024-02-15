@@ -140,7 +140,7 @@ dreamEffect iid = \case
         (DeferSearchedToTarget $ LabeledTarget "Drifter" ScenarioTarget)
   HunterDream -> pure $ search iid GameSource iid [fromDeck] (CardWithTrait Weapon) (PlayFound iid 1)
   MedicOrAssistantDream -> do
-    otherInvestigators <- selectList $ NotInvestigator $ InvestigatorWithId iid
+    otherInvestigators <- select $ NotInvestigator $ InvestigatorWithId iid
     player <- getPlayer iid
     pure
       $ chooseOne

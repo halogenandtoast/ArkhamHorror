@@ -24,10 +24,10 @@ instance HasAbilities InTheKnow1 where
 instance RunMessage InTheKnow1 where
   runMessage msg a@(InTheKnow1 attrs) = case msg of
     UseCardAbility iid source 1 windows' _ | isSource attrs source -> do
-      locations <- selectList $ RevealedLocation <> InvestigatableLocation
+      locations <- select $ RevealedLocation <> InvestigatableLocation
       locationsWithInvestigate <- concatForM locations \lid -> do
         investigateActions <-
-          selectList $ AbilityOnLocation (LocationWithId lid) <> AbilityIsAction #investigate
+          select $ AbilityOnLocation (LocationWithId lid) <> AbilityIsAction #investigate
         pure $ map (lid,) investigateActions
       player <- getPlayer iid
       push

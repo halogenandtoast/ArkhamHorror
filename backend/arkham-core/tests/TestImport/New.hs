@@ -171,7 +171,7 @@ investigate i l =
       }
 
 instance HasField "engagedEnemies" Investigator (TestAppT [EnemyId]) where
-  getField self = selectList $ Matcher.enemyEngagedWith $ toId self
+  getField self = select $ Matcher.enemyEngagedWith $ toId self
 
 instance HasField "playableCards" Investigator (TestAppT [Card]) where
   getField self = getPlayableCards (toAttrs self) UnpaidCost (defaultWindows $ toId self)
@@ -210,7 +210,7 @@ instance HasField "accessibleLocations" Investigator (TestAppT [LocationId]) whe
     case mlid of
       Nothing -> pure []
       Just lid ->
-        selectList
+        select
           $ Matcher.canEnterLocation (toId self)
           <> Matcher.AccessibleFrom (Matcher.LocationWithId lid)
 
@@ -218,10 +218,10 @@ instance HasField "clues" Location (TestAppT Int) where
   getField = field LocationClues . toEntityId
 
 instance HasField "connectedLocations" LocationId (TestAppT [LocationId]) where
-  getField = selectList . Matcher.ConnectedTo . Matcher.LocationWithId
+  getField = select . Matcher.ConnectedTo . Matcher.LocationWithId
 
 instance HasField "connectedLocations" Location (TestAppT [LocationId]) where
-  getField = selectList . Matcher.ConnectedTo . Matcher.LocationWithId . toId
+  getField = select . Matcher.ConnectedTo . Matcher.LocationWithId . toId
 
 instance HasField "clues" TreacheryId (TestAppT Int) where
   getField = field TreacheryClues

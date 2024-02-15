@@ -26,7 +26,7 @@ instance RunMessage SnakeBite where
       push $ RevelationSkillTest iid source SkillAgility 3
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ -> do
-      allies <- selectList $ AllyAsset <> AssetControlledBy (InvestigatorWithId iid)
+      allies <- select $ AllyAsset <> AssetControlledBy (InvestigatorWithId iid)
       isPoisoned <- getIsPoisoned iid
       handlePoisoned <-
         if isPoisoned

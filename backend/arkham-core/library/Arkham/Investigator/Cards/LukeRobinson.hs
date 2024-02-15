@@ -28,9 +28,9 @@ newtype LukeRobinson = LukeRobinson (InvestigatorAttrs `With` Meta)
 
 instance HasModifiersFor LukeRobinson where
   getModifiersFor target (LukeRobinson (a `With` meta)) | a `is` target && active meta = do
-    connectingLocations <- selectList ConnectedLocation
+    connectingLocations <- select ConnectedLocation
     mods <- for connectingLocations $ \lid -> do
-      enemies <- selectList $ enemyAt lid
+      enemies <- select $ enemyAt lid
       pure (AsIfAt lid : map AsIfEngagedWith enemies)
     pure $ toModifiers a [PlayableModifierContexts $ map (CardWithType EventType,) mods]
   getModifiersFor _ _ = pure []
@@ -49,9 +49,9 @@ instance HasChaosTokenValue LukeRobinson where
 getLukePlayable :: HasGame m => InvestigatorAttrs -> [Window] -> m [(LocationId, [Card])]
 getLukePlayable attrs windows' = do
   let iid = toId attrs
-  connectingLocations <- selectList ConnectedLocation
+  connectingLocations <- select ConnectedLocation
   forToSnd connectingLocations $ \lid -> do
-    enemies <- selectList $ enemyAt lid
+    enemies <- select $ enemyAt lid
     withModifiers iid (toModifiers attrs $ AsIfAt lid : map AsIfEngagedWith enemies) $ do
       filter (`cardMatch` CardWithType EventType)
         <$> getPlayableCards attrs UnpaidCost windows'
@@ -114,7 +114,7 @@ instance RunMessage LukeRobinson where
         then do
           let lids = map fst $ filter (elem card . snd) lukePlayable
           locationOptions <- forToSnd lids $ \lid -> do
-            enemies <- selectList $ enemyAt lid
+            enemies <- select $ enemyAt lid
             pure
               $ [cardResolutionModifiers attrs attrs $ AsIfAt lid : map AsIfEngagedWith enemies]
               <> playCard

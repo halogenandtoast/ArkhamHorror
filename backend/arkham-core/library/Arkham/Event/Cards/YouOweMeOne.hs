@@ -24,7 +24,7 @@ youOweMeOne = event YouOweMeOne Cards.youOweMeOne
 instance RunMessage YouOweMeOne where
   runMessage msg e@(YouOweMeOne attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      others <- selectList $ NotInvestigator (InvestigatorWithId iid)
+      others <- select $ NotInvestigator (InvestigatorWithId iid)
       player <- getPlayer iid
       push
         $ chooseOrRunOne

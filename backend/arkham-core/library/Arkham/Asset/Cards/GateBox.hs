@@ -35,7 +35,7 @@ instance HasAbilities GateBox where
 instance RunMessage GateBox where
   runMessage msg a@(GateBox attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <- selectList $ EnemyIsEngagedWith $ InvestigatorWithId iid
+      enemies <- select $ EnemyIsEngagedWith $ InvestigatorWithId iid
       (dreamGate, placement) <- placeLocationCard Locations.dreamGateWondrousJourney
       pushAll
         $ map (DisengageEnemy iid) enemies

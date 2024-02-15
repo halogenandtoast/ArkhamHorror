@@ -27,7 +27,7 @@ instance RunMessage NamelessRuins where
       readStory iid (toId attrs) Story.whatRemainsOfTyrrhia
       pure . NamelessRuins $ attrs & canBeFlippedL .~ False
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      allies <- selectList $ assetControlledBy iid <> #ally
+      allies <- select $ assetControlledBy iid <> #ally
       player <- getPlayer iid
       push
         $ chooseOne player [targetLabel ally [AssetDamage ally (attrs.ability 1) 1 0] | ally <- allies]

@@ -31,7 +31,7 @@ instance HasModifiersFor DetectivesColt1911s where
       Nothing -> pure []
       Just iid -> do
         toolAssetsWithHands <-
-          selectList
+          select
             $ assetControlledBy iid
             <> AssetWithTrait Tool
             <> AssetInSlot HandSlot

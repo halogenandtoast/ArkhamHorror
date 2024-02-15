@@ -25,7 +25,7 @@ instance RunMessage Enemy where
     -- discard.
     allEnemyIds <- select AnyEnemy
     modifiers' <-
-      if toId e `member` allEnemyIds
+      if toId e `elem` allEnemyIds
         then getModifiers (toTarget e)
         else pure []
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg

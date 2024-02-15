@@ -46,7 +46,7 @@ instance RunMessage FortyFiveAutomatic2 where
     Successful (Action.Fight, EnemyTarget eid) _ _ (isTarget attrs -> True) _ -> do
       ignoreWindow <-
         checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
-      ignored <- member eid <$> select (EnemyWithKeyword Retaliate)
+      ignored <- elem eid <$> select (EnemyWithKeyword Retaliate)
       pushAll $ EnemyDamage eid (attack attrs 1) : [ignoreWindow | ignored]
       pure a
     _ -> FortyFiveAutomatic2 <$> runMessage msg attrs

@@ -238,8 +238,8 @@ instance RunMessage TheSearchForKadath where
 
       leadId <- getLead
       investigators <- getInvestigators
-      victoryLocations <- selectList $ LocationWithVictory <> LocationWithoutClues
-      locations <- filter (`notElem` victoryLocations) <$> selectList Anywhere
+      victoryLocations <- select $ LocationWithVictory <> LocationWithoutClues
+      locations <- filter (`notElem` victoryLocations) <$> select Anywhere
 
       case region of
         Oriab -> do

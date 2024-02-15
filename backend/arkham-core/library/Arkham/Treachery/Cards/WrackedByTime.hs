@@ -32,7 +32,7 @@ instance RunMessage WrackedByTime where
   runMessage msg t@(WrackedByTime (attrs `With` meta)) = case msg of
     Revelation iid source | isSource attrs source -> do
       others <-
-        selectList
+        select
           $ InvestigatorAt (LocationWithTrait Shattered)
           <> NotInvestigator (InvestigatorWithId iid)
       pushAll

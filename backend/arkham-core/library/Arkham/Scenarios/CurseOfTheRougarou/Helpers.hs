@@ -12,10 +12,10 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Trait
 
-bayouLocations :: HasGame m => m (Set LocationId)
+bayouLocations :: HasGame m => m [LocationId]
 bayouLocations = select $ LocationWithTrait Bayou
 
-nonBayouLocations :: HasGame m => m (Set LocationId)
+nonBayouLocations :: HasGame m => m [LocationId]
 nonBayouLocations = select $ LocationWithoutTrait Bayou
 
 getTheRougarou :: HasGame m => m (Maybe EnemyId)

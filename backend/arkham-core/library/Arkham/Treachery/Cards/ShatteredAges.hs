@@ -26,7 +26,7 @@ instance RunMessage ShatteredAges where
       pure t
     FailedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do
-        locations <- selectList $ NotLocation $ locationIs Locations.nexusOfNKai
+        locations <- select $ NotLocation $ locationIs Locations.nexusOfNKai
         pushAll
           [PlaceClues (toSource attrs) (toTarget location) 1 | location <- locations]
         pure t

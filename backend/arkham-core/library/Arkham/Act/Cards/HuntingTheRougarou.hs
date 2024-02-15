@@ -77,7 +77,7 @@ instance RunMessage HuntingTheRougarou where
       protectedOurselves <-
         (>= requiredDamage) <$> field EnemyDamage rougarou
 
-      assetIds <- selectList (EnemyAsset rougarou)
+      assetIds <- select (EnemyAsset rougarou)
       keptItContained <- or <$> for assetIds (fieldMap AssetTraits (member Trap))
 
       scenarioLogs <- scenarioField ScenarioRemembered

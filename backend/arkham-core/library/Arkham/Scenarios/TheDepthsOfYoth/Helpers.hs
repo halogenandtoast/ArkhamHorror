@@ -65,7 +65,7 @@ getInPursuitEnemyWithHighestEvade = do
       (fieldMap (OutOfPlayEnemyField PursuitZone EnemyEvade) ((== Just evadeValue)))
       (toList inPursuit)
 
-getInPursuitEnemies :: HasGame m => m (Set EnemyId)
+getInPursuitEnemies :: HasGame m => m [EnemyId]
 getInPursuitEnemies = select $ OutOfPlayEnemy PursuitZone AnyEnemy
 
 getPlacePursuitEnemyMessages :: HasGame m => m [Message]

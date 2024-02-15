@@ -213,7 +213,7 @@ instance RunMessage ForTheGreaterGood where
       if isEasyStandard attrs
         then do
           player <- getPlayer iid
-          closestCultists <- selectList $ NearestEnemy $ EnemyWithTrait Trait.Cultist
+          closestCultists <- select $ NearestEnemy $ EnemyWithTrait Trait.Cultist
           unless (null closestCultists)
             $ push
             $ chooseOrRunOne
@@ -222,7 +222,7 @@ instance RunMessage ForTheGreaterGood where
               | cultist <- closestCultists
               ]
         else do
-          cultists <- selectList $ EnemyWithTrait Trait.Cultist
+          cultists <- select $ EnemyWithTrait Trait.Cultist
           pushAll
             [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget cultist) Doom 1 | cultist <- cultists]
       pure s
@@ -230,7 +230,7 @@ instance RunMessage ForTheGreaterGood where
       if isEasyStandard attrs
         then do
           player <- getPlayer iid
-          closestCultists <- selectList $ NearestEnemy (EnemyWithTrait Trait.Cultist) <> EnemyWithAnyDoom
+          closestCultists <- select $ NearestEnemy (EnemyWithTrait Trait.Cultist) <> EnemyWithAnyDoom
           unless (null closestCultists)
             $ push
             $ chooseOne

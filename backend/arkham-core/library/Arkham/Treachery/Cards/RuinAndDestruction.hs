@@ -23,7 +23,7 @@ instance RunMessage RuinAndDestruction where
   runMessage msg t@(RuinAndDestruction attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
       targetInvestigators <-
-        selectList
+        select
           $ InvestigatorAt
           $ LocationWithEnemy
           $ EnemyWithTitle

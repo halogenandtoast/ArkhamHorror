@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Action qualified as Action
 import Arkham.Classes
-import Arkham.Helpers.Location
+import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Movement
@@ -24,16 +24,15 @@ survivalInstinct = skill SurvivalInstinct Cards.survivalInstinct
 instance RunMessage SurvivalInstinct where
   runMessage msg s@(SurvivalInstinct attrs) = case msg of
     PassedSkillTest iid (Just Action.Evade) _ (SkillTarget sid) _ _ | sid == toId attrs -> do
-      engagedEnemies <- selectList $ enemyEngagedWith iid
-      unblockedConnectedLocations <- accessibleLocations iid
-      canMove <- iid <=~> InvestigatorCanMove
+      engagedEnemies <- select $ enemyEngagedWith iid
+      targets <- getConnectedMoveLocations iid (toSource attrs)
       canDisengage <- iid <=~> InvestigatorCanDisengage
       player <- getPlayer iid
       let
         moveOptions =
           chooseOrRunOne player
             $ [Label "Do not move to a connecting location" []]
-            <> targetLabels unblockedConnectedLocations (only . Move . move attrs iid)
+            <> targetLabels targets (only . Move . move attrs iid)
 
       case engagedEnemies of
         es | notNull es && canDisengage -> do
@@ -43,7 +42,7 @@ instance RunMessage SurvivalInstinct where
                     , Label "Skip" []
                     ]
               ]
-            <> [moveOptions | notNull unblockedConnectedLocations && canMove]
-        _ -> unless (null unblockedConnectedLocations) $ push moveOptions
+            <> [moveOptions | notNull targets]
+        _ -> unless (null targets) $ push moveOptions
       pure s
     _ -> SurvivalInstinct <$> runMessage msg attrs

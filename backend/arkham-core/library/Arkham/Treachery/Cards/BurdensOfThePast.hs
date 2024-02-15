@@ -26,7 +26,7 @@ instance RunMessage BurdensOfThePast where
       if hasUnfinishedBusiness
         then do
           abilities <-
-            selectList
+            select
               $ AbilityOnStory (StoryWithTitle "Unfinished Business" <> StoryWithPlacement (InThreatArea iid))
               <> AbilityIsForcedAbility
           player <- getPlayer iid

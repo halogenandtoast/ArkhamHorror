@@ -77,7 +77,7 @@ instance RunMessage TheHierophantV where
           Nothing -> error "No investigators"
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 (defeatedEnemy -> enemy) _ -> do
-      enemiesWithDoom <- selectList $ EnemyAt (locationWithEnemy enemy) <> EnemyWithAnyDoom
+      enemiesWithDoom <- select $ EnemyAt (locationWithEnemy enemy) <> EnemyWithAnyDoom
       pushAll
         $ concat
           [[RemoveDoom (toSource attrs) (toTarget enemy') 1, PlaceDoomOnAgenda] | enemy' <- enemiesWithDoom]

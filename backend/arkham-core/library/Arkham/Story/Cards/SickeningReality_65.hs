@@ -29,7 +29,7 @@ instance RunMessage SickeningReality_65 where
       assetId <- selectJust (assetIs asset)
       enemyCard <- genCard enemy
       lid <- fieldJust AssetLocation assetId
-      iids <- selectList $ investigatorAt lid
+      iids <- select $ investigatorAt lid
       clues <- field AssetClues assetId
       enemyCreation <- createEnemyAt_ enemyCard lid Nothing
       pushAll

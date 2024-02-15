@@ -21,7 +21,7 @@ instance RunMessage Guidance where
   runMessage msg e@(Guidance attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       investigators <-
-        selectList $ NotYou <> InvestigatorAt YourLocation <> YetToTakeTurn
+        select $ NotYou <> InvestigatorAt YourLocation <> YetToTakeTurn
       player <- getPlayer iid
       pushAll
         [ chooseOne

@@ -22,11 +22,11 @@ instance RunMessage DynamiteBlast3 where
   runMessage msg e@(DynamiteBlast3 attrs@EventAttrs {..}) = case msg of
     PlayThisEvent iid eid | eid == eventId -> do
       currentLocationId <- fieldJust InvestigatorLocation iid
-      connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId currentLocationId
+      connectedLocationIds <- select $ AccessibleFrom $ LocationWithId currentLocationId
       canDealDamage <- withoutModifier iid CannotDealDamage
       choices <- forMaybeM (currentLocationId : connectedLocationIds) $ \lid -> do
-        enemyIds <- if canDealDamage then selectList (enemyAt lid) else pure []
-        investigatorIds <- selectList $ investigatorAt lid
+        enemyIds <- if canDealDamage then select (enemyAt lid) else pure []
+        investigatorIds <- select $ investigatorAt lid
         if null enemyIds && null investigatorIds
           then pure Nothing
           else

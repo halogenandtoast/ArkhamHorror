@@ -38,7 +38,7 @@ instance RunMessage PeterClover where
       push $ AssetDamage (toId attrs) (toAbilitySource attrs 1) 1 0
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      criminals <- selectList $ EnemyWithTrait Criminal <> EnemyAt YourLocation
+      criminals <- select $ EnemyWithTrait Criminal <> EnemyAt YourLocation
       player <- getPlayer iid
       push $ chooseOne player $ targetLabels criminals (only . EnemyEvaded iid)
       pure a

@@ -44,7 +44,7 @@ instance RunMessage InEveryShadow where
         Nothing -> push $ AttachStoryTreacheryTo shadowSpawned (EnemyTarget eid)
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      iids <- selectList UneliminatedInvestigator
+      iids <- select UneliminatedInvestigator
       pushAll
         $ concatMap
           ( \iid ->

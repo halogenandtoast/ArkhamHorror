@@ -59,7 +59,7 @@ instance RunMessage Interrogate where
         matcher = case mlocation of
           Nothing -> LocationWithAnyClues
           Just lid -> LocationWithAnyClues <> NotLocation (LocationWithId lid)
-      locations <- selectList matcher
+      locations <- select matcher
       player <- getPlayer iid
       pushAll
         $ [InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) 1 Nothing]

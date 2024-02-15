@@ -51,6 +51,7 @@ type Who = InvestigatorMatcher
 data InvestigatorMatcher
   = InvestigatorAt LocationMatcher
   | InvestigatorIs CardCode
+  | InvestigatorCanMoveTo Source LocationMatcher
   | You
   | ThatInvestigator
   | UnengagedInvestigator
@@ -381,6 +382,7 @@ data LocationMatcher
   | LocationWithAsset AssetMatcher
   | LocationWithInvestigator InvestigatorMatcher
   | CanEnterLocation InvestigatorMatcher
+  | CanMoveToLocation InvestigatorMatcher Source LocationMatcher
   | RevealedLocation
   | UnrevealedLocation
   | InvestigatableLocation

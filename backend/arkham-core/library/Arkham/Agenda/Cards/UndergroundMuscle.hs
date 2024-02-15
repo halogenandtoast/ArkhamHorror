@@ -39,11 +39,11 @@ instance RunMessage UndergroundMuscle where
         rest = drop 1 result
       strikingFear <- gatherEncounterSet StrikingFear
       laBellaLunaInvestigators <-
-        selectList
+        select
           $ InvestigatorAt
           $ LocationWithId
             laBellaLunaId
-      laBellaLunaEnemies <- selectList $ EnemyAt $ LocationWithId laBellaLunaId
+      laBellaLunaEnemies <- select $ EnemyAt $ LocationWithId laBellaLunaId
       unEngagedEnemiesAtLaBellaLuna <-
         filterM
           (fieldMap EnemyEngagedInvestigators null)

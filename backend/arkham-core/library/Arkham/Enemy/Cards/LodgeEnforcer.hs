@@ -29,7 +29,7 @@ lodgeEnforcer =
 
 instance HasModifiersFor LodgeEnforcer where
   getModifiersFor (LocationTarget lid) (LodgeEnforcer attrs) = do
-    shouldBlank <- member lid <$> select (locationWithEnemy $ toId attrs)
+    shouldBlank <- elem lid <$> select (locationWithEnemy $ toId attrs)
     pure $ toModifiers attrs [Blank | shouldBlank]
   getModifiersFor _ _ = pure []
 

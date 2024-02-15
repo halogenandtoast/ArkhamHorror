@@ -26,7 +26,7 @@ instance RunMessage TheStarsAreRight where
   runMessage msg e@(TheStarsAreRight attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       player <- getPlayer iid
-      investigators <- selectList $ affectsOthers UneliminatedInvestigator
+      investigators <- select $ affectsOthers UneliminatedInvestigator
       iid' <- getActiveInvestigatorId
       investigatorsWithChoice <- for investigators $ \investigator -> do
         canDraw <- can.draw.cards investigator

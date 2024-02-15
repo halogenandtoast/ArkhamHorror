@@ -40,7 +40,7 @@ instance RunMessage ChillingPresence where
       push $ DoStep n msg
       pure t
     DoStep n msg'@(PassedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
-      geists <- selectList $ enemyAtLocationWith iid <> EnemyWithTrait Geist
+      geists <- select $ enemyAtLocationWith iid <> EnemyWithTrait Geist
       when (notNull geists) $ do
         player <- getPlayer iid
         push
@@ -70,7 +70,7 @@ instance RunMessage ChillingPresenceEffect where
   runMessage msg e@(ChillingPresenceEffect attrs) = case msg of
     Msg.RevealChaosToken _ iid token -> do
       when (chaosTokenFace token == #eldersign) $ do
-        geists <- selectList $ EnemyWithTrait Geist
+        geists <- select $ EnemyWithTrait Geist
         when (notNull geists) $ do
           player <- getPlayer iid
           push

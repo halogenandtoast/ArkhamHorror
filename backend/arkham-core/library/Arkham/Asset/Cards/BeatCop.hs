@@ -29,7 +29,7 @@ instance RunMessage BeatCop where
   runMessage msg a@(BeatCop attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      enemies <- selectList $ enemyAtLocationWith iid
+      enemies <- select $ enemyAtLocationWith iid
       player <- getPlayer iid
       push $ chooseOrRunOne player $ targetLabels enemies (only . assignEnemyDamage (nonAttack source 1))
       pure a

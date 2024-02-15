@@ -38,7 +38,7 @@ instance RunMessage ExploringPnakotus where
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       locations <- getSetAsideCardsMatching LocationCard
       custodian <- getSetAsideCard Assets.theCustodian
-      yithianObservers <- selectList $ enemyIs Enemies.yithianObserver
+      yithianObservers <- select $ enemyIs Enemies.yithianObserver
       placements <- traverse placeLocation locations
       spawnLocation <- maybe (error "no locations") (fmap fst . sample) $ NE.nonEmpty placements
       assetId <- getRandom

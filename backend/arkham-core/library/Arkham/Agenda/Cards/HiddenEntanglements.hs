@@ -31,7 +31,7 @@ instance RunMessage HiddenEntanglements where
       push (Resign iid)
       HiddenEntanglements <$> runMessage msg attrs
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      iids <- selectList UneliminatedInvestigator
+      iids <- select UneliminatedInvestigator
       a
         <$ pushAll
           ( concatMap

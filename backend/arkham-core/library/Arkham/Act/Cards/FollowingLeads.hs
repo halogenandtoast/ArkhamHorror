@@ -203,7 +203,7 @@ instance RunMessage FollowingLeads where
               basement <- getJustLocationByName "Basement"
               card <- genCard Enemies.dimensionalShambler
               placeDimensionalShambler <- createEnemyAt_ card basement Nothing
-              guests <- selectList $ VictoryDisplayCardMatch $ CardWithTrait Guest
+              guests <- select $ VictoryDisplayCardMatch $ CardWithTrait Guest
               x <- perPlayer 1
               pushAll
                 [ SetCurrentAgendaDeck 1 [agenda]
@@ -216,7 +216,7 @@ instance RunMessage FollowingLeads where
                 ]
             (_, _, Just _sinisterSolution, Just _managersKey, _) -> do
               agenda <- genCard Agendas.theTrueCulpritV8
-              staff <- selectList $ VictoryDisplayCardMatch $ CardWithTrait Staff
+              staff <- select $ VictoryDisplayCardMatch $ CardWithTrait Staff
               room212 <- getJustLocationByName "Room 212"
               harvestedBrain <- getSetAsideCard Treacheries.harvestedBrain
               x <- getPlayerCount
@@ -250,7 +250,7 @@ instance RunMessage FollowingLeads where
               basement <- getJustLocationByName "Basement"
               card <- genCard Enemies.dimensionalShambler
               placeDimensionalShambler <- createEnemyAt_ card basement Nothing
-              guests <- selectList $ VictoryDisplayCardMatch $ CardWithTrait Guest
+              guests <- select $ VictoryDisplayCardMatch $ CardWithTrait Guest
               x <- perPlayer 2
               pushAll
                 [ SetCurrentAgendaDeck 1 [agenda]
@@ -270,7 +270,7 @@ instance RunMessage FollowingLeads where
 
       pure a
     RequestedEncounterCards (isTarget attrs -> True) cards -> do
-      crimeScenes <- selectList $ LocationWithTrait CrimeScene
+      crimeScenes <- select $ LocationWithTrait CrimeScene
       (emptyCrimeScenes, rest) <- partitionM (<=~> EmptyLocation) crimeScenes
       emptyCrimeScenes' <- shuffleM emptyCrimeScenes
       rest' <- shuffleM rest

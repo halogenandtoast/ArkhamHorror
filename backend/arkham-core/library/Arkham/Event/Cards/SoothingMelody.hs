@@ -43,17 +43,17 @@ instance RunMessage SoothingMelody where
 
       let limit = foldl' updateLimit 2 modifiers'
       damageInvestigators <-
-        selectList $ HealableInvestigator (toSource attrs) DamageType $ InvestigatorAt YourLocation
+        select $ HealableInvestigator (toSource attrs) DamageType $ InvestigatorAt YourLocation
       horrorInvestigators <-
-        selectList $ HealableInvestigator (toSource attrs) HorrorType $ InvestigatorAt YourLocation
+        select $ HealableInvestigator (toSource attrs) HorrorType $ InvestigatorAt YourLocation
       damageAssets <-
-        selectListMap AssetTarget
+        selectMap AssetTarget
           $ HealableAsset (toSource attrs) DamageType
           $ AssetAt YourLocation
           <> AllyAsset
           <> AssetControlledBy (affectsOthers Anyone)
       horrorAssets <-
-        selectListMap AssetTarget
+        selectMap AssetTarget
           $ HealableAsset (toSource attrs) HorrorType
           $ AssetAt YourLocation
           <> AllyAsset

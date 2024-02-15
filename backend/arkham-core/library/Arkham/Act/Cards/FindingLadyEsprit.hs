@@ -37,10 +37,9 @@ findingLadyEsprit =
 instance RunMessage FindingLadyEsprit where
   runMessage msg a@(FindingLadyEsprit attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
-      ladyEspritSpawnLocation <-
-        fromJust . headMay . setToList <$> bayouLocations
+      ladyEspritSpawnLocation <- fromJust . headMay <$> bayouLocations
       ladyEsprit <- genCard Assets.ladyEsprit
-      setAsideLocations <- selectList $ SetAsideCardMatch LocationCard
+      setAsideLocations <- select $ SetAsideCardMatch LocationCard
 
       let
         traits =
@@ -69,7 +68,7 @@ instance RunMessage FindingLadyEsprit where
       curseOfTheRougarouSet <-
         map EncounterCard
           <$> gatherEncounterSet EncounterSet.CurseOfTheRougarou
-      rougarouSpawnLocations <- setToList <$> nonBayouLocations
+      rougarouSpawnLocations <- nonBayouLocations
       theRougarou <- genCard Enemies.theRougarou
       curseOfTheRougarou <- genCard Treacheries.curseOfTheRougarou
       choices <- for rougarouSpawnLocations $ \lid -> do

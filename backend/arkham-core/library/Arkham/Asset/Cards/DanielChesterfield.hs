@@ -33,7 +33,7 @@ instance HasAbilities DanielChesterfield where
 instance RunMessage DanielChesterfield where
   runMessage msg a@(DanielChesterfield attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      otherInvestigators <- selectList (InvestigatorAt YourLocation <> NotYou)
+      otherInvestigators <- select (InvestigatorAt YourLocation <> NotYou)
       player <- getPlayer iid
       push
         $ chooseOne player [targetLabel i [TakeControlOfAsset i (toId attrs)] | i <- otherInvestigators]

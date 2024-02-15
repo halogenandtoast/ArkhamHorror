@@ -22,7 +22,7 @@ lostInTime = treachery LostInTime Cards.lostInTime
 instance RunMessage LostInTime where
   runMessage msg t@(LostInTime attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      assets <- selectList $ assetControlledBy iid <> AssetNonStory
+      assets <- select $ assetControlledBy iid <> AssetNonStory
       assetsWithDamageAndHorror <- for assets $ \asset -> do
         damage <- field AssetDamage asset
         horror <- field AssetHorror asset

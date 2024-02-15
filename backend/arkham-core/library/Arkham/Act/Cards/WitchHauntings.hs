@@ -39,7 +39,7 @@ instance HasModifiersFor WitchHauntings where
         ]
   getModifiersFor (InvestigatorTarget iid) (WitchHauntings a) = do
     lids <-
-      selectList
+      select
         $ LocationIsInFrontOf (NotInvestigator $ InvestigatorWithId iid)
     pure $ toModifiers a $ map CannotEnter lids
   getModifiersFor _ _ = pure []

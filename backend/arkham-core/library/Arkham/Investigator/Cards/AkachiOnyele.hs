@@ -35,7 +35,7 @@ instance HasChaosTokenValue AkachiOnyele where
 instance RunMessage AkachiOnyele where
   runMessage msg i@(AkachiOnyele attrs) = case msg of
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
-      assets <- filterByField AssetStartingUses (hasUsesFor Charge) =<< selectList (assetControlledBy iid)
+      assets <- filterByField AssetStartingUses (hasUsesFor Charge) =<< select (assetControlledBy iid)
       player <- getPlayer iid
       pushIfAny assets
         $ chooseOne player

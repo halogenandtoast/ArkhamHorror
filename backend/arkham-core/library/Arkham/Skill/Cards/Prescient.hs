@@ -72,7 +72,7 @@ instance RunMessage PrescientEffect where
           _ -> error "Invalid metadata"
 
       spells <-
-        selectList
+        select
           $ InDiscardOf (InvestigatorWithId iid)
           <> BasicCardMatch
             (CardWithTrait Spell)

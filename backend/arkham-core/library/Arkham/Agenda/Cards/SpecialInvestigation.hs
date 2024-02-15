@@ -56,7 +56,7 @@ instance RunMessage SpecialInvestigation where
   runMessage msg a@(SpecialInvestigation attrs) =
     case msg of
       UseThisAbility iid (isSource attrs -> True) 1 -> do
-        police <- selectList $ enemyAtLocationWith iid <> ReadyEnemy <> EnemyWithTrait Police
+        police <- select $ enemyAtLocationWith iid <> ReadyEnemy <> EnemyWithTrait Police
         player <- getPlayer iid
         push
           $ chooseOneAtATime

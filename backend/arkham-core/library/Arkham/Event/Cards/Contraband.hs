@@ -24,10 +24,10 @@ contraband = event Contraband Cards.contraband
 instance RunMessage Contraband where
   runMessage msg e@(Contraband attrs@EventAttrs {..}) = case msg of
     PlayThisEvent iid eid | eid == eventId -> do
-      investigatorIds <- selectList =<< guardAffectsColocated iid
+      investigatorIds <- select =<< guardAffectsColocated iid
 
       ammoAssets <-
-        selectList
+        select
           $ AssetWithUseType Ammo
           <> AssetNotAtUseLimit
           <> oneOf (map assetControlledBy investigatorIds)
@@ -39,7 +39,7 @@ instance RunMessage Contraband where
             (\aid -> (,aid) <$> fieldMap AssetUses (findWithDefault 0 Ammo) aid)
 
       supplyAssets <-
-        selectList
+        select
           $ AssetWithUseType Supply
           <> AssetNotAtUseLimit
           <> oneOf (map assetControlledBy investigatorIds)

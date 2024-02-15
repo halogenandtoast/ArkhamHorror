@@ -38,7 +38,7 @@ instance RunMessage GrandRue where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       maxDoom <- fieldMax AgendaDoom AnyAgenda
       agendas <-
-        selectListMap AgendaTarget
+        selectMap AgendaTarget
           $ AgendaWithDoom
           $ EqualTo
           $ Static

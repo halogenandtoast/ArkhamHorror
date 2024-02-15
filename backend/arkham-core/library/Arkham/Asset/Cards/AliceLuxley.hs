@@ -48,7 +48,7 @@ instance RunMessage AliceLuxley where
   runMessage msg a@(AliceLuxley attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       enemies <-
-        selectList
+        select
           $ EnemyAt (locationWithInvestigator iid)
           <> EnemyCanBeDamagedBySource (toAbilitySource attrs 1)
       player <- getPlayer iid

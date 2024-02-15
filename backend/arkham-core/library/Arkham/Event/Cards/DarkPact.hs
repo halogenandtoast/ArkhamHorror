@@ -34,7 +34,7 @@ instance HasAbilities DarkPact where
 instance RunMessage DarkPact where
   runMessage msg e@(DarkPact attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      iids <- selectList $ colocatedWith iid
+      iids <- select $ colocatedWith iid
       player <- getPlayer iid
       pushAll
         [ chooseOne

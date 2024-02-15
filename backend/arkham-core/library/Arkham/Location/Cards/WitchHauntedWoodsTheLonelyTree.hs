@@ -70,14 +70,14 @@ instance RunMessage WitchHauntedWoodsTheLonelyTree where
       canDraw <- iid <=~> InvestigatorCanDrawCards Anyone
 
       iidsForDraw <-
-        selectList
+        select
           $ InvestigatorCanDrawCards
           $ InvestigatorAt
           $ LocationWithTitle "Witch-Haunted Woods"
           <> NotLocation (locationWithInvestigator iid)
 
       iidsForDiscard <-
-        selectList
+        select
           $ InvestigatorWithDiscardableCard
           <> InvestigatorAt
             ( LocationWithTitle "Witch-Haunted Woods"

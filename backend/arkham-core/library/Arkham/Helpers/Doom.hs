@@ -10,15 +10,15 @@ import Arkham.Target
 
 targetsWithDoom :: HasGame m => m [Target]
 targetsWithDoom = do
-  locations <- selectListMap LocationTarget LocationWithAnyDoom
-  investigators <- selectListMap InvestigatorTarget InvestigatorWithAnyDoom
-  enemies <- selectListMap EnemyTarget EnemyWithAnyDoom
-  assets <- selectListMap AssetTarget AssetWithAnyDoom
-  agendas <- selectListMap AgendaTarget AgendaWithAnyDoom
-  treacheries <- selectListMap TreacheryTarget TreacheryWithAnyDoom
-  -- acts <- selectListMap ActTarget ActWithAnyDoom
-  -- events <- selectListMap EventTarget EventWithAnyDoom
-  -- skills <- selectListMap SkillTarget SkillWithAnyDoom
+  locations <- selectMap LocationTarget LocationWithAnyDoom
+  investigators <- selectMap InvestigatorTarget InvestigatorWithAnyDoom
+  enemies <- selectMap EnemyTarget EnemyWithAnyDoom
+  assets <- selectMap AssetTarget AssetWithAnyDoom
+  agendas <- selectMap AgendaTarget AgendaWithAnyDoom
+  treacheries <- selectMap TreacheryTarget TreacheryWithAnyDoom
+  -- acts <- selectMap ActTarget ActWithAnyDoom
+  -- events <- selectMap EventTarget EventWithAnyDoom
+  -- skills <- selectMap SkillTarget SkillWithAnyDoom
   pure
     $ locations
     <> investigators

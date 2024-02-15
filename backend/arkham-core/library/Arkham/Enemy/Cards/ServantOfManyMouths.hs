@@ -41,7 +41,7 @@ instance HasAbilities ServantOfManyMouths where
 instance RunMessage ServantOfManyMouths where
   runMessage msg e@(ServantOfManyMouths attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      locationsWithClues <- selectList LocationWithAnyClues
+      locationsWithClues <- select LocationWithAnyClues
       player <- getPlayer iid
       unless
         (null locationsWithClues)

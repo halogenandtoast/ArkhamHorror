@@ -213,7 +213,7 @@ instance RunMessage LocationAttrs where
         traits' <- field EnemyTraits eid
         unless (Elite `elem` traits') $ do
           activeInvestigatorId <- getActiveInvestigatorId
-          connectedLocationIds <- selectList $ AccessibleFrom $ LocationWithId lid
+          connectedLocationIds <- select $ AccessibleFrom $ LocationWithId lid
           availableLocationIds <-
             flip filterM connectedLocationIds $ \locationId' -> do
               modifiers' <- getModifiers (LocationTarget locationId')
@@ -389,7 +389,7 @@ instance RunMessage LocationAttrs where
 
 locationInvestigatorsWithClues :: HasGame m => LocationAttrs -> m [InvestigatorId]
 locationInvestigatorsWithClues attrs =
-  filterM (fieldMap InvestigatorClues (> 0)) =<< selectList (investigatorAt $ toId attrs)
+  filterM (fieldMap InvestigatorClues (> 0)) =<< select (investigatorAt $ toId attrs)
 
 getModifiedShroudValueFor :: HasGame m => LocationAttrs -> m Int
 getModifiedShroudValueFor attrs = do
@@ -443,7 +443,10 @@ instance HasAbilities LocationAttrs where
     , restrictedAbility
         l
         102
-        (OnLocation (accessibleTo l) <> exists (You <> can.move <> noModifier (CannotEnter l.id)))
+        ( CanMoveTo (LocationWithId l.id)
+            <> OnLocation (accessibleTo l)
+            <> exists (You <> can.move <> noModifier (CannotEnter l.id))
+        )
         $ ActionAbility [#move] moveCost
     ]
       <> [ withTooltip ("Take " <> keyName k <> " key")
@@ -464,10 +467,10 @@ getShouldSpawnNonEliteAtConnectingInstead attrs = do
     _ -> False
 
 enemyAtLocation :: HasGame m => EnemyId -> LocationAttrs -> m Bool
-enemyAtLocation eid attrs = member eid <$> select (enemyAt $ toId attrs)
+enemyAtLocation eid attrs = elem eid <$> select (enemyAt $ toId attrs)
 
 locationEnemiesWithTrait :: HasGame m => LocationAttrs -> Trait -> m [EnemyId]
-locationEnemiesWithTrait attrs trait = selectList $ enemyAt (toId attrs) <> EnemyWithTrait trait
+locationEnemiesWithTrait attrs trait = select $ enemyAt (toId attrs) <> EnemyWithTrait trait
 
 instance Be LocationAttrs LocationMatcher where
   be = LocationWithId . toId

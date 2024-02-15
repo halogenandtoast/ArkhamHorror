@@ -14,7 +14,7 @@ import Arkham.Id
 import Arkham.Matcher
 
 getHauntedAbilities :: HasGame m => InvestigatorId -> m [Ability]
-getHauntedAbilities iid = selectList $ HauntedAbility <> AbilityOnLocation (locationWithInvestigator iid)
+getHauntedAbilities iid = select $ HauntedAbility <> AbilityOnLocation (locationWithInvestigator iid)
 
 runHauntedAbilities :: (HasGame m, HasQueue Message m) => InvestigatorId -> m ()
 runHauntedAbilities iid = do
@@ -26,7 +26,7 @@ runHauntedAbilities iid = do
 runLocationHauntedAbilities
   :: (HasGame m, HasQueue Message m) => InvestigatorId -> LocationId -> m ()
 runLocationHauntedAbilities iid lid = do
-  hauntedAbilities <- selectList $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
+  hauntedAbilities <- select $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
   player <- getPlayer iid
   pushWhen (notNull hauntedAbilities)
     $ chooseOneAtATime player [AbilityLabel iid ab [] [] | ab <- hauntedAbilities]

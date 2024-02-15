@@ -44,7 +44,7 @@ getCount (_ : xs) = getCount xs
 instance RunMessage WitchHauntedWoodsHermitsHouse where
   runMessage msg l@(WitchHauntedWoodsHermitsHouse attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (getCount -> n) _ -> do
-      iids <- selectList $ investigatorAt $ toId attrs
+      iids <- select $ investigatorAt $ toId attrs
       pushAll [toMessage $ randomDiscardN iid attrs n | iid <- iids]
       pure l
     _ -> WitchHauntedWoodsHermitsHouse <$> runMessage msg attrs

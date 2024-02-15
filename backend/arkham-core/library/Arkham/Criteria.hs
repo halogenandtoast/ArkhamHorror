@@ -183,6 +183,7 @@ data Criterion
   | DuringPhase PhaseMatcher
   | ChaosTokenCountIs ChaosTokenMatcher ValueMatcher
   | CanMoveThis GridDirection
+  | CanMoveTo LocationMatcher
   | NotYetRecorded CampaignLogKey
   | HasHistory HistoryType InvestigatorMatcher HistoryMatcher
   | HasScenarioCount ScenarioCountKey ValueMatcher

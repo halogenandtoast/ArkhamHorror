@@ -40,6 +40,7 @@ getCardPayments c = do
  where
   isCardTarget = \case
     ForAbility {} -> False
+    ForAdditionalCost {} -> False
     ForCard _ c' -> toCardId c == toCardId c'
     ForCost c' -> toCardId c == toCardId c'
 

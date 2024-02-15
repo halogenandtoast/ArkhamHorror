@@ -39,8 +39,8 @@ instance RunMessage SanctumDoorwayCeremonyRoom where
       cancelEffect <-
         selectAny $ investigatorAt (toId attrs) <> InvestigatorWithKey SkullKey
       unless cancelEffect $ do
-        investigators <- selectList $ investigatorAt $ toId attrs
-        assets <- selectList $ assetAt $ toId attrs
+        investigators <- select $ investigatorAt $ toId attrs
+        assets <- select $ assetAt $ toId attrs
         pushAll
           $ [InvestigatorDirectDamage iid (toAbilitySource attrs 1) 0 1 | iid <- investigators]
           <> [AssetDamage aid (toAbilitySource attrs 1) 0 1 | aid <- assets]

@@ -66,7 +66,7 @@ instance RunMessage IntelReport where
       if discoverUpToTwoAway
         then do
           lids <-
-            selectList
+            select
               $ LocationMatchAny
               $ (locationWithInvestigator iid <> LocationWithAnyClues)
               : [ LocationWithDistanceFrom n LocationWithAnyClues

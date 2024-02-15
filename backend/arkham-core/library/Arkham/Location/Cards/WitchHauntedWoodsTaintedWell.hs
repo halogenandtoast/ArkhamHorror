@@ -42,7 +42,7 @@ instance HasModifiersFor WitchHauntedWoodsTaintedWell where
                   ]
             else do
               isWitchHauntedWoods <-
-                member lid
+                elem lid
                   <$> select (LocationWithTitle "Witch-Haunted Woods")
               pure
                 $ toModifiers

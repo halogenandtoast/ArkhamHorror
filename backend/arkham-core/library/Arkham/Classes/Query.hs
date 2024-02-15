@@ -1,36 +1,31 @@
 module Arkham.Classes.Query where
 
-import Arkham.Prelude
-
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Query
 import Arkham.Target
-import Data.Set qualified as Set
+import Data.List qualified as List
 import Data.Typeable
 
 selectCount :: (HasCallStack, Query a, HasGame m) => a -> m Int
-selectCount = fmap Set.size . select
+selectCount = fmap length . select
 
 selectAny :: (HasCallStack, Query a, HasGame m) => a -> m Bool
-selectAny = fmap notNull . selectListMap id
+selectAny = fmap notNull . selectMap id
 
 selectNone :: (HasCallStack, Query a, HasGame m) => a -> m Bool
 selectNone = fmap not . selectAny
 
 selectFilter :: (HasCallStack, Query a, HasGame m) => a -> [QueryElement a] -> m [QueryElement a]
-selectFilter matcher ids = toList . (setFromList ids `intersection`) <$> select matcher
-
-selectList
-  :: (HasCallStack, Query a, HasGame m) => a -> m [QueryElement a]
-selectList = selectListMap id
+selectFilter matcher ids = (ids `List.intersect`) <$> select matcher
 
 selectShuffled
   :: (HasCallStack, Query a, HasGame m, MonadRandom m)
   => a
   -> m [QueryElement a]
-selectShuffled = shuffleM <=< selectList
+selectShuffled = shuffleM <=< select
 
 selectWithField
   :: ( EntityId rec ~ QueryElement a
@@ -41,7 +36,7 @@ selectWithField
   => Field rec typ
   -> a
   -> m [(QueryElement a, typ)]
-selectWithField fld = traverse (traverseToSnd (field fld)) <=< selectList
+selectWithField fld = traverse (traverseToSnd (field fld)) <=< select
 
 selectField
   :: ( EntityId rec ~ QueryElement a
@@ -52,14 +47,14 @@ selectField
   => Field rec typ
   -> a
   -> m [typ]
-selectField fld = traverse (field fld) <=< selectList
+selectField fld = traverse (field fld) <=< select
 
 selectRandom
   :: (HasCallStack, Query a, HasGame m, MonadRandom m)
   => a
   -> m (Maybe (QueryElement a))
 selectRandom matcher = do
-  results <- selectList matcher
+  results <- select matcher
   maybe (pure Nothing) (fmap Just . sample) (nonEmpty results)
 
 selectRandomJust
@@ -68,28 +63,28 @@ selectRandomJust
   -> a
   -> m (QueryElement a)
 selectRandomJust err matcher = do
-  results <- selectList matcher
+  results <- select matcher
   maybe (error err) sample (nonEmpty results)
 
-selectListMap
+selectMap
   :: (HasCallStack, Query a, HasGame m)
   => (QueryElement a -> b)
   -> a
   -> m [b]
-selectListMap f = selectListMapM (pure . f)
+selectMap f = selectMapM (pure . f)
 
 selectTargets
   :: (HasCallStack, Query a, HasGame m, Targetable (QueryElement a))
   => a
   -> m [Target]
-selectTargets = selectListMap toTarget
+selectTargets = selectMap toTarget
 
-selectListMapM
+selectMapM
   :: (HasCallStack, Query a, HasGame m)
   => (QueryElement a -> m b)
   -> a
   -> m [b]
-selectListMapM f = traverse f . setToList <=< select
+selectMapM f = traverse f <=< select
 
 selectJust
   :: (HasCallStack, Show a, Query a, HasGame m)
@@ -135,7 +130,7 @@ selectAgg
   -> a
   -> m monoid
 selectAgg f p matcher = do
-  results <- selectList matcher
+  results <- select matcher
   values <- traverse (fieldMap p f) results
   pure $ fold values
 
@@ -208,7 +203,7 @@ selectMax fld matcher = do
   maxValue <- fieldMax fld matcher
   if maxValue > 0
     then do
-      results <- selectList matcher
+      results <- select matcher
       filterM (fmap (== maxValue) . field fld) results
     else pure []
 
@@ -217,7 +212,7 @@ selectOne
   => a
   -> m (Maybe (QueryElement a))
 selectOne matcher = do
-  result <- selectList matcher
+  result <- select matcher
   pure $ case result of
     [] -> Nothing
     x : _ -> Just x
@@ -236,7 +231,7 @@ selectOnlyOne
   => a
   -> m (QueryElement a)
 selectOnlyOne matcher =
-  selectList matcher >>= \case
+  select matcher >>= \case
     [x] -> pure x
     xs ->
       error
@@ -252,13 +247,13 @@ isMatch
   => QueryElement matcher
   -> matcher
   -> m Bool
-isMatch a m = member a <$> select m
+isMatch a m = elem a <$> select m
 
 class (Ord (QueryElement a), Eq (QueryElement a)) => Query a where
-  select :: (HasCallStack, HasGame m) => a -> m (Set (QueryElement a))
+  select :: (HasCallStack, HasGame m) => a -> m [QueryElement a]
 
 matches :: (HasGame m, Query a) => QueryElement a -> a -> m Bool
-matches a matcher = member a <$> select matcher
+matches a matcher = elem a <$> select matcher
 
 (<=~>) :: (HasGame m, Query a) => QueryElement a -> a -> m Bool
 (<=~>) = matches

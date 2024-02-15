@@ -44,7 +44,7 @@ instance RunMessage TimeWrackedWoods where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       targets <-
         mapMaybe (preview _EncounterCard)
-          <$> selectList
+          <$> select
             ( VictoryDisplayCardMatch
                 $ CardWithVengeance
                 <> NotCard

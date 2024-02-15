@@ -21,7 +21,7 @@ manoAMano2 = event ManoAMano2 Cards.manoAMano2
 instance RunMessage ManoAMano2 where
   runMessage msg e@(ManoAMano2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      enemies <- selectList $ enemyEngagedWith iid
+      enemies <- select $ enemyEngagedWith iid
       player <- getPlayer iid
       pushAll
         [ chooseOrRunOne

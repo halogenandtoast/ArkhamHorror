@@ -18,7 +18,7 @@ sneakAttack = event SneakAttack Cards.sneakAttack
 instance RunMessage SneakAttack where
   runMessage msg e@(SneakAttack attrs) = case msg of
     PlayThisEvent you eid | attrs `is` eid -> do
-      enemies <- selectList $ ExhaustedEnemy <> enemiesColocatedWith you
+      enemies <- select $ ExhaustedEnemy <> enemiesColocatedWith you
       player <- getPlayer you
       push $ chooseOne player $ targetLabels enemies $ only . nonAttackEnemyDamage attrs 2
       pure e

@@ -1207,6 +1207,7 @@ passesCriteria
   -> Criterion
   -> m Bool
 passesCriteria iid mcard source windows' = \case
+  Criteria.HasRemainingBlessTokens -> (> 0) <$> getRemainingBlessTokens
   Criteria.CanMoveThis dir -> do
     case source of
       LocationSource lid -> do

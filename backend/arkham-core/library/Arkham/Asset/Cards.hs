@@ -305,6 +305,7 @@ allPlayerAssetCards =
       , higherEducation3
       , hiredMuscle1
       , holyRosary
+      , holyRosary2
       , hope
       , hyperawareness
       , hyperawareness2
@@ -3970,6 +3971,15 @@ abyssalTome2 =
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = setFromList [Item, Tome]
     , cdSlots = [#hand]
+    , cdLevel = 2
+    }
+
+holyRosary2 :: CardDef
+holyRosary2 =
+  (asset "07220" "Holy Rosary" 2 Guardian)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Item, Charm, Blessed]
+    , cdSlots = [#accessory]
     , cdLevel = 2
     }
 

@@ -647,6 +647,9 @@ allAssets =
       SomeAssetCard keenEye
     , --- mystic [def]
       SomeAssetCard abyssalTome2
+    , -- A Light in the Fog
+      --- guardian [lif]
+      SomeAssetCard holyRosary2
     , -- The Lair of Dagon
       --- rogue [lod]
       SomeAssetCard hardKnocks4

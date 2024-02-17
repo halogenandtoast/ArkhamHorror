@@ -20,7 +20,6 @@ export function imgsrc(src: string) {
   const path = src.replace(/^\//, '')
   switch (language) {
     case 'it': {
-      console.log(ita, path)
       const exists = ita.includes(path)
       return exists ? `${baseUrl}/img/arkham/ita/${src.replace(/^\//, '')}` : `${baseUrl}/img/arkham/${src.replace(/^\//, '')}`
     }

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n';
 import { ref, computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -139,7 +140,12 @@ const replaceIcons = function(body: string) {
     replace('{elderSign}', '<span class="elder-sign"></span>')
 }
 
+const { t } = useI18n()
+
 const label = function(body: string) {
+  if (body.startsWith("$")) {
+    return t(body.slice(1))
+  }
   return replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>').replace(/\*([^*]*)\*/g, '<i>$1</i>')
 }
 

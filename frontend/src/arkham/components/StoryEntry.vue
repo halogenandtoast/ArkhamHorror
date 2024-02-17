@@ -26,10 +26,16 @@ const readChoices = props.question.readChoices.reduce<{ label: string, index: nu
 }, [] as { label: string, index: number }[])
 
 const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
+
+const formatted = computed(() => {
+  return props.question.flavorText.body[0].startsWith("$") ? props.question.flavorText.body[0].slice(1) : null
+})
+
 </script>
 <template>
   <div class="intro-text">
-    <div class="entry">
+    <div class="entry" v-if="formatted" v-html="$t(formatted)"></div>
+    <div v-else class="entry">
       <h1 v-if="question.flavorText.title">{{question.flavorText.title}}</h1>
       <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="() => {}" />
       <p
@@ -43,7 +49,7 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
         v-for="readChoice in readChoices"
         @click="choose(readChoice.index)"
         :key="readChoice.index"
-      ><i class="option"></i>{{readChoice.label}}</button>
+      ><i class="option"></i>{{$t(readChoice.label)}}</button>
     </div>
   </div>
 </template>
@@ -62,7 +68,7 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
   background: #001721;
   padding: 20px;
   box-sizing: border-box;
-  h1 {
+  :deep(h1) {
     font-family: "Teutonic";
     font-weight: 500;
     color: #38615F;
@@ -78,7 +84,7 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
     }
   }
 
-  p {
+  :deep(p) {
     margin: 10px;
     font-style: italic;
   }

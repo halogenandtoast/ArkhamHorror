@@ -33,6 +33,6 @@ instance RunMessage NightOfTheZealot where
   runMessage msg c = case msg of
     CampaignStep PrologueStep -> do
       players <- allPlayers
-      pushAll [story players prologue, NextCampaignStep Nothing]
+      pushAll [story players (i18n "nightOfTheZealot.prologue"), NextCampaignStep Nothing]
       pure c
     _ -> defaultCampaignRunner msg c

@@ -872,7 +872,6 @@ library
       Arkham.CampaignLogKey
       Arkham.Campaigns.NightOfTheZealot.CampaignSteps
       Arkham.Campaigns.NightOfTheZealot.ChaosBag
-      Arkham.Campaigns.NightOfTheZealot.FlavorText
       Arkham.Campaigns.NightOfTheZealot.Import
       Arkham.Campaigns.TheCircleUndone.CampaignSteps
       Arkham.Campaigns.TheCircleUndone.ChaosBag

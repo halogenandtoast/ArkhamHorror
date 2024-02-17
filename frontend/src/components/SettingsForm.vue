@@ -23,14 +23,14 @@ const updateLanguage = () => {
 
 <template>
   <div class="settings">
-    <h1>Settings</h1>
+    <h1>{{$t('settings')}}</h1>
 
     <fieldset>
-      <legend>Language</legend>
+      <legend>{{$t('language')}}</legend>
       <p>This will change the language of the cards and app, but will default to English if a card or text is not available in the selected language.</p>
-      <select v-model="language" @change="updateLanguage">
+      <select v-model="$i18n.locale" @change="updateLanguage">
         <option value="en">English</option>
-        <option value="it">Italian</option>
+        <option value="it">Italiano</option>
       </select>
     </fieldset>
 

@@ -1,0 +1,14 @@
+{
+  "language": "Language",
+  "settings": "Settings",
+  "continue": "Continue",
+  "nightOfTheZealot": {
+    "prologue": "<h1>The Ghouls Hunger...</h1><p>Friday, September 18, 1925. Arkham, Massachusetts. It is the end of a long and abnormally hot summer. The first hints of autumn beckon, but a heavy heat persists, relentless. A silent, unspoken anger grips the town. Tempers are short, and in the last week alone there have been numerous reports of townspeople coming to heated, violent blows with one another over simple misunderstandings.</p> <p>And now, a call from James Hankerson. He claims to have found a dismembered body in his barn.</p> <p>Blaming the weather would be too easy. There is something wrong with this town, and not a whole lot this old soothsayer can do to stop the slide. My auguries indicate a small group of investigators will soon take note of these strange happenings and set forth to make things right. I’ll be watching their progress…but I won’t be holding my breath.</p>",
+    "theGathering": {
+      "intro": {
+        "title": "Part I: The Gathering",
+        "body": "<p>You and your partners have been investigating strange events taking place in your home city of Arkham, Massachusetts. Over the past few weeks, several townspeople have mysteriously gone missing. Recently, their corpses turned up in the woods, savaged and half - eaten. The police and newspapers have stated that wild animals are responsible, but you believe there is something else going on. You are gathered together at the lead investigator’s home to discuss these bizarre events.<p>"
+      }
+    }
+  }
+}

@@ -23,6 +23,7 @@
     "v-jsoneditor": "^1.4.5",
     "vue": "^3.3.4",
     "vue-final-modal": "^4.0.0",
+    "vue-i18n": "^9.9.1",
     "vue-router": "^4.0.16",
     "vue-toastification": "^2.0.0-rc.5"
   },

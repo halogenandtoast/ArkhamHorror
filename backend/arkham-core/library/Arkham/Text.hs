@@ -15,6 +15,15 @@ data FlavorText = FlavorText
   }
   deriving stock (Show, Eq, Ord)
 
+i18n :: Text -> FlavorText
+i18n = FlavorText Nothing . pure . toI18n
+
+i18nWithTitle :: Text -> Text -> FlavorText
+i18nWithTitle t = FlavorText (Just $ toI18n t) . pure . toI18n
+
+toI18n :: Text -> Text
+toI18n = ("$" <>)
+
 instance Semigroup FlavorText where
   FlavorText mTitle1 body1 <> FlavorText mTitle2 body2 = FlavorText (mTitle1 <|> mTitle2) (body1 <> body2)
 

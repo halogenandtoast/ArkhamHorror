@@ -107,7 +107,7 @@ const choose = (idx: number) => emit('choose', idx)
           <button @click="choose(index)" v-tooltip="choice.tooltip">{{choice.label}}</button>
         </template>
         <template v-if="choice.tag === MessageType.LABEL">
-          <button @click="choose(index)">{{choice.label}}</button>
+          <button @click="choose(index)">{{$t(choice.label)}}</button>
         </template>
         <template v-if="choice.tag === MessageType.CARD_LABEL">
           <a href='#' @click.prevent="choose(index)">

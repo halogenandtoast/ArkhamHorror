@@ -13,15 +13,14 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faExpeditedssl } from "@fortawesome/free-brands-svg-icons";
 import { faSearch, faList, faImage, faAngleDown, faUndo, faTrash, faEye, faCopy, faExternalLink, faRefresh } from '@fortawesome/free-solid-svg-icons'
 import * as VueI18n from 'vue-i18n'
-import en from '@/locales/en.json'
-import it from '@/locales/it.json'
+import messages from '@/locales/messages'
 
 const i18n = VueI18n.createI18n({
   locale: 'en', // set locale
   fallbackLocale: 'en', // set fallback locale
   legacy: false,
   warnHtmlMessage: false,
-  messages: { en, it }// set locale messages
+  messages
 })
 
 library.add(faSearch, faList, faImage, faAngleDown, faExpeditedssl, faUndo, faTrash, faEye, faCopy, faExternalLink, faRefresh)

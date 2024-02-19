@@ -23,7 +23,6 @@ import Arkham.Scenario.Runner hiding (
   placeLocationCard,
   story,
  )
-import Arkham.Scenarios.TheGathering.Story
 import Arkham.Trait qualified as Trait
 
 newtype TheGathering = TheGathering ScenarioAttrs
@@ -54,7 +53,7 @@ theGatheringAgendaDeck = [Agendas.whatsGoingOn, Agendas.riseOfTheGhouls, Agendas
 instance RunMessage TheGathering where
   runMessage msg s@(TheGathering attrs) = runQueueT $ case msg of
     PreScenarioSetup -> do
-      story theGatheringIntro
+      story $ i18nWithTitle "nightOfTheZealot.theGathering.intro"
       pure s
     Setup -> do
       encounterDeck <-
@@ -90,12 +89,14 @@ instance RunMessage TheGathering where
       moveAllTo attrs study
 
       TheGathering
-        <$> runMessage
-          msg
-          ( attrs
-              & (setAsideCardsL .~ setAsideCards)
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
+        <$> lift
+          ( runMessage
+              msg
+              ( attrs
+                  & (setAsideCardsL .~ setAsideCards)
+                  & (actStackL . at 1 ?~ acts)
+                  & (agendaStackL . at 1 ?~ agendas)
+              )
           )
     ResolveChaosToken _ Cultist iid -> do
       pushWhen (isHardExpert attrs) $ DrawAnotherChaosToken iid
@@ -117,20 +118,20 @@ instance RunMessage TheGathering where
       let chooseToAddLita = push $ addCampaignCardToDeckChoice lead [leadId] Assets.litaChantler
       case resolution of
         NoResolution -> do
-          story noResolution
+          story $ i18n "nightOfTheZealot.theGathering.resolutions.noResolution"
           record YourHouseIsStillStanding
           record GhoulPriestIsStillAlive
           chooseToAddLita
           allGainXp
         Resolution 1 -> do
-          story resolution1
+          story $ i18nWithTitle "nightOfTheZealot.theGathering.resolutions.resolution1"
           record YourHouseHasBurnedToTheGround
           chooseToAddLita
           sufferMentalTrauma leadId 1
           allGainXp
         Resolution 2 -> do
           -- TODO: Combine gainXP and bonus so modifiers work
-          story resolution2
+          story $ i18nWithTitle "nightOfTheZealot.theGathering.resolutions.resolution2"
           record YourHouseIsStillStanding
           gainXp leadId attrs 1
           allGainXp
@@ -140,7 +141,7 @@ instance RunMessage TheGathering where
           -- \* end campaign if none left
           -- \* handle new investigators
           -- \* handle lead being killed
-          story resolution3
+          story $ i18nWithTitle "nightOfTheZealot.theGathering.resolutions.resolution3"
           record LitaWasForcedToFindOthersToHelpHerCause
           record YourHouseIsStillStanding
           record GhoulPriestIsStillAlive

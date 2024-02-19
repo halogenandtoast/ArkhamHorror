@@ -18,8 +18,8 @@ data FlavorText = FlavorText
 i18n :: Text -> FlavorText
 i18n = FlavorText Nothing . pure . toI18n
 
-i18nWithTitle :: Text -> Text -> FlavorText
-i18nWithTitle t = FlavorText (Just $ toI18n t) . pure . toI18n
+i18nWithTitle :: Text -> FlavorText
+i18nWithTitle t = FlavorText (Just $ toI18n $ t <> ".title") [toI18n $ t <> ".body"]
 
 toI18n :: Text -> Text
 toI18n = ("$" <>)

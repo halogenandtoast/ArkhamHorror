@@ -3,7 +3,9 @@ import { useUserStore } from '@/stores/user'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, reactive } from 'vue'
 import { Credentials } from '../types'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const store = useUserStore()
 const route = useRoute()
 const router = useRouter()
@@ -24,7 +26,7 @@ async function authenticate() {
       router.push({ path: '/' })
     }
   } catch {
-    signInError.value = "Invalid email or password"
+    signInError.value = t("invalidEmailOrPassword")
   }
 }
 </script>
@@ -38,18 +40,18 @@ async function authenticate() {
         <input
           v-model="credentials.email"
           type="email"
-          placeholder="Email"
+          :placeholder="$t('email')"
         />
       </div>
       <div>
         <input
           v-model="credentials.password"
           type="password"
-          placeholder="Password"
+          :placeholder="$t('password')"
         />
       </div>
       <div>
-        <button>Log in</button>
+        <button>{{$t('logIn')}}</button>
       </div>
     </section>
   </form>

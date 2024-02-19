@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 import type { User } from '@/types'
 import md5 from 'md5'
 
+const toggle = ref<HTMLInputElement | null>(null)
 const router = useRouter()
 const store = useUserStore()
 const currentUser = computed<User | null>(() => store.getCurrentUser)
@@ -18,6 +19,12 @@ const gravatar = computed(() => {
   return "https://www.gravatar.com/avatar/?d=identicon"
 })
 
+function close() {
+  if (toggle.value) {
+    toggle.value.checked = false
+  }
+}
+
 async function logout() {
   await store.logout()
   router.push({ path: '/' })
@@ -27,12 +34,12 @@ async function logout() {
 <template>
   <div id="nav">
     <span class="main-links">
-      <router-link to="/" class="home-link">Home</router-link>{{' '}}
-      <router-link v-if="currentUser" to="/decks">My Decks</router-link>
-      <router-link v-if="currentUser" to="/cards">Cards</router-link>
+      <router-link to="/" class="home-link">{{$t('home')}}</router-link>{{' '}}
+      <router-link v-if="currentUser" to="/decks">{{$t('myDecks')}}</router-link>
+      <router-link v-if="currentUser" to="/cards">{{$t('cards')}}</router-link>
     </span>
 
-    <input type="checkbox" id="dropdown-toggle" />
+    <input type="checkbox" id="dropdown-toggle" ref="toggle" />
     <span class="user-links">
       <template v-if="currentUser">
         <label for="dropdown-toggle">
@@ -41,7 +48,7 @@ async function logout() {
           <font-awesome-icon icon="angle-down" class="user-links--dropdown-icon" />
         </label>
         <div class="user-links--dropdown">
-          <router-link to="/settings">{{$t('settings')}}</router-link>{{' '}}
+          <router-link @click="close" to="/settings">{{$t('settings')}}</router-link>{{' '}}
           <a href="#" @click="logout">Logout</a>
         </div>
       </template>

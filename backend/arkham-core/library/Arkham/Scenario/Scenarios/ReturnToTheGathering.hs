@@ -14,7 +14,6 @@ import Arkham.Message
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios.TheGathering
-import Arkham.Scenarios.TheGathering.Story
 
 newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
   deriving stock (Generic)
@@ -75,7 +74,7 @@ instance RunMessage ReturnToTheGathering where
           <> placeRest
           <> [ RevealLocation Nothing studyId
              , MoveAllTo (toSource attrs) studyId
-             , story players theGatheringIntro
+             , story players $ i18nWithTitle "nightOfTheZealot.theGathering.intro"
              ]
 
         attic <- sample $ Locations.returnToAttic :| [Locations.attic]

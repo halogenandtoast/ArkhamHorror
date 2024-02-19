@@ -192,7 +192,7 @@ async function start() {
       </div>
       <div v-else>
         <header>
-          <h2>New Game</h2>
+          <h2>{{$t('newGame')}}</h2>
         </header>
         <form id="new-campaign" @submit.prevent="start">
           <p>Number of Players</p>

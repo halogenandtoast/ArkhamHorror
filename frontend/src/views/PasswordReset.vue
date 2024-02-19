@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { reactive } from 'vue'
 import { useToast } from "vue-toastification";
+import { useI18n } from 'vue-i18n';
 import api from '@/api';
 
 interface PasswordReset {
@@ -11,9 +12,11 @@ const reset = reactive<PasswordReset>({
   email: '',
 })
 
+const { t } = useI18n()
+
 async function resetPassword() {
   await api.post('password-reset', { email : reset.email })
-  toast.success("Password Reset Requested", { timeout: 3000 })
+  toast.success(t("passwordResetRequested"), { timeout: 3000 })
 }
 
 const toast = useToast()
@@ -27,11 +30,11 @@ const toast = useToast()
         <input
           v-model="reset.email"
           type="email"
-          placeholder="Email"
+          :placeholder="$t('email')"
         />
       </div>
       <div>
-        <button>Reset Password</button>
+        <button>{{$t('resetPassword')}}</button>
       </div>
     </section>
   </form>

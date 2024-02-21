@@ -1,10 +1,4 @@
-module Arkham.Asset.Cards.BaseballBat (
-  BaseballBat (..),
-  baseballBat,
-  baseballBatEffect,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.BaseballBat (BaseballBat (..), baseballBat, baseballBatEffect) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -12,22 +6,14 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Effect.Runner
+import Arkham.Prelude
 
 newtype BaseballBat = BaseballBat AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baseballBat :: AssetCard BaseballBat
 baseballBat = asset BaseballBat Cards.baseballBat
-
-instance HasModifiersFor BaseballBat where
-  getModifiersFor (InvestigatorTarget iid) (BaseballBat a) | controlledBy a iid = do
-    mAction <- getSkillTestAction
-    mSource <- getSkillTestSource
-    case (mAction, mSource) of
-      (Just Action.Fight, Just (isSource a -> True)) -> pure $ toModifiers a [DamageDealt 1]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities BaseballBat where
   getAbilities (BaseballBat a) = [fightAbility a 1 mempty ControlsThis]
@@ -35,9 +21,9 @@ instance HasAbilities BaseballBat where
 instance RunMessage BaseballBat where
   runMessage msg a@(BaseballBat attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = toAbilitySource attrs 1
+      let source = attrs.ability 1
       pushAll
-        [ skillTestModifier source iid (SkillModifier #combat 2)
+        [ skillTestModifiers source iid [SkillModifier #combat 2, DamageDealt 1]
         , createCardEffect Cards.baseballBat Nothing source iid
         , chooseFightEnemy iid source #combat
         ]

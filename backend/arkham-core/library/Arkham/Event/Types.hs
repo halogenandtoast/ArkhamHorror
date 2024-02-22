@@ -94,6 +94,9 @@ instance HasField "placement" EventAttrs Placement where
 instance HasField "owner" EventAttrs InvestigatorId where
   getField = eventOwner
 
+instance HasField "ability" EventAttrs (Int -> Source) where
+  getField this = toAbilitySource this
+
 instance HasCardCode EventAttrs where
   toCardCode = eventCardCode
 

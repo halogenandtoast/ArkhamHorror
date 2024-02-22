@@ -953,43 +953,11 @@ library
       Arkham.Draw.Types
       Arkham.Effect
       Arkham.Effect.Effects
-      Arkham.Effect.Effects.BindMonster2
-      Arkham.Effect.Effects.CallingInFavors
       Arkham.Effect.Effects.ChaosTokenEffect
-      Arkham.Effect.Effects.CursedShores
       Arkham.Effect.Effects.CurseOfTheRougarouTabletToken
-      Arkham.Effect.Effects.DaisysToteBagAdvanced
-      Arkham.Effect.Effects.Deduction2
-      Arkham.Effect.Effects.EideticMemory3
-      Arkham.Effect.Effects.ExposeWeakness1
-      Arkham.Effect.Effects.FightOrFlight
-      Arkham.Effect.Effects.FireExtinguisher1
-      Arkham.Effect.Effects.GildedVolto
-      Arkham.Effect.Effects.Improvisation
-      Arkham.Effect.Effects.JeremiahPierce
-      Arkham.Effect.Effects.LeMarais218
-      Arkham.Effect.Effects.LuckyDice2
-      Arkham.Effect.Effects.MeatCleaver
-      Arkham.Effect.Effects.MindWipe3
-      Arkham.Effect.Effects.Montmartre209
-      Arkham.Effect.Effects.MrPeabody
-      Arkham.Effect.Effects.NarrowShaft
-      Arkham.Effect.Effects.PereLachaiseCemetery
-      Arkham.Effect.Effects.PushedIntoTheBeyond
-      Arkham.Effect.Effects.QuickThinking
-      Arkham.Effect.Effects.SleightOfHand
-      Arkham.Effect.Effects.SongOfTheDead2
       Arkham.Effect.Effects.SurgeEffect
-      Arkham.Effect.Effects.TenAcreMeadow_246
-      Arkham.Effect.Effects.TheKingsEdict
-      Arkham.Effect.Effects.TheOrganistHopelessIDefiedHim
-      Arkham.Effect.Effects.ThePaintedWorld
-      Arkham.Effect.Effects.TheStrangerACityAflame
-      Arkham.Effect.Effects.TheStrangerThePathIsMine
       Arkham.Effect.Effects.UndimensionedAndUnseenTabletToken
-      Arkham.Effect.Effects.WilliamYorick
       Arkham.Effect.Effects.WindowModifierEffect
-      Arkham.Effect.Effects.YogSothoth
       Arkham.Effect.Helpers
       Arkham.Effect.Runner
       Arkham.Effect.Types

@@ -1,19 +1,16 @@
-module Arkham.Event.Cards.ThePaintedWorld (
-  thePaintedWorld,
-  ThePaintedWorld (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.ThePaintedWorld (thePaintedWorld, thePaintedWorldEffect, ThePaintedWorld (..)) where
 
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
+import Arkham.Effect.Runner
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Matcher qualified as Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Window
@@ -44,8 +41,8 @@ instance RunMessage ThePaintedWorld where
           iid
           (toCard attrs)
           playableCards
-          [ CreateEffect
-              "03012"
+          [ createCardEffect
+              Cards.thePaintedWorld
               Nothing
               (CardSource $ toCard attrs)
               (CardIdTarget $ toCardId attrs)
@@ -55,3 +52,23 @@ instance RunMessage ThePaintedWorld where
           True
       pure e
     _ -> ThePaintedWorld <$> runMessage msg attrs
+
+newtype ThePaintedWorldEffect = ThePaintedWorldEffect EffectAttrs
+  deriving anyclass (HasAbilities, IsEffect)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+thePaintedWorldEffect :: EffectArgs -> ThePaintedWorldEffect
+thePaintedWorldEffect = cardEffect ThePaintedWorldEffect Cards.thePaintedWorld
+
+instance HasModifiersFor ThePaintedWorldEffect where
+  getModifiersFor (EventTarget eid) (ThePaintedWorldEffect a@EffectAttrs {..}) = do
+    cardId <- field EventCardId eid
+    pure $ toModifiers a [RemoveFromGameInsteadOfDiscard | toTarget cardId == effectTarget]
+  getModifiersFor (CardIdTarget cardId) (ThePaintedWorldEffect a@EffectAttrs {..}) = do
+    -- Mainly used for cards like Crystallizer of Dreams that work with After you play effects
+    pure $ toModifiers a [RemoveFromGameInsteadOfDiscard | toTarget cardId == effectTarget]
+  getModifiersFor _ _ = pure []
+
+instance RunMessage ThePaintedWorldEffect where
+  runMessage msg (ThePaintedWorldEffect attrs) =
+    ThePaintedWorldEffect <$> runMessage msg attrs

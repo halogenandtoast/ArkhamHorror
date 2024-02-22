@@ -1,18 +1,14 @@
-module Arkham.Asset.Cards.GildedVolto (
-  gildedVolto,
-  GildedVolto (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.GildedVolto (gildedVolto, gildedVoltoEffect, GildedVolto (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Card
+import Arkham.Effect.Runner
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.SkillTest
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype GildedVolto = GildedVolto AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -23,22 +19,19 @@ gildedVolto = asset GildedVolto Cards.gildedVolto
 
 instance HasAbilities GildedVolto where
   getAbilities (GildedVolto a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
-          (AssetEntersPlay Timing.After $ AssetWithId $ toId a)
-          Free
+    [ restrictedAbility a 1 ControlsThis $ freeReaction $ AssetEntersPlay #after (be a)
     , restrictedAbility a 2 ControlsThis
         $ ReactionAbility
-          (InitiatedSkillTest Timing.When You (NotSkillType SkillAgility) AnySkillTestValue #any)
+          (InitiatedSkillTest #when You (NotSkillType #agility) AnySkillTestValue #any)
           (DiscardCost FromPlay $ toTarget a)
     ]
 
 instance RunMessage GildedVolto where
   runMessage msg a@(GildedVolto attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ CreateEffect "82026" Nothing source (InvestigatorTarget iid)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ createCardEffect Cards.gildedVolto Nothing (attrs.ability 1) iid
       pure a
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
       skillTest <- getJustSkillTest
       let
         newBase =
@@ -50,3 +43,27 @@ instance RunMessage GildedVolto where
       push $ ChangeSkillTestType (SkillSkillTest #agility) newBase
       pure a
     _ -> GildedVolto <$> runMessage msg attrs
+
+newtype GildedVoltoEffect = GildedVoltoEffect EffectAttrs
+  deriving anyclass (HasAbilities, IsEffect)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+gildedVoltoEffect :: EffectArgs -> GildedVoltoEffect
+gildedVoltoEffect = cardEffect GildedVoltoEffect Cards.gildedVolto
+
+instance HasModifiersFor GildedVoltoEffect where
+  getModifiersFor target (GildedVoltoEffect a) | target == a.target = do
+    pure [toModifier a $ CanBecomeFast #asset]
+  getModifiersFor (CardTarget card) (GildedVoltoEffect a) | (toTarget <$> toCardOwner card) == Just a.target = do
+    pure [toModifier a BecomesFast | cardMatch card (CardWithType AssetType)]
+  getModifiersFor _ _ = pure []
+
+instance RunMessage GildedVoltoEffect where
+  runMessage msg e@(GildedVoltoEffect attrs) = case msg of
+    CardEnteredPlay iid card | toTarget iid == attrs.target && cardMatch card (CardWithType AssetType) -> do
+      push $ disable attrs
+      pure e
+    EndTurn _ -> do
+      push $ disable attrs
+      pure e
+    _ -> GildedVoltoEffect <$> runMessage msg attrs

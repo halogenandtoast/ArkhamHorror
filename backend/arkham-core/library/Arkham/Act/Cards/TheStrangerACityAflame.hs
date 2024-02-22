@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.TheStrangerACityAflame (
-  TheStrangerACityAflame (..),
-  theStrangerACityAflame,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheStrangerACityAflame (TheStrangerACityAflame (..), theStrangerACityAflame, theStrangerACityAflameEffect) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -11,10 +6,11 @@ import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Effect.Runner
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding (Discarded)
+import Arkham.Prelude
 import Arkham.Scenarios.CurtainCall.Helpers
-import Arkham.Timing qualified as Timing
 
 newtype TheStrangerACityAflame = TheStrangerACityAflame ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -28,29 +24,55 @@ instance HasAbilities TheStrangerACityAflame where
   getAbilities (TheStrangerACityAflame a) =
     [ mkAbility a 1
         $ Objective
-        $ ForcedAbility
-        $ EnemyWouldBeDiscarded Timing.When
+        $ forced
+        $ EnemyWouldBeDiscarded #when
         $ enemyIs Enemies.theManInThePallidMask
     ]
 
 instance RunMessage TheStrangerACityAflame where
   runMessage msg a@(TheStrangerACityAflame attrs) = case msg of
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ AdvanceAct (toId attrs) (attrs.ability 1) AdvancedWithOther
+      pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
-      theatre <-
-        fromJustNote "theatre must be in play"
-          <$> selectOne (LocationWithTitle "Theatre")
+      theatre <- selectJust (LocationWithTitle "Theatre")
       card <- flipCard <$> genCard (toCardDef attrs)
       pushAll
         [ AddChaosToken Cultist
         , AddChaosToken Cultist
         , PlaceHorror (toSource attrs) (toTarget theatre) 1
         , PlaceNextTo ActDeckTarget [card]
-        , CreateEffect "03047a" Nothing (toSource attrs) (toTarget attrs)
+        , createCardEffect Cards.theStrangerACityAflame Nothing attrs attrs
         , advanceActDeck attrs
         ]
       pure a
     _ -> TheStrangerACityAflame <$> runMessage msg attrs
+
+newtype TheStrangerACityAflameEffect = TheStrangerACityAflameEffect EffectAttrs
+  deriving anyclass (IsEffect, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+theStrangerACityAflameEffect :: EffectArgs -> TheStrangerACityAflameEffect
+theStrangerACityAflameEffect = TheStrangerACityAflameEffect . uncurry4 (baseAttrs "03047a")
+
+instance HasAbilities TheStrangerACityAflameEffect where
+  getAbilities (TheStrangerACityAflameEffect attrs) =
+    [ playerLimit PerRound
+        $ mkAbility (ProxySource (LocationMatcherSource LocationWithAnyHorror) (toSource attrs)) 1
+        $ forced
+        $ OrWindowMatcher
+          [ Enters #after You ThisLocation
+          , TurnEnds #when (You <> InvestigatorAt ThisLocation)
+          ]
+    ]
+
+instance RunMessage TheStrangerACityAflameEffect where
+  runMessage msg e@(TheStrangerACityAflameEffect attrs) = case msg of
+    UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source -> do
+      push $ beginSkillTest iid source iid #agility 3
+      pure e
+    FailedSkillTest _ _ source (Initiator (InvestigatorTarget iid)) _ _ | isSource attrs source -> do
+      push $ assignDamage iid source 1
+      pure e
+    _ -> TheStrangerACityAflameEffect <$> runMessage msg attrs

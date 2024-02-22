@@ -1,18 +1,14 @@
-module Arkham.Location.Cards.TenAcreMeadow_246 (
-  tenAcreMeadow_246,
-  TenAcreMeadow_246 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.TenAcreMeadow_246 (tenAcreMeadow_246, tenAcreMeadow_246Effect, TenAcreMeadow_246 (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Effect.Runner
 import Arkham.Exception
-import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (tenAcreMeadow_246)
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype TenAcreMeadow_246 = TenAcreMeadow_246 LocationAttrs
@@ -25,15 +21,14 @@ tenAcreMeadow_246 =
 
 instance HasAbilities TenAcreMeadow_246 where
   getAbilities (TenAcreMeadow_246 attrs) =
-    withBaseAbilities
+    withRevealedAbilities
       attrs
       [ groupLimit PerGame
-        $ restrictedAbility
-          attrs
-          1
-          (Here <> exists (EnemyAt YourLocation <> EnemyWithTrait Abomination))
-          (FastAbility Free)
-      | locationRevealed attrs
+          $ restrictedAbility
+            attrs
+            1
+            (Here <> exists (EnemyAt YourLocation <> EnemyWithTrait Abomination))
+            (FastAbility Free)
       ]
 
 instance RunMessage TenAcreMeadow_246 where
@@ -50,14 +45,24 @@ instance RunMessage TenAcreMeadow_246 where
             [ targetLabel
               eid
               [ PlaceClues (toAbilitySource attrs 1) (toTarget eid) 1
-              , CreateEffect
-                  "02246"
-                  Nothing
-                  (toSource attrs)
-                  (EnemyTarget eid)
+              , createCardEffect Cards.tenAcreMeadow_246 Nothing (attrs.ability 1) eid
               ]
             | eid <- abominations
             ]
         ]
       pure l
     _ -> TenAcreMeadow_246 <$> runMessage msg attrs
+
+newtype TenAcreMeadow_246Effect = TenAcreMeadow_246Effect EffectAttrs
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+tenAcreMeadow_246Effect :: EffectArgs -> TenAcreMeadow_246Effect
+tenAcreMeadow_246Effect = cardEffect TenAcreMeadow_246Effect Cards.tenAcreMeadow_246
+
+instance RunMessage TenAcreMeadow_246Effect where
+  runMessage msg e@(TenAcreMeadow_246Effect attrs) = case msg of
+    EndRound -> do
+      pushAll [RemoveClues (toSource attrs) (effectTarget attrs) 1, disable attrs]
+      pure e
+    _ -> TenAcreMeadow_246Effect <$> runMessage msg attrs

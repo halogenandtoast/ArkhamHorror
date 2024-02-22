@@ -155,6 +155,10 @@ phaseModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 phaseModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectPhaseWindow source target [modifier]
 
+phaseModifiers
+  :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
+phaseModifiers (toSource -> source) (toTarget -> target) modifiers = createWindowModifierEffect EffectPhaseWindow source target modifiers
+
 cardResolutionModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 cardResolutionModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectCardResolutionWindow source target [modifier]

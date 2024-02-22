@@ -1,24 +1,19 @@
-module Arkham.Location.Cards.NarrowShaft (
-  narrowShaft,
-  NarrowShaft (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.NarrowShaft (narrowShaft, narrowShaftEffect, NarrowShaft (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Direction
-import Arkham.EffectMetadata
+import Arkham.Effect.Runner hiding (RevealLocation)
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThePallidMask.Helpers
 import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype NarrowShaft = NarrowShaft LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -26,47 +21,21 @@ newtype NarrowShaft = NarrowShaft LocationAttrs
 
 narrowShaft :: LocationCard NarrowShaft
 narrowShaft =
-  locationWith
-    NarrowShaft
-    Cards.narrowShaft
-    2
-    (PerPlayer 1)
-    ( (connectsToL .~ adjacentLocations)
-        . ( costToEnterUnrevealedL
-              .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
-          )
-    )
+  locationWith NarrowShaft Cards.narrowShaft 2 (PerPlayer 1)
+    $ (connectsToL .~ adjacentLocations)
+    . (costToEnterUnrevealedL .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation])
 
 instance HasAbilities NarrowShaft where
   getAbilities (NarrowShaft attrs) =
-    withBaseAbilities attrs
-      $ if locationRevealed attrs
-        then
-          [ mkAbility attrs 1
-              $ ForcedAbility
-              $ Moves
-                Timing.When
-                You
-                AnySource
-                (LocationWithId $ toId attrs)
-                UnrevealedLocation
-          , restrictedAbility
-              attrs
-              2
-              ( AnyCriterion
-                  [ Negate
-                    ( LocationExists
-                        $ LocationInDirection dir (LocationWithId $ toId attrs)
-                    )
-                  | dir <- [Above, Below, RightOf]
-                  ]
-              )
-              $ ForcedAbility
-              $ RevealLocation Timing.When Anyone
-              $ LocationWithId
-              $ toId attrs
-          ]
-        else []
+    withRevealedAbilities
+      attrs
+      [ mkAbility attrs 1 $ forced $ Moves #when You AnySource (be attrs) UnrevealedLocation
+      , restrictedAbility
+          attrs
+          2
+          (oneOf [notExists $ LocationInDirection dir (be attrs) | dir <- [Above, Below, RightOf]])
+          $ forced (RevealLocation #when Anyone $ be attrs)
+      ]
 
 instance RunMessage NarrowShaft where
   runMessage msg l@(NarrowShaft attrs) = case msg of
@@ -81,7 +50,7 @@ instance RunMessage NarrowShaft where
         target = InvestigatorTarget iid
         effectMetadata = Just $ EffectMessages (catMaybes [moveFrom, moveTo])
       pushAll
-        [ CreateEffect "03254" effectMetadata (toSource attrs) target
+        [ createCardEffect Cards.narrowShaft effectMetadata (attrs.ability 1) target
         , beginSkillTest iid (toSource attrs) target SkillAgility 3
         ]
       pure l
@@ -104,3 +73,26 @@ instance RunMessage NarrowShaft where
         _ -> error "wrong number of cards drawn"
       pure l
     _ -> NarrowShaft <$> runMessage msg attrs
+
+newtype NarrowShaftEffect = NarrowShaftEffect EffectAttrs
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+narrowShaftEffect :: EffectArgs -> NarrowShaftEffect
+narrowShaftEffect = cardEffect NarrowShaftEffect Cards.narrowShaft
+
+instance RunMessage NarrowShaftEffect where
+  runMessage msg e@(NarrowShaftEffect attrs) = case msg of
+    PassedThisSkillTest _ (LocationSource lid) -> do
+      narrowShaftEffectId <- getJustLocationByName "Narrow Shaft"
+      when (lid == narrowShaftEffectId)
+        $ case effectMetadata attrs of
+          Just (EffectMessages msgs) -> pushAll (msgs <> [disable attrs])
+          _ -> push $ disable attrs
+      pure e
+    FailedThisSkillTest iid (LocationSource lid) -> do
+      narrowShaftEffectId <- getJustLocationByName "Narrow Shaft"
+      when (lid == narrowShaftEffectId)
+        $ pushAll [assignDamage iid narrowShaftEffectId 1, disable attrs]
+      pure e
+    _ -> NarrowShaftEffect <$> runMessage msg attrs

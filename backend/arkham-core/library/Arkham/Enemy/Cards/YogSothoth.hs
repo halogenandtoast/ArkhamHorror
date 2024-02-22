@@ -1,18 +1,13 @@
-module Arkham.Enemy.Cards.YogSothoth (
-  yogSothoth,
-  YogSothoth (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.YogSothoth (yogSothoth, yogSothothEffect, YogSothoth (..)) where
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.Classes
-import Arkham.EffectMetadata
+import Arkham.Effect.Runner hiding (EnemyAttacks)
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Message qualified as Msg
+import Arkham.Prelude
 
 newtype YogSothoth = YogSothoth EnemyAttrs
   deriving anyclass (IsEnemy)
@@ -25,23 +20,14 @@ instance HasModifiersFor YogSothoth where
   getModifiersFor target (YogSothoth a) | isTarget a target = do
     healthModifier <- getPlayerCountValue (PerPlayer 6)
     pure
-      $ toModifiers
-        a
-        [ HealthModifier healthModifier
-        , CannotMakeAttacksOfOpportunity
-        , CannotBeEvaded
-        ]
+      $ toModifiers a [HealthModifier healthModifier, CannotMakeAttacksOfOpportunity, CannotBeEvaded]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities YogSothoth where
   getAbilities (YogSothoth attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1
-          $ ReactionAbility
-            (EnemyAttacks Timing.When You AnyEnemyAttack $ EnemyWithId $ toId attrs)
-            Free
-      ]
+      [mkAbility attrs 1 $ freeReaction (EnemyAttacks #when You AnyEnemyAttack $ be attrs)]
 
 instance RunMessage YogSothoth where
   runMessage msg e@(YogSothoth attrs@EnemyAttrs {..}) = case msg of
@@ -57,14 +43,34 @@ instance RunMessage YogSothoth where
                 <> tshow (enemySanityDamage - discardCount)
                 <> " horror"
             )
-            [ CreateEffect
-                (toCardCode attrs)
-                (Just $ EffectInt discardCount)
-                source
-                (InvestigatorTarget iid)
+            [ createCardEffect Cards.yogSothoth (Just $ EffectInt discardCount) source iid
             , DiscardTopOfDeck iid discardCount (toAbilitySource attrs 1) Nothing
             ]
           | discardCount <- [0 .. enemySanityDamage]
           ]
       pure e
     _ -> YogSothoth <$> runMessage msg attrs
+
+newtype YogSothothEffect = YogSothothEffect EffectAttrs
+  deriving anyclass (HasAbilities, IsEffect)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+yogSothothEffect :: EffectArgs -> YogSothothEffect
+yogSothothEffect = cardEffect YogSothothEffect Cards.yogSothoth
+
+instance HasModifiersFor YogSothothEffect where
+  getModifiersFor target (YogSothothEffect attrs) = case effectMetadata attrs of
+    Just (EffectInt n) -> case target of
+      EnemyTarget eid -> case effectSource attrs of
+        EnemySource eid' | eid' == eid -> do
+          pure $ toModifiers attrs [HorrorDealt (-n)]
+        _ -> pure []
+      _ -> pure []
+    _ -> pure []
+
+instance RunMessage YogSothothEffect where
+  runMessage msg e@(YogSothothEffect attrs) = case msg of
+    Msg.DeckHasNoCards iid _ | isTarget attrs (InvestigatorTarget iid) -> do
+      push (DrivenInsane iid)
+      pure e
+    _ -> YogSothothEffect <$> runMessage msg attrs

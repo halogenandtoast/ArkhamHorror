@@ -1,16 +1,16 @@
 module Arkham.Investigator.Cards.WilliamYorick where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Card
+import Arkham.Effect.Runner
 import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Timing qualified as Timing
-import Arkham.Window (mkWindow)
+import Arkham.Prelude
+import Arkham.Projection
+import Arkham.Window (mkWhen)
 import Arkham.Window qualified as Window
 
 newtype WilliamYorick = WilliamYorick InvestigatorAttrs
@@ -31,17 +31,14 @@ instance HasAbilities WilliamYorick where
   getAbilities (WilliamYorick attrs) =
     [ playerLimit PerRound
         $ restrictedAbility attrs 1 (Self <> PlayableCardInDiscard (DiscardOf You) (CardWithType AssetType))
-        $ freeReaction (Matcher.EnemyDefeated Timing.After You ByAny AnyEnemy)
+        $ freeReaction (Matcher.EnemyDefeated #after You ByAny AnyEnemy)
     ]
 
 instance RunMessage WilliamYorick where
   runMessage msg i@(WilliamYorick attrs) = case msg of
     UseCardAbility iid source 1 windows' _ | isSource attrs source -> do
       let
-        windows'' =
-          nub
-            $ windows'
-            <> [mkWindow Timing.When Window.NonFast, mkWindow Timing.When (Window.DuringTurn iid)]
+        windows'' = nub $ windows' <> [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
         targets = filter ((== AssetType) . toCardType) (investigatorDiscard attrs)
         playCardMsgs c =
           [addToHand iid c]
@@ -55,6 +52,32 @@ instance RunMessage WilliamYorick where
         $ [targetLabel (toCardId card) (playCardMsgs $ PlayerCard card) | card <- playableTargets]
       pure i
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
-      push $ CreateEffect "03005" Nothing (toSource ElderSign) (toTarget iid)
+      push $ createCardEffect Cards.williamYorick Nothing (toSource ElderSign) iid
       pure i
     _ -> WilliamYorick <$> runMessage msg attrs
+
+newtype WilliamYorickEffect = WilliamYorickEffect EffectAttrs
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+williamYorickEffect :: EffectArgs -> WilliamYorickEffect
+williamYorickEffect = cardEffect WilliamYorickEffect Cards.williamYorick
+
+instance RunMessage WilliamYorickEffect where
+  runMessage msg e@(WilliamYorickEffect attrs) = case msg of
+    PassedSkillTest _ _ _ SkillTestInitiatorTarget {} _ _ ->
+      case effectTarget attrs of
+        InvestigatorTarget iid -> do
+          modifiers' <- getModifiers (InvestigatorTarget iid)
+          unless (CardsCannotLeaveYourDiscardPile `elem` modifiers') $ do
+            discards <- field InvestigatorDiscard iid
+            player <- getPlayer iid
+            when (notNull discards)
+              $ push
+              $ chooseOne player
+              $ Done "Do not return card to hand"
+              : [targetLabel (toCardId card) [addToHand iid $ PlayerCard card] | card <- discards]
+          pure e
+        _ -> pure e
+    SkillTestEnds _ _ -> e <$ push (DisableEffect $ effectId attrs)
+    _ -> WilliamYorickEffect <$> runMessage msg attrs

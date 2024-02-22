@@ -24,6 +24,8 @@ import Arkham.Window (Window)
 
 import Arkham.Act.Acts (
   infiltratingTheLodgeEffect,
+  theStrangerACityAflameEffect,
+  theStrangerThePathIsMineEffect,
   theStrangerTheShoresOfHaliEffect,
   theYithianRelicEffect,
  )
@@ -42,9 +44,12 @@ import Arkham.Asset.Assets (
   clairvoyance5Effect,
   clairvoyanceEffect,
   crystalPendulumEffect,
+  daisysToteBagAdvancedEffect,
   empiricalHypothesisEffect,
   fence1Effect,
   fieldworkEffect,
+  fireExtinguisher1Effect,
+  gildedVoltoEffect,
   gregoryGryEffect,
   grislyTotemSeeker3Effect,
   grislyTotemSurvivor3Effect,
@@ -55,10 +60,13 @@ import Arkham.Asset.Assets (
   libraryDocent1Effect,
   lockpicks1Effect,
   lockpicksEffect,
+  luckyDice2Effect,
+  meatCleaverEffect,
   miskatonicArchaeologyFunding4Effect,
   mistsOfRlyeh2Effect,
   mistsOfRlyeh4Effect,
   mistsOfRlyehEffect,
+  mrPeabodyEffect,
   oldBookOfLore3Effect,
   pnakoticManuscripts5Effect,
   riteOfSeekingEffect,
@@ -66,6 +74,7 @@ import Arkham.Asset.Assets (
   shrivellingEffect,
   sixthSense4Effect,
   sixthSenseEffect,
+  songOfTheDead2Effect,
   thirtyFiveWinchesterEffect,
   twilightBladeEffect,
   wellConnected3Effect,
@@ -79,29 +88,39 @@ import Arkham.Enemy.Enemies (
   boaConstrictorEffect,
   corruptedOrderlyEffect,
   ichtacaScionOfYigEffect,
+  jeremiahPierceEffect,
   tommyMalloyEffect,
+  yogSothothEffect,
  )
 import Arkham.Event.Events (
   aChanceEncounterEffect,
   actOfDesperationEffect,
   backstab3Effect,
   banish1Effect,
+  bindMonster2Effect,
   blindingLight2Effect,
   blindingLightEffect,
+  callingInFavorsEffect,
   cheapShot2Effect,
+  eideticMemory3Effect,
+  exposeWeakness1Effect,
   exposeWeakness3Effect,
+  fightOrFlightEffect,
   followedEffect,
   imDoneRunninEffect,
+  improvisationEffect,
   letMeHandleThisEffect,
   marksmanship1Effect,
   mystifyingSongEffect,
   pilfer3Effect,
+  sleightOfHandEffect,
   slipAway2Effect,
   slipAwayEffect,
   spectralRazorEffect,
   stormOfSpirits3Effect,
   stormOfSpiritsEffect,
   telescopicSight3Effect,
+  thePaintedWorldEffect,
   uncageTheSoulEffect,
   vantagePointEffect,
   willToSurviveEffect,
@@ -112,22 +131,29 @@ import Arkham.Investigator.Investigators (
   nathanielChoEffect,
   pennyWhiteEffect,
   ritaYoungElderSignEffect,
+  williamYorickEffect,
   winifredHabbamockEffect,
  )
 import Arkham.Location.Locations (
+  cursedShoresEffect,
   enchantedWoodsLostWoodsEffect,
   hereticsGravesSpectral_171Effect,
+  montmartre209Effect,
+  narrowShaftEffect,
   restaurantEffect,
+  tenAcreMeadow_246Effect,
   unvisitedIsleMossCoveredStepsEffect,
   unvisitedIsleStandingStonesEffect,
  )
 import Arkham.Skill.Skills (
   copycat3Effect,
+  deduction2Effect,
   defiance2Effect,
   defianceEffect,
   hatchetManEffect,
   momentum1Effect,
   prescientEffect,
+  quickThinkingEffect,
   surprisingFind1Effect,
   theEyeOfTruth5Effect,
  )
@@ -144,6 +170,8 @@ import Arkham.Treachery.Treacheries (
   chillingPresenceEffect,
   mesmerizeEffect,
   mysteriesOfTheLodgeEffect,
+  pushedIntoTheBeyondEffect,
+  theKingsEdictEffect,
   whispersOfHypnosEffect,
  )
 
@@ -264,44 +292,41 @@ allEffects =
     , ("01069", SomeEffect blindingLight2Effect)
     , ("01074", SomeEffect baseballBatEffect)
     , ("02028", SomeEffect riteOfSeekingEffect)
-    , ("02031", SomeEffect bindMonster2)
-    , ("02100", SomeEffect pushedIntoTheBeyond)
+    , ("02031", SomeEffect bindMonster2Effect)
+    , ("02100", SomeEffect pushedIntoTheBeyondEffect)
     , ("02102", SomeEffect arcaneBarrierEffect)
-    , ("02112", SomeEffect songOfTheDead2)
-    , ("02114", SomeEffect fireExtinguisher1)
-    , ("02150", SomeEffect deduction2)
+    , ("02112", SomeEffect songOfTheDead2Effect)
+    , ("02114", SomeEffect fireExtinguisher1Effect)
+    , ("02150", SomeEffect deduction2Effect)
     , ("02190", SomeEffect defianceEffect)
-    , ("02228", SomeEffect exposeWeakness1)
-    , ("02229", SomeEffect quickThinking)
-    , ("02230", SomeEffect luckyDice2)
+    , ("02228", SomeEffect exposeWeakness1Effect)
+    , ("02229", SomeEffect quickThinkingEffect)
+    , ("02230", SomeEffect luckyDice2Effect)
     , ("02236", SomeEffect undimensionedAndUnseenTabletToken)
-    , ("02246", SomeEffect tenAcreMeadow_246)
+    , ("02246", SomeEffect tenAcreMeadow_246Effect)
     , ("02270", SomeEffect aChanceEncounterEffect)
-    , ("02323", SomeEffect yogSothoth)
-    , ("03005", SomeEffect williamYorick)
-    , ("03012", SomeEffect thePaintedWorld)
-    , ("03018", SomeEffect improvisation)
+    , ("02323", SomeEffect yogSothothEffect)
+    , ("03005", SomeEffect williamYorickEffect)
+    , ("03012", SomeEffect thePaintedWorldEffect)
+    , ("03018", SomeEffect improvisationEffect)
     , ("03022", SomeEffect letMeHandleThisEffect)
     , ("03024", SomeEffect fieldworkEffect)
-    , ("03029", SomeEffect sleightOfHand)
+    , ("03029", SomeEffect sleightOfHandEffect)
     , ("03031", SomeEffect lockpicks1Effect)
     , ("03032", SomeEffect alchemicalTransmutationEffect)
     , ("03033", SomeEffect uncageTheSoulEffect)
-    , ("03047a", SomeEffect theStrangerACityAflame)
-    , ("03047b", SomeEffect theStrangerThePathIsMine)
+    , ("03047a", SomeEffect theStrangerACityAflameEffect)
+    , ("03047b", SomeEffect theStrangerThePathIsMineEffect)
     , ("03047c", SomeEffect theStrangerTheShoresOfHaliEffect)
-    , ("03100", SomeEffect theKingsEdict)
-    , ("03141", SomeEffect mrPeabody)
+    , ("03100", SomeEffect theKingsEdictEffect)
+    , ("03141", SomeEffect mrPeabodyEffect)
     , ("03149", SomeEffect charlesRossEsqEffect)
     , ("03153", SomeEffect stormOfSpiritsEffect)
-    , ("03155", SomeEffect fightOrFlight)
-    , ("03158", SomeEffect callingInFavors)
-    , ("03209", SomeEffect montmartre209)
-    , ("03215", SomeEffect pereLachaiseCemetery)
-    , ("03218", SomeEffect leMarais218)
-    , ("03221a", SomeEffect theOrganistHopelessIDefiedHim)
-    , ("03254", SomeEffect narrowShaft)
-    , ("03306", SomeEffect eideticMemory3)
+    , ("03155", SomeEffect fightOrFlightEffect)
+    , ("03158", SomeEffect callingInFavorsEffect)
+    , ("03209", SomeEffect montmartre209Effect)
+    , ("03254", SomeEffect narrowShaftEffect)
+    , ("03306", SomeEffect eideticMemory3Effect)
     , ("04004", SomeEffect fatherMateoElderSignEffect)
     , ("04029", SomeEffect mistsOfRlyehEffect)
     , ("04035", SomeEffect yaotl1Effect)
@@ -331,7 +356,7 @@ allEffects =
     , ("05085b", SomeEffect josefsPlanEffect)
     , ("05097", SomeEffect mysteriesOfTheLodgeEffect)
     , ("05113", SomeEffect banish1Effect)
-    , ("05114", SomeEffect meatCleaver)
+    , ("05114", SomeEffect meatCleaverEffect)
     , ("05157", SomeEffect witherEffect)
     , ("05158", SomeEffect sixthSenseEffect)
     , ("05171", SomeEffect hereticsGravesSpectral_171Effect)
@@ -363,9 +388,8 @@ allEffects =
     , ("07004", SomeEffect dexterDrakeEffect)
     , ("07012", SomeEffect showmanshipEffect)
     , ("09041", SomeEffect empiricalHypothesisEffect)
-    , ("50008", SomeEffect mindWipe3)
     , ("50013", SomeEffect twilightBladeEffect)
-    , ("50044", SomeEffect jeremiahPierce)
+    , ("50044", SomeEffect jeremiahPierceEffect)
     , ("52007", SomeEffect alchemicalTransmutation2Effect)
     , ("52008", SomeEffect stormOfSpirits3Effect)
     , ("53007", SomeEffect mistsOfRlyeh2Effect)
@@ -396,12 +420,12 @@ allEffects =
     , ("60432", SomeEffect ineffableTruth5Effect)
     , ("60512", SomeEffect willToSurviveEffect)
     , ("81001", SomeEffect curseOfTheRougarouTabletToken)
-    , ("81007", SomeEffect cursedShores)
-    , ("82026", SomeEffect gildedVolto)
+    , ("81007", SomeEffect cursedShoresEffect)
+    , ("82026", SomeEffect gildedVoltoEffect)
     , ("82035", SomeEffect mesmerizeEffect)
     , ("84014", SomeEffect restaurantEffect)
     , ("84042", SomeEffect chillingPresenceEffect)
-    , ("90002", SomeEffect daisysToteBagAdvanced)
+    , ("90002", SomeEffect daisysToteBagAdvancedEffect)
     , ("wmode", SomeEffect windowModifierEffect)
     , ("tokef", SomeEffect chaosTokenEffect)
     , ("surge", SomeEffect surgeEffect)

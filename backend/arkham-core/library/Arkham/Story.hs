@@ -90,4 +90,7 @@ allStories =
     , SomeStoryCard whatRemainsOfTyrrhia
     , SomeStoryCard adviceOfTheKing
     , SomeStoryCard timelessBeauty
+    , SomeStoryCard unattainableDesires
+    , SomeStoryCard theCityInside
+    , SomeStoryCard theBalefulStar
     ]

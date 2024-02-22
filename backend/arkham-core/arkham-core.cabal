@@ -2327,6 +2327,8 @@ library
       Arkham.Story.Cards.StarsOfAldebaran
       Arkham.Story.Cards.StepsOfThePalace
       Arkham.Story.Cards.TheArchway
+      Arkham.Story.Cards.TheBalefulStar
+      Arkham.Story.Cards.TheCityInside
       Arkham.Story.Cards.TheCoffin
       Arkham.Story.Cards.TheCryptOfZulanThek
       Arkham.Story.Cards.TheDoomOfSarnath
@@ -2341,6 +2343,7 @@ library
       Arkham.Story.Cards.TheTrialOfKamanThah
       Arkham.Story.Cards.TheTrialOfNasht
       Arkham.Story.Cards.TimelessBeauty
+      Arkham.Story.Cards.UnattainableDesires
       Arkham.Story.Cards.UnfinishedBusiness_B
       Arkham.Story.Cards.UnfinishedBusiness_D
       Arkham.Story.Cards.UnfinishedBusiness_F

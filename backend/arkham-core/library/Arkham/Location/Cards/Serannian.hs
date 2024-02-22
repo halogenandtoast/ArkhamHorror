@@ -2,10 +2,12 @@ module Arkham.Location.Cards.Serannian (serannian, Serannian (..)) where
 
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Story
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Prelude
+import Arkham.Story.Cards qualified as Story
 
 newtype Serannian = Serannian LocationAttrs
   deriving anyclass (IsLocation)
@@ -28,4 +30,8 @@ instance HasAbilities Serannian where
   getAbilities (Serannian attrs) = veiled attrs []
 
 instance RunMessage Serannian where
-  runMessage msg (Serannian attrs) = Serannian <$> runMessage msg attrs
+  runMessage msg (Serannian attrs) = case msg of
+    Flip iid _ (isTarget attrs -> True) -> do
+      readStory iid (toId attrs) Story.timelessBeauty
+      pure . Serannian $ attrs & canBeFlippedL .~ False
+    _ -> Serannian <$> runMessage msg attrs

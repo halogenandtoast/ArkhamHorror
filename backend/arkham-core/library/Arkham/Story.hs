@@ -89,4 +89,5 @@ allStories =
     , SomeStoryCard theLikenessOfOld
     , SomeStoryCard whatRemainsOfTyrrhia
     , SomeStoryCard adviceOfTheKing
+    , SomeStoryCard timelessBeauty
     ]

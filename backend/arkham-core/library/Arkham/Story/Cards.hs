@@ -73,6 +73,7 @@ allStoryCards =
       , theLikenessOfOld
       , whatRemainsOfTyrrhia
       , adviceOfTheKing
+      , timelessBeauty
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -234,3 +235,6 @@ whatRemainsOfTyrrhia = story "06138b" "What Remains of Tyrrhia" TheSearchForKada
 
 adviceOfTheKing :: CardDef
 adviceOfTheKing = story "06139b" "Advice of the King" TheSearchForKadath
+
+timelessBeauty :: CardDef
+timelessBeauty = story "06140b" "Timeless Beauty" TheSearchForKadath

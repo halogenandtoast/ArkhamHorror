@@ -805,7 +805,7 @@ instance RunMessage EnemyAttrs where
             modifiedHealth <- fieldJust EnemyHealth (toId a)
             when (enemyDamage a >= modifiedHealth) $ do
               whenMsg <- checkWindows [mkWhen $ Window.EnemyWouldBeDefeated eid]
-              afterMsg <- checkWindows [mkWhen $ Window.EnemyWouldBeDefeated eid]
+              afterMsg <- checkWindows [mkAfter $ Window.EnemyWouldBeDefeated eid]
               pushAll
                 $ [ whenMsg
                   , afterMsg
@@ -928,6 +928,8 @@ instance RunMessage EnemyAttrs where
         <> discardWindow
         <> defeatMsgs
       pure $ a & keysL .~ mempty
+    After (EnemyDefeated eid _ source _) | eid == toId a -> do
+      pure $ a & defeatedL .~ True
     Discard miid source target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       windows'' <- windows [Window.EntityDiscarded source (toTarget a)]

@@ -43,6 +43,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyKeys :: Set ArkhamKey
   , enemySpawnedBy :: Maybe InvestigatorId
   , enemyDiscardedBy :: Maybe InvestigatorId
+  , enemyDefeated :: Bool
   }
   deriving stock (Show, Eq, Generic)
 
@@ -93,6 +94,7 @@ instance FromJSON EnemyAttrs where
     enemyKeys <- o .: "keys"
     enemySpawnedBy <- o .: "spawnedBy"
     enemyDiscardedBy <- o .:? "discardedBy" .!= Nothing
+    enemyDefeated <- o .:? "defeated" .!= False
     pure EnemyAttrs {..}
 
 instance Be EnemyAttrs EnemyMatcher where

@@ -401,7 +401,8 @@ allEvents =
       SomeEventCard faustianBargain
     , -- Edge of the Earth
       --- guardian [eote]
-      SomeEventCard dodge2
+      SomeEventCard sweepingKick1
+    , SomeEventCard dodge2
     , --- seeker [eote]
       SomeEventCard unearthTheAncients2
     , --- rogue [eote]

@@ -256,6 +256,7 @@ allPlayerEventCards =
       , stormOfSpirits
       , stormOfSpirits3
       , sureGamble3
+      , sweepingKick1
       , swiftReflexes
       , swiftReload2
       , taunt
@@ -2341,6 +2342,15 @@ faustianBargain =
     , cdAdditionalCost = Just $ AddCurseTokenCost 2
     , cdCriteria =
         Just $ Criteria.exists $ affectsOthers $ can.gain.resources <> InvestigatorAt YourLocation
+    }
+
+sweepingKick1 :: CardDef
+sweepingKick1 =
+  (event "08023" "Sweeping Kick" 1 Guardian)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Spirit, Tactic, Trick]
+    , cdActions = [#fight]
+    , cdLevel = 1
     }
 
 dodge2 :: CardDef

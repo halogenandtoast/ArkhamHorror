@@ -7,7 +7,6 @@ where
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Movement

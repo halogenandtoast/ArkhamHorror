@@ -64,7 +64,6 @@ tests:
     ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
     dependencies:
       - arkham-core
-      - HUnit
       - hspec
       - hspec-expectations-lifted
       - lens

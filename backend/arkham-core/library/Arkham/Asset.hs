@@ -669,6 +669,7 @@ allAssets =
       SomeAssetCard schoffnersCatalogue
     , --- guardian/seeker [eote]
       SomeAssetCard medicalStudent
+    , SomeAssetCard michaelLeigh5
     , --- seeker/rogue [eote]
       SomeAssetCard geneBeauregard3
     , --- neutral [eote]

@@ -376,6 +376,7 @@ allPlayerAssetCards =
       , medicalStudent
       , medicalTexts
       , medicoDellaPeste
+      , michaelLeigh5
       , mindsEye2
       , miskatonicArchaeologyFunding4
       , missDoyle1
@@ -4053,6 +4054,17 @@ medicalStudent =
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Ally, Miskatonic, Science]
     , cdSlots = [#ally]
+    }
+
+michaelLeigh5 :: CardDef
+michaelLeigh5 =
+  (multiClassAsset "08086" ("Michael Leigh" <:> "Experienced Hunter") 4 [Guardian, Seeker])
+    { cdSkills = [#intellect, #combat, #wild]
+    , cdCardTraits = setFromList [Ally, Detective]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdUses = uses Evidence 0
+    , cdLevel = 5
     }
 
 geneBeauregard3 :: CardDef

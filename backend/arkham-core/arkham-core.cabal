@@ -2912,8 +2912,7 @@ test-suite spec
   build-tool-depends:
       cards-discover:cards-discover
   build-depends:
-      HUnit
-    , arkham-core
+      arkham-core
     , base
     , containers
     , hspec

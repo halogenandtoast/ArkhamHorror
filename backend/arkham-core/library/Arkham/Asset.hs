@@ -667,6 +667,7 @@ allAssets =
       SomeAssetCard dragonPole
     , --- survivor [eote]
       SomeAssetCard schoffnersCatalogue
+    , SomeAssetCard bangleOfJinxes1
     , --- guardian/seeker [eote]
       SomeAssetCard medicalStudent
     , SomeAssetCard michaelLeigh5

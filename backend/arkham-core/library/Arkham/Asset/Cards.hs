@@ -135,6 +135,7 @@ allPlayerAssetCards =
       , backpack2
       , bandolier
       , bandolier2
+      , bangleOfJinxes1
       , baronSamedi
       , baseballBat
       , bauta
@@ -4046,6 +4047,16 @@ schoffnersCatalogue =
     { cdSkills = [#intellect]
     , cdCardTraits = setFromList [Item, Tome]
     , cdUses = uses Secret 5
+    }
+
+bangleOfJinxes1 :: CardDef
+bangleOfJinxes1 =
+  (asset "08075" "Bangle of Jinxes" 2 Survivor)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Charm, Cursed]
+    , cdSlots = [#accessory]
+    , cdUses = uses Charge 1
+    , cdLevel = 1
     }
 
 medicalStudent :: CardDef

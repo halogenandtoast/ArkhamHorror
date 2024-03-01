@@ -1,14 +1,10 @@
-module Arkham.Asset.Cards.MichaelLeigh5 (
-  michaelLeigh5,
-  MichaelLeigh5 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.MichaelLeigh5 (michaelLeigh5, MichaelLeigh5 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype MichaelLeigh5 = MichaelLeigh5 AssetAttrs
   deriving anyclass (IsAsset)
@@ -26,13 +22,13 @@ instance HasAbilities MichaelLeigh5 where
   getAbilities (MichaelLeigh5 a) =
     [ controlledAbility a 1 cardRestriction
         $ freeReaction (SkillTestResult #after You (WhileInvestigating Anywhere) $ SuccessResult AnyValue)
-    ,
-      restrictedAbility a 2 ControlsThis
+    , restrictedAbility a 2 ControlsThis
         $ ReactionAbility (PerformAction #when You #fight)
-        $ assetUseCost a Evidence 1 <> exhaust a
+        $ assetUseCost a Evidence 1
+        <> exhaust a
     ]
-    where
-      cardRestriction = if findWithDefault 0 Evidence (assetUses a) == 3 then Never else NoRestriction
+   where
+    cardRestriction = if findWithDefault 0 Evidence (assetUses a) == 3 then Never else NoRestriction
 
 instance RunMessage MichaelLeigh5 where
   runMessage msg a@(MichaelLeigh5 attrs) = case msg of

@@ -8,10 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Id
 import Arkham.Matcher
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype MichaelLeigh5 = MichaelLeigh5 AssetAttrs
   deriving anyclass (IsAsset)

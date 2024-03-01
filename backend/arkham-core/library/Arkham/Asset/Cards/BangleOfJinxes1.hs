@@ -15,12 +15,11 @@ bangleOfJinxes1 = asset BangleOfJinxes1 Cards.bangleOfJinxes1
 
 instance HasAbilities BangleOfJinxes1 where
   getAbilities (BangleOfJinxes1 a) =
-    [ limitedAbility (PlayerLimit PerTestOrAbility 1)
+    [ playerLimit PerTestOrAbility
         $ controlledAbility a 1 (DuringSkillTest AnySkillTest)
-        $ FastAbility 
+        $ FastAbility
         $ assetUseCost a Charge 1
-    ,
-      restrictedAbility a 2 ControlsThis
+    , restrictedAbility a 2 ControlsThis
         $ freeReaction (EnemyAttacks #after You AnyEnemyAttack AnyEnemy)
     ]
 

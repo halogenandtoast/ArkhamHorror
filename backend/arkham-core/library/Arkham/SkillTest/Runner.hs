@@ -175,6 +175,7 @@ instance RunMessage SkillTest where
       pure s
     TriggerSkillTest iid -> do
       modifiers' <- getModifiers iid
+      modifiers'' <- getModifiers SkillTestTarget
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
         then do
           let
@@ -194,10 +195,12 @@ instance RunMessage SkillTest where
             then pushAll [PassSkillTest, UnsetActiveCard]
             else do
               let
+                applyRevealStategyModifier (MultiReveal _ b) (ChangeRevealStrategy n) = MultiReveal n b
                 applyRevealStategyModifier _ (ChangeRevealStrategy n) = n
+                applyRevealStategyModifier n RevealAnotherChaosToken = MultiReveal n (Reveal 1)
                 applyRevealStategyModifier n _ = n
                 revealStrategy =
-                  foldl' applyRevealStategyModifier (Reveal 1) modifiers'
+                  foldl' applyRevealStategyModifier (Reveal 1) (traceShowId $ modifiers' <> modifiers'')
               pushAll
                 [ RequestChaosTokens (toSource s) (Just iid) revealStrategy SetAside
                 , RunSkillTest iid

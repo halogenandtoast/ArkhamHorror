@@ -232,6 +232,7 @@ data CampaignLogKey
   | YouAskedForIt
   | TheInvestigatorsForcedTheirWayIntoTheTemple
   | EvidenceOfKadath
+  | HasBrokenTheLawOfUlthar
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

@@ -294,6 +294,7 @@ data EnemyMatcher
   | IsSwarm
   | SwarmingEnemy
   | EnemyWithHealth
+  | DefeatedEnemy EnemyMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup EnemyMatcher where

@@ -17,6 +17,7 @@ import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Difficulty
 import Arkham.Helpers
+import Arkham.History
 import Arkham.Id
 import Arkham.Json
 import Arkham.Key
@@ -74,6 +75,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioTokens :: Field Scenario Tokens
   ScenarioTarotCards :: Field Scenario (Map TarotCardScope [TarotCard])
   ScenarioTurn :: Field Scenario Int
+  ScenarioDefeatedEnemies :: Field Scenario (Map EnemyId DefeatedEnemyAttrs)
 
 deriving stock instance Show (Field Scenario typ)
 
@@ -117,6 +119,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioTarotDeck :: [TarotCardArcana]
   , scenarioTurn :: Int
   , scenarioTimesPlayed :: Int
+  , scenarioDefeatedEnemies :: Map EnemyId DefeatedEnemyAttrs
   , -- for standalone
     scenarioStoryCards :: Map InvestigatorId [PlayerCard]
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
@@ -191,6 +194,7 @@ scenario f cardCode name difficulty layout =
       , scenarioTarotDeck = mempty
       , scenarioTurn = 0
       , scenarioTimesPlayed = 0
+      , scenarioDefeatedEnemies = mempty
       }
 
 instance Entity ScenarioAttrs where
@@ -288,6 +292,7 @@ instance FromJSON ScenarioAttrs where
     scenarioTarotDeck <- o .: "tarotDeck"
     scenarioTurn <- o .: "turn"
     scenarioTimesPlayed <- o .: "timesPlayed"
+    scenarioDefeatedEnemies <- o .:? "defeatedEnemies" .!= mempty
     pure ScenarioAttrs {..}
 
 makeLensesWith suffixedFields ''ScenarioAttrs

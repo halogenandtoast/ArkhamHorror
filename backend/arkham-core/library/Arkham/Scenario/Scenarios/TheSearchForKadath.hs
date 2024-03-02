@@ -91,7 +91,7 @@ instance RunMessage TheSearchForKadath where
         . TheSearchForKadath
         $ attrs
         & standaloneCampaignLogL
-        .~ standaloneCampaignLog
+        <>~ standaloneCampaignLog
     PreScenarioSetup -> do
       players <- allPlayers
       blackCatAtYourSide <- getHasRecord TheBlackCatIsAtYourSide

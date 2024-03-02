@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Action hiding (Resource)
 import Arkham.Action.Additional
+import Arkham.CampaignLog
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.ClassSymbol
@@ -102,6 +103,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorKeys :: Field Investigator (Set ArkhamKey)
   InvestigatorPlayerId :: Field Investigator PlayerId
   InvestigatorBondedCards :: Field Investigator [Card]
+  InvestigatorLog :: Field Investigator CampaignLog
   --
   InvestigatorSupplies :: Field Investigator [Supply]
 
@@ -158,6 +160,8 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorIsYithian :: Bool
   , -- keys
     investigatorKeys :: Set ArkhamKey
+  , -- investigator specific logs
+    investigatorLog :: CampaignLog
   , -- internal tracking
     investigatorDiscarding :: Maybe (HandDiscard Message)
   }

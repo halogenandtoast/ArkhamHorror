@@ -29,6 +29,7 @@ import Arkham.Action (Action)
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Asset.Types (Field (..))
+import Arkham.CampaignLog
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Classes.HasGame
@@ -235,6 +236,18 @@ runWindow attrs windows actions playableCards = do
 
 runInvestigatorMessage :: Runner InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
+  RecordForInvestigator iid key | iid == toId a -> do
+    send $ "Record \"" <> format investigatorName <> " " <> format key <> "\""
+    pure
+      $ a
+      & ( logL
+            . recordedL
+            %~ insertSet key
+        )
+      . ( logL
+            . orderedKeysL
+            %~ (<> [key])
+        )
   EndCheckWindow -> do
     depth <- getWindowDepth
     let

@@ -734,6 +734,7 @@ data Message
   | ReadyAlternative Source Target
   | ReadyExhausted
   | Record CampaignLogKey
+  | RecordForInvestigator InvestigatorId CampaignLogKey
   | RecordCount CampaignLogKey Int
   | IncrementRecordCount CampaignLogKey Int
   | RecordSetInsert CampaignLogKey [SomeRecorded]

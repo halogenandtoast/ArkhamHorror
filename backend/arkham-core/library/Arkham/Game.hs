@@ -42,6 +42,7 @@ import Arkham.Damage
 import Arkham.Difficulty
 import Arkham.Distance
 import Arkham.Effect.Types
+import Arkham.Enemy (lookupEnemy)
 import Arkham.Enemy.Types (Enemy, EnemyAttrs (..), Field (..), enemyClues, enemyDamage, enemyDoom)
 import Arkham.Entities
 import Arkham.Event.Types
@@ -2094,6 +2095,12 @@ getEnemyMatching :: HasGame m => EnemyMatcher -> m (Maybe Enemy)
 getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
 
 getEnemiesMatching :: HasGame m => EnemyMatcher -> m [Enemy]
+getEnemiesMatching (DefeatedEnemy matcher) = do
+  let
+    wrapEnemy (defeatedEnemyAttrs -> a) =
+      overAttrs (const a) $ lookupEnemy (toCardCode a) (toId a) (toCardId a)
+  allDefeatedEnemies <- map wrapEnemy . toList <$> scenarioField ScenarioDefeatedEnemies
+  filterM (enemyMatcherFilter matcher) allDefeatedEnemies
 getEnemiesMatching (IncludeOmnipotent matcher) = do
   allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
   filterM (enemyMatcherFilter matcher) allGameEnemies
@@ -2107,6 +2114,10 @@ getEnemiesMatching matcher = do
 
 enemyMatcherFilter :: HasGame m => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
+  DefeatedEnemy matcher -> \e ->
+    if attr enemyDefeated e
+      then enemyMatcherFilter matcher e
+      else pure False
   EnemyDiscardedBy investigatorMatcher -> \enemy ->
     case attr enemyDiscardedBy enemy of
       Nothing -> pure False
@@ -2922,6 +2933,7 @@ instance Projection Investigator where
     i <- getInvestigator iid
     let attrs@InvestigatorAttrs {..} = toAttrs i
     case f of
+      InvestigatorLog -> pure investigatorLog
       InvestigatorCardCode -> pure investigatorCardCode
       InvestigatorKeys -> pure investigatorKeys
       InvestigatorPlayerId -> pure investigatorPlayerId
@@ -3654,6 +3666,7 @@ instance Projection Scenario where
       ScenarioPlayerDecks -> pure scenarioPlayerDecks
       ScenarioTarotCards -> pure scenarioTarotCards
       ScenarioHasEncounterDeck -> pure scenarioHasEncounterDeck
+      ScenarioDefeatedEnemies -> pure scenarioDefeatedEnemies
 
 instance Projection Skill where
   getAttrs sid = toAttrs <$> getSkill sid

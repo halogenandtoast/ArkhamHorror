@@ -16,6 +16,20 @@ data CampaignLog = CampaignLog
   }
   deriving stock (Show, Generic, Eq)
 
+instance Semigroup CampaignLog where
+  a <> b =
+    CampaignLog
+      { campaignLogRecorded = campaignLogRecorded a <> campaignLogRecorded b
+      , campaignLogCrossedOut = campaignLogCrossedOut a <> campaignLogCrossedOut b
+      , campaignLogRecordedCounts = campaignLogRecordedCounts a <> campaignLogRecordedCounts b
+      , campaignLogRecordedSets = campaignLogRecordedSets a <> campaignLogRecordedSets b
+      , campaignLogOrderedKeys = campaignLogOrderedKeys a <> campaignLogOrderedKeys b
+      , campaignLogOptions = campaignLogOptions a <> campaignLogOptions b
+      }
+
+instance Monoid CampaignLog where
+  mempty = mkCampaignLog
+
 emptyCampaignLog :: CampaignLog -> Bool
 emptyCampaignLog CampaignLog {..} =
   null campaignLogRecorded

@@ -29,7 +29,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.DefeatedBy
 import Arkham.EncounterCard.Source
 import Arkham.Enemy.Creation
-import Arkham.Enemy.Types (Field (..))
+import Arkham.Enemy.Types (Enemy, Field (..))
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
@@ -40,6 +40,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Window
+import Arkham.History
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
@@ -1204,4 +1205,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         TarotCard Reversed arcana' | arcana' == arcana -> TarotCard Upright arcana'
         c -> c
     pure $ a & tarotCardsL . each %~ map rotate
+  After (EnemyDefeated eid _ _ _) -> do
+    eattrs <- getAttrs @Enemy eid
+    enemyHealth <- fieldJust EnemyHealth eid
+    pure $ a & defeatedEnemiesL %~ insertMap eid (DefeatedEnemyAttrs eattrs enemyHealth)
   _ -> pure a

@@ -496,28 +496,34 @@ instance RunMessage ChaosBag where
         & (setAsideChaosTokensL .~ mempty)
         & (choiceL .~ Nothing)
     RequestChaosTokens source miid revealStrategy strategy -> do
-      push (RunBag source miid strategy)
       case revealStrategy of
-        Reveal n -> case n of
-          0 -> pure $ c & revealedChaosTokensL .~ []
-          1 -> pure $ c & choiceL ?~ Undecided Draw & revealedChaosTokensL .~ []
-          x ->
-            pure
-              $ c
-              & ( choiceL
-                    ?~ Undecided (Choose source x ResolveChoice (replicate x (Undecided Draw)) [])
-                )
-              & (revealedChaosTokensL .~ [])
-        RevealAndChoose n m -> case n of
-          0 -> error "should be more than 1"
-          1 -> error "should be more than 1"
-          x ->
-            pure
-              $ c
-              & ( choiceL
-                    ?~ Undecided (Choose source m ResolveChoice (replicate x (Undecided Draw)) [])
-                )
-              & (revealedChaosTokensL .~ [])
+        MultiReveal a b -> do
+          pushAll [RequestChaosTokens source miid a strategy, RequestChaosTokens source miid b strategy]
+          pure c
+        Reveal n -> do
+          push (RunBag source miid strategy)
+          case n of
+            0 -> pure $ c & revealedChaosTokensL .~ []
+            1 -> pure $ c & choiceL ?~ Undecided Draw & revealedChaosTokensL .~ []
+            x ->
+              pure
+                $ c
+                & ( choiceL
+                      ?~ Undecided (Choose source x ResolveChoice (replicate x (Undecided Draw)) [])
+                  )
+                & (revealedChaosTokensL .~ [])
+        RevealAndChoose n m -> do
+          push (RunBag source miid strategy)
+          case n of
+            0 -> error "should be more than 1"
+            1 -> error "should be more than 1"
+            x ->
+              pure
+                $ c
+                & ( choiceL
+                      ?~ Undecided (Choose source m ResolveChoice (replicate x (Undecided Draw)) [])
+                  )
+                & (revealedChaosTokensL .~ [])
     RunBag source miid strategy -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' ->

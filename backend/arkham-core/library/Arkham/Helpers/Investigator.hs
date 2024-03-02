@@ -7,6 +7,7 @@ import Arkham.Prelude
 import Arkham.Action
 import Arkham.Action.Additional
 import Arkham.Asset.Types qualified as Field
+import Arkham.CampaignLog
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.Entity
@@ -341,6 +342,7 @@ investigator f cardDef Stats {..} =
                 , investigatorDrawnCards = []
                 , investigatorIsYithian = False
                 , investigatorDiscarding = Nothing
+                , investigatorLog = mkCampaignLog
                 }
         }
 

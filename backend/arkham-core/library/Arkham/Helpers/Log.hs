@@ -8,6 +8,8 @@ import Arkham.CampaignLogKey
 import Arkham.Card.CardCode
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Scenario
+import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
@@ -18,6 +20,15 @@ getCampaignLog =
   withStandalone
     (field CampaignCampaignLog)
     (field ScenarioStandaloneCampaignLog)
+
+getInvestigatorHasRecord :: HasGame m => InvestigatorId -> CampaignLogKey -> m Bool
+getInvestigatorHasRecord iid k = do
+  ilog <- field InvestigatorLog iid
+  pure
+    $ or
+      [ k `member` campaignLogRecorded ilog
+      , k `member` campaignLogRecordedCounts ilog
+      ]
 
 getHasRecord :: HasGame m => CampaignLogKey -> m Bool
 getHasRecord k = do

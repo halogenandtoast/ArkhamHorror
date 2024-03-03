@@ -15,6 +15,7 @@ const props = defineProps<Props>()
 
 const campaignLog = props.game.campaign?.log || props.game.scenario?.standaloneCampaignLog || { recorded: [], recordedSets: [], recordedCounts: [] }
 const { recorded, recordedSets, recordedCounts } = campaignLog
+
 const hasSupplies = computed(() => Object.values(props.game.investigators).some((i) => i.supplies.length > 0))
 
 
@@ -69,6 +70,9 @@ const fullName = (name: Name): string => {
     </div>
     <ul>
       <li v-for="record in recorded" :key="record">{{toCapitalizedWords(record)}}.</li>
+      <template v-for="i in game.investigators" :key="i.id">
+        <li v-for="record in i.log.recorded" :key="`${i.id}${record}`">{{fullName(i.name)}} {{toCapitalizedWords(record).toLowerCase()}}.</li>
+      </template>
     </ul>
     <ul>
       <li v-for="[setKey, setValues] in Object.entries(recordedSets)" :key="setKey">{{toCapitalizedWords(setKey)}}

@@ -1,4 +1,5 @@
 import { JsonDecoder } from 'ts.data.json';
+import { LogContents, logContentsDecoder } from '@/arkham/types/Log';
 import { Name, nameDecoder } from '@/arkham/types/Name';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
@@ -95,6 +96,7 @@ export type Investigator = {
   revealedHunchCard?: string | null;
   isYithian: boolean;
   slots: Slot[];
+  log: LogContents;
 }
 
 type SlotType = 'HandSlot' | 'BodySlot' | 'AccessorySlot' | 'ArcaneSlot' | 'TarotSlot' | 'AllySlot'
@@ -182,4 +184,5 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   modifiers: JsonDecoder.optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
   isYithian: JsonDecoder.boolean,
   slots: slotsDecoder,
+  log: logContentsDecoder,
 }, 'Investigator', { foundCards: 'search' });

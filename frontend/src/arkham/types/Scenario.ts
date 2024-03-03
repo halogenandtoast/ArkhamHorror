@@ -6,7 +6,7 @@ import {
   cardContentsDecoder,
 } from '@/arkham/types/Card';
 import { ChaosBag, chaosBagDecoder } from '@/arkham/types/ChaosBag';
-import { logContentsDecoder } from '@/arkham/types/Campaign';
+import { logContentsDecoder } from '@/arkham/types/Log';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import type { LogContents } from '@/arkham/types/Campaign';
 import { Difficulty, difficultyDecoder } from '@/arkham/types/Difficulty';

@@ -418,6 +418,8 @@ library
       Arkham.Asset.Cards.BountyContracts
       Arkham.Asset.Cards.BoxingGloves
       Arkham.Asset.Cards.BoxingGloves3
+      Arkham.Asset.Cards.BrandOfCthugha1
+      Arkham.Asset.Cards.BrandOfCthugha4
       Arkham.Asset.Cards.BrotherXavier1
       Arkham.Asset.Cards.BulletproofVest3
       Arkham.Asset.Cards.Burglary
@@ -2794,6 +2796,8 @@ test-suite spec
       Arkham.Asset.Cards.BeckySpec
       Arkham.Asset.Cards.BookOfShadows3Spec
       Arkham.Asset.Cards.BountyContractsSpec
+      Arkham.Asset.Cards.BrandOfCthugha1Spec
+      Arkham.Asset.Cards.BrandOfCthugha4Spec
       Arkham.Asset.Cards.BulletproofVest3Spec
       Arkham.Asset.Cards.BurglarySpec
       Arkham.Asset.Cards.CatBurglar1Spec

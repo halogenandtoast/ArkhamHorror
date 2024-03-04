@@ -494,11 +494,6 @@ withRewind action = do
     testApp <- cloneTestApp original
     runTestApp testApp action
 
-skip :: HasCallStack => TestAppT ()
-skip = chooseOptionMatching "skip" \case
-  Label _ [] -> True
-  _ -> False
-
 assertRunsMessage :: Message -> TestAppT () -> TestAppT ()
 assertRunsMessage msg body = do
   didRunMessage <- createMessageMatcher msg

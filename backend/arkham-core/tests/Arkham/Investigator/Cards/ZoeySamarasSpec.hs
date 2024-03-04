@@ -26,12 +26,7 @@ spec = do
         , moveTo zoeySamaras location
         , fightEnemy zoeySamaras enemy
         ]
-      chooseOptionMatching
-        "skip ability"
-        ( \case
-            Label {} -> True
-            _ -> False
-        )
+      skip
       chooseOnlyOption "start skill test"
       chooseOnlyOption "apply results"
       fieldAssert EnemyDamage (== 2) enemy

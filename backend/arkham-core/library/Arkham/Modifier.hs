@@ -241,6 +241,7 @@ data ModifierType
   | MustBeCommitted
   | MustTakeAction ActionTarget
   | NegativeToPositive
+  | NoStandardDamage
   | NoDamageDealt
   | NoMoreThanOneDamageOrHorrorAmongst AssetMatcher
   | NoSurge

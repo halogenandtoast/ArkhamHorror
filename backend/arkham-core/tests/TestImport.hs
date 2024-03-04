@@ -650,6 +650,11 @@ replaceScenario f = do
   ref <- view gameRefL
   atomicModifyIORef' ref (\g -> (g {gameMode = That scenario'}, ()))
 
+skip :: HasCallStack => TestAppT ()
+skip = chooseOptionMatching "skip" \case
+  SkipTriggersButton {} -> True
+  _ -> False
+
 chooseOnlyOption :: HasCallStack => String -> TestAppT ()
 chooseOnlyOption _reason = do
   questionMap <- gameQuestion <$> getGame

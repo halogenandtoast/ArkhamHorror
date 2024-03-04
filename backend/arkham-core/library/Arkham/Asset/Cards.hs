@@ -153,6 +153,8 @@ allPlayerAssetCards =
       , bountyContracts
       , boxingGloves
       , boxingGloves3
+      , brandOfCthugha1
+      , brandOfCthugha4
       , brotherXavier1
       , bulletproofVest3
       , burglary
@@ -4106,6 +4108,26 @@ michaelLeigh5 =
     , cdUnique = True
     , cdUses = uses Evidence 0
     , cdLevel = 5
+    }
+
+brandOfCthugha1 :: CardDef
+brandOfCthugha1 =
+  (multiClassAsset "08090" "Brand Of Cthugha" 2 [Guardian, Mystic])
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Spell]
+    , cdLevel = 1
+    , cdUses = uses Charge 6
+    , cdSlots = [#arcane]
+    }
+
+brandOfCthugha4 :: CardDef
+brandOfCthugha4 =
+  (multiClassAsset "08092" "Brand Of Cthugha" 2 [Guardian, Mystic])
+    { cdSkills = [#combat, #willpower]
+    , cdCardTraits = setFromList [Spell]
+    , cdLevel = 4
+    , cdUses = uses Charge 9
+    , cdSlots = [#arcane]
     }
 
 geneBeauregard3 :: CardDef

@@ -99,7 +99,8 @@ baseSkillValueFor skill _maction tempModifiers iid = do
 damageValueFor :: HasGame m => Int -> InvestigatorId -> m Int
 damageValueFor baseValue iid = do
   modifiers <- getModifiers (InvestigatorTarget iid)
-  pure $ foldr applyModifier baseValue modifiers
+  let baseValue' = if NoStandardDamage `elem` modifiers then 0 else baseValue
+  pure $ foldr applyModifier baseValue' modifiers
  where
   applyModifier (DamageDealt m) n = max 0 (n + m)
   applyModifier NoDamageDealt _ = 0

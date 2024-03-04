@@ -55,24 +55,14 @@ spec = describe "Fire Axe" $ do
             AbilityLabel {} -> True
             _ -> False
         )
-      chooseOptionMatching
-        "Skip playing fast cards or using reactions and continue"
-        ( \case
-            Label {} -> True
-            _ -> False
-        )
+      skip
       chooseOptionMatching
         "Start Skill Test"
         ( \case
             StartSkillTestButton {} -> True
             _ -> False
         )
-      chooseOptionMatching
-        "Skip playing fast cards or using reactions and continue"
-        ( \case
-            Label {} -> True
-            _ -> False
-        )
+      skip
       chooseOnlyOption "Apply Results"
       fieldAssert EnemyDamage (== 1) enemy
 

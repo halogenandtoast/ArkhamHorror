@@ -676,6 +676,9 @@ allAssets =
     , --- guardian/seeker [eote]
       SomeAssetCard medicalStudent
     , SomeAssetCard michaelLeigh5
+    , --- guardian/mystic [eote]
+      SomeAssetCard brandOfCthugha1
+    , SomeAssetCard brandOfCthugha4
     , --- seeker/rogue [eote]
       SomeAssetCard geneBeauregard3
     , --- rogue/survivor [eote]

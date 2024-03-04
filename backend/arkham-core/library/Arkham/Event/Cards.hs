@@ -717,6 +717,8 @@ delveTooDeep =
     , cdCriteria = Just $ Criteria.exists $ You <> can.target.encounterDeck
     }
 
+-- TODO: Oops might not be playable if 0 damage would be dealt, we might want
+-- to capture that
 oops :: CardDef
 oops =
   (event "02113" "Oops!" 2 Survivor)

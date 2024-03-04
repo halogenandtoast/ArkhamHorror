@@ -673,6 +673,9 @@ allAssets =
     , SomeAssetCard michaelLeigh5
     , --- seeker/rogue [eote]
       SomeAssetCard geneBeauregard3
+    , --- rogue/survivor [eote]
+      SomeAssetCard preciousMementoFromAFormerLife4
+    , SomeAssetCard preciousMementoFromAFutureLife4
     , --- neutral [eote]
       SomeAssetCard inTheThickOfIt
     , -- The Scarlet Keys

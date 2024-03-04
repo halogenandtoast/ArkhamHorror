@@ -428,6 +428,8 @@ allPlayerAssetCards =
       , pnakoticManuscripts5
       , policeBadge2
       , powderOfIbnGhazi
+      , preciousMementoFromAFormerLife4
+      , preciousMementoFromAFutureLife4
       , professorWarrenRice
       , protectiveIncantation1
       , puzzleBox
@@ -4086,6 +4088,26 @@ geneBeauregard3 =
     , cdSlots = [#ally]
     , cdUnique = True
     , cdLevel = 3
+    }
+
+preciousMementoFromAFormerLife4 :: CardDef
+preciousMementoFromAFormerLife4 =
+    (multiClassAsset "08114" ("Precious Memento" <:> "From a Former Life") 3 [Rogue, Survivor])
+    { cdCardTraits = setFromList [Item, Charm, Blessed]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdSkills = [#wild, #wild]
+    , cdSlots = [#accessory]
+    , cdLevel = 4
+    }
+
+preciousMementoFromAFutureLife4 :: CardDef
+preciousMementoFromAFutureLife4 =
+    (multiClassAsset "08115" ("Precious Memento" <:> "From a Future Life") 3 [Rogue, Survivor])
+    { cdCardTraits = setFromList [Item, Charm, Cursed]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdSkills = [#wild, #wild]
+    , cdSlots = [#accessory]
+    , cdLevel = 4
     }
 
 inTheThickOfIt :: CardDef

@@ -200,7 +200,7 @@ instance RunMessage SkillTest where
                 applyRevealStategyModifier n RevealAnotherChaosToken = MultiReveal n (Reveal 1)
                 applyRevealStategyModifier n _ = n
                 revealStrategy =
-                  foldl' applyRevealStategyModifier (Reveal 1) (traceShowId $ modifiers' <> modifiers'')
+                  foldl' applyRevealStategyModifier (Reveal 1) (modifiers' <> modifiers'')
               pushAll
                 [ RequestChaosTokens (toSource s) (Just iid) revealStrategy SetAside
                 , RunSkillTest iid

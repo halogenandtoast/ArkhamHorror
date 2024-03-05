@@ -44,6 +44,7 @@ data EnemyAttrs = EnemyAttrs
   , enemySpawnedBy :: Maybe InvestigatorId
   , enemyDiscardedBy :: Maybe InvestigatorId
   , enemyDefeated :: Bool
+  , enemyAttacks :: InvestigatorMatcher
   }
   deriving stock (Show, Eq, Generic)
 
@@ -95,6 +96,7 @@ instance FromJSON EnemyAttrs where
     enemySpawnedBy <- o .: "spawnedBy"
     enemyDiscardedBy <- o .:? "discardedBy" .!= Nothing
     enemyDefeated <- o .:? "defeated" .!= False
+    enemyAttacks <- o .:? "attacks" .!= InvestigatorEngagedWith (EnemyWithId enemyId)
     pure EnemyAttrs {..}
 
 instance Be EnemyAttrs EnemyMatcher where

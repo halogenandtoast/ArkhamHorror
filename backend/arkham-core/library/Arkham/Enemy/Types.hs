@@ -191,6 +191,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             , enemySpawnedBy = Nothing
             , enemyDiscardedBy = Nothing
             , enemyDefeated = False
+            , enemyAttacks = InvestigatorEngagedWith (EnemyWithId eid)
             }
     }
 

@@ -625,8 +625,6 @@ instance RunMessage EnemyAttrs where
               if DoNotExhaustEvaded `elem` mods
                 then id
                 else exhaustedL .~ True
-          others <- select $ SwarmOf (toId a) <> ReadyEnemy
-          pushAll [Exhaust (toTarget other) | other <- others]
           pure $ a & updatePlacement & updateExhausted
     Exhaust (isTarget a -> True) -> do
       case enemyPlacement of
@@ -806,11 +804,13 @@ instance RunMessage EnemyAttrs where
             when (enemyDamage a >= modifiedHealth) $ do
               whenMsg <- checkWindows [mkWhen $ Window.EnemyWouldBeDefeated eid]
               afterMsg <- checkWindows [mkAfter $ Window.EnemyWouldBeDefeated eid]
-              pushAll
-                $ [ whenMsg
-                  , afterMsg
-                  , EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)
-                  ]
+              let
+                defeatMsgs =
+                  if ExhaustIfDefeated `elem` modifiers'
+                    then [Exhaust (toTarget a) | not enemyExhausted]
+                    else [EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)]
+
+              pushAll $ [whenMsg, afterMsg] <> defeatMsgs
           pure a
         Just da -> do
           hasSwarm <- selectAny $ SwarmOf (toId a)
@@ -853,31 +853,33 @@ instance RunMessage EnemyAttrs where
               afterExcessMsg <-
                 checkWindows
                   [mkAfter $ Window.DealtExcessDamage source damageEffect (toTarget eid) excess | excess > 0]
-              pushAll
-                $ [ whenExcessMsg
-                  , afterExcessMsg
-                  , whenMsg
-                  , afterMsg
-                  , EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)
-                  ]
-                <> ( guard (notNull excessDamageTargets && excess > 0)
-                      *> [ ExcessDamage
-                            eid
-                            [ chooseOne
-                                controller
-                                [ Label
-                                    "Deal Excess Damage to Host or Swarm?"
-                                    [ chooseOrRunOne
+
+              let
+                defeatMsgs =
+                  if ExhaustIfDefeated `elem` modifiers'
+                    then [Exhaust (toTarget a) | not enemyExhausted]
+                    else
+                      [EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)]
+                        <> ( guard (notNull excessDamageTargets && excess > 0)
+                              *> [ ExcessDamage
+                                    eid
+                                    [ chooseOne
                                         controller
-                                        [ targetLabel other [Msg.EnemyDamage other (da {damageAssignmentAmount = excess})]
-                                        | other <- excessDamageTargets
+                                        [ Label
+                                            "Deal Excess Damage to Host or Swarm?"
+                                            [ chooseOrRunOne
+                                                controller
+                                                [ targetLabel other [Msg.EnemyDamage other (da {damageAssignmentAmount = excess})]
+                                                | other <- excessDamageTargets
+                                                ]
+                                            ]
+                                        , Label "Do not deal excess damage" $ map (CheckDefeated GameSource . toTarget) (toList mSwarmOf)
                                         ]
                                     ]
-                                , Label "Do not deal excess damage" $ map (CheckDefeated GameSource . toTarget) (toList mSwarmOf)
-                                ]
-                            ]
-                         ]
-                   )
+                                 ]
+                           )
+
+              pushAll $ [whenExcessMsg, afterExcessMsg, whenMsg, afterMsg] <> defeatMsgs
           pure $ a & tokensL %~ addTokens Token.Damage amount' & assignedDamageL .~ mempty
     DefeatEnemy eid _ source | eid == enemyId -> do
       canBeDefeated <- withoutModifier a CannotBeDefeated

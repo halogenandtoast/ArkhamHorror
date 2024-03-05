@@ -292,6 +292,7 @@ data EnemyMatcher
   | PatrolEnemy
   | SwarmOf EnemyId
   | IsSwarm
+  | IsHost
   | SwarmingEnemy
   | EnemyWithHealth
   | DefeatedEnemy EnemyMatcher

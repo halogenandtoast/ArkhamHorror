@@ -21,11 +21,10 @@ stunningBlow = skill StunningBlow Cards.stunningBlow
 
 instance RunMessage StunningBlow where
   runMessage msg s@(StunningBlow attrs) = case msg of
-    PassedSkillTest iid (Just Fight) _ (SkillTarget sid) _ _ | sid == toId attrs ->
-      do
-        mSkillTestTarget <- getSkillTestTarget
-        for_ mSkillTestTarget $ \case
-          EnemyTarget eid -> push $ EnemyEvaded iid eid
-          _ -> pure ()
-        pure s
+    PassedSkillTest iid (Just Fight) _ (SkillTarget sid) _ _ | sid == toId attrs -> do
+      mSkillTestTarget <- getSkillTestTarget
+      for_ mSkillTestTarget $ \case
+        EnemyTarget eid -> push $ EnemyEvaded iid eid
+        _ -> pure ()
+      pure s
     _ -> StunningBlow <$> runMessage msg attrs

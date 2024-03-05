@@ -553,7 +553,7 @@ instance RunMessage EnemyAttrs where
     EnemiesAttack | not enemyExhausted -> do
       mods <- getModifiers (EnemyTarget enemyId)
       unless (CannotAttack `elem` mods) do
-        iids <- select $ investigatorEngagedWith enemyId
+        iids <- select $ enemyAttacks
         for_ iids \iid ->
           push
             $ EnemyWillAttack

@@ -1,5 +1,6 @@
 module Arkham.Scenario.Scenarios.TheSearchForKadath (TheSearchForKadath (..), theSearchForKadath) where
 
+import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence
 import Arkham.Action qualified as Action
@@ -20,11 +21,13 @@ import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheSearchForKadath.FlavorText
 import Arkham.Scenarios.TheSearchForKadath.Helpers
+import Arkham.Trait (Trait (City))
 
 newtype TheSearchForKadath = TheSearchForKadath ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -231,6 +234,21 @@ instance RunMessage TheSearchForKadath where
           lift $ push $ skillTestModifier ElderThing iid (DiscoveredClues 1)
         _ -> pure ()
       pure s
+    DoStep 1 (SetScenarioMeta _) -> do
+      tenebrousNightgaunts <- select $ enemyIs Enemies.tenebrousNightgaunt <> EnemyWithPlacement Unplaced
+      when (notNull tenebrousNightgaunts) $ do
+        cities <- select $ LocationWithTrait City
+        lead <- getLeadPlayer
+        pushAll $ case cities of
+          [c] -> [PlaceEnemy t $ AtLocation c | t <- tenebrousNightgaunts]
+          _ ->
+            [ Ask lead
+              $ QuestionLabel "Place Tenebrous Nightgaunt in city location" Nothing
+              $ ChooseOne [targetLabel c [PlaceEnemy t $ AtLocation c] | c <- cities]
+            | t <- tenebrousNightgaunts
+            ]
+
+      pure s
     SetScenarioMeta value -> do
       let region = toResult value
       let meta = toResult (scenarioMeta attrs)
@@ -241,6 +259,17 @@ instance RunMessage TheSearchForKadath where
       victoryLocations <- select $ LocationWithVictory <> LocationWithoutClues
       locations <- filter (`notElem` victoryLocations) <$> select Anywhere
 
+      tenebrousNightgaunts <- select $ enemyIs Enemies.tenebrousNightgaunt
+
+      player <- getPlayer leadId
+      let
+        nightgauntMessages =
+          guard (notNull tenebrousNightgaunts)
+            *> [ chooseOneAtATime
+                  player
+                  [AbilityLabel leadId (mkAbility t 1 $ forced NotAnyWindow) [] [] | t <- tenebrousNightgaunts]
+               ]
+
       case region of
         Oriab -> do
           (baharna, placeBaharna) <- placeSetAsideLocation Locations.baharna
@@ -248,6 +277,7 @@ instance RunMessage TheSearchForKadath where
 
           pushAll
             $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
+            <> nightgauntMessages
             <> [placeBaharna, MoveAllTo (toSource attrs) baharna]
             <> placeOriabRest
             <> map (AddToVictory . toTarget) victoryLocations
@@ -260,6 +290,7 @@ instance RunMessage TheSearchForKadath where
                   (cardIs Enemies.nightriders)
                   (DeferSearchedToTarget $ toTarget attrs)
                , AdvanceToAct 1 Acts.theIsleOfOriab A (toSource attrs)
+               , DoStep 1 msg
                ]
         Mnar -> do
           (kadatheron, placeKadatheron) <- placeSetAsideLocation Locations.kadatheron
@@ -270,11 +301,12 @@ instance RunMessage TheSearchForKadath where
 
           pushAll
             $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
+            <> nightgauntMessages
             <> [placeKadatheron, MoveAllTo (toSource attrs) kadatheron]
             <> [placeRuinsOfIb, placeSarnath, createBeingsOfIb]
             <> map (AddToVictory . toTarget) victoryLocations
             <> map RemoveLocation locations
-            <> [AdvanceToAct 1 Acts.theDoomThatCameBefore A (toSource attrs)]
+            <> [AdvanceToAct 1 Acts.theDoomThatCameBefore A (toSource attrs), DoStep 1 msg]
         ForbiddenLands -> do
           (ilekVad, placeIlekVad) <- placeSetAsideLocation Locations.ilekVad
           (forbiddenLands, placeForbiddenLands) <- placeSetAsideLocation Locations.forbiddenLands
@@ -286,11 +318,12 @@ instance RunMessage TheSearchForKadath where
 
           pushAll
             $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
+            <> nightgauntMessages
             <> [placeIlekVad, MoveAllTo (toSource attrs) ilekVad]
             <> [placeForbiddenLands, placeZulanThek, createStalkingManticore, createHordeOfNight]
             <> map (AddToVictory . toTarget) victoryLocations
             <> map RemoveLocation locations
-            <> [AdvanceToAct 1 Acts.seekOutTheNight A (toSource attrs)]
+            <> [AdvanceToAct 1 Acts.seekOutTheNight A (toSource attrs), DoStep 1 msg]
         TimelessRealm -> do
           (celephais, placeCelephais) <- placeSetAsideLocation Locations.celephais
           placeTimlessRealmRest <- placeSetAsideLocations [Locations.serannian, Locations.hazuthKleg]
@@ -298,6 +331,7 @@ instance RunMessage TheSearchForKadath where
 
           pushAll
             $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
+            <> nightgauntMessages
             <> [placeCelephais, MoveAllTo (toSource attrs) celephais]
             <> placeTimlessRealmRest
             <> map (AddToVictory . toTarget) victoryLocations
@@ -311,6 +345,7 @@ instance RunMessage TheSearchForKadath where
                   (cardIs Enemies.priestOfAThousandMasks)
                   (DeferSearchedToTarget $ toTarget attrs)
                , AdvanceToAct 1 Acts.theKingsDecree A (toSource attrs)
+               , DoStep 1 msg
                ]
       pure $ TheSearchForKadath $ attrs & metaL .~ toJSON meta'
     _ -> TheSearchForKadath <$> runMessage msg attrs

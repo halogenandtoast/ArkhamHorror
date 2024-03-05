@@ -223,6 +223,7 @@ data ModifierType
   | IncreaseCostOf CardMatcher Int
   | IsEmptySpace
   | KilledIfDefeated
+  | ExhaustIfDefeated
   | LeaveCardWhereItIs
   | LosePatrol
   | LoseVictory

@@ -2141,6 +2141,12 @@ enemyMatcherFilter = \case
         AsSwarm {} -> True
         _ -> False
     fieldMap EnemyPlacement isSwarm (toId enemy)
+  IsHost -> \enemy -> do
+    let
+      isHost = \case
+        AsSwarm {} -> False
+        _ -> True
+    fieldMap EnemyPlacement isHost (toId enemy)
   EnemyWithEqualFields p q -> \enemy -> do
     x <- field p (toId enemy)
     y <- field q (toId enemy)

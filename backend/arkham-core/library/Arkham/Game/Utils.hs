@@ -33,7 +33,6 @@ import Arkham.Skill.Types (Skill)
 import Arkham.Target
 import Arkham.Treachery.Types (Treachery)
 import Arkham.Window (Window)
-import Control.Exception (throw)
 import Control.Lens (each)
 import Data.Text qualified as T
 import Data.These
@@ -131,7 +130,8 @@ maybeAsset aid = do
 getEffect :: (HasCallStack, HasGame m) => EffectId -> m Effect
 getEffect effectId = fromMaybe (throw missingEffect) <$> maybeEffect effectId
  where
-  missingEffect = MissingEntity $ "Unknown effect: " <> tshow effectId <> "\n" <> T.pack (prettyCallStack callStack)
+  missingEffect =
+    MissingEntity $ "Unknown effect: " <> tshow effectId <> "\n" <> T.pack (prettyCallStack callStack)
 
 maybeEffect :: HasGame m => EffectId -> m (Maybe Effect)
 maybeEffect effectId = do

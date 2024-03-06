@@ -233,6 +233,10 @@ data CampaignLogKey
   | TheInvestigatorsForcedTheirWayIntoTheTemple
   | EvidenceOfKadath
   | HasBrokenTheLawOfUlthar
+  | WasCaptured
+  | VirgilWasCaptured
+  | RandolphEludedCapture
+  | RandolphWasCaptured
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

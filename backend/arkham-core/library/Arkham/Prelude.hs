@@ -6,6 +6,7 @@ module Arkham.Prelude (
 import ClassyPrelude as X hiding (foldlM, on, (\\))
 import Data.Type.Equality as X (type (~))
 
+import Control.Exception as X (throw)
 import Control.Lens as X (
   Lens',
   Traversal',

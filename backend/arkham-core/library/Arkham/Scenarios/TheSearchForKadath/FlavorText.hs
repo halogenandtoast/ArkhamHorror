@@ -205,3 +205,56 @@ intro11 =
       \ travel such great distances. I suggest we begin by traveling south, to the\
       \ port city of Dylath-Leen. We can figure out our next step from there.”"
     ]
+
+investigatorDefeat :: FlavorText
+investigatorDefeat =
+  FlavorText
+    (Just "Investigator Defeat")
+    [ "You wake to find yourself restrained by thick cords of hempen rope,\
+      \ lying on top of hard, moist wood. The floor rocks steadily back and forth,\
+      \ and you hear ocean waves crashing against the walls. You are captive aboard\
+      \ some kind of galley. But why?"
+    ]
+
+resolution1 :: FlavorText
+resolution1 =
+  FlavorText
+    (Just "Resolution 1")
+    [ "You have ventured far and wide, from the quaint cobbled villages of the\
+      \ kingdom of the Skai to wondrous lands you could have never in a hundred\
+      \ years imagined. You learned much of the Dreamlands and of the gods who\
+      \ dwell atop unknown Kadath. Though you are closer to your goal, you still\
+      \ don’t know its precise location. In the meantime, your quest grows deadlier\
+      \ with each passing day. No matter where you go, foul, nightmarish creatures\
+      \ pursue you across land and sea. Winged beasts with no faces, horned\
+      \ Corsairs wielding razor-sharp cutlasses and commanding great black\
+      \ galleys—the agents of your demise bear many shapes. You decide to return to\
+      \ your ship, safe from the many dangers of the Dreamlands...or so you\
+      \ thought. Unfortunately, your ship is no safe haven. When you return, the\
+      \ crew and captain are nowhere to be found. There are no signs of struggle,\
+      \ but Virgil, who returned to the ship earlier to prepare for your next\
+      \ departure, is also missing."
+    , "“I fear the worst,” Randolph mourns. “If those fiendish Corsairs\
+      \ captured them, they are in dire trouble. They are agents of the Other Gods\
+      \ from the Outside, whose soul and messenger is the crawling chaos\
+      \ _Nyarlathotep_.” The mere utterance of the name causes you to shudder, though\
+      \ you do not know why. You ask where they might have been taken. As if\
+      \ discussing any other port of call, he replies: “The beasts who command\
+      \ their black galleys sail from the Moon. If we are to rescue Virgil and our\
+      \ other companions, that is where we must go.”"
+    ]
+
+resolution2 :: FlavorText
+resolution2 =
+  FlavorText
+    (Just "Resolution 2")
+    [ "As you examine your surroundings, you notice that your other companions,\
+      \ including Virgil and Randolph, have been captured as well. They are\
+      \ unconscious at the moment, but maybe when they awaken you can formulate a\
+      \ plan to free yourselves. After all, despite this setback, you have learned\
+      \ much of the Dreamlands and of the gods who dwell atop unknown Kadath.\
+      \ Though you still don’t know its precise location, if you are able to escape\
+      \ from this wretched galley, perhaps there is hope for your quest. You\
+      \ swallow a ball of despair and hope that this is not the end of your\
+      \ journey..."
+    ]

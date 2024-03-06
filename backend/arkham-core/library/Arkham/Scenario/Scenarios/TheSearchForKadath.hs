@@ -11,10 +11,12 @@ import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Exception
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -23,6 +25,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Prelude
+import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheSearchForKadath.FlavorText
@@ -82,6 +85,31 @@ standaloneChaosTokens =
 standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog =
   mkCampaignLog {campaignLogRecorded = setFromList [TheInvestigatorsWereSavedByRandolphCarder]}
+
+readInvestigatorDefeat :: HasGame m => m [Message]
+readInvestigatorDefeat = do
+  defeatedInvestigatorIds <- select DefeatedInvestigator
+  if null defeatedInvestigatorIds
+    then pure []
+    else do
+      resigned <- select ResignedInvestigator
+      defeatedPlayers <- traverse getPlayer defeatedInvestigatorIds
+      mRandolphCarterOwner <- getOwner Assets.randolphCarterExpertDreamer
+      lead <- getLeadPlayer
+
+      let
+        randolphMessages = case mRandolphCarterOwner of
+          Just owner
+            | owner `elem` defeatedInvestigatorIds
+            , notNull resigned ->
+                [ RemoveCampaignCard Assets.randolphCarterExpertDreamer
+                , forceAddCampaignCardToDeckChoice lead resigned Assets.randolphCarterExpertDreamer
+                ]
+          _ -> []
+      pure
+        $ [story defeatedPlayers investigatorDefeat]
+        <> [RecordForInvestigator iid WasCaptured | iid <- defeatedInvestigatorIds]
+        <> randolphMessages
 
 instance RunMessage TheSearchForKadath where
   runMessage msg s@(TheSearchForKadath attrs) = case msg of
@@ -339,7 +367,7 @@ instance RunMessage TheSearchForKadath where
             <> [ ShuffleCardsIntoDeck Deck.EncounterDeck [theCrawlingMist]
                , search
                   leadId
-                  (toSource attrs)
+                  attrs
                   EncounterDeckTarget
                   [fromDeck]
                   (cardIs Enemies.priestOfAThousandMasks)
@@ -348,4 +376,29 @@ instance RunMessage TheSearchForKadath where
                , DoStep 1 msg
                ]
       pure $ TheSearchForKadath $ attrs & metaL .~ toJSON meta'
+    ScenarioResolution r -> do
+      case r of
+        NoResolution -> do
+          anyResigned <- selectAny ResignedInvestigator
+          push $ if anyResigned then R1 else R2
+        Resolution n -> do
+          let
+            (resolutionText, randolphStatus) = case n of
+              1 -> (resolution1, RandolphEludedCapture)
+              2 -> (resolution2, RandolphWasCaptured)
+              other -> throw $ UnknownResolution $ Resolution other
+          msgs <- readInvestigatorDefeat
+          players <- allPlayers
+          gainXp <- toGainXp attrs getXp
+          evidence <- getSignsOfTheGods
+          pushAll
+            $ msgs
+            <> [story players resolutionText]
+            <> gainXp
+            <> [ IncrementRecordCount EvidenceOfKadath evidence
+               , Record VirgilWasCaptured
+               , Record randolphStatus
+               , EndOfGame Nothing
+               ]
+      pure s
     _ -> TheSearchForKadath <$> runMessage msg attrs

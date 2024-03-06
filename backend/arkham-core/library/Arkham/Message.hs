@@ -72,7 +72,6 @@ import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Trait
 import Arkham.Window (Window, WindowType)
-import Control.Exception
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 

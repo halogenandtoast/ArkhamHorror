@@ -10,6 +10,7 @@ export enum MessageType {
   TARGET_LABEL = 'TargetLabel',
   TOOLTIP_LABEL = 'TooltipLabel',
   SKILL_LABEL = 'SkillLabel',
+  SKILL_LABEL_WITH_LABEL = 'SkillLabelWithLabel',
   CARD_LABEL = 'CardLabel',
   PORTRAIT_LABEL = 'PortraitLabel',
   COMPONENT_LABEL = 'ComponentLabel',
@@ -51,6 +52,12 @@ export type TooltipLabel = {
 
 export type SkillLabel = {
   tag: MessageType.SKILL_LABEL
+  skillType: SkillType
+}
+
+export type SkillLabelWithLabel = {
+  tag: MessageType.SKILL_LABEL_WITH_LABEL
+  label: string
   skillType: SkillType
 }
 
@@ -236,7 +243,7 @@ export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestAp
     tag: JsonDecoder.isExactly(MessageType.SKILL_TEST_APPLY_RESULTS_BUTTON),
   }, 'SkillTestApplyResultsButton')
 
-export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | EngageLabel | GridLabel | TarotLabel | Done | ChaosTokenGroupChoice | EffectActionButton;
+export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | SkillLabelWithLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | EngageLabel | GridLabel | TarotLabel | Done | ChaosTokenGroupChoice | EffectActionButton;
 
 export const doneDecoder = JsonDecoder.object<Done>(
   {
@@ -262,6 +269,13 @@ export const skillLabelDecoder = JsonDecoder.object<SkillLabel>(
     tag: JsonDecoder.isExactly(MessageType.SKILL_LABEL),
     skillType: skillTypeDecoder
   }, 'SkillLabel')
+
+export const skillLabelWithLabelDecoder = JsonDecoder.object<SkillLabelWithLabel>(
+  {
+    tag: JsonDecoder.isExactly(MessageType.SKILL_LABEL_WITH_LABEL),
+    label: JsonDecoder.string,
+    skillType: skillTypeDecoder
+  }, 'SkillLabelWithLabel')
 
 export const targetLabelDecoder = JsonDecoder.object<TargetLabel>(
   {
@@ -313,6 +327,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     labelDecoder,
     tooltipLabelDecoder,
     skillLabelDecoder,
+    skillLabelWithLabelDecoder,
     targetLabelDecoder,
     cardLabelDecoder,
     portraitLabelDecoder,

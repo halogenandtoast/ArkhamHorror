@@ -223,7 +223,7 @@ instance RunMessage TheSearchForKadath where
             $ chooseOne
               player
               [ Label "Take 1 damage and 1 horror" [assignDamageAndHorror iid Tablet 1 1]
-              , Label "Place 1 doom on the current agenda" [PlaceDoomOnAgenda]
+              , Label "Place 1 doom on the current agenda" [placeDoomOnAgenda]
               ]
         _ -> pure ()
       pure s

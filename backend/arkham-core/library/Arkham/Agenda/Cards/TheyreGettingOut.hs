@@ -47,6 +47,6 @@ instance RunMessage TheyreGettingOut where
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       ghoulCount <- selectCount $ withTrait Ghoul <> EnemyAt (LocationMatchAny ["Parlor", "Hallway"])
-      pushAll $ replicate ghoulCount PlaceDoomOnAgenda
+      push $ PlaceDoomOnAgenda ghoulCount CanNotAdvance
       pure a
     _ -> TheyreGettingOut <$> runMessage msg attrs

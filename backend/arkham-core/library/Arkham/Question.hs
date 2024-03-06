@@ -60,6 +60,7 @@ data UI msg
   | PortraitLabel {investigatorId :: InvestigatorId, messages :: [msg]}
   | TargetLabel {target :: Target, messages :: [msg]}
   | SkillLabel {skillType :: SkillType, messages :: [msg]}
+  | SkillLabelWithLabel {label :: Text, skillType :: SkillType, messages :: [msg]}
   | EvadeLabel {enemyId :: EnemyId, messages :: [msg]}
   | FightLabel {enemyId :: EnemyId, messages :: [msg]}
   | EngageLabel {enemyId :: EnemyId, messages :: [msg]}

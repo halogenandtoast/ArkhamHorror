@@ -38,9 +38,7 @@ instance RunMessage Encore where
             <$ pushAll
               [ RemoveAllDoomFromPlay defaultRemoveDoomMatchers
               , ResetAgendaDeckToStage 1
-              , PlaceDoomOnAgenda
-              , PlaceDoomOnAgenda
-              , PlaceDoomOnAgenda
+              , PlaceDoomOnAgenda 3 CanNotAdvance
               ]
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       iids <- getInvestigatorIds

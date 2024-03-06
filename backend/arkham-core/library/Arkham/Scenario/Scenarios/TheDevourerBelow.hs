@@ -82,10 +82,11 @@ instance RunMessage TheDevourerBelow where
             *> [ AllRandomDiscard (toSource attrs) AnyCard
                , AllRandomDiscard (toSource attrs) AnyCard
                ]
+
+        placeDoomAmount = (length cultistsWhoGotAway + 1) `div` 2
         cultistsWhoGotAwayMessages =
-          replicate
-            ((length cultistsWhoGotAway + 1) `div` 2)
-            PlaceDoomOnAgenda
+          guard (placeDoomAmount > 0)
+            $> PlaceDoomOnAgenda placeDoomAmount CanNotAdvance
 
       (mainPath, placeMainPath) <- placeLocationCard Locations.mainPath
 

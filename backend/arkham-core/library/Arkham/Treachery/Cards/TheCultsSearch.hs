@@ -37,7 +37,7 @@ instance RunMessage TheCultsSearch where
               concatMap
                 ( \(enemy, doom) ->
                     RemoveDoom (toSource attrs) (toTarget enemy) doom
-                      : replicate doom PlaceDoomOnAgenda
+                      : replicate doom placeDoomOnAgenda
                 )
                 cultists
                 <> [AdvanceAgendaIfThresholdSatisfied]

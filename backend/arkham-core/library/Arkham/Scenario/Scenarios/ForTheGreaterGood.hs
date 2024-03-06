@@ -237,7 +237,7 @@ instance RunMessage ForTheGreaterGood where
               player
               [ targetLabel
                 cultist
-                [RemoveDoom (ChaosTokenEffectSource ElderThing) (toTarget cultist) 1, PlaceDoomOnAgenda]
+                [RemoveDoom (ChaosTokenEffectSource ElderThing) (toTarget cultist) 1, placeDoomOnAgenda]
               | cultist <- closestCultists
               ]
         else do

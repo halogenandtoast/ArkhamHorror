@@ -305,6 +305,10 @@ pattern AssetDamage aid source damage horror <- AssetDamageWithCheck aid source 
 
 type IsSameAction = Bool
 
+data CanAdvance = CanAdvance | CanNotAdvance
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | SetInvestigator PlayerId Investigator
@@ -707,7 +711,7 @@ data Message
   | FlipClues Target Int
   | FlipDoom Target Int
   | PlaceAdditionalDamage Target Source Int Int
-  | PlaceDoomOnAgenda
+  | PlaceDoomOnAgenda Int CanAdvance
   | PlaceEnemyInVoid EnemyId
   | PlaceEnemy EnemyId Placement
   | PlaceLocation LocationId Card
@@ -988,6 +992,7 @@ uiToRun = \case
   GridLabel _ msgs -> Run msgs
   TarotLabel _ msgs -> Run msgs
   SkillLabel _ msgs -> Run msgs
+  SkillLabelWithLabel _ _ msgs -> Run msgs
   EvadeLabel _ msgs -> Run msgs
   FightLabel _ msgs -> Run msgs
   EngageLabel _ msgs -> Run msgs

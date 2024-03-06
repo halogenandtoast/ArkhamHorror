@@ -31,7 +31,7 @@ instance RunMessage BlackStarsRise where
             $ chooseOrRunOne player
             $ [ Label
                 "Place 1 doom on current agenda. This effect can cause the current agenda to advance."
-                [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
+                [placeDoomOnAgendaAndCheckAdvance]
               | hasAgenda
               ]
             <> [ Label

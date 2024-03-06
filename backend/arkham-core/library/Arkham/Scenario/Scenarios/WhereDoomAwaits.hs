@@ -216,9 +216,11 @@ instance RunMessage WhereDoomAwaits where
              , SetEncounterDeck encounterDeck
              , SetAgendaDeck
              , SetActDeck
+             , PlaceDoomOnAgenda broodEscapedCount CanNotAdvance
+             , placeBaseOfTheHill
+             , placeAscendingPath
+             , placeSentinelPeak
              ]
-          <> replicate broodEscapedCount PlaceDoomOnAgenda
-          <> [placeBaseOfTheHill, placeAscendingPath, placeSentinelPeak]
           <> silasMsgs
           <> [ RevealLocation Nothing baseOfTheHillId
              , MoveAllTo (toSource attrs) baseOfTheHillId

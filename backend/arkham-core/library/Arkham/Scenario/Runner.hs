@@ -144,11 +144,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     a <$ case matches of
       [] -> error "There were no locations with that name"
       (card : _) -> push (PlaceLocation locationId card)
-  PlaceDoomOnAgenda -> do
+  PlaceDoomOnAgenda n canAdvance -> do
     agendaIds <- select Matcher.AnyAgenda
+    pushWhen (canAdvance == CanAdvance) AdvanceAgendaIfThresholdSatisfied
     case agendaIds of
       [] -> pure a
-      [x] -> a <$ push (PlaceTokens (toSource a) (AgendaTarget x) Doom 1)
+      [x] -> a <$ push (PlaceTokens (toSource a) (AgendaTarget x) Doom n)
       _ -> error "multiple agendas should be handled by the scenario"
   AdvanceAgendaDeck n _ -> do
     let

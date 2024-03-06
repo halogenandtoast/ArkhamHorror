@@ -242,13 +242,14 @@ instance RunMessage BlackStarsRise where
               & (agendaStackL . at 1 ?~ agendas1)
               & (agendaStackL . at 2 ?~ agendas2)
           )
-    PlaceDoomOnAgenda -> do
+    PlaceDoomOnAgenda n canAdvance -> do
       agendaIds <- select AnyAgenda
       lead <- getLeadPlayer
+      pushWhen (canAdvance == CanAdvance) AdvanceAgendaIfThresholdSatisfied
       push
         $ chooseOne
           lead
-          [ targetLabel agendaId [PlaceTokens (toSource attrs) (toTarget agendaId) Doom 1]
+          [ targetLabel agendaId [PlaceTokens (toSource attrs) (toTarget agendaId) Doom n]
           | agendaId <- agendaIds
           ]
       pure s

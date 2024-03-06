@@ -28,8 +28,7 @@ instance RunMessage ThePriceOfFailure where
           darkPact <- genPlayerCard Events.darkPact
           pushAll
             [ InvestigatorAssignDamage iid source DamageAny 2 2
-            , PlaceDoomOnAgenda
-            , AdvanceAgendaIfThresholdSatisfied
+            , placeDoomOnAgendaAndCheckAdvance
             , RemoveCardFromDeckForCampaign iid pc
             , AddCardToDeckForCampaign iid darkPact
             , RemoveTreachery (toId attrs)

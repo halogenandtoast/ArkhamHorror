@@ -31,7 +31,7 @@ instance RunMessage TheRougarouFeeds where
           pushAll
             [ ShuffleAllInEncounterDiscardBackIn "81034"
             , AdvanceAgendaDeck agendaDeckId (toSource attrs)
-            , PlaceDoomOnAgenda
+            , placeDoomOnAgenda
             ]
         Just eid -> do
           lead <- getLeadPlayer

@@ -37,7 +37,7 @@ instance RunMessage BehindTheCurtain where
         $ [ ShuffleEncounterDiscardBackIn
           , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
           ]
-        <> [PlaceDoomOnAgenda | deckCount <= 2]
-        <> [PlaceDoomOnAgenda | deckCount == 1]
+        <> [placeDoomOnAgenda | deckCount == 2]
+        <> [PlaceDoomOnAgenda 2 CanNotAdvance | deckCount == 1]
       pure a
     _ -> BehindTheCurtain <$> runMessage msg attrs

@@ -21,6 +21,7 @@ import Arkham.Matcher
 import Arkham.Message (Message (RevelationSkillTest), pattern BeginSkillTest)
 import Arkham.Name
 import Arkham.Projection
+import Arkham.Question
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
 import Arkham.SkillType
@@ -352,3 +353,14 @@ getIsCommittable investigator card = do
             EncounterCard ec ->
               pure $ CommittableTreachery `elem` (cdCommitRestrictions $ toCardDef ec)
             VengeanceCard _ -> error "vengeance card"
+
+skillTestLabel
+  :: (Sourceable source, Targetable target)
+  => Text
+  -> SkillType
+  -> InvestigatorId
+  -> source
+  -> target
+  -> Int
+  -> UI Message
+skillTestLabel lbl sType iid source target n = SkillLabelWithLabel lbl sType [beginSkillTest iid source target sType n]

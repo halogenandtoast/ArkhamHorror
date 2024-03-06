@@ -44,7 +44,7 @@ enchantedWoodsLostWoodsEffect = cardEffect EnchantedWoodsLostWoodsEffect Cards.e
 instance RunMessage EnchantedWoodsLostWoodsEffect where
   runMessage msg e@(EnchantedWoodsLostWoodsEffect attrs) = case msg of
     EndRoundWindow -> do
-      pushAll [disable attrs, PlaceDoomOnAgenda]
+      pushAll [disable attrs, placeDoomOnAgenda]
       pure e
     MoveTo (moveTarget -> InvestigatorTarget iid) | attrs.target == toTarget iid -> do
       push $ disable attrs

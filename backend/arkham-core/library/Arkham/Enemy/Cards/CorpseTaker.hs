@@ -45,7 +45,7 @@ instance RunMessage CorpseTaker where
           let location = fromJustNote "one of these has to exist" (mRivertown <|> mMainPath)
           if loc == location
             then do
-              pushAll $ replicate (enemyDoom attrs) PlaceDoomOnAgenda
+              push $ PlaceDoomOnAgenda (enemyDoom attrs) CanNotAdvance
               pure $ CorpseTaker $ attrs & tokensL %~ removeAllTokens Doom
             else do
               lead <- getLeadPlayer

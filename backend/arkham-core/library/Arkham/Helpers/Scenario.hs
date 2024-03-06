@@ -68,6 +68,9 @@ toChaosTokenValue attrs t esVal heVal =
     t
     (NegativeModifier $ if isEasyStandard attrs then esVal else heVal)
 
+byDifficulty :: ScenarioAttrs -> a -> a -> a
+byDifficulty attrs a b = if isEasyStandard attrs then a else b
+
 isEasyStandard :: ScenarioAttrs -> Bool
 isEasyStandard ScenarioAttrs {scenarioDifficulty} =
   scenarioDifficulty `elem` [Easy, Standard]

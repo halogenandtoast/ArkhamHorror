@@ -8,7 +8,7 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.Location.Cards qualified as Locations
@@ -16,14 +16,14 @@ import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
+import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
 import Arkham.Scenario.Runner hiding (
   assignHorror,
   findAndDrawEncounterCard,
   placeLocationCard,
   story,
  )
-import Arkham.Trait qualified as Trait
+import Arkham.Trait (Trait (Ghoul))
 
 newtype TheGathering = TheGathering ScenarioAttrs
   deriving stock (Generic)
@@ -41,7 +41,7 @@ theGathering difficulty =
 instance HasChaosTokenValue TheGathering where
   getChaosTokenValue iid chaosTokenFace (TheGathering attrs) = case chaosTokenFace of
     Skull -> do
-      ghoulCount <- selectCount $ enemyAtLocationWith iid <> withTrait Trait.Ghoul
+      ghoulCount <- selectCount $ enemyAtLocationWith iid <> withTrait Ghoul
       pure $ toChaosTokenValue attrs Skull ghoulCount 2
     Cultist -> pure $ ChaosTokenValue Cultist (mwhen (isEasyStandard attrs) (NegativeModifier 1))
     Tablet -> pure $ toChaosTokenValue attrs Tablet 2 4
@@ -59,12 +59,12 @@ instance RunMessage TheGathering where
       encounterDeck <-
         buildEncounterDeckExcluding
           [Enemies.ghoulPriest]
-          [ EncounterSet.TheGathering
-          , EncounterSet.Rats
-          , EncounterSet.Ghouls
-          , EncounterSet.StrikingFear
-          , EncounterSet.AncientEvils
-          , EncounterSet.ChillingCold
+          [ Set.TheGathering
+          , Set.Rats
+          , Set.Ghouls
+          , Set.StrikingFear
+          , Set.AncientEvils
+          , Set.ChillingCold
           ]
 
       setAsideCards <-
@@ -102,50 +102,52 @@ instance RunMessage TheGathering where
       pushWhen (isHardExpert attrs) $ DrawAnotherChaosToken iid
       pure s
     ResolveChaosToken _ Tablet iid -> do
-      pushWhenM (selectAny $ enemyAtLocationWith iid <> withTrait Trait.Ghoul)
-        $ assignDamageAndHorror iid Tablet 1 (if isEasyStandard attrs then 0 else 1)
+      pushWhenM (selectAny $ enemyAtLocationWith iid <> withTrait Ghoul)
+        $ assignDamageAndHorror iid Tablet 1 (byDifficulty attrs 0 1)
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
-      case chaosTokenFace token of
-        Skull | isHardExpert attrs -> findAndDrawEncounterCard iid (#enemy <> withTrait Trait.Ghoul)
-        Cultist -> assignHorror iid (ChaosTokenSource token) (if isEasyStandard attrs then 1 else 2)
+      case token.face of
+        Skull | isHardExpert attrs -> findAndDrawEncounterCard iid (#enemy <> withTrait Ghoul)
+        Cultist -> assignHorror iid (ChaosTokenSource token) (byDifficulty attrs 1 2)
         _ -> pure ()
       pure s
     ScenarioResolution resolution -> do
-      lead <- getLeadPlayer
-      leadId <- getLeadInvestigatorId
-      let allGainXp = pushAll =<< toGainXp attrs (getXpWithBonus 2)
-      let chooseToAddLita = push $ addCampaignCardToDeckChoice lead [leadId] Assets.litaChantler
+      resigned <- select ResignedInvestigator
+      leadId <- getLead
+      let
+        chooseToAddLita killed =
+          addCampaignCardToDeckChoice
+            (if leadId `elem` killed then resigned else [leadId])
+            Assets.litaChantler
       case resolution of
         NoResolution -> do
           story $ i18n "nightOfTheZealot.theGathering.resolutions.noResolution"
           record YourHouseIsStillStanding
           record GhoulPriestIsStillAlive
-          chooseToAddLita
-          allGainXp
+          chooseToAddLita []
+          allGainXp attrs
         Resolution 1 -> do
           story $ i18nWithTitle "nightOfTheZealot.theGathering.resolutions.resolution1"
           record YourHouseHasBurnedToTheGround
-          chooseToAddLita
+          chooseToAddLita []
           sufferMentalTrauma leadId 1
-          allGainXp
+          allGainXp attrs
         Resolution 2 -> do
           -- TODO: Combine gainXP and bonus so modifiers work
           story $ i18nWithTitle "nightOfTheZealot.theGathering.resolutions.resolution2"
           record YourHouseIsStillStanding
           gainXp leadId attrs 1
-          allGainXp
+          allGainXp attrs
         Resolution 3 -> do
           -- TODO: missing rules
-          -- \* kill non-resigned investigators
-          -- \* end campaign if none left
           -- \* handle new investigators
-          -- \* handle lead being killed
           story $ i18nWithTitle "nightOfTheZealot.theGathering.resolutions.resolution3"
           record LitaWasForcedToFindOthersToHelpHerCause
           record YourHouseIsStillStanding
           record GhoulPriestIsStillAlive
-          chooseToAddLita
+
+          killed <- killRemaining attrs
+          when (notNull resigned) $ chooseToAddLita killed
         other -> throwIO $ UnknownResolution other
 
       endOfScenario

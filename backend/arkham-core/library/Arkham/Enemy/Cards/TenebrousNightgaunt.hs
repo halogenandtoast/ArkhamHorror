@@ -3,6 +3,8 @@ module Arkham.Enemy.Cards.TenebrousNightgaunt (tenebrousNightgaunt, TenebrousNig
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Prelude
 
 newtype TenebrousNightgaunt = TenebrousNightgaunt EnemyAttrs
@@ -15,10 +17,10 @@ tenebrousNightgaunt = enemy TenebrousNightgaunt Cards.tenebrousNightgaunt (4, St
 -- We add a no-op ability here as the scenario TheSearchForKadath will be
 -- responsible for triggering the ability, and implementing its effect.
 instance HasAbilities TenebrousNightgaunt where
-  getAbilities = extend a [mkAbility a 1 $ forced NotAnyWindow]
+  getAbilities (TenebrousNightgaunt a) = extend a [mkAbility a 1 $ forced NotAnyWindow]
 
 instance RunMessage TenebrousNightgaunt where
-  runMessage msg e@(TenebrousNightgaunt attrs) = case msg of
+  runMessage msg (TenebrousNightgaunt attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      pure $ e & placementL .~ Unplaced
+      pure $ TenebrousNightgaunt $ attrs & placementL .~ Unplaced
     _ -> TenebrousNightgaunt <$> runMessage msg attrs

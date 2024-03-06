@@ -117,8 +117,7 @@ instance RunMessage JusticeXI where
       removeMessageType DrawEnemyMessage
       pushAll
         [ SetCardAside card
-        , PlaceDoomOnAgenda
-        , AdvanceAgendaIfThresholdSatisfied
+        , placeDoomOnAgendaAndCheckAdvance
         ]
       pure a
     _ -> JusticeXI <$> runMessage msg attrs

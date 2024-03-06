@@ -51,10 +51,7 @@ instance RunMessage TheWitchLight where
         _ ->
           [ SetOutOfPlay SetAsideZone (toTarget nahab)
           , advanceAgendaDeck attrs
-          , PlaceDoomOnAgenda
-          , PlaceDoomOnAgenda
-          , PlaceDoomOnAgenda
-          , PlaceDoomOnAgenda
+          , PlaceDoomOnAgenda 4 CanNotAdvance
           ]
       pure a
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do

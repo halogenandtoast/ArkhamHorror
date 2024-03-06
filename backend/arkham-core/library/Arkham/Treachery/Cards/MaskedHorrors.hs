@@ -36,5 +36,5 @@ instance RunMessage MaskedHorrors where
               [ InvestigatorAssignDamage iid source DamageAny 0 2
               | iid <- targetInvestigators
               ]
-          else pushAll [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
+          else push placeDoomOnAgendaAndCheckAdvance
     _ -> MaskedHorrors <$> runMessage msg attrs

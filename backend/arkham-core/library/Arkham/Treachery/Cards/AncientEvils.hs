@@ -1,8 +1,7 @@
 module Arkham.Treachery.Cards.AncientEvils where
 
-import Arkham.Prelude
-
 import Arkham.Classes
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -16,6 +15,6 @@ ancientEvils = treachery AncientEvils Cards.ancientEvils
 instance RunMessage AncientEvils where
   runMessage msg t@(AncientEvils attrs) = case msg of
     Revelation _ (isSource attrs -> True) -> do
-      pushAll [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
+      push placeDoomOnAgendaAndCheckAdvance
       pure t
     _ -> AncientEvils <$> runMessage msg attrs

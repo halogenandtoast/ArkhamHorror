@@ -70,7 +70,7 @@ instance RunMessage MadnessCoils where
               <> [advanceAgendaDeck attrs]
            , Label
               "The investigators faint and awaken some time later. Advance to agenda 2a and place 1 doom on it."
-              [advanceAgendaDeck attrs, PlaceDoomOnAgenda]
+              [advanceAgendaDeck attrs, placeDoomOnAgenda]
            ]
       pure a
     FailedSkillTest _ _ source SkillTestInitiatorTarget {} (SkillSkillTest st) _ | isSource attrs source -> do

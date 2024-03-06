@@ -225,7 +225,7 @@ instance RunMessage BloodOnTheAltar where
             , SetEncounterDeck encounterDeck
             , SetAgendaDeck
             ]
-          <> [PlaceDoomOnAgenda | delayedOnTheirWayToDunwich]
+          <> [placeDoomOnAgenda | delayedOnTheirWayToDunwich]
           <> [SetActDeck]
           <> (placeVillageCommons : concat otherPlacements)
           <> [ RevealLocation Nothing villageCommonsId

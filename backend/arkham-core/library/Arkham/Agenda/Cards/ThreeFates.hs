@@ -36,6 +36,6 @@ instance RunMessage ThreeFates where
         $ [ ShuffleEncounterDiscardBackIn
           , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
           ]
-        <> [PlaceDoomOnAgenda | deckCount == 2]
+        <> [placeDoomOnAgenda | deckCount == 2]
       pure a
     _ -> ThreeFates <$> runMessage msg attrs

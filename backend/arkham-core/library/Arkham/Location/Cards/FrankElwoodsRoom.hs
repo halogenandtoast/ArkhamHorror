@@ -37,6 +37,6 @@ instance RunMessage FrankElwoodsRoom where
             [InvestigatorSpendClues iid 1, PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1]
           | hasClues
           ]
-        <> [Label "Place 1 doom on the current agenda" [PlaceDoomOnAgenda]]
+        <> [Label "Place 1 doom on the current agenda" [placeDoomOnAgenda]]
       pure l
     _ -> FrankElwoodsRoom <$> runMessage msg attrs

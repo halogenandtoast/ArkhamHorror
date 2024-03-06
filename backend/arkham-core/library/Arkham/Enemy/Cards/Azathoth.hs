@@ -34,8 +34,8 @@ instance RunMessage Azathoth where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       push R1
       pure e
-    PlaceDoomOnAgenda -> do
+    PlaceDoomOnAgenda n _ -> do
       noAgenda <- selectNone AnyAgenda
-      pushWhen noAgenda $ placeDoom attrs attrs 1
+      pushWhen noAgenda $ placeDoom attrs attrs n
       pure e
     _ -> Azathoth <$> runMessage msg attrs

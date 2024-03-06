@@ -32,7 +32,7 @@ instance RunMessage SaracenicScript where
       esotericFormulas <- getSetAsideCardsMatching $ cardIs Assets.esotericFormula
       pushAll
         $ zipWith TakeControlOfSetAsideAsset investigatorIds esotericFormulas
-        <> [PlaceDoomOnAgenda | not survived]
+        <> [placeDoomOnAgenda | not survived]
         <> [advanceActDeck attrs]
       pure a
     _ -> SaracenicScript <$> runMessage msg attrs

@@ -57,6 +57,6 @@ instance RunMessage EndsAndMeans where
       enemiesWithDoom <- select $ EnemyAt (locationWithEnemy enemy) <> EnemyWithAnyDoom
       pushAll
         $ concat
-          [[RemoveDoom (toSource attrs) (toTarget enemy') 1, PlaceDoomOnAgenda] | enemy' <- enemiesWithDoom]
+          [[RemoveDoom (toSource attrs) (toTarget enemy') 1, placeDoomOnAgenda] | enemy' <- enemiesWithDoom]
       pure a
     _ -> EndsAndMeans <$> runMessage msg attrs

@@ -20,8 +20,7 @@ instance RunMessage OfferOfPower where
       player <- getPlayer iid
       push
         $ chooseOne player
-        $ [ Label "Draw 2 cards and place 2 doom on agenda"
-              $ [drawing, PlaceDoomOnAgenda, PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
+        $ [ Label "Draw 2 cards and place 2 doom on agenda" [drawing, PlaceDoomOnAgenda 2 CanAdvance]
           , Label "Take 2 horror" [assignHorror iid attrs 2]
           ]
       pure t

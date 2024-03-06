@@ -26,7 +26,7 @@ instance RunMessage LedAstray where
       cultists <- selectMap EnemyTarget $ EnemyWithTrait Cultist
       hasNoClues <- fieldP InvestigatorClues (== 0) iid
       let
-        advanceAgenda = [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
+        advanceAgenda = [placeDoomOnAgendaAndCheckAdvance]
         placeDoomOnCultist target =
           TargetLabel
             target

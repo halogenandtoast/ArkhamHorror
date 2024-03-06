@@ -1,19 +1,48 @@
-module Arkham.Treachery.Cards.SongOfTheMagahBird ( songOfTheMagahBird , SongOfTheMagahBird(..)) where
+module Arkham.Treachery.Cards.SongOfTheMagahBird (songOfTheMagahBird, SongOfTheMagahBird (..)) where
 
-import Arkham.Prelude
+import Arkham.Ability
 import Arkham.Classes
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Matcher
 import Arkham.Message
+import Arkham.Prelude
+import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype SongOfTheMagahBird = SongOfTheMagahBird TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsTreachery, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 songOfTheMagahBird :: TreacheryCard SongOfTheMagahBird
 songOfTheMagahBird = treachery SongOfTheMagahBird Cards.songOfTheMagahBird
 
+instance HasAbilities SongOfTheMagahBird where
+  getAbilities (SongOfTheMagahBird a) =
+    [ mkAbility a 1 $ forced $ Leaves #after You $ locationWithTreachery a
+    , restrictedAbility a 2 OnSameLocation actionAbility
+    ]
+
 instance RunMessage SongOfTheMagahBird where
   runMessage msg t@(SongOfTheMagahBird attrs) = case msg of
-    Revelation _iid (isSource attrs -> True) -> pure t
+    Revelation iid (isSource attrs -> True) -> do
+      forField InvestigatorLocation (push . attachTreachery attrs) iid
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      pushAll
+        [ assignHorror iid (attrs.ability 1) 1
+        , toDiscardBy iid (attrs.ability 1) attrs
+        , placeDoomOnAgendaAndCheckAdvance
+        ]
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      let chooseSkillTest (lbl, sType) = skillTestLabel lbl sType iid (attrs.ability 2) attrs 4
+      player <- getPlayer iid
+      push
+        $ chooseOne player
+        $ map chooseSkillTest [("Resist the call", #willpower), ("Drive away the birds", #combat)]
+      pure t
+    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+      push $ toDiscardBy iid (attrs.ability 2) attrs
+      pure t
     _ -> SongOfTheMagahBird <$> runMessage msg attrs

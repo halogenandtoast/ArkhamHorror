@@ -30,9 +30,7 @@ instance RunMessage WindowToAnotherTime where
       player <- getPlayer iid
       push
         $ chooseOrRunOne player
-        $ Label
-          "Place Doom on the Current Agenda"
-          [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
+        $ Label "Place Doom on the Current Agenda" [placeDoomOnAgendaAndCheckAdvance]
         : [ targetLabel
             lid
             [ RemoveLocation lid

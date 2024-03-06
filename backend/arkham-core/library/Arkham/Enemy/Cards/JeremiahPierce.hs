@@ -44,6 +44,6 @@ instance RunMessage JeremiahPierceEffect where
       pushAll [parley iid attrs iid #willpower 4, disable attrs]
       pure e
     FailedThisSkillTestBy _ (isSource attrs -> True) n -> do
-      pushAll $ replicate n PlaceDoomOnAgenda <> [AdvanceAgendaIfThresholdSatisfied]
+      push $ PlaceDoomOnAgenda n CanAdvance
       pure e
     _ -> JeremiahPierceEffect <$> runMessage msg attrs

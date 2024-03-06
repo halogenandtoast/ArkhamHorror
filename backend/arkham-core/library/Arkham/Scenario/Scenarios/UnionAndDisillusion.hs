@@ -193,9 +193,14 @@ instance RunMessage UnionAndDisillusion where
       placeTheWatcher <- createEnemyWithPlacement_ theWatcher (OutOfPlay SetAsideZone)
 
       pushAll
-        $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
-        <> replicate hereticCount PlaceDoomOnAgenda
-        <> [placeMiskatonicRiver, MoveAllTo (toSource attrs) miskatonicRiver, placeForbiddingShore]
+        $ [ SetEncounterDeck encounterDeck
+          , SetAgendaDeck
+          , SetActDeck
+          , PlaceDoomOnAgenda hereticCount CanNotAdvance
+          , placeMiskatonicRiver
+          , MoveAllTo (toSource attrs) miskatonicRiver
+          , placeForbiddingShore
+          ]
         <> placeUnvisitedIsles
         <> (if sidedWithTheCoven then map lightBrazier (forbiddingShore : unvisitedIsles) else [])
         <> [placeTheWatcher]

@@ -61,6 +61,14 @@ fieldMapM
   -> m b
 fieldMapM f g eid = g =<< field f eid
 
+forField
+  :: (HasCallStack, HasGame m, Projection a, typ ~ Element (t typ), MonoFoldable (t typ))
+  => Field a (t typ)
+  -> (typ -> m ())
+  -> EntityId a
+  -> m ()
+forField f g eid = flip for_ g =<< field f eid
+
 filterByFieldM
   :: (EntityId a ~ Element seq, IsSequence seq, HasGame m, Projection a)
   => Field a typ

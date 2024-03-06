@@ -28,6 +28,6 @@ instance RunMessage DarkMemory where
         ]
       pure e
     PlayThisEvent _ eid | attrs `is` eid -> do
-      pushAll [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
+      push placeDoomOnAgendaAndCheckAdvance
       pure e
     _ -> DarkMemory <$> runMessage msg attrs

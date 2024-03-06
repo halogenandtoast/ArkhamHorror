@@ -1670,7 +1670,7 @@ runGameMessage msg g = case msg of
     let phaseStep s msgs = Msg.PhaseStep (MythosPhaseStep s) msgs
     pushAllEnd
       $ phaseStep MythosPhaseBeginsStep [phaseBeginsWindow]
-      : [ phaseStep PlaceDoomOnAgendaStep [PlaceDoomOnAgenda]
+      : [ phaseStep PlaceDoomOnAgendaStep [placeDoomOnAgenda]
         | SkipMythosPhaseStep PlaceDoomOnAgendaStep `notElem` modifiers
         ]
         <> [phaseStep CheckDoomThresholdStep [AdvanceAgendaIfThresholdSatisfied, afterCheckDoomThreshold]]

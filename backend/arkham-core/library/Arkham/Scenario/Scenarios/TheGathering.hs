@@ -67,37 +67,25 @@ instance RunMessage TheGathering where
           , Set.ChillingCold
           ]
 
-      setAsideCards <-
-        genCards
-          [ Enemies.ghoulPriest
-          , Assets.litaChantler
-          , Locations.hallway
-          , Locations.attic
-          , Locations.cellar
-          , Locations.parlor
-          ]
-
-      agendas <- genCards theGatheringAgendaDeck
-      acts <- genCards [Acts.trapped, Acts.theBarrier, Acts.whatHaveYouDone]
+      setAsideCards
+        [ Enemies.ghoulPriest
+        , Assets.litaChantler
+        , Locations.hallway
+        , Locations.attic
+        , Locations.cellar
+        , Locations.parlor
+        ]
 
       setEncounterDeck encounterDeck
-      setAgendaDeck
-      setActDeck
+      setAgendaDeck theGatheringAgendaDeck
+
+      setActDeck [Acts.trapped, Acts.theBarrier, Acts.whatHaveYouDone]
 
       study <- placeLocationCard Locations.study
       reveal study
       moveAllTo attrs study
 
-      TheGathering
-        <$> lift
-          ( runMessage
-              msg
-              ( attrs
-                  & (setAsideCardsL .~ setAsideCards)
-                  & (actStackL . at 1 ?~ acts)
-                  & (agendaStackL . at 1 ?~ agendas)
-              )
-          )
+      TheGathering <$> lift (runMessage msg attrs)
     ResolveChaosToken _ Cultist iid -> do
       pushWhen (isHardExpert attrs) $ DrawAnotherChaosToken iid
       pure s

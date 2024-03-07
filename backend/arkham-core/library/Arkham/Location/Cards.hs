@@ -101,6 +101,7 @@ allLocationCards =
       , asylumHallsEasternPatientWing_171
       , atlantis
       , attic
+      , attic_AThousandShapesOfHorror
       , audubonPark
       , backAlley
       , backstage
@@ -135,6 +136,7 @@ allLocationCards =
       , brokenPassage
       , brokenSteps_289
       , brokenSteps_290
+      , burialGround
       , burialPit
       , burnedRuins_204
       , burnedRuins_205
@@ -206,6 +208,8 @@ allLocationCards =
       , diningCar
       , diningRoom
       , dormitories
+      , downstairsDoorwayDen
+      , downstairsDoorwayParlor
       , downtownArkhamAsylum
       , downtownFirstBankOfArkham
       , dreamGatePointlessReality
@@ -258,6 +262,7 @@ allLocationCards =
       , frankElwoodsRoom
       , frenchHill_290
       , frenchHill_291
+      , frontPorchEntryway
       , frozenSpring
       , gallery
       , garden
@@ -361,6 +366,12 @@ allLocationCards =
       , mu
       , museumEntrance
       , museumHalls
+      , mysteriousStairs_183
+      , mysteriousStairs_184
+      , mysteriousStairs_185
+      , mysteriousStairs_186
+      , mysteriousStairs_187
+      , mysteriousStairs_188
       , namelessRuins
       , narrowShaft
       , nexusOfNKai
@@ -512,6 +523,7 @@ allLocationCards =
       , twistedUnderbrush
       , ulthar
       , undergroundRuins
+      , unmarkedTomb
       , unvisitedIsleDecayedWillow
       , unvisitedIsleForsakenWoods
       , unvisitedIsleHauntedSpring
@@ -519,6 +531,9 @@ allLocationCards =
       , unvisitedIsleMossCoveredSteps
       , unvisitedIsleStandingStones
       , uprootedWoods
+      , upstairsDoorwayBedroom
+      , upstairsDoorwayLibrary
+      , upstairsHallway
       , uptown_296
       , uptown_297
       , valusia
@@ -5334,6 +5349,182 @@ cityWhichAppearsOnNoMap =
       T
       [Plus, Star]
       TheSearchForKadath
+
+burialGround :: CardDef
+burialGround =
+  victory 1
+    $ location
+      "06174"
+      "Burial Ground"
+      [Graveyard]
+      Moon
+      [Square, Plus]
+      AThousandShapesOfHorror
+
+frontPorchEntryway :: CardDef
+frontPorchEntryway =
+  locationWithUnrevealed
+    "06175"
+    "Front Porch"
+    mempty
+    Square
+    [Moon, Heart, Hourglass]
+    "Entryway"
+    mempty
+    Square
+    [Moon, Heart, Hourglass]
+    AThousandShapesOfHorror
+
+downstairsDoorwayDen :: CardDef
+downstairsDoorwayDen =
+  victory 1
+    $ locationWithUnrevealed
+      "06176"
+      "Downstairs Doorway"
+      mempty
+      Hourglass
+      [Square]
+      "Den"
+      mempty
+      Hourglass
+      [Square]
+      AThousandShapesOfHorror
+
+downstairsDoorwayParlor :: CardDef
+downstairsDoorwayParlor =
+  victory 1
+    $ locationWithUnrevealed
+      "06177"
+      "Downstairs Doorway"
+      mempty
+      Hourglass
+      [Square]
+      "Parlor"
+      mempty
+      Hourglass
+      [Square]
+      AThousandShapesOfHorror
+
+upstairsHallway :: CardDef
+upstairsHallway =
+  location
+    "06178"
+    "Upstairs Hallway"
+    mempty
+    Heart
+    [Diamond, Square, Circle]
+    AThousandShapesOfHorror
+
+upstairsDoorwayLibrary :: CardDef
+upstairsDoorwayLibrary =
+  locationWithUnrevealed
+    "06179"
+    "Upstairs Doorway"
+    mempty
+    Diamond
+    [Heart]
+    "Upstairs Hallway"
+    mempty
+    Diamond
+    [Heart]
+    AThousandShapesOfHorror
+
+upstairsDoorwayBedroom :: CardDef
+upstairsDoorwayBedroom =
+  victory 1
+    $ locationWithUnrevealed
+      "06180"
+      "Upstairs Doorway"
+      mempty
+      Diamond
+      [Heart]
+      "Bedroom"
+      mempty
+      Diamond
+      [Heart]
+      AThousandShapesOfHorror
+
+attic_AThousandShapesOfHorror :: CardDef
+attic_AThousandShapesOfHorror =
+  victory 1
+    $ location
+      "06181"
+      "Attic"
+      mempty
+      Circle
+      [Heart]
+      AThousandShapesOfHorror
+
+unmarkedTomb :: CardDef
+unmarkedTomb =
+  victory 1
+    $ location
+      "06182"
+      "Unmarked Tomb"
+      mempty
+      Plus
+      [Moon]
+      AThousandShapesOfHorror
+
+mysteriousStairs_183 :: CardDef
+mysteriousStairs_183 =
+  location
+    "06183"
+    "Mysterious Stairs"
+    mempty
+    NoSymbol
+    mempty
+    AThousandShapesOfHorror
+
+mysteriousStairs_184 :: CardDef
+mysteriousStairs_184 =
+  location
+    "06184"
+    "Mysterious Stairs"
+    mempty
+    NoSymbol
+    mempty
+    AThousandShapesOfHorror
+
+mysteriousStairs_185 :: CardDef
+mysteriousStairs_185 =
+  location
+    "06185"
+    "Mysterious Stairs"
+    mempty
+    NoSymbol
+    mempty
+    AThousandShapesOfHorror
+
+mysteriousStairs_186 :: CardDef
+mysteriousStairs_186 =
+  location
+    "06186"
+    "Mysterious Stairs"
+    mempty
+    NoSymbol
+    mempty
+    AThousandShapesOfHorror
+
+mysteriousStairs_187 :: CardDef
+mysteriousStairs_187 =
+  location
+    "06187"
+    "Mysterious Stairs"
+    mempty
+    NoSymbol
+    mempty
+    AThousandShapesOfHorror
+
+mysteriousStairs_188 :: CardDef
+mysteriousStairs_188 =
+  location
+    "06188"
+    "Mysterious Stairs"
+    mempty
+    NoSymbol
+    mempty
+    AThousandShapesOfHorror
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

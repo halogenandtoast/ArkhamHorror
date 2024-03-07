@@ -221,5 +221,12 @@
     "settings": [
       { "key": "TheInvestigatorsParleyedWithTheZoogs", "type": "ToggleKey", "content": false }
     ]
+  },
+  {
+    "id": "06168",
+    "name": "A Thousand Shapes of Horror",
+    "campaign": "06",
+    "beta": true,
+    "settings": []
   }
 ]

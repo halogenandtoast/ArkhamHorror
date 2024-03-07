@@ -126,6 +126,7 @@ library
       Arkham.Act.Cards.SearchForTheStrangerV3
       Arkham.Act.Cards.SearchingForAnswers
       Arkham.Act.Cards.SearchingForTheTome
+      Arkham.Act.Cards.SearchingTheUnnamable
       Arkham.Act.Cards.SeekOutTheNight
       Arkham.Act.Cards.SkinGame
       Arkham.Act.Cards.StalkedByShadows
@@ -273,6 +274,7 @@ library
       Arkham.Agenda.Cards.TheCityFloods
       Arkham.Agenda.Cards.TheCloverClub
       Arkham.Agenda.Cards.TheCurseSpreads
+      Arkham.Agenda.Cards.TheDeadWithNoName
       Arkham.Agenda.Cards.TheDescentBegins
       Arkham.Agenda.Cards.TheEndOfAllThings
       Arkham.Agenda.Cards.TheEntityAboveTheFloodBelow
@@ -284,6 +286,7 @@ library
       Arkham.Agenda.Cards.TheHangedManXII
       Arkham.Agenda.Cards.TheHermitIX
       Arkham.Agenda.Cards.TheHierophantV
+      Arkham.Agenda.Cards.TheHouseWithNoName
       Arkham.Agenda.Cards.TheInfestationSpreads
       Arkham.Agenda.Cards.TheJunglesHeart
       Arkham.Agenda.Cards.TheLonelyCaverns
@@ -300,6 +303,7 @@ library
       Arkham.Agenda.Cards.TheShadowOfTheEclipse
       Arkham.Agenda.Cards.TheTempleWarden
       Arkham.Agenda.Cards.TheTerrifyingTruth
+      Arkham.Agenda.Cards.TheThingWithNoName
       Arkham.Agenda.Cards.TheThirdAct
       Arkham.Agenda.Cards.TheThirdNight
       Arkham.Agenda.Cards.TheTideRises
@@ -814,6 +818,7 @@ library
       Arkham.Asset.Cards.ThePallidMask
       Arkham.Asset.Cards.TheRedGlovedMan5
       Arkham.Asset.Cards.Thermos
+      Arkham.Asset.Cards.TheSilverKey
       Arkham.Asset.Cards.TheSkeletonKey2
       Arkham.Asset.Cards.TheStarXVII3
       Arkham.Asset.Cards.TheTatteredCloak
@@ -1607,6 +1612,7 @@ library
       Arkham.Location.Cards.ATearInThePath
       Arkham.Location.Cards.Atlantis
       Arkham.Location.Cards.Attic
+      Arkham.Location.Cards.Attic_AThousandShapesOfHorror
       Arkham.Location.Cards.AudubonPark
       Arkham.Location.Cards.BackAlley
       Arkham.Location.Cards.Backstage
@@ -1642,6 +1648,7 @@ library
       Arkham.Location.Cards.BrokenPassage
       Arkham.Location.Cards.BrokenSteps_289
       Arkham.Location.Cards.BrokenSteps_290
+      Arkham.Location.Cards.BurialGround
       Arkham.Location.Cards.BurialPit
       Arkham.Location.Cards.BurnedRuins_204
       Arkham.Location.Cards.BurnedRuins_205
@@ -1713,6 +1720,8 @@ library
       Arkham.Location.Cards.DiningCar
       Arkham.Location.Cards.DiningRoom
       Arkham.Location.Cards.Dormitories
+      Arkham.Location.Cards.DownstairsDoorwayDen
+      Arkham.Location.Cards.DownstairsDoorwayParlor
       Arkham.Location.Cards.DowntownArkhamAsylum
       Arkham.Location.Cards.DowntownFirstBankOfArkham
       Arkham.Location.Cards.DreamGatePointlessReality
@@ -1766,6 +1775,7 @@ library
       Arkham.Location.Cards.FrankElwoodsRoom
       Arkham.Location.Cards.FrenchHill_290
       Arkham.Location.Cards.FrenchHill_291
+      Arkham.Location.Cards.FrontPorchEntryway
       Arkham.Location.Cards.FrozenSpring
       Arkham.Location.Cards.Gallery
       Arkham.Location.Cards.Garden
@@ -1869,6 +1879,12 @@ library
       Arkham.Location.Cards.Mu
       Arkham.Location.Cards.MuseumEntrance
       Arkham.Location.Cards.MuseumHalls
+      Arkham.Location.Cards.MysteriousStairs_183
+      Arkham.Location.Cards.MysteriousStairs_184
+      Arkham.Location.Cards.MysteriousStairs_185
+      Arkham.Location.Cards.MysteriousStairs_186
+      Arkham.Location.Cards.MysteriousStairs_187
+      Arkham.Location.Cards.MysteriousStairs_188
       Arkham.Location.Cards.NamelessRuins
       Arkham.Location.Cards.NarrowShaft
       Arkham.Location.Cards.NexusOfNKai
@@ -2020,6 +2036,7 @@ library
       Arkham.Location.Cards.TwistedUnderbrush
       Arkham.Location.Cards.Ulthar
       Arkham.Location.Cards.UndergroundRuins
+      Arkham.Location.Cards.UnmarkedTomb
       Arkham.Location.Cards.UnvisitedIsleDecayedWillow
       Arkham.Location.Cards.UnvisitedIsleForsakenWoods
       Arkham.Location.Cards.UnvisitedIsleHauntedSpring
@@ -2027,6 +2044,9 @@ library
       Arkham.Location.Cards.UnvisitedIsleMossCoveredSteps
       Arkham.Location.Cards.UnvisitedIsleStandingStones
       Arkham.Location.Cards.UprootedWoods
+      Arkham.Location.Cards.UpstairsDoorwayBedroom
+      Arkham.Location.Cards.UpstairsDoorwayLibrary
+      Arkham.Location.Cards.UpstairsHallway
       Arkham.Location.Cards.Uptown_296
       Arkham.Location.Cards.Uptown_297
       Arkham.Location.Cards.Valusia

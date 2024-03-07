@@ -335,6 +335,7 @@ data Message
   | SetCurrentActDeck Int [Card]
   | -- Agenda Deck Messages
     SetAgendaDeck
+  | SetAgendaDeckCards Int [Card]
   | AddAgenda Int Card
   | SetCurrentAgendaDeck Int [Card]
   | AdvanceAgendaBy AgendaId AgendaAdvancementMethod
@@ -884,6 +885,7 @@ data Message
   | ReplaceInvestigatorAsset InvestigatorId Card
   | ReplacedInvestigatorAsset InvestigatorId AssetId
   | TakeControlOfSetAsideAsset InvestigatorId Card
+  | SetAsideCards [Card]
   | TakeResources InvestigatorId Int Source Bool
   | DrawStartingHands
   | DrawStartingHand InvestigatorId

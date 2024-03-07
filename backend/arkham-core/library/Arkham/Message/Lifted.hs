@@ -24,11 +24,11 @@ import Arkham.Target
 setEncounterDeck :: HasQueue Message m => Deck EncounterCard -> QueueT Message m ()
 setEncounterDeck = push . SetEncounterDeck
 
-setAgendaDeck :: HasQueue Message m => QueueT Message m ()
-setAgendaDeck = push SetAgendaDeck
+setAgendaDeck :: (HasQueue Message m, CardGen m) => [CardDef] -> QueueT Message m ()
+setAgendaDeck = genCards >=> push . SetAgendaDeckCards 1
 
-setActDeck :: HasQueue Message m => QueueT Message m ()
-setActDeck = push SetActDeck
+setActDeck :: (HasQueue Message m, CardGen m) => [CardDef] -> QueueT Message m ()
+setActDeck = genCards >=> push . SetActDeckCards 1
 
 placeLocationCard
   :: (CardGen m, HasGame m, HasQueue Message m) => CardDef -> QueueT Message m LocationId
@@ -36,6 +36,13 @@ placeLocationCard def = do
   (lid, placement) <- Msg.placeLocationCard def
   push placement
   pure lid
+
+placeRandomLocationGroupCards
+  :: (CardGen m, HasGame m, HasQueue Message m) => Text -> [CardDef] -> QueueT Message m ()
+placeRandomLocationGroupCards groupName cards = do
+  shuffled <- traverse genCard =<< shuffleM cards
+  msgs <- Msg.placeLabeledLocations_ groupName shuffled
+  pushAll msgs
 
 placeLocationCards
   :: (CardGen m, HasGame m, HasQueue Message m) => [CardDef] -> QueueT Message m ()
@@ -138,3 +145,6 @@ addCampaignCardToDeckChoice choices cardDef = do
 createEnemyAt
   :: (HasQueue Message m, IsCard card, MonadRandom m) => card -> LocationId -> QueueT Message m ()
 createEnemyAt c lid = push =<< Msg.createEnemyAt_ (toCard c) lid Nothing
+
+setAsideCards :: (CardGen m, HasQueue Message m) => [CardDef] -> QueueT Message m ()
+setAsideCards = genCards >=> push . Msg.SetAsideCards

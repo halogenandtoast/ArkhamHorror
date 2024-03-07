@@ -574,6 +574,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & resolvedStoriesL %~ (storyId :)
   SetActDeckCards n cards -> do
     pure $ a & (actStackL . at n ?~ cards)
+  SetAgendaDeckCards n cards -> do
+    pure $ a & (agendaStackL . at n ?~ cards)
   SetActDeck -> do
     let ks = sortOn Down $ a ^. actStackL . to IntMap.keys
     for_ ks $ \k -> do
@@ -1212,4 +1214,6 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     eattrs <- getAttrs @Enemy eid
     enemyHealth <- fieldJust EnemyHealth eid
     pure $ a & defeatedEnemiesL %~ insertMap eid (DefeatedEnemyAttrs eattrs enemyHealth)
+  SetAsideCards cards -> do
+    pure $ a & setAsideCardsL <>~ cards
   _ -> pure a

@@ -3,13 +3,12 @@ module Arkham.Scenario.Scenarios.AThousandShapesOfHorror (
   aThousandShapesOfHorror,
 ) where
 
-import Arkham.Prelude
+import Arkham.Prelude hiding ((.=))
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
-import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
@@ -18,8 +17,8 @@ import Arkham.Helpers.Log
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner hiding (placeLocationCard, story)
+import Arkham.Scenario.Runner hiding (placeLocationCard, pushAll, story)
+import Arkham.Scenario.Setup
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype AThousandShapesOfHorror = AThousandShapesOfHorror ScenarioAttrs
@@ -83,37 +82,32 @@ instance RunMessage AThousandShapesOfHorror where
     StandaloneSetup -> do
       push $ SetChaosTokens standaloneChaosTokens
       pure s
-    Setup -> do
-      encounterDeck <-
-        buildEncounterDeckExcluding
-          [Treacheries.endlessDescent]
-          [ Set.AThousandShapesOfHorror
-          , Set.CreaturesOfTheUnderworld
-          , Set.MergingRealities
-          , Set.ChillingCold
-          , Set.Ghouls
-          , Set.LockedDoors
-          , Set.Rats
-          ]
+    Setup -> runScenarioSetup AThousandShapesOfHorror attrs $ do
+      gather Set.AThousandShapesOfHorror
+      gather Set.CreaturesOfTheUnderworld
+      gather Set.MergingRealities
+      gather Set.ChillingCold
+      gather Set.Ghouls
+      gather Set.LockedDoors
+      gather Set.Rats
 
-      setEncounterDeck encounterDeck
       setAgendaDeck [Agendas.theHouseWithNoName, Agendas.theThingWithNoName, Agendas.theDeadWithNoName]
       setActDeck [Acts.searchingTheUnnamable, Acts.theEndlessStairs]
 
-      burialGround <- placeLocationCard Locations.burialGround
-      placeLocationCards [Locations.frontPorchEntryway, Locations.upstairsHallway]
+      burialGround <- place Locations.burialGround
+      placeAll [Locations.frontPorchEntryway, Locations.upstairsHallway]
 
-      placeRandomLocationGroupCards
+      placeGroup
         "downstairsDoorway"
         [Locations.downstairsDoorwayDen, Locations.downstairsDoorwayParlor]
 
-      placeRandomLocationGroupCards
+      placeGroup
         "upstairsDoorway"
         [Locations.upstairsDoorwayBedroom, Locations.upstairsDoorwayLibrary]
 
-      moveAllTo attrs burialGround
+      startAt burialGround
 
-      setAsideCards
+      setAside
         [ Locations.attic_AThousandShapesOfHorror
         , Locations.unmarkedTomb
         , Locations.mysteriousStairs_183
@@ -128,6 +122,4 @@ instance RunMessage AThousandShapesOfHorror where
         , Treacheries.endlessDescent
         , Assets.theSilverKey
         ]
-
-      AThousandShapesOfHorror <$> lift (runMessage msg attrs)
     _ -> AThousandShapesOfHorror <$> lift (runMessage msg attrs)

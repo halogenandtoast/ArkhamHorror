@@ -25,6 +25,7 @@ import Arkham.Message.Lifted
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (recordSetInsert)
 import Arkham.Scenario.Runner hiding (createEnemyAt, placeLocationCard, story)
+import Arkham.Scenario.Setup
 import Arkham.Scenarios.TheMidnightMasks.Story
 import Arkham.Token
 import Arkham.Trait qualified as Trait
@@ -81,56 +82,36 @@ instance RunMessage TheMidnightMasks where
         $ if litaForcedToFindOthersToHelpHerCause then TheMidnightMasksIntroOne else TheMidnightMasksIntroTwo
       story introPart2
       pure s
-    Setup -> do
-      count' <- getPlayerCount
-      (acolytes, darkCult) <-
-        splitAt (count' - 1) . sortOn toCardCode <$> gatherEncounterSet EncounterSet.DarkCult
-      -- we will spawn these acolytes
-      encounterDeck <-
-        buildEncounterDeckWith
-          (<> darkCult)
-          [ EncounterSet.TheMidnightMasks
-          , EncounterSet.ChillingCold
-          , EncounterSet.Nightgaunts
-          , EncounterSet.LockedDoors
-          ]
+    Setup -> runScenarioSetup TheMidnightMasks attrs do
+      gather EncounterSet.TheMidnightMasks
+      gather EncounterSet.ChillingCold
+      gather EncounterSet.Nightgaunts
+      gather EncounterSet.LockedDoors
+      gather EncounterSet.DarkCult
 
-      setEncounterDeck encounterDeck
       setAgendaDeck [Agendas.predatorOrPrey, Agendas.timeIsRunningShort]
       setActDeck [Acts.uncoveringTheConspiracy]
 
-      rivertown <- placeLocationCard Locations.rivertown
-      southside <-
-        placeLocationCardM
-          $ sample2
-            Locations.southsideHistoricalSociety
-            Locations.southsideMasBoardingHouse
-      downtown <-
-        placeLocationCardM $ sample2 Locations.downtownFirstBankOfArkham Locations.downtownArkhamAsylum
-      graveyard <- placeLocationCard Locations.graveyard
-      placeLocationCards
+      rivertown <- place Locations.rivertown
+      southside <- placeOneOf (Locations.southsideHistoricalSociety, Locations.southsideMasBoardingHouse)
+      downtown <- placeOneOf (Locations.downtownFirstBankOfArkham, Locations.downtownArkhamAsylum)
+      graveyard <- place Locations.graveyard
+      placeAll
         [Locations.easttown, Locations.miskatonicUniversity, Locations.northside, Locations.stMarysHospital]
 
       houseBurnedDown <- getHasRecord YourHouseHasBurnedToTheGround
-      ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
-      ghoulPriestCard <- genEncounterCard Enemies.ghoulPriest
-      cultistDeck' <- shuffleM . map EncounterCard =<< gatherEncounterSet EncounterSet.CultOfUmordhoth
+      addExtraDeck CultistDeck =<< gatherEncounterSet EncounterSet.CultOfUmordhoth
 
       if houseBurnedDown
-        then do
-          reveal rivertown
-          moveAllTo attrs rivertown
-        else do
-          yourHouse <- placeLocationCard Locations.yourHouse
-          reveal yourHouse
-          moveAllTo attrs yourHouse
+        then startAt rivertown
+        else startAt =<< place Locations.yourHouse
 
+      count' <- getPlayerCount
+      let acolytes = replicate (count' - 1) Enemies.acolyte
       for_ (zip acolytes [southside, downtown, graveyard])
-        $ uncurry createEnemyAt
+        $ uncurry enemyAt
 
-      pushAll [AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive]
-
-      TheMidnightMasks <$> lift (runMessage msg $ attrs & (decksL . at CultistDeck ?~ cultistDeck'))
+      whenHasRecord GhoulPriestIsStillAlive $ addToEncounterDeck (Only Enemies.ghoulPriest)
     ResolveChaosToken _ Cultist iid | isEasyStandard attrs -> do
       closestCultists <- select $ NearestEnemy $ EnemyWithTrait Trait.Cultist
       player <- getPlayer iid

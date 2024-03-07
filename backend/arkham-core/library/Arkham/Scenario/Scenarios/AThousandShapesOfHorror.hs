@@ -16,7 +16,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.Log
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Message.Lifted
+import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Scenario.Runner hiding (placeLocationCard, pushAll, story)
 import Arkham.Scenario.Setup
 import Arkham.Treachery.Cards qualified as Treacheries

@@ -21,9 +21,9 @@ import Arkham.Matcher (
   EnemyMatcher (..),
   ExtendedCardMatcher (..),
  )
-import Arkham.Message.Lifted
+import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (recordSetInsert)
+import Arkham.Scenario.Helpers hiding (forceAddCampaignCardToDeckChoice, recordSetInsert)
 import Arkham.Scenario.Runner hiding (createEnemyAt, placeLocationCard, story)
 import Arkham.Scenario.Setup
 import Arkham.Scenarios.TheMidnightMasks.Story
@@ -154,10 +154,10 @@ instance RunMessage TheMidnightMasks where
       pure s
     HandleOption option -> do
       whenM getIsStandalone $ do
-        lead <- getLeadPlayer
-        investigators <- allInvestigators
         case option of
-          AddLitaChantler -> push $ forceAddCampaignCardToDeckChoice lead investigators Assets.litaChantler
+          AddLitaChantler -> do
+            investigators <- allInvestigators
+            forceAddCampaignCardToDeckChoice investigators Assets.litaChantler
           _ -> error $ "Unhandled option: " <> show option
       pure s
     _ -> TheMidnightMasks <$> lift (runMessage msg attrs)

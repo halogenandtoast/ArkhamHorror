@@ -16,9 +16,11 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.Log
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Scenario.Runner hiding (placeLocationCard, pushAll, story)
 import Arkham.Scenario.Setup
+import Arkham.Trait (Trait (Graveyard))
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype AThousandShapesOfHorror = AThousandShapesOfHorror ScenarioAttrs
@@ -40,10 +42,12 @@ aThousandShapesOfHorror difficulty =
 
 instance HasChaosTokenValue AThousandShapesOfHorror where
   getChaosTokenValue iid tokenFace (AThousandShapesOfHorror attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
+    Skull -> do
+      atGraveyard <- iid <=~> InvestigatorAt (LocationWithTrait Graveyard)
+      pure $ toChaosTokenValue attrs Skull (if atGraveyard then 3 else 1) (if atGraveyard then 4 else 2)
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Tablet -> pure $ ChaosTokenValue Tablet (PositiveModifier $ byDifficulty attrs 2 1)
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 3
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 standaloneChaosTokens :: [ChaosTokenFace]

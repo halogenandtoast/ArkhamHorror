@@ -22,6 +22,7 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Data.Typeable
+import GHC.Records
 
 class
   ( Typeable a
@@ -129,6 +130,9 @@ agendaWith (n, side) f cardDef threshold g =
             , agendaUsedWheelOfFortuneX = False
             }
     }
+
+instance HasField "ability" AgendaAttrs (Int -> Source) where
+  getField this = toAbilitySource this
 
 instance HasCardDef AgendaAttrs where
   toCardDef e = case lookup (unAgendaId $ agendaId e) allAgendaCards of

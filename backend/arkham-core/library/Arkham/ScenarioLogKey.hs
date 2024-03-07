@@ -63,6 +63,10 @@ data ScenarioLogKey
     KnowWhatHappenedToIb
   | ObtainedSuppliesFromBaharna
   | BeseechedTheKing
+  | -- | A Thousand Shapes of Horror
+    FoundACrackedMirror
+  | StudiedADesecratedPortrait
+  | NoticedTheMissingBones
   | -- | Murder at the Excelsior Hotel
     CleanedUpTheBlood
   | HidTheBody

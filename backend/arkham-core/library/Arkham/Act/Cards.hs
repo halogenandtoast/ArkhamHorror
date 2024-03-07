@@ -130,6 +130,7 @@ allActCards =
       , searchForTheStrangerV3
       , searchingForAnswers
       , searchingForTheTome
+      , searchingTheUnnamable
       , seekOutTheNight
       , skinGame
       , stalkedByShadows
@@ -149,6 +150,7 @@ allActCards =
       , theCosmosBeckons
       , theDisappearance
       , theDoomThatCameBefore
+      , theEndlessStairs
       , theFinalDescent
       , theFourKeys
       , theGateOpens
@@ -675,6 +677,12 @@ seekOutTheNight = act "06125" "Seek Out the Night" 2 TheSearchForKadath
 
 theKingsDecree :: CardDef
 theKingsDecree = act "06126" "The King's Decree" 2 TheSearchForKadath
+
+searchingTheUnnamable :: CardDef
+searchingTheUnnamable = act "06172" "Searching the Unnamable" 1 AThousandShapesOfHorror
+
+theEndlessStairs :: CardDef
+theEndlessStairs = act "06173" "The Endless Stairs" 2 AThousandShapesOfHorror
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

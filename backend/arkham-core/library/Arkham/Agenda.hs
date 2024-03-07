@@ -196,6 +196,10 @@ allAgendas =
     , -- The Search for Kadath
       SomeAgendaCard journeyAcrossTheDreamlands
     , SomeAgendaCard agentsOfTheOuterGods
+    , -- A Thousand Shapes of Horror
+      SomeAgendaCard theHouseWithNoName
+    , SomeAgendaCard theThingWithNoName
+    , SomeAgendaCard theDeadWithNoName
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

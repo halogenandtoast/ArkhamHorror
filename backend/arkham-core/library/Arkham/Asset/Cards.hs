@@ -544,6 +544,7 @@ allPlayerAssetCards =
       , theNecronomiconPetrusDeDaciaTranslation5
       , thePallidMask
       , theRedGlovedMan5
+      , theSilverKey
       , theSkeletonKey2
       , theStarXvii3
       , theTatteredCloak
@@ -3668,6 +3669,15 @@ versatile2 =
       , cdLevel = 2
       }
 
+theSilverKey :: CardDef
+theSilverKey =
+  (storyAsset "06189" ("The Silver Key" <:> "Key to the Gate of Dreams") 2 AThousandShapesOfHorror)
+    { cdSkills = [#willpower, #wild, #wild]
+    , cdCardTraits = setFromList [Item, Charm, Relic]
+    , cdUnique = True
+    , cdSlots = [#accessory]
+    }
+
 thirtyFiveWinchester :: CardDef
 thirtyFiveWinchester =
   (asset "06195" ".35 Winchester" 4 Guardian)
@@ -4092,7 +4102,7 @@ geneBeauregard3 =
 
 preciousMementoFromAFormerLife4 :: CardDef
 preciousMementoFromAFormerLife4 =
-    (multiClassAsset "08114" ("Precious Memento" <:> "From a Former Life") 3 [Rogue, Survivor])
+  (multiClassAsset "08114" ("Precious Memento" <:> "From a Former Life") 3 [Rogue, Survivor])
     { cdCardTraits = setFromList [Item, Charm, Blessed]
     , cdDeckRestrictions = [PerDeckLimit 1]
     , cdSkills = [#wild, #wild]
@@ -4102,7 +4112,7 @@ preciousMementoFromAFormerLife4 =
 
 preciousMementoFromAFutureLife4 :: CardDef
 preciousMementoFromAFutureLife4 =
-    (multiClassAsset "08115" ("Precious Memento" <:> "From a Future Life") 3 [Rogue, Survivor])
+  (multiClassAsset "08115" ("Precious Memento" <:> "From a Future Life") 3 [Rogue, Survivor])
     { cdCardTraits = setFromList [Item, Charm, Cursed]
     , cdDeckRestrictions = [PerDeckLimit 1]
     , cdSkills = [#wild, #wild]

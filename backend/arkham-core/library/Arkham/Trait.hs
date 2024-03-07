@@ -91,6 +91,7 @@ data Trait
   | Geist
   | Ghoul
   | Grant
+  | Graveyard
   | GroundFloor
   | Guest
   | Gug

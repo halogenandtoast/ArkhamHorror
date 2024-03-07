@@ -532,6 +532,22 @@ allLocations =
     , SomeLocationCard hazuthKleg
     , SomeLocationCard templeOfUnattainableDesires
     , SomeLocationCard cityWhichAppearsOnNoMap
+    , -- A Thousand Shapes of Horror
+      SomeLocationCard burialGround
+    , SomeLocationCard frontPorchEntryway
+    , SomeLocationCard downstairsDoorwayDen
+    , SomeLocationCard downstairsDoorwayParlor
+    , SomeLocationCard upstairsHallway
+    , SomeLocationCard upstairsDoorwayLibrary
+    , SomeLocationCard upstairsDoorwayBedroom
+    , SomeLocationCard attic_AThousandShapesOfHorror
+    , SomeLocationCard unmarkedTomb
+    , SomeLocationCard mysteriousStairs_183
+    , SomeLocationCard mysteriousStairs_184
+    , SomeLocationCard mysteriousStairs_185
+    , SomeLocationCard mysteriousStairs_186
+    , SomeLocationCard mysteriousStairs_187
+    , SomeLocationCard mysteriousStairs_188
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

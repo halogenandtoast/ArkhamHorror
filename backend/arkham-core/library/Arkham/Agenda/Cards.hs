@@ -100,6 +100,7 @@ allAgendaCards =
       , theCityFloods
       , theCloverClub
       , theCurseSpreads
+      , theDeadWithNoName
       , theDescentBegins
       , theEndOfAllThings
       , theEntityAboveTheFloodBelow
@@ -111,6 +112,7 @@ allAgendaCards =
       , theHangedManXII
       , theHermitIX
       , theHierophantV
+      , theHouseWithNoName
       , theInfestationSpreads
       , theJunglesHeart
       , theLonelyCaverns
@@ -127,6 +129,7 @@ allAgendaCards =
       , theShadowOfTheEclipse
       , theTempleWarden
       , theTerrifyingTruth
+      , theThingWithNoName
       , theThirdAct
       , theThirdNight
       , theTideRises
@@ -497,6 +500,15 @@ journeyAcrossTheDreamlands = agenda "06120" "Journey Across the Dreamlands" 1 Th
 
 agentsOfTheOuterGods :: CardDef
 agentsOfTheOuterGods = agenda "06121" "Agents of the Outer Gods" 2 TheSearchForKadath
+
+theHouseWithNoName :: CardDef
+theHouseWithNoName = agenda "06169a" "The House with No Name" 1 AThousandShapesOfHorror
+
+theThingWithNoName :: CardDef
+theThingWithNoName = agenda "06170" "The Thing with No Name" 2 AThousandShapesOfHorror
+
+theDeadWithNoName :: CardDef
+theDeadWithNoName = agenda "06171" "The Dead with No Name" 3 AThousandShapesOfHorror
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

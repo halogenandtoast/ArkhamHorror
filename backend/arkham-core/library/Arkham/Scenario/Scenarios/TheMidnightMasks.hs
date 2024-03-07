@@ -96,8 +96,8 @@ instance RunMessage TheMidnightMasks where
           ]
 
       setEncounterDeck encounterDeck
-      setAgendaDeck
-      setActDeck
+      setAgendaDeck [Agendas.predatorOrPrey, Agendas.timeIsRunningShort]
+      setActDeck [Acts.uncoveringTheConspiracy]
 
       rivertown <- placeLocationCard Locations.rivertown
       southside <-
@@ -130,19 +130,7 @@ instance RunMessage TheMidnightMasks where
 
       pushAll [AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive]
 
-      agendas <- genCards [Agendas.predatorOrPrey, Agendas.timeIsRunningShort]
-      acts <- genCards [Acts.uncoveringTheConspiracy]
-
-      TheMidnightMasks
-        <$> lift
-          ( runMessage
-              msg
-              ( attrs
-                  & (decksL . at CultistDeck ?~ cultistDeck')
-                  & (actStackL . at 1 ?~ acts)
-                  & (agendaStackL . at 1 ?~ agendas)
-              )
-          )
+      TheMidnightMasks <$> lift (runMessage msg $ attrs & (decksL . at CultistDeck ?~ cultistDeck'))
     ResolveChaosToken _ Cultist iid | isEasyStandard attrs -> do
       closestCultists <- select $ NearestEnemy $ EnemyWithTrait Trait.Cultist
       player <- getPlayer iid

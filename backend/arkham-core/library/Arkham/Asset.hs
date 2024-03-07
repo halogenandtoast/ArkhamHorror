@@ -589,6 +589,8 @@ allAssets =
       SomeAssetCard healingWords
     , --- neutral [tsh]
       SomeAssetCard versatile2
+    , --- story [tsh]
+      SomeAssetCard theSilverKey
     , -- The Dark Side of the Moon
       --- guardian [pnr]
       SomeAssetCard thirtyFiveWinchester

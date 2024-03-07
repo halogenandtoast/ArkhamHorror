@@ -104,7 +104,6 @@ allPlayerTreacheryCards =
       , shellShock
       , shockingDiscovery
       , smiteTheWicked
-      , songOfTheMagahBird
       , starsOfHyades
       , terribleSecret
       , the13thVision
@@ -118,7 +117,6 @@ allPlayerTreacheryCards =
       , unspeakableOathCuriosity
       , voiceOfTheMessenger
       , whatHaveYouDone
-      , wondrousLands
       , wrackedByNightmares
       , yaztaroth
       ]
@@ -190,6 +188,7 @@ allEncounterTreacheryCards =
       , eagerForDeath
       , eagerForDeathUnionAndDisillusion
       , encephalonSignal
+      , endlessDescent
       , entombed
       , ephemeralExhibits
       , evilPast
@@ -287,6 +286,7 @@ allEncounterTreacheryCards =
       , snakescourge
       , somethingInTheDrinks
       , somniphobia
+      , songOfTheMagahBird
       , sordidAndSilent
       , spacesBetween
       , spectralMist
@@ -342,6 +342,7 @@ allEncounterTreacheryCards =
       , whispersOfHypnos
       , willOfTheSpiderMother
       , windowToAnotherTime
+      , wondrousLands
       , wordsOfPower
       , worldsMerge
       , wormhole
@@ -1810,6 +1811,12 @@ wondrousLands :: CardDef
 wondrousLands =
   (treachery "06154" "Wondrous Lands" TheSearchForKadath 2)
     { cdCardTraits = singleton Power
+    }
+
+endlessDescent :: CardDef
+endlessDescent =
+  (treachery "06190" "Endless Descent" AThousandShapesOfHorror 4)
+    { cdCardTraits = singleton Curse
     }
 
 theHarbinger :: CardDef

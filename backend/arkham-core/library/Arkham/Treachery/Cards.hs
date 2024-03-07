@@ -173,6 +173,7 @@ allEncounterTreacheryCards =
       , danceOfTheYellowKing
       , deadlyFate
       , deathApproaches
+      , deceptiveMemories
       , deepDark
       , deeperSlumber
       , descentIntoMadness
@@ -205,6 +206,7 @@ allEncounterTreacheryCards =
       , giftOfMadnessPity
       , ghostlyPresence
       , glimpseOfTheUnderworld
+      , glowingEyes
       , graspingHands
       , graveLight
       , graveLightSpectral
@@ -215,6 +217,7 @@ allEncounterTreacheryCards =
       , huntingShadow
       , illOmen
       , incriminatingEvidence
+      , indescribableApparition
       , insatiableBloodlust
       , kidnapped
       , lawOfYgirothChaos
@@ -273,6 +276,7 @@ allEncounterTreacheryCards =
       , rottingRemains
       , rottingRemainsBloodOnTheAltar
       , ruinAndDestruction
+      , secretsInTheAttic
       , secretsOfTheBeyond
       , serpentsCall
       , serpentsIre
@@ -1817,6 +1821,30 @@ endlessDescent :: CardDef
 endlessDescent =
   (treachery "06190" "Endless Descent" AThousandShapesOfHorror 4)
     { cdCardTraits = singleton Curse
+    }
+
+indescribableApparition :: CardDef
+indescribableApparition =
+  (treachery "06191" "Indescribable Apparition" AThousandShapesOfHorror 2)
+    { cdCardTraits = singleton Curse
+    }
+
+glowingEyes :: CardDef
+glowingEyes =
+  (treachery "06192" "Glowing Eyes" AThousandShapesOfHorror 2)
+    { cdCardTraits = singleton Terror
+    }
+
+deceptiveMemories :: CardDef
+deceptiveMemories =
+  (treachery "06193" "Deceptive Memories" AThousandShapesOfHorror 2)
+    { cdCardTraits = singleton Terror
+    }
+
+secretsInTheAttic :: CardDef
+secretsInTheAttic =
+  (treachery "06194" "Secrets in the Attic" AThousandShapesOfHorror 2)
+    { cdCardTraits = singleton Scheme
     }
 
 theHarbinger :: CardDef

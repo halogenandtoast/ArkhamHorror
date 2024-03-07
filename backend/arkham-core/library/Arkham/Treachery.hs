@@ -386,6 +386,12 @@ allTreacheries =
     , -- The Search for Kadath
       SomeTreacheryCard songOfTheMagahBird
     , SomeTreacheryCard wondrousLands
+    , -- A Thousand Shapes of Horror
+      SomeTreacheryCard endlessDescent
+    , SomeTreacheryCard indescribableApparition
+    , SomeTreacheryCard glowingEyes
+    , SomeTreacheryCard deceptiveMemories
+    , SomeTreacheryCard secretsInTheAttic
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

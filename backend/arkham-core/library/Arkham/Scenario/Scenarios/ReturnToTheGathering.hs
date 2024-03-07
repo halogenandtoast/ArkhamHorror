@@ -16,7 +16,7 @@ import Arkham.Scenario.Setup
 newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
   deriving stock (Generic)
   deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
+  deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasChaosTokenValue)
 
 returnToTheGathering :: Difficulty -> ReturnToTheGathering
 returnToTheGathering difficulty =
@@ -32,10 +32,6 @@ returnToTheGathering difficulty =
     , ".     .         deepBelowYourHouse ."
     ]
     (referenceL .~ "01104")
-
-instance HasChaosTokenValue ReturnToTheGathering where
-  getChaosTokenValue iid chaosTokenFace (ReturnToTheGathering theGathering') =
-    getChaosTokenValue iid chaosTokenFace theGathering'
 
 instance RunMessage ReturnToTheGathering where
   runMessage msg s@(ReturnToTheGathering theGathering'@(TheGathering attrs)) = runQueueT $ case msg of
@@ -56,8 +52,8 @@ instance RunMessage ReturnToTheGathering where
 
       placeAll [Locations.guestHall, Locations.bedroom, Locations.bathroom]
 
-      attic <- sample $ Locations.returnToAttic :| [Locations.attic]
-      cellar <- sample $ Locations.returnToCellar :| [Locations.cellar]
+      attic <- sample2 Locations.returnToAttic Locations.attic
+      cellar <- sample2 Locations.returnToCellar Locations.cellar
 
       setAside
         [ Enemies.ghoulPriest

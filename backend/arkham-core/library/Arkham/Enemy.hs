@@ -318,7 +318,7 @@ allEnemies =
       SomeEnemyCard furtiveZoog
     , SomeEnemyCard stealthyZoog
     , SomeEnemyCard inconspicuousZoog
-    , -- TheSearchForKadath
+    , -- The Search For Kadath
       SomeEnemyCard catsOfUlthar
     , SomeEnemyCard stalkingManticore
     , SomeEnemyCard hordeOfNight
@@ -327,6 +327,8 @@ allEnemies =
     , SomeEnemyCard tenebrousNightgaunt
     , SomeEnemyCard packOfVooniths
     , SomeEnemyCard nightriders
+    , -- A Thousand Shapes of Horror
+      SomeEnemyCard theUnnamable
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

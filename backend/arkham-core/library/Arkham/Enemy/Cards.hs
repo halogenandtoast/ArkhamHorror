@@ -248,6 +248,7 @@ allEncounterEnemyCards =
       , theOrganistHopelessIDefiedHim
       , theSpectralWatcher
       , theRougarou
+      , theUnnamable
       , theWingedSerpent
       , thrall
       , tidalTerror
@@ -1720,6 +1721,14 @@ nightriders =
     { cdCardTraits = setFromList [Creature, Monster]
     , cdKeywords = singleton (Keyword.Swarming (Static 1))
     }
+
+theUnnamable :: CardDef
+theUnnamable =
+  unique
+    $ (enemy "06169b" ("The Unnamable" <:> "The Ultimate Abominiation") AThousandShapesOfHorror 1)
+      { cdCardTraits = setFromList [Monster, Abomination, Elite]
+      , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+      }
 
 unboundBeast :: CardDef
 unboundBeast =

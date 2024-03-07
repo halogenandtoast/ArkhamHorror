@@ -8,17 +8,24 @@ import Arkham.Prelude hiding ((.=))
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Log
+import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
+import Arkham.Projection
 import Arkham.Scenario.Runner hiding (placeLocationCard, pushAll, story)
+import Arkham.Scenario.Runner qualified as Msg
 import Arkham.Scenario.Setup
 import Arkham.Trait (Trait (Graveyard))
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -126,4 +133,42 @@ instance RunMessage AThousandShapesOfHorror where
         , Treacheries.endlessDescent
         , Assets.theSilverKey
         ]
+    ResolveChaosToken _ Cultist iid -> do
+      push $ DrawAnotherChaosToken iid
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Cultist -> do
+          mTheUnnamable <- selectOne $ enemyIs Enemies.theUnnamable
+          for_ mTheUnnamable $ \theUnnamable -> do
+            push $ InitiateEnemyAttack $ enemyAttack theUnnamable (ChaosTokenEffectSource Tablet) iid
+        ElderThing -> do
+          playerClueCount <- field InvestigatorClues iid
+          player <- getPlayer iid
+          let takeDamage = assignDamage iid (ChaosTokenEffectSource ElderThing) 1
+          push
+            $ if playerClueCount > 0
+              then
+                chooseOne
+                  player
+                  [ Label
+                      "Place 1 of your clues on your location"
+                      [InvestigatorPlaceCluesOnLocation iid (toSource attrs) 1]
+                  , Label "Take 1 damage" [takeDamage]
+                  ]
+              else takeDamage
+        _ -> pure ()
+      pure s
+    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
+      case token.face of
+        Tablet -> do
+          enemies <-
+            select (CanEvadeEnemy (ChaosTokenEffectSource Tablet))
+              >>= filterM (fieldP EnemyFight (maybe False (<= n)))
+          player <- getPlayer iid
+          pushIfAny enemies
+            $ chooseOne player [targetLabel enemy [Msg.EnemyEvaded iid enemy] | enemy <- enemies]
+          pure ()
+        _ -> pure ()
+      pure s
     _ -> AThousandShapesOfHorror <$> lift (runMessage msg attrs)

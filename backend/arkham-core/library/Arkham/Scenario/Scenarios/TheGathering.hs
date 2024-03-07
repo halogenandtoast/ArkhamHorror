@@ -13,7 +13,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message.Lifted
+import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Prelude
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)

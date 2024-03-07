@@ -16,10 +16,12 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message
+import Arkham.Message hiding (story)
+import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Helpers hiding (forceAddCampaignCardToDeckChoice)
+import Arkham.Scenario.Runner hiding (findAndDrawEncounterCard, placeLocationCard, story)
+import Arkham.Scenario.Setup
 import Arkham.Scenarios.TheDevourerBelow.Story
 import Arkham.Token
 import Arkham.Trait hiding (Cultist)
@@ -62,108 +64,68 @@ agendaDeck =
   [Agendas.theArkhamWoods, Agendas.theRitualBegins, Agendas.vengeanceAwaits]
 
 instance RunMessage TheDevourerBelow where
-  runMessage msg s@(TheDevourerBelow attrs) = case msg of
+  runMessage msg s@(TheDevourerBelow attrs) = runQueueT $ case msg of
     SetChaosTokensForScenario -> do
       whenM getIsStandalone $ push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
       pure s
     PreScenarioSetup -> do
-      players <- allPlayers
-      push $ story players intro
+      story intro
       pure s
-    Setup -> do
-      pastMidnight <- getHasRecord ItIsPastMidnight
-      ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
-      cultistsWhoGotAway <- getRecordSet CultistsWhoGotAway
-      ghoulPriestCard <- genEncounterCard Enemies.ghoulPriest
+    Setup -> runScenarioSetup TheDevourerBelow attrs do
+      gather EncounterSet.TheDevourerBelow
+      gather EncounterSet.AncientEvils
+      gather EncounterSet.StrikingFear
+      gather EncounterSet.Ghouls
+      gather EncounterSet.DarkCult
+      gatherOneOf
+        $ EncounterSet.AgentsOfYogSothoth
+        :| [ EncounterSet.AgentsOfShubNiggurath
+           , EncounterSet.AgentsOfCthulhu
+           , EncounterSet.AgentsOfHastur
+           ]
 
-      let
-        pastMidnightMessages =
-          guard pastMidnight
-            *> [ AllRandomDiscard (toSource attrs) AnyCard
-               , AllRandomDiscard (toSource attrs) AnyCard
-               ]
+      setAside [Locations.ritualSite, Enemies.umordhoth]
+      whenHasRecord GhoulPriestIsStillAlive $ addToEncounterDeck (Only Enemies.ghoulPriest)
 
-        placeDoomAmount = (length cultistsWhoGotAway + 1) `div` 2
-        cultistsWhoGotAwayMessages =
-          guard (placeDoomAmount > 0)
-            $> PlaceDoomOnAgenda placeDoomAmount CanNotAdvance
-
-      (mainPath, placeMainPath) <- placeLocationCard Locations.mainPath
+      setActDeck actDeck
+      setAgendaDeck agendaDeck
+      addChaosToken ElderThing
 
       woodsLocations <-
-        take 4
-          <$> shuffleM
-            [ Locations.arkhamWoodsUnhallowedGround
-            , Locations.arkhamWoodsTwistingPaths
-            , Locations.arkhamWoodsOldHouse
-            , Locations.arkhamWoodsCliffside
-            , Locations.arkhamWoodsTangledThicket
-            , Locations.arkhamWoodsQuietGlade
-            ]
-
-      randomSet <-
-        sample
-          $ EncounterSet.AgentsOfYogSothoth
-          :| [ EncounterSet.AgentsOfShubNiggurath
-             , EncounterSet.AgentsOfCthulhu
-             , EncounterSet.AgentsOfHastur
+        sampleN 4
+          $ Locations.arkhamWoodsUnhallowedGround
+          :| [ Locations.arkhamWoodsTwistingPaths
+             , Locations.arkhamWoodsOldHouse
+             , Locations.arkhamWoodsCliffside
+             , Locations.arkhamWoodsTangledThicket
+             , Locations.arkhamWoodsQuietGlade
              ]
 
-      encounterDeck <-
-        buildEncounterDeckExcluding
-          [Enemies.umordhoth]
-          [ EncounterSet.TheDevourerBelow
-          , EncounterSet.AncientEvils
-          , EncounterSet.StrikingFear
-          , EncounterSet.Ghouls
-          , EncounterSet.DarkCult
-          , randomSet
+      mainPath <- place Locations.mainPath
+      placeGroup "woods" woodsLocations
+      startAt mainPath
+
+      cultistsWhoGotAway <- getRecordSet CultistsWhoGotAway
+      let placeDoomAmount = (length cultistsWhoGotAway + 1) `div` 2
+      when (placeDoomAmount > 0) $ push $ PlaceDoomOnAgenda placeDoomAmount CanNotAdvance
+
+      whenHasRecord ItIsPastMidnight
+        $ pushAll
+          [ AllRandomDiscard (toSource attrs) AnyCard
+          , AllRandomDiscard (toSource attrs) AnyCard
           ]
-
-      placeWoods <- placeLabeledLocationCards_ "woods" woodsLocations
-
-      pushAll
-        $ [ SetEncounterDeck encounterDeck
-          , AddChaosToken ElderThing
-          , SetAgendaDeck
-          , SetActDeck
-          , placeMainPath
-          ]
-        <> placeWoods
-        <> [ RevealLocation Nothing mainPath
-           , MoveAllTo (toSource attrs) mainPath
-           ]
-        <> [AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive]
-        <> cultistsWhoGotAwayMessages
-        <> pastMidnightMessages
-
-      setAsideCards <- genCards [Locations.ritualSite, Enemies.umordhoth]
-
-      acts <- genCards actDeck
-      agendas <- genCards agendaDeck
-
-      TheDevourerBelow
-        <$> runMessage
-          msg
-          ( attrs
-              & (setAsideCardsL .~ setAsideCards)
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
-          )
     ResolveChaosToken _ Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2
       closestEnemyIds <- select $ NearestEnemy AnyEnemy
       player <- getPlayer iid
-      case closestEnemyIds of
-        [] -> pure ()
-        [x] -> push $ PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom doom
-        xs ->
-          push
-            $ chooseOne player
-            $ [targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom doom] | x <- xs]
+      pushIfAny closestEnemyIds
+        $ chooseOrRunOne player
+        $ [ targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom doom]
+          | x <- closestEnemyIds
+          ]
       pure s
     ResolveChaosToken _ Tablet iid -> do
-      let horror = if isEasyStandard attrs then 0 else 1
+      let horror = byDifficulty attrs 0 1
       pushWhenM (selectAny $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Monster)
         $ assignDamageAndHorror iid (ChaosTokenEffectSource Tablet) 1 horror
       pure s
@@ -171,27 +133,26 @@ instance RunMessage TheDevourerBelow where
       pushWhenM (selectAny $ EnemyWithTrait AncientOne) $ DrawAnotherChaosToken iid
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Skull)) _ _ | isHardExpert attrs -> do
-      push $ findAndDrawEncounterCard iid $ CardWithType EnemyType <> CardWithTrait Monster
+      findAndDrawEncounterCard iid $ CardWithType EnemyType <> CardWithTrait Monster
       pure s
     ScenarioResolution r -> do
       let
-        (resolution, record) = case r of
-          NoResolution ->
-            (noResolution, ArkhamSuccumbedToUmordhothsTerribleVengeance)
+        (resolution, key) = case r of
+          NoResolution -> (noResolution, ArkhamSuccumbedToUmordhothsTerribleVengeance)
           Resolution 1 -> (resolution1, TheRitualToSummonUmordhothWasBroken)
           Resolution 2 -> (resolution2, TheInvestigatorsRepelledUmordoth)
-          Resolution 3 ->
-            (resolution3, TheInvestigatorsSacrificedLitaChantlerToUmordhoth)
+          Resolution 3 -> (resolution3, TheInvestigatorsSacrificedLitaChantlerToUmordhoth)
           _ -> error "Invalid resolution"
-      players <- allPlayers
-      pushAll [story players resolution, Record record, EndOfGame Nothing]
+      story resolution
+      record key
+      endOfScenario
       pure s
     HandleOption option -> do
       whenM getIsStandalone $ do
-        lead <- getLeadPlayer
-        investigators <- allInvestigators
         case option of
-          AddLitaChantler -> push $ forceAddCampaignCardToDeckChoice lead investigators Assets.litaChantler
+          AddLitaChantler -> do
+            investigators <- allInvestigators
+            forceAddCampaignCardToDeckChoice investigators Assets.litaChantler
           _ -> error $ "Unhandled option: " <> show option
       pure s
     _ -> TheDevourerBelow <$> runMessage msg attrs

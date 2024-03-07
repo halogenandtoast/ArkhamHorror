@@ -14,6 +14,7 @@ import Arkham.Helpers.EncounterSet
 import Arkham.Id
 import Arkham.Message
 import Arkham.Message.Lifted
+import Arkham.Phase
 import Arkham.Prelude hiding ((.=))
 import Arkham.Scenario.Helpers (excludeBSides, excludeDoubleSided)
 import Arkham.Scenario.Runner ()
@@ -68,8 +69,13 @@ runScenarioSetup
   -> ScenarioBuilderT m ()
   -> m b
 runScenarioSetup f attrs body = do
-  attrs' <- execStateT (body.unScenarioBuilderT >> shuffleEncounterDeck) attrs
-  f <$> runMessage Setup attrs'
+  f
+    <$> execStateT
+      ( body.unScenarioBuilderT
+          >> shuffleEncounterDeck
+          >> lift (pushAll [BeginGame, BeginRound, Begin InvestigationPhase])
+      )
+      attrs
 
 shuffleEncounterDeck :: (MonadRandom m, MonadState ScenarioAttrs m) => m ()
 shuffleEncounterDeck = do
@@ -81,6 +87,10 @@ gather :: CardGen m => Set.EncounterSet -> ScenarioBuilderT m ()
 gather encounterSet = do
   cards <- excludeBSides . excludeDoubleSided <$> gatherEncounterSet encounterSet
   encounterDeckL %= (Deck cards <>)
+
+gatherOneOf
+  :: (SampleOneOf as, Sampled as ~ Set.EncounterSet, CardGen m) => as -> ScenarioBuilderT m ()
+gatherOneOf = sampleOneOf >=> gather
 
 setAside :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
 setAside defs = do
@@ -131,3 +141,15 @@ addExtraDeck :: (ReverseQueue m, IsCard card) => ScenarioDeckKey -> [card] -> Sc
 addExtraDeck k cards = do
   cards' <- shuffleM $ map toCard cards
   decksL %= (at k ?~ cards')
+
+setActDeck :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
+setActDeck defs = do
+  cards <- genCards defs
+  actStackL %= insertMap 1 cards
+  push SetActDeck
+
+setAgendaDeck :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
+setAgendaDeck defs = do
+  cards <- genCards defs
+  agendaStackL %= insertMap 1 cards
+  push SetAgendaDeck

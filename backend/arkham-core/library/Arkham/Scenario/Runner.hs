@@ -573,9 +573,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   ResolveStory _ ResolveIt storyId -> do
     pure $ a & resolvedStoriesL %~ (storyId :)
   SetActDeckCards n cards -> do
-    pure $ a & (actStackL . at n ?~ cards)
+    pure $ a & actStackL %~ insertMap n cards
   SetAgendaDeckCards n cards -> do
-    pure $ a & (agendaStackL . at n ?~ cards)
+    pure $ a & agendaStackL %~ insertMap n cards
   SetActDeck -> do
     let ks = sortOn Down $ a ^. actStackL . to IntMap.keys
     for_ ks $ \k -> do

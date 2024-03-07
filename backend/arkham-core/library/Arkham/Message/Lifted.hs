@@ -2,6 +2,7 @@ module Arkham.Message.Lifted (module X, module Arkham.Message.Lifted) where
 
 import Arkham.CampaignLogKey
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.HasQueue as X (runQueueT)
@@ -145,9 +146,18 @@ addCampaignCardToDeckChoice choices cardDef = do
   lead <- getLeadPlayer
   push $ Msg.addCampaignCardToDeckChoice lead choices cardDef
 
+forceAddCampaignCardToDeckChoice
+  :: ReverseQueue m => [InvestigatorId] -> CardDef -> m ()
+forceAddCampaignCardToDeckChoice choices cardDef = do
+  lead <- getLeadPlayer
+  push $ Msg.forceAddCampaignCardToDeckChoice lead choices cardDef
+
 createEnemyAt
   :: (ReverseQueue m, IsCard card) => card -> LocationId -> m ()
 createEnemyAt c lid = push =<< Msg.createEnemyAt_ (toCard c) lid Nothing
 
 setAsideCards :: ReverseQueue m => [CardDef] -> m ()
 setAsideCards = genCards >=> push . Msg.SetAsideCards
+
+addChaosToken :: ReverseQueue m => ChaosTokenFace -> m ()
+addChaosToken = push . AddChaosToken

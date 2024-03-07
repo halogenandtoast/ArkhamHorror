@@ -99,9 +99,9 @@ instance RunMessage TheMidnightMasks where
       placeAll
         [Locations.easttown, Locations.miskatonicUniversity, Locations.northside, Locations.stMarysHospital]
 
-      houseBurnedDown <- getHasRecord YourHouseHasBurnedToTheGround
       addExtraDeck CultistDeck =<< gatherEncounterSet EncounterSet.CultOfUmordhoth
 
+      houseBurnedDown <- getHasRecord YourHouseHasBurnedToTheGround
       if houseBurnedDown
         then startAt rivertown
         else startAt =<< place Locations.yourHouse

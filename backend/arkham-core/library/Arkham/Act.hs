@@ -236,6 +236,9 @@ allActs =
     , SomeActCard theDoomThatCameBefore
     , SomeActCard seekOutTheNight
     , SomeActCard theKingsDecree
+    , --- A Thousand Shapes of Horror
+      SomeActCard searchingTheUnnamable
+    , SomeActCard theEndlessStairs
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

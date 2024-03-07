@@ -2160,6 +2160,7 @@ library
       Arkham.Scenario.Scenarios.WeaverOfTheCosmos
       Arkham.Scenario.Scenarios.WhereDoomAwaits
       Arkham.Scenario.Scenarios.WhereTheGodsDwell
+      Arkham.Scenario.Setup
       Arkham.Scenario.Types
       Arkham.ScenarioLogKey
       Arkham.Scenarios.APhantomOfTruth.Helpers

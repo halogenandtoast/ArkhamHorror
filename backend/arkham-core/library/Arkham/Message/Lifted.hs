@@ -21,114 +21,117 @@ import Arkham.SkillType qualified as SkillType
 import Arkham.Source
 import Arkham.Target
 
-setEncounterDeck :: HasQueue Message m => Deck EncounterCard -> QueueT Message m ()
+class (CardGen m, HasGame m, HasQueue Message m) => ReverseQueue m
+instance (CardGen m, MonadIO m, HasGame m) => ReverseQueue (QueueT Message m)
+
+setEncounterDeck :: ReverseQueue m => Deck EncounterCard -> m ()
 setEncounterDeck = push . SetEncounterDeck
 
-setAgendaDeck :: (HasQueue Message m, CardGen m) => [CardDef] -> QueueT Message m ()
+setAgendaDeck :: ReverseQueue m => [CardDef] -> m ()
 setAgendaDeck = genCards >=> push . SetAgendaDeckCards 1
 
-setActDeck :: (HasQueue Message m, CardGen m) => [CardDef] -> QueueT Message m ()
+setActDeck :: ReverseQueue m => [CardDef] -> m ()
 setActDeck = genCards >=> push . SetActDeckCards 1
 
 placeLocationCard
-  :: (CardGen m, HasGame m, HasQueue Message m) => CardDef -> QueueT Message m LocationId
+  :: ReverseQueue m => CardDef -> m LocationId
 placeLocationCard def = do
   (lid, placement) <- Msg.placeLocationCard def
   push placement
   pure lid
 
 placeRandomLocationGroupCards
-  :: (CardGen m, HasGame m, HasQueue Message m) => Text -> [CardDef] -> QueueT Message m ()
+  :: ReverseQueue m => Text -> [CardDef] -> m ()
 placeRandomLocationGroupCards groupName cards = do
   shuffled <- traverse genCard =<< shuffleM cards
   msgs <- Msg.placeLabeledLocations_ groupName shuffled
   pushAll msgs
 
 placeLocationCards
-  :: (CardGen m, HasGame m, HasQueue Message m) => [CardDef] -> QueueT Message m ()
+  :: ReverseQueue m => [CardDef] -> m ()
 placeLocationCards defs = for_ defs placeLocationCard
 
 placeOneLocationCard
-  :: (CardGen m, HasGame m, HasQueue Message m) => NonEmpty CardDef -> QueueT Message m LocationId
+  :: ReverseQueue m => NonEmpty CardDef -> m LocationId
 placeOneLocationCard = sample >=> placeLocationCard
 
 placeLocationCardM
-  :: (CardGen m, HasGame m, HasQueue Message m)
-  => QueueT Message m CardDef
-  -> QueueT Message m LocationId
+  :: ReverseQueue m
+  => m CardDef
+  -> m LocationId
 placeLocationCardM = (>>= placeLocationCard)
 
-reveal :: HasQueue Message m => LocationId -> QueueT Message m ()
+reveal :: ReverseQueue m => LocationId -> m ()
 reveal = push . Msg.RevealLocation Nothing
 
-moveAllTo :: (HasQueue Message m, Sourceable source) => source -> LocationId -> QueueT Message m ()
+moveAllTo :: (ReverseQueue m, Sourceable source) => source -> LocationId -> m ()
 moveAllTo (toSource -> source) lid = push $ MoveAllTo source lid
 
-record :: HasQueue Message m => CampaignLogKey -> QueueT Message m ()
+record :: ReverseQueue m => CampaignLogKey -> m ()
 record = push . Record
 
-crossOut :: HasQueue Message m => CampaignLogKey -> QueueT Message m ()
+crossOut :: ReverseQueue m => CampaignLogKey -> m ()
 crossOut = push . CrossOutRecord
 
 recordSetInsert
-  :: (HasQueue Message m, Recordable a, MonoFoldable t, Element t ~ a)
+  :: (Recordable a, MonoFoldable t, Element t ~ a, ReverseQueue m)
   => CampaignLogKey
   -> t
-  -> QueueT Message m ()
+  -> m ()
 recordSetInsert k = push . Msg.recordSetInsert k
 
-story :: (HasQueue Message m, HasGame m) => FlavorText -> QueueT Message m ()
+story :: ReverseQueue m => FlavorText -> m ()
 story flavor = do
   players <- allPlayers
   push $ Msg.story players flavor
 
-sufferTrauma :: HasQueue Message m => InvestigatorId -> Int -> Int -> QueueT Message m ()
+sufferTrauma :: ReverseQueue m => InvestigatorId -> Int -> Int -> m ()
 sufferTrauma iid physical mental = push $ SufferTrauma iid physical mental
 
-sufferMentalTrauma :: HasQueue Message m => InvestigatorId -> Int -> QueueT Message m ()
+sufferMentalTrauma :: ReverseQueue m => InvestigatorId -> Int -> m ()
 sufferMentalTrauma iid mental = sufferTrauma iid 0 mental
 
 gainXp
-  :: (Sourceable source, HasQueue Message m) => InvestigatorId -> source -> Int -> QueueT Message m ()
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 gainXp iid (toSource -> source) xp = push $ GainXP iid source xp
 
 allGainXpWithBonus
-  :: (Sourceable source, HasQueue Message m, HasGame m) => source -> Int -> QueueT Message m ()
+  :: (ReverseQueue m, Sourceable source) => source -> Int -> m ()
 allGainXpWithBonus (toSource -> source) xp = pushAll =<< toGainXp source (getXpWithBonus xp)
 
 allGainXp
-  :: (Sourceable source, HasQueue Message m, HasGame m) => source -> QueueT Message m ()
+  :: (ReverseQueue m, Sourceable source) => source -> m ()
 allGainXp (toSource -> source) = pushAll =<< toGainXp source getXp
 
-endOfScenario :: HasQueue Message m => QueueT Message m ()
+endOfScenario :: ReverseQueue m => m ()
 endOfScenario = push $ EndOfGame Nothing
 
 assignHorror
-  :: (Sourceable source, HasQueue Message m) => InvestigatorId -> source -> Int -> QueueT Message m ()
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 assignHorror iid (toSource -> source) horror = push $ Msg.assignHorror iid source horror
 
 findAndDrawEncounterCard
-  :: HasQueue Message m => InvestigatorId -> CardMatcher -> QueueT Message m ()
+  :: ReverseQueue m => InvestigatorId -> CardMatcher -> m ()
 findAndDrawEncounterCard iid matcher = push $ Msg.findAndDrawEncounterCard iid matcher
 
 beginSkillTest
-  :: (HasQueue Message m, Sourceable source, Targetable target)
+  :: (ReverseQueue m, Sourceable source, Targetable target)
   => InvestigatorId
   -> source
   -> target
   -> SkillType.SkillType
   -> Int
-  -> QueueT Message m ()
+  -> m ()
 beginSkillTest iid source target sType n = push $ Msg.beginSkillTest iid source target sType n
 
-gameOverIf :: HasQueue Message m => Bool -> QueueT Message m ()
-gameOverIf t = if t then push GameOver else pure ()
+gameOverIf :: ReverseQueue m => Bool -> m ()
+gameOverIf t = when t (push GameOver)
 
-kill :: (HasQueue Message m, Sourceable source) => source -> InvestigatorId -> QueueT Message m ()
+kill :: (Sourceable source, ReverseQueue m) => source -> InvestigatorId -> m ()
 kill (toSource -> source) = push . InvestigatorKilled source
 
 killRemaining
-  :: (HasQueue Message m, HasGame m, Sourceable source) => source -> QueueT Message m [InvestigatorId]
+  :: (Sourceable source, ReverseQueue m) => source -> m [InvestigatorId]
 killRemaining (toSource -> source) = do
   remaining <- select UneliminatedInvestigator
   resigned <- select ResignedInvestigator
@@ -137,14 +140,14 @@ killRemaining (toSource -> source) = do
   pure remaining
 
 addCampaignCardToDeckChoice
-  :: (HasQueue Message m, HasGame m) => [InvestigatorId] -> CardDef -> QueueT Message m ()
+  :: ReverseQueue m => [InvestigatorId] -> CardDef -> m ()
 addCampaignCardToDeckChoice choices cardDef = do
   lead <- getLeadPlayer
   push $ Msg.addCampaignCardToDeckChoice lead choices cardDef
 
 createEnemyAt
-  :: (HasQueue Message m, IsCard card, MonadRandom m) => card -> LocationId -> QueueT Message m ()
+  :: (ReverseQueue m, IsCard card) => card -> LocationId -> m ()
 createEnemyAt c lid = push =<< Msg.createEnemyAt_ (toCard c) lid Nothing
 
-setAsideCards :: (CardGen m, HasQueue Message m) => [CardDef] -> QueueT Message m ()
+setAsideCards :: ReverseQueue m => [CardDef] -> m ()
 setAsideCards = genCards >=> push . Msg.SetAsideCards

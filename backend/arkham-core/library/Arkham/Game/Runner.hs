@@ -1530,9 +1530,9 @@ runGameMessage msg g = case msg of
   ChoosePlayerOrder investigatorIds orderedInvestigatorIds -> do
     player <- getPlayer (gameLeadInvestigatorId g)
     push
-      $ chooseOne
-        player
-        [ targetLabel
+      $ questionLabel "Choose next in turn order" player
+      $ ChooseOne
+        [ PortraitLabel
           iid
           [ ChoosePlayerOrder
               (filter (/= iid) investigatorIds)

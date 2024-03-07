@@ -185,11 +185,9 @@ const label = function(body: string) {
 
       <div v-if="skillTestResults" class="skill-test-results-break"></div>
 
-      <div v-if="cardLabels.length > 0">
+      <div v-if="cardLabels.length > 0" class="cardLabels">
         <template v-for="{choice, index} in cardLabels" :key="index">
-          <a href='#' @click.prevent="choose(index)">
-            <img class="card" :src="cardLabelImage(choice.cardCode)"/>
-          </a>
+          <img class="card" :src="cardLabelImage(choice.cardCode)" @click="choose(index)" />
         </template>
       </div>
 
@@ -223,9 +221,7 @@ const label = function(body: string) {
             <button @click="choose(index)" v-tooltip="choice.tooltip">{{choice.label}}</button>
           </template>
           <template v-if="choice.tag === 'PortraitLabel'">
-            <a href='#' @click.prevent="choose(index)">
-              <img class="portrait card active" :src="portraitLabelImage(choice.investigatorId)"/>
-            </a>
+            <img class="portrait card active" :src="portraitLabelImage(choice.investigatorId)" @click="choose(index)" />
           </template>
           <button v-if="choice.tag === MessageType.DONE" @click="choose(index)">{{label(choice.label)}}</button>
           <div v-if="choice.tag === MessageType.LABEL" class="message-label">
@@ -501,6 +497,12 @@ button {
       content: "\E91A";
       margin-right: 10px;
     }
+  }
+
+  &:has(.portrait) {
+    flex-direction: row;
+    padding: 10px;
+    justify-content: center;
   }
 }
 

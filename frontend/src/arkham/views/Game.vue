@@ -140,7 +140,13 @@ const handleResult = (result: ServerResult) => {
                 if (Object.keys(game.value.question).length == 1) {
                   playerId.value = Object.keys(game.value.question)[0]
                 } else if (game.value.activePlayerId !== playerId.value) {
-                  playerId.value = game.value.activePlayerId
+                  if (playerId.value && Object.keys(game.value.question).includes(playerId.value)) {
+                    playerId.value = game.value.activePlayerId
+                  } else {
+                    playerId.value = Object.keys(game.value.question)[0]
+                  }
+                } else if (playerId.value && !Object.keys(game.value.question).includes(playerId.value)) {
+                    playerId.value = Object.keys(game.value.question)[0]
                 }
               }
             })

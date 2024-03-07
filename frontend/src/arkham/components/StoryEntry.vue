@@ -31,6 +31,8 @@ const formatted = computed(() => {
   return props.question.flavorText.body[0].startsWith("$") ? props.question.flavorText.body[0].slice(1) : null
 })
 
+const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
+
 </script>
 <template>
   <div class="intro-text">
@@ -49,7 +51,7 @@ const formatted = computed(() => {
         v-for="readChoice in readChoices"
         @click="choose(readChoice.index)"
         :key="readChoice.index"
-      ><i class="option"></i>{{$t(readChoice.label)}}</button>
+      ><i class="option"></i>{{$t(tformat(readChoice.label))}}</button>
     </div>
   </div>
 </template>

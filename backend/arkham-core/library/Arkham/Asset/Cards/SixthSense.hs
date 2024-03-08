@@ -1,8 +1,4 @@
-module Arkham.Asset.Cards.SixthSense (
-  sixthSense,
-  sixthSenseEffect,
-  SixthSense (..),
-) where
+module Arkham.Asset.Cards.SixthSense (sixthSense, sixthSenseEffect, SixthSense (..)) where
 
 import Arkham.Ability
 import Arkham.Aspect
@@ -26,13 +22,7 @@ sixthSense :: AssetCard SixthSense
 sixthSense = asset SixthSense Cards.sixthSense
 
 instance HasAbilities SixthSense where
-  getAbilities (SixthSense a) =
-    [ investigateAbility a 1 mempty ControlsThis
-        & abilityDelayAdditionalCostsL
-        .~ True
-        & abilityMetadataL
-        ?~ InvestigateTargets RevealedLocation
-    ]
+  getAbilities (SixthSense a) = [investigateAbility a 1 mempty ControlsThis]
 
 instance RunMessage SixthSense where
   runMessage msg a@(SixthSense attrs) = case msg of

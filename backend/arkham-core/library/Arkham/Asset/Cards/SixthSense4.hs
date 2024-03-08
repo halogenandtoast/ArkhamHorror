@@ -1,8 +1,4 @@
-module Arkham.Asset.Cards.SixthSense4 (
-  sixthSense4,
-  sixthSense4Effect,
-  SixthSense4 (..),
-) where
+module Arkham.Asset.Cards.SixthSense4 (sixthSense4, sixthSense4Effect, SixthSense4 (..)) where
 
 import Arkham.Ability
 import Arkham.Aspect
@@ -16,7 +12,6 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Window qualified as Window
 
 newtype SixthSense4 = SixthSense4 AssetAttrs
@@ -39,7 +34,7 @@ instance RunMessage SixthSense4 where
 
       pushAll
         $ [ createCardEffect Cards.sixthSense4 Nothing source (InvestigationTarget iid lid)
-          , skillTestModifier (toAbilitySource attrs 1) iid (SkillModifier SkillWillpower 2)
+          , skillTestModifier (attrs.ability 1) iid (SkillModifier #willpower 2)
           ]
         <> leftOr investigation
       pure a
@@ -65,7 +60,14 @@ instance RunMessage SixthSense4Effect where
                 [ LocationWithDistanceFrom n Anywhere
                 | n <- [1 .. 2]
                 ]
+
+          locationsWithAdditionalCosts <- forMaybeM locations \location@(lid', _) -> do
+            mods <- getModifiers lid'
+            let costs = fold [m | AdditionalCostToInvestigate m <- mods]
+            canAfford <- getCanAffordCost iid attrs [#investigate] [] costs
+            pure $ guard canAfford $> (location, costs)
           player <- getPlayer iid
+          batchId <- getRandom
           pushAll
             [ If
                 (Window.RevealChaosTokenEffect iid token effectId)
@@ -73,27 +75,31 @@ instance RunMessage SixthSense4Effect where
                     $ Label "Do not choose other location" []
                     : [ targetLabel
                         location
-                        [ SetSkillTestTarget
-                            (BothTarget (toTarget location) (toTarget lid))
-                        , chooseOne
-                            player
-                            [ Label
-                                "Use new location's shroud"
-                                [ skillTestModifier
-                                    (AbilitySource effectSource 1)
-                                    SkillTestTarget
-                                    (SetDifficulty shroud)
-                                ]
-                            , Label
-                                "Use original locations shroud"
-                                [ skillTestModifier
-                                    (AbilitySource effectSource 1)
-                                    SkillTestTarget
-                                    (SetDifficulty currentShroud)
+                        [ Would
+                            batchId
+                            [ PayAdditionalCost iid batchId cost
+                            , SetSkillTestTarget
+                                (BothTarget (toTarget location) (toTarget lid))
+                            , chooseOne
+                                player
+                                [ Label
+                                    "Use new location's shroud"
+                                    [ skillTestModifier
+                                        (AbilitySource effectSource 1)
+                                        SkillTestTarget
+                                        (SetDifficulty shroud)
+                                    ]
+                                , Label
+                                    "Use original locations shroud"
+                                    [ skillTestModifier
+                                        (AbilitySource effectSource 1)
+                                        SkillTestTarget
+                                        (SetDifficulty currentShroud)
+                                    ]
                                 ]
                             ]
                         ]
-                      | (location, shroud) <- locations
+                      | ((location, shroud), cost) <- locationsWithAdditionalCosts
                       ]
                 ]
             , DisableEffect effectId

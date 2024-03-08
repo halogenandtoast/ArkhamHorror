@@ -27,6 +27,7 @@ data Ability = Ability
   , abilityTooltip :: Maybe Text
   , abilityCanBeCancelled :: Bool
   , abilityDisplayAsAction :: Bool
+  , abilityDelayAdditionalCosts :: Bool
   }
   deriving stock (Show, Ord, Data)
 
@@ -37,6 +38,7 @@ data AbilityMetadata
   | EncounterCardMetadata EncounterCard
   | SkillChoiceMetadata SkillType
   | NoAbilityMetadata
+  | InvestigateTargets LocationMatcher
   deriving stock (Eq, Show, Ord, Data)
 
 instance Eq Ability where
@@ -68,6 +70,9 @@ abilityDoesNotProvokeAttacksOfOpportunityL =
 
 abilityDisplayAsActionL :: Lens' Ability Bool
 abilityDisplayAsActionL = lens abilityDisplayAsAction $ \m x -> m {abilityDisplayAsAction = x}
+
+abilityDelayAdditionalCostsL :: Lens' Ability Bool
+abilityDelayAdditionalCostsL = lens abilityDelayAdditionalCosts $ \m x -> m {abilityDelayAdditionalCosts = x}
 
 $(deriveJSON defaultOptions ''AbilityMetadata)
 $(deriveJSON (aesonOptions $ Just "ability") ''Ability)

@@ -13,11 +13,11 @@ newtype FrontPorchEntryway = FrontPorchEntryway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 frontPorchEntryway :: LocationCard FrontPorchEntryway
-frontPorchEntryway = location FrontPorchEntryway Cards.frontPorchEntryway 0 (Static 0)
+frontPorchEntryway = location FrontPorchEntryway Cards.frontPorchEntryway 2 (PerPlayer 1)
 
 instance HasAbilities FrontPorchEntryway where
   getAbilities (FrontPorchEntryway attrs) =
-    extend
+    extendRevealed
       attrs
       [ withTooltip "Reveal the Upstairs Hallway"
           $ restrictedAbility attrs 1 (Here <> exists (UnrevealedLocation <> "Upstairs Hallway"))
@@ -27,7 +27,10 @@ instance HasAbilities FrontPorchEntryway where
           $ restrictedAbility
             attrs
             2
-            (Here <> exists (enemyIs Enemies.theUnnamable <> EnemyWithDamage (AtLeast $ PerPlayer 1)))
+            ( Here
+                <> exists (enemyIs Enemies.theUnnamable <> EnemyWithDamage (AtLeast $ PerPlayer 1))
+                <> notExists (LocationWithTitle "Unmarked Tomb")
+            )
           $ FastAbility Free
       ]
 

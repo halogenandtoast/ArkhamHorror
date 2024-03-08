@@ -26,7 +26,13 @@ sixthSense :: AssetCard SixthSense
 sixthSense = asset SixthSense Cards.sixthSense
 
 instance HasAbilities SixthSense where
-  getAbilities (SixthSense a) = [investigateAbility a 1 mempty ControlsThis]
+  getAbilities (SixthSense a) =
+    [ investigateAbility a 1 mempty ControlsThis
+        & abilityDelayAdditionalCostsL
+        .~ True
+        & abilityMetadataL
+        ?~ InvestigateTargets RevealedLocation
+    ]
 
 instance RunMessage SixthSense where
   runMessage msg a@(SixthSense attrs) = case msg of
@@ -55,11 +61,14 @@ instance RunMessage SixthSenseEffect where
       InvestigationTarget iid' lid | iid == iid' -> do
         when (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing]) $ do
           currentShroud <- field LocationShroud lid
-          locations <-
-            selectWithField LocationShroud
-              $ ConnectedLocation
-              <> RevealedLocation
+          locations <- selectWithField LocationShroud $ ConnectedLocation <> RevealedLocation
+          locationsWithAdditionalCosts <- forMaybeM locations \location@(lid', _) -> do
+            mods <- getModifiers lid'
+            let costs = fold [m | AdditionalCostToInvestigate m <- mods]
+            canAfford <- getCanAffordCost iid attrs [#investigate] [] costs
+            pure $ guard canAfford $> (location, costs)
           player <- getPlayer iid
+          batchId <- getRandom
           pushAll
             [ If
                 (Window.RevealChaosTokenEffect iid token effectId)
@@ -67,26 +76,30 @@ instance RunMessage SixthSenseEffect where
                     $ Label "Do not choose other location" []
                     : [ targetLabel
                         location
-                        [ SetSkillTestTarget (toTarget location)
-                        , chooseOne
-                            player
-                            [ Label
-                                "Use new location's shroud"
-                                [ skillTestModifier
-                                    (AbilitySource effectSource 1)
-                                    SkillTestTarget
-                                    (SetDifficulty shroud)
-                                ]
-                            , Label
-                                "Use original locations shroud"
-                                [ skillTestModifier
-                                    (AbilitySource effectSource 1)
-                                    SkillTestTarget
-                                    (SetDifficulty currentShroud)
+                        [ Would
+                            batchId
+                            [ PayAdditionalCost iid batchId cost
+                            , SetSkillTestTarget (toTarget location)
+                            , chooseOne
+                                player
+                                [ Label
+                                    "Use new location's shroud"
+                                    [ skillTestModifier
+                                        (AbilitySource effectSource 1)
+                                        SkillTestTarget
+                                        (SetDifficulty shroud)
+                                    ]
+                                , Label
+                                    "Use original locations shroud"
+                                    [ skillTestModifier
+                                        (AbilitySource effectSource 1)
+                                        SkillTestTarget
+                                        (SetDifficulty currentShroud)
+                                    ]
                                 ]
                             ]
                         ]
-                      | (location, shroud) <- locations
+                      | ((location, shroud), cost) <- locationsWithAdditionalCosts
                       ]
                 ]
             , DisableEffect effectId

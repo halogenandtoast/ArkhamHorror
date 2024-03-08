@@ -48,6 +48,7 @@ data ModifierType
   | AdditionalActions Text Source Int
   | AdditionalCost Cost
   | AdditionalCostToEnter Cost
+  | AdditionalCostToInvestigate Cost
   | AdditionalCostToLeave Cost
   | AdditionalStartingUses Int
   | AdditionalStartingCards [Card]

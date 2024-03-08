@@ -264,6 +264,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       -- No need to record payment... yet
       pure c
     OrCost xs -> do
+      xs' <- filterM (getCanAffordCost iid source actions (activeCostWindows c)) xs
       push
         $ chooseOne player
         $ map
@@ -272,7 +273,7 @@ payCost msg c iid skipAdditionalCosts cost = do
                 (displayCostType x)
                 [PayCost acId iid skipAdditionalCosts x]
           )
-          xs
+          xs'
       pure c
     OptionalCost x -> do
       canAfford <- getCanAffordCost iid source actions [] x

@@ -1582,14 +1582,18 @@ getLocationsMatching lmatcher = do
       LocationMatchAll (x : xs) -> do
         matches' :: Set LocationId <-
           foldl' intersection
-            <$> (setFromList . map toId <$> getLocationsMatching x)
+            . setFromList
+            . map toId
+            <$> getLocationsMatching x
             <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
         pure $ filter ((`member` matches') . toId) ls
       LocationMatchAny [] -> pure []
       LocationMatchAny (x : xs) -> do
         matches' :: Set LocationId <-
           foldl' union
-            <$> (setFromList . map toId <$> getLocationsMatching x)
+            . setFromList
+            . map toId
+            <$> getLocationsMatching x
             <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
         pure $ filter ((`member` matches') . toId) ls
       InvestigatableLocation -> flip filterM ls

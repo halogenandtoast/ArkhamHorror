@@ -968,6 +968,12 @@ data SkillTestResultMatcher
   | ResultOneOf [SkillTestResultMatcher]
   deriving stock (Show, Eq, Ord, Data)
 
+instance IsLabel "success" SkillTestResultMatcher where
+  fromLabel = SuccessResult AnyValue
+
+instance IsLabel "failure" SkillTestResultMatcher where
+  fromLabel = FailureResult AnyValue
+
 data ValueMatcher
   = LessThan GameValue
   | GreaterThan GameValue

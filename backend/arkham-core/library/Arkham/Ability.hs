@@ -181,6 +181,7 @@ mkAbility entity idx type' =
     , abilityTooltip = Nothing
     , abilityCanBeCancelled = True
     , abilityDisplayAsAction = False
+    , abilityDelayAdditionalCosts = False
     }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability

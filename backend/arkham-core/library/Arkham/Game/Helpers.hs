@@ -327,11 +327,29 @@ getCanAffordAbility iid ability window =
 getCanAffordAbilityCost :: HasGame m => InvestigatorId -> Ability -> m Bool
 getCanAffordAbilityCost iid a@Ability {..} = do
   modifiers <- getModifiers (AbilityTarget iid a)
+  investigateCosts <-
+    if #investigate `elem` abilityActions a
+      then do
+        case abilityMetadata of
+          Just (InvestigateTargets matcher) -> do
+            ls <- select (matcher <> Matcher.InvestigatableLocation)
+            costs <- for ls $ \lid -> do
+              mods <- getModifiers lid
+              pure $ fold [m | AdditionalCostToInvestigate m <- mods]
+            pure [OrCost costs | Free `notElem` costs]
+          _ -> do
+            mLocation <- field InvestigatorLocation iid
+            case mLocation of
+              Nothing -> pure []
+              Just lid -> do
+                mods <- getModifiers lid
+                pure [m | AdditionalCostToInvestigate m <- mods]
+      else pure []
   let
     costF =
       case find isSetCost modifiers of
-        Just (SetAbilityCost c) -> const c
-        _ -> id
+        Just (SetAbilityCost c) -> fold . (: investigateCosts) . const c
+        _ -> fold . (: investigateCosts)
     isSetCost = \case
       SetAbilityCost _ -> True
       _ -> False
@@ -1109,6 +1127,17 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
           if costStatus == PaidCost then Nothing else Just $ SealCost matcher
         _ -> Nothing
 
+    investigateCosts <-
+      if #investigate `elem` cdActions pcDef
+        then do
+          mLocation <- field InvestigatorLocation iid
+          case mLocation of
+            Nothing -> pure []
+            Just lid -> do
+              mods <- getModifiers lid
+              pure [m | AdditionalCostToInvestigate m <- mods]
+        else pure []
+
     attrs <- getAttrs @Investigator iid
     actionCost <- getActionCost attrs (cdActions pcDef)
 
@@ -1122,6 +1151,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
           | costStatus /= PaidCost && actionCost > 0 && source /= GameSource && not inFastWindow
           ]
         <> additionalCosts
+        <> investigateCosts
         <> sealedChaosTokenCost
         <> [fromMaybe mempty (cdAdditionalCost pcDef) | costStatus /= PaidCost]
 

@@ -24,7 +24,7 @@ instance HasModifiersFor BurialGround where
 
 instance HasAbilities BurialGround where
   getAbilities (BurialGround attrs) =
-    extend
+    extendRevealed
       attrs
       [ restrictedAbility attrs 1 Here
           $ FastAbility

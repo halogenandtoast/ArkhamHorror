@@ -102,6 +102,9 @@ place def = do
   encounterDeckL %= flip removeEachFromDeck [def]
   placeLocationCard def
 
+place_ :: ReverseQueue m => CardDef -> ScenarioBuilderT m ()
+place_ = void . place
+
 placeAll :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
 placeAll defs = do
   encounterDeckL %= flip removeEachFromDeck defs
@@ -114,10 +117,17 @@ placeOneOf as = do
   encounterDeckL %= flip removeEachFromDeck (sampledFrom as)
   placeLocationCard def
 
+placeOneOf_
+  :: (SampleOneOf as, Sampled as ~ CardDef, ReverseQueue m) => as -> ScenarioBuilderT m ()
+placeOneOf_ = void . placeOneOf
+
 placeGroup :: ReverseQueue m => Text -> [CardDef] -> ScenarioBuilderT m ()
 placeGroup groupName defs = do
   encounterDeckL %= flip removeEachFromDeck defs
   placeRandomLocationGroupCards groupName defs
+
+placeGroupChooseN :: ReverseQueue m => Int -> Text -> NonEmpty CardDef -> ScenarioBuilderT m ()
+placeGroupChooseN n groupName = sampleN n >=> placeGroup groupName
 
 startAt :: ReverseQueue m => LocationId -> ScenarioBuilderT m ()
 startAt lid = do

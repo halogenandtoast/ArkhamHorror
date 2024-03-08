@@ -30,6 +30,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Movement
 import Arkham.Name
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Slot
 import Arkham.Source
@@ -125,7 +126,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorCombat :: Int
   , investigatorAgility :: Int
   , investigatorTokens :: Tokens
-  , investigatorLocation :: LocationId
+  , investigatorPlacement :: Placement
   , investigatorActionsTaken :: [[Action]]
   , investigatorActionsPerformed :: [[Action]]
   , investigatorRemainingActions :: Int
@@ -254,6 +255,9 @@ instance Sourceable InvestigatorAttrs where
 
 instance HasField "id" InvestigatorAttrs InvestigatorId where
   getField = investigatorId
+
+instance HasField "placement" InvestigatorAttrs Placement where
+  getField = investigatorPlacement
 
 instance HasField "resources" InvestigatorAttrs Int where
   getField = investigatorResources

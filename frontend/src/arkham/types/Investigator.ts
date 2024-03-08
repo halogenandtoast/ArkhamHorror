@@ -4,6 +4,7 @@ import { Name, nameDecoder } from '@/arkham/types/Name';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
+import { Placement, placementDecoder } from '@/arkham/types/Placement';
 import {
   Card,
   CardContents,
@@ -155,7 +156,7 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   tokens: tokensDecoder,
   assignedHealthDamage: JsonDecoder.number,
   assignedSanityDamage: JsonDecoder.number,
-  location: JsonDecoder.string,
+  location: placementDecoder.map((placement) => placement.tag === "AtLocation" ? placement.contents : "00000000-0000-0000-0000-000000000000"),
   remainingActions: JsonDecoder.number,
   endedTurn: JsonDecoder.boolean,
   engagedEnemies: JsonDecoder.array<string>(JsonDecoder.string, 'EnemyId[]'),
@@ -185,4 +186,4 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   isYithian: JsonDecoder.boolean,
   slots: slotsDecoder,
   log: logContentsDecoder,
-}, 'Investigator', { foundCards: 'search' });
+}, 'Investigator', { foundCards: 'search', location: 'placement' });

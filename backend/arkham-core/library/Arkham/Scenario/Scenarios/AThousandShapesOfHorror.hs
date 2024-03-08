@@ -41,10 +41,11 @@ aThousandShapesOfHorror difficulty =
     "06168"
     "A Thousand Shapes of Horror"
     difficulty
-    [ "upstairsDoorway1   .               upstairsDoorway2"
-    , ".                  upstairsHallway ."
-    , "downstairsDoorway1 frontPorch      downstairsDoorway2"
-    , ".                  burialGround    ."
+    [ "mysteriousStairs1 upstairsDoorway1   attic           upstairsDoorway2"
+    , "mysteriousStairs2 .                  upstairsHallway ."
+    , "mysteriousStairs3 downstairsDoorway1 frontPorch      downstairsDoorway2"
+    , "mysteriousStairs4 .                  burialGround    unmarkedTomb"
+    , "mysteriousStairs5 .                  .               ."
     ]
 
 instance HasChaosTokenValue AThousandShapesOfHorror where
@@ -105,7 +106,7 @@ instance RunMessage AThousandShapesOfHorror where
       setAgendaDeck [Agendas.theHouseWithNoName, Agendas.theThingWithNoName, Agendas.theDeadWithNoName]
       setActDeck [Acts.searchingTheUnnamable, Acts.theEndlessStairs]
 
-      burialGround <- place Locations.burialGround
+      startAt =<< place Locations.burialGround
       placeAll [Locations.frontPorchEntryway, Locations.upstairsHallway]
 
       placeGroup
@@ -115,8 +116,6 @@ instance RunMessage AThousandShapesOfHorror where
       placeGroup
         "upstairsDoorway"
         [Locations.upstairsDoorwayBedroom, Locations.upstairsDoorwayLibrary]
-
-      startAt burialGround
 
       setAside
         [ Locations.attic_AThousandShapesOfHorror

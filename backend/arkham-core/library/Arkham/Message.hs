@@ -773,6 +773,7 @@ data Message
   | RemovedLocation LocationId
   | SetCardAside Card
   | SetOutOfPlay OutOfPlayZone Target
+  | PlaceInvestigator InvestigatorId Placement
   | PlaceInBonded InvestigatorId Card
   | DoSetOutOfPlay OutOfPlayZone Target
   | RemoveFromPlay Source

@@ -48,6 +48,12 @@ placeRandomLocationGroupCards groupName cards = do
   msgs <- Msg.placeLabeledLocations_ groupName shuffled
   pushAll msgs
 
+placeLabeledLocations_ :: ReverseQueue m => Text -> [Card] -> m ()
+placeLabeledLocations_ lbl cards = Msg.pushAllM $ Msg.placeLabeledLocations_ lbl cards
+
+placeLabeledLocations :: ReverseQueue m => Text -> [Card] -> m [LocationId]
+placeLabeledLocations lbl cards = Msg.placeLabeledLocations lbl cards >>= \(lids, msgs) -> pushAll msgs $> lids
+
 placeLocationCards
   :: ReverseQueue m => [CardDef] -> m ()
 placeLocationCards defs = for_ defs placeLocationCard

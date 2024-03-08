@@ -1,7 +1,8 @@
-module Arkham.Location.Cards.Attic_AThousandShapesOfHorror
-  ( attic_AThousandShapesOfHorror
-  , Attic_AThousandShapesOfHorror(..)
-  )
+{- HLINT ignore "Use camelCase" -}
+module Arkham.Location.Cards.Attic_AThousandShapesOfHorror (
+  attic_AThousandShapesOfHorror,
+  Attic_AThousandShapesOfHorror (..),
+)
 where
 
 import Arkham.Prelude
@@ -20,7 +21,8 @@ attic_AThousandShapesOfHorror = location Attic_AThousandShapesOfHorror Cards.att
 instance HasAbilities Attic_AThousandShapesOfHorror where
   getAbilities (Attic_AThousandShapesOfHorror attrs) =
     getAbilities attrs
-    -- withRevealedAbilities attrs []
+
+-- withRevealedAbilities attrs []
 
 instance RunMessage Attic_AThousandShapesOfHorror where
   runMessage msg (Attic_AThousandShapesOfHorror attrs) =

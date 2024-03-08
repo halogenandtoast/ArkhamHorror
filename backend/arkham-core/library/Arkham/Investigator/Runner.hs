@@ -61,10 +61,11 @@ import Arkham.Matcher (
   EnemyMatcher (..),
   EventMatcher (..),
   InvestigatorMatcher (..),
-  LocationMatcher (..),
   assetControlledBy,
   assetIs,
   colocatedWith,
+  enemyEngagedWith,
+  locationWithInvestigator,
   treacheryInHandOf,
  )
 import Arkham.Message qualified as Msg
@@ -1779,13 +1780,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              ]
         pure a
   Do (WhenWillEnterLocation iid lid) | iid == investigatorId -> do
-    pure $ a & locationL .~ lid
+    pure $ a & placementL .~ AtLocation lid
   CheckEnemyEngagement iid | iid == investigatorId -> do
     -- [AsIfAt]: enemies don't move to threat with AsIf, so we use actual location here
     -- This might not be correct and we should still check engagement and let
     -- that handle whether or not to move to threat area
-    enemies <- select $ EnemyAt $ LocationWithId investigatorLocation
-    a <$ pushAll [EnemyCheckEngagement eid | eid <- enemies]
+    enemies <- select $ EnemyAt $ locationWithInvestigator iid
+    pushAll [EnemyCheckEngagement eid | eid <- enemies]
+    pure a
   AddSlot iid slotType slot | iid == investigatorId -> do
     let
       slots = findWithDefault [] slotType investigatorSlots
@@ -3270,10 +3272,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PickSupply iid s | iid == toId a -> pure $ a & suppliesL %~ (s :)
   UseSupply iid s | iid == toId a -> pure $ a & suppliesL %~ deleteFirst s
   Blanked msg' -> runMessage msg' a
-  RemovedLocation lid | investigatorLocation == lid -> do
+  RemovedLocation lid | investigatorLocation a == Just lid -> do
     -- needs to look at the "real" location not as if
-    pure $ a & locationL .~ LocationId nil
+    pure $ a & placementL .~ Unplaced
+  PlaceInvestigator iid placement | iid == toId a -> do
+    when (placement == Unplaced) do
+      enemies <- select $ enemyEngagedWith iid
+      case investigatorLocation a of
+        Just lid -> pushAll [PlaceEnemy enemy (AtLocation lid) | enemy <- enemies]
+        Nothing -> pushAll [toDiscard GameSource (toTarget enemy) | enemy <- enemies]
+
+    pure $ a & placementL .~ placement
   _ -> pure a
+
+investigatorLocation :: InvestigatorAttrs -> Maybe LocationId
+investigatorLocation a = case a.placement of
+  AtLocation lid -> Just lid
+  _ -> Nothing
 
 getFacingDefeat :: HasGame m => InvestigatorAttrs -> m Bool
 getFacingDefeat a@InvestigatorAttrs {..} = do

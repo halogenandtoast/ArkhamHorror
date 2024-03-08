@@ -362,6 +362,7 @@ runGameMessage msg g = case msg of
     -- TODO: we might want to check the ability index and source
     let
       isMovement = abilityIs ability #move
+      isInvestigate = abilityIs ability #investigate
 
     leaveCosts <-
       if isMovement
@@ -384,6 +385,16 @@ runGameMessage msg g = case msg of
           _ -> pure []
         else pure []
 
+    investigateCosts <-
+      if isInvestigate && not (abilityDelayAdditionalCosts ability)
+        then do
+          getMaybeLocation iid >>= \case
+            Just lid -> do
+              mods' <- getModifiers lid
+              pure [c | AdditionalCostToInvestigate c <- mods']
+            _ -> pure []
+        else pure []
+
     let
       costF =
         case find isSetCost modifiers' of
@@ -400,7 +411,8 @@ runGameMessage msg g = case msg of
         ActiveCost
           { activeCostId = acId
           , activeCostCosts =
-              mconcat (costF (abilityCost ability) : additionalCosts ++ leaveCosts ++ enterCosts)
+              mconcat
+                (costF (abilityCost ability) : additionalCosts ++ leaveCosts ++ enterCosts ++ investigateCosts)
           , activeCostPayments = Cost.NoPayment
           , activeCostTarget = ForAbility ability
           , activeCostWindows = windows'

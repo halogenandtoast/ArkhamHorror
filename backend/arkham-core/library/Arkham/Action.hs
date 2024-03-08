@@ -31,7 +31,7 @@ data Action
   | Resource
   | Explore
   | Circle
-  deriving stock (Show, Eq, Ord, Enum, Bounded, Generic, Data)
+  deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance IsLabel "activate" Action where

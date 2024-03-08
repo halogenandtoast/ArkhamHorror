@@ -122,8 +122,8 @@ colocatedWith = InvestigatorAt . LocationWithInvestigator . InvestigatorWithId
 investigatorEngagedWith :: (AsId enemy, IdOf enemy ~ EnemyId) => enemy -> InvestigatorMatcher
 investigatorEngagedWith = InvestigatorEngagedWith . EnemyWithId . asId
 
-investigatorAt :: LocationId -> InvestigatorMatcher
-investigatorAt = InvestigatorAt . LocationWithId
+investigatorAt :: (AsId a, IdOf a ~ LocationId) => a -> InvestigatorMatcher
+investigatorAt = InvestigatorAt . LocationWithId . asId
 
 replaceYouMatcher :: Data a => InvestigatorId -> a -> a
 replaceYouMatcher iid = replaceInvestigatorMatcher (transform replace)
@@ -240,6 +240,10 @@ accessibleTo = AccessibleTo . LocationWithId . asId
 locationNotOneOf :: IsLocationMatcher a => [a] -> LocationMatcher
 locationNotOneOf = LocationNotOneOf . map toLocationMatcher
 {-# INLINE locationNotOneOf #-}
+
+whileInvestigating :: (AsId a, IdOf a ~ LocationId) => a -> SkillTestMatcher
+whileInvestigating = WhileInvestigating . LocationWithId . asId
+{-# INLINE whileInvestigating #-}
 
 -- ** Treachery Helpers **
 

@@ -19,7 +19,12 @@ inTheKnow1 = asset InTheKnow1 Cards.inTheKnow1
 
 instance HasAbilities InTheKnow1 where
   getAbilities (InTheKnow1 attrs) =
-    [restrictedAbility attrs 1 ControlsThis $ investigateAction $ assetUseCost attrs Secret 1]
+    [ restrictedAbility attrs 1 ControlsThis (investigateAction $ assetUseCost attrs Secret 1)
+        & abilityDelayAdditionalCostsL
+        .~ True
+        & abilityMetadataL
+        ?~ InvestigateTargets RevealedLocation
+    ]
 
 instance RunMessage InTheKnow1 where
   runMessage msg a@(InTheKnow1 attrs) = case msg of
@@ -28,15 +33,23 @@ instance RunMessage InTheKnow1 where
       locationsWithInvestigate <- concatForM locations \lid -> do
         investigateActions <-
           select $ AbilityOnLocation (LocationWithId lid) <> AbilityIsAction #investigate
-        pure $ map (lid,) investigateActions
+        mods <- getModifiers lid
+        let costs = fold [m | AdditionalCostToInvestigate m <- mods]
+        pure $ map (lid,costs,) investigateActions
       player <- getPlayer iid
+      batchId <- getRandom
       push
         $ chooseOne player
-        $ [ targetLabel location
-            $ [ abilityModifier (toAbilitySource attrs 1) iid (AsIfAt location)
-              , UseAbility iid ability windows'
-              ]
-          | (location, ability) <- locationsWithInvestigate
+        $ [ targetLabel
+            location
+            [ Would
+                batchId
+                [ abilityModifier (toAbilitySource attrs 1) iid (AsIfAt location)
+                , PayAdditionalCost iid batchId costs
+                , UseAbility iid ability windows'
+                ]
+            ]
+          | (location, costs, ability) <- locationsWithInvestigate
           ]
       pure a
     _ -> InTheKnow1 <$> runMessage msg attrs

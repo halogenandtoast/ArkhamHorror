@@ -67,6 +67,7 @@ data ScenarioLogKey
     FoundACrackedMirror
   | StudiedADesecratedPortrait
   | NoticedTheMissingBones
+  | RecoveredAStrangeKey
   | -- | Murder at the Excelsior Hotel
     CleanedUpTheBlood
   | HidTheBody

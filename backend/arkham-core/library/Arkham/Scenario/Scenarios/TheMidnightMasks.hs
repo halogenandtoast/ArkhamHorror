@@ -76,10 +76,10 @@ instance RunMessage TheMidnightMasks where
       pushWhenM getIsStandalone $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
       pure s
     PreScenarioSetup -> do
-      litaForcedToFindOthersToHelpHerCause <- getHasRecord LitaWasForcedToFindOthersToHelpHerCause
+      forcedToFindOthers <- getHasRecord LitaWasForcedToFindOthersToHelpHerCause
       story
         $ introPart1
-        $ if litaForcedToFindOthersToHelpHerCause then TheMidnightMasksIntroOne else TheMidnightMasksIntroTwo
+        $ if forcedToFindOthers then TheMidnightMasksIntroOne else TheMidnightMasksIntroTwo
       story introPart2
       pure s
     Setup -> runScenarioSetup TheMidnightMasks attrs do
@@ -108,8 +108,7 @@ instance RunMessage TheMidnightMasks where
 
       count' <- getPlayerCount
       let acolytes = replicate (count' - 1) Enemies.acolyte
-      for_ (zip acolytes [southside, downtown, graveyard])
-        $ uncurry enemyAt
+      zipWithM_ enemyAt acolytes [southside, downtown, graveyard]
 
       whenHasRecord GhoulPriestIsStillAlive $ addToEncounterDeck (Only Enemies.ghoulPriest)
     ResolveChaosToken _ Cultist iid | isEasyStandard attrs -> do

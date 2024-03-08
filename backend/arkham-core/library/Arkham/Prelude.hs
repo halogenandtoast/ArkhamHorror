@@ -42,6 +42,7 @@ import Control.Monad.Extra as X (
   mconcatMapM,
   orM,
   partitionM,
+  zipWithM_,
  )
 import Control.Monad.Random as X (MonadRandom, uniform)
 import Control.Monad.Random.Class as X (getRandom, getRandomR, getRandoms)

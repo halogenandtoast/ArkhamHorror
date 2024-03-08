@@ -79,10 +79,7 @@ instance RunMessage TheDevourerBelow where
       gather EncounterSet.DarkCult
       gatherOneOf
         $ EncounterSet.AgentsOfYogSothoth
-        :| [ EncounterSet.AgentsOfShubNiggurath
-           , EncounterSet.AgentsOfCthulhu
-           , EncounterSet.AgentsOfHastur
-           ]
+        :| [EncounterSet.AgentsOfShubNiggurath, EncounterSet.AgentsOfCthulhu, EncounterSet.AgentsOfHastur]
 
       setAside [Locations.ritualSite, Enemies.umordhoth]
       whenHasRecord GhoulPriestIsStillAlive $ addToEncounterDeck (Only Enemies.ghoulPriest)
@@ -91,23 +88,19 @@ instance RunMessage TheDevourerBelow where
       setAgendaDeck agendaDeck
       addChaosToken ElderThing
 
-      woodsLocations <-
-        sampleN 4
-          $ Locations.arkhamWoodsUnhallowedGround
-          :| [ Locations.arkhamWoodsTwistingPaths
-             , Locations.arkhamWoodsOldHouse
-             , Locations.arkhamWoodsCliffside
-             , Locations.arkhamWoodsTangledThicket
-             , Locations.arkhamWoodsQuietGlade
-             ]
-
-      mainPath <- place Locations.mainPath
-      placeGroup "woods" woodsLocations
-      startAt mainPath
+      startAt =<< place Locations.mainPath
+      placeGroupChooseN 4 "woods"
+        $ Locations.arkhamWoodsUnhallowedGround
+        :| [ Locations.arkhamWoodsTwistingPaths
+           , Locations.arkhamWoodsOldHouse
+           , Locations.arkhamWoodsCliffside
+           , Locations.arkhamWoodsTangledThicket
+           , Locations.arkhamWoodsQuietGlade
+           ]
 
       cultistsWhoGotAway <- getRecordSet CultistsWhoGotAway
       let placeDoomAmount = (length cultistsWhoGotAway + 1) `div` 2
-      when (placeDoomAmount > 0) $ push $ PlaceDoomOnAgenda placeDoomAmount CanNotAdvance
+      pushWhen (placeDoomAmount > 0) $ PlaceDoomOnAgenda placeDoomAmount CanNotAdvance
 
       whenHasRecord ItIsPastMidnight
         $ pushAll

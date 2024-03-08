@@ -2651,7 +2651,9 @@ instance Projection Location where
       LocationCardId -> pure locationCardId
       -- virtual
       LocationCardDef -> pure $ toCardDef attrs
-      LocationCard -> pure $ lookupCard locationCardCode locationCardId
+      LocationCard -> do
+        let card = lookupCard locationCardCode locationCardId
+        pure $ if locationRevealed then flipCard card else card
       LocationAbilities -> pure $ getAbilities l
       LocationPrintedSymbol -> pure locationSymbol
       LocationVengeance -> pure $ cdVengeancePoints $ toCardDef attrs
@@ -2971,9 +2973,9 @@ instance Projection Investigator where
             AsIfAt lid -> Just lid
             _ -> Nothing
         pure
-          $ if investigatorLocation == LocationId nil
-            then mAsIfAt
-            else mAsIfAt <|> Just investigatorLocation
+          $ case investigatorPlacement of
+            AtLocation lid -> mAsIfAt <|> Just lid
+            _ -> mAsIfAt
       InvestigatorWillpower -> pure investigatorWillpower
       InvestigatorIntellect -> pure investigatorIntellect
       InvestigatorCombat -> pure investigatorCombat

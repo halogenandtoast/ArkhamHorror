@@ -6,6 +6,7 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
@@ -15,7 +16,13 @@ newtype MysteriousStairs_185 = MysteriousStairs_185 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mysteriousStairs_185 :: LocationCard MysteriousStairs_185
-mysteriousStairs_185 = location MysteriousStairs_185 Cards.mysteriousStairs_185 0 (Static 0)
+mysteriousStairs_185 =
+  locationWith
+    MysteriousStairs_185
+    Cards.mysteriousStairs_185
+    0
+    (Static 0)
+    (connectsToL .~ setFromList [Above, Below])
 
 instance HasAbilities MysteriousStairs_185 where
   getAbilities (MysteriousStairs_185 attrs) =

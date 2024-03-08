@@ -16,6 +16,7 @@ import Arkham.Source
 import Arkham.Spawn
 import Arkham.Strategy
 import Arkham.Token
+import GHC.Records
 
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId
@@ -47,6 +48,9 @@ data EnemyAttrs = EnemyAttrs
   , enemyAttacks :: InvestigatorMatcher
   }
   deriving stock (Show, Eq, Generic)
+
+instance HasField "placement" EnemyAttrs Placement where
+  getField = enemyPlacement
 
 enemyDamage :: EnemyAttrs -> Int
 enemyDamage = countTokens Damage . enemyTokens

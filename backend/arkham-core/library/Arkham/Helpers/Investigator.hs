@@ -25,6 +25,7 @@ import Arkham.Investigator.Types
 import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Message (Message (HealHorror, InvestigatorMulligan))
 import Arkham.Name
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
@@ -35,7 +36,6 @@ import Data.Foldable (foldrM)
 import Data.Function (on)
 import Data.List (nubBy)
 import Data.Monoid
-import Data.UUID (nil)
 import Data.UUID qualified as UUID
 
 getSkillValue :: HasGame m => SkillType -> InvestigatorId -> m Int
@@ -287,7 +287,7 @@ investigator f cardDef Stats {..} =
                 , investigatorCombat = combat
                 , investigatorAgility = agility
                 , investigatorTokens = mempty
-                , investigatorLocation = LocationId nil
+                , investigatorPlacement = Unplaced
                 , investigatorActionsTaken = mempty
                 , investigatorActionsPerformed = mempty
                 , investigatorRemainingActions = 3

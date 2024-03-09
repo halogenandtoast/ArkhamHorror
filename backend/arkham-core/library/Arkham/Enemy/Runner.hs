@@ -37,6 +37,7 @@ import Arkham.DefeatedBy
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Placement
 import Arkham.Id
 import Arkham.Keyword (_Swarming)
 import Arkham.Keyword qualified as Keyword
@@ -1126,10 +1127,7 @@ instance RunMessage EnemyAttrs where
         & (tokensL %~ removeAllTokens Doom . removeAllTokens Clue . removeAllTokens Token.Damage)
     PlaceEnemy eid placement | eid == enemyId -> do
       push $ EnemyCheckEngagement eid
-      case placement of
-        InThreatArea iid -> do
-          pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid (toCard a)]
-        _ -> pure ()
+      checkEntersThreatArea a placement
       pure $ a & placementL .~ placement
     Blanked msg' -> runMessage msg' a
     UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do

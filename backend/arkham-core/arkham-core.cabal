@@ -1502,6 +1502,7 @@ library
       Arkham.Helpers.Message
       Arkham.Helpers.Message.Discard
       Arkham.Helpers.Modifiers
+      Arkham.Helpers.Placement
       Arkham.Helpers.Projection
       Arkham.Helpers.Query
       Arkham.Helpers.Scenario

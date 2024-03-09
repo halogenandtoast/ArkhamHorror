@@ -27,6 +27,7 @@ import Arkham.SkillType
 import Arkham.Slot
 import Arkham.Trait
 import Data.Aeson.TH
+import GHC.Records
 
 data DeckRestriction
   = Signature InvestigatorId
@@ -141,6 +142,18 @@ data CardDef = CardDef
   , cdCustomizations :: Map Customization Int
   }
   deriving stock (Show, Eq, Ord, Data)
+
+instance HasField "attackOfOpportunityModifiers" CardDef [AttackOfOpportunityModifier] where
+  getField = cdAttackOfOpportunityModifiers
+
+instance HasField "actions" CardDef [Action] where
+  getField = cdActions
+
+instance HasField "beforeEffect" CardDef Bool where
+  getField = cdBeforeEffect
+
+instance HasField "fastWindow" CardDef (Maybe WindowMatcher) where
+  getField = cdFastWindow
 
 instance Exists CardDef where
   exists def = case cdCardType def of

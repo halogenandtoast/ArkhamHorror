@@ -26,7 +26,7 @@ attic_AThousandShapesOfHorror =
 
 instance HasAbilities Attic_AThousandShapesOfHorror where
   getAbilities (Attic_AThousandShapesOfHorror x) =
-    extend
+    extendRevealed
       x
       [ restrictedAbility x 1 (Here <> not_ (Remembered RecoveredAStrangeKey))
           $ FastAbility

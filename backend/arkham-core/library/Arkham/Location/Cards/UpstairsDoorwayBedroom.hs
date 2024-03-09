@@ -16,7 +16,7 @@ upstairsDoorwayBedroom = location UpstairsDoorwayBedroom Cards.upstairsDoorwayBe
 
 instance HasAbilities UpstairsDoorwayBedroom where
   getAbilities (UpstairsDoorwayBedroom x) =
-    extend
+    extendRevealed
       x
       [ restrictedAbility x 1 (Here <> exists (TreacheryInThreatAreaOf You <> TreacheryIsNonWeakness))
           $ ActionAbility [] (ActionCost 2)

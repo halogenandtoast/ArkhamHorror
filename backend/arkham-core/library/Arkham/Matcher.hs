@@ -169,8 +169,8 @@ assetIs = AssetIs . toCardCode
 assetControlledBy :: InvestigatorId -> AssetMatcher
 assetControlledBy = AssetControlledBy . InvestigatorWithId
 
-assetAt :: LocationId -> AssetMatcher
-assetAt = AssetAt . LocationWithId
+assetAt :: (AsId a, IdOf a ~ LocationId) => a -> AssetMatcher
+assetAt = AssetAt . LocationWithId . asId
 
 assetAtLocationWith :: InvestigatorId -> AssetMatcher
 assetAtLocationWith = AssetAt . locationWithInvestigator
@@ -180,8 +180,8 @@ assetAtLocationWith = AssetAt . locationWithInvestigator
 enemyIs :: HasCardCode a => a -> EnemyMatcher
 enemyIs = EnemyIs . toCardCode
 
-enemyAt :: LocationId -> EnemyMatcher
-enemyAt = EnemyAt . LocationWithId
+enemyAt :: (AsId a, IdOf a ~ LocationId) => a -> EnemyMatcher
+enemyAt = EnemyAt . LocationWithId . asId
 
 enemyAtLocationWith :: InvestigatorId -> EnemyMatcher
 enemyAtLocationWith = EnemyAt . locationWithInvestigator

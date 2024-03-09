@@ -130,4 +130,9 @@ runEventMessage msg a@EventAttrs {..} = case msg of
     pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
   ShuffleCardsIntoDeck _ cards ->
     pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
+  RemoveAllAttachments source target -> do
+    case placementToAttached a.placement of
+      Just attached | target == attached -> push $ toDiscard source a
+      _ -> pure ()
+    pure a
   _ -> pure a

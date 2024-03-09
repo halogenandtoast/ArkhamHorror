@@ -750,6 +750,8 @@ data Message
   | RemoveAllCopiesOfCardFromGame InvestigatorId CardCode
   | RemoveAllCopiesOfEncounterCardFromGame CardMatcher
   | RemovePlayerCardFromGame Bool Card
+  | RemoveAllTokens Source Target
+  | RemoveAllAttachments Source Target
   | RemoveAllClues Source Target
   | RemoveAllDoomFromPlay RemoveDoomMatchers
   | RemoveAllDoom Source Target

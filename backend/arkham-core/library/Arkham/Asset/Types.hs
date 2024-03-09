@@ -248,6 +248,9 @@ instance Is AssetAttrs AssetId where
 instance Be AssetAttrs AssetMatcher where
   be = AssetWithId . assetId
 
+instance HasField "placement" AssetAttrs Placement where
+  getField = assetPlacement
+
 instance HasField "exhausted" AssetAttrs Bool where
   getField = assetExhausted
 

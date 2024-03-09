@@ -29,4 +29,9 @@ instance RunMessage SkillAttrs where
       pure $ a {skillPlacement = Limbo}
     PlaceSkill sid placement | sid == toId a -> do
       pure $ a {skillPlacement = placement}
+    RemoveAllAttachments source target -> do
+      case placementToAttached a.placement of
+        Just attached | target == attached -> push $ toDiscard source a
+        _ -> pure ()
+      pure a
     _ -> pure a

@@ -5423,7 +5423,7 @@ upstairsDoorwayLibrary =
     mempty
     Diamond
     [Heart]
-    "Upstairs Hallway"
+    "Library"
     mempty
     Diamond
     [Heart]

@@ -55,6 +55,7 @@ import Arkham.Token qualified as Token
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkAfter, mkWhen)
 import Arkham.Window qualified as Window
+import Control.Lens (non)
 import GHC.Records
 
 activeCostActions :: ActiveCost -> [Action]
@@ -732,6 +733,20 @@ payCost msg c iid skipAdditionalCosts cost = do
             )
             cards
       push $ chooseOne player cardMsgs
+      pure c
+    SameSkillIconCost x -> do
+      handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
+      let total = foldMap (frequencies . cdSkills . toCardDef) handCards
+      let wildCount = total ^. at #wild . non 0
+      let choices = keys $ filterMap (\n -> n + wildCount > x) $ deleteMap #wild total
+      push
+        $ chooseOne
+          player
+          [ SkillLabel
+            skill
+            [PayCost acId iid skipAdditionalCosts (SkillIconCost x (singleton $ SkillIcon skill))]
+          | SkillIcon skill <- choices
+          ]
       pure c
     DiscardCombinedCost x -> do
       handCards <-

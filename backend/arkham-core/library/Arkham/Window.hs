@@ -224,6 +224,7 @@ data WindowType
   | AttemptExplore InvestigatorId
   | EnemiesAttackStep
   | AddingToCurrentDepth
+  | EntersThreatArea InvestigatorId Card
   | CancelledOrIgnoredCardOrGameEffect Source -- Diana Stanley
   | -- used to avoid checking a window
     DoNotCheckWindow

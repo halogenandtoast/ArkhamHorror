@@ -33,9 +33,12 @@ import Arkham.Treachery.Helpers as X
 import Arkham.Treachery.Types as X
 
 import Arkham.Ability.Type
+import Arkham.Card
 import Arkham.Id
 import Arkham.Message qualified as Msg
 import Arkham.Token
+import Arkham.Window (mkAfter)
+import Arkham.Window qualified as Window
 
 addHiddenToHand :: InvestigatorId -> TreacheryAttrs -> Message
 addHiddenToHand iid a = PlaceTreachery (toId a) (TreacheryInHandOf iid)
@@ -55,6 +58,10 @@ instance RunMessage TreacheryAttrs where
       push $ toDiscard GameSource a
       pure a
     PlaceTreachery tid placement | tid == treacheryId -> do
+      case placement of
+        TreacheryAttachedTo (InvestigatorTarget iid) -> do
+          pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid (toCard a)]
+        _ -> pure ()
       pure $ a & placementL .~ placement
     PlaceTokens _ (isTarget a -> True) token n -> do
       pure $ a & tokensL %~ addTokens token n

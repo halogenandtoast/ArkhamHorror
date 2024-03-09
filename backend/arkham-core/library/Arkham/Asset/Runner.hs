@@ -22,7 +22,7 @@ import Arkham.ChaosToken
 import Arkham.Classes.HasGame
 import Arkham.Damage
 import Arkham.DefeatedBy
-import Arkham.Enemy.Types (Field (EnemyPlacement))
+import Arkham.Helpers.Placement
 import Arkham.Helpers.Use
 import Arkham.Matcher (
   AssetMatcher (AnyAsset, AssetAttachedToAsset, AssetWithId),
@@ -187,16 +187,12 @@ instance RunMessage AssetAttrs where
           pushM $ checkWindows [mkAfter $ Window.SpentUses controller (toId a) useType' n]
         pure $ a & usesL . ix useType' .~ remainingUses
       _ -> error "Trying to use the wrong use type"
-    AttachAsset aid target | aid == assetId -> case target of
-      LocationTarget lid -> pure $ a & (placementL .~ AttachedToLocation lid)
-      EnemyTarget eid -> do
-        placement <- field EnemyPlacement eid
-        case placement of
-          InThreatArea iid -> do
-            pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid (toCard a)]
-          _ -> pure ()
-        pure $ a & (placementL .~ AttachedToEnemy eid)
-      _ -> error "Cannot attach asset to that type"
+    AttachAsset aid target | aid == assetId -> do
+      case target of
+        LocationTarget lid -> push $ PlaceAsset aid (AttachedToLocation lid)
+        EnemyTarget eid -> push $ PlaceAsset aid (AttachedToEnemy eid)
+        _ -> error "Cannot attach asset to that type"
+      pure a
     RemoveFromGame target | a `isTarget` target -> do
       a <$ push (RemoveFromPlay $ toSource a)
     Discard _ source target | a `isTarget` target -> do
@@ -320,16 +316,7 @@ instance RunMessage AssetAttrs where
     AddToHand _ cards -> do
       pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
     PlaceAsset aid placement | aid == assetId -> do
-      case placement of
-        InThreatArea iid -> do
-          pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid (toCard a)]
-        AttachedToEnemy eid -> do
-          p <- field EnemyPlacement eid
-          case p of
-            InThreatArea iid -> do
-              pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid (toCard a)]
-            _ -> pure ()
-        _ -> pure ()
+      checkEntersThreatArea a placement
       pure $ a & placementL .~ placement
     Blanked msg' -> runMessage msg' a
     RemoveAllAttachments source target -> do

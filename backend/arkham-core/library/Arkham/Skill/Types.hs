@@ -59,6 +59,9 @@ data SkillAttrs = SkillAttrs
 instance HasField "controller" SkillAttrs InvestigatorId where
   getField = skillOwner
 
+instance HasField "placement" SkillAttrs Placement where
+  getField = skillPlacement
+
 additionalCostL :: Lens' SkillAttrs (Maybe Cost)
 additionalCostL = lens skillAdditionalCost $ \m x -> m {skillAdditionalCost = x}
 

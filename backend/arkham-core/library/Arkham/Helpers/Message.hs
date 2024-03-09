@@ -29,7 +29,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
-import Arkham.Window (Window (..), WindowType, defaultWindows, mkWindow)
+import Arkham.Window (Window (..), WindowType, defaultWindows, mkAfter, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone
 
@@ -121,6 +121,42 @@ dealAdditionalHorror iid amount additionalMessages = do
               []
           _ -> error "impossible"
       replaceMessage horrorMsg $ newMsg : additionalMessages
+    Nothing -> throwIO $ InvalidState "No horror occured"
+
+cancelHorror
+  :: (Sourceable source, HasQueue Message m, HasGame m)
+  => InvestigatorId
+  -> source
+  -> Int
+  -> [Message]
+  -> m ()
+cancelHorror iid (toSource -> source) amount additionalMessages = do
+  mMsg <- findFromQueue $ \case
+    InvestigatorDamage iid' _ _ n | iid' == iid -> n > 0
+    InvestigatorDoAssignDamage iid' _ _ _ _ n [] [] | iid' == iid -> n > 0
+    _ -> False
+  case mMsg of
+    Just horrorMsg -> do
+      let
+        mNewMsg = case horrorMsg of
+          InvestigatorDamage _ source' damage n ->
+            guard (n - amount > 0) $> InvestigatorDamage iid source' damage (n - amount)
+          InvestigatorDoAssignDamage _ source' strategy matcher damage n [] [] ->
+            guard (n - amount > 0)
+              $> InvestigatorDoAssignDamage
+                iid
+                source'
+                strategy
+                matcher
+                damage
+                (n - amount)
+                []
+                []
+          _ -> error "impossible"
+
+      ignoreWindow <- checkWindows [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect source)]
+      push ignoreWindow
+      replaceMessage horrorMsg $ maybeToList mNewMsg <> additionalMessages
     Nothing -> throwIO $ InvalidState "No horror occured"
 
 createEnemy

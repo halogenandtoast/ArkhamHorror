@@ -35,7 +35,7 @@ instance HasAbilities Attic_AThousandShapesOfHorror where
 
 instance RunMessage Attic_AThousandShapesOfHorror where
   runMessage msg l@(Attic_AThousandShapesOfHorror attrs) = case msg of
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       push $ Remember RecoveredAStrangeKey
       pure l
     _ -> Attic_AThousandShapesOfHorror <$> runMessage msg attrs

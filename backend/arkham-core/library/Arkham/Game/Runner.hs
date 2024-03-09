@@ -363,6 +363,7 @@ runGameMessage msg g = case msg of
     let
       isMovement = abilityIs ability #move
       isInvestigate = abilityIs ability #investigate
+      isResign = abilityIs ability #resign
 
     leaveCosts <-
       if isMovement
@@ -395,6 +396,16 @@ runGameMessage msg g = case msg of
             _ -> pure []
         else pure []
 
+    resignCosts <-
+      if isResign && not (abilityDelayAdditionalCosts ability)
+        then do
+          getMaybeLocation iid >>= \case
+            Just lid -> do
+              mods' <- getModifiers lid
+              pure [c | AdditionalCostToResign c <- mods']
+            _ -> pure []
+        else pure []
+
     let
       costF =
         case find isSetCost modifiers' of
@@ -412,7 +423,9 @@ runGameMessage msg g = case msg of
           { activeCostId = acId
           , activeCostCosts =
               mconcat
-                (costF (abilityCost ability) : additionalCosts ++ leaveCosts ++ enterCosts ++ investigateCosts)
+                ( costF (abilityCost ability)
+                    : additionalCosts ++ leaveCosts ++ enterCosts ++ investigateCosts ++ resignCosts
+                )
           , activeCostPayments = Cost.NoPayment
           , activeCostTarget = ForAbility ability
           , activeCostWindows = windows'

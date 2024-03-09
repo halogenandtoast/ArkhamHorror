@@ -71,4 +71,9 @@ instance RunMessage TreacheryAttrs where
         (treacheryPlacement == TreacheryLimbo)
         (toDiscardBy iid iid a)
       pure $ a & resolvedL %~ insertSet iid
+    RemoveAllAttachments source target -> do
+      case a.placement of
+        TreacheryAttachedTo attached | target == attached -> push $ toDiscard source a
+        _ -> pure ()
+      pure a
     _ -> pure a

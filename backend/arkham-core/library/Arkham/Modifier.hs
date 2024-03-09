@@ -49,6 +49,7 @@ data ModifierType
   | AdditionalCost Cost
   | AdditionalCostToEnter Cost
   | AdditionalCostToInvestigate Cost
+  | AdditionalCostToResign Cost
   | AdditionalCostToLeave Cost
   | AdditionalStartingUses Int
   | AdditionalStartingCards [Card]

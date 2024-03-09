@@ -242,6 +242,20 @@ selectOnlyOne matcher =
         <> ", got: "
         <> show (length xs)
 
+selectSortedBy
+  :: ( EntityId rec ~ QueryElement a
+     , Projection rec
+     , HasGame m
+     , Query a
+     , Ord typ
+     )
+  => Field rec typ
+  -> a
+  -> m [QueryElement a]
+selectSortedBy fld matcher = do
+  results <- selectWithField fld matcher
+  pure $ map fst $ sortOn snd results
+
 isMatch
   :: (HasCallStack, Query matcher, HasGame m)
   => QueryElement matcher

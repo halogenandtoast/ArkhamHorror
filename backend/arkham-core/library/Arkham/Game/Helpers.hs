@@ -83,7 +83,7 @@ import Arkham.Trait (Trait, toTraits)
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), defaultWindows, mkWindow)
 import Arkham.Window qualified as Window
-import Control.Lens (over)
+import Control.Lens (non, over)
 import Control.Monad.Reader (local)
 import Data.Data.Lens (biplate)
 import Data.List qualified as List
@@ -345,11 +345,21 @@ getCanAffordAbilityCost iid a@Ability {..} = do
                 mods <- getModifiers lid
                 pure [m | AdditionalCostToInvestigate m <- mods]
       else pure []
+  resignCosts <-
+    if #resign `elem` abilityActions a
+      then do
+        mLocation <- field InvestigatorLocation iid
+        case mLocation of
+          Nothing -> pure []
+          Just lid -> do
+            mods <- getModifiers lid
+            pure [m | AdditionalCostToResign m <- mods]
+      else pure []
   let
     costF =
       case find isSetCost modifiers of
-        Just (SetAbilityCost c) -> fold . (: investigateCosts) . const c
-        _ -> fold . (: investigateCosts)
+        Just (SetAbilityCost c) -> fold . (: investigateCosts <> resignCosts) . const c
+        _ -> fold . (: investigateCosts <> resignCosts)
     isSetCost = \case
       SetAbilityCost _ -> True
       _ -> False
@@ -658,6 +668,11 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
             (count (`member` insertSet WildIcon skillTypes) . cdSkills . toCardDef)
             handCards
     pure $ total >= n
+  SameSkillIconCost n -> do
+    handCards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
+    let total = foldMap (frequencies . cdSkills . toCardDef) handCards
+    let wildCount = total ^. at #wild . non 0
+    pure $ foldr (\x y -> y || x + wildCount > n) False $ toList $ deleteMap #wild total
   DiscardCombinedCost n -> do
     handCards <-
       mapMaybe (preview _PlayerCard)
@@ -1138,6 +1153,17 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
               pure [m | AdditionalCostToInvestigate m <- mods]
         else pure []
 
+    resignCosts <-
+      if #resign `elem` cdActions pcDef
+        then do
+          mLocation <- field InvestigatorLocation iid
+          case mLocation of
+            Nothing -> pure []
+            Just lid -> do
+              mods <- getModifiers lid
+              pure [m | AdditionalCostToResign m <- mods]
+        else pure []
+
     attrs <- getAttrs @Investigator iid
     actionCost <- getActionCost attrs (cdActions pcDef)
 
@@ -1152,6 +1178,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
           ]
         <> additionalCosts
         <> investigateCosts
+        <> resignCosts
         <> sealedChaosTokenCost
         <> [fromMaybe mempty (cdAdditionalCost pcDef) | costStatus /= PaidCost]
 

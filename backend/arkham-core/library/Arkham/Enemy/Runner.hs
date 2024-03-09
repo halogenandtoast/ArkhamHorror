@@ -58,6 +58,7 @@ import Arkham.Matcher (
  )
 import Arkham.Message
 import Arkham.Message qualified as Msg
+import Arkham.Movement
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
@@ -292,6 +293,17 @@ instance RunMessage EnemyAttrs where
                   [ chooseOne lead $ targetLabels closestLocationIds (only . EnemyMove enemyId)
                   , MoveUntil lid target
                   ]
+      pure a
+    Move movement | isTarget a (moveTarget movement) -> do
+      case moveDestination movement of
+        ToLocation destinationLocationId -> do
+          push $ EnemyMove (toId a) destinationLocationId
+        ToLocationMatching matcher -> do
+          lids <- select matcher
+          player <- getLeadPlayer
+          push
+            $ chooseOrRunOne player
+            $ [targetLabel lid [Move $ movement {moveDestination = ToLocation lid}] | lid <- lids]
       pure a
     EnemyMove eid lid | eid == enemyId -> case enemyPlacement of
       AsSwarm eid' _ -> do
@@ -1137,4 +1149,9 @@ instance RunMessage EnemyAttrs where
       push $ RemoveEnemy (toId a)
       pure a
     SendMessage (isTarget a -> True) msg' -> runMessage msg' a
+    RemoveAllAttachments source target -> do
+      case placementToAttached a.placement of
+        Just attached | target == attached -> push $ toDiscard source a
+        _ -> pure ()
+      pure a
     _ -> pure a

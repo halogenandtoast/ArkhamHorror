@@ -313,4 +313,9 @@ instance RunMessage AssetAttrs where
     PlaceAsset aid placement | aid == assetId -> do
       pure $ a & placementL .~ placement
     Blanked msg' -> runMessage msg' a
+    RemoveAllAttachments source target -> do
+      case placementToAttached a.placement of
+        Just attached | target == attached -> push $ toDiscard source a
+        _ -> pure ()
+      pure a
     _ -> pure a

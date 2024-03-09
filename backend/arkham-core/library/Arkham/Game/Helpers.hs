@@ -1796,6 +1796,13 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
   case mtchr of
     Matcher.NotAnyWindow -> noMatch
     Matcher.AnyWindow -> isMatch
+    Matcher.EntersThreatArea timing whoMatcher cardMatcher -> guardTiming timing \case
+      Window.EntersThreatArea who card -> do
+        andM
+          [ matchWho iid who whoMatcher
+          , pure $ card `cardMatch` cardMatcher
+          ]
+      _ -> noMatch
     Matcher.WouldPayCardCost timing whomatcher cardMatcher -> guardTiming timing \case
       Window.WouldPayCardCost who _ _ card -> do
         andM

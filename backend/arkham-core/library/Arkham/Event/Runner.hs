@@ -23,10 +23,12 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window
 import Arkham.Message qualified as Msg
 import Arkham.Placement
+import Arkham.Projection
 import Arkham.Window (mkAfter)
 import Arkham.Window qualified as Window
 
@@ -93,6 +95,16 @@ runEventMessage msg a@EventAttrs {..} = case msg of
   UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
   RemoveAllChaosTokens face -> pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
   PlaceEvent _ eid placement | eid == eventId -> do
+    case placement of
+      InThreatArea iid -> do
+        pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid (toCard a)]
+      AttachedToEnemy eid' -> do
+        p <- field EnemyPlacement eid'
+        case p of
+          InThreatArea iid -> do
+            pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid (toCard a)]
+          _ -> pure ()
+      _ -> pure ()
     pure $ a & placementL .~ placement
   FinishedEvent eid | eid == eventId -> do
     mods <- liftA2 (<>) (getModifiers eid) (getModifiers $ toCardId $ toCard a)

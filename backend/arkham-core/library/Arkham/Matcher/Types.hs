@@ -857,6 +857,7 @@ data WindowMatcher
   | LostActions Timing Who SourceMatcher
   | WouldTriggerChaosTokenRevealEffectOnCard Who CardMatcher [ChaosTokenFace]
   | Exhausts Timing Who TargetMatcher
+  | EntersThreatArea Timing Who CardMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 data PhaseStepMatcher = EnemiesAttackStep | HuntersMoveStep

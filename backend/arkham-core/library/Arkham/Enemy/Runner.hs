@@ -981,21 +981,21 @@ instance RunMessage EnemyAttrs where
       case enemyPlacement of
         AsSwarm eid' _ -> do
           push $ EnemyEngageInvestigator eid' iid
-          pure a
         _ -> do
           lid <- getJustLocation iid
           enemyLocation <- field EnemyLocation eid
           when (Just lid /= enemyLocation) $ push $ EnemyEntered eid lid
           massive <- eid <=~> MassiveEnemy
-          pure $ a & (if massive then id else placementL .~ InThreatArea iid)
+          pushWhen (not massive) $ PlaceEnemy eid (InThreatArea iid)
+      pure a
     EngageEnemy iid eid mTarget False | eid == enemyId -> do
       case enemyPlacement of
         AsSwarm eid' _ -> do
           push $ EngageEnemy iid eid' mTarget False
-          pure a
         _ -> do
           massive <- eid <=~> MassiveEnemy
-          pure $ a & (if massive then id else placementL .~ InThreatArea iid)
+          pushWhen (not massive) $ PlaceEnemy eid (InThreatArea iid)
+      pure a
     WhenWillEnterLocation iid lid -> do
       case enemyPlacement of
         InThreatArea iid' | iid' == iid -> do
@@ -1126,6 +1126,10 @@ instance RunMessage EnemyAttrs where
         & (tokensL %~ removeAllTokens Doom . removeAllTokens Clue . removeAllTokens Token.Damage)
     PlaceEnemy eid placement | eid == enemyId -> do
       push $ EnemyCheckEngagement eid
+      case placement of
+        InThreatArea iid -> do
+          pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid (toCard a)]
+        _ -> pure ()
       pure $ a & placementL .~ placement
     Blanked msg' -> runMessage msg' a
     UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do

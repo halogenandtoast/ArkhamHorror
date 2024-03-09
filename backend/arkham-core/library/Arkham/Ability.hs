@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 module Arkham.Ability (
   module X,
   module Arkham.Ability,
@@ -18,6 +20,7 @@ import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
 import Arkham.Source
 import Control.Lens (set)
+import GHC.Records
 
 inHandAbility :: Ability -> Bool
 inHandAbility = inHandCriteria . abilityCriteria
@@ -42,6 +45,9 @@ abilityCost = abilityTypeCost . abilityType
 
 abilityActions :: Ability -> [Action]
 abilityActions = abilityTypeActions . abilityType
+
+instance HasField "actions" Ability [Action] where
+  getField = abilityActions
 
 abilityIs :: Ability -> Action -> Bool
 abilityIs a = (`elem` abilityActions a)

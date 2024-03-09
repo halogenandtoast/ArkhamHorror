@@ -14,6 +14,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Data.Aeson.TH
+import GHC.Records
 
 data Ability = Ability
   { abilitySource :: Source
@@ -30,6 +31,12 @@ data Ability = Ability
   , abilityDelayAdditionalCosts :: Bool
   }
   deriving stock (Show, Ord, Data)
+
+instance HasField "source" Ability Source where
+  getField = abilitySource
+
+instance HasField "index" Ability Int where
+  getField = abilityIndex
 
 data AbilityMetadata
   = IntMetadata Int

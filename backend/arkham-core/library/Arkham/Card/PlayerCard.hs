@@ -14,7 +14,9 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Name
 import Arkham.PlayerCard
+import Arkham.SkillType
 import Data.Aeson.TH
+import GHC.Records
 
 data PlayerCard = MkPlayerCard
   { pcId :: CardId
@@ -37,6 +39,9 @@ instance HasCost PlayerCard where
     Just DynamicCost -> 0
     Just DiscardAmountCost -> 0
     Nothing -> 0
+
+instance HasField "skills" PlayerCard [SkillIcon] where
+  getField = cdSkills . toCardDef
 
 instance HasCardDef PlayerCard where
   toCardDef c = case lookup (pcCardCode c) (allPlayerCards <> allSpecialEnemyCards) of

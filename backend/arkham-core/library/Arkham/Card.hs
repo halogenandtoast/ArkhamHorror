@@ -16,6 +16,7 @@ import Arkham.Card.EncounterCard as X (EncounterCard (..))
 import Arkham.Card.Id as X
 import Arkham.Card.PlayerCard as X (PlayerCard (..))
 
+import Arkham.Action (Action)
 import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
 import Arkham.Classes.GameLogger
@@ -30,6 +31,7 @@ import Arkham.SkillType
 import Arkham.Trait
 import Data.Aeson.TH
 import Data.Text qualified as T
+import GHC.Records
 
 lookupCard
   :: (HasCallStack, HasCardCode cardCode) => cardCode -> CardId -> Card
@@ -196,6 +198,15 @@ data Card
   | EncounterCard EncounterCard
   | VengeanceCard Card
   deriving stock (Show, Ord, Data)
+
+instance HasField "actions" Card [Action] where
+  getField = cdActions . toCardDef
+
+instance HasField "skills" Card [SkillIcon] where
+  getField = cdSkills . toCardDef
+
+instance HasField "cost" Card (Maybe CardCost) where
+  getField = cdCost . toCardDef
 
 instance Eq Card where
   a == b = toCardId a == toCardId b

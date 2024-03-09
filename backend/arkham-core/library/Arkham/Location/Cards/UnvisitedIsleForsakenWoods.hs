@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.CampaignLogKey
+import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Log
@@ -81,5 +82,8 @@ instance RunMessage UnvisitedIsleForsakenWoods where
       pure l
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       passedCircleTest iid attrs
+      pure l
+    FoundEncounterCard _iid (isTarget attrs -> True) (toCard -> card) -> do
+      pushM $ createEnemyAt_ card (toId attrs) Nothing
       pure l
     _ -> UnvisitedIsleForsakenWoods <$> runMessage msg attrs

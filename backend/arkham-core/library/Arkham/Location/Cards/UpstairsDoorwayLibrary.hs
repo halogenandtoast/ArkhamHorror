@@ -12,7 +12,7 @@ newtype UpstairsDoorwayLibrary = UpstairsDoorwayLibrary LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 upstairsDoorwayLibrary :: LocationCard UpstairsDoorwayLibrary
-upstairsDoorwayLibrary = location UpstairsDoorwayLibrary Cards.upstairsDoorwayLibrary 0 (Static 0)
+upstairsDoorwayLibrary = location UpstairsDoorwayLibrary Cards.upstairsDoorwayLibrary 1 (PerPlayer 1)
 
 instance HasModifiersFor UpstairsDoorwayLibrary where
   getModifiersFor target (UpstairsDoorwayLibrary a) | a `is` target = do

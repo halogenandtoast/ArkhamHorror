@@ -359,6 +359,9 @@ instance IsLabel "move" ActionTarget where
 instance IsLabel "investigate" ActionTarget where
   fromLabel = IsAction #investigate
 
+instance IsLabel "resign" ActionTarget where
+  fromLabel = IsAction #resign
+
 setActiveDuringSetup :: Modifier -> Modifier
 setActiveDuringSetup m = m {modifierActiveDuringSetup = True}
 

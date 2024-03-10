@@ -10,6 +10,7 @@ import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.Sequence
 import Arkham.Aspect.Types
 import Arkham.Asset.Uses
+import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card.CardCode
 import Arkham.Card.CardType
@@ -123,6 +124,7 @@ data InvestigatorMatcher
   | InvestigatorWithBondedCard CardMatcher
   | InvestigatorIfThen InvestigatorMatcher InvestigatorMatcher InvestigatorMatcher
   | InvestigatorCanTarget Target
+  | InvestigatorWithRecord CampaignLogKey
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated InvestigatorMatcher

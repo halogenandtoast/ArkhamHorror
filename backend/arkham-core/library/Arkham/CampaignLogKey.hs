@@ -240,6 +240,9 @@ data CampaignLogKey
   | RandolphSurvivedTheDescent
   | RandolphDidNotSurviveTheDescent
   | TheInvestigatorsPossessTheSilverKey
+  | TheBlackCatRequestedAidFromTheOthers
+  | TheBlackCatSharedKnowledgeOfTheUnderworld
+  | TheBlackCatIsSearchingForTheTruth
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

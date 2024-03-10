@@ -93,6 +93,12 @@ story flavor = do
   players <- allPlayers
   push $ Msg.story players flavor
 
+storyWithChooseOne :: ReverseQueue m => FlavorText -> [UI Message] -> m ()
+storyWithChooseOne flavor choices = do
+  players <- allPlayers
+  lead <- getLeadPlayer
+  push $ Msg.storyWithChooseOne lead players flavor choices
+
 sufferTrauma :: ReverseQueue m => InvestigatorId -> Int -> Int -> m ()
 sufferTrauma iid physical mental = push $ SufferTrauma iid physical mental
 

@@ -326,3 +326,24 @@ nowWhereWasI =
     [ "“Now, where was I? Oh, right. I had a chat with your friends. They’re in\
       \ the Dreamlands now, too. They have a message for you.”"
     ]
+
+theBlackCatRequestedAidFromTheOthers :: FlavorText
+theBlackCatRequestedAidFromTheOthers =
+  FlavorText
+    Nothing
+    [ "“Your friends are in a bit of trouble. They took a one-way trip to a pretty awful place, and I don’t know if they’ll be able to navigate it without me. I know your quest is looking pretty dire right now, too, but if I don’t stick by them, it won’t matter whether you reach Kadath or not. Good luck. Try not to die.” With that, the black cat leaps out of view."
+    ]
+
+warnedTheOthersStory :: FlavorText
+warnedTheOthersStory =
+  FlavorText
+    Nothing
+    [ "“Your friends are doing about as well as can be expected, really. But they’re worried about you, and for good reason, it seems. They might not be able to reach you any time soon. They want me to help you out instead, so I’ll be staying here for a little while longer. Gotta make sure you survive. If you don’t, well...” it takes a long pause, “...let’s not talk about that.”"
+    ]
+
+sharedTheKnowledgeStory :: FlavorText
+sharedTheKnowledgeStory =
+  FlavorText
+    Nothing
+    [ "The black cat tells you all about the region of the Dreamlands your companions have entered. “The entire surface of the Dreamlands, where you’ve been exploring, covers the Underworld like a beautiful silk dress over decayed skin. You have no reason to go there, which is a good thing, because it is a particularly inhospitable place. You actually might have walked right by one entrance to the Underworld, now that I think about it—back in the Enchanted Woods. There are several other entrances as well: beneath an old monastery in Leng, another in the ruins of Sarkomand...”"
+    ]

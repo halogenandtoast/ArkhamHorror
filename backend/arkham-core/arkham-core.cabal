@@ -890,6 +890,7 @@ library
       Arkham.Campaigns.TheCircleUndone.Import
       Arkham.Campaigns.TheCircleUndone.Memento
       Arkham.Campaigns.TheDreamEaters.CampaignSteps
+      Arkham.Campaigns.TheDreamEaters.ChaosBag
       Arkham.Campaigns.TheDreamEaters.FlavorText
       Arkham.Campaigns.TheDreamEaters.Helpers
       Arkham.Campaigns.TheDreamEaters.Import

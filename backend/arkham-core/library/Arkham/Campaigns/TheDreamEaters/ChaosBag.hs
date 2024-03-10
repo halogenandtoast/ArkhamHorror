@@ -1,0 +1,155 @@
+module Arkham.Campaigns.TheDreamEaters.ChaosBag where
+
+import Arkham.Campaigns.TheDreamEaters.Meta
+import Arkham.ChaosToken
+import Arkham.Difficulty
+
+initChaosBag :: CampaignPart -> Difficulty -> [ChaosTokenFace]
+initChaosBag TheDreamQuest = \case
+  Easy ->
+    [ PlusOne
+    , PlusOne
+    , Zero
+    , Zero
+    , Zero
+    , MinusOne
+    , MinusOne
+    , MinusTwo
+    , MinusTwo
+    , Cultist
+    , Tablet
+    , Tablet
+    , AutoFail
+    , ElderSign
+    ]
+  Standard ->
+    [ PlusOne
+    , Zero
+    , Zero
+    , MinusOne
+    , MinusOne
+    , MinusTwo
+    , MinusTwo
+    , MinusThree
+    , MinusFour
+    , Cultist
+    , Tablet
+    , Tablet
+    , AutoFail
+    , ElderSign
+    ]
+  Hard ->
+    [ Zero
+    , Zero
+    , MinusOne
+    , MinusOne
+    , MinusTwo
+    , MinusTwo
+    , MinusThree
+    , MinusThree
+    , MinusFour
+    , MinusFive
+    , Cultist
+    , Tablet
+    , Tablet
+    , AutoFail
+    , ElderSign
+    ]
+  Expert ->
+    [ Zero
+    , MinusOne
+    , MinusOne
+    , MinusTwo
+    , MinusTwo
+    , MinusThree
+    , MinusFour
+    , MinusFour
+    , MinusFive
+    , MinusSix
+    , MinusEight
+    , Cultist
+    , Tablet
+    , Tablet
+    , AutoFail
+    , ElderSign
+    ]
+initChaosBag TheWebOfDreams = \case
+  Easy ->
+    [ PlusOne
+    , PlusOne
+    , Zero
+    , Zero
+    , Zero
+    , MinusOne
+    , MinusOne
+    , MinusOne
+    , MinusTwo
+    , MinusTwo
+    , Skull
+    , Skull
+    , Cultist
+    , ElderThing
+    , ElderThing
+    , AutoFail
+    , ElderSign
+    ]
+  Standard ->
+    [ PlusOne
+    , Zero
+    , Zero
+    , MinusOne
+    , MinusOne
+    , MinusOne
+    , MinusTwo
+    , MinusTwo
+    , MinusThree
+    , MinusFour
+    , Skull
+    , Skull
+    , Cultist
+    , ElderThing
+    , ElderThing
+    , AutoFail
+    , ElderSign
+    ]
+  Hard ->
+    [ Zero
+    , Zero
+    , Zero
+    , MinusOne
+    , MinusOne
+    , MinusTwo
+    , MinusTwo
+    , MinusThree
+    , MinusThree
+    , MinusFour
+    , MinusFive
+    , Skull
+    , Skull
+    , Cultist
+    , ElderThing
+    , ElderThing
+    , AutoFail
+    , ElderSign
+    ]
+  Expert ->
+    [ Zero
+    , MinusOne
+    , MinusOne
+    , MinusTwo
+    , MinusTwo
+    , MinusThree
+    , MinusThree
+    , MinusFour
+    , MinusFour
+    , MinusFive
+    , MinusSix
+    , MinusEight
+    , Skull
+    , Skull
+    , Cultist
+    , ElderThing
+    , ElderThing
+    , AutoFail
+    , ElderSign
+    ]

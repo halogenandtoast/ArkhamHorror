@@ -197,7 +197,7 @@ instance RunMessage AThousandShapesOfHorror where
         Resolution 4 -> do
           story $ i18nWithTitle "dreamEaters.aThousandShapesOfHorror.resolution4"
           record RandolphDidNotSurviveTheDescent
-          removeCampaignCardFromDeck Assets.randolphCarterChainedToTheWakingWorld
+          removeCampaignCard Assets.randolphCarterChainedToTheWakingWorld
           allGainXp attrs
         other -> throw $ UnknownResolution other
       pure s

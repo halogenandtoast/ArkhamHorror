@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Campaign.Option
 import Arkham.CampaignLogKey
 import Arkham.Json
+import GHC.Records
 
 data CampaignLog = CampaignLog
   { campaignLogRecorded :: Set CampaignLogKey
@@ -15,6 +16,12 @@ data CampaignLog = CampaignLog
   , campaignLogOptions :: Set CampaignOption
   }
   deriving stock (Show, Generic, Eq)
+
+instance HasField "recorded" CampaignLog (Set CampaignLogKey) where
+  getField = campaignLogRecorded
+
+instance HasField "recordedCounts" CampaignLog (Map CampaignLogKey Int) where
+  getField = campaignLogRecordedCounts
 
 instance Semigroup CampaignLog where
   a <> b =

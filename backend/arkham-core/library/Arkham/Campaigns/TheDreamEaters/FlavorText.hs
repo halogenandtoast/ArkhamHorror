@@ -218,3 +218,111 @@ okayFineHaveItYourWayThen =
     [ "“Nah, you know what? Forget about it. I’m sure you’ll be fine.” The black\
       \ cat suddenly leaves without another word."
     ]
+
+theOneironauts1 :: FlavorText
+theOneironauts1 =
+  FlavorText
+    (Just "Interlude II: The Oneironauts")
+    [ "The black cat awaits you at the bottom of the stairs, watching your long\
+      \ descent with distant, unblinking eyes. You are about to ask how the cat got\
+      \ there when it cuts you off. “Don’t bother. You wouldn’t understand.” It\
+      \ curls up on the cold stone floor, lounging amid the bleak environment."
+    ]
+
+where'sBlondie :: FlavorText
+where'sBlondie =
+  FlavorText
+    Nothing
+    [ "“Where’s blondie?” the black cat asks, peering around. You remain silent,\
+      \ in anguish. “Ah. I see.” The cat examines its paw. It doesn’t seem to care\
+      \ that your companion did not survive the descent. “Well, that seems to have\
+      \ resolved itself nicely,” it says to itself cryptically."
+    ]
+
+youAskedForIt :: FlavorText
+youAskedForIt =
+  FlavorText
+    Nothing
+    [ "“Well, since you clearly don’t need my help, I’ll be off now. Just wanted\
+      \ to check to see if you’re still alive. And look at that! You are. For now.\
+      \ Bye then.” Before you get the chance to reply, the black cat wanders off,\
+      \ its pitch-black fur melding into the darkness of the Underworld."
+    ]
+
+youDidNotAskForIt :: FlavorText
+youDidNotAskForIt =
+  FlavorText
+    Nothing
+    [ "You’ve about had it with this cat’s cryptic half-truths and nonanswers.\
+      \ You rail at the beast. How are you supposed to help when you might as well\
+      \ be stumbling in the dark? The black cat sits up and narrows its gaze. “I\
+      \ did not know if you could be trusted. To be honest, I am still unsure. I\
+      \ have had visions of these events for many, many years now. I know some of\
+      \ what may come to pass, but not everything. You could be the ones who will\
+      \ save all of us...or the fools who herald our doom.” The cat’s justification\
+      \ is convenient, but it does explain how it has known where to find you at\
+      \ every turn. You try to persuade the cat to trust you, but it remains\
+      \ unconvinced. “Tell you what. Beneath the surface of the Sea of Pitch lies a\
+      \ passageway between realms. That is where you need to go to stop this world\
+      \ from merging with yours. Make it there in one piece, and I’ll tell you\
+      \ everything. But first, I have somewhere else to be. Your pals need me,\
+      \ too.”"
+    ]
+
+theOneironauts2 :: FlavorText
+theOneironauts2 =
+  FlavorText
+    Nothing
+    [ "<b>The Oneironauts 2</b>: You open your eyes to the sound of a cat’s\
+      \ shrill caterwauling. You had been drifting off to...well, not sleep,\
+      \ exactly. Despite—or perhaps due to—your dreaming, you have been unable to\
+      \ truly sleep in this realm. When you come to your senses, you spot the\
+      \ source of the wailing: Virgil’s cat, black as the void of space itself,\
+      \ sits several feet away waiting for you to pay attention. “Finally,” it\
+      \ declares, “about time you noticed something outside your own head. Listen,\
+      \ I got something important to tell you.”"
+    ]
+
+atLeastOneNotCaptured :: FlavorText
+atLeastOneNotCaptured =
+  FlavorText
+    Nothing
+    [ "“Wait, where is my human?” the cat asks, craning its head to look around\
+      \ the deck of your ship. “Didn’t I leave him with you?” You explain that\
+      \ Virgil has been taken captive by Corsairs, and the cat replies by licking\
+      \ its paw without much concern. “Oh yeah, that’s right. Okay. I’m on the same\
+      \ page as you now.”"
+    ]
+
+allCaptured :: FlavorText
+allCaptured =
+  FlavorText
+    Nothing
+    [ "You try to shush the black cat, but it ignores you. “Relax. Your captors\
+      \ are all up on deck at the moment.” You ask bitterly why the creature is so\
+      \ cavalier about your capture, and request that it free you. “Nah. Somebody\
+      \ else has that covered, if memory serves,” it replies enigmatically."
+    ]
+
+searchingForTheTruth :: FlavorText
+searchingForTheTruth =
+  FlavorText
+    Nothing
+    [ "The black cat sees Randolph at the helm of your ship and glares at him\
+      \ suspiciously. You wonder aloud what is wrong. “Normally I like the smell of\
+      \ fish, but this is too fishy. Something is wrong. There are not supposed to\
+      \ be two of him. But my memory is fuzzy...” You thought you were confused\
+      \ before, but now you are truly lost. Two Randolphs? “Yes,” the black cat\
+      \ affirms. “This one, and another in the waking world. That seems off,” the\
+      \ black cat understates the problem. “I think something is trying to\
+      \ interfere. I need to go figure this out.” With that, the cat leaps out of\
+      \ view."
+    ]
+
+nowWhereWasI :: FlavorText
+nowWhereWasI =
+  FlavorText
+    Nothing
+    [ "“Now, where was I? Oh, right. I had a chat with your friends. They’re in\
+      \ the Dreamlands now, too. They have a message for you.”"
+    ]

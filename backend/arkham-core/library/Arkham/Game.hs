@@ -950,6 +950,13 @@ getInvestigatorsMatching matcher = do
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
     InvestigatorWithKey key -> \i ->
       pure $ key `elem` investigatorKeys (toAttrs i)
+    InvestigatorWithRecord r -> \i -> do
+      ilog <- field InvestigatorLog (toId i)
+      pure
+        $ or
+          [ r `member` ilog.recorded
+          , r `member` ilog.recordedCounts
+          ]
     InvestigatorWithBondedCard cardMatcher -> \i -> do
       bondedCards <- field InvestigatorBondedCards (toId i)
       pure $ any (`cardMatch` cardMatcher) bondedCards

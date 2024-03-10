@@ -17,7 +17,6 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
-import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario

@@ -25,6 +25,7 @@ import Arkham.Target
 import Control.Monad.Writer hiding (filterM)
 import Data.List.NonEmpty qualified as NE
 import Data.Typeable
+import GHC.Records
 
 class
   ( Typeable a
@@ -64,6 +65,12 @@ data CampaignAttrs = CampaignAttrs
   , campaignMeta :: Value
   }
   deriving stock (Show, Eq, Generic)
+
+instance HasField "log" CampaignAttrs CampaignLog where
+  getField = campaignLog
+
+instance HasField "meta" CampaignAttrs Value where
+  getField = campaignMeta
 
 instance HasModifiersFor CampaignAttrs where
   getModifiersFor (InvestigatorTarget iid) attrs =

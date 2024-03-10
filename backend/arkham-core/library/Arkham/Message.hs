@@ -390,6 +390,7 @@ data Message
     AddChaosToken ChaosTokenFace
   | SwapChaosToken ChaosTokenFace ChaosTokenFace
   | RemoveAllChaosTokens ChaosTokenFace
+  | RemoveChaosToken ChaosTokenFace
   | -- Asset Uses
     AddUses AssetId UseType Int
   | -- Asks

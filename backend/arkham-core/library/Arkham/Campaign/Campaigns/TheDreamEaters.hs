@@ -7,13 +7,17 @@ import Arkham.Campaigns.TheDreamEaters.Import
 import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Log
+import Arkham.Helpers.Campaign
+import Arkham.Helpers.Log hiding (getHasRecord)
+import Arkham.Helpers.Log qualified as Lift
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Investigator (Investigator, lookupInvestigator)
-import Arkham.Message.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted hiding (record)
 import Arkham.Prelude
 import Arkham.Projection
 import Data.Aeson (Result (..))
@@ -27,8 +31,48 @@ theDreamEaters difficulty =
     $ metaL
     .~ toJSON (Metadata FullMode Nothing Nothing mempty mempty)
 
-recordInBoth :: CampaignLogKey -> ()
-recordInBoth key = pushAll [InTheWebOfDreams (Record key), InTheDreamQuest (Record key)]
+recordInBoth :: HasQueue Message m => CampaignLogKey -> m ()
+recordInBoth = pushBoth . Record
+
+pushBoth :: HasQueue Message m => CampaignLogKey -> m ()
+pushBoth msg = pushAll [InTheWebOfDreams msg, InTheDreamQuest msg]
+
+record :: HasQueue Message m => CampaignPart -> CampaignLogKey -> m ()
+record TheDreamQuest key = push $ InTheDreamQuest (Record key)
+record TheWebOfDreams key = push $ InTheWebOfDreams (Record key)
+
+setCampaignPart :: CampaignPart -> TheDreamEaters -> TheDreamEaters
+setCampaignPart part c@(TheDreamEaters attrs) =
+  if (toResult @Metadata attrs.meta).mode == PartialMode part
+    then c
+    else
+      let meta = toResult @Metadata attrs.meta
+          newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
+       in TheDreamEaters
+            ( newAttrs
+                { campaignCompletedSteps = campaignCompletedSteps attrs
+                , campaignStep = campaignStep attrs
+                , campaignMeta =
+                    toJSON
+                      $ meta
+                        { currentCampaignMode = Just part
+                        , otherCampaignAttrs = Just attrs
+                        , currentCampaignPlayers = otherCampaignPlayers meta
+                        , otherCampaignPlayers = currentCampaignPlayers meta
+                        }
+                }
+            )
+
+getHasRecord :: HasGame m => CampaignPart -> CampaignLogKey -> m Bool
+getHasRecord part key = do
+  isCurrent <- getIsPartialCampaign part
+  if isCurrent
+    then Lift.getHasRecord key
+    else do
+      meta <- getCampaignMeta @Metadata
+      case meta.otherCampaignAttrs of
+        Just otherAttrs -> pure $ hasRecord key otherAttrs.log
+        Nothing -> error "no other campaign attrs"
 
 instance IsCampaign TheDreamEaters where
   nextStep a@(TheDreamEaters attrs) =
@@ -370,8 +414,7 @@ instance RunMessage TheDreamEaters where
                     }
             }
       CampaignStep s@(ScenarioStep _) -> do
-        void $ lift $ defaultCampaignRunner msg c
-        case s of
+        c' <- case s of
           _ | s `elem` theDreamQuestSteps -> do
             if currentCampaignMode meta == Just TheWebOfDreams
               then do
@@ -446,6 +489,7 @@ instance RunMessage TheDreamEaters where
                     )
               else pure c
           _ -> error $ "Unknown scenario: " <> show s
+        lift $ defaultCampaignRunner msg c'
       CampaignStep (InterludeStep 1 _) -> do
         case campaignMode meta of
           PartialMode TheWebOfDreams -> push $ CampaignStep (InterludeStepPart 1 Nothing 3)
@@ -462,16 +506,16 @@ instance RunMessage TheDreamEaters where
           theBlackCat2
           [ Label
               "Tell your companions of your quest, your plight, and your peril. The black cat will return to you once this message is delivered. This may put an undue burden on your companions. "
-              [Record TheBlackCatDeliveredNewsOfYourPlight]
+              [InTheDreamQuest (Record TheBlackCatDeliveredNewsOfYourPlight)]
           , Label
               "Tell your companions about your new friends and about the Dreamlands."
-              [Record TheBlackCatSharedKnowledgeOfTheDreamlands]
+              [InTheDreamQuest (Record TheBlackCatSharedKnowledgeOfTheDreamlands)]
           , Label
               "Tell your companions that they are in danger, and that you are safe. The black cat will stay with them once this message is delivered. This might make your quest a little more difficult."
-              [Record TheBlackCatWarnedTheOthers]
+              [InTheDreamQuest (Record TheBlackCatWarnedTheOthers)]
           , Label
               "You don’t trust this creature one bit. You threaten the black cat, warning it not to approach your friends under any circumstance. The black cat yawns and vanishes out the door."
-              [Record OkayFineHaveItYourWayThen]
+              [InTheDreamQuest (Record OkayFineHaveItYourWayThen)]
           ]
         push $ CampaignStep (InterludeStepPart 1 Nothing 3)
         pure c
@@ -493,7 +537,7 @@ instance RunMessage TheDreamEaters where
         isOnYourOwn <- getIsTheWebOfDreams
         when isOnYourOwn do
           story youAreOnYourOwn
-          record YouAreOnYourOwn
+          record TheWebOfDreams YouAreOnYourOwn
 
         whenHasRecord TheBlackCatSharedKnowledgeOfTheDreamlands do
           story theBlackCatSharedKnowledgeOfTheDreamlands
@@ -521,11 +565,11 @@ instance RunMessage TheDreamEaters where
         push next
         pure c
       CampaignStep (InterludeStep 2 _) -> do
-        lead <- getLeadPlayer
+        -- Start TheWebOfDreams
         story theOneironauts1
 
-        hasAHunch <- getHasRecord TheBlackCatHasAHunch
-        randolphDidNotSurvive <- getHasRecord RandolphDidNotSurviveTheDescent
+        hasAHunch <- getHasRecord TheWebOfDreams TheBlackCatHasAHunch
+        randolphDidNotSurvive <- getHasRecord TheWebOfDreams RandolphDidNotSurviveTheDescent
 
         when (hasAHunch && randolphDidNotSurvive) do
           story where'sBlondie
@@ -534,9 +578,12 @@ instance RunMessage TheDreamEaters where
             , InTheWebOfDreams (CrossOutRecord TheBlackCatHasAHunch)
             ]
 
-        didYouAskForIt <- getHasRecord YouAskedForIt
+        didYouAskForIt <- getHasRecord TheWebOfDreams YouAskedForIt
         if didYouAskForIt
-          then story youAskedForIt
+          then do
+            story youAskedForIt
+            push $ CampaignStep (InterludeStepPart 1 Nothing 4)
+            pure c
           else do
             storyWithChooseOne youDidNotAskForIt
               $ if hasAHunch
@@ -556,20 +603,77 @@ instance RunMessage TheDreamEaters where
                       "Tell your companions that you are safe. The black cat will stay with them once this message is delivered. This might make your quest a little more difficult. "
                       [InTheWebOfDreams (Record TheBlackCatWarnedTheOthers)]
                   ]
-            story theOneironauts2
-            notCaptured <- selectAny $ not_ (InvestigatorWithRecord WasCaptured)
 
-            story
-              $ if notCaptured
-                then atLeastOneNotCaptured
-                else allCaptured
+            push $ CampaignStep (InterludeStepPart 1 Nothing 4)
+            pure $ setCampaignPart TheDreamQuest c
+      CampaignStep (InterludeStepPart 2 _ 2) -> do
+        -- TheDreamQuest
+        story theOneironauts2
+        notCaptured <- selectAny $ not_ (InvestigatorWithRecord WasCaptured)
+        randolphEludedCapture <- getHasRecord TheDreamQuest RandolphEludedCapture
 
-            if hasAHunch && randolphEludedCapture
-              then do
-                story searchingForTheTruth
-                recordInBoth TheBlackCatIsSearchingForTheTruth
-              else story nowWhereWasI
+        story
+          $ if notCaptured
+            then atLeastOneNotCaptured
+            else allCaptured
 
+        hasAHunch <- getHasRecord TheDreamQuest TheBlackCatHasAHunch
+        if hasAHunch && randolphEludedCapture
+          then do
+            story searchingForTheTruth
+            recordInBoth TheBlackCatIsSearchingForTheTruth
+            push $ CampaignStep (InterludeStepPart 1 Nothing 4)
+            pure c
+          else do
+            push $ CampaignStep (InterludeStepPart 1 Nothing 3)
+            pure $ setCampaignPart TheDreamQuest c
+      CampaignStep (InterludeStepPart 2 _ 3) -> do
+        story nowWhereWasI
+
+        requestedAid <- getHasRecord TheWebOfDreams TheBlackCatRequestedAidFromTheOthers
+        warnedTheOthers <- getHasRecord TheWebOfDreams TheBlackCatWarnedTheOthers
+        sharedTheKnowledge <- getHasRecord TheWebOfDreams TheBlackCatSharedKnowledgeOfTheUnderworld
+        theBlackCatIsAtYourSideWebOfDreams <- getHasRecord TheWebOfDreams TheBlackCatIsAtYourSide
+        theBlackCatIsAtYourSideDreamQuest <- getHasRecord TheDreamQuest TheBlackCatIsAtYourSide
+
+        when requestedAid do
+          story theBlackCatRequestedAidFromTheOthers
+
+          unless (theBlackCatIsAtYourSideWebOfDreams || theBlackCatIsAtYourSideDreamQuest) do
+            record TheWebOfDreams TheBlackCatIsAtYourSide
+            pushBoth $ AddChaosToken ElderThing
+
+          when theBlackCatIsAtYourSideDreamQuest do
+            push $ InTheDreamQuest (CrossOurRecord TheBlackCatIsAtYourSide)
+            record TheWebOfDreams TheBlackCatIsAtYourSide
+            pushBoth $ SwapChaosToken ElderThing Tablet
+
+        when warnedTheOthers do
+          unless (theBlackCatIsAtYourSideWebOfDreams || theBlackCatIsAtYourSideDreamQuest) do
+            record TheDreamQuest TheBlackCatIsAtYourSide
+            pushBoth $ AddChaosToken ElderThing
+
+          when theBlackCatIsAtYourSideWebOfDreams do
+            push $ InTheWebOfDreams (CrossOurRecord TheBlackCatIsAtYourSide)
+            record TheDreamQuest TheBlackCatIsAtYourSide
+            pushBoth $ SwapChaosToken Tablet ElderThing
+
+        when sharedTheKnowledge do
+          story sharedTheKnowledge
+          record TheDreamQuest TheDreamersKnowOfAnotherPath
+
+          when theBlackCatIsAtYourSideDreamQuest do
+            push $ InTheDreamQuest (CrossOurRecord TheBlackCatIsAtYourSide)
+            pushBoth $ RemoveChaosToken ElderThing
+
+          when theBlackCatIsAtYourSideWebOfDreams do
+            push $ InTheWebOfDreams (CrossOurRecord TheBlackCatIsAtYourSide)
+            pushBoth $ RemoveChaosToken Tablet
+
+        push $ CampaignStep (InterludeStepPart 1 Nothing 4)
+        pure c
+      CampaignStep (InterludeStepPart 2 _ 4) -> do
+        lead <- getLeadPlayer
         push
           $ questionLabel "Proceed to which scenario" lead
           $ ChooseOne

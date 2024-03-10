@@ -34,7 +34,7 @@ theDreamEaters difficulty =
 recordInBoth :: HasQueue Message m => CampaignLogKey -> m ()
 recordInBoth = pushBoth . Record
 
-pushBoth :: HasQueue Message m => CampaignLogKey -> m ()
+pushBoth :: HasQueue Message m => Message -> m ()
 pushBoth msg = pushAll [InTheWebOfDreams msg, InTheDreamQuest msg]
 
 record :: HasQueue Message m => CampaignPart -> CampaignLogKey -> m ()
@@ -644,30 +644,31 @@ instance RunMessage TheDreamEaters where
             pushBoth $ AddChaosToken ElderThing
 
           when theBlackCatIsAtYourSideDreamQuest do
-            push $ InTheDreamQuest (CrossOurRecord TheBlackCatIsAtYourSide)
+            push $ InTheDreamQuest (CrossOutRecord TheBlackCatIsAtYourSide)
             record TheWebOfDreams TheBlackCatIsAtYourSide
             pushBoth $ SwapChaosToken ElderThing Tablet
 
         when warnedTheOthers do
+          story warnedTheOthersStory
           unless (theBlackCatIsAtYourSideWebOfDreams || theBlackCatIsAtYourSideDreamQuest) do
             record TheDreamQuest TheBlackCatIsAtYourSide
             pushBoth $ AddChaosToken ElderThing
 
           when theBlackCatIsAtYourSideWebOfDreams do
-            push $ InTheWebOfDreams (CrossOurRecord TheBlackCatIsAtYourSide)
+            push $ InTheWebOfDreams (CrossOutRecord TheBlackCatIsAtYourSide)
             record TheDreamQuest TheBlackCatIsAtYourSide
             pushBoth $ SwapChaosToken Tablet ElderThing
 
         when sharedTheKnowledge do
-          story sharedTheKnowledge
+          story sharedTheKnowledgeStory
           record TheDreamQuest TheDreamersKnowOfAnotherPath
 
           when theBlackCatIsAtYourSideDreamQuest do
-            push $ InTheDreamQuest (CrossOurRecord TheBlackCatIsAtYourSide)
+            push $ InTheDreamQuest (CrossOutRecord TheBlackCatIsAtYourSide)
             pushBoth $ RemoveChaosToken ElderThing
 
           when theBlackCatIsAtYourSideWebOfDreams do
-            push $ InTheWebOfDreams (CrossOurRecord TheBlackCatIsAtYourSide)
+            push $ InTheWebOfDreams (CrossOutRecord TheBlackCatIsAtYourSide)
             pushBoth $ RemoveChaosToken Tablet
 
         push $ CampaignStep (InterludeStepPart 1 Nothing 4)

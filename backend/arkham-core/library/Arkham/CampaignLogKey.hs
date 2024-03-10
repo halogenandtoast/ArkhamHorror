@@ -243,6 +243,7 @@ data CampaignLogKey
   | TheBlackCatRequestedAidFromTheOthers
   | TheBlackCatSharedKnowledgeOfTheUnderworld
   | TheBlackCatIsSearchingForTheTruth
+  | TheDreamersKnowOfAnotherPath
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

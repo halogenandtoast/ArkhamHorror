@@ -16,6 +16,8 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Exception
+import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -24,9 +26,11 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Runner hiding (placeLocationCard, pushAll, story)
 import Arkham.Scenario.Runner qualified as Msg
 import Arkham.Scenario.Setup
+import Arkham.ScenarioLogKey
 import Arkham.Trait (Trait (Graveyard))
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -169,5 +173,32 @@ instance RunMessage AThousandShapesOfHorror where
             $ chooseOne player [targetLabel enemy [Msg.EnemyEvaded iid enemy] | enemy <- enemies]
           pure ()
         _ -> pure ()
+      pure s
+    ScenarioResolution r -> do
+      case r of
+        NoResolution -> push R2
+        Resolution 1 -> do
+          investigators <- allInvestigators
+          story $ i18nWithTitle "dreamEaters.aThousandShapesOfHorror.resolution1"
+          record RandolphSurvivedTheDescent
+          record TheInvestigatorsPossessTheSilverKey
+          addCampaignCardToDeckChoice investigators Assets.theSilverKey
+          allGainXp attrs
+          addChaosToken Skull
+        Resolution 2 -> do
+          recoveredAStrangeKey <- remembered RecoveredAStrangeKey
+          story $ i18nWithTitle "dreamEaters.aThousandShapesOfHorror.resolution2"
+          push $ if recoveredAStrangeKey then R3 else R4
+        Resolution 3 -> do
+          story $ i18nWithTitle "dreamEaters.aThousandShapesOfHorror.resolution3"
+          record RandolphSurvivedTheDescent
+          allGainXp attrs
+          addChaosToken Skull
+        Resolution 4 -> do
+          story $ i18nWithTitle "dreamEaters.aThousandShapesOfHorror.resolution4"
+          record RandolphDidNotSurviveTheDescent
+          removeCampaignCardFromDeck Assets.randolphCarterChainedToTheWakingWorld
+          allGainXp attrs
+        other -> throw $ UnknownResolution other
       pure s
     _ -> AThousandShapesOfHorror <$> lift (runMessage msg attrs)

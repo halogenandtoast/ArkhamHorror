@@ -5,6 +5,7 @@ import { imgsrc } from '@/arkham/helpers'
 export interface Props {
   type: string
   amount: number
+  tooltip?: string
 }
 const props = defineProps<Props>()
 
@@ -14,7 +15,7 @@ const image = computed(() => {
 </script>
 
 <template>
-  <div class="poolItem" :class="`poolItem-${type}`" @click="$emit('choose')">
+  <div class="poolItem" :class="`poolItem-${type}`" @click="$emit('choose')" v-tooltip="tooltip">
     <img :src="image" />
     <span>{{amount}}</span>
   </div>
@@ -40,7 +41,6 @@ const image = computed(() => {
 }
 
 .poolItem {
-  pointer-events: none;
   width: 30px;
   display: grid;
   place-items: center;

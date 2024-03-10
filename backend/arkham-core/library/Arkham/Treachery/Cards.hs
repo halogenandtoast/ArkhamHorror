@@ -158,6 +158,7 @@ allEncounterTreacheryCards =
       , chillFromBelow
       , chillingPresence
       , clawsOfSteam
+      , closeWatch
       , collapsingReality
       , conspiracyOfBlood
       , corrosion
@@ -196,10 +197,12 @@ allEncounterTreacheryCards =
       , expulsion
       , extradimensionalVisions
       , eyesInTheWalls
+      , falseAwakening
       , falseLead
       , fateOfAllFools
       , finalMistake
       , fineDining
+      , forcedIntoHiding
       , frozenInFear
       , frozenInFearAPhantomOfTruth
       , giftOfMadnessMisery
@@ -233,6 +236,7 @@ allEncounterTreacheryCards =
       , lostInTime
       , lostInVenice
       , lowOnSupplies
+      , lunarPatrol
       , markOfTheOrder
       , markedByTheSign
       , markedForDeath
@@ -1845,6 +1849,32 @@ secretsInTheAttic :: CardDef
 secretsInTheAttic =
   (treachery "06194" "Secrets in the Attic" AThousandShapesOfHorror 2)
     { cdCardTraits = singleton Scheme
+    }
+
+closeWatch :: CardDef
+closeWatch =
+  (treachery "06230" "Close Watch" DarkSideOfTheMoon 3)
+    { cdCardTraits = singleton Scheme
+    }
+
+forcedIntoHiding :: CardDef
+forcedIntoHiding =
+  (treachery "06231" "Forced into Hiding" DarkSideOfTheMoon 3)
+    { cdCardTraits = singleton Terror
+    }
+
+lunarPatrol :: CardDef
+lunarPatrol =
+  (treachery "06232" "Lunar Patrol" DarkSideOfTheMoon 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+falseAwakening :: CardDef
+falseAwakening =
+  (weakness "06233" "False Awakening")
+    { cdCardTraits = setFromList [Curse]
+    , cdEncounterSet = Just DarkSideOfTheMoon
+    , cdEncounterSetQuantity = Just 1
     }
 
 theHarbinger :: CardDef

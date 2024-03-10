@@ -44,11 +44,6 @@ instance IsCampaign TheDunwichLegacy where
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
 
-findOwner :: HasGame m => CardCode -> m (Maybe InvestigatorId)
-findOwner cardCode = do
-  campaignStoryCards <- getCampaignStoryCards
-  pure $ findKey (any ((== cardCode) . toCardCode)) campaignStoryCards
-
 theDunwichLegacy :: Difficulty -> TheDunwichLegacy
 theDunwichLegacy difficulty =
   campaign
@@ -108,9 +103,9 @@ instance RunMessage TheDunwichLegacy where
       investigatorIds <- allInvestigatorIds
       players <- allPlayers
       lead <- getLeadPlayer
-      drHenryArmitageUnowned <- isNothing <$> findOwner "02040"
-      professorWarrenRiceUnowned <- isNothing <$> findOwner "02061"
-      drFrancisMorganUnowned <- isNothing <$> findOwner "02080"
+      drHenryArmitageUnowned <- isNothing <$> getOwner Assets.drHenryArmitage
+      professorWarrenRiceUnowned <- isNothing <$> getOwner Assets.professorWarrenRice
+      drFrancisMorganUnowned <- isNothing <$> getOwner Assets.drFrancisMorgan
       let
         addPowderOfIbnGhazi =
           addCampaignCardToDeckChoice

@@ -37,9 +37,7 @@ getCompletedScenarios = do
           _ -> Nothing
 
 getOwner :: HasGame m => CardDef -> m (Maybe InvestigatorId)
-getOwner cardDef = do
-  campaignStoryCards <- getCampaignStoryCards
-  pure $ findKey (any ((== cardDef) . toCardDef)) campaignStoryCards
+getOwner cardDef = findKey (any ((== cardDef) . toCardDef)) <$> getCampaignStoryCards
 
 getCampaignStoryCards :: HasGame m => m (Map InvestigatorId [PlayerCard])
 getCampaignStoryCards = do
@@ -54,9 +52,7 @@ getCampaignStoryCard def = do
   pure . fromJustNote "missing card" $ find ((== def) . toCardDef) cards
 
 getIsAlreadyOwned :: HasGame m => CardDef -> m Bool
-getIsAlreadyOwned cDef = do
-  campaignStoryCards <- getCampaignStoryCards
-  pure $ any ((== cDef) . toCardDef) $ concat (toList campaignStoryCards)
+getIsAlreadyOwned cDef = any (any ((== cDef) . toCardDef)) . toList <$> getCampaignStoryCards
 
 campaignField :: (HasCallStack, HasGame m) => Field Campaign a -> m a
 campaignField fld = selectJust TheCampaign >>= field fld

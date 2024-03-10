@@ -96,6 +96,7 @@ allEncounterEnemyCards =
       , carlSanfordDeathlessFanatic
       , carnevaleSentinel
       , catacombsDocent
+      , catsFromSaturn
       , catsOfUlthar
       , cellKeeper
       , cloverClubPitBoss
@@ -184,6 +185,9 @@ allEncounterEnemyCards =
       , mindlessDancer
       , mrTrombly
       , mobster
+      , moonBeast
+      , moonLizard
+      , moonboundByakhee
       , nahab
       , narogath
       , nasht
@@ -1729,6 +1733,36 @@ theUnnamable =
       { cdCardTraits = setFromList [Monster, Abomination, Elite]
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
       }
+
+moonLizard :: CardDef
+moonLizard =
+  (enemy "06226" "Moon Lizard" DarkSideOfTheMoon 1)
+    { cdCardTraits = setFromList [Monster, Elite]
+    , cdKeywords = singleton Keyword.Hunter
+    , cdVictoryPoints = Just 2
+    }
+
+moonboundByakhee :: CardDef
+moonboundByakhee =
+  (enemy "06227" "Moonbound Byakhee" DarkSideOfTheMoon 2)
+    { cdCardTraits = setFromList [Monster, Byakhee]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
+    }
+
+catsFromSaturn :: CardDef
+catsFromSaturn =
+  (enemy "06228" "Cats from Saturn" DarkSideOfTheMoon 3)
+    { cdCardTraits = setFromList [Creature, Monster]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Swarming (Static 0)]
+    }
+
+moonBeast :: CardDef
+moonBeast =
+  (enemy "06229" "Moon-Beast" DarkSideOfTheMoon 2)
+    { cdCardTraits = setFromList [Monster, Servitor]
+    , cdKeywords = singleton Keyword.Retaliate
+    , cdVictoryPoints = Just 1
+    }
 
 unboundBeast :: CardDef
 unboundBeast =

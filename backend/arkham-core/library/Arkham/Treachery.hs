@@ -392,6 +392,11 @@ allTreacheries =
     , SomeTreacheryCard glowingEyes
     , SomeTreacheryCard deceptiveMemories
     , SomeTreacheryCard secretsInTheAttic
+    , -- Dark Side of the Moon
+      SomeTreacheryCard closeWatch
+    , SomeTreacheryCard forcedIntoHiding
+    , SomeTreacheryCard lunarPatrol
+    , SomeTreacheryCard falseAwakening
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

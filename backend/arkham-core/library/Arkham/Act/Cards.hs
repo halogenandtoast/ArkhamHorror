@@ -87,6 +87,7 @@ allActCards =
       , inLostCarcosa
       , inPursuitOfTheDead
       , inPursuitOfTheLiving
+      , inTheBellyOfTheMoonBeast
       , investigatingTheTrail
       , journeyToTheNexus
       , kingdomOfTheSkai
@@ -683,6 +684,18 @@ searchingTheUnnamable = act "06172" "Searching the Unnamable" 1 AThousandShapesO
 
 theEndlessStairs :: CardDef
 theEndlessStairs = act "06173" "The Endless Stairs" 2 AThousandShapesOfHorror
+
+inTheBellyOfTheMoonBeast :: CardDef
+inTheBellyOfTheMoonBeast = act "06210" "In they Belly of the Moon-Beast" 1 DarkSideOfTheMoon
+
+exploringTheMoon :: CardDef
+exploringTheMoon = act "06211" "Exploring the Moon" 2 DarkSideOfTheMoon
+
+theMoonsCore :: CardDef
+theMoonsCore = act "06212" "The Moon's Core" 3 DarkSideOfTheMoon
+
+unexpectedRescue :: CardDef
+unexpectedRescue = act "06213" "Unexpected Rescue" 4 DarkSideOfTheMoon
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

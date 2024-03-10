@@ -592,13 +592,16 @@ allAssets =
     , --- story [tsh]
       SomeAssetCard theSilverKey
     , -- The Dark Side of the Moon
-      --- guardian [pnr]
+      --- guardian [dsm]
       SomeAssetCard thirtyFiveWinchester
     , SomeAssetCard safeguard2
-    , --- rogue [pnr]
+    , --- rogue [dsm]
       SomeAssetCard burglary2
-    , --- survivor [pnr]
+    , --- survivor [dsm]
       SomeAssetCard moonstone
+    , --- story [dsm]
+      SomeAssetCard virgilGrayTrulyInspired
+    , SomeAssetCard theCaptain
     , -- Point of No Return
       --- seeker [pnr]
       SomeAssetCard dreamDiaryDreamsOfAnExplorer3

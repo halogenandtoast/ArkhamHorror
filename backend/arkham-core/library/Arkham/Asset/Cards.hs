@@ -613,6 +613,8 @@ allEncounterAssetCards =
       , tomeOfRituals
       , sinisterSolution
       , timeWornLocket
+      , virgilGrayTrulyInspired
+      , theCaptain
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef
@@ -3712,6 +3714,22 @@ moonstone =
     , cdCommitRestrictions = [SelfCanCommitWhen NoOne]
     , cdCardInHandEffects = True
     , cdCardInDiscardEffects = True
+    }
+
+virgilGrayTrulyInspired :: CardDef
+virgilGrayTrulyInspired =
+  (storyAsset "06224" ("Virgil Gray" <:> "Truly Inspired") 0 DarkSideOfTheMoon)
+    { cdCardTraits = setFromList [Ally, Dreamer]
+    , cdUnique = True
+    , cdCost = Nothing
+    }
+
+theCaptain :: CardDef
+theCaptain =
+  (storyAsset "06225" ("The Captain" <:> "Dreamlands Navigator") 0 DarkSideOfTheMoon)
+    { cdCardTraits = setFromList [Ally, Dreamer]
+    , cdUnique = True
+    , cdCost = Nothing
     }
 
 dreamDiaryDreamsOfAnExplorer3 :: CardDef

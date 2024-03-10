@@ -15,6 +15,7 @@ data Token
   | LostSoul
   | Bounty
   | Offering
+  | AlarmLevel
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)
 

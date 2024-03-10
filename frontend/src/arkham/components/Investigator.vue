@@ -200,6 +200,7 @@ const clues = computed(() => props.investigator.tokens[TokenType.Clue] || 0)
 const resources = computed(() => props.investigator.tokens[TokenType.Resource] || 0)
 const horror = computed(() => (props.investigator.tokens[TokenType.Horror] || 0) + props.investigator.assignedSanityDamage)
 const damage = computed(() => (props.investigator.tokens[TokenType.Damage] || 0) + props.investigator.assignedHealthDamage)
+const alarmLevel = computed(() => props.investigator.tokens[TokenType.AlarmLevel] || 0)
 </script>
 
 <template>
@@ -304,6 +305,13 @@ const damage = computed(() => (props.investigator.tokens[TokenType.Damage] || 0)
       <template v-if="debug.active">
         <button class="plus-button" @click="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 0, 1]})">+</button>
       </template>
+
+      <PoolItem
+        v-if="alarmLevel > 0"
+        type="doom"
+        :amount="alarmLevel"
+        tooltip="Alarm Level"
+      />
     </div>
   </div>
 </template>

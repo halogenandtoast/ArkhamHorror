@@ -329,6 +329,11 @@ allEnemies =
     , SomeEnemyCard nightriders
     , -- A Thousand Shapes of Horror
       SomeEnemyCard theUnnamable
+    , -- Dark Side of the Moon
+      SomeEnemyCard moonLizard
+    , SomeEnemyCard moonboundByakhee
+    , SomeEnemyCard catsFromSaturn
+    , SomeEnemyCard moonBeast
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

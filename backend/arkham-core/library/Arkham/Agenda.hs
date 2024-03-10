@@ -200,6 +200,10 @@ allAgendas =
       SomeAgendaCard theHouseWithNoName
     , SomeAgendaCard theThingWithNoName
     , SomeAgendaCard theDeadWithNoName
+    , -- Dark Side of the Moon
+      SomeAgendaCard silentStiring
+    , SomeAgendaCard theAlarmIsRaised
+    , SomeAgendaCard theyAreUponYou
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

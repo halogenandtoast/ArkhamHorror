@@ -169,6 +169,7 @@ data Trait
   | Service
   | Servitor
   | Shattered
+  | Ship
   | Shoggoth
   | SilverTwilight
   | Skai

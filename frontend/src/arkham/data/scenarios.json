@@ -228,5 +228,12 @@
     "campaign": "06",
     "beta": true,
     "settings": []
+  },
+  {
+    "id": "06206",
+    "name": "Dark Side of the Moon",
+    "campaign": "06",
+    "beta": true,
+    "settings": []
   }
 ]

@@ -548,6 +548,17 @@ allLocations =
     , SomeLocationCard mysteriousStairs_186
     , SomeLocationCard mysteriousStairs_187
     , SomeLocationCard mysteriousStairs_188
+    , -- Dark Side of the Moon
+      SomeLocationCard moonBeastGalley
+    , SomeLocationCard cityOfTheMoonBeasts
+    , SomeLocationCard theDarkCrater
+    , SomeLocationCard templeOfTheMoonLizard
+    , SomeLocationCard moonForest
+    , SomeLocationCard cavernsBeneathTheMoonDarkSide
+    , SomeLocationCard theBlackCore
+    , SomeLocationCard cavernsBeneathTheMoonLightSide
+    , SomeLocationCard lightSideOfTheMoon
+    , SomeLocationCard theWhiteShip
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

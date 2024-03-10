@@ -18,6 +18,7 @@ import Arkham.Helpers.Xp
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message hiding (story)
+import Arkham.Movement
 import Arkham.Prelude
 import Arkham.SkillType qualified as SkillType
 import Arkham.Source
@@ -74,6 +75,9 @@ reveal = push . Msg.RevealLocation Nothing
 
 moveAllTo :: (ReverseQueue m, Sourceable source) => source -> LocationId -> m ()
 moveAllTo (toSource -> source) lid = push $ MoveAllTo source lid
+
+moveTo :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> LocationId -> m ()
+moveTo (toSource -> source) iid lid = push $ MoveTo $ move source iid lid
 
 record :: ReverseQueue m => CampaignLogKey -> m ()
 record = push . Record
@@ -180,3 +184,6 @@ removeCampaignCard (toCardDef -> def) = do
   mOwner <- getOwner def
   for_ mOwner \owner ->
     push $ RemoveCampaignCardFromDeck owner def
+
+placeClues :: (ReverseQueue m, Sourceable source) => source -> LocationId -> Int -> m ()
+placeClues source lid n = push $ PlaceClues (toSource source) (toTarget lid) n

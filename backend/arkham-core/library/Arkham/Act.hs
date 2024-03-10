@@ -239,6 +239,11 @@ allActs =
     , --- A Thousand Shapes of Horror
       SomeActCard searchingTheUnnamable
     , SomeActCard theEndlessStairs
+    , --- Dark Side of the Moon
+      SomeActCard inTheBellyOfTheMoonBeast
+    , SomeActCard exploringTheMoon
+    , SomeActCard theMoonsCore
+    , SomeActCard unexpectedRescue
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

@@ -145,6 +145,8 @@ allLocationCards =
       , canalsOfTenochtitlan_180
       , canalsOfTenochtitlan_181
       , candlelitTunnels
+      , cavernsBeneathTheMoonDarkSide
+      , cavernsBeneathTheMoonLightSide
       , cavernsOfYoth
       , celephais
       , cellar
@@ -166,6 +168,7 @@ allLocationCards =
       , choeurGothique_293
       , circuitousTrail
       , cityOfElderThings
+      , cityOfTheMoonBeasts
       , cityOfTheSerpents
       , cityOfTheUnseen
       , cityWhichAppearsOnNoMap
@@ -331,6 +334,7 @@ allLocationCards =
       , leMarais217
       , leMarais218
       , library
+      , lightSideOfTheMoon
       , lightingBox
       , livingRoom
       , lobby
@@ -359,6 +363,8 @@ allLocationCards =
       , montmartre209
       , montmartre210
       , montparnasse
+      , moonBeastGalley
+      , moonForest
       , morgue
       , mouthOfKnYanTheCavernsMaw
       , mouthOfKnYanTheDepthsBelow
@@ -489,6 +495,7 @@ allLocationCards =
       , tearThroughSpace
       , tearThroughTime
       , templeOfTheFang
+      , templeOfTheMoonLizard
       , templeOfUnattainableDesires
       , templeRuins
       , templesOfTenochtitlan_176
@@ -497,19 +504,22 @@ allLocationCards =
       , temploMayor_175
       , tenAcreMeadow_246
       , tenAcreMeadow_247
+      , theBlackCore
       , theBlackThrone
       , theCavernOfFlame
+      , theDarkCrater
       , theEdgeOfTheUniverse
       , theEnchantedPath
-      , theGateToHell
-      , theGeistTrap
-      , theGuardian
-      , theHiddenChamber
-      , theatre
       , theGallowsSpectral_169
       , theGallowsSpectral_170
       , theGallows_169
       , theGallows_170
+      , theGateToHell
+      , theGeistTrap
+      , theGuardian
+      , theHiddenChamber
+      , theWhiteShip
+      , theatre
       , timeWrackedWoods
       , tombOfShadows
       , towersOfPnakotus
@@ -5525,6 +5535,112 @@ mysteriousStairs_188 =
     NoSymbol
     mempty
     AThousandShapesOfHorror
+
+moonBeastGalley :: CardDef
+moonBeastGalley =
+  storyOnBack
+    $ location
+      "06214"
+      "Moon-Beast Galley"
+      [Ship]
+      NoSymbol
+      []
+      DarkSideOfTheMoon
+
+cityOfTheMoonBeasts :: CardDef
+cityOfTheMoonBeasts =
+  victory 1
+    $ location
+      "06215"
+      "City of the Moon-Beasts"
+      [Surface, City]
+      Triangle
+      [Square, Moon]
+      DarkSideOfTheMoon
+
+theDarkCrater :: CardDef
+theDarkCrater =
+  victory 1
+    $ location
+      "06216"
+      "The Dark Crater"
+      [Surface]
+      Moon
+      [Triangle, Circle, Squiggle]
+      DarkSideOfTheMoon
+
+templeOfTheMoonLizard :: CardDef
+templeOfTheMoonLizard =
+  victory 1
+    $ location
+      "06217"
+      "Temple of the Moon Lizard"
+      [Surface]
+      Square
+      [Circle, Triangle]
+      DarkSideOfTheMoon
+
+moonForest :: CardDef
+moonForest =
+  victory 1
+    $ location
+      "06218"
+      "Moon-Forest"
+      [Surface, Woods]
+      Circle
+      [Moon, Square, Squiggle]
+      DarkSideOfTheMoon
+
+cavernsBeneathTheMoonDarkSide :: CardDef
+cavernsBeneathTheMoonDarkSide =
+  location
+    "06219"
+    ("Caverns Beneath the Moon" <:> "Dark Side")
+    [Cave]
+    Squiggle
+    [Circle, Moon, Star]
+    DarkSideOfTheMoon
+
+theBlackCore :: CardDef
+theBlackCore =
+  location
+    "06220"
+    "The Black Core"
+    [Cave]
+    Star
+    [Squiggle, Equals]
+    DarkSideOfTheMoon
+
+cavernsBeneathTheMoonLightSide :: CardDef
+cavernsBeneathTheMoonLightSide =
+  location
+    "06221"
+    ("Caverns Beneath the Moon" <:> "Light Side")
+    [Cave]
+    Equals
+    [Star, Hourglass]
+    DarkSideOfTheMoon
+
+lightSideOfTheMoon :: CardDef
+lightSideOfTheMoon =
+  victory 2
+    $ location
+      "06222"
+      "Light Side of the Moon"
+      [Surface, Ruins]
+      Hourglass
+      [Equals, Heart]
+      DarkSideOfTheMoon
+
+theWhiteShip :: CardDef
+theWhiteShip =
+  location
+    "06223"
+    "The White Ship"
+    [Ship]
+    Heart
+    [Hourglass]
+    DarkSideOfTheMoon
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

@@ -22,22 +22,17 @@ getCampaignLog =
     (field ScenarioStandaloneCampaignLog)
 
 getInvestigatorHasRecord :: HasGame m => InvestigatorId -> CampaignLogKey -> m Bool
-getInvestigatorHasRecord iid k = do
-  ilog <- field InvestigatorLog iid
-  pure
-    $ or
-      [ k `member` campaignLogRecorded ilog
-      , k `member` campaignLogRecordedCounts ilog
-      ]
+getInvestigatorHasRecord iid k = fieldMap InvestigatorLog (hasRecord k) iid
 
 getHasRecord :: HasGame m => CampaignLogKey -> m Bool
-getHasRecord k = do
-  campaignLog <- getCampaignLog
-  pure
-    $ or
-      [ k `member` campaignLogRecorded campaignLog
-      , k `member` campaignLogRecordedCounts campaignLog
-      ]
+getHasRecord k = hasRecord k <$> getCampaignLog
+
+hasRecord :: CampaignLogKey -> CampaignLog -> Bool
+hasRecord k campaignLog =
+  or
+    [ k `member` campaignLogRecorded campaignLog
+    , k `member` campaignLogRecordedCounts campaignLog
+    ]
 
 whenHasRecord :: HasGame m => CampaignLogKey -> m () -> m ()
 whenHasRecord k = whenM (getHasRecord k)

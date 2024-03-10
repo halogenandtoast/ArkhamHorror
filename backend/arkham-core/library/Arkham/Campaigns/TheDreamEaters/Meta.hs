@@ -5,6 +5,7 @@ import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Message
 import Arkham.Prelude
+import GHC.Records
 
 pattern InTheDreamQuest :: Message -> Message
 pattern InTheDreamQuest msg <- (DoStep 1 msg)
@@ -33,3 +34,6 @@ data Metadata = Metadata
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+instance HasField "mode" Metadata CampaignMode where
+  getField = campaignMode

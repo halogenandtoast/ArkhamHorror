@@ -41,10 +41,16 @@ buildEncounterDeckExcludingMatching matcher =
   buildEncounterDeckWith (filter (not . (`cardMatch` matcher)))
 
 excludeDoubleSided :: [EncounterCard] -> [EncounterCard]
-excludeDoubleSided = filter (not . cdDoubleSided . toCardDef)
+excludeDoubleSided = filter (not . isDoubleSided)
 
 excludeBSides :: [EncounterCard] -> [EncounterCard]
-excludeBSides = filter (not . isSuffixOf "b" . unCardCode . toCardCode)
+excludeBSides = filter (not . hasBSide)
+
+hasBSide :: EncounterCard -> Bool
+hasBSide = isSuffixOf "b" . unCardCode . toCardCode
+
+isDoubleSided :: EncounterCard -> Bool
+isDoubleSided = cdDoubleSided . toCardDef
 
 buildEncounterDeckWith
   :: CardGen m

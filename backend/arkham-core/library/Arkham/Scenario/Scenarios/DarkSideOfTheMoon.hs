@@ -75,11 +75,13 @@ instance RunMessage DarkSideOfTheMoon where
       place_ Locations.theDarkCrater
 
       captured <- select $ InvestigatorWithRecord WasCaptured
-      when (notNull captured) do
-        moonBeastGalley <- place Locations.moonBeastGalley
-        for_ captured \iid -> do
-          moveTo attrs iid moonBeastGalley
-          placeClues attrs moonBeastGalley 2
+      if (notNull captured)
+        then do
+          moonBeastGalley <- place Locations.moonBeastGalley
+          for_ captured \iid -> do
+            moveTo attrs iid moonBeastGalley
+            placeClues attrs moonBeastGalley 2
+        else setAside [Locations.moonBeastGalley]
 
       notCaptured <- select $ not_ (InvestigatorWithRecord WasCaptured)
       for_ notCaptured \iid -> moveTo attrs iid moonForest
@@ -88,7 +90,16 @@ instance RunMessage DarkSideOfTheMoon where
         getCampaignStoryCard Assets.randolphCarterExpertDreamer >>= push . SetAsideCards . pure . toCard
 
       setAside
-        [Enemies.moonLizard, Assets.virgilGrayTrulyInspired, Assets.theCaptain, Treacheries.falseAwakening]
+        [ Enemies.moonLizard
+        , Assets.virgilGrayTrulyInspired
+        , Assets.theCaptain
+        , Treacheries.falseAwakening
+        , Locations.cavernsBeneathTheMoonDarkSide
+        , Locations.cavernsBeneathTheMoonLightSide
+        , Locations.lightSideOfTheMoon
+        , Locations.theBlackCore
+        , Locations.theWhiteShip
+        ]
 
       for_ (captured <> notCaptured) \iid -> do
         push $ PlaceTokens (toSource attrs) (toTarget iid) AlarmLevel 1

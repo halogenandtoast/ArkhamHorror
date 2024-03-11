@@ -46,7 +46,7 @@ theSearchForKadath difficulty =
     [ ".             baharna        ulthar    .           serannian"
     , "namelessRuins mtNgranek      skaiRiver dylathLeen  celephaïs"
     , ".             .              sarnath   kadatheron  hazuthKleg"
-    , ".             .              ruinsOfIb .           ."
+    , ".             .              ruinsOfIb .           templeOfUnattainableDesires"
     , "zulanThek     forbiddenLands ilekVad   .           ."
     ]
     (metaL .~ toJSON (Meta []))

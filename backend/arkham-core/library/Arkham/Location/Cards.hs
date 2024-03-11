@@ -5333,7 +5333,7 @@ hazuthKleg =
       "Hazuth-Kleg"
       [OothNargai, City]
       Plus
-      [Hourglass, Plus]
+      [Hourglass, T]
       TheSearchForKadath
 
 templeOfUnattainableDesires :: CardDef
@@ -5356,8 +5356,8 @@ cityWhichAppearsOnNoMap =
       "06143"
       "City-Which-Appears-On-No-Map"
       [City, Otherworld]
-      T
-      [Plus, Star]
+      Star
+      [T]
       TheSearchForKadath
 
 burialGround :: CardDef

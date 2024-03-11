@@ -736,9 +736,9 @@ payCost msg c iid skipAdditionalCosts cost = do
       pure c
     SameSkillIconCost x -> do
       handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
-      let total = foldMap (frequencies . cdSkills . toCardDef) handCards
+      let total = unionsWith (+) $ map (frequencies . cdSkills . toCardDef) handCards
       let wildCount = total ^. at #wild . non 0
-      let choices = keys $ filterMap (\n -> n + wildCount > x) $ deleteMap #wild total
+      let choices = keys $ filterMap (\n -> n + wildCount >= x) $ deleteMap #wild total
       push
         $ chooseOne
           player

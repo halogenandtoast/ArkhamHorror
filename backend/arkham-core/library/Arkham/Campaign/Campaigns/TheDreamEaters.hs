@@ -41,27 +41,40 @@ record :: HasQueue Message m => CampaignPart -> CampaignLogKey -> m ()
 record TheDreamQuest key = push $ InTheDreamQuest (Record key)
 record TheWebOfDreams key = push $ InTheWebOfDreams (Record key)
 
-setCampaignPart :: CampaignPart -> TheDreamEaters -> TheDreamEaters
-setCampaignPart part c@(TheDreamEaters attrs) =
+setCampaignPart
+  :: ReverseQueue m
+  => CampaignPart
+  -> TheDreamEaters
+  -> CampaignStep
+  -> m TheDreamEaters
+setCampaignPart part c@(TheDreamEaters attrs) step =
   if (toResult @Metadata attrs.meta).mode == PartialMode part
-    then c
-    else
+    then pure c
+    else do
       let meta = toResult @Metadata attrs.meta
           newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
-       in TheDreamEaters
-            ( newAttrs
-                { campaignCompletedSteps = campaignCompletedSteps attrs
-                , campaignStep = campaignStep attrs
-                , campaignMeta =
-                    toJSON
-                      $ meta
-                        { currentCampaignMode = Just part
-                        , otherCampaignAttrs = Just attrs
-                        , currentCampaignPlayers = otherCampaignPlayers meta
-                        , otherCampaignPlayers = currentCampaignPlayers meta
-                        }
-                }
-            )
+
+      for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
+        let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
+        push $ SetInvestigator pid i
+
+      push $ CampaignStep step
+
+      pure
+        $ TheDreamEaters
+          ( newAttrs
+              { campaignCompletedSteps = campaignCompletedSteps attrs
+              , campaignStep = campaignStep attrs
+              , campaignMeta =
+                  toJSON
+                    $ meta
+                      { currentCampaignMode = Just part
+                      , otherCampaignAttrs = Just attrs
+                      , currentCampaignPlayers = otherCampaignPlayers meta
+                      , otherCampaignPlayers = currentCampaignPlayers meta
+                      }
+              }
+          )
 
 getHasRecord :: HasGame m => CampaignPart -> CampaignLogKey -> m Bool
 getHasRecord part key = do
@@ -415,6 +428,8 @@ instance RunMessage TheDreamEaters where
         push next
         pure c
       CampaignStep (InterludeStep 2 _) -> do
+        setCampaignPart TheWebOfDreams c (InterludeStepPart 2 Nothing 1)
+      CampaignStep (InterludeStepPart 2 _ 1) -> do
         -- Start TheWebOfDreams
         story theOneironauts1
 
@@ -432,7 +447,7 @@ instance RunMessage TheDreamEaters where
         if didYouAskForIt
           then do
             story youAskedForIt
-            push $ CampaignStep (InterludeStepPart 1 Nothing 4)
+            push $ CampaignStep (InterludeStepPart 2 Nothing 4)
             pure c
           else do
             storyWithChooseOne youDidNotAskForIt
@@ -454,8 +469,7 @@ instance RunMessage TheDreamEaters where
                       [InTheWebOfDreams (Record TheBlackCatWarnedTheOthers)]
                   ]
 
-            push $ CampaignStep (InterludeStepPart 1 Nothing 2)
-            pure $ setCampaignPart TheDreamQuest c
+            setCampaignPart TheDreamQuest c (InterludeStepPart 2 Nothing 2)
       CampaignStep (InterludeStepPart 2 _ 2) -> do
         -- TheDreamQuest
         story theOneironauts2
@@ -472,11 +486,10 @@ instance RunMessage TheDreamEaters where
           then do
             story searchingForTheTruth
             recordInBoth TheBlackCatIsSearchingForTheTruth
-            push $ CampaignStep (InterludeStepPart 1 Nothing 4)
+            push $ CampaignStep (InterludeStepPart 2 Nothing 4)
             pure c
           else do
-            push $ CampaignStep (InterludeStepPart 1 Nothing 3)
-            pure $ setCampaignPart TheDreamQuest c
+            setCampaignPart TheDreamQuest c (InterludeStepPart 2 Nothing 3)
       CampaignStep (InterludeStepPart 2 _ 3) -> do
         story nowWhereWasI
 
@@ -521,7 +534,7 @@ instance RunMessage TheDreamEaters where
             push $ InTheWebOfDreams (CrossOutRecord TheBlackCatIsAtYourSide)
             pushBoth $ RemoveChaosToken Tablet
 
-        push $ CampaignStep (InterludeStepPart 1 Nothing 4)
+        push $ CampaignStep (InterludeStepPart 2 Nothing 4)
         pure c
       CampaignStep (InterludeStepPart 2 _ 4) -> do
         lead <- getLeadPlayer

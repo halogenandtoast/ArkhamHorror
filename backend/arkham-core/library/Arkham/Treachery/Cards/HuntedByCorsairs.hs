@@ -34,7 +34,7 @@ instance RunMessage HuntedByCorsairs where
       investigators <- getInvestigators
       pushAll [assignDamage iid (attrs.ability 1) 2 | iid <- investigators]
       pure t
-    UseThisAbility iid source@(isProxySource attrs -> True) 1 -> do
+    UseThisAbility iid source@(isProxySource attrs -> True) 2 -> do
       player <- getPlayer iid
       push
         $ chooseOne

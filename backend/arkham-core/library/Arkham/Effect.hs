@@ -376,7 +376,7 @@ allEffects =
     , ("05322", SomeEffect sixthSense4Effect)
     , ("06056", SomeEffect enchantedWoodsLostWoodsEffect)
     , ("06082", SomeEffect corruptedOrderlyEffect)
-    , ("06089", SomeEffect whispersOfHypnosEffect)
+    , ("06090", SomeEffect whispersOfHypnosEffect)
     , ("06114", SomeEffect followedEffect)
     , ("06115", SomeEffect momentum1Effect)
     , ("06162", SomeEffect gregoryGryEffect)

@@ -301,9 +301,6 @@ instance RunMessage TheDreamEaters where
                     ( newAttrs
                         { campaignCompletedSteps = campaignCompletedSteps attrs
                         , campaignStep = s
-                        , campaignLog = campaignLog attrs
-                        , campaignResolutions = campaignResolutions attrs
-                        , campaignModifiers = campaignModifiers attrs
                         , campaignMeta =
                             toJSON
                               $ meta
@@ -337,9 +334,6 @@ instance RunMessage TheDreamEaters where
                     ( newAttrs
                         { campaignCompletedSteps = campaignCompletedSteps attrs
                         , campaignStep = s
-                        , campaignLog = campaignLog attrs
-                        , campaignResolutions = campaignResolutions attrs
-                        , campaignModifiers = campaignModifiers attrs
                         , campaignMeta =
                             toJSON
                               $ meta
@@ -489,7 +483,7 @@ instance RunMessage TheDreamEaters where
             push $ CampaignStep (InterludeStepPart 2 Nothing 4)
             pure c
           else do
-            setCampaignPart TheDreamQuest c (InterludeStepPart 2 Nothing 3)
+            setCampaignPart TheWebOfDreams c (InterludeStepPart 2 Nothing 3)
       CampaignStep (InterludeStepPart 2 _ 3) -> do
         story nowWhereWasI
 

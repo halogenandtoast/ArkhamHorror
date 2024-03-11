@@ -256,6 +256,7 @@ async function chooseAbility(ability: AbilityMessage) {
   padding: 10px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
+  z-index: 10000;
 }
 
 

@@ -40,7 +40,10 @@ instance HasAbilities MysteriousStairs_187 where
   getAbilities (MysteriousStairs_187 attrs) =
     extendRevealed
       attrs
-      [mkAbility attrs 1 $ forced $ RevealLocation #when Anyone (be attrs)]
+      [ restrictedAbility attrs 1 (exists $ enemyIs Enemies.theUnnamable <> not_ (enemyAt attrs))
+          $ forced
+          $ RevealLocation #when Anyone (be attrs)
+      ]
 
 instance RunMessage MysteriousStairs_187 where
   runMessage msg l@(MysteriousStairs_187 attrs) = case msg of

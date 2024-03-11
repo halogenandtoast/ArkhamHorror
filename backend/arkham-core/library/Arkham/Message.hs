@@ -49,6 +49,7 @@ import Arkham.Id
 import Arkham.Investigate.Types
 import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Key
+import Arkham.Layout
 import {-# SOURCE #-} Arkham.Location.Types
 import Arkham.Matcher hiding (EnemyDefeated, InvestigatorDefeated, RevealChaosToken)
 import Arkham.Movement
@@ -834,6 +835,7 @@ data Message
   | SearchNoneFound InvestigatorId Target
   | SetActions InvestigatorId Source Int
   | SetEncounterDeck (Deck EncounterCard)
+  | SetLayout [GridTemplateRow]
   | SetLocationLabel LocationId Text
   | SetRole InvestigatorId ClassSymbol
   | ForceChaosTokenDraw ChaosTokenFace

@@ -42,10 +42,12 @@ instance RunMessage WaresOfBaharna where
 
       lead <- getLeadPlayer
       pushAll
-        [ chooseOrRunOneAtATimeWithLabel "Choose investigator to decide on returning discard" lead
+        $ [ chooseOrRunOneAtATimeWithLabel "Choose investigator to decide on returning discard" lead
             $ map (uncurry targetLabel) msgPairs
-        , Remember ObtainedSuppliesFromBaharna
-        ]
+          | notNull msgPairs
+          ]
+        <> [ Remember ObtainedSuppliesFromBaharna
+           ]
 
       pure s
     _ -> WaresOfBaharna <$> runMessage msg attrs

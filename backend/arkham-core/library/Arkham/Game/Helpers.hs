@@ -670,9 +670,9 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
     pure $ total >= n
   SameSkillIconCost n -> do
     handCards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
-    let total = foldMap (frequencies . cdSkills . toCardDef) handCards
+    let total = unionsWith (+) $ map (frequencies . cdSkills . toCardDef) handCards
     let wildCount = total ^. at #wild . non 0
-    pure $ foldr (\x y -> y || x + wildCount > n) False $ toList $ deleteMap #wild total
+    pure $ foldr (\x y -> y || x + wildCount >= n) False $ traceShowId $ toList $ deleteMap #wild total
   DiscardCombinedCost n -> do
     handCards <-
       mapMaybe (preview _PlayerCard)

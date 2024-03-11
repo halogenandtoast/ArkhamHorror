@@ -170,7 +170,6 @@ instance RunMessage AThousandShapesOfHorror where
           player <- getPlayer iid
           pushIfAny enemies
             $ chooseOne player [targetLabel enemy [Msg.EnemyEvaded iid enemy] | enemy <- enemies]
-          pure ()
         _ -> pure ()
       pure s
     ScenarioResolution r -> do
@@ -184,6 +183,7 @@ instance RunMessage AThousandShapesOfHorror where
           addCampaignCardToDeckChoice investigators Assets.theSilverKey
           allGainXp attrs
           addChaosToken Skull
+          endOfScenario
         Resolution 2 -> do
           recoveredAStrangeKey <- remembered RecoveredAStrangeKey
           story $ i18nWithTitle "dreamEaters.aThousandShapesOfHorror.resolution2"
@@ -193,11 +193,13 @@ instance RunMessage AThousandShapesOfHorror where
           record RandolphSurvivedTheDescent
           allGainXp attrs
           addChaosToken Skull
+          endOfScenario
         Resolution 4 -> do
           story $ i18nWithTitle "dreamEaters.aThousandShapesOfHorror.resolution4"
           record RandolphDidNotSurviveTheDescent
           removeCampaignCard Assets.randolphCarterChainedToTheWakingWorld
           allGainXp attrs
+          endOfScenario
         other -> throw $ UnknownResolution other
       pure s
     _ -> AThousandShapesOfHorror <$> lift (runMessage msg attrs)

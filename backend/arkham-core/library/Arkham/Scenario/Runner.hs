@@ -222,24 +222,41 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     (oldAct, actStack') <- case lookup n scenarioActStack of
       Just (x : ys) -> do
         let fromActId = ActId (toCardCode x)
-        -- Todo we add this here because of how the search for kadath moves
-        -- through acts and this seems better than failing. However maybe
-        -- we want to handle this in the scenario directly or come up with
-        -- some way not to remove acts at the same level
-        toAct <- maybe (genCard actDef) pure $ find (`isCard` actDef) ys
-        let toActId = ActId (toCardCode toAct)
-        pushWhen (newActSide == Act.B)
-          $ AdvanceAct toActId (toSource a) AdvancedWithOther
-        push $ ReplaceAct fromActId toAct
-        pure
-          ( x
-          , filter
-              ( \c ->
-                  (cdStage (toCardDef c) /= cdStage actDef)
-                    || (toCardCode c `cardCodeExactEq` toCardCode actDef)
+        case find (`isCard` actDef) ys of
+          Nothing -> do
+            -- Todo we add this here because of how the search for kadath moves
+            -- through acts and this seems better than failing. However maybe
+            -- we want to handle this in the scenario directly or come up with
+            -- some way not to remove acts at the same level
+            toAct <- genCard actDef
+            let toActId = ActId (toCardCode toAct)
+            pushWhen (newActSide == Act.B)
+              $ AdvanceAct toActId (toSource a) AdvancedWithOther
+            push $ ReplaceAct fromActId toAct
+            pure
+              ( x
+              , toAct
+                  : filter
+                    ( \c ->
+                        (cdStage (toCardDef c) /= cdStage actDef)
+                          || (toCardCode c `cardCodeExactEq` toCardCode actDef)
+                    )
+                    ys
               )
-              ys
-          )
+          Just toAct -> do
+            let toActId = ActId (toCardCode toAct)
+            pushWhen (newActSide == Act.B)
+              $ AdvanceAct toActId (toSource a) AdvancedWithOther
+            push $ ReplaceAct fromActId toAct
+            pure
+              ( x
+              , filter
+                  ( \c ->
+                      (cdStage (toCardDef c) /= cdStage actDef)
+                        || (toCardCode c `cardCodeExactEq` toCardCode actDef)
+                  )
+                  ys
+              )
       _ -> error "Can not advance act deck"
     pure
       $ a
@@ -1216,4 +1233,6 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & defeatedEnemiesL %~ insertMap eid (DefeatedEnemyAttrs eattrs enemyHealth)
   SetAsideCards cards -> do
     pure $ a & setAsideCardsL <>~ cards
+  SetLayout layout -> do
+    pure $ a & locationLayoutL .~ layout
   _ -> pure a

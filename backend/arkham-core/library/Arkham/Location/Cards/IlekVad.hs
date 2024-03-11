@@ -18,7 +18,7 @@ newtype IlekVad = IlekVad LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ilekVad :: LocationCard IlekVad
-ilekVad = locationWith IlekVad Cards.ilekVad 2 (PerPlayer 1) (canBeFlippedL .~ True)
+ilekVad = location IlekVad Cards.ilekVad 2 (PerPlayer 1)
 
 instance HasModifiersFor IlekVad where
   getModifiersFor (InvestigatorTarget iid) (IlekVad attrs) = do

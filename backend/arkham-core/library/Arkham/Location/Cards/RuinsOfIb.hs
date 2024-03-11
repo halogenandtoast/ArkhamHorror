@@ -13,7 +13,7 @@ newtype RuinsOfIb = RuinsOfIb LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ruinsOfIb :: LocationCard RuinsOfIb
-ruinsOfIb = locationWith RuinsOfIb Cards.ruinsOfIb 1 (PerPlayer 1) (canBeFlippedL .~ True)
+ruinsOfIb = location RuinsOfIb Cards.ruinsOfIb 1 (PerPlayer 1)
 
 instance HasAbilities RuinsOfIb where
   getAbilities (RuinsOfIb attrs) =

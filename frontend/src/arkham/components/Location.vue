@@ -229,10 +229,12 @@ const debug = useDebug()
           :ability="ability.contents"
           @click="chooseAbility(ability.index)"
           />
-        <template v-if="debug.active">
-          <button v-if="!location.revealed" @click="debug.send(game.id, {tag: 'RevealLocation', contents: [null, id]})">Reveal</button>
-        </template>
       </div>
+
+      <template v-if="debug.active">
+        <button v-if="!location.revealed" @click="debug.send(game.id, {tag: 'RevealLocation', contents: [null, id]})">Reveal</button>
+        <button v-if="clues && clues > 0" @click="debug.send(game.id, {tag: 'RemoveTokens', contents: [{ tag: 'TestSource', contents: []}, { tag: 'LocationTarget', contents: id }, 'Clue', 1]})">Remove Token</button>
+      </template>
     </div>
     <div class="attachments">
       <Treachery

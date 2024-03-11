@@ -14,7 +14,7 @@ newtype DylathLeen = DylathLeen LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dylathLeen :: LocationCard DylathLeen
-dylathLeen = locationWith DylathLeen Cards.dylathLeen 3 (PerPlayer 1) (canBeFlippedL .~ True)
+dylathLeen = location DylathLeen Cards.dylathLeen 3 (PerPlayer 1)
 
 instance HasAbilities DylathLeen where
   getAbilities (DylathLeen attrs) =

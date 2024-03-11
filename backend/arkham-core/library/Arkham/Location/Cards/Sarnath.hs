@@ -15,7 +15,7 @@ newtype Sarnath = Sarnath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sarnath :: LocationCard Sarnath
-sarnath = locationWith Sarnath Cards.sarnath 3 (PerPlayer 1) (canBeFlippedL .~ True)
+sarnath = location Sarnath Cards.sarnath 3 (PerPlayer 1)
 
 instance HasAbilities Sarnath where
   getAbilities (Sarnath attrs) =

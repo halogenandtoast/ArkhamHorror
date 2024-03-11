@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import * as Arkham from '@/arkham/types/Game'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { CardDef } from '@/arkham/types/CardDef'
 import type { Name } from '@/arkham/types/Name'
 import Supplies from '@/arkham/components/Supplies.vue';
@@ -13,11 +13,25 @@ export interface Props {
 
 const props = defineProps<Props>()
 
-const campaignLog = props.game.campaign?.log || props.game.scenario?.standaloneCampaignLog || { recorded: [], recordedSets: [], recordedCounts: [] }
-const { recorded, recordedSets, recordedCounts } = campaignLog
+const mainLog = props.game.campaign?.log || props.game.scenario?.standaloneCampaignLog || { recorded: [], recordedSets: [], recordedCounts: [] }
 
+const otherLog = props.game.campaign?.meta?.otherCampaignAttrs?.log
+const logTitle = props.game.campaign?.meta?.currentCampaignMode ?
+  (props.game.campaign.meta.currentCampaignMode === 'TheDreamQuest' ? "The Dream-Quest" : "The Web of Dreams") : null
+
+
+const otherLogTitle = logTitle ?
+  (logTitle === 'The Dream-Quest' ? 'The Web of Dreams' : 'The Dream-Quest') : null
+
+const logTitles = logTitle && otherLogTitle ? [logTitle, otherLogTitle].sort() : null
+
+
+const campaignLog = ref(mainLog)
+
+const recorded = computed(() => campaignLog.value.recorded)
+const recordedSets = computed(() => campaignLog.value.recordedSets)
+const recordedCounts = computed(() => campaignLog.value.recordedCounts)
 const hasSupplies = computed(() => Object.values(props.game.investigators).some((i) => i.supplies.length > 0))
-
 
 const findCard = (cardCode: string): CardDef | undefined => {
   return props.cards.find((c) => c.cardCode == cardCode)
@@ -60,6 +74,18 @@ const fullName = (name: Name): string => {
 <template>
   <div class="campaign-log">
     <h1>Campaign Log: {{game.name}}</h1>
+    <div v-if="logTitles" class="options">
+      <template v-for="title in logTitles" :key="title">
+        <input
+          type="radio"
+          v-model="campaignLog"
+          :value="title === logTitle ? mainLog : otherLog"
+          :checked="title === logTitle"
+          :id="`log${title}`"
+        />
+        <label :for="`log${title}`">{{title}}</label>
+      </template>
+    </div>
     <div v-if="hasSupplies">
       <h2>Supplies</h2>
       <Supplies v-for="i in game.investigators" :key="i.id" :player="i">
@@ -105,5 +131,10 @@ h1 {
 
 .crossed-out {
   text-decoration: line-through;
+}
+
+.options {
+  display: flex;
+  justify-content: space-around;
 }
 </style>

@@ -49,10 +49,19 @@ setCampaignPart
   -> m TheDreamEaters
 setCampaignPart part c@(TheDreamEaters attrs) step =
   if (toResult @Metadata attrs.meta).mode == PartialMode part
-    then pure c
+    then do
+      push $ CampaignStep step
+      pure c
     else do
       let meta = toResult @Metadata attrs.meta
           newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
+          newMeta = toResult @Metadata newAttrs.meta
+
+      investigators <- allInvestigators
+      currentPlayers <- for investigators \i -> do
+        player <- getPlayer i
+        iattrs <- getAttrs @Investigator i
+        pure (player, iattrs)
 
       for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
         let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
@@ -67,11 +76,10 @@ setCampaignPart part c@(TheDreamEaters attrs) step =
               , campaignStep = campaignStep attrs
               , campaignMeta =
                   toJSON
-                    $ meta
-                      { currentCampaignMode = Just part
-                      , otherCampaignAttrs = Just attrs
+                    $ newMeta
+                      { otherCampaignAttrs = Just attrs
                       , currentCampaignPlayers = otherCampaignPlayers meta
-                      , otherCampaignPlayers = currentCampaignPlayers meta
+                      , otherCampaignPlayers = mapFromList currentPlayers
                       }
               }
           )

@@ -1764,8 +1764,7 @@ runGameMessage msg g = case msg of
                     <> windows'
                     <> [BeginSkillTestAfterFast]
           AndSkillTest types -> do
-            availableSkills <- for types $ traverseToSnd \skillType ->
-              getAvailableSkillsFor skillType iid
+            availableSkills <- for types $ traverseToSnd (`getAvailableSkillsFor` iid)
             -- (base, other choices)
             let skillsWithChoice = filter ((> 1) . Set.size . snd) availableSkills
             if null skillsWithChoice
@@ -1829,7 +1828,6 @@ runGameMessage msg g = case msg of
           , chooseOne
               player
               [targetLabel (toCardId card) [ResolveStory iid storyMode storyId, ResolvedStory storyMode storyId]]
-          , UnfocusCards
           ]
       _ ->
         push
@@ -1838,6 +1836,9 @@ runGameMessage msg g = case msg of
             [ targetLabel (toTarget storyId) [ResolveStory iid storyMode storyId, ResolvedStory storyMode storyId]
             ]
     pure $ g & entitiesL . storiesL . at storyId ?~ story'
+  ResolveStory _ _ sid -> do
+    card <- field StoryCard sid
+    pure $ g & focusedCardsL %~ filter (/= card)
   RemoveStory storyId -> do
     pure $ g & entitiesL . storiesL %~ deleteMap storyId
   CreateSkill skillId card investigatorId placement -> do

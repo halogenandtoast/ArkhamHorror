@@ -1,5 +1,6 @@
 module Arkham.Act.Cards.KingdomOfTheSkai (KingdomOfTheSkai (..), kingdomOfTheSkai) where
 
+import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
@@ -16,7 +17,7 @@ import Arkham.Trait (Trait (Port))
 
 newtype KingdomOfTheSkai = KingdomOfTheSkai ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 kingdomOfTheSkai :: ActCard KingdomOfTheSkai
 kingdomOfTheSkai =
@@ -24,10 +25,20 @@ kingdomOfTheSkai =
     (1, A)
     KingdomOfTheSkai
     Cards.kingdomOfTheSkai
-    (Just $ GroupClueCost (PerPlayer 2) (LocationWithTrait Port))
+    Nothing
+
+instance HasAbilities KingdomOfTheSkai where
+  getAbilities (KingdomOfTheSkai x) =
+    [ restrictedAbility x 1 (EachUndefeatedInvestigator $ InvestigatorAt $ LocationWithTrait Port)
+        $ Objective
+        $ ReactionAbility (RoundEnds #when) (GroupClueCost (PerPlayer 2) (LocationWithTrait Port))
+    ]
 
 instance RunMessage KingdomOfTheSkai where
   runMessage msg a@(KingdomOfTheSkai attrs) = case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ advanceVia #clues attrs attrs
+      pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       lead <- getLeadPlayer
       players <- getAllPlayers

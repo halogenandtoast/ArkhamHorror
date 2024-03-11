@@ -155,6 +155,9 @@ instance HasField "beforeEffect" CardDef Bool where
 instance HasField "fastWindow" CardDef (Maybe WindowMatcher) where
   getField = cdFastWindow
 
+instance HasField "keywords" CardDef (Set Keyword) where
+  getField = cdKeywords
+
 instance Exists CardDef where
   exists def = case cdCardType def of
     AssetType -> exists $ assetIs def

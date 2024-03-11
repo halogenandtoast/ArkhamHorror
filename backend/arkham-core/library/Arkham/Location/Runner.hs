@@ -486,7 +486,7 @@ veiled attrs abilities =
     ( restrictedAbility
         attrs
         VeiledAbility
-        (exists $ LocationWithId (toId attrs) <> LocationCanBeFlipped <> LocationWithoutClues)
+        (Here <> exists (LocationWithId (toId attrs) <> LocationCanBeFlipped <> LocationWithoutClues))
         (FastAbility Free)
         : abilities
     )

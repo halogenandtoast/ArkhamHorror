@@ -14,7 +14,7 @@ newtype Kadatheron = Kadatheron LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 kadatheron :: LocationCard Kadatheron
-kadatheron = locationWith Kadatheron Cards.kadatheron 5 (PerPlayer 1) (canBeFlippedL .~ True)
+kadatheron = location Kadatheron Cards.kadatheron 5 (PerPlayer 1)
 
 instance HasAbilities Kadatheron where
   getAbilities (Kadatheron attrs) =

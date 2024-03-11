@@ -25,7 +25,7 @@ instance HasAbilities Nasht where
     withBaseAbilities
       x
       [ mkAbility x 1 parleyAction_
-      , mkAbility x 2 $ ForcedAbility $ EnemyDefeated #after You ByAny $ EnemyWithId $ toId x
+      , mkAbility x 2 $ forced $ EnemyDefeated #after You ByAny $ be x
       ]
 
 instance RunMessage Nasht where
@@ -36,17 +36,15 @@ instance RunMessage Nasht where
       push
         $ chooseOne
           player
-          [ SkillLabel
-            sType
-            [parley iid (toAbilitySource attrs 1) iid sType (2 + n)]
+          [ SkillLabel sType [parley iid (attrs.ability 1) iid sType (2 + n)]
           | sType <- [#combat, #agility]
           ]
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ Flip iid (toAbilitySource attrs 1) (toTarget attrs)
+      push $ Flip iid (attrs.ability 1) (toTarget attrs)
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ Flip iid (toAbilitySource attrs 2) (toTarget attrs)
+      push $ Flip iid (attrs.ability 2) (toTarget attrs)
       pure e
     Flip iid _ (isTarget attrs -> True) -> do
       theTrialOfNasht <- genCard Story.theTrialOfNasht

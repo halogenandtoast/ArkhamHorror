@@ -26,7 +26,11 @@ newtype TheInfestationBegins = TheInfestationBegins StoryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theInfestationBegins :: StoryCard TheInfestationBegins
-theInfestationBegins = story TheInfestationBegins Cards.theInfestationBegins
+theInfestationBegins =
+  storyWith
+    TheInfestationBegins
+    Cards.theInfestationBegins
+    (\a -> a {storyRemoveAfterResolution = False})
 
 instance RunMessage TheInfestationBegins where
   runMessage msg s@(TheInfestationBegins attrs) = case msg of

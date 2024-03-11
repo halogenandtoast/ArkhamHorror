@@ -90,6 +90,7 @@ export type Campaign = {
   log: LogContents;
   step: CampaignStep | null;
   difficulty: Difficulty;
+  meta: any;
 }
 
 
@@ -98,5 +99,6 @@ export const campaignDecoder = JsonDecoder.object<Campaign>({
   id: JsonDecoder.string,
   difficulty: difficultyDecoder,
   log: logContentsDecoder,
-  step: JsonDecoder.nullable(campaignStepDecoder)
+  step: JsonDecoder.nullable(campaignStepDecoder),
+  meta: JsonDecoder.succeed
 }, 'Campaign');

@@ -359,8 +359,13 @@ provide('solo', solo)
           <p>Game over</p>
           <CampaignLog v-if="game !== null" :game="game" :cards="cards" />
         </div>
-        <div v-if="!game.scenario">
+        <div class="sidebar" v-if="!game.scenario">
           <GameLog :game="game" :gameLog="gameLog" @undo="undo" />
+          <router-link class="button-link" :to="`/games/${game.id}/log`" v-slot="{href, navigate}">
+            <button :href="href" @click="navigate">View Log</button>
+          </router-link>
+          <button @click="debug.toggle">Toggle Debug</button>
+          <button @click="debugExport">Debug Export</button>
         </div>
       </div>
     </template>

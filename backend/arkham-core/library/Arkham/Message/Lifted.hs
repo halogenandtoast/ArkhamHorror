@@ -10,6 +10,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.HasQueue as X (runQueueT)
 import Arkham.Classes.Query
 import Arkham.DamageEffect
+import Arkham.Enemy.Creation
 import Arkham.Helpers
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Campaign qualified as Msg
@@ -39,6 +40,15 @@ setAgendaDeck = genCards >=> push . SetAgendaDeckCards 1
 
 setActDeck :: ReverseQueue m => [CardDef] -> m ()
 setActDeck = genCards >=> push . SetActDeckCards 1
+
+placeSetAsideLocation :: ReverseQueue m => CardDef -> m LocationId
+placeSetAsideLocation card = do
+  (lid, msg) <- Msg.placeSetAsideLocation card
+  push msg
+  pure lid
+
+placeSetAsideLocation_ :: ReverseQueue m => CardDef -> m ()
+placeSetAsideLocation_ = push <=< Msg.placeSetAsideLocation_
 
 placeLocationCard
   :: ReverseQueue m => CardDef -> m LocationId
@@ -177,6 +187,21 @@ createEnemyAt
   :: (ReverseQueue m, IsCard card) => card -> LocationId -> m ()
 createEnemyAt c lid = push =<< Msg.createEnemyAt_ (toCard c) lid Nothing
 
+createSetAsideEnemy
+  :: (ReverseQueue m, IsEnemyCreationMethod creation) => CardDef -> creation -> m ()
+createSetAsideEnemy def creation = createSetAsideEnemyWith def creation id
+
+createSetAsideEnemyWith
+  :: (ReverseQueue m, IsEnemyCreationMethod creation)
+  => CardDef
+  -> creation
+  -> (EnemyCreation Message -> EnemyCreation Message)
+  -> m ()
+createSetAsideEnemyWith def creation f = do
+  card <- getSetAsideCard def
+  msg <- Msg.createEnemy card creation
+  push $ toMessage (f msg)
+
 setAsideCards :: ReverseQueue m => [CardDef] -> m ()
 setAsideCards = genCards >=> push . Msg.SetAsideCards
 
@@ -224,3 +249,11 @@ placeDoomOnAgenda n = push $ PlaceDoomOnAgenda n CanNotAdvance
 
 revertAgenda :: (ReverseQueue m, AsId a, IdOf a ~ AgendaId) => a -> m ()
 revertAgenda a = push $ RevertAgenda (asId a)
+
+chooseOrRunOne :: ReverseQueue m => InvestigatorId -> [UI Message] -> m ()
+chooseOrRunOne iid msgs = do
+  player <- getPlayer iid
+  push $ Msg.chooseOrRunOne player msgs
+
+addToHand :: (IsCard a, ReverseQueue m) => InvestigatorId -> [a] -> m ()
+addToHand iid cards = push $ AddToHand iid (map toCard cards)

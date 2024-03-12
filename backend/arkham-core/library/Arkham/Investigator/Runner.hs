@@ -2475,6 +2475,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & remainingActionsL .~ 0 & usedAdditionalActionsL .~ additionalActions
   SetActions iid _ n | iid == investigatorId -> do
     pure $ a & remainingActionsL .~ n
+  SetAsideCards cards -> do
+    pure
+      $ a
+      & (handL %~ filter (`notElem` cards))
+      & (discardL %~ filter ((`notElem` cards) . PlayerCard))
+      & (deckL %~ Deck . filter ((`notElem` cards) . PlayerCard) . unDeck)
+    pure $ a
   GainActions iid _ n | iid == investigatorId -> do
     -- TODO: If we add a window here we need to reconsider Ace of Rods, likely it would need a Do variant
     pure $ a & remainingActionsL +~ n

@@ -60,7 +60,8 @@ instance RunMessage DeepDark where
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ toDiscard (toAbilitySource attrs 1) attrs
       pure t
-    DiscoverClues iid lid _ _ _ -> do
+    DiscoverClues iid lid _ _ _ _ -> do
+      -- TODO: We should track this via history instead
       let
         updatedMetadata =
           Map.insertWith

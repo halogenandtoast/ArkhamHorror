@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.DamageEffect
+import Arkham.Discover
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 
 newtype TheNecronomiconPetrusDeDaciaTranslation5 = TheNecronomiconPetrusDeDaciaTranslation5 AssetAttrs
@@ -54,7 +55,7 @@ instance RunMessage TheNecronomiconPetrusDeDaciaTranslation5 where
         pushWhen (notNull lids)
           $ chooseOrRunOne
             player
-            [ targetLabel lid [DiscoverCluesAtLocation iid lid (toAbilitySource attrs 1) 2 Nothing]
+            [ targetLabel lid [toMessage $ discover iid lid (attrs.ability 1) 2]
             | lid <- lids
             ]
         pure a

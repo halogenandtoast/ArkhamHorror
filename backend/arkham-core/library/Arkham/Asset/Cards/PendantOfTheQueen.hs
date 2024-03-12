@@ -87,7 +87,7 @@ instance RunMessage PendantOfTheQueen where
           ]
         <> [ Label
             "Discover a clue at this location"
-            [DiscoverCluesAtLocation iid lid (toAbilitySource attrs 1) 1 Nothing]
+            [DiscoverCluesAtLocation iid lid (toAbilitySource attrs 1) 1 NotInvestigate Nothing]
            | discoverChoice
            ]
         <> [ Label

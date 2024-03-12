@@ -40,6 +40,7 @@ import Arkham.DamageEffect
 import Arkham.Deck qualified as Deck
 import Arkham.DefeatedBy
 import Arkham.Discard
+import Arkham.Discover
 import Arkham.Draw.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Event.Types (Field (..))
@@ -1387,14 +1388,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       Just lid -> runMessage (InvestigatorDiscoverClues iid lid source n maction) a
       _ -> pure a
   InvestigatorDiscoverClues iid lid source n _ | iid == investigatorId -> do
-    canDiscoverClues <- getCanDiscoverClues iid lid
+    canDiscoverClues <- getCanDiscoverClues NotInvestigate iid lid
     when canDiscoverClues $ do
       checkWindowMsg <- checkWindows [mkWhen (Window.DiscoverClues iid lid source n)]
       pushAll [checkWindowMsg, Do msg]
     pure a
   Do (InvestigatorDiscoverClues iid lid source n maction) | iid == investigatorId -> do
-    canDiscoverClues <- getCanDiscoverClues iid lid
-    pushWhen canDiscoverClues $ DiscoverCluesAtLocation iid lid source n maction
+    canDiscoverClues <- getCanDiscoverClues NotInvestigate iid lid
+    pushWhen canDiscoverClues $ toMessage $ discoverAction maction $ discover iid lid source n
     pure a
   GainClues iid source n | iid == investigatorId -> do
     window <- checkWindows ((`mkWindow` Window.GainsClues iid source n) <$> [#when, #after])
@@ -1402,7 +1403,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   FlipClues target n | isTarget a target -> do
     pure $ a & tokensL %~ flipClues n
-  DiscoverClues iid lid source n maction | iid == investigatorId -> do
+  DiscoverClues iid lid source n isInvestigate maction | iid == investigatorId -> do
     modifiers <- getModifiers lid
     let
       getMaybeMax :: ModifierType -> Maybe Int -> Maybe Int
@@ -1411,9 +1412,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       getMaybeMax _ x = x
       mMax :: Maybe Int = foldr getMaybeMax Nothing modifiers
       n' = maybe n (min n) mMax
-    push $ Do $ DiscoverClues iid lid source n' maction
+    push $ Do $ DiscoverClues iid lid source n' isInvestigate maction
     pure a
-  Do (DiscoverClues iid _ source n _) | iid == investigatorId -> do
+  Do (DiscoverClues iid _ source n _ _) | iid == investigatorId -> do
     send $ format a <> " discovered " <> pluralize n "clue"
     push $ After $ GainClues iid source n
     pure $ a & tokensL %~ addTokens Clue n
@@ -2481,7 +2482,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (handL %~ filter (`notElem` cards))
       & (discardL %~ filter ((`notElem` cards) . PlayerCard))
       & (deckL %~ Deck . filter ((`notElem` cards) . PlayerCard) . unDeck)
-    pure $ a
   GainActions iid _ n | iid == investigatorId -> do
     -- TODO: If we add a window here we need to reconsider Ace of Rods, likely it would need a Do variant
     pure $ a & remainingActionsL +~ n

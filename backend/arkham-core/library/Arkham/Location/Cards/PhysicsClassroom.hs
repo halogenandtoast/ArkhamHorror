@@ -5,6 +5,7 @@ module Arkham.Location.Cards.PhysicsClassroom (
 
 import Arkham.Prelude
 
+import Arkham.Discover
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
@@ -56,7 +57,7 @@ instance RunMessage PhysicsClassroom where
       push
         $ chooseOrRunOne
           player
-          [ targetLabel lid [DiscoverCluesAtLocation iid lid (toAbilitySource attrs 1) 1 Nothing]
+          [ targetLabel lid [toMessage $ discover iid lid (attrs.ability 1) 1]
           | lid <- locations
           ]
       pure l

@@ -126,6 +126,7 @@ data ModifierType
   | CannotDealDamage
   | CannotDiscoverClues
   | CannotDiscoverCluesAt LocationMatcher
+  | CannotDiscoverCluesExceptAsResultOfInvestigation LocationMatcher
   | CannotDisengageEnemies
   | CannotDrawCards
   | CannotEngage InvestigatorId

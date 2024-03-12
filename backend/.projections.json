@@ -36,11 +36,8 @@
        "  , {dot|snakecase|camelcase}",
        "  ) where",
        "",
-       "import Arkham.Prelude",
-       "",
        "import Arkham.Act.Cards qualified as Cards",
-       "import Arkham.Act.Runner",
-       "import Arkham.Classes",
+       "import Arkham.Act.Import.Lifted",
        "",
        "newtype {dot} = {dot} ActAttrs",
        "  deriving anyclass (IsAct, HasModifiersFor)",
@@ -50,7 +47,10 @@
        "{dot|snakecase|camelcase} = act (1, A) {dot} Cards.{dot|snakecase|camelcase} Nothing",
        "",
        "instance RunMessage {dot} where",
-       "  runMessage msg ({dot} attrs) = {dot} <$> runMessage msg attrs"
+       "  runMessage msg a@({dot} attrs) = runQueueT $ case msg of",
+       "    AdvanceAct (isSide B attrs -> True) _ _ -> do",
+       "      pure a",
+       "    _ -> {dot} <$> lift (runMessage msg attrs)"
     ]
   },
   "arkham-core/library/Arkham/Scenario/Scenarios/*.hs": {

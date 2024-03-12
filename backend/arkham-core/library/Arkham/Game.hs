@@ -659,6 +659,7 @@ getInvestigatorsMatching matcher = do
     InvestigatorCanDiscoverCluesAtOneOf matcher' -> \i -> do
       let
         getInvalid acc (CannotDiscoverCluesAt x) = AnyLocationMatcher x <> acc
+        getInvalid acc (CannotDiscoverCluesExceptAsResultOfInvestigation x) = AnyLocationMatcher x <> acc
         getInvalid acc _ = acc
       modifiers' <- getModifiers (toTarget i)
       invalidLocations <-

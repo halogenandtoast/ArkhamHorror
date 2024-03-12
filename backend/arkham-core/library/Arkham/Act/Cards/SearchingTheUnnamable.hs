@@ -1,7 +1,7 @@
 module Arkham.Act.Cards.SearchingTheUnnamable (SearchingTheUnnamable (..), searchingTheUnnamable) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner hiding (placeLabeledLocations)
+import Arkham.Act.Runner hiding (advanceActDeck, placeLabeledLocations)
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Direction
@@ -67,6 +67,6 @@ instance RunMessage SearchingTheUnnamable where
       endlessDescent <- getSetAsideCardsMatching "Endless Descent"
       pushAll [ShuffleCardsIntoDeck Deck.EncounterDeck endlessDescent, ShuffleEncounterDiscardBackIn]
 
-      push $ advanceActDeck attrs
+      advanceActDeck attrs
       pure a
     _ -> SearchingTheUnnamable <$> runMessage msg attrs

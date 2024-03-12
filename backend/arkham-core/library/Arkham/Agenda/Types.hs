@@ -64,6 +64,14 @@ data AgendaAttrs = AgendaAttrs
   }
   deriving stock (Show, Eq, Generic)
 
+instance AsId Agenda where
+  type IdOf Agenda = AgendaId
+  asId = toId
+
+instance AsId AgendaAttrs where
+  type IdOf AgendaAttrs = AgendaId
+  asId = toId
+
 instance ToJSON AgendaAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "agenda"
   toEncoding = genericToEncoding $ aesonOptions $ Just "agenda"
@@ -93,6 +101,9 @@ instance Sourceable AgendaAttrs where
 
 onSide :: AgendaSide -> AgendaAttrs -> Bool
 onSide side AgendaAttrs {..} = agendaSide agendaSequence == side
+
+isSide :: AgendaSide -> AgendaAttrs -> AgendaId -> Bool
+isSide side attrs aid = aid == attrs.id && onSide side attrs
 
 agenda
   :: (Int, AgendaSide)
@@ -130,6 +141,9 @@ agendaWith (n, side) f cardDef threshold g =
             , agendaUsedWheelOfFortuneX = False
             }
     }
+
+instance HasField "id" AgendaAttrs AgendaId where
+  getField = agendaId
 
 instance HasField "ability" AgendaAttrs (Int -> Source) where
   getField this = toAbilitySource this

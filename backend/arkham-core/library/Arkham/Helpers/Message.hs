@@ -392,8 +392,8 @@ directDamage iid (toSource -> source) damage = InvestigatorDirectDamage iid sour
 directHorror :: Sourceable source => InvestigatorId -> source -> Int -> Message
 directHorror iid (toSource -> source) horror = InvestigatorDirectDamage iid source 0 horror
 
-findAndDrawEncounterCard :: InvestigatorId -> CardMatcher -> Message
-findAndDrawEncounterCard investigator cardMatcher = FindAndDrawEncounterCard investigator cardMatcher IncludeDiscard
+findAndDrawEncounterCard :: IsCardMatcher a => InvestigatorId -> a -> Message
+findAndDrawEncounterCard investigator cardMatcher = FindAndDrawEncounterCard investigator (toCardMatcher cardMatcher) IncludeDiscard
 
 ready :: Targetable target => target -> Message
 ready = Ready . toTarget

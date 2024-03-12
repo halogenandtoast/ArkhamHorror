@@ -59,6 +59,9 @@ data ActAttrs = ActAttrs
   }
   deriving stock (Show, Eq, Generic)
 
+instance HasField "id" ActAttrs ActId where
+  getField = actId
+
 instance HasField "ability" ActAttrs (Int -> Source) where
   getField = toAbilitySource
 
@@ -147,6 +150,9 @@ instance Sourceable ActAttrs where
 
 onSide :: AS.ActSide -> ActAttrs -> Bool
 onSide side ActAttrs {..} = AS.actSide actSequence == side
+
+isSide :: AS.ActSide -> ActAttrs -> ActId -> Bool
+isSide side attrs aid = aid == attrs.id && onSide side attrs
 
 instance HasAbilities ActAttrs where
   getAbilities attrs@ActAttrs {..} = case actAdvanceCost of

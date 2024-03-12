@@ -87,7 +87,7 @@ instance RunMessage TheGathering where
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
-        Skull | isHardExpert attrs -> findAndDrawEncounterCard iid (#enemy <> withTrait Ghoul)
+        Skull | isHardExpert attrs -> findAndDrawEncounterCard iid (isEnemyCard $ withTrait Ghoul)
         Cultist -> assignHorror iid (ChaosTokenSource token) (byDifficulty attrs 1 2)
         _ -> pure ()
       pure s

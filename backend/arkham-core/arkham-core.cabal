@@ -339,6 +339,7 @@ library
       Arkham.Agenda.Cards.WhatsGoingOn
       Arkham.Agenda.Cards.WheelOfFortuneX
       Arkham.Agenda.Helpers
+      Arkham.Agenda.Import.Lifted
       Arkham.Agenda.Runner
       Arkham.Agenda.Sequence
       Arkham.Agenda.Types

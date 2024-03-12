@@ -688,6 +688,9 @@ instance IsLabel "asset" CardMatcher where
 instance IsLabel "ally" CardMatcher where
   fromLabel = CardWithTrait Ally
 
+isEnemyCard :: CardMatcher -> CardMatcher
+isEnemyCard = (#enemy <>)
+
 instance Semigroup CardMatcher where
   AnyCard <> a = a
   a <> AnyCard = a

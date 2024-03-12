@@ -1,5 +1,7 @@
 module Arkham.Message.Lifted (module X, module Arkham.Message.Lifted) where
 
+import Arkham.Act.Types (ActAttrs (actDeckId))
+import Arkham.Agenda.Types (AgendaAttrs (agendaDeckId))
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
@@ -131,7 +133,7 @@ assignHorror
 assignHorror iid (toSource -> source) horror = push $ Msg.assignHorror iid source horror
 
 findAndDrawEncounterCard
-  :: ReverseQueue m => InvestigatorId -> CardMatcher -> m ()
+  :: (ReverseQueue m, IsCardMatcher a) => InvestigatorId -> a -> m ()
 findAndDrawEncounterCard iid matcher = push $ Msg.findAndDrawEncounterCard iid matcher
 
 beginSkillTest
@@ -202,3 +204,23 @@ drawAnotherChaosToken = push . DrawAnotherChaosToken
 
 assignEnemyDamage :: ReverseQueue m => DamageAssignment -> EnemyId -> m ()
 assignEnemyDamage assignment = push . Msg.assignEnemyDamage assignment
+
+eachInvestigator :: ReverseQueue m => (InvestigatorId -> m ()) -> m ()
+eachInvestigator f = do
+  investigators <- getInvestigators
+  for_ investigators f
+
+advanceAgendaDeck :: ReverseQueue m => AgendaAttrs -> m ()
+advanceAgendaDeck attrs = push $ AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+
+advanceActDeck :: ReverseQueue m => ActAttrs -> m ()
+advanceActDeck attrs = push $ AdvanceActDeck (actDeckId attrs) (toSource attrs)
+
+shuffleEncounterDiscardBackIn :: ReverseQueue m => m ()
+shuffleEncounterDiscardBackIn = push ShuffleEncounterDiscardBackIn
+
+placeDoomOnAgenda :: ReverseQueue m => Int -> m ()
+placeDoomOnAgenda n = push $ PlaceDoomOnAgenda n CanNotAdvance
+
+revertAgenda :: (ReverseQueue m, AsId a, IdOf a ~ AgendaId) => a -> m ()
+revertAgenda a = push $ RevertAgenda (asId a)

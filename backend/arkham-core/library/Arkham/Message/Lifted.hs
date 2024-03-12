@@ -7,6 +7,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.HasQueue as X (runQueueT)
 import Arkham.Classes.Query
+import Arkham.DamageEffect
 import Arkham.Helpers
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Campaign qualified as Msg
@@ -23,6 +24,7 @@ import Arkham.Prelude
 import Arkham.SkillType qualified as SkillType
 import Arkham.Source
 import Arkham.Target
+import Arkham.Token
 
 class (CardGen m, HasGame m, HasQueue Message m) => ReverseQueue m
 instance (CardGen m, MonadIO m, HasGame m) => ReverseQueue (QueueT Message m)
@@ -187,3 +189,16 @@ removeCampaignCard (toCardDef -> def) = do
 
 placeClues :: (ReverseQueue m, Sourceable source) => source -> LocationId -> Int -> m ()
 placeClues source lid n = push $ PlaceClues (toSource source) (toTarget lid) n
+
+placeTokens
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
+placeTokens source lid token n = push $ PlaceTokens (toSource source) (toTarget lid) token n
+
+afterSkillTest :: ReverseQueue m => Message -> m ()
+afterSkillTest = Msg.pushAfterSkillTest
+
+drawAnotherChaosToken :: ReverseQueue m => InvestigatorId -> m ()
+drawAnotherChaosToken = push . DrawAnotherChaosToken
+
+assignEnemyDamage :: ReverseQueue m => DamageAssignment -> EnemyId -> m ()
+assignEnemyDamage assignment = push . Msg.assignEnemyDamage assignment

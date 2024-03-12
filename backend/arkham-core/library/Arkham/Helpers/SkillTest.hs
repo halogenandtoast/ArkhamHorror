@@ -6,6 +6,7 @@ import Arkham.Action
 import Arkham.Card
 import Arkham.ClassSymbol
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasQueue (HasQueue, pushAfter)
 import Arkham.Classes.Query hiding (matches)
 import Arkham.CommitRestriction
 import Arkham.Enemy.Types (Field (..))
@@ -18,7 +19,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword (Keyword (Peril))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message (Message (RevelationSkillTest), pattern BeginSkillTest)
+import Arkham.Message (Message (RevelationSkillTest, SkillTestEnds), pattern BeginSkillTest)
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Question
@@ -364,3 +365,8 @@ skillTestLabel
   -> Int
   -> UI Message
 skillTestLabel lbl sType iid source target n = SkillLabelWithLabel lbl sType [beginSkillTest iid source target sType n]
+
+pushAfterSkillTest :: HasQueue Message m => Message -> m ()
+pushAfterSkillTest = pushAfter \case
+  SkillTestEnds {} -> True
+  _ -> False

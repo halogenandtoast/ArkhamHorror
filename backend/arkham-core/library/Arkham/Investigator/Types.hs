@@ -81,6 +81,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorResources :: Field Investigator Int
   InvestigatorDoom :: Field Investigator Int
   InvestigatorClues :: Field Investigator Int
+  InvestigatorTokens :: Field Investigator Tokens
   InvestigatorHand :: Field Investigator [Card]
   InvestigatorHandSize :: Field Investigator Int
   InvestigatorCardsUnderneath :: Field Investigator [Card]

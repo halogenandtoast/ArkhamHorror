@@ -153,3 +153,13 @@ isAbilitySource _ _ _ = False
 isProxyAbilitySource :: Sourceable a => a -> Int -> Source -> Bool
 isProxyAbilitySource a idx (AbilitySource (ProxySource _ b) idx') | idx == idx' = isSource a b
 isProxyAbilitySource _ _ _ = False
+
+pattern TabletEffect :: Source
+pattern TabletEffect <- ChaosTokenEffectSource Tablet
+  where
+    TabletEffect = ChaosTokenEffectSource Tablet
+
+pattern ElderThingEffect :: Source
+pattern ElderThingEffect <- ChaosTokenEffectSource ElderThing
+  where
+    ElderThingEffect = ChaosTokenEffectSource ElderThing

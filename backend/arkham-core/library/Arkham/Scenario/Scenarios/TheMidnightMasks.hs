@@ -24,7 +24,7 @@ import Arkham.Matcher (
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (forceAddCampaignCardToDeckChoice, recordSetInsert)
-import Arkham.Scenario.Runner hiding (createEnemyAt, placeLocationCard, story)
+import Arkham.Scenario.Runner hiding (chooseOrRunOne, createEnemyAt, placeLocationCard, story)
 import Arkham.Scenario.Setup
 import Arkham.Scenarios.TheMidnightMasks.Story
 import Arkham.Token
@@ -113,12 +113,11 @@ instance RunMessage TheMidnightMasks where
       whenHasRecord GhoulPriestIsStillAlive $ addToEncounterDeck (Only Enemies.ghoulPriest)
     ResolveChaosToken _ Cultist iid | isEasyStandard attrs -> do
       closestCultists <- select $ NearestEnemy $ EnemyWithTrait Trait.Cultist
-      player <- getPlayer iid
-      pushIfAny closestCultists
-        $ chooseOrRunOne player
-        $ [ targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom 1]
-          | x <- closestCultists
-          ]
+      when (notNull closestCultists) do
+        chooseOrRunOne iid
+          $ [ targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom 1]
+            | x <- closestCultists
+            ]
       pure s
     ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
       cultists <- select $ EnemyWithTrait Trait.Cultist

@@ -190,6 +190,7 @@ library
       Arkham.Act.Cards.WitchHauntings
       Arkham.Act.Cards.WorldsBeyond
       Arkham.Act.Helpers
+      Arkham.Act.Import.Lifted
       Arkham.Act.Runner
       Arkham.Act.Sequence
       Arkham.Act.Types

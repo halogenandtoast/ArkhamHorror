@@ -1,15 +1,13 @@
 module Arkham.Act.Cards.InTheBellyOfTheMoonBeast (InTheBellyOfTheMoonBeast (..), inTheBellyOfTheMoonBeast) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner hiding (advanceActDeck)
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
-import Arkham.Classes
 import Arkham.Helpers.Campaign (getOwner)
+import Arkham.Helpers.Query (getLead)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message.Lifted
-import Arkham.Prelude
 
 newtype InTheBellyOfTheMoonBeast = InTheBellyOfTheMoonBeast ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -25,20 +23,19 @@ inTheBellyOfTheMoonBeast =
 
 instance RunMessage InTheBellyOfTheMoonBeast where
   runMessage msg a@(InTheBellyOfTheMoonBeast attrs) = runQueueT $ case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       investigators <- select $ InvestigatorAt "City of the Moon-Beasts"
-      lead <- getLeadPlayer
+      lead <- getLead
       virgilGray <- getSetAsideCard Assets.virgilGrayTrulyInspired
-      push
-        $ chooseOrRunOne
-          lead
-          [targetLabel iid [TakeControlOfSetAsideAsset iid virgilGray] | iid <- investigators]
+      chooseOrRunOne
+        lead
+        [targetLabel iid [TakeControlOfSetAsideAsset iid virgilGray] | iid <- investigators]
 
       whenHasRecord RandolphWasCaptured do
         mOwner <- getOwner Assets.randolphCarterExpertDreamer
         for_ mOwner \iid -> do
           randolph <- getSetAsideCard Assets.randolphCarterExpertDreamer
-          push $ AddToHand iid [randolph]
+          addToHand iid [randolph]
 
       advanceActDeck attrs
       pure a

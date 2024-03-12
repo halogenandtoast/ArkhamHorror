@@ -16,11 +16,16 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message hiding (story)
+import Arkham.Message hiding (chooseOrRunOne, story)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (forceAddCampaignCardToDeckChoice)
-import Arkham.Scenario.Runner hiding (findAndDrawEncounterCard, placeLocationCard, story)
+import Arkham.Scenario.Runner hiding (
+  chooseOrRunOne,
+  findAndDrawEncounterCard,
+  placeLocationCard,
+  story,
+ )
 import Arkham.Scenario.Setup
 import Arkham.Scenarios.TheDevourerBelow.Story
 import Arkham.Token
@@ -110,12 +115,11 @@ instance RunMessage TheDevourerBelow where
     ResolveChaosToken _ Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2
       closestEnemyIds <- select $ NearestEnemy AnyEnemy
-      player <- getPlayer iid
-      pushIfAny closestEnemyIds
-        $ chooseOrRunOne player
-        $ [ targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom doom]
-          | x <- closestEnemyIds
-          ]
+      when (notNull closestEnemyIds) do
+        chooseOrRunOne iid
+          $ [ targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom doom]
+            | x <- closestEnemyIds
+            ]
       pure s
     ResolveChaosToken _ Tablet iid -> do
       let horror = byDifficulty attrs 0 1

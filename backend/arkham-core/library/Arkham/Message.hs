@@ -266,7 +266,13 @@ instance IsMessage Discover where
         discovery.count
         discovery.action
     DiscoverAtLocation lid ->
-      DiscoverCluesAtLocation discovery.investigator lid discovery.source discovery.count discovery.action
+      DiscoverCluesAtLocation
+        discovery.investigator
+        lid
+        discovery.source
+        discovery.count
+        NotInvestigate
+        discovery.action
   {-# INLINE toMessage #-}
 
 data ReplaceStrategy = DefaultReplace | Swap
@@ -306,6 +312,10 @@ pattern AssetDamage aid source damage horror <- AssetDamageWithCheck aid source 
 type IsSameAction = Bool
 
 data CanAdvance = CanAdvance | CanNotAdvance
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+data IsInvestigate = IsInvestigate | NotInvestigate
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -510,8 +520,8 @@ data Message
   | Discarded Target Source Card
   | DiscardedTopOfEncounterDeck InvestigatorId [EncounterCard] Source Target
   | DiscardedTopOfDeck InvestigatorId [PlayerCard] Source Target
-  | DiscoverClues InvestigatorId LocationId Source Int (Maybe Action)
-  | DiscoverCluesAtLocation InvestigatorId LocationId Source Int (Maybe Action)
+  | DiscoverClues InvestigatorId LocationId Source Int IsInvestigate (Maybe Action)
+  | DiscoverCluesAtLocation InvestigatorId LocationId Source Int IsInvestigate (Maybe Action)
   | DisengageEnemy InvestigatorId EnemyId
   | DisengageEnemyFromAll EnemyId
   | DrawAnotherChaosToken InvestigatorId

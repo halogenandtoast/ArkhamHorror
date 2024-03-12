@@ -1,9 +1,10 @@
-module Arkham.Discover where
+{-# LANGUAGE NoFieldSelectors #-}
 
-import Arkham.Prelude
+module Arkham.Discover where
 
 import Arkham.Action
 import Arkham.Id
+import Arkham.Prelude
 import Arkham.Source
 import GHC.Records
 
@@ -18,22 +19,25 @@ data Discover = Discover
   }
 
 instance HasField "count" Discover Int where
-  getField = discoverCount
+  getField = (.discoverCount)
 
 instance HasField "investigator" Discover InvestigatorId where
-  getField = discoverInvestigator
+  getField = (.discoverInvestigator)
 
 instance HasField "location" Discover DiscoverLocation where
-  getField = discoverLocation
+  getField = (.discoverLocation)
 
 instance HasField "source" Discover Source where
-  getField = discoverSource
+  getField = (.discoverSource)
 
 instance HasField "action" Discover (Maybe Action) where
-  getField = discoverAction
+  getField = (.discoverAction)
 
 viaInvestigate :: Discover -> Discover
 viaInvestigate discover' = discover' {discoverAction = Just #investigate}
+
+discoverAction :: Maybe Action -> Discover -> Discover
+discoverAction action discover' = discover' {discoverAction = action}
 
 discoverAtYourLocation :: Sourceable source => InvestigatorId -> source -> Int -> Discover
 discoverAtYourLocation iid (toSource -> source) n =

@@ -234,6 +234,9 @@ emptyCardDef cCode name cType =
 instance IsCardMatcher CardDef where
   toCardMatcher = cardIs
 
+instance IsLocationMatcher CardDef where
+  toLocationMatcher = locationIs
+
 isSignature :: CardDef -> Bool
 isSignature = any isSignatureDeckRestriction . cdDeckRestrictions
  where

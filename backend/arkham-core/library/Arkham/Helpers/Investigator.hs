@@ -23,7 +23,7 @@ import Arkham.Helpers.Source
 import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Message (Message (HealHorror, InvestigatorMulligan))
+import Arkham.Message (IsInvestigate (..), Message (HealHorror, InvestigatorMulligan))
 import Arkham.Name
 import Arkham.Placement
 import Arkham.Projection
@@ -139,13 +139,14 @@ getAbilitiesForTurn attrs = do
   applyModifier _ n = n
 
 getCanDiscoverClues
-  :: HasGame m => InvestigatorId -> LocationId -> m Bool
-getCanDiscoverClues iid lid = do
+  :: HasGame m => IsInvestigate -> InvestigatorId -> LocationId -> m Bool
+getCanDiscoverClues isInvestigation iid lid = do
   modifiers <- getModifiers (toTarget iid)
   not <$> anyM match modifiers
  where
   match CannotDiscoverClues {} = pure True
   match (CannotDiscoverCluesAt matcher) = elem lid <$> select matcher
+  match (CannotDiscoverCluesExceptAsResultOfInvestigation matcher) | isInvestigation == NotInvestigate = elem lid <$> select matcher
   match _ = pure False
 
 getCanSpendClues :: HasGame m => InvestigatorAttrs -> m Bool

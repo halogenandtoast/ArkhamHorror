@@ -41,7 +41,7 @@ instance RunMessage FinnEdwards where
       when (chaosTokenFace token == ElderSign) $ do
         mlid <- selectOne $ locationWithInvestigator iid
         for_ mlid $ \lid -> do
-          canDiscover <- getCanDiscoverClues (toId attrs) lid
+          canDiscover <- getCanDiscoverClues NotInvestigate (toId attrs) lid
           hasClues <- fieldP LocationClues (> 0) lid
           player <- getPlayer iid
           pushWhen (hasClues && canDiscover)

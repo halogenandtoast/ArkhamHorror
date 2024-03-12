@@ -122,8 +122,8 @@ colocatedWith = InvestigatorAt . LocationWithInvestigator . InvestigatorWithId
 investigatorEngagedWith :: (AsId enemy, IdOf enemy ~ EnemyId) => enemy -> InvestigatorMatcher
 investigatorEngagedWith = InvestigatorEngagedWith . EnemyWithId . asId
 
-investigatorAt :: (AsId a, IdOf a ~ LocationId) => a -> InvestigatorMatcher
-investigatorAt = InvestigatorAt . LocationWithId . asId
+investigatorAt :: IsLocationMatcher a => a -> InvestigatorMatcher
+investigatorAt = InvestigatorAt . toLocationMatcher
 
 replaceYouMatcher :: Data a => InvestigatorId -> a -> a
 replaceYouMatcher iid = replaceInvestigatorMatcher (transform replace)

@@ -181,21 +181,42 @@ instance RunMessage LocationAttrs where
         $ a
         & (revealedConnectedMatchersL <>~ [LocationWithId toLid])
         & (connectedMatchersL <>~ [LocationWithId toLid])
-    DiscoverCluesAtLocation iid lid source n maction | lid == locationId -> do
-      let discoveredClues = min n $ locationClues a
-      push $ DiscoverClues iid lid source discoveredClues maction
+    DiscoverCluesAtLocation iid lid source n isInvestigate maction | lid == locationId -> do
+      mods <- getModifiers iid
+
+      canDiscover <-
+        and <$> for mods \case
+          CannotDiscoverCluesAt matcher -> not <$> (lid <=~> matcher)
+          CannotDiscoverCluesExceptAsResultOfInvestigation matcher | isInvestigate == NotInvestigate -> not <$> (lid <=~> matcher)
+          _ -> pure True
+
+      when canDiscover $ do
+        let discoveredClues = min n $ locationClues a
+        push $ DiscoverClues iid lid source discoveredClues isInvestigate maction
+
       pure a
-    Do (DiscoverClues iid lid source n _) | lid == locationId -> do
-      let lastClue = locationClues a - n <= 0
-      let clueCount = max 0 $ subtract n $ locationClues a
-      push
-        =<< checkWindows
-          ( mkWindow Timing.After (Window.DiscoverClues iid lid source n)
-              : [ mkWindow Timing.After (Window.DiscoveringLastClue iid lid)
-                | lastClue
-                ]
-          )
-      pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
+    Do (DiscoverClues iid lid source n isInvestigate _) | lid == locationId -> do
+      mods <- getModifiers iid
+
+      canDiscover <-
+        and <$> for mods \case
+          CannotDiscoverCluesAt matcher -> not <$> (lid <=~> matcher)
+          CannotDiscoverCluesExceptAsResultOfInvestigation matcher | isInvestigate == NotInvestigate -> not <$> (lid <=~> matcher)
+          _ -> pure True
+
+      if canDiscover
+        then do
+          let lastClue = locationClues a - n <= 0
+          let clueCount = max 0 $ subtract n $ locationClues a
+          push
+            =<< checkWindows
+              ( mkWindow Timing.After (Window.DiscoverClues iid lid source n)
+                  : [ mkWindow Timing.After (Window.DiscoveringLastClue iid lid)
+                    | lastClue
+                    ]
+              )
+          pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
+        else pure a
     EnterLocation iid lid | lid == locationId -> do
       unless locationRevealed $ push (RevealLocation (Just iid) lid)
       pure a

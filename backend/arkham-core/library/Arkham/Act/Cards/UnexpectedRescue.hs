@@ -1,13 +1,7 @@
-module Arkham.Act.Cards.UnexpectedRescue
-  ( UnexpectedRescue(..)
-  , unexpectedRescue
-  ) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.UnexpectedRescue (UnexpectedRescue (..), unexpectedRescue) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 
 newtype UnexpectedRescue = UnexpectedRescue ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -17,4 +11,8 @@ unexpectedRescue :: ActCard UnexpectedRescue
 unexpectedRescue = act (4, A) UnexpectedRescue Cards.unexpectedRescue Nothing
 
 instance RunMessage UnexpectedRescue where
-  runMessage msg (UnexpectedRescue attrs) = UnexpectedRescue <$> runMessage msg attrs
+  runMessage msg a@(UnexpectedRescue attrs) = case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      push R1
+      pure a
+    _ -> UnexpectedRescue <$> runMessage msg attrs

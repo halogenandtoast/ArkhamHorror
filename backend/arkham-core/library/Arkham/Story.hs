@@ -93,4 +93,5 @@ allStories =
     , SomeStoryCard unattainableDesires
     , SomeStoryCard theCityInside
     , SomeStoryCard theBalefulStar
+    , SomeStoryCard offTheGalley
     ]

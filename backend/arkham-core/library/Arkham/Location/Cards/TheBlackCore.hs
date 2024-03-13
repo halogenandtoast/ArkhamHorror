@@ -15,7 +15,7 @@ newtype TheBlackCore = TheBlackCore LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theBlackCore :: LocationCard TheBlackCore
-theBlackCore = location TheBlackCore Cards.theBlackCore 0 (Static 0)
+theBlackCore = location TheBlackCore Cards.theBlackCore 0 (PerPlayer 1)
 
 instance HasAbilities TheBlackCore where
   getAbilities (TheBlackCore attrs) =

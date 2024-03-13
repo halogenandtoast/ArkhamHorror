@@ -6,6 +6,7 @@ module Arkham.Event.Cards.ConnectTheDots (
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
@@ -30,7 +31,7 @@ instance RunMessage ConnectTheDots where
       push
         $ chooseOrRunOne
           player
-          [ targetLabel location [DiscoverCluesAtLocation iid location (toSource attrs) 2 Nothing]
+          [ targetLabel location [toMessage $ discover iid location attrs 2]
           | location <- locations
           ]
       pure e

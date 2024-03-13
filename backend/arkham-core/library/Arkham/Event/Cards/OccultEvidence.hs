@@ -38,7 +38,7 @@ instance RunMessage OccultEvidence where
   runMessage msg e@(OccultEvidence attrs) = case msg of
     InSearch (UseThisAbility iid (isSource attrs -> True) 1) -> do
       mLocation <- field InvestigatorLocation iid
-      canDiscoverClues <- maybe (pure False) (getCanDiscoverClues iid) mLocation
+      canDiscoverClues <- maybe (pure False) (getCanDiscoverClues NotInvestigate iid) mLocation
       hasClues <- maybe (pure False) (fieldSome LocationClues) mLocation
       let source = toAbilitySource attrs 1
       pushAll

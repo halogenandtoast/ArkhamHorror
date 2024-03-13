@@ -77,6 +77,7 @@ allStoryCards =
       , unattainableDesires
       , theCityInside
       , theBalefulStar
+      , offTheGalley
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -250,3 +251,6 @@ theCityInside = story "06142b" "The City Inside" TheSearchForKadath
 
 theBalefulStar :: CardDef
 theBalefulStar = story "06143b" "The Baleful Star" TheSearchForKadath
+
+offTheGalley :: CardDef
+offTheGalley = story "06214b" "Off the Galley" DarkSideOfTheMoon

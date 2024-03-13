@@ -17,6 +17,14 @@ import Arkham.Act.Runner as X (
   push,
   targetLabel,
   whenHasRecord,
+  pattern R1,
+  pattern R2,
+  pattern R3,
+  pattern R4,
+  pattern R5,
+  pattern R6,
+  pattern R7,
+  pattern R8,
  )
 import Arkham.Classes as X
 import Arkham.Cost as X

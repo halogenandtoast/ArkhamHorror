@@ -525,6 +525,7 @@ getCanAffordCost
   -> Cost
   -> m Bool
 getCanAffordCost iid (toSource -> source) actions windows' = \case
+  UnpayableCost -> pure False
   Free -> pure True
   UpTo {} -> pure True
   OptionalCost {} -> pure True

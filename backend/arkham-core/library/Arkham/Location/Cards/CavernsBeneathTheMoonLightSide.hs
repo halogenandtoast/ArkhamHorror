@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.CavernsBeneathTheMoonLightSide
-  ( cavernsBeneathTheMoonLightSide
-  , CavernsBeneathTheMoonLightSide(..)
-  )
+module Arkham.Location.Cards.CavernsBeneathTheMoonLightSide (
+  cavernsBeneathTheMoonLightSide,
+  CavernsBeneathTheMoonLightSide (..),
+)
 where
 
 import Arkham.Prelude
@@ -15,12 +15,19 @@ newtype CavernsBeneathTheMoonLightSide = CavernsBeneathTheMoonLightSide Location
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cavernsBeneathTheMoonLightSide :: LocationCard CavernsBeneathTheMoonLightSide
-cavernsBeneathTheMoonLightSide = location CavernsBeneathTheMoonLightSide Cards.cavernsBeneathTheMoonLightSide 0 (Static 0)
+cavernsBeneathTheMoonLightSide =
+  locationWith
+    CavernsBeneathTheMoonLightSide
+    Cards.cavernsBeneathTheMoonLightSide
+    0
+    (Static 0)
+    (labelL .~ "cavernsBeneathTheMoonLightSide")
 
 instance HasAbilities CavernsBeneathTheMoonLightSide where
   getAbilities (CavernsBeneathTheMoonLightSide attrs) =
     getAbilities attrs
-    -- withRevealedAbilities attrs []
+
+-- withRevealedAbilities attrs []
 
 instance RunMessage CavernsBeneathTheMoonLightSide where
   runMessage msg (CavernsBeneathTheMoonLightSide attrs) =

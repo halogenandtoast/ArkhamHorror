@@ -783,6 +783,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       pushAll [FocusCards cards, chooseOne player cardMsgs, UnfocusCards]
       pure c
     Free -> pure c
+    UnpayableCost -> pure c
 
 instance RunMessage ActiveCost where
   runMessage msg c = case msg of

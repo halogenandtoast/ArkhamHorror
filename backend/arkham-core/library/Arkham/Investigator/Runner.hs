@@ -1387,14 +1387,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     case mlid of
       Just lid -> runMessage (InvestigatorDiscoverClues iid lid source n maction) a
       _ -> pure a
-  InvestigatorDiscoverClues iid lid source n _ | iid == investigatorId -> do
-    canDiscoverClues <- getCanDiscoverClues NotInvestigate iid lid
+  InvestigatorDiscoverClues iid lid source n maction | iid == investigatorId -> do
+    let isInvestigate = if maction == Just #investigate then IsInvestigate else NotInvestigate
+    canDiscoverClues <- getCanDiscoverClues isInvestigate iid lid
     when canDiscoverClues $ do
       checkWindowMsg <- checkWindows [mkWhen (Window.DiscoverClues iid lid source n)]
       pushAll [checkWindowMsg, Do msg]
     pure a
   Do (InvestigatorDiscoverClues iid lid source n maction) | iid == investigatorId -> do
-    canDiscoverClues <- getCanDiscoverClues NotInvestigate iid lid
+    let isInvestigate = if maction == Just Action.Investigate then IsInvestigate else NotInvestigate
+    canDiscoverClues <- getCanDiscoverClues isInvestigate iid lid
     pushWhen canDiscoverClues $ toMessage $ discoverAction maction $ discover iid lid source n
     pure a
   GainClues iid source n | iid == investigatorId -> do

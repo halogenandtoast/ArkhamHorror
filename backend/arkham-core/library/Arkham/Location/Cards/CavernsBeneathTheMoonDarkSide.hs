@@ -15,7 +15,13 @@ newtype CavernsBeneathTheMoonDarkSide = CavernsBeneathTheMoonDarkSide LocationAt
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cavernsBeneathTheMoonDarkSide :: LocationCard CavernsBeneathTheMoonDarkSide
-cavernsBeneathTheMoonDarkSide = location CavernsBeneathTheMoonDarkSide Cards.cavernsBeneathTheMoonDarkSide 0 (Static 0)
+cavernsBeneathTheMoonDarkSide =
+  locationWith
+    CavernsBeneathTheMoonDarkSide
+    Cards.cavernsBeneathTheMoonDarkSide
+    6
+    (PerPlayer 1)
+    (labelL .~ "cavernsBeneathTheMoonDarkSide")
 
 instance HasAbilities CavernsBeneathTheMoonDarkSide where
   getAbilities (CavernsBeneathTheMoonDarkSide attrs) =

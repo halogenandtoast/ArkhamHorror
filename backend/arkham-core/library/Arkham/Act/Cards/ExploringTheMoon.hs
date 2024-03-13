@@ -17,7 +17,7 @@ exploringTheMoon =
     (2, A)
     ExploringTheMoon
     Cards.exploringTheMoon
-    (Just $ GroupClueCost (PerPlayer 2) (locationIs Locations.templeOfTheMoonLizard))
+    (Just $ GroupClueCost (PerPlayer 1) (locationIs Locations.templeOfTheMoonLizard))
 
 instance RunMessage ExploringTheMoon where
   runMessage msg a@(ExploringTheMoon attrs) = runQueueT $ case msg of

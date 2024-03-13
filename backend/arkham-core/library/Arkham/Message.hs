@@ -271,7 +271,7 @@ instance IsMessage Discover where
         lid
         discovery.source
         discovery.count
-        NotInvestigate
+        (if discovery.action == Just #investigate then IsInvestigate else NotInvestigate)
         discovery.action
   {-# INLINE toMessage #-}
 

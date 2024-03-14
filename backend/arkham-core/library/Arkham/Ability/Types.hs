@@ -82,4 +82,20 @@ abilityDelayAdditionalCostsL :: Lens' Ability Bool
 abilityDelayAdditionalCostsL = lens abilityDelayAdditionalCosts $ \m x -> m {abilityDelayAdditionalCosts = x}
 
 $(deriveJSON defaultOptions ''AbilityMetadata)
-$(deriveJSON (aesonOptions $ Just "ability") ''Ability)
+$(deriveToJSON (aesonOptions $ Just "ability") ''Ability)
+
+instance FromJSON Ability where
+  parseJSON = withObject "Ability" $ \o -> do
+    abilitySource <- o .: "source"
+    abilityIndex <- o .: "index"
+    abilityType <- o .: "type"
+    abilityLimit <- o .: "limit"
+    abilityWindow <- o .: "window"
+    abilityMetadata <- o .:? "metadata"
+    abilityCriteria <- o .: "criteria"
+    abilityDoesNotProvokeAttacksOfOpportunity <- o .: "doesNotProvokeAttacksOfOpportunity"
+    abilityTooltip <- o .:? "tooltip"
+    abilityCanBeCancelled <- o .: "canBeCancelled"
+    abilityDisplayAsAction <- o .: "displayAsAction"
+    abilityDelayAdditionalCosts <- o .:? "delayAdditionalCosts" .!= False
+    pure Ability {..}

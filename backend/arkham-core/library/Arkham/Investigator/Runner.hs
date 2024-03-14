@@ -2109,6 +2109,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ if cannotGainResources then a else a & tokensL %~ addTokens Resource n
   PlaceTokens _ (isTarget a -> True) token n -> do
     pure $ a & tokensL %~ addTokens token n
+  RemoveTokens _ (isTarget a -> True) token n -> do
+    pure $ a & tokensL %~ subtractTokens token n
   DoBatch _ (EmptyDeck iid mDrawing) | iid == investigatorId -> do
     pushAll
       $ [EmptyDeck iid mDrawing]

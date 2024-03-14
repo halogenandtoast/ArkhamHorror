@@ -43,6 +43,7 @@ data AbilityLimitType
   | PerSearch Trait
   | PerDepthLevel
   | PerCampaign
+  | SuccessPerGame
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''AbilityLimitType)

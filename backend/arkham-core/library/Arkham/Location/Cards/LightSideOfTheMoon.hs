@@ -18,7 +18,7 @@ newtype LightSideOfTheMoon = LightSideOfTheMoon LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lightSideOfTheMoon :: LocationCard LightSideOfTheMoon
-lightSideOfTheMoon = locationWith LightSideOfTheMoon Cards.lightSideOfTheMoon 0 (Static 0) (setMeta $ Meta [])
+lightSideOfTheMoon = locationWith LightSideOfTheMoon Cards.lightSideOfTheMoon 5 (PerPlayer 1) (setMeta $ Meta [])
 
 instance HasAbilities LightSideOfTheMoon where
   getAbilities (LightSideOfTheMoon attrs) =

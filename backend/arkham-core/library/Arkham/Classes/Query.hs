@@ -173,6 +173,20 @@ fieldMax
   -> m a
 fieldMax fld matcher = selectAgg' Max0 fld matcher
 
+fieldMaxBy
+  :: ( QueryElement matcher ~ EntityId attrs
+     , Num a
+     , Ord a
+     , Query matcher
+     , Projection attrs
+     , HasGame m
+     )
+  => Field attrs b
+  -> (b -> a)
+  -> matcher
+  -> m a
+fieldMaxBy fld f matcher = selectAgg' (Max0 . f) fld matcher
+
 maybeFieldMax
   :: ( QueryElement matcher ~ EntityId attrs
      , Num a

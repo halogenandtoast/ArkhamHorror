@@ -114,6 +114,7 @@ data ModifierType
   | CannotBeDefeated
   | CannotBeEngaged
   | CannotBeEngagedBy EnemyMatcher
+  | CannotBeHuntedBy EnemyMatcher
   | CannotBeEnteredBy EnemyMatcher
   | CannotBeEvaded
   | CannotBeFlipped
@@ -288,6 +289,7 @@ data ModifierType
   | XPModifier Int
   | IfSuccessfulModifier ModifierType
   | NoInitialSwarm
+  | SwarmingValue Int
   | -- UI only modifiers
     Ethereal -- from Ethereal Form
   | Explosion -- from Dyanamite Blast

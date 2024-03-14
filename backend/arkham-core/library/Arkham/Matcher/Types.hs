@@ -49,6 +49,16 @@ import GHC.OverloadedLabels
 
 type Who = InvestigatorMatcher
 
+pattern MostClues :: InvestigatorMatcher
+pattern MostClues <- MostToken Clue
+  where
+    MostClues = MostToken Clue
+
+pattern MostHorror :: InvestigatorMatcher
+pattern MostHorror <- MostToken Horror
+  where
+    MostHorror = MostToken Horror
+
 data InvestigatorMatcher
   = InvestigatorAt LocationMatcher
   | InvestigatorIs CardCode
@@ -64,7 +74,6 @@ data InvestigatorMatcher
   | LowestRemainingHealth
   | LowestRemainingSanity
   | MostRemainingSanity
-  | MostHorror
   | NearestToEnemy EnemyMatcher
   | NearestToLocation LocationMatcher
   | HasMostMatchingAsset AssetMatcher
@@ -73,7 +82,8 @@ data InvestigatorMatcher
   | HasMatchingEvent EventMatcher
   | HasMatchingSkill SkillMatcher
   | HasMatchingTreachery TreacheryMatcher
-  | MostClues
+  | MostToken Token
+  | HasTokens Token ValueMatcher
   | MostKeys
   | UneliminatedInvestigator
   | ResignedInvestigator
@@ -125,6 +135,7 @@ data InvestigatorMatcher
   | InvestigatorIfThen InvestigatorMatcher InvestigatorMatcher InvestigatorMatcher
   | InvestigatorCanTarget Target
   | InvestigatorWithRecord CampaignLogKey
+  | CanBeHuntedBy EnemyId
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated InvestigatorMatcher
@@ -721,7 +732,7 @@ data DiscardedPlayerCardMatcher
   = DiscardedCardMatcher InvestigatorMatcher CardMatcher
   deriving stock (Show, Eq, Ord, Data)
 
-data MovesVia = MovedViaHunter | MovedViaOther
+data MovesVia = MovedViaHunter | MovedViaOther | MovedViaAny
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 

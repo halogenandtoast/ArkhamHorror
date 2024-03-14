@@ -49,6 +49,9 @@ data EnemyAttrs = EnemyAttrs
   }
   deriving stock (Show, Eq, Generic)
 
+instance HasField "id" EnemyAttrs EnemyId where
+  getField = enemyId
+
 instance HasField "placement" EnemyAttrs Placement where
   getField = enemyPlacement
 

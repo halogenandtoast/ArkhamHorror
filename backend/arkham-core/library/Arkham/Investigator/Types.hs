@@ -268,7 +268,7 @@ instance FromJSON InvestigatorAttrs where
     investigatorDrawnCards <- o .: "drawnCards"
     investigatorIsYithian <- o .: "isYithian"
     investigatorKeys <- o .: "keys"
-    investigatorLog <- o .: "log"
+    investigatorLog <- o .:? "log" .!= mempty
     investigatorDiscarding <- o .: "discarding"
 
     pure InvestigatorAttrs {..}

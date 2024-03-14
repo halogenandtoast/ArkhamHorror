@@ -11,7 +11,7 @@ servers:
 
 builder:
   cache:
-    type: gha
+    type: registry
 
 # Credentials for your image host.
 registry:

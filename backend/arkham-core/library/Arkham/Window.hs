@@ -24,6 +24,8 @@ import Arkham.Source (Source)
 import Arkham.Target (Target)
 import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
+import Arkham.Token
+import Arkham.Token qualified as Token
 import Data.Aeson.TH
 import GHC.Records
 
@@ -80,6 +82,31 @@ revealedChaosTokens :: [Window] -> [ChaosToken]
 revealedChaosTokens [] = []
 revealedChaosTokens ((windowType -> RevealChaosToken _ token) : rest) = token : revealedChaosTokens rest
 revealedChaosTokens (_ : rest) = revealedChaosTokens rest
+
+pattern PlacedDoom :: Source -> Target -> Int -> WindowType
+pattern PlacedDoom source target n <- PlacedToken source target Doom n
+  where
+    PlacedDoom source target n = PlacedToken source target Doom n
+
+pattern PlacedClues :: Source -> Target -> Int -> WindowType
+pattern PlacedClues source target n <- PlacedToken source target Clue n
+  where
+    PlacedClues source target n = PlacedToken source target Clue n
+
+pattern PlacedResources :: Source -> Target -> Int -> WindowType
+pattern PlacedResources source target n <- PlacedToken source target Token.Resource n
+  where
+    PlacedResources source target n = PlacedToken source target Token.Resource n
+
+pattern PlacedHorror :: Source -> Target -> Int -> WindowType
+pattern PlacedHorror source target n <- PlacedToken source target Horror n
+  where
+    PlacedHorror source target n = PlacedToken source target Horror n
+
+pattern PlacedDamage :: Source -> Target -> Int -> WindowType
+pattern PlacedDamage source target n <- PlacedToken source target Damage n
+  where
+    PlacedDamage source target n = PlacedToken source target Damage n
 
 data WindowType
   = ActAdvance ActId
@@ -164,13 +191,9 @@ data WindowType
   | PhaseBegins Phase
   | PhaseEnds Phase
   | PlaceUnderneath Target Card
-  | PlacedClues Source Target Int
-  | PlacedResources Source Target Int
+  | PlacedToken Source Target Token Int
   | LostResources InvestigatorId Source Int
   | LostActions InvestigatorId Source Int
-  | PlacedDamage Source Target Int
-  | PlacedHorror Source Target Int
-  | PlacedDoom Source Target Int
   | WouldPlaceDoom Source Target Int
   | DeckWouldRunOutOfCards InvestigatorId
   | DeckRanOutOfCards InvestigatorId

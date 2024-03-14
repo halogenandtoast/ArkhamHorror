@@ -1797,6 +1797,9 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
   case mtchr of
     Matcher.NotAnyWindow -> noMatch
     Matcher.AnyWindow -> isMatch
+    Matcher.PlacedToken timing token -> guardTiming timing \case
+      Window.PlacedToken _ _ token' _ -> pure $ token == token'
+      _ -> noMatch
     Matcher.EntersThreatArea timing whoMatcher cardMatcher -> guardTiming timing \case
       Window.EntersThreatArea who card -> do
         andM

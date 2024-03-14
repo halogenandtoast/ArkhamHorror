@@ -2,6 +2,7 @@ module Arkham.Scenarios.DarkSideOfTheMoon.Helpers where
 
 import Arkham.Classes.HasGame
 import {-# SOURCE #-} Arkham.Game ()
+import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message.Lifted
@@ -29,3 +30,9 @@ reduceAlarmLevel source = reduceAlarmLevelBy 1 source
 reduceAlarmLevelBy :: (Sourceable source, ReverseQueue m) => Int -> source -> InvestigatorId -> m ()
 reduceAlarmLevelBy n (toSource -> source) iid = removeTokens source iid AlarmLevel n
 {-# INLINE reduceAlarmLevelBy #-}
+
+getMaxAlarmLevel :: HasGame m => m Int
+getMaxAlarmLevel = do
+  investigators <- getInvestigators
+  alarmLevels <- traverse (fieldMap InvestigatorTokens (countTokens AlarmLevel)) investigators
+  pure $ getMax0 $ foldMap Max0 alarmLevels

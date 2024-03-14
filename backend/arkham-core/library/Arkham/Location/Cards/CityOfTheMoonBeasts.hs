@@ -2,15 +2,12 @@ module Arkham.Location.Cards.CityOfTheMoonBeasts (cityOfTheMoonBeasts, CityOfThe
 
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner hiding (beginSkillTest)
 import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Prelude
-import Arkham.Projection
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
-import Arkham.Token
 
 newtype CityOfTheMoonBeasts = CityOfTheMoonBeasts LocationAttrs
   deriving anyclass (IsLocation)
@@ -21,10 +18,8 @@ cityOfTheMoonBeasts = location CityOfTheMoonBeasts Cards.cityOfTheMoonBeasts 0 (
 
 instance HasModifiersFor CityOfTheMoonBeasts where
   getModifiersFor target (CityOfTheMoonBeasts attrs) | attrs `is` target = do
-    investigators <- getInvestigators
-    alarmLevels <- traverse (fieldMap InvestigatorTokens (countTokens AlarmLevel)) investigators
-    let maxAlarmLevel = getMax0 $ foldMap Max0 alarmLevels
-    pure $ toModifiers attrs [ShroudModifier maxAlarmLevel]
+    x <- getMaxAlarmLevel
+    pure $ toModifiers attrs [ShroudModifier x]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CityOfTheMoonBeasts where

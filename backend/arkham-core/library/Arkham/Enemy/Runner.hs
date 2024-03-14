@@ -459,8 +459,8 @@ instance RunMessage EnemyAttrs where
                 select
                   $ locationMatcherModifier
                   $ LocationWithInvestigator
-                  $ NearestToEnemy
-                  $ EnemyWithId eid
+                  $ NearestToEnemy (EnemyWithId eid)
+                  <> CanBeHuntedBy eid
               select
                 $ locationMatcherModifier
                 $ NearestLocationToLocation

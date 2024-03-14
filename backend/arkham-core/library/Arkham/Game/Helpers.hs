@@ -1951,7 +1951,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
       _ -> noMatch
     Matcher.EnemyMovedTo timing locationMatcher movesVia enemyMatcher -> guardTiming timing $ \case
       Window.EnemyMovesTo lid movesVia' eid
-        | movesVia == movesVia' ->
+        | movesVia == Matcher.MovedViaAny || movesVia == movesVia' ->
             andM [elem eid <$> select enemyMatcher, elem lid <$> select locationMatcher]
       _ -> noMatch
     Matcher.PlaceUnderneath timing targetMatcher cardMatcher -> guardTiming timing $ \case

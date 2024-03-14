@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (chooseOne, chooseOrRunOne)
 import Arkham.Capability
-import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Prelude

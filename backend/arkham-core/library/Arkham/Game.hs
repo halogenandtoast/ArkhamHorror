@@ -702,10 +702,6 @@ getInvestigatorsMatching matcher = do
       mostRemainingSanity <-
         fieldMax InvestigatorRemainingSanity UneliminatedInvestigator
       pure $ mostRemainingSanity == remainingSanity
-    MostHorror -> \i -> do
-      mostHorrorCount <-
-        fieldMax InvestigatorHorror UneliminatedInvestigator
-      pure $ mostHorrorCount == investigatorSanityDamage (toAttrs i)
     NearestToLocation locationMatcher -> \i -> do
       let
         getLocationDistance start =
@@ -790,10 +786,13 @@ getInvestigatorsMatching matcher = do
     HasMatchingSkill skillMatcher -> \i ->
       selectAny
         (skillMatcher <> SkillControlledBy (InvestigatorWithId $ toId i))
-    MostClues -> \i -> do
-      mostClueCount <-
-        fieldMax InvestigatorClues UneliminatedInvestigator
-      pure $ mostClueCount == investigatorClues (toAttrs i)
+    MostToken tkn -> \i -> do
+      mostCount <-
+        fieldMaxBy InvestigatorTokens (Token.countTokens tkn) UneliminatedInvestigator
+      pure $ mostCount == Token.countTokens tkn (attr investigatorTokens i)
+    HasTokens tkn valueMatcher -> \i -> do
+      let n = Token.countTokens tkn (attr investigatorTokens i)
+      gameValueMatches n valueMatcher
     MostKeys -> \i -> do
       mostKeyCount <- getMax0 <$> selectAgg (Max0 . Set.size) InvestigatorKeys UneliminatedInvestigator
       pure $ mostKeyCount == Set.size (investigatorKeys $ toAttrs i)
@@ -951,6 +950,11 @@ getInvestigatorsMatching matcher = do
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
     InvestigatorWithKey key -> \i ->
       pure $ key `elem` investigatorKeys (toAttrs i)
+    CanBeHuntedBy eid -> \i -> do
+      mods <- getModifiers i
+      flip noneM mods $ \case
+        CannotBeHuntedBy matcher' -> eid <=~> matcher'
+        _ -> pure False
     InvestigatorWithRecord r -> \i -> do
       ilog <- field InvestigatorLog (toId i)
       pure

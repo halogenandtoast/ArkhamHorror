@@ -9,7 +9,6 @@ import Arkham.CampaignStep
 import Arkham.Campaigns.TheDunwichLegacy.Import
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Classes.HasGame
 import Arkham.Difficulty
 import Arkham.Game.Helpers
 import Arkham.Helpers.Card

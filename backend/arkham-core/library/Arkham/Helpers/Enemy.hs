@@ -8,6 +8,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Enemy.Types
+import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Helpers.Message (
@@ -93,7 +94,14 @@ getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do
   applyModifierCaps _ n = n
 
 getModifiedKeywords :: HasGame m => EnemyAttrs -> m (Set Keyword)
-getModifiedKeywords e = field EnemyKeywords (enemyId e)
+getModifiedKeywords e = do
+  mods <- getModifiers e
+  keywords <- field EnemyKeywords (enemyId e)
+  pure $ setFromList $ flip map (toList keywords) \case
+    Swarming k ->
+      let xs = [n | SwarmingValue n <- mods]
+       in Swarming $ case fromNullable xs of Nothing -> k; Just ys -> Static $ maximum ys
+    k -> k
 
 canEnterLocation :: HasGame m => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do

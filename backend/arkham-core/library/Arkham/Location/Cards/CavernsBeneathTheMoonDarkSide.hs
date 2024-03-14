@@ -4,11 +4,12 @@ module Arkham.Location.Cards.CavernsBeneathTheMoonDarkSide (
 )
 where
 
-import Arkham.Prelude
-
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Prelude
 
 newtype CavernsBeneathTheMoonDarkSide = CavernsBeneathTheMoonDarkSide LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -24,11 +25,14 @@ cavernsBeneathTheMoonDarkSide =
     (labelL .~ "cavernsBeneathTheMoonDarkSide")
 
 instance HasAbilities CavernsBeneathTheMoonDarkSide where
-  getAbilities (CavernsBeneathTheMoonDarkSide attrs) =
-    getAbilities attrs
-
--- withRevealedAbilities attrs []
+  getAbilities (CavernsBeneathTheMoonDarkSide x) =
+    extendRevealed
+      x
+      [restrictedAbility x 1 Here $ forced $ SkillTestResult #after You (whileInvestigating x) #failure]
 
 instance RunMessage CavernsBeneathTheMoonDarkSide where
-  runMessage msg (CavernsBeneathTheMoonDarkSide attrs) =
-    CavernsBeneathTheMoonDarkSide <$> runMessage msg attrs
+  runMessage msg l@(CavernsBeneathTheMoonDarkSide attrs) = case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ turnModifier (attrs.ability 1) attrs (ShroudModifier (-2))
+      pure l
+    _ -> CavernsBeneathTheMoonDarkSide <$> runMessage msg attrs

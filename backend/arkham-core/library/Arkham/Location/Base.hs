@@ -87,4 +87,7 @@ instance HasField "keys" LocationAttrs (Set ArkhamKey) where
 
 makeLensesWith suffixedFields ''LocationAttrs
 
+setMeta :: ToJSON a => a -> LocationAttrs -> LocationAttrs
+setMeta a = metaL .~ toJSON a
+
 $(deriveJSON (aesonOptions $ Just "location") ''LocationAttrs)

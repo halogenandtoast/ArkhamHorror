@@ -26,7 +26,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Runner hiding (placeLocationCard, pushAll, story)
+import Arkham.Scenario.Runner hiding (chooseOne, placeLocationCard, pushAll, story)
 import Arkham.Scenario.Runner qualified as Msg
 import Arkham.Scenario.Setup
 import Arkham.ScenarioLogKey
@@ -146,19 +146,17 @@ instance RunMessage AThousandShapesOfHorror where
             push $ InitiateEnemyAttack $ enemyAttack theUnnamable (ChaosTokenEffectSource Tablet) iid
         ElderThing -> do
           playerClueCount <- field InvestigatorClues iid
-          player <- getPlayer iid
           let takeDamage = assignDamage iid (ChaosTokenEffectSource ElderThing) 1
-          push
-            $ if playerClueCount > 0
-              then
-                chooseOne
-                  player
-                  [ Label
-                      "Place 1 of your clues on your location"
-                      [InvestigatorPlaceCluesOnLocation iid (toSource attrs) 1]
-                  , Label "Take 1 damage" [takeDamage]
-                  ]
-              else takeDamage
+          if playerClueCount > 0
+            then
+              chooseOne
+                iid
+                [ Label
+                    "Place 1 of your clues on your location"
+                    [InvestigatorPlaceCluesOnLocation iid (toSource attrs) 1]
+                , Label "Take 1 damage" [takeDamage]
+                ]
+            else push takeDamage
         _ -> pure ()
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
@@ -167,9 +165,8 @@ instance RunMessage AThousandShapesOfHorror where
           enemies <-
             select (CanEvadeEnemy (ChaosTokenEffectSource Tablet))
               >>= filterM (fieldP EnemyFight (maybe False (<= n)))
-          player <- getPlayer iid
-          pushIfAny enemies
-            $ chooseOne player [targetLabel enemy [Msg.EnemyEvaded iid enemy] | enemy <- enemies]
+          when (notNull enemies)
+            $ chooseOne iid [targetLabel enemy [Msg.EnemyEvaded iid enemy] | enemy <- enemies]
         _ -> pure ()
       pure s
     ScenarioResolution r -> do

@@ -1,20 +1,13 @@
-module Arkham.Location.Cards.StudentUnion (
-  StudentUnion (..),
-  studentUnion,
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.StudentUnion (StudentUnion (..), studentUnion) where
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards (studentUnion)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype StudentUnion = StudentUnion LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -25,29 +18,21 @@ studentUnion = location StudentUnion Cards.studentUnion 1 (Static 2)
 
 instance HasAbilities StudentUnion where
   getAbilities (StudentUnion attrs) =
-    withBaseAbilities attrs
-      $ if locationRevealed attrs
-        then
-          [ mkAbility attrs 1
-              $ ForcedAbility
-              $ RevealLocation Timing.After Anyone
-              $ LocationWithId
-              $ toId attrs
-          , restrictedAbility
-              attrs
-              2
-              ( Here
-                  <> InvestigatorExists
-                    ( AnyInvestigator
-                        [ HealableInvestigator (toSource attrs) HorrorType You
-                        , HealableInvestigator (toSource attrs) DamageType You
-                        ]
-                    )
-              )
-              $ ActionAbility []
-              $ ActionCost 2
-          ]
-        else []
+    extendRevealed
+      attrs
+      [ mkAbility attrs 1 $ forced $ RevealLocation #after Anyone $ be attrs
+      , restrictedAbility
+          attrs
+          2
+          ( Here
+              <> exists
+                ( oneOf
+                    [HealableInvestigator (toSource attrs) hType You | hType <- [#horror, #damage]]
+                )
+          )
+          $ ActionAbility []
+          $ ActionCost 2
+      ]
 
 instance RunMessage StudentUnion where
   runMessage msg l@(StudentUnion attrs) = case msg of

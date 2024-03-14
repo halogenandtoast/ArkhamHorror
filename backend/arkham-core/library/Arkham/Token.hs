@@ -16,6 +16,7 @@ data Token
   | Bounty
   | Offering
   | AlarmLevel
+  | Depth
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)
 

@@ -259,5 +259,10 @@ chooseOrRunOne iid msgs = do
   player <- getPlayer iid
   push $ Msg.chooseOrRunOne player msgs
 
+chooseOne :: ReverseQueue m => InvestigatorId -> [UI Message] -> m ()
+chooseOne iid msgs = do
+  player <- getPlayer iid
+  push $ Msg.chooseOne player msgs
+
 addToHand :: (IsCard a, ReverseQueue m) => InvestigatorId -> [a] -> m ()
 addToHand iid cards = push $ AddToHand iid (map toCard cards)

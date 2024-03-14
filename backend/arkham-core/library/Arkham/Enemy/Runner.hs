@@ -408,23 +408,19 @@ instance RunMessage EnemyAttrs where
             matchForcedTargetLocation = \case
               DuringEnemyPhaseMustMoveToward (LocationTarget lid) -> Just lid
               _ -> Nothing
-            forcedTargetLocation =
-              firstJust matchForcedTargetLocation mods
+            forcedTargetLocation = firstJust matchForcedTargetLocation mods
           -- applyConnectionMapModifier connectionMap (HunterConnectedTo lid') =
           --   unionWith (<>) connectionMap $ singletonMap loc [lid']
           -- applyConnectionMapModifier connectionMap _ = connectionMap
           -- extraConnectionsMap :: Map LocationId [LocationId] =
           --   foldl' applyConnectionMapModifier mempty modifiers'
 
-          mLocation <- field EnemyLocation eid
-          enemiesAsInvestigatorLocations <- case mLocation of
-            Nothing -> pure []
-            Just lid ->
-              select
-                $ locationMatcherModifier
-                $ LocationWithEnemy
-                $ NearestEnemyToLocation lid
-                $ EnemyWithModifier CountsAsInvestigatorForHunterEnemies
+          enemiesAsInvestigatorLocations <-
+            select
+              $ locationMatcherModifier
+              $ LocationWithEnemy
+              $ NearestEnemyToLocation loc
+              $ EnemyWithModifier CountsAsInvestigatorForHunterEnemies
 
           -- The logic here is an artifact of doing this incorrect
           -- Prey is only used for breaking ties unless we're dealing
@@ -465,14 +461,11 @@ instance RunMessage EnemyAttrs where
                   $ LocationWithInvestigator
                   $ NearestToEnemy
                   $ EnemyWithId eid
-              case mLocation of
-                Nothing -> pure investigatorLocations
-                Just lid ->
-                  select
-                    $ locationMatcherModifier
-                    $ NearestLocationToLocation
-                      lid
-                      (LocationMatchAny $ map LocationWithId (enemiesAsInvestigatorLocations <> investigatorLocations))
+              select
+                $ locationMatcherModifier
+                $ NearestLocationToLocation
+                  loc
+                  (LocationMatchAny $ map LocationWithId (enemiesAsInvestigatorLocations <> investigatorLocations))
 
           preyIds <- select prey
           let includeEnemies = prey == Prey Anyone
@@ -501,7 +494,9 @@ instance RunMessage EnemyAttrs where
 
           (leadId, lead) <- getLeadInvestigatorPlayer
           pathIds <-
-            concatForM destinationLocationIds (select . locationMatcherModifier . ClosestPathLocation loc)
+            concatForM
+              destinationLocationIds
+              (select . (LocationCanBeEnteredBy enemyId <>) . locationMatcherModifier . ClosestPathLocation loc)
           case pathIds of
             [] -> pure a
             [lid] -> do

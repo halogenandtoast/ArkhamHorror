@@ -221,6 +221,10 @@ placeTokens
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
 placeTokens source lid token n = push $ PlaceTokens (toSource source) (toTarget lid) token n
 
+removeTokens
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
+removeTokens source lid token n = push $ RemoveTokens (toSource source) (toTarget lid) token n
+
 afterSkillTest :: ReverseQueue m => Message -> m ()
 afterSkillTest = Msg.pushAfterSkillTest
 

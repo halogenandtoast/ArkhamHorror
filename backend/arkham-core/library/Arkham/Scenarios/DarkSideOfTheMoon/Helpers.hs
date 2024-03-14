@@ -21,3 +21,11 @@ raiseAlarmLevel source = raiseAlarmLevelBy 1 source
 raiseAlarmLevelBy :: (Sourceable source, ReverseQueue m) => Int -> source -> InvestigatorId -> m ()
 raiseAlarmLevelBy n (toSource -> source) iid = placeTokens source iid AlarmLevel n
 {-# INLINE raiseAlarmLevelBy #-}
+
+reduceAlarmLevel :: (Sourceable source, ReverseQueue m) => source -> InvestigatorId -> m ()
+reduceAlarmLevel source = reduceAlarmLevelBy 1 source
+{-# INLINE reduceAlarmLevel #-}
+
+reduceAlarmLevelBy :: (Sourceable source, ReverseQueue m) => Int -> source -> InvestigatorId -> m ()
+reduceAlarmLevelBy n (toSource -> source) iid = removeTokens source iid AlarmLevel n
+{-# INLINE reduceAlarmLevelBy #-}

@@ -57,8 +57,32 @@ instance HasChaosTokenValue DarkSideOfTheMoon where
     ElderThing -> pure $ ChaosTokenValue ElderThing (byDifficulty attrs (PositiveModifier 1) (PositiveModifier 0))
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
+  [ PlusOne
+  , Zero
+  , Zero
+  , MinusOne
+  , MinusOne
+  , MinusTwo
+  , MinusTwo
+  , MinusThree
+  , MinusFour
+  , Skull
+  , Skull
+  , Skull
+  , Cultist
+  , Tablet
+  , Tablet
+  , AutoFail
+  , ElderSign
+  ]
+
 instance RunMessage DarkSideOfTheMoon where
   runMessage msg s@(DarkSideOfTheMoon attrs) = runQueueT $ case msg of
+    StandaloneSetup -> do
+      push $ SetChaosTokens standaloneChaosTokens
+      pure s
     PreScenarioSetup -> do
       notCaptured <- selectAny $ not_ (InvestigatorWithRecord WasCaptured)
       captured <- selectAny $ InvestigatorWithRecord WasCaptured

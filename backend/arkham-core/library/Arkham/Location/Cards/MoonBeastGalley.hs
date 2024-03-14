@@ -19,7 +19,7 @@ instance HasModifiersFor MoonBeastGalley where
   getModifiersFor _ _ = pure []
 
 moonBeastGalley :: LocationCard MoonBeastGalley
-moonBeastGalley = location MoonBeastGalley Cards.moonBeastGalley 0 (Static 0)
+moonBeastGalley = location MoonBeastGalley Cards.moonBeastGalley 3 (Static 1)
 
 instance HasAbilities MoonBeastGalley where
   getAbilities (MoonBeastGalley attrs) =

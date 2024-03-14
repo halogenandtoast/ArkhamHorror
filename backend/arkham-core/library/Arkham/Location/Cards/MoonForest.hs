@@ -1,28 +1,50 @@
-module Arkham.Location.Cards.MoonForest (
-  moonForest,
-  MoonForest (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.MoonForest (moonForest, MoonForest (..)) where
 
 import Arkham.GameValue
+import Arkham.Id
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Runner hiding (beginSkillTest)
+import Arkham.Message.Lifted
+import Arkham.Prelude
+import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
+
+newtype Meta = Meta {hasUsedSuccess :: [InvestigatorId]}
+  deriving stock (Generic)
+  deriving anyclass (FromJSON, ToJSON)
 
 newtype MoonForest = MoonForest LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 moonForest :: LocationCard MoonForest
-moonForest = location MoonForest Cards.moonForest 0 (Static 0)
+moonForest = locationWith MoonForest Cards.moonForest 4 (PerPlayer 1) (setMeta $ Meta [])
 
 instance HasAbilities MoonForest where
   getAbilities (MoonForest attrs) =
-    getAbilities attrs
-
--- withRevealedAbilities attrs []
+    extendRevealed
+      attrs
+      [ restrictedAbility attrs 1 Here actionAbility
+      , playerLimit PerRound
+          $ restrictedAbility attrs 2 (Here <> not_ DuringAction)
+          $ FastAbility' Free [#evade]
+      ]
 
 instance RunMessage MoonForest where
-  runMessage msg (MoonForest attrs) =
-    MoonForest <$> runMessage msg attrs
+  runMessage msg l@(MoonForest attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      beginSkillTest iid (attrs.ability 1) iid #agility 5
+      pure l
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      let meta = toResult @Meta attrs.meta
+      if iid `elem` hasUsedSuccess meta
+        then pure l
+        else do
+          reduceAlarmLevel (attrs.ability 1) iid
+          pure $ MoonForest $ attrs & setMeta (meta {hasUsedSuccess = iid : hasUsedSuccess meta})
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      push $ chooseEvadeEnemy iid (attrs.ability 2) #agility
+      pure l
+    FailedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+      raiseAlarmLevel (attrs.ability 2) iid
+      pure l
+    _ -> MoonForest <$> lift (runMessage msg attrs)

@@ -64,13 +64,12 @@ instance RunMessage TheDarkCrater where
       pure l
     Do (Msg.DiscoverClues iid lid _ _ _ _) | lid == attrs.id -> do
       attrs' <- lift (runMessage msg attrs)
-      let meta' = toResult @Meta attrs.meta
+      let meta = toResult @Meta attrs.meta
       pure
         $ TheDarkCrater
         $ attrs'
-        & metaL
-        .~ toJSON (meta' {discoveredCluesThisTurn = iid : discoveredCluesThisTurn meta'})
+        & setMeta (meta {discoveredCluesThisTurn = iid : discoveredCluesThisTurn meta})
     After (EndTurn _) -> do
-      let meta' = toResult @Meta attrs.meta
-      pure $ TheDarkCrater $ attrs & metaL .~ toJSON (meta' {discoveredCluesThisTurn = []})
+      let meta = toResult @Meta attrs.meta
+      pure $ TheDarkCrater $ attrs & setMeta (meta {discoveredCluesThisTurn = []})
     _ -> TheDarkCrater <$> lift (runMessage msg attrs)

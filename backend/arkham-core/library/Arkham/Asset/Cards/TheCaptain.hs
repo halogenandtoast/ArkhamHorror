@@ -17,18 +17,17 @@ theCaptain = asset TheCaptain Cards.theCaptain
 
 instance HasAbilities TheCaptain where
   getAbilities (TheCaptain x) =
-    [ restrictedAbility
-        x
-        1
-        (EachUndefeatedInvestigator $ InvestigatorAt "The White Ship")
-        parleyAction_
-    ]
+    [restrictedAbility x 1 (EachUndefeatedInvestigator $ at_ "The White Ship") parleyAction_]
 
 instance RunMessage TheCaptain where
   runMessage msg a@(TheCaptain attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       x <- getMaxAlarmLevel
-      chooseOne iid [SkillLabel s [parley iid (attrs.ability 1) iid s x] | s <- [#willpower, #intellect]]
+      chooseOne
+        iid
+        [ SkillLabel s [parley iid (attrs.ability 1) iid s x]
+        | s <- [#willpower, #intellect]
+        ]
       pure a
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       actId <- selectJust AnyAct

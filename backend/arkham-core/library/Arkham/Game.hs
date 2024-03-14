@@ -1471,11 +1471,17 @@ getLocationsMatching lmatcher = do
         matches' <- getLocationsMatching locationMatcher
         maxes <$> forToSnd matches' (pure . attr locationClues)
       LocationCanBeEnteredBy enemyId -> do
+        emods <- getModifiers enemyId
         flip filterM ls $ \l -> do
           mods <- getModifiers l
-          flip noneM mods $ \case
-            CannotBeEnteredBy matcher -> enemyId <=~> matcher
-            _ -> pure False
+          andM
+            [ flip noneM mods $ \case
+                CannotBeEnteredBy matcher -> enemyId <=~> matcher
+                _ -> pure False
+            , flip noneM emods $ \case
+                CannotEnter lid -> pure $ lid == toId l
+                _ -> pure False
+            ]
       LocationWithoutTreachery matcher -> flip filterM ls $ \l -> do
         selectNone $ treacheryAt (toId l) <> matcher
       LocationWithTreachery matcher -> flip filterM ls $ \l -> do

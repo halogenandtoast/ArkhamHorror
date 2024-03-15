@@ -2104,7 +2104,7 @@ runGameMessage msg g = case msg of
         ( initSkillTest
             iid
             (TreacherySource tid)
-            (InvestigatorTarget iid)
+            (TreacheryTarget tid)
             skillType
             difficulty
         )

@@ -37,7 +37,7 @@ instance HasChaosTokenValue DaisyWalkerParallel where
 instance HasAbilities DaisyWalkerParallel where
   getAbilities (DaisyWalkerParallel attrs) =
     [ playerLimit PerGame
-        $ restrictedAbility attrs 1 (Self <> AssetExists (AssetControlledBy You <> withTrait Tome))
+        $ restrictedAbility attrs 1 (Self <> exists (AssetControlledBy You <> withTrait Tome))
         $ FastAbility Free
     ]
 
@@ -57,8 +57,9 @@ instance RunMessage DaisyWalkerParallel where
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       player <- getPlayer iid
       push
-        $ chooseOne player
-        $ [ targetLabel iid [search iid attrs attrs [fromDiscard] (#asset <> withTrait Tome) $ DrawFound iid 1]
+        $ chooseOne
+          player
+          [ targetLabel iid [search iid attrs attrs [fromDiscard] (#asset <> withTrait Tome) $ DrawFound iid 1]
           , Label "Do not use Daisy's ability" []
           ]
       pure i

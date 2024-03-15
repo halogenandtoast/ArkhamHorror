@@ -1,14 +1,40 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { imgsrc } from '@/arkham/helpers'
 
-const card = ref<string | null>(null);
-const reversed = ref<boolean>(false);
 const cardOverlay = ref<HTMLElement | null>(null);
+const hoveredElement = ref<HTMLElement | null>(null);
 
-const getReversed = (el: HTMLElement) => {
-  return el.classList.contains('Reversed')
-}
+onMounted(() => {
+  const handleMouseover = (event: Event) => {
+    const target = event.target as HTMLElement;
+    if (target && (target.classList.contains('card') || target.dataset.imageId || target.dataset.target || target.dataset.image)) {
+      hoveredElement.value = target;
+    } else {
+      hoveredElement.value = null;
+    }
+  };
+
+  document.addEventListener('mouseover', handleMouseover);
+
+  onUnmounted(() => {
+    document.removeEventListener('mouseover', handleMouseover);
+  });
+});
+
+const card = computed(() => {
+  if (!hoveredElement.value) return null;
+  return getImage(hoveredElement.value);
+});
+
+const reversed = computed(() => {
+  return hoveredElement.value?.classList.contains('Reversed') ?? false;
+});
+
+const overlayPosition = computed(() => {
+  if (!hoveredElement.value) return { top: 0, left: 0 };
+  return getPosition(hoveredElement.value);
+});
 
 const getRotated = (el: HTMLElement) => {
   var st = window.getComputedStyle(el, null);
@@ -31,29 +57,30 @@ const getRotated = (el: HTMLElement) => {
 }
 
 const getPosition = (el: HTMLElement) => {
-  const rect = el.getBoundingClientRect()
+  const rect = el.getBoundingClientRect();
+  const overlayWidth = 300; // Adjust this value if the overlay width changes
 
-  // we do not know the height of the overlay, BUT we can calculate it from the width and height of the target.
-  // since we know the overlay's width is 300px we get the ratio and multiply the height
-  // afterwards we add this new height to it's top to figure out if we are off the screen. If we are we use the
-  // bottom value instead
+  // Calculate the ratio based on the orientation of the card
+  const rotated = getRotated(el);
+  const ratio = rotated ? rect.height / rect.width : rect.width / rect.height;
 
+  // Calculate the height of the overlay based on the ratio
+  const height = overlayWidth / ratio;
 
-  const ratio = rect.width > rect.height ? rect.height / rect.width : rect.width / rect.height
-
-  const rotated = getRotated(el)
-
-  const height = 300 / ratio
+  // Calculate the top position, ensuring it doesn't go off the screen
   const top = rect.top + window.scrollY - 40;
+  const bottom = top + height;
+  const newTop = Math.max(0, bottom > window.innerHeight ? rect.bottom - height + window.scrollY - 40 : top);
 
-  const bottom = top + height
+  // Calculate the left position, adjusting for rotated cards
+  const left = rect.left + window.scrollX + (rotated ? rect.height : rect.width) + 10;
 
-  const newTop = Math.max(0, bottom > window.innerHeight ?
-    (rotated ? rect.bottom - height + rect.height : rect.bottom - height) + window.scrollY - 40 :
-    top)
-
-  return { top: newTop, left: rect.left + window.scrollX + rect.width + 10 }
-}
+  if (left + 300 >= window.innerWidth) {
+    return { top: newTop, left: rect.left - overlayWidth - 10 };
+  } else {
+    return { top: newTop, left: left };
+  }
+};
 
 const getImage = (el: HTMLElement): string | null => {
   if (el instanceof HTMLImageElement) {
@@ -84,64 +111,10 @@ const getImage = (el: HTMLElement): string | null => {
 
   return null
 }
-
-document.addEventListener('mouseover', (event) => {
-  if (cardOverlay.value === null) {
-    return
-  }
-
-  card.value = getImage(event.target as HTMLElement)
-  reversed.value = getReversed(event.target as HTMLElement)
-
-  if (event.target instanceof HTMLImageElement) {
-    if (event.target.classList.contains('card')) {
-      const { top, left } = getPosition(event.target)
-
-      cardOverlay.value.style.top = `${top}px`
-      cardOverlay.value.style.left = `${left}px`
-
-      return
-    }
-  } else if (event.target instanceof HTMLDivElement) {
-    if (event.target.classList.contains('card')) {
-      const { top, left } = getPosition(event.target)
-
-      cardOverlay.value.style.top = `${top}px`
-      cardOverlay.value.style.left = `${left}px`
-      return
-    }
-  } else if (event.target instanceof HTMLElement) {
-    if(event.target.dataset.imageId) {
-      const { top, left } = getPosition(event.target)
-
-      cardOverlay.value.style.top = `${top}px`
-      cardOverlay.value.style.left = `${left}px`
-      return
-    }
-    if(event.target.dataset.target) {
-      const target = document.querySelector(`[data-id="${event.target.dataset.target}"]`) as HTMLElement
-      if (target === null) {
-        return
-      }
-      const { top, left } = getPosition(target)
-
-      cardOverlay.value.style.top = `${top}px`
-      cardOverlay.value.style.left = `${left}px`
-      return
-    }
-    if(event.target.dataset.image) {
-      const { top, left } = getPosition(event.target)
-
-      cardOverlay.value.style.top = `${top}px`
-      cardOverlay.value.style.left = `${left}px`
-      return
-    }
-  }
-})
 </script>
 
 <template>
-  <div class="card-overlay" ref="cardOverlay">
+  <div class="card-overlay" ref="cardOverlay" :style="{ top: overlayPosition.top + 'px', left: overlayPosition.left + 'px' }">
     <img v-if="card" :src="card" :class="{ reversed }" />
   </div>
 </template>
@@ -155,12 +128,9 @@ document.addEventListener('mouseover', (event) => {
   height: fit-content;
   display: flex;
   img {
-    object-fit: contain;
     border-radius: 15px;
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: 100%;
+    width: 300px;
+    height: fit-content;
   }
 }
 

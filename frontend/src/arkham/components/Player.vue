@@ -313,7 +313,7 @@ function onLeave(el: Element, done: () => void) {
       <transition-group tag="section" class="in-play" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
 
         <template v-if="tarotCards.length > 0">
-          <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana">
+          <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana" :data-index="tarotCard.arcana">
             <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }" @click="$emit('choose', tarotCardAbility(tarotCard))"/>
           </div>
         </template>
@@ -390,7 +390,7 @@ function onLeave(el: Element, done: () => void) {
           @choose="$emit('choose', $event)"
         />
 
-        <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot">
+        <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot" :data-index="`${slot}${idx}`">
           <img :src="slotImg(slot)" />
         </div>
 

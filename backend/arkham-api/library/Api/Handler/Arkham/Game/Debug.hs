@@ -1,7 +1,3 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE OverloadedRecordDot #-}
-{-# LANGUAGE TemplateHaskell #-}
-
 module Api.Handler.Arkham.Game.Debug (
   getApiV1ArkhamGameExportR,
   postApiV1ArkhamGamesImportR,
@@ -23,6 +19,7 @@ import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.))
 import Json
 import Safe (fromJustNote)
+import UnliftIO.Exception (catch)
 
 getApiV1ArkhamGameExportR :: ArkhamGameId -> Handler ArkhamExport
 getApiV1ArkhamGameExportR gameId = do
@@ -48,13 +45,12 @@ getApiV1ArkhamGameExportR gameId = do
         }
 
 postApiV1ArkhamGamesFixR :: Handler ()
-postApiV1ArkhamGamesFixR = runDB $ do
-  gameIds <- Persist.selectKeysList @ArkhamGame [] []
+postApiV1ArkhamGamesFixR = do
+  gameIds <- runDB $ selectKeysList @ArkhamGame [] []
   for_ gameIds $ \gameId -> do
-    mg <- Persist.get gameId
-    case mg of
-      Nothing -> Persist.delete gameId
-      _ -> pure ()
+    let handleBrokenGame :: SomeException -> Handler ()
+        handleBrokenGame _ = void $ runDB (Persist.delete gameId)
+    void (runDB (Persist.get gameId) :: Handler (Maybe ArkhamGame)) `catch` handleBrokenGame
 
 postApiV1ArkhamGamesImportR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesImportR = do

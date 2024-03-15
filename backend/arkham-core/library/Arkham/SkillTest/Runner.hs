@@ -142,7 +142,9 @@ instance RunMessage SkillTest where
     BeginSkillTestAfterFast -> do
       windowMsg <- checkWindows [mkWindow #when Window.FastPlayerWindow]
       pushAll [windowMsg, BeforeSkillTest s, EndSkillTestWindow]
-      mCardId <- fmap toCardId <$> sourceToMaybeCard skillTestSource
+      mCardId <- case skillTestTarget of
+        ProxyTarget _ t -> fmap toCardId <$> targetToMaybeCard t
+        t -> fmap toCardId <$> targetToMaybeCard t
       pure $ s & cardL .~ mCardId
     ReplaceSkillTestSkill (FromSkillType fsType) (ToSkillType tsType) -> do
       let

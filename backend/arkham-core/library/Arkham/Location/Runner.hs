@@ -393,7 +393,7 @@ instance RunMessage LocationAttrs where
       let
         triggerSource = case source of
           ProxySource _ s -> s
-          _ -> source
+          _ -> InvestigatorSource iid
       pushM $ mkInvestigateLocation iid triggerSource (toId a)
       pure a
     UseCardAbility iid source 102 _ _ | isSource a source -> do

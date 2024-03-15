@@ -56,7 +56,7 @@ instance HasAbilities Room212 where
 instance RunMessage Room212 where
   runMessage msg l@(Room212 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ beginSkillTest iid (toAbilitySource attrs 1) iid #intellect 3
+      push $ beginSkillTest iid (attrs.ability 1) iid #intellect 3
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       player <- getPlayer iid

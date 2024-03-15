@@ -1,10 +1,4 @@
-module Arkham.Asset.Cards.NineOfRods3 (
-  nineOfRods3,
-  NineOfRods3 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.NineOfRods3 (nineOfRods3, NineOfRods3 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -12,7 +6,8 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
-import Arkham.Window (Window, defaultWindows, windowType)
+import Arkham.Prelude
+import Arkham.Window (Window, windowType)
 import Arkham.Window qualified as Window
 
 newtype NineOfRods3 = NineOfRods3 AssetAttrs
@@ -28,7 +23,7 @@ instance HasAbilities NineOfRods3 where
         a
         1
         (exhaust a)
-        (DrawCard #when You (CanCancelRevelationEffect $ BasicCardMatch NonWeaknessTreachery) EncounterDeck)
+        (DrawCard #when You (CanCancelRevelationEffect $ basic NonWeaknessTreachery) EncounterDeck)
         ControlsThis
     , restrictedAbility a 2 InYourHand $ freeReaction (GameBegins #when)
     ]

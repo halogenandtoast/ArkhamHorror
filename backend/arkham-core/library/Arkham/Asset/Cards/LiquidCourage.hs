@@ -39,15 +39,15 @@ instance RunMessage LiquidCourage where
           [ targetLabel
             iid'
             [ HealHorrorWithAdditional (toTarget iid') (toSource attrs) 1
-            , beginSkillTest iid' source iid' SkillWillpower 2
+            , beginSkillTest iid' (attrs.ability 1) iid' SkillWillpower 2
             ]
           | iid' <- iids
           ]
       pure a
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
       push $ AdditionalHealHorror (toTarget iid) (toSource attrs) 1
       pure a
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
       pushAll
         [ AdditionalHealHorror (toTarget iid) (toSource attrs) 0
         , toMessage $ randomDiscard iid (toSource attrs)

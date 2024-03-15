@@ -30,7 +30,7 @@ instance RunMessage DeceptiveMemories where
       push $ chooseAndDiscardCard iid (attrs.ability 1)
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ beginSkillTest iid attrs iid #willpower 3
+      push $ beginSkillTest iid (attrs.ability 2) iid #willpower 3
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       push $ toDiscardBy iid (toSource attrs) attrs

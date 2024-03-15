@@ -37,12 +37,12 @@ instance RunMessage SalemGaol1692 where
     Msg.RevealLocation _ lid | lid == toId attrs -> do
       SalemGaol1692 <$> runMessage msg (attrs & labelL .~ "salemGaol1692")
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid attrs iid SkillIntellect 3
+      push $ beginSkillTest iid (attrs.ability 1) iid SkillIntellect 3
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ Move $ moveToMatch attrs iid (locationIs Locations.keziahsRoom)
       pure l
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
       push $ Move $ moveToMatch attrs iid RevealedLocation
       pure l
     _ -> SalemGaol1692 <$> runMessage msg attrs

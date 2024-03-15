@@ -1,9 +1,5 @@
-module Arkham.Story.Cards.UnfinishedBusiness_B (
-  UnfinishedBusiness_B (..),
-  unfinishedBusiness_B,
-) where
-
-import Arkham.Prelude
+{- HLINT ignore "Use camelCase" -}
+module Arkham.Story.Cards.UnfinishedBusiness_B (UnfinishedBusiness_B (..), unfinishedBusiness_B) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -11,10 +7,10 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Runner
-import Arkham.Timing qualified as Timing
 
 newtype UnfinishedBusiness_B = UnfinishedBusiness_B StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor)
@@ -26,15 +22,12 @@ unfinishedBusiness_B = story UnfinishedBusiness_B Cards.unfinishedBusiness_B
 instance HasAbilities UnfinishedBusiness_B where
   getAbilities (UnfinishedBusiness_B x) = case storyPlacement x of
     InThreatArea _ ->
-      [ restrictedAbility x 1 (InThreatAreaOf You) $ ForcedAbility $ RoundEnds Timing.When
+      [ restrictedAbility x 1 (InThreatAreaOf You) $ forced $ RoundEnds #when
       , restrictedAbility
           x
           2
-          ( OnSameLocation
-              <> LocationExists (YourLocation <> LocationWithTitle "Chapel Crypt" <> LocationWithoutClues)
-          )
-          $ ActionAbility []
-          $ ActionCost 1
+          (OnSameLocation <> exists (YourLocation <> "Chapel Crypt" <> LocationWithoutClues))
+          actionAbility
       ]
     _ -> []
 
@@ -56,9 +49,11 @@ instance RunMessage UnfinishedBusiness_B where
       push
         $ chooseOne
           player
-          [SkillLabel sType [beginSkillTest iid attrs attrs sType 4] | sType <- [SkillIntellect, SkillCombat]]
+          [ SkillLabel sType [beginSkillTest iid (attrs.ability 2) attrs sType 4]
+          | sType <- [SkillIntellect, SkillCombat]
+          ]
       pure s
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedThisSkillTest _ (isAbilitySource attrs 2 -> True) -> do
       card <- genCard Enemies.heretic_A
       send $ format card <> " is \"banished\""
       push $ AddToVictory (toTarget attrs)
@@ -66,7 +61,6 @@ instance RunMessage UnfinishedBusiness_B where
     Flip _ _ (isTarget attrs -> True) -> do
       let heretic = lookupCard Enemies.heretic_A (toCardId attrs)
       creation <- createEnemy heretic (storyPlacement attrs)
-      pushAll
-        [RemoveStory (toId attrs), toMessage creation]
+      pushAll [RemoveStory (toId attrs), toMessage creation]
       pure s
     _ -> UnfinishedBusiness_B <$> runMessage msg attrs

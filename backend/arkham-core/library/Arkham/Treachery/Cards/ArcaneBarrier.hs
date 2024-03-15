@@ -51,9 +51,9 @@ arcaneBarrierEffect = cardEffect ArcaneBarrierEffect Cards.arcaneBarrier
 instance RunMessage ArcaneBarrierEffect where
   runMessage msg e@(ArcaneBarrierEffect attrs) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == toId attrs -> do
-      push $ beginSkillTest iid attrs iid #willpower 4
+      push $ beginSkillTest iid attrs.source iid #willpower 4
       pure e
-    FailedThisSkillTest iid (isSource attrs -> True) -> do
+    FailedThisSkillTest iid (isSource attrs.source -> True) -> do
       let
         moveMessages = case effectMetadata attrs of
           Just (EffectMessages msgs) -> msgs

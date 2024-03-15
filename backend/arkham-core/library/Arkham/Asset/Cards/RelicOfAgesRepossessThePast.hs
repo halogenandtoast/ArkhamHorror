@@ -34,7 +34,7 @@ instance RunMessage RelicOfAgesRepossessThePast where
     case msg of
       UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
         let
-          chooseSkillTest skillType = beginSkillTest iid attrs iid skillType 4
+          chooseSkillTest skillType = beginSkillTest iid (attrs.ability 1) iid skillType 4
         player <- getPlayer iid
         push
           $ chooseOne
@@ -43,7 +43,7 @@ instance RunMessage RelicOfAgesRepossessThePast where
             | skillType <- [SkillWillpower, SkillIntellect]
             ]
         pure a
-      PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ | not (successTriggered metadata) -> do
+      PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ | not (successTriggered metadata) -> do
         targets <- targetsWithDoom
         player <- getPlayer iid
         push

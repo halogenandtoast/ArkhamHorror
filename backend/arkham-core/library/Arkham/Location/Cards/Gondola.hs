@@ -42,11 +42,11 @@ instance RunMessage Gondola where
       push
         $ chooseOne
           player
-          [ Label "Test {combat} (2)" [beginSkillTest iid attrs attrs #combat 2]
-          , Label "Test {agility} (2)" [beginSkillTest iid attrs attrs #agility 2]
+          [ Label "Test {combat} (2)" [beginSkillTest iid (attrs.ability 1) attrs #combat 2]
+          , Label "Test {agility} (2)" [beginSkillTest iid (attrs.ability 1) attrs #agility 2]
           ]
       pure l
-    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _ | isAbilitySource attrs 1 source -> do
       push (PlaceResources (toAbilitySource attrs 1) (toTarget attrs) 1)
       pure l
     _ -> Gondola <$> runMessage msg attrs

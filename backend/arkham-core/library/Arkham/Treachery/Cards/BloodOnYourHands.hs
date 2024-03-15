@@ -24,7 +24,7 @@ instance RunMessage BloodOnYourHands where
   runMessage msg t@(BloodOnYourHands attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       innocents <- selectCount $ VictoryDisplayCardMatch $ CardWithTrait Innocent
-      push $ beginSkillTest iid (toSource attrs) iid #willpower (2 + innocents)
+      push $ revelationSkillTest iid (toSource attrs) #willpower (2 + innocents)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       atCrimeScene <- iid <=~> InvestigatorAt (LocationWithTrait CrimeScene)

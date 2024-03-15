@@ -45,11 +45,11 @@ instance RunMessage Garden where
             <$ push
               ( beginSkillTest
                   iid
-                  source
+                  (attrs.ability 1)
                   (toTarget attrs)
                   SkillAgility
                   2
               )
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> l <$ push (Remember DistractedTheGuards)
+      | isAbilitySource attrs 1 source -> l <$ push (Remember DistractedTheGuards)
     _ -> Garden <$> runMessage msg attrs

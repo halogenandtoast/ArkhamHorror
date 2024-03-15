@@ -1,15 +1,11 @@
-module Arkham.Treachery.Cards.Overgrowth (
-  overgrowth,
-  Overgrowth (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Overgrowth (overgrowth, Overgrowth (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -28,33 +24,23 @@ instance HasModifiersFor Overgrowth where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Overgrowth where
-  getAbilities (Overgrowth a) =
-    [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility []
-        $ ActionCost 1
-    ]
+  getAbilities (Overgrowth a) = [restrictedAbility a 1 OnSameLocation actionAbility]
 
 instance RunMessage Overgrowth where
   runMessage msg t@(Overgrowth attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getJustLocation iid
-      withoutOvergrowth <-
-        lid
-          <=~> LocationWithoutTreachery (treacheryIs Cards.overgrowth)
-      when withoutOvergrowth
-        $ push
-        $ AttachTreachery
-          (toId attrs)
-          (LocationTarget lid)
+      withoutOvergrowth <- lid <=~> LocationWithoutTreachery (treacheryIs Cards.overgrowth)
+      pushWhen withoutOvergrowth $ attachTreachery attrs lid
       pure t
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let
         target = toTarget attrs
-        chooseSkillTest sType =
-          SkillLabel sType [beginSkillTest iid source target sType 4]
+        chooseSkillTest sType = SkillLabel sType [beginSkillTest iid (attrs.ability 1) target sType 4]
       player <- getPlayer iid
       push $ chooseOne player $ map chooseSkillTest [SkillCombat, SkillIntellect]
       pure t
-    PassedThisSkillTest iid (isSource attrs -> True) -> do
-      t <$ push (toDiscardBy iid (toAbilitySource attrs 1) attrs)
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      push $ toDiscardBy iid (attrs.ability 1) attrs
+      pure t
     _ -> Overgrowth <$> runMessage msg attrs

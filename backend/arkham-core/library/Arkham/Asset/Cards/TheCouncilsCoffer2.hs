@@ -47,13 +47,13 @@ instance RunMessage TheCouncilsCoffer2 where
         <> [Exile (toTarget attrs)]
       pure a
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      let chooseSkillTest skillType = beginSkillTest iid attrs iid skillType 5
+      let chooseSkillTest skillType = beginSkillTest iid (attrs.ability 1) iid skillType 5
       player <- getPlayer iid
       push
         $ chooseOne
           player
           [SkillLabel sType [chooseSkillTest sType] | sType <- allSkills]
       pure a
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+    PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
       pure . TheCouncilsCoffer2 $ attrs & usesL . ix Lock %~ max 0 . subtract 1
     _ -> TheCouncilsCoffer2 <$> runMessage msg attrs

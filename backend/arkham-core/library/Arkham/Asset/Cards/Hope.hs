@@ -1,19 +1,13 @@
-module Arkham.Asset.Cards.Hope (
-  hope,
-  Hope (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Hope (hope, Hope (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Cost
 import Arkham.Deck qualified as Deck
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (AssetCard)
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype Hope = Hope AssetAttrs
@@ -26,9 +20,9 @@ hope = asset Hope Cards.hope
 instance HasAbilities Hope where
   getAbilities (Hope a) =
     [ controlledAbility a 1 (exists $ oneOf [assetIs Cards.zeal, assetIs Cards.augur])
-        $ ForcedAbility
+        $ forced
         $ AssetEntersPlay #when
-        $ AssetWithId (toId a)
+        $ be a
     , controlledAbility a 2 (exists $ AssetWithId (toId a) <> AssetReady)
         $ evadeAction
         $ OrCost [exhaust a, discardCost a]

@@ -69,10 +69,10 @@ instance HasAbilities TheStrangerTheShoresOfHaliEffect where
 
 instance RunMessage TheStrangerTheShoresOfHaliEffect where
   runMessage msg e@(TheStrangerTheShoresOfHaliEffect attrs) = case msg of
-    UseCardAbility iid (isProxySource attrs -> True) 1 (getBatchId -> batchId) _ -> do
-      push $ beginSkillTest iid attrs (BatchTarget batchId) #agility 2
+    UseCardAbility iid p@(isProxySource attrs -> True) 1 (getBatchId -> batchId) _ -> do
+      push $ beginSkillTest iid (AbilitySource p 1) (BatchTarget batchId) #agility 2
       pure e
-    FailedSkillTest iid _ (isSource attrs -> True) Initiator {} _ _ -> do
+    FailedSkillTest iid _ (isProxyAbilitySource attrs 1 -> True) Initiator {} _ _ -> do
       mtarget <- getSkillTestTarget
       case mtarget of
         Just (BatchTarget batchId) -> pushAll [assignDamage iid attrs 1, IgnoreBatch batchId]

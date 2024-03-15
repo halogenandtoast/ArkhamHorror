@@ -1,16 +1,11 @@
-module Arkham.Event.Cards.BloodEclipse3 (
-  bloodEclipse3,
-  BloodEclipse3 (..),
-) where
+module Arkham.Event.Cards.BloodEclipse3 (bloodEclipse3, BloodEclipse3 (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
+import Arkham.Prelude
 
 newtype BloodEclipse3 = BloodEclipse3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

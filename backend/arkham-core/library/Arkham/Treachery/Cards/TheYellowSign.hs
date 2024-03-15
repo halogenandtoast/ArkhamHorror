@@ -19,7 +19,7 @@ theYellowSign = treachery TheYellowSign Cards.theYellowSign
 instance RunMessage TheYellowSign where
   runMessage msg t@(TheYellowSign attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ beginSkillTest iid attrs iid #willpower 4
+      push $ revelationSkillTest iid attrs #willpower 4
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       pushAll

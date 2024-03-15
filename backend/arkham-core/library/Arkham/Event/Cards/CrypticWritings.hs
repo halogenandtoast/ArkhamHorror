@@ -1,9 +1,4 @@
-module Arkham.Event.Cards.CrypticWritings (
-  crypticWritings,
-  CrypticWritings (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.CrypticWritings (crypticWritings, CrypticWritings (..)) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -11,7 +6,7 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher hiding (DuringTurn)
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype CrypticWritings = CrypticWritings EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)

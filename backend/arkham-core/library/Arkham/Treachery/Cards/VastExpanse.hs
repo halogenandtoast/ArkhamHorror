@@ -1,13 +1,8 @@
-module Arkham.Treachery.Cards.VastExpanse (
-  vastExpanse,
-  VastExpanse (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.VastExpanse (vastExpanse, VastExpanse (..)) where
 
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -26,16 +21,9 @@ instance RunMessage VastExpanse where
       push
         $ if extradimensionalCount == 0
           then gainSurge attrs
-          else
-            beginSkillTest
-              iid
-              source
-              (toTarget iid)
-              SkillWillpower
-              (min 5 extradimensionalCount)
+          else revelationSkillTest iid source #willpower (min 5 extradimensionalCount)
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
-      | isSource attrs source ->
-          t
-            <$ push (InvestigatorAssignDamage iid source DamageAny 0 n)
+    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
+      push $ assignHorror iid attrs n
+      pure t
     _ -> VastExpanse <$> runMessage msg attrs

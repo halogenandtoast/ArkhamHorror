@@ -39,9 +39,11 @@ instance RunMessage HuntedByCorsairs where
       push
         $ chooseOne
           player
-          [SkillLabel sType [beginSkillTest iid source iid sType 4] | sType <- [#intellect, #agility]]
+          [ SkillLabel sType [beginSkillTest iid (AbilitySource source 2) attrs sType 4]
+          | sType <- [#intellect, #agility]
+          ]
       pure t
-    PassedThisSkillTest iid source@(isProxySource attrs -> True) -> do
+    PassedThisSkillTest iid source@(isProxyAbilitySource attrs 2 -> True) -> do
       push $ toDiscardBy iid source attrs
       pure t
     _ -> HuntedByCorsairs <$> runMessage msg attrs

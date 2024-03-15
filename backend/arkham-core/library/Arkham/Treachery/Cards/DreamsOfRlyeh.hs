@@ -37,7 +37,7 @@ instance RunMessage DreamsOfRlyeh where
       push $ attachTreachery attrs iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid attrs iid #willpower 3
+      push $ beginSkillTest iid (attrs.ability 1) iid #willpower 3
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ toDiscardBy iid (toAbilitySource attrs 1) attrs

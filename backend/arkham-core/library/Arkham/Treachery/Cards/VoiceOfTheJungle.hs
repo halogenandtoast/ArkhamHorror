@@ -45,13 +45,13 @@ instance RunMessage VoiceOfTheJungle where
       push
         $ beginSkillTest
           iid
-          source
+          (attrs.ability 2)
           (InvestigatorTarget iid)
           SkillWillpower
           3
       pure t
     PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
+      | isAbilitySource attrs 2 source -> do
           push $ toDiscardBy iid (toAbilitySource attrs 2) (toTarget attrs)
           pure t
     _ -> VoiceOfTheJungle <$> runMessage msg attrs

@@ -1,20 +1,14 @@
-module Arkham.Asset.Cards.Augur (
-  augur,
-  Augur (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Augur (augur, Augur (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Cost
 import Arkham.Deck qualified as Deck
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (AssetCard)
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype Augur = Augur AssetAttrs
@@ -27,9 +21,9 @@ augur = asset Augur Cards.augur
 instance HasAbilities Augur where
   getAbilities (Augur a) =
     [ controlledAbility a 1 (exists $ oneOf [assetIs Cards.zeal, assetIs Cards.hope])
-        $ ForcedAbility
+        $ forced
         $ AssetEntersPlay #when
-        $ AssetWithId (toId a)
+        $ be a
     , controlledAbility a 2 (exists $ AssetWithId (toId a) <> AssetReady)
         $ investigateAction
         $ OrCost [exhaust a, discardCost a]

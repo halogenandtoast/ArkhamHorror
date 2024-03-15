@@ -58,10 +58,11 @@ instance RunMessage UnfinishedBusiness_F where
       push
         $ chooseOne
           player
-          [ SkillLabel sType [beginSkillTest iid attrs attrs sType 4] | sType <- [SkillIntellect, SkillAgility]
+          [ SkillLabel sType [beginSkillTest iid (attrs.ability 2) attrs sType 4]
+          | sType <- [SkillIntellect, SkillAgility]
           ]
       pure s
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedSkillTest _ _ (isAbilitySource attrs 2 -> True) SkillTestInitiatorTarget {} _ _ -> do
       card <- genCard Enemies.heretic_E
       send $ format card <> " is \"banished\""
       push $ AddToVictory (toTarget attrs)

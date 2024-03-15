@@ -1,15 +1,10 @@
-module Arkham.Asset.Cards.DoubleDouble4 (
-  doubleDouble4,
-  DoubleDouble4 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.DoubleDouble4 (doubleDouble4, DoubleDouble4 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (PlayCard)
-import Arkham.Cost
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype DoubleDouble4 = DoubleDouble4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

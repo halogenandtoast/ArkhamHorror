@@ -1,14 +1,9 @@
-module Arkham.Treachery.Cards.RuinAndDestruction (
-  ruinAndDestruction,
-  RuinAndDestruction (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.RuinAndDestruction (ruinAndDestruction, RuinAndDestruction (..)) where
 
 import Arkham.Classes
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
-import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -22,20 +17,12 @@ ruinAndDestruction = treachery RuinAndDestruction Cards.ruinAndDestruction
 instance RunMessage RuinAndDestruction where
   runMessage msg t@(RuinAndDestruction attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
-      targetInvestigators <-
-        select
-          $ InvestigatorAt
-          $ LocationWithEnemy
-          $ EnemyWithTitle
-            broodTitle
+      targetInvestigators <- select $ InvestigatorAt $ LocationWithEnemy $ EnemyWithTitle broodTitle
       pushAll
-        $ [ beginSkillTest iid' source (InvestigatorTarget iid') SkillAgility 3
-          | iid' <- targetInvestigators
-          ]
+        $ [revelationSkillTest iid' source #agility 3 | iid' <- targetInvestigators]
         <> [gainSurge attrs | null targetInvestigators]
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
-      | isSource attrs source ->
-          t
-            <$ push (InvestigatorAssignDamage iid source DamageAny n 0)
+    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
+      push $ assignDamage iid attrs n
+      pure t
     _ -> RuinAndDestruction <$> runMessage msg attrs

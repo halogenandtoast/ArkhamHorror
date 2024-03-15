@@ -42,12 +42,12 @@ instance RunMessage InterviewRoomIchorFilledChamber where
       push
         $ beginSkillTest
           iid
-          (toSource attrs)
+          (attrs.ability 1)
           (InvestigatorTarget iid)
           SkillWillpower
           3
       pure l
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n ->
+    FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ n ->
       do
         push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 n
         pure l

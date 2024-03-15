@@ -5,6 +5,7 @@
 module Api.Handler.Arkham.Game.Debug (
   getApiV1ArkhamGameExportR,
   postApiV1ArkhamGamesImportR,
+  postApiV1ArkhamGamesFixR,
 ) where
 
 import Api.Arkham.Export
@@ -15,6 +16,7 @@ import Conduit
 import Data.Text qualified as T
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (update)
+import Database.Persist qualified as Persist
 import Entity.Arkham.LogEntry
 import Entity.Arkham.Player
 import Entity.Arkham.Step
@@ -45,6 +47,15 @@ getApiV1ArkhamGameExportR gameId = do
         , aeCampaignData = arkhamGameToExportData ge (map entityVal steps) entries
         }
 
+postApiV1ArkhamGamesFixR :: Handler ()
+postApiV1ArkhamGamesFixR = runDB $ do
+  gameIds <- Persist.selectKeysList @ArkhamGame [] []
+  for_ gameIds $ \gameId -> do
+    mg <- Persist.get gameId
+    case mg of
+      Nothing -> Persist.delete gameId
+      _ -> pure ()
+
 postApiV1ArkhamGamesImportR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesImportR = do
   -- Convert to multiplayer solitaire
@@ -56,7 +67,7 @@ postApiV1ArkhamGamesImportR = do
       . fromJustNote "No export file uploaded"
       . headMay
       . snd
-        =<< runRequestBody
+      =<< runRequestBody
   now <- liftIO getCurrentTime
 
   case eExportData of

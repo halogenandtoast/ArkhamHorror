@@ -20,6 +20,7 @@
       /games ApiV1ArkhamGamesP:
         / ApiV1ArkhamGamesR GET POST
         !/import ApiV1ArkhamGamesImportR POST
+        !/fix ApiV1ArkhamGamesFixR POST
         /#ArkhamGameId ApiV1ArkhamGameP:
           / ApiV1ArkhamGameR GET PUT DELETE
           /raw ApiV1ArkhamGameRawR PUT

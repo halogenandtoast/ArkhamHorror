@@ -41,7 +41,7 @@ instance HasAbilities TheNecronomiconAdvanced where
 instance RunMessage TheNecronomiconAdvanced where
   runMessage msg a@(TheNecronomiconAdvanced attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
+      push $ putCardIntoPlay iid attrs
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1

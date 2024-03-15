@@ -54,7 +54,7 @@ instance HasModifiersFor TheKingInYellow where
 instance RunMessage TheKingInYellow where
   runMessage msg a@(TheKingInYellow attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
+      push $ putCardIntoPlay iid attrs
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ toDiscardBy iid (toAbilitySource attrs 1) attrs

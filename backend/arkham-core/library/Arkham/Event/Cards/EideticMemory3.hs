@@ -44,6 +44,7 @@ instance RunMessage EideticMemory3 where
               (CardIdTarget $ toCardId attrs)
           ]
           (if canAffectOthers then RemoveChosenCardFromGame else LeaveChosenCard)
+          NoPayment
           playableWindows
           True
       pure e

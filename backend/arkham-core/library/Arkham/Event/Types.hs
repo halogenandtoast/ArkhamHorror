@@ -71,6 +71,7 @@ data EventAttrs = EventAttrs
   , eventDoom :: Int
   , eventExhausted :: Bool
   , eventBeingPaidFor :: Bool
+  , eventPayment :: Payment
   , eventPaymentMessages :: [Message]
   , eventSealedChaosTokens :: [ChaosToken]
   , eventCardsUnderneath :: [Card]
@@ -91,6 +92,9 @@ instance Is EventAttrs EventId where
 instance HasField "placement" EventAttrs Placement where
   getField = eventPlacement
 
+instance HasField "payment" EventAttrs Payment where
+  getField = eventPayment
+
 instance HasField "owner" EventAttrs InvestigatorId where
   getField = eventOwner
 
@@ -110,7 +114,26 @@ instance ToJSON EventAttrs where
   toEncoding = genericToEncoding $ aesonOptions $ Just "event"
 
 instance FromJSON EventAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "event"
+  parseJSON = withObject "EventAttrs" \o -> do
+    eventCardCode <- o .: "cardCode"
+    eventCardId <- o .: "cardId"
+    eventOriginalCardCode <- o .: "originalCardCode"
+    eventId <- o .: "id"
+    eventOwner <- o .: "owner"
+    eventDoom <- o .: "doom"
+    eventExhausted <- o .: "exhausted"
+    eventBeingPaidFor <- o .: "beingPaidFor"
+    eventPayment <- o .:? "payment" .!= NoPayment
+    eventPaymentMessages <- o .: "paymentMessages"
+    eventSealedChaosTokens <- o .: "sealedChaosTokens"
+    eventCardsUnderneath <- o .: "cardsUnderneath"
+    eventPlacement <- o .: "placement"
+    eventAfterPlay <- o .: "afterPlay"
+    eventPlayedFrom <- o .: "playedFrom"
+    eventWindows <- o .: "windows"
+    eventTarget <- o .: "target"
+
+    pure EventAttrs {..}
 
 instance IsCard EventAttrs where
   toCard = defaultToCard
@@ -141,6 +164,7 @@ event f cardDef =
             , eventExhausted = False
             , -- currently only relevant to time warp
               eventBeingPaidFor = False
+            , eventPayment = NoPayment
             , eventPaymentMessages = []
             , eventSealedChaosTokens = []
             , eventCardsUnderneath = []

@@ -55,6 +55,7 @@ import Arkham.Story.Types (Field (..))
 import Arkham.Tarot
 import Arkham.Timing qualified as Timing
 import Arkham.Token
+import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (mkWhen, mkWindow)
 import Arkham.Window qualified as Window
@@ -100,6 +101,16 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         push $ LoadDeck iid (Deck deck')
     pure a
   Setup -> a <$ pushAllEnd [BeginGame, BeginRound, Begin InvestigationPhase]
+  BeginGame -> do
+    mFalseAwakening <- getMaybeCampaignStoryCard Treacheries.falseAwakening
+    for_ mFalseAwakening \falseAwakening -> do
+      tid <- getRandom
+      pushAll
+        [ AttachStoryTreacheryTo tid (toCard falseAwakening) AgendaDeckTarget
+        , PlaceDoom (toSource tid) (toTarget tid) 1
+        ]
+
+    pure a
   BeginRound -> do
     push $ Do BeginRound
     pure $ a & turnL +~ 1
@@ -523,7 +534,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       VengeanceCard _ -> error "vengeance card"
   CreateAssetAt _ card _ -> do
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
-  AttachStoryTreacheryTo card _ -> do
+  AttachStoryTreacheryTo _ card _ -> do
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
   CreateEnemy (enemyCreationCard -> card) -> do
     pure
@@ -856,8 +867,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           filter ((/= cardId) . toCardId) (unDeck scenarioEncounterDeck)
         _ -> unDeck scenarioEncounterDeck
       encounterDecksF = case cardSource of
-        FromEncounterDeck ->
-          (encounterDecksL . each . _1 %~ withDeck (filter ((/= cardId) . toCardId)))
+        FromEncounterDeck -> encounterDecksL . each . _1 %~ withDeck (filter ((/= cardId) . toCardId))
         _ -> id
     shuffled <- shuffleM encounterDeck
     push (InvestigatorDrewEncounterCard iid card)
@@ -1211,7 +1221,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       . non []
       .~ cards
       & tarotDeckL
-      %~ filter (`notElem` (map toTarotArcana cards))
+      %~ filter (`notElem` map toTarotArcana cards)
   DrawAndChooseTarot iid facing n -> do
     cards <- map (TarotCard facing) <$> sampleN n (NE.fromList scenarioTarotDeck)
     player <- getPlayer iid

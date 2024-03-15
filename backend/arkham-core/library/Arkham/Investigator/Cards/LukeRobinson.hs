@@ -72,7 +72,9 @@ instance RunMessage LukeRobinson where
           lukePlayable <- getLukePlayable attrs (defaultWindows iid)
           let
             asIfActions =
-              [ targetLabel (toCardId c) [InitiatePlayCard (toId attrs) c Nothing (defaultWindows iid) usesAction]
+              [ targetLabel
+                (toCardId c)
+                [InitiatePlayCard (toId attrs) c Nothing NoPayment (defaultWindows iid) usesAction]
               | c <- concatMap snd lukePlayable
               ]
           LukeRobinson
@@ -90,7 +92,7 @@ instance RunMessage LukeRobinson where
             playableCards <- getPlayableCards attrs UnpaidCost windows'
             runWindow attrs windows' actions (nub $ playableCards <> lukePlayable)
             pure i
-    InitiatePlayCard iid card mtarget windows' asAction | iid == toId attrs && active meta -> do
+    InitiatePlayCard iid card mtarget payment windows' asAction | iid == toId attrs && active meta -> do
       let a = attrs
       mods <- getModifiers (toTarget a)
       playable <- withModifiers iid (toModifiers attrs [IgnorePlayableModifierContexts]) $ do
@@ -104,7 +106,7 @@ instance RunMessage LukeRobinson where
       let playCard =
             guard (not shouldSkip)
               *> [ CheckWindow [iid] [mkWhen (Window.PlayCard iid card)]
-                 , PlayCard iid card mtarget windows' asAction
+                 , PlayCard iid card mtarget payment windows' asAction
                  , afterPlayCard
                  ]
 

@@ -13,7 +13,6 @@ import Arkham.Card
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
-import Arkham.Window (defaultWindows)
 
 newtype DeathXIII1 = DeathXIII1 AssetAttrs
   deriving anyclass (IsAsset)
@@ -36,6 +35,6 @@ instance HasAbilities DeathXIII1 where
 instance RunMessage DeathXIII1 where
   runMessage msg a@(DeathXIII1 attrs) = case msg of
     InHand _ (UseCardAbility iid (isSource attrs -> True) 1 _ _) -> do
-      push (PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid))
+      push $ putCardIntoPlay iid attrs
       pure a
     _ -> DeathXIII1 <$> runMessage msg attrs

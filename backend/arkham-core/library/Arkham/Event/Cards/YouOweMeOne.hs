@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Investigator.Types (Field (InvestigatorHand))
@@ -50,7 +51,7 @@ instance RunMessage YouOweMeOne where
                   (toCardId card)
                   [ RemoveCardFromHand iid' (toCardId card)
                   , AddToHand iid [card]
-                  , InitiatePlayCard iid card Nothing (defaultWindows iid) False
+                  , InitiatePlayCard iid card Nothing NoPayment (defaultWindows iid) False
                   , drawing1
                   , drawing2
                   ]

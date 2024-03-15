@@ -1,9 +1,4 @@
-module Arkham.Scenario.Scenarios.DarkSideOfTheMoon (
-  DarkSideOfTheMoon (..),
-  darkSideOfTheMoon,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.DarkSideOfTheMoon (DarkSideOfTheMoon (..), darkSideOfTheMoon) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
@@ -17,13 +12,17 @@ import Arkham.DamageEffect
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Exception
 import Arkham.Helpers.Campaign (getCampaignStoryCard)
 import Arkham.Helpers.Log (whenHasRecord)
+import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
+import Arkham.Prelude
+import Arkham.Resolution
 import Arkham.Scenario.Runner hiding (assignEnemyDamage, story)
 import Arkham.Scenario.Setup
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
@@ -154,5 +153,25 @@ instance RunMessage DarkSideOfTheMoon where
           EnemyTarget eid <- MaybeT getSkillTestTarget
           lift (assignEnemyDamage (nonAttack ElderThingEffect 2) eid)
         _ -> pure ()
+      pure s
+    ScenarioResolution r -> do
+      case r of
+        NoResolution -> do
+          lead <- getLead
+          story $ i18n "dreamEaters.darkSideOfTheMoon.noResolution"
+          record TheInvestigatorsWereCarriedToTheColdWastes
+          record RandolphCarterDidNotSurviveTheVoyage
+          removeCampaignCard Assets.randolphCarterExpertDreamer
+          forceAddCampaignCardToDeckChoice [lead] Treacheries.falseAwakening
+          allGainXp attrs
+          endOfScenario
+        Resolution 1 -> do
+          story $ i18n "dreamEaters.darkSideOfTheMoon.resolution1"
+          record TheInvestigatorsTraveledToTheColdWastes
+          record RandolphSurvivedTheVoyage
+          allGainXp attrs
+          push $ IncrementRecordCount EvidenceOfKadath 3
+          endOfScenario
+        other -> throw $ UnknownResolution other
       pure s
     _ -> DarkSideOfTheMoon <$> lift (runMessage msg attrs)

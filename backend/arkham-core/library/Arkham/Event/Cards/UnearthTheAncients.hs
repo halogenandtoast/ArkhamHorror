@@ -53,9 +53,7 @@ instance RunMessage UnearthTheAncients where
       case chosenCard metadata of
         Just card -> do
           drawing <- drawCards iid attrs 1
-          pushAll
-            $ PutCardIntoPlay iid card Nothing (defaultWindows iid)
-            : [drawing | Relic `member` toTraits card]
+          pushAll $ putCardIntoPlay iid card : [drawing | Relic `member` toTraits card]
         Nothing -> error "this should not happen"
       pure e
     _ -> UnearthTheAncients . (`with` metadata) <$> runMessage msg attrs

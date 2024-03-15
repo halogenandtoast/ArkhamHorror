@@ -78,7 +78,7 @@ instance RunMessage TonyMorgan where
       push
         $ AskPlayer
         $ chooseOne player
-        $ [ targetLabel (toCardId c) [InitiatePlayCard iid c Nothing windows' False]
+        $ [ targetLabel (toCardId c) [InitiatePlayCard iid c Nothing NoPayment windows' False]
           | canPlay
           , c <- playableCards
           ]

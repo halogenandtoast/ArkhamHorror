@@ -47,6 +47,6 @@ instance RunMessage TheFool03 where
       push $ costModifier (toAbilitySource attrs 1) iid (ReduceCostOf (CardWithId $ toCardId card) 1)
       pure a
     InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
-      push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
+      push $ putCardIntoPlay iid attrs
       pure a
     _ -> TheFool03 <$> runMessage msg attrs

@@ -91,6 +91,7 @@ instance RunMessage ReturnToTheDevourerBelow where
       name <- field LocationName lid
       when (name == "Ritual Site") $ do
         vaultOfEarthlyDemise <- genCard Treacheries.vaultOfEarthlyDemise
-        push $ AttachStoryTreacheryTo vaultOfEarthlyDemise (toTarget $ enemyCreationEnemyId creation)
+        tid <- getRandom
+        push $ AttachStoryTreacheryTo tid vaultOfEarthlyDemise (toTarget $ enemyCreationEnemyId creation)
       pure s
     _ -> ReturnToTheDevourerBelow <$> lift (runMessage msg theDevourerBelow')

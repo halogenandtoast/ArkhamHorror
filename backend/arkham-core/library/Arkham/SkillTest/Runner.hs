@@ -377,7 +377,7 @@ instance RunMessage SkillTest where
       pure $ s & committedCardsL %~ map (filter (/= card))
     PutCardOnTopOfDeck _ _ card -> do
       pure $ s & committedCardsL %~ map (filter (/= card))
-    PutCardIntoPlay _ card _ _ -> do
+    PutCardIntoPlay _ card _ _ _ -> do
       pure $ s & committedCardsL %~ map (filter (/= card))
     CardEnteredPlay _ card -> do
       pure $ s & committedCardsL %~ map (filter (/= card))

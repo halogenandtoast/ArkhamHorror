@@ -11,6 +11,7 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue qualified as Queue
 import Arkham.Classes.Query
+import Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Deck
 import Arkham.Draw.Types
@@ -31,7 +32,6 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
 import Arkham.Window (Window (..), WindowType, defaultWindows, mkAfter, mkWindow)
 import Arkham.Window qualified as Window
-import Arkham.Zone
 
 drawCards
   :: (MonadRandom m, Sourceable source)
@@ -359,7 +359,7 @@ placeLabeledLocations lbl cards = fmap fold
     pure [([location], [placement, SetLocationLabel location (lbl <> tshow idx)])]
 
 putCardIntoPlay :: IsCard card => InvestigatorId -> card -> Message
-putCardIntoPlay iid (toCard -> card) = PutCardIntoPlay iid card Nothing (defaultWindows iid)
+putCardIntoPlay iid (toCard -> card) = PutCardIntoPlay iid card Nothing NoPayment (defaultWindows iid)
 
 placeLabeledLocation :: (MonadRandom m, HasGame m) => Text -> Card -> m (LocationId, Message)
 placeLabeledLocation lbl card = do

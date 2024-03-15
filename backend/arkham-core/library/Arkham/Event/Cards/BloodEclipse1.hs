@@ -20,7 +20,7 @@ bloodEclipse1 = event BloodEclipse1 Cards.bloodEclipse1
 
 instance RunMessage BloodEclipse1 where
   runMessage msg e@(BloodEclipse1 attrs) = case msg of
-    PaidForCardCost iid card _ | toCardId card == toCardId attrs -> do
+    PlayThisEvent iid eid | attrs `is` eid -> do
       pushAll
         [ skillTestModifiers attrs iid [DamageDealt 2, SkillModifier #willpower 2]
         , chooseFightEnemy iid attrs #willpower

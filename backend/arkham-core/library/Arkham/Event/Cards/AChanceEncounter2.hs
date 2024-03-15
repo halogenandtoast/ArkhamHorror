@@ -25,8 +25,8 @@ aChanceEncounter2 = event AChanceEncounter2 Cards.aChanceEncounter2
 
 instance RunMessage AChanceEncounter2 where
   runMessage msg e@(AChanceEncounter2 attrs) = case msg of
-    PaidForCardCost iid card payment | toCardId card == toCardId attrs -> do
-      let resources = totalResourcePayment payment
+    PlayThisEvent iid eid | attrs `is` eid -> do
+      let resources = totalResourcePayment attrs.payment
       investigatorIds <-
         filterM
           ( fmap (notElem CardsCannotLeaveYourDiscardPile)
@@ -62,7 +62,7 @@ instance RunMessage AChanceEncounter2 where
             player
             [ targetLabel
               (toCardId card')
-              [ PutCardIntoPlay iid card Nothing (defaultWindows iid)
+              [ PutCardIntoPlay iid card' Nothing NoPayment (defaultWindows iid)
               , RemoveFromDiscard iid (toCardId card')
               ]
             | card' <- filteredDiscards

@@ -15,6 +15,7 @@ import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Cost
 import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
@@ -233,6 +234,7 @@ instance RunMessage UndimensionedAndUnseen where
                     iid
                     (PlayerCard card)
                     Nothing
+                    NoPayment
                     (defaultWindows iid)
                 ]
             , Label "Do no play Powder of Ibn-Ghazi" []

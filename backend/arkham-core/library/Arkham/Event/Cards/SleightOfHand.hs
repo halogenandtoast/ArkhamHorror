@@ -2,6 +2,7 @@ module Arkham.Event.Cards.SleightOfHand (sleightOfHand, sleightOfHandEffect, Sle
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Cost
 import Arkham.Cost.Status qualified as Cost
 import Arkham.Effect.Runner
 import Arkham.Event.Cards qualified as Cards
@@ -26,7 +27,7 @@ instance RunMessage SleightOfHand where
           player
           [ targetLabel
             (toCardId card)
-            [ PutCardIntoPlay iid card (Just $ toTarget attrs) windows'
+            [ PutCardIntoPlay iid card (Just $ toTarget attrs) NoPayment windows'
             , createCardEffect Cards.sleightOfHand Nothing attrs card
             ]
           | card <- cards

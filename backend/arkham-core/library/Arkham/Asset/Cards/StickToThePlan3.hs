@@ -63,7 +63,7 @@ instance RunMessage StickToThePlan3 where
               | card <- tacticsAndSupplies
               ]
       pure a
-    InitiatePlayCard iid card _ _ _ | controlledBy attrs iid && card `elem` assetCardsUnderneath attrs -> do
+    InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `elem` assetCardsUnderneath attrs -> do
       let remaining = deleteFirstMatch (== card) $ assetCardsUnderneath attrs
       pushAll
         [ costModifier attrs (toCardId card) (AdditionalCost $ ExhaustCost $ toTarget attrs)

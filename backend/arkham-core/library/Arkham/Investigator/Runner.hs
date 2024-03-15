@@ -79,6 +79,7 @@ import Arkham.Skill.Types (Field (..))
 import Arkham.SkillTest
 import Arkham.Token
 import Arkham.Token qualified as Token
+import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
@@ -221,7 +222,9 @@ runWindow attrs windows actions playableCards = do
         skippable <- getAllAbilitiesSkippable attrs windows
         push
           $ chooseOne player
-          $ [ targetLabel (toCardId c) [InitiatePlayCard iid c Nothing windows True, RunWindow iid windows]
+          $ [ targetLabel
+              (toCardId c)
+              [InitiatePlayCard iid c Nothing NoPayment windows True, RunWindow iid windows]
             | c <- playableCards
             ]
           <> map
@@ -274,6 +277,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       investigatorId
                       (toCard card)
                       Nothing
+                      NoPayment
                       (Window.defaultWindows investigatorId)
                       : msgs
                   , Deck (before <> rest)
@@ -285,6 +289,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       investigatorId
                       card
                       Nothing
+                      NoPayment
                       (Window.defaultWindows investigatorId)
                       : msgs
                   , currentDeck
@@ -293,7 +298,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         ([], investigatorDeck)
         investigatorStartsWith
     let (permanentCards, deck'') = partition (cdPermanent . toCardDef) (unDeck deck')
-    let deck''' = filter ((`notElem` investigatorStartsWithInHand) . toCardDef) deck''
+    let deck''' =
+          filter
+            ( or
+                . sequence
+                  [ (`notElem` investigatorStartsWithInHand) . toCardDef
+                  , not . (`cardMatch` Treacheries.falseAwakening)
+                  ]
+            )
+            deck''
 
     let bonded = nub $ concatMap (cdBondedWith . toCardDef) (unDeck investigatorDeck)
 
@@ -306,7 +319,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
     pushAll
       $ startsWithMsgs
-      <> [ PutCardIntoPlay investigatorId (PlayerCard card) Nothing (Window.defaultWindows investigatorId)
+      <> [ PutCardIntoPlay
+          investigatorId
+          (PlayerCard card)
+          Nothing
+          NoPayment
+          (Window.defaultWindows investigatorId)
          | card <- permanentCards
          ]
       <> [TakeStartingResources investigatorId]
@@ -557,7 +575,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   TakeControlOfAsset iid aid | iid /= investigatorId -> do
     pure $ a & (slotsL %~ removeFromSlots aid)
   ChooseAndDiscardAsset iid source assetMatcher | iid == investigatorId -> do
-    discardableAssetIds <- select $ assetMatcher <> DiscardableAsset <> assetControlledBy iid
+    discardableAssetIds <- select $ assetControlledBy iid <> DiscardableAsset <> assetMatcher
     player <- getPlayer iid
     push
       $ chooseOrRunOne player
@@ -1425,7 +1443,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveAllCluesTo source target | not (isTarget a target) -> do
     when (investigatorClues a > 0) (push $ PlaceTokens source target Clue $ investigatorClues a)
     pure $ a & tokensL %~ removeAllTokens Clue
-  InitiatePlayCardAsChoose iid card choices msgs chosenCardStrategy windows' asAction | iid == toId a -> do
+  InitiatePlayCardAsChoose iid card choices msgs chosenCardStrategy payment windows' asAction | iid == toId a -> do
     event <- selectJust $ EventWithCardId $ toCardId card
     player <- getPlayer iid
     push
@@ -1433,12 +1451,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ [ targetLabel
           (toCardId choice)
           [ ReturnToHand iid (toTarget event)
-          , InitiatePlayCardAs iid card choice msgs chosenCardStrategy windows' asAction
+          , InitiatePlayCardAs iid card choice msgs chosenCardStrategy payment windows' asAction
           ]
         | choice <- choices
         ]
     pure a
-  InitiatePlayCardAs iid card choice msgs chosenCardStrategy windows' asAction | iid == toId a -> do
+  InitiatePlayCardAs iid card choice msgs chosenCardStrategy payment windows' asAction | iid == toId a -> do
     let
       choiceDef = toCardDef choice
       choiceAsCard =
@@ -1452,27 +1470,26 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pushAll
       $ chosenCardMsgs
       <> msgs
-      <> [InitiatePlayCard iid (PlayerCard choiceAsCard) Nothing windows' asAction]
+      <> [InitiatePlayCard iid (PlayerCard choiceAsCard) Nothing payment windows' asAction]
     pure $ a & handL %~ (PlayerCard choiceAsCard :) . filter (/= card)
-  InitiatePlayCard iid card mtarget windows' asAction | iid == investigatorId ->
-    do
-      -- we need to check if the card is first an AsIfInHand card, if it is, then we let the owning entity handle this message
-      modifiers' <- getModifiers (toTarget a)
-      let
-        shouldSkip = flip any modifiers' $ \case
-          AsIfInHand card' -> card == card'
-          _ -> False
-      unless shouldSkip $ do
-        afterPlayCard <- checkWindows [mkAfter (Window.PlayCard iid card)]
-        if cdSkipPlayWindows (toCardDef card)
-          then push $ PlayCard iid card mtarget windows' asAction
-          else
-            pushAll
-              [ CheckWindow [iid] [mkWhen (Window.PlayCard iid card)]
-              , PlayCard iid card mtarget windows' asAction
-              , afterPlayCard
-              ]
-      pure a
+  InitiatePlayCard iid card mtarget payment windows' asAction | iid == investigatorId -> do
+    -- we need to check if the card is first an AsIfInHand card, if it is, then we let the owning entity handle this message
+    modifiers' <- getModifiers (toTarget a)
+    let
+      shouldSkip = flip any modifiers' $ \case
+        AsIfInHand card' -> card == card'
+        _ -> False
+    unless shouldSkip $ do
+      afterPlayCard <- checkWindows [mkAfter (Window.PlayCard iid card)]
+      if cdSkipPlayWindows (toCardDef card)
+        then push $ PlayCard iid card mtarget payment windows' asAction
+        else
+          pushAll
+            [ CheckWindow [iid] [mkWhen (Window.PlayCard iid card)]
+            , PlayCard iid card mtarget payment windows' asAction
+            , afterPlayCard
+            ]
+    pure a
   CardEnteredPlay iid card | iid == investigatorId -> do
     send $ format a <> " played " <> format card
     pure
@@ -1490,7 +1507,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let mcard = find ((== cardDef) . toCardDef) (unDeck investigatorDeck)
     case mcard of
       Nothing -> error "did not have campaign card"
-      Just card -> push $ PutCardIntoPlay iid (PlayerCard card) Nothing []
+      Just card -> push $ PutCardIntoPlay iid (PlayerCard card) Nothing NoPayment []
     pure a
   InvestigatorPlayAsset iid aid | iid == investigatorId -> do
     -- It might seem weird that we remove the asset from the slots here since
@@ -1584,7 +1601,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (deckL %~ Deck . filter ((/= cardCode) . toCardCode) . unDeck)
       & (discardL %~ filter ((/= cardCode) . toCardCode))
       & (handL %~ filter ((/= cardCode) . toCardCode))
-  PutCardIntoPlay _ card _ _ -> do
+  PutCardIntoPlay _ card _ _ _ -> do
     pure
       $ a
       & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
@@ -2884,7 +2901,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 pure (zone, cards')
               let
                 choices =
-                  [ targetLabel (toCardId card) [addToHand who card, PutCardIntoPlay iid card Nothing windows']
+                  [ targetLabel
+                    (toCardId card)
+                    [addToHand who card, PutCardIntoPlay iid card Nothing NoPayment windows']
                   | (_, cards) <- playableCards
                   , card <- cards
                   ]
@@ -3097,7 +3116,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              , canDraw
              , none (`elem` modifiers) [CannotDrawCards, CannotManipulateDeck]
              ]
-          <> [ targetLabel (toCardId c) [InitiatePlayCard iid c Nothing windows usesAction]
+          <> [ targetLabel (toCardId c) [InitiatePlayCard iid c Nothing NoPayment windows usesAction]
              | canPlay
              , c <- playableCards
              ]
@@ -3115,7 +3134,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         usesAction = not isAdditional
         choices =
           additionalActions
-            <> [ targetLabel (toCardId c) [InitiatePlayCard investigatorId c Nothing windows usesAction]
+            <> [ targetLabel (toCardId c) [InitiatePlayCard investigatorId c Nothing NoPayment windows usesAction]
                | c <- playableCards
                ]
             <> map ((\f -> f windows []) . AbilityLabel investigatorId) actions

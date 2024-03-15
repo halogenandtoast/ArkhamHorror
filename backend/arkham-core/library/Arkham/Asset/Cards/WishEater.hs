@@ -55,7 +55,7 @@ instance RunMessage WishEater where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       mEmptyVessel <- listToMaybe <$> searchBonded iid Cards.emptyVessel4
       for_ mEmptyVessel $ \emptyVessel -> do
-        push $ PutCardIntoPlay iid emptyVessel Nothing []
+        push $ PutCardIntoPlay iid emptyVessel Nothing NoPayment []
       push $ PlaceInBonded iid (toCard attrs)
       pure a
     _ -> WishEater <$> runMessage msg attrs

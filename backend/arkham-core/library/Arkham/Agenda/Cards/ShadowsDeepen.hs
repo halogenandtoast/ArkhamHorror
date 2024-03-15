@@ -43,8 +43,9 @@ instance RunMessage ShadowsDeepen where
           shadowSpawned <- genCard Treacheries.shadowSpawned
           case mShadowSpawnedId of
             Just tid -> push $ PlaceResources (toAbilitySource attrs 1) (toTarget tid) 1
-            Nothing ->
-              push $ AttachStoryTreacheryTo shadowSpawned (EnemyTarget eid)
+            Nothing -> do
+              tid <- getRandom
+              push $ AttachStoryTreacheryTo tid shadowSpawned (EnemyTarget eid)
           pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

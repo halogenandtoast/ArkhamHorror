@@ -47,7 +47,7 @@ instance RunMessage Backpack2 where
       player <- getPlayer iid
       push $ chooseOne player [Label "No Cards Found" []]
       pure a
-    InitiatePlayCard iid card _ _ _ | controlledBy attrs iid && card `elem` assetCardsUnderneath attrs -> do
+    InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `elem` assetCardsUnderneath attrs -> do
       let remaining = deleteFirstMatch (== card) $ assetCardsUnderneath attrs
       pushAll $ [toDiscardBy iid attrs attrs | null remaining] <> [addToHand iid card, msg]
       pure $ Backpack2 $ attrs & cardsUnderneathL .~ remaining

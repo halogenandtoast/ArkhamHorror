@@ -40,7 +40,9 @@ instance HasModifiersFor NormanWithers where
 
 instance HasAbilities NormanWithers where
   getAbilities (NormanWithers (a `With` _)) =
-    [ (restrictedAbility a 1)
+    [ restrictedAbility
+        a
+        1
         (Self <> InvestigatorExists (TopCardOfDeckIs WeaknessCard) <> CanManipulateDeck)
         (ForcedAbility AnyWindow)
     ]
@@ -68,13 +70,14 @@ instance RunMessage NormanWithers where
         push
           $ chooseOne player
           $ Label "Do not swap" []
-          : [ targetLabel (toCardId c)
-              $ [drawing, PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)]
+          : [ targetLabel
+              (toCardId c)
+              [drawing, PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)]
             | c <- onlyPlayerCards hand
             ]
       pure nw
     Do BeginRound -> NormanWithers . (`with` Metadata False) <$> runMessage msg a
-    PlayCard iid card _ _ False | iid == toId a ->
+    PlayCard iid card _ _ _ False | iid == toId a ->
       case unDeck (investigatorDeck a) of
         c : _ | toCardId c == toCardId card -> do
           NormanWithers . (`with` Metadata True) <$> runMessage msg a

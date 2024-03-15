@@ -420,7 +420,7 @@ data Message
   | AssetDefeated AssetId
   | -- Attach
     AttachAsset AssetId Target
-  | AttachStoryTreacheryTo Card Target
+  | AttachStoryTreacheryTo TreacheryId Card Target
   | AttackEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
   | BeforeRevealChaosTokens
   | BeforeSkillTest SkillTest
@@ -628,9 +628,17 @@ data Message
   | FinishedUpgradingDecks
   | Flip InvestigatorId Source Target
   | Flipped Source Card
-  | InitiatePlayCardAsChoose InvestigatorId Card [Card] [Message] ChosenCardStrategy [Window] Bool
-  | InitiatePlayCardAs InvestigatorId Card Card [Message] ChosenCardStrategy [Window] Bool
-  | InitiatePlayCard InvestigatorId Card (Maybe Target) [Window] Bool
+  | InitiatePlayCardAsChoose
+      InvestigatorId
+      Card
+      [Card]
+      [Message]
+      ChosenCardStrategy
+      Payment
+      [Window]
+      Bool
+  | InitiatePlayCardAs InvestigatorId Card Card [Message] ChosenCardStrategy Payment [Window] Bool
+  | InitiatePlayCard InvestigatorId Card (Maybe Target) Payment [Window] Bool
   | -- | InitiatePlayFastEvent InvestigatorId CardId (Maybe Target) Bool
     CheckAdditionalActionCosts InvestigatorId Target Action [Message]
   | CheckAllAdditionalCommitCosts
@@ -736,12 +744,12 @@ data Message
   | PlacedLocation Name CardCode LocationId
   | PlacedLocationDirection LocationId Direction LocationId
   | LocationMoved LocationId
-  | PlayCard InvestigatorId Card (Maybe Target) [Window] Bool
+  | PlayCard InvestigatorId Card (Maybe Target) Payment [Window] Bool
   | CardEnteredPlay InvestigatorId Card
   | ResolvedCard InvestigatorId Card
   | PlayerWindow InvestigatorId [UI Message] Bool
   | PutCampaignCardIntoPlay InvestigatorId CardDef
-  | PutCardIntoPlay InvestigatorId Card (Maybe Target) [Window]
+  | PutCardIntoPlay InvestigatorId Card (Maybe Target) Payment [Window]
   | PutCardOnTopOfDeck InvestigatorId DeckSignifier Card
   | PutOnTopOfDeck InvestigatorId DeckSignifier Target
   | PutCardOnBottomOfDeck InvestigatorId DeckSignifier Card

@@ -10,6 +10,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Cost
 import Arkham.Deck qualified as Deck
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
@@ -60,7 +61,7 @@ instance RunMessage Augur where
             $ [ CardLabel
                 (toCardCode card)
                 [ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [augurCard]
-                , PutCardIntoPlay iid (toCard card) Nothing []
+                , PutCardIntoPlay iid (toCard card) Nothing NoPayment []
                 ]
               | card <- catsInDiscard
               ]

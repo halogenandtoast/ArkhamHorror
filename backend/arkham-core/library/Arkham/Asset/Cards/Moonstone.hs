@@ -10,6 +10,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (Discarded)
 import Arkham.Card
+import Arkham.Cost
 import Arkham.Matcher
 
 newtype Moonstone = Moonstone AssetAttrs
@@ -41,6 +42,8 @@ instance RunMessage Moonstone where
   runMessage msg a@(Moonstone attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' _ -> do
       pushAll
-        [PayCardCost iid (toCard attrs) windows', PutCardIntoPlay iid (toCard attrs) Nothing windows']
+        [ PayCardCost iid (toCard attrs) windows'
+        , PutCardIntoPlay iid (toCard attrs) Nothing NoPayment windows'
+        ]
       pure a
     _ -> Moonstone <$> runMessage msg attrs

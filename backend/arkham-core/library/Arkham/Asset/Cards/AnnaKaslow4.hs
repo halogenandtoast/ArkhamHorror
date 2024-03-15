@@ -12,7 +12,6 @@ import Arkham.Card
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Tarot))
-import Arkham.Window (defaultWindows)
 
 newtype AnnaKaslow4 = AnnaKaslow4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -39,7 +38,7 @@ instance HasAbilities AnnaKaslow4 where
 instance RunMessage AnnaKaslow4 where
   runMessage msg a@(AnnaKaslow4 attrs) = case msg of
     InHand _ (UseCardAbility iid (isSource attrs -> True) 1 _ _) -> do
-      push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
+      push $ putCardIntoPlay iid attrs
       pure a
     CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
       pushAll $ replicate 2 (AddSlot iid TarotSlot (slot attrs))

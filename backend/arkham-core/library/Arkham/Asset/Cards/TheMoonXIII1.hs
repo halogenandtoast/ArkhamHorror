@@ -36,6 +36,6 @@ instance HasAbilities TheMoonXIII1 where
 instance RunMessage TheMoonXIII1 where
   runMessage msg a@(TheMoonXIII1 attrs) = case msg of
     InHand _ (UseCardAbility iid (isSource attrs -> True) 1 _ _) -> do
-      push (PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid))
+      push $ putCardIntoPlay iid attrs
       pure a
     _ -> TheMoonXIII1 <$> runMessage msg attrs

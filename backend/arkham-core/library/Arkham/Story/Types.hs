@@ -18,6 +18,7 @@ import Arkham.Source
 import Arkham.Story.Cards
 import Arkham.Target
 import Data.Typeable
+import GHC.Records
 
 class
   ( Typeable a
@@ -51,6 +52,9 @@ data StoryAttrs = StoryAttrs
   , storyRemoveAfterResolution :: Bool
   }
   deriving stock (Show, Eq, Generic)
+
+instance HasField "ability" StoryAttrs (Int -> Source) where
+  getField = toAbilitySource
 
 storyWith
   :: (StoryAttrs -> a)

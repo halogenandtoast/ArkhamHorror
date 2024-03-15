@@ -32,11 +32,11 @@ instance RunMessage AlchemicalTransmutation2 where
       let source = toAbilitySource attrs 1
       pushAll
         [ createCardEffect Cards.alchemicalTransmutation2 Nothing source iid
-        , beginSkillTest iid source attrs #willpower 0
+        , beginSkillTest iid (attrs.ability 1) attrs #willpower 0
         ]
       pure a
-    PassedThisSkillTestBy iid (isSource attrs -> True) (min 4 -> n) -> do
-      push $ TakeResources iid n (toAbilitySource attrs 1) False
+    PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) (min 4 -> n) -> do
+      push $ TakeResources iid n (attrs.ability 1) False
       pure a
     _ -> AlchemicalTransmutation2 <$> runMessage msg attrs
 

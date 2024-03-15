@@ -48,7 +48,7 @@ instance RunMessage CourtOfTheGreatOldOnesANotTooDistantFuture where
       CourtOfTheGreatOldOnesANotTooDistantFuture
         <$> runMessage msg (attrs & labelL .~ "courtOfTheGreatOldOnesANotTooDistantFuture")
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid attrs iid SkillWillpower 3
+      push $ beginSkillTest iid (attrs.ability 1) iid SkillWillpower 3
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push
@@ -58,7 +58,7 @@ instance RunMessage CourtOfTheGreatOldOnesANotTooDistantFuture where
           iid
           [MustTakeAction $ IsAction Action.Investigate]
       pure l
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n -> do
+    FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ n -> do
       push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 n
       pure l
     _ -> CourtOfTheGreatOldOnesANotTooDistantFuture <$> runMessage msg attrs

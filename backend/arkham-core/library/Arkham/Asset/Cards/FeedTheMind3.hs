@@ -31,13 +31,13 @@ instance HasAbilities FeedTheMind3 where
 instance RunMessage FeedTheMind3 where
   runMessage msg a@(FeedTheMind3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid (toAbilitySource attrs 1) iid #intellect 0
+      push $ beginSkillTest iid (attrs.ability 1) iid #intellect 0
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
-      drawing <- drawCards iid (toAbilitySource attrs 1) n
+      drawing <- drawCards iid (attrs.ability 1) n
       pushAll
         [ drawing
-        , HandleTargetChoice iid (toAbilitySource attrs 1) (toTarget attrs)
+        , HandleTargetChoice iid (attrs.ability 1) (toTarget attrs)
         ]
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) _ -> do

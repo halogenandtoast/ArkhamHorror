@@ -45,10 +45,10 @@ instance RunMessage StepsOfYhagharl where
         $ \madnessCard -> push $ InvestigatorDrewEncounterCard iid madnessCard
       StepsOfYhagharl <$> runMessage msg attrs
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ beginSkillTest iid source (InvestigatorTarget iid) SkillWillpower 2
+      push $ beginSkillTest iid (attrs.ability 1) (InvestigatorTarget iid) SkillWillpower 2
       pure l
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
+      | isAbilitySource attrs 1 source -> do
           replaceMessageMatching
             ( \case
                 MoveFrom _ iid' lid' -> iid == iid' && lid' == toId attrs

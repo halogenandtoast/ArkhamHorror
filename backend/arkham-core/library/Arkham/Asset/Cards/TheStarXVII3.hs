@@ -1,17 +1,10 @@
-module Arkham.Asset.Cards.TheStarXVII3 (
-  theStarXvii3,
-  TheStarXVII3 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.TheStarXVII3 (theStarXvii3, TheStarXVII3 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card
 import Arkham.Matcher
-import Arkham.Window (defaultWindows)
+import Arkham.Prelude
 
 newtype TheStarXVII3 = TheStarXVII3 AssetAttrs
   deriving anyclass (IsAsset)

@@ -1,34 +1,21 @@
-module Arkham.Asset.Cards.KnightOfSwords3 (
-  knightOfSwords3,
-  KnightOfSwords3 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.KnightOfSwords3 (knightOfSwords3, KnightOfSwords3 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card
 import Arkham.Matcher
-import Arkham.Window (defaultWindows)
+import Arkham.Prelude
 
 newtype KnightOfSwords3 = KnightOfSwords3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 knightOfSwords3 :: AssetCard KnightOfSwords3
-knightOfSwords3 =
-  asset KnightOfSwords3 Cards.knightOfSwords3
+knightOfSwords3 = asset KnightOfSwords3 Cards.knightOfSwords3
 
 instance HasAbilities KnightOfSwords3 where
   getAbilities (KnightOfSwords3 a) =
-    [ reactionAbility
-        a
-        1
-        Free
-        (WouldHaveSkillTestResult #when You AnySkillTest $ SuccessResult AnyValue)
-        ControlsThis
+    [ reactionAbility a 1 Free (WouldHaveSkillTestResult #when You AnySkillTest #success) ControlsThis
     , restrictedAbility a 2 InYourHand $ freeReaction (GameBegins #when)
     ]
 

@@ -48,14 +48,14 @@ instance RunMessage Entombed where
         testChoice sType =
           SkillLabel
             sType
-            [beginSkillTest iid source iid sType difficulty]
+            [beginSkillTest iid (attrs.ability 1) attrs sType difficulty]
       player <- getPlayer iid
       push $ chooseOne player [testChoice #agility, testChoice #combat]
       pure t
-    PassedThisSkillTest iid (isSource attrs -> True) -> do
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure t
-    FailedThisSkillTest _ (isSource attrs -> True) -> do
+    FailedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       pure
         $ Entombed
         $ attrs

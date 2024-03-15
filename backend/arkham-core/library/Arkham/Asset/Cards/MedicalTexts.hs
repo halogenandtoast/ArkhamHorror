@@ -30,7 +30,7 @@ instance RunMessage MedicalTexts where
       push
         $ chooseOne player
         $ targetLabels investigators
-        $ \iid' -> only $ beginSkillTest iid (toAbilitySource attrs 1) iid' #intellect 2
+        $ \iid' -> only $ beginSkillTest iid (attrs.ability 1) iid' #intellect 2
       pure a
     PassedThisSkillTest who (isAbilitySource attrs 1 -> True) -> do
       mtarget <- getSkillTestTarget

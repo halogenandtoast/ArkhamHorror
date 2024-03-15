@@ -63,7 +63,7 @@ instance RunMessage ParadiseLost where
             skillType
             [ beginSkillTest
                 iid
-                (toSource attrs)
+                (attrs.ability 1)
                 (toTarget attrs)
                 skillType
                 3
@@ -71,7 +71,7 @@ instance RunMessage ParadiseLost where
           | skillType <- [SkillWillpower, SkillIntellect]
           ]
       pure a
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+    PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
       do
         lid <- getJustLocation iid
         card <- field LocationCard lid

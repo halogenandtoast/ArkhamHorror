@@ -72,10 +72,10 @@ instance HasAbilities TheStrangerThePathIsMineEffect where
 
 instance RunMessage TheStrangerThePathIsMineEffect where
   runMessage msg e@(TheStrangerThePathIsMineEffect attrs) = case msg of
-    UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source -> do
-      push $ beginSkillTest iid source iid #agility 4
+    UseCardAbility iid p@(ProxySource _ source) 1 _ _ | isSource attrs source -> do
+      push $ beginSkillTest iid (AbilitySource p 1) attrs #agility 4
       pure e
-    FailedSkillTest _ _ source (Initiator (InvestigatorTarget iid)) _ _ | isSource attrs source -> do
+    FailedSkillTest _ _ source (Initiator (InvestigatorTarget iid)) _ _ | isProxyAbilitySource attrs 1 source -> do
       push $ assignDamageAndHorror iid source 1 1
       pure e
     _ -> TheStrangerThePathIsMineEffect <$> runMessage msg attrs

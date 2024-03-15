@@ -40,7 +40,7 @@ instance HasAbilities HypnoticTherapy where
 instance RunMessage HypnoticTherapy where
   runMessage msg a@(HypnoticTherapy attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid (toAbilitySource attrs 1) iid #intellect 2
+      push $ beginSkillTest iid (attrs.ability 1) iid #intellect 2
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       targetsWithCardDrawAndHeal <- do

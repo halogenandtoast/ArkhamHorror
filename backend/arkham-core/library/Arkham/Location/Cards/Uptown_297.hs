@@ -26,9 +26,9 @@ instance HasAbilities Uptown_297 where
 instance RunMessage Uptown_297 where
   runMessage msg l@(Uptown_297 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid attrs attrs #agility 2
+      push $ beginSkillTest iid (attrs.ability 1) attrs #agility 2
       pure l
-    PassedSkillTest _iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n -> do
+    PassedSkillTest _iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ n -> do
       let n' = min (maybe 0 countBreaches $ locationBreaches attrs) n
       act <- selectJust AnyAct
       pushAll [RemoveBreaches (toTarget attrs) n', PlaceBreaches (toTarget act) n']

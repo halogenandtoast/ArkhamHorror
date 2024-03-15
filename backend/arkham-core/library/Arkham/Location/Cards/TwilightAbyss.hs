@@ -30,11 +30,11 @@ instance RunMessage TwilightAbyss where
     Msg.RevealLocation _ lid | lid == toId attrs -> do
       TwilightAbyss <$> runMessage msg (attrs & labelL .~ "twilightAbyss")
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      let skillTest sType = beginSkillTest iid attrs iid sType 3
+      let skillTest sType = beginSkillTest iid (attrs.ability 1) iid sType 3
       player <- getPlayer iid
       push $ chooseOne player [SkillLabel sType [skillTest sType] | sType <- [#combat, #agility]]
       pure l
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n -> do
+    FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ n -> do
       push $ InvestigatorAssignDamage iid (toAbilitySource attrs 1) DamageAny n 0
       pure l
     _ -> TwilightAbyss <$> runMessage msg attrs

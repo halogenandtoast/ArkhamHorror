@@ -1,9 +1,4 @@
-module Arkham.Event.Cards.UnearthTheAncients (
-  unearthTheAncients,
-  UnearthTheAncients (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.UnearthTheAncients (unearthTheAncients, UnearthTheAncients (..)) where
 
 import Arkham.Action qualified as Action
 import Arkham.Card
@@ -13,8 +8,8 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Investigate
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait
-import Arkham.Window (defaultWindows)
 
 newtype Metadata = Metadata {chosenCard :: Maybe Card}
   deriving stock (Show, Eq, Generic)

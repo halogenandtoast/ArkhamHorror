@@ -32,8 +32,8 @@ instance RunMessage DisruptingTheRitual where
       push
         $ chooseOne
           player
-          [ SkillLabel #willpower [beginSkillTest iid source attrs #willpower 3]
-          , SkillLabel #agility [beginSkillTest iid source attrs #agility 3]
+          [ SkillLabel #willpower [beginSkillTest iid (attrs.ability 1) attrs #willpower 3]
+          , SkillLabel #agility [beginSkillTest iid (attrs.ability 1) attrs #agility 3]
           ]
       pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do

@@ -1,17 +1,10 @@
-module Arkham.Asset.Cards.TheWorldXXI3 (
-  theWorldXxi3,
-  TheWorldXXI3 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.TheWorldXXI3 (theWorldXxi3, TheWorldXXI3 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card
 import Arkham.Matcher
-import Arkham.Window (defaultWindows)
+import Arkham.Prelude
 
 newtype TheWorldXXI3 = TheWorldXXI3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

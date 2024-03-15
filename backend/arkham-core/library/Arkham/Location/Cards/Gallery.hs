@@ -38,13 +38,13 @@ instance RunMessage Gallery where
       push
         $ beginSkillTest
           iid
-          source
+          (attrs.ability 1)
           iid
           SkillWillpower
           2
       pure l
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
+      | isAbilitySource attrs 1 source -> do
           clueCount <- field InvestigatorClues iid
           when (clueCount > 0) $ do
             pushAll [InvestigatorSpendClues iid 1, PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1]

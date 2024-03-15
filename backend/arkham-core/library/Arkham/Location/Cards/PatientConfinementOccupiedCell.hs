@@ -41,7 +41,7 @@ instance RunMessage PatientConfinementOccupiedCell where
       | isSource attrs source ->
           l
             <$ push
-              (beginSkillTest iid source (toTarget attrs) SkillCombat 2)
+              (beginSkillTest iid (attrs.ability 1) (toTarget attrs) SkillCombat 2)
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> l <$ push (Remember ReleasedADangerousPatient)
+      | isAbilitySource attrs 1 source -> l <$ push (Remember ReleasedADangerousPatient)
     _ -> PatientConfinementOccupiedCell <$> runMessage msg attrs

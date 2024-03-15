@@ -1,16 +1,10 @@
-module Arkham.Treachery.Cards.Kidnapped (
-  kidnapped,
-  Kidnapped (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Kidnapped (kidnapped, Kidnapped (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Matcher hiding (PlaceUnderneath)
+import Arkham.Prelude
 import Arkham.Scenario.Deck
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -23,12 +17,7 @@ kidnapped = treachery Kidnapped Cards.kidnapped
 
 instance HasAbilities Kidnapped where
   getAbilities (Kidnapped attrs) = case treacheryAttachedTarget attrs of
-    Just (AgendaTarget aid) ->
-      [ mkAbility attrs 1
-          $ ForcedAbility
-          $ AgendaAdvances Timing.When
-          $ AgendaWithId aid
-      ]
+    Just (AgendaTarget aid) -> [mkAbility attrs 1 $ forced $ AgendaAdvances #when $ AgendaWithId aid]
     _ -> []
 
 instance RunMessage Kidnapped where
@@ -38,42 +27,30 @@ instance RunMessage Kidnapped where
       push
         $ chooseOne
           player
-          [ Label
-              "Test {willpower} (4)"
-              [beginSkillTest iid (toSource attrs) (toTarget attrs) SkillWillpower 4]
-          , Label
-              "Test {agility} (4)"
-              [beginSkillTest iid (toSource attrs) (toTarget attrs) SkillAgility 4]
+          [ Label "Test {willpower} (4)" [revelationSkillTest iid attrs #willpower 4]
+          , Label "Test {agility} (4)" [revelationSkillTest iid attrs #agility 4]
           ]
       pure t
-    FailedSkillTest iid _ _ (SkillTestInitiatorTarget target) _ _ | isTarget attrs target -> do
-      allies <- select (AssetControlledBy You <> AllyAsset)
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      allies <- select $ assetControlledBy iid <> #ally
       if null allies
-        then push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
+        then push $ assignDamage iid attrs 2
         else do
           agendaId <- selectJust AnyAgenda
           player <- getPlayer iid
           pushAll
             [ chooseOne
                 player
-                [ TargetLabel
-                  (AssetTarget aid)
-                  [AddToScenarioDeck PotentialSacrifices (AssetTarget aid)]
+                [ targetLabel aid [AddToScenarioDeck PotentialSacrifices (AssetTarget aid)]
                 | aid <- allies
                 ]
             , AttachTreachery treacheryId (AgendaTarget agendaId)
             ]
       pure t
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push
-        $ DrawRandomFromScenarioDeck
-          iid
-          PotentialSacrifices
-          (toTarget attrs)
-          1
+      push $ DrawRandomFromScenarioDeck iid PotentialSacrifices (toTarget attrs) 1
       pure t
-    DrewFromScenarioDeck _ PotentialSacrifices target cards
-      | isTarget attrs target ->
-          t
-            <$ push (PlaceUnderneath AgendaDeckTarget cards)
+    DrewFromScenarioDeck _ PotentialSacrifices target cards | isTarget attrs target -> do
+      push (PlaceUnderneath AgendaDeckTarget cards)
+      pure t
     _ -> Kidnapped <$> runMessage msg attrs

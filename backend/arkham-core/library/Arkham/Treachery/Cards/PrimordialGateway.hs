@@ -48,11 +48,11 @@ instance RunMessage PrimordialGateway where
       push
         $ chooseOne
           player
-          [ SkillLabel sType [beginSkillTest iid (toSource attrs) (toTarget attrs) sType 4]
+          [ SkillLabel sType [beginSkillTest iid (attrs.ability 1) (toTarget attrs) sType 4]
           | sType <- [#intellect, #willpower]
           ]
       pure t
-    PassedThisSkillTest iid (isSource attrs -> True) -> do
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure t
     _ -> PrimordialGateway <$> runMessage msg attrs

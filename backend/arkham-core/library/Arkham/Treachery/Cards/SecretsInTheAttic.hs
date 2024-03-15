@@ -36,7 +36,7 @@ instance HasAbilities SecretsInTheAttic where
 instance RunMessage SecretsInTheAttic where
   runMessage msg t@(SecretsInTheAttic attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ beginSkillTest iid attrs iid #willpower 3
+      push $ revelationSkillTest iid attrs #willpower 3
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       pushAll

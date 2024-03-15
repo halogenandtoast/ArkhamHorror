@@ -47,16 +47,16 @@ instance HasAbilities MomentOfDoom where
 
 instance RunMessage MomentOfDoom where
   runMessage msg a@(MomentOfDoom attrs) = case msg of
-    UseCardAbility iid (ProxySource _ (isSource attrs -> True)) 1 _ _ -> do
+    UseCardAbility iid p@(ProxySource _ (isSource attrs -> True)) 1 _ _ -> do
       player <- getPlayer iid
       push
         $ chooseOne
           player
-          [ SkillLabel skill [beginSkillTest iid attrs attrs skill 4]
+          [ SkillLabel skill [beginSkillTest iid (AbilitySource p 1) attrs skill 4]
           | skill <- [#willpower, #intellect]
           ]
       pure a
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedSkillTest iid _ (isProxyAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
       mlid <- field InvestigatorLocation iid
       for_ mlid $ \lid -> do
         yig <- selectJust $ enemyIs Enemies.yig

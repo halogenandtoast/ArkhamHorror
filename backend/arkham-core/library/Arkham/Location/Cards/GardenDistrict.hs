@@ -34,7 +34,7 @@ instance RunMessage GardenDistrict where
       | isSource attrs source ->
           l
             <$ push
-              (beginSkillTest iid source (toTarget attrs) SkillAgility 7)
+              (beginSkillTest iid (attrs.ability 1) (toTarget attrs) SkillAgility 7)
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> l <$ push (Remember FoundAStrangeDoll)
+      | isAbilitySource attrs 1 source -> l <$ push (Remember FoundAStrangeDoll)
     _ -> GardenDistrict <$> runMessage msg attrs

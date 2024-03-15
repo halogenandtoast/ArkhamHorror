@@ -41,7 +41,7 @@ instance RunMessage PatientConfinementDrearyCell where
       | isSource attrs source ->
           l
             <$ push
-              (beginSkillTest iid source (toTarget attrs) SkillIntellect 2)
+              (beginSkillTest iid (attrs.ability 1) (toTarget attrs) SkillIntellect 2)
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> l <$ push (Remember KnowTheGuardsPatrols)
+      | isAbilitySource attrs 1 source -> l <$ push (Remember KnowTheGuardsPatrols)
     _ -> PatientConfinementDrearyCell <$> runMessage msg attrs

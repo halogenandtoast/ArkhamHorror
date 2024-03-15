@@ -1,10 +1,4 @@
-module Arkham.Asset.Cards.MoonPendant2 (
-  moonPendant2,
-  MoonPendant2 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.MoonPendant2 (moonPendant2, MoonPendant2 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -13,9 +7,9 @@ import Arkham.Card
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Trait (Trait (Tarot))
-import Arkham.Window (defaultWindows)
 
 newtype MoonPendant2 = MoonPendant2 AssetAttrs
   deriving anyclass (IsAsset)
@@ -26,7 +20,7 @@ moonPendant2 = asset MoonPendant2 Cards.moonPendant2
 
 instance HasModifiersFor MoonPendant2 where
   getModifiersFor (CardIdTarget cid) (MoonPendant2 attrs) | Just iid <- assetController attrs = do
-    mcard <- selectOne $ BasicCardMatch (CardWithId cid) <> InHandOf (InvestigatorWithId iid)
+    mcard <- selectOne $ basic (CardWithId cid) <> inHandOf iid
     committed <- fieldMap InvestigatorCommittedCards (elem cid . map toCardId) iid
 
     if isJust mcard || committed
@@ -38,8 +32,7 @@ instance HasModifiersFor MoonPendant2 where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities MoonPendant2 where
-  getAbilities (MoonPendant2 a) =
-    [restrictedAbility a 1 InYourHand $ freeReaction (GameBegins #when)]
+  getAbilities (MoonPendant2 a) = [restrictedAbility a 1 InYourHand $ freeReaction (GameBegins #when)]
 
 instance RunMessage MoonPendant2 where
   runMessage msg a@(MoonPendant2 attrs) = case msg of

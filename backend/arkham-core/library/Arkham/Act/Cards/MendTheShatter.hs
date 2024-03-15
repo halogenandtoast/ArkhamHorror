@@ -60,11 +60,11 @@ instance RunMessage MendTheShatter where
       push
         $ chooseOne
           player
-          [ SkillLabel skillType [beginSkillTest iid attrs attrs skillType 3]
+          [ SkillLabel skillType [beginSkillTest iid (attrs.ability 1) attrs skillType 3]
           | skillType <- [SkillWillpower, SkillIntellect]
           ]
       pure a
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
+    PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
       do
         lid <- getJustLocation iid
         card <- field LocationCard lid

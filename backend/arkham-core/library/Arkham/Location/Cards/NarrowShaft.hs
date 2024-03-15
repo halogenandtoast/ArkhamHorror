@@ -51,7 +51,7 @@ instance RunMessage NarrowShaft where
         effectMetadata = Just $ EffectMessages (catMaybes [moveFrom, moveTo])
       pushAll
         [ createCardEffect Cards.narrowShaft effectMetadata (attrs.ability 1) target
-        , beginSkillTest iid (toSource attrs) target SkillAgility 3
+        , beginSkillTest iid (attrs.ability 1) target SkillAgility 3
         ]
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
@@ -83,14 +83,14 @@ narrowShaftEffect = cardEffect NarrowShaftEffect Cards.narrowShaft
 
 instance RunMessage NarrowShaftEffect where
   runMessage msg e@(NarrowShaftEffect attrs) = case msg of
-    PassedThisSkillTest _ (LocationSource lid) -> do
+    PassedThisSkillTest _ (AbilitySource (LocationSource lid) 1) -> do
       narrowShaftEffectId <- getJustLocationByName "Narrow Shaft"
       when (lid == narrowShaftEffectId)
         $ case effectMetadata attrs of
           Just (EffectMessages msgs) -> pushAll (msgs <> [disable attrs])
           _ -> push $ disable attrs
       pure e
-    FailedThisSkillTest iid (LocationSource lid) -> do
+    FailedThisSkillTest iid (AbilitySource (LocationSource lid) 1) -> do
       narrowShaftEffectId <- getJustLocationByName "Narrow Shaft"
       when (lid == narrowShaftEffectId)
         $ pushAll [assignDamage iid narrowShaftEffectId 1, disable attrs]

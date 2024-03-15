@@ -1,17 +1,11 @@
-module Arkham.Asset.Cards.TheNecronomiconAdvanced (
-  TheNecronomiconAdvanced (..),
-  theNecronomiconAdvanced,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.TheNecronomiconAdvanced (TheNecronomiconAdvanced (..), theNecronomiconAdvanced) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card
 import Arkham.ChaosToken qualified as Token
+import Arkham.Prelude
 import Arkham.Token
-import Arkham.Window (defaultWindows)
 
 newtype TheNecronomiconAdvanced = TheNecronomiconAdvanced AssetAttrs
   deriving anyclass (IsAsset)
@@ -50,8 +44,5 @@ instance RunMessage TheNecronomiconAdvanced where
         then do
           push $ toDiscardBy iid source attrs
           pure a
-        else
-          pure
-            $ TheNecronomiconAdvanced
-              (attrs & tokensL %~ decrementTokens Horror)
+        else pure $ TheNecronomiconAdvanced (attrs & tokensL %~ decrementTokens Horror)
     _ -> TheNecronomiconAdvanced <$> runMessage msg attrs

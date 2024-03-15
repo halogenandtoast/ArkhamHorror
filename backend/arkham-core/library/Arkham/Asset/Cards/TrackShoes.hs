@@ -38,9 +38,9 @@ instance HasAbilities TrackShoes where
 instance RunMessage TrackShoes where
   runMessage msg a@(TrackShoes attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ beginSkillTest iid source (InvestigatorTarget iid) SkillAgility 3
+      push $ beginSkillTest iid (attrs.ability 1) (InvestigatorTarget iid) SkillAgility 3
       pure a
-    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isAbilitySource attrs 1 source -> do
       accessibleLocationIds <- getAccessibleLocations iid (attrs.ability 1)
       player <- getPlayer iid
       push

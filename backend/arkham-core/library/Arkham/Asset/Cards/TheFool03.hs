@@ -1,10 +1,4 @@
-module Arkham.Asset.Cards.TheFool03 (
-  theFool03,
-  TheFool03 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.TheFool03 (theFool03, TheFool03 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -12,7 +6,8 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Window (Window, defaultWindows, windowType)
+import Arkham.Prelude
+import Arkham.Window (Window, windowType)
 import Arkham.Window qualified as Window
 
 newtype TheFool03 = TheFool03 AssetAttrs
@@ -24,7 +19,7 @@ theFool03 = asset TheFool03 Cards.theFool03
 
 instance HasModifiersFor TheFool03 where
   getModifiersFor (InvestigatorTarget iid) (TheFool03 a) | controlledBy a iid && not (assetExhausted a) = do
-    pure $ toModifiers a $ [CanReduceCostOf AnyCard 1]
+    pure $ toModifiers a [CanReduceCostOf AnyCard 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheFool03 where

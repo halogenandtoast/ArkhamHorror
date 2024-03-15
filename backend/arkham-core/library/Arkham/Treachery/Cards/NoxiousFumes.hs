@@ -32,7 +32,7 @@ instance RunMessage NoxiousFumes where
       pushAll
         [ chooseOne
           player
-          [ SkillLabel skill [beginSkillTest investigator (toSource attrs) investigator skill 3]
+          [ SkillLabel skill [revelationSkillTest investigator attrs skill 3]
           | skill <- [#agility, #combat]
           ]
         | (investigator, player) <- investigatorPlayers

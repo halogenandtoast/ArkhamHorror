@@ -30,7 +30,7 @@ instance RunMessage MorbidAwareness where
       l2 <- getJustLocationByName "Room 212"
       mdistance <- getDistance l1 l2
       let n = 6 - maybe 0 unDistance mdistance
-      push $ beginSkillTest iid (toSource attrs) iid #willpower n
+      push $ revelationSkillTest iid attrs #willpower n
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       hasClues <- fieldMap InvestigatorClues (> 0) iid

@@ -45,11 +45,11 @@ instance RunMessage Kitchen where
             <$ push
               ( beginSkillTest
                   iid
-                  source
+                  (attrs.ability 1)
                   (toTarget attrs)
                   SkillWillpower
                   2
               )
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> l <$ push (Remember SetAFireInTheKitchen)
+      | isAbilitySource attrs 1 source -> l <$ push (Remember SetAFireInTheKitchen)
     _ -> Kitchen <$> runMessage msg attrs

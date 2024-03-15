@@ -77,7 +77,7 @@ drawCards i n = do
   run drawing
 
 playCard :: Investigator -> Card -> TestAppT ()
-playCard i c = run $ InitiatePlayCard (toId i) c Nothing (defaultWindows $ toId i) True
+playCard i c = run $ InitiatePlayCard (toId i) c Nothing NoPayment (defaultWindows $ toId i) True
 
 addToHand :: IsCard a => Investigator -> a -> TestAppT ()
 addToHand i (toCard -> c) = run $ AddToHand (toId i) [c]

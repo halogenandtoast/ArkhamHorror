@@ -7,6 +7,7 @@ import Arkham.Asset.Types
 import Arkham.Attack qualified as Attack
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Cost
 import Arkham.Enemy.Types
 import Arkham.Event.Types
 import Arkham.Helpers
@@ -22,7 +23,6 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Window (defaultWindows)
-import Arkham.Zone
 
 playEvent :: Investigator -> Event -> Message
 playEvent i e = Run [InvestigatorPlayEvent (toId i) (toId e) Nothing [] FromHand, FinishedEvent (toId e)]
@@ -65,7 +65,7 @@ placedLocation :: Location -> Message
 placedLocation l = PlacedLocation (toName l) (toCardCode l) (toId l)
 
 playCard :: Investigator -> Card -> Message
-playCard i c = InitiatePlayCard (toId i) c Nothing (defaultWindows $ toId i) True
+playCard i c = InitiatePlayCard (toId i) c Nothing NoPayment (defaultWindows $ toId i) True
 
 investigate :: Investigator -> Location -> Message
 investigate i l =
@@ -94,4 +94,10 @@ beginActionSkillTest i a mt sType n =
 
 playAssetCard :: PlayerCard -> Investigator -> Message
 playAssetCard card (toId -> iid) =
-  InitiatePlayCard iid (PlayerCard $ card {pcOwner = Just iid}) Nothing (defaultWindows iid) True
+  InitiatePlayCard
+    iid
+    (PlayerCard $ card {pcOwner = Just iid})
+    Nothing
+    NoPayment
+    (defaultWindows iid)
+    True

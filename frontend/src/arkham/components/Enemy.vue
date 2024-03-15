@@ -150,12 +150,13 @@ watch(abilities, (abilities) => {
       <Story v-if="enemyStory" :story="enemyStory" :game="game" :playerId="playerId" @choose="choose"/>
       <template v-else>
         <div class="card-frame">
-          <img :src="image"
-            :class="{'enemy--can-interact': canInteract, exhausted: isExhausted }"
-            class="card enemy"
-            :data-id="id"
-            @click="clicked"
-          />
+          <div class="card-wrapper" :class="{ 'enemy--can-interact': canInteract, exhausted: isExhausted}">
+            <img :src="image"
+              class="card enemy"
+              :data-id="id"
+              @click="clicked"
+            />
+          </div>
 
           <div class="pool">
             <div class="keys" v-if="keys.length > 0">
@@ -233,7 +234,7 @@ watch(abilities, (abilities) => {
 
 .enemy--can-interact {
   border: 3px solid $select;
-  border-radius: 15px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
@@ -267,9 +268,9 @@ watch(abilities, (abilities) => {
 
 .exhausted {
   transform: rotate(90deg);
-  margin-left: 13px;
+  margin-left: 2px;
   margin-bottom: -10px;
-  height: 80px;
+  height: fit-content;
   width: auto;
 }
 

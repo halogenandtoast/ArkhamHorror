@@ -1029,6 +1029,7 @@ uiToRun = \case
   ChaosTokenGroupChoice source iid step -> Run [ChooseChaosTokenGroups source iid step]
   EffectActionButton _ _ msgs -> Run msgs
   Done _ -> Run []
+  SkipTriggersButton _ -> Run []
 
 chooseOrRunOne :: PlayerId -> [UI Message] -> Message
 chooseOrRunOne _ [x] = uiToRun x

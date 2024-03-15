@@ -125,6 +125,11 @@ const endTurnAction = computed(() => {
     .findIndex((c) => c.tag === MessageType.END_TURN_BUTTON && c.investigatorId === id.value);
 })
 
+const skipTriggersAction = computed(() => {
+  return props.choices
+    .findIndex((c) => c.tag === MessageType.SKIP_TRIGGERS_BUTTON && c.investigatorId === id.value);
+})
+
 const image = computed(() => {
   if (props.investigator.isYithian) {
     return imgsrc("cards/04244.jpg");
@@ -251,6 +256,12 @@ const alarmLevel = computed(() => props.investigator.tokens[TokenType.AlarmLevel
           :disabled="endTurnAction == -1"
           @click="$emit('choose', endTurnAction)"
         >End turn</button>
+
+        <button
+          :disabled="skipTriggersAction == -1"
+          @click="$emit('choose', skipTriggersAction)"
+          class="skip-triggers-button"
+        >Skip Triggers</button>
 
         <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
       </div>
@@ -528,6 +539,7 @@ i.action {
 .player-buttons {
   margin-left: 10px;
   display: flex;
+  gap: 2px;
   flex-direction: column;
 
   @media (prefers-color-scheme: light) {
@@ -537,5 +549,22 @@ i.action {
 
 .plus-button {
   margin-right: 10px;
+}
+
+.skip-triggers-button {
+  transition: all 0.2s ease-in;
+  background-color: $select;
+  color: white;
+  border: 0;
+  border-radius: 2px;
+
+  &[disabled] {
+    background-color: #999;
+    color: #666;
+  }
+
+  &:not([disabled]):hover {
+    background-color: darken($select, 17%);
+  }
 }
 </style>

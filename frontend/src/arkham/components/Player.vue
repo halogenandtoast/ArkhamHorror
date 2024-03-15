@@ -570,10 +570,10 @@ function onLeave(el: Element, done: () => void) {
     background: #1C1C1C;
   }
 
-  & :deep(.asset) {
+  & :deep(div.asset) {
     margin-right: 5px;
   }
-  & :deep(.enemy) {
+  & :deep(div.enemy) {
     margin-right: 5px;
   }
 }

@@ -888,7 +888,7 @@ instance RunMessage ActiveCost where
           let iid = c.investigator
           let actions = [#play | isPlayAction == IsPlayAction] <> card.actions
           pushAll
-            $ [PlayCard iid card Nothing c.windows False, PaidForCardCost iid card c.payments]
+            $ [PlayCard iid card Nothing c.payments c.windows False]
             <> [SealedChaosToken token card | token <- c.sealedChaosTokens]
             <> [FinishAction | notNull actions]
             <> [TakenActions iid actions | notNull actions]

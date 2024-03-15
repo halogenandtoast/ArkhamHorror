@@ -1,17 +1,11 @@
-module Arkham.Event.Cards.OccultInvocation (
-  occultInvocation,
-  OccultInvocation (..),
-) where
+module Arkham.Event.Cards.OccultInvocation (occultInvocation, OccultInvocation (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
-import Arkham.SkillType
+import Arkham.Prelude
 
 newtype OccultInvocation = OccultInvocation EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -28,19 +22,11 @@ countCards = \case
 
 instance RunMessage OccultInvocation where
   runMessage msg e@(OccultInvocation attrs) = case msg of
-    PaidForCardCost iid card (countCards -> n) | toCardId card == toCardId attrs -> do
+    PlayThisEvent iid eid | attrs `is` eid -> do
+      let n = countCards attrs.payment
       pushAll
-        [ skillTestModifiers
-            (toSource attrs)
-            (InvestigatorTarget iid)
-            [DamageDealt n, SkillModifier SkillIntellect n]
-        , ChooseFightEnemy
-            iid
-            (toSource attrs)
-            Nothing
-            SkillIntellect
-            mempty
-            False
+        [ skillTestModifiers attrs iid [DamageDealt n, SkillModifier #intellect n]
+        , chooseFightEnemy iid (toSource attrs) #intellect
         ]
       pure e
     _ -> OccultInvocation <$> runMessage msg attrs

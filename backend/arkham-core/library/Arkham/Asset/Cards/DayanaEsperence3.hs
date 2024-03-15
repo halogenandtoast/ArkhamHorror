@@ -61,14 +61,14 @@ instance RunMessage DayanaEsperence3 where
           | c <- cards
           ]
       pure a
-    InitiatePlayCard iid card mTarget windows' asAction | card `elem` assetCardsUnderneath attrs -> do
+    InitiatePlayCard iid card mTarget payment windows' asAction | card `elem` assetCardsUnderneath attrs -> do
       afterPlayCard <- checkWindows [mkAfter (Window.PlayCard iid card)]
       if cdSkipPlayWindows (toCardDef card)
-        then push $ PlayCard iid card mTarget windows' asAction
+        then push $ PlayCard iid card mTarget payment windows' asAction
         else
           pushAll
             [ CheckWindow [iid] [mkWhen (Window.PlayCard iid card)]
-            , PlayCard iid card mTarget windows' asAction
+            , PlayCard iid card mTarget payment windows' asAction
             , afterPlayCard
             ]
       pure a

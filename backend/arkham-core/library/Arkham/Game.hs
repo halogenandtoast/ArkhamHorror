@@ -1896,6 +1896,9 @@ getAssetsMatching matcher = do
         isSanityDamageable a =
           fieldP AssetRemainingSanity (maybe False (> 0)) (toId a)
       filterM isSanityDamageable assets
+    AssetWithHighestPrintedCost matcher' -> do
+      matches' <- getAssetsMatching matcher'
+      maxes <$> forToSnd matches' (field AssetCost . toId)
     AssetWithDifferentTitleFromAtLeastOneCardInHand who extendedCardMatcher assetMatcher ->
       do
         iids <- select who

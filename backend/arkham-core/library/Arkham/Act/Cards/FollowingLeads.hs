@@ -220,6 +220,7 @@ instance RunMessage FollowingLeads where
               room212 <- getJustLocationByName "Room 212"
               harvestedBrain <- getSetAsideCard Treacheries.harvestedBrain
               x <- getPlayerCount
+              tid <- getRandom
               pushAll
                 $ [ SetCurrentAgendaDeck 1 [agenda]
                   , ShuffleCardsIntoDeck Deck.EncounterDeck staff
@@ -233,17 +234,18 @@ instance RunMessage FollowingLeads where
                     $ CardWithTrait Staff
                    | x >= 3
                    ]
-                <> [AttachStoryTreacheryTo harvestedBrain (toTarget room212)]
+                <> [AttachStoryTreacheryTo tid harvestedBrain (toTarget room212)]
             (_, _, Just sinisterSolution, _, Just tomeOfRituals) -> do
               agenda <- genCard Agendas.theTrueCulpritV9
               room212 <- getJustLocationByName "Room 212"
               clues <- field AssetClues sinisterSolution
               harvestedBrain <- getSetAsideCard Treacheries.harvestedBrain
+              tid <- getRandom
               pushAll
                 [ SetCurrentAgendaDeck 1 [agenda]
                 , RemoveClues (toSource attrs) (toTarget sinisterSolution) clues
                 , PlaceClues (toSource attrs) (toTarget tomeOfRituals) clues
-                , AttachStoryTreacheryTo harvestedBrain (toTarget room212)
+                , AttachStoryTreacheryTo tid harvestedBrain (toTarget room212)
                 ]
             (_, _, _, Just _managersKey, Just _tomeOfRituals) -> do
               agenda <- genCard Agendas.theTrueCulpritV10

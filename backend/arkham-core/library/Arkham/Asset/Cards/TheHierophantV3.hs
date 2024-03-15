@@ -38,7 +38,7 @@ instance HasModifiersFor TheHierophantV3 where
 instance RunMessage TheHierophantV3 where
   runMessage msg a@(TheHierophantV3 attrs) = case msg of
     InHand _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
+      push $ putCardIntoPlay iid attrs
       pure a
     CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
       push $ AddSlot iid ArcaneSlot (Slot (toSource attrs) [])

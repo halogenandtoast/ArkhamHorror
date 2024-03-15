@@ -44,7 +44,7 @@ instance HasAbilities MoonPendant2 where
 instance RunMessage MoonPendant2 where
   runMessage msg a@(MoonPendant2 attrs) = case msg of
     InHand _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
+      push $ putCardIntoPlay iid attrs
       pure a
     CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
       push $ AddSlot iid TarotSlot (Slot (toSource attrs) [])

@@ -906,7 +906,7 @@ putCardIntoPlay i (toCardDef -> def) = do
     card' = case card of
       PlayerCard pc -> PlayerCard $ pc {pcOwner = Just $ toId i}
       other -> other
-  pushAndRun $ PutCardIntoPlay (toId i) card' Nothing []
+  pushAndRun $ PutCardIntoPlay (toId i) card' Nothing NoPayment []
 
 playEvent :: HasCardDef def => Investigator -> def -> TestAppT ()
 playEvent = putCardIntoPlay
@@ -918,7 +918,7 @@ putAssetIntoPlay i (toCardDef -> def) = do
     card' = case card of
       PlayerCard pc -> PlayerCard $ pc {pcOwner = Just $ toId i}
       other -> other
-  pushAndRun $ PutCardIntoPlay (toId i) card' Nothing []
+  pushAndRun $ PutCardIntoPlay (toId i) card' Nothing NoPayment []
   selectJust $ AssetWithCardId (toCardId card)
 
 putTreacheryIntoPlay :: HasCardDef def => Investigator -> def -> TestAppT TreacheryId
@@ -928,7 +928,7 @@ putTreacheryIntoPlay i (toCardDef -> def) = do
     card' = case card of
       PlayerCard pc -> PlayerCard $ pc {pcOwner = Just $ toId i}
       other -> other
-  pushAndRun $ PutCardIntoPlay (toId i) card' Nothing []
+  pushAndRun $ PutCardIntoPlay (toId i) card' Nothing NoPayment []
   selectJust $ TreacheryWithCardId (toCardId card)
 
 updateInvestigator :: Investigator -> (InvestigatorAttrs -> InvestigatorAttrs) -> TestAppT ()

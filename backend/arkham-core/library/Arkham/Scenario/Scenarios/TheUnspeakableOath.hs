@@ -15,6 +15,7 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Classes.HasGame
+import Arkham.Cost
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
@@ -170,30 +171,29 @@ instance RunMessage TheUnspeakableOath where
       courageMessages <-
         if constanceInterviewed
           then
-            concat <$> for
-              investigatorIds
-              \iid -> do
-                deck <- fieldMap InvestigatorDeck unDeck iid
-                case deck of
-                  (x : _) -> do
-                    courageProxy <- genPlayerCard Assets.courage
-                    let
-                      courage =
-                        PlayerCard
-                          (courageProxy {pcOriginalCardCode = toCardCode x})
-                    drawing <- drawCards iid attrs 1
-                    pure
-                      [ drawing
-                      , InitiatePlayCardAs
-                          iid
-                          (PlayerCard x)
-                          courage
-                          []
-                          LeaveChosenCard
-                          (Window.defaultWindows iid)
-                          False
-                      ]
-                  _ -> error "empty investigator deck"
+            concat <$> for investigatorIds \iid -> do
+              deck <- fieldMap InvestigatorDeck unDeck iid
+              case deck of
+                (x : _) -> do
+                  courageProxy <- genPlayerCard Assets.courage
+                  let
+                    courage =
+                      PlayerCard
+                        (courageProxy {pcOriginalCardCode = toCardCode x})
+                  drawing <- drawCards iid attrs 1
+                  pure
+                    [ drawing
+                    , InitiatePlayCardAs
+                        iid
+                        (PlayerCard x)
+                        courage
+                        []
+                        LeaveChosenCard
+                        NoPayment
+                        (Window.defaultWindows iid)
+                        False
+                    ]
+                _ -> error "empty investigator deck"
           else pure []
       theFollowersOfTheSignHaveFoundTheWayForward <-
         getHasRecord

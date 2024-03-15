@@ -36,6 +36,6 @@ instance HasAbilities FourOfCups1 where
 instance RunMessage FourOfCups1 where
   runMessage msg a@(FourOfCups1 attrs) = case msg of
     InHand _ (UseCardAbility iid (isSource attrs -> True) 1 _ _) -> do
-      push (PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid))
+      push $ putCardIntoPlay iid attrs
       pure a
     _ -> FourOfCups1 <$> runMessage msg attrs

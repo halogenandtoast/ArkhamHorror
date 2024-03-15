@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Cost
 import Arkham.Effect.Runner
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
@@ -37,7 +38,7 @@ instance RunMessage AChanceEncounter where
             player
             [ targetLabel
               (toCardId card)
-              [ PutCardIntoPlay iid card Nothing windows'
+              [ PutCardIntoPlay iid card Nothing NoPayment windows'
               , RemoveFromDiscard iid (toCardId card)
               , CreateEffect "02270" Nothing (toSource attrs) (toTarget $ toCardId card)
               ]

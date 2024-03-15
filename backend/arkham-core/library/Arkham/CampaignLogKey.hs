@@ -244,6 +244,10 @@ data CampaignLogKey
   | TheBlackCatSharedKnowledgeOfTheUnderworld
   | TheBlackCatIsSearchingForTheTruth
   | TheDreamersKnowOfAnotherPath
+  | TheInvestigatorsWereCarriedToTheColdWastes
+  | TheInvestigatorsTraveledToTheColdWastes
+  | RandolphCarterDidNotSurviveTheVoyage
+  | RandolphSurvivedTheVoyage
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

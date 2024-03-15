@@ -47,7 +47,9 @@ instance RunMessage MissDoyle1 where
         $ ChooseOne
           [ CardLabel
             (toCardCode playCat)
-            [PutCardIntoPlay iid playCat Nothing [], ShuffleCardsIntoDeck (InvestigatorDeck iid) deckCats]
+            [ PutCardIntoPlay iid playCat Nothing NoPayment []
+            , ShuffleCardsIntoDeck (InvestigatorDeck iid) deckCats
+            ]
           | (playCat, deckCats) <- eachWithRest cats
           ]
 

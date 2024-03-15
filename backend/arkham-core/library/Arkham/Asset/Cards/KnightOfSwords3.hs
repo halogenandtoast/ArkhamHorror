@@ -46,6 +46,6 @@ instance RunMessage KnightOfSwords3 where
           ]
       pure a
     InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
-      push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
+      push $ putCardIntoPlay iid attrs
       pure a
     _ -> KnightOfSwords3 <$> runMessage msg attrs

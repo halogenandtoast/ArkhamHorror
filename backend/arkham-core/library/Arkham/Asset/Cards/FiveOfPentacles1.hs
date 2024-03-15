@@ -36,6 +36,6 @@ instance HasAbilities FiveOfPentacles1 where
 instance RunMessage FiveOfPentacles1 where
   runMessage msg a@(FiveOfPentacles1 attrs) = case msg of
     InHand _ (UseCardAbility iid (isSource attrs -> True) 1 _ _) -> do
-      push (PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid))
+      push $ putCardIntoPlay iid attrs
       pure a
     _ -> FiveOfPentacles1 <$> runMessage msg attrs

@@ -189,6 +189,7 @@ data AssetMatcher
   | AssetWithDoom ValueMatcher
   | AssetWithClues ValueMatcher
   | AssetWithTokens ValueMatcher Token
+  | AssetWithHighestPrintedCost AssetMatcher
   | AssetInSlot SlotType
   | AssetInTwoHandSlots
   | AssetIs CardCode
@@ -237,6 +238,17 @@ instance IsLabel "mystic" AssetMatcher where
   fromLabel = AssetWithClass Mystic
 
 instance Semigroup AssetMatcher where
+  AssetWithHighestPrintedCost x <> AssetWithHighestPrintedCost y = AssetWithHighestPrintedCost (x <> y)
+  AssetWithHighestPrintedCost x <> y = AssetWithHighestPrintedCost (x <> y)
+  x <> AssetWithHighestPrintedCost y = AssetWithHighestPrintedCost (x <> y)
+  AssetWithFewestClues x <> AssetWithFewestClues y = AssetWithFewestClues (x <> y)
+  AssetWithFewestClues x <> y = AssetWithFewestClues (x <> y)
+  x <> AssetWithFewestClues y = AssetWithFewestClues (x <> y)
+  ClosestAsset lid x <> ClosestAsset lid' y
+    | lid == lid' = AssetWithFewestClues (x <> y)
+    | otherwise = error "Cannnot combine"
+  ClosestAsset lid x <> y = ClosestAsset lid (x <> y)
+  x <> ClosestAsset lid y = ClosestAsset lid (x <> y)
   AnyAsset <> x = x
   x <> AnyAsset = x
   AssetMatches xs <> AssetMatches ys = AssetMatches (xs <> ys)

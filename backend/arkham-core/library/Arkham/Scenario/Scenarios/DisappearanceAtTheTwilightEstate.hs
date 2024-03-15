@@ -121,6 +121,9 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           entryHallId
           Nothing
 
+      tid1 <- getRandom
+      tid2 <- getRandom
+
       pushAll
         $ [ SetEncounterDeck
               $ removeEachFromDeck encounterDeck
@@ -146,14 +149,14 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
         <> officeMoveTo
         <> billiardsRoomMoveTo
         <> balconyMoveTo
-        <> [ AttachStoryTreacheryTo obscuringFog (toTarget officeId)
+        <> [ AttachStoryTreacheryTo tid1 obscuringFog (toTarget officeId)
            | isJust mJeromeDavids
            ]
         <> [createNetherMist | isJust mJeromeDavids]
         <> [ SpawnEnemyAtEngagedWith shadowHound billiardsRoomId valentinoId
            | valentinoId <- maybeToList mValentinoRivas
            ]
-        <> [ AttachStoryTreacheryTo obscuringFog (toTarget officeId)
+        <> [ AttachStoryTreacheryTo tid2 obscuringFog (toTarget officeId)
            | isJust mJeromeDavids
            ]
         <> [ SpawnEnemyAtEngagedWith wraith balconyId pennyId
@@ -181,14 +184,17 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
       terrorInTheNight <- genCard Treacheries.terrorInTheNight
       whispersInTheDark <- genCard Treacheries.whispersInTheDark
 
+      tid1 <- getRandom
+      tid2 <- getRandom
+
       pushAll
         $ [ EnemyDamage theSpectralWatcher $ nonAttack attrs 1
           | gavriellaChosen
           ]
-        <> [ AttachStoryTreacheryTo terrorInTheNight (toTarget agendaId)
+        <> [ AttachStoryTreacheryTo tid1 terrorInTheNight (toTarget agendaId)
            | valentinoChosen
            ]
-        <> [ AttachStoryTreacheryTo whispersInTheDark (toTarget agendaId)
+        <> [ AttachStoryTreacheryTo tid2 whispersInTheDark (toTarget agendaId)
            | pennyChosen
            ]
       pure s

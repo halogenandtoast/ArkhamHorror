@@ -27,7 +27,8 @@ countDamage = \case
 
 instance RunMessage BloodEclipse3 where
   runMessage msg e@(BloodEclipse3 attrs) = case msg of
-    PaidForCardCost iid card (countDamage -> n) | toCardId card == toCardId attrs -> do
+    PlayThisEvent iid eid | attrs `is` eid -> do
+      let n = countDamage attrs.payment
       pushAll
         [ skillTestModifiers attrs iid [DamageDealt n, SkillModifier #willpower n]
         , chooseFightEnemy iid attrs #willpower

@@ -70,8 +70,7 @@ instance RunMessage Haste2 where
       push
         $ chooseOne player
         $ map (\ab -> AbilityLabel iid ab (defaultWindows iid) []) available
-        <> [ ComponentLabel (InvestigatorComponent iid ResourceToken)
-            $ [TakeResources iid 1 (toSource a') False]
+        <> [ ComponentLabel (InvestigatorComponent iid ResourceToken) [TakeResources iid 1 (toSource a') False]
            | canAffordTakeResources
            , canTakeResource
            , #resource `elem` as
@@ -81,7 +80,7 @@ instance RunMessage Haste2 where
            , canDraw
            , #draw `elem` as
            ]
-        <> [ targetLabel (toCardId c) [InitiatePlayCard iid c Nothing [] False]
+        <> [ targetLabel (toCardId c) [InitiatePlayCard iid c Nothing NoPayment [] False]
            | canPlay
            , #play `elem` as
            , c <- playableCards

@@ -52,7 +52,7 @@ instance RunMessage EffectAttrs where
       _ -> pure a
     PaidAllCosts {} | isEndOfWindow a EffectCostWindow -> do
       a <$ push (DisableEffect effectId)
-    PlayCard _ card _ _ _ | isEndOfWindow a (EffectCardCostWindow $ toCardId card) -> do
+    PlayCard _ card _ _ _ _ | isEndOfWindow a (EffectCardCostWindow $ toCardId card) -> do
       a <$ push (DisableEffect effectId)
     After (PerformEnemyAttack {}) | isEndOfWindow a EffectAttackWindow -> do
       a <$ push (DisableEffect effectId)

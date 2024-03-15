@@ -42,7 +42,8 @@ instance RunMessage RestrictedAccess where
         Nothing -> do
           huntingHorror <- selectJust $ enemyIs Enemies.huntingHorror
           shadowSpawned <- getSetAsideCard Treacheries.shadowSpawned
-          push $ AttachStoryTreacheryTo shadowSpawned (toTarget huntingHorror)
+          tid <- getRandom
+          push $ AttachStoryTreacheryTo tid shadowSpawned (toTarget huntingHorror)
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

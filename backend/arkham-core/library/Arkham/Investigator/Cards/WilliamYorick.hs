@@ -43,7 +43,7 @@ instance RunMessage WilliamYorick where
         playCardMsgs c =
           [addToHand iid c]
             <> if isFastCard c
-              then [InitiatePlayCard iid c Nothing windows'' False]
+              then [InitiatePlayCard iid c Nothing NoPayment windows'' False]
               else [PayCardCost iid c windows'']
       playableTargets <- filterM (getIsPlayable iid source UnpaidCost windows'' . PlayerCard) targets
       player <- getPlayer iid

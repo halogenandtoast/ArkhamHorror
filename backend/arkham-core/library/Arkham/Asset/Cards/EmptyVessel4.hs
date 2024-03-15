@@ -42,6 +42,6 @@ instance RunMessage EmptyVessel4 where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       wishEater <- fromJustNote "missing wish eater" . listToMaybe <$> searchBonded iid Cards.wishEater
       -- Rest is handled by Wish Eater
-      push $ PutCardIntoPlay iid wishEater Nothing []
+      push $ PutCardIntoPlay iid wishEater Nothing NoPayment []
       pure a
     _ -> EmptyVessel4 <$> runMessage msg attrs

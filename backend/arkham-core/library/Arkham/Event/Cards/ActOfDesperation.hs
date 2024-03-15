@@ -15,7 +15,6 @@ import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
-import Arkham.SkillType
 
 newtype ActOfDesperation = ActOfDesperation EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -31,30 +30,17 @@ getDiscards _ = []
 
 instance RunMessage ActOfDesperation where
   runMessage msg e@(ActOfDesperation attrs) = case msg of
-    PaidForCardCost iid card (getDiscards -> [(zone, discard)])
-      | toCardId card == toCardId attrs -> do
+    PlayThisEvent iid eid | attrs `is` eid -> do
+      case getDiscards attrs.payment of
+        [(zone, discard)] -> do
           let n = maybe 0 toPrintedCost . cdCost $ toCardDef discard
           pushAll
-            $ skillTestModifiers
-              (toSource attrs)
-              (InvestigatorTarget iid)
-              (DamageDealt 1 : [SkillModifier SkillCombat n | n > 0])
-            : [ createCardEffect
-                Cards.actOfDesperation
-                (Just (EffectInt n))
-                (toSource attrs)
-                (InvestigatorTarget iid)
-              | zone == FromPlay && n > 0
+            $ skillTestModifiers attrs iid (DamageDealt 1 : [SkillModifier #combat n | n > 0])
+            : [ createCardEffect Cards.actOfDesperation (Just (EffectInt n)) attrs iid | zone == FromPlay && n > 0
               ]
-              <> [ ChooseFightEnemy
-                    iid
-                    (toSource attrs)
-                    Nothing
-                    SkillCombat
-                    mempty
-                    False
-                 ]
-          pure e
+              <> [chooseFightEnemy iid attrs #combat]
+        _ -> error "Invalid choice"
+      pure e
     _ -> ActOfDesperation <$> runMessage msg attrs
 
 newtype ActOfDesperationEffect = ActOfDesperationEffect EffectAttrs
@@ -68,14 +54,12 @@ actOfDesperationEffect =
 instance RunMessage ActOfDesperationEffect where
   runMessage msg e@(ActOfDesperationEffect attrs@EffectAttrs {..}) =
     case msg of
-      PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-        | source == effectSource -> do
-            case (effectMetadata, effectTarget) of
-              (Just (EffectInt n), InvestigatorTarget iid) ->
-                pushAll
-                  [TakeResources iid n effectSource False, DisableEffect effectId]
-              _ -> error "Invalid call"
-            pure e
+      PassedThisSkillTest _ source | source == effectSource -> do
+        case (effectMetadata, effectTarget) of
+          (Just (EffectInt n), InvestigatorTarget iid) ->
+            pushAll [TakeResources iid n effectSource False, DisableEffect effectId]
+          _ -> error "Invalid call"
+        pure e
       SkillTestEnds _ _ -> do
         push $ DisableEffect effectId
         pure e

@@ -111,10 +111,10 @@ instance RunMessage JoeDiamond where
           pushAll [wouldBeWindow, ShuffleCardsIntoDeck (Deck.HunchDeck iid) [x]]
         _ -> pure ()
       pure i
-    InitiatePlayCard iid card mTarget windows' asAction | attrs `is` iid && Just (toCardId card) == revealedHunchCard meta -> do
+    InitiatePlayCard iid card mTarget payment windows' asAction | attrs `is` iid && Just (toCardId card) == revealedHunchCard meta -> do
       pushAll
         [ addToHand iid card
-        , InitiatePlayCard iid card mTarget windows' asAction
+        , InitiatePlayCard iid card mTarget payment windows' asAction
         ]
       let hunchDeck' = filter (/= card) (hunchDeck attrs)
       pure $ JoeDiamond . (`with` Metadata Nothing) $ attrs & decksL . at HunchDeck ?~ hunchDeck'

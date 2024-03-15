@@ -58,7 +58,7 @@ instance RunMessage Zeal where
             $ [ CardLabel
                 (toCardCode card)
                 [ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [zealCard]
-                , PutCardIntoPlay iid (toCard card) Nothing []
+                , PutCardIntoPlay iid (toCard card) Nothing NoPayment []
                 ]
               | card <- catsInDiscard
               ]

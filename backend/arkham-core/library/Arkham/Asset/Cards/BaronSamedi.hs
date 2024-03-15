@@ -9,11 +9,10 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..), defaultWindows)
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype BaronSamedi = BaronSamedi AssetAttrs
@@ -49,7 +48,7 @@ toDamagedInvestigator (_ : xs) = toDamagedInvestigator xs
 instance RunMessage BaronSamedi where
   runMessage msg a@(BaronSamedi attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
+      push $ putCardIntoPlay iid attrs
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 (toDamagedInvestigator -> iid') _ -> do
       push $ PlaceAdditionalDamage (InvestigatorTarget iid') (toSource attrs) 1 0

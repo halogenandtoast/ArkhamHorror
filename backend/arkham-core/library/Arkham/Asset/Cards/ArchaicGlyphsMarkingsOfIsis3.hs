@@ -37,7 +37,7 @@ instance RunMessage ArchaicGlyphsMarkingsOfIsis3 where
       player <- getPlayer iid
       pushAll
         [ chooseUpToN player 1 "Do not play an asset"
-            $ [targetLabel (toCardId card) [PutCardIntoPlay iid card Nothing []] | card <- assets]
+            $ [targetLabel (toCardId card) [PutCardIntoPlay iid card Nothing NoPayment []] | card <- assets]
         , Successful (#investigate, toTarget lid) iid source (toTarget lid) n
         ]
       pure a

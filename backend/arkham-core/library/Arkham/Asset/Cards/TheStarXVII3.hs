@@ -38,6 +38,6 @@ instance HasAbilities TheStarXVII3 where
 instance RunMessage TheStarXVII3 where
   runMessage msg a@(TheStarXVII3 attrs) = case msg of
     InHand _ (UseCardAbility iid (isSource attrs -> True) 1 _ _) -> do
-      push $ PutCardIntoPlay iid (toCard attrs) Nothing (defaultWindows iid)
+      push $ putCardIntoPlay iid attrs
       pure a
     _ -> TheStarXVII3 <$> runMessage msg attrs

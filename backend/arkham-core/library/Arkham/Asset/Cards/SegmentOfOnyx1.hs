@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Cost
 import Arkham.Helpers.Investigator (searchBonded)
 import Arkham.Matcher hiding (AssetCard)
 
@@ -37,7 +38,7 @@ instance RunMessage SegmentOfOnyx1 where
       segments <- selectFields AssetCard $ assetIs Cards.segmentOfOnyx1 <> assetControlledBy iid
 
       for_ mPendant $ \pendant -> do
-        push $ PutCardIntoPlay iid pendant Nothing []
+        push $ PutCardIntoPlay iid pendant Nothing NoPayment []
 
       pushAll $ map (PlaceInBonded iid) segments
 

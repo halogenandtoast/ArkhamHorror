@@ -48,6 +48,7 @@ instance RunMessage ThePaintedWorld where
               (CardIdTarget $ toCardId attrs)
           ]
           LeaveChosenCard
+          NoPayment
           playableWindows
           True
       pure e

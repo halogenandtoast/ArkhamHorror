@@ -1521,6 +1521,7 @@ library
       Arkham.Helpers.Placement
       Arkham.Helpers.Projection
       Arkham.Helpers.Query
+      Arkham.Helpers.Ref
       Arkham.Helpers.Scenario
       Arkham.Helpers.SkillTest
       Arkham.Helpers.Slot

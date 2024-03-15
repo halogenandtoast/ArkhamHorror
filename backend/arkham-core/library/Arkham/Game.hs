@@ -357,6 +357,11 @@ withAssetMetadata a = do
   amTreacheries <- select (TreacheryIsAttachedTo $ toTarget a)
   pure $ a `with` AssetMetadata {..}
 
+withSkillTestMetadata :: HasGame m => SkillTest -> m (With SkillTest SkillTestMetadata)
+withSkillTestMetadata st = do
+  stmModifiedSkillValue <- getSkillTestModifiedSkillValue
+  pure $ st `with` SkillTestMetadata {..}
+
 withInvestigatorConnectionData
   :: HasGame m
   => With WithDeckSize ModifierData
@@ -501,7 +506,8 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       , "playerOrder" .= toJSON gamePlayerOrder
       , "phase" .= toJSON gamePhase
       , "phaseStep" .= toJSON gamePhaseStep
-      , "skillTest" .= toJSON gameSkillTest
+      , "skillTest"
+          .= toJSON (runReader (maybe (pure Nothing) (fmap Just . withSkillTestMetadata) gameSkillTest) g)
       , "skillTestChaosTokens"
           .= toJSON
             ( runReader

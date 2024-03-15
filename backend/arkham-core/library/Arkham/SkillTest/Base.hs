@@ -42,6 +42,7 @@ data SkillTest = SkillTest
   , skillTestSubscribers :: [Target]
   , skillTestIsRevelation :: Bool
   , skillTestIconValues :: Map SkillIcon Int
+  , skillTestCard :: Maybe CardId
   }
   deriving stock (Show, Eq, Ord)
 
@@ -122,6 +123,7 @@ buildSkillTest iid (toSource -> source) (toTarget -> target) stType bValue diffi
     , skillTestSubscribers = [toTarget iid]
     , skillTestIsRevelation = False
     , skillTestIconValues = iconValuesForSkillTestType stType
+    , skillTestCard = Nothing
     }
 
 iconValuesForSkillTestType :: SkillTestType -> Map SkillIcon Int
@@ -166,6 +168,7 @@ instance FromJSON SkillTest where
     skillTestSubscribers <- o .: "subscribers"
     skillTestIsRevelation <- o .: "isRevelation"
     skillTestIconValues <- o .:? "iconValues" .!= iconValuesForSkillTestType skillTestType
+    skillTestCard <- o .:? "card"
     pure SkillTest {..}
 
 $(deriveToJSON (aesonOptions $ Just "skillTest") ''SkillTest)

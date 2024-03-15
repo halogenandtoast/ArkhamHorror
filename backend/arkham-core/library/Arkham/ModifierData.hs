@@ -59,3 +59,12 @@ data AssetMetadata = AssetMetadata
 instance ToJSON AssetMetadata where
   toJSON = genericToJSON $ aesonOptions $ Just "am"
   toEncoding = genericToEncoding $ aesonOptions $ Just "am"
+
+newtype SkillTestMetadata = SkillTestMetadata
+  { stmModifiedSkillValue :: Int
+  }
+  deriving stock (Show, Eq, Generic)
+
+instance ToJSON SkillTestMetadata where
+  toJSON = genericToJSON $ aesonOptions $ Just "stm"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "stm"

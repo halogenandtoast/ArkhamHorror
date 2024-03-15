@@ -16,25 +16,23 @@ import Arkham.SkillTest.Type as X
 import Arkham.SkillTestResult
 import Arkham.Target
 
+cardL :: Lens' SkillTest (Maybe CardId)
+cardL = lens skillTestCard $ \m x -> m {skillTestCard = x}
+
 subscribersL :: Lens' SkillTest [Target]
-subscribersL =
-  lens skillTestSubscribers $ \m x -> m {skillTestSubscribers = x}
+subscribersL = lens skillTestSubscribers $ \m x -> m {skillTestSubscribers = x}
 
 setAsideChaosTokensL :: Lens' SkillTest [ChaosToken]
-setAsideChaosTokensL =
-  lens skillTestSetAsideChaosTokens $ \m x -> m {skillTestSetAsideChaosTokens = x}
+setAsideChaosTokensL = lens skillTestSetAsideChaosTokens $ \m x -> m {skillTestSetAsideChaosTokens = x}
 
 resolvedChaosTokensL :: Lens' SkillTest [ChaosToken]
-resolvedChaosTokensL =
-  lens skillTestResolvedChaosTokens $ \m x -> m {skillTestResolvedChaosTokens = x}
+resolvedChaosTokensL = lens skillTestResolvedChaosTokens $ \m x -> m {skillTestResolvedChaosTokens = x}
 
 revealedChaosTokensL :: Lens' SkillTest [ChaosToken]
-revealedChaosTokensL =
-  lens skillTestRevealedChaosTokens $ \m x -> m {skillTestRevealedChaosTokens = x}
+revealedChaosTokensL = lens skillTestRevealedChaosTokens $ \m x -> m {skillTestRevealedChaosTokens = x}
 
 committedCardsL :: Lens' SkillTest (Map InvestigatorId [Card])
-committedCardsL =
-  lens skillTestCommittedCards $ \m x -> m {skillTestCommittedCards = x}
+committedCardsL = lens skillTestCommittedCards $ \m x -> m {skillTestCommittedCards = x}
 
 resultL :: Lens' SkillTest SkillTestResult
 resultL = lens skillTestResult $ \m x -> m {skillTestResult = x}
@@ -46,8 +44,7 @@ baseValueL :: Lens' SkillTest SkillTestBaseValue
 baseValueL = lens skillTestBaseValue $ \m x -> m {skillTestBaseValue = x}
 
 valueModifierL :: Lens' SkillTest Int
-valueModifierL =
-  lens skillTestValueModifier $ \m x -> m {skillTestValueModifier = x}
+valueModifierL = lens skillTestValueModifier $ \m x -> m {skillTestValueModifier = x}
 
 resolveFailureInvestigatorL :: Lens' SkillTest InvestigatorId
 resolveFailureInvestigatorL =

@@ -37,25 +37,22 @@ const overlayPosition = computed(() => {
 });
 
 const getRotated = (el: HTMLElement) => {
-  var st = window.getComputedStyle(el, null);
-  var tr = st.getPropertyValue("-webkit-transform") ||
-           st.getPropertyValue("-moz-transform") ||
-           st.getPropertyValue("-ms-transform") ||
-           st.getPropertyValue("-o-transform") ||
-           st.getPropertyValue("transform") ||
-           "none"
+  const elementsToCheck = [el, el.parentElement];
 
-  if (tr !== "none") {
-    const [a, b] = tr.split('(')[1].split(')')[0].split(',');
+  for (let i = 0; i < elementsToCheck.length; i++) {
+    if (elementsToCheck[i]) {
+      const style = window.getComputedStyle(elementsToCheck[i] as Element);
+      const matrix = new WebKitCSSMatrix(style.transform);
+      const angle = Math.round(Math.atan2(matrix.m21, matrix.m11) * (180 / Math.PI));
 
-    var angle = Math.round(Math.atan2(parseFloat(b), parseFloat(a)) * (180/Math.PI));
-
-    return angle == 90
+      if (Math.abs(angle) === 90 || Math.abs(angle) === -270) {
+          return true
+      }
+    }
   }
 
   return false
 }
-
 const getPosition = (el: HTMLElement) => {
   const rect = el.getBoundingClientRect();
   const overlayWidth = 300; // Adjust this value if the overlay width changes
@@ -73,7 +70,7 @@ const getPosition = (el: HTMLElement) => {
   const newTop = Math.max(0, bottom > window.innerHeight ? rect.bottom - height + window.scrollY - 40 : top);
 
   // Calculate the left position, adjusting for rotated cards
-  const left = rect.left + window.scrollX + (rotated ? rect.height : rect.width) + 10;
+  const left = rect.left + window.scrollX + rect.width + 10;
 
   if (left + 300 >= window.innerWidth) {
     return { top: newTop, left: rect.left - overlayWidth - 10 };

@@ -230,7 +230,7 @@ runWindow attrs windows actions playableCards = do
           <> map
             (\(ability, windows') -> AbilityLabel iid ability windows' [RunWindow iid windows])
             actionsWithMatchingWindows
-          <> [Label "Skip playing fast cards or using reactions" [] | skippable]
+          <> [SkipTriggersButton iid | skippable]
 
 runInvestigatorMessage :: Runner InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of

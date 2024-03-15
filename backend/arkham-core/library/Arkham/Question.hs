@@ -75,6 +75,7 @@ data UI msg
   | ChaosTokenGroupChoice {source :: Source, investigatorId :: InvestigatorId, step :: ChaosBagStep}
   | EffectActionButton {tooltip :: Tooltip, effectId :: EffectId, messages :: [msg]}
   | Done {label :: Text}
+  | SkipTriggersButton {investigatorId :: InvestigatorId}
   deriving stock (Show, Eq, Ord)
 
 data PaymentAmountChoice msg = PaymentAmountChoice

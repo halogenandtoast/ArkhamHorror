@@ -24,6 +24,7 @@ export enum MessageType {
   GRID_LABEL = 'GridLabel',
   TAROT_LABEL = 'TarotLabel',
   DONE = 'Done',
+  SKIP_TRIGGERS_BUTTON = 'SkipTriggersButton',
   TOKEN_GROUP_CHOICE = 'ChaosTokenGroupChoice',
   EFFECT_ACTION_BUTTON = 'EffectActionButton'
 }
@@ -32,6 +33,11 @@ export type AbilityMessage = {
   contents: AbilityLabel | FightLabel | EvadeLabel
   displayAsAction: boolean
   index: number
+}
+
+export type SkipTriggersButton = {
+  tag: MessageType.SKIP_TRIGGERS_BUTTON
+  investigatorId: string
 }
 
 export type Done = {
@@ -243,7 +249,13 @@ export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestAp
     tag: JsonDecoder.isExactly(MessageType.SKILL_TEST_APPLY_RESULTS_BUTTON),
   }, 'SkillTestApplyResultsButton')
 
-export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | SkillLabelWithLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | EngageLabel | GridLabel | TarotLabel | Done | ChaosTokenGroupChoice | EffectActionButton;
+export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | SkillLabelWithLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | EngageLabel | GridLabel | TarotLabel | Done | ChaosTokenGroupChoice | EffectActionButton | SkipTriggersButton;
+
+export const skipTriggersDecoder = JsonDecoder.object<SkipTriggersButton>(
+  {
+    tag: JsonDecoder.isExactly(MessageType.SKIP_TRIGGERS_BUTTON),
+    investigatorId: JsonDecoder.string,
+  }, 'SkipTriggersButton')
 
 export const doneDecoder = JsonDecoder.object<Done>(
   {
@@ -344,6 +356,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     doneDecoder,
     chaosTokenGroupChoiceDecoder,
     effectActionButtonDecoder,
+    skipTriggersDecoder,
     JsonDecoder.succeed.chain((f) => {
       return JsonDecoder.fail(f)
     })

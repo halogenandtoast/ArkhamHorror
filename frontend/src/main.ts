@@ -15,8 +15,10 @@ import { faSearch, faList, faImage, faAngleDown, faUndo, faTrash, faEye, faCopy,
 import * as VueI18n from 'vue-i18n'
 import messages from '@/locales/messages'
 
+const currentLanguage = localStorage.getItem('language') ?? 'en'
+
 const i18n = VueI18n.createI18n({
-  locale: 'en', // set locale
+  locale: currentLanguage, // set locale
   fallbackLocale: 'en', // set fallback locale
   legacy: false,
   warnHtmlMessage: false,

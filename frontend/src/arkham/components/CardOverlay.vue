@@ -83,34 +83,29 @@ const getPosition = (el: HTMLElement) => {
 };
 
 const getImage = (el: HTMLElement): string | null => {
-  if (el instanceof HTMLImageElement) {
-    if (el.classList.contains('card')) {
-      if (el.closest(".revelation")) {
-        return null
-      }
-      return el.src
-    }
-  } else if (el instanceof HTMLDivElement) {
-    if (el.classList.contains('card')) {
-      return el.style.backgroundImage.slice(4, -1).replace(/"/g, "")
-    }
-  } else if (el instanceof HTMLElement) {
-    if(el.dataset.imageId) {
-      return imgsrc(`cards/${el.dataset.imageId}.jpg`)
-    }
-    if(el.dataset.target) {
-      const target = document.querySelector(`[data-id="${el.dataset.target}"]`) as HTMLElement
-      if (target !== null) {
-        return getImage(target)
-      }
-    }
-    if(el.dataset.image) {
-      return el.dataset.image
-    }
+  if (el instanceof HTMLImageElement && el.classList.contains('card') && !el.closest(".revelation")) {
+    return el.src;
   }
 
-  return null
-}
+  if (el instanceof HTMLDivElement && el.classList.contains('card')) {
+    return el.style.backgroundImage.slice(4, -1).replace(/"/g, "");
+  }
+
+  if (el.dataset.imageId) {
+    return imgsrc(`cards/${el.dataset.imageId}.jpg`);
+  }
+
+  if (el.dataset.target) {
+    const target = document.querySelector(`[data-id="${el.dataset.target}"]`) as HTMLElement;
+    return target ? getImage(target) : null;
+  }
+
+  if (el.dataset.image) {
+    return el.dataset.image;
+  }
+
+  return null;
+};
 </script>
 
 <template>

@@ -26,16 +26,13 @@ import Arkham.Cost.FieldCost
 import Arkham.Deck qualified as Deck
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
-import Arkham.Enemy.Types (Field (..))
-import Arkham.Event.Types (Field (..))
 import Arkham.Game.Helpers
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Message
+import Arkham.Helpers.Ref
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (
   AssetCard,
   EventCard,
@@ -47,12 +44,10 @@ import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
-import Arkham.Skill.Types (Field (..))
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token qualified as Token
-import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 import Control.Lens (non)
@@ -897,19 +892,3 @@ instance RunMessage ActiveCost where
       push PaidAllCosts
       pure c
     _ -> pure c
-
-targetToCard :: HasGame m => Target -> m Card
-targetToCard = \case
-  AssetTarget aid -> field AssetCard aid
-  EventTarget aid -> field EventCard aid
-  SkillTarget aid -> field SkillCard aid
-  EnemyTarget aid -> field EnemyCard aid
-  TreacheryTarget aid -> field TreacheryCard aid
-  LocationTarget aid -> field LocationCard aid
-  CardTarget c -> pure c
-  SearchedCardTarget cId -> getCard cId
-  CardIdTarget cId -> getCard cId
-  unknown -> error $ "unhandled: " <> show unknown
-
-sourceToCard :: HasGame m => Source -> m Card
-sourceToCard = targetToCard . sourceToTarget

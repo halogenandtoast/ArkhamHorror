@@ -7,7 +7,6 @@ import { toCardContents } from '@/arkham/types/Card';
 import { imgsrc, pluralize } from '@/arkham/helpers';
 import * as ArkhamCard from '@/arkham/types/Card';
 import * as ArkhamGame from '@/arkham/types/Game';
-import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Story from '@/arkham/components/Story.vue';
 import Location from '@/arkham/components/Location.vue';
@@ -392,16 +391,6 @@ function onLeave(el: Element, done: () => void) {
 
         <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot" :data-index="`${slot}${idx}`">
           <img :src="slotImg(slot)" />
-        </div>
-
-        <div v-if="committedCards.length > 0" class="committed-skills" key="committed-skills">
-          <h2>Committed Skills</h2>
-          <CommittedSkills
-            :game="game"
-            :cards="committedCards"
-            :playerId="playerId"
-            @choose="$emit('choose', $event)"
-          />
         </div>
       </transition-group>
     </transition>

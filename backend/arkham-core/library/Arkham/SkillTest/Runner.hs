@@ -20,6 +20,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Game.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Message
+import Arkham.Helpers.Ref
 import Arkham.Matcher hiding (IgnoreChaosToken, RevealChaosToken)
 import Arkham.Message qualified as Msg
 import Arkham.Projection
@@ -141,7 +142,8 @@ instance RunMessage SkillTest where
     BeginSkillTestAfterFast -> do
       windowMsg <- checkWindows [mkWindow #when Window.FastPlayerWindow]
       pushAll [windowMsg, BeforeSkillTest s, EndSkillTestWindow]
-      pure s
+      mCardId <- fmap toCardId <$> sourceToMaybeCard skillTestSource
+      pure $ s & cardL .~ mCardId
     ReplaceSkillTestSkill (FromSkillType fsType) (ToSkillType tsType) -> do
       let
         stType = case skillTestType of

@@ -129,7 +129,7 @@ const classObject = computed(() => ({
 }
 
 .token {
-  width: 150px;
+  width: 100px;
 }
 
 @keyframes flip {
@@ -168,9 +168,6 @@ const classObject = computed(() => ({
 
 .front {
   transform-style: preserve-3d;
-  position: absolute;
-  top: 0;
-  left: 0;
   opacity: 0;
   backface-visibility: hidden;
   animation: flip 0.2s linear;
@@ -179,7 +176,7 @@ const classObject = computed(() => ({
 }
 
 .token-container {
-  width: 150px;
+  width: 100px;
   position: relative;
 }
 </style>

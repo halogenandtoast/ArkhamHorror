@@ -55,6 +55,7 @@ import Arkham.Helpers.Message hiding (
   InvestigatorResigned,
   createEnemy,
  )
+import Arkham.Helpers.Ref
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator (

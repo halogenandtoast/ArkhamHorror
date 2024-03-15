@@ -76,61 +76,50 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 const tokenAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.START_SKILL_TEST_BUTTON))
 
-const investigatorPortrait = computed(() => {
-  const choice = choices.value.find((c): c is StartSkillTestButton => c.tag === MessageType.START_SKILL_TEST_BUTTON)
-  if (choice) {
-    const player = props.game.investigators[choice.investigatorId]
-
-    if (player.isYithian) {
-      return imgsrc(`portraits/${choice.investigatorId.replace('c', '')}.jpg`)
-    }
-
-    return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
-  }
-
-  if (props.skillTest) {
-    const player = props.game.investigators[props.skillTest.investigator]
-
-    if (player.isYithian) {
-      return imgsrc(`portraits/${props.skillTest.investigator.replace('c', '')}.jpg`)
-    }
-
-    return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
-  }
-
-  return null;
-})
-
 const debug = useDebug()
 
-const tokenFaces = computed(() => [...new Set(props.chaosBag.chaosTokens.map(t => t.face))])
+
+const allTokenFaces = computed(() => props.chaosBag.chaosTokens.map(t => t.face).sort(sortTokenFaces))
+const tokenFaces = computed(() => [...new Set(allTokenFaces.value)])
+
+const tokenOrder = ['PlusOne', 'Zero', 'MinusOne', 'MinusTwo', 'MinusThree', 'MinusFour', 'MinusFive', 'MinusSix', 'MinusSeven', 'MinusEight', 'Skull', 'Cultist', 'Tablet', 'ElderThing', 'AutoFail', 'ElderSign', 'CurseToken', 'BlessToken']
+
+function sortTokenFaces(a: string, b: string) {
+  return tokenOrder.indexOf(a) - tokenOrder.indexOf(b)
+}
 
 const choose = (idx: number) => emit('choose', idx)
 </script>
 
 <template>
-  <div class="chaos-bag-contents">
-    <img
-      v-if="investigatorPortrait"
-      class="portrait"
-      :src="investigatorPortrait"
-    />
-    <Token v-for="(revealedToken, index) in revealedChaosTokens" :key="index" :token="revealedToken" :playerId="playerId" :game="game" @choose="choose" />
-    <img
-      v-if="tokenAction !== -1"
-      class="token token--can-draw"
-      :src="imgsrc('ct_blank.png')"
-      @click="choose(tokenAction)"
-    />
-    <template v-if="debug.active && tokenAction !== -1">
-      <div class="token-debug" v-for="tokenFace in tokenFaces" :key="tokenFace" @click="debug.send(game.id, {tag: 'ForceChaosTokenDraw', contents: tokenFace})">
+  <div class="chaos-bag">
+    <div class="chaos-bag-contents">
+      <Token v-for="(revealedToken, index) in revealedChaosTokens" :key="index" :token="revealedToken" :playerId="playerId" :game="game" @choose="choose" />
+      <img
+        v-if="tokenAction !== -1"
+        class="token token--can-draw"
+        :src="imgsrc('ct_blank.png')"
+        @click="choose(tokenAction)"
+      />
+      <ChaosBagChoice v-if="chaosBag.choice && 'step' in chaosBag.choice && !game.skillTestResults" :choice="chaosBag.choice.step" :game="game" :playerId="playerId" @choose="choose" />
+    </div>
+
+    <div v-if="debug.active && tokenAction !== -1" class="token-preview">
+      <div class="token-debug" v-for="tokenFace in allTokenFaces" :key="tokenFace" @click="debug.send(game.id, {tag: 'ForceChaosTokenDraw', contents: tokenFace})">
         <img
           class="token"
           :src="imageFor(tokenFace)"
         />
         </div>
-    </template>
-    <ChaosBagChoice v-if="chaosBag.choice && 'step' in chaosBag.choice && !game.skillTestResults" :choice="chaosBag.choice.step" :game="game" :playerId="playerId" @choose="choose" />
+    </div>
+    <div v-else class="token-preview">
+      <img
+        v-for="(tokenFace, idx) in allTokenFaces"
+        :key="`${tokenFace}${idx}`"
+        class="token"
+        :src="imageFor(tokenFace)"
+      />
+    </div>
   </div>
 </template>
 
@@ -142,12 +131,14 @@ const choose = (idx: number) => emit('choose', idx)
 }
 
 .token {
-  width: 150px;
+  width: 100px;
   height: auto;
+  margin-bottom: 10px;
 }
 
 .portrait {
   width: $card-width;
+  height: fit-content;
 }
 
 .token-debug {
@@ -162,7 +153,24 @@ const choose = (idx: number) => emit('choose', idx)
 
 .chaos-bag-contents {
   display: flex;
-  align-items: flex-start;
-  height: 113px;
+  align-items: center;
+  justify-content: center;
+}
+
+.token-preview {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  img {
+    width: 30px;
+    height: fit-content;
+  }
+}
+
+.chaos-bag {
+  padding: 10px;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
 }
 </style>

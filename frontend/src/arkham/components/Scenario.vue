@@ -17,12 +17,12 @@ import Enemy from '@/arkham/components/Enemy.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
 import Key from '@/arkham/components/Key.vue';
-import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
 import Connections from '@/arkham/components/Connections.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
+import SkillTest from '@/arkham/components/SkillTest.vue';
 import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
 import Story from '@/arkham/components/Story.vue';
 import Location from '@/arkham/components/Location.vue';
@@ -380,19 +380,15 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
           </div>
           <button v-if="cardsUnderScenarioReference.length > 0" class="view-cards-under-button" @click="showCardsUnderScenarioReference">{{viewUnderScenarioReference}}</button>
         </div>
-        <ChaosBag
-          :game="game"
-          :chaosBag="scenario.chaosBag"
-          :skillTest="game.skillTest"
-          :playerId="playerId"
-          @choose="choose"
-        />
-
-        <img
-          v-if="activeCard"
-          :src="activeCard"
-          class="card"
-        />
+        <SkillTest
+            v-if="game.skillTest"
+            :game="game"
+            :chaosBag="scenario.chaosBag"
+            :skillTest="game.skillTest"
+            :playerId="playerId"
+            @choose="choose"
+        >
+        </SkillTest>
 
         <button v-if="removedFromPlay.length > 0" class="view-removed-from-play-button" @click="showRemovedFromPlay"><font-awesome-icon icon="eye" /> Removed from Play</button>
 

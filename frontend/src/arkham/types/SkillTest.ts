@@ -20,6 +20,8 @@ export type SkillTest = {
   committedCards: Card[]
   source: Source;
   action: string | null;
+  card: string | null;
+  modifiedSkillValue: number;
 }
 
 export type SkillTestResults = {
@@ -40,6 +42,8 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     // result: skillTestResultDecoder,
     committedCards: JsonDecoder.dictionary(JsonDecoder.array(cardDecoder, 'Card[]'), 'Record<string, Card[]>').map((record) => Object.values(record).flat()),
     source: sourceDecoder,
+    card: JsonDecoder.nullable(JsonDecoder.string),
+    modifiedSkillValue: JsonDecoder.number,
   },
   'SkillTest',
 );

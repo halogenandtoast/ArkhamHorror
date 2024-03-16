@@ -3,8 +3,10 @@
 module Arkham.Scenario.Scenarios.PointOfNoReturn (PointOfNoReturn (..), pointOfNoReturn) where
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -13,10 +15,12 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.SkillTest (getSkillTestAction)
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Prelude
-import Arkham.Scenario.Runner hiding (story)
+import Arkham.Scenario.Runner hiding (chooseOne, story)
 import Arkham.Scenario.Setup
 import Arkham.ScenarioLogKey
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -127,4 +131,33 @@ instance RunMessage PointOfNoReturn where
         | steps == 0 -> pure ()
         | steps <= 4 -> push $ ScenarioCountIncrementBy Distortion 1
         | otherwise -> push $ ScenarioCountIncrementBy Distortion 2
+    ResolveChaosToken _ Cultist iid -> do
+      push $ DrawAnotherChaosToken iid
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
+      case token.face of
+        Cultist -> push $ InvestigatorDrawEncounterCard iid
+        ElderThing | n >= 2 -> do
+          enemies <-
+            select
+              $ ReadyEnemy
+              <> oneOf
+                [EnemyAt (locationWithInvestigator iid), EnemyAt $ ConnectedFrom (locationWithInvestigator iid)]
+          chooseOne
+            iid
+            [ targetLabel
+              enemy
+              [EnemyEngageInvestigator enemy iid, InitiateEnemyAttack $ enemyAttack enemy attrs iid]
+            | enemy <- enemies
+            ]
+        _ -> pure ()
+      pure s
+    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case chaosTokenFace token of
+        Tablet -> void $ runMaybeT $ do
+          Action.Investigate <- MaybeT getSkillTestAction
+          drawCard <- MaybeT $ drawCardsIfCan iid TabletEffect 1
+          lift $ push drawCard
+        _ -> pure ()
+      pure s
     _ -> PointOfNoReturn <$> lift (runMessage msg attrs)

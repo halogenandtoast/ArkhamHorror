@@ -178,7 +178,7 @@ watch(abilities, (abilities) => {
             />
           </div>
 
-          <div v-if="showAbilities" class="abilities" :data-image="image">
+          <div v-if="showAbilities" class="abilities">
             <AbilityButton
               v-for="ability in abilities"
               :key="ability.index"

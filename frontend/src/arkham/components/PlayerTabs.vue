@@ -39,6 +39,19 @@ function tabClass(investigator: Investigator) {
   ]
 }
 
+function hasSwitch(investigator: Investigator) {
+  const pid = investigator.playerId
+  return pid !== props.playerId && hasChoices(investigator.playerId)
+}
+
+function instructions(investigator: Investigator) {
+  if (investigator.playerId !== props.playerId) {
+    return "Switch to this investigator's perspective"
+  }
+
+  return null
+}
+
 function selectTab(i: string) {
   selectedTab.value = i
 }
@@ -63,11 +76,16 @@ watchEffect(() => selectedTab.value = props.playerId)
     <ul class='tabs__header'>
       <li v-for='investigator in investigators'
         :key='investigator.name.title'
-        @click.exact='selectTab(investigator.playerId)'
-        @click.shift='selectTabExtended(investigator.playerId)'
+        @click='selectTab(investigator.playerId)'
         :class='tabClass(investigator)'
       >
-        {{ investigator.name.title }}
+        <span>{{ investigator.name.title }}</span>
+        <button
+          v-if="solo"
+          v-tooltip="instructions(investigator)"
+          :disabled="investigator.playerId === props.playerId"
+          class="switch-investigators"
+          @click="selectTabExtended(investigator.playerId)"><font-awesome-icon icon="eye" :class="{ 'fa-icon': hasSwitch(investigator) }" /></button>
       </li>
     </ul>
     <Tab
@@ -94,7 +112,7 @@ watchEffect(() => selectedTab.value = props.playerId)
 
 <style lang="scss">
 ul.tabs__header {
-  display: block;
+  display: flex;
   list-style: none;
   padding: 0;
   margin: 0;
@@ -104,13 +122,17 @@ ul.tabs__header {
 
 ul.tabs__header > li {
   margin: 0;
-  display: inline-block;
   margin-right: 5px;
   cursor: pointer;
   color: white;
-  padding: 5px 10px;
   filter: contrast(50%);
   border-radius: 5px 5px 0 0;
+  display: flex;
+  span {
+    display: block;
+    width: fit-content;
+    padding: 5px 10px;
+  }
 }
 
 ul.tabs__header > li.tab--selected {
@@ -146,13 +168,10 @@ ul.tabs__header > li.tab--selected {
   &:before {
     font-weight: normal;
     font-family: "Arkham";
-    content: "\0058";
-    margin-right: 5px;
+    content: "\0058" / "Active Player";
+    margin-left: 5px;
+    align-self: center;
   }
-}
-
-.tab--has-actions {
-  box-shadow: 0 0 5px #ff00ff;
 }
 
 .player-info {
@@ -171,6 +190,42 @@ ul.tabs__header > li.tab--selected {
     height: 25px;
     background-image: v-bind(lead);
     background-size: contain;
+  }
+}
+
+.switch-investigators {
+  background: none;
+  border: none;
+  color: white;
+  border-left: 1px solid rgba(0, 0, 0, 0.5);
+  padding: 4px 8px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 0 5px 0 0;
+  margin: 0;
+  cursor: pointer;
+
+  &[disabled] {
+    background: rgba(0, 0, 0, 0.5);
+    color: rgba(255, 255, 255, 0.2);
+  }
+  &:not([disabled]):hover {
+    filter: contrast(200%);
+    color: black;
+  }
+}
+
+.fa-icon {
+  animation: glow 1.5s infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    color: #000; /* Or any other default color */
+    text-shadow: 0 0 0px #ff00ff;
+  }
+  to {
+    color: #ff00ff; /* Glowing color */
+    text-shadow: 0 0 10px #ff00ff;
   }
 }
 </style>

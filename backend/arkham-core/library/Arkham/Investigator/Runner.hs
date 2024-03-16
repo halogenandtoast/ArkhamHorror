@@ -64,9 +64,11 @@ import Arkham.Matcher (
   InvestigatorMatcher (..),
   assetControlledBy,
   assetIs,
+  cardIs,
   colocatedWith,
   enemyEngagedWith,
   locationWithInvestigator,
+  oneOf,
   treacheryInHandOf,
  )
 import Arkham.Message qualified as Msg
@@ -303,7 +305,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             ( or
                 . sequence
                   [ (`notElem` investigatorStartsWithInHand) . toCardDef
-                  , not . (`cardMatch` Treacheries.falseAwakening)
+                  , not
+                      . ( `cardMatch`
+                            oneOf [cardIs Treacheries.falseAwakening, cardIs Treacheries.falseAwakeningPointOfNoReturn]
+                        )
                   ]
             )
             deck''

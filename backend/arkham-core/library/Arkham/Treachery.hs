@@ -397,6 +397,15 @@ allTreacheries =
     , SomeTreacheryCard forcedIntoHiding
     , SomeTreacheryCard lunarPatrol
     , SomeTreacheryCard falseAwakening
+    , -- Point of No Return
+      SomeTreacheryCard tasteOfLifeblood
+    , SomeTreacheryCard litByDeathFire
+    , SomeTreacheryCard unexpectedAmbush
+    , SomeTreacheryCard falseAwakeningPointOfNoReturn
+    , --- Terror of the Vale
+      SomeTreacheryCard dholeTunnel
+    , --- Descent into the Pitch
+      SomeTreacheryCard shadowOfAtlachNacha
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

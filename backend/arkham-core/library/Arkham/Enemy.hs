@@ -334,6 +334,12 @@ allEnemies =
     , SomeEnemyCard moonboundByakhee
     , SomeEnemyCard catsFromSaturn
     , SomeEnemyCard moonBeast
+    , -- Point of No Return
+      SomeEnemyCard gugSentinel
+    , --- Terror of the Vale
+      SomeEnemyCard slitheringDhole
+    , --- Descent into the Pitch
+      SomeEnemyCard pitchSpider
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

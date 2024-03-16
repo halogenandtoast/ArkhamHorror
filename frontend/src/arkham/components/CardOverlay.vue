@@ -36,6 +36,14 @@ const overlayPosition = computed(() => {
   return getPosition(hoveredElement.value);
 });
 
+const sideways = computed<boolean>(() => {
+  if (!hoveredElement.value) return false;
+
+  const rect = hoveredElement.value.getBoundingClientRect();
+
+  return rect.width > rect.height;
+})
+
 const getRotated = (el: HTMLElement) => {
   const elementsToCheck = [el, el.parentElement];
 
@@ -62,7 +70,8 @@ const getPosition = (el: HTMLElement) => {
   const ratio = rotated ? rect.height / rect.width : rect.width / rect.height;
 
   // Calculate the height of the overlay based on the ratio
-  const height = overlayWidth / ratio;
+  const width = sideways.value ? (overlayWidth / ratio) : 300
+  const height = sideways.value ? 300 : overlayWidth / ratio;
 
   // Calculate the top position, ensuring it doesn't go off the screen
   const top = rect.top + window.scrollY - 40;
@@ -72,7 +81,7 @@ const getPosition = (el: HTMLElement) => {
   // Calculate the left position, adjusting for rotated cards
   const left = rect.left + window.scrollX + rect.width + 10;
 
-  if (left + 300 >= window.innerWidth) {
+  if (left + width >= window.innerWidth) {
     return { top: newTop, left: rect.left - overlayWidth - 10 };
   } else {
     return { top: newTop, left: left };
@@ -106,7 +115,7 @@ const getImage = (el: HTMLElement): string | null => {
 </script>
 
 <template>
-  <div class="card-overlay" ref="cardOverlay" :style="{ top: overlayPosition.top + 'px', left: overlayPosition.left + 'px' }">
+  <div class="card-overlay" ref="cardOverlay" :style="{ top: overlayPosition.top + 'px', left: overlayPosition.left + 'px'}" :class="{ sideways }">
     <img v-if="card" :src="card" :class="{ reversed }" />
   </div>
 </template>
@@ -123,6 +132,15 @@ const getImage = (el: HTMLElement): string | null => {
     border-radius: 15px;
     width: 300px;
     height: fit-content;
+  }
+  &.sideways {
+    height: 300px !important;
+    width: fit-content !important;
+    img {
+      border-radius: 15px;
+      height: 300px;
+      width: fit-content;
+    }
   }
 }
 

@@ -559,6 +559,19 @@ allLocations =
     , SomeLocationCard cavernsBeneathTheMoonLightSide
     , SomeLocationCard lightSideOfTheMoon
     , SomeLocationCard theWhiteShip
+    , -- Point of No Return
+      SomeLocationCard vaultsOfZin
+    , SomeLocationCard cityOfGugs
+    , SomeLocationCard towerOfKoth
+    , SomeLocationCard plainOfTheGhouls
+    , SomeLocationCard cragOfTheGhouls
+    , SomeLocationCard seaOfBones
+    , SomeLocationCard peaksOfThok
+    , SomeLocationCard valeOfPnath
+    , SomeLocationCard seaOfPitch_262
+    , SomeLocationCard seaOfPitch_263
+    , SomeLocationCard seaOfPitch_264
+    , SomeLocationCard seaOfPitch_265
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

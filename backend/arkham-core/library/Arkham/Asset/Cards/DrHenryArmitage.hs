@@ -1,14 +1,10 @@
-module Arkham.Asset.Cards.DrHenryArmitage (
-  DrHenryArmitage (..),
-  drHenryArmitage,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.DrHenryArmitage (DrHenryArmitage (..), drHenryArmitage) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype DrHenryArmitage = DrHenryArmitage AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -27,6 +23,6 @@ instance HasAbilities DrHenryArmitage where
 instance RunMessage DrHenryArmitage where
   runMessage msg a@(DrHenryArmitage attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ takeResources iid (toAbilitySource attrs 1) 3
+      push $ takeResources iid (attrs.ability 1) 3
       pure a
     _ -> DrHenryArmitage <$> runMessage msg attrs

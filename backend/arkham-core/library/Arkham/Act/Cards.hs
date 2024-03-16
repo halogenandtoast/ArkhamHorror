@@ -56,9 +56,11 @@ allActCards =
       , discoveringTheTruth
       , disruptingTheRitual
       , enteringTheDreamlands
+      , enteringTheUnderworldV1
       , escapeTheCage
       , escapeTheRuins
       , exploringPnakotus
+      , exploringTheMoon
       , exploringTheRainforest
       , fatedSouls
       , findTheRelic
@@ -141,6 +143,7 @@ allActCards =
       , strangeRelicsMariasInformation
       , theBarrier
       , theBindingRite
+      , theBlackExpanse
       , theBrokenRite
       , theBrotherhoodIsRevealed
       , theCarnevaleConspiracy
@@ -149,6 +152,7 @@ allActCards =
       , theChamberOfStillRemains
       , theChamberOfTheBeast
       , theCosmosBeckons
+      , theDescent
       , theDisappearance
       , theDoomThatCameBefore
       , theEndlessStairs
@@ -160,6 +164,7 @@ allActCards =
       , theIsleOfOriab
       , theKingInTatters
       , theKingsDecree
+      , theMoonsCore
       , theOath
       , theParisianConspiracyV1
       , theParisianConspiracyV2
@@ -184,6 +189,7 @@ allActCards =
       , trapped
       , trialOfTheHuntress
       , uncoveringTheConspiracy
+      , unexpectedRescue
       , warmWelcome
       , whatHappened
       , whatHaveYouDone
@@ -696,6 +702,18 @@ theMoonsCore = act "06212" "The Moon's Core" 3 DarkSideOfTheMoon
 
 unexpectedRescue :: CardDef
 unexpectedRescue = act "06213" "Unexpected Rescue" 4 DarkSideOfTheMoon
+
+enteringTheUnderworldV1 :: CardDef
+enteringTheUnderworldV1 = act "06250" "Entering the Underworld (v. I)" 1 PointOfNoReturn
+
+enteringTheUnderworldV2 :: CardDef
+enteringTheUnderworldV2 = act "06251" "Entering the Underworld (v. II)" 1 PointOfNoReturn
+
+theDescent :: CardDef
+theDescent = act "06252" "The Descent" 2 PointOfNoReturn
+
+theBlackExpanse :: CardDef
+theBlackExpanse = act "06253" "The Black Expanse" 3 PointOfNoReturn
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

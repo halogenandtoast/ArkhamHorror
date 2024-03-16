@@ -117,6 +117,8 @@ data EncounterSet
   | AThousandShapesOfHorror
   | DarkSideOfTheMoon
   | PointOfNoReturn
+  | DescentIntoThePitch
+  | TerrorOfTheVale
   | WhereTheGodsDwell
   | WeaverOfTheCosmos
   | ReturnToTheGathering

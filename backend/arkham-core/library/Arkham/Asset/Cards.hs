@@ -617,6 +617,7 @@ allEncounterAssetCards =
       , timeWornLocket
       , virgilGrayTrulyInspired
       , theCaptain
+      , richardUptonPickman
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef
@@ -3812,6 +3813,14 @@ twilaKatherinePrice3 =
     , cdSlots = [#ally]
     , cdLevel = 3
     , cdUnique = True
+    }
+
+richardUptonPickman :: CardDef
+richardUptonPickman =
+  (storyAsset "06266" ("Richard Upton Pickman" <:> "Venerable Ghoul") 0 PointOfNoReturn)
+    { cdCardTraits = setFromList [Ally, Ghoul, Artist]
+    , cdUnique = True
+    , cdCost = Nothing
     }
 
 emptyVessel4 :: CardDef

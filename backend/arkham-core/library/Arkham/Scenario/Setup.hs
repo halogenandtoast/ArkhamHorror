@@ -88,6 +88,11 @@ gather encounterSet = do
   cards <- excludeBSides . excludeDoubleSided <$> gatherEncounterSet encounterSet
   encounterDeckL %= (Deck cards <>)
 
+gatherAndSetAside :: ReverseQueue m => Set.EncounterSet -> ScenarioBuilderT m ()
+gatherAndSetAside encounterSet = do
+  cards <- map toCard <$> gatherEncounterSet encounterSet
+  push $ SetAsideCards cards
+
 gatherOneOf
   :: (SampleOneOf as, Sampled as ~ Set.EncounterSet, CardGen m) => as -> ScenarioBuilderT m ()
 gatherOneOf = sampleOneOf >=> gather

@@ -168,6 +168,7 @@ allLocationCards =
       , choeurGothique_293
       , circuitousTrail
       , cityOfElderThings
+      , cityOfGugs
       , cityOfTheMoonBeasts
       , cityOfTheSerpents
       , cityOfTheUnseen
@@ -186,6 +187,7 @@ allLocationCards =
       , courtOfTheGreatOldOnes
       , courtOfTheGreatOldOnesANotTooDistantFuture
       , coyoacan
+      , cragOfTheGhouls
       , crumblingPrecipice
       , cryptOfTheSepulchralLamp
       , crystalPillars
@@ -413,9 +415,11 @@ allLocationCards =
       , patientConfinementOccupiedCell
       , patientConfinementDrearyCell
       , patientConfinementFamiliarCell
+      , peaksOfThok
       , pereLachaiseCemetery
       , perilousGulch
       , physicsClassroom
+      , plainOfTheGhouls
       , plateauOfLeng
       , pnakotus
       , porteDeLAvancee
@@ -456,6 +460,11 @@ allLocationCards =
       , schoolhouse_212
       , schoolhouse_213
       , scienceBuilding
+      , seaOfBones
+      , seaOfPitch_262
+      , seaOfPitch_263
+      , seaOfPitch_264
+      , seaOfPitch_265
       , secondFloorHall
       , secretPassage
       , securityOffice_128
@@ -522,6 +531,7 @@ allLocationCards =
       , theatre
       , timeWrackedWoods
       , tombOfShadows
+      , towerOfKoth
       , towersOfPnakotus
       , townHall
       , trainTracks
@@ -546,9 +556,11 @@ allLocationCards =
       , upstairsHallway
       , uptown_296
       , uptown_297
+      , valeOfPnath
       , valusia
       , vastPassages
       , vault
+      , vaultsOfZin
       , velmasDiner
       , venetianGarden
       , victorianHalls
@@ -5641,6 +5653,148 @@ theWhiteShip =
     Heart
     [Hourglass]
     DarkSideOfTheMoon
+
+vaultsOfZin :: CardDef
+vaultsOfZin =
+  victory 1
+    $ veiled
+    $ location
+      "06254"
+      "Vaults of Zin"
+      []
+      Heart
+      [T, Moon]
+      PointOfNoReturn
+
+cityOfGugs :: CardDef
+cityOfGugs =
+  victory 1
+    $ singleSided
+    $ location
+      "06255"
+      "City of Gugs"
+      []
+      T
+      [Heart, Squiggle, Moon]
+      PointOfNoReturn
+
+towerOfKoth :: CardDef
+towerOfKoth =
+  singleSided
+    $ location
+      "06256"
+      "Tower of Koth"
+      []
+      Squiggle
+      [T, Square]
+      PointOfNoReturn
+
+plainOfTheGhouls :: CardDef
+plainOfTheGhouls =
+  victory 1
+    $ singleSided
+    $ location
+      "06257"
+      "Plain of the Ghouls"
+      [Central]
+      Moon
+      [Heart, T, Hourglass]
+      PointOfNoReturn
+
+cragOfTheGhouls :: CardDef
+cragOfTheGhouls =
+  victory 1
+    $ veiled
+    $ location
+      "06258"
+      "Crag of the Ghouls"
+      [Vale]
+      Hourglass
+      [Equals, Circle, Moon]
+      PointOfNoReturn
+
+seaOfBones :: CardDef
+seaOfBones =
+  victory 1
+    $ singleSided
+    $ location
+      "06259"
+      "Sea of Bones"
+      [Vale]
+      Moon
+      [Hourglass, Star, Equals]
+      PointOfNoReturn
+
+peaksOfThok :: CardDef
+peaksOfThok =
+  singleSided
+    $ location
+      "06260"
+      "Peaks of Thok"
+      [Vale, Central]
+      Star
+      [Equals, Circle]
+      PointOfNoReturn
+
+valeOfPnath :: CardDef
+valeOfPnath =
+  victory 1
+    $ veiled
+    $ location
+      "06261"
+      "Vale of Pnath"
+      [Vale]
+      Equals
+      [Hourglass, Star, Circle, Plus]
+      PointOfNoReturn
+
+seaOfPitch_262 :: CardDef
+seaOfPitch_262 =
+  victory 1
+    $ veiled
+    $ location
+      "06262"
+      "Sea of Pitch"
+      [Depths]
+      Plus
+      [Equals, Plus]
+      PointOfNoReturn
+
+seaOfPitch_263 :: CardDef
+seaOfPitch_263 =
+  victory 1
+    $ veiled
+    $ location
+      "06263"
+      "Sea of Pitch"
+      [Depths]
+      Plus
+      [Equals, Plus]
+      PointOfNoReturn
+
+seaOfPitch_264 :: CardDef
+seaOfPitch_264 =
+  victory 1
+    $ veiled
+    $ location
+      "06264"
+      "Sea of Pitch"
+      [Depths]
+      Plus
+      [Equals, Plus]
+      PointOfNoReturn
+
+seaOfPitch_265 :: CardDef
+seaOfPitch_265 =
+  victory 1
+    $ veiled
+    $ location
+      "06265"
+      "Sea of Pitch"
+      [Depths]
+      Plus
+      [Equals, Plus]
+      PointOfNoReturn
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

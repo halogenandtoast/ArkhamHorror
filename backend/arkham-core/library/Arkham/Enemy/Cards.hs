@@ -137,6 +137,7 @@ allEncounterEnemyCards =
       , grapplingHorror
       , graveEater
       , greyWeaver
+      , gugSentinel
       , handOfTheBrotherhood
       , harbingerOfValusia
       , harlanEarnstoneCrazedByTheCurse
@@ -204,6 +205,7 @@ allEncounterEnemyCards =
       , piperOfAzathoth
       , pitViper
       , pitWarden
+      , pitchSpider
       , poleman
       , poltergeist
       , possessedOathspeaker
@@ -230,6 +232,7 @@ allEncounterEnemyCards =
       , shadowHound
       , silasBishop
       , slimeCoveredDhole
+      , slitheringDhole
       , spawnOfHali
       , specterOfDeath
       , spectralRaven
@@ -1762,6 +1765,28 @@ moonBeast =
     { cdCardTraits = setFromList [Monster, Servitor]
     , cdKeywords = singleton Keyword.Retaliate
     , cdVictoryPoints = Just 1
+    }
+
+gugSentinel :: CardDef
+gugSentinel =
+  (enemy "06267" "Gug Sentinel" PointOfNoReturn 1)
+    { cdCardTraits = setFromList [Monster, Gug]
+    , cdVictoryPoints = Just 1
+    }
+
+slitheringDhole :: CardDef
+slitheringDhole =
+  (enemy "06271" "Slithering Dhole" TerrorOfTheVale 1)
+    { cdCardTraits = setFromList [Monster, Dhole, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+    , cdVictoryPoints = Just 1
+    }
+
+pitchSpider :: CardDef
+pitchSpider =
+  (enemy "06273" "Pitch Spider" TerrorOfTheVale 2)
+    { cdCardTraits = setFromList [Monster, Spider]
+    , cdKeywords = setFromList [Keyword.Swarming (Static 0)]
     }
 
 unboundBeast :: CardDef

@@ -614,6 +614,8 @@ allAssets =
     , SomeAssetCard empowerSelfAlacrity2
     , SomeAssetCard empowerSelfAcuity2
     , SomeAssetCard twilaKatherinePrice3
+    , --- story [pnr]
+      SomeAssetCard richardUptonPickman
     , -- Where the Gods Dwell
       --- guardian [wgd]
       SomeAssetCard emptyVessel4

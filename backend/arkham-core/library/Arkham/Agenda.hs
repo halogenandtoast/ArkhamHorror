@@ -204,6 +204,9 @@ allAgendas =
       SomeAgendaCard silentStiring
     , SomeAgendaCard theAlarmIsRaised
     , SomeAgendaCard theyAreUponYou
+    , -- Point of No Return
+      SomeAgendaCard aSinisterRealm
+    , SomeAgendaCard besetByMonsters
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

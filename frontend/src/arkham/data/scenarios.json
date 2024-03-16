@@ -235,5 +235,12 @@
     "campaign": "06",
     "beta": true,
     "settings": []
+  },
+  {
+    "id": "06247",
+    "name": "Point of No Return",
+    "campaign": "06",
+    "beta": true,
+    "settings": []
   }
 ]

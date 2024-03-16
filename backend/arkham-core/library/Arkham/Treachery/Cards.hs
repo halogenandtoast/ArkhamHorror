@@ -178,6 +178,7 @@ allEncounterTreacheryCards =
       , deepDark
       , deeperSlumber
       , descentIntoMadness
+      , dholeTunnel
       , diabolicVoices
       , dismalCurse
       , disquietingDreams
@@ -229,6 +230,7 @@ allEncounterTreacheryCards =
       , ledAstray
       , lightlessShadow
       , lightOfAforgomon
+      , litByDeathFire
       , lockedDoor
       , lostHumanity
       , lostInTheWilds
@@ -284,6 +286,7 @@ allEncounterTreacheryCards =
       , secretsOfTheBeyond
       , serpentsCall
       , serpentsIre
+      , shadowOfAtlachNacha
       , shadowSpawned
       , shadowed
       , shapesInTheMist
@@ -303,6 +306,7 @@ allEncounterTreacheryCards =
       , stalkedInTheDark
       , straitjacket
       , strangeSigns
+      , tasteOfLifeblood
       , terrorInTheNight
       , terrorFromBeyond
       , terrorUnleashed
@@ -330,6 +334,7 @@ allEncounterTreacheryCards =
       , ultimateChaos
       , umordhothsHunger
       , umordhothsWrath
+      , unexpectedAmbush
       , unhallowedCountry
       , vastExpanse
       , vaultOfEarthlyDemise
@@ -1874,6 +1879,44 @@ falseAwakening =
   (weakness "06233" "False Awakening")
     { cdCardTraits = setFromList [Curse]
     , cdEncounterSet = Just DarkSideOfTheMoon
+    , cdEncounterSetQuantity = Just 1
+    }
+
+tasteOfLifeblood :: CardDef
+tasteOfLifeblood =
+  (treachery "06268" "Taste of Lifeblood" PointOfNoReturn 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+litByDeathFire :: CardDef
+litByDeathFire =
+  (treachery "06269" "Lit by Death-Fire" PointOfNoReturn 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+unexpectedAmbush :: CardDef
+unexpectedAmbush =
+  (treachery "06270" "Unexpected Ambush" PointOfNoReturn 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+dholeTunnel :: CardDef
+dholeTunnel =
+  (treachery "06272" "Dhole Tunnel" TerrorOfTheVale 3)
+    { cdCardTraits = singleton Hazard
+    }
+
+shadowOfAtlachNacha :: CardDef
+shadowOfAtlachNacha =
+  (treachery "06274" "Shadow of Atlach-Nacha" DescentIntoThePitch 2)
+    { cdCardTraits = singleton Curse
+    }
+
+falseAwakeningPointOfNoReturn :: CardDef
+falseAwakeningPointOfNoReturn =
+  (weakness "06275" "False Awakening")
+    { cdCardTraits = setFromList [Curse]
+    , cdEncounterSet = Just PointOfNoReturn
     , cdEncounterSetQuantity = Just 1
     }
 

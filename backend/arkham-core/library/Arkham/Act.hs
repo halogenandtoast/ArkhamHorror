@@ -244,6 +244,11 @@ allActs =
     , SomeActCard exploringTheMoon
     , SomeActCard theMoonsCore
     , SomeActCard unexpectedRescue
+    , --- Point of No Return
+      SomeActCard enteringTheUnderworldV1
+    , SomeActCard enteringTheUnderworldV2
+    , SomeActCard theDescent
+    , SomeActCard theBlackExpanse
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

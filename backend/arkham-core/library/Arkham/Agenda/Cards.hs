@@ -23,6 +23,7 @@ allAgendaCards =
     $ map
       (toCardCode &&& id)
       [ aCreatureOfTheBayou
+      , aSinisterRealm
       , aTearInReality
       , agentsOfTheOuterGods
       , allIsOne
@@ -521,6 +522,12 @@ theAlarmIsRaised = agenda "06208" "The Alarm is Raised" 2 DarkSideOfTheMoon
 
 theyAreUponYou :: CardDef
 theyAreUponYou = agenda "06209" "They Are Upon You!" 3 DarkSideOfTheMoon
+
+aSinisterRealm :: CardDef
+aSinisterRealm = agenda "06248" "A Sinister Realm" 1 PointOfNoReturn
+
+besetByMonsters :: CardDef
+besetByMonsters = agenda "06249" "Beset by Monsters" 2 PointOfNoReturn
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

@@ -110,6 +110,15 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         , PlaceDoom (toSource tid) (toTarget tid) 1
         ]
 
+    mFalseAwakeningPointOfNoReturn <-
+      getMaybeCampaignStoryCard Treacheries.falseAwakeningPointOfNoReturn
+    for_ mFalseAwakeningPointOfNoReturn \falseAwakening -> do
+      tid <- getRandom
+      pushAll
+        [ AttachStoryTreacheryTo tid (toCard falseAwakening) AgendaDeckTarget
+        , PlaceDoom (toSource tid) (toTarget tid) 1
+        ]
+
     pure a
   BeginRound -> do
     push $ Do BeginRound

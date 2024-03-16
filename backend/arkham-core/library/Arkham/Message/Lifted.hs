@@ -32,6 +32,9 @@ import Arkham.Token
 class (CardGen m, HasGame m, HasQueue Message m) => ReverseQueue m
 instance (CardGen m, MonadIO m, HasGame m) => ReverseQueue (QueueT Message m)
 
+setChaosTokens :: ReverseQueue m => [ChaosTokenFace] -> m ()
+setChaosTokens = push . SetChaosTokens
+
 setEncounterDeck :: ReverseQueue m => Deck EncounterCard -> m ()
 setEncounterDeck = push . SetEncounterDeck
 

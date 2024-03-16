@@ -58,6 +58,7 @@ data Trait
   | Cursed
   | DarkYoung
   | DeepOne
+  | Depths
   | Desperate
   | Detective
   | Developed
@@ -204,6 +205,7 @@ data Trait
   | Trick
   | Unhallowed
   | Upgrade
+  | Vale
   | Venice
   | Veteran
   | Void

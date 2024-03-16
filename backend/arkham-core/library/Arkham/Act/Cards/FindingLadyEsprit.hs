@@ -66,7 +66,8 @@ instance RunMessage FindingLadyEsprit where
     NextAdvanceActStep aid 2 | aid == actId && onSide B attrs -> do
       (leadId, lead) <- getLeadInvestigatorPlayer
       curseOfTheRougarouSet <-
-        map EncounterCard
+        filter (not . (`cardMatch` Enemies.theRougarou))
+          . map EncounterCard
           <$> gatherEncounterSet EncounterSet.CurseOfTheRougarou
       rougarouSpawnLocations <- nonBayouLocations
       theRougarou <- genCard Enemies.theRougarou

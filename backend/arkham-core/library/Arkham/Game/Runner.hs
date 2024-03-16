@@ -1740,7 +1740,7 @@ runGameMessage msg g = case msg of
         insertAfterMatching [msg] (== EndSkillTestWindow)
         pure g
       else do
-        let iid = skillTestInvestigator skillTest
+        let iid = skillTest.investigator
         windows' <- windows [Window.InitiatedSkillTest skillTest]
         let defaultCase = windows' <> [BeginSkillTestAfterFast]
 
@@ -1777,7 +1777,7 @@ runGameMessage msg g = case msg of
                 -- if we choose a type it should replace for example if we have int+agi+wil+com and we use mind over matter
                 -- we should be asked for agi and com and end up with int+int+wil+int
                 -- Easiest way might be to let the skill test handle the replacement so we don't have to nest
-                player <- getPlayer (skillTestInvestigator skillTest)
+                player <- getPlayer skillTest.investigator
                 pure
                   $ map
                     ( \(base, setToList -> skillsTypes) ->
@@ -1798,13 +1798,14 @@ runGameMessage msg g = case msg of
             else pure msgs
 
         pushAll
-          $ [SetActiveInvestigator (skillTestInvestigator skillTest)]
+          $ [SetActiveInvestigator skillTest.investigator]
           <> pre
           <> msgs'
           <> [SetActiveInvestigator (g ^. activeInvestigatorIdL)]
         pure $ g & (skillTestL ?~ skillTest)
-  BeforeSkillTest skillTest ->
-    pure $ g & activeInvestigatorIdL .~ skillTestInvestigator skillTest
+  BeforeSkillTest skillTest -> do
+    player <- getPlayer skillTest.investigator
+    pure $ g & activeInvestigatorIdL .~ skillTest.investigator & activePlayerIdL .~ player
   CreateStoryAssetAtLocationMatching cardCode locationMatcher -> do
     lid <- selectJust locationMatcher
     assetId <- getRandom

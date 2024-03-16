@@ -1896,8 +1896,8 @@ runGameMessage msg g = case msg of
     let asset = createAsset card assetId
     pushAll [TakeControlOfAsset iid assetId]
     pure $ g & entitiesL . assetsL . at assetId ?~ asset
-  ReplaceInvestigatorAsset iid card -> do
-    assetId <- getRandom
+  ReplaceInvestigatorAsset iid assetId card -> do
+    replaceCard (toCardId card) card
     let asset = createAsset card assetId
     push (ReplacedInvestigatorAsset iid assetId)
     pure $ g & entitiesL . assetsL . at assetId ?~ asset

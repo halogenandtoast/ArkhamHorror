@@ -238,6 +238,7 @@ data AssetAttrs = AssetAttrs
   , assetAssignedSanityDamage :: Int
   , assetCustomizations :: IntMap Int
   , assetMeta :: Value
+  , assetFlipped :: Bool
   }
   deriving stock (Show, Eq, Generic)
 
@@ -250,6 +251,9 @@ instance Be AssetAttrs AssetMatcher where
 
 instance HasField "id" AssetAttrs AssetId where
   getField = assetId
+
+instance HasField "flipped" AssetAttrs Bool where
+  getField = assetFlipped
 
 instance HasField "placement" AssetAttrs Placement where
   getField = assetPlacement
@@ -328,6 +332,7 @@ instance FromJSON AssetAttrs where
     assetAssignedSanityDamage <- o .: "assignedSanityDamage"
     assetCustomizations <- o .:? "customizations" .!= mempty
     assetMeta <- o .:? "meta" .!= Null
+    assetFlipped <- o .:? "flipped" .!= False
     pure AssetAttrs {..}
 
 instance IsCard AssetAttrs where
@@ -379,6 +384,7 @@ assetWith f cardDef g =
             , assetAssignedSanityDamage = 0
             , assetCustomizations = mempty
             , assetMeta = Null
+            , assetFlipped = False
             }
     }
 

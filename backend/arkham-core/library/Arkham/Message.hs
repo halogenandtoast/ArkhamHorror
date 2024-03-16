@@ -906,7 +906,7 @@ data Message
   | Surge InvestigatorId Source
   | TakeActions InvestigatorId [Action] Cost
   | TakeControlOfAsset InvestigatorId AssetId
-  | ReplaceInvestigatorAsset InvestigatorId Card
+  | ReplaceInvestigatorAsset InvestigatorId AssetId Card
   | ReplacedInvestigatorAsset InvestigatorId AssetId
   | TakeControlOfSetAsideAsset InvestigatorId Card
   | SetAsideCards [Card]

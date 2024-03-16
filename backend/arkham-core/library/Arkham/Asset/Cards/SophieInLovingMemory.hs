@@ -1,9 +1,4 @@
-module Arkham.Asset.Cards.SophieInLovingMemory (
-  sophieInLovingMemory,
-  SophieInLovingMemory (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.SophieInLovingMemory (sophieInLovingMemory, SophieInLovingMemory (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -11,6 +6,7 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype SophieInLovingMemory = SophieInLovingMemory AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -25,37 +21,28 @@ sophieInLovingMemory =
 
 instance HasAbilities SophieInLovingMemory where
   getAbilities (SophieInLovingMemory x) =
-    [ restrictedAbility
-        x
-        1
-        (ControlsThis <> DuringSkillTest (YourSkillTest AnySkillTest))
-        $ FastAbility
-        $ DirectDamageCost (toSource x) You 1
-    , restrictedAbility
-        x
-        2
-        ( ControlsThis
-            <> InvestigatorExists
-              (You <> InvestigatorWithDamage (AtLeast $ Static 5))
-        )
-        $ ForcedAbility AnyWindow
-    ]
+    let flippedCriteria = if x.flipped then Never else NoRestriction
+     in [ controlledAbility x 1 (DuringSkillTest (YourSkillTest AnySkillTest))
+            $ FastAbility
+            $ DirectDamageCost (toSource x) You 1
+        , controlledAbility x 2 (flippedCriteria <> youExist (InvestigatorWithDamage (atLeast 5)))
+            $ forced AnyWindow
+        ]
 
 instance RunMessage SophieInLovingMemory where
   runMessage msg a@(SophieInLovingMemory attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              (skillTestModifier attrs (InvestigatorTarget iid) (AnySkillValue 2))
-    UseCardAbility iid source 2 _ _
-      | isSource attrs source ->
-          a <$ push (Flip iid (toSource attrs) (toTarget attrs))
-    Flip _ _ target | isTarget attrs target -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ skillTestModifier (attrs.ability 1) iid (AnySkillValue 2)
+      pure a
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      push $ Flip iid (attrs.ability 2) (toTarget attrs)
+      pure a
+    Flip _ _ (isTarget attrs -> True) -> do
       let
         sophieItWasAllMyFault =
           PlayerCard
             $ lookupPlayerCard Cards.sophieItWasAllMyFault (toCardId attrs)
         markId = getController attrs
-      a <$ pushAll [ReplaceInvestigatorAsset markId sophieItWasAllMyFault]
+      push $ ReplaceInvestigatorAsset markId attrs.id sophieItWasAllMyFault
+      pure $ SophieInLovingMemory $ attrs & flippedL .~ True
     _ -> SophieInLovingMemory <$> runMessage msg attrs

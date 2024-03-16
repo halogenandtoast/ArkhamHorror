@@ -203,7 +203,7 @@ const assetStory = computed(() => {
           <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
         </div>
 
-        <div v-if="showAbilities" class="abilities" :data-image="image">
+        <div v-if="showAbilities" class="abilities">
           <AbilityButton
             v-for="ability in abilities"
             :key="ability.index"

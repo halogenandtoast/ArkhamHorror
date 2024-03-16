@@ -52,6 +52,9 @@ instance HasField "action" SkillTest (Maybe Action) where
 instance HasField "target" SkillTest Target where
   getField = skillTestTarget
 
+instance HasField "investigator" SkillTest InvestigatorId where
+  getField = skillTestInvestigator
+
 instance HasField "revealedChaosTokens" SkillTest [ChaosToken] where
   getField = skillTestRevealedChaosTokens
 

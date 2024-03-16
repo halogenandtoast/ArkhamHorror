@@ -152,7 +152,7 @@ const testResult = computed(() => {
   background: #759686;
   width: fit-content;
   text-align: center;
-  z-index: 1000000000000;
+  z-index: 10;
   overflow: hidden;
 }
 

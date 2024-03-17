@@ -119,7 +119,7 @@ maybeGetSetAsideEncounterCard def = do
           then card
           else lookupCard (toCardCode def) (toCardId card)
 
-getSetAsideCardsMatching :: HasGame m => CardMatcher -> m [Card]
+getSetAsideCardsMatching :: (HasCallStack, HasGame m) => CardMatcher -> m [Card]
 getSetAsideCardsMatching = select . SetAsideCardMatch
 
 getJustLocationByName :: (HasCallStack, HasGame m) => Name -> m LocationId

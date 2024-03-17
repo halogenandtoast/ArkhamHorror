@@ -77,6 +77,8 @@ allPlayerTreacheryCards =
       , detachedFromReality
       , doomed
       , drawingTheSign
+      , falseAwakening
+      , falseAwakeningPointOfNoReturn
       , finalRhapsody
       , finePrint
       , haunted
@@ -198,7 +200,6 @@ allEncounterTreacheryCards =
       , expulsion
       , extradimensionalVisions
       , eyesInTheWalls
-      , falseAwakening
       , falseLead
       , fateOfAllFools
       , finalMistake

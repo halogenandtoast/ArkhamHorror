@@ -41,8 +41,8 @@ data FoundCardsStrategy
   | DrawOrPlayFound InvestigatorId Int
   deriving stock (Show, Eq, Ord, Data)
 
-defer :: Target -> FoundCardsStrategy
-defer = DeferSearchedToTarget
+defer :: Targetable target => target -> FoundCardsStrategy
+defer = DeferSearchedToTarget . toTarget
 
 data AfterPlayStrategy
   = DiscardThis

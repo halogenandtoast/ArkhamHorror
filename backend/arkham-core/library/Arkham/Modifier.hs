@@ -202,6 +202,7 @@ data ModifierType
   | FewerSlots SlotType Int
   | ForcePrey PreyMatcher
   | ForceSpawnLocation LocationMatcher
+  | ChangeSpawnLocation LocationMatcher LocationMatcher
   | ForcedChaosTokenChange ChaosTokenFace [ChaosTokenFace]
   | GainVictory Int
   | GiveAdditionalAction AdditionalAction

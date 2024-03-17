@@ -1,9 +1,13 @@
 module Arkham.Location.Cards.CityOfGugs (cityOfGugs, CityOfGugs (..)) where
 
 import Arkham.GameValue
+import Arkham.Helpers.Story (readStory)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Matcher
+import Arkham.Message.Lifted
 import Arkham.Prelude
+import Arkham.Story.Cards qualified as Story
 
 newtype CityOfGugs = CityOfGugs LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -13,8 +17,14 @@ cityOfGugs :: LocationCard CityOfGugs
 cityOfGugs = location CityOfGugs Cards.cityOfGugs 2 (PerPlayer 1)
 
 instance HasAbilities CityOfGugs where
-  getAbilities (CityOfGugs attrs) = extendRevealed attrs []
+  getAbilities (CityOfGugs a) = extendRevealed a [forcedAbility a 1 $ Enters #after You $ be a]
 
 instance RunMessage CityOfGugs where
-  runMessage msg (CityOfGugs attrs) =
-    CityOfGugs <$> runMessage msg attrs
+  runMessage msg l@(CityOfGugs attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      flipOver iid attrs
+      pure l
+    Flip iid _ (isTarget attrs -> True) -> do
+      readStory iid (toId attrs) Story.theSentry
+      pure . CityOfGugs $ attrs & canBeFlippedL .~ False
+    _ -> CityOfGugs <$> lift (runMessage msg attrs)

@@ -5692,7 +5692,7 @@ towerOfKoth =
 plainOfTheGhouls :: CardDef
 plainOfTheGhouls =
   victory 1
-    $ singleSided
+    $ veiled
     $ location
       "06257"
       "Plain of the Ghouls"

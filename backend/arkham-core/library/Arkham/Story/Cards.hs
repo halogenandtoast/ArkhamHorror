@@ -79,6 +79,10 @@ allStoryCards =
       , theBalefulStar
       , offTheGalley
       , ghastlyTunnels
+      , theSentry
+      , anotherPath
+      , aStrangeGhoul
+      , scoutingTheVale
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -258,3 +262,15 @@ offTheGalley = story "06214b" "Off the Galley" DarkSideOfTheMoon
 
 ghastlyTunnels :: CardDef
 ghastlyTunnels = story "06254b" "Ghastly Tunnels" PointOfNoReturn
+
+theSentry :: CardDef
+theSentry = story "06255b" "The Sentry" PointOfNoReturn
+
+anotherPath :: CardDef
+anotherPath = story "06256b" "Another Path" PointOfNoReturn
+
+aStrangeGhoul :: CardDef
+aStrangeGhoul = story "06257b" "A Strange Ghoul" PointOfNoReturn
+
+scoutingTheVale :: CardDef
+scoutingTheVale = story "06258b" "Scouting the Vale" PointOfNoReturn

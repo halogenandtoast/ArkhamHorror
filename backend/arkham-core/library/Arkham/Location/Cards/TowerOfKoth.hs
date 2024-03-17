@@ -1,14 +1,12 @@
-module Arkham.Location.Cards.TowerOfKoth
-  ( towerOfKoth
-  , TowerOfKoth(..)
-  )
-where
+module Arkham.Location.Cards.TowerOfKoth (towerOfKoth, TowerOfKoth (..)) where
 
-import Arkham.Prelude
-
-import Arkham.GameValue
+import Arkham.Ability
+import Arkham.Helpers.Story (readStory)
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Source
+import Arkham.Story.Cards qualified as Story
+import Arkham.Target
 
 newtype TowerOfKoth = TowerOfKoth LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -18,9 +16,17 @@ towerOfKoth :: LocationCard TowerOfKoth
 towerOfKoth = location TowerOfKoth Cards.towerOfKoth 5 (Static 0)
 
 instance HasAbilities TowerOfKoth where
-  getAbilities (TowerOfKoth attrs) =
-    extendRevealed attrs []
+  getAbilities (TowerOfKoth attrs) = extendRevealed attrs [restrictedAbility attrs 1 Here actionAbility]
 
 instance RunMessage TowerOfKoth where
-  runMessage msg (TowerOfKoth attrs) =
-    TowerOfKoth <$> runMessage msg attrs
+  runMessage msg l@(TowerOfKoth attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      beginSkillTest iid (attrs.ability 1) iid #combat 5
+      pure l
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      flipOver iid attrs
+      pure l
+    Flip iid _ (isTarget attrs -> True) -> do
+      readStory iid attrs Story.anotherPath
+      pure . TowerOfKoth $ attrs & canBeFlippedL .~ False
+    _ -> TowerOfKoth <$> lift (runMessage msg attrs)

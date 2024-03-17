@@ -248,6 +248,7 @@ data CampaignLogKey
   | TheInvestigatorsTraveledToTheColdWastes
   | RandolphCarterDidNotSurviveTheVoyage
   | RandolphSurvivedTheVoyage
+  | TheInvestigatorsFoundAWayOutOfTheUnderworld
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

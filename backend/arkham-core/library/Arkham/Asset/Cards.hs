@@ -3821,6 +3821,7 @@ richardUptonPickman =
     { cdCardTraits = setFromList [Ally, Ghoul, Artist]
     , cdUnique = True
     , cdCost = Nothing
+    , cdCardType = EncounterAssetType
     }
 
 emptyVessel4 :: CardDef

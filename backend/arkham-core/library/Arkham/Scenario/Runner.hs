@@ -797,6 +797,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & resignedCardCodesL %~ (cardCode :)
   RemoveFromEncounterDiscard ec -> pure $ a & discardL %~ filter (/= ec)
   RemoveFromEncounterDeck ec -> pure $ a & encounterDeckL %~ filter (/= ec)
+  ShuffleDeck Deck.EncounterDeck -> do
+    encounterDeck <- withDeckM shuffleM scenarioEncounterDeck
+    pure $ a & encounterDeckL .~ encounterDeck
   ShuffleEncounterDiscardBackIn -> do
     encounterDeck <-
       withDeckM

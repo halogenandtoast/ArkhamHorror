@@ -2,7 +2,7 @@ module Arkham.Story.Cards.ScoutingTheVale (ScoutingTheVale (..), scoutingTheVale
 
 import Arkham.Card
 import Arkham.Game.Helpers (perPlayer)
-import Arkham.Helpers.Message (UI (..), lookAt)
+import Arkham.Helpers.Message (lookAt)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Modifier

@@ -22,15 +22,15 @@ seventySteps = location SeventySteps Cards.seventySteps 1 (PerPlayer 1)
 
 instance HasAbilities SeventySteps where
   getAbilities (SeventySteps attrs) =
-    withRevealedAbilities attrs
-      $ [ mkAbility attrs 1
-            $ ForcedAbility
-            $ Leaves #after (You <> HandWith (LengthIs $ atLeast 6))
-            $ LocationWithId
-            $ toId attrs
-        , restrictedAbility attrs 2 (Here <> exists (You <> HandWith (HasCard DiscardableCard)))
-            $ FastAbility Free
-        ]
+    withRevealedAbilities
+      attrs
+      [ mkAbility attrs 1
+          $ forced
+          $ Leaves #after (You <> HandWith (LengthIs $ atLeast 6))
+          $ be attrs
+      , restrictedAbility attrs 2 (Here <> youExist (HandWith (HasCard DiscardableCard)))
+          $ FastAbility Free
+      ]
 
 instance RunMessage SeventySteps where
   runMessage msg l@(SeventySteps attrs) = case msg of

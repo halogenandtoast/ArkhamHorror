@@ -17,7 +17,9 @@ cityOfGugs :: LocationCard CityOfGugs
 cityOfGugs = location CityOfGugs Cards.cityOfGugs 2 (PerPlayer 1)
 
 instance HasAbilities CityOfGugs where
-  getAbilities (CityOfGugs a) = extendRevealed a [forcedAbility a 1 $ Enters #after You $ be a]
+  getAbilities (CityOfGugs a) =
+    let restriction = if locationCanBeFlipped a then NoRestriction else Never
+     in extendRevealed a [restrictedAbility a 1 restriction $ forced $ Enters #after You $ be a]
 
 instance RunMessage CityOfGugs where
   runMessage msg l@(CityOfGugs attrs) = runQueueT $ case msg of

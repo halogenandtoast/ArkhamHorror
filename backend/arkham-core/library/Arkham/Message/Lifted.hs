@@ -27,6 +27,7 @@ import Arkham.Matcher
 import Arkham.Message hiding (story)
 import Arkham.Movement
 import Arkham.Prelude
+import Arkham.Query
 import Arkham.SkillType qualified as SkillType
 import Arkham.Source
 import Arkham.Target
@@ -237,6 +238,25 @@ createSetAsideEnemyWith def creation f = do
   msg <- Msg.createEnemy card creation
   push $ toMessage (f msg)
 
+createEnemyWith
+  :: (ReverseQueue m, IsCard card, IsEnemyCreationMethod creation)
+  => card
+  -> creation
+  -> (EnemyCreation Message -> EnemyCreation Message)
+  -> m EnemyId
+createEnemyWith card creation f = do
+  msg <- Msg.createEnemy card creation
+  push $ toMessage (f msg)
+  pure msg.enemy
+
+createEnemyWith_
+  :: (ReverseQueue m, IsCard card, IsEnemyCreationMethod creation)
+  => card
+  -> creation
+  -> (EnemyCreation Message -> EnemyCreation Message)
+  -> m ()
+createEnemyWith_ card creation f = void $ createEnemyWith card creation f
+
 setAsideCards :: ReverseQueue m => [CardDef] -> m ()
 setAsideCards = genCards >=> push . Msg.SetAsideCards
 
@@ -274,6 +294,9 @@ eachInvestigator :: ReverseQueue m => (InvestigatorId -> m ()) -> m ()
 eachInvestigator f = do
   investigators <- getInvestigators
   for_ investigators f
+
+selectEach :: (Query a, ReverseQueue m) => a -> (QueryElement a -> m ()) -> m ()
+selectEach matcher f = select matcher >>= traverse_ f
 
 advanceAgendaDeck :: ReverseQueue m => AgendaAttrs -> m ()
 advanceAgendaDeck attrs = push $ AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)

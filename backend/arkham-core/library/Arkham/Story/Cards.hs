@@ -83,6 +83,10 @@ allStoryCards =
       , anotherPath
       , aStrangeGhoul
       , scoutingTheVale
+      , somethingBelow
+      , inhabitantsOfTheVale
+      , theWayOut
+      , spiderInfestedWaters
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -274,3 +278,15 @@ aStrangeGhoul = story "06257b" "A Strange Ghoul" PointOfNoReturn
 
 scoutingTheVale :: CardDef
 scoutingTheVale = story "06258b" "Scouting the Vale" PointOfNoReturn
+
+somethingBelow :: CardDef
+somethingBelow = story "06259b" "Something Below" PointOfNoReturn
+
+inhabitantsOfTheVale :: CardDef
+inhabitantsOfTheVale = story "06260b" "Inhabitants of the Vale" PointOfNoReturn
+
+theWayOut :: CardDef
+theWayOut = story "06261b" "The Way Out" PointOfNoReturn
+
+spiderInfestedWaters :: CardDef
+spiderInfestedWaters = story "06262b" "Spider-Infested Waters" PointOfNoReturn

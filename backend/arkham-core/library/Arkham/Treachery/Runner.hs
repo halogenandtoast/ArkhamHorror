@@ -83,4 +83,10 @@ instance RunMessage TreacheryAttrs where
         TreacheryAttachedTo attached | target == attached -> push $ toDiscard source a
         _ -> pure ()
       pure a
+    RemoveAllCopiesOfCardFromGame _ cCode | cCode == toCardCode a -> do
+      push $ RemoveTreachery (toId a)
+      pure a
+    RemoveAllCopiesOfEncounterCardFromGame cardMatcher | toCard a `cardMatch` cardMatcher -> do
+      push $ RemoveTreachery (toId a)
+      pure a
     _ -> pure a

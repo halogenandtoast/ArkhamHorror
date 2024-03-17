@@ -94,4 +94,5 @@ allStories =
     , SomeStoryCard theCityInside
     , SomeStoryCard theBalefulStar
     , SomeStoryCard offTheGalley
+    , SomeStoryCard ghastlyTunnels
     ]

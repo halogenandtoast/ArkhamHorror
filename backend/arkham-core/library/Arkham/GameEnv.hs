@@ -64,6 +64,9 @@ getCard cardId = do
     Nothing -> error $ "Unregistered card id: " <> show cardId
     Just card -> pure card
 
+findAllCards :: HasGame m => (Card -> Bool) -> m [Card]
+findAllCards cardPred = filter cardPred . toList . gameCards <$> getGame
+
 findCard :: HasGame m => (Card -> Bool) -> m (Maybe Card)
 findCard cardPred = find cardPred . toList . gameCards <$> getGame
 

@@ -10,12 +10,15 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.HasQueue as X (runQueueT)
 import Arkham.Classes.Query
 import Arkham.DamageEffect
+import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.Enemy.Creation
 import Arkham.Helpers
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Campaign qualified as Msg
 import Arkham.Helpers.Log qualified as Msg
 import Arkham.Helpers.Message qualified as Msg
+import Arkham.Helpers.Modifiers (ModifierType)
+import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.Xp
@@ -28,6 +31,8 @@ import Arkham.SkillType qualified as SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
+import Arkham.Window (Window)
+import Arkham.Zone
 
 class (CardGen m, HasGame m, HasQueue Message m) => ReverseQueue m
 instance (CardGen m, MonadIO m, HasGame m) => ReverseQueue (QueueT Message m)
@@ -59,6 +64,9 @@ placeLocationCard def = do
   (lid, placement) <- Msg.placeLocationCard def
   push placement
   pure lid
+
+placeLocation_ :: ReverseQueue m => Card -> m ()
+placeLocation_ = Msg.placeLocation_ >=> push
 
 placeRandomLocationGroupCards
   :: ReverseQueue m => Text -> [CardDef] -> m ()
@@ -149,6 +157,21 @@ findAndDrawEncounterCard
   :: (ReverseQueue m, IsCardMatcher a) => InvestigatorId -> a -> m ()
 findAndDrawEncounterCard iid matcher = push $ Msg.findAndDrawEncounterCard iid matcher
 
+findEncounterCard
+  :: forall cardMatcher target m
+   . (ReverseQueue m, Targetable target, IsCardMatcher cardMatcher)
+  => InvestigatorId
+  -> target
+  -> cardMatcher
+  -> m ()
+findEncounterCard iid target cardMatcher =
+  push
+    $ Msg.FindEncounterCard
+      iid
+      (toTarget target)
+      [FromEncounterDeck, FromEncounterDiscard]
+      (toCardMatcher cardMatcher)
+
 beginSkillTest
   :: (ReverseQueue m, Sourceable source, Targetable target)
   => InvestigatorId
@@ -186,9 +209,16 @@ forceAddCampaignCardToDeckChoice choices cardDef = do
   lead <- getLeadPlayer
   push $ Msg.forceAddCampaignCardToDeckChoice lead choices cardDef
 
-createEnemyAt
+createEnemyAt_
   :: (ReverseQueue m, IsCard card) => card -> LocationId -> m ()
-createEnemyAt c lid = push =<< Msg.createEnemyAt_ (toCard c) lid Nothing
+createEnemyAt_ c lid = push =<< Msg.createEnemyAt_ (toCard c) lid Nothing
+
+createEnemyAt
+  :: (ReverseQueue m, IsCard card) => card -> LocationId -> m EnemyId
+createEnemyAt c lid = do
+  (enemyId, msg) <- Msg.createEnemyAt (toCard c) lid Nothing
+  push msg
+  pure enemyId
 
 createSetAsideEnemy
   :: (ReverseQueue m, IsEnemyCreationMethod creation) => CardDef -> creation -> m ()
@@ -217,8 +247,9 @@ removeCampaignCard (toCardDef -> def) = do
   for_ mOwner \owner ->
     push $ RemoveCampaignCardFromDeck owner def
 
-placeClues :: (ReverseQueue m, Sourceable source) => source -> LocationId -> Int -> m ()
-placeClues source lid n = push $ PlaceClues (toSource source) (toTarget lid) n
+placeClues
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
+placeClues source target n = push $ PlaceClues (toSource source) (toTarget target) n
 
 placeTokens
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
@@ -269,3 +300,16 @@ chooseOne iid msgs = do
 
 addToHand :: (IsCard a, ReverseQueue m) => InvestigatorId -> [a] -> m ()
 addToHand iid cards = push $ AddToHand iid (map toCard cards)
+
+createCardEffect
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => CardDef
+  -> Maybe (EffectMetadata Window Message)
+  -> source
+  -> target
+  -> m ()
+createCardEffect def mMeta source target = push $ Msg.createCardEffect def mMeta source target
+
+gameModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
+gameModifier source target modifier = push $ Msg.gameModifier source target modifier

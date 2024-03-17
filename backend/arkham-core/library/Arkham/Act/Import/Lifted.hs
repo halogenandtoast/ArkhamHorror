@@ -15,6 +15,7 @@ import Arkham.Act.Runner as X (
   isSide,
   onSide,
   push,
+  pushAll,
   targetLabel,
   whenHasRecord,
   pattern R1,
@@ -25,6 +26,7 @@ import Arkham.Act.Runner as X (
   pattern R6,
   pattern R7,
   pattern R8,
+  pattern UseThisAbility,
  )
 import Arkham.Classes as X
 import Arkham.Cost as X

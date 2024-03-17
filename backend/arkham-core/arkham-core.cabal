@@ -1091,6 +1091,7 @@ library
       Arkham.Enemy.Cards.HotelGuest
       Arkham.Enemy.Cards.HotelManager
       Arkham.Enemy.Cards.HotelSecurity
+      Arkham.Enemy.Cards.HuntingGhast
       Arkham.Enemy.Cards.HuntingHorror
       Arkham.Enemy.Cards.HuntingNightgaunt
       Arkham.Enemy.Cards.Ichtaca
@@ -1112,6 +1113,7 @@ library
       Arkham.Enemy.Cards.LodgeEnforcer
       Arkham.Enemy.Cards.LodgeJailor
       Arkham.Enemy.Cards.LodgeNeophyte
+      Arkham.Enemy.Cards.LumberingGug
       Arkham.Enemy.Cards.LupineThrall
       Arkham.Enemy.Cards.MadPatient
       Arkham.Enemy.Cards.MalevolentSpirit
@@ -2391,6 +2393,7 @@ library
       Arkham.Story.Cards.EndlessSecrets
       Arkham.Story.Cards.EngramsOath
       Arkham.Story.Cards.GavriellasFate
+      Arkham.Story.Cards.GhastlyTunnels
       Arkham.Story.Cards.GhostsOfTheDead
       Arkham.Story.Cards.HastursEnd
       Arkham.Story.Cards.InhabitantOfCarcosa

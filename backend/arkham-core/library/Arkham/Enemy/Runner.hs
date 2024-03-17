@@ -635,6 +635,8 @@ instance RunMessage EnemyAttrs where
                 else exhaustedL .~ True
           pure $ a & updatePlacement & updateExhausted
     Exhaust (isTarget a -> True) -> do
+      afterWindow <- checkWindows [mkAfter $ Window.Exhausts (toTarget a)]
+      push afterWindow
       case enemyPlacement of
         AsSwarm eid' _ -> do
           others <- select $ SwarmOf eid' <> not_ (EnemyWithId $ toId a) <> ReadyEnemy

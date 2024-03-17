@@ -16,6 +16,7 @@ import Arkham.Id
 import Arkham.Matcher.Types
 import Arkham.Message
 import Arkham.Modifier as X
+import Arkham.Phase (Phase)
 import Arkham.Source
 import Arkham.Target
 import Arkham.Window (Window)
@@ -142,6 +143,10 @@ roundModifiers = createRoundModifier
 gameModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 gameModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectGameWindow source target [modifier]
+
+nextPhaseModifier
+  :: (Sourceable source, Targetable target) => Phase -> source -> target -> ModifierType -> Message
+nextPhaseModifier phase (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect (EffectPhaseWindowFor phase) source target [modifier]
 
 costModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message

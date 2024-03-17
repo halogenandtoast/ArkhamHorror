@@ -309,6 +309,9 @@ allEnemies =
       SomeEnemyCard greyWeaver
     , --- Agents of Nyarlathotep
       SomeEnemyCard theCrawlingMist
+    , --- Creatures of the Underworld
+      SomeEnemyCard huntingGhast
+    , SomeEnemyCard lumberingGug
     , --- Spiders
       SomeEnemyCard spiderOfLeng
     , SomeEnemyCard swarmOfSpiders

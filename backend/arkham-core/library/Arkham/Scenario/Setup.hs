@@ -150,7 +150,7 @@ enemyAt :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m ()
 enemyAt def lid = do
   encounterDeckL %= flip removeEachFromDeck [def]
   card <- genCard def
-  createEnemyAt card lid
+  createEnemyAt_ card lid
 
 addExtraDeck :: (ReverseQueue m, IsCard card) => ScenarioDeckKey -> [card] -> ScenarioBuilderT m ()
 addExtraDeck k cards = do

@@ -2084,6 +2084,9 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
               ]
           Nothing -> noMatch
       _ -> noMatch
+    Matcher.EnemyExhausts timing enemyMatcher -> guardTiming timing \case
+      Window.Exhausts (EnemyTarget eid) -> enemyMatches eid enemyMatcher
+      _ -> noMatch
     Matcher.MovedBy timing whoMatcher sourceMatcher -> guardTiming timing $ \case
       Window.Moves who source' _ _ ->
         andM

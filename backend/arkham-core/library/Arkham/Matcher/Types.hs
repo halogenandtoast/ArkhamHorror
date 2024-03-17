@@ -71,6 +71,7 @@ data InvestigatorMatcher
   | Anyone
   | FewestCardsInHand
   | MostCardsInHand
+  | MostDamage
   | LowestRemainingHealth
   | LowestRemainingSanity
   | MostRemainingSanity
@@ -693,6 +694,9 @@ instance IsLabel "seeker" CardMatcher where
 instance IsLabel "rogue" CardMatcher where
   fromLabel = CardWithClass Rogue
 
+instance IsLabel "location" CardMatcher where
+  fromLabel = CardWithType LocationType
+
 instance IsLabel "treachery" CardMatcher where
   fromLabel = CardWithType TreacheryType
 
@@ -886,6 +890,7 @@ data WindowMatcher
   | LostActions Timing Who SourceMatcher
   | WouldTriggerChaosTokenRevealEffectOnCard Who CardMatcher [ChaosTokenFace]
   | Exhausts Timing Who TargetMatcher
+  | EnemyExhausts Timing EnemyMatcher
   | EntersThreatArea Timing Who CardMatcher
   deriving stock (Show, Eq, Ord, Data)
 

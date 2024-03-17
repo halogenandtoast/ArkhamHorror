@@ -49,6 +49,7 @@
        "instance RunMessage {dot} where",
        "  runMessage msg a@({dot} attrs) = runQueueT $ case msg of",
        "    AdvanceAct (isSide B attrs -> True) _ _ -> do",
+       "      advanceActDeck attrs",
        "      pure a",
        "    _ -> {dot} <$> lift (runMessage msg attrs)"
     ]

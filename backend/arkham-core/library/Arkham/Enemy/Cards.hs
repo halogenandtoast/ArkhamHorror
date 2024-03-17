@@ -156,6 +156,7 @@ allEncounterEnemyCards =
       , hotelGuest
       , hotelManager
       , hotelSecurity
+      , huntingGhast
       , huntingHorror
       , huntingNightgaunt
       , ichtaca
@@ -177,6 +178,7 @@ allEncounterEnemyCards =
       , lodgeEnforcer
       , lodgeJailor
       , lodgeNeophyte
+      , lumberingGug
       , lupineThrall
       , madPatient
       , malevolentSpirit
@@ -1628,6 +1630,21 @@ theCrawlingMist =
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
     , cdVictoryPoints = Just 1
     , cdUnique = True
+    }
+
+huntingGhast :: CardDef
+huntingGhast =
+  ( enemy "06091" "Hunting Ghast" CreaturesOfTheUnderworld 3
+  )
+    { cdCardTraits = setFromList [Humanoid, Monster, Ghast]
+    , cdKeywords = singleton Keyword.Hunter
+    }
+
+lumberingGug :: CardDef
+lumberingGug =
+  ( enemy "06092" "Lumbering Gug" CreaturesOfTheUnderworld 1
+  )
+    { cdCardTraits = setFromList [Monster, Gug]
     }
 
 spiderOfLeng :: CardDef

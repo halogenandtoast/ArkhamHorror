@@ -686,6 +686,7 @@ getInvestigatorsMatching matcher = do
         (toId i)
         UneliminatedInvestigator
         (fieldMap InvestigatorHand length)
+    MostDamage -> \i -> isHighestAmongst (toId i) UneliminatedInvestigator (field InvestigatorDamage)
     MostCardsInHand -> \i ->
       isHighestAmongst
         (toId i)

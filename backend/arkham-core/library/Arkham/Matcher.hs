@@ -8,6 +8,7 @@ import Arkham.Prelude
 
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card.CardCode
+import Arkham.EncounterSet (EncounterSet)
 import Arkham.Id
 import Arkham.Matcher.Patterns
 import Arkham.Matcher.Types
@@ -291,6 +292,9 @@ storyIs = StoryIs . toCardCode
 
 cardIs :: HasCardCode a => a -> CardMatcher
 cardIs = CardWithCardCode . toCardCode
+
+fromSets :: [EncounterSet] -> CardMatcher
+fromSets = oneOf . map CardFromEncounterSet
 
 -- ** Extended Card Helpers **
 

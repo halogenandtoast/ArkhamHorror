@@ -90,6 +90,7 @@ data Trait
   | Future
   | Gambit
   | Geist
+  | Ghast
   | Ghoul
   | Grant
   | Graveyard

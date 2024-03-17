@@ -49,5 +49,8 @@ data EnemyCreation msg = MkEnemyCreation
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+createExhausted :: EnemyCreation msg -> EnemyCreation msg
+createExhausted ec = ec {enemyCreationExhausted = True}
+
 instance HasField "enemy" (EnemyCreation msg) EnemyId where
   getField = enemyCreationEnemyId

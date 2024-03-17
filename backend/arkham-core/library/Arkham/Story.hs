@@ -99,4 +99,8 @@ allStories =
     , SomeStoryCard anotherPath
     , SomeStoryCard aStrangeGhoul
     , SomeStoryCard scoutingTheVale
+    , SomeStoryCard somethingBelow
+    , SomeStoryCard inhabitantsOfTheVale
+    , SomeStoryCard theWayOut
+    , SomeStoryCard spiderInfestedWaters
     ]

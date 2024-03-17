@@ -347,11 +347,8 @@
       "  )",
       "where",
       "",
-      "import Arkham.Prelude",
-      "",
-      "import Arkham.GameValue",
       "import Arkham.Location.Cards qualified as Cards",
-      "import Arkham.Location.Runner",
+      "import Arkham.Location.Import.Lifted",
       "",
       "newtype {dot} = {dot} LocationAttrs",
       "  deriving anyclass (IsLocation, HasModifiersFor)",
@@ -365,8 +362,8 @@
       "    extendRevealed attrs []",
       "",
       "instance RunMessage {dot} where",
-      "  runMessage msg ({dot} attrs) =",
-      "    {dot} <$> runMessage msg attrs"
+      "  runMessage msg ({dot} attrs) = runQueueT $ case msg of",
+      "    _ -> {dot} <$> lift (runMessage msg attrs)"
       ]
   },
   "arkham-core/library/Arkham/Skill/Cards/*.hs": {

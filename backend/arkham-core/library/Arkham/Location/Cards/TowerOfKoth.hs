@@ -24,7 +24,8 @@ instance RunMessage TowerOfKoth where
       beginSkillTest iid (attrs.ability 1) iid #combat 5
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      flipOver iid attrs
+      when (locationCanBeFlipped attrs)
+        $ flipOver iid attrs
       pure l
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid attrs Story.anotherPath

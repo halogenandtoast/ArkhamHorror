@@ -2399,6 +2399,7 @@ library
       Arkham.Story.Cards.GhostsOfTheDead
       Arkham.Story.Cards.HastursEnd
       Arkham.Story.Cards.InhabitantOfCarcosa
+      Arkham.Story.Cards.InhabitantsOfTheVale
       Arkham.Story.Cards.JeromesFate
       Arkham.Story.Cards.JosefsPlan
       Arkham.Story.Cards.LagneauPerdu
@@ -2411,7 +2412,9 @@ library
       Arkham.Story.Cards.SickeningReality_67
       Arkham.Story.Cards.SickeningReality_68
       Arkham.Story.Cards.SickeningReality_69
+      Arkham.Story.Cards.SomethingBelow
       Arkham.Story.Cards.SongsThatTheHyadesShallSing
+      Arkham.Story.Cards.SpiderInfestedWaters
       Arkham.Story.Cards.StarsOfAldebaran
       Arkham.Story.Cards.StepsOfThePalace
       Arkham.Story.Cards.TheArchway
@@ -2431,6 +2434,7 @@ library
       Arkham.Story.Cards.TheSentry
       Arkham.Story.Cards.TheTrialOfKamanThah
       Arkham.Story.Cards.TheTrialOfNasht
+      Arkham.Story.Cards.TheWayOut
       Arkham.Story.Cards.TimelessBeauty
       Arkham.Story.Cards.UnattainableDesires
       Arkham.Story.Cards.UnfinishedBusiness_B

@@ -21,7 +21,7 @@ nonBayouLocations = select $ LocationWithoutTrait Bayou
 getTheRougarou :: HasGame m => m (Maybe EnemyId)
 getTheRougarou = selectOne $ enemyIs Cards.theRougarou
 
-locationsWithLabels :: MonadRandom m => Trait -> [Card] -> m [(Text, Card)]
+locationsWithLabels :: (MonadRandom m, HasTraits a) => Trait -> [a] -> m [(Text, a)]
 locationsWithLabels trait locationSet = do
   let
     (before, bayou :| after) = case break (elem Bayou . toTraits) locationSet of

@@ -419,7 +419,6 @@ allEffects =
     , ("60431", SomeEffect clairvoyance5Effect)
     , ("60432", SomeEffect ineffableTruth5Effect)
     , ("60512", SomeEffect willToSurviveEffect)
-    , ("81001", SomeEffect curseOfTheRougarouTabletToken)
     , ("81007", SomeEffect cursedShoresEffect)
     , ("82026", SomeEffect gildedVoltoEffect)
     , ("82035", SomeEffect mesmerizeEffect)

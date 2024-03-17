@@ -985,7 +985,6 @@ library
       Arkham.Effect
       Arkham.Effect.Effects
       Arkham.Effect.Effects.ChaosTokenEffect
-      Arkham.Effect.Effects.CurseOfTheRougarouTabletToken
       Arkham.Effect.Effects.SurgeEffect
       Arkham.Effect.Effects.UndimensionedAndUnseenTabletToken
       Arkham.Effect.Effects.WindowModifierEffect

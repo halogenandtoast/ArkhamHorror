@@ -1,16 +1,10 @@
-module Arkham.Scenario.Scenarios.CurseOfTheRougarou (
-  CurseOfTheRougarou (..),
-  curseOfTheRougarou,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.CurseOfTheRougarou (CurseOfTheRougarou (..), curseOfTheRougarou) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack
 import Arkham.CampaignLogKey
-import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
@@ -18,10 +12,12 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message
+import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
+import Arkham.Prelude
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
+import Arkham.Scenario.Runner hiding (chooseOne, story)
+import Arkham.Scenario.Setup
 import Arkham.Scenarios.CurseOfTheRougarou.FlavorText
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Trait hiding (Cultist)
@@ -60,24 +56,22 @@ instance HasChaosTokenValue CurseOfTheRougarou where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage CurseOfTheRougarou where
-  runMessage msg s@(CurseOfTheRougarou attrs) = case msg of
-    Setup -> do
-      players <- allPlayers
-      let cardsToSetAside = [Assets.ladyEsprit, Assets.bearTrap, Assets.fishingNet]
-      encounterDeck <- buildEncounterDeckExcluding cardsToSetAside [EncounterSet.TheBayou]
+  runMessage msg s@(CurseOfTheRougarou attrs) = runQueueT $ case msg of
+    PreScenarioSetup -> do
+      story intro
+      pure s
+    Setup -> runScenarioSetup CurseOfTheRougarou attrs $ do
+      gather EncounterSet.TheBayou
+
       result <- shuffleM $ keys locationsByTrait
       let
         trait = fromJust . headMay . drop 1 $ result
         rest = drop 2 result
 
-      startingLocations <- genCards $ findWithDefault [] trait locationsByTrait
-      startingLocationsWithLabel <- locationsWithLabels trait startingLocations
+      setAside [Assets.ladyEsprit, Assets.bearTrap, Assets.fishingNet]
+      setAside $ concatMap (\t -> findWithDefault [] t locationsByTrait) rest
 
-      setAsideLocations <-
-        genCards
-          $ concatMap (\t -> findWithDefault [] t locationsByTrait) rest
-
-      setAsideCards <- genCards cardsToSetAside
+      startingLocationsWithLabel <- locationsWithLabels trait $ findWithDefault [] trait locationsByTrait
 
       let
         ((bayouLabel, bayou), others) =
@@ -85,35 +79,20 @@ instance RunMessage CurseOfTheRougarou where
             (as, x : bs) -> (x, as <> bs)
             _ -> error "handled"
 
-      (bayouId, placeBayou) <- placeLocation bayou
-      otherPlacements <- for others $ \(label, card) -> do
-        (locationId, placement) <- placeLocation card
-        pure [placement, SetLocationLabel locationId label]
+      start <- place bayou
+      startAt start
+      push $ SetLocationLabel start bayouLabel
 
-      pushAll
-        $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
-        <> [placeBayou, SetLocationLabel bayouId bayouLabel]
-        <> concat otherPlacements
-        <> [ RevealLocation Nothing bayouId
-           , MoveAllTo (toSource attrs) bayouId
-           , story players intro
-           ]
-      agendas <-
-        genCards
-          [ Agendas.aCreatureOfTheBayou
-          , Agendas.theRougarouFeeds
-          , Agendas.theCurseSpreads
-          ]
-      acts <- genCards [Acts.findingLadyEsprit, Acts.huntingTheRougarou]
+      for_ others $ \(label, card) -> do
+        locationId <- place card
+        push $ SetLocationLabel locationId label
 
-      CurseOfTheRougarou
-        <$> runMessage
-          msg
-          ( attrs
-              & (setAsideCardsL .~ setAsideLocations <> setAsideCards)
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
-          )
+      setAgendaDeck
+        [ Agendas.aCreatureOfTheBayou
+        , Agendas.theRougarouFeeds
+        , Agendas.theCurseSpreads
+        ]
+      setActDeck [Acts.findingLadyEsprit, Acts.huntingTheRougarou]
     SetChaosTokensForScenario -> do
       let
         tokens =
@@ -174,16 +153,13 @@ instance RunMessage CurseOfTheRougarou where
               ]
       s <$ push (SetChaosTokens tokens)
     ResolveChaosToken _ Cultist iid -> do
-      rougarouAtYourLocation <-
-        selectAny
-          $ enemyIs Enemies.theRougarou
-          <> EnemyAt
-            (locationWithInvestigator iid)
-      s <$ when rougarouAtYourLocation (push $ DrawAnotherChaosToken iid)
+      rougarouAtYourLocation <- selectAny $ enemyIs Enemies.theRougarou <> enemyAtLocationWith iid
+      pushWhen rougarouAtYourLocation (DrawAnotherChaosToken iid)
+      pure s
     ResolveChaosToken _ ElderThing iid -> do
       if isEasyStandard attrs
         then do
-          mrougarou <- selectOne $ enemyIs Enemies.theRougarou <> EnemyAt (locationWithInvestigator iid)
+          mrougarou <- selectOne $ enemyIs Enemies.theRougarou <> enemyAtLocationWith iid
           for_ mrougarou \eid -> push $ EnemyWillAttack $ enemyAttack eid attrs iid
         else do
           lid <- getJustLocation iid
@@ -191,51 +167,35 @@ instance RunMessage CurseOfTheRougarou where
           mrougarou <-
             selectOne
               $ enemyIs Enemies.theRougarou
-              <> EnemyAt (LocationMatchAny $ map LocationWithId $ lid : connectedLocationIds)
+              <> EnemyAt (oneOf $ map LocationWithId $ lid : connectedLocationIds)
           for_ mrougarou \eid -> push $ EnemyWillAttack $ enemyAttack eid attrs iid
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
-      when
-        (token.face == Tablet)
-        (push $ CreateEffect "81001" Nothing (ChaosTokenSource token) (InvestigatorTarget iid))
+      pushWhen (token.face == Tablet) (roundModifier TabletEffect iid CannotMove)
       pure s
     ScenarioResolution NoResolution ->
       runMessage (ScenarioResolution $ Resolution 1) s
     ScenarioResolution (Resolution 1) -> do
-      players <- allPlayers
-      xp <- getXp
-      pushAll
-        $ [story players resolution1, Record TheRougarouContinuesToHauntTheBayou]
-        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-        <> [EndOfGame Nothing]
+      story resolution1
+      record TheRougarouContinuesToHauntTheBayou
+      allGainXp attrs
+      endOfScenario
       pure s
     ScenarioResolution (Resolution 2) -> do
-      players <- allPlayers
-      (leadId, lead) <- getLeadInvestigatorPlayer
-      xp <- getXp
-      pushAll
-        $ [ story players resolution2
-          , Record TheRougarouIsDestroyed
-          , RemoveCampaignCard Treacheries.curseOfTheRougarou
-          , chooseOne
-              lead
-              [ Label "Add Lady Esprit to your deck" [AddCampaignCardToDeck leadId Assets.ladyEsprit]
-              , Label "Do not add Lady Esprit to your deck" []
-              ]
-          ]
-        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-        <> [EndOfGame Nothing]
+      lead <- getLead
+      story resolution2
+      record TheRougarouIsDestroyed
+      removeCampaignCard Treacheries.curseOfTheRougarou
+      addCampaignCardToDeckChoice [lead] Assets.ladyEsprit
+      allGainXp attrs
+      endOfScenario
       pure s
     ScenarioResolution (Resolution 3) -> do
-      players <- allPlayers
       lead <- getLead
-      xp <- getXp
-      pushAll
-        $ [ story players resolution3
-          , Record TheRougarouEscapedAndYouEmbracedTheCurse
-          , AddCampaignCardToDeck lead Assets.monstrousTransformation
-          ]
-        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-        <> [EndOfGame Nothing]
+      story resolution3
+      record TheRougarouEscapedAndYouEmbracedTheCurse
+      addCampaignCardToDeck lead Assets.monstrousTransformation
+      allGainXp attrs
+      endOfScenario
       pure s
-    _ -> CurseOfTheRougarou <$> runMessage msg attrs
+    _ -> CurseOfTheRougarou <$> lift (runMessage msg attrs)

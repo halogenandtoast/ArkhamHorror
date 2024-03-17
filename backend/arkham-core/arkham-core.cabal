@@ -2136,6 +2136,7 @@ library
       Arkham.Location.Cards.Zocalo
       Arkham.Location.Cards.ZulanThek
       Arkham.Location.Helpers
+      Arkham.Location.Import.Lifted
       Arkham.Location.Label
       Arkham.Location.Locations
       Arkham.Location.Runner
@@ -2384,8 +2385,10 @@ library
       Arkham.Story.Cards.AboveAndBelow
       Arkham.Story.Cards.AdviceOfTheKing
       Arkham.Story.Cards.AMomentsRest
+      Arkham.Story.Cards.AnotherPath
       Arkham.Story.Cards.AnotherWay
       Arkham.Story.Cards.AShrineToTheGods
+      Arkham.Story.Cards.AStrangeGhoul
       Arkham.Story.Cards.BleakDesolation
       Arkham.Story.Cards.CrypticSouls
       Arkham.Story.Cards.CylindersOfKadatheron
@@ -2403,6 +2406,7 @@ library
       Arkham.Story.Cards.MappingTheStreets
       Arkham.Story.Cards.OffTheGalley
       Arkham.Story.Cards.PennysFate
+      Arkham.Story.Cards.ScoutingTheVale
       Arkham.Story.Cards.SickeningReality_65
       Arkham.Story.Cards.SickeningReality_66
       Arkham.Story.Cards.SickeningReality_67
@@ -2425,6 +2429,7 @@ library
       Arkham.Story.Cards.TheLikenessOfOld
       Arkham.Story.Cards.ThePalaceOfRainbows
       Arkham.Story.Cards.ThePattern
+      Arkham.Story.Cards.TheSentry
       Arkham.Story.Cards.TheTrialOfKamanThah
       Arkham.Story.Cards.TheTrialOfNasht
       Arkham.Story.Cards.TimelessBeauty
@@ -2439,6 +2444,7 @@ library
       Arkham.Story.Cards.WaresOfBaharna
       Arkham.Story.Cards.WhatRemainsOfTyrrhia
       Arkham.Story.Cards.YigsMercy
+      Arkham.Story.Import.Lifted
       Arkham.Story.Runner
       Arkham.Story.Stories
       Arkham.Story.Types

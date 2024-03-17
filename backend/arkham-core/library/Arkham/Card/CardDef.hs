@@ -269,7 +269,7 @@ class HasOriginalCardCode a where
   toOriginalCardCode :: a -> CardCode
 
 class HasCardType a where
-  toCardType :: a -> CardType
+  toCardType :: HasCallStack => a -> CardType
 
 instance HasCardDef a => HasCardType a where
   toCardType = cdCardType . toCardDef

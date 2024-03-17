@@ -11,8 +11,12 @@ import Arkham.Message
 import Arkham.Window qualified as Window
 
 readStory
-  :: (CardGen m, HasQueue Message m, HasGame m) => InvestigatorId -> LocationId -> CardDef -> m ()
-readStory iid lid storyDef = do
+  :: (CardGen m, HasQueue Message m, HasGame m, AsId a, IdOf a ~ LocationId)
+  => InvestigatorId
+  -> a
+  -> CardDef
+  -> m ()
+readStory iid (asId -> lid) storyDef = do
   (whenWindowMsg, _, afterWindowMsg) <- frame (Window.FlipLocation iid lid)
   storyCard <- genCard storyDef
   pushAll [whenWindowMsg, afterWindowMsg, ReadStory iid storyCard ResolveIt Nothing]

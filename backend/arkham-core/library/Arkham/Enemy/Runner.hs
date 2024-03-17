@@ -45,6 +45,7 @@ import Arkham.Matcher (
   AssetMatcher (..),
   EnemyMatcher (..),
   InvestigatorMatcher (..),
+  LocationFilter (..),
   LocationMatcher (..),
   MovesVia (..),
   PreyMatcher (..),
@@ -1023,29 +1024,42 @@ instance RunMessage EnemyAttrs where
             }
       pure a
     InvestigatorDrawEnemy iid eid | eid == enemyId -> do
-      modifiers' <- getModifiers enemyId
+      mods <- getModifiers enemyId
       let
         getModifiedSpawnAt [] = enemySpawnAt
         getModifiedSpawnAt (ForceSpawnLocation m : _) = Just $ SpawnAt m
         getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
-        spawnAtMatcher = getModifiedSpawnAt modifiers'
+        spawnAtMatcher = getModifiedSpawnAt mods
+        LocationFilter cannotSpawnMatchers = fold [LocationFilter m | CannotSpawnIn m <- mods]
+        (LocationFilter changeSpawnMatchers, changedSpawnMatchers) = fold [(LocationFilter x, y) | ChangeSpawnLocation x y <- mods]
+        applyMatcherExclusions ms (SpawnAtFirst sas) =
+          SpawnAtFirst (map (applyMatcherExclusions ms) sas)
+        applyMatcherExclusions [] m = m
+        applyMatcherExclusions (CannotSpawnIn n : xs) (SpawnAt m) =
+          applyMatcherExclusions xs (SpawnAt $ m <> NotLocation n)
+        applyMatcherExclusions (_ : xs) m = applyMatcherExclusions xs m
+
       case spawnAtMatcher of
         Nothing -> do
           mlid <- getMaybeLocation iid
           case mlid of
             Just lid -> do
-              windows' <- checkWindows [mkWhen $ Window.EnemyWouldSpawnAt eid lid]
-              pushAll $ windows' : resolve (EnemySpawn (Just iid) lid eid)
+              canSpawn <- lid <!=~> cannotSpawnMatchers
+              unchanged <- lid <!=~> changeSpawnMatchers
+              if canSpawn && unchanged
+                then do
+                  windows' <- checkWindows [mkWhen $ Window.EnemyWouldSpawnAt eid lid]
+                  pushAll $ windows' : resolve (EnemySpawn (Just iid) lid eid)
+                else
+                  if not unchanged
+                    then do
+                      spawnAt
+                        enemyId
+                        $ applyMatcherExclusions mods
+                        $ replaceYouMatcher iid (SpawnAt $ not_ changeSpawnMatchers <> changedSpawnMatchers)
+                    else noSpawn a (Just iid)
             Nothing -> noSpawn a (Just iid)
-        Just matcher -> do
-          let
-            applyMatcherExclusions ms (SpawnAtFirst sas) =
-              SpawnAtFirst (map (applyMatcherExclusions ms) sas)
-            applyMatcherExclusions [] m = m
-            applyMatcherExclusions (CannotSpawnIn n : xs) (SpawnAt m) =
-              applyMatcherExclusions xs (SpawnAt $ m <> NotLocation n)
-            applyMatcherExclusions (_ : xs) m = applyMatcherExclusions xs m
-          spawnAt enemyId (applyMatcherExclusions modifiers' $ replaceYouMatcher iid matcher)
+        Just matcher -> spawnAt enemyId (applyMatcherExclusions mods $ replaceYouMatcher iid matcher)
       pure a
     EnemySpawnAtLocationMatching miid locationMatcher eid | eid == enemyId -> do
       activeInvestigatorId <- getActiveInvestigatorId

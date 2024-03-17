@@ -313,3 +313,11 @@ createCardEffect def mMeta source target = push $ Msg.createCardEffect def mMeta
 gameModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 gameModifier source target modifier = push $ Msg.gameModifier source target modifier
+
+flipOver
+  :: (ReverseQueue m, Sourceable a, Targetable a) => InvestigatorId -> a -> m ()
+flipOver iid a = push $ Msg.Flip iid (toSource a) (toTarget a)
+
+flipOverBy
+  :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
+flipOverBy iid source target = push $ Msg.Flip iid (toSource source) (toTarget target)

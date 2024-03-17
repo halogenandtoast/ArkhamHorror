@@ -29,6 +29,7 @@ allAgendaCards =
       , allIsOne
       , beckoningForPower
       , behindTheCurtain
+      , besetByMonsters
       , bidingItsTime
       , breakingThrough
       , callingForthTheOldOnes

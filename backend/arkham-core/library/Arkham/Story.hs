@@ -95,4 +95,8 @@ allStories =
     , SomeStoryCard theBalefulStar
     , SomeStoryCard offTheGalley
     , SomeStoryCard ghastlyTunnels
+    , SomeStoryCard theSentry
+    , SomeStoryCard anotherPath
+    , SomeStoryCard aStrangeGhoul
+    , SomeStoryCard scoutingTheVale
     ]

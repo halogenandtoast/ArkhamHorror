@@ -457,6 +457,24 @@ data LocationMatcher
     ThatLocation
   deriving stock (Show, Eq, Ord, Data)
 
+newtype LocationFilter = LocationFilter {getLocationFilter :: LocationMatcher}
+
+-- LocationFilter has the same semigroup and monoid instances as LocationMatcher except that the monoid instance is Nowhere and the Semigroup instance needs to swap the behavior for Anywhere and Nowhere
+
+instance Semigroup LocationFilter where
+  LocationFilter Nowhere <> y = y
+  x <> LocationFilter Nowhere = x
+  x@(LocationFilter Anywhere) <> _ = x
+  _ <> y@(LocationFilter Anywhere) = y
+  LocationFilter (LocationMatchAll xs) <> LocationFilter (LocationMatchAll ys) =
+    LocationFilter $ LocationMatchAll (xs <> ys)
+  LocationFilter (LocationMatchAll xs) <> LocationFilter x = LocationFilter (LocationMatchAll (x : xs))
+  LocationFilter x <> LocationFilter (LocationMatchAll xs) = LocationFilter (LocationMatchAll (x : xs))
+  LocationFilter x <> LocationFilter y = LocationFilter $ LocationMatchAll [x, y]
+
+instance Monoid LocationFilter where
+  mempty = LocationFilter Nowhere
+
 instance Plated LocationMatcher
 
 instance Not LocationMatcher where
@@ -492,12 +510,17 @@ instance IsLocationMatcher LocationId where
   toLocationMatcher = LocationWithId
 
 instance Semigroup LocationMatcher where
+  Anywhere <> x = x
+  x <> Anywhere = x
   Nowhere <> _ = Nowhere
   _ <> Nowhere = Nowhere
   LocationMatchAll xs <> LocationMatchAll ys = LocationMatchAll $ xs <> ys
   LocationMatchAll xs <> x = LocationMatchAll (x : xs)
   x <> LocationMatchAll xs = LocationMatchAll (x : xs)
   x <> y = LocationMatchAll [x, y]
+
+instance Monoid LocationMatcher where
+  mempty = Anywhere
 
 newtype AnyLocationMatcher = AnyLocationMatcher {getAnyLocationMatcher :: LocationMatcher}
 

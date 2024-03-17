@@ -197,8 +197,10 @@ killRemaining (toSource -> source) = do
   gameOverIf (null resigned)
   pure remaining
 
-addCampaignCardToDeckChoice
-  :: ReverseQueue m => [InvestigatorId] -> CardDef -> m ()
+addCampaignCardToDeck :: ReverseQueue m => InvestigatorId -> CardDef -> m ()
+addCampaignCardToDeck investigator cardDef = push $ Msg.AddCampaignCardToDeck investigator cardDef
+
+addCampaignCardToDeckChoice :: ReverseQueue m => [InvestigatorId] -> CardDef -> m ()
 addCampaignCardToDeckChoice choices cardDef = do
   lead <- getLeadPlayer
   push $ Msg.addCampaignCardToDeckChoice lead choices cardDef

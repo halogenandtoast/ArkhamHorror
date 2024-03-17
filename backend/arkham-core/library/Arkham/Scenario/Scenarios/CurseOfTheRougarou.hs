@@ -63,7 +63,8 @@ instance RunMessage CurseOfTheRougarou where
   runMessage msg s@(CurseOfTheRougarou attrs) = case msg of
     Setup -> do
       players <- allPlayers
-      encounterDeck <- buildEncounterDeck [EncounterSet.TheBayou]
+      let cardsToSetAside = [Assets.ladyEsprit, Assets.bearTrap, Assets.fishingNet]
+      encounterDeck <- buildEncounterDeckExcluding cardsToSetAside [EncounterSet.TheBayou]
       result <- shuffleM $ keys locationsByTrait
       let
         trait = fromJust . headMay . drop 1 $ result
@@ -76,9 +77,7 @@ instance RunMessage CurseOfTheRougarou where
         genCards
           $ concatMap (\t -> findWithDefault [] t locationsByTrait) rest
 
-      setAsideCards <-
-        genCards
-          [Assets.ladyEsprit, Assets.bearTrap, Assets.fishingNet]
+      setAsideCards <- genCards cardsToSetAside
 
       let
         ((bayouLabel, bayou), others) =
@@ -197,14 +196,8 @@ instance RunMessage CurseOfTheRougarou where
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       when
-        (chaosTokenFace token == Tablet)
-        ( push
-            $ CreateEffect
-              "81001"
-              Nothing
-              (ChaosTokenSource token)
-              (InvestigatorTarget iid)
-        )
+        (token.face == Tablet)
+        (push $ CreateEffect "81001" Nothing (ChaosTokenSource token) (InvestigatorTarget iid))
       pure s
     ScenarioResolution NoResolution ->
       runMessage (ScenarioResolution $ Resolution 1) s

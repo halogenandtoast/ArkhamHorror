@@ -1651,6 +1651,10 @@ getLocationsMatching lmatcher = do
             if valid then getLocationsMatching connectedTo else pure []
         matcherSupreme <- foldMapM (fmap AnyLocationMatcher . getConnectedMatcher) starts
         (<> others) <$> getLocationsMatching (getAnyLocationMatcher matcherSupreme)
+      LocationWhenCriteria criteria -> do
+        iid <- getLead
+        passes <- passesCriteria iid Nothing GameSource [] criteria
+        pure $ if passes then ls else []
       AccessibleFrom matcher -> do
         getLocationsMatching (Unblocked <> ConnectedFrom matcher)
       AccessibleTo matcher ->

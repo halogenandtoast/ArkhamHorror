@@ -4,9 +4,7 @@ import Arkham.Ability
 import Arkham.Helpers.Story (readStory)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Source
 import Arkham.Story.Cards qualified as Story
-import Arkham.Target
 
 newtype TowerOfKoth = TowerOfKoth LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

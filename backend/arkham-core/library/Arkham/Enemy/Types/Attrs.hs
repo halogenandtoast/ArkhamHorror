@@ -18,6 +18,10 @@ import Arkham.Strategy
 import Arkham.Token
 import GHC.Records
 
+data UnableToSpawn = DiscardIfUnableToSpawn | ShuffleBackInIfUnableToSpawn
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data EnemyAttrs = EnemyAttrs
   { enemyId :: EnemyId
   , enemyCardId :: CardId
@@ -46,6 +50,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyDiscardedBy :: Maybe InvestigatorId
   , enemyDefeated :: Bool
   , enemyAttacks :: InvestigatorMatcher
+  , enemyUnableToSpawn :: UnableToSpawn
   }
   deriving stock (Show, Eq, Generic)
 
@@ -104,6 +109,7 @@ instance FromJSON EnemyAttrs where
     enemyDiscardedBy <- o .:? "discardedBy" .!= Nothing
     enemyDefeated <- o .:? "defeated" .!= False
     enemyAttacks <- o .:? "attacks" .!= InvestigatorEngagedWith (EnemyWithId enemyId)
+    enemyUnableToSpawn <- o .:? "unableToSpawn" .!= DiscardIfUnableToSpawn
     pure EnemyAttrs {..}
 
 instance Be EnemyAttrs EnemyMatcher where

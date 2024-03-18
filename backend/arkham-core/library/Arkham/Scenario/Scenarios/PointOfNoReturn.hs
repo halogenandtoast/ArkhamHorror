@@ -16,7 +16,9 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest (getSkillTestAction)
+import Arkham.Location.Cards (cragOfTheGhouls)
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Cards.PlainOfTheGhouls (plainOfTheGhouls)
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Prelude
@@ -36,11 +38,9 @@ pointOfNoReturn difficulty =
     "06247"
     "Point of No Return"
     difficulty
-    [ "towerOfKoth enchantedWoodsStoneTrapdoor .               seaOfBones"
-    , "cityOfGugs  vaultsOfZin                 cragOfTheGhouls peaksOfThok"
-    , ".           plainOfTheGhouls            valeOfPnath     ."
-    , ".           seaOfPitch1                 .               seaOfPitch2"
-    , ".           seaOfPitch3                 .               seaOfPitch4"
+    [ "enchantedWoodsStoneTrapdoor towerOfKoth     seaOfBones  peaksOfThok seaOfPitch1"
+    , "vaultsOfZin                 cityOfGugs      valeOfPnath seaOfPitch2 ."
+    , "plainOfTheGhouls            cragOfTheGhouls .           seaOfPitch3 seaOfPitch4"
     ]
 
 instance HasChaosTokenValue PointOfNoReturn where

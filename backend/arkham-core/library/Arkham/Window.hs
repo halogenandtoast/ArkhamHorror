@@ -239,6 +239,7 @@ data WindowType
   | WouldFailSkillTest InvestigatorId
   | WouldPassSkillTest InvestigatorId
   | WouldReady Target
+  | Readies Target
   | WouldRevealChaosToken Source InvestigatorId
   | WouldTakeDamage Source Target Int
   | WouldTakeDamageOrHorror Source Target Int Int

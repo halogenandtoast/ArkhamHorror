@@ -1945,8 +1945,9 @@ runGameMessage msg g = case msg of
         (createEnemy card enemyId)
 
     let
+      miid = enemyCreationInvestigator enemyCreation
       enemy' =
-        overAttrs (\attrs -> attrs {enemySpawnedBy = enemyCreationInvestigator enemyCreation})
+        overAttrs (\attrs -> attrs {enemySpawnedBy = miid})
           $ if enemyCreationExhausted enemyCreation
             then overAttrs (\attrs -> attrs {enemyExhausted = True}) enemy''
             else enemy''
@@ -1983,7 +1984,7 @@ runGameMessage msg g = case msg of
           [] -> push (toDiscard GameSource (toTarget enemyId))
           lids -> do
             lead <- getLead
-            player <- getPlayer $ fromMaybe lead $ enemyCreationInvestigator enemyCreation
+            player <- getPlayer $ fromMaybe lead miid
             pushAll
               $ windows'
               <> [ chooseOrRunOne
@@ -2012,7 +2013,7 @@ runGameMessage msg g = case msg of
             , EnemySpawnEngagedWithPrey enemyId
             ]
           <> enemyCreationAfter enemyCreation
-      SpawnViaSpawnInstruction -> spawnAt enemyId (fromMaybe (error "called without spawn at") $ attr enemySpawnAt enemy)
+      SpawnViaSpawnInstruction -> spawnAt enemyId miid (fromMaybe (error "called without spawn at") $ attr enemySpawnAt enemy)
     pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
   EnemySpawnEngagedWithPrey eid ->
     pure $ g & activeCardL .~ Nothing & outOfPlayEntitiesL . each . enemiesL %~ deleteMap eid

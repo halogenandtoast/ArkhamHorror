@@ -185,12 +185,8 @@
       "  )",
       "where",
       "",
-      "import Arkham.Prelude",
-      "",
-      "import Arkham.Classes",
-      "import Arkham.Message",
       "import Arkham.Treachery.Cards qualified as Cards",
-      "import Arkham.Treachery.Runner",
+      "import Arkham.Treachery.Import.Lifted",
       "",
       "newtype {dot} = {dot} TreacheryAttrs",
       "  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)",
@@ -200,9 +196,9 @@
       "{dot|snakecase|camelcase} = treachery {dot} Cards.{dot|snakecase|camelcase}",
       "",
       "instance RunMessage {dot} where",
-      "  runMessage msg t@({dot} attrs) = case msg of",
+      "  runMessage msg t@({dot} attrs) = runQueueT $ case msg of",
       "    Revelation _iid (isSource attrs -> True) -> pure t",
-      "    _ -> {dot} <$> runMessage msg attrs"
+      "    _ -> {dot} <$> lift (runMessage msg attrs)"
     ]
   },
   "arkham-core/library/Arkham/Investigator/Cards/*.hs": {

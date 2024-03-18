@@ -2608,6 +2608,9 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
     Matcher.EnemyWouldReady timing enemyMatcher -> guardTiming timing $ \case
       Window.WouldReady (EnemyTarget enemyId) -> enemyMatches enemyId enemyMatcher
       _ -> noMatch
+    Matcher.EnemyReadies timing enemyMatcher -> guardTiming timing $ \case
+      Window.Readies (EnemyTarget enemyId) -> enemyMatches enemyId enemyMatcher
+      _ -> noMatch
     Matcher.FastPlayerWindow -> guardTiming #when (pure . (== Window.FastPlayerWindow))
     Matcher.DealtDamageOrHorror timing sourceMatcher whoMatcher -> guardTiming timing $ \case
       Window.WouldTakeDamageOrHorror source' (InvestigatorTarget iid') _ _ ->

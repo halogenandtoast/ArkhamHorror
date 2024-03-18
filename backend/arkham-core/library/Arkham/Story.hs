@@ -103,4 +103,7 @@ allStories =
     , SomeStoryCard inhabitantsOfTheVale
     , SomeStoryCard theWayOut
     , SomeStoryCard spiderInfestedWaters
+    , SomeStoryCard stillSurface
+    , SomeStoryCard rollingPits
+    , SomeStoryCard centerOfTheSea
     ]

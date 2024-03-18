@@ -170,8 +170,8 @@ import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (emptyArray, parse)
 import Data.List qualified as List
 import Data.List.Extra (groupOn)
-import Data.Map.Monoidal (getMonoidalMap)
-import Data.Map.Monoidal qualified as MonoidalMap
+import Data.Map.Monoidal.Strict (getMonoidalMap)
+import Data.Map.Monoidal.Strict qualified as MonoidalMap
 import Data.Map.Strict qualified as Map
 import Data.Monoid (First (..))
 import Data.Sequence qualified as Seq
@@ -1006,9 +1006,9 @@ isLowestAmongst iid matcher f = do
   allIds <- select matcher
   if iid `elem` allIds
     then do
-      highestCount <- getMin <$> foldMapM (fmap Min . f) allIds
+      lowestCount <- getMin <$> foldMapM (fmap Min . f) allIds
       thisCount <- f iid
-      pure $ highestCount == thisCount
+      pure $ lowestCount == thisCount
     else pure False
 
 getCardsInPlayCount :: HasGame m => InvestigatorId -> m Int
@@ -1548,6 +1548,15 @@ getLocationsMatching lmatcher = do
               distance
               (foldr (unionWith (<>) . distanceAggregates) mempty distances)
         pure $ filter ((`elem` matches') . toId) ls
+      LocationWithDistanceFromAtLeast distance start matcher -> do
+        candidates <- map toId <$> getLocationsMatching matcher
+        distances <-
+          distanceSingletons
+            <$> evalStateT
+              (markDistances start (pure . (`elem` candidates)) mempty)
+              (LPState (pure start) (singleton start) mempty)
+        let matches' = Map.keys $ Map.filter (>= distance) distances
+        pure $ filter ((`elem` matches') . toId) ls
       FarthestLocationFromAll matcher -> do
         iids <- getInvestigatorIds
         candidates <- map toId <$> getLocationsMatching matcher
@@ -1631,10 +1640,17 @@ getLocationsMatching lmatcher = do
           matchAny <- getConnectedMatcher l
           selectAny $ NotLocation (LocationWithId $ toId l) <> matcher <> matchAny
       ConnectedFrom matcher -> do
+        -- we need to add the (ConnectedToWhen)
         startIds <- select matcher
         let starts = filter ((`elem` startIds) . toId) ls
+        others :: [Location] <- concatForM startIds \l -> do
+          mods <- getModifiers l
+          let checks = [(isValid, connectedTo) | ConnectedToWhen isValid connectedTo <- mods]
+          concatForM checks $ \(isValid, connectedTo) -> do
+            valid <- l <=~> isValid
+            if valid then getLocationsMatching connectedTo else pure []
         matcherSupreme <- foldMapM (fmap AnyLocationMatcher . getConnectedMatcher) starts
-        getLocationsMatching $ getAnyLocationMatcher matcherSupreme
+        (<> others) <$> getLocationsMatching (getAnyLocationMatcher matcherSupreme)
       AccessibleFrom matcher -> do
         getLocationsMatching (Unblocked <> ConnectedFrom matcher)
       AccessibleTo matcher ->
@@ -1660,6 +1676,7 @@ getLocationsMatching lmatcher = do
         -- logic is to get each adjacent location and determine which is closest to
         -- the destination
         let extraConnectionsMap = mempty
+
         connectedLocationIds <- select $ ConnectedFrom $ LocationWithId start
         matches' <-
           if start == destination || destination `elem` connectedLocationIds
@@ -2351,8 +2368,8 @@ enemyMatcherFilter = \case
     pure $ flip any allKeys $ \case
       IchtacasPrey (Labeled _ eid) -> eid == toId enemy
       _ -> False
-  MovingEnemy ->
-    \enemy -> (== Just (toId enemy)) . view enemyMovingL <$> getGame
+  MovingEnemy -> \enemy -> do
+    (== Just (toId enemy)) . view enemyMovingL <$> getGame
   EvadingEnemy ->
     \enemy -> (== Just (toId enemy)) . view enemyEvadingL <$> getGame
   M.EnemyAt locationMatcher -> \enemy -> do
@@ -3798,7 +3815,9 @@ overGameReader body = runReader body <$> getGame
 
 overGame
   :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> Game) -> m ()
-overGame f = overGameM (pure . f)
+overGame f = do
+  g <- readGame
+  putGame $ f g
 
 overGameM
   :: (MonadIO m, MonadReader env m, HasGameRef env) => (Game -> m Game) -> m ()
@@ -3920,10 +3939,11 @@ runMessages mLogger = do
               RunWindow _ (getEvadedEnemy -> Just eid) ->
                 overGame $ enemyEvadingL ?~ eid
               _ -> pure ()
+
             runWithEnv
               ( getGame
-                  >>= runMessage msg
                   >>= preloadModifiers
+                  >>= runMessage msg
                   >>= handleTraitRestrictedModifiers
                   >>= handleBlanked
               )
@@ -3976,8 +3996,7 @@ preloadModifiers g = case gameMode g of
                   (toList $ entitiesInvestigators $ gameEntities g)
                 <> map (AbilityTarget (gameActiveInvestigatorId g)) (getAbilities g)
           )
-    pure
-      $ g {gameModifiers = Map.map (filter modifierFilter) allModifiers}
+    allModifiers `seq` pure $ g {gameModifiers = Map.map (filter modifierFilter) allModifiers}
  where
   entities = overEntities (: []) (gameEntities g)
   inHandEntities =

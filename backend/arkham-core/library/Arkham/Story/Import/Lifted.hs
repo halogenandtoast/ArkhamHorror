@@ -11,6 +11,7 @@ import Arkham.Story.Runner as X (
   StoryMode (..),
   push,
   pushAll,
+  pushWhen,
   story,
  )
 

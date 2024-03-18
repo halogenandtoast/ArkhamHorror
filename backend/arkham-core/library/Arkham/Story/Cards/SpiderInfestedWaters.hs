@@ -19,7 +19,6 @@ spiderInfestedWaters = story SpiderInfestedWaters Cards.spiderInfestedWaters
 instance RunMessage SpiderInfestedWaters where
   runMessage msg s@(SpiderInfestedWaters attrs) = runQueueT $ case msg of
     ResolveStory iid ResolveIt story' | story' == toId attrs -> do
-      -- Shuffle the encounter discard pile into the encounter deck and discard cards from the top until a Spider enemy is discarded. Spawn that enemy here with 1  clues on it (if it is swarming, place those clues on the host enemy).
       shuffleEncounterDiscardBackIn
       push
         $ DiscardUntilFirst

@@ -28,6 +28,7 @@ import Arkham.Message hiding (story)
 import Arkham.Movement
 import Arkham.Prelude
 import Arkham.Query
+import Arkham.SkillType
 import Arkham.SkillType qualified as SkillType
 import Arkham.Source
 import Arkham.Target
@@ -71,8 +72,12 @@ placeLocation_ = Msg.placeLocation_ >=> push
 
 placeRandomLocationGroupCards
   :: ReverseQueue m => Text -> [CardDef] -> m ()
-placeRandomLocationGroupCards groupName cards = do
-  shuffled <- traverse genCard =<< shuffleM cards
+placeRandomLocationGroupCards groupName = genCards >=> placeRandomLocationGroup groupName
+
+placeRandomLocationGroup
+  :: ReverseQueue m => Text -> [Card] -> m ()
+placeRandomLocationGroup groupName cards = do
+  shuffled <- shuffleM cards
   msgs <- Msg.placeLabeledLocations_ groupName shuffled
   pushAll msgs
 
@@ -346,3 +351,17 @@ flipOver iid a = push $ Msg.Flip iid (toSource a) (toTarget a)
 flipOverBy
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 flipOverBy iid source target = push $ Msg.Flip iid (toSource source) (toTarget target)
+
+chooseFightEnemy
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> SkillType -> m ()
+chooseFightEnemy iid (toSource -> source) sType = push $ Msg.chooseFightEnemy iid source sType
+
+skillTestModifiers
+  :: forall target source m
+   . (ReverseQueue m, Sourceable source, Targetable target)
+  => source
+  -> target
+  -> [ModifierType]
+  -> m ()
+skillTestModifiers (toSource -> source) (toTarget -> target) mods =
+  push $ Msg.skillTestModifiers source target mods

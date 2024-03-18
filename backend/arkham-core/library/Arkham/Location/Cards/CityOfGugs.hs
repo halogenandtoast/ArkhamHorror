@@ -14,7 +14,7 @@ newtype CityOfGugs = CityOfGugs LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cityOfGugs :: LocationCard CityOfGugs
-cityOfGugs = location CityOfGugs Cards.cityOfGugs 2 (PerPlayer 1)
+cityOfGugs = locationWith CityOfGugs Cards.cityOfGugs 2 (PerPlayer 1) (canBeFlippedL .~ True)
 
 instance HasAbilities CityOfGugs where
   getAbilities (CityOfGugs a) =

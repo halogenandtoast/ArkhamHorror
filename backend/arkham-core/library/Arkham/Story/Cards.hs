@@ -87,6 +87,9 @@ allStoryCards =
       , inhabitantsOfTheVale
       , theWayOut
       , spiderInfestedWaters
+      , stillSurface
+      , rollingPits
+      , centerOfTheSea
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -290,3 +293,12 @@ theWayOut = story "06261b" "The Way Out" PointOfNoReturn
 
 spiderInfestedWaters :: CardDef
 spiderInfestedWaters = story "06262b" "Spider-Infested Waters" PointOfNoReturn
+
+stillSurface :: CardDef
+stillSurface = story "06263b" "Still Surface" PointOfNoReturn
+
+rollingPits :: CardDef
+rollingPits = story "06264b" "Rolling Pits" PointOfNoReturn
+
+centerOfTheSea :: CardDef
+centerOfTheSea = story "06265b" "Center of the Sea" PointOfNoReturn

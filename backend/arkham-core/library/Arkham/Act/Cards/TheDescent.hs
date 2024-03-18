@@ -27,7 +27,8 @@ instance RunMessage TheDescent where
       push $ GainClues iid (attrs.ability 1) 1
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      traverse_ placeLocation_ =<< getSetAsideCardsMatching (#location <> withTrait Depths)
+      placeRandomLocationGroup "seaOfPitch"
+        =<< getSetAsideCardsMatching (#location <> withTrait Depths)
       encounterSets <- getSetAsideCardsMatching (fromSets [DescentIntoThePitch, AgentsOfAtlachNacha])
       pushAll [ShuffleCardsIntoDeck Deck.EncounterDeck encounterSets, ShuffleEncounterDiscardBackIn]
       advanceActDeck attrs

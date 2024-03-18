@@ -5721,7 +5721,7 @@ seaOfBones =
       "06259"
       "Sea of Bones"
       [Vale]
-      Moon
+      Circle
       [Hourglass, Star, Equals]
       PointOfNoReturn
 

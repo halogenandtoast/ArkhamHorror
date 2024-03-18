@@ -437,6 +437,11 @@ getMaybeLocation
   :: (HasCallStack, HasGame m) => InvestigatorId -> m (Maybe LocationId)
 getMaybeLocation = field InvestigatorLocation
 
+withLocationOf :: HasGame m => InvestigatorId -> (LocationId -> m ()) -> m ()
+withLocationOf iid f = do
+  mLocation <- getMaybeLocation iid
+  maybe (pure ()) f mLocation
+
 enemiesColocatedWith :: InvestigatorId -> EnemyMatcher
 enemiesColocatedWith = EnemyAt . LocationWithInvestigator . InvestigatorWithId
 

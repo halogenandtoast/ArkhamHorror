@@ -882,6 +882,7 @@ library
       Arkham.Asset.Cards.ZebulonWhateley
       Arkham.Asset.Cards.ZoeysCross
       Arkham.Asset.Helpers
+      Arkham.Asset.Import.Lifted
       Arkham.Asset.Runner
       Arkham.Asset.Types
       Arkham.Asset.Uses
@@ -1230,6 +1231,7 @@ library
       Arkham.Enemy.Creation
       Arkham.Enemy.Enemies
       Arkham.Enemy.Helpers
+      Arkham.Enemy.Import.Lifted
       Arkham.Enemy.Runner
       Arkham.Enemy.Types
       Arkham.Enemy.Types.Attrs
@@ -2389,6 +2391,7 @@ library
       Arkham.Story.Cards.AShrineToTheGods
       Arkham.Story.Cards.AStrangeGhoul
       Arkham.Story.Cards.BleakDesolation
+      Arkham.Story.Cards.CenterOfTheSea
       Arkham.Story.Cards.CrypticSouls
       Arkham.Story.Cards.CylindersOfKadatheron
       Arkham.Story.Cards.DreamlikeHorrors
@@ -2406,6 +2409,7 @@ library
       Arkham.Story.Cards.MappingTheStreets
       Arkham.Story.Cards.OffTheGalley
       Arkham.Story.Cards.PennysFate
+      Arkham.Story.Cards.RollingPits
       Arkham.Story.Cards.ScoutingTheVale
       Arkham.Story.Cards.SickeningReality_65
       Arkham.Story.Cards.SickeningReality_66
@@ -2417,6 +2421,7 @@ library
       Arkham.Story.Cards.SpiderInfestedWaters
       Arkham.Story.Cards.StarsOfAldebaran
       Arkham.Story.Cards.StepsOfThePalace
+      Arkham.Story.Cards.StillSurface
       Arkham.Story.Cards.TheArchway
       Arkham.Story.Cards.TheBalefulStar
       Arkham.Story.Cards.TheCityInside
@@ -2762,6 +2767,7 @@ library
       Arkham.Treachery.Cards.YithianPresence
       Arkham.Treachery.Cards.ZoogBurrow
       Arkham.Treachery.Helpers
+      Arkham.Treachery.Import.Lifted
       Arkham.Treachery.Runner
       Arkham.Treachery.Treacheries
       Arkham.Treachery.Types

@@ -41,27 +41,28 @@ emptyLocationMap = mempty
 isActionTarget :: EnemyAttrs -> Target -> Bool
 isActionTarget attrs = isTarget attrs . toProxyTarget
 
-spawnAt :: (HasGame m, HasQueue Message m, MonadRandom m) => EnemyId -> SpawnAt -> m ()
-spawnAt _ NoSpawn = pure ()
-spawnAt eid (SpawnAt locationMatcher) = do
+spawnAt
+  :: (HasGame m, HasQueue Message m, MonadRandom m) => EnemyId -> Maybe InvestigatorId -> SpawnAt -> m ()
+spawnAt _ _ NoSpawn = pure ()
+spawnAt eid miid (SpawnAt locationMatcher) = do
   windows' <- windows [Window.EnemyAttemptsToSpawnAt eid locationMatcher]
   pushAll
     $ windows'
     <> resolve
-      (EnemySpawnAtLocationMatching Nothing locationMatcher eid)
-spawnAt eid (SpawnEngagedWith investigatorMatcher) = do
+      (EnemySpawnAtLocationMatching miid locationMatcher eid)
+spawnAt eid _ (SpawnEngagedWith investigatorMatcher) = do
   pushAll $ resolve (EnemySpawnEngagedWith eid investigatorMatcher)
-spawnAt eid (SpawnPlaced placement) = do
+spawnAt eid _ (SpawnPlaced placement) = do
   push $ PlaceEnemy eid placement
-spawnAt _ (SpawnAtFirst []) = error "must have something"
-spawnAt eid (SpawnAtFirst (x : xs)) = case x of
+spawnAt _ _ (SpawnAtFirst []) = error "must have something"
+spawnAt eid miid (SpawnAtFirst (x : xs)) = case x of
   SpawnAt matcher -> do
     willMatch <- selectAny matcher
     if willMatch
-      then spawnAt eid (SpawnAt matcher)
-      else spawnAt eid (SpawnAtFirst xs)
-  other -> spawnAt eid other
-spawnAt eid SpawnAtRandomSetAsideLocation = do
+      then spawnAt eid miid (SpawnAt matcher)
+      else spawnAt eid miid (SpawnAtFirst xs)
+  other -> spawnAt eid miid other
+spawnAt eid miid SpawnAtRandomSetAsideLocation = do
   cards <- getSetAsideCardsMatching (CardWithType LocationType)
   case nonEmpty cards of
     Nothing -> do
@@ -69,7 +70,7 @@ spawnAt eid SpawnAtRandomSetAsideLocation = do
       pushAll
         $ windows'
         <> resolve
-          (EnemySpawnAtLocationMatching Nothing Nowhere eid)
+          (EnemySpawnAtLocationMatching miid Nowhere eid)
     Just locations -> do
       x <- sample locations
       (locationId, locationPlacement) <- placeLocation x
@@ -80,7 +81,7 @@ spawnAt eid SpawnAtRandomSetAsideLocation = do
         $ locationPlacement
         : windows'
           <> resolve
-            (EnemySpawnAtLocationMatching Nothing (LocationWithId locationId) eid)
+            (EnemySpawnAtLocationMatching miid (LocationWithId locationId) eid)
 
 getModifiedDamageAmount :: HasGame m => EnemyAttrs -> Bool -> Int -> m Int
 getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do

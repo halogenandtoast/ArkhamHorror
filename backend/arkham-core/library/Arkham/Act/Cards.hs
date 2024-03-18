@@ -57,6 +57,7 @@ allActCards =
       , disruptingTheRitual
       , enteringTheDreamlands
       , enteringTheUnderworldV1
+      , enteringTheUnderworldV2
       , escapeTheCage
       , escapeTheRuins
       , exploringPnakotus

@@ -105,7 +105,7 @@ wouldDoEach
 wouldDoEach n msg outerWouldWindow wouldWindow outerWindow window = do
   (outerBatchId, outerWouldWindowsMsgs) <- wouldWindows outerWouldWindow
   (outerBefore, outerAtIf, outerAfter) <- frame outerWindow
-  frames <- for [1 .. n] $ \_ -> do
+  frames <- replicateM n do
     (innerBatchId, innerWouldWindowsMsgs) <- wouldWindows wouldWindow
     framed <- doFrame msg window
     pure $ Would innerBatchId $ innerWouldWindowsMsgs <> framed

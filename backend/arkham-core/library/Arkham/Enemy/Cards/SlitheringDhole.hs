@@ -18,7 +18,9 @@ slitheringDhole =
     Cards.slitheringDhole
     (3, Static 5, 3)
     (1, 1)
-    $ (spawnAtL ?~ SpawnAt (LocationWithTreachery $ treacheryIs Treacheries.dholeTunnel))
+    $ ( spawnAtL
+          ?~ SpawnAt (NearestLocationToYou $ LocationWithTreachery $ treacheryIs Treacheries.dholeTunnel)
+      )
     . (surgeIfUnableToSpawnL .~ True)
     . (unableToSpawnL .~ ShuffleBackInIfUnableToSpawn)
 
@@ -29,7 +31,7 @@ instance HasModifiersFor SlitheringDhole where
         a
         [ ConnectedToWhen
             ( LocationWithTreachery (treacheryIs Treacheries.dholeTunnel)
-                <> LocationWithEnemy (EnemyWithId a.id <> MovingEnemy)
+                <> LocationWhenCriteria (exists $ EnemyWithId a.id <> MovingEnemy)
             )
             (LocationWithTreachery (treacheryIs Treacheries.dholeTunnel) <> not_ (LocationWithId lid))
         ]

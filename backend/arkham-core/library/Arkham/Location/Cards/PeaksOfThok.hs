@@ -6,9 +6,7 @@ import Arkham.Helpers.Story (readStory)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Source
 import Arkham.Story.Cards qualified as Story
-import Arkham.Target
 
 newtype PeaksOfThok = PeaksOfThok LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -1,15 +1,8 @@
-module Arkham.Location.Cards.GardensOfLuxembourg (
-  gardensOfLuxembourg,
-  GardensOfLuxembourg (..),
-) where
+module Arkham.Location.Cards.GardensOfLuxembourg (gardensOfLuxembourg, GardensOfLuxembourg (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
-import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Trait
 
@@ -18,21 +11,17 @@ newtype GardensOfLuxembourg = GardensOfLuxembourg LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 gardensOfLuxembourg :: LocationCard GardensOfLuxembourg
-gardensOfLuxembourg =
-  location GardensOfLuxembourg Cards.gardensOfLuxembourg 3 (PerPlayer 1)
+gardensOfLuxembourg = location GardensOfLuxembourg Cards.gardensOfLuxembourg 3 (PerPlayer 1)
 
 instance HasModifiersFor GardensOfLuxembourg where
-  getModifiersFor (LocationTarget lid) (GardensOfLuxembourg attrs)
-    | toId attrs == lid && locationRevealed attrs = do
-        byakheeIsMoving <-
-          selectAny
-            (MovingEnemy <> EnemyWithTrait Byakhee <> EnemyAt (LocationWithId lid))
-        pure
-          $ toModifiers
-            attrs
-            [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId attrs)
-            | byakheeIsMoving
-            ]
+  getModifiersFor (LocationTarget lid) (GardensOfLuxembourg attrs) | attrs.id == lid && attrs.revealed = do
+    pure
+      $ toModifiers
+        attrs
+        [ ConnectedToWhen
+            (LocationWithEnemy $ MovingEnemy <> EnemyWithTrait Byakhee)
+            (LocationWithId $ toId attrs)
+        ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage GardensOfLuxembourg where

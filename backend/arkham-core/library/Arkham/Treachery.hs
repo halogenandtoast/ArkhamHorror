@@ -406,6 +406,16 @@ allTreacheries =
       SomeTreacheryCard dholeTunnel
     , --- Descent into the Pitch
       SomeTreacheryCard shadowOfAtlachNacha
+    , -- Where the Gods Dwell
+      SomeTreacheryCard whisperingChaosNorth
+    , SomeTreacheryCard whisperingChaosEast
+    , SomeTreacheryCard whisperingChaosSouth
+    , SomeTreacheryCard whisperingChaosWest
+    , SomeTreacheryCard myriadForms
+    , SomeTreacheryCard restlessJourneyFallacy
+    , SomeTreacheryCard restlessJourneyHardship
+    , SomeTreacheryCard restlessJourneyLies
+    , SomeTreacheryCard abandonedByTheGods
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

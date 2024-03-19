@@ -343,6 +343,15 @@ allEnemies =
       SomeEnemyCard slitheringDhole
     , --- Descent into the Pitch
       SomeEnemyCard pitchSpider
+    , -- Where the Gods Dwell
+      SomeEnemyCard nyarlathotepTheCrawlingChaos
+    , SomeEnemyCard nyarlathotepTheFacelessWhisperer
+    , SomeEnemyCard nyarlathotepMessengerOfTheOuterGods
+    , SomeEnemyCard nyarlathotepGodOfAThousandForms
+    , SomeEnemyCard nyarlathotepStalkerAmongTheStars
+    , SomeEnemyCard highPriestNotToBeDescribed
+    , SomeEnemyCard dholeOfTheWastes
+    , SomeEnemyCard liarWithNoFace
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

@@ -249,6 +249,12 @@ allActs =
     , SomeActCard enteringTheUnderworldV2
     , SomeActCard theDescent
     , SomeActCard theBlackExpanse
+    , --- Where the Gods Dwell
+      SomeActCard journeyThroughTheColdWastes
+    , SomeActCard theThingInTheRobes
+    , SomeActCard beyondDreams
+    , SomeActCard truthAndLies
+    , SomeActCard theDreamEaters
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

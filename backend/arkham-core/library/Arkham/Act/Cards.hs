@@ -37,6 +37,7 @@ allActCards =
       , atTheStationTrainTracks
       , awakening
       , beginnersLuck
+      , beyondDreams
       , beyondTheGrave
       , beyondTheMistV1
       , beyondTheMistV2
@@ -92,6 +93,7 @@ allActCards =
       , inPursuitOfTheLiving
       , inTheBellyOfTheMoonBeast
       , investigatingTheTrail
+      , journeyThroughTheColdWastes
       , journeyToTheNexus
       , kingdomOfTheSkai
       , leadingTheWay
@@ -156,6 +158,7 @@ allActCards =
       , theDescent
       , theDisappearance
       , theDoomThatCameBefore
+      , theDreamEaters
       , theEndlessStairs
       , theFinalDescent
       , theFourKeys
@@ -180,6 +183,7 @@ allActCards =
       , theStrangerACityAflame
       , theStrangerThePathIsMine
       , theStrangerTheShoresOfHali
+      , theThingInTheRobes
       , theTrialOfNashtAndKamanThah
       , theUnvisitedIsle
       , theWayOut
@@ -189,6 +193,7 @@ allActCards =
       , timelock
       , trapped
       , trialOfTheHuntress
+      , truthAndLies
       , uncoveringTheConspiracy
       , unexpectedRescue
       , warmWelcome
@@ -715,6 +720,21 @@ theDescent = act "06252" "The Descent" 2 PointOfNoReturn
 
 theBlackExpanse :: CardDef
 theBlackExpanse = act "06253" "The Black Expanse" 3 PointOfNoReturn
+
+journeyThroughTheColdWastes :: CardDef
+journeyThroughTheColdWastes = act "06290" "Journey Through the Cold Wastes" 1 WhereTheGodsDwell
+
+theThingInTheRobes :: CardDef
+theThingInTheRobes = act "06291" "The Thing in the Robes" 2 WhereTheGodsDwell
+
+beyondDreams :: CardDef
+beyondDreams = act "06292" "Beyond Dreams" 3 WhereTheGodsDwell
+
+truthAndLies :: CardDef
+truthAndLies = act "06293" "Truth and Lies" 4 WhereTheGodsDwell
+
+theDreamEaters :: CardDef
+theDreamEaters = act "06294" "The Dream-Eaters" 5 WhereTheGodsDwell
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

@@ -179,6 +179,7 @@ allLocationCards =
       , cloverClubLounge
       , coldSpringGlen_244
       , coldSpringGlen_245
+      , coldWastes
       , congregationalChurch_208
       , congregationalChurch_209
       , cosmicGate
@@ -261,6 +262,12 @@ allLocationCards =
       , forbiddingShore
       , forgottenMarsh
       , forkedPath
+      , forsakenTowerOfEternalFlame
+      , forsakenTowerOfIllusionAndMyth
+      , forsakenTowerOfInfiniteTruth
+      , forsakenTowerOfLifeAndDeath
+      , forsakenTowerOfPrimevalLight
+      , forsakenTowerOfTheQueenOfNight
       , foulSwamp
       , foyer
       , foyerMurderAtTheExcelsiorHotel
@@ -362,6 +369,7 @@ allLocationCards =
       , miskatonicUniversityMiskatonicMuseum
       , moldyHalls
       , moldyHallsEarlierTonight
+      , monasteryOfLeng
       , montmartre209
       , montmartre210
       , montparnasse
@@ -391,6 +399,7 @@ allLocationCards =
       , office
       , officeMurderAtTheExcelsiorHotel
       , officeSpectral
+      , onyxGates
       , operaGarnier212
       , operaGarnier213
       , operatingRoom
@@ -421,6 +430,7 @@ allLocationCards =
       , physicsClassroom
       , plainOfTheGhouls
       , plateauOfLeng
+      , plateauOfLengWhereTheGodsDwell
       , pnakotus
       , porteDeLAvancee
       , prismaticCascade
@@ -527,6 +537,7 @@ allLocationCards =
       , theGeistTrap
       , theGuardian
       , theHiddenChamber
+      , theOnyxCastle
       , theWhiteShip
       , theatre
       , timeWrackedWoods
@@ -5795,6 +5806,144 @@ seaOfPitch_265 =
       Plus
       [Equals, Plus]
       PointOfNoReturn
+
+plateauOfLengWhereTheGodsDwell :: CardDef
+plateauOfLengWhereTheGodsDwell =
+  location
+    "06295"
+    "Plateau of Leng"
+    [Leng]
+    Diamond
+    [Triangle]
+    WhereTheGodsDwell
+
+coldWastes :: CardDef
+coldWastes =
+  location
+    "06296"
+    "Cold Wastes"
+    [Leng]
+    Triangle
+    [Diamond, Plus, T]
+    WhereTheGodsDwell
+
+monasteryOfLeng :: CardDef
+monasteryOfLeng =
+  location
+    "06297"
+    "Monastery of Leng"
+    [Leng]
+    Plus
+    [Triangle]
+    WhereTheGodsDwell
+
+onyxGates :: CardDef
+onyxGates =
+  location
+    "06298"
+    "Onyx Gates"
+    [Leng, Kadath]
+    T
+    [Triangle, Square]
+    WhereTheGodsDwell
+
+theOnyxCastle :: CardDef
+theOnyxCastle =
+  locationWithUnrevealed
+    "06299"
+    "The Onyx Castle"
+    [Kadath]
+    Square
+    [T]
+    "The Great Hall"
+    [Kadath]
+    Square
+    [Equals]
+    WhereTheGodsDwell
+
+forsakenTowerOfIllusionAndMyth :: CardDef
+forsakenTowerOfIllusionAndMyth =
+  locationWithUnrevealed
+    "06300"
+    "Forsaken Tower"
+    [Kadath]
+    Equals
+    [Square]
+    ("Forsaken Tower" <:> "Of Illusion and Myth")
+    [Kadath]
+    Equals
+    [Square]
+    WhereTheGodsDwell
+
+forsakenTowerOfLifeAndDeath :: CardDef
+forsakenTowerOfLifeAndDeath =
+  locationWithUnrevealed
+    "06301"
+    "Forsaken Tower"
+    [Kadath]
+    Equals
+    [Square]
+    ("Forsaken Tower" <:> "Of Life and Death")
+    [Kadath]
+    Equals
+    [Square]
+    WhereTheGodsDwell
+
+forsakenTowerOfInfiniteTruth :: CardDef
+forsakenTowerOfInfiniteTruth =
+  locationWithUnrevealed
+    "06302"
+    "Forsaken Tower"
+    [Kadath]
+    Equals
+    [Square]
+    ("Forsaken Tower" <:> "Of Infinite Truth")
+    [Kadath]
+    Equals
+    [Square]
+    WhereTheGodsDwell
+
+forsakenTowerOfEternalFlame :: CardDef
+forsakenTowerOfEternalFlame =
+  locationWithUnrevealed
+    "06303"
+    "Forsaken Tower"
+    [Kadath]
+    Equals
+    [Square]
+    ("Forsaken Tower" <:> "Of Eternal Flame")
+    [Kadath]
+    Equals
+    [Square]
+    WhereTheGodsDwell
+
+forsakenTowerOfTheQueenOfNight :: CardDef
+forsakenTowerOfTheQueenOfNight =
+  locationWithUnrevealed
+    "06304"
+    "Forsaken Tower"
+    [Kadath]
+    Equals
+    [Square]
+    ("Forsaken Tower" <:> "Of the Queen of Night")
+    [Kadath]
+    Equals
+    [Square]
+    WhereTheGodsDwell
+
+forsakenTowerOfPrimevalLight :: CardDef
+forsakenTowerOfPrimevalLight =
+  locationWithUnrevealed
+    "06305"
+    "Forsaken Tower"
+    [Kadath]
+    Equals
+    [Square]
+    ("Forsaken Tower" <:> "Of Primeval Light")
+    [Kadath]
+    Equals
+    [Square]
+    WhereTheGodsDwell
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

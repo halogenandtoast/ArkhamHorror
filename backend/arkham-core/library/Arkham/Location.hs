@@ -572,6 +572,18 @@ allLocations =
     , SomeLocationCard seaOfPitch_263
     , SomeLocationCard seaOfPitch_264
     , SomeLocationCard seaOfPitch_265
+    , --- WhereTheGodsDwell
+      SomeLocationCard plateauOfLengWhereTheGodsDwell
+    , SomeLocationCard coldWastes
+    , SomeLocationCard monasteryOfLeng
+    , SomeLocationCard onyxGates
+    , SomeLocationCard theOnyxCastle
+    , SomeLocationCard forsakenTowerOfIllusionAndMyth
+    , SomeLocationCard forsakenTowerOfLifeAndDeath
+    , SomeLocationCard forsakenTowerOfInfiniteTruth
+    , SomeLocationCard forsakenTowerOfEternalFlame
+    , SomeLocationCard forsakenTowerOfTheQueenOfNight
+    , SomeLocationCard forsakenTowerOfPrimevalLight
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

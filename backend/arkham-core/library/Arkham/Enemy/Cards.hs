@@ -116,6 +116,7 @@ allEncounterEnemyCards =
       , danielChesterfield
       , darkYoungHost
       , devoteeOfTheKey
+      , dholeOfTheWastes
       , dianneDevine
       , dimensionalShambler
       , discipleOfTheDevourer
@@ -152,6 +153,7 @@ allEncounterEnemyCards =
       , heretic_I
       , heretic_K
       , hermanCollins
+      , highPriestNotToBeDescribed
       , hordeOfNight
       , hotelGuest
       , hotelManager
@@ -175,6 +177,7 @@ allEncounterEnemyCards =
       , knightOfTheInnerCircle
       , knightOfTheOuterVoid
       , laboringGug
+      , liarWithNoFace
       , lodgeEnforcer
       , lodgeJailor
       , lodgeNeophyte
@@ -198,6 +201,11 @@ allEncounterEnemyCards =
       , nathanWickMasterOfInitiation
       , netherMist
       , nightriders
+      , nyarlathotepGodOfAThousandForms
+      , nyarlathotepMessengerOfTheOuterGods
+      , nyarlathotepStalkerAmongTheStars
+      , nyarlathotepTheCrawlingChaos
+      , nyarlathotepTheFacelessWhisperer
       , oBannionsThug
       , otherworldlyMeddler
       , packOfVooniths
@@ -1811,6 +1819,78 @@ unboundBeast =
   (weakness "06283" "Unbound Beast")
     { cdCardTraits = setFromList [Monster, Extradimensional, Tindalos]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    }
+
+nyarlathotepTheCrawlingChaos :: CardDef
+nyarlathotepTheCrawlingChaos =
+  unique
+    $ (enemy "06306" ("Nyarlathotep" <:> "The Crawling Chaos") WhereTheGodsDwell 1)
+      { cdCardTraits = setFromList [AncientOne, Elite]
+      , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Hunter]
+      , cdVictoryPoints = Just 2
+      }
+
+nyarlathotepTheFacelessWhisperer :: CardDef
+nyarlathotepTheFacelessWhisperer =
+  unique
+    $ (enemy "06307" ("Nyarlathotep" <:> "The Faceless Whisperer") WhereTheGodsDwell 1)
+      { cdCardTraits = setFromList [AncientOne, Elite]
+      , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Hunter]
+      , cdVictoryPoints = Just 2
+      }
+
+nyarlathotepMessengerOfTheOuterGods :: CardDef
+nyarlathotepMessengerOfTheOuterGods =
+  unique
+    $ (enemy "06308" ("Nyarlathotep" <:> "Messenger of the Outer Gods") WhereTheGodsDwell 1)
+      { cdCardTraits = setFromList [AncientOne, Elite]
+      , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Hunter]
+      , cdVictoryPoints = Just 2
+      }
+
+nyarlathotepGodOfAThousandForms :: CardDef
+nyarlathotepGodOfAThousandForms =
+  unique
+    $ (enemy "06309" ("Nyarlathotep" <:> "God of a Thousand Forms") WhereTheGodsDwell 1)
+      { cdCardTraits = setFromList [AncientOne, Elite]
+      , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Hunter]
+      , cdVictoryPoints = Just 2
+      }
+
+nyarlathotepStalkerAmongTheStars :: CardDef
+nyarlathotepStalkerAmongTheStars =
+  unique
+    $ (enemy "06310" ("Nyarlathotep" <:> "Stalker Among the Stars") WhereTheGodsDwell 1)
+      { cdCardTraits = setFromList [AncientOne, Elite]
+      , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Hunter]
+      , cdVictoryPoints = Just 2
+      }
+
+highPriestNotToBeDescribed :: CardDef
+highPriestNotToBeDescribed =
+  unique
+    $ ( enemy "06311" ("High Priest Not to Be Described" <:> "Agent of the Other Gods") WhereTheGodsDwell 1
+      )
+      { cdCardTraits = setFromList [Monster, Cultist, Avatar, Elite]
+      , cdKeywords = setFromList [Keyword.Alert, Keyword.Massive, Keyword.Retaliate]
+      , cdVictoryPoints = Just 2
+      }
+
+dholeOfTheWastes :: CardDef
+dholeOfTheWastes =
+  ( enemy "06312" "Dhole of the Wastes" WhereTheGodsDwell 1
+  )
+    { cdCardTraits = singleton Monster
+    , cdKeywords = singleton Keyword.Hunter
+    , cdVictoryPoints = Just 1
+    }
+
+liarWithNoFace :: CardDef
+liarWithNoFace =
+  ( enemy "06313" "Liar with No Face" WhereTheGodsDwell 3
+  )
+    { cdCardTraits = setFromList [Monster, Cultist, Servitor]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 corpseHungryGhoul :: CardDef

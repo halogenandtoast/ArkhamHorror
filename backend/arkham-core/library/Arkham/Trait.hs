@@ -114,8 +114,10 @@ data Trait
   | Item
   | Job
   | Jungle
+  | Kadath
   | Key
   | Lead
+  | Leng
   | Lodge
   | Lunatic
   | Madness

@@ -3,6 +3,7 @@ module Arkham.Scenario.Scenarios.WhereTheGodsDwell (WhereTheGodsDwell (..), wher
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Attack
+import Arkham.CampaignLogKey
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Act (getCurrentActStep)
@@ -41,6 +42,27 @@ instance HasChaosTokenValue WhereTheGodsDwell where
     ElderThing -> pure $ ChaosTokenValue ElderThing $ byDifficulty attrs ZeroModifier (NegativeModifier 1)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
+  [ PlusOne
+  , Zero
+  , Zero
+  , MinusOne
+  , MinusOne
+  , MinusTwo
+  , MinusTwo
+  , MinusThree
+  , MinusFour
+  , Skull
+  , Skull
+  , Skull
+  , Cultist
+  , Tablet
+  , Tablet
+  , AutoFail
+  , ElderSign
+  ]
+
 instance RunMessage WhereTheGodsDwell where
   runMessage msg s@(WhereTheGodsDwell attrs) = runQueueT $ case msg of
     PreScenarioSetup -> do
@@ -48,6 +70,11 @@ instance RunMessage WhereTheGodsDwell where
       story
         $ i18nWithTitle
         $ if carried then "dreamEaters.whereTheGodsDwell.intro1" else "dreamEaters.whereTheGodsDwell.intro2"
+      pure s
+    StandaloneSetup -> do
+      record RandolphSurvivedTheVoyage
+      record TheInvestigatorsTraveledToTheColdWastes
+      setChaosTokens standaloneChaosTokens
       pure s
     Setup -> runScenarioSetup WhereTheGodsDwell attrs do
       gather Set.WhereTheGodsDwell

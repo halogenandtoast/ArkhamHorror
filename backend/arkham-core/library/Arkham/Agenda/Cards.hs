@@ -35,6 +35,7 @@ allAgendaCards =
       , callingForthTheOldOnes
       , chaosAtTheCarnevale
       , chaosInTheCloverClub
+      , chaosIncarnate
       , cityOfBlood
       , cityOfTheGreatRace
       , crossroadsOfFate
@@ -109,6 +110,7 @@ allAgendaCards =
       , theEndOfAllThings
       , theEntityAboveTheFloodBelow
       , theEntityAboveTheVortexAbove
+      , theEyeOfChaos
       , theFamiliar
       , theFestivitiesBegin
       , theFinalCountdown
@@ -131,6 +133,7 @@ allAgendaCards =
       , theRougarouFeeds
       , theSecondNight
       , theShadowOfTheEclipse
+      , theShapeOfChaos
       , theTempleWarden
       , theTerrifyingTruth
       , theThingWithNoName
@@ -529,6 +532,15 @@ aSinisterRealm = agenda "06248" "A Sinister Realm" 1 PointOfNoReturn
 
 besetByMonsters :: CardDef
 besetByMonsters = agenda "06249" "Beset by Monsters" 2 PointOfNoReturn
+
+theEyeOfChaos :: CardDef
+theEyeOfChaos = agenda "06287" "The Eye of Chaos" 1 WhereTheGodsDwell
+
+theShapeOfChaos :: CardDef
+theShapeOfChaos = agenda "06288" "The Shape of Chaos" 2 WhereTheGodsDwell
+
+chaosIncarnate :: CardDef
+chaosIncarnate = agenda "06289" "Chaos Incarnate" 3 WhereTheGodsDwell
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

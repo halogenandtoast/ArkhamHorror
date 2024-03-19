@@ -207,6 +207,10 @@ allAgendas =
     , -- Point of No Return
       SomeAgendaCard aSinisterRealm
     , SomeAgendaCard besetByMonsters
+    , -- Where the Gods Dwell
+      SomeAgendaCard theEyeOfChaos
+    , SomeAgendaCard theShapeOfChaos
+    , SomeAgendaCard chaosIncarnate
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

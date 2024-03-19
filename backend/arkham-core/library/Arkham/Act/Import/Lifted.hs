@@ -3,6 +3,7 @@ module Arkham.Act.Import.Lifted (
 )
 where
 
+import Arkham.Act.Helpers as X (groupClueCost)
 import Arkham.Act.Runner as X (
   ActAttrs (..),
   ActCard,

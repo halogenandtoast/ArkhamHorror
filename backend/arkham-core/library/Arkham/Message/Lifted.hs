@@ -322,6 +322,9 @@ shuffleEncounterDiscardBackIn = push ShuffleEncounterDiscardBackIn
 placeDoomOnAgenda :: ReverseQueue m => Int -> m ()
 placeDoomOnAgenda n = push $ PlaceDoomOnAgenda n CanNotAdvance
 
+placeDoomOnAgendaAndCheckAdvance :: ReverseQueue m => Int -> m ()
+placeDoomOnAgendaAndCheckAdvance n = push $ PlaceDoomOnAgenda n CanAdvance
+
 revertAgenda :: (ReverseQueue m, AsId a, IdOf a ~ AgendaId) => a -> m ()
 revertAgenda a = push $ RevertAgenda (asId a)
 

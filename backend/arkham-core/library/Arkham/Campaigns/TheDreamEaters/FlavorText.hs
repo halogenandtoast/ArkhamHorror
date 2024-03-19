@@ -347,3 +347,148 @@ sharedTheKnowledgeStory =
     Nothing
     [ "The black cat tells you all about the region of the Dreamlands your companions have entered. “The entire surface of the Dreamlands, where you’ve been exploring, covers the Underworld like a beautiful silk dress over decayed skin. You have no reason to go there, which is a good thing, because it is a particularly inhospitable place. You actually might have walked right by one entrance to the Underworld, now that I think about it—back in the Enchanted Woods. There are several other entrances as well: beneath an old monastery in Leng, another in the ruins of Sarkomand...”"
     ]
+
+theGreatOnes1 :: FlavorText
+theGreatOnes1 =
+  FlavorText
+    (Just "Interlude III: The Great Ones")
+    [ "You are nudged out of a sleepless reverie by a furry forehead. You look\
+      \ down to find the black cat peering up at you. “Hey. I see you’ve made some\
+      \ progress.” You’re not quite sure if you would call this progress. Though\
+      \ you are finally on your way to the Cold Wastes, you haven’t pinned down the\
+      \ exact location of unknown Kadath, and you have no idea what to expect when\
+      \ you arrive."
+    ]
+
+theGreatOnes1GrowWeaker :: FlavorText
+theGreatOnes1GrowWeaker =
+  FlavorText
+    Nothing
+    [ "“Whoa,” the cat says suddenly, “you’re not looking too good, you know.”\
+      \ It gazes up at you with unconcerned but curious eyes. You ask what it\
+      \ means. “You can’t tell? You look sick. You eating enough? Whatever, it\
+      \ doesn’t matter. You can walk, can’t you? That’s good enough.”"
+    ]
+
+theGreatOnes1Searching :: FlavorText
+theGreatOnes1Searching =
+  FlavorText
+    Nothing
+    [ "“Where’s what’s-his-name?” the black cat asks, searching for Randolph.\
+      \ You try to explain what happened, but you can barely choke out the words.\
+      \ “Say no more. I get it.” The cat ponders the situation, not seeming to care\
+      \ much about Randolph’s terrible fate. “Well, I guess the thing I was going\
+      \ to say is no longer going to be said,” it riddles."
+    ]
+
+theGreatOnes1YouAskedForIt :: FlavorText
+theGreatOnes1YouAskedForIt =
+  FlavorText
+    Nothing
+    [ "“Don’t mind me. I just wanted to see if you’re alive.” You begin to tell\
+      \ the black cat of your troubles, and it tilts its head to the side with a\
+      \ look of catlike curiosity. “Huh. That’s funny. Did I say I cared what you\
+      \ had to say? I don’t think I did. Oh well. Let me make it more clear: I only\
+      \ care about whether you’re able to fulfill your duty. I don’t care how you\
+      \ are feeling.” The cat’s glaring eyes never blink. “Well, good luck. You’ll\
+      \ need it.” It bounds off into a shadow and vanishes."
+    ]
+
+theGreatOnes1Part2 :: FlavorText
+theGreatOnes1Part2 =
+  FlavorText
+    Nothing
+    [ "You ask the black cat if it knows what you’ll find in Kadath. “Sort of,”\
+      \ it answers. “I’ve foreseen your arrival in Kadath for some time now. I’ve\
+      \ seen a lot of this, in fact. But it’s...well, it’s not playing out exactly\
+      \ the same way. Or maybe I just didn’t see it the same way. Regardless, I\
+      \ think you’re on the right path. After all, it’s the only path that’s left.\
+      \ I know a little more about what you’ll see when you get there, but I’m\
+      \ afraid that if I tell you, you’ll see it differently, too. Don’t worry\
+      \ about it. You’re doing fine. Get to Kadath. Find the land of the Great\
+      \ Ones. Everything else will fall into place when you arrive. As long as you\
+      \ don’t mess this up. These beings that you face, the ones whose names I do\
+      \ not wish to speak, they don’t just threaten the Dreamlands. They threaten\
+      \ existence itself. Now, if you’ll excuse me, I have somewhere to be.”"
+    ]
+
+theGreatOnes2 :: FlavorText
+theGreatOnes2 =
+  FlavorText
+    (Just "Interlude III: The Great Ones")
+    [ "A cat’s low-pitched wail draws your attention to a nearby web. When you\
+      \ arrive, you find the black cat stuck on a patch of particularly sticky web,\
+      \ wriggling back and forth in a vain attempt to free itself. Even with its\
+      \ sharp claws, it seems to be in trouble. You lean over and pull the cat\
+      \ free, and it leaps from your arms to a rocky platform below, the only thing\
+      \ between the cat and an endless void. It hisses for a moment, then stands\
+      \ tall. “Did I ask for your help?” it scolds. “Well, you made it below the\
+      \ Sea of Pitch after all. Now look around you. See all this webbing?” You\
+      \ couldn’t miss it even if you tried; you are surrounded on all sides by\
+      \ webs, treacherous pathways across the aether. “It is a bridge between your\
+      \ world and the Dreamlands. If it is completed, the two will merge.\
+      \ Understand? Unless you want everything to look like that hospital where\
+      \ your friends are sleeping, you have to stop this at all costs. Nothing else\
+      \ matters. Nothing.”"
+    ]
+
+theGreatOnes2TheSilverKey :: FlavorText
+theGreatOnes2TheSilverKey =
+  FlavorText
+    Nothing
+    [ "“Hey, you still have that key?” the black cat asks. You scrounge through\
+      \ your belongings for the key you found in the Unnamable and show it to the\
+      \ cat. “Gimme that,” it demands, jumping and biting it out of your hands\
+      \ before you can protest. “Don’t look at me like that. Your other friends\
+      \ need it more than you.”"
+    ]
+
+theGreatOnes2Searching :: FlavorText
+theGreatOnes2Searching =
+  FlavorText
+    Nothing
+    [ "The black cat stops talking as it spots Randolph for the first time. It\
+      \ circles around the man a few times, agitated. For his part, Randolph looks\
+      \ uncharacteristically perturbed by the cat’s presence, even taking a step\
+      \ backward as it closes in. “What is the matter? I’ve not harmed any of your\
+      \ kind,” he says matter-of-factly. “Have I done something to offend you?”"
+    , "“Your mere existence offends me,” the cat replies with a hiss. It\
+      \ strolls back toward you, keeping a wary eye on Randolph. “I think I know\
+      \ what is going on now. It all makes sense. I know who is interfering with my\
+      \ sight. Do not trust that thing,” it warns, circling to keep an eye on the\
+      \ blond man behind it. “I have to prepare. I’ll return when the time is\
+      \ right.”"
+    ]
+
+theGreatOnes2Part2 :: FlavorText
+theGreatOnes2Part2 =
+  FlavorText
+    (Just "Interlude III: The Great Ones")
+    [ "“Oh, before I forget: your friends have almost made it to their\
+      \ destination. If everything happens as I have foreseen, they’ll be able to\
+      \ free themselves. In the meantime, they wanted me to let you know...”"
+    ]
+
+theGreatOnes2Nyarlathotep :: FlavorText
+theGreatOnes2Nyarlathotep =
+  FlavorText
+    Nothing
+    [ "“...the being they face is one with thousands, perhaps an endless number\
+      \ of masks. Nyarlathotep, it is called by some. It is manipulative,\
+      \ deceptive, and cunning. It is probably the thing that trapped them in the\
+      \ Dreamlands to begin with. Why, I have no idea. If you want them to survive,\
+      \ they’re probably going to need my help. You’ll be okay here on your own,\
+      \ right?” The black cat doesn’t wait for an answer; without another word, it\
+      \ leaps into the aether below and vanishes."
+    ]
+
+theGreatOnes2AtlachNacha :: FlavorText
+theGreatOnes2AtlachNacha =
+  FlavorText
+    Nothing
+    [ "“...that bridge I just mentioned? The creature weaving it is unlike\
+      \ anything you have ever seen. Atlach-Nacha is the name I have heard\
+      \ whispered in the dark corners of the Dreamlands. It is the master and\
+      \ progenitor of all the spiders crawling around these parts. Maybe all parts,\
+      \ really. You’re going to need my help to stop its scheme.”"
+    ]

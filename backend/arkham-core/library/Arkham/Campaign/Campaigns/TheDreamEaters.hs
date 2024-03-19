@@ -1,5 +1,8 @@
+{-# LANGUAGE MultiWayIf #-}
+
 module Arkham.Campaign.Campaigns.TheDreamEaters (TheDreamEaters (..), theDreamEaters) where
 
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Runner hiding (story, storyWithChooseOne)
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
@@ -10,7 +13,7 @@ import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Campaign
+import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
 import Arkham.Helpers.Log hiding (getHasRecord)
 import Arkham.Helpers.Log qualified as Lift
 import Arkham.Helpers.Query
@@ -548,6 +551,114 @@ instance RunMessage TheDreamEaters where
             ]
         pure c
       CampaignStep (InterludeStep 3 _) -> do
+        setCampaignPart TheDreamQuest c (InterludeStepPart 3 Nothing 1)
+      CampaignStep (InterludeStepPart 3 _ 1) -> do
+        story theGreatOnes1
+        whenM (getHasRecord TheDreamQuest TheDreamersGrowWeaker) do
+          story theGreatOnes1GrowWeaker
+          addChaosToken $ case attrs.difficulty of
+            Easy -> MinusThree
+            Standard -> MinusFour
+            Hard -> MinusFive
+            Expert -> MinusSeven
+
+        randolphDidNotSurvive <- getHasRecord TheDreamQuest RandolphCarterDidNotSurviveTheVoyage
+        isSearchingForTheTruth <- getHasRecord TheDreamQuest TheBlackCatIsSearchingForTheTruth
+
+        when (randolphDidNotSurvive && isSearchingForTheTruth) do
+          story theGreatOnes1Searching
+          pushAll
+            [ InTheDreamQuest (CrossOutRecord TheBlackCatIsSearchingForTheTruth)
+            , InTheWebOfDreams (CrossOutRecord TheBlackCatIsSearchingForTheTruth)
+            ]
+
+        didYouAskForIt <- getHasRecord TheDreamQuest YouAskedForIt
+        if didYouAskForIt
+          then do
+            story theGreatOnes1YouAskedForIt
+            push $ CampaignStep (InterludeStepPart 3 Nothing 3)
+            pure c
+          else do
+            hasAHunch <- getHasRecord TheDreamQuest TheBlackCatHasAHunch
+            storyWithChooseOne theGreatOnes1Part2
+              $ if hasAHunch
+                then
+                  [ Label
+                      "The black cat bounds off into the void of space before you get the chance to ask it anything else."
+                      []
+                  ]
+                else
+                  [ Label
+                      "Tell your companions about the threats that you face. The black cat will return to you with aid once this message is delivered. This may put an undue burden on your companions. "
+                      [InTheDreamQuest (Record TheBlackCatSpokeOfNyarlathotep)]
+                  , Label
+                      "Tell your companions that you will be okay. The black cat will stay with them once this message is delivered. This might make your quest a little more difficult. "
+                      [InTheDreamQuest (Record TheBlackCatSpokeOfAtlachNacha)]
+                  ]
+            setCampaignPart TheWebOfDreams c (InterludeStepPart 3 Nothing 2)
+      CampaignStep (InterludeStepPart 3 _ 2) -> do
+        story theGreatOnes2
+        possessTheSilverKey <- getHasRecord TheWebOfDreams TheInvestigatorsPossessTheSilverKey
+
+        if possessTheSilverKey
+          then do
+            story theGreatOnes2TheSilverKey
+            pushAll
+              [ InTheWebOfDreams (CrossOutRecord TheInvestigatorsPossessTheSilverKey)
+              , InTheDreamQuest (Record TheInvestigatorsPossessTheSilverKey)
+              ]
+            removeCampaignCard Assets.theSilverKey
+            setCampaignPart TheDreamQuest c (InterludeStepPart 3 Nothing 21)
+          else do
+            push $ CampaignStep (InterludeStepPart 3 Nothing 22)
+            pure c
+      CampaignStep (InterludeStepPart 3 _ 21) -> do
+        investigators <- allInvestigators
+        addCampaignCardToDeckChoice investigators Assets.theSilverKey
+        setCampaignPart TheDreamQuest c (InterludeStepPart 3 Nothing 22)
+      CampaignStep (InterludeStepPart 3 _ 22) -> do
+        -- If the black cat is searching for the truth:
+        isSearching <- getHasRecord TheDreamQuest TheBlackCatIsSearchingForTheTruth
+        if isSearching
+          then do
+            story theGreatOnes2Searching
+            recordInBoth TheBlackCatKnowsTheTruth
+          else do
+            story theGreatOnes2Part2
+            spokeOfNyarlathotep <- getHasRecord TheDreamQuest TheBlackCatSpokeOfNyarlathotep
+            atYourSideTheWebOfDreams <- getHasRecord TheWebOfDreams TheBlackCatIsAtYourSide
+            atYourSideTheDreamQuest <- getHasRecord TheDreamQuest TheBlackCatIsAtYourSide
+            let neitherCampaignHasBlackCatAtYourSide = not atYourSideTheWebOfDreams && not atYourSideTheDreamQuest
+
+            when spokeOfNyarlathotep do
+              story theGreatOnes2Nyarlathotep
+
+              if
+                | neitherCampaignHasBlackCatAtYourSide -> do
+                    record TheDreamQuest TheBlackCatIsAtYourSide
+                    pushBoth $ AddChaosToken ElderThing
+                | atYourSideTheWebOfDreams -> do
+                    push $ InTheWebOfDreams (CrossOutRecord TheBlackCatIsAtYourSide)
+                    push $ InTheDreamQuest (Record TheBlackCatIsAtYourSide)
+                    pushBoth $ SwapChaosToken Tablet ElderThing
+                | otherwise -> pure ()
+
+            spokeOfAtlachNacha <- getHasRecord TheDreamQuest TheBlackCatSpokeOfAtlachNacha
+            when spokeOfAtlachNacha do
+              story theGreatOnes2AtlachNacha
+              if
+                | neitherCampaignHasBlackCatAtYourSide -> do
+                    record TheWebOfDreams TheBlackCatIsAtYourSide
+                    pushBoth $ AddChaosToken Tablet
+                | atYourSideTheDreamQuest -> do
+                    push $ InTheDreamQuest (CrossOutRecord TheBlackCatIsAtYourSide)
+                    push $ InTheWebOfDreams (Record TheBlackCatIsAtYourSide)
+                    pushBoth $ SwapChaosToken ElderThing Tablet
+                | otherwise -> pure ()
+
+        push $ CampaignStep (InterludeStepPart 3 Nothing 3)
+        pure c
+      CampaignStep (InterludeStepPart 3 _ 3) -> do
         lead <- getLeadPlayer
         push
           $ questionLabel "Proceed to which scenario" lead

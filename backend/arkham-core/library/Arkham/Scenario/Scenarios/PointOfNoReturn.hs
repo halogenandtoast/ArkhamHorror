@@ -13,13 +13,16 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Exception
 import Arkham.Helpers.Log
+import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest (getSkillTestAction)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Prelude
+import Arkham.Resolution
 import Arkham.Scenario.Runner hiding (chooseOne, story)
 import Arkham.Scenario.Setup
 import Arkham.ScenarioLogKey
@@ -157,5 +160,25 @@ instance RunMessage PointOfNoReturn where
           drawCard <- MaybeT $ drawCardsIfCan iid TabletEffect 1
           lift $ push drawCard
         _ -> pure ()
+      pure s
+    ScenarioResolution r -> do
+      case r of
+        NoResolution -> push R2
+        Resolution 1 -> do
+          story $ i18nWithTitle "dreamEaters.pointOfNoReturn.resolution1"
+          n <- scenarioCount Distortion
+          incrementRecordCount StepsOfTheBridge n
+          allGainXp attrs
+          endOfScenario
+        Resolution 2 -> do
+          story $ i18nWithTitle "dreamEaters.pointOfNoReturn.resolution2"
+          lead <- getLead
+          forceAddCampaignCardToDeckChoice [lead] Treacheries.falseAwakening
+          n <- scenarioCount Distortion
+          incrementRecordCount StepsOfTheBridge n
+          allGainXp attrs
+          endOfScenario
+          pure ()
+        other -> throw $ UnknownResolution other
       pure s
     _ -> PointOfNoReturn <$> lift (runMessage msg attrs)

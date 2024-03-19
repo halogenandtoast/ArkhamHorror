@@ -292,6 +292,7 @@ data ModifierType
   | IfSuccessfulModifier ModifierType
   | NoInitialSwarm
   | SwarmingValue Int
+  | AttackDealsEitherDamageOrHorror
   | -- UI only modifiers
     Ethereal -- from Ethereal Form
   | Explosion -- from Dyanamite Blast

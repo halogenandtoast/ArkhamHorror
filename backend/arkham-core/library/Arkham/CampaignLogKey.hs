@@ -249,6 +249,9 @@ data CampaignLogKey
   | RandolphCarterDidNotSurviveTheVoyage
   | RandolphSurvivedTheVoyage
   | TheInvestigatorsFoundAWayOutOfTheUnderworld
+  | TheBlackCatSpokeOfNyarlathotep
+  | TheBlackCatSpokeOfAtlachNacha
+  | TheBlackCatKnowsTheTruth
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

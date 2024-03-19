@@ -18,6 +18,7 @@ import Arkham.Prelude
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
 import Arkham.Scenario.Runner hiding (
+  assignDamageAndHorror,
   assignHorror,
   findAndDrawEncounterCard,
   placeLocationCard,
@@ -82,7 +83,7 @@ instance RunMessage TheGathering where
       pushWhen (isHardExpert attrs) $ DrawAnotherChaosToken iid
       pure s
     ResolveChaosToken _ Tablet iid -> do
-      pushWhenM (selectAny $ enemyAtLocationWith iid <> withTrait Ghoul)
+      whenM (selectAny $ enemyAtLocationWith iid <> withTrait Ghoul)
         $ assignDamageAndHorror iid Tablet 1 (byDifficulty attrs 0 1)
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do

@@ -21,6 +21,7 @@ import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (forceAddCampaignCardToDeckChoice)
 import Arkham.Scenario.Runner hiding (
+  assignDamageAndHorror,
   chooseOrRunOne,
   findAndDrawEncounterCard,
   placeLocationCard,
@@ -123,7 +124,7 @@ instance RunMessage TheDevourerBelow where
       pure s
     ResolveChaosToken _ Tablet iid -> do
       let horror = byDifficulty attrs 0 1
-      pushWhenM (selectAny $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Monster)
+      whenM (selectAny $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Monster)
         $ assignDamageAndHorror iid (ChaosTokenEffectSource Tablet) 1 horror
       pure s
     ResolveChaosToken _ ElderThing iid -> do

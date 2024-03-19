@@ -728,16 +728,42 @@ instance RunMessage EnemyAttrs where
       sanityDamage <- field EnemySanityDamage (toId a)
 
       case attackTarget details of
-        InvestigatorTarget iid ->
+        InvestigatorTarget iid -> do
+          player <- getPlayer iid
+          let
+            attackMessage =
+              if AttackDealsEitherDamageOrHorror `elem` modifiers
+                then
+                  chooseOne
+                    player
+                    [ Label
+                        ("Take " <> tshow healthDamage <> " damage")
+                        [ InvestigatorAssignDamage
+                            iid
+                            (EnemyAttackSource enemyId)
+                            (attackDamageStrategy details)
+                            healthDamage
+                            0
+                        ]
+                    , Label
+                        ("Take " <> tshow sanityDamage <> " horror")
+                        [ InvestigatorAssignDamage
+                            iid
+                            (EnemyAttackSource enemyId)
+                            (attackDamageStrategy details)
+                            0
+                            sanityDamage
+                        ]
+                    ]
+                else
+                  InvestigatorAssignDamage
+                    iid
+                    (EnemyAttackSource enemyId)
+                    (attackDamageStrategy details)
+                    healthDamage
+                    sanityDamage
           pushAll
-            $ [ InvestigatorAssignDamage
-                iid
-                (EnemyAttackSource enemyId)
-                (attackDamageStrategy details)
-                healthDamage
-                sanityDamage
-              | allowAttack
-              ]
+            $ [attackMessage | allowAttack]
             <> [Exhaust (toTarget a) | allowAttack, attackExhaustsEnemy details]
             <> ignoreWindows
             <> [After (EnemyAttack details)]

@@ -123,6 +123,9 @@ recordSetInsert
   -> m ()
 recordSetInsert k = push . Msg.recordSetInsert k
 
+incrementRecordCount :: ReverseQueue m => CampaignLogKey -> Int -> m ()
+incrementRecordCount key = push . IncrementRecordCount key
+
 story :: ReverseQueue m => FlavorText -> m ()
 story flavor = do
   players <- allPlayers
@@ -158,6 +161,10 @@ endOfScenario = push $ EndOfGame Nothing
 assignHorror
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 assignHorror iid (toSource -> source) horror = push $ Msg.assignHorror iid source horror
+
+assignDamageAndHorror
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> Int -> m ()
+assignDamageAndHorror iid (toSource -> source) damage horror = push $ Msg.assignDamageAndHorror iid source damage horror
 
 findAndDrawEncounterCard
   :: (ReverseQueue m, IsCardMatcher a) => InvestigatorId -> a -> m ()

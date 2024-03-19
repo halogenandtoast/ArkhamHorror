@@ -72,6 +72,9 @@ instance HasField "log" CampaignAttrs CampaignLog where
 instance HasField "meta" CampaignAttrs Value where
   getField = campaignMeta
 
+instance HasField "difficulty" CampaignAttrs Difficulty where
+  getField = campaignDifficulty
+
 instance HasModifiersFor CampaignAttrs where
   getModifiersFor (InvestigatorTarget iid) attrs =
     pure $ findWithDefault [] iid (campaignModifiers attrs)

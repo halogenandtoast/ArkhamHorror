@@ -33,6 +33,11 @@ const enemyStory = computed(() => {
   return Object.values(stories).find((s) => s.otherSide?.contents === props.enemy.id)
 })
 
+const isTrueForm = computed(() => {
+  const { cardCode } = props.enemy
+  return cardCode === 'cxnyarlathotep'
+})
+
 const image = computed(() => {
   const { cardCode } = props.enemy
   return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
@@ -178,7 +183,7 @@ watch(abilities, (abilities) => {
       <template v-else>
         <div class="card-frame">
           <div class="card-wrapper" :class="{ 'enemy--can-interact': canInteract, exhausted: isExhausted}">
-            <img :src="image"
+            <img v-if="isTrueForm" :src="image"
               class="card enemy"
               :data-id="id"
               :data-fight="enemy.fight"
@@ -188,6 +193,12 @@ watch(abilities, (abilities) => {
               :data-horror="enemy.sanityDamage"
               :data-victory="gainedVictory"
               :data-keywords="addedKeywords"
+              @click="clicked"
+            />
+            <img v-else
+              :src="image"
+              class="card enemy"
+              :data-id="id"
               @click="clicked"
             />
           </div>

@@ -74,12 +74,16 @@ data TreacheryAttrs = TreacheryAttrs
   , treacheryDrawnFrom :: Maybe DeckSignifier
   , treacheryResolved :: Set InvestigatorId -- who resolved effects on this
   , treacheryDiscardedBy :: Maybe InvestigatorId
+  , treacheryMeta :: Value
   }
   deriving stock (Show, Eq, Generic)
 
 instance AsId TreacheryAttrs where
   type IdOf TreacheryAttrs = TreacheryId
   asId = treacheryId
+
+instance HasField "meta" TreacheryAttrs Value where
+  getField = treacheryMeta
 
 instance HasField "resources" TreacheryAttrs Int where
   getField = treacheryResources
@@ -137,7 +141,21 @@ instance ToJSON TreacheryAttrs where
   toEncoding = genericToEncoding $ aesonOptions $ Just "treachery"
 
 instance FromJSON TreacheryAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "treachery"
+  parseJSON = withObject "TreacheryAttrs" $ \o -> do
+    treacheryId <- o .: "id"
+    treacheryCardId <- o .: "cardId"
+    treacheryCardCode <- o .: "cardCode"
+    treacheryOwner <- o .: "owner"
+    treacheryTokens <- o .: "tokens"
+    treacheryPlacement <- o .: "placement"
+    treacheryCanBeCommitted <- o .: "canBeCommitted"
+    treacheryDrawnBy <- o .: "drawnBy"
+    treacheryDrawnFrom <- o .: "drawnFrom"
+    treacheryResolved <- o .: "resolved"
+    treacheryDiscardedBy <- o .: "discardedBy"
+    treacheryMeta <- o .:? "meta" .!= Null
+
+    pure $ TreacheryAttrs {..}
 
 instance Entity TreacheryAttrs where
   type EntityId TreacheryAttrs = TreacheryId
@@ -242,6 +260,7 @@ treacheryWith f cardDef g =
             , treacheryDrawnFrom = Nothing
             , treacheryResolved = mempty
             , treacheryDiscardedBy = Nothing
+            , treacheryMeta = Null
             }
     }
 
@@ -316,3 +335,6 @@ someTreacheryCardCode :: SomeTreacheryCard -> CardCode
 someTreacheryCardCode = liftSomeTreacheryCard cbCardCode
 
 makeLensesWith suffixedFields ''TreacheryAttrs
+
+setMeta :: ToJSON a => a -> TreacheryAttrs -> TreacheryAttrs
+setMeta a = metaL .~ toJSON a

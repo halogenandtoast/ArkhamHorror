@@ -1,20 +1,12 @@
-module Arkham.Treachery.Cards.WatchersGrasp (
-  watchersGrasp,
-  WatchersGrasp (..),
-) where
+module Arkham.Treachery.Cards.WatchersGrasp (watchersGrasp, WatchersGrasp (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Attack
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
-import Arkham.Window (mkWindow)
-import Arkham.Window qualified as Window
 
 newtype WatchersGrasp = WatchersGrasp TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
@@ -36,41 +28,14 @@ instance HasModifiersFor WatchersGrasp where
 
 instance RunMessage WatchersGrasp where
   runMessage msg t@(WatchersGrasp attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation _iid (isSource attrs -> True) -> do
       theSpectralWatcher <- selectJust (enemyIs Enemies.theSpectralWatcher)
-      unengaged <- selectNone $ investigatorEngagedWith theSpectralWatcher
-      leadInvestigatorId <- getLeadInvestigatorId
 
       pushAll
-        $ [ HealDamage (EnemyTarget theSpectralWatcher) (toSource attrs) 3
-          , Ready (EnemyTarget theSpectralWatcher)
-          ]
-        <> ( guard unengaged
-              *> [ CheckWindow
-                    [leadInvestigatorId]
-                    [ mkWindow
-                        Timing.When
-                        (Window.MovedFromHunter theSpectralWatcher)
-                    ]
-                 , HunterMove theSpectralWatcher
-                 ]
-           )
-        <> [RevelationChoice iid (toSource attrs) 1]
-      pure t
-    RevelationChoice _ (isSource attrs -> True) _ -> do
-      theSpectralWatcher <- selectJust (enemyIs Enemies.theSpectralWatcher)
-      iids <- select $ investigatorEngagedWith theSpectralWatcher
-
-      modifiers' <- getModifiers (EnemyTarget theSpectralWatcher)
-      unless (CannotAttack `elem` modifiers') $ do
-        pushAll
-          $ map
-            ( \iid' ->
-                EnemyWillAttack
-                  $ (enemyAttack theSpectralWatcher attrs iid')
-                    { attackExhaustsEnemy = True
-                    }
-            )
-            iids
+        [ HealDamage (toTarget theSpectralWatcher) (toSource attrs) 3
+        , Ready (toTarget theSpectralWatcher)
+        , SendMessage (toTarget theSpectralWatcher) HuntersMove
+        , SendMessage (toTarget theSpectralWatcher) EnemiesAttack
+        ]
       pure t
     _ -> WatchersGrasp <$> runMessage msg attrs

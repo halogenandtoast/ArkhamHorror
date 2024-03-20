@@ -187,6 +187,7 @@ data Criterion
   | NotYetRecorded CampaignLogKey
   | HasHistory HistoryType InvestigatorMatcher HistoryMatcher
   | HasScenarioCount ScenarioCountKey ValueMatcher
+  | HasCampaignCount CampaignLogKey ValueMatcher
   | HasRemainingBlessTokens
   | -- Special Criterion
     AtLeastNCriteriaMet Int [Criterion]

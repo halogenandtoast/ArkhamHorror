@@ -68,7 +68,7 @@ instance RunMessage BeyondDreams where
       n <- perPlayer 1
 
       (nyarlathoteps, removedNyarlathoteps) :: ([Card], [Card]) <-
-        fmap (splitAt n) . shuffleM =<< getSetAsideCardsMatching (CardWithTitle "Nyarlathotep")
+        fmap (splitAt (n + 1)) . shuffleM =<< getSetAsideCardsMatching (CardWithTitle "Nyarlathotep")
       otherCards <-
         getSetAsideCardsMatching
           $ oneOf

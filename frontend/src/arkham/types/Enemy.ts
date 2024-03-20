@@ -20,14 +20,31 @@ export type Enemy = {
   placement: Placement;
   keys: ArkhamKey[];
   modifiers: Modifier[];
+  fight: number;
+  evade: number;
+  healthDamage: number;
+  sanityDamage: number;
+  health: GameValue | null;
 }
 
 type DamageAssignment = { damageAssignmentAmount: number }
+
+type GameValue = { tag: "Static", contents: number } | { tag: "PerPlayer", contents: number }
+
+export const gameValueDecoder = JsonDecoder.oneOf<GameValue>([
+  JsonDecoder.object({ tag: JsonDecoder.isExactly("Static"), contents: JsonDecoder.number }, 'Static'),
+  JsonDecoder.object({ tag: JsonDecoder.isExactly("PerPlayer"), contents: JsonDecoder.number }, 'PerPlayer')
+], 'GameValue')
 
 export const enemyDecoder = JsonDecoder.object<Enemy>({
   id: JsonDecoder.string,
   cardId: JsonDecoder.string,
   cardCode: JsonDecoder.string,
+  fight: JsonDecoder.number,
+  evade: JsonDecoder.number,
+  healthDamage: JsonDecoder.number,
+  sanityDamage: JsonDecoder.number,
+  health: JsonDecoder.failover(null, gameValueDecoder),
   tokens: tokensDecoder,
   assignedDamage: JsonDecoder.array<[boolean, number]>(
     JsonDecoder.tuple(

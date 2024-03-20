@@ -28,7 +28,7 @@ instance HasAbilities TruthAndLies where
     [ mkAbility attrs 1 $ actionAbilityWithCost (ClueCost $ Static 1)
     , restrictedAbility
         attrs
-        1
+        2
         (InVictoryDisplay (CardWithTitle "Nyarlathotep") (EqualTo $ StaticWithPerPlayer 1 1))
         $ Objective
         $ forced AnyWindow

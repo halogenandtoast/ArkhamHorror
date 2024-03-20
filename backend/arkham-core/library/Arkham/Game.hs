@@ -2917,6 +2917,7 @@ getEnemyField f e = do
           pure $ Just $ foldr applyAfterModifier initialFight modifiers'
     EnemyClues -> pure $ enemyClues attrs
     EnemyDamage -> pure $ enemyDamage attrs
+    EnemyName -> pure $ toName $ toCardDef attrs
     EnemyRemainingHealth -> do
       mTotalHealth <- field EnemyHealth (toId e)
       case mTotalHealth of

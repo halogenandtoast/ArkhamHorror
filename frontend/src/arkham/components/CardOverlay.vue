@@ -27,6 +27,41 @@ const card = computed(() => {
   return getImage(hoveredElement.value);
 });
 
+const fight = computed(() => {
+  if (!hoveredElement.value) return null;
+  return hoveredElement.value.dataset.fight;
+});
+
+const health = computed(() => {
+  if (!hoveredElement.value) return null;
+  return hoveredElement.value.dataset.health;
+});
+
+const damage = computed(() => {
+  if (!hoveredElement.value) return null;
+  return hoveredElement.value.dataset.damage;
+});
+
+const horror = computed(() => {
+  if (!hoveredElement.value) return null;
+  return hoveredElement.value.dataset.horror;
+});
+
+const victory = computed(() => {
+  if (!hoveredElement.value) return null;
+  return hoveredElement.value.dataset.victory;
+});
+
+const keywords = computed(() => {
+  if (!hoveredElement.value) return null;
+  return hoveredElement.value.dataset.keywords;
+});
+
+const evade = computed(() => {
+  if (!hoveredElement.value) return null;
+  return hoveredElement.value.dataset.evade;
+});
+
 const reversed = computed(() => {
   return hoveredElement.value?.classList.contains('Reversed') ?? false;
 });
@@ -117,10 +152,70 @@ const getImage = (el: HTMLElement): string | null => {
 <template>
   <div class="card-overlay" ref="cardOverlay" :style="{ top: overlayPosition.top + 'px', left: overlayPosition.left + 'px'}" :class="{ sideways }">
     <img v-if="card" :src="card" :class="{ reversed }" />
+    <span class="fight" v-if="fight">{{ fight }}</span>
+    <span class="health" v-if="health">{{ health }}</span>
+    <span class="evade" v-if="evade">{{ evade }}</span>
+    <span class="victory" v-if="victory">Victory {{ victory }}.</span>
+    <span class="keywords" v-if="keywords">{{ keywords }}.</span>
+    <img class="damage damage-1" v-if="damage && damage >= 1" :src="imgsrc('damage-overlay.png')"/>
+    <img class="damage damage-2" v-if="damage && damage >= 2" :src="imgsrc('damage-overlay.png')"/>
+    <img class="damage damage-3" v-if="damage && damage >= 3" :src="imgsrc('damage-overlay.png')"/>
+    <img class="horror horror-1" v-if="horror && horror >= 1" :src="imgsrc('horror-overlay.png')"/>
+    <img class="horror horror-2" v-if="horror && horror >= 2" :src="imgsrc('horror-overlay.png')"/>
+    <img class="horror horror-3" v-if="horror && horror >= 3" :src="imgsrc('horror-overlay.png')"/>
   </div>
 </template>
 
 <style lang="scss">
+.fight, .evade, .health {
+  font-family: "Teutonic";
+  position: absolute;
+  color: white;
+  font-weight: bold;
+  font-size: 1.3em;
+  text-shadow:
+    1px 1px 0 #000,
+    -1px 1px 0 #000,
+    -1px -1px 0 #000,
+    1px -1px 0 #000;
+}
+
+.fight {
+  top: 11%;
+  left: 30%;
+}
+
+.health {
+  font-size: 1.6em;
+  top: 10%;
+  transform: translate(-50%, 0);
+  left:50%;
+}
+
+.evade {
+  top: 11%;
+  left: 68%;
+}
+
+.victory {
+  position: absolute;
+  color: rgba(0, 0, 0, 0.6);
+  top: 47%;
+  transform: translate(-50%, 0);
+  left:50%;
+  font-weight: bold;
+  font-size: 0.8em;
+}
+
+.keywords {
+  position: absolute;
+  color: rgba(0, 0, 0, 0.6);
+  top: 23.2%;
+  left:13%;
+  font-weight: bold;
+  font-size: 0.8em;
+}
+
 .card-overlay {
   position: absolute;
   z-index: 1000;
@@ -133,6 +228,41 @@ const getImage = (el: HTMLElement): string | null => {
     width: 300px;
     height: fit-content;
   }
+  img.damage {
+    width: auto;
+    height: 22px;
+    position: absolute;
+    top: 53.5%;
+    left: 34.5%;
+    &.damage-2 {
+      top: 52%;
+      left: 27.5%;
+    }
+
+    &.damage-3 {
+      top: 50.5%;
+      left: 20.5%;
+    }
+
+
+  }
+  img.horror {
+    width: auto;
+    height: 22px;
+    position: absolute;
+    top: 53.5%;
+    left: 57.5%;
+    &.horror-2 {
+      top: 52%;
+      left: 64.5%;
+    }
+
+    &.horror-3 {
+      top: 50.5%;
+      left: 71.5%;
+    }
+
+  }
   &.sideways {
     height: 300px !important;
     width: fit-content !important;
@@ -144,8 +274,8 @@ const getImage = (el: HTMLElement): string | null => {
   }
 }
 
-
 .reversed {
   transform: rotateZ(180deg);
 }
+
 </style>

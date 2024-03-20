@@ -30,7 +30,9 @@ instance HasAbilities ForsakenTowerOfEternalFlame where
 instance RunMessage ForsakenTowerOfEternalFlame where
   runMessage msg l@(ForsakenTowerOfEternalFlame attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      revealWhisperingChaos attrs
       nyarlathoteps <- select $ EnemyInHandOf $ InvestigatorWithId iid
+
       chooseOne
         iid
         [ targetLabel
@@ -43,9 +45,11 @@ instance RunMessage ForsakenTowerOfEternalFlame where
       push $ FightEnemy iid nyarlathotep (attrs.ability 1) (Just $ toTarget attrs) #combat False
       pure l
     Successful (Action.Fight, EnemyTarget eid) _iid _ (isTarget attrs -> True) _ -> do
+      discardWhisperingChaos attrs
       push $ AddToVictory (toTarget eid)
       pure l
     Failed (Action.Fight, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
+      shuffleWhisperingChaosBackIntoEncounterDeck attrs
       pushAll
         [ InitiateEnemyAttack $ enemyAttack eid (attrs.ability 1) iid
         , ShuffleBackIntoEncounterDeck (toTarget eid)

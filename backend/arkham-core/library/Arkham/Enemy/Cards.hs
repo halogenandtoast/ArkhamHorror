@@ -2211,7 +2211,7 @@ reanimatedDead =
 nyarlathotepTrueShape :: CardDef
 nyarlathotepTrueShape =
   unique
-    $ (enemy "xnyalarthotep" ("Nyarlathotep" <:> "True Shape") WhereTheGodsDwell 0)
+    $ (enemy "xnyarlathotep" ("Nyarlathotep" <:> "True Shape") WhereTheGodsDwell 0)
       { cdCardTraits = setFromList [AncientOne, Elite]
       , cdVictoryPoints = Just 0
       }

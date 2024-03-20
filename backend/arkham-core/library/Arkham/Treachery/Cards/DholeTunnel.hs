@@ -23,15 +23,11 @@ instance RunMessage DholeTunnel where
       mSlitheringDhole <- selectOne $ enemyIs Enemies.slitheringDhole
       case mSlitheringDhole of
         Just slitheringDhole -> do
-          unengaged <- selectNone $ investigatorEngagedWith slitheringDhole
-          movedWindow <- checkWindows [mkWhen (Window.MovedFromHunter slitheringDhole)]
-
           pushAll
-            $ [ Ready (toTarget slitheringDhole)
-              ]
-            <> ( guard unengaged
-                  *> [movedWindow, HunterMove slitheringDhole]
-               )
+            [ Ready (toTarget slitheringDhole)
+            , SendMessage (toTarget slitheringDhole) HuntersMove
+            , SendMessage (toTarget slitheringDhole) EnemiesAttack
+            ]
         Nothing -> do
           nearestDholeTunnel <-
             select $ NearestLocationTo iid (LocationWithTreachery $ treacheryIs Cards.dholeTunnel)
@@ -43,8 +39,6 @@ instance RunMessage DholeTunnel where
                 [ targetLabel location [HandleTargetChoice iid (toSource attrs) (toTarget location)]
                 | location <- nearestDholeTunnel
                 ]
-      -- attach Dhole Tunnel to a location at least 2 connections away from the nearest Dhole Tunnel (or to your location if you cannot)
-      -- if Slithering Dhole is in the victory display, spawn it at attached location, exhausted.
       pure t
     HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do
       targets <- select $ LocationWithDistanceFromAtLeast 2 lid Anywhere

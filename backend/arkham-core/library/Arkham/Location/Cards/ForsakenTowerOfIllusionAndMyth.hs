@@ -35,6 +35,7 @@ instance HasAbilities ForsakenTowerOfIllusionAndMyth where
 instance RunMessage ForsakenTowerOfIllusionAndMyth where
   runMessage msg l@(ForsakenTowerOfIllusionAndMyth attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      revealWhisperingChaos attrs
       nyarlathoteps <- select $ EnemyInHandOf $ InvestigatorWithId iid
       chooseOne
         iid
@@ -49,6 +50,7 @@ instance RunMessage ForsakenTowerOfIllusionAndMyth where
       push $ investigate iid (attrs.ability 1) (toTarget attrs) #intellect health
       pure $ ForsakenTowerOfIllusionAndMyth $ setMeta (Just nyarlathotep) attrs
     Successful (Action.Investigate, other) iid (isAbilitySource attrs 1 -> True) target n -> do
+      discardWhisperingChaos attrs
       attrs' <-
         lift (runMessage (Successful (Action.Investigate, other) iid (toSource attrs) target n) attrs)
       case toResult @(Maybe EnemyId) attrs.meta of
@@ -57,6 +59,7 @@ instance RunMessage ForsakenTowerOfIllusionAndMyth where
           push $ AddToVictory (toTarget nyarlathotep)
       pure $ ForsakenTowerOfIllusionAndMyth attrs'
     Failed (Action.Investigate, _) iid (isAbilitySource attrs 1 -> True) _ _ -> do
+      shuffleWhisperingChaosBackIntoEncounterDeck attrs
       case toResult @(Maybe EnemyId) attrs.meta of
         Nothing -> error "Invalid meta"
         Just nyarlathotep -> do

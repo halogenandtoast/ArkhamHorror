@@ -114,6 +114,33 @@ const omnipotent = computed(() => {
   )
 })
 
+const health = computed(() => {
+  return props.enemy.health?.tag == "Static" ? props.enemy.health.contents : null
+})
+
+const gainedVictory = computed(() => {
+  const {modifiers} = props.enemy
+
+  return modifiers.reduce((acc, modifier) =>
+    acc + (modifier.type.tag === "GainVictory" ? modifier.type.contents : 0)
+  , 0)
+})
+
+function mapMaybe<T, U>(arr: T[], fn: (item: T) => U | null | undefined): U[] {
+  return arr.reduce((acc: U[], item: T) => {
+    const result = fn(item);
+    if (result !== null && result !== undefined) {
+      acc.push(result);
+    }
+    return acc;
+  }, []);
+}
+
+const addedKeywords = computed(() => {
+  const {modifiers} = props.enemy
+  return mapMaybe(modifiers, modifier => modifier.type.tag === "AddKeyword" ? modifier.type.contents : null).join(". ")
+})
+
 const choose = (index: number) => emits('choose', index)
 
 const showAbilities = ref<boolean>(false)
@@ -154,6 +181,13 @@ watch(abilities, (abilities) => {
             <img :src="image"
               class="card enemy"
               :data-id="id"
+              :data-fight="enemy.fight"
+              :data-evade="enemy.evade"
+              :data-health="health"
+              :data-damage="enemy.healthDamage"
+              :data-horror="enemy.sanityDamage"
+              :data-victory="gainedVictory"
+              :data-keywords="addedKeywords"
               @click="clicked"
             />
           </div>

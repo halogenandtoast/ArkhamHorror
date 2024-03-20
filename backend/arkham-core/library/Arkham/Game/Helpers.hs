@@ -1289,6 +1289,9 @@ passesCriteria iid mcard source windows' = \case
   Criteria.HasScenarioCount key valueMatcher -> do
     n <- scenarioCount key
     gameValueMatches n valueMatcher
+  Criteria.HasCampaignCount key valueMatcher -> do
+    n <- getRecordCount key
+    gameValueMatches n valueMatcher
   Criteria.NotYetRecorded key -> do
     recorded <- getHasRecord key
     pure $ not recorded

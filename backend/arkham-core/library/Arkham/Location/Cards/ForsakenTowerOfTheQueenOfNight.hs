@@ -30,6 +30,7 @@ instance HasAbilities ForsakenTowerOfTheQueenOfNight where
 instance RunMessage ForsakenTowerOfTheQueenOfNight where
   runMessage msg l@(ForsakenTowerOfTheQueenOfNight attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      revealWhisperingChaos attrs
       nyarlathoteps <- select $ EnemyInHandOf $ InvestigatorWithId iid
       chooseOne
         iid
@@ -43,9 +44,11 @@ instance RunMessage ForsakenTowerOfTheQueenOfNight where
       push $ EvadeEnemy iid nyarlathotep (attrs.ability 1) (Just $ toTarget attrs) #agility False
       pure l
     Successful (Action.Evade, EnemyTarget eid) _iid _ (isTarget attrs -> True) _ -> do
+      discardWhisperingChaos attrs
       push $ AddToVictory (toTarget eid)
       pure l
     Failed (Action.Evade, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
+      shuffleWhisperingChaosBackIntoEncounterDeck attrs
       pushAll
         [ InitiateEnemyAttack $ enemyAttack eid (attrs.ability 1) iid
         , ShuffleBackIntoEncounterDeck (toTarget eid)

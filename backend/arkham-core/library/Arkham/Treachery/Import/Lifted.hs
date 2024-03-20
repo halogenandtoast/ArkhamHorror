@@ -22,9 +22,12 @@ import Arkham.Treachery.Runner as X (
   TreacheryCard,
   push,
   pushAll,
+  setMeta,
   treachery,
+  treacheryWith,
  )
 
+import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Id
 import Arkham.SkillType
@@ -42,3 +45,6 @@ revelationSkillTest iid source sType n = push $ Msg.revelationSkillTest iid sour
 attachTreachery
   :: (ReverseQueue m, AsId a, IdOf a ~ TreacheryId, Targetable target) => a -> target -> m ()
 attachTreachery a target = push $ Msg.attachTreachery a target
+
+gainSurge :: (ReverseQueue m, Sourceable a, Targetable a) => a -> m ()
+gainSurge = push . Msg.gainSurge

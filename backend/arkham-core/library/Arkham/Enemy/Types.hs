@@ -73,6 +73,7 @@ data instance Field Enemy :: Type -> Type where
   EnemyKeywords :: Field Enemy (Set Keyword)
   EnemyAbilities :: Field Enemy [Ability]
   EnemyCard :: Field Enemy Card
+  EnemyName :: Field Enemy Name
   EnemyCardCode :: Field Enemy CardCode
   EnemyCardId :: Field Enemy CardId
   EnemyLocation :: Field Enemy (Maybe LocationId)
@@ -119,6 +120,7 @@ instance FromJSON (SomeField Enemy) where
     "EnemyKeywords" -> pure $ SomeField EnemyKeywords
     "EnemyAbilities" -> pure $ SomeField EnemyAbilities
     "EnemyCard" -> pure $ SomeField EnemyCard
+    "EnemyName" -> pure $ SomeField EnemyName
     "EnemyCardCode" -> pure $ SomeField EnemyCardCode
     "EnemyCardId" -> pure $ SomeField EnemyCardId
     "EnemyLocation" -> pure $ SomeField EnemyLocation
@@ -386,6 +388,7 @@ fieldLens = \case
   EnemyKeywords -> virtual
   EnemyAbilities -> virtual
   EnemyCard -> virtual
+  EnemyName -> virtual
   EnemyCardCode -> cardCodeL
   EnemyCardId -> cardIdL
   EnemyLocation -> virtual

@@ -26,7 +26,11 @@ instance HasAbilities OnyxGates where
   getAbilities (OnyxGates attrs) =
     extendRevealed
       attrs
-      [mkAbility attrs 1 $ forced $ RevealLocation #after Anyone $ be attrs]
+      [ restrictedAbility attrs 1 (HasCampaignCount EvidenceOfKadath $ atLeast 1)
+          $ forced
+          $ RevealLocation #after Anyone
+          $ be attrs
+      ]
 
 instance RunMessage OnyxGates where
   runMessage msg l@(OnyxGates attrs) = runQueueT $ case msg of

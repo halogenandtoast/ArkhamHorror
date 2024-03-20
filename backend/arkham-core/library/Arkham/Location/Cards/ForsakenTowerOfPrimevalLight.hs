@@ -27,6 +27,7 @@ instance HasAbilities ForsakenTowerOfPrimevalLight where
 instance RunMessage ForsakenTowerOfPrimevalLight where
   runMessage msg l@(ForsakenTowerOfPrimevalLight attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      revealWhisperingChaos attrs
       nyarlathoteps <- select $ EnemyInHandOf $ InvestigatorWithId iid
       chooseOne
         iid
@@ -41,9 +42,11 @@ instance RunMessage ForsakenTowerOfPrimevalLight where
       beginSkillTest iid (attrs.ability 1) (toTarget nyarlathotep) #willpower health
       pure l
     PassedSkillTest _iid _ (isAbilitySource attrs 1 -> True) (Initiator target) _ _ -> do
+      discardWhisperingChaos attrs
       push $ AddToVictory target
       pure l
     FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) (Initiator (EnemyTarget eid)) _ _ -> do
+      shuffleWhisperingChaosBackIntoEncounterDeck attrs
       pushAll
         [ InitiateEnemyAttack $ enemyAttack eid (attrs.ability 1) iid
         , ShuffleBackIntoEncounterDeck (toTarget eid)

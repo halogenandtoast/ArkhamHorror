@@ -4,7 +4,6 @@ module Arkham.Location.Cards.ForsakenTowerOfPrimevalLight (
 )
 where
 
-import Arkham.Ability
 import Arkham.Attack
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Game.Helpers (getGameValue)
@@ -12,7 +11,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Scenarios.WhereTheGodsDwell.Helpers
 
 newtype ForsakenTowerOfPrimevalLight = ForsakenTowerOfPrimevalLight LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -23,18 +22,7 @@ forsakenTowerOfPrimevalLight = location ForsakenTowerOfPrimevalLight Cards.forsa
 
 instance HasAbilities ForsakenTowerOfPrimevalLight where
   getAbilities (ForsakenTowerOfPrimevalLight attrs) =
-    let
-      whisperingChaos = case attrs.label of
-        "northTower" -> Treacheries.whisperingChaosNorth
-        "southTower" -> Treacheries.whisperingChaosSouth
-        "eastTower" -> Treacheries.whisperingChaosEast
-        "westTower" -> Treacheries.whisperingChaosWest
-        _ -> error "Invalid Label"
-      restriction =
-        exists (TreacheryInHandOf You <> treacheryIs whisperingChaos)
-          <> exists (EnemyInHandOf You <> EnemyWithTitle "Nyarlathotep")
-     in
-      extendRevealed attrs [restrictedAbility attrs 1 restriction actionAbility]
+    extendRevealed attrs $ forsakenTowerAbilities attrs
 
 instance RunMessage ForsakenTowerOfPrimevalLight where
   runMessage msg l@(ForsakenTowerOfPrimevalLight attrs) = runQueueT $ case msg of

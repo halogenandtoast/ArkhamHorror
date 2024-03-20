@@ -2313,6 +2313,7 @@ library
       Arkham.Scenarios.WakingNightmare.Helpers
       Arkham.Scenarios.WakingNightmare.InfestationBag
       Arkham.Scenarios.WhereDoomAwaits.Story
+      Arkham.Scenarios.WhereTheGodsDwell.Helpers
       Arkham.Skill
       Arkham.Skill.Cards
       Arkham.Skill.Cards.AbleBodied

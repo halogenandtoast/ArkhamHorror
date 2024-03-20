@@ -203,7 +203,7 @@ const getImage = (el: HTMLElement): string | null => {
   top: 47%;
   transform: translate(-50%, 0);
   left:50%;
-  font-weight: bold;
+  font-weight: 900;
   font-size: 0.8em;
 }
 

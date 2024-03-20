@@ -31,9 +31,8 @@ instance HasModifiersFor TheMaskedHunter where
     affected <- iid <=~> investigatorEngagedWith (toId a)
     pure
       $ toModifiers a
-      $ if affected
-        then [CannotDiscoverClues, CannotSpendClues]
-        else []
+      $ guard affected
+      *> [CannotDiscoverClues, CannotSpendClues]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheMaskedHunter where

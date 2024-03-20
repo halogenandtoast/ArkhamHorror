@@ -41,6 +41,7 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
 import Arkham.Enemy.Creation
+import {-# SOURCE #-} Arkham.Enemy.Types
 import Arkham.Exception
 import Arkham.Field
 import Arkham.Helpers
@@ -445,7 +446,6 @@ data Message
   | CancelSkillEffects
   | CancelHorror InvestigatorId Int
   | CancelDamage InvestigatorId Int
-  | CancelFailedByModifierEffects
   | CheckAttackOfOpportunity InvestigatorId Bool
   | CheckDefeated Source Target
   | AssignDamage Target
@@ -898,6 +898,7 @@ data Message
   | -- There are two targets, one associated to the action and one
     -- to handle the result
     Successful (Action, Target) InvestigatorId Source Target Int
+  | Failed (Action, Target) InvestigatorId Source Target Int
   | SufferTrauma InvestigatorId Int Int
   | CheckTrauma InvestigatorId
   | HealTrauma InvestigatorId Int Int
@@ -988,6 +989,7 @@ data Message
     PlaceSwarmCards InvestigatorId EnemyId Int
   | PlacedSwarmCard EnemyId Card
   | UpdateLocation LocationId (Update Location)
+  | UpdateEnemy EnemyId (Update Enemy)
   | If WindowType [Message]
   | SendMessage Target Message
   | IfEnemyExists EnemyMatcher [Message]

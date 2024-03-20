@@ -79,6 +79,9 @@ instance HasField "meta" LocationAttrs Value where
 instance HasField "revealed" LocationAttrs Bool where
   getField = locationRevealed
 
+instance HasField "label" LocationAttrs Text where
+  getField = locationLabel
+
 instance HasField "clues" LocationAttrs Int where
   getField = locationClues
 

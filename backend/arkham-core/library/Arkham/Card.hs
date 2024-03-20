@@ -157,6 +157,7 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
     EncounterCard ec -> Peril `notMember` cdKeywords (toCardDef a) && not (ecAddedPeril ec)
     _ -> Peril `notMember` cdKeywords (toCardDef a)
   CardWithoutKeyword k -> k `notMember` cdKeywords (toCardDef a)
+  CardWithKeyword k -> k `member` cdKeywords (toCardDef a)
   NonWeakness -> isNothing . cdCardSubType $ toCardDef a
   NonSignature -> not . isSignature $ toCardDef a
   BasicWeaknessCard -> (== Just BasicWeakness) . cdCardSubType $ toCardDef a

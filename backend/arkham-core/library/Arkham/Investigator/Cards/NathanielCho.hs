@@ -76,7 +76,7 @@ isTakeDamage attrs window = case effectTarget attrs of
 
 instance RunMessage NathanielChoEffect where
   runMessage msg e@(NathanielChoEffect attrs) = case msg of
-    PassedSkillTest iid _ _ _ _ _ | effectTarget attrs == InvestigatorTarget iid -> do
+    PassedSkillTest iid _ _ (Initiator {}) _ _ | effectTarget attrs == InvestigatorTarget iid -> do
       discardedCards <- field InvestigatorDiscard iid
       let events = filter ((== EventType) . toCardType) discardedCards
       if null events

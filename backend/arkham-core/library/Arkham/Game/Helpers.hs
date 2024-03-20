@@ -81,7 +81,7 @@ import Arkham.Token (countTokens)
 import Arkham.Token qualified as Token
 import Arkham.Trait (Trait, toTraits)
 import Arkham.Treachery.Types (Field (..))
-import Arkham.Window (Window (..), defaultWindows, mkWindow)
+import Arkham.Window (Window (..), defaultWindows, mkWhen)
 import Arkham.Window qualified as Window
 import Control.Lens (non, over)
 import Control.Monad.Reader (local)
@@ -1100,7 +1100,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       canAffordCost = modifiedCardCost <= (availableResources + additionalResources)
       handleCriteriaReplacement _ (CanPlayWithOverride (Criteria.CriteriaOverride cOverride)) = Just cOverride
       handleCriteriaReplacement m _ = m
-      duringTurnWindow = mkWindow #when (Window.DuringTurn iid)
+      duringTurnWindow = mkWhen (Window.DuringTurn iid)
       notFastWindow = any (`elem` windows') [duringTurnWindow]
       canBecomeFast = CannotPlay Matcher.FastCard `notElem` modifiers && foldr applyModifier False modifiers
       canBecomeFastWindow = guard canBecomeFast $> Matcher.DuringTurn Matcher.You
@@ -1492,7 +1492,7 @@ passesCriteria iid mcard source windows' = \case
       updatedWindows = case mTurnInvestigator of
         Nothing -> windows'
         Just tIid ->
-          nub $ mkWindow #when (Window.DuringTurn tIid) : windows'
+          nub $ mkWhen (Window.DuringTurn tIid) : windows'
     availableResources <- getSpendableResources iid
     results <- select cardMatcher
     -- GameSource is important because it allows us to skip the action cost
@@ -1505,7 +1505,7 @@ passesCriteria iid mcard source windows' = \case
       updatedWindows = case mTurnInvestigator of
         Nothing -> windows'
         Just tIid ->
-          nub $ mkWindow #when (Window.DuringTurn tIid) : windows'
+          nub $ mkWhen (Window.DuringTurn tIid) : windows'
     results <- select cardMatcher
     anyM (getIsPlayable iid source costStatus updatedWindows) results
   Criteria.PlayableCardInDiscard discardSignifier cardMatcher -> do
@@ -1514,8 +1514,8 @@ passesCriteria iid mcard source windows' = \case
         Criteria.DiscardOf matcher -> matcher
         Criteria.AnyPlayerDiscard -> Matcher.Anyone
       windows'' =
-        [ mkWindow #when (Window.DuringTurn iid)
-        , mkWindow #when Window.FastPlayerWindow
+        [ mkWhen (Window.DuringTurn iid)
+        , mkWhen Window.FastPlayerWindow
         ]
     investigatorIds <-
       filterM
@@ -1999,6 +1999,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                 [ enemyMatches eid enemyMatcher
                 , selectNone locationMatcher'
                 ]
+            other | other == locationMatcher' -> enemyMatches eid enemyMatcher
             _ -> noMatch -- TODO: We may need more things here
         _ -> noMatch
     Matcher.TookControlOfAsset timing whoMatcher assetMatcher ->
@@ -3268,24 +3269,25 @@ damageEffectMatches a = \case
   Matcher.AttackDamageEffect -> pure $ a == AttackDamageEffect
   Matcher.NonAttackDamageEffect -> pure $ a == NonAttackDamageEffect
 
-spawnAtOneOf :: (HasGame m, HasQueue Message m) => InvestigatorId -> EnemyId -> [LocationId] -> m ()
-spawnAtOneOf iid eid targetLids = do
+spawnAtOneOf
+  :: (HasGame m, HasQueue Message m) => Maybe InvestigatorId -> EnemyId -> [LocationId] -> m ()
+spawnAtOneOf miid eid targetLids = do
   locations' <- select $ Matcher.IncludeEmptySpace Matcher.Anywhere
-  player <- getPlayer iid
+  player <- maybe getLeadPlayer getPlayer miid
   case targetLids `List.intersect` locations' of
-    [] -> push (toDiscardBy iid GameSource eid)
+    [] -> push (toDiscard GameSource eid)
     [lid] -> do
-      windows' <- checkWindows [Window #when (Window.EnemyWouldSpawnAt eid lid) Nothing]
-      pushAll $ windows' : resolve (EnemySpawn Nothing lid eid)
+      windows' <- checkWindows [mkWhen (Window.EnemyWouldSpawnAt eid lid)]
+      pushAll $ windows' : resolve (EnemySpawn miid lid eid)
     lids -> do
       windowPairs <- for lids $ \lid -> do
-        windows' <- checkWindows [Window #when (Window.EnemyWouldSpawnAt eid lid) Nothing]
+        windows' <- checkWindows [mkWhen (Window.EnemyWouldSpawnAt eid lid)]
         pure (windows', lid)
 
       push
         $ chooseOne
           player
-          [ targetLabel lid $ windows' : resolve (EnemySpawn Nothing lid eid)
+          [ targetLabel lid $ windows' : resolve (EnemySpawn miid lid eid)
           | (windows', lid) <- windowPairs
           ]
 

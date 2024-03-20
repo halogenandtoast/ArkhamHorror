@@ -15,6 +15,7 @@ import Arkham.Enemy.Creation
 import Arkham.Helpers
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Campaign qualified as Msg
+import Arkham.Helpers.Enemy qualified as Msg
 import Arkham.Helpers.Log qualified as Msg
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers (ModifierType)
@@ -28,6 +29,7 @@ import Arkham.Message hiding (story)
 import Arkham.Movement
 import Arkham.Prelude
 import Arkham.Query
+import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.SkillType qualified as SkillType
 import Arkham.Source
@@ -35,6 +37,7 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Window (Window)
 import Arkham.Zone
+import Control.Monad.Trans.Class
 
 class (CardGen m, HasGame m, HasQueue Message m) => ReverseQueue m
 instance (CardGen m, MonadIO m, HasGame m) => ReverseQueue (QueueT Message m)
@@ -64,6 +67,13 @@ placeLocationCard
   :: ReverseQueue m => CardDef -> m LocationId
 placeLocationCard def = do
   (lid, placement) <- Msg.placeLocationCard def
+  push placement
+  pure lid
+
+placeLocation
+  :: ReverseQueue m => Card -> m LocationId
+placeLocation card = do
+  (lid, placement) <- Msg.placeLocation card
   push placement
   pure lid
 
@@ -112,6 +122,9 @@ moveTo (toSource -> source) iid lid = push $ MoveTo $ move source iid lid
 
 record :: ReverseQueue m => CampaignLogKey -> m ()
 record = push . Record
+
+remember :: ReverseQueue m => ScenarioLogKey -> m ()
+remember = push . Remember
 
 crossOut :: ReverseQueue m => CampaignLogKey -> m ()
 crossOut = push . CrossOutRecord
@@ -224,6 +237,9 @@ forceAddCampaignCardToDeckChoice choices cardDef = do
   lead <- getLeadPlayer
   push $ Msg.forceAddCampaignCardToDeckChoice lead choices cardDef
 
+defeatEnemy :: (ReverseQueue m, Sourceable source) => EnemyId -> InvestigatorId -> source -> m ()
+defeatEnemy enemyId investigatorId = Msg.defeatEnemy enemyId investigatorId >=> pushAll
+
 createEnemyAt_
   :: (ReverseQueue m, IsCard card) => card -> LocationId -> m ()
 createEnemyAt_ c lid = push =<< Msg.createEnemyAt_ (toCard c) lid Nothing
@@ -310,6 +326,9 @@ eachInvestigator f = do
 selectEach :: (Query a, ReverseQueue m) => a -> (QueryElement a -> m ()) -> m ()
 selectEach matcher f = select matcher >>= traverse_ f
 
+selectForEach :: (Query a, ReverseQueue m) => a -> (QueryElement a -> m b) -> m [b]
+selectForEach matcher f = select matcher >>= traverse f
+
 advanceAgendaDeck :: ReverseQueue m => AgendaAttrs -> m ()
 advanceAgendaDeck attrs = push $ AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
 
@@ -350,9 +369,17 @@ createCardEffect
   -> m ()
 createCardEffect def mMeta source target = push $ Msg.createCardEffect def mMeta source target
 
+phaseModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
+phaseModifier source target modifier = push $ Msg.phaseModifier source target modifier
+
 gameModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 gameModifier source target modifier = push $ Msg.gameModifier source target modifier
+
+gameModifiers
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
+gameModifiers source target = traverse_ (gameModifier source target)
 
 flipOver
   :: (ReverseQueue m, Sourceable a, Targetable a) => InvestigatorId -> a -> m ()
@@ -375,3 +402,6 @@ skillTestModifiers
   -> m ()
 skillTestModifiers (toSource -> source) (toTarget -> target) mods =
   push $ Msg.skillTestModifiers source target mods
+
+mapQueue :: (MonadTrans t, HasQueue Message m) => (Message -> Message) -> t m ()
+mapQueue = lift . Msg.mapQueue

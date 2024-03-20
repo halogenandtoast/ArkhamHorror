@@ -1,5 +1,6 @@
 module Arkham.Act.Import.Lifted (
   module X,
+  module Arkham.Act.Import.Lifted,
 )
 where
 
@@ -8,6 +9,7 @@ import Arkham.Act.Runner as X (
   ActAttrs (..),
   ActCard,
   ActSide (..),
+  AdvancementMethod (..),
   IsAct,
   Message (..),
   act,
@@ -32,5 +34,20 @@ import Arkham.Act.Runner as X (
 import Arkham.Classes as X
 import Arkham.Cost as X
 import Arkham.GameValue as X
+import Arkham.Helpers.Log as X (getHasRecord)
 import Arkham.Message.Lifted as X
 import Arkham.Prelude as X
+import Arkham.Source as X
+import Arkham.Target as X
+import Arkham.Text as X
+
+import Arkham.Helpers.Act qualified as Msg
+import Arkham.Id
+
+advanceVia
+  :: (ReverseQueue m, EntityId a ~ ActId, Sourceable source, Entity a)
+  => AdvancementMethod
+  -> a
+  -> source
+  -> m ()
+advanceVia method actId source = push $ Msg.advanceVia method actId source

@@ -349,6 +349,7 @@ allEnemies =
     , SomeEnemyCard nyarlathotepMessengerOfTheOuterGods
     , SomeEnemyCard nyarlathotepGodOfAThousandForms
     , SomeEnemyCard nyarlathotepStalkerAmongTheStars
+    , SomeEnemyCard nyarlathotepTrueShape
     , SomeEnemyCard highPriestNotToBeDescribed
     , SomeEnemyCard dholeOfTheWastes
     , SomeEnemyCard liarWithNoFace

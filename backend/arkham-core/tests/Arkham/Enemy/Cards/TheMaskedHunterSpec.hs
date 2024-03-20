@@ -26,5 +26,6 @@ spec = describe "The Masked Hunter" $ do
         pushAndRun $ placedLocation location
         pushAndRun $ moveTo investigator location
         pushAndRun $ engageEnemy investigator theMaskedHunter
+        pushAndRun $ exhaustEnemy theMaskedHunter
         pushAndRun $ disengageEnemy investigator theMaskedHunter
         getModifiers investigator `shouldNotContainM` [CannotDiscoverClues, CannotSpendClues]

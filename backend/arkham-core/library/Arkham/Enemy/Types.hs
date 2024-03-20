@@ -34,6 +34,7 @@ import Arkham.Strategy
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait
+import Control.Lens (non, over, set)
 import Data.Data
 import GHC.Records
 
@@ -63,6 +64,7 @@ data instance Field Enemy :: Type -> Type where
   EnemyClues :: Field Enemy Int
   EnemyDamage :: Field Enemy Int
   EnemyHealth :: Field Enemy (Maybe Int)
+  EnemyHealthActual :: Field Enemy (Maybe GameValue)
   EnemyRemainingHealth :: Field Enemy (Maybe Int)
   EnemyForcedRemainingHealth :: Field Enemy Int
   EnemyHealthDamage :: Field Enemy Int
@@ -108,6 +110,7 @@ instance FromJSON (SomeField Enemy) where
     "EnemyClues" -> pure $ SomeField EnemyClues
     "EnemyDamage" -> pure $ SomeField EnemyDamage
     "EnemyHealth" -> pure $ SomeField EnemyHealth
+    "EnemyHealthActual" -> pure $ SomeField EnemyHealthActual
     "EnemyRemainingHealth" -> pure $ SomeField EnemyRemainingHealth
     "EnemyForcedRemainingHealth" -> pure $ SomeField EnemyForcedRemainingHealth
     "EnemyHealthDamage" -> pure $ SomeField EnemyHealthDamage
@@ -363,3 +366,40 @@ someEnemyCardCode :: SomeEnemyCard -> CardCode
 someEnemyCardCode = liftSomeEnemyCard cbCardCode
 
 makeLensesWith suffixedFields ''EnemyAttrs
+
+fieldLens :: Field Enemy typ -> Lens' EnemyAttrs typ
+fieldLens = \case
+  EnemyEngagedInvestigators -> virtual
+  EnemyDoom -> tokensL . at Doom . non 0
+  Arkham.Enemy.Types.EnemyEvade -> evadeL
+  Arkham.Enemy.Types.EnemyFight -> fightL
+  EnemyTokens -> tokensL
+  EnemyClues -> tokensL . at Clue . non 0
+  EnemyDamage -> tokensL . at #damage . non 0
+  EnemyHealthActual -> healthL
+  EnemyHealth -> virtual
+  EnemyRemainingHealth -> virtual
+  EnemyForcedRemainingHealth -> virtual
+  EnemyHealthDamage -> healthDamageL
+  EnemySanityDamage -> sanityDamageL
+  EnemyTraits -> virtual
+  EnemyKeywords -> virtual
+  EnemyAbilities -> virtual
+  EnemyCard -> virtual
+  EnemyCardCode -> cardCodeL
+  EnemyCardId -> cardIdL
+  EnemyLocation -> virtual
+  EnemyPlacement -> placementL
+  EnemySealedChaosTokens -> sealedChaosTokensL
+  EnemyKeys -> keysL
+  EnemySpawnedBy -> spawnedByL
+ where
+  virtual = error "virtual attribute can not be set directly"
+
+updateEnemy :: [Update Enemy] -> EnemyAttrs -> EnemyAttrs
+updateEnemy updates attrs = foldr go attrs updates
+ where
+  go :: Update Enemy -> EnemyAttrs -> EnemyAttrs
+  go (Update fld val) = set (fieldLens fld) val
+  go (IncrementBy fld val) = over (fieldLens fld) (max 0 . (+ val))
+  go (DecrementBy fld val) = over (fieldLens fld) (max 0 . subtract val)

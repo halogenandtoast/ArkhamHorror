@@ -41,7 +41,7 @@ instance RunMessage Flamethrower5 where
         ]
       pure a
     Successful (Action.Fight, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
-      damage <- damageValueFor 4 iid
+      damage <- damageValueFor 4 iid DamageForEnemy
       engaged <- select $ enemyEngagedWith iid
       let toMsg eid' = EnemyDamage eid' $ delayDamage $ isDirect $ attack attrs 1
       player <- getPlayer iid

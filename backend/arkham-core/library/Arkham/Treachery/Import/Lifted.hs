@@ -41,4 +41,4 @@ revelationSkillTest iid source sType n = push $ Msg.revelationSkillTest iid sour
 
 attachTreachery
   :: (ReverseQueue m, AsId a, IdOf a ~ TreacheryId, Targetable target) => a -> target -> m ()
-attachTreachery treachery target = push $ Msg.attachTreachery treachery target
+attachTreachery a target = push $ Msg.attachTreachery a target

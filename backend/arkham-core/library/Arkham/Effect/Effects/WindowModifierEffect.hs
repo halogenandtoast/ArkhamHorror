@@ -46,15 +46,9 @@ instance HasModifiersFor WindowModifierEffect where
         Just (EffectModifiers modifiers) -> case effectWindow of
           Just EffectSetupWindow -> pure $ map setActiveDuringSetup modifiers
           _ -> pure modifiers
-        Just (FailedByEffectModifiers modifiers) -> pure modifiers
         _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage WindowModifierEffect where
-  runMessage msg e@(WindowModifierEffect attrs) = case msg of
-    CancelFailedByModifierEffects -> case effectMetadata attrs of
-      Just (FailedByEffectModifiers _) -> do
-        push (DisableEffect $ toId attrs)
-        pure e
-      _ -> pure e
-    _ -> WindowModifierEffect <$> runMessage msg attrs
+  runMessage msg (WindowModifierEffect attrs) =
+    WindowModifierEffect <$> runMessage msg attrs

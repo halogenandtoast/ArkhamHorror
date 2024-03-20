@@ -4,6 +4,7 @@ module Arkham.ChaosToken where
 
 import Arkham.Prelude
 
+import Arkham.Classes.GameLogger
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 import GHC.Records
@@ -68,6 +69,12 @@ data ChaosToken = ChaosToken
   , chaosTokenFace :: ChaosTokenFace
   }
   deriving stock (Show, Eq, Ord, Data)
+
+instance ToGameLoggerFormat ChaosToken where
+  format c = format c.face
+
+instance ToGameLoggerFormat ChaosTokenFace where
+  format c = "{token:\"" <> tshow c <> "\"}"
 
 instance HasField "face" ChaosToken ChaosTokenFace where
   getField = chaosTokenFace

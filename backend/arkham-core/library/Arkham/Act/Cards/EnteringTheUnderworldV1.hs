@@ -7,7 +7,6 @@ import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet (EncounterSet (Ghouls, Nightgaunts, StrikingFear, TerrorOfTheVale))
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Source
 import Arkham.Trait (Trait (Vale))
 
 newtype EnteringTheUnderworldV1 = EnteringTheUnderworldV1 ActAttrs

@@ -500,6 +500,9 @@ instance Be LocationMatcher LocationMatcher where
 instance Be LocationId LocationMatcher where
   be = LocationWithId
 
+instance Be EnemyId EnemyMatcher where
+  be = EnemyWithId
+
 instance IsString LocationMatcher where
   fromString = LocationWithTitle . fromString
 
@@ -669,6 +672,7 @@ data CardMatcher
   | CardWithId CardId
   | CardWithLevel Int
   | CardWithoutKeyword Keyword
+  | CardWithKeyword Keyword
   | CardWithClass ClassSymbol
   | CardWithSkillIcon SkillIcon
   | CardWithOneOf [CardMatcher]

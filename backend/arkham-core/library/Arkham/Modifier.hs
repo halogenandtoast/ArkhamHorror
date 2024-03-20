@@ -170,6 +170,7 @@ data ModifierType
   | CountAllDoomInPlay
   | CountsAsInvestigatorForHunterEnemies
   | DamageDealt Int
+  | DamageDealtToInvestigator Int
   | DamageTaken Int
   | Difficulty Int
   | DiscoveredClues Int

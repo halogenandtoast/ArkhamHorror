@@ -1426,7 +1426,8 @@ getLocationsMatching lmatcher = do
       LocationNotInPlay -> pure [] -- TODO: Should this check out of play locations
       Anywhere -> pure ls
       LocationIs cardCode -> pure $ filter ((== cardCode) . toCardCode) ls
-      EmptyLocation -> filterM (andM . sequence [selectNone . investigatorAt . toId, selectNone . enemyAt . toId]) ls
+      EmptyLocation ->
+        filterM (andM . sequence [selectNone . investigatorAt . toId, selectNone . enemyAt . toId]) ls
       HauntedLocation ->
         filterM
           ( \l ->
@@ -2649,6 +2650,7 @@ instance Projection Location where
       LocationLabel -> pure locationLabel
       LocationTokens -> pure locationTokens
       LocationClues -> pure $ locationClues attrs
+      LocationRevealClues -> pure locationRevealClues
       LocationResources -> pure $ locationResources attrs
       LocationHorror -> pure $ locationHorror attrs
       LocationDamage -> pure $ locationDamage attrs
@@ -2924,6 +2926,7 @@ getEnemyField f e = do
     EnemyForcedRemainingHealth -> do
       totalHealth <- fieldJust EnemyHealth (toId e)
       pure (totalHealth - enemyDamage attrs)
+    EnemyHealthActual -> pure enemyHealth
     EnemyHealth -> case enemyHealth of
       Nothing -> pure Nothing
       Just health -> do
@@ -3946,8 +3949,8 @@ runMessages mLogger = do
 
             runWithEnv
               ( getGame
-                  >>= preloadModifiers
                   >>= runMessage msg
+                  >>= preloadModifiers
                   >>= handleTraitRestrictedModifiers
                   >>= handleBlanked
               )

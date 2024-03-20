@@ -823,13 +823,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push $ Msg.InvestigatorDamage (toId a) source damage horror
     pure a
   InvestigatorDamageInvestigator iid xid | iid == investigatorId -> do
-    damage <- damageValueFor 1 iid
+    damage <- damageValueFor 1 iid DamageForInvestigator
     push $ InvestigatorAssignDamage xid (InvestigatorSource iid) DamageAny damage 0
     pure a
   InvestigatorDamageEnemy iid eid source | iid == investigatorId -> do
     cannotDamage <- hasModifier iid CannotDealDamage
     unless cannotDamage $ do
-      damage <- damageValueFor 1 iid
+      damage <- damageValueFor 1 iid DamageForEnemy
       push $ EnemyDamage eid $ attack source damage
     pure a
   EnemyEvaded iid eid | iid == investigatorId -> do

@@ -140,6 +140,12 @@ instance RunMessage LocationAttrs where
       for_ alternateSuccessfullInvestigation $ \target' ->
         push $ Successful (Action.Investigate, toTarget lid) iid source target' n
       pure a
+    FailedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
+      push $ Failed (Action.Investigate, toTarget a) iid source (toTarget a) n
+      pure a
+    FailedSkillTest iid (Just Action.Investigate) source (InitiatorProxy target actual) _ n | isTarget a target -> do
+      push $ Failed (Action.Investigate, toTarget a) iid source actual n
+      pure a
     PlaceUnderneath target cards | isTarget a target -> do
       pure $ a & cardsUnderneathL <>~ cards
     SetLocationLabel lid label' | lid == locationId -> do

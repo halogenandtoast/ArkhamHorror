@@ -89,6 +89,9 @@ push = pushAll . pure
 replaceMessage :: (HasQueue msg m, Eq msg) => msg -> [msg] -> m ()
 replaceMessage msg replacement = replaceMessageMatching (== msg) (const replacement)
 
+mapQueue :: HasQueue msg m => (msg -> msg) -> m ()
+mapQueue replacer = withQueue_ (map replacer)
+
 replaceMessageMatching
   :: HasQueue msg m => (msg -> Bool) -> (msg -> [msg]) -> m ()
 replaceMessageMatching matcher replacer = withQueue \queue ->

@@ -68,6 +68,9 @@ data ScenarioLogKey
   | StudiedADesecratedPortrait
   | NoticedTheMissingBones
   | RecoveredAStrangeKey
+  | -- | Where the Gods Dwell
+    ManeuveredThePriestCloser
+  | StunnedThePriest
   | -- | Murder at the Excelsior Hotel
     CleanedUpTheBlood
   | HidTheBody

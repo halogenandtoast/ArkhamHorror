@@ -208,6 +208,7 @@ const getImage = (el: HTMLElement): string | null => {
 }
 
 .keywords {
+  width: 80%;
   position: absolute;
   color: rgba(0, 0, 0, 0.6);
   top: 23.2%;

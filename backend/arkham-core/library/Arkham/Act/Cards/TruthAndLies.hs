@@ -1,6 +1,8 @@
 module Arkham.Act.Cards.TruthAndLies (TruthAndLies (..), truthAndLies) where
 
 import Arkham.Ability
+import Arkham.Movement
+import Arkham.Placement
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
@@ -67,7 +69,7 @@ instance RunMessage TruthAndLies where
 
       theGreatHall <- selectJust $ locationIs Locations.theOnyxCastle
 
-      trueShape <- genCard Enemies.nyarlathotepTrueShape >>= (`createEnemyAt` theGreatHall)
+      trueShape <- genCard Enemies.nyarlathotepTrueShape >>= (\e -> createEnemyWith e Unplaced id)
 
       pushAll
         [ UpdateEnemy trueShape (EnemyFight ?=. fight)
@@ -79,6 +81,7 @@ instance RunMessage TruthAndLies where
 
       gameModifier attrs trueShape (GainVictory victory)
       gameModifiers attrs trueShape (map AddKeyword $ toList keywords)
+      push $ Move $ move attrs trueShape theGreatHall
       advanceActDeck attrs
 
       -- push R1

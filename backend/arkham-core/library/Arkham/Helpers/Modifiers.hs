@@ -68,15 +68,6 @@ skillTestModifier
 skillTestModifier source target modifier =
   skillTestModifiers source target [modifier]
 
-failedSkillTestModifier
-  :: (Sourceable source, Targetable target)
-  => source
-  -> target
-  -> ModifierType
-  -> Message
-failedSkillTestModifier source target modifier =
-  failedSkillTestModifiers source target [modifier]
-
 skillTestModifiers
   :: forall target source
    . (Sourceable source, Targetable target)
@@ -86,18 +77,6 @@ skillTestModifiers
   -> Message
 skillTestModifiers (toSource -> source) (toTarget -> target) mods =
   CreateWindowModifierEffect #skillTest (EffectModifiers $ toModifiers source mods) source target
-
-failedSkillTestModifiers
-  :: forall target source
-   . (Sourceable source, Targetable target)
-  => source
-  -> target
-  -> [ModifierType]
-  -> Message
-failedSkillTestModifiers (toSource -> source) (toTarget -> target) mods =
-  CreateWindowModifierEffect #skillTest (failed $ toModifiers source mods) source target
- where
-  failed = FailedByEffectModifiers
 
 effectModifiers :: Sourceable a => a -> [ModifierType] -> EffectMetadata Window Message
 effectModifiers source = EffectModifiers . toModifiers source
@@ -147,6 +126,10 @@ gameModifier (toSource -> source) (toTarget -> target) modifier = createWindowMo
 nextPhaseModifier
   :: (Sourceable source, Targetable target) => Phase -> source -> target -> ModifierType -> Message
 nextPhaseModifier phase (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect (EffectPhaseWindowFor phase) source target [modifier]
+
+enemyAttackModifier
+  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+enemyAttackModifier (toSource -> source) (toTarget -> target) modifier = createWindowModifierEffect EffectAttackWindow source target [modifier]
 
 costModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message

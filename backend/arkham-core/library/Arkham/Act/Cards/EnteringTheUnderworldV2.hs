@@ -9,7 +9,6 @@ import Arkham.EncounterSet (EncounterSet (Nightgaunts, StrikingFear, TerrorOfThe
 import Arkham.Helpers.Query (getInvestigators, getLead, getSetAsideCardsMatching)
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Source
 import Arkham.Trait (Trait (Vale))
 
 newtype EnteringTheUnderworldV2 = EnteringTheUnderworldV2 ActAttrs

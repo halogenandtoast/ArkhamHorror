@@ -18,7 +18,9 @@ import Arkham.Classes.HasGame
 import Arkham.Game.Helpers
 import Arkham.Helpers.Message
 import Arkham.Id
+import Arkham.Investigator.Types (Investigator)
 import Arkham.Matcher (ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIsNot))
+import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Source
 import Arkham.Timing qualified as Timing
@@ -590,6 +592,14 @@ instance RunMessage ChaosBag where
                   [ mkWindow Timing.When (Window.RevealChaosToken iid token)
                   | token <- chaosTokenFaces'
                   ]
+          for_ miid $ \iid -> do
+            investigator <- getAttrs @Investigator iid
+            send
+              $ format investigator
+              <> " draws "
+              <> formatAsSentence chaosTokenFaces'
+              <> " chaos "
+              <> (if length chaosTokenFaces' == 1 then "token" else "tokens")
           pushAll
             ( FocusChaosTokens chaosTokenFaces'
                 : checkWindowMsgs

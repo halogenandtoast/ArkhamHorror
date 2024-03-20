@@ -293,7 +293,7 @@ allEncounterEnemyCards =
 
 allSpecialEnemyCards :: Map CardCode CardDef
 allSpecialEnemyCards =
-  mapFromList $ map (toCardCode &&& id) [flyingPolyp, reanimatedDead]
+  mapFromList $ map (toCardCode &&& id) [flyingPolyp, reanimatedDead, nyarlathotepTrueShape]
 
 mobEnforcer :: CardDef
 mobEnforcer =
@@ -1828,6 +1828,7 @@ nyarlathotepTheCrawlingChaos =
       { cdCardTraits = setFromList [AncientOne, Elite]
       , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Hunter]
       , cdVictoryPoints = Just 2
+      , cdRevelation = IsRevelation
       }
 
 nyarlathotepTheFacelessWhisperer :: CardDef
@@ -1835,8 +1836,9 @@ nyarlathotepTheFacelessWhisperer =
   unique
     $ (enemy "06307" ("Nyarlathotep" <:> "The Faceless Whisperer") WhereTheGodsDwell 1)
       { cdCardTraits = setFromList [AncientOne, Elite]
-      , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Hunter]
+      , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Retaliate]
       , cdVictoryPoints = Just 2
+      , cdRevelation = IsRevelation
       }
 
 nyarlathotepMessengerOfTheOuterGods :: CardDef
@@ -1844,8 +1846,9 @@ nyarlathotepMessengerOfTheOuterGods =
   unique
     $ (enemy "06308" ("Nyarlathotep" <:> "Messenger of the Outer Gods") WhereTheGodsDwell 1)
       { cdCardTraits = setFromList [AncientOne, Elite]
-      , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Hunter]
+      , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Alert]
       , cdVictoryPoints = Just 2
+      , cdRevelation = IsRevelation
       }
 
 nyarlathotepGodOfAThousandForms :: CardDef
@@ -1855,6 +1858,7 @@ nyarlathotepGodOfAThousandForms =
       { cdCardTraits = setFromList [AncientOne, Elite]
       , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Hunter]
       , cdVictoryPoints = Just 2
+      , cdRevelation = IsRevelation
       }
 
 nyarlathotepStalkerAmongTheStars :: CardDef
@@ -1862,8 +1866,9 @@ nyarlathotepStalkerAmongTheStars =
   unique
     $ (enemy "06310" ("Nyarlathotep" <:> "Stalker Among the Stars") WhereTheGodsDwell 1)
       { cdCardTraits = setFromList [AncientOne, Elite]
-      , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Hunter]
+      , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden, Keyword.Massive]
       , cdVictoryPoints = Just 2
+      , cdRevelation = IsRevelation
       }
 
 highPriestNotToBeDescribed :: CardDef
@@ -2202,3 +2207,11 @@ reanimatedDead =
   (enemy "xreanimated" "Reanimated Dead" TheWagesOfSin 0)
     { cdCardTraits = singleton Monster
     }
+
+nyarlathotepTrueShape :: CardDef
+nyarlathotepTrueShape =
+  unique
+    $ (enemy "xnyalarthotep" ("Nyarlathotep" <:> "True Shape") WhereTheGodsDwell 0)
+      { cdCardTraits = setFromList [AncientOne, Elite]
+      , cdVictoryPoints = Just 0
+      }

@@ -6,7 +6,6 @@ import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Target
 
 newtype TheMoonsCore = TheMoonsCore ActAttrs
   deriving anyclass (IsAct)

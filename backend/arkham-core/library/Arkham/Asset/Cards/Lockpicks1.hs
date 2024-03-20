@@ -35,7 +35,7 @@ newtype Lockpicks1Effect = Lockpicks1Effect EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lockpicks1Effect :: EffectArgs -> Lockpicks1Effect
-lockpicks1Effect = Lockpicks1Effect . uncurry4 (baseAttrs "03031Effect")
+lockpicks1Effect = cardEffect Lockpicks1Effect Cards.lockpicks1
 
 instance HasModifiersFor Lockpicks1Effect where
   getModifiersFor target (Lockpicks1Effect a) | a.target `is` target = do

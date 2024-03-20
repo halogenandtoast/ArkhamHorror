@@ -17,6 +17,12 @@ import GHC.OverloadedLabels
 evadeAction :: Cost -> AbilityType
 evadeAction cost = ActionAbility [Evade] (ActionCost 1 <> cost)
 
+evadeAction_ :: AbilityType
+evadeAction_ = ActionAbility [Evade] $ ActionCost 1
+
+instance IsLabel "evade" AbilityType where
+  fromLabel = evadeAction_
+
 fightAction :: Cost -> AbilityType
 fightAction cost = ActionAbility [Fight] (ActionCost 1 <> cost)
 

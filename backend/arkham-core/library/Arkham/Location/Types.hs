@@ -62,6 +62,7 @@ type LocationCard a = CardBuilder LocationId a
 data instance Field Location :: Type -> Type where
   LocationTokens :: Field Location Tokens
   LocationClues :: Field Location Int
+  LocationRevealClues :: Field Location GameValue
   LocationResources :: Field Location Int
   LocationHorror :: Field Location Int
   LocationDamage :: Field Location Int
@@ -97,6 +98,7 @@ fieldLens :: Field Location typ -> Lens' LocationAttrs typ
 fieldLens = \case
   LocationTokens -> tokensL
   LocationClues -> tokensL . at Clue . non 0
+  LocationRevealClues -> revealCluesL
   LocationResources -> tokensL . at Resource . non 0
   LocationDamage -> tokensL . at #damage . non 0
   LocationHorror -> tokensL . at Horror . non 0
@@ -142,6 +144,7 @@ instance FromJSON (SomeField Location) where
     "LocationInFrontOf" -> pure $ SomeField LocationInFrontOf
     "LocationInvestigateSkill" -> pure $ SomeField LocationInvestigateSkill
     "LocationClues" -> pure $ SomeField LocationClues
+    "LocationRevealClues" -> pure $ SomeField LocationRevealClues
     "LocationResources" -> pure $ SomeField LocationResources
     "LocationDamage" -> pure $ SomeField LocationDamage
     "LocationHorror" -> pure $ SomeField LocationHorror

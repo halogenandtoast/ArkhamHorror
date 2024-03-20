@@ -152,6 +152,9 @@ isSwarm attrs = case enemyPlacement attrs of
 
 instance RunMessage EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = case msg of
+    UpdateEnemy eid upd | eid == enemyId -> do
+      -- TODO: we may want life cycles around this, generally this might just be a bad idea
+      pure $ updateEnemy [upd] a
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     EndPhase -> pure $ a & movedFromHunterKeywordL .~ False
     SealedChaosToken token card | toCardId card == toCardId a -> do
@@ -207,7 +210,7 @@ instance RunMessage EnemyAttrs where
               let validInvestigatorIds = maybe (preyIds <> investigatorIds) pure miid
               case validInvestigatorIds of
                 [] -> push $ EnemyEntered eid lid
-                [iid] -> pushAll [EnemyEntered eid lid, EnemyEngageInvestigator eid iid]
+                [iid] -> pushAll $ EnemyEntered eid lid : [EnemyEngageInvestigator eid iid]
                 iids ->
                   push
                     $ chooseOne lead
@@ -289,7 +292,8 @@ instance RunMessage EnemyAttrs where
               closestLocationIds <- select $ ClosestPathLocation loc lid
               if lid `elem` adjacentLocationIds
                 then push $ chooseOne lead [targetLabel lid [EnemyMove enemyId lid]]
-                else pushAll [chooseOne lead [targetLabel lid' [EnemyMove enemyId lid'] | lid' <- closestLocationIds]]
+                else
+                  pushAll [chooseOne lead [targetLabel lid' [EnemyMove enemyId lid'] | lid' <- closestLocationIds]]
       pure a
     MoveUntil lid target | isTarget a target -> do
       case enemyPlacement of
@@ -604,18 +608,22 @@ instance RunMessage EnemyAttrs where
       push $ InvestigatorDamageEnemy iid enemyId source
       pure a
     FailedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isTarget a target -> do
-      keywords <- getModifiedKeywords a
-      mods <- getModifiers iid
       pushAll
-        $ [ FailedAttackEnemy iid enemyId
-          , CheckWindow [iid] [mkAfter $ Window.FailAttackEnemy iid enemyId n]
-          , CheckWindow [iid] [mkAfter $ Window.EnemyAttacked iid source enemyId]
-          ]
-        <> [ EnemyAttack $ (enemyAttack enemyId a iid) {attackDamageStrategy = enemyDamageStrategy}
-           | Keyword.Retaliate `elem` keywords
-           , IgnoreRetaliate `notElem` mods
-           , not enemyExhausted || CanRetaliateWhileExhausted `elem` mods
-           ]
+        [ FailedAttackEnemy iid enemyId
+        , CheckWindow [iid] [mkAfter $ Window.FailAttackEnemy iid enemyId n]
+        , CheckWindow [iid] [mkAfter $ Window.EnemyAttacked iid source enemyId]
+        , Failed (Action.Fight, toProxyTarget target) iid source (toActionTarget target) n
+        ]
+      pure a
+    Failed (Action.Fight, _) iid _source target _ | isTarget a target -> do
+      mods <- getModifiers iid
+      keywords <- getModifiedKeywords a
+      pushAll
+        [ EnemyAttack $ (enemyAttack enemyId a iid) {attackDamageStrategy = enemyDamageStrategy}
+        | Keyword.Retaliate `elem` keywords
+        , IgnoreRetaliate `notElem` mods
+        , not enemyExhausted || CanRetaliateWhileExhausted `elem` mods
+        ]
       pure a
     EnemyAttackIfEngaged eid miid | eid == enemyId -> do
       case miid of
@@ -676,15 +684,21 @@ instance RunMessage EnemyAttrs where
     Successful (Action.Evade, _) iid _ target _ | isTarget a target -> do
       push $ EnemyEvaded iid enemyId
       pure a
-    FailedSkillTest iid (Just Action.Evade) _ (Initiator target) _ n | isTarget a target -> do
-      keywords <- getModifiedKeywords a
+    FailedSkillTest iid (Just Action.Evade) source (Initiator target) _ n | isTarget a target -> do
       whenWindow <- checkWindows [mkWhen $ Window.FailEvadeEnemy iid enemyId n]
       afterWindow <- checkWindows [mkAfter $ Window.FailEvadeEnemy iid enemyId n]
       pushAll
-        $ [whenWindow, afterWindow]
-        <> [ EnemyAttack $ viaAlert $ (enemyAttack enemyId a iid) {attackDamageStrategy = enemyDamageStrategy}
-           | Keyword.Alert `elem` keywords
-           ]
+        [ whenWindow
+        , Failed (Action.Evade, toProxyTarget target) iid source (toActionTarget target) n
+        , afterWindow
+        ]
+      pure a
+    Failed (Action.Evade, _) iid _ target _ | isTarget a target -> do
+      keywords <- getModifiedKeywords a
+      pushAll
+        [ EnemyAttack $ viaAlert $ (enemyAttack enemyId a iid) {attackDamageStrategy = enemyDamageStrategy}
+        | Keyword.Alert `elem` keywords
+        ]
       pure a
     InitiateEnemyAttack details | attackEnemy details == enemyId -> do
       push $ EnemyAttack details
@@ -1103,13 +1117,12 @@ instance RunMessage EnemyAttrs where
     EnemySpawnAtLocationMatching miid locationMatcher eid | eid == enemyId -> do
       activeInvestigatorId <- getActiveInvestigatorId
       lids <- select $ replaceYouMatcher activeInvestigatorId locationMatcher
-      leadInvestigatorId <- getLeadInvestigatorId
       case lids of
         [] -> noSpawn a miid
         [lid] -> do
           windows' <- checkWindows [mkWhen $ Window.EnemyWouldSpawnAt eid lid]
           pushAll $ windows' : resolve (EnemySpawn miid lid eid)
-        xs -> spawnAtOneOf (fromMaybe leadInvestigatorId miid) eid xs
+        xs -> spawnAtOneOf miid eid xs
       pure a
     InvestigatorEliminated iid -> case enemyPlacement of
       InThreatArea iid' | iid == iid' -> do

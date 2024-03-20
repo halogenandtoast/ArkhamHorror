@@ -25,10 +25,9 @@ whereTheGodsDwell difficulty =
     "06286"
     "Where the Gods Dwell"
     difficulty
-    [ ".               plateauOfLeng  .              ."
-    , "monasteryOfLeng coldWastes     forsakenTower1 forsakenTower2"
-    , ".               onyxGates      theOnyxCastle  forsakenTower3"
-    , ".               forsakenTower4 forsakenTower5 forsakenTower6"
+    [ ".               plateauOfLeng  ."
+    , "monasteryOfLeng coldWastes     ."
+    , ".               onyxGates      theOnyxCastle"
     ]
 
 instance HasChaosTokenValue WhereTheGodsDwell where

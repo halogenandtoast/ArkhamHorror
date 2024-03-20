@@ -18,6 +18,5 @@ data EffectMetadata window a
   | EffectMetaTarget Target
   | EffectMetaSkill SkillType
   | EffectAbility (Ability, [window])
-  | FailedByEffectModifiers [Modifier]
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)

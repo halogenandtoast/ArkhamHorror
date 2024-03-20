@@ -1,23 +1,81 @@
-module Arkham.Location.Cards.ForsakenTowerOfIllusionAndMyth
-  ( forsakenTowerOfIllusionAndMyth
-  , ForsakenTowerOfIllusionAndMyth(..)
-  )
+module Arkham.Location.Cards.ForsakenTowerOfIllusionAndMyth (
+  forsakenTowerOfIllusionAndMyth,
+  ForsakenTowerOfIllusionAndMyth (..),
+)
 where
 
+import Arkham.Ability
+import Arkham.Action qualified as Action
+import Arkham.Attack
+import Arkham.Enemy.Types (Field (..))
+import Arkham.Game.Helpers (getGameValue)
+import Arkham.Helpers.SkillTest (investigate)
+import Arkham.Id
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Projection
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype ForsakenTowerOfIllusionAndMyth = ForsakenTowerOfIllusionAndMyth LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 forsakenTowerOfIllusionAndMyth :: LocationCard ForsakenTowerOfIllusionAndMyth
-forsakenTowerOfIllusionAndMyth = location ForsakenTowerOfIllusionAndMyth Cards.forsakenTowerOfIllusionAndMyth 5 (PerPlayer 1)
+forsakenTowerOfIllusionAndMyth =
+  locationWith
+    ForsakenTowerOfIllusionAndMyth
+    Cards.forsakenTowerOfIllusionAndMyth
+    5
+    (PerPlayer 1)
+    (setMeta @(Maybe EnemyId) Nothing)
 
 instance HasAbilities ForsakenTowerOfIllusionAndMyth where
   getAbilities (ForsakenTowerOfIllusionAndMyth attrs) =
-    extendRevealed attrs []
+    let
+      whisperingChaos = case attrs.label of
+        "northTower" -> Treacheries.whisperingChaosNorth
+        "southTower" -> Treacheries.whisperingChaosSouth
+        "eastTower" -> Treacheries.whisperingChaosEast
+        "westTower" -> Treacheries.whisperingChaosWest
+        _ -> error "Invalid Label"
+      restriction =
+        exists (TreacheryInHandOf You <> treacheryIs whisperingChaos)
+          <> exists (EnemyInHandOf You <> EnemyWithTitle "Nyarlathotep")
+     in
+      extendRevealed attrs [restrictedAbility attrs 1 restriction investigateAction_]
 
 instance RunMessage ForsakenTowerOfIllusionAndMyth where
-  runMessage msg (ForsakenTowerOfIllusionAndMyth attrs) = runQueueT $ case msg of
+  runMessage msg l@(ForsakenTowerOfIllusionAndMyth attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      nyarlathoteps <- select $ EnemyInHandOf $ InvestigatorWithId iid
+      chooseOne
+        iid
+        [ targetLabel
+          nyarlathotep
+          [HandleTargetChoice iid (attrs.ability 1) (toTarget nyarlathotep)]
+        | nyarlathotep <- nyarlathoteps
+        ]
+      pure l
+    HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget nyarlathotep) -> do
+      health <- fieldMapM EnemyHealthActual (maybe (pure 0) getGameValue) nyarlathotep
+      push $ investigate iid (attrs.ability 1) (toTarget attrs) #intellect health
+      pure $ ForsakenTowerOfIllusionAndMyth $ setMeta (Just nyarlathotep) attrs
+    Successful (Action.Investigate, other) iid (isAbilitySource attrs 1 -> True) target n -> do
+      attrs' <-
+        lift (runMessage (Successful (Action.Investigate, other) iid (toSource attrs) target n) attrs)
+      case toResult @(Maybe EnemyId) attrs.meta of
+        Nothing -> error "Invalid meta"
+        Just nyarlathotep -> do
+          push $ AddToVictory (toTarget nyarlathotep)
+      pure $ ForsakenTowerOfIllusionAndMyth attrs'
+    Failed (Action.Investigate, _) iid (isAbilitySource attrs 1 -> True) _ _ -> do
+      case toResult @(Maybe EnemyId) attrs.meta of
+        Nothing -> error "Invalid meta"
+        Just nyarlathotep -> do
+          pushAll
+            [ InitiateEnemyAttack $ enemyAttack nyarlathotep (attrs.ability 1) iid
+            , ShuffleBackIntoEncounterDeck (toTarget nyarlathotep)
+            ]
+      pure l
     _ -> ForsakenTowerOfIllusionAndMyth <$> lift (runMessage msg attrs)

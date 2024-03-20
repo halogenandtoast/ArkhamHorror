@@ -58,6 +58,9 @@ engageEnemy i e = EngageEnemy (toId i) (toId e) Nothing False
 disengageEnemy :: Investigator -> Enemy -> Message
 disengageEnemy i e = DisengageEnemy (toId i) (toId e)
 
+exhaustEnemy :: Targetable target => target -> Message
+exhaustEnemy = Exhaust . toTarget
+
 playAsset :: Investigator -> Asset -> Message
 playAsset i a = PlaceAsset (toId a) (InPlayArea $ toId i)
 

@@ -1,11 +1,18 @@
-module Arkham.Location.Cards.ForsakenTowerOfPrimevalLight
-  ( forsakenTowerOfPrimevalLight
-  , ForsakenTowerOfPrimevalLight(..)
-  )
+module Arkham.Location.Cards.ForsakenTowerOfPrimevalLight (
+  forsakenTowerOfPrimevalLight,
+  ForsakenTowerOfPrimevalLight (..),
+)
 where
 
+import Arkham.Ability
+import Arkham.Attack
+import Arkham.Enemy.Types (Field (..))
+import Arkham.Game.Helpers (getGameValue)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Projection
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype ForsakenTowerOfPrimevalLight = ForsakenTowerOfPrimevalLight LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -16,8 +23,42 @@ forsakenTowerOfPrimevalLight = location ForsakenTowerOfPrimevalLight Cards.forsa
 
 instance HasAbilities ForsakenTowerOfPrimevalLight where
   getAbilities (ForsakenTowerOfPrimevalLight attrs) =
-    extendRevealed attrs []
+    let
+      whisperingChaos = case attrs.label of
+        "northTower" -> Treacheries.whisperingChaosNorth
+        "southTower" -> Treacheries.whisperingChaosSouth
+        "eastTower" -> Treacheries.whisperingChaosEast
+        "westTower" -> Treacheries.whisperingChaosWest
+        _ -> error "Invalid Label"
+      restriction =
+        exists (TreacheryInHandOf You <> treacheryIs whisperingChaos)
+          <> exists (EnemyInHandOf You <> EnemyWithTitle "Nyarlathotep")
+     in
+      extendRevealed attrs [restrictedAbility attrs 1 restriction actionAbility]
 
 instance RunMessage ForsakenTowerOfPrimevalLight where
-  runMessage msg (ForsakenTowerOfPrimevalLight attrs) = runQueueT $ case msg of
+  runMessage msg l@(ForsakenTowerOfPrimevalLight attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      nyarlathoteps <- select $ EnemyInHandOf $ InvestigatorWithId iid
+      chooseOne
+        iid
+        [ targetLabel
+          nyarlathotep
+          [HandleTargetChoice iid (attrs.ability 1) (toTarget nyarlathotep)]
+        | nyarlathotep <- nyarlathoteps
+        ]
+      pure l
+    HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget nyarlathotep) -> do
+      health <- fieldMapM EnemyHealthActual (maybe (pure 0) getGameValue) nyarlathotep
+      beginSkillTest iid (attrs.ability 1) (toTarget nyarlathotep) #willpower health
+      pure l
+    PassedSkillTest _iid _ (isAbilitySource attrs 1 -> True) (Initiator target) _ _ -> do
+      push $ AddToVictory target
+      pure l
+    FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) (Initiator (EnemyTarget eid)) _ _ -> do
+      pushAll
+        [ InitiateEnemyAttack $ enemyAttack eid (attrs.ability 1) iid
+        , ShuffleBackIntoEncounterDeck (toTarget eid)
+        ]
+      pure l
     _ -> ForsakenTowerOfPrimevalLight <$> lift (runMessage msg attrs)

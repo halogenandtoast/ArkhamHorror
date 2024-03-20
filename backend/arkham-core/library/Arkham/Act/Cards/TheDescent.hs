@@ -7,7 +7,6 @@ import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet (EncounterSet (AgentsOfAtlachNacha, DescentIntoThePitch))
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Matcher
-import Arkham.Source
 import Arkham.Trait (Trait (Depths))
 
 newtype TheDescent = TheDescent ActAttrs

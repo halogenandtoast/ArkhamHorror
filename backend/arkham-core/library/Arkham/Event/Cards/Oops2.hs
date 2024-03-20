@@ -42,7 +42,6 @@ instance RunMessage Oops2 where
                 ]
       pushAll
         [ skillTestModifier (toSource attrs) iid DoesNotDamageOtherInvestigator
-        , CancelFailedByModifierEffects
         , damageMsg
         ]
       pure e

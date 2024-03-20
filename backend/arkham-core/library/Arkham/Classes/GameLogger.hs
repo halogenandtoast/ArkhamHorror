@@ -13,6 +13,15 @@ instance HasGameLogger m => HasGameLogger (ReaderT e m) where
 class ToGameLoggerFormat a where
   format :: a -> Text
 
+formatAsSentence :: ToGameLoggerFormat a => [a] -> Text
+formatAsSentence = go False
+ where
+  go _ [] = ""
+  go _ [a] = format a
+  go True [a, b] = format a <> ", and " <> format b
+  go False [a, b] = format a <> " and " <> format b
+  go _ (a : as) = format a <> ", " <> go True as
+
 data ClientMessage
   = ClientText Text
   | ClientError Text

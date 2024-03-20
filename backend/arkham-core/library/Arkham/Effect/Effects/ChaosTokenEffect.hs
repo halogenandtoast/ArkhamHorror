@@ -39,7 +39,6 @@ instance HasModifiersFor ChaosTokenEffect where
   getModifiersFor target (ChaosTokenEffect attrs) | target == effectTarget attrs =
     case effectMetadata attrs of
       Just (EffectModifiers modifiers) -> pure modifiers
-      Just (FailedByEffectModifiers modifiers) -> pure modifiers
       _ -> pure []
   getModifiersFor _ _ = pure []
 

@@ -39,6 +39,6 @@ instance RunMessage Oops where
               $ [ targetLabel x [InvestigatorDamageEnemy iid x (toSource enemy)]
                 | x <- xs
                 ]
-      pushAll [CancelFailedByModifierEffects, damageMsg]
+      push damageMsg
       pure e
     _ -> Oops <$> runMessage msg attrs

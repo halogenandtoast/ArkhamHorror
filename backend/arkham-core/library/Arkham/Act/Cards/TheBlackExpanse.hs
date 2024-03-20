@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Matcher
-import Arkham.Source
 
 newtype TheBlackExpanse = TheBlackExpanse ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

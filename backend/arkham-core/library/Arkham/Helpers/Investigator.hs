@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Helpers.Investigator where
@@ -96,13 +97,17 @@ baseSkillValueFor skill _maction tempModifiers iid = do
   applyModifier (BaseSkillOf skillType m) _ | skillType == skill = m
   applyModifier _ n = n
 
-damageValueFor :: HasGame m => Int -> InvestigatorId -> m Int
-damageValueFor baseValue iid = do
-  modifiers <- getModifiers (InvestigatorTarget iid)
+data DamageFor = DamageForEnemy | DamageForInvestigator
+  deriving stock (Eq)
+
+damageValueFor :: HasGame m => Int -> InvestigatorId -> DamageFor -> m Int
+damageValueFor baseValue iid damageFor = do
+  modifiers <- traceShowId <$> getModifiers (InvestigatorTarget iid)
   let baseValue' = if NoStandardDamage `elem` modifiers then 0 else baseValue
   pure $ foldr applyModifier baseValue' modifiers
  where
   applyModifier (DamageDealt m) n = max 0 (n + m)
+  applyModifier (DamageDealtToInvestigator m) n | damageFor == DamageForInvestigator = max 0 (n + m)
   applyModifier NoDamageDealt _ = 0
   applyModifier _ n = n
 

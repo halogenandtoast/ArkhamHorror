@@ -152,13 +152,8 @@
       "  , {dot|snakecase|camelcase}",
       "  ) where",
       "",
-      "import Arkham.Prelude",
-      "",
       "import Arkham.Agenda.Cards qualified as Cards",
-      "import Arkham.Agenda.Runner",
-      "import Arkham.Classes",
-      "import Arkham.GameValue",
-      "import Arkham.Message",
+      "import Arkham.Agenda.Import.Lifted",
       "",
       "newtype {dot} = {dot} AgendaAttrs",
       "  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)",
@@ -168,11 +163,11 @@
       "{dot|snakecase|camelcase} = agenda (1, A) {dot} Cards.{dot|snakecase|camelcase} (Static 12)",
       "",
       "instance RunMessage {dot} where",
-      "  runMessage msg a@({dot} attrs) =",
-      "    case msg of",
-      "      AdvanceAgenda aid | aid == toId attrs && onSide B attrs ->",
-      "        a <$ pushAll [advanceAgendaDeck attrs]",
-      "      _ -> {dot} <$> runMessage msg attrs"
+      "  runMessage msg a@({dot} attrs) = runQueueT $ case msg of",
+      "    AdvanceAgenda (isSide B attrs -> True) ->",
+      "      advanceAgendaDeck attrs",
+      "      pure a",
+      "    _ -> {dot} <$> runMessage msg attrs"
     ]
   },
   "arkham-core/library/Arkham/Treachery/Cards/*.hs": {

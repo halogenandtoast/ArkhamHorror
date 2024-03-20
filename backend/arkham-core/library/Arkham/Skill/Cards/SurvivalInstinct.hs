@@ -37,10 +37,11 @@ instance RunMessage SurvivalInstinct where
       case engagedEnemies of
         es | notNull es && canDisengage -> do
           pushAll
-            $ [ chooseOne player
-                  $ [ Label "Disengage from each other enemy" $ map (DisengageEnemy iid) es
-                    , Label "Skip" []
-                    ]
+            $ [ chooseOne
+                  player
+                  [ Label "Disengage from each other enemy" $ map (DisengageEnemy iid) es
+                  , Label "Skip" []
+                  ]
               ]
             <> [moveOptions | notNull targets]
         _ -> unless (null targets) $ push moveOptions

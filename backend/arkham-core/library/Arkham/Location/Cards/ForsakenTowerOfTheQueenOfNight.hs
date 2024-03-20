@@ -4,13 +4,12 @@ module Arkham.Location.Cards.ForsakenTowerOfTheQueenOfNight (
 )
 where
 
-import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Scenarios.WhereTheGodsDwell.Helpers
 
 newtype ForsakenTowerOfTheQueenOfNight = ForsakenTowerOfTheQueenOfNight LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -26,18 +25,7 @@ forsakenTowerOfTheQueenOfNight =
 
 instance HasAbilities ForsakenTowerOfTheQueenOfNight where
   getAbilities (ForsakenTowerOfTheQueenOfNight attrs) =
-    let
-      whisperingChaos = case attrs.label of
-        "northTower" -> Treacheries.whisperingChaosNorth
-        "southTower" -> Treacheries.whisperingChaosSouth
-        "eastTower" -> Treacheries.whisperingChaosEast
-        "westTower" -> Treacheries.whisperingChaosWest
-        _ -> error "Invalid Label"
-      restriction =
-        exists (TreacheryInHandOf You <> treacheryIs whisperingChaos)
-          <> exists (EnemyInHandOf You <> EnemyWithTitle "Nyarlathotep")
-     in
-      extendRevealed attrs [restrictedAbility attrs 1 restriction #evade]
+    extendRevealed attrs $ forsakenTowerAbilities attrs
 
 instance RunMessage ForsakenTowerOfTheQueenOfNight where
   runMessage msg l@(ForsakenTowerOfTheQueenOfNight attrs) = runQueueT $ case msg of

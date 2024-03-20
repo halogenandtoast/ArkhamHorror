@@ -207,7 +207,8 @@ instance RunMessage EnemyAttrs where
               preyIds <- select $ preyWith prey $ investigatorAt lid
               investigatorIds <- if null preyIds then select $ investigatorAt lid else pure []
               lead <- getLeadPlayer
-              let validInvestigatorIds = maybe (preyIds <> investigatorIds) pure miid
+              let allIds = preyIds <> investigatorIds
+              let validInvestigatorIds = maybe (preyIds <> investigatorIds) (\iid -> guard (iid `elem` allIds) $> iid) miid
               case validInvestigatorIds of
                 [] -> push $ EnemyEntered eid lid
                 [iid] -> pushAll $ EnemyEntered eid lid : [EnemyEngageInvestigator eid iid]

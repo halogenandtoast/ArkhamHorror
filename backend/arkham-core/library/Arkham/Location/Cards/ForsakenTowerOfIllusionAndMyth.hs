@@ -4,7 +4,6 @@ module Arkham.Location.Cards.ForsakenTowerOfIllusionAndMyth (
 )
 where
 
-import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.Enemy.Types (Field (..))
@@ -15,7 +14,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Scenarios.WhereTheGodsDwell.Helpers
 
 newtype ForsakenTowerOfIllusionAndMyth = ForsakenTowerOfIllusionAndMyth LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -31,19 +30,7 @@ forsakenTowerOfIllusionAndMyth =
     (setMeta @(Maybe EnemyId) Nothing)
 
 instance HasAbilities ForsakenTowerOfIllusionAndMyth where
-  getAbilities (ForsakenTowerOfIllusionAndMyth attrs) =
-    let
-      whisperingChaos = case attrs.label of
-        "northTower" -> Treacheries.whisperingChaosNorth
-        "southTower" -> Treacheries.whisperingChaosSouth
-        "eastTower" -> Treacheries.whisperingChaosEast
-        "westTower" -> Treacheries.whisperingChaosWest
-        _ -> error "Invalid Label"
-      restriction =
-        exists (TreacheryInHandOf You <> treacheryIs whisperingChaos)
-          <> exists (EnemyInHandOf You <> EnemyWithTitle "Nyarlathotep")
-     in
-      extendRevealed attrs [restrictedAbility attrs 1 restriction investigateAction_]
+  getAbilities (ForsakenTowerOfIllusionAndMyth attrs) = extendRevealed attrs $ forsakenTowerAbilities attrs
 
 instance RunMessage ForsakenTowerOfIllusionAndMyth where
   runMessage msg l@(ForsakenTowerOfIllusionAndMyth attrs) = runQueueT $ case msg of

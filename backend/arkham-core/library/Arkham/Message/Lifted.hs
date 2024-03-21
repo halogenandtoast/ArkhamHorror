@@ -405,3 +405,7 @@ skillTestModifiers (toSource -> source) (toTarget -> target) mods =
 
 mapQueue :: (MonadTrans t, HasQueue Message m) => (Message -> Message) -> t m ()
 mapQueue = lift . Msg.mapQueue
+
+toDiscardBy
+  :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
+toDiscardBy iid source target = push $ Msg.toDiscardBy iid source target

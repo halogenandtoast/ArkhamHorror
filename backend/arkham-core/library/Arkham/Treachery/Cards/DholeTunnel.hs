@@ -2,13 +2,10 @@ module Arkham.Treachery.Cards.DholeTunnel (dholeTunnel, DholeTunnel (..)) where
 
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator (withLocationOf)
-import Arkham.Helpers.Window (checkWindows)
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers qualified as Msg
 import Arkham.Treachery.Import.Lifted
-import Arkham.Window (mkWhen)
-import Arkham.Window qualified as Window
 
 newtype DholeTunnel = DholeTunnel TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

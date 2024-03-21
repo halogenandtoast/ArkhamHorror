@@ -927,85 +927,97 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     from <- fromMaybe (LocationId nil) <$> field InvestigatorLocation iid
     afterWindowMsg <- Helpers.checkWindows [mkAfter $ Window.MoveAction iid from lid]
     -- exclude additional costs because they will have been paid by the action
-    pushAll $ resolve (Move ((move (toSource a) iid lid) {movePayAdditionalCosts = False}))
+    canMove <- withoutModifier a CannotMove
+    pushAll
+      $ (guard canMove *> resolve (Move ((move (toSource a) iid lid) {movePayAdditionalCosts = False})))
       <> [afterWindowMsg]
     pure a
   Move movement | isTarget a (moveTarget movement) -> do
-    case moveDestination movement of
-      ToLocationMatching matcher -> do
-        lids <- getCanMoveToMatchingLocations investigatorId (moveSource movement) matcher
-        player <- getPlayer investigatorId
-        push
-          $ chooseOrRunOne player
-          $ [targetLabel lid [Move $ movement {moveDestination = ToLocation lid}] | lid <- lids]
-      ToLocation destinationLocationId -> do
-        batchId <- getRandom
+    canMove <- withoutModifier a CannotMove
+    when canMove do
+      case moveDestination movement of
+        ToLocationMatching matcher -> do
+          lids <- getCanMoveToMatchingLocations investigatorId (moveSource movement) matcher
+          player <- getPlayer investigatorId
+          push
+            $ chooseOrRunOne player
+            $ [targetLabel lid [Move $ movement {moveDestination = ToLocation lid}] | lid <- lids]
+        ToLocation destinationLocationId -> do
+          batchId <- getRandom
 
-        let
-          source = moveSource movement
-          iid = investigatorId
-        mFromLocation <- field InvestigatorLocation iid
+          let
+            source = moveSource movement
+            iid = investigatorId
+          mFromLocation <- field InvestigatorLocation iid
 
-        leaveCosts <- case mFromLocation of
-          Nothing -> pure mempty
-          Just lid ->
+          leaveCosts <- case mFromLocation of
+            Nothing -> pure mempty
+            Just lid ->
+              if movePayAdditionalCosts movement
+                then do
+                  mods' <- getModifiers lid
+                  pure $ mconcat [c | AdditionalCostToLeave c <- mods']
+                else pure mempty
+
+          -- TODO: we might care about other sources here
+          enterCosts <- do
             if movePayAdditionalCosts movement
               then do
-                mods' <- getModifiers lid
-                pure $ mconcat [c | AdditionalCostToLeave c <- mods']
+                mods' <- getModifiers destinationLocationId
+                pure $ mconcat [c | AdditionalCostToEnter c <- mods']
               else pure mempty
 
-        -- TODO: we might care about other sources here
-        enterCosts <- do
-          if movePayAdditionalCosts movement
-            then do
-              mods' <- getModifiers destinationLocationId
-              pure $ mconcat [c | AdditionalCostToEnter c <- mods']
-            else pure mempty
+          let
+            (whenMoves, atIfMoves, afterMoves) = timings (Window.Moves iid source mFromLocation destinationLocationId)
+            (mWhenLeaving, mAtIfLeaving, mAfterLeaving) = case mFromLocation of
+              Just from ->
+                batchedTimings batchId (Window.Leaving iid from) & \case
+                  (whens, atIfs, afters) -> (Just whens, Just atIfs, Just afters)
+              Nothing -> (Nothing, Nothing, Nothing)
+            (whenEntering, atIfEntering, afterEntering) = batchedTimings batchId (Window.Entering iid destinationLocationId)
 
-        let
-          (whenMoves, atIfMoves, afterMoves) = timings (Window.Moves iid source mFromLocation destinationLocationId)
-          (mWhenLeaving, mAtIfLeaving, mAfterLeaving) = case mFromLocation of
-            Just from ->
-              batchedTimings batchId (Window.Leaving iid from) & \case
-                (whens, atIfs, afters) -> (Just whens, Just atIfs, Just afters)
-            Nothing -> (Nothing, Nothing, Nothing)
-          (whenEntering, atIfEntering, afterEntering) = batchedTimings batchId (Window.Entering iid destinationLocationId)
+          -- Windows we need to check as understood:
+          -- according to Empirical Hypothesis ruling the order should be like:
+          -- when {leaving} -> atIf {leaving} -> after {leaving} -> before {entering} -> atIf {entering} / when {move} -> atIf {move} -> Reveal Location -> after but before enemy engagement {entering} -> Check Enemy Engagement -> after {entering, move}
+          -- move but before enemy engagement is handled in MoveTo
 
-        -- Windows we need to check as understood:
-        -- according to Empirical Hypothesis ruling the order should be like:
-        -- when {leaving} -> atIf {leaving} -> after {leaving} -> before {entering} -> atIf {entering} / when {move} -> atIf {move} -> Reveal Location -> after but before enemy engagement {entering} -> Check Enemy Engagement -> after {entering, move}
-        -- move but before enemy engagement is handled in MoveTo
+          mRunWhenLeaving <- case mWhenLeaving of
+            Just whenLeaving -> Just <$> checkWindows [whenLeaving]
+            Nothing -> pure Nothing
+          mRunAtIfLeaving <- case mAtIfLeaving of
+            Just atIfLeaving -> Just <$> checkWindows [atIfLeaving]
+            Nothing -> pure Nothing
+          mRunAfterLeaving <- case mAfterLeaving of
+            Just afterLeaving -> Just <$> checkWindows [afterLeaving]
+            Nothing -> pure Nothing
+          runWhenMoves <- checkWindows [whenMoves]
+          runAtIfMoves <- checkWindows [atIfMoves]
+          runWhenEntering <- checkWindows [whenEntering]
+          runAtIfEntering <- checkWindows [atIfEntering]
+          runAfterEnteringMoves <- checkWindows [afterEntering, afterMoves]
 
-        mRunWhenLeaving <- case mWhenLeaving of
-          Just whenLeaving -> Just <$> checkWindows [whenLeaving]
-          Nothing -> pure Nothing
-        mRunAtIfLeaving <- case mAtIfLeaving of
-          Just atIfLeaving -> Just <$> checkWindows [atIfLeaving]
-          Nothing -> pure Nothing
-        mRunAfterLeaving <- case mAfterLeaving of
-          Just afterLeaving -> Just <$> checkWindows [afterLeaving]
-          Nothing -> pure Nothing
-        runWhenMoves <- checkWindows [whenMoves]
-        runAtIfMoves <- checkWindows [atIfMoves]
-        runWhenEntering <- checkWindows [whenEntering]
-        runAtIfEntering <- checkWindows [atIfEntering]
-        runAfterEnteringMoves <- checkWindows [afterEntering, afterMoves]
-
-        pushBatched batchId
-          $ maybeToList mRunWhenLeaving
-          <> maybeToList mRunAtIfLeaving
-          <> [PayAdditionalCost iid batchId leaveCosts]
-          <> [MoveFrom source iid fromLocationId | fromLocationId <- maybeToList mFromLocation]
-          <> maybeToList mRunAfterLeaving
-          <> [ runWhenEntering
-             , runAtIfEntering
-             , PayAdditionalCost iid batchId enterCosts
-             , runWhenMoves
-             , runAtIfMoves
-             ]
-          <> [MoveTo $ move source iid destinationLocationId]
-          <> [runAfterEnteringMoves]
+          pushBatched batchId
+            $ maybeToList mRunWhenLeaving
+            <> maybeToList mRunAtIfLeaving
+            <> [ PayAdditionalCost iid batchId leaveCosts
+               , WhenCanMove
+                  iid
+                  ( [MoveFrom source iid fromLocationId | fromLocationId <- maybeToList mFromLocation]
+                      <> maybeToList mRunAfterLeaving
+                      <> [ runWhenEntering
+                         , runAtIfEntering
+                         , PayAdditionalCost iid batchId enterCosts
+                         , runWhenMoves
+                         , runAtIfMoves
+                         ]
+                      <> [MoveTo $ move source iid destinationLocationId]
+                      <> [runAfterEnteringMoves]
+                  )
+               ]
+    pure a
+  WhenCanMove iid msgs | iid == investigatorId -> do
+    canMove <- withoutModifier a CannotMove
+    when canMove $ pushAll msgs
     pure a
   Will (PassedSkillTest iid _ _ (InvestigatorTarget iid') _ _) | iid == iid' && iid == investigatorId -> do
     pushM $ checkWindows [mkWhen (Window.WouldPassSkillTest iid)]

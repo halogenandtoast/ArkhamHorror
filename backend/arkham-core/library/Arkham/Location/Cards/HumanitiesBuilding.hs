@@ -1,47 +1,32 @@
 module Arkham.Location.Cards.HumanitiesBuilding where
 
-import Arkham.Prelude
-
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Game.Helpers
-import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards (humanitiesBuilding)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype HumanitiesBuilding = HumanitiesBuilding LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 humanitiesBuilding :: LocationCard HumanitiesBuilding
-humanitiesBuilding =
-  location HumanitiesBuilding Cards.humanitiesBuilding 3 (PerPlayer 2)
+humanitiesBuilding = location HumanitiesBuilding Cards.humanitiesBuilding 3 (PerPlayer 2)
 
 instance HasAbilities HumanitiesBuilding where
   getAbilities (HumanitiesBuilding attrs) =
-    withBaseAbilities attrs
-      $ [ restrictedAbility attrs 1 Here
-          $ ForcedAbility
-          $ TurnEnds
-            Timing.When
-            You
-        | locationRevealed attrs
-        ]
+    extendRevealed
+      attrs
+      [ restrictedAbility attrs 1 (Here <> youExist InvestigatorWithAnyHorror)
+          $ forced
+          $ TurnEnds #when You
+      ]
 
 instance RunMessage HumanitiesBuilding where
-  runMessage msg l@(HumanitiesBuilding attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg l@(HumanitiesBuilding attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       horror <- field InvestigatorHorror iid
-      when (horror > 0)
-        $ push
-        $ DiscardTopOfDeck
-          iid
-          horror
-          (toAbilitySource attrs 1)
-          Nothing
+      push $ DiscardTopOfDeck iid horror (attrs.ability 1) Nothing
       pure l
-    _ -> HumanitiesBuilding <$> runMessage msg attrs
+    _ -> HumanitiesBuilding <$> lift (runMessage msg attrs)

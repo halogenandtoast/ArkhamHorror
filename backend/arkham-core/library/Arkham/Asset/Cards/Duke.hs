@@ -48,9 +48,7 @@ instance RunMessage Duke where
     UseCardAbility iid (isSource attrs -> True) 2 windows' _ -> do
       let source = attrs.ability 2
       lid <- getJustLocation iid
-      accessibleLocationIds <-
-        traverse (traverseToSnd (mkInvestigateLocation iid attrs))
-          =<< getAccessibleLocations iid (attrs.ability 2)
+      accessibleLocationIds <- getAccessibleLocations iid source
       investigateAbilities <-
         filterM
           ( andM
@@ -79,13 +77,14 @@ instance RunMessage Duke where
       push
         $ chooseOne player
         $ investigateActions
-        <> [ targetLabel
-            lid'
-            [ Move $ move attrs iid lid'
-            , CheckAdditionalActionCosts iid (toTarget lid') #investigate [toMessage investigate']
-            ]
-           | (lid', investigate') <- accessibleLocationIds
+        <> [ targetLabel lid' [Move $ move attrs iid lid', DoStep 1 msg]
+           | lid' <- accessibleLocationIds
            ]
+      pure a
+    DoStep 1 (UseCardAbility iid (isSource attrs -> True) 2 _ _) -> do
+      lid <- getJustLocation iid
+      investigate' <- mkInvestigateLocation iid attrs lid
+      push $ CheckAdditionalActionCosts iid (toTarget lid) #investigate [toMessage investigate']
       pure a
     UseCardAbility iid (ProxySource (LocationSource lid) (isAbilitySource attrs 2 -> True)) 101 _ _ -> do
       pushM $ mkInvestigateLocation iid attrs lid

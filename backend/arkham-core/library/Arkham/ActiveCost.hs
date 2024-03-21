@@ -31,6 +31,7 @@ import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Message
 import Arkham.Helpers.Ref
+import Arkham.Helpers.SkillTest (beginSkillTest)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (
@@ -173,6 +174,9 @@ payCost msg c iid skipAdditionalCosts cost = do
         as -> as
   player <- getPlayer iid
   case cost of
+    SkillTestCost stsource sType n -> do
+      push $ beginSkillTest iid stsource ScenarioTarget sType n
+      pure c
     ShuffleAttachedCardIntoDeckCost target cardMatcher -> do
       case target of
         AssetTarget aid -> do

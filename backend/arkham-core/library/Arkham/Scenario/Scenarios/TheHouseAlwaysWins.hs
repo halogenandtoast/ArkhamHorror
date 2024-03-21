@@ -9,6 +9,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDunwichLegacy.ChaosBag
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -52,6 +53,9 @@ instance HasChaosTokenValue TheHouseAlwaysWins where
 
 instance RunMessage TheHouseAlwaysWins where
   runMessage msg s@(TheHouseAlwaysWins attrs) = case msg of
+    StandaloneSetup -> do
+      push $ SetChaosTokens $ chaosBagContents attrs.difficulty
+      pure s
     Setup -> do
       players <- allPlayers
 
@@ -126,25 +130,22 @@ instance RunMessage TheHouseAlwaysWins where
       let requiredResources = if isEasyStandard attrs then 2 else 3
       resourceCount <- getSpendableResources iid
       player <- getPlayer iid
-      if resourceCount >= requiredResources
-        then
-          push
-            $ chooseOne
-              player
-              [ Label
-                  ( "Spend "
-                      <> tshow requiredResources
-                      <> " resources to treat this token as a 0"
-                  )
-                  [ SpendResources iid requiredResources
-                  , CreateChaosTokenValueEffect
-                      (if isEasyStandard attrs then 2 else 3)
-                      (ChaosTokenSource drawnToken)
-                      (ChaosTokenTarget drawnToken)
-                  ]
-              , Label "Do not spend resources" []
+      pushWhen (resourceCount >= requiredResources)
+        $ chooseOne
+          player
+          [ Label
+              ( "Spend "
+                  <> tshow requiredResources
+                  <> " resources to treat this token as a 0"
+              )
+              [ SpendResources iid requiredResources
+              , CreateChaosTokenValueEffect
+                  (if isEasyStandard attrs then 2 else 3)
+                  (ChaosTokenSource drawnToken)
+                  (ChaosTokenTarget drawnToken)
               ]
-        else pure ()
+          , Label "Do not spend resources" []
+          ]
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ ->
       s <$ case chaosTokenFace token of

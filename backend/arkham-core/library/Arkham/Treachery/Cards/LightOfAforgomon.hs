@@ -1,16 +1,10 @@
-module Arkham.Treachery.Cards.LightOfAforgomon (
-  LightOfAforgomon (..),
-  lightOfAforgomon,
-) where
+module Arkham.Treachery.Cards.LightOfAforgomon (LightOfAforgomon (..), lightOfAforgomon) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Helpers qualified as Msg
+import Arkham.Treachery.Import.Lifted
 
 newtype LightOfAforgomon = LightOfAforgomon TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
@@ -25,25 +19,16 @@ instance HasModifiersFor LightOfAforgomon where
   getModifiersFor _ _ = pure []
 
 instance RunMessage LightOfAforgomon where
-  runMessage msg (LightOfAforgomon attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      targetActs <-
-        selectMap ActTarget
-          $ NotAct
-          $ ActWithTreachery
-          $ treacheryIs
-            Cards.lightOfAforgomon
+  runMessage msg t@(LightOfAforgomon attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      targetActs <- selectTargets $ NotAct $ ActWithTreachery $ treacheryIs Cards.lightOfAforgomon
       targetAgendas <-
-        selectMap AgendaTarget
-          $ NotAgenda
-          $ AgendaWithTreachery
-          $ treacheryIs Cards.lightOfAforgomon
-      player <- getPlayer iid
-      pushWhen (notNull $ targetActs <> targetAgendas)
-        $ chooseOne
-          player
-          [ TargetLabel target [AttachTreachery treacheryId target]
+        selectTargets $ NotAgenda $ AgendaWithTreachery $ treacheryIs Cards.lightOfAforgomon
+      when (notNull $ targetActs <> targetAgendas) do
+        chooseOne
+          iid
+          [ TargetLabel target [Msg.attachTreachery attrs target]
           | target <- targetActs <> targetAgendas
           ]
-      LightOfAforgomon <$> runMessage msg attrs
-    _ -> LightOfAforgomon <$> runMessage msg attrs
+      pure t
+    _ -> LightOfAforgomon <$> lift (runMessage msg attrs)

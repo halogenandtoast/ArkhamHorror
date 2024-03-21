@@ -89,4 +89,10 @@ instance RunMessage TreacheryAttrs where
     RemoveAllCopiesOfEncounterCardFromGame cardMatcher | toCard a `cardMatch` cardMatcher -> do
       push $ RemoveTreachery (toId a)
       pure a
+    ReplaceAct aid _ -> do
+      pushWhen (treacheryOnAct aid a) $ toDiscard (toSource a) (toTarget a)
+      pure a
+    ReplaceAgenda aid _ -> do
+      pushWhen (treacheryOnAgenda aid a) $ toDiscard (toSource a) (toTarget a)
+      pure a
     _ -> pure a

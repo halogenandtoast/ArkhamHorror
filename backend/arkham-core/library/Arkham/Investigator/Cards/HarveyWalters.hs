@@ -1,14 +1,10 @@
-module Arkham.Investigator.Cards.HarveyWalters (
-  harveyWalters,
-  HarveyWalters (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.HarveyWalters (harveyWalters, HarveyWalters (..)) where
 
 import Arkham.Ability
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -24,8 +20,8 @@ harveyWalters =
 instance HasAbilities HarveyWalters where
   getAbilities (HarveyWalters a) =
     [ playerLimit PerRound
-        $ restrictedAbility a 1 Self
-        $ freeReaction (DrawsCards #after (affectsOthers $ InvestigatorAt YourLocation) (atLeast 1))
+        $ restrictedAbility a 1 (Self <> DuringPhase #investigation)
+        $ freeReaction (DrawsCards #after (affectsOthers $ at_ YourLocation) (atLeast 1))
     ]
 
 instance HasChaosTokenValue HarveyWalters where

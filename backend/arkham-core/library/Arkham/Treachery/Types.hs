@@ -82,6 +82,9 @@ instance AsId TreacheryAttrs where
   type IdOf TreacheryAttrs = TreacheryId
   asId = treacheryId
 
+instance HasField "id" TreacheryAttrs TreacheryId where
+  getField = treacheryId
+
 instance HasField "meta" TreacheryAttrs Value where
   getField = treacheryMeta
 
@@ -199,6 +202,9 @@ treacheryOnLocation = treacheryOn
 
 treacheryOnAgenda :: AgendaId -> TreacheryAttrs -> Bool
 treacheryOnAgenda = treacheryOn
+
+treacheryOnAct :: ActId -> TreacheryAttrs -> Bool
+treacheryOnAct = treacheryOn
 
 withTreacheryEnemy :: TreacheryAttrs -> (EnemyId -> m a) -> m a
 withTreacheryEnemy attrs f = case treacheryAttachedTarget attrs of

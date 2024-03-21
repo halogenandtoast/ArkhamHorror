@@ -1,6 +1,5 @@
 module Arkham.Treachery.Cards.TasteOfLifeblood (tasteOfLifeblood, TasteOfLifeblood (..)) where
 
-import Arkham.Game.Helpers (getPlayer)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Matcher

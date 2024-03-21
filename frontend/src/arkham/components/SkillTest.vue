@@ -26,6 +26,10 @@ const emit = defineEmits(['choose'])
 const committedCards = computed(() => props.skillTest.committedCards)
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const skipTriggersAction = computed(() => {
+  return choices.value
+    .findIndex((c) => c.tag === MessageType.SKIP_TRIGGERS_BUTTON && c.investigatorId === props.skillTest.investigator);
+})
 const investigatorPortrait = computed(() => {
   const choice = choices.value.find((c): c is StartSkillTestButton => c.tag === MessageType.START_SKILL_TEST_BUTTON)
   if (choice) {
@@ -139,6 +143,11 @@ const testResult = computed(() => {
 
       <div v-if="skillTestResults" class="skill-test-results-break"></div>
       <button
+        v-if="skipTriggersAction !== -1"
+        @click="$emit('choose', skipTriggersAction)"
+        class="skip-triggers-button"
+      >Skip Triggers</button>
+      <button
         class="apply-results"
         v-if="applyResultsAction !== -1"
         @click="choose(applyResultsAction)"
@@ -248,6 +257,22 @@ const testResult = computed(() => {
   border: 0;
   padding: 10px;
   background-color: #532e61;
+  color: #EEE;
+  font: Arial, sans-serif;
+}
+
+.skip-triggers-button {
+  width: 100%;
+  border: 0;
+  text-align: center;
+  text-transform: uppercase;
+  transition: all 0.2s ease-in;
+  border: 0;
+  padding: 10px;
+  background-color: darken($select, 30%);
+  &:hover {
+    background-color: darken($select, 20%);
+  }
   color: #EEE;
   font: Arial, sans-serif;
 }

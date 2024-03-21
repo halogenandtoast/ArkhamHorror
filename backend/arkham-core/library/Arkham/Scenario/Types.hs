@@ -32,6 +32,7 @@ import Arkham.Tarot
 import Arkham.Token
 import Data.Aeson.TH
 import Data.Typeable
+import GHC.Records
 
 class
   ( Typeable a
@@ -125,6 +126,9 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
   }
   deriving stock (Show, Eq)
+
+instance HasField "difficulty" ScenarioAttrs Difficulty where
+  getField = scenarioDifficulty
 
 setStandaloneCampaignLog :: CampaignLog -> ScenarioAttrs -> ScenarioAttrs
 setStandaloneCampaignLog standaloneCampaignLog attrs =

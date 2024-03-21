@@ -166,7 +166,6 @@ import Arkham.Story.Stories (
   valentinosFateEffect,
  )
 import Arkham.Treachery.Treacheries (
-  arcaneBarrierEffect,
   chillingPresenceEffect,
   mesmerizeEffect,
   mysteriesOfTheLodgeEffect,
@@ -294,7 +293,6 @@ allEffects =
     , ("02028", SomeEffect riteOfSeekingEffect)
     , ("02031", SomeEffect bindMonster2Effect)
     , ("02100", SomeEffect pushedIntoTheBeyondEffect)
-    , ("02102", SomeEffect arcaneBarrierEffect)
     , ("02112", SomeEffect songOfTheDead2Effect)
     , ("02114", SomeEffect fireExtinguisher1Effect)
     , ("02150", SomeEffect deduction2Effect)

@@ -26,6 +26,7 @@ data EffectWindow
   | EffectSearchWindow
   | EffectCardCostWindow CardId
   | EffectUI
+  | EffectMoveWindow
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

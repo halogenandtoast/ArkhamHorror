@@ -5,11 +5,14 @@ module Arkham.Treachery.Import.Lifted (
 where
 
 import Arkham.Classes as X
+import Arkham.Helpers.Query as X
 import Arkham.Message as X (
   Message (..),
   toMessage,
   pattern FailedThisSkillTest,
   pattern FailedThisSkillTestBy,
+  pattern PassedThisSkillTest,
+  pattern UseThisAbility,
  )
 import Arkham.Message.Lifted as X
 import Arkham.Prelude as X
@@ -22,8 +25,10 @@ import Arkham.Treachery.Runner as X (
   TreacheryCard,
   push,
   pushAll,
+  pushWhen,
   setMeta,
   treachery,
+  treacheryOn,
   treacheryWith,
  )
 

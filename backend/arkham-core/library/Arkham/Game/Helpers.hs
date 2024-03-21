@@ -532,6 +532,7 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
   AddCurseTokenCost n -> do
     x <- getRemainingCurseTokens
     pure $ x >= n
+  SkillTestCost {} -> pure True
   ShuffleAttachedCardIntoDeckCost target cardMatcher -> do
     case target of
       AssetTarget aid -> fieldMap AssetCardsUnderneath (any (`cardMatch` cardMatcher)) aid

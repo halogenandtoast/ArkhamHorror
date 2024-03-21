@@ -6,6 +6,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDunwichLegacy.ChaosBag
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -54,6 +55,9 @@ instance HasChaosTokenValue ExtracurricularActivity where
 
 instance RunMessage ExtracurricularActivity where
   runMessage msg s@(ExtracurricularActivity attrs) = case msg of
+    StandaloneSetup -> do
+      push $ SetChaosTokens $ chaosBagContents attrs.difficulty
+      pure s
     Setup -> do
       players <- allPlayers
       completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios

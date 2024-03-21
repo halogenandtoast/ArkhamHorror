@@ -109,9 +109,9 @@ readInvestigatorDefeat = do
 instance RunMessage TheEssexCountyExpress where
   runMessage msg s@(TheEssexCountyExpress attrs@ScenarioAttrs {..}) =
     case msg of
-      SetChaosTokensForScenario -> do
-        standalone <- getIsStandalone
-        s <$ if standalone then push (SetChaosTokens standaloneChaosTokens) else pure ()
+      StandaloneSetup -> do
+        push $ SetChaosTokens standaloneChaosTokens
+        pure s
       Setup -> do
         players <- allPlayers
 

@@ -716,6 +716,7 @@ data Message
     MoveToward Target LocationMatcher
   | -- | Move target one location at a time until arrive at location
     MoveUntil LocationId Target
+  | WhenCanMove InvestigatorId [Message]
   | MoveAllCluesTo Source Target
   | MoveTopOfDeckToBottom Source DeckSignifier Int
   | NextCampaignStep (Maybe CampaignStep)

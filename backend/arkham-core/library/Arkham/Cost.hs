@@ -125,6 +125,7 @@ data Cost
   | HandDiscardAnyNumberCost CardMatcher
   | ReturnMatchingAssetToHandCost AssetMatcher
   | ReturnAssetToHandCost AssetId
+  | SkillTestCost Source SkillType Int
   | SkillIconCost Int (Set SkillIcon)
   | SameSkillIconCost Int
   | DiscardCombinedCost Int
@@ -264,6 +265,7 @@ displayCostType = \case
   ReturnMatchingAssetToHandCost {} -> "Return matching asset to hand"
   ReturnAssetToHandCost {} -> "Return asset to hand"
   SkillIconCost n _ -> tshow n <> " Matching Icons"
+  SkillTestCost _ sType n -> "Test {" <> tshow sType <> "}(" <> tshow n <> ")"
   SameSkillIconCost n -> tshow n <> " instances of the same skill icon"
   HorrorCost _ _ n -> tshow n <> " Horror"
   HorrorCostX _ -> "Take X Horror"

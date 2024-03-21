@@ -204,11 +204,15 @@ instance RunMessage EnemyAttrs where
           if all (`notElem` keywords) [#aloof, #massive] && not enemyExhausted
             then do
               prey <- getPreyMatcher a
-              preyIds <- select $ preyWith prey $ investigatorAt lid
+              preyIds <- select (preyWith prey $ investigatorAt lid)
               investigatorIds <- if null preyIds then select $ investigatorAt lid else pure []
               lead <- getLeadPlayer
               let allIds = preyIds <> investigatorIds
-              let validInvestigatorIds = maybe allIds (\iid -> guard (iid `elem` allIds) $> iid) miid
+              let
+                validInvestigatorIds =
+                  case miid of
+                    Nothing -> allIds
+                    Just iid -> if iid `elem` allIds then [iid] else allIds
               case validInvestigatorIds of
                 [] -> push $ EnemyEntered eid lid
                 [iid] -> pushAll $ EnemyEntered eid lid : [EnemyEngageInvestigator eid iid]

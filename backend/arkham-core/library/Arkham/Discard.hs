@@ -7,7 +7,7 @@ import Arkham.Matcher
 import Arkham.Source
 import Arkham.Target
 
-data DiscardStrategy = DiscardChoose | DiscardRandom
+data DiscardStrategy = DiscardChoose | DiscardRandom | DiscardAll
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

@@ -20,7 +20,7 @@ targetToCard target = fromMaybe handleMissing <$> targetToMaybeCard target
  where
   handleMissing = error $ "unhandled: " <> show target
 
-targetToMaybeCard :: HasGame m => Target -> m (Maybe Card)
+targetToMaybeCard :: (HasCallStack, HasGame m) => Target -> m (Maybe Card)
 targetToMaybeCard = \case
   AssetTarget aid -> Just <$> field AssetCard aid
   EventTarget aid -> Just <$> field EventCard aid

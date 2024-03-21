@@ -37,6 +37,7 @@ data Source
   | AssetSource AssetId
   | CardCodeSource CardCode
   | CardSource Card
+  | CardIdSource CardId
   | DeckSource
   | EffectSource EffectId
   | EmptyDeckSource

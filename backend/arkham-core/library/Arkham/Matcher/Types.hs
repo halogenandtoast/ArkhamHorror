@@ -697,6 +697,7 @@ data CardMatcher
   | CardFromEncounterSet EncounterSet
   | CardWithOddCost
   | CardWithEvenCost
+  | CardWithCost Int
   | CardWithOddSkillIcons
   | CardWithEvenSkillIcons
   | CardWithOddNumberOfWordsInTitle

@@ -66,6 +66,9 @@ data EffectAttrs = EffectAttrs
   }
   deriving stock (Show, Eq, Generic)
 
+instance HasField "id" EffectAttrs EffectId where
+  getField = effectId
+
 finishedL :: Lens' EffectAttrs Bool
 finishedL = lens effectFinished $ \m x -> m {effectFinished = x}
 

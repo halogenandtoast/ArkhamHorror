@@ -918,6 +918,7 @@ sourceToTarget = \case
   AssetSource aid -> AssetTarget aid
   EnemySource eid -> EnemyTarget eid
   CardSource c -> CardTarget c
+  CardIdSource c -> CardIdTarget c
   ScenarioSource -> ScenarioTarget
   InvestigatorSource iid -> InvestigatorTarget iid
   CardCodeSource cid -> CardCodeTarget cid

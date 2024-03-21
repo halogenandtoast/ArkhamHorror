@@ -170,6 +170,9 @@ import Arkham.Treachery.Treacheries (
   mesmerizeEffect,
   mysteriesOfTheLodgeEffect,
   pushedIntoTheBeyondEffect,
+  restlessJourneyFallacyEffect,
+  restlessJourneyHardshipEffect,
+  restlessJourneyLiesEffect,
   theKingsEdictEffect,
   whispersOfHypnosEffect,
  )
@@ -382,6 +385,9 @@ allEffects =
     , ("06201", SomeEffect spectralRazorEffect)
     , ("06278", SomeEffect surprisingFind1Effect)
     , ("06279", SomeEffect oldBookOfLore3Effect)
+    , ("06319", SomeEffect restlessJourneyFallacyEffect)
+    , ("06320", SomeEffect restlessJourneyHardshipEffect)
+    , ("06321", SomeEffect restlessJourneyLiesEffect)
     , ("06325", SomeEffect theEyeOfTruth5Effect)
     , ("07004", SomeEffect dexterDrakeEffect)
     , ("07012", SomeEffect showmanshipEffect)

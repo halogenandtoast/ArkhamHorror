@@ -56,3 +56,20 @@ randomDiscardMatching
   -> HandDiscard Message
 randomDiscardMatching iid source matcher =
   (discardFromHand iid source DiscardRandom 1) {discardFilter = matcher}
+
+discardAll
+  :: Sourceable source
+  => InvestigatorId
+  -> source
+  -> CardMatcher
+  -> HandDiscard Message
+discardAll iid (toSource -> source) matcher =
+  HandDiscard
+    { discardStrategy = DiscardAll
+    , discardFilter = matcher
+    , discardSource = source
+    , discardAmount = 0
+    , discardThen = Nothing
+    , discardTarget = Nothing
+    , discardInvestigator = iid
+    }

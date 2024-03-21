@@ -129,8 +129,9 @@ isCard (toCardCode -> a) (toCardCode -> b) = a == b
 cardMatch :: (IsCard a, IsCardMatcher cardMatcher, HasCallStack) => a -> cardMatcher -> Bool
 cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   AnyCard -> True
-  CardWithOddCost -> odd $ maybe 0 toPrintedCost (cdCost $ toCardDef a)
-  CardWithEvenCost -> even $ maybe 0 toPrintedCost (cdCost $ toCardDef a)
+  CardWithOddCost -> maybe False (odd . toPrintedCost) (cdCost $ toCardDef a)
+  CardWithEvenCost -> maybe False (even . toPrintedCost) (cdCost $ toCardDef a)
+  CardWithCost n -> maybe False ((== n) . toPrintedCost) (cdCost $ toCardDef a)
   CardWithOddSkillIcons -> odd $ length (cdSkills $ toCardDef a)
   CardWithEvenSkillIcons -> even $ length (cdSkills $ toCardDef a)
   CardWithOddNumberOfWordsInTitle -> odd $ length $ words (toTitle $ toCardDef a)

@@ -75,7 +75,8 @@ button {
 
 .card-row {
   position: absolute;
-  width: 80%;
+  width: fit-content;
+  max-width: 80%;
   top: 50%;
   left: 50%;
   background: hsl(150.9 13.6% 52.4% / 80%);

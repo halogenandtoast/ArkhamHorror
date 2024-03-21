@@ -28,6 +28,7 @@ import Arkham.Treachery.Runner as X (
   pushWhen,
   setMeta,
   treachery,
+  treacheryInHandOf,
   treacheryOn,
   treacheryWith,
  )

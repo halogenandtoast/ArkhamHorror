@@ -639,6 +639,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             $ [ targetLabel (toCardId c) [DiscardCard investigatorId (discardSource handDiscard) (toCardId c)]
               | c <- filter (`cardMatch` discardFilter handDiscard) cs
               ]
+      DiscardAll -> case discardableCards a of
+        [] -> pure ()
+        cs -> do
+          player <- getPlayer investigatorId
+          push
+            $ chooseOneAtATime player
+            $ [ targetLabel (toCardId c) [DiscardCard investigatorId (discardSource handDiscard) (toCardId c)]
+              | c <- filter (`cardMatch` discardFilter handDiscard) cs
+              ]
       DiscardRandom -> do
         -- only cards actually in hand
         let filtered = filter (`cardMatch` discardFilter handDiscard) investigatorHand

@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Field.Import
+import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Matcher qualified as Matcher
@@ -26,6 +27,7 @@ sourceTraits = \case
   AssetSource aid -> field AssetTraits aid
   CardCodeSource _ -> pure mempty
   CardSource c -> pure (toTraits c)
+  CardIdSource c -> toTraits <$> getCard c
   DeckSource -> pure mempty
   EffectSource _ -> pure mempty
   EmptyDeckSource -> pure mempty

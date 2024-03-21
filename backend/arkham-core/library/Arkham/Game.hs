@@ -3934,13 +3934,11 @@ runMessages mLogger = do
               >>= putGame
           AskMap askMap -> do
             -- Read might have only one player being prompted so we need to find the active player
-            let currentActivePid = g ^. activePlayerIdL
-            let
-              whenBeingQuestioned = \case
-                (pid, Read _ choices) -> First $ guard (notNull choices) $> pid
-                (pid, _) -> First (Just pid)
-            let activePids = foldMap whenBeingQuestioned $ mapToList askMap
-            let activePid = fromMaybe currentActivePid (getFirst activePids)
+            let current = g ^. activePlayerIdL
+            let whenBeingQuestioned (pid, Read _ choices) = guard (notNull choices) $> pid
+                whenBeingQuestioned (pid, _) = Just pid
+            let activePids = mapMaybe whenBeingQuestioned $ mapToList askMap
+            let activePid = fromMaybe current $ find (`elem` activePids) (current : keys askMap)
             runWithEnv (toExternalGame (g & activePlayerIdL .~ activePid) askMap) >>= putGame
           RunWindow {} | not (gameRunWindows g) -> runMessages mLogger
           CheckWindow {} | not (gameRunWindows g) -> runMessages mLogger

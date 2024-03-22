@@ -2183,7 +2183,7 @@ runGameMessage msg g = case msg of
         sendRevelation (toJSON $ toCard card)
         -- handles draw windows
         push $ DrewTreachery iid (Just Deck.EncounterDeck) (toCard card)
-        pure g
+        pure g'
       EncounterAssetType -> do
         sendRevelation (toJSON $ toCard card)
         assetId <- getRandom

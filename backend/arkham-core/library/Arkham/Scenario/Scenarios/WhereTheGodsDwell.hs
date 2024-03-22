@@ -4,13 +4,17 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Attack
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDreamEaters.Helpers
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Exception
 import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
+import Arkham.Helpers.Query (getLead)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -142,5 +146,59 @@ instance RunMessage WhereTheGodsDwell where
             | nyarlathotep <- nyarlathoteps
             ]
         _ -> pure ()
+      pure s
+    ScenarioResolution r -> do
+      case r of
+        NoResolution -> do
+          story $ i18nWithTitle "dreamEaters.whereTheGodsDwell.noResolution"
+          record Nyarlathotep'sInvasionHasBegun
+          whenM getIsTheDreamQuest $ push GameOver
+          endOfScenario
+        Resolution 1 -> do
+          story $ i18nWithTitle "dreamEaters.whereTheGodsDwell.resolution1"
+          record TheDreamersEscapedFromNyarlathotep'sGrasp
+          allGainXp attrs
+          eachInvestigator (`sufferMentalTrauma` 2)
+          lead <- getLead
+          knowOfAnotherPath <- getHasRecord TheDreamersKnowOfAnotherPath
+          chooseOne
+            lead
+            $ [ Label "Wake up" [R3]
+              , Label "Remain on the surface of the Dreamlands" [R4]
+              ]
+            <> [ Label "Venture into the Underworld to find your companions" [R5]
+               | knowOfAnotherPath
+               ]
+        Resolution 2 -> do
+          story $ i18nWithTitle "dreamEaters.whereTheGodsDwell.resolution2"
+          record TheDreamersBanishedNyarlathotep
+          allGainXpWithBonus attrs 5
+          eachInvestigator (`sufferMentalTrauma` 2)
+          lead <- getLead
+          knowOfAnotherPath <- getHasRecord TheDreamersKnowOfAnotherPath
+          chooseOne
+            lead
+            $ [ Label "Wake up" [R3]
+              , Label "Remain on the surface of the Dreamlands" [R4]
+              ]
+            <> [ Label "Venture into the Underworld to find your companions" [R5]
+               | knowOfAnotherPath
+               ]
+        Resolution 3 -> do
+          story $ i18nWithTitle "dreamEaters.whereTheGodsDwell.resolution3"
+          record TheDreamersAwoke
+          whenM getIsTheDreamQuest $ push GameOver
+          endOfScenario
+        Resolution 4 -> do
+          story $ i18nWithTitle "dreamEaters.whereTheGodsDwell.resolution4"
+          record TheDreamersStayedInTheDreamlandsForever
+          whenM getIsTheDreamQuest $ push GameOver
+          endOfScenario
+        Resolution 5 -> do
+          story $ i18nWithTitle "dreamEaters.whereTheGodsDwell.resolution5"
+          record TheDreamersTraveledBeneathTheMonastery
+          endOfScenario
+        other -> throw $ UnknownResolution other
+
       pure s
     _ -> WhereTheGodsDwell <$> lift (runMessage msg attrs)

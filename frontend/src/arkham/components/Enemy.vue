@@ -41,7 +41,6 @@ const isTrueForm = computed(() => {
 const image = computed(() => {
   const { cardCode, flipped } = props.enemy
   const suffix = flipped ? 'b' : ''
-  console.log(flipped, suffix)
   return imgsrc(`cards/${cardCode.replace('c', '')}${suffix}.jpg`)
 })
 

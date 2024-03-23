@@ -353,6 +353,13 @@ allEnemies =
     , SomeEnemyCard highPriestNotToBeDescribed
     , SomeEnemyCard dholeOfTheWastes
     , SomeEnemyCard liarWithNoFace
+    , -- Weaver of the Cosmos
+      SomeEnemyCard atlachNacha
+    , SomeEnemyCard legsOfAtlachNacha_347
+    , SomeEnemyCard legsOfAtlachNacha_348
+    , SomeEnemyCard legsOfAtlachNacha_349
+    , SomeEnemyCard legsOfAtlachNacha_350
+    , SomeEnemyCard webSpinner
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

@@ -9,6 +9,7 @@ import Arkham.Location.Runner as X (
   LocationCard,
   Message (..),
   canBeFlippedL,
+  connectsToL,
   extendRevealed,
   getLeadPlayer,
   getSetAsideCard,

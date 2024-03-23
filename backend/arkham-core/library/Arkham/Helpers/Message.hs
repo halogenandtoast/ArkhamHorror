@@ -358,6 +358,14 @@ placeLabeledLocations lbl cards = fmap fold
     (location, placement) <- placeLocation card
     pure [([location], [placement, SetLocationLabel location (lbl <> tshow idx)])]
 
+placeLabeledLocationsFrom
+  :: (HasGame m, CardGen m) => Text -> Int -> [Card] -> m ([LocationId], [Message])
+placeLabeledLocationsFrom lbl n cards = fmap fold
+  . concatForM (withIndex cards)
+  $ \(idx, card) -> do
+    (location, placement) <- placeLocation card
+    pure [([location], [placement, SetLocationLabel location (lbl <> tshow (n + idx))])]
+
 putCardIntoPlay :: IsCard card => InvestigatorId -> card -> Message
 putCardIntoPlay iid (toCard -> card) = PutCardIntoPlay iid card Nothing NoPayment (defaultWindows iid)
 

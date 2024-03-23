@@ -198,6 +198,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             , enemyDefeated = False
             , enemyAttacks = InvestigatorEngagedWith (EnemyWithId eid)
             , enemyUnableToSpawn = DiscardIfUnableToSpawn
+            , enemyMeta = Null
             }
     }
 
@@ -211,7 +212,7 @@ instance HasAbilities EnemyAttrs where
               [ Negate $ EnemyCriteria $ ThisEnemy AloofEnemy
               , EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith Anyone
               ]
-            <> (EnemyCriteria $ ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
+            <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
             <> CanAttack
         )
         $ ActionAbility [#fight] (ActionCost 1)
@@ -406,3 +407,6 @@ updateEnemy updates attrs = foldr go attrs updates
   go (Update fld val) = set (fieldLens fld) val
   go (IncrementBy fld val) = over (fieldLens fld) (max 0 . (+ val))
   go (DecrementBy fld val) = over (fieldLens fld) (max 0 . subtract val)
+
+setMeta :: ToJSON a => a -> EnemyAttrs -> EnemyAttrs
+setMeta a = metaL .~ toJSON a

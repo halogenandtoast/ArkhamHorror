@@ -164,7 +164,7 @@
       "",
       "instance RunMessage {dot} where",
       "  runMessage msg a@({dot} attrs) = runQueueT $ case msg of",
-      "    AdvanceAgenda (isSide B attrs -> True) ->",
+      "    AdvanceAgenda (isSide B attrs -> True) -> do",
       "      advanceAgendaDeck attrs",
       "      pure a",
       "    _ -> {dot} <$> runMessage msg attrs"

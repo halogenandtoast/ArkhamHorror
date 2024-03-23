@@ -255,6 +255,10 @@ allActs =
     , SomeActCard beyondDreams
     , SomeActCard truthAndLies
     , SomeActCard theDreamEaters
+    , --- Weaver of the Cosmos
+      SomeActCard journeyAcrossTheBridge
+    , SomeActCard theWeaverOfTheCosmos
+    , SomeActCard theSchemesDemise
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

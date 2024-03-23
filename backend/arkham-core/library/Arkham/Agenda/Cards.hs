@@ -25,6 +25,7 @@ allAgendaCards =
       [ aCreatureOfTheBayou
       , aSinisterRealm
       , aTearInReality
+      , aTrailOfTwists
       , agentsOfTheOuterGods
       , allIsOne
       , beckoningForPower
@@ -82,6 +83,7 @@ allAgendaCards =
       , quietHalls
       , rampagingCreatures
       , ransackingTheManor
+      , realitiesInterwoven
       , restrictedAccess
       , returnToPredatorOrPrey
       , riseOfTheGhouls
@@ -101,6 +103,7 @@ allAgendaCards =
       , theBarrierIsThin
       , theBeastUnleashed
       , theBoundaryBroken
+      , theBridgeOfWebs
       , theChariotVII
       , theCityFloods
       , theCloverClub
@@ -541,6 +544,15 @@ theShapeOfChaos = agenda "06288" "The Shape of Chaos" 2 WhereTheGodsDwell
 
 chaosIncarnate :: CardDef
 chaosIncarnate = agenda "06289" "Chaos Incarnate" 3 WhereTheGodsDwell
+
+theBridgeOfWebs :: CardDef
+theBridgeOfWebs = agenda "06334" "The Bridge of Webs" 1 WeaverOfTheCosmos
+
+aTrailOfTwists :: CardDef
+aTrailOfTwists = agenda "06335" "A Trail of Twists" 2 WeaverOfTheCosmos
+
+realitiesInterwoven :: CardDef
+realitiesInterwoven = agenda "06336" "Realities Interwoven" 3 WeaverOfTheCosmos
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

@@ -51,11 +51,15 @@ data EnemyAttrs = EnemyAttrs
   , enemyDefeated :: Bool
   , enemyAttacks :: InvestigatorMatcher
   , enemyUnableToSpawn :: UnableToSpawn
+  , enemyMeta :: Value
   }
   deriving stock (Show, Eq, Generic)
 
 instance HasField "id" EnemyAttrs EnemyId where
   getField = enemyId
+
+instance HasField "meta" EnemyAttrs Value where
+  getField = enemyMeta
 
 instance HasField "placement" EnemyAttrs Placement where
   getField = enemyPlacement
@@ -110,6 +114,7 @@ instance FromJSON EnemyAttrs where
     enemyDefeated <- o .:? "defeated" .!= False
     enemyAttacks <- o .:? "attacks" .!= InvestigatorEngagedWith (EnemyWithId enemyId)
     enemyUnableToSpawn <- o .:? "unableToSpawn" .!= DiscardIfUnableToSpawn
+    enemyMeta <- o .:? "meta" .!= Null
     pure EnemyAttrs {..}
 
 instance Be EnemyAttrs EnemyMatcher where

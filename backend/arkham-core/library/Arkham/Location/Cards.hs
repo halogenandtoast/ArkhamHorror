@@ -535,6 +535,12 @@ allLocationCards =
       , theGallows_170
       , theGateToHell
       , theGeistTrap
+      , theGreatWebCosmicWeb
+      , theGreatWebPrisonOfCocoons
+      , theGreatWebTangledWeb
+      , theGreatWebVastWeb
+      , theGreatWebWebStairs
+      , theGreatWebWebWovenIsland
       , theGuardian
       , theHiddenChamber
       , theOnyxCastle
@@ -5944,6 +5950,90 @@ forsakenTowerOfPrimevalLight =
     Equals
     [Square]
     WhereTheGodsDwell
+
+theGreatWebWebStairs :: CardDef
+theGreatWebWebStairs =
+  locationWithUnrevealed
+    "06340"
+    "The Great Web"
+    [Otherworld, Extradimensional]
+    NoSymbol
+    []
+    ("The Great Web" <:> "Web-Stairs")
+    [Otherworld, Extradimensional]
+    NoSymbol
+    []
+    WeaverOfTheCosmos
+
+theGreatWebCosmicWeb :: CardDef
+theGreatWebCosmicWeb =
+  locationWithUnrevealed
+    "06341"
+    "The Great Web"
+    [Otherworld, Extradimensional]
+    NoSymbol
+    []
+    ("The Great Web" <:> "Cosmic Web")
+    [Otherworld, Extradimensional]
+    NoSymbol
+    []
+    WeaverOfTheCosmos
+
+theGreatWebTangledWeb :: CardDef
+theGreatWebTangledWeb =
+  locationWithUnrevealed
+    "06342"
+    "The Great Web"
+    [Otherworld, Extradimensional]
+    NoSymbol
+    []
+    ("The Great Web" <:> "Tangled Web")
+    [Otherworld, Extradimensional]
+    NoSymbol
+    []
+    WeaverOfTheCosmos
+
+theGreatWebPrisonOfCocoons :: CardDef
+theGreatWebPrisonOfCocoons =
+  locationWithUnrevealed
+    "06343"
+    "The Great Web"
+    [Otherworld, Extradimensional]
+    NoSymbol
+    []
+    ("The Great Web" <:> "Prison of Cocoons")
+    [Otherworld, Extradimensional]
+    NoSymbol
+    []
+    WeaverOfTheCosmos
+
+theGreatWebVastWeb :: CardDef
+theGreatWebVastWeb =
+  locationWithUnrevealed
+    "06344"
+    "The Great Web"
+    [Otherworld, Extradimensional]
+    NoSymbol
+    []
+    ("The Great Web" <:> "Vast Web")
+    [Otherworld, Extradimensional]
+    NoSymbol
+    []
+    WeaverOfTheCosmos
+
+theGreatWebWebWovenIsland :: CardDef
+theGreatWebWebWovenIsland =
+  locationWithUnrevealed
+    "06345"
+    "The Great Web"
+    [Otherworld, Extradimensional]
+    NoSymbol
+    []
+    ("The Great Web" <:> "Web-Woven Island")
+    [Otherworld, Extradimensional]
+    NoSymbol
+    []
+    WeaverOfTheCosmos
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

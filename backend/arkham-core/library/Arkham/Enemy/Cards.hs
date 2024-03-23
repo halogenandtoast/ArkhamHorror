@@ -80,6 +80,7 @@ allEncounterEnemyCards =
       , arkhamOfficer
       , ashleighClarke
       , asylumGorger
+      , atlachNacha
       , avianThrall
       , azathoth
       , balefulReveler
@@ -177,6 +178,10 @@ allEncounterEnemyCards =
       , knightOfTheInnerCircle
       , knightOfTheOuterVoid
       , laboringGug
+      , legsOfAtlachNacha_347
+      , legsOfAtlachNacha_348
+      , legsOfAtlachNacha_349
+      , legsOfAtlachNacha_350
       , liarWithNoFace
       , lodgeEnforcer
       , lodgeJailor
@@ -274,6 +279,7 @@ allEncounterEnemyCards =
       , vengefulSpecter
       , vengefulWitch
       , victoriaDevereux
+      , webSpinner
       , whippoorwill
       , whippoorwillUnionAndDisillusion
       , wingedOne
@@ -1896,6 +1902,60 @@ liarWithNoFace =
   )
     { cdCardTraits = setFromList [Monster, Cultist, Servitor]
     , cdKeywords = singleton Keyword.Hunter
+    }
+
+atlachNacha :: CardDef
+atlachNacha =
+  unique
+    $ ( enemy "06346" ("Atlach-Nacha" <:> "The Spider God") WeaverOfTheCosmos 1
+      )
+      { cdCardTraits = setFromList [AncientOne, Spider, Elite]
+      , cdKeywords = singleton Keyword.Massive
+      , cdVictoryPoints = Just 1
+      }
+
+legsOfAtlachNacha_347 :: CardDef
+legsOfAtlachNacha_347 =
+  ( enemy "06347" "Legs of Atlach-Nacha" WeaverOfTheCosmos 1
+  )
+    { cdCardTraits = setFromList [AncientOne, Spider, Elite]
+    , cdKeywords = singleton Keyword.Massive
+    , cdVictoryPoints = Just 1
+    }
+
+legsOfAtlachNacha_348 :: CardDef
+legsOfAtlachNacha_348 =
+  ( enemy "06348" "Legs of Atlach-Nacha" WeaverOfTheCosmos 1
+  )
+    { cdCardTraits = setFromList [AncientOne, Spider, Elite]
+    , cdKeywords = singleton Keyword.Massive
+    , cdVictoryPoints = Just 1
+    }
+
+legsOfAtlachNacha_349 :: CardDef
+legsOfAtlachNacha_349 =
+  ( enemy "06349" "Legs of Atlach-Nacha" WeaverOfTheCosmos 1
+  )
+    { cdCardTraits = setFromList [AncientOne, Spider, Elite]
+    , cdKeywords = singleton Keyword.Massive
+    , cdVictoryPoints = Just 1
+    }
+
+legsOfAtlachNacha_350 :: CardDef
+legsOfAtlachNacha_350 =
+  ( enemy "06350" "Legs of Atlach-Nacha" WeaverOfTheCosmos 1
+  )
+    { cdCardTraits = setFromList [AncientOne, Spider, Elite]
+    , cdKeywords = singleton Keyword.Massive
+    , cdVictoryPoints = Just 1
+    }
+
+webSpinner :: CardDef
+webSpinner =
+  ( enemy "06351" "Web-Spinner" WeaverOfTheCosmos 3
+  )
+    { cdCardTraits = setFromList [Monster, Spider]
+    , cdKeywords = singleton Keyword.Aloof
     }
 
 corpseHungryGhoul :: CardDef

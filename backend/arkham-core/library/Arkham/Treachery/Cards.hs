@@ -153,6 +153,7 @@ allEncounterTreacheryCards =
       , brokenRails
       , burdensOfThePast
       , callToOrder
+      , caughtInAWeb
       , captiveMind
       , centuriesOfSecrets
       , chaosInTheWater
@@ -195,6 +196,7 @@ allEncounterTreacheryCards =
       , eagerForDeathUnionAndDisillusion
       , encephalonSignal
       , endlessDescent
+      , endlessWeaving
       , entombed
       , ephemeralExhibits
       , evilPast
@@ -325,6 +327,7 @@ allEncounterTreacheryCards =
       , thePitBelow
       , theSecretMustBeKept
       , theShadowBehindYou
+      , theSpinnerInDarkness
       , theYellowSign
       , theZealotsSeal
       , threadsOfReality
@@ -1990,6 +1993,24 @@ abandonedByTheGods =
   (treachery "06322" "Abandoned by the Gods" WhereTheGodsDwell 2)
     { cdCardTraits = singleton Curse
     , cdKeywords = setFromList [Keyword.Peril]
+    }
+
+theSpinnerInDarkness :: CardDef
+theSpinnerInDarkness =
+  (treachery "06352" "The Spinner in Darkness" WeaverOfTheCosmos 2)
+    { cdCardTraits = singleton Power
+    }
+
+caughtInAWeb :: CardDef
+caughtInAWeb =
+  (treachery "06353" "Caught in a Web" WeaverOfTheCosmos 3)
+    { cdCardTraits = singleton Hazard
+    }
+
+endlessWeaving :: CardDef
+endlessWeaving =
+  (treachery "06354" "Endless Weaving" WeaverOfTheCosmos 3)
+    { cdCardTraits = singleton Scheme
     }
 
 theHarbinger :: CardDef

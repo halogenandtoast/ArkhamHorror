@@ -416,6 +416,10 @@ allTreacheries =
     , SomeTreacheryCard restlessJourneyHardship
     , SomeTreacheryCard restlessJourneyLies
     , SomeTreacheryCard abandonedByTheGods
+    , -- Weaver of the Cosmos
+      SomeTreacheryCard theSpinnerInDarkness
+    , SomeTreacheryCard caughtInAWeb
+    , SomeTreacheryCard endlessWeaving
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

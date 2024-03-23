@@ -584,6 +584,13 @@ allLocations =
     , SomeLocationCard forsakenTowerOfEternalFlame
     , SomeLocationCard forsakenTowerOfTheQueenOfNight
     , SomeLocationCard forsakenTowerOfPrimevalLight
+    , --- Weaver of the Cosmos
+      SomeLocationCard theGreatWebWebStairs
+    , SomeLocationCard theGreatWebCosmicWeb
+    , SomeLocationCard theGreatWebTangledWeb
+    , SomeLocationCard theGreatWebPrisonOfCocoons
+    , SomeLocationCard theGreatWebVastWeb
+    , SomeLocationCard theGreatWebWebWovenIsland
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

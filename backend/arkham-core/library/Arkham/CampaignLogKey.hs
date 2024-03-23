@@ -258,6 +258,7 @@ data CampaignLogKey
   | TheDreamersAwoke
   | TheDreamersStayedInTheDreamlandsForever
   | TheDreamersTraveledBeneathTheMonastery
+  | TheInvestigatorsAreTrappedInAtlachNacha'sRealm
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

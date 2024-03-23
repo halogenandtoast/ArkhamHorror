@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import {
+  onMounted,
+  onUpdated,
   computed,
   ref,
   ComputedRef,
@@ -38,6 +40,56 @@ export interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const debug = useDebug()
+
+onMounted(() => {
+  rotateImages();
+});
+
+onUpdated(() => {
+  rotateImages();
+});
+
+const previousRotation = ref(0);
+
+function rotateImages() {
+  const atlachNacha = document.querySelector('[data-label=atlachNacha]')
+  if (atlachNacha) {
+    const degrees = parseFloat(atlachNacha.dataset.rotation) || 0
+    const middleCardImg = atlachNacha.querySelector('img')
+    const middleCardRect = atlachNacha.getBoundingClientRect()
+    const middleCardImgRect = middleCardImg.getBoundingClientRect()
+    const originX = middleCardImgRect.left + middleCardImgRect.width / 2 - middleCardRect.left
+    const originY = middleCardImgRect.top + middleCardImgRect.height / 2 - middleCardRect.top
+
+    atlachNacha.style.transformOrigin = `${originX}px ${originY}px`
+    atlachNacha.style.transition = 'none'
+    atlachNacha.style.transform = `rotate(${previousRotation.value}deg)`
+    const oX = middleCardImgRect.left + middleCardImgRect.width / 2
+    const oY = middleCardImgRect.top + middleCardImgRect.height / 2
+
+    document.querySelectorAll('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]').forEach((img) => {
+      const thisRect = img.getBoundingClientRect()
+      const thisX = thisRect.left
+      const thisY = thisRect.top
+      img.style.transformOrigin = `${oX - thisX}px ${oY - thisY}px`
+      img.style.transition = 'none'
+      img.style.transform = `rotate(${previousRotation.value}deg)`
+    });
+    if (degrees !== previousRotation.value) {
+      previousRotation.value = degrees
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          atlachNacha.style.transform = `rotate(${previousRotation.value}deg)`
+          atlachNacha.style.transition = 'transform 0.5s'
+          document.querySelectorAll('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]').forEach((img) => {
+            img.style.transition = 'transform 0.5s'
+            img.style.transform = `rotate(${degrees}deg)`
+          })
+        })
+      })
+    }
+  }
+}
 
 function beforeLeave(e: Element) {
   const el = e as HTMLElement
@@ -98,7 +150,6 @@ const locationStyles = computed(() => {
   return {
     display: 'grid',
     'grid-template-areas': cleaned.map((row) => `"${row}"`).join(' '),
-    'gap': '80px',
   }
 })
 
@@ -420,7 +471,9 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
             :enemy="enemy"
             :game="game"
             :playerId="playerId"
-            :style="{ 'grid-area': enemy.asSelfLocation, 'justify-self': 'center' }"
+            :data-label="enemy.asSelfLocation"
+            :data-rotation="enemy.meta?.rotation ?? null"
+            :style="{ 'grid-area': enemy.asSelfLocation, 'justify-self': 'center', 'align-items': 'center' }"
             @choose="choose"
           />
 
@@ -876,4 +929,15 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   margin-inline: 10px;
 }
 
+</style>
+
+<style>
+@keyframes rotateInfinite {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
 </style>

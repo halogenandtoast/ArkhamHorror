@@ -211,6 +211,10 @@ allAgendas =
       SomeAgendaCard theEyeOfChaos
     , SomeAgendaCard theShapeOfChaos
     , SomeAgendaCard chaosIncarnate
+    , -- Weaver of the Cosmos
+      SomeAgendaCard theBridgeOfWebs
+    , SomeAgendaCard aTrailOfTwists
+    , SomeAgendaCard realitiesInterwoven
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

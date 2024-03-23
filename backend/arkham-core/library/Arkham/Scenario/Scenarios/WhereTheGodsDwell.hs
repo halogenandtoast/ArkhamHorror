@@ -155,7 +155,7 @@ instance RunMessage WhereTheGodsDwell where
           whenM getIsTheDreamQuest $ push GameOver
           endOfScenario
         Resolution 1 -> do
-          story $ i18nWithTitle "dreamEaters.whereTheGodsDwell.resolution1"
+          story $ i18n "dreamEaters.whereTheGodsDwell.resolution1"
           record TheDreamersEscapedFromNyarlathotep'sGrasp
           allGainXp attrs
           eachInvestigator (`sufferMentalTrauma` 2)
@@ -170,7 +170,7 @@ instance RunMessage WhereTheGodsDwell where
                | knowOfAnotherPath
                ]
         Resolution 2 -> do
-          story $ i18nWithTitle "dreamEaters.whereTheGodsDwell.resolution2"
+          story $ i18n "dreamEaters.whereTheGodsDwell.resolution2"
           record TheDreamersBanishedNyarlathotep
           allGainXpWithBonus attrs 5
           eachInvestigator (`sufferMentalTrauma` 2)
@@ -185,17 +185,17 @@ instance RunMessage WhereTheGodsDwell where
                | knowOfAnotherPath
                ]
         Resolution 3 -> do
-          story $ i18nWithTitle "dreamEaters.whereTheGodsDwell.resolution3"
+          story $ i18n "dreamEaters.whereTheGodsDwell.resolution3"
           record TheDreamersAwoke
           whenM getIsTheDreamQuest $ push GameOver
           endOfScenario
         Resolution 4 -> do
-          story $ i18nWithTitle "dreamEaters.whereTheGodsDwell.resolution4"
+          story $ i18n "dreamEaters.whereTheGodsDwell.resolution4"
           record TheDreamersStayedInTheDreamlandsForever
           whenM getIsTheDreamQuest $ push GameOver
           endOfScenario
         Resolution 5 -> do
-          story $ i18nWithTitle "dreamEaters.whereTheGodsDwell.resolution5"
+          story $ i18n "dreamEaters.whereTheGodsDwell.resolution5"
           record TheDreamersTraveledBeneathTheMonastery
           endOfScenario
         other -> throw $ UnknownResolution other

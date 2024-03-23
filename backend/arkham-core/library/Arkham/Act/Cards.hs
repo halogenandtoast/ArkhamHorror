@@ -93,6 +93,7 @@ allActCards =
       , inPursuitOfTheLiving
       , inTheBellyOfTheMoonBeast
       , investigatingTheTrail
+      , journeyAcrossTheBridge
       , journeyThroughTheColdWastes
       , journeyToTheNexus
       , kingdomOfTheSkai
@@ -179,6 +180,7 @@ allActCards =
       , theReallyBadOnesV2
       , theRelicIsMissing
       , theReturnTrip
+      , theSchemesDemise
       , theSpectralRealm
       , theStrangerACityAflame
       , theStrangerThePathIsMine
@@ -187,6 +189,7 @@ allActCards =
       , theTrialOfNashtAndKamanThah
       , theUnvisitedIsle
       , theWayOut
+      , theWeaverOfTheCosmos
       , theYithianRelic
       , theyMustBeDestroyed
       , throughTheCatacombs
@@ -735,6 +738,15 @@ truthAndLies = act "06293" "Truth and Lies" 4 WhereTheGodsDwell
 
 theDreamEaters :: CardDef
 theDreamEaters = act "06294" "The Dream-Eaters" 5 WhereTheGodsDwell
+
+journeyAcrossTheBridge :: CardDef
+journeyAcrossTheBridge = act "06337" "Journey Across the Bridge" 1 WeaverOfTheCosmos
+
+theWeaverOfTheCosmos :: CardDef
+theWeaverOfTheCosmos = act "06338" "The Weaver of the Cosmos" 2 WeaverOfTheCosmos
+
+theSchemesDemise :: CardDef
+theSchemesDemise = act "06339" "The Scheme's Demise" 3 WeaverOfTheCosmos
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

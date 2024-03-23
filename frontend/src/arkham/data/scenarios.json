@@ -249,5 +249,12 @@
     "campaign": "06",
     "beta": true,
     "settings": []
+  },
+  {
+    "id": "06333",
+    "name": "Weaver of the Cosmos",
+    "campaign": "06",
+    "beta": true,
+    "settings": []
   }
 ]

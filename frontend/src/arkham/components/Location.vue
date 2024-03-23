@@ -311,7 +311,7 @@ const debug = useDebug()
 
 .location-container {
   display: flex;
-  margin: 0 5px;
+  margin: 20px;
   position: relative;
 }
 

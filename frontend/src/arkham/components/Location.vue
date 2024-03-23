@@ -452,4 +452,8 @@ const debug = useDebug()
   position: absolute;
   top: 100%;
 }
+
+.location:has(.abilities) {
+  z-index: 30 !important;
+}
 </style>

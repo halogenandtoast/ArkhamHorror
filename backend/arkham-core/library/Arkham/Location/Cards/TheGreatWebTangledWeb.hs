@@ -4,9 +4,11 @@ module Arkham.Location.Cards.TheGreatWebTangledWeb (
 )
 where
 
+import Arkham.Ability
 import Arkham.Direction
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
 
 newtype TheGreatWebTangledWeb = TheGreatWebTangledWeb LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -23,8 +25,14 @@ theGreatWebTangledWeb =
 
 instance HasAbilities TheGreatWebTangledWeb where
   getAbilities (TheGreatWebTangledWeb attrs) =
-    extendRevealed attrs []
+    extendRevealed
+      attrs
+      [ restrictedAbility attrs 1 (exists $ investigatorAt attrs) $ forced $ PhaseEnds #when #investigation
+      ]
 
 instance RunMessage TheGreatWebTangledWeb where
-  runMessage msg (TheGreatWebTangledWeb attrs) = runQueueT $ case msg of
+  runMessage msg l@(TheGreatWebTangledWeb attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeDoom (attrs.ability 1) attrs 1
+      pure l
     _ -> TheGreatWebTangledWeb <$> lift (runMessage msg attrs)

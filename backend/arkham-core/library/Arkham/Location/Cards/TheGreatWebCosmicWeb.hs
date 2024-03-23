@@ -4,9 +4,13 @@ module Arkham.Location.Cards.TheGreatWebCosmicWeb (
 )
 where
 
+import Arkham.Ability
 import Arkham.Direction
+import Arkham.Helpers.Message.Discard
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message (toMessage)
 
 newtype TheGreatWebCosmicWeb = TheGreatWebCosmicWeb LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -23,8 +27,22 @@ theGreatWebCosmicWeb =
 
 instance HasAbilities TheGreatWebCosmicWeb where
   getAbilities (TheGreatWebCosmicWeb attrs) =
-    extendRevealed attrs []
+    extendRevealed attrs [forcedAbility attrs 1 $ Enters #after You $ be attrs]
 
 instance RunMessage TheGreatWebCosmicWeb where
-  runMessage msg (TheGreatWebCosmicWeb attrs) = runQueueT $ case msg of
+  runMessage msg l@(TheGreatWebCosmicWeb attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      beginSkillTest iid (attrs.ability 1) iid #willpower 3
+      pure l
+    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
+      canDiscard <- iid <=~> InvestigatorWithDiscardableCard
+      chooseOrRunOne
+        iid
+        $ [ Label ("Discard " <> pluralize n "card") [toMessage $ chooseAndDiscardCard iid (attrs.ability 1)]
+          | canDiscard
+          ]
+        <> [ Label "Place 1 doom on this location" [PlaceDoom (attrs.ability 1) (toTarget attrs) 1]
+           ]
+
+      pure l
     _ -> TheGreatWebCosmicWeb <$> lift (runMessage msg attrs)

@@ -23,7 +23,7 @@ instance HasAbilities EnchantedWoodsGreatStoneCircle where
   getAbilities (EnchantedWoodsGreatStoneCircle attrs) =
     withRevealedAbilities
       attrs
-      [mkAbility attrs 1 $ ForcedAbility $ RevealLocation #after Anyone $ LocationWithId $ toId attrs]
+      [mkAbility attrs 1 $ forced $ RevealLocation #after Anyone $ be attrs]
 
 instance RunMessage EnchantedWoodsGreatStoneCircle where
   runMessage msg l@(EnchantedWoodsGreatStoneCircle attrs) = case msg of

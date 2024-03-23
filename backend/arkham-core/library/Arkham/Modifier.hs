@@ -170,6 +170,7 @@ data ModifierType
   | CountAllDoomInPlay
   | CountsAsInvestigatorForHunterEnemies
   | DamageDealt Int
+  | HorrorDealt Int
   | DamageDealtToInvestigator Int
   | DamageTaken Int
   | Difficulty Int
@@ -213,7 +214,6 @@ data ModifierType
   | HealHorrorOnThisAsIfInvestigator InvestigatorId
   | HealthModifier Int
   | HealthModifierWithMin Int (Min Int)
-  | HorrorDealt Int
   | HunterConnectedTo LocationId
   | IgnoreAllCosts
   | IgnoreAloof

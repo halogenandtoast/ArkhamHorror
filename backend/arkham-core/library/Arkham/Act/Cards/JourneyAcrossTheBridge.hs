@@ -80,19 +80,20 @@ instance RunMessage JourneyAcrossTheBridge where
       push $ PlacedLocationDirection top Above (NE.last locationIds)
 
       atlachNacha <-
-        getSetAsideCardsMatching
-          $ oneOf
-          $ map
-            cardIs
-            [ Enemies.atlachNacha
-            , Enemies.legsOfAtlachNacha_347
-            , Enemies.legsOfAtlachNacha_348
-            , Enemies.legsOfAtlachNacha_349
-            , Enemies.legsOfAtlachNacha_350
-            ]
+        traverse
+          getSetAsideCard
+          [ Enemies.atlachNacha
+          , Enemies.legsOfAtlachNacha_347
+          , Enemies.legsOfAtlachNacha_348
+          , Enemies.legsOfAtlachNacha_349
+          , Enemies.legsOfAtlachNacha_350
+          ]
 
-      for_ atlachNacha $ \part ->
-        push . toMessage =<< createEnemy part Global
+      case locationIds of
+        _ :| [loc2, _, loc4, _, loc3, _, loc1] -> do
+          for_ (zip atlachNacha [Global, AtLocation loc1, AtLocation loc2, AtLocation loc3, AtLocation loc4]) $ \(part, placement) ->
+            push . toMessage =<< createEnemy part placement
+        _ -> error "wrong number of locations"
 
       push
         $ SetLayout

@@ -1912,6 +1912,8 @@ atlachNacha =
       { cdCardTraits = setFromList [AncientOne, Spider, Elite]
       , cdKeywords = singleton Keyword.Massive
       , cdVictoryPoints = Just 1
+      , cdDoubleSided = True
+      , cdAlternateCardCodes = ["06346b"]
       }
 
 legsOfAtlachNacha_347 :: CardDef

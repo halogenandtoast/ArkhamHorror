@@ -137,7 +137,7 @@ const enemies = computed(() => {
   const enemyIds = props.location.enemies;
 
   return enemyIds
-    .filter((e) => props.game.enemies[e].placement.tag === 'OtherPlacement')
+    .filter((e) => props.game.enemies[e].placement.tag === 'OtherPlacement' && props.game.enemies[e].asSelfLocation === null)
 })
 
 const blocked = computed(() => {

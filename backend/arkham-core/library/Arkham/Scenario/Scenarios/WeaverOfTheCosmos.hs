@@ -52,10 +52,36 @@ instance HasChaosTokenValue WeaverOfTheCosmos where
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
+  [ PlusOne
+  , Zero
+  , Zero
+  , MinusOne
+  , MinusOne
+  , MinusOne
+  , MinusTwo
+  , MinusTwo
+  , MinusThree
+  , MinusFour
+  , Skull
+  , Skull
+  , Skull
+  , Cultist
+  , ElderThing
+  , ElderThing
+  , AutoFail
+  , ElderSign
+  ]
+
 instance RunMessage WeaverOfTheCosmos where
   runMessage msg s@(WeaverOfTheCosmos attrs) = runQueueT $ case msg of
     PreScenarioSetup -> do
       story $ i18nWithTitle "dreamEaters.weaverOfTheCosmos.intro"
+      pure s
+    StandaloneSetup -> do
+      record RandolphDidNotSurviveTheDescent
+      setChaosTokens standaloneChaosTokens
       pure s
     Setup -> runScenarioSetup WeaverOfTheCosmos attrs do
       gather Set.WeaverOfTheCosmos

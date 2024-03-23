@@ -26,6 +26,7 @@ export type Enemy = {
   sanityDamage: number;
   health: GameValue | null;
   meta: any;
+  flipped: boolean;
 }
 
 type DamageAssignment = { damageAssignmentAmount: number }
@@ -66,5 +67,6 @@ export const enemyDecoder = JsonDecoder.object<Enemy>({
   placement: placementDecoder,
   keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
   modifiers: JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]'),
-  meta: JsonDecoder.succeed
+  meta: JsonDecoder.succeed,
+  flipped: JsonDecoder.boolean
 }, 'Enemy');

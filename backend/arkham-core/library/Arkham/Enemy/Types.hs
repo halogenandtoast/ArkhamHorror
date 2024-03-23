@@ -199,6 +199,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             , enemyAttacks = InvestigatorEngagedWith (EnemyWithId eid)
             , enemyUnableToSpawn = DiscardIfUnableToSpawn
             , enemyMeta = Null
+            , enemyFlipped = False
             }
     }
 

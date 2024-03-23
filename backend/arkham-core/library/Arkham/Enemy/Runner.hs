@@ -643,6 +643,11 @@ instance RunMessage EnemyAttrs where
             ]
       pure a
     EnemyEvaded iid eid | eid == enemyId -> do
+      whenWindow <- checkWindows [mkWhen $ Window.EnemyEvaded iid enemyId]
+      afterWindow <- checkWindows [mkAfter $ Window.EnemyEvaded iid enemyId]
+      pushAll [whenWindow, Do msg, afterWindow]
+      pure a
+    Do (EnemyEvaded iid eid) | eid == enemyId -> do
       case enemyPlacement of
         AsSwarm eid' _ -> do
           push $ EnemyEvaded iid eid'

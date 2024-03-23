@@ -841,9 +841,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       damage <- damageValueFor 1 iid DamageForEnemy
       push $ EnemyDamage eid $ attack source damage
     pure a
-  EnemyEvaded iid eid | iid == investigatorId -> do
-    push =<< checkWindows [mkAfter (Window.EnemyEvaded iid eid)]
-    pure a
   ChooseEvadeEnemy iid source mTarget skillType enemyMatcher isAction | iid == investigatorId -> do
     modifiers <- getModifiers (InvestigatorTarget iid)
     let

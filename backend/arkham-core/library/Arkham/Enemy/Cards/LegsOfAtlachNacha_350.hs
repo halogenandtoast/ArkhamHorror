@@ -22,7 +22,7 @@ newtype LegsOfAtlachNacha_350 = LegsOfAtlachNacha_350 EnemyAttrs
 
 instance HasModifiersFor LegsOfAtlachNacha_350 where
   getModifiersFor target (LegsOfAtlachNacha_350 attrs) | attrs `is` target = do
-    x <- field LocationShroud =<< selectJust (locationWithEnemy attrs)
+    x <- maybe (pure 0) (field LocationShroud) =<< selectOne (locationWithEnemy attrs)
     pure $ toModifiers attrs [CannotMakeAttacksOfOpportunity, DoNotExhaustEvaded, Mod.EnemyFight x]
   getModifiersFor _ _ = pure []
 
@@ -50,6 +50,6 @@ instance RunMessage LegsOfAtlachNacha_350 where
         | iid' <- iids
         ]
       pure e
-    Msg.EnemyEvaded _ eid | eid == attrs.id -> do
+    Do (Msg.EnemyEvaded _ eid) | eid == attrs.id -> do
       pure e
     _ -> LegsOfAtlachNacha_350 <$> lift (runMessage msg attrs)

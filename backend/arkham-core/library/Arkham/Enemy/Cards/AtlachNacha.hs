@@ -16,7 +16,6 @@ import Arkham.Matcher
 import Arkham.Matcher qualified as Match
 import Arkham.Message qualified as Msg
 import Arkham.Placement
-import Data.Aeson (Result (..))
 
 newtype Meta = Meta {rotation :: Int}
   deriving stock (Show, Eq, Generic)
@@ -62,11 +61,7 @@ instance RunMessage AtlachNacha where
         [targetLabel lid [PlaceEnemy attrs.id $ AtLocation lid] | lid <- lids]
       pure $ AtlachNacha $ attrs & asSelfLocationL .~ Nothing & flippedL .~ True
     HandleAbilityOption _ (isSource attrs -> True) n -> do
-      let
-        Meta m =
-          case fromJSON @Meta attrs.meta of
-            Success a -> a
-            Error _ -> Meta 0
+      let Meta m = toResult attrs.meta
       pure $ AtlachNacha $ setMeta @Meta (Meta ((m + (45 * n)) `mod` 360)) attrs
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       lid <- selectJust $ locationWithEnemy attrs.id
@@ -85,6 +80,6 @@ instance RunMessage AtlachNacha where
         | iid' <- iids
         ]
       pure e
-    Msg.EnemyEvaded _ eid | eid == attrs.id -> do
+    Do (Msg.EnemyEvaded _ eid) | eid == attrs.id -> do
       pure e
     _ -> AtlachNacha <$> lift (runMessage msg attrs)

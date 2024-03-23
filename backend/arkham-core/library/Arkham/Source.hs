@@ -155,6 +155,11 @@ isProxyAbilitySource :: Sourceable a => a -> Int -> Source -> Bool
 isProxyAbilitySource a idx (AbilitySource (ProxySource _ b) idx') | idx == idx' = isSource a b
 isProxyAbilitySource _ _ _ = False
 
+pattern CultistEffect :: Source
+pattern CultistEffect <- ChaosTokenEffectSource Arkham.ChaosToken.Cultist
+  where
+    CultistEffect = ChaosTokenEffectSource Arkham.ChaosToken.Cultist
+
 pattern TabletEffect :: Source
 pattern TabletEffect <- ChaosTokenEffectSource Tablet
   where

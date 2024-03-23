@@ -12,6 +12,7 @@ import Arkham.Enemy.Runner as X (
   cardCodeL,
   enemy,
   enemyWith,
+  flippedL,
   is,
   push,
   setMeta,

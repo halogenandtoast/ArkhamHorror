@@ -4,17 +4,24 @@ module Arkham.Scenario.Scenarios.WeaverOfTheCosmos (
 ) where
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Attack
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Log (getRecordCount)
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTarget)
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types (Field (..))
+import Arkham.Matcher
 import Arkham.Scenario.Import.Lifted
+import Arkham.Trait (Trait (AncientOne, Spider))
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype WeaverOfTheCosmos = WeaverOfTheCosmos ScenarioAttrs
@@ -36,10 +43,13 @@ weaverOfTheCosmos difficulty =
 
 instance HasChaosTokenValue WeaverOfTheCosmos where
   getChaosTokenValue iid tokenFace (WeaverOfTheCosmos attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
+    Skull -> do
+      maxDoom <- fieldMax LocationDoom Anywhere
+      totalDoom <- selectSum LocationDoom Anywhere
+      pure $ toChaosTokenValue attrs Skull maxDoom totalDoom
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Tablet -> pure $ ChaosTokenValue Tablet $ byDifficulty attrs ZeroModifier (NegativeModifier 1)
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage WeaverOfTheCosmos where
@@ -110,4 +120,28 @@ instance RunMessage WeaverOfTheCosmos where
            , Enemies.legsOfAtlachNacha_350
            , Treacheries.theSpinnerInDarkness
            ]
+    ResolveChaosToken _ Cultist iid -> do
+      push $ DrawAnotherChaosToken iid
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Cultist -> do
+          mEnemy <- selectOne $ enemyAtLocationWith iid <> EnemyWithTrait AncientOne
+          for_ mEnemy \enemy ->
+            push $ InitiateEnemyAttack $ enemyAttack enemy CultistEffect iid
+        ElderThing -> void $ runMaybeT do
+          Action.Fight <- MaybeT getSkillTestAction
+          EnemyTarget eid <- MaybeT getSkillTestTarget
+          guardM (lift $ eid <=~> EnemyWithTrait Spider)
+          lid <- MaybeT $ getMaybeLocation iid
+          lift (placeTokens ElderThingEffect lid #doom 1)
+        _ -> pure ()
+      pure s
+    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
+      case chaosTokenFace token of
+        Tablet | n >= 2 -> do
+          mlid <- getMaybeLocation iid
+          for_ mlid \lid -> removeTokens TabletEffect lid #doom 1
+        _ -> pure ()
+      pure s
     _ -> WeaverOfTheCosmos <$> lift (runMessage msg attrs)

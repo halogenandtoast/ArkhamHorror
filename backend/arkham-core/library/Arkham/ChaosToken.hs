@@ -223,6 +223,9 @@ isNonNegativeChaosToken = \case
   BlessToken -> False
   CurseToken -> False
 
+isNegativeChaosToken :: ChaosTokenFace -> Bool
+isNegativeChaosToken = not . isNonNegativeChaosToken
+
 -- only for the printed value and should not be used in scenario
 -- mainly used for the JudgementXX Tarot Card
 chaosTokenToFaceValue :: ChaosTokenFace -> Int

@@ -52,6 +52,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyAttacks :: InvestigatorMatcher
   , enemyUnableToSpawn :: UnableToSpawn
   , enemyMeta :: Value
+  , enemyFlipped :: Bool
   }
   deriving stock (Show, Eq, Generic)
 
@@ -115,6 +116,7 @@ instance FromJSON EnemyAttrs where
     enemyAttacks <- o .:? "attacks" .!= InvestigatorEngagedWith (EnemyWithId enemyId)
     enemyUnableToSpawn <- o .:? "unableToSpawn" .!= DiscardIfUnableToSpawn
     enemyMeta <- o .:? "meta" .!= Null
+    enemyFlipped <- o .:? "flipped" .!= False
     pure EnemyAttrs {..}
 
 instance Be EnemyAttrs EnemyMatcher where

@@ -5,6 +5,8 @@ module Arkham.Treachery.Cards.CaughtInAWeb (
 where
 
 import Arkham.Helpers.Modifiers
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -17,7 +19,8 @@ caughtInAWeb = treachery CaughtInAWeb Cards.caughtInAWeb
 
 instance HasModifiersFor CaughtInAWeb where
   getModifiersFor (InvestigatorTarget iid) (CaughtInAWeb attrs) | treacheryOnInvestigator iid attrs = do
-    pure $ toModifiers attrs [SkillModifier #agility (-1)]
+    alreadyMoved <- fieldMap InvestigatorActionsTaken (any (elem #move)) iid
+    pure $ toModifiers attrs $ SkillModifier #agility (-1) : [CannotTakeAction #move | alreadyMoved]
   getModifiersFor _ _ = pure []
 
 instance RunMessage CaughtInAWeb where

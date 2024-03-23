@@ -23,6 +23,7 @@ import Arkham.Location.Runner as X (
   pattern FailedThisSkillTestBy,
   pattern PassedThisSkillTest,
   pattern PassedThisSkillTestBy,
+  pattern PlaceDoom,
   pattern UseThisAbility,
  )
 import Arkham.Message.Lifted as X

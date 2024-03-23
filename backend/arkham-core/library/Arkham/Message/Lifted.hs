@@ -305,6 +305,10 @@ placeClues
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
 placeClues source target n = push $ PlaceClues (toSource source) (toTarget target) n
 
+placeDoom
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
+placeDoom source target n = push $ PlaceDoom (toSource source) (toTarget target) n
+
 placeTokens
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
 placeTokens source lid token n = push $ PlaceTokens (toSource source) (toTarget lid) token n

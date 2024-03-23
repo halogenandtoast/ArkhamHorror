@@ -4,9 +4,11 @@ module Arkham.Location.Cards.TheGreatWebWebStairs (
 )
 where
 
+import Arkham.Ability
 import Arkham.Direction
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
 
 newtype TheGreatWebWebStairs = TheGreatWebWebStairs LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -23,8 +25,13 @@ theGreatWebWebStairs =
 
 instance HasAbilities TheGreatWebWebStairs where
   getAbilities (TheGreatWebWebStairs attrs) =
-    extendRevealed attrs []
+    extendRevealed
+      attrs
+      [forcedAbility attrs 1 $ RevealLocation #after Anyone $ be attrs]
 
 instance RunMessage TheGreatWebWebStairs where
-  runMessage msg (TheGreatWebWebStairs attrs) = runQueueT $ case msg of
+  runMessage msg l@(TheGreatWebWebStairs attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      placeTokens (attrs.ability 1) attrs #doom 1
+      pure l
     _ -> TheGreatWebWebStairs <$> lift (runMessage msg attrs)

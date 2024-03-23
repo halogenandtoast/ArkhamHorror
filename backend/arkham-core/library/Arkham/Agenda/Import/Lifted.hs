@@ -6,10 +6,14 @@ import Arkham.Agenda.Runner as X (
   AgendaSide (..),
   IsAgenda,
   agenda,
+  agendaWith,
+  is,
   isSide,
   onSide,
   push,
   pushAll,
+  removeDoomMatchersL,
+  pattern R2,
  )
 import Arkham.Classes as X
 import Arkham.GameValue as X

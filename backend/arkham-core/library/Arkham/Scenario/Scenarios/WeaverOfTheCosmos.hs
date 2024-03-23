@@ -134,11 +134,11 @@ instance RunMessage WeaverOfTheCosmos where
           EnemyTarget eid <- MaybeT getSkillTestTarget
           guardM (lift $ eid <=~> EnemyWithTrait Spider)
           lid <- MaybeT $ getMaybeLocation iid
-          lift (placeTokens ElderThingEffect lid #doom 1)
+          lift $ placeTokens ElderThingEffect lid #doom 1
         _ -> pure ()
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
-      case chaosTokenFace token of
+      case token.face of
         Tablet | n >= 2 -> do
           mlid <- getMaybeLocation iid
           for_ mlid \lid -> removeTokens TabletEffect lid #doom 1

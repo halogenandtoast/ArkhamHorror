@@ -30,6 +30,8 @@ import Arkham.Treachery.Runner as X (
   treachery,
   treacheryInHandOf,
   treacheryOn,
+  treacheryOnEnemy,
+  treacheryOnInvestigator,
   treacheryWith,
  )
 

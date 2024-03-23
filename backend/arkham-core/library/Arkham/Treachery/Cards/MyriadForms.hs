@@ -39,7 +39,7 @@ instance RunMessage MyriadForms where
       isNyarlathotep <- fieldMap EnemyName (`hasTitle` "Nyarlathotep") (attackEnemy details)
       let meta = toResult @Bool attrs.meta
       pure $ MyriadForms $ setMeta @Bool (meta || isNyarlathotep) attrs
-    DoStep 1 (Revelation iid (isSource attrs -> True)) -> do
+    DoStep 1 (Revelation _iid (isSource attrs -> True)) -> do
       unless (toResult @Bool attrs.meta) $ gainSurge attrs
       pure t
     _ -> MyriadForms <$> lift (runMessage msg attrs)

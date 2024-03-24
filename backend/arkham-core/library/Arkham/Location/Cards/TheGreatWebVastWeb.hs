@@ -42,14 +42,14 @@ instance RunMessage TheGreatWebVastWeb where
       let
         acrossLabel =
           case attrs.label of
-            "theGreatWeb1" -> "theGreatWeb5"
-            "theGreatWeb2" -> "theGreatWeb6"
-            "theGreatWeb3" -> "theGreatWeb7"
             "theGreatWeb4" -> "theGreatWeb8"
-            "theGreatWeb5" -> "theGreatWeb1"
-            "theGreatWeb6" -> "theGreatWeb2"
-            "theGreatWeb7" -> "theGreatWeb3"
+            "theGreatWeb5" -> "theGreatWeb9"
+            "theGreatWeb6" -> "theGreatWeb10"
+            "theGreatWeb7" -> "theGreatWeb11"
             "theGreatWeb8" -> "theGreatWeb4"
+            "theGreatWeb9" -> "theGreatWeb5"
+            "theGreatWeb10" -> "theGreatWeb6"
+            "theGreatWeb11" -> "theGreatWeb7"
             _ -> error "invalid label"
       acrossLocation <- selectJust $ LocationWithLabel acrossLabel
       push $ Move $ move (attrs.ability 1) iid acrossLocation

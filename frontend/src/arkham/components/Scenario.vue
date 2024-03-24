@@ -43,46 +43,47 @@ const debug = useDebug()
 const needsInit = ref(true)
 
 onMounted(() => {
-  waitForImagesToLoad(() => {
-    rotateImages(true);
-  })
+  if(props.scenario.id === "c06333") {
+    waitForImagesToLoad(() => {
+      rotateImages(true);
+    })
+  }
 });
 
 function waitForImagesToLoad(callback) {
-  const images = document.querySelectorAll('img');
-  const totalImages = images.length;
-  let loadedCount = 0;
+  const images = document.querySelectorAll('img')
+  const totalImages = images.length
+  let loadedCount = 0
 
-  // Check if there are no images
   if (totalImages === 0) {
-    callback(); // Handle case with no images
-    return;
+    callback()
+    return
   }
 
   const checkIfAllLoaded = () => {
-    loadedCount++;
+    loadedCount++
     if (loadedCount === totalImages) {
-      callback(); // All images have loaded
+      callback()
     }
   };
 
   images.forEach(image => {
     if (image.complete) {
-      // Image is already loaded
-      checkIfAllLoaded();
+      checkIfAllLoaded()
     } else {
-      // Add load event listener for images that are not yet loaded
-      image.addEventListener('load', checkIfAllLoaded);
-      image.addEventListener('error', checkIfAllLoaded); // Handle image load errors
+      image.addEventListener('load', checkIfAllLoaded)
+      image.addEventListener('error', checkIfAllLoaded)
     }
   });
 }
 
 onUpdated(() => {
-  rotateImages(needsInit.value);
+  if(props.scenario.id === "c06333") {
+    rotateImages(needsInit.value)
+  }
 });
 
-const previousRotation = ref(0);
+const previousRotation = ref(0)
 const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
 
 function rotateImages(init) {
@@ -348,7 +349,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 </script>
 
 <template>
-  <div v-if="!gameOver" id="scenario" class="scenario">
+  <div v-if="!gameOver" id="scenario" class="scenario" :data-scenario="scenario.id">
     <div class="scenario-body">
       <StatusBar :game="game" :playerId="playerId" @choose="choose" />
       <CardRow
@@ -992,8 +993,8 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   margin-inline: 10px;
 }
 
-.location-cards:has([data-label=atlachNacha]):deep(.location-container) {
-  margin: 20px !important;
+[data-scenario='c06333'] .location-cards:deep(.location-container) {
+margin: 20px !important;
 }
 
 </style>

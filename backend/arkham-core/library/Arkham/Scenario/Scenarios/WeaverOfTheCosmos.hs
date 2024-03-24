@@ -1,3 +1,5 @@
+{-# LANGUAGE MultiWayIf #-}
+
 module Arkham.Scenario.Scenarios.WeaverOfTheCosmos (
   WeaverOfTheCosmos (..),
   weaverOfTheCosmos,
@@ -7,12 +9,14 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Attack
+import Arkham.Campaigns.TheDreamEaters.Helpers
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Exception
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Log (getRecordCount)
 import Arkham.Helpers.Scenario
@@ -20,6 +24,7 @@ import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTarget)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Trait (Trait (AncientOne, Spider))
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -169,5 +174,50 @@ instance RunMessage WeaverOfTheCosmos where
           mlid <- getMaybeLocation iid
           for_ mlid \lid -> removeTokens TabletEffect lid #doom 1
         _ -> pure ()
+      pure s
+    ScenarioResolution r -> do
+      case r of
+        NoResolution -> do
+          story $ i18nWithTitle "dreamEaters.weaverOfTheCosmos.noResolution"
+          record TheBridgeWasCompleted
+          eachInvestigator $ kill attrs
+          whenM getIsTheWebOfDreams $ push GameOver
+          endOfScenario
+        Resolution 1 -> do
+          story $ i18n "dreamEaters.weaverOfTheCosmos.resolution1"
+          record TheBridgeWasDestroyed
+          allGainXpWithBonus attrs 5
+          foundAWayOut <- getHasRecord TheInvestigatorsFoundAWayOutOfTheUnderworld
+          trapped <- getHasRecord TheInvestigatorsAreTrappedInAtlachNacha'sRealm
+          if
+            | foundAWayOut -> push R3
+            | trapped -> push R4
+            | otherwise -> push R5
+        Resolution 2 -> do
+          story $ i18n "dreamEaters.weaverOfTheCosmos.resolution2"
+          record TheBridgeWasCompleted
+          eachInvestigator $ push . DrivenInsane
+          whenM getIsTheWebOfDreams $ push GameOver
+          endOfScenario
+        Resolution 3 -> do
+          story $ i18n "dreamEaters.weaverOfTheCosmos.resolution3"
+          record TheInvestigatorsReturnedToReality
+          eachInvestigator (`sufferPhysicalTrauma` 2)
+          whenM getIsTheDreamQuest $ push GameOver
+          endOfScenario
+        Resolution 4 -> do
+          story $ i18n "dreamEaters.weaverOfTheCosmos.resolution4"
+          record TheInvestigatorsNeverEscaped
+          eachInvestigator $ push . DrivenInsane
+          whenM getIsTheDreamQuest $ push GameOver
+          endOfScenario
+        Resolution 5 -> do
+          story $ i18n "dreamEaters.weaverOfTheCosmos.resolution5"
+          record TheInvestigatorsAreStillInTheDreamlands
+          eachInvestigator (`sufferPhysicalTrauma` 2)
+          whenM getIsTheDreamQuest $ push GameOver
+          endOfScenario
+        other -> throw $ UnknownResolution other
+
       pure s
     _ -> WeaverOfTheCosmos <$> lift (runMessage msg attrs)

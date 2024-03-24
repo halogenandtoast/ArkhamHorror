@@ -259,6 +259,11 @@ data CampaignLogKey
   | TheDreamersStayedInTheDreamlandsForever
   | TheDreamersTraveledBeneathTheMonastery
   | TheInvestigatorsAreTrappedInAtlachNacha'sRealm
+  | TheBridgeWasCompleted
+  | TheBridgeWasDestroyed
+  | TheInvestigatorsReturnedToReality
+  | TheInvestigatorsNeverEscaped
+  | TheInvestigatorsAreStillInTheDreamlands
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

@@ -160,6 +160,9 @@ sufferTrauma iid physical mental = push $ SufferTrauma iid physical mental
 sufferMentalTrauma :: ReverseQueue m => InvestigatorId -> Int -> m ()
 sufferMentalTrauma iid mental = sufferTrauma iid 0 mental
 
+sufferPhysicalTrauma :: ReverseQueue m => InvestigatorId -> Int -> m ()
+sufferPhysicalTrauma iid physical = sufferTrauma iid physical 0
+
 gainXp
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 gainXp iid (toSource -> source) xp = push $ GainXP iid source xp

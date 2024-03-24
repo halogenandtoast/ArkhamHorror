@@ -40,20 +40,43 @@ export interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const debug = useDebug()
+const needsInit = ref(true)
 
 onMounted(() => {
-  rotateImages();
+  rotateImages(true);
 });
 
 onUpdated(() => {
-  rotateImages();
+  rotateImages(needsInit.value);
 });
 
 const previousRotation = ref(0);
+const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
 
-function rotateImages() {
+function rotateImages(init) {
   const atlachNacha = document.querySelector('[data-label=atlachNacha]')
+  const locationCards = document.querySelector('.location-cards')
   if (atlachNacha) {
+    needsInit.value = false
+    const inLocation = locationCards.querySelector('[data-label=atlachNacha]')
+
+    if (inLocation) {
+      ["legs1", "legs2", "legs3", "legs4"].forEach((legs) =>  {
+        const legsDiv = locationCards.querySelector(`[data-label=${legs}]`)
+        if (!legsDiv) {
+          legsSet.value = legsSet.value.filter(item => item !== legs);
+
+          const newDiv = document.createElement('div');
+          newDiv.setAttribute('data-label', legs); // Setting the data-label attribute
+          newDiv.style.width = '60px'; // Setting the width of the div
+          newDiv.style.height = '84px'; // Setting the width of the div
+          newDiv.style.gridArea = legs; // Assuming 'legs1' is a valid grid-area name
+
+          locationCards.appendChild(newDiv); // Append the new div to the parent container
+        }
+      })
+    }
+
     const degrees = parseFloat(atlachNacha.dataset.rotation) || 0
     const middleCardImg = atlachNacha.querySelector('img')
     const middleCardRect = atlachNacha.getBoundingClientRect()
@@ -61,17 +84,25 @@ function rotateImages() {
     const originX = middleCardImgRect.left + middleCardImgRect.width / 2 - middleCardRect.left
     const originY = middleCardImgRect.top + middleCardImgRect.height / 2 - middleCardRect.top
 
-    atlachNacha.style.transformOrigin = `${originX}px ${originY}px`
+    if (init) {
+      atlachNacha.style.transformOrigin = `${originX}px ${originY}px`
+    }
     atlachNacha.style.transition = 'none'
     atlachNacha.style.transform = `rotate(${previousRotation.value}deg)`
     const oX = middleCardImgRect.left + middleCardImgRect.width / 2
     const oY = middleCardImgRect.top + middleCardImgRect.height / 2
 
     document.querySelectorAll('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]').forEach((img) => {
-      const thisRect = img.getBoundingClientRect()
-      const thisX = thisRect.left
-      const thisY = thisRect.top
-      img.style.transformOrigin = `${oX - thisX}px ${oY - thisY}px`
+
+      if (init || !legsSet.value.includes(img.dataset.label)) {
+        if(!legsSet.value.includes(img.dataset.label)) {
+          legsSet.value = [...legsSet.value, img.dataset.label]
+        }
+        const thisRect = img.getBoundingClientRect()
+        const thisX = thisRect.left
+        const thisY = thisRect.top
+        img.style.transformOrigin = `${oX - thisX}px ${oY - thisY}px`
+      }
       img.style.transition = 'none'
       img.style.transform = `rotate(${previousRotation.value}deg)`
     });
@@ -146,7 +177,7 @@ const locationStyles = computed(() => {
   const { locationLayout } = props.scenario
   if (!locationLayout) return null
 
-  const cleaned = cleanLocationLayout(locationLayout)
+  const cleaned = locationLayout
   return {
     display: 'grid',
     'grid-template-areas': cleaned.map((row) => `"${row}"`).join(' '),

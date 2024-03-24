@@ -36,8 +36,12 @@ instance HasAbilities TheMoonsCore where
 
 instance RunMessage TheMoonsCore where
   runMessage msg a@(TheMoonsCore attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advanceVia #other attrs attrs
+      pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       placeSetAsideLocation_ Locations.cavernsBeneathTheMoonLightSide
+      placeSetAsideLocation_ Locations.lightSideOfTheMoon
       placeSetAsideLocation_ Locations.theWhiteShip
       advanceActDeck attrs
       pure a

@@ -19,7 +19,7 @@ inTheBellyOfTheMoonBeast =
     (1, A)
     InTheBellyOfTheMoonBeast
     Cards.inTheBellyOfTheMoonBeast
-    (Just $ GroupClueCost (PerPlayer 2) (locationIs Locations.cityOfTheMoonBeasts))
+    (Just $ GroupClueCost (PerPlayer 3) (locationIs Locations.cityOfTheMoonBeasts))
 
 instance RunMessage InTheBellyOfTheMoonBeast where
   runMessage msg a@(InTheBellyOfTheMoonBeast attrs) = runQueueT $ case msg of

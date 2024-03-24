@@ -993,6 +993,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   margin-inline: 10px;
 }
 
+// We lower the margin so things line up a bit better.
 [data-scenario='c06333'] .location-cards:deep(.location-container) {
 margin: 20px !important;
 }

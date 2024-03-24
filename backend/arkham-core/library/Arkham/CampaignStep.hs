@@ -13,6 +13,7 @@ data CampaignStep
   | InterludeStepPart Int (Maybe InterludeKey) Int
   | UpgradeDeckStep CampaignStep
   | EpilogueStep
+  | EpilogueStepPart Int
   | InvestigatorCampaignStep InvestigatorId CampaignStep
   | ResupplyPoint
   deriving stock (Show, Eq, Generic)

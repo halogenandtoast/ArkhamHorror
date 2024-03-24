@@ -11,11 +11,14 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Modifiers qualified as Msg
+import Arkham.Label
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Matcher qualified as Match
 import Arkham.Message qualified as Msg
+import Arkham.Movement
 import Arkham.Placement
+import Arkham.Projection
 
 newtype Meta = Meta {rotation :: Int}
   deriving stock (Show, Eq, Generic)
@@ -43,6 +46,19 @@ instance HasModifiersFor AtlachNacha where
         else [DoNotExhaustEvaded]
   getModifiersFor _ _ = pure []
 
+rotateLocation :: Int -> Text -> Text
+rotateLocation 0 txt = txt
+rotateLocation n txt = case txt of
+  "theGreatWeb4" -> rotateLocation (n - 1) "theGreatWeb5"
+  "theGreatWeb5" -> rotateLocation (n - 1) "theGreatWeb6"
+  "theGreatWeb6" -> rotateLocation (n - 1) "theGreatWeb7"
+  "theGreatWeb7" -> rotateLocation (n - 1) "theGreatWeb8"
+  "theGreatWeb8" -> rotateLocation (n - 1) "theGreatWeb9"
+  "theGreatWeb9" -> rotateLocation (n - 1) "theGreatWeb10"
+  "theGreatWeb10" -> rotateLocation (n - 1) "theGreatWeb11"
+  "theGreatWeb11" -> rotateLocation (n - 1) "theGreatWeb4"
+  _ -> error "Invalid"
+
 instance HasAbilities AtlachNacha where
   getAbilities (AtlachNacha attrs) =
     extend
@@ -62,6 +78,12 @@ instance RunMessage AtlachNacha where
       pure $ AtlachNacha $ attrs & asSelfLocationL .~ Nothing & flippedL .~ True
     HandleAbilityOption _ (isSource attrs -> True) n -> do
       let Meta m = toResult attrs.meta
+      legs <- select $ EnemyWithTitle "Legs of Atlach-Nacha"
+      for_ legs \leg -> do
+        label <- field LocationLabel =<< selectJust (locationWithEnemy leg)
+        let newLabel = mkLabel $ rotateLocation n label
+        newLocation <- selectJust (LocationWithLabel newLabel)
+        push $ Move $ move (toSource attrs) leg newLocation
       pure $ AtlachNacha $ setMeta @Meta (Meta ((m + (45 * n)) `mod` 360)) attrs
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       lid <- selectJust $ locationWithEnemy attrs.id

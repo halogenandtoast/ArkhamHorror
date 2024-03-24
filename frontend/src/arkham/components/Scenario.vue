@@ -43,8 +43,40 @@ const debug = useDebug()
 const needsInit = ref(true)
 
 onMounted(() => {
-  rotateImages(true);
+  waitForImagesToLoad(() => {
+    rotateImages(true);
+  })
 });
+
+function waitForImagesToLoad(callback) {
+  const images = document.querySelectorAll('img');
+  const totalImages = images.length;
+  let loadedCount = 0;
+
+  // Check if there are no images
+  if (totalImages === 0) {
+    callback(); // Handle case with no images
+    return;
+  }
+
+  const checkIfAllLoaded = () => {
+    loadedCount++;
+    if (loadedCount === totalImages) {
+      callback(); // All images have loaded
+    }
+  };
+
+  images.forEach(image => {
+    if (image.complete) {
+      // Image is already loaded
+      checkIfAllLoaded();
+    } else {
+      // Add load event listener for images that are not yet loaded
+      image.addEventListener('load', checkIfAllLoaded);
+      image.addEventListener('error', checkIfAllLoaded); // Handle image load errors
+    }
+  });
+}
 
 onUpdated(() => {
   rotateImages(needsInit.value);
@@ -960,15 +992,8 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   margin-inline: 10px;
 }
 
-</style>
-
-<style>
-@keyframes rotateInfinite {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.location-cards:has([data-label=atlachNacha]):deep(.location-container) {
+  margin: 20px !important;
 }
+
 </style>

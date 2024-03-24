@@ -167,6 +167,7 @@ const keys = computed(() => props.location.keys)
 const clues = computed(() => props.location.tokens[TokenType.Clue])
 const doom = computed(() => props.location.tokens[TokenType.Doom])
 const resources = computed(() => props.location.tokens[TokenType.Resource])
+const depth = computed(() => props.location.tokens[TokenType.Depth])
 const breaches = computed(() => {
   const {breaches} = props.location
   if (breaches) {
@@ -217,6 +218,7 @@ const debug = useDebug()
           <PoolItem v-if="horror && horror > 0" type="horror" :amount="horror" />
           <PoolItem v-if="damage && damage > 0" type="health" :amount="damage" />
           <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
+          <PoolItem v-if="depth && depth > 0" type="resource" :amount="depth" />
           <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
           <PoolItem v-if="location.brazier && location.brazier === 'Lit'" type="resource" :amount="1" />
           <PoolItem v-if="location.cardsUnderneath.length > 0" type="card" :amount="location.cardsUnderneath.length" />

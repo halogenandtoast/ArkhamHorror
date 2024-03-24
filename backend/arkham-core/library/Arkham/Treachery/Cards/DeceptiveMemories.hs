@@ -1,6 +1,7 @@
 module Arkham.Treachery.Cards.DeceptiveMemories (deceptiveMemories, DeceptiveMemories (..)) where
 
 import Arkham.Ability
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
@@ -17,7 +18,9 @@ deceptiveMemories = treachery DeceptiveMemories Cards.deceptiveMemories
 
 instance HasAbilities DeceptiveMemories where
   getAbilities (DeceptiveMemories a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $ forced $ EntersThreatArea #after You AnyCard
+    [ restrictedAbility a 1 (InThreatAreaOf You)
+        $ forced
+        $ EntersThreatArea #after You (NotCard $ CardWithId $ toCardId a)
     , restrictedAbility a 2 Here actionAbility
     ]
 

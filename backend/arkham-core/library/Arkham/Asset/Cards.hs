@@ -3733,6 +3733,7 @@ theCaptain =
     { cdCardTraits = setFromList [Ally, Dreamer]
     , cdUnique = True
     , cdCost = Nothing
+    , cdCardType = EncounterAssetType
     }
 
 dreamDiaryDreamsOfAnExplorer3 :: CardDef

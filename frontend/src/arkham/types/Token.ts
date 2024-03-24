@@ -2,7 +2,7 @@ import { JsonDecoder } from 'ts.data.json';
 
 // data Token = Resource | Damage | Horror | Clue | Doom | TokenAs Text Token
 
-export type Token = 'Doom' | 'Clue' | 'Resource' | 'Damage' | 'Horror' | 'LostSoul' | 'Bounty' | 'Offering' | 'AlarmLevel';
+export type Token = 'Doom' | 'Clue' | 'Resource' | 'Damage' | 'Horror' | 'LostSoul' | 'Bounty' | 'Offering' | 'Depth' | 'AlarmLevel';
 
 export const TokenType = {
   Doom: 'Doom',
@@ -13,6 +13,7 @@ export const TokenType = {
   LostSoul: 'LostSoul',
   Bounty: 'Bounty',
   Offering: 'Offering',
+  Depth: 'Depth',
   AlarmLevel: 'AlarmLevel',
 } as const;
 
@@ -25,6 +26,7 @@ export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>
   JsonDecoder.isExactly('LostSoul'),
   JsonDecoder.isExactly('Bounty'),
   JsonDecoder.isExactly('Offering'),
+  JsonDecoder.isExactly('Depth'),
   JsonDecoder.isExactly('AlarmLevel'),
 ], 'Token');
 

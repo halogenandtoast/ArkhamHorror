@@ -677,6 +677,7 @@ instance RunMessage TheDreamEaters where
         returned <- getHasRecord TheWebOfDreams TheInvestigatorsReturnedToReality
         neverEscaped <- getHasRecord TheWebOfDreams TheInvestigatorsNeverEscaped
         stillInDreamlands <- getHasRecord TheWebOfDreams TheInvestigatorsAreStillInTheDreamlands
+        print c
         if
           | invasionHasBegun ->
               if

@@ -287,6 +287,7 @@ allPlayerAssetCards =
       , grounded1
       , guardDog
       , guardDog2
+      , guardianAngel
       , guidingSpirit1
       , hallowedMirror
       , hallowedMirror3
@@ -3975,6 +3976,14 @@ scavenging2 =
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = setFromList [Talent]
     , cdLevel = 2
+    }
+
+guardianAngel :: CardDef
+guardianAngel =
+  (asset "07006" "Guardian Angel" 2 Neutral)
+    { cdCardTraits = setFromList [Ritual, Blessed]
+    , cdSkills = [#willpower, #combat, #wild]
+    , cdDeckRestrictions = [Signature "07001"]
     }
 
 showmanship :: CardDef

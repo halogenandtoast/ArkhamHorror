@@ -645,7 +645,8 @@ allAssets =
     , SomeAssetCard scavenging2
     , -- The Innsmouth Conspiracy
       --- signature [tic]
-      SomeAssetCard showmanship
+      SomeAssetCard guardianAngel
+    , SomeAssetCard showmanship
     , SomeAssetCard occultScraps
     , --- mystic [tic]
       SomeAssetCard swordCane

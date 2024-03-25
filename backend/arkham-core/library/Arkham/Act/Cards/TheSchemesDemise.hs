@@ -10,7 +10,6 @@ import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Message (Message (EnemyDamage))
 import Arkham.RequestedChaosTokenStrategy

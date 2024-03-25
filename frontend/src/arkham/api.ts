@@ -61,6 +61,12 @@ export const fetchCards = (includeEncounter = false): Promise<CardDef[]> => {
   .then((resp) => JsonDecoder.array(cardDefDecoder, 'ArkhamCardDef[]').decodeToPromise(resp.data));
 }
 
+export const fetchCard = (cardCode: string): Promise<CardDef> => {
+  return api
+  .get(`arkham/card/${cardCode}`)
+  .then((resp) => cardDefDecoder.decodeToPromise(resp.data));
+}
+
 export const fetchInvestigators = (): Promise<CardDef[]> => api
   .get('arkham/investigators')
   .then((resp) => JsonDecoder.array(cardDefDecoder, 'CardDef[]').decodeToPromise(resp.data));

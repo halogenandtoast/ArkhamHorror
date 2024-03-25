@@ -20,8 +20,7 @@ export const logContentsDecoder = JsonDecoder.object<LogContents>({
   recorded: JsonDecoder.array<string>(JsonDecoder.string, 'recorded[]'),
   recordedSets: JsonDecoder.array<[string, any[]]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.array(someRecordableDecoder.map((res) => res.recordVal), 'SomeRecorded[]')], '[string, somerecorded]'), '[string, any][]').map<Record<string, any>>(res => { // eslint-disable-line
     return res.reduce<Record<string, any>>((acc, [k, v]) => { //eslint-disable-line
-      acc[k] = v
-      return acc
+      return {[k]: v, ...acc}
     }, {})
   }),
   recordedCounts: JsonDecoder.array<[string, number]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.number], '[string, number]'), '[string, number][]'),

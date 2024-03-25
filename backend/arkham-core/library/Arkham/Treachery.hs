@@ -420,6 +420,9 @@ allTreacheries =
       SomeTreacheryCard theSpinnerInDarkness
     , SomeTreacheryCard caughtInAWeb
     , SomeTreacheryCard endlessWeaving
+    , -- The Innsmouth Conspiracy
+      -- signature
+      SomeTreacheryCard crisisOfFaith
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

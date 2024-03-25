@@ -70,6 +70,7 @@ allPlayerTreacheryCards =
       , caughtRedHanded
       , chronophobia
       , coverUp
+      , crisisOfFaith
       , crisisOfIdentity
       , curseOfTheRougarou
       , damned
@@ -2011,6 +2012,12 @@ endlessWeaving :: CardDef
 endlessWeaving =
   (treachery "06354" "Endless Weaving" WeaverOfTheCosmos 3)
     { cdCardTraits = singleton Scheme
+    }
+
+crisisOfFaith :: CardDef
+crisisOfFaith =
+  (weakness "07007" "Crisis of Faith")
+    { cdCardTraits = singleton Madness
     }
 
 theHarbinger :: CardDef

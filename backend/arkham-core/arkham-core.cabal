@@ -576,6 +576,7 @@ library
       Arkham.Asset.Cards.Grounded1
       Arkham.Asset.Cards.GuardDog
       Arkham.Asset.Cards.GuardDog2
+      Arkham.Asset.Cards.GuardianAngel
       Arkham.Asset.Cards.GuidingSpirit1
       Arkham.Asset.Cards.HallowedMirror
       Arkham.Asset.Cards.HallowedMirror3
@@ -1617,6 +1618,7 @@ library
       Arkham.Investigator.Cards.RitaYoung
       Arkham.Investigator.Cards.RolandBanks
       Arkham.Investigator.Cards.SefinaRousseau
+      Arkham.Investigator.Cards.SisterMary
       Arkham.Investigator.Cards.SkidsOToole
       Arkham.Investigator.Cards.StellaClark
       Arkham.Investigator.Cards.TommyMuldoon
@@ -2568,6 +2570,7 @@ library
       Arkham.Treachery.Cards.CrashingFloods
       Arkham.Treachery.Cards.CreepingDarkness
       Arkham.Treachery.Cards.CreepingPoison
+      Arkham.Treachery.Cards.CrisisOfFaith
       Arkham.Treachery.Cards.CrisisOfIdentity
       Arkham.Treachery.Cards.CruelInterrogations
       Arkham.Treachery.Cards.CryptChill

@@ -54,6 +54,7 @@ allInvestigatorCards =
       , tonyMorgan
       , lukeRobinson
       , patriceHathaway
+      , sisterMary
       , dexterDrake
       , normanWithers
       , nathanielCho
@@ -330,6 +331,14 @@ patriceHathaway =
     ("Patrice Hathaway" <:> "The Violinist")
     Survivor
     [Performer, Cursed]
+
+sisterMary :: CardDef
+sisterMary =
+  investigator
+    "07001"
+    ("Sister Mary" <:> "The Nun")
+    Guardian
+    [Believer, Blessed]
 
 dexterDrake :: CardDef
 dexterDrake =

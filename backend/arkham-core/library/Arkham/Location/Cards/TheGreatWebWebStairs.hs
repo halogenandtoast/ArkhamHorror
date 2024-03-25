@@ -31,7 +31,7 @@ instance HasAbilities TheGreatWebWebStairs where
 
 instance RunMessage TheGreatWebWebStairs where
   runMessage msg l@(TheGreatWebWebStairs attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
       placeTokens (attrs.ability 1) attrs #doom 1
       pure l
     _ -> TheGreatWebWebStairs <$> lift (runMessage msg attrs)

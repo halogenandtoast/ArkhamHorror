@@ -408,9 +408,12 @@ withInvestigatorConnectionData inner@(With target _) = case target of
         connectedLocationIds <- case myou of
           Nothing -> pure []
           Just _ -> do
-            location <- getLocation locationId
-            matcher <- getConnectedMatcher location
-            select (AccessibleLocation <> matcher)
+            mmlocation <- maybeLocation locationId
+            case mmlocation of
+              Just location -> do
+                matcher <- getConnectedMatcher location
+                select (AccessibleLocation <> matcher)
+              Nothing -> pure []
         pure
           $ inner
           `with` ConnectionData connectedLocationIds

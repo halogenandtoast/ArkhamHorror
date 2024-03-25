@@ -102,7 +102,7 @@ data DamageFor = DamageForEnemy | DamageForInvestigator
 
 damageValueFor :: HasGame m => Int -> InvestigatorId -> DamageFor -> m Int
 damageValueFor baseValue iid damageFor = do
-  modifiers <- traceShowId <$> getModifiers (InvestigatorTarget iid)
+  modifiers <- getModifiers (InvestigatorTarget iid)
   let baseValue' = if NoStandardDamage `elem` modifiers then 0 else baseValue
   pure $ foldr applyModifier baseValue' modifiers
  where
@@ -118,8 +118,7 @@ getHandSize attrs = do
   pure $ foldr (applyModifier ignoreReduction) 8 modifiers
  where
   applyModifier ignoreReduction (HandSize m) n
-    | m > 0 || not ignoreReduction =
-        max 0 (n + m)
+    | m > 0 || not ignoreReduction = max 0 (n + m)
   applyModifier _ _ n = n
 
 getInHandCount :: HasGame m => InvestigatorAttrs -> m Int

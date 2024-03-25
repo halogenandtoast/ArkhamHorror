@@ -5,6 +5,7 @@
 
 module Orphans where
 
+import Arkham.Card.CardCode
 import Arkham.Game
 import Arkham.Message
 import Control.Error.Util (hush)
@@ -47,6 +48,8 @@ instance PersistField [Message] where
 instance PathPiece UUID where
   toPathPiece = toUrlPiece
   fromPathPiece = hush . parseUrlPiece
+
+deriving newtype instance PathPiece CardCode
 
 instance PersistField UUID where
   toPersistValue u = PersistLiteral_ Escaped . BS8.pack . UUID.toString $ u

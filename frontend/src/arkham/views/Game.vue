@@ -346,7 +346,7 @@ provide('solo', solo)
           @choose="choose"
           @update="update"
         />
-        <div class="sidebar" v-if="game.scenario && game.gameState.tag === 'IsActive' || game.gameState.tag === 'IsOver'">
+        <div class="sidebar" v-if="game.scenario !== null && (game.gameState.tag === 'IsActive' || game.gameState.tag === 'IsOver')">
           <GameLog :game="game" :gameLog="gameLog" @undo="undo" />
           <router-link class="button-link" :to="`/games/${game.id}/log`" v-slot="{href, navigate}"
   >
@@ -359,7 +359,7 @@ provide('solo', solo)
           <p>Game over</p>
           <CampaignLog v-if="game !== null" :game="game" :cards="cards" />
         </div>
-        <div class="sidebar" v-if="!game.scenario">
+        <div class="sidebar" v-if="game.scenario === null">
           <GameLog :game="game" :gameLog="gameLog" @undo="undo" />
           <router-link class="button-link" :to="`/games/${game.id}/log`" v-slot="{href, navigate}">
             <button :href="href" @click="navigate">View Log</button>

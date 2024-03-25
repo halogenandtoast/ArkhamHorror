@@ -33,6 +33,7 @@ instance CardGen m => CardGen (QueueT msg m) where
   genEncounterCard = lift . genEncounterCard
   genPlayerCard = lift . genPlayerCard
   replaceCard cardId card = lift $ replaceCard cardId card
+  clearCardCache = lift clearCardCache
 
 newtype Queue msg = Queue {queueToRef :: IORef [msg]}
 

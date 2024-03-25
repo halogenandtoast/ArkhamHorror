@@ -81,7 +81,7 @@ setCampaignPart part c@(TheDreamEaters attrs) step =
               , campaignMeta =
                   toJSON
                     $ newMeta
-                      { otherCampaignAttrs = Just attrs
+                      { otherCampaignAttrs = Just $ attrs {campaignMeta = Null}
                       , currentCampaignPlayers = otherCampaignPlayers meta
                       , otherCampaignPlayers = mapFromList currentPlayers
                       }
@@ -317,7 +317,7 @@ instance RunMessage TheDreamEaters where
                             toJSON
                               $ meta
                                 { currentCampaignMode = Just TheDreamQuest
-                                , otherCampaignAttrs = Just attrs
+                                , otherCampaignAttrs = Just $ attrs {campaignMeta = Null}
                                 , currentCampaignPlayers = otherCampaignPlayers meta
                                 , otherCampaignPlayers = mapFromList currentPlayers
                                 }
@@ -350,7 +350,7 @@ instance RunMessage TheDreamEaters where
                             toJSON
                               $ meta
                                 { currentCampaignMode = Just TheWebOfDreams
-                                , otherCampaignAttrs = Just attrs
+                                , otherCampaignAttrs = Just $ attrs {campaignMeta = Null}
                                 , currentCampaignPlayers = otherCampaignPlayers meta
                                 , otherCampaignPlayers = mapFromList currentPlayers
                                 }

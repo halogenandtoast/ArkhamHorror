@@ -52,6 +52,7 @@ instance CardGen m => CardGen (ScenarioBuilderT m) where
   genEncounterCard = lift . genEncounterCard
   genPlayerCard = lift . genPlayerCard
   replaceCard cid = lift . replaceCard cid
+  clearCardCache = lift clearCardCache
 
 instance HasQueue Message m => HasQueue Message (ScenarioBuilderT m) where
   messageQueue = lift messageQueue

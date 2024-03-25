@@ -257,6 +257,8 @@ runGameMessage msg g = case msg of
         Just cl -> overAttrs (standaloneCampaignLogL .~ cl)
       standalone = isNothing $ modeCampaign $ g ^. modeL
 
+    clearCardCache
+
     pushAll
       $ LoadTarotDeck
       : PreScenarioSetup
@@ -273,6 +275,7 @@ runGameMessage msg g = case msg of
       $ g
       & (modeL %~ setScenario (setCampaignLog $ lookupScenario sid difficulty))
       & (phaseL .~ InvestigationPhase)
+      & (cardsL %~ filterMap (not . isEncounterCard))
   PerformTarotReading -> do
     lead <- getLeadPlayer
     push

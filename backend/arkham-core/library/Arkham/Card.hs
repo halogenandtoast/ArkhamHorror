@@ -87,6 +87,7 @@ class MonadRandom m => CardGen m where
   genEncounterCard :: HasCardDef a => a -> m EncounterCard
   genPlayerCard :: HasCardDef a => a -> m PlayerCard
   replaceCard :: CardId -> Card -> m ()
+  clearCardCache :: m ()
 
 genPlayerCardWith :: (HasCardDef a, CardGen m) => a -> (PlayerCard -> PlayerCard) -> m PlayerCard
 genPlayerCardWith a f = do
@@ -200,6 +201,14 @@ data Card
   | EncounterCard EncounterCard
   | VengeanceCard Card
   deriving stock (Show, Ord, Data)
+
+isEncounterCard :: Card -> Bool
+isEncounterCard = \case
+  PlayerCard _ -> False
+  EncounterCard ec -> case cdCardSubType (toCardDef ec) of
+    Just Weakness -> False
+    _ -> True
+  VengeanceCard _ -> False
 
 instance HasField "actions" Card [Action] where
   getField = cdActions . toCardDef

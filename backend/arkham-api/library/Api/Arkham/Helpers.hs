@@ -101,6 +101,9 @@ instance CardGen GameAppT where
     ref <- asks appGame
     atomicModifyIORef' ref $ \g ->
       (g {gameCards = Map.insert cardId card (gameCards g)}, ())
+  clearCardCache = do
+    ref <- asks appGame
+    atomicModifyIORef' ref $ \g -> (g {gameCards = Map.filter (not . isEncounterCard) (gameCards g)}, ())
 
 newApp :: MonadIO m => Game -> (ClientMessage -> IO ()) -> [Message] -> m GameApp
 newApp g logger msgs = do

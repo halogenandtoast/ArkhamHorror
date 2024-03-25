@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import * as Arkham from '@/arkham/types/Game'
 import { computed, ref } from 'vue'
+import api from '@/api';
 import type { CardDef } from '@/arkham/types/CardDef'
 import type { Name } from '@/arkham/types/Name'
 import Supplies from '@/arkham/components/Supplies.vue';
@@ -37,16 +38,19 @@ const findCard = (cardCode: string): CardDef | undefined => {
   return props.cards.find((c) => c.cardCode == cardCode)
 }
 
-const displayRecordValue = (key: string, value: string): string => {
+const displayRecordValue = (key: string, value: SomeRecordable): string => {
   if (key === 'MementosDiscovered') {
-    return toCapitalizedWords(value)
+    return toCapitalizedWords(value.recordVal.contents)
   }
 
-  return cardCodeToTitle(value)
+
+  return cardCodeToTitle(value.recordVal.contents)
 }
 
 const cardCodeToTitle = (cardCode: string): string => {
   const card = findCard(cardCode)
+
+  api.get(`cards/${cardCode.replace(/^c/, '')}`).then((c) => console.log(c))
 
   if (card) {
     return fullName(card.name)
@@ -55,6 +59,9 @@ const cardCodeToTitle = (cardCode: string): string => {
   if(cardCode == "c01121b") {
     return "The Masked Hunter"
   }
+
+
+  api.get(`cards/${cardCode}`).then((c) => console.log(c))
 
   return "unknown"
 }
@@ -101,9 +108,9 @@ const fullName = (name: Name): string => {
       </template>
     </ul>
     <ul>
-      <li v-for="[setKey, setValues] in Object.entries(recordedSets)" :key="setKey">{{toCapitalizedWords(setKey)}}
+      <li v-for="[setKey, setValues] in recordedSets" :key="setKey">{{toCapitalizedWords(setKey)}}
         <ul>
-          <li v-for="setValue in setValues" :key="setValue" :class="{ 'crossed-out': setValue.tag === 'CrossedOut' }">{{displayRecordValue(setKey, setValue.contents)}}</li>
+          <li v-for="setValue in setValues" :key="setValue" :class="{ 'crossed-out': setValue.tag === 'CrossedOut' }">{{displayRecordValue(setKey, setValue)}}</li>
         </ul>
       </li>
     </ul>

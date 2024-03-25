@@ -27,6 +27,8 @@ import Network.HTTP.Client.Conduit (HasHttpManager (..), Manager)
 import Yesod.Core.Types (Logger)
 import Yesod.Core.Unsafe qualified as Unsafe
 
+import Arkham.Card.CardCode
+
 import Orphans ()
 
 {- | The foundation datatype for your application. This can be a good place to

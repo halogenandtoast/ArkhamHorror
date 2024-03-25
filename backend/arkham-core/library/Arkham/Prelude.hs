@@ -361,7 +361,7 @@ toSentence = go False
   go False [a, b] = tshow a <> " and " <> tshow b
   go _ (a : as) = tshow a <> ", " <> go True as
 
-toResult :: FromJSON a => Value -> a
+toResult :: (HasCallStack, FromJSON a) => Value -> a
 toResult x = case fromJSON x of
   Success a -> a
   Error e -> error $ "result failure: " <> e

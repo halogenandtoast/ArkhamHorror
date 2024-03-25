@@ -1,4 +1,5 @@
 module Api.Handler.Arkham.Cards (
+  getApiV1ArkhamCardR,
   getApiV1ArkhamCardsR,
 ) where
 
@@ -59,3 +60,13 @@ getApiV1ArkhamCardsR = do
     $ toList
     $ cards
     `Map.difference` allSpecialPlayerAssetCards
+
+getApiV1ArkhamCardR :: CardCode -> Handler CardDef
+getApiV1ArkhamCardR cCode = do
+  let allCards =
+        allInvestigatorCards
+          <> allPlayerCards
+          <> allEncounterCards
+          <> allScenarioCards
+          <> allEncounterInvestigatorCards
+  maybe notFound pure $ Map.lookup cCode allCards

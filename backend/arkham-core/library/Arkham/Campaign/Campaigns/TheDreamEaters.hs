@@ -57,15 +57,21 @@ setCampaignPart part c@(TheDreamEaters attrs) step =
       push $ CampaignStep step
       pure c
     else do
-      let meta = toResult @Metadata attrs.meta
-          newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
-          newMeta = toResult @Metadata newAttrs.meta
-
       investigators <- allInvestigators
       currentPlayers <- for investigators \i -> do
         player <- getPlayer i
         iattrs <- getAttrs @Investigator i
         pure (player, iattrs)
+
+      let meta = toResult @Metadata attrs.meta
+          newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
+          newMeta =
+            meta
+              { currentCampaignMode = Just part
+              , otherCampaignAttrs = Just $ attrs {campaignMeta = Null}
+              , currentCampaignPlayers = meta.otherCampaignPlayers
+              , otherCampaignPlayers = mapFromList currentPlayers
+              }
 
       for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
         let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
@@ -78,13 +84,7 @@ setCampaignPart part c@(TheDreamEaters attrs) step =
           ( newAttrs
               { campaignCompletedSteps = campaignCompletedSteps attrs
               , campaignStep = campaignStep attrs
-              , campaignMeta =
-                  toJSON
-                    $ newMeta
-                      { otherCampaignAttrs = Just $ attrs {campaignMeta = Null}
-                      , currentCampaignPlayers = otherCampaignPlayers meta
-                      , otherCampaignPlayers = mapFromList currentPlayers
-                      }
+              , campaignMeta = toJSON newMeta
               }
           )
 
@@ -95,9 +95,11 @@ getHasRecord part key = do
     then Lift.getHasRecord key
     else do
       meta <- getCampaignMeta @Metadata
-      case meta.otherCampaignAttrs of
-        Just otherAttrs -> pure $ hasRecord key otherAttrs.log
-        Nothing -> error "no other campaign attrs"
+      if meta.currentCampaignMode == Just part
+        then Lift.getHasRecord key
+        else case meta.otherCampaignAttrs of
+          Just otherAttrs -> pure $ hasRecord key otherAttrs.log
+          Nothing -> error "no other campaign attrs"
 
 instance IsCampaign TheDreamEaters where
   nextStep a@(TheDreamEaters attrs) =
@@ -677,7 +679,6 @@ instance RunMessage TheDreamEaters where
         returned <- getHasRecord TheWebOfDreams TheInvestigatorsReturnedToReality
         neverEscaped <- getHasRecord TheWebOfDreams TheInvestigatorsNeverEscaped
         stillInDreamlands <- getHasRecord TheWebOfDreams TheInvestigatorsAreStillInTheDreamlands
-        print c
         if
           | invasionHasBegun ->
               if
@@ -754,6 +755,7 @@ instance RunMessage TheDreamEaters where
           players <- traverse getPlayer iids
           push $ Msg.story players $ i18n "theDreamEaters.brokeTheLawOfUlthar"
           for_ iids $ kill attrs
+        push GameOver
         pure c
       InTheDreamQuest msg' -> do
         case currentCampaignMode meta of

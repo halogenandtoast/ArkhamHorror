@@ -281,13 +281,13 @@ instance Show MissingLocation where
 instance Exception MissingLocation
 
 getLocation :: (HasCallStack, HasGame m) => LocationId -> m Location
-getLocation lid =
-  fromMaybe missingLocation
-    . preview (entitiesL . locationsL . ix lid)
-    <$> getGame
+getLocation lid = fromMaybe missingLocation <$> maybeLocation lid
  where
   missingLocation =
     throw $ MissingLocation ("Unknown location: " <> tshow lid) callStack
+
+maybeLocation :: HasGame m => LocationId -> m (Maybe Location)
+maybeLocation lid = preview (entitiesL . locationsL . ix lid) <$> getGame
 
 modeScenario :: GameMode -> Maybe Scenario
 modeScenario = \case

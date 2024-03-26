@@ -1014,6 +1014,7 @@ library
       Arkham.EncounterSet
       Arkham.Enemy
       Arkham.Enemy.Cards
+      Arkham.Enemy.Cards.AccursedFollower
       Arkham.Enemy.Cards.Acolyte
       Arkham.Enemy.Cards.AcolyteOfUmordhoth
       Arkham.Enemy.Cards.AgentOfTheKing
@@ -1434,6 +1435,7 @@ library
       Arkham.Event.Cards.NoStoneUnturned
       Arkham.Event.Cards.NoStoneUnturned5
       Arkham.Event.Cards.NothingLeftToLose3
+      Arkham.Event.Cards.ObscureStudies
       Arkham.Event.Cards.OccultEvidence
       Arkham.Event.Cards.OccultInvocation
       Arkham.Event.Cards.OneTwoPunch
@@ -1585,6 +1587,7 @@ library
       Arkham.Investigator.Cards
       Arkham.Investigator.Cards.AgnesBaker
       Arkham.Investigator.Cards.AkachiOnyele
+      Arkham.Investigator.Cards.AmandaSharpe
       Arkham.Investigator.Cards.AshcanPete
       Arkham.Investigator.Cards.BodyOfAYithian
       Arkham.Investigator.Cards.CalvinWright
@@ -2414,9 +2417,11 @@ library
       Arkham.Skill.Cards.TrueUnderstanding
       Arkham.Skill.Cards.UnexpectedCourage
       Arkham.Skill.Cards.UnexpectedCourage2
+      Arkham.Skill.Cards.Unrelenting1
       Arkham.Skill.Cards.ViciousBlow
       Arkham.Skill.Cards.ViciousBlow2
       Arkham.Skill.Cards.WatchThis
+      Arkham.Skill.Cards.WhispersFromTheDeep
       Arkham.Skill.Runner
       Arkham.Skill.Skills
       Arkham.Skill.Types

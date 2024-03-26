@@ -204,6 +204,7 @@ allPlayerEventCards =
       , noStoneUnturned
       , noStoneUnturned5
       , nothingLeftToLose3
+      , obscureStudies
       , occultEvidence
       , occultInvocation
       , oneTwoPunch
@@ -2334,6 +2335,16 @@ nothingLeftToLose3 =
           $ Criteria.exists
             (You <> oneOf [InvestigatorWithResources (lessThan 5), HandWith (LengthIs $ lessThan 5)])
     , cdLevel = 3
+    }
+
+obscureStudies :: CardDef
+obscureStudies =
+  (event "07008" "Obscure Studies" 0 Neutral)
+    { cdSkills = [#wild, #wild, #wild]
+    , cdCardTraits = singleton Insight
+    , cdLevel = 1
+    , cdFastWindow = Just $ InitiatedSkillTest #when You #any #any #any
+    , cdDeckRestrictions = [Signature "07008"]
     }
 
 faustianBargain :: CardDef

@@ -103,9 +103,11 @@ allPlayerSkillCards =
       , trueUnderstanding
       , unexpectedCourage
       , unexpectedCourage2
+      , unrelenting1
       , viciousBlow
       , viciousBlow2
       , watchThis
+      , whispersFromTheDeep
       ]
 
 viciousBlow :: CardDef
@@ -557,10 +559,25 @@ dreamParasite =
     , cdKeywords = singleton (Keyword.Bonded 3 "06330")
     }
 
+whispersFromTheDeep :: CardDef
+whispersFromTheDeep =
+  (skill "07009" "Whispers from the Deep" [#wildMinus] Neutral)
+    { cdCardTraits = singleton Curse
+    , cdCardSubType = Just Weakness
+    , cdCardInHandEffects = True
+    }
+
 promiseOfPower :: CardDef
 promiseOfPower =
   (skill "07032" "Promise of Power" [#wild, #wild, #wild, #wild] Mystic)
     { cdCardTraits = setFromList [Practiced, Cursed]
+    }
+
+unrelenting1 :: CardDef
+unrelenting1 =
+  (skill "07196" "Unrelenting" [#wild] Survivor)
+    { cdCardTraits = singleton Practiced
+    , cdCommitRestrictions = [MaxOnePerTest]
     }
 
 defensiveStance1 :: CardDef

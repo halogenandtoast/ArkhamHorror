@@ -106,6 +106,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorPlayerId :: Field Investigator PlayerId
   InvestigatorBondedCards :: Field Investigator [Card]
   InvestigatorLog :: Field Investigator CampaignLog
+  InvestigatorMeta :: Field Investigator Value
   --
   InvestigatorSupplies :: Field Investigator [Supply]
 
@@ -154,6 +155,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorUsedAdditionalActions :: [AdditionalAction]
   , investigatorMulligansTaken :: Int
   , investigatorBondedCards :: [Card]
+  , investigatorMeta :: Value
   , -- handling liquid courage
     investigatorHorrorHealed :: Int
   , -- the forgotten age
@@ -263,6 +265,7 @@ instance FromJSON InvestigatorAttrs where
     investigatorUsedAdditionalActions <- o .: "usedAdditionalActions"
     investigatorMulligansTaken <- o .: "mulligansTaken"
     investigatorBondedCards <- o .: "bondedCards"
+    investigatorMeta <- o .:? "meta" .!= Null
     investigatorHorrorHealed <- o .: "horrorHealed"
     investigatorSupplies <- o .: "supplies"
     investigatorDrawnCards <- o .: "drawnCards"
@@ -307,6 +310,9 @@ instance Sourceable InvestigatorAttrs where
 
 instance HasField "id" InvestigatorAttrs InvestigatorId where
   getField = investigatorId
+
+instance HasField "meta" InvestigatorAttrs Value where
+  getField = investigatorMeta
 
 instance HasField "placement" InvestigatorAttrs Placement where
   getField = investigatorPlacement
@@ -413,3 +419,6 @@ searchingFoundCardsL = lens searchingFoundCards $ \m x -> m {searchingFoundCards
 
 foundCardsL :: Traversal' InvestigatorAttrs (Map Zone [Card])
 foundCardsL = searchL . _Just . searchingFoundCardsL
+
+setMeta :: ToJSON a => a -> InvestigatorAttrs -> InvestigatorAttrs
+setMeta a = metaL .~ toJSON a

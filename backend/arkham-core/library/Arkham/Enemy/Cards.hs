@@ -60,6 +60,7 @@ allPlayerEnemyCards =
       , guardianOfTheCrystallizer
       , yourWorstNightmare
       , unboundBeast
+      , accursedFollower
       , tommyMalloy
       ]
 
@@ -1957,6 +1958,13 @@ webSpinner =
   ( enemy "06351" "Web-Spinner" WeaverOfTheCosmos 3
   )
     { cdCardTraits = setFromList [Monster, Spider]
+    , cdKeywords = singleton Keyword.Aloof
+    }
+
+accursedFollower :: CardDef
+accursedFollower =
+  (basicWeakness "07038" "Accursed Follower")
+    { cdCardTraits = setFromList [Humanoid, Cultist, Cursed]
     , cdKeywords = singleton Keyword.Aloof
     }
 

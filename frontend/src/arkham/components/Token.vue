@@ -73,11 +73,11 @@ const revealedTokenAction = computed(() => {
     }
 
     if (c.tag === "TargetLabel") {
-      if (c.target.tag === "TokenFaceTarget") {
+      if (c.target.tag === "ChaosTokenFaceTarget") {
         return props.token.face === c.target.contents
 
       }
-      if (c.target.tag === "TokenTarget" && c.target.contents) {
+      if (c.target.tag === "ChaosTokenTarget" && c.target.contents) {
         return props.token.id === (c.target.contents as { face: string, id: string }).id
       }
     }

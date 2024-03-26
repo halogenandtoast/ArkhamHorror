@@ -89,6 +89,9 @@ allEventCards = allPlayerEventCards
 instance Is EventAttrs EventId where
   is = (==) . toId
 
+instance HasField "id" EventAttrs EventId where
+  getField = eventId
+
 instance HasField "placement" EventAttrs Placement where
   getField = eventPlacement
 

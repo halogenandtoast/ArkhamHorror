@@ -436,10 +436,7 @@ instance RunMessage SkillTest where
         $ ResetChaosTokens (toSource s)
         : discardMessages
           <> skillTestEndsWindows
-          <> [ AfterSkillTestEnds
-                skillTestSource
-                skillTestTarget
-                skillTestResult
+          <> [ AfterSkillTestEnds skillTestSource skillTestTarget skillTestResult
              , Msg.SkillTestEnded
              ]
       pure s

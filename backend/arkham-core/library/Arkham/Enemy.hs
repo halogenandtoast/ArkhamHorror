@@ -360,6 +360,9 @@ allEnemies =
     , SomeEnemyCard legsOfAtlachNacha_349
     , SomeEnemyCard legsOfAtlachNacha_350
     , SomeEnemyCard webSpinner
+    , -- The Innsmouth Conspiracy
+      -- signature
+      SomeEnemyCard accursedFollower
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

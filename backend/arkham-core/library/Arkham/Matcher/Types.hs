@@ -1069,6 +1069,9 @@ data SkillTestValueMatcher
   | AnySkillTestValue
   deriving stock (Show, Eq, Ord, Data)
 
+instance IsLabel "any" SkillTestValueMatcher where
+  fromLabel = AnySkillTestValue
+
 data ChaosTokenMatcher
   = WithNegativeModifier
   | ChaosTokenFaceIs ChaosTokenFace
@@ -1297,6 +1300,9 @@ data SkillTypeMatcher
   | IsSkillType SkillType
   | SkillTypeOneOf [SkillType]
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "any" SkillTypeMatcher where
+  fromLabel = AnySkillType
 
 data RemoveDoomMatchers = RemoveDoomMatchers
   { removeDoomLocations :: LocationMatcher

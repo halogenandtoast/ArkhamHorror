@@ -397,7 +397,9 @@ allEvents =
       --- survivor [wgd]
       SomeEventCard nothingLeftToLose3
     , -- The Innsmouth Conspiracy
-      --- rogue [tic]
+      --- signature [tic]
+      SomeEventCard obscureStudies
+    , --- rogue [tic]
       SomeEventCard faustianBargain
     , -- Edge of the Earth
       --- guardian [eote]

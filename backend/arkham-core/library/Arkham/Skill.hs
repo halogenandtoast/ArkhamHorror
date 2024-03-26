@@ -97,7 +97,9 @@ allSkills =
     , SomeSkillCard surprisingFind1
     , SomeSkillCard theEyeOfTruth5
     , SomeSkillCard dreamParasite
+    , SomeSkillCard whispersFromTheDeep
     , SomeSkillCard promiseOfPower
+    , SomeSkillCard unrelenting1
     , SomeSkillCard defensiveStance1
     , SomeSkillCard surveyTheArea1
     , SomeSkillCard occultTheory1

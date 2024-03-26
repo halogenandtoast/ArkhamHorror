@@ -2198,6 +2198,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 $ Endo
                 $ (slotsL %~ maybe id removeFromSlots mAssetId)
                 . (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+                . (handL %~ filter (/= card))
+                . (discardL %~ filter ((/= card) . PlayerCard))
           )
           cards
     pure $ a & cardsUnderneathL <>~ cards & update

@@ -3002,6 +3002,7 @@ instance Projection Investigator where
     let attrs@InvestigatorAttrs {..} = toAttrs i
     case f of
       InvestigatorLog -> pure investigatorLog
+      InvestigatorMeta -> pure investigatorMeta
       InvestigatorCardCode -> pure investigatorCardCode
       InvestigatorKeys -> pure investigatorKeys
       InvestigatorPlayerId -> pure investigatorPlayerId

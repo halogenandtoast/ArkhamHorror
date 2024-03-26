@@ -55,6 +55,7 @@ allInvestigatorCards =
       , lukeRobinson
       , patriceHathaway
       , sisterMary
+      , amandaSharpe
       , dexterDrake
       , normanWithers
       , nathanielCho
@@ -339,6 +340,14 @@ sisterMary =
     ("Sister Mary" <:> "The Nun")
     Guardian
     [Believer, Blessed]
+
+amandaSharpe :: CardDef
+amandaSharpe =
+  investigator
+    "07002"
+    ("Amanda Sharpe" <:> "The Student")
+    Seeker
+    [Miskatonic, Scholar]
 
 dexterDrake :: CardDef
 dexterDrake =

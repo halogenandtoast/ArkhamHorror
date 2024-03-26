@@ -155,6 +155,7 @@ const choose = (idx: number) => emit('choose', idx)
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .token-preview {

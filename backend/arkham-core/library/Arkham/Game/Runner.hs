@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiWayIf #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game.Runner where
@@ -821,35 +822,35 @@ runGameMessage msg g = case msg of
 
     skillPairs <- for (mapToList skills') $ \(skillId, skill) -> do
       card <- field SkillCard skillId
-      modifiers' <- map resultF <$> liftA2 (<>) (getModifiers skillId) (getModifiers $ toCardId card)
+      mods <- map resultF <$> liftA2 (<>) (getModifiers skillId) (getModifiers $ toCardId card)
       pure
-        $ if ReturnToHandAfterTest `elem` modifiers'
-          then
-            ( ReturnToHand (skillOwner $ toAttrs skill) (SkillTarget skillId)
-            , Nothing
-            )
-          else
-            if PlaceOnBottomOfDeckInsteadOfDiscard `elem` modifiers'
-              then
-                ( PutCardOnBottomOfDeck
+        $ if
+          | ReturnToHandAfterTest `elem` mods ->
+              ( ReturnToHand (skillOwner $ toAttrs skill) (SkillTarget skillId)
+              , Nothing
+              )
+          | PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods ->
+              ( PutCardOnBottomOfDeck
+                  (skillOwner $ toAttrs skill)
+                  (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill)
+                  (toCard skill)
+              , Just skillId
+              )
+          | LeaveCardWhereItIs `elem` mods ->
+              (Run [], Just skillId)
+          | otherwise -> case skillAfterPlay (toAttrs skill) of
+              DiscardThis ->
+                ( AddToDiscard
                     (skillOwner $ toAttrs skill)
-                    (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill)
-                    (toCard skill)
+                    (lookupPlayerCard (toCardDef skill) (toCardId skill))
                 , Just skillId
                 )
-              else case skillAfterPlay (toAttrs skill) of
-                DiscardThis ->
-                  ( AddToDiscard
-                      (skillOwner $ toAttrs skill)
-                      (lookupPlayerCard (toCardDef skill) (toCardId skill))
-                  , Just skillId
-                  )
-                RemoveThisFromGame ->
-                  (RemoveFromGame (SkillTarget skillId), Nothing)
-                ShuffleThisBackIntoDeck ->
-                  ( ShuffleIntoDeck (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill) (toTarget skill)
-                  , Just skillId
-                  )
+              RemoveThisFromGame ->
+                (RemoveFromGame (SkillTarget skillId), Nothing)
+              ShuffleThisBackIntoDeck ->
+                ( ShuffleIntoDeck (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill) (toTarget skill)
+                , Just skillId
+                )
 
     pushAll $ map fst skillPairs
 

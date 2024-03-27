@@ -180,6 +180,7 @@ allPlayerAssetCards =
       , coltVestPocket2
       , cornered2
       , combatTraining1
+      , cryptographicCipher
       , crystalPendulum
       , crystallineElderSign3
       , crystallizerOfDreams
@@ -4001,6 +4002,15 @@ occultScraps =
     , cdCriteria = Just Criteria.Never
     , cdCardInHandEffects = True
     , cdCost = Just (StaticCost 0)
+    }
+
+cryptographicCipher :: CardDef
+cryptographicCipher =
+  (asset "07021" "Cryptographic Cipher" 3 Seeker)
+    { cdCardTraits = setFromList [Item, Tool]
+    , cdSkills = [#intellect]
+    , cdSlots = [#hand]
+    , cdUses = uses Secret 3
     }
 
 swordCane :: CardDef

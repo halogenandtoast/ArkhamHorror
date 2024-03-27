@@ -648,6 +648,8 @@ allAssets =
       SomeAssetCard guardianAngel
     , SomeAssetCard showmanship
     , SomeAssetCard occultScraps
+    , --- seeker [tic]
+      SomeAssetCard cryptographicCipher
     , --- mystic [tic]
       SomeAssetCard swordCane
     , -- Devil Reef

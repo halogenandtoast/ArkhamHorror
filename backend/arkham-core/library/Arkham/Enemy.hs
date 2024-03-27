@@ -362,6 +362,8 @@ allEnemies =
     , SomeEnemyCard webSpinner
     , -- The Innsmouth Conspiracy
       -- signature
+      SomeEnemyCard shadowAgents
+    , -- basic weakness
       SomeEnemyCard accursedFollower
     , -- Return to Night of the Zealot
       -- Return to the Gathering

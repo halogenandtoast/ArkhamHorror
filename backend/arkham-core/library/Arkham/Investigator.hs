@@ -118,6 +118,7 @@ allInvestigators =
       , SomeInvestigatorCard patriceHathaway
       , SomeInvestigatorCard sisterMary
       , SomeInvestigatorCard amandaSharpe
+      , SomeInvestigatorCard trishScarborough
       , SomeInvestigatorCard dexterDrake
       , SomeInvestigatorCard normanWithers
       , SomeInvestigatorCard nathanielCho

@@ -56,6 +56,7 @@ allInvestigatorCards =
       , patriceHathaway
       , sisterMary
       , amandaSharpe
+      , trishScarborough
       , dexterDrake
       , normanWithers
       , nathanielCho
@@ -348,6 +349,14 @@ amandaSharpe =
     ("Amanda Sharpe" <:> "The Student")
     Seeker
     [Miskatonic, Scholar]
+
+trishScarborough :: CardDef
+trishScarborough =
+  investigator
+    "07003"
+    ("Trish Scarborough" <:> "The Spy")
+    Rogue
+    [Agency, Detective]
 
 dexterDrake :: CardDef
 dexterDrake =

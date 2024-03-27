@@ -1747,6 +1747,11 @@ getLocationsMatching lmatcher = do
         ls' <- filter (`elem` ls) <$> getLocationsMatching matcher'
         maxes <$> forToSnd ls' (fieldMap LocationBreaches (maybe 0 Breach.countBreaches) . toId)
       LocationWithVictory -> filterM (getHasVictoryPoints . toId) ls
+      LocationBeingDiscovered -> do
+        maybeToList <$> runMaybeT do
+          LocationTarget lid <- MaybeT getSkillTestTarget
+          Action.Investigate <- MaybeT getSkillTestAction
+          hoistMaybe $ find ((== lid) . toId) ls
       -- these can not be queried
       LocationWithIncursion -> pure $ filter (maybe False Breach.isIncursion . attr locationBreaches) ls
       LocationLeavingPlay -> pure []

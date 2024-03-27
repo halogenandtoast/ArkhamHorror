@@ -436,6 +436,7 @@ data LocationMatcher
   | LocationMatchAny [LocationMatcher]
   | FirstLocation [LocationMatcher]
   | NotLocation LocationMatcher
+  | LocationBeingDiscovered
   | LocationCanBeFlipped
   | SingleSidedLocation
   | ClosestPathLocation LocationId LocationId

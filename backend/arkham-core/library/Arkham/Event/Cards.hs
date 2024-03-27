@@ -163,6 +163,7 @@ allPlayerEventCards =
       , impromptuBarrier
       , improvisation
       , improvisedWeapon
+      , inTheShadows
       , infighting3
       , intelReport
       , interrogate
@@ -2342,9 +2343,17 @@ obscureStudies =
   (event "07008" "Obscure Studies" 0 Neutral)
     { cdSkills = [#wild, #wild, #wild]
     , cdCardTraits = singleton Insight
-    , cdLevel = 1
     , cdFastWindow = Just $ InitiatedSkillTest #when You #any #any #any
-    , cdDeckRestrictions = [Signature "07008"]
+    , cdDeckRestrictions = [Signature "07002"]
+    }
+
+inTheShadows :: CardDef
+inTheShadows =
+  (event "07010" "In the Shadows" 0 Neutral)
+    { cdSkills = [#agility, #agility, #wild, #wild]
+    , cdCardTraits = singleton Tactic
+    , cdFastWindow = Just (TurnBegins #after You)
+    , cdDeckRestrictions = [Signature "07003"]
     }
 
 faustianBargain :: CardDef

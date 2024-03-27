@@ -399,6 +399,7 @@ allEvents =
     , -- The Innsmouth Conspiracy
       --- signature [tic]
       SomeEventCard obscureStudies
+    , SomeEventCard inTheShadows
     , --- rogue [tic]
       SomeEventCard faustianBargain
     , -- Edge of the Earth

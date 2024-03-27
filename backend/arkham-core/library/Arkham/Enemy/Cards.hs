@@ -60,6 +60,7 @@ allPlayerEnemyCards =
       , guardianOfTheCrystallizer
       , yourWorstNightmare
       , unboundBeast
+      , shadowAgents
       , accursedFollower
       , tommyMalloy
       ]
@@ -1959,6 +1960,13 @@ webSpinner =
   )
     { cdCardTraits = setFromList [Monster, Spider]
     , cdKeywords = singleton Keyword.Aloof
+    }
+
+shadowAgents :: CardDef
+shadowAgents =
+  (weakness "07011" "Shadow Agents")
+    { cdCardTraits = setFromList [Humanoid, Cultist]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 accursedFollower :: CardDef

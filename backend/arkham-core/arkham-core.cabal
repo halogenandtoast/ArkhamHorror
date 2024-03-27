@@ -467,6 +467,7 @@ library
       Arkham.Asset.Cards.ConstanceDumaine
       Arkham.Asset.Cards.Cornered2
       Arkham.Asset.Cards.Courage
+      Arkham.Asset.Cards.CryptographicCipher
       Arkham.Asset.Cards.CrystallineElderSign3
       Arkham.Asset.Cards.CrystallizerOfDreams
       Arkham.Asset.Cards.CrystalPendulum
@@ -1199,6 +1200,7 @@ library
       Arkham.Enemy.Cards.ServantOfManyMouths
       Arkham.Enemy.Cards.ServantOfTheLurker
       Arkham.Enemy.Cards.SethBishop
+      Arkham.Enemy.Cards.ShadowAgents
       Arkham.Enemy.Cards.ShadowHound
       Arkham.Enemy.Cards.SilasBishop
       Arkham.Enemy.Cards.SilverTwilightAcolyte
@@ -1397,6 +1399,7 @@ library
       Arkham.Event.Cards.Infighting3
       Arkham.Event.Cards.IntelReport
       Arkham.Event.Cards.Interrogate
+      Arkham.Event.Cards.InTheShadows
       Arkham.Event.Cards.IveGotAPlan
       Arkham.Event.Cards.IveGotAPlan2
       Arkham.Event.Cards.IveHadWorse2
@@ -1626,6 +1629,7 @@ library
       Arkham.Investigator.Cards.StellaClark
       Arkham.Investigator.Cards.TommyMuldoon
       Arkham.Investigator.Cards.TonyMorgan
+      Arkham.Investigator.Cards.TrishScarborough
       Arkham.Investigator.Cards.UrsulaDowns
       Arkham.Investigator.Cards.ValentinoRivas
       Arkham.Investigator.Cards.WendyAdams

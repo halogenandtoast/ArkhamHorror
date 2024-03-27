@@ -3,6 +3,7 @@ module Arkham.Skill.Types where
 import Arkham.Prelude
 
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
@@ -53,6 +54,7 @@ data SkillAttrs = SkillAttrs
   , skillAdditionalPayment :: Maybe Payment
   , skillAfterPlay :: AfterPlayStrategy
   , skillPlacement :: Placement
+  , skillSealedChaosTokens :: [ChaosToken]
   }
   deriving stock (Show, Eq, Generic)
 
@@ -64,6 +66,9 @@ instance HasField "placement" SkillAttrs Placement where
 
 additionalCostL :: Lens' SkillAttrs (Maybe Cost)
 additionalCostL = lens skillAdditionalCost $ \m x -> m {skillAdditionalCost = x}
+
+sealedChaosTokensL :: Lens' SkillAttrs [ChaosToken]
+sealedChaosTokensL = lens skillSealedChaosTokens $ \m x -> m {skillSealedChaosTokens = x}
 
 afterPlayL :: Lens' SkillAttrs AfterPlayStrategy
 afterPlayL = lens skillAfterPlay $ \m x -> m {skillAfterPlay = x}
@@ -134,6 +139,7 @@ skill f cardDef =
             , skillAdditionalPayment = Nothing
             , skillAfterPlay = DiscardThis
             , skillPlacement = Unplaced
+            , skillSealedChaosTokens = []
             }
     }
 

@@ -136,6 +136,7 @@ type AssetCard a = CardBuilder (AssetId, Maybe InvestigatorId) a
 
 data instance Field (DiscardedEntity Asset) :: Type -> Type where
   DiscardedAssetTraits :: Field (DiscardedEntity Asset) (Set Trait)
+  DiscardedAssetController :: Field (DiscardedEntity Asset) (Maybe InvestigatorId)
 
 data instance Field (InHandEntity Asset) :: Type -> Type where
   InHandAssetCardId :: Field (InHandEntity Asset) CardId

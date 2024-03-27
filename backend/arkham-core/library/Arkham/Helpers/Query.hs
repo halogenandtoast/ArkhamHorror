@@ -2,6 +2,7 @@ module Arkham.Helpers.Query where
 
 import Arkham.Prelude
 
+import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
@@ -67,7 +68,10 @@ getLeadInvestigatorPlayer = traverseToSnd (field InvestigatorPlayerId) =<< getLe
 
 selectAssetController
   :: HasGame m => AssetId -> m (Maybe InvestigatorId)
-selectAssetController = selectOne . HasMatchingAsset . AssetWithId
+selectAssetController aid =
+  (<|>)
+    <$> (join <$> fieldMay AssetController aid)
+    <*> (join <$> fieldMay DiscardedAssetController aid)
 
 selectEventController
   :: HasGame m => EventId -> m (Maybe InvestigatorId)

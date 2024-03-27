@@ -189,6 +189,7 @@ data Criterion
   | HasScenarioCount ScenarioCountKey ValueMatcher
   | HasCampaignCount CampaignLogKey ValueMatcher
   | HasRemainingBlessTokens
+  | HasRemainingCurseTokens
   | -- Special Criterion
     AtLeastNCriteriaMet Int [Criterion]
   | Criteria [Criterion]

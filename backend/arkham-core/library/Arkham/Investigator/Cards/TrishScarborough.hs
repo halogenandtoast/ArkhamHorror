@@ -62,7 +62,7 @@ instance RunMessage TrishScarborough where
   runMessage msg i@(TrishScarborough attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (toLocation -> lid) _ -> do
       player <- getPlayer iid
-      enemies <- select $ enemyAt lid
+      enemies <- select $ enemyAt lid <> CanEvadeEnemy (attrs.ability 1)
       push
         $ chooseOrRunOne player
         $ [Label "Discover 1 additional clue at that location" [toMessage $ discover iid lid attrs 1]]

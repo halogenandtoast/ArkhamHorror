@@ -5,12 +5,16 @@ module Arkham.Investigator.Cards.TrishScarborough (
 where
 
 import Arkham.Action qualified as Action
+import Arkham.Discover
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
+import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner hiding (DiscoverClues)
-import Arkham.Matcher
+import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Prelude
+import Arkham.Window (Window (..))
+import Arkham.Window qualified as Window
 
 newtype TrishScarborough = TrishScarborough InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -49,8 +53,25 @@ instance HasChaosTokenValue TrishScarborough where
     pure $ ChaosTokenValue ElderSign (PositiveModifier 2)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
+toLocation :: [Window] -> LocationId
+toLocation [] = error "missing window"
+toLocation ((windowType -> Window.DiscoverClues _ lid _ _) : _) = lid
+toLocation (_ : xs) = toLocation xs
+
 instance RunMessage TrishScarborough where
   runMessage msg i@(TrishScarborough attrs) = case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 (toLocation -> lid) _ -> do
+      player <- getPlayer iid
+      enemies <- select $ enemyAt lid
+      push
+        $ chooseOrRunOne player
+        $ [Label "Discover 1 additional clue at that location" [toMessage $ discover iid lid attrs 1]]
+        <> [ Label
+            "Automatically evade that enemy"
+            [chooseOrRunOne player [targetLabel enemy [EnemyEvaded iid enemy] | enemy <- enemies]]
+           | notNull enemies
+           ]
+      pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       mAction <- getSkillTestAction
       case mAction of
@@ -60,7 +81,13 @@ instance RunMessage TrishScarborough where
           when (notNull locations) do
             player <- getPlayer iid
             push $ chooseOne player $ Label "Do not choose a different location" []
-              : [targetLabel location [skillTestModifier attrs iid (AsIfAt location)] | location <- locations]
+              : [ targetLabel
+                  location
+                  [ SetSkillTestTarget (toTarget location)
+                  , skillTestModifier attrs iid (AsIfAt location)
+                  ]
+                | location <- locations
+                ]
         _ -> pure ()
       pure i
     _ -> TrishScarborough <$> runMessage msg attrs

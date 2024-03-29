@@ -45,6 +45,7 @@ allPlayerSkillCards =
       , desperateSearch
       , doubleOrNothing
       , dreamParasite
+      , dreamsOfTheDeepTheDeepGate
       , enraptured
       , essenceOfTheDream
       , eureka
@@ -63,6 +64,7 @@ allPlayerSkillCards =
       , manualDexterity
       , manualDexterity2
       , momentum1
+      , nauticalProwess
       , neitherRainNorSnow
       , nimble
       , notWithoutAFight
@@ -726,4 +728,19 @@ unexpectedCourage2 =
     { cdCardTraits = setFromList [Innate, Developed]
     , cdCommitRestrictions = [MaxOnePerTest]
     , cdLevel = 2
+    }
+
+nauticalProwess :: CardDef
+nauticalProwess =
+  (skill "98014" "Nautical Prowess" [#willpower, #intellect, #wild] Neutral)
+    { cdCardTraits = setFromList [Innate, Developed]
+    , cdDeckRestrictions = [Signature "07005"]
+    }
+
+dreamsOfTheDeepTheDeepGate :: CardDef
+dreamsOfTheDeepTheDeepGate =
+  (skill "98015" ("Dreams of the Deep" <:> "The Deep Gate") [#wildMinus, #wildMinus] Neutral)
+    { cdCardTraits = setFromList [Curse]
+    , cdDeckRestrictions = [Signature "07005"]
+    , cdCardSubType = Just Weakness
     }

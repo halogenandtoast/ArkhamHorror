@@ -423,6 +423,7 @@ allTreacheries =
     , -- The Innsmouth Conspiracy
       -- signature
       SomeTreacheryCard crisisOfFaith
+    , SomeTreacheryCard sirenCall
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

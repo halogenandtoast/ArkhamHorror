@@ -120,4 +120,6 @@ allSkills =
     , SomeSkillCard guts2
     , SomeSkillCard neitherRainNorSnow
     , SomeSkillCard unexpectedCourage2
+    , SomeSkillCard nauticalProwess
+    , SomeSkillCard dreamsOfTheDeepTheDeepGate
     ]

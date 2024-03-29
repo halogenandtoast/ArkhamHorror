@@ -58,6 +58,7 @@ allInvestigatorCards =
       , amandaSharpe
       , trishScarborough
       , dexterDrake
+      , silasMarsh
       , normanWithers
       , nathanielCho
       , harveyWalters
@@ -366,6 +367,15 @@ dexterDrake =
       ("Dexter Drake" <:> "The Magician")
       Mystic
       [Sorcerer, Veteran]
+
+silasMarsh :: CardDef
+silasMarsh =
+  withAlternate "98013"
+    $ investigator
+      "07005"
+      ("Silas Marsh" <:> "The Sailor")
+      Survivor
+      [Drifter]
 
 normanWithers :: CardDef
 normanWithers =

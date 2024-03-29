@@ -648,6 +648,8 @@ allAssets =
       SomeAssetCard guardianAngel
     , SomeAssetCard showmanship
     , SomeAssetCard occultScraps
+    , SomeAssetCard seaChangeHarpoon
+    , SomeAssetCard silassNet
     , --- seeker [tic]
       SomeAssetCard cryptographicCipher
     , --- mystic [tic]

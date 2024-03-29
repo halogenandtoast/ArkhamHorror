@@ -106,6 +106,7 @@ allPlayerTreacheryCards =
       , sellYourSoul
       , shellShock
       , shockingDiscovery
+      , sirenCall
       , smiteTheWicked
       , starsOfHyades
       , terribleSecret
@@ -2018,6 +2019,12 @@ crisisOfFaith :: CardDef
 crisisOfFaith =
   (weakness "07007" "Crisis of Faith")
     { cdCardTraits = singleton Madness
+    }
+
+sirenCall :: CardDef
+sirenCall =
+  (weakness "07016" "Siren Call")
+    { cdCardTraits = singleton Curse
     }
 
 theHarbinger :: CardDef

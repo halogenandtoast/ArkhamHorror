@@ -48,7 +48,6 @@ instance RunMessage FieldworkEffect where
       pure e
     SkillTestEnds {} -> do
       let meta = toResult @Bool attrs.extra
-      when meta do
-        push $ disable attrs
+      pushWhen meta $ disable attrs
       pure e
     _ -> FieldworkEffect <$> runMessage msg attrs

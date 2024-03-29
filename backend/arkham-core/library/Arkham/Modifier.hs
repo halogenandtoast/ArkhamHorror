@@ -51,6 +51,7 @@ data ModifierType
   | AdditionalCostToInvestigate Cost
   | AdditionalCostToResign Cost
   | AdditionalCostToLeave Cost
+  | AdditionalCostToCommit InvestigatorId Cost
   | AdditionalStartingUses Int
   | AdditionalStartingCards [Card]
   | AdditionalTargets Int

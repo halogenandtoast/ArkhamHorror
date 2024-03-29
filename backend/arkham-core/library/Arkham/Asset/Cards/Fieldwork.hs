@@ -30,20 +30,25 @@ newtype FieldworkEffect = FieldworkEffect EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fieldworkEffect :: EffectArgs -> FieldworkEffect
-fieldworkEffect = cardEffect FieldworkEffect Cards.fieldwork
+fieldworkEffect = cardEffectWith FieldworkEffect Cards.fieldwork (setEffectMeta @Bool False)
 
 instance HasModifiersFor FieldworkEffect where
-  getModifiersFor target (FieldworkEffect a) | a `is` target = do
+  getModifiersFor target (FieldworkEffect a) | a.target == target = do
     mSkillTestSource <- getSkillTestSource
-    pure $ toModifiers a [AnySkillValue 2 | isJust mSkillTestSource]
+    let meta = toResult @Bool a.extra
+    pure $ toModifiers a [AnySkillValue 2 | isJust mSkillTestSource && meta]
   getModifiersFor _ _ = pure []
 
 instance RunMessage FieldworkEffect where
   runMessage msg e@(FieldworkEffect attrs) = case msg of
+    BeginSkillTestAfterFast -> do
+      pure . FieldworkEffect $ attrs & setEffectMeta @Bool True
     EndPhase -> do
       push $ disable attrs
       pure e
     SkillTestEnds {} -> do
-      push $ disable attrs
+      let meta = toResult @Bool attrs.extra
+      when meta do
+        push $ disable attrs
       pure e
     _ -> FieldworkEffect <$> runMessage msg attrs

@@ -205,3 +205,6 @@ disableEffect = DisableEffect . asId
 
 disable :: (AsId a, IdOf a ~ EffectId) => a -> Message
 disable = disableEffect
+
+setEffectMeta :: ToJSON a => a -> EffectAttrs -> EffectAttrs
+setEffectMeta a = extraL .~ toJSON a

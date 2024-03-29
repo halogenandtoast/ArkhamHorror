@@ -7,7 +7,7 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Matcher
+import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Prelude
 
 newtype SilassNet = SilassNet AssetAttrs
@@ -44,7 +44,7 @@ instance RunMessage SilassNet where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       mtarget <- getSkillTestTarget
       case mtarget of
-        Just eid -> do
+        Just (EnemyTarget eid) -> do
           otherEnemies <- select $ enemyEngagedWith iid <> not_ (EnemyWithId eid)
           when (notNull otherEnemies) do
             player <- getPlayer iid
@@ -56,6 +56,7 @@ instance RunMessage SilassNet where
                     [chooseOrRunOne player [targetLabel enemy [EnemyEvaded iid enemy] | enemy <- otherEnemies]]
                 , Label "Do not evade another enemy" []
                 ]
+        Just _ -> error "Invalid target"
         Nothing -> error "No target"
       pure a
     _ -> SilassNet <$> runMessage msg attrs

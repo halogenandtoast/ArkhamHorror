@@ -56,7 +56,6 @@ instance RunMessage SilasMarsh where
         $ chooseOrRunOne player [targetLabel skill [ReturnToHand iid (toTarget skill)] | skill <- skills]
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
-      -- You may commit a skill from your discard pile to this test. After this test ends, return that skill to your hand instead of discarding it.
       skills <-
         filterM (getIsCommittable iid)
           . filter (`cardMatch` CardWithType SkillType)

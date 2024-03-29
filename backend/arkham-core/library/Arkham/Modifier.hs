@@ -291,6 +291,7 @@ data ModifierType
   | UseSkillInsteadOf SkillType SkillType -- this doesn't
   | XPModifier Int
   | IfSuccessfulModifier ModifierType
+  | IfFailureModifier ModifierType
   | NoInitialSwarm
   | SwarmingValue Int
   | AttackDealsEitherDamageOrHorror

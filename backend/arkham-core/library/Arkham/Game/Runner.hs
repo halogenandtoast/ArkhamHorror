@@ -816,6 +816,9 @@ runGameMessage msg g = case msg of
           Just SucceededBy {} -> \case
             IfSuccessfulModifier m -> m
             other -> other
+          Just FailedBy {} -> \case
+            IfFailureModifier m -> m
+            other -> other
           _ -> id
 
     skills' <- filterMapM (fieldMap SkillPlacement (== Limbo) . toId) $ g ^. entitiesL . skillsL

@@ -12,6 +12,7 @@ import Arkham.CommitRestriction
 import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
+import Arkham.Helpers.Cost
 import Arkham.Helpers.Investigator hiding (investigator)
 import Arkham.Helpers.Modifiers
 import Arkham.Id
@@ -286,7 +287,8 @@ getIsCommittable investigator card = do
     Nothing -> pure False
     Just skillTest -> do
       let sInvestigator = skillTestInvestigator skillTest
-      modifiers' <- getModifiers (toTarget investigator)
+      imods <- getModifiers investigator
+      cmods <- getModifiers (CardIdTarget $ toCardId card)
       committedCards <- field InvestigatorCommittedCards sInvestigator
       allCommittedCards <- selectAgg id InvestigatorCommittedCards Anyone
       let
@@ -300,7 +302,8 @@ getIsCommittable investigator card = do
       mLocation <- field InvestigatorLocation investigator
       clueCount <- maybe (pure 0) (field LocationClues) mLocation
       skillIcons <- getSkillTestMatchingSkillIcons
-      cannotCommitCards <- elem (CannotCommitCards AnyCard) <$> getModifiers (toTarget investigator)
+      let cannotCommitCards = CannotCommitCards AnyCard `elem` imods
+      let costToCommit = fold [c | AdditionalCostToCommit iid' c <- cmods, iid' == investigator]
 
       if cannotCommitCards || onlyCardComittedToTestCommitted
         then pure False
@@ -333,7 +336,7 @@ getIsCommittable investigator card = do
                       ResourceSkillTest -> do
                         resources <- field InvestigatorResources investigator
                         pure $ (skillDifficulty - resources) >= n
-                prevented = flip any modifiers' $ \case
+                prevented = flip any imods $ \case
                   CanOnlyUseCardsInRole role ->
                     null
                       $ intersect
@@ -344,6 +347,7 @@ getIsCommittable investigator card = do
               passesCommitRestrictions <- allM passesCommitRestriction (cdCommitRestrictions $ toCardDef pc)
 
               icons <- iconsForCard card
+              affordable <- getCanAffordCost investigator (toSource investigator) [] [] costToCommit
 
               pure
                 $ card

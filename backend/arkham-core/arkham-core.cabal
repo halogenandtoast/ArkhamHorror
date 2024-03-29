@@ -1557,6 +1557,7 @@ library
       Arkham.Helpers.Campaign
       Arkham.Helpers.Card
       Arkham.Helpers.ChaosBag
+      Arkham.Helpers.Cost
       Arkham.Helpers.Customization
       Arkham.Helpers.Deck
       Arkham.Helpers.Doom
@@ -1564,9 +1565,11 @@ library
       Arkham.Helpers.EncounterSet
       Arkham.Helpers.Enemy
       Arkham.Helpers.Event
+      Arkham.Helpers.GameValue
       Arkham.Helpers.Investigator
       Arkham.Helpers.Location
       Arkham.Helpers.Log
+      Arkham.Helpers.Matchers
       Arkham.Helpers.Message
       Arkham.Helpers.Message.Discard
       Arkham.Helpers.Modifiers

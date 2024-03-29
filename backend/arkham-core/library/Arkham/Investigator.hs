@@ -120,6 +120,7 @@ allInvestigators =
       , SomeInvestigatorCard amandaSharpe
       , SomeInvestigatorCard trishScarborough
       , SomeInvestigatorCard dexterDrake
+      , SomeInvestigatorCard silasMarsh
       , SomeInvestigatorCard normanWithers
       , SomeInvestigatorCard nathanielCho
       , SomeInvestigatorCard harveyWalters

@@ -776,6 +776,7 @@ library
       Arkham.Asset.Cards.Scrying
       Arkham.Asset.Cards.Scrying3
       Arkham.Asset.Cards.ScryingMirror
+      Arkham.Asset.Cards.SeaChangeHarpoon
       Arkham.Asset.Cards.SealOfTheSeventhSign5
       Arkham.Asset.Cards.SebastienMoreau
       Arkham.Asset.Cards.SegmentOfOnyx1
@@ -791,6 +792,7 @@ library
       Arkham.Asset.Cards.Shrivelling5
       Arkham.Asset.Cards.SignMagick
       Arkham.Asset.Cards.SignMagick3
+      Arkham.Asset.Cards.SilassNet
       Arkham.Asset.Cards.SinisterSolution
       Arkham.Asset.Cards.SixthSense
       Arkham.Asset.Cards.SixthSense4
@@ -1624,6 +1626,7 @@ library
       Arkham.Investigator.Cards.RitaYoung
       Arkham.Investigator.Cards.RolandBanks
       Arkham.Investigator.Cards.SefinaRousseau
+      Arkham.Investigator.Cards.SilasMarsh
       Arkham.Investigator.Cards.SisterMary
       Arkham.Investigator.Cards.SkidsOToole
       Arkham.Investigator.Cards.StellaClark
@@ -2363,6 +2366,7 @@ library
       Arkham.Skill.Cards.DesperateSearch
       Arkham.Skill.Cards.DoubleOrNothing
       Arkham.Skill.Cards.DreamParasite
+      Arkham.Skill.Cards.DreamsOfTheDeepTheDeepGate
       Arkham.Skill.Cards.Enraptured
       Arkham.Skill.Cards.EssenceOfTheDream
       Arkham.Skill.Cards.Eureka
@@ -2381,6 +2385,7 @@ library
       Arkham.Skill.Cards.ManualDexterity
       Arkham.Skill.Cards.ManualDexterity2
       Arkham.Skill.Cards.Momentum1
+      Arkham.Skill.Cards.NauticalProwess
       Arkham.Skill.Cards.NeitherRainNorSnow
       Arkham.Skill.Cards.Nimble
       Arkham.Skill.Cards.NotWithoutAFight
@@ -2746,6 +2751,7 @@ library
       Arkham.Treachery.Cards.ShellShock
       Arkham.Treachery.Cards.ShockingDiscovery
       Arkham.Treachery.Cards.SickeningWebs
+      Arkham.Treachery.Cards.SirenCall
       Arkham.Treachery.Cards.SlitheringBehindYou
       Arkham.Treachery.Cards.SmiteTheWicked
       Arkham.Treachery.Cards.SnakeBite

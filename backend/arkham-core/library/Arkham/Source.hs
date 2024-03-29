@@ -21,6 +21,7 @@ import Arkham.Tarot
 import Arkham.Trait
 import Control.Lens (Prism', prism')
 import Data.Aeson.TH
+import GHC.OverloadedLabels
 import GHC.Records
 
 data Source
@@ -169,3 +170,6 @@ pattern ElderThingEffect :: Source
 pattern ElderThingEffect <- ChaosTokenEffectSource ElderThing
   where
     ElderThingEffect = ChaosTokenEffectSource ElderThing
+
+instance IsLabel "elderSign" Source where
+  fromLabel = ChaosTokenEffectSource ElderSign

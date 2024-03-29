@@ -475,6 +475,7 @@ allPlayerAssetCards =
       , scrying
       , scrying3
       , scryingMirror
+      , seaChangeHarpoon
       , sealOfTheSeventhSign5
       , segmentOfOnyx1
       , sergeantMonroe
@@ -489,6 +490,7 @@ allPlayerAssetCards =
       , shrivelling5
       , signMagick
       , signMagick3
+      , silassNet
       , sixthSense
       , sixthSense4
       , smokingPipe
@@ -4002,6 +4004,26 @@ occultScraps =
     , cdCriteria = Just Criteria.Never
     , cdCardInHandEffects = True
     , cdCost = Just (StaticCost 0)
+    }
+
+seaChangeHarpoon :: CardDef
+seaChangeHarpoon =
+  (asset "07014" "Sea Change Harpoon" 3 Neutral)
+    { cdCardTraits = setFromList [Item, Weapon, Melee]
+    , cdSkills = [#combat, #wild]
+    , cdDeckRestrictions = [Signature "07005"]
+    , cdSlots = [#hand]
+    , cdUnique = True
+    }
+
+silassNet :: CardDef
+silassNet =
+  (asset "07015" "Silas's Net" 2 Neutral)
+    { cdCardTraits = setFromList [Item, Tool]
+    , cdSkills = [#agility, #wild]
+    , cdDeckRestrictions = [Signature "07005"]
+    , cdSlots = [#hand]
+    , cdUnique = True
     }
 
 cryptographicCipher :: CardDef

@@ -743,4 +743,5 @@ dreamsOfTheDeepTheDeepGate =
     { cdCardTraits = setFromList [Curse]
     , cdDeckRestrictions = [Signature "07005"]
     , cdCardSubType = Just Weakness
+    , cdCardInHandEffects = True
     }

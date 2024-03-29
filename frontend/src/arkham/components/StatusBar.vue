@@ -103,19 +103,19 @@ const title = computed(() => {
 
 const replaceIcons = function(body: string) {
   return body.
-    replace('{action}', '<span class="action-icon"></span>').
-    replace('{fast}', '<span class="fast-icon"></span>').
-    replace('{willpower}', '<span class="willpower-icon"></span>').
-    replace('{intellect}', '<span class="intellect-icon"></span>').
-    replace('{combat}', '<span class="combat-icon"></span>').
-    replace('{agility}', '<span class="agility-icon"></span>').
-    replace('{wild}', '<span class="wild-icon"></span>').
-    replace('{guardian}', '<span class="guardian-icon"></span>').
-    replace('{seeker}', '<span class="seeker-icon"></span>').
-    replace('{rogue}', '<span class="rogue-icon"></span>').
-    replace('{mystic}', '<span class="mystic-icon"></span>').
-    replace('{survivor}', '<span class="survivor-icon"></span>').
-    replace('{elderSign}', '<span class="elder-sign"></span>')
+    replace(/{action}/g, '<span class="action-icon"></span>').
+    replace(/{fast}/g, '<span class="fast-icon"></span>').
+    replace(/{willpower}/g, '<span class="willpower-icon"></span>').
+    replace(/{intellect}/g, '<span class="intellect-icon"></span>').
+    replace(/{combat}/g, '<span class="combat-icon"></span>').
+    replace(/{agility}/g, '<span class="agility-icon"></span>').
+    replace(/{wild}/g, '<span class="wild-icon"></span>').
+    replace(/{guardian}/g, '<span class="guardian-icon"></span>').
+    replace(/{seeker}/g, '<span class="seeker-icon"></span>').
+    replace(/{rogue}/g, '<span class="rogue-icon"></span>').
+    replace(/{mystic}/g, '<span class="mystic-icon"></span>').
+    replace(/{survivor}/g, '<span class="survivor-icon"></span>').
+    replace(/{elderSign}/g, '<span class="elder-sign"></span>')
 }
 
 const { t } = useI18n()

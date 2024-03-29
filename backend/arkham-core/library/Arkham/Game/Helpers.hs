@@ -1333,6 +1333,11 @@ passesCriteria iid mcard source windows' = \case
         case mCardId of
           Nothing -> pure False
           Just cardId -> pure $ cardId `elem` hand
+      SkillSource sid -> do
+        mCardId <- fieldMay InHandSkillCardId sid
+        case mCardId of
+          Nothing -> pure False
+          Just cardId -> pure $ cardId `elem` hand
       AssetSource aid -> do
         inPlay <- selectAny $ Matcher.AssetWithId aid
         if inPlay

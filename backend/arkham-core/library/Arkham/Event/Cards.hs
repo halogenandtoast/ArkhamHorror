@@ -149,6 +149,7 @@ allPlayerEventCards =
       , glory
       , gritYourTeeth
       , guidance
+      , handOfFate
       , heroicRescue
       , heroicRescue2
       , hidingSpot
@@ -2356,6 +2357,20 @@ inTheShadows =
     , cdCardTraits = singleton Tactic
     , cdFastWindow = Just (TurnBegins #after You)
     , cdDeckRestrictions = [Signature "07003"]
+    }
+
+handOfFate :: CardDef
+handOfFate =
+  (event "07020" "Hand of Fate" 3 Guardian)
+    { cdSkills = [#willpower, #combat]
+    , cdCardTraits = setFromList [Spell, Blessed]
+    , cdFastWindow =
+        Just
+          $ EnemyAttacks
+            #when
+            (affectsOthers $ InvestigatorAt YourLocation)
+            (CancelableEnemyAttack AnyEnemyAttack)
+            AnyEnemy
     }
 
 faustianBargain :: CardDef

@@ -22,7 +22,7 @@ newtype RiteOfSanctification = RiteOfSanctification AssetAttrs
 
 riteOfSanctification :: AssetCard RiteOfSanctification
 riteOfSanctification =
-  asset RiteOfSanctification Cards.riteOfSanctification
+  assetWith RiteOfSanctification Cards.riteOfSanctification (setMeta @Bool False)
 
 instance HasModifiersFor RiteOfSanctification where
   getModifiersFor (InvestigatorTarget iid) (RiteOfSanctification a) | not (assetExhausted a) = do
@@ -33,13 +33,19 @@ instance HasModifiersFor RiteOfSanctification where
 
 instance HasAbilities RiteOfSanctification where
   getAbilities (RiteOfSanctification attrs) =
-    [ restrictedAbility attrs 1 ControlsThis
-        $ ReactionAbility
-          (PlayCard #when (InvestigatorAt YourLocation) #any)
-          (exhaust attrs <> ReleaseChaosTokensCost 1)
-    , restrictedAbility attrs 2 (exists $ be attrs <> AssetWithoutSealedTokens)
-        $ SilentForcedAbility AnyWindow
-    ]
+    let active = toResult @Bool attrs.meta
+     in restrictedAbility
+          attrs
+          1
+          ControlsThis
+          ( ReactionAbility
+              (PlayCard #when (InvestigatorAt YourLocation) #any)
+              (exhaust attrs <> ReleaseChaosTokensCost 1)
+          )
+          : [ restrictedAbility attrs 2 (exists $ be attrs <> AssetWithoutSealedTokens)
+              $ SilentForcedAbility AnyWindow
+            | active
+            ]
 
 getDetails :: [Window] -> (InvestigatorId, Card)
 getDetails [] = error "Wrong window"
@@ -48,7 +54,7 @@ getDetails (_ : xs) = getDetails xs
 
 instance RunMessage RiteOfSanctification where
   runMessage msg a@(RiteOfSanctification attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (getDetails -> (current, card)) _ -> do
+    UseCardAbility _iid (isSource attrs -> True) 1 (getDetails -> (current, card)) _ -> do
       push
         $ CreateWindowModifierEffect
           EffectCostWindow

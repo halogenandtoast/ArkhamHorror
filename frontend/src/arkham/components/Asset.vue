@@ -277,9 +277,15 @@ const assetStory = computed(() => {
   position: absolute;
   top: 50%;
   align-items: center;
+  width: 100%;
   display: flex;
-  * {
-    transform: scale(0.6);
+  flex-wrap: wrap;
+  :deep(.token-container) {
+    width: unset;
+  }
+  :deep(img) {
+    width: 20px;
+    height: auto;
   }
 
   pointer-events: none;

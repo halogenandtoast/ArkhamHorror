@@ -32,12 +32,16 @@ instance RunMessage BlessedBlade where
         , chooseFightEnemy iid (attrs.ability 1) #combat
         ]
       pure a
-    RevealChaosToken (isAbilitySource attrs 1 -> True) iid token -> do
-      let meta = toResult @Bool attrs.meta
-      if meta && token.face `elem` [#bless, #eldersign]
+    RevealChaosToken SkillTestSource iid token -> do
+      s <- fromJustNote "Must be in skillTest" <$> getSkillTestSource
+      if isAbilitySource attrs 1 s
         then do
-          push $ skillTestModifier (attrs.ability 1) iid (DamageDealt 1)
-          pure . BlessedBlade $ attrs & setMeta @Bool False
+          let meta = toResult @Bool attrs.meta
+          if meta && token.face `elem` [#bless, #eldersign]
+            then do
+              push $ skillTestModifier (attrs.ability 1) iid (DamageDealt 1)
+              pure . BlessedBlade $ attrs & setMeta @Bool False
+            else pure a
         else pure a
     SkillTestEnds _ _ -> do
       pure . BlessedBlade $ attrs & setMeta @Bool True

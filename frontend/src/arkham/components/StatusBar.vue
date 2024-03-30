@@ -9,6 +9,7 @@ import { MessageType } from '@/arkham/types/Message';
 import { QuestionType } from '@/arkham/types/Question';
 import Draggable from '@/components/Draggable.vue';
 import DropDown from '@/components/DropDown.vue';
+import Token from '@/arkham/components/Token.vue';
 
 export interface Props {
   game: Game
@@ -98,6 +99,10 @@ const title = computed(() => {
     return "Choose"
   }
 
+  if (focusedChaosTokens.value.length > 0) {
+    return "Choose"
+  }
+
   return null
 })
 
@@ -119,6 +124,8 @@ const replaceIcons = function(body: string) {
 }
 
 const { t } = useI18n()
+
+const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
 
 const label = function(body: string) {
   if (body.startsWith("$")) {
@@ -163,6 +170,7 @@ const label = function(body: string) {
         <DropDown @choose="choose" :options="question.question.options" />
       </div>
 
+      <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="choose" />
 
       <div v-if="showChoices" class="choices">
         <template v-for="(choice, index) in choices" :key="index">

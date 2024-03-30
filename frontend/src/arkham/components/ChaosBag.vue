@@ -160,6 +160,7 @@ const choose = (idx: number) => emit('choose', idx)
 
 .token-preview {
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
   justify-content: center;
   img {

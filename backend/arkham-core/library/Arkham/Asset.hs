@@ -651,7 +651,8 @@ allAssets =
     , SomeAssetCard seaChangeHarpoon
     , SomeAssetCard silassNet
     , --- guardian [tic]
-      SomeAssetCard blessedBlade
+      SomeAssetCard bookOfPsalms
+    , SomeAssetCard blessedBlade
     , SomeAssetCard riteOfSanctification
     , --- seeker [tic]
       SomeAssetCard cryptographicCipher

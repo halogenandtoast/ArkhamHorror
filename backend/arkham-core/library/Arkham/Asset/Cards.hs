@@ -167,6 +167,7 @@ allPlayerAssetCards =
       , blessedBlade
       , bloodPact3
       , bloodstainedDagger
+      , bookOfPsalms
       , bookOfShadows1
       , bookOfShadows3
       , borrowedTime3
@@ -4045,6 +4046,15 @@ silassNet =
     , cdDeckRestrictions = [Signature "07005"]
     , cdSlots = [#hand]
     , cdUnique = True
+    }
+
+bookOfPsalms :: CardDef
+bookOfPsalms =
+  (asset "07017" "Book of Psalms" 3 Guardian)
+    { cdCardTraits = setFromList [Item, Tome, Blessed]
+    , cdSkills = [#willpower]
+    , cdSlots = [#hand]
+    , cdUses = uses Secret 4
     }
 
 blessedBlade :: CardDef

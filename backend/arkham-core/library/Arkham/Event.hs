@@ -400,6 +400,8 @@ allEvents =
       --- signature [tic]
       SomeEventCard obscureStudies
     , SomeEventCard inTheShadows
+    , --- guardian [tic]
+      SomeEventCard handOfFate
     , --- rogue [tic]
       SomeEventCard faustianBargain
     , --- mystic [tic]

@@ -277,20 +277,23 @@ payCost msg c iid skipAdditionalCosts cost = do
       push $ SealChaosToken token
       pure $ c & costPaymentsL <>~ SealChaosTokenPayment token & costSealedChaosTokensL %~ (token :)
     ReleaseChaosTokensCost n -> do
-      case source of
-        AssetSource aid -> do
-          tokens <- field AssetSealedChaosTokens aid
-          pushAll
-            [ FocusChaosTokens tokens
-            , chooseN
-                player
-                n
-                [ TargetLabel (ChaosTokenTarget t) [PayCost acId iid skipAdditionalCosts (ReleaseChaosTokenCost t)]
-                | t <- tokens
-                ]
-            , UnfocusChaosTokens
-            ]
-        _ -> error "Unhandled source for releasing tokens cost"
+      let
+        handleSource = \case
+          AbilitySource t _ -> handleSource t
+          AssetSource aid -> do
+            tokens <- field AssetSealedChaosTokens aid
+            pushAll
+              [ FocusChaosTokens tokens
+              , chooseN
+                  player
+                  n
+                  [ TargetLabel (ChaosTokenTarget t) [PayCost acId iid skipAdditionalCosts (ReleaseChaosTokenCost t)]
+                  | t <- tokens
+                  ]
+              , UnfocusChaosTokens
+              ]
+          _ -> error "Unhandled source for releasing tokens cost"
+      handleSource source
       pure c
     ReleaseChaosTokenCost t -> do
       push $ UnsealChaosToken t

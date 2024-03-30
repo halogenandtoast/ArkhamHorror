@@ -38,7 +38,7 @@ instance HasChaosTokenValue SisterMary where
 
 instance RunMessage SisterMary where
   runMessage msg i@(SisterMary attrs) = case msg of
-    SetupInvestigator iid | iid == attrs.id -> do
+    Setup -> do
       push $ AddChaosToken BlessToken
       push $ AddChaosToken BlessToken
       SisterMary <$> runMessage msg attrs

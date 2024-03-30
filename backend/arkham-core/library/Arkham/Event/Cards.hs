@@ -2379,7 +2379,7 @@ wardOfRadiance =
 
 temptFate :: CardDef
 temptFate =
-  (event "07038" "Tempt Fate" 0 Neutral)
+  (event "07037" "Tempt Fate" 0 Neutral)
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Fortune, Blessed, Cursed]
     , cdFastWindow = Just FastPlayerWindow

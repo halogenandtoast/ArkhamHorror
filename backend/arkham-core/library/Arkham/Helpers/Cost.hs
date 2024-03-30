@@ -220,13 +220,19 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
     anyM (\token -> matchChaosToken iid token tokenMatcher) tokens
   SealChaosTokenCost _ -> pure True
   ReleaseChaosTokensCost n -> do
-    case source of
-      AssetSource aid -> fieldMap AssetSealedChaosTokens ((>= n) . length) aid
-      _ -> error "Unhandled release token cost source"
+    let
+      handleSource = \case
+        AssetSource aid -> fieldMap AssetSealedChaosTokens ((>= n) . length) aid
+        AbilitySource t _ -> handleSource t
+        _ -> error $ "Unhandled release token cost source: " <> show source
+    handleSource source
   ReleaseChaosTokenCost t -> do
-    case source of
-      AssetSource aid -> fieldMap AssetSealedChaosTokens (elem t) aid
-      _ -> error "Unhandled release token cost source"
+    let
+      handleSource = \case
+        AssetSource aid -> fieldMap AssetSealedChaosTokens (elem t) aid
+        AbilitySource u _ -> handleSource u
+        _ -> error "Unhandled release token cost source"
+    handleSource source
   FieldResourceCost (FieldCost mtchr fld) -> do
     ns <- selectFields fld mtchr
     resources <- getSpendableResources iid

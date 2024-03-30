@@ -45,7 +45,7 @@ instance RunMessage BlessedBlade where
         else pure a
     SkillTestEnds _ _ -> do
       pure . BlessedBlade $ attrs & setMeta @Bool True
-    When (RevealSkillTestChaosTokens _) -> do
+    BeforeRevealChaosTokens -> do
       void $ runMaybeT $ do
         source <- MaybeT getSkillTestSource
         guard $ isAbilitySource attrs 1 source

@@ -12,6 +12,10 @@ import Control.Lens (Prism', prism')
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 
+data Sealing = Sealing ChaosTokenMatcher | SealUpTo Int ChaosTokenMatcher
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data Keyword
   = Alert
   | Aloof
@@ -27,7 +31,7 @@ data Keyword
   | Exceptional
   | Permanent
   | Researched CampaignLogKey
-  | Seal ChaosTokenMatcher
+  | Seal Sealing
   | Bonded Int CardCode
   | Patrol LocationMatcher
   | Swarming GameValue

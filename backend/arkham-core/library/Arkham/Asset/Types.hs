@@ -253,6 +253,9 @@ instance Be AssetAttrs AssetMatcher where
 instance HasField "id" AssetAttrs AssetId where
   getField = assetId
 
+instance HasField "meta" AssetAttrs Value where
+  getField = assetMeta
+
 instance HasField "flipped" AssetAttrs Bool where
   getField = assetFlipped
 
@@ -461,3 +464,6 @@ allyWith f cardDef (health, sanity) g =
 
 discardWhenNoUses :: AssetAttrs -> AssetAttrs
 discardWhenNoUses = whenNoUsesL ?~ DiscardWhenNoUses
+
+setMeta :: ToJSON a => a -> AssetAttrs -> AssetAttrs
+setMeta a = metaL .~ toJSON a

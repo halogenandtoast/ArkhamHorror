@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.ChaosBag.Base
+import Arkham.Keyword (Sealing (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Placement
@@ -64,7 +65,9 @@ instance RunMessage DrElliHorowitz where
           let
             sealChaosTokenMatchers =
               flip mapMaybe (setToList $ cdKeywords $ toCardDef c) $ \case
-                Keyword.Seal matcher -> Just $ matcher
+                Keyword.Seal sealing -> case sealing of
+                  Sealing matcher -> Just matcher
+                  SealUpTo _ matcher -> Just matcher
                 _ -> Nothing
           allM
             (\matcher -> anyM (\t -> matchChaosToken iid t matcher) tokens)

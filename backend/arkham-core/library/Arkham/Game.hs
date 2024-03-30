@@ -1933,6 +1933,8 @@ getAssetsMatching matcher = do
         isSanityDamageable a =
           fieldP AssetRemainingSanity (maybe False (> 0)) (toId a)
       filterM isSanityDamageable assets
+    AssetWithoutSealedTokens -> do
+      pure $ filter (null . attr assetSealedChaosTokens) as
     AssetWithHighestPrintedCost matcher' -> do
       matches' <- getAssetsMatching matcher'
       maxes <$> forToSnd matches' (field AssetCost . toId)

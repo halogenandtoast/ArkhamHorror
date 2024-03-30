@@ -402,6 +402,10 @@ allEvents =
     , SomeEventCard inTheShadows
     , --- rogue [tic]
       SomeEventCard faustianBargain
+    , --- mystic [tic]
+      SomeEventCard wardOfRadiance
+    , --- neutral [tic]
+      SomeEventCard temptFate
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard sweepingKick1

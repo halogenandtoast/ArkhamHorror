@@ -23,6 +23,7 @@ import Arkham.Game.Helpers hiding (
  )
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..), Investigator, investigatorResources)
+import Arkham.Keyword (Sealing (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Types (Location)
 import Arkham.Placement
@@ -175,7 +176,9 @@ createActiveCostForAdditionalCardCosts iid card = do
       _ -> Nothing
     sealChaosTokenCosts =
       flip mapMaybe (setToList $ cdKeywords $ toCardDef card) $ \case
-        Keyword.Seal matcher -> Just $ Cost.SealCost matcher
+        Keyword.Seal sealing -> case sealing of
+          Sealing matcher -> Just $ Cost.SealCost matcher
+          SealUpTo n matcher -> Just $ Cost.UpTo n $ Cost.SealCost matcher
         _ -> Nothing
     cost = mconcat $ additionalCosts <> sealChaosTokenCosts
 
@@ -241,7 +244,9 @@ createActiveCostForCard iid card isPlayAction windows' = do
         else Cost.ResourceCost resources
     sealChaosTokenCosts =
       flip mapMaybe (setToList $ cdKeywords $ toCardDef card) $ \case
-        Keyword.Seal matcher -> Just $ Cost.SealCost matcher
+        Keyword.Seal sealing -> case sealing of
+          Sealing matcher -> Just $ Cost.SealCost matcher
+          SealUpTo n matcher -> Just $ Cost.UpTo n $ Cost.SealCost matcher
         _ -> Nothing
 
   additionalCosts <- flip mapMaybeM allModifiers $ \case

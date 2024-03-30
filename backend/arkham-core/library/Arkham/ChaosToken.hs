@@ -118,6 +118,12 @@ instance IsLabel "autofail" ChaosTokenFace where
 instance IsLabel "eldersign" ChaosTokenFace where
   fromLabel = ElderSign
 
+instance IsLabel "bless" ChaosTokenFace where
+  fromLabel = BlessToken
+
+instance IsLabel "curse" ChaosTokenFace where
+  fromLabel = CurseToken
+
 isNumberChaosToken :: ChaosTokenFace -> Bool
 isNumberChaosToken = \case
   PlusOne -> True

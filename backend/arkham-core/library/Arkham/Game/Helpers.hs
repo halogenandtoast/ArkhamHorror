@@ -899,8 +899,11 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         AdditionalCost x -> Just x
         _ -> Nothing
       sealedChaosTokenCost = flip mapMaybe (setToList $ cdKeywords pcDef) $ \case
-        Keyword.Seal matcher ->
-          if costStatus == PaidCost then Nothing else Just $ SealCost matcher
+        Keyword.Seal sealing -> case sealing of
+          Keyword.Sealing matcher -> do
+            if costStatus == PaidCost then Nothing else Just $ SealCost matcher
+          Keyword.SealUpTo n matcher -> do
+            if costStatus == PaidCost then Nothing else Just $ UpTo n (SealCost matcher)
         _ -> Nothing
 
     investigateCosts <-

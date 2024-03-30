@@ -650,6 +650,9 @@ allAssets =
     , SomeAssetCard occultScraps
     , SomeAssetCard seaChangeHarpoon
     , SomeAssetCard silassNet
+    , --- guardian [tic]
+      SomeAssetCard blessedBlade
+    , SomeAssetCard riteOfSanctification
     , --- seeker [tic]
       SomeAssetCard cryptographicCipher
     , --- mystic [tic]

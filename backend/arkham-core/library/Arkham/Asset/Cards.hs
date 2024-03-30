@@ -17,6 +17,7 @@ import Arkham.Criteria qualified as Criteria
 import Arkham.Customization
 import Arkham.EncounterSet hiding (Dreamlands, Dunwich)
 import Arkham.GameValue
+import Arkham.Keyword (Keyword, Sealing (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Name
@@ -68,6 +69,24 @@ storyWeakness cardCode name encounterSet =
 
 uses :: UseType -> Int -> Uses GameValue
 uses uType = Uses uType . Static
+
+seal :: IsSealing s => s -> Keyword
+seal (toSealing -> s) = Keyword.Seal s
+
+class IsSealing s where
+  toSealing :: s -> Sealing
+
+instance IsSealing Sealing where
+  toSealing = id
+  {-# INLINE toSealing #-}
+
+instance IsSealing ChaosTokenMatcher where
+  toSealing s = Sealing s
+  {-# INLINE toSealing #-}
+
+instance IsSealing Token.ChaosTokenFace where
+  toSealing = Sealing . ChaosTokenFaceIs
+  {-# INLINE toSealing #-}
 
 baseAsset
   :: Maybe (EncounterSet, Int)
@@ -145,6 +164,7 @@ allPlayerAssetCards =
       , berettaM19184
       , blackjack
       , blackjack2
+      , blessedBlade
       , bloodPact3
       , bloodstainedDagger
       , bookOfShadows1
@@ -452,6 +472,7 @@ allPlayerAssetCards =
       , relicOfAgesRepossessThePast
       , relicOfAgesUnleashTheTimestream
       , researchLibrarian
+      , riteOfSanctification
       , riteOfSeeking
       , riteOfSeeking2
       , riteOfSeeking4
@@ -2296,7 +2317,7 @@ theCodexOfAges =
     { cdSkills = [#willpower, #wild]
     , cdCardTraits = setFromList [Item, Relic, Tome, Blessed]
     , cdSlots = [#hand]
-    , cdKeywords = singleton (Keyword.Seal $ ChaosTokenFaceIs Token.ElderSign)
+    , cdKeywords = singleton (seal Token.ElderSign)
     , cdUnique = True
     , cdDeckRestrictions = [Signature "04004"]
     }
@@ -2388,7 +2409,7 @@ theChthonianStone =
     , cdUnique = True
     , cdKeywords =
         singleton
-          $ Keyword.Seal
+          $ seal
           $ ChaosTokenMatchesAny
           $ map ChaosTokenFaceIs [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
     }
@@ -2399,7 +2420,7 @@ protectiveIncantation1 =
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Ritual, Blessed]
     , cdSlots = [#arcane]
-    , cdKeywords = singleton (Keyword.Seal $ ChaosTokenFaceIsNot Token.AutoFail)
+    , cdKeywords = singleton (seal $ ChaosTokenFaceIsNot Token.AutoFail)
     , cdLevel = 1
     }
 
@@ -2653,7 +2674,7 @@ crystallineElderSign3 =
     , cdSlots = [#accessory]
     , cdKeywords =
         singleton
-          $ Keyword.Seal
+          $ seal
           $ ChaosTokenMatchesAny
           $ map ChaosTokenFaceIs [Token.PlusOne, Token.ElderSign]
     , cdLevel = 3
@@ -2811,7 +2832,7 @@ shardsOfTheVoid3 :: CardDef
 shardsOfTheVoid3 =
   (asset "04310" "Shards of the Void" 3 Mystic)
     { cdSkills = [#willpower, #combat]
-    , cdKeywords = singleton $ Keyword.Seal $ ChaosTokenFaceIs Token.Zero
+    , cdKeywords = singleton $ seal Token.Zero
     , cdCardTraits = singleton Spell
     , cdUses = uses Charge 3
     , cdSlots = [#arcane]
@@ -2822,7 +2843,7 @@ sealOfTheSeventhSign5 :: CardDef
 sealOfTheSeventhSign5 =
   (asset "04311" ("Seal of the Seventh Sign" <:> "Over the Threshold and Beyond") 4 Mystic)
     { cdSkills = [#willpower, #wild]
-    , cdKeywords = singleton $ Keyword.Seal $ ChaosTokenFaceIs Token.AutoFail
+    , cdKeywords = singleton $ seal Token.AutoFail
     , cdCardTraits = setFromList [Spell, Ritual]
     , cdUses = uses Charge 7
     , cdSlots = [#arcane]
@@ -4026,6 +4047,23 @@ silassNet =
     , cdUnique = True
     }
 
+blessedBlade :: CardDef
+blessedBlade =
+  (asset "07018" "Blessed Blade" 3 Guardian)
+    { cdCardTraits = setFromList [Item, Weapon, Melee, Blessed]
+    , cdSkills = [#combat]
+    , cdSlots = [#hand]
+    }
+
+riteOfSanctification :: CardDef
+riteOfSanctification =
+  (asset "07019" "Rite of Sanctification" 0 Guardian)
+    { cdCardTraits = setFromList [Ritual, Blessed]
+    , cdSkills = [#intellect]
+    , cdSlots = [#arcane]
+    , cdKeywords = singleton $ seal $ SealUpTo 5 #bless
+    }
+
 cryptographicCipher :: CardDef
 cryptographicCipher =
   (asset "07021" "Cryptographic Cipher" 3 Seeker)
@@ -4513,7 +4551,7 @@ theChthonianStone3 =
     , cdUses = uses Charge 3
     , cdKeywords =
         singleton
-          $ Keyword.Seal
+          $ seal
           $ ChaosTokenMatchesAny
           $ map ChaosTokenFaceIs [Token.Skull, Token.Cultist, Token.Tablet, Token.ElderThing]
     }

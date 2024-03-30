@@ -192,6 +192,7 @@ data AssetMatcher
   | AssetWithClues ValueMatcher
   | AssetWithTokens ValueMatcher Token
   | AssetWithHighestPrintedCost AssetMatcher
+  | AssetWithoutSealedTokens
   | AssetInSlot SlotType
   | AssetInTwoHandSlots
   | AssetIs CardCode
@@ -642,6 +643,9 @@ instance Semigroup ExtendedCardMatcher where
   x <> ExtendedCardMatches xs = ExtendedCardMatches (x : xs)
   x <> y = ExtendedCardMatches [x, y]
 
+instance IsLabel "any" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #any
+
 instance IsLabel "ally" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #ally
 
@@ -707,6 +711,9 @@ data CardMatcher
 
 instance IsString CardMatcher where
   fromString = CardWithTitle . fromString
+
+instance IsLabel "any" CardMatcher where
+  fromLabel = AnyCard
 
 instance IsLabel "tome" CardMatcher where
   fromLabel = CardWithTrait Tome
@@ -1102,6 +1109,9 @@ instance IsLabel "eldersign" ChaosTokenMatcher where
 
 instance IsLabel "autofail" ChaosTokenMatcher where
   fromLabel = ChaosTokenFaceIs AutoFail
+
+instance IsLabel "bless" ChaosTokenMatcher where
+  fromLabel = ChaosTokenFaceIs BlessToken
 
 instance Semigroup ChaosTokenMatcher where
   AnyChaosToken <> x = x

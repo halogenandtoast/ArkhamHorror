@@ -430,6 +430,7 @@ library
       Arkham.Asset.Cards.BerettaM19184
       Arkham.Asset.Cards.Blackjack
       Arkham.Asset.Cards.Blackjack2
+      Arkham.Asset.Cards.BlessedBlade
       Arkham.Asset.Cards.BloodPact3
       Arkham.Asset.Cards.BloodstainedDagger
       Arkham.Asset.Cards.BookOfShadows1
@@ -752,6 +753,7 @@ library
       Arkham.Asset.Cards.RelicOfAgesUnleashTheTimestream
       Arkham.Asset.Cards.ResearchLibrarian
       Arkham.Asset.Cards.RichardUptonPickman
+      Arkham.Asset.Cards.RiteOfSanctification
       Arkham.Asset.Cards.RiteOfSeeking
       Arkham.Asset.Cards.RiteOfSeeking2
       Arkham.Asset.Cards.RiteOfSeeking4
@@ -1501,6 +1503,7 @@ library
       Arkham.Event.Cards.Taunt3
       Arkham.Event.Cards.Teamwork
       Arkham.Event.Cards.TelescopicSight3
+      Arkham.Event.Cards.TemptFate
       Arkham.Event.Cards.ThePaintedWorld
       Arkham.Event.Cards.TheStarsAreRight
       Arkham.Event.Cards.ThinkOnYourFeet
@@ -1521,6 +1524,7 @@ library
       Arkham.Event.Cards.WardOfProtection
       Arkham.Event.Cards.WardOfProtection2
       Arkham.Event.Cards.WardOfProtection5
+      Arkham.Event.Cards.WardOfRadiance
       Arkham.Event.Cards.WarningShot
       Arkham.Event.Cards.Waylay
       Arkham.Event.Cards.WellMaintained1

@@ -196,7 +196,11 @@ instance RunMessage SkillTest where
           if null tokensTreatedAsRevealed
             then push (RunSkillTest iid)
             else do
-              pushAll [RevealSkillTestChaosTokens iid, RunSkillTest iid]
+              pushAll
+                [ When (RevealSkillTestChaosTokens iid)
+                , RevealSkillTestChaosTokens iid
+                , RunSkillTest iid
+                ]
               for_ tokensTreatedAsRevealed $ \chaosTokenFace -> do
                 t <- getRandom
                 pushAll

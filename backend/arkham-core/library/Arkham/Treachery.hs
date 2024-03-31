@@ -424,6 +424,8 @@ allTreacheries =
       -- signature
       SomeTreacheryCard crisisOfFaith
     , SomeTreacheryCard sirenCall
+    , -- basic weakness
+      SomeTreacheryCard dreadCurse
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

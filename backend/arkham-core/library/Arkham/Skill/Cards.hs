@@ -76,6 +76,7 @@ allPlayerSkillCards =
       , perception
       , perception2
       , planOfAction
+      , predestined
       , prescient
       , promiseOfPower
       , prophesy
@@ -580,6 +581,13 @@ promiseOfPower :: CardDef
 promiseOfPower =
   (skill "07032" "Promise of Power" [#wild, #wild, #wild, #wild] Mystic)
     { cdCardTraits = setFromList [Practiced, Cursed]
+    }
+
+predestined :: CardDef
+predestined =
+  (skill "07035" "Predestined" [] Survivor)
+    { cdCardTraits = setFromList [Fortune, Blessed]
+    , cdCommitRestrictions = [MaxOnePerTest]
     }
 
 unrelenting1 :: CardDef

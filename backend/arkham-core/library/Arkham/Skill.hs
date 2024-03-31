@@ -100,6 +100,7 @@ allSkills =
     , SomeSkillCard whispersFromTheDeep
     , SomeSkillCard planOfAction
     , SomeSkillCard promiseOfPower
+    , SomeSkillCard predestined
     , SomeSkillCard unrelenting1
     , SomeSkillCard defensiveStance1
     , SomeSkillCard surveyTheArea1

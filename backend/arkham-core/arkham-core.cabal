@@ -874,6 +874,7 @@ library
       Arkham.Asset.Cards.ThirtyTwoColt2
       Arkham.Asset.Cards.TimewornBrand5
       Arkham.Asset.Cards.TimeWornLocket
+      Arkham.Asset.Cards.TokenOfFaith
       Arkham.Asset.Cards.TomeOfRituals
       Arkham.Asset.Cards.Tonys38LongColt
       Arkham.Asset.Cards.ToothOfEztli
@@ -1417,6 +1418,7 @@ library
       Arkham.Event.Cards.IveGotAPlan2
       Arkham.Event.Cards.IveHadWorse2
       Arkham.Event.Cards.IveHadWorse4
+      Arkham.Event.Cards.KeepFaith
       Arkham.Event.Cards.KnowledgeIsPower
       Arkham.Event.Cards.LessonLearned2
       Arkham.Event.Cards.LetGodSortThemOut

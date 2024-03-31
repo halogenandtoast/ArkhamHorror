@@ -173,6 +173,7 @@ allPlayerEventCards =
       , iveGotAPlan2
       , iveHadWorse2
       , iveHadWorse4
+      , keepFaith
       , knowledgeIsPower
       , lessonLearned2
       , letGodSortThemOut
@@ -2411,6 +2412,15 @@ wardOfRadiance =
     , cdCardTraits = setFromList [Insight, Blessed]
     , cdFastWindow =
         Just $ DrawCard #when Anyone (CanCancelRevelationEffect $ basic NonWeaknessTreachery) EncounterDeck
+    }
+
+keepFaith :: CardDef
+keepFaith =
+  (event "07034" "Keep Faith" 1 Survivor)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Fortune, Blessed]
+    , cdFastWindow = Just FastPlayerWindow
+    , cdCriteria = Just Criteria.HasRemainingBlessTokens
     }
 
 temptFate :: CardDef

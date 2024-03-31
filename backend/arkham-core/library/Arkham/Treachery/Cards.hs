@@ -78,6 +78,7 @@ allPlayerTreacheryCards =
       , detachedFromReality
       , doomed
       , drawingTheSign
+      , dreadCurse
       , falseAwakening
       , falseAwakeningPointOfNoReturn
       , finalRhapsody
@@ -2024,6 +2025,12 @@ crisisOfFaith =
 sirenCall :: CardDef
 sirenCall =
   (weakness "07016" "Siren Call")
+    { cdCardTraits = singleton Curse
+    }
+
+dreadCurse :: CardDef
+dreadCurse =
+  (basicWeakness "07039" "Dread Curse")
     { cdCardTraits = singleton Curse
     }
 

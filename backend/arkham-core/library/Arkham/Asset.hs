@@ -656,6 +656,7 @@ allAssets =
     , SomeAssetCard riteOfSanctification
     , --- seeker [tic]
       SomeAssetCard cryptographicCipher
+    , SomeAssetCard crypticGrimoireUntranslated
     , --- mystic [tic]
       SomeAssetCard swordCane
     , -- Devil Reef

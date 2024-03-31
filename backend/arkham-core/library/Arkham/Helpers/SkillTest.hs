@@ -355,8 +355,9 @@ getIsCommittable investigator card = do
                 && (any (`member` skillIcons) icons || (null icons && toCardType pc == SkillType))
                 && passesCommitRestrictions
                 && not prevented
+                && affordable
             EncounterCard ec ->
-              pure $ CommittableTreachery `elem` (cdCommitRestrictions $ toCardDef ec)
+              pure $ CommittableTreachery `elem` cdCommitRestrictions (toCardDef ec)
             VengeanceCard _ -> error "vengeance card"
 
 skillTestLabel

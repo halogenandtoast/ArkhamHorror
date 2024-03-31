@@ -44,6 +44,8 @@ instance RunMessage SkillAttrs where
         Just attached | target == attached -> push $ toDiscard source a
         _ -> pure ()
       pure a
+    Discarded (isTarget a -> True) _ _ -> do
+      runMessage (RemoveFromPlay (toSource a)) a
     RemoveFromPlay source | isSource a source -> do
       windowMsg <-
         checkWindows

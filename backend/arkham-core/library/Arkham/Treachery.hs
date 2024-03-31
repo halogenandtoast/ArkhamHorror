@@ -426,6 +426,7 @@ allTreacheries =
     , SomeTreacheryCard sirenCall
     , -- basic weakness
       SomeTreacheryCard dreadCurse
+    , SomeTreacheryCard dayOfReckoning
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

@@ -75,6 +75,7 @@ allPlayerTreacheryCards =
       , curseOfTheRougarou
       , damned
       , darkFuture
+      , dayOfReckoning
       , detachedFromReality
       , doomed
       , drawingTheSign
@@ -2032,6 +2033,12 @@ dreadCurse :: CardDef
 dreadCurse =
   (basicWeakness "07039" "Dread Curse")
     { cdCardTraits = singleton Curse
+    }
+
+dayOfReckoning :: CardDef
+dayOfReckoning =
+  (basicWeakness "07040" "Day of Reckoning")
+    { cdCardTraits = singleton Endtimes
     }
 
 theHarbinger :: CardDef

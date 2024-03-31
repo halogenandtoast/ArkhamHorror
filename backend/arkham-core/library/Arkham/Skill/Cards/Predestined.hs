@@ -25,9 +25,8 @@ instance RunMessage Predestined where
         push
           $ chooseOrRunOne
             player
-            [ Label ("Add " <> pluralize n "{bless} tokens") $ replicate n (AddChaosToken #bless)
-            , Label ("Remove " <> pluralize x "{curse} tokens") $ replicate x (RemoveChaosToken #curse)
-            ]
+          $ [Label ("Add " <> pluralize n "{bless} token") $ replicate n (AddChaosToken #bless) | n > 0]
+          <> [Label ("Remove " <> pluralize x "{curse} token") $ replicate x (RemoveChaosToken #curse) | x > 0]
 
       pure s
     _ -> Predestined <$> runMessage msg attrs

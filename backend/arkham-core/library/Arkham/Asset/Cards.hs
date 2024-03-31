@@ -201,6 +201,7 @@ allPlayerAssetCards =
       , coltVestPocket2
       , cornered2
       , combatTraining1
+      , crypticGrimoireUntranslated
       , cryptographicCipher
       , crystalPendulum
       , crystallineElderSign3
@@ -4081,6 +4082,14 @@ cryptographicCipher =
     , cdSkills = [#intellect]
     , cdSlots = [#hand]
     , cdUses = uses Secret 3
+    }
+
+crypticGrimoireUntranslated :: CardDef
+crypticGrimoireUntranslated =
+  (asset "07022" ("Cryptic Grimoire" <:> "Untranslated") 3 Seeker)
+    { cdCardTraits = setFromList [Item, Tome, Occult]
+    , cdSkills = [#wild]
+    , cdSlots = [#hand]
     }
 
 swordCane :: CardDef

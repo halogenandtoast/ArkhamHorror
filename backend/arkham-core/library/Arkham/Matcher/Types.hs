@@ -1113,6 +1113,9 @@ instance IsLabel "autofail" ChaosTokenMatcher where
 instance IsLabel "bless" ChaosTokenMatcher where
   fromLabel = ChaosTokenFaceIs BlessToken
 
+instance IsLabel "curse" ChaosTokenMatcher where
+  fromLabel = ChaosTokenFaceIs CurseToken
+
 instance Semigroup ChaosTokenMatcher where
   AnyChaosToken <> x = x
   x <> AnyChaosToken = x

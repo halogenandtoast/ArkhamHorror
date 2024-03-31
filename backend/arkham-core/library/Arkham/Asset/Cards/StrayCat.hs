@@ -19,9 +19,9 @@ strayCat = ally StrayCat Cards.strayCat (1, 0)
 
 instance HasAbilities StrayCat where
   getAbilities (StrayCat a) =
-    [ controlledAbility a 1 (ControlsThis <> exists (EnemyAt YourLocation))
+    [ controlledAbility a 1 (exists (EnemyAt YourLocation))
         $ FastAbility
-        $ DiscardCost FromPlay (toTarget a)
+        $ discardCost a
     ]
 
 instance RunMessage StrayCat where

@@ -663,6 +663,9 @@ allAssets =
       SomeAssetCard swordCane
     , --- survivor [tic]
       SomeAssetCard tokenOfFaith
+    , -- In Too Deep
+      --- guardian [itp]
+      SomeAssetCard riotWhistle
     , -- Devil Reef
       --- guardian [def]
       SomeAssetCard keenEye

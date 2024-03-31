@@ -477,6 +477,7 @@ allPlayerAssetCards =
       , relicOfAgesRepossessThePast
       , relicOfAgesUnleashTheTimestream
       , researchLibrarian
+      , riotWhistle
       , riteOfSanctification
       , riteOfSeeking
       , riteOfSeeking2
@@ -4141,6 +4142,14 @@ tokenOfFaith =
   (asset "07033" "Token of Faith" 2 Survivor)
     { cdCardTraits = setFromList [Item, Charm]
     , cdSkills = [#intellect]
+    , cdSlots = [#accessory]
+    }
+
+riotWhistle :: CardDef
+riotWhistle =
+  (asset "07108" "Riot Whistle" 2 Guardian)
+    { cdCardTraits = setFromList [Item, Tool]
+    , cdSkills = [#willpower]
     , cdSlots = [#accessory]
     }
 

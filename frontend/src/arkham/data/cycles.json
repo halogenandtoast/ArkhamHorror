@@ -8,6 +8,7 @@
   { "name": "The Innsmouth Conspiracy", "cycle": 7, "code": "tic" },
   { "name": "The Edge of the Earth", "cycle": 8, "code": "eoe" },
   { "name": "The Scarlet Keys", "cycle": 9, "code": "tsk" },
+  { "name": "The Feast of Hemloch Vale", "cycle": 10, "code": "fhv" },
   { "name": "Return to...", "cycle": 50, "code": "return" },
   { "name": "Investigator Starter Decks", "cycle": 60, "code": "investigator" },
   { "name": "Side Stories", "cycle": 70, "code": "side_stories" },

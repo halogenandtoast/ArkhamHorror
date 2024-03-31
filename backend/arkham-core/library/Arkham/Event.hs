@@ -407,7 +407,8 @@ allEvents =
     , --- rogue [tic]
       SomeEventCard faustianBargain
     , --- mystic [tic]
-      SomeEventCard wardOfRadiance
+      SomeEventCard tidesOfFate
+    , SomeEventCard wardOfRadiance
     , --- neutral [tic]
       SomeEventCard temptFate
     , -- Edge of the Earth

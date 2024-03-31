@@ -423,6 +423,9 @@ allEvents =
       SomeEventCard moneyTalks2
     , --- mystic [eote]
       SomeEventCard parallelFates2
+    , -- The Feast of Hemloch Vale
+      --- survivor [fhv]
+      SomeEventCard keepFaith2
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

@@ -174,6 +174,7 @@ allPlayerEventCards =
       , iveHadWorse2
       , iveHadWorse4
       , keepFaith
+      , keepFaith2
       , knowledgeIsPower
       , lessonLearned2
       , letGodSortThemOut
@@ -2492,6 +2493,16 @@ parallelFates2 =
     , cdLevel = 2
     , cdCriteria =
         Just $ Criteria.exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck]
+    }
+
+keepFaith2 :: CardDef
+keepFaith2 =
+  (event "10124" "Keep Faith" 0 Survivor)
+    { cdSkills = [#willpower, #willpower]
+    , cdCardTraits = setFromList [Fortune, Blessed]
+    , cdFastWindow = Just FastPlayerWindow
+    , cdCriteria = Just Criteria.HasRemainingBlessTokens
+    , cdLevel = 2
     }
 
 dynamiteBlast2 :: CardDef

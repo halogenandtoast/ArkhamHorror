@@ -34,10 +34,11 @@ import Arkham.Treachery.Types as X
 
 import Arkham.Ability.Type
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Id
 import Arkham.Message qualified as Msg
 import Arkham.Token
-import Arkham.Window (mkAfter)
+import Arkham.Window (mkAfter, mkWindow)
 import Arkham.Window qualified as Window
 
 addHiddenToHand :: InvestigatorId -> TreacheryAttrs -> Message
@@ -51,6 +52,11 @@ on = flip treacheryOn
 
 instance RunMessage TreacheryAttrs where
   runMessage msg a@TreacheryAttrs {..} = case msg of
+    Msg.SealedChaosToken token card | toCardId card == toCardId a -> do
+      pure $ a & sealedChaosTokensL %~ (token :)
+    Msg.UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
+    Msg.RemoveAllChaosTokens face -> do
+      pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
     Msg.InvestigatorEliminated iid | InvestigatorTarget iid `elem` treacheryAttachedTarget a -> do
       push $ toDiscard GameSource a
       pure a
@@ -94,5 +100,18 @@ instance RunMessage TreacheryAttrs where
       pure a
     ReplaceAgenda aid _ -> do
       pushWhen (treacheryOnAgenda aid a) $ toDiscard (toSource a) (toTarget a)
+      pure a
+    Discarded (isTarget a -> True) _ _ -> do
+      runMessage (RemoveFromPlay (toSource a)) a
+    RemoveFromPlay source | isSource a source -> do
+      windowMsg <-
+        checkWindows
+          ( (`mkWindow` Window.LeavePlay (toTarget a))
+              <$> [#when, #at, #after]
+          )
+      pushAll
+        $ windowMsg
+        : [UnsealChaosToken token | token <- treacherySealedChaosTokens]
+          <> [RemovedFromPlay source]
       pure a
     _ -> pure a

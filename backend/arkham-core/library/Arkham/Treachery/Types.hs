@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
+import Arkham.ChaosToken (ChaosToken)
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
@@ -75,6 +76,7 @@ data TreacheryAttrs = TreacheryAttrs
   , treacheryResolved :: Set InvestigatorId -- who resolved effects on this
   , treacheryDiscardedBy :: Maybe InvestigatorId
   , treacheryMeta :: Value
+  , treacherySealedChaosTokens :: [ChaosToken]
   }
   deriving stock (Show, Eq, Generic)
 
@@ -157,6 +159,7 @@ instance FromJSON TreacheryAttrs where
     treacheryResolved <- o .: "resolved"
     treacheryDiscardedBy <- o .: "discardedBy"
     treacheryMeta <- o .:? "meta" .!= Null
+    treacherySealedChaosTokens <- o .:? "sealedChaosTokens" .!= []
 
     pure $ TreacheryAttrs {..}
 
@@ -267,6 +270,7 @@ treacheryWith f cardDef g =
             , treacheryResolved = mempty
             , treacheryDiscardedBy = Nothing
             , treacheryMeta = Null
+            , treacherySealedChaosTokens = []
             }
     }
 

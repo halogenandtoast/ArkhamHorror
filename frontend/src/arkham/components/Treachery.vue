@@ -8,6 +8,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Treachery';
 
 export interface Props {
@@ -18,6 +19,10 @@ export interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), { attached: false })
+
+const emits = defineEmits<{ choose: [value: number] }>()
+
+const choose = (idx: number) => emits('choose', idx)
 
 const debug = useDebug()
 const image = computed(() => {
@@ -107,6 +112,7 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
         type="doom"
         :amount="doom"
       />
+      <Token v-for="(sealedToken, index) in treachery.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
     </div>
 
     <template v-if="debug.active">
@@ -147,9 +153,15 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
   display: flex;
   align-self: flex-start;
   align-items: flex-end;
-  * {
-    transform: scale(0.6);
+  flex-wrap: wrap;
+  :deep(.token-container) {
+    width: unset;
   }
+  :deep(img) {
+    width: 20px;
+    height: auto;
+  }
+
 
   pointer-events: none;
 }

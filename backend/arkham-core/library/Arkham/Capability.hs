@@ -3,6 +3,7 @@
 
 module Arkham.Capability where
 
+import Arkham.GameValue
 import Arkham.Matcher.Patterns
 import Arkham.Matcher.Types
 import Arkham.Modifier
@@ -23,6 +24,7 @@ instance Capable InvestigatorMatcher where
                 InvestigatorWithoutModifier CannotDrawCards <> InvestigatorWithoutModifier CannotManipulateDeck
             }
       , gain = GainCapabilities {resources = InvestigatorWithoutModifier CannotGainResources}
+      , spend = SpendCapabilities {resources = InvestigatorWithSpendableResources (GreaterThan $ Static 0)}
       , have =
           HaveCapabilities
             { cards =
@@ -41,6 +43,7 @@ data Capabilities a = Capabilities
   , draw :: DrawCapabilities a
   , manipulate :: ManipulateCapabilities a
   , gain :: GainCapabilities a
+  , spend :: SpendCapabilities a
   , have :: HaveCapabilities a
   , affect :: AffectCapabilities a
   , target :: TargetCapabilities a
@@ -69,6 +72,11 @@ data DrawCapabilities a = DrawCapabilities
   deriving stock (Functor)
 
 data GainCapabilities a = GainCapabilities
+  { resources :: a
+  }
+  deriving stock (Functor)
+
+data SpendCapabilities a = SpendCapabilities
   { resources :: a
   }
   deriving stock (Functor)

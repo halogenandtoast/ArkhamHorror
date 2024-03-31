@@ -211,6 +211,7 @@ allPlayerAssetCards =
       , daisysToteBagAdvanced
       , darioElAmin
       , darkHorse
+      , darkRitual
       , davidRenfield
       , dayanaEsperence3
       , deathXiii1
@@ -594,6 +595,8 @@ allPlayerAssetCards =
       , trueGrit
       , tryAndTryAgain1
       , tryAndTryAgain3
+      , twentyFiveAutomatic
+      , twentyFiveAutomatic2
       , twilaKatherinePrice3
       , twilightBlade
       , untilTheEndOfTime
@@ -4093,6 +4096,25 @@ crypticGrimoireUntranslated =
     , cdSlots = [#hand]
     }
 
+twentyFiveAutomatic :: CardDef
+twentyFiveAutomatic =
+  fast
+    $ (asset "07025" ".25 Automatic" 4 Rogue)
+      { cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+      , cdSkills = [#agility]
+      , cdSlots = [#hand]
+      , cdUses = uses Ammo 4
+      }
+
+darkRitual :: CardDef
+darkRitual =
+  (asset "07026" "Dark Ritual" 1 Rogue)
+    { cdCardTraits = setFromList [Ritual, Cursed]
+    , cdSkills = [#intellect]
+    , cdSlots = [#arcane]
+    , cdKeywords = singleton $ seal $ SealUpTo 5 #curse
+    }
+
 swordCane :: CardDef
 swordCane =
   (asset "07029" "Sword Cane" 2 Mystic)
@@ -4143,6 +4165,17 @@ ancestralKnowledge3 =
       { cdCardTraits = singleton Talent
       , cdKeywords = setFromList [Keyword.Exceptional]
       , cdLevel = 3
+      }
+
+twentyFiveAutomatic2 :: CardDef
+twentyFiveAutomatic2 =
+  fast
+    $ (asset "07305" ".25 Automatic" 4 Rogue)
+      { cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+      , cdSkills = [#combat, #agility]
+      , cdSlots = [#hand]
+      , cdUses = uses Ammo 4
+      , cdLevel = 2
       }
 
 livreDeibon :: CardDef

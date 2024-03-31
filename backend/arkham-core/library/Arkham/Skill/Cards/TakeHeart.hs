@@ -20,7 +20,7 @@ takeHeart = skill TakeHeart Cards.takeHeart
 instance RunMessage TakeHeart where
   runMessage msg s@(TakeHeart attrs) = case msg of
     FailedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == toId attrs -> do
-      drawing <- drawCards iid attrs 2
-      pushAll [drawing, TakeResources iid 2 (toSource attrs) False]
+      mdrawing <- drawCardsIfCan iid attrs 2
+      pushAll $ toList mdrawing <> [TakeResources iid 2 (toSource attrs) False]
       pure s
     _ -> TakeHeart <$> runMessage msg attrs

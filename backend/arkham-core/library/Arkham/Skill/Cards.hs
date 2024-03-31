@@ -75,6 +75,7 @@ allPlayerSkillCards =
       , overpower2
       , perception
       , perception2
+      , planOfAction
       , prescient
       , promiseOfPower
       , prophesy
@@ -567,6 +568,12 @@ whispersFromTheDeep =
     { cdCardTraits = singleton Curse
     , cdCardSubType = Just Weakness
     , cdCardInHandEffects = True
+    }
+
+planOfAction :: CardDef
+planOfAction =
+  (skill "07024" "Plan of Action" [#wild] Seeker)
+    { cdCardTraits = setFromList [Practiced]
     }
 
 promiseOfPower :: CardDef

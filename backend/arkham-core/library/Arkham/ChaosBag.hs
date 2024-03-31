@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-dodgy-imports #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.ChaosBag (
@@ -21,7 +20,6 @@ import Arkham.Helpers.Message
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Matcher (ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIsNot))
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Source
@@ -29,7 +27,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
-import Control.Monad.State hiding (filterM)
+import Control.Monad.State.Strict (StateT, gets, modify', runStateT)
 
 isUndecided :: ChaosBagStepState -> Bool
 isUndecided (Undecided _) = True
@@ -493,18 +491,24 @@ instance RunMessage ChaosBag where
       tokens'' <- traverse createChaosToken tokens'
       pure $ c & chaosTokensL .~ tokens'' & setAsideChaosTokensL .~ mempty
     ResetChaosTokens _source -> do
-      returnBlessed <-
+      returnAllBlessed <-
         getIsSkillTest >>= \case
           True -> hasModifier SkillTestTarget ReturnBlessedToChaosBag
           False -> pure False
 
-      let excludes = [CurseToken] <> [BlessToken | not returnBlessed]
+      let excludes = [CurseToken] <> [BlessToken | not returnAllBlessed]
       -- TODO: We need to decide which tokens to keep, i.e. Blessed Blade (4)
+
+      tokensToReturn <- forMaybeM chaosBagSetAsideChaosTokens \token -> do
+        if token.face == #bless
+          then do
+            returnBlessed <- if returnAllBlessed then pure True else hasModifier token ReturnBlessedToChaosBag
+            pure $ guard returnBlessed $> token
+          else pure $ guard (token.face `notElem` excludes) $> token
+
       pure
         $ c
-        & ( chaosTokensL
-              <>~ filter ((`notElem` excludes) . chaosTokenFace) chaosBagSetAsideChaosTokens
-          )
+        & (chaosTokensL <>~ tokensToReturn)
         & (setAsideChaosTokensL .~ mempty)
         & (choiceL .~ Nothing)
     RequestChaosTokens source miid revealStrategy strategy -> do

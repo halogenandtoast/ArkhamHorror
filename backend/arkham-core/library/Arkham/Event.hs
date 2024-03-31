@@ -402,6 +402,8 @@ allEvents =
     , SomeEventCard inTheShadows
     , --- guardian [tic]
       SomeEventCard handOfFate
+    , --- seeker [tic]
+      SomeEventCard deepKnowledge
     , --- rogue [tic]
       SomeEventCard faustianBargain
     , --- mystic [tic]

@@ -165,6 +165,7 @@ allPlayerAssetCards =
       , blackjack
       , blackjack2
       , blessedBlade
+      , blessedBlade4
       , bloodPact3
       , bloodstainedDagger
       , bookOfPsalms
@@ -4342,6 +4343,15 @@ chuckFergus2 =
     , cdSlots = [#ally]
     , cdLevel = 2
     , cdUnique = True
+    }
+
+blessedBlade4 :: CardDef
+blessedBlade4 =
+  (asset "10034" "Blessed Blade" 3 Guardian)
+    { cdCardTraits = setFromList [Item, Weapon, Melee, Blessed]
+    , cdSkills = [#willpower, #combat]
+    , cdSlots = [#hand]
+    , cdLevel = 4
     }
 
 physicalTraining2 :: CardDef

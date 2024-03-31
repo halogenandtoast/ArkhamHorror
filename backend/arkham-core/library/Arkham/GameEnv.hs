@@ -147,6 +147,9 @@ instance MonadRandom GameT where
 getSkillTest :: HasGame m => m (Maybe SkillTest)
 getSkillTest = gameSkillTest <$> getGame
 
+getIsSkillTest :: HasGame m => m Bool
+getIsSkillTest = isJust <$> getSkillTest
+
 getActiveCosts :: HasGame m => m [ActiveCost]
 getActiveCosts = toList . gameActiveCost <$> getGame
 

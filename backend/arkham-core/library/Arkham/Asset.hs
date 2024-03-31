@@ -708,6 +708,9 @@ allAssets =
     , SomeAssetCard fingerprintKit4
     , --- rogue [tsk]
       SomeAssetCard chuckFergus2
+    , -- The Feast of Hemloch Vale
+      --- guardian [tsk]
+      SomeAssetCard blessedBlade4
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

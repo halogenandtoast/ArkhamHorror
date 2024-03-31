@@ -16,13 +16,16 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Message
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Matcher (ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIsNot))
+import Arkham.Modifier
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Source
+import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
@@ -489,11 +492,18 @@ instance RunMessage ChaosBag where
     SetChaosTokens tokens' -> do
       tokens'' <- traverse createChaosToken tokens'
       pure $ c & chaosTokensL .~ tokens'' & setAsideChaosTokensL .~ mempty
-    ResetChaosTokens _source ->
+    ResetChaosTokens _source -> do
+      returnBlessed <-
+        getIsSkillTest >>= \case
+          True -> hasModifier SkillTestTarget ReturnBlessedToChaosBag
+          False -> pure False
+
+      let excludes = [CurseToken] <> [BlessToken | not returnBlessed]
+      -- TODO: We need to decide which tokens to keep, i.e. Blessed Blade (4)
       pure
         $ c
         & ( chaosTokensL
-              <>~ filter ((`notElem` [CurseToken, BlessToken]) . chaosTokenFace) chaosBagSetAsideChaosTokens
+              <>~ filter ((`notElem` excludes) . chaosTokenFace) chaosBagSetAsideChaosTokens
           )
         & (setAsideChaosTokensL .~ mempty)
         & (choiceL .~ Nothing)

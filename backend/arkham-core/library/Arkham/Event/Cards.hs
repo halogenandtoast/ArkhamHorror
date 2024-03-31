@@ -96,6 +96,7 @@ allPlayerEventCards =
       , darkProphecy
       , decipheredReality5
       , decoy
+      , deepKnowledge
       , delayTheInevitable
       , delveTooDeep
       , denyExistence
@@ -2371,6 +2372,16 @@ handOfFate =
             (affectsOthers $ InvestigatorAt YourLocation)
             (CancelableEnemyAttack AnyEnemyAttack)
             AnyEnemy
+    }
+
+deepKnowledge :: CardDef
+deepKnowledge =
+  (event "07023" "Deep Knowledge" 0 Seeker)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Insight, Cursed]
+    , cdAdditionalCost = Just $ AddCurseTokenCost 2
+    , cdCriteria =
+        Just $ Criteria.exists $ affectsOthers $ can.draw.cards <> InvestigatorAt YourLocation
     }
 
 faustianBargain :: CardDef

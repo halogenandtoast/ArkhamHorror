@@ -409,6 +409,8 @@ allEvents =
     , --- mystic [tic]
       SomeEventCard tidesOfFate
     , SomeEventCard wardOfRadiance
+    , --- survivor [tic]
+      SomeEventCard keepFaith
     , --- neutral [tic]
       SomeEventCard temptFate
     , -- Edge of the Earth

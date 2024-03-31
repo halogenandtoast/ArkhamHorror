@@ -587,6 +587,7 @@ allPlayerAssetCards =
       , thirtyTwoColt
       , thirtyTwoColt2
       , timewornBrand5
+      , tokenOfFaith
       , tonys38LongColt
       , toothOfEztli
       , trackShoes
@@ -4133,6 +4134,14 @@ swordCane =
     , cdSkills = [#combat]
     , cdSlots = [#hand]
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+    }
+
+tokenOfFaith :: CardDef
+tokenOfFaith =
+  (asset "07033" "Token of Faith" 2 Survivor)
+    { cdCardTraits = setFromList [Item, Charm]
+    , cdSkills = [#intellect]
+    , cdSlots = [#accessory]
     }
 
 keenEye :: CardDef

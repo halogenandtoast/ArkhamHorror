@@ -661,6 +661,8 @@ allAssets =
       SomeAssetCard twentyFiveAutomatic
     , --- mystic [tic]
       SomeAssetCard swordCane
+    , --- survivor [tic]
+      SomeAssetCard tokenOfFaith
     , -- Devil Reef
       --- guardian [def]
       SomeAssetCard keenEye

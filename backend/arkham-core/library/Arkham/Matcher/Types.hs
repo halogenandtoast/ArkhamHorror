@@ -978,6 +978,7 @@ data SkillTestMatcher
   | SkillTestMatches [SkillTestMatcher]
   | NotSkillTest SkillTestMatcher
   | SkillTestFromRevelation
+  | SkillTestWithRevealedChaosToken ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 data SourceMatcher

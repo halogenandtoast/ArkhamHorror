@@ -2683,6 +2683,9 @@ targetMatches s = \case
 enemyMatches :: HasGame m => EnemyId -> Matcher.EnemyMatcher -> m Bool
 enemyMatches !enemyId !mtchr = elem enemyId <$> select mtchr
 
+chaosTokenMatches :: HasGame m => ChaosToken -> Matcher.ChaosTokenMatcher -> m Bool
+chaosTokenMatches !tkn !mtchr = elem tkn <$> select mtchr
+
 locationMatches
   :: HasGame m
   => InvestigatorId
@@ -2834,6 +2837,8 @@ skillTestMatches iid source st = \case
   Matcher.UsingThis -> pure $ source == skillTestSource st
   Matcher.SkillTestSourceMatches sourceMatcher ->
     sourceMatches (skillTestSource st) sourceMatcher
+  Matcher.SkillTestWithRevealedChaosToken matcher ->
+    anyM (`chaosTokenMatches` matcher) $ skillTestRevealedChaosTokens st
   Matcher.SkillTestFromRevelation -> pure $ skillTestIsRevelation st
   Matcher.SkillTestForAction actionMatcher -> case skillTestAction st of
     Just action -> actionMatches iid action actionMatcher

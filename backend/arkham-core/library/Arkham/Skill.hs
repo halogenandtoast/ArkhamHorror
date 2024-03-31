@@ -101,6 +101,7 @@ allSkills =
     , SomeSkillCard planOfAction
     , SomeSkillCard promiseOfPower
     , SomeSkillCard predestined
+    , SomeSkillCard beloved
     , SomeSkillCard unrelenting1
     , SomeSkillCard defensiveStance1
     , SomeSkillCard surveyTheArea1

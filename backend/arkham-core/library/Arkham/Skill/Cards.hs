@@ -29,6 +29,7 @@ allPlayerSkillCards =
       , allIn5
       , anythingYouCanDoBetter
       , arrogance
+      , beloved
       , bruteForce1
       , copycat3
       , cunning
@@ -588,6 +589,12 @@ predestined =
   (skill "07035" "Predestined" [] Survivor)
     { cdCardTraits = setFromList [Fortune, Blessed]
     , cdCommitRestrictions = [MaxOnePerTest]
+    }
+
+beloved :: CardDef
+beloved =
+  (skill "07036" "Beloved" [#willpower, #agility, #wild] Survivor)
+    { cdCardTraits = setFromList [Innate, Blessed]
     }
 
 unrelenting1 :: CardDef

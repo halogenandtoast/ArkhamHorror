@@ -657,6 +657,8 @@ allAssets =
     , --- seeker [tic]
       SomeAssetCard cryptographicCipher
     , SomeAssetCard crypticGrimoireUntranslated
+    , --- rogue [tic]
+      SomeAssetCard twentyFiveAutomatic
     , --- mystic [tic]
       SomeAssetCard swordCane
     , -- Devil Reef
@@ -673,6 +675,9 @@ allAssets =
     , -- Into the Maelstrom
       --- seeker [itm]
       SomeAssetCard ancestralKnowledge3
+    , --- rogue [itm]
+      SomeAssetCard twentyFiveAutomatic2
+    , SomeAssetCard darkRitual
     , -- Edge of the Earth
       --- signature [eote]
       SomeAssetCard livreDeibon

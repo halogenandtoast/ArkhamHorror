@@ -480,6 +480,7 @@ library
       Arkham.Asset.Cards.DanielChesterfield
       Arkham.Asset.Cards.DarioElAmin
       Arkham.Asset.Cards.DarkHorse
+      Arkham.Asset.Cards.DarkRitual
       Arkham.Asset.Cards.DavidRenfield
       Arkham.Asset.Cards.DayanaEsperence3
       Arkham.Asset.Cards.DeathXIII1
@@ -882,6 +883,8 @@ library
       Arkham.Asset.Cards.TrueGrit
       Arkham.Asset.Cards.TryAndTryAgain1
       Arkham.Asset.Cards.TryAndTryAgain3
+      Arkham.Asset.Cards.TwentyFiveAutomatic
+      Arkham.Asset.Cards.TwentyFiveAutomatic2
       Arkham.Asset.Cards.TwilaKatherinePrice3
       Arkham.Asset.Cards.TwilightBlade
       Arkham.Asset.Cards.UntilTheEndOfTime

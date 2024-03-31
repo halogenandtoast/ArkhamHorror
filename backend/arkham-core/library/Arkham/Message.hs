@@ -584,6 +584,7 @@ data Message
   | FailSkillTest
   | FailedAttackEnemy InvestigatorId EnemyId
   | FailedSkillTest InvestigatorId (Maybe Action) Source Target SkillTestType Int
+  | ChoseEnemy InvestigatorId Source EnemyId
   | FightEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
   | FindAndDrawEncounterCard InvestigatorId CardMatcher IncludeDiscard
   | FindEncounterCard InvestigatorId Target [ScenarioZone] CardMatcher

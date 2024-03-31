@@ -779,7 +779,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push
       $ chooseOne
         player
-        [ FightLabel eid [FightEnemy iid eid source mTarget skillType isAction]
+        [ FightLabel eid [ChoseEnemy iid source eid, FightEnemy iid eid source mTarget skillType isAction]
         | eid <- enemyIds
         ]
     pure a

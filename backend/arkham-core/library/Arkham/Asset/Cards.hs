@@ -425,6 +425,7 @@ allPlayerAssetCards =
       , newspaper2
       , nightmareBauble3
       , nineOfRods3
+      , obfuscation
       , observed4
       , occultLexicon
       , occultLexicon3
@@ -4114,6 +4115,16 @@ darkRitual =
     , cdSlots = [#arcane]
     , cdKeywords = singleton $ seal $ SealUpTo 5 #curse
     }
+
+obfuscation :: CardDef
+obfuscation =
+  fast
+    $ (asset "07027" "Obfuscation" 2 Rogue)
+      { cdCardTraits = setFromList [Spell]
+      , cdSkills = [#combat]
+      , cdSlots = [#arcane]
+      , cdUses = uses Charge 3
+      }
 
 swordCane :: CardDef
 swordCane =

@@ -678,6 +678,7 @@ allAssets =
     , --- rogue [itm]
       SomeAssetCard twentyFiveAutomatic2
     , SomeAssetCard darkRitual
+    , SomeAssetCard obfuscation
     , -- Edge of the Earth
       --- signature [eote]
       SomeAssetCard livreDeibon

@@ -272,6 +272,7 @@ allPlayerEventCards =
       , thePaintedWorld
       , thinkOnYourFeet
       , thinkOnYourFeet2
+      , tidesOfFate
       , timeWarp2
       , trialByFire
       , trialByFire3
@@ -2392,6 +2393,15 @@ faustianBargain =
     , cdAdditionalCost = Just $ AddCurseTokenCost 2
     , cdCriteria =
         Just $ Criteria.exists $ affectsOthers $ can.gain.resources <> InvestigatorAt YourLocation
+    }
+
+tidesOfFate :: CardDef
+tidesOfFate =
+  (event "07030" "Tides of Fate" 1 Mystic)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Spell, Blessed]
+    , cdFastWindow = Just $ oneOf [FastPlayerWindow, RoundBegins #when]
+    , cdCriteria = Just $ Criteria.ChaosTokenCountIs #bless (atLeast 1)
     }
 
 wardOfRadiance :: CardDef

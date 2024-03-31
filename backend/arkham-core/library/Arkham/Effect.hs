@@ -121,6 +121,7 @@ import Arkham.Event.Events (
   stormOfSpiritsEffect,
   telescopicSight3Effect,
   thePaintedWorldEffect,
+  tidesOfFateEffect,
   uncageTheSoulEffect,
   vantagePointEffect,
   willToSurviveEffect,
@@ -391,6 +392,7 @@ allEffects =
     , ("06325", SomeEffect theEyeOfTruth5Effect)
     , ("07004", SomeEffect dexterDrakeEffect)
     , ("07012", SomeEffect showmanshipEffect)
+    , ("07030", SomeEffect tidesOfFateEffect)
     , ("09041", SomeEffect empiricalHypothesisEffect)
     , ("50013", SomeEffect twilightBladeEffect)
     , ("50044", SomeEffect jeremiahPierceEffect)
@@ -401,7 +403,6 @@ allEffects =
     , ("60101", SomeEffect nathanielChoEffect)
     , ("60103", SomeEffect tommyMalloyEffect)
     , ("60220", SomeEffect libraryDocent1Effect)
-    , ("60226", SomeEffect $ noop "60226")
     , ("60232", SomeEffect miskatonicArchaeologyFunding4Effect)
     , ("60301", SomeEffect winifredHabbamockEffect)
     , ("60305", SomeEffect lockpicksEffect)

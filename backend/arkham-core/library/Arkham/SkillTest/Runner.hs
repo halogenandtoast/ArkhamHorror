@@ -272,6 +272,10 @@ instance RunMessage SkillTest where
         (CheckWindow [iid] [mkWindow Timing.After (Window.RevealChaosToken iid token)])
       pure $ s & revealedChaosTokensL %~ (token :)
     RevealSkillTestChaosTokens iid -> do
+      -- NOTE: this exists here because of Sacred Covenant (2), we want to
+      -- cancel the modifiers but retain the effects so the effects are queued,
+      -- but if the token is returned it will no longer be counted. If we need
+      -- to move this window we will need an alternate solution.
       afterMsg <- checkWindows [mkAfter $ Window.SkillTestStep RevealChaosTokenStep]
       revealedChaosTokenFaces <- flip
         concatMapM

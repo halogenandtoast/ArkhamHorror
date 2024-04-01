@@ -1610,12 +1610,20 @@ getLocationsMatching lmatcher = do
               valid <- flip anyM paths \case
                 Empty -> pure True
                 (mids :|> fin) -> do
-                  startCost <- AsIfAtLocationCost loc <$> getLeaveCost loc
-                  lastCost <- AsIfAtLocationCost fin <$> getEnterCost fin
+                  startCost <- getLeaveCost loc
+                  lastCost <- case mids of
+                    Empty -> AsIfAtLocationCost loc <$> getEnterCost fin
+                    (_ :|> lastMid) -> AsIfAtLocationCost lastMid <$> getEnterCost fin
+
                   midCosts <-
                     foldMapM
-                      (\mid -> AsIfAtLocationCost mid <$> liftA2 (<>) (getEnterCost mid) (getLeaveCost mid))
-                      (toList mids)
+                      ( \(mid, prevLoc) ->
+                          liftA2
+                            (<>)
+                            (AsIfAtLocationCost prevLoc <$> getEnterCost mid)
+                            (AsIfAtLocationCost mid <$> getLeaveCost mid)
+                      )
+                      (zip (toList mids) (loc : toList mids))
 
                   getCanAffordCost investigator source [] [] (startCost <> lastCost <> midCosts)
               pure $ guard valid $> loc

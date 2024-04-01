@@ -34,10 +34,16 @@ instance RunMessage RighteousHunt1 where
         n <- lift $ min horror <$> getRemainingBlessTokens
         pure
           $ targetLabel enemy
-          $ [Move $ (move attrs iid loc) {moveMeans = OneAtATime}, EnemyEngageInvestigator enemy iid]
+          $ [ Move $ (move attrs iid loc) {moveMeans = OneAtATime}
+            , HandleTargetChoice iid (toSource attrs) (toTarget enemy)
+            ]
           <> replicate n (AddChaosToken #bless)
 
       player <- getPlayer iid
       push $ chooseOne player choices
+      pure e
+    HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
+      canEngage <- eid <=~> CanEngageEnemy (toSource attrs)
+      pushWhen canEngage (EnemyEngageInvestigator eid iid)
       pure e
     _ -> RighteousHunt1 <$> runMessage msg attrs

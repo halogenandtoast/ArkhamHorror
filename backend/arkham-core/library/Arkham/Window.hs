@@ -19,6 +19,7 @@ import Arkham.Id
 import Arkham.Matcher (LocationMatcher, MovesVia)
 import Arkham.Phase (Phase)
 import Arkham.SkillTest.Base
+import Arkham.SkillTest.Step
 import Arkham.SkillTest.Type
 import Arkham.Source (Source)
 import Arkham.Target (Target)
@@ -124,6 +125,7 @@ data WindowType
   | AtBeginningOfRound
   | AtEndOfRound
   | GameBegins
+  | SkillTestStep SkillTestStep
   | ChosenRandomLocation LocationId
   | CommittedCard InvestigatorId Card
   | CommittedCards InvestigatorId [Card]

@@ -768,6 +768,7 @@ library
       Arkham.Asset.Cards.RobesOfEndlessNight2
       Arkham.Asset.Cards.Rolands38Special
       Arkham.Asset.Cards.RunicAxe
+      Arkham.Asset.Cards.SacredCovenant2
       Arkham.Asset.Cards.Safeguard
       Arkham.Asset.Cards.Safeguard2
       Arkham.Asset.Cards.SawedOffShotgun5
@@ -2462,6 +2463,7 @@ library
       Arkham.SkillTest
       Arkham.SkillTest.Base
       Arkham.SkillTest.Runner
+      Arkham.SkillTest.Step
       Arkham.SkillTest.Type
       Arkham.SkillTestResult
       Arkham.SkillType

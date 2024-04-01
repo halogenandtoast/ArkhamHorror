@@ -33,6 +33,7 @@ data DeckRestriction
   = Signature InvestigatorId
   | CampaignModeOnly
   | PerDeckLimit Int
+  | TraitPerDeckLimit Trait Int
   | MultiplayerOnly
   | PurchaseAtDeckCreation
   deriving stock (Show, Eq, Ord, Data)

@@ -1346,6 +1346,10 @@ passesCriteria iid mcard source windows' = \case
   Criteria.ActExists matcher -> selectAny matcher
   Criteria.AssetExists matcher -> do
     selectAny (Matcher.replaceYouMatcher iid matcher)
+  Criteria.DifferentAssetsExist matcher1 matcher2 -> do
+    m1 <- select (Matcher.replaceYouMatcher iid matcher1)
+    m2 <- select (Matcher.replaceYouMatcher iid matcher2)
+    pure $ sort m1 /= sort m2
   Criteria.EventExists matcher -> do
     selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.ExcludeWindowAssetExists matcher -> case getWindowAsset windows' of

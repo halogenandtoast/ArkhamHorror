@@ -188,6 +188,7 @@ data AssetMatcher
   | AssetNotAtUsesX
   | AssetWithUseType UseType
   | AssetWithUses UseType
+  | AssetWithoutUses
   | AssetWithUseCount UseType ValueMatcher
   | AssetWithDoom ValueMatcher
   | AssetWithClues ValueMatcher

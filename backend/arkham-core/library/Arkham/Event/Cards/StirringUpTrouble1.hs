@@ -1,8 +1,4 @@
-module Arkham.Event.Cards.StirringUpTrouble1 (
-  stirringUpTrouble1,
-  StirringUpTrouble1 (..),
-)
-where
+module Arkham.Event.Cards.StirringUpTrouble1 (stirringUpTrouble1, StirringUpTrouble1 (..)) where
 
 import Arkham.Classes
 import Arkham.Discover

@@ -164,6 +164,7 @@ allPlayerAssetCards =
       , berettaM19184
       , blackjack
       , blackjack2
+      , blasphemousCovenant2
       , blessedBlade
       , blessedBlade4
       , bloodPact3
@@ -4171,6 +4172,14 @@ eldritchSophist =
     , cdSlots = [#ally]
     , cdUses = uses Secret 3
     }
+
+blasphemousCovenant2 :: CardDef
+blasphemousCovenant2 =
+  permanent
+    $ (asset "07113" "Blasphemous Covenant" 0 Seeker)
+      { cdCardTraits = setFromList [Covenant, Cursed]
+      , cdDeckRestrictions = [TraitPerDeckLimit Covenant 1]
+      }
 
 keenEye :: CardDef
 keenEye =

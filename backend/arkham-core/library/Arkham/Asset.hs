@@ -669,6 +669,7 @@ allAssets =
     , SomeAssetCard sacredCovenant2
     , --- seeker [itp]
       SomeAssetCard eldritchSophist
+    , SomeAssetCard blasphemousCovenant2
     , -- Devil Reef
       --- guardian [def]
       SomeAssetCard keenEye

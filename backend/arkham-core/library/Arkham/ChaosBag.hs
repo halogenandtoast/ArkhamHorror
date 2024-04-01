@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiWayIf #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.ChaosBag (
@@ -500,11 +501,14 @@ instance RunMessage ChaosBag where
       -- TODO: We need to decide which tokens to keep, i.e. Blessed Blade (4)
 
       tokensToReturn <- forMaybeM chaosBagSetAsideChaosTokens \token -> do
-        if token.face == #bless
-          then do
-            returnBlessed <- if returnAllBlessed then pure True else hasModifier token ReturnBlessedToChaosBag
-            pure $ guard returnBlessed $> token
-          else pure $ guard (token.face `notElem` excludes) $> token
+        if
+          | token.face == #bless -> do
+              returnBlessed <- if returnAllBlessed then pure True else hasModifier token ReturnBlessedToChaosBag
+              pure $ guard returnBlessed $> token
+          | token.face == #curse -> do
+              returnCursed <- hasModifier token ReturnCursedToChaosBag
+              pure $ guard returnCursed $> token
+          | otherwise -> pure $ guard (token.face `notElem` excludes) $> token
 
       pure
         $ c
@@ -643,7 +647,7 @@ instance RunMessage ChaosBag where
       pure
         $ c
         & (chaosTokensL %~ (<> tokens'))
-        & (setAsideChaosTokensL %~ traceShowId . (\\ tokens') . traceShowId)
+        & (setAsideChaosTokensL %~ (\\ tokens'))
         & (choiceL .~ Nothing)
     AddChaosToken chaosTokenFace -> do
       token <- createChaosToken chaosTokenFace

@@ -50,6 +50,9 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
     x <- getRemainingCurseTokens
     pure $ x >= n
   SkillTestCost {} -> pure True
+  AsIfAtLocationCost lid c -> do
+    withModifiers' iid (toModifiers source [AsIfAt lid])
+      $ getCanAffordCost iid source actions windows' c
   ShuffleAttachedCardIntoDeckCost target cardMatcher -> do
     case target of
       AssetTarget aid -> fieldMap AssetCardsUnderneath (any (`cardMatch` cardMatcher)) aid

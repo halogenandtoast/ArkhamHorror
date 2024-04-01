@@ -19,7 +19,7 @@ data Movement = Movement
   }
   deriving stock (Show, Eq)
 
-data MovementMeans = Direct
+data MovementMeans = Direct | OneAtATime
   deriving stock (Show, Eq)
 
 uncancellableMove :: Movement -> Movement

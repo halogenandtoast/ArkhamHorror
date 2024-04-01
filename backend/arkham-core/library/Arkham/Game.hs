@@ -174,6 +174,7 @@ import Data.Map.Monoidal.Strict (getMonoidalMap)
 import Data.Map.Monoidal.Strict qualified as MonoidalMap
 import Data.Map.Strict qualified as Map
 import Data.Monoid (First (..))
+import Data.Sequence ((|>), pattern Empty, pattern (:|>))
 import Data.Sequence qualified as Seq
 import Data.Set qualified as Set
 import Data.These
@@ -1344,7 +1345,7 @@ replaceMatcherSources ability = case abilitySource ability of
   _ -> pure [ability]
 
 getLocationsMatching
-  :: (HasCallStack, HasGame m) => LocationMatcher -> m [Location]
+  :: forall m. (HasCallStack, HasGame m) => LocationMatcher -> m [Location]
 getLocationsMatching lmatcher = do
   g <- getGame
   let allowEmpty = gameAllowEmptySpaces g
@@ -1522,11 +1523,12 @@ getLocationsMatching lmatcher = do
         pure $ filter ((`elem` matches') . toId) ls
       CanEnterLocation investigatorMatcher -> do
         iid <- selectJust investigatorMatcher
-        cannotEnter <- mapMaybe (preview _CannotEnter) <$> getModifiers iid
+        blocked <- getLocationsMatching BlockedLocation
+        cannotEnter <- (<> map toId blocked) . mapMaybe (preview _CannotEnter) <$> getModifiers iid
         pure $ filter ((`notElem` cannotEnter) . toId) ls
       CanMoveToLocation investigatorMatcher source matcher -> do
         iid <- selectJust investigatorMatcher
-        inner <- select matcher
+        inner <- select (matcher <> not_ BlockedLocation)
         filterM (andM . sequence [pure . (`elem` inner), getCanMoveTo iid source] . toId) ls
       NearestLocationToLocation start matcher -> do
         matchingLocationIds <- map toId <$> getLocationsMatching matcher
@@ -1552,15 +1554,87 @@ getLocationsMatching lmatcher = do
               distance
               (foldr (unionWith (<>) . distanceAggregates) mempty distances)
         pure $ filter ((`elem` matches') . toId) ls
-      LocationWithDistanceFromAtLeast distance start matcher -> do
-        candidates <- map toId <$> getLocationsMatching matcher
-        distances <-
-          distanceSingletons
-            <$> evalStateT
-              (markDistances start (pure . (`elem` candidates)) mempty)
-              (LPState (pure start) (singleton start) mempty)
-        let matches' = Map.keys $ Map.filter (>= distance) distances
-        pure $ filter ((`elem` matches') . toId) ls
+      LocationWithDistanceFromAtLeast distance startMatcher matcher -> do
+        mstart <- selectOne startMatcher
+        case mstart of
+          Just start -> do
+            candidates <- map toId <$> getLocationsMatching matcher
+            distances <-
+              distanceSingletons
+                <$> evalStateT
+                  (markDistances start (pure . (`elem` candidates)) mempty)
+                  (LPState (pure start) (singleton start) mempty)
+            let matches' = Map.keys $ Map.filter (>= distance) distances
+            pure $ filter ((`elem` matches') . toId) ls
+          Nothing -> pure []
+      LocationWithAccessiblePath source distance investigatorMatcher destinationMatcher -> do
+        -- we want to get all possible paths within the distance, we need to
+        -- make sure the investigator can enter the location (the location is
+        -- not blocked, and no modifier prevents them), and we need to make
+        -- sure the entire cost for entering and leaving are covered (so the
+        -- first location in the path is only the leave cost, the last is only
+        -- the enter, and everything in between is both).
+
+        investigator <- selectJust investigatorMatcher
+        mstart <- field InvestigatorLocation investigator
+        case mstart of
+          Just start -> do
+            let
+              go :: Int -> LocationId -> Seq LocationId -> StateT PathState (ReaderT Game m) ()
+              go 0 _ _ = pure ()
+              go n loc path = do
+                doesMatch <- lift $ loc <=~> destinationMatcher
+                ps@PathState {..} <- get
+                put
+                  $ ps
+                    { _psVisitedLocations = insertSet loc _psVisitedLocations
+                    , _psPaths = if doesMatch then Map.insertWith (<>) loc [path] _psPaths else _psPaths
+                    }
+                connections <-
+                  lift $ select $ AccessibleFrom (LocationWithId loc) <> CanEnterLocation investigatorMatcher
+                for_ connections \conn -> do
+                  unless (conn `elem` _psVisitedLocations) do
+                    go (n - 1) conn (path |> loc)
+            PathState {_psPaths} <-
+              execStateT (go (distance + 1) start mempty) (PathState (singleton start) mempty)
+
+            let
+              getEnterCost loc = do
+                mods <- getModifiers loc
+                pure $ mconcat [c | AdditionalCostToEnter c <- mods]
+              getLeaveCost loc = do
+                mods <- getModifiers loc
+                pure $ mconcat [c | AdditionalCostToLeave c <- mods]
+
+            valids <- forMaybeM (mapToList _psPaths) \(loc, paths) -> do
+              valid <- flip anyM paths \case
+                Empty -> pure True
+                (mids :|> fin) -> do
+                  startCost <- AsIfAtLocationCost loc <$> getLeaveCost loc
+                  lastCost <- AsIfAtLocationCost fin <$> getEnterCost fin
+                  midCosts <-
+                    foldMapM
+                      (\mid -> AsIfAtLocationCost mid <$> liftA2 (<>) (getEnterCost mid) (getLeaveCost mid))
+                      (toList mids)
+
+                  getCanAffordCost investigator source [] [] (startCost <> lastCost <> midCosts)
+              pure $ guard valid $> loc
+
+            pure $ filter ((`elem` valids) . toId) ls
+          Nothing -> pure []
+      LocationWithDistanceFromAtMost distance startMatcher matcher -> do
+        mstart <- selectOne startMatcher
+        case mstart of
+          Just start -> do
+            candidates <- map toId <$> getLocationsMatching matcher
+            distances <-
+              distanceSingletons
+                <$> evalStateT
+                  (markDistances start (pure . (`elem` candidates)) mempty)
+                  (LPState (pure start) (singleton start) mempty)
+            let matches' = Map.keys $ Map.filter (<= distance) distances
+            pure $ filter ((`elem` matches') . toId) ls
+          Nothing -> pure []
       FarthestLocationFromAll matcher -> do
         iids <- getInvestigatorIds
         candidates <- map toId <$> getLocationsMatching matcher
@@ -1720,8 +1794,7 @@ getLocationsMatching lmatcher = do
                 . groupOn snd
                 $ sortOn snd candidates
         pure $ filter ((`member` matches') . toId) ls
-      BlockedLocation ->
-        flip filterM ls $ \l -> notElem Blocked <$> getModifiers (toTarget l)
+      BlockedLocation -> flip filterM ls $ \l -> l `hasModifier` Blocked
       LocationWithoutClues -> pure $ filter (attr locationWithoutClues) ls
       LocationWithDefeatedEnemyThisRound -> do
         iids <- allInvestigatorIds
@@ -3479,6 +3552,12 @@ data LPState = LPState
   , _lpParents :: Map LocationId LocationId
   }
 
+data PathState = PathState
+  { _psVisitedLocations :: Set LocationId
+  , _psPaths :: Map LocationId [Seq LocationId]
+  }
+  deriving stock (Show)
+
 getLongestPath
   :: HasGame m => LocationId -> (LocationId -> m Bool) -> m [LocationId]
 getLongestPath !initialLocation !target = do
@@ -3499,7 +3578,16 @@ markDistances
   -> (LocationId -> m Bool)
   -> Map LocationId [LocationId]
   -> StateT LPState m (Map Int [LocationId])
-markDistances initialLocation target extraConnectionsMap = do
+markDistances initialLocation target extraConnectionsMap = markDistancesWithInclusion initialLocation target (const (pure True)) extraConnectionsMap
+
+markDistancesWithInclusion
+  :: HasGame m
+  => LocationId
+  -> (LocationId -> m Bool)
+  -> (LocationId -> m Bool) -- can be included?
+  -> Map LocationId [LocationId]
+  -> StateT LPState m (Map Int [LocationId])
+markDistancesWithInclusion initialLocation target canInclude extraConnectionsMap = do
   LPState searchQueue visitedSet parentsMap <- get
   if Seq.null searchQueue
     then do
@@ -3511,10 +3599,11 @@ markDistances initialLocation target extraConnectionsMap = do
         newVisitedSet = insertSet nextLoc visitedSet
         extraConnections = findWithDefault [] nextLoc extraConnectionsMap
       adjacentCells <-
-        nub
+        lift
+          $ filterM canInclude
+          . nub
           . (<> extraConnections)
-          <$> lift
-            (fieldMap LocationConnectedLocations setToList nextLoc)
+          =<< fieldMap LocationConnectedLocations setToList nextLoc
       let
         unvisitedNextCells = filter (`notMember` visitedSet) adjacentCells
         newSearchQueue =
@@ -3525,7 +3614,7 @@ markDistances initialLocation target extraConnectionsMap = do
             parentsMap
             unvisitedNextCells
       put (LPState newSearchQueue newVisitedSet newParentsMap)
-      markDistances initialLocation target extraConnectionsMap
+      markDistancesWithInclusion initialLocation target canInclude extraConnectionsMap
  where
   getDistances map' = do
     locationIds <- filterM target (keys map')

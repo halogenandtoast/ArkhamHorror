@@ -413,6 +413,9 @@ allEvents =
       SomeEventCard keepFaith
     , --- neutral [tic]
       SomeEventCard temptFate
+    , -- In Too Deep
+      --- guardian [itd]
+      SomeEventCard righteousHunt1
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard sweepingKick1

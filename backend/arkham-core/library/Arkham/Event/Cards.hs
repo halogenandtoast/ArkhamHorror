@@ -12,6 +12,7 @@ import Arkham.Card.CardType
 import Arkham.Card.Cost
 import Arkham.ClassSymbol
 import Arkham.Cost
+import Arkham.Criteria (exists)
 import Arkham.Criteria qualified as Criteria
 import Arkham.Damage
 import Arkham.History.Types
@@ -236,6 +237,7 @@ allPlayerEventCards =
       , recharge2
       , recharge4
       , reliable1
+      , righteousHunt1
       , sacrifice1
       , sceneOfTheCrime
       , scroungeForSupplies
@@ -335,8 +337,8 @@ evidence =
     , cdCriteria =
         Just
           $ Criteria.Criteria
-            [ Criteria.exists $ YourLocation <> LocationWithAnyClues
-            , Criteria.exists $ You <> InvestigatorCanDiscoverCluesAt YourLocation
+            [ exists $ YourLocation <> LocationWithAnyClues
+            , exists $ You <> InvestigatorCanDiscoverCluesAt YourLocation
             ]
     , cdAlternateCardCodes = ["01522"]
     }
@@ -373,7 +375,7 @@ extraAmmunition1 =
     , cdLevel = 1
     , cdCriteria =
         Just
-          $ Criteria.exists
+          $ exists
           $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
           <> AssetWithTrait Firearm
     , cdAlternateCardCodes = ["01526"]
@@ -397,8 +399,8 @@ workingAHunch =
     , cdCriteria =
         Just
           $ Criteria.Criteria
-            [ Criteria.exists $ YourLocation <> LocationWithAnyClues
-            , Criteria.exists $ You <> InvestigatorCanDiscoverCluesAt YourLocation
+            [ exists $ YourLocation <> LocationWithAnyClues
+            , exists $ You <> InvestigatorCanDiscoverCluesAt YourLocation
             ]
     , cdAlternateCardCodes = ["01537"]
     }
@@ -418,7 +420,7 @@ crypticResearch4 =
     , cdLevel = 4
     , cdFastWindow = Just $ DuringTurn You
     , cdAlternateCardCodes = ["01543"]
-    , cdCriteria = Just $ Criteria.exists $ affectsOthers $ InvestigatorAt YourLocation <> can.draw.cards
+    , cdCriteria = Just $ exists $ affectsOthers $ InvestigatorAt YourLocation <> can.draw.cards
     }
 
 elusive :: CardDef
@@ -430,7 +432,7 @@ elusive =
     , cdCriteria =
         Just
           $ Criteria.AnyCriterion
-            [ Criteria.exists EnemyEngagedWithYou
+            [ exists EnemyEngagedWithYou
             , Criteria.CanMoveTo $ RevealedLocation <> LocationWithoutEnemies
             ]
     , cdAlternateCardCodes = ["01550"]
@@ -451,7 +453,7 @@ sneakAttack =
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = setFromList [Tactic]
     , cdCriteria =
-        Just $ Criteria.exists (EnemyAt YourLocation <> ExhaustedEnemy) <> Criteria.CanDealDamage
+        Just $ exists (EnemyAt YourLocation <> ExhaustedEnemy) <> Criteria.CanDealDamage
     , cdAlternateCardCodes = ["01552"]
     }
 
@@ -479,7 +481,7 @@ drawnToTheFlame =
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Insight]
     , cdAlternateCardCodes = ["01564"]
-    , cdCriteria = Just $ Criteria.exists $ You <> can.target.encounterDeck
+    , cdCriteria = Just $ exists $ You <> can.target.encounterDeck
     }
 
 wardOfProtection :: CardDef
@@ -508,7 +510,7 @@ mindWipe1 =
     , cdCardTraits = setFromList [Spell]
     , cdLevel = 1
     , cdFastWindow = Just $ PhaseBegins #after AnyPhase
-    , cdCriteria = Just $ Criteria.exists $ EnemyAt YourLocation <> NonEliteEnemy
+    , cdCriteria = Just $ exists $ EnemyAt YourLocation <> NonEliteEnemy
     , cdAlternateCardCodes = ["01568"]
     }
 
@@ -541,8 +543,8 @@ lookWhatIFound =
     , cdCriteria =
         Just
           $ Criteria.Criteria
-            [ Criteria.exists $ YourLocation <> LocationWithAnyClues
-            , Criteria.exists $ You <> InvestigatorCanDiscoverCluesAt YourLocation
+            [ exists $ YourLocation <> LocationWithAnyClues
+            , exists $ You <> InvestigatorCanDiscoverCluesAt YourLocation
             ]
     , cdAlternateCardCodes = ["01579", "60517"]
     }
@@ -562,7 +564,7 @@ closeCall2 =
     , cdCardTraits = setFromList [Fortune]
     , cdFastWindow =
         Just $ EnemyEvaded #after Anyone (EnemyAt YourLocation <> NonWeaknessEnemy <> NonEliteEnemy)
-    , cdCriteria = Just $ Criteria.exists $ You <> can.target.encounterDeck
+    , cdCriteria = Just $ exists $ You <> can.target.encounterDeck
     , cdLevel = 2
     , cdAlternateCardCodes = ["01583"]
     }
@@ -591,7 +593,7 @@ emergencyCache =
   (event "01088" "Emergency Cache" 0 Neutral)
     { cdCardTraits = setFromList [Supply]
     , cdAlternateCardCodes = ["01588"]
-    , cdCriteria = Just $ Criteria.exists $ You <> can.gain.resources
+    , cdCriteria = Just $ exists $ You <> can.gain.resources
     }
 
 searchForTheTruth :: CardDef
@@ -600,7 +602,7 @@ searchForTheTruth =
     { cdSkills = [#intellect, #intellect, #wild]
     , cdCardTraits = setFromList [Insight]
     , cdDeckRestrictions = [Signature "02002"]
-    , cdCriteria = Just $ Criteria.exists $ You <> can.draw.cards
+    , cdCriteria = Just $ exists $ You <> can.draw.cards
     }
 
 taunt :: CardDef
@@ -617,7 +619,7 @@ teamwork =
     { cdCardTraits = setFromList [Tactic]
     , cdSkills = [#wild]
     , cdCriteria =
-        Just $ Criteria.exists $ affectsOthers $ NotInvestigator You <> InvestigatorAt YourLocation
+        Just $ exists $ affectsOthers $ NotInvestigator You <> InvestigatorAt YourLocation
     }
 
 taunt2 :: CardDef
@@ -637,7 +639,7 @@ shortcut =
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria =
         Just
-          $ Criteria.exists
+          $ exists
           $ affectsOthers
           $ can.move
           <> InvestigatorAt YourLocation
@@ -658,7 +660,7 @@ thinkOnYourFeet =
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = singleton Trick
     , cdFastWindow = Just $ EnemySpawns #when YourLocation AnyEnemy
-    , cdCriteria = Just $ Criteria.exists AccessibleLocation <> Criteria.exists (You <> can.move)
+    , cdCriteria = Just $ exists AccessibleLocation <> exists (You <> can.move)
     }
 
 bindMonster2 :: CardDef
@@ -686,11 +688,11 @@ emergencyAid =
     , cdCriteria =
         Just
           $ Criteria.AnyCriterion
-            [ Criteria.exists
+            [ exists
                 $ HealableAsset ThisCard DamageType
                 $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
                 <> #ally
-            , Criteria.exists
+            , exists
                 $ affectsOthers
                 $ HealableInvestigator ThisCard DamageType
                 $ InvestigatorAt YourLocation
@@ -712,7 +714,7 @@ contraband =
     , cdCardTraits = setFromList [Supply, Illicit]
     , cdCriteria =
         Just
-          $ Criteria.exists
+          $ exists
           $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
           <> oneOf [AssetWithUses Uses.Ammo, AssetWithUses Uses.Supply]
           <> AssetNotAtUseLimit
@@ -723,7 +725,7 @@ delveTooDeep =
   (event "02111" "Delve Too Deep" 1 Mystic)
     { cdCardTraits = setFromList [Insight]
     , cdVictoryPoints = Just 1
-    , cdCriteria = Just $ Criteria.exists $ You <> can.target.encounterDeck
+    , cdCriteria = Just $ exists $ You <> can.target.encounterDeck
     }
 
 -- TODO: Oops might not be playable if 0 damage would be dealt, we might want
@@ -734,7 +736,7 @@ oops =
     { cdSkills = [#combat, #combat]
     , cdCardTraits = singleton Fortune
     , cdCriteria =
-        Just $ Criteria.exists (EnemyAt YourLocation <> NotEnemy AttackedEnemy) <> Criteria.CanDealDamage
+        Just $ exists (EnemyAt YourLocation <> NotEnemy AttackedEnemy) <> Criteria.CanDealDamage
     , cdFastWindow =
         Just
           $ SkillTestResult #after You (WhileAttackingAnEnemy EnemyEngagedWithYou)
@@ -750,7 +752,7 @@ flare1 =
     , cdCardTraits = singleton Tactic
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = 1
-    , cdCriteria = Just $ Criteria.exists $ affectsOthers can.manipulate.deck
+    , cdCriteria = Just $ exists $ affectsOthers can.manipulate.deck
     }
 
 standTogether3 :: CardDef
@@ -760,8 +762,8 @@ standTogether3 =
     , cdCardTraits = singleton Spirit
     , cdCriteria =
         Just
-          $ Criteria.exists (affectsOthers $ InvestigatorAt YourLocation <> NotYou)
-          <> Criteria.exists
+          $ exists (affectsOthers $ InvestigatorAt YourLocation <> NotYou)
+          <> exists
             (affectsOthers $ InvestigatorAt YourLocation <> oneOf [can.gain.resources, can.draw.cards])
     , cdLevel = 3
     }
@@ -819,7 +821,7 @@ emergencyCache2 =
     { cdCardTraits = setFromList [Supply]
     , cdLevel = 2
     , cdAlternateCardCodes = ["01693"]
-    , cdCriteria = Just $ Criteria.exists $ You <> can.gain.resources
+    , cdCriteria = Just $ exists $ You <> can.gain.resources
     }
 
 ifItBleeds :: CardDef
@@ -835,7 +837,7 @@ exposeWeakness1 =
     { cdSkills = [#intellect, #combat, #combat]
     , cdCardTraits = singleton Insight
     , cdFastWindow = Just FastPlayerWindow
-    , cdCriteria = Just $ Criteria.exists $ EnemyAt YourLocation
+    , cdCriteria = Just $ exists $ EnemyAt YourLocation
     , cdLevel = 1
     }
 
@@ -879,7 +881,7 @@ momentOfRespite3 =
   (event "02273" "Moment of Respite" 3 Neutral)
     { cdSkills = [#willpower, #willpower]
     , cdCardTraits = singleton Spirit
-    , cdCriteria = Just $ Criteria.Negate $ Criteria.exists $ EnemyAt YourLocation
+    , cdCriteria = Just $ Criteria.Negate $ exists $ EnemyAt YourLocation
     , cdLevel = 3
     }
 
@@ -974,7 +976,7 @@ noStoneUnturned =
     { cdSkills = [#wild]
     , cdCardTraits = singleton Insight
     , cdCriteria =
-        Just $ Criteria.exists $ affectsOthers $ InvestigatorAt YourLocation <> can.manipulate.deck
+        Just $ exists $ affectsOthers $ InvestigatorAt YourLocation <> can.manipulate.deck
     }
 
 sleightOfHand :: CardDef
@@ -1013,7 +1015,7 @@ astralTravel =
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = singleton Spell
     , cdActions = [#move]
-    , cdCriteria = Just $ Criteria.exists $ RevealedLocation <> Unblocked <> NotYourLocation
+    , cdCriteria = Just $ exists $ RevealedLocation <> Unblocked <> NotYourLocation
     , cdAlternateCardCodes = ["60413"]
     }
 
@@ -1047,8 +1049,8 @@ anatomicalDiagrams =
     , cdFastWindow = Just $ DuringTurn Anyone
     , cdCriteria =
         Just
-          $ Criteria.exists (You <> InvestigatorWithRemainingSanity (atLeast 5))
-          <> Criteria.exists (EnemyAt YourLocation <> NonEliteEnemy)
+          $ exists (You <> InvestigatorWithRemainingSanity (atLeast 5))
+          <> exists (EnemyAt YourLocation <> NonEliteEnemy)
     }
 
 ambush1 :: CardDef
@@ -1065,7 +1067,7 @@ forewarned1 =
     { cdSkills = [#willpower]
     , cdCardTraits = singleton Insight
     , cdLevel = 1
-    , cdCriteria = Just $ Criteria.exists (You <> InvestigatorWithAnyClues)
+    , cdCriteria = Just $ exists (You <> InvestigatorWithAnyClues)
     , cdFastWindow =
         Just $ DrawCard #when You (CanCancelRevelationEffect $ basic NonWeaknessTreachery) EncounterDeck
     }
@@ -1077,7 +1079,7 @@ sneakAttack2 =
     , cdCardTraits = setFromList [Tactic]
     , cdLevel = 2
     , cdCriteria =
-        Just $ Criteria.exists (EnemyAt YourLocation <> EnemyNotEngagedWithYou) <> Criteria.CanDealDamage
+        Just $ exists (EnemyAt YourLocation <> EnemyNotEngagedWithYou) <> Criteria.CanDealDamage
     }
 
 stormOfSpirits :: CardDef
@@ -1131,7 +1133,7 @@ callingInFavors =
   (event "03158" "Calling in Favors" 1 Neutral)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = singleton Favor
-    , cdCriteria = Just $ Criteria.exists $ AssetControlledBy You
+    , cdCriteria = Just $ exists $ AssetControlledBy You
     }
 
 illSeeYouInHell :: CardDef
@@ -1149,12 +1151,12 @@ logicalReasoning =
     , cdCardTraits = singleton Insight
     , cdCriteria =
         Just
-          $ Criteria.exists (You <> InvestigatorWithAnyClues)
+          $ exists (You <> InvestigatorWithAnyClues)
           <> Criteria.AnyCriterion
-            [ Criteria.exists
+            [ exists
                 $ HealableInvestigator ThisCard HorrorType
                 $ InvestigatorAt YourLocation
-            , Criteria.exists
+            , exists
                 $ TreacheryWithTrait Terror
                 <> TreacheryInThreatAreaOf (affectsOthers $ InvestigatorAt YourLocation)
             ]
@@ -1183,7 +1185,7 @@ recharge2 =
     , cdCardTraits = singleton Spell
     , cdCriteria =
         Just
-          $ Criteria.exists
+          $ exists
           $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
           <> oneOf [AssetWithTrait Spell, AssetWithTrait Relic]
     , cdLevel = 2
@@ -1194,7 +1196,7 @@ snareTrap2 =
   (event "03199" "Snare Trap" 2 Survivor)
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Trap, Improvised]
-    , cdCriteria = Just $ Criteria.Negate $ Criteria.exists $ AssetIs "03199" <> AssetAt YourLocation
+    , cdCriteria = Just $ Criteria.Negate $ exists $ AssetIs "03199" <> AssetAt YourLocation
     , cdLevel = 2
     }
 
@@ -1204,7 +1206,7 @@ manoAMano1 =
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spirit, Bold]
     , cdCriteria =
-        Just $ Criteria.FirstAction <> Criteria.exists EnemyEngagedWithYou <> Criteria.CanDealDamage
+        Just $ Criteria.FirstAction <> exists EnemyEngagedWithYou <> Criteria.CanDealDamage
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = 1
     }
@@ -1223,7 +1225,7 @@ waylay =
   (event "03237" "Waylay" 3 Survivor)
     { cdSkills = [#agility, #agility]
     , cdCardTraits = singleton Tactic
-    , cdCriteria = Just $ Criteria.exists $ NonEliteEnemy <> EnemyAt YourLocation <> ExhaustedEnemy
+    , cdCriteria = Just $ exists $ NonEliteEnemy <> EnemyAt YourLocation <> ExhaustedEnemy
     }
 
 aChanceEncounter2 :: CardDef
@@ -1244,8 +1246,8 @@ emergencyCache3 =
     , cdCriteria =
         Just
           $ Criteria.AnyCriterion
-            [ Criteria.exists $ You <> can.gain.resources
-            , Criteria.exists
+            [ exists $ You <> can.gain.resources
+            , exists
                 $ AssetWithUseType Uses.Supply
                 <> AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
                 <> AssetNotAtUseLimit
@@ -1265,7 +1267,7 @@ guidance =
   (event "03265" "Guidance" 0 Seeker)
     { cdCardTraits = singleton Insight
     , cdCriteria =
-        Just $ Criteria.exists $ affectsOthers $ NotYou <> InvestigatorAt YourLocation <> YetToTakeTurn
+        Just $ exists $ affectsOthers $ NotYou <> InvestigatorAt YourLocation <> YetToTakeTurn
     , cdSkills = [#wild]
     }
 
@@ -1338,7 +1340,7 @@ noStoneUnturned5 =
     , cdSkills = [#wild, #intellect]
     , cdFastWindow = Just FastPlayerWindow
     , cdCriteria =
-        Just $ Criteria.exists $ affectsOthers $ InvestigatorAt YourLocation <> can.manipulate.deck
+        Just $ exists $ affectsOthers $ InvestigatorAt YourLocation <> can.manipulate.deck
     , cdLevel = 5
     }
 
@@ -1375,7 +1377,7 @@ smuggledGoods =
   (event "04010" "Smuggled Goods" 0 Neutral)
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Supply, Illicit]
-    , cdCriteria = Just $ Criteria.Negate $ Criteria.exists $ EnemyAt YourLocation <> ReadyEnemy
+    , cdCriteria = Just $ Criteria.Negate $ exists $ EnemyAt YourLocation <> ReadyEnemy
     , cdDeckRestrictions = [Signature "04003"]
     }
 
@@ -1385,7 +1387,7 @@ trusted =
     { cdSkills = [#willpower]
     , cdCardTraits = singleton Upgrade
     , cdFastWindow = Just $ DuringTurn You
-    , cdCriteria = Just $ Criteria.exists $ AssetControlledBy You <> #ally
+    , cdCriteria = Just $ exists $ AssetControlledBy You <> #ally
     }
 
 reliable1 :: CardDef
@@ -1394,7 +1396,7 @@ reliable1 =
     { cdSkills = [#intellect]
     , cdCardTraits = singleton Upgrade
     , cdFastWindow = Just $ DuringTurn You
-    , cdCriteria = Just $ Criteria.exists $ AssetControlledBy You <> #item
+    , cdCriteria = Just $ exists $ AssetControlledBy You <> #item
     , cdLevel = 1
     }
 
@@ -1412,7 +1414,7 @@ eavesdrop =
   (event "04027" "Eavesdrop" 1 Rogue)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Insight, Trick]
-    , cdCriteria = Just $ Criteria.exists $ UnengagedEnemy <> EnemyAt YourLocation
+    , cdCriteria = Just $ exists $ UnengagedEnemy <> EnemyAt YourLocation
     }
 
 youHandleThisOne :: CardDef
@@ -1420,7 +1422,7 @@ youHandleThisOne =
   (event "04028" "\"You handle this one!\"" 0 Rogue)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = singleton Trick
-    , cdCriteria = Just (Criteria.exists $ affectsOthers NotYou)
+    , cdCriteria = Just (exists $ affectsOthers NotYou)
     , cdFastWindow = Just $ DrawCard #when You (basic $ NonPeril <> IsEncounterCard) EncounterDeck
     }
 
@@ -1446,7 +1448,7 @@ dumbLuck =
   (event "04034" "Dumb Luck" 2 Survivor)
     { cdSkills = [#agility, #agility]
     , cdCardTraits = singleton Fortune
-    , cdCriteria = Just $ Criteria.exists $ You <> can.target.encounterDeck
+    , cdCriteria = Just $ exists $ You <> can.target.encounterDeck
     , cdFastWindow =
         Just
           $ SkillTestResult #after You (WhileEvadingAnEnemy NonEliteEnemy)
@@ -1494,8 +1496,8 @@ persuasion =
     , cdCardTraits = setFromList [Insight, Trick]
     , cdCriteria =
         Just
-          $ Criteria.exists (NonWeaknessEnemy <> EnemyWithTrait Humanoid <> EnemyAt YourLocation)
-          <> Criteria.exists (You <> can.target.encounterDeck)
+          $ exists (NonWeaknessEnemy <> EnemyWithTrait Humanoid <> EnemyAt YourLocation)
+          <> exists (You <> can.target.encounterDeck)
     , cdActions = [Action.Parley]
     }
 
@@ -1531,7 +1533,7 @@ secondWind =
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Spirit, Bold]
     , cdCriteria =
-        Just $ Criteria.FirstAction <> Criteria.exists (HealableInvestigator ThisCard DamageType You)
+        Just $ Criteria.FirstAction <> exists (HealableInvestigator ThisCard DamageType You)
     }
 
 truthFromFiction :: CardDef
@@ -1542,7 +1544,7 @@ truthFromFiction =
     , cdCriteria =
         Just
           $ Criteria.ClueOnLocation
-          <> Criteria.exists (AssetControlledBy You <> AssetWithUseType Uses.Secret)
+          <> exists (AssetControlledBy You <> AssetWithUseType Uses.Secret)
     }
 
 customAmmunition3 :: CardDef
@@ -1552,7 +1554,7 @@ customAmmunition3 =
     , cdCardTraits = setFromList [Upgrade, Supply, Blessed]
     , cdCriteria =
         Just
-          $ Criteria.exists
+          $ exists
           $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
           <> AssetWithTrait Firearm
           <> NotAsset (AssetWithAttachedEvent $ EventCardMatch $ cardIs customAmmunition3)
@@ -1566,7 +1568,7 @@ exposeWeakness3 =
     { cdSkills = [#intellect, #combat, #wild]
     , cdCardTraits = singleton Insight
     , cdFastWindow = Just FastPlayerWindow
-    , cdCriteria = Just $ Criteria.exists $ EnemyAt YourLocation
+    , cdCriteria = Just $ exists $ EnemyAt YourLocation
     , cdLevel = 3
     }
 
@@ -1617,7 +1619,7 @@ sacrifice1 =
   (event "04234" "Sacrifice" 0 Mystic)
     { cdSkills = [#willpower]
     , cdCardTraits = singleton Ritual
-    , cdCriteria = Just $ Criteria.exists $ #mystic <> AssetControlledBy You <> DiscardableAsset
+    , cdCriteria = Just $ exists $ #mystic <> AssetControlledBy You <> DiscardableAsset
     , cdLevel = 1
     }
 
@@ -1639,7 +1641,7 @@ coupDeGrace =
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdCriteria =
         Just
-          $ Criteria.exists (EnemyAt YourLocation <> EnemyCanBeDamagedBySource ThisCard)
+          $ exists (EnemyAt YourLocation <> EnemyCanBeDamagedBySource ThisCard)
           <> Criteria.CanDealDamage
     }
 
@@ -1681,7 +1683,7 @@ alterFate3 =
     , cdFastWindow = Just FastPlayerWindow
     , cdCriteria =
         Just
-          $ Criteria.exists
+          $ exists
           $ NotTreachery (TreacheryOnEnemy EliteEnemy)
           <> TreacheryIsNonWeakness
     , cdLevel = 3
@@ -1744,7 +1746,7 @@ interrogate =
   (event "05020" "Interrogate" 2 Guardian)
     { cdSkills = [#combat, #intellect]
     , cdCardTraits = setFromList [Tactic, Insight]
-    , cdCriteria = Just $ Criteria.exists $ EnemyWithTrait Humanoid <> EnemyAt YourLocation
+    , cdCriteria = Just $ exists $ EnemyWithTrait Humanoid <> EnemyAt YourLocation
     , cdActions = [Action.Parley]
     }
 
@@ -1764,7 +1766,7 @@ connectTheDots =
     , cdFastWindow = Just $ DiscoveringLastClue #after You YourLocation
     , cdCriteria =
         Just
-          $ Criteria.exists
+          $ exists
           $ LocationWithLowerPrintedShroudThan YourLocation
           <> LocationWithDiscoverableCluesBy You
     }
@@ -1824,7 +1826,7 @@ crackTheCase =
     , cdCardTraits = singleton Insight
     , cdFastWindow = Just $ DiscoveringLastClue #after You YourLocation
     , cdCriteria =
-        Just $ Criteria.exists $ affectsOthers $ can.gain.resources <> InvestigatorAt YourLocation
+        Just $ exists $ affectsOthers $ can.gain.resources <> InvestigatorAt YourLocation
     }
 
 intelReport :: CardDef
@@ -1835,9 +1837,9 @@ intelReport =
     , cdCriteria =
         Just
           $ Criteria.AnyCriterion
-            [ Criteria.ClueOnLocation <> Criteria.exists (You <> InvestigatorCanDiscoverCluesAt YourLocation)
+            [ Criteria.ClueOnLocation <> exists (You <> InvestigatorCanDiscoverCluesAt YourLocation)
             , Criteria.CanAffordCostIncrease 2
-                <> Criteria.exists
+                <> exists
                   ( You
                       <> InvestigatorCanDiscoverCluesAt
                         (LocationMatchAny [LocationWithDistanceFrom n LocationWithAnyClues | n <- [0 .. 2]])
@@ -1853,7 +1855,7 @@ banish1 =
     , cdCardTraits = singleton Spell
     , cdActions = [#evade]
     , cdLevel = 1
-    , cdCriteria = Just $ Criteria.exists $ NonEliteEnemy <> CanEvadeEnemy ThisCard
+    , cdCriteria = Just $ exists $ NonEliteEnemy <> CanEvadeEnemy ThisCard
     }
 
 wellMaintained1 :: CardDef
@@ -1864,7 +1866,7 @@ wellMaintained1 =
     , cdLevel = 1
     , cdCriteria =
         Just
-          $ Criteria.exists
+          $ exists
           $ AssetControlledBy You
           <> #item
           <> NotAsset (AssetWithAttachedEvent $ EventIs "05152")
@@ -1889,7 +1891,7 @@ bellyOfTheBeast =
           $ SkillTestResult #after You (WhileEvadingAnEnemy AnyEnemy)
           $ SuccessResult
           $ atLeast 2
-    , cdCriteria = Just $ Criteria.exists $ YourLocation <> LocationWithDiscoverableCluesBy You
+    , cdCriteria = Just $ exists $ YourLocation <> LocationWithDiscoverableCluesBy You
     }
 
 warningShot :: CardDef
@@ -1898,7 +1900,7 @@ warningShot =
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic, Trick]
     , cdAdditionalCost = Just $ UseCost (AssetWithTrait Firearm <> AssetControlledBy You) Uses.Ammo 1
-    , cdCriteria = Just $ Criteria.exists (EnemyAt YourLocation <> EnemyCanEnter ConnectedLocation)
+    , cdCriteria = Just $ exists (EnemyAt YourLocation <> EnemyCanEnter ConnectedLocation)
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     }
 
@@ -1908,7 +1910,7 @@ telescopicSight3 =
     { cdSkills = [#intellect, #combat, #agility]
     , cdCardTraits = setFromList [Item, Upgrade]
     , cdFastWindow = Just $ DuringTurn You
-    , cdCriteria = Just $ Criteria.exists (AssetControlledBy You <> AssetInTwoHandSlots)
+    , cdCriteria = Just $ exists (AssetControlledBy You <> AssetInTwoHandSlots)
     , cdLevel = 3
     }
 
@@ -1921,7 +1923,7 @@ knowledgeIsPower =
     , cdCriteria =
         Just
           $ Criteria.AnyCriterion
-            [ Criteria.exists (AssetControlledBy You <> oneOf [AssetWithTrait Tome, AssetWithTrait Spell])
+            [ exists (AssetControlledBy You <> oneOf [AssetWithTrait Tome, AssetWithTrait Spell])
             , Criteria.ExtendedCardExists
                 $ InHandOf You
                 <> basic (oneOf [CardWithTrait Tome, CardWithTrait Spell] <> #asset)
@@ -1940,9 +1942,9 @@ decoy =
     , cdCriteria =
         Just
           $ Criteria.AnyCriterion
-            [ Criteria.exists $ EnemyAt YourLocation <> CanEvadeEnemy ThisCard
+            [ exists $ EnemyAt YourLocation <> CanEvadeEnemy ThisCard
             , Criteria.CanAffordCostIncrease 2
-                <> Criteria.exists
+                <> exists
                   ( CanEvadeEnemyWithOverride
                       $ Criteria.CriteriaOverride
                       $ Criteria.EnemyCriteria
@@ -1982,8 +1984,8 @@ smallFavor =
         Just
           $ Criteria.CanDealDamage
           <> Criteria.AnyCriterion
-            [ Criteria.exists $ EnemyAt YourLocation <> NonEliteEnemy
-            , Criteria.exists (oneOf [EnemyAt (LocationWithDistanceFrom n Anywhere) | n <- [1 .. 2]])
+            [ exists $ EnemyAt YourLocation <> NonEliteEnemy
+            , exists (oneOf [EnemyAt (LocationWithDistanceFrom n Anywhere) | n <- [1 .. 2]])
                 <> Criteria.CanAffordCostIncrease 2
             ]
     , cdCardInHandEffects = True
@@ -2025,7 +2027,7 @@ baitAndSwitch3 =
     , cdLevel = 3
     , cdCriteria =
         Just
-          $ Criteria.exists
+          $ exists
           $ oneOf
             [ EnemyAt YourLocation <> CanEvadeEnemy ThisCard
             , CanEvadeEnemyWithOverride
@@ -2045,10 +2047,10 @@ soothingMelody =
     , cdCriteria =
         Just
           $ Criteria.AnyCriterion
-            [ Criteria.exists (HealableInvestigator ThisCard DamageType $ InvestigatorAt YourLocation)
-            , Criteria.exists (HealableInvestigator ThisCard HorrorType $ InvestigatorAt YourLocation)
-            , Criteria.exists (HealableAsset ThisCard DamageType $ AssetAt YourLocation <> AllyAsset)
-            , Criteria.exists (HealableAsset ThisCard HorrorType $ AssetAt YourLocation <> AllyAsset)
+            [ exists (HealableInvestigator ThisCard DamageType $ InvestigatorAt YourLocation)
+            , exists (HealableInvestigator ThisCard HorrorType $ InvestigatorAt YourLocation)
+            , exists (HealableAsset ThisCard DamageType $ AssetAt YourLocation <> AllyAsset)
+            , exists (HealableAsset ThisCard HorrorType $ AssetAt YourLocation <> AllyAsset)
             , Criteria.CanDrawCards
             ]
     }
@@ -2084,7 +2086,7 @@ youOweMeOne =
   (event "05319" "\"You owe me one!\"" 0 Rogue)
     { cdSkills = [#intellect, #combat, #agility]
     , cdCardTraits = setFromList [Favor, Gambit]
-    , cdCriteria = Just $ Criteria.exists (affectsOthers $ NotInvestigator You <> HandWith AnyCards)
+    , cdCriteria = Just $ exists (affectsOthers $ NotInvestigator You <> HandWith AnyCards)
     }
 
 lure2 :: CardDef
@@ -2164,7 +2166,7 @@ openGate =
     , cdCardTraits = singleton Spell
     , cdCriteria =
         Just
-          $ Criteria.exists (You <> InvestigatorAt Anywhere)
+          $ exists (You <> InvestigatorAt Anywhere)
           <> Criteria.EventCount (lessThan 3) (eventIs openGate)
     , cdFastWindow = Just $ DuringTurn You
     , cdKeywords = singleton Keyword.Myriad
@@ -2185,7 +2187,7 @@ firstWatch =
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Tactic]
     , cdFastWindow = Just $ MythosStep WhenAllDrawEncounterCard
-    , cdCriteria = Just $ Criteria.exists $ You <> can.target.encounterDeck
+    , cdCriteria = Just $ exists $ You <> can.target.encounterDeck
     }
 
 followed :: CardDef
@@ -2194,7 +2196,7 @@ followed =
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = singleton Tactic
     , cdActions = [#investigate]
-    , cdCriteria = Just $ Criteria.exists $ EnemyAt YourLocation
+    , cdCriteria = Just $ exists $ EnemyAt YourLocation
     , cdBeforeEffect = True
     }
 
@@ -2235,7 +2237,7 @@ swiftReload2 =
     , cdCardTraits = setFromList [Tactic, Trick]
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria =
-        Just $ Criteria.exists $ AssetControlledBy You <> AssetWithTrait Firearm <> AssetNotAtUsesX
+        Just $ exists $ AssetControlledBy You <> AssetWithTrait Firearm <> AssetNotAtUsesX
     , cdLevel = 2
     }
 
@@ -2272,8 +2274,8 @@ extensiveResearch1 =
     , cdCriteria =
         Just
           $ Criteria.Criteria
-            [ Criteria.exists $ YourLocation <> LocationWithAnyClues
-            , Criteria.exists $ You <> InvestigatorCanDiscoverCluesAt YourLocation
+            [ exists $ YourLocation <> LocationWithAnyClues
+            , exists $ You <> InvestigatorCanDiscoverCluesAt YourLocation
             ]
     , cdLevel = 1
     }
@@ -2284,7 +2286,7 @@ spectralRazor =
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = singleton Spell
     , cdActions = [#fight]
-    , cdCriteria = Just $ Criteria.exists $ oneOf [CanFightEnemy ThisCard, CanEngageEnemy ThisCard]
+    , cdCriteria = Just $ exists $ oneOf [CanFightEnemy ThisCard, CanEngageEnemy ThisCard]
     , cdOverrideActionPlayableIfCriteriaMet = True
     }
 
@@ -2340,7 +2342,7 @@ nothingLeftToLose3 =
     , cdCardTraits = singleton Spirit
     , cdCriteria =
         Just
-          $ Criteria.exists
+          $ exists
             (You <> oneOf [InvestigatorWithResources (lessThan 5), HandWith (LengthIs $ lessThan 5)])
     , cdLevel = 3
     }
@@ -2384,7 +2386,7 @@ deepKnowledge =
     , cdCardTraits = setFromList [Insight, Cursed]
     , cdAdditionalCost = Just $ AddCurseTokenCost 2
     , cdCriteria =
-        Just $ Criteria.exists $ affectsOthers $ can.draw.cards <> InvestigatorAt YourLocation
+        Just $ exists $ affectsOthers $ can.draw.cards <> InvestigatorAt YourLocation
     }
 
 faustianBargain :: CardDef
@@ -2394,7 +2396,7 @@ faustianBargain =
     , cdCardTraits = setFromList [Pact, Cursed]
     , cdAdditionalCost = Just $ AddCurseTokenCost 2
     , cdCriteria =
-        Just $ Criteria.exists $ affectsOthers $ can.gain.resources <> InvestigatorAt YourLocation
+        Just $ exists $ affectsOthers $ can.gain.resources <> InvestigatorAt YourLocation
     }
 
 tidesOfFate :: CardDef
@@ -2433,6 +2435,23 @@ temptFate =
     , cdCriteria =
         Just
           $ oneOf [Criteria.HasRemainingBlessTokens, Criteria.HasRemainingCurseTokens, can.draw.cards You]
+    }
+
+righteousHunt1 :: CardDef
+righteousHunt1 =
+  (event "07109" "Righteous Hunt" 1 Guardian)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Tactic, Blessed]
+    , cdActions = [#engage]
+    , cdOverrideActionPlayableIfCriteriaMet = True
+    , cdCriteria =
+        Just
+          $ exists
+          $ CanEngageEnemyWithOverride
+          $ Criteria.CriteriaOverride
+          $ exists
+          $ EnemyAt
+          $ LocationWithAccessiblePath ThisCard 2 You Anywhere
     }
 
 sweepingKick1 :: CardDef
@@ -2492,7 +2511,7 @@ parallelFates2 =
     , cdCardTraits = singleton Augury
     , cdLevel = 2
     , cdCriteria =
-        Just $ Criteria.exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck]
+        Just $ exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck]
     }
 
 keepFaith2 :: CardDef
@@ -2556,7 +2575,7 @@ contraband2 =
     , cdLevel = 2
     , cdCriteria =
         Just
-          $ Criteria.exists
+          $ exists
           $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
           <> AssetNotAtUseLimit
           <> oneOf [AssetWithUseType Uses.Ammo, AssetWithUseType Uses.Supply]
@@ -2568,7 +2587,7 @@ thinkOnYourFeet2 =
     { cdSkills = [#intellect, #agility, #agility]
     , cdCardTraits = singleton Trick
     , cdFastWindow = Just (EnemyEnters #when YourLocation AnyEnemy)
-    , cdCriteria = Just $ Criteria.exists AccessibleLocation <> Criteria.exists (You <> can.move)
+    , cdCriteria = Just $ exists AccessibleLocation <> exists (You <> can.move)
     , cdLevel = 2
     }
 
@@ -2604,10 +2623,10 @@ logicalReasoning4 =
     , cdLevel = 4
     , cdCriteria =
         Just
-          $ Criteria.exists (You <> InvestigatorWithAnyClues)
+          $ exists (You <> InvestigatorWithAnyClues)
           <> Criteria.AnyCriterion
-            [ Criteria.exists $ HealableInvestigator ThisCard HorrorType $ InvestigatorAt YourLocation
-            , Criteria.exists
+            [ exists $ HealableInvestigator ThisCard HorrorType $ InvestigatorAt YourLocation
+            , exists
                 $ TreacheryWithTrait Terror
                 <> TreacheryInThreatAreaOf (affectsOthers $ InvestigatorAt YourLocation)
             ]
@@ -2640,7 +2659,7 @@ truthFromFiction2 =
     , cdLevel = 2
     , cdCriteria =
         Just
-          $ Criteria.exists
+          $ exists
           $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
           <> AssetWithUseType Uses.Secret
     }
@@ -2651,7 +2670,7 @@ alterFate1 =
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Spell, Blessed]
     , cdCriteria =
-        Just $ Criteria.exists $ NotTreachery (TreacheryOnEnemy EliteEnemy) <> TreacheryIsNonWeakness
+        Just $ exists $ NotTreachery (TreacheryOnEnemy EliteEnemy) <> TreacheryIsNonWeakness
     , cdLevel = 1
     }
 
@@ -2692,7 +2711,7 @@ getOverHere =
     , cdSkills = [#willpower, #combat]
     , cdCriteria =
         Just
-          $ Criteria.exists
+          $ exists
           $ NonEliteEnemy
           <> oneOf
             [ EnemyAt YourLocation <> oneOf [CanEngageEnemy ThisCard, CanFightEnemy ThisCard]
@@ -2732,8 +2751,8 @@ standTogether =
     , cdSkills = [#willpower]
     , cdCriteria =
         Just
-          $ Criteria.exists (affectsOthers $ NotYou <> InvestigatorAt YourLocation)
-          <> Criteria.exists (affectsOthers $ InvestigatorAt YourLocation <> can.gain.resources)
+          $ exists (affectsOthers $ NotYou <> InvestigatorAt YourLocation)
+          <> exists (affectsOthers $ InvestigatorAt YourLocation <> can.gain.resources)
     }
 
 evidence1 :: CardDef
@@ -2745,8 +2764,8 @@ evidence1 =
     , cdCriteria =
         Just
           $ Criteria.Criteria
-            [ Criteria.exists $ YourLocation <> LocationWithAnyClues
-            , Criteria.exists $ You <> InvestigatorCanDiscoverCluesAt YourLocation
+            [ exists $ YourLocation <> LocationWithAnyClues
+            , exists $ You <> InvestigatorCanDiscoverCluesAt YourLocation
             ]
     , cdLevel = 1
     }
@@ -2781,7 +2800,7 @@ getOverHere2 =
     , cdFastWindow = Just FastPlayerWindow
     , cdCriteria =
         Just
-          $ Criteria.exists
+          $ exists
           $ NonEliteEnemy
           <> oneOf
             [ EnemyAt YourLocation <> oneOf [CanEngageEnemy ThisCard, CanFightEnemy ThisCard]
@@ -2801,8 +2820,8 @@ lessonLearned2 =
     , cdCriteria =
         Just
           $ Criteria.Criteria
-            [ Criteria.exists $ YourLocation <> LocationWithAnyClues
-            , Criteria.exists $ You <> InvestigatorCanDiscoverCluesAt YourLocation
+            [ exists $ YourLocation <> LocationWithAnyClues
+            , exists $ You <> InvestigatorCanDiscoverCluesAt YourLocation
             ]
     , cdLevel = 2
     }
@@ -2813,7 +2832,7 @@ manoAMano2 =
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spirit, Bold]
     , cdCriteria =
-        Just $ Criteria.FirstAction <> Criteria.exists EnemyEngagedWithYou <> Criteria.CanDealDamage
+        Just $ Criteria.FirstAction <> exists EnemyEngagedWithYou <> Criteria.CanDealDamage
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = 2
     }
@@ -2869,8 +2888,8 @@ extensiveResearch =
     , cdCriteria =
         Just
           $ Criteria.Criteria
-            [ Criteria.exists $ YourLocation <> LocationWithAnyClues
-            , Criteria.exists $ You <> InvestigatorCanDiscoverCluesAt YourLocation
+            [ exists $ YourLocation <> LocationWithAnyClues
+            , exists $ You <> InvestigatorCanDiscoverCluesAt YourLocation
             ]
     }
 
@@ -2995,7 +3014,7 @@ parallelFates =
   (event "60415" "Parallel Fates" 0 Mystic)
     { cdSkills = [#wild]
     , cdCardTraits = singleton Augury
-    , cdCriteria = Just $ Criteria.exists $ You <> can.target.encounterDeck
+    , cdCriteria = Just $ exists $ You <> can.target.encounterDeck
     }
 
 voiceOfRa :: CardDef
@@ -3003,7 +3022,7 @@ voiceOfRa =
   (event "60416" "Voice of Ra" 0 Mystic)
     { cdSkills = [#willpower]
     , cdCardTraits = singleton Spell
-    , cdCriteria = Just $ Criteria.exists $ can.gain.resources <> You
+    , cdCriteria = Just $ exists $ can.gain.resources <> You
     }
 
 eldritchInspiration1 :: CardDef
@@ -3037,7 +3056,7 @@ recharge4 =
     , cdCardTraits = singleton Spell
     , cdCriteria =
         Just
-          $ Criteria.exists
+          $ exists
           $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
           <> oneOf [AssetWithTrait Spell, AssetWithTrait Relic]
     , cdLevel = 4
@@ -3103,8 +3122,8 @@ lookWhatIFound2 =
     , cdCriteria =
         Just
           $ Criteria.Criteria
-            [ Criteria.exists $ LocationMatchAny [YourLocation, ConnectedLocation] <> LocationWithAnyClues
-            , Criteria.exists
+            [ exists $ LocationMatchAny [YourLocation, ConnectedLocation] <> LocationWithAnyClues
+            , exists
                 $ You
                 <> InvestigatorCanDiscoverCluesAt (LocationMatchAny [YourLocation, ConnectedLocation])
             ]
@@ -3120,7 +3139,7 @@ dumbLuck2 =
     , cdFastWindow =
         Just $ SkillTestResult #after You (WhileEvadingAnEnemy NonEliteEnemy) $ FailureResult $ lessThan 4
     , cdLevel = 2
-    , cdCriteria = Just $ Criteria.exists $ You <> can.target.encounterDeck
+    , cdCriteria = Just $ exists $ You <> can.target.encounterDeck
     }
 
 lucky3 :: CardDef

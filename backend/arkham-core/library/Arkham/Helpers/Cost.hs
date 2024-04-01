@@ -19,6 +19,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
 import Arkham.Prelude
 import Arkham.Projection
@@ -46,6 +47,11 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
   Free -> pure True
   UpTo {} -> pure True
   OptionalCost {} -> pure True
+  AddCurseTokensEqualToShroudCost -> do
+    mloc <- field InvestigatorLocation iid
+    shroud <- maybe (pure 0) (field LocationShroud) mloc
+    x <- getRemainingCurseTokens
+    pure $ x >= shroud
   AddCurseTokenCost n -> do
     x <- getRemainingCurseTokens
     pure $ x >= n

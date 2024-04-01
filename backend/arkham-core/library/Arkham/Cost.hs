@@ -153,6 +153,7 @@ data Cost
   | ShuffleAttachedCardIntoDeckCost Target CardMatcher
   | OptionalCost Cost
   | UnpayableCost
+  | AsIfAtLocationCost LocationId Cost
   deriving stock (Show, Eq, Ord, Data)
 
 assetUseCost :: (Entity a, EntityId a ~ AssetId) => a -> UseType -> Int -> Cost
@@ -174,6 +175,7 @@ displayCostType :: Cost -> Text
 displayCostType = \case
   UnpayableCost -> "Unpayable"
   OptionalCost c -> "Optional: " <> displayCostType c
+  AsIfAtLocationCost _ c -> displayCostType c
   ShuffleAttachedCardIntoDeckCost _ _ -> "Shuffle attached card into deck"
   AddCurseTokenCost n -> "Add " <> tshow n <> " curse " <> pluralize n "token" <> "to the chaos bag"
   ShuffleIntoDeckCost _ -> "Shuffle into deck"

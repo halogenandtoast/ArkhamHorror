@@ -402,7 +402,11 @@ data LocationMatcher
   | AccessibleTo LocationMatcher
   | LocationWithVictory
   | LocationWithDistanceFrom Int LocationMatcher
-  | LocationWithDistanceFromAtLeast Int LocationId LocationMatcher
+  | -- | distance, start, end
+    LocationWithDistanceFromAtMost Int LocationMatcher LocationMatcher
+  | LocationWithDistanceFromAtLeast Int LocationMatcher LocationMatcher
+  | -- | distance, valid step, start, destination
+    LocationWithAccessiblePath Source Int InvestigatorMatcher LocationMatcher
   | LocationWithResources ValueMatcher
   | LocationWithClues ValueMatcher
   | LocationWithHorror ValueMatcher

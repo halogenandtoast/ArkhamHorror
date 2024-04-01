@@ -1441,7 +1441,7 @@ passesEnemyCriteria
 passesEnemyCriteria iid source windows' criterion = do
   bountiesOnly <- hasModifier iid BountiesOnly
   let matcherF = if bountiesOnly then (Matcher.EnemyWithBounty <>) else id
-  selectAny . matcherF =<< matcher criterion
+  selectAny . matcherF . Matcher.replaceYouMatcher iid =<< matcher criterion
  where
   matcher = \case
     Criteria.EnemyMatchesCriteria ms -> mconcatMapM matcher ms
@@ -2707,6 +2707,8 @@ locationMatches investigatorId source window locationId matcher' = do
 
     -- normal cases
     Matcher.LocationWithDistanceFromAtLeast {} -> locationId <=~> matcher
+    Matcher.LocationWithAccessiblePath {} -> locationId <=~> matcher
+    Matcher.LocationWithDistanceFromAtMost {} -> locationId <=~> matcher
     Matcher.LocationWhenCriteria {} -> locationId <=~> matcher
     Matcher.LocationBeingDiscovered {} -> locationId <=~> matcher
     Matcher.CanMoveToLocation {} -> locationId <=~> matcher

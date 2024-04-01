@@ -38,7 +38,7 @@ instance RunMessage DholeTunnel where
                 ]
       pure t
     HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do
-      targets <- select $ LocationWithDistanceFromAtLeast 2 lid Anywhere
+      targets <- select $ LocationWithDistanceFromAtLeast 2 (LocationWithId lid) Anywhere
       chooseOrRunOne
         iid
         [targetLabel location [Msg.attachTreachery (toId attrs) (toTarget location)] | location <- targets]

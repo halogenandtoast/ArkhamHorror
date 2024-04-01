@@ -123,7 +123,8 @@ data ModifierType
   | CannotBeRevealed
   | CannotCancelHorror
   | CannotCancelOrIgnoreChaosToken ChaosTokenFace
-  | ReturnBlessedToChaosBag -- For blessed tokens,
+  | ReturnBlessedToChaosBag
+  | ReturnCursedToChaosBag
   | CannotCommitCards CardMatcher
   | CannotCommitToOtherInvestigatorsSkillTests
   | CannotDealDamage

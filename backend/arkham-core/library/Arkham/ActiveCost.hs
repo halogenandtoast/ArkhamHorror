@@ -29,11 +29,13 @@ import Arkham.EffectMetadata
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Helpers
+import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Message
 import Arkham.Helpers.Ref
 import Arkham.Helpers.SkillTest (beginSkillTest)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (
   AssetCard,
   EventCard,
@@ -446,7 +448,14 @@ payCost msg c iid skipAdditionalCosts cost = do
       push $ RemoveTokens c.source ScenarioTarget Token.Resource n
       withPayment $ ResourcePayment n
     AddCurseTokenCost n -> do
-      pushAll $ replicate n $ AddChaosToken CurseToken
+      x <- min n <$> getRemainingCurseTokens
+      pushAll $ replicate x $ AddChaosToken CurseToken
+      pure c
+    AddCurseTokensEqualToShroudCost -> do
+      mloc <- field InvestigatorLocation iid
+      shroud <- maybe (pure 0) (field LocationShroud) mloc
+      x <- min shroud <$> getRemainingCurseTokens
+      pushAll $ replicate x $ AddChaosToken CurseToken
       pure c
     ResourceCost x -> do
       case activeCostTarget c of

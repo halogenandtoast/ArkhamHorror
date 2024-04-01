@@ -1972,6 +1972,10 @@ getAssetsMatching matcher = do
       filterM
         (fieldMap AssetUses ((> 0) . findWithDefault 0 uType) . toId)
         as
+    AssetWithoutUses ->
+      filterM
+        (fieldMap AssetStartingUses (== NoUses) . toId)
+        as
     AssetCanBeAssignedDamageBy iid -> do
       modifiers' <- getModifiers (InvestigatorTarget iid)
       let

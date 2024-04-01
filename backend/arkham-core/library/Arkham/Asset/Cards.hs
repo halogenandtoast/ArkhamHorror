@@ -245,6 +245,7 @@ allPlayerAssetCards =
       , eighteenDerringer
       , eighteenDerringer2
       , elderSignAmulet3
+      , eldritchSophist
       , empiricalHypothesis
       , empowerSelfAcuity2
       , empowerSelfAlacrity2
@@ -4161,6 +4162,15 @@ sacredCovenant2 =
       { cdCardTraits = setFromList [Covenant, Blessed]
       , cdDeckRestrictions = [TraitPerDeckLimit Covenant 1]
       }
+
+eldritchSophist :: CardDef
+eldritchSophist =
+  (asset "07111" "Eldritch Sophist" 4 Seeker)
+    { cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdSkills = [#willpower]
+    , cdSlots = [#ally]
+    , cdUses = uses Secret 3
+    }
 
 keenEye :: CardDef
 keenEye =

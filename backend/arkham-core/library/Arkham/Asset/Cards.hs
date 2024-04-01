@@ -486,6 +486,7 @@ allPlayerAssetCards =
       , robesOfEndlessNight
       , robesOfEndlessNight2
       , rolands38Special
+      , sacredCovenant2
       , safeguard
       , safeguard2
       , sawedOffShotgun5
@@ -4152,6 +4153,14 @@ riotWhistle =
     , cdSkills = [#willpower]
     , cdSlots = [#accessory]
     }
+
+sacredCovenant2 :: CardDef
+sacredCovenant2 =
+  permanent
+    $ (asset "07110" "Sacred Covenant" 0 Guardian)
+      { cdCardTraits = setFromList [Covenant, Blessed]
+      , cdDeckRestrictions = [TraitPerDeckLimit Covenant 1]
+      }
 
 keenEye :: CardDef
 keenEye =

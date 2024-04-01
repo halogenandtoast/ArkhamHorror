@@ -36,6 +36,7 @@ import Arkham.Location.Brazier
 import Arkham.LocationSymbol
 import Arkham.Modifier
 import {-# SOURCE #-} Arkham.Placement
+import Arkham.SkillTest.Step
 import Arkham.SkillType
 import Arkham.SlotType
 import {-# SOURCE #-} Arkham.Source
@@ -928,6 +929,7 @@ data WindowMatcher
   | Explored Timing Who ExploreMatcher
   | AttemptExplore Timing Who
   | PhaseStep Timing PhaseStepMatcher
+  | SkillTestStep Timing SkillTestStep
   | AddingToCurrentDepth
   | CancelledOrIgnoredCardOrGameEffect SourceMatcher
   | LostResources Timing Who SourceMatcher

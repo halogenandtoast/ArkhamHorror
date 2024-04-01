@@ -26,12 +26,13 @@ import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Skill.Types as Field
+import Arkham.SkillTest.Step
 import Arkham.SkillTestResult
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..), mkWindow)
+import Arkham.Window (Window (..), mkAfter, mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (each)
 import Data.Map.Strict qualified as Map
@@ -139,6 +140,12 @@ getModifiedChaosTokenValue s t = do
 
 instance RunMessage SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
+    ReturnChaosTokens tokens -> do
+      pure
+        $ s
+        & (resolvedChaosTokensL %~ filter (`notElem` tokens))
+        & (revealedChaosTokensL %~ filter (`notElem` tokens))
+        & (setAsideChaosTokensL %~ filter (`notElem` tokens))
     BeginSkillTestAfterFast -> do
       windowMsg <- checkWindows [mkWindow #when Window.FastPlayerWindow]
       pushAll [windowMsg, BeforeSkillTest s, EndSkillTestWindow]
@@ -240,42 +247,42 @@ instance RunMessage SkillTest where
         , RunSkillTest iid
         ]
       pure $ s & (resolvedChaosTokensL %~ (<> skillTestRevealedChaosTokens))
-    RequestedChaosTokens SkillTestSource (Just iid) chaosTokenFaces ->
-      do
-        skillTestModifiers' <- getModifiers SkillTestTarget
-        windowMsg <- checkWindows [mkWindow Timing.When Window.FastPlayerWindow]
-        push
-          $ if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
-            then
-              CommitToSkillTest
-                s
-                (Label "Done Comitting" [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestChaosTokens iid])
-            else RevealSkillTestChaosTokens iid
-        for_ chaosTokenFaces $ \chaosTokenFace -> do
-          let
-            revealMsg = RevealChaosToken SkillTestSource iid chaosTokenFace
-          pushAll
-            [ When revealMsg
-            , CheckWindow [iid] [mkWindow Timing.AtIf (Window.RevealChaosToken iid chaosTokenFace)]
-            , revealMsg
-            , After revealMsg
-            ]
-        pure $ s & (setAsideChaosTokensL %~ (chaosTokenFaces <>))
+    RequestedChaosTokens SkillTestSource (Just iid) chaosTokenFaces -> do
+      skillTestModifiers' <- getModifiers SkillTestTarget
+      windowMsg <- checkWindows [mkWindow Timing.When Window.FastPlayerWindow]
+      push
+        $ if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
+          then
+            CommitToSkillTest
+              s
+              (Label "Done Comitting" [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestChaosTokens iid])
+          else RevealSkillTestChaosTokens iid
+      for_ chaosTokenFaces $ \chaosTokenFace -> do
+        let
+          revealMsg = RevealChaosToken SkillTestSource iid chaosTokenFace
+        pushAll
+          [ When revealMsg
+          , CheckWindow [iid] [mkWindow Timing.AtIf (Window.RevealChaosToken iid chaosTokenFace)]
+          , revealMsg
+          , After revealMsg
+          ]
+      pure $ s & (setAsideChaosTokensL %~ (chaosTokenFaces <>))
     RevealChaosToken SkillTestSource {} iid token -> do
       push
         (CheckWindow [iid] [mkWindow Timing.After (Window.RevealChaosToken iid token)])
       pure $ s & revealedChaosTokensL %~ (token :)
     RevealSkillTestChaosTokens iid -> do
+      afterMsg <- checkWindows [mkAfter $ Window.SkillTestStep RevealChaosTokenStep]
       revealedChaosTokenFaces <- flip
         concatMapM
         (skillTestRevealedChaosTokens \\ skillTestResolvedChaosTokens)
         \token -> do
           faces <- getModifiedChaosTokenFaces [token]
           pure [(token, face) | face <- faces]
-      pushAll
-        [ Will (ResolveChaosToken drawnChaosToken chaosTokenFace iid)
-        | (drawnChaosToken, chaosTokenFace) <- revealedChaosTokenFaces
-        ]
+      pushAll $ afterMsg
+        : [ Will (ResolveChaosToken drawnChaosToken chaosTokenFace iid)
+          | (drawnChaosToken, chaosTokenFace) <- revealedChaosTokenFaces
+          ]
       pure
         $ s
         & ( subscribersL

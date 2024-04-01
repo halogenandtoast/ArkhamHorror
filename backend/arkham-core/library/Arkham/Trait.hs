@@ -50,6 +50,7 @@ data Trait
   | Connection
   | Conspirator
   | Courage
+  | Covenant
   | Creature
   | CrimeScene
   | Criminal

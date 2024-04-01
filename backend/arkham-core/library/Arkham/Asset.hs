@@ -666,6 +666,7 @@ allAssets =
     , -- In Too Deep
       --- guardian [itp]
       SomeAssetCard riotWhistle
+    , SomeAssetCard sacredCovenant2
     , -- Devil Reef
       --- guardian [def]
       SomeAssetCard keenEye

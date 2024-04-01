@@ -642,8 +642,8 @@ instance RunMessage ChaosBag where
     ReturnChaosTokens tokens' ->
       pure
         $ c
-        & (chaosTokensL %~ (<> filter ((`notElem` [CurseToken, BlessToken]) . chaosTokenFace) tokens'))
-        & (setAsideChaosTokensL %~ (\\ tokens'))
+        & (chaosTokensL %~ (<> tokens'))
+        & (setAsideChaosTokensL %~ traceShowId . (\\ tokens') . traceShowId)
         & (choiceL .~ Nothing)
     AddChaosToken chaosTokenFace -> do
       token <- createChaosToken chaosTokenFace

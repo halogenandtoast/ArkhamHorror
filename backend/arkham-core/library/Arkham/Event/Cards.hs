@@ -263,6 +263,7 @@ allPlayerEventCards =
       , standTogether
       , standTogether3
       , stargazing1
+      , stirringUpTrouble1
       , stormOfSpirits
       , stormOfSpirits3
       , sureGamble3

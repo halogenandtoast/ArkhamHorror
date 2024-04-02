@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Deck qualified as Deck
+import Arkham.Evade
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Prelude
@@ -44,10 +45,11 @@ instance RunMessage Hope where
           iid
       player <- getPlayer iid
       hopeCard <- field AssetCard (toId attrs)
+      chooseEvade <- toMessage <$> mkChooseEvade iid source
       pushAll
         $ [skillTestModifier source iid (BaseSkillOf #agility 5)]
         <> [skillTestModifier source iid SkillTestAutomaticallySucceeds | discarded]
-        <> [chooseEvadeEnemy iid source #agility]
+        <> [chooseEvade]
         <> [ questionLabel "Put into play from discard" player
             $ ChooseOne
             $ [ CardLabel

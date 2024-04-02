@@ -1,14 +1,11 @@
-module Arkham.Asset.Cards.Stealth (
-  stealth,
-  Stealth (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Stealth (stealth, Stealth (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Evade
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.SkillTestResult
 
 newtype Stealth = Stealth AssetAttrs
@@ -24,7 +21,7 @@ instance HasAbilities Stealth where
 instance RunMessage Stealth where
   runMessage msg a@(Stealth attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ chooseEvadeEnemyWithTarget iid (toAbilitySource attrs 1) attrs #agility
+      pushM $ setTarget attrs <$> mkChooseEvade iid (attrs.ability 1)
       pure a
     ChosenEvadeEnemy source@(isSource attrs -> True) eid -> do
       push $ skillTestModifier source eid (EnemyEvade (-2))

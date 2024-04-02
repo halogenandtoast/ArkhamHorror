@@ -4,15 +4,15 @@ module Arkham.Treachery.Cards.UnspeakableOathCowardice (
 )
 where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Classes
+import Arkham.Evade
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (EnemyEvaded, TreacheryInHandOf)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -63,10 +63,8 @@ instance RunMessage UnspeakableOathCowardice where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = toAbilitySource attrs 2
       let matcher = ExhaustedEnemy <> UnengagedEnemy
-      pushAll
-        [ skillTestModifier (toAbilitySource attrs 2) iid evasionCriteria
-        , ChooseEvadeEnemy iid source (Just $ toTarget attrs) #agility matcher False
-        ]
+      chooseEvade <- toMessage . setTarget attrs <$> mkChooseEvadeMatch iid source matcher
+      pushAll [skillTestModifier (toAbilitySource attrs 2) iid evasionCriteria, chooseEvade]
       pure t
     Successful (Action.Evade, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
       pushAll [EnemyEvaded iid eid, toDiscardBy iid (toAbilitySource attrs 2) $ toTarget attrs]

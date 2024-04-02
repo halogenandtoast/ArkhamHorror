@@ -1,12 +1,9 @@
-module Arkham.Asset.Cards.SilassNet (
-  silassNet,
-  SilassNet (..),
-)
-where
+module Arkham.Asset.Cards.SilassNet (silassNet, SilassNet (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Evade
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Prelude
 
@@ -24,7 +21,7 @@ instance HasAbilities SilassNet where
 instance RunMessage SilassNet where
   runMessage msg a@(SilassNet attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ chooseEvadeEnemy iid (attrs.ability 1) #agility
+      pushM $ mkChooseEvade iid (attrs.ability 1)
       pure a
     SkillTestEnds iid (isAbilitySource attrs 1 -> True) -> do
       miid <- getSkillTestInvestigator

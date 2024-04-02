@@ -1,16 +1,14 @@
-module Arkham.Asset.Cards.Handcuffs2 (
-  handcuffs2,
-  Handcuffs2 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Handcuffs2 (handcuffs2, Handcuffs2 (..)) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
+import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Evade
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Trait (Trait (Humanoid))
 
@@ -33,28 +31,21 @@ instance HasAbilities Handcuffs2 where
   getAbilities (Handcuffs2 a) = case assetPlacement a of
     AttachedToEnemy _ -> []
     _ ->
-      [ restrictedAbility
-          a
-          1
-          ( ControlsThis
-              <> EnemyCriteria
-                (EnemyExists $ CanEvadeEnemy (toSource a) <> EnemyWithTrait Humanoid)
-          )
-          $ ActionAbility [Action.Evade]
-          $ ActionCost 1
+      [ controlledAbility a 1 (exists $ CanEvadeEnemy (toSource a) <> EnemyWithTrait Humanoid) evadeAction_
       ]
 
 instance RunMessage Handcuffs2 where
   runMessage msg a@(Handcuffs2 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push
-        $ ChooseEvadeEnemy
-          iid
-          (toSource attrs)
-          (Just $ toTarget attrs)
-          SkillCombat
-          (EnemyWithTrait Humanoid)
-          False
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = attrs.ability 1
+      chooseEvade <-
+        leftOr
+          <$> aspect
+            iid
+            source
+            (#combat `InsteadOf` #agility)
+            (setTarget attrs <$> mkChooseEvadeMatch iid source (EnemyWithTrait Humanoid))
+      pushAll chooseEvade
       pure a
     Successful (Action.Evade, EnemyTarget enemyId) iid _ (isTarget attrs -> True) _ ->
       do

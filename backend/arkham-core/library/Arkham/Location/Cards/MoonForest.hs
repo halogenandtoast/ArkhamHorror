@@ -1,5 +1,6 @@
 module Arkham.Location.Cards.MoonForest (moonForest, MoonForest (..)) where
 
+import Arkham.Evade
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Location.Cards qualified as Cards
@@ -42,7 +43,7 @@ instance RunMessage MoonForest where
           reduceAlarmLevel (attrs.ability 1) iid
           pure $ MoonForest $ attrs & setMeta (meta {hasUsedSuccess = iid : hasUsedSuccess meta})
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ chooseEvadeEnemy iid (attrs.ability 2) #agility
+      pushM $ mkChooseEvade iid (attrs.ability 2)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       raiseAlarmLevel (attrs.ability 2) iid

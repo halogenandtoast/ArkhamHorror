@@ -1,14 +1,11 @@
-module Arkham.Asset.Cards.Suggestion4 (
-  suggestion4,
-  Suggestion4 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Suggestion4 (suggestion4, Suggestion4 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Evade
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype Suggestion4 = Suggestion4 AssetAttrs
@@ -30,10 +27,8 @@ instance RunMessage Suggestion4 where
   runMessage msg a@(Suggestion4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      pushAll
-        [ skillTestModifier source iid (AddSkillValue #willpower)
-        , chooseEvadeEnemy iid source #agility
-        ]
+      chooseEvade <- toMessage <$> mkChooseEvade iid source
+      pushAll [skillTestModifier source iid (AddSkillValue #willpower), chooseEvade]
       pure a
     PassedThisSkillTestBy _ (isSource attrs -> True) n | n < 2 -> do
       push $ SpendUses (toTarget attrs) Charge 1

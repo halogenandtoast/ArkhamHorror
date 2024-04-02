@@ -1,21 +1,18 @@
-module Arkham.Event.Cards.BindMonster2 (
-  bindMonster2,
-  bindMonster2Effect,
-  BindMonster2 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.BindMonster2 (bindMonster2, bindMonster2Effect, BindMonster2 (..)) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
+import Arkham.Aspect
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards (bindMonster2)
 import Arkham.Event.Runner
 import Arkham.Exception
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Trait (Trait (Elite))
 
@@ -37,10 +34,11 @@ instance HasAbilities BindMonster2 where
 instance RunMessage BindMonster2 where
   runMessage msg e@(BindMonster2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+      chooseEvade <-
+        leftOr <$> aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvade iid attrs)
       pushAll
-        [ createCardEffect Cards.bindMonster2 Nothing attrs SkillTestTarget
-        , chooseEvadeEnemy iid eid #willpower
-        ]
+        $ createCardEffect Cards.bindMonster2 Nothing attrs SkillTestTarget
+        : chooseEvade
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 ->
       case eventAttachedTarget attrs of

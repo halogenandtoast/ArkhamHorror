@@ -858,7 +858,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       damage <- damageValueFor 1 iid DamageForEnemy
       push $ EnemyDamage eid $ attack source damage
     pure a
-  ChooseEvadeEnemy iid source mTarget skillType enemyMatcher isAction | iid == investigatorId -> do
+  ChooseEvadeEnemy choose | choose.investigator == investigatorId -> do
+    let iid = investigatorId
+    let source = choose.source
+    let mTarget = choose.target
+    let skillType = choose.skillType
+    let enemyMatcher = choose.matcher
+    let isAction = choose.isAction
     modifiers <- getModifiers (InvestigatorTarget iid)
     let
       isOverride = \case

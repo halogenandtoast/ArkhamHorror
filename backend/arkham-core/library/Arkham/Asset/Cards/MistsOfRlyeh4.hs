@@ -1,21 +1,17 @@
-module Arkham.Asset.Cards.MistsOfRlyeh4 (
-  mistsOfRlyeh4,
-  MistsOfRlyeh4 (..),
-  mistsOfRlyeh4Effect,
-  MistsOfRlyeh4Effect (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.MistsOfRlyeh4 (mistsOfRlyeh4, MistsOfRlyeh4 (..), mistsOfRlyeh4Effect) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
+import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Effect.Runner
+import Arkham.Evade
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
 import Arkham.SkillType
@@ -29,22 +25,20 @@ mistsOfRlyeh4 :: AssetCard MistsOfRlyeh4
 mistsOfRlyeh4 = asset MistsOfRlyeh4 Cards.mistsOfRlyeh4
 
 instance HasAbilities MistsOfRlyeh4 where
-  getAbilities (MistsOfRlyeh4 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility [Action.Evade]
-        $ ActionCost 1
-        <> UseCost (AssetWithId $ toId a) Charge 1
-    ]
+  getAbilities (MistsOfRlyeh4 a) = [restrictedAbility a 1 ControlsThis $ evadeAction $ assetUseCost a Charge 1]
 
 instance RunMessage MistsOfRlyeh4 where
   runMessage msg a@(MistsOfRlyeh4 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = attrs.ability 1
+      chooseEvade <-
+        leftOr <$> aspect iid source (#willpower `InsteadOf` #agility) (mkChooseEvade iid source)
       pushAll
-        [ createCardEffect Cards.mistsOfRlyeh4 (Just $ EffectInt 1) source iid
-        , createCardEffect Cards.mistsOfRlyeh4 (Just $ EffectInt 2) source iid
-        , skillTestModifier source iid (SkillModifier SkillWillpower 3)
-        , ChooseEvadeEnemy iid source Nothing SkillWillpower AnyEnemy False
-        ]
+        $ [ createCardEffect Cards.mistsOfRlyeh4 (Just $ EffectInt 1) source iid
+          , createCardEffect Cards.mistsOfRlyeh4 (Just $ EffectInt 2) source iid
+          , skillTestModifier source iid (SkillModifier SkillWillpower 3)
+          ]
+        <> chooseEvade
       pure a
     _ -> MistsOfRlyeh4 <$> runMessage msg attrs
 
@@ -59,9 +53,7 @@ instance RunMessage MistsOfRlyeh4Effect where
   runMessage msg e@(MistsOfRlyeh4Effect attrs@EffectAttrs {..}) = case msg of
     RevealChaosToken _ iid token | effectMetadata == Just (EffectInt 1) -> do
       when (effectTarget == InvestigatorTarget iid) $ do
-        when
-          ( chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
-          )
+        when (token.face `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
           $ pushAll
             [ If
                 (Window.RevealChaosTokenEffect iid token effectId)

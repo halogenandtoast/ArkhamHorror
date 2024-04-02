@@ -102,6 +102,7 @@ allSkills =
     , SomeSkillCard promiseOfPower
     , SomeSkillCard predestined
     , SomeSkillCard beloved
+    , SomeSkillCard skeptic1
     , SomeSkillCard unrelenting1
     , SomeSkillCard defensiveStance1
     , SomeSkillCard surveyTheArea1

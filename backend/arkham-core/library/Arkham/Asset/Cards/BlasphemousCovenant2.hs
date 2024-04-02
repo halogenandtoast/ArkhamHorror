@@ -16,10 +16,7 @@ blasphemousCovenant2 = asset BlasphemousCovenant2 Cards.blasphemousCovenant2
 
 instance HasAbilities BlasphemousCovenant2 where
   getAbilities (BlasphemousCovenant2 a) =
-    [ restrictedAbility
-        a
-        1
-        ControlsThis
+    [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
           (RevealChaosToken #when (affectsOthers $ InvestigatorAt YourLocation) #curse)
           (exhaust a)

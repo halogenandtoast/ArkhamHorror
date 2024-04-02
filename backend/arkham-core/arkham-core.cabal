@@ -530,6 +530,7 @@ library
       Arkham.Asset.Cards.EsotericAtlas2
       Arkham.Asset.Cards.EsotericFormula
       Arkham.Asset.Cards.ExpeditionJournal
+      Arkham.Asset.Cards.FalseCovenant2
       Arkham.Asset.Cards.FamiliarSpirit
       Arkham.Asset.Cards.FamilyInheritance
       Arkham.Asset.Cards.Farsight4
@@ -2441,6 +2442,7 @@ library
       Arkham.Skill.Cards.SealOfTheElderSign5
       Arkham.Skill.Cards.SelfSacrifice
       Arkham.Skill.Cards.SharpVision1
+      Arkham.Skill.Cards.Skeptic1
       Arkham.Skill.Cards.Steadfast
       Arkham.Skill.Cards.StrokeOfLuck2
       Arkham.Skill.Cards.StunningBlow

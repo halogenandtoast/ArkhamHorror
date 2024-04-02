@@ -48,6 +48,7 @@ import Arkham.Asset.Assets (
   crystalPendulumEffect,
   daisysToteBagAdvancedEffect,
   empiricalHypothesisEffect,
+  eyeOfChaos4Effect,
   eyeOfChaosEffect,
   fence1Effect,
   fieldworkEffect,
@@ -75,6 +76,8 @@ import Arkham.Asset.Assets (
   riteOfSeekingEffect,
   showmanshipEffect,
   shrivellingEffect,
+  shroudOfShadows4Effect,
+  shroudOfShadowsEffect,
   sixthSense4Effect,
   sixthSenseEffect,
   songOfTheDead2Effect,
@@ -398,7 +401,10 @@ allEffects =
     , ("07030", SomeEffect tidesOfFateEffect)
     , ("07117", SomeEffect armageddonEffect)
     , ("07118", SomeEffect eyeOfChaosEffect)
+    , ("07119", SomeEffect shroudOfShadowsEffect)
     , ("07226", SomeEffect armageddon4Effect)
+    , ("07227", SomeEffect eyeOfChaos4Effect)
+    , ("07228", SomeEffect shroudOfShadows4Effect)
     , ("09041", SomeEffect empiricalHypothesisEffect)
     , ("50013", SomeEffect twilightBladeEffect)
     , ("50044", SomeEffect jeremiahPierceEffect)

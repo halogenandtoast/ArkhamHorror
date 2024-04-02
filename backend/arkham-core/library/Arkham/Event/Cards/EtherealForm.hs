@@ -1,16 +1,12 @@
-module Arkham.Event.Cards.EtherealForm (
-  etherealForm,
-  EtherealForm (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.EtherealForm (etherealForm, EtherealForm (..)) where
 
 import Arkham.Classes
+import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype EtherealForm = EtherealForm EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -22,9 +18,10 @@ etherealForm = event EtherealForm Cards.etherealForm
 instance RunMessage EtherealForm where
   runMessage msg e@(EtherealForm attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
+      chooseEvade <- toMessage <$> mkChooseEvade iid attrs
       pushAll
         [ skillTestModifier attrs iid (AddSkillValue #willpower)
-        , chooseEvadeEnemy iid attrs #agility
+        , chooseEvade
         ]
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do

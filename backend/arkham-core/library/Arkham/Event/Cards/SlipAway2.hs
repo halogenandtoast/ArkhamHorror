@@ -1,22 +1,18 @@
-module Arkham.Event.Cards.SlipAway2 (
-  slipAway2,
-  slipAway2Effect,
-  SlipAway2 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.SlipAway2 (slipAway2, slipAway2Effect, SlipAway2 (..)) where
 
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.EffectMetadata
+import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.Phase
+import Arkham.Prelude
 import Arkham.SkillType
 
 newtype SlipAway2 = SlipAway2 EventAttrs
@@ -29,9 +25,10 @@ slipAway2 = event SlipAway2 Cards.slipAway2
 instance RunMessage SlipAway2 where
   runMessage msg e@(SlipAway2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+      chooseEvade <- toMessage <$> mkChooseEvade iid attrs
       pushAll
         [ skillTestModifier attrs iid (AddSkillValue SkillAgility)
-        , ChooseEvadeEnemy iid (toSource attrs) Nothing SkillAgility AnyEnemy False
+        , chooseEvade
         ]
       pure e
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n | n >= 1 -> do

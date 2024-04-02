@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Aspect.Types
 import Arkham.Classes.HasGame
+import Arkham.Evade.Types
 import Arkham.Fight.Types
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
@@ -83,3 +84,26 @@ instance IsAspect InsteadOf ChooseFight where
                     ]
                 else Right updated
         else Right chooseFight
+
+instance IsAspect InsteadOf ChooseEvade where
+  aspect iid source a@(InsteadOf skillType replaced) action = do
+    ignorable <- canIgnoreAspect iid source (InsteadOfAspect a)
+    chooseEvade <- action
+    player <- getPlayer iid
+    pure
+      $ if chooseEvade.skillType == replaced
+        then
+          let updated = chooseEvade {chooseEvadeSkillType = skillType}
+           in if ignorable
+                then
+                  Left
+                    [ chooseOne
+                        player
+                        [ Label
+                            ("Ignore use " <> tshow skillType <> " instead of " <> tshow replaced)
+                            [toMessage chooseEvade]
+                        , Label "Do not ignore" [toMessage updated]
+                        ]
+                    ]
+                else Right updated
+        else Right chooseEvade

@@ -1,13 +1,14 @@
 module Arkham.Event.Cards.BlindingLight where
 
-import Arkham.Prelude
-
 import Arkham.Action qualified as Action
+import Arkham.Aspect
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Effect.Runner
+import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards (blindingLight)
 import Arkham.Event.Runner
+import Arkham.Prelude
 import Arkham.Window qualified as Window
 
 newtype BlindingLight = BlindingLight EventAttrs
@@ -20,11 +21,13 @@ blindingLight = event BlindingLight Cards.blindingLight
 instance RunMessage BlindingLight where
   runMessage msg e@(BlindingLight attrs) = case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
+      chooseEvade <-
+        leftOr <$> aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvade iid attrs)
       pushAll
-        [ createCardEffect Cards.blindingLight Nothing attrs iid
-        , createCardEffect Cards.blindingLight Nothing attrs SkillTestTarget
-        , chooseEvadeEnemy iid eid #willpower
-        ]
+        $ [ createCardEffect Cards.blindingLight Nothing attrs iid
+          , createCardEffect Cards.blindingLight Nothing attrs SkillTestTarget
+          ]
+        <> chooseEvade
       pure e
     _ -> BlindingLight <$> runMessage msg attrs
 

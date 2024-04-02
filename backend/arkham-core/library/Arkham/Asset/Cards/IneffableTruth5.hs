@@ -1,19 +1,16 @@
-module Arkham.Asset.Cards.IneffableTruth5 (
-  ineffableTruth5,
-  IneffableTruth5 (..),
-  ineffableTruth5Effect,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.IneffableTruth5 (ineffableTruth5, IneffableTruth5 (..), ineffableTruth5Effect) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
+import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.DamageEffect
 import Arkham.Effect.Runner
+import Arkham.Evade
 import Arkham.Matcher hiding (RevealChaosToken)
+import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Window qualified as Window
 
@@ -34,13 +31,16 @@ instance HasAbilities IneffableTruth5 where
 
 instance RunMessage IneffableTruth5 where
   runMessage msg a@(IneffableTruth5 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = attrs.ability 1
+      chooseEvade <-
+        leftOr <$> aspect iid source (#willpower `InsteadOf` #agility) (mkChooseEvade iid source)
       pushAll
-        [ createCardEffect Cards.ineffableTruth5 Nothing source iid
-        , createCardEffect Cards.ineffableTruth5 Nothing source SkillTestTarget
-        , skillTestModifier source iid (SkillModifier SkillWillpower 3)
-        , ChooseEvadeEnemy iid source Nothing SkillWillpower AnyEnemy False
-        ]
+        $ [ createCardEffect Cards.ineffableTruth5 Nothing source iid
+          , createCardEffect Cards.ineffableTruth5 Nothing source SkillTestTarget
+          , skillTestModifier source iid (SkillModifier #willpower 3)
+          ]
+        <> chooseEvade
       pure a
     _ -> IneffableTruth5 <$> runMessage msg attrs
 
@@ -52,24 +52,24 @@ ineffableTruth5Effect :: EffectArgs -> IneffableTruth5Effect
 ineffableTruth5Effect = cardEffect IneffableTruth5Effect Cards.ineffableTruth5
 
 instance RunMessage IneffableTruth5Effect where
-  runMessage msg e@(IneffableTruth5Effect attrs@EffectAttrs {..}) = case msg of
-    RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget -> do
+  runMessage msg e@(IneffableTruth5Effect attrs) = case msg of
+    RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
       when
-        (chaosTokenFace token `elem` [ElderSign, PlusOne, Zero])
+        (token.face `elem` [ElderSign, PlusOne, Zero])
         $ pushAll
           [ If
-              (Window.RevealChaosTokenEffect iid token effectId)
-              [LoseResources iid (AbilitySource effectSource 1) 2]
-          , DisableEffect effectId
+              (Window.RevealChaosTokenEffect iid token attrs.id)
+              [LoseResources iid attrs.source 2]
+          , disable attrs
           ]
       pure e
     SkillTestEnds _ _ ->
-      e <$ push (DisableEffect effectId)
+      e <$ push (disable attrs)
     PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
-      | SkillTestTarget == effectTarget -> do
+      | SkillTestTarget == attrs.target -> do
           pushAll
-            [ EnemyDamage eid $ nonAttack (InvestigatorSource iid) 2
-            , DisableEffect effectId
+            [ EnemyDamage eid $ nonAttack iid 2
+            , disable attrs
             ]
           pure e
     _ -> IneffableTruth5Effect <$> runMessage msg attrs

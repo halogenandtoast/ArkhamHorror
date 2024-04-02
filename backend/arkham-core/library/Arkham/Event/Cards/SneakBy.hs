@@ -1,14 +1,10 @@
-module Arkham.Event.Cards.SneakBy (
-  sneakBy,
-  SneakBy (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.SneakBy (sneakBy, SneakBy (..)) where
 
 import Arkham.Classes
+import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Prelude
 import Arkham.SkillType
 
 newtype SneakBy = SneakBy EventAttrs
@@ -21,9 +17,10 @@ sneakBy = event SneakBy Cards.sneakBy
 instance RunMessage SneakBy where
   runMessage msg e@(SneakBy attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+      chooseEvade <- toMessage <$> mkChooseEvade iid attrs
       pushAll
         [ TakeResources iid 2 (toSource attrs) False
-        , ChooseEvadeEnemy iid (toSource attrs) Nothing SkillAgility mempty False
+        , chooseEvade
         ]
       pure e
     _ -> SneakBy <$> runMessage msg attrs

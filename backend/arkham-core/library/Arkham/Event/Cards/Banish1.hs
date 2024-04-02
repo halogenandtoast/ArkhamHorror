@@ -1,21 +1,17 @@
-module Arkham.Event.Cards.Banish1 (
-  banish1,
-  banish1Effect,
-  Banish1 (..),
-)
-where
+module Arkham.Event.Cards.Banish1 (banish1, banish1Effect, Banish1 (..)) where
 
-import Arkham.Prelude
-
+import Arkham.Aspect
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
+import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.SkillTest.Base
 import Arkham.SkillType
 
@@ -24,13 +20,16 @@ newtype Banish1 = Banish1 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 banish1 :: EventCard Banish1
-banish1 =
-  event Banish1 Cards.banish1
+banish1 = event Banish1 Cards.banish1
 
 instance RunMessage Banish1 where
   runMessage msg e@(Banish1 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      push $ ChooseEvadeEnemy iid (toSource attrs) Nothing SkillWillpower NonEliteEnemy False
+    PlayThisEvent iid eid | eid == toId attrs -> do
+      let source = attrs.ability 1
+      chooseEvade <-
+        leftOr
+          <$> aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvadeMatch iid attrs NonEliteEnemy)
+      pushAll chooseEvade
       pure e
     ChosenEvadeEnemy source eid | isSource attrs source -> do
       push $ createCardEffect Cards.banish1 Nothing attrs (EnemyTarget eid)

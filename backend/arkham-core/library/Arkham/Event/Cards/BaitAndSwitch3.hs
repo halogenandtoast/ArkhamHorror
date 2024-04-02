@@ -1,14 +1,10 @@
-module Arkham.Event.Cards.BaitAndSwitch3 (
-  baitAndSwitch3,
-  BaitAndSwitch3,
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.BaitAndSwitch3 (baitAndSwitch3, BaitAndSwitch3) where
 
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Criteria
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards (baitAndSwitch3)
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
@@ -16,6 +12,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.SkillType
 
@@ -64,14 +61,7 @@ instance RunMessage BaitAndSwitch3 where
              ]
         pure e
       ResolveEventChoice iid eid n _ _ | eid == eventId -> do
-        push
-          $ ChooseEvadeEnemy
-            iid
-            (toSource attrs)
-            (Just $ toTarget attrs)
-            SkillAgility
-            AnyEnemy
-            False
+        pushM $ setTarget attrs <$> mkChooseEvade iid attrs
         when (n == 2)
           $ push
           $ skillTestModifier

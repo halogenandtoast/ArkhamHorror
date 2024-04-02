@@ -124,10 +124,12 @@ runEventMessage msg a@EventAttrs {..} = case msg of
           DiscardThis -> pushAll [after, toDiscardBy (eventController a) GameSource a]
           RemoveThisFromGame -> push (RemoveEvent $ toId a)
           ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck $ eventController a) (toTarget a))
+          ReturnThisToHand -> push (ReturnToHand (eventController a) (toTarget a))
         Limbo -> case afterPlay of
           DiscardThis -> pushAll [after, toDiscardBy (eventController a) GameSource a]
           RemoveThisFromGame -> push (RemoveEvent $ toId a)
           ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck $ eventController a) (toTarget a))
+          ReturnThisToHand -> push (ReturnToHand (eventController a) (toTarget a))
         _ -> pure ()
     pure a
   InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do

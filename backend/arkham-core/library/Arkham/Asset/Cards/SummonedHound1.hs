@@ -1,18 +1,14 @@
-module Arkham.Asset.Cards.SummonedHound1 (
-  summonedHound1,
-  SummonedHound1 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.SummonedHound1 (summonedHound1, SummonedHound1 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Investigate
 import Arkham.Investigate.Types qualified as Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype SummonedHound1 = SummonedHound1 AssetAttrs
@@ -34,7 +30,7 @@ instance RunMessage SummonedHound1 where
       fightableEnemies <- select $ CanFightEnemy (toSource attrs)
       player <- getPlayer iid
       mLocation <- field InvestigatorLocation iid
-      let doFight = chooseFightEnemy iid attrs #combat
+      doFight <- toMessage <$> mkChooseFight iid (attrs.ability 1)
       mDoInvestigate :: Maybe Investigate.Investigate <- case mLocation of
         Just lid -> do
           canInvestigate <- lid <=~> InvestigatableLocation

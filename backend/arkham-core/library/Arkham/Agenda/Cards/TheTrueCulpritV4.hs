@@ -1,19 +1,17 @@
-module Arkham.Agenda.Cards.TheTrueCulpritV4 (
-  TheTrueCulpritV4 (..),
-  theTrueCulpritV4,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheTrueCulpritV4 (TheTrueCulpritV4 (..), theTrueCulpritV4) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
+import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Fight
 import Arkham.GameValue
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype TheTrueCulpritV4 = TheTrueCulpritV4 AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -47,7 +45,11 @@ instance RunMessage TheTrueCulpritV4 where
   runMessage msg a@(TheTrueCulpritV4 attrs) =
     case msg of
       UseThisAbility iid p@(ProxySource _ (isSource attrs -> True)) 1 -> do
-        push $ chooseFightEnemyWithTarget iid (toAbilitySource p 1) attrs #willpower
+        let source = toAbilitySource p 1
+        chooseFight <-
+          leftOr
+            <$> aspect iid source (#willpower `InsteadOf` #combat) (setTarget attrs <$> mkChooseFight iid source)
+        pushAll chooseFight
         pure a
       Successful (Action.Fight, target) _ _ (isTarget attrs -> True) _ -> do
         push $ RemoveDoom (toAbilitySource attrs 1) target 3

@@ -1,12 +1,7 @@
-module Arkham.Event.Cards.StormOfSpirits (
-  stormOfSpirits,
-  stormOfSpiritsEffect,
-  StormOfSpirits (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.StormOfSpirits (stormOfSpirits, stormOfSpiritsEffect, StormOfSpirits (..)) where
 
 import Arkham.Action qualified as Action
+import Arkham.Aspect
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.DamageEffect
@@ -14,7 +9,9 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Fight
 import Arkham.Matcher hiding (AttackDamageEffect, RevealChaosToken)
+import Arkham.Prelude
 import Arkham.Window qualified as Window
 
 newtype StormOfSpirits = StormOfSpirits EventAttrs
@@ -26,11 +23,13 @@ stormOfSpirits = event StormOfSpirits Cards.stormOfSpirits
 
 instance RunMessage StormOfSpirits where
   runMessage msg e@(StormOfSpirits attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    PlayThisEvent iid eid | eid == toId attrs -> do
+      chooseFight <-
+        leftOr
+          <$> aspect iid attrs (#willpower `InsteadOf` #combat) (setTarget attrs <$> mkChooseFight iid attrs)
       pushAll
-        [ createCardEffect Cards.stormOfSpirits Nothing attrs iid
-        , chooseFightEnemyWithTarget iid attrs attrs #willpower
-        ]
+        $ createCardEffect Cards.stormOfSpirits Nothing attrs iid
+        : chooseFight
       pure e
     Successful (Action.Fight, EnemyTarget eid) iid _ target _ | isTarget attrs target -> do
       let
@@ -55,7 +54,7 @@ instance RunMessage StormOfSpiritsEffect where
     RevealChaosToken _ iid token | toTarget iid == effectTarget attrs -> do
       let triggers = chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
       when triggers $ do
-        enemy <- fromJustNote "must be enemy" . join . fmap (preview _EnemyTarget) <$> getSkillTestTarget
+        enemy <- fromJustNote "must be enemy" . (preview _EnemyTarget =<<) <$> getSkillTestTarget
         iids <- select $ InvestigatorAt $ locationWithEnemy enemy
         pushAll
           [ If

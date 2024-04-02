@@ -1,13 +1,10 @@
-module Arkham.Asset.Cards.FortyOneDerringer (
-  FortyOneDerringer (..),
-  fortyOneDerringer,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.FortyOneDerringer (FortyOneDerringer (..), fortyOneDerringer) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
+import Arkham.Prelude
 
 newtype FortyOneDerringer = FortyOneDerringer AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -23,12 +20,11 @@ instance HasAbilities FortyOneDerringer where
 instance RunMessage FortyOneDerringer where
   runMessage msg a@(FortyOneDerringer attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushAll
-        [ skillTestModifier (toAbilitySource attrs 1) iid (SkillModifier #combat 2)
-        , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
-        ]
+      let source = attrs.ability 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
+      pushAll [skillTestModifier source iid (SkillModifier #combat 2), chooseFight]
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
-      pushWhen (n >= 2) $ skillTestModifier (toAbilitySource attrs 1) iid (DamageDealt 1)
+      pushWhen (n >= 2) $ skillTestModifier (attrs.ability 1) iid (DamageDealt 1)
       pure a
     _ -> FortyOneDerringer <$> runMessage msg attrs

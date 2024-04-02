@@ -1,12 +1,7 @@
-module Arkham.Event.Cards.StormOfSpirits3 (
-  stormOfSpirits3,
-  stormOfSpirits3Effect,
-  StormOfSpirits3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.StormOfSpirits3 (stormOfSpirits3, stormOfSpirits3Effect, StormOfSpirits3 (..)) where
 
 import Arkham.Action qualified as Action
+import Arkham.Aspect
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.DamageEffect
@@ -14,8 +9,10 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Fight
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (AttackDamageEffect, RevealChaosToken)
+import Arkham.Prelude
 import Arkham.Window qualified as Window
 
 newtype StormOfSpirits3 = StormOfSpirits3 EventAttrs
@@ -28,11 +25,14 @@ stormOfSpirits3 = event StormOfSpirits3 Cards.stormOfSpirits3
 instance RunMessage StormOfSpirits3 where
   runMessage msg e@(StormOfSpirits3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+      chooseFight <-
+        leftOr
+          <$> aspect iid attrs (#willpower `InsteadOf` #combat) (setTarget attrs <$> mkChooseFight iid attrs)
       pushAll
-        [ skillTestModifier attrs iid (SkillModifier #willpower 2)
-        , createCardEffect Cards.stormOfSpirits3 Nothing attrs iid
-        , chooseFightEnemyWithTarget iid attrs attrs #willpower
-        ]
+        $ [ skillTestModifier attrs iid (SkillModifier #willpower 2)
+          , createCardEffect Cards.stormOfSpirits3 Nothing attrs iid
+          ]
+        <> chooseFight
       pure e
     Successful (Action.Fight, EnemyTarget eid) iid _ target _ | isTarget attrs target -> do
       let
@@ -58,7 +58,7 @@ instance RunMessage StormOfSpirits3Effect where
     RevealChaosToken _ iid token | toTarget iid == effectTarget attrs -> do
       let triggers = chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
       when triggers $ do
-        enemy <- fromJustNote "must be enemy" . join . fmap (preview _EnemyTarget) <$> getSkillTestTarget
+        enemy <- fromJustNote "must be enemy" . (preview _EnemyTarget =<<) <$> getSkillTestTarget
         iids <- select $ InvestigatorAt $ locationWithEnemy enemy
         pushAll
           [ If

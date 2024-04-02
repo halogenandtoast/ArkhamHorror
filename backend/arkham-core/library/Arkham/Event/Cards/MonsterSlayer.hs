@@ -1,15 +1,11 @@
-module Arkham.Event.Cards.MonsterSlayer (
-  monsterSlayer,
-  MonsterSlayer (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.MonsterSlayer (monsterSlayer, MonsterSlayer (..)) where
 
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
-import Arkham.SkillType
+import Arkham.Fight
+import Arkham.Prelude
 
 newtype MonsterSlayer = MonsterSlayer EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -20,13 +16,11 @@ monsterSlayer = event MonsterSlayer Cards.monsterSlayer
 
 instance RunMessage MonsterSlayer where
   runMessage msg e@(MonsterSlayer attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      e
-        <$ pushAll
-          [ skillTestModifier
-              (toSource attrs)
-              (InvestigatorTarget iid)
-              (DamageDealt 1)
-          , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
-          ]
+    PlayThisEvent iid eid | eid == attrs.id -> do
+      chooseFight <- toMessage <$> mkChooseFight iid attrs
+      pushAll
+        [ skillTestModifier attrs iid (DamageDealt 1)
+        , chooseFight
+        ]
+      pure e
     _ -> MonsterSlayer <$> runMessage msg attrs

@@ -1,16 +1,13 @@
-module Arkham.Asset.Cards.Mk1Grenades4 (
-  mk1Grenades4,
-  Mk1Grenades4 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Mk1Grenades4 (mk1Grenades4, Mk1Grenades4 (..)) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.DamageEffect
+import Arkham.Fight
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype Mk1Grenades4 = Mk1Grenades4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -25,15 +22,13 @@ instance HasAbilities Mk1Grenades4 where
 instance RunMessage Mk1Grenades4 where
   runMessage msg a@(Mk1Grenades4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = toAbilitySource attrs 1
-      pushAll
-        [ skillTestModifier source iid (SkillModifier #combat 2)
-        , chooseFightEnemyWithTarget iid source attrs #combat
-        ]
+      let source = attrs.ability 1
+      chooseFight <- toMessage . setTarget attrs <$> mkChooseFight iid source
+      pushAll [skillTestModifier source iid (SkillModifier #combat 2), chooseFight]
       pure a
     Successful (Action.Fight, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
       let
-        source = toAbilitySource attrs 1
+        source = attrs.ability 1
         toMsg eid' =
           targetLabel eid'
             $ if eid == eid'

@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Fight
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Prelude
 import Arkham.Projection
@@ -26,12 +27,11 @@ instance HasAbilities Tonys38LongColt where
 
 instance HasModifiersFor Tonys38LongColt where
   getModifiersFor (InvestigatorTarget iid) (Tonys38LongColt a) | a `controlledBy` iid = do
-    mBounties <- runMaybeT $ do
+    toModifiers a . toList <$> runMaybeT do
       EnemyTarget eid <- MaybeT getSkillTestTarget
-      source <- MaybeT getSkillTestSource
-      guard $ isAbilitySource a 2 source
-      lift $ fieldMap EnemyTokens (Token.countTokens Token.Bounty) eid
-    pure $ toModifiers a [SkillModifier #combat bounties | bounties <- toList mBounties, bounties > 0]
+      guardM $ isAbilitySource a 2 <$> MaybeT getSkillTestSource
+      bounties <- lift $ fieldMap EnemyTokens (Token.countTokens Token.Bounty) eid
+      guard (bounties > 0) $> SkillModifier #combat bounties
   getModifiersFor _ _ = pure []
 
 instance RunMessage Tonys38LongColt where
@@ -41,8 +41,9 @@ instance RunMessage Tonys38LongColt where
       for_ mcard $ push . putCardIntoPlay iid
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      let source = toAbilitySource attrs 2
-      pushAll [skillTestModifier source iid (DamageDealt 1), chooseFightEnemy iid source #combat]
+      let source = attrs.ability 2
+      chooseFight <- toMessage <$> mkChooseFight iid source
+      pushAll [skillTestModifier source iid (DamageDealt 1), chooseFight]
       pure a
     EnemyDefeated eid _ (isAbilitySource attrs 2 -> True) _ -> do
       hadBounty <- eid <=~> EnemyWithBounty

@@ -3,6 +3,7 @@ module Arkham.Asset.Cards.BlessedBlade4 (blessedBlade4, BlessedBlade4 (..)) wher
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Helpers.ChaosBag
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Prelude
@@ -20,10 +21,11 @@ instance HasAbilities BlessedBlade4 where
 instance RunMessage BlessedBlade4 where
   runMessage msg a@(BlessedBlade4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      chooseFight <- toMessage <$> mkChooseFight iid (attrs.ability 1)
       pushAll
         [ skillTestModifier (attrs.ability 1) iid (SkillModifier #combat 2)
         , skillTestModifier (attrs.ability 1) SkillTestTarget ReturnBlessedToChaosBag
-        , chooseFightEnemy iid (attrs.ability 1) #combat
+        , chooseFight
         ]
       pure a
     BeforeRevealChaosTokens -> do

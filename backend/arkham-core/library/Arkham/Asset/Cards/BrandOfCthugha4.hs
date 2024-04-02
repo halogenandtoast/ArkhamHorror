@@ -3,6 +3,7 @@ module Arkham.Asset.Cards.BrandOfCthugha4 (brandOfCthugha4, BrandOfCthugha4 (..)
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Prelude
 
 newtype BrandOfCthugha4 = BrandOfCthugha4 AssetAttrs
@@ -18,21 +19,18 @@ instance HasAbilities BrandOfCthugha4 where
 instance RunMessage BrandOfCthugha4 where
   runMessage msg a@(BrandOfCthugha4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ SkillLabel
+      choices <- for [#willpower, #combat] \sType -> do
+        chooseFight <- toMessage . withSkillType sType <$> mkChooseFight iid (attrs.ability 1)
+        pure
+          $ SkillLabel
             sType
-            [ skillTestModifiers (attrs.ability 1) iid [SkillModifier sType 2, NoStandardDamage]
-            , chooseFightEnemy iid (attrs.ability 1) sType
-            ]
-          | sType <- [#willpower, #combat]
-          ]
+            [skillTestModifiers (attrs.ability 1) iid [SkillModifier sType 2, NoStandardDamage], chooseFight]
+      player <- getPlayer iid
+      push $ chooseOne player choices
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       player <- getPlayer iid
-      pushWhen (n == 0) $ LoseActions iid (toAbilitySource attrs 1) 2
+      pushWhen (n == 0) $ LoseActions iid (attrs.ability 1) 2
       case attrs.use Charge of
         0 -> pure ()
         1 -> push $ ResolveAmounts iid [("Charges", 1)] (toTarget attrs)

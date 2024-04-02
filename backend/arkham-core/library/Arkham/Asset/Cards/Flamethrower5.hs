@@ -1,9 +1,4 @@
-module Arkham.Asset.Cards.Flamethrower5 (
-  flamethrower5,
-  Flamethrower5 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Flamethrower5 (flamethrower5, Flamethrower5 (..)) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -11,9 +6,11 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.DamageEffect
 import Arkham.Enemy.Types qualified as Field (Field (..))
+import Arkham.Fight
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Projection
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype Flamethrower5 = Flamethrower5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -27,17 +24,14 @@ instance HasAbilities Flamethrower5 where
 
 instance RunMessage Flamethrower5 where
   runMessage msg a@(Flamethrower5 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = attrs.ability 1
       enemies <- withMaybeMaxField Field.EnemyFight =<< select (enemyEngagedWith iid)
+      chooseFight <-
+        toMessage . setTarget attrs <$> mkChooseFightMatch iid source (oneOf $ map EnemyWithId enemies)
       pushAll
         [ skillTestModifier attrs iid (SkillModifier #combat 4)
-        , ChooseFightEnemy
-            iid
-            (toSource attrs)
-            (Just $ toTarget attrs)
-            #combat
-            (oneOf $ map EnemyWithId enemies)
-            False
+        , chooseFight
         ]
       pure a
     Successful (Action.Fight, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
@@ -46,8 +40,9 @@ instance RunMessage Flamethrower5 where
       let toMsg eid' = EnemyDamage eid' $ delayDamage $ isDirect $ attack attrs 1
       player <- getPlayer iid
       push
-        $ chooseOne player
-        $ [ Label "Do standard damage" [EnemyDamage eid $ attack attrs 1]
+        $ chooseOne
+          player
+          [ Label "Do standard damage" [EnemyDamage eid $ attack attrs 1]
           , Label "Assign up to 4 damage among enemies engaged with you"
               $ replicate damage
               $ chooseOne player [targetLabel eid' [toMsg eid'] | eid' <- engaged]

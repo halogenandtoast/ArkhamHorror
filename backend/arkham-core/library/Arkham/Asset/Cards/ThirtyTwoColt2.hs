@@ -1,13 +1,10 @@
-module Arkham.Asset.Cards.ThirtyTwoColt2 (
-  thirtyTwoColt2,
-  ThirtyTwoColt2 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.ThirtyTwoColt2 (thirtyTwoColt2, ThirtyTwoColt2 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
+import Arkham.Prelude
 
 newtype ThirtyTwoColt2 = ThirtyTwoColt2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -25,9 +22,11 @@ instance HasAbilities ThirtyTwoColt2 where
 instance RunMessage ThirtyTwoColt2 where
   runMessage msg a@(ThirtyTwoColt2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = attrs.ability 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
       pushAll
-        [ skillTestModifier (toAbilitySource attrs 1) iid (DamageDealt 1)
-        , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
+        [ skillTestModifier source iid (DamageDealt 1)
+        , chooseFight
         ]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

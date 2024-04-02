@@ -1,18 +1,15 @@
-module Arkham.Asset.Cards.ShardsOfTheVoid3 (
-  shardsOfTheVoid3,
-  ShardsOfTheVoid3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.ShardsOfTheVoid3 (shardsOfTheVoid3, ShardsOfTheVoid3 (..)) where
 
 import Arkham.Ability
+import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.ChaosToken
+import Arkham.Fight
 import Arkham.Message qualified as Msg
+import Arkham.Prelude
 import Arkham.Projection
-import Arkham.SkillType
 
 newtype ShardsOfTheVoid3 = ShardsOfTheVoid3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -34,20 +31,19 @@ instance RunMessage ShardsOfTheVoid3 where
   runMessage msg a@(ShardsOfTheVoid3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       zeros <- fieldMap AssetSealedChaosTokens (count ((== Zero) . chaosTokenFace)) (toId attrs)
+      let source = attrs.ability 1
+      chooseFight <- aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight iid source)
       pushAll
-        [ skillTestModifiers attrs iid
-            $ DamageDealt 1
-            : [SkillModifier SkillWillpower (zeros * 2) | zeros > 0]
-        , ChooseFightEnemy iid (toSource attrs) Nothing SkillWillpower mempty False
-        ]
+        $ skillTestModifiers source iid (DamageDealt 1 : [SkillModifier #willpower (zeros * 2) | zeros > 0])
+        : leftOr chooseFight
       pure a
     Msg.RevealChaosToken SkillTestSource _ token | chaosTokenFace token == Zero -> do
       mSource <- getSkillTestSource
       mInvestigator <- getSkillTestInvestigator
       for_ ((,) <$> mSource <*> mInvestigator) $ \(source, iid) -> do
-        when (isSource attrs source)
+        when (isAbilitySource attrs 1 source)
           $ pushAll
-            [ skillTestModifier attrs iid (DamageDealt 1)
+            [ skillTestModifier (attrs.ability 1) iid (DamageDealt 1)
             , SealChaosToken token
             , SealedChaosToken token (toCard attrs)
             ]

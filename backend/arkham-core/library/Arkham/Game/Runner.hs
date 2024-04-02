@@ -850,6 +850,8 @@ runGameMessage msg g = case msg of
                 )
               RemoveThisFromGame ->
                 (RemoveFromGame (SkillTarget skillId), Nothing)
+              ReturnThisToHand ->
+                (ReturnToHand (skillOwner $ toAttrs skill) (SkillTarget skillId), Nothing)
               ShuffleThisBackIntoDeck ->
                 ( ShuffleIntoDeck (Deck.InvestigatorDeck $ skillOwner $ toAttrs skill) (toTarget skill)
                 , Just skillId

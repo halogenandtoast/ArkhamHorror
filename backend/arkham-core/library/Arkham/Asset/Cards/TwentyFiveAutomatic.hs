@@ -3,6 +3,7 @@ module Arkham.Asset.Cards.TwentyFiveAutomatic (twentyFiveAutomatic, TwentyFiveAu
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -19,7 +20,7 @@ instance HasAbilities TwentyFiveAutomatic where
 instance RunMessage TwentyFiveAutomatic where
   runMessage msg a@(TwentyFiveAutomatic attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ chooseFightEnemy iid (attrs.ability 1) #combat
+      pushM $ mkChooseFight iid (attrs.ability 1)
       pure a
     ChoseEnemy iid (isAbilitySource attrs 1 -> True) eid -> do
       exhausted <- eid <=~> ExhaustedEnemy

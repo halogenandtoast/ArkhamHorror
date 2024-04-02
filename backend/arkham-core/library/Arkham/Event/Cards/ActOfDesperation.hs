@@ -4,8 +4,6 @@ module Arkham.Event.Cards.ActOfDesperation (
   ActOfDesperation (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
@@ -14,7 +12,9 @@ import Arkham.Effect.Types
 import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Fight
 import Arkham.Helpers.Modifiers
+import Arkham.Prelude
 
 newtype ActOfDesperation = ActOfDesperation EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -34,11 +34,12 @@ instance RunMessage ActOfDesperation where
       case getDiscards attrs.payment of
         [(zone, discard)] -> do
           let n = maybe 0 toPrintedCost . cdCost $ toCardDef discard
+          chooseFight <- toMessage <$> mkChooseFight iid attrs
           pushAll
             $ skillTestModifiers attrs iid (DamageDealt 1 : [SkillModifier #combat n | n > 0])
             : [ createCardEffect Cards.actOfDesperation (Just (EffectInt n)) attrs iid | zone == FromPlay && n > 0
               ]
-              <> [chooseFightEnemy iid attrs #combat]
+              <> [chooseFight]
         _ -> error "Invalid choice"
       pure e
     _ -> ActOfDesperation <$> runMessage msg attrs

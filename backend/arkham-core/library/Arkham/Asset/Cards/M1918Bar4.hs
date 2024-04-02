@@ -1,16 +1,11 @@
-module Arkham.Asset.Cards.M1918Bar4 (
-  m1918Bar4,
-  M1918Bar4 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.M1918Bar4 (m1918Bar4, M1918Bar4 (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Prelude
 
 newtype M1918Bar4 = M1918Bar4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,12 +16,7 @@ m1918Bar4 = asset M1918Bar4 Cards.m1918Bar4
 
 instance HasAbilities M1918Bar4 where
   getAbilities (M1918Bar4 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility
-          ([Action.Fight])
-        $ ActionCost 1
-        <> UseCostUpTo (AssetWithId $ toId a) Ammo 1 5
-    ]
+    [restrictedAbility a 1 ControlsThis $ fightAction $ UseCostUpTo (AssetWithId $ toId a) Ammo 1 5]
 
 totalUses :: Payment -> Int
 totalUses (Payments ps) = sum $ map totalUses ps
@@ -37,16 +27,11 @@ instance RunMessage M1918Bar4 where
   runMessage msg a@(M1918Bar4 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ payments -> do
       let uses = totalUses payments
+      let source = attrs.ability 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
       pushAll
-        [ skillTestModifier
-            attrs
-            (InvestigatorTarget iid)
-            (SkillModifier SkillCombat uses)
-        , skillTestModifier
-            attrs
-            (InvestigatorTarget iid)
-            (DamageDealt (uses - 1))
-        , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
+        [ skillTestModifiers source iid [SkillModifier #combat uses, DamageDealt (uses - 1)]
+        , chooseFight
         ]
       pure a
     _ -> M1918Bar4 <$> runMessage msg attrs

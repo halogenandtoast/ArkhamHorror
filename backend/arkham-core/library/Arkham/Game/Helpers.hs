@@ -2847,7 +2847,11 @@ skillTestMatches iid source st = \case
       (&&)
       (pure $ skillTestInvestigator st == iid)
       (skillTestMatches iid source st matcher)
-  Matcher.UsingThis -> pure $ source == skillTestSource st
+  Matcher.UsingThis -> pure $ case skillTestSource st of
+    AbilitySource (ProxySource _ s) _ -> s == source
+    AbilitySource s _ -> s == source
+    ProxySource _ s -> s == source
+    s -> s == source
   Matcher.SkillTestSourceMatches sourceMatcher ->
     sourceMatches (skillTestSource st) sourceMatcher
   Matcher.SkillTestWithRevealedChaosToken matcher ->

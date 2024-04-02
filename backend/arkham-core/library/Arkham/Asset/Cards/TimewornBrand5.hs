@@ -1,15 +1,11 @@
-module Arkham.Asset.Cards.TimewornBrand5 (
-  timewornBrand5,
-  TimewornBrand5 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.TimewornBrand5 (timewornBrand5, TimewornBrand5 (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Matcher hiding (EnemyDefeated)
+import Arkham.Prelude
 import Arkham.Trait (Trait (Elite))
 
 newtype TimewornBrand5 = TimewornBrand5 AssetAttrs
@@ -23,34 +19,34 @@ instance HasAbilities TimewornBrand5 where
   getAbilities (TimewornBrand5 a) =
     [ withTooltip
         "{action} If Timeworn Brand is ready: _Fight_. You get +2 {combat} and deal +1 damage for this attack."
-        $ restrictedAbility
-          a
-          1
-          (ControlsThis <> AssetExists (AssetWithId (toId a) <> AssetReady))
-        $ ActionAbility [] (ActionCost 1)
+        $ controlledAbility a 1 (exists (AssetWithId (toId a) <> AssetReady)) actionAbility
     , withTooltip
         "{action} Exhaust Timeworn Brand: _Fight_. Add your {willpower} to your skill value for this attack. This attack deals +3 damage. If this attack defeats an _Elite_ enemy, draw 3 cards. (Max once per game.)"
         $ limitedAbility (MaxPer Cards.timewornBrand5 PerGame 1)
         $ restrictedAbility a 2 ControlsThis
-        $ ActionAbility ([Action.Fight]) (ActionCost 1 <> exhaust a)
+        $ fightAction (exhaust a)
     ]
 
 instance RunMessage TimewornBrand5 where
   runMessage msg a@(TimewornBrand5 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = attrs.ability 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
       pushAll
-        [ skillTestModifiers (toAbilitySource attrs 1) iid [SkillModifier #combat 2, DamageDealt 1]
-        , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
+        [ skillTestModifiers source iid [SkillModifier #combat 2, DamageDealt 1]
+        , chooseFight
         ]
       pure a
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      let source = attrs.ability 2
+      chooseFight <- toMessage <$> mkChooseFight iid source
       pushAll
-        [ skillTestModifiers (toAbilitySource attrs 2) iid [AddSkillValue #willpower, DamageDealt 3]
-        , chooseFightEnemy iid (toAbilitySource attrs 2) #combat
+        [ skillTestModifiers source iid [AddSkillValue #willpower, DamageDealt 3]
+        , chooseFight
         ]
       pure a
     EnemyDefeated _ _ (isAbilitySource attrs 2 -> True) traits | Elite `elem` traits -> do
-      for_ (assetController attrs) $ \iid -> do
-        pushM $ drawCards iid (toAbilitySource attrs 2) 3
+      for_ attrs.controller \iid -> do
+        pushM $ drawCards iid (attrs.ability 2) 3
       pure a
     _ -> TimewornBrand5 <$> runMessage msg attrs

@@ -1,14 +1,11 @@
-module Arkham.Asset.Cards.Rolands38Special (
-  Rolands38Special (..),
-  rolands38Special,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Rolands38Special (Rolands38Special (..), rolands38Special) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype Rolands38Special = Rolands38Special AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -25,10 +22,9 @@ instance RunMessage Rolands38Special where
   runMessage msg a@(Rolands38Special attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       anyClues <- selectAny $ locationWithInvestigator iid <> LocationWithAnyClues
-      let source = toAbilitySource attrs 1
-      pushAll
-        [ skillTestModifiers source iid [DamageDealt 1, SkillModifier #combat (if anyClues then 3 else 1)]
-        , chooseFightEnemy iid source #combat
-        ]
+      let source = attrs.ability 1
+      let n = if anyClues then 3 else 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
+      pushAll [skillTestModifiers source iid [DamageDealt 1, SkillModifier #combat n], chooseFight]
       pure a
     _ -> Rolands38Special <$> runMessage msg attrs

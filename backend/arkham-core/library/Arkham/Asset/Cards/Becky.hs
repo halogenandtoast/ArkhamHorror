@@ -1,14 +1,10 @@
-module Arkham.Asset.Cards.Becky (
-  becky,
-  Becky (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Becky (becky, Becky (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
+import Arkham.Prelude
 
 -- N.B: The constant ability is handled on Tommy Muldoon
 
@@ -26,9 +22,10 @@ instance RunMessage Becky where
   runMessage msg a@(Becky attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
       pushAll
         [ skillTestModifiers source iid [DamageDealt 1, SkillModifier #combat 2]
-        , chooseFightEnemy iid source #combat
+        , chooseFight
         ]
       pure a
     _ -> Becky <$> runMessage msg attrs

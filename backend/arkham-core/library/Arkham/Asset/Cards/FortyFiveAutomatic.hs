@@ -3,6 +3,7 @@ module Arkham.Asset.Cards.FortyFiveAutomatic (FortyFiveAutomatic (..), fortyFive
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Prelude
 
 newtype FortyFiveAutomatic = FortyFiveAutomatic AssetAttrs
@@ -18,9 +19,10 @@ instance HasAbilities FortyFiveAutomatic where
 instance RunMessage FortyFiveAutomatic where
   runMessage msg a@(FortyFiveAutomatic attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      chooseFight <- toMessage <$> mkChooseFight iid (attrs.ability 1)
       pushAll
         [ skillTestModifiers (attrs.ability 1) iid [DamageDealt 1, SkillModifier #combat 1]
-        , chooseFightEnemy iid (attrs.ability 1) #combat
+        , chooseFight
         ]
       pure a
     _ -> FortyFiveAutomatic <$> runMessage msg attrs

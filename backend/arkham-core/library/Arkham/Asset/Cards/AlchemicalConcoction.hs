@@ -1,16 +1,13 @@
-module Arkham.Asset.Cards.AlchemicalConcoction (
-  alchemicalConcoction,
-  AlchemicalConcoction (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.AlchemicalConcoction (alchemicalConcoction, AlchemicalConcoction (..)) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
+import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Prelude
 
 newtype AlchemicalConcoction = AlchemicalConcoction AssetAttrs
   deriving anyclass (IsAsset)
@@ -24,23 +21,23 @@ instance HasAbilities AlchemicalConcoction where
 
 instance HasModifiersFor AlchemicalConcoction where
   getModifiersFor (InvestigatorTarget _) (AlchemicalConcoction a) = do
-    mAction <- getSkillTestAction
-    mSource <- getSkillTestSource
-    mTarget <- getSkillTestTarget
-    case (mAction, mSource, mTarget) of
-      (Just Action.Fight, Just source, Just (EnemyTarget eid)) | isSource a source -> do
-        isTheExperiement <- enemyMatches eid $ EnemyWithTitle "The Experiment"
-        pure $ toModifiers a [DamageDealt 6 | isTheExperiement]
-      _ -> pure []
+    toModifiers a . maybeToList <$> runMaybeT do
+      Action.Fight <- MaybeT getSkillTestAction
+      guardM $ isAbilitySource a 1 <$> MaybeT getSkillTestSource
+      EnemyTarget eid <- MaybeT getSkillTestTarget
+      isTheExperiment <- lift $ enemyMatches eid $ EnemyWithTitle "The Experiment"
+      guard isTheExperiment
+      pure $ DamageDealt 6
   getModifiersFor _ _ = pure []
 
 instance RunMessage AlchemicalConcoction where
   runMessage msg a@(AlchemicalConcoction attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushAll
-        [ skillTestModifier attrs iid (DamageDealt 1)
-        , CreateEffect "01060" Nothing (toAbilitySource attrs 1) (toTarget iid)
-        , ChooseFightEnemy iid (toAbilitySource attrs 1) Nothing SkillWillpower mempty False
-        ]
+      let source = attrs.ability 1
+      chooseFight <- aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight iid source)
+      pushAll $ skillTestModifier source iid (DamageDealt 1) : leftOr chooseFight
+      pure a
+    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
+      push $ RemoveFromGame (toTarget attrs)
       pure a
     _ -> AlchemicalConcoction <$> runMessage msg attrs

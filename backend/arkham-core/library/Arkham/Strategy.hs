@@ -48,6 +48,7 @@ data AfterPlayStrategy
   = DiscardThis
   | RemoveThisFromGame
   | ShuffleThisBackIntoDeck
+  | ReturnThisToHand
   deriving stock (Show, Eq, Ord, Data)
 
 data ChosenCardStrategy

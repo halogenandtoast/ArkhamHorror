@@ -8,6 +8,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
+import Arkham.Fight
 import Arkham.Helpers.ChaosBag
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Message
@@ -18,18 +19,18 @@ newtype BlessedBlade = BlessedBlade AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blessedBlade :: AssetCard BlessedBlade
-blessedBlade =
-  assetWith BlessedBlade Cards.blessedBlade (setMeta @Bool True)
+blessedBlade = assetWith BlessedBlade Cards.blessedBlade (setMeta @Bool True)
 
 instance HasAbilities BlessedBlade where
-  getAbilities (BlessedBlade attrs) = [restrictedAbility attrs 1 (ControlsThis <> exists (be attrs <> AssetReady)) fightAction_]
+  getAbilities (BlessedBlade attrs) = [controlledAbility attrs 1 (exists $ be attrs <> AssetReady) fightAction_]
 
 instance RunMessage BlessedBlade where
   runMessage msg a@(BlessedBlade attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      chooseFight <- toMessage <$> mkChooseFight iid (attrs.ability 1)
       pushAll
         [ skillTestModifier (attrs.ability 1) iid (SkillModifier #combat 1)
-        , chooseFightEnemy iid (attrs.ability 1) #combat
+        , chooseFight
         ]
       pure a
     RevealChaosToken SkillTestSource iid token -> do

@@ -1,19 +1,15 @@
-module Arkham.Investigator.Cards.TonyMorgan (
-  tonyMorgan,
-  TonyMorgan (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.TonyMorgan (tonyMorgan, TonyMorgan (..)) where
 
 import Arkham.Action.Additional
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Uses
 import Arkham.Card
+import Arkham.Fight
 import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Window (defaultWindows)
 import Control.Lens (over)
 import Data.Data.Lens (biplate)
@@ -88,13 +84,11 @@ instance RunMessage TonyMorgan where
         . (`with` Meta True)
         $ attrs
         & (usedAdditionalActionsL %~ (AdditionalAction "Tony Morgan" (toSource attrs) BountyAction :))
-    ChooseFightEnemy iid source mTarget skillType enemyMatcher isAction | iid == toId attrs -> do
-      bountiesOnly <- hasModifier iid BountiesOnly
+    ChooseFightEnemy choose | choose.investigator == toId attrs -> do
+      bountiesOnly <- hasModifier attrs BountiesOnly
       let matcherF = if bountiesOnly then (<> EnemyWithBounty) else id
       result <-
-        runMessage
-          (ChooseFightEnemy iid source mTarget skillType (matcherF enemyMatcher) isAction)
-          attrs
+        runMessage (ChooseFightEnemy $ choose {chooseFightEnemyMatcher = matcherF choose.matcher}) attrs
       pure $ TonyMorgan . (`with` Meta False) $ result
     ChooseEngageEnemy iid source mTarget enemyMatcher isAction | iid == toId attrs -> do
       bountiesOnly <- hasModifier iid BountiesOnly

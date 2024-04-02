@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Effect.Runner
+import Arkham.Fight
 import Arkham.Helpers.Investigator
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Prelude
@@ -29,14 +30,15 @@ paidHorror _ = False
 
 instance RunMessage MeatCleaver where
   runMessage msg a@(MeatCleaver attrs) = case msg of
-    UseCardAbility iid source 1 _ payments | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ payments -> do
+      let source = attrs.ability 1
       remainingSanity <- field InvestigatorRemainingSanity iid
+      let n = if remainingSanity <= 3 then 2 else 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
       pushAll
-        [ skillTestModifiers attrs iid
-            $ [SkillModifier #combat (if remainingSanity <= 3 then 2 else 1)]
-            <> [DamageDealt 1 | paidHorror payments]
+        [ skillTestModifiers attrs iid $ SkillModifier #combat n : [DamageDealt 1 | paidHorror payments]
         , createCardEffect Cards.meatCleaver Nothing source iid
-        , chooseFightEnemy iid source #combat
+        , chooseFight
         ]
       pure a
     _ -> MeatCleaver <$> runMessage msg attrs
@@ -50,14 +52,12 @@ meatCleaverEffect = cardEffect MeatCleaverEffect Cards.meatCleaver
 
 instance RunMessage MeatCleaverEffect where
   runMessage msg e@(MeatCleaverEffect attrs) = case msg of
-    EnemyDefeated _ _ source _ | effectSource attrs == source -> do
-      case effectTarget attrs of
+    EnemyDefeated _ _ source _ | attrs.source == source -> do
+      case attrs.target of
         InvestigatorTarget iid -> do
           mHealHorror <- getHealHorrorMessage source 1 iid
-          pushAll
-            $ maybeToList mHealHorror
-            <> [DisableEffect $ toId attrs]
-          pure e
+          pushAll $ toList mHealHorror <> [disable attrs]
         _ -> error "Invalid target"
-    SkillTestEnds _ _ -> e <$ push (DisableEffect $ toId attrs)
+      pure e
+    SkillTestEnds _ _ -> e <$ push (disable attrs)
     _ -> MeatCleaverEffect <$> runMessage msg attrs

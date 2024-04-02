@@ -1,22 +1,17 @@
-module Arkham.Asset.Cards.BloodstainedDagger (
-  bloodstainedDagger,
-  BloodstainedDagger (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.BloodstainedDagger (bloodstainedDagger, BloodstainedDagger (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
+import Arkham.Prelude
 
 newtype BloodstainedDagger = BloodstainedDagger AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bloodstainedDagger :: AssetCard BloodstainedDagger
-bloodstainedDagger =
-  asset BloodstainedDagger Cards.bloodstainedDagger
+bloodstainedDagger = asset BloodstainedDagger Cards.bloodstainedDagger
 
 instance HasAbilities BloodstainedDagger where
   getAbilities (BloodstainedDagger a) =
@@ -31,19 +26,21 @@ instance HasAbilities BloodstainedDagger where
 instance RunMessage BloodstainedDagger where
   runMessage msg a@(BloodstainedDagger attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      chooseFight <- toMessage <$> mkChooseFight iid (attrs.ability 1)
       pushAll
         [ skillTestModifier attrs iid (SkillModifier #combat 2)
-        , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
+        , chooseFight
         ]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
+      chooseFight <- toMessage <$> mkChooseFight iid (attrs.ability 2)
       pushAll
         [ skillTestModifiers attrs iid [SkillModifier #combat 2, DamageDealt 1]
-        , chooseFightEnemy iid (toAbilitySource attrs 2) #combat
+        , chooseFight
         ]
       pure a
     EnemyDefeated _ _ (isAbilitySource attrs 2 -> True) _ -> do
-      for_ (assetController attrs) $ \iid -> do
-        pushM $ drawCards iid (toAbilitySource attrs 2) 1
+      for_ (assetController attrs) \iid -> do
+        pushM $ drawCards iid (attrs.ability 2) 1
       pure a
     _ -> BloodstainedDagger <$> runMessage msg attrs

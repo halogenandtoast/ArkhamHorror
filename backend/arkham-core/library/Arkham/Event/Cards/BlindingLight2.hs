@@ -41,11 +41,11 @@ blindingLight2Effect = cardEffect BlindingLight2Effect Cards.blindingLight2
 instance RunMessage BlindingLight2Effect where
   runMessage msg e@(BlindingLight2Effect attrs) = case msg of
     RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
-      when (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
+      when (token.face `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
         $ pushAll
           [ If
               (Window.RevealChaosTokenEffect iid token (toId attrs))
-              [LoseActions iid (toSource attrs) 1, assignHorror iid attrs 1]
+              [LoseActions iid attrs.source 1, assignHorror iid attrs 1]
           , disable attrs
           ]
       pure e

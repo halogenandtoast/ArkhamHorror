@@ -19,7 +19,7 @@ mkChooseEvade iid source =
       , chooseEvadeEnemyMatcher = AnyEnemy
       , chooseEvadeSource = toSource source
       , chooseEvadeTarget = Nothing
-      , chooseEvadeSkillType = #combat
+      , chooseEvadeSkillType = #agility
       , chooseEvadeIsAction = False
       }
 

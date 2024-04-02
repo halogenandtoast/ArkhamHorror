@@ -21,7 +21,7 @@ spec = do
       assert $ Events.blindingLight2 `isInDiscardOf` self
       self.engagedEnemies `shouldReturn` []
 
-    fit "deals 2 damage to the evaded enemy" . gameTest $ \self -> do
+    it "deals 2 damage to the evaded enemy" . gameTest $ \self -> do
       withProp @"willpower" 5 self
       enemy <- testEnemy & prop @"evade" 4 & prop @"health" 3
       location <- testLocation
@@ -51,7 +51,6 @@ spec = do
           chooseOnlyOption "Run skill check"
           chooseOnlyOption "Apply results"
           chooseOnlyOption "take event damage"
-          when (token == Cultist) $ chooseOnlyOption "take scenario effect damage"
           assert $ Events.blindingLight2 `isInDiscardOf` self
           self.remainingActions `shouldReturn` 2
-          self.horror `shouldReturn` (if token == Cultist then 2 else 1)
+          self.horror `shouldReturn` 1

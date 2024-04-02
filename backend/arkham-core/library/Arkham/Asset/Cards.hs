@@ -261,6 +261,7 @@ allPlayerAssetCards =
       , esotericAtlas2
       , esotericFormula
       , expeditionJournal
+      , falseCovenant2
       , familiarSpirit
       , familyInheritance
       , farsight4
@@ -4177,6 +4178,14 @@ blasphemousCovenant2 :: CardDef
 blasphemousCovenant2 =
   permanent
     $ (asset "07113" "Blasphemous Covenant" 0 Seeker)
+      { cdCardTraits = setFromList [Covenant, Cursed]
+      , cdDeckRestrictions = [TraitPerDeckLimit Covenant 1]
+      }
+
+falseCovenant2 :: CardDef
+falseCovenant2 =
+  permanent
+    $ (asset "07116" "False Covenant" 0 Rogue)
       { cdCardTraits = setFromList [Covenant, Cursed]
       , cdDeckRestrictions = [TraitPerDeckLimit Covenant 1]
       }

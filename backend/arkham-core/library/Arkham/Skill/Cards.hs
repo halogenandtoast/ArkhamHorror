@@ -92,6 +92,7 @@ allPlayerSkillCards =
       , sealOfTheElderSign5
       , selfSacrifice
       , sharpVision1
+      , skeptic1
       , steadfast
       , strokeOfLuck2
       , stunningBlow
@@ -595,6 +596,12 @@ beloved :: CardDef
 beloved =
   (skill "07036" "Beloved" [#willpower, #agility, #wild] Survivor)
     { cdCardTraits = setFromList [Innate, Blessed]
+    }
+
+skeptic1 :: CardDef
+skeptic1 =
+  (skill "07115" "Skeptic" [#wild] Rogue)
+    { cdCardTraits = setFromList [Practiced]
     }
 
 unrelenting1 :: CardDef

@@ -19,7 +19,10 @@ strayCat = ally StrayCat Cards.strayCat (1, 0)
 
 instance HasAbilities StrayCat where
   getAbilities (StrayCat a) =
-    [ controlledAbility a 1 (exists (EnemyAt YourLocation))
+    [ controlledAbility
+        a
+        1
+        (exists (EnemyAt YourLocation <> NonEliteEnemy <> EnemyWithoutModifier CannotBeEvaded))
         $ FastAbility
         $ discardCost a
     ]
@@ -27,7 +30,7 @@ instance HasAbilities StrayCat where
 instance RunMessage StrayCat where
   runMessage msg a@(StrayCat attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <- select $ enemyAtLocationWith iid <> NonEliteEnemy
+      enemies <- select $ enemyAtLocationWith iid <> NonEliteEnemy <> EnemyWithoutModifier CannotBeEvaded
       player <- getPlayer iid
       push $ chooseOne player $ targetLabels enemies (only . EnemyEvaded iid)
       pure a

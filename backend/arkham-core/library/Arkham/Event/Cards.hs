@@ -68,6 +68,8 @@ allPlayerEventCards =
       , bloodEclipse1
       , bloodEclipse3
       , bloodRite
+      , breakingAndEntering
+      , breakingAndEntering2
       , burningTheMidnightOil
       , buryThemDeep
       , callingInFavors
@@ -2450,6 +2452,15 @@ stirringUpTrouble1 =
     , cdCriteria = Just canDiscoverCluesAtYourLocation
     }
 
+breakingAndEntering :: CardDef
+breakingAndEntering =
+  (event "07114" "Breaking and Entering" 2 Rogue)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Trick]
+    , cdActions = [#investigate]
+    , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+    }
+
 sweepingKick1 :: CardDef
 sweepingKick1 =
   (event "08023" "Sweeping Kick" 1 Guardian)
@@ -2508,6 +2519,16 @@ parallelFates2 =
     , cdLevel = 2
     , cdCriteria =
         Just $ exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck]
+    }
+
+breakingAndEntering2 :: CardDef
+breakingAndEntering2 =
+  (event "09074" "Breaking and Entering" 2 Rogue)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Trick]
+    , cdActions = [#investigate]
+    , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+    , cdLevel = 2
     }
 
 keepFaith2 :: CardDef

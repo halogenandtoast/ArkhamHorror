@@ -674,6 +674,7 @@ allAssets =
       SomeAssetCard falseCovenant2
     , --- mystic [itp]
       SomeAssetCard armageddon
+    , SomeAssetCard eyeOfChaos
     , -- Devil Reef
       --- guardian [def]
       SomeAssetCard keenEye
@@ -684,6 +685,7 @@ allAssets =
       SomeAssetCard holyRosary2
     , --- mystic [lif]
       SomeAssetCard armageddon4
+    , SomeAssetCard eyeOfChaos4
     , -- The Lair of Dagon
       --- rogue [lod]
       SomeAssetCard hardKnocks4

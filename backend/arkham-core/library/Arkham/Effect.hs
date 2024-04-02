@@ -48,6 +48,7 @@ import Arkham.Asset.Assets (
   crystalPendulumEffect,
   daisysToteBagAdvancedEffect,
   empiricalHypothesisEffect,
+  eyeOfChaosEffect,
   fence1Effect,
   fieldworkEffect,
   fireExtinguisher1Effect,
@@ -396,6 +397,7 @@ allEffects =
     , ("07012", SomeEffect showmanshipEffect)
     , ("07030", SomeEffect tidesOfFateEffect)
     , ("07117", SomeEffect armageddonEffect)
+    , ("07118", SomeEffect eyeOfChaosEffect)
     , ("07226", SomeEffect armageddon4Effect)
     , ("09041", SomeEffect empiricalHypothesisEffect)
     , ("50013", SomeEffect twilightBladeEffect)

@@ -1394,6 +1394,7 @@ getLocationsMatching lmatcher = do
             let lowestShroud = getMin $ foldMap (Min . attr locationShroud) ls'
             pure $ filter ((< lowestShroud) . attr locationShroud) ls'
       LocationWithDiscoverableCluesBy whoMatcher -> do
+        ls' <- getLocationsMatching LocationWithAnyClues
         filterM
           ( selectAny
               . (<> whoMatcher)
@@ -1401,7 +1402,7 @@ getLocationsMatching lmatcher = do
               . LocationWithId
               . toId
           )
-          ls
+          (ls `List.intersect` ls')
       SingleSidedLocation ->
         filterM (fieldP LocationCard (not . cdDoubleSided . toCardDef) . toId) ls
       FirstLocation [] -> pure []

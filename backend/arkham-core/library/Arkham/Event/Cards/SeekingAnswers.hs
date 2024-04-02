@@ -1,16 +1,13 @@
-module Arkham.Event.Cards.SeekingAnswers (
-  seekingAnswers,
-  SeekingAnswers (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.SeekingAnswers (seekingAnswers, SeekingAnswers (..)) where
 
 import Arkham.Action qualified as Action
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Investigate
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype SeekingAnswers = SeekingAnswers EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -25,14 +22,12 @@ instance RunMessage SeekingAnswers where
       pushM $ mkInvestigate iid attrs <&> setTarget attrs
       pure e
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
-      lids <- select $ ConnectedLocation <> LocationWithAnyClues
+      lids <- select $ ConnectedLocation <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
       player <- getPlayer iid
       pushIfAny lids
         $ chooseOne
           player
-          [ targetLabel
-            lid'
-            [InvestigatorDiscoverClues iid lid' (toSource attrs) 1 (Just #investigate)]
+          [ targetLabel lid' [toMessage $ viaInvestigate $ discover iid lid' attrs 1]
           | lid' <- lids
           ]
       pure e

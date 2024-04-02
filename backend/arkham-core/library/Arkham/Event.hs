@@ -416,6 +416,10 @@ allEvents =
     , -- In Too Deep
       --- guardian [itd]
       SomeEventCard righteousHunt1
+    , --- seeker [itd]
+      SomeEventCard stirringUpTrouble1
+    , --- rogue [itd]
+      SomeEventCard breakingAndEntering
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard sweepingKick1
@@ -426,6 +430,9 @@ allEvents =
       SomeEventCard moneyTalks2
     , --- mystic [eote]
       SomeEventCard parallelFates2
+    , -- The Scarlet Keys
+      --- rogue [tsk]
+      SomeEventCard breakingAndEntering2
     , -- The Feast of Hemloch Vale
       --- survivor [fhv]
       SomeEventCard keepFaith2

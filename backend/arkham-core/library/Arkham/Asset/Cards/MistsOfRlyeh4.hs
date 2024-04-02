@@ -1,7 +1,6 @@
 module Arkham.Asset.Cards.MistsOfRlyeh4 (mistsOfRlyeh4, MistsOfRlyeh4 (..), mistsOfRlyeh4Effect) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
@@ -9,7 +8,6 @@ import Arkham.ChaosToken
 import Arkham.Effect.Runner
 import Arkham.Evade
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Movement
 import Arkham.Prelude
 import Arkham.SkillTest.Base

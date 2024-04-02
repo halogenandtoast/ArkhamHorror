@@ -13,7 +13,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.SkillTest.Base
-import Arkham.SkillType
 
 newtype Banish1 = Banish1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -25,7 +24,6 @@ banish1 = event Banish1 Cards.banish1
 instance RunMessage Banish1 where
   runMessage msg e@(Banish1 attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      let source = attrs.ability 1
       chooseEvade <-
         leftOr
           <$> aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvadeMatch iid attrs NonEliteEnemy)

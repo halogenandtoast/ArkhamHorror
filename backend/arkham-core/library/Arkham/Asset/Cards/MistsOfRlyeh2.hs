@@ -1,7 +1,6 @@
 module Arkham.Asset.Cards.MistsOfRlyeh2 (mistsOfRlyeh2, MistsOfRlyeh2 (..), mistsOfRlyeh2Effect) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
@@ -9,12 +8,10 @@ import Arkham.ChaosToken
 import Arkham.Effect.Runner
 import Arkham.Evade
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Movement
 import Arkham.Prelude
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
-import Arkham.SkillType
 import Arkham.Window qualified as Window
 
 newtype MistsOfRlyeh2 = MistsOfRlyeh2 AssetAttrs
@@ -29,7 +26,7 @@ instance HasAbilities MistsOfRlyeh2 where
 
 instance RunMessage MistsOfRlyeh2 where
   runMessage msg a@(MistsOfRlyeh2 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       chooseEvade <-
         leftOr <$> aspect iid source (#willpower `InsteadOf` #agility) (mkChooseEvade iid source)

@@ -5,7 +5,6 @@ import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Prelude
-import Arkham.SkillType
 
 newtype SneakBy = SneakBy EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

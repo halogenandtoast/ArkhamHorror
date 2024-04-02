@@ -14,7 +14,6 @@ import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Movement
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.SkillType
 
 newtype Metadata = Metadata {choice :: Maybe Int}
   deriving stock (Show, Eq, Generic)

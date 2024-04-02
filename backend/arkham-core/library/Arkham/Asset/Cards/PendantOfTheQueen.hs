@@ -34,7 +34,7 @@ instance HasAbilities PendantOfTheQueen where
             , exists
                 ( RevealedLocation
                     <> oneOf
-                      [ LocationWithDiscoverableCluesBy You <> LocationWithAnyClues
+                      [ LocationWithDiscoverableCluesBy You
                       , LocationWithEnemy (EnemyWithEvade <> EnemyWithoutModifier CannotBeEvaded)
                       ]
                 )
@@ -61,7 +61,7 @@ instance RunMessage PendantOfTheQueen where
         select
           $ RevealedLocation
           <> oneOf
-            ( (LocationWithDiscoverableCluesBy (InvestigatorWithId iid) <> LocationWithAnyClues)
+            ( LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
                 : LocationWithEnemy (EnemyWithEvade <> EnemyWithoutModifier CannotBeEvaded)
                 : [NotLocation (locationWithInvestigator iid) <> Unblocked | canMove]
             )
@@ -74,8 +74,7 @@ instance RunMessage PendantOfTheQueen where
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (LocationTarget lid) -> do
       canMove <- iid <=~> InvestigatorCanMove
       moveChoice <- lid <=~> (NotLocation (locationWithInvestigator iid) <> Unblocked)
-      discoverChoice <-
-        lid <=~> (LocationWithDiscoverableCluesBy (InvestigatorWithId iid) <> LocationWithAnyClues)
+      discoverChoice <- lid <=~> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
       enemies <-
         select $ EnemyAt (LocationWithId lid) <> EnemyWithEvade <> EnemyWithoutModifier CannotBeEvaded
       player <- getPlayer iid

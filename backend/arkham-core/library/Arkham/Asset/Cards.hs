@@ -263,6 +263,8 @@ allPlayerAssetCards =
       , esotericAtlas2
       , esotericFormula
       , expeditionJournal
+      , eyeOfChaos
+      , eyeOfChaos4
       , falseCovenant2
       , familiarSpirit
       , familyInheritance
@@ -4201,6 +4203,15 @@ armageddon =
     , cdSlots = [#arcane]
     }
 
+eyeOfChaos :: CardDef
+eyeOfChaos =
+  (asset "07118" "Eye of Chaos" 5 Mystic)
+    { cdCardTraits = setFromList [Spell, Cursed]
+    , cdSkills = [#intellect]
+    , cdUses = uses Charge 3
+    , cdSlots = [#arcane]
+    }
+
 keenEye :: CardDef
 keenEye =
   (asset "07152" "Keen Eye" 2 Guardian)
@@ -4231,6 +4242,16 @@ armageddon4 =
   (asset "07226" "Armageddon" 4 Mystic)
     { cdCardTraits = setFromList [Spell, Cursed]
     , cdSkills = [#willpower, #combat]
+    , cdUses = uses Charge 3
+    , cdSlots = [#arcane]
+    , cdLevel = 4
+    }
+
+eyeOfChaos4 :: CardDef
+eyeOfChaos4 =
+  (asset "07227" "Eye of Chaos" 5 Mystic)
+    { cdCardTraits = setFromList [Spell, Cursed]
+    , cdSkills = [#willpower, #intellect]
     , cdUses = uses Charge 3
     , cdSlots = [#arcane]
     , cdLevel = 4

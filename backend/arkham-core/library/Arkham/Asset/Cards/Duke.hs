@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Helpers.Investigator
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
@@ -43,7 +44,7 @@ instance HasAbilities Duke where
 instance RunMessage Duke where
   runMessage msg a@(Duke attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ chooseFightEnemy iid (attrs.ability 1) #combat
+      pushM $ mkChooseFight iid (attrs.ability 1)
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 windows' _ -> do
       let source = attrs.ability 2

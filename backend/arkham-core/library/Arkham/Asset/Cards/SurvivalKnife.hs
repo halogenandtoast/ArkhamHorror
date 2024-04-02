@@ -1,15 +1,12 @@
-module Arkham.Asset.Cards.SurvivalKnife (
-  survivalKnife,
-  SurvivalKnife (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.SurvivalKnife (survivalKnife, SurvivalKnife (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Id
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Window (WindowType)
 import Arkham.Window qualified as Window
 
@@ -36,9 +33,10 @@ instance RunMessage SurvivalKnife where
   runMessage msg a@(SurvivalKnife attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
       pushAll
         [ skillTestModifiers source iid [SkillModifier #combat 1]
-        , chooseFightEnemy iid source #combat
+        , chooseFight
         ]
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 windows' _ -> do

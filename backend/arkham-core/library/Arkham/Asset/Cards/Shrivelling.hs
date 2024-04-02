@@ -4,13 +4,14 @@ module Arkham.Asset.Cards.Shrivelling (
   shrivellingEffect,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
+import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Effect.Runner
+import Arkham.Fight
+import Arkham.Prelude
 import Arkham.Window qualified as Window
 
 newtype Shrivelling = Shrivelling AssetAttrs
@@ -31,12 +32,14 @@ instance HasAbilities Shrivelling where
 instance RunMessage Shrivelling where
   runMessage msg a@(Shrivelling attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      let source = toAbilitySource attrs 1
+      let source = attrs.ability 1
+      chooseFight <-
+        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight iid source)
       pushAll
-        [ skillTestModifier source iid (DamageDealt 1)
-        , createCardEffect Cards.shrivelling Nothing source iid
-        , chooseFightEnemy iid source #willpower
-        ]
+        $ [ skillTestModifier source iid (DamageDealt 1)
+          , createCardEffect Cards.shrivelling Nothing source iid
+          ]
+        <> chooseFight
       pure a
     _ -> Shrivelling <$> runMessage msg attrs
 
@@ -51,7 +54,7 @@ instance RunMessage ShrivellingEffect where
   runMessage msg e@(ShrivellingEffect attrs) = case msg of
     RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
       let horror = maybe 1 intFromMetadata attrs.metadata
-      when (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
+      when (token.face `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
         $ pushAll
           [ If (Window.RevealChaosTokenEffect iid token (toId attrs)) [assignHorror iid attrs.source horror]
           , disable attrs

@@ -1,16 +1,11 @@
-module Arkham.Asset.Cards.Shrivelling3 (
-  Shrivelling3 (..),
-  shrivelling3,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Shrivelling3 (Shrivelling3 (..), shrivelling3) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
+import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Fight
+import Arkham.Prelude
 
 newtype Shrivelling3 = Shrivelling3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,24 +16,19 @@ shrivelling3 = asset Shrivelling3 Cards.shrivelling3
 
 instance HasAbilities Shrivelling3 where
   getAbilities (Shrivelling3 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility
-          ([Action.Fight])
-          (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
-    ]
+    [restrictedAbility a 1 ControlsThis $ fightAction $ assetUseCost a Charge 1]
 
 instance RunMessage Shrivelling3 where
   runMessage msg a@(Shrivelling3 attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ pushAll
-              [ skillTestModifiers
-                  attrs
-                  (InvestigatorTarget iid)
-                  [SkillModifier SkillWillpower 2, DamageDealt 1]
-              , CreateEffect "01060" Nothing source (InvestigatorTarget iid)
-              , -- reusing shrivelling(0)'s effect
-                ChooseFightEnemy iid source Nothing SkillWillpower mempty False
-              ]
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = attrs.ability 1
+      chooseFight <-
+        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight iid source)
+      -- reusing shrivelling(0)'s effect
+      pushAll
+        $ [ skillTestModifiers attrs iid [SkillModifier #willpower 2, DamageDealt 1]
+          , createCardEffect Cards.shrivelling Nothing source iid
+          ]
+        <> chooseFight
+      pure a
     _ -> Shrivelling3 <$> runMessage msg attrs

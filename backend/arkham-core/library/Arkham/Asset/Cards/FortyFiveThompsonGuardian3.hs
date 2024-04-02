@@ -3,14 +3,11 @@ module Arkham.Asset.Cards.FortyFiveThompsonGuardian3 (
   FortyFiveThompsonGuardian3 (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Fight
+import Arkham.Prelude
 
 newtype FortyFiveThompsonGuardian3 = FortyFiveThompsonGuardian3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,25 +18,17 @@ fortyFiveThompsonGuardian3 = asset FortyFiveThompsonGuardian3 Cards.fortyFiveTho
 
 instance HasAbilities FortyFiveThompsonGuardian3 where
   getAbilities (FortyFiveThompsonGuardian3 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility ([Action.Fight])
-        $ ActionCost 1
-        <> UseCost (AssetWithId $ toId a) Ammo 1
-    ]
+    [restrictedAbility a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1]
 
 instance RunMessage FortyFiveThompsonGuardian3 where
   runMessage msg a@(FortyFiveThompsonGuardian3 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushAll
-        [ skillTestModifiers
-            attrs
-            iid
-            [DamageDealt 1, SkillModifier SkillCombat 2]
-        , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
-        ]
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = attrs.ability 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
+      pushAll [skillTestModifiers source iid [DamageDealt 1, SkillModifier #combat 2], chooseFight]
       pure a
-    SpendUses target Ammo n | isTarget attrs target -> do
-      for_ (assetController attrs) $ \iid ->
+    SpendUses (isTarget attrs -> True) Ammo n -> do
+      for_ attrs.controller \iid -> do
         push $ PlaceResources (toSource attrs) (toTarget iid) n
       FortyFiveThompsonGuardian3 <$> runMessage msg attrs
     _ -> FortyFiveThompsonGuardian3 <$> runMessage msg attrs

@@ -3,13 +3,13 @@ module Arkham.Asset.Cards.FortyFiveThompsonRogue3 (
   FortyFiveThompsonRogue3 (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (EnemyFight)
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Fight
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype FortyFiveThompsonRogue3 = FortyFiveThompsonRogue3 AssetAttrs
@@ -20,19 +20,18 @@ fortyFiveThompsonRogue3 :: AssetCard FortyFiveThompsonRogue3
 fortyFiveThompsonRogue3 = asset FortyFiveThompsonRogue3 Cards.fortyFiveThompsonRogue3
 
 instance HasAbilities FortyFiveThompsonRogue3 where
-  getAbilities (FortyFiveThompsonRogue3 a) = [restrictedAbility a 1 ControlsThis $ fightAction (assetUseCost a Ammo 1)]
+  getAbilities (FortyFiveThompsonRogue3 a) =
+    [restrictedAbility a 1 ControlsThis $ fightAction (assetUseCost a Ammo 1)]
 
 instance RunMessage FortyFiveThompsonRogue3 where
   runMessage msg a@(FortyFiveThompsonRogue3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushAll
-        [ skillTestModifiers attrs iid [DamageDealt 1, SkillModifier #combat 2]
-        , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
-        ]
+      let source = attrs.ability 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
+      pushAll [skillTestModifiers source iid [DamageDealt 1, SkillModifier #combat 2], chooseFight]
       pure a
-    PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | findWithDefault 0 Ammo (assetUses attrs) > 0 -> do
-      mSkillTestTarget <- getSkillTestTarget
-      case mSkillTestTarget of
+    PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | attrs.use Ammo > 0 -> do
+      getSkillTestTarget >>= \case
         Just (EnemyTarget eid) -> do
           fightValue <- fieldJust EnemyFight eid
           when (n >= fightValue) $ do
@@ -42,10 +41,9 @@ instance RunMessage FortyFiveThompsonRogue3 where
             push
               $ chooseOrRunOne player
               $ Label "Do not damage any enemies" []
-              : [ targetLabel eid'
-                  $ [ SpendUses (toTarget attrs) Ammo 1
-                    , InvestigatorDamageEnemy iid eid' (toSource attrs)
-                    ]
+              : [ targetLabel
+                  eid'
+                  [SpendUses (toTarget attrs) Ammo 1, InvestigatorDamageEnemy iid eid' (toSource attrs)]
                 | canDealDamage
                 , eid' <- enemies
                 ]

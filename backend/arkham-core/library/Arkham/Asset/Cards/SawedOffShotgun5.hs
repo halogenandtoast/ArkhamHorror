@@ -3,6 +3,7 @@ module Arkham.Asset.Cards.SawedOffShotgun5 (SawedOffShotgun5 (..), sawedOffShotg
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Prelude
 
 newtype SawedOffShotgun5 = SawedOffShotgun5 AssetAttrs
@@ -18,7 +19,7 @@ instance HasAbilities SawedOffShotgun5 where
 instance RunMessage SawedOffShotgun5 where
   runMessage msg a@(SawedOffShotgun5 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ chooseFightEnemy iid (attrs.ability 1) #combat
+      pushM $ mkChooseFight iid (attrs.ability 1)
       pure a
     FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       -- This has to be handled specially for cards like Oops!

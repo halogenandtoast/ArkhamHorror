@@ -1,18 +1,15 @@
-module Arkham.Event.Cards.IveGotAPlan (
-  iveGotAPlan,
-  IveGotAPlan (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.IveGotAPlan (iveGotAPlan, IveGotAPlan (..)) where
 
 import Arkham.Action
+import Arkham.Aspect
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
+import Arkham.Fight
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Prelude
 import Arkham.Projection
-import Arkham.SkillType
 
 newtype IveGotAPlan = IveGotAPlan EventAttrs
   deriving anyclass (IsEvent, HasAbilities)
@@ -33,8 +30,10 @@ instance HasModifiersFor IveGotAPlan where
   getModifiersFor _ _ = pure []
 
 instance RunMessage IveGotAPlan where
-  runMessage msg e@(IveGotAPlan attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      push $ ChooseFightEnemy iid (EventSource eid) Nothing SkillIntellect mempty False
+  runMessage msg e@(IveGotAPlan attrs) = case msg of
+    PlayThisEvent iid eid | eid == attrs.id -> do
+      chooseFight <-
+        leftOr <$> aspect iid attrs (#intellect `InsteadOf` #combat) (mkChooseFight iid attrs)
+      pushAll chooseFight
       pure e
     _ -> IveGotAPlan <$> runMessage msg attrs

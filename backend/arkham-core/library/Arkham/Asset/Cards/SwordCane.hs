@@ -1,15 +1,11 @@
-module Arkham.Asset.Cards.SwordCane (
-  swordCane,
-  SwordCane (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.SwordCane (swordCane, SwordCane (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype SwordCane = SwordCane AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -36,17 +32,23 @@ instance RunMessage SwordCane where
     UseCardAbility iid (isSource attrs -> True) 1 windows' payments -> do
       runMessage (UseCardAbility iid (toSource attrs) 2 windows' payments) a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      fightableEnemies <- select $ CanFightEnemy (toSource attrs)
-      evadeableEnemies <- select $ CanEvadeEnemy (toSource attrs)
+      let source = attrs.ability 2
+      fightableEnemies <- select $ CanFightEnemy source
+      evadeableEnemies <- select $ CanEvadeEnemy source
       player <- getPlayer iid
-      let doEvade = chooseOne player [SkillLabel sk [chooseEvadeEnemy iid attrs sk] | sk <- [#willpower, #agility]]
-      let doFight = chooseOne player [SkillLabel sk [chooseFightEnemy iid attrs sk] | sk <- [#willpower, #combat]]
+      let doEvade = chooseOne player [SkillLabel sk [chooseEvadeEnemy iid source sk] | sk <- [#willpower, #agility]]
+
+      fightChoices <- for [#willpower, #combat] \sk -> do
+        chooseFight <- toMessage . withSkillType sk <$> mkChooseFight iid source
+        pure $ SkillLabel sk [chooseFight]
+
+      let doFight = chooseOne player fightChoices
 
       case (fightableEnemies, evadeableEnemies) of
         ([], []) -> error "invalid call"
-        ([], (_ : _)) -> push doEvade
-        ((_ : _), []) -> push doFight
-        ((_ : _), (_ : _)) -> do
+        ([], _ : _) -> push doEvade
+        (_ : _, []) -> push doFight
+        (_ : _, _ : _) -> do
           push
             $ chooseOne
               player

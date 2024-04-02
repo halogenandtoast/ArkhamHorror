@@ -3,6 +3,7 @@ module Arkham.Asset.Cards.LightningGun5 (lightningGun5, LightningGun5 (..)) wher
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Prelude
 
 newtype LightningGun5 = LightningGun5 AssetAttrs
@@ -18,9 +19,8 @@ instance HasAbilities LightningGun5 where
 instance RunMessage LightningGun5 where
   runMessage msg a@(LightningGun5 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushAll
-        [ skillTestModifiers attrs iid [DamageDealt 2, SkillModifier #combat 5]
-        , chooseFightEnemy iid (attrs.ability 1) #combat
-        ]
+      let source = attrs.ability 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
+      pushAll [skillTestModifiers source iid [DamageDealt 2, SkillModifier #combat 5], chooseFight]
       pure a
     _ -> LightningGun5 <$> runMessage msg attrs

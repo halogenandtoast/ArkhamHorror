@@ -1,15 +1,11 @@
-module Arkham.Asset.Cards.TheHungeringBlade1 (
-  theHungeringBlade1,
-  TheHungeringBlade1 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.TheHungeringBlade1 (theHungeringBlade1, TheHungeringBlade1 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Matcher hiding (EnemyDefeated)
+import Arkham.Prelude
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -28,15 +24,14 @@ instance RunMessage TheHungeringBlade1 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       bloodlusts <-
         selectCount $ treacheryIs Treacheries.bloodlust <> TreacheryIsAttachedTo (toTarget attrs)
+      let source = attrs.ability 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
       pushAll
-        [ skillTestModifiers
-            (toAbilitySource attrs 1)
-            iid
-            (DamageDealt 1 : [SkillModifier #combat bloodlusts | bloodlusts > 0])
-        , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
+        [ skillTestModifiers source iid (DamageDealt 1 : [SkillModifier #combat bloodlusts | bloodlusts > 0])
+        , chooseFight
         ]
       pure a
     EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
-      push $ PlaceTokens (toAbilitySource attrs 1) (toTarget attrs) Offering 1
+      push $ PlaceTokens (attrs.ability 1) (toTarget attrs) Offering 1
       pure a
     _ -> TheHungeringBlade1 <$> runMessage msg attrs

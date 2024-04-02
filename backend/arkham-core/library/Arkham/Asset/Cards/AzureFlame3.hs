@@ -1,20 +1,13 @@
-module Arkham.Asset.Cards.AzureFlame3 (
-  azureFlame3,
-  azureFlame3Effect,
-  AzureFlame3 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.AzureFlame3 (azureFlame3, azureFlame3Effect, AzureFlame3 (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
+import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Effect.Runner
-import Arkham.Matcher hiding (RevealChaosToken)
-import Arkham.SkillType
+import Arkham.Fight
+import Arkham.Prelude
 import Arkham.Window qualified as Window
 
 newtype AzureFlame3 = AzureFlame3 AssetAttrs
@@ -27,20 +20,21 @@ azureFlame3 = asset AzureFlame3 Cards.azureFlame3
 instance HasAbilities AzureFlame3 where
   getAbilities (AzureFlame3 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ActionAbilityWithSkill
-          ([Action.Fight])
-          SkillWillpower
-          (Costs [ActionCost 1, UseCost (AssetWithId $ toId a) Charge 1])
+        $ ActionAbilityWithSkill [#fight] #willpower
+        $ Costs [ActionCost 1, assetUseCost a Charge 1]
     ]
 
 instance RunMessage AzureFlame3 where
   runMessage msg a@(AzureFlame3 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = attrs.ability 1
+      chooseFight <-
+        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight iid source)
       pushAll
-        [ skillTestModifiers attrs (InvestigatorTarget iid) [DamageDealt 1, SkillModifier SkillWillpower 2]
-        , createCardEffect Cards.azureFlame3 Nothing source (InvestigatorTarget iid)
-        , ChooseFightEnemy iid source Nothing SkillWillpower mempty False
-        ]
+        $ [ skillTestModifiers attrs iid [DamageDealt 1, SkillModifier #willpower 2]
+          , createCardEffect Cards.azureFlame3 Nothing source iid
+          ]
+        <> chooseFight
       pure a
     _ -> AzureFlame3 <$> runMessage msg attrs
 
@@ -54,8 +48,7 @@ azureFlame3Effect = cardEffect AzureFlame3Effect Cards.azureFlame3
 instance RunMessage AzureFlame3Effect where
   runMessage msg e@(AzureFlame3Effect attrs@EffectAttrs {..}) = case msg of
     RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget -> do
-      when
-        (chaosTokenFace token `elem` [ElderSign, PlusOne, Zero])
+      when (token.face `elem` [ElderSign, PlusOne, Zero])
         $ pushAll
           [ If
               (Window.RevealChaosTokenEffect iid token effectId)

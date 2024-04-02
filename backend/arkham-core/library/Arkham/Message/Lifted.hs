@@ -12,6 +12,7 @@ import Arkham.Classes.Query
 import Arkham.DamageEffect
 import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.Enemy.Creation
+import Arkham.Fight
 import Arkham.Helpers
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Campaign qualified as Msg
@@ -30,7 +31,6 @@ import Arkham.Movement
 import Arkham.Prelude
 import Arkham.Query
 import Arkham.ScenarioLogKey
-import Arkham.SkillType
 import Arkham.SkillType qualified as SkillType
 import Arkham.Source
 import Arkham.Target
@@ -405,10 +405,6 @@ flipOverBy
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 flipOverBy iid source target = push $ Msg.Flip iid (toSource source) (toTarget target)
 
-chooseFightEnemy
-  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> SkillType -> m ()
-chooseFightEnemy iid (toSource -> source) sType = push $ Msg.chooseFightEnemy iid source sType
-
 skillTestModifiers
   :: forall target source m
    . (ReverseQueue m, Sourceable source, Targetable target)
@@ -418,6 +414,9 @@ skillTestModifiers
   -> m ()
 skillTestModifiers (toSource -> source) (toTarget -> target) mods =
   push $ Msg.skillTestModifiers source target mods
+
+chooseFightEnemy :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
+chooseFightEnemy iid = mkChooseFight iid >=> push . toMessage
 
 mapQueue :: (MonadTrans t, HasQueue Message m) => (Message -> Message) -> t m ()
 mapQueue = lift . Msg.mapQueue

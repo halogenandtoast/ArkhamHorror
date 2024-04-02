@@ -35,6 +35,8 @@ import Arkham.Asset.Assets (
   alchemicalTransmutation2Effect,
   alchemicalTransmutationEffect,
   arbiterOfFatesEffect,
+  armageddon4Effect,
+  armageddonEffect,
   azureFlame3Effect,
   azureFlame5Effect,
   azureFlameEffect,
@@ -393,6 +395,8 @@ allEffects =
     , ("07004", SomeEffect dexterDrakeEffect)
     , ("07012", SomeEffect showmanshipEffect)
     , ("07030", SomeEffect tidesOfFateEffect)
+    , ("07117", SomeEffect armageddonEffect)
+    , ("07226", SomeEffect armageddon4Effect)
     , ("09041", SomeEffect empiricalHypothesisEffect)
     , ("50013", SomeEffect twilightBladeEffect)
     , ("50044", SomeEffect jeremiahPierceEffect)

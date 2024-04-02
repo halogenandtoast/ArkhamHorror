@@ -1,16 +1,13 @@
-module Arkham.Event.Cards.OneTwoPunch5 (
-  oneTwoPunch5,
-  OneTwoPunch5 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.OneTwoPunch5 (oneTwoPunch5, OneTwoPunch5 (..)) where
 
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Fight
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.SkillTest.Base
 
 newtype Metadata = Metadata {isFirst :: Bool}
@@ -32,9 +29,10 @@ instance HasModifiersFor OneTwoPunch5 where
 instance RunMessage OneTwoPunch5 where
   runMessage msg e@(OneTwoPunch5 (attrs `With` metadata)) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
+      chooseFight <- toMessage <$> mkChooseFight iid attrs
       pushAll
         [ skillTestModifier attrs iid (DamageDealt 1)
-        , chooseFightEnemy iid attrs #combat
+        , chooseFight
         ]
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) | isFirst metadata -> do

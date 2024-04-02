@@ -1,10 +1,4 @@
-module Arkham.Event.Cards.CheapShot2 (
-  cheapShot2,
-  cheapShot2Effect,
-  CheapShot2 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.CheapShot2 (cheapShot2, cheapShot2Effect, CheapShot2 (..)) where
 
 import Arkham.Card
 import Arkham.Classes
@@ -14,7 +8,8 @@ import Arkham.Effect.Types
 import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.SkillType
+import Arkham.Fight
+import Arkham.Prelude
 
 newtype CheapShot2 = CheapShot2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -25,20 +20,18 @@ cheapShot2 = event CheapShot2 Cards.cheapShot2
 
 instance RunMessage CheapShot2 where
   runMessage msg e@(CheapShot2 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      pushAll
-        [ skillTestModifier attrs iid (AddSkillValue SkillAgility)
-        , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
-        ]
+    PlayThisEvent iid eid | eid == toId attrs -> do
+      chooseFight <- toMessage <$> mkChooseFight iid attrs
+      pushAll [skillTestModifier attrs iid (AddSkillValue #agility), chooseFight]
       pure e
-    PassedSkillTest iid _ _ (SkillTestInitiatorTarget (InvestigatorTarget _)) _ n | n >= 1 -> do
+    PassedThisSkillTestBy iid (isSource attrs -> True) n | n >= 1 -> do
       when (n >= 3)
         $ push
         $ createCardEffect Cards.cheapShot2 (Just $ EffectMetaTarget (toTarget $ toCardId attrs)) attrs iid
-      mSkillTestTarget <- getSkillTestTarget
-      case mSkillTestTarget of
-        Just (EnemyTarget eid) -> push $ EnemyEvaded iid eid
-        _ -> pure ()
+
+      void $ runMaybeT $ do
+        EnemyTarget eid <- MaybeT getSkillTestTarget
+        lift $ push $ EnemyEvaded iid eid
       pure e
     _ -> CheapShot2 <$> runMessage msg attrs
 

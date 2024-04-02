@@ -1,13 +1,10 @@
-module Arkham.Asset.Cards.SeaChangeHarpoon (
-  seaChangeHarpoon,
-  SeaChangeHarpoon (..),
-)
-where
+module Arkham.Asset.Cards.SeaChangeHarpoon (seaChangeHarpoon, SeaChangeHarpoon (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Fight
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude
@@ -18,34 +15,27 @@ newtype SeaChangeHarpoon = SeaChangeHarpoon AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 seaChangeHarpoon :: AssetCard SeaChangeHarpoon
-seaChangeHarpoon =
-  asset SeaChangeHarpoon Cards.seaChangeHarpoon
+seaChangeHarpoon = asset SeaChangeHarpoon Cards.seaChangeHarpoon
 
 instance HasAbilities SeaChangeHarpoon where
   getAbilities (SeaChangeHarpoon attrs) = [restrictedAbility attrs 1 ControlsThis fightAction_]
 
 instance HasModifiersFor SeaChangeHarpoon where
   getModifiersFor (InvestigatorTarget iid) (SeaChangeHarpoon attrs) = do
-    maybeMods <- runMaybeT $ do
-      source <- MaybeT getSkillTestSource
-      guard $ isAbilitySource attrs 1 source
-      iid' <- MaybeT getSkillTestInvestigator
-      guard $ iid == iid'
+    toModifiers attrs . toList <$> runMaybeT do
+      guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
+      guardM $ (== iid) <$> MaybeT getSkillTestInvestigator
       skillCount <-
         lift $ fieldMap InvestigatorCommittedCards (count (`cardMatch` CardWithType SkillType)) iid
-      guard $ skillCount > 0
-      pure $ DamageDealt 1
-
-    pure $ toModifiers attrs $ maybeToList maybeMods
+      guard (skillCount > 0) $> DamageDealt 1
   getModifiersFor _ _ = pure []
 
 instance RunMessage SeaChangeHarpoon where
   runMessage msg a@(SeaChangeHarpoon attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushAll
-        [ skillTestModifier (attrs.ability 1) iid (SkillModifier #combat 1)
-        , chooseFightEnemy iid (attrs.ability 1) #combat
-        ]
+      let source = attrs.ability 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
+      pushAll [skillTestModifier source iid (SkillModifier #combat 1), chooseFight]
       pure a
     SkillTestEnds iid (isAbilitySource attrs 1 -> True) -> do
       miid <- getSkillTestInvestigator

@@ -1,17 +1,12 @@
-module Arkham.Asset.Cards.MauserC96 (
-  mauserC96,
-  MauserC96 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.MauserC96 (mauserC96, MauserC96 (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Capability
+import Arkham.Fight
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Prelude
 
 newtype MauserC96 = MauserC96 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -22,31 +17,24 @@ mauserC96 = asset MauserC96 Cards.mauserC96
 
 instance HasAbilities MauserC96 where
   getAbilities (MauserC96 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility ([Action.Fight])
-        $ ActionCost 1
-        <> ExhaustCost (toTarget a)
-        <> UseCost (AssetWithId $ toId a) Ammo 1
-    ]
+    [restrictedAbility a 1 ControlsThis $ fightAction $ exhaust a <> assetUseCost a Ammo 1]
 
 instance RunMessage MauserC96 where
   runMessage msg a@(MauserC96 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushAll
-        [ skillTestModifiers attrs iid [DamageDealt 1, SkillModifier SkillCombat 1]
-        , ChooseFightEnemy iid (toSource attrs) Nothing SkillCombat mempty False
-        ]
+      let source = attrs.ability 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
+      pushAll [skillTestModifiers source iid [DamageDealt 1, SkillModifier #combat 1], chooseFight]
       pure a
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n | n >= 2 -> do
+    PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
       canReady <-
         andM
           [ toId a <=~> AssetWithoutModifier CannotReady
           , iid <=~> InvestigatorWithoutModifier ControlledAssetsCannotReady
           ]
-      canGainResources <- iid <=~> InvestigatorWithoutModifier CannotGainResources
+      canGainResources <- can.gain.resources iid
       player <- getPlayer iid
-      when (canReady || canGainResources)
-        $ push
+      pushWhen (canReady || canGainResources)
         $ chooseOrRunOne player
         $ [Label "Ready Mauser C96" [Ready (toTarget attrs)] | canReady]
         <> [Label "Take 1 resource" [TakeResources iid 1 (toSource attrs) False] | canGainResources]

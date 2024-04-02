@@ -1,18 +1,13 @@
-module Arkham.Event.Cards.SpectralRazor (
-  spectralRazor,
-  spectralRazorEffect,
-  SpectralRazor (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.SpectralRazor (spectralRazor, spectralRazorEffect, SpectralRazor (..)) where
 
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Fight
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype SpectralRazor = SpectralRazor EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -29,9 +24,9 @@ instance RunMessage SpectralRazor where
 
       case (fightableEnemies, engageableEnemies) of
         ([], []) -> error "invalid call"
-        ([], (_ : _)) -> pushAll [chooseEngageEnemy iid attrs, DoStep 1 msg]
-        ((_ : _), []) -> push $ DoStep 1 msg
-        ((_ : _), (_ : _)) -> do
+        ([], _ : _) -> pushAll [chooseEngageEnemy iid attrs, DoStep 1 msg]
+        (_ : _, []) -> push $ DoStep 1 msg
+        (_ : _, _ : _) -> do
           player <- getPlayer iid
           push
             $ chooseOne
@@ -41,10 +36,11 @@ instance RunMessage SpectralRazor where
               ]
       pure e
     DoStep 1 (PlayThisEvent iid eid) | eid == toId attrs -> do
+      chooseFight <- toMessage <$> mkChooseFight iid attrs
       pushAll
         [ skillTestModifier attrs iid (AddSkillValue #willpower)
         , createCardEffect Cards.spectralRazor Nothing attrs iid
-        , chooseFightEnemy iid attrs #combat
+        , chooseFight
         ]
       pure e
     _ -> SpectralRazor <$> runMessage msg attrs

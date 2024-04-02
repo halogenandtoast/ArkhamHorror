@@ -1,13 +1,10 @@
-module Arkham.Asset.Cards.Knife (
-  Knife (..),
-  knife,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Knife (Knife (..), knife) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
+import Arkham.Prelude
 
 newtype Knife = Knife AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -23,21 +20,19 @@ instance HasAbilities Knife where
     , withTooltip
         "{action}: Discard Knife: _Fight_. You get +2 {combat} for this attack. This attack deals +1 damage."
         $ restrictedAbility a 2 ControlsThis
-        $ fightAction (DiscardCost FromPlay (toTarget a))
+        $ fightAction (discardCost a)
     ]
 
 instance RunMessage Knife where
   runMessage msg a@(Knife attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushAll
-        [ skillTestModifier attrs iid (SkillModifier #combat 1)
-        , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
-        ]
+      let source = attrs.ability 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
+      pushAll [skillTestModifier source iid (SkillModifier #combat 1), chooseFight]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      pushAll
-        [ skillTestModifiers attrs iid [SkillModifier #combat 2, DamageDealt 1]
-        , chooseFightEnemy iid (toAbilitySource attrs 2) #combat
-        ]
+      let source = attrs.ability 2
+      chooseFight <- toMessage <$> mkChooseFight iid source
+      pushAll [skillTestModifiers source iid [SkillModifier #combat 2, DamageDealt 1], chooseFight]
       pure a
     _ -> Knife <$> runMessage msg attrs

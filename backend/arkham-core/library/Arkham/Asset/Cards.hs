@@ -143,6 +143,8 @@ allPlayerAssetCards =
       , archaicGlyphsGuidingStones3
       , archaicGlyphsMarkingsOfIsis3
       , archaicGlyphsProphecyForetold3
+      , armageddon
+      , armageddon4
       , armorOfArdennes5
       , artStudent
       , augur
@@ -4190,6 +4192,15 @@ falseCovenant2 =
       , cdDeckRestrictions = [TraitPerDeckLimit Covenant 1]
       }
 
+armageddon :: CardDef
+armageddon =
+  (asset "07117" "Armageddon" 4 Mystic)
+    { cdCardTraits = setFromList [Spell, Cursed]
+    , cdSkills = [#combat]
+    , cdUses = uses Charge 3
+    , cdSlots = [#arcane]
+    }
+
 keenEye :: CardDef
 keenEye =
   (asset "07152" "Keen Eye" 2 Guardian)
@@ -4213,6 +4224,16 @@ holyRosary2 =
     , cdCardTraits = setFromList [Item, Charm, Blessed]
     , cdSlots = [#accessory]
     , cdLevel = 2
+    }
+
+armageddon4 :: CardDef
+armageddon4 =
+  (asset "07226" "Armageddon" 4 Mystic)
+    { cdCardTraits = setFromList [Spell, Cursed]
+    , cdSkills = [#willpower, #combat]
+    , cdUses = uses Charge 3
+    , cdSlots = [#arcane]
+    , cdLevel = 4
     }
 
 hardKnocks4 :: CardDef

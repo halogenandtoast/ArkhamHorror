@@ -3,6 +3,7 @@ module Arkham.Asset.Cards.Shotgun4 (Shotgun4 (..), shotgun4) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Prelude
 
 newtype Shotgun4 = Shotgun4 AssetAttrs
@@ -18,10 +19,9 @@ instance HasAbilities Shotgun4 where
 instance RunMessage Shotgun4 where
   runMessage msg a@(Shotgun4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushAll
-        [ skillTestModifier (attrs.ability 1) iid (SkillModifier #combat 3)
-        , chooseFightEnemy iid (attrs.ability 1) #combat
-        ]
+      let source = attrs.ability 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
+      pushAll [skillTestModifier source iid (SkillModifier #combat 3), chooseFight]
       pure a
     FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       let val = max 1 (min 5 n)

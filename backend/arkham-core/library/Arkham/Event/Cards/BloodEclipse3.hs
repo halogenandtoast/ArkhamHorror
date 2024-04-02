@@ -1,9 +1,11 @@
 module Arkham.Event.Cards.BloodEclipse3 (bloodEclipse3, BloodEclipse3 (..)) where
 
+import Arkham.Aspect
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Fight
 import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
@@ -24,9 +26,8 @@ instance RunMessage BloodEclipse3 where
   runMessage msg e@(BloodEclipse3 attrs) = case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
       let n = countDamage attrs.payment
-      pushAll
-        [ skillTestModifiers attrs iid [DamageDealt n, SkillModifier #willpower n]
-        , chooseFightEnemy iid attrs #willpower
-        ]
+      chooseFight <-
+        leftOr <$> aspect iid attrs (#willpower `InsteadOf` #combat) (mkChooseFight iid attrs)
+      pushAll $ skillTestModifiers attrs iid [DamageDealt n, SkillModifier #willpower n] : chooseFight
       pure e
     _ -> BloodEclipse3 <$> runMessage msg attrs

@@ -758,8 +758,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Exiled (AssetTarget aid) _ -> pure $ a & (slotsL %~ removeFromSlots aid)
   RemoveFromGame (AssetTarget aid) -> pure $ a & (slotsL %~ removeFromSlots aid)
   RemoveFromGame (CardIdTarget cid) -> pure $ a & cardsUnderneathL %~ filter ((/= cid) . toCardId)
-  ChooseFightEnemy iid source mTarget skillType enemyMatcher isAction | iid == investigatorId -> do
-    modifiers <- getModifiers (InvestigatorTarget iid)
+  -- ChooseFightEnemy iid source mTarget skillType enemyMatcher isAction | iid == investigatorId -> do
+  ChooseFightEnemy choose | choose.investigator == investigatorId -> do
+    modifiers <- getModifiers a
+    let source = choose.source
+    let mTarget = choose.target
+    let skillType = choose.skillType
+    let enemyMatcher = choose.matcher
+    let isAction = choose.isAction
     let
       isOverride = \case
         EnemyFightActionCriteria override -> Just override
@@ -776,11 +782,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [o] -> CanFightEnemyWithOverride o
         _ -> error "multiple overrides found"
     enemyIds <- select $ foldr applyMatcherModifiers (canFightMatcher <> enemyMatcher) modifiers
-    player <- getPlayer iid
+    player <- getPlayer investigatorId
     push
       $ chooseOne
         player
-        [ FightLabel eid [ChoseEnemy iid source eid, FightEnemy iid eid source mTarget skillType isAction]
+        [ FightLabel
+          eid
+          [ ChoseEnemy investigatorId source eid
+          , FightEnemy investigatorId eid source mTarget skillType isAction
+          ]
         | eid <- enemyIds
         ]
     pure a

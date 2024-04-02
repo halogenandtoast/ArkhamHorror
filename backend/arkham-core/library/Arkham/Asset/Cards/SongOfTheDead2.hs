@@ -1,10 +1,12 @@
 module Arkham.Asset.Cards.SongOfTheDead2 (songOfTheDead2, songOfTheDead2Effect, SongOfTheDead2 (..)) where
 
 import Arkham.Ability
+import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Effect.Runner
+import Arkham.Fight
 import Arkham.Prelude
 import Arkham.Window qualified as Window
 
@@ -21,11 +23,14 @@ instance HasAbilities SongOfTheDead2 where
 instance RunMessage SongOfTheDead2 where
   runMessage msg a@(SongOfTheDead2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = attrs.ability 1
+      chooseFight <-
+        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight iid source)
       pushAll
-        [ skillTestModifier (attrs.ability 1) iid (SkillModifier #willpower 1)
-        , createCardEffect Cards.songOfTheDead2 Nothing (attrs.ability 1) iid
-        , chooseFightEnemy iid (attrs.ability 1) #willpower
-        ]
+        $ [ skillTestModifier source iid (SkillModifier #willpower 1)
+          , createCardEffect Cards.songOfTheDead2 Nothing source iid
+          ]
+        <> chooseFight
       pure a
     _ -> SongOfTheDead2 <$> runMessage msg attrs
 

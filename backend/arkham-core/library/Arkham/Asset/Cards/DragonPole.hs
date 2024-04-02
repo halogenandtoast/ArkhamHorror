@@ -1,16 +1,12 @@
-module Arkham.Asset.Cards.DragonPole (
-  dragonPole,
-  DragonPole (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.DragonPole (dragonPole, DragonPole (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Fight
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype DragonPole = DragonPole AssetAttrs
@@ -32,9 +28,10 @@ instance RunMessage DragonPole where
       let source = toAbilitySource attrs 1
       slots <-
         count (not . isEmptySlot) . findWithDefault [] #arcane <$> field InvestigatorSlots iid
+      chooseFight <- toMessage <$> mkChooseFight iid source
       pushAll
         [ skillTestModifiers source iid (SkillModifier #combat slots : [DamageDealt 1 | slots >= 2])
-        , chooseFightEnemy iid source #combat
+        , chooseFight
         ]
       pure a
     _ -> DragonPole <$> runMessage msg attrs

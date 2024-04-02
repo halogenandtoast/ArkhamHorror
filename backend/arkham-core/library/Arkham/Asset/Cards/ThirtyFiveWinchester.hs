@@ -5,13 +5,13 @@ module Arkham.Asset.Cards.ThirtyFiveWinchester (
 )
 where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Effect.Runner
+import Arkham.Fight
+import Arkham.Prelude
 
 newtype ThirtyFiveWinchester = ThirtyFiveWinchester AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -27,10 +27,12 @@ instance HasAbilities ThirtyFiveWinchester where
 instance RunMessage ThirtyFiveWinchester where
   runMessage msg a@(ThirtyFiveWinchester attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = attrs.ability 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
       pushAll
-        [ skillTestModifier (toAbilitySource attrs 1) iid (SkillModifier #combat 2)
-        , createCardEffect Cards.thirtyFiveWinchester Nothing (toAbilitySource attrs 1) iid
-        , chooseFightEnemy iid (toAbilitySource attrs 1) #combat
+        [ skillTestModifier source iid (SkillModifier #combat 2)
+        , createCardEffect Cards.thirtyFiveWinchester Nothing source iid
+        , chooseFight
         ]
       pure a
     _ -> ThirtyFiveWinchester <$> runMessage msg attrs

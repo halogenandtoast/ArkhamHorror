@@ -8,6 +8,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards (flare1)
 import Arkham.Event.Runner
+import Arkham.Fight
 import Arkham.Helpers.Enemy
 import Arkham.Matcher
 
@@ -28,11 +29,13 @@ instance RunMessage Flare1 where
       let doSearch iid' = targetLabel iid' [search iid' e iid' [fromTopOfDeck 9] #ally (defer $ toTarget e)]
       let searchForAlly = [CheckAttackOfOpportunity iid False, chooseOne player $ map doSearch investigators]
 
+      chooseFight <- toMessage <$> mkChooseFight iid e
+
       push
         $ chooseOrRunOne player
         $ [ Label "Fight"
             $ [ skillTestModifiers attrs iid [SkillModifier #combat 3, DamageDealt 2]
-              , chooseFightEnemy iid e #combat
+              , chooseFight
               , Exile (toTarget e)
               ]
           | notNull fightableEnemies

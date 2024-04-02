@@ -3,6 +3,7 @@ module Arkham.Asset.Cards.SpringfieldM19034 (springfieldM19034, SpringfieldM1903
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -23,9 +24,11 @@ instance HasAbilities SpringfieldM19034 where
 instance RunMessage SpringfieldM19034 where
   runMessage msg a@(SpringfieldM19034 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = attrs.ability 1
+      chooseFight <- toMessage <$> mkChooseFightMatch iid source EnemyNotEngagedWithYou
       pushAll
         [ skillTestModifiers attrs iid [DamageDealt 2, SkillModifier #combat 3]
-        , ChooseFightEnemy iid (attrs.ability 1) Nothing #combat EnemyNotEngagedWithYou False
+        , chooseFight
         ]
       pure a
     _ -> SpringfieldM19034 <$> runMessage msg attrs

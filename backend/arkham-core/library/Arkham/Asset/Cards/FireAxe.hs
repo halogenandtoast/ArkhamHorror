@@ -1,18 +1,14 @@
-module Arkham.Asset.Cards.FireAxe (
-  FireAxe (..),
-  fireAxe,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.FireAxe (FireAxe (..), fireAxe) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
-import Arkham.SkillType
 
 newtype FireAxe = FireAxe AssetAttrs
   deriving anyclass (IsAsset)
@@ -23,13 +19,11 @@ fireAxe = asset FireAxe Cards.fireAxe
 
 instance HasModifiersFor FireAxe where
   getModifiersFor (InvestigatorTarget iid) (FireAxe a) | controlledBy a iid = do
-    mSource <- getSkillTestSource
-    mAction <- getSkillTestAction
-    case (mAction, mSource) of
-      (Just Action.Fight, Just source) | isSource a source -> do
-        resourceCount <- field InvestigatorResources iid
-        pure $ toModifiers a [DamageDealt 1 | resourceCount == 0]
-      _ -> pure []
+    toModifiers a . toList <$> runMaybeT do
+      guardM $ isAbilitySource a 1 <$> MaybeT getSkillTestSource
+      Action.Fight <- MaybeT getSkillTestAction
+      resourceCount <- lift $ field InvestigatorResources iid
+      DamageDealt 1 <$ guard (resourceCount == 0)
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FireAxe where
@@ -43,10 +37,10 @@ instance HasAbilities FireAxe where
 
 instance RunMessage FireAxe where
   runMessage msg a@(FireAxe attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ ChooseFightEnemy iid source Nothing SkillCombat mempty False
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      pushM $ mkChooseFight iid (attrs.ability 1)
       pure a
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      push $ skillTestModifier attrs iid (SkillModifier SkillCombat 2)
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      push $ skillTestModifier attrs iid (SkillModifier #combat 2)
       pure a
     _ -> FireAxe <$> runMessage msg attrs

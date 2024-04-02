@@ -1,16 +1,12 @@
-module Arkham.Asset.Cards.Knuckleduster (
-  knuckleduster,
-  Knuckleduster (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Knuckleduster (knuckleduster, Knuckleduster (..)) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Fight
 import Arkham.Keyword qualified as Keyword
-import Arkham.SkillType
+import Arkham.Prelude
 
 newtype Knuckleduster = Knuckleduster AssetAttrs
   deriving anyclass (IsAsset)
@@ -24,22 +20,18 @@ instance HasAbilities Knuckleduster where
 
 instance HasModifiersFor Knuckleduster where
   getModifiersFor (EnemyTarget eid) (Knuckleduster attrs) = do
-    mTarget <- getSkillTestTarget
-    mSource <- getSkillTestSource
-    mAction <- getSkillTestAction
-    case (mAction, mSource, mTarget) of
-      (Just Action.Fight, Just source, Just (EnemyTarget eid'))
-        | eid == eid' && isSource attrs source ->
-            pure $ toModifiers attrs [AddKeyword Keyword.Retaliate]
-      _ -> pure []
+    toModifiers attrs . toList <$> runMaybeT do
+      guardM $ isTarget eid <$> MaybeT getSkillTestTarget
+      guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
+      Action.Fight <- MaybeT getSkillTestAction
+      pure $ AddKeyword Keyword.Retaliate
   getModifiersFor _ _ = pure []
 
 instance RunMessage Knuckleduster where
   runMessage msg a@(Knuckleduster attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      pushAll
-        [ skillTestModifier attrs iid (DamageDealt 1)
-        , ChooseFightEnemy iid source Nothing SkillCombat mempty False
-        ]
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = attrs.ability 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
+      pushAll [skillTestModifier source iid (DamageDealt 1), chooseFight]
       pure a
     _ -> Knuckleduster <$> runMessage msg attrs

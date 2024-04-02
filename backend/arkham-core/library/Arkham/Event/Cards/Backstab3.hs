@@ -1,13 +1,7 @@
-module Arkham.Event.Cards.Backstab3 (
-  backstab3,
-  backstab3Effect,
-  Backstab3 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.Backstab3 (backstab3, backstab3Effect, Backstab3 (..)) where
 
 import Arkham.Action
+import Arkham.Aspect
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Effect.Runner ()
@@ -16,7 +10,8 @@ import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
-import Arkham.SkillType
+import Arkham.Fight
+import Arkham.Prelude
 
 newtype Backstab3 = Backstab3 EventAttrs
   deriving anyclass (IsEvent, HasAbilities)
@@ -38,9 +33,10 @@ instance HasModifiersFor Backstab3 where
 instance RunMessage Backstab3 where
   runMessage msg e@(Backstab3 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      push $ ChooseFightEnemy iid (EventSource eid) Nothing SkillAgility mempty False
+      chooseFight <- leftOr <$> aspect iid attrs (#agility `InsteadOf` #combat) (mkChooseFight iid attrs)
+      pushAll $ skillTestModifier attrs iid (DamageDealt 2) : chooseFight
       pure e
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n | n >= 2 -> do
+    PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
       push
         $ createCardEffect Cards.pilfer3 (Just $ EffectMetaTarget (toTarget $ toCardId attrs)) attrs iid
       pure e

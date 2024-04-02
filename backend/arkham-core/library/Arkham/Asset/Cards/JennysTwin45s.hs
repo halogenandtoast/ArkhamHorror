@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Fight
 import Arkham.Prelude
 
 newtype JennysTwin45s = JennysTwin45s AssetAttrs
@@ -23,10 +24,8 @@ instance RunMessage JennysTwin45s where
       JennysTwin45s
         <$> runMessage msg (attrs & printedUsesL .~ Uses Ammo (Static n) & usesL .~ singletonMap Ammo n)
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = toAbilitySource attrs 1
-      pushAll
-        [ skillTestModifiers source iid [DamageDealt 1, SkillModifier #combat 2]
-        , chooseFightEnemy iid source #combat
-        ]
+      let source = attrs.ability 1
+      chooseFight <- toMessage <$> mkChooseFight iid source
+      pushAll [skillTestModifiers source iid [DamageDealt 1, SkillModifier #combat 2], chooseFight]
       pure a
     _ -> JennysTwin45s <$> runMessage msg attrs

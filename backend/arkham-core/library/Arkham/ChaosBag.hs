@@ -502,9 +502,7 @@ instance RunMessage ChaosBag where
           True -> hasModifier SkillTestTarget ReturnCursedToChaosBag
           False -> pure True
 
-      let excludes = [CurseToken | not returnAllCursed] <> [BlessToken | not returnAllBlessed]
       -- TODO: We need to decide which tokens to keep, i.e. Blessed Blade (4)
-
       tokensToReturn <- forMaybeM chaosBagSetAsideChaosTokens \token -> do
         if
           | token.face == #bless -> do
@@ -513,7 +511,7 @@ instance RunMessage ChaosBag where
           | token.face == #curse -> do
               returnCursed <- if returnAllCursed then pure True else hasModifier token ReturnCursedToChaosBag
               pure $ guard returnCursed $> token
-          | otherwise -> pure $ guard (token.face `notElem` excludes) $> token
+          | otherwise -> pure $ Just token
 
       pure
         $ c

@@ -58,7 +58,7 @@ instance RunMessage EyeOfChaos4Effect where
             pushAll
               $ [ chooseOrRunOne
                   player
-                  $ [Label "Place 1 Charge on EyeOfChaos4" [AddUses assetId Charge 1] | stillInPlay]
+                  $ [Label "Place 1 Charge on Eye of Chaos (4)" [AddUses assetId Charge 1] | stillInPlay]
                   <> [ Label
                         "Discover 1 clues at a connecting location"
                         [ chooseOne

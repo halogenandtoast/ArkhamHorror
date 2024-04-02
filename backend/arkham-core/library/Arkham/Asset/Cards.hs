@@ -523,6 +523,8 @@ allPlayerAssetCards =
       , shrivelling
       , shrivelling3
       , shrivelling5
+      , shroudOfShadows
+      , shroudOfShadows4
       , signMagick
       , signMagick3
       , silassNet
@@ -4212,6 +4214,15 @@ eyeOfChaos =
     , cdSlots = [#arcane]
     }
 
+shroudOfShadows :: CardDef
+shroudOfShadows =
+  (asset "07119" "Shroud of Shadows" 3 Mystic)
+    { cdCardTraits = setFromList [Spell, Cursed]
+    , cdSkills = [#agility]
+    , cdUses = uses Charge 3
+    , cdSlots = [#arcane]
+    }
+
 keenEye :: CardDef
 keenEye =
   (asset "07152" "Keen Eye" 2 Guardian)
@@ -4252,6 +4263,16 @@ eyeOfChaos4 =
   (asset "07227" "Eye of Chaos" 5 Mystic)
     { cdCardTraits = setFromList [Spell, Cursed]
     , cdSkills = [#willpower, #intellect]
+    , cdUses = uses Charge 3
+    , cdSlots = [#arcane]
+    , cdLevel = 4
+    }
+
+shroudOfShadows4 :: CardDef
+shroudOfShadows4 =
+  (asset "07228" "Eye of Chaos" 3 Mystic)
+    { cdCardTraits = setFromList [Spell, Cursed]
+    , cdSkills = [#willpower, #agility]
     , cdUses = uses Charge 3
     , cdSlots = [#arcane]
     , cdLevel = 4

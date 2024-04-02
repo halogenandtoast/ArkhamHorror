@@ -675,6 +675,7 @@ allAssets =
     , --- mystic [itp]
       SomeAssetCard armageddon
     , SomeAssetCard eyeOfChaos
+    , SomeAssetCard shroudOfShadows
     , -- Devil Reef
       --- guardian [def]
       SomeAssetCard keenEye
@@ -686,6 +687,7 @@ allAssets =
     , --- mystic [lif]
       SomeAssetCard armageddon4
     , SomeAssetCard eyeOfChaos4
+    , SomeAssetCard shroudOfShadows4
     , -- The Lair of Dagon
       --- rogue [lod]
       SomeAssetCard hardKnocks4

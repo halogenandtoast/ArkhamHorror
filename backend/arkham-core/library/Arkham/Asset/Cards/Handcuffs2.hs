@@ -9,7 +9,6 @@ import Arkham.Evade
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Placement
 import Arkham.Prelude
-import Arkham.SkillType
 import Arkham.Trait (Trait (Humanoid))
 
 newtype Handcuffs2 = Handcuffs2 AssetAttrs

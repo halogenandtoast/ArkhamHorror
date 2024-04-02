@@ -11,7 +11,6 @@ import Arkham.Effect.Runner
 import Arkham.Evade
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Prelude
-import Arkham.SkillType
 import Arkham.Window qualified as Window
 
 newtype IneffableTruth5 = IneffableTruth5 AssetAttrs

@@ -25,7 +25,6 @@ import Arkham.Label (mkLabel)
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Resolution
-import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing

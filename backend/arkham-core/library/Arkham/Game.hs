@@ -174,7 +174,7 @@ import Data.Map.Monoidal.Strict (getMonoidalMap)
 import Data.Map.Monoidal.Strict qualified as MonoidalMap
 import Data.Map.Strict qualified as Map
 import Data.Monoid (First (..))
-import Data.Sequence ((|>), pattern Empty, pattern (:|>))
+import Data.Sequence ((|>), pattern Empty, pattern (:<|), pattern (:|>))
 import Data.Sequence qualified as Seq
 import Data.Set qualified as Set
 import Data.These
@@ -1609,12 +1609,15 @@ getLocationsMatching lmatcher = do
 
             valids <- forMaybeM (mapToList _psPaths) \(loc, paths) -> do
               valid <- flip anyM paths \case
-                Empty -> pure True
-                (mids :|> fin) -> do
-                  startCost <- getLeaveCost loc
+                Empty -> pure False
+                (_ :<| Empty) -> do
+                  leaveCost <- getLeaveCost start
+                  enterCost <- getEnterCost loc
+                  getCanAffordCost investigator source [] [] (leaveCost <> enterCost)
+                (_ :<| mids) -> do
+                  startCost <- getLeaveCost start
                   lastCost <- case mids of
-                    Empty -> AsIfAtLocationCost loc <$> getEnterCost fin
-                    (_ :|> lastMid) -> AsIfAtLocationCost lastMid <$> getEnterCost fin
+                    (_ :|> lastMid) -> AsIfAtLocationCost lastMid <$> getEnterCost loc
 
                   midCosts <-
                     foldMapM
@@ -1624,9 +1627,71 @@ getLocationsMatching lmatcher = do
                             (AsIfAtLocationCost prevLoc <$> getEnterCost mid)
                             (AsIfAtLocationCost mid <$> getLeaveCost mid)
                       )
-                      (zip (toList mids) (loc : toList mids))
+                      (zip (toList mids) (start : toList mids))
 
                   getCanAffordCost investigator source [] [] (startCost <> lastCost <> midCosts)
+              pure $ guard valid $> loc
+
+            pure $ filter ((`elem` valids) . toId) ls
+          Nothing -> pure []
+      CanMoveCloserToLocation source investigatorMatcher destinationMatcher -> do
+        -- Logic is similar to LocationWithAccessiblePath with a few
+        -- exceptions, we don't care if the entire path is traversable, only if
+        -- a path exists and the investigator can take a single step. So we
+        -- exclude checking if the investigator can enter until we verify the
+        -- paths and we only need to look at the first step of the path. We
+        -- also have no specific distance to check
+
+        investigator <- selectJust investigatorMatcher
+        mstart <- field InvestigatorLocation investigator
+        case mstart of
+          Just start -> do
+            let
+              go :: LocationId -> Seq LocationId -> StateT PathState (ReaderT Game m) ()
+              go loc path = do
+                doesMatch <- lift $ loc <=~> destinationMatcher
+                ps@PathState {..} <- get
+                put
+                  $ ps
+                    { _psVisitedLocations = insertSet loc _psVisitedLocations
+                    , _psPaths = if doesMatch then Map.insertWith (<>) loc [path] _psPaths else _psPaths
+                    }
+                connections <-
+                  lift $ select $ ConnectedFrom (LocationWithId loc)
+                for_ connections \conn -> do
+                  unless (conn `elem` _psVisitedLocations) do
+                    go conn (path |> loc)
+            PathState {_psPaths} <-
+              execStateT (go start mempty) (PathState (singleton start) mempty)
+
+            let
+              getEnterCost loc = do
+                mods <- getModifiers loc
+                pure $ mconcat [c | AdditionalCostToEnter c <- mods]
+              getLeaveCost loc = do
+                mods <- getModifiers loc
+                pure $ mconcat [c | AdditionalCostToLeave c <- mods]
+
+            valids <- forMaybeM (mapToList _psPaths) \(loc, paths) -> do
+              valid <- flip anyM paths \case
+                Empty -> pure False
+                (_ :<| Empty) -> do
+                  -- single step
+                  canEnter <- getCanMoveTo investigator source loc
+                  if canEnter
+                    then do
+                      leaveCost <- getLeaveCost start
+                      enterCost <- getEnterCost loc
+                      getCanAffordCost investigator source [] [] (leaveCost <> enterCost)
+                    else pure False
+                (_ :<| (step :<| _)) -> do
+                  canEnter <- getCanMoveTo investigator source step
+                  if canEnter
+                    then do
+                      leaveCost <- getLeaveCost start
+                      enterCost <- getEnterCost step
+                      getCanAffordCost investigator source [] [] (leaveCost <> enterCost)
+                    else pure False
               pure $ guard valid $> loc
 
             pure $ filter ((`elem` valids) . toId) ls

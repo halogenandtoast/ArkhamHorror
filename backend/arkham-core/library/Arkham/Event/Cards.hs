@@ -12,7 +12,7 @@ import Arkham.Card.CardType
 import Arkham.Card.Cost
 import Arkham.ClassSymbol
 import Arkham.Cost
-import Arkham.Criteria (Criterion, exists)
+import Arkham.Criteria (Criterion, exists, notExists)
 import Arkham.Criteria qualified as Criteria
 import Arkham.Damage
 import Arkham.History.Types
@@ -278,6 +278,7 @@ allPlayerEventCards =
       , telescopicSight3
       , temptFate
       , thePaintedWorld
+      , theTruthBeckons
       , thinkOnYourFeet
       , thinkOnYourFeet2
       , tidesOfFate
@@ -2469,6 +2470,17 @@ radiantSmite1 =
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spirit, Spell, Blessed]
     , cdActions = [#fight]
+    }
+
+theTruthBeckons :: CardDef
+theTruthBeckons =
+  (event "07154" "The Truth Beckons" 1 Seeker)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Insight]
+    , cdCriteria =
+        Just
+          $ notExists EnemyEngagedWithYou
+          <> exists (CanMoveCloserToLocation ThisCard You UnrevealedLocation)
     }
 
 sweepingKick1 :: CardDef

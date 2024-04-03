@@ -409,6 +409,7 @@ data LocationMatcher
   | LocationWithDistanceFromAtLeast Int LocationMatcher LocationMatcher
   | -- | distance, valid step, start, destination
     LocationWithAccessiblePath Source Int InvestigatorMatcher LocationMatcher
+  | CanMoveCloserToLocation Source InvestigatorMatcher LocationMatcher
   | LocationWithResources ValueMatcher
   | LocationWithClues ValueMatcher
   | LocationWithHorror ValueMatcher

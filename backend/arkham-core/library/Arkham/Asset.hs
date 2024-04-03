@@ -683,6 +683,8 @@ allAssets =
     , -- Devil Reef
       --- guardian [def]
       SomeAssetCard keenEye
+    , --- rogue [def]
+      SomeAssetCard priestOfTwoFaiths1
     , --- mystic [def]
       SomeAssetCard bloodPact
     , SomeAssetCard abyssalTome2

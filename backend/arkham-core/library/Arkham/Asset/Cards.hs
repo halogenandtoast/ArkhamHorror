@@ -471,6 +471,7 @@ allPlayerAssetCards =
       , powderOfIbnGhazi
       , preciousMementoFromAFormerLife4
       , preciousMementoFromAFutureLife4
+      , priestOfTwoFaiths1
       , professorWarrenRice
       , protectiveIncantation1
       , puzzleBox
@@ -4257,6 +4258,15 @@ keenEye =
   (asset "07152" "Keen Eye" 2 Guardian)
     { cdCardTraits = setFromList [Talent]
     , cdSkills = [#intellect, #combat]
+    }
+
+priestOfTwoFaiths1 :: CardDef
+priestOfTwoFaiths1 =
+  (asset "07156" "Priest of Two Faiths" 1 Rogue)
+    { cdCardTraits = setFromList [Ally, Blessed, Cursed]
+    , cdSkills = [#agility]
+    , cdSlots = [#ally]
+    , cdLevel = 1
     }
 
 bloodPact :: CardDef

@@ -2353,28 +2353,22 @@ runGameMessage msg g = case msg of
     runMessage (RemoveAsset aid) g
   Discarded (EventTarget eid) _ _ -> do
     mEvent <- getEventMaybe eid
-    case mEvent of
-      Nothing -> pure g
-      Just event' -> do
-        card <- field EventCard eid
-        modifiers' <- liftA2 (<>) (getModifiers $ EventTarget eid) (getModifiers $ toCardId card)
-        if RemoveFromGameInsteadOfDiscard `elem` modifiers'
-          then g <$ push (RemoveFromGame (EventTarget eid))
-          else do
-            case card of
-              PlayerCard pc ->
-                if PlaceOnBottomOfDeckInsteadOfDiscard `elem` modifiers'
-                  then do
-                    let iid = eventOwner $ toAttrs event'
-                    push
-                      $ PutCardOnBottomOfDeck
-                        iid
-                        (Deck.InvestigatorDeck iid)
-                        card
-                  else push $ AddToDiscard (eventOwner $ toAttrs event') pc
-              EncounterCard _ -> error "Unhandled"
-              VengeanceCard _ -> error "Vengeance card"
-            pure $ g & entitiesL . eventsL %~ deleteMap eid
+    for_ mEvent \event' -> do
+      card <- field EventCard eid
+      modifiers' <- liftA2 (<>) (getModifiers $ EventTarget eid) (getModifiers $ toCardId card)
+      if RemoveFromGameInsteadOfDiscard `elem` modifiers'
+        then push (RemoveFromGame (EventTarget eid))
+        else do
+          case card of
+            PlayerCard pc ->
+              if PlaceOnBottomOfDeckInsteadOfDiscard `elem` modifiers'
+                then do
+                  let iid = eventOwner $ toAttrs event'
+                  push $ PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) card
+                else push $ AddToDiscard (eventOwner $ toAttrs event') pc
+            EncounterCard _ -> error "Unhandled"
+            VengeanceCard _ -> error "Vengeance card"
+    pure g
   Discard miid source (TreacheryTarget tid) -> do
     card <- field TreacheryCard tid
     iid <- maybe getActiveInvestigatorId pure miid

@@ -150,8 +150,12 @@ const choose = (index: number) => emits('choose', index)
   display: flex;
   align-self: flex-start;
   align-items: flex-end;
-  * {
-    transform: scale(0.6);
+  :deep(.token-container) {
+    width: unset;
+  }
+  :deep(img) {
+    width: 20px;
+    height: auto;
   }
   z-index: 1;
   pointer-events: none;

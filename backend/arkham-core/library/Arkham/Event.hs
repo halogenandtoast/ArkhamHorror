@@ -420,6 +420,9 @@ allEvents =
       SomeEventCard stirringUpTrouble1
     , --- rogue [itd]
       SomeEventCard breakingAndEntering
+    , -- Devil Reef
+      --- guardian [def]
+      SomeEventCard radiantSmite1
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard sweepingKick1

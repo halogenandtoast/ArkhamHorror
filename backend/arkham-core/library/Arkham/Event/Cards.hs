@@ -235,6 +235,7 @@ allPlayerEventCards =
       , preposterousSketches
       , preposterousSketches2
       , quantumFlux
+      , radiantSmite1
       , readTheSigns
       , recharge2
       , recharge4
@@ -2460,6 +2461,14 @@ breakingAndEntering =
     , cdCardTraits = setFromList [Trick]
     , cdActions = [#investigate]
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+    }
+
+radiantSmite1 :: CardDef
+radiantSmite1 =
+  (event "07153" "Radiant Smite" 1 Guardian)
+    { cdSkills = [#willpower, #combat]
+    , cdCardTraits = setFromList [Spirit, Spell, Blessed]
+    , cdActions = [#fight]
     }
 
 sweepingKick1 :: CardDef

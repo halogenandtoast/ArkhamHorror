@@ -428,6 +428,8 @@ allEvents =
     , SomeEventCard gazeOfOuraxsh2
     , --- rogue [def]
       SomeEventCard underSurveillance1
+    , --- survivor [def]
+      SomeEventCard butterflyEffect1
     , --- neutral [def]
       SomeEventCard manipulateDestiny2
     , -- Edge of the Earth

@@ -72,6 +72,7 @@ allPlayerEventCards =
       , breakingAndEntering2
       , burningTheMidnightOil
       , buryThemDeep
+      , butterflyEffect1
       , callingInFavors
       , cheapShot
       , cheapShot2
@@ -2501,6 +2502,19 @@ underSurveillance1 =
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Tactic, Trap]
     , cdCriteria = Just $ Criteria.Negate $ exists $ "Under Surveillance" <> AssetAt YourLocation
+    , cdLevel = 1
+    }
+
+butterflyEffect1 :: CardDef
+butterflyEffect1 =
+  (event "07158" "Butterfly Effect" 0 Survivor)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Paradox, Blessed, Cursed]
+    , cdFastWindow = Just $ RevealChaosToken #when (affectsOthers Anyone) IsSymbol
+    , cdCriteria =
+        Just
+          $ Criteria.DuringSkillTest SkillTestAtYourLocation
+          <> exists (CardIsCommittedBy (affectsOthers $ InvestigatorAt YourLocation))
     , cdLevel = 1
     }
 

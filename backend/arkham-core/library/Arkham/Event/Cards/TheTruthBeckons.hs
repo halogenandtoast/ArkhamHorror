@@ -37,7 +37,7 @@ instance RunMessage TheTruthBeckons where
         lid <=~> CanMoveCloserToLocation (toSource attrs) (InvestigatorWithId iid) (LocationWithId lid)
       notEngaged <- iid <!=~> InvestigatorEngagedWith AnyEnemy
 
-      when (traceShowId canStillMove && traceShowId notEngaged && traceShowId (not revealedLocation)) do
+      when (canStillMove && notEngaged && not revealedLocation) do
         pushAll [toMessage $ (move attrs iid lid) {moveMeans = Towards}, DoStep 1 msg']
 
       pure e

@@ -32,11 +32,9 @@ import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
-import Arkham.ClassSymbol
 import Arkham.Classes
 import Arkham.Classes.HasDistance
 import Arkham.Classes.HasGame
-import Arkham.CommitRestriction
 import Arkham.Cost qualified as Cost
 import Arkham.Damage
 import Arkham.Difficulty
@@ -191,32 +189,13 @@ class HasGameRef a where
 class HasStdGen a where
   genL :: Lens' a (IORef StdGen)
 
-newCampaign
-  :: CampaignId
-  -> Maybe ScenarioId
-  -> Int
-  -> Int
-  -> Difficulty
-  -> Bool
-  -> Game
+newCampaign :: CampaignId -> Maybe ScenarioId -> Int -> Int -> Difficulty -> Bool -> Game
 newCampaign cid msid = newGame (maybe (This cid) (These cid) msid)
 
-newScenario
-  :: ScenarioId
-  -> Int
-  -> Int
-  -> Difficulty
-  -> Bool
-  -> Game
+newScenario :: ScenarioId -> Int -> Int -> Difficulty -> Bool -> Game
 newScenario = newGame . That
 
-newGame
-  :: These CampaignId ScenarioId
-  -> Int
-  -> Int
-  -> Difficulty
-  -> Bool
-  -> Game
+newGame :: These CampaignId ScenarioId -> Int -> Int -> Difficulty -> Bool -> Game
 newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
   let state = IsPending []
    in Game
@@ -3439,105 +3418,17 @@ instance Query ExtendedCardMatcher where
             results
         pure $ c `elem` playable
       CommittableCard iid matcher' -> do
-        mSkillTest <- getSkillTest
-        case mSkillTest of
-          Nothing -> pure False
-          Just skillTest -> do
-            modifiers' <- getModifiers (toTarget iid)
-            committedCards <- field InvestigatorCommittedCards iid
-            allCommittedCards <- selectAgg id InvestigatorCommittedCards Anyone
-            let
-              onlyCardComittedToTestCommitted =
-                any
-                  (elem OnlyCardCommittedToTest . cdCommitRestrictions . toCardDef)
-                  allCommittedCards
-              committedCardTitles = map toTitle allCommittedCards
-              skillDifficulty = skillTestDifficulty skillTest
-            cannotCommitCards <-
-              elem (CannotCommitCards AnyCard)
-                <$> getModifiers (InvestigatorTarget iid)
-            if cannotCommitCards || onlyCardComittedToTestCommitted
-              then pure False
-              else do
-                matchInitial <- c `matches'` matcher'
-                resources <- field InvestigatorResources iid
-                isScenarioAbility <- getIsScenarioAbility
-                mlid <- field InvestigatorLocation iid
-                skillIcons <- getSkillTestMatchingSkillIcons
-                case c of
-                  PlayerCard card -> do
-                    let
-                      passesCommitRestriction = \case
-                        CommittableTreachery -> error "unhandled"
-                        OnlyInvestigator imatcher -> iid <=~> imatcher
-                        OnlyCardCommittedToTest -> pure $ null committedCardTitles
-                        MaxOnePerTest ->
-                          pure $ toTitle card `notElem` committedCardTitles
-                        OnlyYourTest -> pure $ skillTestInvestigator skillTest == iid
-                        MustBeCommittedToYourTest -> pure True
-                        OnlyIfYourLocationHasClues -> case mlid of
-                          Nothing -> pure False
-                          Just lid -> fieldMap LocationClues (> 0) lid
-                        OnlyTestWithActions as ->
-                          pure $ maybe False (`elem` as) (skillTestAction skillTest)
-                        ScenarioAbility -> pure isScenarioAbility
-                        SelfCanCommitWhen matcher'' ->
-                          notNull <$> select (InvestigatorWithId iid <> matcher'')
-                        MinSkillTestValueDifference n ->
-                          case skillTestType skillTest of
-                            SkillSkillTest skillType -> do
-                              baseValue <- baseSkillValueFor skillType Nothing [] iid
-                              pure $ (skillDifficulty - baseValue) >= n
-                            AndSkillTest types -> do
-                              baseValue <- sum <$> traverse (\skillType -> baseSkillValueFor skillType Nothing [] iid) types
-                              pure $ (skillDifficulty - baseValue) >= n
-                            ResourceSkillTest ->
-                              pure $ (skillDifficulty - resources) >= n
-                      prevented = flip
-                        any
-                        modifiers'
-                        \case
-                          CanOnlyUseCardsInRole role ->
-                            null
-                              $ intersect
-                                (cdClassSymbols $ toCardDef card)
-                                (setFromList [Neutral, role])
-                          CannotCommitCards matcher'' -> cardMatch card matcher''
-                          _ -> False
-                    passesCommitRestrictions <-
-                      allM
-                        passesCommitRestriction
-                        (cdCommitRestrictions $ toCardDef card)
-                    pure
-                      $ PlayerCard card
-                      `notElem` committedCards
-                      && ( any (`member` skillIcons) (cdSkills (toCardDef card))
-                            || ( null (cdSkills $ toCardDef card)
-                                  && toCardType card
-                                  == SkillType
-                               )
-                         )
-                      && passesCommitRestrictions
-                      && not prevented
-                      && matchInitial
-                  EncounterCard card ->
-                    pure
-                      $ CommittableTreachery
-                      `elem` cdCommitRestrictions (toCardDef card)
-                      && matchInitial
-                  VengeanceCard _ -> error "vengeance card"
+        cards <- getCommittableCards iid
+        matchInitial <- c `matches'` matcher'
+        pure $ matchInitial && c `elem` cards
       BasicCardMatch cm -> pure $ c `cardMatch` cm
       InHandOf who -> do
         iids <- select who
-        cards <- concat <$> traverse (field InvestigatorHand) iids
+        cards <- concatMapM (field InvestigatorHand) iids
         pure $ c `elem` cards
       InDeckOf who -> do
         iids <- select who
-        cards <-
-          concat
-            <$> traverse
-              (fieldMap InvestigatorDeck (map PlayerCard . unDeck))
-              iids
+        cards <- concatMapM (fieldMap InvestigatorDeck (map PlayerCard . unDeck)) iids
         pure $ c `elem` cards
       TopOfDeckOf who -> do
         iids <- select who
@@ -3549,10 +3440,7 @@ instance Query ExtendedCardMatcher where
         pure $ c `elem` cards
       EligibleForCurrentSkillTest -> do
         skillIcons <- getSkillTestMatchingSkillIcons
-        pure
-          ( any (`member` skillIcons) (cdSkills (toCardDef c))
-              || (null (cdSkills $ toCardDef c) && toCardType c == SkillType)
-          )
+        pure $ any (`member` skillIcons) c.skills || (null c.skills && toCardType c == SkillType)
       CardWithCopyInHand who -> do
         let name = toName c
         iids <- select who

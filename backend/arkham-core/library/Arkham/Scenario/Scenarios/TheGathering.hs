@@ -106,19 +106,19 @@ instance RunMessage TheGathering where
           record YourHouseIsStillStanding
           record GhoulPriestIsStillAlive
           chooseToAddLita []
-          allGainXp attrs
+          allGainXpWithBonus attrs 2
         Resolution 1 -> do
           story $ i18nWithTitle "nightOfTheZealot.theGathering.resolutions.resolution1"
           record YourHouseHasBurnedToTheGround
           chooseToAddLita []
           sufferMentalTrauma leadId 1
-          allGainXp attrs
+          allGainXpWithBonus attrs 2
         Resolution 2 -> do
           -- TODO: Combine gainXP and bonus so modifiers work
           story $ i18nWithTitle "nightOfTheZealot.theGathering.resolutions.resolution2"
           record YourHouseIsStillStanding
           gainXp leadId attrs 1
-          allGainXp attrs
+          allGainXpWithBonus attrs 2
         Resolution 3 -> do
           -- TODO: missing rules
           -- \* handle new investigators

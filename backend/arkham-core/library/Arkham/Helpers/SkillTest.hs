@@ -379,3 +379,81 @@ pushAfterSkillTest :: HasQueue Message m => Message -> m ()
 pushAfterSkillTest = pushAfter \case
   SkillTestEnds {} -> True
   _ -> False
+
+getCommittableCards :: HasGame m => InvestigatorId -> m [Card]
+getCommittableCards a = do
+  getSkillTest >>= \case
+    Nothing -> pure []
+    Just skillTest -> do
+      let iid = skillTestInvestigator skillTest
+      modifiers' <- getModifiers a
+      committedCards <- field InvestigatorCommittedCards iid
+      allCommittedCards <- selectAgg id InvestigatorCommittedCards Anyone
+      let
+        skillDifficulty = skillTestDifficulty skillTest
+        onlyCardComittedToTestCommitted =
+          any
+            (elem OnlyCardCommittedToTest . cdCommitRestrictions . toCardDef)
+            allCommittedCards
+        committedCardTitles = map toTitle allCommittedCards
+      isScenarioAbility <- getIsScenarioAbility
+      mlid <- field InvestigatorLocation a
+      clueCount <- maybe (pure 0) (field LocationClues) mlid
+      skillIcons <- getSkillTestMatchingSkillIcons
+      cannotCommitCards <- elem (CannotCommitCards AnyCard) <$> getModifiers a
+      if cannotCommitCards || onlyCardComittedToTestCommitted
+        then pure []
+        else do
+          committableTreacheries <- filterM (field TreacheryCanBeCommitted) =<< select (treacheryInHandOf a)
+          treacheryCards <- traverse (field TreacheryCard) committableTreacheries
+          let asIfInHandForCommit = mapMaybe (preview _CanCommitToSkillTestsAsIfInHand) modifiers'
+          hand <- field InvestigatorHand a
+          flip filterM (asIfInHandForCommit <> hand <> treacheryCards) $ \case
+            PlayerCard card -> do
+              let
+                passesCommitRestriction = \case
+                  CommittableTreachery -> error "unhandled"
+                  OnlyInvestigator matcher -> iid <=~> matcher
+                  OnlyCardCommittedToTest -> pure $ null committedCardTitles
+                  MaxOnePerTest -> pure $ toTitle card `notElem` committedCardTitles
+                  OnlyYourTest -> pure True
+                  MustBeCommittedToYourTest -> pure True
+                  OnlyIfYourLocationHasClues -> pure $ clueCount > 0
+                  OnlyTestWithActions as ->
+                    pure $ maybe False (`elem` as) (skillTestAction skillTest)
+                  ScenarioAbility -> pure isScenarioAbility
+                  SelfCanCommitWhen matcher -> notNull <$> select (You <> matcher)
+                  MinSkillTestValueDifference n ->
+                    case skillTestType skillTest of
+                      SkillSkillTest skillType -> do
+                        baseValue <- baseSkillValueFor skillType Nothing [] a
+                        pure $ (skillDifficulty - baseValue) >= n
+                      AndSkillTest types -> do
+                        baseValue <-
+                          sum
+                            <$> traverse (\skillType -> baseSkillValueFor skillType Nothing [] a) types
+                        pure $ (skillDifficulty - baseValue) >= n
+                      ResourceSkillTest -> do
+                        resources <- field InvestigatorResources a
+                        pure $ (skillDifficulty - resources) >= n
+                prevented = flip any modifiers' $ \case
+                  CanOnlyUseCardsInRole role ->
+                    null $ intersect (cdClassSymbols $ toCardDef card) (setFromList [Neutral, role])
+                  CannotCommitCards matcher -> cardMatch card matcher
+                  _ -> False
+              passesCommitRestrictions <- allM passesCommitRestriction (cdCommitRestrictions $ toCardDef card)
+
+              icons <- iconsForCard (toCard card)
+
+              pure
+                $ and
+                  [ PlayerCard card `notElem` committedCards
+                  , or
+                      [ any (`member` skillIcons) icons
+                      , and [null icons, toCardType card == SkillType]
+                      ]
+                  , passesCommitRestrictions
+                  , not prevented
+                  ]
+            EncounterCard card -> pure $ CommittableTreachery `elem` cdCommitRestrictions (toCardDef card)
+            VengeanceCard _ -> error "vengeance card"

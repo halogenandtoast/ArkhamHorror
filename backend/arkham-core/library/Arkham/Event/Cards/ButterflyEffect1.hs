@@ -15,5 +15,9 @@ butterflyEffect1 = event ButterflyEffect1 Cards.butterflyEffect1
 instance RunMessage ButterflyEffect1 where
   runMessage msg e@(ButterflyEffect1 attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
+      mPerformer <- getSkillTestInvestigator
+
+      yourCommittableCards <- getCommittableCards iid
+
       pure e
     _ -> ButterflyEffect1 <$> runMessage msg attrs

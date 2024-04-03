@@ -2514,7 +2514,10 @@ butterflyEffect1 =
     , cdCriteria =
         Just
           $ Criteria.DuringSkillTest SkillTestAtYourLocation
-          <> exists (CardIsCommittedBy (affectsOthers $ InvestigatorAt YourLocation))
+          <> oneOf
+            [ exists (CardIsCommittedBy (affectsOthers $ InvestigatorAt YourLocation))
+            , exists (affectsOthers $ InvestigatorAt YourLocation <> InvestigatorWithCommittableCard)
+            ]
     , cdLevel = 1
     }
 

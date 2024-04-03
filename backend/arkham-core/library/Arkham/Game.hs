@@ -933,6 +933,8 @@ getInvestigatorsMatching matcher = do
     NoSuccessfulExploreThisTurn -> \i -> do
       history <- getHistory TurnHistory (toId i)
       pure $ not (historySuccessfulExplore history)
+    InvestigatorWithCommittableCard -> \i -> do
+      selectAny $ CommittableCard (toId i) (basic AnyCard)
     ContributedMatchingIcons valueMatcher -> \i -> do
       mSkillTest <- getSkillTest
       case mSkillTest of

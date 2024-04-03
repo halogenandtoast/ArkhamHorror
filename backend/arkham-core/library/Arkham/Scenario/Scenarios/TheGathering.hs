@@ -114,7 +114,6 @@ instance RunMessage TheGathering where
           sufferMentalTrauma leadId 1
           allGainXpWithBonus attrs 2
         Resolution 2 -> do
-          -- TODO: Combine gainXP and bonus so modifiers work
           story $ i18nWithTitle "nightOfTheZealot.theGathering.resolutions.resolution2"
           record YourHouseIsStillStanding
           gainXp leadId attrs 1

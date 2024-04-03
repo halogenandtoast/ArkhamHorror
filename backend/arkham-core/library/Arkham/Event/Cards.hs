@@ -2507,7 +2507,7 @@ underSurveillance1 =
 
 butterflyEffect1 :: CardDef
 butterflyEffect1 =
-  (event "07158" "Butterfly Effect" 0 Survivor)
+  (event "07160" "Butterfly Effect" 0 Survivor)
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Paradox, Blessed, Cursed]
     , cdFastWindow = Just $ RevealChaosToken #when (affectsOthers Anyone) IsSymbol

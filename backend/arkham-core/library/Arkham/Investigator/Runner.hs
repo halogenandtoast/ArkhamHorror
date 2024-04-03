@@ -980,6 +980,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           mFromLocation <- field InvestigatorLocation iid
 
           case moveMeans movement of
+            Towards -> do
+              player <- getPlayer iid
+              let loc = fromJustNote "must have a starting location for OneAtATime" mFromLocation
+              matchingClosestLocationIds <- select $ ClosestPathLocation loc destinationLocationId
+              if destinationLocationId `elem` matchingClosestLocationIds
+                then
+                  push $ chooseOne player [targetLabel destinationLocationId [Move $ movement {moveMeans = Direct}]]
+                else do
+                  push
+                    $ chooseOne
+                      player
+                      [ targetLabel
+                        lid
+                        [Move $ movement {moveDestination = ToLocation lid, moveMeans = Direct}]
+                      | lid <- matchingClosestLocationIds
+                      ]
             OneAtATime -> do
               player <- getPlayer iid
               let loc = fromJustNote "must have a starting location for OneAtATime" mFromLocation

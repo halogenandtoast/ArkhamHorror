@@ -2723,6 +2723,7 @@ locationMatches investigatorId source window locationId matcher' = do
     -- normal cases
     Matcher.LocationWithDistanceFromAtLeast {} -> locationId <=~> matcher
     Matcher.LocationWithAccessiblePath {} -> locationId <=~> matcher
+    Matcher.CanMoveCloserToLocation {} -> locationId <=~> matcher
     Matcher.LocationWithDistanceFromAtMost {} -> locationId <=~> matcher
     Matcher.LocationWhenCriteria {} -> locationId <=~> matcher
     Matcher.LocationBeingDiscovered {} -> locationId <=~> matcher

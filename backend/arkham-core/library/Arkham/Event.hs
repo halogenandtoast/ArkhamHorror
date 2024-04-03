@@ -423,6 +423,8 @@ allEvents =
     , -- Devil Reef
       --- guardian [def]
       SomeEventCard radiantSmite1
+    , --- seeker [def]
+      SomeEventCard theTruthBeckons
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard sweepingKick1

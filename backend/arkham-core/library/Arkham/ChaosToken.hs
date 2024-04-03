@@ -69,7 +69,10 @@ data ChaosToken = ChaosToken
   , chaosTokenFace :: ChaosTokenFace
   , chaosTokenRevealedBy :: Maybe InvestigatorId
   }
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Ord, Data)
+
+instance Eq ChaosToken where
+  a == b = chaosTokenId a == chaosTokenId b
 
 instance ToGameLoggerFormat ChaosToken where
   format c = format c.face

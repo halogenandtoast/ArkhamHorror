@@ -3,10 +3,8 @@ module Arkham.Asset.Cards.JimsTrumpet (JimsTrumpet (..), jimsTrumpet) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.ChaosToken
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Placement
 import Arkham.Prelude
 
 newtype JimsTrumpet = JimsTrumpet AssetAttrs
@@ -21,18 +19,16 @@ instance HasAbilities JimsTrumpet where
     [ controlledAbility
         x
         1
-        ( exists
-            $ HealableInvestigator (toSource x) #horror
-            $ oneOf [InvestigatorAt YourLocation, InvestigatorAt ConnectedLocation]
+        ( exists $ HealableInvestigator (toSource x) #horror $ at_ (oneOf [YourLocation, ConnectedLocation])
         )
-        $ ReactionAbility (RevealChaosToken #when Anyone (ChaosTokenFaceIs Skull)) (exhaust x)
+        $ ReactionAbility (RevealChaosToken #when Anyone #skull) (exhaust x)
     ]
 
 instance RunMessage JimsTrumpet where
-  runMessage msg a@(JimsTrumpet attrs@AssetAttrs {..}) = case msg of
+  runMessage msg a@(JimsTrumpet attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      case assetPlacement of
-        InPlayArea controller -> do
+      case attrs.controller of
+        Just controller -> do
           location <- getJustLocation controller
           investigatorsWithHeal <-
             getInvestigatorsWithHealHorror attrs 1
@@ -42,9 +38,7 @@ instance RunMessage JimsTrumpet where
           push
             $ chooseOne
               player
-              [ targetLabel iid [healHorror]
-              | (iid, healHorror) <- investigatorsWithHeal
-              ]
+              [targetLabel iid [healHorror] | (iid, healHorror) <- investigatorsWithHeal]
           pure a
         _ -> error "Invalid call"
     _ -> JimsTrumpet <$> runMessage msg attrs

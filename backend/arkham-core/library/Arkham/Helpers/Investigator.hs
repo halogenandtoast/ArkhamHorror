@@ -413,9 +413,9 @@ drawOpeningHand a n = do
       else go replaceWeaknesses (m - 1) (d, PlayerCard c : h, cs)
 
 canCommitToAnotherLocation
-  :: HasGame m => InvestigatorAttrs -> LocationId -> m Bool
-canCommitToAnotherLocation attrs otherLocation = do
-  modifiers <- getModifiers (toTarget attrs)
+  :: HasGame m => InvestigatorId -> LocationId -> m Bool
+canCommitToAnotherLocation iid otherLocation = do
+  modifiers <- getModifiers iid
   if any (`elem` modifiers) [CannotCommitToOtherInvestigatorsSkillTests]
     then pure False
     else anyM permit modifiers

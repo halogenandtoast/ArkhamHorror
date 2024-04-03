@@ -3289,6 +3289,7 @@ instance Query ChaosTokenMatcher where
                 currentSkillValue <- getCurrentSkillValue skillTest
                 let currentChaosTokenModifier = fromMaybe 0 (chaosTokenModifierToInt other)
                 pure $ (currentSkillValue + currentChaosTokenModifier) <= 0
+      IsSymbol -> pure . isSymbolChaosToken . chaosTokenFace
       WithNegativeModifier -> \t -> do
         iid' <- toId <$> getActiveInvestigator
         tv <- getChaosTokenValue iid' (chaosTokenFace t) ()
@@ -3346,6 +3347,9 @@ instance Query ExtendedCardMatcher where
         modifiers <- getModifiers (toCardId c)
         let cannotBeCanceled = cdRevelation (toCardDef c) == CannotBeCanceledRevelation
         pure $ cardIsMatch && EffectsCannotBeCanceled `notElem` modifiers && not cannotBeCanceled
+      CardIsCommittedBy investigatorMatcher -> do
+        committed <- selectAgg id InvestigatorCommittedCards investigatorMatcher
+        pure $ c `elem` committed
       CanCancelAllEffects matcher' -> do
         cardIsMatch <- matches' c matcher'
         modifiers <- getModifiers (toCardId c)

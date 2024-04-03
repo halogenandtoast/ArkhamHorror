@@ -641,6 +641,7 @@ data ExtendedCardMatcher
   | CanCancelRevelationEffect ExtendedCardMatcher
   | CanCancelAllEffects ExtendedCardMatcher
   | CardWithoutModifier ModifierType
+  | CardIsCommittedBy InvestigatorMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup ExtendedCardMatcher where
@@ -1096,6 +1097,7 @@ data ChaosTokenMatcher
   | ChaosTokenFaceIsNot ChaosTokenFace
   | ChaosTokenMatchesAny [ChaosTokenMatcher]
   | AnyChaosToken
+  | IsSymbol
   | ChaosTokenMatches [ChaosTokenMatcher]
   | IncludeSealed ChaosTokenMatcher
   | WouldReduceYourSkillValueToZero

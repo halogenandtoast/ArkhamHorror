@@ -472,3 +472,6 @@ getCommittableCards a = do
                       ]
                 EncounterCard card -> pure $ CommittableTreachery `elem` cdCommitRestrictions (toCardDef card)
                 VengeanceCard _ -> error "vengeance card"
+
+getCommittedCards :: HasGame m => InvestigatorId -> m [Card]
+getCommittedCards = field InvestigatorCommittedCards

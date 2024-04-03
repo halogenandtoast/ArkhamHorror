@@ -449,6 +449,7 @@ allPlayerAssetCards =
       , otherworldlyCompass2
       , painkillers
       , pantalone
+      , paradoxicalCovenant2
       , pathfinder1
       , patricesViolin
       , pendantOfTheQueen
@@ -4222,6 +4223,14 @@ shroudOfShadows =
     , cdUses = uses Charge 3
     , cdSlots = [#arcane]
     }
+
+paradoxicalCovenant2 :: CardDef
+paradoxicalCovenant2 =
+  permanent
+    $ (asset "07120" "Paradoxical Covenant" 0 Mystic)
+      { cdCardTraits = setFromList [Covenant, Blessed, Cursed]
+      , cdDeckRestrictions = [TraitPerDeckLimit Covenant 1]
+      }
 
 keenEye :: CardDef
 keenEye =

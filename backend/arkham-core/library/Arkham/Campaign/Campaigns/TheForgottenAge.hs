@@ -570,7 +570,8 @@ instance RunMessage TheForgottenAge where
         then do
           results <- for iids $ \iid -> do
             tokens <- sampleN (if backfired then 1 else 2) chaosBag
-            asChaosTokens <- traverse (\face -> ChaosToken <$> getRandom <*> pure face) tokens
+            asChaosTokens <-
+              traverse (\face -> ChaosToken <$> getRandom <*> pure face <*> pure (Just iid)) tokens
             let
               outOfBody =
                 any
@@ -597,14 +598,11 @@ instance RunMessage TheForgottenAge where
             $ concatMap
               ( \(iid, player, outOfBody, stuckAsYithian, tokens) ->
                   let
-                    qLabel =
-                      if stuckAsYithian
-                        then
+                    qLabel
+                      | stuckAsYithian =
                           "You must use the Body of a Yithian investigator card as your investigator card for the remainder of the campaign. You also gain the Out of Body Experience weakness."
-                        else
-                          if outOfBody
-                            then "You gain the Out of Body Experience weakness"
-                            else "You suffer no ill-effects"
+                      | outOfBody = "You gain the Out of Body Experience weakness"
+                      | otherwise = "You suffer no ill-effects"
                    in
                     [ FocusChaosTokens tokens
                     , Ask player $ Read qLabel [Label "Continue" []]

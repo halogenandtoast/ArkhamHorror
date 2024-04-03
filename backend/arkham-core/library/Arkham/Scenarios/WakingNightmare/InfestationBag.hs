@@ -11,7 +11,7 @@ newtype InfestationToken = InfestationToken {infestationTokenFace :: ChaosTokenF
   deriving newtype (Show, Eq, ToJSON, FromJSON)
 
 asChaosToken :: InfestationToken -> ChaosToken
-asChaosToken (InfestationToken face) = ChaosToken (ChaosTokenId nil) face
+asChaosToken (InfestationToken face) = ChaosToken (ChaosTokenId nil) face Nothing
 
 instance HasField "face" InfestationToken ChaosTokenFace where
   getField = infestationTokenFace

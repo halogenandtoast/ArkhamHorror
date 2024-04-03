@@ -2,9 +2,9 @@
 
 module Arkham.ChaosToken where
 
-import Arkham.Prelude
-
 import Arkham.Classes.GameLogger
+import Arkham.Id
+import Arkham.Prelude
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 import GHC.Records
@@ -67,6 +67,7 @@ chaosTokenModifierToInt = \case
 data ChaosToken = ChaosToken
   { chaosTokenId :: ChaosTokenId
   , chaosTokenFace :: ChaosTokenFace
+  , chaosTokenRevealedBy :: Maybe InvestigatorId
   }
   deriving stock (Show, Eq, Ord, Data)
 
@@ -78,6 +79,9 @@ instance ToGameLoggerFormat ChaosTokenFace where
 
 instance HasField "face" ChaosToken ChaosTokenFace where
   getField = chaosTokenFace
+
+instance HasField "revealedBy" ChaosToken (Maybe InvestigatorId) where
+  getField = chaosTokenRevealedBy
 
 data ChaosTokenFace
   = PlusOne

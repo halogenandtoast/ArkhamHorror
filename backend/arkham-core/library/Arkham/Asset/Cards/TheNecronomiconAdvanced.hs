@@ -18,15 +18,11 @@ theNecronomiconAdvanced =
     . (canLeavePlayByNormalMeansL .~ False)
 
 instance HasModifiersFor TheNecronomiconAdvanced where
-  getModifiersFor (InvestigatorTarget iid) (TheNecronomiconAdvanced a) =
-    pure
-      $ toModifiers
-        a
-        [ ForcedChaosTokenChange
-          Token.ElderSign
-          [Token.Cultist, Token.Tablet, Token.ElderThing]
-        | controlledBy a iid
-        ]
+  getModifiersFor (ChaosTokenTarget token) (TheNecronomiconAdvanced a) = do
+    case a.controller of
+      Just iid | token.revealedBy == Just iid -> do
+        pure $ toModifiers a [ForcedChaosTokenChange #eldersign [#cultist, #tablet, #elderthing]]
+      _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheNecronomiconAdvanced where
@@ -34,12 +30,12 @@ instance HasAbilities TheNecronomiconAdvanced where
 
 instance RunMessage TheNecronomiconAdvanced where
   runMessage msg a@(TheNecronomiconAdvanced attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
       push $ putCardIntoPlay iid attrs
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = toAbilitySource attrs 1
-      push $ InvestigatorDamage iid source 0 1
+      let source = attrs.ability 1
+      push $ assignDamage iid source 1
       if assetHorror attrs <= 1
         then do
           push $ toDiscardBy iid source attrs

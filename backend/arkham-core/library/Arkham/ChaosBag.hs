@@ -515,7 +515,7 @@ instance RunMessage ChaosBag where
 
       pure
         $ c
-        & (chaosTokensL <>~ tokensToReturn)
+        & (chaosTokensL <>~ map (\token -> token {chaosTokenRevealedBy = Nothing}) tokensToReturn)
         & (setAsideChaosTokensL .~ mempty)
         & (choiceL .~ Nothing)
     RequestChaosTokens source miid revealStrategy strategy -> do
@@ -604,27 +604,28 @@ instance RunMessage ChaosBag where
     RunDrawFromBag source miid strategy -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> case choice' of
-        Resolved chaosTokenFaces' -> do
+        Resolved tokens -> do
+          let tokens' = map (\token -> token {chaosTokenRevealedBy = miid}) tokens
           checkWindowMsgs <- case miid of
             Nothing -> pure []
             Just iid ->
               pure
                 <$> checkWindows
                   [ mkWindow Timing.When (Window.RevealChaosToken iid token)
-                  | token <- chaosTokenFaces'
+                  | token <- tokens'
                   ]
           for_ miid $ \iid -> do
             investigator <- getAttrs @Investigator iid
             send
               $ format investigator
               <> " draws "
-              <> formatAsSentence chaosTokenFaces'
+              <> formatAsSentence tokens'
               <> " chaos "
-              <> (if length chaosTokenFaces' == 1 then "token" else "tokens")
+              <> (if length tokens' == 1 then "token" else "tokens")
           pushAll
-            ( FocusChaosTokens chaosTokenFaces'
+            ( FocusChaosTokens tokens'
                 : checkWindowMsgs
-                  <> [RequestedChaosTokens source miid chaosTokenFaces', UnfocusChaosTokens]
+                  <> [RequestedChaosTokens source miid tokens', UnfocusChaosTokens]
             )
           pure $ c & choiceL .~ Nothing
         _ -> do

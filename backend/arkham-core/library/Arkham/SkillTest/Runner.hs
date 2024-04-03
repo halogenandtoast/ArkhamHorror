@@ -1,9 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.SkillTest.Runner (
-  module X,
-  totalModifiedSkillValue,
-) where
+module Arkham.SkillTest.Runner (module X, totalModifiedSkillValue) where
 
 import Arkham.Prelude
 
@@ -37,20 +34,18 @@ import Arkham.Window qualified as Window
 import Control.Lens (each)
 import Data.Map.Strict qualified as Map
 
+totalChaosTokenValues :: HasGame m => SkillTest -> m Int
+totalChaosTokenValues s = sum <$> for (skillTestSetAsideChaosTokens s) (getModifiedChaosTokenValue s)
+
 totalModifiedSkillValue :: HasGame m => SkillTest -> m Int
 totalModifiedSkillValue s = do
   results <- calculateSkillTestResultsData s
-  chaosTokenValues <-
-    sum
-      <$> for
-        (skillTestResolvedChaosTokens s)
-        (getModifiedChaosTokenValue s)
+  chaosTokenValues <- totalChaosTokenValues s
 
-  let totaledChaosTokenValues = chaosTokenValues + skillTestValueModifier s
   pure
     $ max
       0
-      (skillTestResultsSkillValue results + totaledChaosTokenValues + skillTestResultsIconValue results)
+      (skillTestResultsSkillValue results + chaosTokenValues + skillTestResultsIconValue results)
 
 calculateSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
 calculateSkillTestResultsData s = do
@@ -60,28 +55,20 @@ calculateSkillTestResultsData s = do
   iconCount <- if cancelSkills then pure 0 else skillIconCount s
   subtractIconCount <- if cancelSkills then pure 0 else subtractSkillIconCount s
   currentSkillValue <- getCurrentSkillValue s
-  chaosTokenValues <-
-    sum
-      <$> for
-        ( nub
-            $ skillTestRevealedChaosTokens s
-            <> skillTestResolvedChaosTokens s
-        )
-        (getModifiedChaosTokenValue s)
+  chaosTokenValues <- totalChaosTokenValues s
   let
     addResultModifier n (SkillTestResultValueModifier m) = n + m
     addResultModifier n _ = n
     resultValueModifiers = foldl' addResultModifier 0 modifiers'
-    totaledChaosTokenValues = chaosTokenValues + skillTestValueModifier s
     modifiedSkillValue' =
-      max 0 (currentSkillValue + totaledChaosTokenValues + iconCount - subtractIconCount)
+      max 0 (currentSkillValue + chaosTokenValues + iconCount - subtractIconCount)
     op = if FailTies `elem` modifiers' then (>) else (>=)
     isSuccess = modifiedSkillValue' `op` modifiedSkillTestDifficulty
   pure
     $ SkillTestResultsData
       currentSkillValue
       (iconCount - subtractIconCount)
-      totaledChaosTokenValues
+      chaosTokenValues
       modifiedSkillTestDifficulty
       (resultValueModifiers <$ guard (resultValueModifiers /= 0))
       isSuccess
@@ -89,14 +76,8 @@ calculateSkillTestResultsData s = do
 autoFailSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
 autoFailSkillTestResultsData s = do
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
-  chaosTokenValues <-
-    sum
-      <$> for
-        (nub $ skillTestRevealedChaosTokens s <> skillTestResolvedChaosTokens s)
-        (getModifiedChaosTokenValue s)
-  let
-    totaledChaosTokenValues = chaosTokenValues + skillTestValueModifier s
-  pure $ SkillTestResultsData 0 0 totaledChaosTokenValues modifiedSkillTestDifficulty Nothing False
+  chaosTokenValues <- totalChaosTokenValues s
+  pure $ SkillTestResultsData 0 0 chaosTokenValues modifiedSkillTestDifficulty Nothing False
 
 subtractSkillIconCount :: HasGame m => SkillTest -> m Int
 subtractSkillIconCount SkillTest {..} =
@@ -141,11 +122,7 @@ getModifiedChaosTokenValue s t = do
 instance RunMessage SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
     ReturnChaosTokens tokens -> do
-      pure
-        $ s
-        & (resolvedChaosTokensL %~ filter (`notElem` tokens))
-        & (revealedChaosTokensL %~ filter (`notElem` tokens))
-        & (setAsideChaosTokensL %~ filter (`notElem` tokens))
+      pure $ s & (setAsideChaosTokensL %~ filter (`notElem` tokens))
     BeginSkillTestAfterFast -> do
       windowMsg <- checkWindows [mkWindow #when Window.FastPlayerWindow]
       pushAll [windowMsg, BeforeSkillTest s, EndSkillTestWindow]
@@ -211,7 +188,7 @@ instance RunMessage SkillTest where
               for_ tokensTreatedAsRevealed $ \chaosTokenFace -> do
                 t <- getRandom
                 pushAll
-                  $ resolve (RevealChaosToken (toSource s) iid (ChaosToken t chaosTokenFace))
+                  $ resolve (RevealChaosToken (toSource s) iid (ChaosToken t chaosTokenFace (Just iid)))
         else
           if SkillTestAutomaticallySucceeds `elem` modifiers'
             then pushAll [PassSkillTest, UnsetActiveCard]
@@ -246,7 +223,7 @@ instance RunMessage SkillTest where
         [ RequestChaosTokens (toSource s) (Just iid) (Reveal 1) SetAside
         , RunSkillTest iid
         ]
-      pure $ s & (resolvedChaosTokensL %~ (<> skillTestRevealedChaosTokens))
+      pure s
     RequestedChaosTokens SkillTestSource (Just iid) chaosTokenFaces -> do
       skillTestModifiers' <- getModifiers SkillTestTarget
       windowMsg <- checkWindows [mkWindow Timing.When Window.FastPlayerWindow]
@@ -268,9 +245,8 @@ instance RunMessage SkillTest where
           ]
       pure $ s & (setAsideChaosTokensL %~ (chaosTokenFaces <>))
     RevealChaosToken SkillTestSource {} iid token -> do
-      push
-        (CheckWindow [iid] [mkWindow Timing.After (Window.RevealChaosToken iid token)])
-      pure $ s & revealedChaosTokensL %~ (token :)
+      push $ CheckWindow [iid] [mkAfter $ Window.RevealChaosToken iid token]
+      pure $ s & revealedChaosTokensL %~ (token :) & toResolveChaosTokensL %~ nub . (token :)
     RevealSkillTestChaosTokens iid -> do
       -- NOTE: this exists here because of Sacred Covenant (2), we want to
       -- cancel the modifiers but retain the effects so the effects are queued,
@@ -279,7 +255,7 @@ instance RunMessage SkillTest where
       afterMsg <- checkWindows [mkAfter $ Window.SkillTestStep RevealChaosTokenStep]
       revealedChaosTokenFaces <- flip
         concatMapM
-        (skillTestRevealedChaosTokens \\ skillTestResolvedChaosTokens)
+        skillTestToResolveChaosTokens
         \token -> do
           faces <- getModifiedChaosTokenFaces [token]
           pure [(token, face) | face <- faces]
@@ -292,12 +268,12 @@ instance RunMessage SkillTest where
         & ( subscribersL
               %~ (nub . (<> [ChaosTokenTarget token' | token' <- skillTestRevealedChaosTokens]))
           )
+        & toResolveChaosTokensL
+        .~ mempty
+        & resolvedChaosTokensL
+        <>~ skillTestToResolveChaosTokens
     PassSkillTest -> do
-      currentSkillValue <- getCurrentSkillValue s
-      iconCount <- skillIconCount s
-      let
-        modifiedSkillValue' =
-          max 0 (currentSkillValue + skillTestValueModifier + iconCount)
+      modifiedSkillValue' <- totalModifiedSkillValue s
       player <- getPlayer skillTestInvestigator
       pushAll
         [ chooseOne player [SkillTestApplyResultsButton]
@@ -416,12 +392,7 @@ instance RunMessage SkillTest where
       -- Rex's Curse timing keeps effects on stack so we do
       -- not want to remove them as subscribers from the stack
       push $ ResetChaosTokens (toSource s)
-      pure
-        $ s
-        & (setAsideChaosTokensL .~ mempty)
-        & (revealedChaosTokensL .~ mempty)
-        & (resolvedChaosTokensL .~ mempty)
-        & (valueModifierL .~ 0)
+      pure $ s & (setAsideChaosTokensL .~ mempty)
     AddToVictory (SkillTarget sid) -> do
       card <- field Field.SkillCard sid
       pure $ s & committedCardsL . each %~ filter (/= card)
@@ -777,16 +748,7 @@ instance RunMessage SkillTest where
             | player == player' -> False
           _ -> True
         push $ RunSkillTest skillTestInvestigator
-        -- We need to subtract the current token values to prevent them from
-        -- doubling. However, we need to keep any existing value modifier on
-        -- the stack (such as a token no longer visible who effect still
-        -- persists)
-        chaosTokenValues <-
-          sum
-            <$> for
-              (nub $ skillTestRevealedChaosTokens <> skillTestResolvedChaosTokens)
-              (getModifiedChaosTokenValue s)
-        pure $ s & valueModifierL %~ subtract chaosTokenValues
+        pure s
     RecalculateSkillTestResults -> do
       results <- calculateSkillTestResultsData s
       push $ SkillTestResults results
@@ -797,34 +759,18 @@ instance RunMessage SkillTest where
       -- TODO: We should be able to get all of this from the results data, but
       -- there is a discrepancy between totaledTokenValues and the info stored
       -- in the result data, this may be incorrect, need to investigate
-      chaosTokenValues <-
-        sum
-          <$> for
-            (nub $ skillTestRevealedChaosTokens <> skillTestResolvedChaosTokens)
-            (getModifiedChaosTokenValue s)
+      modifiedSkillValue' <- totalModifiedSkillValue s
       let
-        modifiedSkillValue' =
-          max
-            0
-            (skillTestResultsSkillValue results + totaledChaosTokenValues + skillTestResultsIconValue results)
-        totaledChaosTokenValues = chaosTokenValues + skillTestValueModifier
         result =
           if skillTestResultsSuccess results
             then SucceededBy NonAutomatic (modifiedSkillValue' - skillTestResultsDifficulty results)
             else FailedBy NonAutomatic (skillTestResultsDifficulty results - modifiedSkillValue')
 
-      pure $ s & valueModifierL .~ totaledChaosTokenValues & resultL .~ result
+      pure $ s & resultL .~ result
     ChangeSkillTestType newSkillTestType newSkillTestBaseValue ->
       pure $ s & typeL .~ newSkillTestType & baseValueL .~ newSkillTestBaseValue
     RemoveAllChaosTokens face -> do
-      pure
-        $ s
-        & revealedChaosTokensL
-        %~ filter ((/= face) . chaosTokenFace)
-        & setAsideChaosTokensL
-        %~ filter ((/= face) . chaosTokenFace)
-        & resolvedChaosTokensL
-        %~ filter ((/= face) . chaosTokenFace)
+      pure $ s & setAsideChaosTokensL %~ filter ((/= face) . chaosTokenFace)
     SetSkillTestResolveFailureInvestigator iid -> do
       pure $ s & resolveFailureInvestigatorL .~ iid
     _ -> pure s

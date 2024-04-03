@@ -102,7 +102,6 @@ import Arkham.Event.Events (
   aChanceEncounterEffect,
   actOfDesperationEffect,
   backstab3Effect,
-  banish1Effect,
   bindMonster2Effect,
   blindingLight2Effect,
   blindingLightEffect,
@@ -121,7 +120,6 @@ import Arkham.Event.Events (
   pilfer3Effect,
   sleightOfHandEffect,
   slipAway2Effect,
-  slipAwayEffect,
   spectralRazorEffect,
   stormOfSpirits3Effect,
   stormOfSpiritsEffect,
@@ -345,7 +343,6 @@ allEffects =
     , ("04156", SomeEffect highRoller2Effect)
     , ("04195", SomeEffect exposeWeakness3Effect)
     , ("04198", SomeEffect defiance2Effect)
-    , ("04232", SomeEffect slipAwayEffect)
     , ("04239", SomeEffect lostMemoriesEffect)
     , ("04271", SomeEffect mistsOfRlyeh4Effect)
     , ("04283", SomeEffect theRedDepthsEffect)
@@ -363,7 +360,6 @@ allEffects =
     , ("05049", SomeEffect pennyWhiteEffect)
     , ("05085b", SomeEffect josefsPlanEffect)
     , ("05097", SomeEffect mysteriesOfTheLodgeEffect)
-    , ("05113", SomeEffect banish1Effect)
     , ("05114", SomeEffect meatCleaverEffect)
     , ("05157", SomeEffect witherEffect)
     , ("05158", SomeEffect sixthSenseEffect)

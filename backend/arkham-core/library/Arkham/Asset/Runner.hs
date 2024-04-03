@@ -148,7 +148,7 @@ instance RunMessage AssetAttrs where
           InPlayArea iid' -> iid == iid'
           InThreatArea iid' -> iid == iid'
           AttachedToInvestigator iid' -> iid == iid'
-          _ -> False
+          _ -> a.controller == Just iid
       when shouldDiscard $ push $ toDiscard GameSource assetId
       pure a
     AddUses aid useType' n | aid == assetId -> case assetPrintedUses of

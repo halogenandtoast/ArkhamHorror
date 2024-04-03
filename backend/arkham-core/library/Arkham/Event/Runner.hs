@@ -45,7 +45,7 @@ instance RunMessage EventAttrs where
 runEventMessage :: Runner EventAttrs
 runEventMessage msg a@EventAttrs {..} = case msg of
   SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
-  Msg.InvestigatorEliminated iid | eventAttachedTarget a == Just (InvestigatorTarget iid) -> do
+  Msg.InvestigatorEliminated iid | eventAttachedTarget a == Just (InvestigatorTarget iid) || iid == a.controller -> do
     push $ toDiscard GameSource eventId
     pure a
   Discard _ source (isTarget a -> True) -> do

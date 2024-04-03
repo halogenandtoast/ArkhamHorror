@@ -292,6 +292,7 @@ allPlayerEventCards =
       , truthFromFiction
       , truthFromFiction2
       , uncageTheSoul
+      , underSurveillance1
       , unearthTheAncients
       , unearthTheAncients2
       , unsolvedCase
@@ -1195,7 +1196,7 @@ snareTrap2 =
   (event "03199" "Snare Trap" 2 Survivor)
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Trap, Improvised]
-    , cdCriteria = Just $ Criteria.Negate $ exists $ AssetIs "03199" <> AssetAt YourLocation
+    , cdCriteria = Just $ Criteria.Negate $ exists $ "Snare Trap" <> AssetAt YourLocation
     , cdLevel = 2
     }
 
@@ -2492,6 +2493,15 @@ gazeOfOuraxsh2 =
     , cdCardTraits = setFromList [Spell, Cursed]
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = 2
+    }
+
+underSurveillance1 :: CardDef
+underSurveillance1 =
+  (event "07157" "Under Surveillance" 3 Rogue)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Tactic, Trap]
+    , cdCriteria = Just $ Criteria.Negate $ exists $ "Under Surveillance" <> AssetAt YourLocation
+    , cdLevel = 1
     }
 
 manipulateDestiny2 :: CardDef

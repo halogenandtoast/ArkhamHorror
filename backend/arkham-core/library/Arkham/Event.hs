@@ -426,6 +426,8 @@ allEvents =
     , --- seeker [def]
       SomeEventCard theTruthBeckons
     , SomeEventCard gazeOfOuraxsh2
+    , --- rogue [def]
+      SomeEventCard underSurveillance1
     , --- neutral [def]
       SomeEventCard manipulateDestiny2
     , -- Edge of the Earth

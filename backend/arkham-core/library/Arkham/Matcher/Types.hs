@@ -868,6 +868,7 @@ data WindowMatcher
   | EnemyAttacked Timing Who SourceMatcher EnemyMatcher
   | EnemyAttackedSuccessfully Timing Who EnemyMatcher
   | RevealChaosToken Timing Who ChaosTokenMatcher
+  | ResolvesChaosToken Timing Who ChaosTokenMatcher
   | CancelChaosToken Timing Who ChaosTokenMatcher
   | IgnoreChaosToken Timing Who ChaosTokenMatcher
   | WouldRevealChaosToken Timing Who

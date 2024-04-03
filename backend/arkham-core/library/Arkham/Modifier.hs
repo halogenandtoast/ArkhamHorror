@@ -262,6 +262,7 @@ data ModifierType
   | RemoveTrait Trait
   | ResolvesFailedEffects
   | ReturnToHandAfterTest
+  | DoNotRevealAnotherChaosToken -- see: Ancient Covenant (2)
   | RevealAnotherChaosToken -- TODO: Only ShatteredAeons handles this, if a player card affects this, all scenarios have to be updated, we also use this for Cats of Ulthar directly on the SkillTest
   | RevealChaosTokensBeforeCommittingCards
   | SanityModifier Int

@@ -50,6 +50,10 @@ withoutModifier
   :: (HasGame m, Targetable a) => a -> ModifierType -> m Bool
 withoutModifier a m = not <$> hasModifier a m
 
+withoutModifiers
+  :: (HasGame m, Targetable a) => a -> [ModifierType] -> m Bool
+withoutModifiers a ms = all (`notElem` ms) <$> getModifiers (toTarget a)
+
 toModifier :: Sourceable a => a -> ModifierType -> Modifier
 toModifier a mType = Modifier (toSource a) mType False
 

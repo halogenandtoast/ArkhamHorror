@@ -679,6 +679,7 @@ allAssets =
     , SomeAssetCard paradoxicalCovenant2
     , --- survivor [itp]
       SomeAssetCard marinersCompass
+    , SomeAssetCard ancientCovenant2
     , -- Devil Reef
       --- guardian [def]
       SomeAssetCard keenEye

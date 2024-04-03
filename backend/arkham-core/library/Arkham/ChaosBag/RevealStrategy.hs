@@ -3,7 +3,6 @@
 module Arkham.ChaosBag.RevealStrategy where
 
 import Arkham.Prelude
-
 import Data.Aeson.TH
 
 data RevealStrategy

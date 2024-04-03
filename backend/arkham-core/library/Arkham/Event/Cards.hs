@@ -145,6 +145,7 @@ allPlayerEventCards =
       , fortuitousDiscovery
       , fortuneOrFate2
       , galvanize1
+      , gazeOfOuraxsh2
       , getOverHere
       , getOverHere2
       , ghastlyRevelation
@@ -194,6 +195,7 @@ allPlayerEventCards =
       , lucky3
       , lure1
       , lure2
+      , manipulateDestiny2
       , manoAMano1
       , manoAMano2
       , marksmanship1
@@ -2481,6 +2483,24 @@ theTruthBeckons =
         Just
           $ notExists EnemyEngagedWithYou
           <> exists (CanMoveCloserToLocation ThisCard You UnrevealedLocation)
+    }
+
+gazeOfOuraxsh2 :: CardDef
+gazeOfOuraxsh2 =
+  (event "07155" "Gaze of Ouraxsh" 2 Seeker)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Spell, Cursed]
+    , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+    , cdLevel = 2
+    }
+
+manipulateDestiny2 :: CardDef
+manipulateDestiny2 =
+  (event "07162" "Manipulate Destiny" 1 Neutral)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Spell, Cursed]
+    , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+    , cdLevel = 2
     }
 
 sweepingKick1 :: CardDef

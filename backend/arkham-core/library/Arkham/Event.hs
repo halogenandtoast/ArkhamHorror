@@ -425,6 +425,9 @@ allEvents =
       SomeEventCard radiantSmite1
     , --- seeker [def]
       SomeEventCard theTruthBeckons
+    , SomeEventCard gazeOfOuraxsh2
+    , --- neutral [def]
+      SomeEventCard manipulateDestiny2
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard sweepingKick1

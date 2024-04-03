@@ -170,6 +170,7 @@ allPlayerAssetCards =
       , blasphemousCovenant2
       , blessedBlade
       , blessedBlade4
+      , bloodPact
       , bloodPact3
       , bloodstainedDagger
       , bookOfPsalms
@@ -4256,6 +4257,13 @@ keenEye =
   (asset "07152" "Keen Eye" 2 Guardian)
     { cdCardTraits = setFromList [Talent]
     , cdSkills = [#intellect, #combat]
+    }
+
+bloodPact :: CardDef
+bloodPact =
+  (asset "07158" "Blood Pact" 2 Mystic)
+    { cdCardTraits = setFromList [Spell, Pact]
+    , cdSkills = [#willpower, #combat]
     }
 
 abyssalTome2 :: CardDef

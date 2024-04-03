@@ -684,7 +684,8 @@ allAssets =
       --- guardian [def]
       SomeAssetCard keenEye
     , --- mystic [def]
-      SomeAssetCard abyssalTome2
+      SomeAssetCard bloodPact
+    , SomeAssetCard abyssalTome2
     , -- A Light in the Fog
       --- guardian [lif]
       SomeAssetCard holyRosary2

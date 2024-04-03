@@ -3,7 +3,6 @@ module Arkham.Asset.Cards.TheNecronomiconAdvanced (TheNecronomiconAdvanced (..),
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.ChaosToken qualified as Token
 import Arkham.Prelude
 import Arkham.Token
 

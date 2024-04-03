@@ -85,6 +85,7 @@ data InvestigatorMatcher
   | HasMatchingEvent EventMatcher
   | HasMatchingSkill SkillMatcher
   | HasMatchingTreachery TreacheryMatcher
+  | InvestigatorWithCommittableCard
   | MostToken Token
   | HasTokens Token ValueMatcher
   | MostKeys

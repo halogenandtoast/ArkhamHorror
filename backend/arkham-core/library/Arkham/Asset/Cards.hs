@@ -401,6 +401,8 @@ allPlayerAssetCards =
       , magnifyingGlass
       , magnifyingGlass1
       , mariaDeSilva
+      , marinersCompass
+      , marinersCompass2
       , maskedCarnevaleGoer_17
       , maskedCarnevaleGoer_18
       , maskedCarnevaleGoer_19
@@ -4232,6 +4234,14 @@ paradoxicalCovenant2 =
       , cdDeckRestrictions = [TraitPerDeckLimit Covenant 1]
       }
 
+marinersCompass :: CardDef
+marinersCompass =
+  (asset "07121" "Mariner's Compass" 3 Survivor)
+    { cdCardTraits = setFromList [Item, Tool]
+    , cdSkills = [#intellect]
+    , cdSlots = [#hand]
+    }
+
 keenEye :: CardDef
 keenEye =
   (asset "07152" "Keen Eye" 2 Guardian)
@@ -4523,6 +4533,15 @@ blessedBlade4 =
     , cdSkills = [#willpower, #combat]
     , cdSlots = [#hand]
     , cdLevel = 4
+    }
+
+marinersCompass2 :: CardDef
+marinersCompass2 =
+  (asset "10122" "Mariner's Compass" 2 Survivor)
+    { cdCardTraits = setFromList [Item, Tool]
+    , cdSkills = [#intellect, #intellect]
+    , cdSlots = [#hand]
+    , cdLevel = 2
     }
 
 physicalTraining2 :: CardDef

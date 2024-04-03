@@ -677,6 +677,8 @@ allAssets =
     , SomeAssetCard eyeOfChaos
     , SomeAssetCard shroudOfShadows
     , SomeAssetCard paradoxicalCovenant2
+    , --- survivor [itp]
+      SomeAssetCard marinersCompass
     , -- Devil Reef
       --- guardian [def]
       SomeAssetCard keenEye
@@ -737,6 +739,8 @@ allAssets =
     , -- The Feast of Hemloch Vale
       --- guardian [tsk]
       SomeAssetCard blessedBlade4
+    , --- survivor [tsk]
+      SomeAssetCard marinersCompass2
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

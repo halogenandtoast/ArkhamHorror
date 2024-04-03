@@ -2276,7 +2276,10 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
       _ -> noMatch
     Matcher.RevealChaosToken timing whoMatcher tokenMatcher -> guardTiming timing $ \case
       Window.RevealChaosToken who token ->
-        andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
+        andM
+          [ matchWho iid who whoMatcher
+          , matchChaosToken who token tokenMatcher
+          ]
       _ -> noMatch
     Matcher.ResolvesChaosToken timing whoMatcher tokenMatcher -> guardTiming timing $ \case
       Window.ResolvesChaosToken who token ->

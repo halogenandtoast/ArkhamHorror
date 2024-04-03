@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.ChaosToken
 import Arkham.Effect.Runner
 import Arkham.Fight
 import Arkham.Prelude
@@ -45,7 +44,7 @@ instance HasModifiersFor SongOfTheDead2Effect
 
 instance RunMessage SongOfTheDead2Effect where
   runMessage msg e@(SongOfTheDead2Effect attrs@EffectAttrs {..}) = case msg of
-    RevealChaosToken _ iid token@(ChaosToken _ Skull) | InvestigatorTarget iid == effectTarget -> do
+    RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget && token.face == #skull -> do
       push
         $ If
           (Window.RevealChaosTokenEffect iid token effectId)

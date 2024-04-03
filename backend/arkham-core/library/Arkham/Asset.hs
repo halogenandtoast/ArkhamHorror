@@ -676,6 +676,7 @@ allAssets =
       SomeAssetCard armageddon
     , SomeAssetCard eyeOfChaos
     , SomeAssetCard shroudOfShadows
+    , SomeAssetCard paradoxicalCovenant2
     , -- Devil Reef
       --- guardian [def]
       SomeAssetCard keenEye

@@ -25,17 +25,16 @@ undimensionedAndUnseenTabletToken =
   UndimensionedAndUnseenTabletToken . uncurry4 (baseAttrs "02236")
 
 instance HasModifiersFor UndimensionedAndUnseenTabletToken where
-  getModifiersFor (ChaosTokenTarget (ChaosToken _ Tablet)) (UndimensionedAndUnseenTabletToken attrs) =
-    do
-      difficulty <- scenarioField ScenarioDifficulty
-      pure
-        [ toModifier
-            attrs
-            $ ChangeChaosTokenModifier
-            $ if difficulty `elem` [Easy, Standard]
-              then NegativeModifier 4
-              else AutoFailModifier
-        ]
+  getModifiersFor (ChaosTokenTarget token) (UndimensionedAndUnseenTabletToken attrs) | token.face == #tablet = do
+    difficulty <- scenarioField ScenarioDifficulty
+    pure
+      [ toModifier
+          attrs
+          $ ChangeChaosTokenModifier
+          $ if difficulty `elem` [Easy, Standard]
+            then NegativeModifier 4
+            else AutoFailModifier
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage UndimensionedAndUnseenTabletToken where

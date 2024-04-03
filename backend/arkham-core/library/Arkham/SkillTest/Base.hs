@@ -33,7 +33,7 @@ data SkillTest = SkillTest
   , skillTestSetAsideChaosTokens :: [ChaosToken]
   , skillTestRevealedChaosTokens :: [ChaosToken] -- tokens may change from physical representation
   , skillTestResolvedChaosTokens :: [ChaosToken]
-  , skillTestValueModifier :: Int
+  , skillTestToResolveChaosTokens :: [ChaosToken]
   , skillTestResult :: SkillTestResult
   , skillTestCommittedCards :: Map InvestigatorId [Card]
   , skillTestSource :: Source
@@ -58,9 +58,11 @@ instance HasField "investigator" SkillTest InvestigatorId where
 instance HasField "revealedChaosTokens" SkillTest [ChaosToken] where
   getField = skillTestRevealedChaosTokens
 
+instance HasField "chaosTokens" SkillTest [ChaosToken] where
+  getField = skillTestSetAsideChaosTokens
+
 allSkillTestChaosTokens :: SkillTest -> [ChaosToken]
-allSkillTestChaosTokens SkillTest {..} =
-  skillTestSetAsideChaosTokens <> skillTestRevealedChaosTokens <> skillTestResolvedChaosTokens
+allSkillTestChaosTokens SkillTest {..} = skillTestSetAsideChaosTokens
 
 instance Targetable SkillTest where
   toTarget _ = SkillTestTarget
@@ -117,7 +119,7 @@ buildSkillTest iid (toSource -> source) (toTarget -> target) stType bValue diffi
     , skillTestSetAsideChaosTokens = mempty
     , skillTestRevealedChaosTokens = mempty
     , skillTestResolvedChaosTokens = mempty
-    , skillTestValueModifier = 0
+    , skillTestToResolveChaosTokens = mempty
     , skillTestResult = Unrun
     , skillTestCommittedCards = mempty
     , skillTestSource = source
@@ -143,7 +145,7 @@ resetSkillTest skillTest =
     { skillTestSetAsideChaosTokens = mempty
     , skillTestRevealedChaosTokens = mempty
     , skillTestResolvedChaosTokens = mempty
-    , skillTestValueModifier = 0
+    , skillTestToResolveChaosTokens = mempty
     , skillTestResult = Unrun
     , skillTestCommittedCards = mempty
     , skillTestSubscribers = [toTarget $ skillTestInvestigator skillTest]
@@ -162,7 +164,7 @@ instance FromJSON SkillTest where
     skillTestSetAsideChaosTokens <- o .: "setAsideChaosTokens"
     skillTestRevealedChaosTokens <- o .: "revealedChaosTokens"
     skillTestResolvedChaosTokens <- o .: "resolvedChaosTokens"
-    skillTestValueModifier <- o .: "valueModifier"
+    skillTestToResolveChaosTokens <- o .:? "toResolveChaosTokens" .!= []
     skillTestResult <- o .: "result"
     skillTestCommittedCards <- o .: "committedCards"
     skillTestSource <- o .: "source"

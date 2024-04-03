@@ -28,6 +28,9 @@ setAsideChaosTokensL = lens skillTestSetAsideChaosTokens $ \m x -> m {skillTestS
 resolvedChaosTokensL :: Lens' SkillTest [ChaosToken]
 resolvedChaosTokensL = lens skillTestResolvedChaosTokens $ \m x -> m {skillTestResolvedChaosTokens = x}
 
+toResolveChaosTokensL :: Lens' SkillTest [ChaosToken]
+toResolveChaosTokensL = lens skillTestToResolveChaosTokens $ \m x -> m {skillTestToResolveChaosTokens = x}
+
 revealedChaosTokensL :: Lens' SkillTest [ChaosToken]
 revealedChaosTokensL = lens skillTestRevealedChaosTokens $ \m x -> m {skillTestRevealedChaosTokens = x}
 
@@ -42,9 +45,6 @@ typeL = lens skillTestType $ \m x -> m {skillTestType = x}
 
 baseValueL :: Lens' SkillTest SkillTestBaseValue
 baseValueL = lens skillTestBaseValue $ \m x -> m {skillTestBaseValue = x}
-
-valueModifierL :: Lens' SkillTest Int
-valueModifierL = lens skillTestValueModifier $ \m x -> m {skillTestValueModifier = x}
 
 resolveFailureInvestigatorL :: Lens' SkillTest InvestigatorId
 resolveFailureInvestigatorL =

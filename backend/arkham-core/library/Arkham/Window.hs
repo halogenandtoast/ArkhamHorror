@@ -216,6 +216,7 @@ data WindowType
   | RevealLocation InvestigatorId LocationId
   | FlipLocation InvestigatorId LocationId
   | RevealChaosToken InvestigatorId ChaosToken
+  | ResolvesChaosToken InvestigatorId ChaosToken
   | IgnoreChaosToken InvestigatorId ChaosToken
   | CancelChaosToken InvestigatorId ChaosToken
   | RevealChaosTokenEffect InvestigatorId ChaosToken EffectId

@@ -122,6 +122,7 @@ allPlayerAssetCards =
       , alyssaGraham
       , analyticalMind
       , ancestralKnowledge3
+      , ancientCovenant2
       , ancientStone1
       , ancientStoneKnowledgeOfTheElders4
       , ancientStoneMindsInHarmony4
@@ -4241,6 +4242,14 @@ marinersCompass =
     , cdSkills = [#intellect]
     , cdSlots = [#hand]
     }
+
+ancientCovenant2 :: CardDef
+ancientCovenant2 =
+  permanent
+    $ (asset "07122" "Ancient Covenant" 0 Survivor)
+      { cdCardTraits = setFromList [Covenant, Blessed]
+      , cdDeckRestrictions = [TraitPerDeckLimit Covenant 1]
+      }
 
 keenEye :: CardDef
 keenEye =

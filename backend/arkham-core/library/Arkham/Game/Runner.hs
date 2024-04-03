@@ -314,16 +314,17 @@ runGameMessage msg g = case msg of
         flip mapMaybe mods \case
           CanResolveToken tokenFace' target | tokenFace == tokenFace' -> Just target
           _ -> Nothing
+    whenWindow <- checkWindows [mkWhen (Window.ResolvesChaosToken iid token)]
     if null resolutionChoices
-      then push msg'
+      then pushAll [whenWindow, msg']
       else do
         player <- getPlayer iid
         push
           $ chooseOne player
-          $ [ targetLabel target [TargetResolveChaosToken target token tokenFace iid]
+          $ [ targetLabel target [whenWindow, TargetResolveChaosToken target token tokenFace iid]
             | target <- resolutionChoices
             ]
-          <> [Label "Resolve Normally" [msg']]
+          <> [Label "Resolve Normally" [whenWindow, msg']]
     pure g
   CreateEffect cardCode meffectMetadata source target -> do
     (effectId, effect) <- createEffect cardCode meffectMetadata source target
@@ -877,10 +878,13 @@ runGameMessage msg g = case msg of
             %~ Map.filterWithKey
               (\k _ -> k `notElem` skillsToRemove)
         )
-      & (skillTestL .~ Nothing)
-      & (skillTestResultsL .~ Nothing)
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & setTurnHistory
+  Msg.SkillTestEnded -> do
+    pure
+      $ g
+      & (skillTestL .~ Nothing)
+      & (skillTestResultsL .~ Nothing)
   Do msg'@(Search {}) -> do
     inSearch <- fromQueue (elem FinishedSearch)
     if inSearch

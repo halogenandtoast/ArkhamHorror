@@ -178,4 +178,5 @@ getChaosToken :: [Window] -> ChaosToken
 getChaosToken = \case
   [] -> error "No chaos token drawn"
   ((windowType -> Window.RevealChaosToken _ token) : _) -> token
+  ((windowType -> Window.ResolvesChaosToken _ token) : _) -> token
   (_ : rest) -> getChaosToken rest

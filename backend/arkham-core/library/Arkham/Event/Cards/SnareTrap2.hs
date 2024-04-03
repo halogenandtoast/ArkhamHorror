@@ -1,9 +1,4 @@
-module Arkham.Event.Cards.SnareTrap2 (
-  snareTrap2,
-  SnareTrap2 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.SnareTrap2 (snareTrap2, SnareTrap2 (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
@@ -12,7 +7,7 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -26,24 +21,14 @@ snareTrap2 = event SnareTrap2 Cards.snareTrap2
 instance HasAbilities SnareTrap2 where
   getAbilities (SnareTrap2 a) = case eventAttachedTarget a of
     Just (LocationTarget lid) ->
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ EnemyEnters
-            Timing.After
-            (LocationWithId lid)
-            NonEliteEnemy
-      ]
+      [mkAbility a 1 $ forced $ EnemyEnters #after (LocationWithId lid) NonEliteEnemy]
     Just (EnemyTarget eid) ->
-      [ mkAbility a 2
-          $ ForcedAbility
-          $ EnemyWouldReady Timing.When
-          $ EnemyWithId eid
-      ]
+      [mkAbility a 2 $ forced $ EnemyWouldReady #when $ EnemyWithId eid]
     _ -> []
 
 instance RunMessage SnareTrap2 where
   runMessage msg e@(SnareTrap2 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    PlayThisEvent iid eid | eid == toId attrs -> do
       lid <- getJustLocation iid
       push $ PlaceEvent iid eid (AttachedToLocation lid)
       pure e
@@ -59,6 +44,6 @@ instance RunMessage SnareTrap2 where
         \case
           Ready t -> t == target
           _ -> False
-        (const [toDiscardBy (eventController attrs) (toAbilitySource attrs 2) attrs])
+        (const [toDiscardBy attrs.owner (attrs.ability 2) attrs])
       pure e
     _ -> SnareTrap2 <$> runMessage msg attrs

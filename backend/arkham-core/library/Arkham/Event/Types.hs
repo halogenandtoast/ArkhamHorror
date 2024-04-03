@@ -105,6 +105,9 @@ instance HasField "payment" EventAttrs Payment where
 instance HasField "owner" EventAttrs InvestigatorId where
   getField = eventOwner
 
+instance HasField "controller" EventAttrs InvestigatorId where
+  getField = eventOwner
+
 instance HasField "ability" EventAttrs (Int -> Source) where
   getField this = toAbilitySource this
 

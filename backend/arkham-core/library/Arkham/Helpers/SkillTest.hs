@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Action
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.ClassSymbol
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (HasQueue, pushAfter)
@@ -38,6 +39,9 @@ getBaseValueForSkillTestType iid mAction = \case
   SkillSkillTest skillType -> baseSkillValueFor skillType mAction [] iid
   AndSkillTest types -> sum <$> traverse (\skillType -> baseSkillValueFor skillType mAction [] iid) types
   ResourceSkillTest -> field InvestigatorResources iid
+
+getSkillTestRevealedChaosTokens :: HasGame m => m [ChaosToken]
+getSkillTestRevealedChaosTokens = maybe [] skillTestRevealedChaosTokens <$> getSkillTest
 
 getSkillTestInvestigator :: HasGame m => m (Maybe InvestigatorId)
 getSkillTestInvestigator = fmap skillTestInvestigator <$> getSkillTest

@@ -673,9 +673,7 @@ instance RunMessage ChaosBag where
         & revealedChaosTokensL
         %~ filter (/= token)
     UnsealChaosToken token -> do
-      if chaosTokenFace token `elem` [CurseToken, BlessToken]
-        then pure c
-        else pure $ c & chaosTokensL %~ (token :)
+      pure $ c & chaosTokensL %~ (token :)
     RemoveAllChaosTokens face ->
       pure
         $ c

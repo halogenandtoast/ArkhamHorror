@@ -430,6 +430,7 @@ allEvents =
       SomeEventCard underSurveillance1
     , --- survivor [def]
       SomeEventCard butterflyEffect1
+    , SomeEventCard thirdTimesACharm2
     , --- neutral [def]
       SomeEventCard manipulateDestiny2
     , -- Edge of the Earth

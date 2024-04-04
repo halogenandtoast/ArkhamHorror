@@ -1105,6 +1105,9 @@ data ChaosTokenMatcher
   | IsInfestationToken ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data)
 
+instance IsLabel "any" ChaosTokenMatcher where
+  fromLabel = AnyChaosToken
+
 instance IsLabel "skull" ChaosTokenMatcher where
   fromLabel = ChaosTokenFaceIs Skull
 

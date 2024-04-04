@@ -284,6 +284,7 @@ allPlayerEventCards =
       , theTruthBeckons
       , thinkOnYourFeet
       , thinkOnYourFeet2
+      , thirdTimesACharm2
       , tidesOfFate
       , timeWarp2
       , trialByFire
@@ -2518,6 +2519,16 @@ butterflyEffect1 =
             [ exists (CardIsCommittedBy (affectsOthers $ InvestigatorAt YourLocation))
             , exists (affectsOthers $ InvestigatorAt YourLocation <> InvestigatorWithCommittableCard)
             ]
+    , cdLevel = 1
+    }
+
+thirdTimesACharm2 :: CardDef
+thirdTimesACharm2 =
+  (event "07161" "Third Time's a Charm" 1 Survivor)
+    { cdSkills = [#willpower, #combat, #agility]
+    , cdCardTraits = setFromList [Spirit]
+    , cdFastWindow = Just $ InitiatedSkillTest #when (affectsOthers Anyone) #any #any #any
+    , cdCriteria = Just $ Criteria.DuringSkillTest SkillTestAtYourLocation
     , cdLevel = 1
     }
 

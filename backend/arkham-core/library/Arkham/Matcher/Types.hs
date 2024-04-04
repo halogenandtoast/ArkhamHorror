@@ -1153,6 +1153,9 @@ instance Monoid ChaosTokenMatcher where
 data PhaseMatcher = AnyPhase | IsMythosPhase | IsEnemyPhase | IsInvestigationPhase | IsUpkeepPhase
   deriving stock (Show, Eq, Ord, Data)
 
+instance IsLabel "any" PhaseMatcher where
+  fromLabel = AnyPhase
+
 instance IsLabel "mythos" PhaseMatcher where
   fromLabel = IsMythosPhase
 

@@ -694,6 +694,7 @@ allAssets =
     , SomeAssetCard blessingOfIsis3
     , --- seeker [hhg]
       SomeAssetCard crypticGrimoireTextOfTheElderHerald4
+    , SomeAssetCard crypticGrimoireTextOfTheElderGuardian4
     , -- A Light in the Fog
       --- guardian [lif]
       SomeAssetCard holyRosary2

@@ -170,6 +170,7 @@ allPlayerAssetCards =
       , blasphemousCovenant2
       , blessedBlade
       , blessedBlade4
+      , blessingOfIsis3
       , bloodPact
       , bloodPact3
       , bloodstainedDagger
@@ -4293,6 +4294,14 @@ enchantedArmor2 =
     , cdCardTraits = setFromList [Ritual, Armor]
     , cdSlots = [#body, #arcane]
     , cdLevel = 2
+    }
+
+blessingOfIsis3 :: CardDef
+blessingOfIsis3 =
+  (asset "07190" "Blessing of Isis" 2 Guardian)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Ritual, Blessed]
+    , cdLevel = 3
     }
 
 holyRosary2 :: CardDef

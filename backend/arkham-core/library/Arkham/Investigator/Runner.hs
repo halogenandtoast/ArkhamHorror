@@ -2273,15 +2273,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           )
           cards
     pure $ a & update & foundCardsL %~ Map.map (filter (`notElem` cards))
-  ChaosTokenCanceled iid _ token | iid == investigatorId -> do
+  ChaosTokenCanceled iid source token | iid == investigatorId -> do
     whenWindow <- checkWindows [mkWhen (Window.CancelChaosToken iid token)]
+    whenWindow2 <- checkWindows [mkWhen (Window.CancelledOrIgnoredCardOrGameEffect source)]
     afterWindow <- checkWindows [mkAfter (Window.CancelChaosToken iid token)]
-    pushAll [whenWindow, afterWindow]
+    afterWindow2 <- checkWindows [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect source)]
+    pushAll [whenWindow, whenWindow2, afterWindow2, afterWindow]
     pure a
-  ChaosTokenIgnored iid _ token | iid == toId a -> do
+  ChaosTokenIgnored iid source token | iid == toId a -> do
     whenWindow <- checkWindows [mkWhen (Window.IgnoreChaosToken iid token)]
+    whenWindow2 <- checkWindows [mkWhen (Window.CancelledOrIgnoredCardOrGameEffect source)]
     afterWindow <- checkWindows [mkAfter (Window.IgnoreChaosToken iid token)]
-    pushAll [whenWindow, afterWindow]
+    afterWindow2 <- checkWindows [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect source)]
+    pushAll [whenWindow, whenWindow2, afterWindow2, afterWindow]
     pure a
   BeforeSkillTest skillTest | skillTestInvestigator skillTest == toId a -> do
     skillTestModifiers' <- getModifiers SkillTestTarget

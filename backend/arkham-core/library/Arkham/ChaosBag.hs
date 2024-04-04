@@ -503,13 +503,15 @@ instance RunMessage ChaosBag where
           False -> pure True
 
       -- TODO: We need to decide which tokens to keep, i.e. Blessed Blade (4)
-      tokensToReturn <- forMaybeM chaosBagSetAsideChaosTokens \token -> do
+      tokensToReturn <- forMaybeM chaosBagSetAsideChaosTokens \(traceShowId -> token) -> do
         if
           | token.face == #bless -> do
-              returnBlessed <- if returnAllBlessed then pure True else hasModifier token ReturnBlessedToChaosBag
+              returnBlessed <-
+                if returnAllBlessed then pure True else traceShowId <$> hasModifier token ReturnBlessedToChaosBag
               pure $ guard returnBlessed $> token
           | token.face == #curse -> do
-              returnCursed <- if returnAllCursed then pure True else hasModifier token ReturnCursedToChaosBag
+              returnCursed <-
+                if returnAllCursed then pure True else traceShowId <$> hasModifier token ReturnCursedToChaosBag
               pure $ guard returnCursed $> token
           | otherwise -> pure $ Just token
 

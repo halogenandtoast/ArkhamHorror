@@ -31,6 +31,8 @@ newtype ThirdTimesACharm2Effect = ThirdTimesACharm2Effect EffectAttrs
 thirdTimesACharm2Effect :: EffectArgs -> ThirdTimesACharm2Effect
 thirdTimesACharm2Effect = cardEffect ThirdTimesACharm2Effect Cards.thirdTimesACharm2
 
+-- TODO: technically the limit here should be enough so that we don't need to
+-- rely on the EffectMetadata, but it didn't seem to be working
 instance HasAbilities ThirdTimesACharm2Effect where
   getAbilities (ThirdTimesACharm2Effect a) = case a.meta of
     Just (EffectInt n) ->

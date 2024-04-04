@@ -891,6 +891,7 @@ data WindowMatcher
   | PlacedCounterOnLocation Timing Where SourceMatcher CounterMatcher ValueMatcher
   | PlacedCounterOnEnemy Timing EnemyMatcher SourceMatcher CounterMatcher ValueMatcher
   | PlacedCounterOnAgenda Timing AgendaMatcher SourceMatcher CounterMatcher ValueMatcher
+  | PlacedCounterOnAsset Timing AssetMatcher SourceMatcher CounterMatcher ValueMatcher
   | WouldHaveSkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | SuccessfullyInvestigatedWithNoClues Timing Who Where
   | EnemyAttemptsToSpawnAt Timing EnemyMatcher LocationMatcher
@@ -1165,6 +1166,12 @@ data WindowMythosStepMatcher
 
 data CounterMatcher = HorrorCounter | DamageCounter | ClueCounter | DoomCounter | ResourceCounter
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "horror" CounterMatcher where
+  fromLabel = HorrorCounter
+
+instance IsLabel "damage" CounterMatcher where
+  fromLabel = DamageCounter
 
 instance IsLabel "clue" CounterMatcher where
   fromLabel = ClueCounter

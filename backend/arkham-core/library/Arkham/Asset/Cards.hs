@@ -256,6 +256,7 @@ allPlayerAssetCards =
       , empowerSelfAlacrity2
       , empowerSelfStamina2
       , emptyVessel4
+      , enchantedArmor2
       , enchantedBlade
       , enchantedBladeGuardian3
       , enchantedBladeMystic3
@@ -4282,6 +4283,15 @@ abyssalTome2 =
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = setFromList [Item, Tome]
     , cdSlots = [#hand]
+    , cdLevel = 2
+    }
+
+enchantedArmor2 :: CardDef
+enchantedArmor2 =
+  (asset "07189" "Enchanted Armor" 1 Guardian)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Ritual, Armor]
+    , cdSlots = [#body, #arcane]
     , cdLevel = 2
     }
 

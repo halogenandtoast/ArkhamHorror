@@ -271,6 +271,9 @@ instance HasField "horror" AssetAttrs Int where
 instance HasField "controller" AssetAttrs (Maybe InvestigatorId) where
   getField = assetController
 
+instance HasField "owner" AssetAttrs (Maybe InvestigatorId) where
+  getField = assetOwner
+
 instance HasField "uses" AssetAttrs (Map UseType Int) where
   getField = assetUses
 
@@ -279,6 +282,9 @@ instance HasField "use" AssetAttrs (UseType -> Int) where
 
 instance HasField "ability" AssetAttrs (Int -> Source) where
   getField this = toAbilitySource this
+
+instance HasField "damage" AssetAttrs Int where
+  getField = assetDamage
 
 assetDoom :: AssetAttrs -> Int
 assetDoom = countTokens Doom . assetTokens

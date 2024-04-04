@@ -699,7 +699,7 @@ sourceToTarget = \case
   ProxySource _ source -> sourceToTarget source
   EffectSource eid -> EffectTarget eid
   ResourceSource -> ResourceTarget
-  AbilitySource {} -> error "not implemented"
+  AbilitySource s _ -> sourceToTarget s
   ActDeckSource -> ActDeckTarget
   AgendaDeckSource -> AgendaDeckTarget
   ActMatcherSource {} -> error "not converted"
@@ -1944,6 +1944,21 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
         Window.PlacedDoom source' (AgendaTarget agendaId) n | counterMatcher == Matcher.DoomCounter -> do
           andM
             [ agendaMatches agendaId agendaMatcher
+            , sourceMatches source' sourceMatcher
+            , gameValueMatches n valueMatcher
+            ]
+        _ -> noMatch
+    Matcher.PlacedCounterOnAsset timing assetMatcher sourceMatcher counterMatcher valueMatcher ->
+      guardTiming timing $ \case
+        Window.PlacedHorror source' (AssetTarget assetId) n | counterMatcher == Matcher.HorrorCounter -> do
+          andM
+            [ assetId <=~> assetMatcher
+            , sourceMatches source' sourceMatcher
+            , gameValueMatches n valueMatcher
+            ]
+        Window.PlacedDamage source' (AssetTarget assetId) n | counterMatcher == Matcher.DamageCounter -> do
+          andM
+            [ assetId <=~> assetMatcher
             , sourceMatches source' sourceMatcher
             , gameValueMatches n valueMatcher
             ]

@@ -40,7 +40,7 @@ const hasPool = computed(() => {
     keys,
   } = props.asset;
 
-  return Object.values(tokens).some((v) => v > 0) || sealedChaosTokens.length > 0 || keys.length > 0 || uses || sanity || health
+  return cardCode.value == 'c07189' || (Object.values(tokens).some((v) => v > 0) || sealedChaosTokens.length > 0 || keys.length > 0 || uses || sanity || health)
 })
 
 const exhausted = computed(() => props.asset.exhausted)
@@ -183,14 +183,14 @@ const assetStory = computed(() => {
             />
           </template>
           <PoolItem
-            v-if="asset.health !== null || (damage || 0) > 0"
+            v-if="cardCode == 'c07189' || (asset.health !== null || (damage || 0) > 0)"
             type="health"
             :amount="damage || 0"
             :class="{ 'health--can-interact': healthAction !== -1 }"
             @choose="choose(healthAction)"
           />
           <PoolItem
-            v-if="asset.sanity !== null || (horror || 0) > 0"
+            v-if="cardCode == 'c07189' || (asset.sanity !== null || (horror || 0) > 0)"
             type="sanity"
             :amount="horror || 0"
             :class="{ 'sanity--can-interact': sanityAction !== -1 }"

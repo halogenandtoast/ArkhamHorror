@@ -1,3 +1,4 @@
+{-# LANGUAGE TypeAbstractions #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Investigator (

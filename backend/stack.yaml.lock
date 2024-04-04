@@ -17,7 +17,7 @@ packages:
     url: https://github.com/halogenandtoast/monad-validate/archive/e5f36d4a82875c09c6000fed8f8ced50e21b75ce.tar.gz
 snapshots:
 - completed:
-    sha256: 8b211c5a6aad3787e023dfddaf7de7868968e4f240ecedf14ad1c5b2199046ca
-    size: 714097
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/4.yaml
-  original: lts-22.4
+    sha256: 31177dd01e2b7801b9347776d892d1e808396c21ab3b60f7f8c96856bdbe5f52
+    size: 622360
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2024/4/4.yaml
+  original: nightly-2024-04-04

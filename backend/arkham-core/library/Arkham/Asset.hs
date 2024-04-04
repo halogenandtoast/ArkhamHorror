@@ -691,6 +691,7 @@ allAssets =
     , -- Horror in High Geat
       --- guardian [hhg]
       SomeAssetCard enchantedArmor2
+    , SomeAssetCard blessingOfIsis3
     , -- A Light in the Fog
       --- guardian [lif]
       SomeAssetCard holyRosary2

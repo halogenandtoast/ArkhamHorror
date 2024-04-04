@@ -688,6 +688,9 @@ allAssets =
     , --- mystic [def]
       SomeAssetCard bloodPact
     , SomeAssetCard abyssalTome2
+    , -- Horror in High Geat
+      --- guardian [hhg]
+      SomeAssetCard enchantedArmor2
     , -- A Light in the Fog
       --- guardian [lif]
       SomeAssetCard holyRosary2

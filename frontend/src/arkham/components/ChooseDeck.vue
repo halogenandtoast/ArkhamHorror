@@ -79,7 +79,7 @@ const needsReply = computed(() => {
 
 <template>
   <div class="container">
-    <div class="investigators">
+    <div v-if="Object.entries(investigators).length > 1" class="investigators">
       <h2>Chosen Players</h2>
       <div class="portraits">
         <img

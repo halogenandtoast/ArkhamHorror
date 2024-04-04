@@ -4,6 +4,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.NightOfTheZealot.ChaosBag
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -54,6 +55,9 @@ theGatheringAgendaDeck = [Agendas.whatsGoingOn, Agendas.riseOfTheGhouls, Agendas
 
 instance RunMessage TheGathering where
   runMessage msg s@(TheGathering attrs) = runQueueT $ case msg of
+    SetChaosTokensForScenario -> do
+      pushWhenM getIsStandalone $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
+      pure s
     PreScenarioSetup -> do
       story $ i18nWithTitle "nightOfTheZealot.theGathering.intro"
       pure s

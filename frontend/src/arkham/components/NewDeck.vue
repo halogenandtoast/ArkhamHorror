@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { watch, ref } from 'vue'
 import {imgsrc} from '@/arkham/helpers';
 import { fetchInvestigators, newDeck, validateDeck } from '@/arkham/api'
 import { CardDef } from '@/arkham/types/CardDef';
+import ArkhamDbDeck from '@/arkham/components/ArkhamDbDeck.vue';
 
 const ready = ref(false)
 const emit = defineEmits(['newDeck'])
@@ -68,46 +69,30 @@ function loadDeckFromFile(e: Event) {
   }
 }
 
+watch(deckList, loadDeck)
+
 function loadDeck() {
   valid.value = false
-  if (!deck.value) {
+  if (!deckList.value) {
     return
   }
 
-  const matches = deck.value.match(/\/(deck(list)?)(\/view)?\/([^/]+)/)
-  if (matches) {
-    deckUrl.value = `https://arkhamdb.com/api/public/${matches[1]}/${matches[4]}`
-    fetch(deckUrl.value)
-      .then((response) => response.json(), () => {
-        investigator.value = null
-        deckId.value = null
-        deckName.value = null
-        deckUrl.value = null
-      })
-      .then((data) => {
-        deckList.value = data
-        investigator.value = null
-        investigatorError.value = null
-        if (investigators.value.map(i => i.art).includes(data.investigator_code)) {
-          if(data.meta && data.meta.alternate_front) {
-            investigator.value = data.meta.alternate_front
-          } else {
-            investigator.value = data.investigator_code
-          }
-        } else {
-          investigatorError.value = `${data.investigator_name} is not yet implemented, please use a different deck`
-        }
-        deckId.value = matches[4]
-        deckName.value = data.name
-
-        runValidations()
-      })
+  investigator.value = null
+  investigatorError.value = null
+  if (investigators.value.map(i => i.art).includes(deckList.value.investigator_code)) {
+    if(deckList.value.meta && deckList.value.meta.alternate_front) {
+      investigator.value = deckList.value.meta.alternate_front
+    } else {
+      investigator.value = deckList.value.investigator_code
+    }
   } else {
-    investigator.value = null
-    deckId.value = null
-    deckName.value = null
-    deckUrl.value = null
+    investigatorError.value = `${deckList.value.investigator_name} is not yet implemented, please use a different deck`
   }
+  deckId.value = String(deckList.value.id)
+  deckName.value = deckList.value.name
+  deckUrl.value = deckList.value.url
+
+  runValidations()
 }
 
 function runValidations() {
@@ -125,16 +110,9 @@ function runValidations() {
   })
 }
 
-function pasteDeck(evt: ClipboardEvent) {
-  if (evt.clipboardData) {
-    deck.value = evt.clipboardData.getData('text')
-    loadDeck()
-  }
-}
-
 async function createDeck() {
   errors.value = []
-  if (deckId.value && deckName.value && valid.value && deckUrl.value) {
+  if (deckId.value && deckName.value && valid.value) {
     newDeck(deckId.value, deckName.value, deckUrl.value, deckList.value).then((newDeck) => {
       deckId.value = null
       deckName.value = null
@@ -161,13 +139,7 @@ async function createDeck() {
     <div class="form-body">
       <img v-if="investigator" class="portrait" :src="imgsrc(`portraits/${investigator.replace('c', '')}.jpg`)" />
       <div class="fields">
-        <input
-          type="url"
-          v-model="deck"
-          @change="loadDeck"
-          @paste.prevent="pasteDeck($event)"
-          placeholder="ArkhamDB deck url"
-        />
+        <ArkhamDbDeck type="url" v-model="deckList" />
         <input type="file" @change="loadDeckFromFile" />
         <input v-if="investigator" v-model="deckName" />
         <button :disabled="!valid" @click.prevent="createDeck">Create</button>

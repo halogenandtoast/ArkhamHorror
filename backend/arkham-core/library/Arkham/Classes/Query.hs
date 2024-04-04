@@ -134,6 +134,18 @@ selectAgg f p matcher = do
   values <- traverse (fieldMap p f) results
   pure $ fold values
 
+selectAll
+  :: ( Monoid typ
+     , Query a
+     , QueryElement a ~ EntityId attrs
+     , Projection attrs
+     , HasGame m
+     )
+  => Field attrs typ
+  -> a
+  -> m typ
+selectAll p = select >=> fmap fold . traverse (field p)
+
 selectAgg'
   :: ( Monoid monoid
      , Query a

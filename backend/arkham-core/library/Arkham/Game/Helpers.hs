@@ -2879,6 +2879,11 @@ skillTestMatches iid source st = \case
     sourceMatches (skillTestSource st) sourceMatcher
   Matcher.SkillTestWithRevealedChaosToken matcher ->
     anyM (`chaosTokenMatches` matcher) $ skillTestRevealedChaosTokens st
+  Matcher.SkillTestWithResolvedChaosTokenBy whoMatcher matcher -> do
+    iids <- select whoMatcher
+    anyM (`chaosTokenMatches` matcher)
+      . filter (maybe False (`elem` iids) . chaosTokenRevealedBy)
+      $ skillTestRevealedChaosTokens st
   Matcher.SkillTestFromRevelation -> pure $ skillTestIsRevelation st
   Matcher.SkillTestForAction actionMatcher -> case skillTestAction st of
     Just action -> actionMatches iid action actionMatcher

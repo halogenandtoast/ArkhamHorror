@@ -1546,7 +1546,7 @@ truthFromFiction =
     , cdCriteria =
         Just
           $ Criteria.ClueOnLocation
-          <> exists (AssetControlledBy You <> AssetWithUseType Uses.Secret)
+          <> exists (AssetControlledBy You <> AssetCanHaveUses Uses.Secret)
     }
 
 customAmmunition3 :: CardDef
@@ -2758,7 +2758,7 @@ truthFromFiction2 =
         Just
           $ exists
           $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
-          <> AssetWithUseType Uses.Secret
+          <> AssetCanHaveUses Uses.Secret
     }
 
 alterFate1 :: CardDef

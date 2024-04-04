@@ -166,6 +166,11 @@ data PreyMatcher
   | RestrictedBearerOf EnemyId InvestigatorMatcher
   deriving stock (Show, Eq, Ord, Data)
 
+pattern AssetCanHaveUses :: UseType -> AssetMatcher
+pattern AssetCanHaveUses uType <- AssetOneOf [AssetWithUseType uType, AssetWithoutUses]
+  where
+    AssetCanHaveUses uType = AssetOneOf [AssetWithUseType uType, AssetWithoutUses]
+
 data AssetMatcher
   = AssetWithTitle Text
   | AssetWithFullTitle Text Text
@@ -991,6 +996,7 @@ data SkillTestMatcher
   | NotSkillTest SkillTestMatcher
   | SkillTestFromRevelation
   | SkillTestWithRevealedChaosToken ChaosTokenMatcher
+  | SkillTestWithResolvedChaosTokenBy InvestigatorMatcher ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 data SourceMatcher

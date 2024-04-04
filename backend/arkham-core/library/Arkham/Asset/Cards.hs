@@ -208,6 +208,7 @@ allPlayerAssetCards =
       , coltVestPocket2
       , cornered2
       , combatTraining1
+      , crypticGrimoireTextOfTheElderHerald4
       , crypticGrimoireUntranslated
       , cryptographicCipher
       , crystalPendulum
@@ -4302,6 +4303,16 @@ blessingOfIsis3 =
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Ritual, Blessed]
     , cdLevel = 3
+    }
+
+crypticGrimoireTextOfTheElderHerald4 :: CardDef
+crypticGrimoireTextOfTheElderHerald4 =
+  (asset "07191" ("Cryptic Grimoire" <:> "Text of the Elder Herald") 3 Seeker)
+    { cdCardTraits = setFromList [Item, Tome, Cursed]
+    , cdSkills = [#intellect, #agility]
+    , cdSlots = [#hand]
+    , cdLevel = 4
+    , cdKeywords = singleton $ Keyword.Researched YouHaveTranslatedTheGrimoire
     }
 
 holyRosary2 :: CardDef

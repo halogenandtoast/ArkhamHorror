@@ -119,6 +119,8 @@ const debug = useDebug()
 const doom = computed(() => props.asset.tokens[TokenType.Doom])
 const clues = computed(() => props.asset.tokens[TokenType.Clue])
 const resources = computed(() => props.asset.tokens[TokenType.Resource])
+const charges = computed(() => props.asset.tokens[TokenType.Charge])
+const secrets = computed(() => props.asset.tokens[TokenType.Secret])
 const offerings = computed(() => props.asset.tokens[TokenType.Offering])
 
 const damage = computed(() => props.asset.tokens[TokenType.Damage])
@@ -199,6 +201,8 @@ const assetStory = computed(() => {
           <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
           <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
           <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
+          <PoolItem v-if="charges && charges > 0" type="resource" :amount="charges" />
+          <PoolItem v-if="secrets && secrets > 0" type="resource" :amount="secrets" />
           <PoolItem v-if="offerings && offerings > 0" type="resource" :amount="offerings" />
           <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
         </div>

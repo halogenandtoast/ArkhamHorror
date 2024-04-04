@@ -43,6 +43,9 @@ getBaseValueForSkillTestType iid mAction = \case
 getSkillTestRevealedChaosTokens :: HasGame m => m [ChaosToken]
 getSkillTestRevealedChaosTokens = maybe [] skillTestRevealedChaosTokens <$> getSkillTest
 
+getSkillTestResolvedChaosTokens :: HasGame m => m [ChaosToken]
+getSkillTestResolvedChaosTokens = maybe [] skillTestResolvedChaosTokens <$> getSkillTest
+
 getSkillTestInvestigator :: HasGame m => m (Maybe InvestigatorId)
 getSkillTestInvestigator = fmap skillTestInvestigator <$> getSkillTest
 

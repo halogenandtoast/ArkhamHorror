@@ -208,6 +208,7 @@ allPlayerAssetCards =
       , coltVestPocket2
       , cornered2
       , combatTraining1
+      , crypticGrimoireTextOfTheElderGuardian4
       , crypticGrimoireTextOfTheElderHerald4
       , crypticGrimoireUntranslated
       , cryptographicCipher
@@ -4310,6 +4311,16 @@ crypticGrimoireTextOfTheElderHerald4 =
   (asset "07191" ("Cryptic Grimoire" <:> "Text of the Elder Herald") 3 Seeker)
     { cdCardTraits = setFromList [Item, Tome, Cursed]
     , cdSkills = [#intellect, #agility]
+    , cdSlots = [#hand]
+    , cdLevel = 4
+    , cdKeywords = singleton $ Keyword.Researched YouHaveTranslatedTheGrimoire
+    }
+
+crypticGrimoireTextOfTheElderGuardian4 :: CardDef
+crypticGrimoireTextOfTheElderGuardian4 =
+  (asset "07192" ("Cryptic Grimoire" <:> "Text of the Elder Guardian") 3 Seeker)
+    { cdCardTraits = setFromList [Item, Tome, Blessed]
+    , cdSkills = [#willpower, #intellect]
     , cdSlots = [#hand]
     , cdLevel = 4
     , cdKeywords = singleton $ Keyword.Researched YouHaveTranslatedTheGrimoire

@@ -16,6 +16,22 @@ fetchInvestigators().then(async (response) => {
   })
 })
 
+interface Meta {
+  alternate_front: string
+}
+
+interface ArkhamDbDecklist {
+  id: string
+  url: string | null
+  meta?: Meta
+  name: string
+  investigator_code: string
+  investigator_name: string
+  slots: {
+    [key: string]: number
+  }
+}
+
 interface UnimplementedCardError {
   tag: string
   contents: string
@@ -37,7 +53,7 @@ const deck = ref<string | null>(null)
 const deckId = ref<string | null>(null)
 const deckName = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
-const deckList = ref<string | null>(null)
+const deckList = ref<ArkhamDbDecklist | null>(null)
 
 function loadDeckFromFile(e: Event) {
   valid.value = false

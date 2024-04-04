@@ -35,6 +35,7 @@ import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Window (mkAfter, mkWindow)
 import Arkham.Window qualified as Window
+import Control.Lens (non)
 
 defeated :: HasGame m => AssetAttrs -> Source -> m (Maybe DefeatedBy)
 defeated AssetAttrs {assetId, assetAssignedHealthDamage, assetAssignedSanityDamage} source = do
@@ -151,8 +152,8 @@ instance RunMessage AssetAttrs where
           _ -> a.controller == Just iid
       when shouldDiscard $ push $ toDiscard GameSource assetId
       pure a
-    AddUses aid useType' n | aid == assetId -> case assetPrintedUses of
-      NoUses -> pure $ a & usesL . ix useType' %~ (+ n)
+    AddUses aid useType' n | aid == assetId -> case traceShowId assetPrintedUses of
+      NoUses -> pure $ a & usesL . at useType' . non 0 %~ (+ n)
       Uses useType'' _ | useType' == useType'' -> do
         pure $ a & usesL . ix useType' +~ n
       UsesWithLimit useType'' _ pl | useType' == useType'' -> do

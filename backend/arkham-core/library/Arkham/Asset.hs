@@ -692,6 +692,8 @@ allAssets =
       --- guardian [hhg]
       SomeAssetCard enchantedArmor2
     , SomeAssetCard blessingOfIsis3
+    , --- seeker [hhg]
+      SomeAssetCard crypticGrimoireTextOfTheElderHerald4
     , -- A Light in the Fog
       --- guardian [lif]
       SomeAssetCard holyRosary2

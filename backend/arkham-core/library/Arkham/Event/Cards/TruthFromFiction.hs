@@ -21,7 +21,7 @@ truthFromFiction = event TruthFromFiction Cards.truthFromFiction
 instance RunMessage TruthFromFiction where
   runMessage msg e@(TruthFromFiction attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      assets <- select $ assetControlledBy iid <> AssetWithUseType Uses.Secret
+      assets <- select $ assetControlledBy iid <> AssetCanHaveUses Uses.Secret
       player <- getPlayer iid
       push $ chooseOne player [targetLabel aid [AddUses aid Uses.Secret 2] | aid <- assets]
       pure e

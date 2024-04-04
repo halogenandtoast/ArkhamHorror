@@ -173,7 +173,7 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
           assets <- select $ Matcher.AssetControlledBy whoMatcher
           traverse (field AssetCard) assets
         CostZones zs -> concatMapM getCards zs
-    (> n) . length <$> getCards zone
+    (>= n) . length <$> getCards zone
   DiscardCost _ _ -> pure True -- TODO: Make better
   DiscardCardCost _ -> pure True -- TODO: Make better
   DiscardRandomCardCost -> iid <=~> Matcher.InvestigatorWithDiscardableCard

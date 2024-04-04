@@ -252,22 +252,21 @@ instance RunMessage SkillTest where
       -- cancel the modifiers but retain the effects so the effects are queued,
       -- but if the token is returned it will no longer be counted. If we need
       -- to move this window we will need an alternate solution.
-      afterMsg <- checkWindows [mkAfter $ Window.SkillTestStep RevealChaosTokenStep]
+      afterRevealMsg <- checkWindows [mkAfter $ Window.SkillTestStep RevealChaosTokenStep]
+      afterResolveMsg <- checkWindows [mkAfter $ Window.SkillTestStep ResolveChaosSymbolEffectsStep]
       revealedChaosTokenFaces <- flip
         concatMapM
         skillTestToResolveChaosTokens
         \token -> do
           faces <- getModifiedChaosTokenFaces [token]
           pure [(token, face) | face <- faces]
-      pushAll $ afterMsg
+      pushAll $ afterRevealMsg
         : [ Will (ResolveChaosToken drawnChaosToken chaosTokenFace iid)
           | (drawnChaosToken, chaosTokenFace) <- revealedChaosTokenFaces
           ]
+          <> [afterResolveMsg]
       pure
         $ s
-        -- & ( subscribersL
-        --      %~ (nub . (<> [ChaosTokenTarget token' | token' <- skillTestRevealedChaosTokens]))
-        --  )
         & toResolveChaosTokensL
         .~ mempty
         & resolvedChaosTokensL

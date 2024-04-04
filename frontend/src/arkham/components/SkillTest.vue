@@ -1,8 +1,10 @@
 <script lang="ts" setup>
+import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import { computed } from 'vue';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
 import { Game } from '@/arkham/types/Game';
 import { SkillTest } from '@/arkham/types/SkillTest';
+import { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import Draggable from '@/components/Draggable.vue';
 import Card from '@/arkham/components/Card.vue'
 import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
@@ -53,6 +55,29 @@ const investigatorPortrait = computed(() => {
   }
 
   return null;
+})
+
+function isAbility(v: Message): v is AbilityLabel {
+  console.log(v)
+  if ("ability" in v) {
+    const ability = v.ability
+    if ("source" in ability) {
+      const { source } = ability
+
+      if (source.sourceTag === 'ProxySource') {
+        return source.source.tag === 'SkillTestSource'
+      }
+    }
+  }
+
+  return false
+}
+
+const abilities = computed<AbilityMessage[]>(() => {
+  return choices.value
+    .reduce<AbilityMessage[]>((acc, v, i) =>
+      isAbility(v) ? [...acc, { contents: v, displayAsAction: false, index: i}] : acc
+    , [])
 })
 
 
@@ -131,6 +156,14 @@ const testResult = computed(() => {
         </div>
         <h2>Committed Skills</h2>
       </div>
+
+      <AbilityButton
+        v-for="ability in abilities"
+        :key="ability.index"
+        :ability="ability.contents"
+        :tooltipIsButtonText="true"
+        @click="choose(ability.index)"
+        />
 
       <div v-if="skillTestResults" class="skill-test-results" :class="{ success: skillTestResults.skillTestResultsSuccess, failure: !skillTestResults.skillTestResultsSuccess}">
         <span v-if="skillTestResults.skillTestResultsSuccess">
@@ -261,7 +294,7 @@ const testResult = computed(() => {
   font: Arial, sans-serif;
 }
 
-.skip-triggers-button {
+button {
   width: 100%;
   border: 0;
   text-align: center;

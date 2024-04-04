@@ -119,6 +119,9 @@ baseAttrs cardCode eid meffectMetadata source target =
 targetL :: Lens' EffectAttrs Target
 targetL = lens effectTarget $ \m x -> m {effectTarget = x}
 
+metadataL :: Lens' EffectAttrs (Maybe (EffectMetadata Window Message))
+metadataL = lens effectMetadata $ \m x -> m {effectMetadata = x}
+
 instance ToJSON EffectAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "effect"
   toEncoding = genericToEncoding $ aesonOptions $ Just "effect"

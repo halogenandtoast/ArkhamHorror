@@ -125,6 +125,7 @@ import Arkham.Event.Events (
   stormOfSpiritsEffect,
   telescopicSight3Effect,
   thePaintedWorldEffect,
+  thirdTimesACharm2Effect,
   tidesOfFateEffect,
   uncageTheSoulEffect,
   vantagePointEffect,
@@ -398,6 +399,7 @@ allEffects =
     , ("07117", SomeEffect armageddonEffect)
     , ("07118", SomeEffect eyeOfChaosEffect)
     , ("07119", SomeEffect shroudOfShadowsEffect)
+    , ("07161", SomeEffect thirdTimesACharm2Effect)
     , ("07226", SomeEffect armageddon4Effect)
     , ("07227", SomeEffect eyeOfChaos4Effect)
     , ("07228", SomeEffect shroudOfShadows4Effect)

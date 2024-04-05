@@ -7,6 +7,7 @@ import Arkham.Classes.GameLogger
 import Arkham.Prelude
 import Control.Monad.Trans.Class
 import Data.Tuple.Extra (dupe)
+import Text.Pretty.Simple
 
 runQueueT :: HasQueue msg m => QueueT msg m a -> m a
 runQueueT body = do
@@ -41,6 +42,9 @@ class MonadIO m => HasQueue msg m | m -> msg where
   messageQueue :: m (Queue msg)
   pushAll :: [msg] -> m ()
   pushAll = withQueue_ . (<>)
+
+dumpQueue :: (HasQueue msg m, Show msg) => m ()
+dumpQueue = pPrint =<< readIORef . queueToRef =<< messageQueue
 
 newQueue :: MonadIO m => [msg] -> m (Queue msg)
 newQueue msgs = Queue <$> newIORef msgs

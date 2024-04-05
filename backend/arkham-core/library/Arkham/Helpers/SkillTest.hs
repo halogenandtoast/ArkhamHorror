@@ -7,7 +7,7 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.ClassSymbol
 import Arkham.Classes.HasGame
-import Arkham.Classes.HasQueue (HasQueue, pushAfter)
+import Arkham.Classes.HasQueue (HasQueue, popMessageMatching_, pushAfter)
 import Arkham.Classes.Query hiding (matches)
 import Arkham.CommitRestriction
 import Arkham.Enemy.Types (Field (..))
@@ -21,7 +21,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword (Keyword (Peril))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message (Message (RevelationSkillTest, SkillTestEnds), pattern BeginSkillTest)
+import Arkham.Message (Message (..), pattern BeginSkillTest)
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Question
@@ -32,6 +32,8 @@ import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
 import Arkham.Treachery.Types (Field (..))
+import Arkham.Window (Window (..))
+import Arkham.Window qualified as Window
 
 getBaseValueForSkillTestType
   :: HasGame m => InvestigatorId -> Maybe Action -> SkillTestType -> m Int
@@ -87,7 +89,7 @@ getIsBeingInvestigated :: HasGame m => LocationId -> m Bool
 getIsBeingInvestigated lid = do
   mTarget <- getSkillTestTarget
   mAction <- getSkillTestAction
-  pure $ mAction == Just Investigate && mTarget == Just (LocationTarget lid)
+  pure $ mAction == Just #investigate && mTarget == Just (LocationTarget lid)
 
 revelationSkillTest
   :: Sourceable source
@@ -162,7 +164,7 @@ investigate
 investigate iid (toSource -> source) (toTarget -> target) sType n =
   BeginSkillTest
     $ (initSkillTest iid source target sType n)
-      { skillTestAction = Just Investigate
+      { skillTestAction = Just #investigate
       }
 
 getIsScenarioAbility :: HasGame m => m Bool
@@ -191,7 +193,7 @@ isInvestigating :: HasGame m => InvestigatorId -> LocationId -> m Bool
 isInvestigating iid lid =
   andM
     [ (== Just (LocationTarget lid)) <$> getSkillTestTarget
-    , (== Just Investigate) <$> getSkillTestAction
+    , (== Just #investigate) <$> getSkillTestAction
     , (== Just iid) <$> getSkillTestInvestigator
     ]
 
@@ -398,3 +400,22 @@ getCommittableCards iid = do
 
 getCommittedCards :: HasGame m => InvestigatorId -> m [Card]
 getCommittedCards = field InvestigatorCommittedCards
+
+cancelTokenDraw :: HasQueue Message m => m ()
+cancelTokenDraw = do
+  let
+    removeWindow window = case windowType window of
+      Window.WouldRevealChaosToken {} -> True
+      _ -> False
+  popMessageMatching_ $ \case
+    RunWindow _ windows' -> any removeWindow windows'
+    _ -> False
+  popMessageMatching_ $ \case
+    NextChaosBagStep {} -> True
+    _ -> False
+  popMessageMatching_ $ \case
+    RunBag {} -> True
+    _ -> False
+  popMessageMatching_ $ \case
+    RunSkillTest {} -> True
+    _ -> False

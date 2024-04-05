@@ -277,6 +277,9 @@ instance HasField "owner" AssetAttrs (Maybe InvestigatorId) where
 instance HasField "uses" AssetAttrs (Map UseType Int) where
   getField = assetUses
 
+instance HasField "sealedChaosTokens" AssetAttrs [ChaosToken] where
+  getField = assetSealedChaosTokens
+
 instance HasField "use" AssetAttrs (UseType -> Int) where
   getField a uType = findWithDefault 0 uType a.uses
 

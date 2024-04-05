@@ -318,7 +318,10 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
 getCanAffordAbility
   :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Window -> m Bool
 getCanAffordAbility iid ability window =
-  andM [getCanAffordUse iid ability window, getCanAffordAbilityCost iid ability]
+  andM
+    [ getCanAffordUse iid ability window
+    , getCanAffordAbilityCost iid ability
+    ]
 
 getCanAffordAbilityCost :: HasGame m => InvestigatorId -> Ability -> m Bool
 getCanAffordAbilityCost iid a@Ability {..} = do
@@ -1518,7 +1521,7 @@ cardInFastWindows iid source _ windows' matcher =
   anyM (\window -> windowMatches iid source window matcher) windows'
 
 windowMatches
-  :: HasGame m
+  :: (HasGame m, HasCallStack)
   => InvestigatorId
   -> Source
   -> Window

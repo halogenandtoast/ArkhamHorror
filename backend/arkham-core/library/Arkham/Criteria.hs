@@ -265,6 +265,9 @@ instance Exists EnemyMatcher where
 instance Exists ExtendedCardMatcher where
   exists = ExtendedCardExists
 
+thisExists :: (Be a matcher, Exists matcher, Semigroup matcher) => a -> matcher -> Criterion
+thisExists a matcher = exists (be a <> matcher)
+
 youExist :: InvestigatorMatcher -> Criterion
 youExist matcher = exists (You <> matcher)
 

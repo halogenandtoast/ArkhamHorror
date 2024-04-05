@@ -215,6 +215,7 @@ allPlayerAssetCards =
       , crystalPendulum
       , crystallineElderSign3
       , crystallizerOfDreams
+      , curseOfAeons3
       , daisysToteBag
       , daisysToteBagAdvanced
       , darioElAmin
@@ -275,6 +276,7 @@ allPlayerAssetCards =
       , familiarSpirit
       , familyInheritance
       , farsight4
+      , favorOfTheMoon1
       , feedTheMind
       , feedTheMind3
       , fence1
@@ -4338,6 +4340,14 @@ tristanBotleyFixerForHire2 =
     , cdCardInHandEffects = True
     }
 
+curseOfAeons3 :: CardDef
+curseOfAeons3 =
+  (asset "07195" "Curse of Aeons" 2 Mystic)
+    { cdCardTraits = setFromList [Ritual, Cursed]
+    , cdSkills = [#wild]
+    , cdLevel = 3
+    }
+
 holyRosary2 :: CardDef
 holyRosary2 =
   (asset "07220" "Holy Rosary" 2 Guardian)
@@ -4385,6 +4395,16 @@ hardKnocks4 =
     , cdUses = uses Resource 2
     , cdLevel = 4
     }
+
+favorOfTheMoon1 :: CardDef
+favorOfTheMoon1 =
+  fast
+    $ (asset "07271" "Favor of the Moon" 1 Neutral)
+      { cdCardTraits = setFromList [Pact, Cursed]
+      , cdSkills = [#intellect, #combat]
+      , cdKeywords = singleton $ seal $ SealUpTo 3 #curse
+      , cdLevel = 1
+      }
 
 ancestralKnowledge3 :: CardDef
 ancestralKnowledge3 =

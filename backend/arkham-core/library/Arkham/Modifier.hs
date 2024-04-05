@@ -125,6 +125,7 @@ data ModifierType
   | CannotCancelOrIgnoreChaosToken ChaosTokenFace
   | ReturnBlessedToChaosBag
   | ReturnCursedToChaosBag
+  | MayChooseToRemoveChaosToken InvestigatorId
   | CannotCommitCards CardMatcher
   | CannotCommitToOtherInvestigatorsSkillTests
   | CannotDealDamage

@@ -937,6 +937,7 @@ data Message
   | UnfocusChaosTokens
   | SealChaosToken ChaosToken
   | SealedChaosToken ChaosToken Card
+  | SetChaosTokenAside ChaosToken -- see: Favor of the Moon (1)
   | UnsealChaosToken ChaosToken
   | ChaosTokenIgnored InvestigatorId Source ChaosToken
   | ChaosTokenCanceled InvestigatorId Source ChaosToken

@@ -237,6 +237,7 @@ const assetStory = computed(() => {
       <template v-if="debug.active">
         <button v-if="!asset.owner" @click="debug.send(game.id, {tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">Take control</button>
         <button v-if="asset.owner" @click="debug.send(game.id, {tag: 'Discard', contents: [null, { tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}]})">Discard</button>
+        <button v-if="asset.owner && asset.exhausted" @click="debug.send(game.id, {tag: 'Ready', contents: { tag: 'AssetTarget', contents: id}})">Ready</button>
       </template>
       <Asset
         v-for="assetId in asset.assets"

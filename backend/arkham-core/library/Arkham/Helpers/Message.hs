@@ -509,3 +509,7 @@ placeDoomOnAgenda = PlaceDoomOnAgenda 1 CanNotAdvance
 
 placeDoomOnAgendaAndCheckAdvance :: Message
 placeDoomOnAgendaAndCheckAdvance = PlaceDoomOnAgenda 1 CanAdvance
+
+handleTargetChoice
+  :: (Sourceable source, Targetable target) => InvestigatorId -> source -> target -> Message
+handleTargetChoice iid (toSource -> source) (toTarget -> target) = HandleTargetChoice iid source target

@@ -83,6 +83,11 @@ data AbilityType
   | ForcedWhen {criteria :: Criterion, abilityType :: AbilityType}
   deriving stock (Show, Ord, Eq, Data)
 
+pattern Anytime :: AbilityType
+pattern Anytime <- SilentForcedAbility AnyWindow
+  where
+    Anytime = SilentForcedAbility AnyWindow
+
 abilityTypeCostL :: Traversal' AbilityType Cost
 abilityTypeCostL f = \case
   FastAbility' cost action -> (`FastAbility'` action) <$> f cost

@@ -3001,6 +3001,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
     let
       windows = [mkWhen (Window.DuringTurn iid), mkWhen Window.FastPlayerWindow, mkWhen Window.NonFast]
+    -- TODO: we end up duplicating this expensive call for each window we should pass them all
     actions <- nub <$> concatMapM (getActions iid) windows
     anyForced <- anyM (isForcedAbility iid) actions
     if anyForced

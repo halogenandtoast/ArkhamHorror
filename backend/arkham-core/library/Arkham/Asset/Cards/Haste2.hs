@@ -50,7 +50,7 @@ instance RunMessage Haste2 where
     UseCardAbility iid (isSource attrs -> True) 1 (getActionTypes -> as) _ -> do
       a' <- getAttrs @Investigator iid
       actions <- withModifiers iid (toModifiers attrs [ActionCostModifier (-1)]) $ do
-        concatMapM (getActions iid) (defaultWindows iid)
+        getActions iid (defaultWindows iid)
 
       playableCards <- withModifiers iid (toModifiers attrs [ActionCostOf IsAnyAction (-1)]) $ do
         filter (`cardMatch` NotCard FastCard) <$> getPlayableCards a' UnpaidCost (defaultWindows iid)

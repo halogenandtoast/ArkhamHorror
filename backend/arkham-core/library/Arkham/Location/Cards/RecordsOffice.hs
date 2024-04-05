@@ -41,7 +41,7 @@ instance RunMessage RecordsOffice where
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) -> do
       player <- getPlayer iid
       actions <- withModifiers iid (toModifiers attrs [ActionCostModifier (-1)]) $ do
-        concatMapM (getActions iid) (defaultWindows iid)
+        getActions iid (defaultWindows iid)
 
       let available = filter (elem #investigate . abilityActions) (nub actions)
 

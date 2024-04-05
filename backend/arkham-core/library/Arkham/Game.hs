@@ -1157,7 +1157,7 @@ abilityMatches a@Ability {..} = \case
   PerformableAbility modifiers' -> do
     let ab = applyAbilityModifiers a modifiers'
     iid <- view activeInvestigatorIdL <$> getGame
-    anyM (\w -> getCanPerformAbility iid w ab) (Window.defaultWindows iid)
+    getCanPerformAbility iid (Window.defaultWindows iid) ab
   AnyAbility -> pure True
   HauntedAbility -> pure $ abilityType == Haunted
   AssetAbility assetMatcher -> do
@@ -2092,11 +2092,7 @@ getAssetsMatching matcher = do
       iid <- view activeInvestigatorIdL <$> getGame
       let adjustAbility ab = applyAbilityModifiers ab modifiers'
       abilities <- selectMap adjustAbility $ abilityMatcher <> AssetAbility (AssetWithId $ toId asset)
-      notNull
-        <$> filterM
-          ( \ab -> anyM (\w -> getCanPerformAbility iid w ab) (Window.defaultWindows iid)
-          )
-          abilities
+      notNull <$> filterM (getCanPerformAbility iid (Window.defaultWindows iid)) abilities
     ClosestAsset start assetMatcher -> flip filterM as $ \asset -> do
       aids <- select assetMatcher
       if toId asset `elem` aids
@@ -2562,7 +2558,7 @@ enemyMatcherFilter = \case
                 [ pure . (`abilityIs` Action.Fight)
                 , -- Because ChooseFightEnemy happens after taking a fight action we
                   -- need to decrement the action cost
-                  getCanPerformAbility iid window
+                  getCanPerformAbility iid [window]
                     . (`applyAbilityModifiers` [ActionCostModifier (-1)])
                     . overrideFunc
                 ]
@@ -2592,7 +2588,7 @@ enemyMatcherFilter = \case
                 [ pure . (`abilityIs` Action.Fight)
                 , -- Because ChooseFightEnemy happens after taking a fight action we
                   -- need to decrement the action cost
-                  getCanPerformAbility iid window
+                  getCanPerformAbility iid [window]
                     . (`applyAbilityModifiers` [ActionCostModifier (-1)])
                     . overrideAbilityCriteria override
                 ]
@@ -2635,7 +2631,7 @@ enemyMatcherFilter = \case
           ( andM
               . sequence
                 [ pure . (`abilityIs` Action.Evade)
-                , getCanPerformAbility iid window
+                , getCanPerformAbility iid [window]
                     . (`applyAbilityModifiers` [ActionCostModifier (-1)])
                     . overrideFunc
                 ]
@@ -2665,7 +2661,7 @@ enemyMatcherFilter = \case
                 [ pure . (`abilityIs` Action.Evade)
                 , -- Because ChooseEvadeEnemy happens after taking a fight action we
                   -- need to decrement the action cost
-                  getCanPerformAbility iid window
+                  getCanPerformAbility iid [window]
                     . (`applyAbilityModifiers` [ActionCostModifier (-1)])
                     . overrideAbilityCriteria override
                 ]
@@ -2708,7 +2704,7 @@ enemyMatcherFilter = \case
           ( andM
               . sequence
                 [ pure . (`abilityIs` Action.Engage)
-                , getCanPerformAbility iid window
+                , getCanPerformAbility iid [window]
                     . (`applyAbilityModifiers` [ActionCostModifier (-1)])
                     . overrideFunc
                 ]
@@ -2738,7 +2734,7 @@ enemyMatcherFilter = \case
                 [ pure . (`abilityIs` Action.Engage)
                 , -- Because ChooseEngageEnemy happens after taking a fight action we
                   -- need to decrement the action cost
-                  getCanPerformAbility iid window
+                  getCanPerformAbility iid [window]
                     . (`applyAbilityModifiers` [ActionCostModifier (-1)])
                     . overrideAbilityCriteria override
                 ]
@@ -3365,9 +3361,7 @@ instance Query ExtendedCardMatcher where
         flip runReaderT (g {gameEntities = gameEntities g <> extraEntities}) $ do
           flip anyM abilities' $ \ab -> do
             let adjustedAbility = applyAbilityModifiers ab modifiers'
-            anyM
-              (\w -> getCanPerformAbility iid w adjustedAbility)
-              (Window.defaultWindows iid)
+            getCanPerformAbility iid (Window.defaultWindows iid) adjustedAbility
       HandCardWithDifferentTitleFromAtLeastOneAsset who assetMatcher cardMatcher ->
         do
           iids <- select who

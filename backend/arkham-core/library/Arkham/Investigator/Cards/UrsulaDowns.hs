@@ -41,7 +41,7 @@ instance RunMessage UrsulaDowns where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let windows' = defaultWindows iid
       let decreaseCost = flip applyAbilityModifiers [ActionCostModifier (-1)]
-      actions <- nub <$> concatMapM (\w -> getActionsWith iid w decreaseCost) windows'
+      actions <- getActionsWith iid windows' decreaseCost
       handCards <- field InvestigatorHand iid
       let investigateCards = filter (elem #investigate . cdActions . toCardDef) handCards
       playableCards <- withModifiers iid (toModifiers attrs [ActionCostOf IsAnyAction (-1)]) $ do

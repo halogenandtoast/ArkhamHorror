@@ -490,7 +490,13 @@ instance RunMessage ChaosBag where
       pure $ c & forceDrawL ?~ face
     SetChaosTokens tokens' -> do
       tokens'' <- traverse createChaosToken tokens'
-      pure $ c & chaosTokensL .~ tokens'' & setAsideChaosTokensL .~ mempty
+      blessTokens <- replicateM 10 $ createChaosToken #bless
+      curseTokens <- replicateM 10 $ createChaosToken #curse
+      pure
+        $ c
+        & (chaosTokensL .~ tokens'')
+        & (setAsideChaosTokensL .~ mempty)
+        & (tokenPoolL .~ blessTokens <> curseTokens)
     ResetChaosTokens _source -> do
       returnAllBlessed <-
         getIsSkillTest >>= \case
@@ -653,8 +659,11 @@ instance RunMessage ChaosBag where
         & (setAsideChaosTokensL %~ (\\ tokens'))
         & (choiceL .~ Nothing)
     AddChaosToken chaosTokenFace -> do
-      token <- createChaosToken chaosTokenFace
-      pure $ c & chaosTokensL %~ (token :)
+      token <- case chaosTokenFace of
+        BlessToken -> pure $ fromMaybe (error "no more bless tokens") $ find ((== #bless) . (.face)) chaosBagTokenPool
+        CurseToken -> pure $ fromMaybe (error "no more curse tokens") $ find ((== #curse) . (.face)) chaosBagTokenPool
+        _ -> createChaosToken chaosTokenFace
+      pure $ c & chaosTokensL %~ (token :) & tokenPoolL %~ delete token
     SwapChaosToken originalFace newFace -> do
       let
         replaceToken [] = []

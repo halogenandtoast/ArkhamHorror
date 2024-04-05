@@ -3228,17 +3228,29 @@ instance Projection Investigator where
 
 instance Query ChaosTokenMatcher where
   select matcher = do
+    tokenPool <- if includeTokenPool matcher then getTokenPool else pure []
     tokens <-
-      if includeSealed
+      if includeSealed matcher
         then getAllChaosTokens
         else
           if isInfestation
             then getInfestationTokens
             else getBagChaosTokens
-    filterM (go matcher) tokens
+    filterM (go matcher) ((if inTokenPool matcher then [] else tokens) <> tokenPool)
    where
-    includeSealed = case matcher of
+    includeSealed = \case
       IncludeSealed _ -> True
+      IncludeTokenPool m -> includeSealed m
+      _ -> False
+    includeTokenPool = \case
+      IncludeSealed m -> includeTokenPool m
+      IncludeTokenPool _ -> True
+      InTokenPool _ -> True
+      _ -> False
+    inTokenPool = \case
+      IncludeSealed m -> inTokenPool m
+      IncludeTokenPool m -> inTokenPool m
+      InTokenPool _ -> True
       _ -> False
     isInfestation = case matcher of
       IsInfestationToken _ -> True
@@ -3255,6 +3267,7 @@ instance Query ChaosTokenMatcher where
             <> infestationSetAside bag
             <> maybeToList (infestationCurrentToken bag)
     go = \case
+      InTokenPool m -> go m
       WouldReduceYourSkillValueToZero -> \t -> do
         mSkillTest <- getSkillTest
         case mSkillTest of
@@ -3282,6 +3295,7 @@ instance Query ChaosTokenMatcher where
       ChaosTokenMatchesAny ms -> \t -> anyM (`go` t) ms
       ChaosTokenMatches ms -> \t -> allM (`go` t) ms
       IncludeSealed m -> go m
+      IncludeTokenPool m -> go m
       IsInfestationToken m -> go m
 
 instance Query AssetMatcher where

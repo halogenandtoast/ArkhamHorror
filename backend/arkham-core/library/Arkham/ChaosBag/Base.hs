@@ -21,7 +21,6 @@ allChaosBagChaosTokens ChaosBag {..} =
   chaosBagChaosTokens
     <> chaosBagSetAsideChaosTokens
     <> chaosBagRevealedChaosTokens
-    <> chaosBagTokenPool
 
 instance ToJSON ChaosBag where
   toJSON = genericToJSON $ aesonOptions $ Just "chaosBag"

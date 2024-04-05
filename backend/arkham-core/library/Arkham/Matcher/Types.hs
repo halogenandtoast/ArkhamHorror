@@ -1107,8 +1107,10 @@ data ChaosTokenMatcher
   | ChaosTokenMatchesAny [ChaosTokenMatcher]
   | AnyChaosToken
   | IsSymbol
+  | InTokenPool ChaosTokenMatcher
   | ChaosTokenMatches [ChaosTokenMatcher]
   | IncludeSealed ChaosTokenMatcher
+  | IncludeTokenPool ChaosTokenMatcher
   | WouldReduceYourSkillValueToZero
   | IsInfestationToken ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data)

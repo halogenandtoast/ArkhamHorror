@@ -615,6 +615,7 @@ allPlayerAssetCards =
       , treasureHunter1
       , trenchCoat
       , trenchKnife
+      , tristanBotleyFixerForHire2
       , trueGrit
       , tryAndTryAgain1
       , tryAndTryAgain3
@@ -4324,6 +4325,17 @@ crypticGrimoireTextOfTheElderGuardian4 =
     , cdSlots = [#hand]
     , cdLevel = 4
     , cdKeywords = singleton $ Keyword.Researched YouHaveTranslatedTheGrimoire
+    }
+
+tristanBotleyFixerForHire2 :: CardDef
+tristanBotleyFixerForHire2 =
+  (asset "07194" ("Tristan Botley" <:> "Fixer for Hire") 5 Rogue)
+    { cdCardTraits = setFromList [Ally, Criminal, Cursed]
+    , cdSkills = [#wild]
+    , cdSlots = [#ally]
+    , cdLevel = 2
+    , cdKeywords = singleton $ Keyword.Researched YouHaveTranslatedTheGrimoire
+    , cdCardInHandEffects = True
     }
 
 holyRosary2 :: CardDef

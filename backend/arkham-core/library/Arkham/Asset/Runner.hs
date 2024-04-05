@@ -152,7 +152,7 @@ instance RunMessage AssetAttrs where
           _ -> a.controller == Just iid
       when shouldDiscard $ push $ toDiscard GameSource assetId
       pure a
-    AddUses aid useType' n | aid == assetId -> case traceShowId assetPrintedUses of
+    AddUses aid useType' n | aid == assetId -> case assetPrintedUses of
       NoUses -> pure $ a & usesL . at useType' . non 0 %~ (+ n)
       Uses useType'' _ | useType' == useType'' -> do
         pure $ a & usesL . ix useType' +~ n

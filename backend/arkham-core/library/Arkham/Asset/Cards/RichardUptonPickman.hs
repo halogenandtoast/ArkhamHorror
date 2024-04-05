@@ -8,8 +8,6 @@ import Arkham.Enemy.Types (Field (EnemyCard))
 import Arkham.Helpers.Modifiers hiding (skillTestModifiers)
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher hiding (PlaceUnderneath)
-import Arkham.Source
-import Arkham.Target
 import Arkham.Trait (Trait (Ghoul))
 
 newtype RichardUptonPickman = RichardUptonPickman AssetAttrs

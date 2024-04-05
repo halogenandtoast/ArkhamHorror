@@ -503,22 +503,19 @@ instance RunMessage ChaosBag where
           False -> pure True
 
       -- TODO: We need to decide which tokens to keep, i.e. Blessed Blade (4)
-      tokensToReturn <- forMaybeM chaosBagSetAsideChaosTokens \(traceShowId -> token) -> do
+      (tokensToReturn, tokensToPool) <- flip partitionM chaosBagSetAsideChaosTokens \token -> do
         if
           | token.face == #bless -> do
-              returnBlessed <-
-                if returnAllBlessed then pure True else traceShowId <$> hasModifier token ReturnBlessedToChaosBag
-              pure $ guard returnBlessed $> token
+              if returnAllBlessed then pure True else hasModifier token ReturnBlessedToChaosBag
           | token.face == #curse -> do
-              returnCursed <-
-                if returnAllCursed then pure True else traceShowId <$> hasModifier token ReturnCursedToChaosBag
-              pure $ guard returnCursed $> token
-          | otherwise -> pure $ Just token
+              if returnAllCursed then pure True else hasModifier token ReturnCursedToChaosBag
+          | otherwise -> pure True
 
       pure
         $ c
         & (chaosTokensL <>~ map (\token -> token {chaosTokenRevealedBy = Nothing}) tokensToReturn)
         & (setAsideChaosTokensL .~ mempty)
+        & (tokenPoolL <>~ map (\token -> token {chaosTokenRevealedBy = Nothing}) tokensToPool)
         & (choiceL .~ Nothing)
     RequestChaosTokens source miid revealStrategy strategy -> do
       case revealStrategy of

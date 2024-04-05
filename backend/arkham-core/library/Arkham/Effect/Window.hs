@@ -17,6 +17,7 @@ data EffectWindow
   | EffectNextActionWindow
   | EffectSetupWindow
   | EffectTurnWindow
+  | EffectNextTurnWindow
   | EffectCardResolutionWindow
   | EffectGameWindow
   | EffectAttackWindow

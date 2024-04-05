@@ -351,6 +351,10 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 <template>
   <div v-if="!gameOver" id="scenario" class="scenario" :data-scenario="scenario.id">
     <div class="scenario-body">
+      <div v-if="debug.active">
+        <button @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'BlessToken'})">Add Bless Token</button>
+        <button @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'CurseToken'})">Add Curse Token</button>
+      </div>
       <StatusBar :game="game" :playerId="playerId" @choose="choose" />
       <CardRow
         v-if="showCards.ref.length > 0"

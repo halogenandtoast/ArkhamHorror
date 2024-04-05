@@ -3,7 +3,6 @@ module Arkham.Event.Cards.Riastrad1 (riastrad1, Riastrad1 (..)) where
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.ChaosBag
-import Arkham.Modifier
 
 newtype Riastrad1 = Riastrad1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

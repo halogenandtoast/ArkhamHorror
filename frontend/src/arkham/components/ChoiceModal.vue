@@ -4,6 +4,7 @@ import type { Game } from '@/arkham/types/Game';
 import type { Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import * as ArkhamGame from '@/arkham/types/Game';
+import { replaceIcons } from '@/arkham/helpers';
 import { AmountChoice, QuestionType } from '@/arkham/types/Question';
 import Card from '@/arkham/components/Card.vue';
 import Draggable from '@/components/Draggable.vue';
@@ -34,7 +35,7 @@ const chooseAmounts = inject<(amounts: Record<string, number>) => Promise<void>>
 const paymentAmountsLabel = computed(() => {
   const question = props.game.question[props.playerId]
   if (question?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
-    return question.label
+    return replaceIcons(question.label)
   }
 
   return null
@@ -43,7 +44,7 @@ const paymentAmountsLabel = computed(() => {
 const amountsLabel = computed(() => {
   const question = props.game.question[props.playerId]
   if (question?.tag === QuestionType.CHOOSE_AMOUNTS) {
-    return question.label
+    return replaceIcons(question.label)
   }
 
   if (question?.tag === QuestionType.QUESTION_LABEL && question?.question?.tag === QuestionType.CHOOSE_AMOUNTS) {
@@ -278,18 +279,6 @@ const title = computed(() => {
 
   return null
 })
-
-const replaceIcons = function(body: string) {
-  return body.
-    replace('{action}', '<span class="action-icon"></span>').
-    replace('{fast}', '<span class="fast-icon"></span>').
-    replace('{willpower}', '<span class="willpower-icon"></span>').
-    replace('{intellect}', '<span class="intellect-icon"></span>').
-    replace('{combat}', '<span class="combat-icon"></span>').
-    replace('{agility}', '<span class="agility-icon"></span>').
-    replace('{wild}', '<span class="wild-icon"></span>').
-    replace('{elderSign}', '<span class="elder-sign"></span>')
-}
 </script>
 
 <template>
@@ -367,6 +356,9 @@ const replaceIcons = function(body: string) {
 .amount-contents {
   background: #735e7b;
   padding: 10px;
+  box-sizing: border-box;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
   div {
     display: inline;
   }

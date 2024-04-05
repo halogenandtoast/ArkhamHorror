@@ -147,6 +147,20 @@ body {
   }
 }
 
+.curse-icon {
+  &:before {
+    font-family: "ArkhamIcons";
+    content: "\e929";
+  }
+}
+
+.bless-icon {
+  &:before {
+    font-family: "ArkhamIcons";
+    content: "\e92a";
+  }
+}
+
 .wild-icon {
   &:before {
     font-family: "Arkham";

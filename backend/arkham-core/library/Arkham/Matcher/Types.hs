@@ -996,6 +996,7 @@ data SkillTestMatcher
   | NotSkillTest SkillTestMatcher
   | SkillTestFromRevelation
   | SkillTestWithRevealedChaosToken ChaosTokenMatcher
+  | SkillTestWithRevealedChaosTokenCount Int ChaosTokenMatcher
   | SkillTestWithResolvedChaosTokenBy InvestigatorMatcher ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data)
 

@@ -695,6 +695,8 @@ allAssets =
     , --- seeker [hhg]
       SomeAssetCard crypticGrimoireTextOfTheElderHerald4
     , SomeAssetCard crypticGrimoireTextOfTheElderGuardian4
+    , --- rogue [hhg]
+      SomeAssetCard tristanBotleyFixerForHire2
     , -- A Light in the Fog
       --- guardian [lif]
       SomeAssetCard holyRosary2

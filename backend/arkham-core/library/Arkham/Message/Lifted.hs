@@ -450,3 +450,6 @@ mapQueue = lift . Msg.mapQueue
 toDiscardBy
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 toDiscardBy iid source target = push $ Msg.toDiscardBy iid source target
+
+putCardIntoPlay :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
+putCardIntoPlay iid card = push $ Msg.putCardIntoPlay iid card

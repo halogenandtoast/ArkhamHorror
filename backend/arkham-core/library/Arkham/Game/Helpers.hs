@@ -2878,10 +2878,13 @@ skillTestMatches iid source st = \case
   Matcher.SkillTestSourceMatches sourceMatcher ->
     sourceMatches (skillTestSource st) sourceMatcher
   Matcher.SkillTestWithRevealedChaosToken matcher ->
-    anyM (`chaosTokenMatches` matcher) $ skillTestRevealedChaosTokens st
+    anyM (`chaosTokenMatches` Matcher.IncludeSealed matcher) $ skillTestRevealedChaosTokens st
+  Matcher.SkillTestWithRevealedChaosTokenCount n matcher ->
+    (>= n)
+      <$> countM (`chaosTokenMatches` Matcher.IncludeSealed matcher) (skillTestRevealedChaosTokens st)
   Matcher.SkillTestWithResolvedChaosTokenBy whoMatcher matcher -> do
     iids <- select whoMatcher
-    anyM (`chaosTokenMatches` matcher)
+    anyM (`chaosTokenMatches` Matcher.IncludeSealed matcher)
       . filter (maybe False (`elem` iids) . chaosTokenRevealedBy)
       $ skillTestRevealedChaosTokens st
   Matcher.SkillTestFromRevelation -> pure $ skillTestIsRevelation st

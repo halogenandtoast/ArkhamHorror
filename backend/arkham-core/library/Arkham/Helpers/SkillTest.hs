@@ -329,7 +329,7 @@ getIsCommittable a c = do
       if not allowedToCommit
         then pure False
         else do
-          allCommittedCards <- traceShowId <$> selectAll InvestigatorCommittedCards Anyone
+          allCommittedCards <- selectAll InvestigatorCommittedCards Anyone
           let
             onlyCardCommittedToTest = elem OnlyCardCommittedToTest . cdCommitRestrictions . toCardDef
             onlyCardComittedToTestCommitted = any onlyCardCommittedToTest allCommittedCards

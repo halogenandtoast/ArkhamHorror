@@ -55,7 +55,7 @@ instance RunMessage Duke where
           ( andM
               . sequence
                 [ pure . (`abilityIs` #investigate)
-                , (\ab -> anyM (getCanAffordAbility iid ab) windows')
+                , (\ab -> getCanAffordAbility iid ab windows')
                     . (`applyAbilityModifiers` [ActionCostModifier (-1)])
                 ]
           )

@@ -69,8 +69,7 @@ instance RunMessage SignMagick3 where
                 <> assetControlledBy iid
                 <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Ritual]
             )
-      abilities' <-
-        filterM (\ab -> anyM (\w -> getCanPerformAbility iid w ab) (defaultWindows iid)) abilities
+      abilities' <- filterM (getCanPerformAbility iid (defaultWindows iid)) abilities
       player <- getPlayer iid
       push $ chooseOne player [AbilityLabel iid ab [] [] | ab <- abilities']
       pure a

@@ -129,7 +129,7 @@ getWindowSkippable _ _ w@(windowType -> Window.ActivateAbility iid _ ab) = do
         else uab {usedTimes = usedTimes uab - 1} : xs
     excludeOne (uab : xs) = uab : excludeOne xs
   andM
-    [ getCanAffordUseWith excludeOne CanNotIgnoreAbilityLimit iid ab w
+    [ getCanAffordUseWith excludeOne CanNotIgnoreAbilityLimit iid ab [w]
     , withAlteredGame withoutCanModifiers
         $ passesCriteria iid Nothing (abilitySource ab) [w] (abilityCriteria ab)
     ]
@@ -2299,7 +2299,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     committedCards <- field InvestigatorCommittedCards iid
     mustBeCommited <- filterM (`hasModifier` MustBeCommitted) committedCards
     let window = mkWhen (Window.SkillTest $ skillTestType skillTest)
-    actions <- getActions iid window
+    actions <- getActions iid [window]
 
     skillTestModifiers' <- getModifiers SkillTestTarget
     committableCards <- getCommittableCards (toId a)
@@ -2352,7 +2352,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   RunWindow iid windows
     | iid == toId a
     , not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows -> do
-        actions <- nub . concat <$> traverse (getActions iid) windows
+        actions <- getActions iid windows
         playableCards <- getPlayableCards a UnpaidCost windows
         runWindow a windows actions playableCards
         pure a
@@ -3001,8 +3001,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
     let
       windows = [mkWhen (Window.DuringTurn iid), mkWhen Window.FastPlayerWindow, mkWhen Window.NonFast]
-    -- TODO: we end up duplicating this expensive call for each window we should pass them all
-    actions <- nub <$> concatMapM (getActions iid) windows
+    actions <- getActions iid windows
     anyForced <- anyM (isForcedAbility iid) actions
     if anyForced
       then do
@@ -3066,7 +3065,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   PlayerWindow iid additionalActions isAdditional | iid /= investigatorId -> do
     let windows = [mkWhen (Window.DuringTurn iid), mkWhen Window.FastPlayerWindow]
-    actions <- nub <$> concatMapM (getActions investigatorId) windows
+    actions <- getActions investigatorId windows
     anyForced <- anyM (isForcedAbility investigatorId) actions
     unless anyForced $ do
       playableCards <- getPlayableCards a UnpaidCost windows

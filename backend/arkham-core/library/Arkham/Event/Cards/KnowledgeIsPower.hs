@@ -94,14 +94,7 @@ instance RunMessage KnowledgeIsPower where
         selectMap adjustAbility
           $ AssetAbility (AssetWithId aid)
           <> AbilityOneOf [AbilityIsActionAbility, AbilityIsFastAbility]
-      abilities' <-
-        filterM
-          ( \ab ->
-              anyM
-                (\w -> getCanPerformAbility iid w ab)
-                (Window.defaultWindows iid)
-          )
-          abilities
+      abilities' <- filterM (getCanPerformAbility iid (Window.defaultWindows iid)) abilities
       player <- getPlayer iid
       push $ chooseOne player [AbilityLabel iid ab [] [] | ab <- abilities']
       pure e

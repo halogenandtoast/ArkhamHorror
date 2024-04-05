@@ -88,7 +88,7 @@ instance RunMessage LukeRobinson where
           || Window.hasEliminatedWindow windows' ->
           do
             lukePlayable <- concatMap snd <$> getLukePlayable attrs windows'
-            actions <- nub . concat <$> traverse (getActions iid) windows'
+            actions <- getActions iid windows'
             playableCards <- getPlayableCards attrs UnpaidCost windows'
             runWindow attrs windows' actions (nub $ playableCards <> lukePlayable)
             pure i

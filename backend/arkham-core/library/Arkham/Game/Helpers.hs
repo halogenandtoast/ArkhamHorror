@@ -170,8 +170,8 @@ getAsIfInHandCards iid = do
     <> cardsAddedViaModifiers
 
 getCanPerformAbility
-  :: HasGame m => InvestigatorId -> Window -> Ability -> m Bool
-getCanPerformAbility !iid !window !ability = do
+  :: HasGame m => InvestigatorId -> [Window] -> Ability -> m Bool
+getCanPerformAbility !iid !ws !ability = do
   -- can perform an ability means you can afford it
   -- it is in the right window
   -- passes restrictions
@@ -192,11 +192,11 @@ getCanPerformAbility !iid !window !ability = do
       _ -> id
 
   andM
-    [ getCanAffordCost iid (toSource ability) actions [window] cost
-    , meetsActionRestrictions iid window ability
-    , windowMatches iid (toSource ability) window (abilityWindow ability)
-    , passesCriteria iid Nothing (abilitySource ability) [window] criteria
-    , allM (getCanAffordCost iid (abilitySource ability) actions [window]) additionalCosts
+    [ getCanAffordCost iid (toSource ability) actions ws cost
+    , meetsActionRestrictions iid ws ability
+    , anyM (\window -> windowMatches iid (toSource ability) window (abilityWindow ability)) ws
+    , passesCriteria iid Nothing (abilitySource ability) ws criteria
+    , allM (getCanAffordCost iid (abilitySource ability) actions ws) additionalCosts
     , not <$> preventedByInvestigatorModifiers iid ability
     ]
 
@@ -224,7 +224,7 @@ preventedByInvestigatorModifiers iid ability = do
       _ -> pure False
 
 meetsActionRestrictions
-  :: HasGame m => InvestigatorId -> Window -> Ability -> m Bool
+  :: HasGame m => InvestigatorId -> [Window] -> Ability -> m Bool
 meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
  where
   go = \case
@@ -316,10 +316,10 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
   Action.Circle -> pure True
 
 getCanAffordAbility
-  :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Window -> m Bool
-getCanAffordAbility iid ability window =
+  :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
+getCanAffordAbility iid ability ws =
   andM
-    [ getCanAffordUse iid ability window
+    [ getCanAffordUse iid ability ws
     , getCanAffordAbilityCost iid ability
     ]
 
@@ -409,7 +409,7 @@ getAbilityLimit iid ability = do
 -- limits for instance won't work if we have a group limit higher than one, for
 -- that we need to sum uses across all investigators. So we should fix this
 -- soon.
-getCanAffordUse :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Window -> m Bool
+getCanAffordUse :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
 getCanAffordUse = getCanAffordUseWith id CanIgnoreAbilityLimit
 
 -- Use `f` to modify use count, used for `getWindowSkippable` to exclude the current call
@@ -420,9 +420,9 @@ getCanAffordUseWith
   -> CanIgnoreAbilityLimit
   -> InvestigatorId
   -> Ability
-  -> Window
+  -> [Window]
   -> m Bool
-getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
+getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
   usedAbilities <-
     fmap f . filterDepthSpecificAbilities =<< field InvestigatorUsedAbilities iid
   limit <- getAbilityLimit iid ability
@@ -486,16 +486,20 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
         -- This is difficult and based on the window, so we need to match out the
         -- relevant investigator ids from the window. If this becomes more prevalent
         -- we may want a method from `Window -> Maybe InvestigatorId`
-        case windowType window of
-          Window.CommittedCard iid' _ -> do
-            let
-              matchingPerInvestigatorCount =
-                flip count usedAbilities $ \usedAbility' ->
-                  flip any (usedAbilityWindows usedAbility') $ \case
-                    (windowType -> Window.CommittedCard iid'' _) -> usedAbility usedAbility' == ability && iid' == iid''
-                    _ -> False
-            pure $ matchingPerInvestigatorCount < n
-          _ -> error "Unhandled per investigator limit"
+        anyM
+          ( \window ->
+              case windowType window of
+                Window.CommittedCard iid' _ -> do
+                  let
+                    matchingPerInvestigatorCount =
+                      flip count usedAbilities $ \usedAbility' ->
+                        flip any (usedAbilityWindows usedAbility') $ \case
+                          (windowType -> Window.CommittedCard iid'' _) -> usedAbility usedAbility' == ability && iid' == iid''
+                          _ -> False
+                  pure $ matchingPerInvestigatorCount < n
+                _ -> pure False
+          )
+          ws
       GroupLimit _ n -> do
         usedAbilities' <-
           fmap (map usedAbility)
@@ -505,16 +509,16 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability window = do
         let total = count (== ability) usedAbilities'
         pure $ total < n
 
-getActions :: (HasGame m, HasCallStack) => InvestigatorId -> Window -> m [Ability]
-getActions iid window = getActionsWith iid window id
+getActions :: (HasGame m, HasCallStack) => InvestigatorId -> [Window] -> m [Ability]
+getActions iid ws = getActionsWith iid ws id
 
 getActionsWith
   :: (HasCallStack, HasGame m)
   => InvestigatorId
-  -> Window
+  -> [Window]
   -> (Ability -> Ability)
   -> m [Ability]
-getActionsWith iid window f = do
+getActionsWith iid ws f = do
   modifiersForFilter <- getModifiers iid
   let
     abilityFilters =
@@ -600,13 +604,17 @@ getActionsWith iid window f = do
           -- If the window is fast we only permit fast abilities, but forced
           -- abilities need to be everpresent so we include them
           needsToBeFast =
-            windowType window
-              == Window.FastPlayerWindow
-              && not
-                ( isFastAbility ability
-                    || isForced
-                    || isReactionAbility ability
-                )
+            all
+              ( \window ->
+                  windowType window
+                    == Window.FastPlayerWindow
+                    && not
+                      ( isFastAbility ability
+                          || isForced
+                          || isReactionAbility ability
+                      )
+              )
+              ws
 
         pure
           $ if any prevents investigatorModifiers
@@ -620,8 +628,8 @@ getActionsWith iid window f = do
     filterM
       ( \action ->
           andM
-            [ getCanPerformAbility iid window action
-            , getCanAffordAbility iid action window
+            [ getCanPerformAbility iid ws action
+            , getCanAffordAbility iid action ws
             ]
       )
       actions''
@@ -727,7 +735,7 @@ hasFightActions
   -> [Window]
   -> m Bool
 hasFightActions iid window windows' =
-  anyM (\a -> anyM (\w -> getCanPerformAbility iid w $ decreaseAbilityActionCost a 1) windows')
+  anyM (\a -> getCanPerformAbility iid windows' $ decreaseAbilityActionCost a 1)
     =<< select (Matcher.AbilityIsAction #fight <> Matcher.AbilityWindow window)
 
 hasEvadeActions
@@ -737,7 +745,7 @@ hasEvadeActions
   -> [Window]
   -> m Bool
 hasEvadeActions iid window windows' =
-  anyM (\a -> anyM (\w -> getCanPerformAbility iid w a) windows')
+  anyM (getCanPerformAbility iid windows')
     =<< select
       (Matcher.AbilityIsAction Action.Evade <> Matcher.AbilityWindow window)
 
@@ -3004,7 +3012,7 @@ actionMatches iid a (Matcher.ActionOneOf as) = anyM (actionMatches iid a) as
 actionMatches iid a Matcher.RepeatableAction = do
   a' <- getAttrs @Investigator iid
   actions <- withModifiers iid (toModifiers GameSource [ActionCostModifier (-1)]) $ do
-    concatMapM (getActions iid) (defaultWindows iid)
+    getActions iid (defaultWindows iid)
 
   playableCards <- withModifiers iid (toModifiers GameSource [ActionCostOf IsAnyAction (-1)]) $ do
     filter (`cardMatch` Matcher.NotCard Matcher.FastCard)

@@ -329,12 +329,12 @@ getIsCommittable a c = do
       if not allowedToCommit
         then pure False
         else do
-          allCommittedCards <- selectAll InvestigatorCommittedCards Anyone
+          allCommittedCards <- traceShowId <$> selectAll InvestigatorCommittedCards Anyone
           let
             onlyCardCommittedToTest = elem OnlyCardCommittedToTest . cdCommitRestrictions . toCardDef
             onlyCardComittedToTestCommitted = any onlyCardCommittedToTest allCommittedCards
           let cannotCommitCards = CannotCommitCards AnyCard `elem` modifiers'
-          if c `notElem` allCommittedCards && (cannotCommitCards || onlyCardComittedToTestCommitted)
+          if c `elem` allCommittedCards || cannotCommitCards || onlyCardComittedToTestCommitted
             then pure False
             else case c of
               PlayerCard card -> do
@@ -352,17 +352,8 @@ getIsCommittable a c = do
                     ScenarioAbility -> getIsScenarioAbility
                     SelfCanCommitWhen matcher -> notNull <$> select (You <> matcher)
                     MinSkillTestValueDifference n -> do
-                      let skillDifficulty = skillTestDifficulty skillTest
-                      case skillTestType skillTest of
-                        SkillSkillTest skillType -> do
-                          baseValue <- baseSkillValueFor skillType Nothing [] a
-                          pure $ (skillDifficulty - baseValue) >= n
-                        AndSkillTest types -> do
-                          baseValue <- sum <$> traverse (\skillType -> baseSkillValueFor skillType Nothing [] a) types
-                          pure $ (skillDifficulty - baseValue) >= n
-                        ResourceSkillTest -> do
-                          resources <- field InvestigatorResources a
-                          pure $ (skillDifficulty - resources) >= n
+                      x <- getSkillTestDifficultyDifferenceFromBaseValue a skillTest
+                      pure $ x >= n
                   prevented = flip any modifiers' $ \case
                     CanOnlyUseCardsInRole role ->
                       null $ intersect (cdClassSymbols $ toCardDef card) (setFromList [Neutral, role])
@@ -419,3 +410,17 @@ cancelTokenDraw = do
   popMessageMatching_ $ \case
     RunSkillTest {} -> True
     _ -> False
+
+getSkillTestDifficultyDifferenceFromBaseValue :: HasGame m => InvestigatorId -> SkillTest -> m Int
+getSkillTestDifficultyDifferenceFromBaseValue iid skillTest = do
+  let skillDifficulty = skillTestDifficulty skillTest
+  case skillTestType skillTest of
+    SkillSkillTest skillType -> do
+      baseValue <- baseSkillValueFor skillType Nothing [] iid
+      pure $ skillDifficulty - baseValue
+    AndSkillTest types -> do
+      baseValue <- sum <$> traverse (\skillType -> baseSkillValueFor skillType Nothing [] iid) types
+      pure $ skillDifficulty - baseValue
+    ResourceSkillTest -> do
+      resources <- field InvestigatorResources iid
+      pure $ skillDifficulty - resources

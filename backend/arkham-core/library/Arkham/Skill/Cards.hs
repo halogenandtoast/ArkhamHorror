@@ -92,6 +92,7 @@ allPlayerSkillCards =
       , sealOfTheElderSign5
       , selfSacrifice
       , sharpVision1
+      , signumCrucis2
       , skeptic1
       , steadfast
       , strokeOfLuck2
@@ -609,6 +610,13 @@ unrelenting1 =
   (skill "07196" "Unrelenting" [#wild] Survivor)
     { cdCardTraits = singleton Practiced
     , cdCommitRestrictions = [MaxOnePerTest]
+    }
+
+signumCrucis2 :: CardDef
+signumCrucis2 =
+  (skill "07197" "Signum Crucis" [#wild] Survivor)
+    { cdCardTraits = singleton Practiced
+    , cdCommitRestrictions = [OnlyYourTest, MinSkillTestValueDifference 1]
     }
 
 defensiveStance1 :: CardDef

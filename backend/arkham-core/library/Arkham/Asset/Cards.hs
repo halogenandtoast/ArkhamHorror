@@ -233,6 +233,7 @@ allPlayerAssetCards =
       , deVermisMysteriis2
       , digDeep
       , digDeep2
+      , digDeep4
       , discOfItzamna
       , discOfItzamna2
       , doubleDouble4
@@ -353,6 +354,7 @@ allPlayerAssetCards =
       , hope
       , hyperawareness
       , hyperawareness2
+      , hyperawareness4
       , hypnoticTherapy
       , ichtacaTheForgottenGuardian
       , inTheKnow1
@@ -4387,10 +4389,28 @@ shroudOfShadows4 =
     , cdLevel = 4
     }
 
+hyperawareness4 :: CardDef
+hyperawareness4 =
+  (asset "07264" "Hyperawareness" 2 Seeker)
+    { cdSkills = [#intellect, #intellect, #agility, #agility]
+    , cdCardTraits = setFromList [Talent]
+    , cdUses = uses Resource 2
+    , cdLevel = 4
+    }
+
 hardKnocks4 :: CardDef
 hardKnocks4 =
   (asset "07266" "Hard Knocks" 2 Rogue)
     { cdSkills = [#combat, #combat, #agility, #agility]
+    , cdCardTraits = setFromList [Talent]
+    , cdUses = uses Resource 2
+    , cdLevel = 4
+    }
+
+digDeep4 :: CardDef
+digDeep4 =
+  (asset "07270" "Dig Deep" 2 Survivor)
+    { cdSkills = [#willpower, #willpower, #agility, #agility]
     , cdCardTraits = setFromList [Talent]
     , cdUses = uses Resource 2
     , cdLevel = 4

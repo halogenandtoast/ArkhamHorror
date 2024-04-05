@@ -1,4 +1,4 @@
-module Arkham.Asset.Cards.HardKnocks4 (hardKnocks4, HardKnocks4 (..)) where
+module Arkham.Asset.Cards.Hyperawareness4 (hyperawareness4, Hyperawareness4 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -6,31 +6,31 @@ import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.Prelude
 
-newtype HardKnocks4 = HardKnocks4 AssetAttrs
+newtype Hyperawareness4 = Hyperawareness4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-hardKnocks4 :: AssetCard HardKnocks4
-hardKnocks4 = asset HardKnocks4 Cards.hardKnocks4
+hyperawareness4 :: AssetCard Hyperawareness4
+hyperawareness4 = asset Hyperawareness4 Cards.hyperawareness4
 
-instance HasAbilities HardKnocks4 where
-  getAbilities (HardKnocks4 a) =
+instance HasAbilities Hyperawareness4 where
+  getAbilities (Hyperawareness4 a) =
     [ controlledAbility a 1 (DuringSkillTest AnySkillTest)
         $ FastAbility
         $ OrCost [ResourceCost 1, assetUseCost a Resource 1]
     ]
 
-instance RunMessage HardKnocks4 where
-  runMessage msg a@(HardKnocks4 attrs) = case msg of
-    Do BeginRound -> pure . HardKnocks4 $ attrs & usesL . ix Resource %~ max 2
+instance RunMessage Hyperawareness4 where
+  runMessage msg a@(Hyperawareness4 attrs) = case msg of
+    Do BeginRound -> pure . Hyperawareness4 $ attrs & usesL . ix Resource %~ max 2
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       player <- getPlayer iid
       let source = attrs.ability 1
       push
         $ chooseOne
           player
-          [ Label "Choose Combat" [skillTestModifier source iid (SkillModifier #combat 1)]
+          [ Label "Choose Intellect" [skillTestModifier source iid (SkillModifier #intellect 1)]
           , Label "Choose Agility" [skillTestModifier source iid (SkillModifier #agility 1)]
           ]
       pure a
-    _ -> HardKnocks4 <$> runMessage msg attrs
+    _ -> Hyperawareness4 <$> runMessage msg attrs

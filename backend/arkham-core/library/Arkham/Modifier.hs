@@ -308,6 +308,15 @@ data ModifierType
 instance IsLabel "combat" (Int -> ModifierType) where
   fromLabel = SkillModifier #combat
 
+instance IsLabel "agility" (Int -> ModifierType) where
+  fromLabel = SkillModifier #agility
+
+instance IsLabel "intellect" (Int -> ModifierType) where
+  fromLabel = SkillModifier #intellect
+
+instance IsLabel "willpower" (Int -> ModifierType) where
+  fromLabel = SkillModifier #willpower
+
 instance IsLabel "damage" (Int -> ModifierType) where
   fromLabel = DamageDealt
 

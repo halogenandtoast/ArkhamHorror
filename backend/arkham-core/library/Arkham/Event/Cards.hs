@@ -243,6 +243,7 @@ allPlayerEventCards =
       , recharge2
       , recharge4
       , reliable1
+      , riastrad1
       , righteousHunt1
       , sacrifice1
       , sceneOfTheCrime
@@ -2539,6 +2540,15 @@ manipulateDestiny2 =
     , cdCardTraits = setFromList [Spell, Cursed]
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = 2
+    }
+
+riastrad1 :: CardDef
+riastrad1 =
+  (event "07193" "Ríastrad" 0 Rogue)
+    { cdSkills = [#combat, #combat]
+    , cdCardTraits = setFromList [Spell, Spirit, Cursed]
+    , cdActions = [#fight]
+    , cdLevel = 1
     }
 
 sweepingKick1 :: CardDef

@@ -304,6 +304,12 @@ data ModifierType
   | Explosion -- from Dyanamite Blast
   deriving stock (Show, Eq, Ord, Data)
 
+instance IsLabel "combat" (Int -> ModifierType) where
+  fromLabel = SkillModifier #combat
+
+instance IsLabel "damage" (Int -> ModifierType) where
+  fromLabel = DamageDealt
+
 _UpkeepResources :: Prism' ModifierType Int
 _UpkeepResources = prism' UpkeepResources $ \case
   UpkeepResources n -> Just n

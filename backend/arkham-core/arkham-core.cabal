@@ -1510,6 +1510,7 @@ library
       Arkham.Event.Cards.Recharge2
       Arkham.Event.Cards.Recharge4
       Arkham.Event.Cards.Reliable1
+      Arkham.Event.Cards.Riastrad1
       Arkham.Event.Cards.RighteousHunt1
       Arkham.Event.Cards.Sacrifice1
       Arkham.Event.Cards.SceneOfTheCrime
@@ -1584,6 +1585,7 @@ library
       Arkham.Event.Cards.YouOweMeOne
       Arkham.Event.Events
       Arkham.Event.Helpers
+      Arkham.Event.Import.Lifted
       Arkham.Event.Runner
       Arkham.Event.Types
       Arkham.Exception

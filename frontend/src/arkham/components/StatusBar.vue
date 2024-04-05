@@ -4,7 +4,7 @@ import { ref, computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { tarotCardImage } from '@/arkham/types/TarotCard';
-import { imgsrc } from '@/arkham/helpers';
+import { imgsrc, replaceIcons } from '@/arkham/helpers';
 import { MessageType } from '@/arkham/types/Message';
 import { QuestionType } from '@/arkham/types/Question';
 import Draggable from '@/components/Draggable.vue';
@@ -105,23 +105,6 @@ const title = computed(() => {
 
   return null
 })
-
-const replaceIcons = function(body: string) {
-  return body.
-    replace(/{action}/g, '<span class="action-icon"></span>').
-    replace(/{fast}/g, '<span class="fast-icon"></span>').
-    replace(/{willpower}/g, '<span class="willpower-icon"></span>').
-    replace(/{intellect}/g, '<span class="intellect-icon"></span>').
-    replace(/{combat}/g, '<span class="combat-icon"></span>').
-    replace(/{agility}/g, '<span class="agility-icon"></span>').
-    replace(/{wild}/g, '<span class="wild-icon"></span>').
-    replace(/{guardian}/g, '<span class="guardian-icon"></span>').
-    replace(/{seeker}/g, '<span class="seeker-icon"></span>').
-    replace(/{rogue}/g, '<span class="rogue-icon"></span>').
-    replace(/{mystic}/g, '<span class="mystic-icon"></span>').
-    replace(/{survivor}/g, '<span class="survivor-icon"></span>').
-    replace(/{elderSign}/g, '<span class="elder-sign"></span>')
-}
 
 const { t } = useI18n()
 

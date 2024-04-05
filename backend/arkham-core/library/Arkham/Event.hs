@@ -433,6 +433,9 @@ allEvents =
     , SomeEventCard thirdTimesACharm2
     , --- neutral [def]
       SomeEventCard manipulateDestiny2
+    , -- Horror in High Gear
+      --- rogue [hhg]
+      SomeEventCard riastrad1
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard sweepingKick1

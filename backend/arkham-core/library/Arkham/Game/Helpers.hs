@@ -1158,17 +1158,22 @@ passesCriteria iid mcard source windows' = \case
       fieldP InvestigatorLocation (== Just lid) iid
     _ -> pure False
   Criteria.HasSupply s -> fieldP InvestigatorSupplies (elem s) iid
-  Criteria.ControlsThis -> case source of
-    AssetSource aid ->
-      elem aid
-        <$> select (Matcher.AssetControlledBy $ Matcher.InvestigatorWithId iid)
-    EventSource eid ->
-      elem eid
-        <$> select (Matcher.EventControlledBy $ Matcher.InvestigatorWithId iid)
-    SkillSource sid ->
-      elem sid
-        <$> select (Matcher.SkillControlledBy $ Matcher.InvestigatorWithId iid)
-    _ -> pure False
+  Criteria.ControlsThis ->
+    let
+      go = \case
+        ProxySource s _ -> go s
+        AssetSource aid ->
+          elem aid
+            <$> select (Matcher.AssetControlledBy $ Matcher.InvestigatorWithId iid)
+        EventSource eid ->
+          elem eid
+            <$> select (Matcher.EventControlledBy $ Matcher.InvestigatorWithId iid)
+        SkillSource sid ->
+          elem sid
+            <$> select (Matcher.SkillControlledBy $ Matcher.InvestigatorWithId iid)
+        _ -> pure False
+     in
+      go source
   Criteria.DuringSkillTest skillTestMatcher -> do
     mSkillTest <- getSkillTest
     case mSkillTest of

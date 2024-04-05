@@ -502,6 +502,7 @@ library
       Arkham.Asset.Cards.DeVermisMysteriis2
       Arkham.Asset.Cards.DigDeep
       Arkham.Asset.Cards.DigDeep2
+      Arkham.Asset.Cards.DigDeep4
       Arkham.Asset.Cards.DiscOfItzamna
       Arkham.Asset.Cards.DiscOfItzamna2
       Arkham.Asset.Cards.DoubleDouble4
@@ -625,6 +626,7 @@ library
       Arkham.Asset.Cards.Hope
       Arkham.Asset.Cards.Hyperawareness
       Arkham.Asset.Cards.Hyperawareness2
+      Arkham.Asset.Cards.Hyperawareness4
       Arkham.Asset.Cards.HypnoticTherapy
       Arkham.Asset.Cards.IchtacaTheForgottenGuardian
       Arkham.Asset.Cards.IneffableTruth

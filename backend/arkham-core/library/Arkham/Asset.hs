@@ -707,8 +707,12 @@ allAssets =
     , SomeAssetCard eyeOfChaos4
     , SomeAssetCard shroudOfShadows4
     , -- The Lair of Dagon
-      --- rogue [lod]
+      --- seeker [lod]
+      SomeAssetCard hyperawareness4
+    , --- rogue [lod]
       SomeAssetCard hardKnocks4
+    , --- survivor [lod]
+      SomeAssetCard digDeep4
     , --- neutral [lod]
       SomeAssetCard favorOfTheMoon1
     , -- Into the Maelstrom

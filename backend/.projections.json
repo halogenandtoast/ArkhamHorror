@@ -279,21 +279,19 @@
       "  )",
       "where",
       "",
-      "import Arkham.Prelude",
-      "",
       "import Arkham.Asset.Cards qualified as Cards",
-      "import Arkham.Asset.Runner",
+      "import Arkham.Asset.Import.Lifted",
       "",
       "newtype {dot} = {dot} AssetAttrs",
       "  deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)",
       "  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)",
       "",
       "{dot|snakecase|camelcase} :: AssetCard {dot}",
-      "{dot|snakecase|camelcase} =",
-      "  asset {dot} Cards.{dot|snakecase|camelcase}",
+      "{dot|snakecase|camelcase} = asset {dot} Cards.{dot|snakecase|camelcase}",
       "",
       "instance RunMessage {dot} where",
-      "  runMessage msg ({dot} attrs) = {dot} <$> runMessage msg attrs"
+      "  runMessage msg ({dot} attrs) = runQueueT $ case msg of",
+      "    _ -> {dot} <$> lift (runMessage msg attrs)"
     ]
   },
   "arkham-core/library/Arkham/Event/Cards/*.hs": {

@@ -159,7 +159,7 @@ nonAttackOfOpportunityActions = [#fight, #evade, #resign, #parley]
 
 payCost
   :: forall m
-   . (HasGame m, HasQueue Message m)
+   . (HasGame m, HasQueue Message m, HasCallStack)
   => Message
   -> ActiveCost
   -> InvestigatorId
@@ -170,11 +170,7 @@ payCost msg c iid skipAdditionalCosts cost = do
   let acId = c.id
   let withPayment payment = pure $ c & costPaymentsL <>~ payment
   let source = c.source
-  let
-    actions =
-      case c.actions of
-        [] -> error "action expected"
-        as -> as
+  let actions = c.actions
   player <- getPlayer iid
   case cost of
     SkillTestCost stsource sType n -> do
@@ -228,6 +224,7 @@ payCost msg c iid skipAdditionalCosts cost = do
         ResourceCost resources -> do
           availableResources <- getSpendableResources iid
           pure $ min n (availableResources `div` resources)
+        SealCost matcher -> selectCount matcher
         _ -> pure n
       name <- fieldMap InvestigatorName toTitle iid
       pushWhen canAfford
@@ -859,9 +856,7 @@ instance RunMessage ActiveCost where
     PayCost acId iid skipAdditionalCosts cost | acId == c.id -> do
       let
         source = c.source
-        actions = case c.actions of
-          [] -> error "action expected"
-          as -> as
+        actions = c.actions
 
       canStillAfford <- getCanAffordCost iid source actions c.windows cost
       if canStillAfford

@@ -54,6 +54,8 @@ getDetails (_ : xs) = getDetails xs
 
 instance RunMessage RiteOfSanctification where
   runMessage msg a@(RiteOfSanctification attrs) = case msg of
+    ResolvedCard _ card | toCardId card == toCardId attrs -> do
+      RiteOfSanctification <$> runMessage msg (setMeta True attrs)
     UseCardAbility _iid (isSource attrs -> True) 1 (getDetails -> (current, card)) _ -> do
       push
         $ CreateWindowModifierEffect

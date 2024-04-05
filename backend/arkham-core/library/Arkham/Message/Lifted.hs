@@ -23,6 +23,7 @@ import Arkham.Helpers.Modifiers (ModifierType)
 import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest qualified as Msg
+import Arkham.Helpers.Window qualified as Msg
 import Arkham.Helpers.Xp
 import Arkham.Id
 import Arkham.Matcher
@@ -453,3 +454,19 @@ toDiscardBy iid source target = push $ Msg.toDiscardBy iid source target
 
 putCardIntoPlay :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 putCardIntoPlay iid card = push $ Msg.putCardIntoPlay iid card
+
+gainResourcesIfCan :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
+gainResourcesIfCan iid source n = do
+  mmsg <- Msg.gainResourcesIfCan iid source n
+  for_ mmsg push
+
+focusChaosTokens :: ReverseQueue m => [ChaosToken] -> (Message -> m ()) -> m ()
+focusChaosTokens tokens f = do
+  push $ FocusChaosTokens tokens
+  f UnfocusChaosTokens
+
+checkWindows :: ReverseQueue m => [Window] -> m ()
+checkWindows = Msg.pushM . Msg.checkWindows
+
+cancelTokenDraw :: (MonadTrans t, HasQueue Message m) => t m ()
+cancelTokenDraw = lift Msg.cancelTokenDraw

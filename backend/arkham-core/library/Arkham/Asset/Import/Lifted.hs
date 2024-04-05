@@ -9,7 +9,10 @@ import Arkham.Asset.Runner as X (
   allyWith,
   asset,
   assetWith,
+  push,
   pushAll,
+  sealedChaosTokensL,
+  setMeta,
  )
 import Arkham.Classes as X
 import Arkham.Message as X (Message (..), pattern UseThisAbility)

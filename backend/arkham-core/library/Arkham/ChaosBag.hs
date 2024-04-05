@@ -517,6 +517,23 @@ instance RunMessage ChaosBag where
               if returnAllCursed then pure True else hasModifier token ReturnCursedToChaosBag
           | otherwise -> pure True
 
+      when (notNull tokensToPool) do
+        for_ tokensToPool \token -> do
+          mods <- getModifiers token
+          let iids = [iid | MayChooseToRemoveChaosToken iid <- mods]
+          case iids of
+            [] -> pure ()
+            (iid : _) -> do
+              player <- getPlayer iid
+              pushAll
+                [ FocusChaosTokens [token]
+                , chooseOne
+                    player
+                    [ Label "Remove to Token Pool" [UnfocusChaosTokens]
+                    , Label "Return to Bag" [UnfocusChaosTokens, ReturnChaosTokens [token]]
+                    ]
+                ]
+
       pure
         $ c
         & (chaosTokensL <>~ map (\token -> token {chaosTokenRevealedBy = Nothing}) tokensToReturn)
@@ -658,6 +675,7 @@ instance RunMessage ChaosBag where
         & (chaosTokensL %~ (<> tokens'))
         & (setAsideChaosTokensL %~ (\\ tokens'))
         & (choiceL .~ Nothing)
+        & (tokenPoolL %~ (\\ tokens'))
     AddChaosToken chaosTokenFace -> do
       token <- case chaosTokenFace of
         BlessToken -> pure $ fromMaybe (error "no more bless tokens") $ find ((== #bless) . (.face)) chaosBagTokenPool
@@ -680,6 +698,8 @@ instance RunMessage ChaosBag where
         %~ filter (/= token)
         & revealedChaosTokensL
         %~ filter (/= token)
+    SetChaosTokenAside token -> do
+      pure $ c & setAsideChaosTokensL %~ (token :)
     UnsealChaosToken token -> do
       pure $ c & chaosTokensL %~ (token :)
     RemoveAllChaosTokens face ->

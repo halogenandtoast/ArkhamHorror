@@ -697,6 +697,8 @@ allAssets =
     , SomeAssetCard crypticGrimoireTextOfTheElderGuardian4
     , --- rogue [hhg]
       SomeAssetCard tristanBotleyFixerForHire2
+    , --- mystic [hhg]
+      SomeAssetCard curseOfAeons3
     , -- A Light in the Fog
       --- guardian [lif]
       SomeAssetCard holyRosary2
@@ -707,6 +709,8 @@ allAssets =
     , -- The Lair of Dagon
       --- rogue [lod]
       SomeAssetCard hardKnocks4
+    , --- neutral [lod]
+      SomeAssetCard favorOfTheMoon1
     , -- Into the Maelstrom
       --- seeker [itm]
       SomeAssetCard ancestralKnowledge3

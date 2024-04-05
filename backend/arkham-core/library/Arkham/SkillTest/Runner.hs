@@ -29,7 +29,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..), mkAfter, mkWindow)
+import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (each)
 import Data.Map.Strict qualified as Map
@@ -226,7 +226,7 @@ instance RunMessage SkillTest where
       pure s
     RequestedChaosTokens SkillTestSource (Just iid) chaosTokenFaces -> do
       skillTestModifiers' <- getModifiers SkillTestTarget
-      windowMsg <- checkWindows [mkWindow Timing.When Window.FastPlayerWindow]
+      windowMsg <- checkWindows [mkWhen Window.FastPlayerWindow]
       push
         $ if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
           then
@@ -245,7 +245,7 @@ instance RunMessage SkillTest where
           ]
       pure $ s & (setAsideChaosTokensL %~ (chaosTokenFaces <>))
     RevealChaosToken SkillTestSource {} iid token -> do
-      push $ CheckWindow [iid] [mkAfter $ Window.RevealChaosToken iid token]
+      pushM $ checkWindows [mkAfter $ Window.RevealChaosToken iid token]
       pure $ s & revealedChaosTokensL %~ (token :) & toResolveChaosTokensL %~ nub . (token :)
     RevealSkillTestChaosTokens iid -> do
       -- NOTE: this exists here because of Sacred Covenant (2), we want to

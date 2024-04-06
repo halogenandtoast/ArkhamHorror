@@ -144,6 +144,7 @@ data Cost
   | SealCost ChaosTokenMatcher
   | AddCurseTokenCost Int
   | AddCurseTokensEqualToShroudCost
+  | AddCurseTokensEqualToSkillTestDifficulty
   | ReleaseChaosTokenCost ChaosToken
   | ReleaseChaosTokensCost Int
   | SealChaosTokenCost ChaosToken -- internal to track sealed token
@@ -180,6 +181,7 @@ displayCostType = \case
   ShuffleAttachedCardIntoDeckCost _ _ -> "Shuffle attached card into deck"
   AddCurseTokenCost n -> "Add " <> tshow n <> " {curse} " <> pluralize n "token" <> "to the chaos bag"
   AddCurseTokensEqualToShroudCost -> "Add {curse} tokens to the chaos bag equal to your location's shroud value"
+  AddCurseTokensEqualToSkillTestDifficulty -> "Add {curse} tokens to this test's difficulty"
   ShuffleIntoDeckCost _ -> "Shuffle into deck"
   ShuffleBondedCost n cCode -> case lookupCardDef cCode of
     Just def ->

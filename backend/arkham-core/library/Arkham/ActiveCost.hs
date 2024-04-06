@@ -32,7 +32,7 @@ import Arkham.Helpers
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Message
 import Arkham.Helpers.Ref
-import Arkham.Helpers.SkillTest (beginSkillTest)
+import Arkham.Helpers.SkillTest (beginSkillTest, getSkillTestDifficulty)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
@@ -454,6 +454,13 @@ payCost msg c iid skipAdditionalCosts cost = do
       x <- min shroud <$> getRemainingCurseTokens
       pushAll $ replicate x $ AddChaosToken CurseToken
       pure c
+    AddCurseTokensEqualToSkillTestDifficulty -> do
+      getSkillTestDifficulty >>= \case
+        Nothing -> error "Not valid"
+        Just difficulty -> do
+          x <- min difficulty <$> getRemainingCurseTokens
+          pushAll $ replicate x $ AddChaosToken CurseToken
+          pure c
     ResourceCost x -> do
       case activeCostTarget c of
         ForAbility {} -> push $ SpendResources iid x

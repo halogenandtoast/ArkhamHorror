@@ -1593,7 +1593,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
           ]
       _ -> noMatch
     Matcher.TokensWouldBeRemovedFromChaosBag timing matcher -> guardTiming timing $ \case
-      Window.TokensWouldBeRemovedFromChaosBag tokens' -> traceShowId <$> anyM (`chaosTokenMatches` Matcher.InTokenPool matcher) (traceShowId tokens')
+      Window.TokensWouldBeRemovedFromChaosBag tokens' -> anyM (`chaosTokenMatches` Matcher.InTokenPool matcher) tokens'
       _ -> noMatch
     Matcher.WouldTriggerChaosTokenRevealEffectOnCard whoMatcher cardMatcher tokens ->
       guardTiming Timing.AtIf $ \case

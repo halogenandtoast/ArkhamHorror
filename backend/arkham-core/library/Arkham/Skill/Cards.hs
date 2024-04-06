@@ -60,6 +60,7 @@ allPlayerSkillCards =
       , inquiringMind
       , inspiringPresence
       , intrepid
+      , justifyTheMeans3
       , lastChance
       , leadership
       , leadership2
@@ -624,6 +625,12 @@ fey1 :: CardDef
 fey1 =
   (skill "07222" "Fey" [#willpower, #wild, #wild] Seeker)
     { cdCardTraits = setFromList [Innate, Cursed]
+    }
+
+justifyTheMeans3 :: CardDef
+justifyTheMeans3 =
+  (skill "07306" "Justify the Means" [] Rogue)
+    { cdCardTraits = setFromList [Practiced, Cursed]
     }
 
 defensiveStance1 :: CardDef

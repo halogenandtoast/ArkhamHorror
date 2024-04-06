@@ -50,6 +50,7 @@ import Arkham.Asset.Assets (
   empiricalHypothesisEffect,
   eyeOfChaos4Effect,
   eyeOfChaosEffect,
+  eyeOfTheDjinnVesselOfGoodAndEvil2Effect,
   fence1Effect,
   fieldworkEffect,
   fireExtinguisher1Effect,
@@ -403,6 +404,7 @@ allEffects =
     , ("07119", SomeEffect shroudOfShadowsEffect)
     , ("07161", SomeEffect thirdTimesACharm2Effect)
     , ("07222", SomeEffect fey1Effect)
+    , ("07225", SomeEffect eyeOfTheDjinnVesselOfGoodAndEvil2Effect)
     , ("07226", SomeEffect armageddon4Effect)
     , ("07227", SomeEffect eyeOfChaos4Effect)
     , ("07228", SomeEffect shroudOfShadows4Effect)

@@ -707,6 +707,9 @@ allAssets =
     , SomeAssetCard shieldOfFaith2
     , --- seeker [lif]
       SomeAssetCard guidedByTheUnseen3
+    , --- rogue [lif]
+      SomeAssetCard luckyPennyOmenOfMisfortune2
+    , SomeAssetCard eyeOfTheDjinnVesselOfGoodAndEvil2
     , --- mystic [lif]
       SomeAssetCard armageddon4
     , SomeAssetCard eyeOfChaos4

@@ -58,7 +58,6 @@ const investigatorPortrait = computed(() => {
 })
 
 function isAbility(v: Message): v is AbilityLabel {
-  console.log(v)
   if ("ability" in v) {
     const ability = v.ability
     if ("source" in ability) {

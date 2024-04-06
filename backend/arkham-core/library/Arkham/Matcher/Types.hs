@@ -1001,6 +1001,9 @@ data SkillTestMatcher
   | SkillTestWithResolvedChaosTokenBy InvestigatorMatcher ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data)
 
+instance IsLabel "any" SkillTestMatcher where
+  fromLabel = AnySkillTest
+
 data SourceMatcher
   = SourceWithTrait Trait
   | SourceIsEnemyAttack EnemyMatcher

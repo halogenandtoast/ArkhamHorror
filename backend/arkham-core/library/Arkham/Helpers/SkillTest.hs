@@ -319,11 +319,13 @@ getIsCommittable a c = do
             otherLocation <- field InvestigatorLocation iid
             otherLocationOk <- maybe (pure False) (canCommitToAnotherLocation a) otherLocation
             perilous <- getIsPerilous skillTest
+            alreadyCommitted <- fieldMap InvestigatorCommittedCards notNull a
             pure
               $ and
                 [ not perilous
                 , CannotCommitToOtherInvestigatorsSkillTests `notElem` modifiers'
                 , isJust mlid && (mlid == otherLocation || otherLocationOk)
+                , not alreadyCommitted
                 ]
           else pure True
       if not allowedToCommit

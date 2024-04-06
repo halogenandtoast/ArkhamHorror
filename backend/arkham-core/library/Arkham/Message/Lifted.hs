@@ -442,6 +442,16 @@ skillTestModifiers
 skillTestModifiers (toSource -> source) (toTarget -> target) mods =
   push $ Msg.skillTestModifiers source target mods
 
+skillTestModifier
+  :: forall target source m
+   . (ReverseQueue m, Sourceable source, Targetable target)
+  => source
+  -> target
+  -> ModifierType
+  -> m ()
+skillTestModifier (toSource -> source) (toTarget -> target) x =
+  push $ Msg.skillTestModifier source target x
+
 chooseFightEnemy :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 chooseFightEnemy iid = mkChooseFight iid >=> push . toMessage
 
@@ -458,6 +468,16 @@ putCardIntoPlay iid card = push $ Msg.putCardIntoPlay iid card
 gainResourcesIfCan :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 gainResourcesIfCan iid source n = do
   mmsg <- Msg.gainResourcesIfCan iid source n
+  for_ mmsg push
+
+drawCardsIfCan
+  :: (ReverseQueue m, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> Int
+  -> m ()
+drawCardsIfCan iid source n = do
+  mmsg <- Msg.drawCardsIfCan iid source n
   for_ mmsg push
 
 focusChaosTokens :: ReverseQueue m => [ChaosToken] -> (Message -> m ()) -> m ()

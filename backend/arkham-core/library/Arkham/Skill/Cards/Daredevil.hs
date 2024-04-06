@@ -32,7 +32,7 @@ instance RunMessage Daredevil where
         $ BasicCardMatch
         $ CardWithClass Rogue
         <> CardWithType SkillType
-      pure s
+      Daredevil <$> runMessage msg attrs
     RequestedPlayerCard iid (isSource attrs -> True) mcard discards -> do
       let weaknesses = filter (`cardMatch` WeaknessCard) discards
       pushAll

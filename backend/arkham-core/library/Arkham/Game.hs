@@ -3264,6 +3264,7 @@ instance Query ChaosTokenMatcher where
             <> maybeToList (infestationCurrentToken bag)
     go = \case
       InTokenPool m -> go m
+      NotChaosToken m -> fmap not . go m
       WouldReduceYourSkillValueToZero -> \t -> do
         mSkillTest <- getSkillTest
         case mSkillTest of

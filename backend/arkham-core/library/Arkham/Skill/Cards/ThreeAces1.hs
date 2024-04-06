@@ -21,7 +21,7 @@ threeAces1 :: SkillCard ThreeAces1
 threeAces1 = skill ThreeAces1 Cards.threeAces1
 
 instance RunMessage ThreeAces1 where
-  runMessage msg s@(ThreeAces1 attrs) = case msg of
+  runMessage msg (ThreeAces1 attrs) = case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
       n <- selectCount $ skillIs Cards.threeAces1 <> skillControlledBy iid
       mods <- getModifiers SkillTestTarget
@@ -33,5 +33,5 @@ instance RunMessage ThreeAces1 where
           $ [skillTestModifier (toSource attrs) SkillTestTarget (MetaModifier "ThreeAces1"), PassSkillTest]
           <> [drawing | canDraw]
           <> [takeResources iid (toSource attrs) 3 | canGainResources]
-      pure s
+      ThreeAces1 <$> runMessage msg attrs
     _ -> ThreeAces1 <$> runMessage msg attrs

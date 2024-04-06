@@ -278,6 +278,7 @@ allPlayerAssetCards =
       , familyInheritance
       , farsight4
       , favorOfTheMoon1
+      , favorOfTheSun1
       , feedTheMind
       , feedTheMind3
       , fence1
@@ -404,6 +405,7 @@ allPlayerAssetCards =
       , luckyCigaretteCase
       , luckyCigaretteCase3
       , luckyDice2
+      , luckyDice3
       , lupara3
       , m1918Bar4
       , machete
@@ -530,6 +532,7 @@ allPlayerAssetCards =
       , sergeantMonroe
       , shardsOfTheVoid3
       , sharpshooter3
+      , shieldOfFaith2
       , shiningTrapezohedron4
       , shotgun4
       , showmanship
@@ -4359,6 +4362,16 @@ holyRosary2 =
     , cdLevel = 2
     }
 
+shieldOfFaith2 :: CardDef
+shieldOfFaith2 =
+  (asset "07221" "Shield of Faith" 2 Guardian)
+    { cdSkills = [#willpower, #willpower]
+    , cdCardTraits = setFromList [Spell, Blessed]
+    , cdSlots = [#arcane]
+    , cdLevel = 2
+    , cdKeywords = singleton $ seal $ SealUpTo 5 #bless
+    }
+
 armageddon4 :: CardDef
 armageddon4 =
   (asset "07226" "Armageddon" 4 Mystic)
@@ -4426,6 +4439,16 @@ favorOfTheMoon1 =
       , cdLevel = 1
       }
 
+favorOfTheSun1 :: CardDef
+favorOfTheSun1 =
+  fast
+    $ (asset "07272" "Favor of the Sun" 1 Neutral)
+      { cdCardTraits = setFromList [Pact, Blessed]
+      , cdSkills = [#willpower, #agility]
+      , cdKeywords = singleton $ seal $ SealUpTo 3 #bless
+      , cdLevel = 1
+      }
+
 ancestralKnowledge3 :: CardDef
 ancestralKnowledge3 =
   permanent
@@ -4445,6 +4468,16 @@ twentyFiveAutomatic2 =
       , cdUses = uses Ammo 4
       , cdLevel = 2
       }
+
+luckyDice3 :: CardDef
+luckyDice3 =
+  (asset "07307" ("Lucky Dice" <:> "...Or Are They?") 2 Rogue)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdSkills = [#willpower, #agility]
+    , cdExceptional = True
+    , cdLevel = 3
+    , cdSlots = [#accessory]
+    }
 
 livreDeibon :: CardDef
 livreDeibon =

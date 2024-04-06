@@ -53,6 +53,7 @@ allPlayerSkillCards =
       , expeditiousRetreat1
       , fearless
       , fearless2
+      , fey1
       , guts
       , guts2
       , hatchetMan
@@ -617,6 +618,12 @@ signumCrucis2 =
   (skill "07197" "Signum Crucis" [#wild] Survivor)
     { cdCardTraits = singleton Practiced
     , cdCommitRestrictions = [OnlyYourTest, MinSkillTestValueDifference 1]
+    }
+
+fey1 :: CardDef
+fey1 =
+  (skill "07222" "Fey" [#willpower, #wild, #wild] Seeker)
+    { cdCardTraits = setFromList [Innate, Cursed]
     }
 
 defensiveStance1 :: CardDef

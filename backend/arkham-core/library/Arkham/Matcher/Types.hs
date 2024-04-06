@@ -1113,7 +1113,11 @@ data ChaosTokenMatcher
   | IncludeTokenPool ChaosTokenMatcher
   | WouldReduceYourSkillValueToZero
   | IsInfestationToken ChaosTokenMatcher
+  | NotChaosToken ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data)
+
+instance Not ChaosTokenMatcher where
+  not_ = NotChaosToken
 
 instance IsLabel "any" ChaosTokenMatcher where
   fromLabel = AnyChaosToken

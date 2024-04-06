@@ -40,7 +40,7 @@ instance RunMessage Unrelenting1 where
             ]
         , DoStep 1 msg
         ]
-      pure s
+      Unrelenting1 <$> runMessage msg attrs
     DoStep 1 (InvestigatorCommittedSkill iid sid) | sid == toId attrs -> do
       when
         ( all

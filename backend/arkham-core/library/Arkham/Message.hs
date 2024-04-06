@@ -453,7 +453,7 @@ data Message
   | HandleOption CampaignOption
   | CampaignStep CampaignStep
   | CancelEachNext Source [MessageType]
-  | CancelSkillEffects
+  | CancelSkillEffects -- used by scenarios to cancel skill cards
   | CancelHorror InvestigatorId Int
   | CancelDamage InvestigatorId Int
   | CheckAttackOfOpportunity InvestigatorId Bool

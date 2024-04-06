@@ -28,7 +28,7 @@ prescient :: SkillCard Prescient
 prescient = skill Prescient Cards.prescient
 
 instance RunMessage Prescient where
-  runMessage msg s@(Prescient attrs) = case msg of
+  runMessage msg (Prescient attrs) = case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
       player <- getPlayer iid
       push
@@ -44,7 +44,7 @@ instance RunMessage Prescient where
               "Symbol"
               [createCardEffect Cards.prescient (Just $ EffectInt 3) attrs iid]
           ]
-      pure s
+      Prescient <$> runMessage msg attrs
     _ -> Prescient <$> runMessage msg attrs
 
 newtype PrescientEffect = PrescientEffect EffectAttrs

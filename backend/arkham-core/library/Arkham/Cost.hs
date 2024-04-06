@@ -7,6 +7,7 @@ module Arkham.Cost (
 
 import Arkham.Prelude
 
+import Arkham.Classes.GameLogger
 import Arkham.Cost.Status as X
 import Arkham.Zone as X
 
@@ -86,6 +87,7 @@ data Payment
   | Payments [Payment]
   | SealChaosTokenPayment ChaosToken
   | ReleaseChaosTokenPayment ChaosToken
+  | ReturnChaosTokenToPoolPayment ChaosToken
   | ReturnToHandPayment Card
   | NoPayment
   | SupplyPayment Supply
@@ -148,6 +150,8 @@ data Cost
   | ReleaseChaosTokenCost ChaosToken
   | ReleaseChaosTokensCost Int
   | SealChaosTokenCost ChaosToken -- internal to track sealed token
+  | ReturnChaosTokensToPoolCost Int ChaosTokenMatcher
+  | ReturnChaosTokenToPoolCost ChaosToken
   | SupplyCost LocationMatcher Supply
   | ResolveEachHauntedAbility LocationId -- the circle undone, see TrappedSpirits
   | ShuffleBondedCost Int CardCode
@@ -320,16 +324,21 @@ displayCostType = \case
   ReleaseChaosTokenCost _ -> "Release a chaos token sealed here"
   ReleaseChaosTokensCost 1 -> "Release a chaos token sealed here"
   ReleaseChaosTokensCost _ -> "Release chaos tokens sealed here"
+  ReturnChaosTokensToPoolCost n (IncludeSealed _) ->
+    "Search the chaos bag and/or cards in play for a total of "
+      <> tshow n
+      <> " matching tokens and return them to the token pool"
+  ReturnChaosTokensToPoolCost n _ ->
+    "Search the chaos bag for a total of "
+      <> tshow n
+      <> " matching tokens and return them to the token pool"
+  ReturnChaosTokenToPoolCost token ->
+    "Return " <> format token <> " to the token pool"
   FieldResourceCost {} -> "X"
   MaybeFieldResourceCost {} -> "X"
   SupplyCost _ supply ->
     "An investigator crosses off " <> tshow supply <> " from their supplies"
   IncreaseCostOfThis _ n -> "Increase its cost by " <> tshow n
- where
-  pluralize n a = if n == 1 then "1 " <> a else tshow n <> " " <> a <> "s"
-  irregular n singular plural = case n of
-    1 -> "1 " <> singular
-    _ -> tshow n <> " " <> plural
 
 instance Semigroup Cost where
   Free <> a = a

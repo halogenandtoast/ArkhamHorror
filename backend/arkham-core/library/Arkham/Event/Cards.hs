@@ -45,6 +45,7 @@ allPlayerEventCards =
       , aTestOfWill
       , aTestOfWill1
       , aTestOfWill2
+      , aWatchfulPeace3
       , aceInTheHole3
       , actOfDesperation
       , againstAllOdds2
@@ -2588,6 +2589,16 @@ theStygianEye3 =
     , cdFastWindow = Just $ DuringTurn You
     , cdCardInHandEffects = True
     , cdLevel = 3
+    }
+
+aWatchfulPeace3 :: CardDef
+aWatchfulPeace3 =
+  (event "07269" "A Watchful Peace" 1 Survivor)
+    { cdSkills = [#willpower, #willpower]
+    , cdCardTraits = setFromList [Spirit, Blessed]
+    , cdFastWindow = Just $ MythosStep WhenAllDrawEncounterCard
+    , cdCriteria = Just $ exists $ You <> can.target.encounterDeck
+    , cdAdditionalCost = Just $ ReturnChaosTokensToPoolCost 5 #bless
     }
 
 sweepingKick1 :: CardDef

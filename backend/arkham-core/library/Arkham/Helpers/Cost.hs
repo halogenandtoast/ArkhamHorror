@@ -225,10 +225,10 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
     pure $ length discards >= n
   HandDiscardCost n cardMatcher -> do
     cards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
-    pure $ length (filter (`cardMatch` cardMatcher) cards) >= n
+    pure $ count (`cardMatch` cardMatcher) cards >= n
   HandDiscardAnyNumberCost cardMatcher -> do
     cards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
-    pure $ length (filter (`cardMatch` cardMatcher) cards) > 0
+    pure $ count (`cardMatch` cardMatcher) cards > 0
   ReturnMatchingAssetToHandCost assetMatcher -> selectAny assetMatcher
   ReturnAssetToHandCost assetId -> selectAny $ Matcher.AssetWithId assetId
   SealCost tokenMatcher -> do
@@ -249,6 +249,9 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
         AbilitySource u _ -> handleSource u
         _ -> error "Unhandled release token cost source"
     handleSource source
+  ReturnChaosTokensToPoolCost n matcher -> do
+    (>= n) <$> selectCount matcher
+  ReturnChaosTokenToPoolCost _ -> pure True
   FieldResourceCost (FieldCost mtchr fld) -> do
     ns <- selectFields fld mtchr
     resources <- getSpendableResources iid

@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         stack: ["2.13.1"]
-        ghc: ["9.6.4"]
+        ghc: ["9.8.2"]
 
     steps:
     - uses: actions/checkout@v3

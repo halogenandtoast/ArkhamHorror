@@ -26,7 +26,7 @@ import Arkham.RequestedChaosTokenStrategy
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..), mkWindow)
+import Arkham.Window (Window (..), mkWhen)
 import Arkham.Window qualified as Window
 import Control.Monad.State.Strict (StateT, gets, modify', runStateT)
 
@@ -326,7 +326,7 @@ decideFirstUndecided source iid strategy f = \case
       ,
         [ CheckWindow
             [iid]
-            [mkWindow Timing.When (Window.WouldRevealChaosToken source iid)]
+            [mkWhen (Window.WouldRevealChaosToken source iid)]
         , NextChaosBagStep source (Just iid) strategy
         ]
       )
@@ -527,15 +527,16 @@ instance RunMessage ChaosBag where
         for_ tokensToPool \token -> do
           mods <- getModifiers token
           let iids = [iid | MayChooseToRemoveChaosToken iid <- mods]
+          removeWindow <- checkWindows [mkWhen $ Window.TokensWouldBeRemovedFromChaosBag tokensToPool]
           case iids of
-            [] -> pure ()
+            [] -> push removeWindow
             (iid : _) -> do
               player <- getPlayer iid
               pushAll
                 [ FocusChaosTokens [token]
                 , chooseOne
                     player
-                    [ Label "Remove to Token Pool" [UnfocusChaosTokens]
+                    [ Label "Remove to Token Pool" [UnfocusChaosTokens, removeWindow]
                     , Label "Return to Bag" [UnfocusChaosTokens, ReturnChaosTokens [token]]
                     ]
                 ]
@@ -639,7 +640,7 @@ instance RunMessage ChaosBag where
             Just iid ->
               pure
                 <$> checkWindows
-                  [ mkWindow Timing.When (Window.RevealChaosToken iid token)
+                  [ mkWhen (Window.RevealChaosToken iid token)
                   | token <- tokens'
                   ]
           for_ miid $ \iid -> do

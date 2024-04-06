@@ -65,6 +65,7 @@ instance RunMessage AssetAttrs where
     SealedChaosToken token card | toCardId card == toCardId a -> do
       pure $ a & sealedChaosTokensL %~ (token :)
     UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
+    ReturnChaosTokensToPool tokens -> pure $ a & sealedChaosTokensL %~ filter (`notElem` tokens)
     RemoveAllChaosTokens face -> do
       pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
     ReadyExhausted -> case assetPlacement of

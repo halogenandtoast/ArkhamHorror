@@ -1592,6 +1592,9 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
               $ Matcher.replaceThatInvestigator who deckMatcher
           ]
       _ -> noMatch
+    Matcher.TokensWouldBeRemovedFromChaosBag timing matcher -> guardTiming timing $ \case
+      Window.TokensWouldBeRemovedFromChaosBag tokens' -> traceShowId <$> anyM (`chaosTokenMatches` Matcher.InTokenPool matcher) (traceShowId tokens')
+      _ -> noMatch
     Matcher.WouldTriggerChaosTokenRevealEffectOnCard whoMatcher cardMatcher tokens ->
       guardTiming Timing.AtIf $ \case
         Window.RevealChaosTokenEffect who token effectId -> do

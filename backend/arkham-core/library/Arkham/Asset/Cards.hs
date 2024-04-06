@@ -564,6 +564,7 @@ allPlayerAssetCards =
       , streetwise3
       , studious3
       , songOfTheDead2
+      , spiritOfHumanity2
       , spiritSpeaker
       , spiritualResolve5
       , springfieldM19034
@@ -4427,12 +4428,21 @@ eyeOfChaos4 =
 
 shroudOfShadows4 :: CardDef
 shroudOfShadows4 =
-  (asset "07228" "Eye of Chaos" 3 Mystic)
+  (asset "07228" "Shroud of Shadows" 3 Mystic)
     { cdCardTraits = setFromList [Spell, Cursed]
     , cdSkills = [#willpower, #agility]
     , cdUses = uses Charge 3
     , cdSlots = [#arcane]
     , cdLevel = 4
+    }
+
+spiritOfHumanity2 :: CardDef
+spiritOfHumanity2 =
+  (asset "07229" "Spirit of Humanity" 2 Survivor)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Ritual, Blessed, Cursed]
+    , cdSlots = [#arcane]
+    , cdLevel = 2
     }
 
 hyperawareness4 :: CardDef

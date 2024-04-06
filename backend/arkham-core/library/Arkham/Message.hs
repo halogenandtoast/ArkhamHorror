@@ -825,6 +825,7 @@ data Message
   | ResetInvestigators
   | ResetGame
   | ResetChaosTokens Source
+  | ReturnChaosTokensToPool [ChaosToken]
   | Resign InvestigatorId
   | ResignWith Target
   | ResolveAmounts InvestigatorId [(Text, Int)] Target

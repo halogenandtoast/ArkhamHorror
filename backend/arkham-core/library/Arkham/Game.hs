@@ -2916,7 +2916,9 @@ instance Projection Asset where
         AsSwarm {} -> error "AssetLocation: AsSwarm"
       AssetCardCode -> pure assetCardCode
       AssetCardId -> pure assetCardId
-      AssetSlots -> pure assetSlots
+      AssetSlots -> do
+        mods <- getModifiers aid
+        pure $ assetSlots <> [s | AdditionalSlot s <- mods]
       AssetSealedChaosTokens -> pure assetSealedChaosTokens
       AssetCardsUnderneath -> pure assetCardsUnderneath
       -- virtual

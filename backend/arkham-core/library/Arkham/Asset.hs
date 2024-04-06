@@ -714,6 +714,8 @@ allAssets =
       SomeAssetCard armageddon4
     , SomeAssetCard eyeOfChaos4
     , SomeAssetCard shroudOfShadows4
+    , --- survivor [lif]
+      SomeAssetCard spiritOfHumanity2
     , -- The Lair of Dagon
       --- seeker [lod]
       SomeAssetCard hyperawareness4

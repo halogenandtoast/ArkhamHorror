@@ -497,6 +497,12 @@ instance RunMessage ChaosBag where
         & (chaosTokensL .~ tokens'')
         & (setAsideChaosTokensL .~ mempty)
         & (tokenPoolL .~ blessTokens <> curseTokens)
+    ReturnChaosTokensToPool tokensToPool -> do
+      pure
+        $ c
+        & (chaosTokensL %~ filter (`notElem` tokensToPool))
+        & (setAsideChaosTokensL %~ filter (`notElem` tokensToPool))
+        & (tokenPoolL <>~ filter ((`elem` [#bless, #curse]) . (.face)) tokensToPool)
     ResetChaosTokens _source -> do
       returnAllBlessed <-
         getIsSkillTest >>= \case

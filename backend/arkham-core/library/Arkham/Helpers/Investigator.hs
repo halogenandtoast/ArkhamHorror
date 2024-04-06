@@ -70,6 +70,9 @@ skillValueFor skill maction tempModifiers iid = go 2 skill
     applyModifier (AddSkillValue sv) n | canBeIncreased = do
       m <- getSkillValue sv iid
       pure $ max 0 (n + m)
+    applyModifier (AddSkillValueOf sv iid') n | canBeIncreased = do
+      m <- getSkillValue sv iid'
+      pure $ max 0 (n + m)
     applyModifier (AddSkillToOtherSkill svAdd svType) n | canBeIncreased && svType `elem` matchingSkills = do
       m <- go (depth - 1) svAdd
       pure $ max 0 (n + m)

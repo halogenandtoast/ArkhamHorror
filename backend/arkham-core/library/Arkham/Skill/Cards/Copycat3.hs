@@ -27,7 +27,7 @@ copycat3 :: SkillCard Copycat3
 copycat3 = skill Copycat3 Cards.copycat3
 
 instance RunMessage Copycat3 where
-  runMessage msg s@(Copycat3 attrs) = case msg of
+  runMessage msg (Copycat3 attrs) = case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
       iids <- select $ NotInvestigator $ InvestigatorWithId iid
       iidsWithCommittableCards <- flip mapMaybeM iids $ \iid' -> do
@@ -60,7 +60,7 @@ instance RunMessage Copycat3 where
               ]
           , UnfocusCards
           ]
-      pure s
+      Copycat3 <$> runMessage msg attrs
     _ -> Copycat3 <$> runMessage msg attrs
 
 newtype Copycat3Effect = Copycat3Effect EffectAttrs

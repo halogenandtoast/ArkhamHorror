@@ -16,7 +16,7 @@ signumCrucis2 :: SkillCard SignumCrucis2
 signumCrucis2 = skill SignumCrucis2 Cards.signumCrucis2
 
 instance RunMessage SignumCrucis2 where
-  runMessage msg s@(SignumCrucis2 attrs) = case msg of
+  runMessage msg (SignumCrucis2 attrs) = case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
       getSkillTest >>= \case
         Nothing -> error "no skill test"
@@ -24,5 +24,5 @@ instance RunMessage SignumCrucis2 where
           n <- getSkillTestDifficultyDifferenceFromBaseValue iid skillTest
           x <- min n <$> getRemainingBlessTokens
           pushAll $ replicate x $ AddChaosToken #bless
-      pure s
+      SignumCrucis2 <$> runMessage msg attrs
     _ -> SignumCrucis2 <$> runMessage msg attrs

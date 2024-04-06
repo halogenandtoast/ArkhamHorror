@@ -26,10 +26,10 @@ defiance2 :: SkillCard Defiance2
 defiance2 = skill Defiance2 Cards.defiance2
 
 instance RunMessage Defiance2 where
-  runMessage msg s@(Defiance2 attrs) = case msg of
+  runMessage msg (Defiance2 attrs) = case msg of
     InvestigatorCommittedSkill _ sid | sid == toId attrs -> do
       push $ createCardEffect Cards.defiance2 Nothing (toSource attrs) (toTarget attrs)
-      pure s
+      Defiance2 <$> runMessage msg attrs
     _ -> Defiance2 <$> runMessage msg attrs
 
 newtype Defiance2Effect = Defiance2Effect EffectAttrs

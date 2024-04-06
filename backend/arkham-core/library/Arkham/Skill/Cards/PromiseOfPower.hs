@@ -21,11 +21,11 @@ promiseOfPower =
   skill PromiseOfPower Cards.promiseOfPower
 
 instance RunMessage PromiseOfPower where
-  runMessage msg s@(PromiseOfPower attrs) = case msg of
+  runMessage msg (PromiseOfPower attrs) = case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
       n <- getRemainingCurseTokens
       if n > 0
         then push $ AddChaosToken CurseToken
         else push $ assignHorror iid attrs 2
-      pure s
+      PromiseOfPower <$> runMessage msg attrs
     _ -> PromiseOfPower <$> runMessage msg attrs

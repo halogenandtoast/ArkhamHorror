@@ -659,6 +659,8 @@ allAssets =
     , SomeAssetCard crypticGrimoireUntranslated
     , --- rogue [tic]
       SomeAssetCard twentyFiveAutomatic
+    , SomeAssetCard darkRitual
+    , SomeAssetCard obfuscation
     , --- mystic [tic]
       SomeAssetCard swordCane
     , --- survivor [tic]
@@ -702,6 +704,7 @@ allAssets =
     , -- A Light in the Fog
       --- guardian [lif]
       SomeAssetCard holyRosary2
+    , SomeAssetCard shieldOfFaith2
     , --- mystic [lif]
       SomeAssetCard armageddon4
     , SomeAssetCard eyeOfChaos4
@@ -715,13 +718,13 @@ allAssets =
       SomeAssetCard digDeep4
     , --- neutral [lod]
       SomeAssetCard favorOfTheMoon1
+    , SomeAssetCard favorOfTheSun1
     , -- Into the Maelstrom
       --- seeker [itm]
       SomeAssetCard ancestralKnowledge3
     , --- rogue [itm]
       SomeAssetCard twentyFiveAutomatic2
-    , SomeAssetCard darkRitual
-    , SomeAssetCard obfuscation
+    , SomeAssetCard luckyDice3
     , -- Edge of the Earth
       --- signature [eote]
       SomeAssetCard livreDeibon

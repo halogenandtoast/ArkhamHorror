@@ -547,6 +547,7 @@ library
       Arkham.Asset.Cards.FamilyInheritance
       Arkham.Asset.Cards.Farsight4
       Arkham.Asset.Cards.FavorOfTheMoon1
+      Arkham.Asset.Cards.FavorOfTheSun1
       Arkham.Asset.Cards.FeedTheMind
       Arkham.Asset.Cards.FeedTheMind3
       Arkham.Asset.Cards.Fence1
@@ -681,6 +682,7 @@ library
       Arkham.Asset.Cards.LuckyCigaretteCase
       Arkham.Asset.Cards.LuckyCigaretteCase3
       Arkham.Asset.Cards.LuckyDice2
+      Arkham.Asset.Cards.LuckyDice3
       Arkham.Asset.Cards.Lupara3
       Arkham.Asset.Cards.M1918Bar4
       Arkham.Asset.Cards.Machete
@@ -813,6 +815,7 @@ library
       Arkham.Asset.Cards.SergeantMonroe
       Arkham.Asset.Cards.ShardsOfTheVoid3
       Arkham.Asset.Cards.Sharpshooter3
+      Arkham.Asset.Cards.ShieldOfFaith2
       Arkham.Asset.Cards.ShiningTrapezohedron4
       Arkham.Asset.Cards.Shotgun4
       Arkham.Asset.Cards.Showmanship
@@ -2437,6 +2440,7 @@ library
       Arkham.Skill.Cards.ExpeditiousRetreat1
       Arkham.Skill.Cards.Fearless
       Arkham.Skill.Cards.Fearless2
+      Arkham.Skill.Cards.Fey1
       Arkham.Skill.Cards.Guts
       Arkham.Skill.Cards.Guts2
       Arkham.Skill.Cards.HatchetMan

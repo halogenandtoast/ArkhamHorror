@@ -105,6 +105,7 @@ allSkills =
     , SomeSkillCard skeptic1
     , SomeSkillCard unrelenting1
     , SomeSkillCard signumCrucis2
+    , SomeSkillCard fey1
     , SomeSkillCard defensiveStance1
     , SomeSkillCard surveyTheArea1
     , SomeSkillCard occultTheory1

@@ -442,6 +442,8 @@ allEvents =
     , --  The Lair of Dagon
       --- guardian [lod]
       SomeEventCard enchantWeapon3
+    , --- seeker [lod]
+      SomeEventCard theStygianEye3
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard sweepingKick1

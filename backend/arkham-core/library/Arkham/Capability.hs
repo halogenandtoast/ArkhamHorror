@@ -18,6 +18,7 @@ instance Capable InvestigatorMatcher where
     Capabilities
       { search = SearchCapabilities {deck = InvestigatorCanSearchDeck}
       , manipulate = ManipulateCapabilities {deck = InvestigatorWithoutModifier CannotManipulateDeck}
+      , shuffle = ManipulateCapabilities {deck = InvestigatorWithoutModifier CannotManipulateDeck}
       , draw =
           DrawCapabilities
             { cards =
@@ -42,6 +43,7 @@ data Capabilities a = Capabilities
   { search :: SearchCapabilities a
   , draw :: DrawCapabilities a
   , manipulate :: ManipulateCapabilities a
+  , shuffle :: ManipulateCapabilities a
   , gain :: GainCapabilities a
   , spend :: SpendCapabilities a
   , have :: HaveCapabilities a

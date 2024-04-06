@@ -284,6 +284,7 @@ allPlayerEventCards =
       , telescopicSight3
       , temptFate
       , thePaintedWorld
+      , theStygianEye3
       , theTruthBeckons
       , thinkOnYourFeet
       , thinkOnYourFeet2
@@ -2576,6 +2577,16 @@ enchantWeapon3 =
           $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
           <> AssetWithTrait Weapon
           <> not_ (AssetWithAttachedEvent $ EventIs "07261")
+    , cdLevel = 3
+    }
+
+theStygianEye3 :: CardDef
+theStygianEye3 =
+  (event "07263" "The Stygian Eye" 10 Seeker)
+    { cdSkills = [#willpower, #willpower, #willpower]
+    , cdCardTraits = setFromList [Insight, Cursed]
+    , cdFastWindow = Just $ DuringTurn You
+    , cdCardInHandEffects = True
     , cdLevel = 3
     }
 

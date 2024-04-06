@@ -379,7 +379,7 @@ discoverClues i n = do
 
 getActionsFrom :: Sourceable source => Investigator -> source -> TestAppT [Ability]
 getActionsFrom i s = do
-  actions <- nub <$> concatMapM (getActions (toId i)) (defaultWindows $ toId i)
+  actions <- getActions (toId i) (defaultWindows $ toId i)
   pure $ filter ((== toSource s) . abilitySource) actions
 
 hasDiscardPile :: Investigator -> [CardDef] -> TestAppT ()

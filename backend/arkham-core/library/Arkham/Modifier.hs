@@ -44,6 +44,7 @@ data ModifierType
   | AddSkillIcons [SkillIcon]
   | AddSkillToOtherSkill SkillType SkillType
   | AddSkillValue SkillType
+  | AddSkillValueOf SkillType InvestigatorId
   | AddTrait Trait
   | AdditionalActions Text Source Int
   | AdditionalCost Cost
@@ -206,6 +207,7 @@ data ModifierType
   | FailTies
   | FewerActions Int
   | FewerSlots SlotType Int
+  | AdditionalSlot SlotType
   | ForcePrey PreyMatcher
   | ForceSpawnLocation LocationMatcher
   | ChangeSpawnLocation LocationMatcher LocationMatcher

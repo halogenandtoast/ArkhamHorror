@@ -842,6 +842,7 @@ library
       Arkham.Asset.Cards.SophieItWasAllMyFault
       Arkham.Asset.Cards.SpectralWeb
       Arkham.Asset.Cards.SpiritAthame1
+      Arkham.Asset.Cards.SpiritOfHumanity2
       Arkham.Asset.Cards.SpiritSpeaker
       Arkham.Asset.Cards.SpiritualResolve5
       Arkham.Asset.Cards.SpringfieldM19034
@@ -1404,6 +1405,7 @@ library
       Arkham.Event.Cards.EmergencyCache
       Arkham.Event.Cards.EmergencyCache2
       Arkham.Event.Cards.EmergencyCache3
+      Arkham.Event.Cards.EnchantWeapon3
       Arkham.Event.Cards.EtherealForm
       Arkham.Event.Cards.Eucatastrophe3
       Arkham.Event.Cards.EverVigilant1
@@ -1434,6 +1436,7 @@ library
       Arkham.Event.Cards.GritYourTeeth
       Arkham.Event.Cards.Guidance
       Arkham.Event.Cards.HandOfFate
+      Arkham.Event.Cards.HarmonyRestored2
       Arkham.Event.Cards.HeroicRescue
       Arkham.Event.Cards.HeroicRescue2
       Arkham.Event.Cards.HidingSpot

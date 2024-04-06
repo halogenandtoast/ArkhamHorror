@@ -126,6 +126,7 @@ allPlayerEventCards =
       , emergencyCache
       , emergencyCache2
       , emergencyCache3
+      , enchantWeapon3
       , etherealForm
       , eucatastrophe3
       , everVigilant1
@@ -156,6 +157,7 @@ allPlayerEventCards =
       , gritYourTeeth
       , guidance
       , handOfFate
+      , harmonyRestored2
       , heroicRescue
       , heroicRescue2
       , hidingSpot
@@ -2549,6 +2551,32 @@ riastrad1 =
     , cdCardTraits = setFromList [Spell, Spirit, Cursed]
     , cdActions = [#fight]
     , cdLevel = 1
+    }
+
+harmonyRestored2 :: CardDef
+harmonyRestored2 =
+  (event "07230" "Harmony Restored" 3 Survivor)
+    { cdSkills = [#willpower, #willpower]
+    , cdCardTraits = setFromList [Fortune, Blessed]
+    , cdCriteria =
+        Just
+          $ Criteria.ChaosTokenCountIs #bless (atLeast 1)
+          <> Criteria.ChaosTokenCountIs #curse (atLeast 1)
+    , cdLevel = 2
+    }
+
+enchantWeapon3 :: CardDef
+enchantWeapon3 =
+  (event "07261" "Enchant Weapon" 3 Guardian)
+    { cdSkills = [#willpower, #willpower, #combat]
+    , cdCardTraits = setFromList [Spell, Upgrade]
+    , cdCriteria =
+        Just
+          $ exists
+          $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
+          <> AssetWithTrait Weapon
+          <> not_ (AssetWithAttachedEvent $ EventIs "07261")
+    , cdLevel = 3
     }
 
 sweepingKick1 :: CardDef

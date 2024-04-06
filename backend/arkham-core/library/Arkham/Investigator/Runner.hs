@@ -1878,7 +1878,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       assetCard <- field AssetCard assetId
       mods <- getModifiers assetId
       let slotFilter sType = DoNotTakeUpSlot sType `notElem` mods
-      pure $ (assetId,assetCard,) <$> filter slotFilter (cdSlots $ toCardDef assetCard)
+      slots <- field AssetSlots assetId
+      pure $ (assetId,assetCard,) <$> filter slotFilter slots
 
     let allSlots :: [(SlotType, Slot)] = concatMap (\(k, vs) -> (k,) . emptySlot <$> vs) $ Map.assocs (a ^. slotsL)
 

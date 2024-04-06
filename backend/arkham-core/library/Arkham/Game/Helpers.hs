@@ -2939,6 +2939,7 @@ skillTestMatches iid source st = \case
     case (mlid1, mlid2) of
       (Just lid1, Just lid2) -> pure $ lid1 == lid2 && (canAffectOthers || iid == st.investigator)
       _ -> pure False
+  Matcher.SkillTestOfInvestigator whoMatcher -> st.investigator <=~> whoMatcher
   Matcher.SkillTestMatches ms -> allM (skillTestMatches iid source st) ms
 
 matchPhase :: Monad m => Phase -> Matcher.PhaseMatcher -> m Bool

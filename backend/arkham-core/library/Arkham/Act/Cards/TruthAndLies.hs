@@ -9,7 +9,6 @@ import Arkham.Enemy
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (EnemyAttrs (..), Field (..))
 import Arkham.Field
-import Arkham.Helpers.Message (lookAt)
 import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Locations
@@ -80,14 +79,13 @@ instance RunMessage TruthAndLies where
       advanceActDeck attrs
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push
-        $ lookAt
-          iid
-          (attrs.ability 1)
-          EncounterDeckTarget
-          [(FromTopOfDeck 3, DiscardRest)]
-          (CardWithKeyword Keyword.Hidden)
-          (DrawAllFound iid)
+      lookAt
+        iid
+        (attrs.ability 1)
+        EncounterDeckTarget
+        [(FromTopOfDeck 3, DiscardRest)]
+        (CardWithKeyword Keyword.Hidden)
+        (DrawAllFound iid)
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       advanceVia #other attrs attrs

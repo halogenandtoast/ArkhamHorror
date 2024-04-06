@@ -330,6 +330,7 @@ allPlayerAssetCards =
       , guardDog
       , guardDog2
       , guardianAngel
+      , guidedByTheUnseen3
       , guidingSpirit1
       , hallowedMirror
       , hallowedMirror3
@@ -4370,6 +4371,16 @@ shieldOfFaith2 =
     , cdSlots = [#arcane]
     , cdLevel = 2
     , cdKeywords = singleton $ seal $ SealUpTo 5 #bless
+    }
+
+guidedByTheUnseen3 :: CardDef
+guidedByTheUnseen3 =
+  (asset "07223" "Guided by the Unseen" 2 Seeker)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Ritual]
+    , cdSlots = [#arcane]
+    , cdLevel = 3
+    , cdUses = uses Secret 4
     }
 
 armageddon4 :: CardDef

@@ -989,6 +989,7 @@ data SkillTestMatcher
   | SkillTestWasFailed
   | YourSkillTest SkillTestMatcher
   | SkillTestAtYourLocation
+  | SkillTestOfInvestigator InvestigatorMatcher
   | SkillTestOnTreachery TreacheryMatcher
   | UsingThis
   | SkillTestSourceMatches SourceMatcher

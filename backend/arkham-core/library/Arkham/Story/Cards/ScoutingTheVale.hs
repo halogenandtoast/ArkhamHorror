@@ -2,7 +2,6 @@ module Arkham.Story.Cards.ScoutingTheVale (ScoutingTheVale (..), scoutingTheVale
 
 import Arkham.Card
 import Arkham.Game.Helpers (perPlayer)
-import Arkham.Helpers.Message (lookAt)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Modifier
@@ -22,7 +21,7 @@ instance RunMessage ScoutingTheVale where
   runMessage msg s@(ScoutingTheVale attrs) = runQueueT $ case msg of
     ResolveStory iid ResolveIt story' | story' == toId attrs -> do
       n <- perPlayer 2
-      push $ lookAt iid attrs EncounterDeckTarget [fromTopOfDeck n] AnyCard (defer attrs)
+      lookAt iid attrs EncounterDeckTarget [fromTopOfDeck n] AnyCard (defer attrs)
       cragOfTheGhouls <- selectJust $ locationIs Locations.cragOfTheGhouls
       gameModifier attrs cragOfTheGhouls Blank
       pure s

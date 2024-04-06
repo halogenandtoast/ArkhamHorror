@@ -465,8 +465,35 @@ focusChaosTokens tokens f = do
   push $ FocusChaosTokens tokens
   f UnfocusChaosTokens
 
+focusCards :: ReverseQueue m => [Card] -> (Message -> m ()) -> m ()
+focusCards cards f = do
+  push $ FocusCards cards
+  f UnfocusCards
+
 checkWindows :: ReverseQueue m => [Window] -> m ()
 checkWindows = Msg.pushM . Msg.checkWindows
 
 cancelTokenDraw :: (MonadTrans t, HasQueue Message m) => t m ()
 cancelTokenDraw = lift Msg.cancelTokenDraw
+
+search
+  :: (Targetable target, Sourceable source, ReverseQueue m)
+  => InvestigatorId
+  -> source
+  -> target
+  -> [(Zone, ZoneReturnStrategy)]
+  -> CardMatcher
+  -> FoundCardsStrategy
+  -> m ()
+search iid source target zones matcher strategy = Msg.push $ Msg.search iid source target zones matcher strategy
+
+lookAt
+  :: (Targetable target, Sourceable source, ReverseQueue m)
+  => InvestigatorId
+  -> source
+  -> target
+  -> [(Zone, ZoneReturnStrategy)]
+  -> CardMatcher
+  -> FoundCardsStrategy
+  -> m ()
+lookAt iid source target zones matcher strategy = Msg.push $ Msg.lookAt iid source target zones matcher strategy

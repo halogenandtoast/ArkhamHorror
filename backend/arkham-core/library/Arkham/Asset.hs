@@ -705,6 +705,8 @@ allAssets =
       --- guardian [lif]
       SomeAssetCard holyRosary2
     , SomeAssetCard shieldOfFaith2
+    , --- seeker [lif]
+      SomeAssetCard guidedByTheUnseen3
     , --- mystic [lif]
       SomeAssetCard armageddon4
     , SomeAssetCard eyeOfChaos4

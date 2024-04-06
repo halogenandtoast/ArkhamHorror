@@ -37,7 +37,7 @@ instance RunMessage ImpromptuBarrier where
     Successful (Action.Evade, EnemyTarget enemyId) iid _ (isTarget attrs -> True) n -> do
       enemies <-
         map fst
-          . filter (\(_, x) -> maybe False (<= n) x)
+          . filter (maybe False (<= n) . snd)
           <$> selectWithField Enemy.EnemyEvade (at_ (locationWithEnemy enemyId) <> not_ (EnemyWithId enemyId))
       player <- getPlayer iid
       chooseEvade <-

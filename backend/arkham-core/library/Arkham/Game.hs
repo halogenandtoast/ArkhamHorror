@@ -2065,6 +2065,13 @@ getAssetsMatching matcher = do
       filterM isSanityDamageable assets
     AssetWithoutSealedTokens -> do
       pure $ filter (null . attr assetSealedChaosTokens) as
+    AssetWithSealedChaosTokens n chaosTokenMatcher -> do
+      filterM
+        ( fmap (>= n)
+            . countM (`chaosTokenMatches` IncludeSealed chaosTokenMatcher)
+            . attr assetSealedChaosTokens
+        )
+        as
     AssetWithHighestPrintedCost matcher' -> do
       matches' <- getAssetsMatching matcher'
       maxes <$> forToSnd matches' (field AssetCost . toId)

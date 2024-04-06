@@ -717,7 +717,9 @@ allAssets =
     , --- survivor [lif]
       SomeAssetCard spiritOfHumanity2
     , -- The Lair of Dagon
-      --- seeker [lod]
+      --- guardian [lod]
+      SomeAssetCard nephthysHuntressOfBast4
+    , --- seeker [lod]
       SomeAssetCard hyperawareness4
     , --- rogue [lod]
       SomeAssetCard hardKnocks4

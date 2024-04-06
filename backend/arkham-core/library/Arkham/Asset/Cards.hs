@@ -445,6 +445,7 @@ allPlayerAssetCards =
       , moxie1
       , mrRook
       , mysteriousRaven
+      , nephthysHuntressOfBast4
       , newspaper
       , newspaper2
       , nightmareBauble3
@@ -4347,6 +4348,7 @@ tristanBotleyFixerForHire2 =
     , cdLevel = 2
     , cdKeywords = singleton $ Keyword.Researched YouHaveTranslatedTheGrimoire
     , cdCardInHandEffects = True
+    , cdUnique = True
     }
 
 curseOfAeons3 :: CardDef
@@ -4394,6 +4396,7 @@ luckyPennyOmenOfMisfortune2 =
     , cdSlots = [#accessory]
     , cdLevel = 2
     , cdKeywords = setFromList [Keyword.Exceptional]
+    , cdUnique = True
     }
 
 eyeOfTheDjinnVesselOfGoodAndEvil2 :: CardDef
@@ -4404,6 +4407,7 @@ eyeOfTheDjinnVesselOfGoodAndEvil2 =
     , cdSlots = [#hand]
     , cdLevel = 2
     , cdKeywords = setFromList [Keyword.Exceptional]
+    , cdUnique = True
     }
 
 armageddon4 :: CardDef
@@ -4443,6 +4447,16 @@ spiritOfHumanity2 =
     , cdCardTraits = setFromList [Ritual, Blessed, Cursed]
     , cdSlots = [#arcane]
     , cdLevel = 2
+    }
+
+nephthysHuntressOfBast4 :: CardDef
+nephthysHuntressOfBast4 =
+  (asset "07262" ("Nephthys" <:> "Huntress of Bast") 3 Guardian)
+    { cdSkills = [#willpower, #combat, #combat]
+    , cdCardTraits = setFromList [Ally, Blessed]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdLevel = 4
     }
 
 hyperawareness4 :: CardDef

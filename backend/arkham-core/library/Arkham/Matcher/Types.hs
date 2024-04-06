@@ -200,6 +200,7 @@ data AssetMatcher
   | AssetWithClues ValueMatcher
   | AssetWithTokens ValueMatcher Token
   | AssetWithHighestPrintedCost AssetMatcher
+  | AssetWithSealedChaosTokens Int ChaosTokenMatcher
   | AssetWithoutSealedTokens
   | AssetInSlot SlotType
   | AssetInTwoHandSlots
@@ -876,6 +877,7 @@ data WindowMatcher
   | EnemyAttacked Timing Who SourceMatcher EnemyMatcher
   | EnemyAttackedSuccessfully Timing Who EnemyMatcher
   | RevealChaosToken Timing Who ChaosTokenMatcher
+  | TokensWouldBeRemovedFromChaosBag Timing ChaosTokenMatcher
   | ResolvesChaosToken Timing Who ChaosTokenMatcher
   | CancelChaosToken Timing Who ChaosTokenMatcher
   | IgnoreChaosToken Timing Who ChaosTokenMatcher

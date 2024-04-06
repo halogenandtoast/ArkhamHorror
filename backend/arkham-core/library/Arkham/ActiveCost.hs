@@ -171,6 +171,7 @@ payCost msg c iid skipAdditionalCosts cost = do
   let withPayment payment = pure $ c & costPaymentsL <>~ payment
   let source = c.source
   let actions = c.actions
+  let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
   case cost of
     SkillTestCost stsource sType n -> do
@@ -203,19 +204,14 @@ payCost msg c iid skipAdditionalCosts cost = do
       xs' <- filterM (getCanAffordCost iid source actions c.windows) xs
       push
         $ chooseOne player
-        $ map (\x -> Label (displayCostType x) [PayCost acId iid skipAdditionalCosts x]) xs'
+        $ map (\x -> Label (displayCostType x) [pay x]) xs'
       pure c
     OptionalCost x -> do
       canAfford <- getCanAffordCost iid source actions [] x
-      pushWhen canAfford
-        $ chooseOne
-          player
-          [ Label (displayCostType x) [PayCost acId iid skipAdditionalCosts x]
-          , Label "Do not pay" []
-          ]
+      pushWhen canAfford $ chooseOne player [Label (displayCostType x) [pay x], Label "Do not pay" []]
       pure c
     Costs xs -> do
-      pushAll [PayCost acId iid skipAdditionalCosts x | x <- xs]
+      pushAll $ map pay xs
       pure c
     UpTo 0 _ -> pure c
     UpTo n cost' -> do
@@ -232,7 +228,7 @@ payCost msg c iid skipAdditionalCosts cost = do
         $ ChoosePaymentAmounts
           ("Pay " <> displayCostType cost)
           Nothing
-          [PaymentAmountChoice iid 0 maxUpTo name $ PayCost acId iid skipAdditionalCosts cost']
+          [PaymentAmountChoice iid 0 maxUpTo name $ pay cost']
       pure c
     DiscardTopOfDeckCost n -> do
       cards <- fieldMap InvestigatorDeck (map PlayerCard . take n . unDeck) iid
@@ -250,13 +246,8 @@ payCost msg c iid skipAdditionalCosts cost = do
       push $ Exhaust target
       withPayment $ ExhaustPayment [target]
     ExhaustAssetCost matcher -> do
-      targets <- map AssetTarget <$> select (matcher <> AssetReady)
-      push
-        $ chooseOne
-          player
-          [ TargetLabel target [PayCost acId iid skipAdditionalCosts (ExhaustCost target)]
-          | target <- targets
-          ]
+      assets <- select $ matcher <> AssetReady
+      push $ chooseOne player $ targetLabels assets $ only . pay . exhaust
       pure c
     SealCost matcher -> do
       targets <-
@@ -264,13 +255,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           =<< scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
       pushAll
         [ FocusChaosTokens targets
-        , chooseOne
-            player
-            [ TargetLabel
-              (ChaosTokenTarget target)
-              [PayCost acId iid skipAdditionalCosts (SealChaosTokenCost target)]
-            | target <- targets
-            ]
+        , chooseOne player $ targetLabels targets $ only . pay . SealChaosTokenCost
         , UnfocusChaosTokens
         ]
       pure c
@@ -285,12 +270,7 @@ payCost msg c iid skipAdditionalCosts cost = do
             tokens <- field AssetSealedChaosTokens aid
             pushAll
               [ FocusChaosTokens tokens
-              , chooseN
-                  player
-                  n
-                  [ TargetLabel (ChaosTokenTarget t) [PayCost acId iid skipAdditionalCosts (ReleaseChaosTokenCost t)]
-                  | t <- tokens
-                  ]
+              , chooseN player n $ targetLabels tokens $ only . pay . ReleaseChaosTokenCost
               , UnfocusChaosTokens
               ]
           _ -> error "Unhandled source for releasing tokens cost"
@@ -298,7 +278,18 @@ payCost msg c iid skipAdditionalCosts cost = do
       pure c
     ReleaseChaosTokenCost t -> do
       push $ UnsealChaosToken t
-      pure $ c & (costPaymentsL <>~ ReleaseChaosTokenPayment t)
+      withPayment $ ReleaseChaosTokenPayment t
+    ReturnChaosTokensToPoolCost n matcher -> do
+      tokens <- select matcher
+      pushAll
+        [ FocusChaosTokens tokens
+        , chooseN player n $ targetLabels tokens $ only . pay . ReturnChaosTokenToPoolCost
+        , UnfocusChaosTokens
+        ]
+      pure c
+    ReturnChaosTokenToPoolCost t -> do
+      push $ ReturnChaosTokensToPool [t]
+      withPayment $ ReturnChaosTokenToPoolPayment t
     SupplyCost matcher supply -> do
       iid' <- selectJust $ InvestigatorWithSupply supply <> InvestigatorAt matcher
       push $ UseSupply iid' supply
@@ -308,13 +299,8 @@ payCost msg c iid skipAdditionalCosts cost = do
       pushAll [DiscardedCost target, toDiscardBy iid c.source target]
       withPayment $ DiscardPayment [(zone, card)]
     DiscardAssetCost matcher -> do
-      targets <- map AssetTarget <$> select (matcher <> AssetReady)
-      push
-        $ chooseOne
-          player
-          [ TargetLabel target [PayCost acId iid skipAdditionalCosts (DiscardCost FromPlay target)]
-          | target <- targets
-          ]
+      assets <- select (matcher <> AssetReady)
+      push $ chooseOne player $ targetLabels assets $ only . pay . discardCost
       pure c
     DiscardRandomCardCost -> do
       push $ toMessage $ randomDiscard iid c.source
@@ -341,8 +327,8 @@ payCost msg c iid skipAdditionalCosts cost = do
       push $ RevealCard cardId
       pure c
     EnemyDoomCost x matcher -> do
-      enemies <- selectMap EnemyTarget matcher
-      push $ chooseOrRunOne player [TargetLabel target [PlaceDoom source target x] | target <- enemies]
+      enemies <- select matcher
+      push $ chooseOrRunOne player [targetLabel enemy [placeDoom source enemy x] | enemy <- enemies]
       withPayment $ DoomPayment x
     DoomCost _ (AgendaMatcherTarget matcher) x -> do
       agendas <- selectMap AgendaTarget matcher
@@ -381,7 +367,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           "Pay X Horror"
           Nothing
           [ PaymentAmountChoice iid minimumHorror sanity name
-              $ PayCost acId iid skipAdditionalCosts (HorrorCost source' (InvestigatorTarget iid) 1)
+              $ pay (HorrorCost source' (InvestigatorTarget iid) 1)
           ]
       pure c
     DamageCost _ target x -> case target of
@@ -533,7 +519,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           player
           [ Label
               "Spend 1 additional action"
-              [ PayCost acId iid skipAdditionalCosts (ActionCost 1)
+              [ pay (ActionCost 1)
               , PaidAbilityCost iid Nothing AdditionalActionPayment
               , msg
               ]
@@ -580,7 +566,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           ("Pay " <> displayCostType cost)
           Nothing
           [ PaymentAmountChoice iid n maxUses name
-              $ PayCost acId iid skipAdditionalCosts (UseCost assetMatcher uType 1)
+              $ pay (UseCost assetMatcher uType 1)
           ]
       pure c
     AssetClueCost _ aMatcher gv -> do
@@ -604,12 +590,12 @@ payCost msg c iid skipAdditionalCosts cost = do
     ClueCostX -> do
       mVal <- getSpendableClueCount [iid]
       if mVal == 1
-        then push $ PayCost acId iid skipAdditionalCosts (ClueCost (Static 1))
+        then push $ pay (ClueCost (Static 1))
         else
           push
             $ questionLabel ("Spend 1-" <> tshow mVal <> " clues, as a group") player
             $ DropDown
-              [ (tshow n, PayCost acId iid skipAdditionalCosts (ClueCost (Static n)))
+              [ (tshow n, pay (ClueCost (Static n)))
               | n <- [1 .. mVal]
               ]
       pure c
@@ -619,12 +605,12 @@ payCost msg c iid skipAdditionalCosts cost = do
     GroupClueCostRange (sVal, eVal) locationMatcher -> do
       mVal <- min eVal . getSum <$> selectAgg Sum InvestigatorClues (InvestigatorAt locationMatcher)
       if mVal == sVal
-        then push $ PayCost acId iid skipAdditionalCosts (GroupClueCost (Static sVal) locationMatcher)
+        then push $ pay (GroupClueCost (Static sVal) locationMatcher)
         else
           push
             $ questionLabel ("Spend " <> tshow sVal <> "-" <> tshow mVal <> " clues, as a group") player
             $ DropDown
-              [ (tshow n, PayCost acId iid skipAdditionalCosts (GroupClueCost (Static n) locationMatcher))
+              [ (tshow n, pay (GroupClueCost (Static n) locationMatcher))
               | n <- [sVal .. mVal]
               ]
       pure c
@@ -674,7 +660,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           x
           [ targetLabel
             (toCardId card)
-            [PayCost acId iid skipAdditionalCosts (DiscardCardCost $ PlayerCard card)]
+            [pay (DiscardCardCost $ PlayerCard card)]
           | card <- cards
           ]
       pure c
@@ -694,17 +680,12 @@ payCost msg c iid skipAdditionalCosts cost = do
           "Number of cards to pay"
           Nothing
           [ PaymentAmountChoice iid 1 (length cards) name
-              $ PayCost acId iid skipAdditionalCosts (HandDiscardCost 1 cardMatcher)
+              $ pay (HandDiscardCost 1 cardMatcher)
           ]
       pure c
     ReturnMatchingAssetToHandCost assetMatcher -> do
       assets <- select assetMatcher
-      push
-        $ chooseOne
-          player
-          [ targetLabel asset [PayCost acId iid skipAdditionalCosts (ReturnAssetToHandCost asset)]
-          | asset <- assets
-          ]
+      push $ chooseOne player $ targetLabels assets $ only . pay . ReturnAssetToHandCost
       pure c
     ReturnAssetToHandCost assetId -> do
       card <- field AssetCard assetId
@@ -728,9 +709,7 @@ payCost msg c iid skipAdditionalCosts cost = do
         $ chooseN
           player
           x
-          [ targetLabel
-            (toCardId card)
-            [PayCost acId iid skipAdditionalCosts (DiscardCost zone' $ CardTarget card)]
+          [ targetLabel (toCardId card) [pay (DiscardCost zone' $ CardTarget card)]
           | (zone', card) <- cards
           ]
       pure c
@@ -746,7 +725,7 @@ payCost msg c iid skipAdditionalCosts cost = do
                 targetLabel (toCardId card)
                   $ toMessage (discardCard iid c.source card)
                   : PaidAbilityCost iid Nothing (SkillIconPayment card.skills)
-                  : [PayCost acId iid skipAdditionalCosts (SkillIconCost (x - n) skillTypes) | n < x]
+                  : [pay (SkillIconCost (x - n) skillTypes) | n < x]
             )
             cards
       push $ chooseOne player cardMsgs
@@ -759,9 +738,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       push
         $ chooseOne
           player
-          [ SkillLabel
-            skill
-            [PayCost acId iid skipAdditionalCosts (SkillIconCost x (singleton $ SkillIcon skill))]
+          [ SkillLabel skill [pay (SkillIconCost x (singleton $ SkillIcon skill))]
           | SkillIcon skill <- choices
           ]
       pure c
@@ -776,7 +753,7 @@ payCost msg c iid skipAdditionalCosts cost = do
                 targetLabel (toCardId card)
                   $ toMessage (discardCard iid c.source card)
                   : PaidAbilityCost iid Nothing (DiscardCardPayment [PlayerCard card])
-                  : [PayCost acId iid skipAdditionalCosts $ DiscardCombinedCost (x - n) | n < x]
+                  : [pay $ DiscardCombinedCost (x - n) | n < x]
             )
             cards
       push $ chooseOne player cardMsgs
@@ -793,7 +770,7 @@ payCost msg c iid skipAdditionalCosts cost = do
                   [ RemoveFromDiscard iid (toCardId card)
                   , ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
                   , PaidAbilityCost iid Nothing $ CardPayment card
-                  , PayCost acId iid skipAdditionalCosts $ ShuffleDiscardCost (n - 1) cardMatcher
+                  , pay $ ShuffleDiscardCost (n - 1) cardMatcher
                   ]
             )
             cards

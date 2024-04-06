@@ -17,6 +17,7 @@ import Arkham.Helpers.Investigator (additionalActionCovers)
 import Arkham.Helpers.Matchers
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
+import {-# SOURCE #-} Arkham.Helpers.SkillTest
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
@@ -52,6 +53,12 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
     shroud <- maybe (pure 0) (field LocationShroud) mloc
     x <- getRemainingCurseTokens
     pure $ x >= shroud
+  AddCurseTokensEqualToSkillTestDifficulty -> do
+    getSkillTestDifficulty >>= \case
+      Nothing -> pure False
+      Just difficulty -> do
+        x <- getRemainingCurseTokens
+        pure $ x >= difficulty
   AddCurseTokenCost n -> do
     x <- getRemainingCurseTokens
     pure $ x >= n

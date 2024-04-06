@@ -2297,7 +2297,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   CommitToSkillTest skillTest triggerMessage' | skillTestInvestigator skillTest == toId a -> do
     let iid = skillTestInvestigator skillTest
     committedCards <- field InvestigatorCommittedCards iid
-    mustBeCommited <- filterM (`hasModifier` MustBeCommitted) committedCards
+    uncommittableCards <- filterM (`withoutModifier` MustBeCommitted) committedCards
     let window = mkWhen (Window.SkillTest $ skillTestType skillTest)
     actions <- getActions iid [window]
 
@@ -2311,7 +2311,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         ]
       beginMessage = CommitToSkillTest skillTest triggerMessage'
     player <- getPlayer iid
-    if notNull committableCards || notNull committedCards || notNull actions
+    if notNull committableCards || notNull uncommittableCards || notNull actions
       then
         push
           $ SkillTestAsk
@@ -2320,8 +2320,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (\card -> targetLabel (toCardId card) [SkillTestCommitCard iid card, beginMessage])
             committableCards
           <> [ targetLabel (toCardId card) [SkillTestUncommitCard iid card, beginMessage]
-             | card <- committedCards
-             , card `notElem` mustBeCommited
+             | card <- uncommittableCards
              ]
           <> map
             (\action -> AbilityLabel iid action [window] [beginMessage])
@@ -2336,16 +2335,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     committedCards <- field InvestigatorCommittedCards investigatorId
     let beginMessage = CommitToSkillTest skillTest triggerMessage
     committableCards <- getCommittableCards a.id
+    uncommittableCards <- filterM (`withoutModifier` MustBeCommitted) committedCards
     player <- getPlayer investigatorId
-    pushWhen (notNull committableCards || notNull committedCards)
+    pushWhen (notNull committableCards || notNull uncommittableCards)
       $ SkillTestAsk
       $ chooseOne player
       $ map
         (\card -> targetLabel (toCardId card) [SkillTestCommitCard investigatorId card, beginMessage])
         committableCards
-      <> map
-        (\card -> targetLabel (toCardId card) [SkillTestUncommitCard investigatorId card, beginMessage])
-        committedCards
+      <> [ targetLabel (toCardId card) [SkillTestUncommitCard investigatorId card, beginMessage]
+         | card <- uncommittableCards
+         ]
     pure a
   CheckWindow iids windows | investigatorId `elem` iids -> do
     a <$ push (RunWindow investigatorId windows)
@@ -2713,8 +2713,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           filter
             ((`notElem` findWithDefault [] Zone.FromDeck foundCards) . PlayerCard)
             (unDeck investigatorDeck)
-      pushBatch batchId $ EndSearch iid source target cardSources
-      pushBatch batchId $ ResolveSearch iid
+      pushBatch batchId $ EndSearch investigatorId source target cardSources
+      pushBatch batchId $ ResolveSearch investigatorId
 
       when (searchType == Searching) $ do
         pushBatch batchId
@@ -2726,10 +2726,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         ?~ InvestigatorSearch searchType iid source target cardSources cardMatcher foundStrategy foundCards
         & deckL
         .~ Deck deck
-  ResolveSearch iid | iid == investigatorId -> do
+  ResolveSearch x | x == investigatorId -> do
     case investigatorSearch of
       Just
-        (InvestigatorSearch _ _ source (InvestigatorTarget iid') _ cardMatcher foundStrategy foundCards) -> do
+        (InvestigatorSearch _ iid source (InvestigatorTarget iid') _ cardMatcher foundStrategy foundCards) -> do
           mods <- getModifiers iid
           let
             applyMod (AdditionalTargets n) = over biplate (+ n)

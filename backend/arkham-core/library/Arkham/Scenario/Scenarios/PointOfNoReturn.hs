@@ -23,7 +23,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Prelude
 import Arkham.Resolution
-import Arkham.Scenario.Runner hiding (chooseOne, story)
+import Arkham.Scenario.Runner hiding (chooseOne, drawCardsIfCan, story)
 import Arkham.Scenario.Setup
 import Arkham.ScenarioLogKey
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -157,8 +157,7 @@ instance RunMessage PointOfNoReturn where
       case chaosTokenFace token of
         Tablet -> void $ runMaybeT $ do
           Action.Investigate <- MaybeT getSkillTestAction
-          drawCard <- MaybeT $ drawCardsIfCan iid TabletEffect 1
-          lift $ push drawCard
+          lift $ drawCardsIfCan iid TabletEffect 1
         _ -> pure ()
       pure s
     ScenarioResolution r -> do

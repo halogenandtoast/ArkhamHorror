@@ -542,6 +542,7 @@ library
       Arkham.Asset.Cards.ExpeditionJournal
       Arkham.Asset.Cards.EyeOfChaos
       Arkham.Asset.Cards.EyeOfChaos4
+      Arkham.Asset.Cards.EyeOfTheDjinnVesselOfGoodAndEvil2
       Arkham.Asset.Cards.FalseCovenant2
       Arkham.Asset.Cards.FamiliarSpirit
       Arkham.Asset.Cards.FamilyInheritance
@@ -684,6 +685,7 @@ library
       Arkham.Asset.Cards.LuckyCigaretteCase3
       Arkham.Asset.Cards.LuckyDice2
       Arkham.Asset.Cards.LuckyDice3
+      Arkham.Asset.Cards.LuckyPennyOmenOfMisfortune2
       Arkham.Asset.Cards.Lupara3
       Arkham.Asset.Cards.M1918Bar4
       Arkham.Asset.Cards.Machete

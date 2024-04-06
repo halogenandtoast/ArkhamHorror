@@ -273,6 +273,7 @@ allPlayerAssetCards =
       , expeditionJournal
       , eyeOfChaos
       , eyeOfChaos4
+      , eyeOfTheDjinnVesselOfGoodAndEvil2
       , falseCovenant2
       , familiarSpirit
       , familyInheritance
@@ -407,6 +408,7 @@ allPlayerAssetCards =
       , luckyCigaretteCase3
       , luckyDice2
       , luckyDice3
+      , luckyPennyOmenOfMisfortune2
       , lupara3
       , m1918Bar4
       , machete
@@ -4381,6 +4383,26 @@ guidedByTheUnseen3 =
     , cdSlots = [#arcane]
     , cdLevel = 3
     , cdUses = uses Secret 4
+    }
+
+luckyPennyOmenOfMisfortune2 :: CardDef
+luckyPennyOmenOfMisfortune2 =
+  (asset "07224" ("\"Lucky\" Penny" <:> "Omen of Misfortune") 2 Rogue)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Item, Charm, Cursed]
+    , cdSlots = [#accessory]
+    , cdLevel = 2
+    , cdKeywords = setFromList [Keyword.Exceptional]
+    }
+
+eyeOfTheDjinnVesselOfGoodAndEvil2 :: CardDef
+eyeOfTheDjinnVesselOfGoodAndEvil2 =
+  (asset "07225" ("Eye of the Djinn" <:> "Vessel of Good and Evil") 2 Rogue)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Item, Relic, Blessed, Cursed]
+    , cdSlots = [#hand]
+    , cdLevel = 2
+    , cdKeywords = setFromList [Keyword.Exceptional]
     }
 
 armageddon4 :: CardDef

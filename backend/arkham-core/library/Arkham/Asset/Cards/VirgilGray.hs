@@ -38,7 +38,7 @@ instance HasAbilities VirgilGray where
 instance RunMessage VirgilGray where
   runMessage msg a@(VirgilGray attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      mDrawCards <- drawCardsIfCan iid (attrs.ability 1) 1
+      mDrawCards <- Msg.drawCardsIfCan iid (attrs.ability 1) 1
       mGainResources <- Msg.gainResourcesIfCan iid (attrs.ability 1) 1
       healable <- selectAny $ HealableAsset (attrs.ability 1) #horror (be attrs)
       others <- select $ not_ (InvestigatorWithId iid)

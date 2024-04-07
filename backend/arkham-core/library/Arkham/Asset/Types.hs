@@ -280,6 +280,9 @@ instance HasField "uses" AssetAttrs (Map UseType Int) where
 instance HasField "sealedChaosTokens" AssetAttrs [ChaosToken] where
   getField = assetSealedChaosTokens
 
+instance HasField "cardsUnderneath" AssetAttrs [Card] where
+  getField = assetCardsUnderneath
+
 instance HasField "use" AssetAttrs (UseType -> Int) where
   getField a uType = findWithDefault 0 uType a.uses
 

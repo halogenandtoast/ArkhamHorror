@@ -361,6 +361,7 @@ allPlayerAssetCards =
       , hyperawareness4
       , hypnoticTherapy
       , ichtacaTheForgottenGuardian
+      , ikiaqTheCouncilsChosen3
       , inTheKnow1
       , inTheThickOfIt
       , ineffableTruth
@@ -4484,6 +4485,16 @@ hardKnocks4 =
     , cdCardTraits = setFromList [Talent]
     , cdUses = uses Resource 2
     , cdLevel = 4
+    }
+
+ikiaqTheCouncilsChosen3 :: CardDef
+ikiaqTheCouncilsChosen3 =
+  (asset "07267" ("Ikiaq" <:> "The Council's Chosen") 3 Mystic)
+    { cdCardTraits = setFromList [Ally, Sorcerer]
+    , cdSkills = [#willpower, #intellect]
+    , cdUnique = True
+    , cdSlots = [#ally]
+    , cdLevel = 3
     }
 
 digDeep4 :: CardDef

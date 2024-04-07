@@ -1383,6 +1383,17 @@ runGameMessage msg g = case msg of
     pure g
   Flipped (AssetSource aid) card | toCardType card /= AssetType -> do
     runMessage (RemoveAsset aid) g
+  QuietlyRemoveFromGame target -> do
+    case target of
+      AssetTarget aid -> pure $ g & entitiesL . assetsL %~ deleteMap aid
+      EnemyTarget aid -> pure $ g & entitiesL . enemiesL %~ deleteMap aid
+      TreacheryTarget aid -> do
+        popMessageMatching_ \case
+          Discard _ _ (TreacheryTarget tid) -> tid == aid
+          _ -> False
+        pure $ g & entitiesL . treacheriesL %~ deleteMap aid
+      LocationTarget aid -> pure $ g & entitiesL . locationsL %~ deleteMap aid
+      _ -> error $ "Unhandled quiet removal of target: " <> show target
   RemoveFromGame (AssetTarget aid) -> do
     card <- field AssetCard aid
     runMessage

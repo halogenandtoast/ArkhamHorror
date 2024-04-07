@@ -3,12 +3,10 @@ module Arkham.Asset.Cards.NineOfRods3 (nineOfRods3, NineOfRods3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card
 import Arkham.Deck qualified as Deck
+import Arkham.Helpers.Card (getCardEntityTarget)
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.Window (Window, windowType)
-import Arkham.Window qualified as Window
 
 newtype NineOfRods3 = NineOfRods3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -28,21 +26,10 @@ instance HasAbilities NineOfRods3 where
     , restrictedAbility a 2 InYourHand $ freeReaction (GameBegins #when)
     ]
 
-getCard :: [Window] -> Card
-getCard = \case
-  [] -> error "impossible"
-  ((windowType -> Window.DrawCard _ card _) : _) -> card
-  (_ : rest) -> getCard rest
-
 instance RunMessage NineOfRods3 where
   runMessage msg a@(NineOfRods3 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (getCard -> card) _ -> do
-      target <- case toCardType card of
-        EnemyType -> toTarget <$> selectJust (EnemyWithCardId $ toCardId card)
-        TreacheryType -> toTarget <$> selectJust (TreacheryWithCardId $ toCardId card)
-        LocationType -> toTarget <$> selectJust (LocationWithCardId $ toCardId card)
-        AssetType -> toTarget <$> selectJust (AssetWithCardId $ toCardId card)
-        _ -> error "Unhandled type"
+    UseCardAbility iid (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
+      target <- getCardEntityTarget card
       pushAll
         [ CancelNext (toSource attrs) RevelationMessage
         , CancelNext (toSource attrs) DrawEnemyMessage

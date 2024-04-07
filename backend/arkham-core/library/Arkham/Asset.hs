@@ -724,6 +724,8 @@ allAssets =
     , --- rogue [lod]
       SomeAssetCard geas2
     , SomeAssetCard hardKnocks4
+    , --- mystic [lod]
+      SomeAssetCard ikiaqTheCouncilsChosen3
     , --- survivor [lod]
       SomeAssetCard digDeep4
     , --- neutral [lod]

@@ -738,6 +738,7 @@ allAssets =
       SomeAssetCard holySpear5
     , --- seeker [itm]
       SomeAssetCard ancestralKnowledge3
+    , SomeAssetCard ariadnesTwine3
     , --- rogue [itm]
       SomeAssetCard twentyFiveAutomatic2
     , SomeAssetCard luckyDice3

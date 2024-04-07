@@ -33,6 +33,7 @@ import Arkham.Token qualified as Token
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Control.Lens (non)
+import Control.Monad.State.Strict (evalStateT, get, put)
 import Data.List qualified as List
 
 getCanAffordCost
@@ -102,8 +103,19 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
     selectAny $ matcher <> Matcher.DiscardableAsset
   UseCost assetMatcher uType n -> do
     assets <- select assetMatcher
-    uses <-
-      sum <$> traverse (fieldMap AssetUses (findWithDefault 0 uType)) assets
+    uses <- flip evalStateT assets $ do
+      sum <$> for assets \asset -> do
+        mods <- lift $ getModifiers asset
+        let otherSources = [s | ProvidesUses uType' (AssetSource s) <- mods, uType' == uType]
+        alreadyCounted <- get
+        fromOtherSources <-
+          sum <$> for otherSources \otherSource -> do
+            if otherSource `elem` alreadyCounted
+              then pure 0
+              else do
+                put $ otherSource : alreadyCounted
+                lift $ fieldMap AssetUses (findWithDefault 0 uType) otherSource
+        lift $ fieldMap AssetUses ((+ fromOtherSources) . findWithDefault 0 uType) asset
     pure $ uses >= n
   DynamicUseCost assetMatcher uType useCost -> case useCost of
     DrawnCardsValue -> do

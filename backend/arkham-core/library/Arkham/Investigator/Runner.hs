@@ -2509,6 +2509,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         & (foundCardsL . each %~ filter (/= PlayerCard pc))
     EncounterCard _ -> pure a
     VengeanceCard _ -> pure a
+  MoveUses (ProxySource (isSource a -> True) ResourceSource) _ _ n -> do
+    pure $ a & tokensL %~ subtractTokens Resource n
+  MoveUses _ (ProxyTarget (isTarget a -> True) ResourceTarget) _ n -> do
+    pure $ a & tokensL %~ addTokens Resource n
   AddToHand iid cards | iid == investigatorId -> do
     let
       choices = mapMaybe cardChoice cards

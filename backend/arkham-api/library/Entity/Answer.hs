@@ -292,10 +292,14 @@ handleAnswer Game {..} playerId = \case
       let (mm, msgs') = extract (qrChoice response) qs
       case (mm, msgs') of
         (Just m', []) -> [uiToRun m']
-        (Just m', msgs'') ->
+        (Just m', msgs''@(m1 : mrest)) ->
           if n - 1 == 0
             then [uiToRun m']
-            else [uiToRun m', Ask playerId $ f $ ChooseN (n - 1) msgs'']
+            else
+              -- it is possible that every choice in qs is the same, in which case we can just run them all
+              if all (== m1) mrest
+                then uiToRun m' : map uiToRun (take (n - 1) msgs'')
+                else [uiToRun m', Ask playerId $ f $ ChooseN (n - 1) msgs'']
         (Nothing, msgs'') -> [Ask playerId $ f $ ChooseN n msgs'']
     ChooseUpToN n qs -> do
       let (mm, msgs') = extract (qrChoice response) qs

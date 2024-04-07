@@ -904,6 +904,7 @@ data Message
   | SpendClues Int [InvestigatorId]
   | SpendResources InvestigatorId Int
   | SpendUses Target UseType Int
+  | MoveUses Source Target UseType Int
   | SpentAllUses Target
   | StartCampaign
   | StartScenario ScenarioId

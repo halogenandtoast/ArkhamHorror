@@ -235,6 +235,9 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
   SealCost tokenMatcher -> do
     tokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
     anyM (\token -> matchChaosToken iid token tokenMatcher) tokens
+  SealMultiCost n tokenMatcher -> do
+    tokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
+    (>= n) <$> countM (\token -> matchChaosToken iid token tokenMatcher) tokens
   SealChaosTokenCost _ -> pure True
   ReleaseChaosTokensCost n tokenMatcher -> do
     let

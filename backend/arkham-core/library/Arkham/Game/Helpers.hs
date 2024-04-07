@@ -1361,6 +1361,16 @@ passesCriteria iid mcard source windows' = \case
   Criteria.SkillExists matcher -> selectAny matcher
   Criteria.StoryExists matcher -> selectAny matcher
   Criteria.ActExists matcher -> selectAny matcher
+  Criteria.CardWithDoomExists -> do
+    orM
+      [ selectAny $ Matcher.AssetWithDoom (Matcher.atLeast 1)
+      , selectAny $ Matcher.InvestigatorWithDoom (Matcher.atLeast 1)
+      , selectAny $ Matcher.EnemyWithDoom (Matcher.atLeast 1)
+      , selectAny $ Matcher.EventWithDoom (Matcher.atLeast 1)
+      , selectAny $ Matcher.LocationWithDoom (Matcher.atLeast 1)
+      , selectAny $ Matcher.TreacheryWithDoom (Matcher.atLeast 1)
+      , selectAny $ Matcher.AgendaWithDoom (Matcher.atLeast 1)
+      ]
   Criteria.AssetExists matcher -> do
     selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.DifferentAssetsExist matcher1 matcher2 -> do

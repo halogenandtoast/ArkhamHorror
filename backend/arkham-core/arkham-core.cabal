@@ -628,6 +628,7 @@ library
       Arkham.Asset.Cards.HiredMuscle1
       Arkham.Asset.Cards.HolyRosary
       Arkham.Asset.Cards.HolyRosary2
+      Arkham.Asset.Cards.HolySpear5
       Arkham.Asset.Cards.Hope
       Arkham.Asset.Cards.Hyperawareness
       Arkham.Asset.Cards.Hyperawareness2
@@ -1441,6 +1442,7 @@ library
       Arkham.Event.Cards.Glory
       Arkham.Event.Cards.GritYourTeeth
       Arkham.Event.Cards.Guidance
+      Arkham.Event.Cards.Hallow3
       Arkham.Event.Cards.HandOfFate
       Arkham.Event.Cards.HarmonyRestored2
       Arkham.Event.Cards.HeroicRescue

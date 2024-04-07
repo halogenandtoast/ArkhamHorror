@@ -296,6 +296,7 @@ allPlayerAssetCards =
       , flamethrower5
       , flashlight
       , fleshWard
+      , fluteOfTheOuterGods4
       , forbiddenKnowledge
       , forbiddenTome
       , forbiddenTomeDarkKnowledge3
@@ -490,6 +491,7 @@ allPlayerAssetCards =
       , priestOfTwoFaiths1
       , professorWarrenRice
       , protectiveIncantation1
+      , purifyingCorruption4
       , puzzleBox
       , quickLearner4
       , quickStudy2
@@ -4495,6 +4497,26 @@ ikiaqTheCouncilsChosen3 =
     , cdUnique = True
     , cdSlots = [#ally]
     , cdLevel = 3
+    }
+
+fluteOfTheOuterGods4 :: CardDef
+fluteOfTheOuterGods4 =
+  (asset "07268" "Flute of the Outer Gods" 0 Mystic)
+    { cdCardTraits = setFromList [Item, Instrument, Relic, Cursed]
+    , cdSkills = [#willpower, #combat, #agility]
+    , cdUnique = True
+    , cdSlots = [#hand]
+    , cdKeywords = setFromList [Keyword.Exceptional, seal $ SealUpToX #curse]
+    , cdLevel = 4
+    , cdCost = Just DynamicCost
+    }
+
+purifyingCorruption4 :: CardDef
+purifyingCorruption4 =
+  (asset "07273" "Purifying Corruption" 4 Neutral)
+    { cdCardTraits = setFromList [Ritual, Blessed, Cursed]
+    , cdSkills = [#wild]
+    , cdLevel = 4
     }
 
 digDeep4 :: CardDef

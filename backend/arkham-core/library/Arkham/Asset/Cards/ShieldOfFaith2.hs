@@ -29,7 +29,7 @@ instance HasAbilities ShieldOfFaith2 where
                   (CancelableEnemyAttack AnyEnemyAttack)
                   AnyEnemy
               )
-              (exhaust attrs <> ReleaseChaosTokensCost 1)
+              (exhaust attrs <> ReleaseChaosTokensCost 1 #any)
           )
           : [restrictedAbility attrs 2 (thisExists attrs AssetWithoutSealedTokens) Anytime | active]
 

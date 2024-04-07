@@ -23,7 +23,7 @@ instance HasAbilities ShardsOfTheVoid3 where
     [ fightAbility
         a
         1
-        (OrCost [assetUseCost a Charge 1, ReleaseChaosTokensCost 1])
+        (OrCost [assetUseCost a Charge 1, ReleaseChaosTokensCost 1 #any])
         ControlsThis
     ]
 

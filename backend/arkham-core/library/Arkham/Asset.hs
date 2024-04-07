@@ -726,11 +726,13 @@ allAssets =
     , SomeAssetCard hardKnocks4
     , --- mystic [lod]
       SomeAssetCard ikiaqTheCouncilsChosen3
+    , SomeAssetCard fluteOfTheOuterGods4
     , --- survivor [lod]
       SomeAssetCard digDeep4
     , --- neutral [lod]
       SomeAssetCard favorOfTheMoon1
     , SomeAssetCard favorOfTheSun1
+    , SomeAssetCard purifyingCorruption4
     , -- Into the Maelstrom
       --- seeker [itm]
       SomeAssetCard ancestralKnowledge3

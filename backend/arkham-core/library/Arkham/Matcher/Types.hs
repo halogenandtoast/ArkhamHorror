@@ -282,6 +282,7 @@ data EnemyMatcher
   | EnemyWithKeyword Keyword
   | EnemyWithClues ValueMatcher
   | EnemyWithEqualFields (Field Enemy Int) (Field Enemy Int)
+  | EnemyWithNonZeroField (Field Enemy Int)
   | EnemyWithRemainingHealth ValueMatcher
   | EnemyWithDamage ValueMatcher
   | EnemyWithDoom ValueMatcher

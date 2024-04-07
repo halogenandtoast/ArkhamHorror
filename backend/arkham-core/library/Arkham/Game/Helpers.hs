@@ -915,6 +915,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
             if costStatus == PaidCost then Nothing else Just $ SealCost matcher
           Keyword.SealUpTo n matcher -> do
             if costStatus == PaidCost then Nothing else Just $ UpTo n (SealCost matcher)
+          Keyword.SealUpToX _ -> Nothing
         _ -> Nothing
 
     investigateCosts <-
@@ -1363,6 +1364,14 @@ passesCriteria iid mcard source windows' = \case
   Criteria.AssetExists matcher -> do
     selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.DifferentAssetsExist matcher1 matcher2 -> do
+    m1 <- select (Matcher.replaceYouMatcher iid matcher1)
+    m2 <- select (Matcher.replaceYouMatcher iid matcher2)
+    case (m1, m2) of
+      ([], _) -> pure False
+      (_, []) -> pure False
+      ([x], [y]) -> pure $ x /= y
+      _ -> pure True
+  Criteria.DifferentEnemiesExist matcher1 matcher2 -> do
     m1 <- select (Matcher.replaceYouMatcher iid matcher1)
     m2 <- select (Matcher.replaceYouMatcher iid matcher2)
     case (m1, m2) of

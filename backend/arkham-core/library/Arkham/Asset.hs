@@ -722,7 +722,8 @@ allAssets =
     , --- seeker [lod]
       SomeAssetCard hyperawareness4
     , --- rogue [lod]
-      SomeAssetCard hardKnocks4
+      SomeAssetCard geas2
+    , SomeAssetCard hardKnocks4
     , --- survivor [lod]
       SomeAssetCard digDeep4
     , --- neutral [lod]

@@ -312,6 +312,7 @@ allPlayerAssetCards =
       , garroteWire2
       , gateBox
       , gavriellaMizrah
+      , geas2
       , geneBeauregard3
       , gildedVolto
       , grannyOrne
@@ -4466,6 +4467,14 @@ hyperawareness4 =
     , cdCardTraits = setFromList [Talent]
     , cdUses = uses Resource 2
     , cdLevel = 4
+    }
+
+geas2 :: CardDef
+geas2 =
+  (asset "07265" "Geas" 2 Rogue)
+    { cdCardTraits = setFromList [Pact]
+    , cdKeywords = setFromList [Keyword.Exceptional]
+    , cdLevel = 2
     }
 
 hardKnocks4 :: CardDef

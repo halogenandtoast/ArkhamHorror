@@ -144,6 +144,7 @@ allPlayerAssetCards =
       , archaicGlyphsGuidingStones3
       , archaicGlyphsMarkingsOfIsis3
       , archaicGlyphsProphecyForetold3
+      , ariadnesTwine3
       , armageddon
       , armageddon4
       , armorOfArdennes5
@@ -4566,6 +4567,16 @@ ancestralKnowledge3 =
       , cdKeywords = setFromList [Keyword.Exceptional]
       , cdLevel = 3
       }
+
+ariadnesTwine3 :: CardDef
+ariadnesTwine3 =
+  (asset "07304" "Ariadne's Twine" 0 Seeker)
+    { cdCardTraits = setFromList [Ritual]
+    , cdUses = uses Secret 0
+    , cdSkills = [#intellect, #intellect]
+    , cdSlots = [#arcane]
+    , cdLevel = 3
+    }
 
 twentyFiveAutomatic2 :: CardDef
 twentyFiveAutomatic2 =

@@ -103,6 +103,7 @@ data ModifierType
   | CanRetaliateWhileExhausted
   | CanSpendResourcesOnCardFromInvestigator InvestigatorMatcher CardMatcher
   | CanSpendUsesAsResourceOnCardFromInvestigator AssetId UseType InvestigatorMatcher CardMatcher
+  | ProvidesUses UseType Source
   | CancelAttacksByEnemies Card EnemyMatcher
   | CancelSkills
   | CannotAffectOtherPlayersWithPlayerEffectsExceptDamage

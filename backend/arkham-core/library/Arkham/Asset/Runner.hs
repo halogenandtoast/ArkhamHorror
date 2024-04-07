@@ -162,33 +162,66 @@ instance RunMessage AssetAttrs where
         pure $ a & usesL . ix useType' %~ min l . (+ n)
       _ ->
         error $ "Trying to add the wrong use type, has " <> show assetUses <> ", but got: " <> show useType'
-    SpendUses target useType' n | isTarget a target -> case assetPrintedUses of
-      NoUses -> pure $ a & usesL . ix useType' %~ max 0 . subtract n
-      Uses useType'' _ | useType' == useType'' -> do
-        let m = findWithDefault 0 useType' assetUses
-        let remainingUses = max 0 (m - n)
-        when (remainingUses == 0) $ for_ assetWhenNoUses \case
-          DiscardWhenNoUses -> push $ Discard assetController GameSource (toTarget a)
-          ReturnToHandWhenNoUses ->
-            for_ assetController \iid ->
-              push $ ReturnToHand iid $ toTarget a
-          NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
-        for_ assetController $ \controller ->
-          pushM $ checkWindows [mkAfter $ Window.SpentUses controller (toId a) useType' n]
-        pure $ a & usesL . ix useType' .~ remainingUses
-      UsesWithLimit useType'' _ _ | useType' == useType'' -> do
-        let m = findWithDefault 0 useType' assetUses
-        let remainingUses = max 0 (m - n)
-        when (remainingUses == 0) $ for_ assetWhenNoUses \case
-          DiscardWhenNoUses -> push $ Discard assetController GameSource (toTarget a)
-          ReturnToHandWhenNoUses ->
-            for_ assetController \iid ->
-              push $ ReturnToHand iid $ toTarget a
-          NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
-        for_ assetController $ \controller ->
-          pushM $ checkWindows [mkAfter $ Window.SpentUses controller (toId a) useType' n]
-        pure $ a & usesL . ix useType' .~ remainingUses
-      _ -> error "Trying to use the wrong use type"
+    MoveUses (isSource a -> True) _ useType' n -> do
+      runMessage (Do (SpendUses (toTarget a) useType' n)) a
+    MoveUses _ (isTarget a -> True) useType' n -> do
+      runMessage (AddUses a.id useType' n) a
+    SpendUses target useType' n | isTarget a target -> do
+      mods <- getModifiers a
+      let otherSources = [source | ProvidesUses uType source <- mods, uType == useType']
+      otherSourcePairs <- for otherSources \source -> do
+        case source of
+          AssetSource aid' -> do
+            uses <- fieldMap AssetUses (findWithDefault 0 useType') aid'
+            pure (AssetTarget aid', uses)
+          _ -> error $ "Unhandled source: " <> show source
+
+      -- window should be independent of other sources since they are spent from this asset
+      for_ assetController $ \controller ->
+        pushM $ checkWindows [mkAfter $ Window.SpentUses controller (toId a) useType' n]
+
+      if null otherSourcePairs
+        then push $ Do msg
+        else case a.controller of
+          Nothing -> error "Cannot spend uses on an asset with no controller"
+          Just iid -> do
+            -- we may want a nicer way to handle this, but for the now the
+            -- logic is to duplicate the choice for each use (the ui can only
+            -- display it being clickable) and then to remove that choice from
+            -- the list when used.
+            player <- getPlayer iid
+            push
+              $ chooseN player n
+              $ replicate (a.use useType') (targetLabel a [Do msg])
+              <> concat
+                [ replicate x (targetLabel otherTarget [Do $ SpendUses otherTarget useType' n])
+                | (otherTarget, x) <- otherSourcePairs
+                ]
+      pure a
+    Do (SpendUses target useType' n) | isTarget a target -> do
+      case assetPrintedUses of
+        NoUses -> pure $ a & usesL . ix useType' %~ max 0 . subtract n
+        Uses useType'' _ | useType' == useType'' -> do
+          let m = findWithDefault 0 useType' assetUses
+          let remainingUses = max 0 (m - n)
+          when (remainingUses == 0) $ for_ assetWhenNoUses \case
+            DiscardWhenNoUses -> push $ Discard assetController GameSource (toTarget a)
+            ReturnToHandWhenNoUses ->
+              for_ assetController \iid ->
+                push $ ReturnToHand iid $ toTarget a
+            NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
+          pure $ a & usesL . ix useType' .~ remainingUses
+        UsesWithLimit useType'' _ _ | useType' == useType'' -> do
+          let m = findWithDefault 0 useType' assetUses
+          let remainingUses = max 0 (m - n)
+          when (remainingUses == 0) $ for_ assetWhenNoUses \case
+            DiscardWhenNoUses -> push $ Discard assetController GameSource (toTarget a)
+            ReturnToHandWhenNoUses ->
+              for_ assetController \iid ->
+                push $ ReturnToHand iid $ toTarget a
+            NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
+          pure $ a & usesL . ix useType' .~ remainingUses
+        _ -> error "Trying to use the wrong use type"
     AttachAsset aid target | aid == assetId -> do
       case target of
         LocationTarget lid -> push $ PlaceAsset aid (AttachedToLocation lid)

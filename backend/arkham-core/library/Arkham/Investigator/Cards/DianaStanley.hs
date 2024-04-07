@@ -70,9 +70,9 @@ instance RunMessage DianaStanley where
     UseCardAbility iid (isSource attrs -> True) 1 (getCancelSource -> source) _ -> do
       let
         getSource = \case
-          AssetSource aid -> (RemoveAsset aid,) <$> field AssetCard aid
-          SkillSource sid -> (RemoveSkill sid,) <$> field SkillCard sid
-          EventSource eid -> (RemoveEvent eid,) <$> field EventCard eid
+          AssetSource aid -> (RemoveFromPlay (toSource aid),) <$> field AssetCard aid
+          SkillSource sid -> (RemoveFromPlay (toSource sid),) <$> field SkillCard sid
+          EventSource eid -> (RemoveFromPlay (toSource eid),) <$> field EventCard eid
           AbilitySource abilitySource _ -> getSource abilitySource
           CardSource card -> pure (RemovePlayerCardFromGame False card, card)
           _ -> error $ "Unhandled source for Diana Stanley: " <> show source

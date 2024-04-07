@@ -119,6 +119,9 @@ instance Sourceable LocationId where
 instance Sourceable AssetId where
   toSource = AssetSource
 
+instance Sourceable SkillId where
+  toSource = SkillSource
+
 instance Sourceable AgendaId where
   toSource = AgendaSource
 

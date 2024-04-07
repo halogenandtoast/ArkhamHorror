@@ -49,7 +49,7 @@ import Arkham.Game.Helpers hiding (windows)
 import Arkham.Game.Helpers qualified as Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
-import Arkham.Helpers.Card (extendedCardMatch)
+import Arkham.Helpers.Card (drawThisCard, extendedCardMatch)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.SkillTest
 import Arkham.Id
@@ -2098,23 +2098,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               shuffleBackInEachWeakness =
                 ShuffleBackInEachWeakness `elem` cardDrawRules cardDraw
 
-              msgs = flip concatMap allDrawn $ \card ->
-                case toCardType card of
-                  PlayerTreacheryType ->
-                    guard (not shuffleBackInEachWeakness)
-                      *> [ DrewTreachery iid (Just $ Deck.InvestigatorDeck iid) (PlayerCard card)
-                         , ResolvedCard iid (PlayerCard card)
-                         ]
-                  PlayerEnemyType -> do
-                    guard $ not shuffleBackInEachWeakness
-                    if hasRevelation card
-                      then [Revelation iid $ PlayerCardSource card, ResolvedCard iid (PlayerCard card)]
-                      else [DrewPlayerEnemy iid (PlayerCard card), ResolvedCard iid (PlayerCard card)]
-                  other | hasRevelation card && other `notElem` [PlayerTreacheryType, PlayerEnemyType] -> do
-                    guard $ ShuffleBackInEachWeakness `notElem` cardDrawRules cardDraw
-                    [Revelation iid (PlayerCardSource card), ResolvedCard iid (PlayerCard card)]
-                  _ -> []
-
+              msgs =
+                if shuffleBackInEachWeakness
+                  then []
+                  else concatMap (drawThisCard iid) allDrawn
             player <- getPlayer iid
             let
               weaknesses = map PlayerCard $ filter (`cardMatch` WeaknessCard) allDrawn

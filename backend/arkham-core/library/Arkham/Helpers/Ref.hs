@@ -15,7 +15,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Treachery.Types (Field (..))
 
-targetToCard :: HasGame m => Target -> m Card
+targetToCard :: (HasCallStack, HasGame m) => Target -> m Card
 targetToCard target = fromMaybe handleMissing <$> targetToMaybeCard target
  where
   handleMissing = error $ "unhandled: " <> show target
@@ -33,8 +33,8 @@ targetToMaybeCard = \case
   CardIdTarget cId -> Just <$> getCard cId
   _ -> pure Nothing
 
-sourceToCard :: HasGame m => Source -> m Card
+sourceToCard :: (HasCallStack, HasGame m) => Source -> m Card
 sourceToCard = targetToCard . sourceToTarget
 
-sourceToMaybeCard :: HasGame m => Source -> m (Maybe Card)
+sourceToMaybeCard :: (HasCallStack, HasGame m) => Source -> m (Maybe Card)
 sourceToMaybeCard = targetToMaybeCard . sourceToTarget

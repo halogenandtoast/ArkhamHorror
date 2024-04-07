@@ -801,6 +801,7 @@ data Message
   | RemoveFromEncounterDiscard EncounterCard
   | RemoveFromEncounterDeck EncounterCard
   | RemoveFromGame Target
+  | QuietlyRemoveFromGame Target
   | RemoveCompletedActFromGame Int ActId
   | RemovedFromGame Card
   | RemoveLocation LocationId

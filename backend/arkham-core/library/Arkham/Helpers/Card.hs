@@ -13,6 +13,7 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
+import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types
 import {-# SOURCE #-} Arkham.Entities
 import {-# SOURCE #-} Arkham.GameEnv
@@ -21,8 +22,10 @@ import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Location.Types
 import Arkham.Matcher hiding (AssetCard, LocationCard)
+import Arkham.Message
 import Arkham.Projection
 import Arkham.SkillType
+import Arkham.Source
 import Arkham.Target
 
 isDiscardable :: Card -> Bool
@@ -129,3 +132,34 @@ iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
   applyAfterSkillModifiers DoubleSkillIcons ys = ys <> ys
   applyAfterSkillModifiers _ ys = ys
 iconsForCard _ = pure []
+
+getCardEntityTarget :: HasGame m => Card -> m Target
+getCardEntityTarget card = case toCardType card of
+  EnemyType -> toTarget <$> selectJust (EnemyWithCardId $ toCardId card)
+  PlayerEnemyType -> toTarget <$> selectJust (EnemyWithCardId $ toCardId card)
+  TreacheryType -> toTarget <$> selectJust (TreacheryWithCardId $ toCardId card)
+  PlayerTreacheryType -> toTarget <$> selectJust (TreacheryWithCardId $ toCardId card)
+  LocationType -> toTarget <$> selectJust (LocationWithCardId $ toCardId card)
+  AssetType -> toTarget <$> selectJust (AssetWithCardId $ toCardId card)
+  EncounterAssetType -> toTarget <$> selectJust (AssetWithCardId $ toCardId card)
+  other -> error $ "Unhandled type: " <> show other
+
+drawThisCard :: IsCard card => InvestigatorId -> card -> [Message]
+drawThisCard iid card = case toCard card of
+  PlayerCard pc -> drawThisPlayerCard iid pc
+  EncounterCard _ -> error "Not yet implemented"
+  VengeanceCard c -> drawThisCard iid c
+
+drawThisPlayerCard :: InvestigatorId -> PlayerCard -> [Message]
+drawThisPlayerCard iid card = case toCardType card of
+  PlayerTreacheryType ->
+    [ DrewTreachery iid (Just $ Deck.InvestigatorDeck iid) (PlayerCard card)
+    , ResolvedCard iid (PlayerCard card)
+    ]
+  PlayerEnemyType -> do
+    if hasRevelation card
+      then [Revelation iid $ PlayerCardSource card, ResolvedCard iid (PlayerCard card)]
+      else [DrewPlayerEnemy iid (PlayerCard card), ResolvedCard iid (PlayerCard card)]
+  other | hasRevelation card && other `notElem` [PlayerTreacheryType, PlayerEnemyType] -> do
+    [Revelation iid (PlayerCardSource card), ResolvedCard iid (PlayerCard card)]
+  _ -> []

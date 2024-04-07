@@ -70,6 +70,7 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
     case target of
       AssetTarget aid -> fieldMap AssetCardsUnderneath (any (`cardMatch` cardMatcher)) aid
       _ -> error "Unhandled shuffle attached card into deck cost"
+  DrawEncounterCardsCost _n -> can.target.encounterDeck iid
   ShuffleIntoDeckCost target -> case target of
     TreacheryTarget tid ->
       andM
@@ -235,10 +236,11 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
     tokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
     anyM (\token -> matchChaosToken iid token tokenMatcher) tokens
   SealChaosTokenCost _ -> pure True
-  ReleaseChaosTokensCost n -> do
+  ReleaseChaosTokensCost n tokenMatcher -> do
     let
       handleSource = \case
-        AssetSource aid -> fieldMap AssetSealedChaosTokens ((>= n) . length) aid
+        AssetSource aid ->
+          fmap (>= n) . countM (<=~> Matcher.IncludeSealed tokenMatcher) =<< field AssetSealedChaosTokens aid
         AbilitySource t _ -> handleSource t
         _ -> error $ "Unhandled release token cost source: " <> show source
     handleSource source

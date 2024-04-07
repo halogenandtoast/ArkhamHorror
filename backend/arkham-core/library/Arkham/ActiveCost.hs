@@ -174,6 +174,9 @@ payCost msg c iid skipAdditionalCosts cost = do
   let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
   case cost of
+    DrawEncounterCardsCost n -> do
+      pushAll $ replicate n $ InvestigatorDrawEncounterCard iid
+      pure c
     SkillTestCost stsource sType n -> do
       push $ beginSkillTest iid stsource ScenarioTarget sType n
       pure c
@@ -262,12 +265,12 @@ payCost msg c iid skipAdditionalCosts cost = do
     SealChaosTokenCost token -> do
       push $ SealChaosToken token
       pure $ c & costPaymentsL <>~ SealChaosTokenPayment token & costSealedChaosTokensL %~ (token :)
-    ReleaseChaosTokensCost n -> do
+    ReleaseChaosTokensCost n matcher -> do
       let
         handleSource = \case
           AbilitySource t _ -> handleSource t
           AssetSource aid -> do
-            tokens <- field AssetSealedChaosTokens aid
+            tokens <- filterM (<=~> IncludeSealed matcher) =<< field AssetSealedChaosTokens aid
             pushAll
               [ FocusChaosTokens tokens
               , chooseN player n $ targetLabels tokens $ only . pay . ReleaseChaosTokenCost

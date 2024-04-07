@@ -2349,6 +2349,7 @@ enemyMatcherFilter = \case
     x <- field p (toId enemy)
     y <- field q (toId enemy)
     pure $ x >= y
+  EnemyWithNonZeroField p -> fieldMap p (> 0) . toId
   IncludeOmnipotent matcher -> enemyMatcherFilter matcher
   OutOfPlayEnemy _ matcher -> enemyMatcherFilter matcher
   EnemyWithCardId cardId -> pure . (== cardId) . toCardId

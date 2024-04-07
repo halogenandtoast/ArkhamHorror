@@ -40,7 +40,7 @@ instance HasAbilities RiteOfSanctification where
           ControlsThis
           ( ReactionAbility
               (PlayCard #when (InvestigatorAt YourLocation) #any)
-              (exhaust attrs <> ReleaseChaosTokensCost 1)
+              (exhaust attrs <> ReleaseChaosTokensCost 1 #any)
           )
           : [ restrictedAbility attrs 2 (exists $ be attrs <> AssetWithoutSealedTokens)
               $ SilentForcedAbility AnyWindow

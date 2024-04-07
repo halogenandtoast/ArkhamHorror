@@ -117,6 +117,7 @@ pattern DuringAnySkillTest <- DuringSkillTest AnySkillTest
 data Criterion
   = AssetExists AssetMatcher
   | DifferentAssetsExist AssetMatcher AssetMatcher
+  | DifferentEnemiesExist EnemyMatcher EnemyMatcher
   | EventExists EventMatcher
   | ExcludeWindowAssetExists AssetMatcher
   | AgendaExists AgendaMatcher

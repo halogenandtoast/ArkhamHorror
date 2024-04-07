@@ -179,6 +179,7 @@ createActiveCostForAdditionalCardCosts iid card = do
         Keyword.Seal sealing -> case sealing of
           Sealing matcher -> Just $ Cost.SealCost matcher
           SealUpTo n matcher -> Just $ Cost.UpTo n $ Cost.SealCost matcher
+          SealUpToX _ -> Nothing
         _ -> Nothing
     cost = mconcat $ additionalCosts <> sealChaosTokenCosts
 
@@ -247,6 +248,7 @@ createActiveCostForCard iid card isPlayAction windows' = do
         Keyword.Seal sealing -> case sealing of
           Sealing matcher -> Just $ Cost.SealCost matcher
           SealUpTo n matcher -> Just $ Cost.UpTo n $ Cost.SealCost matcher
+          SealUpToX _ -> Nothing
         _ -> Nothing
 
   additionalCosts <- flip mapMaybeM allModifiers $ \case

@@ -68,6 +68,7 @@ instance RunMessage DrElliHorowitz where
                 Keyword.Seal sealing -> case sealing of
                   Sealing matcher -> Just matcher
                   SealUpTo _ matcher -> Just matcher
+                  SealUpToX _ -> Nothing
                 _ -> Nothing
           allM
             (\matcher -> anyM (\t -> matchChaosToken iid t matcher) tokens)

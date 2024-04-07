@@ -148,7 +148,7 @@ data Cost
   | AddCurseTokensEqualToShroudCost
   | AddCurseTokensEqualToSkillTestDifficulty
   | ReleaseChaosTokenCost ChaosToken
-  | ReleaseChaosTokensCost Int
+  | ReleaseChaosTokensCost Int ChaosTokenMatcher
   | SealChaosTokenCost ChaosToken -- internal to track sealed token
   | ReturnChaosTokensToPoolCost Int ChaosTokenMatcher
   | ReturnChaosTokenToPoolCost ChaosToken
@@ -160,6 +160,7 @@ data Cost
   | OptionalCost Cost
   | UnpayableCost
   | AsIfAtLocationCost LocationId Cost
+  | DrawEncounterCardsCost Int
   deriving stock (Show, Eq, Ord, Data)
 
 assetUseCost :: (Entity a, EntityId a ~ AssetId) => a -> UseType -> Int -> Cost
@@ -181,6 +182,7 @@ displayCostType :: Cost -> Text
 displayCostType = \case
   UnpayableCost -> "Unpayable"
   OptionalCost c -> "Optional: " <> displayCostType c
+  DrawEncounterCardsCost n -> "Draw " <> pluralize n "Encounter Card"
   AsIfAtLocationCost _ c -> displayCostType c
   ShuffleAttachedCardIntoDeckCost _ _ -> "Shuffle attached card into deck"
   AddCurseTokenCost n -> "Add " <> tshow n <> " {curse} " <> pluralize n "token" <> "to the chaos bag"
@@ -322,8 +324,8 @@ displayCostType = \case
   SealCost _ -> "Seal token"
   SealChaosTokenCost _ -> "Seal token"
   ReleaseChaosTokenCost _ -> "Release a chaos token sealed here"
-  ReleaseChaosTokensCost 1 -> "Release a chaos token sealed here"
-  ReleaseChaosTokensCost _ -> "Release chaos tokens sealed here"
+  ReleaseChaosTokensCost 1 _ -> "Release a chaos token sealed here"
+  ReleaseChaosTokensCost _ _ -> "Release chaos tokens sealed here"
   ReturnChaosTokensToPoolCost n (IncludeSealed _) ->
     "Search the chaos bag and/or cards in play for a total of "
       <> tshow n

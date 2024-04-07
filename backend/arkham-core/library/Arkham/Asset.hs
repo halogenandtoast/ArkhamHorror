@@ -734,7 +734,9 @@ allAssets =
     , SomeAssetCard favorOfTheSun1
     , SomeAssetCard purifyingCorruption4
     , -- Into the Maelstrom
-      --- seeker [itm]
+      --- guardian [itm]
+      SomeAssetCard holySpear5
+    , --- seeker [itm]
       SomeAssetCard ancestralKnowledge3
     , --- rogue [itm]
       SomeAssetCard twentyFiveAutomatic2

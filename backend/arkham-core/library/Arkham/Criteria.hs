@@ -160,6 +160,7 @@ data Criterion
   | CanAffordCostIncrease Int
   | OnSameLocation
   | OwnCardWithDoom
+  | CardWithDoomExists
   | ControlsThis -- really controls this
   | PlayableCardExists CostStatus ExtendedCardMatcher
   | PlayableCardExistsWithCostReduction Int ExtendedCardMatcher

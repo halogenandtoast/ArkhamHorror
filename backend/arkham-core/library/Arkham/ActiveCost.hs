@@ -262,6 +262,9 @@ payCost msg c iid skipAdditionalCosts cost = do
         , UnfocusChaosTokens
         ]
       pure c
+    SealMultiCost n matcher -> do
+      pushAll $ replicate n $ pay (SealCost matcher)
+      pure c
     SealChaosTokenCost token -> do
       push $ SealChaosToken token
       pure $ c & costPaymentsL <>~ SealChaosTokenPayment token & costSealedChaosTokensL %~ (token :)
@@ -874,8 +877,10 @@ instance RunMessage ActiveCost where
               else pure []
           -- TODO: this will not work for ForcedWhen, but this currently only applies to IntelReport
           isForced <- isForcedAbility iid ability
+          card <- sourceToCard ability.source
           pushAll
             $ [whenActivateAbilityWindow | not isForced]
+            <> [SealedChaosToken token card | token <- c.sealedChaosTokens]
             <> [UseCardAbility iid ability.source ability.index c.windows c.payments]
             <> afterMsgs
             <> [afterActivateAbilityWindow | not isForced]

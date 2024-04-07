@@ -356,6 +356,7 @@ allPlayerAssetCards =
       , hiredMuscle1
       , holyRosary
       , holyRosary2
+      , holySpear5
       , hope
       , hyperawareness
       , hyperawareness2
@@ -4547,6 +4548,15 @@ favorOfTheSun1 =
       , cdKeywords = singleton $ seal $ SealUpTo 3 #bless
       , cdLevel = 1
       }
+
+holySpear5 :: CardDef
+holySpear5 =
+  (asset "07302" "Holy Spear" 4 Guardian)
+    { cdCardTraits = setFromList [Item, Weapon, Melee, Blessed]
+    , cdSkills = [#willpower, #combat, #combat]
+    , cdSlots = [#hand, #hand]
+    , cdLevel = 5
+    }
 
 ancestralKnowledge3 :: CardDef
 ancestralKnowledge3 =

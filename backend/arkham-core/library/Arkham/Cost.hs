@@ -144,6 +144,7 @@ data Cost
   | UseCostUpTo AssetMatcher UseType Int Int -- (e.g. Spend 1-5 ammo, see M1918 BAR)
   | UpTo Int Cost
   | SealCost ChaosTokenMatcher
+  | SealMultiCost Int ChaosTokenMatcher
   | AddCurseTokenCost Int
   | AddCurseTokensEqualToShroudCost
   | AddCurseTokensEqualToSkillTestDifficulty
@@ -322,6 +323,7 @@ displayCostType = \case
     Evidence -> tshow n <> "-" <> tshow m <> " Evidence"
   UpTo n c -> displayCostType c <> " up to " <> pluralize n "time"
   SealCost _ -> "Seal token"
+  SealMultiCost n _ -> "Seal " <> tshow n <> " matching tokens"
   SealChaosTokenCost _ -> "Seal token"
   ReleaseChaosTokenCost _ -> "Release a chaos token sealed here"
   ReleaseChaosTokensCost 1 _ -> "Release a chaos token sealed here"

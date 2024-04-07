@@ -157,6 +157,7 @@ allPlayerEventCards =
       , glory
       , gritYourTeeth
       , guidance
+      , hallow3
       , handOfFate
       , harmonyRestored2
       , heroicRescue
@@ -2599,6 +2600,15 @@ aWatchfulPeace3 =
     , cdFastWindow = Just $ MythosStep WhenAllDrawEncounterCard
     , cdCriteria = Just $ exists $ You <> can.target.encounterDeck
     , cdAdditionalCost = Just $ ReturnChaosTokensToPoolCost 5 #bless
+    }
+
+hallow3 :: CardDef
+hallow3 =
+  (event "07301" "Hallow" 3 Guardian)
+    { cdSkills = [#willpower, #wild]
+    , cdCardTraits = setFromList [Spell, Blessed]
+    , cdCriteria = Just $ Criteria.CardWithDoomExists
+    , cdAdditionalCost = Just $ ReturnChaosTokensToPoolCost 10 (IncludeSealed #bless)
     }
 
 sweepingKick1 :: CardDef

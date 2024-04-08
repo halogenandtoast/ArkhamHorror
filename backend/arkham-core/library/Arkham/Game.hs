@@ -2905,6 +2905,8 @@ instance Projection Asset where
             _ -> Nothing
         pure $ mcontroller <|> assetController
       AssetOwner -> pure assetOwner
+      AssetAssignedHealthHeal -> pure assetAssignedHealthHeal
+      AssetAssignedSanityHeal -> pure assetAssignedSanityHeal
       AssetCustomizations -> pure assetCustomizations
       AssetLocation -> case assetPlacement of
         AtLocation lid -> pure $ Just lid

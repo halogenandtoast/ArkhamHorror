@@ -168,6 +168,8 @@ data instance Field Asset :: Type -> Type where
   AssetPlacement :: Field Asset Placement
   AssetCardsUnderneath :: Field Asset [Card]
   AssetCustomizations :: Field Asset (IntMap Int)
+  AssetAssignedHealthHeal :: Field Asset (Map Source Int)
+  AssetAssignedSanityHeal :: Field Asset (Map Source Int)
   -- virtual
   AssetClasses :: Field Asset (Set ClassSymbol)
   AssetTraits :: Field Asset (Set Trait)
@@ -237,8 +239,8 @@ data AssetAttrs = AssetAttrs
   , assetKeys :: Set ArkhamKey
   , assetAssignedHealthDamage :: Int
   , assetAssignedSanityDamage :: Int
-  , assetAssignedHealthHeal :: Int
-  , assetAssignedSanityHeal :: Int
+  , assetAssignedHealthHeal :: Map Source Int
+  , assetAssignedSanityHeal :: Map Source Int
   , assetCustomizations :: IntMap Int
   , assetMeta :: Value
   , assetFlipped :: Bool
@@ -353,9 +355,9 @@ instance FromJSON AssetAttrs where
     assetSealedChaosTokens <- o .: "sealedChaosTokens"
     assetKeys <- o .: "keys"
     assetAssignedHealthDamage <- o .: "assignedHealthDamage"
-    assetAssignedHealthHeal <- o .:? "assignedHealthHeal" .!= 0
+    assetAssignedHealthHeal <- o .:? "assignedHealthHeal" .!= mempty
     assetAssignedSanityDamage <- o .: "assignedSanityDamage"
-    assetAssignedSanityHeal <- o .:? "assignedSanityHeal" .!= 0
+    assetAssignedSanityHeal <- o .:? "assignedSanityHeal" .!= mempty
     assetCustomizations <- o .:? "customizations" .!= mempty
     assetMeta <- o .:? "meta" .!= Null
     assetFlipped <- o .:? "flipped" .!= False
@@ -407,9 +409,9 @@ assetWith f cardDef g =
             , assetSealedChaosTokens = []
             , assetKeys = mempty
             , assetAssignedHealthDamage = 0
-            , assetAssignedHealthHeal = 0
+            , assetAssignedHealthHeal = mempty
             , assetAssignedSanityDamage = 0
-            , assetAssignedSanityHeal = 0
+            , assetAssignedSanityHeal = mempty
             , assetCustomizations = mempty
             , assetMeta = Null
             , assetFlipped = False

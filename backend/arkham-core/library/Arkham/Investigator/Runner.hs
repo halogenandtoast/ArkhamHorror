@@ -1731,10 +1731,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ a
       & (assignedHealthDamageL %~ max 0 . subtract damageReduction)
       & (assignedSanityDamageL %~ max 0 . subtract horrorReduction)
+  ApplyHealing source -> do
+    cannotHealHorror <- hasModifier a CannotHealHorror
+    let health = findWithDefault 0 source investigatorAssignedHealthHeal
+    let sanity = if cannotHealHorror then 0 else findWithDefault 0 source investigatorAssignedSanityHeal
+    when (health > 0 || sanity > 0) do
+      pushM
+        $ checkWindows
+        $ [mkAfter (Window.Healed DamageType (toTarget a) source health) | health > 0]
+        <> [mkAfter (Window.Healed DamageType (toTarget a) source sanity) | sanity > 0]
+    pure $ a & tokensL %~ subtractTokens Token.Damage health . subtractTokens Token.Horror sanity
   HealDamage (InvestigatorTarget iid) source amount | iid == investigatorId -> do
     afterWindow <- checkWindows [mkAfter $ Window.Healed DamageType (toTarget a) source amount]
     push afterWindow
     pure $ a & tokensL %~ subtractTokens Token.Damage amount
+  HealDamageDelayed (isTarget a -> True) source n -> do
+    pure $ a & assignedHealthHealL %~ insertWith (+) source n
   HealHorrorWithAdditional (InvestigatorTarget iid) _ amount | iid == investigatorId -> do
     -- exists to have no callbacks, and to be resolved with AdditionalHealHorror
     cannotHealHorror <- hasModifier a CannotHealHorror
@@ -1771,6 +1783,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         afterWindow <- checkWindows [mkAfter $ Window.Healed #horror (toTarget a) source amount]
         push afterWindow
         pure $ a & tokensL %~ subtractTokens #horror amount
+  HealHorrorDelayed (isTarget a -> True) source n -> do
+    pure $ a & assignedSanityHealL %~ insertWith (+) source n
   MovedClues _ (isTarget a -> True) amount -> do
     pure $ a & tokensL %~ addTokens #clue amount
   MovedClues (isSource a -> True) _ amount -> do

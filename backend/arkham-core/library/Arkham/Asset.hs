@@ -742,6 +742,8 @@ allAssets =
     , --- rogue [itm]
       SomeAssetCard twentyFiveAutomatic2
     , SomeAssetCard luckyDice3
+    , --- survivor [itm]
+      SomeAssetCard jacobMorrisonCostGuardCaptain3
     , -- Edge of the Earth
       --- signature [eote]
       SomeAssetCard livreDeibon

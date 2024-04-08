@@ -11,7 +11,7 @@ export type CardDef = {
   classSymbols: string[];
   cardType: string;
   art: string;
-  level: number;
+  level: number | null;
   name: Name;
   cardTraits: string[];
   skills: SkillIcon[];
@@ -33,7 +33,7 @@ const skillIconDecoder = JsonDecoder.oneOf<SkillIcon>([
 export const cardDefDecoder = JsonDecoder.object<CardDef>(
   {
     art: JsonDecoder.string,
-    level: JsonDecoder.number,
+    level: JsonDecoder.nullable(JsonDecoder.number),
     cardType: JsonDecoder.string,
     cardCode: JsonDecoder.string,
     classSymbols: JsonDecoder.array<string>(JsonDecoder.string, 'string[]'),

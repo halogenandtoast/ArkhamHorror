@@ -5,6 +5,7 @@ module Arkham.Event.Types where
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.ChaosToken (ChaosToken)
 import Arkham.Classes.Entity
@@ -51,6 +52,7 @@ data instance Field Event :: Type -> Type where
   EventCard :: Field Event Card
   EventCardId :: Field Event CardId
   EventSealedChaosTokens :: Field Event [ChaosToken]
+  EventUses :: Field Event (Map UseType Int)
 
 data instance Field (InHandEntity Event) :: Type -> Type where
   InHandEventCardId :: Field (InHandEntity Event) CardId
@@ -81,6 +83,7 @@ data EventAttrs = EventAttrs
   , eventWindows :: [Window]
   , eventTarget :: Maybe Target
   , eventMeta :: Value
+  , eventUses :: Map UseType Int
   }
   deriving stock (Show, Eq, Generic)
 
@@ -143,6 +146,7 @@ instance FromJSON EventAttrs where
     eventWindows <- o .: "windows"
     eventTarget <- o .: "target"
     eventMeta <- o .:? "meta" .!= Null
+    eventUses <- o .:? "uses" .!= mempty
 
     pure EventAttrs {..}
 
@@ -185,6 +189,7 @@ event f cardDef =
             , eventWindows = []
             , eventTarget = Nothing
             , eventMeta = Null
+            , eventUses = mempty
             }
     }
 

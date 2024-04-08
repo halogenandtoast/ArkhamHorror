@@ -27,7 +27,8 @@ const emits = defineEmits<{
 const id = computed(() => props.event.id)
 const hasPool = computed(() => {
   const { doom, sealedChaosTokens } = props.event
-  return doom > 0 || sealedChaosTokens.length > 0
+  const uses = Object.entries(props.event.uses)
+  return doom > 0 || sealedChaosTokens.length > 0 || uses.length > 0
 })
 
 const cardCode = computed(() => props.event.cardCode)
@@ -44,6 +45,8 @@ function canInteract(c: Message): boolean {
 }
 
 const cardAction = computed(() => choices.value.findIndex(canInteract))
+
+const exhausted = computed(() => props.event.exhausted)
 
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== MessageType.ABILITY_LABEL) {
@@ -86,12 +89,19 @@ const choose = (index: number) => emits('choose', index)
   <div class="event" :class="{ attached }">
     <img
       :src="image"
-      :class="{ 'event--can-interact': cardAction !== -1 }"
+      :class="{ 'event--can-interact': cardAction !== -1, exhausted }"
       class="card event"
       @click="$emit('choose', cardAction)"
     />
     <div v-if="hasPool" class="pool">
       <PoolItem v-if="event.doom > 0" type="doom" :amount="event.doom" />
+      <template v-for="[use, amount] in Object.entries(event.uses)" :key="use">
+        <PoolItem
+          v-if="amount > 0"
+          type="resource"
+          :amount="amount"
+        />
+      </template>
       <Token
         v-for="(sealedToken, index) in event.sealedChaosTokens"
         :key="index"
@@ -165,5 +175,11 @@ const choose = (index: number) => emits('choose', index)
   object-fit: cover;
   object-position: left bottom;
   height: $card-width*0.6;
+}
+
+.exhausted {
+  transition: transform 0.2s linear;
+  transform: rotate(90deg);
+  padding: 0 30px;
 }
 </style>

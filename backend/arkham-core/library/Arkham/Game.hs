@@ -3720,6 +3720,7 @@ eventField e fld = do
   case fld of
     EventCardId -> pure eventCardId
     EventSealedChaosTokens -> pure eventSealedChaosTokens
+    EventUses -> pure eventUses
     EventPlacement -> pure eventPlacement
     EventTraits -> pure $ cdCardTraits cdef
     EventAbilities -> pure $ getAbilities e

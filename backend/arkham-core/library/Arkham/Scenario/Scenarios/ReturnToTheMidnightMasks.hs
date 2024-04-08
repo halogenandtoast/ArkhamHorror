@@ -26,7 +26,7 @@ returnToTheMidnightMasks difficulty =
   scenarioWith
     (ReturnToTheMidnightMasks . TheMidnightMasks)
     "50025"
-    "Return to the Midnight Masks"
+    "Return to The Midnight Masks"
     difficulty
     [ "northside downtown easttown"
     , "miskatonicUniversity rivertown graveyard"

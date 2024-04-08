@@ -372,6 +372,7 @@ allPlayerAssetCards =
       , ineffableTruth5
       , innocentReveler
       , investments
+      , jacobMorrisonCostGuardCaptain3
       , jakeWilliams
       , jennysTwin45s
       , jeromeDavids
@@ -4597,6 +4598,16 @@ luckyDice3 =
     , cdExceptional = True
     , cdLevel = 3
     , cdSlots = [#accessory]
+    }
+
+jacobMorrisonCostGuardCaptain3 :: CardDef
+jacobMorrisonCostGuardCaptain3 =
+  (asset "07309" ("Jacob Morrison" <:> "Coast Guard Captain") 3 Survivor)
+    { cdCardTraits = setFromList [Ally, Blessed]
+    , cdSkills = [#wild]
+    , cdSlots = [#ally]
+    , cdLevel = 3
+    , cdUnique = True
     }
 
 livreDeibon :: CardDef

@@ -235,10 +235,10 @@ instance FromJSON InvestigatorAttrs where
     investigatorClass <- o .: "class"
     investigatorHealth <- o .: "health"
     investigatorAssignedHealthDamage <- o .: "assignedHealthDamage"
-    investigatorAssignedHealthHeal <- o .:? "assignedHealthHeal" .!= mempty
+    investigatorAssignedHealthHeal <- (o .:? "assignedHealthHeal" .!= mempty) <|> pure mempty
     investigatorSanity <- o .: "sanity"
     investigatorAssignedSanityDamage <- o .: "assignedSanityDamage"
-    investigatorAssignedSanityHeal <- o .:? "assignedSanityHeal" .!= mempty
+    investigatorAssignedSanityHeal <- (o .:? "assignedSanityHeal" .!= mempty) <|> pure mempty
     investigatorWillpower <- o .: "willpower"
     investigatorIntellect <- o .: "intellect"
     investigatorCombat <- o .: "combat"

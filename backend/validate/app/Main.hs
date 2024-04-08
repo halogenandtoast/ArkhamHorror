@@ -188,6 +188,7 @@ toClassSymbol = \case
   _ -> Nothing
 
 normalizeName :: CardCode -> Text -> Text
+normalizeName "02159" _ = "The Essex County Express" -- missing The
 normalizeName "02219" _ = "Powder of Ibn-Ghazi" -- missing -
 normalizeName "06078" _ = "The Infestation Begins" -- includes a ... not in the name
 normalizeName "84025" _ = "Blood on Your Hands" -- your is lowercase on ADB

@@ -113,7 +113,7 @@ data CardCostMismatch
 data VictoryMismatch = VictoryMismatch CardCode Name (Maybe Int) (Maybe Int)
   deriving stock (Show)
 
-data XpMismatch = XpMismatch CardCode Name Int Int
+data XpMismatch = XpMismatch CardCode Name (Maybe Int) (Maybe Int)
   deriving stock (Show)
 
 data EnemyStatsMismatch
@@ -385,8 +385,8 @@ getValidationResults cards = runValidateT $ do
           (isUnique /= cdUnique card)
           (invariant $ UniqueMismatch code (cdName card))
         when
-          (fromMaybe 0 xp /= cdLevel card)
-          ( invariant $ XpMismatch code (cdName card) (fromMaybe 0 xp) (cdLevel card)
+          (xp /= cdLevel card)
+          ( invariant $ XpMismatch code (cdName card) xp (cdLevel card)
           )
         when
           (normalizeCost code cost /= cdCost card)
@@ -407,6 +407,7 @@ getValidationResults cards = runValidateT $ do
         when
           ( sort (normalizeSkills code $ getSkills cardJson)
               /= sort (replaceWildMinus $ cdSkills card)
+              && cdCardType card /= InvestigatorType
           )
           ( invariant $
               SkillsMismatch
@@ -513,7 +514,11 @@ getValidationResults cards = runValidateT $ do
         Nothing -> unless (ignoreCardCode ccode) (invariant $ unknownCard ccode)
         Just CardJson {..} -> do
           let
-            cardStats = (health, sanity)
+            cardStats = case (health, sanity) of
+              (Just h, Just s) -> (guard (h > 0) $> h, guard (s > 0) $> s)
+              (Just h, Nothing) -> (guard (h > 0) $> h, Nothing)
+              (Nothing, Just s) -> (Nothing, guard (s > 0) $> s)
+              (Nothing, Nothing) -> (Nothing, Nothing)
             assetStats = (assetHealth attrs, assetSanity attrs)
           when
             (cardStats /= assetStats)

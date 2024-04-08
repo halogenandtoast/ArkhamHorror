@@ -16,7 +16,7 @@ newtype EldritchSophist = EldritchSophist AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 eldritchSophist :: AssetCard EldritchSophist
-eldritchSophist = asset EldritchSophist Cards.eldritchSophist
+eldritchSophist = ally EldritchSophist Cards.eldritchSophist (1, 3)
 
 instance HasAbilities EldritchSophist where
   getAbilities (EldritchSophist attrs) =

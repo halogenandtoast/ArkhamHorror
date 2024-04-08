@@ -46,4 +46,5 @@ randomWeakness =
   (emptyCardDef "01000" "Random Basic Weakness" PlayerTreacheryType)
     { cdCardSubType = Just Weakness
     , cdClassSymbols = singleton Neutral
+    , cdLevel = Nothing
     }

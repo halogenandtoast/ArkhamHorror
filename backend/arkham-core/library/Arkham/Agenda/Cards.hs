@@ -15,6 +15,7 @@ agenda cardCode name stage encounterSet =
     , cdEncounterSetQuantity = Nothing
     , cdDoubleSided = True
     , cdStage = Just stage
+    , cdLevel = Nothing
     }
 
 allAgendaCards :: Map CardCode CardDef
@@ -90,7 +91,7 @@ allAgendaCards =
       , rollingBackwards
       , secretsBetterLeftHidden
       , settingSun
-      , silentStiring
+      , silentStirring
       , shadowsDeepen
       , snappedThreads
       , somethingStirs
@@ -521,11 +522,11 @@ theThingWithNoName = agenda "06170" "The Thing with No Name" 2 AThousandShapesOf
 theDeadWithNoName :: CardDef
 theDeadWithNoName = agenda "06171" "The Dead with No Name" 3 AThousandShapesOfHorror
 
-silentStiring :: CardDef
-silentStiring = agenda "06207" "Silent Stiring" 1 DarkSideOfTheMoon
+silentStirring :: CardDef
+silentStirring = agenda "06207" "Silent Stirring" 1 DarkSideOfTheMoon
 
 theAlarmIsRaised :: CardDef
-theAlarmIsRaised = agenda "06208" "The Alarm is Raised" 2 DarkSideOfTheMoon
+theAlarmIsRaised = agenda "06208" "The Alarm Is Raised" 2 DarkSideOfTheMoon
 
 theyAreUponYou :: CardDef
 theyAreUponYou = agenda "06209" "They Are Upon You!" 3 DarkSideOfTheMoon

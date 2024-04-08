@@ -1567,6 +1567,9 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
   case mtchr of
     Matcher.NotAnyWindow -> noMatch
     Matcher.AnyWindow -> isMatch
+    Matcher.ScenarioCountIncremented timing k -> guardTiming timing \case
+      Window.ScenarioCountIncremented k' -> pure $ k == k'
+      _ -> noMatch
     Matcher.SkillTestStep timing step -> guardTiming timing \case
       Window.SkillTestStep step' -> pure $ step == step'
       _ -> noMatch

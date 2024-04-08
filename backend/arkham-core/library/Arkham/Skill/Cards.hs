@@ -6,6 +6,7 @@ import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.CommitRestriction
 import Arkham.GameValue
+import Arkham.Id
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Name
@@ -19,6 +20,9 @@ skill cardCode name icons classSymbol =
     { cdClassSymbols = singleton classSymbol
     , cdSkills = icons
     }
+
+signature :: InvestigatorId -> CardDef -> CardDef
+signature iid cd = cd {cdDeckRestrictions = [Signature iid], cdLevel = Nothing}
 
 allPlayerSkillCards :: Map CardCode CardDef
 allPlayerSkillCards =
@@ -281,10 +285,10 @@ viciousBlow2 =
 
 theHomeFront :: CardDef
 theHomeFront =
-  (skill "03007" "The Home Front" (replicate 4 #combat) Neutral)
-    { cdCardTraits = setFromList [Practiced, Expert]
-    , cdDeckRestrictions = [Signature "03001"]
-    }
+  signature "03001"
+    $ (skill "03007" "The Home Front" (replicate 4 #combat) Neutral)
+      { cdCardTraits = setFromList [Practiced, Expert]
+      }
 
 resourceful :: CardDef
 resourceful =
@@ -481,6 +485,7 @@ essenceOfTheDream =
   (skill "06113" "Essence of the Dream" [#wild, #wild] Seeker)
     { cdCardTraits = setFromList [Practiced, Expert]
     , cdKeywords = singleton (Keyword.Bonded 1 "06112")
+    , cdLevel = Nothing
     }
 
 momentum1 :: CardDef
@@ -566,6 +571,7 @@ dreamParasite =
     , cdCardSubType = Just Weakness
     , cdCommitRestrictions = [MustBeCommittedToYourTest]
     , cdKeywords = singleton (Keyword.Bonded 3 "06330")
+    , cdLevel = Nothing
     }
 
 whispersFromTheDeep :: CardDef
@@ -573,6 +579,7 @@ whispersFromTheDeep =
   (skill "07009" "Whispers from the Deep" [#wildMinus] Neutral)
     { cdCardTraits = singleton Curse
     , cdCardSubType = Just Weakness
+    , cdLevel = Nothing
     , cdCardInHandEffects = True
     }
 
@@ -605,6 +612,7 @@ skeptic1 :: CardDef
 skeptic1 =
   (skill "07115" "Skeptic" [#wild] Rogue)
     { cdCardTraits = setFromList [Practiced]
+    , cdLevel = Just 1
     }
 
 unrelenting1 :: CardDef
@@ -612,25 +620,29 @@ unrelenting1 =
   (skill "07196" "Unrelenting" [#wild] Survivor)
     { cdCardTraits = singleton Practiced
     , cdCommitRestrictions = [MaxOnePerTest]
+    , cdLevel = Just 1
     }
 
 signumCrucis2 :: CardDef
 signumCrucis2 =
   (skill "07197" "Signum Crucis" [#wild] Survivor)
-    { cdCardTraits = singleton Practiced
+    { cdCardTraits = setFromList [Practiced, Blessed]
     , cdCommitRestrictions = [OnlyYourTest, MinSkillTestValueDifference 1]
+    , cdLevel = Just 2
     }
 
 fey1 :: CardDef
 fey1 =
   (skill "07222" "Fey" [#willpower, #wild, #wild] Seeker)
     { cdCardTraits = setFromList [Innate, Cursed]
+    , cdLevel = Just 1
     }
 
 justifyTheMeans3 :: CardDef
 justifyTheMeans3 =
   (skill "07306" "Justify the Means" [] Rogue)
     { cdCardTraits = setFromList [Practiced, Cursed]
+    , cdLevel = Just 3
     }
 
 defensiveStance1 :: CardDef
@@ -696,22 +708,23 @@ perception2 =
 
 anythingYouCanDoBetter :: CardDef
 anythingYouCanDoBetter =
-  ( skill
-      "60302"
-      "Anything You Can Do, Better"
-      [#wild, #wild, #wild, #wild, #wild, #wild]
-      Rogue
-  )
-    { cdCardTraits = setFromList [Innate, Developed]
-    , cdCommitRestrictions = [OnlyYourTest]
-    , cdDeckRestrictions = [Signature "60301"]
-    }
+  signature "60301"
+    $ ( skill
+          "60302"
+          "Anything You Can Do, Better"
+          [#wild, #wild, #wild, #wild, #wild, #wild]
+          Rogue
+      )
+      { cdCardTraits = setFromList [Innate, Developed]
+      , cdCommitRestrictions = [OnlyYourTest]
+      }
 
 arrogance :: CardDef
 arrogance =
   (skill "60303" "Arrogance" [#wildMinus] Neutral)
     { cdCardTraits = singleton Flaw
     , cdCardSubType = Just Weakness
+    , cdLevel = Nothing
     , cdCommitRestrictions = [MustBeCommittedToYourTest]
     }
 
@@ -720,6 +733,7 @@ reckless =
   (skill "60304" "Reckless" [] Neutral)
     { cdCardTraits = singleton Flaw
     , cdCardSubType = Just Weakness
+    , cdLevel = Nothing
     , cdCommitRestrictions = [OnlyYourTest, OnlyCardCommittedToTest]
     , cdCardInHandEffects = True
     }
@@ -768,10 +782,10 @@ guts2 =
 
 neitherRainNorSnow :: CardDef
 neitherRainNorSnow =
-  (skill "60502" "Neither Rain nor Snow" [#wild, #wild, #wild] Survivor)
-    { cdCardTraits = setFromList [Innate, Developed]
-    , cdDeckRestrictions = [Signature "60501"]
-    }
+  signature "60501"
+    $ (skill "60502" "Neither Rain nor Snow" [#wild, #wild, #wild] Survivor)
+      { cdCardTraits = setFromList [Innate, Developed]
+      }
 
 unexpectedCourage2 :: CardDef
 unexpectedCourage2 =
@@ -783,16 +797,16 @@ unexpectedCourage2 =
 
 nauticalProwess :: CardDef
 nauticalProwess =
-  (skill "98014" "Nautical Prowess" [#willpower, #intellect, #wild] Neutral)
-    { cdCardTraits = setFromList [Innate, Developed]
-    , cdDeckRestrictions = [Signature "07005"]
-    }
+  signature "07005"
+    $ (skill "98014" "Nautical Prowess" [#willpower, #intellect, #wild] Neutral)
+      { cdCardTraits = setFromList [Innate, Developed]
+      }
 
 dreamsOfTheDeepTheDeepGate :: CardDef
 dreamsOfTheDeepTheDeepGate =
   (skill "98015" ("Dreams of the Deep" <:> "The Deep Gate") [#wildMinus, #wildMinus] Neutral)
     { cdCardTraits = setFromList [Curse]
-    , cdDeckRestrictions = [Signature "07005"]
+    , cdLevel = Nothing
     , cdCardSubType = Just Weakness
     , cdCardInHandEffects = True
     }

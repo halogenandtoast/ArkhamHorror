@@ -38,6 +38,7 @@ locationWithUnrevealed cardCode unrevealedName unrevealedTraits unrevealedLocati
     , cdRevealedCardTraits = setFromList traits
     , cdLocationRevealedSymbol = Just locationSymbol
     , cdLocationRevealedConnections = connectedLocationSymbols
+    , cdLevel = Nothing
     }
 
 location
@@ -60,6 +61,7 @@ location cardCode name traits locationSymbol connectedLocationSymbols encounterS
     , cdLocationRevealedSymbol = Just locationSymbol
     , cdLocationConnections = connectedLocationSymbols
     , cdLocationRevealedConnections = connectedLocationSymbols
+    , cdLevel = Nothing
     }
 
 allLocationCards :: Map CardCode CardDef
@@ -4986,6 +4988,7 @@ dreamGateWondrousJourney =
     , cdLocationConnections = mempty
     , cdLocationRevealedConnections = mempty
     , cdClassSymbols = singleton #neutral
+    , cdLevel = Nothing
     }
 
 dreamGatePointlessReality :: CardDef
@@ -5001,6 +5004,7 @@ dreamGatePointlessReality =
     , cdLocationConnections = mempty
     , cdLocationRevealedConnections = mempty
     , cdClassSymbols = singleton #neutral
+    , cdLevel = Nothing
     }
 
 seventySteps :: CardDef
@@ -5456,17 +5460,18 @@ upstairsHallway =
 
 upstairsDoorwayLibrary :: CardDef
 upstairsDoorwayLibrary =
-  locationWithUnrevealed
-    "06179"
-    "Upstairs Doorway"
-    mempty
-    Diamond
-    [Heart]
-    "Library"
-    mempty
-    Diamond
-    [Heart]
-    AThousandShapesOfHorror
+  victory 1
+    $ locationWithUnrevealed
+      "06179"
+      "Upstairs Doorway"
+      mempty
+      Diamond
+      [Heart]
+      "Library"
+      mempty
+      Diamond
+      [Heart]
+      AThousandShapesOfHorror
 
 upstairsDoorwayBedroom :: CardDef
 upstairsDoorwayBedroom =
@@ -5500,7 +5505,7 @@ unmarkedTomb =
     $ location
       "06182"
       "Unmarked Tomb"
-      mempty
+      [Graveyard]
       Plus
       [Moon]
       AThousandShapesOfHorror
@@ -5510,7 +5515,7 @@ mysteriousStairs_183 =
   location
     "06183"
     "Mysterious Stairs"
-    mempty
+    [Graveyard]
     NoSymbol
     mempty
     AThousandShapesOfHorror
@@ -5520,7 +5525,7 @@ mysteriousStairs_184 =
   location
     "06184"
     "Mysterious Stairs"
-    mempty
+    [Graveyard]
     NoSymbol
     mempty
     AThousandShapesOfHorror
@@ -5530,7 +5535,7 @@ mysteriousStairs_185 =
   location
     "06185"
     "Mysterious Stairs"
-    mempty
+    [Graveyard]
     NoSymbol
     mempty
     AThousandShapesOfHorror
@@ -5540,7 +5545,7 @@ mysteriousStairs_186 =
   location
     "06186"
     "Mysterious Stairs"
-    mempty
+    [Graveyard]
     NoSymbol
     mempty
     AThousandShapesOfHorror
@@ -5550,7 +5555,7 @@ mysteriousStairs_187 =
   location
     "06187"
     "Mysterious Stairs"
-    mempty
+    [Graveyard]
     NoSymbol
     mempty
     AThousandShapesOfHorror
@@ -5560,7 +5565,7 @@ mysteriousStairs_188 =
   location
     "06188"
     "Mysterious Stairs"
-    mempty
+    [Graveyard]
     NoSymbol
     mempty
     AThousandShapesOfHorror
@@ -5767,8 +5772,7 @@ valeOfPnath =
 
 seaOfPitch_262 :: CardDef
 seaOfPitch_262 =
-  victory 1
-    $ veiled
+  veiled
     $ location
       "06262"
       "Sea of Pitch"
@@ -5779,8 +5783,7 @@ seaOfPitch_262 =
 
 seaOfPitch_263 :: CardDef
 seaOfPitch_263 =
-  victory 1
-    $ veiled
+  veiled
     $ location
       "06263"
       "Sea of Pitch"
@@ -5791,8 +5794,7 @@ seaOfPitch_263 =
 
 seaOfPitch_264 :: CardDef
 seaOfPitch_264 =
-  victory 1
-    $ veiled
+  veiled
     $ location
       "06264"
       "Sea of Pitch"
@@ -5803,8 +5805,7 @@ seaOfPitch_264 =
 
 seaOfPitch_265 :: CardDef
 seaOfPitch_265 =
-  victory 1
-    $ veiled
+  veiled
     $ location
       "06265"
       "Sea of Pitch"
@@ -5953,87 +5954,93 @@ forsakenTowerOfPrimevalLight =
 
 theGreatWebWebStairs :: CardDef
 theGreatWebWebStairs =
-  locationWithUnrevealed
-    "06340"
-    "The Great Web"
-    [Otherworld, Extradimensional]
-    NoSymbol
-    []
-    ("The Great Web" <:> "Web-Stairs")
-    [Otherworld, Extradimensional]
-    NoSymbol
-    []
-    WeaverOfTheCosmos
+  quantity 3
+    $ locationWithUnrevealed
+      "06340"
+      "The Great Web"
+      [Otherworld, Extradimensional]
+      NoSymbol
+      []
+      ("The Great Web" <:> "Web-Stairs")
+      [Otherworld, Extradimensional]
+      NoSymbol
+      []
+      WeaverOfTheCosmos
 
 theGreatWebCosmicWeb :: CardDef
 theGreatWebCosmicWeb =
-  locationWithUnrevealed
-    "06341"
-    "The Great Web"
-    [Otherworld, Extradimensional]
-    NoSymbol
-    []
-    ("The Great Web" <:> "Cosmic Web")
-    [Otherworld, Extradimensional]
-    NoSymbol
-    []
-    WeaverOfTheCosmos
+  quantity 2
+    $ locationWithUnrevealed
+      "06341"
+      "The Great Web"
+      [Otherworld, Extradimensional]
+      NoSymbol
+      []
+      ("The Great Web" <:> "Cosmic Web")
+      [Otherworld, Extradimensional]
+      NoSymbol
+      []
+      WeaverOfTheCosmos
 
 theGreatWebTangledWeb :: CardDef
 theGreatWebTangledWeb =
-  locationWithUnrevealed
-    "06342"
-    "The Great Web"
-    [Otherworld, Extradimensional]
-    NoSymbol
-    []
-    ("The Great Web" <:> "Tangled Web")
-    [Otherworld, Extradimensional]
-    NoSymbol
-    []
-    WeaverOfTheCosmos
+  quantity 3
+    $ locationWithUnrevealed
+      "06342"
+      "The Great Web"
+      [Otherworld, Extradimensional]
+      NoSymbol
+      []
+      ("The Great Web" <:> "Tangled Web")
+      [Otherworld, Extradimensional]
+      NoSymbol
+      []
+      WeaverOfTheCosmos
 
 theGreatWebPrisonOfCocoons :: CardDef
 theGreatWebPrisonOfCocoons =
-  locationWithUnrevealed
-    "06343"
-    "The Great Web"
-    [Otherworld, Extradimensional]
-    NoSymbol
-    []
-    ("The Great Web" <:> "Prison of Cocoons")
-    [Otherworld, Extradimensional]
-    NoSymbol
-    []
-    WeaverOfTheCosmos
+  quantity 2
+    $ locationWithUnrevealed
+      "06343"
+      "The Great Web"
+      [Otherworld, Extradimensional]
+      NoSymbol
+      []
+      ("The Great Web" <:> "Prison of Cocoons")
+      [Otherworld, Extradimensional]
+      NoSymbol
+      []
+      WeaverOfTheCosmos
 
 theGreatWebVastWeb :: CardDef
 theGreatWebVastWeb =
-  locationWithUnrevealed
-    "06344"
-    "The Great Web"
-    [Otherworld, Extradimensional]
-    NoSymbol
-    []
-    ("The Great Web" <:> "Vast Web")
-    [Otherworld, Extradimensional]
-    NoSymbol
-    []
-    WeaverOfTheCosmos
+  quantity 2
+    $ locationWithUnrevealed
+      "06344"
+      "The Great Web"
+      [Otherworld, Extradimensional]
+      NoSymbol
+      []
+      ("The Great Web" <:> "Vast Web")
+      [Otherworld, Extradimensional]
+      NoSymbol
+      []
+      WeaverOfTheCosmos
 
 theGreatWebWebWovenIsland :: CardDef
 theGreatWebWebWovenIsland =
-  locationWithUnrevealed
-    "06345"
-    "The Great Web"
-    [Otherworld, Extradimensional]
-    NoSymbol
-    []
-    ("The Great Web" <:> "Web-Woven Island")
-    [Otherworld, Extradimensional]
-    NoSymbol
-    []
-    WeaverOfTheCosmos
+  quantity 3
+    $ locationWithUnrevealed
+      "06345"
+      "The Great Web"
+      [Otherworld, Extradimensional]
+      NoSymbol
+      []
+      ("The Great Web" <:> "Web-Woven Island")
+      [Otherworld, Extradimensional]
+      NoSymbol
+      []
+      WeaverOfTheCosmos
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

@@ -15,7 +15,7 @@ newtype RichardUptonPickman = RichardUptonPickman AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 richardUptonPickman :: AssetCard RichardUptonPickman
-richardUptonPickman = asset RichardUptonPickman Cards.richardUptonPickman
+richardUptonPickman = assetWith RichardUptonPickman Cards.richardUptonPickman (healthL ?~ 3)
 
 instance HasModifiersFor RichardUptonPickman where
   getModifiersFor (InvestigatorTarget _) (RichardUptonPickman a) = do

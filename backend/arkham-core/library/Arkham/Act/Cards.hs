@@ -15,6 +15,7 @@ act cardCode name stage encounterSet =
     , cdEncounterSetQuantity = Nothing
     , cdDoubleSided = True
     , cdStage = Just stage
+    , cdLevel = Nothing
     }
 
 allActCards :: Map CardCode CardDef
@@ -668,7 +669,7 @@ theFinalDescent :: CardDef
 theFinalDescent = act "06043" "The Final Descent" 3 BeyondTheGatesOfSleep
 
 thePath :: CardDef
-thePath = act "06044" "The Final Descent" 4 BeyondTheGatesOfSleep
+thePath = act "06044" "The Path" 4 BeyondTheGatesOfSleep
 
 lookingForAnswers :: CardDef
 lookingForAnswers = act "06067" "Looking for Answers" 1 WakingNightmare
@@ -701,7 +702,7 @@ theEndlessStairs :: CardDef
 theEndlessStairs = act "06173" "The Endless Stairs" 2 AThousandShapesOfHorror
 
 inTheBellyOfTheMoonBeast :: CardDef
-inTheBellyOfTheMoonBeast = act "06210" "In they Belly of the Moon-Beast" 1 DarkSideOfTheMoon
+inTheBellyOfTheMoonBeast = act "06210" "In the Belly of the Moon-Beast" 1 DarkSideOfTheMoon
 
 exploringTheMoon :: CardDef
 exploringTheMoon = act "06211" "Exploring the Moon" 2 DarkSideOfTheMoon

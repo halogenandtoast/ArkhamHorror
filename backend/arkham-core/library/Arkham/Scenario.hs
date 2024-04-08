@@ -616,7 +616,9 @@ scenarioCard :: CardCode -> Name -> EncounterSet -> CardDef
 scenarioCard cCode name ecSet =
   (emptyCardDef cCode name ScenarioType)
     { cdEncounterSet = Just ecSet
+    , cdEncounterSetQuantity = Just 1
     , cdDoubleSided = True
+    , cdLevel = Nothing
     }
 
 allScenarioCards :: Map CardCode CardDef

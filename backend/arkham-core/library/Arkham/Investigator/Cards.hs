@@ -15,6 +15,7 @@ investigator cardCode name classSymbol traits =
     { cdClassSymbols = singleton classSymbol
     , cdCardTraits = setFromList traits
     , cdUnique = True
+    , cdLevel = Nothing
     }
 
 allInvestigatorCards :: Map CardCode CardDef
@@ -220,7 +221,7 @@ carolynFern =
       "05001"
       ("Carolyn Fern" <:> "The Psychologist")
       Guardian
-      [Miskatonic]
+      [Medic]
 
 joeDiamond :: CardDef
 joeDiamond =
@@ -390,7 +391,7 @@ nathanielCho :: CardDef
 nathanielCho =
   investigator
     "60101"
-    ("Nathanial Cho" <:> "The Boxer")
+    ("Nathaniel Cho" <:> "The Boxer")
     Guardian
     [Criminal, Warden]
 

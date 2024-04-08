@@ -19,8 +19,8 @@ shadowAgents =
   enemyWith
     ShadowAgents
     Cards.shadowAgents
-    (0, Static 1, 0)
-    (0, 0)
+    (3, Static 3, 5)
+    (2, 0)
     (\a -> a & preyL .~ BearerOf (toId a))
 
 instance HasAbilities ShadowAgents where

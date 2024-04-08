@@ -20,7 +20,7 @@ forsakenTowerOfTheQueenOfNight =
   location
     ForsakenTowerOfTheQueenOfNight
     Cards.forsakenTowerOfTheQueenOfNight
-    2
+    3
     (PerPlayer 1)
 
 instance HasAbilities ForsakenTowerOfTheQueenOfNight where

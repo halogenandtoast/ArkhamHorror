@@ -94,7 +94,7 @@ instance RunMessage DarkSideOfTheMoon where
       gather Set.DreamersCurse
       gather Set.AncientEvils
 
-      setAgendaDeck [Agendas.silentStiring, Agendas.theAlarmIsRaised, Agendas.theyAreUponYou]
+      setAgendaDeck [Agendas.silentStirring, Agendas.theAlarmIsRaised, Agendas.theyAreUponYou]
       setActDeck
         [Acts.inTheBellyOfTheMoonBeast, Acts.exploringTheMoon, Acts.theMoonsCore, Acts.unexpectedRescue]
 

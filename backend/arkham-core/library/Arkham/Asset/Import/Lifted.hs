@@ -11,6 +11,7 @@ import Arkham.Asset.Runner as X (
   assetWith,
   cardsUnderneathL,
   controlledBy,
+  healthL,
   is,
   push,
   pushAll,

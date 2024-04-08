@@ -15,6 +15,7 @@ import Arkham.Cost
 import Arkham.Criteria (Criterion, exists, notExists)
 import Arkham.Criteria qualified as Criteria
 import Arkham.Damage
+import Arkham.GameValue
 import Arkham.History.Types
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
@@ -259,6 +260,7 @@ allPlayerEventCards =
       , seekingAnswers2
       , shortcut
       , shortcut2
+      , shrineOfTheMoirai3
       , sleightOfHand
       , slipAway
       , slipAway2
@@ -391,7 +393,7 @@ extraAmmunition1 =
   (event "01026" "Extra Ammunition" 2 Guardian)
     { cdSkills = [#intellect]
     , cdCardTraits = setFromList [Supply]
-    , cdLevel = 1
+    , cdLevel = Just 1
     , cdCriteria =
         Just
           $ exists
@@ -431,7 +433,7 @@ crypticResearch4 :: CardDef
 crypticResearch4 =
   (event "01043" "Cryptic Research" 0 Seeker)
     { cdCardTraits = setFromList [Insight]
-    , cdLevel = 4
+    , cdLevel = Just 4
     , cdFastWindow = Just $ DuringTurn You
     , cdAlternateCardCodes = ["01543"]
     , cdCriteria = Just $ exists $ affectsOthers $ InvestigatorAt YourLocation <> can.draw.cards
@@ -476,7 +478,7 @@ sureGamble3 =
   (event "01056" "Sure Gamble" 2 Rogue)
     { cdCardTraits = setFromList [Fortune, Insight]
     , cdFastWindow = Just $ RevealChaosToken #when You WithNegativeModifier
-    , cdLevel = 3
+    , cdLevel = Just 3
     , cdAlternateCardCodes = ["01556"]
     }
 
@@ -485,7 +487,7 @@ hotStreak4 =
   (event "01057" "Hot Streak" 3 Rogue)
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Fortune]
-    , cdLevel = 4
+    , cdLevel = Just 4
     , cdAlternateCardCodes = ["01557"]
     }
 
@@ -522,7 +524,7 @@ mindWipe1 =
   (event "01068" "Mind Wipe" 1 Mystic)
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spell]
-    , cdLevel = 1
+    , cdLevel = Just 1
     , cdFastWindow = Just $ PhaseBegins #after AnyPhase
     , cdCriteria = Just $ exists $ EnemyAt YourLocation <> NonEliteEnemy
     , cdAlternateCardCodes = ["01568"]
@@ -534,7 +536,7 @@ blindingLight2 =
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Spell]
     , cdActions = [#evade]
-    , cdLevel = 2
+    , cdLevel = Just 2
     , cdAlternateCardCodes = ["01569"]
     }
 
@@ -574,7 +576,7 @@ closeCall2 =
     , cdFastWindow =
         Just $ EnemyEvaded #after Anyone (EnemyAt YourLocation <> NonWeaknessEnemy <> NonEliteEnemy)
     , cdCriteria = Just $ exists $ You <> can.target.encounterDeck
-    , cdLevel = 2
+    , cdLevel = Just 2
     , cdAlternateCardCodes = ["01583"]
     }
 
@@ -583,7 +585,7 @@ lucky2 =
   (event "01084" "Lucky!" 1 Survivor)
     { cdCardTraits = setFromList [Fortune]
     , cdFastWindow = Just $ WouldHaveSkillTestResult #when You AnySkillTest $ FailureResult AnyValue
-    , cdLevel = 2
+    , cdLevel = Just 2
     , cdAlternateCardCodes = ["01584"]
     }
 
@@ -593,7 +595,7 @@ willToSurvive3 =
     { cdSkills = [#combat, #wild]
     , cdCardTraits = setFromList [Spirit]
     , cdFastWindow = Just $ DuringTurn You
-    , cdLevel = 3
+    , cdLevel = Just 3
     , cdAlternateCardCodes = ["01585"]
     }
 
@@ -637,7 +639,7 @@ taunt2 =
     { cdCardTraits = setFromList [Tactic]
     , cdFastWindow = Just $ DuringTurn You
     , cdSkills = [#willpower, #combat, #agility]
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 shortcut :: CardDef
@@ -678,7 +680,7 @@ bindMonster2 =
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = singleton Spell
     , cdActions = [#evade]
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 baitAndSwitch :: CardDef
@@ -760,7 +762,7 @@ flare1 =
     { cdSkills = [#wild]
     , cdCardTraits = singleton Tactic
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
-    , cdLevel = 1
+    , cdLevel = Just 1
     , cdCriteria = Just $ exists $ affectsOthers can.manipulate.deck
     }
 
@@ -774,7 +776,7 @@ standTogether3 =
           $ exists (affectsOthers $ InvestigatorAt YourLocation <> NotYou)
           <> exists
             (affectsOthers $ InvestigatorAt YourLocation <> oneOf [can.gain.resources, can.draw.cards])
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 imOuttaHere :: CardDef
@@ -805,7 +807,7 @@ lure1 =
   (event "02156" "Lure" 1 Survivor)
     { cdSkills = [#agility, #agility]
     , cdCardTraits = singleton Trick
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 preparedForTheWorst :: CardDef
@@ -828,7 +830,7 @@ emergencyCache2 :: CardDef
 emergencyCache2 =
   (event "02194" "Emergency Cache" 0 Neutral)
     { cdCardTraits = setFromList [Supply]
-    , cdLevel = 2
+    , cdLevel = Just 2
     , cdAlternateCardCodes = ["01693"]
     , cdCriteria = Just $ exists $ You <> can.gain.resources
     }
@@ -847,7 +849,7 @@ exposeWeakness1 =
     , cdCardTraits = singleton Insight
     , cdFastWindow = Just FastPlayerWindow
     , cdCriteria = Just $ exists $ EnemyAt YourLocation
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 iveHadWorse4 :: CardDef
@@ -856,7 +858,7 @@ iveHadWorse4 =
     { cdSkills = [#willpower, #willpower, #agility]
     , cdCardTraits = singleton Spirit
     , cdFastWindow = Just $ DealtDamageOrHorror #when (SourceIsCancelable AnySource) You
-    , cdLevel = 4
+    , cdLevel = Just 4
     , cdAlternateCardCodes = ["01684"]
     }
 
@@ -865,7 +867,7 @@ aceInTheHole3 =
   (event "02266" "Ace in the Hole" 0 Rogue)
     { cdCardTraits = singleton Trick
     , cdFastWindow = Just $ DuringTurn You
-    , cdLevel = 3
+    , cdLevel = Just 3
     , cdExceptional = True
     }
 
@@ -891,7 +893,7 @@ momentOfRespite3 =
     { cdSkills = [#willpower, #willpower]
     , cdCardTraits = singleton Spirit
     , cdCriteria = Just $ Criteria.Negate $ exists $ EnemyAt YourLocation
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 monsterSlayer5 :: CardDef
@@ -900,7 +902,7 @@ monsterSlayer5 =
     { cdSkills = [#combat, #wild]
     , cdCardTraits = singleton Spirit
     , cdActions = [#fight]
-    , cdLevel = 5
+    , cdLevel = Just 5
     }
 
 decipheredReality5 :: CardDef
@@ -909,7 +911,7 @@ decipheredReality5 =
     { cdSkills = [#intellect, #intellect, #willpower]
     , cdCardTraits = singleton Insight
     , cdActions = [#investigate]
-    , cdLevel = 5
+    , cdLevel = Just 5
     }
 
 wardOfProtection5 :: CardDef
@@ -924,7 +926,7 @@ wardOfProtection5 =
             You
             (CanCancelAllEffects $ BasicCardMatch IsEncounterCard)
             EncounterDeck
-    , cdLevel = 5
+    , cdLevel = Just 5
     }
 
 thePaintedWorld :: CardDef
@@ -975,7 +977,7 @@ everVigilant1 =
   (event "03023" "Ever Vigilant" 0 Guardian)
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = singleton Tactic
-    , cdLevel = 1
+    , cdLevel = Just 1
     , cdCriteria = Just $ Criteria.PlayableCardExistsWithCostReduction 1 $ #asset <> InHandOf You
     }
 
@@ -1067,7 +1069,7 @@ ambush1 =
   (event "03148" "Ambush" 2 Guardian)
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = singleton Tactic
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 forewarned1 :: CardDef
@@ -1075,7 +1077,7 @@ forewarned1 =
   (event "03150" "Forewarned" 0 Seeker)
     { cdSkills = [#willpower]
     , cdCardTraits = singleton Insight
-    , cdLevel = 1
+    , cdLevel = Just 1
     , cdCriteria = Just $ exists (You <> InvestigatorWithAnyClues)
     , cdFastWindow =
         Just $ DrawCard #when You (CanCancelRevelationEffect $ basic NonWeaknessTreachery) EncounterDeck
@@ -1086,7 +1088,7 @@ sneakAttack2 =
   (event "03152" "Sneak Attack" 2 Rogue)
     { cdSkills = [#intellect, #combat, #combat]
     , cdCardTraits = setFromList [Tactic]
-    , cdLevel = 2
+    , cdLevel = Just 2
     , cdCriteria =
         Just $ exists (EnemyAt YourLocation <> EnemyNotEngagedWithYou) <> Criteria.CanDealDamage
     }
@@ -1125,7 +1127,7 @@ aTestOfWill1 =
                 (CanCancelRevelationEffect $ basic NonWeaknessTreachery)
                 EncounterDeck
             ]
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 devilsLuck :: CardDef
@@ -1134,7 +1136,7 @@ devilsLuck =
     { cdSkills = [#agility]
     , cdCardTraits = singleton Fortune
     , cdFastWindow = Just $ DealtDamageOrHorror #when (SourceIsCancelable AnySource) You
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 callingInFavors :: CardDef
@@ -1197,7 +1199,7 @@ recharge2 =
           $ exists
           $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
           <> oneOf [AssetWithTrait Spell, AssetWithTrait Relic]
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 snareTrap2 :: CardDef
@@ -1206,7 +1208,7 @@ snareTrap2 =
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Trap, Improvised]
     , cdCriteria = Just $ Criteria.Negate $ exists $ "Snare Trap" <> AssetAt YourLocation
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 manoAMano1 :: CardDef
@@ -1217,7 +1219,7 @@ manoAMano1 =
     , cdCriteria =
         Just $ Criteria.FirstAction <> exists EnemyEngagedWithYou <> Criteria.CanDealDamage
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 shortcut2 :: CardDef
@@ -1226,7 +1228,7 @@ shortcut2 =
     { cdSkills = [#willpower, #intellect, #agility]
     , cdCardTraits = setFromList [Insight, Tactic]
     , cdFastWindow = Just $ DuringTurn You
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 waylay :: CardDef
@@ -1244,14 +1246,14 @@ aChanceEncounter2 =
     , cdCardTraits = singleton Fortune
     , cdCost = Just DynamicCost
     , cdCriteria = Just $ Criteria.ReturnableCardInDiscard Criteria.AnyPlayerDiscard [Ally]
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 emergencyCache3 :: CardDef
 emergencyCache3 =
   (event "03239" "Emergency Cache" 0 Neutral)
     { cdCardTraits = setFromList [Supply]
-    , cdLevel = 3
+    , cdLevel = Just 3
     , cdCriteria =
         Just
           $ Criteria.AnyCriterion
@@ -1306,7 +1308,7 @@ wardOfProtection2 =
             (affectsOthers Anyone)
             (CanCancelRevelationEffect $ basic $ NonPeril <> NonWeaknessTreachery)
             EncounterDeck
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 trueSurvivor3 :: CardDef
@@ -1314,7 +1316,7 @@ trueSurvivor3 =
   (event "03273" "True Survivor" 3 Survivor)
     { cdCardTraits = singleton Spirit
     , cdCriteria = Just $ Criteria.CardInDiscard (Criteria.DiscardOf You) (CardWithTrait Innate)
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 eatLead2 :: CardDef
@@ -1327,7 +1329,7 @@ eatLead2 =
             #when
             You
             (AssetAbility (AssetWithTrait Firearm <> AssetWithUses Uses.Ammo) <> AbilityIsAction #fight)
-    , cdLevel = 2
+    , cdLevel = Just 2
     , cdSkills = [#combat, #agility]
     }
 
@@ -1338,7 +1340,7 @@ eideticMemory3 =
     , cdCardTraits = singleton Spirit
     , cdFastWindow =
         Just $ PlayerHasPlayableCard $ InDiscardOf Anyone <> basic (CardWithTrait Insight <> #event)
-    , cdLevel = 3
+    , cdLevel = Just 3
     , cdCost = Nothing
     }
 
@@ -1350,7 +1352,7 @@ noStoneUnturned5 =
     , cdFastWindow = Just FastPlayerWindow
     , cdCriteria =
         Just $ exists $ affectsOthers $ InvestigatorAt YourLocation <> can.manipulate.deck
-    , cdLevel = 5
+    , cdLevel = Just 5
     }
 
 cheatDeath5 :: CardDef
@@ -1359,7 +1361,7 @@ cheatDeath5 =
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Trick, Fated]
     , cdFastWindow = Just $ InvestigatorWouldBeDefeated #when ByAny You
-    , cdLevel = 5
+    , cdLevel = Just 5
     }
 
 timeWarp2 :: CardDef
@@ -1369,7 +1371,7 @@ timeWarp2 =
     , cdFastWindow =
         Just $ PerformAction #after (affectsOthers $ InvestigatorAt YourLocation) AnyAction
     , cdCriteria = Just $ Criteria.ActionCanBeUndone <> Criteria.DuringTurn Anyone
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 infighting3 :: CardDef
@@ -1377,7 +1379,7 @@ infighting3 =
   (event "03314" "Infighting" 1 Survivor)
     { cdSkills = [#intellect, #intellect, #agility, #agility]
     , cdCardTraits = singleton Trick
-    , cdLevel = 3
+    , cdLevel = Just 3
     , cdFastWindow = Just $ PhaseBegins #after #enemy
     }
 
@@ -1406,7 +1408,7 @@ reliable1 =
     , cdCardTraits = singleton Upgrade
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria = Just $ exists $ AssetControlledBy You <> #item
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 unearthTheAncients :: CardDef
@@ -1495,7 +1497,7 @@ marksmanship1 =
           $ AbilityIsAction #fight
           <> AssetAbility (oneOf [AssetWithTrait Firearm, AssetWithTrait Ranged])
     , cdCardInHandEffects = True
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 persuasion :: CardDef
@@ -1520,7 +1522,7 @@ counterspell2 =
           $ RevealChaosToken #when You
           $ ChaosTokenMatchesAny
           $ map ChaosTokenFaceIs [#skull, #cultist, #tablet, #elderthing]
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 perseverance :: CardDef
@@ -1568,7 +1570,7 @@ customAmmunition3 =
           <> AssetWithTrait Firearm
           <> NotAsset (AssetWithAttachedEvent $ EventCardMatch $ cardIs customAmmunition3)
     , cdFastWindow = Just $ DuringTurn You
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 exposeWeakness3 :: CardDef
@@ -1578,7 +1580,7 @@ exposeWeakness3 =
     , cdCardTraits = singleton Insight
     , cdFastWindow = Just FastPlayerWindow
     , cdCriteria = Just $ exists $ EnemyAt YourLocation
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 premonition :: CardDef
@@ -1604,7 +1606,7 @@ againstAllOdds2 =
     { cdCardTraits = singleton Spirit
     , cdSkills = [#willpower, #combat, #agility]
     , cdFastWindow = Just $ InitiatedSkillTest #when You AnySkillType GreaterThanBaseValue #any
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 slipAway :: CardDef
@@ -1620,7 +1622,7 @@ payDay1 :: CardDef
 payDay1 =
   (event "04233" "Pay Day" 0 Rogue)
     { cdCardTraits = setFromList [Illicit, Fated]
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 sacrifice1 :: CardDef
@@ -1629,7 +1631,7 @@ sacrifice1 =
     { cdSkills = [#willpower]
     , cdCardTraits = singleton Ritual
     , cdCriteria = Just $ exists $ #mystic <> AssetControlledBy You <> DiscardableAsset
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 bloodEclipse3 :: CardDef
@@ -1639,7 +1641,7 @@ bloodEclipse3 =
     , cdCardTraits = setFromList [Spell, Spirit]
     , cdActions = [#fight]
     , cdAdditionalCost = Just $ UpTo 3 $ InvestigatorDamageCost ThisCard You DamageAny 1
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 coupDeGrace :: CardDef
@@ -1695,7 +1697,7 @@ alterFate3 =
           $ exists
           $ NotTreachery (TreacheryOnEnemy EliteEnemy)
           <> TreacheryIsNonWeakness
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 unsolvedCase :: CardDef
@@ -1863,7 +1865,7 @@ banish1 =
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = singleton Spell
     , cdActions = [#evade]
-    , cdLevel = 1
+    , cdLevel = Just 1
     , cdCriteria = Just $ exists $ NonEliteEnemy <> CanEvadeEnemy ThisCard
     }
 
@@ -1872,7 +1874,7 @@ wellMaintained1 =
   (event "05152" "Well-Maintained" 0 Guardian)
     { cdSkills = [#agility]
     , cdCardTraits = singleton Upgrade
-    , cdLevel = 1
+    , cdLevel = Just 1
     , cdCriteria =
         Just
           $ exists
@@ -1920,7 +1922,7 @@ telescopicSight3 =
     , cdCardTraits = setFromList [Item, Upgrade]
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria = Just $ exists (AssetControlledBy You <> AssetInTwoHandSlots)
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 knowledgeIsPower :: CardDef
@@ -1973,7 +1975,7 @@ fortuneOrFate2 =
     , cdCardTraits = setFromList [Fortune, Blessed]
     , cdLimits = [MaxPerGame 1]
     , cdFastWindow = Just $ PlacedDoomCounter #when (SourceIsCancelable AnySource) ScenarioCardTarget
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 ghastlyRevelation :: CardDef
@@ -2014,7 +2016,7 @@ denyExistence5 =
             , InvestigatorWouldTakeDamage #when You source
             , InvestigatorWouldTakeHorror #when You source
             ]
-    , cdLevel = 5
+    , cdLevel = Just 5
     }
  where
   source = SourceMatchesAny [SourceIsEnemyAttack AnyEnemy, Matcher.EncounterCardSource]
@@ -2033,7 +2035,7 @@ baitAndSwitch3 =
     { cdSkills = [#intellect, #agility, #agility]
     , cdCardTraits = setFromList [Trick]
     , cdActions = [#evade]
-    , cdLevel = 3
+    , cdLevel = Just 3
     , cdCriteria =
         Just
           $ exists
@@ -2070,7 +2072,7 @@ iveHadWorse2 =
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = singleton Spirit
     , cdFastWindow = Just $ DealtDamageOrHorror #when (SourceIsCancelable AnySource) You
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 bloodRite :: CardDef
@@ -2086,7 +2088,7 @@ glimpseTheUnthinkable5 =
   (event "05318" "Glimpse the Unthinkable" 1 Seeker)
     { cdSkills = [#intellect, #intellect, #intellect]
     , cdCardTraits = singleton Insight
-    , cdLevel = 5
+    , cdLevel = Just 5
     , cdCriteria = Just $ Criteria.AnyCriterion [Criteria.CanDrawCards, Criteria.CanManipulateDeck]
     }
 
@@ -2103,7 +2105,7 @@ lure2 =
   (event "05323" "Lure" 1 Survivor)
     { cdSkills = [#agility, #agility]
     , cdCardTraits = singleton Trick
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 eucatastrophe3 :: CardDef
@@ -2113,7 +2115,7 @@ eucatastrophe3 =
     , cdCardTraits = setFromList [Fortune, Blessed]
     , cdFastWindow = Just $ RevealChaosToken #when You WouldReduceYourSkillValueToZero
     , cdAlternateCardCodes = ["01692"]
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 occultEvidence :: CardDef
@@ -2144,7 +2146,7 @@ easyMark1 =
     , cdCardTraits = singleton Trick
     , cdKeywords = singleton Keyword.Myriad
     , cdCriteria = Just $ Criteria.AnyCriterion [Criteria.CanGainResources, Criteria.CanDrawCards]
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 stargazing1 :: CardDef
@@ -2155,7 +2157,7 @@ stargazing1 =
     , cdLimits = [MaxPerGame 2]
     , cdCriteria = Just $ Criteria.EncounterDeckWith $ LengthIs (atLeast 10)
     , cdBondedWith = [(1, "06028")]
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 theStarsAreRight :: CardDef
@@ -2228,7 +2230,7 @@ foolMeOnce1 =
           $ TreacheryWouldBeDiscarded #when
           $ TreacheryWithResolvedEffectsBy You
           <> TreacheryDiscardedBy You
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 letGodSortThemOut :: CardDef
@@ -2247,7 +2249,7 @@ swiftReload2 =
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria =
         Just $ exists $ AssetControlledBy You <> AssetWithTrait Firearm <> AssetNotAtUsesX
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 etherealForm :: CardDef
@@ -2281,7 +2283,7 @@ extensiveResearch1 =
     , cdCardTraits = singleton Insight
     , cdCardInHandEffects = True
     , cdCriteria = Just canDiscoverCluesAtYourLocation
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 spectralRazor :: CardDef
@@ -2298,7 +2300,7 @@ wordOfCommand2 :: CardDef
 wordOfCommand2 =
   (event "06202" "Word of Command" 2 Mystic)
     { cdCardTraits = setFromList [Spell]
-    , cdLevel = 2
+    , cdLevel = Just 2
     , cdCriteria = can.manipulate.deck You
     }
 
@@ -2306,7 +2308,7 @@ lucidDreaming2 :: CardDef
 lucidDreaming2 =
   (event "06205" "Lucid Dreaming" 1 Neutral)
     { cdCardTraits = setFromList [Spell]
-    , cdLevel = 2
+    , cdLevel = Just 2
     , cdCriteria = can.manipulate.deck You
     }
 
@@ -2326,7 +2328,7 @@ heroicRescue2 =
             )
             AnyEnemyAttack
             NonEliteEnemy
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 aGlimmerOfHope :: CardDef
@@ -2348,7 +2350,7 @@ nothingLeftToLose3 =
         Just
           $ exists
             (You <> oneOf [InvestigatorWithResources (lessThan 5), HandWith (LengthIs $ lessThan 5)])
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 obscureStudies :: CardDef
@@ -2501,7 +2503,7 @@ gazeOfOuraxsh2 =
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Spell, Cursed]
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 underSurveillance1 :: CardDef
@@ -2510,7 +2512,7 @@ underSurveillance1 =
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Tactic, Trap]
     , cdCriteria = Just $ Criteria.Negate $ exists $ "Under Surveillance" <> AssetAt YourLocation
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 butterflyEffect1 :: CardDef
@@ -2526,7 +2528,7 @@ butterflyEffect1 =
             [ exists (CardIsCommittedBy (affectsOthers $ InvestigatorAt YourLocation))
             , exists (affectsOthers $ InvestigatorAt YourLocation <> InvestigatorWithCommittableCard)
             ]
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 thirdTimesACharm2 :: CardDef
@@ -2536,7 +2538,7 @@ thirdTimesACharm2 =
     , cdCardTraits = setFromList [Spirit]
     , cdFastWindow = Just $ InitiatedSkillTest #when (affectsOthers Anyone) #any #any #any
     , cdCriteria = Just $ Criteria.DuringSkillTest SkillTestAtYourLocation
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 manipulateDestiny2 :: CardDef
@@ -2545,7 +2547,7 @@ manipulateDestiny2 =
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Spell, Cursed]
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 riastrad1 :: CardDef
@@ -2554,7 +2556,7 @@ riastrad1 =
     { cdSkills = [#combat, #combat]
     , cdCardTraits = setFromList [Spell, Spirit, Cursed]
     , cdActions = [#fight]
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 harmonyRestored2 :: CardDef
@@ -2566,7 +2568,7 @@ harmonyRestored2 =
         Just
           $ Criteria.ChaosTokenCountIs #bless (atLeast 1)
           <> Criteria.ChaosTokenCountIs #curse (atLeast 1)
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 enchantWeapon3 :: CardDef
@@ -2580,7 +2582,7 @@ enchantWeapon3 =
           $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
           <> AssetWithTrait Weapon
           <> not_ (AssetWithAttachedEvent $ EventIs "07261")
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 theStygianEye3 :: CardDef
@@ -2590,7 +2592,7 @@ theStygianEye3 =
     , cdCardTraits = setFromList [Insight, Cursed]
     , cdFastWindow = Just $ DuringTurn You
     , cdCardInHandEffects = True
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 aWatchfulPeace3 :: CardDef
@@ -2628,7 +2630,18 @@ riteOfEquilibrium5 =
                   , exists (HealableInvestigator ThisCard #horror $ InvestigatorAt YourLocation)
                   ]
             ]
-    , cdLevel = 5
+    , cdLevel = Just 5
+    }
+
+shrineOfTheMoirai3 :: CardDef
+shrineOfTheMoirai3 =
+  (event "07310" "Shrine of the Moirai" 1 Survivor)
+    { cdSkills = [#willpower, #intellect, #agility]
+    , cdCardTraits = setFromList [Fortune, Blessed, Cursed]
+    , cdCriteria = Just $ exists (LocationWithInvestigator You)
+    , cdLevel = Just 3
+    , cdUnique = True
+    , cdUses = Uses.Uses Uses.Offering (Static 3)
     }
 
 sweepingKick1 :: CardDef
@@ -2637,7 +2650,7 @@ sweepingKick1 =
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Spirit, Tactic, Trick]
     , cdActions = [#fight]
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 dodge2 :: CardDef
@@ -2652,7 +2665,7 @@ dodge2 =
             (affectsOthers $ InvestigatorAt YourLocation)
             (CancelableEnemyAttack AnyEnemyAttack)
             AnyEnemy
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 unearthTheAncients2 :: CardDef
@@ -2662,7 +2675,7 @@ unearthTheAncients2 =
     , cdCardTraits = singleton Insight
     , cdActions = [#investigate]
     , cdCriteria = Just $ Criteria.ExtendedCardExists $ InHandOf You <> basic (#seeker <> #asset)
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 moneyTalks2 :: CardDef
@@ -2678,7 +2691,7 @@ moneyTalks2 =
             AnySkillType
             AnySkillTestValue
             #any
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 parallelFates2 :: CardDef
@@ -2686,7 +2699,7 @@ parallelFates2 =
   (event "08066" "Parallel Fates" 0 Mystic)
     { cdSkills = [#willpower, #wild]
     , cdCardTraits = singleton Augury
-    , cdLevel = 2
+    , cdLevel = Just 2
     , cdCriteria =
         Just $ exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck]
     }
@@ -2698,7 +2711,7 @@ breakingAndEntering2 =
     , cdCardTraits = setFromList [Trick]
     , cdActions = [#investigate]
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 keepFaith2 :: CardDef
@@ -2708,7 +2721,7 @@ keepFaith2 =
     , cdCardTraits = setFromList [Fortune, Blessed]
     , cdFastWindow = Just FastPlayerWindow
     , cdCriteria = Just Criteria.HasRemainingBlessTokens
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 dynamiteBlast2 :: CardDef
@@ -2717,7 +2730,7 @@ dynamiteBlast2 =
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Tactic]
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 barricade3 :: CardDef
@@ -2725,7 +2738,7 @@ barricade3 =
   (event "50004" "Barricade" 0 Seeker)
     { cdSkills = [#willpower, #intellect, #agility]
     , cdCardTraits = setFromList [Insight, Tactic]
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 hotStreak2 :: CardDef
@@ -2733,7 +2746,7 @@ hotStreak2 =
   (event "50006" "Hot Streak" 5 Rogue)
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Fortune]
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 mindWipe3 :: CardDef
@@ -2741,7 +2754,7 @@ mindWipe3 =
   (event "50008" "Mind Wipe" 1 Mystic)
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spell]
-    , cdLevel = 3
+    , cdLevel = Just 3
     , cdFastWindow = Just $ PhaseBegins #after AnyPhase
     }
 
@@ -2751,7 +2764,7 @@ preposterousSketches2 =
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = singleton Insight
     , cdCriteria = Just Criteria.ClueOnLocation
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 contraband2 :: CardDef
@@ -2759,7 +2772,7 @@ contraband2 =
   (event "51005" "Contraband" 3 Rogue)
     { cdSkills = [#willpower, #intellect, #intellect]
     , cdCardTraits = setFromList [Supply, Illicit]
-    , cdLevel = 2
+    , cdLevel = Just 2
     , cdCriteria =
         Just
           $ exists
@@ -2775,7 +2788,7 @@ thinkOnYourFeet2 =
     , cdCardTraits = singleton Trick
     , cdFastWindow = Just (EnemyEnters #when YourLocation AnyEnemy)
     , cdCriteria = Just $ exists AccessibleLocation <> exists (You <> can.move)
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 oops2 :: CardDef
@@ -2783,7 +2796,7 @@ oops2 =
   (event "51009" "Oops!" 2 Survivor)
     { cdSkills = [#combat, #combat, #agility]
     , cdCardTraits = singleton Fortune
-    , cdLevel = 2
+    , cdLevel = Just 2
     , cdCriteria = Just Criteria.CanDealDamage
     , cdFastWindow =
         Just $ SkillTestResult #after You (WhileAttackingAnEnemy AnyEnemy) $ FailureResult $ lessThan 4
@@ -2807,7 +2820,7 @@ logicalReasoning4 =
   (event "52003" "Logical Reasoning" 2 Seeker)
     { cdSkills = [#willpower, #willpower, #willpower]
     , cdCardTraits = singleton Insight
-    , cdLevel = 4
+    , cdLevel = Just 4
     , cdCriteria =
         Just
           $ exists (You <> InvestigatorWithAnyClues)
@@ -2825,7 +2838,7 @@ stormOfSpirits3 =
     { cdSkills = [#willpower, #combat, #combat]
     , cdCardTraits = singleton Spell
     , cdActions = [#fight]
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 bloodEclipse1 :: CardDef
@@ -2835,7 +2848,7 @@ bloodEclipse1 =
     , cdCardTraits = setFromList [Spell, Spirit]
     , cdActions = [#fight]
     , cdAdditionalCost = Just $ InvestigatorDamageCost ThisCard You DamageAny 2
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 truthFromFiction2 :: CardDef
@@ -2843,7 +2856,7 @@ truthFromFiction2 =
   (event "53003" "Truth from Fiction" 1 Seeker)
     { cdSkills = [#intellect, #intellect, #intellect]
     , cdCardTraits = singleton Insight
-    , cdLevel = 2
+    , cdLevel = Just 2
     , cdCriteria =
         Just
           $ exists
@@ -2858,7 +2871,7 @@ alterFate1 =
     , cdCardTraits = setFromList [Spell, Blessed]
     , cdCriteria =
         Just $ exists $ NotTreachery (TreacheryOnEnemy EliteEnemy) <> TreacheryIsNonWeakness
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 trialByFire3 :: CardDef
@@ -2867,7 +2880,7 @@ trialByFire3 =
     { cdSkills = [#wild, #wild]
     , cdCardTraits = singleton Spirit
     , cdFastWindow = Just $ DuringTurn You
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 cleanThemOut :: CardDef
@@ -2949,7 +2962,7 @@ evidence1 =
     , cdCardTraits = singleton Insight
     , cdFastWindow = Just (EnemyDefeated #after You ByAny AnyEnemy)
     , cdCriteria = Just canDiscoverCluesAtYourLocation
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 galvanize1 :: CardDef
@@ -2958,7 +2971,7 @@ galvanize1 =
     { cdSkills = [#willpower, #willpower]
     , cdCardTraits = singleton Spirit
     , cdFastWindow = Just $ DuringTurn You
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 counterpunch2 :: CardDef
@@ -2967,7 +2980,7 @@ counterpunch2 =
     { cdSkills = [#combat, #combat, #agility]
     , cdCardTraits = setFromList [Spirit, Tactic]
     , cdFastWindow = Just $ EnemyAttacks #when You AnyEnemyAttack AnyEnemy
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 -- We need to override the action check for this card because of multiple actions,
@@ -2990,7 +3003,7 @@ getOverHere2 =
             , EnemyAt $ LocationWithDistanceFrom 2 YourLocation
             ]
     , cdOverrideActionPlayableIfCriteriaMet = True
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 lessonLearned2 :: CardDef
@@ -3000,7 +3013,7 @@ lessonLearned2 =
     , cdSkills = [#willpower, #intellect, #intellect]
     , cdFastWindow = Just $ DealtDamage #after (SourceIsEnemyAttack AnyEnemy) You
     , cdCriteria = Just canDiscoverCluesAtYourLocation
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 manoAMano2 :: CardDef
@@ -3011,7 +3024,7 @@ manoAMano2 =
     , cdCriteria =
         Just $ Criteria.FirstAction <> exists EnemyEngagedWithYou <> Criteria.CanDealDamage
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 dynamiteBlast3 :: CardDef
@@ -3019,7 +3032,7 @@ dynamiteBlast3 =
   (event "60129" "Dynamite Blast" 4 Guardian)
     { cdSkills = [#willpower, #willpower, #combat, #combat]
     , cdCardTraits = setFromList [Tactic]
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 taunt3 :: CardDef
@@ -3028,7 +3041,7 @@ taunt3 =
     { cdCardTraits = setFromList [Tactic]
     , cdFastWindow = Just $ DuringTurn You
     , cdSkills = [#willpower, #willpower, #combat, #agility]
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 oneTwoPunch5 :: CardDef
@@ -3037,7 +3050,7 @@ oneTwoPunch5 =
     { cdCardTraits = setFromList [Spirit, Tactic]
     , cdActions = [#fight]
     , cdSkills = [#combat, #combat, #combat, #combat]
-    , cdLevel = 5
+    , cdLevel = Just 5
     }
 
 burningTheMidnightOil :: CardDef
@@ -3079,7 +3092,7 @@ glimpseTheUnthinkable1 =
   (event "60221" "Glimpse the Unthinkable" 0 Seeker)
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = singleton Insight
-    , cdLevel = 1
+    , cdLevel = Just 1
     , cdCriteria = Just $ Criteria.AnyCriterion [Criteria.CanDrawCards, Criteria.CanManipulateDeck]
     }
 
@@ -3089,7 +3102,7 @@ crypticWritings2 =
     { cdSkills = [#intellect, #wild]
     , cdCardTraits = singleton Insight
     , cdCardInHandEffects = True
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 iveGotAPlan2 :: CardDef
@@ -3097,7 +3110,7 @@ iveGotAPlan2 =
   (event "60225" "\"I've got a plan!\"" 2 Seeker)
     { cdSkills = [#intellect, #intellect, #combat]
     , cdCardTraits = setFromList [Insight, Tactic]
-    , cdLevel = 2
+    , cdLevel = Just 2
     , cdActions = [#fight]
     }
 
@@ -3107,7 +3120,7 @@ mindOverMatter2 =
     { cdSkills = [#combat, #agility, #wild]
     , cdCardTraits = singleton Insight
     , cdFastWindow = Just $ DuringTurn You
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 seekingAnswers2 :: CardDef
@@ -3116,7 +3129,7 @@ seekingAnswers2 =
     { cdSkills = [#intellect, #agility, #agility]
     , cdActions = [#investigate]
     , cdCardTraits = singleton Insight
-    , cdLevel = 2
+    , cdLevel = Just 2
     , cdAlternateCardCodes = ["01685"]
     }
 
@@ -3142,7 +3155,7 @@ daringManeuver2 =
     { cdSkills = [#wild]
     , cdCardTraits = singleton Gambit
     , cdFastWindow = Just $ WouldHaveSkillTestResult #when You AnySkillTest $ SuccessResult AnyValue
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 cheapShot2 :: CardDef
@@ -3151,7 +3164,7 @@ cheapShot2 =
     { cdSkills = [#combat, #agility]
     , cdCardTraits = singleton Trick
     , cdActions = [#fight]
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 slipAway2 :: CardDef
@@ -3160,7 +3173,7 @@ slipAway2 =
     { cdCardTraits = singleton Trick
     , cdSkills = [#intellect, #agility]
     , cdActions = [#evade]
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 pilfer3 :: CardDef
@@ -3169,7 +3182,7 @@ pilfer3 =
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = singleton Trick
     , cdActions = [#investigate]
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 backstab3 :: CardDef
@@ -3178,7 +3191,7 @@ backstab3 =
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic]
     , cdActions = [#fight]
-    , cdLevel = 3
+    , cdLevel = Just 3
     }
 
 parallelFates :: CardDef
@@ -3203,7 +3216,7 @@ eldritchInspiration1 =
     { cdSkills = [#willpower, #intellect, #intellect]
     , cdCardTraits = setFromList [Spell, Spirit]
     , cdFastWindow = Just $ WouldTriggerChaosTokenRevealEffectOnCard You MysticCard [minBound ..]
-    , cdLevel = 1
+    , cdLevel = Just 1
     }
 
 hypnoticGaze2 :: CardDef
@@ -3218,7 +3231,7 @@ hypnoticGaze2 =
             (affectsOthers $ InvestigatorAt YourLocation)
             (CancelableEnemyAttack AnyEnemyAttack)
             AnyEnemy
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 recharge4 :: CardDef
@@ -3231,7 +3244,7 @@ recharge4 =
           $ exists
           $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
           <> oneOf [AssetWithTrait Spell, AssetWithTrait Relic]
-    , cdLevel = 4
+    , cdLevel = Just 4
     }
 
 willToSurvive :: CardDef
@@ -3282,7 +3295,7 @@ aTestOfWill2 =
                 EncounterDeck
             , DrawCard #when You (CanCancelRevelationEffect $ basic NonWeaknessTreachery) EncounterDeck
             ]
-    , cdLevel = 2
+    , cdLevel = Just 2
     }
 
 lookWhatIFound2 :: CardDef
@@ -3290,7 +3303,7 @@ lookWhatIFound2 =
   (event "60524" "\"Look what I found!\"" 2 Survivor)
     { cdSkills = [#intellect, #intellect, #agility]
     , cdCardTraits = singleton Fortune
-    , cdLevel = 2
+    , cdLevel = Just 2
     , cdCriteria =
         Just
           $ Criteria.Criteria
@@ -3310,7 +3323,7 @@ dumbLuck2 =
     , cdCardTraits = singleton Fortune
     , cdFastWindow =
         Just $ SkillTestResult #after You (WhileEvadingAnEnemy NonEliteEnemy) $ FailureResult $ lessThan 4
-    , cdLevel = 2
+    , cdLevel = Just 2
     , cdCriteria = Just $ exists $ You <> can.target.encounterDeck
     }
 
@@ -3322,5 +3335,5 @@ lucky3 =
         Just
           $ WouldHaveSkillTestResult #when (affectsOthers $ InvestigatorAt YourLocation) AnySkillTest
           $ FailureResult AnyValue
-    , cdLevel = 3
+    , cdLevel = Just 3
     }

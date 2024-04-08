@@ -150,4 +150,6 @@ runEventMessage msg a@EventAttrs {..} = case msg of
       Just attached | target == attached -> push $ toDiscard source a
       _ -> pure ()
     pure a
+  SpendUses target useType' n | isTarget a target -> do
+    pure $ a & usesL . ix useType' %~ max 0 . subtract n
   _ -> pure a

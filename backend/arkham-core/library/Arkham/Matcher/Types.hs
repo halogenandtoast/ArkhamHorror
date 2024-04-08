@@ -692,6 +692,7 @@ data CardMatcher
   | CardWithTrait Trait
   | CardWithId CardId
   | CardWithLevel Int
+  | CardWithMaxLevel Int
   | CardWithoutKeyword Keyword
   | CardWithKeyword Keyword
   | CardWithClass ClassSymbol

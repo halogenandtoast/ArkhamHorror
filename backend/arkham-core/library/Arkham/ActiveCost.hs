@@ -548,6 +548,10 @@ payCost msg c iid skipAdditionalCosts cost = do
       assets <- select assetMatcher
       push $ chooseOrRunOne player [targetLabel aid [SpendUses (AssetTarget aid) uType n] | aid <- assets]
       withPayment $ UsesPayment n
+    EventUseCost eventMatcher uType n -> do
+      events <- select eventMatcher
+      push $ chooseOrRunOne player [targetLabel eid [SpendUses (EventTarget eid) uType n] | eid <- events]
+      withPayment $ UsesPayment n
     DynamicUseCost assetMatcher uType costValue -> case costValue of
       DrawnCardsValue -> do
         let

@@ -140,6 +140,7 @@ data Cost
   | FieldResourceCost FieldCost
   | MaybeFieldResourceCost MaybeFieldCost
   | UseCost AssetMatcher UseType Int
+  | EventUseCost EventMatcher UseType Int
   | DynamicUseCost AssetMatcher UseType DynamicUseCostValue
   | UseCostUpTo AssetMatcher UseType Int Int -- (e.g. Spend 1-5 ammo, see M1918 BAR)
   | UpTo Int Cost
@@ -285,11 +286,13 @@ displayCostType = \case
   Free -> "Free"
   ResourceCost n -> pluralize n "Resource"
   ScenarioResourceCost n -> pluralize n "Resource from the scenario reference"
+  EventUseCost _ b c -> displayCostType (UseCost AnyAsset b c)
   UseCost _ uType n -> case uType of
     Ammo -> tshow n <> " Ammo"
     Supply -> if n == 1 then "1 Supply" else tshow n <> " Supplies"
     Secret -> pluralize n "Secret"
     Charge -> pluralize n "Charge"
+    Offering -> pluralize n "Offering"
     Try -> if n == 1 then "1 Try" else tshow n <> " Tries"
     Bounty -> if n == 1 then "1 Bounty" else tshow n <> " Bounties"
     Whistle -> pluralize n "Whistle"
@@ -302,6 +305,7 @@ displayCostType = \case
     Supply -> "X Supplies"
     Secret -> "X Secrets"
     Charge -> "X Charges"
+    Offering -> "X Offerings"
     Try -> "X Tries"
     Bounty -> "X Bounties"
     Whistle -> "X Whistles"
@@ -314,6 +318,7 @@ displayCostType = \case
     Supply -> tshow n <> "-" <> tshow m <> " Supplies"
     Secret -> tshow n <> "-" <> tshow m <> " Secrets"
     Charge -> tshow n <> "-" <> tshow m <> " Charges"
+    Offering -> tshow n <> "-" <> tshow m <> " Offerings"
     Try -> tshow n <> "-" <> tshow m <> " Tries"
     Bounty -> tshow n <> "-" <> tshow m <> " Bounties"
     Whistle -> tshow n <> "-" <> tshow m <> " Whistles"

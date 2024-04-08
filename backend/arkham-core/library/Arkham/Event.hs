@@ -451,6 +451,8 @@ allEvents =
       SomeEventCard hallow3
     , --- mystic [itm]
       SomeEventCard riteOfEquilibrium5
+    , --- survivor [itm]
+      SomeEventCard shrineOfTheMoirai3
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard sweepingKick1

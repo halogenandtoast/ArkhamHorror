@@ -10,6 +10,7 @@ import Arkham.Event.Runner as X (
   push,
   pushAll,
   pushM,
+  usesL,
  )
 import Arkham.Message as X (
   Message (..),

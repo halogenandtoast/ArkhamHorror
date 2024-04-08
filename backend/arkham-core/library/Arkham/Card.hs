@@ -150,7 +150,8 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title
   CardWithTrait trait -> trait `member` toTraits a
   CardWithClass role -> role `member` cdClassSymbols (toCardDef a)
-  CardWithLevel n -> cdLevel (toCardDef a) == n
+  CardWithLevel n -> Just n == cdLevel (toCardDef a)
+  CardWithMaxLevel n -> maybe False (<= n) $ cdLevel (toCardDef a)
   FastCard -> isJust $ cdFastWindow (toCardDef a)
   CardMatches ms -> all (cardMatch a) ms
   CardWithVengeance -> isJust . cdVengeancePoints $ toCardDef a
@@ -218,6 +219,9 @@ instance HasField "skills" Card [SkillIcon] where
 
 instance HasField "cost" Card (Maybe CardCost) where
   getField = cdCost . toCardDef
+
+instance HasField "level" Card (Maybe Int) where
+  getField = cdLevel . toCardDef
 
 instance Eq Card where
   a == b = toCardId a == toCardId b

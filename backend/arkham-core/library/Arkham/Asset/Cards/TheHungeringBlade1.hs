@@ -2,7 +2,7 @@ module Arkham.Asset.Cards.TheHungeringBlade1 (theHungeringBlade1, TheHungeringBl
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Runner hiding (Offering)
 import Arkham.Fight
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Prelude

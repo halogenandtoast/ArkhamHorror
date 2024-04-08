@@ -96,7 +96,7 @@ data CardDef = CardDef
   , cdRevealedName :: Maybe Name
   , cdCost :: Maybe CardCost
   , cdAdditionalCost :: Maybe Cost
-  , cdLevel :: Int
+  , cdLevel :: Maybe Int
   , cdCardType :: CardType
   , cdCardSubType :: Maybe CardSubType
   , cdClassSymbols :: Set ClassSymbol
@@ -185,7 +185,7 @@ emptyCardDef cCode name cType =
     , cdRevealedName = Nothing
     , cdCost = Nothing
     , cdAdditionalCost = Nothing
-    , cdLevel = 0
+    , cdLevel = Just 0
     , cdCardType = cType
     , cdCardSubType = Nothing
     , cdClassSymbols = mempty

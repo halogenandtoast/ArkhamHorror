@@ -449,6 +449,8 @@ allEvents =
     , --  Into the Maelstrom
       --- guardian [itm]
       SomeEventCard hallow3
+    , --- mystic [itm]
+      SomeEventCard riteOfEquilibrium5
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard sweepingKick1

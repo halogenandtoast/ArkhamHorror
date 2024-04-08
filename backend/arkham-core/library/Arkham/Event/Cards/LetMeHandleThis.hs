@@ -57,8 +57,10 @@ instance RunMessage LetMeHandleThis where
       when (isNothing $ (mTreachery $> ()) <|> (mEnemy $> ()) <|> (mLocation $> ()) <|> (mAsset $> ()))
         $ error "Unhandled card type"
 
-      pushWhen (cdRevelation (toCardDef card) == IsRevelation)
-        $ createCardEffect Cards.letMeHandleThis Nothing attrs iid
+      when (cdRevelation (toCardDef card) == IsRevelation) $ do
+        for_ mTreachery \tid -> do
+          push
+            $ createCardEffect Cards.letMeHandleThis (Just $ EffectMetaTarget $ TreacheryTarget tid) attrs iid
       pure e
     _ -> LetMeHandleThis <$> runMessage msg attrs
 
@@ -76,7 +78,10 @@ instance HasModifiersFor LetMeHandleThisEffect where
 
 instance RunMessage LetMeHandleThisEffect where
   runMessage msg e@(LetMeHandleThisEffect attrs) = case msg of
-    AfterRevelation _ tid' | attrs.target == TreacheryTarget tid' -> do
-      push $ disable attrs
+    AfterRevelation _ tid' -> do
+      case attrs.meta of
+        Just (EffectMetaTarget (TreacheryTarget tid)) | tid == tid' -> do
+          push $ disable attrs
+        _ -> pure ()
       pure e
     _ -> LetMeHandleThisEffect <$> runMessage msg attrs

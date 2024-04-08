@@ -237,6 +237,8 @@ data AssetAttrs = AssetAttrs
   , assetKeys :: Set ArkhamKey
   , assetAssignedHealthDamage :: Int
   , assetAssignedSanityDamage :: Int
+  , assetAssignedHealthHeal :: Int
+  , assetAssignedSanityHeal :: Int
   , assetCustomizations :: IntMap Int
   , assetMeta :: Value
   , assetFlipped :: Bool
@@ -351,7 +353,9 @@ instance FromJSON AssetAttrs where
     assetSealedChaosTokens <- o .: "sealedChaosTokens"
     assetKeys <- o .: "keys"
     assetAssignedHealthDamage <- o .: "assignedHealthDamage"
+    assetAssignedHealthHeal <- o .:? "assignedHealthHeal" .!= 0
     assetAssignedSanityDamage <- o .: "assignedSanityDamage"
+    assetAssignedSanityHeal <- o .:? "assignedSanityHeal" .!= 0
     assetCustomizations <- o .:? "customizations" .!= mempty
     assetMeta <- o .:? "meta" .!= Null
     assetFlipped <- o .:? "flipped" .!= False
@@ -403,7 +407,9 @@ assetWith f cardDef g =
             , assetSealedChaosTokens = []
             , assetKeys = mempty
             , assetAssignedHealthDamage = 0
+            , assetAssignedHealthHeal = 0
             , assetAssignedSanityDamage = 0
+            , assetAssignedSanityHeal = 0
             , assetCustomizations = mempty
             , assetMeta = Null
             , assetFlipped = False

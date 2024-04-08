@@ -172,6 +172,12 @@ function calculateSkill(base: number, skillType: string, modifiers: Modifier[]) 
       modified = modified + modifier.type.value
     }
 
+    if (modifier.type.tag === "AnySkillValue") {
+      if (props.game.skillTest && props.game.skillTest.skills.includes(skillType)) {
+        modified = modified + modifier.type.contents
+      }
+    }
+
     if (modifier.type.tag === "ActionSkillModifier" && modifier.type.skillType === skillType && props.game.skillTest && props.game.skillTest.action === modifier.type.action) {
       modified = modified + modifier.type.value
     }

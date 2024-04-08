@@ -355,9 +355,9 @@ instance FromJSON AssetAttrs where
     assetSealedChaosTokens <- o .: "sealedChaosTokens"
     assetKeys <- o .: "keys"
     assetAssignedHealthDamage <- o .: "assignedHealthDamage"
-    assetAssignedHealthHeal <- o .:? "assignedHealthHeal" .!= mempty
+    assetAssignedHealthHeal <- (o .:? "assignedHealthHeal" .!= mempty) <|> pure mempty
     assetAssignedSanityDamage <- o .: "assignedSanityDamage"
-    assetAssignedSanityHeal <- o .:? "assignedSanityHeal" .!= mempty
+    assetAssignedSanityHeal <- (o .:? "assignedSanityHeal" .!= mempty) <|> pure mempty
     assetCustomizations <- o .:? "customizations" .!= mempty
     assetMeta <- o .:? "meta" .!= Null
     assetFlipped <- o .:? "flipped" .!= False

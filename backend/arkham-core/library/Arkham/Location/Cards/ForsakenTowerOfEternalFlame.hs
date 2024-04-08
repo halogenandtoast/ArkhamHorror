@@ -20,7 +20,7 @@ forsakenTowerOfEternalFlame =
   location
     ForsakenTowerOfEternalFlame
     Cards.forsakenTowerOfEternalFlame
-    2
+    3
     (PerPlayer 1)
 
 instance HasAbilities ForsakenTowerOfEternalFlame where

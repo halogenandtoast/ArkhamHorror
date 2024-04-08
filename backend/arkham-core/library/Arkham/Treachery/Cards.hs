@@ -26,6 +26,7 @@ baseTreachery cardCode name mEncounterSet isWeakness =
     , cdEncounterSet = fst <$> mEncounterSet
     , cdEncounterSetQuantity = snd <$> mEncounterSet
     , cdRevelation = IsRevelation
+    , cdLevel = Nothing
     }
 
 surge :: CardDef -> CardDef

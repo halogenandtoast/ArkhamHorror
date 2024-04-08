@@ -17,6 +17,7 @@ import Arkham.Criteria qualified as Criteria
 import Arkham.Customization
 import Arkham.EncounterSet hiding (Dreamlands, Dunwich)
 import Arkham.GameValue
+import Arkham.Id
 import Arkham.Keyword (Keyword, Sealing (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
@@ -25,11 +26,13 @@ import Arkham.Trait hiding (Evidence, Supply)
 
 storyAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
 storyAsset cardCode name cost encounterSet =
-  baseAsset (Just (encounterSet, 1)) cardCode name cost (singleton Neutral)
+  (baseAsset (Just (encounterSet, 1)) cardCode name cost (singleton Neutral)) {cdLevel = Nothing}
 
 storyAssetWithMany :: CardCode -> Name -> Int -> EncounterSet -> Int -> CardDef
 storyAssetWithMany cardCode name cost encounterSet encounterSetCount =
-  baseAsset (Just (encounterSet, encounterSetCount)) cardCode name cost (singleton Neutral)
+  (baseAsset (Just (encounterSet, encounterSetCount)) cardCode name cost (singleton Neutral))
+    { cdLevel = Nothing
+    }
 
 asset :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
 asset cCode name cost classSymbol = baseAsset Nothing cCode name cost (singleton classSymbol)
@@ -49,6 +52,7 @@ weakness cardCode name =
     { cdCardSubType = Just Weakness
     , cdRevelation = IsRevelation
     , cdCost = Nothing
+    , cdLevel = Nothing
     }
 
 basicWeakness :: CardCode -> Name -> CardDef
@@ -57,6 +61,7 @@ basicWeakness cardCode name =
     { cdCardSubType = Just BasicWeakness
     , cdRevelation = IsRevelation
     , cdCost = Nothing
+    , cdLevel = Nothing
     }
 
 storyWeakness :: CardCode -> Name -> EncounterSet -> CardDef
@@ -65,6 +70,7 @@ storyWeakness cardCode name encounterSet =
     { cdCardSubType = Just Weakness
     , cdRevelation = IsRevelation
     , cdCost = Nothing
+    , cdLevel = Nothing
     }
 
 uses :: UseType -> Int -> Uses GameValue
@@ -698,27 +704,30 @@ allSpecialPlayerAssetCards :: Map CardCode CardDef
 allSpecialPlayerAssetCards =
   mapFromList $ map (toCardCode &&& id) [courage, straitjacket, intrepid]
 
+signature :: InvestigatorId -> CardDef -> CardDef
+signature iid cd = cd {cdDeckRestrictions = [Signature iid], cdLevel = Nothing}
+
 rolands38Special :: CardDef
 rolands38Special =
-  (asset "01006" "Roland's .38 Special" 3 Neutral)
-    { cdSkills = [#combat, #agility, #wild]
-    , cdCardTraits = setFromList [Item, Weapon, Firearm]
-    , cdUnique = True
-    , cdUses = uses Ammo 4
-    , cdSlots = [#hand]
-    , cdAlternateCardCodes = ["01506"]
-    , cdDeckRestrictions = [Signature "01001"]
-    }
+  signature "01001"
+    $ (asset "01006" "Roland's .38 Special" 3 Neutral)
+      { cdSkills = [#combat, #agility, #wild]
+      , cdCardTraits = setFromList [Item, Weapon, Firearm]
+      , cdUnique = True
+      , cdUses = uses Ammo 4
+      , cdSlots = [#hand]
+      , cdAlternateCardCodes = ["01506"]
+      }
 
 daisysToteBag :: CardDef
 daisysToteBag =
-  (asset "01008" "Daisy's Tote Bag" 2 Neutral)
-    { cdSkills = [#willpower, #intellect, #wild]
-    , cdCardTraits = setFromList [Item]
-    , cdUnique = True
-    , cdAlternateCardCodes = ["01508"]
-    , cdDeckRestrictions = [Signature "01002"]
-    }
+  signature "01002"
+    $ (asset "01008" "Daisy's Tote Bag" 2 Neutral)
+      { cdSkills = [#willpower, #intellect, #wild]
+      , cdCardTraits = setFromList [Item]
+      , cdUnique = True
+      , cdAlternateCardCodes = ["01508"]
+      }
 
 theNecronomicon :: CardDef
 theNecronomicon =
@@ -730,25 +739,25 @@ theNecronomicon =
 
 heirloomOfHyperborea :: CardDef
 heirloomOfHyperborea =
-  (asset "01012" ("Heirloom of Hyperborea" <:> "Artifact from Another Life") 3 Neutral)
-    { cdSkills = [#willpower, #combat, #wild]
-    , cdCardTraits = setFromList [Item, Relic]
-    , cdUnique = True
-    , cdSlots = [#accessory]
-    , cdAlternateCardCodes = ["01512"]
-    , cdDeckRestrictions = [Signature "01004"]
-    }
+  signature "01004"
+    $ (asset "01012" ("Heirloom of Hyperborea" <:> "Artifact from Another Life") 3 Neutral)
+      { cdSkills = [#willpower, #combat, #wild]
+      , cdCardTraits = setFromList [Item, Relic]
+      , cdUnique = True
+      , cdSlots = [#accessory]
+      , cdAlternateCardCodes = ["01512"]
+      }
 
 wendysAmulet :: CardDef
 wendysAmulet =
-  (asset "01014" "Wendy's Amulet" 2 Neutral)
-    { cdSkills = [#wild, #wild]
-    , cdCardTraits = setFromList [Item, Relic]
-    , cdUnique = True
-    , cdSlots = [#accessory]
-    , cdAlternateCardCodes = ["01514"]
-    , cdDeckRestrictions = [Signature "01005"]
-    }
+  signature "01005"
+    $ (asset "01014" "Wendy's Amulet" 2 Neutral)
+      { cdSkills = [#wild, #wild]
+      , cdCardTraits = setFromList [Item, Relic]
+      , cdUnique = True
+      , cdSlots = [#accessory]
+      , cdAlternateCardCodes = ["01514"]
+      }
 
 fortyFiveAutomatic :: CardDef
 fortyFiveAutomatic =
@@ -1185,42 +1194,42 @@ litaChantler =
 
 zoeysCross :: CardDef
 zoeysCross =
-  (asset "02006" ("Zoey's Cross" <:> "Symbol of Righteousness") 1 Neutral)
-    { cdSkills = [#combat, #combat, #wild]
-    , cdCardTraits = setFromList [Item, Charm]
-    , cdUnique = True
-    , cdSlots = [#accessory]
-    , cdDeckRestrictions = [Signature "02001"]
-    }
+  signature "02001"
+    $ (asset "02006" ("Zoey's Cross" <:> "Symbol of Righteousness") 1 Neutral)
+      { cdSkills = [#combat, #combat, #wild]
+      , cdCardTraits = setFromList [Item, Charm]
+      , cdUnique = True
+      , cdSlots = [#accessory]
+      }
 
 jennysTwin45s :: CardDef
 jennysTwin45s =
-  (asset "02010" ("Jenny's Twin .45s" <:> "A Perfect Fit") 0 Neutral)
-    { cdSkills = [#agility, #agility, #wild]
-    , cdCardTraits = setFromList [Item, Weapon, Firearm]
-    , cdCost = Just DynamicCost
-    , cdUnique = True
-    , cdSlots = [#hand, #hand]
-    , cdDeckRestrictions = [Signature "02003"]
-    }
+  signature "02003"
+    $ (asset "02010" ("Jenny's Twin .45s" <:> "A Perfect Fit") 0 Neutral)
+      { cdSkills = [#agility, #agility, #wild]
+      , cdCardTraits = setFromList [Item, Weapon, Firearm]
+      , cdCost = Just DynamicCost
+      , cdUnique = True
+      , cdSlots = [#hand, #hand]
+      }
 
 jimsTrumpet :: CardDef
 jimsTrumpet =
-  (asset "02012" ("Jim's Trumpet" <:> "The Dead Listen") 2 Neutral)
-    { cdSkills = [#willpower, #willpower, #wild]
-    , cdCardTraits = setFromList [Item, Instrument, Relic]
-    , cdUnique = True
-    , cdSlots = [#hand]
-    , cdDeckRestrictions = [Signature "02004"]
-    }
+  signature "02004"
+    $ (asset "02012" ("Jim's Trumpet" <:> "The Dead Listen") 2 Neutral)
+      { cdSkills = [#willpower, #willpower, #wild]
+      , cdCardTraits = setFromList [Item, Instrument, Relic]
+      , cdUnique = True
+      , cdSlots = [#hand]
+      }
 
 duke :: CardDef
 duke =
-  (asset "02014" ("Duke" <:> "Loyal Hound") 2 Neutral)
-    { cdCardTraits = setFromList [Ally, Creature]
-    , cdUnique = True
-    , cdDeckRestrictions = [Signature "02005"]
-    }
+  signature "02005"
+    $ (asset "02014" ("Duke" <:> "Loyal Hound") 2 Neutral)
+      { cdCardTraits = setFromList [Ally, Creature]
+      , cdUnique = True
+      }
 
 blackjack :: CardDef
 blackjack =
@@ -1805,29 +1814,29 @@ theRedGlovedMan5 =
 
 sophieInLovingMemory :: CardDef
 sophieInLovingMemory =
-  (asset "03009" ("Sophie" <:> "In Loving Memory") 0 Neutral)
-    { cdCardTraits = setFromList [Item, Spirit]
-    , cdUnique = True
-    , cdCost = Nothing
-    , cdDeckRestrictions = [Signature "03001"]
-    }
+  signature "03001"
+    $ (asset "03009" ("Sophie" <:> "In Loving Memory") 0 Neutral)
+      { cdCardTraits = setFromList [Item, Spirit]
+      , cdUnique = True
+      , cdCost = Nothing
+      }
 
 sophieItWasAllMyFault :: CardDef
 sophieItWasAllMyFault =
-  (asset "03009b" ("Sophie" <:> "It Was All My Fault") 0 Neutral)
-    { cdCardTraits = setFromList [Item, Madness]
-    , cdUnique = True
-    , cdCost = Nothing
-    , cdDeckRestrictions = [Signature "03001"]
-    }
+  signature "03001"
+    $ (asset "03009b" ("Sophie" <:> "It Was All My Fault") 0 Neutral)
+      { cdCardTraits = setFromList [Item, Madness]
+      , cdUnique = True
+      , cdCost = Nothing
+      }
 
 analyticalMind :: CardDef
 analyticalMind =
-  (asset "03010" ("Analytical Mind" <:> "Between the Lines") 3 Neutral)
-    { cdCardTraits = singleton Talent
-    , cdSkills = [#wild, #wild]
-    , cdDeckRestrictions = [Signature "03002"]
-    }
+  signature "03002"
+    $ (asset "03010" ("Analytical Mind" <:> "Between the Lines") 3 Neutral)
+      { cdCardTraits = singleton Talent
+      , cdSkills = [#wild, #wild]
+      }
 
 theKingInYellow :: CardDef
 theKingInYellow =
@@ -1839,11 +1848,11 @@ theKingInYellow =
 
 spiritSpeaker :: CardDef
 spiritSpeaker =
-  (asset "03014" ("Spirit-Speaker" <:> "Envoy of the Alusi") 2 Neutral)
-    { cdSkills = [#willpower, #intellect, #wild]
-    , cdCardTraits = singleton Ritual
-    , cdDeckRestrictions = [Signature "03004"]
-    }
+  signature "03004"
+    $ (asset "03014" ("Spirit-Speaker" <:> "Envoy of the Alusi") 2 Neutral)
+      { cdSkills = [#willpower, #intellect, #wild]
+      , cdCardTraits = singleton Ritual
+      }
 
 thirtyTwoColt :: CardDef
 thirtyTwoColt =
@@ -2326,58 +2335,59 @@ thePallidMask =
     { cdCardTraits = setFromList [Item, Relic]
     , cdRevelation = IsRevelation
     , cdUnique = True
+    , cdLevel = Nothing
     }
 
 mitchBrown :: CardDef
 mitchBrown =
-  (asset "04006" ("Mitch Brown" <:> "Sole Survivor") 3 Neutral)
-    { cdSkills = [#wild, #wild]
-    , cdCardTraits = setFromList [Ally, Wayfarer]
-    , cdSlots = [#ally]
-    , cdUnique = True
-    , cdDeckRestrictions = [Signature "04001"]
-    }
+  signature "04001"
+    $ (asset "04006" ("Mitch Brown" <:> "Sole Survivor") 3 Neutral)
+      { cdSkills = [#wild, #wild]
+      , cdCardTraits = setFromList [Ally, Wayfarer]
+      , cdSlots = [#ally]
+      , cdUnique = True
+      }
 
 jakeWilliams :: CardDef
 jakeWilliams =
-  (asset "04008" ("Jake Williams" <:> "Loyal Companion") 3 Neutral)
-    { cdSkills = [#intellect, #wild]
-    , cdCardTraits = setFromList [Ally, Wayfarer]
-    , cdSlots = [#ally]
-    , cdUnique = True
-    , cdDeckRestrictions = [Signature "04002"]
-    }
+  signature "04002"
+    $ (asset "04008" ("Jake Williams" <:> "Loyal Companion") 3 Neutral)
+      { cdSkills = [#intellect, #wild]
+      , cdCardTraits = setFromList [Ally, Wayfarer]
+      , cdSlots = [#ally]
+      , cdUnique = True
+      }
 
 finnsTrustyThirtyEight :: CardDef
 finnsTrustyThirtyEight =
   fast
+    . signature "04003"
     $ (asset "04011" ("Finn's Trusty .38" <:> "Never Leave Home Without It") 2 Neutral)
       { cdSkills = [#agility, #wild]
       , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
       , cdSlots = [#hand]
       , cdUses = uses Ammo 3
       , cdUnique = True
-      , cdDeckRestrictions = [Signature "04003"]
       }
 
 theCodexOfAges :: CardDef
 theCodexOfAges =
-  (asset "04013" ("The Codex of Ages" <:> "finis omnium nunc est") 2 Neutral)
-    { cdSkills = [#willpower, #wild]
-    , cdCardTraits = setFromList [Item, Relic, Tome, Blessed]
-    , cdSlots = [#hand]
-    , cdKeywords = singleton (seal Token.ElderSign)
-    , cdUnique = True
-    , cdDeckRestrictions = [Signature "04004"]
-    }
+  signature "04004"
+    $ (asset "04013" ("The Codex of Ages" <:> "finis omnium nunc est") 2 Neutral)
+      { cdSkills = [#willpower, #wild]
+      , cdCardTraits = setFromList [Item, Relic, Tome, Blessed]
+      , cdSlots = [#hand]
+      , cdKeywords = singleton (seal Token.ElderSign)
+      , cdUnique = True
+      }
 
 untilTheEndOfTime :: CardDef
 untilTheEndOfTime =
-  (asset "04015" "Until the End of Time" 1 Neutral)
-    { cdSkills = [#combat, #wild]
-    , cdCardTraits = singleton Talent
-    , cdDeckRestrictions = [Signature "04005"]
-    }
+  signature "04005"
+    $ (asset "04015" "Until the End of Time" 1 Neutral)
+      { cdSkills = [#combat, #wild]
+      , cdCardTraits = singleton Talent
+      }
 
 survivalKnife :: CardDef
 survivalKnife =
@@ -2910,40 +2920,40 @@ relicOfAgesUnleashTheTimestream =
 
 hypnoticTherapy :: CardDef
 hypnoticTherapy =
-  (asset "05007" "Hypnotic Therapy" 2 Neutral)
-    { cdCardTraits = singleton Talent
-    , cdSkills = [#willpower, #intellect, #wild]
-    , cdDeckRestrictions = [Signature "05001"]
-    }
+  signature "05001"
+    $ (asset "05007" "Hypnotic Therapy" 2 Neutral)
+      { cdCardTraits = singleton Talent
+      , cdSkills = [#willpower, #intellect, #wild]
+      }
 
 detectivesColt1911s :: CardDef
 detectivesColt1911s =
-  (asset "05009" "Detective's Colt 1911s" 4 Neutral)
-    { cdCardTraits = setFromList [Item, Weapon, Firearm]
-    , cdSkills = [#intellect, #combat, #wild]
-    , cdSlots = [#hand, #hand]
-    , cdUses = uses Ammo 4
-    , cdDeckRestrictions = [Signature "05002"]
-    }
+  signature "05002"
+    $ (asset "05009" "Detective's Colt 1911s" 4 Neutral)
+      { cdCardTraits = setFromList [Item, Weapon, Firearm]
+      , cdSkills = [#intellect, #combat, #wild]
+      , cdSlots = [#hand, #hand]
+      , cdUses = uses Ammo 4
+      }
 
 familyInheritance :: CardDef
 familyInheritance =
   permanent
-    (asset "05011" ("Family Inheritance" <:> "A Windfall? Or a Burden?") 0 Neutral)
+    . signature "05003"
+    $ (asset "05011" ("Family Inheritance" <:> "A Windfall? Or a Burden?") 0 Neutral)
       { cdCardTraits = singleton Boon
       , cdUnique = True
-      , cdDeckRestrictions = [Signature "05003"]
       }
 
 twilightBlade :: CardDef
 twilightBlade =
-  (asset "05013" ("Twilight Blade" <:> "Sanctum's Reward") 3 Neutral)
-    { cdCardTraits = setFromList [Item, Relic, Weapon]
-    , cdSkills = [#willpower, #combat, #wild]
-    , cdSlots = [#hand]
-    , cdUnique = True
-    , cdDeckRestrictions = [Signature "05004"]
-    }
+  signature "05004"
+    $ (asset "05013" ("Twilight Blade" <:> "Sanctum's Reward") 3 Neutral)
+      { cdCardTraits = setFromList [Item, Relic, Weapon]
+      , cdSkills = [#willpower, #combat, #wild]
+      , cdSlots = [#hand]
+      , cdUnique = True
+      }
 
 baronSamedi :: CardDef
 baronSamedi =
@@ -3479,52 +3489,52 @@ sixthSense4 =
 
 becky :: CardDef
 becky =
-  (asset "06006" ("Becky" <:> "Custom Marlin Model 1894") 2 Neutral)
-    { cdCardTraits = setFromList [Item, Weapon, Firearm]
-    , cdSkills = [#combat, #agility, #wild]
-    , cdDeckRestrictions = [Signature "06001"]
-    , cdSlots = [#hand, #hand]
-    , cdUses = uses Ammo 2
-    , cdUnique = True
-    }
+  signature "06001"
+    $ (asset "06006" ("Becky" <:> "Custom Marlin Model 1894") 2 Neutral)
+      { cdCardTraits = setFromList [Item, Weapon, Firearm]
+      , cdSkills = [#combat, #agility, #wild]
+      , cdSlots = [#hand, #hand]
+      , cdUses = uses Ammo 2
+      , cdUnique = True
+      }
 
 bountyContracts :: CardDef
 bountyContracts =
   permanent
+    . signature "06003"
     $ (asset "06010" "Bounty Contracts" 0 Neutral)
       { cdCardTraits = setFromList [Job]
-      , cdDeckRestrictions = [Signature "06003"]
       , cdUses = uses Bounty 6
       }
 
 tonys38LongColt :: CardDef
 tonys38LongColt =
-  (asset "06011" "Tony's .38 Long Colt" 3 Neutral)
-    { cdCardTraits = setFromList [Item, Weapon, Firearm]
-    , cdSkills = [#combat, #intellect, #wild]
-    , cdDeckRestrictions = [Signature "06003"]
-    , cdUses = uses Ammo 3
-    , cdSlots = [#hand]
-    }
+  signature "06003"
+    $ (asset "06011" "Tony's .38 Long Colt" 3 Neutral)
+      { cdCardTraits = setFromList [Item, Weapon, Firearm]
+      , cdSkills = [#combat, #intellect, #wild]
+      , cdUses = uses Ammo 3
+      , cdSlots = [#hand]
+      }
 
 gateBox :: CardDef
 gateBox =
-  (asset "06013" ("Gate Box" <:> "Worlds within Worlds") 3 Neutral)
-    { cdCardTraits = setFromList [Item, Relic]
-    , cdDeckRestrictions = [Signature "06004"]
-    , cdUses = uses Charge 3
-    , cdUnique = True
-    }
+  signature "06004"
+    $ (asset "06013" ("Gate Box" <:> "Worlds within Worlds") 3 Neutral)
+      { cdCardTraits = setFromList [Item, Relic]
+      , cdUses = uses Charge 3
+      , cdUnique = True
+      }
 
 patricesViolin :: CardDef
 patricesViolin =
-  (asset "06016" ("Patrice's Violin" <:> "My Muse") 2 Neutral)
-    { cdCardTraits = setFromList [Item, Instrument]
-    , cdDeckRestrictions = [Signature "06005"]
-    , cdUnique = True
-    , cdSlots = [#hand]
-    , cdSkills = [#willpower, #agility, #wild]
-    }
+  signature "06005"
+    $ (asset "06016" ("Patrice's Violin" <:> "My Muse") 2 Neutral)
+      { cdCardTraits = setFromList [Item, Instrument]
+      , cdUnique = True
+      , cdSlots = [#hand]
+      , cdSkills = [#willpower, #agility, #wild]
+      }
 
 theHungeringBlade1 :: CardDef
 theHungeringBlade1 =
@@ -3570,6 +3580,7 @@ pendantOfTheQueen =
     , cdSlots = [#accessory]
     , cdCost = Nothing
     , cdUnique = True
+    , cdLevel = Nothing
     }
 
 crystallizerOfDreams :: CardDef
@@ -3602,6 +3613,7 @@ hope =
       , cdCardTraits = setFromList [Ally, Creature, Dreamlands]
       , cdKeywords = singleton (Keyword.Bonded 1 "06030")
       , cdUnique = True
+      , cdLevel = Nothing
       }
 
 zeal :: CardDef
@@ -3612,6 +3624,7 @@ zeal =
       , cdCardTraits = setFromList [Ally, Creature, Dreamlands]
       , cdKeywords = singleton (Keyword.Bonded 1 "06030")
       , cdUnique = True
+      , cdLevel = Nothing
       }
 
 augur :: CardDef
@@ -3622,6 +3635,7 @@ augur =
       , cdCardTraits = setFromList [Ally, Creature, Dreamlands]
       , cdKeywords = singleton (Keyword.Bonded 1 "06030")
       , cdUnique = True
+      , cdLevel = Nothing
       }
 
 kleptomania :: CardDef
@@ -3692,6 +3706,7 @@ virgilGray =
   (storyAsset "06144" ("Virgil Gray" <:> "Writer of Strange Tales") 0 TheSearchForKadath)
     { cdCardTraits = setFromList [Ally, Dreamer]
     , cdUnique = True
+    , cdCost = Nothing
     }
 
 tetsuoMori :: CardDef
@@ -3920,6 +3935,7 @@ wishEater =
     , cdUnique = True
     , cdKeywords = singleton (Keyword.Bonded 1 "06277")
     , cdCost = Nothing
+    , cdLevel = Nothing
     }
 
 oldBookOfLore3 :: CardDef
@@ -4053,19 +4069,19 @@ scavenging2 =
 
 guardianAngel :: CardDef
 guardianAngel =
-  (asset "07006" "Guardian Angel" 2 Neutral)
-    { cdCardTraits = setFromList [Ritual, Blessed]
-    , cdSkills = [#willpower, #combat, #wild]
-    , cdDeckRestrictions = [Signature "07001"]
-    }
+  signature "07001"
+    $ (asset "07006" "Guardian Angel" 2 Neutral)
+      { cdCardTraits = setFromList [Ritual, Blessed]
+      , cdSkills = [#willpower, #combat, #wild]
+      }
 
 showmanship :: CardDef
 showmanship =
-  (asset "07012" "Showmanship" 1 Neutral)
-    { cdCardTraits = setFromList [Talent]
-    , cdSkills = [#combat, #agility, #wild]
-    , cdDeckRestrictions = [Signature "07004"]
-    }
+  signature "07004"
+    $ (asset "07012" "Showmanship" 1 Neutral)
+      { cdCardTraits = setFromList [Talent]
+      , cdSkills = [#combat, #agility, #wild]
+      }
 
 occultScraps :: CardDef
 occultScraps =
@@ -4078,23 +4094,23 @@ occultScraps =
 
 seaChangeHarpoon :: CardDef
 seaChangeHarpoon =
-  (asset "07014" "Sea Change Harpoon" 3 Neutral)
-    { cdCardTraits = setFromList [Item, Weapon, Melee]
-    , cdSkills = [#combat, #wild]
-    , cdDeckRestrictions = [Signature "07005"]
-    , cdSlots = [#hand]
-    , cdUnique = True
-    }
+  signature "07005"
+    $ (asset "07014" "Sea Change Harpoon" 3 Neutral)
+      { cdCardTraits = setFromList [Item, Weapon, Melee]
+      , cdSkills = [#combat, #wild]
+      , cdSlots = [#hand]
+      , cdUnique = True
+      }
 
 silassNet :: CardDef
 silassNet =
-  (asset "07015" "Silas's Net" 2 Neutral)
-    { cdCardTraits = setFromList [Item, Tool]
-    , cdSkills = [#agility, #wild]
-    , cdDeckRestrictions = [Signature "07005"]
-    , cdSlots = [#hand]
-    , cdUnique = True
-    }
+  signature "07005"
+    $ (asset "07015" "Silas's Net" 2 Neutral)
+      { cdCardTraits = setFromList [Item, Tool]
+      , cdSkills = [#agility, #wild]
+      , cdSlots = [#hand]
+      , cdUnique = True
+      }
 
 bookOfPsalms :: CardDef
 bookOfPsalms =
@@ -4199,6 +4215,7 @@ sacredCovenant2 =
     $ (asset "07110" "Sacred Covenant" 0 Guardian)
       { cdCardTraits = setFromList [Covenant, Blessed]
       , cdDeckRestrictions = [TraitPerDeckLimit Covenant 1]
+      , cdLevel = Just 2
       }
 
 eldritchSophist :: CardDef
@@ -4216,6 +4233,7 @@ blasphemousCovenant2 =
     $ (asset "07113" "Blasphemous Covenant" 0 Seeker)
       { cdCardTraits = setFromList [Covenant, Cursed]
       , cdDeckRestrictions = [TraitPerDeckLimit Covenant 1]
+      , cdLevel = Just 2
       }
 
 falseCovenant2 :: CardDef
@@ -4224,6 +4242,7 @@ falseCovenant2 =
     $ (asset "07116" "False Covenant" 0 Rogue)
       { cdCardTraits = setFromList [Covenant, Cursed]
       , cdDeckRestrictions = [TraitPerDeckLimit Covenant 1]
+      , cdLevel = Just 2
       }
 
 armageddon :: CardDef
@@ -4259,6 +4278,7 @@ paradoxicalCovenant2 =
     $ (asset "07120" "Paradoxical Covenant" 0 Mystic)
       { cdCardTraits = setFromList [Covenant, Blessed, Cursed]
       , cdDeckRestrictions = [TraitPerDeckLimit Covenant 1]
+      , cdLevel = Just 2
       }
 
 marinersCompass :: CardDef
@@ -4275,6 +4295,7 @@ ancientCovenant2 =
     $ (asset "07122" "Ancient Covenant" 0 Survivor)
       { cdCardTraits = setFromList [Covenant, Blessed]
       , cdDeckRestrictions = [TraitPerDeckLimit Covenant 1]
+      , cdLevel = Just 2
       }
 
 keenEye :: CardDef
@@ -4539,16 +4560,18 @@ favorOfTheMoon1 =
       , cdSkills = [#intellect, #combat]
       , cdKeywords = singleton $ seal $ SealUpTo 3 #curse
       , cdLevel = Just 1
+      , cdUnique = True
       }
 
 favorOfTheSun1 :: CardDef
 favorOfTheSun1 =
   fast
-    $ (asset "07272" "Favor of the Sun" 1 Neutral)
+    $ (asset "07272" "Favor of the Sun" 2 Neutral)
       { cdCardTraits = setFromList [Pact, Blessed]
       , cdSkills = [#willpower, #agility]
       , cdKeywords = singleton $ seal $ SealUpTo 3 #bless
       , cdLevel = Just 1
+      , cdUnique = True
       }
 
 holySpear5 :: CardDef
@@ -4612,13 +4635,13 @@ jacobMorrisonCostGuardCaptain3 =
 
 livreDeibon :: CardDef
 livreDeibon =
-  (asset "08005" ("Livre d'Eibon" <:> "Hyperborean Grimoire") 2 Neutral)
-    { cdCardTraits = setFromList [Item, Relic, Tome]
-    , cdSkills = [#willpower, #willpower, #wild]
-    , cdUnique = True
-    , cdSlots = [#hand]
-    , cdDeckRestrictions = [Signature "08004"]
-    }
+  signature "08004"
+    $ (asset "08005" ("Livre d'Eibon" <:> "Hyperborean Grimoire") 2 Neutral)
+      { cdCardTraits = setFromList [Item, Relic, Tome]
+      , cdSkills = [#willpower, #willpower, #wild]
+      , cdUnique = True
+      , cdSlots = [#hand]
+      }
 
 -- TODO: if we ever care about deck size need to encode that somehow
 forcedLearning :: CardDef
@@ -4687,7 +4710,7 @@ michaelLeigh5 =
 
 brandOfCthugha1 :: CardDef
 brandOfCthugha1 =
-  (multiClassAsset "08090" "Brand Of Cthugha" 2 [Guardian, Mystic])
+  (multiClassAsset "08090" "Brand of Cthugha" 2 [Guardian, Mystic])
     { cdSkills = [#combat]
     , cdCardTraits = setFromList [Spell]
     , cdLevel = Just 1
@@ -4697,7 +4720,7 @@ brandOfCthugha1 =
 
 brandOfCthugha4 :: CardDef
 brandOfCthugha4 =
-  (multiClassAsset "08092" "Brand Of Cthugha" 2 [Guardian, Mystic])
+  (multiClassAsset "08092" "Brand of Cthugha" 2 [Guardian, Mystic])
     { cdSkills = [#combat, #willpower]
     , cdCardTraits = setFromList [Spell]
     , cdLevel = Just 4
@@ -4738,7 +4761,7 @@ preciousMementoFromAFutureLife4 =
 inTheThickOfIt :: CardDef
 inTheThickOfIt =
   permanent
-    $ (asset "08125" "In the Thick of it" 0 Neutral)
+    $ (asset "08125" "In the Thick of It" 0 Neutral)
       { cdCardTraits = singleton Curse
       , cdPurchaseTrauma = PurchaseAnyTrauma 2
       }
@@ -5208,13 +5231,13 @@ theDevilXv =
 
 randallCho :: CardDef
 randallCho =
-  (asset "60102" ("Randall Cho" <:> "Concerned Brother") 2 Guardian)
-    { cdSkills = [#willpower, #intellect, #wild]
-    , cdCardTraits = setFromList [Ally, Medic]
-    , cdUnique = True
-    , cdSlots = [#ally]
-    , cdDeckRestrictions = [Signature "60101"]
-    }
+  signature "60101"
+    $ (asset "60102" ("Randall Cho" <:> "Concerned Brother") 2 Guardian)
+      { cdSkills = [#willpower, #intellect, #wild]
+      , cdCardTraits = setFromList [Ally, Medic]
+      , cdUnique = True
+      , cdSlots = [#ally]
+      }
 
 boxingGloves :: CardDef
 boxingGloves =
@@ -5286,11 +5309,11 @@ physicalTraining4 =
 
 vaultOfKnowledge :: CardDef
 vaultOfKnowledge =
-  (asset "60202" "Vault of Knowledge" 3 Seeker)
-    { cdSkills = [#willpower, #agility, #wild]
-    , cdCardTraits = singleton Talent
-    , cdDeckRestrictions = [Signature "60202"]
-    }
+  signature "60201"
+    $ (asset "60202" "Vault of Knowledge" 3 Seeker)
+      { cdSkills = [#willpower, #agility, #wild]
+      , cdCardTraits = singleton Talent
+      }
 
 arcaneEnlightenment :: CardDef
 arcaneEnlightenment =
@@ -5536,11 +5559,11 @@ chuckFergus5 =
 
 arbiterOfFates :: CardDef
 arbiterOfFates =
-  (asset "60402" "Arbiter of Fates" 3 Mystic)
-    { cdSkills = [#willpower, #agility, #wild]
-    , cdCardTraits = singleton Talent
-    , cdDeckRestrictions = [Signature "60401"]
-    }
+  signature "60401"
+    $ (asset "60402" "Arbiter of Fates" 3 Mystic)
+      { cdSkills = [#willpower, #agility, #wild]
+      , cdCardTraits = singleton Talent
+      }
 
 scryingMirror :: CardDef
 scryingMirror =
@@ -5990,12 +6013,12 @@ timeWornLocket =
 
 daisysToteBagAdvanced :: CardDef
 daisysToteBagAdvanced =
-  (asset "90002" "Daisy's Tote Bag" 2 Neutral)
-    { cdSkills = [#willpower, #intellect, #wild, #wild]
-    , cdCardTraits = setFromList [Item]
-    , cdUnique = True
-    , cdDeckRestrictions = [Signature "01002"]
-    }
+  signature "01002"
+    $ (asset "90002" "Daisy's Tote Bag" 2 Neutral)
+      { cdSkills = [#willpower, #intellect, #wild, #wild]
+      , cdCardTraits = setFromList [Item]
+      , cdUnique = True
+      }
 
 theNecronomiconAdvanced :: CardDef
 theNecronomiconAdvanced =
@@ -6006,13 +6029,13 @@ theNecronomiconAdvanced =
 
 mollyMaxwell :: CardDef
 mollyMaxwell =
-  (asset "98017" ("Molly Maxwell" <:> "The Exotic Morgana") 3 Neutral)
-    { cdCardTraits = setFromList [Ally, Assistant]
-    , cdSkills = [#willpower, #agility, #wild]
-    , cdSlots = [#ally]
-    , cdUnique = True
-    , cdDeckRestrictions = [Signature "07004"]
-    }
+  signature "07004"
+    $ (asset "98017" ("Molly Maxwell" <:> "The Exotic Morgana") 3 Neutral)
+      { cdCardTraits = setFromList [Ally, Assistant]
+      , cdSkills = [#willpower, #agility, #wild]
+      , cdSlots = [#ally]
+      , cdUnique = True
+      }
 
 courage :: CardDef
 courage =

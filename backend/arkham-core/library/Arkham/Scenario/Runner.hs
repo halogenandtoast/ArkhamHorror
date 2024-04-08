@@ -57,7 +57,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Treachery.Types (Field (..))
-import Arkham.Window (mkWhen, mkWindow)
+import Arkham.Window (mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone (Zone)
 import Arkham.Zone qualified as Zone
@@ -359,7 +359,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   Remember logKey -> do
     send $ "Remember \"" <> format logKey <> "\""
     pure $ a & logL %~ insertSet logKey
-  ScenarioCountIncrementBy logKey n ->
+  ScenarioCountIncrementBy logKey n -> do
+    pushM $ checkWindows [mkAfter $ Window.ScenarioCountIncremented logKey]
     pure $ a & countsL %~ Map.alter (Just . maybe n (+ n)) logKey
   ScenarioCountDecrementBy logKey n ->
     pure

@@ -18,6 +18,7 @@ import Arkham.DefeatedBy
 import Arkham.Id
 import Arkham.Matcher (LocationMatcher, MovesVia)
 import Arkham.Phase (Phase)
+import Arkham.ScenarioLogKey
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Step
 import Arkham.SkillTest.Type
@@ -254,6 +255,7 @@ data WindowType
   | AddingToCurrentDepth
   | EntersThreatArea InvestigatorId Card
   | CancelledOrIgnoredCardOrGameEffect Source -- Diana Stanley
+  | ScenarioCountIncremented ScenarioCountKey
   | -- used to avoid checking a window
     DoNotCheckWindow
   deriving stock (Show, Ord, Eq)

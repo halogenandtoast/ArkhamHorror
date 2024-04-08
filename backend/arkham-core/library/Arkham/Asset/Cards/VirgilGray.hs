@@ -8,7 +8,7 @@ import Arkham.Helpers.Message qualified as Msg
 import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Prelude
-import Arkham.Token
+import Arkham.ScenarioLogKey
 
 newtype VirgilGray = VirgilGray AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -29,7 +29,7 @@ instance HasAbilities VirgilGray where
             ]
         )
         $ freeReaction
-        $ PlacedToken #after AlarmLevel
+        $ ScenarioCountIncremented #after SignOfTheGods
     , mkAbility x 2
         $ forced
         $ AssetLeavesPlay #when (be x)

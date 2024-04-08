@@ -26,6 +26,7 @@ baseEnemy cardCode name mEncounterSet isWeakness =
     , cdClassSymbols = if isJust isWeakness then singleton Neutral else mempty
     , cdEncounterSet = fst <$> mEncounterSet
     , cdEncounterSetQuantity = snd <$> mEncounterSet
+    , cdLevel = Nothing
     }
 
 unique :: CardDef -> CardDef
@@ -1757,7 +1758,7 @@ packOfVooniths =
 
 nightriders :: CardDef
 nightriders =
-  (enemy "06152" "Nighriders" TheSearchForKadath 2)
+  (enemy "06152" "Nightriders" TheSearchForKadath 2)
     { cdCardTraits = setFromList [Creature, Monster]
     , cdKeywords = singleton (Keyword.Swarming (Static 1))
     }
@@ -1765,7 +1766,7 @@ nightriders =
 theUnnamable :: CardDef
 theUnnamable =
   unique
-    $ (enemy "06169b" ("The Unnamable" <:> "The Ultimate Abominiation") AThousandShapesOfHorror 1)
+    $ (enemy "06169b" ("The Unnamable" <:> "The Ultimate Abomination") AThousandShapesOfHorror 1)
       { cdCardTraits = setFromList [Monster, Abomination, Elite]
       , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
       }

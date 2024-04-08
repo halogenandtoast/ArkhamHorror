@@ -14,6 +14,7 @@ story cardCode name encounterSet =
     { cdEncounterSet = Just encounterSet
     , cdEncounterSetQuantity = Just 1
     , cdDoubleSided = True
+    , cdLevel = Nothing
     }
 
 allStoryCards :: Map CardCode CardDef

@@ -17,6 +17,7 @@ import Arkham.Criteria qualified as Criteria
 import Arkham.Damage
 import Arkham.GameValue
 import Arkham.History.Types
+import Arkham.Id
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
@@ -34,6 +35,9 @@ event cardCode name cost classSymbol =
     { cdCost = Just (StaticCost cost)
     , cdClassSymbols = singleton classSymbol
     }
+
+signature :: InvestigatorId -> CardDef -> CardDef
+signature iid cd = cd {cdDeckRestrictions = [Signature iid], cdLevel = Nothing}
 
 allPlayerEventCards :: Map CardCode CardDef
 allPlayerEventCards =
@@ -337,19 +341,20 @@ canDiscoverCluesAtYourLocation =
 
 onTheLam :: CardDef
 onTheLam =
-  (event "01010" "On the Lam" 1 Neutral)
-    { cdCardTraits = setFromList [Tactic]
-    , cdSkills = [#intellect, #agility, #wild, #wild]
-    , cdFastWindow = Just (TurnBegins #after You)
-    , cdAlternateCardCodes = ["01510"]
-    , cdDeckRestrictions = [Signature "01003"]
-    }
+  signature "01003"
+    $ (event "01010" "On the Lam" 1 Neutral)
+      { cdCardTraits = setFromList [Tactic]
+      , cdSkills = [#intellect, #agility, #wild, #wild]
+      , cdFastWindow = Just (TurnBegins #after You)
+      , cdAlternateCardCodes = ["01510"]
+      }
 
 darkMemory :: CardDef
 darkMemory =
   (event "01013" "Dark Memory" 2 Neutral)
     { cdCardTraits = setFromList [Spell]
     , cdCardSubType = Just Weakness
+    , cdLevel = Nothing
     , cdCardInHandEffects = True
     , cdAlternateCardCodes = ["01513"]
     }
@@ -609,12 +614,12 @@ emergencyCache =
 
 searchForTheTruth :: CardDef
 searchForTheTruth =
-  (event "02008" "Search for the Truth" 1 Neutral)
-    { cdSkills = [#intellect, #intellect, #wild]
-    , cdCardTraits = setFromList [Insight]
-    , cdDeckRestrictions = [Signature "02002"]
-    , cdCriteria = Just $ exists $ You <> can.draw.cards
-    }
+  signature "02002"
+    $ (event "02008" "Search for the Truth" 1 Neutral)
+      { cdSkills = [#intellect, #intellect, #wild]
+      , cdCardTraits = setFromList [Insight]
+      , cdCriteria = Just $ exists $ You <> can.draw.cards
+      }
 
 taunt :: CardDef
 taunt =
@@ -931,37 +936,37 @@ wardOfProtection5 =
 
 thePaintedWorld :: CardDef
 thePaintedWorld =
-  (event "03012" "The Painted World" 0 Neutral)
-    { cdSkills = [#willpower, #agility, #wild]
-    , cdCardTraits = singleton Spell
-    , cdSkipPlayWindows = True
-    , cdFastWindow =
-        Just
-          $ PlayerHasPlayableCard
-          $ CardIsBeneathInvestigator You
-          <> basic (NonExceptional <> #event)
-    , cdCost = Nothing
-    , cdDeckRestrictions = [Signature "03003"]
-    }
+  signature "03003"
+    $ (event "03012" "The Painted World" 0 Neutral)
+      { cdSkills = [#willpower, #agility, #wild]
+      , cdCardTraits = singleton Spell
+      , cdSkipPlayWindows = True
+      , cdFastWindow =
+          Just
+            $ PlayerHasPlayableCard
+            $ CardIsBeneathInvestigator You
+            <> basic (NonExceptional <> #event)
+      , cdCost = Nothing
+      }
 
 buryThemDeep :: CardDef
 buryThemDeep =
-  (event "03016" "Bury Them Deep" 0 Neutral)
-    { cdSkills = [#willpower, #combat, #wild]
-    , cdCardTraits = singleton Task
-    , cdFastWindow = Just $ EnemyDefeated #after Anyone ByAny $ NonEliteEnemy <> EnemyAt YourLocation
-    , cdVictoryPoints = Just 1
-    , cdDeckRestrictions = [Signature "03005"]
-    }
+  signature "03005"
+    $ (event "03016" "Bury Them Deep" 0 Neutral)
+      { cdSkills = [#willpower, #combat, #wild]
+      , cdCardTraits = singleton Task
+      , cdFastWindow = Just $ EnemyDefeated #after Anyone ByAny $ NonEliteEnemy <> EnemyAt YourLocation
+      , cdVictoryPoints = Just 1
+      }
 
 improvisation :: CardDef
 improvisation =
-  (event "03018" "Improvisation" 0 Neutral)
-    { cdSkills = [#wild, #wild]
-    , cdCardTraits = singleton Insight
-    , cdFastWindow = Just $ DuringTurn You
-    , cdDeckRestrictions = [Signature "03006"]
-    }
+  signature "03006"
+    $ (event "03018" "Improvisation" 0 Neutral)
+      { cdSkills = [#wild, #wild]
+      , cdCardTraits = singleton Insight
+      , cdFastWindow = Just $ DuringTurn You
+      }
 
 letMeHandleThis :: CardDef
 letMeHandleThis =
@@ -1385,12 +1390,12 @@ infighting3 =
 
 smuggledGoods :: CardDef
 smuggledGoods =
-  (event "04010" "Smuggled Goods" 0 Neutral)
-    { cdSkills = [#wild]
-    , cdCardTraits = setFromList [Supply, Illicit]
-    , cdCriteria = Just $ Criteria.Negate $ exists $ EnemyAt YourLocation <> ReadyEnemy
-    , cdDeckRestrictions = [Signature "04003"]
-    }
+  signature "04003"
+    $ (event "04010" "Smuggled Goods" 0 Neutral)
+      { cdSkills = [#wild]
+      , cdCardTraits = setFromList [Supply, Illicit]
+      , cdCriteria = Just $ Criteria.Negate $ exists $ EnemyAt YourLocation <> ReadyEnemy
+      }
 
 trusted :: CardDef
 trusted =
@@ -1473,6 +1478,7 @@ darkPact =
   (event "04038" "Dark Pact" 2 Neutral)
     { cdCardTraits = singleton Pact
     , cdCardSubType = Just BasicWeakness
+    , cdLevel = Nothing
     , cdCardInHandEffects = True
     , cdDeckRestrictions = [CampaignModeOnly]
     }
@@ -1705,6 +1711,7 @@ unsolvedCase =
   (event "05010" "Unsolved Case" 4 Neutral)
     { cdCardTraits = setFromList [Insight, Mystery]
     , cdCardSubType = Just Weakness
+    , cdLevel = Nothing
     , cdCardInHandEffects = True
     }
 
@@ -1713,44 +1720,45 @@ lodgeDebts =
   (event "05012" "Lodge \"Debts\"" 10 Neutral)
     { cdCardTraits = singleton Pact
     , cdCardSubType = Just Weakness
+    , cdLevel = Nothing
     , cdCardInHandEffects = True
     }
 
 darkInsight :: CardDef
 darkInsight =
-  (event "05014" "Dark Insight" 2 Neutral)
-    { cdCardTraits = singleton Insight
-    , cdFastWindow =
-        Just
-          $ OrWindowMatcher
-            [ DrawCard
-                #when
-                (affectsOthers $ InvestigatorAt YourLocation)
-                (basic $ NonPeril <> oneOf [IsEncounterCard, WeaknessCard])
-                AnyDeck
-            , DrawCard #when You (basic $ oneOf [IsEncounterCard, WeaknessCard]) AnyDeck
-            ]
-    , cdDeckRestrictions = [Signature "05004"]
-    }
+  signature "05004"
+    $ (event "05014" "Dark Insight" 2 Neutral)
+      { cdCardTraits = singleton Insight
+      , cdFastWindow =
+          Just
+            $ OrWindowMatcher
+              [ DrawCard
+                  #when
+                  (affectsOthers $ InvestigatorAt YourLocation)
+                  (basic $ NonPeril <> oneOf [IsEncounterCard, WeaknessCard])
+                  AnyDeck
+              , DrawCard #when You (basic $ oneOf [IsEncounterCard, WeaknessCard]) AnyDeck
+              ]
+      }
 
 imDoneRunnin :: CardDef
 imDoneRunnin =
-  (event "05016" "\"I'm done runnin'!\"" 0 Neutral)
-    { cdSkills = [#combat, #agility, #wild]
-    , cdCardTraits = singleton Spirit
-    , cdFastWindow = Just $ DuringTurn You
-    , cdDeckRestrictions = [Signature "05005"]
-    }
+  signature "05005"
+    $ (event "05016" "\"I'm done runnin'!\"" 0 Neutral)
+      { cdSkills = [#combat, #agility, #wild]
+      , cdCardTraits = singleton Spirit
+      , cdFastWindow = Just $ DuringTurn You
+      }
 
 mystifyingSong :: CardDef
 mystifyingSong =
-  (event "05018" "Mystifying Song" 3 Neutral)
-    { cdSkills = [#wild, #wild]
-    , cdCardTraits = setFromList [Spell, Song]
-    , cdFastWindow = Just $ AgendaWouldAdvance #when DoomThreshold AnyAgenda
-    , cdAlternateCardCodes = ["99002"]
-    , cdDeckRestrictions = [Signature "05006"]
-    }
+  signature "05006"
+    $ (event "05018" "Mystifying Song" 3 Neutral)
+      { cdSkills = [#wild, #wild]
+      , cdCardTraits = setFromList [Spell, Song]
+      , cdFastWindow = Just $ AgendaWouldAdvance #when DoomThreshold AnyAgenda
+      , cdAlternateCardCodes = ["99002"]
+      }
 
 interrogate :: CardDef
 interrogate =
@@ -2064,6 +2072,8 @@ soothingMelody =
             , exists (HealableAsset ThisCard HorrorType $ AssetAt YourLocation <> AllyAsset)
             , Criteria.CanDrawCards
             ]
+    , cdKeywords = setFromList [Keyword.Bonded 3 "05313", Keyword.Bonded 3 "54002"]
+    , cdLevel = Nothing
     }
 
 iveHadWorse2 :: CardDef
@@ -2080,6 +2090,8 @@ bloodRite =
   (event "05317" "Blood-Rite" 0 Seeker)
     { cdSkills = [#willpower, #intellect, #combat]
     , cdCardTraits = singleton Spell
+    , cdLevel = Nothing
+    , cdKeywords = setFromList [Keyword.Bonded 3 "05316", Keyword.Bonded 3 "54004"]
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     }
 
@@ -2120,14 +2132,14 @@ eucatastrophe3 =
 
 occultEvidence :: CardDef
 occultEvidence =
-  (event "06008" "Occult Evidence" 0 Neutral)
-    { cdSkills = [#wild]
-    , cdCardTraits = setFromList [Insight, Research]
-    , cdCardInSearchEffects = True
-    , cdCardInHandEffects = True
-    , cdCriteria = Just $ Criteria.CanManipulateDeck
-    , cdDeckRestrictions = [Signature "06002"]
-    }
+  signature "06002"
+    $ (event "06008" "Occult Evidence" 0 Neutral)
+      { cdSkills = [#wild]
+      , cdCardTraits = setFromList [Insight, Research]
+      , cdCardInSearchEffects = True
+      , cdCardInHandEffects = True
+      , cdCriteria = Just $ Criteria.CanManipulateDeck
+      }
 
 astoundingRevelation :: CardDef
 astoundingRevelation =
@@ -2168,6 +2180,7 @@ theStarsAreRight =
     , cdCost = Nothing
     , cdRevelation = IsRevelation
     , cdCardType = EncounterEventType
+    , cdLevel = Nothing
     }
 
 openGate :: CardDef
@@ -2355,21 +2368,21 @@ nothingLeftToLose3 =
 
 obscureStudies :: CardDef
 obscureStudies =
-  (event "07008" "Obscure Studies" 0 Neutral)
-    { cdSkills = [#wild, #wild, #wild]
-    , cdCardTraits = singleton Insight
-    , cdFastWindow = Just $ InitiatedSkillTest #when You #any #any #any
-    , cdDeckRestrictions = [Signature "07002"]
-    }
+  signature "07002"
+    $ (event "07008" "Obscure Studies" 0 Neutral)
+      { cdSkills = [#wild, #wild, #wild]
+      , cdCardTraits = singleton Insight
+      , cdFastWindow = Just $ InitiatedSkillTest #when You #any #any #any
+      }
 
 inTheShadows :: CardDef
 inTheShadows =
-  (event "07010" "In the Shadows" 0 Neutral)
-    { cdSkills = [#agility, #agility, #wild, #wild]
-    , cdCardTraits = singleton Tactic
-    , cdFastWindow = Just (TurnBegins #after You)
-    , cdDeckRestrictions = [Signature "07003"]
-    }
+  signature "07003"
+    $ (event "07010" "In the Shadows" 0 Neutral)
+      { cdSkills = [#agility, #agility, #wild, #wild]
+      , cdCardTraits = singleton Tactic
+      , cdFastWindow = Just (TurnBegins #after You)
+      }
 
 handOfFate :: CardDef
 handOfFate =
@@ -2425,7 +2438,7 @@ wardOfRadiance =
 
 keepFaith :: CardDef
 keepFaith =
-  (event "07034" "Keep Faith" 1 Survivor)
+  (event "07034" "Keep Faith" 2 Survivor)
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Fortune, Blessed]
     , cdFastWindow = Just FastPlayerWindow
@@ -2449,6 +2462,7 @@ righteousHunt1 =
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic, Blessed]
     , cdActions = [#engage]
+    , cdLevel = Just 1
     , cdOverrideActionPlayableIfCriteriaMet = True
     , cdCriteria =
         Just
@@ -2467,6 +2481,7 @@ stirringUpTrouble1 =
     , cdCardTraits = setFromList [Insight, Cursed]
     , cdAdditionalCost = Just AddCurseTokensEqualToShroudCost
     , cdCriteria = Just canDiscoverCluesAtYourLocation
+    , cdLevel = Just 1
     }
 
 breakingAndEntering :: CardDef
@@ -2484,6 +2499,7 @@ radiantSmite1 =
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spirit, Spell, Blessed]
     , cdActions = [#fight]
+    , cdLevel = Just 1
     }
 
 theTruthBeckons :: CardDef
@@ -2538,14 +2554,14 @@ thirdTimesACharm2 =
     , cdCardTraits = setFromList [Spirit]
     , cdFastWindow = Just $ InitiatedSkillTest #when (affectsOthers Anyone) #any #any #any
     , cdCriteria = Just $ Criteria.DuringSkillTest SkillTestAtYourLocation
-    , cdLevel = Just 1
+    , cdLevel = Just 2
     }
 
 manipulateDestiny2 :: CardDef
 manipulateDestiny2 =
   (event "07162" "Manipulate Destiny" 1 Neutral)
-    { cdSkills = [#combat, #agility]
-    , cdCardTraits = setFromList [Spell, Cursed]
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Spell]
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = Just 2
     }
@@ -2603,6 +2619,7 @@ aWatchfulPeace3 =
     , cdFastWindow = Just $ MythosStep WhenAllDrawEncounterCard
     , cdCriteria = Just $ exists $ You <> can.target.encounterDeck
     , cdAdditionalCost = Just $ ReturnChaosTokensToPoolCost 5 #bless
+    , cdLevel = Just 3
     }
 
 hallow3 :: CardDef
@@ -2612,6 +2629,7 @@ hallow3 =
     , cdCardTraits = setFromList [Spell, Blessed]
     , cdCriteria = Just Criteria.CardWithDoomExists
     , cdAdditionalCost = Just $ ReturnChaosTokensToPoolCost 10 (IncludeSealed #bless)
+    , cdLevel = Just 3
     }
 
 riteOfEquilibrium5 :: CardDef

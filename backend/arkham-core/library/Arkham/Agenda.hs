@@ -201,7 +201,7 @@ allAgendas =
     , SomeAgendaCard theThingWithNoName
     , SomeAgendaCard theDeadWithNoName
     , -- Dark Side of the Moon
-      SomeAgendaCard silentStiring
+      SomeAgendaCard silentStirring
     , SomeAgendaCard theAlarmIsRaised
     , SomeAgendaCard theyAreUponYou
     , -- Point of No Return

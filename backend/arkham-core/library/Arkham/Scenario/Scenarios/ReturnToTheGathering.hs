@@ -23,7 +23,7 @@ returnToTheGathering difficulty =
   scenarioWith
     (ReturnToTheGathering . TheGathering)
     "50011"
-    "Return To The Gathering"
+    "Return to The Gathering"
     difficulty
     [ ".     .         farAboveYourHouse  ."
     , ".     bedroom   attic              ."

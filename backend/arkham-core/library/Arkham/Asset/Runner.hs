@@ -121,14 +121,27 @@ instance RunMessage AssetAttrs where
       pure $ a & tokensL %~ addTokens #damage amount
     MovedDamage (isSource a -> True) _ amount -> do
       pure $ a & tokensL %~ subtractTokens #damage amount
+    ApplyHealing source -> do
+      let health = findWithDefault 0 source assetAssignedHealthHeal
+      let sanity = findWithDefault 0 source assetAssignedSanityHeal
+      when (health > 0 || sanity > 0) do
+        pushM
+          $ checkWindows
+          $ [mkWindow Timing.After (Window.Healed DamageType (toTarget a) source health) | health > 0]
+          <> [mkWindow Timing.After (Window.Healed DamageType (toTarget a) source sanity) | sanity > 0]
+      pure $ a & tokensL %~ subtractTokens Token.Damage health . subtractTokens Token.Horror sanity
     HealDamage (isTarget a -> True) source n -> do
       afterWindow <- checkWindows [mkWindow Timing.After (Window.Healed DamageType (toTarget a) source n)]
       push afterWindow
       pure $ a & tokensL %~ subtractTokens Token.Damage n
+    HealDamageDelayed (isTarget a -> True) source n -> do
+      pure $ a & assignedHealthHealL %~ insertWith (+) source n
     HealHorror (isTarget a -> True) source n -> do
       afterWindow <- checkWindows [mkWindow Timing.After (Window.Healed HorrorType (toTarget a) source n)]
       push afterWindow
       pure $ a & tokensL %~ subtractTokens Horror n
+    HealHorrorDelayed (isTarget a -> True) source n -> do
+      pure $ a & assignedSanityHealL %~ insertWith (+) source n
     HealHorrorDirectly target _ amount | isTarget a target -> do
       -- USE ONLY WHEN NO CALLBACKS
       pure $ a & tokensL %~ subtractTokens Horror amount

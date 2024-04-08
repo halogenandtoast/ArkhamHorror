@@ -76,10 +76,10 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorAgility :: Field Investigator Int
   InvestigatorHorror :: Field Investigator Int
   InvestigatorAssignedHorror :: Field Investigator Int
-  InvestigatorAssignedHealHorror :: Field Investigator Int
+  InvestigatorAssignedHealHorror :: Field Investigator (Map Source Int)
   InvestigatorDamage :: Field Investigator Int
   InvestigatorAssignedDamage :: Field Investigator Int
-  InvestigatorAssignedHealDamage :: Field Investigator Int
+  InvestigatorAssignedHealDamage :: Field Investigator (Map Source Int)
   InvestigatorResources :: Field Investigator Int
   InvestigatorDoom :: Field Investigator Int
   InvestigatorClues :: Field Investigator Int
@@ -123,10 +123,10 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorClass :: ClassSymbol
   , investigatorHealth :: Int
   , investigatorAssignedHealthDamage :: Int
-  , investigatorAssignedHealthHeal :: Int
+  , investigatorAssignedHealthHeal :: Map Source Int
   , investigatorSanity :: Int
   , investigatorAssignedSanityDamage :: Int
-  , investigatorAssignedSanityHeal :: Int
+  , investigatorAssignedSanityHeal :: Map Source Int
   , investigatorWillpower :: Int
   , investigatorIntellect :: Int
   , investigatorCombat :: Int
@@ -235,10 +235,10 @@ instance FromJSON InvestigatorAttrs where
     investigatorClass <- o .: "class"
     investigatorHealth <- o .: "health"
     investigatorAssignedHealthDamage <- o .: "assignedHealthDamage"
-    investigatorAssignedHealthHeal <- o .:? "assignedHealthHeal" .!= 0
+    investigatorAssignedHealthHeal <- o .:? "assignedHealthHeal" .!= mempty
     investigatorSanity <- o .: "sanity"
     investigatorAssignedSanityDamage <- o .: "assignedSanityDamage"
-    investigatorAssignedSanityHeal <- o .:? "assignedSanityDamage" .!= 0
+    investigatorAssignedSanityHeal <- o .:? "assignedSanityHeal" .!= mempty
     investigatorWillpower <- o .: "willpower"
     investigatorIntellect <- o .: "intellect"
     investigatorCombat <- o .: "combat"

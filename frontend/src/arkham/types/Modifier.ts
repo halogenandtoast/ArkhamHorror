@@ -1,6 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export type ModifierType = BaseSkillOf | ActionSkillModifier | SkillModifier | UseEncounterDeck | CannotEnter | GainVictory | AddKeyword | OtherModifier
+export type ModifierType = BaseSkillOf | ActionSkillModifier | SkillModifier | AnySkillValue | UseEncounterDeck | CannotEnter | GainVictory | AddKeyword | OtherModifier
 
 export type BaseSkillOf = {
   tag: "BaseSkillOf"
@@ -19,6 +19,11 @@ export type SkillModifier = {
   tag: "SkillModifier"
   skillType: string
   value: number
+}
+
+export type AnySkillValue = {
+  tag: "AnySkillValue"
+  contents: number
 }
 
 export type GainVictory = {
@@ -74,6 +79,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       skillType: JsonDecoder.string,
       value: JsonDecoder.number
     }, 'SkillModifier'),
+  JsonDecoder.object<AnySkillValue>(
+    {
+      tag: JsonDecoder.isExactly('AnySkillValue'),
+      contents: JsonDecoder.number
+    }, 'AnySkillValue'),
   JsonDecoder.object<GainVictory>(
     {
       tag: JsonDecoder.isExactly('GainVictory'),

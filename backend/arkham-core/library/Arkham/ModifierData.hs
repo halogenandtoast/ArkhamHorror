@@ -7,6 +7,7 @@ import Arkham.Prelude
 import Arkham.Id
 import Arkham.Json
 import Arkham.Modifier
+import Arkham.SkillType
 
 newtype ModifierData = ModifierData {mdModifiers :: [Modifier]}
   deriving stock (Show, Eq, Generic)
@@ -60,8 +61,9 @@ instance ToJSON AssetMetadata where
   toJSON = genericToJSON $ aesonOptions $ Just "am"
   toEncoding = genericToEncoding $ aesonOptions $ Just "am"
 
-newtype SkillTestMetadata = SkillTestMetadata
+data SkillTestMetadata = SkillTestMetadata
   { stmModifiedSkillValue :: Int
+  , stmSkills :: [SkillType]
   }
   deriving stock (Show, Eq, Generic)
 

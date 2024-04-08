@@ -249,6 +249,7 @@ allPlayerEventCards =
       , reliable1
       , riastrad1
       , righteousHunt1
+      , riteOfEquilibrium5
       , sacrifice1
       , sceneOfTheCrime
       , scroungeForSupplies
@@ -2607,8 +2608,27 @@ hallow3 =
   (event "07301" "Hallow" 3 Guardian)
     { cdSkills = [#willpower, #wild]
     , cdCardTraits = setFromList [Spell, Blessed]
-    , cdCriteria = Just $ Criteria.CardWithDoomExists
+    , cdCriteria = Just Criteria.CardWithDoomExists
     , cdAdditionalCost = Just $ ReturnChaosTokensToPoolCost 10 (IncludeSealed #bless)
+    }
+
+riteOfEquilibrium5 :: CardDef
+riteOfEquilibrium5 =
+  (event "07308" "Rite of Equilibrium" 0 Mystic)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Spell, Blessed, Cursed]
+    , cdCriteria =
+        Just
+          $ oneOf
+            [ Criteria.HasRemainingCurseTokens <> Criteria.HasRemainingBlessTokens
+            , Criteria.ChaosTokenCountIs #curse (atLeast 1)
+                <> Criteria.ChaosTokenCountIs #bless (atLeast 1)
+                <> oneOf
+                  [ exists (HealableAsset ThisCard #horror $ AssetAt YourLocation)
+                  , exists (HealableInvestigator ThisCard #horror $ InvestigatorAt YourLocation)
+                  ]
+            ]
+    , cdLevel = 5
     }
 
 sweepingKick1 :: CardDef

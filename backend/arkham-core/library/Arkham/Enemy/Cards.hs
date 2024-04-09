@@ -65,6 +65,7 @@ allPlayerEnemyCards =
       , accursedFollower
       , mobGoons
       , tommyMalloy
+      , vengefulHound
       ]
 
 allEncounterEnemyCards :: Map CardCode CardDef
@@ -2281,6 +2282,13 @@ vengefulSpecter =
     , cdKeywords = setFromList [Keyword.Patrol "Room 245", Keyword.Retaliate]
     , cdVictoryPoints = Just 2
     , cdUnique = True
+    }
+
+vengefulHound :: CardDef
+vengefulHound =
+  (weakness "98009" "Vengeful Hound")
+    { cdCardTraits = setFromList [Monster, Extradimensional, Tindalos]
+    , cdKeywords = singleton Keyword.Replacement
     }
 
 flyingPolyp :: CardDef

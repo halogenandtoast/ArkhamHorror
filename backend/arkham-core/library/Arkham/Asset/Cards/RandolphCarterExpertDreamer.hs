@@ -26,7 +26,7 @@ instance HasModifiersFor RandolphCarterExpertDreamer where
 
 instance HasAbilities RandolphCarterExpertDreamer where
   getAbilities (RandolphCarterExpertDreamer x) =
-    [ controlledAbility x 1 (exists $ You <> can.draw.cards)
+    [ controlledAbility x 1 (exists $ You <> can.draw.cards FromPlayerCardEffect)
         $ ReactionAbility (RevealChaosToken #when (InvestigatorAt YourLocation) $ ChaosTokenFaceIs Tablet)
         $ exhaust x
     ]

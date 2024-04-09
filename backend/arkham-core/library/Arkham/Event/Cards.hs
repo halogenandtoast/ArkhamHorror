@@ -12,7 +12,7 @@ import Arkham.Card.CardType
 import Arkham.Card.Cost
 import Arkham.ClassSymbol
 import Arkham.Cost
-import Arkham.Criteria (Criterion, exists, notExists)
+import Arkham.Criteria (Criterion, exists, notExists, youExist)
 import Arkham.Criteria qualified as Criteria
 import Arkham.Damage
 import Arkham.GameValue
@@ -441,7 +441,8 @@ crypticResearch4 =
     , cdLevel = Just 4
     , cdFastWindow = Just $ DuringTurn You
     , cdAlternateCardCodes = ["01543"]
-    , cdCriteria = Just $ exists $ affectsOthers $ InvestigatorAt YourLocation <> can.draw.cards
+    , cdCriteria =
+        Just $ exists $ affectsOthers $ InvestigatorAt YourLocation <> can.draw.cards FromPlayerCardEffect
     }
 
 elusive :: CardDef
@@ -618,7 +619,7 @@ searchForTheTruth =
     $ (event "02008" "Search for the Truth" 1 Neutral)
       { cdSkills = [#intellect, #intellect, #wild]
       , cdCardTraits = setFromList [Insight]
-      , cdCriteria = Just $ exists $ You <> can.draw.cards
+      , cdCriteria = Just $ exists $ You <> can.draw.cards FromPlayerCardEffect
       }
 
 taunt :: CardDef
@@ -780,7 +781,10 @@ standTogether3 =
         Just
           $ exists (affectsOthers $ InvestigatorAt YourLocation <> NotYou)
           <> exists
-            (affectsOthers $ InvestigatorAt YourLocation <> oneOf [can.gain.resources, can.draw.cards])
+            ( affectsOthers
+                $ InvestigatorAt YourLocation
+                <> oneOf [can.gain.resources, can.draw.cards FromPlayerCardEffect]
+            )
     , cdLevel = Just 3
     }
 
@@ -2322,7 +2326,10 @@ lucidDreaming2 =
   (event "06205" "Lucid Dreaming" 1 Neutral)
     { cdCardTraits = setFromList [Spell]
     , cdLevel = Just 2
-    , cdCriteria = can.manipulate.deck You
+    , cdCriteria =
+        Just
+          $ youExist can.manipulate.deck
+          <> exists (oneOf [InPlayAreaOf You, InHandOf (You <> can.reveal.cards) <> NotThisCard])
     }
 
 heroicRescue2 :: CardDef
@@ -2405,7 +2412,7 @@ deepKnowledge =
     , cdCardTraits = setFromList [Insight, Cursed]
     , cdAdditionalCost = Just $ AddCurseTokenCost 2
     , cdCriteria =
-        Just $ exists $ affectsOthers $ can.draw.cards <> InvestigatorAt YourLocation
+        Just $ exists $ affectsOthers $ can.draw.cards FromPlayerCardEffect <> InvestigatorAt YourLocation
     }
 
 faustianBargain :: CardDef
@@ -2453,7 +2460,11 @@ temptFate =
     , cdFastWindow = Just FastPlayerWindow
     , cdCriteria =
         Just
-          $ oneOf [Criteria.HasRemainingBlessTokens, Criteria.HasRemainingCurseTokens, can.draw.cards You]
+          $ oneOf
+            [ Criteria.HasRemainingBlessTokens
+            , Criteria.HasRemainingCurseTokens
+            , can.draw.cards FromPlayerCardEffect You
+            ]
     }
 
 righteousHunt1 :: CardDef

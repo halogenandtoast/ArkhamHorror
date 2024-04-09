@@ -2665,21 +2665,10 @@ enemyMatcherFilter = \case
                 ]
           )
           (getAbilities enemy)
-  EnemyCanBeEvadedBy source -> \enemy -> do
+  EnemyCanBeEvadedBy _source -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers iid
-    enemyModifiers <- getModifiers enemy
-    sourceModifiers <- case source of
-      AbilitySource abSource idx -> do
-        abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-        foldMapM (getModifiers . AbilityTarget iid) abilities
-      _ -> pure []
     let
-      isOverride = \case
-        EnemyEvadeActionCriteria override -> Just override
-        CanModify (EnemyEvadeActionCriteria override) -> Just override
-        _ -> Nothing
-      overrides = mapMaybe isOverride (enemyModifiers <> sourceModifiers)
       enemyFilters =
         mapMaybe
           ( \case
@@ -2687,11 +2676,6 @@ enemyMatcherFilter = \case
               _ -> Nothing
           )
           modifiers'
-      window = mkWindow #when (Window.DuringTurn iid)
-      overrideFunc = case overrides of
-        [] -> id
-        [o] -> overrideAbilityCriteria o
-        _ -> error "multiple overrides found"
     notElem (toId enemy) <$> select (mconcat $ EnemyWithModifier CannotBeEvaded : enemyFilters)
   CanEvadeEnemyWithOverride override -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
@@ -3395,6 +3379,7 @@ instance Query ExtendedCardMatcher where
    where
     matches' :: HasGame m => Card -> ExtendedCardMatcher -> m Bool
     matches' c = \case
+      NotThisCard -> error "must be replaced"
       CanCancelRevelationEffect matcher' -> do
         cardIsMatch <- matches' c matcher'
         modifiers <- getModifiers (toCardId c)

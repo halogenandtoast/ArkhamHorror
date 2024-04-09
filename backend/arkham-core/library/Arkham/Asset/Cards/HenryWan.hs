@@ -1,14 +1,10 @@
-module Arkham.Asset.Cards.HenryWan (
-  henryWan,
-  HenryWan (..),
-) where
+module Arkham.Asset.Cards.HenryWan (henryWan, HenryWan (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
-import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.RequestedChaosTokenStrategy
 
@@ -24,52 +20,42 @@ henryWan :: AssetCard HenryWan
 henryWan = ally (HenryWan . (`with` Metadata [])) Cards.henryWan (1, 2)
 
 instance HasAbilities HenryWan where
-  getAbilities (HenryWan (a `With` _)) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility []
-        $ ActionCost 1
-        <> exhaust a
-    ]
+  getAbilities (HenryWan (a `With` _)) = [restrictedAbility a 1 ControlsThis $ actionAbilityWithCost (exhaust a)]
+
+validToken :: ChaosToken -> Bool
+validToken = (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . chaosTokenFace
 
 instance RunMessage HenryWan where
   runMessage msg a@(HenryWan (attrs `With` meta)) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ RequestChaosTokens (toAbilitySource attrs 1) (Just iid) (Reveal 1) SetAside
+      push $ RequestChaosTokens (attrs.ability 1) (Just iid) (Reveal 1) SetAside
       pure a
     RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) tokens -> do
       player <- getPlayer iid
-      if any ((`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . chaosTokenFace) tokens
-        then
-          push
-            $ chooseOne
-              player
-              [Label "Do nothing" [HandleTargetChoice iid (toAbilitySource attrs 1) (toTarget attrs)]]
-        else
-          push
-            $ chooseOne
-              player
-              [ Label "Stop" [HandleTargetChoice iid (toAbilitySource attrs 1) (toTarget attrs)]
-              , Label "Draw Another" [RequestChaosTokens (toAbilitySource attrs 1) (Just iid) (Reveal 1) SetAside]
-              ]
+      let source = attrs.ability 1
+      push
+        $ chooseOne player
+        $ if any validToken tokens
+          then
+            [Label "Do nothing" [HandleTargetChoice iid source (toTarget attrs)]]
+          else
+            [ Label "Stop" [HandleTargetChoice iid source (toTarget attrs)]
+            , Label "Draw Another" [RequestChaosTokens source (Just iid) (Reveal 1) SetAside]
+            ]
       pure $ HenryWan (attrs `with` Metadata (tokens <> revealedChaosTokens meta))
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) _ -> do
       push $ ResetChaosTokens (toAbilitySource attrs 1)
-      unless
-        ( any
-            ((`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . chaosTokenFace)
-            (revealedChaosTokens meta)
-        )
-        $ do
-          canDraw <- iid <=~> InvestigatorCanDrawCards Anyone
-          canGainResources <- iid <=~> InvestigatorCanGainResources
-          when (canDraw || canGainResources) $ do
-            player <- getPlayer iid
-            msgs <- for (revealedChaosTokens meta) $ \_ -> do
-              drawing <- drawCards iid (toAbilitySource attrs 1) 1
-              pure
-                $ chooseOrRunOne player
-                $ [Label "Draw 1 card" [drawing] | canDraw]
-                <> [Label "Gain 1 resources" [TakeResources iid 1 (toAbilitySource attrs 1) False] | canGainResources]
-            pushAll msgs
+      unless (any validToken (revealedChaosTokens meta)) do
+        let source = attrs.ability 1
+        mDrawing <- drawCardsIfCan iid source 1
+        mGainResources <- gainResourcesIfCan iid source 1
+        when (isJust mDrawing || isJust mGainResources) do
+          player <- getPlayer iid
+          msgs <- for (revealedChaosTokens meta) \_ -> do
+            pure
+              $ chooseOrRunOne player
+              $ [Label "Draw 1 card" [drawing] | drawing <- toList mDrawing]
+              <> [Label "Gain 1 resources" [gain] | gain <- toList mGainResources]
+          pushAll msgs
       pure $ HenryWan (attrs `with` Metadata [])
     _ -> HenryWan . (`with` meta) <$> runMessage msg attrs

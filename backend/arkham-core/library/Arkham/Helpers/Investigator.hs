@@ -553,9 +553,6 @@ additionalActionCovers source actions (AdditionalAction _ _ aType) = case aType 
 -- canEngage <- selectAny $ CanEngageEnemy <> EnemyWithBounty
 -- pure $ (canFight && maction == Just #fight) || (canEngage && maction == Just #engage)
 
-getCanDrawCards :: HasGame m => InvestigatorId -> m Bool
-getCanDrawCards = selectAny . InvestigatorCanDrawCards . InvestigatorWithId
-
 eliminationWindow :: InvestigatorId -> WindowMatcher
 eliminationWindow iid = OrWindowMatcher [GameEnds #when, InvestigatorEliminated #when (InvestigatorWithId iid)]
 
@@ -584,10 +581,20 @@ instance HasGame m => Capable (InvestigatorId -> m Bool) where
     let can' = can :: Capabilities InvestigatorMatcher
      in fmap (flip (<=~>)) can'
 
+instance HasGame m => Capable (FromSource -> InvestigatorId -> m Bool) where
+  can =
+    let can' = can :: Capabilities (FromSource -> InvestigatorMatcher)
+     in fmap (\m fSource iid -> iid <=~> m fSource) can'
+
 instance HasGame m => Capable (InvestigatorAttrs -> m Bool) where
   can =
     let can' = can :: Capabilities InvestigatorMatcher
      in fmap (\c -> (<=~> c) . toId) can'
+
+instance HasGame m => Capable (FromSource -> InvestigatorAttrs -> m Bool) where
+  can =
+    let can' = can :: Capabilities (FromSource -> InvestigatorMatcher)
+     in fmap (\c fSource attrs -> toId attrs <=~> c fSource) can'
 
 guardAffectsOthers :: HasGame m => InvestigatorId -> InvestigatorMatcher -> m InvestigatorMatcher
 guardAffectsOthers iid matcher = do

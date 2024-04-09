@@ -89,21 +89,6 @@ pattern InvestigatorCanGainResources <-
     InvestigatorCanGainResources =
       InvestigatorWithoutModifier CannotGainResources
 
-pattern InvestigatorCanDrawCards :: InvestigatorMatcher -> InvestigatorMatcher
-pattern InvestigatorCanDrawCards matcher <-
-  InvestigatorMatches
-    [ InvestigatorWithoutModifier CannotDrawCards
-      , InvestigatorWithoutModifier CannotManipulateDeck
-      , matcher
-      ]
-  where
-    InvestigatorCanDrawCards matcher =
-      InvestigatorMatches
-        [ InvestigatorWithoutModifier CannotDrawCards
-        , InvestigatorWithoutModifier CannotManipulateDeck
-        , matcher
-        ]
-
 pattern InvestigatorCanSearchDeck :: InvestigatorMatcher
 pattern InvestigatorCanSearchDeck <-
   InvestigatorWithoutModifier CannotManipulateDeck

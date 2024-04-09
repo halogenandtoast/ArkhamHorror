@@ -692,7 +692,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         batchId <- getRandom
         push $ DoBatch batchId msg
     pure a
-  DoBatch batchId (Search _ iid source EncounterDeckTarget cardSources cardMatcher foundStrategy) -> do
+  DoBatch batchId (Search sType iid source EncounterDeckTarget cardSources cardMatcher foundStrategy) -> do
     mods <- getModifiers iid
     let
       additionalDepth = foldl' (+) 0 $ mapMaybe (preview Modifier._SearchDepth) mods
@@ -748,10 +748,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       DrawFound who n -> do
         let
           choices =
-            [ targetLabel
-              (toCardId card)
-              [InvestigatorDrewEncounterCard who card]
-            | card <- mapMaybe (preview _EncounterCard) targetCards
+            [ targetLabel (toCardId card) [InvestigatorDrewEncounterCard who card]
+            | EncounterCard card <- targetCards
             ]
         pushBatch batchId
           $ if null choices
@@ -760,10 +758,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       DrawFoundUpTo who n -> do
         let
           choices =
-            [ targetLabel
-              (toCardId card)
-              [InvestigatorDrewEncounterCard who card]
-            | card <- mapMaybe (preview _EncounterCard) targetCards
+            [ targetLabel (toCardId card) [InvestigatorDrewEncounterCard who card]
+            | EncounterCard card <- targetCards
             ]
         pushBatch batchId
           $ if null choices
@@ -780,10 +776,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       DrawAllFound who -> do
         let
           choices =
-            [ targetLabel
-              (toCardId card)
-              [InvestigatorDrewEncounterCard who card]
-            | card <- mapMaybe (preview _EncounterCard) targetCards
+            [ targetLabel (toCardId card) [InvestigatorDrewEncounterCard who card]
+            | EncounterCard card <- targetCards
             ]
         pushBatch batchId
           $ if null choices
@@ -791,7 +785,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
             else chooseOneAtATime player choices
       PlayFound {} -> error "PlayFound is not a valid EncounterDeck strategy"
       PlayFoundNoCost {} -> error "PlayFound is not a valid EncounterDeck strategy"
-      ReturnCards -> pure ()
+      ReturnCards -> when (sType == Revealing) $ for_ targetCards (sendReveal . toJSON)
 
     pushBatch batchId (FoundCards foundCards)
 

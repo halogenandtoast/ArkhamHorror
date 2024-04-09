@@ -299,7 +299,7 @@ data IncludeDiscard = IncludeDiscard | ExcludeDiscard
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data SearchType = Searching | Looking
+data SearchType = Searching | Looking | Revealing
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

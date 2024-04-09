@@ -854,6 +854,7 @@ library
       Arkham.Asset.Cards.SpiritOfHumanity2
       Arkham.Asset.Cards.SpiritSpeaker
       Arkham.Asset.Cards.SpiritualResolve5
+      Arkham.Asset.Cards.SplitTheAngleIreOfTheVoid
       Arkham.Asset.Cards.SpringfieldM19034
       Arkham.Asset.Cards.Stealth
       Arkham.Asset.Cards.Stealth3
@@ -1296,6 +1297,7 @@ library
       Arkham.Enemy.Cards.Umordhoth
       Arkham.Enemy.Cards.UnboundBeast
       Arkham.Enemy.Cards.ValentinoRivas
+      Arkham.Enemy.Cards.VengefulHound
       Arkham.Enemy.Cards.VengefulSpecter
       Arkham.Enemy.Cards.VengefulWitch
       Arkham.Enemy.Cards.VictoriaDevereux

@@ -582,6 +582,7 @@ allPlayerAssetCards =
       , spiritOfHumanity2
       , spiritSpeaker
       , spiritualResolve5
+      , splitTheAngleIreOfTheVoid
       , springfieldM19034
       , stHubertsKey
       , strangeSolution
@@ -6035,7 +6036,17 @@ theNecronomiconAdvanced =
   (weakness "90003" ("The Necronomicon" <:> "John Dee Translation"))
     { cdCardTraits = setFromList [Item, Tome]
     , cdSlots = [#hand]
+    , cdKeywords = setFromList [Keyword.Advanced]
     }
+
+splitTheAngleIreOfTheVoid :: CardDef
+splitTheAngleIreOfTheVoid =
+  signature "08004"
+    $ (asset "98008" ("Split the Angle" <:> "Ire of the Void") 2 Neutral)
+      { cdCardTraits = setFromList [Spell]
+      , cdSkills = [#willpower, #intellect, #wild]
+      , cdKeywords = setFromList [Keyword.Replacement]
+      }
 
 mollyMaxwell :: CardDef
 mollyMaxwell =
@@ -6045,6 +6056,7 @@ mollyMaxwell =
       , cdSkills = [#willpower, #agility, #wild]
       , cdSlots = [#ally]
       , cdUnique = True
+      , cdKeywords = setFromList [Keyword.Replacement]
       }
 
 courage :: CardDef

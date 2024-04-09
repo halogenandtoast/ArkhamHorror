@@ -136,12 +136,14 @@ data ModifierType
   | CannotDiscoverCluesExceptAsResultOfInvestigation LocationMatcher
   | CannotDisengageEnemies
   | CannotDrawCards
+  | CannotDrawCardsFromPlayerCardEffects
   | CannotEngage InvestigatorId
   | CannotEnter LocationId
   | CannotEvade EnemyMatcher
   | CannotExplore
   | CannotFight EnemyMatcher
   | CannotGainResources
+  | CannotRevealCards
   | CannotHealHorror
   | CannotHealHorrorOnOtherCards Target
   | CannotInvestigate

@@ -9,7 +9,7 @@ import Arkham.Prelude
 
 import Arkham.CampaignLogKey (CampaignLogKey)
 import Arkham.Campaigns.TheForgottenAge.Supply (Supply)
-import Arkham.Capability (Capabilities, Capable (..))
+import Arkham.Capability (Capabilities, Capable (..), FromSource)
 import Arkham.Cost.Status (CostStatus)
 import Arkham.Criteria.Override
 import Arkham.Direction (GridDirection)
@@ -324,6 +324,13 @@ instance Capable (InvestigatorMatcher -> Criterion) where
   can =
     let can' = can :: Capabilities InvestigatorMatcher
      in fmap (\m matcher -> exists (m <> matcher)) can'
+
+instance Capable (FromSource -> InvestigatorMatcher -> Criterion) where
+  can =
+    let can' = can :: Capabilities (FromSource -> InvestigatorMatcher)
+     in fmap
+          (\(m :: FromSource -> InvestigatorMatcher) fSource matcher -> exists (m fSource <> matcher))
+          can'
 
 $(deriveJSON defaultOptions ''DiscardSignifier)
 $(deriveJSON defaultOptions ''UnderZone)

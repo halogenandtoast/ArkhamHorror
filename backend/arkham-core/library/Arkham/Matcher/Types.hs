@@ -244,6 +244,9 @@ instance IsLabel "ally" AssetMatcher where
 instance IsLabel "tome" AssetMatcher where
   fromLabel = AssetWithTrait Tome
 
+instance IsLabel "spell" AssetMatcher where
+  fromLabel = AssetWithTrait Spell
+
 instance IsLabel "item" AssetMatcher where
   fromLabel = AssetWithTrait Item
 
@@ -633,6 +636,7 @@ data ExtendedCardMatcher
   = BasicCardMatch CardMatcher
   | CardIsBeneathInvestigator Who
   | CardWithCopyInHand Who
+  | NotThisCard
   | InHandOf Who
   | InDeckOf Who
   | InPlayAreaOf Who
@@ -655,6 +659,8 @@ data ExtendedCardMatcher
   | CardWithoutModifier ModifierType
   | CardIsCommittedBy InvestigatorMatcher
   deriving stock (Show, Eq, Ord, Data)
+
+instance Plated ExtendedCardMatcher
 
 instance Semigroup ExtendedCardMatcher where
   ExtendedCardMatches xs <> ExtendedCardMatches ys =

@@ -968,7 +968,9 @@ allAssets =
       SomeAssetCard daisysToteBagAdvanced
     , SomeAssetCard theNecronomiconAdvanced
     , -- Promo
-      --- Blood of Baalshandor
+      --- Ire of the Void
+      SomeAssetCard splitTheAngleIreOfTheVoid
+    , --- Blood of Baalshandor
       SomeAssetCard mollyMaxwell
     , -- Misc
       SomeAssetCard courage

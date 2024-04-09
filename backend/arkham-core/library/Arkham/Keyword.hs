@@ -37,6 +37,8 @@ data Keyword
   | Swarming GameValue
   | Veiled
   | Customizable
+  | Advanced
+  | Replacement
   deriving stock (Show, Eq, Ord, Data)
 
 class HasKeywords a where

@@ -1,6 +1,5 @@
 module Arkham.Event.Cards.DodgeSpec (spec) where
 
-import Arkham.Attack qualified as Attack
 import Arkham.Event.Cards qualified as Cards
 import TestImport.New
 

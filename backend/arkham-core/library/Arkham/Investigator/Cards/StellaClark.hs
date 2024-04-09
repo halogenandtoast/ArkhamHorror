@@ -6,7 +6,6 @@ import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher hiding (RevealChaosToken)
-import Arkham.Timing qualified as Timing
 
 newtype StellaClark = StellaClark InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)

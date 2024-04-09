@@ -12,7 +12,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Trait (Trait (Spell, Tome))
 import Arkham.Window qualified as Window
 
 newtype KnowledgeIsPower = KnowledgeIsPower EventAttrs

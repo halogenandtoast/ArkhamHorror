@@ -15,7 +15,6 @@ data SomeField a where
   SomeField
     :: ( ToJSON typ
        , FromJSON typ
-       , Ord typ
        , Typeable typ
        , Typeable a
        , Show typ

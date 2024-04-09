@@ -2,6 +2,7 @@ module Arkham.Enemy.Types.Attrs where
 
 import Arkham.Prelude
 
+import Arkham.Attack.Types
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.DamageEffect
@@ -53,6 +54,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyUnableToSpawn :: UnableToSpawn
   , enemyMeta :: Value
   , enemyFlipped :: Bool
+  , enemyAttacking :: Maybe EnemyAttackDetails
   }
   deriving stock (Show, Eq, Generic)
 
@@ -117,6 +119,7 @@ instance FromJSON EnemyAttrs where
     enemyUnableToSpawn <- o .:? "unableToSpawn" .!= DiscardIfUnableToSpawn
     enemyMeta <- o .:? "meta" .!= Null
     enemyFlipped <- o .:? "flipped" .!= False
+    enemyAttacking <- o .:? "attacking"
     pure EnemyAttrs {..}
 
 instance Be EnemyAttrs EnemyMatcher where

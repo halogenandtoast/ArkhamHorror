@@ -11,6 +11,7 @@ import Data.Aeson.TH
 
 data DamageStrategy
   = DamageAny
+  | DamageDirect
   | DamageAssetsFirst
   | DamageFirst CardDef
   | SingleTarget

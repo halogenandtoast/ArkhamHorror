@@ -26,32 +26,17 @@ heroicRescue2 = event HeroicRescue2 Cards.heroicRescue2
 
 instance RunMessage HeroicRescue2 where
   runMessage msg e@(HeroicRescue2 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ [(windowType -> Window.EnemyWouldAttack details')] _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ [windowType -> Window.EnemyWouldAttack details'] _ | eid == toId attrs -> do
       let iid' = fromJustNote "wrong target" $ preview _InvestigatorTarget (attackTarget details')
+      let enemy = attackEnemy details'
       lid <- fieldJust InvestigatorLocation iid'
       mlid <- field InvestigatorLocation iid
 
       canDealDamage <- withoutModifier iid CannotDealDamage
-      popMessageMatching_ \case
-        CheckWindow _ windows -> flip
-          any
-          windows
-          \case
-            (windowType -> Window.EnemyAttacks details) -> details == details'
-            _ -> False
-        _ -> False
-      popMessageMatching_ \case
-        After (PerformEnemyAttack details) -> details == details'
-        _ -> False
-      replaceMessageMatching
-        \case
-          PerformEnemyAttack details -> details == details'
-          _ -> False
-        \case
-          PerformEnemyAttack details ->
-            [Move $ move attrs iid lid | Just lid /= mlid]
-              <> [EnemyAttack (details {attackTarget = toTarget iid})]
-              <> [EnemyDamage (attackEnemy details) $ nonAttack attrs 1 | canDealDamage]
-          _ -> error "Mismatched"
+      pushAll
+        $ [Move $ move attrs iid lid | Just lid /= mlid]
+        <> [EnemyEngageInvestigator enemy iid]
+        <> [ChangeEnemyAttackTarget enemy (toTarget iid)]
+        <> [AfterEnemyAttack enemy [EnemyDamage enemy $ nonAttack attrs 1] | canDealDamage]
       pure e
     _ -> HeroicRescue2 <$> runMessage msg attrs

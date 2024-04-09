@@ -365,6 +365,9 @@ allEnemies =
       SomeEnemyCard shadowAgents
     , -- basic weakness
       SomeEnemyCard accursedFollower
+    , -- Edge of the Earth
+      -- signature
+      SomeEnemyCard mobGoons
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

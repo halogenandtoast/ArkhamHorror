@@ -5,7 +5,6 @@ module Arkham.Event.Cards.HypnoticGaze (
 
 import Arkham.Prelude
 
-import Arkham.Attack
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -40,7 +39,7 @@ instance RunMessage HypnoticGaze where
   runMessage msg e@(HypnoticGaze (attrs `With` meta)) = case msg of
     InvestigatorPlayEvent iid eventId _ _ _ | eventId == toId attrs -> do
       enemyId <- fromQueue $ \queue -> case dropUntilAttack queue of
-        PerformEnemyAttack details : _ -> attackEnemy details
+        PerformEnemyAttack eid : _ -> eid
         _ -> error "unhandled"
       ignoreWindow <-
         checkWindows

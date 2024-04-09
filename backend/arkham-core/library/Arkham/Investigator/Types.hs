@@ -425,6 +425,3 @@ searchingFoundCardsL = lens searchingFoundCards $ \m x -> m {searchingFoundCards
 
 foundCardsL :: Traversal' InvestigatorAttrs (Map Zone [Card])
 foundCardsL = searchL . _Just . searchingFoundCardsL
-
-setMeta :: ToJSON a => a -> InvestigatorAttrs -> InvestigatorAttrs
-setMeta a = metaL .~ toJSON a

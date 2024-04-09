@@ -438,6 +438,7 @@ allPlayerAssetCards =
       , mauserC96
       , mauserC962
       , meatCleaver
+      , mechanicsWrench
       , medicalStudent
       , medicalTexts
       , medicoDellaPeste
@@ -4632,6 +4633,15 @@ jacobMorrisonCostGuardCaptain3 =
     , cdLevel = Just 3
     , cdUnique = True
     }
+
+mechanicsWrench :: CardDef
+mechanicsWrench =
+  signature "08001"
+    $ (asset "08002" "Mechanic's Wrench" 2 Neutral)
+      { cdCardTraits = setFromList [Item, Tool, Melee]
+      , cdSkills = [#combat, #combat, #wild]
+      , cdSlots = [#hand]
+      }
 
 livreDeibon :: CardDef
 livreDeibon =

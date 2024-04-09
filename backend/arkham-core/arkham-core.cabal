@@ -710,6 +710,7 @@ library
       Arkham.Asset.Cards.MauserC96
       Arkham.Asset.Cards.MauserC962
       Arkham.Asset.Cards.MeatCleaver
+      Arkham.Asset.Cards.MechanicsWrench
       Arkham.Asset.Cards.MedicalStudent
       Arkham.Asset.Cards.MedicalTexts
       Arkham.Asset.Cards.MedicoDellaPeste
@@ -956,6 +957,7 @@ library
       Arkham.Asset.Types
       Arkham.Asset.Uses
       Arkham.Attack
+      Arkham.Attack.Types
       Arkham.Campaign
       Arkham.Campaign.Campaigns
       Arkham.Campaign.Campaigns.NightOfTheZealot
@@ -1200,6 +1202,7 @@ library
       Arkham.Enemy.Cards.MarshGug
       Arkham.Enemy.Cards.MindlessDancer
       Arkham.Enemy.Cards.MobEnforcer
+      Arkham.Enemy.Cards.MobGoons
       Arkham.Enemy.Cards.Mobster
       Arkham.Enemy.Cards.MoonBeast
       Arkham.Enemy.Cards.MoonboundByakhee
@@ -1684,6 +1687,7 @@ library
       Arkham.Investigator.Cards.CarolynFern
       Arkham.Investigator.Cards.DaisyWalker
       Arkham.Investigator.Cards.DaisyWalkerParallel
+      Arkham.Investigator.Cards.DanielaReyes
       Arkham.Investigator.Cards.DexterDrake
       Arkham.Investigator.Cards.DianaStanley
       Arkham.Investigator.Cards.FatherMateo
@@ -1726,6 +1730,7 @@ library
       Arkham.Investigator.Cards.ZoeySamaras
       Arkham.Investigator.DamageAssignment
       Arkham.Investigator.Deck
+      Arkham.Investigator.Import.Lifted
       Arkham.Investigator.Investigators
       Arkham.Investigator.Runner
       Arkham.Investigator.Types

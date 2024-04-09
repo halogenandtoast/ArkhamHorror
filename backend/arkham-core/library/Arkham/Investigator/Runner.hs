@@ -1378,6 +1378,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               pure
                 $ [damageInvestigator | null healthDamageableAssets]
                 <> map damageAsset healthDamageableAssets
+            DamageDirect -> pure [damageInvestigator]
             DamageAny ->
               pure $ damageInvestigator : map damageAsset healthDamageableAssets
             DamageFromHastur ->
@@ -1419,6 +1420,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               pure
                 $ [damageInvestigator | null sanityDamageableAssets]
                 <> map damageAsset sanityDamageableAssets
+            DamageDirect -> pure [damageInvestigator]
             DamageAny -> do
               mustBeDamagedFirstBeforeInvestigator <-
                 select

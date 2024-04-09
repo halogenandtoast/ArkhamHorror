@@ -35,8 +35,8 @@ instance RunMessage MyriadForms where
       push $ DoStep 1 msg
 
       pure t
-    PerformEnemyAttack details -> do
-      isNyarlathotep <- fieldMap EnemyName (`hasTitle` "Nyarlathotep") (attackEnemy details)
+    PerformEnemyAttack eid -> do
+      isNyarlathotep <- fieldMap EnemyName (`hasTitle` "Nyarlathotep") eid
       let meta = toResult @Bool attrs.meta
       pure $ MyriadForms $ setMeta @Bool (meta || isNyarlathotep) attrs
     DoStep 1 (Revelation _iid (isSource attrs -> True)) -> do

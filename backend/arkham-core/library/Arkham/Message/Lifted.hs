@@ -455,6 +455,10 @@ skillTestModifier (toSource -> source) (toTarget -> target) x =
 chooseFightEnemy :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 chooseFightEnemy iid = mkChooseFight iid >=> push . toMessage
 
+chooseFightEnemyMatch
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> EnemyMatcher -> m ()
+chooseFightEnemyMatch iid source = mkChooseFightMatch iid source >=> push . toMessage
+
 mapQueue :: (MonadTrans t, HasQueue Message m) => (Message -> Message) -> t m ()
 mapQueue = lift . Msg.mapQueue
 

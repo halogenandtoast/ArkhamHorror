@@ -122,6 +122,7 @@ allInvestigators =
       , SomeInvestigatorCard trishScarborough
       , SomeInvestigatorCard dexterDrake
       , SomeInvestigatorCard silasMarsh
+      , SomeInvestigatorCard danielaReyes
       , SomeInvestigatorCard normanWithers
       , SomeInvestigatorCard nathanielCho
       , SomeInvestigatorCard harveyWalters

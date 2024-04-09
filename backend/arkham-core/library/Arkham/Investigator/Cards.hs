@@ -60,6 +60,7 @@ allInvestigatorCards =
       , trishScarborough
       , dexterDrake
       , silasMarsh
+      , danielaReyes
       , normanWithers
       , nathanielCho
       , harveyWalters
@@ -377,6 +378,14 @@ silasMarsh =
       ("Silas Marsh" <:> "The Sailor")
       Survivor
       [Drifter]
+
+danielaReyes :: CardDef
+danielaReyes =
+  investigator
+    "08001"
+    ("Daniela Reyes" <:> "The Mechanic")
+    Seeker
+    [Miskatonic]
 
 normanWithers :: CardDef
 normanWithers =

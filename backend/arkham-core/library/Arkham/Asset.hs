@@ -746,7 +746,8 @@ allAssets =
       SomeAssetCard jacobMorrisonCostGuardCaptain3
     , -- Edge of the Earth
       --- signature [eote]
-      SomeAssetCard livreDeibon
+      SomeAssetCard mechanicsWrench
+    , SomeAssetCard livreDeibon
     , --- seeker [eote]
       SomeAssetCard forcedLearning
     , --- rogue [eote]

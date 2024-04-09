@@ -1,28 +1,14 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Arkham.Attack where
+module Arkham.Attack (module Arkham.Attack, module Arkham.Attack.Types) where
 
 import Arkham.Prelude
 
+import Arkham.Attack.Types
 import Arkham.Id
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
-import Data.Aeson.TH
-
-data EnemyAttackType = AttackOfOpportunity | RegularAttack | AlertAttack
-  deriving stock (Show, Eq, Ord)
-
-data EnemyAttackDetails = EnemyAttackDetails
-  { attackTarget :: Target
-  , attackEnemy :: EnemyId
-  , attackType :: EnemyAttackType
-  , attackDamageStrategy :: DamageStrategy
-  , attackExhaustsEnemy :: Bool
-  , attackSource :: Source
-  , attackCanBeCanceled :: Bool
-  }
-  deriving stock (Show, Eq, Ord)
 
 enemyAttack
   :: (Targetable target, Sourceable source, IdOf enemy ~ EnemyId, AsId enemy)
@@ -33,25 +19,24 @@ enemyAttack
 enemyAttack (asId -> enemyId) (toSource -> source) (toTarget -> target) =
   EnemyAttackDetails
     { attackTarget = target
+    , attackOriginalTarget = target
     , attackEnemy = enemyId
     , attackType = RegularAttack
     , attackDamageStrategy = DamageAny
     , attackExhaustsEnemy = False
     , attackSource = source
     , attackCanBeCanceled = True
+    , attackAfter = []
     }
 
 attackOfOpportunity
-  :: (Targetable target, Sourceable source) => EnemyId -> source -> target -> EnemyAttackDetails
-attackOfOpportunity enemyId source target =
+  :: (Targetable target, Sourceable source)
+  => EnemyId
+  -> source
+  -> target
+  -> EnemyAttackDetails
+attackOfOpportunity enemyId source target = do
   (enemyAttack enemyId source target) {attackType = AttackOfOpportunity}
-
-damageStrategyL :: Lens' EnemyAttackDetails DamageStrategy
-damageStrategyL =
-  lens attackDamageStrategy $ \m x -> m {attackDamageStrategy = x}
 
 viaAlert :: EnemyAttackDetails -> EnemyAttackDetails
 viaAlert a = a {attackType = AlertAttack}
-
-$(deriveJSON defaultOptions ''EnemyAttackType)
-$(deriveJSON defaultOptions ''EnemyAttackDetails)

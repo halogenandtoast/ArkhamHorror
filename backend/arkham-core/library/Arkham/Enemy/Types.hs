@@ -11,6 +11,7 @@ module Arkham.Enemy.Types (
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Attack.Types
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.Entity
@@ -81,6 +82,7 @@ data instance Field Enemy :: Type -> Type where
   EnemySealedChaosTokens :: Field Enemy [ChaosToken]
   EnemyKeys :: Field Enemy (Set ArkhamKey)
   EnemySpawnedBy :: Field Enemy (Maybe InvestigatorId)
+  EnemyAttacking :: Field Enemy (Maybe EnemyAttackDetails)
 
 deriving stock instance Show (Field Enemy typ)
 deriving stock instance Ord (Field Enemy typ)
@@ -129,6 +131,7 @@ instance FromJSON (SomeField Enemy) where
     "EnemySealedChaosTokens" -> pure $ SomeField EnemySealedChaosTokens
     "EnemyKeys" -> pure $ SomeField EnemyKeys
     "EnemySpawnedBy" -> pure $ SomeField EnemySpawnedBy
+    "EnemyAttacking" -> pure $ SomeField EnemyAttacking
     _ -> error "no such field"
 
 data instance Field (OutOfPlayEntity Enemy) :: Type -> Type where
@@ -201,6 +204,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             , enemyUnableToSpawn = DiscardIfUnableToSpawn
             , enemyMeta = Null
             , enemyFlipped = False
+            , enemyAttacking = Nothing
             }
     }
 
@@ -399,6 +403,7 @@ fieldLens = \case
   EnemySealedChaosTokens -> sealedChaosTokensL
   EnemyKeys -> keysL
   EnemySpawnedBy -> spawnedByL
+  EnemyAttacking -> attackingL
  where
   virtual = error "virtual attribute can not be set directly"
 

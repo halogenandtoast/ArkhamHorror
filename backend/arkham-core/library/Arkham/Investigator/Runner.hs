@@ -1799,15 +1799,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
     unless cannotHealHorror do
       mods <- getModifiers a
-      let additionalTargets = [targetLabel t [HealHorror t source 1] | HealHorrorAsIfOnInvestigator t x <- mods, x > 0]
-      if null additionalTargets
+      let onlyTargets = [targetLabel t [HealHorror t source 1] | CannotHealHorrorOnOtherCards t <- mods]
+      let additionalTargets =
+            guard (null onlyTargets)
+              *> [targetLabel t [HealHorror t source 1] | HealHorrorAsIfOnInvestigator t x <- mods, x > 0]
+      if null additionalTargets && null onlyTargets
         then push $ Do msg
         else do
           let remainingHorror = investigatorSanityDamage a - sum (toList investigatorAssignedSanityHeal)
           player <- getPlayer a.id
           pushAll
-            [ chooseOne player $ [HorrorLabel a.id [Do $ HealHorrorDelayed target source 1] | remainingHorror > 0]
+            [ chooseOne player
+                $ [HorrorLabel a.id [Do $ HealHorrorDelayed target source 1] | remainingHorror > 0, null onlyTargets]
                 <> additionalTargets
+                <> onlyTargets
             , HealHorrorDelayed target source (n - 1)
             ]
 

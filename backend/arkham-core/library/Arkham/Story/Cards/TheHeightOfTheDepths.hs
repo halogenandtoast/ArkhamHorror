@@ -5,7 +5,6 @@ module Arkham.Story.Cards.TheHeightOfTheDepths (
 
 import Arkham.Prelude
 
-import Arkham.Helpers.Investigator
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -22,8 +21,8 @@ theHeightOfTheDepths = story TheHeightOfTheDepths Cards.theHeightOfTheDepths
 instance RunMessage TheHeightOfTheDepths where
   runMessage msg s@(TheHeightOfTheDepths attrs) = case msg of
     ResolveStory _ _ story' | story' == toId attrs -> do
-      healHorrorMessages <-
-        map snd <$> getInvestigatorsWithHealHorror attrs 5 Anyone
+      healableInvestigators <- select $ HealableInvestigator (toSource attrs) #horror Anyone
+      let healHorrorMessages = [HealHorror (toTarget iid) (toSource attrs) 5 | iid <- healableInvestigators]
       setAsideDepthsOfDemhe <-
         getSetAsideCardsMatching
           $ CardWithTitle "Depths of Demhe"

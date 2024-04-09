@@ -20,8 +20,8 @@ instance RunMessage ThePalaceOfRainbows where
       iids <- select $ InvestigatorAt (locationIs Locations.ilekVad)
       for_ iids \iid -> do
         mDrawing <- drawCardsIfCan iid (toSource attrs) 2
-        mHeal <- getHealHorrorMessage attrs 2 iid
+        canHeal <- canHaveHorrorHealed (toSource attrs) iid
         for_ mDrawing push
-        for_ mHeal push
+        pushWhen canHeal $ HealHorror (toTarget iid) (toSource attrs) 2
       pure s
     _ -> ThePalaceOfRainbows <$> runMessage msg attrs

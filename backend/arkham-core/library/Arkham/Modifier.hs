@@ -221,7 +221,8 @@ data ModifierType
   | HandSize Int
   | CheckHandSizeAfterDraw
   | HandSizeCardCount Int
-  | HealHorrorOnThisAsIfInvestigator Target Int
+  | HealHorrorOnThisAsIfInvestigator InvestigatorId -- DEPRECATED
+  | HealHorrorAsIfOnInvestigator Target Int
   | HealthModifier Int
   | HealthModifierWithMin Int (Min Int)
   | HunterConnectedTo LocationId

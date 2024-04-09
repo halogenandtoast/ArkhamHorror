@@ -69,15 +69,15 @@ instance HasAbilities IchtacaTheForgottenGuardian where
 instance RunMessage IchtacaTheForgottenGuardian where
   runMessage msg a@(IchtacaTheForgottenGuardian attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      mHealHorror <- getHealHorrorMessage attrs 1 iid
+      canHeal <- canHaveHorrorHealed (attrs.ability 1) iid
       ichtacaCanHealHorror <-
         selectAny
           $ HealableAsset (toSource attrs) HorrorType
           $ AssetWithId
             (toId attrs)
       pushAll
-        $ maybeToList mHealHorror
-        <> [ HealHorror (toTarget attrs) (toSource attrs) 1
+        $ [HealHorror (toTarget iid) (attrs.ability 1) 1 | canHeal]
+        <> [ HealHorror (toTarget attrs) (attrs.ability 1) 1
            | ichtacaCanHealHorror
            ]
       pure a

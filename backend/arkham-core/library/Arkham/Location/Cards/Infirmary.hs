@@ -32,19 +32,20 @@ instance HasAbilities Infirmary where
 instance RunMessage Infirmary where
   runMessage msg l@(Infirmary attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      mHealHorror <- getHealHorrorMessage attrs 1 iid
-      healDamage <- canHaveDamageHealed attrs iid
+      let source = attrs.ability 1
+      healDamage <- canHaveDamageHealed source iid
+      healHorror <- canHaveHorrorHealed source iid
       player <- getPlayer iid
 
       push
         $ chooseOne
           player
           [ Label "Heal 1 damage and take 1 direct horror"
-              $ [HealDamage (toTarget attrs) (toSource attrs) 1 | healDamage]
-              <> [directHorror iid (toAbilitySource attrs 1) 1]
+              $ [HealDamage (toTarget attrs) source 1 | healDamage]
+              <> [directHorror iid source 1]
           , Label "Heal 1 horror and take 1 direct damage"
-              $ maybeToList mHealHorror
-              <> [directDamage iid (toAbilitySource attrs 1) 1]
+              $ [HealHorror (toTarget attrs) source 1 | healHorror]
+              <> [directDamage iid source 1]
           ]
       pure l
     _ -> Infirmary <$> runMessage msg attrs

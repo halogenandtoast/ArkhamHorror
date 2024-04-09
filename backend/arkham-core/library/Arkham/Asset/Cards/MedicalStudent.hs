@@ -9,7 +9,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (allInvestigators)
-import Arkham.Helpers.Investigator
 import Arkham.Matcher
 
 newtype MedicalStudent = MedicalStudent AssetAttrs
@@ -97,15 +96,9 @@ instance RunMessage MedicalStudent where
           select
             $ HealableInvestigator (toSource attrs) #damage
             $ colocatedWith iid
-        let
-          allInvestigators =
-            horrorInvestigators <> damageInvestigators
+        let allInvestigators = horrorInvestigators <> damageInvestigators
         for allInvestigators $ \i -> do
           let target = InvestigatorTarget i
-          mHealHorror <-
-            if i `elem` horrorInvestigators
-              then getHealHorrorMessage attrs 1 i
-              else pure Nothing
           pure
             $ targetLabel
               i
@@ -116,8 +109,8 @@ instance RunMessage MedicalStudent where
                       [HealDamage target (toSource attrs) 1]
                     | i `elem` damageInvestigators
                     ]
-                  <> [ componentLabel HorrorToken target [healHorror]
-                     | healHorror <- maybeToList mHealHorror
+                  <> [ componentLabel HorrorToken target [HealHorror target (toSource attrs) 1]
+                     | i `elem` horrorInvestigators
                      ]
               ]
 

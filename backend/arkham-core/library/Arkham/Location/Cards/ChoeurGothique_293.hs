@@ -44,7 +44,7 @@ instance HasAbilities ChoeurGothique_293 where
 instance RunMessage ChoeurGothique_293 where
   runMessage msg l@(ChoeurGothique_293 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      mHealHorror <- getHealHorrorMessage attrs 2 iid
-      for_ mHealHorror push
+      canHeal <- canHaveHorrorHealed (attrs.ability 1) iid
+      pushWhen canHeal $ HealHorror (toTarget iid) (attrs.ability 1) 2
       pure l
     _ -> ChoeurGothique_293 <$> runMessage msg attrs

@@ -48,8 +48,10 @@ instance RunMessage WishEater where
     UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> [token]) _ -> do
       let source = toAbilitySource attrs 1
       healDamage <- canHaveDamageHealed source iid
-      mHealHorror <- getHealHorrorMessage source 1 iid
-      pushAll $ [HealDamage (InvestigatorTarget iid) source 1 | healDamage] <> maybeToList mHealHorror
+      healHorror <- canHaveHorrorHealed source iid
+      pushAll
+        $ [HealDamage (InvestigatorTarget iid) source 1 | healDamage]
+        <> [HealHorror (InvestigatorTarget iid) source 1 | healHorror]
       cancelChaosToken token
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

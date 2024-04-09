@@ -44,9 +44,9 @@ instance RunMessage StHubertsKey where
         defeatedSource = case mDefeatedMessage of
           Just (Msg.InvestigatorDefeated x _) -> x
           _ -> error "missing defeated message"
-      mHealHorror <- getHealHorrorMessage attrs 2 iid
+      canHeal <- canHaveHorrorHealed (attrs.ability 1) iid
       pushAll
-        $ maybeToList mHealHorror
+        $ [HealHorror (toTarget iid) (attrs.ability 1) 2 | canHeal]
         <> [ CancelNext (toSource attrs) InvestigatorDefeatedMessage
            , checkDefeated defeatedSource iid
            ]

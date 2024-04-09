@@ -74,14 +74,9 @@ instance RunMessage Thermos where
           | target <- targets
           ]
       pure a
-    UseCardAbilityChoiceTarget _ (isSource attrs -> True) 2 (InvestigatorTarget iid') _ _ ->
-      do
-        trauma <- field InvestigatorMentalTrauma iid'
-        mHealHorror <-
-          getHealHorrorMessage
-            attrs
-            (if trauma >= 2 then 2 else 1)
-            iid'
-        for_ mHealHorror push
-        pure a
+    UseCardAbilityChoiceTarget _ (isSource attrs -> True) 2 (InvestigatorTarget iid') _ _ -> do
+      trauma <- field InvestigatorMentalTrauma iid'
+      canBeHealed <- canHaveHorrorHealed (attrs.ability 1) iid'
+      pushWhen canBeHealed $ HealHorror (toTarget iid') (attrs.ability 1) (if trauma >= 2 then 2 else 1)
+      pure a
     _ -> Thermos <$> runMessage msg attrs

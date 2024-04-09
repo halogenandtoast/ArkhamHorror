@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.ChaosBag (getRemainingBlessTokens)
-import Arkham.Helpers.Investigator (canHaveDamageHealed, getHealHorrorMessage)
+import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed)
 import Arkham.Matcher
 
 newtype SpiritOfHumanity2 = SpiritOfHumanity2 AssetAttrs
@@ -39,12 +39,14 @@ instance RunMessage SpiritOfHumanity2 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      canHealDamage <- canHaveDamageHealed attrs iid
-      mHealHorror <- getHealHorrorMessage source 1 iid
+      canHealDamage <- canHaveDamageHealed source iid
+      canHealHorror <- canHaveHorrorHealed source iid
       pushAll
         $ [ HealDamage (InvestigatorTarget iid) source 1
           | canHealDamage
           ]
-        <> toList mHealHorror
+        <> [ HealHorror (InvestigatorTarget iid) source 1
+           | canHealHorror
+           ]
       pure a
     _ -> SpiritOfHumanity2 <$> lift (runMessage msg attrs)

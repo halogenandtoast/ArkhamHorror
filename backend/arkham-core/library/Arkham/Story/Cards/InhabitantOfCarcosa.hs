@@ -5,7 +5,6 @@ module Arkham.Story.Cards.InhabitantOfCarcosa (
 
 import Arkham.Prelude
 
-import Arkham.Helpers.Investigator
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -22,8 +21,8 @@ inhabitantOfCarcosa = story InhabitantOfCarcosa Cards.inhabitantOfCarcosa
 instance RunMessage InhabitantOfCarcosa where
   runMessage msg s@(InhabitantOfCarcosa attrs) = case msg of
     ResolveStory _ _ story' | story' == toId attrs -> do
-      healHorrorMessages <-
-        map snd <$> getInvestigatorsWithHealHorror attrs 3 Anyone
+      healableInvestigators <- select $ HealableInvestigator (toSource attrs) #horror Anyone
+      let healHorrorMessages = [HealHorror (toTarget iid) (toSource attrs) 3 | iid <- healableInvestigators]
       ruinsOfCarcosa <- selectJust $ locationIs Locations.ruinsOfCarcosaInhabitantOfCarcosa
       setAsideRuinsOfCarcosa <-
         getSetAsideCardsMatching

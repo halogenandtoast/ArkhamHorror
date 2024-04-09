@@ -21,7 +21,7 @@ instance RunMessage MomentOfRespite3 where
   runMessage msg e@(MomentOfRespite3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       drawing <- drawCards iid attrs 1
-      mHealHorror <- getHealHorrorMessage attrs 3 iid
-      pushAll $ maybeToList mHealHorror <> [drawing]
+      canHealHorror <- canHaveHorrorHealed attrs iid
+      pushAll $ [HealHorror (toTarget iid) (toSource attrs) 3 | canHealHorror] <> [drawing]
       pure e
     _ -> MomentOfRespite3 <$> runMessage msg attrs

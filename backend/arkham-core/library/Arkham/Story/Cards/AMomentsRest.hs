@@ -26,7 +26,7 @@ instance RunMessage AMomentsRest where
         select
           $ EnemyOneOf [NotEnemy ExhaustedEnemy, EnemyIsEngagedWith Anyone]
       ruinsOfCarcosa <- selectJust $ locationIs Locations.ruinsOfCarcosaAMomentsRest
-      mHealHorror <- getHealHorrorMessage (toSource attrs) 5 iid
+      canHeal <- canHaveHorrorHealed (toSource attrs) iid
       player <- getPlayer iid
       let
         handleEnemy enemy =
@@ -39,8 +39,8 @@ instance RunMessage AMomentsRest where
             [chooseOne player $ map handleEnemy enemies]
           | notNull enemies
           ]
-            <> [ Label "You heal 5 horror" [healHorror]
-               | healHorror <- maybeToList mHealHorror
+            <> [ Label "You heal 5 horror" [HealHorror (toTarget iid) (toSource attrs) 5]
+               | canHeal
                ]
       setAsideRuinsOfCarcosa <-
         getSetAsideCardsMatching

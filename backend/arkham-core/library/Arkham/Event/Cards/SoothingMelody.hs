@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Damage
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Data.Aeson
@@ -85,8 +84,7 @@ instance RunMessage SoothingMelody where
           ]
 
       investigatorHorrorChoices <- for horrorInvestigators $ \i -> do
-        healHorror <- fromJustNote "should be healable" <$> getHealHorrorMessage attrs 1 i
-        pure $ componentLabel HorrorToken (toTarget i) [healHorror]
+        pure $ componentLabel HorrorToken (toTarget i) [HealHorror (toTarget i) (toSource attrs) 1]
 
       let choices =
             investigatorDamageChoices <> investigatorHorrorChoices <> damageAssetChoices <> horrorAssetChoices

@@ -180,7 +180,6 @@ import Data.These
 import Data.Tuple.Extra (dupe)
 import Data.Typeable
 import Data.UUID (nil)
-import Data.UUID qualified as UUID
 import System.Environment (lookupEnv)
 import Text.Pretty.Simple
 
@@ -582,15 +581,22 @@ getInvestigatorsMatching matcher = do
   case matcher of
     ThatInvestigator -> error "ThatInvestigator must be resolved in criteria"
     HealableInvestigator _source HorrorType _ -> do
-      -- first let's look for the modifier for the active investigator
       let
         isCannotHealHorrorOnOtherCardsModifiers = \case
           CannotHealHorrorOnOtherCards _ -> True
           _ -> False
-      modifiers' <- getActiveInvestigatorModifiers
-      if CannotHealHorror `elem` modifiers'
+      active <- getActiveInvestigatorId
+      mods <- getModifiers active
+      if CannotHealHorror `elem` mods
         then pure []
-        else pure results
+        else
+          -- This logic may be too specific to rational thought, we basically
+          -- only let the player heal themselves if this modifier is on them,
+          -- but we may need to let them heal other things
+          pure
+            if any isCannotHealHorrorOnOtherCardsModifiers mods
+              then filter ((== active) . toId) results
+              else results
     _ -> pure results
  where
   includeEliminated Anyone = True
@@ -829,14 +835,14 @@ getInvestigatorsMatching matcher = do
     InvestigatorWithDamage gameValueMatcher ->
       (`gameValueMatches` gameValueMatcher) . attr investigatorHealthDamage
     InvestigatorWithHealableHorror -> \i -> do
-      onSelf <- attr investigatorSanityDamage i `gameValueMatches` gameValueMatcher
+      let onSelf = attr investigatorSanityDamage i > 0
       mFoolishness <-
         selectOne
           $ assetIs Assets.foolishnessFoolishCatOfUlthar
           <> assetControlledBy i.id
           <> AssetWithHorror
       foolishness <-
-        maybe (pure False) (fieldMapM AssetHorror (`gameValueMatches` gameValueMatcher)) mFoolishness
+        maybe (pure False) (fieldMap AssetHorror (> 0)) mFoolishness
       pure $ onSelf || foolishness
     InvestigatorWithHorror gameValueMatcher -> \i -> do
       onSelf <- attr investigatorSanityDamage i `gameValueMatches` gameValueMatcher

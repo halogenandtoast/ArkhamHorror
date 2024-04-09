@@ -5,7 +5,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (allInvestigators)
 import Arkham.Classes.HasGame
 import Arkham.Damage
-import Arkham.Helpers.Investigator
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Prelude
@@ -39,20 +38,20 @@ componentLabel component (toTarget -> target) = case target of
 damageComponentLabel :: Targetable target => target -> Source -> UI Message
 damageComponentLabel (toTarget -> thing) source = componentLabel DamageToken thing [HealDamage thing source 1]
 
+horrorComponentLabel :: Targetable target => target -> Source -> UI Message
+horrorComponentLabel (toTarget -> thing) source = componentLabel HorrorToken thing [HealDamage thing source 1]
+
 getInvestigatorChoices :: HasGame m => InvestigatorId -> PlayerId -> Source -> m [UI Message]
 getInvestigatorChoices iid player source = do
   horrorInvestigators <- select $ HealableInvestigator source #horror $ colocatedWith iid
   damageInvestigators <- select $ HealableInvestigator source #damage $ colocatedWith iid
   for (horrorInvestigators <> damageInvestigators) $ \i -> do
     let target = toTarget i
-    mHealHorror <- runMaybeT do
-      guard $ i `elem` horrorInvestigators
-      MaybeT $ getHealHorrorMessage source 1 i
     pure
       $ targetLabel i
       $ [ chooseOneAtATime player
             $ [damageComponentLabel target source | i `elem` damageInvestigators]
-            <> [componentLabel HorrorToken target [healHorror] | healHorror <- maybeToList mHealHorror]
+            <> [horrorComponentLabel target source | i `elem` horrorInvestigators]
         ]
 
 getAssetChoices :: HasGame m => InvestigatorId -> PlayerId -> Source -> m [UI Message]
@@ -65,9 +64,7 @@ getAssetChoices iid player source = do
       asset'
       [ chooseOneAtATime player
           $ [damageComponentLabel asset' source | asset' `elem` damageAssets]
-          <> [ componentLabel HorrorToken asset' [HealHorror (toTarget asset') source 1]
-             | asset' `elem` horrorAssets
-             ]
+          <> [horrorComponentLabel asset' source | asset' `elem` horrorAssets]
       ]
 
 instance RunMessage FirstAid3 where

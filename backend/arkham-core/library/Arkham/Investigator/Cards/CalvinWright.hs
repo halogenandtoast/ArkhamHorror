@@ -1,14 +1,10 @@
-module Arkham.Investigator.Cards.CalvinWright (
-  calvinWright,
-  CalvinWright (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.CalvinWright (calvinWright, CalvinWright (..)) where
 
 import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Message (directDamage, directHorror)
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 
 newtype CalvinWright = CalvinWright InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
@@ -35,18 +31,16 @@ instance HasChaosTokenValue CalvinWright where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage CalvinWright where
-  runMessage msg i@(CalvinWright attrs) = case msg of
+  runMessage msg i@(CalvinWright attrs) = runQueueT $ case msg of
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
-      mHealHorror <- getHealHorrorMessage attrs 1 iid
+      canHealHorror <- canHaveHorrorHealed attrs iid
       canHealDamage <- canHaveDamageHealed attrs iid
-      player <- getPlayer iid
-      push
-        $ chooseOne player
+      chooseOne iid
         $ [Label "Heal 1 Damage" [HealDamage (toTarget attrs) (toSource attrs) 1] | canHealDamage]
-        <> [Label "Heal 1 Horror" [healHorror] | healHorror <- toList mHealHorror]
+        <> [Label "Heal 1 Horror" [HealHorror (toTarget attrs) (toSource attrs) 1] | canHealHorror]
         <> [ Label "Take 1 Direct Damage" [directDamage iid attrs 1]
            , Label "Take 1 Direct Horror" [directHorror iid attrs 1]
            , Label "Do not use elder sign ability" []
            ]
       pure i
-    _ -> CalvinWright <$> runMessage msg attrs
+    _ -> CalvinWright <$> lift (runMessage msg attrs)

@@ -36,14 +36,14 @@ instance RunMessage CheatDeath5 where
           InvestigatorWhenDefeated source' _ -> [checkDefeated source' iid]
           _ -> error "invalid match"
 
-      mHealHorror <- getHealHorrorMessage attrs 2 iid
+      canHealHorror <- canHaveHorrorHealed attrs iid
       healable <- canHaveDamageHealed attrs iid
       player <- getPlayer iid
 
       pushAll
         $ map (DisengageEnemy iid) enemies
         <> map (toDiscardBy iid attrs) treacheries
-        <> maybeToList mHealHorror
+        <> [HealHorror (InvestigatorTarget iid) (toSource attrs) 2 | canHealHorror]
         <> [HealDamage (InvestigatorTarget iid) (toSource attrs) 2 | healable]
         <> [ chooseOrRunOne player $ targetLabels locations (only . MoveTo . move (toSource attrs) iid)
            | notNull locations

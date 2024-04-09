@@ -109,6 +109,7 @@ data InvestigatorMatcher
   | InvestigatorHasCardWithHorror
   | InvestigatorWithDoom ValueMatcher
   | InvestigatorWithHorror ValueMatcher
+  | InvestigatorWithHealableHorror
   | InvestigatorWithRemainingSanity ValueMatcher
   | InvestigatorWithResources ValueMatcher
   | InvestigatorWithSpendableResources ValueMatcher
@@ -1020,6 +1021,9 @@ data SkillTestMatcher
 instance IsLabel "any" SkillTestMatcher where
   fromLabel = AnySkillTest
 
+instance IsLabel "failed" SkillTestMatcher where
+  fromLabel = SkillTestWasFailed
+
 data SourceMatcher
   = SourceWithTrait Trait
   | SourceIsEnemyAttack EnemyMatcher
@@ -1092,6 +1096,9 @@ instance IsLabel "success" SkillTestResultMatcher where
 
 instance IsLabel "failure" SkillTestResultMatcher where
   fromLabel = FailureResult AnyValue
+
+instance IsLabel "any" SkillTestResultMatcher where
+  fromLabel = AnyResult
 
 data ValueMatcher
   = LessThan GameValue

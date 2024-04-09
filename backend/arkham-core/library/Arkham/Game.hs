@@ -590,52 +590,7 @@ getInvestigatorsMatching matcher = do
       modifiers' <- getActiveInvestigatorModifiers
       if CannotHealHorror `elem` modifiers'
         then pure []
-        else case find isCannotHealHorrorOnOtherCardsModifiers modifiers' of
-          Nothing -> do
-            extra <- forMaybeM results \result -> runMaybeT do
-              foolishness <-
-                MaybeT
-                  $ selectOne
-                  $ assetIs Assets.foolishnessFoolishCatOfUlthar
-                  <> assetControlledBy result.id
-                  <> AssetWithHorror
-              pure
-                $ overAttrs
-                  ( \a ->
-                      a {Investigator.investigatorId = InvestigatorId (CardCode $ UUID.toText $ unAssetId foolishness)}
-                  )
-                  result
-
-            let results' = filter ((> 0) . attr investigatorSanityDamage) results
-
-            pure $ results' <> extra
-          Just (CannotHealHorrorOnOtherCards target) -> case target of
-            TreacheryTarget tid -> do
-              let
-                asIfInvestigator = \case
-                  HealHorrorOnThisAsIfInvestigator ii -> First (Just ii)
-                  _ -> First Nothing
-              mAsIfInverstigator <-
-                getFirst . foldMap asIfInvestigator <$> getModifiers target
-              case mAsIfInverstigator of
-                Just iid' -> case find ((== iid') . toId) results of
-                  Just targetInvestigator ->
-                    pure
-                      [ overAttrs
-                          ( \a ->
-                              a
-                                { Investigator.investigatorId =
-                                    InvestigatorId
-                                      (CardCode $ UUID.toText $ unTreacheryId tid)
-                                }
-                          )
-                          targetInvestigator
-                      ]
-                  _ -> pure []
-                _ -> pure []
-            -- we know rational thought is in effect
-            _ -> error "Only handled for Rational Thought"
-          Just _ -> error "Not possible"
+        else pure results
     _ -> pure results
  where
   includeEliminated Anyone = True
@@ -873,6 +828,16 @@ getInvestigatorsMatching matcher = do
       (`gameValueMatches` gameValueMatcher) . attr investigatorDoom
     InvestigatorWithDamage gameValueMatcher ->
       (`gameValueMatches` gameValueMatcher) . attr investigatorHealthDamage
+    InvestigatorWithHealableHorror -> \i -> do
+      onSelf <- attr investigatorSanityDamage i `gameValueMatches` gameValueMatcher
+      mFoolishness <-
+        selectOne
+          $ assetIs Assets.foolishnessFoolishCatOfUlthar
+          <> assetControlledBy i.id
+          <> AssetWithHorror
+      foolishness <-
+        maybe (pure False) (fieldMapM AssetHorror (`gameValueMatches` gameValueMatcher)) mFoolishness
+      pure $ onSelf || foolishness
     InvestigatorWithHorror gameValueMatcher -> \i -> do
       onSelf <- attr investigatorSanityDamage i `gameValueMatches` gameValueMatcher
       mFoolishness <-

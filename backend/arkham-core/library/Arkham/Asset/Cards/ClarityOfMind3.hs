@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Helpers.Investigator
 import Arkham.Matcher
 
 newtype ClarityOfMind3 = ClarityOfMind3 AssetAttrs
@@ -32,9 +31,19 @@ instance HasAbilities ClarityOfMind3 where
 
 instance RunMessage ClarityOfMind3 where
   runMessage msg a@(ClarityOfMind3 attrs) = case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      iidsWithHeal <- getInvestigatorsWithHealHorror attrs 1 $ colocatedWith iid
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      push $ DoStep 2 msg
+      pure a
+    DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
+      investigators <- select $ HealableInvestigator (attrs.ability 1) #horror (colocatedWith iid)
       player <- getPlayer iid
-      pushAll $ replicate 2 $ chooseOrRunOne player $ map (uncurry targetLabel . second only) iidsWithHeal
+      push
+        $ chooseOrRunOne
+          player
+          [ targetLabel
+            investigator
+            [HealHorror (toTarget investigator) (attrs.ability 1) 1, DoStep (n - 1) msg']
+          | investigator <- investigators
+          ]
       pure a
     _ -> ClarityOfMind3 <$> runMessage msg attrs

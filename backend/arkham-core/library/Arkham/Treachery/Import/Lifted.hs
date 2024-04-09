@@ -9,6 +9,7 @@ import Arkham.Helpers.Query as X
 import Arkham.Message as X (
   Message (..),
   toMessage,
+  pattern AttachTreachery,
   pattern FailedThisSkillTest,
   pattern FailedThisSkillTestBy,
   pattern PassedThisSkillTest,

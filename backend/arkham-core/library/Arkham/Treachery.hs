@@ -497,6 +497,8 @@ allTreacheries =
     , --- Sins of the Past
       SomeTreacheryCard chillingPresence
     , -- Promo
-      --- Blood of Baalshandor
+      --- To Fight the Black Wind
+      SomeTreacheryCard toFightTheBlackWind
+    , --- Blood of Baalshandor
       SomeTreacheryCard yaztaroth
     ]

@@ -12,6 +12,7 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Keyword qualified as Keyword
 import Arkham.Name
 import Arkham.Trait hiding (Dreamlands)
+import Arkham.Trait qualified as Trait
 
 baseTreachery
   :: CardCode
@@ -119,6 +120,7 @@ allPlayerTreacheryCards =
       , thePriceOfFailure
       , thriceDamnedCuriosity
       , throughTheGates
+      , toFightTheBlackWind
       , unspeakableOathBloodthirst
       , unspeakableOathCowardice
       , unspeakableOathCuriosity
@@ -2324,6 +2326,12 @@ chillingPresence :: CardDef
 chillingPresence =
   (treachery "84042" "Chilling Presence" SinsOfThePast 3)
     { cdCardTraits = singleton Terror
+    }
+
+toFightTheBlackWind :: CardDef
+toFightTheBlackWind =
+  (weakness "98012" "To Fight the Black Wind")
+    { cdCardTraits = setFromList [Task, Trait.Dreamlands]
     }
 
 yaztaroth :: CardDef

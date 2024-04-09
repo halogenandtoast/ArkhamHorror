@@ -15,6 +15,7 @@ import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agenda
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types (Agenda, AgendaAttrs (..), Field (..))
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (
   Asset,
   AssetAttrs (..),
@@ -590,7 +591,24 @@ getInvestigatorsMatching matcher = do
       if CannotHealHorror `elem` modifiers'
         then pure []
         else case find isCannotHealHorrorOnOtherCardsModifiers modifiers' of
-          Nothing -> pure results
+          Nothing -> do
+            extra <- forMaybeM results \result -> runMaybeT do
+              foolishness <-
+                MaybeT
+                  $ selectOne
+                  $ assetIs Assets.foolishnessFoolishCatOfUlthar
+                  <> assetControlledBy result.id
+                  <> AssetWithHorror
+              pure
+                $ overAttrs
+                  ( \a ->
+                      a {Investigator.investigatorId = InvestigatorId (CardCode $ UUID.toText $ unAssetId foolishness)}
+                  )
+                  result
+
+            let results' = filter ((> 0) . attr investigatorSanityDamage) results
+
+            pure $ results' <> extra
           Just (CannotHealHorrorOnOtherCards target) -> case target of
             TreacheryTarget tid -> do
               let
@@ -855,8 +873,16 @@ getInvestigatorsMatching matcher = do
       (`gameValueMatches` gameValueMatcher) . attr investigatorDoom
     InvestigatorWithDamage gameValueMatcher ->
       (`gameValueMatches` gameValueMatcher) . attr investigatorHealthDamage
-    InvestigatorWithHorror gameValueMatcher ->
-      (`gameValueMatches` gameValueMatcher) . attr investigatorSanityDamage
+    InvestigatorWithHorror gameValueMatcher -> \i -> do
+      onSelf <- attr investigatorSanityDamage i `gameValueMatches` gameValueMatcher
+      mFoolishness <-
+        selectOne
+          $ assetIs Assets.foolishnessFoolishCatOfUlthar
+          <> assetControlledBy i.id
+          <> AssetWithHorror
+      foolishness <-
+        maybe (pure False) (fieldMapM AssetHorror (`gameValueMatches` gameValueMatcher)) mFoolishness
+      pure $ onSelf || foolishness
     InvestigatorWithRemainingSanity gameValueMatcher ->
       field InvestigatorRemainingSanity
         . toId
@@ -915,6 +941,7 @@ getInvestigatorsMatching matcher = do
       pure $ not (historySuccessfulExplore history)
     InvestigatorWithCommittableCard -> \i -> do
       selectAny $ CommittableCard (toId i) (basic AnyCard)
+    InvestigatorWithUnhealedHorror -> fieldMap InvestigatorUnhealedHorrorThisRound (> 0) . toId
     ContributedMatchingIcons valueMatcher -> \i -> do
       mSkillTest <- getSkillTest
       case mSkillTest of
@@ -3230,6 +3257,7 @@ instance Projection Investigator where
       InvestigatorMentalTrauma -> pure investigatorMentalTrauma
       InvestigatorPhysicalTrauma -> pure investigatorPhysicalTrauma
       InvestigatorBondedCards -> pure investigatorBondedCards
+      InvestigatorUnhealedHorrorThisRound -> pure investigatorUnhealedHorrorThisRound
       InvestigatorResources -> pure $ investigatorResources attrs
       InvestigatorDoom -> pure $ investigatorDoom attrs
       InvestigatorClues -> pure $ investigatorClues attrs

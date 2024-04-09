@@ -2,7 +2,6 @@ module Arkham.Treachery.Cards.DayOfReckoning (dayOfReckoning, DayOfReckoning (..
 
 import Arkham.Card
 import Arkham.Matcher
-import Arkham.Message (pattern AttachTreachery)
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

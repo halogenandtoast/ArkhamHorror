@@ -568,6 +568,7 @@ library
       Arkham.Asset.Cards.Flashlight
       Arkham.Asset.Cards.FleshWard
       Arkham.Asset.Cards.FluteOfTheOuterGods4
+      Arkham.Asset.Cards.FoolishnessFoolishCatOfUlthar
       Arkham.Asset.Cards.ForbiddenKnowledge
       Arkham.Asset.Cards.ForbiddenTome
       Arkham.Asset.Cards.ForbiddenTomeDarkKnowledge3
@@ -2895,6 +2896,7 @@ library
       Arkham.Treachery.Cards.ThriceDamnedCuriosity
       Arkham.Treachery.Cards.ThroughTheGates
       Arkham.Treachery.Cards.TimelineDestabilization
+      Arkham.Treachery.Cards.ToFightTheBlackWind
       Arkham.Treachery.Cards.ToilAndTrouble
       Arkham.Treachery.Cards.TorturousChords
       Arkham.Treachery.Cards.ToughCrowd

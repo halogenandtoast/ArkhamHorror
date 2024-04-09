@@ -90,6 +90,7 @@ data InvestigatorMatcher
   | MostToken Token
   | HasTokens Token ValueMatcher
   | MostKeys
+  | InvestigatorWithUnhealedHorror
   | UneliminatedInvestigator
   | ResignedInvestigator
   | DefeatedInvestigator

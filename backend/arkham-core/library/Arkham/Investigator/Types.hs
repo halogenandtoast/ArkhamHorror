@@ -108,6 +108,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorPlayerId :: Field Investigator PlayerId
   InvestigatorBondedCards :: Field Investigator [Card]
   InvestigatorLog :: Field Investigator CampaignLog
+  InvestigatorUnhealedHorrorThisRound :: Field Investigator Int
   InvestigatorMeta :: Field Investigator Value
   --
   InvestigatorSupplies :: Field Investigator [Supply]
@@ -160,6 +161,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorMulligansTaken :: Int
   , investigatorBondedCards :: [Card]
   , investigatorMeta :: Value
+  , investigatorUnhealedHorrorThisRound :: Int
   , -- handling liquid courage
     investigatorHorrorHealed :: Int
   , -- the forgotten age
@@ -272,6 +274,7 @@ instance FromJSON InvestigatorAttrs where
     investigatorMulligansTaken <- o .: "mulligansTaken"
     investigatorBondedCards <- o .: "bondedCards"
     investigatorMeta <- o .:? "meta" .!= Null
+    investigatorUnhealedHorrorThisRound <- o .:? "unhealedHorrorThisRound" .!= 0
     investigatorHorrorHealed <- o .: "horrorHealed"
     investigatorSupplies <- o .: "supplies"
     investigatorDrawnCards <- o .: "drawnCards"

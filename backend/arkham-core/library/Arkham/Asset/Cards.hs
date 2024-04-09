@@ -304,6 +304,7 @@ allPlayerAssetCards =
       , flashlight
       , fleshWard
       , fluteOfTheOuterGods4
+      , foolishnessFoolishCatOfUlthar
       , forbiddenKnowledge
       , forbiddenTome
       , forbiddenTomeDarkKnowledge3
@@ -6046,6 +6047,17 @@ splitTheAngleIreOfTheVoid =
       { cdCardTraits = setFromList [Spell]
       , cdSkills = [#willpower, #intellect, #wild]
       , cdKeywords = setFromList [Keyword.Replacement]
+      }
+
+foolishnessFoolishCatOfUlthar :: CardDef
+foolishnessFoolishCatOfUlthar =
+  signature "05001"
+    $ (asset "98011" ("Foolishness" <:> "Foolish Cat of Ulthar") 4 Neutral)
+      { cdCardTraits = setFromList [Ally, Creature, Dreamlands]
+      , cdSkills = [#wild, #wild]
+      , cdKeywords = setFromList [Keyword.Replacement]
+      , cdUnique = True
+      , cdSlots = [#ally]
       }
 
 mollyMaxwell :: CardDef

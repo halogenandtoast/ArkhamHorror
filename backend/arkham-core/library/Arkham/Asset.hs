@@ -970,6 +970,8 @@ allAssets =
     , -- Promo
       --- Ire of the Void
       SomeAssetCard splitTheAngleIreOfTheVoid
+    , --- To Fight the Black Wind
+      SomeAssetCard foolishnessFoolishCatOfUlthar
     , --- Blood of Baalshandor
       SomeAssetCard mollyMaxwell
     , -- Misc

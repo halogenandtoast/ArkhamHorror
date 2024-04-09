@@ -4,6 +4,7 @@ where
 import Arkham.Asset.Runner as X (
   AssetAttrs (..),
   AssetCard,
+  Field (..),
   IsAsset,
   ally,
   allyWith,
@@ -17,6 +18,8 @@ import Arkham.Asset.Runner as X (
   pushAll,
   sealedChaosTokensL,
   setMeta,
+  toModifiers,
+  tokensL,
  )
 import Arkham.Classes as X
 import Arkham.Message as X (Message (..), pattern UseThisAbility)

@@ -340,6 +340,7 @@ investigator f cardDef Stats {..} =
                 , investigatorMovement = Nothing
                 , investigatorBondedCards = mempty
                 , investigatorMeta = Null
+                , investigatorUnhealedHorrorThisRound = 0
                 , investigatorUsedAbilities = mempty
                 , investigatorUsedAdditionalActions = mempty
                 , investigatorMulligansTaken = 0
@@ -499,15 +500,19 @@ getHealHorrorMessage a n iid = do
 
 canHaveHorrorHealed :: (HasGame m, Sourceable a) => a -> InvestigatorId -> m (Maybe InvestigatorId)
 canHaveHorrorHealed a iid = do
-  result <- selectAny $ HealableInvestigator (toSource a) HorrorType $ InvestigatorWithId iid
-
   let
     isCannotHealHorrorOnOtherCardsModifiers = \case
       CannotHealHorrorOnOtherCards _ -> True
       _ -> False
   mModifier <- find isCannotHealHorrorOnOtherCardsModifiers <$> getModifiers (InvestigatorTarget iid)
   case mModifier of
-    Nothing -> pure $ iid <$ guard result
+    Nothing -> do
+      result <- selectAny $ HealableInvestigator (toSource a) HorrorType $ InvestigatorWithId iid
+      orFoolishness <- case UUID.fromText (unCardCode $ unInvestigatorId iid) of
+        Just uuid -> selectAny $ HealableAsset (toSource a) HorrorType $ AssetWithId $ AssetId uuid
+        Nothing -> pure False
+
+      pure $ iid <$ guard (result || orFoolishness)
     Just (CannotHealHorrorOnOtherCards target) -> case target of
       TreacheryTarget tid -> do
         -- we know rational thought is in effect

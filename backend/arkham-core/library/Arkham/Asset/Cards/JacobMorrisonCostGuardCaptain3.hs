@@ -6,8 +6,8 @@ where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
-import Arkham.Helpers.Modifiers (ModifierType (..), toModifiers)
+import Arkham.Asset.Import.Lifted hiding (AssetExhausted, RevealChaosToken)
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Matcher
 
 newtype JacobMorrisonCostGuardCaptain3 = JacobMorrisonCostGuardCaptain3 AssetAttrs

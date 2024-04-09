@@ -32,7 +32,7 @@ instance HasModifiersFor FoolishnessFoolishCatOfUlthar where
       $ toModifiers a
       $ if horror == 0
         then [SkillModifier stype 1 | stype <- allSkills]
-        else [HealHorrorOnThisAsIfInvestigator (toTarget a) horror]
+        else [HealHorrorAsIfOnInvestigator (toTarget a) horror]
   getModifiersFor _ _ = pure []
 
 instance RunMessage FoolishnessFoolishCatOfUlthar where

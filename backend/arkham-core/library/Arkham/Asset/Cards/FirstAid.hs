@@ -3,7 +3,6 @@ module Arkham.Asset.Cards.FirstAid (FirstAid (..), firstAid) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (allInvestigators)
-import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -28,13 +27,12 @@ instance RunMessage FirstAid where
       withDamage <- select $ HealableInvestigator source #damage $ colocatedWith iid
       player <- getPlayer iid
       choices <- for (toList $ withHorror <> withDamage) \i -> do
-        mHealHorror <- runMaybeT $ guard (i `elem` withHorror) *> MaybeT (getHealHorrorMessage source 1 i)
         pure
           $ targetLabel i
           . only
           $ chooseOrRunOne player
           $ [DamageLabel i [HealDamage (toTarget i) source 1] | i `elem` withDamage]
-          <> [HorrorLabel i [healHorror] | healHorror <- toList mHealHorror]
+          <> [HorrorLabel i [HealHorror (toTarget i) source 1] | i `elem` withHorror]
       pushIfAny choices $ chooseOne player choices
       pure a
     _ -> FirstAid <$> runMessage msg attrs

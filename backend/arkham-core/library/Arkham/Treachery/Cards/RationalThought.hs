@@ -13,6 +13,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Matcher
+import Arkham.Projection
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -41,11 +42,11 @@ rationalThought =
 -- concern, but we may want a more flexible solution in the future
 instance HasModifiersFor RationalThought where
   getModifiersFor (InvestigatorTarget iid) (RationalThought (a `With` _)) = do
-    horror <- field TreacheryTokens (countTokens Horror) a.id
+    horror <- fieldMap TreacheryTokens (countTokens Horror) a.id
     pure
       $ toModifiers a
       $ guard (treacheryOnInvestigator iid a)
-      *> [CannotHealHorrorOnOtherCards (toTarget a), HealHorrorOnThisAsIfInvestigator (toTarget a) horror]
+      *> [CannotHealHorrorOnOtherCards (toTarget a), HealHorrorAsIfOnInvestigator (toTarget a) horror]
   getModifiersFor _ _ = pure []
 
 -- Discard when no horror is on this
@@ -65,34 +66,15 @@ instance RunMessage RationalThought where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure $ RationalThought $ attrs `with` Metadata True
-    HealHorror (InvestigatorTarget iid) source amount
-      | unCardCode (unInvestigatorId iid)
-          == UUID.toText (unTreacheryId $ toId attrs) ->
-          do
-            afterWindow <-
-              checkWindows
-                [ mkAfter
-                    $ Window.Healed
-                      HorrorType
-                      ( InvestigatorTarget
-                          $ InvestigatorId
-                            ( CardCode
-                                $ UUID.toText
-                                $ unTreacheryId
-                                $ toId
-                                  attrs
-                            )
-                      )
-                      source
-                      amount
-                ]
-            push afterWindow
-            pure
-              . RationalThought
-              . (`with` meta)
-              $ attrs
-              & tokensL
-              %~ subtractTokens Horror amount
+    HealHorror (isTarget attrs -> True) source amount -> do
+      afterWindow <- checkWindows [mkAfter $ Window.Healed HorrorType (toTarget attrs) source amount]
+      push afterWindow
+      pure
+        . RationalThought
+        . (`with` meta)
+        $ attrs
+        & tokensL
+        %~ subtractTokens Horror amount
     HealHorrorDirectly (InvestigatorTarget iid) _ amount
       | unCardCode (unInvestigatorId iid)
           == UUID.toText (unTreacheryId $ toId attrs) ->

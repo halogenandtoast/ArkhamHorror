@@ -33,7 +33,7 @@ instance HasAbilities DowntownArkhamAsylum where
 instance RunMessage DowntownArkhamAsylum where
   runMessage msg l@(DowntownArkhamAsylum attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      mHealHorror <- getHealHorrorMessage (toAbilitySource attrs 1) 3 iid
-      for_ mHealHorror push
+      canHeal <- canHaveHorrorHealed (attrs.ability 1) iid
+      pushWhen canHeal $ HealHorror (toTarget iid) (attrs.ability 1) 3
       pure l
     _ -> DowntownArkhamAsylum <$> runMessage msg attrs

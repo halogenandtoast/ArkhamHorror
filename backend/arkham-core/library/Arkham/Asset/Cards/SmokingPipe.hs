@@ -41,7 +41,7 @@ instance HasAbilities SmokingPipe where
 instance RunMessage SmokingPipe where
   runMessage msg a@(SmokingPipe attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      mHealHorror <- getHealHorrorMessage attrs 1 iid
-      for_ mHealHorror push
+      canHeal <- canHaveHorrorHealed (attrs.ability 1) iid
+      pushWhen canHeal $ HealHorror (toTarget iid) (attrs.ability 1) 1
       pure a
     _ -> SmokingPipe <$> runMessage msg attrs

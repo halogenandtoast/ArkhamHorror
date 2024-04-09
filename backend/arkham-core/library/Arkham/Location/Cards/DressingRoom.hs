@@ -41,7 +41,7 @@ instance HasAbilities DressingRoom where
 instance RunMessage DressingRoom where
   runMessage msg l@(DressingRoom attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      mHealHorror <- getHealHorrorMessage attrs 3 iid
-      for_ mHealHorror push
+      canHeal <- canHaveHorrorHealed (attrs.ability 1) iid
+      pushWhen canHeal $ HealHorror (toTarget iid) (attrs.ability 1) 3
       pure l
     _ -> DressingRoom <$> runMessage msg attrs

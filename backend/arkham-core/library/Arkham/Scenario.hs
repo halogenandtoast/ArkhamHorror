@@ -456,11 +456,11 @@ instance RunMessage Scenario where
       case facing of
         Upright -> do
           canHealDamage <- Helpers.canHaveDamageHealed source iid
-          mHealHorror <- Helpers.getHealHorrorMessage source 1 iid
+          canHealHorror <- Helpers.canHaveHorrorHealed source iid
           push
             $ chooseOrRunOne player
             $ [DamageLabel iid [HealDamage (toTarget iid) source 1] | canHealDamage]
-            <> [HorrorLabel iid [healHorror] | healHorror <- toList mHealHorror]
+            <> [HorrorLabel iid [HealHorror (toTarget iid) source 1] | canHealHorror]
         Reversed -> do
           push
             $ chooseOne

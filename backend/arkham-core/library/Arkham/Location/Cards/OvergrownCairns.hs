@@ -42,7 +42,7 @@ instance HasAbilities OvergrownCairns where
 instance RunMessage OvergrownCairns where
   runMessage msg l@(OvergrownCairns attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      mHealHorror <- getHealHorrorMessage attrs 2 iid
-      for_ mHealHorror push
+      canHeal <- canHaveHorrorHealed (attrs.ability 1) iid
+      pushWhen canHeal $ HealHorror (toTarget iid) (attrs.ability 1) 2
       pure l
     _ -> OvergrownCairns <$> runMessage msg attrs

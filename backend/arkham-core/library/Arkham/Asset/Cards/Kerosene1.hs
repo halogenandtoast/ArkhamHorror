@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Damage
-import Arkham.Helpers.Investigator
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 
@@ -89,13 +88,11 @@ instance RunMessage Kerosene1 where
             NoPayment
         pure a
     UseCardAbilityChoice iid (isSource attrs -> True) 1 _ _ _ -> do
-      investigatorsWithHeal <-
-        getInvestigatorsWithHealHorror attrs 1
-          $ colocatedWith iid
+      investigators <- selectTargets $ HealableInvestigator (attrs.ability 1) #horror $ colocatedWith iid
 
       assets <-
         selectTargets
-          $ HealableAsset (toSource attrs) HorrorType
+          $ HealableAsset (attrs.ability 1) HorrorType
           $ AssetAt (locationWithInvestigator iid)
           <> AssetControlledBy (affectsOthers Anyone)
 
@@ -103,8 +100,7 @@ instance RunMessage Kerosene1 where
       push
         $ chooseOne player
         $ [ TargetLabel target [HealHorror target (toSource attrs) 1]
-          | target <- assets
+          | target <- assets <> investigators
           ]
-        <> map (uncurry targetLabel . second only) investigatorsWithHeal
       pure a
     _ -> Kerosene1 <$> runMessage msg attrs

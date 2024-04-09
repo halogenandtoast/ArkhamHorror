@@ -50,8 +50,8 @@ toInvestigator (_ : xs) = toInvestigator xs
 
 instance RunMessage GrimmsFairyTales where
   runMessage msg a@(GrimmsFairyTales attrs) = case msg of
-    UseCardAbility _ source 1 windows' _ | isSource attrs source -> do
-      mHealHorror <- getHealHorrorMessage attrs 1 (toInvestigator windows')
-      for_ mHealHorror push
+    UseCardAbility _ source 1 (toInvestigator -> iid) _ | isSource attrs source -> do
+      canHeal <- canHaveHorrorHealed (attrs.ability 1) iid
+      pushWhen canHeal $ HealHorror (toTarget iid) (attrs.ability 1) 1
       pure a
     _ -> GrimmsFairyTales <$> runMessage msg attrs

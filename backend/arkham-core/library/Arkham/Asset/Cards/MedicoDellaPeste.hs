@@ -55,17 +55,17 @@ instance RunMessage MedicoDellaPeste where
   runMessage msg a@(MedicoDellaPeste attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       hasDamage <- canHaveDamageHealed attrs iid
-      mHealHorror <- getHealHorrorMessage attrs 1 iid
+      hasHorror <- canHaveHorrorHealed attrs iid
       player <- getPlayer iid
       push
         $ chooseOrRunOne player
         $ [ Label
             "Heal 1 damage"
-            [HealDamage (InvestigatorTarget iid) (toSource attrs) 1]
+            [HealDamage (InvestigatorTarget iid) (attrs.ability 1) 1]
           | hasDamage
           ]
-        <> [ Label "Heal 1 horror" [healHorror]
-           | healHorror <- maybeToList mHealHorror
+        <> [ Label "Heal 1 horror" [HealHorror (toTarget iid) (attrs.ability 1) 1]
+           | hasHorror
            ]
       pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do

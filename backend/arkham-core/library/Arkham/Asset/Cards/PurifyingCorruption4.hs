@@ -7,7 +7,7 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Investigator (canHaveDamageHealed, getHealHorrorMessage)
+import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed)
 import Arkham.Matcher
 import Arkham.Message (MessageType (..))
 import Arkham.Token
@@ -51,12 +51,12 @@ instance RunMessage PurifyingCorruption4 where
       PurifyingCorruption4 <$> lift (runMessage msg attrs)
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       canHealDamage <- canHaveDamageHealed (attrs.ability 2) iid
-      mHealHorror <- getHealHorrorMessage (attrs.ability 2) 1 iid
+      canHealHorror <- canHaveHorrorHealed (attrs.ability 2) iid
       chooseOrRunOne iid
         $ [ Label "Heal 1 damage and 1 horror"
             $ [HealDamage (toTarget iid) (attrs.ability 2) 1 | canHealDamage]
-            <> toList mHealHorror
-          | canHealDamage || isJust mHealHorror
+            <> [HealHorror (toTarget iid) (attrs.ability 2) 1 | canHealHorror]
+          | canHealDamage || canHealHorror
           ]
         <> [ Label
             "Remove 1 corruption from this card"

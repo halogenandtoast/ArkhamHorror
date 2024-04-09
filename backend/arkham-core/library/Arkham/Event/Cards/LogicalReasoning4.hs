@@ -30,13 +30,13 @@ instance RunMessage LogicalReasoning4 where
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
       iids <- select $ affectsOthers $ colocatedWith iid
       options <- for iids $ \iid' -> do
-        mHealHorror <- getHealHorrorMessage attrs 2 iid'
+        canHealHorror <- canHaveHorrorHealed attrs iid'
         terrors <- select $ TreacheryWithTrait Terror <> treacheryInThreatAreaOf iid'
         player <- getPlayer iid'
         pure
           ( iid'
           , player
-          , [Label "Heal 2 Horror" [healHorror] | healHorror <- toList mHealHorror]
+          , [Label "Heal 2 Horror" [HealHorror (toTarget iid') (toSource attrs) 2] | canHealHorror]
               <> [ Label
                   "Discard a Terror"
                   [ chooseOne player

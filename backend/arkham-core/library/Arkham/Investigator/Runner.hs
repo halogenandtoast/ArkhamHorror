@@ -1738,11 +1738,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     cannotHealHorror <- hasModifier a CannotHealHorror
     let health = findWithDefault 0 source investigatorAssignedHealthHeal
     let sanity = if cannotHealHorror then 0 else findWithDefault 0 source investigatorAssignedSanityHeal
+
     when (health > 0 || sanity > 0) do
       pushM
         $ checkWindows
         $ [mkAfter (Window.Healed DamageType (toTarget a) source health) | health > 0]
-        <> [mkAfter (Window.Healed DamageType (toTarget a) source sanity) | sanity > 0]
+        <> [mkAfter (Window.Healed HorrorType (toTarget a) source sanity) | sanity > 0]
     pure
       $ a
       & (tokensL %~ subtractTokens Token.Damage health . subtractTokens Token.Horror sanity)
@@ -1759,6 +1760,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     if cannotHealHorror
       then pure a
       else do
+        -- TODO: HERE
+        -- healInvestigator = componentLabel HorrorToken thing [HealDamage thing source 1]
+
         let totalHealed = min amount (investigatorSanityDamage a)
         pure
           $ a
@@ -1767,6 +1771,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           & (unhealedHorrorThisRoundL %~ min 0 . subtract totalHealed)
   AdditionalHealHorror (InvestigatorTarget iid) source additional | iid == investigatorId -> do
     -- exists to have Callbacks for the total, get from investigatorHorrorHealed
+    -- TODO: HERE  MAYBE
     cannotHealHorror <- hasModifier a CannotHealHorror
     if cannotHealHorror
       then pure $ a & horrorHealedL .~ 0
@@ -1784,17 +1789,34 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           & (unhealedHorrorThisRoundL %~ min 0 . subtract additional)
   HealHorror (InvestigatorTarget iid) source amount | iid == investigatorId -> do
     cannotHealHorror <- hasModifier a CannotHealHorror
+    unless cannotHealHorror
+      $ pushAll [HealHorrorDelayed (InvestigatorTarget iid) source amount, ApplyHealing source]
+    pure a
+  HealHorrorDelayed target@(isTarget a -> True) source n | n > 0 -> do
+    cannotHealHorror <- hasModifier a CannotHealHorror
+
+    -- afterWindow <- checkWindows [mkAfter $ Window.Healed #horror (toTarget a) source n]
+
+    unless cannotHealHorror do
+      mods <- getModifiers a
+      let additionalTargets = [targetLabel t [HealHorror t source 1] | HealHorrorAsIfOnInvestigator t x <- mods, x > 0]
+      if null additionalTargets
+        then push $ Do msg
+        else do
+          let remainingHorror = investigatorSanityDamage a - sum (toList investigatorAssignedSanityHeal)
+          player <- getPlayer a.id
+          pushAll
+            [ chooseOne player $ [HorrorLabel a.id [Do $ HealHorrorDelayed target source 1] | remainingHorror > 0]
+                <> additionalTargets
+            , HealHorrorDelayed target source (n - 1)
+            ]
+
+    pure a
+  Do (HealHorrorDelayed (isTarget a -> True) source n) -> do
+    cannotHealHorror <- hasModifier a CannotHealHorror
     if cannotHealHorror
       then pure a
-      else do
-        afterWindow <- checkWindows [mkAfter $ Window.Healed #horror (toTarget a) source amount]
-        push afterWindow
-        pure
-          $ a
-          & (tokensL %~ subtractTokens #horror amount)
-          & (unhealedHorrorThisRoundL %~ min 0 . subtract amount)
-  HealHorrorDelayed (isTarget a -> True) source n -> do
-    pure $ a & assignedSanityHealL %~ insertWith (+) source n
+      else pure $ a & assignedSanityHealL %~ insertWith (+) source n
   MovedClues _ (isTarget a -> True) amount -> do
     pure $ a & tokensL %~ addTokens #clue amount
   MovedClues (isSource a -> True) _ amount -> do

@@ -30,15 +30,16 @@ instance RunMessage JimsTrumpet where
       case attrs.controller of
         Just controller -> do
           location <- getJustLocation controller
-          investigatorsWithHeal <-
-            getInvestigatorsWithHealHorror attrs 1
+          investigators <-
+            select
+              $ HealableInvestigator (attrs.ability 1) #horror
               $ oneOf [colocatedWith controller, InvestigatorAt (accessibleFrom location)]
 
           player <- getPlayer controller
           push
             $ chooseOne
               player
-              [targetLabel iid [healHorror] | (iid, healHorror) <- investigatorsWithHeal]
+              [targetLabel iid [HealHorror (toTarget iid) (attrs.ability 1) 1] | iid <- investigators]
           pure a
         _ -> error "Invalid call"
     _ -> JimsTrumpet <$> runMessage msg attrs

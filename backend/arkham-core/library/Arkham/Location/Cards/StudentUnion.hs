@@ -38,13 +38,16 @@ instance RunMessage StudentUnion where
   runMessage msg l@(StudentUnion attrs) = case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       l <$ push (PlaceLocationMatching $ CardWithTitle "Dormitories")
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+      let source = attrs.ability 2
       healDamage <- canHaveDamageHealed source iid
-      mHealHorror <- getHealHorrorMessage source 1 iid
+      healHorror <- canHaveHorrorHealed source iid
       pushAll
-        $ [ HealDamage (InvestigatorTarget iid) (toSource attrs) 1
+        $ [ HealDamage (InvestigatorTarget iid) source 1
           | healDamage
           ]
-        <> maybeToList mHealHorror
+        <> [ HealHorror (InvestigatorTarget iid) source 1
+           | healHorror
+           ]
       pure l
     _ -> StudentUnion <$> runMessage msg attrs

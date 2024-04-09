@@ -44,9 +44,9 @@ instance HasAbilities DiningRoom where
 instance RunMessage DiningRoom where
   runMessage msg l@(DiningRoom attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      mHealHorror <- getHealHorrorMessage attrs 1 iid
+      canHeal <- canHaveHorrorHealed (attrs.ability 1) iid
       pushAll
-        $ maybeToList mHealHorror
+        $ [HealHorror (toTarget iid) (attrs.ability 1) 1 | canHeal]
         <> [RequestChaosTokens source (Just iid) (Reveal 1) SetAside]
       pure l
     RequestedChaosTokens source (Just iid) tokens | isSource attrs source -> do

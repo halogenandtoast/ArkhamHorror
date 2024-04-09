@@ -1,9 +1,4 @@
-module Arkham.Event.Cards.KnowledgeIsPower (
-  knowledgeIsPower,
-  KnowledgeIsPower (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.KnowledgeIsPower (knowledgeIsPower, KnowledgeIsPower (..)) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -15,6 +10,7 @@ import Arkham.Helpers.Card
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Trait (Trait (Spell, Tome))
 import Arkham.Window qualified as Window
@@ -28,58 +24,37 @@ knowledgeIsPower = event KnowledgeIsPower Cards.knowledgeIsPower
 
 cardMatcher :: ExtendedCardMatcher
 cardMatcher =
-  basic
-    ( oneOf [#tome, #spell]
-        <> #asset
-    )
-    <> CardWithPerformableAbility
-      (AbilityOneOf [AbilityIsActionAbility, AbilityIsFastAbility])
-      [IgnoreAllCosts]
+  basic (oneOf [#tome, #spell] <> #asset)
+    <> CardWithPerformableAbility (oneOf [AbilityIsActionAbility, AbilityIsFastAbility]) [IgnoreAllCosts]
 
 instance RunMessage KnowledgeIsPower where
   runMessage msg e@(KnowledgeIsPower attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    PlayThisEvent iid eid | eid == toId attrs -> do
       assets <-
         select
           $ assetControlledBy iid
-          <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Tome]
-          <> AssetWithPerformableAbility
-            (AbilityOneOf [AbilityIsActionAbility, AbilityIsFastAbility])
-            [IgnoreAllCosts]
+          <> oneOf [#spell, #tome]
+          <> AssetWithPerformableAbility (oneOf [AbilityIsActionAbility, AbilityIsFastAbility]) [IgnoreAllCosts]
 
-      cards <-
-        fieldMapM
-          InvestigatorHand
-          (filterM (`extendedCardMatch` cardMatcher))
-          iid
-
-      canDraw <- iid <=~> InvestigatorCanDrawCards Anyone
-      drawing <- drawCards iid attrs 1
+      cards <- fieldMapM InvestigatorHand (filterM (`extendedCardMatch` cardMatcher)) iid
+      mDrawing <- drawCardsIfCan iid attrs 1
       player <- getPlayer iid
 
       push
         $ chooseOne player
-        $ [ targetLabel asset [HandleTargetChoice iid (toSource attrs) (AssetTarget asset)]
-          | asset <- assets
+        $ [ targetLabel asset [HandleTargetChoice iid (toSource attrs) (AssetTarget asset)] | asset <- assets
           ]
         <> [ targetLabel (toCardId card)
             $ [ AddCardEntity card
-              , HandleTargetChoice
-                  iid
-                  (toSource attrs)
-                  (AssetTarget $ AssetId $ unsafeCardIdToUUID $ toCardId card)
+              , HandleTargetChoice iid (toSource attrs) (AssetTarget $ AssetId $ unsafeCardIdToUUID $ toCardId card)
               , RemoveCardEntity card
               ]
             <> [ chooseOne
                 player
-                [ Label
-                    "Discard to draw 1 card"
-                    [ DiscardCard iid (toSource attrs) (toCardId card)
-                    , drawing
-                    ]
+                [ Label "Discard to draw 1 card" [DiscardCard iid (toSource attrs) (toCardId card), drawing]
                 , Label "Do not discard" []
                 ]
-               | canDraw
+               | drawing <- toList mDrawing
                ]
            | card <- cards
            ]
@@ -93,7 +68,7 @@ instance RunMessage KnowledgeIsPower where
       abilities <-
         selectMap adjustAbility
           $ AssetAbility (AssetWithId aid)
-          <> AbilityOneOf [AbilityIsActionAbility, AbilityIsFastAbility]
+          <> oneOf [AbilityIsActionAbility, AbilityIsFastAbility]
       abilities' <- filterM (getCanPerformAbility iid (Window.defaultWindows iid)) abilities
       player <- getPlayer iid
       push $ chooseOne player [AbilityLabel iid ab [] [] | ab <- abilities']

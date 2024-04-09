@@ -27,14 +27,18 @@ normanWithers =
 
 instance HasModifiersFor NormanWithers where
   getModifiersFor target (NormanWithers (a `With` metadata)) | isTarget a target = do
+    canReveal <- withoutModifier a CannotRevealCards
     pure
       $ toModifiers a
-      $ TopCardOfDeckIsRevealed
-      : [CanPlayTopOfDeck AnyCard | not (playedFromTopOfDeck metadata)]
+      $ guard canReveal
+      *> ( TopCardOfDeckIsRevealed
+            : [CanPlayTopOfDeck AnyCard | not (playedFromTopOfDeck metadata)]
+         )
   getModifiersFor (CardIdTarget cid) (NormanWithers (a `With` _)) =
     case unDeck (investigatorDeck a) of
       x : _ | toCardId x == cid -> do
-        pure $ toModifiers a [ReduceCostOf (CardWithId cid) 1]
+        canReveal <- withoutModifier a CannotRevealCards
+        pure $ toModifiers a [ReduceCostOf (CardWithId cid) 1 | canReveal]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

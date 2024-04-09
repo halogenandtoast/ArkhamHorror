@@ -43,6 +43,11 @@ sendRevelation msg = do
   f <- getLogger
   liftIO $ f (ClientCard "Revelation" msg)
 
+sendReveal :: HasGameLogger m => Value -> m ()
+sendReveal msg = do
+  f <- getLogger
+  liftIO $ f (ClientCard "Revealed" msg)
+
 sendEnemy :: HasGameLogger m => Text -> Value -> m ()
 sendEnemy title msg = do
   f <- getLogger

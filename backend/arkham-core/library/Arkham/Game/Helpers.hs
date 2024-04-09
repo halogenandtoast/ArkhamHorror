@@ -1259,7 +1259,10 @@ passesCriteria iid mcard source windows' = \case
     _ -> error $ "missing OnSameLocation check for source: " <> show source
   Criteria.DuringTurn (Matcher.replaceYouMatcher iid -> who) -> selectAny (Matcher.TurnInvestigator <> who)
   Criteria.CardExists cardMatcher -> selectAny cardMatcher
-  Criteria.ExtendedCardExists cardMatcher -> selectAny cardMatcher
+  Criteria.ExtendedCardExists cardMatcher ->
+    case mcard of
+      Just (card, _) -> selectAny (Matcher.replaceThisCard (toCardId card) cardMatcher)
+      _ -> selectAny cardMatcher
   Criteria.CommitedCardsMatch cardListMatcher -> do
     mSkillTest <- getSkillTest
     case mSkillTest of
@@ -3350,6 +3353,7 @@ canDo iid action = do
       CannotTakeAction x -> preventsAction x
       MustTakeAction x -> not <$> preventsAction x -- reads a little weird but we want only thing things x would prevent with cannot take action
       CannotDrawCards -> pure $ action == #draw
+      CannotDrawCardsFromPlayerCardEffects -> pure $ action == #draw
       CannotManipulateDeck -> pure $ action == #draw
       CannotGainResources -> pure $ action == #resource
       _ -> pure False

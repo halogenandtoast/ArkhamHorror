@@ -521,3 +521,12 @@ lookAt
   -> FoundCardsStrategy
   -> m ()
 lookAt iid source target zones matcher strategy = Msg.push $ Msg.lookAt iid source target zones matcher strategy
+
+revealing
+  :: (Targetable target, Sourceable source, ReverseQueue m)
+  => InvestigatorId
+  -> source
+  -> target
+  -> Zone
+  -> m ()
+revealing iid (toSource -> source) (toTarget -> target) zone = Msg.push $ Msg.revealing iid source target zone

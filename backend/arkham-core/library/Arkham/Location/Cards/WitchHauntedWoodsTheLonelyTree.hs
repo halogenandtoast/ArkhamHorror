@@ -3,9 +3,8 @@ module Arkham.Location.Cards.WitchHauntedWoodsTheLonelyTree (
   WitchHauntedWoodsTheLonelyTree (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
+import Arkham.Capability
 import Arkham.Discard
 import Arkham.Draw.Types
 import Arkham.Game.Helpers
@@ -14,6 +13,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype WitchHauntedWoodsTheLonelyTree = WitchHauntedWoodsTheLonelyTree LocationAttrs
@@ -44,19 +44,13 @@ instance HasAbilities WitchHauntedWoodsTheLonelyTree where
   getAbilities (WitchHauntedWoodsTheLonelyTree a) =
     withBaseAbilities
       a
-      [ limitedAbility (PlayerLimit PerRound 1)
+      [ playerLimit PerRound
           $ restrictedAbility
             a
             1
             ( Here
-                <> InvestigatorExists
-                  ( AnyInvestigator
-                      [ You
-                      , InvestigatorAt
-                          ( NotLocation YourLocation
-                              <> LocationWithTitle "Witch-Haunted Woods"
-                          )
-                      ]
+                <> exists
+                  ( oneOf [You, at_ (NotLocation YourLocation <> "Witch-Haunted Woods")]
                       <> InvestigatorWithDiscardableCard
                   )
             )
@@ -67,39 +61,32 @@ instance RunMessage WitchHauntedWoodsTheLonelyTree where
   runMessage msg l@(WitchHauntedWoodsTheLonelyTree attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       handLength <- fieldMap InvestigatorHand length iid
-      canDraw <- iid <=~> InvestigatorCanDrawCards Anyone
+      canDraw <- can.draw.cards FromOtherSource iid
 
       iidsForDraw <-
-        select
-          $ InvestigatorCanDrawCards
-          $ InvestigatorAt
-          $ LocationWithTitle "Witch-Haunted Woods"
-          <> NotLocation (locationWithInvestigator iid)
+        select @InvestigatorMatcher
+          $ can.draw.cards FromOtherSource
+          $ InvestigatorAt ("Witch-Haunted Woods" <> not_ (locationWithInvestigator iid))
 
       iidsForDiscard <-
         select
           $ InvestigatorWithDiscardableCard
-          <> InvestigatorAt
-            ( LocationWithTitle "Witch-Haunted Woods"
-                <> NotLocation (locationWithInvestigator iid)
-            )
+          <> at_ ("Witch-Haunted Woods" <> not_ (locationWithInvestigator iid))
 
       chooseOtherDraw <- for iidsForDraw $ \other -> do
         drawing <- newCardDraw other attrs 1
         pure $ targetLabel other [DrawCards drawing]
 
       drawing <- newCardDraw iid attrs 1
-
       player <- getPlayer iid
+
       push
         $ chooseOrRunOne player
         $ [ Label
             "You choose and discard 1 card from your hand, then an investigator at a different Witch-Haunted Woods draws 1 card"
             [ toMessage
                 $ (chooseAndDiscardCard iid attrs)
-                  { discardThen =
-                      guard (notNull chooseOtherDraw)
-                        $> chooseOrRunOne player chooseOtherDraw
+                  { discardThen = guard (notNull chooseOtherDraw) $> chooseOrRunOne player chooseOtherDraw
                   }
             ]
           | handLength > 0
@@ -110,11 +97,7 @@ instance RunMessage WitchHauntedWoodsTheLonelyTree where
                 player
                 [ targetLabel
                   other
-                  [ toMessage
-                      $ (chooseAndDiscardCard other attrs)
-                        { discardThen = Just $ DrawCards drawing
-                        }
-                  ]
+                  [toMessage $ (chooseAndDiscardCard other attrs) {discardThen = Just $ DrawCards drawing}]
                 | other <- iidsForDiscard
                 ]
             ]

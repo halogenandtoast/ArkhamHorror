@@ -418,4 +418,7 @@ allEnemies =
     , SomeEnemyCard cultistOfTheEnclave
     , --- Sins of the Past
       SomeEnemyCard vengefulSpecter
+    , -- Promo
+      --- Ire of the Void
+      SomeEnemyCard vengefulHound
     ]

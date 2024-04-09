@@ -2262,7 +2262,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             andM
               [ matchWho iid who whoMatcher
               , enemyMatches (attackEnemy details) enemyMatcher
-              , enemyAttackMatches details enemyAttackMatcher
+              , enemyAttackMatches iid details enemyAttackMatcher
               ]
           _ -> noMatch
         _ -> noMatch
@@ -2273,7 +2273,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             andM
               [ matchWho iid who whoMatcher
               , enemyMatches (attackEnemy details) enemyMatcher
-              , enemyAttackMatches details enemyAttackMatcher
+              , enemyAttackMatches iid details enemyAttackMatcher
               ]
           _ -> noMatch
         _ -> noMatch
@@ -2284,7 +2284,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             andM
               [ matchWho iid who whoMatcher
               , enemyMatches (attackEnemy details) enemyMatcher
-              , enemyAttackMatches details enemyAttackMatcher
+              , enemyAttackMatches iid details enemyAttackMatcher
               ]
           _ -> noMatch
         _ -> noMatch
@@ -3068,16 +3068,20 @@ skillTypeMatches st = \case
   Matcher.IsSkillType st' -> st == st'
   Matcher.SkillTypeOneOf ss -> st `elem` ss
 
-enemyAttackMatches :: HasGame m => EnemyAttackDetails -> Matcher.EnemyAttackMatcher -> m Bool
-enemyAttackMatches details@EnemyAttackDetails {..} = \case
+enemyAttackMatches
+  :: HasGame m => InvestigatorId -> EnemyAttackDetails -> Matcher.EnemyAttackMatcher -> m Bool
+enemyAttackMatches youId details@EnemyAttackDetails {..} = \case
   Matcher.AnyEnemyAttack -> pure True
+  Matcher.NotEnemyAttack inner -> not <$> enemyAttackMatches youId details inner
   Matcher.AttackOfOpportunityAttack -> pure $ attackType == AttackOfOpportunity
+  Matcher.AttackOfOpportunityAttackYouProvoked ->
+    pure $ attackType == AttackOfOpportunity && isTarget youId attackOriginalTarget
   Matcher.AttackViaAlert -> pure $ attackType == AlertAttack
   Matcher.CancelableEnemyAttack matcher -> do
     modifiers' <- getModifiers (sourceToTarget attackSource)
     enemyModifiers <- getModifiers attackEnemy
     andM
-      [ enemyAttackMatches details matcher
+      [ enemyAttackMatches youId details matcher
       , pure $ EffectsCannotBeCanceled `notElem` modifiers'
       , pure $ AttacksCannotBeCancelled `notElem` enemyModifiers
       ]

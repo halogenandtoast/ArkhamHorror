@@ -604,3 +604,6 @@ getInMulligan = fromQueue (any isMulligan)
   isMulligan = \case
     InvestigatorMulligan {} -> True
     _ -> False
+
+setMeta :: ToJSON a => a -> InvestigatorAttrs -> InvestigatorAttrs
+setMeta meta attrs = attrs & metaL .~ toJSON meta

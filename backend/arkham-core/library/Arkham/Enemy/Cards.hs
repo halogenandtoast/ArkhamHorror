@@ -63,6 +63,7 @@ allPlayerEnemyCards =
       , unboundBeast
       , shadowAgents
       , accursedFollower
+      , mobGoons
       , tommyMalloy
       ]
 
@@ -1975,6 +1976,13 @@ accursedFollower =
   (basicWeakness "07038" "Accursed Follower")
     { cdCardTraits = setFromList [Humanoid, Cultist, Cursed]
     , cdKeywords = singleton Keyword.Aloof
+    }
+
+mobGoons :: CardDef
+mobGoons =
+  (weakness "08003" "Mob Goons")
+    { cdCardTraits = setFromList [Humanoid, Criminal]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 corpseHungryGhoul :: CardDef

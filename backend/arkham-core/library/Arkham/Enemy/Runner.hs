@@ -711,9 +711,25 @@ instance RunMessage EnemyAttrs where
         ]
       pure a
     InitiateEnemyAttack details | attackEnemy details == enemyId -> do
-      push $ EnemyAttack details
+      mods <- getModifiers a
+      let canBeCancelled = AttacksCannotBeCancelled `notElem` mods
+      let strategy =
+            fromMaybe (attackDamageStrategy details)
+              $ listToMaybe [s | SetAttackDamageStrategy s <- mods]
+      push $ EnemyAttack $ details {attackCanBeCanceled = canBeCancelled, attackDamageStrategy = strategy}
       pure a
+    ChangeEnemyAttackTarget eid target | eid == enemyId -> do
+      let details = fromJustNote "missing attack details" enemyAttacking
+      pure $ a & attackingL ?~ details {attackTarget = target}
+    AfterEnemyAttack eid msgs | eid == enemyId -> do
+      let details = fromJustNote "missing attack details" enemyAttacking
+      pure $ a & attackingL ?~ details {attackAfter = msgs}
     EnemyAttack details | attackEnemy details == enemyId -> do
+      mods <- getModifiers a
+      let canBeCancelled = AttacksCannotBeCancelled `notElem` mods
+      let strategy =
+            fromMaybe (attackDamageStrategy details)
+              $ listToMaybe [s | SetAttackDamageStrategy s <- mods]
       whenAttacksWindow <- checkWindows [mkWhen $ Window.EnemyAttacks details]
       afterAttacksEventIfCancelledWindow <-
         checkWindows [mkAfter $ Window.EnemyAttacksEvenIfCancelled details]
@@ -721,12 +737,16 @@ instance RunMessage EnemyAttrs where
       pushAll
         [ whenWouldAttackWindow
         , whenAttacksWindow
-        , PerformEnemyAttack details
-        , After (PerformEnemyAttack details)
+        , PerformEnemyAttack enemyId
+        , After (PerformEnemyAttack enemyId)
         , afterAttacksEventIfCancelledWindow
         ]
-      pure a
-    PerformEnemyAttack details | attackEnemy details == enemyId -> do
+      pure
+        $ a
+        & attackingL
+        ?~ details {attackCanBeCanceled = canBeCancelled, attackDamageStrategy = strategy}
+    PerformEnemyAttack eid | eid == enemyId -> do
+      let details = fromJustNote "missing attack details" enemyAttacking
       modifiers <- getModifiers (attackTarget details)
       sourceModifiers <- getModifiers (sourceToTarget $ attackSource details)
 
@@ -743,9 +763,9 @@ instance RunMessage EnemyAttrs where
 
       let
         allowAttack =
-          and
+          or
             [ null cardsThatCanceled
-            , EffectsCannotBeCanceled `notElem` sourceModifiers && attackCanBeCanceled details
+            , EffectsCannotBeCanceled `notElem` sourceModifiers || not (attackCanBeCanceled details)
             ]
 
       healthDamage <- field EnemyHealthDamage (toId a)
@@ -795,7 +815,8 @@ instance RunMessage EnemyAttrs where
       pure a
     After (EnemyAttack details) | attackEnemy details == toId a -> do
       afterAttacksWindow <- checkWindows [mkAfter $ Window.EnemyAttacks details]
-      push afterAttacksWindow
+      let updatedDetails = fromJustNote "missing attack details" enemyAttacking
+      pushAll $ afterAttacksWindow : attackAfter updatedDetails
       pure a
     HealDamage (EnemyTarget eid) source n | eid == enemyId -> do
       afterWindow <- checkWindows [mkAfter $ Window.Healed DamageType (toTarget a) source n]
@@ -1078,11 +1099,13 @@ instance RunMessage EnemyAttrs where
           $ EnemyAttackDetails
             { attackEnemy = enemyId
             , attackTarget = InvestigatorTarget iid
+            , attackOriginalTarget = InvestigatorTarget iid
             , attackDamageStrategy = enemyDamageStrategy
             , attackType = AttackOfOpportunity
             , attackExhaustsEnemy = False
             , attackSource = toSource a
             , attackCanBeCanceled = True
+            , attackAfter = []
             }
       pure a
     InvestigatorDrawEnemy iid eid | eid == enemyId -> do

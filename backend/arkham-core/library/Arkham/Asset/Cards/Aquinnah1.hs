@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Attack
 import Arkham.Enemy.Types (Field (EnemyHealthDamage, EnemySanityDamage))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Matcher qualified as Matcher
@@ -40,7 +39,7 @@ instance RunMessage Aquinnah1 where
   runMessage msg a@(Aquinnah1 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       enemyId <- withQueue $ \queue -> case dropUntilAttack queue of
-        PerformEnemyAttack details : queue' -> (queue', attackEnemy details)
+        PerformEnemyAttack eid : queue' -> (queue', eid)
         _ -> error "unhandled"
       healthDamage' <- field EnemyHealthDamage enemyId
       sanityDamage' <- field EnemySanityDamage enemyId

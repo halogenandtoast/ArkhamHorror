@@ -23,27 +23,12 @@ heroicRescue = event HeroicRescue Cards.heroicRescue
 
 instance RunMessage HeroicRescue where
   runMessage msg e@(HeroicRescue attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ [(windowType -> Window.EnemyWouldAttack details')] _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ [windowType -> Window.EnemyWouldAttack details'] _ | eid == toId attrs -> do
       canDealDamage <- withoutModifier iid CannotDealDamage
-      popMessageMatching_ \case
-        CheckWindow _ windows -> flip
-          any
-          windows
-          \case
-            (windowType -> Window.EnemyAttacks details) -> details == details'
-            _ -> False
-        _ -> False
-      popMessageMatching_ \case
-        After (PerformEnemyAttack details) -> details == details'
-        _ -> False
-      replaceMessageMatching
-        \case
-          PerformEnemyAttack details -> details == details'
-          _ -> False
-        \case
-          PerformEnemyAttack details ->
-            EnemyAttack (details {attackTarget = toTarget iid})
-              : [EnemyDamage (attackEnemy details) $ nonAttack attrs 1 | canDealDamage]
-          _ -> error "Mismatched"
+      let enemy = attackEnemy details'
+      pushAll
+        $ EnemyEngageInvestigator enemy iid
+        : ChangeEnemyAttackTarget enemy (toTarget iid)
+        : [AfterEnemyAttack enemy [EnemyDamage enemy $ nonAttack attrs 1] | canDealDamage]
       pure e
     _ -> HeroicRescue <$> runMessage msg attrs

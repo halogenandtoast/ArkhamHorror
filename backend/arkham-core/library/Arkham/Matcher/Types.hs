@@ -298,10 +298,13 @@ data EnemyMatcher
   | EnemyIs CardCode
   | EnemyWithCardId CardId
   | AnyEnemy
+  | EnemyCanAttack InvestigatorMatcher
+  | AttackedYouSinceTheEndOfYourLastTurn
   | CanFightEnemy Source
-  | CanEvadeEnemy Source
+  | CanEvadeEnemy Source -- This checks for an ability
+  | EnemyCanBeEvadedBy Source -- This is not checking for an ability
   | CanFightEnemyWithOverride CriteriaOverride
-  | CanEvadeEnemyWithOverride CriteriaOverride
+  | CanEvadeEnemyWithOverride CriteriaOverride -- This checks for an ability but overrides the criteria
   | CanEngageEnemy Source
   | CanEngageEnemyWithOverride CriteriaOverride
   | EnemyDiscardedBy InvestigatorMatcher
@@ -1344,9 +1347,14 @@ data DamageEffectMatcher
 data EnemyAttackMatcher
   = AnyEnemyAttack
   | AttackOfOpportunityAttack
+  | AttackOfOpportunityAttackYouProvoked
   | AttackViaAlert
   | CancelableEnemyAttack EnemyAttackMatcher
+  | NotEnemyAttack EnemyAttackMatcher
   deriving stock (Show, Eq, Ord, Data)
+
+instance Not EnemyAttackMatcher where
+  not_ = NotEnemyAttack
 
 data ScenarioMatcher = TheScenario
   deriving stock (Show, Eq, Ord, Data)

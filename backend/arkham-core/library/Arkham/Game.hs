@@ -165,7 +165,7 @@ import Control.Monad.State.Strict hiding (state)
 import Data.Aeson (Result (..))
 import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.KeyMap qualified as KeyMap
-import Data.Aeson.Types (emptyArray, parse)
+import Data.Aeson.Types (emptyArray, parse, parseMaybe)
 import Data.List qualified as List
 import Data.List.Extra (groupOn)
 import Data.Map.Monoidal.Strict (getMonoidalMap)
@@ -2501,6 +2501,25 @@ enemyMatcherFilter = \case
       . maxes
       . mapMaybe (\(x, y) -> (x,) <$> y)
       <$> forToSnd matches' (field EnemyRemainingHealth . toId)
+  AttackedYouSinceTheEndOfYourLastTurn -> \enemy -> do
+    -- ONLY works for Daniela Reyes
+    iid <- toId <$> getActiveInvestigator
+    meta <- field InvestigatorMeta iid
+    case meta of
+      Object obj -> case parseMaybe @_ @[EnemyId] (.: "enemiesThatAttackedYouSinceTheEndOfYourLastTurn") obj of
+        Just eids -> pure $ toId enemy `elem` eids
+        Nothing -> error "AttackedYouSinceTheEndOfYourLastTurn: key missing"
+      _ -> error "AttackedYouSinceTheEndOfYourLastTurn: InvestigatorMeta is not an Object"
+  EnemyCanAttack investigatorMatcher -> \enemy -> do
+    iids <- select investigatorMatcher
+    let
+      canBeAttacked iid = do
+        mods <- getModifiers iid
+        flip noneM mods \case
+          CannotBeAttackedBy eMatcher -> toId enemy <=~> eMatcher
+          CannotBeAttacked -> pure True
+          _ -> pure False
+    anyM canBeAttacked iids
   EnemyWithRemainingHealth valueMatcher -> do
     let hasRemainingHealth = \case
           Nothing -> pure False
@@ -2646,6 +2665,34 @@ enemyMatcherFilter = \case
                 ]
           )
           (getAbilities enemy)
+  EnemyCanBeEvadedBy source -> \enemy -> do
+    iid <- view activeInvestigatorIdL <$> getGame
+    modifiers' <- getModifiers iid
+    enemyModifiers <- getModifiers enemy
+    sourceModifiers <- case source of
+      AbilitySource abSource idx -> do
+        abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+        foldMapM (getModifiers . AbilityTarget iid) abilities
+      _ -> pure []
+    let
+      isOverride = \case
+        EnemyEvadeActionCriteria override -> Just override
+        CanModify (EnemyEvadeActionCriteria override) -> Just override
+        _ -> Nothing
+      overrides = mapMaybe isOverride (enemyModifiers <> sourceModifiers)
+      enemyFilters =
+        mapMaybe
+          ( \case
+              CannotEvade m -> Just m
+              _ -> Nothing
+          )
+          modifiers'
+      window = mkWindow #when (Window.DuringTurn iid)
+      overrideFunc = case overrides of
+        [] -> id
+        [o] -> overrideAbilityCriteria o
+        _ -> error "multiple overrides found"
+    notElem (toId enemy) <$> select (mconcat $ EnemyWithModifier CannotBeEvaded : enemyFilters)
   CanEvadeEnemyWithOverride override -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers (EnemyTarget $ toId enemy)
@@ -3027,6 +3074,7 @@ getEnemyField f e = do
     EnemySealedChaosTokens -> pure enemySealedChaosTokens
     EnemyKeys -> pure enemyKeys
     EnemySpawnedBy -> pure enemySpawnedBy
+    EnemyAttacking -> pure enemyAttacking
     EnemyTokens -> pure enemyTokens
     EnemyDoom -> do
       countAllDoom <- attrs `hasModifier` CountAllDoomInPlay

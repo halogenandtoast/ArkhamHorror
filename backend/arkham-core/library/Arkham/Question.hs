@@ -76,7 +76,7 @@ data UI msg
   | EffectActionButton {tooltip :: Tooltip, effectId :: EffectId, messages :: [msg]}
   | Done {label :: Text}
   | SkipTriggersButton {investigatorId :: InvestigatorId}
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq)
 
 data PaymentAmountChoice msg = PaymentAmountChoice
   { investigatorId :: InvestigatorId

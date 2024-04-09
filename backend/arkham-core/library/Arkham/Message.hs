@@ -18,7 +18,7 @@ import Arkham.Action hiding (Explore)
 import Arkham.Action.Additional
 import Arkham.Agenda.Sequence
 import Arkham.Asset.Uses
-import Arkham.Attack
+import Arkham.Attack.Types
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
@@ -81,6 +81,7 @@ import GHC.OverloadedLabels
 
 messageType :: Message -> Maybe MessageType
 messageType PerformEnemyAttack {} = Just AttackMessage
+messageType (After (PerformEnemyAttack {})) = Just AttackMessage
 messageType Revelation {} = Just RevelationMessage
 messageType DrawChaosToken {} = Just DrawChaosTokenMessage
 messageType ResolveChaosToken {} = Just ResolveChaosTokenMessage
@@ -566,10 +567,12 @@ data Message
   | EnemyWillAttack EnemyAttackDetails
   | EnemyAttack EnemyAttackDetails
   | InitiateEnemyAttack EnemyAttackDetails
-  | PerformEnemyAttack EnemyAttackDetails -- Internal
+  | PerformEnemyAttack EnemyId -- Internal
+  | AfterEnemyAttack EnemyId [Message]
   | EnemyAttackFromDiscard InvestigatorId Source Card
   | EnemyAttackIfEngaged EnemyId (Maybe InvestigatorId)
   | EnemyAttacks [Message]
+  | ChangeEnemyAttackTarget EnemyId Target
   | CheckEnemyEngagement InvestigatorId
   | EnemyCheckEngagement EnemyId
   | EnemyDamage EnemyId DamageAssignment

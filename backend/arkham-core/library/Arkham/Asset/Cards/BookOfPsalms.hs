@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.ChaosBag
-import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -32,11 +31,15 @@ instance HasAbilities BookOfPsalms where
 instance RunMessage BookOfPsalms where
   runMessage msg a@(BookOfPsalms attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      iidsWithHeal <- getInvestigatorsWithHealHorror attrs 1 (colocatedWith iid)
+      investigators <- select $ HealableInvestigator (attrs.ability 1) #horror (colocatedWith iid)
       player <- getPlayer iid
       n <- min 2 <$> getRemainingBlessTokens
       pushAll
-        $ (chooseOrRunOne player $ map (uncurry targetLabel . second only) iidsWithHeal)
+        $ chooseOrRunOne
+          player
+          [ targetLabel investigator [HealHorror (toTarget investigator) (attrs.ability 1) 1]
+          | investigator <- investigators
+          ]
         : replicate n (AddChaosToken #bless)
       pure a
     _ -> BookOfPsalms <$> runMessage msg attrs

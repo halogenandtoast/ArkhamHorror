@@ -31,26 +31,21 @@ newtype RationalThought = RationalThought (TreacheryAttrs `With` Metadata)
 
 rationalThought :: TreacheryCard RationalThought
 rationalThought =
-  treacheryWith
-    (RationalThought . (`with` Metadata False))
-    Cards.rationalThought
-    (tokensL %~ addTokens Horror 4)
+  treacheryWith (RationalThought . (`with` Metadata False)) Cards.rationalThought
+    $ tokensL
+    %~ addTokens Horror 4
 
 -- NOTE: Preventing the resource gain is handled in Carolyn Fern. Ideally it
 -- would be a modifier, but targetting such a specific interaction is
 -- difficult. Since this is a signature, overlap like this is generally not a
 -- concern, but we may want a more flexible solution in the future
 instance HasModifiersFor RationalThought where
-  getModifiersFor (InvestigatorTarget iid) (RationalThought (a `With` _)) =
+  getModifiersFor (InvestigatorTarget iid) (RationalThought (a `With` _)) = do
+    horror <- field TreacheryTokens (countTokens Horror) a.id
     pure
-      $ toModifiers
-        a
-        [ CannotHealHorrorOnOtherCards (toTarget a)
-        | treacheryOnInvestigator iid a
-        ]
-  getModifiersFor target (RationalThought a)
-    | isTarget a target =
-        pure $ toModifiers a [HealHorrorOnThisAsIfInvestigator "05001"] -- should this be a matcher? Probably doesn't matter as this is likely very unique
+      $ toModifiers a
+      $ guard (treacheryOnInvestigator iid a)
+      *> [CannotHealHorrorOnOtherCards (toTarget a), HealHorrorOnThisAsIfInvestigator (toTarget a) horror]
   getModifiersFor _ _ = pure []
 
 -- Discard when no horror is on this

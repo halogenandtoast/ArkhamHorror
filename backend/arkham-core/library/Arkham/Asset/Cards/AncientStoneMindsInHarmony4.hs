@@ -10,7 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.CampaignLogKey
 import Arkham.Damage
-import Arkham.Helpers.Investigator
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Timing qualified as Timing
 
@@ -53,8 +52,8 @@ instance RunMessage AncientStoneMindsInHarmony4 where
           msg
           (attrs {assetPrintedUses = Uses Secret (Static n), assetUses = singletonMap Secret n})
     UseCardAbility iid (isSource attrs -> True) 1 _ (getAmount -> amount) -> do
-      investigatorsWithHealMessage <-
-        getInvestigatorsWithHealHorror attrs amount $ colocatedWith iid
+      investigators <-
+        select $ HealableInvestigator (attrs.ability 1) #horror $ colocatedWith iid
 
       assets <-
         selectMap AssetTarget
@@ -65,10 +64,7 @@ instance RunMessage AncientStoneMindsInHarmony4 where
       push
         $ chooseOrRunOne player
         $ [ TargetLabel target [HealHorror target (toSource attrs) amount]
-          | target <- assets
+          | target <- map toTarget assets <> map toTarget investigators
           ]
-        <> [ targetLabel target [healHorror]
-           | (target, healHorror) <- investigatorsWithHealMessage
-           ]
       pure a
     _ -> AncientStoneMindsInHarmony4 <$> runMessage msg attrs

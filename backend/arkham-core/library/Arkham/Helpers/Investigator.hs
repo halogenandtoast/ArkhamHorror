@@ -23,7 +23,7 @@ import Arkham.Helpers.Source
 import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Message (IsInvestigate (..), Message (HealHorror, InvestigatorMulligan))
+import Arkham.Message (IsInvestigate (..), Message (InvestigatorMulligan))
 import Arkham.Name
 import Arkham.Placement
 import Arkham.Projection
@@ -31,12 +31,9 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
-import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Foldable (foldrM)
 import Data.Function (on)
 import Data.List (nubBy)
-import Data.Monoid
-import Data.UUID qualified as UUID
 
 getSkillValue :: HasGame m => SkillType -> InvestigatorId -> m Int
 getSkillValue st iid = case st of
@@ -492,54 +489,11 @@ isEliminated iid =
 getHandCount :: HasGame m => InvestigatorId -> m Int
 getHandCount = fieldMap InvestigatorHand length
 
-getHealHorrorMessage :: (HasGame m, Sourceable a) => a -> Int -> InvestigatorId -> m (Maybe Message)
-getHealHorrorMessage a n iid = do
-  mHorrorId <- canHaveHorrorHealed a iid
-  for mHorrorId $ \horrorId ->
-    pure $ HealHorror (InvestigatorTarget horrorId) (toSource a) n
-
-canHaveHorrorHealed :: (HasGame m, Sourceable a) => a -> InvestigatorId -> m (Maybe InvestigatorId)
-canHaveHorrorHealed a iid = do
-  let
-    isCannotHealHorrorOnOtherCardsModifiers = \case
-      CannotHealHorrorOnOtherCards _ -> True
-      _ -> False
-  mModifier <- find isCannotHealHorrorOnOtherCardsModifiers <$> getModifiers (InvestigatorTarget iid)
-  case mModifier of
-    Nothing -> do
-      result <- selectAny $ HealableInvestigator (toSource a) HorrorType $ InvestigatorWithId iid
-      orFoolishness <- case UUID.fromText (unCardCode $ unInvestigatorId iid) of
-        Just uuid -> selectAny $ HealableAsset (toSource a) HorrorType $ AssetWithId $ AssetId uuid
-        Nothing -> pure False
-
-      pure $ iid <$ guard (result || orFoolishness)
-    Just (CannotHealHorrorOnOtherCards target) -> case target of
-      TreacheryTarget tid -> do
-        -- we know rational thought is in effect
-        let
-          asIfInvestigator = \case
-            HealHorrorOnThisAsIfInvestigator ii -> First (Just ii)
-            _ -> First Nothing
-        mAsIfInverstigator <- getFirst . foldMap asIfInvestigator <$> getModifiers target
-        case mAsIfInverstigator of
-          Just iid' | iid == iid' -> do
-            innerResult <- elem tid <$> select (treacheryIs Treacheries.rationalThought)
-            pure $ InvestigatorId (CardCode $ UUID.toText $ unTreacheryId tid) <$ guard innerResult
-          _ -> pure Nothing
-      _ -> pure Nothing
-    _ -> pure Nothing
+canHaveHorrorHealed :: (HasGame m, Sourceable a) => a -> InvestigatorId -> m Bool
+canHaveHorrorHealed a = selectAny . HealableInvestigator (toSource a) HorrorType . InvestigatorWithId
 
 canHaveDamageHealed :: (HasGame m, Sourceable a) => a -> InvestigatorId -> m Bool
 canHaveDamageHealed a = selectAny . HealableInvestigator (toSource a) DamageType . InvestigatorWithId
-
-getInvestigatorsWithHealHorror
-  :: (HasGame m, Sourceable a)
-  => a
-  -> Int
-  -> InvestigatorMatcher
-  -> m [(InvestigatorId, Message)]
-getInvestigatorsWithHealHorror a n =
-  select . affectsOthers >=> mapMaybeM (traverseToSndM (getHealHorrorMessage a n))
 
 additionalActionCovers
   :: HasGame m => Source -> [Action] -> AdditionalAction -> m Bool

@@ -1,11 +1,10 @@
 module Arkham.Investigator.Cards.StellaClark where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Game.Helpers
+import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed)
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Timing qualified as Timing
 
@@ -22,7 +21,7 @@ instance HasAbilities StellaClark where
   getAbilities (StellaClark a) =
     [ playerLimit PerRound
         $ restrictedAbility a 1 Self
-        $ freeReaction (SkillTestResult Timing.After You SkillTestWasFailed AnyResult)
+        $ freeReaction (SkillTestResult #after You #failed #any)
     ]
 
 instance HasChaosTokenValue StellaClark where
@@ -31,24 +30,23 @@ instance HasChaosTokenValue StellaClark where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage StellaClark where
-  runMessage msg i@(StellaClark attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ GainActions iid source 1
+  runMessage msg i@(StellaClark attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ GainActions iid (attrs.ability 1) 1
       pure i
     When (RevealChaosToken _ iid token) | iid == toId attrs -> do
       faces <- getModifiedChaosTokenFace token
       when (ElderSign `elem` faces) $ do
         healDamage <- canHaveDamageHealed attrs iid
-        mHealHorror <- getHealHorrorMessage attrs 1 iid
-        player <- getPlayer iid
-        push
-          $ chooseOne player
-          $ [ Label "Resolve as Elder Sign" []
-            , Label
-                "Automatically fail this skill test to heal 1 damage and 1 horror"
-                $ FailSkillTest
-                : [HealDamage (toTarget attrs) (toSource attrs) 1 | healDamage]
-                  <> maybeToList mHealHorror
-            ]
+        healHorror <- canHaveHorrorHealed attrs iid
+        chooseOne
+          iid
+          [ Label "Resolve as Elder Sign" []
+          , Label
+              "Automatically fail this skill test to heal 1 damage and 1 horror"
+              $ FailSkillTest
+              : [HealDamage (toTarget attrs) (toSource attrs) 1 | healDamage]
+                <> [HealHorror (toTarget attrs) (toSource attrs) 1 | healHorror]
+          ]
       pure i
-    _ -> StellaClark <$> runMessage msg attrs
+    _ -> StellaClark <$> lift (runMessage msg attrs)

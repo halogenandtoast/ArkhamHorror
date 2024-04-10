@@ -968,7 +968,9 @@ allAssets =
       SomeAssetCard daisysToteBagAdvanced
     , SomeAssetCard theNecronomiconAdvanced
     , -- Promo
-      --- Ire of the Void
+      --- Hour of the Huntress
+      SomeAssetCard greenManMedallionHourOfTheHuntress
+    , --- Ire of the Void
       SomeAssetCard splitTheAngleIreOfTheVoid
     , --- To Fight the Black Wind
       SomeAssetCard foolishnessFoolishCatOfUlthar

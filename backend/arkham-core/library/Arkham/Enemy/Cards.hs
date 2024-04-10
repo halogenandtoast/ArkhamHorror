@@ -65,6 +65,7 @@ allPlayerEnemyCards =
       , accursedFollower
       , mobGoons
       , tommyMalloy
+      , sacrificialBeast
       , vengefulHound
       ]
 
@@ -2282,6 +2283,13 @@ vengefulSpecter =
     , cdKeywords = setFromList [Keyword.Patrol "Room 245", Keyword.Retaliate]
     , cdVictoryPoints = Just 2
     , cdUnique = True
+    }
+
+sacrificialBeast :: CardDef
+sacrificialBeast =
+  (weakness "98003" "Sacrificial Beast")
+    { cdCardTraits = setFromList [Monster, DarkYoung]
+    , cdKeywords = singleton Keyword.Replacement
     }
 
 vengefulHound :: CardDef

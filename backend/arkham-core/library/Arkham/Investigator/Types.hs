@@ -19,6 +19,7 @@ import Arkham.Classes.HasChaosTokenValue
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Deck qualified as Deck
+import Arkham.DeckBuilding.Adjustment
 import Arkham.Discard
 import Arkham.Helpers
 import Arkham.Id
@@ -174,6 +175,8 @@ data InvestigatorAttrs = InvestigatorAttrs
     investigatorLog :: CampaignLog
   , -- internal tracking
     investigatorDiscarding :: Maybe (HandDiscard Message)
+  , -- deck building
+    investigatorDeckBuildingAdjustments :: [DeckBuildingAdjustment]
   }
   deriving stock (Show, Eq, Generic)
 
@@ -282,6 +285,7 @@ instance FromJSON InvestigatorAttrs where
     investigatorKeys <- o .: "keys"
     investigatorLog <- o .:? "log" .!= mempty
     investigatorDiscarding <- o .: "discarding"
+    investigatorDeckBuildingAdjustments <- o .:? "deckBuildingAdjustments" .!= mempty
 
     pure InvestigatorAttrs {..}
 

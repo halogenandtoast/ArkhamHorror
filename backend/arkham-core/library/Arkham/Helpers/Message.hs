@@ -55,9 +55,8 @@ drawCardsIfCan i source n = do
 
 sourceToFromSource :: Sourceable source => source -> FromSource
 sourceToFromSource (toSource -> source) = case source of
-  AbilitySource (InvestigatorSource _) _ -> FromPlayerCardEffect
-  InvestigatorSource _ -> FromOtherSource
   AbilitySource s _ -> sourceToFromSource s
+  InvestigatorSource _ -> FromPlayerCardEffect
   AssetSource _ -> FromPlayerCardEffect
   EventSource _ -> FromPlayerCardEffect
   SkillSource _ -> FromPlayerCardEffect
@@ -455,7 +454,7 @@ takeResources iid (toSource -> source) n = TakeResources iid n source False
 gainResourcesIfCan
   :: (HasGame m, Sourceable source) => InvestigatorId -> source -> Int -> m (Maybe Message)
 gainResourcesIfCan iid source n = do
-  canGainResources <- can.gain.resources iid
+  canGainResources <- can.gain.resources (sourceToFromSource source) iid
   pure $ guard canGainResources $> takeResources iid source n
 
 assignEnemyDamage :: DamageAssignment -> EnemyId -> Message

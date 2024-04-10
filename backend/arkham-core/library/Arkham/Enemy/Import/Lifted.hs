@@ -26,4 +26,5 @@ import Arkham.Message.Lifted as X
 import Arkham.Prelude as X
 import Arkham.Question as X
 import Arkham.Source as X
+import Arkham.Spawn as X
 import Arkham.Target as X

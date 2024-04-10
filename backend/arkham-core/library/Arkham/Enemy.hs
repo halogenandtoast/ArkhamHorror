@@ -419,6 +419,8 @@ allEnemies =
     , --- Sins of the Past
       SomeEnemyCard vengefulSpecter
     , -- Promo
-      --- Ire of the Void
+      --- Hour of the Huntress
+      SomeEnemyCard sacrificialBeast
+    , --- Ire of the Void
       SomeEnemyCard vengefulHound
     ]

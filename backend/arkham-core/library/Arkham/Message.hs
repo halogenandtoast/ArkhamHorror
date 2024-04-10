@@ -32,6 +32,7 @@ import Arkham.ClassSymbol
 import Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Deck
+import Arkham.DeckBuilding.Adjustment
 import Arkham.Decklist.Type
 import Arkham.Direction
 import Arkham.Discard
@@ -1016,6 +1017,7 @@ data Message
   | SendMessage Target Message
   | IfEnemyExists EnemyMatcher [Message]
   | ExcessDamage EnemyId [Message]
+  | AddDeckBuildingAdjustment InvestigatorId DeckBuildingAdjustment
   | -- Commit
     Do Message
   | DoBatch BatchId Message

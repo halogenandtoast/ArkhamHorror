@@ -837,6 +837,8 @@ data WindowMatcher
   | InvestigatorWouldTakeDamage Timing Who SourceMatcher
   | InvestigatorWouldTakeHorror Timing Who SourceMatcher
   | WouldSearchDeck Timing Who DeckMatcher
+  | WouldLookAtDeck Timing Who DeckMatcher
+  | LookedAtDeck Timing Who DeckMatcher
   | SearchedDeck Timing Who DeckMatcher
   | AmongSearchedCards Who
   | DeckWouldRunOutOfCards Timing Who
@@ -1109,7 +1111,12 @@ data ValueMatcher
   | AnyValue
   deriving stock (Show, Eq, Ord, Data)
 
-data SkillTestTypeMatcher = InvestigationSkillTest LocationMatcher | AnySkillTestType
+data SkillTestTypeMatcher
+  = InvestigationSkillTest LocationMatcher
+  | AnySkillTestType
+  | SkillTestWithAction ActionMatcher
+  | SkillTestOnEncounterCard
+  | SkillTestTypeOneOf [SkillTestTypeMatcher]
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "investigation" SkillTestTypeMatcher where

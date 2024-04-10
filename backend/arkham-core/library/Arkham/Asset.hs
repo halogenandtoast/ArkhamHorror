@@ -976,6 +976,8 @@ allAssets =
       SomeAssetCard foolishnessFoolishCatOfUlthar
     , --- Blood of Baalshandor
       SomeAssetCard mollyMaxwell
+    , --- Dark Revelations
+      SomeAssetCard ruthWestmacottDarkRevelations
     , -- Misc
       SomeAssetCard courage
     ]

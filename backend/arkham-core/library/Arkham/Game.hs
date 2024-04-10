@@ -341,6 +341,7 @@ withSkillTestMetadata :: HasGame m => SkillTest -> m (With SkillTest SkillTestMe
 withSkillTestMetadata st = do
   stmModifiedSkillValue <- getSkillTestModifiedSkillValue
   stmSkills <- getSkillTestSkillTypes
+  stmModifiedDifficulty <- fromJustNote "impossible" <$> getSkillTestDifficulty
   pure $ st `with` SkillTestMetadata {..}
 
 withInvestigatorConnectionData

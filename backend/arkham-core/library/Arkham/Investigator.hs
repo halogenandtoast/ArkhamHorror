@@ -129,6 +129,7 @@ allInvestigators =
       , SomeInvestigatorCard winifredHabbamock
       , SomeInvestigatorCard stellaClark
       , SomeInvestigatorCard jacquelineFine
+      , SomeInvestigatorCard gloriaGoldberg
       , SomeInvestigatorCard daisyWalkerParallel
       ]
 

@@ -453,6 +453,16 @@ skillTestModifier
 skillTestModifier (toSource -> source) (toTarget -> target) x =
   push $ Msg.skillTestModifier source target x
 
+searchModifier
+  :: forall target source m
+   . (ReverseQueue m, Sourceable source, Targetable target)
+  => source
+  -> target
+  -> ModifierType
+  -> m ()
+searchModifier (toSource -> source) (toTarget -> target) modifier =
+  push $ Msg.searchModifier source target modifier
+
 chooseFightEnemy :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 chooseFightEnemy iid = mkChooseFight iid >=> push . toMessage
 
@@ -534,3 +544,11 @@ revealing iid (toSource -> source) (toTarget -> target) zone = Msg.push $ Msg.re
 
 shuffleIntoDeck :: (ReverseQueue m, IsDeck deck, Targetable target) => deck -> target -> m ()
 shuffleIntoDeck deck target = push $ Msg.shuffleIntoDeck deck target
+
+cardResolutionModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
+cardResolutionModifier source target modifier = push $ Msg.cardResolutionModifier source target modifier
+
+cardResolutionModifiers
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
+cardResolutionModifiers source target modifiers = push $ Msg.cardResolutionModifiers source target modifiers

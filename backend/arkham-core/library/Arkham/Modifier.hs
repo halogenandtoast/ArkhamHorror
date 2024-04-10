@@ -276,6 +276,7 @@ data ModifierType
   | RevealChaosTokensBeforeCommittingCards
   | SanityModifier Int
   | SearchDepth Int
+  | LookAtDepth Int
   | SetAbilityCost Cost
   | SetAbilityCriteria CriteriaOverride
   | SetAfterPlay AfterPlayStrategy

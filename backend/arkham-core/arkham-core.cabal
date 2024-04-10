@@ -805,6 +805,7 @@ library
       Arkham.Asset.Cards.RobesOfEndlessNight2
       Arkham.Asset.Cards.Rolands38Special
       Arkham.Asset.Cards.RunicAxe
+      Arkham.Asset.Cards.RuthWestmacottDarkRevelations
       Arkham.Asset.Cards.SacredCovenant2
       Arkham.Asset.Cards.Safeguard
       Arkham.Asset.Cards.Safeguard2
@@ -1674,6 +1675,7 @@ library
       Arkham.Helpers.Slot
       Arkham.Helpers.Source
       Arkham.Helpers.Story
+      Arkham.Helpers.Target
       Arkham.Helpers.Tarot
       Arkham.Helpers.Use
       Arkham.Helpers.Window
@@ -1700,6 +1702,7 @@ library
       Arkham.Investigator.Cards.FatherMateo
       Arkham.Investigator.Cards.FinnEdwards
       Arkham.Investigator.Cards.GavriellaMizrah
+      Arkham.Investigator.Cards.GloriaGoldberg
       Arkham.Investigator.Cards.HarveyWalters
       Arkham.Investigator.Cards.JacquelineFine
       Arkham.Investigator.Cards.JennyBarnes
@@ -2771,6 +2774,7 @@ library
       Arkham.Treachery.Cards.LawOfYgirothDiscord
       Arkham.Treachery.Cards.LawOfYgirothPandemonium
       Arkham.Treachery.Cards.LedAstray
+      Arkham.Treachery.Cards.LiberOmniumFinium
       Arkham.Treachery.Cards.LightlessShadow
       Arkham.Treachery.Cards.LightOfAforgomon
       Arkham.Treachery.Cards.LitByDeathFire

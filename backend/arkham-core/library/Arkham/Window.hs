@@ -201,7 +201,9 @@ data WindowType
   | DeckWouldRunOutOfCards InvestigatorId
   | DeckRanOutOfCards InvestigatorId
   | WouldSearchDeck InvestigatorId DeckSignifier
+  | WouldLookAtDeck InvestigatorId DeckSignifier
   | SearchedDeck InvestigatorId DeckSignifier
+  | LookedAtDeck InvestigatorId DeckSignifier
   | PlacedBreaches Target -- BEGIN Breaches
   | PlacedBreach Target
   | WouldPlaceBreaches Target

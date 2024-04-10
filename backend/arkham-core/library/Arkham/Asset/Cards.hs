@@ -529,6 +529,7 @@ allPlayerAssetCards =
       , robesOfEndlessNight
       , robesOfEndlessNight2
       , rolands38Special
+      , ruthWestmacottDarkRevelations
       , sacredCovenant2
       , safeguard
       , safeguard2
@@ -6078,6 +6079,17 @@ mollyMaxwell =
     $ (asset "98017" ("Molly Maxwell" <:> "The Exotic Morgana") 3 Neutral)
       { cdCardTraits = setFromList [Ally, Assistant]
       , cdSkills = [#willpower, #agility, #wild]
+      , cdSlots = [#ally]
+      , cdUnique = True
+      , cdKeywords = setFromList [Keyword.Replacement]
+      }
+
+ruthWestmacottDarkRevelations :: CardDef
+ruthWestmacottDarkRevelations =
+  signature "98019"
+    $ (asset "98020" ("Ruth Westmacott" <:> "Dark Revelations") 3 Neutral)
+      { cdCardTraits = setFromList [Ally, Artist]
+      , cdSkills = [#intellect, #intellect, #wild]
       , cdSlots = [#ally]
       , cdUnique = True
       , cdKeywords = setFromList [Keyword.Replacement]

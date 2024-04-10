@@ -2737,7 +2737,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     (Search searchType iid source target@(InvestigatorTarget iid') cardSources cardMatcher foundStrategy) | iid' == toId a -> do
       mods <- getModifiers iid
       let
-        additionalDepth = foldl' (+) 0 $ mapMaybe (preview Modifier._SearchDepth) mods
+        additionalDepth =
+          sum [x | searchType == Searching, SearchDepth x <- mods]
+            + sum [x | searchType == Looking, LookAtDepth x <- mods]
         foundCards :: Map Zone [Card] =
           foldl'
             ( \hmap (cardSource, _) -> case cardSource of

@@ -16,6 +16,7 @@ import Arkham.Helpers.Query as X
 import Arkham.Helpers.Scenario as X
 import Arkham.Helpers.Slot as X
 import Arkham.Helpers.Source as X
+import Arkham.Helpers.Target as X
 import Arkham.Helpers.Window as X
 import Arkham.Helpers.Xp as X
 
@@ -75,7 +76,7 @@ import Arkham.Source
 import Arkham.Story.Types (Field (..))
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Trait (Trait, toTraits)
+import Arkham.Trait (toTraits)
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), defaultWindows, mkWhen)
 import Arkham.Window qualified as Window
@@ -1617,6 +1618,22 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
               $ Matcher.replaceThatInvestigator who deckMatcher
           ]
       _ -> noMatch
+    Matcher.WouldLookAtDeck timing whoMatcher deckMatcher -> guardTiming timing $ \case
+      Window.WouldLookAtDeck who deck -> do
+        andM
+          [ matchWho iid who whoMatcher
+          , deckMatch who deck
+              $ Matcher.replaceThatInvestigator who deckMatcher
+          ]
+      _ -> noMatch
+    Matcher.LookedAtDeck timing whoMatcher deckMatcher -> guardTiming timing $ \case
+      Window.LookedAtDeck who deck -> do
+        andM
+          [ matchWho iid who whoMatcher
+          , deckMatch iid deck
+              $ Matcher.replaceThatInvestigator who deckMatcher
+          ]
+      _ -> noMatch
     Matcher.TokensWouldBeRemovedFromChaosBag timing matcher -> guardTiming timing $ \case
       Window.TokensWouldBeRemovedFromChaosBag tokens' -> anyM (`chaosTokenMatches` Matcher.InTokenPool matcher) tokens'
       _ -> noMatch
@@ -2133,7 +2150,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                   (skillTestAction st)
                   (skillTestType st)
                   skillValueMatcher
-              , skillTestTypeMatches st skillTestTypeMatcher
+              , skillTestTypeMatches iid st skillTestTypeMatcher
               ]
           _ -> noMatch
         _ -> noMatch
@@ -2664,54 +2681,6 @@ skillTestValueMatches iid n maction skillTestType = \case
     ResourceSkillTest -> do
       resources <- field InvestigatorResources iid
       pure $ n > resources
-
-targetTraits :: (HasCallStack, HasGame m) => Target -> m (Set Trait)
-targetTraits = \case
-  ActDeckTarget -> pure mempty
-  ActTarget _ -> pure mempty
-  AfterSkillTestTarget -> pure mempty
-  AgendaDeckTarget -> pure mempty
-  AgendaTarget _ -> pure mempty
-  AssetTarget aid -> field AssetTraits aid
-  CardCodeTarget _ -> pure mempty
-  CardIdTarget _ -> pure mempty
-  EffectTarget _ -> pure mempty
-  EnemyTarget eid -> field EnemyTraits eid
-  EventTarget eid -> field EventTraits eid
-  InvestigatorTarget iid -> field InvestigatorTraits iid
-  LocationTarget lid ->
-    selectOne (Matcher.LocationWithId lid) >>= \case
-      Nothing -> pure mempty
-      Just _ -> field LocationTraits lid
-  ProxyTarget t _ -> targetTraits t
-  ResourceTarget -> pure mempty
-  ScenarioTarget -> pure mempty
-  SkillTarget sid -> field SkillTraits sid
-  SkillTestTarget {} -> pure mempty
-  TreacheryTarget tid -> field TreacheryTraits tid
-  StoryTarget _ -> pure mempty
-  TestTarget -> pure mempty
-  ChaosTokenTarget _ -> pure mempty
-  YouTarget -> selectJust Matcher.You >>= field InvestigatorTraits
-  InvestigatorHandTarget _ -> pure mempty
-  InvestigatorDiscardTarget _ -> pure mempty
-  SetAsideLocationsTarget _ -> pure mempty
-  EncounterDeckTarget -> pure mempty
-  ScenarioDeckTarget -> pure mempty
-  CardTarget c -> pure $ toTraits c
-  SearchedCardTarget _ -> pure mempty
-  SkillTestInitiatorTarget _ -> pure mempty
-  PhaseTarget _ -> pure mempty
-  ChaosTokenFaceTarget _ -> pure mempty
-  InvestigationTarget _ _ -> pure mempty
-  AgendaMatcherTarget _ -> pure mempty
-  CampaignTarget -> pure mempty
-  TarotTarget _ -> pure mempty
-  AbilityTarget _ _ -> pure mempty
-  BothTarget _ _ -> error "won't make sense, or need to determine later"
-  BatchTarget {} -> pure mempty
-  ActiveCostTarget {} -> pure mempty
-  LabeledTarget _ t -> targetTraits t
 
 targetMatches :: HasGame m => Target -> Matcher.TargetMatcher -> m Bool
 targetMatches s = \case
@@ -3367,9 +3336,13 @@ canDo iid action = do
 
   not <$> anyM prevents mods
 
-skillTestTypeMatches :: HasGame m => SkillTest -> Matcher.SkillTestTypeMatcher -> m Bool
-skillTestTypeMatches st = \case
+skillTestTypeMatches
+  :: HasGame m => InvestigatorId -> SkillTest -> Matcher.SkillTestTypeMatcher -> m Bool
+skillTestTypeMatches iid st = \case
+  Matcher.SkillTestTypeOneOf as -> anyM (skillTestTypeMatches iid st) as
   Matcher.AnySkillTestType -> pure True
+  Matcher.SkillTestOnEncounterCard -> skillTestSource st `sourceMatches` Matcher.EncounterCardSource
+  Matcher.SkillTestWithAction actionMatcher -> maybe (pure False) (\a -> actionMatches iid a actionMatcher) (skillTestAction st)
   Matcher.InvestigationSkillTest locationMatcher -> case toActionTarget (skillTestTarget st) of
     LocationTarget lid -> andM [lid <=~> locationMatcher, pure $ skillTestAction st == Just #investigate]
     _ -> pure False

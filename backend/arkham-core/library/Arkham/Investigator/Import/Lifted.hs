@@ -19,7 +19,7 @@ import Arkham.Investigator.Runner as X (
   pushWhen,
   setMeta,
  )
-import Arkham.Message as X (Message (..), pattern UseThisAbility)
+import Arkham.Message as X (Message (..), pattern ElderSignEffect, pattern UseThisAbility)
 import Arkham.Message.Lifted as X
 import Arkham.Prelude as X
 import Arkham.Question as X

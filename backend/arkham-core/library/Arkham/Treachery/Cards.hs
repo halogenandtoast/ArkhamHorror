@@ -129,6 +129,7 @@ allPlayerTreacheryCards =
       , whatHaveYouDone
       , wrackedByNightmares
       , yaztaroth
+      , liberOmniumFinium
       ]
 
 allEncounterTreacheryCards :: Map CardCode CardDef
@@ -2348,5 +2349,12 @@ yaztaroth =
   (weakness "98018" "Yaztaroth")
     { cdCardTraits = setFromList [Curse, Pact]
     , cdUnique = True
+    , cdKeywords = setFromList [Keyword.Replacement]
+    }
+
+liberOmniumFinium :: CardDef
+liberOmniumFinium =
+  (weakness "98021" "Liber Omnium Finium")
+    { cdCardTraits = setFromList [Endtimes]
     , cdKeywords = setFromList [Keyword.Replacement]
     }

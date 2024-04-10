@@ -32,8 +32,9 @@ import Arkham.Helpers
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Message
 import Arkham.Helpers.Ref
-import Arkham.Helpers.SkillTest (beginSkillTest, getSkillTestDifficulty)
+import Arkham.Helpers.SkillTest (beginSkillTest, getSkillTestDifficulty, getSkillTestTarget)
 import Arkham.Id
+import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (
@@ -174,6 +175,24 @@ payCost msg c iid skipAdditionalCosts cost = do
   let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
   case cost of
+    GloriaCost -> do
+      mtarget <- getSkillTestTarget
+      case mtarget of
+        Nothing -> error "not in skill test"
+        Just t -> do
+          gloria <- selectJust $ investigatorIs Investigators.gloriaGoldberg
+          cardsUnderneath <- field InvestigatorCardsUnderneath gloria
+          traits <- targetTraits t
+          let cards = filter (\card -> any (\trait -> card `cardMatch` CardWithTrait trait) traits) cardsUnderneath
+          pushAll
+            [ FocusCards cards
+            , chooseOne
+                player
+                [ targetLabel (CardIdTarget $ toCardId card) [ObtainCard card, AddToEncounterDiscard ec]
+                | card@(EncounterCard ec) <- cards
+                ]
+            ]
+      pure c
     DrawEncounterCardsCost n -> do
       pushAll $ replicate n $ InvestigatorDrawEncounterCard iid
       pure c

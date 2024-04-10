@@ -503,4 +503,6 @@ allTreacheries =
       SomeTreacheryCard toFightTheBlackWind
     , --- Blood of Baalshandor
       SomeTreacheryCard yaztaroth
+    , --- Dark Revelations
+      SomeTreacheryCard liberOmniumFinium
     ]

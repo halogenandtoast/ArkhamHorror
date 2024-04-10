@@ -63,6 +63,7 @@ instance ToJSON AssetMetadata where
 
 data SkillTestMetadata = SkillTestMetadata
   { stmModifiedSkillValue :: Int
+  , stmModifiedDifficulty :: Int
   , stmSkills :: [SkillType]
   }
   deriving stock (Show, Eq, Generic)

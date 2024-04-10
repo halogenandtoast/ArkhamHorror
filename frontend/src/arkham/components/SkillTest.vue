@@ -122,7 +122,7 @@ const testResult = computed(() => {
         <Card v-if="card" :game="game" :card="card" :revealed="true" playerId="" />
         <div class="test-status">
           <div class="test-difficulty">
-            <span class="difficulty">{{skillTest.difficulty}}</span>
+            <span class="difficulty">{{skillTest.modifiedDifficulty}}</span>
             <span>Test Difficulty</span>
           </div>
           <span>VS</span>

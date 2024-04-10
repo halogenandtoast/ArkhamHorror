@@ -335,7 +335,7 @@ data IsInvestigate = IsInvestigate | NotInvestigate
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | SetInvestigator PlayerId Investigator
-  | ResolvedAbility Ability -- INTERNAL, Set Arbiter of Fates
+  | ResolvedAbility Ability -- INTERNAL, See Arbiter of Fates
   | -- Story Card Messages
     ReadStory InvestigatorId Card StoryMode (Maybe Target)
   | ReadStoryWithPlacement InvestigatorId Card StoryMode (Maybe Target) Placement
@@ -478,7 +478,7 @@ data Message
   | PreScenarioSetup
   | StandaloneSetup
   | ChoosePlayer InvestigatorId ChoosePlayerChoice
-  | ChoosePlayerOrder [InvestigatorId] [InvestigatorId]
+  | ChoosePlayerOrder InvestigatorId [InvestigatorId] [InvestigatorId]
   | ChooseRandomLocation Target [LocationId]
   | ChosenRandomLocation Target LocationId
   | ChooseChaosTokenGroups Source InvestigatorId ChaosBagStep
@@ -943,6 +943,7 @@ data Message
   | TriggerSkillTest InvestigatorId
   | TryEvadeEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
   | UnfocusCards
+  | ClearFound Zone
   | UnfocusTargets
   | UnfocusChaosTokens
   | SealChaosToken ChaosToken

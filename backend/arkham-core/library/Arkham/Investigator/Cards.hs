@@ -67,6 +67,7 @@ allInvestigatorCards =
       , winifredHabbamock
       , jacquelineFine
       , stellaClark
+      , gloriaGoldberg
       , daisyWalkerParallel
       ]
 
@@ -435,6 +436,14 @@ stellaClark =
     ("Stella Clark" <:> "The Letter Carrier")
     Survivor
     [Chosen, Civic]
+
+gloriaGoldberg :: CardDef
+gloriaGoldberg =
+  investigator
+    "98019"
+    ("Gloria Goldberg" <:> "The Writer")
+    Mystic
+    [Clairvoyant]
 
 daisyWalkerParallel :: CardDef
 daisyWalkerParallel =

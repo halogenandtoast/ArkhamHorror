@@ -29,7 +29,7 @@ instance HasAbilities GloriaGoldberg where
 
 instance HasChaosTokenValue GloriaGoldberg where
   getChaosTokenValue iid ElderSign (GloriaGoldberg attrs) | iid == toId attrs = do
-    pure $ ChaosTokenValue ElderSign NoModifier
+    pure $ ChaosTokenValue ElderSign (PositiveModifier 1)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage GloriaGoldberg where

@@ -143,6 +143,7 @@ data ModifierType
   | CannotExplore
   | CannotFight EnemyMatcher
   | CannotGainResources
+  | CannotGainResourcesFromPlayerCardEffects
   | CannotRevealCards
   | CannotHealHorror
   | CannotHealHorrorOnOtherCards Target

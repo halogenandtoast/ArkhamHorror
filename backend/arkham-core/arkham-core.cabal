@@ -592,6 +592,7 @@ library
       Arkham.Asset.Cards.GrannyOrne3
       Arkham.Asset.Cards.GravediggersShovel
       Arkham.Asset.Cards.GravediggersShovel2
+      Arkham.Asset.Cards.GreenManMedallionHourOfTheHuntress
       Arkham.Asset.Cards.GregoryGry
       Arkham.Asset.Cards.GreteWagner
       Arkham.Asset.Cards.GreteWagner3
@@ -1046,6 +1047,7 @@ library
       Arkham.Damage
       Arkham.DamageEffect
       Arkham.Deck
+      Arkham.DeckBuilding.Adjustment
       Arkham.Decklist
       Arkham.Decklist.Type
       Arkham.Decks
@@ -1245,6 +1247,7 @@ library
       Arkham.Enemy.Cards.RoachSwarm
       Arkham.Enemy.Cards.RoyalEmissary
       Arkham.Enemy.Cards.RuthTurner
+      Arkham.Enemy.Cards.SacrificialBeast
       Arkham.Enemy.Cards.SalvatoreNeri
       Arkham.Enemy.Cards.SavioCorvi
       Arkham.Enemy.Cards.ScholarFromYith

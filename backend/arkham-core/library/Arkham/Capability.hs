@@ -14,6 +14,7 @@ class Capable a where
   can :: Capabilities a
 
 data FromSource = FromPlayerCardEffect | FromOtherSource
+  deriving stock (Eq)
 
 instance Capable InvestigatorMatcher where
   can =
@@ -28,7 +29,12 @@ instance Capable InvestigatorMatcher where
                   <> InvestigatorWithoutModifier CannotDrawCardsFromPlayerCardEffects
                   <> InvestigatorWithoutModifier CannotManipulateDeck
             }
-      , gain = GainCapabilities {resources = InvestigatorWithoutModifier CannotGainResources}
+      , gain =
+          GainCapabilities
+            { resources =
+                InvestigatorWithoutModifier CannotGainResources
+                  <> InvestigatorWithoutModifier CannotGainResourcesFromPlayerCardEffects
+            }
       , spend = SpendCapabilities {resources = InvestigatorWithSpendableResources (GreaterThan $ Static 0)}
       , have =
           HaveCapabilities
@@ -60,6 +66,12 @@ instance Capable (FromSource -> InvestigatorMatcher) where
                     FromOtherSource ->
                       InvestigatorWithoutModifier CannotDrawCards
                         <> InvestigatorWithoutModifier CannotManipulateDeck
+                }
+          , gain =
+              GainCapabilities
+                { resources = \case
+                    FromPlayerCardEffect -> can.gain.resources
+                    FromOtherSource -> InvestigatorWithoutModifier CannotGainResources
                 }
           }
 

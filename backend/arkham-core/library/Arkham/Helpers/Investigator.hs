@@ -352,6 +352,7 @@ investigator f cardDef Stats {..} =
                 , investigatorIsYithian = False
                 , investigatorDiscarding = Nothing
                 , investigatorLog = mkCampaignLog
+                , investigatorDeckBuildingAdjustments = mempty
                 }
         }
 

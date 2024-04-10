@@ -1,14 +1,9 @@
-module Arkham.Enemy.Cards.WebSpinner (
-  webSpinner,
-  WebSpinner (..),
-)
-where
+module Arkham.Enemy.Cards.WebSpinner (webSpinner, WebSpinner (..)) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
-import Arkham.Spawn
 
 newtype WebSpinner = WebSpinner EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

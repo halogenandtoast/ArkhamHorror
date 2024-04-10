@@ -328,6 +328,7 @@ allPlayerAssetCards =
       , grannyOrne3
       , gravediggersShovel
       , gravediggersShovel2
+      , greenManMedallionHourOfTheHuntress
       , gregoryGry
       , greteWagner
       , greteWagner3
@@ -6039,6 +6040,17 @@ theNecronomiconAdvanced =
     , cdSlots = [#hand]
     , cdKeywords = setFromList [Keyword.Advanced]
     }
+
+greenManMedallionHourOfTheHuntress :: CardDef
+greenManMedallionHourOfTheHuntress =
+  signature "02003"
+    $ (asset "98002" ("Green Man Medallion" <:> "Hour of the Huntress") 1 Neutral)
+      { cdCardTraits = setFromList [Item, Relic]
+      , cdSkills = [#wild, #wild]
+      , cdKeywords = setFromList [Keyword.Replacement]
+      , cdUnique = True
+      , cdSlots = [#accessory]
+      }
 
 splitTheAngleIreOfTheVoid :: CardDef
 splitTheAngleIreOfTheVoid =

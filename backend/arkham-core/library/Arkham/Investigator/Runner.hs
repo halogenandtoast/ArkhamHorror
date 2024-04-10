@@ -30,6 +30,7 @@ import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Asset.Types (Field (..))
 import Arkham.CampaignLog
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Classes.HasGame
@@ -267,7 +268,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         , investigatorStartsWithInHand = investigatorStartsWithInHand
         , investigatorSupplies = investigatorSupplies
         , investigatorUsedAbilities = filter onlyCampaignAbilities investigatorUsedAbilities
+        , investigatorLog = investigatorLog
         }
+  AddDeckBuildingAdjustment iid adjustment | iid == investigatorId -> do
+    pure $ a & deckBuildingAdjustmentsL %~ (adjustment :)
   SetupInvestigator iid | iid == investigatorId -> do
     (startsWithMsgs, deck') <-
       foldM
@@ -391,13 +395,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     modifiers' <- getModifiers (toTarget a)
     let
       startingResources =
-        foldl'
-          ( \total -> \case
-              StartingResources n -> max 0 (total + n)
-              _ -> total
-          )
-          5
-          modifiers'
+        if CannotGainResources `elem` modifiers'
+          then 0
+          else
+            foldl'
+              ( \total -> \case
+                  StartingResources n -> max 0 (total + n)
+                  _ -> total
+              )
+              5
+              modifiers'
       startingClues =
         foldl'
           ( \total -> \case
@@ -2230,7 +2237,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   TakeResources iid n source True | iid == investigatorId -> do
     beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #resource)]
     afterWindowMsg <- checkWindows [mkAfter (Window.PerformAction iid #resource)]
-    unlessM (hasModifier a CannotGainResources)
+    canGain <- can.gain.resources (sourceToFromSource source) iid
+    when canGain
       $ pushAll
         [ BeginAction
         , beforeWindowMsg
@@ -2241,9 +2249,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         , FinishAction
         ]
     pure a
-  TakeResources iid n _ False | iid == investigatorId -> do
-    cannotGainResources <- hasModifier a CannotGainResources
-    pure $ if cannotGainResources then a else a & tokensL %~ addTokens Resource n
+  TakeResources iid n source False | iid == investigatorId -> do
+    canGain <- can.gain.resources (sourceToFromSource source) iid
+    pure $ if canGain then a & tokensL %~ addTokens Resource n else a
   PlaceTokens _ (isTarget a -> True) token n -> do
     pure $ a & tokensL %~ addTokens token n
   RemoveTokens _ (isTarget a -> True) token n -> do
@@ -3080,7 +3088,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         drawing <- drawCardsF iid a 1
 
         canDraw <- canDo iid #draw
-        canTakeResource <- canDo iid #resource
+        canTakeResource <- (&&) <$> canDo iid #resource <*> can.gain.resources FromOtherSource iid
         canPlay <- canDo iid #play
         player <- getPlayer iid
 
@@ -3092,7 +3100,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           <> [ ComponentLabel
               (InvestigatorComponent iid ResourceToken)
               [TakeResources iid 1 (toSource a) usesAction]
-             | canAffordTakeResources && CannotGainResources `notElem` modifiers && canTakeResource
+             | canAffordTakeResources && canTakeResource
              ]
           <> [ ComponentLabel (InvestigatorDeckComponent iid) [drawing]
              | canAffordDrawCards
@@ -3292,16 +3300,31 @@ getFacingDefeat a@InvestigatorAttrs {..} = do
 
 takeUpkeepResources :: InvestigatorAttrs -> Runnable InvestigatorAttrs
 takeUpkeepResources a = do
-  mods <- getModifiers a
-  let amount = foldr (+) 1 [n | UpkeepResources n <- mods]
-  if MayChooseNotToTakeUpkeepResources `elem` mods
-    then do
-      player <- getPlayer (toId a)
-      push
-        $ chooseOne
-          player
-          [ Label "Do not take resource(s)" []
-          , Label "Take resource(s)" [TakeResources (toId a) amount (toSource a) False]
+  fullModifiers <- getModifiers' a
+  let mods = map modifierType fullModifiers
+
+  let cannotGainResourcesFromPlayerCardEffects = CannotGainResourcesFromPlayerCardEffects `elem` mods
+
+  let additionalAmount =
+        sum
+          [ n
+          | Modifier s (UpkeepResources n) _ <- fullModifiers
+          , not cannotGainResourcesFromPlayerCardEffects || sourceToFromSource s /= FromPlayerCardEffect
           ]
-      pure a
-    else pure $ a & tokensL %~ addTokens Resource amount
+  let amount = 1 + additionalAmount
+  let cannotGainResources = CannotGainResources `elem` mods
+  if cannotGainResources
+    then pure a
+    else
+      if MayChooseNotToTakeUpkeepResources `elem` mods
+        then do
+          player <- getPlayer (toId a)
+          push
+            $ chooseOne
+              player
+              [ Label "Do not take resource(s)" []
+              , Label "Take resource(s)" [TakeResources (toId a) amount (toSource a) False]
+              ]
+          pure a
+        else
+          pure $ a & tokensL %~ addTokens Resource amount

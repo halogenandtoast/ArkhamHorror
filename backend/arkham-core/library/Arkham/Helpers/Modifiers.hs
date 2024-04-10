@@ -38,6 +38,15 @@ getModifiers (toTarget -> target) = do
     filterF = if ignoreCanModifiers then notCanModifier else const True
   filter filterF . map modifierType <$> getModifiers' target
 
+getFullModifiers :: forall a m. (HasGame m, Targetable a) => a -> m [Modifier]
+getFullModifiers (toTarget -> target) = do
+  ignoreCanModifiers <- getIgnoreCanModifiers
+  let
+    notCanModifier CanModify {} = False
+    notCanModifier _ = True
+    filterF = if ignoreCanModifiers then notCanModifier else const True
+  filter (filterF . modifierType) <$> getModifiers' target
+
 getModifiers' :: (HasGame m, Targetable a) => a -> m [Modifier]
 getModifiers' (toTarget -> target) =
   findWithDefault [] target <$> getAllModifiers

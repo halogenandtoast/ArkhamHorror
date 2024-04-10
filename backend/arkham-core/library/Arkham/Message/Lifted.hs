@@ -10,6 +10,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.HasQueue as X (runQueueT)
 import Arkham.Classes.Query
 import Arkham.DamageEffect
+import Arkham.Deck (IsDeck (..))
 import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.Enemy.Creation
 import Arkham.Fight
@@ -530,3 +531,6 @@ revealing
   -> Zone
   -> m ()
 revealing iid (toSource -> source) (toTarget -> target) zone = Msg.push $ Msg.revealing iid source target zone
+
+shuffleIntoDeck :: (ReverseQueue m, IsDeck deck, Targetable target) => deck -> target -> m ()
+shuffleIntoDeck deck target = push $ Msg.shuffleIntoDeck deck target

@@ -116,6 +116,7 @@ allPlayerTreacheryCards =
       , terribleSecret
       , the13thVision
       , theBellTolls
+      , theDirgeOfReason
       , theHarbinger
       , thePriceOfFailure
       , thriceDamnedCuriosity
@@ -2328,10 +2329,18 @@ chillingPresence =
     { cdCardTraits = singleton Terror
     }
 
+theDirgeOfReason :: CardDef
+theDirgeOfReason =
+  (weakness "98006" "The Dirge of Reason")
+    { cdCardTraits = setFromList [Madness]
+    , cdKeywords = setFromList [Keyword.Replacement]
+    }
+
 toFightTheBlackWind :: CardDef
 toFightTheBlackWind =
   (weakness "98012" "To Fight the Black Wind")
     { cdCardTraits = setFromList [Task, Trait.Dreamlands]
+    , cdKeywords = setFromList [Keyword.Replacement]
     }
 
 yaztaroth :: CardDef
@@ -2339,4 +2348,5 @@ yaztaroth =
   (weakness "98018" "Yaztaroth")
     { cdCardTraits = setFromList [Curse, Pact]
     , cdUnique = True
+    , cdKeywords = setFromList [Keyword.Replacement]
     }

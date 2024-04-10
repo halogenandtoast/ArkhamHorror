@@ -1510,6 +1510,7 @@ library
       Arkham.Event.Cards.MonsterSlayer
       Arkham.Event.Cards.MonsterSlayer5
       Arkham.Event.Cards.MoonlightRitual
+      Arkham.Event.Cards.MysteriesRemain
       Arkham.Event.Cards.MystifyingSong
       Arkham.Event.Cards.NarrowEscape
       Arkham.Event.Cards.NoStoneUnturned
@@ -2883,6 +2884,7 @@ library
       Arkham.Treachery.Cards.TheBellTolls
       Arkham.Treachery.Cards.TheCreaturesTracks
       Arkham.Treachery.Cards.TheCultsSearch
+      Arkham.Treachery.Cards.TheDirgeOfReason
       Arkham.Treachery.Cards.TheEndIsNigh
       Arkham.Treachery.Cards.TheFinalAct
       Arkham.Treachery.Cards.TheHarbinger

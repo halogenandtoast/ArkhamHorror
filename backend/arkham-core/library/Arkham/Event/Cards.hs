@@ -219,6 +219,7 @@ allPlayerEventCards =
       , monsterSlayer
       , monsterSlayer5
       , moonlightRitual
+      , mysteriesRemain
       , mystifyingSong
       , narrowEscape
       , noStoneUnturned
@@ -3366,3 +3367,14 @@ lucky3 =
           $ FailureResult AnyValue
     , cdLevel = Just 3
     }
+
+mysteriesRemain :: CardDef
+mysteriesRemain =
+  signature "01001"
+    $ (event "98005" "Mysteries Remain" 0 Neutral)
+      { cdSkills = [#combat, #intellect, #wild]
+      , cdCardTraits = singleton Insight
+      , cdKeywords = setFromList [Keyword.Replacement]
+      , cdFastWindow = Just $ DuringTurn You
+      , cdCriteria = Just $ youExist (at_ Anywhere)
+      }

@@ -553,4 +553,7 @@ allEvents =
     , SomeEventCard lookWhatIFound2
     , SomeEventCard dumbLuck2
     , SomeEventCard lucky3
+    , -- Promo
+      -- The Dirge of Reason
+      SomeEventCard mysteriesRemain
     ]

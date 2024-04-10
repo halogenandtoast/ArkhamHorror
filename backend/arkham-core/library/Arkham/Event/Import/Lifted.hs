@@ -14,6 +14,8 @@ import Arkham.Event.Runner as X (
  )
 import Arkham.Message as X (
   Message (..),
+  toMessage,
+  pattern PlaceClues,
   pattern PlayThisEvent,
   pattern RemoveDoom,
   pattern UseThisAbility,

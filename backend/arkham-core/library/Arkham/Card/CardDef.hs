@@ -40,6 +40,7 @@ data DeckRestriction
 
 data AttackOfOpportunityModifier
   = DoesNotProvokeAttacksOfOpportunity
+  | DoesNotProvokeAttacksOfOpportunityForChosenEnemy
   deriving stock (Show, Eq, Ord, Data)
 
 data EventChoicesRepeatable
@@ -141,6 +142,7 @@ data CardDef = CardDef
   , cdSkipPlayWindows :: Bool
   , cdBeforeEffect :: Bool
   , cdCustomizations :: Map Customization Int
+  , cdOtherSide :: Maybe CardCode
   }
   deriving stock (Show, Eq, Ord, Data)
 
@@ -230,6 +232,7 @@ emptyCardDef cCode name cType =
     , cdSkipPlayWindows = False
     , cdBeforeEffect = False
     , cdCustomizations = mempty
+    , cdOtherSide = Nothing
     }
 
 instance IsCardMatcher CardDef where
@@ -341,6 +344,7 @@ instance FromJSON CardDef where
     cdSkipPlayWindows <- o .: "skipPlayWindows"
     cdBeforeEffect <- o .: "beforeEffect"
     cdCustomizations <- o .:? "customizations" .!= mempty
+    cdOtherSide <- o .:? "otherSide"
     pure CardDef {..}
 
 instance Has InvestigatorMatcher CardDef where

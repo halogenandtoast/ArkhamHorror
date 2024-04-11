@@ -16,6 +16,7 @@ import Arkham.Investigator.Runner as X (
   investigatorWith,
   is,
   push,
+  pushAll,
   pushWhen,
   setMeta,
  )

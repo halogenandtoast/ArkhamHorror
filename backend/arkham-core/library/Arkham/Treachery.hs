@@ -430,6 +430,8 @@ allTreacheries =
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger
+    , SomeTreacheryCard buriedSecrets
+    , SomeTreacheryCard burdenOfDestiny
     , -- Return to the Night of the Zealot
       -- Return to the Gathering
       SomeTreacheryCard theZealotsSeal

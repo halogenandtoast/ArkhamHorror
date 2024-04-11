@@ -62,6 +62,8 @@ allInvestigatorCards =
       , silasMarsh
       , danielaReyes
       , normanWithers
+      , montereyJack
+      , lilyChen
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -396,6 +398,22 @@ normanWithers =
       ("Norman Withers" <:> "The Astronomer")
       Seeker
       [Miskatonic]
+
+montereyJack :: CardDef
+montereyJack =
+  investigator
+    "08007"
+    ("Monterey Jack" <:> "The Archaeologist")
+    Rogue
+    [Wayfarer]
+
+lilyChen :: CardDef
+lilyChen =
+  investigator
+    "08010"
+    ("Lily Chen" <:> "The Martial Artist")
+    Mystic
+    [Chosen, Warden]
 
 nathanielCho :: CardDef
 nathanielCho =

@@ -111,6 +111,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorLog :: Field Investigator CampaignLog
   InvestigatorUnhealedHorrorThisRound :: Field Investigator Int
   InvestigatorMeta :: Field Investigator Value
+  InvestigatorBeganRoundAt :: Field Investigator (Maybe LocationId)
   --
   InvestigatorSupplies :: Field Investigator [Supply]
 
@@ -171,6 +172,8 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorIsYithian :: Bool
   , -- keys
     investigatorKeys :: Set ArkhamKey
+  , -- monterey jack
+    investigatorBeganRoundAt :: Maybe LocationId
   , -- investigator specific logs
     investigatorLog :: CampaignLog
   , -- internal tracking
@@ -286,6 +289,7 @@ instance FromJSON InvestigatorAttrs where
     investigatorLog <- o .:? "log" .!= mempty
     investigatorDiscarding <- o .: "discarding"
     investigatorDeckBuildingAdjustments <- o .:? "deckBuildingAdjustments" .!= mempty
+    investigatorBeganRoundAt <- o .:? "beganRoundAt"
 
     pure InvestigatorAttrs {..}
 

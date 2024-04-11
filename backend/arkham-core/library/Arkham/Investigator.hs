@@ -124,6 +124,8 @@ allInvestigators =
       , SomeInvestigatorCard silasMarsh
       , SomeInvestigatorCard danielaReyes
       , SomeInvestigatorCard normanWithers
+      , SomeInvestigatorCard montereyJack
+      , SomeInvestigatorCard lilyChen
       , SomeInvestigatorCard nathanielCho
       , SomeInvestigatorCard harveyWalters
       , SomeInvestigatorCard winifredHabbamock

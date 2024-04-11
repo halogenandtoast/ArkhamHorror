@@ -546,9 +546,19 @@ shuffleIntoDeck :: (ReverseQueue m, IsDeck deck, Targetable target) => deck -> t
 shuffleIntoDeck deck target = push $ Msg.shuffleIntoDeck deck target
 
 cardResolutionModifier
-  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
-cardResolutionModifier source target modifier = push $ Msg.cardResolutionModifier source target modifier
+  :: (ReverseQueue m, IsCard card, Sourceable source, Targetable target)
+  => card
+  -> source
+  -> target
+  -> ModifierType
+  -> m ()
+cardResolutionModifier card source target modifier = push $ Msg.cardResolutionModifier card source target modifier
 
 cardResolutionModifiers
-  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
-cardResolutionModifiers source target modifiers = push $ Msg.cardResolutionModifiers source target modifiers
+  :: (ReverseQueue m, IsCard card, Sourceable source, Targetable target)
+  => card
+  -> source
+  -> target
+  -> [ModifierType]
+  -> m ()
+cardResolutionModifiers card source target modifiers = push $ Msg.cardResolutionModifiers card source target modifiers

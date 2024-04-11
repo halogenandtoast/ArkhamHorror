@@ -34,7 +34,11 @@ instance RunMessage OminousPortents where
         $ chooseOrRunOne player
         $ [ Label
             "Draw the top card of the spectral encounter deck. That card gains peril, and its effects cannot be canceled."
-            [ cardResolutionModifiers attrs (toCardId topSpectralCard) [AddKeyword Peril, EffectsCannotBeCanceled]
+            [ cardResolutionModifiers
+                topSpectralCard
+                attrs
+                (toCardId topSpectralCard)
+                [AddKeyword Peril, EffectsCannotBeCanceled]
             , InvestigatorDrewEncounterCard iid (topSpectralCard {ecAddedPeril = True})
             ]
           | topSpectralCard <- maybeToList mTopSpectralCard

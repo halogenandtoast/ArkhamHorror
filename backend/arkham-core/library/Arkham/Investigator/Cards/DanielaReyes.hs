@@ -85,7 +85,7 @@ instance RunMessage DanielaReyes where
       attrs' <- lift (runMessage msg attrs)
       let meta = toResult attrs.meta
       pure . DanielaReyes $ attrs' & setMeta (meta {enemiesThatAttackedYouSinceTheEndOfYourLastTurn = []})
-    ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
+    ElderSignEffect iid | attrs `is` iid -> do
       pushWhen (elderSignAutoSucceeds $ toResult attrs.meta) PassSkillTest
       pure i
     _ -> DanielaReyes <$> lift (runMessage msg attrs)

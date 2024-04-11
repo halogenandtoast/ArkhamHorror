@@ -504,6 +504,14 @@ library
       Arkham.Asset.Cards.DigDeep
       Arkham.Asset.Cards.DigDeep2
       Arkham.Asset.Cards.DigDeep4
+      Arkham.Asset.Cards.DisciplineAlignmentOfSpirit
+      Arkham.Asset.Cards.DisciplineAlignmentOfSpiritBroken
+      Arkham.Asset.Cards.DisciplineBalanceOfBody
+      Arkham.Asset.Cards.DisciplineBalanceOfBodyBroken
+      Arkham.Asset.Cards.DisciplinePrescienceOfFate
+      Arkham.Asset.Cards.DisciplinePrescienceOfFateBroken
+      Arkham.Asset.Cards.DisciplineQuiescenceOfThought
+      Arkham.Asset.Cards.DisciplineQuiescenceOfThoughtBroken
       Arkham.Asset.Cards.DiscOfItzamna
       Arkham.Asset.Cards.DiscOfItzamna2
       Arkham.Asset.Cards.DoubleDouble4
@@ -881,6 +889,7 @@ library
       Arkham.Asset.Cards.Switchblade
       Arkham.Asset.Cards.Switchblade2
       Arkham.Asset.Cards.SwordCane
+      Arkham.Asset.Cards.TalismanOfProtection
       Arkham.Asset.Cards.TennesseeSourMash
       Arkham.Asset.Cards.TennesseeSourMashRogue3
       Arkham.Asset.Cards.TennesseeSourMashSurvivor3
@@ -929,6 +938,7 @@ library
       Arkham.Asset.Cards.TrenchKnife
       Arkham.Asset.Cards.TristanBotleyFixerForHire2
       Arkham.Asset.Cards.TrueGrit
+      Arkham.Asset.Cards.TrustyBullwhip
       Arkham.Asset.Cards.TryAndTryAgain1
       Arkham.Asset.Cards.TryAndTryAgain3
       Arkham.Asset.Cards.TwentyFiveAutomatic
@@ -1426,6 +1436,8 @@ library
       Arkham.Event.Cards.EmergencyCache3
       Arkham.Event.Cards.EnchantWeapon3
       Arkham.Event.Cards.EtherealForm
+      Arkham.Event.Cards.EtherealSlip
+      Arkham.Event.Cards.EtherealSlip2
       Arkham.Event.Cards.Eucatastrophe3
       Arkham.Event.Cards.EverVigilant1
       Arkham.Event.Cards.Evidence
@@ -1550,6 +1562,7 @@ library
       Arkham.Event.Cards.RiteOfEquilibrium5
       Arkham.Event.Cards.Sacrifice1
       Arkham.Event.Cards.SceneOfTheCrime
+      Arkham.Event.Cards.ScoutAhead
       Arkham.Event.Cards.ScroungeForSupplies
       Arkham.Event.Cards.SearchForTheTruth
       Arkham.Event.Cards.SecondWind
@@ -1710,12 +1723,14 @@ library
       Arkham.Investigator.Cards.JimCulver
       Arkham.Investigator.Cards.JoeDiamond
       Arkham.Investigator.Cards.LeoAnderson
+      Arkham.Investigator.Cards.LilyChen
       Arkham.Investigator.Cards.LolaHayes
       Arkham.Investigator.Cards.LukeRobinson
       Arkham.Investigator.Cards.MandyThompson
       Arkham.Investigator.Cards.MarieLambeau
       Arkham.Investigator.Cards.MarkHarrigan
       Arkham.Investigator.Cards.MinhThiPhan
+      Arkham.Investigator.Cards.MontereyJack
       Arkham.Investigator.Cards.NathanielCho
       Arkham.Investigator.Cards.NormanWithers
       Arkham.Investigator.Cards.PatriceHathaway
@@ -2669,7 +2684,9 @@ library
       Arkham.Treachery.Cards.BloodOnYourHands
       Arkham.Treachery.Cards.BoughtInBlood
       Arkham.Treachery.Cards.BrokenRails
+      Arkham.Treachery.Cards.BurdenOfDestiny
       Arkham.Treachery.Cards.BurdensOfThePast
+      Arkham.Treachery.Cards.BuriedSecrets
       Arkham.Treachery.Cards.CalledByTheMists
       Arkham.Treachery.Cards.CallOfTheUnknown
       Arkham.Treachery.Cards.CallToOrder
@@ -3010,6 +3027,7 @@ library
     , process
     , random-shuffle
     , safe
+    , semialign
     , template-haskell
     , text
     , these

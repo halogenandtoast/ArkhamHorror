@@ -1161,6 +1161,7 @@ passesCriteria iid mcard source windows' = \case
     InvestigatorSource iid' ->
       elem modifier <$> getModifiers (InvestigatorTarget iid')
     EnemySource iid' -> elem modifier <$> getModifiers (EnemyTarget iid')
+    AssetSource aid' -> elem modifier <$> getModifiers aid'
     _ -> pure False
   Criteria.Here -> case source of
     LocationSource lid -> fieldP InvestigatorLocation (== Just lid) iid
@@ -1362,6 +1363,7 @@ passesCriteria iid mcard source windows' = \case
     actId <- selectJust Matcher.AnyAct
     (== AS.ActStep step) . AS.actStep <$> field ActSequence actId
   Criteria.AgendaExists matcher -> selectAny matcher
+  Criteria.AbilityExists matcher -> selectAny matcher
   Criteria.SkillExists matcher -> selectAny matcher
   Criteria.StoryExists matcher -> selectAny matcher
   Criteria.ActExists matcher -> selectAny matcher

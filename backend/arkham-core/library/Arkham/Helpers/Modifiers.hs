@@ -173,12 +173,23 @@ phaseModifiers
 phaseModifiers source target modifiers = createWindowModifierEffect EffectPhaseWindow source target modifiers
 
 cardResolutionModifier
-  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
-cardResolutionModifier source target modifier = createWindowModifierEffect EffectCardResolutionWindow source target [modifier]
+  :: (Sourceable source, Targetable target, IsCard card)
+  => card
+  -> source
+  -> target
+  -> ModifierType
+  -> Message
+cardResolutionModifier card source target modifier =
+  createWindowModifierEffect (EffectCardResolutionWindow $ toCardId card) source target [modifier]
 
 cardResolutionModifiers
-  :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
-cardResolutionModifiers source target modifiers = createWindowModifierEffect EffectCardResolutionWindow source target modifiers
+  :: (Sourceable source, Targetable target, IsCard card)
+  => card
+  -> source
+  -> target
+  -> [ModifierType]
+  -> Message
+cardResolutionModifiers card source target modifiers = createWindowModifierEffect (EffectCardResolutionWindow $ toCardId card) source target modifiers
 
 searchModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message

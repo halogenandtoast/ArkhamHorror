@@ -289,7 +289,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       : msgs
                   , Deck (before <> rest)
                   )
-              _ -> do
+              _ | investigatorId `elem` ["05046", "05047", "05048", "05049"] -> do
                 card <- setOwner investigatorId =<< genCard cardDef
                 pure
                   ( PutCardIntoPlay
@@ -301,6 +301,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       : msgs
                   , currentDeck
                   )
+              _ -> pure (msgs, currentDeck)
         )
         ([], investigatorDeck)
         investigatorStartsWith
@@ -2015,6 +2016,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ChooseEndTurn iid | iid == investigatorId -> pure $ a & endedTurnL .~ True
   Do BeginRound -> do
     actionsForTurn <- getAbilitiesForTurn a
+    current <- getMaybeLocation a.id
     pure
       $ a
       & (endedTurnL .~ False)
@@ -2022,6 +2024,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (usedAdditionalActionsL .~ mempty)
       & (actionsTakenL .~ mempty)
       & (actionsPerformedL .~ mempty)
+      & (beganRoundAtL .~ current)
+      & (unhealedHorrorThisRoundL .~ 0)
   DiscardTopOfDeck iid n source mTarget | iid == investigatorId -> do
     let (cs, deck') = draw n investigatorDeck
         (cs', essenceOfTheDreams) = partition ((/= "06113") . toCardCode) cs
@@ -2213,7 +2217,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                        ]
                  )
               <> [CheckHandSize iid | checkHandSize]
-            pure $ a & handL %~ (<> map PlayerCard allDrawn) & deckL .~ Deck deck'
+            pure
+              $ a
+              & (handL %~ (<> map PlayerCard (filter (`cardMatch` NotCard CardWithRevelation) allDrawn)))
+              & (deckL .~ Deck deck')
   InvestigatorDrewPlayerCard iid card -> do
     windowMsg <-
       checkWindows [mkAfter (Window.DrawCard iid (PlayerCard card) $ Deck.InvestigatorDeck iid)]
@@ -2600,6 +2607,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (discardL %~ filter ((`notElem` cards) . PlayerCard))
       & (foundCardsL . each %~ filter (`notElem` cards))
       & (bondedCardsL %~ filter (`notElem` cards))
+  SwapPlaces (aTarget, _) (_, newLocation) | a `is` aTarget -> do
+    push $ CheckEnemyEngagement a.id
+    pure $ a & placementL .~ AtLocation newLocation
+  SwapPlaces (_, newLocation) (bTarget, _) | a `is` bTarget -> do
+    push $ CheckEnemyEngagement a.id
+    pure $ a & placementL .~ AtLocation newLocation
   ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [] | iid == investigatorId -> do
     -- can't shuffle zero cards
     pure a

@@ -13,6 +13,7 @@ import Arkham.Effect.Runner
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Modifiers
 import Arkham.Investigate
 import Arkham.Matcher
@@ -44,18 +45,22 @@ newtype FollowedEffect = FollowedEffect EffectAttrs
 followedEffect :: EffectArgs -> FollowedEffect
 followedEffect = cardEffect FollowedEffect Cards.followed
 
+-- effect is triggered by cdBeforeEffect
 instance RunMessage FollowedEffect where
   runMessage msg e@(FollowedEffect attrs) = case msg of
     CreatedEffect eid _ (InvestigatorSource iid) target | eid == toId attrs -> do
       enemies <- selectWithField Field.EnemyDamage $ enemyAtLocationWith iid
       player <- getPlayer iid
+      card <- case attrs.target of
+        CardIdTarget cid -> getCard cid
+        _ -> error "FollowedEffect: cardId should be CardIdTarget"
       push
         $ chooseOne
           player
           [ targetLabel
             enemy
             [ costModifier attrs enemy CannotMakeAttacksOfOpportunity
-            , cardResolutionModifier attrs target (MetaModifier $ object ["damage" .= dmg])
+            , cardResolutionModifier card attrs target (MetaModifier $ object ["damage" .= dmg])
             , disable attrs
             ]
           | (enemy, dmg) <- enemies

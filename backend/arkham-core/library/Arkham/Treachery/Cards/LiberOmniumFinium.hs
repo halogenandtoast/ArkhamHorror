@@ -30,8 +30,8 @@ instance RunMessage LiberOmniumFinium where
       case cardsUnderneath of
         (x : xs) -> do
           c <- sample (x :| xs)
-          cardResolutionModifiers attrs (toCardId c) [AddKeyword Peril, EffectsCannotBeCanceled]
-          cardResolutionModifier attrs iid (AnySkillValue (-2))
+          cardResolutionModifiers c attrs (toCardId c) [AddKeyword Peril, EffectsCannotBeCanceled]
+          cardResolutionModifier c attrs iid (AnySkillValue (-2))
           push $ InvestigatorDrewEncounterCard iid c
         _ -> push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
 

@@ -229,7 +229,9 @@ instance Eq Card where
 flipCard :: Card -> Card
 flipCard (EncounterCard ec) =
   EncounterCard $ ec {ecIsFlipped = not <$> ecIsFlipped ec}
-flipCard (PlayerCard pc) = PlayerCard pc
+flipCard (PlayerCard pc) = case cdOtherSide (toCardDef pc) of
+  Just otherSide -> PlayerCard $ pc {pcCardCode = otherSide}
+  Nothing -> PlayerCard pc
 flipCard (VengeanceCard c) = VengeanceCard c
 
 _PlayerCard :: Traversal' Card PlayerCard

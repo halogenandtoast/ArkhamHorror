@@ -460,9 +460,13 @@ allEvents =
     , --- seeker [eote]
       SomeEventCard unearthTheAncients2
     , --- rogue [eote]
-      SomeEventCard moneyTalks2
+      SomeEventCard scoutAhead
+    , SomeEventCard moneyTalks2
     , --- mystic [eote]
       SomeEventCard parallelFates2
+    , --- rogue/mystic [eote]
+      SomeEventCard etherealSlip
+    , SomeEventCard etherealSlip2
     , -- The Scarlet Keys
       --- rogue [tsk]
       SomeEventCard breakingAndEntering2

@@ -165,6 +165,7 @@ import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (state)
 import Data.Aeson (Result (..))
 import Data.Aeson.Diff qualified as Diff
+import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (emptyArray, parse, parseMaybe)
 import Data.List qualified as List
@@ -176,7 +177,6 @@ import Data.Monoid (First (..))
 import Data.Sequence ((|>), pattern Empty, pattern (:<|), pattern (:|>))
 import Data.Sequence qualified as Seq
 import Data.Set qualified as Set
-import Data.These
 import Data.Tuple.Extra (dupe)
 import Data.Typeable
 import Data.UUID (nil)
@@ -914,6 +914,14 @@ getInvestigatorsMatching matcher = do
     InvestigatorWithCommittableCard -> \i -> do
       selectAny $ CommittableCard (toId i) (basic AnyCard)
     InvestigatorWithUnhealedHorror -> fieldMap InvestigatorUnhealedHorrorThisRound (> 0) . toId
+    InvestigatorWithMetaKey k -> \i -> do
+      meta <- field InvestigatorMeta (toId i)
+      case meta of
+        Object o ->
+          case KeyMap.lookup (Key.fromText k) o of
+            Just (Bool b) -> pure b
+            _ -> pure False
+        _ -> pure False
     ContributedMatchingIcons valueMatcher -> \i -> do
       mSkillTest <- getSkillTest
       case mSkillTest of
@@ -942,6 +950,12 @@ getInvestigatorsMatching matcher = do
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
     InvestigatorWithKey key -> \i ->
       pure $ key `elem` investigatorKeys (toAttrs i)
+    DistanceFromRoundStart valueMatcher -> \i -> do
+      fromMaybe False <$> runMaybeT do
+        startLocation <- hoistMaybe $ attr investigatorBeganRoundAt i
+        current <- MaybeT $ getMaybeLocation i.id
+        Distance distance <- MaybeT $ getDistance startLocation current
+        lift $ gameValueMatches distance valueMatcher
     CanBeHuntedBy eid -> \i -> do
       mods <- getModifiers i
       flip noneM mods $ \case
@@ -3230,6 +3244,7 @@ instance Projection Investigator where
       InvestigatorPhysicalTrauma -> pure investigatorPhysicalTrauma
       InvestigatorBondedCards -> pure investigatorBondedCards
       InvestigatorUnhealedHorrorThisRound -> pure investigatorUnhealedHorrorThisRound
+      InvestigatorBeganRoundAt -> pure investigatorBeganRoundAt
       InvestigatorResources -> pure $ investigatorResources attrs
       InvestigatorDoom -> pure $ investigatorDoom attrs
       InvestigatorClues -> pure $ investigatorClues attrs
@@ -3922,6 +3937,7 @@ instance Projection Treachery where
       TreacheryPlacement -> pure treacheryPlacement
       TreacheryDrawnBy -> pure treacheryDrawnBy
       TreacheryDrawnFrom -> pure treacheryDrawnFrom
+      TreacheryOwner -> pure treacheryOwner
       TreacheryCardId -> pure treacheryCardId
       TreacheryCanBeCommitted -> pure treacheryCanBeCommitted
       TreacheryClues -> pure $ treacheryClues attrs

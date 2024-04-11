@@ -118,7 +118,7 @@ instance RunMessage LukeRobinson where
           locationOptions <- forToSnd lids $ \lid -> do
             enemies <- select $ enemyAt lid
             pure
-              $ [cardResolutionModifiers attrs attrs $ AsIfAt lid : map AsIfEngagedWith enemies]
+              $ [cardResolutionModifiers card attrs attrs $ AsIfAt lid : map AsIfEngagedWith enemies]
               <> playCard
 
           player <- getPlayer iid

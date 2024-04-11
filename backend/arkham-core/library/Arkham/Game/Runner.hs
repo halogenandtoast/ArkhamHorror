@@ -1027,9 +1027,14 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . eventsL %~ deleteMap eid
   ShuffleIntoDeck deck (TreacheryTarget treacheryId) -> do
     treachery <- getTreachery treacheryId
+    adjustedDeck <- case deck of
+      Deck.InvestigatorDeck _ ->
+        maybe Deck.EncounterDeck Deck.InvestigatorDeck <$> field TreacheryOwner treacheryId
+      _ -> pure deck
+
     pushAll
       [ RemoveTreachery treacheryId
-      , ShuffleCardsIntoDeck deck [toCard treachery]
+      , ShuffleCardsIntoDeck adjustedDeck [toCard treachery]
       ]
     pure g
   ShuffleIntoDeck deck (EnemyTarget enemyId) -> do
@@ -2090,7 +2095,7 @@ runGameMessage msg g = case msg of
     for_ (view resolvingCardL g) $ \c ->
       push
         $ CreateWindowModifierEffect
-          EffectCardResolutionWindow
+          (EffectCardResolutionWindow $ toCardId c)
           (EffectModifiers $ toModifiers GameSource [NoSurge])
           GameSource
           (CardIdTarget $ toCardId c)

@@ -748,6 +748,15 @@ allAssets =
       --- signature [eote]
       SomeAssetCard mechanicsWrench
     , SomeAssetCard livreDeibon
+    , SomeAssetCard trustyBullwhip
+    , SomeAssetCard disciplineAlignmentOfSpirit
+    , SomeAssetCard disciplineAlignmentOfSpiritBroken
+    , SomeAssetCard disciplineQuiescenceOfThought
+    , SomeAssetCard disciplineQuiescenceOfThoughtBroken
+    , SomeAssetCard disciplinePrescienceOfFate
+    , SomeAssetCard disciplinePrescienceOfFateBroken
+    , SomeAssetCard disciplineBalanceOfBody
+    , SomeAssetCard disciplineBalanceOfBodyBroken
     , --- seeker [eote]
       SomeAssetCard forcedLearning
     , --- rogue [eote]
@@ -768,6 +777,8 @@ allAssets =
     , --- rogue/survivor [eote]
       SomeAssetCard preciousMementoFromAFormerLife4
     , SomeAssetCard preciousMementoFromAFutureLife4
+    , --- mystic/survivor [eote]
+      SomeAssetCard talismanOfProtection
     , --- neutral [eote]
       SomeAssetCard inTheThickOfIt
     , -- The Scarlet Keys

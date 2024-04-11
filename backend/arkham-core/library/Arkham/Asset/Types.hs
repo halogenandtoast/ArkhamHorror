@@ -269,6 +269,9 @@ instance HasField "placement" AssetAttrs Placement where
 instance HasField "exhausted" AssetAttrs Bool where
   getField = assetExhausted
 
+instance HasField "ready" AssetAttrs Bool where
+  getField = not . assetExhausted
+
 instance HasField "horror" AssetAttrs Int where
   getField = assetHorror
 

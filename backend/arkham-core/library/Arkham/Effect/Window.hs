@@ -18,7 +18,7 @@ data EffectWindow
   | EffectSetupWindow
   | EffectTurnWindow
   | EffectNextTurnWindow
-  | EffectCardResolutionWindow
+  | EffectCardResolutionWindow CardId
   | EffectGameWindow
   | EffectAttackWindow
   | FirstEffectWindow [EffectWindow]

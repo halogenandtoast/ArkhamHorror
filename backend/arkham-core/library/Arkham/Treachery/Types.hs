@@ -62,6 +62,7 @@ data instance Field Treachery :: Type -> Type where
   TreacheryPlacement :: Field Treachery TreacheryPlacement
   TreacheryDrawnBy :: Field Treachery InvestigatorId
   TreacheryDrawnFrom :: Field Treachery (Maybe DeckSignifier)
+  TreacheryOwner :: Field Treachery (Maybe InvestigatorId)
 
 data TreacheryAttrs = TreacheryAttrs
   { treacheryId :: TreacheryId
@@ -191,23 +192,23 @@ instance IsCard TreacheryAttrs where
   toCardId = treacheryCardId
   toCardOwner = treacheryOwner
 
-treacheryOn :: Targetable target => target -> TreacheryAttrs -> Bool
-treacheryOn t = elem (toTarget t) . treacheryAttachedTarget
+treacheryOn :: Targetable target => TreacheryAttrs -> target -> Bool
+treacheryOn attrs t = toTarget t `elem` treacheryAttachedTarget attrs
 
 treacheryOnInvestigator :: InvestigatorId -> TreacheryAttrs -> Bool
-treacheryOnInvestigator = treacheryOn
+treacheryOnInvestigator = flip treacheryOn
 
 treacheryOnEnemy :: EnemyId -> TreacheryAttrs -> Bool
-treacheryOnEnemy = treacheryOn
+treacheryOnEnemy = flip treacheryOn
 
 treacheryOnLocation :: LocationId -> TreacheryAttrs -> Bool
-treacheryOnLocation = treacheryOn
+treacheryOnLocation = flip treacheryOn
 
 treacheryOnAgenda :: AgendaId -> TreacheryAttrs -> Bool
-treacheryOnAgenda = treacheryOn
+treacheryOnAgenda = flip treacheryOn
 
 treacheryOnAct :: ActId -> TreacheryAttrs -> Bool
-treacheryOnAct = treacheryOn
+treacheryOnAct = flip treacheryOn
 
 withTreacheryEnemy :: TreacheryAttrs -> (EnemyId -> m a) -> m a
 withTreacheryEnemy attrs f = case treacheryAttachedTarget attrs of

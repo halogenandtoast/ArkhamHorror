@@ -121,6 +121,7 @@ data Criterion
   | EventExists EventMatcher
   | ExcludeWindowAssetExists AssetMatcher
   | AgendaExists AgendaMatcher
+  | AbilityExists AbilityMatcher
   | ActExists ActMatcher
   | SkillExists SkillMatcher
   | StoryExists StoryMatcher
@@ -245,6 +246,9 @@ instance Exists SkillMatcher where
 
 instance Exists AgendaMatcher where
   exists = AgendaExists
+
+instance Exists AbilityMatcher where
+  exists = AbilityExists
 
 instance Exists InvestigatorMatcher where
   exists = InvestigatorExists

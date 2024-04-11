@@ -67,6 +67,8 @@ allPlayerTreacheryCards =
       , atychiphobia
       , bloodlust
       , boughtInBlood
+      , burdenOfDestiny
+      , buriedSecrets
       , callOfTheUnknown
       , calledByTheMists
       , caughtRedHanded
@@ -2050,6 +2052,18 @@ theHarbinger :: CardDef
 theHarbinger =
   (weakness "08006" "The Harbinger")
     { cdCardTraits = setFromList [Omen, Endtimes]
+    }
+
+buriedSecrets :: CardDef
+buriedSecrets =
+  (weakness "08009" "Buried Secrets")
+    { cdCardTraits = setFromList [Mystery]
+    }
+
+burdenOfDestiny :: CardDef
+burdenOfDestiny =
+  (weakness "08015" "Burden of Destiny")
+    { cdCardTraits = setFromList [Flaw]
     }
 
 theZealotsSeal :: CardDef

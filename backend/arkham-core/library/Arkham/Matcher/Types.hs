@@ -143,6 +143,8 @@ data InvestigatorMatcher
   | InvestigatorCanTarget Target
   | InvestigatorWithRecord CampaignLogKey
   | CanBeHuntedBy EnemyId
+  | DistanceFromRoundStart ValueMatcher
+  | InvestigatorWithMetaKey Text
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated InvestigatorMatcher

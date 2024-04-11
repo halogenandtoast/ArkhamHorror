@@ -407,6 +407,7 @@ data Message
   | DrewFromScenarioDeck InvestigatorId ScenarioDeckKey Target [Card]
   | SetScenarioDeck ScenarioDeckKey [Card]
   | RemoveCardFromScenarioDeck ScenarioDeckKey Card
+  | SwapPlaces (Target, LocationId) (Target, LocationId) -- we include the placement so it is up to date
   | -- Victory
     AddToVictory Target
   | DefeatedAddToVictory Target

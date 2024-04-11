@@ -314,6 +314,11 @@ data ModifierType
   | Explosion -- from Dyanamite Blast
   deriving stock (Show, Eq, Ord, Data)
 
+pattern CannotMoveExceptByScenarioCardEffects :: ModifierType
+pattern CannotMoveExceptByScenarioCardEffects <- CannotMove
+  where
+    CannotMoveExceptByScenarioCardEffects = CannotMove
+
 instance IsLabel "combat" (Int -> ModifierType) where
   fromLabel = SkillModifier #combat
 

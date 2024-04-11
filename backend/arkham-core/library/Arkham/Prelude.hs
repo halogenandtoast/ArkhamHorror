@@ -52,6 +52,7 @@ import Data.Aeson (Result (..))
 import Data.Aeson as X hiding (Result (..))
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Text
+import Data.Align as X (align)
 import Data.Char qualified as C
 import Data.Coerce as X (Coercible, coerce)
 import Data.Data as X (Data)
@@ -65,6 +66,7 @@ import Data.Semigroup as X (Max (..), Min (..), Sum (..))
 import Data.Set qualified as Set
 import Data.Text.Lazy qualified as TL
 import Data.Text.Lazy.Builder
+import Data.These as X (These (..))
 import Data.UUID as X (UUID)
 import GHC.Stack as X
 import Language.Haskell.TH hiding (location)

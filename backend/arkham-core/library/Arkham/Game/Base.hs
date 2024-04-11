@@ -23,7 +23,6 @@ import Arkham.Target
 import Arkham.Tarot
 import Arkham.Zone
 import Data.Aeson.Diff qualified as Diff
-import Data.These
 import GHC.Records
 
 type GameMode = These Campaign Scenario

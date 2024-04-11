@@ -36,7 +36,6 @@ import Arkham.Treachery.Types (Treachery)
 import Arkham.Window (Window)
 import Control.Lens (each)
 import Data.Text qualified as T
-import Data.These
 
 newtype MissingEntity = MissingEntity Text
   deriving stock (Show)

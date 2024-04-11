@@ -243,6 +243,14 @@ allPlayerAssetCards =
       , digDeep4
       , discOfItzamna
       , discOfItzamna2
+      , disciplineAlignmentOfSpirit
+      , disciplineAlignmentOfSpiritBroken
+      , disciplineBalanceOfBody
+      , disciplineBalanceOfBodyBroken
+      , disciplinePrescienceOfFate
+      , disciplinePrescienceOfFateBroken
+      , disciplineQuiescenceOfThought
+      , disciplineQuiescenceOfThoughtBroken
       , doubleDouble4
       , drElliHorowitz
       , drFrancisMorgan
@@ -602,6 +610,7 @@ allPlayerAssetCards =
       , switchblade
       , switchblade2
       , swordCane
+      , talismanOfProtection
       , tennesseeSourMash
       , tennesseeSourMashRogue3
       , tennesseeSourMashSurvivor3
@@ -647,6 +656,7 @@ allPlayerAssetCards =
       , trenchKnife
       , tristanBotleyFixerForHire2
       , trueGrit
+      , trustyBullwhip
       , tryAndTryAgain1
       , tryAndTryAgain3
       , twentyFiveAutomatic
@@ -4657,6 +4667,88 @@ livreDeibon =
       , cdSlots = [#hand]
       }
 
+trustyBullwhip :: CardDef
+trustyBullwhip =
+  signature "08007"
+    . fast
+    $ (asset "08008" "Trusty Bullwhip" 2 Neutral)
+      { cdCardTraits = setFromList [Item, Weapon, Melee]
+      , cdSkills = [#agility, #agility, #wild]
+      , cdSlots = [#hand]
+      }
+
+disciplineAlignmentOfSpirit :: CardDef
+disciplineAlignmentOfSpirit =
+  signature "08010"
+    . permanent
+    $ (asset "08011a" ("Discipline" <:> "Alignment of Spirit") 0 Neutral)
+      { cdCardTraits = setFromList [Unbroken]
+      , cdOtherSide = Just "08011b"
+      }
+
+disciplineAlignmentOfSpiritBroken :: CardDef
+disciplineAlignmentOfSpiritBroken =
+  signature "08010"
+    . permanent
+    $ (asset "08011b" ("Discipline" <:> "Alignment of Spirit") 0 Neutral)
+      { cdCardTraits = setFromList [Broken]
+      , cdOtherSide = Just "08011a"
+      }
+
+disciplineQuiescenceOfThought :: CardDef
+disciplineQuiescenceOfThought =
+  signature "08010"
+    . permanent
+    $ (asset "08012a" ("Discipline" <:> "Quiescence of Thought") 0 Neutral)
+      { cdCardTraits = setFromList [Unbroken]
+      , cdOtherSide = Just "08012b"
+      }
+
+disciplineQuiescenceOfThoughtBroken :: CardDef
+disciplineQuiescenceOfThoughtBroken =
+  signature "08010"
+    . permanent
+    $ (asset "08012b" ("Discipline" <:> "Quiescence of Thought") 0 Neutral)
+      { cdCardTraits = setFromList [Broken]
+      , cdOtherSide = Just "08012a"
+      }
+
+disciplinePrescienceOfFate :: CardDef
+disciplinePrescienceOfFate =
+  signature "08010"
+    . permanent
+    $ (asset "08013a" ("Discipline" <:> "Prescience of Fate") 0 Neutral)
+      { cdCardTraits = setFromList [Unbroken]
+      , cdOtherSide = Just "08013b"
+      }
+
+disciplinePrescienceOfFateBroken :: CardDef
+disciplinePrescienceOfFateBroken =
+  signature "08010"
+    . permanent
+    $ (asset "08013b" ("Discipline" <:> "Prescience of Fate") 0 Neutral)
+      { cdCardTraits = setFromList [Broken]
+      , cdOtherSide = Just "08013a"
+      }
+
+disciplineBalanceOfBody :: CardDef
+disciplineBalanceOfBody =
+  signature "08010"
+    . permanent
+    $ (asset "08014a" ("Discipline" <:> "Balance of Body") 0 Neutral)
+      { cdCardTraits = setFromList [Unbroken]
+      , cdOtherSide = Just "08014b"
+      }
+
+disciplineBalanceOfBodyBroken :: CardDef
+disciplineBalanceOfBodyBroken =
+  signature "08010"
+    . permanent
+    $ (asset "08014b" ("Discipline" <:> "Balance of Body") 0 Neutral)
+      { cdCardTraits = setFromList [Broken]
+      , cdOtherSide = Just "08014a"
+      }
+
 -- TODO: if we ever care about deck size need to encode that somehow
 forcedLearning :: CardDef
 forcedLearning =
@@ -4771,6 +4863,15 @@ preciousMementoFromAFutureLife4 =
     , cdSlots = [#accessory]
     , cdLevel = Just 4
     }
+
+talismanOfProtection :: CardDef
+talismanOfProtection =
+  fast
+    (multiClassAsset "08116" "Talisman of Protection" 2 [Mystic, Survivor])
+      { cdCardTraits = setFromList [Item, Charm]
+      , cdSkills = [#willpower]
+      , cdSlots = [#arcane]
+      }
 
 inTheThickOfIt :: CardDef
 inTheThickOfIt =

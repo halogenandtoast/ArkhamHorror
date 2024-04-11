@@ -17,7 +17,7 @@ torturousChords :: TreacheryCard TorturousChords
 torturousChords = treachery TorturousChords Cards.torturousChords
 
 instance HasModifiersFor TorturousChords where
-  getModifiersFor target (TorturousChords a) | treacheryOn target a = do
+  getModifiersFor target (TorturousChords a) | treacheryOn a target = do
     pure $ toModifiers a [IncreaseCostOf AnyCard 1]
   getModifiersFor _ _ = pure []
 

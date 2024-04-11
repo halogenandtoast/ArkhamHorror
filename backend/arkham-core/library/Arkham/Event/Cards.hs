@@ -30,11 +30,17 @@ import Arkham.Strategy
 import Arkham.Trait
 
 event :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
-event cardCode name cost classSymbol =
+event cardCode name cost = baseEvent cardCode name cost . singleton
+
+baseEvent :: CardCode -> Name -> Int -> Set ClassSymbol -> CardDef
+baseEvent cardCode name cost classSymbols =
   (emptyCardDef cardCode name EventType)
     { cdCost = Just (StaticCost cost)
-    , cdClassSymbols = singleton classSymbol
+    , cdClassSymbols = classSymbols
     }
+
+multiClassEvent :: CardCode -> Name -> Int -> [ClassSymbol] -> CardDef
+multiClassEvent cCode name cost classSymbols = baseEvent cCode name cost (setFromList classSymbols)
 
 signature :: InvestigatorId -> CardDef -> CardDef
 signature iid cd = cd {cdDeckRestrictions = [Signature iid], cdLevel = Nothing}
@@ -134,6 +140,8 @@ allPlayerEventCards =
       , emergencyCache3
       , enchantWeapon3
       , etherealForm
+      , etherealSlip
+      , etherealSlip2
       , eucatastrophe3
       , everVigilant1
       , evidence
@@ -258,6 +266,7 @@ allPlayerEventCards =
       , riteOfEquilibrium5
       , sacrifice1
       , sceneOfTheCrime
+      , scoutAhead
       , scroungeForSupplies
       , searchForTheTruth
       , secondWind
@@ -2708,6 +2717,15 @@ unearthTheAncients2 =
     , cdLevel = Just 2
     }
 
+scoutAhead :: CardDef
+scoutAhead =
+  (event "08047" "Scout Ahead" 1 Rogue)
+    { cdSkills = [#agility, #agility]
+    , cdCardTraits = setFromList [Insight, Trick]
+    , cdActions = [#move]
+    , cdCriteria = Just $ youExist can.move
+    }
+
 moneyTalks2 :: CardDef
 moneyTalks2 =
   (event "08054" "Money Talks" 0 Rogue)
@@ -2732,6 +2750,33 @@ parallelFates2 =
     , cdLevel = Just 2
     , cdCriteria =
         Just $ exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck]
+    }
+
+etherealSlip :: CardDef
+etherealSlip =
+  (multiClassEvent "08108" "Ethereal Slip" 2 [Rogue, Mystic])
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Spell, Trick]
+    , cdCriteria =
+        Just
+          $ exists
+          $ NonEliteEnemy
+          <> EnemyAt (LocationWithDistanceFromAtMost 2 YourLocation (RevealedLocation <> CanEnterLocation You))
+          <> EnemyCanEnter YourLocation
+    }
+
+etherealSlip2 :: CardDef
+etherealSlip2 =
+  (multiClassEvent "08110" "Ethereal Slip" 1 [Rogue, Mystic])
+    { cdSkills = [#willpower, #agility, #agility]
+    , cdCardTraits = setFromList [Spell, Trick]
+    , cdCriteria =
+        Just
+          $ exists
+          $ NonEliteEnemy
+          <> EnemyAt (RevealedLocation <> CanEnterLocation You)
+          <> EnemyCanEnter YourLocation
+    , cdLevel = Just 2
     }
 
 breakingAndEntering2 :: CardDef

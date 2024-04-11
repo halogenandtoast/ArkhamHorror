@@ -21,13 +21,17 @@ import Arkham.Question as X
 import Arkham.Source as X
 import Arkham.Target as X
 import Arkham.Treachery.Runner as X (
+  Field (..),
   IsTreachery,
   TreacheryAttrs,
   TreacheryCard,
+  on,
   push,
   pushAll,
+  pushM,
   pushWhen,
   setMeta,
+  toModifiers,
   treachery,
   treacheryInHandOf,
   treacheryOn,

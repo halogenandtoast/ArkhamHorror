@@ -353,6 +353,7 @@ instance RunMessage EnemyAttrs where
               investigatorMods <- getModifiers iid
               canEngage <- flip allM investigatorMods $ \case
                 CannotBeEngagedBy matcher -> notElem eid <$> select matcher
+                CannotBeEngaged -> pure False
                 _ -> pure True
               pure $ canEngage && all (`notElem` mods) [EnemyCannotEngage iid, CannotBeEngaged]
       investigatorIds' <- filterM modifiedFilter =<< getInvestigatorsAtSameLocation a
@@ -416,6 +417,12 @@ instance RunMessage EnemyAttrs where
           Keyword.Patrol lMatcher -> push $ PatrolMove (toId a) lMatcher
           _ -> pure ()
       pure a
+    SwapPlaces (aTarget, _) (_, newLocation) | a `is` aTarget -> do
+      push $ EnemyCheckEngagement a.id
+      pure $ a & placementL .~ AtLocation newLocation
+    SwapPlaces (_, newLocation) (bTarget, _) | a `is` bTarget -> do
+      push $ EnemyCheckEngagement a.id
+      pure $ a & placementL .~ AtLocation newLocation
     HunterMove eid | eid == toId a && not enemyExhausted && not (isSwarm a) -> do
       enemyLocation <- field EnemyLocation enemyId
       case enemyLocation of

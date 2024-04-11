@@ -68,7 +68,6 @@ tests:
       - hspec
       - hspec-expectations-lifted
       - lens
-      - these
       - uuid
       - mtl
       - random

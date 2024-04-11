@@ -88,7 +88,6 @@ import Arkham.Trait (Trait (Elite))
 import Control.Monad.State
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
-import Data.These
 import GHC.OverloadedLabels
 import GHC.TypeLits
 import System.Random (StdGen, mkStdGen)

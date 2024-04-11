@@ -116,6 +116,7 @@ import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens (each, itraverseOf, itraversed, non, set)
+import Control.Monad.State.Strict (evalStateT, get, put)
 import Data.Map.Strict qualified as Map
 import Data.Set qualified as Set
 import Data.These
@@ -908,35 +909,46 @@ runGameMessage msg g = case msg of
         other -> other
       foundCards = gameFoundCards g
     player <- getPlayer iid
-    for_ cardSources $ \(cardSource, returnStrategy) -> case returnStrategy of
-      DiscardRest -> do
-        push
-          $ chooseOneAtATime player
-          $ map
-            ( \case
-                EncounterCard c ->
+
+    flip evalStateT True $ do
+      for_ cardSources $ \(cardSource, returnStrategy) -> case returnStrategy of
+        DiscardRest -> do
+          lift
+            $ push
+            $ chooseOneAtATime player
+            $ map
+              ( \case
+                  EncounterCard c ->
+                    TargetLabel
+                      (CardIdTarget $ toCardId c)
+                      [AddToEncounterDiscard c]
+                  _ -> error "not possible"
+              )
+              (findWithDefault [] Zone.FromDeck foundCards)
+        PutBackInAnyOrder -> do
+          when (foundKey cardSource /= Zone.FromDeck) $ error "Expects a deck"
+          lift
+            $ push
+            $ chooseOneAtATime player
+            $ map
+              ( \c ->
                   TargetLabel
                     (CardIdTarget $ toCardId c)
-                    [AddToEncounterDiscard c]
-                _ -> error "not possible"
-            )
-            (findWithDefault [] Zone.FromDeck foundCards)
-      PutBackInAnyOrder -> do
-        when (foundKey cardSource /= Zone.FromDeck) $ error "Expects a deck"
-        push
-          $ chooseOneAtATime player
-          $ map
-            ( \c ->
-                TargetLabel
-                  (CardIdTarget $ toCardId c)
-                  [AddFocusedToTopOfDeck iid EncounterDeckTarget $ toCardId c]
-            )
-            (findWithDefault [] Zone.FromDeck foundCards)
-      ShuffleBackIn -> pushAll [ClearFound $ foundKey cardSource, ShuffleDeck Deck.EncounterDeck]
-      PutBack -> push (ClearFound $ foundKey cardSource) -- we don't remove anymore so nothing to do
-      RemoveRestFromGame -> do
-        -- Try to obtain, then don't add back
-        pushAll $ map ObtainCard $ findWithDefault [] Zone.FromDeck foundCards
+                    [AddFocusedToTopOfDeck iid EncounterDeckTarget $ toCardId c]
+              )
+              (findWithDefault [] Zone.FromDeck foundCards)
+        ShuffleBackIn -> lift $ pushAll [ClearFound $ foundKey cardSource, ShuffleDeck Deck.EncounterDeck]
+        PutBack -> do
+          needsContinue <- get
+          if needsContinue
+            then do
+              put False
+              lift $ push $ chooseOne player [Label "Continue" [ClearFound $ foundKey cardSource]] -- we don't remove anymore so nothing to do
+            else lift $ push (ClearFound $ foundKey cardSource) -- we don't remove anymore so nothing to do
+        RemoveRestFromGame -> do
+          -- Try to obtain, then don't add back
+          lift $ pushAll $ map ObtainCard $ findWithDefault [] Zone.FromDeck foundCards
+
     pure g
   AddToEncounterDiscard card -> do
     pure

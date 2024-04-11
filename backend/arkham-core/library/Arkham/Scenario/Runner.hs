@@ -803,7 +803,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
             else chooseOneAtATime player choices
       PlayFound {} -> error "PlayFound is not a valid EncounterDeck strategy"
       PlayFoundNoCost {} -> error "PlayFound is not a valid EncounterDeck strategy"
-      ReturnCards -> pushAll [chooseOne player [Label "Continue" []]]
+      ReturnCards -> pure ()
 
     pushBatch batchId (FoundCards foundCards)
 

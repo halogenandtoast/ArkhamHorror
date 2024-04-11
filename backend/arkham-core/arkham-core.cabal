@@ -3245,6 +3245,5 @@ test-suite spec
     , mtl
     , random
     , text
-    , these
     , uuid
   default-language: GHC2021

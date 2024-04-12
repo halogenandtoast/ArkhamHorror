@@ -17,13 +17,23 @@ export interface Props {
 
 const props = defineProps<Props>()
 
-const investigatorId = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)?.id)
+const investigator = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId))
+const investigatorId = computed(() => investigator.value?.id)
 
 const cardContents = computed<CardContents>(() =>
   props.card.tag == 'VengeanceCard' ? props.card.contents.contents : props.card.contents)
 
 const id = computed(() => cardContents.value.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+
+const revealed = computed(() => {
+  const meta = investigator.value?.meta
+  if ("revealedCards" in meta) {
+    return Object.values(meta.revealedCards).some((v) => (v as string[]).includes(id.value))
+  }
+
+  return false
+})
 
 const cardAction = computed(() => {
   return choices.value.findIndex((choice) => {
@@ -211,7 +221,7 @@ function oilPaintEffect(canvas, radius, intensity) {
 </script>
 
 <template>
-  <div class="card-container" :data-index="id" v-if="solo || (investigatorId == ownerId)">
+  <div class="card-container" :data-index="id" v-if="solo || (investigatorId == ownerId) || revealed">
     <img
       :class="classObject"
       class="card"

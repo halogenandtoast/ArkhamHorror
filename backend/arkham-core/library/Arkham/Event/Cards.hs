@@ -867,7 +867,7 @@ exposeWeakness1 =
     { cdSkills = [#intellect, #combat, #combat]
     , cdCardTraits = singleton Insight
     , cdFastWindow = Just FastPlayerWindow
-    , cdCriteria = Just $ exists $ EnemyAt YourLocation
+    , cdCriteria = Just $ exists $ EnemyAt YourLocation <> EnemyWithFight
     , cdLevel = Just 1
     }
 
@@ -1255,7 +1255,8 @@ waylay =
   (event "03237" "Waylay" 3 Survivor)
     { cdSkills = [#agility, #agility]
     , cdCardTraits = singleton Tactic
-    , cdCriteria = Just $ exists $ NonEliteEnemy <> EnemyAt YourLocation <> ExhaustedEnemy
+    , cdCriteria =
+        Just $ exists $ NonEliteEnemy <> EnemyAt YourLocation <> ExhaustedEnemy <> EnemyWithEvade
     }
 
 aChanceEncounter2 :: CardDef
@@ -1444,7 +1445,7 @@ eavesdrop =
   (event "04027" "Eavesdrop" 1 Rogue)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Insight, Trick]
-    , cdCriteria = Just $ exists $ UnengagedEnemy <> EnemyAt YourLocation
+    , cdCriteria = Just $ exists $ UnengagedEnemy <> EnemyAt YourLocation <> EnemyWithEvade
     }
 
 youHandleThisOne :: CardDef
@@ -1599,7 +1600,7 @@ exposeWeakness3 =
     { cdSkills = [#intellect, #combat, #wild]
     , cdCardTraits = singleton Insight
     , cdFastWindow = Just FastPlayerWindow
-    , cdCriteria = Just $ exists $ EnemyAt YourLocation
+    , cdCriteria = Just $ exists $ EnemyAt YourLocation <> EnemyWithFight
     , cdLevel = Just 3
     }
 

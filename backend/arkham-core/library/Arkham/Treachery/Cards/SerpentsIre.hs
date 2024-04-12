@@ -40,11 +40,7 @@ instance RunMessage SerpentsIre where
           (OutOfPlayEnemyField PursuitZone EnemyFight)
           (OutOfPlayEnemy PursuitZone $ EnemyWithTrait Serpent)
       choices <-
-        toList
-          . setFromList @(Set EnemyId)
-          <$> filterM
-            (fieldMap (OutOfPlayEnemyField PursuitZone EnemyFight) ((== Just fightValue)))
-            serpents
+        filterM (fieldMap (OutOfPlayEnemyField PursuitZone EnemyFight) (== Just fightValue)) serpents
       if null choices
         then push $ gainSurge attrs
         else do

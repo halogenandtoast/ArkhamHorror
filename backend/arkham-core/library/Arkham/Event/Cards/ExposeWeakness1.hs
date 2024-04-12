@@ -21,7 +21,7 @@ exposeWeakness1 = event ExposeWeakness1 Cards.exposeWeakness1
 instance RunMessage ExposeWeakness1 where
   runMessage msg e@(ExposeWeakness1 attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      enemies <- selectWithField EnemyFight (enemyAtLocationWith iid)
+      enemies <- select $ enemyAtLocationWith iid <> EnemyWithFight
       player <- getPlayer iid
       push
         $ chooseOne
@@ -29,7 +29,7 @@ instance RunMessage ExposeWeakness1 where
           [ targetLabel
             enemy
             [beginSkillTest iid attrs enemy #intellect (EnemyMaybeFieldDifficulty enemy EnemyFight)]
-          | (enemy, Just _) <- enemies
+          | enemy <- enemies
           ]
       pure e
     PassedThisSkillTestBy _ (isSource attrs -> True) n -> do

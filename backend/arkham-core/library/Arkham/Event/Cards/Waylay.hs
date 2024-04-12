@@ -23,14 +23,7 @@ waylay = event Waylay Cards.waylay
 instance RunMessage Waylay where
   runMessage msg e@(Waylay attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      enemies <-
-        selectWithField EnemyEvade
-          $ NonEliteEnemy
-          <> EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
-          <> ExhaustedEnemy
-      let
-        enemiesWithEvade =
-          flip mapMaybe enemies $ \(enemy, mEvade) -> (enemy,) <$> mEvade
+      enemies <- select $ NonEliteEnemy <> enemyAtLocationWith iid <> ExhaustedEnemy <> EnemyWithEvade
       player <- getPlayer iid
       pushAll
         [ chooseOne
@@ -44,7 +37,7 @@ instance RunMessage Waylay where
                   SkillAgility
                   (EnemyMaybeFieldDifficulty enemy EnemyEvade)
               ]
-            | (enemy, _) <- enemiesWithEvade
+            | enemy <- enemies
             ]
         ]
       pure e

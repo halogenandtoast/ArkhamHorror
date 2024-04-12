@@ -328,7 +328,7 @@ getBaseSkillTestDifficulty s = go (skillTestDifficulty s)
     SumDifficulty ds -> sum <$> traverse go ds
     AssetFieldDifficulty aid fld -> field fld aid
     InvestigatorFieldDifficulty iid fld -> field fld iid
-    InvestigatorFieldLengthDifficulty iid (SomeListField fld) -> fieldMap fld length iid
+    InvestigatorHandLengthDifficulty iid -> fieldMap InvestigatorHand length iid
     EnemyMaybeFieldDifficulty eid fld -> fromJustNote "missing maybe field" <$> field fld eid
     VictoryDisplayCountDifficulty mtchr -> selectCount $ VictoryDisplayCardMatch mtchr
     EnemyCountDifficulty mtchr -> selectCount mtchr

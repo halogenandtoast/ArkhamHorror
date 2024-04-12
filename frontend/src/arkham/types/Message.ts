@@ -26,7 +26,7 @@ export enum MessageType {
   DONE = 'Done',
   SKIP_TRIGGERS_BUTTON = 'SkipTriggersButton',
   TOKEN_GROUP_CHOICE = 'ChaosTokenGroupChoice',
-  EFFECT_ACTION_BUTTON = 'EffectActionButton'
+  EFFECT_ACTION_BUTTON = 'EffectActionButton',
 }
 
 export type AbilityMessage = {
@@ -332,7 +332,6 @@ export const effectActionButtonDecoder = JsonDecoder.object<EffectActionButton>(
     effectId: JsonDecoder.string,
     tooltip: JsonDecoder.string
   }, 'EffectActionButton')
-
 
 export const messageDecoder = JsonDecoder.oneOf<Message>(
   [

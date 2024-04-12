@@ -1,19 +1,23 @@
 module Arkham.Investigator.Cards.BobJenkins (bobJenkins, BobJenkins (..)) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Action.Additional
+import Arkham.Capability
 import Arkham.Card
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Game.Helpers (getPlayableCards, toModifiers, withModifiers)
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
+import Arkham.Investigator.Types (Field (InvestigatorHand))
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Projection
 import Arkham.Window (defaultWindows, mkWhen)
 import Arkham.Window qualified as Window
+import Data.Aeson.Types (Parser, parseMaybe)
+import Data.Map.Strict qualified as Map
 
 newtype BobJenkins = BobJenkins InvestigatorAttrs
   deriving anyclass (IsInvestigator)
@@ -25,6 +29,12 @@ bobJenkins =
     BobJenkins
     Cards.bobJenkins
     Stats {health = 6, sanity = 8, willpower = 2, intellect = 4, combat = 3, agility = 3}
+
+parseRevealedCards :: Value -> Parser (Map InvestigatorId [CardId])
+parseRevealedCards = withObject "RevealedCards" $ \o -> o .:? "revealedCards" .!= mempty
+
+getRevealedCards :: Value -> Map InvestigatorId [CardId]
+getRevealedCards = fromMaybe mempty . parseMaybe parseRevealedCards
 
 instance HasModifiersFor BobJenkins where
   getModifiersFor target (BobJenkins a) | a `is` target = do
@@ -94,4 +104,21 @@ instance RunMessage BobJenkins where
           checkWindows [mkWhen (Window.PlayCard iid c)]
           push $ PayCardCost iid c windows'
           pure i
-    _ -> BobJenkins <$> lift (runMessage msg attrs)
+    _ -> do
+      let revealedCards = getRevealedCards attrs.meta
+      -- remove any cards no longer in hand
+      iids <-
+        select
+          $ affectsOthers
+          $ colocatedWith attrs.id
+          <> not_ (InvestigatorWithId attrs.id)
+          <> can.reveal.cards
+      let
+        addCards revealedCards' iid = do
+          handCards <-
+            map toCardId . filter (`cardMatch` (CardWithType AssetType <> #item)) <$> field InvestigatorHand iid
+          pure $ Map.insert iid handCards revealedCards'
+
+      revealedCards' <- foldM addCards revealedCards iids
+
+      BobJenkins <$> lift (runMessage msg $ attrs & setMeta (object ["revealedCards" .= revealedCards']))

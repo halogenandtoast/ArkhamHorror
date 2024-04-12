@@ -26,7 +26,7 @@ instance RunMessage OperatingRoom where
       push
         $ chooseOrRunOne
           player
-          [ targetLabel target [beginSkillTest iid (attrs.ability 1) target #intellect 4]
+          [ targetLabel target [beginSkillTest iid (attrs.ability 1) target #intellect (Fixed 4)]
           | target <- investigators
           ]
       pure l

@@ -53,7 +53,16 @@ instance RunMessage EnchantedArmor2 where
       for_ attrs.owner \owner -> do
         stillAlive <- selectAny $ InvestigatorWithId owner
         pushWhen stillAlive
-          $ beginSkillTest owner (attrs.ability 1) owner #willpower (attrs.damage + attrs.horror)
+          $ beginSkillTest
+            owner
+            (attrs.ability 1)
+            owner
+            #willpower
+            ( SumDifficulty
+                [ AssetFieldDifficulty attrs.id AssetDamage
+                , AssetFieldDifficulty attrs.id AssetHorror
+                ]
+            )
       pure $ EnchantedArmor2 $ attrs & setMeta (x, y)
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       let (x, y) = toResult @(Int, Int) attrs.meta

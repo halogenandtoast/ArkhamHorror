@@ -33,7 +33,7 @@ instance HasAbilities DisquietingDreams where
 instance RunMessage DisquietingDreams where
   runMessage msg t@(DisquietingDreams attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs SkillWillpower 5
+      push $ revelationSkillTest iid attrs SkillWillpower (Fixed 5)
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       push $ AttachTreachery (toId attrs) (toTarget iid)

@@ -25,7 +25,7 @@ instance RunMessage ClawsOfSteam where
   runMessage msg t@(ClawsOfSteam attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source
       | isSource attrs source ->
-          t <$ push (RevelationSkillTest iid source SkillWillpower 3)
+          t <$ push (RevelationSkillTest iid source SkillWillpower (Fixed 3))
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source ->
           t

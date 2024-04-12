@@ -36,7 +36,7 @@ instance HasModifiersFor CursedSwamp where
 instance RunMessage CursedSwamp where
   runMessage msg t@(CursedSwamp attrs@TreacheryAttrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      t <$ push (RevelationSkillTest iid source SkillWillpower 3)
+      t <$ push (RevelationSkillTest iid source SkillWillpower (Fixed 3))
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget {} _ n | tid == treacheryId -> do
       push $ InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAny n 0
       pure t

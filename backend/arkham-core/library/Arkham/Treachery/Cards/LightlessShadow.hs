@@ -6,7 +6,7 @@ module Arkham.Treachery.Cards.LightlessShadow (
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Scenarios.TheDepthsOfYoth.Helpers
+import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -21,8 +21,12 @@ lightlessShadow = treachery LightlessShadow Cards.lightlessShadow
 instance RunMessage LightlessShadow where
   runMessage msg t@(LightlessShadow attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      n <- getCurrentDepth
-      push $ RevelationSkillTest iid source SkillAgility (1 + n)
+      push
+        $ RevelationSkillTest
+          iid
+          source
+          SkillAgility
+          (SumDifficulty [Fixed 1, ScenarioCountDifficulty CurrentDepth])
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do

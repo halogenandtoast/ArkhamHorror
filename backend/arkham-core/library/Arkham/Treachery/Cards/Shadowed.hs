@@ -39,9 +39,9 @@ instance RunMessage Shadowed where
               [ targetLabel
                 cultist
                 [ PlaceDoom (toSource attrs) (toTarget cultist) 1
-                , RevelationSkillTest iid source SkillWillpower x
+                , RevelationSkillTest iid source SkillWillpower (EnemyMaybeFieldDifficulty cultist EnemyFight)
                 ]
-              | (cultist, Just x) <- cultists
+              | (cultist, Just _) <- cultists
               ]
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do

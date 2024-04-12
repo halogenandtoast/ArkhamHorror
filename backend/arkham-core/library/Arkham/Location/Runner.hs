@@ -25,6 +25,7 @@ import Arkham.Helpers.Query as X
 import Arkham.Helpers.SkillTest as X
 import Arkham.Location.Types as X
 import Arkham.LocationSymbol as X
+import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
 import Arkham.Target as X
 
@@ -107,9 +108,14 @@ instance RunMessage LocationAttrs where
       let iid = investigation.investigator
       allowed <- getInvestigateAllowed iid a
       when allowed $ do
-        shroudValue' <- getModifiedShroudValueFor a
         let target = maybe (toTarget a) (ProxyTarget (toTarget a)) investigation.target
-        push $ investigate iid investigation.source target investigation.skillType shroudValue'
+        push
+          $ investigate
+            iid
+            investigation.source
+            target
+            investigation.skillType
+            (LocationFieldDifficulty a.id LocationShroud)
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
       let clues = locationClues a

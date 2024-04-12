@@ -8,7 +8,6 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -23,8 +22,12 @@ markedForDeath = treachery MarkedForDeath Cards.markedForDeath
 instance RunMessage MarkedForDeath where
   runMessage msg t@(MarkedForDeath attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      difficulty <- fieldMap InvestigatorHorror (+ 2) iid
-      push $ RevelationSkillTest iid source SkillAgility difficulty
+      push
+        $ RevelationSkillTest
+          iid
+          source
+          SkillAgility
+          (SumDifficulty [Fixed 2, InvestigatorFieldDifficulty iid InvestigatorHorror])
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do

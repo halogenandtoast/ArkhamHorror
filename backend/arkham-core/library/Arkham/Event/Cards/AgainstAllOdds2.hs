@@ -29,7 +29,8 @@ instance RunMessage AgainstAllOdds2 where
   runMessage msg e@(AgainstAllOdds2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ [(windowType -> Window.InitiatedSkillTest st)] _ | eid == toId attrs -> do
       base <- getBaseValueForSkillTestType iid (skillTestAction st) (skillTestType st)
-      let n = skillTestDifficulty st - base
+      difficulty <- fromJustNote "missing" <$> getSkillTestDifficulty
+      let n = difficulty - base
       ignoreWindow <-
         checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
       pushAll

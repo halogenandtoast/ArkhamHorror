@@ -6,7 +6,6 @@ module Arkham.Treachery.Cards.DiabolicVoices (
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Helpers.Scenario
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
@@ -24,8 +23,12 @@ diabolicVoices = treachery DiabolicVoices Cards.diabolicVoices
 instance RunMessage DiabolicVoices where
   runMessage msg t@(DiabolicVoices attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      n <- length <$> findInDiscard (cardIs Cards.diabolicVoices)
-      push $ revelationSkillTest iid attrs SkillWillpower (3 + n)
+      push
+        $ revelationSkillTest
+          iid
+          attrs
+          SkillWillpower
+          (SumDifficulty [Fixed 3, ScenarioInDiscardCountDifficulty (cardIs Cards.diabolicVoices)])
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n | n > 0 -> do
       handCount <- fieldMap InvestigatorHand length iid

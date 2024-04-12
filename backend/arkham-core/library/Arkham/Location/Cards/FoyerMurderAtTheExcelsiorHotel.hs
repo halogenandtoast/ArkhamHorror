@@ -33,8 +33,13 @@ instance HasAbilities FoyerMurderAtTheExcelsiorHotel where
 instance RunMessage FoyerMurderAtTheExcelsiorHotel where
   runMessage msg l@(FoyerMurderAtTheExcelsiorHotel attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getBatchId -> batchId) _ -> do
-      n <- selectCount $ enemyAt (toId attrs) <> EnemyWithTrait Guest
-      push $ beginSkillTest iid (toAbilitySource attrs 1) (BatchTarget batchId) #agility n
+      push
+        $ beginSkillTest
+          iid
+          (toAbilitySource attrs 1)
+          (BatchTarget batchId)
+          #agility
+          (EnemyCountDifficulty $ enemyAt (toId attrs) <> EnemyWithTrait Guest)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       mtarget <- getSkillTestTarget

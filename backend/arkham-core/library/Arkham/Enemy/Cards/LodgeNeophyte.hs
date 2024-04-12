@@ -11,7 +11,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.SkillTest.Base
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
@@ -47,7 +46,7 @@ instance RunMessage LodgeNeophyte where
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       e <$ push (PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1)
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      push $ BeginSkillTest $ initSkillTest iid attrs attrs SkillWillpower 2
+      push $ parley iid attrs attrs SkillWillpower (Fixed 2)
       pure e
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do

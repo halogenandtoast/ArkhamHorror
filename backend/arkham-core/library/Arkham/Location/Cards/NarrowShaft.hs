@@ -51,7 +51,7 @@ instance RunMessage NarrowShaft where
         effectMetadata = Just $ EffectMessages (catMaybes [moveFrom, moveTo])
       pushAll
         [ createCardEffect Cards.narrowShaft effectMetadata (attrs.ability 1) target
-        , beginSkillTest iid (attrs.ability 1) target SkillAgility 3
+        , beginSkillTest iid (attrs.ability 1) target SkillAgility (Fixed 3)
         ]
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do

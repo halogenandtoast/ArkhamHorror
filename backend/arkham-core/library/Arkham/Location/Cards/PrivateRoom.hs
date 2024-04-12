@@ -24,11 +24,11 @@ instance HasAbilities PrivateRoom where
 instance RunMessage PrivateRoom where
   runMessage msg l@(PrivateRoom attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ parley iid (attrs.ability 1) iid #willpower 2
+      push $ parley iid (attrs.ability 1) iid #willpower (Fixed 2)
       pure l
     PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) Initiator {} (SkillSkillTest sType) _ -> do
       case sType of
-        SkillWillpower -> push $ parley iid (attrs.ability 1) iid #intellect 2
+        SkillWillpower -> push $ parley iid (attrs.ability 1) iid #intellect (Fixed 2)
         SkillIntellect -> do
           let cost = GroupClueCost (PerPlayer 1) (LocationWithId $ toId attrs)
           canAfford <- getCanAffordCost iid (attrs.ability 1) [] [] cost

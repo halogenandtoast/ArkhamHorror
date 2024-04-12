@@ -53,7 +53,7 @@ instance RunMessage MysteriousStairs_186 where
       push
         $ chooseOrRunOne
           player
-          [ SkillLabel skill [beginSkillTest iid (attrs.ability 2) iid skill 2]
+          [ SkillLabel skill [beginSkillTest iid (attrs.ability 2) iid skill (Fixed 2)]
           | skill <- choices
           ]
       pure l

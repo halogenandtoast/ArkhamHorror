@@ -48,7 +48,7 @@ instance RunMessage CourtOfTheGreatOldOnesANotTooDistantFuture where
       CourtOfTheGreatOldOnesANotTooDistantFuture
         <$> runMessage msg (attrs & labelL .~ "courtOfTheGreatOldOnesANotTooDistantFuture")
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid (attrs.ability 1) iid SkillWillpower 3
+      push $ beginSkillTest iid (attrs.ability 1) iid SkillWillpower (Fixed 3)
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push

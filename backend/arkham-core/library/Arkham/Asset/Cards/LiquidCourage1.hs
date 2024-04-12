@@ -37,7 +37,7 @@ instance RunMessage LiquidCourage1 where
         $ chooseOrRunOne player
         $ [ targetLabel iid'
             $ [ HealHorrorWithAdditional (toTarget iid') (toSource attrs) 1
-              , beginSkillTest iid' (attrs.ability 1) iid' #willpower 2
+              , beginSkillTest iid' (attrs.ability 1) iid' #willpower (Fixed 2)
               ]
           | iid' <- iids
           ]

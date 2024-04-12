@@ -30,11 +30,7 @@ instance RunMessage Interrogate where
       mlocation <- field InvestigatorLocation iid
       case mlocation of
         Just location -> do
-          enemies <-
-            selectWithField EnemyHealthDamage
-              $ enemyAt location
-              <> EnemyWithTrait Humanoid
-              <> CanParleyEnemy iid
+          enemies <- select $ enemyAt location <> EnemyWithTrait Humanoid <> CanParleyEnemy iid
           player <- getPlayer iid
           pushAll
             [ chooseOne
@@ -46,9 +42,9 @@ instance RunMessage Interrogate where
                       (toSource attrs)
                       (EnemyTarget enemy)
                       SkillCombat
-                      (3 + damage)
+                      (SumDifficulty [Fixed 3, EnemyFieldDifficulty enemy EnemyHealthDamage])
                   ]
-                | (enemy, damage) <- enemies
+                | enemy <- enemies
                 ]
             ]
         _ -> error "investigator not at location"

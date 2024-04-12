@@ -33,7 +33,7 @@ instance HasAbilities ArkhamWoodsUnhallowedGround where
 instance RunMessage ArkhamWoodsUnhallowedGround where
   runMessage msg l@(ArkhamWoodsUnhallowedGround attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ beginSkillTest iid (toAbilitySource attrs 1) iid #willpower 4
+      push $ beginSkillTest iid (toAbilitySource attrs 1) iid #willpower (Fixed 4)
       pure l
     FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
       push $ assignDamageAndHorror iid attrs 1 1

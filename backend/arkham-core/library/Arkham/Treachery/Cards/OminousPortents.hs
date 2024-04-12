@@ -45,7 +45,7 @@ instance RunMessage OminousPortents where
           ]
         <> [ Label
               "Test {willpower} (3). If you fail take 2 horror."
-              [revelationSkillTest iid attrs SkillWillpower 3]
+              [revelationSkillTest iid attrs SkillWillpower (Fixed 3)]
            ]
       pure t
     _ -> OminousPortents <$> runMessage msg attrs

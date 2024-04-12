@@ -43,8 +43,13 @@ getWindowCard (_ : rest) = getWindowCard rest
 instance RunMessage ShiningTrapezohedron4 where
   runMessage msg a@(ShiningTrapezohedron4 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getWindowCard -> (acId, _batchId, card)) _ -> do
-      resources <- getModifiedCardCost iid card
-      push $ beginSkillTest iid (attrs.ability 1) (ActiveCostTarget acId) #willpower resources
+      push
+        $ beginSkillTest
+          iid
+          (attrs.ability 1)
+          (ActiveCostTarget acId)
+          #willpower
+          (CardCostDifficulty $ toCardId card)
       pure a
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       costs <- getActiveCosts

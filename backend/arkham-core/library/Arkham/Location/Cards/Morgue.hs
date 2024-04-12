@@ -31,7 +31,7 @@ instance HasAbilities Morgue where
 instance RunMessage Morgue where
   runMessage msg l@(Morgue attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ beginSkillTest iid (attrs.ability 1) iid #willpower 3
+      push $ beginSkillTest iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ toMessage $ discover iid (toId attrs) (attrs.ability 1) 1

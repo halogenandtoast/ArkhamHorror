@@ -29,7 +29,7 @@ instance RunMessage ChillingPresence where
     Revelation iid (isSource attrs -> True) -> do
       pushAll
         [ createCardEffect Cards.chillingPresence Nothing (toSource attrs) (toTarget iid)
-        , revelationSkillTest iid attrs #willpower 3
+        , revelationSkillTest iid attrs #willpower (Fixed 3)
         ]
 
       pure t

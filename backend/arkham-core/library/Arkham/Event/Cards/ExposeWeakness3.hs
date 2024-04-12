@@ -27,9 +27,7 @@ exposeWeakness3 = event ExposeWeakness3 Cards.exposeWeakness3
 instance RunMessage ExposeWeakness3 where
   runMessage msg e@(ExposeWeakness3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      enemies <-
-        selectWithField EnemyFight (EnemyAt $ locationWithInvestigator iid)
-          <&> mapMaybe (\(x, y) -> (x,) <$> y)
+      enemies <- selectWithField EnemyFight (EnemyAt $ locationWithInvestigator iid)
       drawing <- drawCards iid attrs 1
       player <- getPlayer iid
       pushAll
@@ -42,9 +40,9 @@ instance RunMessage ExposeWeakness3 where
                   (toSource attrs)
                   (EnemyTarget enemy)
                   SkillIntellect
-                  enemyFight
+                  (EnemyMaybeFieldDifficulty enemy EnemyFight)
               ]
-            | (enemy, enemyFight) <- enemies
+            | (enemy, Just _) <- enemies
             ]
         , drawing
         ]

@@ -41,6 +41,8 @@ instance RunMessage NightTerrors where
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       pushAll
-        [beginSkillTest iid (attrs.ability 2) iid #willpower 4, toDiscardBy iid (attrs.ability 2) attrs]
+        [ beginSkillTest iid (attrs.ability 2) iid #willpower (Fixed 4)
+        , toDiscardBy iid (attrs.ability 2) attrs
+        ]
       pure t
     _ -> NightTerrors <$> runMessage msg attrs

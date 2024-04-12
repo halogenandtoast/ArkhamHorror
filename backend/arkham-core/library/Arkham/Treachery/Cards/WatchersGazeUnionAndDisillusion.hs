@@ -26,7 +26,7 @@ instance RunMessage WatchersGazeUnionAndDisillusion where
   runMessage msg t@(WatchersGazeUnionAndDisillusion attrs) = case msg of
     Revelation _iid (isSource attrs -> True) -> do
       investigators <- getInvestigators
-      pushAll [revelationSkillTest iid attrs SkillWillpower 5 | iid <- investigators]
+      pushAll [revelationSkillTest iid attrs SkillWillpower (Fixed 5) | iid <- investigators]
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       yourLocationIsHaunted <- selectAny $ locationWithInvestigator iid <> HauntedLocation

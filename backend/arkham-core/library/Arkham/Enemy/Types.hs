@@ -93,16 +93,13 @@ instance ToJSON (Field Enemy typ) where
 instance Ord (SomeField Enemy) where
   compare (SomeField a) (SomeField b) = compare (show a) (show b)
 
-instance FromJSON (Field Enemy Int) where
-  parseJSON = withText "Field Enemy" $ \case
-    "EnemyDoom" -> pure EnemyDoom
-    "EnemyClues" -> pure EnemyClues
-    "EnemyDamage" -> pure EnemyDamage
-    "EnemyRemainingHealth" -> pure EnemyForcedRemainingHealth
-    "EnemyForcedRemainingHealth" -> pure EnemyForcedRemainingHealth
-    "EnemyHealthDamage" -> pure EnemyHealthDamage
-    "EnemySanityDamage" -> pure EnemySanityDamage
-    other -> error $ "no such int field: " <> show other
+instance Typeable typ => FromJSON (Field Enemy typ) where
+  parseJSON x = do
+    z <- parseJSON @(SomeField Enemy) x
+    case z of
+      SomeField (f :: Field Enemy k) -> case eqT @typ @k of
+        Just Refl -> pure f
+        Nothing -> error "type mismatch"
 
 instance FromJSON (SomeField Enemy) where
   parseJSON = withText "Field Enemy" $ \case

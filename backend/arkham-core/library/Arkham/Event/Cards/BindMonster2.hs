@@ -43,7 +43,7 @@ instance RunMessage BindMonster2 where
     UseThisAbility iid (isSource attrs -> True) 1 ->
       case eventAttachedTarget attrs of
         Just target -> do
-          push $ beginSkillTest iid (attrs.ability 1) target #willpower 3
+          push $ beginSkillTest iid (attrs.ability 1) target #willpower (Fixed 3)
           pure e
         Nothing -> throwIO $ InvalidState "must be attached"
     PassedThisSkillTest _ (isSource attrs -> True) -> do

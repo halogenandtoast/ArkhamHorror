@@ -17,7 +17,7 @@ tasteOfLifeblood = treachery TasteOfLifeblood Cards.tasteOfLifeblood
 instance RunMessage TasteOfLifeblood where
   runMessage msg t@(TasteOfLifeblood attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      revelationSkillTest iid attrs #willpower 3
+      revelationSkillTest iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTestBy _iid (isSource attrs -> True) n -> do
       push $ DoStep n msg

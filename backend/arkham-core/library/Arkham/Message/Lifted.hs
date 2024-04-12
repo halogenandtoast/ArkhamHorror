@@ -33,6 +33,7 @@ import Arkham.Movement
 import Arkham.Prelude
 import Arkham.Query
 import Arkham.ScenarioLogKey
+import Arkham.SkillTest.Base (SkillTestDifficulty)
 import Arkham.SkillType qualified as SkillType
 import Arkham.Source
 import Arkham.Target
@@ -213,7 +214,7 @@ beginSkillTest
   -> source
   -> target
   -> SkillType.SkillType
-  -> Int
+  -> SkillTestDifficulty
   -> m ()
 beginSkillTest iid source target sType n = push $ Msg.beginSkillTest iid source target sType n
 

@@ -27,8 +27,8 @@ instance RunMessage Kidnapped where
       push
         $ chooseOne
           player
-          [ Label "Test {willpower} (4)" [revelationSkillTest iid attrs #willpower 4]
-          , Label "Test {agility} (4)" [revelationSkillTest iid attrs #agility 4]
+          [ Label "Test {willpower} (4)" [revelationSkillTest iid attrs #willpower (Fixed 4)]
+          , Label "Test {agility} (4)" [revelationSkillTest iid attrs #agility (Fixed 4)]
           ]
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

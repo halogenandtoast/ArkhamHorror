@@ -40,9 +40,29 @@ import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Trait
 import Control.Lens (_Just)
+import Data.Data
 import Data.Text qualified as T
-import Data.Typeable
 import GHC.Records
+
+instance Data Investigator where
+  gunfold _ _ _ = error "gunfold(Investigator)"
+  toConstr _ = error "toConstr(Investigator)"
+  dataTypeOf _ = error "dataTypeOf(Investigator)"
+
+instance Data (SomeField Investigator) where
+  gunfold _ _ _ = error "gunfold(SomeField Investigator)"
+  toConstr _ = error "toConstr(SomeField Investigator)"
+  dataTypeOf _ = error "dataTypeOf(SomeField Investigator)"
+
+instance Data (SomeListField Investigator) where
+  gunfold _ _ _ = error "gunfold(SomeListField Investigator)"
+  toConstr _ = error "toConstr(SomeListField Investigator)"
+  dataTypeOf _ = error "dataTypeOf(SomeListField Investigator)"
+
+instance Typeable a => Data (Field Investigator a) where
+  gunfold _ _ _ = error "gunfold(Investigator)"
+  toConstr _ = error "toConstr(Investigator)"
+  dataTypeOf _ = error "dataTypeOf(Investigator)"
 
 class
   ( Typeable a
@@ -116,6 +136,92 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorSupplies :: Field Investigator [Supply]
 
 deriving stock instance Show (Field Investigator val)
+deriving stock instance Ord (Field Investigator val)
+
+instance Ord (SomeListField Investigator) where
+  compare (SomeListField a) (SomeListField b) = compare (show a) (show b)
+
+instance ToJSON (Field Investigator typ) where
+  toJSON = toJSON . show
+
+instance Typeable typ => FromJSON (Field Investigator typ) where
+  parseJSON x = do
+    z <- parseJSON @(SomeField Investigator) x
+    case z of
+      SomeField (f :: Field Investigator k) -> case eqT @typ @k of
+        Just Refl -> pure f
+        Nothing -> error "type mismatch"
+
+instance FromJSON (SomeListField Investigator) where
+  parseJSON x = do
+    SomeField z <- parseJSON @(SomeField Investigator) x
+    case z of
+      InvestigatorAdditionalActions -> pure $ SomeListField InvestigatorAdditionalActions
+      InvestigatorHand -> pure $ SomeListField InvestigatorHand
+      InvestigatorCardsUnderneath -> pure $ SomeListField InvestigatorCardsUnderneath
+      InvestigatorDiscard -> pure $ SomeListField InvestigatorDiscard
+      InvestigatorActionsTaken -> pure $ SomeListField InvestigatorActionsTaken
+      InvestigatorActionsPerformed -> pure $ SomeListField InvestigatorActionsPerformed
+      InvestigatorUsedAbilities -> pure $ SomeListField InvestigatorUsedAbilities
+      InvestigatorAbilities -> pure $ SomeListField InvestigatorAbilities
+      InvestigatorCommittedCards -> pure $ SomeListField InvestigatorCommittedCards
+      InvestigatorBondedCards -> pure $ SomeListField InvestigatorBondedCards
+      InvestigatorSupplies -> pure $ SomeListField InvestigatorSupplies
+      _ -> error "Unknown List Field Investigator"
+
+instance FromJSON (SomeField Investigator) where
+  parseJSON = withText "Field Investigator" $ \case
+    "InvestigatorName" -> pure $ SomeField InvestigatorName
+    "InvestigatorRemainingActions" -> pure $ SomeField InvestigatorRemainingActions
+    "InvestigatorAdditionalActions" -> pure $ SomeField InvestigatorAdditionalActions
+    "InvestigatorHealth" -> pure $ SomeField InvestigatorHealth
+    "InvestigatorSanity" -> pure $ SomeField InvestigatorSanity
+    "InvestigatorRemainingSanity" -> pure $ SomeField InvestigatorRemainingSanity
+    "InvestigatorRemainingHealth" -> pure $ SomeField InvestigatorRemainingHealth
+    "InvestigatorLocation" -> pure $ SomeField InvestigatorLocation
+    "InvestigatorWillpower" -> pure $ SomeField InvestigatorWillpower
+    "InvestigatorIntellect" -> pure $ SomeField InvestigatorIntellect
+    "InvestigatorCombat" -> pure $ SomeField InvestigatorCombat
+    "InvestigatorAgility" -> pure $ SomeField InvestigatorAgility
+    "InvestigatorHorror" -> pure $ SomeField InvestigatorHorror
+    "InvestigatorAssignedHorror" -> pure $ SomeField InvestigatorAssignedHorror
+    "InvestigatorAssignedHealHorror" -> pure $ SomeField InvestigatorAssignedHealHorror
+    "InvestigatorDamage" -> pure $ SomeField Arkham.Investigator.Types.InvestigatorDamage
+    "InvestigatorAssignedDamage" -> pure $ SomeField InvestigatorAssignedDamage
+    "InvestigatorAssignedHealDamage" -> pure $ SomeField InvestigatorAssignedHealDamage
+    "InvestigatorResources" -> pure $ SomeField InvestigatorResources
+    "InvestigatorDoom" -> pure $ SomeField InvestigatorDoom
+    "InvestigatorClues" -> pure $ SomeField InvestigatorClues
+    "InvestigatorTokens" -> pure $ SomeField InvestigatorTokens
+    "InvestigatorHand" -> pure $ SomeField InvestigatorHand
+    "InvestigatorHandSize" -> pure $ SomeField InvestigatorHandSize
+    "InvestigatorCardsUnderneath" -> pure $ SomeField InvestigatorCardsUnderneath
+    "InvestigatorDeck" -> pure $ SomeField InvestigatorDeck
+    "InvestigatorDecks" -> pure $ SomeField InvestigatorDecks
+    "InvestigatorDiscard" -> pure $ SomeField InvestigatorDiscard
+    "InvestigatorClass" -> pure $ SomeField InvestigatorClass
+    "InvestigatorActionsTaken" -> pure $ SomeField InvestigatorActionsTaken
+    "InvestigatorActionsPerformed" -> pure $ SomeField InvestigatorActionsPerformed
+    "InvestigatorSlots" -> pure $ SomeField InvestigatorSlots
+    "InvestigatorUsedAbilities" -> pure $ SomeField InvestigatorUsedAbilities
+    "InvestigatorTraits" -> pure $ SomeField InvestigatorTraits
+    "InvestigatorAbilities" -> pure $ SomeField InvestigatorAbilities
+    "InvestigatorCommittedCards" -> pure $ SomeField InvestigatorCommittedCards
+    "InvestigatorDefeated" -> pure $ SomeField Arkham.Investigator.Types.InvestigatorDefeated
+    "InvestigatorResigned" -> pure $ SomeField Arkham.Investigator.Types.InvestigatorResigned
+    "InvestigatorPhysicalTrauma" -> pure $ SomeField InvestigatorPhysicalTrauma
+    "InvestigatorMentalTrauma" -> pure $ SomeField InvestigatorMentalTrauma
+    "InvestigatorXp" -> pure $ SomeField InvestigatorXp
+    "InvestigatorCardCode" -> pure $ SomeField InvestigatorCardCode
+    "InvestigatorKeys" -> pure $ SomeField InvestigatorKeys
+    "InvestigatorPlayerId" -> pure $ SomeField InvestigatorPlayerId
+    "InvestigatorBondedCards" -> pure $ SomeField InvestigatorBondedCards
+    "InvestigatorLog" -> pure $ SomeField InvestigatorLog
+    "InvestigatorUnhealedHorrorThisRound" -> pure $ SomeField InvestigatorUnhealedHorrorThisRound
+    "InvestigatorMeta" -> pure $ SomeField InvestigatorMeta
+    "InvestigatorBeganRoundAt" -> pure $ SomeField InvestigatorBeganRoundAt
+    "InvestigatorSupplies" -> pure $ SomeField InvestigatorSupplies
+    _ -> error "Unknown Field Investigator"
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId

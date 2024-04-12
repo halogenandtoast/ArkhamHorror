@@ -52,7 +52,7 @@ instance RunMessage Fold where
     UseCardAbility iid (ProxySource _ source) 1 _ _
       | isSource attrs source && actSequence == Sequence 3 A -> do
           aid <- selectJust $ assetIs Cards.peterClover
-          push $ parley iid source (AssetTarget aid) SkillWillpower 3
+          push $ parley iid source (AssetTarget aid) SkillWillpower (Fixed 3)
           pure a
     PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source && actSequence == Sequence 3 A -> do

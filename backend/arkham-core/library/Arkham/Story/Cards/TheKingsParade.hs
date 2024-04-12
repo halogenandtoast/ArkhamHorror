@@ -36,7 +36,7 @@ instance RunMessage TheKingsParade where
             (toSource attrs)
             (InvestigatorTarget iid)
             SkillCombat
-            2
+            (Fixed 2)
         , ReplaceLocation dimStreets otherDimStreets DefaultReplace
         ]
       pure s

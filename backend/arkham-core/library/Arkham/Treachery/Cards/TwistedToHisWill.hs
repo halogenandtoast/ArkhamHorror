@@ -24,7 +24,7 @@ instance RunMessage TwistedToHisWill where
       doomCount <- getDoomCount
       push
         $ if doomCount > 0
-          then RevelationSkillTest iid source SkillWillpower doomCount
+          then RevelationSkillTest iid source SkillWillpower DoomCountDifficulty
           else gainSurge attrs
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->

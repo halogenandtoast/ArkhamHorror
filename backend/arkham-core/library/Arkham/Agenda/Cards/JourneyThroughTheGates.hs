@@ -52,7 +52,7 @@ instance RunMessage JourneyThroughTheGates where
                 player
                 [ Label
                     "Test {willpower} (3) to remember that this is all a dream"
-                    [beginSkillTest iid (toSource attrs) iid #willpower 3]
+                    [beginSkillTest iid (toSource attrs) iid #willpower (Fixed 3)]
                 , Label "Do not test" [SufferTrauma iid 1 0, InvestigatorDefeated (toSource attrs) iid]
                 ]
       pure a

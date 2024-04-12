@@ -52,7 +52,7 @@ instance RunMessage ConspiracyOfBlood where
       pure t
     UseCardAbility iid (ProxySource (EnemySource eid) source) 1 _ _
       | isSource attrs source -> do
-          push $ parley iid source eid SkillWillpower 4
+          push $ parley iid source eid SkillWillpower (Fixed 4)
           pure t
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do

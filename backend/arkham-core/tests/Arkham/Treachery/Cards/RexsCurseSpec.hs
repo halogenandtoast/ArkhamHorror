@@ -37,7 +37,7 @@ spec = describe "Rex's Curse" $ do
             (TestSource mempty)
             TestTarget
             SkillIntellect
-            5
+            (Fixed 5)
       ]
     chooseOnlyOption "start skill test"
     chooseOnlyOption "trigger rex's curse"

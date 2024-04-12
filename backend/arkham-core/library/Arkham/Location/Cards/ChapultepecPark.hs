@@ -31,7 +31,7 @@ instance RunMessage ChapultepecPark where
       push $ assignHorror iid attrs 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ beginSkillTest iid (toAbilitySource attrs 2) iid #willpower 3
+      push $ exploreTest iid (toAbilitySource attrs 2) iid #willpower (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       let source = toAbilitySource attrs 2

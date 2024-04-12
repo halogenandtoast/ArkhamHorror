@@ -24,7 +24,7 @@ ants = treachery Ants Cards.ants
 instance RunMessage Ants where
   runMessage msg t@(Ants attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs #agility 3
+      push $ revelationSkillTest iid attrs #agility (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       push $ RevelationChoice iid (toSource attrs) n

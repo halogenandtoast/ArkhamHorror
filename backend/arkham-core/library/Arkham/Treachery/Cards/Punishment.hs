@@ -55,7 +55,7 @@ instance RunMessage Punishment where
       push $ assignDamage iid attrs 1
       pure t
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ beginSkillTest iid (toAbilitySource attrs 2) attrs #willpower 3
+      push $ beginSkillTest iid (toAbilitySource attrs 2) attrs #willpower (Fixed 3)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       push $ toDiscardBy iid attrs attrs

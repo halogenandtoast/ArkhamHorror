@@ -139,6 +139,14 @@ updateLocation updates attrs = foldr go attrs updates
 instance ToJSON (Field Location typ) where
   toJSON = toJSON . show
 
+instance Typeable typ => FromJSON (Field Location typ) where
+  parseJSON x = do
+    z <- parseJSON @(SomeField Location) x
+    case z of
+      SomeField (f :: Field Location k) -> case eqT @typ @k of
+        Just Refl -> pure f
+        Nothing -> error "type mismatch"
+
 instance FromJSON (SomeField Location) where
   parseJSON = withText "Field Location" $ \case
     "LocationInFrontOf" -> pure $ SomeField LocationInFrontOf

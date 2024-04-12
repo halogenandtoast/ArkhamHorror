@@ -47,7 +47,7 @@ instance HasAbilities TheDarkCrater where
 instance RunMessage TheDarkCrater where
   runMessage msg l@(TheDarkCrater attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      beginSkillTest iid (attrs.ability 1) iid #intellect 5
+      beginSkillTest iid (attrs.ability 1) iid #intellect (Fixed 5)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       let meta = toResult @Meta attrs.meta
@@ -57,7 +57,7 @@ instance RunMessage TheDarkCrater where
           reduceAlarmLevel (attrs.ability 1) iid
           pure $ TheDarkCrater $ attrs & metaL .~ toJSON (meta {hasUsedSuccess = iid : hasUsedSuccess meta})
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      beginSkillTest iid (attrs.ability 2) iid #willpower 3
+      beginSkillTest iid (attrs.ability 2) iid #willpower (Fixed 3)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       raiseAlarmLevel (attrs.ability 2) iid

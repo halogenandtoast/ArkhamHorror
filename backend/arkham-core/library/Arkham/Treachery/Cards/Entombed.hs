@@ -48,7 +48,7 @@ instance RunMessage Entombed where
         testChoice sType =
           SkillLabel
             sType
-            [beginSkillTest iid (attrs.ability 1) attrs sType difficulty]
+            [beginSkillTest iid (attrs.ability 1) attrs sType (Fixed difficulty)]
       player <- getPlayer iid
       push $ chooseOne player [testChoice #agility, testChoice #combat]
       pure t

@@ -36,7 +36,7 @@ instance RunMessage TheArchway where
             (toSource attrs)
             (InvestigatorTarget iid)
             SkillIntellect
-            3
+            (Fixed 3)
         , ReplaceLocation dimStreets otherDimStreets DefaultReplace
         ]
       pure s

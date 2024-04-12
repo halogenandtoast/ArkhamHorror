@@ -32,7 +32,7 @@ instance HasAbilities TheGreatWebPrisonOfCocoons where
 instance RunMessage TheGreatWebPrisonOfCocoons where
   runMessage msg l@(TheGreatWebPrisonOfCocoons attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      beginSkillTest iid (attrs.ability 1) iid #agility 3
+      beginSkillTest iid (attrs.ability 1) iid #agility (Fixed 3)
       pure l
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       actions <- field InvestigatorRemainingActions iid

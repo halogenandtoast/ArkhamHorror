@@ -60,7 +60,7 @@ instance RunMessage MendTheShatter where
       push
         $ chooseOne
           player
-          [ SkillLabel skillType [beginSkillTest iid (attrs.ability 1) attrs skillType 3]
+          [ SkillLabel skillType [beginSkillTest iid (attrs.ability 1) attrs skillType (Fixed 3)]
           | skillType <- [SkillWillpower, SkillIntellect]
           ]
       pure a

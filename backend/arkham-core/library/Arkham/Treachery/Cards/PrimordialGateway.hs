@@ -48,7 +48,7 @@ instance RunMessage PrimordialGateway where
       push
         $ chooseOne
           player
-          [ SkillLabel sType [beginSkillTest iid (attrs.ability 1) (toTarget attrs) sType 4]
+          [ SkillLabel sType [beginSkillTest iid (attrs.ability 1) (toTarget attrs) sType (Fixed 4)]
           | sType <- [#intellect, #willpower]
           ]
       pure t

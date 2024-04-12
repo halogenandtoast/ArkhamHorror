@@ -28,7 +28,7 @@ instance HasAbilities FeedTheMind where
 instance RunMessage FeedTheMind where
   runMessage msg a@(FeedTheMind attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid (attrs.ability 1) iid #intellect 1
+      push $ beginSkillTest iid (attrs.ability 1) iid #intellect (Fixed 1)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) (min 3 -> n) -> do
       pushM $ drawCards iid (toAbilitySource attrs 1) n

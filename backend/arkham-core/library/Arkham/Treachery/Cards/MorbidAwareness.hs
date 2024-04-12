@@ -7,9 +7,6 @@ where
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Distance
-import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Investigator
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
 import Arkham.Projection
@@ -26,11 +23,12 @@ morbidAwareness = treachery MorbidAwareness Cards.morbidAwareness
 instance RunMessage MorbidAwareness where
   runMessage msg t@(MorbidAwareness attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      l1 <- getJustLocation iid
-      l2 <- getJustLocationByName "Room 212"
-      mdistance <- getDistance l1 l2
-      let n = 6 - maybe 0 unDistance mdistance
-      push $ revelationSkillTest iid attrs #willpower n
+      push
+        $ revelationSkillTest
+          iid
+          attrs
+          #willpower
+          (SubtractDifficulty (Fixed 6) (DistanceFromDifficulty iid "Room 212"))
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       hasClues <- fieldMap InvestigatorClues (> 0) iid

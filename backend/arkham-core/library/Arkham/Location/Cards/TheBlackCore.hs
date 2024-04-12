@@ -44,7 +44,8 @@ instance RunMessage TheBlackCore where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       chooseOne
         iid
-        [SkillLabel s [Msg.beginSkillTest iid (attrs.ability 2) iid s 3] | s <- [#willpower, #combat]]
+        [ SkillLabel s [Msg.beginSkillTest iid (attrs.ability 2) iid s (Fixed 3)] | s <- [#willpower, #combat]
+        ]
       pure l
     PassedThisSkillTestBy _ (isAbilitySource attrs 2 -> True) n -> do
       removeTokens (attrs.ability 2) attrs Depth n

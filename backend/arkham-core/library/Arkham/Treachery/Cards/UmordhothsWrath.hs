@@ -21,7 +21,7 @@ umordhothsWrath = treachery UmordhothsWrath Cards.umordhothsWrath
 instance RunMessage UmordhothsWrath where
   runMessage msg t@(UmordhothsWrath attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ revelationSkillTest iid attrs #willpower 5
+      push $ revelationSkillTest iid attrs #willpower (Fixed 5)
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n -> do
       push $ HandlePointOfFailure iid (toTarget attrs) n

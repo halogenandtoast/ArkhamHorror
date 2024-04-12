@@ -26,8 +26,10 @@ instance RunMessage ExposeWeakness1 where
       push
         $ chooseOne
           player
-          [ targetLabel enemy [beginSkillTest iid attrs enemy #intellect enemyFight]
-          | (enemy, Just enemyFight) <- enemies
+          [ targetLabel
+            enemy
+            [beginSkillTest iid attrs enemy #intellect (EnemyMaybeFieldDifficulty enemy EnemyFight)]
+          | (enemy, Just _) <- enemies
           ]
       pure e
     PassedThisSkillTestBy _ (isSource attrs -> True) n -> do

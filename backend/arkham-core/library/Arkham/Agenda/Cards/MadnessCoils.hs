@@ -60,7 +60,9 @@ instance RunMessage MadnessCoils where
           ( \sk ->
               Label
                 ("Any investigator tests " <> tshow sk)
-                [ chooseOrRunOne lead [targetLabel iid [beginSkillTest iid attrs attrs sk 4] | iid <- investigatorIds]
+                [ chooseOrRunOne
+                    lead
+                    [targetLabel iid [beginSkillTest iid attrs attrs sk (Fixed 4)] | iid <- investigatorIds]
                 ]
           )
           (setToList skills)

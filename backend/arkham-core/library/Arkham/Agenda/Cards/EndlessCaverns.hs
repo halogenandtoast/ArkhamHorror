@@ -12,7 +12,6 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
-import Arkham.SkillType
 
 newtype EndlessCaverns = EndlessCaverns AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -45,24 +44,8 @@ instance RunMessage EndlessCaverns where
         $ push
         $ chooseOne
           player
-          [ SkillLabel
-              SkillCombat
-              [ beginSkillTest
-                  iid
-                  (toSource attrs)
-                  (toTarget attrs)
-                  SkillCombat
-                  5
-              ]
-          , SkillLabel
-              SkillAgility
-              [ beginSkillTest
-                  iid
-                  (toSource attrs)
-                  (toTarget attrs)
-                  SkillAgility
-                  5
-              ]
+          [ SkillLabel #combat [beginSkillTest iid attrs attrs #combat (Fixed 5)]
+          , SkillLabel #agility [beginSkillTest iid attrs attrs #agility (Fixed 5)]
           ]
       pure a
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _

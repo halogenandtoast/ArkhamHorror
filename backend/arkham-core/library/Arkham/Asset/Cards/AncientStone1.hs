@@ -10,12 +10,10 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.CampaignLogKey
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Projection
-import Arkham.SkillTest.Base
 
 newtype AncientStone1 = AncientStone1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -38,7 +36,7 @@ instance RunMessage AncientStone1 where
       pure a
     Successful (Action.Investigate, LocationTarget lid) iid _ target _ | attrs `is` target -> do
       amount <- min 2 <$> field LocationClues lid
-      difficulty <- skillTestDifficulty <$> getJustSkillTest
+      difficulty <- fromJustNote "missing" <$> getSkillTestDifficulty
       shouldRecord <- not <$> getHasRecord YouHaveIdentifiedTheStone
       pushAll
         $ [ InvestigatorDiscoverClues iid lid (toAbilitySource attrs 1) amount (Just Action.Investigate)

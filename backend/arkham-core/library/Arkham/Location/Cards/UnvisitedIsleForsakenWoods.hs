@@ -54,7 +54,7 @@ instance HasAbilities UnvisitedIsleForsakenWoods where
 instance RunMessage UnvisitedIsleForsakenWoods where
   runMessage msg l@(UnvisitedIsleForsakenWoods attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      circleTest iid attrs attrs [#willpower, #combat] 11
+      circleTest iid attrs attrs [#willpower, #combat] (Fixed 11)
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       whippoorwills <- select $ NearestEnemy $ enemyIs Enemies.whippoorwill

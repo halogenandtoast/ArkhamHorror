@@ -13,7 +13,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Projection
 
 newtype HasturTheKingInYellow = HasturTheKingInYellow EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -41,8 +40,13 @@ instance RunMessage HasturTheKingInYellow where
       pushAll $ map (InitiateEnemyAttack . enemyAttack (toId attrs) attrs) iids
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      x <- fieldJust EnemyFight (toId attrs)
-      push $ beginSkillTest iid (toAbilitySource attrs 2) attrs #willpower x
+      push
+        $ beginSkillTest
+          iid
+          (toAbilitySource attrs 2)
+          attrs
+          #willpower
+          (EnemyMaybeFieldDifficulty attrs.id EnemyFight)
       pure e
     PassedThisSkillTest _ (isSource attrs -> True) -> do
       push $ Exhaust (toTarget attrs)

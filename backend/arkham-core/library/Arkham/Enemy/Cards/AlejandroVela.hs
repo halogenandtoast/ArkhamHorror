@@ -32,7 +32,7 @@ instance RunMessage AlejandroVela where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       pushAll
         [ createCardEffect Cards.alejandroVela Nothing (toAbilitySource attrs 1) SkillTestTarget
-        , parley iid (toAbilitySource attrs 1) attrs #intellect 5
+        , parley iid (toAbilitySource attrs 1) attrs #intellect (Fixed 5)
         ]
       pure e
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

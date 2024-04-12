@@ -48,7 +48,7 @@ instance RunMessage VoiceOfTheJungle where
           (attrs.ability 2)
           (InvestigatorTarget iid)
           SkillWillpower
-          3
+          (Fixed 3)
       pure t
     PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isAbilitySource attrs 2 source -> do

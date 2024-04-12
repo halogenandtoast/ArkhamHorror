@@ -39,7 +39,7 @@ instance RunMessage EvilPast where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       pushAll
         [ assignHorror iid attrs 2
-        , beginSkillTest iid (attrs.ability 1) iid #willpower 3
+        , beginSkillTest iid (attrs.ability 1) iid #willpower (Fixed 3)
         ]
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

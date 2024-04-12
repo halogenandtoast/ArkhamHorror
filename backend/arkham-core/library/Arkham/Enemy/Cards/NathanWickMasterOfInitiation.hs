@@ -38,7 +38,7 @@ instance RunMessage NathanWickMasterOfInitiation where
           (toAbilitySource attrs 1)
           iid
           SkillWillpower
-          3
+          (Fixed 3)
       pure e
     PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
       n <- perPlayer 1

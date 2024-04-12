@@ -43,12 +43,12 @@ instance RunMessage HotelRoof where
       push
         $ chooseOne
           player
-          [ SkillLabel skill [beginSkillTest iid (toAbilitySource attrs 1) iid skill 4]
+          [ SkillLabel skill [beginSkillTest iid (toAbilitySource attrs 1) iid skill (Fixed 4)]
           | skill <- [#agility, #combat]
           ]
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ beginSkillTest iid (toAbilitySource attrs 2) iid #willpower 3
+      push $ beginSkillTest iid (toAbilitySource attrs 2) iid #willpower (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       rooms <-

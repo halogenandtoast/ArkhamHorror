@@ -52,8 +52,8 @@ instance RunMessage KnightOfTheOuterVoid where
       push
         $ chooseOne
           player
-          [ Label "Use {willpower}" [parley iid (toAbilitySource attrs 1) attrs SkillWillpower 4]
-          , Label "Use {intellect}" [parley iid (toAbilitySource attrs 1) attrs SkillIntellect 4]
+          [ Label "Use {willpower}" [parley iid (toAbilitySource attrs 1) attrs SkillWillpower (Fixed 4)]
+          , Label "Use {intellect}" [parley iid (toAbilitySource attrs 1) attrs SkillIntellect (Fixed 4)]
           ]
       pure e
     PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do

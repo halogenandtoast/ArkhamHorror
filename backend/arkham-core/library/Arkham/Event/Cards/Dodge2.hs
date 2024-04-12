@@ -30,7 +30,7 @@ instance RunMessage Dodge2 where
         _ -> error "unhandled"
       pushAll
         [ CancelNext (toSource attrs) AttackMessage
-        , beginSkillTest iid (toSource attrs) (InvestigatorTarget iid) SkillAgility 1
+        , beginSkillTest iid (toSource attrs) (InvestigatorTarget iid) SkillAgility (Fixed 1)
         ]
       pure $ Dodge2 (attrs `with` Metadata (Just enemyId))
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do

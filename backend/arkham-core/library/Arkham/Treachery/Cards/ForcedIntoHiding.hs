@@ -5,7 +5,7 @@ module Arkham.Treachery.Cards.ForcedIntoHiding (forcedIntoHiding, ForcedIntoHidi
 import Arkham.Classes
 import Arkham.Message
 import Arkham.Prelude
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
+import Arkham.Token
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -19,8 +19,7 @@ forcedIntoHiding = treachery ForcedIntoHiding Cards.forcedIntoHiding
 instance RunMessage ForcedIntoHiding where
   runMessage msg t@(ForcedIntoHiding attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      x <- getAlarmLevel iid
-      push $ revelationSkillTest iid attrs #willpower x
+      push $ revelationSkillTest iid attrs #willpower (InvestigatorTokenCountDifficulty iid AlarmLevel)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       let

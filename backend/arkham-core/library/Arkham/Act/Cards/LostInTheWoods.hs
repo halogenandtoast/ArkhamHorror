@@ -93,7 +93,7 @@ instance RunMessage LostInTheWoods where
               [ enemyCreation
               , chooseOne
                   player
-                  [ SkillLabel skillType [beginSkillTest iid attrs enemyId skillType 3]
+                  [ SkillLabel skillType [beginSkillTest iid attrs enemyId skillType (Fixed 3)]
                   | skillType <- [SkillWillpower, SkillAgility]
                   ]
               ]

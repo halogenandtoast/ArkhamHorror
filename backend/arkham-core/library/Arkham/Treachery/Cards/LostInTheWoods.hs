@@ -22,7 +22,7 @@ instance RunMessage LostInTheWoods where
     Revelation _iid (isSource attrs -> True) -> do
       investigators <- getInvestigators
       for_ investigators $ \iid' -> do
-        push $ revelationSkillTest iid' attrs #willpower 3
+        push $ revelationSkillTest iid' attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       pushAll

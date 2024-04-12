@@ -10,7 +10,6 @@ import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
 
@@ -35,14 +34,13 @@ instance HasAbilities DeconstructionRoom where
 instance RunMessage DeconstructionRoom where
   runMessage msg l@(DeconstructionRoom attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      n <- field LocationClues (toId attrs)
       push
         $ beginSkillTest
           iid
           (toAbilitySource attrs 1)
           (InvestigatorTarget iid)
           SkillCombat
-          (4 + n)
+          (SumDifficulty [Fixed 4, LocationFieldDifficulty attrs.id LocationClues])
       pure l
     PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
       do

@@ -24,7 +24,7 @@ instance RunMessage HuntedByByakhee where
   runMessage msg t@(HuntedByByakhee attrs) = case msg of
     Revelation iid source
       | isSource attrs source ->
-          t <$ push (RevelationSkillTest iid source SkillAgility 6)
+          t <$ push (RevelationSkillTest iid source SkillAgility (Fixed 6))
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
       | isSource attrs source -> do
           t

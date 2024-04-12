@@ -39,7 +39,7 @@ instance RunMessage HuntedByCorsairs where
       push
         $ chooseOne
           player
-          [ SkillLabel sType [beginSkillTest iid (AbilitySource source 2) attrs sType 4]
+          [ SkillLabel sType [beginSkillTest iid (AbilitySource source 2) attrs sType (Fixed 4)]
           | sType <- [#intellect, #agility]
           ]
       pure t

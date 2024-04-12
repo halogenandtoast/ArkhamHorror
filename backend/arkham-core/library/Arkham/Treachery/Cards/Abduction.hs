@@ -20,7 +20,7 @@ abduction = treachery Abduction Cards.abduction
 instance RunMessage Abduction where
   runMessage msg t@(Abduction attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs #willpower 3
+      push $ revelationSkillTest iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       allies <- selectTargets $ assetControlledBy iid <> #ally <> DiscardableAsset

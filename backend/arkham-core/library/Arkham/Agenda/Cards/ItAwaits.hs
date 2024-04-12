@@ -37,7 +37,7 @@ instance RunMessage ItAwaits where
           $ ritualSuicideMessages
           <> [findAndDrawEncounterCard lead (cardIs Treacheries.daemonicPiping)]
           <> ( guard (not theWraithRecognizesTheCrucifix)
-                *> [beginSkillTest iid attrs iid #willpower 4 | iid <- investigators]
+                *> [beginSkillTest iid attrs iid #willpower (Fixed 4) | iid <- investigators]
              )
           <> [advanceAgendaDeck attrs]
         pure a

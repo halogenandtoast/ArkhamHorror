@@ -51,7 +51,7 @@ instance HasAbilities UnvisitedIsleMossCoveredSteps where
 instance RunMessage UnvisitedIsleMossCoveredSteps where
   runMessage msg l@(UnvisitedIsleMossCoveredSteps attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      circleTest iid attrs attrs [#combat, #agility] 10
+      circleTest iid attrs attrs [#combat, #agility] (Fixed 10)
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ createCardEffect Cards.unvisitedIsleMossCoveredSteps Nothing attrs iid

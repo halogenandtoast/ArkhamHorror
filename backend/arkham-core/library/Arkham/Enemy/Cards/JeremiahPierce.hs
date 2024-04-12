@@ -41,7 +41,7 @@ jeremiahPierceEffect = cardEffect JeremiahPierceEffect Cards.jeremiahPierce
 instance RunMessage JeremiahPierceEffect where
   runMessage msg e@(JeremiahPierceEffect attrs) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId attrs -> do
-      pushAll [parley iid attrs iid #willpower 4, disable attrs]
+      pushAll [parley iid attrs iid #willpower (Fixed 4), disable attrs]
       pure e
     FailedThisSkillTestBy _ (isSource attrs -> True) n -> do
       push $ PlaceDoomOnAgenda n CanAdvance

@@ -51,7 +51,7 @@ instance RunMessage TheTrueCulpritV5 where
   runMessage msg a@(TheTrueCulpritV5 attrs) =
     case msg of
       UseThisAbility iid p@(ProxySource _ (isSource attrs -> True)) 1 -> do
-        push $ beginSkillTest iid (toAbilitySource p 1) iid #intellect 1
+        push $ beginSkillTest iid (toAbilitySource p 1) iid #intellect (Fixed 1)
         pure a
       PassedThisSkillTestBy _ (isProxyAbilitySource attrs 1 -> True) n | n > 0 -> do
         sinisterSolution <- selectJust $ assetIs Cards.sinisterSolution

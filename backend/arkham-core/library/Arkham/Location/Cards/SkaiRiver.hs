@@ -33,7 +33,9 @@ instance RunMessage SkaiRiver where
       push
         $ chooseOne
           player
-          [ SkillLabel sType [beginSkillTest iid (toAbilitySource attrs 1) (BatchTarget batchId) sType 2]
+          [ SkillLabel
+            sType
+            [beginSkillTest iid (toAbilitySource attrs 1) (BatchTarget batchId) sType (Fixed 2)]
           | sType <- [#willpower, #agility]
           ]
       pure l

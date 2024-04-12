@@ -50,7 +50,7 @@ instance RunMessage IchtacaScionOfYig where
             (toSource attrs)
             (toTarget attrs)
             SkillIntellect
-            5
+            (Fixed 5)
         ]
       pure e
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do

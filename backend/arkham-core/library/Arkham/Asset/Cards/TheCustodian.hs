@@ -34,7 +34,7 @@ instance RunMessage TheCustodian where
       for_ iids $ \iid -> pushM $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ parley iid (toAbilitySource attrs 2) attrs #intellect 3
+      push $ parley iid (toAbilitySource attrs 2) attrs #intellect (Fixed 3)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       clueCount <- field AssetClues (toId a)

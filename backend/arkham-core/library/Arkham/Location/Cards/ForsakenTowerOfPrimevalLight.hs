@@ -6,11 +6,9 @@ where
 
 import Arkham.Attack
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Game.Helpers (getGameValue)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Scenarios.WhereTheGodsDwell.Helpers
 
 newtype ForsakenTowerOfPrimevalLight = ForsakenTowerOfPrimevalLight LocationAttrs
@@ -38,8 +36,12 @@ instance RunMessage ForsakenTowerOfPrimevalLight where
         ]
       pure l
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget nyarlathotep) -> do
-      health <- fieldMapM EnemyHealthActual (maybe (pure 0) getGameValue) nyarlathotep
-      beginSkillTest iid (attrs.ability 1) (toTarget nyarlathotep) #willpower health
+      beginSkillTest
+        iid
+        (attrs.ability 1)
+        (toTarget nyarlathotep)
+        #willpower
+        (EnemyMaybeGameValueFieldDifficulty nyarlathotep EnemyHealthActual)
       pure l
     PassedSkillTest _iid _ (isAbilitySource attrs 1 -> True) (Initiator target) _ _ -> do
       discardWhisperingChaos attrs

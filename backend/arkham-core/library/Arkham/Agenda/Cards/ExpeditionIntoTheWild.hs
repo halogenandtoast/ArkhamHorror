@@ -37,7 +37,7 @@ instance RunMessage ExpeditionIntoTheWild where
         $ [ ShuffleEncounterDiscardBackIn
           , ShuffleCardsIntoDeck Deck.EncounterDeck setAsideAgentsOfYig
           ]
-        <> [beginSkillTest iid attrs iid #willpower 3 | iid <- iids]
+        <> [beginSkillTest iid attrs iid #willpower (Fixed 3) | iid <- iids]
         <> [advanceAgendaDeck attrs]
       pure a
     FailedThisSkillTest iid (isSource attrs -> True) -> do

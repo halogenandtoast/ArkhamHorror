@@ -56,7 +56,7 @@ instance RunMessage BidingItsTime where
       enemyCreation <- createEnemy card location
       pushAll
         $ toMessage enemyCreation
-        : [ beginSkillTest iid source (enemyCreationEnemyId enemyCreation) #agility 4
+        : [ beginSkillTest iid source (enemyCreationEnemyId enemyCreation) #agility (Fixed 4)
           | iid <- investigators
           ]
       pure a

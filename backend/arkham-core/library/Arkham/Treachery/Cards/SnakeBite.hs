@@ -23,7 +23,7 @@ snakeBite = treachery SnakeBite Cards.snakeBite
 instance RunMessage SnakeBite where
   runMessage msg t@(SnakeBite attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ RevelationSkillTest iid source SkillAgility 3
+      push $ RevelationSkillTest iid source SkillAgility (Fixed 3)
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ -> do
       allies <- select $ AllyAsset <> AssetControlledBy (InvestigatorWithId iid)

@@ -27,7 +27,7 @@ instance RunMessage TheZealotsSeal where
         push
           $ if handCardCount <= 3
             then assignDamageAndHorror iid' attrs 1 1
-            else revelationSkillTest iid' source #willpower 2
+            else revelationSkillTest iid' source #willpower (Fixed 2)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       pushAll

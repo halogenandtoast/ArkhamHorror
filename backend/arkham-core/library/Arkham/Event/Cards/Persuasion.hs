@@ -29,11 +29,7 @@ instance RunMessage Persuasion where
       case mlocation of
         Just location -> do
           enemies <-
-            selectWithField EnemySanityDamage
-              $ enemyAt location
-              <> EnemyWithTrait Humanoid
-              <> NonWeaknessEnemy
-              <> CanParleyEnemy iid
+            select $ enemyAt location <> EnemyWithTrait Humanoid <> NonWeaknessEnemy <> CanParleyEnemy iid
           player <- getPlayer iid
           pushAll
             [ chooseOne
@@ -45,9 +41,9 @@ instance RunMessage Persuasion where
                       (toSource attrs)
                       (EnemyTarget enemy)
                       SkillIntellect
-                      (3 + horror)
+                      (SumDifficulty [Fixed 3, EnemyFieldDifficulty enemy EnemySanityDamage])
                   ]
-                | (enemy, horror) <- enemies
+                | enemy <- enemies
                 ]
             ]
         _ -> error "investigator not at location"

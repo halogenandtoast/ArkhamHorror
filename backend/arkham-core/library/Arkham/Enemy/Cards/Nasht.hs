@@ -36,7 +36,7 @@ instance RunMessage Nasht where
       push
         $ chooseOne
           player
-          [ SkillLabel sType [parley iid (attrs.ability 1) iid sType (2 + n)]
+          [ SkillLabel sType [parley iid (attrs.ability 1) iid sType (Fixed $ 2 + n)]
           | sType <- [#combat, #agility]
           ]
       pure e

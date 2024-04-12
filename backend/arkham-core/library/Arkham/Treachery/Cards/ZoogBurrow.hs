@@ -23,7 +23,7 @@ zoogBurrow = treachery ZoogBurrow Cards.zoogBurrow
 instance RunMessage ZoogBurrow where
   runMessage msg t@(ZoogBurrow attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs #agility 3
+      push $ revelationSkillTest iid attrs #agility (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       zoogs <- select $ NearestEnemyTo iid $ EnemyWithTrait Zoog <> SwarmingEnemy <> NotEnemy IsSwarm

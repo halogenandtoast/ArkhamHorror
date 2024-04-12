@@ -50,7 +50,7 @@ instance RunMessage MuseumHalls where
   runMessage msg l@(MuseumHalls attrs) = case msg of
     UseThisAbility iid this@(isProxySource attrs -> True) 1 | unrevealed attrs -> do
       museumEntrance <- selectJust $ LocationWithTitle "Museum Entrance"
-      push $ beginSkillTest iid (toAbilitySource this 1) museumEntrance #combat 5
+      push $ beginSkillTest iid (toAbilitySource this 1) museumEntrance #combat (Fixed 5)
       pure l
     UseThisAbility iid (isSource attrs -> True) 1 | revealed attrs -> do
       push $ DrawFromScenarioDeck iid ExhibitDeck (toTarget attrs) 1

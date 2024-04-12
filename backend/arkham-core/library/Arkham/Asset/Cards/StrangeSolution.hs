@@ -24,7 +24,7 @@ instance HasAbilities StrangeSolution where
 instance RunMessage StrangeSolution where
   runMessage msg a@(StrangeSolution attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid (attrs.ability 1) iid #intellect 4
+      push $ beginSkillTest iid (attrs.ability 1) iid #intellect (Fixed 4)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       drawing <- drawCards iid (attrs.ability 1) 2

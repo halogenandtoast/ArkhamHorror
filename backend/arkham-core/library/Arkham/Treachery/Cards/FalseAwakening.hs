@@ -31,7 +31,7 @@ instance RunMessage FalseAwakening where
       n <- perPlayer 1
       chooseOne
         iid
-        [SkillLabel s [Msg.beginSkillTest iid (attrs.ability 1) iid s (2 + n)] | s <- allSkills]
+        [SkillLabel s [Msg.beginSkillTest iid (attrs.ability 1) iid s (Fixed $ 2 + n)] | s <- allSkills]
       pure t
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       push $ RemoveFromGame (toTarget attrs)

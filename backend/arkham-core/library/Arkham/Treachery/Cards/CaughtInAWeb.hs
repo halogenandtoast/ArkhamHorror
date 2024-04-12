@@ -29,7 +29,7 @@ instance RunMessage CaughtInAWeb where
       attachTreachery attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      beginSkillTest iid (attrs.ability 1) iid #combat 3
+      beginSkillTest iid (attrs.ability 1) iid #combat (Fixed 3)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs

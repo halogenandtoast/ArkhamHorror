@@ -24,7 +24,7 @@ instance HasAbilities Graveyard where
 instance RunMessage Graveyard where
   runMessage msg l@(Graveyard attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid (attrs.ability 1) iid #willpower 3
+      push $ beginSkillTest iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       rivertown <- getJustLocationByName "Rivertown"

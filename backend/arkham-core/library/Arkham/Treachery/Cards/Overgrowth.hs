@@ -36,7 +36,7 @@ instance RunMessage Overgrowth where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let
         target = toTarget attrs
-        chooseSkillTest sType = SkillLabel sType [beginSkillTest iid (attrs.ability 1) target sType 4]
+        chooseSkillTest sType = SkillLabel sType [beginSkillTest iid (attrs.ability 1) target sType (Fixed 4)]
       player <- getPlayer iid
       push $ chooseOne player $ map chooseSkillTest [SkillCombat, SkillIntellect]
       pure t

@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Classes
-import Arkham.Helpers.Investigator
+import Arkham.Investigator.Types (Field (..))
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -25,11 +25,19 @@ instance RunMessage LostSoul where
       moreConvictionThanDoubt <- getMoreConvictionThanDoubt
       if moreConvictionThanDoubt
         then do
-          intellect <- getSkillValue SkillIntellect iid
-          push $ RevelationSkillTest iid source SkillWillpower intellect
+          push
+            $ RevelationSkillTest
+              iid
+              source
+              SkillWillpower
+              (InvestigatorFieldDifficulty iid InvestigatorIntellect)
         else do
-          willpower <- getSkillValue SkillWillpower iid
-          push $ RevelationSkillTest iid source SkillIntellect willpower
+          push
+            $ RevelationSkillTest
+              iid
+              source
+              SkillIntellect
+              (InvestigatorFieldDifficulty iid InvestigatorWillpower)
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do

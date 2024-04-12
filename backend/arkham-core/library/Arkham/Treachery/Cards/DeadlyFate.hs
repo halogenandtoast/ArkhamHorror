@@ -23,7 +23,7 @@ deadlyFate = treachery DeadlyFate Cards.deadlyFate
 instance RunMessage DeadlyFate where
   runMessage msg t@(DeadlyFate attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ RevelationSkillTest iid source SkillWillpower 3
+      push $ RevelationSkillTest iid source SkillWillpower (Fixed 3)
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
       push $ DiscardUntilFirst iid source Deck.EncounterDeck $ BasicCardMatch $ CardWithType EnemyType

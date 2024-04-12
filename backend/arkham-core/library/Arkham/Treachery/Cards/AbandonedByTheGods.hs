@@ -19,7 +19,7 @@ abandonedByTheGods = treacheryWith AbandonedByTheGods Cards.abandonedByTheGods (
 instance RunMessage AbandonedByTheGods where
   runMessage msg t@(AbandonedByTheGods attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      revelationSkillTest iid attrs #willpower 3
+      revelationSkillTest iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) (min 5 -> n) -> do
       chooseN

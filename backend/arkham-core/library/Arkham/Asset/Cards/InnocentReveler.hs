@@ -47,7 +47,7 @@ instance RunMessage InnocentReveler where
           source
           (toTarget attrs)
           SkillIntellect
-          2
+          (Fixed 2)
       pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds

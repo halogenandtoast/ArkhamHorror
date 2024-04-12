@@ -37,7 +37,7 @@ instance RunMessage Stairwell where
             [ targetLabel
               basementLocation
               [ toMessage $ move (attrs.ability 1) iid basementLocation
-              , beginSkillTest iid (attrs.ability 1) iid #agility 4
+              , beginSkillTest iid (attrs.ability 1) iid #agility (Fixed 4)
               ]
             | basementLocation <- basementLocations
             ]

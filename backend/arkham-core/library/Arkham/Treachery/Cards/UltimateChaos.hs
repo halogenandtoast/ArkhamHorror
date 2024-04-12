@@ -24,7 +24,7 @@ ultimateChaos = treachery UltimateChaos Cards.ultimateChaos
 instance RunMessage UltimateChaos where
   runMessage msg t@(UltimateChaos attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs #willpower 4
+      push $ revelationSkillTest iid attrs #willpower (Fixed 4)
       pure t
     AfterRevelation iid tid | tid == toId attrs -> do
       instances <- select $ treacheryIs Cards.ultimateChaos

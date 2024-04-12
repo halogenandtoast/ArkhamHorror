@@ -23,7 +23,7 @@ instance RunMessage LostHumanity where
   runMessage msg t@(LostHumanity attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       pushAll
-        [ RevelationSkillTest iid (toSource attrs) SkillWillpower 5
+        [ RevelationSkillTest iid (toSource attrs) SkillWillpower (Fixed 5)
         , RevelationChoice iid (toSource attrs) 1
         ]
       pure t

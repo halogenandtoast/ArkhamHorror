@@ -21,9 +21,13 @@ theSecretMustBeKept = treachery TheSecretMustBeKept Cards.theSecretMustBeKept
 instance RunMessage TheSecretMustBeKept where
   runMessage msg t@(TheSecretMustBeKept attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      deckCount <- getActDecksInPlayCount
-      let n = 3 - deckCount
-      push $ RevelationSkillTest iid source SkillWillpower (3 + n)
+      -- max 3 decks so we subtract the number of decks in play from 3
+      push
+        $ RevelationSkillTest
+          iid
+          source
+          SkillWillpower
+          (SumDifficulty [Fixed 3, SubtractDifficulty (Fixed 3) ActsInPlayDifficulty])
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do

@@ -12,7 +12,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
-import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
 
@@ -40,8 +39,13 @@ instance HasAbilities PatientConfinementFamiliarCell where
 instance RunMessage PatientConfinementFamiliarCell where
   runMessage msg l@(PatientConfinementFamiliarCell attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      horror <- field InvestigatorHorror iid
-      push $ beginSkillTest iid (attrs.ability 1) (toTarget attrs) SkillWillpower horror
+      push
+        $ beginSkillTest
+          iid
+          (attrs.ability 1)
+          (toTarget attrs)
+          SkillWillpower
+          (InvestigatorFieldDifficulty iid InvestigatorHorror)
       pure l
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isAbilitySource attrs 1 source -> l <$ push (Remember RecalledTheWayOut)

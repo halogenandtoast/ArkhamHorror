@@ -54,11 +54,6 @@ instance Data (SomeField Investigator) where
   toConstr _ = error "toConstr(SomeField Investigator)"
   dataTypeOf _ = error "dataTypeOf(SomeField Investigator)"
 
-instance Data (SomeListField Investigator) where
-  gunfold _ _ _ = error "gunfold(SomeListField Investigator)"
-  toConstr _ = error "toConstr(SomeListField Investigator)"
-  dataTypeOf _ = error "dataTypeOf(SomeListField Investigator)"
-
 instance Typeable a => Data (Field Investigator a) where
   gunfold _ _ _ = error "gunfold(Investigator)"
   toConstr _ = error "toConstr(Investigator)"
@@ -138,9 +133,6 @@ data instance Field Investigator :: Type -> Type where
 deriving stock instance Show (Field Investigator val)
 deriving stock instance Ord (Field Investigator val)
 
-instance Ord (SomeListField Investigator) where
-  compare (SomeListField a) (SomeListField b) = compare (show a) (show b)
-
 instance ToJSON (Field Investigator typ) where
   toJSON = toJSON . show
 
@@ -151,23 +143,6 @@ instance Typeable typ => FromJSON (Field Investigator typ) where
       SomeField (f :: Field Investigator k) -> case eqT @typ @k of
         Just Refl -> pure f
         Nothing -> error "type mismatch"
-
-instance FromJSON (SomeListField Investigator) where
-  parseJSON x = do
-    SomeField z <- parseJSON @(SomeField Investigator) x
-    case z of
-      InvestigatorAdditionalActions -> pure $ SomeListField InvestigatorAdditionalActions
-      InvestigatorHand -> pure $ SomeListField InvestigatorHand
-      InvestigatorCardsUnderneath -> pure $ SomeListField InvestigatorCardsUnderneath
-      InvestigatorDiscard -> pure $ SomeListField InvestigatorDiscard
-      InvestigatorActionsTaken -> pure $ SomeListField InvestigatorActionsTaken
-      InvestigatorActionsPerformed -> pure $ SomeListField InvestigatorActionsPerformed
-      InvestigatorUsedAbilities -> pure $ SomeListField InvestigatorUsedAbilities
-      InvestigatorAbilities -> pure $ SomeListField InvestigatorAbilities
-      InvestigatorCommittedCards -> pure $ SomeListField InvestigatorCommittedCards
-      InvestigatorBondedCards -> pure $ SomeListField InvestigatorBondedCards
-      InvestigatorSupplies -> pure $ SomeListField InvestigatorSupplies
-      _ -> error "Unknown List Field Investigator"
 
 instance FromJSON (SomeField Investigator) where
   parseJSON = withText "Field Investigator" $ \case

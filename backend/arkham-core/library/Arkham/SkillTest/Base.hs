@@ -46,7 +46,7 @@ data SkillTestDifficulty
   | SubtractDifficulty SkillTestDifficulty SkillTestDifficulty
   | AssetFieldDifficulty AssetId (Field Asset Int)
   | InvestigatorFieldDifficulty InvestigatorId (Field Investigator Int)
-  | InvestigatorFieldLengthDifficulty InvestigatorId (SomeListField Investigator)
+  | InvestigatorHandLengthDifficulty InvestigatorId
   | EnemyMaybeFieldDifficulty EnemyId (Field Enemy (Maybe Int))
   | EnemyMaybeGameValueFieldDifficulty EnemyId (Field Enemy (Maybe GameValue))
   | EnemyFieldDifficulty EnemyId (Field Enemy Int)

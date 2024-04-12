@@ -23,8 +23,7 @@ shadowed = treachery Shadowed Cards.shadowed
 instance RunMessage Shadowed where
   runMessage msg t@(Shadowed attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      cultists <-
-        selectWithField EnemyFight $ NearestEnemyTo iid $ EnemyWithTrait Cultist
+      cultists <- select (NearestEnemyTo iid $ EnemyWithTrait Cultist <> EnemyWithFight)
       if null cultists
         then
           pushAll
@@ -41,7 +40,7 @@ instance RunMessage Shadowed where
                 [ PlaceDoom (toSource attrs) (toTarget cultist) 1
                 , RevelationSkillTest iid source SkillWillpower (EnemyMaybeFieldDifficulty cultist EnemyFight)
                 ]
-              | (cultist, Just _) <- cultists
+              | cultist <- cultists
               ]
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do

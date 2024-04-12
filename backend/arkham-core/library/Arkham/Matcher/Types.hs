@@ -326,6 +326,7 @@ data EnemyMatcher
   | EnemyWithoutModifier ModifierType
   | EnemyWithModifier ModifierType
   | EnemyWithEvade
+  | EnemyWithFight
   | UnengagedEnemy
   | UniqueEnemy
   | NotEnemy EnemyMatcher

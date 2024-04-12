@@ -2543,6 +2543,7 @@ enemyMatcherFilter = \case
   EnemyWithModifier modifier ->
     \enemy -> elem modifier <$> getModifiers (toTarget enemy)
   EnemyWithEvade -> fieldP EnemyEvade isJust . toId
+  EnemyWithFight -> fieldP EnemyFight isJust . toId
   EnemyWithPlacement p -> fieldP EnemyPlacement (== p) . toId
   UnengagedEnemy -> selectNone . InvestigatorEngagedWith . EnemyWithId . toId
   UniqueEnemy -> pure . cdUnique . toCardDef

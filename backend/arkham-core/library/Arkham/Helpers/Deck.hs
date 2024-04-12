@@ -66,7 +66,7 @@ initDeckTrauma deck' iid pid target =
     [SufferTrauma iid physicalTrauma mentalTrauma | mentalTrauma > 0 || physicalTrauma > 0]
       <> [ chooseAmounts
           pid
-          "Suffer n total physical and/or mental trauma"
+          ("Suffer " <> tshow anyTrauma <> " total physical and/or mental trauma")
           (TotalAmountTarget anyTrauma)
           [("Physical", (0, anyTrauma)), ("Mental", (0, anyTrauma))]
           (LabeledTarget "Purchase Trauma" target)

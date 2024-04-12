@@ -10,7 +10,6 @@ import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Enemy.Types
-import Arkham.Field
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Investigator.Types

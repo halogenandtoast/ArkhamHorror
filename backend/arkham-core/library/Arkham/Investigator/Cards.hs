@@ -64,6 +64,7 @@ allInvestigatorCards =
       , normanWithers
       , montereyJack
       , lilyChen
+      , bobJenkins
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -387,7 +388,7 @@ danielaReyes =
   investigator
     "08001"
     ("Daniela Reyes" <:> "The Mechanic")
-    Seeker
+    Guardian
     [Miskatonic]
 
 normanWithers :: CardDef
@@ -414,6 +415,14 @@ lilyChen =
     ("Lily Chen" <:> "The Martial Artist")
     Mystic
     [Chosen, Warden]
+
+bobJenkins :: CardDef
+bobJenkins =
+  investigator
+    "08016"
+    ("Bob Jenkins" <:> "The Salesman")
+    Survivor
+    [Entrepreneur]
 
 nathanielCho :: CardDef
 nathanielCho =

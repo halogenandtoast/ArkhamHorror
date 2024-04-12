@@ -26,6 +26,7 @@ import Arkham.Act.Sequence qualified as AS
 import Arkham.Act.Types (Field (..))
 import Arkham.Action (Action)
 import Arkham.Action qualified as Action
+import Arkham.Action.Additional (AdditionalActionType (BobJenkinsAction), additionalActionType)
 import Arkham.Asset.Types (Field (..))
 import Arkham.Attack
 import Arkham.Capability
@@ -57,6 +58,7 @@ import Arkham.Helpers.SkillTest (getSkillTestDifficulty)
 import Arkham.Helpers.Tarot
 import Arkham.History
 import Arkham.Id
+import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (Field (..), Investigator, InvestigatorAttrs (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Types hiding (location)
@@ -110,11 +112,12 @@ getPlayableCards
   :: (HasCallStack, HasGame m) => InvestigatorAttrs -> CostStatus -> [Window] -> m [Card]
 getPlayableCards a costStatus windows' = do
   asIfInHandCards <- getAsIfInHandCards (toId a)
+  otherPlayersPlayableCards <- getOtherPlayersPlayableCards (toId a) costStatus windows'
   playableDiscards <- getPlayableDiscards a costStatus windows'
   hand <- field InvestigatorHand (toId a)
   playableHandCards <-
     filterM (getIsPlayable (toId a) (toSource a) costStatus windows') (hand <> asIfInHandCards)
-  pure $ playableHandCards <> playableDiscards
+  pure $ playableHandCards <> playableDiscards <> otherPlayersPlayableCards
 
 getPlayableDiscards :: HasGame m => InvestigatorAttrs -> CostStatus -> [Window] -> m [Card]
 getPlayableDiscards attrs@InvestigatorAttrs {..} costStatus windows' = do
@@ -197,7 +200,7 @@ getCanPerformAbility !iid !ws !ability = do
     [ getCanAffordCost iid (toSource ability) actions ws cost
     , meetsActionRestrictions iid ws ability
     , anyM (\window -> windowMatches iid (toSource ability) window (abilityWindow ability)) ws
-    , passesCriteria iid Nothing (abilitySource ability) ws criteria
+    , passesCriteria iid Nothing (toSource ability) ws criteria
     , allM (getCanAffordCost iid (abilitySource ability) actions ws) additionalCosts
     , not <$> preventedByInvestigatorModifiers iid ability
     ]
@@ -814,10 +817,33 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
     pure $ m > n
   go :: forall n. HasGame n => n Bool
   go = withDepthGuard 3 False $ do
+    attrs <- getAttrs @Investigator iid
+    isBobJenkins <-
+      case source of
+        AbilitySource (InvestigatorSource iid') 1 -> do
+          case toCardOwner c of
+            Just owner ->
+              andM
+                [ iid' <=~> Matcher.investigatorIs Investigators.bobJenkins
+                , owner <=~> Matcher.affectsOthers (Matcher.colocatedWith iid')
+                , pure $ c `cardMatch` (Matcher.CardWithType AssetType <> #item)
+                , pure
+                    $ BobJenkinsAction
+                    `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)
+                ]
+            Nothing -> pure False
+        _ -> pure False
     iids <- filter (/= iid) <$> getInvestigatorIds
     iidsWithModifiers <- for iids $ \iid' -> (iid',) <$> getModifiers iid'
     canHelpPay <- flip filterM iidsWithModifiers $ \(iid', modifiers) -> do
-      flip anyM modifiers $ \case
+      bobJenkinsPermitted <-
+        if isBobJenkins
+          then do
+            case toCardOwner c of
+              Just owner | owner == iid' -> pure True
+              _ -> pure False
+          else pure False
+      modifierPermitted <- flip anyM modifiers $ \case
         CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher ->
           andM
             [ iid <=~> iMatcher
@@ -825,6 +851,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
             , withoutModifier iid' CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
             ]
         _ -> pure False
+      pure $ bobJenkinsPermitted || modifierPermitted
 
     resourcesFromAssets <-
       sum <$> for iidsWithModifiers \(iid', modifiers) -> do
@@ -942,7 +969,6 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
               pure [m | AdditionalCostToResign m <- mods]
         else pure []
 
-    attrs <- getAttrs @Investigator iid
     actionCost <- getActionCost attrs (cdActions pcDef)
 
     -- Warning: We check if the source is GameSource, this affects the
@@ -971,7 +997,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       $ (cdCardType pcDef /= SkillType)
       && ((costStatus == PaidCost) || (canAffordCost || canAffordAlternateResourceCost))
       && (none prevents modifiers)
-      && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow)
+      && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow || isBobJenkins)
       && ( #evade
             `notElem` cdActions pcDef
             || canEvade
@@ -1035,7 +1061,7 @@ passesCriteria
   -> [Window]
   -> Criterion
   -> m Bool
-passesCriteria iid mcard source windows' = \case
+passesCriteria iid mcard source' windows' = \case
   Criteria.HasRemainingBlessTokens -> (> 0) <$> getRemainingBlessTokens
   Criteria.HasRemainingCurseTokens -> (> 0) <$> getRemainingCurseTokens
   Criteria.CanMoveTo matcher -> notNull <$> getCanMoveToMatchingLocations iid source matcher
@@ -1292,7 +1318,7 @@ passesCriteria iid mcard source windows' = \case
         Just tIid ->
           nub $ mkWhen (Window.DuringTurn tIid) : windows'
     results <- select cardMatcher
-    anyM (getIsPlayable iid source costStatus updatedWindows) results
+    anyM (getIsPlayable iid source' costStatus updatedWindows) results
   Criteria.PlayableCardInDiscard discardSignifier cardMatcher -> do
     let
       investigatorMatcher = case discardSignifier of
@@ -1417,8 +1443,8 @@ passesCriteria iid mcard source windows' = \case
           InvestigatorClues
           (Matcher.InvestigatorWithoutModifier CannotSpendClues)
     total `gameValueMatches` valueMatcher
-  Criteria.Criteria rs -> allM (passesCriteria iid mcard source windows') rs
-  Criteria.AnyCriterion rs -> anyM (passesCriteria iid mcard source windows') rs
+  Criteria.Criteria rs -> allM (passesCriteria iid mcard source' windows') rs
+  Criteria.AnyCriterion rs -> anyM (passesCriteria iid mcard source' windows') rs
   Criteria.LocationExists matcher -> do
     selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.LocationCount n matcher -> do
@@ -1472,6 +1498,10 @@ passesCriteria iid mcard source windows' = \case
   Criteria.AffectedByTarot -> case source of
     TarotSource card -> affectedByTarot iid card
     _ -> pure False
+ where
+  source = case source' of
+    AbilitySource s _ -> s
+    _ -> source'
 
 getWindowAsset :: [Window] -> Maybe AssetId
 getWindowAsset [] = Nothing
@@ -3399,3 +3429,12 @@ getCanLeaveCurrentLocation iid source = do
       mods <- getModifiers lid
       let extraCostsToLeave = mconcat [c | AdditionalCostToLeave c <- mods]
       getCanAffordCost iid source [#move] [] extraCostsToLeave
+
+getOtherPlayersPlayableCards :: HasGame m => InvestigatorId -> CostStatus -> [Window] -> m [Card]
+getOtherPlayersPlayableCards iid costStatus windows' = do
+  mods <- getModifiers iid
+  forMaybeM mods $ \case
+    PlayableCardOf _ c -> do
+      playable <- getIsPlayable iid (toSource iid) costStatus windows' c
+      pure $ guard playable $> c
+    _ -> pure Nothing

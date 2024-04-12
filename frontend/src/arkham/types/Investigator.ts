@@ -29,6 +29,7 @@ type AdditionalActionType
   | { tag: "TraitRestrictedAdditionalAction" }
   | { tag: "AnyAdditionalAction" }
   | { tag: "BountyAction" }
+  | { tag: "BobJenkinsAction" }
 
 type AdditionalAction = {
   kind: AdditionalActionType
@@ -42,6 +43,7 @@ export const additionalActionTypeDecoder = JsonDecoder.oneOf<AdditionalActionTyp
   , JsonDecoder.object({ tag: JsonDecoder.isExactly("TraitRestrictedAdditionalAction") }, "TraitRestrictedAdditionalAction")
   , JsonDecoder.object({ tag: JsonDecoder.isExactly("AnyAdditionalAction") }, "AnyAdditionalAction")
   , JsonDecoder.object({ tag: JsonDecoder.isExactly("BountyAction") }, "BountyAction")
+  , JsonDecoder.object({ tag: JsonDecoder.isExactly("BobJenkinsAction") }, "BobJenkinsAction")
   ], "AdditionalActionType")
 
 export const additionalActionDecoder = JsonDecoder.object<AdditionalAction>(

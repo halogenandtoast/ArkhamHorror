@@ -68,7 +68,9 @@ data ModifierType
   | AsIfEnemyFight Int
   | AsIfEngagedWith EnemyId
   | AsIfInHand Card
+  | PlayableCardOf InvestigatorId Card
   | AsIfUnderControlOf InvestigatorId
+  | PlayUnderControlOf InvestigatorId
   | AttacksCannotBeCancelled
   | BaseSkillOf {skillType :: SkillType, value :: Int}
   | BecomesFast
@@ -209,6 +211,7 @@ data ModifierType
   | EnemyFightActionCriteria CriteriaOverride
   | EnemyFightWithMin Int (Min Int)
   | EnemyEngageActionCriteria CriteriaOverride
+  | ExtraResources Int
   | FailTies
   | FewerActions Int
   | FewerSlots SlotType Int

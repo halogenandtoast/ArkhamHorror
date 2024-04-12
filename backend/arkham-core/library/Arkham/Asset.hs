@@ -757,6 +757,7 @@ allAssets =
     , SomeAssetCard disciplinePrescienceOfFateBroken
     , SomeAssetCard disciplineBalanceOfBody
     , SomeAssetCard disciplineBalanceOfBodyBroken
+    , SomeAssetCard shrewdDealings
     , --- seeker [eote]
       SomeAssetCard forcedLearning
     , --- rogue [eote]

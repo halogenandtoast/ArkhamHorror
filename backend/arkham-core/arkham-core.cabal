@@ -843,6 +843,7 @@ library
       Arkham.Asset.Cards.Shotgun4
       Arkham.Asset.Cards.Showmanship
       Arkham.Asset.Cards.ShrewdAnalysis
+      Arkham.Asset.Cards.ShrewdDealings
       Arkham.Asset.Cards.Shrivelling
       Arkham.Asset.Cards.Shrivelling3
       Arkham.Asset.Cards.Shrivelling5
@@ -1704,6 +1705,7 @@ library
       Arkham.Investigator.Cards.AkachiOnyele
       Arkham.Investigator.Cards.AmandaSharpe
       Arkham.Investigator.Cards.AshcanPete
+      Arkham.Investigator.Cards.BobJenkins
       Arkham.Investigator.Cards.BodyOfAYithian
       Arkham.Investigator.Cards.CalvinWright
       Arkham.Investigator.Cards.CarolynFern
@@ -2772,6 +2774,7 @@ library
       Arkham.Treachery.Cards.GraspingHands
       Arkham.Treachery.Cards.GraveLight
       Arkham.Treachery.Cards.GraveLightSpectral
+      Arkham.Treachery.Cards.Greed
       Arkham.Treachery.Cards.HarvestedBrain
       Arkham.Treachery.Cards.Haunted
       Arkham.Treachery.Cards.HospitalDebts

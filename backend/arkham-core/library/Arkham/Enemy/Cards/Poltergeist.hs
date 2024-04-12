@@ -13,7 +13,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message qualified as Msg
-import Arkham.SkillType
 import Arkham.Trait
 
 newtype Poltergeist = Poltergeist EnemyAttrs
@@ -48,19 +47,10 @@ instance HasModifiersFor Poltergeist where
 
 instance RunMessage Poltergeist where
   runMessage msg e@(Poltergeist attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          e
-            <$ push
-              ( parley
-                  iid
-                  source
-                  (toTarget attrs)
-                  SkillIntellect
-                  3
-              )
-    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source ->
-          e
-            <$ push (Msg.EnemyDamage (toId attrs) $ nonAttack source 1)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ parley iid source attrs #intellect (Fixed 3)
+      pure e
+    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+      push (Msg.EnemyDamage (toId attrs) $ nonAttack source 1)
+      pure e
     _ -> Poltergeist <$> runMessage msg attrs

@@ -6,7 +6,6 @@ module Arkham.Location.Cards.CrystalPillars (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
@@ -36,8 +35,13 @@ instance HasAbilities CrystalPillars where
 instance RunMessage CrystalPillars where
   runMessage msg l@(CrystalPillars attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      n <- getVengeanceInVictoryDisplay
-      push $ beginSkillTest iid (attrs.ability 1) iid SkillWillpower (1 + n)
+      push
+        $ beginSkillTest
+          iid
+          (attrs.ability 1)
+          iid
+          SkillWillpower
+          (SumDifficulty [Fixed 1, VengeanceDifficulty])
       pure l
     FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
       do

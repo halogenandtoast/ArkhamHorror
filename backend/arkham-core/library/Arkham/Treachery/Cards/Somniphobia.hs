@@ -26,7 +26,7 @@ instance RunMessage Somniphobia where
       -- push $ revelationSkillTest iid attrs #willpower 5
 
       let card = toCard attrs
-      let skillTest = (initSkillTest iid attrs iid #willpower 5) {skillTestIsRevelation = True}
+      let skillTest = (initSkillTest iid attrs iid #willpower (Fixed 5)) {skillTestIsRevelation = True}
       let
         skillTest' =
           skillTest

@@ -25,7 +25,7 @@ instance RunMessage VortexOfTime where
       investigatorsAtSentinelHills <-
         select $ InvestigatorAt $ LocationWithTrait SentinelHill
       pushAll
-        [ RevelationSkillTest iid source SkillWillpower 4
+        [ RevelationSkillTest iid source SkillWillpower (Fixed 4)
         | iid <- investigatorsAtSentinelHills
         ]
       pure t

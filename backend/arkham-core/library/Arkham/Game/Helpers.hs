@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Helpers.Ability as X
 import Arkham.Helpers.Cost as X
+import Arkham.Helpers.Doom as X
 import Arkham.Helpers.EncounterSet as X
 import Arkham.Helpers.GameValue as X
 import Arkham.Helpers.Log as X
@@ -25,7 +26,6 @@ import Arkham.Act.Sequence qualified as AS
 import Arkham.Act.Types (Field (..))
 import Arkham.Action (Action)
 import Arkham.Action qualified as Action
-import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Types (Field (..))
 import Arkham.Attack
 import Arkham.Capability
@@ -53,6 +53,7 @@ import Arkham.Helpers.Investigator (
   getCanAfford,
  )
 import Arkham.Helpers.Message hiding (AssetDamage, InvestigatorDamage, PaidCost)
+import Arkham.Helpers.SkillTest (getSkillTestDifficulty)
 import Arkham.Helpers.Tarot
 import Arkham.History
 import Arkham.Id
@@ -2148,7 +2149,6 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
               [ matchWho iid (skillTestInvestigator st) whoMatcher
               , skillTestValueMatches
                   iid
-                  (skillTestDifficulty st)
                   (skillTestAction st)
                   (skillTestType st)
                   skillValueMatcher
@@ -2665,24 +2665,27 @@ gameValueMatches n = \case
 skillTestValueMatches
   :: HasGame m
   => InvestigatorId
-  -> Int
   -> Maybe Action
   -> SkillTestType
   -> Matcher.SkillTestValueMatcher
   -> m Bool
-skillTestValueMatches iid n maction skillTestType = \case
+skillTestValueMatches iid maction skillTestType = \case
   Matcher.AnySkillTestValue -> pure True
-  Matcher.SkillTestGameValue valueMatcher -> gameValueMatches n valueMatcher
-  Matcher.GreaterThanBaseValue -> case skillTestType of
-    SkillSkillTest skillType -> do
-      baseSkill <- baseSkillValueFor skillType maction [] iid
-      pure $ n > baseSkill
-    AndSkillTest types -> do
-      baseSkill <- sum <$> traverse (\skillType -> baseSkillValueFor skillType maction [] iid) types
-      pure $ n > baseSkill
-    ResourceSkillTest -> do
-      resources <- field InvestigatorResources iid
-      pure $ n > resources
+  Matcher.SkillTestGameValue valueMatcher -> do
+    maybe (pure False) (`gameValueMatches` valueMatcher) =<< getSkillTestDifficulty
+  Matcher.GreaterThanBaseValue -> do
+    getSkillTestDifficulty >>= \case
+      Nothing -> pure False
+      Just n -> case skillTestType of
+        SkillSkillTest skillType -> do
+          baseSkill <- baseSkillValueFor skillType maction [] iid
+          pure $ n > baseSkill
+        AndSkillTest types -> do
+          baseSkill <- sum <$> traverse (\skillType -> baseSkillValueFor skillType maction [] iid) types
+          pure $ n > baseSkill
+        ResourceSkillTest -> do
+          resources <- field InvestigatorResources iid
+          pure $ n > resources
 
 targetMatches :: HasGame m => Target -> Matcher.TargetMatcher -> m Bool
 targetMatches s = \case
@@ -3106,19 +3109,6 @@ sourceCanDamageEnemy eid source = do
         (Matcher.SourceMatchesAny [Matcher.EncounterCardSource, matcher])
     CannotBeDamaged -> pure True
     _ -> pure False
-
-getDoomCount :: HasGame m => m Int
-getDoomCount =
-  getSum
-    . fold
-    <$> sequence
-      [ selectAgg Sum AssetDoom Matcher.AnyAsset
-      , selectAgg Sum EnemyDoom Matcher.AnyEnemy
-      , selectAgg Sum LocationDoom Matcher.Anywhere
-      , selectAgg Sum TreacheryDoom Matcher.AnyTreachery
-      , selectAgg Sum AgendaDoom Matcher.AnyAgenda
-      , selectAgg Sum InvestigatorDoom Matcher.UneliminatedInvestigator
-      ]
 
 getPotentialSlots
   :: (HasGame m, IsCard a) => a -> InvestigatorId -> m [SlotType]

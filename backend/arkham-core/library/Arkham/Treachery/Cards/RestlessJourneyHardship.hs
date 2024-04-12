@@ -66,7 +66,7 @@ restlessJourneyHardshipEffect = cardEffect RestlessJourneyHardshipEffect Cards.r
 instance RunMessage RestlessJourneyHardshipEffect where
   runMessage msg e@(RestlessJourneyHardshipEffect attrs) = runQueueT $ case msg of
     CreatedEffect eid _ source (InvestigatorTarget iid) | eid == attrs.id -> do
-      beginSkillTest iid source iid #combat 3
+      beginSkillTest iid source iid #combat (Fixed 3)
       pure e
     SkillTestEnds _iid (isSource attrs -> True) -> do
       push $ disable attrs

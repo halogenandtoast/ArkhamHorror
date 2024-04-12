@@ -36,7 +36,7 @@ instance RunMessage SongOfTheMagahBird where
         ]
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      let chooseSkillTest (lbl, sType) = skillTestLabel lbl sType iid (attrs.ability 2) attrs 4
+      let chooseSkillTest (lbl, sType) = skillTestLabel lbl sType iid (attrs.ability 2) attrs (Fixed 4)
       player <- getPlayer iid
       push
         $ chooseOne player

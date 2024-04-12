@@ -13,7 +13,6 @@ import Arkham.CampaignLogKey
 import Arkham.Classes
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Scenarios.WakingNightmare.Helpers
 
 newtype ContainingTheOutbreak = ContainingTheOutbreak ActAttrs
@@ -50,10 +49,15 @@ instance RunMessage ContainingTheOutbreak where
       1
       _
       (getPaidClues -> paidClues) -> do
-        shroud <- field LocationShroud lid
         pushAll
           $ [skillTestModifier source SkillTestTarget SkillTestAutomaticallySucceeds | paidClues]
-          <> [beginSkillTest iid (toAbilitySource source 1) iid #willpower shroud]
+          <> [ beginSkillTest
+                iid
+                (toAbilitySource source 1)
+                iid
+                #willpower
+                (LocationFieldDifficulty lid LocationShroud)
+             ]
         pure a
     PassedThisSkillTest
       _

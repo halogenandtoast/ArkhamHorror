@@ -22,7 +22,7 @@ shatteredAges = treachery ShatteredAges Cards.shatteredAges
 instance RunMessage ShatteredAges where
   runMessage msg t@(ShatteredAges attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ RevelationSkillTest iid (toSource attrs) SkillWillpower 4
+      push $ RevelationSkillTest iid (toSource attrs) SkillWillpower (Fixed 4)
       pure t
     FailedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do

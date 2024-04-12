@@ -36,7 +36,7 @@ instance RunMessage LockedDoor where
         $ targetLabels locations (only . AttachTreachery treacheryId . toTarget)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let chooseSkillTest sType = SkillLabel sType [beginSkillTest iid (toAbilitySource attrs 1) attrs sType 4]
+      let chooseSkillTest sType = SkillLabel sType [beginSkillTest iid (toAbilitySource attrs 1) attrs sType (Fixed 4)]
       player <- getPlayer iid
       push $ chooseOne player $ map chooseSkillTest [#combat, #agility]
       pure t

@@ -66,7 +66,7 @@ instance RunMessage Timelock where
                 (attrs.ability 1)
                 (toTarget attrs)
                 skillType
-                3
+                (Fixed 3)
             ]
           | skillType <- [SkillWillpower, SkillIntellect]
           ]

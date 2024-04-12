@@ -19,7 +19,7 @@ instance HasAbilities TowerOfKoth where
 instance RunMessage TowerOfKoth where
   runMessage msg l@(TowerOfKoth attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      beginSkillTest iid (attrs.ability 1) iid #combat 5
+      beginSkillTest iid (attrs.ability 1) iid #combat (Fixed 5)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       when (locationCanBeFlipped attrs)

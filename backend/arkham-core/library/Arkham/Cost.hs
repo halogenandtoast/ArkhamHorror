@@ -21,6 +21,7 @@ import Arkham.GameValue
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Name
+import {-# SOURCE #-} Arkham.SkillTest.Base (SkillTestDifficulty)
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Strategy
@@ -127,7 +128,7 @@ data Cost
   | HandDiscardAnyNumberCost CardMatcher
   | ReturnMatchingAssetToHandCost AssetMatcher
   | ReturnAssetToHandCost AssetId
-  | SkillTestCost Source SkillType Int
+  | SkillTestCost Source SkillType SkillTestDifficulty
   | SkillIconCost Int (Set SkillIcon)
   | SameSkillIconCost Int
   | DiscardCombinedCost Int

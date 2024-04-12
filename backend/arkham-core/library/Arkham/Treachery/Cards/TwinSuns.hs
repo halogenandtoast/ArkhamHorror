@@ -21,7 +21,7 @@ twinSuns = treachery TwinSuns Cards.twinSuns
 instance RunMessage TwinSuns where
   runMessage msg t@(TwinSuns attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ RevelationSkillTest iid source SkillIntellect 4
+      push $ RevelationSkillTest iid source SkillIntellect (Fixed 4)
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n | isSource attrs source -> do
       agenda <- selectJust AnyAgenda

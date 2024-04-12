@@ -59,7 +59,7 @@ instance RunMessage CrossingTheThreshold where
             (toSource attrs)
             (InvestigatorTarget iid)
             SkillWillpower
-            4
+            (Fixed 4)
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
       pure a

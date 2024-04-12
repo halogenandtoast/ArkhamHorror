@@ -55,7 +55,7 @@ instance RunMessage SpectralMist where
           ]
       SpectralMist <$> runMessage msg attrs
     UseCardAbility iid (TreacherySource tid) 1 _ _ | tid == treacheryId -> do
-      push $ beginSkillTest iid (attrs.ability 1) attrs #intellect 2
+      push $ beginSkillTest iid (attrs.ability 1) attrs #intellect (Fixed 2)
       pure t
     PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isAbilitySource attrs 1 source -> do
       t <$ push (toDiscardBy iid (toAbilitySource attrs 1) attrs)

@@ -33,7 +33,7 @@ instance HasAbilities Cloister where
 instance RunMessage Cloister where
   runMessage msg l@(Cloister attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ parley iid source iid #willpower 3
+      push $ parley iid source iid #willpower (Fixed 3)
       pure l
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> l <$ push (Remember FoundAGuide)

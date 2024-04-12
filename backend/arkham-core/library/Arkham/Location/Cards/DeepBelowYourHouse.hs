@@ -34,7 +34,7 @@ instance HasAbilities DeepBelowYourHouse where
 instance RunMessage DeepBelowYourHouse where
   runMessage msg l@(DeepBelowYourHouse attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid (attrs.ability 1) iid #agility 3
+      push $ beginSkillTest iid (attrs.ability 1) iid #agility (Fixed 3)
       pure l
     FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ n -> do
       pushAll $ replicate n $ findAndDrawEncounterCard iid $ cardIs Enemies.swarmOfRats

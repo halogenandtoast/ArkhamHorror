@@ -16,7 +16,8 @@ arcaneBarrier = treachery ArcaneBarrier Cards.arcaneBarrier
 
 instance HasModifiersFor ArcaneBarrier where
   getModifiersFor target (ArcaneBarrier attrs) | treacheryOn attrs target = do
-    pure $ toModifiers attrs [AdditionalCostToLeave $ SkillTestCost (toSource attrs) #willpower 4]
+    pure
+      $ toModifiers attrs [AdditionalCostToLeave $ SkillTestCost (toSource attrs) #willpower (Fixed 4)]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ArcaneBarrier where

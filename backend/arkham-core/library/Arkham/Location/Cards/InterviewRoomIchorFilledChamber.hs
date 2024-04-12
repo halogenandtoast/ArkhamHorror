@@ -45,7 +45,7 @@ instance RunMessage InterviewRoomIchorFilledChamber where
           (attrs.ability 1)
           (InvestigatorTarget iid)
           SkillWillpower
-          3
+          (Fixed 3)
       pure l
     FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ n ->
       do

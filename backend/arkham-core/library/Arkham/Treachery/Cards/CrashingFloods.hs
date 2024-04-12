@@ -36,7 +36,7 @@ instance RunMessage CrashingFloods where
       | isSource attrs source ->
           t
             <$ pushAll
-              [RevelationSkillTest iid source SkillAgility 3]
+              [RevelationSkillTest iid source SkillAgility (Fixed 3)]
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
           n <- getStep =<< selectOne (AgendaWithSide AS.A)

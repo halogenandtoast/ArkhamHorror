@@ -39,7 +39,7 @@ instance HasModifiersFor BeneathTheLodge where
 instance RunMessage BeneathTheLodge where
   runMessage msg t@(BeneathTheLodge attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs SkillIntellect 3
+      push $ revelationSkillTest iid attrs SkillIntellect (Fixed 3)
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n | isSource attrs source -> do
       push $ HandlePointOfFailure iid (toTarget attrs) n

@@ -49,7 +49,7 @@ instance RunMessage UnfinishedBusiness_B where
       push
         $ chooseOne
           player
-          [ SkillLabel sType [beginSkillTest iid (attrs.ability 2) attrs sType 4]
+          [ SkillLabel sType [beginSkillTest iid (attrs.ability 2) attrs sType (Fixed 4)]
           | sType <- [SkillIntellect, SkillCombat]
           ]
       pure s

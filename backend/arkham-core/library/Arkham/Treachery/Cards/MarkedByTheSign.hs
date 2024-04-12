@@ -26,7 +26,7 @@ instance RunMessage MarkedByTheSign where
         selectAny
           $ enemyIs Cards.theManInThePallidMask
       let difficulty = if theManInThePallidMaskIsInPlay then 4 else 2
-      t <$ push (RevelationSkillTest iid source SkillWillpower difficulty)
+      t <$ push (RevelationSkillTest iid source SkillWillpower (Fixed difficulty))
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ -> do
       theManInThePallidMaskIsInPlay <-
         selectAny

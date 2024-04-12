@@ -6,9 +6,7 @@ module Arkham.Treachery.Cards.WallsClosingIn (
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
-import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
@@ -24,8 +22,14 @@ wallsClosingIn = treachery WallsClosingIn Cards.wallsClosingIn
 instance RunMessage WallsClosingIn where
   runMessage msg t@(WallsClosingIn attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      shroud <- maybe (pure 0) (field LocationShroud) =<< field InvestigatorLocation iid
-      t <$ push (RevelationSkillTest iid source SkillWillpower shroud)
+      t
+        <$ push
+          ( RevelationSkillTest
+              iid
+              source
+              SkillWillpower
+              (InvestigatorLocationFieldDifficulty iid LocationShroud)
+          )
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n | isSource attrs source -> do
       player <- getPlayer iid
       push

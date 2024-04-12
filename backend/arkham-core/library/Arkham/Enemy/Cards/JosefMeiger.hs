@@ -7,7 +7,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner hiding (beginSkillTest)
 import Arkham.Matcher
-import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
 import Arkham.Trait (Trait (SilverTwilight))
@@ -33,7 +32,7 @@ instance HasAbilities JosefMeiger where
 instance RunMessage JosefMeiger where
   runMessage msg e@(JosefMeiger attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> runQueueT do
-      beginSkillTest iid (attrs.ability 1) attrs #intellect 4
+      push $ parley iid (attrs.ability 1) attrs #intellect (Fixed 4)
       pure e
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ InitiateEnemyAttack $ enemyAttack (toId attrs) attrs iid

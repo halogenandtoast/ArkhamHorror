@@ -42,9 +42,9 @@ instance RunMessage Waylay where
                   (toSource attrs)
                   (EnemyTarget enemy)
                   SkillAgility
-                  evadeValue
+                  (EnemyMaybeFieldDifficulty enemy EnemyEvade)
               ]
-            | (enemy, evadeValue) <- enemiesWithEvade
+            | (enemy, _) <- enemiesWithEvade
             ]
         ]
       pure e

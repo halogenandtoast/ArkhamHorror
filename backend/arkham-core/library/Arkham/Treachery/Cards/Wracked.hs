@@ -56,7 +56,7 @@ instance RunMessage Wracked where
       push $ AttachTreachery (toId attrs) (toTarget iid)
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ RevelationSkillTest iid (toSource attrs) SkillWillpower 3
+      push $ RevelationSkillTest iid (toSource attrs) SkillWillpower (Fixed 3)
       pure t
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       push $ toDiscardBy iid (toAbilitySource attrs 1) attrs

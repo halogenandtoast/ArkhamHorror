@@ -15,7 +15,6 @@ export const sourceDecoder = JsonDecoder.object<Source>({
 
 export type SkillTest = {
   investigator: string;
-  difficulty: number;
   setAsideChaosTokens: ChaosToken[];
   // result: SkillTestResult;
   committedCards: Card[]
@@ -40,7 +39,6 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
   {
     investigator: JsonDecoder.string,
     action: JsonDecoder.nullable(JsonDecoder.string),
-    difficulty: JsonDecoder.number,
     modifiedDifficulty: JsonDecoder.number,
     setAsideChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     // result: skillTestResultDecoder,

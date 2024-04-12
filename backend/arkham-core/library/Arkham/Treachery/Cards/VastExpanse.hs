@@ -21,7 +21,12 @@ instance RunMessage VastExpanse where
       push
         $ if extradimensionalCount == 0
           then gainSurge attrs
-          else revelationSkillTest iid source #willpower (min 5 extradimensionalCount)
+          else
+            revelationSkillTest
+              iid
+              source
+              #willpower
+              (MaxDifficulty 5 (LocationCountDifficulty $ LocationWithTrait Extradimensional))
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       push $ assignHorror iid attrs n

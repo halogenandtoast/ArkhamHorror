@@ -65,7 +65,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
-import Arkham.SkillTest.Base
+import {-# SOURCE #-} Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
 import Arkham.SkillTestResult qualified as SkillTest
 import Arkham.SkillType
@@ -852,7 +852,7 @@ data Message
   | RevealChaosToken Source InvestigatorId ChaosToken
   | Revelation InvestigatorId Source
   | RevelationChoice InvestigatorId Source Int
-  | RevelationSkillTest InvestigatorId Source SkillType Int
+  | RevelationSkillTest InvestigatorId Source SkillType SkillTestDifficulty
   | Run [Message]
   | RunBag Source (Maybe InvestigatorId) RequestedChaosTokenStrategy
   | RunDrawFromBag Source (Maybe InvestigatorId) RequestedChaosTokenStrategy

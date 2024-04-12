@@ -7,13 +7,11 @@ where
 import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Game.Helpers (getGameValue)
 import Arkham.Helpers.SkillTest (investigate)
 import Arkham.Id
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Scenarios.WhereTheGodsDwell.Helpers
 
 newtype ForsakenTowerOfIllusionAndMyth = ForsakenTowerOfIllusionAndMyth LocationAttrs
@@ -46,8 +44,13 @@ instance RunMessage ForsakenTowerOfIllusionAndMyth where
         ]
       pure l
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget nyarlathotep) -> do
-      health <- fieldMapM EnemyHealthActual (maybe (pure 0) getGameValue) nyarlathotep
-      push $ investigate iid (attrs.ability 1) (toTarget attrs) #intellect health
+      push
+        $ investigate
+          iid
+          (attrs.ability 1)
+          (toTarget attrs)
+          #intellect
+          (EnemyMaybeGameValueFieldDifficulty nyarlathotep EnemyHealthActual)
       pure $ ForsakenTowerOfIllusionAndMyth $ setMeta (Just nyarlathotep) attrs
     Successful (Action.Investigate, other) iid (isAbilitySource attrs 1 -> True) target n -> do
       discardWhisperingChaos attrs

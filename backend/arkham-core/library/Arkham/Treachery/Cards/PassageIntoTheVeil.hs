@@ -25,7 +25,7 @@ instance RunMessage PassageIntoTheVeil where
           iid
           source
           #willpower
-          (if huntingHorrorAtYourLocation then 5 else 3)
+          (Fixed $ if huntingHorrorAtYourLocation then 5 else 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       assetIds <- select $ assetControlledBy iid <> #ally

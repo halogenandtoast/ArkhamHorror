@@ -29,7 +29,9 @@ instance RunMessage LightSideOfTheMoon where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOne
         iid
-        [SkillLabel s [Msg.beginSkillTest iid (attrs.ability 1) iid s 1] | s <- [#intellect, #agility]]
+        [ SkillLabel s [Msg.beginSkillTest iid (attrs.ability 1) iid s (Fixed 1)]
+        | s <- [#intellect, #agility]
+        ]
       pure l
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       let meta = toResult @Meta attrs.meta

@@ -65,7 +65,7 @@ instance RunMessage TheTrueCulpritV10 where
             ]
           <> [ chooseOne
                 player
-                [ SkillLabel skill [beginSkillTest iid (AbilitySource p 1) iid skill 4]
+                [ SkillLabel skill [beginSkillTest iid (AbilitySource p 1) iid skill (Fixed 4)]
                 | skill <- [#willpower, #agility]
                 ]
              ]

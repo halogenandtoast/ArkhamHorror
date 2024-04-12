@@ -32,7 +32,8 @@ instance RunMessage TheRitualBegins where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       investigators <- getInvestigators
       pushAll
-        $ [beginSkillTest investigator attrs investigator #willpower 6 | investigator <- investigators]
+        $ [ beginSkillTest investigator attrs investigator #willpower (Fixed 6) | investigator <- investigators
+          ]
         <> [advanceAgendaDeck attrs]
       pure a
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do

@@ -28,7 +28,7 @@ instance HasAbilities JordanPerry where
 instance RunMessage JordanPerry where
   runMessage msg a@(JordanPerry attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ beginSkillTest iid (attrs.ability 1) attrs #intellect 2
+      push $ parley iid (attrs.ability 1) attrs #intellect (Fixed 2)
       pure a
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       modifiers <- getModifiers iid

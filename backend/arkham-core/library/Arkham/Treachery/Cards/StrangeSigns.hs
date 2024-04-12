@@ -22,7 +22,7 @@ strangeSigns = treachery StrangeSigns Cards.strangeSigns
 instance RunMessage StrangeSigns where
   runMessage msg t@(StrangeSigns attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      t <$ push (RevelationSkillTest iid source SkillIntellect 3)
+      t <$ push (RevelationSkillTest iid source SkillIntellect (Fixed 3))
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do
           playerCount <- getPlayerCount

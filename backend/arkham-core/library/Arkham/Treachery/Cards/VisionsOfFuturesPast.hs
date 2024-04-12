@@ -24,7 +24,7 @@ instance RunMessage VisionsOfFuturesPast where
     case msg of
       Revelation iid source
         | isSource attrs source ->
-            t <$ push (RevelationSkillTest iid source SkillWillpower 5)
+            t <$ push (RevelationSkillTest iid source SkillWillpower (Fixed 5))
       FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget {} _ n
         | tid == treacheryId -> do
             push (DiscardTopOfDeck iid n (toSource attrs) Nothing)

@@ -52,7 +52,7 @@ instance RunMessage MomentOfDoom where
       push
         $ chooseOne
           player
-          [ SkillLabel skill [beginSkillTest iid (AbilitySource p 1) attrs skill 4]
+          [ SkillLabel skill [beginSkillTest iid (AbilitySource p 1) attrs skill (Fixed 4)]
           | skill <- [#willpower, #intellect]
           ]
       pure a

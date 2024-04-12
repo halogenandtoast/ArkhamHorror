@@ -51,10 +51,10 @@ instance RunMessage Run where
               player
               [ Label
                   "Attempt to dodge the creature"
-                  [beginSkillTest iid attrs attrs #agility 3]
+                  [beginSkillTest iid attrs attrs #agility (Fixed 3)]
               , Label
                   "Attempt to endure the creature's extreme heat"
-                  [beginSkillTest iid attrs attrs #combat 3]
+                  [beginSkillTest iid attrs attrs #combat (Fixed 3)]
               ]
             : [advanceActDeck attrs]
       pure a

@@ -46,7 +46,7 @@ instance RunMessage FoulSwamp where
         source = toAbilitySource attrs 1
       pushAll
         [ skillTestModifier source iid $ SkillModifier #willpower n
-        , beginSkillTest iid (attrs.ability 1) attrs #willpower 7
+        , beginSkillTest iid (attrs.ability 1) attrs #willpower (Fixed 7)
         ]
       pure l
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do

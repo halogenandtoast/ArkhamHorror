@@ -5,15 +5,25 @@ module Arkham.SkillTest.Base where
 import Arkham.Prelude
 
 import Arkham.Action (Action)
+import Arkham.Asset.Types
+import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
+import Arkham.Enemy.Types
+import Arkham.Field
+import Arkham.GameValue
 import Arkham.Id
+import Arkham.Investigator.Types
 import Arkham.Json
+import Arkham.Location.Types
+import Arkham.Matcher.Types
+import Arkham.ScenarioLogKey
 import Arkham.SkillTest.Type
 import Arkham.SkillTestResult
 import Arkham.SkillType (SkillIcon (..), SkillType)
 import Arkham.Source
 import Arkham.Target
+import Arkham.Token
 import Data.Aeson.TH
 import GHC.Records
 
@@ -22,14 +32,52 @@ data SkillTestBaseValue
   | AndSkillBaseValue [SkillType]
   | HalfResourcesOf InvestigatorId
   | StaticBaseValue Int
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq)
+
+data SkillTestDifficulty
+  = Fixed Int
+  | ActsInPlayDifficulty
+  | MaxDifficulty Int SkillTestDifficulty
+  | CurrentAgendaStepDifficulty SkillTestDifficulty
+  | DividedByDifficulty SkillTestDifficulty Int
+  | RecordCountDifficulty CampaignLogKey
+  | ScenarioCountDifficulty ScenarioCountKey
+  | SumDifficulty [SkillTestDifficulty]
+  | SubtractDifficulty SkillTestDifficulty SkillTestDifficulty
+  | AssetFieldDifficulty AssetId (Field Asset Int)
+  | InvestigatorFieldDifficulty InvestigatorId (Field Investigator Int)
+  | InvestigatorFieldLengthDifficulty InvestigatorId (SomeListField Investigator)
+  | EnemyMaybeFieldDifficulty EnemyId (Field Enemy (Maybe Int))
+  | EnemyMaybeGameValueFieldDifficulty EnemyId (Field Enemy (Maybe GameValue))
+  | EnemyFieldDifficulty EnemyId (Field Enemy Int)
+  | EnemyCountDifficulty EnemyMatcher
+  | LocationCountDifficulty LocationMatcher
+  | VictoryDisplayCountDifficulty CardMatcher
+  | LocationFieldDifficulty LocationId (Field Location Int)
+  | InvestigatorLocationFieldDifficulty InvestigatorId (Field Location Int)
+  | CardCostDifficulty CardId
+  | ScenarioInDiscardCountDifficulty CardMatcher
+  | DoomCountDifficulty
+  | DistanceFromDifficulty InvestigatorId LocationMatcher
+  | InvestigatorTokenCountDifficulty InvestigatorId Token
+  | MaxAlarmLevelDifficulty -- getMaxAlarmLevel
+  | VengeanceDifficulty -- getVengeanceInVictoryDisplay
+  deriving stock (Show, Ord, Eq, Data, Generic)
+  deriving (FromJSON) via MaybeFixed
+
+newtype MaybeFixed = MaybeFixed SkillTestDifficulty
+
+instance FromJSON MaybeFixed where
+  parseJSON = \case
+    v@(Number _) -> MaybeFixed . Fixed <$> parseJSON v
+    other -> MaybeFixed <$> genericParseJSON defaultOptions other
 
 data SkillTest = SkillTest
   { skillTestInvestigator :: InvestigatorId
   , skillTestResolveFailureInvestigator :: InvestigatorId
   , skillTestType :: SkillTestType
   , skillTestBaseValue :: SkillTestBaseValue
-  , skillTestDifficulty :: Int
+  , skillTestDifficulty :: SkillTestDifficulty
   , skillTestSetAsideChaosTokens :: [ChaosToken]
   , skillTestRevealedChaosTokens :: [ChaosToken] -- tokens may change from physical representation
   , skillTestResolvedChaosTokens :: [ChaosToken]
@@ -44,7 +92,7 @@ data SkillTest = SkillTest
   , skillTestIconValues :: Map SkillIcon Int
   , skillTestCard :: Maybe CardId
   }
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq)
 
 instance HasField "action" SkillTest (Maybe Action) where
   getField = skillTestAction
@@ -82,7 +130,7 @@ data SkillTestResultsData = SkillTestResultsData
   , skillTestResultsResultModifiers :: Maybe Int
   , skillTestResultsSuccess :: Bool
   }
-  deriving stock (Eq, Show, Ord)
+  deriving stock (Eq, Show)
 
 initSkillTest
   :: (Sourceable source, Targetable target)
@@ -90,7 +138,7 @@ initSkillTest
   -> source
   -> target
   -> SkillType
-  -> Int
+  -> SkillTestDifficulty
   -> SkillTest
 initSkillTest iid source target skillType =
   buildSkillTest
@@ -107,7 +155,7 @@ buildSkillTest
   -> target
   -> SkillTestType
   -> SkillTestBaseValue
-  -> Int
+  -> SkillTestDifficulty
   -> SkillTest
 buildSkillTest iid (toSource -> source) (toTarget -> target) stType bValue difficulty =
   SkillTest
@@ -153,6 +201,7 @@ resetSkillTest skillTest =
 
 $(deriveJSON defaultOptions ''SkillTestBaseValue)
 $(deriveJSON defaultOptions ''SkillTestResultsData)
+$(deriveToJSON defaultOptions ''SkillTestDifficulty)
 
 instance FromJSON SkillTest where
   parseJSON = withObject "skillTest" $ \o -> do

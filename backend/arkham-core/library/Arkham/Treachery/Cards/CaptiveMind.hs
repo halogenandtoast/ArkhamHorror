@@ -32,7 +32,7 @@ doDiscard iid source = do
 instance RunMessage CaptiveMind where
   runMessage msg t@(CaptiveMind attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs #willpower 0
+      push $ revelationSkillTest iid attrs #willpower (Fixed 0)
       pure t
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       doDiscard iid (toSource attrs)

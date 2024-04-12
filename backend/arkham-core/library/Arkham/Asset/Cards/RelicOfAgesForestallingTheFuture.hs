@@ -34,7 +34,7 @@ instance RunMessage RelicOfAgesForestallingTheFuture where
     case msg of
       UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
         let
-          chooseSkillTest skillType = beginSkillTest iid attrs iid skillType 4
+          chooseSkillTest skillType = beginSkillTest iid attrs iid skillType (Fixed 4)
         player <- getPlayer iid
         push
           $ chooseOne

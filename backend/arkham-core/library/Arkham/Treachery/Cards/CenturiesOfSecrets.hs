@@ -24,7 +24,7 @@ centuriesOfSecrets = treachery CenturiesOfSecrets Cards.centuriesOfSecrets
 instance RunMessage CenturiesOfSecrets where
   runMessage msg t@(CenturiesOfSecrets attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs SkillWillpower 5
+      push $ revelationSkillTest iid attrs SkillWillpower (Fixed 5)
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n
       | n > 0 ->

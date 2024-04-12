@@ -16,7 +16,7 @@ rottingRemains = treachery RottingRemains Cards.rottingRemains
 instance RunMessage RottingRemains where
   runMessage msg t@(RottingRemains attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs #willpower 3
+      push $ revelationSkillTest iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       push $ assignHorror iid attrs n

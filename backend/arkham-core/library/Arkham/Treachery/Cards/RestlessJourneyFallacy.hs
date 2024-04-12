@@ -66,7 +66,7 @@ restlessJourneyFallacyEffect = cardEffect RestlessJourneyFallacyEffect Cards.res
 instance RunMessage RestlessJourneyFallacyEffect where
   runMessage msg e@(RestlessJourneyFallacyEffect attrs) = runQueueT $ case msg of
     CreatedEffect eid _ source (InvestigatorTarget iid) | eid == attrs.id -> do
-      beginSkillTest iid source iid #intellect 3
+      beginSkillTest iid source iid #intellect (Fixed 3)
       pure e
     SkillTestEnds _iid (isSource attrs -> True) -> do
       push $ disable attrs

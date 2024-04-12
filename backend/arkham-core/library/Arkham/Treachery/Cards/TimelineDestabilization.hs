@@ -26,8 +26,12 @@ timelineDestabilization =
 instance RunMessage TimelineDestabilization where
   runMessage msg t@(TimelineDestabilization attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      n <- selectCount $ LocationWithTrait Ancient
-      push $ RevelationSkillTest iid (toSource attrs) SkillWillpower (1 + n)
+      push
+        $ RevelationSkillTest
+          iid
+          (toSource attrs)
+          SkillWillpower
+          (SumDifficulty [Fixed 1, LocationCountDifficulty (LocationWithTrait Ancient)])
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       card <- field TreacheryCard (toId attrs)

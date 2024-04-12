@@ -84,12 +84,12 @@ investigate i l =
 
 beginSkillTest :: Investigator -> SkillType -> Int -> Message
 beginSkillTest i sType n =
-  BeginSkillTest $ initSkillTest (toId i) (TestSource mempty) TestTarget sType n
+  BeginSkillTest $ initSkillTest (toId i) (TestSource mempty) TestTarget sType (Fixed n)
 
 beginActionSkillTest :: Investigator -> Action -> Maybe Target -> SkillType -> Int -> Message
 beginActionSkillTest i a mt sType n =
   BeginSkillTest
-    $ (initSkillTest (toId i) (TestSource mempty) target sType n)
+    $ (initSkillTest (toId i) (TestSource mempty) target sType (Fixed n))
       { skillTestAction = Just a
       }
  where

@@ -39,7 +39,7 @@ instance RunMessage SuiteBalcony where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemies <- select $ enemyAt (toId attrs) <> EnemyWithTrait Humanoid
       player <- getPlayer iid
-      let chooseSkill skill enemy = SkillLabel skill [beginSkillTest iid (toAbilitySource attrs 1) (toTarget enemy) skill 4]
+      let chooseSkill skill enemy = SkillLabel skill [beginSkillTest iid (toAbilitySource attrs 1) (toTarget enemy) skill (Fixed 4)]
       push
         $ chooseOrRunOne
           player

@@ -19,6 +19,7 @@ import Arkham.Helpers.Message as X hiding (
  )
 import Arkham.Helpers.SkillTest as X
 import Arkham.Id as X (AsId (..))
+import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
 import Arkham.Spawn as X
 import Arkham.Target as X
@@ -600,9 +601,13 @@ instance RunMessage EnemyAttrs where
               }
       pure a
     AttackEnemy iid eid source mTarget skillType | eid == enemyId -> do
-      enemyFight' <- fieldJust EnemyFight eid
       push
-        $ fight iid source (maybe (toTarget eid) (ProxyTarget (toTarget eid)) mTarget) skillType enemyFight'
+        $ fight
+          iid
+          source
+          (maybe (toTarget eid) (ProxyTarget (toTarget eid)) mTarget)
+          skillType
+          (EnemyMaybeFieldDifficulty eid EnemyFight)
       pure a
     PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isActionTarget a target -> do
       whenWindow <- checkWindows [mkWhen (Window.SuccessfulAttackEnemy iid enemyId n)]
@@ -686,7 +691,14 @@ instance RunMessage EnemyAttrs where
     TryEvadeEnemy iid eid source mTarget skillType | eid == enemyId -> do
       mEnemyEvade' <- field EnemyEvade eid
       case mEnemyEvade' of
-        Just n -> push $ evade iid source (maybe (toTarget eid) (ProxyTarget (toTarget eid)) mTarget) skillType n
+        Just _ ->
+          push
+            $ evade
+              iid
+              source
+              (maybe (toTarget eid) (ProxyTarget (toTarget eid)) mTarget)
+              skillType
+              (EnemyMaybeFieldDifficulty eid EnemyEvade)
         Nothing -> error "No evade value"
       pure a
     PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ n | isActionTarget a target -> do

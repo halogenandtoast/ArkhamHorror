@@ -50,7 +50,7 @@ instance RunMessage PulledByTheStars where
       push $ assignHorror iid (toAbilitySource attrs 1) 2
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ beginSkillTest iid (toAbilitySource attrs 2) iid #willpower 3
+      push $ beginSkillTest iid (toAbilitySource attrs 2) iid #willpower (Fixed 3)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       push $ toDiscardBy iid attrs attrs

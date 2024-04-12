@@ -35,7 +35,9 @@ instance RunMessage MtNgranek where
       push
         $ chooseOne
           player
-          [SkillLabel sType [beginSkillTest iid (attrs.ability 1) iid sType 3] | sType <- [#combat, #agility]]
+          [ SkillLabel sType [beginSkillTest iid (attrs.ability 1) iid sType (Fixed 3)]
+          | sType <- [#combat, #agility]
+          ]
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       pushAll [SetActions iid (attrs.ability 1) 0, ChooseEndTurn iid]

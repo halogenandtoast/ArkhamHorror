@@ -64,7 +64,7 @@ instance RunMessage JazzMulligan where
           source
           (toTarget attrs)
           SkillIntellect
-          3
+          (Fixed 3)
       pure a
     PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> a <$ push (TakeControlOfAsset iid assetId)

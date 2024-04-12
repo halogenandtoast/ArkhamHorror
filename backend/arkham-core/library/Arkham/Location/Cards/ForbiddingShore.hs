@@ -37,7 +37,7 @@ instance RunMessage ForbiddingShore where
       push
         $ chooseOne
           player
-          [ SkillLabel skillType [beginSkillTest iid attrs attrs skillType 3]
+          [ SkillLabel skillType [beginSkillTest iid attrs attrs skillType (Fixed 3)]
           | skillType <- [#willpower, #intellect]
           ]
       pure l

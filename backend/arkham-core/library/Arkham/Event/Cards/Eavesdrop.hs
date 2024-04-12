@@ -10,7 +10,6 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.SkillType
 
 newtype Eavesdrop = Eavesdrop EventAttrs
@@ -38,17 +37,15 @@ instance RunMessage Eavesdrop where
             ]
         ]
       pure e
-    HandleTargetChoice iid source (EnemyTarget eid) | isSource attrs source ->
-      do
-        n <- fromJustNote "Enemy must have evade" <$> field EnemyEvade eid
-        push
-          $ beginSkillTest
-            iid
-            (toSource attrs)
-            (toTarget attrs)
-            SkillIntellect
-            n
-        pure e
+    HandleTargetChoice iid source (EnemyTarget eid) | isSource attrs source -> do
+      push
+        $ beginSkillTest
+          iid
+          (toSource attrs)
+          (toTarget attrs)
+          SkillIntellect
+          (EnemyMaybeFieldDifficulty eid EnemyEvade)
+      pure e
     PassedSkillTest iid _ _ target _ _ | isTarget attrs target -> do
       push $ InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) 2 Nothing
       pure e

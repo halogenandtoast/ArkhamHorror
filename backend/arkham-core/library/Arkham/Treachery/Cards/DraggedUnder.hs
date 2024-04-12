@@ -28,7 +28,7 @@ instance HasAbilities DraggedUnder where
 instance RunMessage DraggedUnder where
   runMessage msg t@(DraggedUnder attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ RevelationSkillTest iid (toSource attrs) #agility 3
+      push $ RevelationSkillTest iid (toSource attrs) #agility (Fixed 3)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
@@ -38,7 +38,7 @@ instance RunMessage DraggedUnder where
         ]
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ beginSkillTest iid (toAbilitySource attrs 2) iid #agility 3
+      push $ beginSkillTest iid (toAbilitySource attrs 2) iid #agility (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       pushWhen

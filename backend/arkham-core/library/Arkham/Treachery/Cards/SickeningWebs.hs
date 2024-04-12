@@ -42,7 +42,9 @@ instance RunMessage SickeningWebs where
       push
         $ chooseOne
           player
-          [SkillLabel sType [beginSkillTest iid (attrs.ability 1) iid sType 3] | sType <- [#combat, #agility]]
+          [ SkillLabel sType [beginSkillTest iid (attrs.ability 1) iid sType (Fixed 3)]
+          | sType <- [#combat, #agility]
+          ]
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ toDiscardBy iid (attrs.ability 1) attrs

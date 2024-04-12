@@ -23,12 +23,12 @@ instance HasAbilities CrumblingPrecipice where
 instance RunMessage CrumblingPrecipice where
   runMessage msg l@(CrumblingPrecipice attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid (attrs.ability 1) iid #willpower 4
+      push $ beginSkillTest iid (attrs.ability 1) iid #willpower (Fixed 4)
       pure l
     FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) Initiator {} (SkillSkillTest sType) _ -> do
       case sType of
-        SkillWillpower -> push $ beginSkillTest iid (attrs.ability 1) iid #agility 3
-        SkillAgility -> push $ beginSkillTest iid (attrs.ability 1) iid #combat 2
+        SkillWillpower -> push $ beginSkillTest iid (attrs.ability 1) iid #agility (Fixed 3)
+        SkillAgility -> push $ beginSkillTest iid (attrs.ability 1) iid #combat (Fixed 2)
         SkillCombat -> push $ InvestigatorKilled (toSource attrs) iid
         _ -> error "Invalid skill type"
       pure l

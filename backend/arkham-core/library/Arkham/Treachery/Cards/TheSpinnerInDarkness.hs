@@ -40,7 +40,7 @@ instance RunMessage TheSpinnerInDarkness where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOne
         iid
-        [SkillLabel s [Msg.beginSkillTest iid (attrs.ability 1) iid s 5] | s <- allSkills]
+        [SkillLabel s [Msg.beginSkillTest iid (attrs.ability 1) iid s (Fixed 5)] | s <- allSkills]
 
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

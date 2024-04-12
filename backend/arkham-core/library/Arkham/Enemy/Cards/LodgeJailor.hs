@@ -47,7 +47,7 @@ instance RunMessage LodgeJailor where
         : [PlaceKey (toTarget attrs) k | k <- maybeToList mKey]
       pure e
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ parley iid (toAbilitySource attrs 2) attrs SkillIntellect 3
+      push $ parley iid (toAbilitySource attrs 2) attrs SkillIntellect (Fixed 3)
       pure e
     PassedSkillTest iid _ (isAbilitySource attrs 2 -> True) SkillTestInitiatorTarget {} _ _ -> do
       let

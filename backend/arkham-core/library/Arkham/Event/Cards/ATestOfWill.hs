@@ -27,7 +27,7 @@ getDetails [] = error "missing targets"
 instance RunMessage ATestOfWill where
   runMessage msg e@(ATestOfWill attrs) = case msg of
     InvestigatorPlayEvent iid eid _ (getDetails -> details) _ | eid == toId attrs -> do
-      push $ beginSkillTest iid attrs details #willpower 3
+      push $ beginSkillTest iid attrs details #willpower (Fixed 3)
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       mTarget <- getSkillTestTarget

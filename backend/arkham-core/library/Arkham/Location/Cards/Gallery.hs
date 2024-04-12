@@ -41,7 +41,7 @@ instance RunMessage Gallery where
           (attrs.ability 1)
           iid
           SkillWillpower
-          2
+          (Fixed 2)
       pure l
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isAbilitySource attrs 1 source -> do

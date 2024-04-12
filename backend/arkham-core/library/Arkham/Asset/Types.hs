@@ -4,7 +4,7 @@ module Arkham.Asset.Types where
 
 import Arkham.Prelude
 
-import Arkham.Ability
+import Arkham.Ability.Types
 import Arkham.Asset.Cards
 import Arkham.Asset.Uses
 import Arkham.Card
@@ -14,6 +14,7 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
+import Arkham.Field
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
@@ -22,7 +23,6 @@ import Arkham.Matcher.Types (AssetMatcher (AssetWithId), Be (..))
 import Arkham.Message hiding (AssetDamage, Damage)
 import Arkham.Name
 import Arkham.Placement
-import Arkham.Projection
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
@@ -178,9 +178,18 @@ data instance Field Asset :: Type -> Type where
   AssetAbilities :: Field Asset [Ability]
 
 deriving stock instance Show (Field Asset typ)
+deriving stock instance Ord (Field Asset typ)
 
 instance ToJSON (Field Asset typ) where
   toJSON = toJSON . show
+
+instance Typeable typ => FromJSON (Field Asset typ) where
+  parseJSON x = do
+    z <- parseJSON @(SomeField Asset) x
+    case z of
+      SomeField (f :: Field Asset k) -> case eqT @typ @k of
+        Just Refl -> pure f
+        Nothing -> error "type mismatch"
 
 instance FromJSON (SomeField Asset) where
   parseJSON = withText "Field Asset" $ \case

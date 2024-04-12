@@ -33,7 +33,7 @@ instance RunMessage Room245 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       mTopOfDiscard <- fieldMap InvestigatorDiscard headMay iid
       investigators <- getInvestigators
-      push $ beginSkillTest iid (toAbilitySource attrs 1) iid #intellect 3
+      push $ beginSkillTest iid (toAbilitySource attrs 1) iid #intellect (Fixed 3)
       case mTopOfDiscard of
         Just topOfDiscard -> do
           push

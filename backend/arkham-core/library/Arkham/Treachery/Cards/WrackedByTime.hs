@@ -36,8 +36,8 @@ instance RunMessage WrackedByTime where
           $ InvestigatorAt (LocationWithTrait Shattered)
           <> NotInvestigator (InvestigatorWithId iid)
       pushAll
-        $ RevelationSkillTest iid (toSource attrs) SkillWillpower 3
-        : [ RevelationSkillTest iid' (toSource attrs) SkillWillpower 3
+        $ RevelationSkillTest iid (toSource attrs) SkillWillpower (Fixed 3)
+        : [ RevelationSkillTest iid' (toSource attrs) SkillWillpower (Fixed 3)
           | iid' <- others
           ]
       pure t

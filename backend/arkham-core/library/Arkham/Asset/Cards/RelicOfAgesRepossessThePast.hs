@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Helpers.Doom
 import Arkham.SkillType
 
 newtype Metadata = Metadata {successTriggered :: Bool}
@@ -34,7 +33,7 @@ instance RunMessage RelicOfAgesRepossessThePast where
     case msg of
       UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
         let
-          chooseSkillTest skillType = beginSkillTest iid (attrs.ability 1) iid skillType 4
+          chooseSkillTest skillType = beginSkillTest iid (attrs.ability 1) iid skillType (Fixed 4)
         player <- getPlayer iid
         push
           $ chooseOne

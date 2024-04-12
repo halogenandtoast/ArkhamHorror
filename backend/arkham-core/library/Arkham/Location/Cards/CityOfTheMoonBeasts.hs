@@ -31,7 +31,7 @@ instance HasAbilities CityOfTheMoonBeasts where
 instance RunMessage CityOfTheMoonBeasts where
   runMessage msg l@(CityOfTheMoonBeasts attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      eachInvestigator $ \iid -> beginSkillTest iid (attrs.ability 1) iid #agility 2
+      eachInvestigator $ \iid -> beginSkillTest iid (attrs.ability 1) iid #agility (Fixed 2)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       raiseAlarmLevel (attrs.ability 1) iid

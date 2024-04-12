@@ -33,7 +33,7 @@ instance HasAbilities MoonForest where
 instance RunMessage MoonForest where
   runMessage msg l@(MoonForest attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      beginSkillTest iid (attrs.ability 1) iid #agility 5
+      beginSkillTest iid (attrs.ability 1) iid #agility (Fixed 5)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       let meta = toResult @Meta attrs.meta

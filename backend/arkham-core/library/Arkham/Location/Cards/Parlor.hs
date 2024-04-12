@@ -39,7 +39,7 @@ instance RunMessage Parlor where
   runMessage msg l@(Parlor attrs) = case msg of
     UseThisAbility iid (isProxySource attrs -> True) 1 -> do
       aid <- selectJust $ assetIs Cards.litaChantler
-      push $ parley iid attrs aid #intellect 4
+      push $ parley iid attrs aid #intellect (Fixed 4)
       pure l
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       aid <- selectJust $ assetIs Cards.litaChantler

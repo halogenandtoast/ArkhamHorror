@@ -34,7 +34,7 @@ instance RunMessage KeeperOfSecrets where
       push $ placeDoom (toAbilitySource attrs 1) attrs 1
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ beginSkillTest iid (attrs.ability 2) attrs #intellect 3
+      push $ parley iid (attrs.ability 2) attrs #intellect (Fixed 3)
       pure e
     PassedThisSkillTest _ (isAbilitySource attrs 2 -> True) -> do
       push $ RemoveAllDoom (toAbilitySource attrs 2) (toTarget attrs)

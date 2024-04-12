@@ -35,7 +35,7 @@ instance RunMessage MysteriousGateway where
             [ targetLabel
               iid'
               [ MoveTo $ move (toSource attrs) iid' holeInTheWallId
-              , beginSkillTest iid' (ActSource aid) iid' #willpower 4
+              , beginSkillTest iid' (ActSource aid) iid' #willpower (Fixed 4)
               ]
             | iid' <- investigatorIds
             ]

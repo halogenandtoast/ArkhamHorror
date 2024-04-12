@@ -32,7 +32,7 @@ circleTest
   -> source
   -> target
   -> [SkillType]
-  -> Int
+  -> SkillTestDifficulty
   -> m ()
 circleTest iid source target skillTypes n =
   push

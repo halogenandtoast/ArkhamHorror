@@ -30,7 +30,7 @@ instance RunMessage EncephalonSignal where
         $ [ PlaceDoom (toSource attrs) (toTarget otherworldlyMeddler) 1
           | otherworldlyMeddler <- toList mOtherworldlyMeddler
           ]
-        <> [revelationSkillTest iid attrs #willpower 4]
+        <> [revelationSkillTest iid attrs #willpower (Fixed 4)]
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       player <- getPlayer iid

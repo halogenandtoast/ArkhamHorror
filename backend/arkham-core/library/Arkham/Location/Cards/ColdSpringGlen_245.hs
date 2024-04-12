@@ -43,7 +43,7 @@ instance HasAbilities ColdSpringGlen_245 where
 instance RunMessage ColdSpringGlen_245 where
   runMessage msg l@(ColdSpringGlen_245 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid (attrs.ability 1) attrs SkillAgility 3
+      push $ beginSkillTest iid (attrs.ability 1) attrs SkillAgility (Fixed 3)
       pure l
     PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
       replaceMessageMatching

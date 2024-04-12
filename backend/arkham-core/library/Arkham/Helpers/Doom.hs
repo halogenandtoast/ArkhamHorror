@@ -2,11 +2,17 @@ module Arkham.Helpers.Doom where
 
 import Arkham.Prelude
 
+import Arkham.Agenda.Types
+import Arkham.Asset.Types
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
+import Arkham.Enemy.Types
 import {-# SOURCE #-} Arkham.Game ()
+import Arkham.Investigator.Types
+import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Target
+import Arkham.Treachery.Types
 
 targetsWithDoom :: HasGame m => m [Target]
 targetsWithDoom = do
@@ -26,3 +32,16 @@ targetsWithDoom = do
     <> assets
     <> agendas
     <> treacheries
+
+getDoomCount :: HasGame m => m Int
+getDoomCount =
+  getSum
+    . fold
+    <$> sequence
+      [ selectAgg Sum AssetDoom AnyAsset
+      , selectAgg Sum EnemyDoom AnyEnemy
+      , selectAgg Sum LocationDoom Anywhere
+      , selectAgg Sum TreacheryDoom AnyTreachery
+      , selectAgg Sum AgendaDoom AnyAgenda
+      , selectAgg Sum InvestigatorDoom UneliminatedInvestigator
+      ]

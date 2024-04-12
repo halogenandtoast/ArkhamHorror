@@ -15,7 +15,6 @@ import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype PastPresentAndFuture = PastPresentAndFuture AgendaAttrs
@@ -46,18 +45,9 @@ instance RunMessage PastPresentAndFuture where
       lead <- getLead
       pushAll
         $ [ ShuffleEncounterDiscardBackIn
-          , DiscardUntilFirst
-              lead
-              (toSource attrs)
-              Deck.EncounterDeck
-              (BasicCardMatch $ CardWithType LocationType)
+          , DiscardUntilFirst lead (toSource attrs) Deck.EncounterDeck (basic $ CardWithType LocationType)
           ]
-        <> [ beginSkillTest
-            iid
-            attrs
-            iid
-            SkillWillpower
-            sacrificedToYogSothoth
+        <> [ beginSkillTest iid attrs iid #willpower (RecordCountDifficulty SacrificedToYogSothoth)
            | sacrificedToYogSothoth > 0
            , iid <- investigatorIds
            ]

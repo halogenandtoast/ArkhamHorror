@@ -26,14 +26,14 @@ instance HasAbilities PeaksOfThok where
 instance RunMessage PeaksOfThok where
   runMessage msg l@(PeaksOfThok attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      beginSkillTest iid (attrs.ability 1) iid #agility 5
+      beginSkillTest iid (attrs.ability 1) iid #agility (Fixed 5)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       when (locationCanBeFlipped attrs)
         $ flipOver iid attrs
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      beginSkillTest iid (attrs.ability 2) iid #agility 2
+      beginSkillTest iid (attrs.ability 2) iid #agility (Fixed 2)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       push $ assignDamage iid (toAbilitySource attrs 2) 1

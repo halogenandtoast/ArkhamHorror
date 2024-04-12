@@ -18,7 +18,7 @@ onWingsOfDarkness = treachery OnWingsOfDarkness Cards.onWingsOfDarkness
 instance RunMessage OnWingsOfDarkness where
   runMessage msg t@(OnWingsOfDarkness attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs #agility 4
+      push $ revelationSkillTest iid attrs #agility (Fixed 4)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       centralLocations <- getCanMoveToMatchingLocations iid attrs $ LocationWithTrait Central

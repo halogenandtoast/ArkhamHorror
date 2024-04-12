@@ -24,7 +24,7 @@ instance RunMessage FalseLead where
       push
         $ if playerClueCount == 0
           then chooseOne player [Label "Surge" [gainSurge attrs]]
-          else revelationSkillTest iid attrs #intellect 4
+          else revelationSkillTest iid attrs #intellect (Fixed 4)
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n -> do
       push $ InvestigatorPlaceCluesOnLocation iid (toSource attrs) n

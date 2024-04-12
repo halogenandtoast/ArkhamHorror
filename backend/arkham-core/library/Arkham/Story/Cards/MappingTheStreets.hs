@@ -32,7 +32,7 @@ instance RunMessage MappingTheStreets where
             (toSource attrs)
             (InvestigatorTarget iid)
             SkillIntellect
-            3
+            (Fixed 3)
         , Msg.EnemyDamage hastur $ storyDamage iid n
         ]
       pure s

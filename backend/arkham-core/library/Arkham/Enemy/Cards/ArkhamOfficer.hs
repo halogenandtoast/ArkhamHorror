@@ -38,7 +38,7 @@ instance RunMessage ArkhamOfficer where
       pushAll [MovedClues (toSource location) (toTarget attrs) 1, FlipClues (toTarget attrs) 1]
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ parley iid (toAbilitySource attrs 1) iid #willpower 3
+      push $ parley iid (toAbilitySource attrs 1) iid #willpower (Fixed 3)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       player <- getPlayer iid

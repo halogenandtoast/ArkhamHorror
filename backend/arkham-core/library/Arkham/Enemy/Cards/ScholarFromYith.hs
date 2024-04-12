@@ -54,7 +54,7 @@ instance RunMessage ScholarFromYith where
         ]
       pure e
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ parley iid (toAbilitySource attrs 2) iid #intellect 3
+      push $ parley iid (toAbilitySource attrs 2) iid #intellect (Fixed 3)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       drawing <- drawCards iid (toAbilitySource attrs 2) 1

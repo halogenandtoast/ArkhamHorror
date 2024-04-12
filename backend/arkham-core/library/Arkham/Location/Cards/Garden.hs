@@ -48,7 +48,7 @@ instance RunMessage Garden where
                   (attrs.ability 1)
                   (toTarget attrs)
                   SkillAgility
-                  2
+                  (Fixed 2)
               )
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isAbilitySource attrs 1 source -> l <$ push (Remember DistractedTheGuards)

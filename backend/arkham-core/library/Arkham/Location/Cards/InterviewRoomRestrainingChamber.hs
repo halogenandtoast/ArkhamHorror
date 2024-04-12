@@ -42,8 +42,12 @@ instance RunMessage InterviewRoomRestrainingChamber where
       push
         $ chooseOne
           player
-          [ SkillLabel SkillIntellect [parley iid (toSource attrs) (InvestigatorTarget iid) SkillIntellect 4]
-          , SkillLabel SkillCombat [parley iid (toSource attrs) (InvestigatorTarget iid) SkillIntellect 4]
+          [ SkillLabel
+              SkillIntellect
+              [parley iid (toSource attrs) (InvestigatorTarget iid) SkillIntellect (Fixed 4)]
+          , SkillLabel
+              SkillCombat
+              [parley iid (toSource attrs) (InvestigatorTarget iid) SkillIntellect (Fixed 4)]
           ]
       pure l
     PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do

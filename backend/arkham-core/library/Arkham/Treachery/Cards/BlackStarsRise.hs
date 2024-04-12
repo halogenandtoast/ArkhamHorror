@@ -22,7 +22,7 @@ instance RunMessage BlackStarsRise where
   runMessage msg t@(BlackStarsRise attrs) = case msg of
     Revelation iid source
       | isSource attrs source ->
-          t <$ push (RevelationSkillTest iid source SkillIntellect 4)
+          t <$ push (RevelationSkillTest iid source SkillIntellect (Fixed 4))
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
       | isSource attrs source -> do
           hasAgenda <- selectAny AnyAgenda

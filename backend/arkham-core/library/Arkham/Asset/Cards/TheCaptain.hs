@@ -6,7 +6,6 @@ import Arkham.Asset.Runner hiding (chooseOne)
 import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Prelude
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
 
 newtype TheCaptain = TheCaptain AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -22,10 +21,9 @@ instance HasAbilities TheCaptain where
 instance RunMessage TheCaptain where
   runMessage msg a@(TheCaptain attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      x <- getMaxAlarmLevel
       chooseOne
         iid
-        [ SkillLabel s [parley iid (attrs.ability 1) iid s x]
+        [ SkillLabel s [parley iid (attrs.ability 1) iid s MaxAlarmLevelDifficulty]
         | s <- [#willpower, #intellect]
         ]
       pure a

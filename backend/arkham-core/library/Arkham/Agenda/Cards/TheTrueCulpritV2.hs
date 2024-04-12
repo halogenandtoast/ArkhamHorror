@@ -43,7 +43,7 @@ instance RunMessage TheTrueCulpritV2 where
   runMessage msg a@(TheTrueCulpritV2 attrs) =
     case msg of
       UseThisAbility iid p@(ProxySource _ (isSource attrs -> True)) 1 -> do
-        push $ beginSkillTest iid (toAbilitySource p 1) iid #intellect 2
+        push $ beginSkillTest iid (toAbilitySource p 1) iid #intellect (Fixed 2)
         pure a
       UseThisAbility _ (isSource attrs -> True) 2 -> do
         push $ AdvanceAgendaBy (toId attrs) AgendaAdvancedWithOther

@@ -16,13 +16,13 @@ spec = describe "Jim Culver" $ do
         _ -> False
       pushAndRunAll
         [ SetChaosTokens [ElderSign]
-        , BeginSkillTest $
-            initSkillTest
+        , BeginSkillTest
+            $ initSkillTest
               (toId jimCulver)
               (TestSource mempty)
               TestTarget
               SkillIntellect
-              2
+              (Fixed 2)
         ]
       chooseOnlyOption "start skill test"
       chooseOptionMatching
@@ -39,13 +39,13 @@ spec = describe "Jim Culver" $ do
 
       pushAndRunAll
         [ SetChaosTokens [ElderSign]
-        , BeginSkillTest $
-            initSkillTest
+        , BeginSkillTest
+            $ initSkillTest
               (toId jimCulver)
               (TestSource mempty)
               TestTarget
               SkillIntellect
-              2
+              (Fixed 2)
         ]
       chooseOnlyOption "start skill test"
       chooseOptionMatching
@@ -63,13 +63,13 @@ spec = describe "Jim Culver" $ do
 
       pushAndRunAll
         [ SetChaosTokens [Skull]
-        , BeginSkillTest $
-            initSkillTest
+        , BeginSkillTest
+            $ initSkillTest
               (toId jimCulver)
               (TestSource mempty)
               TestTarget
               SkillIntellect
-              2
+              (Fixed 2)
         ]
       chooseOnlyOption "start skill test"
       chooseOnlyOption "apply results"

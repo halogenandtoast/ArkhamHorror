@@ -9,7 +9,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Helpers.Agenda
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Trait (Trait (Cultist))
@@ -26,9 +25,12 @@ theEndIsNigh = treachery TheEndIsNigh Cards.theEndIsNigh
 instance RunMessage TheEndIsNigh where
   runMessage msg t@(TheEndIsNigh attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      mAgenda <- selectOne AnyAgenda
-      x <- maybe (pure 4) getAgendaStep mAgenda
-      push $ revelationSkillTest iid attrs #willpower (1 + x)
+      push
+        $ revelationSkillTest
+          iid
+          attrs
+          #willpower
+          (SumDifficulty [Fixed 1, CurrentAgendaStepDifficulty (Fixed 4)])
       pure t
     FailedThisSkillTest _ (isSource attrs -> True) -> do
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth

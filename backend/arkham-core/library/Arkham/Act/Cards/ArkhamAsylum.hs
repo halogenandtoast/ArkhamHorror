@@ -34,7 +34,9 @@ instance RunMessage ArkhamAsylum where
         $ chooseOne lead
         $ [ Label
             ("Any investigator tests " <> tshow sk)
-            [ chooseOrRunOne lead [targetLabel iid [beginSkillTest iid attrs attrs sk 4] | iid <- investigators]
+            [ chooseOrRunOne
+                lead
+                [targetLabel iid [beginSkillTest iid attrs attrs sk (Fixed 4)] | iid <- investigators]
             ]
           | sk <- setToList skills
           ]

@@ -36,8 +36,13 @@ instance HasAbilities BaseOfTheSteps where
 instance RunMessage BaseOfTheSteps where
   runMessage msg l@(BaseOfTheSteps attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      handSize <- fieldMap InvestigatorHand length iid
-      push $ beginSkillTest iid (toAbilitySource attrs 1) iid #willpower handSize
+      push
+        $ beginSkillTest
+          iid
+          (toAbilitySource attrs 1)
+          iid
+          #willpower
+          (InvestigatorFieldLengthDifficulty iid (SomeListField InvestigatorHand))
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       player <- getPlayer iid

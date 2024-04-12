@@ -21,7 +21,10 @@ instance RunMessage UnexpectedAmbush where
       enemies <- select AnyEnemy
       if null enemies
         then push $ Msg.assignDamageAndHorror iid attrs 1 1
-        else chooseOne iid [SkillLabel s [Msg.revelationSkillTest iid attrs s 4] | s <- [#intellect, #agility]]
+        else
+          chooseOne
+            iid
+            [SkillLabel s [Msg.revelationSkillTest iid attrs s (Fixed 4)] | s <- [#intellect, #agility]]
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       nearestEnemies <- select $ NearestEnemyTo iid AnyEnemy

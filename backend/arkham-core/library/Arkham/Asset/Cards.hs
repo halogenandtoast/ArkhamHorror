@@ -566,6 +566,7 @@ allPlayerAssetCards =
       , shotgun4
       , showmanship
       , shrewdAnalysis
+      , shrewdDealings
       , shrivelling
       , shrivelling3
       , shrivelling5
@@ -4747,6 +4748,14 @@ disciplineBalanceOfBodyBroken =
     $ (asset "08014b" ("Discipline" <:> "Balance of Body") 0 Neutral)
       { cdCardTraits = setFromList [Broken]
       , cdOtherSide = Just "08014a"
+      }
+
+shrewdDealings :: CardDef
+shrewdDealings =
+  signature "08016"
+    $ (asset "08017" "Shrewd Dealings" 2 Neutral)
+      { cdSkills = [#intellect, #intellect, #wild]
+      , cdCardTraits = setFromList [Talent]
       }
 
 -- TODO: if we ever care about deck size need to encode that somehow

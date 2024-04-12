@@ -1576,8 +1576,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             , afterPlayCard
             ]
     pure a
-  CardEnteredPlay iid card | iid == investigatorId -> do
-    send $ format a <> " played " <> format card
+  CardEnteredPlay _ card -> do
     pure
       $ a
       & (handL %~ filter (/= card))

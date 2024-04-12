@@ -1105,7 +1105,12 @@ runGameMessage msg g = case msg of
     case find (== card) playableCards of
       Nothing -> pure g
       Just _ -> do
-        g' <- runGameMessage (PutCardIntoPlay iid card mtarget payment windows') g
+        mods <- getModifiers iid
+        cardMods <- getModifiers (CardIdTarget $ toCardId card)
+        let owner = fromMaybe iid $ listToMaybe [o | PlayableCardOf o c <- mods, c == card]
+        let controller = fromMaybe owner $ listToMaybe [c | PlayUnderControlOf c <- cardMods]
+        send $ format investigator' <> " played " <> format card
+        g' <- runGameMessage (PutCardIntoPlay controller card mtarget payment windows') g
         let
           recordLimit g'' = \case
             MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1

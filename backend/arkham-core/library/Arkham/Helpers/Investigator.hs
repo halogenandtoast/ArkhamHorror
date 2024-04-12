@@ -509,6 +509,7 @@ additionalActionCovers source actions (AdditionalAction _ _ aType) = case aType 
   EffectAction _ _ -> pure False
   AnyAdditionalAction -> pure True
   BountyAction -> pure False -- Has to be handled by Tony Morgan
+  BobJenkinsAction -> pure False -- Has to be handled by Bob Jenkins
 
 -- canFight <- selectAny $ CanFightEnemy source <> EnemyWithBounty
 -- canEngage <- selectAny $ CanEngageEnemy <> EnemyWithBounty

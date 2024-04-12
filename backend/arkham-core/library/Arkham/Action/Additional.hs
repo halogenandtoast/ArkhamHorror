@@ -21,6 +21,7 @@ data AdditionalActionType
   | EffectAction Text EffectId
   | AnyAdditionalAction
   | BountyAction -- Tony Morgan
+  | BobJenkinsAction -- Bob Jenkins... probably
   deriving stock (Show, Eq, Ord, Data)
 
 data AdditionalAction = AdditionalAction {label :: Text, source :: Source, kind :: AdditionalActionType}

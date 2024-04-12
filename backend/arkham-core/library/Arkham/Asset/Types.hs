@@ -455,6 +455,9 @@ instance Sourceable AssetAttrs where
   isSource attrs (AbilitySource source _) = isSource attrs source
   isSource _ _ = False
 
+controls :: InvestigatorId -> AssetAttrs -> Bool
+controls = flip controlledBy
+
 controlledBy :: AssetAttrs -> InvestigatorId -> Bool
 controlledBy AssetAttrs {..} iid = case assetPlacement of
   InPlayArea iid' -> iid == iid'

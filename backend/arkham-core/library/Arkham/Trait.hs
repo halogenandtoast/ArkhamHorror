@@ -73,6 +73,7 @@ data Trait
   | Eldritch
   | Elite
   | Endtimes
+  | Entrepreneur
   | Evidence
   | Exhibit
   | Expert

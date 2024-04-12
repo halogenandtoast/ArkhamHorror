@@ -88,6 +88,7 @@ allPlayerTreacheryCards =
       , falseAwakeningPointOfNoReturn
       , finalRhapsody
       , finePrint
+      , greed
       , haunted
       , hospitalDebts
       , hypochondria
@@ -2063,6 +2064,12 @@ buriedSecrets =
 burdenOfDestiny :: CardDef
 burdenOfDestiny =
   (weakness "08015" "Burden of Destiny")
+    { cdCardTraits = setFromList [Flaw]
+    }
+
+greed :: CardDef
+greed =
+  (weakness "08018" "Greed")
     { cdCardTraits = setFromList [Flaw]
     }
 

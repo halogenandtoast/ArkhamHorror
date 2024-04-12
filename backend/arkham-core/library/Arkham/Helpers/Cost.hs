@@ -302,13 +302,15 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
 
 getSpendableResources :: HasGame m => InvestigatorId -> m Int
 getSpendableResources iid = do
+  mods <- getModifiers iid
+  let extraResources = sum [x | ExtraResources x <- mods]
   familyInheritanceResources <-
     getSum
       <$> selectAgg
         Sum
         AssetResources
         (Matcher.assetIs Assets.familyInheritance)
-  fieldMap InvestigatorResources (+ familyInheritanceResources) iid
+  fieldMap InvestigatorResources (+ (familyInheritanceResources + extraResources)) iid
 
 getModifiedCardCost :: HasGame m => InvestigatorId -> Card -> m Int
 getModifiedCardCost iid c@(PlayerCard _) = do

@@ -148,6 +148,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           : purchaseTrauma
         pure $ a & playerDecksL %~ insertMap iid deck'
       else pure a
+  EndSetup -> do
+    pushAll [BeginGame, BeginRound, Begin InvestigationPhase]
+    pure a
   ResolveAmounts iid choiceMap (LabeledTarget "Purchase Trauma" (isTarget a -> True)) -> do
     let physical = getChoiceAmount "Physical" choiceMap
     let mental = getChoiceAmount "Mental" choiceMap

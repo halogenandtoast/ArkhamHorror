@@ -14,7 +14,6 @@ import Arkham.Helpers.EncounterSet
 import Arkham.Id
 import Arkham.Message
 import Arkham.Message.Lifted
-import Arkham.Phase
 import Arkham.Prelude hiding ((.=))
 import Arkham.Scenario.Helpers (excludeBSides, excludeDoubleSided)
 import Arkham.Scenario.Runner ()
@@ -70,13 +69,7 @@ runScenarioSetup
   -> ScenarioBuilderT m ()
   -> m b
 runScenarioSetup f attrs body = do
-  f
-    <$> execStateT
-      ( body.unScenarioBuilderT
-          >> shuffleEncounterDeck
-          >> lift (pushAll [BeginGame, BeginRound, Begin InvestigationPhase])
-      )
-      attrs
+  f <$> execStateT (body.unScenarioBuilderT >> shuffleEncounterDeck) attrs
 
 shuffleEncounterDeck :: (MonadRandom m, MonadState ScenarioAttrs m) => m ()
 shuffleEncounterDeck = do

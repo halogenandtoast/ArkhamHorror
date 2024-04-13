@@ -115,6 +115,9 @@ replaceMessageMatching matcher replacer = withQueue \queue ->
 pushAfter :: HasQueue msg m => (msg -> Bool) -> msg -> m ()
 pushAfter matcher msg = replaceMessageMatching matcher (\m -> [m, msg])
 
+pushAllAfter :: HasQueue msg m => (msg -> Bool) -> [msg] -> m ()
+pushAllAfter matcher msgs = replaceMessageMatching matcher (\m -> m : msgs)
+
 popMessageMatching
   :: HasQueue msg m => (msg -> Bool) -> m (Maybe msg)
 popMessageMatching matcher = withQueue \queue ->

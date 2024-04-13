@@ -758,6 +758,8 @@ allAssets =
     , SomeAssetCard disciplineBalanceOfBody
     , SomeAssetCard disciplineBalanceOfBodyBroken
     , SomeAssetCard shrewdDealings
+    , --- guardian [eote]
+      SomeAssetCard gearedUp
     , --- seeker [eote]
       SomeAssetCard forcedLearning
     , --- rogue [eote]

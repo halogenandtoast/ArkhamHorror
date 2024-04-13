@@ -13,6 +13,7 @@ import Arkham.Classes hiding (Entity (..), select)
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Game
+import Arkham.Id
 import Arkham.Message
 import Control.Lens hiding (from)
 import Control.Monad.Random (MonadRandom (..), StdGen, mkStdGen)
@@ -62,6 +63,7 @@ data ApiResponse
   | GameMessage Text
   | GameError Text
   | GameCard {title :: Text, card :: Aeson.Value}
+  | GameCardOnly {player :: PlayerId, title :: Text, card :: Aeson.Value}
   | GameTarot Aeson.Value
   deriving stock (Generic)
   deriving anyclass (ToJSON)

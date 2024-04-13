@@ -1,5 +1,6 @@
 module Arkham.Classes.GameLogger where
 
+import Arkham.Id
 import Arkham.Prelude
 
 class MonadIO m => HasGameLogger m where
@@ -26,6 +27,7 @@ data ClientMessage
   = ClientText Text
   | ClientError Text
   | ClientCard Text Value
+  | ClientCardOnly PlayerId Text Value
   | ClientTarot Value
 
 send :: HasGameLogger m => Text -> m ()
@@ -38,10 +40,10 @@ sendError msg = do
   f <- getLogger
   liftIO $ f (ClientError msg)
 
-sendRevelation :: HasGameLogger m => Value -> m ()
-sendRevelation msg = do
+sendRevelation :: HasGameLogger m => PlayerId -> Value -> m ()
+sendRevelation pid msg = do
   f <- getLogger
-  liftIO $ f (ClientCard "Revelation" msg)
+  liftIO $ f (ClientCardOnly pid "Revelation" msg)
 
 sendReveal :: HasGameLogger m => Value -> m ()
 sendReveal msg = do

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import gsap from 'gsap';
-import { computed, ref, ComputedRef, reactive } from 'vue';
+import { computed, inject, Ref, ref, ComputedRef, reactive } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { toCardContents } from '@/arkham/types/Card';
@@ -36,6 +36,11 @@ export interface Props {
 const props = defineProps<Props>()
 
 const investigatorId = computed(() => props.investigator.id)
+
+const solo = inject<Ref<boolean>>('solo')
+const encounterBack = computed(() => {
+  return imgsrc("encounter_back.jpg")
+})
 
 const stories = computed(() =>
   Object.
@@ -461,25 +466,33 @@ function onLeave(el: Element, done: () => void) {
           @choose="$emit('choose', $event)"
         />
 
-        <Enemy
-          v-for="enemy in inHandEnemies"
-          :key="enemy.id"
-          :enemy="enemy"
-          :game="game"
-          :data-index="enemy.cardId"
-          :playerId="playerId"
-          @choose="$emit('choose', $event)"
-        />
+        <template v-for="enemy in inHandEnemies" :key="enemy.id">
+          <Enemy
+            v-if="solo || (playerId == investigator.playerId)"
+            :enemy="enemy"
+            :game="game"
+            :data-index="enemy.cardId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+          <div class="card-container" v-else>
+            <img class="card" :src="encounterBack" />
+          </div>
+        </template>
 
-        <Treachery
-          v-for="treacheryId in inHandTreacheries"
-          :key="treacheryId"
-          :treachery="game.treacheries[treacheryId]"
-          :game="game"
-          :data-index="treacheryId"
-          :playerId="playerId"
-          @choose="$emit('choose', $event)"
-        />
+        <template v-for="treacheryId in inHandTreacheries" :key="treacheryId">
+          <Treachery
+            v-if="solo || (playerId == investigator.playerId)"
+            :treachery="game.treacheries[treacheryId]"
+            :game="game"
+            :data-index="treacheryId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+          <div class="card-container" v-else>
+            <img class="card" :src="encounterBack" />
+          </div>
+        </template>
 
       </transition-group>
     </div>

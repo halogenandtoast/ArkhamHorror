@@ -2163,7 +2163,8 @@ runGameMessage msg g = case msg of
     pure $ g & (activeCardL ?~ card)
   Revelation iid (PlayerCardSource card) -> case toCardType card of
     AssetType -> do
-      sendRevelation (toJSON $ toCard card)
+      pid <- getPlayer iid
+      sendRevelation pid (toJSON $ toCard card)
       assetId <- getRandom
       let asset = createAsset card assetId
       -- Asset is assumed to have a revelation ability if drawn from encounter deck
@@ -2227,19 +2228,22 @@ runGameMessage msg g = case msg of
           & (entitiesL . enemiesL . at enemyId ?~ enemy)
           & (activeCardL ?~ toCard card)
       TreacheryType -> do
-        sendRevelation (toJSON $ toCard card)
+        pid <- getPlayer iid
+        sendRevelation pid (toJSON $ toCard card)
         -- handles draw windows
         push $ DrewTreachery iid (Just Deck.EncounterDeck) (toCard card)
         pure g'
       EncounterAssetType -> do
-        sendRevelation (toJSON $ toCard card)
+        pid <- getPlayer iid
+        sendRevelation pid (toJSON $ toCard card)
         assetId <- getRandom
         let asset = createAsset card assetId
         -- Asset is assumed to have a revelation ability if drawn from encounter deck
         pushAll $ whenDraw : afterDraw : resolve (Revelation iid $ AssetSource assetId)
         pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
       EncounterEventType -> do
-        sendRevelation (toJSON $ toCard card)
+        pid <- getPlayer iid
+        sendRevelation pid (toJSON $ toCard card)
         eventId <- getRandom
         let owner = fromMaybe iid (toCardOwner card)
         let event' = createEvent card owner eventId
@@ -2247,7 +2251,8 @@ runGameMessage msg g = case msg of
         pushAll $ whenDraw : afterDraw : resolve (Revelation iid $ EventSource eventId)
         pure $ g' & (entitiesL . eventsL . at eventId ?~ event')
       LocationType -> do
-        sendRevelation (toJSON $ toCard card)
+        pid <- getPlayer iid
+        sendRevelation pid (toJSON $ toCard card)
         locationId <- getRandom
         let location = createLocation card locationId
 
@@ -2304,7 +2309,8 @@ runGameMessage msg g = case msg of
             <> [AfterRevelation iid treacheryId, UnsetActiveCard]
     pure $ g & (if ignoreRevelation then activeCardL .~ Nothing else id)
   DrewTreachery iid _ (PlayerCard card) -> do
-    sendRevelation (toJSON $ toCard card)
+    pid <- getPlayer iid
+    sendRevelation pid (toJSON $ toCard card)
     treacheryId <- getRandom
     let treachery = createTreachery card iid treacheryId
     -- player treacheries will not trigger draw treachery windows

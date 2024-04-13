@@ -24,16 +24,54 @@ async function choose(idx: number) {
 }
 
 //const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.step?.tag === 'UpgradeDeckStep')
-const chooseDeck = computed(() => props.game.question[props.playerId]?.tag === 'ChooseDeck')
+const chooseDeck = computed(() => {
+  const question = Object.values(props.game.question)[0]
+
+  if (question === null || question == undefined) {
+    return false
+  }
+
+  const { tag } = question
+
+  if (tag === 'ChooseDeck') {
+    return true
+  }
+
+  if (tag === 'QuestionLabel') {
+    return question.question.tag === 'ChooseDeck'
+  }
+
+  return false
+})
+
+const questionLabel = computed(() => {
+  let question = props.game.question[props.playerId]
+
+  if (!question && chooseDeck.value) {
+    question = Object.values(props.game.question)[0]
+  }
+
+  return question.tag === 'QuestionLabel' ? question.label : null
+})
+
+const questionHash = computed(() => {
+  let question = props.game.question[props.playerId]
+  if (question) {
+    return btoa(encodeURIComponent(JSON.stringify(question)))
+  }
+
+  return null
+})
 </script>
 
 <template>
   <div v-if="chooseDeck" id="game" class="game">
+    <h2 v-if="questionLabel" class="question-label">{{ questionLabel }}</h2>
     <ChooseDeck :game="game" :playerId="playerId" />
   </div>
   <div v-else-if="game.gameState.tag === 'IsActive'" id="game" class="game">
     <Scenario
-      v-if="game.scenario"
+      v-if="game.scenario && game.phase !== 'CampaignPhase'"
       :game="game"
       :scenario="game.scenario"
       :playerId="playerId"
@@ -41,7 +79,7 @@ const chooseDeck = computed(() => props.game.question[props.playerId]?.tag === '
       @update="update"
     />
     <template v-else>
-      <StoryQuestion :game="game" :playerId="playerId" @choose="choose" />
+      <StoryQuestion :game="game" :key="questionHash" :playerId="playerId" @choose="choose" />
     </template>
   </div>
 </template>

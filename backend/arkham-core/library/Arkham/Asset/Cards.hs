@@ -329,6 +329,7 @@ allPlayerAssetCards =
       , garroteWire2
       , gateBox
       , gavriellaMizrah
+      , gearedUp
       , geas2
       , geneBeauregard3
       , gildedVolto
@@ -4756,6 +4757,14 @@ shrewdDealings =
     $ (asset "08017" "Shrewd Dealings" 2 Neutral)
       { cdSkills = [#intellect, #intellect, #wild]
       , cdCardTraits = setFromList [Talent]
+      }
+
+gearedUp :: CardDef
+gearedUp =
+  permanent
+    $ (asset "08019" "Geared Up" 0 Guardian)
+      { cdCardTraits = setFromList [Talent]
+      , cdDeckRestrictions = [PerDeckLimit 1, PurchaseAtDeckCreation]
       }
 
 -- TODO: if we ever care about deck size need to encode that somehow

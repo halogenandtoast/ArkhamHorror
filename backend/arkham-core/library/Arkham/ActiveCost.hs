@@ -520,9 +520,9 @@ payCost msg c iid skipAdditionalCosts cost = do
                   pure $ guard (resources > 0) $> (iid', name, resources)
 
               case iidsWithResources of
-                [(iid', _, z)] | z >= x -> push $ SpendResources iid' x
+                [(iid', _, z)] | z >= x && null resourcesFromAssets -> push $ SpendResources iid' x
                 _
-                  | sum (map (\(_, _, z) -> z) iidsWithResources) == x ->
+                  | sum (map (\(_, _, z) -> z) iidsWithResources) == x && null resourcesFromAssets ->
                       pushAll $ map (\(iid', _, z) -> SpendResources iid' z) iidsWithResources
                 _ ->
                   push

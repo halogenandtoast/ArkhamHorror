@@ -794,9 +794,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         player
         [ FightLabel
           eid
-          [ ChoseEnemy investigatorId source eid
-          , FightEnemy investigatorId eid source mTarget skillType isAction
-          ]
+          $ ChoseEnemy investigatorId source eid
+          : [ FightEnemy investigatorId eid source mTarget skillType isAction
+            | not choose.onlyChoose
+            ]
         | eid <- enemyIds
         ]
     pure a
@@ -1179,7 +1180,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                , let horror = count (== target) horrorTargets
                ]
             <> [mkWhen (Window.AssignedHorror source iid horrorTargets) | notNull horrorTargets]
-        , CheckWindow [iid]
+        ]
+      <> [CheckDefeated source (toTarget aid) | aid <- checkAssets]
+      <> [ CheckWindow [iid]
             $ [ mkAfter (Window.DealtDamage source damageEffect target damage)
               | target <- nub damageTargets
               , let damage = count (== target) damageTargets
@@ -1189,8 +1192,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                , let horror = count (== target) horrorTargets
                ]
             <> [mkAfter (Window.AssignedHorror source iid horrorTargets) | notNull horrorTargets]
-        ]
-      <> [CheckDefeated source (toTarget aid) | aid <- checkAssets]
+         ]
     when
       ( damageStrategy
           == DamageFromHastur

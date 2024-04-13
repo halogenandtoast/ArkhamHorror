@@ -455,7 +455,8 @@ allEvents =
       SomeEventCard shrineOfTheMoirai3
     , -- Edge of the Earth
       --- guardian [eote]
-      SomeEventCard sweepingKick1
+      SomeEventCard toeToToe
+    , SomeEventCard sweepingKick1
     , SomeEventCard dodge2
     , --- seeker [eote]
       SomeEventCard unearthTheAncients2

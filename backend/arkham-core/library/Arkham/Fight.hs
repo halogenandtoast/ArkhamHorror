@@ -11,6 +11,9 @@ import Arkham.Source
 withSkillType :: SkillType -> ChooseFight -> ChooseFight
 withSkillType skillType chooseFight = chooseFight {chooseFightSkillType = skillType}
 
+onlyChooseFight :: Functor m => m ChooseFight -> m ChooseFight
+onlyChooseFight = fmap $ \chooseFight -> chooseFight {chooseFightOnlyChoose = True}
+
 mkChooseFight :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m ChooseFight
 mkChooseFight iid source =
   pure
@@ -21,6 +24,7 @@ mkChooseFight iid source =
       , chooseFightTarget = Nothing
       , chooseFightSkillType = #combat
       , chooseFightIsAction = False
+      , chooseFightOnlyChoose = False
       }
 
 mkChooseFightMatch

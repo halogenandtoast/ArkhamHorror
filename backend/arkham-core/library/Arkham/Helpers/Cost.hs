@@ -74,6 +74,7 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
     case target of
       AssetTarget aid -> fieldMap AssetCardsUnderneath (any (`cardMatch` cardMatcher)) aid
       _ -> error "Unhandled shuffle attached card into deck cost"
+  EnemyAttackCost eid -> selectAny $ Matcher.EnemyWithId eid <> Matcher.EnemyCanAttack (Matcher.InvestigatorWithId iid)
   DrawEncounterCardsCost _n -> can.target.encounterDeck iid
   GloriaCost -> do
     mtarget <- getSkillTestTarget

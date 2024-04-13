@@ -497,6 +497,7 @@ data Message
   | CancelCost ActiveCostId
   | SetCost ActiveCostId Cost
   | PayAdditionalCost InvestigatorId BatchId Cost
+  | CheckAdditionalCosts ActiveCostId
   | PayCosts ActiveCostId
   | PayCost ActiveCostId InvestigatorId Bool Cost
   | PayCostFinished ActiveCostId

@@ -421,6 +421,7 @@ library
       Arkham.Asset.Cards.AzureFlame5
       Arkham.Asset.Cards.Backpack
       Arkham.Asset.Cards.Backpack2
+      Arkham.Asset.Cards.Bandages
       Arkham.Asset.Cards.Bandolier
       Arkham.Asset.Cards.Bandolier2
       Arkham.Asset.Cards.BangleOfJinxes1
@@ -1609,6 +1610,7 @@ library
       Arkham.Event.Cards.ThirdTimesACharm2
       Arkham.Event.Cards.TidesOfFate
       Arkham.Event.Cards.TimeWarp2
+      Arkham.Event.Cards.ToeToToe
       Arkham.Event.Cards.TrialByFire
       Arkham.Event.Cards.TrialByFire3
       Arkham.Event.Cards.TrueSurvivor3

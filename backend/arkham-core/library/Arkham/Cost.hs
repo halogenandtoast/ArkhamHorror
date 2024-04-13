@@ -123,6 +123,7 @@ data Cost
   | DiscardHandCost
   | DoomCost Source Target Int
   | EnemyDoomCost Int EnemyMatcher
+  | EnemyAttackCost EnemyId
   | ExileCost Target
   | HandDiscardCost Int CardMatcher
   | HandDiscardAnyNumberCost CardMatcher
@@ -184,6 +185,7 @@ data DynamicUseCostValue = DrawnCardsValue
 
 displayCostType :: Cost -> Text
 displayCostType = \case
+  EnemyAttackCost _ -> "The chosen enemy makes an attack against you"
   UnpayableCost -> "Unpayable"
   OptionalCost c -> "Optional: " <> displayCostType c
   DrawEncounterCardsCost n -> "Draw " <> pluralize n "Encounter Card"

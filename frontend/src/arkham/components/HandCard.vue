@@ -28,7 +28,7 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 const revealed = computed(() => {
   const meta = investigator.value?.meta
-  if ("revealedCards" in meta) {
+  if (meta && "revealedCards" in meta) {
     return Object.values(meta.revealedCards).some((v) => (v as string[]).includes(id.value))
   }
 

@@ -40,8 +40,23 @@ interface GameCard {
   card: Card
 }
 
+interface GameCardOnly {
+  player: string
+  title: string
+  card: Card
+}
+
 const gameCardDecoder = JsonDecoder.object<GameCard>(
   {
+    title: JsonDecoder.string,
+    card: cardDecoder
+  },
+  'GameCard'
+);
+
+const gameCardOnlyDecoder = JsonDecoder.object<GameCardOnly>(
+  {
+    player: JsonDecoder.string,
     title: JsonDecoder.string,
     card: cardDecoder
   },
@@ -96,6 +111,7 @@ type ServerResult =
   | { tag: "GameMessage"; contents: string }
   | { tag: "GameTarot"; contents: string }
   | { tag: "GameCard"; contents: string }
+  | { tag: "GameCardOnly"; contents: string }
   | { tag: "GameUpdate"; contents: string }
 
 const handleResult = (result: ServerResult) => {
@@ -123,6 +139,18 @@ const handleResult = (result: ServerResult) => {
         gameCardDecoder.decodeToPromise(result).then((r) => {
           uiLock.value = true
           gameCard.value = r
+        })
+      }
+      return
+    case "GameCardOnly":
+      if (uiLock.value) {
+        resultQueue.value.push(result)
+      } else {
+        gameCardOnlyDecoder.decodeToPromise(result).then((r) => {
+          if (r.player == playerId.value) {
+            uiLock.value = true
+            gameCard.value = r
+          }
         })
       }
       return

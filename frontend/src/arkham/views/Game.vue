@@ -147,7 +147,7 @@ const handleResult = (result: ServerResult) => {
         resultQueue.value.push(result)
       } else {
         gameCardOnlyDecoder.decodeToPromise(result).then((r) => {
-          if (r.player == playerId.value) {
+          if (solo.value === true || r.player == playerId.value) {
             uiLock.value = true
             gameCard.value = r
           }

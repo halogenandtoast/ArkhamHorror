@@ -767,7 +767,8 @@ allAssets =
     , --- mystic [eote]
       SomeAssetCard dragonPole
     , --- survivor [eote]
-      SomeAssetCard schoffnersCatalogue
+      SomeAssetCard bandages
+    , SomeAssetCard schoffnersCatalogue
     , SomeAssetCard bangleOfJinxes1
     , --- guardian/seeker [eote]
       SomeAssetCard medicalStudent

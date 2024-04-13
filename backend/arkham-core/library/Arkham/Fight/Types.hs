@@ -15,6 +15,7 @@ data ChooseFight = ChooseFight
   , chooseFightTarget :: Maybe Target
   , chooseFightSkillType :: SkillType
   , chooseFightIsAction :: Bool
+  , chooseFightOnlyChoose :: Bool
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -36,6 +37,9 @@ instance HasField "target" ChooseFight (Maybe Target) where
 
 instance HasField "matcher" ChooseFight EnemyMatcher where
   getField = chooseFightEnemyMatcher
+
+instance HasField "onlyChoose" ChooseFight Bool where
+  getField = chooseFightOnlyChoose
 
 instance WithTarget ChooseFight where
   getTarget = chooseFightTarget

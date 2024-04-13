@@ -162,6 +162,7 @@ allPlayerAssetCards =
       , azureFlame5
       , backpack
       , backpack2
+      , bandages
       , bandolier
       , bandolier2
       , bangleOfJinxes1
@@ -4801,6 +4802,14 @@ schoffnersCatalogue =
     { cdSkills = [#intellect]
     , cdCardTraits = setFromList [Item, Tome]
     , cdUses = uses Secret 5
+    }
+
+bandages :: CardDef
+bandages =
+  (asset "08073" "Bandages" 2 Survivor)
+    { cdCardTraits = setFromList [Item]
+    , cdSkills = [#agility]
+    , cdUses = uses Supply 3
     }
 
 bangleOfJinxes1 :: CardDef

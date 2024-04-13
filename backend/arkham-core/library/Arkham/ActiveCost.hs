@@ -17,6 +17,7 @@ import Arkham.Asset.Types (
     AssetUses
   ),
  )
+import Arkham.Attack
 import Arkham.Card
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
@@ -192,6 +193,9 @@ payCost msg c iid skipAdditionalCosts cost = do
                 | card@(EncounterCard ec) <- cards
                 ]
             ]
+      pure c
+    EnemyAttackCost eid -> do
+      push $ toMessage $ enemyAttack eid source iid
       pure c
     DrawEncounterCardsCost n -> do
       pushAll $ replicate n $ InvestigatorDrawEncounterCard iid
@@ -816,6 +820,10 @@ payCost msg c iid skipAdditionalCosts cost = do
 
 instance RunMessage ActiveCost where
   runMessage msg c = case msg of
+    CheckAdditionalCosts acId | acId == c.id -> do
+      mods <- getModifiers (ActiveCostTarget acId)
+      let additionalCosts = fold [ac | AdditionalCost ac <- mods]
+      pure $ c {activeCostCosts = activeCostCosts c <> additionalCosts}
     PayCosts acId | acId == c.id -> do
       push $ PayCost acId c.investigator False c.costs
       pure c
@@ -834,7 +842,9 @@ instance RunMessage ActiveCost where
             cardDef = toCardDef card
             modifiersPreventAttackOfOpportunity = ActionDoesNotCauseAttacksOfOpportunity #play `elem` modifiers'
             actions = [Action.Play | isPlayAction == IsPlayAction] <> cardDef.actions
-            mEffect = guard cardDef.beforeEffect $> createCardEffect cardDef Nothing iid (toCardId card)
+            mEffect =
+              guard cardDef.beforeEffect
+                *> [createCardEffect cardDef (Just $ EffectCost acId) iid (toCardId card), CheckAdditionalCosts acId]
           batchId <- getRandom
           beforeWindowMsg <- checkWindows $ map (mkWhen . Window.PerformAction iid) actions
           wouldPayWindowMsg <- checkWindows [mkWhen $ Window.WouldPayCardCost iid acId batchId card]
@@ -843,7 +853,7 @@ instance RunMessage ActiveCost where
           -- play off of Uncage the Soul)
           pushAll
             $ (guard (notNull actions) *> [BeginAction, beforeWindowMsg])
-            <> maybeToList mEffect
+            <> mEffect
             <> [ wouldPayWindowMsg
                , Would
                   batchId

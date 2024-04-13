@@ -310,6 +310,7 @@ allPlayerEventCards =
       , thirdTimesACharm2
       , tidesOfFate
       , timeWarp2
+      , toeToToe
       , trialByFire
       , trialByFire3
       , trueSurvivor3
@@ -2682,6 +2683,15 @@ shrineOfTheMoirai3 =
     , cdLevel = Just 3
     , cdUnique = True
     , cdUses = Uses.Uses Uses.Offering (Static 3)
+    }
+
+toeToToe :: CardDef
+toeToToe =
+  (event "08020" "Toe to Toe" 0 Guardian)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Spirit, Tactic]
+    , cdActions = [#fight]
+    , cdBeforeEffect = True
     }
 
 sweepingKick1 :: CardDef

@@ -1128,10 +1128,11 @@ instance RunMessage EnemyAttrs where
             }
       pure a
     InvestigatorDrawEnemy iid eid | eid == enemyId -> do
-      mods <- getModifiers enemyId
+      mods <- (<>) <$> getModifiers enemyId <*> getModifiers (CardIdTarget $ toCardId a)
       let
         getModifiedSpawnAt [] = enemySpawnAt
         getModifiedSpawnAt (ForceSpawnLocation m : _) = Just $ SpawnAt m
+        getModifiedSpawnAt (ForceSpawn m : _) = Just m
         getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
         spawnAtMatcher = getModifiedSpawnAt mods
         LocationFilter cannotSpawnMatchers = fold [LocationFilter m | CannotSpawnIn m <- mods]

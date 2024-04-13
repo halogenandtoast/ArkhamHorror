@@ -17,6 +17,13 @@ runQueueT body = do
   pushAll $ reverse msgs
   pure a
 
+evalQueueT :: HasQueue msg m => QueueT msg m a -> QueueT msg m [msg]
+evalQueueT body = do
+  inbox <- newIORef []
+  _ <- lift $ runReaderT (unQueueT body) (Queue inbox)
+  msgs <- readIORef inbox
+  pure $ reverse msgs
+
 newtype QueueT msg m a = QueueT {unQueueT :: ReaderT (Queue msg) m a}
   deriving newtype
     (Functor, Applicative, Monad, MonadIO, MonadRandom, MonadReader (Queue msg), MonadTrans)

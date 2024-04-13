@@ -563,3 +563,9 @@ cardResolutionModifiers
   -> [ModifierType]
   -> m ()
 cardResolutionModifiers card source target modifiers = push $ Msg.cardResolutionModifiers card source target modifiers
+
+insteadOf
+  :: HasQueue Message m => Message -> QueueT Message m () -> QueueT Message m ()
+insteadOf msg f = do
+  msgs <- evalQueueT f
+  lift $ replaceMessageMatching (== msg) (const msgs)

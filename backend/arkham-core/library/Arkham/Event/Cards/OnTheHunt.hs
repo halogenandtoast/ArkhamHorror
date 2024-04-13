@@ -1,16 +1,13 @@
-module Arkham.Event.Cards.OnTheHunt (
-  onTheHunt,
-  OnTheHunt (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.OnTheHunt (onTheHunt, OnTheHunt (..)) where
 
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Matcher
+import Arkham.Spawn
+import Arkham.Strategy
 import Arkham.Zone
 
 newtype OnTheHunt = OnTheHunt EventAttrs
@@ -21,13 +18,10 @@ onTheHunt :: EventCard OnTheHunt
 onTheHunt = event OnTheHunt Cards.onTheHunt
 
 instance RunMessage OnTheHunt where
-  runMessage msg e@(OnTheHunt attrs) = case msg of
+  runMessage msg e@(OnTheHunt attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      _ <- popMessageMatching $ \case
-        InvestigatorDoDrawEncounterCard iid' -> iid == iid'
-        _ -> False
-      push
-        $ search iid attrs EncounterDeckTarget [(FromTopOfDeck 9, PutBack)] AnyCard (defer $ toTarget attrs)
+      insteadOf (InvestigatorDoDrawEncounterCard iid) (pure ())
+      search iid attrs EncounterDeckTarget [(FromTopOfDeck 9, PutBack)] AnyCard (defer attrs)
       pure e
     SearchNoneFound iid (isTarget attrs -> True) -> do
       push $ InvestigatorDrawEncounterCard iid
@@ -35,11 +29,16 @@ instance RunMessage OnTheHunt where
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       additionalTargets <- getAdditionalSearchTargets iid
       let enemyCards = filter (`cardMatch` EnemyType) $ onlyEncounterCards cards
-      player <- getPlayer iid
-      push
-        $ chooseN player (min (length enemyCards) (1 + additionalTargets))
-        $ [ targetLabel (toCardId card) [InvestigatorDrewEncounterCard iid card]
+      chooseN iid (min (length enemyCards) (1 + additionalTargets))
+        $ [ targetLabel
+            (toCardId card)
+            [ Msg.searchModifier
+                attrs
+                (CardIdTarget $ toCardId card)
+                (ForceSpawn (SpawnEngagedWith $ InvestigatorWithId iid))
+            , InvestigatorDrewEncounterCard iid card
+            ]
           | card <- enemyCards
           ]
       pure e
-    _ -> OnTheHunt <$> runMessage msg attrs
+    _ -> OnTheHunt <$> lift (runMessage msg attrs)

@@ -25,6 +25,7 @@ import Arkham.Scenario.Deck
 import Arkham.SkillType
 import Arkham.SlotType
 import {-# SOURCE #-} Arkham.Source
+import {-# SOURCE #-} Arkham.Spawn
 import {-# SOURCE #-} Arkham.Strategy
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Trait
@@ -218,6 +219,7 @@ data ModifierType
   | AdditionalSlot SlotType
   | ForcePrey PreyMatcher
   | ForceSpawnLocation LocationMatcher
+  | ForceSpawn SpawnAt
   | ChangeSpawnLocation LocationMatcher LocationMatcher
   | ForcedChaosTokenChange ChaosTokenFace [ChaosTokenFace]
   | GainVictory Int

@@ -15,7 +15,7 @@ data SpawnAt
   | SpawnAtFirst [SpawnAt]
   | SpawnEngagedWith InvestigatorMatcher
   | NoSpawn
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance IsString SpawnAt where
   fromString = SpawnAt . fromString

@@ -475,6 +475,7 @@ library
       Arkham.Asset.Cards.ColtVestPocket
       Arkham.Asset.Cards.ColtVestPocket2
       Arkham.Asset.Cards.CombatTraining1
+      Arkham.Asset.Cards.CombatTraining3
       Arkham.Asset.Cards.ConstanceDumaine
       Arkham.Asset.Cards.Cornered2
       Arkham.Asset.Cards.Courage
@@ -516,6 +517,7 @@ library
       Arkham.Asset.Cards.DiscOfItzamna
       Arkham.Asset.Cards.DiscOfItzamna2
       Arkham.Asset.Cards.DoubleDouble4
+      Arkham.Asset.Cards.DownTheRabbitHole
       Arkham.Asset.Cards.DragonPole
       Arkham.Asset.Cards.DrawingThin
       Arkham.Asset.Cards.DreamDiary
@@ -613,6 +615,7 @@ library
       Arkham.Asset.Cards.GrotesqueStatue2
       Arkham.Asset.Cards.GrotesqueStatue4
       Arkham.Asset.Cards.Grounded1
+      Arkham.Asset.Cards.Grounded3
       Arkham.Asset.Cards.GuardDog
       Arkham.Asset.Cards.GuardDog2
       Arkham.Asset.Cards.GuardianAngel
@@ -740,6 +743,7 @@ library
       Arkham.Asset.Cards.MoonPendant2
       Arkham.Asset.Cards.Moonstone
       Arkham.Asset.Cards.Moxie1
+      Arkham.Asset.Cards.Moxie3
       Arkham.Asset.Cards.MrPeabody
       Arkham.Asset.Cards.MrRook
       Arkham.Asset.Cards.MysteriousRaven
@@ -779,6 +783,7 @@ library
       Arkham.Asset.Cards.Pickpocketing
       Arkham.Asset.Cards.Pickpocketing2
       Arkham.Asset.Cards.Plucky1
+      Arkham.Asset.Cards.Plucky3
       Arkham.Asset.Cards.PnakoticManuscripts5
       Arkham.Asset.Cards.PoliceBadge2
       Arkham.Asset.Cards.PowderOfIbnGhazi
@@ -824,6 +829,7 @@ library
       Arkham.Asset.Cards.Scavenging2
       Arkham.Asset.Cards.SchoffnersCatalogue
       Arkham.Asset.Cards.ScientificTheory1
+      Arkham.Asset.Cards.ScientificTheory3
       Arkham.Asset.Cards.Scrapper
       Arkham.Asset.Cards.Scrapper3
       Arkham.Asset.Cards.ScrollOfProphecies
@@ -948,6 +954,7 @@ library
       Arkham.Asset.Cards.TwentyFiveAutomatic2
       Arkham.Asset.Cards.TwilaKatherinePrice3
       Arkham.Asset.Cards.TwilightBlade
+      Arkham.Asset.Cards.UnderworldSupport
       Arkham.Asset.Cards.UntilTheEndOfTime
       Arkham.Asset.Cards.ValentinoRivas
       Arkham.Asset.Cards.VaultOfKnowledge

@@ -216,6 +216,7 @@ allPlayerAssetCards =
       , coltVestPocket2
       , cornered2
       , combatTraining1
+      , combatTraining3
       , crypticGrimoireTextOfTheElderGuardian4
       , crypticGrimoireTextOfTheElderHerald4
       , crypticGrimoireUntranslated
@@ -253,6 +254,7 @@ allPlayerAssetCards =
       , disciplineQuiescenceOfThought
       , disciplineQuiescenceOfThoughtBroken
       , doubleDouble4
+      , downTheRabbitHole
       , drElliHorowitz
       , drFrancisMorgan
       , drHenryArmitage
@@ -349,6 +351,7 @@ allPlayerAssetCards =
       , grotesqueStatue2
       , grotesqueStatue4
       , grounded1
+      , grounded3
       , guardDog
       , guardDog2
       , guardianAngel
@@ -468,6 +471,7 @@ allPlayerAssetCards =
       , moonPendant2
       , moonstone
       , moxie1
+      , moxie3
       , mrRook
       , mysteriousRaven
       , nephthysHuntressOfBast4
@@ -505,6 +509,7 @@ allPlayerAssetCards =
       , pickpocketing
       , pickpocketing2
       , plucky1
+      , plucky3
       , pnakoticManuscripts5
       , policeBadge2
       , powderOfIbnGhazi
@@ -548,6 +553,7 @@ allPlayerAssetCards =
       , scavenging2
       , schoffnersCatalogue
       , scientificTheory1
+      , scientificTheory3
       , scrapper
       , scrapper3
       , scrollOfProphecies
@@ -666,6 +672,7 @@ allPlayerAssetCards =
       , twentyFiveAutomatic2
       , twilaKatherinePrice3
       , twilightBlade
+      , underworldSupport
       , untilTheEndOfTime
       , valentinoRivas
       , vaultOfKnowledge
@@ -4768,6 +4775,15 @@ gearedUp =
       , cdDeckRestrictions = [PerDeckLimit 1, PurchaseAtDeckCreation]
       }
 
+combatTraining3 :: CardDef
+combatTraining3 =
+  (asset "08027" "Combat Training" 1 Guardian)
+    { cdSkills = [#combat, #combat, #agility, #agility]
+    , cdCardTraits = setFromList [Talent, Composure]
+    , cdLimits = [LimitPerTrait Composure 1]
+    , cdLevel = Just 3
+    }
+
 -- TODO: if we ever care about deck size need to encode that somehow
 forcedLearning :: CardDef
 forcedLearning =
@@ -4776,6 +4792,32 @@ forcedLearning =
       { cdCardTraits = setFromList [Talent, Ritual]
       , cdDeckRestrictions = [PerDeckLimit 1, PurchaseAtDeckCreation]
       }
+
+scientificTheory3 :: CardDef
+scientificTheory3 =
+  (asset "08040" "Scientific Theory" 0 Seeker)
+    { cdSkills = [#intellect, #intellect, #combat, #combat]
+    , cdCardTraits = setFromList [Talent, Composure]
+    , cdLimits = [LimitPerTrait Composure 1]
+    , cdLevel = Just 3
+    }
+
+underworldSupport :: CardDef
+underworldSupport =
+  permanent
+    $ (asset "08046" "Underworld Support" 0 Rogue)
+      { cdCardTraits = setFromList [Favor, Illicit]
+      , cdDeckRestrictions = [PerDeckLimit 1, PurchaseAtDeckCreation]
+      }
+
+moxie3 :: CardDef
+moxie3 =
+  (asset "08056" "Moxie" 0 Rogue)
+    { cdSkills = [#willpower, #willpower, #agility, #agility]
+    , cdCardTraits = setFromList [Talent, Composure]
+    , cdLimits = [LimitPerTrait Composure 1]
+    , cdLevel = Just 3
+    }
 
 theBlackFan3 :: CardDef
 theBlackFan3 =
@@ -4788,12 +4830,29 @@ theBlackFan3 =
     , cdLevel = Just 3
     }
 
+downTheRabbitHole :: CardDef
+downTheRabbitHole =
+  permanent
+    $ (asset "08059" "Down the Rabbit Hole" 0 Mystic)
+      { cdCardTraits = setFromList [Talent]
+      , cdDeckRestrictions = [PerDeckLimit 1, PurchaseAtDeckCreation]
+      }
+
 dragonPole :: CardDef
 dragonPole =
   (asset "08060" "Dragon Pole" 3 Mystic)
     { cdCardTraits = setFromList [Item, Weapon, Melee]
     , cdSkills = [#combat]
     , cdSlots = [#hand, #hand]
+    }
+
+grounded3 :: CardDef
+grounded3 =
+  (asset "08069" "Grounded" 0 Mystic)
+    { cdSkills = [#wild, #wild]
+    , cdCardTraits = setFromList [Talent, Composure]
+    , cdLimits = [LimitPerTrait Composure 1]
+    , cdLevel = Just 3
     }
 
 schoffnersCatalogue :: CardDef
@@ -4820,6 +4879,15 @@ bangleOfJinxes1 =
     , cdSlots = [#accessory]
     , cdUses = uses Charge 1
     , cdLevel = Just 1
+    }
+
+plucky3 :: CardDef
+plucky3 =
+  (asset "08081" "Plucky" 0 Survivor)
+    { cdSkills = [#willpower, #willpower, #intellect, #intellect]
+    , cdCardTraits = setFromList [Talent, Composure]
+    , cdLimits = [LimitPerTrait Composure 1]
+    , cdLevel = Just 3
     }
 
 medicalStudent :: CardDef

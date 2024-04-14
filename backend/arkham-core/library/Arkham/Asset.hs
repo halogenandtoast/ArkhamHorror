@@ -760,16 +760,23 @@ allAssets =
     , SomeAssetCard shrewdDealings
     , --- guardian [eote]
       SomeAssetCard gearedUp
+    , SomeAssetCard combatTraining3
     , --- seeker [eote]
       SomeAssetCard forcedLearning
+    , SomeAssetCard scientificTheory3
     , --- rogue [eote]
-      SomeAssetCard theBlackFan3
+      SomeAssetCard underworldSupport
+    , SomeAssetCard moxie3
+    , SomeAssetCard theBlackFan3
     , --- mystic [eote]
-      SomeAssetCard dragonPole
+      SomeAssetCard downTheRabbitHole
+    , SomeAssetCard dragonPole
+    , SomeAssetCard grounded3
     , --- survivor [eote]
       SomeAssetCard bandages
     , SomeAssetCard schoffnersCatalogue
     , SomeAssetCard bangleOfJinxes1
+    , SomeAssetCard plucky3
     , --- guardian/seeker [eote]
       SomeAssetCard medicalStudent
     , SomeAssetCard michaelLeigh5

@@ -189,8 +189,12 @@ instance RunMessage TheCircleUndone where
         [ story players theInnerCircle1
         , chooseOne
             lead
-            [ Label "" [CampaignStep (InterludeStepPart 3 mInterludeKey 2)]
-            , Label "" [CampaignStep (InterludeStepPart 3 mInterludeKey 3)]
+            [ Label
+                "Give Mr. Sanford everything you have found."
+                [CampaignStep (InterludeStepPart 3 mInterludeKey 2)]
+            , Label
+                "Tell him you have nothing to show. (You are lying.)"
+                [CampaignStep (InterludeStepPart 3 mInterludeKey 3)]
             ]
         ]
       pure c

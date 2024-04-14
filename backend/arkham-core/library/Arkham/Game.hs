@@ -2952,6 +2952,8 @@ instance Projection Asset where
       AssetOwner -> pure assetOwner
       AssetAssignedHealthHeal -> pure assetAssignedHealthHeal
       AssetAssignedSanityHeal -> pure assetAssignedSanityHeal
+      AssetAssignedHealthDamage -> pure assetAssignedHealthDamage
+      AssetAssignedSanityDamage -> pure assetAssignedSanityDamage
       AssetCustomizations -> pure assetCustomizations
       AssetLocation -> case assetPlacement of
         AtLocation lid -> pure $ Just lid

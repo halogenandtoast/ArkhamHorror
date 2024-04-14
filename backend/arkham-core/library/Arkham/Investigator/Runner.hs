@@ -1206,23 +1206,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   InvestigatorDoAssignDamage iid source DamageEvenly matcher health 0 damageTargets horrorTargets | iid == toId a -> do
     healthDamageableAssets <-
-      toList
-        <$> getHealthDamageableAssets
-          iid
-          matcher
-          health
-          damageTargets
-          horrorTargets
+      toList <$> getHealthDamageableAssets iid matcher health damageTargets horrorTargets
+
+    mustBeDamagedFirstBeforeInvestigator <-
+      select (AssetCanBeAssignedDamageBy iid <> AssetWithModifier NonDirectDamageMustBeAssignToThisFirst)
+
     let
-      getDamageTargets xs =
-        if length xs >= length healthDamageableAssets + 1
-          then getDamageTargets (drop (length healthDamageableAssets + 1) xs)
-          else xs
-      damageTargets' = getDamageTargets damageTargets
-      healthDamageableAssets' =
-        filter
-          ((`notElem` damageTargets') . AssetTarget)
-          healthDamageableAssets
+      onlyAssets = any (`elem` mustBeDamagedFirstBeforeInvestigator) healthDamageableAssets
+      allowedDamage =
+        findFewestOccurrences
+          damageTargets
+          (map toTarget healthDamageableAssets <> [InvestigatorTarget iid | not onlyAssets])
       assignRestOfHealthDamage =
         InvestigatorDoAssignDamage
           investigatorId
@@ -1248,9 +1242,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           ]
       healthDamageMessages =
         [ damageInvestigator
-        | InvestigatorTarget investigatorId `notElem` damageTargets'
+        | InvestigatorTarget investigatorId `elem` allowedDamage
         ]
-          <> map damageAsset healthDamageableAssets'
+          <> map damageAsset (filter ((`elem` allowedDamage) . toTarget) healthDamageableAssets)
     player <- getPlayer iid
     push $ chooseOne player healthDamageMessages
     pure a
@@ -1269,15 +1263,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
         )
     let
-      getDamageTargets xs =
-        if length xs >= length sanityDamageableAssets + 1
-          then getDamageTargets (drop (length sanityDamageableAssets + 1) xs)
-          else xs
-      horrorTargets' = getDamageTargets horrorTargets
-      sanityDamageableAssets' =
-        filter
-          ((`notElem` horrorTargets') . AssetTarget)
-          sanityDamageableAssets
+      onlyAssets = any (`elem` mustBeDamagedFirstBeforeInvestigator) sanityDamageableAssets
+      allowedDamage =
+        findFewestOccurrences
+          damageTargets
+          (map toTarget sanityDamageableAssets <> [InvestigatorTarget iid | not onlyAssets])
       assignRestOfSanityDamage =
         InvestigatorDoAssignDamage
           investigatorId
@@ -1303,11 +1293,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           ]
       sanityDamageMessages =
         [ damageInvestigator
-        | InvestigatorTarget investigatorId
-            `notElem` horrorTargets'
-            && null mustBeDamagedFirstBeforeInvestigator
+        | InvestigatorTarget investigatorId `elem` allowedDamage
         ]
-          <> map damageAsset sanityDamageableAssets'
+          <> map damageAsset (filter ((`elem` allowedDamage) . toTarget) sanityDamageableAssets)
     player <- getPlayer iid
     push $ chooseOne player sanityDamageMessages
     pure a
@@ -1328,9 +1316,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         sanity
         damageTargets
         horrorTargets
+
+    mustBeAssignedDamageFirstBeforeInvestigator <-
+      select
+        ( AssetCanBeAssignedDamageBy iid
+            <> AssetWithModifier NonDirectDamageMustBeAssignToThisFirst
+        )
+
+    mustBeAssignedHorrorFirstBeforeInvestigator <-
+      select
+        ( AssetCanBeAssignedHorrorBy iid
+            <> AssetWithModifier NonDirectDamageMustBeAssignToThisFirst
+        )
+
     let
       damageableAssets =
         toList $ healthDamageableAssets `union` sanityDamageableAssets
+      onlyAssets =
+        (any (`elem` mustBeAssignedDamageFirstBeforeInvestigator) damageableAssets && health > 0)
+          || (any (`elem` mustBeAssignedHorrorFirstBeforeInvestigator) damageableAssets && sanity > 0)
       continue h s t =
         InvestigatorDoAssignDamage
           iid
@@ -1355,12 +1359,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     player <- getPlayer iid
     push
       $ chooseOne player
-      $ targetLabel
-        a
-        [ Msg.InvestigatorDamage investigatorId source health sanity
-        , continue health sanity (toTarget a)
+      $ [ targetLabel
+          a
+          [ Msg.InvestigatorDamage investigatorId source health sanity
+          , continue health sanity (toTarget a)
+          ]
+        | not onlyAssets
         ]
-      : map toAssetMessage assetsWithCounts
+      <> map toAssetMessage assetsWithCounts
     pure a
   InvestigatorDoAssignDamage iid source strategy matcher health sanity damageTargets horrorTargets | iid == toId a -> do
     healthDamageMessages <-
@@ -1389,10 +1395,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 $ [damageInvestigator | null healthDamageableAssets]
                 <> map damageAsset healthDamageableAssets
             DamageDirect -> pure [damageInvestigator]
-            DamageAny ->
-              pure $ damageInvestigator : map damageAsset healthDamageableAssets
-            DamageFromHastur ->
-              pure $ damageInvestigator : map damageAsset healthDamageableAssets
+            DamageAny -> do
+              mustBeAssignedDamageFirstBeforeInvestigator <-
+                select
+                  ( AssetCanBeAssignedDamageBy iid
+                      <> AssetWithModifier NonDirectDamageMustBeAssignToThisFirst
+                  )
+              let onlyAssets = any (`elem` mustBeAssignedDamageFirstBeforeInvestigator) healthDamageableAssets
+
+              pure $ [damageInvestigator | not onlyAssets] <> map damageAsset healthDamageableAssets
+            DamageFromHastur -> do
+              mustBeAssignedDamageFirstBeforeInvestigator <-
+                select
+                  ( AssetCanBeAssignedDamageBy iid
+                      <> AssetWithModifier NonDirectDamageMustBeAssignToThisFirst
+                  )
+              let onlyAssets = any (`elem` mustBeAssignedDamageFirstBeforeInvestigator) healthDamageableAssets
+              pure $ [damageInvestigator | not onlyAssets] <> map damageAsset healthDamageableAssets
             DamageFirst def -> do
               validAssets <-
                 List.intersect healthDamageableAssets
@@ -1432,25 +1451,28 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 <> map damageAsset sanityDamageableAssets
             DamageDirect -> pure [damageInvestigator]
             DamageAny -> do
-              mustBeDamagedFirstBeforeInvestigator <-
+              mustBeAssignedDamageFirstBeforeInvestigator <-
                 select
                   ( AssetCanBeAssignedHorrorBy iid
                       <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
                   )
+
+              let onlyAssets = any (`elem` mustBeAssignedDamageFirstBeforeInvestigator) sanityDamageableAssets
               pure
                 $ [ damageInvestigator
-                  | null mustBeDamagedFirstBeforeInvestigator
+                  | not onlyAssets
                   ]
                 <> map damageAsset sanityDamageableAssets
             DamageFromHastur -> do
-              mustBeDamagedFirstBeforeInvestigator <-
+              mustBeAssignedDamageFirstBeforeInvestigator <-
                 select
                   ( AssetCanBeAssignedHorrorBy iid
                       <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
                   )
+              let onlyAssets = any (`elem` mustBeAssignedDamageFirstBeforeInvestigator) sanityDamageableAssets
               pure
                 $ [ damageInvestigator
-                  | null mustBeDamagedFirstBeforeInvestigator
+                  | not onlyAssets
                   ]
                 <> map damageAsset sanityDamageableAssets
             DamageFirst def -> do

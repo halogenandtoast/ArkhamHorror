@@ -265,6 +265,7 @@ data ModifierType
   | NoMoreThanOneDamageOrHorrorAmongst AssetMatcher
   | NoSurge
   | NonDirectHorrorMustBeAssignToThisFirst
+  | NonDirectDamageMustBeAssignToThisFirst
   | Omnipotent
   | OnlyFirstCopyCardCountsTowardMaximumHandSize
   | PlaceOnBottomOfDeckInsteadOfDiscard

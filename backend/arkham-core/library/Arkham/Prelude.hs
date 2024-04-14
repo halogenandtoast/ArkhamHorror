@@ -370,3 +370,13 @@ toResult :: (HasCallStack, FromJSON a) => Value -> a
 toResult x = case fromJSON x of
   Success a -> a
   Error e -> error $ "result failure: " <> e
+
+countOccurrences :: Ord a => [a] -> Map a Int
+countOccurrences = foldr (\x acc -> Map.insertWith (+) x 1 acc) Map.empty
+
+-- Function to find all elements of the first list that appear the fewest number of times in the second list.
+findFewestOccurrences :: Ord a => [a] -> [a] -> [a]
+findFewestOccurrences uniqueTargets as = filter (\t -> Map.findWithDefault 0 t targetCounts == minOccurrence) uniqueTargets
+ where
+  targetCounts = countOccurrences as
+  minOccurrence = maybe 0 snd (Map.lookupMin (Map.fromListWith min (Map.toList targetCounts)))

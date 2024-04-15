@@ -12,6 +12,7 @@ import Arkham.Cost.Status as X
 import Arkham.Zone as X
 
 import Arkham.Asset.Uses
+import {-# SOURCE #-} Arkham.Calculation
 import Arkham.Campaigns.TheForgottenAge.Supply
 import {-# SOURCE #-} Arkham.Card
 import Arkham.ChaosToken (ChaosToken)
@@ -21,7 +22,6 @@ import Arkham.GameValue
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Name
-import {-# SOURCE #-} Arkham.SkillTest.Base (SkillTestDifficulty)
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Strategy
@@ -129,7 +129,7 @@ data Cost
   | HandDiscardAnyNumberCost CardMatcher
   | ReturnMatchingAssetToHandCost AssetMatcher
   | ReturnAssetToHandCost AssetId
-  | SkillTestCost Source SkillType SkillTestDifficulty
+  | SkillTestCost Source SkillType GameCalculation
   | SkillIconCost Int (Set SkillIcon)
   | SameSkillIconCost Int
   | DiscardCombinedCost Int

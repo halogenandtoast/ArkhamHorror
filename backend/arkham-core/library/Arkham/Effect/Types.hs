@@ -10,9 +10,11 @@ import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
+import {-# SOURCE #-} Arkham.Helpers.Calculation (calculate)
 import Arkham.Id
 import Arkham.Json
 import Arkham.Message
+import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
@@ -181,7 +183,14 @@ instance ToJSON Effect where
   toJSON (Effect a) = toJSON a
 
 instance HasModifiersFor Effect where
-  getModifiersFor target (Effect a) = getModifiersFor target a
+  getModifiersFor target (Effect a) = do
+    mods <- getModifiersFor target a
+    foldMapM expandForEach mods
+   where
+    expandForEach x@(modifierType -> ForEach calc ms) = do
+      n <- calculate calc
+      pure $ map (\m -> x {modifierType = m}) (concat @[[ModifierType]] $ replicate n ms)
+    expandForEach m = pure [m]
 
 instance HasAbilities Effect where
   getAbilities (Effect a) = getAbilities a

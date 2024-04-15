@@ -50,7 +50,7 @@ instance RunMessage ForsakenTowerOfIllusionAndMyth where
           (attrs.ability 1)
           (toTarget attrs)
           #intellect
-          (EnemyMaybeGameValueFieldDifficulty nyarlathotep EnemyHealthActual)
+          (EnemyMaybeGameValueFieldCalculation nyarlathotep EnemyHealthActual)
       pure $ ForsakenTowerOfIllusionAndMyth $ setMeta (Just nyarlathotep) attrs
     Successful (Action.Investigate, other) iid (isAbilitySource attrs 1 -> True) target n -> do
       discardWhisperingChaos attrs

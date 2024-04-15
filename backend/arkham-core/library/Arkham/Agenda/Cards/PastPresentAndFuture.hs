@@ -47,7 +47,7 @@ instance RunMessage PastPresentAndFuture where
         $ [ ShuffleEncounterDiscardBackIn
           , DiscardUntilFirst lead (toSource attrs) Deck.EncounterDeck (basic $ CardWithType LocationType)
           ]
-        <> [ beginSkillTest iid attrs iid #willpower (RecordCountDifficulty SacrificedToYogSothoth)
+        <> [ beginSkillTest iid attrs iid #willpower (RecordedCount SacrificedToYogSothoth)
            | sacrificedToYogSothoth > 0
            , iid <- investigatorIds
            ]

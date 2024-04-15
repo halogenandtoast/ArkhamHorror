@@ -40,7 +40,7 @@ instance RunMessage BilliardsRoom where
           (toAbilitySource attrs 1)
           attrs
           SkillAgility
-          (Fixed 3)
+          (SkillTestDifficulty $ Fixed 3)
       pure l
     PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
       do

@@ -23,7 +23,7 @@ instance RunMessage TheCaptain where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOne
         iid
-        [ SkillLabel s [parley iid (attrs.ability 1) iid s MaxAlarmLevelDifficulty]
+        [ SkillLabel s [parley iid (attrs.ability 1) iid s MaxAlarmLevelCalculation]
         | s <- [#willpower, #intellect]
         ]
       pure a

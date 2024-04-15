@@ -37,7 +37,7 @@ instance HasAbilities LostInTheWilds where
 instance RunMessage LostInTheWilds where
   runMessage msg t@(LostInTheWilds attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ RevelationSkillTest iid source #willpower (Fixed 3)
+      push $ RevelationSkillTest iid source #willpower (SkillTestDifficulty $ Fixed 3)
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n -> do
       pushAll

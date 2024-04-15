@@ -8,6 +8,7 @@ module Arkham.Location.Runner (
 import Arkham.Prelude
 
 import Arkham.Ability as X hiding (PaidCost)
+import Arkham.Calculation as X
 import Arkham.Card.CardDef as X
 import Arkham.Classes as X
 import Arkham.GameValue as X
@@ -115,7 +116,7 @@ instance RunMessage LocationAttrs where
             investigation.source
             target
             investigation.skillType
-            (LocationFieldDifficulty a.id LocationShroud)
+            (LocationFieldCalculation a.id LocationShroud)
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
       let clues = locationClues a

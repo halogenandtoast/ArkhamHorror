@@ -2,6 +2,7 @@ module Arkham.Message.Lifted (module X, module Arkham.Message.Lifted) where
 
 import Arkham.Act.Types (ActAttrs (actDeckId))
 import Arkham.Agenda.Types (AgendaAttrs (agendaDeckId))
+import Arkham.Calculation
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
@@ -33,7 +34,6 @@ import Arkham.Movement
 import Arkham.Prelude
 import Arkham.Query
 import Arkham.ScenarioLogKey
-import Arkham.SkillTest.Base (SkillTestDifficulty)
 import Arkham.SkillType qualified as SkillType
 import Arkham.Source
 import Arkham.Target
@@ -214,7 +214,7 @@ beginSkillTest
   -> source
   -> target
   -> SkillType.SkillType
-  -> SkillTestDifficulty
+  -> GameCalculation
   -> m ()
 beginSkillTest iid source target sType n = push $ Msg.beginSkillTest iid source target sType n
 

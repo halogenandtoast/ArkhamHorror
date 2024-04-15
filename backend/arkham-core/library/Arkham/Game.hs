@@ -2188,7 +2188,7 @@ getEventsMatching matcher = do
       pure $ filter ((== placement) . attr eventPlacement) as
     EventControlledBy investigatorMatcher -> do
       iids <- select investigatorMatcher
-      pure $ filter ((`elem` iids) . ownerOfEvent) as
+      pure $ filter (isInPlayPlacement . attr eventPlacement) $ filter ((`elem` iids) . ownerOfEvent) as
     EventWithoutModifier modifierType -> do
       filterM (fmap (notElem modifierType) . getModifiers . toId) as
     EventWithDoom valueMatcher ->
@@ -3400,6 +3400,15 @@ instance Query ExtendedCardMatcher where
    where
     matches' :: HasGame m => Card -> ExtendedCardMatcher -> m Bool
     matches' c = \case
+      ControlledBy who -> do
+        cards <-
+          concat
+            <$> sequence
+              [ selectFields AssetCard (AssetControlledBy who)
+              , selectFields EventCard (EventControlledBy who)
+              , selectFields SkillCard (SkillControlledBy who)
+              ]
+        pure $ c `elem` cards
       NotThisCard -> error "must be replaced"
       CanCancelRevelationEffect matcher' -> do
         cardIsMatch <- matches' c matcher'

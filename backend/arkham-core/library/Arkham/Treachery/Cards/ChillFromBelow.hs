@@ -20,7 +20,7 @@ instance RunMessage ChillFromBelow where
   runMessage msg t@(ChillFromBelow attrs) = case msg of
     Revelation iid source
       | isSource attrs source ->
-          t <$ push (RevelationSkillTest iid source SkillWillpower (Fixed 3))
+          t <$ push (RevelationSkillTest iid source SkillWillpower (SkillTestDifficulty $ Fixed 3))
     FailedSkillTest iid _ source@(isSource attrs -> True) SkillTestInitiatorTarget {} _ n ->
       do
         handCount <- fieldMap InvestigatorHand length iid

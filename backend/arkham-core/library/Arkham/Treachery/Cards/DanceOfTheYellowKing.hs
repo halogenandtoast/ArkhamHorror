@@ -29,7 +29,7 @@ instance RunMessage DanceOfTheYellowKing where
       anyLunatics <- selectAny $ EnemyWithTrait Lunatic
       push
         $ if anyLunatics
-          then RevelationSkillTest iid source SkillWillpower (Fixed 3)
+          then RevelationSkillTest iid source SkillWillpower (SkillTestDifficulty $ Fixed 3)
           else gainSurge attrs
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do

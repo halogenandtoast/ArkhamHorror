@@ -37,7 +37,7 @@ instance RunMessage RipplesOnTheSurface where
   runMessage msg t@(RipplesOnTheSurface attrs@TreacheryAttrs {..}) =
     case msg of
       Revelation iid source | isSource attrs source -> do
-        t <$ push (RevelationSkillTest iid source SkillWillpower (Fixed 3))
+        t <$ push (RevelationSkillTest iid source SkillWillpower (SkillTestDifficulty $ Fixed 3))
       FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget {} _ n | tid == treacheryId -> do
         push $ InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAny 0 n
         pure t

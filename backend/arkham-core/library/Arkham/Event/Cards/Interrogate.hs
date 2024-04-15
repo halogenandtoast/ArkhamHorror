@@ -42,7 +42,7 @@ instance RunMessage Interrogate where
                       (toSource attrs)
                       (EnemyTarget enemy)
                       SkillCombat
-                      (SumDifficulty [Fixed 3, EnemyFieldDifficulty enemy EnemyHealthDamage])
+                      (SumCalculation [Fixed 3, EnemyFieldCalculation enemy EnemyHealthDamage])
                   ]
                 | enemy <- enemies
                 ]

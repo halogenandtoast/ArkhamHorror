@@ -18,7 +18,7 @@ instance RunMessage ShadowOfAtlachNacha where
         iid
         attrs
         #willpower
-        (SumDifficulty [Fixed 2, ScenarioCountDifficulty Distortion])
+        (SumCalculation [Fixed 2, ScenarioCount Distortion])
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       assignDamageAndHorror iid attrs 1 1

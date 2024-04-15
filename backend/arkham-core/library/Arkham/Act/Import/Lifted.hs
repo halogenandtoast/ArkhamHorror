@@ -31,6 +31,7 @@ import Arkham.Act.Runner as X (
   pattern R8,
   pattern UseThisAbility,
  )
+import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.Cost as X
 import Arkham.GameValue as X

@@ -26,7 +26,7 @@ instance RunMessage VastExpanse where
               iid
               source
               #willpower
-              (MaxDifficulty 5 (LocationCountDifficulty $ LocationWithTrait Extradimensional))
+              (MaxCalculation 5 (CountLocations $ LocationWithTrait Extradimensional))
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       push $ assignHorror iid attrs n

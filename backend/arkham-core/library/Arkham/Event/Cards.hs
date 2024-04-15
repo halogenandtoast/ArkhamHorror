@@ -161,6 +161,7 @@ allPlayerEventCards =
       , fortuitousDiscovery
       , fortuneOrFate2
       , galvanize1
+      , gangUp1
       , gazeOfOuraxsh2
       , getBehindMe
       , getOverHere
@@ -2702,6 +2703,14 @@ getBehindMe =
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spirit, Tactic]
     , cdFastWindow = Just FastPlayerWindow
+    }
+
+gangUp1 :: CardDef
+gangUp1 =
+  (event "08022" "Gang Up" 3 Guardian)
+    { cdSkills = [#willpower, #combat]
+    , cdCardTraits = setFromList [Spirit, Synergy]
+    , cdActions = [#fight]
     }
 
 sweepingKick1 :: CardDef

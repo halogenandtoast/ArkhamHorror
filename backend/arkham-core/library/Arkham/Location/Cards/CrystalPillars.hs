@@ -41,7 +41,7 @@ instance RunMessage CrystalPillars where
           (attrs.ability 1)
           iid
           SkillWillpower
-          (SumDifficulty [Fixed 1, VengeanceDifficulty])
+          (SumCalculation [Fixed 1, VengeanceCalculation])
       pure l
     FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
       do

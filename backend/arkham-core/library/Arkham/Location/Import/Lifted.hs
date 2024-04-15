@@ -1,5 +1,6 @@
 module Arkham.Location.Import.Lifted (module X) where
 
+import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.GameValue as X
 import Arkham.Helpers.Modifiers as X (toModifiers)

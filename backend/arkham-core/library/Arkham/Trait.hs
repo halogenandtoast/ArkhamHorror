@@ -194,6 +194,7 @@ data Trait
   | Supply
   | Surface
   | Syndicate
+  | Synergy
   | Tactic
   | Talent
   | Tarot

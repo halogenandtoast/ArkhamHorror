@@ -26,7 +26,7 @@ instance RunMessage LightlessShadow where
           iid
           source
           SkillAgility
-          (SumDifficulty [Fixed 1, ScenarioCountDifficulty CurrentDepth])
+          (SkillTestDifficulty $ SumCalculation [Fixed 1, ScenarioCount CurrentDepth])
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do

@@ -7,6 +7,7 @@ module Arkham.Story.Runner (
 
 import Arkham.Prelude
 
+import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.Helpers.Message as X hiding (story)
 import Arkham.Helpers.Query as X

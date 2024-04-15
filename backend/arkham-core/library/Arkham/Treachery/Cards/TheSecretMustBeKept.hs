@@ -6,6 +6,7 @@ module Arkham.Treachery.Cards.TheSecretMustBeKept (
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Matcher
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
@@ -27,7 +28,7 @@ instance RunMessage TheSecretMustBeKept where
           iid
           source
           SkillWillpower
-          (SumDifficulty [Fixed 3, SubtractDifficulty (Fixed 3) ActsInPlayDifficulty])
+          (SkillTestDifficulty $ SumCalculation [Fixed 3, SubtractCalculation (Fixed 3) (CountActs AnyAct)])
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do

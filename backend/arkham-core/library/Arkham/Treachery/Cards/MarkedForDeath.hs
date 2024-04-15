@@ -27,7 +27,8 @@ instance RunMessage MarkedForDeath where
           iid
           source
           SkillAgility
-          (SumDifficulty [Fixed 2, InvestigatorFieldDifficulty iid InvestigatorHorror])
+          ( SkillTestDifficulty $ SumCalculation [Fixed 2, InvestigatorFieldCalculation iid InvestigatorHorror]
+          )
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do

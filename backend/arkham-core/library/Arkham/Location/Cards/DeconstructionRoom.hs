@@ -40,7 +40,7 @@ instance RunMessage DeconstructionRoom where
           (toAbilitySource attrs 1)
           (InvestigatorTarget iid)
           SkillCombat
-          (SumDifficulty [Fixed 4, LocationFieldDifficulty attrs.id LocationClues])
+          (SumCalculation [Fixed 4, LocationFieldCalculation attrs.id LocationClues])
       pure l
     PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
       do

@@ -28,7 +28,7 @@ instance RunMessage MorbidAwareness where
           iid
           attrs
           #willpower
-          (SubtractDifficulty (Fixed 6) (DistanceFromDifficulty iid "Room 212"))
+          (SubtractCalculation (Fixed 6) (DistanceFromCalculation iid "Room 212"))
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       hasClues <- fieldMap InvestigatorClues (> 0) iid

@@ -46,7 +46,7 @@ instance RunMessage HasturTheKingInYellow where
           (toAbilitySource attrs 2)
           attrs
           #willpower
-          (EnemyMaybeFieldDifficulty attrs.id EnemyFight)
+          (EnemyMaybeFieldCalculation attrs.id EnemyFight)
       pure e
     PassedThisSkillTest _ (isSource attrs -> True) -> do
       push $ Exhaust (toTarget attrs)

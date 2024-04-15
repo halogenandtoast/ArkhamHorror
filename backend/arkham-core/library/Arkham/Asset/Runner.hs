@@ -10,6 +10,7 @@ import Arkham.Prelude
 import Arkham.Asset.Helpers as X hiding (defeated)
 import Arkham.Asset.Types as X
 import Arkham.Asset.Uses as X
+import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.GameValue as X
 import Arkham.Helpers.Message as X hiding (AssetDamage, RevealChaosToken)

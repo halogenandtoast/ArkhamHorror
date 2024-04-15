@@ -3,6 +3,7 @@ module Arkham.Scenarios.UnionAndDisillusion.Helpers where
 import Arkham.Prelude
 
 import Arkham.Action
+import Arkham.Calculation
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
@@ -32,7 +33,7 @@ circleTest
   -> source
   -> target
   -> [SkillType]
-  -> SkillTestDifficulty
+  -> GameCalculation
   -> m ()
 circleTest iid source target skillTypes n =
   push
@@ -43,7 +44,7 @@ circleTest iid source target skillTypes n =
       target
       (AndSkillTest skillTypes)
       (AndSkillBaseValue skillTypes)
-      n
+      (SkillTestDifficulty n)
 
 passedCircleTest :: (HasGame m, HasQueue Message m) => InvestigatorId -> LocationAttrs -> m ()
 passedCircleTest iid attrs = do

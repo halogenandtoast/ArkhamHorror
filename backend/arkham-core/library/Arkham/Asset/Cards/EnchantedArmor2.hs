@@ -58,9 +58,9 @@ instance RunMessage EnchantedArmor2 where
             (attrs.ability 1)
             owner
             #willpower
-            ( SumDifficulty
-                [ AssetFieldDifficulty attrs.id AssetDamage
-                , AssetFieldDifficulty attrs.id AssetHorror
+            ( SumCalculation
+                [ AssetFieldCalculation attrs.id AssetDamage
+                , AssetFieldCalculation attrs.id AssetHorror
                 ]
             )
       pure $ EnchantedArmor2 $ attrs & setMeta (x, y)

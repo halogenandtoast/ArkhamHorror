@@ -643,6 +643,7 @@ data ExtendedCardMatcher
   | CardIsBeneathInvestigator Who
   | CardWithCopyInHand Who
   | NotThisCard
+  | ControlledBy Who
   | InHandOf Who
   | InDeckOf Who
   | InPlayAreaOf Who

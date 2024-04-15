@@ -29,7 +29,7 @@ instance RunMessage Pitfall where
         $ chooseOrRunOne player
         $ Label
           "Test {agility} (3) to attempt to jump the gap. For each point you fail by, take 1 damage."
-          [RevelationSkillTest iid source SkillAgility (Fixed 3)]
+          [RevelationSkillTest iid source SkillAgility (SkillTestDifficulty $ Fixed 3)]
         : [ Label
             "Shuffle Pitfall into the exploration deck. You cannot choose this option if Pitfall was drawn from the exploration deck."
             [ ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) [card]

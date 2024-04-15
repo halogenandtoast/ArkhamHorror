@@ -41,7 +41,7 @@ instance RunMessage Persuasion where
                       (toSource attrs)
                       (EnemyTarget enemy)
                       SkillIntellect
-                      (SumDifficulty [Fixed 3, EnemyFieldDifficulty enemy EnemySanityDamage])
+                      (SumCalculation [Fixed 3, EnemyFieldCalculation enemy EnemySanityDamage])
                   ]
                 | enemy <- enemies
                 ]

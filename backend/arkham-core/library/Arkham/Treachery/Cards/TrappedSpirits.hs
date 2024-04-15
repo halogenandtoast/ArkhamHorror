@@ -42,7 +42,7 @@ instance HasModifiersFor TrappedSpirits where
 instance RunMessage TrappedSpirits where
   runMessage msg t@(TrappedSpirits attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ RevelationSkillTest iid (toSource attrs) SkillAgility (Fixed 3)
+      push $ RevelationSkillTest iid (toSource attrs) SkillAgility (SkillTestDifficulty $ Fixed 3)
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n ->
       do

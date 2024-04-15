@@ -982,6 +982,7 @@ library
       Arkham.Asset.Uses
       Arkham.Attack
       Arkham.Attack.Types
+      Arkham.Calculation
       Arkham.Campaign
       Arkham.Campaign.Campaigns
       Arkham.Campaign.Campaigns.NightOfTheZealot
@@ -1468,6 +1469,7 @@ library
       Arkham.Event.Cards.FortuitousDiscovery
       Arkham.Event.Cards.FortuneOrFate2
       Arkham.Event.Cards.Galvanize1
+      Arkham.Event.Cards.GangUp1
       Arkham.Event.Cards.GazeOfOuraxsh2
       Arkham.Event.Cards.GetBehindMe
       Arkham.Event.Cards.GetOverHere
@@ -1674,6 +1676,7 @@ library
       Arkham.Helpers.Ability
       Arkham.Helpers.Act
       Arkham.Helpers.Agenda
+      Arkham.Helpers.Calculation
       Arkham.Helpers.Campaign
       Arkham.Helpers.Card
       Arkham.Helpers.ChaosBag

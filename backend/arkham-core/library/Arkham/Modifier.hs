@@ -7,6 +7,7 @@ import Arkham.Prelude
 import Arkham.Action
 import Arkham.Action.Additional
 import Arkham.Asset.Uses
+import {-# SOURCE #-} Arkham.Calculation
 import {-# SOURCE #-} Arkham.Card (Card, CardCode)
 import Arkham.Card.CardType
 import Arkham.ChaosBag.RevealStrategy
@@ -34,7 +35,8 @@ import Data.Aeson.TH
 import GHC.OverloadedLabels
 
 data ModifierType
-  = AbilityModifier Target Int ModifierType
+  = ForEach GameCalculation [ModifierType]
+  | AbilityModifier Target Int ModifierType
   | ActionCostModifier Int
   | ActionCostOf ActionTarget Int
   | ActionCostSetToModifier Int

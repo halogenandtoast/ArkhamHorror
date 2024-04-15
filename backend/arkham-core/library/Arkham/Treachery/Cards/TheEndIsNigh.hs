@@ -30,7 +30,7 @@ instance RunMessage TheEndIsNigh where
           iid
           attrs
           #willpower
-          (SumDifficulty [Fixed 1, CurrentAgendaStepDifficulty (Fixed 4)])
+          (SumCalculation [Fixed 1, CurrentAgendaStepCalculation (Fixed 4)])
       pure t
     FailedThisSkillTest _ (isSource attrs -> True) -> do
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth

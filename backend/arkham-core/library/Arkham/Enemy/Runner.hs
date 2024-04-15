@@ -4,6 +4,7 @@
 module Arkham.Enemy.Runner (module Arkham.Enemy.Runner, module X) where
 
 import Arkham.Ability as X
+import Arkham.Calculation as X
 import Arkham.Enemy.Helpers as X hiding (EnemyEvade, EnemyFight)
 import Arkham.Enemy.Types as X
 import Arkham.GameValue as X
@@ -607,7 +608,7 @@ instance RunMessage EnemyAttrs where
           source
           (maybe (toTarget eid) (ProxyTarget (toTarget eid)) mTarget)
           skillType
-          (EnemyMaybeFieldDifficulty eid EnemyFight)
+          (EnemyMaybeFieldCalculation eid EnemyFight)
       pure a
     PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isActionTarget a target -> do
       whenWindow <- checkWindows [mkWhen (Window.SuccessfulAttackEnemy iid enemyId n)]
@@ -698,7 +699,7 @@ instance RunMessage EnemyAttrs where
               source
               (maybe (toTarget eid) (ProxyTarget (toTarget eid)) mTarget)
               skillType
-              (EnemyMaybeFieldDifficulty eid EnemyEvade)
+              (EnemyMaybeFieldCalculation eid EnemyEvade)
         Nothing -> error "No evade value"
       pure a
     PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ n | isActionTarget a target -> do

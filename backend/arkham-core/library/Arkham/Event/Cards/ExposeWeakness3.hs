@@ -40,7 +40,7 @@ instance RunMessage ExposeWeakness3 where
                   (toSource attrs)
                   (EnemyTarget enemy)
                   SkillIntellect
-                  (EnemyMaybeFieldDifficulty enemy EnemyFight)
+                  (EnemyMaybeFieldCalculation enemy EnemyFight)
               ]
             | enemy <- enemies
             ]

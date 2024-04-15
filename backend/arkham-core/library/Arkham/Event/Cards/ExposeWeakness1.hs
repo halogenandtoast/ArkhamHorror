@@ -28,7 +28,7 @@ instance RunMessage ExposeWeakness1 where
           player
           [ targetLabel
             enemy
-            [beginSkillTest iid attrs enemy #intellect (EnemyMaybeFieldDifficulty enemy EnemyFight)]
+            [beginSkillTest iid attrs enemy #intellect (EnemyMaybeFieldCalculation enemy EnemyFight)]
           | enemy <- enemies
           ]
       pure e

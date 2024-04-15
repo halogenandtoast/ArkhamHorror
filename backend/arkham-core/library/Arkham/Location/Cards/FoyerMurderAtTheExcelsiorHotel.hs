@@ -39,7 +39,7 @@ instance RunMessage FoyerMurderAtTheExcelsiorHotel where
           (toAbilitySource attrs 1)
           (BatchTarget batchId)
           #agility
-          (EnemyCountDifficulty $ enemyAt (toId attrs) <> EnemyWithTrait Guest)
+          (CountEnemies $ enemyAt (toId attrs) <> EnemyWithTrait Guest)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       mtarget <- getSkillTestTarget

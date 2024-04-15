@@ -1111,46 +1111,49 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         InvestigatorDoAssignDamage iid' s t matcher' damage' (max 0 (horror' - n)) aa b
       other -> other
     pure a
-  InvestigatorDirectDamage iid source damage horror
-    | iid == toId a
-    , not (investigatorDefeated || investigatorResigned) -> do
-        pushAll
-          $ [ CheckWindow [iid]
-              $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror)
-              : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage) | damage > 0]
-                <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror) | horror > 0]
-            | damage > 0 || horror > 0
-            ]
-          <> [ InvestigatorDoAssignDamage
-                iid
-                source
-                DamageAny
-                (AssetWithModifier CanBeAssignedDirectDamage)
-                damage
-                horror
-                []
-                []
-             , checkDefeated source iid
-             ]
-        pure a
-  InvestigatorAssignDamage iid source strategy damage horror
-    | iid == toId a
-    , not (investigatorDefeated || investigatorResigned) -> do
-        modifiers <- getModifiers (toTarget a)
-        if TreatAllDamageAsDirect `elem` modifiers
-          then push $ InvestigatorDirectDamage iid source damage horror
-          else
-            pushAll
-              $ [ CheckWindow [iid]
-                  $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror)
-                  : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage) | damage > 0]
-                    <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror) | horror > 0]
-                | damage > 0 || horror > 0
-                ]
-              <> [ InvestigatorDoAssignDamage iid source strategy AnyAsset damage horror [] []
-                 , checkDefeated source iid
-                 ]
-        pure a
+  InvestigatorDirectDamage iid source damage horror | iid == toId a -> do
+    unless (investigatorDefeated || investigatorResigned) do
+      mods <- getModifiers a
+      let horrorToCancel = if CannotCancelHorror `elem` mods then 0 else sum [n | WillCancelHorror n <- mods]
+      let horror' = max 0 (horror - horrorToCancel)
+      pushAll
+        $ [ CheckWindow [iid]
+            $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror')
+            : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage) | damage > 0]
+              <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror') | horror' > 0]
+          | damage > 0 || horror' > 0
+          ]
+        <> [ InvestigatorDoAssignDamage
+              iid
+              source
+              DamageAny
+              (AssetWithModifier CanBeAssignedDirectDamage)
+              damage
+              horror'
+              []
+              []
+           , checkDefeated source iid
+           ]
+    pure a
+  InvestigatorAssignDamage iid source strategy damage horror | iid == toId a -> do
+    unless (investigatorDefeated || investigatorResigned) do
+      mods <- getModifiers a
+      if TreatAllDamageAsDirect `elem` mods
+        then push $ InvestigatorDirectDamage iid source damage horror
+        else do
+          let horrorToCancel = if CannotCancelHorror `elem` mods then 0 else sum [n | WillCancelHorror n <- mods]
+          let horror' = max 0 (horror - horrorToCancel)
+          pushAll
+            $ [ CheckWindow [iid]
+                $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror')
+                : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage) | damage > 0]
+                  <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror') | horror' > 0]
+              | damage > 0 || horror' > 0
+              ]
+            <> [ InvestigatorDoAssignDamage iid source strategy AnyAsset damage horror' [] []
+               , checkDefeated source iid
+               ]
+    pure a
   InvestigatorDoAssignDamage iid source damageStrategy _ 0 0 damageTargets horrorTargets | iid == toId a -> do
     let
       damageEffect = case source of

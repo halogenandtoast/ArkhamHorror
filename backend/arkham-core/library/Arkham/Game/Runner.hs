@@ -1652,11 +1652,13 @@ runGameMessage msg g = case msg of
     afterHuntersMoveWindow <-
       checkWindows
         [mkAfter Window.HuntersMoveStep]
+
+    fastWindow <- checkWindows [mkWhen Window.FastPlayerWindow]
     let phaseStep step msgs = Msg.PhaseStep (EnemyPhaseStep step) msgs
     pushAllEnd
       [ phaseStep EnemyPhaseBeginsStep [phaseBeginsWindow]
       , phaseStep HunterEnemiesMoveStep [HuntersMove, afterHuntersMoveWindow]
-      , phaseStep ResolveAttacksWindow [enemiesAttackWindow]
+      , phaseStep ResolveAttacksWindow [fastWindow, enemiesAttackWindow]
       , phaseStep ResolveAttacksStep [EnemiesAttack]
       , phaseStep EnemyPhaseEndsStep [EndEnemy]
       ]

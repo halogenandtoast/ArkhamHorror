@@ -1,4 +1,4 @@
-module Arkham.Helpers.SkillTest where
+module Arkham.Helpers.SkillTest (module X, module Arkham.Helpers.SkillTest) where
 
 import Arkham.Prelude
 
@@ -18,6 +18,7 @@ import Arkham.Helpers.Card
 import Arkham.Helpers.Cost
 import Arkham.Helpers.Investigator hiding (investigator)
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest.Target as X
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword (Keyword (Peril))
@@ -52,9 +53,6 @@ getSkillTestResolvedChaosTokens = maybe [] skillTestResolvedChaosTokens <$> getS
 
 getSkillTestInvestigator :: HasGame m => m (Maybe InvestigatorId)
 getSkillTestInvestigator = fmap skillTestInvestigator <$> getSkillTest
-
-getSkillTestTarget :: HasGame m => m (Maybe Target)
-getSkillTestTarget = fmap skillTestTarget <$> getSkillTest
 
 getSkillTestSource :: HasGame m => m (Maybe Source)
 getSkillTestSource = getsSkillTest skillTestSource

@@ -14,6 +14,7 @@ import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Log
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.SkillTest.Target
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
@@ -21,6 +22,7 @@ import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Target
 import Arkham.Token
 
 calculate :: (HasCallStack, HasGame m) => GameCalculation -> m Int
@@ -43,6 +45,7 @@ calculate = go
     CountLocations mtchr -> selectCount mtchr
     CountSkills mtchr -> selectCount mtchr
     CountTreacheries mtchr -> selectCount mtchr
+    CountChaosTokens mtchr -> selectCount mtchr
     CurrentAgendaStepCalculation fallback -> do
       mAgenda <- selectOne AnyAgenda
       maybe (go fallback) getAgendaStep mAgenda
@@ -53,6 +56,10 @@ calculate = go
     VictoryDisplayCountCalculation mtchr -> selectCount $ VictoryDisplayCardMatch mtchr
     EnemyMaybeGameValueFieldCalculation eid fld -> maybe (error "missing maybe field") getGameValue =<< field fld eid
     EnemyFieldCalculation eid fld -> field fld eid
+    EnemyTargetFieldCalculation fld ->
+      getSkillTestTarget >>= \case
+        Just (EnemyTarget eid) -> field fld eid
+        _ -> pure 0
     LocationFieldCalculation lid fld -> field fld lid
     InvestigatorLocationFieldCalculation iid fld -> do
       maybe (pure 0) (field fld) =<< field InvestigatorLocation iid

@@ -1153,6 +1153,7 @@ data ChaosTokenMatcher
   | WouldReduceYourSkillValueToZero
   | IsInfestationToken ChaosTokenMatcher
   | NotChaosToken ChaosTokenMatcher
+  | SealedOnAsset AssetMatcher ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not ChaosTokenMatcher where

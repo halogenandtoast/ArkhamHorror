@@ -52,6 +52,8 @@ data GameCalculation
   | MaxAlarmLevelCalculation -- getMaxAlarmLevel
   | VengeanceCalculation -- getVengeanceInVictoryDisplay
   | DifferentClassAmong ExtendedCardMatcher
+  | EnemyTargetFieldCalculation (Field Enemy Int)
+  | CountChaosTokens ChaosTokenMatcher
   deriving stock (Show, Ord, Eq, Data, Generic)
   deriving (FromJSON) via MaybeFixed
 

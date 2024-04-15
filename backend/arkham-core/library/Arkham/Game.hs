@@ -3305,6 +3305,7 @@ instance Query ChaosTokenMatcher where
     includeSealed = \case
       IncludeSealed _ -> True
       IncludeTokenPool m -> includeSealed m
+      SealedOnAsset _ _ -> True
       _ -> False
     includeTokenPool = \case
       IncludeSealed m -> includeTokenPool m
@@ -3330,9 +3331,14 @@ instance Query ChaosTokenMatcher where
             $ infestationTokens bag
             <> infestationSetAside bag
             <> maybeToList (infestationCurrentToken bag)
+    go :: HasGame m => ChaosTokenMatcher -> ChaosToken -> m Bool
     go = \case
       InTokenPool m -> go m
       NotChaosToken m -> fmap not . go m
+      SealedOnAsset assetMatcher chaosTokenMatcher -> \t -> do
+        sealedTokens <- selectAgg id AssetSealedChaosTokens assetMatcher
+        isMatch <- go chaosTokenMatcher t
+        pure $ isMatch && t `elem` sealedTokens
       WouldReduceYourSkillValueToZero -> \t -> do
         mSkillTest <- getSkillTest
         case mSkillTest of

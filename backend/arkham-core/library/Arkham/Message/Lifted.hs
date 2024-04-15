@@ -569,3 +569,7 @@ insteadOf
 insteadOf msg f = do
   msgs <- evalQueueT f
   lift $ replaceMessageMatching (== msg) (const msgs)
+
+enemyAttackModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
+enemyAttackModifier source target modifier = push $ Msg.enemyAttackModifier source target modifier

@@ -145,6 +145,7 @@ data InvestigatorMatcher
   | CanBeHuntedBy EnemyId
   | DistanceFromRoundStart ValueMatcher
   | InvestigatorWithMetaKey Text
+  | InvestigatorWithFilledSlot SlotType
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated InvestigatorMatcher

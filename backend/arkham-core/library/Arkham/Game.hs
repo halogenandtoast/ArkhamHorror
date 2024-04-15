@@ -914,6 +914,9 @@ getInvestigatorsMatching matcher = do
     InvestigatorWithCommittableCard -> \i -> do
       selectAny $ CommittableCard (toId i) (basic AnyCard)
     InvestigatorWithUnhealedHorror -> fieldMap InvestigatorUnhealedHorrorThisRound (> 0) . toId
+    InvestigatorWithFilledSlot sType -> \i -> do
+      slots <- fieldMap InvestigatorSlots (findWithDefault [] sType) (toId i)
+      pure $ count (not . isEmptySlot) slots > 0
     InvestigatorWithMetaKey k -> \i -> do
       meta <- field InvestigatorMeta (toId i)
       case meta of

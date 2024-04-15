@@ -2,6 +2,7 @@ module Arkham.Helpers.Window where
 
 import Arkham.Prelude
 
+import Arkham.Attack.Types
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.HasGame
@@ -180,3 +181,19 @@ getChaosToken = \case
   ((windowType -> Window.RevealChaosToken _ token) : _) -> token
   ((windowType -> Window.ResolvesChaosToken _ token) : _) -> token
   (_ : rest) -> getChaosToken rest
+
+getAttackDetails :: [Window] -> EnemyAttackDetails
+getAttackDetails = \case
+  [] -> error "No chaos token drawn"
+  ((windowType -> Window.EnemyWouldAttack details) : _) -> details
+  (_ : rest) -> getAttackDetails rest
+
+replaceWindow :: HasQueue Message m => (Window -> Bool) -> (Window -> Window) -> m ()
+replaceWindow f wf = do
+  replaceMessageMatching
+    \case
+      CheckWindow _ ws -> any f ws
+      _ -> False
+    \case
+      CheckWindow iids ws -> [CheckWindow iids $ map (\w -> if f w then wf w else w) ws]
+      _ -> error "impossible"

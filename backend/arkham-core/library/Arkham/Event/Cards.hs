@@ -162,6 +162,7 @@ allPlayerEventCards =
       , fortuneOrFate2
       , galvanize1
       , gazeOfOuraxsh2
+      , getBehindMe
       , getOverHere
       , getOverHere2
       , ghastlyRevelation
@@ -217,6 +218,7 @@ allPlayerEventCards =
       , manoAMano1
       , manoAMano2
       , marksmanship1
+      , meditativeTrance
       , mindOverMatter
       , mindOverMatter2
       , mindWipe1
@@ -2694,6 +2696,14 @@ toeToToe =
     , cdBeforeEffect = True
     }
 
+getBehindMe :: CardDef
+getBehindMe =
+  (event "08021" "\"Get behind me!\"" 0 Guardian)
+    { cdSkills = [#willpower, #combat]
+    , cdCardTraits = setFromList [Spirit, Tactic]
+    , cdFastWindow = Just FastPlayerWindow
+    }
+
 sweepingKick1 :: CardDef
 sweepingKick1 =
   (event "08023" "Sweeping Kick" 1 Guardian)
@@ -2751,6 +2761,18 @@ moneyTalks2 =
             AnySkillTestValue
             #any
     , cdLevel = Just 2
+    }
+
+meditativeTrance :: CardDef
+meditativeTrance =
+  (event "08061" "Meditative Trance" 2 Mystic)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Insight, Spirit]
+    , cdCriteria =
+        Just
+          $ youExist
+          $ InvestigatorWithFilledSlot #arcane
+          <> oneOf [HealableInvestigator ThisCard dType You | dType <- [#damage, #horror]]
     }
 
 parallelFates2 :: CardDef

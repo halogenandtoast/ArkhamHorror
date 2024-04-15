@@ -304,11 +304,8 @@
       "  )",
       "where",
       "",
-      "import Arkham.Prelude",
-      "",
-      "import Arkham.Classes",
       "import Arkham.Event.Cards qualified as Cards",
-      "import Arkham.Event.Runner",
+      "import Arkham.Event.Import.Lifted",
       "",
       "newtype {dot} = {dot} EventAttrs",
       "  deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)",
@@ -318,12 +315,10 @@
       "{dot|snakecase|camelcase} = event {dot} Cards.{dot|snakecase|camelcase}",
       "",
       "instance RunMessage {dot} where",
-      "  runMessage msg e@({dot} attrs) = case msg of",
-      "    InvestigatorPlayEvent _ eid _ _ _ | eid == toId attrs -> do",
+      "  runMessage msg e@({dot} attrs) = runQueueT $ case msg of",
+      "    PlayThisEvent _iid eid | eid == toId attrs -> do",
       "      pure e",
-      "    -- PlayThisEvent _iid eid | eid == toId attrs -> do",
-      "    --  pure e",
-      "    _ -> {dot} <$> runMessage msg attrs"
+      "    _ -> {dot} <$> lift (runMessage msg attrs)"
     ]
   },
   "arkham-core/library/Arkham/Location/Cards/*.hs": {

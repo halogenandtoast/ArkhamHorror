@@ -739,7 +739,18 @@ instance RunMessage EnemyAttrs where
       pure a
     ChangeEnemyAttackTarget eid target | eid == enemyId -> do
       let details = fromJustNote "missing attack details" enemyAttacking
-      pure $ a & attackingL ?~ details {attackTarget = target}
+          details' = details {attackTarget = target}
+      replaceWindow
+        \case
+          (Window.windowType -> Window.EnemyAttacks d) -> d == details
+          _ -> False
+        \w -> w {Window.windowType = Window.EnemyAttacks details'}
+      replaceWindow
+        \case
+          (Window.windowType -> Window.EnemyAttacksEvenIfCancelled d) -> d == details
+          _ -> False
+        \w -> w {Window.windowType = Window.EnemyAttacksEvenIfCancelled details'}
+      pure $ a & attackingL ?~ details'
     AfterEnemyAttack eid msgs | eid == enemyId -> do
       let details = fromJustNote "missing attack details" enemyAttacking
       pure $ a & attackingL ?~ details {attackAfter = msgs}

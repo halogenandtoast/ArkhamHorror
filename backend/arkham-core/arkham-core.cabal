@@ -1086,6 +1086,7 @@ library
       Arkham.Effect.Effects.UndimensionedAndUnseenTabletToken
       Arkham.Effect.Effects.WindowModifierEffect
       Arkham.Effect.Helpers
+      Arkham.Effect.Import
       Arkham.Effect.Runner
       Arkham.Effect.Types
       Arkham.Effect.Window
@@ -1468,6 +1469,7 @@ library
       Arkham.Event.Cards.FortuneOrFate2
       Arkham.Event.Cards.Galvanize1
       Arkham.Event.Cards.GazeOfOuraxsh2
+      Arkham.Event.Cards.GetBehindMe
       Arkham.Event.Cards.GetOverHere
       Arkham.Event.Cards.GetOverHere2
       Arkham.Event.Cards.GhastlyRevelation
@@ -1523,6 +1525,7 @@ library
       Arkham.Event.Cards.ManoAMano1
       Arkham.Event.Cards.ManoAMano2
       Arkham.Event.Cards.Marksmanship1
+      Arkham.Event.Cards.MeditativeTrance
       Arkham.Event.Cards.MindOverMatter
       Arkham.Event.Cards.MindOverMatter2
       Arkham.Event.Cards.MindWipe1

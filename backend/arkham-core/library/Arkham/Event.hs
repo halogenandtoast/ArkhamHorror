@@ -456,6 +456,7 @@ allEvents =
     , -- Edge of the Earth
       --- guardian [eote]
       SomeEventCard toeToToe
+    , SomeEventCard getBehindMe
     , SomeEventCard sweepingKick1
     , SomeEventCard dodge2
     , --- seeker [eote]
@@ -464,7 +465,8 @@ allEvents =
       SomeEventCard scoutAhead
     , SomeEventCard moneyTalks2
     , --- mystic [eote]
-      SomeEventCard parallelFates2
+      SomeEventCard meditativeTrance
+    , SomeEventCard parallelFates2
     , --- rogue/mystic [eote]
       SomeEventCard etherealSlip
     , SomeEventCard etherealSlip2

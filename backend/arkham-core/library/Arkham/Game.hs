@@ -3337,8 +3337,8 @@ instance Query ChaosTokenMatcher where
       NotChaosToken m -> fmap not . go m
       SealedOnAsset assetMatcher chaosTokenMatcher -> \t -> do
         sealedTokens <- selectAgg id AssetSealedChaosTokens assetMatcher
-        isMatch <- go chaosTokenMatcher t
-        pure $ isMatch && t `elem` sealedTokens
+        isMatch' <- go chaosTokenMatcher t
+        pure $ isMatch' && t `elem` sealedTokens
       WouldReduceYourSkillValueToZero -> \t -> do
         mSkillTest <- getSkillTest
         case mSkillTest of

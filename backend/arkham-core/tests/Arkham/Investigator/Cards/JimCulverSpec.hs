@@ -4,6 +4,7 @@ module Arkham.Investigator.Cards.JimCulverSpec (
 
 import TestImport.Lifted
 
+import Arkham.Calculation
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.SkillTest.Base
 
@@ -22,7 +23,7 @@ spec = describe "Jim Culver" $ do
               (TestSource mempty)
               TestTarget
               SkillIntellect
-              (Fixed 2)
+              (SkillTestDifficulty $ Fixed 2)
         ]
       chooseOnlyOption "start skill test"
       chooseOptionMatching
@@ -45,7 +46,7 @@ spec = describe "Jim Culver" $ do
               (TestSource mempty)
               TestTarget
               SkillIntellect
-              (Fixed 2)
+              (SkillTestDifficulty $ Fixed 2)
         ]
       chooseOnlyOption "start skill test"
       chooseOptionMatching
@@ -69,7 +70,7 @@ spec = describe "Jim Culver" $ do
               (TestSource mempty)
               TestTarget
               SkillIntellect
-              (Fixed 2)
+              (SkillTestDifficulty $ Fixed 2)
         ]
       chooseOnlyOption "start skill test"
       chooseOnlyOption "apply results"

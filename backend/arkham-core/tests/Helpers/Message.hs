@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Action (Action)
 import Arkham.Asset.Types
 import Arkham.Attack qualified as Attack
+import Arkham.Calculation
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
@@ -84,12 +85,13 @@ investigate i l =
 
 beginSkillTest :: Investigator -> SkillType -> Int -> Message
 beginSkillTest i sType n =
-  BeginSkillTest $ initSkillTest (toId i) (TestSource mempty) TestTarget sType (Fixed n)
+  BeginSkillTest
+    $ initSkillTest (toId i) (TestSource mempty) TestTarget sType (SkillTestDifficulty $ Fixed n)
 
 beginActionSkillTest :: Investigator -> Action -> Maybe Target -> SkillType -> Int -> Message
 beginActionSkillTest i a mt sType n =
   BeginSkillTest
-    $ (initSkillTest (toId i) (TestSource mempty) target sType (Fixed n))
+    $ (initSkillTest (toId i) (TestSource mempty) target sType (SkillTestDifficulty $ Fixed n))
       { skillTestAction = Just a
       }
  where

@@ -1,8 +1,8 @@
 module Arkham.Event.Cards.MindOverMatterSpec (spec) where
 
+import Arkham.Calculation
 import Arkham.Event.Cards qualified as Events
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
-import Arkham.SkillTest.Base
 import TestImport.New
 
 spec :: Spec
@@ -37,7 +37,12 @@ spec = describe "Mind over Matter" $ do
       setChaosTokens [Zero]
       duringTurn self $ do
         self `playEvent` Events.mindOverMatter
-        circleTest (toId self) (TestSource mempty) TestTarget [#intellect, #combat] (Fixed 2)
+        circleTest
+          (toId self)
+          (TestSource mempty)
+          TestTarget
+          [#intellect, #combat]
+          (Fixed 2)
         runMessages
 
         chooseOptionMatching "use intellect instead of combat" \case

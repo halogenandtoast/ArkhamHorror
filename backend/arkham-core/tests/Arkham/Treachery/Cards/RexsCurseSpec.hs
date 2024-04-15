@@ -4,6 +4,7 @@ module Arkham.Treachery.Cards.RexsCurseSpec (
 
 import TestImport.Lifted
 
+import Arkham.Calculation
 import Arkham.Matcher
 import Arkham.SkillTest.Base
 import Arkham.Treachery.Cards qualified as Cards
@@ -37,7 +38,7 @@ spec = describe "Rex's Curse" $ do
             (TestSource mempty)
             TestTarget
             SkillIntellect
-            (Fixed 5)
+            (SkillTestDifficulty $ Fixed 5)
       ]
     chooseOnlyOption "start skill test"
     chooseOnlyOption "trigger rex's curse"

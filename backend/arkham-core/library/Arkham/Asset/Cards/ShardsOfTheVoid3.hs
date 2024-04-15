@@ -3,13 +3,15 @@ module Arkham.Asset.Cards.ShardsOfTheVoid3 (shardsOfTheVoid3, ShardsOfTheVoid3 (
 import Arkham.Ability
 import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Fight
+import Arkham.Helpers.SkillTest
+import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Prelude
-import Arkham.Projection
+import Arkham.Modifier
 
 newtype ShardsOfTheVoid3 = ShardsOfTheVoid3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -28,24 +30,26 @@ instance HasAbilities ShardsOfTheVoid3 where
     ]
 
 instance RunMessage ShardsOfTheVoid3 where
-  runMessage msg a@(ShardsOfTheVoid3 attrs) = case msg of
+  runMessage msg a@(ShardsOfTheVoid3 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      zeros <- fieldMap AssetSealedChaosTokens (count ((== Zero) . chaosTokenFace)) (toId attrs)
       let source = attrs.ability 1
+      skillTestModifiers source iid $ DamageDealt 1
+        : [ ForEach
+              (CountChaosTokens $ SealedOnAsset (be attrs) (ChaosTokenFaceIs Zero))
+              [SkillModifier #willpower 2]
+          ]
       chooseFight <- aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight iid source)
-      pushAll
-        $ skillTestModifiers source iid (DamageDealt 1 : [SkillModifier #willpower (zeros * 2) | zeros > 0])
-        : leftOr chooseFight
+      pushAll $ leftOr chooseFight
       pure a
     Msg.RevealChaosToken SkillTestSource _ token | chaosTokenFace token == Zero -> do
       mSource <- getSkillTestSource
       mInvestigator <- getSkillTestInvestigator
       for_ ((,) <$> mSource <*> mInvestigator) $ \(source, iid) -> do
-        when (isAbilitySource attrs 1 source)
-          $ pushAll
-            [ skillTestModifier (attrs.ability 1) iid (DamageDealt 1)
-            , SealChaosToken token
+        when (isAbilitySource attrs 1 source) do
+          skillTestModifier (attrs.ability 1) iid (DamageDealt 1)
+          pushAll
+            [ SealChaosToken token
             , SealedChaosToken token (toCard attrs)
             ]
       pure a
-    _ -> ShardsOfTheVoid3 <$> runMessage msg attrs
+    _ -> ShardsOfTheVoid3 <$> lift (runMessage msg attrs)

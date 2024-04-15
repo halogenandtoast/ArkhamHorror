@@ -19,6 +19,7 @@ import Arkham.Helpers.Matchers
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
 import {-# SOURCE #-} Arkham.Helpers.SkillTest
+import Arkham.Helpers.SkillTest.Target
 import Arkham.Helpers.Target
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Investigators

@@ -1702,6 +1702,7 @@ library
       Arkham.Helpers.Ref
       Arkham.Helpers.Scenario
       Arkham.Helpers.SkillTest
+      Arkham.Helpers.SkillTest.Target
       Arkham.Helpers.Slot
       Arkham.Helpers.Source
       Arkham.Helpers.Story

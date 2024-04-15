@@ -25,7 +25,7 @@ instance RunMessage Bathophobia where
           iid
           attrs
           #willpower
-          (SumDifficulty [Fixed 1, ScenarioCountDifficulty CurrentDepth])
+          (SumCalculation [Fixed 1, ScenarioCount CurrentDepth])
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       push $ assignHorror iid attrs 2

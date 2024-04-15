@@ -9,6 +9,7 @@ module Arkham.Treachery.Runner (
 
 import Arkham.Prelude
 
+import Arkham.Calculation as X
 import Arkham.Classes.Entity as X
 import Arkham.Classes.HasAbilities as X
 import Arkham.Classes.HasModifiersFor as X

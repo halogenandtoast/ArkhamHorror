@@ -30,14 +30,14 @@ instance RunMessage LostSoul where
               iid
               source
               SkillWillpower
-              (InvestigatorFieldDifficulty iid InvestigatorIntellect)
+              (SkillTestDifficulty $ InvestigatorFieldCalculation iid InvestigatorIntellect)
         else do
           push
             $ RevelationSkillTest
               iid
               source
               SkillIntellect
-              (InvestigatorFieldDifficulty iid InvestigatorWillpower)
+              (SkillTestDifficulty $ InvestigatorFieldCalculation iid InvestigatorWillpower)
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
       do

@@ -24,7 +24,7 @@ terrorInTheNight = treachery TerrorInTheNight Cards.terrorInTheNight
 instance RunMessage TerrorInTheNight where
   runMessage msg t@(TerrorInTheNight attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ RevelationSkillTest iid (toSource attrs) SkillWillpower (Fixed 4)
+      push $ RevelationSkillTest iid (toSource attrs) SkillWillpower (SkillTestDifficulty $ Fixed 4)
       pure t
     FailedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n ->
       do

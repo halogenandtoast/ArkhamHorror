@@ -44,7 +44,7 @@ instance RunMessage Eavesdrop where
           (toSource attrs)
           (toTarget attrs)
           SkillIntellect
-          (EnemyMaybeFieldDifficulty eid EnemyEvade)
+          (EnemyMaybeFieldCalculation eid EnemyEvade)
       pure e
     PassedSkillTest iid _ _ target _ _ | isTarget attrs target -> do
       push $ InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) 2 Nothing

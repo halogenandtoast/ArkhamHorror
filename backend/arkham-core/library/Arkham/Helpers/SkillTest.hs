@@ -3,6 +3,7 @@ module Arkham.Helpers.SkillTest where
 import Arkham.Prelude
 
 import Arkham.Action
+import Arkham.Calculation
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.ClassSymbol
@@ -10,18 +11,13 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (HasQueue, popMessageMatching_, pushAfter)
 import Arkham.Classes.Query hiding (matches)
 import Arkham.CommitRestriction
-import Arkham.Distance
 import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Agenda
+import Arkham.Helpers.Calculation
 import Arkham.Helpers.Card
 import Arkham.Helpers.Cost
-import Arkham.Helpers.Doom
-import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator hiding (investigator)
-import Arkham.Helpers.Log (getRecordCount, scenarioCount)
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword (Keyword (Peril))
@@ -31,15 +27,12 @@ import Arkham.Message (Message (..), pattern BeginSkillTest)
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Question
-import Arkham.Scenario.Types
-import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
-import Arkham.Token
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -105,9 +98,9 @@ revelationSkillTest
   => InvestigatorId
   -> source
   -> SkillType
-  -> SkillTestDifficulty
+  -> GameCalculation
   -> Message
-revelationSkillTest iid (toSource -> source) = RevelationSkillTest iid source
+revelationSkillTest iid (toSource -> source) sType calc = RevelationSkillTest iid source sType (SkillTestDifficulty calc)
 
 beginSkillTest
   :: (Sourceable source, Targetable target)
@@ -115,10 +108,10 @@ beginSkillTest
   -> source
   -> target
   -> SkillType
-  -> SkillTestDifficulty
+  -> GameCalculation
   -> Message
 beginSkillTest iid (toSource -> source) (toTarget -> target) sType n =
-  BeginSkillTest $ initSkillTest iid source target sType n
+  BeginSkillTest $ initSkillTest iid source target sType (SkillTestDifficulty n)
 
 parley
   :: (Sourceable source, Targetable target)
@@ -126,11 +119,11 @@ parley
   -> source
   -> target
   -> SkillType
-  -> SkillTestDifficulty
+  -> GameCalculation
   -> Message
 parley iid (toSource -> source) (toTarget -> target) sType n =
   BeginSkillTest
-    $ (initSkillTest iid source target sType n)
+    $ (initSkillTest iid source target sType (SkillTestDifficulty n))
       { skillTestAction = Just Parley
       }
 
@@ -140,11 +133,11 @@ exploreTest
   -> source
   -> target
   -> SkillType
-  -> SkillTestDifficulty
+  -> GameCalculation
   -> Message
 exploreTest iid (toSource -> source) (toTarget -> target) sType n =
   BeginSkillTest
-    $ (initSkillTest iid source target sType n)
+    $ (initSkillTest iid source target sType (SkillTestDifficulty n))
       { skillTestAction = Just Arkham.Action.Explore
       }
 
@@ -154,11 +147,11 @@ fight
   -> source
   -> target
   -> SkillType
-  -> SkillTestDifficulty
+  -> GameCalculation
   -> Message
 fight iid (toSource -> source) (toTarget -> target) sType n =
   BeginSkillTest
-    $ (initSkillTest iid source target sType n)
+    $ (initSkillTest iid source target sType (SkillTestDifficulty n))
       { skillTestAction = Just Fight
       }
 
@@ -168,11 +161,11 @@ evade
   -> source
   -> target
   -> SkillType
-  -> SkillTestDifficulty
+  -> GameCalculation
   -> Message
 evade iid (toSource -> source) (toTarget -> target) sType n =
   BeginSkillTest
-    $ (initSkillTest iid source target sType n)
+    $ (initSkillTest iid source target sType (SkillTestDifficulty n))
       { skillTestAction = Just Evade
       }
 
@@ -182,11 +175,11 @@ investigate
   -> source
   -> target
   -> SkillType
-  -> SkillTestDifficulty
+  -> GameCalculation
   -> Message
 investigate iid (toSource -> source) (toTarget -> target) sType n =
   BeginSkillTest
-    $ (initSkillTest iid source target sType n)
+    $ (initSkillTest iid source target sType (SkillTestDifficulty n))
       { skillTestAction = Just #investigate
       }
 
@@ -316,62 +309,7 @@ getModifiedSkillTestDifficulty s = do
 getBaseSkillTestDifficulty :: (HasGame m, HasCallStack) => SkillTest -> m Int
 getBaseSkillTestDifficulty s = go (skillTestDifficulty s)
  where
-  go = \case
-    Fixed n -> pure n
-    ActsInPlayDifficulty -> getActDecksInPlayCount
-    CurrentAgendaStepDifficulty fallback -> do
-      mAgenda <- selectOne AnyAgenda
-      maybe (go fallback) getAgendaStep mAgenda
-    ScenarioCountDifficulty key -> scenarioCount key
-    RecordCountDifficulty key -> getRecordCount key
-    DividedByDifficulty d n -> (`div` n) <$> go d
-    SumDifficulty ds -> sum <$> traverse go ds
-    AssetFieldDifficulty aid fld -> field fld aid
-    InvestigatorFieldDifficulty iid fld -> field fld iid
-    InvestigatorHandLengthDifficulty iid -> fieldMap InvestigatorHand length iid
-    EnemyMaybeFieldDifficulty eid fld -> fromJustNote "missing maybe field" <$> field fld eid
-    VictoryDisplayCountDifficulty mtchr -> selectCount $ VictoryDisplayCardMatch mtchr
-    EnemyCountDifficulty mtchr -> selectCount mtchr
-    LocationCountDifficulty mtchr -> selectCount mtchr
-    MaxDifficulty n d -> min n <$> go d
-    EnemyMaybeGameValueFieldDifficulty eid fld -> maybe (error "missing maybe field") getGameValue =<< field fld eid
-    EnemyFieldDifficulty eid fld -> field fld eid
-    LocationFieldDifficulty lid fld -> field fld lid
-    InvestigatorLocationFieldDifficulty iid fld -> do
-      maybe (pure 0) (field fld) =<< field InvestigatorLocation iid
-    CardCostDifficulty cId -> getCard cId >>= getModifiedCardCost (skillTestInvestigator s)
-    ScenarioInDiscardCountDifficulty mtchr -> length <$> findInDiscard mtchr
-    InvestigatorTokenCountDifficulty iid token -> fieldMap InvestigatorTokens (countTokens token) iid
-    DoomCountDifficulty -> getDoomCount
-    DistanceFromDifficulty iid matcher -> do
-      l1 <- getMaybeLocation iid
-      l2 <- selectOne matcher
-      case (l1, l2) of
-        (Just l1', Just l2') -> maybe 0 unDistance <$> getDistance l1' l2'
-        _ -> pure 0
-    SubtractDifficulty d1 d2 -> (-) <$> go d1 <*> go d2
-    MaxAlarmLevelDifficulty -> do
-      -- getMaxAlarmLevel
-      investigators <- select UneliminatedInvestigator
-      alarmLevels <- traverse (fieldMap InvestigatorTokens (countTokens AlarmLevel)) investigators
-      pure $ getMax0 $ foldMap Max0 alarmLevels
-    VengeanceDifficulty -> do
-      -- getVengeanceInVictoryDisplay
-      victoryDisplay <- field ScenarioVictoryDisplay =<< selectJust TheScenario
-      let
-        isVengeanceCard = \case
-          VengeanceCard _ -> True
-          _ -> False
-        inVictoryDisplay =
-          sum $ map (fromMaybe 0 . cdVengeancePoints . toCardDef) victoryDisplay
-        vengeanceCards = count isVengeanceCard victoryDisplay
-      locationsWithModifier <-
-        getSum
-          <$> selectAgg
-            (Sum . fromMaybe 0)
-            LocationVengeance
-            (LocationWithModifier InVictoryDisplayForCountingVengeance)
-      pure $ inVictoryDisplay + locationsWithModifier + vengeanceCards
+  go (SkillTestDifficulty c) = calculate c
 
 skillTestLabel
   :: (Sourceable source, Targetable target)
@@ -380,7 +318,7 @@ skillTestLabel
   -> InvestigatorId
   -> source
   -> target
-  -> SkillTestDifficulty
+  -> GameCalculation
   -> UI Message
 skillTestLabel lbl sType iid source target n = SkillLabelWithLabel lbl sType [beginSkillTest iid source target sType n]
 

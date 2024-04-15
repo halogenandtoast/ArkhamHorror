@@ -32,7 +32,7 @@ instance RunMessage ChaosInTheWater where
             innocentRevelerIds
       t
         <$ pushAll
-          [ RevelationSkillTest iid' source SkillAgility (Fixed 4)
+          [ RevelationSkillTest iid' source SkillAgility (SkillTestDifficulty $ Fixed 4)
           | iid' <- nub (iid : investigatorsWithRevelers)
           ]
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _

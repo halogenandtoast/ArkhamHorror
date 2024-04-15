@@ -45,7 +45,7 @@ instance RunMessage PatientConfinementFamiliarCell where
           (attrs.ability 1)
           (toTarget attrs)
           SkillWillpower
-          (InvestigatorFieldDifficulty iid InvestigatorHorror)
+          (InvestigatorFieldCalculation iid InvestigatorHorror)
       pure l
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isAbilitySource attrs 1 source -> l <$ push (Remember RecalledTheWayOut)

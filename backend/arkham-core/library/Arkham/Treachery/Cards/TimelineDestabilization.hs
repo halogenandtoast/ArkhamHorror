@@ -31,7 +31,8 @@ instance RunMessage TimelineDestabilization where
           iid
           (toSource attrs)
           SkillWillpower
-          (SumDifficulty [Fixed 1, LocationCountDifficulty (LocationWithTrait Ancient)])
+          ( SkillTestDifficulty $ SumCalculation [Fixed 1, CountLocations (LocationWithTrait Ancient)]
+          )
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       card <- field TreacheryCard (toId attrs)

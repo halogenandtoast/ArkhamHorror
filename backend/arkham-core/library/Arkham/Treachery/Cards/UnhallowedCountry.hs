@@ -56,7 +56,7 @@ instance RunMessage UnhallowedCountry where
     Revelation iid source | isSource attrs source -> do
       t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      t <$ push (RevelationSkillTest iid source SkillWillpower (Fixed 3))
+      t <$ push (RevelationSkillTest iid source SkillWillpower (SkillTestDifficulty $ Fixed 3))
     PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> t <$ push (toDiscardBy iid (toAbilitySource attrs 1) $ toTarget attrs)
     _ -> UnhallowedCountry <$> runMessage msg attrs

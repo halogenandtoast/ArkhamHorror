@@ -10,6 +10,7 @@ import Arkham.Prelude
 import Arkham.Act.Helpers as X
 import Arkham.Act.Sequence as X
 import Arkham.Act.Types as X
+import Arkham.Calculation as X
 import Arkham.Cost as X
 import Arkham.GameValue as X
 import Arkham.Helpers.Act as X

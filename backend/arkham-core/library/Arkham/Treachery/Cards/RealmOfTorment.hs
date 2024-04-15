@@ -38,7 +38,7 @@ instance RunMessage RealmOfTorment where
       runHauntedAbilities iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ RevelationSkillTest iid (toAbilitySource attrs 2) #willpower (Fixed 3)
+      push $ RevelationSkillTest iid (toAbilitySource attrs 2) #willpower (SkillTestDifficulty $ Fixed 3)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       push $ toDiscardBy iid (toAbilitySource attrs 1) attrs

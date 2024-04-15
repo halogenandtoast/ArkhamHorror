@@ -27,7 +27,7 @@ instance RunMessage ExtradimensionalVisions where
           iid
           attrs
           SkillWillpower
-          (SumDifficulty [Fixed 2, DividedByDifficulty (ScenarioInDiscardCountDifficulty AnyCard) 10])
+          (SumCalculation [Fixed 2, DividedByCalculation (ScenarioInDiscardCountCalculation AnyCard) 10])
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       push $ ChooseAndDiscardAsset iid (toSource attrs) AnyAsset

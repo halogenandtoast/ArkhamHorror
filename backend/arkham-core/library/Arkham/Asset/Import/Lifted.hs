@@ -22,6 +22,7 @@ import Arkham.Asset.Runner as X (
   toModifiers,
   tokensL,
  )
+import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.Message as X (Message (..), pattern PassedThisSkillTest, pattern UseThisAbility)
 import Arkham.Message.Lifted as X

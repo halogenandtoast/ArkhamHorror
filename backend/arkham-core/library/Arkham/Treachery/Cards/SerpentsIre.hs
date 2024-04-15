@@ -63,7 +63,11 @@ instance RunMessage SerpentsIre where
       if spawned
         then do
           push
-            $ RevelationSkillTest iid (toSource attrs) SkillAgility (EnemyMaybeFieldDifficulty eid EnemyFight)
+            $ RevelationSkillTest
+              iid
+              (toSource attrs)
+              SkillAgility
+              (SkillTestDifficulty $ EnemyMaybeFieldCalculation eid EnemyFight)
           pure . SerpentsIre $ attrs `with` Metadata (Just eid)
         else pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->

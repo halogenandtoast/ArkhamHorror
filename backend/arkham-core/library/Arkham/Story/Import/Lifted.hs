@@ -1,5 +1,6 @@
 module Arkham.Story.Import.Lifted (module X) where
 
+import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.Message as X (Message (..), UI (..), pattern PlaceClues)
 import Arkham.Message.Lifted as X hiding (story)

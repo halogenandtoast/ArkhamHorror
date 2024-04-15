@@ -4,6 +4,7 @@ module Arkham.Treachery.Import.Lifted (
 )
 where
 
+import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.Helpers.Query as X
 import Arkham.Message as X (
@@ -52,7 +53,7 @@ revelationSkillTest
   => InvestigatorId
   -> source
   -> SkillType
-  -> SkillTestDifficulty
+  -> GameCalculation
   -> m ()
 revelationSkillTest iid source sType n = push $ Msg.revelationSkillTest iid source sType n
 

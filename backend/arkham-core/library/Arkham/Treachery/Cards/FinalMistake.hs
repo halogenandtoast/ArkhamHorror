@@ -28,7 +28,7 @@ instance RunMessage FinalMistake where
           <$> selectAgg Sum LocationDoom (locationWithInvestigator iid)
       pushAll
         [ skillTestModifier source SkillTestTarget (Difficulty doom)
-        , RevelationSkillTest iid source SkillAgility (Fixed 2)
+        , RevelationSkillTest iid source SkillAgility (SkillTestDifficulty $ Fixed 2)
         ]
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ -> do

@@ -49,7 +49,7 @@ instance RunMessage ShiningTrapezohedron4 where
           (attrs.ability 1)
           (ActiveCostTarget acId)
           #willpower
-          (CardCostDifficulty $ toCardId card)
+          (CardCostCalculation iid $ toCardId card)
       pure a
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       costs <- getActiveCosts

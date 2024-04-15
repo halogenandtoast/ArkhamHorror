@@ -32,7 +32,7 @@ instance RunMessage WatchersGaze where
             innocentRevelerIds
       t
         <$ pushAll
-          [ RevelationSkillTest iid' source SkillWillpower (Fixed 4)
+          [ RevelationSkillTest iid' source SkillWillpower (SkillTestDifficulty $ Fixed 4)
           | iid' <- nub (iid : investigatorsWithRevelers)
           ]
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _

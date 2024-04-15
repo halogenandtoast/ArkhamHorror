@@ -1,5 +1,6 @@
 module Arkham.Event.Import.Lifted (module X) where
 
+import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.Event.Runner as X (
   EventAttrs (..),

@@ -15,6 +15,7 @@ import Arkham.Agenda.Runner as X (
   removeDoomMatchersL,
   pattern R2,
  )
+import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.GameValue as X
 import Arkham.Message as X (CanAdvance (..), Message (..), pattern AdvanceAgenda)

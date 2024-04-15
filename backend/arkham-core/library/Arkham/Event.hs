@@ -457,6 +457,7 @@ allEvents =
       --- guardian [eote]
       SomeEventCard toeToToe
     , SomeEventCard getBehindMe
+    , SomeEventCard gangUp1
     , SomeEventCard sweepingKick1
     , SomeEventCard dodge2
     , --- seeker [eote]

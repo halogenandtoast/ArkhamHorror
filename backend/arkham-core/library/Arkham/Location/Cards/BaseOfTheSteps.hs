@@ -42,7 +42,7 @@ instance RunMessage BaseOfTheSteps where
           (toAbilitySource attrs 1)
           iid
           #willpower
-          (InvestigatorHandLengthDifficulty iid)
+          (InvestigatorHandLengthCalculation iid)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       player <- getPlayer iid

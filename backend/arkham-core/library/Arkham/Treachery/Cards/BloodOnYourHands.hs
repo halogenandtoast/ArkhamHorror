@@ -28,7 +28,7 @@ instance RunMessage BloodOnYourHands where
           iid
           (toSource attrs)
           #willpower
-          (SumDifficulty [Fixed 2, VictoryDisplayCountDifficulty $ CardWithTrait Innocent])
+          (SumCalculation [Fixed 2, VictoryDisplayCountCalculation $ CardWithTrait Innocent])
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       atCrimeScene <- iid <=~> InvestigatorAt (LocationWithTrait CrimeScene)

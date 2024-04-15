@@ -23,7 +23,8 @@ instance RunMessage EagerForDeath where
     Revelation iid source | isSource attrs source -> do
       push
         $ RevelationSkillTest iid source SkillWillpower
-        $ SumDifficulty [Fixed 2, InvestigatorFieldDifficulty iid InvestigatorDamage]
+        $ SkillTestDifficulty
+        $ SumCalculation [Fixed 2, InvestigatorFieldCalculation iid InvestigatorDamage]
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isSource attrs source -> do

@@ -41,7 +41,7 @@ instance RunMessage ForsakenTowerOfPrimevalLight where
         (attrs.ability 1)
         (toTarget nyarlathotep)
         #willpower
-        (EnemyMaybeGameValueFieldDifficulty nyarlathotep EnemyHealthActual)
+        (EnemyMaybeGameValueFieldCalculation nyarlathotep EnemyHealthActual)
       pure l
     PassedSkillTest _iid _ (isAbilitySource attrs 1 -> True) (Initiator target) _ _ -> do
       discardWhisperingChaos attrs

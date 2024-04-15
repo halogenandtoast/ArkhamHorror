@@ -28,7 +28,7 @@ instance RunMessage DiabolicVoices where
           iid
           attrs
           SkillWillpower
-          (SumDifficulty [Fixed 3, ScenarioInDiscardCountDifficulty (cardIs Cards.diabolicVoices)])
+          (SumCalculation [Fixed 3, ScenarioInDiscardCountCalculation (cardIs Cards.diabolicVoices)])
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n | n > 0 -> do
       handCount <- fieldMap InvestigatorHand length iid

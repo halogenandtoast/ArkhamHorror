@@ -28,7 +28,7 @@ instance RunMessage WallsClosingIn where
               iid
               source
               SkillWillpower
-              (InvestigatorLocationFieldDifficulty iid LocationShroud)
+              (SkillTestDifficulty $ InvestigatorLocationFieldCalculation iid LocationShroud)
           )
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n | isSource attrs source -> do
       player <- getPlayer iid

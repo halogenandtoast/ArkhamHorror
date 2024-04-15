@@ -29,10 +29,17 @@ instance RunMessage Followed where
   runMessage msg e@(Followed attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       investigation <- mkInvestigate iid attrs
-      dmg <- fromJustNote "damage should be set" <$> getMeta (toCardId attrs) "damage"
+      enemy <- fromJustNote "damage should be set" <$> getMeta (toCardId attrs) "enemy"
 
       pushAll
-        [ skillTestModifiers (toSource attrs) iid [SkillModifier #intellect (min 5 dmg), DiscoveredClues 1]
+        [ skillTestModifiers
+            (toSource attrs)
+            iid
+            [ ForEach
+                (MaxCalculation 5 $ EnemyFieldCalculation enemy Field.EnemyDamage)
+                [SkillModifier #intellect 1]
+            , DiscoveredClues 1
+            ]
         , toMessage investigation
         ]
       pure e
@@ -49,7 +56,7 @@ followedEffect = cardEffect FollowedEffect Cards.followed
 instance RunMessage FollowedEffect where
   runMessage msg e@(FollowedEffect attrs) = case msg of
     CreatedEffect eid _ (InvestigatorSource iid) target | eid == toId attrs -> do
-      enemies <- selectWithField Field.EnemyDamage $ enemyAtLocationWith iid
+      enemies <- select $ enemyAtLocationWith iid
       player <- getPlayer iid
       card <- case attrs.target of
         CardIdTarget cid -> getCard cid
@@ -60,10 +67,10 @@ instance RunMessage FollowedEffect where
           [ targetLabel
             enemy
             [ costModifier attrs enemy CannotMakeAttacksOfOpportunity
-            , cardResolutionModifier card attrs target (MetaModifier $ object ["damage" .= dmg])
+            , cardResolutionModifier card attrs target (MetaModifier $ object ["enemy" .= enemy])
             , disable attrs
             ]
-          | (enemy, dmg) <- enemies
+          | enemy <- enemies
           ]
       pure e
     _ -> FollowedEffect <$> runMessage msg attrs

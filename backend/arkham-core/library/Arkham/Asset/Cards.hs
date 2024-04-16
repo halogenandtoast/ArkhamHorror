@@ -195,6 +195,8 @@ allPlayerAssetCards =
       , bulletproofVest3
       , burglary
       , burglary2
+      , butterflySwords2
+      , butterflySwords5
       , catBurglar1
       , celaenoFragments
       , chainsaw4
@@ -4775,6 +4777,15 @@ gearedUp =
       , cdDeckRestrictions = [PerDeckLimit 1, PurchaseAtDeckCreation]
       }
 
+butterflySwords2 :: CardDef
+butterflySwords2 =
+  (asset "08025" "Butterfly Swords" 3 Guardian)
+    { cdCardTraits = setFromList [Item, Weapon, Melee]
+    , cdSkills = [#combat, #agility]
+    , cdSlots = [#hand, #hand]
+    , cdLevel = Just 2
+    }
+
 combatTraining3 :: CardDef
 combatTraining3 =
   (asset "08027" "Combat Training" 1 Guardian)
@@ -4782,6 +4793,15 @@ combatTraining3 =
     , cdCardTraits = setFromList [Talent, Composure]
     , cdLimits = [LimitPerTrait Composure 1]
     , cdLevel = Just 3
+    }
+
+butterflySwords5 :: CardDef
+butterflySwords5 =
+  (asset "08030" "Butterfly Swords" 3 Guardian)
+    { cdCardTraits = setFromList [Item, Weapon, Melee]
+    , cdSkills = [#combat, #agility, #wild]
+    , cdSlots = [#hand, #hand]
+    , cdLevel = Just 5
     }
 
 -- TODO: if we ever care about deck size need to encode that somehow

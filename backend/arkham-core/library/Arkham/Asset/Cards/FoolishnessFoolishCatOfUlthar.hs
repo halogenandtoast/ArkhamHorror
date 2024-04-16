@@ -7,7 +7,6 @@ where
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card.CardCode
-import Arkham.Id
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.SkillType (allSkills)

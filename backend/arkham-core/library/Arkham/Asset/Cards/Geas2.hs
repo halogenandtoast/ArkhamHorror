@@ -5,7 +5,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Modifiers
-import Arkham.Id
 import Arkham.Matcher hiding (PlayCard)
 
 newtype Geas2 = Geas2 AssetAttrs

@@ -760,7 +760,9 @@ allAssets =
     , SomeAssetCard shrewdDealings
     , --- guardian [eote]
       SomeAssetCard gearedUp
+    , SomeAssetCard butterflySwords2
     , SomeAssetCard combatTraining3
+    , SomeAssetCard butterflySwords5
     , --- seeker [eote]
       SomeAssetCard forcedLearning
     , SomeAssetCard scientificTheory3

@@ -17,10 +17,10 @@ runQueueT body = do
   pushAll $ reverse msgs
   pure a
 
-evalQueueT :: HasQueue msg m => QueueT msg m a -> QueueT msg m [msg]
+evalQueueT :: HasQueue msg m => QueueT msg m a -> m [msg]
 evalQueueT body = do
   inbox <- newIORef []
-  _ <- lift $ runReaderT (unQueueT body) (Queue inbox)
+  _ <- runReaderT (unQueueT body) (Queue inbox)
   msgs <- readIORef inbox
   pure $ reverse msgs
 
@@ -146,7 +146,7 @@ insertAfterMatching msgs p = withQueue_ \queue ->
   let (before, rest) = break p queue
    in case rest of
         (x : xs) -> before <> (x : msgs <> xs)
-        _ -> queue
+        _ -> error "no matching message"
 
 assertQueue :: HasQueue msg m => (msg -> Bool) -> m Bool
 assertQueue matcher = any matcher <$> peekQueue

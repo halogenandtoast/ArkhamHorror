@@ -641,6 +641,7 @@ taunt =
   (event "02017" "Taunt" 1 Guardian)
     { cdCardTraits = setFromList [Tactic]
     , cdFastWindow = Just $ DuringTurn You
+    , cdCriteria = Just $ exists $ CanEngageEnemy ThisCard
     , cdSkills = [#willpower, #combat]
     }
 

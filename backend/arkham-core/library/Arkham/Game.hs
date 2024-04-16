@@ -336,6 +336,7 @@ withAssetMetadata a = do
   amEvents <- select (EventAttachedToAsset $ AssetWithId $ toId a)
   amAssets <- select (AssetAttachedToAsset $ AssetWithId $ toId a)
   amTreacheries <- select (TreacheryIsAttachedTo $ toTarget a)
+  let amPermanent = cdPermanent $ toCardDef a
   pure $ a `with` AssetMetadata {..}
 
 withSkillTestMetadata :: HasGame m => SkillTest -> m (With SkillTest SkillTestMetadata)

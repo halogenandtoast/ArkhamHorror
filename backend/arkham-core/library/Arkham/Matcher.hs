@@ -55,6 +55,9 @@ affectsOthers matcher =
 class OneOf a where
   oneOf :: [a] -> a
 
+instance OneOf SkillTestMatcher where
+  oneOf = SkillTestOneOf
+
 instance OneOf SkillTestTypeMatcher where
   oneOf = SkillTestTypeOneOf
 

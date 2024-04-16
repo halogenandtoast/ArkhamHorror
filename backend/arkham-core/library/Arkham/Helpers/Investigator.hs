@@ -63,7 +63,6 @@ skillValueFor skill maction tempModifiers iid = go 2 skill
     maybeAdditionalSkill = \case
       SkillModifiersAffectOtherSkill s' t | t == skill -> Just s'
       _ -> Nothing
-    applyModifier (AnySkillValue m) n | canBeIncreased || m < 0 = pure $ max 0 (n + m)
     applyModifier (AddSkillValue sv) n | canBeIncreased = do
       m <- getSkillValue sv iid
       pure $ max 0 (n + m)

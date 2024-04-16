@@ -39,7 +39,6 @@ instance RunMessage GildedVolto where
             SkillBaseValue _ -> SkillBaseValue #agility
             AndSkillBaseValue _ -> SkillBaseValue #agility
             HalfResourcesOf x -> HalfResourcesOf x
-            StaticBaseValue x -> StaticBaseValue x
       push $ ChangeSkillTestType (SkillSkillTest #agility) newBase
       pure a
     _ -> GildedVolto <$> runMessage msg attrs

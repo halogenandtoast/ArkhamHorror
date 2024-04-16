@@ -25,10 +25,16 @@ mkChooseFight iid source =
       , chooseFightSkillType = #combat
       , chooseFightIsAction = False
       , chooseFightOnlyChoose = False
+      , chooseFightOverride = False
       }
 
 mkChooseFightMatch
   :: (Sourceable source, HasGame m) => InvestigatorId -> source -> EnemyMatcher -> m ChooseFight
 mkChooseFightMatch iid source matcher = do
   chooseFight <- mkChooseFight iid source
-  pure $ chooseFight {chooseFightEnemyMatcher = matcher}
+  let
+    isOverriden = case matcher of
+      CanFightEnemyWithOverride {} -> True
+      _ -> False
+
+  pure $ chooseFight {chooseFightEnemyMatcher = matcher, chooseFightOverride = isOverriden}

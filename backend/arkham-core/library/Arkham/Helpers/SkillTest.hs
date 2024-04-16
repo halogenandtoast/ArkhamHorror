@@ -237,19 +237,32 @@ getSkillTestDifficulty = do
 
 getCurrentSkillValue :: HasGame m => SkillTest -> m Int
 getCurrentSkillValue st = do
+  mods <- getModifiers st.investigator
   case skillTestBaseValue st of
     SkillBaseValue sType -> do
       sType' <- getAlternateSkill st sType
+      let canBeIncreased = SkillCannotBeIncreased sType' `notElem` mods
+      let
+        applyModifier (AnySkillValue m) n | canBeIncreased || m < 0 = max 0 (n + m)
+        applyModifier _ n = n
       stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
-      pure $ statsSkillValue stats sType'
+      pure $ foldr applyModifier (statsSkillValue stats sType') mods
     AndSkillBaseValue types -> do
-      values <- for types $ \sType -> do
-        sType' <- getAlternateSkill st sType
+      types' <- traverse (getAlternateSkill st) types
+      let canBeIncreased = any (\sType' -> SkillCannotBeIncreased sType' `notElem` mods) types'
+      let
+        applyModifier (AnySkillValue m) n | canBeIncreased || m < 0 = max 0 (n + m)
+        applyModifier _ n = n
+      values <- for types' $ \sType -> do
         stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
-        pure $ statsSkillValue stats sType'
-      pure $ sum values
-    HalfResourcesOf iid -> fieldMap InvestigatorResources (`div` 2) iid
-    StaticBaseValue n -> pure n
+        pure $ statsSkillValue stats sType
+      pure $ foldr applyModifier (sum values) mods
+    HalfResourcesOf iid -> do
+      result <- fieldMap InvestigatorResources (`div` 2) iid
+      let
+        applyModifier (AnySkillValue m) n = max 0 (n + m)
+        applyModifier _ n = n
+      pure $ foldr applyModifier result mods
 
 skillIconCount :: HasGame m => SkillTest -> m Int
 skillIconCount SkillTest {..} = do
@@ -260,7 +273,7 @@ skillIconCount SkillTest {..} = do
       _ -> []
   totalIcons <-
     foldr ((+) . toValue) 0
-      <$> (<> addedIcons)
+      . (<> addedIcons)
       <$> concatMapM iconsForCard (concat $ toList skillTestCommittedCards)
   case skillTestType of
     SkillSkillTest sType -> do

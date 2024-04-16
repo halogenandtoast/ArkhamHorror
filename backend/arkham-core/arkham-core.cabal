@@ -393,6 +393,7 @@ library
       Arkham.Asset.Cards.AncientStoneTransientThoughts4
       Arkham.Asset.Cards.AnnaKaslow4
       Arkham.Asset.Cards.AnotherDayAnotherDollar3
+      Arkham.Asset.Cards.Antiquary3
       Arkham.Asset.Cards.Aquinnah1
       Arkham.Asset.Cards.Aquinnah3
       Arkham.Asset.Cards.ArbiterOfFates
@@ -452,6 +453,7 @@ library
       Arkham.Asset.Cards.BrandOfCthugha1
       Arkham.Asset.Cards.BrandOfCthugha4
       Arkham.Asset.Cards.BrotherXavier1
+      Arkham.Asset.Cards.Bruiser3
       Arkham.Asset.Cards.BulletproofVest3
       Arkham.Asset.Cards.Burglary
       Arkham.Asset.Cards.Burglary2
@@ -481,6 +483,7 @@ library
       Arkham.Asset.Cards.ConstanceDumaine
       Arkham.Asset.Cards.Cornered2
       Arkham.Asset.Cards.Courage
+      Arkham.Asset.Cards.Crafty3
       Arkham.Asset.Cards.CrypticGrimoireTextOfTheElderGuardian4
       Arkham.Asset.Cards.CrypticGrimoireTextOfTheElderHerald4
       Arkham.Asset.Cards.CrypticGrimoireUntranslated
@@ -793,6 +796,7 @@ library
       Arkham.Asset.Cards.PreciousMementoFromAFutureLife4
       Arkham.Asset.Cards.PriestOfTwoFaiths1
       Arkham.Asset.Cards.ProfessorWarrenRice
+      Arkham.Asset.Cards.Prophetic3
       Arkham.Asset.Cards.ProtectiveIncantation1
       Arkham.Asset.Cards.PurifyingCorruption4
       Arkham.Asset.Cards.PuzzleBox
@@ -865,6 +869,7 @@ library
       Arkham.Asset.Cards.SinisterSolution
       Arkham.Asset.Cards.SixthSense
       Arkham.Asset.Cards.SixthSense4
+      Arkham.Asset.Cards.Sleuth3
       Arkham.Asset.Cards.SmokingPipe
       Arkham.Asset.Cards.SolemnVow
       Arkham.Asset.Cards.SomethingWorthFightingFor
@@ -1461,6 +1466,7 @@ library
       Arkham.Event.Cards.ExtensiveResearch
       Arkham.Event.Cards.ExtensiveResearch1
       Arkham.Event.Cards.ExtraAmmunition1
+      Arkham.Event.Cards.FangOfTyrthrha4
       Arkham.Event.Cards.FaustianBargain
       Arkham.Event.Cards.FightOrFlight
       Arkham.Event.Cards.FirstWatch
@@ -1552,6 +1558,7 @@ library
       Arkham.Event.Cards.OneTwoPunch
       Arkham.Event.Cards.OneTwoPunch5
       Arkham.Event.Cards.OnTheHunt
+      Arkham.Event.Cards.OnTheHunt3
       Arkham.Event.Cards.OnTheLam
       Arkham.Event.Cards.Oops
       Arkham.Event.Cards.Oops2

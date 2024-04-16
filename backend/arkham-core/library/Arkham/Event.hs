@@ -460,6 +460,8 @@ allEvents =
     , SomeEventCard gangUp1
     , SomeEventCard sweepingKick1
     , SomeEventCard dodge2
+    , SomeEventCard fangOfTyrthrha4
+    , SomeEventCard onTheHunt3
     , --- seeker [eote]
       SomeEventCard unearthTheAncients2
     , --- rogue [eote]

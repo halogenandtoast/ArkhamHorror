@@ -29,7 +29,9 @@ instance HasModifiersFor CharlesRossEsq where
     pure
       $ toModifiers
         attrs
-        [ CanSpendResourcesOnCardFromInvestigator (investigatorAt lid) (#asset <> #item)
+        [ CanSpendResourcesOnCardFromInvestigator
+          (investigatorAt lid <> not_ (InvestigatorWithId iid))
+          (#asset <> #item)
         | lid <- maybeToList mlid
         ]
   getModifiersFor _ _ = pure []

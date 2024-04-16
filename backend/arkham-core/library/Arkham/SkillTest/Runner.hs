@@ -147,7 +147,6 @@ instance RunMessage SkillTest where
           SkillBaseValue currentType -> SkillBaseValue $ if currentType == fsType then tsType else currentType
           AndSkillBaseValue xs -> AndSkillBaseValue $ map (\t -> if t == fsType then tsType else t) xs
           HalfResourcesOf x -> HalfResourcesOf x
-          StaticBaseValue x -> StaticBaseValue x
 
       pure
         $ s

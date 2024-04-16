@@ -564,10 +564,14 @@ cardResolutionModifiers
   -> m ()
 cardResolutionModifiers card source target modifiers = push $ Msg.cardResolutionModifiers card source target modifiers
 
-insteadOf :: ReverseQueue m => Message -> QueueT Message m () -> m ()
+insteadOf
+  :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m))
+  => Message
+  -> QueueT Message (t m) a
+  -> t m ()
 insteadOf msg f = do
   msgs <- evalQueueT f
-  replaceMessageMatching (== msg) (const msgs)
+  lift $ replaceMessageMatching (== msg) (const msgs)
 
 enemyAttackModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()

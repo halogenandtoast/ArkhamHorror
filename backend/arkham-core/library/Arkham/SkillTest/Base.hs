@@ -22,7 +22,6 @@ data SkillTestBaseValue
   = SkillBaseValue SkillType
   | AndSkillBaseValue [SkillType]
   | HalfResourcesOf InvestigatorId
-  | StaticBaseValue Int
   deriving stock (Show, Eq)
 
 newtype SkillTestDifficulty = SkillTestDifficulty GameCalculation

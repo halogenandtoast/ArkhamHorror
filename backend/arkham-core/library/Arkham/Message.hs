@@ -434,6 +434,7 @@ data Message
   | AssetDefeated AssetId
   | -- Attach
     AttachAsset AssetId Target
+  | AttachEvent EventId Target
   | AttachStoryTreacheryTo TreacheryId Card Target
   | AttackEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
   | BeforeRevealChaosTokens

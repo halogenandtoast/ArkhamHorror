@@ -53,7 +53,6 @@ instance RunMessage Bauta where
             SkillBaseValue _ -> SkillBaseValue #combat
             AndSkillBaseValue _ -> SkillBaseValue #combat
             HalfResourcesOf x -> HalfResourcesOf x
-            StaticBaseValue x -> StaticBaseValue x
       push $ ChangeSkillTestType (SkillSkillTest #combat) newBase
       pure a
     _ -> Bauta <$> runMessage msg attrs

@@ -22,6 +22,7 @@ import Arkham.Asset.Runner as X (
   setMeta,
   toModifiers,
   tokensL,
+  usesL,
  )
 import Arkham.Calculation as X
 import Arkham.Classes as X

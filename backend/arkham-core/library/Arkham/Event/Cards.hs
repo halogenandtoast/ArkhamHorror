@@ -151,6 +151,7 @@ allPlayerEventCards =
       , extensiveResearch
       , extensiveResearch1
       , extraAmmunition1
+      , fangOfTyrthrha4
       , faustianBargain
       , fightOrFlight
       , firstWatch
@@ -242,6 +243,7 @@ allPlayerEventCards =
       , oneTwoPunch
       , oneTwoPunch5
       , onTheHunt
+      , onTheHunt3
       , onTheLam
       , oops
       , oops2
@@ -2736,6 +2738,32 @@ dodge2 =
             (CancelableEnemyAttack AnyEnemyAttack)
             AnyEnemy
     , cdLevel = Just 2
+    }
+
+onTheHunt3 :: CardDef
+onTheHunt3 =
+  (event "08028" "On the Hunt" 0 Guardian)
+    { cdCardTraits = singleton Tactic
+    , cdFastWindow = Just $ WouldDrawEncounterCard #when You #mythos
+    , cdSkills = [#willpower, #intellect, #combat]
+    , cdLevel = Just 3
+    }
+
+fangOfTyrthrha4 :: CardDef
+fangOfTyrthrha4 =
+  (event "08029" "Fang of Thr'thrha" 3 Guardian)
+    { cdCardTraits = singleton Spell
+    , cdActions = [#fight]
+    , cdSkills = [#willpower, #intellect, #combat]
+    , cdLevel = Just 4
+    , cdCriteria =
+        Just
+          $ exists
+          $ CanFightEnemyWithOverride
+          $ Criteria.CriteriaOverride
+          $ Criteria.enemyExists
+          $ EnemyAt RevealedLocation
+    , cdOverrideActionPlayableIfCriteriaMet = True
     }
 
 unearthTheAncients2 :: CardDef

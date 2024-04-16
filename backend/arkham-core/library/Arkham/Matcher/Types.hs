@@ -389,6 +389,7 @@ data EventMatcher
   | EventCardMatch CardMatcher
   | EventMatches [EventMatcher]
   | EventOneOf [EventMatcher]
+  | EnemyEvent EnemyId
   | AnyEvent
   | NotEvent EventMatcher
   | EventWithPlacement Placement
@@ -1018,11 +1019,13 @@ data SkillTestMatcher
   | UsingThis
   | SkillTestSourceMatches SourceMatcher
   | SkillTestMatches [SkillTestMatcher]
+  | SkillTestOneOf [SkillTestMatcher]
   | NotSkillTest SkillTestMatcher
   | SkillTestFromRevelation
   | SkillTestWithRevealedChaosToken ChaosTokenMatcher
   | SkillTestWithRevealedChaosTokenCount Int ChaosTokenMatcher
   | SkillTestWithResolvedChaosTokenBy InvestigatorMatcher ChaosTokenMatcher
+  | SkillTestOnCardWithTrait Trait
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "any" SkillTestMatcher where

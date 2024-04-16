@@ -135,6 +135,7 @@ allPlayerAssetCards =
       , ancientStoneTransientThoughts4
       , annaKaslow4
       , anotherDayAnotherDollar3
+      , antiquary3
       , aquinnah1
       , aquinnah3
       , arbiterOfFates
@@ -192,6 +193,7 @@ allPlayerAssetCards =
       , brandOfCthugha1
       , brandOfCthugha4
       , brotherXavier1
+      , bruiser3
       , bulletproofVest3
       , burglary
       , burglary2
@@ -219,6 +221,7 @@ allPlayerAssetCards =
       , cornered2
       , combatTraining1
       , combatTraining3
+      , crafty3
       , crypticGrimoireTextOfTheElderGuardian4
       , crypticGrimoireTextOfTheElderHerald4
       , crypticGrimoireUntranslated
@@ -519,6 +522,7 @@ allPlayerAssetCards =
       , preciousMementoFromAFutureLife4
       , priestOfTwoFaiths1
       , professorWarrenRice
+      , prophetic3
       , protectiveIncantation1
       , purifyingCorruption4
       , puzzleBox
@@ -587,6 +591,7 @@ allPlayerAssetCards =
       , silassNet
       , sixthSense
       , sixthSense4
+      , sleuth3
       , smokingPipe
       , solemnVow
       , somethingWorthFightingFor
@@ -4987,6 +4992,51 @@ talismanOfProtection =
       , cdSkills = [#willpower]
       , cdSlots = [#arcane]
       }
+
+prophetic3 :: CardDef
+prophetic3 =
+  (multiClassAsset "08120" "Prophetic" 3 [Guardian, Mystic, Survivor])
+    { cdSkills = [#willpower, #willpower]
+    , cdCardTraits = setFromList [Talent]
+    , cdLevel = Just 3
+    , cdUses = uses Resource 2
+    }
+
+sleuth3 :: CardDef
+sleuth3 =
+  (multiClassAsset "08121" "Sleuth" 3 [Guardian, Seeker, Mystic])
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Talent]
+    , cdLevel = Just 3
+    , cdUses = uses Resource 2
+    }
+
+bruiser3 :: CardDef
+bruiser3 =
+  (multiClassAsset "08122" "Bruiser" 3 [Guardian, Rogue, Survivor])
+    { cdSkills = [#combat, #combat]
+    , cdCardTraits = setFromList [Talent]
+    , cdLevel = Just 3
+    , cdUses = uses Resource 2
+    }
+
+crafty3 :: CardDef
+crafty3 =
+  (multiClassAsset "08123" "Crafty" 3 [Seeker, Rogue, Survivor])
+    { cdSkills = [#agility, #agility]
+    , cdCardTraits = setFromList [Talent]
+    , cdLevel = Just 3
+    , cdUses = uses Resource 2
+    }
+
+antiquary3 :: CardDef
+antiquary3 =
+  (multiClassAsset "08124" "Crafty" 3 [Seeker, Rogue, Mystic])
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Talent]
+    , cdLevel = Just 3
+    , cdUses = uses Resource 2
+    }
 
 inTheThickOfIt :: CardDef
 inTheThickOfIt =

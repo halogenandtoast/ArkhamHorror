@@ -26,8 +26,10 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types (Field (..))
+import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window
+import Arkham.Matcher (EnemyMatcher (..))
 import Arkham.Message qualified as Msg
 import Arkham.Placement
 import Arkham.Projection
@@ -47,6 +49,22 @@ instance RunMessage EventAttrs where
 runEventMessage :: Runner EventAttrs
 runEventMessage msg a@EventAttrs {..} = case msg of
   SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
+  AttachEvent eid target | eid == eventId -> do
+    case target of
+      LocationTarget lid -> push $ PlaceEvent eventOwner eid (AttachedToLocation lid)
+      EnemyTarget enid -> push $ PlaceEvent eventOwner eid (AttachedToEnemy enid)
+      CardIdTarget cid -> do
+        card <- getCard cid
+        case card.kind of
+          EnemyType -> do
+            enemy <- selectJust $ EnemyWithCardId cid
+            push $ PlaceEvent eventOwner eid (AttachedToEnemy enemy)
+          PlayerEnemyType -> do
+            enemy <- selectJust $ EnemyWithCardId cid
+            push $ PlaceEvent eventOwner eid (AttachedToEnemy enemy)
+          _ -> error "Cannot attach event to that type"
+      _ -> error "Cannot attach event to that type"
+    pure a
   Msg.InvestigatorEliminated iid | eventAttachedTarget a == Just (InvestigatorTarget iid) || iid == a.controller -> do
     push $ toDiscard GameSource eventId
     pure a

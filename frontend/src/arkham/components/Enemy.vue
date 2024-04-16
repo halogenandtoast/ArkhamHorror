@@ -11,6 +11,7 @@ import Key from '@/arkham/components/Key.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
+import Event from '@/arkham/components/Event.vue';
 import Token from '@/arkham/components/Token.vue';
 import Story from '@/arkham/components/Story.vue';
 import * as Arkham from '@/arkham/types/Enemy'
@@ -249,6 +250,14 @@ watch(abilities, (abilities) => {
         v-for="assetId in enemy.assets"
         :key="assetId"
         :asset="game.assets[assetId]"
+        :game="game"
+        :playerId="playerId"
+        @choose="$emit('choose', $event)"
+      />
+      <Event
+        v-for="eventId in enemy.events"
+        :key="eventId"
+        :event="game.events[eventId]"
         :game="game"
         :playerId="playerId"
         @choose="$emit('choose', $event)"

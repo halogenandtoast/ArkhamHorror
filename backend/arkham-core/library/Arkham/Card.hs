@@ -223,6 +223,9 @@ instance HasField "cost" Card (Maybe CardCost) where
 instance HasField "level" Card (Maybe Int) where
   getField = cdLevel . toCardDef
 
+instance HasField "kind" Card CardType where
+  getField = cdCardType . toCardDef
+
 instance Eq Card where
   a == b = toCardId a == toCardId b
 

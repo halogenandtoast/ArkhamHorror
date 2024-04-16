@@ -308,6 +308,7 @@ withEnemyMetadata a = do
   emEngagedInvestigators <- select $ investigatorEngagedWith (toId a)
   emTreacheries <- select $ TreacheryOnEnemy $ EnemyWithId (toId a)
   emAssets <- select $ EnemyAsset (toId a)
+  emEvents <- select $ EnemyEvent (toId a)
   pure $ a `with` EnemyMetadata {..}
 
 withLocationConnectionData
@@ -2170,6 +2171,8 @@ getEventsMatching matcher = do
   filterMatcher events matcher
  where
   filterMatcher as = \case
+    EnemyEvent eid ->
+      filterM (fieldP EventPlacement (== AttachedToEnemy eid) . toId) as
     NotEvent matcher' -> do
       matches' <- getEventsMatching matcher'
       pure $ filter (`notElem` matches') as

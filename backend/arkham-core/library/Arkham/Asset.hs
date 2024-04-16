@@ -792,6 +792,16 @@ allAssets =
     , SomeAssetCard preciousMementoFromAFutureLife4
     , --- mystic/survivor [eote]
       SomeAssetCard talismanOfProtection
+    , --- guardian/mystic/survivor [eote]
+      SomeAssetCard prophetic3
+    , --- guardian/seeker/mystic [eote]
+      SomeAssetCard sleuth3
+    , --- guardian/rogue/survivor [eote]
+      SomeAssetCard bruiser3
+    , --- seeker/rogue/survivor [eote]
+      SomeAssetCard crafty3
+    , --- seeker/rogue/mystic [eote]
+      SomeAssetCard antiquary3
     , --- neutral [eote]
       SomeAssetCard inTheThickOfIt
     , -- The Scarlet Keys

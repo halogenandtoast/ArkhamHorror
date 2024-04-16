@@ -229,6 +229,7 @@ const debug = useDebug()
           v-for="ability in abilities"
           :key="ability.index"
           :ability="ability.contents"
+          :show-move="false"
           @click="chooseAbility(ability.index)"
           />
       </div>

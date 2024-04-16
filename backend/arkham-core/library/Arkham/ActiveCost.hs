@@ -275,6 +275,15 @@ payCost msg c iid skipAdditionalCosts cost = do
       assets <- select $ matcher <> AssetReady
       push $ chooseOne player $ targetLabels assets $ only . pay . exhaust
       pure c
+    ExhaustXAssetCost matcher -> do
+      assets <- select $ matcher <> AssetReady
+      push
+        $ chooseSome1 player "Done exhausting"
+        $ targetLabels assets
+        $ only
+        . pay
+        . exhaust
+      pure c
     SealCost matcher -> do
       targets <-
         filterM (\t -> matchChaosToken iid t matcher)

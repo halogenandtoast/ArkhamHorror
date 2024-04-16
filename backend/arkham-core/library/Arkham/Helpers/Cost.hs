@@ -113,6 +113,8 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
     _ -> error $ "Not handled" <> show target
   ExhaustAssetCost matcher ->
     selectAny $ matcher <> Matcher.AssetReady
+  ExhaustXAssetCost matcher ->
+    selectAny $ matcher <> Matcher.AssetReady
   DiscardAssetCost matcher ->
     selectAny $ matcher <> Matcher.DiscardableAsset
   UseCost assetMatcher uType n -> do

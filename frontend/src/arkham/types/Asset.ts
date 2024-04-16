@@ -17,6 +17,7 @@ export type Asset = {
   tokens: Tokens;
   uses: Record<string, number>;
   exhausted: boolean;
+  permanent: boolean;
   events: string[];
   treacheries: string[];
   assets: string[];
@@ -35,6 +36,7 @@ export const assetDecoder = JsonDecoder.object<Asset>({
   sanity: JsonDecoder.nullable(JsonDecoder.number),
   uses: JsonDecoder.array(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.number], 'Uses'), 'Uses[]').map((x) => x.reduce((acc, [k, v]) => (acc[k] = v, acc), {} as Record<string, number>)),
   exhausted: JsonDecoder.boolean,
+  permanent: JsonDecoder.boolean,
   events: JsonDecoder.array<string>(JsonDecoder.string, 'EventId[]'),
   treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
   assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),

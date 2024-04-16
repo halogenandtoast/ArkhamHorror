@@ -55,6 +55,7 @@ data AssetMetadata = AssetMetadata
   , amAssets :: [AssetId]
   , amTreacheries :: [TreacheryId]
   , amModifiers :: [Modifier]
+  , amPermanent :: Bool
   }
   deriving stock (Show, Eq, Generic)
 

@@ -42,6 +42,29 @@ const encounterBack = computed(() => {
   return imgsrc("encounter_back.jpg")
 })
 
+const assets = computed(() => {
+  const xs = props.investigator.assets.map((a) => props.game.assets[a])
+  xs.sort((a, b) => {
+    if (a.cardCode < b.cardCode) {
+      return -1;
+    }
+    if (a.cardCode > b.cardCode) {
+      return 1;
+    }
+
+    if (a.cardId < b.cardId) {
+      return -1;
+    }
+    if (a.cardId > b.cardId) {
+      return 1;
+    }
+
+    return 0;
+  })
+  xs.sort((a, b) => b.permanent - a.permanent)
+  return xs
+})
+
 const stories = computed(() =>
   Object.
     values(props.game.stories).
@@ -342,12 +365,12 @@ function onLeave(el: Element, done: () => void) {
           @showCards="doShowCards"
         />
         <Asset
-          v-for="asset in investigator.assets"
-          :asset="game.assets[asset]"
+          v-for="asset in assets"
+          :asset="asset"
           :game="game"
           :playerId="playerId"
-          :key="asset"
-          :data-index="game.assets[asset].cardId"
+          :key="asset.id"
+          :data-index="asset.cardId"
           @choose="$emit('choose', $event)"
           @showCards="doShowCards"
         />

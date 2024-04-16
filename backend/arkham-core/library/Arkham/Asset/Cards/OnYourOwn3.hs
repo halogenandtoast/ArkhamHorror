@@ -44,7 +44,8 @@ instance HasAbilities OnYourOwn3 where
 
 instance HasModifiersFor OnYourOwn3 where
   getModifiersFor (InvestigatorTarget iid) (OnYourOwn3 (attrs `With` _)) =
-    pure $ toModifiers attrs [CanReduceCostOf (#event <> #survivor) 2 | controlledBy attrs iid]
+    pure
+      $ toModifiers attrs [CanReduceCostOf (#event <> #survivor) 2 | controlledBy attrs iid && attrs.ready]
   getModifiersFor _ _ = pure []
 
 getCardId :: [Window] -> CardId

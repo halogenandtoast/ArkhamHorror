@@ -9,7 +9,8 @@ import { MessageType } from '@/arkham/types/Message';
 const props = withDefaults(defineProps<{
  ability: AbilityLabel | FightLabel | EvadeLabel | EngageLabel
  tooltipIsButtonText?: boolean
-}>(), { tooltipIsButtonText: false })
+ showMove?: boolean
+}>(), { tooltipIsButtonText: false, showMove: true })
 
 const ability = computed<Ability | null>(() => "ability" in props.ability ? props.ability.ability : null)
 
@@ -56,7 +57,7 @@ const isInvestigate = computed(() => isAction("Investigate"))
 const isFight = computed(() => isAction("Fight"))
 const isEvade = computed(() => isAction("Evade"))
 const isEngage = computed(() => isAction("Engage"))
-const display = computed(() => !isAction("Move"))
+const display = computed(() => !isAction("Move") || props.showMove)
 const isSingleActionAbility = computed(() => {
   if (!ability.value) {
     return false

@@ -107,6 +107,7 @@ data Cost
   | ExhaustCost Target
   | DiscardAssetCost AssetMatcher
   | ExhaustAssetCost AssetMatcher
+  | ExhaustXAssetCost AssetMatcher
   | RemoveCost Target
   | RevealCost CardId
   | Costs [Cost]
@@ -185,6 +186,7 @@ data DynamicUseCostValue = DrawnCardsValue
 
 displayCostType :: Cost -> Text
 displayCostType = \case
+  ExhaustXAssetCost _ -> "Exhaust X copies"
   EnemyAttackCost _ -> "The chosen enemy makes an attack against you"
   UnpayableCost -> "Unpayable"
   OptionalCost c -> "Optional: " <> displayCostType c

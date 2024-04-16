@@ -607,3 +607,7 @@ afterSkillTest
 afterSkillTest body = do
   msgs <- evalQueueT body
   insertAfterMatching msgs (== EndSkillTestWindow)
+
+costModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
+costModifier source target modifier = push $ Msg.costModifier source target modifier

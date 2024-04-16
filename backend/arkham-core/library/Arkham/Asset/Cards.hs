@@ -549,6 +549,7 @@ allPlayerAssetCards =
       , ritualCandles
       , robesOfEndlessNight
       , robesOfEndlessNight2
+      , rodOfAnimalism1
       , rolands38Special
       , ruthWestmacottDarkRevelations
       , sacredCovenant2
@@ -591,6 +592,7 @@ allPlayerAssetCards =
       , silassNet
       , sixthSense
       , sixthSense4
+      , sledDog
       , sleuth3
       , smokingPipe
       , solemnVow
@@ -5045,6 +5047,25 @@ inTheThickOfIt =
       { cdCardTraits = singleton Curse
       , cdPurchaseTrauma = PurchaseAnyTrauma 2
       }
+
+sledDog :: CardDef
+sledDog =
+  (asset "08127" "Sled Dog" 3 Neutral)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Ally, Creature]
+    , cdDeckRestrictions = [PerDeckLimit 4]
+    , cdSlots = [#ally]
+    }
+
+rodOfAnimalism1 :: CardDef
+rodOfAnimalism1 =
+  (asset "08128" "Rod of Animalism" 2 Neutral)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Relic]
+    , cdSlots = [#accessory]
+    , cdLevel = Just 1
+    , cdUnique = True
+    }
 
 runicAxe :: CardDef
 runicAxe =

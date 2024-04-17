@@ -765,9 +765,11 @@ allAssets =
     , SomeAssetCard butterflySwords5
     , --- seeker [eote]
       SomeAssetCard forcedLearning
+    , SomeAssetCard jeremiahKirbyArcticArchaeologist
     , SomeAssetCard scientificTheory3
     , --- rogue [eote]
       SomeAssetCard underworldSupport
+    , SomeAssetCard theRedClockBrokenButReliable2
     , SomeAssetCard moxie3
     , SomeAssetCard theBlackFan3
     , --- mystic [eote]

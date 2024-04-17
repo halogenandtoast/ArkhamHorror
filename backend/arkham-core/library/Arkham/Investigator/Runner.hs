@@ -436,7 +436,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     player <- getPlayer iid
     push $ chooseOne player [targetLabel iid' [TakeControlOfAsset iid' aid] | iid' <- iids]
     pure a
-  BeginTrade iid source ResourceTarget iids | iid == investigatorId -> do
+  BeginTrade iid source (ResourceTarget _) iids | iid == investigatorId -> do
     player <- getPlayer iid
     push
       $ chooseOne player
@@ -2602,9 +2602,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         & (foundCardsL . each %~ filter (/= PlayerCard pc))
     EncounterCard _ -> pure a
     VengeanceCard _ -> pure a
-  MoveUses (ProxySource (isSource a -> True) ResourceSource) _ _ n -> do
+  MoveUses (ResourceSource iid) _ _ n | iid == investigatorId -> do
     pure $ a & tokensL %~ subtractTokens Resource n
-  MoveUses _ (ProxyTarget (isTarget a -> True) ResourceTarget) _ n -> do
+  MoveUses _ (ResourceTarget iid) _ n | iid == investigatorId -> do
     pure $ a & tokensL %~ addTokens Resource n
   AddToHand iid cards | iid == investigatorId -> do
     let

@@ -53,7 +53,7 @@ data Source
   | LocationSource LocationId
   | PlayerCardSource PlayerCard
   | ProxySource {source :: Source, originalSource :: Source}
-  | ResourceSource
+  | ResourceSource InvestigatorId
   | ScenarioSource
   | SkillSource SkillId
   | SkillTestSource

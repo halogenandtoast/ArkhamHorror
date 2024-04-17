@@ -8,6 +8,7 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Effect.Runner
+import {-# SOURCE #-} Arkham.GameEnv (getIsSkillTest)
 import Arkham.Id
 import Arkham.Modifier
 import Arkham.Window (Window)
@@ -45,6 +46,9 @@ instance HasModifiersFor WindowModifierEffect where
     | target == effectTarget = case effectMetadata of
         Just (EffectModifiers modifiers) -> case effectWindow of
           Just EffectSetupWindow -> pure $ map setActiveDuringSetup modifiers
+          Just EffectSkillTestWindow -> do
+            isSkillTest <- getIsSkillTest
+            pure $ guard isSkillTest *> modifiers
           _ -> pure modifiers
         _ -> pure []
   getModifiersFor _ _ = pure []

@@ -669,7 +669,7 @@ targetToSource = \case
   ChaosTokenTarget _ -> error "not convertable"
   ChaosTokenFaceTarget _ -> error "Not convertable"
   TestTarget -> TestSource mempty
-  ResourceTarget -> ResourceSource
+  ResourceTarget iid -> ResourceSource iid
   ActDeckTarget -> ActDeckSource
   AgendaDeckTarget -> AgendaDeckSource
   InvestigationTarget {} -> error "not converted"
@@ -714,7 +714,7 @@ sourceToTarget = \case
   TestSource {} -> TestTarget
   ProxySource _ source -> sourceToTarget source
   EffectSource eid -> EffectTarget eid
-  ResourceSource -> ResourceTarget
+  ResourceSource iid -> ResourceTarget iid
   AbilitySource s _ -> sourceToTarget s
   ActDeckSource -> ActDeckTarget
   AgendaDeckSource -> AgendaDeckTarget

@@ -53,7 +53,7 @@ data Target
   | ChaosTokenTarget ChaosToken
   | ChaosTokenFaceTarget ChaosTokenFace
   | TestTarget
-  | ResourceTarget
+  | ResourceTarget InvestigatorId
   | YouTarget
   | InvestigationTarget InvestigatorId LocationId
   | ProxyTarget Target Target

@@ -35,7 +35,7 @@ targetTraits = \case
       Nothing -> pure mempty
       Just _ -> field LocationTraits lid
   ProxyTarget t _ -> targetTraits t
-  ResourceTarget -> pure mempty
+  ResourceTarget _ -> pure mempty
   ScenarioTarget -> pure mempty
   SkillTarget sid -> field SkillTraits sid
   SkillTestTarget {} -> pure mempty

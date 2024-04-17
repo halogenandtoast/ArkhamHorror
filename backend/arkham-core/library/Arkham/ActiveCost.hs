@@ -176,6 +176,16 @@ payCost msg c iid skipAdditionalCosts cost = do
   let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
   case cost of
+    ArchiveOfConduitsUnidentifiedCost -> do
+      locations <- select Anywhere
+      push
+        $ chooseOrRunN
+          player
+          4
+          [ targetLabel location [PlaceTokens source (toTarget location) Token.Leyline 1]
+          | location <- locations
+          ]
+      pure c
     GloriaCost -> do
       mtarget <- getSkillTestTarget
       case mtarget of

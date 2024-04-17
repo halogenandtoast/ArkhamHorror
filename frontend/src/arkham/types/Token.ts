@@ -15,6 +15,7 @@ export type Token
   | 'Bounty'
   | 'Offering'
   | 'Depth'
+  | 'Leyline'
   | 'AlarmLevel';
 
 export const TokenType = {
@@ -30,6 +31,7 @@ export const TokenType = {
   Bounty: 'Bounty',
   Offering: 'Offering',
   Depth: 'Depth',
+  Leyline: 'Leyline',
   AlarmLevel: 'AlarmLevel',
 } as const;
 
@@ -46,6 +48,7 @@ export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>
   JsonDecoder.isExactly('Bounty'),
   JsonDecoder.isExactly('Offering'),
   JsonDecoder.isExactly('Depth'),
+  JsonDecoder.isExactly('Leyline'),
   JsonDecoder.isExactly('AlarmLevel'),
 ], 'Token');
 

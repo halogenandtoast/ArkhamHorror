@@ -151,6 +151,7 @@ allPlayerAssetCards =
       , archaicGlyphsGuidingStones3
       , archaicGlyphsMarkingsOfIsis3
       , archaicGlyphsProphecyForetold3
+      , archiveOfConduitsUnidentified
       , ariadnesTwine3
       , armageddon
       , armageddon4
@@ -517,6 +518,7 @@ allPlayerAssetCards =
       , plucky1
       , plucky3
       , pnakoticManuscripts5
+      , pocketTelescope
       , policeBadge2
       , powderOfIbnGhazi
       , preciousMementoFromAFormerLife4
@@ -4831,6 +4833,16 @@ jeremiahKirbyArcticArchaeologist =
     , cdUnique = True
     }
 
+archiveOfConduitsUnidentified :: CardDef
+archiveOfConduitsUnidentified =
+  (asset "08033" ("Archive of Conduits" <:> "Unidentified") 2 Seeker)
+    { cdCardTraits = setFromList [Item, Tome, Occult]
+    , cdSkills = [#wild]
+    , cdSlots = [#hand]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdAdditionalCost = Just ArchiveOfConduitsUnidentifiedCost
+    }
+
 scientificTheory3 :: CardDef
 scientificTheory3 =
   (asset "08040" "Scientific Theory" 0 Seeker)
@@ -4977,6 +4989,14 @@ brandOfCthugha4 =
     , cdLevel = Just 4
     , cdUses = uses Charge 9
     , cdSlots = [#arcane]
+    }
+
+pocketTelescope :: CardDef
+pocketTelescope =
+  (multiClassAsset "08097" "Pocket Telescope" 2 [Seeker, Rogue])
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Item, Tool]
+    , cdSlots = [#hand]
     }
 
 geneBeauregard3 :: CardDef

@@ -167,6 +167,7 @@ data Cost
   | AsIfAtLocationCost LocationId Cost
   | DrawEncounterCardsCost Int
   | GloriaCost -- lol, not going to attempt to make this generic
+  | ArchiveOfConduitsUnidentifiedCost -- this either
   deriving stock (Show, Eq, Ord, Data)
 
 assetUseCost :: (Entity a, EntityId a ~ AssetId) => a -> UseType -> Int -> Cost
@@ -193,6 +194,8 @@ displayCostType = \case
   DrawEncounterCardsCost n -> "Draw " <> pluralize n "Encounter Card"
   GloriaCost ->
     "Discard an encounter card that shares a Trait with that encounter card from beneath Gloria Goldberg"
+  ArchiveOfConduitsUnidentifiedCost ->
+    "Place 1 resource on 4 different locations, as leylines."
   AsIfAtLocationCost _ c -> displayCostType c
   ShuffleAttachedCardIntoDeckCost _ _ -> "Shuffle attached card into deck"
   AddCurseTokenCost n -> "Add " <> tshow n <> " {curse} " <> pluralize n "token" <> "to the chaos bag"

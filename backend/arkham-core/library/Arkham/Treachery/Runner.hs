@@ -73,6 +73,8 @@ instance RunMessage TreacheryAttrs where
       pure $ a & placementL .~ placement
     PlaceTokens _ (isTarget a -> True) token n -> do
       pure $ a & tokensL %~ addTokens token n
+    MoveTokens source _ tType n | isSource a source -> pure $ a & tokensL %~ subtractTokens tType n
+    MoveTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ addTokens tType n
     PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget a -> do
       push $ toDiscard GameSource a
       pure a

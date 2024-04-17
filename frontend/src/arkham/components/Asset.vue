@@ -121,6 +121,7 @@ const debug = useDebug()
 const doom = computed(() => props.asset.tokens[TokenType.Doom])
 const clues = computed(() => props.asset.tokens[TokenType.Clue])
 const resources = computed(() => props.asset.tokens[TokenType.Resource])
+const leylines = computed(() => props.asset.tokens[TokenType.Leyline])
 const charges = computed(() => props.asset.tokens[TokenType.Charge])
 const secrets = computed(() => props.asset.tokens[TokenType.Secret])
 const corruption = computed(() => props.asset.tokens[TokenType.Corruption])
@@ -204,6 +205,7 @@ const assetStory = computed(() => {
           <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
           <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
           <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
+          <PoolItem v-if="leylines && leylines > 0" type="resource" tooltip="Leyline" :amount="leylines" />
           <PoolItem v-if="charges && charges > 0" type="resource" :amount="charges" />
           <PoolItem v-if="secrets && secrets > 0" type="resource" :amount="secrets" />
           <PoolItem v-if="corruption && corruption > 0" type="resource" :amount="corruption" />

@@ -1222,6 +1222,8 @@ instance RunMessage EnemyAttrs where
     RemoveAllDoom _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Doom
     RemoveTokens _ target token amount | isTarget a target -> do
       pure $ a & tokensL %~ subtractTokens token amount
+    MoveTokens source _ tType n | isSource a source -> pure $ a & tokensL %~ subtractTokens tType n
+    MoveTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ addTokens tType n
     PlaceTokens source target Doom amount | isTarget a target -> do
       cannotPlaceDoom <- hasModifier a CannotPlaceDoomOnThis
       if cannotPlaceDoom

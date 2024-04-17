@@ -98,6 +98,7 @@ const resources = computed(() => tokens.value[TokenType.Resource])
 const damage = computed(() => tokens.value[TokenType.Damage])
 const horror = computed(() => tokens.value[TokenType.Horror])
 const lostSouls = computed(() => tokens.value[TokenType.LostSoul])
+const leylines = computed(() => tokens.value[TokenType.Leyline])
 
 const hasPool = computed(() => {
   return doom.value || clues.value || resources.value || damage.value || horror.value || lostSouls.value
@@ -121,6 +122,7 @@ const hasPool = computed(() => {
       <PoolItem v-if="clues" type="clue" :amount="clues" />
       <PoolItem v-if="resources" type="resource" :amount="resources" />
       <PoolItem v-if="lostSouls" type="resource" :amount="lostSouls" />
+      <PoolItem v-if="leylines" type="resource" :amount="leylines" />
     </div>
     <AbilityButton
       v-for="ability in abilities"

@@ -2811,6 +2811,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationWithModifier _ -> locationId <=~> matcher
     Matcher.IsIchtacasDestination -> locationId <=~> matcher
     Matcher.HauntedLocation -> locationId <=~> matcher
+    Matcher.LocationWithToken _ -> locationId <=~> matcher
     Matcher.SingleSidedLocation -> locationId <=~> matcher
     Matcher.LocationWithLowerPrintedShroudThan _ -> locationId <=~> matcher
     Matcher.LocationNotInPlay -> locationId <=~> matcher

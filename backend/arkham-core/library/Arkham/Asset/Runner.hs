@@ -79,6 +79,8 @@ instance RunMessage AssetAttrs where
       _ -> a <$ push (Ready $ toTarget a)
     RemoveAllDoom _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Doom
     PlaceTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ addTokens tType n
+    MoveTokens source _ tType n | isSource a source -> pure $ a & tokensL %~ subtractTokens tType n
+    MoveTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ addTokens tType n
     RemoveClues _ target n | isTarget a target -> do
       when (assetClues a - n <= 0)
         $ pushAll

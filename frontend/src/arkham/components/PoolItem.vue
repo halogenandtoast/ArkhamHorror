@@ -23,6 +23,10 @@ const image = computed(() => {
 
 <style scoped lang="scss">
 
+.poolItem {
+  pointer-events: all;
+}
+
 .poolItem.poolItem-resource {
   img {
     width: 30px;

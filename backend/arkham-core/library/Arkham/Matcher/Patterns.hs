@@ -441,6 +441,13 @@ pattern SuccessfulInvestigationResult timing who where_ amount <-
   where
     SuccessfulInvestigationResult timing who where_ amount = SkillTestResult timing who (WhileInvestigating where_) (SuccessResult amount)
 
+pattern SuccessfulInvestigation
+  :: Timing -> Who -> LocationMatcher -> WindowMatcher
+pattern SuccessfulInvestigation timing who where_ <-
+  SkillTestResult timing who (WhileInvestigating where_) (SuccessResult AnyValue)
+  where
+    SuccessfulInvestigation timing who where_ = SkillTestResult timing who (WhileInvestigating where_) (SuccessResult AnyValue)
+
 pattern EnemyEntersPlay :: Timing -> EnemyMatcher -> WindowMatcher
 pattern EnemyEntersPlay timing enemyMatcher <- EnemySpawns timing Anywhere enemyMatcher
   where

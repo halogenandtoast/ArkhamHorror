@@ -760,6 +760,7 @@ data Message
   | PlaceLocationMatching CardMatcher
   | PlaceTokens Source Target Token Int
   | RemoveTokens Source Target Token Int
+  | MoveTokens Source Target Token Int
   | PlaceUnderneath Target [Card]
   | PlacedUnderneath Target Card
   | PlaceNextTo Target [Card]

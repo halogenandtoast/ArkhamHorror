@@ -188,6 +188,13 @@ getAttackDetails = \case
   ((windowType -> Window.EnemyWouldAttack details) : _) -> details
   (_ : rest) -> getAttackDetails rest
 
+getInvestigatedLocation :: [Window] -> LocationId
+getInvestigatedLocation = \case
+  [] -> error "No chaos token drawn"
+  ((windowType -> Window.FailInvestigationSkillTest _ lid _) : _) -> lid
+  ((windowType -> Window.PassInvestigationSkillTest _ lid _) : _) -> lid
+  (_ : rest) -> getInvestigatedLocation rest
+
 replaceWindow :: HasQueue Message m => (Window -> Bool) -> (Window -> Window) -> m ()
 replaceWindow f wf = do
   replaceMessageMatching

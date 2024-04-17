@@ -1433,6 +1433,7 @@ getLocationsMatching lmatcher = do
       LocationIs cardCode -> pure $ filter ((== cardCode) . toCardCode) ls
       EmptyLocation ->
         filterM (andM . sequence [selectNone . investigatorAt . toId, selectNone . enemyAt . toId]) ls
+      LocationWithToken tkn -> filterM (fieldMap LocationTokens (Token.hasToken tkn) . toId) ls
       HauntedLocation ->
         filterM
           ( \l ->

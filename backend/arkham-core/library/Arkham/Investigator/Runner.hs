@@ -2285,6 +2285,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   TakeResources iid n source False | iid == investigatorId -> do
     canGain <- can.gain.resources (sourceToFromSource source) iid
     pure $ if canGain then a & tokensL %~ addTokens Resource n else a
+  MoveTokens source _ tType n | isSource a source -> pure $ a & tokensL %~ subtractTokens tType n
+  MoveTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ addTokens tType n
+  MoveTokens _ (ResourceTarget iid) _tType n | iid == investigatorId -> do
+    pure $ a & tokensL %~ addTokens Resource n
   PlaceTokens _ (isTarget a -> True) token n -> do
     pure $ a & tokensL %~ addTokens token n
   RemoveTokens _ (isTarget a -> True) token n -> do

@@ -18,6 +18,7 @@ data Token
   | AlarmLevel
   | Corruption
   | Depth
+  | Leyline
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)
 
@@ -58,6 +59,9 @@ flipDoom n original@(Tokens tokens) =
   let doomVal = findWithDefault 0 Doom tokens
       n' = min n doomVal
    in if doomVal == 0 then original else addTokens Clue n' (subtractTokens Doom n' original)
+
+hasToken :: Token -> Tokens -> Bool
+hasToken token tokens = countTokens token tokens > 0
 
 countTokens :: Token -> Tokens -> Int
 countTokens token (Tokens tokens) = findWithDefault 0 token tokens

@@ -420,6 +420,7 @@ data LocationMatcher
   | Nowhere
   | HauntedLocation
   | EmptyLocation
+  | LocationWithToken Token
   | ConnectedFrom LocationMatcher
   | ConnectedTo LocationMatcher
   | AccessibleFrom LocationMatcher

@@ -21,9 +21,7 @@ instance HasModifiersFor DrMilanChristopher where
 
 instance HasAbilities DrMilanChristopher where
   getAbilities (DrMilanChristopher x) =
-    [ restrictedAbility x 1 ControlsThis
-        $ freeReaction (SkillTestResult #after You (WhileInvestigating Anywhere) $ SuccessResult AnyValue)
-    ]
+    [restrictedAbility x 1 ControlsThis $ freeReaction (SuccessfulInvestigation #after You Anywhere)]
 
 instance RunMessage DrMilanChristopher where
   runMessage msg a@(DrMilanChristopher attrs) = case msg of

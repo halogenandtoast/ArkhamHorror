@@ -311,6 +311,7 @@ displayCostType = \case
     Key -> pluralize n "Key"
     Lock -> pluralize n "Lock"
     Evidence -> tshow n <> " Evidence"
+    Leyline -> pluralize n "Leyline"
   DynamicUseCost _ uType _ -> case uType of
     Ammo -> "X Ammo"
     Supply -> "X Supplies"
@@ -324,6 +325,7 @@ displayCostType = \case
     Key -> "X Keys"
     Lock -> "X Locks"
     Evidence -> "X Evidence"
+    Leyline -> "X Leylines"
   UseCostUpTo _ uType n m -> case uType of
     Ammo -> tshow n <> "-" <> tshow m <> " Ammo"
     Supply -> tshow n <> "-" <> tshow m <> " Supplies"
@@ -337,6 +339,7 @@ displayCostType = \case
     Key -> tshow n <> "-" <> tshow m <> " Keys"
     Lock -> tshow n <> "-" <> tshow m <> " Locks"
     Evidence -> tshow n <> "-" <> tshow m <> " Evidence"
+    Leyline -> tshow n <> "-" <> tshow m <> " Leylines"
   UpTo n c -> displayCostType c <> " up to " <> pluralize n "time"
   SealCost _ -> "Seal token"
   SealMultiCost n _ -> "Seal " <> tshow n <> " matching tokens"

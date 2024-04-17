@@ -27,10 +27,10 @@ instance HasAbilities ArchiveOfConduitsUnidentified where
 
 instance RunMessage ArchiveOfConduitsUnidentified where
   runMessage msg a@(ArchiveOfConduitsUnidentified attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (getInvestigatedLocation -> location) _ -> do
+    UseCardAbility _iid (isSource attrs -> True) 1 (getInvestigatedLocation -> location) _ -> do
       pushAll [MoveTokens (toSource location) (toTarget attrs) Leyline 1, DoStep 1 msg]
       pure a
-    DoStep 1 msg'@(UseCardAbility iid (isSource attrs -> True) 1 _ _) -> do
+    DoStep 1 (UseCardAbility iid (isSource attrs -> True) 1 _ _) -> do
       let leylines = attrs.token Leyline
       when (leylines >= 4) do
         toDiscardBy iid (attrs.ability 1) attrs

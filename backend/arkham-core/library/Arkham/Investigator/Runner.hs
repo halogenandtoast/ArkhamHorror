@@ -29,6 +29,7 @@ import Arkham.Action (Action)
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Asset.Types (Field (..))
+import Arkham.Asset.Uses qualified as Uses
 import Arkham.CampaignLog
 import Arkham.Capability
 import Arkham.Card
@@ -2285,6 +2286,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   TakeResources iid n source False | iid == investigatorId -> do
     canGain <- can.gain.resources (sourceToFromSource source) iid
     pure $ if canGain then a & tokensL %~ addTokens Resource n else a
+  MoveUses _ target Uses.Leyline n | isTarget a target -> pure $ a & tokensL %~ addTokens Leyline n
   MoveTokens source _ tType n | isSource a source -> pure $ a & tokensL %~ subtractTokens tType n
   MoveTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ addTokens tType n
   MoveTokens _ (ResourceTarget iid) _tType n | iid == investigatorId -> do

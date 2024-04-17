@@ -26,6 +26,7 @@ import Arkham.Spawn as X
 import Arkham.Target as X
 
 import Arkham.Action qualified as Action
+import Arkham.Asset.Uses qualified as Uses
 import Arkham.Attack
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
@@ -1224,6 +1225,7 @@ instance RunMessage EnemyAttrs where
       pure $ a & tokensL %~ subtractTokens token amount
     MoveTokens source _ tType n | isSource a source -> pure $ a & tokensL %~ subtractTokens tType n
     MoveTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ addTokens tType n
+    MoveUses _ target Uses.Leyline n | isTarget a target -> pure $ a & tokensL %~ addTokens Leyline n
     PlaceTokens source target Doom amount | isTarget a target -> do
       cannotPlaceDoom <- hasModifier a CannotPlaceDoomOnThis
       if cannotPlaceDoom

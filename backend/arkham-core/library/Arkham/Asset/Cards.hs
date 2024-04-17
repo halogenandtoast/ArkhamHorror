@@ -151,6 +151,10 @@ allPlayerAssetCards =
       , archaicGlyphsGuidingStones3
       , archaicGlyphsMarkingsOfIsis3
       , archaicGlyphsProphecyForetold3
+      , archiveOfConduitsGatewayToAcheron4
+      , archiveOfConduitsGatewayToAldebaran4
+      , archiveOfConduitsGatewayToParadise4
+      , archiveOfConduitsGatewayToTindalos4
       , archiveOfConduitsUnidentified
       , ariadnesTwine3
       , armageddon
@@ -4850,6 +4854,54 @@ scientificTheory3 =
     , cdCardTraits = setFromList [Talent, Composure]
     , cdLimits = [LimitPerTrait Composure 1]
     , cdLevel = Just 3
+    }
+
+archiveOfConduitsGatewayToTindalos4 :: CardDef
+archiveOfConduitsGatewayToTindalos4 =
+  (asset "08041" ("Archive of Conduits" <:> "Gateway to Tindalos") 4 Seeker)
+    { cdCardTraits = setFromList [Ritual]
+    , cdSkills = [#combat, #combat, #wild]
+    , cdSlots = [#arcane]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdLevel = Just 4
+    , cdKeywords = singleton $ Keyword.Researched YouHaveIdentifiedTheGateway
+    , cdUses = uses Leyline 4
+    }
+
+archiveOfConduitsGatewayToAcheron4 :: CardDef
+archiveOfConduitsGatewayToAcheron4 =
+  (asset "08042" ("Archive of Conduits" <:> "Gateway to Acheron") 4 Seeker)
+    { cdCardTraits = setFromList [Ritual]
+    , cdSkills = [#intellect, #intellect, #wild]
+    , cdSlots = [#arcane]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdLevel = Just 4
+    , cdKeywords = singleton $ Keyword.Researched YouHaveIdentifiedTheGateway
+    , cdUses = uses Leyline 4
+    }
+
+archiveOfConduitsGatewayToAldebaran4 :: CardDef
+archiveOfConduitsGatewayToAldebaran4 =
+  (asset "08043" ("Archive of Conduits" <:> "Gateway to Aldebaran") 4 Seeker)
+    { cdCardTraits = setFromList [Ritual]
+    , cdSkills = [#intellect, #intellect, #wild]
+    , cdSlots = [#arcane]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdLevel = Just 4
+    , cdKeywords = singleton $ Keyword.Researched YouHaveIdentifiedTheGateway
+    , cdUses = uses Leyline 4
+    }
+
+archiveOfConduitsGatewayToParadise4 :: CardDef
+archiveOfConduitsGatewayToParadise4 =
+  (asset "08044" ("Archive of Conduits" <:> "Gateway to Paradise") 4 Seeker)
+    { cdCardTraits = setFromList [Ritual]
+    , cdSkills = [#intellect, #intellect, #wild]
+    , cdSlots = [#arcane]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdLevel = Just 4
+    , cdKeywords = singleton $ Keyword.Researched YouHaveIdentifiedTheGateway
+    , cdUses = uses Leyline 4
     }
 
 underworldSupport :: CardDef

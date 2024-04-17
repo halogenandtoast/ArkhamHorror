@@ -19,6 +19,7 @@ data UseType
   | Lock
   | Evidence
   | Offering
+  | Leyline
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''UseType)

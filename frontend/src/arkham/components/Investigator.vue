@@ -212,6 +212,7 @@ const resources = computed(() => props.investigator.tokens[TokenType.Resource] |
 const horror = computed(() => (props.investigator.tokens[TokenType.Horror] || 0) + props.investigator.assignedSanityDamage)
 const damage = computed(() => (props.investigator.tokens[TokenType.Damage] || 0) + props.investigator.assignedHealthDamage)
 const alarmLevel = computed(() => props.investigator.tokens[TokenType.AlarmLevel] || 0)
+const leylines = computed(() => props.investigator.tokens[TokenType.Leyline] || 0)
 </script>
 
 <template>
@@ -328,6 +329,13 @@ const alarmLevel = computed(() => props.investigator.tokens[TokenType.AlarmLevel
         type="doom"
         :amount="alarmLevel"
         tooltip="Alarm Level"
+      />
+
+      <PoolItem
+        v-if="leylines > 0"
+        type="resource"
+        :amount="leylines"
+        tooltip="Leyline"
       />
     </div>
   </div>

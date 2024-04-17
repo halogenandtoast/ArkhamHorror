@@ -31,6 +31,7 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Action qualified as Action
+import Arkham.Asset.Uses qualified as Uses
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.HasGame
@@ -316,6 +317,7 @@ instance RunMessage LocationAttrs where
     PlaceTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ addTokens tType n
     MoveTokens source _ tType n | isSource a source -> pure $ a & tokensL %~ subtractTokens tType n
     MoveTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ addTokens tType n
+    MoveUses _ target Uses.Leyline n | isTarget a target -> pure $ a & tokensL %~ addTokens Leyline n
     RemoveTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ subtractTokens tType n
     PlacedLocation _ _ lid | lid == locationId -> do
       if locationRevealed

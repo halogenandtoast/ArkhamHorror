@@ -768,6 +768,10 @@ allAssets =
     , SomeAssetCard jeremiahKirbyArcticArchaeologist
     , SomeAssetCard archiveOfConduitsUnidentified
     , SomeAssetCard scientificTheory3
+    , SomeAssetCard archiveOfConduitsGatewayToTindalos4
+    , SomeAssetCard archiveOfConduitsGatewayToAcheron4
+    , SomeAssetCard archiveOfConduitsGatewayToAldebaran4
+    , SomeAssetCard archiveOfConduitsGatewayToParadise4
     , --- rogue [eote]
       SomeAssetCard underworldSupport
     , SomeAssetCard theRedClockBrokenButReliable2

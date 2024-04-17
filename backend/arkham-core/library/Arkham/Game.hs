@@ -787,6 +787,7 @@ getInvestigatorsMatching matcher = do
     LeadInvestigator -> \i -> (== toId i) . gameLeadInvestigatorId <$> getGame
     InvestigatorWithTitle title -> pure . (`hasTitle` title)
     DefeatedInvestigator -> pure . attr investigatorDefeated
+    InvestigatorWithToken tkn -> \i -> fieldMap InvestigatorTokens (Token.hasToken tkn) (toId i)
     InvestigatorCanMoveTo source locationMatcher -> \i -> do
       case source of
         CardCostSource cardId -> do
@@ -2334,6 +2335,7 @@ getEnemiesMatching matcher = do
 
 enemyMatcherFilter :: HasGame m => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
+  EnemyWithToken tkn -> \e -> fieldMap EnemyTokens (Token.hasToken tkn) (toId e)
   DefeatedEnemy matcher -> \e ->
     if attr enemyDefeated e
       then enemyMatcherFilter matcher e

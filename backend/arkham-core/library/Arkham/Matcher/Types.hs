@@ -66,6 +66,7 @@ data InvestigatorMatcher
   = InvestigatorAt LocationMatcher
   | InvestigatorIs CardCode
   | InvestigatorCanMoveTo Source LocationMatcher
+  | InvestigatorWithToken Token
   | You
   | ThatInvestigator
   | UnengagedInvestigator
@@ -285,6 +286,7 @@ data EnemyMatcher
   | EnemyWithFullTitle Text Text
   | EnemyWithId EnemyId
   | EnemyWithTrait Trait
+  | EnemyWithToken Token
   | EnemyAt LocationMatcher
   | EnemyCanEnter LocationMatcher
   | EnemyWithoutTrait Trait

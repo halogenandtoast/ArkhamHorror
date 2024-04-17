@@ -40,7 +40,7 @@ sourceTraits = \case
   LocationSource lid -> field LocationTraits lid
   PlayerCardSource _ -> pure mempty
   ProxySource s _ -> sourceTraits s
-  ResourceSource -> pure mempty
+  ResourceSource _ -> pure mempty
   ScenarioSource -> pure mempty
   SkillSource sid -> field SkillTraits sid
   SkillTestSource {} -> pure mempty

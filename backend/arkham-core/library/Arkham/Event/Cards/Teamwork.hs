@@ -39,7 +39,7 @@ instance RunMessage Teamwork where
         : [ targetLabel aid [beginTrade iid' (toTarget aid), resolveAgain]
           | (iid', aid) <- assetsWithInvestigator
           ]
-          <> [ targetLabel iid' [beginTrade iid' ResourceTarget, resolveAgain]
+          <> [ targetLabel iid' [beginTrade iid' (ResourceTarget iid), resolveAgain]
              | iid' <- investigators
              ]
       pure e

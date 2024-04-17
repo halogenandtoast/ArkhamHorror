@@ -401,6 +401,7 @@ allPlayerAssetCards =
       , jacobMorrisonCostGuardCaptain3
       , jakeWilliams
       , jennysTwin45s
+      , jeremiahKirbyArcticArchaeologist
       , jeromeDavids
       , jessicaHyde1
       , jewelOfAureolus3
@@ -653,6 +654,7 @@ allPlayerAssetCards =
       , theNecronomiconOlausWormiusTranslation
       , theNecronomiconPetrusDeDaciaTranslation5
       , thePallidMask
+      , theRedClockBrokenButReliable2
       , theRedGlovedMan5
       , theSilverKey
       , theSkeletonKey2
@@ -4820,6 +4822,15 @@ forcedLearning =
       , cdDeckRestrictions = [PerDeckLimit 1, PurchaseAtDeckCreation]
       }
 
+jeremiahKirbyArcticArchaeologist :: CardDef
+jeremiahKirbyArcticArchaeologist =
+  (asset "08032" ("Jeremiah Kirby" <:> "Artic Archaeologist") 4 Seeker)
+    { cdCardTraits = setFromList [Ally, Miskatonic, Wayfarer]
+    , cdSkills = [#intellect]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }
+
 scientificTheory3 :: CardDef
 scientificTheory3 =
   (asset "08040" "Scientific Theory" 0 Seeker)
@@ -4836,6 +4847,18 @@ underworldSupport =
       { cdCardTraits = setFromList [Favor, Illicit]
       , cdDeckRestrictions = [PerDeckLimit 1, PurchaseAtDeckCreation]
       }
+
+theRedClockBrokenButReliable2 :: CardDef
+theRedClockBrokenButReliable2 =
+  (asset "08053" ("The Red Clock" <:> "Broken but Reliable") 2 Rogue)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdSkills = [#wild]
+    , cdSlots = [#accessory]
+    , cdUnique = True
+    , cdExceptional = True
+    , cdLevel = Just 2
+    , cdUses = uses Charge 0
+    }
 
 moxie3 :: CardDef
 moxie3 =

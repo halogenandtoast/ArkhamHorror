@@ -757,6 +757,17 @@ instance RunMessage EnemyAttrs where
       let details = fromJustNote "missing attack details" enemyAttacking
       pure $ a & attackingL ?~ details {attackAfter = msgs}
     EnemyAttack details | attackEnemy details == enemyId -> do
+      case attackTarget details of
+        InvestigatorTarget iid -> do
+          canIgnore <- hasModifier iid MayIgnoreAttacksOfOpportunity
+          if canIgnore && attackType details == AttackOfOpportunity
+            then do
+              player <- getPlayer iid
+              push $ chooseOne player [Label "Ignore attack of opportunity" [], Label "Do not ignore" [Do msg]]
+            else push $ Do msg
+        _ -> push $ Do msg
+      pure a
+    Do (EnemyAttack details) | attackEnemy details == enemyId -> do
       mods <- getModifiers a
       let canBeCancelled = AttacksCannotBeCancelled `notElem` mods
       let strategy =

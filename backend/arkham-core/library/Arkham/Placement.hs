@@ -78,6 +78,7 @@ data TreacheryPlacement
   | TreacheryInHandOf InvestigatorId
   | TreacheryNextToAgenda
   | TreacheryLimbo
+  | TreacheryTopOfDeck InvestigatorId
   deriving stock (Show, Eq, Data)
 
 $(deriveJSON defaultOptions ''Placement)

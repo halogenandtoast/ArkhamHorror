@@ -128,6 +128,11 @@ treacheryInHandOf attrs = case treacheryPlacement attrs of
   TreacheryInHandOf iid -> Just iid
   _ -> Nothing
 
+treacheryOnTopOfDeck :: TreacheryAttrs -> Maybe InvestigatorId
+treacheryOnTopOfDeck attrs = case treacheryPlacement attrs of
+  TreacheryTopOfDeck iid -> Just iid
+  _ -> Nothing
+
 treacheryInThreatAreaOf :: TreacheryAttrs -> Maybe InvestigatorId
 treacheryInThreatAreaOf attrs = case treacheryPlacement attrs of
   TreacheryAttachedTo (InvestigatorTarget iid) -> Just iid

@@ -415,6 +415,9 @@ getIsCommittable a c = do
               EncounterCard card -> pure $ CommittableTreachery `elem` cdCommitRestrictions (toCardDef card)
               VengeanceCard _ -> error "vengeance card"
 
+getMustBeCommittableCards :: HasGame m => InvestigatorId -> m [Card]
+getMustBeCommittableCards = filterM (`hasModifier` MustBeCommitted) <=< getCommittableCards
+
 getCommittableCards :: HasGame m => InvestigatorId -> m [Card]
 getCommittableCards iid = do
   modifiers' <- getModifiers iid

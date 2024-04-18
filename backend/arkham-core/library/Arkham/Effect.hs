@@ -135,6 +135,7 @@ import Arkham.Event.Events (
   uncageTheSoulEffect,
   vantagePointEffect,
   willToSurviveEffect,
+  writtenInTheStarsEffect,
  )
 import Arkham.Investigator.Investigators (
   dexterDrakeEffect,
@@ -415,6 +416,7 @@ allEffects =
     , ("08013", SomeEffect disciplinePrescienceOfFateEffect)
     , ("08020", SomeEffect toeToToeEffect)
     , ("08021", SomeEffect getBehindMeEffect)
+    , ("08034", SomeEffect writtenInTheStarsEffect)
     , ("09041", SomeEffect empiricalHypothesisEffect)
     , ("50013", SomeEffect twilightBladeEffect)
     , ("50044", SomeEffect jeremiahPierceEffect)

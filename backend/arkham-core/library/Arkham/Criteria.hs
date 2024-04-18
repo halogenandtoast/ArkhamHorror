@@ -329,6 +329,11 @@ instance Capable (InvestigatorMatcher -> Criterion) where
     let can' = can :: Capabilities InvestigatorMatcher
      in fmap (\m matcher -> exists (m <> matcher)) can'
 
+instance Capable (Maybe Criterion) where
+  can =
+    let can' = can :: Capabilities (InvestigatorMatcher -> Maybe Criterion)
+     in fmap (\m -> m You) can'
+
 instance Capable (FromSource -> InvestigatorMatcher -> Criterion) where
   can =
     let can' = can :: Capabilities (FromSource -> InvestigatorMatcher)

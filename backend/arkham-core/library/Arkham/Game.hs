@@ -1110,6 +1110,7 @@ getTreacheriesMatching matcher = do
       pure $ case placement of
         Placement.TreacheryAttachedTo {} -> True
         Placement.TreacheryInHandOf {} -> False
+        Placement.TreacheryTopOfDeck {} -> False
         Placement.TreacheryNextToAgenda -> True
         Placement.TreacheryLimbo -> False
     TreacheryWithResolvedEffectsBy investigatorMatcher -> \t -> do

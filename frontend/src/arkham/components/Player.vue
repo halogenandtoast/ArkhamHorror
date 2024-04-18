@@ -129,7 +129,7 @@ const playTopOfDeckAction = computed(() => {
     return -1
   }
   const topOfDeck = props.investigator.deck[0]
-  if (topOfDeck !== undefined && topOfDeck !== null) {
+  if (topOfDeck !== undefined && topOfDeck !== null && topOfDeckTreachery.value === null) {
     return choices.value.findIndex((c) => c.tag === "TargetLabel" && c.target.contents === props.investigator.deck[0].id)
   }
   return -1
@@ -173,6 +173,13 @@ const noCards = computed<ArkhamCard.Card[]>(() => [])
 // eslint-disable-next-line
 const showCards = reactive<RefWrapper<any>>({ ref: noCards })
 const cardRowTitle = ref("")
+
+const topOfDeckTreachery = computed(() => {
+  const mTreacheryId = Object.values(props.game.treacheries).
+    filter((t) => t.placement.tag === "TreacheryTopOfDeck" && t.placement.contents === id.value).
+    map((t) => t.id)[0]
+  return mTreacheryId ? props.game.treacheries[mTreacheryId] : null
+})
 
 const inHandTreacheries = computed(() => Object.values(props.game.treacheries).
   filter((t) => t.placement.tag === "TreacheryInHandOf" && t.placement.contents === id.value).
@@ -464,7 +471,17 @@ function onLeave(el: Element, done: () => void) {
 
       <div class="deck-container">
         <div class="top-of-deck">
+          <Treachery
+            v-if="topOfDeckTreachery"
+            :treachery="topOfDeckTreachery"
+            :game="game"
+            :data-index="topOfDeckTreachery.cardId"
+            :playerId="playerId"
+            class="deck"
+            @choose="$emit('choose', $event)"
+          />
           <img
+            v-else
             :class="{ 'deck--can-draw': drawCardsAction !== -1, 'card': topOfDeckRevealed }"
             class="deck"
             :src="topOfDeck"

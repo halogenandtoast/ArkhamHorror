@@ -499,7 +499,9 @@ instance RunMessage Scenario where
       pure x
     DiscardedTopOfDeck iid cards _ (TarotTarget (TarotCard Reversed TheMoonXVIII)) -> do
       let weaknesses = filter (`cardMatch` Matcher.WeaknessCard) cards
-      push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) (map toCard weaknesses)
+      unless (null weaknesses)
+        $ push
+        $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) (map toCard weaknesses)
       pure x
     UseThisAbility _ (TarotSource (TarotCard facing JudgementXX)) 1 -> do
       case facing of

@@ -341,6 +341,7 @@ allPlayerEventCards =
       , wingingIt
       , wordOfCommand2
       , workingAHunch
+      , writtenInTheStars
       , youHandleThisOne
       , youOweMeOne
       ]
@@ -2764,6 +2765,15 @@ fangOfTyrthrha4 =
           $ Criteria.enemyExists
           $ EnemyAt RevealedLocation
     , cdOverrideActionPlayableIfCriteriaMet = True
+    }
+
+writtenInTheStars :: CardDef
+writtenInTheStars =
+  (event "08034" "Written in the Stars" 1 Seeker)
+    { cdSkills = [#wild]
+    , cdCardTraits = singleton Insight
+    , cdFastWindow = Just $ DuringTurn You
+    , cdCriteria = can.manipulate.deck
     }
 
 unearthTheAncients2 :: CardDef

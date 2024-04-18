@@ -25,7 +25,7 @@ instance HasAbilities Shortcut2 where
   getAbilities (Shortcut2 a) = case eventAttachedTarget a of
     Just (LocationTarget lid) ->
       [ restrictedAbility
-          (ProxySource (toSource lid) (toSource a))
+          (proxied lid a)
           1
           (OnLocation (LocationWithId lid) <> LocationExists AccessibleLocation)
           (FastAbility' (exhaust a) [#move])

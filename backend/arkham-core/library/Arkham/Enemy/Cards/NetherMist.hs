@@ -19,14 +19,7 @@ instance HasAbilities NetherMist where
   getAbilities (NetherMist a) =
     withBaseAbilities
       a
-      [ haunted
-          "Nether Mist attacks you."
-          ( ProxySource
-              (LocationMatcherSource $ LocationWithEnemy $ EnemyWithId $ toId a)
-              (toSource a)
-          )
-          1
-      ]
+      [haunted "Nether Mist attacks you." (proxied (LocationWithEnemy $ EnemyWithId $ toId a) a) 1]
 
 netherMist :: EnemyCard NetherMist
 netherMist =

@@ -18,7 +18,7 @@ forbiddenKnowledge =
 
 instance HasAbilities ForbiddenKnowledge where
   getAbilities (ForbiddenKnowledge a) =
-    [ restrictedAbility (toSource a) 1 ControlsThis
+    [ restrictedAbility a 1 ControlsThis
         $ FastAbility
         $ assetUseCost a Secret 1
         <> HorrorCost (toSource a) YouTarget 1

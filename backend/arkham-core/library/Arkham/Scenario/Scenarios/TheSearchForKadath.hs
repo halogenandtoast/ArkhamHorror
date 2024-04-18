@@ -16,6 +16,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types (Field (EnemyCardCode))
 import Arkham.Exception
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
@@ -287,7 +288,7 @@ instance RunMessage TheSearchForKadath where
       victoryLocations <- select $ LocationWithVictory <> LocationWithoutClues
       locations <- filter (`notElem` victoryLocations) <$> select Anywhere
 
-      tenebrousNightgaunts <- select $ enemyIs Enemies.tenebrousNightgaunt
+      tenebrousNightgaunts <- selectWithField EnemyCardCode $ enemyIs Enemies.tenebrousNightgaunt
 
       player <- getPlayer leadId
       let
@@ -295,7 +296,9 @@ instance RunMessage TheSearchForKadath where
           guard (notNull tenebrousNightgaunts)
             *> [ chooseOneAtATime
                   player
-                  [AbilityLabel leadId (mkAbility t 1 $ forced NotAnyWindow) [] [] | t <- tenebrousNightgaunts]
+                  [ AbilityLabel leadId (mkAbility (SourceableWithCardCode cc t) 1 $ forced NotAnyWindow) [] []
+                  | (t, cc) <- tenebrousNightgaunts
+                  ]
                ]
 
       case region of

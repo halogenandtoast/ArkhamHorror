@@ -41,7 +41,7 @@ instance HasAbilities OfficeMurderAtTheExcelsiorHotel where
           [ withTooltip
               "{action}: Test {agility} (3) to attempt to pick the lock. If you succeed, reveal Office and immediately move to it."
               $ restrictedAbility
-                (proxy (LocationMatcherSource "Basement") attrs)
+                (proxied (LocationMatcherSource "Basement") attrs)
                 1
                 (OnLocation "Basement")
                 #action

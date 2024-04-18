@@ -26,7 +26,7 @@ instance HasAbilities TheTrueCulpritV1 where
   getAbilities (TheTrueCulpritV1 attrs) =
     guard (onSide A attrs)
       *> [ controlledAbility
-            (proxy (assetIs Cards.alienDevice) attrs)
+            (proxied (assetIs Cards.alienDevice) attrs)
             1
             (exists (enemyIs Cards.vengefulSpecter <> ExhaustedEnemy))
             (actionAbilityWithCost $ AssetClueCost "Alien Device" (assetIs Cards.alienDevice) $ Static 2)

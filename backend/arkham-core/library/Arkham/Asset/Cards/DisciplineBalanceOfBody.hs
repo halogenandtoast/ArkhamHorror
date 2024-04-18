@@ -11,7 +11,7 @@ import Arkham.Card
 import Arkham.Matcher
 import Arkham.Modifier
 
-newtype Metadata = Metadata {chosenAbilities :: [Ability]}
+newtype Metadata = Metadata {chosenAbilities :: [DifferentAbility]}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -41,7 +41,7 @@ instance RunMessage DisciplineBalanceOfBody where
       pure . DisciplineBalanceOfBody $ attrs `with` Metadata []
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
       abilities' <-
-        select
+        selectMap DifferentAbility
           $ PerformableAbility [ActionCostModifier (-1)]
           <> oneOf [AbilityIsAction #fight, AbilityIsAction #evade]
       chooseOrRunOne iid $ Label "Take no more actions" []
@@ -50,11 +50,11 @@ instance RunMessage DisciplineBalanceOfBody where
             ab
             []
             [HandleTargetChoice iid (toSource attrs) (AbilityTarget iid ab), DoStep (n - 1) msg']
-          | ab <- filter (`notElem` chosenAbilities meta) abilities'
+          | DifferentAbility ab <- filter (`notElem` chosenAbilities meta) abilities'
           ]
       pure a
     HandleTargetChoice _ (isSource attrs -> True) (AbilityTarget _ ab) -> do
-      pure . DisciplineBalanceOfBody $ attrs `with` Metadata (ab : chosenAbilities meta)
+      pure . DisciplineBalanceOfBody $ attrs `with` Metadata (DifferentAbility ab : chosenAbilities meta)
     Flip iid _ (isTarget attrs -> True) -> do
       push $ ReplaceInvestigatorAsset iid attrs.id (flipCard $ toCard attrs)
       pure a

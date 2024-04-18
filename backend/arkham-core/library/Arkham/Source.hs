@@ -176,3 +176,16 @@ pattern ElderThingEffect <- ChaosTokenEffectSource ElderThing
 
 instance IsLabel "elderSign" Source where
   fromLabel = ChaosTokenEffectSource ElderSign
+
+data SourceableWithCardCode where
+  SourceableWithCardCode :: (HasCardCode a, Sourceable b) => a -> b -> SourceableWithCardCode
+
+instance HasCardCode SourceableWithCardCode where
+  toCardCode (SourceableWithCardCode a _) = toCardCode a
+
+instance Sourceable SourceableWithCardCode where
+  toSource (SourceableWithCardCode _ b) = toSource b
+  isSource (SourceableWithCardCode _ b) = isSource b
+
+proxied :: (HasCardCode a, Sourceable a, Sourceable b) => b -> a -> SourceableWithCardCode
+proxied b a = SourceableWithCardCode a (proxy b a)

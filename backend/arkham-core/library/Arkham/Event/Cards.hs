@@ -198,6 +198,7 @@ allPlayerEventCards =
       , iveGotAPlan2
       , iveHadWorse2
       , iveHadWorse4
+      , joinTheCaravan1
       , keepFaith
       , keepFaith2
       , knowledgeIsPower
@@ -2774,6 +2775,17 @@ writtenInTheStars =
     , cdCardTraits = singleton Insight
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria = can.manipulate.deck
+    }
+
+joinTheCaravan1 :: CardDef
+joinTheCaravan1 =
+  (event "08036" "Join the Caravan" 10 Seeker)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Insight, Synergy]
+    , cdFastWindow = Just $ DuringTurn You
+    , cdCriteria = Just $ exists $ CanMoveToLocation You ThisCard RevealedLocation
+    , cdLevel = Just 1
+    , cdCardInHandEffects = True
     }
 
 unearthTheAncients2 :: CardDef

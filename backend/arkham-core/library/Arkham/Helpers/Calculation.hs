@@ -1,4 +1,4 @@
-module Arkham.Helpers.Calculation where
+module Arkham.Helpers.Calculation (module Arkham.Helpers.Calculation, module Arkham.Calculation) where
 
 import Arkham.Calculation
 import Arkham.Card

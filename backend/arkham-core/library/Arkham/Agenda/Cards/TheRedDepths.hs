@@ -69,7 +69,7 @@ theRedDepthsEffect = cardEffect TheRedDepthsEffect Cards.theRedDepths
 instance HasAbilities TheRedDepthsEffect where
   getAbilities (TheRedDepthsEffect attrs) =
     [ restrictedAbility
-        (ProxySource (AgendaMatcherSource AnyAgenda) (toSource attrs))
+        (proxied (AgendaMatcherSource AnyAgenda) attrs)
         1
         (OutOfPlayEnemyExists PursuitZone AnyEnemy)
         $ ForcedAbility

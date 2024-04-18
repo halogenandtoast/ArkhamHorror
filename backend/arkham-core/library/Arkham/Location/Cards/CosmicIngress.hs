@@ -41,10 +41,7 @@ instance HasAbilities CosmicIngress where
         , withTooltip
             "Shuffle this location into the Cosmos, moving each investigator and enemy that was at this location to Cosmic Ingress"
             $ restrictedAbility
-              ( ProxySource
-                  (LocationMatcherSource $ LocationWithTrait Void)
-                  (toSource attrs)
-              )
+              (proxied (LocationMatcherSource $ LocationWithTrait Void) attrs)
               1
               Here
               (ActionAbility [] $ ActionCost 1)

@@ -16,6 +16,7 @@ import Arkham.Criteria as X
 
 import Arkham.Ability.Types qualified
 import Arkham.Action
+import Arkham.Card.CardCode
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
@@ -96,44 +97,44 @@ withTooltip :: Text -> Ability -> Ability
 withTooltip t a = a & abilityTooltipL ?~ t
 
 restrictedAbility
-  :: Sourceable a => a -> Int -> Criterion -> AbilityType -> Ability
+  :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
 restrictedAbility entity idx restriction type' =
   (mkAbility entity idx type') {abilityCriteria = restriction}
 
 restricted
-  :: Sourceable a => a -> Int -> Criterion -> AbilityType -> Ability
+  :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
 restricted = restrictedAbility
 
 controlledAbility
-  :: Sourceable a => a -> Int -> Criterion -> AbilityType -> Ability
+  :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
 controlledAbility entity idx restriction = restrictedAbility entity idx (ControlsThis <> restriction)
 
-fastAbility :: Sourceable a => a -> Int -> Cost -> Criterion -> Ability
+fastAbility :: (HasCardCode a, Sourceable a) => a -> Int -> Cost -> Criterion -> Ability
 fastAbility entity idx cost criteria =
   (mkAbility entity idx (FastAbility cost))
     { abilityCriteria = criteria
     }
 
-fightAbility :: Sourceable a => a -> Int -> Cost -> Criterion -> Ability
+fightAbility :: (HasCardCode a, Sourceable a) => a -> Int -> Cost -> Criterion -> Ability
 fightAbility entity idx cost criteria =
   (mkAbility entity idx (fightAction cost))
     { abilityCriteria = criteria
     }
 
-evadeAbility :: Sourceable a => a -> Int -> Cost -> Criterion -> Ability
+evadeAbility :: (Sourceable a, HasCardCode a) => a -> Int -> Cost -> Criterion -> Ability
 evadeAbility entity idx cost criteria =
   (mkAbility entity idx (ActionAbility [#evade] cost))
     { abilityCriteria = criteria
     }
 
-investigateAbility :: Sourceable a => a -> Int -> Cost -> Criterion -> Ability
+investigateAbility :: (Sourceable a, HasCardCode a) => a -> Int -> Cost -> Criterion -> Ability
 investigateAbility entity idx cost criteria =
   (mkAbility entity idx (investigateAction cost))
     { abilityCriteria = criteria <> exists (YourLocation <> InvestigatableLocation)
     }
 
 reactionAbility
-  :: Sourceable a
+  :: (Sourceable a, HasCardCode a)
   => a
   -> Int
   -> Cost
@@ -145,7 +146,7 @@ reactionAbility entity idx cost window criteria =
     { abilityCriteria = criteria
     }
 
-forcedAbility :: Sourceable a => a -> Int -> WindowMatcher -> Ability
+forcedAbility :: (HasCardCode a, Sourceable a) => a -> Int -> WindowMatcher -> Ability
 forcedAbility entity idx window =
   mkAbility entity idx (ForcedAbility window)
 
@@ -158,26 +159,27 @@ withCriteria a c = a & abilityCriteriaL <>~ c
 restrict :: Criterion -> Ability -> Ability
 restrict = flip withCriteria
 
-haunted :: Sourceable a => Text -> a -> Int -> Ability
+haunted :: (HasCardCode a, Sourceable a) => Text -> a -> Int -> Ability
 haunted tooltip a n = withTooltip tooltip $ mkAbility a n Haunted
 
-cosmos :: Sourceable a => a -> Int -> Ability
+cosmos :: (HasCardCode a, Sourceable a) => a -> Int -> Ability
 cosmos a n = mkAbility a n Cosmos
 
 reaction
-  :: Sourceable a => a -> Int -> Criterion -> Cost -> WindowMatcher -> Ability
+  :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> Cost -> WindowMatcher -> Ability
 reaction a n c cost wm = restrictedAbility a n c (ReactionAbility wm cost)
 
 uncancellable :: Ability -> Ability
 uncancellable ab = ab {abilityCanBeCancelled = False}
 
-abilityEffect :: Sourceable a => a -> Cost -> Ability
+abilityEffect :: (HasCardCode a, Sourceable a) => a -> Cost -> Ability
 abilityEffect a cost = mkAbility a (-1) (AbilityEffect cost)
 
-mkAbility :: Sourceable a => a -> Int -> AbilityType -> Ability
+mkAbility :: (Sourceable a, HasCardCode a) => a -> Int -> AbilityType -> Ability
 mkAbility entity idx type' =
   Ability
     { abilitySource = toSource entity
+    , abilityCardCode = toCardCode entity
     , abilityIndex = idx
     , abilityType = type'
     , abilityLimit = defaultAbilityLimit type'

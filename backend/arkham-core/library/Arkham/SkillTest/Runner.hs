@@ -373,7 +373,10 @@ instance RunMessage SkillTest where
           when canPay
             $ pushAll
             $ [SetActiveInvestigator iid | iid /= iid']
-            <> [PayForAbility (abilityEffect s $ mconcat additionalCosts) []]
+            <> [ PayForAbility
+                  (abilityEffect (SourceableWithCardCode (CardCode "skilltest") s) $ mconcat additionalCosts)
+                  []
+               ]
             <> [SetActiveInvestigator iid' | iid /= iid']
             <> msgs
       pure s

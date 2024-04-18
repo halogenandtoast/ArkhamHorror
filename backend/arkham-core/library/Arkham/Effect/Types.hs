@@ -68,6 +68,9 @@ data EffectAttrs = EffectAttrs
   }
   deriving stock (Show, Eq, Generic)
 
+instance HasCardCode EffectAttrs where
+  toCardCode = effectCardCode
+
 instance HasField "id" EffectAttrs EffectId where
   getField = effectId
 

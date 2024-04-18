@@ -767,6 +767,7 @@ allAssets =
       SomeAssetCard forcedLearning
     , SomeAssetCard jeremiahKirbyArcticArchaeologist
     , SomeAssetCard archiveOfConduitsUnidentified
+    , SomeAssetCard hikingBoots1
     , SomeAssetCard scientificTheory3
     , SomeAssetCard archiveOfConduitsGatewayToTindalos4
     , SomeAssetCard archiveOfConduitsGatewayToAcheron4
@@ -794,7 +795,9 @@ allAssets =
     , SomeAssetCard brandOfCthugha4
     , --- seeker/rogue [eote]
       SomeAssetCard pocketTelescope
+    , SomeAssetCard eonChart1
     , SomeAssetCard geneBeauregard3
+    , SomeAssetCard eonChart4
     , --- rogue/survivor [eote]
       SomeAssetCard preciousMementoFromAFormerLife4
     , SomeAssetCard preciousMementoFromAFutureLife4

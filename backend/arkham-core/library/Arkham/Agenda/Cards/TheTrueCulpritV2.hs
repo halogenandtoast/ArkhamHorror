@@ -28,7 +28,7 @@ instance HasAbilities TheTrueCulpritV2 where
   getAbilities (TheTrueCulpritV2 attrs) =
     guard (onSide A attrs)
       *> [ controlledAbility
-            (proxy (assetIs Cards.sinisterSolution) attrs)
+            (proxied (assetIs Cards.sinisterSolution) attrs)
             1
             (exists $ You <> InvestigatorAt "Room 212")
             actionAbility

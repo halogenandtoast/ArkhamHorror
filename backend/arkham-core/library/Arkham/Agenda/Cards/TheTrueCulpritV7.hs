@@ -34,7 +34,7 @@ instance HasAbilities TheTrueCulpritV7 where
   getAbilities (TheTrueCulpritV7 attrs) =
     guard (onSide A attrs)
       *> ( [ controlledAbility
-            (proxy (assetIs asset) attrs)
+            (proxied (assetIs asset) attrs)
             1
             ( exists (enemyIs Cards.dimensionalShambler <> EnemyAt YourLocation <> CanEvadeEnemy (toSource attrs))
             )

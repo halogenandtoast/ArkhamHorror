@@ -34,10 +34,7 @@ instance HasAbilities LodgeCellarMembersOnly where
       [ withTooltip
         "{action}: Investigators at the Lodge Gates spend 1 {perPlayer} clues, as a group: Reveal the Lodge Cellar."
         $ restrictedAbility
-          ( ProxySource
-              (LocationMatcherSource $ LocationWithTitle "Lodge Gates")
-              (toSource attrs)
-          )
+          (proxied (LocationMatcherSource $ LocationWithTitle "Lodge Gates") attrs)
           1
           (OnLocation $ LocationWithTitle "Lodge Gates")
           ( ActionAbility []

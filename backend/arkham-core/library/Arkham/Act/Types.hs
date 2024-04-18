@@ -148,6 +148,12 @@ instance Sourceable ActAttrs where
   isSource attrs (AbilitySource source _) = isSource attrs source
   isSource _ _ = False
 
+instance HasCardCode ActAttrs where
+  toCardCode = unActId . toId
+
+instance HasCardCode (With ActAttrs meta) where
+  toCardCode (With x _) = toCardCode x
+
 onSide :: AS.ActSide -> ActAttrs -> Bool
 onSide side ActAttrs {..} = AS.actSide actSequence == side
 

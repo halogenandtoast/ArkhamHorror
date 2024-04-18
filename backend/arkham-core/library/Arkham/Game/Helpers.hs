@@ -322,7 +322,7 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
 
 getCanAffordAbility
   :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
-getCanAffordAbility iid ability ws =
+getCanAffordAbility iid ability ws = do
   andM
     [ getCanAffordUse iid ability ws
     , getCanAffordAbilityCost iid ability
@@ -631,7 +631,7 @@ getActionsWith iid ws f = do
 
   actions''' <-
     filterM
-      ( \action ->
+      ( \action -> do
           andM
             [ getCanPerformAbility iid ws action
             , getCanAffordAbility iid action ws

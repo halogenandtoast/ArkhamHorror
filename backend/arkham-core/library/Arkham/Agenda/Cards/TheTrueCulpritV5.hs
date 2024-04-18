@@ -29,7 +29,7 @@ instance HasAbilities TheTrueCulpritV5 where
     guard (onSide A attrs)
       *> [ doesNotProvokeAttacksOfOpportunity
             $ controlledAbility
-              (proxy (assetIs Cards.sinisterSolution) attrs)
+              (proxied (assetIs Cards.sinisterSolution) attrs)
               1
               (exists $ EnemyAt YourLocation <> enemyIs Cards.vengefulSpecter)
               actionAbility

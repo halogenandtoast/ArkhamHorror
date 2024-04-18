@@ -344,6 +344,9 @@ allAssetCards =
 instance HasCardCode AssetAttrs where
   toCardCode = assetCardCode
 
+instance HasCardCode (With AssetAttrs meta) where
+  toCardCode (With x _) = assetCardCode x
+
 instance HasCardDef AssetAttrs where
   toCardDef a = case lookup (assetCardCode a) allAssetCards of
     Just def -> def

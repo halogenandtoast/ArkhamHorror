@@ -1176,9 +1176,10 @@ getScenariosMatching matcher = do
 abilityMatches :: HasGame m => Ability -> AbilityMatcher -> m Bool
 abilityMatches a@Ability {..} = \case
   PerformableAbility modifiers' -> do
-    let ab = applyAbilityModifiers a modifiers'
-    iid <- view activeInvestigatorIdL <$> getGame
-    getCanPerformAbility iid (Window.defaultWindows iid) ab
+    withDepthGuard 3 False $ do
+      let ab = applyAbilityModifiers a modifiers'
+      iid <- view activeInvestigatorIdL <$> getGame
+      getCanPerformAbility iid (Window.defaultWindows iid) ab
   AnyAbility -> pure True
   HauntedAbility -> pure $ abilityType == Haunted
   AssetAbility assetMatcher -> do

@@ -20,7 +20,7 @@ instance HasAbilities HuntedByCorsairs where
   getAbilities (HuntedByCorsairs attrs) = case attrs.attached of
     Just (ActTarget aid) ->
       [ mkAbility attrs 1 $ ForcedAbility $ ActAdvances #when (ActWithId aid)
-      , mkAbility (proxy (ActWithId aid) attrs) 2 actionAbility
+      , mkAbility (proxied (ActWithId aid) attrs) 2 actionAbility
       ]
     _ -> []
 

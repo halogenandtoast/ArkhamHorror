@@ -41,10 +41,7 @@ instance HasAbilities HideousPalace where
         , withTooltip
             "Shuffle this location into the Cosmos, moving each investigator and enemy that was at this location to Hideous Palace"
             $ restrictedAbility
-              ( ProxySource
-                  (LocationMatcherSource $ LocationWithTrait Void)
-                  (toSource attrs)
-              )
+              (proxied (LocationMatcherSource $ LocationWithTrait Void) attrs)
               1
               Here
               (ActionAbility [] $ ActionCost 1)

@@ -264,6 +264,12 @@ data InvestigatorAttrs = InvestigatorAttrs
   }
   deriving stock (Show, Eq, Generic)
 
+instance HasCardCode InvestigatorAttrs where
+  toCardCode = investigatorCardCode
+
+instance HasCardCode (With InvestigatorAttrs meta) where
+  toCardCode (With x _) = investigatorCardCode x
+
 data InvestigatorSearch = InvestigatorSearch
   { searchingType :: SearchType
   , searchingInvestigator :: InvestigatorId

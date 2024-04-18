@@ -295,6 +295,8 @@ allPlayerAssetCards =
       , enchantedBladeMystic3
       , encyclopedia
       , encyclopedia2
+      , eonChart1
+      , eonChart4
       , esotericAtlas1
       , esotericAtlas2
       , esotericFormula
@@ -385,6 +387,7 @@ allPlayerAssetCards =
       , highRoller2
       , higherEducation
       , higherEducation3
+      , hikingBoots1
       , hiredMuscle1
       , holyRosary
       , holyRosary2
@@ -4847,6 +4850,14 @@ archiveOfConduitsUnidentified =
     , cdAdditionalCost = Just ArchiveOfConduitsUnidentifiedCost
     }
 
+hikingBoots1 :: CardDef
+hikingBoots1 =
+  (asset "08035" "Hiking Boots" 2 Seeker)
+    { cdCardTraits = setFromList [Item, Clothing, Footwear]
+    , cdSkills = [#agility]
+    , cdLimits = [LimitPerTrait Footwear 1]
+    }
+
 scientificTheory3 :: CardDef
 scientificTheory3 =
   (asset "08040" "Scientific Theory" 0 Seeker)
@@ -5051,6 +5062,16 @@ pocketTelescope =
     , cdSlots = [#hand]
     }
 
+eonChart1 :: CardDef
+eonChart1 =
+  (multiClassAsset "08098" "Eon Chart" 2 [Seeker, Rogue])
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdSkills = [#intellect, #agility]
+    , cdUses = uses Secret 3
+    , cdLevel = Just 1
+    , cdSlots = [#accessory]
+    }
+
 geneBeauregard3 :: CardDef
 geneBeauregard3 =
   (multiClassAsset "08099" ("Gené Beauregard" <:> "Intrepid Explorer") 5 [Seeker, Rogue])
@@ -5059,6 +5080,16 @@ geneBeauregard3 =
     , cdSlots = [#ally]
     , cdUnique = True
     , cdLevel = Just 3
+    }
+
+eonChart4 :: CardDef
+eonChart4 =
+  (multiClassAsset "08100" "Eon Chart" 2 [Seeker, Rogue])
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdSkills = [#intellect, #agility, #wild]
+    , cdUses = uses Secret 3
+    , cdLevel = Just 4
+    , cdSlots = [#accessory]
     }
 
 preciousMementoFromAFormerLife4 :: CardDef

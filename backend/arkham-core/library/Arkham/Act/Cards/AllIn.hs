@@ -24,7 +24,7 @@ instance HasAbilities AllIn where
     withBaseAbilities x
       $ guard (onSide A x)
       *> [ restrictedAbility
-            (toProxySource x $ AssetMatcherSource $ assetIs Assets.drFrancisMorgan)
+            (proxied (AssetMatcherSource $ assetIs Assets.drFrancisMorgan) x)
             1
             (Uncontrolled <> OnSameLocation)
             parleyAction_

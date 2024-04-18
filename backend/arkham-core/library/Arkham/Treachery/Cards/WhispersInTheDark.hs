@@ -22,10 +22,7 @@ whispersInTheDark = treachery WhispersInTheDark Cards.whispersInTheDark
 
 instance HasAbilities WhispersInTheDark where
   getAbilities (WhispersInTheDark a) =
-    [ haunted
-        "Take 1 horror"
-        (ProxySource (LocationMatcherSource Anywhere) (toSource a))
-        1
+    [ haunted "Take 1 horror" (proxied Anywhere a) 1
     , mkAbility a 2 $ ForcedAbility $ RoundEnds Timing.When
     ]
 

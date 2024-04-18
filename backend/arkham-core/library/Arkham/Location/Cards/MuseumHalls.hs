@@ -36,7 +36,7 @@ instance HasAbilities MuseumHalls where
       [ withTooltip
           "{action}: Test {combat} (5) to attempt to break down the door to the museum. If you are successful, immediately advance to Act 1b"
           $ restrictedAbility
-            (proxy (LocationMatcherSource "Museum Entrance") attrs)
+            (proxied (LocationMatcherSource "Museum Entrance") attrs)
             1
             (OnLocation "Museum Entrance")
             #action

@@ -18,7 +18,7 @@ theEndlessStairs = act (2, A) TheEndlessStairs Cards.theEndlessStairs Nothing
 instance HasAbilities TheEndlessStairs where
   getAbilities (TheEndlessStairs x) =
     restrictedAbility
-      (proxy (RevealedLocation <> LocationWithLabel "mysteriousStairs5") x)
+      (proxied (RevealedLocation <> LocationWithLabel "mysteriousStairs5") x)
       1
       Here
       (ActionAbility [Action.Resign] $ ActionCost 1)

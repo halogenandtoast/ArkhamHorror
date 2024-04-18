@@ -29,10 +29,7 @@ instance HasAbilities NoAsylum where
       $ if onSide A x
         then
           [ restrictedAbility
-              ( ProxySource
-                  (LocationMatcherSource $ locationIs Locations.garden)
-                  (toSource x)
-              )
+              (proxied (LocationMatcherSource $ locationIs Locations.garden) x)
               99
               ( Here
                   <> Negate

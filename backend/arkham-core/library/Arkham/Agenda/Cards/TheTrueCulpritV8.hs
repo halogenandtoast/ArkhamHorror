@@ -27,7 +27,7 @@ instance HasAbilities TheTrueCulpritV8 where
   getAbilities (TheTrueCulpritV8 attrs) =
     guard (onSide A attrs)
       *> ( [ restrictedAbility
-            (proxy (assetIs asset) attrs)
+            (proxied (assetIs asset) attrs)
             1
             ControlsThis
             (actionAbilityWithCost $ AssetClueCost (toTitle asset) (assetIs asset) $ Static 1)

@@ -34,10 +34,7 @@ instance HasAbilities LobbyWeveBeenExpectingYou where
       [ withTooltip
         "{action}: _Parley._ The guards recognize you from the Meiger estate and let you pass. Reveal the Lobby."
         $ restrictedAbility
-          ( ProxySource
-              (LocationMatcherSource $ LocationWithTitle "Lodge Gates")
-              (toSource attrs)
-          )
+          (proxied (LocationMatcherSource $ LocationWithTitle "Lodge Gates") attrs)
           1
           (OnLocation $ LocationWithTitle "Lodge Gates")
           (ActionAbility [] $ ActionCost 1)

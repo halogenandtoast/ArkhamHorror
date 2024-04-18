@@ -7,16 +7,17 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
+import Arkham.Card.CardCode
 import Arkham.Direction
 import Arkham.Game.Helpers as X
 import Arkham.Matcher
 import Arkham.Source
 
-resignAction :: Sourceable a => a -> Ability
+resignAction :: (HasCardCode a, Sourceable a) => a -> Ability
 resignAction a =
   mkAbility a 99 $ ActionAbility [Action.Resign] (ActionCost 1)
 
-drawCardUnderneathAction :: Sourceable a => a -> Ability
+drawCardUnderneathAction :: (HasCardCode a, Sourceable a) => a -> Ability
 drawCardUnderneathAction a =
   limitedAbility (GroupLimit PerGame 1)
     $ restrictedAbility

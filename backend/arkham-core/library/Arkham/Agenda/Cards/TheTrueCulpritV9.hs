@@ -28,7 +28,7 @@ instance HasAbilities TheTrueCulpritV9 where
   getAbilities (TheTrueCulpritV9 attrs) =
     guard (onSide A attrs)
       *> [ restrictedAbility
-            (proxy (locationIs Cards.room212) attrs)
+            (proxied (locationIs Cards.room212) attrs)
             1
             (exists (assetIs Cards.tomeOfRituals <> AssetAt (locationIs Cards.room212)))
             actionAbility

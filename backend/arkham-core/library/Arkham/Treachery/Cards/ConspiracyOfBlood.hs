@@ -33,13 +33,7 @@ instance HasModifiersFor ConspiracyOfBlood where
 
 instance HasAbilities ConspiracyOfBlood where
   getAbilities (ConspiracyOfBlood attrs) =
-    [ restrictedAbility
-        ( ProxySource
-            (EnemyMatcherSource $ EnemyWithTrait Cultist)
-            (toSource attrs)
-        )
-        1
-        OnSameLocation
+    [ restrictedAbility (proxied (EnemyMatcherSource $ EnemyWithTrait Cultist) attrs) 1 OnSameLocation
         $ ActionAbility [Action.Parley]
         $ ActionCost 1
     ]

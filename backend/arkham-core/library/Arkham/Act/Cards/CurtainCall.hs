@@ -26,10 +26,7 @@ curtainCall = act (3, A) CurtainCall Cards.curtainCall Nothing
 instance HasAbilities CurtainCall where
   getAbilities (CurtainCall attrs) =
     [ restrictedAbility
-        ( ProxySource
-            (LocationMatcherSource $ locationIs Cards.lobby)
-            (toSource attrs)
-        )
+        (proxied (LocationMatcherSource $ locationIs Cards.lobby) attrs)
         1
         ( Here
             <> Negate

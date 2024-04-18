@@ -28,7 +28,7 @@ instance HasAbilities TheTrueCulpritV3 where
     guard (onSide A attrs)
       *> [ doesNotProvokeAttacksOfOpportunity
             $ controlledAbility
-              (proxy (assetIs Cards.alienDevice) attrs)
+              (proxied (assetIs Cards.alienDevice) attrs)
               1
               (exists (EnemyAt YourLocation <> EnemyWithTrait Staff))
               ( actionAbilityWithCost

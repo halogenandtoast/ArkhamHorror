@@ -82,7 +82,7 @@ instance RunMessage AmandaSharpe where
               [ AbilityLabel
                   iid
                   ( mkAbility
-                      (proxy (CardIdSource $ toCardId whispersFromTheDeep) attrs)
+                      (proxied (CardIdSource $ toCardId whispersFromTheDeep) attrs)
                       1
                       (ForcedAbility AnyWindow)
                   )

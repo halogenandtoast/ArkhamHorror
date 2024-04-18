@@ -24,7 +24,7 @@ instance HasAbilities TheTrueCulpritV4 where
   getAbilities (TheTrueCulpritV4 attrs) =
     guard (onSide A attrs)
       *> [ restrictedAbility
-            (proxy (assetIs Cards.tomeOfRituals) attrs)
+            (proxied (assetIs Cards.tomeOfRituals) attrs)
             1
             ControlsThis
             (fightAction $ AssetClueCost "Tome of Rituals" (assetIs Cards.tomeOfRituals) $ Static 2)

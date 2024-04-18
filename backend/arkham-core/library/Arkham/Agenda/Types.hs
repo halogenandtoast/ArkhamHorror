@@ -197,6 +197,9 @@ instance HasCardDef Agenda where
 instance HasCardCode Agenda where
   toCardCode = unAgendaId . toId
 
+instance HasCardCode AgendaAttrs where
+  toCardCode = unAgendaId . toId
+
 instance IsCard Agenda where
   toCard = defaultToCard
   toCardId = agendaCardId . toAttrs

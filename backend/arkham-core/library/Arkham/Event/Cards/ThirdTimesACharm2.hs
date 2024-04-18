@@ -38,7 +38,7 @@ instance HasAbilities ThirdTimesACharm2Effect where
     Just (EffectInt n) ->
       [ withTooltip "Cancel it, return it to the chaos bag, and reveal a new chaos token"
         $ limitedAbility (GroupLimit PerTestOrAbility 2)
-        $ mkAbility (proxy SkillTestSource a) 1
+        $ mkAbility (proxied SkillTestSource a) 1
         $ freeReaction
         $ RevealChaosToken #when You #any
       | n > 0

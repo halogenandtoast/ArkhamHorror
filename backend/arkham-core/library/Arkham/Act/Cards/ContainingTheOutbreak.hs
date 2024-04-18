@@ -27,7 +27,7 @@ instance HasAbilities ContainingTheOutbreak where
     [ withTooltip
         "{action}: Test {willpower} (X) to attempt to seal the rift. X is this location's shroud. Investigators at this location may spend 1 {perPlayer} clues, as a group, to automatically succeed. If you succeed, replace the damage token on this location with a horror token. For the remainder of the game, this location cannot become infested."
         $ restrictedAbility
-          (proxy (LocationMatcherSource InfestedLocation) attrs)
+          (proxied (LocationMatcherSource InfestedLocation) attrs)
           1
           Here
         $ ActionAbility [] (ActionCost 1 <> OptionalCost (GroupClueCost (PerPlayer 1) YourLocation))

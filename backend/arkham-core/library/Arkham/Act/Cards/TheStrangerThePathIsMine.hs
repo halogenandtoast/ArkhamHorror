@@ -65,7 +65,7 @@ theStrangerThePathIsMineEffect = cardEffect TheStrangerThePathIsMineEffect Cards
 
 instance HasAbilities TheStrangerThePathIsMineEffect where
   getAbilities (TheStrangerThePathIsMineEffect attrs) =
-    [ mkAbility (ProxySource (LocationMatcherSource LocationWithAnyHorror) (toSource attrs)) 1
+    [ mkAbility (proxied (LocationMatcherSource LocationWithAnyHorror) attrs) 1
         $ forced
         $ Leaves #after You ThisLocation
     ]

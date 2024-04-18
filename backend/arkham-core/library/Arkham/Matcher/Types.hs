@@ -717,6 +717,7 @@ data CardMatcher
   | CardWithoutKeyword Keyword
   | CardWithKeyword Keyword
   | CardWithClass ClassSymbol
+  | CardWithAction Action
   | CardWithSkillIcon SkillIcon
   | CardWithOneOf [CardMatcher]
   | CardMatches [CardMatcher]

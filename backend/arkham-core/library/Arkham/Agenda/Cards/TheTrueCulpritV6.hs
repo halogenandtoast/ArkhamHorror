@@ -25,7 +25,7 @@ instance HasAbilities TheTrueCulpritV6 where
   getAbilities (TheTrueCulpritV6 attrs) =
     guard (onSide A attrs)
       *> [ restrictedAbility
-            (proxy (assetIs Cards.timeWornLocket) attrs)
+            (proxied (assetIs Cards.timeWornLocket) attrs)
             1
             ControlsThis
             $ ReactionAbility

@@ -29,7 +29,7 @@ instance HasAbilities Parlor where
       $ [ withTooltip "\"This is too much for me!\" You run out the front door, fleeing in panic."
             $ locationResignAction attrs
         , restrictedAbility
-            (proxy (assetIs Cards.litaChantler) attrs)
+            (proxied (assetIs Cards.litaChantler) attrs)
             1
             (Uncontrolled <> OnSameLocation)
             #parley

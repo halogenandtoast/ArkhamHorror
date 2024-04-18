@@ -17,14 +17,10 @@ newtype ShrineOfTheMoirai3 = ShrineOfTheMoirai3 EventAttrs
 shrineOfTheMoirai3 :: EventCard ShrineOfTheMoirai3
 shrineOfTheMoirai3 = event ShrineOfTheMoirai3 Cards.shrineOfTheMoirai3
 
--- Draw the top card of the encounter deck, exhaust Shrine of the Moirai, and spend 1 offering: Return up to 2 cards with a total combined level of 5 or less from your discard pile to your hand. Any investigator at this location may trigger this ability
 instance HasAbilities ShrineOfTheMoirai3 where
   getAbilities (ShrineOfTheMoirai3 x) = case x.placement of
     AtLocation lid ->
-      [ restrictedAbility
-          (proxy (LocationSource lid) x)
-          1
-          Here
+      [ restrictedAbility (proxied lid x) 1 Here
           $ FastAbility (exhaust x <> EventUseCost (EventWithId x.id) Offering 1 <> DrawEncounterCardsCost 1)
       ]
     _ -> []

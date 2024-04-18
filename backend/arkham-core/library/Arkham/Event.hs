@@ -464,6 +464,7 @@ allEvents =
     , SomeEventCard onTheHunt3
     , --- seeker [eote]
       SomeEventCard writtenInTheStars
+    , SomeEventCard joinTheCaravan1
     , SomeEventCard unearthTheAncients2
     , --- rogue [eote]
       SomeEventCard scoutAhead

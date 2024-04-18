@@ -30,7 +30,7 @@ instance HasModifiersFor TheTrueCulpritV10 where
 instance HasAbilities TheTrueCulpritV10 where
   getAbilities (TheTrueCulpritV10 attrs) =
     guard (onSide A attrs)
-      *> [ restrictedAbility (proxy (locationIs Cards.basement) attrs) 1 Here actionAbility
+      *> [ restrictedAbility (proxied (locationIs Cards.basement) attrs) 1 Here actionAbility
          , restrictedAbility
             attrs
             2

@@ -59,6 +59,7 @@ hereticAbilities
   :: ( EntityId (EntityAttrs a) ~ EnemyId
      , HasAbilities (EntityAttrs a)
      , Sourceable (EntityAttrs a)
+     , HasCardCode (EntityAttrs a)
      , Entity a
      , Entity (EntityAttrs a)
      )

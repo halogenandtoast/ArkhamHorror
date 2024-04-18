@@ -164,7 +164,7 @@ instance HasAbilities EmpiricalHypothesisEffect where
     AssetSource aid ->
       [ withTooltip
           ("When " <> trigger <> ", you may exhaust Empirical Hypothesis to add 1 evidence to it.")
-          $ restrictedAbility (proxy (AssetWithId aid) attrs) 1 criteria
+          $ restrictedAbility (proxied (AssetWithId aid) attrs) 1 criteria
           $ ReactionAbility reactionWindow (exhaust aid)
       ]
     _ -> error $ "invalid effect source: " <> show attrs.source

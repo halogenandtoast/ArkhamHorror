@@ -49,22 +49,33 @@ instance FromJSON Scenario where
 instance HasAbilities Scenario where
   getAbilities (Scenario x) = concatMap getAbilities $ concat $ toList (attr scenarioTarotCards x)
 
+fromTarot :: TarotCard -> SourceableWithCardCode
+fromTarot t = SourceableWithCardCode (CardCode $ tshow t.arcana) (TarotSource t)
+
 instance HasAbilities TarotCard where
   getAbilities c@(TarotCard facing arcana) = case arcana of
     TheLoversVI ->
-      [ restrictedAbility (TarotSource c) 1 AffectedByTarot
+      [ restrictedAbility
+          (fromTarot c)
+          1
+          AffectedByTarot
           $ ForcedAbility (Matcher.GameBegins #when)
       ]
     StrengthVIII | facing == Upright -> do
-      [restrictedAbility (TarotSource c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameBegins #when)]
+      [ restrictedAbility
+          (fromTarot c)
+          1
+          AffectedByTarot
+          $ ForcedAbility (Matcher.GameBegins #when)
+        ]
     WheelOfFortuneX -> case facing of
       Upright ->
-        [ restrictedAbility (TarotSource c) 1 (AffectedByTarot <> ActExists Matcher.ActCanWheelOfFortuneX)
+        [ restrictedAbility (fromTarot c) 1 (AffectedByTarot <> ActExists Matcher.ActCanWheelOfFortuneX)
             $ ReactionAbility (Matcher.RevealChaosToken #when Matcher.You #autofail) Free
         ]
       Reversed ->
         [ restrictedAbility
-            (TarotSource c)
+            (fromTarot c)
             1
             (AffectedByTarot <> AgendaExists Matcher.AgendaCanWheelOfFortuneX)
             $ ForcedAbility (Matcher.RevealChaosToken #when Matcher.You #eldersign)
@@ -72,7 +83,7 @@ instance HasAbilities TarotCard where
     JusticeXI -> case facing of
       Upright ->
         [ groupLimit PerGame
-            $ restrictedAbility (TarotSource c) 1 AffectedByTarot
+            $ restrictedAbility (fromTarot c) 1 AffectedByTarot
             $ ForcedAbility
               ( Matcher.WouldPlaceDoomCounter
                   #when
@@ -81,18 +92,18 @@ instance HasAbilities TarotCard where
               )
         ]
       Reversed ->
-        [ restrictedAbility (TarotSource c) 1 AffectedByTarot
+        [ restrictedAbility (fromTarot c) 1 AffectedByTarot
             $ ForcedAbility (Matcher.AgendaEntersPlay #when Matcher.FinalAgenda)
         ]
     TheDevilXV ->
-      [restrictedAbility (TarotSource c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameBegins #when)]
+      [restrictedAbility (fromTarot c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameBegins #when)]
     TheTowerXVI -> do
       -- This is handled by SetupInvestigators below
-      [restrictedAbility (TarotSource c) 1 AffectedByTarot $ ForcedAbility Matcher.NotAnyWindow]
+      [restrictedAbility (fromTarot c) 1 AffectedByTarot $ ForcedAbility Matcher.NotAnyWindow]
     TheStarXVII -> case facing of
       Upright ->
         [ restrictedAbility
-            (TarotSource c)
+            (fromTarot c)
             1
             ( AffectedByTarot
                 <> DuringSkillTest Matcher.AnySkillTest
@@ -107,7 +118,7 @@ instance HasAbilities TarotCard where
         ]
       Reversed ->
         [ restrictedAbility
-            (TarotSource c)
+            (fromTarot c)
             1
             (AffectedByTarot <> DuringSkillTest Matcher.AnySkillTest)
             $ ForcedAbility (Matcher.RevealChaosToken #when Matcher.You #autofail)
@@ -115,14 +126,14 @@ instance HasAbilities TarotCard where
     TheMoonXVIII -> case facing of
       Upright ->
         [ playerLimit PerGame
-            $ restrictedAbility (TarotSource c) 1 AffectedByTarot
+            $ restrictedAbility (fromTarot c) 1 AffectedByTarot
             $ ForcedAbility (Matcher.DeckWouldRunOutOfCards #when Matcher.You)
         ]
-      Reversed -> [restrictedAbility (TarotSource c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameBegins #when)]
+      Reversed -> [restrictedAbility (fromTarot c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameBegins #when)]
     JudgementXX ->
-      [restrictedAbility (TarotSource c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameBegins #when)]
+      [restrictedAbility (fromTarot c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameBegins #when)]
     TheWorldXXI ->
-      [restrictedAbility (TarotSource c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameEnds #when)]
+      [restrictedAbility (fromTarot c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameEnds #when)]
     _ -> []
 
 tarotInvestigator :: HasGame m => TarotCard -> m (Maybe InvestigatorId)

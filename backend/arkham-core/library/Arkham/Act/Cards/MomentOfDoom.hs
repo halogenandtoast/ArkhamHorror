@@ -30,10 +30,7 @@ instance HasAbilities MomentOfDoom where
     withBaseAbilities
       attrs
       [ restrictedAbility
-          ( ProxySource
-              (AssetMatcherSource $ assetIs Assets.relicOfAgesRepossessThePast)
-              (toSource attrs)
-          )
+          (proxied (AssetMatcherSource $ assetIs Assets.relicOfAgesRepossessThePast) attrs)
           1
           ControlsThis
           $ ActionAbility []

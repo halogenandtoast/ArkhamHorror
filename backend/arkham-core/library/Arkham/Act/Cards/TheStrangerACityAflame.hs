@@ -59,7 +59,7 @@ theStrangerACityAflameEffect = TheStrangerACityAflameEffect . uncurry4 (baseAttr
 instance HasAbilities TheStrangerACityAflameEffect where
   getAbilities (TheStrangerACityAflameEffect attrs) =
     [ playerLimit PerRound
-        $ mkAbility (ProxySource (LocationMatcherSource LocationWithAnyHorror) (toSource attrs)) 1
+        $ mkAbility (proxied (LocationMatcherSource LocationWithAnyHorror) attrs) 1
         $ forced
         $ OrWindowMatcher
           [ Enters #after You ThisLocation

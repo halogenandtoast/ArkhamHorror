@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import Arkham.Ability.Limit
 import Arkham.Ability.Type
+import Arkham.Card.CardCode
 import Arkham.Card.EncounterCard
 import Arkham.Criteria (Criterion)
 import Arkham.Json
@@ -18,6 +19,7 @@ import GHC.Records
 
 data Ability = Ability
   { abilitySource :: Source
+  , abilityCardCode :: CardCode
   , abilityIndex :: Int
   , abilityType :: AbilityType
   , abilityLimit :: AbilityLimit
@@ -49,8 +51,7 @@ data AbilityMetadata
   deriving stock (Eq, Show, Ord, Data)
 
 instance Eq Ability where
-  a == b =
-    (abilitySource a == abilitySource b) && (abilityIndex a == abilityIndex b)
+  a == b = (abilitySource a == abilitySource b) && (abilityIndex a == abilityIndex b)
 
 instance Sourceable Ability where
   toSource a = AbilitySource (abilitySource a) (abilityIndex a)
@@ -87,6 +88,7 @@ $(deriveToJSON (aesonOptions $ Just "ability") ''Ability)
 instance FromJSON Ability where
   parseJSON = withObject "Ability" $ \o -> do
     abilitySource <- o .: "source"
+    abilityCardCode <- o .: "cardCode"
     abilityIndex <- o .: "index"
     abilityType <- o .: "type"
     abilityLimit <- o .: "limit"
@@ -99,3 +101,13 @@ instance FromJSON Ability where
     abilityDisplayAsAction <- o .: "displayAsAction"
     abilityDelayAdditionalCosts <- o .:? "delayAdditionalCosts" .!= False
     pure Ability {..}
+
+newtype DifferentAbility = DifferentAbility Ability
+  deriving newtype (Show, ToJSON, FromJSON)
+
+instance Eq DifferentAbility where
+  (DifferentAbility a) == (DifferentAbility b) = case abilityIndex a of
+    100 -> abilityIndex b == 100
+    101 -> abilityIndex b == 101
+    102 -> abilityIndex b == 102
+    _ -> (abilityCardCode a == abilityCardCode b) && (abilityIndex a == abilityIndex b)

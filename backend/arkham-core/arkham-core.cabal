@@ -558,6 +558,8 @@ library
       Arkham.Asset.Cards.EnchantedBladeMystic3
       Arkham.Asset.Cards.Encyclopedia
       Arkham.Asset.Cards.Encyclopedia2
+      Arkham.Asset.Cards.EonChart1
+      Arkham.Asset.Cards.EonChart4
       Arkham.Asset.Cards.EsotericAtlas1
       Arkham.Asset.Cards.EsotericAtlas2
       Arkham.Asset.Cards.EsotericFormula
@@ -651,6 +653,7 @@ library
       Arkham.Asset.Cards.HigherEducation
       Arkham.Asset.Cards.HigherEducation3
       Arkham.Asset.Cards.HighRoller2
+      Arkham.Asset.Cards.HikingBoots1
       Arkham.Asset.Cards.HiredMuscle1
       Arkham.Asset.Cards.HolyRosary
       Arkham.Asset.Cards.HolyRosary2
@@ -1523,6 +1526,7 @@ library
       Arkham.Event.Cards.IveGotAPlan2
       Arkham.Event.Cards.IveHadWorse2
       Arkham.Event.Cards.IveHadWorse4
+      Arkham.Event.Cards.JoinTheCaravan1
       Arkham.Event.Cards.KeepFaith
       Arkham.Event.Cards.KeepFaith2
       Arkham.Event.Cards.KnowledgeIsPower

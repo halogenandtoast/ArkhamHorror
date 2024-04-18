@@ -2381,7 +2381,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         then StartSkillTest investigatorId
         else CommitToSkillTest skillTest $ StartSkillTestButton investigatorId
     pure a
-  CommitToSkillTest skillTest triggerMessage' | skillTestInvestigator skillTest == toId a -> do
+  CommitToSkillTest skillTest _ | skillTestInvestigator skillTest == toId a -> do
+    push $ Do msg
+    investigators <- getInvestigators
+    for_ investigators \i -> do
+      mustBeCommitted <- getMustBeCommittableCards i
+      for_ mustBeCommitted $ push . SkillTestCommitCard investigatorId
+    pure a
+  Do (CommitToSkillTest skillTest triggerMessage') | skillTestInvestigator skillTest == toId a -> do
     let iid = skillTestInvestigator skillTest
     committedCards <- field InvestigatorCommittedCards iid
     uncommittableCards <- filterM (`withoutModifier` MustBeCommitted) committedCards
@@ -2396,7 +2403,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [ triggerMessage'
         | CannotPerformSkillTest `notElem` skillTestModifiers' && not mustCommit
         ]
-      beginMessage = CommitToSkillTest skillTest triggerMessage'
+      beginMessage = Do (CommitToSkillTest skillTest triggerMessage')
     player <- getPlayer iid
     if notNull committableCards || notNull uncommittableCards || notNull actions
       then
@@ -2418,9 +2425,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           $ SkillTestAsk
           $ chooseOne player triggerMessage
     pure a
-  CommitToSkillTest skillTest triggerMessage | skillTestInvestigator skillTest /= investigatorId -> do
+  Do (CommitToSkillTest skillTest triggerMessage) | skillTestInvestigator skillTest /= investigatorId -> do
     committedCards <- field InvestigatorCommittedCards investigatorId
-    let beginMessage = CommitToSkillTest skillTest triggerMessage
+    let beginMessage = Do (CommitToSkillTest skillTest triggerMessage)
     committableCards <- getCommittableCards a.id
     uncommittableCards <- filterM (`withoutModifier` MustBeCommitted) committedCards
     player <- getPlayer investigatorId
@@ -2675,7 +2682,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push $ addToHand iid' card
     pure $ a & foundCardsL .~ foundCards
   CommitCard _ card -> do
-    pure $ a & foundCardsL . each %~ filter (/= card)
+    pure $ a & foundCardsL . each %~ filter (/= card) & discardL %~ filter ((/= card) . toCard)
   AddFocusedToTopOfDeck _ (InvestigatorTarget iid') cardId | iid' == toId a -> do
     let
       card =

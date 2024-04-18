@@ -6,6 +6,7 @@ import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 export type TreacheryPlacement =
   { tag: "TreacheryAttachedTo", contents: Target }
   | { tag: "TreacheryInHandOf", contents: string }
+  | { tag: "TreacheryTopOfDeck", contents: string }
   | { tag: "TreacheryNextToAgenda" }
   | { tag: "TreacheryLimbo" }
   | { tag: "TreacheryInSkillTest" }
@@ -13,6 +14,7 @@ export type TreacheryPlacement =
 export const treacheryPlacementDecoder = JsonDecoder.oneOf<TreacheryPlacement>(
   [ JsonDecoder.object({ tag: JsonDecoder.isExactly('TreacheryAttachedTo'), contents: targetDecoder }, 'TreacheryAttachedTo')
   , JsonDecoder.object({ tag: JsonDecoder.isExactly('TreacheryInHandOf'), contents: JsonDecoder.string }, 'TreacheryInHandOf')
+  , JsonDecoder.object({ tag: JsonDecoder.isExactly('TreacheryTopOfDeck'), contents: JsonDecoder.string }, 'TreacheryTopOfDeck')
   , JsonDecoder.object({ tag: JsonDecoder.isExactly('TreacheryNextToAgenda') }, 'TreacheryNextToAgenda')
   , JsonDecoder.object({ tag: JsonDecoder.isExactly('TreacheryLimbo') }, 'TreacheryLimbo')
   , JsonDecoder.object({ tag: JsonDecoder.isExactly('TreacheryInSkillTest') }, 'TreacheryInSkillTest')

@@ -463,7 +463,8 @@ allEvents =
     , SomeEventCard fangOfTyrthrha4
     , SomeEventCard onTheHunt3
     , --- seeker [eote]
-      SomeEventCard unearthTheAncients2
+      SomeEventCard writtenInTheStars
+    , SomeEventCard unearthTheAncients2
     , --- rogue [eote]
       SomeEventCard scoutAhead
     , SomeEventCard moneyTalks2

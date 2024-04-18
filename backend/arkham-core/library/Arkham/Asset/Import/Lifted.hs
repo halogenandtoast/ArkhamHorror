@@ -18,6 +18,7 @@ import Arkham.Asset.Runner as X (
   push,
   pushAll,
   pushM,
+  pushWhenM,
   sealedChaosTokensL,
   setMeta,
   toMessage,
@@ -32,6 +33,7 @@ import Arkham.Message as X (
   Message (..),
   pattern FailedThisSkillTest,
   pattern PassedThisSkillTest,
+  pattern PassedThisSkillTestBy,
   pattern UseThisAbility,
  )
 import Arkham.Message.Lifted as X

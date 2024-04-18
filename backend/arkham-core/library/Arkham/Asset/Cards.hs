@@ -470,6 +470,7 @@ allPlayerAssetCards =
       , mechanicsWrench
       , medicalStudent
       , medicalTexts
+      , medicalTexts2
       , medicoDellaPeste
       , michaelLeigh5
       , mindsEye2
@@ -532,6 +533,7 @@ allPlayerAssetCards =
       , preciousMementoFromAFutureLife4
       , priestOfTwoFaiths1
       , professorWarrenRice
+      , prophesiaeProfanaAtlasOfTheUnknowable5
       , prophetic3
       , protectiveIncantation1
       , purifyingCorruption4
@@ -4858,6 +4860,15 @@ hikingBoots1 =
     , cdLimits = [LimitPerTrait Footwear 1]
     }
 
+medicalTexts2 :: CardDef
+medicalTexts2 =
+  (asset "08038" "Medical Texts" 2 Seeker)
+    { cdSkills = [#intellect, #combat]
+    , cdCardTraits = setFromList [Item, Tome]
+    , cdSlots = [#hand]
+    , cdLevel = Just 2
+    }
+
 scientificTheory3 :: CardDef
 scientificTheory3 =
   (asset "08040" "Scientific Theory" 0 Seeker)
@@ -4913,6 +4924,15 @@ archiveOfConduitsGatewayToParadise4 =
     , cdLevel = Just 4
     , cdKeywords = singleton $ Keyword.Researched YouHaveIdentifiedTheGateway
     , cdUses = uses Leyline 4
+    }
+
+prophesiaeProfanaAtlasOfTheUnknowable5 :: CardDef
+prophesiaeProfanaAtlasOfTheUnknowable5 =
+  (asset "08045" ("Prophesiae Profana" <:> "Atlas of the Unknowable") 4 Seeker)
+    { cdSkills = [#wild, #wild]
+    , cdCardTraits = setFromList [Item, Relic, Tome]
+    , cdSlots = [#hand]
+    , cdLevel = Just 5
     }
 
 underworldSupport :: CardDef

@@ -742,6 +742,7 @@ library
       Arkham.Asset.Cards.MechanicsWrench
       Arkham.Asset.Cards.MedicalStudent
       Arkham.Asset.Cards.MedicalTexts
+      Arkham.Asset.Cards.MedicalTexts2
       Arkham.Asset.Cards.MedicoDellaPeste
       Arkham.Asset.Cards.MichaelLeigh5
       Arkham.Asset.Cards.MindsEye2
@@ -806,6 +807,7 @@ library
       Arkham.Asset.Cards.PreciousMementoFromAFutureLife4
       Arkham.Asset.Cards.PriestOfTwoFaiths1
       Arkham.Asset.Cards.ProfessorWarrenRice
+      Arkham.Asset.Cards.ProphesiaeProfanaAtlasOfTheUnknowable5
       Arkham.Asset.Cards.Prophetic3
       Arkham.Asset.Cards.ProtectiveIncantation1
       Arkham.Asset.Cards.PurifyingCorruption4

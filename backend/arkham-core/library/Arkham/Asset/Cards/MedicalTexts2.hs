@@ -1,4 +1,4 @@
-module Arkham.Asset.Cards.MedicalTexts (MedicalTexts (..), medicalTexts) where
+module Arkham.Asset.Cards.MedicalTexts2 (MedicalTexts2 (..), medicalTexts2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -11,18 +11,18 @@ import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Matcher
 
-newtype MedicalTexts = MedicalTexts AssetAttrs
+newtype MedicalTexts2 = MedicalTexts2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-medicalTexts :: AssetCard MedicalTexts
-medicalTexts = asset MedicalTexts Cards.medicalTexts
+medicalTexts2 :: AssetCard MedicalTexts2
+medicalTexts2 = asset MedicalTexts2 Cards.medicalTexts2
 
-instance HasAbilities MedicalTexts where
-  getAbilities (MedicalTexts a) = [restrictedAbility a 1 ControlsThis #action]
+instance HasAbilities MedicalTexts2 where
+  getAbilities (MedicalTexts2 a) = [restrictedAbility a 1 ControlsThis #action]
 
-instance RunMessage MedicalTexts where
-  runMessage msg a@(MedicalTexts attrs) = runQueueT $ case msg of
+instance RunMessage MedicalTexts2 where
+  runMessage msg a@(MedicalTexts2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let controllerId = getController attrs
       investigators <- select $ affectsOthers $ colocatedWith controllerId
@@ -30,17 +30,20 @@ instance RunMessage MedicalTexts where
         $ targetLabels investigators
         $ \iid' -> only $ Msg.beginSkillTest iid (attrs.ability 1) iid' #intellect (Fixed 2)
       pure a
-    PassedThisSkillTest who (isAbilitySource attrs 1 -> True) -> do
+    PassedThisSkillTestBy who (isAbilitySource attrs 1 -> True) n -> do
       getSkillTestTarget >>= \case
         Just target@(InvestigatorTarget iid) -> do
           whenM (withoutModifier who CannotAffectOtherPlayersWithPlayerEffectsExceptDamage)
             $ pushWhenM (canHaveDamageHealed attrs iid)
-            $ HealDamage target (toAbilitySource attrs 1) 1
+            $ HealDamage target (toAbilitySource attrs 1) (if n >= 2 then 2 else 1)
         _ -> error "invalid target"
       pure a
     FailedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       getSkillTestTarget >>= \case
-        Just (InvestigatorTarget iid) -> push $ Msg.assignDamage iid (toAbilitySource attrs 1) 1
+        Just (InvestigatorTarget iid) -> do
+          chooseOrRunOne iid
+            $ [Label "Exhaust Medical Texts" [Exhaust (toTarget attrs)] | attrs.ready]
+            <> [Label "Deal 1 damage to that investigator" [Msg.assignDamage iid (toAbilitySource attrs 1) 1]]
         _ -> error "invalid target"
       pure a
-    _ -> MedicalTexts <$> lift (runMessage msg attrs)
+    _ -> MedicalTexts2 <$> lift (runMessage msg attrs)

@@ -6,6 +6,7 @@ import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
 import Key from '@/arkham/components/Key.vue';
+import Locus from '@/arkham/components/Locus.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import Asset from '@/arkham/components/Asset.vue';
@@ -49,6 +50,10 @@ const image = computed(() => {
 
 const id = computed(() => props.location.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+
+const locus = computed(() => {
+  return modifiers.value?.some((m) => m.type.tag === "OtherModifier" && m.type.contents === "Locus") ?? false
+})
 
 function isCardAction(c: Message): boolean {
   if (c.tag === "TargetLabel") {
@@ -202,6 +207,7 @@ const debug = useDebug()
     </div>
     <div class="location-column">
       <div class="card-frame" :class="{ explosion }">
+        <Locus v-if="locus" class="locus" />
         <font-awesome-icon v-if="blocked" :icon="['fab', 'expeditedssl']" class="status-icon" />
 
         <img
@@ -461,4 +467,69 @@ const debug = useDebug()
 .location:has(.abilities) {
   z-index: 30 !important;
 }
+
+.locus {
+  width: calc($card-width - 20px);
+  height: calc($card-width - 20px);
+  position: absolute;
+  pointer-events: none;
+  top: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index:10000000;
+
+  :deep(path) {
+    stroke-dasharray: var(--line-length);
+    stroke-dashoffset: var(--line-length);
+    transition: stroke-dashoffset 1.5s linear;
+    animation: draw-locus 1.5s linear forwards;
+  }
+
+
+  animation: locus 3s linear forwards;
+}
+
+@keyframes draw-locus {
+  0% {
+    opacity: 60;
+    stroke-dashoffset: var(--line-length);
+  }
+
+  80% {
+    opacity: 100;
+  }
+
+  100% {
+    opacity: 100;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes locus {
+  0% {
+    filter: drop-shadow(0px 0px 0px #fff)
+            drop-shadow(0px 0px 0px #fff)
+            drop-shadow(0px 0px 0px #ff80b3)
+            drop-shadow(0px 0px 0px #ff4d94)
+            drop-shadow(0px 0px 0px #ff0066);
+  }
+  25% {
+    filter: drop-shadow(0px 0px 0px #fff)
+            drop-shadow(0px 0px 0px #fff)
+            drop-shadow(0px 0px 0px #ff80b3)
+            drop-shadow(0px 0px 0px #ff4d94)
+            drop-shadow(0px 0px 0px #ff0066);
+  }
+  100% {
+    filter: drop-shadow(0px 0px 0.5px #fff)
+            drop-shadow(0px 0px 0.5px #fff)
+            drop-shadow(0px 0px 1.5px #ff80b3)
+            drop-shadow(0px 0px 5px #ff4d94)
+            drop-shadow(0px 0px 7.5px #ff0066);
+  }
+}
+
 </style>

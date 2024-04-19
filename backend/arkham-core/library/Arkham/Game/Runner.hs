@@ -532,7 +532,8 @@ runGameMessage msg g = case msg of
     pure g
   ChoosePlayer iid SetLeadInvestigator -> do
     let players = view playerOrderL g
-    push $ ChoosePlayerOrder (gameLeadInvestigatorId g) (filter (/= iid) players) [iid]
+        lead = if gameLeadInvestigatorId g == "00000" then iid else gameLeadInvestigatorId g
+    push $ ChoosePlayerOrder lead (filter (/= iid) players) [iid]
     pure $ g & leadInvestigatorIdL .~ iid
   ChoosePlayer iid SetTurnPlayer -> do
     pushAll [BeginTurn iid, After (BeginTurn iid)]

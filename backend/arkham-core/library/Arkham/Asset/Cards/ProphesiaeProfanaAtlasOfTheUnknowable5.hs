@@ -26,6 +26,9 @@ instance HasModifiersFor ProphesiaeProfanaAtlasOfTheUnknowable5 where
       $ toModifiers attrs
       $ guard (not atLocus)
       *> [SkillModifier #intellect 1, SkillModifier #agility 1, MayIgnoreAttacksOfOpportunity]
+  getModifiersFor (LocationTarget lid) (ProphesiaeProfanaAtlasOfTheUnknowable5 attrs) = do
+    let mlocus = maybeResult attrs.meta
+    pure $ toModifiers attrs $ guard (Just lid == mlocus) *> [Locus]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ProphesiaeProfanaAtlasOfTheUnknowable5 where

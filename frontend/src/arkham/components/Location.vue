@@ -511,24 +511,24 @@ const debug = useDebug()
 @keyframes locus {
   0% {
     filter: drop-shadow(0px 0px 0px #fff)
-            drop-shadow(0px 0px 0px #fff)
-            drop-shadow(0px 0px 0px #ff80b3)
-            drop-shadow(0px 0px 0px #ff4d94)
-            drop-shadow(0px 0px 0px #ff0066);
+    drop-shadow(0px 0px 0px #fff)
+    drop-shadow(0px 0px 0px #ff80b3)
+    drop-shadow(0px 0px 0px #ff4d94)
+    drop-shadow(0px 0px 0px #ff0066);
   }
   25% {
     filter: drop-shadow(0px 0px 0px #fff)
-            drop-shadow(0px 0px 0px #fff)
-            drop-shadow(0px 0px 0px #ff80b3)
-            drop-shadow(0px 0px 0px #ff4d94)
-            drop-shadow(0px 0px 0px #ff0066);
+    drop-shadow(0px 0px 0px #fff)
+    drop-shadow(0px 0px 0px #ff80b3)
+    drop-shadow(0px 0px 0px #ff4d94)
+    drop-shadow(0px 0px 0px #ff0066);
   }
   100% {
-    filter: drop-shadow(0px 0px 0.5px #fff)
-            drop-shadow(0px 0px 0.5px #fff)
-            drop-shadow(0px 0px 1.5px #ff80b3)
-            drop-shadow(0px 0px 5px #ff4d94)
-            drop-shadow(0px 0px 7.5px #ff0066);
+    filter: drop-shadow(0px 0px 1px #fff)
+    drop-shadow(0px 0px 1px #fff)
+    drop-shadow(0px 0px 3px #ff80b3)
+    drop-shadow(0px 0px 10px #ff4d94)
+    drop-shadow(0px 0px 15px #ff0066);
   }
 }
 

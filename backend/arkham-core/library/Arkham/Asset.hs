@@ -780,6 +780,7 @@ allAssets =
     , SomeAssetCard theRedClockBrokenButReliable2
     , SomeAssetCard moxie3
     , SomeAssetCard theBlackFan3
+    , SomeAssetCard theRedClockBrokenButReliable5
     , --- mystic [eote]
       SomeAssetCard downTheRabbitHole
     , SomeAssetCard dragonPole

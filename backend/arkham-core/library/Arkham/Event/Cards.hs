@@ -323,6 +323,7 @@ allPlayerEventCards =
       , trusted
       , truthFromFiction
       , truthFromFiction2
+      , twentyOneOrBust
       , uncageTheSoul
       , underSurveillance1
       , unearthTheAncients
@@ -2805,6 +2806,13 @@ scoutAhead =
     , cdCardTraits = setFromList [Insight, Trick]
     , cdActions = [#move]
     , cdCriteria = Just $ youExist can.move
+    }
+
+twentyOneOrBust :: CardDef
+twentyOneOrBust =
+  (event "08048" "21 or Bust" 2 Rogue)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Fortune, Gambit]
     }
 
 moneyTalks2 :: CardDef

@@ -468,6 +468,7 @@ allEvents =
     , SomeEventCard unearthTheAncients2
     , --- rogue [eote]
       SomeEventCard scoutAhead
+    , SomeEventCard twentyOneOrBust
     , SomeEventCard moneyTalks2
     , --- mystic [eote]
       SomeEventCard meditativeTrance

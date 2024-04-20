@@ -946,6 +946,7 @@ library
       Arkham.Asset.Cards.TheNecronomiconPetrusDeDaciaTranslation5
       Arkham.Asset.Cards.ThePallidMask
       Arkham.Asset.Cards.TheRedClockBrokenButReliable2
+      Arkham.Asset.Cards.TheRedClockBrokenButReliable5
       Arkham.Asset.Cards.TheRedGlovedMan5
       Arkham.Asset.Cards.Thermos
       Arkham.Asset.Cards.TheSilverKey
@@ -1654,6 +1655,7 @@ library
       Arkham.Event.Cards.Trusted
       Arkham.Event.Cards.TruthFromFiction
       Arkham.Event.Cards.TruthFromFiction2
+      Arkham.Event.Cards.TwentyOneOrBust
       Arkham.Event.Cards.UncageTheSoul
       Arkham.Event.Cards.UnderSurveillance1
       Arkham.Event.Cards.UnearthTheAncients

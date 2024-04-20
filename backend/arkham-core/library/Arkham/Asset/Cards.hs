@@ -666,6 +666,7 @@ allPlayerAssetCards =
       , theNecronomiconPetrusDeDaciaTranslation5
       , thePallidMask
       , theRedClockBrokenButReliable2
+      , theRedClockBrokenButReliable5
       , theRedGlovedMan5
       , theSilverKey
       , theSkeletonKey2
@@ -4973,6 +4974,18 @@ theBlackFan3 =
     , cdUnique = True
     , cdExceptional = True
     , cdLevel = Just 3
+    }
+
+theRedClockBrokenButReliable5 :: CardDef
+theRedClockBrokenButReliable5 =
+  (asset "08058" ("The Red Clock" <:> "Broken but Reliable") 2 Rogue)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdSkills = [#wild, #wild]
+    , cdSlots = [#accessory]
+    , cdUnique = True
+    , cdExceptional = True
+    , cdLevel = Just 5
+    , cdUses = uses Charge 0
     }
 
 downTheRabbitHole :: CardDef

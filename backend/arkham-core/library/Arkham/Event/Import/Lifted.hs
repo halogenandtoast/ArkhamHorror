@@ -11,6 +11,7 @@ import Arkham.Event.Runner as X (
   push,
   pushAll,
   pushM,
+  setMeta,
   usesL,
  )
 import Arkham.Message as X (

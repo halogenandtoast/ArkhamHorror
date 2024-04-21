@@ -31,6 +31,7 @@ import Arkham.Modifier
 import Arkham.Phase
 import Arkham.SkillTest.Base
 import Arkham.Target
+import Arkham.Window
 import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
 
 instance CanRun GameT
@@ -215,6 +216,9 @@ getActionCanBeUndone = gameActionCanBeUndone <$> getGame
 
 getGameInAction :: HasGame m => m Bool
 getGameInAction = gameInAction <$> getGame
+
+getWindowStack :: HasGame m => m [[Window]]
+getWindowStack = fromMaybe [] . gameWindowStack <$> getGame
 
 getIgnoreCanModifiers :: HasGame m => m Bool
 getIgnoreCanModifiers = gameIgnoreCanModifiers <$> getGame

@@ -546,6 +546,13 @@ revealing iid (toSource -> source) (toTarget -> target) zone = Msg.push $ Msg.re
 shuffleIntoDeck :: (ReverseQueue m, IsDeck deck, Targetable target) => deck -> target -> m ()
 shuffleIntoDeck deck target = push $ Msg.shuffleIntoDeck deck target
 
+eventModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
+eventModifier source target modifier = push $ Msg.eventModifier source target modifier
+
+cancelRevelation :: (ReverseQueue m, Sourceable a) => a -> m ()
+cancelRevelation a = push $ CancelNext (toSource a) RevelationMessage
+
 cardResolutionModifier
   :: (ReverseQueue m, IsCard card, Sourceable source, Targetable target)
   => card

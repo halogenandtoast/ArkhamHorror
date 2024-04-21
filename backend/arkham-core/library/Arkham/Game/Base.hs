@@ -21,6 +21,7 @@ import Arkham.Scenario.Types (Scenario)
 import Arkham.SkillTest.Base
 import Arkham.Target
 import Arkham.Tarot
+import Arkham.Window
 import Arkham.Zone
 import Data.Aeson.Diff qualified as Diff
 import GHC.Records
@@ -38,6 +39,7 @@ data Game = Game
   , gameSettings :: Settings
   , gameSeed :: Int
   , gameWindowDepth :: Int
+  , gameWindowStack :: Maybe [[Window]]
   , gameRunWindows :: Bool
   , gameDepthLock :: Int
   , gameIgnoreCanModifiers :: Bool

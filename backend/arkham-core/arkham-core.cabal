@@ -978,6 +978,7 @@ library
       Arkham.Asset.Cards.TwilaKatherinePrice3
       Arkham.Asset.Cards.TwilightBlade
       Arkham.Asset.Cards.UnderworldSupport
+      Arkham.Asset.Cards.UnscrupulousLoan3
       Arkham.Asset.Cards.UntilTheEndOfTime
       Arkham.Asset.Cards.ValentinoRivas
       Arkham.Asset.Cards.VaultOfKnowledge
@@ -1425,6 +1426,7 @@ library
       Arkham.Event.Cards.ConnectTheDots
       Arkham.Event.Cards.Contraband
       Arkham.Event.Cards.Contraband2
+      Arkham.Event.Cards.Counterespionage1
       Arkham.Event.Cards.Counterpunch
       Arkham.Event.Cards.Counterpunch2
       Arkham.Event.Cards.Counterspell2

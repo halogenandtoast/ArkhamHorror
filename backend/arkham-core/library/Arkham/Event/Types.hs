@@ -53,6 +53,7 @@ data instance Field Event :: Type -> Type where
   EventCardId :: Field Event CardId
   EventSealedChaosTokens :: Field Event [ChaosToken]
   EventUses :: Field Event (Map UseType Int)
+  EventWindows :: Field Event [Window]
 
 data instance Field (InHandEntity Event) :: Type -> Type where
   InHandEventCardId :: Field (InHandEntity Event) CardId

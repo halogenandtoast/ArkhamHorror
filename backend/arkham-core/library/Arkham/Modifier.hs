@@ -336,6 +336,9 @@ instance IsLabel "combat" (Int -> ModifierType) where
 instance IsLabel "agility" (Int -> ModifierType) where
   fromLabel = SkillModifier #agility
 
+instance IsLabel "agility" (Integer -> ModifierType) where
+  fromLabel = SkillModifier #agility . fromIntegral
+
 instance IsLabel "intellect" (Int -> ModifierType) where
   fromLabel = SkillModifier #intellect
 

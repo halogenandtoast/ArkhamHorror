@@ -16,4 +16,4 @@ import Arkham.Investigator ()
 import Arkham.Scenario ()
 
 $(deriveJSON defaultOptions ''GameState)
-$(deriveJSON defaultOptions ''Game)
+$(deriveJSON (defaultOptions {allowOmittedFields = True}) ''Game)

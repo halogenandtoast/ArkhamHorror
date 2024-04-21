@@ -466,8 +466,8 @@ instance Sourceable AssetAttrs where
   isSource attrs (AbilitySource source _) = isSource attrs source
   isSource _ _ = False
 
-controls :: InvestigatorId -> AssetAttrs -> Bool
-controls = flip controlledBy
+controls :: (Entity attrs, EntityAttrs attrs ~ AssetAttrs) => InvestigatorId -> attrs -> Bool
+controls iid attrs = toAttrs attrs `controlledBy` iid
 
 controlledBy :: AssetAttrs -> InvestigatorId -> Bool
 controlledBy AssetAttrs {..} iid = case assetPlacement of

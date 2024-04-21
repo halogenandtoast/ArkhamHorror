@@ -201,6 +201,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
    in Game
         { gameCards = mempty
         , gameWindowDepth = 0
+        , gameWindowStack = Nothing
         , gameRunWindows = True
         , gameDepthLock = 0
         , gameRoundHistory = mempty
@@ -3796,6 +3797,7 @@ eventField e fld = do
     attrs@EventAttrs {..} = toAttrs e
     cdef = toCardDef attrs
   case fld of
+    EventWindows -> pure eventWindows
     EventCardId -> pure eventCardId
     EventSealedChaosTokens -> pure eventSealedChaosTokens
     EventUses -> pure eventUses

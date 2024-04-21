@@ -802,7 +802,8 @@ allAssets =
     , SomeAssetCard geneBeauregard3
     , SomeAssetCard eonChart4
     , --- rogue/survivor [eote]
-      SomeAssetCard preciousMementoFromAFormerLife4
+      SomeAssetCard unscrupulousLoan3
+    , SomeAssetCard preciousMementoFromAFormerLife4
     , SomeAssetCard preciousMementoFromAFutureLife4
     , --- mystic/survivor [eote]
       SomeAssetCard talismanOfProtection

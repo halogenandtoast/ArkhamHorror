@@ -30,7 +30,7 @@ currentTotal faces =
         ElderSign -> (Sum 1, Sum 11)
         other -> let x = abs (chaosTokenToFaceValue other) in (Sum x, Sum x)
       total = foldMap toValue faces
-   in (getSum $ fst total, getSum $ snd total)
+   in bimap getSum getSum total
 
 instance RunMessage TwentyOneOrBust where
   runMessage msg e@(TwentyOneOrBust attrs) = runQueueT $ case msg of

@@ -696,6 +696,7 @@ allPlayerAssetCards =
       , twilaKatherinePrice3
       , twilightBlade
       , underworldSupport
+      , unscrupulousLoan3
       , untilTheEndOfTime
       , valentinoRivas
       , vaultOfKnowledge
@@ -5123,6 +5124,14 @@ eonChart4 =
     , cdUses = uses Secret 3
     , cdLevel = Just 4
     , cdSlots = [#accessory]
+    }
+
+unscrupulousLoan3 :: CardDef
+unscrupulousLoan3 =
+  (multiClassAsset "08113" "Unscrupulous Loan" 0 [Rogue, Survivor])
+    { cdCardTraits = setFromList [Item, Charm, Blessed]
+    , cdLimits = [LimitPerInvestigator 1]
+    , cdLevel = Just 3
     }
 
 preciousMementoFromAFormerLife4 :: CardDef

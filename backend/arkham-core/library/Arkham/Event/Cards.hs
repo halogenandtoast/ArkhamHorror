@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Action qualified as Action
 import Arkham.Agenda.AdvancementReason
 import Arkham.Asset.Uses qualified as Uses
+import Arkham.Calculation
 import Arkham.Capability
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -2824,6 +2825,19 @@ counterespionage1 =
     , cdCriteria = Just $ oneOf [Criteria.EventWindowInvestigatorIs You, Criteria.CanAffordCostIncrease 2] -- WindowInvestigatorIs only handles draw card right now
     , cdFastWindow = Just $ DrawCard #when Anyone (basic NonWeaknessTreachery) AnyDeck
     , cdCardInHandEffects = True
+    }
+
+cheatTheSystem1 :: CardDef
+cheatTheSystem1 =
+  (event "08050" "Cheat the System" 0 Rogue)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Trick, Synergy]
+    , cdCriteria =
+        Just
+          $ youExist can.gain.resources
+          <> Criteria.HasCalculation (DifferentClassAmong $ ControlledBy You) (atLeast 1)
+    , cdFastWindow = Just FastPlayerWindow
+    , cdLevel = Just 1
     }
 
 moneyTalks2 :: CardDef

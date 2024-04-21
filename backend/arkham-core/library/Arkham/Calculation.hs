@@ -2,15 +2,15 @@
 
 module Arkham.Calculation where
 
-import Arkham.Asset.Types (Asset)
+import {-# SOURCE #-} Arkham.Asset.Types (Asset)
 import Arkham.CampaignLogKey
 import Arkham.Card.Id
-import Arkham.Enemy.Types (Enemy)
+import {-# SOURCE #-} Arkham.Enemy.Types (Enemy)
 import Arkham.Field
 import Arkham.GameValue
 import Arkham.Id
-import Arkham.Investigator.Types (Investigator)
-import Arkham.Location.Types (Location)
+import {-# SOURCE #-} Arkham.Investigator.Types (Investigator)
+import {-# SOURCE #-} Arkham.Location.Types (Location)
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.ScenarioLogKey

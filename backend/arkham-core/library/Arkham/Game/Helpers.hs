@@ -46,6 +46,7 @@ import {-# SOURCE #-} Arkham.Game
 import Arkham.Game.Settings
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.Calculation
 import Arkham.Helpers.Card
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Investigator (
@@ -1064,6 +1065,9 @@ passesCriteria
   -> Criterion
   -> m Bool
 passesCriteria iid mcard source' windows' = \case
+  Criteria.HasCalculation c valueMatcher -> do
+    value <- calculate c
+    gameValueMatches value valueMatcher
   Criteria.HasRemainingBlessTokens -> (> 0) <$> getRemainingBlessTokens
   Criteria.HasRemainingCurseTokens -> (> 0) <$> getRemainingCurseTokens
   Criteria.CanMoveTo matcher -> notNull <$> getCanMoveToMatchingLocations iid source matcher

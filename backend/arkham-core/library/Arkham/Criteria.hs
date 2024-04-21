@@ -7,6 +7,7 @@ module Arkham.Criteria (
 
 import Arkham.Prelude
 
+import {-# SOURCE #-} Arkham.Calculation
 import Arkham.CampaignLogKey (CampaignLogKey)
 import Arkham.Campaigns.TheForgottenAge.Supply (Supply)
 import Arkham.Capability (Capabilities, Capable (..), FromSource)
@@ -193,6 +194,7 @@ data Criterion
   | HasHistory HistoryType InvestigatorMatcher HistoryMatcher
   | HasScenarioCount ScenarioCountKey ValueMatcher
   | HasCampaignCount CampaignLogKey ValueMatcher
+  | HasCalculation GameCalculation ValueMatcher
   | HasRemainingBlessTokens
   | HasRemainingCurseTokens
   | -- Special Criterion

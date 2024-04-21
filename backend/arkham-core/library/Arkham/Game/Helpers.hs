@@ -1370,7 +1370,7 @@ passesCriteria iid mcard source' windows' = \case
       resources <- getSpendableResources iid
       pure $ resources >= cost + n
     Just (_, PaidCost) -> pure True
-    Nothing -> error "no card for CanAffordCostIncrease"
+    Nothing -> error $ "no card for CanAffordCostIncrease: " <> show source
   Criteria.CardInDiscard discardSignifier cardMatcher -> do
     let
       investigatorMatcher = case discardSignifier of
@@ -1426,6 +1426,13 @@ passesCriteria iid mcard source' windows' = \case
       _ -> pure True
   Criteria.EventExists matcher -> do
     selectAny (Matcher.replaceYouMatcher iid matcher)
+  Criteria.EventWindowInvestigatorIs whoMatcher -> do
+    windows'' :: [[Window]] <- drop 1 <$> getWindowStack
+    case windows'' of
+      ((windowType -> x) : _) : _ -> case x of
+        Window.DrawCard iid' _ _ -> iid' <=~> Matcher.replaceYouMatcher iid whoMatcher
+        _ -> pure False
+      _ -> pure False
   Criteria.ExcludeWindowAssetExists matcher -> case getWindowAsset windows' of
     Nothing -> pure False
     Just aid -> do
@@ -1604,6 +1611,10 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
   let isMatch = pure True
   let guardTiming t body = if timing' == t then body wType else noMatch
   case mtchr of
+    Matcher.WindowWhen criteria mtchr' -> do
+      (&&)
+        <$> passesCriteria iid Nothing source [window'] criteria
+        <*> windowMatches iid source window' mtchr'
     Matcher.NotAnyWindow -> noMatch
     Matcher.AnyWindow -> isMatch
     Matcher.ScenarioCountIncremented timing k -> guardTiming timing \case

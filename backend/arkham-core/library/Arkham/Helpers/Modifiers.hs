@@ -69,6 +69,9 @@ toModifier a mType = Modifier (toSource a) mType False
 toModifiers :: Sourceable a => a -> [ModifierType] -> [Modifier]
 toModifiers = map . toModifier
 
+modified :: (Sourceable a, Applicative m) => a -> [ModifierType] -> m [Modifier]
+modified a = pure . toModifiers a
+
 toModifiersWith :: Sourceable a => a -> (Modifier -> Modifier) -> [ModifierType] -> [Modifier]
 toModifiersWith a f xs = map (f . toModifier a) xs
 

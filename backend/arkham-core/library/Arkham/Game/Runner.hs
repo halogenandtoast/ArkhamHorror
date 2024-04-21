@@ -2527,11 +2527,11 @@ instance RunMessage Game where
 
 runPreGameMessage :: Runner Game
 runPreGameMessage msg g = case msg of
-  CheckWindow {} -> do
+  CheckWindow _ ws -> do
     push EndCheckWindow
-    pure $ g & windowDepthL +~ 1
+    pure $ g & windowDepthL +~ 1 & windowStackL %~ Just . maybe [ws] (ws :)
   -- We want to empty the queue for triggering a resolution
-  EndCheckWindow -> pure $ g & windowDepthL -~ 1
+  EndCheckWindow -> pure $ g & windowDepthL -~ 1 & windowStackL %~ fmap (drop 1)
   ScenarioResolution _ -> do
     clearQueue
     pure $ g & (skillTestL .~ Nothing) & (skillTestResultsL .~ Nothing)

@@ -120,6 +120,7 @@ data Criterion
   | DifferentEnemiesExist EnemyMatcher EnemyMatcher
   | EventExists EventMatcher
   | ExcludeWindowAssetExists AssetMatcher
+  | EventWindowInvestigatorIs InvestigatorMatcher
   | AgendaExists AgendaMatcher
   | AbilityExists AbilityMatcher
   | ActExists ActMatcher

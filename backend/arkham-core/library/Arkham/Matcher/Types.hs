@@ -978,6 +978,7 @@ data WindowMatcher
   | EnemyExhausts Timing EnemyMatcher
   | EntersThreatArea Timing Who CardMatcher
   | ScenarioCountIncremented Timing ScenarioCountKey
+  | WindowWhen Criterion WindowMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 data PhaseStepMatcher = EnemiesAttackStep | HuntersMoveStep

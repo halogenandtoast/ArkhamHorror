@@ -95,6 +95,7 @@ allPlayerEventCards =
       , contraband
       , contraband2
       , coupDeGrace
+      , counterespionage1
       , counterpunch
       , counterpunch2
       , counterspell2
@@ -2813,6 +2814,16 @@ twentyOneOrBust =
   (event "08048" "21 or Bust" 2 Rogue)
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Fortune, Gambit]
+    }
+
+counterespionage1 :: CardDef
+counterespionage1 =
+  (event "08049" "Counterespionage" 2 Rogue)
+    { cdSkills = [#willpower, #willpower]
+    , cdCardTraits = setFromList [Favor, Service]
+    , cdCriteria = Just $ oneOf [Criteria.EventWindowInvestigatorIs You, Criteria.CanAffordCostIncrease 2] -- WindowInvestigatorIs only handles draw card right now
+    , cdFastWindow = Just $ DrawCard #when Anyone (basic NonWeaknessTreachery) AnyDeck
+    , cdCardInHandEffects = True
     }
 
 moneyTalks2 :: CardDef

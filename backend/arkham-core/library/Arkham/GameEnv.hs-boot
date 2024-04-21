@@ -19,6 +19,7 @@ import Arkham.Modifier
 import Arkham.Phase
 import Arkham.SkillTest.Base
 import Arkham.Target
+import Arkham.Window
 import Control.Monad.Random
 
 withModifiers'
@@ -33,6 +34,7 @@ getSkillTest :: HasGame m => m (Maybe SkillTest)
 getActiveCosts :: HasGame m => m [ActiveCost]
 getDistance :: HasGame m => LocationId -> LocationId -> m (Maybe Distance)
 getAllAbilities :: HasGame m => m [Ability]
+getWindowStack :: HasGame m => m [[Window]]
 getActionCanBeUndone :: HasGame m => m Bool
 getGameInAction :: HasGame m => m Bool
 getIgnoreCanModifiers :: HasGame m => m Bool

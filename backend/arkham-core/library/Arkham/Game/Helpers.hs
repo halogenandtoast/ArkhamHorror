@@ -756,7 +756,13 @@ hasEvadeActions iid window windows' =
       (Matcher.AbilityIsAction Action.Evade <> Matcher.AbilityWindow window)
 
 getIsPlayable
-  :: (HasCallStack, HasGame m) => InvestigatorId -> Source -> CostStatus -> [Window] -> Card -> m Bool
+  :: (HasCallStack, HasGame m, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> CostStatus
+  -> [Window]
+  -> Card
+  -> m Bool
 getIsPlayable iid source costStatus windows' c = do
   availableResources <- getSpendableResources iid
   getIsPlayableWithResources iid source availableResources costStatus windows' c

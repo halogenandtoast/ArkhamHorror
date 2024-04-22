@@ -470,6 +470,8 @@ allEvents =
       SomeEventCard scoutAhead
     , SomeEventCard twentyOneOrBust
     , SomeEventCard counterespionage1
+    , SomeEventCard cheatTheSystem1
+    , SomeEventCard untimelyTransaction1
     , SomeEventCard moneyTalks2
     , --- mystic [eote]
       SomeEventCard meditativeTrance

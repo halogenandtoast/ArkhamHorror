@@ -127,6 +127,9 @@ genPlayerCards = traverse genPlayerCard
 isCard :: (HasCardCode a, HasCardCode b) => a -> b -> Bool
 isCard (toCardCode -> a) (toCardCode -> b) = a == b
 
+printedCardCost :: IsCard a => a -> Int
+printedCardCost = maybe 0 toPrintedCost . cdCost . toCardDef
+
 cardMatch :: (IsCard a, IsCardMatcher cardMatcher, HasCallStack) => a -> cardMatcher -> Bool
 cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   AnyCard -> True

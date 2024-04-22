@@ -695,24 +695,28 @@ runGameMessage msg g = case msg of
     popMessageMatching_ $ \case
       Discard _ _ (EnemyTarget eid') -> eid == eid'
       _ -> False
-    enemy <- getEnemy eid
-    swarms <- select $ SwarmOf eid
+    mEnemy <- maybeEnemy eid
+    -- enemy might already be gone (i.e. placed in void)
+    case mEnemy of
+      Nothing -> pure g
+      Just enemy -> do
+        swarms <- select $ SwarmOf eid
 
-    case attr enemyPlacement enemy of
-      AsSwarm _ c -> case toCardOwner c of
-        Just owner -> push $ PutCardOnBottomOfDeck owner (Deck.InvestigatorDeck owner) c
-        Nothing -> error "Missing owner"
-      _ -> do
-        pushAll $ map RemoveEnemy swarms
+        case attr enemyPlacement enemy of
+          AsSwarm _ c -> case toCardOwner c of
+            Just owner -> push $ PutCardOnBottomOfDeck owner (Deck.InvestigatorDeck owner) c
+            Nothing -> error "Missing owner"
+          _ -> do
+            pushAll $ map RemoveEnemy swarms
 
-    pure
-      $ g
-      & entitiesL
-      . enemiesL
-      %~ deleteMap eid
-      & actionRemovedEntitiesL
-      . enemiesL
-      %~ insertEntity enemy
+        pure
+          $ g
+          & entitiesL
+          . enemiesL
+          %~ deleteMap eid
+          & actionRemovedEntitiesL
+          . enemiesL
+          %~ insertEntity enemy
   RemoveSkill sid -> pure $ g & entitiesL . skillsL %~ deleteMap sid
   When (RemoveEnemy enemy) -> do
     pushM $ checkWindows [mkWhen (Window.LeavePlay $ toTarget enemy)]
@@ -1444,6 +1448,7 @@ runGameMessage msg g = case msg of
     let
       isDiscardEnemy = \case
         Discard _ _ (EnemyTarget eid') -> eid == eid'
+        RemovedFromPlay (EnemySource eid') -> eid == eid'
         _ -> False
     withQueue_ $ filter (not . isDiscardEnemy)
     enemy <- getEnemy eid

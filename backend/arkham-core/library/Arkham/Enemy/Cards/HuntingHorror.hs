@@ -26,10 +26,11 @@ huntingHorror = enemy HuntingHorror Cards.huntingHorror (2, Static 3, 2) (1, 1)
 
 instance HasAbilities HuntingHorror where
   getAbilities (HuntingHorror x) =
-    withBaseAbilities x
-      $ [ mkAbility x 1 $ ForcedAbility $ PhaseBegins #when #enemy
-        , mkAbility x 2 $ ForcedAbility $ EnemyLeavesPlay #when $ EnemyWithId (toId x)
-        ]
+    extend
+      x
+      [ mkAbility x 1 $ forced $ PhaseBegins #when #enemy
+      , mkAbility x 2 $ forced $ EnemyLeavesPlay #when (be x)
+      ]
 
 instance RunMessage HuntingHorror where
   runMessage msg e@(HuntingHorror attrs@EnemyAttrs {..}) = case msg of

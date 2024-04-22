@@ -28,7 +28,7 @@ instance HasAbilities EndlessBridge where
     withRevealedAbilities attrs
       $ [ mkAbility attrs 1
             $ ForcedAbility
-            $ Leaves Timing.After Anyone
+            $ Leaves #after Anyone
             $ LocationWithId
             $ toId attrs
         ]

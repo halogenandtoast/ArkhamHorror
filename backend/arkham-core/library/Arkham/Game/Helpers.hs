@@ -3334,13 +3334,18 @@ sourceMatches s = \case
     ScenarioType -> case s of
       ScenarioSource -> True
       _ -> False
-  Matcher.EncounterCardSource -> pure $ case s of
-    ActSource _ -> True
-    AgendaSource _ -> True
-    EnemySource _ -> True
-    LocationSource _ -> True
-    TreacherySource _ -> True
-    _ -> False
+  Matcher.EncounterCardSource ->
+    let
+      check = \case
+        AbilitySource source' _ -> check source'
+        ActSource _ -> True
+        AgendaSource _ -> True
+        EnemySource _ -> True
+        LocationSource _ -> True
+        TreacherySource _ -> True
+        _ -> False
+     in
+      pure (check $ traceShowId s)
   Matcher.SourceWithCard cardMatcher -> do
     let
       getCardSource = \case

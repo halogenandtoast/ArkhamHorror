@@ -1,16 +1,11 @@
-module Arkham.Location.Cards.TearThroughTime (
-  tearThroughTime,
-  TearThroughTime (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.TearThroughTime (tearThroughTime, TearThroughTime (..)) where
 
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
+import Arkham.Prelude
 
 newtype TearThroughTime = TearThroughTime LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -22,7 +17,9 @@ tearThroughTime =
 
 instance HasAbilities TearThroughTime where
   getAbilities (TearThroughTime attrs) =
-    withBaseAbilities attrs $ [resignAction attrs]
+    extendRevealed
+      attrs
+      [mkAbility attrs 99 $ ActionAbility [#resign] (ActionCost 1 <> ClueCost (Static 2))]
 
 instance RunMessage TearThroughTime where
   runMessage msg (TearThroughTime attrs) =

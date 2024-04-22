@@ -28,15 +28,7 @@ findingAWayInside =
 
 instance RunMessage FindingAWayInside where
   runMessage msg a@(FindingAWayInside attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid source@(LocationSource _) advanceMode | aid == actId && onSide A attrs -> do
-      -- When advanced from Museum Halls we don't spend clues
-      lead <- getLeadPlayer
-      push $ chooseOne lead [targetLabel aid [AdvanceAct aid source advanceMode]]
-      pure $ FindingAWayInside $ attrs & sequenceL .~ Sequence 1 B
-    AdvanceAct aid _ _ | aid == actId && onSide A attrs -> do
-      -- otherwise we do the default
-      FindingAWayInside <$> runMessage msg attrs
-    AdvanceAct aid source _ | aid == actId && onSide B attrs && isSource attrs source -> do
+    AdvanceAct aid source AdvancedWithClues | aid == actId && onSide B attrs && isSource attrs source -> do
       lead <- getLeadPlayer
       investigatorIds <- getInvestigatorIds
       adamLynch <- genCard Assets.adamLynch
@@ -46,9 +38,7 @@ instance RunMessage FindingAWayInside where
       pushAll
         [ chooseOne
             lead
-            [ targetLabel
-              iid
-              [TakeControlOfSetAsideAsset iid adamLynch]
+            [ targetLabel iid [TakeControlOfSetAsideAsset iid adamLynch]
             | iid <- investigatorIds
             ]
         , RevealLocation Nothing museumHallsId

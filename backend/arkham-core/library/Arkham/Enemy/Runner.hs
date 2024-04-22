@@ -1071,6 +1071,8 @@ instance RunMessage EnemyAttrs where
       pure $ a & defeatedL .~ True
     Discard miid source target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
+      whenLeavePlay <- checkWindows [mkWhen $ Window.LeavePlay (toTarget a)]
+      afterLeavePlay <- checkWindows [mkWhen $ Window.LeavePlay (toTarget a)]
       windows'' <- windows [Window.EntityDiscarded source (toTarget a)]
       let
         card = case enemyPlacement of
@@ -1079,7 +1081,9 @@ instance RunMessage EnemyAttrs where
       pushAll
         $ windows'
         <> windows''
-        <> [ RemovedFromPlay $ toSource a
+        <> [ whenLeavePlay
+           , RemovedFromPlay $ toSource a
+           , afterLeavePlay
            , Discarded (toTarget a) source card
            , Do (Discarded (toTarget a) source card)
            ]
@@ -1096,11 +1100,9 @@ instance RunMessage EnemyAttrs where
       pure a
     RemovedFromPlay source | isSource a source -> do
       enemyAssets <- select $ EnemyAsset enemyId
-      windowMsg <- checkWindows $ ($ Window.LeavePlay (toTarget a)) <$> [mkWhen, mkAfter]
       pushAll
-        $ windowMsg
-        : map (toDiscard GameSource) enemyAssets
-          <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
+        $ map (toDiscard GameSource) enemyAssets
+        <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
       case enemyPlacement of

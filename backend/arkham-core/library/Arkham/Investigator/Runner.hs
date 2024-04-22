@@ -76,6 +76,7 @@ import Arkham.Matcher (
 import Arkham.Message qualified as Msg
 import Arkham.Modifier qualified as Modifier
 import Arkham.Movement
+import Arkham.Phase
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.ScenarioLogKey
@@ -2053,6 +2054,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (actionsPerformedL .~ mempty)
       & (beganRoundAtL .~ current)
       & (unhealedHorrorThisRoundL .~ 0)
+  Begin InvestigationPhase -> do
+    pure $ a & endedTurnL .~ False
+  BeginTurn iid | iid == investigatorId -> do
+    actionsForTurn <- getAbilitiesForTurn a
+    pure
+      $ a
+      & (remainingActionsL .~ actionsForTurn)
+      & (usedAdditionalActionsL .~ mempty)
+      & (actionsTakenL .~ mempty)
+      & (actionsPerformedL .~ mempty)
   DiscardTopOfDeck iid n source mTarget | iid == investigatorId -> do
     let (cs, deck') = draw n investigatorDeck
         (cs', essenceOfTheDreams) = partition ((/= "06113") . toCardCode) cs

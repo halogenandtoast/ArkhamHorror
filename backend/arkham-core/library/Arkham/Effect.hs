@@ -106,6 +106,7 @@ import Arkham.Event.Events (
   actOfDesperationEffect,
   backstab3Effect,
   bindMonster2Effect,
+  blackMarket2Effect,
   blindingLight2Effect,
   blindingLightEffect,
   callingInFavorsEffect,
@@ -417,6 +418,7 @@ allEffects =
     , ("08020", SomeEffect toeToToeEffect)
     , ("08021", SomeEffect getBehindMeEffect)
     , ("08034", SomeEffect writtenInTheStarsEffect)
+    , ("08055", SomeEffect blackMarket2Effect)
     , ("09041", SomeEffect empiricalHypothesisEffect)
     , ("50013", SomeEffect twilightBladeEffect)
     , ("50044", SomeEffect jeremiahPierceEffect)

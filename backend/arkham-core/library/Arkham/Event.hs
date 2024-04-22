@@ -473,6 +473,7 @@ allEvents =
     , SomeEventCard cheatTheSystem1
     , SomeEventCard untimelyTransaction1
     , SomeEventCard moneyTalks2
+    , SomeEventCard blackMarket2
     , --- mystic [eote]
       SomeEventCard meditativeTrance
     , SomeEventCard parallelFates2

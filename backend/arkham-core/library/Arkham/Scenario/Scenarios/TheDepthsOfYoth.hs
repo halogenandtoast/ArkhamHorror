@@ -288,7 +288,7 @@ instance RunMessage TheDepthsOfYoth where
                       <> map
                         ( \i ->
                             SearchCollectionForRandom i (toSource attrs)
-                              $ WeaknessCard
+                              $ BasicWeaknessCard
                               <> CardWithTrait Injury
                         )
                         iids

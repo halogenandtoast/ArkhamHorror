@@ -457,7 +457,7 @@ instance RunMessage Scenario where
           for_ investigators $ \investigator ->
             push
               $ SearchCollectionForRandom investigator source
-              $ Matcher.CardWithSubType BasicWeakness
+              $ Matcher.BasicWeaknessCard
       pure x
     RequestedPlayerCard iid (TarotSource (TarotCard Reversed TheTowerXVI)) (Just c) _ -> do
       push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [toCard c]

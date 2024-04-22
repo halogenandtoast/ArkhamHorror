@@ -244,7 +244,7 @@ instance RunMessage UndimensionedAndUnseen where
         <> [ SearchCollectionForRandom
             iid
             (toSource attrs)
-            ( CardWithType PlayerTreacheryType
+            ( BasicWeaknessCard
                 <> CardWithOneOf (map CardWithTrait [Madness, Injury, Pact])
             )
            | not standalone

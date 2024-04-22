@@ -80,7 +80,7 @@ sacrificesMade (unzip -> (investigatorIds, players)) s =
     : [ SearchCollectionForRandom
         iid
         (toSource s)
-        ( CardWithType PlayerTreacheryType
+        ( BasicWeaknessCard
             <> CardWithOneOf (map CardWithTrait [Madness, Injury, Monster])
         )
       | iid <- investigatorIds

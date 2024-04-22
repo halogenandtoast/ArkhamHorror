@@ -30,18 +30,6 @@ const emits = defineEmits<{
 
 const investigatorId = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId)?.id)
 const id = computed(() => props.asset.id)
-const hasPool = computed(() => {
-  const {
-    sanity,
-    health,
-    uses,
-    tokens,
-    sealedChaosTokens,
-    keys,
-  } = props.asset;
-
-  return cardCode.value == 'c07189' || (Object.values(tokens).some((v) => v > 0) || sealedChaosTokens.length > 0 || keys.length > 0 || uses || sanity || health)
-})
 
 const exhausted = computed(() => props.asset.exhausted)
 const cardCode = computed(() => props.asset.cardCode)
@@ -129,6 +117,29 @@ const offerings = computed(() => props.asset.tokens[TokenType.Offering])
 
 const damage = computed(() => props.asset.tokens[TokenType.Damage])
 const horror = computed(() => props.asset.tokens[TokenType.Horror])
+
+const hasPool = computed(() => {
+  const {
+    sanity,
+    health,
+    uses,
+    tokens,
+    sealedChaosTokens,
+    keys,
+  } = props.asset;
+
+  return cardCode.value == 'c07189' || (Object.values(tokens).some((v) => v > 0) || sealedChaosTokens.length > 0 || keys.length > 0 || uses || sanity || health
+    || (doom.value ?? 0) > 0
+    || (clues.value ?? 0) > 0
+    || (resources.value ?? 0) > 0
+    || (leylines.value ?? 0) > 0
+    || (charges.value ?? 0) > 0
+    || (secrets.value ?? 0) > 0
+    || (corruption.value ?? 0) > 0
+    || (offerings.value ?? 0) > 0
+    || (damage.value ?? 0) > 0
+    || (horror.value ?? 0) > 0)
+})
 
 const choose = (idx: number) => emits('choose', idx)
 

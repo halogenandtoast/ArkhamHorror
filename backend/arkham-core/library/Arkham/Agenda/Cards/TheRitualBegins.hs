@@ -39,9 +39,8 @@ instance RunMessage TheRitualBegins where
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       push
         $ SearchCollectionForRandom iid (toSource attrs)
-        $ CardWithType PlayerTreacheryType
-        <> CardWithTrait Madness
-        <> CardWithSubType BasicWeakness
+        $ CardWithTrait Madness
+        <> BasicWeaknessCard
       pure a
     RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
       for_ mcard $ push . addToHand iid . PlayerCard

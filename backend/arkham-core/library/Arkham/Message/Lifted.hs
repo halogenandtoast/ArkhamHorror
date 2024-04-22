@@ -403,7 +403,12 @@ chooseN iid n msgs = do
   push $ Msg.chooseN player n msgs
 
 addToHand :: (IsCard a, ReverseQueue m) => InvestigatorId -> [a] -> m ()
-addToHand iid cards = push $ AddToHand iid (map toCard cards)
+addToHand iid cards = do
+  for_ cards obtainCard
+  push $ AddToHand iid (map toCard cards)
+
+obtainCard :: (IsCard a, ReverseQueue m) => a -> m ()
+obtainCard = push . ObtainCard . toCard
 
 createCardEffect
   :: (ReverseQueue m, Sourceable source, Targetable target)

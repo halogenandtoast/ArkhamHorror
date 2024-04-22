@@ -76,6 +76,7 @@ allPlayerEventCards =
       , barricade3
       , bellyOfTheBeast
       , bindMonster2
+      , blackMarket2
       , blindingLight
       , blindingLight2
       , bloodEclipse1
@@ -90,6 +91,7 @@ allPlayerEventCards =
       , cheapShot
       , cheapShot2
       , cheatDeath5
+      , cheatTheSystem1
       , cleanThemOut
       , closeCall2
       , connectTheDots
@@ -2863,6 +2865,16 @@ moneyTalks2 =
             AnySkillType
             AnySkillTestValue
             #any
+    , cdLevel = Just 2
+    }
+
+blackMarket2 :: CardDef
+blackMarket2 =
+  (event "08055" "Black Market" 1 Rogue)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Favor]
+    , cdCriteria = Just $ exists (affectsOthers can.manipulate.deck) <> youExist can.reveal.cards
+    , cdFastWindow = Just $ PhaseBegins #after #investigation
     , cdLevel = Just 2
     }
 

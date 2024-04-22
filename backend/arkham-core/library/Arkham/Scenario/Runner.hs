@@ -19,6 +19,7 @@ import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Types (Field (..))
 import Arkham.CampaignLog
 import Arkham.Card
+import Arkham.Card.PlayerCard (setPlayerCardOwner)
 import Arkham.ChaosBag ()
 import Arkham.ChaosToken
 import Arkham.Classes.GameLogger
@@ -139,7 +140,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       then do
         playerCount <- getPlayerCount
         (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded playerCount deck
-        weaknesses <- traverse genPlayerCard randomWeaknesses
+        weaknesses <- traverse (`genPlayerCardWith` setPlayerCardOwner iid) randomWeaknesses
         pid <- getPlayer iid
         let purchaseTrauma = initDeckTrauma deck' iid pid (toTarget a)
 

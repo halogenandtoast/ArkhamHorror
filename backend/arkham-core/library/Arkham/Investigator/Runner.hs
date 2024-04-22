@@ -1075,7 +1075,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                    , WhenCanMove
                       iid
                       ( [MoveFrom source iid fromLocationId | fromLocationId <- maybeToList mFromLocation]
-                          <> maybeToList mRunAfterLeaving
                           <> [ runWhenEntering
                              , runAtIfEntering
                              , PayAdditionalCost iid batchId enterCosts
@@ -1084,6 +1083,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                              ]
                           <> [MoveTo $ move source iid destinationLocationId]
                           <> [runAfterEnteringMoves]
+                          <> maybeToList mRunAfterLeaving
                       )
                    ]
     pure a

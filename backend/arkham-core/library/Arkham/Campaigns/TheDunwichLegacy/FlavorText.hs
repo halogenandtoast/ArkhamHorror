@@ -139,3 +139,51 @@ interlude2EarlSawyer =
       \ yeh, just ask away. I ain’t much of a fighter or anythin’, but I’ll do all I\
       \ can. Jus’…don’t make me look at anythin’ like that beast again, a’right?”"
     ]
+
+epilogue1 :: FlavorText
+epilogue1 =
+  FlavorText
+    (Just "Epilogue")
+    [ "Six months had passed, and life for Curtis Whateley was finally\
+      \ returning to normal. Since they’d hushed up the incident and the\
+      \ authorities kept their distance from these parts, Mr. Osborn had auctioned\
+      \ off the Ericks and Bishop families’ belongings. Joe took a few trinkets for\
+      \ himself, of course, but Curtis wanted nothing to do with it. Folk already\
+      \ didn’t trust him on account of his family’s sins, even though he’d been\
+      \ attending church on the regular and had stayed far away from anything\
+      \ resembling the arcane."
+    , "Even so, Curtis could not shake a sense of foreboding. He’d seen the\
+      \ devastation that befell the Ericks, Bishop, and Frye homes. He’d even seen\
+      \ firsthand the creature the folks from Arkham had banished. Some days, his\
+      \ thoughts led him to Wilbur Whateley’s farm, where he would stand outside\
+      \ and stare for hours, too scared to enter, but too curious to leave. Maybe\
+      \ there was something in there that could make these terrible visions depart.\
+      \ Something that could give him strength enough to resist the nightmares.\
+      \ Curtis decided he would find it."
+    ]
+
+epilogue2 :: FlavorText
+epilogue2 =
+  FlavorText
+    (Just "Epilogue")
+    [ "Gené knelt closer to the ground to examine the sign in the dirt. The\
+      \ shape of the sign was foreign to her, and the tracks that had led to it\
+      \ were unlike any she’d ever seen. Coupled with the report from the\
+      \ university...she wasn’t sure what to think. “Ms. Beauregard,” her assistant\
+      \ called out to her, “have you found something?”"
+    , "Gené stood and turned to face the freshman who’d been assigned to her.\
+      \ He was a good kid and a bit callow, but a hard worker and eager to prove\
+      \ himself. “This place was supposed to be cordoned off,” Gené responded.\
+      \ “Nobody’s lived here for months. And yet, see for yourself: their primitive\
+      \ rites continue to this day.”"
+    , "The student approached and joined Gené in examining the sign, flipping\
+      \ through the pages of his journal to reference its symbols. “What do you\
+      \ think it means?” he asked. She shook her head. Outsiders rarely traveled to\
+      \ Dunwich, and all the signposts leading to the village had been taken down.\
+      \ But these days, even the townsfolk who had called this place home had\
+      \ abandoned it."
+    , "“I don’t know,” Gené admitted. “But somebody is here, and this isn’t the\
+      \ first sign we’ve seen like this. Stories say there’s an altar where the\
+      \ townsfolk would conduct pagan rituals atop that hill. Maybe we’ll find more\
+      \ up there.”"
+    ]

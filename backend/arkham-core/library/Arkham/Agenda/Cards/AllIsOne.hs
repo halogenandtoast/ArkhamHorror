@@ -26,13 +26,7 @@ allIsOne = agenda (1, A) AllIsOne Cards.allIsOne (Static 4)
 
 instance HasAbilities AllIsOne where
   getAbilities (AllIsOne x) =
-    [ mkAbility x 1
-        $ ForcedAbility
-        $ MovedBy
-          Timing.After
-          You
-          Matcher.EncounterCardSource
-    ]
+    [mkAbility x 1 $ ForcedAbility $ MovedBy #after You Matcher.EncounterCardSource]
 
 instance RunMessage AllIsOne where
   runMessage msg a@(AllIsOne attrs@AgendaAttrs {..}) = case msg of

@@ -43,7 +43,7 @@ instance RunMessage AnotherDimension where
           investigatorIds <- select $ InvestigatorAt $ LocationWithId lid
           enemyIds <- select $ UnengagedEnemy <> EnemyAt (LocationWithId lid)
           pushAll
-            $ [ MoveTo $ uncancellableMove $ move attrs iid (toId attrs)
+            $ [ Move $ uncancellableMove $ move attrs iid (toId attrs)
               | iid <- investigatorIds
               ]
             <> [EnemyMove eid (toId attrs) | eid <- enemyIds]

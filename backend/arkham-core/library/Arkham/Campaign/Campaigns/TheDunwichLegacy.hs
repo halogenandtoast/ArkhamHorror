@@ -39,7 +39,7 @@ instance IsCampaign TheDunwichLegacy where
     InterludeStep 2 _ -> Just (UpgradeDeckStep UndimensionedAndUnseen)
     UndimensionedAndUnseen -> Just (UpgradeDeckStep WhereDoomAwaits)
     WhereDoomAwaits -> Just (UpgradeDeckStep LostInTimeAndSpace)
-    LostInTimeAndSpace -> Nothing
+    LostInTimeAndSpace -> Just EpilogueStep
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
 
@@ -191,5 +191,10 @@ instance RunMessage TheDunwichLegacy where
         <> addEarlSawyer
         <> addPowderOfIbnGhazi
         <> [NextCampaignStep Nothing]
+      pure c
+    CampaignStep EpilogueStep -> do
+      warned <- getHasRecord YouWarnedTheTownsfolk
+      players <- allPlayers
+      pushAll [story players $ if warned then epilogue2 else epilogue1, GameOver]
       pure c
     _ -> defaultCampaignRunner msg c

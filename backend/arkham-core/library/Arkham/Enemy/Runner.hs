@@ -344,7 +344,7 @@ instance RunMessage EnemyAttrs where
             pushAll $ fromMaybe [] leaveWindows <> [EnemyEntered eid lid, EnemyCheckEngagement eid]
             pure $ a & placementL .~ AtLocation lid
           else a <$ push (EnemyCheckEngagement eid)
-    After (EndTurn _) -> a <$ push (EnemyCheckEngagement $ toId a)
+    After (EndTurn _) | not enemyDefeated -> a <$ push (EnemyCheckEngagement $ toId a)
     EnemyCheckEngagement eid | eid == enemyId && not (isSwarm a) -> do
       keywords <- getModifiedKeywords a
       mods <- getModifiers eid

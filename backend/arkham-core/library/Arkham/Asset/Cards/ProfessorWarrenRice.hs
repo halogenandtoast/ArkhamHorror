@@ -28,7 +28,7 @@ instance HasModifiersFor ProfessorWarrenRice where
 instance HasAbilities ProfessorWarrenRice where
   getAbilities (ProfessorWarrenRice a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility (DiscoveringLastClue Timing.After You YourLocation) (exhaust a)
+        $ ReactionAbility (DiscoveringLastClue #after You YourLocation) (exhaust a)
     ]
 
 instance RunMessage ProfessorWarrenRice where

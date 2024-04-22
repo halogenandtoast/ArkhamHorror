@@ -220,7 +220,7 @@ instance RunMessage LocationAttrs where
 
       if canDiscover
         then do
-          let lastClue = locationClues a - n <= 0
+          let lastClue = locationClues a - n <= 0 && locationClues a /= 0
           let clueCount = max 0 $ subtract n $ locationClues a
           push
             =<< checkWindows

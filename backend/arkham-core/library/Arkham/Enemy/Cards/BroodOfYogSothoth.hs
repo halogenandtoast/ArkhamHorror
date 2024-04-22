@@ -36,7 +36,7 @@ instance HasModifiersFor BroodOfYogSothoth where
 
 instance RunMessage BroodOfYogSothoth where
   runMessage msg e@(BroodOfYogSothoth attrs) = case msg of
-    Msg.EnemyDamage eid (damageAssignmentSource -> AssetSource aid)
+    Msg.EnemyDamage eid (damageAssignmentSource -> AbilitySource (AssetSource aid) _)
       | eid == enemyId attrs -> do
           name <- field AssetName aid
           if name == mkName "Esoteric Formula"

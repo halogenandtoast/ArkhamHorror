@@ -867,6 +867,7 @@ library
       Arkham.Asset.Cards.Sharpshooter3
       Arkham.Asset.Cards.ShieldOfFaith2
       Arkham.Asset.Cards.ShiningTrapezohedron4
+      Arkham.Asset.Cards.ShortSupply
       Arkham.Asset.Cards.Shotgun4
       Arkham.Asset.Cards.Showmanship
       Arkham.Asset.Cards.ShrewdAnalysis
@@ -2577,6 +2578,7 @@ library
       Arkham.Skill.Cards.RiseToTheOccasion
       Arkham.Skill.Cards.RiseToTheOccasion3
       Arkham.Skill.Cards.RunForYourLife
+      Arkham.Skill.Cards.Savant1
       Arkham.Skill.Cards.SayYourPrayers
       Arkham.Skill.Cards.SealOfTheElderSign5
       Arkham.Skill.Cards.SelfSacrifice

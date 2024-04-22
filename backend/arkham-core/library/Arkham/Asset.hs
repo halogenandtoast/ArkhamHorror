@@ -786,8 +786,9 @@ allAssets =
     , SomeAssetCard dragonPole
     , SomeAssetCard grounded3
     , --- survivor [eote]
-      SomeAssetCard bandages
+      SomeAssetCard shortSupply
     , SomeAssetCard schoffnersCatalogue
+    , SomeAssetCard bandages
     , SomeAssetCard bangleOfJinxes1
     , SomeAssetCard plucky3
     , --- guardian/seeker [eote]

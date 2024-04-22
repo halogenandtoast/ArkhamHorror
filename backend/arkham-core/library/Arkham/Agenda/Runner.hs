@@ -109,6 +109,8 @@ instance RunMessage AgendaAttrs where
               , AdvanceAgenda agendaId
               ]
           pure a
+    RemoveAllDoom _ (isTarget a -> True) -> do
+      pure $ a & doomL .~ 0
     RevertAgenda aid | aid == agendaId && agendaFlipped -> do
       pure
         $ a

@@ -330,6 +330,7 @@ allPlayerEventCards =
       , underSurveillance1
       , unearthTheAncients
       , unearthTheAncients2
+      , untimelyTransaction1
       , unsolvedCase
       , vantagePoint
       , voiceOfRa
@@ -2837,6 +2838,15 @@ cheatTheSystem1 =
           $ youExist can.gain.resources
           <> Criteria.HasCalculation (DifferentClassAmong $ ControlledBy You) (atLeast 1)
     , cdFastWindow = Just FastPlayerWindow
+    , cdLevel = Just 1
+    }
+
+untimelyTransaction1 :: CardDef
+untimelyTransaction1 =
+  (event "08051" "Untimely Transaction" 0 Rogue)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Favor]
+    , cdCriteria = Just $ youExist $ can.reveal.cards <> HandWith (HasCard $ CardWithTrait Item)
     , cdLevel = Just 1
     }
 

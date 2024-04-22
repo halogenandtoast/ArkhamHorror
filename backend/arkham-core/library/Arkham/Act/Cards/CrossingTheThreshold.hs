@@ -67,7 +67,7 @@ instance RunMessage CrossingTheThreshold where
       do
         push
           $ SearchCollectionForRandom iid (toSource attrs)
-          $ PlayerTreachery
+          $ BasicWeaknessCard
           <> CardWithOneOf (map CardWithTrait [Madness, Injury])
         pure a
     RequestedPlayerCard iid (isSource attrs -> True) (Just card) _ -> do

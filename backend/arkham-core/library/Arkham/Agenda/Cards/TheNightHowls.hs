@@ -46,7 +46,7 @@ instance RunMessage TheNightHowls where
                   [Omen, Curse]
             pure
               $ [ SearchCollectionForRandom iid (toSource attrs)
-                  $ PlayerTreachery
+                  $ BasicWeaknessCard
                   <> CardWithOneOf (map CardWithTrait [Omen, Curse])
                   <> excludeMatcher
                 | iid <- iids

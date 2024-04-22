@@ -210,7 +210,7 @@ instance RunMessage BlackStarsRise where
         <> [ SearchCollectionForRandom
             iid
             (toSource attrs)
-            ( CardWithType PlayerTreacheryType
+            ( BasicWeaknessCard
                 <> CardWithOneOf
                   ( map
                       CardWithTrait

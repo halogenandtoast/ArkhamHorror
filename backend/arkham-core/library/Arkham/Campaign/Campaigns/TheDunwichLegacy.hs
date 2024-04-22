@@ -169,25 +169,25 @@ instance RunMessage TheDunwichLegacy where
               )
       pushAll
         $ [story players interlude2]
-        <> [ story players interlude2DrHenryArmitage
-           | recorded @CardCode "02040" `notElem` sacrificedToYogSothoth
-           ]
+        <> ( guard (recorded @CardCode "02040" `notElem` sacrificedToYogSothoth)
+              *> [story players interlude2DrHenryArmitage, Record DrHenryArmitageSurvivedTheDunwichLegacy]
+           )
         <> addDrHenryArmitage
-        <> [ story players interlude2ProfessorWarrenRice
-           | recorded @CardCode "02061" `notElem` sacrificedToYogSothoth
-           ]
+        <> ( guard (recorded @CardCode "02061" `notElem` sacrificedToYogSothoth)
+              *> [story players interlude2ProfessorWarrenRice, Record ProfessorWarrenRiceSurvivedTheDunwichLegacy]
+           )
         <> addProfessorWarrenRice
-        <> [ story players interlude2DrFrancisMorgan
-           | recorded @CardCode "02080" `notElem` sacrificedToYogSothoth
-           ]
+        <> ( guard (recorded @CardCode "02080" `notElem` sacrificedToYogSothoth)
+              *> [story players interlude2DrFrancisMorgan, Record DrFrancisMorganSurvivedTheDunwichLegacy]
+           )
         <> addDrFrancisMorgan
-        <> [ story players interlude2ZebulonWhateley
-           | recorded @CardCode "02217" `notElem` sacrificedToYogSothoth
-           ]
+        <> ( guard (recorded @CardCode "02217" `notElem` sacrificedToYogSothoth)
+              *> [story players interlude2ZebulonWhateley, Record ZebulonWhateleySurvivedTheDunwichLegacy]
+           )
         <> addZebulonWhateley
-        <> [ story players interlude2EarlSawyer
-           | recorded @CardCode "02218" `notElem` sacrificedToYogSothoth
-           ]
+        <> ( guard (recorded @CardCode "02218" `notElem` sacrificedToYogSothoth)
+              *> [story players interlude2EarlSawyer, Record EarlSawyerSurvivedTheDunwichLegacy]
+           )
         <> addEarlSawyer
         <> addPowderOfIbnGhazi
         <> [NextCampaignStep Nothing]

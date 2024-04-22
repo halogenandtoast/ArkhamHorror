@@ -590,6 +590,7 @@ allPlayerAssetCards =
       , sharpshooter3
       , shieldOfFaith2
       , shiningTrapezohedron4
+      , shortSupply
       , shotgun4
       , showmanship
       , shrewdAnalysis
@@ -5013,6 +5014,14 @@ grounded3 =
     , cdLimits = [LimitPerTrait Composure 1]
     , cdLevel = Just 3
     }
+
+shortSupply :: CardDef
+shortSupply =
+  permanent
+    $ (asset "08071" "Short Supply" 0 Survivor)
+      { cdCardTraits = setFromList [Talent]
+      , cdDeckRestrictions = [PerDeckLimit 1, PurchaseAtDeckCreation]
+      }
 
 schoffnersCatalogue :: CardDef
 schoffnersCatalogue =

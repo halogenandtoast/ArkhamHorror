@@ -94,6 +94,7 @@ allPlayerSkillCards =
       , riseToTheOccasion
       , riseToTheOccasion3
       , runForYourLife
+      , savant1
       , sayYourPrayers
       , sealOfTheElderSign5
       , selfSacrifice
@@ -659,6 +660,13 @@ surveyTheArea1 =
     { cdCardTraits = setFromList [Practiced, Expert]
     , cdLevel = Just 1
     , cdCardInHandEffects = True
+    }
+
+savant1 :: CardDef
+savant1 =
+  (skill "08052" "Savant" [#wild] Rogue)
+    { cdCardTraits = setFromList [Innate, Developed]
+    , cdLevel = Just 1
     }
 
 occultTheory1 :: CardDef

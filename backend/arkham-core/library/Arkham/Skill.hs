@@ -109,6 +109,7 @@ allSkills =
     , SomeSkillCard justifyTheMeans3
     , SomeSkillCard defensiveStance1
     , SomeSkillCard surveyTheArea1
+    , SomeSkillCard savant1
     , SomeSkillCard occultTheory1
     , SomeSkillCard dauntlessSpirit1
     , SomeSkillCard prophesy

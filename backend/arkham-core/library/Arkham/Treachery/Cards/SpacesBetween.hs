@@ -25,25 +25,21 @@ instance RunMessage SpacesBetween where
   runMessage msg t@(SpacesBetween attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       nonSentinelHillLocations <- select $ LocationWithoutTrait SentinelHill
-      msgs <-
-        concatMapM'
-          ( \flipLocation -> do
-              let locationMatcher = LocationWithId flipLocation
-              investigatorIds <- select $ InvestigatorAt locationMatcher
-              enemyIds <- select $ EnemyAt locationMatcher <> UnengagedEnemy
-              destination <-
-                fromJustNote "must be connected to a sentinel location"
-                  <$> selectOne
-                    ( AccessibleFrom locationMatcher
-                        <> LocationWithTrait SentinelHill
-                    )
+      msgs <- flip concatMapM' nonSentinelHillLocations \flipLocation -> do
+        let locationMatcher = LocationWithId flipLocation
+        investigatorIds <- select $ InvestigatorAt locationMatcher
+        enemyIds <- select $ EnemyAt locationMatcher <> UnengagedEnemy
+        destination <-
+          fromJustNote "must be connected to a sentinel location"
+            <$> selectOne
+              ( AccessibleFrom locationMatcher
+                  <> LocationWithTrait SentinelHill
+              )
 
-              pure
-                $ [MoveTo $ move source iid destination | iid <- investigatorIds]
-                <> [EnemyMove eid destination | eid <- enemyIds]
-                <> [UnrevealLocation flipLocation]
-          )
-          nonSentinelHillLocations
+        pure
+          $ [MoveTo $ move source iid destination | iid <- investigatorIds]
+          <> [EnemyMove eid destination | eid <- enemyIds]
+          <> [RemoveAllClues (toSource attrs) (toTarget flipLocation), UnrevealLocation flipLocation]
 
       alteredPaths <-
         shuffleM
@@ -56,14 +52,13 @@ instance RunMessage SpacesBetween where
             (fieldP LocationUnrevealedName (== "Diverging Path"))
             nonSentinelHillLocations
 
-      t
-        <$ pushAll
-          ( msgs
-              <> [ SetLocationLabel locationId $ "alteredPath" <> tshow idx
-                 | (idx, locationId) <- zip [1 :: Int ..] alteredPaths
-                 ]
-              <> [ SetLocationLabel locationId $ "divergingPath" <> tshow idx
-                 | (idx, locationId) <- zip [1 :: Int ..] divergingPaths
-                 ]
-          )
+      pushAll
+        $ msgs
+        <> [ SetLocationLabel locationId $ "alteredPath" <> tshow idx
+           | (idx, locationId) <- zip [1 :: Int ..] alteredPaths
+           ]
+        <> [ SetLocationLabel locationId $ "divergingPath" <> tshow idx
+           | (idx, locationId) <- zip [1 :: Int ..] divergingPaths
+           ]
+      pure t
     _ -> SpacesBetween <$> runMessage msg attrs

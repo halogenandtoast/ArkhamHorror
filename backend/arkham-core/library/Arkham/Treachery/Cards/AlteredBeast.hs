@@ -1,13 +1,9 @@
-module Arkham.Treachery.Cards.AlteredBeast (
-  AlteredBeast (..),
-  alteredBeast,
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.AlteredBeast (AlteredBeast (..), alteredBeast) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -23,11 +19,11 @@ instance HasAbilities AlteredBeast where
   getAbilities (AlteredBeast x) = case treacheryAttachedTarget x of
     Just (EnemyTarget eid) ->
       [ mkAbility x 1
-          $ ForcedAbility
-          $ OrWindowMatcher
+          $ forced
+          $ oneOf
             [EnemyEnters #when YourLocation $ EnemyWithId eid, Enters #when You (locationWithEnemy eid)]
       ]
-    _ -> error "Altered Beast must be attached to an enemy"
+    _ -> []
 
 instance RunMessage AlteredBeast where
   runMessage msg t@(AlteredBeast attrs@TreacheryAttrs {..}) = case msg of

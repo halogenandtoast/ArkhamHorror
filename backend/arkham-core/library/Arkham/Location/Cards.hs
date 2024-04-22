@@ -1432,7 +1432,7 @@ schoolhouse_212 =
     "Schoolhouse"
     [Dunwich]
     Moon
-    [Plus, Squiggle, Moon]
+    [Plus, Squiggle, Circle]
     BloodOnTheAltar
 
 schoolhouse_213 :: CardDef
@@ -1442,7 +1442,7 @@ schoolhouse_213 =
     "Schoolhouse"
     [Dunwich]
     Moon
-    [Plus, Squiggle, Moon]
+    [Plus, Squiggle, Circle]
     BloodOnTheAltar
 
 theHiddenChamber :: CardDef

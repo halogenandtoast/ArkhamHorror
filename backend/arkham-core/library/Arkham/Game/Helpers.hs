@@ -38,6 +38,7 @@ import Arkham.Classes.HasGame
 import Arkham.Criteria qualified as Criteria
 import Arkham.DamageEffect
 import Arkham.Deck hiding (InvestigatorDeck, InvestigatorDiscard)
+import Arkham.Deck qualified as Deck
 import Arkham.DefeatedBy
 import Arkham.Effect.Types (Field (..))
 import Arkham.Enemy.Types (Field (..))
@@ -1395,7 +1396,7 @@ passesCriteria iid mcard source' windows' = \case
       =<< field InvestigatorLocation iid
   Criteria.EnemyCriteria enemyCriteria ->
     passesEnemyCriteria iid source windows' enemyCriteria
-  Criteria.SetAsideCardExists matcher -> selectAny matcher
+  Criteria.SetAsideCardExists matcher -> selectAny (Matcher.SetAsideCardMatch matcher)
   Criteria.OutOfPlayEnemyExists outOfPlayZone matcher ->
     selectAny $ Matcher.OutOfPlayEnemy outOfPlayZone matcher
   Criteria.OnAct step -> do
@@ -3052,7 +3053,9 @@ deckMatch
   -> m Bool
 deckMatch iid deckSignifier = \case
   Matcher.EncounterDeck -> pure $ deckSignifier == EncounterDeck
-  Matcher.DeckOf investigatorMatcher -> matchWho iid iid investigatorMatcher
+  Matcher.DeckOf investigatorMatcher -> case deckSignifier of
+    Deck.InvestigatorDeck iid' -> matchWho iid iid' investigatorMatcher
+    _ -> pure False
   Matcher.AnyDeck -> pure True
   Matcher.DeckIs deckSignifier' -> pure $ deckSignifier == deckSignifier'
   Matcher.DeckOneOf matchers' -> anyM (deckMatch iid deckSignifier) matchers'

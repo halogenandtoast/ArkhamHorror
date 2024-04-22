@@ -4,18 +4,17 @@ module Arkham.Asset.Cards.RiteOfSeeking (
   RiteOfSeeking (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.ChaosToken
-import Arkham.Effect.Runner
+import Arkham.Effect.Import
 import Arkham.Helpers.Investigator
 import Arkham.Investigate
 import Arkham.Message qualified as Msg
+import Arkham.Modifier
 import Arkham.Window qualified as Window
 
 newtype RiteOfSeeking = RiteOfSeeking AssetAttrs
@@ -29,18 +28,18 @@ instance HasAbilities RiteOfSeeking where
   getAbilities (RiteOfSeeking a) = [investigateAbility a 1 (assetUseCost a Charge 1) ControlsThis]
 
 instance RunMessage RiteOfSeeking where
-  runMessage msg a@(RiteOfSeeking attrs) = case msg of
+  runMessage msg a@(RiteOfSeeking attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
       lid <- getJustLocation iid
       investigation <-
         aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate iid source)
 
-      pushAll
-        $ createCardEffect Cards.riteOfSeeking Nothing source (InvestigationTarget iid lid)
-        : leftOr investigation
+      createCardEffect Cards.riteOfSeeking Nothing source (InvestigationTarget iid lid)
+      skillTestModifier (attrs.ability 1) iid (DiscoveredClues 1)
+      pushAll $ leftOr investigation
       pure a
-    _ -> RiteOfSeeking <$> runMessage msg attrs
+    _ -> RiteOfSeeking <$> lift (runMessage msg attrs)
 
 newtype RiteOfSeekingEffect = RiteOfSeekingEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -50,30 +49,22 @@ riteOfSeekingEffect :: EffectArgs -> RiteOfSeekingEffect
 riteOfSeekingEffect = cardEffect RiteOfSeekingEffect Cards.riteOfSeeking
 
 instance RunMessage RiteOfSeekingEffect where
-  runMessage msg e@(RiteOfSeekingEffect attrs@EffectAttrs {..}) = case msg of
-    Msg.RevealChaosToken _ iid token -> case effectTarget of
-      InvestigationTarget iid' _ | iid == iid' -> do
-        when
-          (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-          ( pushAll
-              [ If
-                  (Window.RevealChaosTokenEffect iid token effectId)
-                  [SetActions iid effectSource 0, ChooseEndTurn iid]
-              , DisableEffect effectId
-              ]
-          )
-        pure e
-      _ -> pure e
-    SkillTestEnds _ _ -> do
-      case effectTarget of
-        InvestigatorTarget iid -> pushAll [DisableEffect effectId, EndTurn iid]
-        _ -> push (DisableEffect effectId)
+  runMessage msg e@(RiteOfSeekingEffect attrs) = runQueueT $ case msg of
+    Msg.RevealChaosToken _ iid token -> do
+      case attrs.target of
+        InvestigationTarget iid' _ | iid == iid' -> do
+          when (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) do
+            push
+              $ If
+                (Window.RevealChaosTokenEffect iid token attrs.id)
+                [SetActions iid attrs.source 0, ChooseEndTurn iid]
+            disable attrs
+        _ -> pure ()
       pure e
-    Successful (Action.Investigate, _) iid source _ _ | effectSource == source -> do
-      case effectTarget of
-        InvestigationTarget _ lid' -> do
-          push
-            (InvestigatorDiscoverClues iid lid' (toSource attrs) 1 (Just Action.Investigate))
-          pure e
-        _ -> pure e
-    _ -> RiteOfSeekingEffect <$> runMessage msg attrs
+    SkillTestEnds _ _ -> do
+      disable attrs
+      case attrs.target of
+        InvestigatorTarget iid -> push $ EndTurn iid
+        _ -> pure ()
+      pure e
+    _ -> RiteOfSeekingEffect <$> lift (runMessage msg attrs)

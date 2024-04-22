@@ -23,8 +23,7 @@ instance RunMessage TheCreaturesTracks where
     Revelation iid source | isSource attrs source -> do
       anyBroodOfYogSothoth <- selectAny $ SetAsideCardMatch $ CardWithTitle broodTitle
       if anyBroodOfYogSothoth
-        then push $ InvestigatorAssignDamage iid source DamageAny 0 2
-        else do
+        then do
           player <- getPlayer iid
           push
             $ chooseOne
@@ -36,6 +35,7 @@ instance RunMessage TheCreaturesTracks where
                   "Spawn a set aside Brood of Yog-Sothoth at a random location"
                   [ChooseRandomLocation (toTarget attrs) mempty]
               ]
+        else push $ InvestigatorAssignDamage iid source DamageAny 0 2
       pure t
     ChosenRandomLocation target lid | isTarget attrs target -> do
       setAsideBroodOfYogSothoth <- getSetAsideBroodOfYogSothoth

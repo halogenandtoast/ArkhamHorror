@@ -359,8 +359,9 @@ instance RunMessage SkillTest where
                 _ -> Nothing
             )
             modifiers'
+      afterMsg <- checkWindows [mkAfter $ Window.CommittedCards iid cards]
       if null additionalCosts
-        then pushAll msgs
+        then pushAll $ msgs <> [afterMsg]
         else do
           canPay <-
             getCanAffordCost
@@ -379,6 +380,7 @@ instance RunMessage SkillTest where
                ]
             <> [SetActiveInvestigator iid' | iid /= iid']
             <> msgs
+            <> [afterMsg]
       pure s
     InvestigatorCommittedSkill _ skillId ->
       pure $ s & subscribersL %~ (nub . (SkillTarget skillId :))

@@ -1,15 +1,10 @@
-module Arkham.Asset.Cards.AnalyticalMind (
-  analyticalMind,
-  AnalyticalMind (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.AnalyticalMind (analyticalMind, AnalyticalMind (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype AnalyticalMind = AnalyticalMind AssetAttrs
   deriving anyclass (IsAsset)
@@ -21,7 +16,7 @@ analyticalMind = asset AnalyticalMind Cards.analyticalMind
 instance HasAbilities AnalyticalMind where
   getAbilities (AnalyticalMind attrs) =
     [ restrictedAbility attrs 1 ControlsThis
-        $ ReactionAbility (CommittedCards Timing.After You $ LengthIs $ EqualTo $ Static 1)
+        $ ReactionAbility (CommittedCards #after You $ LengthIs $ EqualTo $ Static 1)
         $ exhaust attrs
     ]
 

@@ -18,8 +18,8 @@
           },
           {
             "type": "Option",
-            "key": "TakeWarenRice",
-            "ckey": "TakeWarenRice",
+            "key": "TakeWarrenRice",
+            "ckey": "TakeWarrenRice",
             "ifRecorded": [
               {
                 "type": "key",
@@ -297,8 +297,8 @@
           },
           {
             "type": "Option",
-            "key": "TakeWarenRice",
-            "ckey": "TakeWarenRice",
+            "key": "TakeWarrenRice",
+            "ckey": "TakeWarrenRice",
             "ifRecorded": [ { "type": "not", "content": { "type": "inSet", "key": "SacrificedToYogSothoth", "recordable": "RecordableCardCode", "content": "02061" } }]
           },
           {

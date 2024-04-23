@@ -41,15 +41,14 @@ instance RunMessage PowderOfIbnGhazi where
   runMessage msg (PowderOfIbnGhazi attrs) = case msg of
     InvestigatorPlayAsset _ aid | aid == toId attrs -> do
       survivedCount <-
-        traceShowId
-          <$> countM
-            getHasRecord
-            [ DrHenryArmitageSurvivedTheDunwichLegacy
-            , ProfessorWarrenRiceSurvivedTheDunwichLegacy
-            , DrFrancisMorganSurvivedTheDunwichLegacy
-            , ZebulonWhateleySurvivedTheDunwichLegacy
-            , EarlSawyerSurvivedTheDunwichLegacy
-            ]
+        countM
+          getHasRecord
+          [ DrHenryArmitageSurvivedTheDunwichLegacy
+          , ProfessorWarrenRiceSurvivedTheDunwichLegacy
+          , DrFrancisMorganSurvivedTheDunwichLegacy
+          , ZebulonWhateleySurvivedTheDunwichLegacy
+          , EarlSawyerSurvivedTheDunwichLegacy
+          ]
       attrs' <- runMessage msg attrs
       pure . PowderOfIbnGhazi $ attrs' & tokensL %~ setTokens Clue survivedCount
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do

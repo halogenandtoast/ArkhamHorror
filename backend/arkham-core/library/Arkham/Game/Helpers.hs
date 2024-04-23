@@ -3345,7 +3345,7 @@ sourceMatches s = \case
         TreacherySource _ -> True
         _ -> False
      in
-      pure (check $ traceShowId s)
+      pure $ check s
   Matcher.SourceWithCard cardMatcher -> do
     let
       getCardSource = \case

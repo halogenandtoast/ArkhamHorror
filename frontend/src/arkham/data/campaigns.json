@@ -359,8 +359,8 @@
           },
           {
             "type": "SetKey",
-            "key": "NoBroodEscaped",
-            "ckey": "NoBroodEscaped"
+            "key": "NoBroodEscapedIntoTheWild",
+            "ckey": "NoBroodEscapedIntoTheWild"
           },
           {
             "type": "ChooseNum",
@@ -368,7 +368,7 @@
             "ckey": "BroodEscapedIntoTheWild",
             "min": 1,
             "max": 6,
-            "ifRecorded": [ { "type": "not", "content": { "type": "key", "key": "NoBroodEscaped" } } ]
+            "ifRecorded": [ { "type": "not", "content": { "type": "key", "key": "NoBroodEscapedIntoTheWild" } } ]
           }
         ]
       },

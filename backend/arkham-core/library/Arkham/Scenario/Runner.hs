@@ -345,12 +345,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     push (ScenarioResolution NoResolution)
     pure $ a & inResolutionL .~ True -- must set to avoid redundancy when scenario kills investigator
   InvestigatorWhenEliminated _ iid -> do
-    whenMsg <-
-      checkWindows
-        [mkWindow Timing.When (Window.InvestigatorEliminated iid)]
-    afterMsg <-
-      checkWindows
-        [mkWindow Timing.When (Window.InvestigatorEliminated iid)]
+    whenMsg <- checkWindows [mkWhen (Window.InvestigatorEliminated iid)]
+    afterMsg <- checkWindows [mkAfter (Window.InvestigatorEliminated iid)]
     pushAll
       [ whenMsg
       , InvestigatorPlaceAllCluesOnLocation iid (toSource a)

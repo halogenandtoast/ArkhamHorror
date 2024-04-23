@@ -630,6 +630,7 @@ data Message
   | HealDamageDelayed Target Source Int
   | HealHorrorDelayed Target Source Int
   | MovedHorror Source Target Int
+  | ReassignHorror Source Target Int
   | MovedDamage Source Target Int
   | MovedClues Source Target Int
   | HealHorrorWithAdditional Target Source Int

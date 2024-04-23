@@ -2099,7 +2099,8 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
         _ -> noMatch
     Matcher.GameEnds timing -> guardTiming timing (pure . (== Window.EndOfGame))
     Matcher.InvestigatorEliminated timing whoMatcher -> guardTiming timing $ \case
-      Window.InvestigatorEliminated who -> matchWho iid who (Matcher.IncludeEliminated whoMatcher)
+      Window.InvestigatorEliminated who ->
+        matchWho iid who (Matcher.IncludeEliminated $ Matcher.replaceYouMatcher iid whoMatcher)
       _ -> noMatch
     Matcher.PutLocationIntoPlay timing whoMatcher locationMatcher ->
       guardTiming timing $ \case

@@ -120,6 +120,20 @@ instance RunMessage AssetAttrs where
     MovedHorror source (isTarget a -> True) n -> do
       push $ checkDefeated source a
       pure $ a & tokensL %~ addTokens #horror n
+    ReassignHorror source (isTarget a -> True) n -> do
+      alreadyChecked <- assertQueue \case
+        CheckDefeated _ target -> target == toTarget a
+        _ -> False
+      unless alreadyChecked do
+        replaceMessageMatching
+          \case
+            CheckDefeated _ target -> target == sourceToTarget source
+            _ -> False
+          \case
+            msg@(CheckDefeated s _) -> [msg, CheckDefeated s (toTarget a)]
+            _ -> error "Invalid match"
+
+      pure $ a & assignedSanityDamageL +~ n
     MovedDamage source (isTarget a -> True) amount -> do
       push $ checkDefeated source a
       pure $ a & tokensL %~ addTokens #damage amount

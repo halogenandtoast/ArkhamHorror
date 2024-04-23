@@ -41,8 +41,14 @@ data Window = Window
   }
   deriving stock (Show, Eq)
 
+replaceWindowType :: WindowType -> Window -> Window
+replaceWindowType wType window = window {windowType = wType}
+
 instance HasField "timing" Window Timing where
   getField = windowTiming
+
+instance HasField "kind" Window WindowType where
+  getField = windowType
 
 mkWindow :: Timing -> WindowType -> Window
 mkWindow timing windowType = Window timing windowType Nothing

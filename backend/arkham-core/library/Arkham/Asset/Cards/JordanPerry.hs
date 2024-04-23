@@ -22,7 +22,10 @@ instance HasAbilities JordanPerry where
         1
         (OnSameLocation <> youExist (InvestigatorWithResources $ atLeast 10))
         parleyAction_
-    , mkAbility a 2 $ forced $ LastClueRemovedFromAsset #when $ AssetWithId (toId a)
+    , groupLimit PerGame
+        $ restrictedAbility a 2 (not_ $ exists Story.sickeningReality_66)
+        $ forced
+        $ LastClueRemovedFromAsset #when (be a)
     ]
 
 instance RunMessage JordanPerry where

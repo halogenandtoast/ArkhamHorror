@@ -110,6 +110,7 @@ import Arkham.Story.Types qualified as Story
 import Arkham.Target
 import Arkham.Tarot qualified as Tarot
 import Arkham.Timing qualified as Timing
+import Arkham.Token qualified as Token
 import Arkham.Treachery
 import Arkham.Treachery.Types (Field (..), drawnFromL)
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
@@ -809,6 +810,17 @@ runGameMessage msg g = case msg of
   AddAgenda agendaDeckNum card -> do
     let aid = AgendaId $ toCardCode card
     pure $ g & entitiesL . agendasL . at aid ?~ lookupAgenda aid agendaDeckNum (toCardId card)
+  ReassignHorror source target n -> do
+    replaceWindowMany
+      \case
+        Window.PlacedToken _ t Token.Horror _ -> t == sourceToTarget source
+        _ -> False
+      \case
+        Window.PlacedToken s t Token.Horror m
+          | m > n -> [Window.PlacedToken s t Token.Horror (m - n), Window.PlacedToken s target Token.Horror n]
+        Window.PlacedToken s _ Token.Horror _ -> [Window.PlacedToken s target Token.Horror n]
+        _ -> error "impossible"
+    pure g
   CommitCard iid card -> do
     push $ InvestigatorCommittedCard iid card
     case card of

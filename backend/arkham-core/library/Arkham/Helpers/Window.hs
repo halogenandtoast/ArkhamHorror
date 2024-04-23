@@ -204,3 +204,26 @@ replaceWindow f wf = do
     \case
       CheckWindow iids ws -> [CheckWindow iids $ map (\w -> if f w then wf w else w) ws]
       _ -> error "impossible"
+
+replaceWindowMany
+  :: HasQueue Message m => (WindowType -> Bool) -> (WindowType -> [WindowType]) -> m ()
+replaceWindowMany f wf = do
+  replaceAllMessagesMatching
+    \case
+      CheckWindow _ ws -> any (f . windowType) ws
+      RunWindow _ ws -> any (f . windowType) ws
+      _ -> False
+    \case
+      CheckWindow iids ws ->
+        [ CheckWindow iids
+            $ concatMap
+              (\w -> if f w.kind then map (`replaceWindowType` w) (wf w.kind) else [w])
+              ws
+        ]
+      RunWindow iid ws ->
+        [ RunWindow iid
+            $ concatMap
+              (\w -> if f w.kind then map (`replaceWindowType` w) (wf w.kind) else [w])
+              ws
+        ]
+      _ -> error "impossible"

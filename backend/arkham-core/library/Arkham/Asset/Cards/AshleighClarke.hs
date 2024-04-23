@@ -20,7 +20,12 @@ instance HasAbilities AshleighClarke where
     [ restrictedAbility a 1 (OnSameLocation <> CanTakeControlOfClues)
         $ ActionAbility [#parley]
         $ ActionCost 2
-    , mkAbility a 2 $ forced $ LastClueRemovedFromAsset #when $ AssetWithId $ toId a
+    , groupLimit PerGame
+        $ restrictedAbility a 2 (not_ $ exists Story.sickeningReality_69)
+        $ forced
+        $ LastClueRemovedFromAsset #when
+        $ AssetWithId
+        $ toId a
     ]
 
 instance RunMessage AshleighClarke where

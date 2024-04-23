@@ -536,9 +536,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         deck <- shuffleM (investigatorDiscard <> coerce investigatorDeck)
         pure $ a & discardL .~ [] & deckL .~ Deck deck
   Resign iid | iid == investigatorId -> do
-    isLead <- (== iid) <$> getLeadInvestigatorId
-    pushAll $ [ChooseLeadInvestigator | isLead] <> resolve (Msg.InvestigatorResigned iid)
-    pure $ a & resignedL .~ True & endedTurnL .~ True
+    pushAll $ resolve (Msg.InvestigatorResigned iid)
+    pure $ a & endedTurnL .~ True
   Msg.InvestigatorDefeated source iid -> do
     -- a card effect defeats an investigator directly
     windowMsg <-
@@ -573,11 +572,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (physicalTraumaL +~ physicalTrauma)
       & (mentalTraumaL +~ mentalTrauma)
   Msg.InvestigatorResigned iid | iid == investigatorId -> do
+    pushAll [InvestigatorWhenEliminated (toSource a) iid, Do msg]
+    pure $ a & endedTurnL .~ True
+  Do (Msg.InvestigatorResigned iid) | iid == investigatorId -> do
     isLead <- (== iid) <$> getLeadInvestigatorId
-    pushAll
-      $ [ChooseLeadInvestigator | isLead && not investigatorResigned]
-      <> [InvestigatorWhenEliminated (toSource a) iid]
-    pure $ a & resignedL .~ True & endedTurnL .~ True
+    pushWhen isLead ChooseLeadInvestigator
+    pure $ a & resignedL .~ True
   -- InvestigatorWhenEliminated is handled by the scenario
   InvestigatorEliminated iid | iid == investigatorId -> do
     mlid <- field InvestigatorLocation iid
@@ -1171,10 +1171,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              | (target, horror) <- mapToList horrorMap
              ]
       checkAssets = nub $ keys horrorMap <> keys damageMap
-    placedWindowMsg <-
-      checkWindows $ concatMap (\t -> map (mkWindow t) placedWindows) [#when, #after]
+    whenPlacedWindowMsg <- checkWindows $ map mkWhen placedWindows
+    afterPlacedWindowMsg <- checkWindows $ map mkAfter placedWindows
     pushAll
-      $ [ placedWindowMsg
+      $ [ whenPlacedWindowMsg
+        , afterPlacedWindowMsg
         , CheckWindow [iid]
             $ [ mkWhen (Window.DealtDamage source damageEffect target damage)
               | target <- nub damageTargets
@@ -1867,6 +1868,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & tokensL %~ addTokens #horror amount
   MovedHorror (isSource a -> True) _ amount -> do
     pure $ a & tokensL %~ subtractTokens #horror amount
+  ReassignHorror (isSource a -> True) _ n -> do
+    pure $ a & assignedSanityDamageL %~ max 0 . subtract n
   MovedDamage source (isTarget a -> True) amount -> do
     push $ checkDefeated source a
     pure $ a & tokensL %~ addTokens #damage amount

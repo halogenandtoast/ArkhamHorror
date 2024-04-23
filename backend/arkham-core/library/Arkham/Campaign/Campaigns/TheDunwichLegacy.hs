@@ -3,6 +3,7 @@ module Arkham.Campaign.Campaigns.TheDunwichLegacy where
 import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Option
 import Arkham.Campaign.Runner
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
@@ -11,9 +12,11 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Id
 import Arkham.Resolution
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)
@@ -196,5 +199,45 @@ instance RunMessage TheDunwichLegacy where
       warned <- getHasRecord YouWarnedTheTownsfolk
       players <- allPlayers
       pushAll [story players $ if warned then epilogue2 else epilogue1, GameOver]
+      pure c
+    HandleOption option -> do
+      lead <- getActivePlayer
+      investigators <- allInvestigators
+      sacrificedToYogSothoth <- getRecordSet SacrificedToYogSothoth
+      let sacrificed = (`elem` sacrificedToYogSothoth) . recorded . toCardCode
+      case option of
+        TakeArmitage -> do
+          unless (sacrificed Assets.drHenryArmitage)
+            $ push
+            $ forceAddCampaignCardToDeckChoice lead investigators Assets.drHenryArmitage
+        TakeWarrenRice -> do
+          unless (sacrificed Assets.professorWarrenRice)
+            $ push
+            $ forceAddCampaignCardToDeckChoice lead investigators Assets.professorWarrenRice
+        TakeFrancisMorgan -> do
+          unless (sacrificed Assets.drFrancisMorgan)
+            $ push
+            $ forceAddCampaignCardToDeckChoice lead investigators Assets.drFrancisMorgan
+        TakeZebulonWhately -> push $ forceAddCampaignCardToDeckChoice lead investigators Assets.zebulonWhateley
+        TakeEarlSawyer -> push $ forceAddCampaignCardToDeckChoice lead investigators Assets.earlSawyer
+        TakePowderOfIbnGhazi -> do
+          when (campaignStep (toAttrs c) == UndimensionedAndUnseen)
+            $ push
+            $ forceAddCampaignCardToDeckChoice lead investigators Assets.powderOfIbnGhazi
+        TakeTheNecronomicon -> do
+          stolen <- getHasRecord TheNecronomiconWasStolen
+          unless stolen
+            $ push
+            $ forceAddCampaignCardToDeckChoice lead investigators Assets.theNecronomiconOlausWormiusTranslation
+        AddAcrossTimeAndSpace -> do
+          push
+            $ Ask lead
+            $ ChooseSome1
+              "Do not add Across Time and Space to any other decks"
+              [ PortraitLabel iid [AddCampaignCardToDeck iid Treacheries.acrossSpaceAndTime]
+              | iid <- investigators
+              ]
+        Cheated -> push $ AddChaosToken #elderthing
+        _ -> error $ "Unhandled option: " <> show option
       pure c
     _ -> defaultCampaignRunner msg c

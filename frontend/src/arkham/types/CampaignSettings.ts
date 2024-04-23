@@ -62,7 +62,7 @@ export type CrossOutSetting = {
 }
 
 export type CampaignSetting = CrossOutSetting |
-  { type: "Record", key: string, ckey: string, recordable: string, content: Recordable, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
+  { type: "Record", key: string, ckey: string, recordable: string, content: Recordable[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[] } |
   { type: "ChooseNum", key: string, ckey: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[], max?: number, min?: number } |
   { type: "ChooseKey", key: string, content: ChooseKey[], ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[]} |
   { type: "ForceKey", key: string, content: string, ifRecorded?: SettingCondition[], anyRecorded?: SettingCondition[]} |

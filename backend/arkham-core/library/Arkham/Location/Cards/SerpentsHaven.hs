@@ -26,8 +26,8 @@ serpentsHaven = location SerpentsHaven Cards.serpentsHaven 2 (PerPlayer 2)
 
 instance HasModifiersFor SerpentsHaven where
   getModifiersFor (EnemyTarget eid) (SerpentsHaven a) = do
-    modified <- eid <=~> (enemyAt (toId a) <> EnemyWithTrait Serpent)
-    pure $ toModifiers a [EnemyFight 1 | modified]
+    isSerpent <- eid <=~> (enemyAt (toId a) <> EnemyWithTrait Serpent)
+    pure $ toModifiers a [EnemyFight 1 | isSerpent]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities SerpentsHaven where

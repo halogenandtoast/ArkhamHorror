@@ -371,10 +371,10 @@ toResult x = case fromJSON x of
   Success a -> a
   Error e -> error $ "result failure: " <> e
 
-maybeResult :: (HasCallStack, FromJSON a) => Value -> Maybe a
+maybeResult :: FromJSON a => Value -> Maybe a
 maybeResult x = case fromJSON x of
   Success a -> Just a
-  Error e -> Nothing
+  Error _ -> Nothing
 
 countOccurrences :: Ord a => [a] -> Map a Int
 countOccurrences = foldr (\x acc -> Map.insertWith (+) x 1 acc) Map.empty

@@ -1,21 +1,15 @@
-module Arkham.Agenda.Cards.AllIsOne (
-  AllIsOne (..),
-  allIsOne,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.AllIsOne (AllIsOne (..), allIsOne) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.CampaignLogKey
-import Arkham.Card.CardType
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype AllIsOne = AllIsOne AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -26,17 +20,15 @@ allIsOne = agenda (1, A) AllIsOne Cards.allIsOne (Static 4)
 
 instance HasAbilities AllIsOne where
   getAbilities (AllIsOne x) =
-    [mkAbility x 1 $ ForcedAbility $ MovedBy #after You Matcher.EncounterCardSource]
+    [mkAbility x 1 $ forced $ MovedBy #after You Matcher.EncounterCardSource]
 
 instance RunMessage AllIsOne where
   runMessage msg a@(AllIsOne attrs@AgendaAttrs {..}) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ InvestigatorAssignDamage iid source DamageAny 0 1
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ assignHorror iid (attrs.ability 1) 1
       pure a
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      failedToSaveStudents <-
-        getHasRecord
-          TheInvestigatorsFailedToSaveTheStudents
+      failedToSaveStudents <- getHasRecord TheInvestigatorsFailedToSaveTheStudents
       lead <- getLead
       investigatorIds <- getInvestigatorIds
       pushAll
@@ -45,9 +37,9 @@ instance RunMessage AllIsOne where
               lead
               (toSource attrs)
               Deck.EncounterDeck
-              (BasicCardMatch $ CardWithType LocationType)
+              (basic #location)
           ]
-        <> [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+        <> [ assignHorror iid attrs 1
            | failedToSaveStudents
            , iid <- investigatorIds
            ]

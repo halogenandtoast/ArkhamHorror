@@ -3,7 +3,6 @@ module Arkham.Location.Cards.TearThroughTime (tearThroughTime, TearThroughTime (
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Prelude
 

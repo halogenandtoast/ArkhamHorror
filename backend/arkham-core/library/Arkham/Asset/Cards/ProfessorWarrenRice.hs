@@ -1,12 +1,10 @@
 module Arkham.Asset.Cards.ProfessorWarrenRice where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype ProfessorWarrenRice = ProfessorWarrenRice AssetAttrs
   deriving anyclass (IsAsset)

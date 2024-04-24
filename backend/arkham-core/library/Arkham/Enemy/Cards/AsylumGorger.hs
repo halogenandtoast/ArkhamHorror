@@ -22,7 +22,13 @@ instance HasModifiersFor AsylumGorger where
   getModifiersFor _ _ = pure []
 
 asylumGorger :: EnemyCard AsylumGorger
-asylumGorger = enemy AsylumGorger Cards.asylumGorger (4, Static 5, 4) (3, 3)
+asylumGorger =
+  enemyWith
+    AsylumGorger
+    Cards.asylumGorger
+    (4, Static 5, 4)
+    (3, 3)
+    (spawnAtL ?~ SpawnAt "Basement Hall")
 
 instance RunMessage AsylumGorger where
   runMessage msg (AsylumGorger attrs) = AsylumGorger <$> runMessage msg attrs

@@ -2351,6 +2351,19 @@ enemyMatcherFilter = \case
         iids <- select investigatorMatcher
         pure $ discardee `elem` iids
   EnemyWithHealth -> fieldMap EnemyHealth isJust . toId
+  CanBeAttackedBy matcher -> \enemy -> do
+    iids <- select matcher
+    modifiers' <- concatMapM (getModifiers . InvestigatorTarget) iids
+    let
+      enemyFilters =
+        mapMaybe
+          ( \case
+              CannotFight m -> Just m
+              _ -> Nothing
+          )
+          modifiers'
+
+    notElem (toId enemy) <$> select (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
   SwarmingEnemy -> \enemy -> do
     modifiers <- getModifiers (toTarget enemy)
     keywords <- field EnemyKeywords (toId enemy)
@@ -2604,7 +2617,7 @@ enemyMatcherFilter = \case
         _ -> error "multiple overrides found"
     excluded <-
       elem (toId enemy)
-        <$> select (mconcat $ EnemyWithModifier CannotBeAttacked : enemyFilters)
+        <$> select (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
     if excluded
       then pure False
       else

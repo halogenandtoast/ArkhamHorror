@@ -349,6 +349,7 @@ data EnemyMatcher
   | SwarmingEnemy
   | EnemyWithHealth
   | DefeatedEnemy EnemyMatcher
+  | CanBeAttackedBy InvestigatorMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup EnemyMatcher where

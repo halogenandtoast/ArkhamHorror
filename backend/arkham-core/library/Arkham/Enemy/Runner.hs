@@ -605,23 +605,26 @@ instance RunMessage EnemyAttrs where
               }
       pure a
     AttackEnemy iid eid source mTarget skillType | eid == enemyId -> do
-      push
-        $ fight
-          iid
-          source
-          (maybe (toTarget eid) (ProxyTarget (toTarget eid)) mTarget)
-          skillType
-          (EnemyMaybeFieldCalculation eid EnemyFight)
+      whenWindow <- checkWindows [mkWhen (Window.EnemyAttacked iid source enemyId)]
+      afterWindow <- checkWindows [mkAfter (Window.EnemyAttacked iid source enemyId)]
+      pushAll
+        [ whenWindow
+        , fight
+            iid
+            source
+            (maybe (toTarget eid) (ProxyTarget (toTarget eid)) mTarget)
+            skillType
+            (EnemyMaybeFieldCalculation eid EnemyFight)
+        , afterWindow
+        ]
       pure a
     PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isActionTarget a target -> do
       whenWindow <- checkWindows [mkWhen (Window.SuccessfulAttackEnemy iid enemyId n)]
       afterSuccessfulWindow <- checkWindows [mkAfter (Window.SuccessfulAttackEnemy iid enemyId n)]
-      afterWindow <- checkWindows [mkAfter (Window.EnemyAttacked iid source enemyId)]
       pushAll
         [ whenWindow
         , Successful (Action.Fight, toProxyTarget target) iid source (toActionTarget target) n
         , afterSuccessfulWindow
-        , afterWindow
         ]
 
       pure a

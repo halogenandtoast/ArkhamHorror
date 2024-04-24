@@ -333,7 +333,7 @@ instance RunMessage TheUnspeakableOath where
       constanceSlain <-
         selectOne
           (VictoryDisplayCardMatch $ cardIs Enemies.constanceDumaine)
-      danielWasAlly <- selectAny (assetIs Assets.danielChesterfield)
+      let danielWasAlly = toCardCode Assets.danielChesterfield `elem` scenarioResignedCardCodes attrs
       danielWasEnemy <- selectAny (enemyIs Enemies.danielChesterfield)
 
       let

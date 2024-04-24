@@ -23,11 +23,7 @@ instance HasAbilities DanielChesterfield where
     , restrictedAbility a 2 ControlsThis
         $ ForcedAbility
         $ AssignedHorror #after You (ExcludesTarget $ TargetIs $ toTarget a)
-    , mkAbility a 3
-        $ ForcedAbility
-        $ AssetLeavesPlay #when
-        $ AssetWithId
-        $ toId a
+    , mkAbility a 3 $ forced $ AssetLeavesPlay #when $ AssetWithId $ toId a
     ]
 
 instance RunMessage DanielChesterfield where

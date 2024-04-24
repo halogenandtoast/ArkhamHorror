@@ -352,7 +352,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         , InvestigatorEliminated iid
         ]
       <> maybeToList mmsg
-      <> [ afterMsg
+      <> [ After (InvestigatorEliminated iid)
+         , afterMsg
          , CheckForRemainingInvestigators
          ]
     pure a

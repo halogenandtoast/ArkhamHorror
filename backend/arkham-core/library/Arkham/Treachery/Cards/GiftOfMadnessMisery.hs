@@ -30,7 +30,8 @@ instance HasModifiersFor GiftOfMadnessMisery where
     pure
       $ toModifiers
         a
-        [ CannotTriggerAbilityMatching (AbilityIsActionAbility <> AbilityOnLocation Anywhere)
+        [ CannotTriggerAbilityMatching
+          (AbilityIsActionAbility <> AbilityOnLocation Anywhere)
         | treacheryInHandOf a == Just iid
         ]
   getModifiersFor _ _ = pure []

@@ -1309,7 +1309,11 @@ data AbilityMatcher
   | HauntedAbility
   | PerformableAbility [ModifierType]
   | TriggeredAbility
+  | NotAbility AbilityMatcher
   deriving stock (Show, Eq, Ord, Data)
+
+instance Not AbilityMatcher where
+  not_ = NotAbility
 
 instance Semigroup AbilityMatcher where
   AnyAbility <> x = x

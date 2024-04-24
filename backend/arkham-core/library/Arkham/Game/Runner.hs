@@ -2151,7 +2151,7 @@ runGameMessage msg g = case msg of
   ReplaceCard cardId card -> do
     replaceCard cardId card -- We must update the IORef
     pure $ g & cardsL %~ insertMap cardId card
-  InvestigatorEliminated iid -> pure $ g & playerOrderL %~ filter (/= iid)
+  After (InvestigatorEliminated iid) -> pure $ g & playerOrderL %~ filter (/= iid)
   SetActiveInvestigator iid -> do
     player <- getPlayer iid
     pure $ g & activeInvestigatorIdL .~ iid & activePlayerIdL .~ player

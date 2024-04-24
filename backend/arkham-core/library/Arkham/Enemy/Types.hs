@@ -215,7 +215,7 @@ instance HasAbilities EnemyAttrs where
               [ Negate $ EnemyCriteria $ ThisEnemy AloofEnemy
               , EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith Anyone
               ]
-            <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
+            <> EnemyCriteria (ThisEnemy $ CanBeAttackedBy You)
             <> CanAttack
         )
         $ ActionAbility [#fight] (ActionCost 1)

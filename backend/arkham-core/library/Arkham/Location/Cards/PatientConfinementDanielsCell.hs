@@ -25,7 +25,7 @@ patientConfinementDanielsCell =
     Cards.patientConfinementDanielsCell
     2
     (Static 1)
-    (costToEnterUnrevealedL .~ Costs [ActionCost 1, ClueCost (PerPlayer 1)])
+    (costToEnterUnrevealedL .~ Costs [ActionCost 1, ClueCost (Static 1)])
 
 instance HasAbilities PatientConfinementDanielsCell where
   getAbilities (PatientConfinementDanielsCell attrs) =

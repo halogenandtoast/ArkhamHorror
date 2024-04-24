@@ -101,6 +101,9 @@ runEventMessage msg a@EventAttrs {..} = case msg of
         push $ toDiscard GameSource a
       _ -> pure ()
     pure a
+  ReadyExhausted -> do
+    push (Ready $ toTarget a)
+    pure a
   Ready (isTarget a -> True) -> pure $ a & exhaustedL .~ False
   Exhaust (isTarget a -> True) -> pure $ a & exhaustedL .~ True
   ExhaustThen (isTarget a -> True) msgs -> do

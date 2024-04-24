@@ -4208,6 +4208,7 @@ preloadModifiers g = case gameMode g of
                   (toList $ entitiesInvestigators $ gameEntities g)
                 <> map (AbilityTarget (gameActiveInvestigatorId g)) (getAbilities g)
                 <> map ActiveCostTarget (keys $ gameActiveCost g)
+                <> map PhaseTarget [minBound ..]
           )
     allModifiers `seq` pure $ g {gameModifiers = Map.map (filter modifierFilter) allModifiers}
  where

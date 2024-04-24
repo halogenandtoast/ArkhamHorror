@@ -710,7 +710,7 @@ data Message
   | InvestigatorResigned InvestigatorId
   | InvestigatorSpendClues InvestigatorId Int
   | InvestigatorWhenDefeated Source InvestigatorId
-  | InvestigatorWhenEliminated Source InvestigatorId
+  | InvestigatorWhenEliminated Source InvestigatorId (Maybe Message)
   | LoadDeck InvestigatorId (Deck PlayerCard) -- used to reset the deck of the investigator
   | LookAtRevealed InvestigatorId Source Target
   | LookAtTopOfDeck InvestigatorId Target Int

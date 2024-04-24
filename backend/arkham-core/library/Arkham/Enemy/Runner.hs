@@ -242,7 +242,9 @@ instance RunMessage EnemyAttrs where
             =<< traverse
               (\eid' -> checkWindows (($ Window.EnemyEnters eid' lid) <$> [mkWhen, mkAfter]))
               (eid : swarm)
-          pure $ a & placementL .~ AtLocation lid
+          case a.placement of
+            InThreatArea {} -> pure a
+            _ -> pure $ a & placementL .~ AtLocation lid
     Ready (isTarget a -> True) -> do
       mods <- getModifiers a
       phase <- getPhase

@@ -1181,6 +1181,7 @@ abilityMatches a@Ability {..} = \case
       let ab = applyAbilityModifiers a modifiers'
       iid <- view activeInvestigatorIdL <$> getGame
       getCanPerformAbility iid (Window.defaultWindows iid) ab
+  NotAbility inner -> not <$> abilityMatches a inner
   AnyAbility -> pure True
   HauntedAbility -> pure $ abilityType == Haunted
   AssetAbility assetMatcher -> do
@@ -1206,7 +1207,7 @@ abilityMatches a@Ability {..} = \case
     ProxySource (StorySource sid') _ -> elem sid' <$> select storyMatcher
     _ -> pure False
   AbilityIsAction action -> pure $ action `elem` abilityActions a
-  AbilityIsActionAbility -> pure $ abilityIsActionAbility a
+  AbilityIsActionAbility -> pure $ abilityIsActionAbility a && not (abilityIndex >= 100 && abilityIndex <= 102)
   AbilityIsFastAbility -> pure $ abilityIsFastAbility a
   AbilityIsForcedAbility -> pure $ abilityIsForcedAbility a
   AbilityIsReactionAbility -> pure $ abilityIsReactionAbility a

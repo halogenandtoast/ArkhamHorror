@@ -564,7 +564,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ windowMsg
       : [ChooseLeadInvestigator | isLead]
         <> [InvestigatorKilled (toSource a) iid | killed]
-        <> [InvestigatorWhenEliminated (toSource a) iid]
+        <> [InvestigatorWhenEliminated (toSource a) iid Nothing]
     pure
       $ a
       & (defeatedL .~ True)
@@ -572,7 +572,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (physicalTraumaL +~ physicalTrauma)
       & (mentalTraumaL +~ mentalTrauma)
   Msg.InvestigatorResigned iid | iid == investigatorId -> do
-    pushAll [InvestigatorWhenEliminated (toSource a) iid, Do msg]
+    pushAll [InvestigatorWhenEliminated (toSource a) iid (Just $ Do msg)]
     pure $ a & endedTurnL .~ True
   Do (Msg.InvestigatorResigned iid) | iid == investigatorId -> do
     isLead <- (== iid) <$> getLeadInvestigatorId

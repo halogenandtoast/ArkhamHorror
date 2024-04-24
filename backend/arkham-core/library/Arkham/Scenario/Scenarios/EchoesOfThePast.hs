@@ -167,7 +167,7 @@ instance RunMessage EchoesOfThePast where
       (quietHalls2Id, placeQuietHalls2) <- placeLocationCard Locations.quietHalls_135
 
       groundFloorPlacements <-
-        shuffleM =<< placeAndLabelLocations "groundloor" groundFloor
+        shuffleM =<< placeAndLabelLocations "groundFloor" groundFloor
       secondFloorPlacements <-
         shuffleM =<< placeAndLabelLocations "secondFloor" secondFloor
       thirdFloorPlacements <-

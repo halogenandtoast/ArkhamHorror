@@ -14,7 +14,7 @@ data Phase
   | UpkeepPhase
   | ResolutionPhase
   | CampaignPhase
-  deriving stock (Eq, Show, Ord, Data)
+  deriving stock (Bounded, Enum, Eq, Show, Ord, Data)
 
 instance IsLabel "mythos" Phase where
   fromLabel = MythosPhase

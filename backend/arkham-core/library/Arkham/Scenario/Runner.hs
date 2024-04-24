@@ -344,16 +344,17 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     clearQueue
     push (ScenarioResolution NoResolution)
     pure $ a & inResolutionL .~ True -- must set to avoid redundancy when scenario kills investigator
-  InvestigatorWhenEliminated _ iid -> do
+  InvestigatorWhenEliminated _ iid mmsg -> do
     whenMsg <- checkWindows [mkWhen (Window.InvestigatorEliminated iid)]
     afterMsg <- checkWindows [mkAfter (Window.InvestigatorEliminated iid)]
     pushAll
-      [ whenMsg
-      , InvestigatorPlaceAllCluesOnLocation iid (toSource a)
-      , InvestigatorEliminated iid
-      , CheckForRemainingInvestigators
-      , afterMsg
-      ]
+      $ [ whenMsg
+        , InvestigatorEliminated iid
+        ]
+      <> maybeToList mmsg
+      <> [ afterMsg
+         , CheckForRemainingInvestigators
+         ]
     pure a
   Remember logKey -> do
     send $ "Remember \"" <> format logKey <> "\""

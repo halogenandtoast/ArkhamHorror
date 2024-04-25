@@ -1539,8 +1539,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   FlipClues target n | isTarget a target -> do
     pure $ a & tokensL %~ flipClues n
-  DiscoverClues iid lid source n isInvestigate maction | iid == investigatorId -> do
+  DiscoverClues iid lid source n1 isInvestigate maction | iid == investigatorId -> do
     modifiers <- getModifiers lid
+    mods <- getModifiers iid
+    let additionalDiscovered = getSum $ fold [Sum x | DiscoveredClues x <- mods]
+    let n = n1 + additionalDiscovered
     let
       getMaybeMax :: ModifierType -> Maybe Int -> Maybe Int
       getMaybeMax (MaxCluesDiscovered x) Nothing = Just x

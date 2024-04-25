@@ -79,18 +79,6 @@ withRevealedAbilities attrs other = withBaseAbilities attrs $ guard (locationRev
 extendRevealed :: LocationAttrs -> [Ability] -> [Ability]
 extendRevealed = withRevealedAbilities
 
-cluesToDiscover :: HasGame m => InvestigatorId -> Int -> m Int
-cluesToDiscover investigatorId startValue = do
-  msource <- getSkillTestSource
-  case msource of
-    Just _ -> do
-      modifiers <- getModifiers (InvestigatorTarget investigatorId)
-      pure $ foldr applyModifier startValue modifiers
-    Nothing -> pure startValue
- where
-  applyModifier (DiscoveredClues m) n = n + m
-  applyModifier _ n = n
-
 instance RunMessage LocationAttrs where
   runMessage msg a@LocationAttrs {..} = case msg of
     UpdateLocation lid upd | lid == locationId -> do
@@ -138,12 +126,11 @@ instance RunMessage LocationAttrs where
     Successful (Action.Investigate, _) iid source target n | isTarget a target -> do
       let lid = toId a
       modifiers' <- getModifiers (LocationTarget lid)
-      clueAmount <- cluesToDiscover iid 1
       (before, _, after) <- frame (Window.SuccessfulInvestigation iid lid)
       let alternateSuccessfullInvestigation = mapMaybe (preview _AlternateSuccessfullInvestigation) modifiers'
       when (null alternateSuccessfullInvestigation)
         $ pushAll
-          [before, InvestigatorDiscoverClues iid lid (toSource a) clueAmount (Just #investigate), after]
+          [before, InvestigatorDiscoverClues iid lid (toSource a) 1 (Just #investigate), after]
 
       for_ alternateSuccessfullInvestigation $ \target' ->
         push $ Successful (Action.Investigate, toTarget lid) iid source target' n

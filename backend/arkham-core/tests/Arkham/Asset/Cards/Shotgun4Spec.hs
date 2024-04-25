@@ -46,7 +46,7 @@ spec = describe "Shotgun (4)" $ do
         setup self enemy
         click "apply results"
         -- 1 regular + 5 maximum
-        enemy.damage `shouldReturn` 6
+        enemy.damage `shouldReturn` 5
 
     context "if you fail and would damage another investigator" $ do
       context "gives 1 damage for each point you fail" $ do
@@ -67,7 +67,7 @@ spec = describe "Shotgun (4)" $ do
           click "apply results"
           applyAllDamage
           enemy.damage `shouldReturn` 0
-          roland.damage `shouldReturn` 2
+          roland.damage `shouldReturn` 1
 
         it "to a maximum of 5" . gameTest $ \self -> do
           withProp @"combat" 0 self

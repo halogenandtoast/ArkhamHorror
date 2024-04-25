@@ -1,15 +1,10 @@
-module Arkham.Treachery.Cards.DeadlyFate (
-  deadlyFate,
-  DeadlyFate (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.DeadlyFate (deadlyFate, DeadlyFate (..)) where
 
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -22,16 +17,16 @@ deadlyFate = treachery DeadlyFate Cards.deadlyFate
 
 instance RunMessage DeadlyFate where
   runMessage msg t@(DeadlyFate attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      push $ RevelationSkillTest iid source SkillWillpower (SkillTestDifficulty $ Fixed 3)
+    Revelation iid (isSource attrs -> True) -> do
+      push $ RevelationSkillTest iid (toSource attrs) #willpower (SkillTestDifficulty $ Fixed 3)
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
-      push $ DiscardUntilFirst iid source Deck.EncounterDeck $ BasicCardMatch $ CardWithType EnemyType
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      push $ DiscardUntilFirst iid (toSource attrs) Deck.EncounterDeck $ basic #enemy
       pure t
     RequestedEncounterCard source _ mcard | isSource attrs source -> do
       iid <- selectJust You
       case mcard of
-        Nothing -> push (InvestigatorAssignDamage iid source DamageAny 0 1)
+        Nothing -> push $ assignHorror iid source 1
         Just c -> do
           -- tricky, we must create an enemy that has been discaded, have it
           -- attack,  and then remove it

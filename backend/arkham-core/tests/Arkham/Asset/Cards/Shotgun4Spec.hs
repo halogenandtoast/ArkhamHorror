@@ -36,8 +36,8 @@ spec = describe "Shotgun (4)" $ do
         -- will pass by 0
         setup self enemy
         click "apply results"
-        -- 1 regular + 1 minimum
-        enemy.damage `shouldReturn` 2
+        -- 1 minimum
+        enemy.damage `shouldReturn` 1
 
       it "to a maximum of 5" . gameTest $ \self -> do
         withProp @"combat" 3 self
@@ -86,4 +86,4 @@ spec = describe "Shotgun (4)" $ do
           click "apply results"
           applyAllDamage
           enemy.damage `shouldReturn` 0
-          roland.damage `shouldReturn` 6
+          roland.damage `shouldReturn` 5

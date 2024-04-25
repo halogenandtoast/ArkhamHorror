@@ -278,7 +278,7 @@ instance RunMessage ThePallidMask where
               (InvestigatorTarget iid)
         _ -> pure ()
       pure s
-    ResolveChaosToken t Tablet iid -> do
+    ResolveChaosToken _ Tablet iid -> do
       player <- getPlayer iid
       if isEasyStandard attrs
         then do

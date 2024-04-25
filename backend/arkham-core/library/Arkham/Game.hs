@@ -140,7 +140,6 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.WakingNightmare.InfestationBag
 import Arkham.Skill.Types (Field (..), Skill, SkillAttrs (..))
 import Arkham.SkillTest.Runner
-import Arkham.SkillType
 import Arkham.Source
 import Arkham.Story
 import Arkham.Story.Cards qualified as Stories
@@ -934,13 +933,10 @@ getInvestigatorsMatching matcher = do
       case mSkillTest of
         Nothing -> pure False
         Just st -> do
+          skillIcons <- getSkillTestMatchingSkillIcons
           let
             cards = findWithDefault [] (toId i) $ skillTestCommittedCards st
-          skillTestCount <-
-            length
-              <$> concatMapM
-                (fmap (map CommittedSkillIcon) . iconsForCard)
-                cards
+          skillTestCount <- count (`elem` skillIcons) <$> concatMapM iconsForCard cards
           gameValueMatches skillTestCount valueMatcher
     HealableInvestigator _source damageType matcher' -> \i -> do
       mods <- getActiveInvestigatorModifiers

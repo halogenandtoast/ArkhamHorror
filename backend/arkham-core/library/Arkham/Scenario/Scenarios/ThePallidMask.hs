@@ -259,57 +259,55 @@ instance RunMessage ThePallidMask where
           | catacomb <- catacombs
           ]
       pure s
-    ResolveChaosToken t token iid -> do
-      player <- getPlayer iid
-      s <$ case token of
-        Cultist -> do
-          mAction <- getSkillTestAction
-          case mAction of
-            Just Action.Fight ->
-              push
-                $ CreateWindowModifierEffect
-                  EffectSkillTestWindow
-                  ( EffectModifiers
-                      $ toModifiers
-                        attrs
-                        [ if isEasyStandard attrs
-                            then DamageDealt (-1)
-                            else NoDamageDealt
-                        ]
-                  )
-                  (ChaosTokenSource t)
-                  (InvestigatorTarget iid)
-            _ -> pure ()
-        Tablet -> do
-          if isEasyStandard attrs
-            then do
-              enemies <-
-                select
-                  (ReadyEnemy <> EnemyOneOf (map EnemyWithTrait [Ghoul, Geist]))
-              unless (null enemies)
-                $ push
-                $ chooseOne
-                  player
-                  [ targetLabel enemy [InitiateEnemyAttack $ enemyAttack enemy attrs iid]
-                  | enemy <- enemies
-                  ]
-            else do
-              enemies <-
-                select
-                  (ReadyEnemy <> EnemyOneOf (map EnemyWithTrait [Ghoul, Geist]))
-              unless (null enemies)
-                $ push
-                $ chooseOne
-                  player
-                  [ targetLabel
-                    enemy
-                    [ Ready (EnemyTarget enemy)
-                    , InitiateEnemyAttack $ enemyAttack enemy attrs iid
+    ResolveChaosToken t Cultist iid -> do
+      mAction <- getSkillTestAction
+      case mAction of
+        Just Action.Fight ->
+          push
+            $ CreateWindowModifierEffect
+              EffectSkillTestWindow
+              ( EffectModifiers
+                  $ toModifiers
+                    attrs
+                    [ if isEasyStandard attrs
+                        then DamageDealt (-1)
+                        else NoDamageDealt
                     ]
-                  | enemy <- enemies
-                  ]
-          pure ()
+              )
+              (ChaosTokenSource t)
+              (InvestigatorTarget iid)
         _ -> pure ()
+      pure s
+    ResolveChaosToken t Tablet iid -> do
+      player <- getPlayer iid
+      if isEasyStandard attrs
+        then do
+          enemies <-
+            select
+              (ReadyEnemy <> EnemyOneOf (map EnemyWithTrait [Ghoul, Geist]))
+          unless (null enemies)
+            $ push
+            $ chooseOne
+              player
+              [ targetLabel enemy [InitiateEnemyAttack $ enemyAttack enemy attrs iid]
+              | enemy <- enemies
+              ]
+        else do
+          enemies <-
+            select
+              (ReadyEnemy <> EnemyOneOf (map EnemyWithTrait [Ghoul, Geist]))
+          unless (null enemies)
+            $ push
+            $ chooseOne
+              player
+              [ targetLabel
+                enemy
+                [ Ready (EnemyTarget enemy)
+                , InitiateEnemyAttack $ enemyAttack enemy attrs iid
+                ]
+              | enemy <- enemies
+              ]
+      pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> case chaosTokenFace token of
       ElderThing -> do
         push

@@ -178,18 +178,19 @@ instance RunMessage TheWagesOfSin where
               & (actStackL . at 1 ?~ acts)
               & (encounterDecksL . at SpectralEncounterDeck ?~ (Deck spectralEncounterDeck, mempty))
           )
-    ResolveChaosToken _ tokenFace iid -> do
-      case tokenFace of
-        Skull | isHardExpert attrs -> push $ DrawAnotherChaosToken iid
-        Tablet -> do
-          heretics <- select $ EnemyWithTitle "Heretic"
-          for_ heretics $ \heretic -> do
-            push $ roundModifiers (ChaosTokenEffectSource Tablet) heretic [EnemyFight 1, EnemyEvade 1]
-        ElderThing | isHardExpert attrs -> do
-          mAction <- getSkillTestAction
-          when (maybe False (`elem` [Action.Fight, Action.Evade]) mAction) $ do
-            runHauntedAbilities iid
-        _ -> pure ()
+    ResolveChaosToken _ Skull iid -> do
+      pushWhen (isHardExpert attrs) $ DrawAnotherChaosToken iid
+      pure s
+    ResolveChaosToken _ Tablet _ -> do
+      heretics <- select $ EnemyWithTitle "Heretic"
+      for_ heretics $ \heretic -> do
+        push $ roundModifiers (ChaosTokenEffectSource Tablet) heretic [EnemyFight 1, EnemyEvade 1]
+      pure s
+    ResolveChaosToken _ ElderThing iid -> do
+      when (isHardExpert attrs) do
+        mAction <- getSkillTestAction
+        when (maybe False (`elem` [Action.Fight, Action.Evade]) mAction) $ do
+          runHauntedAbilities iid
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of

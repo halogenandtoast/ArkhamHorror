@@ -62,6 +62,7 @@ sourceTraits = \case
 
 getSourceController :: HasGame m => Source -> m (Maybe InvestigatorId)
 getSourceController = \case
+  AbilitySource s _ -> getSourceController s
   AssetSource aid -> selectAssetController aid
   EventSource eid -> selectEventController eid
   SkillSource sid -> selectSkillController sid

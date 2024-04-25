@@ -31,7 +31,7 @@ instance HasAbilities JoeyTheRatVigil where
         1
         ( ControlsThis
             <> PlayableCardExists
-              UnpaidCost
+              (UnpaidCost NoAction)
               (InHandOf You <> BasicCardMatch (CardWithTrait Item))
         )
         (FastAbility $ ResourceCost 1)
@@ -53,7 +53,7 @@ instance RunMessage JoeyTheRatVigil where
           ( getIsPlayable
               iid
               source
-              UnpaidCost
+              (UnpaidCost NoAction)
               windows''
           )
           items

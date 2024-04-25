@@ -54,7 +54,7 @@ getLukePlayable attrs windows' = do
     enemies <- select $ enemyAt lid
     withModifiers iid (toModifiers attrs $ AsIfAt lid : map AsIfEngagedWith enemies) $ do
       filter (`cardMatch` CardWithType EventType)
-        <$> getPlayableCards attrs UnpaidCost windows'
+        <$> getPlayableCards attrs (UnpaidCost NeedsAction) windows'
 
 instance RunMessage LukeRobinson where
   runMessage msg i@(LukeRobinson (attrs `With` meta)) = case msg of
@@ -89,14 +89,14 @@ instance RunMessage LukeRobinson where
           do
             lukePlayable <- concatMap snd <$> getLukePlayable attrs windows'
             actions <- getActions iid windows'
-            playableCards <- getPlayableCards attrs UnpaidCost windows'
+            playableCards <- getPlayableCards attrs (UnpaidCost NeedsAction) windows'
             runWindow attrs windows' actions (nub $ playableCards <> lukePlayable)
             pure i
     InitiatePlayCard iid card mtarget payment windows' asAction | iid == toId attrs && active meta -> do
       let a = attrs
       mods <- getModifiers (toTarget a)
       playable <- withModifiers iid (toModifiers attrs [IgnorePlayableModifierContexts]) $ do
-        getIsPlayable (toId a) (toSource a) UnpaidCost windows' card
+        getIsPlayable (toId a) (toSource a) (UnpaidCost NeedsAction) windows' card
       let
         shouldSkip = flip any mods $ \case
           AsIfInHand card' -> card == card'

@@ -51,7 +51,7 @@ instance HasAbilities BobJenkins where
       1
       ( Self
           <> PlayableCardExists
-            UnpaidCost
+            (UnpaidCost NoAction)
             (basic (#asset <> #item) <> InHandOf (affectsOthers $ InvestigatorAt YourLocation))
       )
       $ ActionAbility [] mempty
@@ -79,7 +79,7 @@ instance RunMessage BobJenkins where
           $ do
             withModifiers iid (toModifiers attrs $ map (PlayableCardOf iid') cards) $ do
               filter (`cardMatch` (CardWithType AssetType <> #item))
-                <$> getPlayableCards attrs UnpaidCost windows'
+                <$> getPlayableCards attrs (UnpaidCost NoAction) windows'
 
       chooseOne iid
         $ [ targetLabel (toCardId c) [HandleTargetChoice iid (attrs.ability 1) (CardIdTarget $ toCardId c)]

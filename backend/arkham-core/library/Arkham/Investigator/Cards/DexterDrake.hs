@@ -46,7 +46,7 @@ instance HasAbilities DexterDrake where
         $ DiscardAssetCost
         $ AssetWithDifferentTitleFromAtLeastOneCardInHand
           You
-          (PlayableCardWithCostReduction 1 #asset)
+          (PlayableCardWithCostReduction NoAction 1 #asset)
           AnyAsset
     ]
 
@@ -66,6 +66,7 @@ instance RunMessage DexterDrake where
         select
           $ ExtendedCardWithOneOf
             [ PlayableCardWithCostReduction
+                NoAction
                 1
                 ( InHandOf (InvestigatorWithId $ toId attrs)
                     <> BasicCardMatch (#asset <> NotCard (CardWithTitle $ toTitle card))

@@ -44,8 +44,8 @@ instance RunMessage UrsulaDowns where
       actions <- getActionsWith iid windows' decreaseCost
       handCards <- field InvestigatorHand iid
       let investigateCards = filter (elem #investigate . cdActions . toCardDef) handCards
-      playableCards <- withModifiers iid (toModifiers attrs [ActionCostOf IsAnyAction (-1)]) $ do
-        filterM (getIsPlayable iid (toSource attrs) UnpaidCost windows') investigateCards
+      playableCards <-
+        filterM (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) windows') investigateCards
       player <- getPlayer iid
       push
         $ AskPlayer

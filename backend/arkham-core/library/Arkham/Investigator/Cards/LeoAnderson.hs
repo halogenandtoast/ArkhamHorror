@@ -49,7 +49,13 @@ instance RunMessage LeoAnderson where
       resources <- getSpendableResources iid
       cards <-
         filterM
-          (getIsPlayableWithResources iid GameSource (resources + 1) UnpaidCost [duringTurnWindow iid])
+          ( getIsPlayableWithResources
+              iid
+              GameSource
+              (resources + 1)
+              (UnpaidCost NoAction)
+              [duringTurnWindow iid]
+          )
           results
       let choose c = UseCardAbilityChoiceTarget iid (toSource attrs) 1 (CardTarget c) windows' payment
       player <- getPlayer iid

@@ -63,9 +63,9 @@ instance RunMessage TonyMorgan where
         map (over biplate (`decreaseActionCost` 1))
           . filter (any (`elem` [#fight, #engage]) . abilityActions)
           <$> getActions iid windows'
-      playableCards <- withModifiers attrs (toModifiers attrs [ActionCostModifier (-1), BountiesOnly]) $ do
+      playableCards <- withModifiers attrs (toModifiers attrs [BountiesOnly]) $ do
         filter (any (`elem` [#fight, #engage]) . cdActions . toCardDef)
-          <$> getPlayableCards attrs UnpaidCost windows'
+          <$> getPlayableCards attrs (UnpaidCost NoAction) windows'
 
       canPlay <- canDo (toId attrs) #play
       player <- getPlayer iid

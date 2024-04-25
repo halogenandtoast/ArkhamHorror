@@ -34,7 +34,7 @@ instance RunMessage UntimelyTransaction1 where
     HandleTargetChoice iid (isSource attrs -> True) (CardIdTarget cid) -> do
       card <- getCard cid
       otherInvestigators <- select $ affectsOthers $ colocatedWith iid <> not_ (InvestigatorWithId iid)
-      canAfford <- flip filterM otherInvestigators $ \other -> getIsPlayable other attrs UnpaidCost (defaultWindows other) card
+      canAfford <- flip filterM otherInvestigators $ \other -> getIsPlayable other attrs (UnpaidCost NoAction) (defaultWindows other) card
       unless (null canAfford) do
         for_ canAfford \otherInvestigator -> do
           cardResolutionModifier (toCard attrs) attrs otherInvestigator (AsIfInHand card)

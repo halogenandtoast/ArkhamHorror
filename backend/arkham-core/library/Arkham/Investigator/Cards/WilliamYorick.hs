@@ -30,13 +30,13 @@ instance HasChaosTokenValue WilliamYorick where
 instance HasAbilities WilliamYorick where
   getAbilities (WilliamYorick attrs) =
     [ playerLimit PerRound
-        $ restrictedAbility attrs 1 (Self <> PlayableCardInDiscard (DiscardOf You) (CardWithType AssetType))
+        $ restrictedAbility attrs 1 (Self <> PlayableCardInDiscard (DiscardOf You) #asset)
         $ freeReaction (Matcher.EnemyDefeated #after You ByAny AnyEnemy)
     ]
 
 instance RunMessage WilliamYorick where
   runMessage msg i@(WilliamYorick attrs) = case msg of
-    UseCardAbility iid source 1 windows' _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 1 windows' _ -> do
       let
         windows'' = nub $ windows' <> [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
         targets = filter ((== AssetType) . toCardType) (investigatorDiscard attrs)
@@ -45,7 +45,8 @@ instance RunMessage WilliamYorick where
             <> if isFastCard c
               then [InitiatePlayCard iid c Nothing NoPayment windows'' False]
               else [PayCardCost iid c windows'']
-      playableTargets <- filterM (getIsPlayable iid source UnpaidCost windows'' . PlayerCard) targets
+      playableTargets <-
+        filterM (getIsPlayable iid (attrs.ability 1) (UnpaidCost NoAction) windows'' . PlayerCard) targets
       player <- getPlayer iid
       push
         $ chooseOne player

@@ -60,7 +60,7 @@ instance HasModifiersFor Marksmanship1 where
                       getIsPlayable
                         iid
                         (InvestigatorSource iid)
-                        UnpaidCost
+                        (UnpaidCost NeedsAction)
                         [mkWindow Timing.When DoNotCheckWindow]
                         (toCard a)
                     pure

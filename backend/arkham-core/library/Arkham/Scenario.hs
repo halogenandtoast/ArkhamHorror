@@ -375,7 +375,7 @@ instance RunMessage Scenario where
                 investigator
                 source
                 (resources + 2)
-                UnpaidCost
+                (UnpaidCost NoAction)
                 [duringTurnWindow investigator]
             )
             results

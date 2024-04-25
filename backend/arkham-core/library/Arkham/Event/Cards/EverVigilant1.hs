@@ -36,7 +36,7 @@ instance RunMessage EverVigilant1 where
     ResolveEvent iid eid _mtarget windows' | eid == toId attrs -> do
       let windows'' = nub $ windows' <> [mkWhen (DuringTurn iid), mkWhen NonFast]
       cards <- fieldMap InvestigatorHand (filter (`cardMatch` CardWithType AssetType)) iid
-      playableCards <- filterM (getIsPlayable iid GameSource UnpaidCost windows'') cards
+      playableCards <- filterM (getIsPlayable iid GameSource (UnpaidCost NoAction) windows'') cards
       player <- getPlayer iid
       pushWhen (notNull playableCards)
         $ chooseUpToN

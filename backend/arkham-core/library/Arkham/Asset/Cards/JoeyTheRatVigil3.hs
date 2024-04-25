@@ -29,7 +29,7 @@ instance HasAbilities JoeyTheRatVigil3 where
     [ controlledAbility
         x
         1
-        (PlayableCardExists UnpaidCost (InHandOf You <> #item))
+        (PlayableCardExists (UnpaidCost NoAction) (InHandOf You <> #item))
         (FastAbility $ ResourceCost 1)
     , restrictedAbility x 2 (ControlsThis <> can.gain.resources You)
         $ FastAbility
@@ -42,7 +42,7 @@ instance RunMessage JoeyTheRatVigil3 where
       handCards <- field InvestigatorHand iid
       let items = filter (member Item . toTraits) handCards
       let windows'' = nub $ windows' <> [mkWhen (DuringTurn iid), mkWhen FastPlayerWindow]
-      playableItems <- filterM (getIsPlayable iid source UnpaidCost windows'') items
+      playableItems <- filterM (getIsPlayable iid source (UnpaidCost NoAction) windows'') items
       player <- getPlayer iid
       push
         $ chooseOne

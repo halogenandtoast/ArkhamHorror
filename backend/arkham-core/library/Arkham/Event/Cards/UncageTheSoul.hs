@@ -33,7 +33,7 @@ instance RunMessage UncageTheSoul where
       results <- select $ inHandOf iid <> basic (oneOf [CardWithTrait Spell, CardWithTrait Ritual])
       cards <-
         filterM
-          (getIsPlayableWithResources iid GameSource (availableResources + 3) UnpaidCost windows'')
+          (getIsPlayableWithResources iid GameSource (availableResources + 3) (UnpaidCost NoAction) windows'')
           results
       player <- getPlayer iid
       pushAll

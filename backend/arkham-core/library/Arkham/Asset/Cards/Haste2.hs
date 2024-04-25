@@ -52,8 +52,9 @@ instance RunMessage Haste2 where
       actions <- withModifiers iid (toModifiers attrs [ActionCostModifier (-1)]) $ do
         getActions iid (defaultWindows iid)
 
-      playableCards <- withModifiers iid (toModifiers attrs [ActionCostOf IsAnyAction (-1)]) $ do
-        filter (`cardMatch` NotCard FastCard) <$> getPlayableCards a' UnpaidCost (defaultWindows iid)
+      playableCards <-
+        filter (`cardMatch` NotCard FastCard)
+          <$> getPlayableCards a' (UnpaidCost NoAction) (defaultWindows iid)
 
       canAffordTakeResources <- withModifiers iid (toModifiers attrs [ActionCostOf IsAnyAction (-1)]) $ do
         getCanAfford a' [#resource]

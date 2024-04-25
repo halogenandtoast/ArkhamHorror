@@ -53,7 +53,7 @@ instance RunMessage Montmartre209Effect where
           ( getIsPlayable
               iid
               source
-              UnpaidCost
+              (UnpaidCost NoAction)
               [mkWhen (Window.DuringTurn iid)]
           )
           =<< select (TopOfDeckOf UneliminatedInvestigator)

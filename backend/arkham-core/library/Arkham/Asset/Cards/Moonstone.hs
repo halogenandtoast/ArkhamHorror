@@ -29,7 +29,7 @@ instance HasAbilities Moonstone where
     [ restrictedAbility x 1 InYourDiscard
         $ freeReaction
           ( Discarded #after You AnySource
-              $ PlayableCardWithCriteria (CriteriaOverride NoRestriction)
+              $ PlayableCardWithCriteria NeedsAction (CriteriaOverride NoRestriction)
               $ basic
               $ CardWithId
               $ toCardId x

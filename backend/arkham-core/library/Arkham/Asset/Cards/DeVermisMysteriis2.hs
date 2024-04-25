@@ -29,7 +29,7 @@ instance HasAbilities DeVermisMysteriis2 where
 
 cardMatcher :: InvestigatorMatcher -> ExtendedCardMatcher
 cardMatcher who =
-  PlayableCardWithCostReduction 1
+  PlayableCardWithCostReduction NoAction 1
     $ InDiscardOf who
     <> BasicCardMatch (#event <> CardWithOneOf [CardWithTrait Spell, CardWithTrait Insight])
 

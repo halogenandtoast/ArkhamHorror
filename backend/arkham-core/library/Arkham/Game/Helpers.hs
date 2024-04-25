@@ -979,7 +979,11 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
               pure [m | AdditionalCostToResign m <- mods]
         else pure []
 
-    actionCost <- getActionCost attrs (cdActions pcDef)
+    actionCost <-
+      getActionCost attrs (cdActions pcDef) >>= case costStatus of
+        PaidCost -> pure . max 0 . subtract 1
+        UnpaidCost NoAction -> pure . max 0 . subtract 1
+        UnpaidCost NeedsAction -> pure
 
     -- Warning: We check if the source is GameSource, this affects the
     -- PlayableCardWithCostReduction matcher currently only used by Dexter
@@ -988,7 +992,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       allM
         (getCanAffordCost iid (CardSource c) [] windows')
         $ [ ActionCost actionCost
-          | costStatus /= PaidCost && actionCost > 0 && source /= GameSource && not inFastWindow
+          | actionCost > 0 && source /= GameSource && not inFastWindow
           ]
         <> additionalCosts
         <> investigateCosts
@@ -1321,7 +1325,13 @@ passesCriteria iid mcard source' windows' = \case
     results <- select cardMatcher
     -- GameSource is important because it allows us to skip the action cost
     anyM
-      (getIsPlayableWithResources iid GameSource (availableResources + n) UnpaidCost updatedWindows)
+      ( getIsPlayableWithResources
+          iid
+          GameSource
+          (availableResources + n)
+          (UnpaidCost NoAction)
+          updatedWindows
+      )
       results
   Criteria.PlayableCardExists costStatus cardMatcher -> do
     mTurnInvestigator <- selectOne Matcher.TurnInvestigator
@@ -1351,7 +1361,7 @@ passesCriteria iid mcard source' windows' = \case
     discards <-
       filter (`cardMatch` cardMatcher)
         <$> concatMapM (field InvestigatorDiscard) investigatorIds
-    anyM (getIsPlayable iid source UnpaidCost windows'' . PlayerCard) discards
+    anyM (getIsPlayable iid source (UnpaidCost NoAction) windows'' . PlayerCard) discards
   Criteria.FirstAction -> fieldP InvestigatorActionsTaken null iid
   Criteria.NoRestriction -> pure True
   Criteria.OnLocation locationMatcher -> do
@@ -1376,7 +1386,7 @@ passesCriteria iid mcard source' windows' = \case
           filter (any (`elem` traitsToMatch) . toTraits) discards
     pure $ notNull filteredDiscards
   Criteria.CanAffordCostIncrease n -> case mcard of
-    Just (card, UnpaidCost) -> do
+    Just (card, UnpaidCost _) -> do
       cost <- getModifiedCardCost iid card
       resources <- getSpendableResources iid
       pure $ resources >= cost + n
@@ -2114,7 +2124,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
       -- TODO: do we need to grab the card source?
       -- cards <- filter (/= c) <$> getList cardMatcher
       cards <- select cardMatcher
-      anyM (getIsPlayable iid source UnpaidCost [window']) cards
+      anyM (getIsPlayable iid source (UnpaidCost NoAction) [window']) cards
     Matcher.PhaseBegins timing phaseMatcher -> guardTiming timing $ \case
       Window.AnyPhaseBegins -> pure $ phaseMatcher == Matcher.AnyPhase
       Window.PhaseBegins p -> matchPhase p phaseMatcher
@@ -2444,7 +2454,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
         Window.EnemyDefeated (Just who) defeatedBy enemyId ->
           andM
             [ enemyMatches enemyId enemyMatcher
-            , matchWho iid who whoMatcher
+            , matchWho iid who (Matcher.replaceYouMatcher iid whoMatcher)
             , defeatedByMatches defeatedBy defeatedByMatcher
             ]
         Window.EnemyDefeated Nothing defeatedBy enemyId | whoMatcher == Matcher.You -> do
@@ -3077,9 +3087,9 @@ actionMatches iid a Matcher.RepeatableAction = do
   actions <- withModifiers iid (toModifiers GameSource [ActionCostModifier (-1)]) $ do
     getActions iid (defaultWindows iid)
 
-  playableCards <- withModifiers iid (toModifiers GameSource [ActionCostOf IsAnyAction (-1)]) $ do
+  playableCards <-
     filter (`cardMatch` Matcher.NotCard Matcher.FastCard)
-      <$> getPlayableCards a' UnpaidCost (defaultWindows iid)
+      <$> getPlayableCards a' (UnpaidCost NoAction) (defaultWindows iid)
 
   canAffordTakeResources <- withModifiers iid (toModifiers GameSource [ActionCostOf IsAnyAction (-1)]) $ do
     getCanAfford a' [#resource]

@@ -29,7 +29,7 @@ instance RunMessage GearedUp where
     DoStep _ msg'@(UseThisAbility iid (isSource attrs -> True) 1) -> do
       cards <-
         select
-          $ PlayableCardWithCostReduction 1 (basic $ #asset <> #item)
+          $ PlayableCardWithCostReduction NoAction 1 (basic $ #asset <> #item)
           <> inHandOf iid
       when (notNull cards) do
         chooseOne iid $ Label "Done Playing Items" []

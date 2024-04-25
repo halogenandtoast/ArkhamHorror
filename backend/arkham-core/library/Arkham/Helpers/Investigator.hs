@@ -56,13 +56,16 @@ skillValueFor skill maction tempModifiers iid = go 2 skill
   go 0 _ = error "possible skillValueFor infinite loop"
   go depth s = do
     base <- baseSkillValueFor s maction tempModifiers iid
-    foldrM applyModifier base tempModifiers
+    base' <- foldrM applyBaseModifier base tempModifiers
+    foldrM applyModifier base' tempModifiers
    where
     canBeIncreased = SkillCannotBeIncreased skill `notElem` tempModifiers
     matchingSkills = s : mapMaybe maybeAdditionalSkill tempModifiers -- must be the skill we are looking at
     maybeAdditionalSkill = \case
       SkillModifiersAffectOtherSkill s' t | t == skill -> Just s'
       _ -> Nothing
+    applyBaseModifier DoubleBaseSkillValue n | canBeIncreased = pure (n * 2)
+    applyBaseModifier _ n = pure n
     applyModifier (AddSkillValue sv) n | canBeIncreased = do
       m <- getSkillValue sv iid
       pure $ max 0 (n + m)

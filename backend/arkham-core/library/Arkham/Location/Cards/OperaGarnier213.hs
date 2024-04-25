@@ -21,15 +21,13 @@ operaGarnier213 =
   location OperaGarnier213 Cards.operaGarnier213 6 (PerPlayer 1)
 
 instance HasModifiersFor OperaGarnier213 where
-  getModifiersFor (InvestigatorTarget _) (OperaGarnier213 attrs) =
-    do
-      mtarget <- getSkillTestTarget
-      mAction <- getSkillTestAction
-      case (mAction, mtarget) of
-        (Just Action.Investigate, Just target)
-          | isTarget attrs target ->
-              pure $ toModifiers attrs [DoubleBaseSkillValue]
-        _ -> pure []
+  getModifiersFor (InvestigatorTarget _) (OperaGarnier213 attrs) = do
+    mtarget <- getSkillTestTarget
+    mAction <- getSkillTestAction
+    case (mAction, mtarget) of
+      (Just Action.Investigate, Just target) | isTarget attrs target -> do
+        pure $ toModifiers attrs [DoubleBaseSkillValue]
+      _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage OperaGarnier213 where

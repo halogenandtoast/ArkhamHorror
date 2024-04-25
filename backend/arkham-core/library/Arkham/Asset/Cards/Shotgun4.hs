@@ -21,13 +21,13 @@ instance RunMessage Shotgun4 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       chooseFight <- toMessage <$> mkChooseFight iid source
-      pushAll [skillTestModifiers source iid [SkillModifier #combat 3, NoStandardDamage], chooseFight]
+      pushAll [skillTestModifiers source iid [SkillModifier #combat 3], chooseFight]
       pure a
     FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       let val = max 1 (min 5 n)
       push $ skillTestModifier (attrs.ability 1) iid (DamageDealtToInvestigator val)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
-      push $ skillTestModifier (attrs.ability 1) iid (DamageDealt $ max 1 (min 5 n))
+      push $ skillTestModifiers (attrs.ability 1) iid [NoStandardDamage, DamageDealt $ max 1 (min 5 n)]
       pure a
     _ -> Shotgun4 <$> runMessage msg attrs

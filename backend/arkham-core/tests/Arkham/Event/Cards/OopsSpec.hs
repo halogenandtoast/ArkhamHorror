@@ -82,7 +82,7 @@ spec = describe "Oops!" $ do
     fieldAssert EnemyDamage (== 0) enemy
     fieldAssert EnemyDamage (== 1) enemy2
 
-  it "[FAQ] shotgun only deals 1 damage" $ gameTest $ \investigator -> do
+  it "[FAQ] shotgun only deals 1 damage" . gameTest $ \investigator -> do
     updateInvestigator investigator
       $ (Investigator.combatL .~ 1)
       . (Investigator.tokensL %~ setTokens Resource 2)

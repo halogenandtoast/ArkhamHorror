@@ -33,7 +33,7 @@ instance HasAbilities Farsight4 where
             <> InvestigatorExists
               (You <> HandWith (LengthIs $ AtLeast $ Static 8))
             <> PlayableCardExists
-              UnpaidCost
+              (UnpaidCost NoAction)
               (InHandOf You <> BasicCardMatch (CardWithType EventType))
         )
         $ FastAbility
@@ -54,7 +54,7 @@ instance RunMessage Farsight4 where
                ]
       playableEvents <-
         filterM
-          (getIsPlayable iid (toSource attrs) UnpaidCost windows'')
+          (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) windows'')
           events
       player <- getPlayer iid
       push

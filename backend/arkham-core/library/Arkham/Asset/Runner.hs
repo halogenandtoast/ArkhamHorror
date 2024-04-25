@@ -130,7 +130,7 @@ instance RunMessage AssetAttrs where
             CheckDefeated _ target -> target == sourceToTarget source
             _ -> False
           \case
-            msg@(CheckDefeated s _) -> [msg, CheckDefeated s (toTarget a)]
+            msg'@(CheckDefeated s _) -> [msg', CheckDefeated s (toTarget a)]
             _ -> error "Invalid match"
 
       pure $ a & assignedSanityDamageL +~ n

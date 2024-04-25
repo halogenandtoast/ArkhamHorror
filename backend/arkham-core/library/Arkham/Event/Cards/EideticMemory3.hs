@@ -30,7 +30,8 @@ instance RunMessage EideticMemory3 where
       discards <- map PlayerCard <$> selectAgg id InvestigatorDiscard UneliminatedInvestigator
       let candidates = filter (`cardMatch` (CardWithTrait Insight <> Matcher.EventCard)) discards
       let playableWindows = if null windows' then [mkWhen (DuringTurn iid)] else windows'
-      playableCards <- filterM (getIsPlayable iid (toSource attrs) UnpaidCost playableWindows) candidates
+      playableCards <-
+        filterM (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) playableWindows) candidates
       canAffectOthers <- can.affect.otherPlayers iid
       push
         $ InitiatePlayCardAsChoose

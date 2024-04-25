@@ -6,7 +6,6 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Game.Helpers (getActionsWith, getIsPlayable)
-import Arkham.Helpers.Modifiers (withModifiers)
 import Arkham.Helpers.Query (getPlayer)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -28,10 +27,10 @@ instance HasAbilities EonChart1 where
         attrs
         1
         ( oneOf
-            [ exists
-                $ oneOf (map AbilityIsAction [#move, #investigate, #evade])
-                <> PerformableAbility [ActionCostModifier (-1)]
-            , PlayableCardExists UnpaidCost (basic $ oneOf $ map CardWithAction [#move, #investigate, #evade])
+            [ exists $ oneOf [#move, #investigate, #evade] <> PerformableAbility [ActionCostModifier (-1)]
+            , PlayableCardExists
+                (UnpaidCost NoAction)
+                (basic $ oneOf $ map CardWithAction [#move, #investigate, #evade])
             ]
         )
         $ FastAbility (exhaust attrs <> assetUseCost attrs Secret 1)
@@ -46,8 +45,7 @@ instance RunMessage EonChart1 where
       actions <- getActionsWith iid windows' decreaseCost
       handCards <- field InvestigatorHand iid
       let cards = filter (any (`elem` canDoActions) . cdActions . toCardDef) handCards
-      playableCards <- withModifiers iid (toModifiers attrs [ActionCostOf IsAnyAction (-1)]) $ do
-        filterM (getIsPlayable iid (toSource attrs) UnpaidCost windows') cards
+      playableCards <- filterM (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) windows') cards
       player <- getPlayer iid
       push
         $ AskPlayer

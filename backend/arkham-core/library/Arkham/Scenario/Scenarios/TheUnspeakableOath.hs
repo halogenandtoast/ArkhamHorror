@@ -281,30 +281,27 @@ instance RunMessage TheUnspeakableOath where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )
-    ResolveChaosToken _ chaosTokenFace iid -> case chaosTokenFace of
-      Skull -> s <$ when (isHardExpert attrs) (push $ DrawAnotherChaosToken iid)
-      ElderThing -> do
-        player <- getPlayer iid
-        monsters <-
-          getSetAsideCardsMatching
-            (CardWithType EnemyType <> CardWithTrait Monster)
-        case monsters of
-          [] -> s <$ push FailSkillTest
-          (x : xs) -> do
-            monster <- sample (x :| xs)
-            s
-              <$ push
-                ( chooseOne
-                    player
-                    [ Label
-                        "Randomly choose an enemy from among the set-aside Monster enemies and place it beneath the act deck without looking at it"
-                        [PlaceUnderneath ActDeckTarget [monster]]
-                    , Label "This test automatically fails" [FailSkillTest]
-                    ]
-                )
-      _ -> TheUnspeakableOath <$> runMessage msg attrs
+    ResolveChaosToken _ Skull iid -> do
+      pushWhen (isHardExpert attrs) (DrawAnotherChaosToken iid)
+      pure s
+    ResolveChaosToken _ ElderThing iid -> do
+      player <- getPlayer iid
+      monsters <- getSetAsideCardsMatching (CardWithType EnemyType <> CardWithTrait Monster)
+      case monsters of
+        [] -> push FailSkillTest
+        (x : xs) -> do
+          monster <- sample (x :| xs)
+          push
+            $ chooseOne
+              player
+              [ Label
+                  "Randomly choose an enemy from among the set-aside Monster enemies and place it beneath the act deck without looking at it"
+                  [PlaceUnderneath ActDeckTarget [monster]]
+              , Label "This test automatically fails" [FailSkillTest]
+              ]
+      pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
-      case chaosTokenFace token of
+      case token.face of
         Skull -> do
           monsters <-
             getSetAsideCardsMatching
@@ -314,15 +311,14 @@ instance RunMessage TheUnspeakableOath where
             (x : xs) -> do
               monster <- sample (x :| xs)
               push (PlaceUnderneath ActDeckTarget [monster])
-        Cultist ->
-          push
-            $ InvestigatorAssignDamage iid (ChaosTokenSource token) DamageAny 0 1
-        Tablet ->
+        Cultist | isHardExpert attrs -> do
+          push $ InvestigatorAssignDamage iid (ChaosTokenSource token) DamageAny 0 1
+        Tablet | isHardExpert attrs -> do
           push $ InvestigatorAssignDamage iid (ChaosTokenSource token) DamageAny 0 1
         _ -> pure ()
       pure s
     ScenarioResolution NoResolution -> do
-      push (ScenarioResolution $ Resolution 1)
+      push R1
       pure . TheUnspeakableOath $ attrs & inResolutionL .~ True
     ScenarioResolution (Resolution n) -> do
       msgs <- investigatorDefeat

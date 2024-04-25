@@ -3494,7 +3494,7 @@ instance Query ExtendedCardMatcher where
       VictoryDisplayCardMatch matcher' -> do
         cards <- scenarioField ScenarioVictoryDisplay
         pure $ c `elem` filter (`cardMatch` matcher') cards
-      PlayableCardWithCostReduction n matcher' -> do
+      PlayableCardWithCostReduction actionStatus n matcher' -> do
         mTurnInvestigator <- selectOne TurnInvestigator
         case mTurnInvestigator of
           Nothing -> pure False
@@ -3504,7 +3504,13 @@ instance Query ExtendedCardMatcher where
             availableResources <- getSpendableResources iid
             playable <-
               filterM
-                (getIsPlayableWithResources iid GameSource (availableResources + n) Cost.UnpaidCost windows')
+                ( getIsPlayableWithResources
+                    iid
+                    GameSource
+                    (availableResources + n)
+                    (Cost.UnpaidCost actionStatus)
+                    windows'
+                )
                 results
             pure $ c `elem` playable
       PlayableCard costStatus matcher' -> do
@@ -3516,7 +3522,7 @@ instance Query ExtendedCardMatcher where
             results <- select matcher'
             playable <- filterM (getIsPlayable iid GameSource costStatus windows') results
             pure $ c `elem` playable
-      PlayableCardWithCriteria override matcher' -> do
+      PlayableCardWithCriteria actionStatus override matcher' -> do
         mTurnInvestigator <- selectOne TurnInvestigator
         activeInvestigator <- selectJust ActiveInvestigator
         let iid = fromMaybe activeInvestigator mTurnInvestigator
@@ -3528,7 +3534,7 @@ instance Query ExtendedCardMatcher where
                 (CardIdTarget $ toCardId r)
                 [toModifier GameSource $ CanPlayWithOverride override]
                 $ do
-                  getIsPlayable iid GameSource UnpaidCost windows' r
+                  getIsPlayable iid GameSource (UnpaidCost actionStatus) windows' r
             )
             results
         pure $ c `elem` playable

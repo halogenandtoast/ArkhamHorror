@@ -32,13 +32,12 @@ putApiV1ArkhamGameUndoR gameId = do
   mstep <- runDB $ getBy (UniqueStep gameId arkhamGameStep)
 
   case mstep of
-    Nothing -> pure ()
+    Nothing -> error "Missing step"
     Just (Entity stepId step) -> do
       -- never delete the initial step as it can not be redone
       -- NOTE: actually we never want to step back if the patchOperations are empty, the first condition is therefor redundant
-      when
-        (arkhamStepStep step > 0 && not (null $ patchOperations $ choicePatchDown $ arkhamStepChoice step))
-        $ do
+      if (arkhamStepStep step > 0 && not (null $ patchOperations $ choicePatchDown $ arkhamStepChoice step))
+        then do
           writeChannel <- getChannel gameId
 
           case patch arkhamGameCurrentData (choicePatchDown $ arkhamStepChoice step) of
@@ -46,7 +45,9 @@ putApiV1ArkhamGameUndoR gameId = do
             Success ge -> do
               -- TODO: We need to add back the gameActionDiff
               gameLog <- fmap (fmap unValue)
-                . runDB $ select $ do
+                . runDB
+                $ select
+                $ do
                   entries <- from $ table @ArkhamLogEntry
                   where_ $ entries.arkhamGameId ==. val gameId
                   where_ $ entries.step <. val (arkhamGameStep - 1)
@@ -81,3 +82,4 @@ putApiV1ArkhamGameUndoR gameId = do
                               (view activeInvestigatorIdL ge)
                         }
                   WithFriends -> pure ()
+        else error "Can't undo"

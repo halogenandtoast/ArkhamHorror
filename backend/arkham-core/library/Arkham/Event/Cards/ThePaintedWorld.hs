@@ -34,7 +34,7 @@ instance RunMessage ThePaintedWorld where
         playableWindows = nub $ mkWindow Timing.When (DuringTurn iid) : windows'
       playableCards <-
         filterM
-          (getIsPlayable iid (toSource attrs) UnpaidCost playableWindows)
+          (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) playableWindows)
           candidates
       push
         $ InitiatePlayCardAsChoose

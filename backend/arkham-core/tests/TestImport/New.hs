@@ -174,7 +174,7 @@ instance HasField "engagedEnemies" Investigator (TestAppT [EnemyId]) where
   getField self = select $ Matcher.enemyEngagedWith $ toId self
 
 instance HasField "playableCards" Investigator (TestAppT [Card]) where
-  getField self = getPlayableCards (toAttrs self) UnpaidCost (defaultWindows $ toId self)
+  getField self = getPlayableCards (toAttrs self) (UnpaidCost NoAction) (defaultWindows $ toId self)
 
 instance HasField "arcaneSlots" Investigator (TestAppT [Slot]) where
   getField = fieldMap InvestigatorSlots (findWithDefault [] #arcane) . toId

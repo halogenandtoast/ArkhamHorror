@@ -2059,7 +2059,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (unhealedHorrorThisRoundL .~ 0)
   Begin InvestigationPhase -> do
     pure $ a & endedTurnL .~ False
-  BeginTurn iid | iid == investigatorId -> do
+  Again (Begin InvestigationPhase) -> do
     actionsForTurn <- getAbilitiesForTurn a
     pure
       $ a
@@ -2461,7 +2461,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     | iid == toId a
     , not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows -> do
         actions <- getActions iid windows
-        playableCards <- getPlayableCards a UnpaidCost windows
+        playableCards <- getPlayableCards a (UnpaidCost NeedsAction) windows
         runWindow a windows actions playableCards
         pure a
   SpendActions iid _ _ 0 | iid == investigatorId -> do
@@ -2862,7 +2862,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             DrawOrPlayFound who n -> do
               let windows' = [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
               playableCards <- concatForM (mapToList targetCards) $ \(_, cards) ->
-                filterM (getIsPlayable who source UnpaidCost windows') cards
+                filterM (getIsPlayable who source (UnpaidCost NoAction) windows') cards
               let
                 choices =
                   [ targetLabel
@@ -2944,7 +2944,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             PlayFound who n -> do
               let windows' = [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
               playableCards <- for (mapToList targetCards) $ \(zone, cards) -> do
-                cards' <- filterM (getIsPlayable who source UnpaidCost windows') cards
+                cards' <- filterM (getIsPlayable who source (UnpaidCost NoAction) windows') cards
                 pure (zone, cards')
               let
                 choices =
@@ -3152,7 +3152,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   [UseEffectAction iid effectId windows]
             _ -> Nothing
 
-        playableCards <- getPlayableCards a UnpaidCost windows
+        playableCards <- getPlayableCards a (UnpaidCost NeedsAction) windows
         drawing <- drawCardsF iid a 1
 
         canDraw <- canDo iid #draw
@@ -3188,7 +3188,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     actions <- getActions investigatorId windows
     anyForced <- anyM (isForcedAbility investigatorId) actions
     unless anyForced $ do
-      playableCards <- getPlayableCards a UnpaidCost windows
+      playableCards <- getPlayableCards a (UnpaidCost NeedsAction) windows
       let
         usesAction = not isAdditional
         choices =

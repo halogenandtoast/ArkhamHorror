@@ -661,9 +661,9 @@ data ExtendedCardMatcher
   | HandCardWithDifferentTitleFromAtLeastOneAsset InvestigatorMatcher AssetMatcher CardMatcher
   | ExtendedCardWithOneOf [ExtendedCardMatcher]
   | ExtendedCardMatches [ExtendedCardMatcher]
-  | PlayableCardWithCostReduction Int ExtendedCardMatcher
+  | PlayableCardWithCostReduction ActionStatus Int ExtendedCardMatcher
   | PlayableCard CostStatus ExtendedCardMatcher
-  | PlayableCardWithCriteria CriteriaOverride ExtendedCardMatcher
+  | PlayableCardWithCriteria ActionStatus CriteriaOverride ExtendedCardMatcher
   | CommittableCard InvestigatorId ExtendedCardMatcher
   | CardWithPerformableAbility AbilityMatcher [ModifierType]
   | CanCancelRevelationEffect ExtendedCardMatcher
@@ -1312,6 +1312,15 @@ data AbilityMatcher
   | TriggeredAbility
   | NotAbility AbilityMatcher
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "move" AbilityMatcher where
+  fromLabel = AbilityIsAction #move
+
+instance IsLabel "investigate" AbilityMatcher where
+  fromLabel = AbilityIsAction #investigate
+
+instance IsLabel "evade" AbilityMatcher where
+  fromLabel = AbilityIsAction #evade
 
 instance Not AbilityMatcher where
   not_ = NotAbility

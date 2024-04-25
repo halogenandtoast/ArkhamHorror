@@ -8,7 +8,6 @@ import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Game.Helpers (getIsPlayable)
-import Arkham.Helpers.Modifiers (withModifiers)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Modifier
@@ -31,7 +30,9 @@ instance HasAbilities EonChart4 where
             [ exists
                 $ PerformableAbility [ActionCostModifier (-1)]
                 <> oneOf (map AbilityIsAction [#move, #investigate, #evade])
-            , PlayableCardExists UnpaidCost (basic $ oneOf $ map CardWithAction [#move, #investigate, #evade])
+            , PlayableCardExists
+                (UnpaidCost NoAction)
+                (basic $ oneOf $ map CardWithAction [#move, #investigate, #evade])
             ]
         )
         $ FastAbility (exhaust attrs <> assetUseCost attrs Secret 1)
@@ -42,8 +43,7 @@ getAvailable iid attrs canDoActions = do
   let windows' = defaultWindows iid
   handCards <- field InvestigatorHand iid
   let cards = filter (any (`elem` canDoActions) . cdActions . toCardDef) handCards
-  playableCards <- withModifiers iid (toModifiers attrs [ActionCostOf IsAnyAction (-1)]) $ do
-    filterM (getIsPlayable iid (toSource attrs) UnpaidCost windows') cards
+  playableCards <- filterM (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) windows') cards
 
   abilities' <-
     select (PerformableAbility [ActionCostModifier (-1)] <> oneOf (map AbilityIsAction canDoActions))

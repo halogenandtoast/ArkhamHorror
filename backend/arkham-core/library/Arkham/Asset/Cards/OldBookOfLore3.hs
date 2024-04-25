@@ -74,7 +74,8 @@ instance RunMessage OldBookOfLore3 where
         when (hasUses attrs) $ do
           choices <- forMaybeM cards \card -> do
             spendableResources <- (+ 2) <$> getSpendableResources iid'
-            playable <- getIsPlayableWithResources iid' source spendableResources UnpaidCost windows' card
+            playable <-
+              getIsPlayableWithResources iid' source spendableResources (UnpaidCost NoAction) windows' card
             pure
               $ guard playable
               $> targetLabel

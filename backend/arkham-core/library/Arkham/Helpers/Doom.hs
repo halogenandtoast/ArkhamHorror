@@ -11,6 +11,7 @@ import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Investigator.Types
 import Arkham.Location.Types
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Target
 import Arkham.Treachery.Types
 
@@ -34,14 +35,34 @@ targetsWithDoom = do
     <> treacheries
 
 getDoomCount :: HasGame m => m Int
-getDoomCount =
-  getSum
-    . fold
-    <$> sequence
-      [ selectAgg Sum AssetDoom AnyAsset
-      , selectAgg Sum EnemyDoom AnyEnemy
-      , selectAgg Sum LocationDoom Anywhere
-      , selectAgg Sum TreacheryDoom AnyTreachery
-      , selectAgg Sum AgendaDoom AnyAgenda
-      , selectAgg Sum InvestigatorDoom UneliminatedInvestigator
-      ]
+getDoomCount = do
+  adds <-
+    getSum
+      . fold
+      <$> sequence
+        [ selectAgg Sum AssetDoom (AssetWithoutModifier DoomSubtracts)
+        , selectAgg Sum EnemyDoom (EnemyWithoutModifier DoomSubtracts)
+        , selectAgg Sum LocationDoom (LocationWithoutModifier DoomSubtracts)
+        , selectAgg Sum TreacheryDoom (TreacheryWithoutModifier DoomSubtracts)
+        , selectAgg Sum AgendaDoom (AgendaWithoutModifier DoomSubtracts)
+        , selectAgg
+            Sum
+            InvestigatorDoom
+            (UneliminatedInvestigator <> InvestigatorWithoutModifier DoomSubtracts)
+        ]
+
+  subtracts <-
+    getSum
+      . fold
+      <$> sequence
+        [ selectAgg Sum AssetDoom (AssetWithModifier DoomSubtracts)
+        , selectAgg Sum EnemyDoom (EnemyWithModifier DoomSubtracts)
+        , selectAgg Sum LocationDoom (LocationWithModifier DoomSubtracts)
+        , selectAgg Sum TreacheryDoom (TreacheryWithModifier DoomSubtracts)
+        , selectAgg Sum AgendaDoom (AgendaWithModifier DoomSubtracts)
+        , selectAgg
+            Sum
+            InvestigatorDoom
+            (UneliminatedInvestigator <> InvestigatorWithModifier DoomSubtracts)
+        ]
+  pure $ max 0 (adds - subtracts)

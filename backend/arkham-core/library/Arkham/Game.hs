@@ -1037,6 +1037,9 @@ getAgendasMatching matcher = do
     AgendaWithSide s ->
       pure . (== s) . AS.agendaSide . attr agendaSequence
     AgendaWithDeckId n -> pure . (== n) . attr agendaDeckId
+    AgendaWithModifier modifierType -> \a -> do
+      modifiers' <- getModifiers (toTarget a)
+      pure $ modifierType `elem` modifiers'
     AgendaCanWheelOfFortuneX -> pure . not . attr agendaUsedWheelOfFortuneX
     FinalAgenda -> \a -> do
       card <- field AgendaCard (toId a)
@@ -1113,6 +1116,9 @@ getTreacheriesMatching matcher = do
     TreacheryWithResolvedEffectsBy investigatorMatcher -> \t -> do
       iids <- select investigatorMatcher
       pure $ any (`elem` attr treacheryResolved t) iids
+    TreacheryWithModifier modifierType -> \t -> do
+      modifiers' <- getModifiers (toTarget t)
+      pure $ modifierType `elem` modifiers'
     TreacheryDiscardedBy investigatorMatcher -> \t -> do
       let discardee = fromMaybe (attr treacheryDrawnBy t) (attr treacheryDiscardedBy t)
       iids <- select investigatorMatcher
@@ -2994,6 +3000,7 @@ instance Projection Asset where
         OutOfPlay _ -> pure Nothing
         StillInHand _ -> pure Nothing
         StillInDiscard _ -> pure Nothing
+        StillInEncounterDiscard -> pure Nothing
         AsSwarm {} -> error "AssetLocation: AsSwarm"
       AssetCardCode -> pure assetCardCode
       AssetCardId -> pure assetCardId

@@ -417,6 +417,11 @@ pattern AgendaWithAnyDoom <- AgendaWithDoom (GreaterThan (Static 0))
   where
     AgendaWithAnyDoom = AgendaWithDoom (GreaterThan (Static 0))
 
+pattern AgendaWithoutModifier :: ModifierType -> AgendaMatcher
+pattern AgendaWithoutModifier m <- NotAgenda (AgendaWithModifier m)
+  where
+    AgendaWithoutModifier m = NotAgenda (AgendaWithModifier m)
+
 -- ** Treachery Patterns **
 
 pattern TreacheryWithAnyDoom :: TreacheryMatcher
@@ -424,6 +429,11 @@ pattern TreacheryWithAnyDoom <-
   TreacheryWithDoom (GreaterThan (Static 0))
   where
     TreacheryWithAnyDoom = TreacheryWithDoom (GreaterThan (Static 0))
+
+pattern TreacheryWithoutModifier :: ModifierType -> TreacheryMatcher
+pattern TreacheryWithoutModifier m <- NotTreachery (TreacheryWithModifier m)
+  where
+    TreacheryWithoutModifier m = NotTreachery (TreacheryWithModifier m)
 
 -- ** Window Patterns **
 

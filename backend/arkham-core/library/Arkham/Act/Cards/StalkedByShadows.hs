@@ -24,8 +24,9 @@ stalkedByShadows = act (2, A) StalkedByShadows Cards.stalkedByShadows Nothing
 
 instance HasAbilities StalkedByShadows where
   getAbilities (StalkedByShadows a) =
-    [ restrictedAbility a 1 NoRestriction
-        $ FastAbility (GroupClueCost (Static 1) Anywhere)
+    [ groupLimit PerRound
+        $ restrictedAbility a 1 NoRestriction
+        $ FastAbility (GroupClueCost (PerPlayer 1) Anywhere)
     ]
 
 instance RunMessage StalkedByShadows where

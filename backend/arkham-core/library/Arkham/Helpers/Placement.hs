@@ -21,6 +21,7 @@ placedInThreatArea = \case
   InThreatArea iid -> pure $ Just iid
   StillInHand _ -> pure Nothing
   StillInDiscard _ -> pure Nothing
+  StillInEncounterDiscard -> pure Nothing
   AttachedToEnemy eid -> fieldMapM EnemyPlacement placedInThreatArea eid
   AttachedToAsset aid _ -> fieldMapM AssetPlacement placedInThreatArea aid
   AttachedToAct _ -> pure Nothing

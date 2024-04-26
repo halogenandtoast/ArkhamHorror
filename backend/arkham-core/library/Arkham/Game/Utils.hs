@@ -148,6 +148,7 @@ getPlacementLocation = \case
   InThreatArea investigator -> field InvestigatorLocation investigator
   StillInHand _ -> pure Nothing
   StillInDiscard _ -> pure Nothing
+  StillInEncounterDiscard -> pure Nothing
   AttachedToEnemy enemy -> field EnemyLocation enemy
   AttachedToAsset asset _ -> field AssetLocation asset
   AttachedToAct _ -> pure Nothing

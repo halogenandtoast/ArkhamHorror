@@ -1683,13 +1683,16 @@ runGameMessage msg g = case msg of
     pure $ g & phaseL .~ EnemyPhase
   EnemyAttackFromDiscard iid source card -> do
     enemyId <- getRandom
-    let enemy = createEnemy card enemyId
-    push
-      $ EnemyWillAttack
-      $ (enemyAttack enemyId source iid)
-        { attackDamageStrategy = enemyDamageStrategy (toAttrs enemy)
-        }
-    pure $ g & encounterDiscardEntitiesL . enemiesL . at enemyId ?~ enemy
+    let enemy = overAttrs (\a -> a {enemyPlacement = StillInEncounterDiscard}) (createEnemy card enemyId)
+    pushAll
+      [ EnemyWillAttack
+          $ (enemyAttack enemyId source iid)
+            { attackDamageStrategy = enemyDamageStrategy (toAttrs enemy)
+            }
+      , RemoveEnemy enemyId
+      ]
+
+    pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
   EndEnemy -> do
     pushAll
       . (: [EndPhase, After EndPhase])
@@ -2532,6 +2535,7 @@ instance RunMessage Game where
           (inDiscardEntitiesL . itraversed)
           (\i -> runMessage (InDiscard i msg))
         >>= (inDiscardEntitiesL . itraversed) (runMessage msg)
+        >>= encounterDiscardEntitiesL (runMessage msg)
         >>= inSearchEntitiesL (runMessage (InSearch msg))
         >>= (outOfPlayEntitiesL . itraversed) (runMessage (InOutOfPlay msg))
         >>= (skillTestL . traverse) (runMessage msg)

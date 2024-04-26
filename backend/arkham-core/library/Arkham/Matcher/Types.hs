@@ -623,6 +623,7 @@ data TreacheryMatcher
   | TreacheryIsNonWeakness
   | TreacheryWithResolvedEffectsBy InvestigatorMatcher
   | TreacheryDiscardedBy InvestigatorMatcher
+  | TreacheryWithModifier ModifierType
   | AnyTreachery
   | InPlayTreachery
   | TreacheryOwnedBy InvestigatorMatcher
@@ -1362,6 +1363,7 @@ data AgendaMatcher
   | AgendaWithSequence AgendaSequence
   | AgendaWithSide AgendaSide
   | AgendaWithDeckId Int
+  | AgendaWithModifier ModifierType
   | NotAgenda AgendaMatcher
   | AgendaMatches [AgendaMatcher]
   | AgendaCanWheelOfFortuneX

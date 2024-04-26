@@ -1066,6 +1066,7 @@ onSameLocation iid = \case
   OutOfPlay _ -> pure False
   StillInHand _ -> pure False
   StillInDiscard _ -> pure False
+  StillInEncounterDiscard -> pure False
 
 passesCriteria
   :: (HasCallStack, HasGame m)

@@ -65,4 +65,5 @@ placementLocation = \case
   OutOfPlay _ -> pure Nothing
   StillInHand _ -> pure Nothing
   StillInDiscard _ -> pure Nothing
+  StillInEncounterDiscard -> pure Nothing
   AsSwarm eid _ -> field EnemyLocation eid

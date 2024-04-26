@@ -33,8 +33,6 @@ instance RunMessage TheFirstNight where
       pure a
     NextAdvanceAgendaStep aid 2 | aid == toId attrs && onSide B attrs -> do
       organistMsg <- moveOrganistAwayFromNearestInvestigator
-      pushAll
-        ( organistMsg : [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
-        )
+      pushAll $ organistMsg : [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
       pure a
     _ -> TheFirstNight <$> runMessage msg attrs

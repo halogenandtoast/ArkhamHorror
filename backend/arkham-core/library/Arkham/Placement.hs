@@ -17,6 +17,7 @@ data Placement
   | InThreatArea InvestigatorId
   | StillInHand InvestigatorId
   | StillInDiscard InvestigatorId
+  | StillInEncounterDiscard
   | AttachedToEnemy EnemyId
   | AttachedToAsset AssetId (Maybe Placement) -- Maybe Placement for Dr. Elli Horowitz
   | AttachedToAct ActId
@@ -47,6 +48,7 @@ placementToAttached = \case
   OutOfPlay _ -> Nothing
   StillInHand _ -> Nothing
   StillInDiscard _ -> Nothing
+  StillInEncounterDiscard -> Nothing
   AsSwarm _ _ -> Nothing
 
 isOutOfPlayPlacement :: Placement -> Bool
@@ -62,6 +64,7 @@ isInPlayPlacement = \case
   InThreatArea {} -> True
   StillInHand {} -> False
   StillInDiscard {} -> False
+  StillInEncounterDiscard -> False
   AttachedToEnemy {} -> True
   AttachedToAsset {} -> True
   AttachedToAct {} -> True

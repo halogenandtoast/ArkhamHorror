@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Deck
 import Arkham.Difficulty
-import Arkham.Distance
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
@@ -91,22 +90,12 @@ cultistEffect :: (HasGame m, HasQueue Message m) => m ()
 cultistEffect = do
   lead <- getLeadPlayer
   byakhee <- select $ EnemyWithTrait Byakhee <> UnengagedEnemy
-  byakheePairs <- forToSnd byakhee investigatorsNearestToEnemy
-  let
-    minDistance =
-      fromJustNote "error"
-        . minimumMay
-        $ map
-          (unDistance . fst . snd)
-          byakheePairs
-    hset =
-      concatMap (snd . snd)
-        $ filter ((== minDistance) . unDistance . fst . snd) byakheePairs
+  byakheePairs <- forToSnd byakhee (select . NearestToEnemy . EnemyWithId)
   push
     $ chooseOneAtATime
       lead
       [ targetLabel eid (moveTowardMessages lead eid hset)
-      | (eid, _) <- byakheePairs
+      | (eid, hset) <- byakheePairs
       ]
  where
   moveTowardMessages lead eid hset = case hset of

@@ -1,7 +1,4 @@
-module Arkham.Location.Cards.WellOfSouls (
-  wellOfSouls,
-  WellOfSouls (..),
-) where
+module Arkham.Location.Cards.WellOfSouls (wellOfSouls, WellOfSouls (..)) where
 
 import Arkham.Prelude
 
@@ -15,7 +12,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThePallidMask.Helpers
-import Arkham.Timing qualified as Timing
 
 newtype WellOfSouls = WellOfSouls LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -23,44 +19,26 @@ newtype WellOfSouls = WellOfSouls LocationAttrs
 
 wellOfSouls :: LocationCard WellOfSouls
 wellOfSouls =
-  locationWith
-    WellOfSouls
-    Cards.wellOfSouls
-    4
-    (PerPlayer 1)
-    ( (connectsToL .~ adjacentLocations)
-        . ( costToEnterUnrevealedL
-              .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
-          )
-    )
+  locationWith WellOfSouls Cards.wellOfSouls 4 (PerPlayer 1)
+    $ (connectsToL .~ adjacentLocations)
+    . (costToEnterUnrevealedL .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation])
 
 instance HasAbilities WellOfSouls where
   getAbilities (WellOfSouls attrs) =
-    withBaseAbilities attrs
-      $ if locationRevealed attrs
-        then
-          [ restrictedAbility attrs 1 Here
-              $ ForcedAbility
-              $ TurnEnds
-                Timing.After
-                You
-          , restrictedAbility
-              attrs
-              2
-              ( AnyCriterion
-                  [ Negate
-                    ( LocationExists
-                        $ LocationInDirection dir (LocationWithId $ toId attrs)
-                    )
-                  | dir <- [Above, Below, RightOf]
-                  ]
-              )
-              $ ForcedAbility
-              $ RevealLocation Timing.When Anyone
-              $ LocationWithId
-              $ toId attrs
-          ]
-        else []
+    extendRevealed
+      attrs
+      [ restrictedAbility attrs 1 Here $ forced $ TurnEnds #after You
+      , restrictedAbility
+          attrs
+          2
+          ( oneOf
+              [ not_ $ exists $ LocationInDirection dir (be attrs)
+              | dir <- [Above, Below, RightOf]
+              ]
+          )
+          $ forced
+          $ RevealLocation #when Anyone (be attrs)
+      ]
 
 instance RunMessage WellOfSouls where
   runMessage msg l@(WellOfSouls attrs) = case msg of

@@ -17,6 +17,7 @@ import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator (additionalActionCovers)
 import Arkham.Helpers.Matchers
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Ref
 import Arkham.Helpers.Scenario
 import {-# SOURCE #-} Arkham.Helpers.SkillTest
 import Arkham.Helpers.SkillTest.Target
@@ -80,6 +81,11 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
   ArchiveOfConduitsUnidentifiedCost -> do
     n <- selectCount Matcher.Anywhere
     pure $ n >= 4
+  NonBlankedCost c -> do
+    mods <- getModifiers (sourceToTarget source)
+    if Blank `elem` mods
+      then pure True
+      else getCanAffordCost iid source actions windows' c
   GloriaCost -> do
     mtarget <- getSkillTestTarget
     case mtarget of

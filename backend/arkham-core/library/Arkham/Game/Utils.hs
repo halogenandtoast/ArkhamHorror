@@ -78,6 +78,14 @@ getInDiscardEntity lensFunc entityId game =
       (preview (lensFunc . ix entityId))
       (toList $ view inDiscardEntitiesL game)
 
+getInEncounterDiscardEntity
+  :: (entityId ~ EntityId entity, Ord entityId)
+  => Lens' Entities (EntityMap entity)
+  -> entityId
+  -> Game
+  -> Maybe entity
+getInEncounterDiscardEntity lensFunc entityId game = preview (lensFunc . ix entityId) (view encounterDiscardEntitiesL game)
+
 getRemovedEntity
   :: (entityId ~ EntityId entity, Ord entityId)
   => Lens' Entities (EntityMap entity)
@@ -209,6 +217,7 @@ maybeEnemy eid = do
   pure
     $ preview (entitiesL . enemiesL . ix eid) g
     <|> getInDiscardEntity enemiesL eid g
+    <|> getInEncounterDiscardEntity enemiesL eid g
     <|> getRemovedEntity enemiesL eid g
 
 getActiveInvestigator :: HasGame m => m Investigator

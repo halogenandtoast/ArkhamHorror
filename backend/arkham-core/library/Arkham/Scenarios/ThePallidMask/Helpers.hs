@@ -62,16 +62,16 @@ placeAtDirection direction attrs = do
         , SetLocationLabel locationId (unLabel $ positionToLabel placedPosition)
         ]
       <> case mLeftLocation of
-        Just lid -> [PlacedLocationDirection locationId LeftOf lid]
-        Nothing -> []
-      <> case mRightLocation of
         Just lid -> [PlacedLocationDirection locationId RightOf lid]
         Nothing -> []
+      <> case mRightLocation of
+        Just lid -> [PlacedLocationDirection locationId LeftOf lid]
+        Nothing -> []
       <> case mAboveLocation of
-        Just lid -> [PlacedLocationDirection locationId Above lid]
+        Just lid -> [PlacedLocationDirection locationId Below lid]
         Nothing -> []
       <> case mBelowLocation of
-        Just lid -> [PlacedLocationDirection locationId Below lid]
+        Just lid -> [PlacedLocationDirection locationId Above lid]
         Nothing -> []
  where
   newPos dir (x, y) = case dir of
@@ -81,7 +81,7 @@ placeAtDirection direction attrs = do
     RightOf -> (x + 1, y)
 
 directionEmpty :: HasGame m => LocationAttrs -> Direction -> m Bool
-directionEmpty attrs dir = selectNone $ LocationInDirection dir (LocationWithId $ toId attrs)
+directionEmpty attrs dir = selectNone $ LocationInDirection dir (be attrs.id)
 
 toMaybePlacement
   :: (MonadRandom m, HasGame m) => LocationAttrs -> Direction -> m (Maybe (Card -> m [Message]))

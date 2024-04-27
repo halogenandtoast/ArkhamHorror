@@ -94,7 +94,7 @@ getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do
   applyModifierCaps (Modifier.MaxDamageTaken m) n = min m n
   applyModifierCaps _ n = n
 
-getModifiedKeywords :: HasGame m => EnemyAttrs -> m (Set Keyword)
+getModifiedKeywords :: (HasCallStack, HasGame m) => EnemyAttrs -> m (Set Keyword)
 getModifiedKeywords e = do
   mods <- getModifiers e
   keywords <- field EnemyKeywords (enemyId e)

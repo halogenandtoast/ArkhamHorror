@@ -165,6 +165,7 @@ data Cost
   | OptionalCost Cost
   | UnpayableCost
   | AsIfAtLocationCost LocationId Cost
+  | NonBlankedCost Cost
   | DrawEncounterCardsCost Int
   | GloriaCost -- lol, not going to attempt to make this generic
   | ArchiveOfConduitsUnidentifiedCost -- this either
@@ -192,6 +193,7 @@ displayCostType = \case
   UnpayableCost -> "Unpayable"
   OptionalCost c -> "Optional: " <> displayCostType c
   DrawEncounterCardsCost n -> "Draw " <> pluralize n "Encounter Card"
+  NonBlankedCost c -> displayCostType c
   GloriaCost ->
     "Discard an encounter card that shares a Trait with that encounter card from beneath Gloria Goldberg"
   ArchiveOfConduitsUnidentifiedCost ->

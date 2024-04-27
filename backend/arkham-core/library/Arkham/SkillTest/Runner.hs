@@ -17,7 +17,6 @@ import Arkham.Deck qualified as Deck
 import Arkham.Game.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Message
-import Arkham.Helpers.Ref
 import Arkham.Matcher hiding (IgnoreChaosToken, RevealChaosToken)
 import Arkham.Message qualified as Msg
 import Arkham.Projection

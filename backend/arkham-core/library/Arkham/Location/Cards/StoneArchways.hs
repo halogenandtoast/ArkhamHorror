@@ -23,16 +23,11 @@ newtype StoneArchways = StoneArchways LocationAttrs
 
 stoneArchways :: LocationCard StoneArchways
 stoneArchways =
-  locationWith
-    StoneArchways
-    Cards.stoneArchways
-    2
-    (Static 0)
-    ( (connectsToL .~ adjacentLocations)
-        . ( costToEnterUnrevealedL
-              .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
-          )
-    )
+  locationWith StoneArchways Cards.stoneArchways 2 (Static 0)
+    $ (connectsToL .~ adjacentLocations)
+    . ( costToEnterUnrevealedL
+          .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
+      )
 
 instance HasModifiersFor StoneArchways where
   getModifiersFor (LocationTarget lid) (StoneArchways attrs) = do

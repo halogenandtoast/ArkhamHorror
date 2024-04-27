@@ -488,7 +488,7 @@ instance HasAbilities LocationAttrs where
          , (idx, k) <- withIndex l.keys
          ]
    where
-    moveCost = if l.revealed then ActionCost 1 else locationCostToEnterUnrevealed l
+    moveCost = if l.revealed then ActionCost 1 else NonBlankedCost (locationCostToEnterUnrevealed l)
 
 getShouldSpawnNonEliteAtConnectingInstead :: HasGame m => LocationAttrs -> m Bool
 getShouldSpawnNonEliteAtConnectingInstead attrs = do

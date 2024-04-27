@@ -35,12 +35,12 @@ instance HasAbilities ThePitBelow where
 
 instance RunMessage ThePitBelow where
   runMessage msg t@(ThePitBelow attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
       mlid <- field InvestigatorLocation iid
       for_ mlid $ \lid -> do
         hasThePitBelow <-
           selectAny $ treacheryAt lid <> treacheryIs Cards.thePitBelow
-        pure
+        push
           $ if hasThePitBelow
             then gainSurge attrs
             else AttachTreachery (toId attrs) (toTarget lid)

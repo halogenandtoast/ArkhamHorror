@@ -32,7 +32,6 @@ import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Message
-import Arkham.Helpers.Ref
 import Arkham.Helpers.SkillTest (beginSkillTest, getSkillTestDifficulty, getSkillTestTarget)
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Investigators
@@ -186,6 +185,11 @@ payCost msg c iid skipAdditionalCosts cost = do
           | location <- locations
           ]
       pure c
+    NonBlankedCost cost' -> do
+      mods <- getModifiers (sourceToTarget source)
+      if Blank `elem` mods
+        then pure c
+        else payCost msg c iid skipAdditionalCosts cost'
     GloriaCost -> do
       mtarget <- getSkillTestTarget
       case mtarget of

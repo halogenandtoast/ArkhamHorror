@@ -4176,15 +4176,72 @@ runMessages mLogger = do
                 overGame $ enemyEvadingL ?~ eid
               _ -> pure ()
 
+            -- Before we preload, store the as if at's
+            -- After we preload check diff, if there is a diff, we need to
+            -- manually adjust enemies if they could not enter the new location
+
+            asIfLocations <- runWithEnv getAsIfLocationMap
+
             runWithEnv
               ( getGame
                   >>= runMessage msg
                   >>= preloadModifiers
+                  >>= handleAsIfChanges asIfLocations
                   >>= handleTraitRestrictedModifiers
                   >>= handleBlanked
               )
               >>= putGame
             runMessages mLogger
+
+getAsIfLocationMap :: HasGame m => m (Map InvestigatorId LocationId)
+getAsIfLocationMap = do
+  g <- getGame
+  investigators <- getInvestigators
+
+  Map.fromList <$> forMaybeM investigators \iid -> do
+    let mods = Map.findWithDefault [] (toTarget iid) (gameModifiers g)
+        mAsIf = listToMaybe [loc | (modifierType -> AsIfAt loc) <- mods]
+    pure $ (iid,) <$> mAsIf
+
+handleAsIfChanges :: Map InvestigatorId LocationId -> Game -> GameT Game
+handleAsIfChanges asIfMap g = go (Map.toList asIfMap) g
+ where
+  go [] g' = pure g'
+  go ((iid, loc) : rest) g' = do
+    let mods = Map.findWithDefault [] (toTarget iid) (gameModifiers g')
+        mAsIf = listToMaybe [loc' | (modifierType -> AsIfAt loc') <- mods]
+        handleEnemy Nothing g'' enemy = do
+          stillExists <- loc <=~> LocationWithId loc
+          runMessage
+            ( if stillExists
+                then PlaceEnemy enemy $ AtLocation loc
+                else Discard Nothing GameSource (toTarget enemy)
+            )
+            g''
+        handleEnemy (Just newLoc) g'' enemy = do
+          canEnter <- newLoc <=~> LocationCanBeEnteredBy enemy
+          if canEnter
+            then pure g''
+            else do
+              stillExists <- loc <=~> LocationWithId loc
+              runMessage
+                ( if stillExists
+                    then PlaceEnemy enemy (AtLocation loc)
+                    else Discard Nothing GameSource (toTarget enemy)
+                )
+                g''
+    case mAsIf of
+      Just newLoc | newLoc == loc -> pure g' -- nothing changed
+      Just newLoc -> do
+        -- we moved to a new as if location
+        enemies <- select $ enemyEngagedWith iid
+        foldM (handleEnemy (Just newLoc)) g' enemies >>= go rest
+      Nothing -> do
+        -- we stopped being at an asif location
+        enemies <- select $ enemyEngagedWith iid
+        inv <- getInvestigator iid
+        mLocation <- Helpers.placementLocation inv.placement
+        foldM (handleEnemy mLocation) g' enemies >>= go rest
 
 getTurnInvestigator :: HasGame m => m (Maybe Investigator)
 getTurnInvestigator =

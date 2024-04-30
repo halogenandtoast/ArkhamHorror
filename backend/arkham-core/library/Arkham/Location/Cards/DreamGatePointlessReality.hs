@@ -31,6 +31,8 @@ instance HasModifiersFor DreamGatePointlessReality where
   getModifiersFor (InvestigatorTarget iid) (DreamGatePointlessReality a) = do
     notLuke <- iid <!=~> investigatorIs Investigators.lukeRobinson
     pure $ toModifiers a [CannotEnter (toId a) | notLuke]
+  getModifiersFor (EnemyTarget _) (DreamGatePointlessReality a) = do
+    pure $ toModifiers a [CannotSpawnIn (be a)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DreamGatePointlessReality where

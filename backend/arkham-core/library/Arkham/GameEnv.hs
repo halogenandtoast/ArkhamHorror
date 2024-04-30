@@ -200,7 +200,11 @@ getAllModifiers :: HasGame m => m (Map Target [Modifier])
 getAllModifiers = gameModifiers <$> getGame
 
 withModifiers'
-  :: (Targetable target, HasGame m) => target -> [Modifier] -> (forall n. HasGame n => n a) -> m a
+  :: (Targetable target, HasGame m)
+  => target
+  -> [Modifier]
+  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> m a
 withModifiers' (toTarget -> target) mods body = do
   game <- getGame
   let

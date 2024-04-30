@@ -1185,6 +1185,7 @@ abilityMatches a@Ability {..} = \case
       getCanPerformAbility iid (Window.defaultWindows iid) ab
   NotAbility inner -> not <$> abilityMatches a inner
   AnyAbility -> pure True
+  BasicAbility -> pure abilityBasic
   HauntedAbility -> pure $ abilityType == Haunted
   AssetAbility assetMatcher -> do
     abilities <- concatMap getAbilities <$> (traverse getAsset =<< select assetMatcher)

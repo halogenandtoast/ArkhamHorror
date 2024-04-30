@@ -784,6 +784,7 @@ allAssets =
     , --- mystic [eote]
       SomeAssetCard downTheRabbitHole
     , SomeAssetCard dragonPole
+    , SomeAssetCard closeTheCircle1
     , SomeAssetCard grounded3
     , --- survivor [eote]
       SomeAssetCard shortSupply

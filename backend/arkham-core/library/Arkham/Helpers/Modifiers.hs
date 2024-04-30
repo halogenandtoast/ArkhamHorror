@@ -21,12 +21,17 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Window (Window)
 import Control.Lens (each, sumOf)
+import Control.Monad.Trans.Class
 import Data.Aeson
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Monoid (First (..))
 
 withModifiers
-  :: (HasGame m, Targetable target) => target -> [Modifier] -> (forall n. HasGame n => n a) -> m a
+  :: (HasGame m, Targetable target)
+  => target
+  -> [Modifier]
+  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> m a
 withModifiers = withModifiers'
 
 getModifiers :: forall a m. (HasGame m, Targetable a) => a -> m [ModifierType]

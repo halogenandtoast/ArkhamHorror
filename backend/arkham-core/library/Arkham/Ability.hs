@@ -175,6 +175,9 @@ uncancellable ab = ab {abilityCanBeCancelled = False}
 abilityEffect :: (HasCardCode a, Sourceable a) => a -> Cost -> Ability
 abilityEffect a cost = mkAbility a (-1) (AbilityEffect cost)
 
+basicAbility :: Ability -> Ability
+basicAbility ab = ab {abilityBasic = True}
+
 mkAbility :: (Sourceable a, HasCardCode a) => a -> Int -> AbilityType -> Ability
 mkAbility entity idx type' =
   Ability
@@ -191,6 +194,7 @@ mkAbility entity idx type' =
     , abilityCanBeCancelled = True
     , abilityDisplayAsAction = False
     , abilityDelayAdditionalCosts = False
+    , abilityBasic = False
     }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import StatusBar from '@/arkham/components/StatusBar.vue';
 import { computed } from 'vue';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
 import { Game } from '@/arkham/types/Game';
@@ -95,6 +96,9 @@ const card = computed(() => {
 
 const tokenOperator = computed(() => (skillTestResults.value?.skillTestResultsChaosTokensValue || 0) < 0 ? '-' : '+')
 
+const showChoices = computed(() => choices.value.some((c) => { return c.tag === MessageType.DONE || c.tag === MessageType.LABEL || c.tag === MessageType.SKILL_LABEL || c.tag === MessageType.SKILL_LABEL_WITH_LABEL || c.tag == MessageType.PORTRAIT_LABEL }))
+
+
 const applyResultsAction = computed(() => {
   return choices.value.findIndex((c) => c.tag === "SkillTestApplyResultsButton");
 })
@@ -136,6 +140,49 @@ const testResult = computed(() => {
           class="portrait"
           :src="investigatorPortrait"
         />
+      </div>
+      <div v-if="showChoices" class="choices">
+        <template v-for="(choice, index) in choices" :key="index">
+          <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
+            <button @click="choose(index)" v-tooltip="choice.tooltip">{{choice.label}}</button>
+          </template>
+          <template v-if="choice.tag === 'PortraitLabel'">
+            <img class="portrait card active" :src="portraitLabelImage(choice.investigatorId)" @click="choose(index)" />
+          </template>
+          <button v-if="choice.tag === MessageType.DONE" @click="choose(index)">{{label(choice.label)}}</button>
+          <div v-if="choice.tag === MessageType.LABEL" class="message-label">
+            <button v-if="choice.label == 'Choose {skull}'" @click="choose(index)">
+              Choose <i class="iconSkull"></i>
+            </button>
+            <button v-else-if="choice.label == 'Choose {cultist}'" @click="choose(index)">
+              Choose <i class="iconCultist"></i>
+            </button>
+            <button v-else-if="choice.label == 'Choose {tablet}'" @click="choose(index)">
+              Choose <i class="iconTablet"></i>
+            </button>
+            <button v-else-if="choice.label == 'Choose {elderThing}'" @click="choose(index)">
+              Choose <i class="iconElderThing"></i>
+            </button>
+            <button v-else @click="choose(index)" v-html="label(choice.label)"></button>
+          </div>
+
+          <a
+            v-if="choice.tag === MessageType.SKILL_LABEL"
+            class="button"
+            @click="choose(index)"
+          >
+            Use <i :class="`icon${choice.skillType}`"></i>
+          </a>
+
+          <a
+            v-if="choice.tag === MessageType.SKILL_LABEL_WITH_LABEL"
+            class="button"
+            @click="choose(index)"
+          >
+            Use <i :class="`icon${choice.skillType}`">: {{choice.label}}</i>
+          </a>
+
+        </template>
       </div>
       <ChaosBagView
         :game="game"
@@ -321,5 +368,98 @@ button {
   text-transform: uppercase;
   text-align: center;
   color: white;
+}
+
+i {
+  font-family: 'Arkham';
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+i.iconSkull {
+  &:before {
+    font-family: "Arkham";
+    content: "\004E";
+  }
+}
+
+i.iconCultist {
+  &:before {
+    font-family: "Arkham";
+    content: "\0042";
+  }
+}
+
+i.iconTablet {
+  &:before {
+    font-family: "Arkham";
+    content: "\0056";
+  }
+}
+
+i.iconElderThing {
+  &:before {
+    font-family: "Arkham";
+    content: "\0043";
+  }
+}
+
+i.iconSkillWillpower {
+  &:before {
+    font-family: "Arkham";
+    content: "\0041";
+  }
+}
+
+i.iconSkillIntellect {
+  &:before {
+    font-family: "Arkham";
+    content: "\0046";
+  }
+}
+
+i.iconSkillCombat {
+  &:before {
+    font-family: "Arkham";
+    content: "\0044";
+  }
+}
+
+i.iconSkillAgility {
+  &:before {
+    font-family: "Arkham";
+    content: "\0053";
+  }
+}
+
+.button {
+  display: inline-block;
+  padding: 5px 10px;
+  margin: 2px;
+  background-color: #333;
+  color: white;
+  border: 1px solid #666;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #111;
+  }
+
+  &:active {
+    background-color: #666;
+    border-color: #111;
+  }
+
+  flex: 1;
+}
+
+.choices {
+  display: flex;
+  width: 100%;
 }
 </style>

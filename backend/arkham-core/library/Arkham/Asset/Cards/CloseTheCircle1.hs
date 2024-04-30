@@ -48,8 +48,7 @@ instance RunMessage CloseTheCircle1 where
       cards <- select $ ControlledBy (InvestigatorWithId iid)
 
       let n =
-            length
-              $ filter (`notElem` [Neutral, Mythos])
+            count (`notElem` [Neutral, Mythos])
               . nub
               . (Mystic :)
               $ concatMap (toList . cdClassSymbols . toCardDef . toCard) cards

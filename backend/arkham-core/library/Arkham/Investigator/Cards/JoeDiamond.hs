@@ -37,13 +37,10 @@ hunchDeck :: InvestigatorAttrs -> [Card]
 hunchDeck = Map.findWithDefault [] HunchDeck . investigatorDecks
 
 instance HasModifiersFor JoeDiamond where
-  getModifiersFor (CardIdTarget cid) (JoeDiamond (a `With` Metadata _)) =
-    case hunchDeck a of
-      x : _ | toCardId x == cid -> pure $ toModifiers a [ReduceCostOf (CardWithId cid) 2]
-      _ -> pure []
   getModifiersFor target (JoeDiamond (a `With` Metadata (Just cid))) | a `is` target = do
     case hunchDeck a of
-      x : _ | toCardId x == cid -> pure $ toModifiers a [AsIfInHand x]
+      x : _
+        | toCardId x == cid -> pure $ toModifiers a [ReduceCostOf (CardWithId $ toCardId x) 2, AsIfInHand x]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
@@ -114,6 +111,7 @@ instance RunMessage JoeDiamond where
     InitiatePlayCard iid card mTarget payment windows' asAction | attrs `is` iid && Just (toCardId card) == revealedHunchCard meta -> do
       pushAll
         [ addToHand iid card
+        , costModifier iid iid (ReduceCostOf (CardWithId $ toCardId card) 2)
         , InitiatePlayCard iid card mTarget payment windows' asAction
         ]
       let hunchDeck' = filter (/= card) (hunchDeck attrs)

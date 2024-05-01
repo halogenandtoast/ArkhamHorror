@@ -226,3 +226,9 @@ someSkillCardCode = liftSomeSkillCard cbCardCode
 
 setMeta :: ToJSON a => a -> SkillAttrs -> SkillAttrs
 setMeta a = metaL .~ toJSON a
+
+controlledBy :: SkillAttrs -> InvestigatorId -> Bool
+controlledBy SkillAttrs {..} iid = case skillPlacement of
+  InPlayArea iid' -> iid == iid'
+  AttachedToAsset _ (Just (InPlayArea iid')) -> iid == iid'
+  _ -> False

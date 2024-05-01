@@ -130,4 +130,5 @@ allSkills =
     , SomeSkillCard unexpectedCourage2
     , SomeSkillCard nauticalProwess
     , SomeSkillCard dreamsOfTheDeepTheDeepGate
+    , SomeSkillCard fightingLessons
     ]

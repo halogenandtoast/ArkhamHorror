@@ -58,6 +58,7 @@ allPlayerSkillCards =
       , fearless
       , fearless2
       , fey1
+      , fightingLessons
       , guts
       , guts2
       , hatchetMan
@@ -683,6 +684,13 @@ dauntlessSpirit1 =
     { cdCardTraits = setFromList [Innate, Developed]
     , cdLevel = Just 1
     , cdCardInHandEffects = True
+    }
+
+fightingLessons :: CardDef
+fightingLessons =
+  (skill "09030" "Fighting Lessons" [#combat, #agility, #wild] Guardian)
+    { cdCardTraits = setFromList [Practiced]
+    , cdCommitRestrictions = [OnlyTestWithActions [#fight, #evade]]
     }
 
 riseToTheOccasion3 :: CardDef

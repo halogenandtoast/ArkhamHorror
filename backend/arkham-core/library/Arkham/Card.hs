@@ -171,6 +171,7 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   NonExceptional -> not . cdExceptional $ toCardDef a
   NotCard m -> not (cardMatch a m)
   CardWithAction action -> elem action $ cdActions $ toCardDef a
+  CardWithoutAction -> null $ cdActions $ toCardDef a
   CardWithPrintedLocationSymbol sym ->
     (== Just sym) . cdLocationRevealedSymbol $ toCardDef a
   CardWithPrintedLocationConnection sym ->

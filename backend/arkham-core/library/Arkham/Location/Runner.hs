@@ -470,14 +470,15 @@ withDrawCardUnderneathAction x =
 
 instance HasAbilities LocationAttrs where
   getAbilities l =
-    [ investigateAbility l 101 mempty (onLocation l)
-    , restrictedAbility
-        l
-        102
-        ( CanMoveTo (LocationWithId l.id)
-            <> OnLocation (accessibleTo l)
-            <> exists (You <> can.move <> noModifier (CannotEnter l.id))
-        )
+    [ basicAbility $ investigateAbility l 101 mempty (onLocation l)
+    , basicAbility
+        $ restrictedAbility
+          l
+          102
+          ( CanMoveTo (LocationWithId l.id)
+              <> OnLocation (accessibleTo l)
+              <> exists (You <> can.move <> noModifier (CannotEnter l.id))
+          )
         $ ActionAbility [#move] moveCost
     ]
       <> [ withTooltip ("Take " <> keyName k <> " key")

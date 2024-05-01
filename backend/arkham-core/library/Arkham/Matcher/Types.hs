@@ -720,6 +720,7 @@ data CardMatcher
   | CardWithKeyword Keyword
   | CardWithClass ClassSymbol
   | CardWithAction Action
+  | CardWithoutAction
   | CardWithSkillIcon SkillIcon
   | CardWithOneOf [CardMatcher]
   | CardMatches [CardMatcher]
@@ -1304,6 +1305,7 @@ data AbilityMatcher
   | AbilityOneOf [AbilityMatcher]
   | AbilityIs Source Int
   | AnyAbility
+  | BasicAbility
   | AbilityOnEncounterCard
   | AbilityOnCard CardMatcher
   | AbilityOnCardControlledBy InvestigatorId

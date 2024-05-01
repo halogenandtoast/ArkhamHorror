@@ -31,6 +31,7 @@ data Ability = Ability
   , abilityCanBeCancelled :: Bool
   , abilityDisplayAsAction :: Bool
   , abilityDelayAdditionalCosts :: Bool
+  , abilityBasic :: Bool
   }
   deriving stock (Show, Ord, Data)
 
@@ -100,6 +101,7 @@ instance FromJSON Ability where
     abilityCanBeCancelled <- o .: "canBeCancelled"
     abilityDisplayAsAction <- o .: "displayAsAction"
     abilityDelayAdditionalCosts <- o .:? "delayAdditionalCosts" .!= False
+    abilityBasic <- o .:? "basic" .!= False
     pure Ability {..}
 
 newtype DifferentAbility = DifferentAbility Ability

@@ -22,7 +22,7 @@ instance HasModifiersFor HolyRosary2 where
 
 instance HasAbilities HolyRosary2 where
   getAbilities (HolyRosary2 x) =
-    [ restrictedAbility x 1 HasRemainingBlessTokens
+    [ controlledAbility x 1 HasRemainingBlessTokens
         $ ReactionAbility
           ( SkillTestResult
               #after

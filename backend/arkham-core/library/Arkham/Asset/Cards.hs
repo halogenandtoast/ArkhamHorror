@@ -608,6 +608,7 @@ allPlayerAssetCards =
       , sixthSense4
       , sledDog
       , sledgehammer
+      , sledgehammer4
       , sleuth3
       , smokingPipe
       , solemnVow
@@ -5118,6 +5119,13 @@ sledgehammer =
     , cdSlots = [#hand, #hand]
     }
 
+sledgehammer4 :: CardDef
+sledgehammer4 =
+  (multiClassAsset "08096" "Sledgehammer" 3 [Guardian, Survivor])
+    { cdSkills = [#combat, #combat, #combat]
+    , cdCardTraits = setFromList [Item, Tool, Weapon, Melee]
+    , cdSlots = [#hand, #hand]
+    }
 
 pocketTelescope :: CardDef
 pocketTelescope =

@@ -606,6 +606,7 @@ allPlayerAssetCards =
       , sixthSense
       , sixthSense4
       , sledDog
+      , sledgehammer
       , sleuth3
       , smokingPipe
       , solemnVow
@@ -5096,6 +5097,16 @@ brandOfCthugha4 =
     , cdUses = uses Charge 9
     , cdSlots = [#arcane]
     }
+
+
+sledgehammer :: CardDef
+sledgehammer =
+  (multiClassAsset "08094" "Sledgehammer" 3 [Guardian, Survivor])
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Item, Tool, Weapon, Melee]
+    , cdSlots = [#hand, #hand]
+    }
+
 
 pocketTelescope :: CardDef
 pocketTelescope =

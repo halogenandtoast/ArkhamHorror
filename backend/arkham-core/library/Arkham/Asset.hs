@@ -800,6 +800,7 @@ allAssets =
     , SomeAssetCard brandOfCthugha4
     , --- guardian/survivor [eote]
       SomeAssetCard sledgehammer
+    , SomeAssetCard sledgehammer4
     , --- seeker/rogue [eote]
       SomeAssetCard pocketTelescope
     , SomeAssetCard eonChart1

@@ -221,6 +221,7 @@ allPlayerAssetCards =
       , clairvoyance3
       , clairvoyance5
       , claspOfBlackOnyx
+      , closeTheCircle1
       , coltVestPocket
       , coltVestPocket2
       , cornered2
@@ -5005,6 +5006,16 @@ dragonPole =
     { cdCardTraits = setFromList [Item, Weapon, Melee]
     , cdSkills = [#combat]
     , cdSlots = [#hand, #hand]
+    }
+
+closeTheCircle1 :: CardDef
+closeTheCircle1 =
+  (asset "08062" "Close the Circle" 3 Mystic)
+    { cdCardTraits = setFromList [Ritual, Synergy]
+    , cdSkills = [#combat, #agility]
+    , cdSlots = [#arcane]
+    , cdLevel = Just 1
+    , cdUses = uses Charge 0
     }
 
 grounded3 :: CardDef

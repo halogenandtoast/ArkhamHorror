@@ -207,33 +207,36 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
 
 instance HasAbilities EnemyAttrs where
   getAbilities e =
-    [ restrictedAbility
-        e
-        AbilityAttack
-        ( OnSameLocation
-            <> AnyCriterion
-              [ Negate $ EnemyCriteria $ ThisEnemy AloofEnemy
-              , EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith Anyone
-              ]
-            <> EnemyCriteria (ThisEnemy $ CanBeAttackedBy You)
-            <> CanAttack
-        )
+    [ basicAbility
+        $ restrictedAbility
+          e
+          AbilityAttack
+          ( OnSameLocation
+              <> AnyCriterion
+                [ Negate $ EnemyCriteria $ ThisEnemy AloofEnemy
+                , EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith Anyone
+                ]
+              <> EnemyCriteria (ThisEnemy $ CanBeAttackedBy You)
+              <> CanAttack
+          )
         $ ActionAbility [#fight] (ActionCost 1)
-    , restrictedAbility
-        e
-        AbilityEvade
-        (OnSameLocation <> EnemyCriteria (ThisEnemy $ EnemyIsEngagedWith You <> EnemyWithEvade))
+    , basicAbility
+        $ restrictedAbility
+          e
+          AbilityEvade
+          (OnSameLocation <> EnemyCriteria (ThisEnemy $ EnemyIsEngagedWith You <> EnemyWithEvade))
         $ ActionAbility [#evade] (ActionCost 1)
-    , restrictedAbility
-        e
-        AbilityEngage
-        ( OnSameLocation
-            <> Negate (EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith You)
-            <> Negate (EnemyCriteria $ ThisEnemy MassiveEnemy)
-            <> Negate (EnemyCriteria $ ThisEnemy $ EnemyWithPlacement Global)
-            <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeEngaged)
-            <> InvestigatorExists (You <> InvestigatorWithoutModifier CannotBeEngaged)
-        )
+    , basicAbility
+        $ restrictedAbility
+          e
+          AbilityEngage
+          ( OnSameLocation
+              <> Negate (EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith You)
+              <> Negate (EnemyCriteria $ ThisEnemy MassiveEnemy)
+              <> Negate (EnemyCriteria $ ThisEnemy $ EnemyWithPlacement Global)
+              <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeEngaged)
+              <> InvestigatorExists (You <> InvestigatorWithoutModifier CannotBeEngaged)
+          )
         $ ActionAbility [#engage] (ActionCost 1)
     ]
 

@@ -14,7 +14,10 @@ sledgehammer4 :: AssetCard Sledgehammer4
 sledgehammer4 = asset Sledgehammer4 Cards.sledgehammer4
 
 instance HasAbilities Sledgehammer4 where
-  getAbilities (Sledgehammer4 a) = [restrictedAbility a 1 ControlsThis fightAction_, restrictedAbility a 2 ControlsThis (ActionAbility [#fight] (ActionCost 3))]
+  getAbilities (Sledgehammer4 a) =
+    [ restrictedAbility a 1 ControlsThis fightAction_
+    , restrictedAbility a 2 ControlsThis (ActionAbility [#fight] (ActionCost 3))
+    ]
 
 instance RunMessage Sledgehammer4 where
   runMessage msg a@(Sledgehammer4 attrs) = case msg of

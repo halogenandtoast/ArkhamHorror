@@ -17,7 +17,7 @@ fightingLessons :: SkillCard FightingLessons
 fightingLessons = skill FightingLessons Cards.fightingLessons
 
 instance HasModifiersFor FightingLessons where
-  getModifiersFor (controlledBy iid) (FightingLessons attrs) | InvestigatorTarget attrs iid = do
+  getModifiersFor (InvestigatorTarget iid) (FightingLessons attrs) | controlledBy attrs iid = do
     pure $ toModifiers attrs [CanCommitToSkillTestPerformedByAnInvestigatorAt Anywhere]
   getModifiersFor _ _ = pure []
 

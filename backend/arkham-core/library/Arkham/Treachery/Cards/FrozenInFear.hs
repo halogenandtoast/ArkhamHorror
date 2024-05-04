@@ -21,7 +21,7 @@ instance HasModifiersFor FrozenInFear where
   getModifiersFor (InvestigatorTarget iid) (FrozenInFear attrs) =
     pure
       $ toModifiers attrs
-      $ [ ActionCostOf (FirstOneOfPerformed [#move, #fight, #evade]) 1
+      $ [ AdditionalActionCostOf (FirstOneOfPerformed [#move, #fight, #evade]) 1
         | treacheryOnInvestigator iid attrs
         ]
   getModifiersFor _ _ = pure []

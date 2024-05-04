@@ -70,7 +70,7 @@ unvisitedIsleMossCoveredStepsEffect = cardEffect UnvisitedIsleMossCoveredStepsEf
 
 instance HasModifiersFor UnvisitedIsleMossCoveredStepsEffect where
   getModifiersFor target (UnvisitedIsleMossCoveredStepsEffect a) | effectTarget a == target = do
-    pure $ toModifiers a [ActionCostOf (IsAction Action.Move) 1]
+    pure $ toModifiers a [AdditionalActionCostOf (IsAction Action.Move) 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage UnvisitedIsleMossCoveredStepsEffect where

@@ -1097,22 +1097,15 @@ runGameMessage msg g = case msg of
         as -> as
     activeCost <- createActiveCostForCard iid card isPlayAction windows'
 
-    actionCost <-
-      if isFast
-        then pure Cost.Free
-        else Cost.ActionCost <$> getActionCost (toAttrs investigator') actions
-
-    let activeCost' = addActiveCostCost actionCost activeCost
-
     let historyItem = mempty {historyPlayedCards = [card]}
         turn = isJust $ view turnPlayerInvestigatorIdL g
         setTurnHistory = if turn then turnHistoryL %~ insertHistory iid historyItem else id
 
-    push $ CreatedCost $ activeCostId activeCost'
+    push $ CreatedCost $ activeCostId (traceShowId activeCost)
     pure
       $ g
       & activeCostL
-      %~ insertMap (activeCostId activeCost') activeCost'
+      %~ insertMap (activeCostId activeCost) activeCost
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & setTurnHistory
   PlayCard iid card mtarget payment windows' False -> do

@@ -382,7 +382,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       additionalCosts =
         mapMaybe
           \case
-            ActionCostOf (IsAction action') n | action == action' -> Just (ActionCost n)
+            AdditionalActionCostOf (IsAction action') n | action == action' -> Just (ActionCost n)
             _ -> Nothing
           modifiers'
     if null additionalCosts
@@ -826,7 +826,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       performedActions = setFromList @(Set Action) $ concat investigatorActionsPerformed
       -- takenActions = setFromList @(Set Action) investigatorActionsTaken
       applyFightCostModifiers :: Cost -> ModifierType -> Cost
-      applyFightCostModifiers costToEnter (ActionCostOf actionTarget n) =
+      applyFightCostModifiers costToEnter (AdditionalActionCostOf actionTarget n) =
         case actionTarget of
           FirstOneOfPerformed as
             | #fight `elem` as
@@ -928,7 +928,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       performedActions = setFromList @(Set Action) $ concat investigatorActionsPerformed
       -- takenActions = setFromList @(Set Action) investigatorActionsTaken
       applyEvadeCostModifiers :: Cost -> ModifierType -> Cost
-      applyEvadeCostModifiers costToEnter (ActionCostOf actionTarget n) =
+      applyEvadeCostModifiers costToEnter (AdditionalActionCostOf actionTarget n) =
         case actionTarget of
           FirstOneOfPerformed as
             | #evade `elem` as
@@ -1501,7 +1501,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     modifiers' <- getModifiers a
     let
       investigateCost = foldr applyModifier 1 modifiers
-      applyModifier (ActionCostOf (IsAction Action.Investigate) m) n = max 0 (n + m)
+      applyModifier (AdditionalActionCostOf (IsAction Action.Investigate) m) n = max 0 (n + m)
       applyModifier _ n = n
     pushAll
       $ [ BeginAction

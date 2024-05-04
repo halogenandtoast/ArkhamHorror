@@ -25,7 +25,7 @@ instance HasModifiersFor PrismaticPhenomenon where
   getModifiersFor (InvestigatorTarget iid) (PrismaticPhenomenon attrs) =
     pure
       $ toModifiers attrs
-      $ [ ActionCostOf (FirstOneOfPerformed [#draw, #resource, #play]) 1
+      $ [ AdditionalActionCostOf (FirstOneOfPerformed [#draw, #resource, #play]) 1
         | treacheryOnInvestigator iid attrs
         ]
   getModifiersFor _ _ = pure []

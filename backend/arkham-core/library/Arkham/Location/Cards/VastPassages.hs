@@ -24,7 +24,8 @@ instance HasModifiersFor VastPassages where
   getModifiersFor (InvestigatorTarget iid) (VastPassages attrs) = do
     here <- iid `isAt` attrs
     withBinoculars <- getHasSupply iid Binoculars
-    pure $ toModifiers attrs [ActionCostOf (IsAction Action.Explore) 1 | here, not withBinoculars]
+    pure
+      $ toModifiers attrs [AdditionalActionCostOf (IsAction Action.Explore) 1 | here, not withBinoculars]
   getModifiersFor _ _ = pure []
 
 instance RunMessage VastPassages where

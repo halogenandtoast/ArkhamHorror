@@ -38,7 +38,8 @@ data ModifierType
   = ForEach GameCalculation [ModifierType]
   | AbilityModifier Target Int ModifierType
   | ActionCostModifier Int
-  | ActionCostOf ActionTarget Int
+  | AdditionalActionCostOf ActionTarget Int
+  | ActionCostOf ActionTarget Int -- TODO: Don't use this for anything than decreasing
   | ActionCostSetToModifier Int
   | ActionDoesNotCauseAttacksOfOpportunity Action
   | ActionSkillModifier {action :: Action, skillType :: SkillType, value :: Int}

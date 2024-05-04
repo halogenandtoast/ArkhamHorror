@@ -107,7 +107,7 @@ getActionCostModifier ac = do
   actions = case ac.actions of
     [] -> error "expected action"
     as -> as
-  applyModifier takenActions performedActions (ActionCostOf match m) n =
+  applyModifier takenActions performedActions (AdditionalActionCostOf match m) n =
     -- For cards we've already calculated the cost as an additional cost for
     -- the action specifically
     case ac.target of
@@ -941,7 +941,7 @@ instance RunMessage ActiveCost where
         else do
           case c.target of
             ForAdditionalCost batchId -> push $ IgnoreBatch batchId
-            _ -> pure ()
+            _ -> error $ "Can't afford cost: " <> show cost
           pure c
     SetCost acId cost | acId == c.id -> do
       pure $ c {activeCostCosts = cost}

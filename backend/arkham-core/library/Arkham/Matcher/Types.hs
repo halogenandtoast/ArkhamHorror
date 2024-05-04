@@ -632,6 +632,9 @@ data TreacheryMatcher
   | NotTreachery TreacheryMatcher
   deriving stock (Show, Eq, Ord, Data)
 
+instance Not TreacheryMatcher where
+  not_ = NotTreachery
+
 instance Semigroup TreacheryMatcher where
   AnyTreachery <> x = x
   x <> AnyTreachery = x
@@ -663,6 +666,7 @@ data ExtendedCardMatcher
   | ExtendedCardWithOneOf [ExtendedCardMatcher]
   | ExtendedCardMatches [ExtendedCardMatcher]
   | PlayableCardWithCostReduction ActionStatus Int ExtendedCardMatcher
+  | PlayableCardWithNoCost ActionStatus ExtendedCardMatcher
   | PlayableCard CostStatus ExtendedCardMatcher
   | PlayableCardWithCriteria ActionStatus CriteriaOverride ExtendedCardMatcher
   | CommittableCard InvestigatorId ExtendedCardMatcher

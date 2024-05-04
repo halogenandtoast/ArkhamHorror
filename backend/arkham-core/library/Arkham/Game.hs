@@ -3517,6 +3517,24 @@ instance Query ExtendedCardMatcher where
                 )
                 results
             pure $ c `elem` playable
+      PlayableCardWithNoCost actionStatus matcher' -> do
+        mTurnInvestigator <- selectOne TurnInvestigator
+        case mTurnInvestigator of
+          Nothing -> pure False
+          Just iid -> do
+            let windows' = Window.defaultWindows iid
+            results <- select matcher'
+            playable <-
+              filterM
+                ( getIsPlayableWithResources
+                    iid
+                    GameSource
+                    1000
+                    (Cost.UnpaidCost actionStatus)
+                    windows'
+                )
+                results
+            pure $ c `elem` playable
       PlayableCard costStatus matcher' -> do
         mTurnInvestigator <- selectOne TurnInvestigator
         case mTurnInvestigator of

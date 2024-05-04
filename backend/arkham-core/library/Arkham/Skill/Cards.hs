@@ -691,6 +691,7 @@ fightingLessons =
   (skill "09030" "Fighting Lessons" [#combat, #agility, #wild] Guardian)
     { cdCardTraits = setFromList [Practiced]
     , cdCommitRestrictions = [OnlyTestWithActions [#fight, #evade]]
+    , cdCardInHandEffects = True
     }
 
 riseToTheOccasion3 :: CardDef

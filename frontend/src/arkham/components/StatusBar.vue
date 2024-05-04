@@ -71,6 +71,9 @@ const focusedCards = computed(() => {
 const showChoices = computed(() => !props.game.skillTest && focusedCards.value.length == 0 && choices.value.some((c) => { return c.tag === MessageType.DONE || c.tag === MessageType.LABEL || c.tag === MessageType.SKILL_LABEL || c.tag === MessageType.SKILL_LABEL_WITH_LABEL || c.tag == MessageType.PORTRAIT_LABEL }))
 
 const title = computed(() => {
+  if (props.game.skillTest) {
+    return null
+  }
   if (focusedCards.value.length > 0) {
     return null
   }

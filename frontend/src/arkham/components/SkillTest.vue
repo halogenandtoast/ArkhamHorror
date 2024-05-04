@@ -11,7 +11,7 @@ import Card from '@/arkham/components/Card.vue'
 import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
 import { MessageType, StartSkillTestButton } from '@/arkham/types/Message';
 import * as ArkhamGame from '@/arkham/types/Game';
-import { imgsrc } from '@/arkham/helpers';
+import { imgsrc, replaceIcons } from '@/arkham/helpers';
 import ChaosBagView from '@/arkham/components/ChaosBag.vue';
 // has a slot for content
 
@@ -103,16 +103,32 @@ const applyResultsAction = computed(() => {
   return choices.value.findIndex((c) => c.tag === "SkillTestApplyResultsButton");
 })
 
+const skillValue = computed(() => {
+  const result = skillTestResults.value
+  if (result !== null) {
+    const {skillTestResultsSkillValue, skillTestResultsIconValue, skillTestResultsChaosTokensValue } = result
+    return skillTestResultsSkillValue + skillTestResultsIconValue + skillTestResultsChaosTokensValue
+  } else {
+    return props.skillTest.modifiedSkillValue
+  }
+})
 
 const testResult = computed(() => {
   const result = skillTestResults.value
   if (result !== null) {
-    const {skillTestResultsSkillValue, skillTestResultsIconValue, skillTestResultsChaosTokensValue, skillTestResultsDifficulty} = result
-    return skillTestResultsSkillValue + skillTestResultsIconValue + skillTestResultsChaosTokensValue - skillTestResultsDifficulty
+    const {skillTestResultsDifficulty} = result
+    return skillValue.value - skillTestResultsDifficulty
   } else {
     return null
   }
 })
+
+const label = function(body: string) {
+  if (body.startsWith("$")) {
+    return t(body.slice(1))
+  }
+  return replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>').replace(/\*([^*]*)\*/g, '<i>$1</i>')
+}
 
 </script>
 
@@ -131,7 +147,7 @@ const testResult = computed(() => {
           </div>
           <span>VS</span>
           <div class="modified-skill">
-            <span class="skill">{{skillTest.modifiedSkillValue}}</span>
+            <span class="skill">{{skillValue}}</span>
             <span>Modified Skill</span>
           </div>
         </div>
@@ -215,7 +231,7 @@ const testResult = computed(() => {
         <span v-if="skillTestResults.skillTestResultsSuccess">
           Succeeded by {{testResult}}
         </span>
-        <span v-else-if="testResult">
+        <span v-else-if="testResult !== null">
           Failed by {{testResult - (skillTestResults.skillTestResultsResultModifiers || 0)}}
         </span>
       </div>
@@ -461,5 +477,10 @@ i.iconSkillAgility {
 .choices {
   display: flex;
   width: 100%;
+}
+
+
+.message-label {
+  flex: 1;
 }
 </style>

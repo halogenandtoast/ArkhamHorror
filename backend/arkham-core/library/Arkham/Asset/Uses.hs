@@ -20,6 +20,7 @@ data UseType
   | Evidence
   | Offering
   | Leyline
+  | Aether
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''UseType)

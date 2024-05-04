@@ -397,6 +397,7 @@ allPlayerAssetCards =
       , hyperawareness
       , hyperawareness2
       , hyperawareness4
+      , hyperphysicalShotcasterTheoreticalDevice
       , hypnoticTherapy
       , ichtacaTheForgottenGuardian
       , ikiaqTheCouncilsChosen3
@@ -5110,7 +5111,6 @@ brandOfCthugha4 =
     , cdSlots = [#arcane]
     }
 
-
 sledgehammer :: CardDef
 sledgehammer =
   (multiClassAsset "08094" "Sledgehammer" 3 [Guardian, Survivor])
@@ -5339,6 +5339,25 @@ chuckFergus2 =
     , cdSlots = [#ally]
     , cdLevel = Just 2
     , cdUnique = True
+    }
+
+hyperphysicalShotcasterTheoreticalDevice :: CardDef
+hyperphysicalShotcasterTheoreticalDevice =
+  (asset "09119" ("Hyperphysical Shotcaster" <:> "Theoretical Device") 4 Neutral)
+    { cdCardTraits = setFromList [Item, Relic, Weapon, Firearm]
+    , cdSkills = [#wild]
+    , cdKeywords = setFromList [Keyword.Customizable]
+    , cdUses = uses Aether 4
+    , cdCustomizations =
+        mapFromList
+          [ (Railshooter, 2)
+          , (Telescanner, 2)
+          , (Translocator, 2)
+          , (Realitycollapser, 2)
+          , (Matterweaver, 2)
+          , (AethericLink, 4)
+          , (EmpoweredConfiguration, 4)
+          ]
     }
 
 blessedBlade4 :: CardDef

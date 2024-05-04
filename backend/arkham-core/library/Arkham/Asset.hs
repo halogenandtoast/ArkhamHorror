@@ -836,6 +836,8 @@ allAssets =
     , SomeAssetCard fingerprintKit4
     , --- rogue [tsk]
       SomeAssetCard chuckFergus2
+    , --- neutral [tsk]
+      SomeAssetCard hyperphysicalShotcasterTheoreticalDevice
     , -- The Feast of Hemloch Vale
       --- guardian [tsk]
       SomeAssetCard blessedBlade4

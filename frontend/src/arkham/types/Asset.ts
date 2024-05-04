@@ -24,6 +24,7 @@ export type Asset = {
   cardsUnderneath: Card[];
   sealedChaosTokens: ChaosToken[];
   keys: ArkhamKey[];
+  customizations: [number, number][];
 }
 
 export const assetDecoder = JsonDecoder.object<Asset>({
@@ -42,5 +43,6 @@ export const assetDecoder = JsonDecoder.object<Asset>({
   assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
   sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
-    keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
+  keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
+  customizations: JsonDecoder.array<[number, number]>(JsonDecoder.tuple([JsonDecoder.number, JsonDecoder.number], 'Customization'), 'Customization[]'),
 }, 'Asset');

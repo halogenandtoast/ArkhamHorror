@@ -27,6 +27,64 @@ const card = computed(() => {
   return getImage(hoveredElement.value);
 });
 
+const allCustomizations = ["09021", "09022", "09023", "09040", "09041", "09042", "09059", "09060", "09061", "09079", "09080", "09081", "09099", "09100", "09101", "09119"]
+
+const cardCode = computed(() => {
+  if (card.value) {
+    const pattern = /cards\/(\d+)\.jpg/;
+    const match = card.value.match(pattern);
+    if (match) {
+      return match[1];
+    }
+  }
+  return null;
+});
+
+const customizationsCard = computed(() => {
+  if (cardCode.value) {
+    if (allCustomizations.includes(cardCode.value)) {
+      return imgsrc(`customizations/${cardCode.value}.jpg`);
+    }
+  }
+  return null;
+});
+
+const customizationTicks = computed(() => {
+  if (cardCode.value && customizations.value) {
+    const customizationObject: string[] = [];
+
+    customizations.value.forEach((customization: [number, number]) => {
+        const firstValue = customization[0];
+        const secondValue = customization[1];
+        for (let i = 1; i <= secondValue; i++) {
+          const key = `customization-${cardCode.value}-${firstValue}-${i}`;
+          customizationObject.push(key);
+        }
+    });
+
+    return customizationObject;
+  }
+
+  return [];
+});
+
+const customizations = computed(() => {
+  if (!hoveredElement.value) return null;
+  const str = hoveredElement.value.dataset.customizations
+
+  if (!str) return null;
+
+  const pairs = str.split(",").map(Number); // Convert string to array of numbers
+  const customizations = [];
+
+  // Group pairs into tuples
+  for (let i = 0; i < pairs.length; i += 2) {
+    customizations.push([pairs[i], pairs[i + 1]]);
+  }
+
+  return customizations.length === 0 ? null : customizations;
+});
+
 const fight = computed(() => {
   if (!hoveredElement.value) return null;
   return hoveredElement.value.dataset.fight;
@@ -163,6 +221,12 @@ const getImage = (el: HTMLElement): string | null => {
     <img class="horror horror-1" v-if="horror && horror >= 1" :src="imgsrc('horror-overlay.png')"/>
     <img class="horror horror-2" v-if="horror && horror >= 2" :src="imgsrc('horror-overlay.png')"/>
     <img class="horror horror-3" v-if="horror && horror >= 3" :src="imgsrc('horror-overlay.png')"/>
+    <div v-if="customizationTicks.length > 0" class="customizations-wrapper">
+      <img v-if="customizationsCard" :src="customizationsCard" />
+      <div v-for="tick in customizationTicks" :key="tick" :class="`tick tick-${cardCode} ${tick}`">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -277,6 +341,114 @@ const getImage = (el: HTMLElement): string | null => {
 
 .reversed {
   transform: rotateZ(180deg);
+}
+
+.customizations-wrapper {
+  position: relative;
+  width: fit-content;
+  height: fit-content;
+  margin-left: 2px;
+}
+
+.tick {
+  line-height: 0;
+  position: absolute;
+  width: 2.8%;
+  height: 2.8%;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.tick-09119 {
+  --top-0: 19.0%;
+  --top-1: 28.4%;
+  --top-2: 40.6%;
+  --top-3: 55.6%;
+  --top-4: 67.9%;
+  --top-5: 80.1%;
+  --top-6: 86.4%;
+  --left-1: 8.4%;
+  --left-2: 11.2%;
+  --left-3: 14.2%;
+  --left-4: 17.3%;
+}
+
+
+.customization-09119-0-1 {
+  top: var(--top-0);
+  left: var(--left-1);
+}
+
+.customization-09119-0-2 {
+  top: var(--top-0);
+  left: var(--left-2);
+}
+.customization-09119-1-1 {
+  top: var(--top-1);
+  left: var(--left-1);
+}
+.customization-09119-1-2 {
+  top: var(--top-1);
+  left: var(--left-2);
+}
+.customization-09119-2-1 {
+  top: var(--top-2);
+  left: var(--left-1);
+}
+.customization-09119-2-2 {
+  top: var(--top-2);
+  left: var(--left-2);
+}
+.customization-09119-3-1 {
+  top: var(--top-3);
+  left: var(--left-1);
+}
+.customization-09119-3-2 {
+  top: var(--top-3);
+  left: var(--left-2);
+}
+.customization-09119-4-1 {
+  top: var(--top-4);
+  left: var(--left-1);
+}
+.customization-09119-4-2 {
+  top: var(--top-4);
+  left: var(--left-2);
+}
+.customization-09119-5-1 {
+  top: var(--top-5);
+  left: var(--left-1);
+}
+.customization-09119-5-2 {
+  top: var(--top-5);
+  left: var(--left-2);
+}
+.customization-09119-5-3 {
+  top: var(--top-5);
+  left: var(--left-3);
+}
+.customization-09119-5-4 {
+  top: var(--top-5);
+  left: var(--left-4);
+}
+.customization-09119-6-1 {
+  top: var(--top-6);
+  left: var(--left-1);
+}
+.customization-09119-6-2 {
+  top: var(--top-6);
+  left: var(--left-2);
+}
+.customization-09119-6-3 {
+  top: var(--top-6);
+  left: var(--left-3);
+}
+.customization-09119-6-4 {
+  top: var(--top-6);
+  left: var(--left-4);
 }
 
 </style>

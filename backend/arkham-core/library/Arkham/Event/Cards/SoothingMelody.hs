@@ -84,7 +84,8 @@ instance RunMessage SoothingMelody where
           ]
 
       investigatorHorrorChoices <- for horrorInvestigators $ \i -> do
-        pure $ componentLabel HorrorToken (toTarget i) [HealHorror (toTarget i) (toSource attrs) 1]
+        pure $ componentLabel HorrorToken (toTarget i) $ HealHorror (toTarget i) (toSource attrs) 1
+          : [ResolveEventChoice iid eid (n + 1) Nothing [] | n < limit]
 
       let choices =
             investigatorDamageChoices <> investigatorHorrorChoices <> damageAssetChoices <> horrorAssetChoices

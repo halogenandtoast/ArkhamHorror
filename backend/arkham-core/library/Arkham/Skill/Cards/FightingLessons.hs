@@ -1,10 +1,10 @@
 module Arkham.Skill.Cards.FightingLessons where
 
 import Arkham.Prelude
---import Arkham.Ability
-import Arkham.Modifier
-import Arkham.Helpers.Modifiers
+
+import Arkham.Card
 import Arkham.Classes
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher.Types
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
@@ -17,7 +17,7 @@ fightingLessons :: SkillCard FightingLessons
 fightingLessons = skill FightingLessons Cards.fightingLessons
 
 instance HasModifiersFor FightingLessons where
-  getModifiersFor (InvestigatorTarget iid) (FightingLessons attrs) | controlledBy attrs iid = do
+  getModifiersFor (CardIdTarget cid) (FightingLessons attrs) | toCardId attrs == cid = do
     pure $ toModifiers attrs [CanCommitToSkillTestPerformedByAnInvestigatorAt Anywhere]
   getModifiersFor _ _ = pure []
 

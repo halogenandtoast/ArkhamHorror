@@ -349,8 +349,21 @@ getIsCommittable a c = do
       allowedToCommit <-
         if iid /= a
           then do
+            cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
+            let locationsCardCanBePlayedAt = [matcher | CanCommitToSkillTestPerformedByAnInvestigatorAt matcher <- cardModifiers]
             otherLocation <- field InvestigatorLocation iid
-            otherLocationOk <- maybe (pure False) (canCommitToAnotherLocation a) otherLocation
+            otherLocationOk <-
+              maybe
+                (pure False)
+                ( \l ->
+                    orM
+                      [ canCommitToAnotherLocation a l
+                      , if notNull locationsCardCanBePlayedAt
+                          then l <=~> oneOf locationsCardCanBePlayedAt
+                          else pure False
+                      ]
+                )
+                otherLocation
             perilous <- getIsPerilous skillTest
             alreadyCommitted <- fieldMap InvestigatorCommittedCards notNull a
             pure

@@ -174,9 +174,10 @@ data PreyMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 pattern AssetCanHaveUses :: UseType -> AssetMatcher
-pattern AssetCanHaveUses uType <- AssetOneOf [AssetWithUseType uType, AssetWithoutUses]
+pattern AssetCanHaveUses uType <-
+  AssetOneOf [AssetMatches [AssetWithUseType uType, AssetNotAtUseLimit], AssetWithoutUses]
   where
-    AssetCanHaveUses uType = AssetOneOf [AssetWithUseType uType, AssetWithoutUses]
+    AssetCanHaveUses uType = AssetOneOf [AssetMatches [AssetWithUseType uType, AssetNotAtUseLimit], AssetWithoutUses]
 
 data AssetMatcher
   = AssetWithTitle Text

@@ -345,6 +345,7 @@ allPlayerEventCards =
       , wellMaintained1
       , willToSurvive
       , willToSurvive3
+      , windsOfPower1
       , wingingIt
       , wordOfCommand2
       , workingAHunch
@@ -2888,6 +2889,16 @@ meditativeTrance =
           $ youExist
           $ InvestigatorWithFilledSlot #arcane
           <> oneOf [HealableInvestigator ThisCard dType You | dType <- [#damage, #horror]]
+    }
+
+windsOfPower1 :: CardDef
+windsOfPower1 =
+  (event "08063" "Winds of Power" 2 Mystic)
+    { cdSkills = [#willpower, #willpower]
+    , cdCardTraits = setFromList [Spirit]
+    , cdCriteria = Just $ exists (AssetControlledBy You <> AssetCanHaveUses Uses.Charge)
+    , cdCardInHandEffects = True
+    , cdLevel = Just 1
     }
 
 parallelFates2 :: CardDef

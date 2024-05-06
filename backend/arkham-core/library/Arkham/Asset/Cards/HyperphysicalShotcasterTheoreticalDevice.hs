@@ -45,6 +45,29 @@ instance HasModifiersFor HyperphysicalShotcasterTheoreticalDevice where
   getModifiersFor target (HyperphysicalShotcasterTheoreticalDevice (With attrs _)) | attrs `is` target = do
     let linked = attrs `hasCustomization` AethericLink
     pure $ toModifiers attrs [AdditionalStartingUses 2 | linked]
+  getModifiersFor (AbilityTarget _iid ab) (HyperphysicalShotcasterTheoreticalDevice (With attrs meta)) | isSource attrs ab.source && ab.index == 1 = do
+    case manifest meta of
+      Just Translocator -> do
+        pure
+          $ toModifiers
+            attrs
+            [ CanModify
+                $ EnemyEvadeActionCriteria
+                $ CriteriaOverride
+                $ EnemyCriteria
+                $ ThisEnemy
+                $ oneOf
+                  [ EnemyAt (ConnectedFrom YourLocation)
+                      <> NonEliteEnemy
+                      <> EnemyWithEvade
+                      <> EnemyCanEnter YourLocation
+                  , EnemyAt (CanEnterLocation You)
+                      <> oneOf [not_ (EnemyIsEngagedWith Anyone), MassiveEnemy]
+                      <> EnemyWithEvade
+                  , EnemyAt YourLocation <> EnemyIsEngagedWith You <> EnemyWithEvade
+                  ]
+            ]
+      _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HyperphysicalShotcasterTheoreticalDevice where
@@ -71,24 +94,7 @@ instance HasAbilities HyperphysicalShotcasterTheoreticalDevice where
     manifestCriteria = \case
       Railshooter -> NoRestriction
       Telescanner -> NoRestriction
-      Translocator ->
-        -- either an enemy exists we can evade, OR a non-elite enemy we can
-        -- evade that we can move, or we can move and there is an enemy
-        exists
-          $ oneOf
-            [ CanEvadeEnemy (toSource x)
-            , CanEvadeEnemyWithOverride
-                $ CriteriaOverride
-                $ EnemyCriteria
-                $ ThisEnemy
-                $ EnemyAt ConnectedLocation
-                <> NonEliteEnemy
-            , CanEvadeEnemyWithOverride
-                $ CriteriaOverride
-                $ EnemyCriteria
-                $ ThisEnemy
-                $ EnemyAt (CanEnterLocation You)
-            ]
+      Translocator -> NoRestriction
       Realitycollapser -> NoRestriction
       Matterweaver -> exists (PlayableCardWithNoCost NoAction $ InHandOf You <> #asset)
       _ -> error "Invalid manifest criteria"
@@ -117,7 +123,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
             ]
         Just Translocator -> do
           --  we check if we have enemies we can evade
-          canEvade <- select $ CanEvadeEnemy (toSource attrs)
+          canEvade <- select (CanEvadeEnemy $ toSource attrs)
 
           -- if we don't have an enemy to evade, then we can only move enemies
           -- we can to us, otherwise we can move any non-elite enemy
@@ -202,20 +208,26 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
           -- We can only choose to move nothing if we have a valid target
           -- If we have a valid target we can move any enemy to us, otherwise we have to move an evadeable enemy
           lid <- getJustLocation iid -- TODO: can we do this?
-          chooseOne iid $ Label "Move nothing (before)" [DoStep 1 msg | notNull canEvade]
-            : [targetLabel enemy [Move $ move attrs enemy lid, DoStep 0 msg] | enemy <- canMoveEnemyToUs]
-              <> [ targetLabel e [Move $ moveToMatch attrs e (ConnectedFrom $ LocationWithId lid), DoStep 0 msg]
-                 | e <- canMoveEnemyAway
-                 ]
-              <> [ targetLabel i [Move $ moveToMatch attrs i (ConnectedFrom $ LocationWithId lid), DoStep 0 msg]
-                 | i <- canMoveOtherInvestigatorsAway
-                 ]
-              <> [ targetLabel i [Move $ move attrs i lid, DoStep 0 msg]
-                 | i <- canMoveOtherInvestigatorsToYourLocation
-                 ]
-              <> [ targetLabel l [Move $ move attrs iid l, DoStep 0 msg]
-                 | l <- locationWeCanMoveToWithCurrentEvade <> locationWeCanMoveToWithEvadeableEnemies
-                 ]
+          let
+            forceEngagement enemy = if notNull canEvade then id else afterMove [Msg.EnemyEngageInvestigator enemy iid]
+
+          chooseOne iid
+            $ [Label "Move nothing (before)" [DoStep 1 msg] | notNull canEvade]
+            <> [ targetLabel enemy [Move $ forceEngagement enemy (move attrs enemy lid), DoStep 0 msg]
+               | enemy <- canMoveEnemyToUs
+               ]
+            <> [ targetLabel e [Move $ moveToMatch attrs e (ConnectedFrom $ LocationWithId lid), DoStep 0 msg]
+               | e <- canMoveEnemyAway
+               ]
+            <> [ targetLabel i [Move $ moveToMatch attrs i (ConnectedFrom $ LocationWithId lid), DoStep 0 msg]
+               | i <- canMoveOtherInvestigatorsAway
+               ]
+            <> [ targetLabel i [Move $ move attrs i lid, DoStep 0 msg]
+               | i <- canMoveOtherInvestigatorsToYourLocation
+               ]
+            <> [ targetLabel l [Move $ move attrs iid l, DoStep 0 msg]
+               | l <- locationWeCanMoveToWithCurrentEvade <> locationWeCanMoveToWithEvadeableEnemies
+               ]
         Just Realitycollapser -> do
           chooseOne
             iid

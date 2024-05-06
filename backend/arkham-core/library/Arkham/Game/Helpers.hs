@@ -2546,6 +2546,14 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , deckMatch iid deck deckMatcher
             ]
         _ -> noMatch
+    Matcher.WouldDrawCard timing whoMatcher deckMatcher ->
+      guardTiming timing $ \case
+        Window.WouldDrawCard who deck ->
+          andM
+            [ matchWho iid who whoMatcher
+            , deckMatch iid deck $ Matcher.replaceThatInvestigator who deckMatcher
+            ]
+        _ -> noMatch
     Matcher.DeckWouldRunOutOfCards timing whoMatcher -> guardTiming timing $ \case
       Window.DeckWouldRunOutOfCards who -> matchWho iid who whoMatcher
       _ -> noMatch

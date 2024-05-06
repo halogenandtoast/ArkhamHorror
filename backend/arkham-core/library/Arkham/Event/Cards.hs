@@ -162,6 +162,7 @@ allPlayerEventCards =
       , flare1
       , followed
       , foolMeOnce1
+      , foresight1
       , forewarned1
       , fortuitousDiscovery
       , fortuneOrFate2
@@ -2898,6 +2899,20 @@ windsOfPower1 =
     , cdCardTraits = setFromList [Spirit]
     , cdCriteria = Just $ exists (AssetControlledBy You <> AssetCanHaveUses Uses.Charge)
     , cdCardInHandEffects = True
+    , cdLevel = Just 1
+    }
+
+foresight1 :: CardDef
+foresight1 =
+  (event "08064" "Foresight" 0 Mystic)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Augury]
+    , cdFastWindow =
+        Just
+          $ WouldDrawCard
+            #when
+            (affectsOthers $ InvestigatorAt YourLocation)
+            (DeckOneOf [EncounterDeck, DeckOf ThatInvestigator])
     , cdLevel = Just 1
     }
 

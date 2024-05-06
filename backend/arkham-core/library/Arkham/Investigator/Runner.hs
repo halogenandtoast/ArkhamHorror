@@ -2143,12 +2143,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       n = cardDrawAmount cardDraw
     beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #draw)]
     afterWindowMsg <- checkWindows [mkAfter (Window.PerformAction iid #draw)]
+
+    wouldDraw <-
+      checkWindows [mkWhen (Window.WouldDrawCard iid $ Deck.InvestigatorDeck iid)]
     drawing <- drawCards iid source n
     pushAll
       [ BeginAction
       , beforeWindowMsg
       , TakeActions iid [#draw] (ActionCost 1)
       , CheckAttackOfOpportunity iid False
+      , wouldDraw
       , drawing
       , afterWindowMsg
       , FinishAction

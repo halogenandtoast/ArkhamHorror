@@ -8,6 +8,7 @@ import Arkham.Card
 import Arkham.Deck
 import Arkham.Id
 import Arkham.Source
+import Arkham.Target
 import Data.Aeson.TH
 import GHC.Records
 
@@ -29,6 +30,7 @@ data CardDraw = CardDraw
   , cardDrawState :: CardDrawState
   , cardDrawAction :: Bool
   , cardDrawRules :: Set CardDrawRules
+  , cardDrawHandler :: Maybe Target
   }
   deriving stock (Show, Eq, Ord)
 
@@ -61,6 +63,7 @@ newCardDraw i source n = do
       , cardDrawState = UnresolvedCardDraw
       , cardDrawAction = False
       , cardDrawRules = mempty
+      , cardDrawHandler = Nothing
       }
 
 asDrawAction :: CardDraw -> CardDraw

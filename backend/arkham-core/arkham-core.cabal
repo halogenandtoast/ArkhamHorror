@@ -420,6 +420,7 @@ library
       Arkham.Asset.Cards.ArmorOfArdennes5
       Arkham.Asset.Cards.ArtStudent
       Arkham.Asset.Cards.AshleighClarke
+      Arkham.Asset.Cards.AstronomicalAtlas3
       Arkham.Asset.Cards.Augur
       Arkham.Asset.Cards.AugustLindquist
       Arkham.Asset.Cards.AzureFlame
@@ -1498,6 +1499,7 @@ library
       Arkham.Event.Cards.Flare1
       Arkham.Event.Cards.Followed
       Arkham.Event.Cards.FoolMeOnce1
+      Arkham.Event.Cards.Foresight1
       Arkham.Event.Cards.Forewarned1
       Arkham.Event.Cards.FortuitousDiscovery
       Arkham.Event.Cards.FortuneOrFate2

@@ -13,6 +13,7 @@ import Arkham.Event.Runner
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Projection
+import Arkham.Window (defaultWindows)
 
 newtype CrypticWritings2 = CrypticWritings2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
@@ -35,7 +36,7 @@ instance RunMessage CrypticWritings2 where
       let n = if hasTenOrMoreCards then 4 else 3
       push $ TakeResources iid n (toSource attrs) False
       pure e
-    InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 windows' _) | iid' == iid -> do
-      push $ InitiatePlayCard iid (toCard attrs) Nothing NoPayment windows' False
+    InHand iid' (UseThisAbility iid (isSource attrs -> True) 1) | iid' == iid -> do
+      push $ InitiatePlayCard iid (toCard attrs) Nothing NoPayment (defaultWindows iid) False
       pure e
     _ -> CrypticWritings2 <$> runMessage msg attrs

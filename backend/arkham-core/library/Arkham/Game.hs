@@ -2030,7 +2030,7 @@ getAssetsMatching matcher = do
         UsesWithLimit uType _ pl -> do
           l <- getPlayerCountValue pl
           fieldMap AssetUses ((< l) . findWithDefault 0 uType) (toId a)
-        Uses {} -> pure False
+        Uses {} -> pure True
         NoUses -> pure True
     AssetNotAtUsesX -> do
       filterM

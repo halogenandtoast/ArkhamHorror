@@ -7,6 +7,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Prelude
+import Arkham.Window (defaultWindows)
 
 newtype CrypticWritings = CrypticWritings EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
@@ -27,7 +28,7 @@ instance RunMessage CrypticWritings where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       push $ TakeResources iid 2 (toSource attrs) False
       pure e
-    InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 windows' _) | iid' == iid -> do
-      push $ InitiatePlayCard iid (toCard attrs) Nothing NoPayment windows' False
+    InHand iid' (UseThisAbility iid (isSource attrs -> True) 1) | iid' == iid -> do
+      push $ InitiatePlayCard iid (toCard attrs) Nothing NoPayment (defaultWindows iid) False
       pure e
     _ -> CrypticWritings <$> runMessage msg attrs

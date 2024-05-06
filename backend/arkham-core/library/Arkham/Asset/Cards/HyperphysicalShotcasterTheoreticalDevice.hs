@@ -306,7 +306,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
              ]
       pure a
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
-      lids <- select $ RevealedLocation <> not_ (locationWithInvestigator iid)
+      lids <- select $ RevealedLocation <> not_ (locationWithInvestigator iid) <> LocationWithAnyClues
       when (notNull lids)
         $ chooseOne
           iid

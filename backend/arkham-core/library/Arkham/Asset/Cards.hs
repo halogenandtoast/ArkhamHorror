@@ -161,6 +161,7 @@ allPlayerAssetCards =
       , armageddon4
       , armorOfArdennes5
       , artStudent
+      , astronomicalAtlas3
       , augur
       , augustLindquist
       , azureFlame
@@ -5018,6 +5019,15 @@ closeTheCircle1 =
     , cdSlots = [#arcane]
     , cdLevel = Just 1
     , cdUses = uses Charge 0
+    }
+
+astronomicalAtlas3 :: CardDef
+astronomicalAtlas3 =
+  (asset "08067" "Astronomical Atlas" 3 Mystic)
+    { cdSkills = [#willpower, #intellect, #intellect]
+    , cdCardTraits = setFromList [Item, Tome]
+    , cdSlots = [#hand]
+    , cdLevel = Just 3
     }
 
 grounded3 :: CardDef

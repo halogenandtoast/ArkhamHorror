@@ -145,6 +145,7 @@ data WindowType
   | DiscoverClues InvestigatorId LocationId Source Int
   | DiscoveringLastClue InvestigatorId LocationId
   | SuccessfullyInvestigateWithNoClues InvestigatorId LocationId
+  | WouldDrawCard InvestigatorId DeckSignifier
   | DrawCard InvestigatorId Card DeckSignifier
   | DrawCards InvestigatorId [Card]
   | DrawChaosToken InvestigatorId ChaosToken

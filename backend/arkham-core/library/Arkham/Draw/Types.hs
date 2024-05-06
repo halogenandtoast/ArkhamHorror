@@ -35,6 +35,7 @@ data CardDraw msg = CardDraw
   , cardDrawKind :: CardDrawKind
   , cardDrawRules :: Set CardDrawRules
   , cardDrawAndThen :: Maybe msg
+  , cardDrawHandler :: Maybe Target
   }
   deriving stock (Show, Eq, Ord)
 
@@ -79,6 +80,28 @@ drewCard c draw = draw {cardDrawState = updatedState}
 
 class AsDeck a where
   asDeck :: a -> DeckSignifier
+
+newCardDraw
+  :: (MonadRandom m, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> Int
+  -> m CardDraw
+newCardDraw i source n = do
+  drawId <- getRandom
+  pure
+    $ CardDraw
+      { cardDrawId = drawId
+      , cardDrawInvestigator = i
+      , cardDrawSource = toSource source
+      , cardDrawDeck = InvestigatorDeck i
+      , cardDrawAmount = n
+      , cardDrawState = UnresolvedCardDraw
+      , cardDrawAction = False
+      , cardDrawRules = mempty
+      , cardDrawHandler = Nothing
+      }
+>>>>>>> d02303435 (WIP)
 
 instance AsDeck DeckSignifier where
   asDeck = id

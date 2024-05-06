@@ -477,6 +477,7 @@ allEvents =
     , --- mystic [eote]
       SomeEventCard meditativeTrance
     , SomeEventCard windsOfPower1
+    , SomeEventCard foresight1
     , SomeEventCard parallelFates2
     , --- rogue/mystic [eote]
       SomeEventCard etherealSlip

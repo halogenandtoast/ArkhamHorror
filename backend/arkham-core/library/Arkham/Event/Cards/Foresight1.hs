@@ -2,7 +2,7 @@ module Arkham.Event.Cards.Foresight1 (foresight1, Foresight1 (..)) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv
+import {-# SOURCE #-} Arkham.GameEnv (findAllCards)
 import Arkham.Helpers.Query (getPlayer)
 import Arkham.Message (chooseOneDropDown)
 import Arkham.Name

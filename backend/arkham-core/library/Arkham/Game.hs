@@ -868,8 +868,7 @@ getInvestigatorsMatching matcher = do
     NotInvestigator x -> fmap not . go x
     InvestigatorMatches xs -> \i -> allM (`go` i) xs
     AnyInvestigator xs -> \i -> anyM (`go` i) xs
-    HandWith cardListMatcher ->
-      (`cardListMatches` cardListMatcher) <=< field InvestigatorHand . toId
+    HandWith cardListMatcher -> (`cardListMatches` cardListMatcher) <=< field InvestigatorHand . toId
     DiscardWith cardListMatcher ->
       (`cardListMatches` cardListMatcher)
         . map PlayerCard
@@ -2201,7 +2200,7 @@ getEventsMatching matcher = do
       pure $ filter ((== placement) . attr eventPlacement) as
     EventControlledBy investigatorMatcher -> do
       iids <- select investigatorMatcher
-      pure $ filter (isInPlayPlacement . attr eventPlacement) $ filter ((`elem` iids) . ownerOfEvent) as
+      pure $ filter ((`elem` iids) . ownerOfEvent) as
     EventWithoutModifier modifierType -> do
       filterM (fmap (notElem modifierType) . getModifiers . toId) as
     EventWithDoom valueMatcher ->

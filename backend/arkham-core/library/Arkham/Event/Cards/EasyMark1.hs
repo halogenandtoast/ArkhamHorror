@@ -1,10 +1,4 @@
-module Arkham.Event.Cards.EasyMark1 (
-  easyMark1,
-  EasyMark1 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.EasyMark1 (easyMark1, EasyMark1 (..)) where
 
 import Arkham.Ability
 import Arkham.Capability
@@ -12,14 +6,14 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype EasyMark1 = EasyMark1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 easyMark1 :: EventCard EasyMark1
-easyMark1 =
-  event EasyMark1 Cards.easyMark1
+easyMark1 = event EasyMark1 Cards.easyMark1
 
 instance HasAbilities EasyMark1 where
   getAbilities (EasyMark1 a) =

@@ -351,7 +351,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       pushAll [DiscardedCost target, toDiscardBy iid c.source target]
       withPayment $ DiscardPayment [(zone, card)]
     DiscardAssetCost matcher -> do
-      assets <- select (matcher <> AssetReady)
+      assets <- select (matcher <> DiscardableAsset)
       push $ chooseOne player $ targetLabels assets $ only . pay . discardCost
       pure c
     DiscardRandomCardCost -> do

@@ -756,6 +756,9 @@ data CardMatcher
   | CardWithEvenNumberOfWordsInTitle
   deriving stock (Show, Eq, Ord, Data)
 
+instance Not CardMatcher where
+  not_ = NotCard
+
 instance IsString CardMatcher where
   fromString = CardWithTitle . fromString
 

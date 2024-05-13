@@ -5,18 +5,19 @@ module Arkham.Investigator.Cards.DexterDrake (
 )
 where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher hiding (Discarded, DuringTurn)
+import Arkham.Name
+import Arkham.Placement
 import Arkham.Window (defaultWindows)
 
 newtype DexterDrake = DexterDrake InvestigatorAttrs
@@ -35,11 +36,11 @@ instance HasAbilities DexterDrake where
         1
         ( Self
             <> DuringTurn You
-            <> AnyCriterion
+            <> oneOf
               [ PlayableCardExistsWithCostReduction
                   1
                   (HandCardWithDifferentTitleFromAtLeastOneAsset You AnyAsset AnyCard)
-              , ExtendedCardExists (InHandOf You <> BasicCardMatch (cardIs Assets.occultScraps))
+              , ExtendedCardExists (InHandOf You <> basic (cardIs Assets.occultScraps))
               ]
         )
         $ FastAbility
@@ -60,7 +61,7 @@ toCardPaid (DiscardPayment [(_, c)]) = c
 toCardPaid _ = error "Invalid payment"
 
 instance RunMessage DexterDrake where
-  runMessage msg i@(DexterDrake attrs) = case msg of
+  runMessage msg i@(DexterDrake attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (toCardPaid -> card) -> do
       cards <-
         select
@@ -68,23 +69,27 @@ instance RunMessage DexterDrake where
             [ PlayableCardWithCostReduction
                 NoAction
                 1
-                ( InHandOf (InvestigatorWithId $ toId attrs)
-                    <> BasicCardMatch (#asset <> NotCard (CardWithTitle $ toTitle card))
-                )
-            , InHandOf (InvestigatorWithId iid) <> BasicCardMatch (cardIs Assets.occultScraps)
+                (inHandOf attrs.id <> basic (#asset <> not_ (CardWithTitle $ toTitle card)))
+            , inHandOf iid <> basic (cardIs Assets.occultScraps)
             ]
-      player <- getPlayer iid
-      pushAll
-        [ chooseOrRunOne player
-            $ [ targetLabel (toCardId c)
-                $ [ createCardEffect Cards.dexterDrake Nothing attrs (toCardId c)
-                  , PayCardCost iid c $ defaultWindows iid
-                  ]
-              | c <- cards
-              ]
+      chooseOrRunOne
+        iid
+        [ targetLabel (toCardId c)
+          $ [ Msg.createCardEffect Cards.dexterDrake Nothing attrs (toCardId c)
+            , PayCardCost iid c $ defaultWindows iid
+            ]
+        | c <- cards
         ]
       pure i
-    _ -> DexterDrake <$> runMessage msg attrs
+    ElderSignEffect iid | iid == toId attrs -> do
+      assets <- select $ AssetWithPlacement (InPlayArea iid) <> AssetCanLeavePlayByNormalMeans
+      when (notNull assets) do
+        drawing <- Msg.drawCardsIfCan iid attrs 1
+        chooseOne iid
+          $ Label "Do no return an asset" []
+          : [targetLabel asset $ ReturnToHand iid (toTarget asset) : maybeToList drawing | asset <- assets]
+      pure i
+    _ -> DexterDrake <$> lift (runMessage msg attrs)
 
 newtype DexterDrakeEffect = DexterDrakeEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

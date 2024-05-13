@@ -21,7 +21,11 @@ pushedIntoTheBeyond = treachery PushedIntoTheBeyond Cards.pushedIntoTheBeyond
 instance RunMessage PushedIntoTheBeyond where
   runMessage msg t@(PushedIntoTheBeyond attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      targets <- selectWithField AssetCardCode $ assetControlledBy iid <> AssetNonStory
+      targets <-
+        selectWithField AssetCardCode
+          $ assetControlledBy iid
+          <> AssetNonStory
+          <> AssetCanLeavePlayByNormalMeans
       player <- getPlayer iid
       pushWhen (notNull targets)
         $ chooseOne

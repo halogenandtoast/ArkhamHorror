@@ -1207,10 +1207,9 @@ runGameMessage msg g = case msg of
     send $ format investigator <> " drew " <> format card
     sendEnemy (toTitle investigator <> " drew Enemy") (toJSON card)
     enemyId <- getRandom
-    let enemy = createEnemy card enemyId
+    let enemy = overAttrs (\e -> e {enemyBearer = Just iid}) (createEnemy card enemyId)
     pushAll
-      [ SetBearer (toTarget enemy) iid
-      , RemoveCardFromHand iid (toCardId card)
+      [ RemoveCardFromHand iid (toCardId card)
       , InvestigatorDrawEnemy iid enemyId
       ]
     pure $ g & entitiesL . enemiesL %~ insertMap enemyId enemy & resolvingCardL ?~ card

@@ -24,6 +24,7 @@ const solo = inject<Ref<boolean>>('solo')
 const switchInvestigator = inject<((i: string) => void)>('switchInvestigator')
 const hasChoices = (iid: string) => ArkhamGame.choices(props.game, iid).length > 0
 const investigators = computed(() => props.playerOrder.map(iid => props.players[iid]))
+const inactiveInvestigators = computed(() => Object.values(props.players).filter((p) => !props.playerOrder.includes(p.id)))
 const lead = computed(() => `url('${imgsrc(`lead-investigator.png`)}')`)
 
 function tabClass(investigator: Investigator) {
@@ -87,9 +88,42 @@ watchEffect(() => selectedTab.value = props.playerId)
           class="switch-investigators"
           @click="selectTabExtended(investigator.playerId)"><font-awesome-icon icon="eye" :class="{ 'fa-icon': hasSwitch(investigator) }" /></button>
       </li>
+      <li v-for='investigator in inactiveInvestigators'
+        :key='investigator.name.title'
+        @click='selectTab(investigator.playerId)'
+        class="inactive"
+        :class='tabClass(investigator)'
+      >
+        <span>{{ investigator.name.title }}</span>
+        <button
+          v-if="solo"
+          v-tooltip="instructions(investigator)"
+          :disabled="investigator.playerId === props.playerId"
+          class="switch-investigators"
+          @click="selectTabExtended(investigator.playerId)"><font-awesome-icon icon="eye" :class="{ 'fa-icon': hasSwitch(investigator) }" /></button>
+      </li>
     </ul>
     <Tab
       v-for="investigator in investigators"
+      :key="investigator.id"
+      :index="investigator.playerId"
+      :selectedTab="selectedTab"
+      :playerClass="investigator.class"
+      :title="investigator.name.title"
+      :playerId="playerId"
+      :investigatorId="investigator.id"
+      :activePlayer="investigator.playerId == activePlayerId"
+    >
+      <Player
+        :game="game"
+        :playerId="playerId"
+        :investigator="investigator"
+        :tarotCards="tarotCardsFor(investigator.id)"
+        @choose="$emit('choose', $event)"
+      />
+    </Tab>
+    <Tab
+      v-for="investigator in inactiveInvestigators"
       :key="investigator.id"
       :index="investigator.playerId"
       :selectedTab="selectedTab"
@@ -227,5 +261,9 @@ ul.tabs__header > li.tab--selected {
     color: #ff00ff; /* Glowing color */
     text-shadow: 0 0 10px #ff00ff;
   }
+}
+
+ul.tabs__header > li.inactive {
+  filter: grayscale(100%);
 }
 </style>

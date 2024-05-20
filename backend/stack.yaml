@@ -3,7 +3,7 @@ require-stack-version: ">= 2.13.1"
 concurrent-tests: false
 system-ghc: true
 install-ghc: false
-resolver: nightly-2024-04-04
+resolver: nightly-2024-05-20
 compiler: ghc-9.8.2
 
 ghc-options:

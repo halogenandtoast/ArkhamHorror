@@ -66,8 +66,8 @@ RUN \
     ghcup config set gpg-setting GPGNone
 
 ARG GHC=9.8.2
-ARG CABAL=latest
-ARG STACK=latest
+ARG CABAL=3.10.3.0
+ARG STACK=2.15.5
 
 ENV BOOTSTRAP_HASKELL_NONINTERACTIVE=1
 

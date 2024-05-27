@@ -17,7 +17,7 @@
             buildInputs = with pkgs;
               [
                 nodejs_21
-                haskell.compiler.ghc96
+                haskell.compiler.ghc98
               ];
           };
         };

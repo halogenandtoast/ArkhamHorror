@@ -9,13 +9,8 @@ RUN npm install --location=global vite
 RUN mkdir -p /opt/arkham/src/frontend
 
 WORKDIR /opt/arkham/src/frontend
-COPY ./frontend/package.json /opt/arkham/src/frontend/package.json
-COPY ./frontend/tsconfig.json /opt/arkham/src/frontend/tsconfig.json
-COPY ./frontend/vite.config.js /opt/arkham/src/frontend/vite.config.js
-COPY ./frontend/.eslintrc.cjs /opt/arkham/src/frontend/.eslintrc.cjs
-COPY ./frontend/package-lock.json /opt/arkham/src/frontend/package-lock.json
+COPY ./frontend/package.json ./frontend/tsconfig.json ./frontend/vite.config.js ./frontend/.eslintrc.cjs ./frontend/package-lock.json /opt/arkham/src/frontend/
 RUN npm ci
-WORKDIR /opt/arkham/src/frontend
 COPY ./frontend /opt/arkham/src/frontend
 ENV VITE_ASSET_HOST ${ASSET_HOST:-""}
 RUN npm run build
@@ -26,10 +21,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL=C.UTF-8
 ENV TZ=UTC
 
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
 # install dependencies
 RUN \
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
     apt-get update -y && \
     apt-get install -y --no-install-recommends \
         libpq-dev \
@@ -92,7 +86,7 @@ COPY ./backend/arkham-api/package.yaml /opt/arkham/src/backend/arkham-api/packag
 COPY ./backend/arkham-core/package.yaml /opt/arkham/src/backend/arkham-core/package.yaml
 COPY ./backend/validate/package.yaml /opt/arkham/src/backend/validate/package.yaml
 COPY ./backend/cards-discover/package.yaml /opt/arkham/src/backend/cards-discover/package.yaml
-RUN --mount=type=cache,id=stack,target=/root/.stack stack build --system-ghc --dependencies-only --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS'
+RUN --mount=type=cache,id=stack-${TARGETARCH},target=/root/.stack stack build --system-ghc --dependencies-only --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS'
 
 FROM dependencies as api
 
@@ -103,11 +97,12 @@ RUN mkdir -p \
 COPY ./backend /opt/arkham/src/backend
 
 WORKDIR /opt/arkham/src/backend/cards-discover
-RUN --mount=type=cache,id=stack,target=/root/.stack stack build --system-ghc --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS' cards-discover
+RUN --mount=type=cache,id=stack-${TARGETARCH},target=/root/.stack stack build --system-ghc --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS' cards-discover
 
 WORKDIR /opt/arkham/src/backend/arkham-api
-RUN --mount=type=cache,id=stack,target=/root/.stack stack build --no-terminal --system-ghc --ghc-options '-j4 +RTS -A128m -n2m -RTS'
-RUN --mount=type=cache,id=stack,target=/root/.stack stack --no-terminal --local-bin-path /opt/arkham/bin install
+RUN --mount=type=cache,id=stack-${TARGETARCH},target=/root/.stack \
+  stack build --no-terminal --system-ghc --ghc-options '-j4 +RTS -A128m -n2m -RTS' && \
+  stack --no-terminal --local-bin-path /opt/arkham/bin install
 
 FROM ubuntu:22.04 as app
 

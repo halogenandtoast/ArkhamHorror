@@ -1,12 +1,13 @@
 module Arkham.Treachery.Cards.OnWingsOfDarkness where
 
 import Arkham.Classes
+import Arkham.Game.Helpers (getCanMoveToMatchingLocations)
 import Arkham.Matcher
 import Arkham.Movement
 import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype OnWingsOfDarkness = OnWingsOfDarkness TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -16,17 +17,16 @@ onWingsOfDarkness :: TreacheryCard OnWingsOfDarkness
 onWingsOfDarkness = treachery OnWingsOfDarkness Cards.onWingsOfDarkness
 
 instance RunMessage OnWingsOfDarkness where
-  runMessage msg t@(OnWingsOfDarkness attrs) = case msg of
+  runMessage msg t@(OnWingsOfDarkness attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs #agility (Fixed 4)
+      revelationSkillTest iid attrs #agility (Fixed 4)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       centralLocations <- getCanMoveToMatchingLocations iid attrs $ LocationWithTrait Central
       enemiesToDisengage <- select $ enemyEngagedWith iid <> EnemyWithoutTrait Nightgaunt
-      player <- getPlayer iid
-      pushAll
-        $ assignDamageAndHorror iid attrs 1 1
-        : map (DisengageEnemy iid) enemiesToDisengage
-          <> [chooseOne player $ targetLabels centralLocations (only . MoveTo . move attrs iid)]
+      assignDamageAndHorror iid attrs 1 1
+      pushAll $ map (DisengageEnemy iid) enemiesToDisengage
+      when (notNull centralLocations) do
+        chooseOne iid $ targetLabels centralLocations (only . MoveTo . move attrs iid)
       pure t
-    _ -> OnWingsOfDarkness <$> runMessage msg attrs
+    _ -> OnWingsOfDarkness <$> lift (runMessage msg attrs)

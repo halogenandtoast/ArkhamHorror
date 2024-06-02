@@ -19,8 +19,8 @@ overgrowth = treachery Overgrowth Cards.overgrowth
 
 instance HasModifiersFor Overgrowth where
   getModifiersFor (InvestigatorTarget iid) (Overgrowth attrs) = do
-    lid <- getJustLocation iid
-    pure $ toModifiers attrs [CannotExplore | treacheryOnLocation lid attrs]
+    mlid <- getMaybeLocation iid
+    pure $ toModifiers attrs [CannotExplore | lid <- toList mlid, treacheryOnLocation lid attrs]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Overgrowth where

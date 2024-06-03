@@ -6,7 +6,6 @@ import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -28,17 +27,16 @@ instance HasAbilities Overgrowth where
 
 instance RunMessage Overgrowth where
   runMessage msg t@(Overgrowth attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      lid <- getJustLocation iid
-      withoutOvergrowth <- lid <=~> LocationWithoutTreachery (treacheryIs Cards.overgrowth)
-      pushWhen withoutOvergrowth $ attachTreachery attrs lid
+    Revelation iid (isSource attrs -> True) -> do
+      mlid <- getMaybeLocation iid
+      for_ mlid \lid -> do
+        withoutOvergrowth <- lid <=~> LocationWithoutTreachery (treacheryIs Cards.overgrowth)
+        pushWhen withoutOvergrowth $ attachTreachery attrs lid
       pure t
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      let
-        target = toTarget attrs
-        chooseSkillTest sType = SkillLabel sType [beginSkillTest iid (attrs.ability 1) target sType (Fixed 4)]
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let chooseSkillTest sType = SkillLabel sType [beginSkillTest iid (attrs.ability 1) attrs sType (Fixed 4)]
       player <- getPlayer iid
-      push $ chooseOne player $ map chooseSkillTest [SkillCombat, SkillIntellect]
+      push $ chooseOne player $ map chooseSkillTest [#combat, #intellect]
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ toDiscardBy iid (attrs.ability 1) attrs

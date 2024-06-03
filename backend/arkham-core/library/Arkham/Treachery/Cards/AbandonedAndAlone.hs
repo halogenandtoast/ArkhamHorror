@@ -1,8 +1,7 @@
 module Arkham.Treachery.Cards.AbandonedAndAlone where
 
-import Arkham.Prelude
-
 import Arkham.Classes
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards (abandonedAndAlone)
 import Arkham.Treachery.Runner
 

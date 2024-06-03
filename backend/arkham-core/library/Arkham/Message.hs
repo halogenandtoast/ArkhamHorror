@@ -1075,7 +1075,7 @@ questionLabelWithCard :: Text -> CardCode -> PlayerId -> Question Message -> Mes
 questionLabelWithCard lbl cCode pid q = Ask pid (QuestionLabel lbl (Just cCode) q)
 
 chooseOne :: HasCallStack => PlayerId -> [UI Message] -> Message
-chooseOne _ [] =  error "No messages for chooseOne"
+chooseOne _ [] = error "No messages for chooseOne"
 chooseOne pid msgs = Ask pid (ChooseOne msgs)
 
 chooseOneDropDown :: PlayerId -> [(Text, Message)] -> Message

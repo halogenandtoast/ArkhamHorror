@@ -371,6 +371,11 @@ chooseOne iid msgs = do
   player <- getPlayer iid
   push $ Msg.chooseOne player msgs
 
+chooseOneDropDown :: ReverseQueue m => InvestigatorId -> [(Text, Message)] -> m ()
+chooseOneDropDown iid msgs = do
+  player <- getPlayer iid
+  push $ Msg.chooseOneDropDown player msgs
+
 chooseAmounts
   :: (Targetable target, ReverseQueue m)
   => InvestigatorId

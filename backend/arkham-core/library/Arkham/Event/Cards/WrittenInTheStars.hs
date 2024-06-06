@@ -8,7 +8,6 @@ where
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Effect.Import
-import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv (getCard)

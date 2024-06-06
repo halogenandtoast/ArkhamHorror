@@ -10,6 +10,7 @@ import Arkham.Effect.Types as X (
  )
 
 import Arkham.Effect.Runner as X ()
+import Arkham.EffectMetadata as X
 
 import Arkham.Classes.HasQueue (push)
 import Arkham.Effect.Types qualified as Msg

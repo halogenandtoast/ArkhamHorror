@@ -20,5 +20,6 @@ data EffectMetadata window a
   | EffectMetaSkill SkillType
   | EffectAbility (Ability, [window])
   | EffectCost ActiveCostId
+  | EffectText Text
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)

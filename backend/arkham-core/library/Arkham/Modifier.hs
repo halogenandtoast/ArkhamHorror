@@ -223,6 +223,7 @@ data ModifierType
   | ForcePrey PreyMatcher
   | ForceSpawnLocation LocationMatcher
   | ForceSpawn SpawnAt
+  | Foresight
   | ChangeSpawnLocation LocationMatcher LocationMatcher
   | ForcedChaosTokenChange ChaosTokenFace [ChaosTokenFace]
   | GainVictory Int

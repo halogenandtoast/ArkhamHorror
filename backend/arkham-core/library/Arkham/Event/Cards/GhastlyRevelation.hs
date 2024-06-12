@@ -6,10 +6,12 @@ module Arkham.Event.Cards.GhastlyRevelation (
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Matcher hiding (InvestigatorDefeated)
+import Arkham.Message qualified as Msg
 import Arkham.Projection
 
 newtype GhastlyRevelation = GhastlyRevelation EventAttrs
@@ -23,7 +25,7 @@ instance RunMessage GhastlyRevelation where
   runMessage msg e@(GhastlyRevelation attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       pushAll
-        [ InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) 3 Nothing
+        [ Msg.DiscoverClues iid $ discoverAtYourLocation (toSource attrs) 3
         , ResolveEvent iid eid Nothing []
         ]
       pure e
@@ -45,10 +47,7 @@ instance RunMessage GhastlyRevelation where
                       "Clues to give"
                       (MaxAmountTarget clues)
                       [("Clues", (0, clues))]
-                      ( ProxyTarget
-                          (toTarget attrs)
-                          (InvestigatorTarget iid')
-                      )
+                      (ProxyTarget (toTarget attrs) (InvestigatorTarget iid'))
                   ]
                 | iid' <- otherInvestigators
                 ]

@@ -11,8 +11,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Deck qualified as Deck
+import Arkham.Discover
 import Arkham.Helpers.Investigator (searchBonded)
 import Arkham.Matcher hiding (EnemyEvaded)
+import Arkham.Message qualified as Msg
 import Arkham.Movement
 
 newtype PendantOfTheQueen = PendantOfTheQueen AssetAttrs
@@ -86,7 +88,7 @@ instance RunMessage PendantOfTheQueen where
           ]
         <> [ Label
             "Discover a clue at this location"
-            [DiscoverCluesAtLocation iid lid (toAbilitySource attrs 1) 1 NotInvestigate Nothing]
+            [Msg.DiscoverClues iid $ discover lid (toAbilitySource attrs 1) 1]
            | discoverChoice
            ]
         <> [ Label

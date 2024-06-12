@@ -8,12 +8,14 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Timing qualified as Timing
 import Data.Aeson
 import Data.Aeson.KeyMap qualified as KeyMap
@@ -76,14 +78,10 @@ instance RunMessage IntelReport where
           push
             $ chooseOrRunOne
               player
-              [ targetLabel
-                lid
-                [InvestigatorDiscoverClues iid lid (toSource attrs) clueCount Nothing]
+              [ targetLabel lid [Msg.DiscoverClues iid $ discover lid (toSource attrs) clueCount]
               | lid <- lids
               ]
-        else
-          push
-            $ InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) clueCount Nothing
+        else push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toSource attrs) clueCount
       pure e
     InHand _ (UseCardAbility _ (isSource attrs -> True) 1 _ _) -> do
       push

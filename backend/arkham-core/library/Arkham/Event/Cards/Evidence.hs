@@ -8,6 +8,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Location.Types (Field (..))
+import Arkham.Message qualified as Msg
 import Arkham.Projection
 
 newtype Evidence = Evidence EventAttrs
@@ -22,7 +23,7 @@ instance RunMessage Evidence where
     PlayThisEvent iid eid | attrs `is` eid -> do
       currentLocation <- getJustLocation iid
       pushWhenM (fieldSome LocationClues currentLocation)
-        $ toMessage
-        $ discover iid currentLocation attrs 1
+        $ Msg.DiscoverClues iid
+        $ discover currentLocation attrs 1
       pure e
     _ -> Evidence <$> runMessage msg attrs

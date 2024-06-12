@@ -6,11 +6,12 @@ module Arkham.Event.Cards.Eavesdrop (
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Message qualified as Msg
 
 newtype Eavesdrop = Eavesdrop EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -38,15 +39,9 @@ instance RunMessage Eavesdrop where
         ]
       pure e
     HandleTargetChoice iid source (EnemyTarget eid) | isSource attrs source -> do
-      push
-        $ beginSkillTest
-          iid
-          (toSource attrs)
-          (toTarget attrs)
-          SkillIntellect
-          (EnemyMaybeFieldCalculation eid EnemyEvade)
+      push $ beginSkillTest iid attrs attrs #intellect (EnemyMaybeFieldCalculation eid EnemyEvade)
       pure e
     PassedSkillTest iid _ _ target _ _ | isTarget attrs target -> do
-      push $ InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) 2 Nothing
+      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toSource attrs) 2
       pure e
     _ -> Eavesdrop <$> runMessage msg attrs

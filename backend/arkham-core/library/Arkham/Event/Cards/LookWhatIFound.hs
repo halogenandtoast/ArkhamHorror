@@ -7,6 +7,7 @@ import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
+import Arkham.Message qualified as Msg
 
 newtype LookWhatIFound = LookWhatIFound EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -19,6 +20,6 @@ instance RunMessage LookWhatIFound where
   runMessage msg e@(LookWhatIFound attrs) = case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
       lid <- getJustLocation iid
-      push $ discover iid lid attrs 2
+      push $ Msg.DiscoverClues iid $ discover lid attrs 2
       pure e
     _ -> LookWhatIFound <$> runMessage msg attrs

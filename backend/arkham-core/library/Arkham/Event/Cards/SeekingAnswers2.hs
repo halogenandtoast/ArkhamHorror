@@ -3,14 +3,15 @@ module Arkham.Event.Cards.SeekingAnswers2 (
   SeekingAnswers2 (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Action qualified as Action
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Investigate
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
+import Arkham.Prelude
 
 newtype SeekingAnswers2 = SeekingAnswers2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -33,13 +34,13 @@ instance RunMessage SeekingAnswers2 where
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
       lids <-
         select
-          $ LocationMatchAny [locationWithInvestigator iid, ConnectedLocation]
+          $ oneOf [locationWithInvestigator iid, ConnectedLocation]
           <> locationWithDiscoverableCluesBy iid
       player <- getPlayer iid
       pushIfAny lids
         $ chooseOrRunOne player
         $ [ targetLabel lid'
-            $ [InvestigatorDiscoverClues iid lid' (toSource attrs) 1 (Just #investigate)]
+            $ [Msg.DiscoverClues iid $ viaInvestigate $ discover lid' (toSource attrs) 1]
           | lid' <- lids
           ]
       pure e

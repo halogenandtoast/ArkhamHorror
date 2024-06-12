@@ -9,6 +9,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards hiding (pennyWhite)
 import Arkham.Card
+import Arkham.Discover
 import Arkham.Draw.Types
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
@@ -18,6 +19,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.SkillTest.Base
@@ -69,7 +71,7 @@ instance HasChaosTokenValue PennyWhite where
 instance RunMessage PennyWhite where
   runMessage msg i@(PennyWhite attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ InvestigatorDiscoverCluesAtTheirLocation iid (toAbilitySource attrs 1) 1 Nothing
+      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toAbilitySource attrs 1) 1
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       mSkillTest <- getSkillTest

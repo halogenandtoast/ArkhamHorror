@@ -12,6 +12,7 @@ import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner hiding (DiscoverClues)
 import Arkham.Matcher hiding (EnemyEvaded)
+import Arkham.Message qualified as Msg
 import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -65,7 +66,7 @@ instance RunMessage TrishScarborough where
       enemies <- select $ enemyAt lid <> CanEvadeEnemy (attrs.ability 1)
       push
         $ chooseOrRunOne player
-        $ [Label "Discover 1 additional clue at that location" [toMessage $ discover iid lid attrs 1]]
+        $ [Label "Discover 1 additional clue at that location" [Msg.DiscoverClues iid $ discover lid attrs 1]]
         <> [ Label
             "Automatically evade that enemy"
             [chooseOrRunOne player [targetLabel enemy [EnemyEvaded iid enemy] | enemy <- enemies]]

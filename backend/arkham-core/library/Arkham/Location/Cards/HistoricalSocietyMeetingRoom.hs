@@ -3,17 +3,16 @@ module Arkham.Location.Cards.HistoricalSocietyMeetingRoom (
   HistoricalSocietyMeetingRoom (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (DiscoverClues, RevealLocation)
 import Arkham.Message qualified as Msg
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype HistoricalSocietyMeetingRoom = HistoricalSocietyMeetingRoom LocationAttrs
@@ -30,35 +29,24 @@ historicalSocietyMeetingRoom =
 
 instance HasAbilities HistoricalSocietyMeetingRoom where
   getAbilities (HistoricalSocietyMeetingRoom attrs) =
-    withBaseAbilities attrs
-      $ if locationRevealed attrs
+    extend attrs
+      $ if attrs.revealed
         then
           [ restrictedAbility
               attrs
               1
-              ( Here
-                  <> CluesOnThis (AtLeast $ Static 1)
-                  <> CanDiscoverCluesAt
-                    (LocationWithId $ toId attrs)
-              )
-              $ ActionAbility []
-              $ Costs [ActionCost 1, ExhaustAssetCost $ AssetWithTrait Ally]
+              (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (LocationWithId attrs.id))
+              $ actionAbilityWithCost (ExhaustAssetCost $ AssetWithTrait Ally)
           ]
         else
-          [ mkAbility attrs 1
-              $ ForcedAbility
-              $ EnemySpawns
-                Timing.When
-                (LocationWithId $ toId attrs)
-                AnyEnemy
-          ]
+          [mkAbility attrs 1 $ forced $ EnemySpawns #when (LocationWithId attrs.id) AnyEnemy]
 
 instance RunMessage HistoricalSocietyMeetingRoom where
   runMessage msg l@(HistoricalSocietyMeetingRoom attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ | locationRevealed attrs -> do
-      push $ InvestigatorDiscoverClues iid (toId attrs) (toAbilitySource attrs 1) 1 Nothing
+    UseThisAbility iid (isSource attrs -> True) 1 | attrs.revealed -> do
+      push $ Msg.DiscoverClues iid $ discover attrs (attrs.ability 1) 1
       pure l
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ Msg.RevealLocation Nothing $ toId attrs
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ Msg.RevealLocation Nothing attrs.id
       pure l
     _ -> HistoricalSocietyMeetingRoom <$> runMessage msg attrs

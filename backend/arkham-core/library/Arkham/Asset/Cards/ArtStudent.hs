@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Discover
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 
 newtype ArtStudent = ArtStudent AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -27,6 +28,6 @@ instance HasAbilities ArtStudent where
 instance RunMessage ArtStudent where
   runMessage msg a@(ArtStudent attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ discoverAtYourLocation iid (toAbilitySource attrs 1) 1
+      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toAbilitySource attrs 1) 1
       pure a
     _ -> ArtStudent <$> runMessage msg attrs

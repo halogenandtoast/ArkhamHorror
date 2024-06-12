@@ -11,6 +11,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Discover
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 
 newtype PennyWhite = PennyWhite AssetAttrs
   deriving anyclass (IsAsset)
@@ -38,6 +39,6 @@ instance HasAbilities PennyWhite where
 instance RunMessage PennyWhite where
   runMessage msg a@(PennyWhite attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ discoverAtYourLocation iid (toSource attrs) 1
+      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toSource attrs) 1
       pure a
     _ -> PennyWhite <$> runMessage msg attrs

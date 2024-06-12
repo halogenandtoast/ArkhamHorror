@@ -6,6 +6,7 @@ import Arkham.Investigator.Runner
 import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Prelude
 import Arkham.Projection
 
@@ -35,6 +36,6 @@ instance HasChaosTokenValue RolandBanks where
 instance RunMessage RolandBanks where
   runMessage msg i@(RolandBanks attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ discoverAtYourLocation iid (attrs.ability 1) 1
+      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (attrs.ability 1) 1
       pure i
     _ -> RolandBanks <$> runMessage msg attrs

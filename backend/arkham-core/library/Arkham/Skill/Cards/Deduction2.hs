@@ -2,6 +2,7 @@ module Arkham.Skill.Cards.Deduction2 where
 
 import Arkham.Action qualified as Action
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Effect.Runner
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Prelude
@@ -38,7 +39,7 @@ instance RunMessage Deduction2Effect where
     Successful (Action.Investigate, _) iid _ (LocationTarget lid) _ ->
       case effectMetadata of
         Just (EffectMetaTarget (LocationTarget lid')) | lid == lid' -> do
-          push $ InvestigatorDiscoverClues iid lid (toSource attrs) 1 (Just Action.Investigate)
+          push $ DiscoverClues iid $ viaInvestigate $ discover lid (toSource attrs) 1
           pure e
         _ -> pure e
     SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)

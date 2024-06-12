@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NoFieldSelectors #-}
 
 module Arkham.Discover where
@@ -6,23 +7,25 @@ import Arkham.Action
 import Arkham.Id
 import Arkham.Prelude
 import Arkham.Source
+import Data.Aeson.TH
 import GHC.Records
 
+data IsInvestigate = IsInvestigate | NotInvestigate
+  deriving stock (Show, Eq, Generic)
+
 data DiscoverLocation = DiscoverYourLocation | DiscoverAtLocation LocationId
+  deriving stock (Show, Eq)
 
 data Discover = Discover
   { discoverCount :: Int
-  , discoverInvestigator :: InvestigatorId
   , discoverLocation :: DiscoverLocation
   , discoverSource :: Source
   , discoverAction :: Maybe Action
   }
+  deriving stock (Show, Eq)
 
 instance HasField "count" Discover Int where
   getField = (.discoverCount)
-
-instance HasField "investigator" Discover InvestigatorId where
-  getField = (.discoverInvestigator)
 
 instance HasField "location" Discover DiscoverLocation where
   getField = (.discoverLocation)
@@ -33,29 +36,40 @@ instance HasField "source" Discover Source where
 instance HasField "action" Discover (Maybe Action) where
   getField = (.discoverAction)
 
+instance HasField "isInvestigate" Discover IsInvestigate where
+  getField = discoverIsInvestigate
+
+discoverIsInvestigate :: Discover -> IsInvestigate
+discoverIsInvestigate d = if d.action == Just #investigate then IsInvestigate else NotInvestigate
+
 viaInvestigate :: Discover -> Discover
 viaInvestigate discover' = discover' {discoverAction = Just #investigate}
 
 discoverAction :: Maybe Action -> Discover -> Discover
 discoverAction action discover' = discover' {discoverAction = action}
 
-discoverAtYourLocation :: Sourceable source => InvestigatorId -> source -> Int -> Discover
-discoverAtYourLocation iid (toSource -> source) n =
+discoverAtYourLocation :: Sourceable source => source -> Int -> Discover
+discoverAtYourLocation (toSource -> source) n =
   Discover
     { discoverCount = n
-    , discoverInvestigator = iid
     , discoverLocation = DiscoverYourLocation
     , discoverSource = source
     , discoverAction = Nothing
     }
 
 discover
-  :: (Sourceable source, AsId a, IdOf a ~ LocationId) => InvestigatorId -> a -> source -> Int -> Discover
-discover iid a (toSource -> source) n =
+  :: (Sourceable source, AsId a, IdOf a ~ LocationId) => a -> source -> Int -> Discover
+discover a (toSource -> source) n =
   Discover
     { discoverCount = n
-    , discoverInvestigator = iid
     , discoverLocation = DiscoverAtLocation (asId a)
     , discoverSource = source
     , discoverAction = Nothing
     }
+
+$( do
+    isInvestigateJSON <- deriveJSON defaultOptions ''IsInvestigate
+    discoverLocationJSON <- deriveJSON defaultOptions ''DiscoverLocation
+    discoverJSON <- deriveJSON defaultOptions ''Discover
+    pure $ concat [isInvestigateJSON, discoverLocationJSON, discoverJSON]
+ )

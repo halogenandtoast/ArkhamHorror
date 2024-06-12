@@ -14,6 +14,7 @@ import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Projection
 
 newtype Pnakotus = Pnakotus LocationAttrs
@@ -45,6 +46,6 @@ instance RunMessage Pnakotus where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       clues <- field LocationClues (toId l)
       drawing <- newCardDraw iid (toSource attrs) clues
-      pushAll [toMessage $ discover iid attrs (attrs.ability 1) clues, DrawCards drawing]
+      pushAll [Msg.DiscoverClues iid $ discover attrs (attrs.ability 1) clues, DrawCards drawing]
       pure l
     _ -> Pnakotus <$> runMessage msg attrs

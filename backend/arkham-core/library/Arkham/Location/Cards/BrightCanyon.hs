@@ -2,11 +2,13 @@ module Arkham.Location.Cards.BrightCanyon (brightCanyon, BrightCanyon (..)) wher
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Supply
+import Arkham.Discover
 import Arkham.GameValue
 import Arkham.Helpers.Window (enters)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -34,6 +36,6 @@ instance RunMessage BrightCanyon where
       push $ assignDamage iid (toAbilitySource attrs 1) 1
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ InvestigatorDiscoverClues iid (toId attrs) (toAbilitySource attrs 2) 2 Nothing
+      push $ Msg.DiscoverClues iid $ discover (toId attrs) (toAbilitySource attrs 2) 2
       pure l
     _ -> BrightCanyon <$> runMessage msg attrs

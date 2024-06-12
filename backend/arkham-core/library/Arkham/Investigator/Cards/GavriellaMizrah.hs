@@ -13,6 +13,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 
@@ -60,7 +61,7 @@ instance HasChaosTokenValue GavriellaMizrah where
 instance RunMessage GavriellaMizrah where
   runMessage msg i@(GavriellaMizrah attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ discoverAtYourLocation iid (toAbilitySource attrs 1) 1
+      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toAbilitySource attrs 1) 1
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       pushAll

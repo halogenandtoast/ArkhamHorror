@@ -21,6 +21,7 @@ import Arkham.Classes.RunMessage.Internal
 import Arkham.Deck qualified as Deck
 import Arkham.DeckBuilding.Adjustment
 import Arkham.Discard
+import Arkham.Discover
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Investigator.Cards
@@ -259,6 +260,7 @@ data InvestigatorAttrs = InvestigatorAttrs
     investigatorLog :: CampaignLog
   , -- internal tracking
     investigatorDiscarding :: Maybe (HandDiscard Message)
+  , investigatorDiscover :: Maybe Discover
   , -- deck building
     investigatorDeckBuildingAdjustments :: [DeckBuildingAdjustment]
   }
@@ -375,6 +377,7 @@ instance FromJSON InvestigatorAttrs where
     investigatorKeys <- o .: "keys"
     investigatorLog <- o .:? "log" .!= mempty
     investigatorDiscarding <- o .: "discarding"
+    investigatorDiscover <- o .:? "discarding"
     investigatorDeckBuildingAdjustments <- o .:? "deckBuildingAdjustments" .!= mempty
     investigatorBeganRoundAt <- o .:? "beganRoundAt"
 

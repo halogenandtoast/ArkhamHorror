@@ -12,6 +12,7 @@ import Arkham.Cost.FieldCost
 import Arkham.Discover
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 
 newtype LolaSantiago3 = LolaSantiago3 AssetAttrs
   deriving anyclass (IsAsset)
@@ -34,6 +35,6 @@ instance HasAbilities LolaSantiago3 where
 instance RunMessage LolaSantiago3 where
   runMessage msg a@(LolaSantiago3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ discoverAtYourLocation iid (toAbilitySource attrs 1) 1
+      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toAbilitySource attrs 1) 1
       pure a
     _ -> LolaSantiago3 <$> runMessage msg attrs

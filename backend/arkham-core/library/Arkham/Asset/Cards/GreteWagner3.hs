@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (EnemyDefeated)
 import Arkham.Discover
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 
 newtype GreteWagner3 = GreteWagner3 AssetAttrs
   deriving anyclass (IsAsset)
@@ -37,6 +38,6 @@ instance HasAbilities GreteWagner3 where
 instance RunMessage GreteWagner3 where
   runMessage msg a@(GreteWagner3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ discoverAtYourLocation iid (toAbilitySource attrs 1) 1
+      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toAbilitySource attrs 1) 1
       pure a
     _ -> GreteWagner3 <$> runMessage msg attrs

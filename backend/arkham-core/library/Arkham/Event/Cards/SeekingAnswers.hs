@@ -7,6 +7,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Investigate
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Prelude
 
 newtype SeekingAnswers = SeekingAnswers EventAttrs
@@ -27,7 +28,7 @@ instance RunMessage SeekingAnswers where
       pushIfAny lids
         $ chooseOne
           player
-          [ targetLabel lid' [toMessage $ viaInvestigate $ discover iid lid' attrs 1]
+          [ targetLabel lid' [Msg.DiscoverClues iid $ viaInvestigate $ discover lid' attrs 1]
           | lid' <- lids
           ]
       pure e

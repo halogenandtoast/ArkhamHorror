@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Helpers.Discover
 import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Matcher hiding (DiscoverClues)
@@ -60,15 +61,19 @@ instance RunMessage DeepDark where
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ toDiscard (toAbilitySource attrs 1) attrs
       pure t
-    DiscoverClues iid lid _ _ _ _ -> do
-      -- TODO: We should track this via history instead
-      let
-        updatedMetadata =
-          Map.insertWith
-            (<>)
-            iid
-            (singleton lid)
-            (investigatorLocationsClues metadata)
-      pure . DeepDark $ attrs `with` (Metadata updatedMetadata)
+    DiscoverClues iid discover -> do
+      mlid <- getDiscoverLocation iid discover
+      case mlid of
+        Just lid -> do
+          -- TODO: We should track this via history instead
+          let
+            updatedMetadata =
+              Map.insertWith
+                (<>)
+                iid
+                (singleton lid)
+                (investigatorLocationsClues metadata)
+          pure . DeepDark $ attrs `with` (Metadata updatedMetadata)
+        Nothing -> pure t
     EndRound -> pure . DeepDark $ attrs `with` (Metadata mempty)
     _ -> DeepDark . (`with` metadata) <$> runMessage msg attrs

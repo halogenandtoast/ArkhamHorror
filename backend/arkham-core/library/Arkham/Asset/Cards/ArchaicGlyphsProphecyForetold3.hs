@@ -12,6 +12,7 @@ import Arkham.Asset.Runner
 import Arkham.Discover
 import Arkham.Investigate
 import Arkham.Matcher hiding (EnemyEvaded)
+import Arkham.Message qualified as Msg
 
 newtype ArchaicGlyphsProphecyForetold3 = ArchaicGlyphsProphecyForetold3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -32,7 +33,7 @@ instance RunMessage ArchaicGlyphsProphecyForetold3 where
       enemies <- select $ enemyEngagedWith iid
       player <- getPlayer iid
       pushAll
-        $ toMessage (viaInvestigate $ discover iid lid (toAbilitySource attrs 1) 1)
+        $ Msg.DiscoverClues iid (viaInvestigate $ discover lid (toAbilitySource attrs 1) 1)
         : [ chooseOne player $ Label "No evasion" [] : targetLabels enemies (only . EnemyEvaded iid)
           | notNull enemies
           ]

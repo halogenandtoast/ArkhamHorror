@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Discover
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 
 newtype MysteriousRaven = MysteriousRaven AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -33,6 +34,6 @@ instance HasAbilities MysteriousRaven where
 instance RunMessage MysteriousRaven where
   runMessage msg a@(MysteriousRaven attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ discoverAtYourLocation iid (toAbilitySource attrs 1) 1
+      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toAbilitySource attrs 1) 1
       pure a
     _ -> MysteriousRaven <$> runMessage msg attrs

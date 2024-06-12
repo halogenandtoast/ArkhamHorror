@@ -310,7 +310,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
       when (notNull lids)
         $ chooseOne
           iid
-          [ targetLabel lid' [toMessage $ viaInvestigate $ discover iid lid' attrs 1]
+          [ targetLabel lid' [Msg.DiscoverClues iid $ viaInvestigate $ discover lid' attrs 1]
           | lid' <- lids
           ]
       pure a

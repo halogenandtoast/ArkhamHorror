@@ -15,6 +15,7 @@ import Arkham.Effect.Runner hiding (Discarded)
 import Arkham.Helpers.Customization
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Projection
 
 newtype EmpiricalHypothesis = EmpiricalHypothesis AssetAttrs
@@ -103,7 +104,7 @@ instance RunMessage EmpiricalHypothesis where
       push $ createCardEffect Cards.empiricalHypothesis Nothing attrs iid
       pure a
     UseThisAbility iid (isSource attrs -> True) 4 -> do
-      push $ toMessage $ discoverAtYourLocation iid (toAbilitySource attrs 4) 1
+      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toAbilitySource attrs 4) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 5 -> do
       let meta = toResult @[Int] (assetMeta attrs)

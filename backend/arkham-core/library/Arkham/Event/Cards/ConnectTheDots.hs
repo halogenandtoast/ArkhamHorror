@@ -11,6 +11,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 
 newtype ConnectTheDots = ConnectTheDots EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -31,7 +32,7 @@ instance RunMessage ConnectTheDots where
       push
         $ chooseOrRunOne
           player
-          [ targetLabel location [toMessage $ discover iid location attrs 2]
+          [ targetLabel location [Msg.DiscoverClues iid $ discover location attrs 2]
           | location <- locations
           ]
       pure e

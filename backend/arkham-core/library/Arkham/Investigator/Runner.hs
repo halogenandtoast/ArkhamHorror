@@ -53,11 +53,13 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Card (drawThisCard, extendedCardMatch)
 import Arkham.Helpers.Deck qualified as Deck
+import Arkham.Helpers.Discover
 import Arkham.Helpers.SkillTest
 import Arkham.Id
 import Arkham.Investigate.Types
 import Arkham.Investigator.Types qualified as Attrs
 import Arkham.Key
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher (
   AssetMatcher (..),
   CardMatcher (..),
@@ -1516,34 +1518,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          , FinishAction
          ]
     pure a
-  InvestigatorDiscoverCluesAtTheirLocation iid source n maction | iid == investigatorId -> do
-    mlid <- field InvestigatorLocation iid
-    case mlid of
-      Just lid -> runMessage (InvestigatorDiscoverClues iid lid source n maction) a
-      _ -> pure a
-  InvestigatorDiscoverClues iid lid source n maction | iid == investigatorId -> do
-    let isInvestigate = if maction == Just #investigate then IsInvestigate else NotInvestigate
-    canDiscoverClues <- getCanDiscoverClues isInvestigate iid lid
-    when canDiscoverClues $ do
-      checkWindowMsg <- checkWindows [mkWhen (Window.DiscoverClues iid lid source n)]
-      pushAll [checkWindowMsg, Do msg]
-    pure a
-  Do (InvestigatorDiscoverClues iid lid source n maction) | iid == investigatorId -> do
-    let isInvestigate = if maction == Just Action.Investigate then IsInvestigate else NotInvestigate
-    canDiscoverClues <- getCanDiscoverClues isInvestigate iid lid
-    pushWhen canDiscoverClues $ toMessage $ discoverAction maction $ discover iid lid source n
-    pure a
   GainClues iid source n | iid == investigatorId -> do
     window <- checkWindows ((`mkWindow` Window.GainsClues iid source n) <$> [#when, #after])
     pushAll [window, PlaceTokens source (toTarget iid) Clue n, After (GainClues iid source n)]
     pure a
   FlipClues target n | isTarget a target -> do
     pure $ a & tokensL %~ flipClues n
-  DiscoverClues iid lid source n1 isInvestigate maction | iid == investigatorId -> do
-    modifiers <- getModifiers lid
+  DiscoverClues iid d | iid == investigatorId -> do
     mods <- getModifiers iid
+    lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
+    modifiers <- getModifiers lid
     let additionalDiscovered = getSum $ fold [Sum x | DiscoveredClues x <- mods]
-    let n = n1 + additionalDiscovered
+    let n = d.count + additionalDiscovered
     let
       getMaybeMax :: ModifierType -> Maybe Int -> Maybe Int
       getMaybeMax (MaxCluesDiscovered x) Nothing = Just x
@@ -1551,12 +1537,35 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       getMaybeMax _ x = x
       mMax :: Maybe Int = foldr getMaybeMax Nothing modifiers
       n' = maybe n (min n) mMax
-    push $ Do $ DiscoverClues iid lid source n' isInvestigate maction
+    canDiscoverClues <- getCanDiscoverClues d.isInvestigate iid lid
+
+    when canDiscoverClues $ do
+      discoveredClues <- min n' <$> field LocationClues lid
+      checkWindowMsg <- checkWindows [mkWhen (Window.DiscoverClues iid lid d.source discoveredClues)]
+      pushAll [checkWindowMsg, Do $ DiscoverClues iid $ d {discoverCount = discoveredClues}]
     pure a
-  Do (DiscoverClues iid _ source n _ _) | iid == investigatorId -> do
-    send $ format a <> " discovered " <> pluralize n "clue"
-    push $ After $ GainClues iid source n
-    pure $ a & tokensL %~ addTokens Clue n
+  Do (DiscoverClues iid d) | iid == investigatorId -> do
+    lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
+    canDiscoverClues <- getCanDiscoverClues d.isInvestigate iid lid
+    if canDiscoverClues
+      then do
+        locationClues <- field LocationClues lid
+        let lastClue = locationClues - d.count <= 0 && locationClues /= 0
+        let clueCount = max 0 $ subtract d.count locationClues
+        locationWindows <-
+          checkWindows
+            ( mkAfter (Window.DiscoverClues iid lid d.source clueCount)
+                : [mkAfter (Window.DiscoveringLastClue iid lid) | lastClue]
+            )
+
+        pushAll
+          [ locationWindows
+          , RemoveClues d.source (LocationTarget lid) clueCount
+          , After $ GainClues iid d.source clueCount
+          ]
+        send $ format a <> " discovered " <> pluralize clueCount "clue"
+        pure $ a & tokensL %~ addTokens Clue clueCount
+      else pure a
   InvestigatorDiscardAllClues _ iid | iid == investigatorId -> do
     pure $ a & tokensL %~ removeAllTokens Clue
   MoveAllCluesTo source target | not (isTarget a target) -> do

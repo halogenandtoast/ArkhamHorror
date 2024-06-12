@@ -8,6 +8,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Location.Types (Field (..))
+import Arkham.Message qualified as Msg
 import Arkham.Projection
 
 newtype WorkingAHunch = WorkingAHunch EventAttrs
@@ -22,7 +23,7 @@ instance RunMessage WorkingAHunch where
     PlayThisEvent iid eid | attrs `is` eid -> do
       current <- getJustLocation iid
       pushWhenM (fieldSome LocationClues current)
-        $ toMessage
-        $ discover iid current attrs 1
+        $ Msg.DiscoverClues iid
+        $ discover current attrs 1
       pure e
     _ -> WorkingAHunch <$> runMessage msg attrs

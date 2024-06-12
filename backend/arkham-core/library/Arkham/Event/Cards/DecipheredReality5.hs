@@ -7,12 +7,14 @@ import Arkham.Prelude
 
 import Arkham.Action qualified as Action
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Projection
 
 newtype DecipheredReality5 = DecipheredReality5 EventAttrs
@@ -41,7 +43,7 @@ instance RunMessage DecipheredReality5 where
       locationIds <- select RevealedLocation
       pushAll
         $ Successful (Action.Investigate, actionTarget) iid source target n
-        : [ InvestigatorDiscoverClues iid lid' (toSource attrs) 1 Nothing
+        : [ Msg.DiscoverClues iid $ discover lid' (toSource attrs) 1
           | lid' <- locationIds
           ]
       pure e

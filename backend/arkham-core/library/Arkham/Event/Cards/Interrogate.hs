@@ -7,13 +7,14 @@ where
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Trait (Trait (Humanoid))
 
 newtype Interrogate = Interrogate EventAttrs
@@ -27,27 +28,19 @@ interrogate =
 instance RunMessage Interrogate where
   runMessage msg e@(Interrogate attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      mlocation <- field InvestigatorLocation iid
-      case mlocation of
-        Just location -> do
-          enemies <- select $ enemyAt location <> EnemyWithTrait Humanoid <> CanParleyEnemy iid
-          player <- getPlayer iid
-          pushAll
-            [ chooseOne
-                player
-                [ targetLabel
-                  enemy
-                  [ parley
-                      iid
-                      (toSource attrs)
-                      (EnemyTarget enemy)
-                      SkillCombat
-                      (SumCalculation [Fixed 3, EnemyFieldCalculation enemy EnemyHealthDamage])
-                  ]
-                | enemy <- enemies
-                ]
+      location <- fieldJust InvestigatorLocation iid
+      enemies <- select $ enemyAt location <> EnemyWithTrait Humanoid <> CanParleyEnemy iid
+      player <- getPlayer iid
+      push
+        $ chooseOne
+          player
+          [ targetLabel
+            enemy
+            [ parley iid attrs enemy #combat
+                $ SumCalculation [Fixed 3, EnemyFieldCalculation enemy EnemyHealthDamage]
             ]
-        _ -> error "investigator not at location"
+          | enemy <- enemies
+          ]
       pure e
     PassedSkillTest iid _ _ SkillTestInitiatorTarget {} _ _ -> do
       mlocation <- field InvestigatorLocation iid
@@ -58,12 +51,12 @@ instance RunMessage Interrogate where
       locations <- select matcher
       player <- getPlayer iid
       pushAll
-        $ [InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) 1 Nothing]
+        $ [Msg.DiscoverClues iid $ discoverAtYourLocation (toSource attrs) 1]
         <> [ chooseOrRunOne
               player
               [ targetLabel
                 location
-                [InvestigatorDiscoverClues iid location (toSource attrs) 1 Nothing]
+                [Msg.DiscoverClues iid $ discover location (toSource attrs) 1]
               | location <- locations
               ]
            ]

@@ -8,6 +8,7 @@ import Arkham.Discover
 import Arkham.Effect.Runner
 import Arkham.Investigate
 import Arkham.Matcher hiding (RevealChaosToken)
+import Arkham.Message qualified as Msg
 import Arkham.Prelude
 
 newtype EyeOfChaos4 = EyeOfChaos4 AssetAttrs
@@ -63,7 +64,7 @@ instance RunMessage EyeOfChaos4Effect where
                         "Discover 1 clues at a connecting location"
                         [ chooseOne
                             player
-                            [ targetLabel lid' [toMessage $ discover iid lid' attrs 1]
+                            [ targetLabel lid' [Msg.DiscoverClues iid $ discover lid' attrs 1]
                             | lid' <- lids
                             ]
                         ]

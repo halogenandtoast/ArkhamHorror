@@ -11,6 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Discover
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Movement
 
 newtype ForbiddenTomeSecretsRevealed3 = ForbiddenTomeSecretsRevealed3 AssetAttrs
@@ -46,7 +47,7 @@ instance RunMessage ForbiddenTomeSecretsRevealed3 where
         [ chooseOrRunOne player
             $ Label "Do not move" []
             : [targetLabel lid [MoveTo $ move (toSource attrs) iid lid] | lid <- lids]
-        , toMessage $ discoverAtYourLocation iid (toAbilitySource attrs 1) 1
+        , Msg.DiscoverClues iid $ discoverAtYourLocation (toAbilitySource attrs 1) 1
         ]
       pure a
     _ -> ForbiddenTomeSecretsRevealed3 <$> runMessage msg attrs

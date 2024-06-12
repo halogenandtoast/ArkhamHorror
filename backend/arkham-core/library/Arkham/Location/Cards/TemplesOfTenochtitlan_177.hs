@@ -3,16 +3,15 @@ module Arkham.Location.Cards.TemplesOfTenochtitlan_177 (
   TemplesOfTenochtitlan_177 (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
+import Arkham.Discover
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Message qualified as Msg
+import Arkham.Prelude
 
 newtype TemplesOfTenochtitlan_177 = TemplesOfTenochtitlan_177 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -30,43 +29,33 @@ templesOfTenochtitlan_177 =
 -- TODO: We need to place doom on an enemy as a cost
 instance HasAbilities TemplesOfTenochtitlan_177 where
   getAbilities (TemplesOfTenochtitlan_177 attrs) =
-    withBaseAbilities
+    extendRevealed
       attrs
-      [ restrictedAbility
-          attrs
-          1
-          (EnemyCriteria $ EnemyExists $ NearestEnemyToLocation (toId attrs) AnyEnemy)
-          $ ForcedAbility
-          $ PutLocationIntoPlay Timing.After Anyone
-          $ LocationWithId
-          $ toId attrs
-      , limitedAbility (GroupLimit PerRound 1)
+      [ restrictedAbility attrs 1 (exists $ NearestEnemyToLocation attrs.id AnyEnemy)
+          $ forced
+          $ PutLocationIntoPlay #after Anyone (be attrs)
+      , groupLimit PerRound
           $ restrictedAbility
             attrs
             2
             ( Here
-                <> CluesOnThis (AtLeast $ Static 1)
-                <> CanDiscoverCluesAt (LocationWithId $ toId attrs)
-                <> EnemyCriteria (EnemyExists AnyEnemy)
+                <> CluesOnThis (atLeast 1)
+                <> CanDiscoverCluesAt (LocationWithId attrs.id)
+                <> exists AnyEnemy
             )
-          $ ActionAbility []
-          $ ActionCost 1
+            actionAbility
       ]
 
 instance RunMessage TemplesOfTenochtitlan_177 where
   runMessage msg l@(TemplesOfTenochtitlan_177 attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       lead <- getLeadPlayer
-      targets <-
-        selectMap EnemyTarget
-          $ NearestEnemyToLocation (toId attrs) AnyEnemy
+      targets <- selectMap EnemyTarget $ NearestEnemyToLocation attrs.id AnyEnemy
       unless (null targets)
         $ push
-        $ chooseOrRunOne
-          lead
-          [targetLabel target [PlaceDoom (toAbilitySource attrs 1) target 1] | target <- targets]
+        $ chooseOrRunOne lead [targetLabel target [PlaceDoom (attrs.ability 1) target 1] | target <- targets]
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ InvestigatorDiscoverClues iid (toId attrs) (toAbilitySource attrs 2) 2 Nothing
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      push $ Msg.DiscoverClues iid $ discover attrs (attrs.ability 2) 2
       pure l
     _ -> TemplesOfTenochtitlan_177 <$> runMessage msg attrs

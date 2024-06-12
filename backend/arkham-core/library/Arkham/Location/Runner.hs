@@ -37,6 +37,7 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Constants
 import Arkham.Direction
+import Arkham.Discover
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
 import Arkham.Id
@@ -55,7 +56,8 @@ import Arkham.Matcher (
   investigatorAt,
   noModifier,
  )
-import Arkham.Message (Message (DiscoverClues, MoveAction, RevealLocation))
+import Arkham.Message (Message (MoveAction, RevealLocation))
+import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Token
@@ -130,7 +132,7 @@ instance RunMessage LocationAttrs where
       let alternateSuccessfullInvestigation = mapMaybe (preview _AlternateSuccessfullInvestigation) modifiers'
       when (null alternateSuccessfullInvestigation)
         $ pushAll
-          [before, InvestigatorDiscoverClues iid lid (toSource a) 1 (Just #investigate), after]
+          [before, Msg.DiscoverClues iid $ viaInvestigate $ discover lid (toSource a) 1, after]
 
       for_ alternateSuccessfullInvestigation $ \target' ->
         push $ Successful (Action.Investigate, toTarget lid) iid source target' n
@@ -182,42 +184,6 @@ instance RunMessage LocationAttrs where
         $ a
         & (revealedConnectedMatchersL <>~ [LocationWithId toLid])
         & (connectedMatchersL <>~ [LocationWithId toLid])
-    DiscoverCluesAtLocation iid lid source n isInvestigate maction | lid == locationId -> do
-      mods <- getModifiers iid
-
-      canDiscover <-
-        and <$> for mods \case
-          CannotDiscoverCluesAt matcher -> not <$> (lid <=~> matcher)
-          CannotDiscoverCluesExceptAsResultOfInvestigation matcher | isInvestigate == NotInvestigate -> not <$> (lid <=~> matcher)
-          _ -> pure True
-
-      when canDiscover $ do
-        let discoveredClues = min n $ locationClues a
-        push $ DiscoverClues iid lid source discoveredClues isInvestigate maction
-
-      pure a
-    Do (DiscoverClues iid lid source n isInvestigate _) | lid == locationId -> do
-      mods <- getModifiers iid
-
-      canDiscover <-
-        and <$> for mods \case
-          CannotDiscoverCluesAt matcher -> not <$> (lid <=~> matcher)
-          CannotDiscoverCluesExceptAsResultOfInvestigation matcher | isInvestigate == NotInvestigate -> not <$> (lid <=~> matcher)
-          _ -> pure True
-
-      if canDiscover
-        then do
-          let lastClue = locationClues a - n <= 0 && locationClues a /= 0
-          let clueCount = max 0 $ subtract n $ locationClues a
-          push
-            =<< checkWindows
-              ( mkWindow Timing.After (Window.DiscoverClues iid lid source n)
-                  : [ mkWindow Timing.After (Window.DiscoveringLastClue iid lid)
-                    | lastClue
-                    ]
-              )
-          pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
-        else pure a
     EnterLocation iid lid | lid == locationId -> do
       unless locationRevealed $ push (RevealLocation (Just iid) lid)
       pure a

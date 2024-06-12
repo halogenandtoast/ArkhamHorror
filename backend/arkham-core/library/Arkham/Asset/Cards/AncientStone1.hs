@@ -10,9 +10,11 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.CampaignLogKey
+import Arkham.Discover
 import Arkham.Id
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
+import Arkham.Message qualified as Msg
 import Arkham.Projection
 
 newtype AncientStone1 = AncientStone1 AssetAttrs
@@ -39,7 +41,7 @@ instance RunMessage AncientStone1 where
       difficulty <- fromJustNote "missing" <$> getSkillTestDifficulty
       shouldRecord <- not <$> getHasRecord YouHaveIdentifiedTheStone
       pushAll
-        $ [ InvestigatorDiscoverClues iid lid (toAbilitySource attrs 1) amount (Just Action.Investigate)
+        $ [ Msg.DiscoverClues iid $ viaInvestigate $ discover lid (toAbilitySource attrs 1) amount
           , toDiscardBy iid (toAbilitySource attrs 1) attrs
           ]
         <> [RecordCount YouHaveIdentifiedTheStone difficulty | shouldRecord]

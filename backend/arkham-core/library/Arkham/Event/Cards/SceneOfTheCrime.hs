@@ -1,17 +1,12 @@
-module Arkham.Event.Cards.SceneOfTheCrime (
-  sceneOfTheCrime,
-  SceneOfTheCrime (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.SceneOfTheCrime (sceneOfTheCrime, SceneOfTheCrime (..)) where
 
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Helpers.Investigator
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Projection
+import Arkham.Message qualified as Msg
+import Arkham.Prelude
 
 newtype SceneOfTheCrime = SceneOfTheCrime EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -22,13 +17,9 @@ sceneOfTheCrime = event SceneOfTheCrime Cards.sceneOfTheCrime
 
 instance RunMessage SceneOfTheCrime where
   runMessage msg e@(SceneOfTheCrime attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      location <- getJustLocation iid
-      hasEnemies <- selectAny $ EnemyAt $ LocationWithId location
-      availableClues <- field LocationClues location
-      let clueCount = min availableClues (if hasEnemies then 2 else 1)
-      pushAll
-        [ InvestigatorDiscoverClues iid location (toSource attrs) clueCount Nothing
-        ]
+    PlayThisEvent iid eid | eid == toId attrs -> do
+      hasEnemies <- selectAny $ enemyAtLocationWith iid
+      let clueCount = if hasEnemies then 2 else 1
+      push $ Msg.DiscoverClues iid $ discoverAtYourLocation attrs clueCount
       pure e
     _ -> SceneOfTheCrime <$> runMessage msg attrs

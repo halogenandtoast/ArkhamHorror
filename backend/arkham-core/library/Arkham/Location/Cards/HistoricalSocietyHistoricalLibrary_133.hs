@@ -3,17 +3,16 @@ module Arkham.Location.Cards.HistoricalSocietyHistoricalLibrary_133 (
   HistoricalSocietyHistoricalLibrary_133 (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message qualified as Msg
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype HistoricalSocietyHistoricalLibrary_133 = HistoricalSocietyHistoricalLibrary_133 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -31,41 +30,25 @@ historicalSocietyHistoricalLibrary_133 =
 instance HasAbilities HistoricalSocietyHistoricalLibrary_133 where
   getAbilities (HistoricalSocietyHistoricalLibrary_133 attrs) =
     withBaseAbilities attrs
-      $ if locationRevealed attrs
+      $ if attrs.revealed
         then
-          [ limitedAbility (PlayerLimit PerRound 1)
-              $ restrictedAbility
+          [ playerLimit PerRound
+              $ reaction
                 attrs
                 1
-                ( Here
-                    <> CluesOnThis (AtLeast $ Static 1)
-                    <> CanDiscoverCluesAt
-                      (LocationWithId $ toId attrs)
-                )
-              $ ReactionAbility
-                ( SkillTestResult
-                    Timing.After
-                    You
-                    (WhileInvestigating $ LocationWithId $ toId attrs)
-                    (SuccessResult AnyValue)
-                )
+                (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (LocationWithId attrs.id))
                 (HorrorCost (toSource attrs) YouTarget 2)
+              $ SkillTestResult #after You (whileInvestigating attrs) (SuccessResult AnyValue)
           ]
         else
-          [ mkAbility attrs 1
-              $ ForcedAbility
-              $ EnemySpawns
-                Timing.When
-                (LocationWithId $ toId attrs)
-                AnyEnemy
-          ]
+          [mkAbility attrs 1 $ forced $ EnemySpawns #when (LocationWithId attrs.id) AnyEnemy]
 
 instance RunMessage HistoricalSocietyHistoricalLibrary_133 where
   runMessage msg l@(HistoricalSocietyHistoricalLibrary_133 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ | locationRevealed attrs -> do
-      push (InvestigatorDiscoverClues iid (toId attrs) (toAbilitySource attrs 1) 1 Nothing)
+    UseThisAbility iid (isSource attrs -> True) 1 | attrs.revealed -> do
+      push $ Msg.DiscoverClues iid $ discover attrs (attrs.ability 1) 1
       pure l
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push (Msg.RevealLocation Nothing $ toId attrs)
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ Msg.RevealLocation Nothing attrs.id
       pure l
     _ -> HistoricalSocietyHistoricalLibrary_133 <$> runMessage msg attrs

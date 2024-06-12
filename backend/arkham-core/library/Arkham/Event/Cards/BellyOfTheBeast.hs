@@ -6,6 +6,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Id
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -26,6 +27,6 @@ instance RunMessage BellyOfTheBeast where
   runMessage msg e@(BellyOfTheBeast attrs) = case msg of
     InvestigatorPlayEvent iid eid _ (toEnemyId -> enemyId) _ | eid == toId attrs -> do
       mlid <- selectOne $ locationWithEnemy enemyId
-      for_ mlid $ \lid -> push $ toMessage $ discover iid lid attrs 1
+      for_ mlid $ \lid -> push $ Msg.DiscoverClues iid $ discover lid attrs 1
       pure e
     _ -> BellyOfTheBeast <$> runMessage msg attrs

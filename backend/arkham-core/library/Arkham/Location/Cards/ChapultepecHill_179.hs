@@ -3,14 +3,15 @@ module Arkham.Location.Cards.ChapultepecHill_179 (
   ChapultepecHill_179 (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
+import Arkham.Discover
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype ChapultepecHill_179 = ChapultepecHill_179 LocationAttrs
@@ -29,20 +30,20 @@ instance HasModifiersFor ChapultepecHill_179 where
 
 instance HasAbilities ChapultepecHill_179 where
   getAbilities (ChapultepecHill_179 attrs) =
-    withRevealedAbilities
+    extendRevealed
       attrs
-      [ limitedAbility (GroupLimit PerPhase 1)
+      [ groupLimit PerPhase
           $ restrictedAbility
             attrs
             1
-            (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (LocationWithId $ toId attrs))
+            (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (LocationWithId attrs.id))
           $ freeReaction
-          $ DrawCard #after You (BasicCardMatch $ CardWithTrait Hex) AnyDeck
+          $ DrawCard #after You (basic $ CardWithTrait Hex) AnyDeck
       ]
 
 instance RunMessage ChapultepecHill_179 where
   runMessage msg l@(ChapultepecHill_179 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ InvestigatorDiscoverClues iid (toId attrs) (toAbilitySource attrs 1) 1 Nothing
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ Msg.DiscoverClues iid $ discover attrs (attrs.ability 1) 1
       pure l
     _ -> ChapultepecHill_179 <$> runMessage msg attrs

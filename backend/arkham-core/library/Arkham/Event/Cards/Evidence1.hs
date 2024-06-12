@@ -1,6 +1,7 @@
 module Arkham.Event.Cards.Evidence1 (evidence1, Evidence1 (..)) where
 
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Enemy.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
@@ -10,6 +11,7 @@ import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.History
 import Arkham.Location.Types (Field (..))
+import Arkham.Message qualified as Msg
 import Arkham.Prelude
 import Arkham.Projection
 
@@ -32,9 +34,8 @@ instance RunMessage Evidence1 where
       currentLocationId <- getJustLocation iid
       availableClues <- field LocationClues currentLocationId
       let amount = min availableClues (if totalPrintedHealth >= 4 then 2 else 1)
-      pushAll
-        $ [ InvestigatorDiscoverClues iid currentLocationId (toSource attrs) amount Nothing
-          | amount > 0
-          ]
+      pushWhen (amount > 0)
+        $ Msg.DiscoverClues iid
+        $ discover currentLocationId (toSource attrs) amount
       pure e
     _ -> Evidence1 <$> runMessage msg attrs

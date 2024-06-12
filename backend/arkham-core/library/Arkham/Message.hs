@@ -270,24 +270,6 @@ instance IsMessage (EnemyCreation Message) where
   toMessage = CreateEnemy
   {-# INLINE toMessage #-}
 
-instance IsMessage Discover where
-  toMessage discovery = case discovery.location of
-    DiscoverYourLocation ->
-      InvestigatorDiscoverCluesAtTheirLocation
-        discovery.investigator
-        discovery.source
-        discovery.count
-        discovery.action
-    DiscoverAtLocation lid ->
-      DiscoverCluesAtLocation
-        discovery.investigator
-        lid
-        discovery.source
-        discovery.count
-        (if discovery.action == Just #investigate then IsInvestigate else NotInvestigate)
-        discovery.action
-  {-# INLINE toMessage #-}
-
 data ReplaceStrategy = DefaultReplace | Swap
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -325,10 +307,6 @@ pattern AssetDamage aid source damage horror <- AssetDamageWithCheck aid source 
 type IsSameAction = Bool
 
 data CanAdvance = CanAdvance | CanNotAdvance
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-data IsInvestigate = IsInvestigate | NotInvestigate
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -536,8 +514,7 @@ data Message
   | Discarded Target Source Card
   | DiscardedTopOfEncounterDeck InvestigatorId [EncounterCard] Source Target
   | DiscardedTopOfDeck InvestigatorId [PlayerCard] Source Target
-  | DiscoverClues InvestigatorId LocationId Source Int IsInvestigate (Maybe Action)
-  | DiscoverCluesAtLocation InvestigatorId LocationId Source Int IsInvestigate (Maybe Action)
+  | DiscoverClues InvestigatorId Discover
   | DisengageEnemy InvestigatorId EnemyId
   | DisengageEnemyFromAll EnemyId
   | DrawAnotherChaosToken InvestigatorId
@@ -679,8 +656,6 @@ data Message
   | InvestigatorIsDefeated Source InvestigatorId
   | InvestigatorDirectDamage InvestigatorId Source Int Int
   | InvestigatorDiscardAllClues Source InvestigatorId
-  | InvestigatorDiscoverClues InvestigatorId LocationId Source Int (Maybe Action)
-  | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Source Int (Maybe Action)
   | -- | meant to be used internally by investigators                  ^ damage ^ horror
     InvestigatorDoAssignDamage
       InvestigatorId

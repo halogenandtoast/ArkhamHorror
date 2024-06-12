@@ -7,11 +7,13 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Projection
 
 newtype ExtensiveResearch = ExtensiveResearch EventAttrs
@@ -31,6 +33,6 @@ instance HasModifiersFor ExtensiveResearch where
 instance RunMessage ExtensiveResearch where
   runMessage msg e@(ExtensiveResearch attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      push $ InvestigatorDiscoverCluesAtTheirLocation iid (toSource attrs) 2 Nothing
+      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toSource attrs) 2
       pure e
     _ -> ExtensiveResearch <$> runMessage msg attrs

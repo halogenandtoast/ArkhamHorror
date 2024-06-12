@@ -11,6 +11,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Discover
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 
 newtype GavriellaMizrah = GavriellaMizrah AssetAttrs
   deriving anyclass (IsAsset)
@@ -36,6 +37,6 @@ instance HasAbilities GavriellaMizrah where
 instance RunMessage GavriellaMizrah where
   runMessage msg a@(GavriellaMizrah attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ discoverAtYourLocation iid (toSource attrs) 1
+      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toSource attrs) 1
       pure a
     _ -> GavriellaMizrah <$> runMessage msg attrs

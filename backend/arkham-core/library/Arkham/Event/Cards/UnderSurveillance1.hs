@@ -8,6 +8,7 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (EnemyEvaded)
+import Arkham.Message qualified as Msg
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Window (Window (..))
@@ -39,7 +40,7 @@ instance RunMessage UnderSurveillance1 where
           canDiscover <- getCanDiscoverClues NotInvestigate iid lid
           pushAll
             $ [toDiscardBy iid (attrs.ability 1) attrs, EnemyEvaded iid enemyId]
-            <> [toMessage $ discover iid lid (attrs.ability 1) 1 | canDiscover]
+            <> [Msg.DiscoverClues iid $ discover lid (attrs.ability 1) 1 | canDiscover]
             <> [nextPhaseModifier #upkeep (attrs.ability 1) enemyId DoesNotReadyDuringUpkeep]
         _ -> error "impossible"
       pure e

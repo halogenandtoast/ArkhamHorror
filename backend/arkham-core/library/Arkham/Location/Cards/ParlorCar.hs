@@ -3,16 +3,17 @@ module Arkham.Location.Cards.ParlorCar (
   ParlorCar (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Direction
+import Arkham.Discover
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (parlorCar)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype ParlorCar = ParlorCar LocationAttrs
@@ -33,31 +34,24 @@ instance HasModifiersFor ParlorCar where
     case lookup LeftOf locationDirections of
       Just leftLocation -> do
         clueCount <- field LocationClues leftLocation
-        pure
-          $ toModifiers l
-          $ CannotInvestigate
-          : [Blocked | not locationRevealed && clueCount > 0]
+        pure $ toModifiers l $ CannotInvestigate : [Blocked | not locationRevealed && clueCount > 0]
       Nothing -> pure $ toModifiers l [CannotInvestigate]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ParlorCar where
   getAbilities (ParlorCar attrs) =
-    withRevealedAbilities attrs
-      $ [ restrictedAbility
-            attrs
-            1
-            ( Here
-                <> CluesOnThis (AtLeast $ Static 1)
-                <> InvestigatorExists
-                  (You <> InvestigatorCanDiscoverCluesAt YourLocation)
-            )
-            $ ActionAbility []
-            $ Costs [ActionCost 1, ResourceCost 3]
-        ]
+    extendRevealed
+      attrs
+      [ restrictedAbility
+          attrs
+          1
+          (Here <> CluesOnThis (atLeast 1) <> youExist (InvestigatorCanDiscoverCluesAt YourLocation))
+          $ actionAbilityWithCost (ResourceCost 3)
+      ]
 
 instance RunMessage ParlorCar where
-  runMessage msg l@(ParlorCar attrs@LocationAttrs {..}) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ InvestigatorDiscoverClues iid locationId (toAbilitySource attrs 1) 1 Nothing
+  runMessage msg l@(ParlorCar attrs) = case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ Msg.DiscoverClues iid $ discover attrs (attrs.ability 1) 1
       pure l
     _ -> ParlorCar <$> runMessage msg attrs

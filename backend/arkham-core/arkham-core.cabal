@@ -1722,6 +1722,7 @@ library
       Arkham.Helpers.Cost
       Arkham.Helpers.Customization
       Arkham.Helpers.Deck
+      Arkham.Helpers.Discover
       Arkham.Helpers.Doom
       Arkham.Helpers.Effect
       Arkham.Helpers.EncounterSet

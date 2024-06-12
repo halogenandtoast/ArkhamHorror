@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Discover
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Projection
@@ -35,6 +36,6 @@ instance RunMessage ArchaicGlyphsGuidingStones3 where
       let
         additional = n `div` 2
         amount = min clueCount (1 + additional)
-      push $ InvestigatorDiscoverClues iid lid (toAbilitySource attrs 1) amount $ Just Action.Investigate
+      push $ DiscoverClues iid $ viaInvestigate $ discover lid (toAbilitySource attrs 1) amount
       pure a
     _ -> ArchaicGlyphsGuidingStones3 <$> runMessage msg attrs

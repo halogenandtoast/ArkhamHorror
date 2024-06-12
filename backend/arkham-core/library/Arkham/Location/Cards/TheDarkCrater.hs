@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.TheDarkCrater (theDarkCrater, TheDarkCrater (..)) where
 
 import Arkham.GameValue
+import Arkham.Helpers.Discover
 import Arkham.Id
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner hiding (beginSkillTest)
@@ -62,13 +63,17 @@ instance RunMessage TheDarkCrater where
     FailedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       raiseAlarmLevel (attrs.ability 2) iid
       pure l
-    Do (Msg.DiscoverClues iid lid _ _ _ _) | lid == attrs.id -> do
-      attrs' <- lift (runMessage msg attrs)
-      let meta = toResult @Meta attrs.meta
-      pure
-        $ TheDarkCrater
-        $ attrs'
-        & setMeta (meta {discoveredCluesThisTurn = iid : discoveredCluesThisTurn meta})
+    Do (Msg.DiscoverClues iid d) -> do
+      mlid <- getDiscoverLocation iid d
+      if mlid == Just attrs.id
+        then do
+          attrs' <- lift (runMessage msg attrs)
+          let meta = toResult @Meta attrs.meta
+          pure
+            $ TheDarkCrater
+            $ attrs'
+            & setMeta (meta {discoveredCluesThisTurn = iid : discoveredCluesThisTurn meta})
+        else TheDarkCrater <$> lift (runMessage msg attrs)
     After (EndTurn _) -> do
       let meta = toResult @Meta attrs.meta
       pure $ TheDarkCrater $ attrs & setMeta (meta {discoveredCluesThisTurn = []})

@@ -15,6 +15,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Damage
+import Arkham.Discover (IsInvestigate (..))
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Modifiers
@@ -23,7 +24,7 @@ import Arkham.Helpers.Source
 import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Message (IsInvestigate (..), Message (InvestigatorMulligan))
+import Arkham.Message (Message (InvestigatorMulligan))
 import Arkham.Name
 import Arkham.Placement
 import Arkham.Projection
@@ -353,6 +354,7 @@ investigator f cardDef Stats {..} =
                 , investigatorDrawnCards = []
                 , investigatorIsYithian = False
                 , investigatorDiscarding = Nothing
+                , investigatorDiscover = Nothing
                 , investigatorLog = mkCampaignLog
                 , investigatorDeckBuildingAdjustments = mempty
                 , investigatorBeganRoundAt = Nothing

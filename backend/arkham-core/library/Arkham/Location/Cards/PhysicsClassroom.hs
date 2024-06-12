@@ -57,7 +57,7 @@ instance RunMessage PhysicsClassroom where
       push
         $ chooseOrRunOne
           player
-          [ targetLabel lid [toMessage $ discover iid lid (attrs.ability 1) 1]
+          [ targetLabel lid [Msg.DiscoverClues iid $ discover lid (attrs.ability 1) 1]
           | lid <- locations
           ]
       pure l

@@ -43,9 +43,9 @@ instance RunMessage CoverUp where
     Revelation iid (isSource attrs -> True) -> do
       push $ AttachTreachery treacheryId (toTarget iid)
       pure t
-    UseCardAbility _ (isSource attrs -> True) 1 (toClueCount -> n) _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 (toClueCount -> n) _ -> do
       popMessageMatching_ $ \case
-        Do InvestigatorDiscoverClues {} -> True
+        Do (DiscoverClues iid' _) -> iid == iid'
         _ -> False
       pure $ CoverUp $ attrs & tokensL %~ subtractTokens Clue n
     UseThisAbility _ (isSource attrs -> True) 2 -> do

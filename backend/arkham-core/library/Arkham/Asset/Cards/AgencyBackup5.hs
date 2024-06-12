@@ -7,6 +7,7 @@ import Arkham.DamageEffect
 import Arkham.Discover
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Prelude
 import Arkham.Projection
 
@@ -53,6 +54,6 @@ instance RunMessage AgencyBackup5 where
         $ chooseOne player [targetLabel target [EnemyDamage target $ nonAttack source 1] | target <- targets]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ discoverAtYourLocation iid (attrs.ability 2) 1
+      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (attrs.ability 2) 1
       pure a
     _ -> AgencyBackup5 <$> runMessage msg attrs

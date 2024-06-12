@@ -6,6 +6,7 @@ import Arkham.Asset.Runner
 import Arkham.Discover
 import Arkham.Fight
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Placement
 import Arkham.Prelude
 
@@ -36,6 +37,6 @@ instance RunMessage GravediggersShovel2 where
           case attrs.placement of
             OutOfPlay RemovedZone -> 2
             _ -> 1
-      push $ discoverAtYourLocation iid (attrs.ability 2) n
+      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (attrs.ability 2) n
       pure a
     _ -> GravediggersShovel2 <$> runMessage msg attrs

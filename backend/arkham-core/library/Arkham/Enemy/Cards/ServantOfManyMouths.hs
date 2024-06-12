@@ -7,10 +7,11 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Message qualified as Msg
 
 newtype ServantOfManyMouths = ServantOfManyMouths EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -33,9 +34,9 @@ instance HasAbilities ServantOfManyMouths where
           attrs
           1
           (LocationExists LocationWithAnyClues <> CanDiscoverCluesAt Anywhere)
-          $ ReactionAbility
-            (EnemyDefeated Timing.After You ByAny $ EnemyWithId $ toId attrs)
-            Free
+          $ freeReaction
+          $ EnemyDefeated #after You ByAny
+          $ EnemyWithId attrs.id
       ]
 
 instance RunMessage ServantOfManyMouths where
@@ -43,15 +44,14 @@ instance RunMessage ServantOfManyMouths where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       locationsWithClues <- select LocationWithAnyClues
       player <- getPlayer iid
-      unless
-        (null locationsWithClues)
-        $ push
-        $ chooseOne
-          player
-          [ targetLabel
-            lid
-            [InvestigatorDiscoverClues iid lid (toAbilitySource attrs 1) 1 Nothing]
-          | lid <- locationsWithClues
-          ]
+      unless (null locationsWithClues) do
+        push
+          $ chooseOne
+            player
+            [ targetLabel
+              lid
+              [Msg.DiscoverClues iid $ discover lid (toAbilitySource attrs 1) 1]
+            | lid <- locationsWithClues
+            ]
       pure e
     _ -> ServantOfManyMouths <$> runMessage msg attrs

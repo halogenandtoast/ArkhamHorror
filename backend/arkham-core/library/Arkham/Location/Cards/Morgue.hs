@@ -11,6 +11,7 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Scenarios.WakingNightmare.Helpers
 
 newtype Morgue = Morgue LocationAttrs
@@ -34,7 +35,7 @@ instance RunMessage Morgue where
       push $ beginSkillTest iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ toMessage $ discover iid (toId attrs) (attrs.ability 1) 1
+      push $ Msg.DiscoverClues iid $ discover (toId attrs) (attrs.ability 1) 1
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ assignHorror iid (attrs.ability 1) 1

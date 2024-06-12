@@ -1,11 +1,12 @@
 module Arkham.Event.Cards.LookWhatIFound2 where
 
-import Arkham.Prelude
-
 import Arkham.Classes
+import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
+import Arkham.Prelude
 
 newtype LookWhatIFound2 = LookWhatIFound2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -23,17 +24,12 @@ instance RunMessage LookWhatIFound2 where
         ]
       pure e
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
-      locations <-
-        select
-          $ LocationMatchAny [YourLocation, ConnectedLocation]
-          <> LocationWithAnyClues
+      locations <- select $ oneOf [YourLocation, ConnectedLocation] <> LocationWithAnyClues
       player <- getPlayer iid
       push
         $ chooseOne
           player
-          [ targetLabel
-            lid
-            [InvestigatorDiscoverClues iid lid (toSource attrs) 1 Nothing]
+          [ targetLabel lid [Msg.DiscoverClues iid $ discover lid (toSource attrs) 1]
           | lid <- locations
           ]
       pure e

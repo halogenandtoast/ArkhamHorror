@@ -1551,7 +1551,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       then do
         locationClues <- field LocationClues lid
         let lastClue = locationClues - d.count <= 0 && locationClues /= 0
-        let clueCount = max 0 $ subtract d.count locationClues
+        let clueCount = min locationClues d.count
         locationWindows <-
           checkWindows
             ( mkAfter (Window.DiscoverClues iid lid d.source clueCount)

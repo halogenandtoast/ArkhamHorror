@@ -33,7 +33,7 @@ instance RunMessage WindsOfPower1 where
         iid
         [targetLabel asset [AddUses asset Charge 2] | asset <- assets]
       pure e
-    InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 windows' _) | iid' == iid -> do
+    InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _) | iid' == iid -> do
       push $ InitiatePlayCard iid (toCard attrs) Nothing NoPayment (defaultWindows iid) False
       pure e
     _ -> WindsOfPower1 <$> lift (runMessage msg attrs)

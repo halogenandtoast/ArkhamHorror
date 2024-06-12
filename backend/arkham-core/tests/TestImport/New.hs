@@ -30,6 +30,7 @@ import Arkham.Classes.HasChaosTokenValue
 import Arkham.Classes.HasGame
 import Arkham.CommitRestriction
 import Arkham.Deck qualified as Deck
+import Arkham.Discover
 import Arkham.Enemy.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Entities qualified as Entities
@@ -375,7 +376,7 @@ runSkillTest i st n = do
 discoverClues :: Investigator -> Int -> TestAppT ()
 discoverClues i n = do
   lid <- fieldJust InvestigatorLocation i.id
-  run $ InvestigatorDiscoverClues i.id lid GameSource n Nothing
+  run $ DiscoverClues i.id $ discover lid GameSource n
 
 getActionsFrom :: Sourceable source => Investigator -> source -> TestAppT [Ability]
 getActionsFrom i s = do

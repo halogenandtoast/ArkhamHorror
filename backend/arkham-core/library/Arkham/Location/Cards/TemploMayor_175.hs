@@ -32,7 +32,7 @@ instance RunMessage TemploMayor_175 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       pushAll
         [ ShuffleDiscardBackIn iid
-        , DiscardUntilFirst iid (toSource attrs) (Deck.InvestigatorDeck iid) (basic WeaknessCard)
+        , DiscardUntilFirst iid (attrs.ability 1) (Deck.InvestigatorDeck iid) (basic WeaknessCard)
         ]
       pure l
     RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do

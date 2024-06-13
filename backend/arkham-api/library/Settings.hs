@@ -10,7 +10,8 @@
 -- declared in the Foundation.hs file.
 module Settings where
 
-import Database.Redis (ConnectInfo, parseConnectInfo)
+import Network.TLS (defaultParamsClient)
+import Database.Redis (ConnectInfo(..), parseConnectInfo)
 import Control.Exception qualified as Exception
 import Data.Aeson
   (FromJSON(..), Result(..), Value, fromJSON, withObject, (.!=), (.:), (.:?))
@@ -117,8 +118,11 @@ instance FromJSON AppSettings where
 -- parse a text url into a redis connection
 fromConnectionUrl :: (MonadFail m) => Text -> m ConnectInfo
 fromConnectionUrl info = do
-  case parseConnectInfo (T.unpack info) of
-    Right x -> pure x
+  case parseConnectInfo (T.unpack $ T.replace "rediss://" "redis://" info) of
+    Right x -> 
+      pure $ if "rediss" `T.isPrefixOf` info
+        then x { connectTLSParams = Just $ defaultParamsClient (connectHost x) "" }
+        else x
     Left err -> fail err
 
 -- | Raw bytes at compile time of @config/settings.yml@

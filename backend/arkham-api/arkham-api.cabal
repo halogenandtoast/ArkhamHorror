@@ -7,6 +7,8 @@ cabal-version: 1.12
 name:           arkham-api
 version:        0.0.0
 build-type:     Simple
+extra-source-files:
+    digital-ocean.crt
 
 flag dev
   description: Turn on development settings, like auto-reload templates.
@@ -89,6 +91,8 @@ library
     , case-insensitive
     , conduit
     , containers
+    , crypton-x509-store
+    , data-default-class
     , directory
     , errors
     , esqueleto

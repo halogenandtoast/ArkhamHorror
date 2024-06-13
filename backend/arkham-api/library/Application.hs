@@ -25,16 +25,22 @@ module Application (
 import Config
 import Control.Monad.Logger (liftLoc, runLoggingT)
 import Data.CaseInsensitive (mk)
+import Data.Default.Class (def)
+import Data.Text qualified as T
+import Data.X509.CertificateStore (readCertificateStore)
 import Database.Persist.Postgresql (
   SqlBackend,
   createPostgresqlPool,
   pgConnStr,
   pgPoolSize,
  )
+import Database.Redis (ConnectInfo (..), parseConnectInfo)
 import Import hiding (sendResponse)
 import Language.Haskell.TH.Syntax (qLocation)
 import Network.HTTP.Client.TLS (getGlobalManager)
 import Network.HTTP.Types (ResponseHeaders, status200)
+import Network.TLS (ClientParams (..), Shared (..), Supported (..), defaultParamsClient)
+import Network.TLS.Extra.Cipher (ciphersuite_strong)
 import Network.Wai (Middleware, requestHeaders, requestMethod, responseLBS)
 import Network.Wai.Handler.Warp (
   Settings,
@@ -47,7 +53,7 @@ import Network.Wai.Handler.Warp (
   setPort,
  )
 import Network.Wai.Middleware.AddHeaders (addHeaders)
-import Network.Wai.Middleware.Gzip (def, gzip)
+import Network.Wai.Middleware.Gzip (gzip)
 import Network.Wai.Middleware.RequestLogger (
   Destination (Logger),
   IPAddrSource (..),
@@ -103,7 +109,7 @@ makeFoundation appSettings = do
 
   appGameRooms <- newIORef mempty
 
-  appRedis <- checkedConnect (appRedisConnectionInfo appSettings)
+  appRedis <- checkedConnect =<< fromConnectionUrl (appRedisConnectionInfo appSettings)
   appPubSub <- newPubSubController [] []
   _ <- forkIO $ pubSubForever appRedis appPubSub (pure ())
 
@@ -272,3 +278,23 @@ handler h = getAppSettings >>= makeFoundation >>= flip unsafeHandler h
 -- | Run DB queries
 db :: ReaderT SqlBackend Handler a -> IO a
 db = handler . runDB
+
+-- parse a text url into a redis connection
+fromConnectionUrl :: (MonadFail m, MonadIO m) => Text -> m ConnectInfo
+fromConnectionUrl info = do
+  case parseConnectInfo (T.unpack $ T.replace "rediss://" "redis://" info) of
+    Right x ->
+      if "rediss" `T.isPrefixOf` info
+        then do
+          Just certStore <- liftIO $ readCertificateStore "digital-ocean.crt"
+          pure
+            $ x
+              { connectTLSParams =
+                  Just
+                    $ (defaultParamsClient (connectHost x) "")
+                      { clientSupported = def {supportedCiphers = ciphersuite_strong}
+                      , clientShared = def {sharedCAStore = certStore}
+                      }
+              }
+        else pure x
+    Left err -> fail err

@@ -72,6 +72,7 @@ library:
     - text
     - these
     - time
+    - tls
     - unix
     - unliftio
     - uri-bytestring

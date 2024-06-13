@@ -47,7 +47,7 @@ putApiV1ArkhamPendingGameR gameId = do
   updatedGame <- readIORef gameRef
   updatedQueue <- readIORef (queueToRef queueRef)
 
-  writeChannel <- getChannel gameId
+  writeChannel <- (.channel) <$> getRoom gameId
   atomically
     $ writeTChan writeChannel
     $ encode

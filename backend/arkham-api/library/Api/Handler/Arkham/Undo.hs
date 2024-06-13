@@ -38,7 +38,8 @@ putApiV1ArkhamGameUndoR gameId = do
       -- NOTE: actually we never want to step back if the patchOperations are empty, the first condition is therefor redundant
       if (arkhamStepStep step > 0 && not (null $ patchOperations $ choicePatchDown $ arkhamStepChoice step))
         then do
-          writeChannel <- getChannel gameId
+          room <- getRoom gameId
+          let writeChannel = socketChannel room
 
           case patch arkhamGameCurrentData (choicePatchDown $ arkhamStepChoice step) of
             Error e -> error $ T.pack e

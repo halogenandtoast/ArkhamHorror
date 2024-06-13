@@ -3,6 +3,7 @@ version: "0.0.0"
 language: GHC2021
 
 default-extensions:
+  - BlockArguments
   - DataKinds
   - DeriveAnyClass
   - DerivingStrategies
@@ -12,6 +13,7 @@ default-extensions:
   - NoImplicitPrelude
   - NoMonomorphismRestriction
   - OverloadedStrings
+  - OverloadedRecordDot
   - RecordWildCards
   - TypeFamilies
 
@@ -50,6 +52,7 @@ library:
     - fast-logger
     - file-embed
     - hashable
+    - hedis
     - http-api-data
     - http-client-tls
     - http-conduit

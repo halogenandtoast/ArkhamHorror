@@ -75,7 +75,13 @@ import Base.Api.Handler.CurrentUser
 import Base.Api.Handler.PasswordReset
 import Base.Api.Handler.Registration
 import Base.Api.Handler.Settings
+import Control.Concurrent (forkIO)
 import Data.List (lookup)
+import Database.Redis (
+  checkedConnect,
+  newPubSubController,
+  pubSubForever,
+ )
 import Handler.Health
 
 -- This line actually creates our YesodDispatch instance. It is the second half
@@ -95,9 +101,11 @@ makeFoundation appSettings = do
   appHttpManager <- getGlobalManager
   appLogger <- newStdoutLoggerSet defaultBufSize >>= makeYesodLogger
 
-  -- appBroadcastChannel <- atomically newBroadcastTChan
-  appGameChannels <- newIORef mempty
-  appGameChannelClients <- newIORef mempty
+  appGameRooms <- newIORef mempty
+
+  appRedis <- checkedConnect (appRedisConnectionInfo appSettings)
+  appPubSub <- newPubSubController [] []
+  _ <- forkIO $ pubSubForever appRedis appPubSub (pure ())
 
   -- We need a log function to create a connection pool. We need a connection
   -- pool to create our foundation. And we need our foundation to get a

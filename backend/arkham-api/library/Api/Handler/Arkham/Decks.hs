@@ -128,7 +128,7 @@ putApiV1ArkhamGameDecksR gameId = do
 
   let diffDown = diff ge arkhamGameCurrentData
   updatedQueue <- readIORef (queueToRef queueRef)
-  writeChannel <- getChannel gameId
+  writeChannel <- (.channel) <$> getRoom gameId
   atomically
     $ writeTChan
       writeChannel

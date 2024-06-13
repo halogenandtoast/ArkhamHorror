@@ -2,6 +2,9 @@ name:    arkham-api
 version: "0.0.0"
 language: GHC2021
 
+extra-source-files:
+- digital-ocean.crt
+
 default-extensions:
   - BlockArguments
   - DataKinds
@@ -73,8 +76,10 @@ library:
     - these
     - time
     - tls
+    - data-default-class
     - unix
     - unliftio
+    - crypton-x509-store
     - uri-bytestring
     - uuid
     - wai

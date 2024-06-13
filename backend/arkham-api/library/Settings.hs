@@ -10,8 +10,6 @@
 -- declared in the Foundation.hs file.
 module Settings where
 
-import Network.TLS (defaultParamsClient)
-import Database.Redis (ConnectInfo(..), parseConnectInfo)
 import Control.Exception qualified as Exception
 import Data.Aeson
   (FromJSON(..), Result(..), Value, fromJSON, withObject, (.!=), (.:), (.:?))
@@ -85,7 +83,7 @@ data AppSettings = AppSettings
     , appSkipCombining          :: Bool
     -- ^ Perform no stylesheet/script combining
     , appJwtSecret :: Text
-    , appRedisConnectionInfo :: ConnectInfo
+    , appRedisConnectionInfo :: Text
     -- ^ Redis Connection Info
     }
 
@@ -111,19 +109,9 @@ instance FromJSON AppSettings where
         appReloadTemplates        <- o .:? "reload-templates" .!= dev
         appSkipCombining          <- o .:? "skip-combining"   .!= dev
         appJwtSecret <- o .: "jwt-secret"
-        appRedisConnectionInfo <- fromConnectionUrl =<< o .: "redis-conn"
+        appRedisConnectionInfo <- o .: "redis-conn"
 
         pure AppSettings {..}
-
--- parse a text url into a redis connection
-fromConnectionUrl :: (MonadFail m) => Text -> m ConnectInfo
-fromConnectionUrl info = do
-  case parseConnectInfo (T.unpack $ T.replace "rediss://" "redis://" info) of
-    Right x -> 
-      pure $ if "rediss" `T.isPrefixOf` info
-        then x { connectTLSParams = Just $ defaultParamsClient (connectHost x) "" }
-        else x
-    Left err -> fail err
 
 -- | Raw bytes at compile time of @config/settings.yml@
 configSettingsYmlBS :: ByteString

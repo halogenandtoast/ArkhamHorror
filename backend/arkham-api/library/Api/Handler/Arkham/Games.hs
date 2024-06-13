@@ -256,12 +256,6 @@ updateGame response gameId userId writeChannel = do
     $ GameUpdate
     $ PublicGame gameId arkhamGameName (gameLogToLogEntries $ oldLog <> GameLog updatedLog) ge
 
--- atomically
---   $ writeTChan writeChannel
---   $ encode
---   $ GameUpdate
---   $ PublicGame gameId arkhamGameName (gameLogToLogEntries $ oldLog <> GameLog updatedLog) ge
-
 newtype RawGameJsonPut = RawGameJsonPut
   { gameMessage :: Message
   }

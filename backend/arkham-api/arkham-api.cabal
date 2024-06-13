@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.2.
+-- This file has been generated from package.yaml by hpack version 0.36.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -64,6 +64,7 @@ library
   hs-source-dirs:
       library
   default-extensions:
+      BlockArguments
       DataKinds
       DeriveAnyClass
       DerivingStrategies
@@ -73,6 +74,7 @@ library
       NoImplicitPrelude
       NoMonomorphismRestriction
       OverloadedStrings
+      OverloadedRecordDot
       RecordWildCards
       TypeFamilies
   build-depends:
@@ -93,6 +95,7 @@ library
     , fast-logger
     , file-embed
     , hashable
+    , hedis
     , http-api-data
     , http-client-tls
     , http-conduit
@@ -141,6 +144,7 @@ executable arkham-api
   hs-source-dirs:
       app
   default-extensions:
+      BlockArguments
       DataKinds
       DeriveAnyClass
       DerivingStrategies
@@ -150,6 +154,7 @@ executable arkham-api
       NoImplicitPrelude
       NoMonomorphismRestriction
       OverloadedStrings
+      OverloadedRecordDot
       RecordWildCards
       TypeFamilies
   ghc-options: -threaded -rtsopts -with-rtsopts=-N

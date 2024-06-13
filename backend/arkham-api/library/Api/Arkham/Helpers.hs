@@ -22,6 +22,7 @@ import Data.ByteString.Lazy qualified as BSL
 import Data.Map.Strict qualified as Map
 import Data.Time.Clock
 import Database.Esqueleto.Experimental
+import Database.Redis (RedisChannel, addChannels)
 import Entity.Arkham.LogEntry
 
 newtype GameLog = GameLog {gameLogToLogEntries :: [Text]}
@@ -134,17 +135,31 @@ runGameApp gameApp = liftIO . flip runReaderT gameApp . unGameAppT
 noLogger :: Applicative m => Text -> m ()
 noLogger = const (pure ())
 
-getChannel :: ArkhamGameId -> Handler (TChan BSL.ByteString)
-getChannel gameId = do
-  gameChannelsRef <- appGameChannels <$> getYesod
-  gameChannels <- readIORef gameChannelsRef
-  case Map.lookup gameId gameChannels of
-    Just chan -> pure chan
+gameChannel :: ArkhamGameId -> RedisChannel
+gameChannel gameId = "arkham-" <> encodeUtf8 (tshow gameId)
+
+getRoom :: ArkhamGameId -> Handler Room
+getRoom gameId = do
+  roomsRef <- getsYesod appGameRooms
+  rooms <- readIORef roomsRef
+  ctrl <- getsYesod appPubSub
+  case Map.lookup gameId rooms of
+    Just room -> pure room
     Nothing -> do
       chan <- atomically newBroadcastTChan
-      atomicModifyIORef' gameChannelsRef
-        $ \gameChannels' -> (Map.insert gameId chan gameChannels', ())
-      pure chan
+      let room =
+            Room
+              { socketChannel = chan
+              , socketClients = 0
+              , messageBrokerChannel = gameChannel gameId
+              }
+      atomicModifyIORef' roomsRef
+        $ \rooms' -> (Map.insert gameId room rooms', ())
+
+      let handleIt msg = atomically $ writeTChan chan (BSL.fromStrict msg)
+
+      _ <- addChannels ctrl [(gameChannel gameId, handleIt)] []
+      pure room
 
 displayCardType :: CardType -> Text
 displayCardType = \case

@@ -6,3 +6,4 @@ database-url: "_env:DATABASE_URL:postgres://localhost:5432/arkham-horror-backend
 database-pool-size: "_env:DB_POOL:10"
 detailed-logging: false
 should-log-all: false
+redis-conn: "_env:REDIS_CONN:redis://localhost:6379"

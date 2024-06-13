@@ -10,6 +10,7 @@
 -- declared in the Foundation.hs file.
 module Settings where
 
+import Database.Redis (ConnectInfo, parseConnectInfo)
 import Control.Exception qualified as Exception
 import Data.Aeson
   (FromJSON(..), Result(..), Value, fromJSON, withObject, (.!=), (.:), (.:?))
@@ -83,6 +84,8 @@ data AppSettings = AppSettings
     , appSkipCombining          :: Bool
     -- ^ Perform no stylesheet/script combining
     , appJwtSecret :: Text
+    , appRedisConnectionInfo :: ConnectInfo
+    -- ^ Redis Connection Info
     }
 
 instance FromJSON AppSettings where
@@ -107,8 +110,16 @@ instance FromJSON AppSettings where
         appReloadTemplates        <- o .:? "reload-templates" .!= dev
         appSkipCombining          <- o .:? "skip-combining"   .!= dev
         appJwtSecret <- o .: "jwt-secret"
+        appRedisConnectionInfo <- fromConnectionUrl =<< o .: "redis-conn"
 
         pure AppSettings {..}
+
+-- parse a text url into a redis connection
+fromConnectionUrl :: (MonadFail m) => Text -> m ConnectInfo
+fromConnectionUrl info = do
+  case parseConnectInfo (T.unpack info) of
+    Right x -> pure x
+    Left err -> fail err
 
 -- | Raw bytes at compile time of @config/settings.yml@
 configSettingsYmlBS :: ByteString

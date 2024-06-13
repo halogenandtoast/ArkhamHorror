@@ -23,6 +23,8 @@ import Database.Persist.Sql (
   SqlPersistT,
   runSqlPool,
  )
+import Database.Redis (Connection, PubSubController, RedisChannel)
+import GHC.Records
 import Network.HTTP.Client.Conduit (HasHttpManager (..), Manager)
 import Yesod.Core.Types (Logger)
 import Yesod.Core.Unsafe qualified as Unsafe
@@ -30,6 +32,21 @@ import Yesod.Core.Unsafe qualified as Unsafe
 import Arkham.Card.CardCode
 
 import Orphans ()
+
+data Room = Room
+  { socketChannel :: TChan BSL.ByteString
+  , socketClients :: Int
+  , messageBrokerChannel :: RedisChannel
+  }
+
+instance HasField "channel" Room (TChan BSL.ByteString) where
+  getField = socketChannel
+
+instance HasField "clients" Room Int where
+  getField = socketClients
+
+instance HasField "broker" Room RedisChannel where
+  getField = messageBrokerChannel
 
 {- | The foundation datatype for your application. This can be a good place to
 keep settings and values requiring initialization before your application
@@ -39,11 +56,12 @@ access to the data present here.
 data App = App
   { appSettings :: AppSettings
   , appConnPool :: ConnectionPool
+  , appRedis :: Connection
+  , appPubSub :: PubSubController
   -- ^ Database connection pool.
   , appHttpManager :: Manager
   , appLogger :: Logger
-  , appGameChannels :: !(IORef (Map ArkhamGameId (TChan BSL.ByteString)))
-  , appGameChannelClients :: !(IORef (Map ArkhamGameId Int))
+  , appGameRooms :: !(IORef (Map ArkhamGameId Room))
   }
 
 -- This is where we define all of the routes in our application. For a full

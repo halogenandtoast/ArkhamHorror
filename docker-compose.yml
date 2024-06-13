@@ -1,4 +1,11 @@
 services:
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    command: redis-server
+    volumes:
+      - redis-data:/data
   db:
     image: postgres:14.1
     restart: always
@@ -19,6 +26,7 @@ services:
         - GHC_VERSION=9.6.2
     environment:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/arkham-horror-backend
+      - REDIS_CONN=redis://redis:6379
     ports:
       - "3000:3000"
     depends_on:
@@ -27,3 +35,4 @@ services:
       - ./frontend/public/img:/opt/arkham/src/frontend/dist/img
 volumes:
  pgdata:
+ redis-data:

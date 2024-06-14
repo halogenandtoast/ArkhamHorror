@@ -32,7 +32,7 @@ import Data.Map.Strict qualified as Map
 import Data.String.Conversions.Monomorphic (toStrictByteString)
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (update)
-import Database.Redis (publish, removeChannels, runRedis)
+import Database.Redis (publish, runRedis)
 import Entity.Answer
 import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.))
@@ -69,8 +69,7 @@ gameStream mUserId gameId = catchingConnectionException $ do
         , maybe 0 (\room -> max 0 (room.clients - 1)) $ Map.lookup gameId rooms
         )
     when (clientCount == 0) do
-      pubSubCtrl <- getsYesod appPubSub
-      liftIO $ removeChannels pubSubCtrl [gameChannel gameId] []
+      lift $ removeChannel (gameChannel gameId)
       atomicModifyIORef' roomsRef $ \rooms -> (Map.delete gameId rooms, ())
 
 catchingConnectionException :: WebSocketsT Handler () -> WebSocketsT Handler ()
@@ -246,13 +245,7 @@ updateGame response gameId userId writeChannel = do
         (arkhamGameStep + 1)
         (ActionDiff $ view actionDiffL ge)
 
-  redisConn <- getsYesod appRedis
-  void
-    $ liftIO
-    $ runRedis redisConn
-    $ publish (gameChannel gameId)
-    $ toStrictByteString
-    $ encode
+  publishToRoom gameId
     $ GameUpdate
     $ PublicGame gameId arkhamGameName (gameLogToLogEntries $ oldLog <> GameLog updatedLog) ge
 
@@ -300,3 +293,18 @@ deleteApiV1ArkhamGameR gameId = do
       players <- from $ table @ArkhamPlayer
       where_ $ players.arkhamGameId ==. games.id
       where_ $ players.userId ==. val userId
+
+publishToRoom :: (MonadIO m, ToJSON a, HasApp m) => ArkhamGameId -> a -> m ()
+publishToRoom gameId a = do
+  broker <- getsApp appMessageBroker
+  case broker of
+    RedisBroker redisConn _ ->
+      void
+        $ liftIO
+        $ runRedis redisConn
+        $ publish (gameChannel gameId)
+        $ toStrictByteString
+        $ encode a
+    WebSocketBroker -> do
+      writeChannel <- (.channel) <$> getRoom gameId
+      atomically $ writeTChan writeChannel $ encode a

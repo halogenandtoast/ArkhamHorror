@@ -83,7 +83,7 @@ data AppSettings = AppSettings
     , appSkipCombining          :: Bool
     -- ^ Perform no stylesheet/script combining
     , appJwtSecret :: Text
-    , appRedisConnectionInfo :: Text
+    , appRedisConnectionInfo :: Maybe Text
     -- ^ Redis Connection Info
     }
 
@@ -109,7 +109,7 @@ instance FromJSON AppSettings where
         appReloadTemplates        <- o .:? "reload-templates" .!= dev
         appSkipCombining          <- o .:? "skip-combining"   .!= dev
         appJwtSecret <- o .: "jwt-secret"
-        appRedisConnectionInfo <- o .: "redis-conn"
+        appRedisConnectionInfo <- o .:? "redis-conn"
 
         pure AppSettings {..}
 

@@ -10,11 +10,10 @@ servers:
     hosts:
       - 159.89.182.110
     labels:
-      traefik.http.routers.httpmock.rule: HostRegexp(`{subdomain:[a-zA-Z0-9-]+}.arkhamhorror.app`)  || Host(`arkhamhorror.app`)
-      traefik.http.routers.httpmock_secure.entrypoints: websecure
-      traefik.http.routers.httpmock_secure.tls.certresolver: letsencrypt
-      traefik.http.routers.httpmock.tls.domains[0].main: "arkhamhorror.app"
-      traefik.http.routers.httpmock.tls.domains[0].sans: "*.arkhamhorror.app"
+      - "traefik.http.routers.arkhamhorror.rule=Host(`arkhamhorror.app`) || Host(`www.arkhamhorror.app`)"
+      - "traefik.http.routers.arkhamhorror.entryPoints=websecure"
+      - "traefik.http.routers.arkhamhorror.tls.certresolver=letsencrypt"
+      - "traefik.http.services.arkhamhorror.loadbalancer.server.port=3000"
 
 builder:
   cache:
@@ -92,22 +91,25 @@ healthcheck:
 #   port: 4000
 ## Configure custom arguments for Traefik
 traefik:
-  options:
-    publish:
+    image: traefik:v2.5
+    ports:
+      - "80:80"
       - "443:443"
-    volume:
+    volumes:
       - "/letsencrypt/acme.json:/letsencrypt/acme.json"
-  labels:
-    traefik.http.routers.catchall.entryPoints: web
-  args:
-    accesslog: true
-    global.sendAnonymousUsage: true
-    entryPoints.web.address: ":80"
-    entryPoints.websecure.address: ":443"
-    entryPoints.web.http.redirections.entryPoint.to: websecure
-    entryPoints.web.http.redirections.entryPoint.scheme: https
-    entryPoints.web.http.redirections.entrypoint.permanent: true
-    certificatesResolvers.letsencrypt.acme.email: "halogenandtoast@gmail.com"
-    certificatesResolvers.letsencrypt.acme.storage: "/letsencrypt/acme.json"
-    certificatesResolvers.letsencrypt.acme.dnschallenge: true
-    certificatesResolvers.letsencrypt.acme.dnschallenge.provider: digitalocean
+    environment:
+      - DO_AUTH_TOKEN=your_digitalocean_api_token
+    labels:
+      traefik.http.routers.catchall.entryPoints: web
+    args:
+      - "--accesslog=true"
+      - "--global.sendAnonymousUsage=true"
+      - "--entryPoints.web.address=:80"
+      - "--entryPoints.websecure.address=:443"
+      - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entryPoints.web.http.redirections.entryPoint.permanent=true"
+      - "--certificatesResolvers.letsencrypt.acme.email=halogenandtoast@gmail.com"
+      - "--certificatesResolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesResolvers.letsencrypt.acme.dnsChallenge=true"
+      - "--certificatesResolvers.letsencrypt.acme.dnsChallenge.provider=digitalocean"

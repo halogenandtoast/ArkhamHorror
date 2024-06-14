@@ -100,7 +100,11 @@ traefik:
     environment:
       - DO_AUTH_TOKEN=your_digitalocean_api_token
     labels:
-      traefik.http.routers.catchall.entryPoints: web
+      traefik.http.routers.catchall.entryPoints: "web"
+      traefik.http.routers.arkhamhorror.rule: "Host(`arkhamhorror.app`) || Host(`www.arkhamhorror.app`)"
+      traefik.http.routers.arkhamhorror.entryPoints: "websecure"
+      traefik.http.routers.arkhamhorror.tls.certresolver: "letsencrypt"
+      traefik.http.services.arkhamhorror.loadbalancer.server.port: "3000"
     args:
       - "--accesslog=true"
       - "--global.sendAnonymousUsage=true"

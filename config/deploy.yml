@@ -7,7 +7,6 @@ image: halogenandtoast/arkham-horror
 # Deploy to these servers.
 servers:
   - 159.89.182.110
-  - 159.89.182.72
 
 builder:
   cache:
@@ -29,7 +28,6 @@ env:
     - DATABASE_URL
     - ASSET_HOST
     - PORT
-    - REDIS_CONN
 # Inject ENV variables into containers (secrets come from .env).
 # env:
 #   clear:

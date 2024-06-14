@@ -5,12 +5,6 @@ servers:
   web:
     hosts:
       - 159.89.182.110
-    labels:
-      traefik.http.routers.arkhamhorror.rule: HostRegexp(`{subdomain:[a-zA-Z0-9-]+}.arkhamhorror.app`) || Host(`arkhamhorror.app`)
-      traefik.http.routers.arkhamhorror.entryPoints: websecure
-      traefik.http.routers.arkhamhorror.tls.certresolver: letsencrypt
-      traefik.http.routers.httpmock.tls.domains[0].main: "arkhamhorror.app"
-      traefik.http.routers.httpmock.tls.domains[0].sans: "*.arkhamhorror.app"
 
 builder:
   cache:
@@ -31,27 +25,3 @@ env:
 # Configure a custom healthcheck (default is /up on port 3000)
 healthcheck:
   path: /health
-
-traefik:
-  options:
-    publish:
-      - "443:443"
-    volume:
-      - "/letsencrypt/acme.json:/letsencrypt/acme.json"
-  labels:
-    traefik.http.routers.catchall.entryPoints: web
-  env:
-    secret:
-      - DO_AUTH_TOKEN
-  args:
-    accesslog: true"
-    global.sendAnonymousUsage: true
-    entryPoints.web.address: ":80"
-    entryPoints.websecure.address: ":443"
-    entryPoints.web.http.redirections.entryPoint.to: websecure
-    entryPoints.web.http.redirections.entryPoint.scheme: https
-    entryPoints.web.http.redirections.entryPoint.permanent: true
-    certificatesResolvers.letsencrypt.acme.email: "halogenandtoast@gmail.com"
-    certificatesResolvers.letsencrypt.acme.storage: "/letsencrypt/acme.json"
-    certificatesResolvers.letsencrypt.acme.dnsChallenge: true
-    certificatesResolvers.letsencrypt.acme.dnsChallenge.provider: digitalocean

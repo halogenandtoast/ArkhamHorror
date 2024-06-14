@@ -22,7 +22,7 @@ import Data.ByteString.Lazy qualified as BSL
 import Data.Map.Strict qualified as Map
 import Data.Time.Clock
 import Database.Esqueleto.Experimental
-import Database.Redis (RedisChannel, addChannels)
+import Database.Redis (RedisChannel)
 import Entity.Arkham.LogEntry
 
 newtype GameLog = GameLog {gameLogToLogEntries :: [Text]}
@@ -138,11 +138,10 @@ noLogger = const (pure ())
 gameChannel :: ArkhamGameId -> RedisChannel
 gameChannel gameId = "arkham-" <> encodeUtf8 (tshow gameId)
 
-getRoom :: ArkhamGameId -> Handler Room
+getRoom :: (MonadIO m, HasApp m) => ArkhamGameId -> m Room
 getRoom gameId = do
-  roomsRef <- getsYesod appGameRooms
+  roomsRef <- getsApp appGameRooms
   rooms <- readIORef roomsRef
-  ctrl <- getsYesod appPubSub
   case Map.lookup gameId rooms of
     Just room -> pure room
     Nothing -> do
@@ -158,7 +157,7 @@ getRoom gameId = do
 
       let handleIt msg = atomically $ writeTChan chan (BSL.fromStrict msg)
 
-      _ <- addChannels ctrl [(gameChannel gameId, handleIt)] []
+      addChannel (gameChannel gameId) handleIt
       pure room
 
 displayCardType :: CardType -> Text

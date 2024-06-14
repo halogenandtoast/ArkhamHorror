@@ -23,7 +23,14 @@ import Database.Persist.Sql (
   SqlPersistT,
   runSqlPool,
  )
-import Database.Redis (Connection, PubSubController, RedisChannel)
+import Database.Redis (
+  Connection,
+  MessageCallback,
+  PubSubController,
+  RedisChannel,
+  addChannels,
+  removeChannels,
+ )
 import GHC.Records
 import Network.HTTP.Client.Conduit (HasHttpManager (..), Manager)
 import Yesod.Core.Types (Logger)
@@ -48,6 +55,22 @@ instance HasField "clients" Room Int where
 instance HasField "broker" Room RedisChannel where
   getField = messageBrokerChannel
 
+data MessageBroker = WebSocketBroker | RedisBroker Connection PubSubController
+
+addChannel :: (MonadIO m, HasApp m) => RedisChannel -> MessageCallback -> m ()
+addChannel chn handleIt = do
+  msgBroker <- getsApp appMessageBroker
+  case msgBroker of
+    WebSocketBroker -> pure ()
+    RedisBroker _ ctrl -> void $ addChannels ctrl [(chn, handleIt)] []
+
+removeChannel :: (MonadIO m, HasApp m) => RedisChannel -> m ()
+removeChannel chn = do
+  msgBroker <- getsApp appMessageBroker
+  case msgBroker of
+    WebSocketBroker -> pure ()
+    RedisBroker _ ctrl -> void $ removeChannels ctrl [chn] []
+
 {- | The foundation datatype for your application. This can be a good place to
 keep settings and values requiring initialization before your application
 starts running, such as database connections. Every handler will have
@@ -56,13 +79,18 @@ access to the data present here.
 data App = App
   { appSettings :: AppSettings
   , appConnPool :: ConnectionPool
-  , appRedis :: Connection
-  , appPubSub :: PubSubController
+  , appMessageBroker :: MessageBroker
   -- ^ Database connection pool.
   , appHttpManager :: Manager
   , appLogger :: Logger
   , appGameRooms :: !(IORef (Map ArkhamGameId Room))
   }
+
+class Monad m => HasApp m where
+  getApp :: m App
+
+getsApp :: HasApp m => (App -> a) -> m a
+getsApp f = f <$> getApp
 
 -- This is where we define all of the routes in our application. For a full
 -- explanation of the syntax, please see:
@@ -142,6 +170,9 @@ instance Yesod App where
 
 class Monad m => CanRunDB m where
   runDB :: SqlPersistT m a -> m a
+
+instance HasApp (HandlerFor App) where
+  getApp = getYesod
 
 instance CanRunDB (HandlerFor App) where
   runDB action = do

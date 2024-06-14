@@ -109,9 +109,13 @@ makeFoundation appSettings = do
 
   appGameRooms <- newIORef mempty
 
-  appRedis <- checkedConnect =<< fromConnectionUrl (appRedisConnectionInfo appSettings)
-  appPubSub <- newPubSubController [] []
-  _ <- forkIO $ pubSubForever appRedis appPubSub (pure ())
+  appMessageBroker <- case appRedisConnectionInfo appSettings of
+    Nothing -> pure WebSocketBroker
+    Just url -> do
+      conn <- checkedConnect =<< fromConnectionUrl url
+      ctrl <- newPubSubController [] []
+      _ <- forkIO $ pubSubForever conn ctrl (pure ())
+      pure $ RedisBroker conn ctrl
 
   -- We need a log function to create a connection pool. We need a connection
   -- pool to create our foundation. And we need our foundation to get a

@@ -1,16 +1,12 @@
-# Name of your application. Used to uniquely configure containers.
 service: arkham-horror
-
-# Name of the container image.
 image: halogenandtoast/arkham-horror
 
-# Deploy to these servers.
 servers:
   web:
     hosts:
       - 159.89.182.110
     labels:
-      traefik.http.routers.arkhamhorror.rule: HostRegexp(`{subdomain:[a-zA-Z0-9-]+}.arkhamhorror.app`)  || Host(`arkhamhorror.app`)
+      traefik.http.routers.arkhamhorror.rule: HostRegexp(`{subdomain:[a-zA-Z0-9-]+}.arkhamhorror.app`) || Host(`arkhamhorror.app`)
       traefik.http.routers.arkhamhorror.entryPoints: websecure
       traefik.http.routers.arkhamhorror.tls.certresolver: letsencrypt
       traefik.http.routers.httpmock.tls.domains[0].main: "arkhamhorror.app"
@@ -20,13 +16,8 @@ builder:
   cache:
     type: registry
 
-# Credentials for your image host.
 registry:
-  # Specify the registry server, if you're not using Docker Hub
-  # server: registry.digitalocean.com / ghcr.io / ...
   username: halogenandtoast
-
-  # Always use an access token rather than real password when possible.
   password:
     - KAMAL_REGISTRY_PASSWORD
 
@@ -36,61 +27,11 @@ env:
     - DATABASE_URL
     - ASSET_HOST
     - PORT
-# Inject ENV variables into containers (secrets come from .env).
-# env:
-#   clear:
-#     DB_HOST: 192.168.0.2
-#   secret:
-#     - RAILS_MASTER_KEY
-
-# Use a different ssh user than root
-# ssh:
-#   user: app
-
-# Configure builder setup.
-# builder:
-#   args:
-#     RUBY_VERSION: 3.2.0
-#   secrets:
-#     - GITHUB_TOKEN
-#   remote:
-#     arch: amd64
-#     host: ssh://app@192.168.0.1
-
-# Use accessory services (secrets come from .env).
-# accessories:
-#   db:
-#     image: mysql:8.0
-#     host: 192.168.0.2
-#     port: 3306
-#     env:
-#       clear:
-#         MYSQL_ROOT_HOST: '%'
-#       secret:
-#         - MYSQL_ROOT_PASSWORD
-#     files:
-#       - config/mysql/production.cnf:/etc/mysql/my.cnf
-#       - db/production.sql.erb:/docker-entrypoint-initdb.d/setup.sql
-#     directories:
-#       - data:/var/lib/mysql
-#   redis:
-#     image: redis:7.0
-#     host: 192.168.0.2
-#     port: 6379
-#     directories:
-#       - data:/data
-
-# Configure custom arguments for Traefik
-# traefik:
-#   args:
-#     accesslog: true
-#     accesslog.format: json
 
 # Configure a custom healthcheck (default is /up on port 3000)
 healthcheck:
   path: /health
-#   port: 4000
-## Configure custom arguments for Traefik
+
 traefik:
   options:
     publish:

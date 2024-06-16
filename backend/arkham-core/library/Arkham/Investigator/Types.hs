@@ -377,7 +377,7 @@ instance FromJSON InvestigatorAttrs where
     investigatorKeys <- o .: "keys"
     investigatorLog <- o .:? "log" .!= mempty
     investigatorDiscarding <- o .: "discarding"
-    investigatorDiscover <- o .:? "discarding"
+    investigatorDiscover <- o .:? "discover"
     investigatorDeckBuildingAdjustments <- o .:? "deckBuildingAdjustments" .!= mempty
     investigatorBeganRoundAt <- o .:? "beganRoundAt"
 

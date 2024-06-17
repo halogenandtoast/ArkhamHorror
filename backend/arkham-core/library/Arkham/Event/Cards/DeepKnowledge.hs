@@ -20,7 +20,7 @@ instance RunMessage DeepKnowledge where
       iids <- select $ affectsOthers $ colocatedWith iid <> can.draw.cards
       player <- getPlayer iid
       choices <- for iids $ \iid' -> do
-        drawing <- drawCards iid' attrs 1
+        let drawing = drawCards iid' attrs 1
         pure $ targetLabel iid' [drawing]
       pushAll
         $ replicate 3

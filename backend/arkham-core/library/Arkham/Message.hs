@@ -380,9 +380,11 @@ data Message
     AddToScenarioDeck ScenarioDeckKey Target
   | AddCardToScenarioDeck ScenarioDeckKey Card
   | ShuffleScenarioDeckIntoEncounterDeck ScenarioDeckKey
-  | DrawFromScenarioDeck InvestigatorId ScenarioDeckKey Target Int
-  | DrawRandomFromScenarioDeck InvestigatorId ScenarioDeckKey Target Int
-  | DrewFromScenarioDeck InvestigatorId ScenarioDeckKey Target [Card]
+  | DrawCards InvestigatorId CardDraw
+  | DoDrawCards InvestigatorId
+  | ReplaceCurrentCardDraw InvestigatorId CardDraw
+  | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
+  | DrewCards InvestigatorId CardDrew
   | SetScenarioDeck ScenarioDeckKey [Card]
   | RemoveCardFromScenarioDeck ScenarioDeckKey Card
   | SwapPlaces (Target, LocationId) (Target, LocationId) -- we include the placement so it is up to date
@@ -518,8 +520,6 @@ data Message
   | DisengageEnemy InvestigatorId EnemyId
   | DisengageEnemyFromAll EnemyId
   | DrawAnotherChaosToken InvestigatorId
-  | DrawCards CardDraw -- use drawCards
-  | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
   | DrawChaosToken InvestigatorId ChaosToken
   | DrewPlayerEnemy InvestigatorId Card
   | DrewTreachery InvestigatorId (Maybe DeckSignifier) Card
@@ -666,8 +666,6 @@ data Message
       Int
       [Target]
       [Target]
-  | InvestigatorDrawEncounterCard InvestigatorId
-  | InvestigatorDoDrawEncounterCard InvestigatorId
   | InvestigatorDrawEnemy InvestigatorId EnemyId
   | InvestigatorDrewEncounterCard InvestigatorId EncounterCard
   | InvestigatorDrewPlayerCard InvestigatorId PlayerCard
@@ -916,7 +914,6 @@ data Message
   | SetAsideCards [Card]
   | TakeResources InvestigatorId Int Source Bool
   | DrawStartingHands
-  | DrawStartingHand InvestigatorId
   | TakeStartingResources InvestigatorId
   | TakenActions InvestigatorId [Action]
   | PerformedActions InvestigatorId [Action]

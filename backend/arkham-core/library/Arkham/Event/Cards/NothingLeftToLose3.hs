@@ -24,7 +24,7 @@ instance RunMessage NothingLeftToLose3 where
     PlayThisEvent iid eid | eid == toId attrs -> do
       resources <- field InvestigatorResources iid
       cards <- fieldMap InvestigatorHand length iid
-      drawing <- drawCards iid attrs (5 - cards)
+      let drawing = drawCards iid attrs (5 - cards)
       pushAll
         $ [takeResources iid attrs (5 - resources) | resources < 5]
         <> [drawing | cards < 5]

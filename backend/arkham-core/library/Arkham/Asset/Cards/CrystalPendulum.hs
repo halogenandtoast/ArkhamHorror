@@ -59,14 +59,14 @@ instance RunMessage CrystalPendulumEffect where
     PassedThisSkillTestBy _ _ n | Just (EffectInt n) == effectMetadata attrs -> do
       case effectTarget attrs of
         InvestigatorTarget iid -> do
-          drawing <- drawCards iid (toAbilitySource (effectSource attrs) 1) 1
+          let drawing = drawCards iid (toAbilitySource (effectSource attrs) 1) 1
           pushAll [drawing, DisableEffect $ toId attrs]
         _ -> error "Invalid target"
       pure e
     FailedThisSkillTestBy _ _ n | Just (EffectInt n) == effectMetadata attrs -> do
       case effectTarget attrs of
         InvestigatorTarget iid -> do
-          drawing <- drawCards iid (toAbilitySource (effectSource attrs) 1) 1
+          let drawing = drawCards iid (toAbilitySource (effectSource attrs) 1) 1
           pushAll [drawing, DisableEffect $ toId attrs]
         _ -> error "Invalid target"
       pure e

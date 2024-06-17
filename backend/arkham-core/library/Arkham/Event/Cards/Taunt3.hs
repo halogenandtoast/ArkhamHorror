@@ -16,8 +16,7 @@ taunt3 = event Taunt3 Cards.taunt3
 instance RunMessage Taunt3 where
   runMessage msg e@(Taunt3 attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      enemyIds <- select $ enemiesColocatedWith iid
-      enemies <- forToSnd enemyIds $ \_ -> drawCards iid attrs 1
+      enemies <- map (\enemyId -> (enemyId, drawCards iid attrs 1)) <$> select (enemiesColocatedWith iid)
       player <- getPlayer iid
       push
         $ chooseSome

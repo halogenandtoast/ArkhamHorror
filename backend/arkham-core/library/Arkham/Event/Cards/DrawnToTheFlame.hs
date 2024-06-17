@@ -19,7 +19,7 @@ instance RunMessage DrawnToTheFlame where
   runMessage msg e@(DrawnToTheFlame attrs) = case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
       pushAll
-        [ InvestigatorDrawEncounterCard iid
+        [ drawEncounterCard iid attrs
         , Msg.DiscoverClues iid $ discoverAtYourLocation attrs 2
         ]
       pure e

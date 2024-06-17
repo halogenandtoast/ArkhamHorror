@@ -28,7 +28,7 @@ instance HasAbilities DrawingThin where
 instance RunMessage DrawingThin where
   runMessage msg a@(DrawingThin attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      drawing <- drawCards iid (toAbilitySource attrs 1) 1
+      let drawing = drawCards iid (toAbilitySource attrs 1) 1
       player <- getPlayer iid
       pushAll
         [ skillTestModifier (toAbilitySource attrs 1) SkillTestTarget (Difficulty 2)

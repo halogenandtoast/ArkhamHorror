@@ -35,7 +35,7 @@ instance RunMessage NineOfRods3 where
         , CancelNext (toSource attrs) DrawEnemyMessage
         , CancelSurge (toSource attrs)
         , ShuffleIntoDeck Deck.EncounterDeck target
-        , InvestigatorDrawEncounterCard iid
+        , drawEncounterCard iid attrs
         ]
       pure a
     InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do

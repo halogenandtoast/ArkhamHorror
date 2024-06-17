@@ -49,7 +49,7 @@ instance RunMessage UnearthTheAncients2 where
         ]
       pure e
     Successful (Action.Investigate, _) iid (isSource attrs -> True) _ _ -> do
-      chosen <- forToSnd (chosenCards metadata) $ \_ -> drawCards iid attrs 1
+      let chosen = map (\card -> (card, drawCards iid attrs 1)) (chosenCards metadata)
       pushAll
         $ [putCardIntoPlay iid card | card <- chosenCards metadata]
         <> [drawing | (card, drawing) <- chosen, Relic `member` toTraits card]

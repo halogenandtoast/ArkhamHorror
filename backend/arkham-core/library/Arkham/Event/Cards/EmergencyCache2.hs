@@ -19,7 +19,7 @@ emergencyCache2 = event EmergencyCache2 Cards.emergencyCache2
 instance RunMessage EmergencyCache2 where
   runMessage msg e@(EmergencyCache2 attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      drawing <- drawCards iid attrs 1
+      let drawing = drawCards iid attrs 1
       pushAll
         [ TakeResources iid 3 (toSource attrs) False
         , drawing

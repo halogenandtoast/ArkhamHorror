@@ -63,7 +63,7 @@ instance RunMessage Haste2 where
         getCanAfford a' [#draw]
       let available = filter (any (`elem` as) . abilityActions) actions
       player <- getPlayer iid
-      drawing <- drawCards iid a' 1
+      let drawing = drawCards iid a' 1
 
       canDraw <- canDo iid #draw
       canTakeResource <- canDo iid #resource

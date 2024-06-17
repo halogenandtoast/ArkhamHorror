@@ -50,7 +50,7 @@ instance RunMessage GlimpseTheUnthinkable5 where
         select
           $ InHandOf (InvestigatorWithId iid)
           <> BasicCardMatch NonWeakness
-      drawing <- drawCards iid attrs toDraw
+      let drawing = drawCards iid attrs toDraw
       player <- getPlayer iid
       pushAll
         [ chooseN

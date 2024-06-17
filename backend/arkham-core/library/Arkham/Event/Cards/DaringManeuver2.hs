@@ -22,7 +22,7 @@ daringManeuver2 =
 instance RunMessage DaringManeuver2 where
   runMessage msg e@(DaringManeuver2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      drawing <- drawCards iid attrs 1
+      let drawing = drawCards iid attrs 1
       pushAll
         [ drawing
         , skillTestModifier attrs iid (AnySkillValue 3)

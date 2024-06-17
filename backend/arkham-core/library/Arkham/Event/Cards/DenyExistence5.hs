@@ -43,7 +43,7 @@ instance RunMessage DenyExistence5 where
     ResolveEvent _ eid _ [w] | eid == toId attrs -> do
       case windowType w of
         Discarded iid source c -> do
-          drawing <- drawCards iid source 1
+          let drawing = drawCards iid source 1
           replaceMessageMatching (== Do (toMessage $ discardCard iid source c))
             $ \_ -> [drawing]
         LostResources iid source n -> do

@@ -32,6 +32,6 @@ instance HasAbilities RandolphCarterChainedToTheWakingWorld where
 instance RunMessage RandolphCarterChainedToTheWakingWorld where
   runMessage msg a@(RandolphCarterChainedToTheWakingWorld attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ drawCards iid (attrs.ability 1) 2
+      push $ drawCards iid (attrs.ability 1) 2
       pure a
     _ -> RandolphCarterChainedToTheWakingWorld <$> runMessage msg attrs

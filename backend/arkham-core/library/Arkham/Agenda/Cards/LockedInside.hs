@@ -9,6 +9,7 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
+import Arkham.Draw.Types
 import Arkham.GameValue
 import Arkham.Scenario.Deck
 
@@ -22,19 +23,15 @@ lockedInside = agenda (1, A) LockedInside Cards.lockedInside (Static 2)
 instance RunMessage LockedInside where
   runMessage msg a@(LockedInside attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      a
-        <$ pushAll
-          [ ShuffleScenarioDeckIntoEncounterDeck LunaticsDeck
-          , ShuffleEncounterDiscardBackIn
-          , DrawRandomFromScenarioDeck
-              leadInvestigatorId
-              MonstersDeck
-              (toTarget attrs)
-              1
-          , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-          ]
-    DrewFromScenarioDeck _ _ target cards
-      | isTarget attrs target ->
-          a <$ push (PlaceUnderneath ActDeckTarget cards)
+      lead <- getLeadInvestigatorId
+      pushAll
+        [ ShuffleScenarioDeckIntoEncounterDeck LunaticsDeck
+        , ShuffleEncounterDiscardBackIn
+        , DrawCards lead $ randomTargetCardDraw attrs MonstersDeck 1
+        , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
+        ]
+      pure a
+    DrewCards _ drew | maybe False (isTarget attrs) drew.target -> do
+      push $ PlaceUnderneath ActDeckTarget drew.cards
+      pure a
     _ -> LockedInside <$> runMessage msg attrs

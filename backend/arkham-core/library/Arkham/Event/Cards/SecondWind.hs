@@ -22,13 +22,10 @@ instance RunMessage SecondWind where
   runMessage msg e@(SecondWind attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
       roundHistory <- getHistory RoundHistory iid
-      let
-        damageToHeal =
-          if null (historyTreacheriesDrawn roundHistory) then 1 else 2
-      drawing <- drawCards iid attrs 1
+      let damageToHeal = if null (historyTreacheriesDrawn roundHistory) then 1 else 2
       pushAll
         [ HealDamage (InvestigatorTarget iid) (toSource attrs) damageToHeal
-        , drawing
+        , drawCards iid attrs 1
         ]
       pure e
     _ -> SecondWind <$> runMessage msg attrs

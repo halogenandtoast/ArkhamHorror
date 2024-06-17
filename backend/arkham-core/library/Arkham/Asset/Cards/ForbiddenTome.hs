@@ -27,7 +27,7 @@ instance HasAbilities ForbiddenTome where
 instance RunMessage ForbiddenTome where
   runMessage msg a@(ForbiddenTome attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' payments -> do
-      drawing <- drawCards iid (toAbilitySource attrs 1) 1
+      let drawing = drawCards iid (toAbilitySource attrs 1) 1
       pushAll
         [ drawing
         , UseCardAbilityChoice iid (toSource attrs) 1 NoAbilityMetadata windows' payments

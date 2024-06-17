@@ -40,8 +40,8 @@ instance RunMessage YouOweMeOne where
       do
         cards <- field InvestigatorHand iid'
         let relevantCards = filter (`cardMatch` (NonWeakness <> NonSignature)) cards
-        drawing1 <- drawCards iid attrs 1
-        drawing2 <- drawCards iid' attrs 1
+        let drawing1 = drawCards iid attrs 1
+        let drawing2 = drawCards iid' attrs 1
         player <- getPlayer iid
         pushAll
           [ FocusCards cards

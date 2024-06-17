@@ -35,11 +35,12 @@ instance RunMessage RexMurphy where
       push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toAbilitySource attrs 1) 1
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      drawing <- drawCards iid (ChaosTokenEffectSource ElderSign) 3
       player <- getPlayer iid
       push
         $ chooseOne player
-        $ [ Label "Automatically fail to draw 3" [FailSkillTest, drawing]
+        $ [ Label
+              "Automatically fail to draw 3"
+              [FailSkillTest, drawCards iid (ChaosTokenEffectSource ElderSign) 3]
           , Label "Resolve normally" []
           ]
       pure i

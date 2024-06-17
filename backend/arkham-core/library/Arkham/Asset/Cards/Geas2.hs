@@ -61,8 +61,8 @@ instance RunMessage Geas2 where
       pure $ Geas2 $ setMeta n attrs
     CommitCard iid _ | Just iid == attrs.controller -> do
       Geas2 <$> checkPromise attrs iid CommitPromise
-    DrawCards cardDraw | Just cardDraw.investigator == attrs.controller -> do
-      Geas2 <$> checkPromise attrs cardDraw.investigator DrawPromise
+    DrawCards iid _ | Just iid == attrs.controller -> do
+      Geas2 <$> checkPromise attrs iid DrawPromise
     PlayCard iid _ _ _ _ True | Just iid == attrs.controller -> do
       Geas2 <$> checkPromise attrs iid PlayPromise
     _ -> Geas2 <$> lift (runMessage msg attrs)

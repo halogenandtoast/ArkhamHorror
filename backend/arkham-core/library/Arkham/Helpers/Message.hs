@@ -14,6 +14,7 @@ import Arkham.Classes.Query
 import Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Deck
+import Arkham.Deck qualified as Deck
 import Arkham.Draw.Types
 import Arkham.Enemy.Creation
 import Arkham.Exception
@@ -32,15 +33,14 @@ import Arkham.Token qualified as Token
 import Arkham.Window (Window (..), WindowType, defaultWindows, mkAfter, mkWindow)
 import Arkham.Window qualified as Window
 
-drawCards
-  :: (MonadRandom m, Sourceable source)
-  => InvestigatorId
-  -> source
-  -> Int
-  -> m Message
-drawCards i source n = do
-  drawing <- newCardDraw i source n
-  pure $ DrawCards drawing
+drawCards :: Sourceable source => InvestigatorId -> source -> Int -> Message
+drawCards i source n = DrawCards i $ newCardDraw source i n
+
+drawEncounterCard :: Sourceable source => InvestigatorId -> source -> Message
+drawEncounterCard i source = drawEncounterCards i source 1
+
+drawEncounterCards :: Sourceable source => InvestigatorId -> source -> Int -> Message
+drawEncounterCards i source n = DrawCards i $ newCardDraw source Deck.EncounterDeck n
 
 drawCardsIfCan
   :: (MonadRandom m, Sourceable source, HasGame m)
@@ -50,8 +50,7 @@ drawCardsIfCan
   -> m (Maybe Message)
 drawCardsIfCan i source n = do
   canDraw <- can.draw.cards (sourceToFromSource source) i
-  drawing <- drawCards i source n
-  pure $ guard canDraw $> drawing
+  pure $ guard canDraw $> drawCards i source n
 
 sourceToFromSource :: Sourceable source => source -> FromSource
 sourceToFromSource (toSource -> source) = case source of
@@ -62,15 +61,8 @@ sourceToFromSource (toSource -> source) = case source of
   SkillSource _ -> FromPlayerCardEffect
   _ -> FromOtherSource
 
-drawCardsAction
-  :: (MonadRandom m, Sourceable source)
-  => InvestigatorId
-  -> source
-  -> Int
-  -> m Message
-drawCardsAction i source n = do
-  drawing <- newCardDraw i source n
-  pure $ DrawCards $ asDrawAction drawing
+drawCardsAction :: Sourceable source => InvestigatorId -> source -> Int -> Message
+drawCardsAction i source n = DrawCards i $ asDrawAction $ newCardDraw source i n
 
 resolveWithWindow :: HasGame m => Message -> WindowType -> m [Message]
 resolveWithWindow msg window' = do

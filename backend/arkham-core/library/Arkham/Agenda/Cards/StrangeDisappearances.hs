@@ -3,12 +3,12 @@ module Arkham.Agenda.Cards.StrangeDisappearances (
   strangeDisappearances,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
+import Arkham.Draw.Types
 import Arkham.GameValue
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 
 newtype StrangeDisappearances = StrangeDisappearances AgendaAttrs
@@ -22,22 +22,17 @@ strangeDisappearances =
 instance RunMessage StrangeDisappearances where
   runMessage msg a@(StrangeDisappearances attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLeadInvestigatorId
       scenarioDeckCount <- length <$> getScenarioDeck PotentialSacrifices
       if scenarioDeckCount >= 3
         then
           pushAll
-            [ DrawRandomFromScenarioDeck
-                leadInvestigatorId
-                PotentialSacrifices
-                (toTarget attrs)
-                1
+            [ DrawCards lead $ randomTargetCardDraw attrs PotentialSacrifices 1
             , AdvanceAgendaDeck agendaDeckId (toSource attrs)
             ]
         else push (AdvanceAgendaDeck agendaDeckId (toSource attrs))
       pure a
-    DrewFromScenarioDeck _ PotentialSacrifices target cards
-      | isTarget attrs target ->
-          a
-            <$ push (PlaceUnderneath AgendaDeckTarget cards)
+    DrewCards _iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
+      push $ PlaceUnderneath AgendaDeckTarget drewCards.cards
+      pure a
     _ -> StrangeDisappearances <$> runMessage msg attrs

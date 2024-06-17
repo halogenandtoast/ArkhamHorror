@@ -73,7 +73,7 @@ instance RunMessage GrislyTotemSeeker3Effect where
   runMessage msg e@(GrislyTotemSeeker3Effect attrs) =
     case msg of
       PassedSkillTest iid _ _ _ _ _ -> do
-        drawing <- drawCards iid (effectSource attrs) 1
+        let drawing = drawCards iid (effectSource attrs) 1
         pushAll [DisableEffect (toId attrs), drawing]
         pure e
       SkillTestEnds _ _ -> do

@@ -23,11 +23,7 @@ newtype TheEntityAboveTheVortexAbove = TheEntityAboveTheVortexAbove AgendaAttrs
 
 theEntityAboveTheVortexAbove :: AgendaCard TheEntityAboveTheVortexAbove
 theEntityAboveTheVortexAbove =
-  agenda
-    (2, C)
-    TheEntityAboveTheVortexAbove
-    Cards.theEntityAboveTheVortexAbove
-    (Static 6)
+  agenda (2, C) TheEntityAboveTheVortexAbove Cards.theEntityAboveTheVortexAbove (Static 6)
 
 instance HasModifiersFor TheEntityAboveTheVortexAbove where
   getModifiersFor (EnemyTarget eid) (TheEntityAboveTheVortexAbove a) = do
@@ -37,11 +33,7 @@ instance HasModifiersFor TheEntityAboveTheVortexAbove where
 
 instance HasAbilities TheEntityAboveTheVortexAbove where
   getAbilities (TheEntityAboveTheVortexAbove a) =
-    [ limitedAbility (GroupLimit PerRound 1)
-        $ mkAbility a 1
-        $ FastAbility
-        $ GroupClueCost (PerPlayer 1) Anywhere
-    ]
+    [groupLimit PerRound $ mkAbility a 1 $ FastAbility $ GroupClueCost (PerPlayer 1) Anywhere]
 
 instance RunMessage TheEntityAboveTheVortexAbove where
   runMessage msg a@(TheEntityAboveTheVortexAbove attrs) = case msg of
@@ -50,8 +42,7 @@ instance RunMessage TheEntityAboveTheVortexAbove where
       pushAll [toDiscard GameSource attrs, AddAct 2 openThePathAbove]
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      investigatorIds <- getInvestigatorIds
-      drawing <- for investigatorIds $ \iid -> drawCards iid (toAbilitySource attrs 1) 1
+      drawing <- map (\iid -> drawCards iid (attrs.ability 1) 1) <$> getInvestigatorIds
       pushAll
         $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
         : AdvanceAgendaIfThresholdSatisfied

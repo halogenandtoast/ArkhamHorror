@@ -355,6 +355,7 @@ investigator f cardDef Stats {..} =
                 , investigatorIsYithian = False
                 , investigatorDiscarding = Nothing
                 , investigatorDiscover = Nothing
+                , investigatorDrawing = Nothing
                 , investigatorLog = mkCampaignLog
                 , investigatorDeckBuildingAdjustments = mempty
                 , investigatorBeganRoundAt = Nothing

@@ -9,6 +9,7 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (PlayCard)
+import Arkham.Helpers.Message (drawEncounterCard)
 import Arkham.Matcher
 import Arkham.Modifier
 import Data.Aeson
@@ -56,7 +57,7 @@ instance RunMessage Counterespionage1 where
 
       if useYourDeck
         then drawCardsIfCan iid attrs 1
-        else push $ InvestigatorDrawEncounterCard iid
+        else push $ drawEncounterCard iid attrs
 
       pure e
     InHand _ (UseThisAbility _ (isSource attrs -> True) 1) -> do

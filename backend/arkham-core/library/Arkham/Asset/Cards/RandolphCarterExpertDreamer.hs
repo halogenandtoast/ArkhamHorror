@@ -34,7 +34,7 @@ instance HasAbilities RandolphCarterExpertDreamer where
 instance RunMessage RandolphCarterExpertDreamer where
   runMessage msg a@(RandolphCarterExpertDreamer attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> tokens) _ -> do
-      drawing <- drawCards iid (toAbilitySource attrs 1) 2
+      let drawing = drawCards iid (toAbilitySource attrs 1) 2
       push $ If (Window.RevealChaosTokenAssetAbilityEffect iid tokens (toId attrs)) [drawing]
       pure a
     _ -> RandolphCarterExpertDreamer <$> runMessage msg attrs

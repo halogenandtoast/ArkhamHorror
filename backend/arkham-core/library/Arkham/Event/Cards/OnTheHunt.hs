@@ -3,6 +3,7 @@ module Arkham.Event.Cards.OnTheHunt (onTheHunt, OnTheHunt (..)) where
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Message (drawEncounterCard)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Matcher
@@ -24,7 +25,7 @@ instance RunMessage OnTheHunt where
       search iid attrs EncounterDeckTarget [(FromTopOfDeck 9, PutBack)] AnyCard (defer attrs)
       pure e
     SearchNoneFound iid (isTarget attrs -> True) -> do
-      push $ InvestigatorDrawEncounterCard iid
+      push $ drawEncounterCard iid attrs
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       additionalTargets <- getAdditionalSearchTargets iid

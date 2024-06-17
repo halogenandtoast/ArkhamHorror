@@ -73,9 +73,9 @@ instance RunMessage JacquelineFine where
         ]
       pure i
     ChaosTokenCanceled iid _ (chaosTokenFace -> ElderSign) | attrs `is` iid -> do
-      pushM $ drawCards (toId attrs) (toAbilitySource attrs 1) 1
+      push $ drawCards (toId attrs) (toAbilitySource attrs 1) 1
       JacquelineFine <$> runMessage msg attrs
     ChaosTokenIgnored iid _ (chaosTokenFace -> ElderSign) | attrs `is` iid -> do
-      pushM $ drawCards (toId attrs) (toAbilitySource attrs 1) 1
+      push $ drawCards (toId attrs) (toAbilitySource attrs 1) 1
       JacquelineFine <$> runMessage msg attrs
     _ -> JacquelineFine <$> runMessage msg attrs

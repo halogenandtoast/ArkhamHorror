@@ -61,13 +61,12 @@ instance HasChaosTokenValue GavriellaMizrah where
 instance RunMessage GavriellaMizrah where
   runMessage msg i@(GavriellaMizrah attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toAbilitySource attrs 1) 1
+      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (attrs.ability 1) 1
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       pushAll
         [HealHorror (toTarget attrs) (toSource attrs) 1, HealDamage (toTarget attrs) (toSource attrs) 1]
       pure i
-    DrawStartingHand iid | attrs `is` iid -> pure i
     InvestigatorMulligan iid | iid == toId attrs -> do
       push $ FinishedWithMulligan iid
       pure i
@@ -80,5 +79,5 @@ instance RunMessage GavriellaMizrah where
       pushAll [RemoveCardFromHand iid cardId, RemovedFromGame card]
       pure i
     Do (DiscardCard iid _ _) | attrs `is` iid -> pure i
-    DrawCards cardDraw | attrs `is` cardDraw.investigator -> pure i
+    DrawCards iid cardDraw | iid == attrs.id && cardDraw.isPlayerDraw -> pure i
     _ -> GavriellaMizrah <$> runMessage msg attrs

@@ -48,7 +48,7 @@ instance RunMessage TheNecronomiconPetrusDeDaciaTranslation5 where
         push $ skillTestModifier (toAbilitySource attrs 1) iid (AnySkillValue 2)
         pure a
       UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-        pushM $ drawCards iid (toAbilitySource attrs 2) 2
+        push $ drawCards iid (toAbilitySource attrs 2) 2
         pure a
       UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do
         lids <- select $ LocationWithDiscoverableCluesBy $ InvestigatorWithId iid

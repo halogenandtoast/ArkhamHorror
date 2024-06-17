@@ -31,39 +31,35 @@ instance RunMessage FirstWatch where
           (AllDrawEncounterCard : rest) -> rest
           _ -> error "AllDrawEncounterCard expected"
         playerCount <- getPlayerCount
-        e
-          <$ pushAll
-            [ DrawEncounterCards (EventTarget eventId) playerCount
+        push $ DrawEncounterCards (EventTarget eventId) playerCount
+        pure e
+      UseCardAbilityChoice iid (EventSource eid) 1 (EncounterCardMetadata card) [] _ | eid == eventId -> do
+        investigatorIds <-
+          setFromList @(Set InvestigatorId) <$> getInvestigatorIds
+        let
+          assignedInvestigatorIds = setFromList $ map fst firstWatchPairings
+          remainingInvestigatorIds =
+            setToList
+              . insertSet iid
+              $ investigatorIds
+              `difference` assignedInvestigatorIds
+        player <- getPlayer iid
+        push
+          $ chooseOne
+            player
+            [ targetLabel
+              iid'
+              [ UseCardAbilityChoice
+                  iid'
+                  (EventSource eid)
+                  2
+                  (EncounterCardMetadata card)
+                  []
+                  NoPayment
+              ]
+            | iid' <- remainingInvestigatorIds
             ]
-      UseCardAbilityChoice iid (EventSource eid) 1 (EncounterCardMetadata card) [] _
-        | eid == eventId ->
-            do
-              investigatorIds <-
-                setFromList @(Set InvestigatorId) <$> getInvestigatorIds
-              let
-                assignedInvestigatorIds = setFromList $ map fst firstWatchPairings
-                remainingInvestigatorIds =
-                  setToList
-                    . insertSet iid
-                    $ investigatorIds
-                    `difference` assignedInvestigatorIds
-              player <- getPlayer iid
-              push
-                $ chooseOne
-                  player
-                  [ targetLabel
-                    iid'
-                    [ UseCardAbilityChoice
-                        iid'
-                        (EventSource eid)
-                        2
-                        (EncounterCardMetadata card)
-                        []
-                        NoPayment
-                    ]
-                  | iid' <- remainingInvestigatorIds
-                  ]
-              pure e
+        pure e
       UseCardAbilityChoice iid (EventSource eid) 2 (EncounterCardMetadata card) _ _
         | eid == eventId ->
             pure

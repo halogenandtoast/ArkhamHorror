@@ -18,6 +18,6 @@ instance RunMessage SearchForTheTruth where
   runMessage msg e@(SearchForTheTruth attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       x <- fieldMap InvestigatorClues (min 5) iid
-      pushM $ drawCards iid attrs x
+      push $ drawCards iid attrs x
       pure e
     _ -> SearchForTheTruth <$> runMessage msg attrs

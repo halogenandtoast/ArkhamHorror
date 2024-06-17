@@ -33,6 +33,6 @@ instance HasModifiersFor EarlSawyer where
 instance RunMessage EarlSawyer where
   runMessage msg a@(EarlSawyer attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushM $ drawCards iid (toAbilitySource attrs 1) 1
+      push $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
     _ -> EarlSawyer <$> runMessage msg attrs

@@ -31,6 +31,6 @@ instance RunMessage FeedTheMind where
       push $ beginSkillTest iid (attrs.ability 1) iid #intellect (Fixed 1)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) (min 3 -> n) -> do
-      pushM $ drawCards iid (toAbilitySource attrs 1) n
+      push $ drawCards iid (toAbilitySource attrs 1) n
       pure a
     _ -> FeedTheMind <$> runMessage msg attrs

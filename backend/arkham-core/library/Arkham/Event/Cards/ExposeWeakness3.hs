@@ -28,7 +28,7 @@ instance RunMessage ExposeWeakness3 where
   runMessage msg e@(ExposeWeakness3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <- select (enemyAtLocationWith iid <> EnemyWithFight)
-      drawing <- drawCards iid attrs 1
+      let drawing = drawCards iid attrs 1
       player <- getPlayer iid
       pushAll
         [ chooseOne

@@ -20,8 +20,8 @@ instance HasModifiersFor ForcedLearning where
 instance RunMessage ForcedLearning where
   runMessage msg a@(ForcedLearning attrs) = case msg of
     SendMessage (isTarget attrs -> True) AllDrawCardAndResource -> do
-      for_ attrs.controller \investigatorId -> do
-        drawing <- newCardDraw investigatorId ScenarioSource 2
-        push $ DrawCards $ drawing {cardDrawRules = singleton (AfterDrawDiscard 1)}
+      for_ attrs.controller \iid -> do
+        let drawing = newCardDraw ScenarioSource iid 2
+        push $ DrawCards iid $ drawing {cardDrawRules = singleton (AfterDrawDiscard 1)}
       pure a
     _ -> ForcedLearning <$> runMessage msg attrs

@@ -31,7 +31,7 @@ instance RunMessage TheCustodian where
   runMessage msg a@(TheCustodian attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       iids <- select $ InvestigatorAt $ locationWithAsset attrs
-      for_ iids $ \iid -> pushM $ drawCards iid (toAbilitySource attrs 1) 1
+      for_ iids $ \iid -> push $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ parley iid (toAbilitySource attrs 2) attrs #intellect (Fixed 3)

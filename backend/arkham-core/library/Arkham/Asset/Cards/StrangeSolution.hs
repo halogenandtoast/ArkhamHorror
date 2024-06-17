@@ -27,7 +27,7 @@ instance RunMessage StrangeSolution where
       push $ beginSkillTest iid (attrs.ability 1) iid #intellect (Fixed 4)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      drawing <- drawCards iid (attrs.ability 1) 2
+      let drawing = drawCards iid (attrs.ability 1) 2
       canDraw <- can.draw.cards iid
       pushAll
         $ toDiscardBy iid (attrs.ability 1) attrs

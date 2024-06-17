@@ -24,7 +24,7 @@ instance HasAbilities TheWorldXXI3 where
 instance RunMessage TheWorldXXI3 where
   runMessage msg a@(TheWorldXXI3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ drawCards iid (toAbilitySource attrs 1) 1
+      push $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
     InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
       push $ putCardIntoPlay iid attrs

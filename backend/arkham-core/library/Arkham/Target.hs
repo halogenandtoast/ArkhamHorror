@@ -100,6 +100,9 @@ class WithTarget a where
   getTarget :: a -> Maybe Target
   setTarget :: Targetable target => target -> a -> a
 
+maybeIsTarget :: (Targetable target, WithTarget a) => target -> a -> Bool
+maybeIsTarget target a = maybe False (isTarget target) (getTarget a)
+
 class Targetable a where
   toTarget :: a -> Target
   isTarget :: a -> Target -> Bool

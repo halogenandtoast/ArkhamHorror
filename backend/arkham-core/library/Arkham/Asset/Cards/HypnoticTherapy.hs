@@ -45,7 +45,7 @@ instance RunMessage HypnoticTherapy where
       targetsWithCardDrawAndHeal <- do
         iids <- select $ HealableInvestigator (attrs.ability 1) #horror $ colocatedWith iid
         for iids $ \i -> do
-          draw <- drawCards i (toAbilitySource attrs 1) 1
+          let draw = drawCards i (toAbilitySource attrs 1) 1
           targetPlayer <- getPlayer i
           pure ((i, targetPlayer), draw, HealHorror (toTarget i) (attrs.ability 1) 1)
       player <- getPlayer iid

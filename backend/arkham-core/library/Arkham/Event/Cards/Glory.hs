@@ -19,7 +19,6 @@ glory = event Glory Cards.glory
 instance RunMessage Glory where
   runMessage msg e@(Glory attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      drawing <- drawCards iid attrs 2
-      push drawing
+      push $ drawCards iid attrs 2
       pure e
     _ -> Glory <$> runMessage msg attrs

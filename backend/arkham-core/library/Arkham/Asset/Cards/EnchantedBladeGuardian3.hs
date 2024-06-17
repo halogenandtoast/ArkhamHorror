@@ -43,7 +43,7 @@ instance RunMessage EnchantedBladeGuardian3 where
       pure . EnchantedBladeGuardian3 $ attrs `with` Metadata True
     EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ | empowered meta -> do
       for_ attrs.controller \iid -> do
-        drawing <- drawCards iid (toAbilitySource attrs 1) 1
+        let drawing = drawCards iid (toAbilitySource attrs 1) 1
         pushAll [drawing, HealHorror (toTarget iid) (attrs.ability 1) 1]
       pure a
     SkillTestEnds _ _ -> pure . EnchantedBladeGuardian3 $ attrs `with` Metadata False

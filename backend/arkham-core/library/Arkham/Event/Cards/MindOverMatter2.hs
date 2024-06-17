@@ -17,7 +17,7 @@ mindOverMatter2 = event MindOverMatter2 Cards.mindOverMatter2
 instance RunMessage MindOverMatter2 where
   runMessage msg e@(MindOverMatter2 attrs) = case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
-      drawing <- drawCards iid attrs 1
+      let drawing = drawCards iid attrs 1
 
       pushAll
         [ roundModifiers

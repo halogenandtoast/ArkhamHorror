@@ -23,7 +23,7 @@ moneyTalks2 =
 instance RunMessage MoneyTalks2 where
   runMessage msg e@(MoneyTalks2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      drawing <- drawCards iid attrs 1
+      let drawing = drawCards iid attrs 1
       pushAll [ChangeSkillTestType ResourceSkillTest (HalfResourcesOf iid), drawing]
       pure e
     _ -> MoneyTalks2 <$> runMessage msg attrs

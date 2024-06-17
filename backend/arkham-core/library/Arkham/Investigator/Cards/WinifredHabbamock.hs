@@ -44,7 +44,7 @@ instance HasChaosTokenValue WinifredHabbamock where
 instance RunMessage WinifredHabbamock where
   runMessage msg i@(WinifredHabbamock attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushM $ drawCards iid (toAbilitySource attrs 1) 1
+      push $ drawCards iid (toAbilitySource attrs 1) 1
       pure i
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
       push $ createCardEffect Cards.winifredHabbamock Nothing attrs attrs

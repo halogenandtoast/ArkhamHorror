@@ -38,7 +38,7 @@ instance RunMessage ShockingDiscovery where
       hasEncounterDeck <- can.target.encounterDeck iid
       if canShuffleDeck
         then push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
-        else pushWhen hasEncounterDeck $ InvestigatorDrawEncounterCard iid
+        else pushWhen hasEncounterDeck $ drawEncounterCards iid attrs 1
       pure t
     InSearch (UseCardAbility iid (isSource attrs -> True) 1 (getBatchId -> batchId) _) -> do
       let card = fromJustNote "is player card" $ preview _PlayerCard (toCard attrs)
@@ -47,7 +47,7 @@ instance RunMessage ShockingDiscovery where
         , AddToDiscard iid card
         , CancelBatch batchId
         , CancelSearch iid -- shuffles the deck
-        , InvestigatorDrawEncounterCard iid
+        , drawEncounterCards iid attrs 1
         ]
       pure t
     _ -> ShockingDiscovery <$> runMessage msg attrs

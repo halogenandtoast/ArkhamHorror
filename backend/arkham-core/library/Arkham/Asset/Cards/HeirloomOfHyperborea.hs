@@ -22,6 +22,6 @@ instance HasAbilities HeirloomOfHyperborea where
 instance RunMessage HeirloomOfHyperborea where
   runMessage msg a@(HeirloomOfHyperborea attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ drawCards iid (toAbilitySource attrs 1) 1
+      push $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
     _ -> HeirloomOfHyperborea <$> runMessage msg attrs

@@ -67,7 +67,7 @@ instance RunMessage CloseTheCircle1 where
           filter (`cardMatch` CardWithoutAction) <$> getPlayableCards iattrs (UnpaidCost NoAction) windows
         canTakeResource <- (&&) <$> canDo iid #resource <*> can.gain.resources FromOtherSource iid
         canAffordTakeResources <- getCanAfford iattrs [#resource]
-        drawing <- lift $ drawCards iid iid 1
+        let drawing = drawCards iid iid 1
         canAffordDrawCards <- getCanAfford iattrs [#draw]
         canPlay <- canDo iid #play
         mods <- getModifiers iid

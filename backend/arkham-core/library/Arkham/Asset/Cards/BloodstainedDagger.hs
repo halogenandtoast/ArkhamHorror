@@ -41,6 +41,6 @@ instance RunMessage BloodstainedDagger where
       pure a
     EnemyDefeated _ _ (isAbilitySource attrs 2 -> True) _ -> do
       for_ (assetController attrs) \iid -> do
-        pushM $ drawCards iid (attrs.ability 2) 1
+        push $ drawCards iid (attrs.ability 2) 1
       pure a
     _ -> BloodstainedDagger <$> runMessage msg attrs

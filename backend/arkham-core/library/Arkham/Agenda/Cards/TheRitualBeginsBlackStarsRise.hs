@@ -3,8 +3,6 @@ module Arkham.Agenda.Cards.TheRitualBeginsBlackStarsRise (
   theRitualBeginsBlackStarsRise,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
@@ -15,6 +13,7 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype TheRitualBeginsBlackStarsRise = TheRitualBeginsBlackStarsRise AgendaAttrs
@@ -23,19 +22,11 @@ newtype TheRitualBeginsBlackStarsRise = TheRitualBeginsBlackStarsRise AgendaAttr
 
 theRitualBeginsBlackStarsRise :: AgendaCard TheRitualBeginsBlackStarsRise
 theRitualBeginsBlackStarsRise =
-  agenda
-    (1, C)
-    TheRitualBeginsBlackStarsRise
-    Cards.theRitualBeginsBlackStarsRise
-    (Static 5)
+  agenda (1, C) TheRitualBeginsBlackStarsRise Cards.theRitualBeginsBlackStarsRise (Static 5)
 
 instance HasAbilities TheRitualBeginsBlackStarsRise where
   getAbilities (TheRitualBeginsBlackStarsRise a) =
-    [ limitedAbility (GroupLimit PerRound 1)
-        $ mkAbility a 1
-        $ FastAbility
-        $ GroupClueCost (PerPlayer 1) Anywhere
-    ]
+    [groupLimit PerRound $ mkAbility a 1 $ FastAbility $ GroupClueCost (PerPlayer 1) Anywhere]
 
 instance RunMessage TheRitualBeginsBlackStarsRise where
   runMessage msg a@(TheRitualBeginsBlackStarsRise attrs) = case msg of
@@ -56,8 +47,7 @@ instance RunMessage TheRitualBeginsBlackStarsRise where
         <> [advanceAgendaDeck attrs]
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      investigatorIds <- getInvestigatorIds
-      drawing <- for investigatorIds $ \iid -> drawCards iid (toAbilitySource attrs 1) 1
+      drawing <- map (\iid -> drawCards iid (attrs.ability 1) 1) <$> getInvestigatorIds
       pushAll
         $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
         : AdvanceAgendaIfThresholdSatisfied

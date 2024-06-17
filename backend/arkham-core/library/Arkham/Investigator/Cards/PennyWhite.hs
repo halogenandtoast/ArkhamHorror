@@ -10,7 +10,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards hiding (pennyWhite)
 import Arkham.Card
 import Arkham.Discover
-import Arkham.Draw.Types
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
@@ -79,7 +78,6 @@ instance RunMessage PennyWhite where
         pushWhen (skillTestIsRevelation skillTest)
           $ createCardEffect Cards.pennyWhite Nothing (toSource attrs) (toTarget attrs)
       pure i
-    DrawStartingHand iid | iid == toId attrs -> pure i
     InvestigatorMulligan iid | iid == toId attrs -> do
       push $ FinishedWithMulligan iid
       pure i
@@ -91,10 +89,8 @@ instance RunMessage PennyWhite where
       let card = fromJustNote "must be in hand" $ find ((== cardId) . toCardId) hand
       pushAll [RemoveCardFromHand iid cardId, RemovedFromGame card]
       pure i
-    Do (DiscardCard iid _ _) | iid == toId attrs -> do
-      pure i
-    DrawCards cardDraw | cardDrawInvestigator cardDraw == toId attrs -> do
-      pure i
+    Do (DiscardCard iid _ _) | iid == toId attrs -> pure i
+    DrawCards iid cardDraw | iid == attrs.id && cardDraw.isPlayerDraw -> pure i
     _ -> PennyWhite <$> runMessage msg attrs
 
 newtype PennyWhiteEffect = PennyWhiteEffect EffectAttrs

@@ -43,7 +43,7 @@ instance RunMessage LiquidCourage1 where
           ]
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      drawing <- drawCards iid (toAbilitySource attrs 1) 1
+      let drawing = drawCards iid (toAbilitySource attrs 1) 1
       pushAll [AdditionalHealHorror (toTarget iid) (toAbilitySource attrs 1) 0, drawing]
       pure a
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

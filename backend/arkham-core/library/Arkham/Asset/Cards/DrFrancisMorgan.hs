@@ -35,6 +35,6 @@ instance HasModifiersFor DrFrancisMorgan where
 instance RunMessage DrFrancisMorgan where
   runMessage msg a@(DrFrancisMorgan attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushM $ drawCards iid (toAbilitySource attrs 1) 1
+      push $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
     _ -> DrFrancisMorgan <$> runMessage msg attrs

@@ -33,7 +33,7 @@ instance HasAbilities JewelOfAureolus3 where
 instance RunMessage JewelOfAureolus3 where
   runMessage msg a@(JewelOfAureolus3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> tokens) _ -> do
-      drawing <- drawCards iid (toAbilitySource attrs 1) 1
+      let drawing = drawCards iid (toAbilitySource attrs 1) 1
       player <- getPlayer iid
       push
         $ If (Window.RevealChaosTokenAssetAbilityEffect iid tokens (toId attrs))

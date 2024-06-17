@@ -37,13 +37,7 @@ instance RunMessage ParallelFates2 where
           player
           [ TargetLabel
             target
-            [ lookAt
-                iid
-                (toSource attrs)
-                target
-                [fromTopOfDeck 6]
-                AnyCard
-                (DeferSearchedToTarget $ toTarget attrs)
+            [ lookAt iid attrs target [fromTopOfDeck 6] AnyCard (DeferSearchedToTarget $ toTarget attrs)
             ]
           | target <- EncounterDeckTarget : targets
           ]
@@ -74,7 +68,7 @@ instance RunMessage ParallelFates2 where
         ]
       pure e
     SearchFound iid (isTarget attrs -> True) deck@(Deck.InvestigatorDeck _) cards -> do
-      drawing <- drawCards iid attrs 1
+      let drawing = drawCards iid attrs 1
       player <- getPlayer iid
       pushAll
         [ FocusCards cards

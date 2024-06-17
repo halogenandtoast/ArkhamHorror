@@ -36,7 +36,7 @@ instance HasAbilities MadameLabranche where
 instance RunMessage MadameLabranche where
   runMessage msg a@(MadameLabranche attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushM $ drawCards iid (toAbilitySource attrs 1) 1
+      push $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ TakeResources iid 1 (toAbilitySource attrs 2) False

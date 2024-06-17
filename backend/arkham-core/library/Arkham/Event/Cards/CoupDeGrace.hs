@@ -39,7 +39,7 @@ instance RunMessage CoupDeGrace where
         : [ChooseEndTurn iid | isTurn]
       pure e
     EnemyDefeated _ _ (isSource attrs -> True) _ -> do
-      drawing <- drawCards (eventController attrs) attrs 1
+      let drawing = drawCards (eventController attrs) attrs 1
       push drawing
       pure e
     _ -> CoupDeGrace <$> runMessage msg attrs

@@ -35,7 +35,7 @@ instance RunMessage Sacrifice1 where
     ResolveAmounts iid choices (isTarget attrs -> True) -> do
       let drawAmount = getChoiceAmount "Cards" choices
       let resourcesAmount = getChoiceAmount "Resources" choices
-      drawing <- drawCards iid attrs drawAmount
+      let drawing = drawCards iid attrs drawAmount
       pushAll
         $ [drawing | drawAmount > 0]
         <> [TakeResources iid resourcesAmount (toSource attrs) False | resourcesAmount > 0]

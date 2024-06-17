@@ -32,9 +32,9 @@ instance HasChaosTokenValue HarveyWalters where
 instance RunMessage HarveyWalters where
   runMessage msg i@(HarveyWalters attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (map windowType -> [Window.DrawCards iid' _]) _ -> do
-      pushM $ drawCards iid' (toAbilitySource attrs 1) 1
+      push $ drawCards iid' (attrs.ability 1) 1
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      pushM $ drawCards iid ElderSign 1
+      push $ drawCards iid ElderSign 1
       pure i
     _ -> HarveyWalters <$> runMessage msg attrs

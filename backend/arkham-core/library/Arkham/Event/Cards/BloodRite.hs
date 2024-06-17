@@ -44,7 +44,7 @@ instance RunMessage BloodRite where
   runMessage msg e@(BloodRite attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ windows _ | eid == eventId -> do
       limit <- bloodRiteLimit attrs
-      drawing <- drawCards iid attrs limit
+      let drawing = drawCards iid attrs limit
       pushAll
         [ drawing
         , PayForCardAbility iid (EventSource eid) windows 1 (DiscardCardPayment [])

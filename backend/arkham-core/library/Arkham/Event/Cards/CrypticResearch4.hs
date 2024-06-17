@@ -22,7 +22,7 @@ instance RunMessage CrypticResearch4 where
       iids <-
         select
           =<< guardAffectsOthers iid (colocatedWith iid <> can.draw.cards)
-      investigators <- forToSnd iids $ \iid' -> drawCards iid' attrs 3
+      let investigators = map (\iid' -> (iid', drawCards iid' attrs 3)) iids
       player <- getPlayer iid
       push $ chooseOne player $ [targetLabel iid' [drawing] | (iid', drawing) <- investigators]
       pure e

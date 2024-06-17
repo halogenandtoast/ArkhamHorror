@@ -80,10 +80,11 @@ instance RunMessage DianaStanley where
       canLeavePlay <- case source of
         AssetSource aid -> elem aid <$> select AssetCanLeavePlayByNormalMeans
         _ -> pure $ not (cdPermanent $ toCardDef card)
-      drawing <- drawCards iid (toAbilitySource attrs 1) 1
       pushAll
         $ [removeMsg | canLeavePlay]
         <> [PlaceUnderneath (toTarget attrs) [card] | canLeavePlay]
-        <> [drawing, TakeResources iid 1 (toAbilitySource attrs 1) False]
+        <> [ drawCards iid (attrs.ability 1) 1
+           , TakeResources iid 1 (attrs.ability 1) False
+           ]
       pure i
     _ -> DianaStanley <$> runMessage msg attrs

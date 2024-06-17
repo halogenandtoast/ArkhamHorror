@@ -23,7 +23,7 @@ glimpseTheUnthinkable1 =
 instance RunMessage GlimpseTheUnthinkable1 where
   runMessage msg e@(GlimpseTheUnthinkable1 attrs) = case msg of
     InvestigatorPlayEvent iid eid mtarget windows' _ | eid == toId attrs -> do
-      drawing <- drawCards iid attrs 1
+      let drawing = drawCards iid attrs 1
       pushAll
         [ drawing
         , ResolveEvent iid eid mtarget windows'
@@ -50,7 +50,7 @@ instance RunMessage GlimpseTheUnthinkable1 where
         select
           $ InHandOf (InvestigatorWithId iid)
           <> BasicCardMatch NonWeakness
-      drawing <- drawCards iid attrs n
+      let drawing = drawCards iid attrs n
       player <- getPlayer iid
       pushAll
         [ chooseN

@@ -47,7 +47,7 @@ instance RunMessage UnearthTheAncients where
     Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target -> do
       case chosenCard metadata of
         Just card -> do
-          drawing <- drawCards iid attrs 1
+          let drawing = drawCards iid attrs 1
           pushAll $ putCardIntoPlay iid card : [drawing | Relic `member` toTraits card]
         Nothing -> error "this should not happen"
       pure e

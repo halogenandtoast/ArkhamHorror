@@ -34,7 +34,7 @@ instance RunMessage FeedTheMind3 where
       push $ beginSkillTest iid (attrs.ability 1) iid #intellect (Fixed 0)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
-      drawing <- drawCards iid (attrs.ability 1) n
+      let drawing = drawCards iid (attrs.ability 1) n
       pushAll
         [ drawing
         , HandleTargetChoice iid (attrs.ability 1) (toTarget attrs)

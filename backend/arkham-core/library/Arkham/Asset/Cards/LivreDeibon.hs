@@ -44,7 +44,7 @@ instance RunMessage LivreDeibon where
   runMessage msg a@(LivreDeibon attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       handCards <- field InvestigatorHand iid
-      drawing <- drawCards iid (toAbilitySource attrs 1) 1
+      let drawing = drawCards iid (toAbilitySource attrs 1) 1
       player <- getPlayer iid
       push
         $ chooseOne player

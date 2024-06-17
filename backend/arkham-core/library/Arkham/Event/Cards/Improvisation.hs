@@ -25,7 +25,7 @@ switchRole pid iid = chooseOne pid [Label (tshow role) [SetRole iid role] | role
 instance RunMessage Improvisation where
   runMessage msg e@(Improvisation attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      drawing <- drawCards iid attrs 1
+      let drawing = drawCards iid attrs 1
       player <- getPlayer iid
       pushAll
         [ switchRole player iid

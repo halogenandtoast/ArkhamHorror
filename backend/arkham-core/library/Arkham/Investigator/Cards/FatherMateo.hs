@@ -41,7 +41,7 @@ instance RunMessage FatherMateo where
       pushAll [createCardEffect Cards.fatherMateo Nothing ElderSign iid, PassSkillTest]
       pure i
     UseCardAbility _ (isSource attrs -> True) 1 (Window.revealedChaosTokens -> [token]) _ -> do
-      push $ chaosTokenEffect (toAbilitySource attrs 1) token (ChaosTokenFaceModifier [ElderSign])
+      push $ chaosTokenEffect (attrs.ability 1) token (ChaosTokenFaceModifier [ElderSign])
       pure i
     _ -> FatherMateo <$> runMessage msg attrs
 
@@ -58,11 +58,14 @@ instance RunMessage FatherMateoElderSignEffect where
       push $ DisableEffect $ toId attrs
       for_ (attrs.target ^? #investigator) $ \iid -> do
         isTurn <- iid <=~> TurnInvestigator
-        drawing <- drawCards iid ElderSign 1
         player <- getPlayer iid
         push
           $ chooseOrRunOne player
-          $ Label "Draw 1 card and gain 1 resource" [drawing, TakeResources iid 1 (toSource ElderSign) False]
+          $ Label
+            "Draw 1 card and gain 1 resource"
+            [ drawCards iid ElderSign 1
+            , TakeResources iid 1 (toSource ElderSign) False
+            ]
           : [Label "Take an additional action this turn" [GainActions iid (toSource attrs) 1] | isTurn]
       pure e
     _ -> FatherMateoElderSignEffect <$> runMessage msg attrs

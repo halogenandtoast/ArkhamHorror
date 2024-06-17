@@ -39,7 +39,7 @@ instance RunMessage PatricesViolin where
       let source = toAbilitySource attrs 1
       canGainResources <- can.gain.resources iid'
       canDrawCards <- can.draw.cards iid'
-      drawing <- drawCards iid' source 1
+      let drawing = drawCards iid' source 1
       player <- getPlayer iid
 
       push

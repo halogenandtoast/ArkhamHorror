@@ -63,12 +63,11 @@ instance HasChaosTokenValue NormanWithers where
 instance RunMessage NormanWithers where
   runMessage msg nw@(NormanWithers (a `With` metadata)) = case msg of
     UseCardAbility iid (isSource a -> True) 1 _ _ -> do
-      pushM $ drawCards iid (toAbilitySource a 1) 1
+      push $ drawCards iid (a.ability 1) 1
       pure nw
     When (RevealChaosToken _ iid token) | iid == toId a -> do
       faces <- getModifiedChaosTokenFace token
       when (ElderSign `elem` faces) $ do
-        drawing <- drawCards iid (ChaosTokenEffectSource ElderSign) 1
         hand <- field InvestigatorHand iid
         player <- getPlayer iid
         push
@@ -76,7 +75,9 @@ instance RunMessage NormanWithers where
           $ Label "Do not swap" []
           : [ targetLabel
               (toCardId c)
-              [drawing, PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)]
+              [ drawCards iid (ChaosTokenEffectSource ElderSign) 1
+              , PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)
+              ]
             | c <- onlyPlayerCards hand
             ]
       pure nw

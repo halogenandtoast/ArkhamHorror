@@ -8,6 +8,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (PlayCard)
 import Arkham.Capability
+import Arkham.Draw.Types
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.SkillTest.Step
@@ -36,9 +37,6 @@ instance RunMessage CrypticGrimoireTextOfTheElderGuardian4 where
       push $ AddUses attrs.id Secret n
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      _ <- popMessageMatching $ \case
-        InvestigatorDoDrawEncounterCard iid' -> iid == iid'
-        _ -> False
-      pushM $ drawCards iid (attrs.ability 1) 1
+      push $ ReplaceCurrentCardDraw iid $ newCardDraw (attrs.ability 1) iid 1
       pure a
     _ -> CrypticGrimoireTextOfTheElderGuardian4 <$> runMessage msg attrs

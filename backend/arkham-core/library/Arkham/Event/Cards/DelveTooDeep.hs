@@ -31,7 +31,7 @@ instance RunMessage DelveTooDeep where
             player
             [ TargetLabel
                 EncounterDeckTarget
-                [InvestigatorDrawEncounterCard iid']
+                [drawEncounterCard iid' attrs]
             ]
           | (iid', player) <- investigators
           ]

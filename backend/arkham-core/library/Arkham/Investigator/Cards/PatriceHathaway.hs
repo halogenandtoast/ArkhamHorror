@@ -50,7 +50,7 @@ instance RunMessage PatriceHathaway where
     DoStep 1 (SendMessage (isTarget attrs -> True) AllDrawCardAndResource) | not (attrs ^. defeatedL || attrs ^. resignedL) -> do
       cards <- field InvestigatorHand (toId attrs)
       let numberToDraw = max 0 (5 - length cards)
-      when (numberToDraw > 0) $ pushM $ drawCards (toId attrs) ScenarioSource numberToDraw
+      pushWhen (numberToDraw > 0) $ drawCards (toId attrs) ScenarioSource numberToDraw
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       insertAfterMatching [DoStep 1 msg] (== EndSkillTestWindow)

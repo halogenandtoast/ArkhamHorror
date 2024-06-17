@@ -68,7 +68,6 @@ instance RunMessage JeromeDavids where
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       push $ Msg.DiscoverClues iid $ discoverAtYourLocation ElderSign 1
       pure i
-    DrawStartingHand iid | attrs `is` iid -> pure i
     InvestigatorMulligan iid | attrs `is` iid -> do
       push $ FinishedWithMulligan iid
       pure i
@@ -81,5 +80,5 @@ instance RunMessage JeromeDavids where
       pushAll [RemoveCardFromHand iid cardId, RemovedFromGame card]
       pure i
     Do (DiscardCard iid _ _) | attrs `is` iid -> pure i
-    DrawCards cardDraw | attrs `is` cardDraw.investigator -> pure i
+    DrawCards iid cardDraw | iid == attrs.id && cardDraw.isPlayerDraw -> pure i
     _ -> JeromeDavids <$> runMessage msg attrs

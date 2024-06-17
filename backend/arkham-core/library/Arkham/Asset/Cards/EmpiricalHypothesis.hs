@@ -98,7 +98,7 @@ instance RunMessage EmpiricalHypothesis where
            ]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      pushM $ drawCards iid (toAbilitySource attrs 2) 1
+      push $ drawCards iid (toAbilitySource attrs 2) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 3 -> do
       push $ createCardEffect Cards.empiricalHypothesis Nothing attrs iid

@@ -344,21 +344,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          ]
       <> [TakeStartingResources investigatorId]
     pure $ a & (deckL .~ Deck deck''') & bondedCardsL .~ bondedCards
-  DrawStartingHand iid | iid == investigatorId -> do
-    modifiers' <- getModifiers (toTarget a)
-    if any (`elem` modifiers') [CannotDrawCards, CannotManipulateDeck]
-      then pure a
-      else do
-        let
-          startingHandAmount = foldr applyModifier 5 modifiers'
-          applyModifier (StartingHand m) n = max 0 (n + m)
-          applyModifier _ n = n
-        (discard, hand, deck) <- drawOpeningHand a startingHandAmount
-        pure
-          $ a
-          & (discardL .~ discard)
-          & (handL .~ hand)
-          & (deckL .~ Deck deck)
   ReturnToHand iid (AssetTarget aid) | iid == investigatorId -> do
     pure $ a & (slotsL %~ removeFromSlots aid)
   ReturnToHand iid (CardTarget card) | iid == investigatorId -> do
@@ -2145,20 +2130,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (Just $ PlayerCard x)
             (map PlayerCard revealed)
         pure $ a & deckL .~ Deck xs
-  DrawCards cardDraw | cardDrawInvestigator cardDraw == toId a && cardDrawAction cardDraw -> do
+  DrawCards iid cardDraw | iid == toId a && cardDrawAction cardDraw -> do
     let
       iid = investigatorId
       source = cardDrawSource cardDraw
       n = cardDrawAmount cardDraw
     beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #draw)]
     afterWindowMsg <- checkWindows [mkAfter (Window.PerformAction iid #draw)]
-    drawing <- drawCards iid source n
     pushAll
       [ BeginAction
       , beforeWindowMsg
       , TakeActions iid [#draw] (ActionCost 1)
       , CheckAttackOfOpportunity iid False
-      , drawing
+      , drawCards iid source n
       , afterWindowMsg
       , FinishAction
       ]
@@ -2166,114 +2150,129 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   MoveTopOfDeckToBottom _ (Deck.InvestigatorDeck iid) n | iid == investigatorId -> do
     let (cards, deck) = draw n investigatorDeck
     pure $ a & deckL .~ Deck.withDeck (<> cards) deck
-  DrawCards cardDraw | cardDrawInvestigator cardDraw == toId a && not (cardDrawAction cardDraw) -> do
-    -- RULES: When a player draws two or more cards as the result of a single
-    -- ability or game step, those cards are drawn simultaneously. If a deck
-    -- empties middraw, reset the deck and complete the draw.
-
-    -- RULES: If an investigator with an empty investigator deck needs to draw
-    -- a card, that investigator shuffles his or her discard pile back into his
-    -- or her deck, then draws the card, and upon completion of the entire draw
-    -- takes one horror.
-
-    let
-      iid = investigatorId
-      source = cardDrawSource cardDraw
-      n = cardDrawAmount cardDraw
-
-    modifiers' <- getModifiers (toTarget a)
-    if null investigatorDeck
-      then do
-        -- What happens if the Yorick player has Graveyard Ghouls engaged
-        -- with him or her and runs out of deck? "If an investigator with an
-        -- empty investigator deck needs to draw a card, that investigator
-        -- shuffles his or her discard pile back into his or her deck, then
-        -- draws the card, and upon completion of the entire draw takes one
-        -- horror. In this case, you cannot shuffle your discard pile into
-        -- your deck, so you will neither draw 1 card, nor will you take 1
-        -- horror."
-        unless (null investigatorDiscard || CardsCannotLeaveYourDiscardPile `elem` modifiers') $ do
-          drawing <- drawCards iid source n
-          wouldDo
-            (EmptyDeck iid (Just drawing))
-            (Window.DeckWouldRunOutOfCards iid)
-            (Window.DeckRanOutOfCards iid)
-        -- push $ EmptyDeck iid
-        pure a
-      else do
-        let deck = unDeck investigatorDeck
-        if length deck < n
-          then do
-            drawing <- drawCards iid source (n - length deck)
-            push drawing
-            pure $ a & deckL .~ mempty & drawnCardsL %~ (<> deck)
+  DrawCards iid cardDraw | iid == toId a && not (cardDrawAction cardDraw) -> do
+    case cardDraw.kind of
+      StartingHandCardDraw -> do
+        modifiers' <- getModifiers (toTarget a)
+        if any (`elem` modifiers') [CannotDrawCards, CannotManipulateDeck]
+          then pure a
           else do
             let
-              (drawn, deck') = splitAt n deck
-              allDrawn = investigatorDrawnCards <> drawn
-              shuffleBackInEachWeakness =
-                ShuffleBackInEachWeakness `elem` cardDrawRules cardDraw
-
-              msgs =
-                if shuffleBackInEachWeakness
-                  then []
-                  else concatMap (drawThisCard iid) allDrawn
-            player <- getPlayer iid
-            let
-              weaknesses = map PlayerCard $ filter (`cardMatch` WeaknessCard) allDrawn
-              msgs' =
-                (<> msgs)
-                  $ guard (shuffleBackInEachWeakness && notNull weaknesses)
-                  *> [ FocusCards weaknesses
-                     , chooseOne
-                        player
-                        [ Label
-                            "Shuffle Weaknesses back in"
-                            [UnfocusCards, ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) weaknesses]
-                        ]
-                     ]
-
-            windowMsgs <-
-              if null deck'
-                then pure <$> checkWindows ((`mkWindow` Window.DeckHasNoCards iid) <$> [#when, #after])
-                else pure []
-            (before, _, after) <- frame $ Window.DrawCards iid $ map toCard allDrawn
-            checkHandSize <- hasModifier iid CheckHandSizeAfterDraw
-
-            -- Cards with revelations won't be in hand afte they resolve, so exclude them from the discard
-            let
-              toDrawDiscard = \case
-                AfterDrawDiscard x -> Sum x
-                _ -> mempty
-            let discardable =
-                  filter (`cardMatch` (DiscardableCard <> NotCard CardWithRevelation)) allDrawn
-            let discardAmount =
-                  min (length discardable)
-                    $ getSum (foldMap toDrawDiscard (toList $ cardDrawRules cardDraw))
-            -- Only focus those that will still be in hand
-            let focusable = map toCard $ filter (`cardMatch` NotCard CardWithRevelation) allDrawn
-
-            pushAll
-              $ windowMsgs
-              <> [DeckHasNoCards iid Nothing | null deck']
-              <> [InvestigatorDrewPlayerCard iid card | card <- allDrawn]
-              <> [before]
-              <> msgs'
-              <> [after]
-              <> ( guard (discardAmount > 0)
-                    *> [ FocusCards focusable
-                       , chooseN
-                          player
-                          discardAmount
-                          [targetLabel (toCardId card) [DiscardCard iid (toSource a) (toCardId card)] | card <- discardable]
-                       , UnfocusCards
-                       ]
-                 )
-              <> [CheckHandSize iid | checkHandSize]
+              startingHandAmount = foldr applyModifier 5 modifiers'
+              applyModifier (StartingHand m) n = max 0 (n + m)
+              applyModifier _ n = n
+            (discard, hand, deck) <- drawOpeningHand a startingHandAmount
             pure
               $ a
-              & (handL %~ (<> map PlayerCard (filter (`cardMatch` NotCard CardWithRevelation) allDrawn)))
-              & (deckL .~ Deck deck')
+              & (discardL .~ discard)
+              & (handL .~ hand)
+              & (deckL .~ Deck deck)
+      StandardCardDraw -> do
+        -- RULES: When a player draws two or more cards as the result of a single
+        -- ability or game step, those cards are drawn simultaneously. If a deck
+        -- empties middraw, reset the deck and complete the draw.
+
+        -- RULES: If an investigator with an empty investigator deck needs to draw
+        -- a card, that investigator shuffles his or her discard pile back into his
+        -- or her deck, then draws the card, and upon completion of the entire draw
+        -- takes one horror.
+
+        let
+          iid = investigatorId
+          source = cardDrawSource cardDraw
+          n = cardDrawAmount cardDraw
+
+        modifiers' <- getModifiers (toTarget a)
+        if null investigatorDeck
+          then do
+            -- What happens if the Yorick player has Graveyard Ghouls engaged
+            -- with him or her and runs out of deck? "If an investigator with an
+            -- empty investigator deck needs to draw a card, that investigator
+            -- shuffles his or her discard pile back into his or her deck, then
+            -- draws the card, and upon completion of the entire draw takes one
+            -- horror. In this case, you cannot shuffle your discard pile into
+            -- your deck, so you will neither draw 1 card, nor will you take 1
+            -- horror."
+            unless (null investigatorDiscard || CardsCannotLeaveYourDiscardPile `elem` modifiers') $ do
+              wouldDo
+                (EmptyDeck iid (Just $ drawCards iid source n))
+                (Window.DeckWouldRunOutOfCards iid)
+                (Window.DeckRanOutOfCards iid)
+            -- push $ EmptyDeck iid
+            pure a
+          else do
+            let deck = unDeck investigatorDeck
+            if length deck < n
+              then do
+                push $ drawCards iid source (n - length deck)
+                pure $ a & deckL .~ mempty & drawnCardsL %~ (<> deck)
+              else do
+                let
+                  (drawn, deck') = splitAt n deck
+                  allDrawn = investigatorDrawnCards <> drawn
+                  shuffleBackInEachWeakness =
+                    ShuffleBackInEachWeakness `elem` cardDrawRules cardDraw
+
+                  msgs =
+                    if shuffleBackInEachWeakness
+                      then []
+                      else concatMap (drawThisCard iid) allDrawn
+                player <- getPlayer iid
+                let
+                  weaknesses = map PlayerCard $ filter (`cardMatch` WeaknessCard) allDrawn
+                  msgs' =
+                    (<> msgs)
+                      $ guard (shuffleBackInEachWeakness && notNull weaknesses)
+                      *> [ FocusCards weaknesses
+                         , chooseOne
+                            player
+                            [ Label
+                                "Shuffle Weaknesses back in"
+                                [UnfocusCards, ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) weaknesses]
+                            ]
+                         ]
+
+                windowMsgs <-
+                  if null deck'
+                    then pure <$> checkWindows ((`mkWindow` Window.DeckHasNoCards iid) <$> [#when, #after])
+                    else pure []
+                (before, _, after) <- frame $ Window.DrawCards iid $ map toCard allDrawn
+                checkHandSize <- hasModifier iid CheckHandSizeAfterDraw
+
+                -- Cards with revelations won't be in hand afte they resolve, so exclude them from the discard
+                let
+                  toDrawDiscard = \case
+                    AfterDrawDiscard x -> Sum x
+                    _ -> mempty
+                let discardable =
+                      filter (`cardMatch` (DiscardableCard <> NotCard CardWithRevelation)) allDrawn
+                let discardAmount =
+                      min (length discardable)
+                        $ getSum (foldMap toDrawDiscard (toList $ cardDrawRules cardDraw))
+                -- Only focus those that will still be in hand
+                let focusable = map toCard $ filter (`cardMatch` NotCard CardWithRevelation) allDrawn
+
+                pushAll
+                  $ windowMsgs
+                  <> [DeckHasNoCards iid Nothing | null deck']
+                  <> [InvestigatorDrewPlayerCard iid card | card <- allDrawn]
+                  <> [before]
+                  <> msgs'
+                  <> [after]
+                  <> ( guard (discardAmount > 0)
+                        *> [ FocusCards focusable
+                           , chooseN
+                              player
+                              discardAmount
+                              [targetLabel (toCardId card) [DiscardCard iid (toSource a) (toCardId card)] | card <- discardable]
+                           , UnfocusCards
+                           ]
+                     )
+                  <> [CheckHandSize iid | checkHandSize]
+                pure
+                  $ a
+                  & (handL %~ (<> map PlayerCard (filter (`cardMatch` NotCard CardWithRevelation) allDrawn)))
+                  & (deckL .~ Deck deck')
   InvestigatorDrewPlayerCard iid card -> do
     windowMsg <-
       checkWindows [mkAfter (Window.DrawCard iid (PlayerCard card) $ Deck.InvestigatorDeck iid)]
@@ -2343,7 +2342,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             $ chooseOrRunOne
               pid
               [targetLabel target [SendMessage target AllDrawCardAndResource] | target <- alternateUpkeepDraws]
-        else pushM $ drawCards investigatorId ScenarioSource 1
+        else push $ drawCards investigatorId ScenarioSource 1
     takeUpkeepResources a
   LoadDeck iid deck | iid == investigatorId -> do
     shuffled <- shuffleM $ flip map (unDeck deck) $ \card ->
@@ -3165,7 +3164,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             _ -> Nothing
 
         playableCards <- getPlayableCards a (UnpaidCost NeedsAction) windows
-        drawing <- drawCardsF iid a 1
+        let drawing = drawCardsF iid a 1
 
         canDraw <- canDo iid #draw
         canTakeResource <- (&&) <$> canDo iid #resource <*> can.gain.resources FromOtherSource iid

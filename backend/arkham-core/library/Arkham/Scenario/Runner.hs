@@ -674,6 +674,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         handler <- getEncounterDeckHandler $ toCardId card
         pure $ a & discardLens handler %~ (ec :)
       VengeanceCard _ -> error "vengeance card"
+  DrewCards iid drew | isNothing drew.target && any isEncounterCard drew.cards -> do
+    pushAll $ InvestigatorDrewEncounterCard iid <$> onlyEncounterCards drew.cards
+    pure a
   Do (DrawCards iid drawing) | Just key <- Deck.deckSignifierToScenarioDeckKey drawing.deck -> do
     case lookup key scenarioDecks of
       Just [] -> pure a

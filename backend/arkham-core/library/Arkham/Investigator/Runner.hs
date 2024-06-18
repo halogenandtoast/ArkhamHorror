@@ -2133,26 +2133,29 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Instead (DoDrawCards iid) msg' | iid == toId a -> do
     push msg'
     pure $ a & drawingL .~ Nothing
-  DrawCards iid cardDraw | iid == toId a && cardDrawAction cardDraw -> do
-    let
-      source = cardDrawSource cardDraw
-      n = cardDrawAmount cardDraw
-    beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #draw)]
-    afterWindowMsg <- checkWindows [mkAfter (Window.PerformAction iid #draw)]
-    pushAll
-      [ BeginAction
-      , beforeWindowMsg
-      , TakeActions iid [#draw] (ActionCost 1)
-      , CheckAttackOfOpportunity iid False
-      , drawCards iid source n
-      , afterWindowMsg
-      , FinishAction
-      ]
-    pure a
+  DrawCards iid cardDraw | iid == toId a -> do
+    if cardDrawAction cardDraw
+      then do
+        beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #draw)]
+        afterWindowMsg <- checkWindows [mkAfter (Window.PerformAction iid #draw)]
+        pushAll
+          [ BeginAction
+          , beforeWindowMsg
+          , TakeActions iid [#draw] (ActionCost 1)
+          , CheckAttackOfOpportunity iid False
+          , DoDrawCards iid
+          , afterWindowMsg
+          , FinishAction
+          ]
+      else push $ DoDrawCards iid
+    pure $ a & drawingL ?~ cardDraw
   MoveTopOfDeckToBottom _ (Deck.InvestigatorDeck iid) n | iid == investigatorId -> do
     let (cards, deck) = draw n investigatorDeck
     pure $ a & deckL .~ Deck.withDeck (<> cards) deck
-  DrawCards iid cardDraw | iid == toId a && not (cardDrawAction cardDraw) -> do
+  DoDrawCards iid | iid == toId a -> do
+    for_ (a ^. drawingL) \d -> push $ Do (DrawCards iid d)
+    pure $ a & drawingL .~ Nothing
+  Do (DrawCards iid cardDraw) | iid == toId a && cardDraw.deck == Deck.InvestigatorDeck iid -> do
     case cardDraw.kind of
       StartingHandCardDraw -> do
         modifiers' <- getModifiers (toTarget a)

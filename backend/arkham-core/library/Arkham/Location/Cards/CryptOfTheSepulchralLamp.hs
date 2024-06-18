@@ -3,20 +3,18 @@ module Arkham.Location.Cards.CryptOfTheSepulchralLamp (
   CryptOfTheSepulchralLamp (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Direction
+import Arkham.Draw.Types
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThePallidMask.Helpers
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype CryptOfTheSepulchralLamp = CryptOfTheSepulchralLamp LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -24,47 +22,30 @@ newtype CryptOfTheSepulchralLamp = CryptOfTheSepulchralLamp LocationAttrs
 
 cryptOfTheSepulchralLamp :: LocationCard CryptOfTheSepulchralLamp
 cryptOfTheSepulchralLamp =
-  locationWith
-    CryptOfTheSepulchralLamp
-    Cards.cryptOfTheSepulchralLamp
-    2
-    (PerPlayer 2)
-    ( (connectsToL .~ adjacentLocations)
-        . ( costToEnterUnrevealedL
-              .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
-          )
-        . (investigateSkillL .~ SkillWillpower)
-    )
+  locationWith CryptOfTheSepulchralLamp Cards.cryptOfTheSepulchralLamp 2 (PerPlayer 2)
+    $ (connectsToL .~ adjacentLocations)
+    . (costToEnterUnrevealedL .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation])
+    . (investigateSkillL .~ #willpower)
 
 instance HasAbilities CryptOfTheSepulchralLamp where
   getAbilities (CryptOfTheSepulchralLamp attrs) =
-    withBaseAbilities
+    extendRevealed
       attrs
       [ restrictedAbility
-        attrs
-        1
-        ( AnyCriterion
-            [ Negate
-              ( LocationExists
-                  $ LocationInDirection dir (LocationWithId $ toId attrs)
-              )
-            | dir <- [Above, RightOf]
-            ]
-        )
-        $ ForcedAbility
-        $ RevealLocation Timing.When Anyone
-        $ LocationWithId
-        $ toId attrs
-      | locationRevealed attrs
+          attrs
+          1
+          (oneOf [notExists $ LocationInDirection dir (be attrs) | dir <- [Above, RightOf]])
+          $ forced
+          $ RevealLocation #when Anyone (be attrs)
       ]
 
 instance RunMessage CryptOfTheSepulchralLamp where
   runMessage msg l@(CryptOfTheSepulchralLamp attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- countM (directionEmpty attrs) [Above, RightOf]
-      push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) n)
+      push $ DrawCards iid $ targetCardDraw attrs CatacombsDeck n
       pure l
-    DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do
-      placeDrawnLocations attrs cards [Above, RightOf]
+    DrewCards _ drewCards | maybe False (isTarget attrs) drewCards.target -> do
+      placeDrawnLocations attrs drewCards.cards [Above, RightOf]
       pure l
     _ -> CryptOfTheSepulchralLamp <$> runMessage msg attrs

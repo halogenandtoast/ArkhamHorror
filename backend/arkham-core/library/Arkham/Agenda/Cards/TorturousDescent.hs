@@ -7,9 +7,9 @@ import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
-import Arkham.Draw.Types
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Choose
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 
@@ -22,7 +22,7 @@ torturousDescent = agenda (2, A) TorturousDescent Cards.torturousDescent (Static
 
 instance RunMessage TorturousDescent where
   runMessage msg a@(TorturousDescent attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+    AdvanceAgenda (isSide B attrs -> True) -> do
       lead <- getLead
 
       spawnConstanceDumaineMessages <- do
@@ -32,11 +32,11 @@ instance RunMessage TorturousDescent where
         pure [createConstanceDumaine | spawnConstanceDumaine]
 
       pushAll
-        $ [DrawCards lead $ randomTargetCardDraw attrs MonstersDeck 1]
+        $ [randomlyChooseFrom attrs lead MonstersDeck 1]
         <> spawnConstanceDumaineMessages
-        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+        <> [advanceAgendaDeck attrs]
       pure a
-    DrewCards _ drewCards | maybe False (isTarget attrs) drewCards.target -> do
-      push $ ShuffleCardsIntoDeck Deck.EncounterDeck drewCards.cards
+    ChoseCards _ chose | isTarget attrs chose.target -> do
+      push $ ShuffleCardsIntoDeck Deck.EncounterDeck chose.cards
       pure a
     _ -> TorturousDescent <$> runMessage msg attrs

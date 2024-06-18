@@ -1,18 +1,12 @@
-module Arkham.Location.Cards.LivingRoom (
-  livingRoom,
-  LivingRoom (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.LivingRoom (livingRoom, LivingRoom (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype LivingRoom = LivingRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -24,14 +18,14 @@ livingRoom = location LivingRoom Cards.livingRoom 3 (Static 0)
 instance HasAbilities LivingRoom where
   getAbilities (LivingRoom attrs) =
     withRevealedAbilities attrs
-      $ [ limitedAbility (GroupLimit PerPhase 1)
+      $ [ groupLimit PerPhase
             $ restrictedAbility attrs 1 Here
-            $ ReactionAbility (PerformAction Timing.After You $ ActionIs Action.Parley) Free
+            $ freeReaction (PerformAction #after You #parley)
         ]
 
 instance RunMessage LivingRoom where
   runMessage msg l@(LivingRoom attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushM $ drawCards iid (toAbilitySource attrs 1) 1
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ drawCards iid (attrs.ability 1) 1
       pure l
     _ -> LivingRoom <$> runMessage msg attrs

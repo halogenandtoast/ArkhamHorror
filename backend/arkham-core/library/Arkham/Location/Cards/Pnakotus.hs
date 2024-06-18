@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.Pnakotus (
-  pnakotus,
-  Pnakotus (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.Pnakotus (pnakotus, Pnakotus (..)) where
 
 import Arkham.Ability
 import Arkham.ChaosToken
@@ -15,6 +10,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype Pnakotus = Pnakotus LocationAttrs
@@ -28,24 +24,19 @@ instance HasAbilities Pnakotus where
   getAbilities (Pnakotus a) =
     withBaseAbilities
       a
-      [ limitedAbility (GroupLimit PerGame 1)
+      [ groupLimit PerGame
           $ restrictedAbility
             a
             1
-            ( Here
-                <> ChaosTokenCountIs
-                  (IncludeSealed $ ChaosTokenFaceIs Tablet)
-                  (AtLeast $ Static 3)
-            )
-          $ ActionAbility []
-          $ ActionCost 1
+            (Here <> ChaosTokenCountIs (IncludeSealed $ ChaosTokenFaceIs Tablet) (atLeast 3))
+            actionAbility
       ]
 
 instance RunMessage Pnakotus where
   runMessage msg l@(Pnakotus attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       clues <- field LocationClues (toId l)
-      drawing <- newCardDraw iid (toSource attrs) clues
-      pushAll [Msg.DiscoverClues iid $ discover attrs (attrs.ability 1) clues, DrawCards drawing]
+      let drawing = newCardDraw attrs iid clues
+      pushAll [Msg.DiscoverClues iid $ discover attrs (attrs.ability 1) clues, DrawCards iid drawing]
       pure l
     _ -> Pnakotus <$> runMessage msg attrs

@@ -13,14 +13,13 @@ spec :: Spec
 spec = describe "Searching for Izzie" $ do
   it "attaches to the location farthest away from you" $ gameTest $ \investigator -> do
     searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
-    drawing <- drawCards (toId investigator) investigator 1
     (location1, location2) <- testConnectedLocations id id
     pushAndRunAll
       [ placedLocation location1
       , placedLocation location2
       , loadDeck investigator [searchingForIzzie]
       , moveTo investigator location1
-      , drawing
+      , drawCards (toId investigator) investigator 1
       ]
     assert
       $ selectAny
@@ -30,12 +29,11 @@ spec = describe "Searching for Izzie" $ do
   it "takes 2 actions and is discarded on a successful investigation" $ gameTest $ \investigator -> do
     searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
     location <- testLocationWith id
-    drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll
       [ SetChaosTokens [Zero]
       , loadDeck investigator [searchingForIzzie]
       , moveTo investigator location
-      , drawing
+      , drawCards (toId investigator) investigator 1
       , moveTo investigator location
       ]
     searchingForIzzieId <-
@@ -59,11 +57,10 @@ spec = describe "Searching for Izzie" $ do
   it "causes 1 mental trauma if not discarded" $ gameTest $ \investigator -> do
     searchingForIzzie <- genPlayerCard Cards.searchingForIzzie
     location <- testLocationWith id
-    drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll
       [ loadDeck investigator [searchingForIzzie]
       , moveTo investigator location
-      , drawing
+      , drawCards (toId investigator) investigator 1
       , EndOfGame Nothing
       ]
     chooseOnlyOption "trigger searching for izzie"

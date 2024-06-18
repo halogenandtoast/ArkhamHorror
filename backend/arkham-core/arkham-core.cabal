@@ -1072,6 +1072,7 @@ library
       Arkham.ChaosBag.RevealStrategy
       Arkham.ChaosBagStepState
       Arkham.ChaosToken
+      Arkham.Choose
       Arkham.Classes
       Arkham.Classes.Entity
       Arkham.Classes.Entity.TH
@@ -1087,6 +1088,7 @@ library
       Arkham.Classes.RunMessage
       Arkham.Classes.RunMessage.Internal
       Arkham.ClassSymbol
+      Arkham.Collection
       Arkham.CommitRestriction
       Arkham.Constants
       Arkham.Cost
@@ -1719,6 +1721,7 @@ library
       Arkham.Helpers.Campaign
       Arkham.Helpers.Card
       Arkham.Helpers.ChaosBag
+      Arkham.Helpers.Choose
       Arkham.Helpers.Cost
       Arkham.Helpers.Customization
       Arkham.Helpers.Deck

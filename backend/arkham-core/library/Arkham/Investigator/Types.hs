@@ -262,7 +262,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , -- internal tracking
     investigatorDiscarding :: Maybe (HandDiscard Message)
   , investigatorDiscover :: Maybe Discover
-  , investigatorDrawing :: Maybe CardDraw
+  , investigatorDrawing :: Maybe (CardDraw Message)
   , -- deck building
     investigatorDeckBuildingAdjustments :: [DeckBuildingAdjustment]
   }

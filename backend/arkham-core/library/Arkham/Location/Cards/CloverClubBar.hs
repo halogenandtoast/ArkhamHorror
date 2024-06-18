@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.CloverClubBar (
-  cloverClubBar,
-  CloverClubBar (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.CloverClubBar (cloverClubBar, CloverClubBar (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
@@ -12,6 +7,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards (cloverClubBar)
 import Arkham.Location.Runner
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 
@@ -24,19 +20,18 @@ cloverClubBar = location CloverClubBar Cards.cloverClubBar 3 (Static 0)
 
 instance HasAbilities CloverClubBar where
   getAbilities (CloverClubBar attrs) =
-    withRevealedAbilities attrs
-      $ [ limitedAbility (PlayerLimit PerGame 1)
-            $ restrictedAbility attrs 1 (OnAct 1 <> Here)
-            $ ActionAbility []
-            $ Costs [ActionCost 1, ResourceCost 2]
-        ]
+    extendRevealed
+      attrs
+      [ playerLimit PerGame
+          $ restrictedAbility attrs 1 (OnAct 1 <> Here)
+          $ actionAbilityWithCost (ResourceCost 2)
+      ]
 
 instance RunMessage CloverClubBar where
   runMessage msg l@(CloverClubBar attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      drawing <- drawCards iid (toAbilitySource attrs 1) 2
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let drawing = drawCards iid (attrs.ability 1) 2
       name <- field InvestigatorName iid
-      pushAll
-        [GainClues iid (toAbilitySource attrs 1) 2, drawing, Remember $ HadADrink $ labeled name iid]
+      pushAll [GainClues iid (attrs.ability 1) 2, drawing, Remember $ HadADrink $ labeled name iid]
       pure l
     _ -> CloverClubBar <$> runMessage msg attrs

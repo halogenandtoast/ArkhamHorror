@@ -21,7 +21,7 @@ onTheHunt = event OnTheHunt Cards.onTheHunt
 instance RunMessage OnTheHunt where
   runMessage msg e@(OnTheHunt attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      insteadOf (InvestigatorDoDrawEncounterCard iid) (pure ())
+      insteadOf (DoDrawCards iid) (pure ())
       search iid attrs EncounterDeckTarget [(FromTopOfDeck 9, PutBack)] AnyCard (defer attrs)
       pure e
     SearchNoneFound iid (isTarget attrs -> True) -> do

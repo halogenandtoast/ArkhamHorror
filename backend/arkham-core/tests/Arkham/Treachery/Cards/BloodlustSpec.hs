@@ -22,8 +22,7 @@ spec = describe "Bloodlust" do
         self `playCard` theHungeringBladeCard
         theHungeringBlade <- selectJust $ assetIs Assets.theHungeringBlade1
         run $ PlaceTokens (TestSource mempty) (toTarget theHungeringBlade) Offering 2
-        drawing <- Helpers.drawCards (toId self) (TestSource mempty) 1
-        run drawing
+        run $ Helpers.drawCards (toId self) (TestSource mempty) 1
         theHungeringBlade.countTokens Offering `shouldReturn` 0
         assertAny $ treacheryIs Treacheries.bloodlust <> TreacheryIsAttachedTo (toTarget theHungeringBlade)
 
@@ -35,8 +34,7 @@ spec = describe "Bloodlust" do
       withProp @"hand" [theHungeringBladeCard] self
       duringTurn self do
         self `playCard` theHungeringBladeCard
-        drawing <- Helpers.drawCards (toId self) (TestSource mempty) 1
-        run drawing
+        run $ Helpers.drawCards (toId self) (TestSource mempty) 1
         applyAllHorror
         self.horror `shouldReturn` 1
         (unDeck <$> self.deck) `shouldMatchListM` onlyPlayerCards bloodlusts
@@ -58,8 +56,7 @@ spec = describe "Bloodlust" do
           self `playCard` theHungeringBladeCard
           theHungeringBlade <- selectJust $ assetIs Assets.theHungeringBlade1
           run $ PlaceTokens (TestSource mempty) (toTarget theHungeringBlade) Offering 6
-          drawing <- Helpers.drawCards (toId self) (TestSource mempty) 3
-          run drawing
+          run $ Helpers.drawCards (toId self) (TestSource mempty) 3
           bloodlust <- selectJust $ treacheryIs Treacheries.bloodlust
           bloodlustCard <- field TreacheryCard bloodlust
           enemy `spawnAt` location

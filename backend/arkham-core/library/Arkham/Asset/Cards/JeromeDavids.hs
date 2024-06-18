@@ -1,18 +1,11 @@
-module Arkham.Asset.Cards.JeromeDavids (
-  jeromeDavids,
-  JeromeDavids (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.JeromeDavids (jeromeDavids, JeromeDavids (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card.CardType
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype JeromeDavids = JeromeDavids AssetAttrs
   deriving anyclass (IsAsset)

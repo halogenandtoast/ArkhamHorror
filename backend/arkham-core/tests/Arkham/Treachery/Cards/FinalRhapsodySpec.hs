@@ -11,11 +11,10 @@ spec :: Spec
 spec = describe "Final Rhapsody" $ do
   it "does 1 damage per skull and autofail revealed" $ gameTest $ \investigator -> do
     finalRhapsody <- genPlayerCard Cards.finalRhapsody
-    drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll
       [ SetChaosTokens [Skull, Skull, AutoFail, Zero, Cultist]
       , loadDeck investigator [finalRhapsody]
-      , drawing
+      , drawCards (toId investigator) investigator 1
       ]
     chooseFirstOption "acknowledge damage"
     chooseFirstOption "take damage"

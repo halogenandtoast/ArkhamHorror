@@ -10,6 +10,10 @@ import Arkham.Investigator.Deck qualified as Key
 import Arkham.Scenario.Deck
 import Data.Aeson.TH
 
+deckSignifierToScenarioDeckKey :: DeckSignifier -> Maybe ScenarioDeckKey
+deckSignifierToScenarioDeckKey (ScenarioDeckByKey key) = Just key
+deckSignifierToScenarioDeckKey _ = Nothing
+
 data DeckSignifier
   = InvestigatorDeck InvestigatorId
   | InvestigatorDiscard InvestigatorId

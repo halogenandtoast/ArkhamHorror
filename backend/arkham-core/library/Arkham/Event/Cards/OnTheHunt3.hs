@@ -5,6 +5,7 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Helpers.Message (drawEncounterCard)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Matcher
@@ -33,11 +34,11 @@ instance RunMessage OnTheHunt3 where
       gainResourcesIfCan iid (attrs.ability 1) 3
       pure e
     PlayThisEvent iid eid | eid == toId attrs -> do
-      insteadOf (InvestigatorDoDrawEncounterCard iid) (pure ())
+      insteadOf (DoDrawCards iid) (pure ())
       search iid attrs EncounterDeckTarget [(FromDeck, PutBack)] AnyCard (defer attrs)
       pure e
     SearchNoneFound iid (isTarget attrs -> True) -> do
-      push $ InvestigatorDrawEncounterCard iid
+      push $ drawEncounterCard iid attrs
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       additionalTargets <- getAdditionalSearchTargets iid

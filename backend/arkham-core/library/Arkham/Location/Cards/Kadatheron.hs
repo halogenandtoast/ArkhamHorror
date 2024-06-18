@@ -26,7 +26,7 @@ instance HasAbilities Kadatheron where
 instance RunMessage Kadatheron where
   runMessage msg l@(Kadatheron attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ drawCards iid (attrs.ability 1) 5
+      push $ drawCards iid (attrs.ability 1) 5
       pure l
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.cylindersOfKadatheron

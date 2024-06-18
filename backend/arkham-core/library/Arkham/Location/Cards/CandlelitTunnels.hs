@@ -1,21 +1,17 @@
-module Arkham.Location.Cards.CandlelitTunnels (
-  candlelitTunnels,
-  CandlelitTunnels (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.CandlelitTunnels (candlelitTunnels, CandlelitTunnels (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Direction
+import Arkham.Draw.Types
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThePallidMask.Helpers
-import Arkham.Timing qualified as Timing
 
 newtype CandlelitTunnels = CandlelitTunnels LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -23,46 +19,28 @@ newtype CandlelitTunnels = CandlelitTunnels LocationAttrs
 
 candlelitTunnels :: LocationCard CandlelitTunnels
 candlelitTunnels =
-  locationWith
-    CandlelitTunnels
-    Cards.candlelitTunnels
-    3
-    (PerPlayer 2)
-    ( (connectsToL .~ adjacentLocations)
-        . ( costToEnterUnrevealedL
-              .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
-          )
-    )
+  locationWith CandlelitTunnels Cards.candlelitTunnels 3 (PerPlayer 2)
+    $ (connectsToL .~ adjacentLocations)
+    . ( costToEnterUnrevealedL
+          .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
+      )
 
 instance HasAbilities CandlelitTunnels where
   getAbilities (CandlelitTunnels attrs) =
-    withBaseAbilities attrs
-      $ if locationRevealed attrs
-        then
-          [ limitedAbility (GroupLimit PerGame 1)
-              $ restrictedAbility attrs 1 Here
-              $ ActionAbility [] (ActionCost 1)
-          , restrictedAbility
-              attrs
-              2
-              ( AnyCriterion
-                  [ Negate
-                    ( LocationExists
-                        $ LocationInDirection dir (LocationWithId $ toId attrs)
-                    )
-                  | dir <- [LeftOf, RightOf]
-                  ]
-              )
-              $ ForcedAbility
-              $ RevealLocation Timing.When Anyone
-              $ LocationWithId
-              $ toId attrs
-          ]
-        else []
+    extendRevealed
+      attrs
+      [ groupLimit PerGame $ restrictedAbility attrs 1 Here actionAbility
+      , restrictedAbility
+          attrs
+          2
+          (oneOf [notExists $ LocationInDirection dir (be attrs) | dir <- [LeftOf, RightOf]])
+          $ forced
+          $ RevealLocation #when Anyone (be attrs)
+      ]
 
 instance RunMessage CandlelitTunnels where
   runMessage msg l@(CandlelitTunnels attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ beginSkillTest iid (attrs.ability 1) attrs #intellect (Fixed 3)
       pure l
     PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isAbilitySource attrs 1 source -> do
@@ -78,9 +56,9 @@ instance RunMessage CandlelitTunnels where
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       n <- countM (directionEmpty attrs) [LeftOf, RightOf]
-      push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) n)
+      push $ DrawCards iid $ targetCardDraw attrs CatacombsDeck n
       pure l
-    DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do
-      placeDrawnLocations attrs cards [LeftOf, RightOf]
+    DrewCards _ drewCards | maybe False (isTarget attrs) drewCards.target -> do
+      placeDrawnLocations attrs drewCards.cards [LeftOf, RightOf]
       pure l
     _ -> CandlelitTunnels <$> runMessage msg attrs

@@ -22,10 +22,10 @@ data CardDrawState
   | ResolvedCardDraw [Card]
   deriving stock (Show, Eq, Ord)
 
-data CardDrawKind = StandardCardDraw | StartingHandCardDraw | RandomCardDraw
+data CardDrawKind = StandardCardDraw | StartingHandCardDraw
   deriving stock (Show, Eq, Ord)
 
-data CardDraw = CardDraw
+data CardDraw msg = CardDraw
   { cardDrawSource :: Source
   , cardDrawDeck :: DeckSignifier
   , cardDrawAmount :: Int
@@ -34,11 +34,18 @@ data CardDraw = CardDraw
   , cardDrawAction :: Bool
   , cardDrawKind :: CardDrawKind
   , cardDrawRules :: Set CardDrawRules
+  , cardDrawAndThen :: Maybe msg
   }
   deriving stock (Show, Eq, Ord)
 
-instance HasField "kind" CardDraw CardDrawKind where
+instance HasField "kind" (CardDraw msg) CardDrawKind where
   getField = cardDrawKind
+
+instance HasField "deck" (CardDraw msg) DeckSignifier where
+  getField = cardDrawDeck
+
+instance HasField "amount" (CardDraw msg) Int where
+  getField = cardDrawAmount
 
 data CardDrew = CardDrew
   { cardDrewSource :: Source
@@ -50,7 +57,7 @@ data CardDrew = CardDrew
   }
   deriving stock (Show, Eq, Ord)
 
-instance HasField "isPlayerDraw" CardDraw Bool where
+instance HasField "isPlayerDraw" (CardDraw msg) Bool where
   getField _ = True
 
 instance HasField "target" CardDrew (Maybe Target) where
@@ -62,7 +69,7 @@ instance HasField "cards" CardDrew [Card] where
 instance HasField "deck" CardDrew DeckSignifier where
   getField = cardDrewDeck
 
-drewCard :: Card -> CardDraw -> CardDraw
+drewCard :: Card -> CardDraw msg -> CardDraw msg
 drewCard c draw = draw {cardDrawState = updatedState}
  where
   updatedState = case cardDrawState draw of
@@ -89,7 +96,7 @@ newCardDraw
   => source
   -> deck
   -> Int
-  -> CardDraw
+  -> CardDraw msg
 newCardDraw source deck n = do
   CardDraw
     { cardDrawSource = toSource source
@@ -100,28 +107,33 @@ newCardDraw source deck n = do
     , cardDrawRules = mempty
     , cardDrawTarget = Nothing
     , cardDrawKind = StandardCardDraw
+    , cardDrawAndThen = Nothing
     }
 
 targetCardDraw
-  :: (Targetable source, Sourceable source, AsDeck deck) => source -> deck -> Int -> CardDraw
+  :: (Targetable source, Sourceable source, AsDeck deck) => source -> deck -> Int -> CardDraw msg
 targetCardDraw source deck n = setTarget source $ newCardDraw source deck n
 
-randomTargetCardDraw
-  :: (Targetable source, Sourceable source, AsDeck deck) => source -> deck -> Int -> CardDraw
-randomTargetCardDraw source deck n = randomCardDraw $ setTarget source $ newCardDraw source deck n
+finalizeDraw :: CardDraw msg -> [Card] -> CardDrew
+finalizeDraw draw cards =
+  CardDrew
+    { cardDrewSource = cardDrawSource draw
+    , cardDrewDeck = cardDrawDeck draw
+    , cardDrewCards = cards
+    , cardDrewAction = cardDrawAction draw
+    , cardDrewRules = cardDrawRules draw
+    , cardDrewTarget = cardDrawTarget draw
+    }
 
-instance WithTarget CardDraw where
+instance WithTarget (CardDraw msg) where
   getTarget = cardDrawTarget
   setTarget t c = c {cardDrawTarget = Just (toTarget t)}
 
-asDrawAction :: CardDraw -> CardDraw
+asDrawAction :: CardDraw msg -> CardDraw msg
 asDrawAction c = c {cardDrawAction = True}
 
-withCardDrawRule :: CardDrawRules -> CardDraw -> CardDraw
+withCardDrawRule :: CardDrawRules -> CardDraw msg -> CardDraw msg
 withCardDrawRule r c = c {cardDrawRules = insertSet r (cardDrawRules c)}
-
-randomCardDraw :: CardDraw -> CardDraw
-randomCardDraw c = c {cardDrawKind = RandomCardDraw}
 
 $(deriveJSON defaultOptions ''CardDrawKind)
 $(deriveJSON defaultOptions ''CardDrawRules)

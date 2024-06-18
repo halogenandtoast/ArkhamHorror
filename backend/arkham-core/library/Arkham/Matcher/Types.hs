@@ -1069,6 +1069,9 @@ data SourceMatcher
 instance IsLabel "investigator" SourceMatcher where
   fromLabel = SourceIsType InvestigatorType
 
+instance IsLabel "any" SourceMatcher where
+  fromLabel = AnySource
+
 instance Semigroup SourceMatcher where
   AnySource <> x = x
   x <> AnySource = x

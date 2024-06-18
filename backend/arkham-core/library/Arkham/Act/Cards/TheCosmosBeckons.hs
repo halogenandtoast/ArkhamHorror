@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.TheCosmosBeckons (
-  TheCosmosBeckons (..),
-  theCosmosBeckons,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheCosmosBeckons (TheCosmosBeckons (..), theCosmosBeckons) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -11,6 +6,7 @@ import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
+import Arkham.Draw.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Helpers
 import Arkham.Id
@@ -19,6 +15,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types qualified as Field
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
@@ -40,12 +37,7 @@ theCosmosBeckons =
 
 instance HasAbilities TheCosmosBeckons where
   getAbilities (TheCosmosBeckons attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-            $ ActionAbility []
-            $ ActionCost 1
-            <> ClueCostX
-        ]
+    extend attrs [mkAbility attrs 1 $ actionAbilityWithCost ClueCostX]
 
 getClueCount :: Payment -> Int
 getClueCount (CluePayment _ n) = n
@@ -55,9 +47,10 @@ getClueCount _ = 0
 instance RunMessage TheCosmosBeckons where
   runMessage msg a@(TheCosmosBeckons attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (getClueCount -> x) -> do
-      push $ DrawFromScenarioDeck iid CosmosDeck (toTarget attrs) x
+      push $ DrawCards iid $ targetCardDraw attrs CosmosDeck x
       pure a
-    DrewFromScenarioDeck iid _ (isTarget attrs -> True) cards -> do
+    DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
+      let cards = drewCards.cards
       cardsWithMsgs <- traverse (traverseToSnd placeLocation) cards
       player <- getPlayer iid
       pushAll

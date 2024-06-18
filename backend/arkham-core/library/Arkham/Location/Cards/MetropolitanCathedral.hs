@@ -31,10 +31,10 @@ instance HasAbilities MetropolitanCathedral where
 instance RunMessage MetropolitanCathedral where
   runMessage msg l@(MetropolitanCathedral attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ drawCards iid (toAbilitySource attrs 1) 2
+      push $ drawCards iid (attrs.ability 1) 2
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      let source = toAbilitySource attrs 2
+      let source = attrs.ability 2
       push $ Explore iid source $ CardWithPrintedLocationSymbol $ locationSymbol attrs
       pure l
     _ -> MetropolitanCathedral <$> runMessage msg attrs

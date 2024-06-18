@@ -1775,10 +1775,7 @@ runGameMessage msg g = case msg of
     pushAll
       $ [ chooseOne
           player
-          [ TargetLabel
-              EncounterDeckTarget
-              [InvestigatorDrawEncounterCard iid]
-          ]
+          [TargetLabel EncounterDeckTarget [drawEncounterCard iid GameSource]]
         | (iid, player) <- investigators
         ]
       <> [SetActiveInvestigator $ g ^. activeInvestigatorIdL]
@@ -2137,7 +2134,7 @@ runGameMessage msg g = case msg of
       _ -> error "Unhandled surge target"
     (effectId, surgeEffect) <- createSurgeEffect source cardId
     pure $ g & entitiesL . effectsL . at effectId ?~ surgeEffect
-  Surge iid _ -> g <$ push (InvestigatorDrawEncounterCard iid)
+  Surge iid source -> g <$ push (drawEncounterCard iid source)
   ReplaceCard cardId card -> do
     replaceCard cardId card -- We must update the IORef
     pure $ g & cardsL %~ insertMap cardId card
@@ -2145,28 +2142,22 @@ runGameMessage msg g = case msg of
   SetActiveInvestigator iid -> do
     player <- getPlayer iid
     pure $ g & activeInvestigatorIdL .~ iid & activePlayerIdL .~ player
-  InvestigatorDrawEncounterCard iid -> do
-    drawEncounterCardWindow <- checkWindows [mkWhen $ Window.WouldDrawEncounterCard iid $ g ^. phaseL]
-    pushAll
-      [ SetActiveInvestigator iid
-      , drawEncounterCardWindow
-      , InvestigatorDoDrawEncounterCard iid
-      , SetActiveInvestigator (g ^. activeInvestigatorIdL)
-      ]
-    pure g
+  -- InvestigatorDrawEncounterCard iid -> do
+  --   drawEncounterCardWindow <- checkWindows [mkWhen $ Window.WouldDrawEncounterCard iid $ g ^. phaseL]
+  --   pushAll
+  --     [ SetActiveInvestigator iid
+  --     , drawEncounterCardWindow
+  --     , InvestigatorDoDrawEncounterCard iid
+  --     , SetActiveInvestigator (g ^. activeInvestigatorIdL)
+  --     ]
+  --   pure g
   RevelationSkillTest iid (TreacherySource tid) skillType difficulty -> do
     -- [ALERT] If changed update (DreamersCurse, Somniphobia)
     card <- field TreacheryCard tid
 
     let
       skillTest =
-        ( initSkillTest
-            iid
-            (TreacherySource tid)
-            (TreacheryTarget tid)
-            skillType
-            difficulty
-        )
+        (initSkillTest iid tid tid skillType difficulty)
           { skillTestIsRevelation = True
           }
     pushAll [BeginSkillTest skillTest, UnsetActiveCard]

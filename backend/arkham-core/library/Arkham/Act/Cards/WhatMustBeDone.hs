@@ -13,6 +13,7 @@ import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
+import Arkham.Draw.Types
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Movement
 import Arkham.Scenario.Deck
@@ -28,19 +29,16 @@ whatMustBeDone = act (3, A) WhatMustBeDone Cards.whatMustBeDone Nothing
 instance HasAbilities WhatMustBeDone where
   getAbilities (WhatMustBeDone attrs) =
     withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-            $ ActionAbility []
-            $ ActionCost 1
-            <> ClueCostX
+      $ [ mkAbility attrs 1 $ actionAbilityWithCost ClueCostX
         , restrictedAbility
             attrs
             2
-            ( InvestigatorExists
+            ( exists
                 $ LeadInvestigator
                 <> InvestigatorAt (LocationWithTitle "The Black Throne" <> LocationWithoutClues)
             )
             $ Objective
-            $ ForcedAbility AnyWindow
+            $ forced AnyWindow
         ]
 
 getClueCount :: Payment -> Int
@@ -51,9 +49,10 @@ getClueCount _ = 0
 instance RunMessage WhatMustBeDone where
   runMessage msg a@(WhatMustBeDone attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (getClueCount -> x) -> do
-      push $ DrawFromScenarioDeck iid CosmosDeck (toTarget attrs) x
+      push $ DrawCards iid $ targetCardDraw attrs CosmosDeck x
       pure a
-    DrewFromScenarioDeck iid _ (isTarget attrs -> True) cards -> do
+    DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
+      let cards = drewCards.cards
       cardsWithMsgs <- traverse (traverseToSnd placeLocation) cards
       player <- getPlayer iid
       pushAll

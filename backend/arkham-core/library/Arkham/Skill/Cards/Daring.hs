@@ -30,15 +30,10 @@ instance RunMessage Daring where
       mtarget <- getSkillTestTarget
       case mtarget of
         Just target@(EnemyTarget _) ->
-          push
-            $ skillTestModifiers
-              (toSource attrs)
-              target
-              [AddKeyword Keyword.Retaliate, AddKeyword Keyword.Alert]
+          push $ skillTestModifiers attrs target [AddKeyword Keyword.Retaliate, AddKeyword Keyword.Alert]
         _ -> error "Target was invalid"
       Daring <$> runMessage msg attrs
     SkillTestEnds _ _ -> do
-      drawing <- drawCards (skillOwner attrs) attrs 1
-      push drawing
+      push $ drawCards (skillOwner attrs) attrs 1
       pure s
     _ -> Daring <$> runMessage msg attrs

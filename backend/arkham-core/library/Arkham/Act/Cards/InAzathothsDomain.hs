@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.InAzathothsDomain (
-  InAzathothsDomain (..),
-  inAzathothsDomain,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.InAzathothsDomain (InAzathothsDomain (..), inAzathothsDomain) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -11,6 +6,7 @@ import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
+import Arkham.Draw.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Helpers
 import Arkham.Id
@@ -20,6 +16,7 @@ import Arkham.Location.Types qualified as Field
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
@@ -41,12 +38,7 @@ inAzathothsDomain =
 
 instance HasAbilities InAzathothsDomain where
   getAbilities (InAzathothsDomain attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-            $ ActionAbility []
-            $ ActionCost 1
-            <> ClueCostX
-        ]
+    extend attrs [mkAbility attrs 1 $ actionAbilityWithCost ClueCostX]
 
 getClueCount :: Payment -> Int
 getClueCount (CluePayment _ n) = n
@@ -56,9 +48,10 @@ getClueCount _ = 0
 instance RunMessage InAzathothsDomain where
   runMessage msg a@(InAzathothsDomain attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (getClueCount -> x) -> do
-      push $ DrawFromScenarioDeck iid CosmosDeck (toTarget attrs) x
+      push $ DrawCards iid $ targetCardDraw attrs CosmosDeck x
       pure a
-    DrewFromScenarioDeck iid _ (isTarget attrs -> True) cards -> do
+    DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
+      let cards = drewCards.cards
       cardsWithMsgs <- traverse (traverseToSnd placeLocation) cards
       player <- getPlayer iid
       pushAll
@@ -71,7 +64,7 @@ instance RunMessage InAzathothsDomain where
               , ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) (List.delete card cards)
               , placement
               , Msg.RevealLocation (Just iid) lid
-              , RunCosmos iid lid [Move $ move (toAbilitySource attrs 1) iid lid]
+              , RunCosmos iid lid [Move $ move (attrs.ability 1) iid lid]
               ]
             | (card, (lid, placement)) <- cardsWithMsgs
             ]
@@ -81,12 +74,8 @@ instance RunMessage InAzathothsDomain where
       hideousPalace <- getJustLocationByName "Hideous Palace"
       emptySpace <- select $ IncludeEmptySpace $ locationIs Locations.emptySpace
       emptySpaceCards <- getEmptySpaceCards
-      cosmosLocations <-
-        select
-          $ NotLocation
-          $ LocationMatchAny
-            [LocationWithTitle "Court of the Great Old Ones", LocationWithTitle "Hideous Palace"]
-      enemies <- select $ EnemyAt $ NotLocation $ LocationWithTitle "Court of the Great Old Ones"
+      cosmosLocations <- select $ NotLocation $ oneOf ["Court of the Great Old Ones", "Hideous Palace"]
+      enemies <- select $ EnemyAt $ NotLocation "Court of the Great Old Ones"
       enemyCards <- traverse (field Field.EnemyCard) enemies
 
       cosmosCards <- traverse (field Field.LocationCard) cosmosLocations

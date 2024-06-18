@@ -62,7 +62,7 @@ surprisingFind1Effect = cardEffect SurprisingFind1Effect Cards.surprisingFind1
 instance RunMessage SurprisingFind1Effect where
   runMessage msg e@(SurprisingFind1Effect attrs) = case msg of
     PassedSkillTest iid _ _ _ _ _ -> do
-      drawing <- drawCards iid (effectSource attrs) 1
+      let drawing = drawCards iid (effectSource attrs) 1
       pushAll [disable attrs, drawing]
       pure e
     SkillTestEnds {} -> do

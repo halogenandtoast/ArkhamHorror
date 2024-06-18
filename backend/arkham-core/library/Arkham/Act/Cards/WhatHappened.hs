@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.WhatHappened (
-  WhatHappened (..),
-  whatHappened,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.WhatHappened (WhatHappened (..), whatHappened) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -12,9 +7,11 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
+import Arkham.Draw.Types
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Trait (Trait (Lead))
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -32,16 +29,13 @@ instance HasAbilities WhatHappened where
       *> [ mkAbility x 1 $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) Anywhere)
          , restrictedAbility x 2 (AssetCount 2 $ AssetWithTrait Lead)
             $ Objective
-            $ ForcedAbility AnyWindow
+            $ forced AnyWindow
          ]
 
 instance RunMessage WhatHappened where
   runMessage msg a@(WhatHappened attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ DrawFromScenarioDeck iid LeadsDeck (toTarget attrs) 1
-      pure a
-    DrewFromScenarioDeck iid LeadsDeck (isTarget attrs -> True) (onlyEncounterCards -> cards) -> do
-      pushAll $ InvestigatorDrewEncounterCard iid <$> cards
+      push $ DrawCards iid $ newCardDraw (attrs.ability 1) LeadsDeck 1
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       push $ advancedWithOther attrs

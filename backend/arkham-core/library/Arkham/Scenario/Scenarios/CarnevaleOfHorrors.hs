@@ -321,7 +321,7 @@ instance RunMessage CarnevaleOfHorrors where
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of
-        Cultist -> push $ InvestigatorDrawEncounterCard iid
+        Cultist -> push $ drawEncounterCard iid Cultist
         Tablet -> do
           player <- getPlayer iid
           lid <- getJustLocation iid

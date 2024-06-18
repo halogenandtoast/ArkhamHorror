@@ -1,23 +1,19 @@
-module Arkham.Location.Cards.ShiveringPools (
-  shiveringPools,
-  ShiveringPools (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.ShiveringPools (shiveringPools, ShiveringPools (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Direction
+import Arkham.Draw.Types
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThePallidMask.Helpers
-import Arkham.Timing qualified as Timing
 
 newtype ShiveringPools = ShiveringPools LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -33,53 +29,34 @@ shiveringPools =
 
 instance HasAbilities ShiveringPools where
   getAbilities (ShiveringPools attrs) =
-    withBaseAbilities attrs
-      $ if locationRevealed attrs
-        then
-          [ restrictedAbility attrs 1 Here
-              $ ForcedAbility
-              $ TurnEnds
-                Timing.After
-                You
-          , restrictedAbility
-              attrs
-              2
-              ( AnyCriterion
-                  [ Negate
-                    ( LocationExists
-                        $ LocationInDirection dir (LocationWithId $ toId attrs)
-                    )
-                  | dir <- [Below, RightOf]
-                  ]
-              )
-              $ ForcedAbility
-              $ RevealLocation Timing.When Anyone
-              $ LocationWithId
-              $ toId attrs
-          ]
-        else []
+    extendRevealed
+      attrs
+      [ restrictedAbility attrs 1 Here $ forced $ TurnEnds #after You
+      , restrictedAbility
+          attrs
+          2
+          (oneOf [notExists $ LocationInDirection dir (be attrs) | dir <- [Below, RightOf]])
+          $ forced
+          $ RevealLocation #when Anyone (be attrs)
+      ]
 
 instance RunMessage ShiveringPools where
   runMessage msg l@(ShiveringPools attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasResources <- fieldP InvestigatorResources (> 0) iid
       player <- getPlayer iid
       push
         $ chooseOrRunOne player
-        $ Label
-          "Take 1 direct damage"
-          [InvestigatorDirectDamage iid (toSource attrs) 1 0]
-        : [ Label
-            "Lose 5 resources"
-            [LoseResources iid (toAbilitySource attrs 1) 5]
+        $ Label "Take 1 direct damage" [directDamage iid (attrs.ability 1) 1]
+        : [ Label "Lose 5 resources" [LoseResources iid (attrs.ability 1) 5]
           | hasResources
           ]
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) 1)
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      push $ DrawCards iid $ targetCardDraw attrs CatacombsDeck 1
       pure l
-    DrewFromScenarioDeck iid _ (isTarget attrs -> True) cards -> do
-      case cards of
+    DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
+      case drewCards.cards of
         [card] -> do
           placeBelow <- placeAtDirection Below attrs >>= \f -> f card
           placeRight <- placeAtDirection RightOf attrs >>= \f -> f card

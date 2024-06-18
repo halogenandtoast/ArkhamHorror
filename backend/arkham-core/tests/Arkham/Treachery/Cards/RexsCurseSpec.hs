@@ -13,8 +13,8 @@ spec :: Spec
 spec = describe "Rex's Curse" $ do
   it "is put into play into your threat area" $ gameTest $ \investigator -> do
     rexsCurse <- genPlayerCard Cards.rexsCurse
-    drawing <- drawCards (toId investigator) investigator 1
-    pushAndRunAll [loadDeck investigator [rexsCurse], drawing]
+
+    pushAndRunAll [loadDeck investigator [rexsCurse], drawCards (toId investigator) investigator 1]
     assert
       $ selectAny
         ( TreacheryInThreatAreaOf (InvestigatorWithId $ toId investigator)
@@ -24,14 +24,13 @@ spec = describe "Rex's Curse" $ do
   it "causes you to reveal another token" $ gameTest $ \investigator -> do
     updateInvestigator investigator (intellectL .~ 5)
     rexsCurse <- genPlayerCard Cards.rexsCurse
-    drawing <- drawCards (toId investigator) investigator 1
 
     didRunMessage <- didPassSkillTestBy investigator SkillIntellect 1
 
     pushAndRunAll
       [ SetChaosTokens [PlusOne]
       , loadDeck investigator [rexsCurse]
-      , drawing
+      , drawCards (toId investigator) investigator 1
       , BeginSkillTest
           $ initSkillTest
             (toId investigator)
@@ -53,11 +52,10 @@ spec = describe "Rex's Curse" $ do
   it "is shuffled back into your deck if you fail the test" $ gameTest $ \investigator -> do
     updateInvestigator investigator (intellectL .~ 5)
     rexsCurse <- genPlayerCard Cards.rexsCurse
-    drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll
       [ SetChaosTokens [MinusOne]
       , loadDeck investigator [rexsCurse]
-      , drawing
+      , drawCards (toId investigator) investigator 1
       , beginSkillTest investigator SkillIntellect 4
       ]
     chooseOnlyOption "start skill test"

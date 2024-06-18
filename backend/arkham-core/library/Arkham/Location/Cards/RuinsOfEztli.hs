@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.RuinsOfEztli (
-  ruinsOfEztli,
-  RuinsOfEztli (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.RuinsOfEztli (ruinsOfEztli, RuinsOfEztli (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
@@ -12,7 +7,7 @@ import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype RuinsOfEztli = RuinsOfEztli LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -25,18 +20,11 @@ instance HasAbilities RuinsOfEztli where
   getAbilities (RuinsOfEztli attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1
-          $ ForcedAbility
-          $ SkillTestResult
-            Timing.After
-            You
-            (WhileInvestigating $ LocationWithId $ toId attrs)
-          $ FailureResult AnyValue
-      ]
+      [mkAbility attrs 1 $ forced $ SkillTestResult #after You (WhileInvestigating $ be attrs) #failure]
 
 instance RunMessage RuinsOfEztli where
   runMessage msg l@(RuinsOfEztli attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ InvestigatorDrawEncounterCard iid
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ drawEncounterCard iid attrs
       pure l
     _ -> RuinsOfEztli <$> runMessage msg attrs

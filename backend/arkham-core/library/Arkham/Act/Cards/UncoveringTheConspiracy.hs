@@ -3,14 +3,13 @@ module Arkham.Act.Cards.UncoveringTheConspiracy (
   uncoveringTheConspiracy,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
-import Arkham.Card
 import Arkham.Classes
+import Arkham.Draw.Types
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Trait
 
@@ -24,10 +23,8 @@ uncoveringTheConspiracy = act (1, A) UncoveringTheConspiracy Cards.uncoveringThe
 instance HasAbilities UncoveringTheConspiracy where
   getAbilities (UncoveringTheConspiracy a) | onSide A a = do
     [ restrictedAbility a 1 (ScenarioDeckWithCard CultistDeck)
-        $ ActionAbility []
-        $ ActionCost 1
-        <> GroupClueCost (PerPlayer 2) Anywhere
-      , mkAbility a 2 (Objective $ ForcedAbility AnyWindow)
+        $ actionAbilityWithCost (GroupClueCost (PerPlayer 2) Anywhere)
+      , mkAbility a 2 (Objective $ forced AnyWindow)
           `withCriteria` InVictoryDisplay
             (CardWithTrait Cultist <> CardIsUnique)
             (EqualTo $ Static 6)
@@ -36,16 +33,13 @@ instance HasAbilities UncoveringTheConspiracy where
 
 instance RunMessage UncoveringTheConspiracy where
   runMessage msg a@(UncoveringTheConspiracy attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ DrawFromScenarioDeck iid CultistDeck (toTarget attrs) 1
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ DrawCards iid $ newCardDraw (attrs.ability 1) CultistDeck 1
       pure a
-    DrewFromScenarioDeck iid CultistDeck (isTarget attrs -> True) (onlyEncounterCards -> cards) -> do
-      pushAll $ InvestigatorDrewEncounterCard iid <$> cards
-      pure a
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ AdvanceAct (toId attrs) (InvestigatorSource iid) AdvancedWithOther
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       push R1
       pure a
     _ -> UncoveringTheConspiracy <$> runMessage msg attrs

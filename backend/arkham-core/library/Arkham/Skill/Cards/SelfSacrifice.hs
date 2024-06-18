@@ -36,8 +36,8 @@ instance RunMessage SelfSacrifice where
 
       when (youCanDraw || performingCanDraw) $ do
         player <- getPlayer you
-        yourDraw <- drawCards you attrs 2
-        performingDraw <- drawCards performing attrs 2
+        let yourDraw = drawCards you attrs 2
+        let performingDraw = drawCards performing attrs 2
         push
           $ chooseOrRunOne player
           $ [targetLabel you [yourDraw] | youCanDraw]

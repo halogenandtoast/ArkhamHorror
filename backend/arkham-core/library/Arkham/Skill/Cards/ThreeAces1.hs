@@ -1,15 +1,10 @@
-module Arkham.Skill.Cards.ThreeAces1 (
-  threeAces1,
-  ThreeAces1 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.ThreeAces1 (threeAces1, ThreeAces1 (..)) where
 
 import Arkham.Capability
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 
@@ -26,7 +21,7 @@ instance RunMessage ThreeAces1 where
       n <- selectCount $ skillIs Cards.threeAces1 <> skillControlledBy iid
       mods <- getModifiers SkillTestTarget
       when (n >= 3 && MetaModifier "ThreeAces1" `notElem` mods) $ do
-        drawing <- drawCards iid attrs 3
+        let drawing = drawCards iid attrs 3
         canDraw <- can.draw.cards iid
         canGainResources <- can.gain.resources iid
         pushAll

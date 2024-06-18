@@ -3,6 +3,7 @@ module Arkham.Location.Cards.NarrowShaft (narrowShaft, narrowShaftEffect, Narrow
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Direction
+import Arkham.Draw.Types
 import Arkham.Effect.Runner hiding (RevealLocation)
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
@@ -55,10 +56,10 @@ instance RunMessage NarrowShaft where
         ]
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) 1)
+      push $ DrawCards iid $ targetCardDraw attrs CatacombsDeck 1
       pure l
-    DrewFromScenarioDeck iid _ (isTarget attrs -> True) cards -> do
-      case cards of
+    DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
+      case drewCards.cards of
         [card] -> do
           placeAbove <- placeAtDirection Above attrs >>= \f -> f card
           placeRight <- placeAtDirection RightOf attrs >>= \f -> f card

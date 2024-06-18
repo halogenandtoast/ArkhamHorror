@@ -1,13 +1,10 @@
-module Arkham.Agenda.Cards.StrangeDisappearances (
-  StrangeDisappearances (..),
-  strangeDisappearances,
-) where
+module Arkham.Agenda.Cards.StrangeDisappearances (StrangeDisappearances (..), strangeDisappearances) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
-import Arkham.Draw.Types
 import Arkham.GameValue
+import Arkham.Helpers.Choose
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 
@@ -16,8 +13,7 @@ newtype StrangeDisappearances = StrangeDisappearances AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeDisappearances :: AgendaCard StrangeDisappearances
-strangeDisappearances =
-  agenda (1, A) StrangeDisappearances Cards.strangeDisappearances (Static 6)
+strangeDisappearances = agenda (1, A) StrangeDisappearances Cards.strangeDisappearances (Static 6)
 
 instance RunMessage StrangeDisappearances where
   runMessage msg a@(StrangeDisappearances attrs@AgendaAttrs {..}) = case msg of
@@ -27,12 +23,12 @@ instance RunMessage StrangeDisappearances where
       if scenarioDeckCount >= 3
         then
           pushAll
-            [ DrawCards lead $ randomTargetCardDraw attrs PotentialSacrifices 1
+            [ randomlyChooseFrom attrs lead PotentialSacrifices 1
             , AdvanceAgendaDeck agendaDeckId (toSource attrs)
             ]
         else push (AdvanceAgendaDeck agendaDeckId (toSource attrs))
       pure a
-    DrewCards _iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
-      push $ PlaceUnderneath AgendaDeckTarget drewCards.cards
+    ChoseCards _ chose | isTarget attrs chose.target -> do
+      push $ PlaceUnderneath AgendaDeckTarget chose.cards
       pure a
     _ -> StrangeDisappearances <$> runMessage msg attrs

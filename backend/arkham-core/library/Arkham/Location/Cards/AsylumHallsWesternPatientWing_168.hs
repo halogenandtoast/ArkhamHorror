@@ -36,6 +36,6 @@ instance HasAbilities AsylumHallsWesternPatientWing_168 where
 instance RunMessage AsylumHallsWesternPatientWing_168 where
   runMessage msg l@(AsylumHallsWesternPatientWing_168 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushM $ drawCards iid (toAbilitySource attrs 1) 1
+      push $ drawCards iid (toAbilitySource attrs 1) 1
       pure l
     _ -> AsylumHallsWesternPatientWing_168 <$> runMessage msg attrs

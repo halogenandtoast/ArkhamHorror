@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.HallOfIdolatry (
-  hallOfIdolatry,
-  HallOfIdolatry (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.HallOfIdolatry (hallOfIdolatry, HallOfIdolatry (..)) where
 
 import Arkham.Ability
 import Arkham.CampaignLogKey
@@ -13,7 +8,7 @@ import Arkham.Helpers.Log
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype HallOfIdolatry = HallOfIdolatry LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -27,20 +22,16 @@ instance HasAbilities HallOfIdolatry where
     withBaseAbilities
       attrs
       [ mkAbility attrs 1
-          $ ForcedAbility
-          $ Explored Timing.After You
-          $ SuccessfulExplore
-          $ LocationWithId
-          $ toId attrs
+          $ forced
+          $ Explored #after You
+          $ SuccessfulExplore (be attrs)
       ]
 
 instance RunMessage HallOfIdolatry where
   runMessage msg l@(HallOfIdolatry attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       yigsFury <- getRecordCount YigsFury
-      when (yigsFury >= 5) $ do
-        pushAll
-          $ InvestigatorDrawEncounterCard iid
-          : [InvestigatorDrawEncounterCard iid | yigsFury >= 10]
+      pushWhen (yigsFury >= 5)
+        $ drawEncounterCards iid attrs (if yigsFury >= 10 then 2 else 1)
       pure l
     _ -> HallOfIdolatry <$> runMessage msg attrs

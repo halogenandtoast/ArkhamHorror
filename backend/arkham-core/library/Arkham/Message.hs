@@ -28,6 +28,7 @@ import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken
+import Arkham.Choose
 import Arkham.ClassSymbol
 import Arkham.Cost
 import Arkham.DamageEffect
@@ -310,6 +311,12 @@ data CanAdvance = CanAdvance | CanNotAdvance
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+class AndThen a where
+  andThen :: a -> Message -> a
+
+instance AndThen (CardDraw Message) where
+  andThen cd msg = cd {cardDrawAndThen = Just msg}
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | SetInvestigator PlayerId Investigator
@@ -380,11 +387,15 @@ data Message
     AddToScenarioDeck ScenarioDeckKey Target
   | AddCardToScenarioDeck ScenarioDeckKey Card
   | ShuffleScenarioDeckIntoEncounterDeck ScenarioDeckKey
-  | DrawCards InvestigatorId CardDraw
+  | DrawStartingHand InvestigatorId
+  | DrawCards InvestigatorId (CardDraw Message)
   | DoDrawCards InvestigatorId
-  | ReplaceCurrentCardDraw InvestigatorId CardDraw
+  | Instead Message Message
+  | ReplaceCurrentCardDraw InvestigatorId (CardDraw Message)
   | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
   | DrewCards InvestigatorId CardDrew
+  | ChooseFrom InvestigatorId Choose
+  | ChoseCards InvestigatorId Chosen
   | SetScenarioDeck ScenarioDeckKey [Card]
   | RemoveCardFromScenarioDeck ScenarioDeckKey Card
   | SwapPlaces (Target, LocationId) (Target, LocationId) -- we include the placement so it is up to date

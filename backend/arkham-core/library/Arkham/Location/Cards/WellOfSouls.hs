@@ -1,15 +1,15 @@
 module Arkham.Location.Cards.WellOfSouls (wellOfSouls, WellOfSouls (..)) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Direction
+import Arkham.Draw.Types
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThePallidMask.Helpers
 
@@ -31,38 +31,32 @@ instance HasAbilities WellOfSouls where
       , restrictedAbility
           attrs
           2
-          ( oneOf
-              [ not_ $ exists $ LocationInDirection dir (be attrs)
-              | dir <- [Above, Below, RightOf]
-              ]
-          )
+          (oneOf [notExists $ LocationInDirection dir (be attrs) | dir <- [Above, Below, RightOf]])
           $ forced
           $ RevealLocation #when Anyone (be attrs)
       ]
 
 instance RunMessage WellOfSouls where
   runMessage msg l@(WellOfSouls attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      hasCardsInHand <- selectAny $ InHandOf (InvestigatorWithId iid)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      hasCardsInHand <- selectAny $ inHandOf iid
       player <- getPlayer iid
       push
         $ chooseOrRunOne player
-        $ Label
-          "Take 1 direct horror"
-          [InvestigatorDirectDamage iid (toSource attrs) 0 1]
+        $ Label "Take 1 direct horror" [directHorror iid (attrs.ability 1) 1]
         : [ Label
             "Discard 2 random cards from your hand"
-            [ toMessage $ randomDiscard iid (toAbilitySource attrs 1)
-            , toMessage $ randomDiscard iid (toAbilitySource attrs 1)
+            [ toMessage $ randomDiscard iid (attrs.ability 1)
+            , toMessage $ randomDiscard iid (attrs.ability 1)
             ]
           | hasCardsInHand
           ]
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push (DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) 1)
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      push $ DrawCards iid $ targetCardDraw attrs CatacombsDeck 1
       pure l
-    DrewFromScenarioDeck iid _ (isTarget attrs -> True) cards -> do
-      case cards of
+    DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
+      case drewCards.cards of
         [card] -> do
           placeAbove <- placeAtDirection Above attrs >>= \f -> f card
           placeBelow <- placeAtDirection Below attrs >>= \f -> f card

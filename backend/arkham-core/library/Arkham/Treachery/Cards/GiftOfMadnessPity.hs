@@ -1,14 +1,11 @@
-module Arkham.Treachery.Cards.GiftOfMadnessPity (
-  giftOfMadnessPity,
-  GiftOfMadnessPity (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.GiftOfMadnessPity (giftOfMadnessPity, GiftOfMadnessPity (..)) where
 
 import Arkham.Ability
+import Arkham.Choose
 import Arkham.Classes
 import Arkham.Matcher hiding (PlaceUnderneath, treacheryInHandOf)
 import Arkham.Modifier
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
@@ -24,26 +21,24 @@ giftOfMadnessPity = treachery GiftOfMadnessPity Cards.giftOfMadnessPity
 
 instance HasModifiersFor GiftOfMadnessPity where
   getModifiersFor (InvestigatorTarget iid) (GiftOfMadnessPity a) =
-    pure
-      $ toModifiers
-        a
-        [CannotFight (EnemyWithTrait Lunatic) | treacheryInHandOf a == Just iid]
+    pure $ toModifiers a [CannotFight (EnemyWithTrait Lunatic) | treacheryInHandOf a == Just iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities GiftOfMadnessPity where
-  getAbilities (GiftOfMadnessPity a) =
-    [restrictedAbility a 1 InYourHand actionAbility]
+  getAbilities (GiftOfMadnessPity a) = [restrictedAbility a 1 InYourHand actionAbility]
 
 instance RunMessage GiftOfMadnessPity where
   runMessage msg t@(GiftOfMadnessPity attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      t <$ push (addHiddenToHand iid attrs)
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push $ addHiddenToHand iid attrs
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       pushAll
-        [ DrawRandomFromScenarioDeck iid MonstersDeck (toTarget attrs) 1
-        , toDiscardBy iid (toAbilitySource attrs 1) attrs
+        [ ChooseFrom iid $ chooseRandom attrs MonstersDeck 1
+        , toDiscardBy iid (attrs.ability 1) attrs
         ]
       pure t
-    DrewFromScenarioDeck _ _ target cards | isTarget attrs target -> do
-      t <$ push (PlaceUnderneath ActDeckTarget cards)
+    ChoseCards _ chosen | isTarget attrs chosen.target -> do
+      push $ PlaceUnderneath ActDeckTarget chosen.cards
+      pure t
     _ -> GiftOfMadnessPity <$> runMessage msg attrs

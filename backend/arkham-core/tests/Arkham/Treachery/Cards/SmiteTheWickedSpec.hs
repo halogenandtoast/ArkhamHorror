@@ -18,14 +18,13 @@ spec = describe "Smite the Wicked" $ do
     enemy <- genEncounterCard Cards.swarmOfRats
     treachery <- genEncounterCard Cards.ancientEvils
     (location1, location2) <- testConnectedLocations id id
-    drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll
       [ placedLocation location1
       , placedLocation location2
       , SetEncounterDeck (Deck [treachery, enemy])
       , loadDeck investigator [smiteTheWicked]
       , moveTo investigator location1
-      , drawing
+      , drawCards (toId investigator) investigator 1
       ]
     enemyId <- selectJust AnyEnemy
     assert $ fieldP EnemyLocation (== Just (toId location2)) enemyId
@@ -35,12 +34,11 @@ spec = describe "Smite the Wicked" $ do
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
     location <- testLocationWith id
-    drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll
       [ SetEncounterDeck (Deck [enemy])
       , loadDeck investigator [smiteTheWicked]
       , moveTo investigator location
-      , drawing
+      , drawCards (toId investigator) investigator 1
       , EndOfGame Nothing
       ]
     chooseOnlyOption "trigger smite the wicked"
@@ -50,13 +48,12 @@ spec = describe "Smite the Wicked" $ do
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
     location <- testLocationWith id
-    drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll
       [ placedLocation location
       , SetEncounterDeck (Deck [enemy])
       , loadDeck investigator [smiteTheWicked]
       , moveTo investigator location
-      , drawing
+      , drawCards (toId investigator) investigator 1
       ]
     enemyId <- selectJust AnyEnemy
     pushAndRunAll
@@ -74,13 +71,12 @@ spec = describe "Smite the Wicked" $ do
     smiteTheWicked <- genPlayerCard Cards.smiteTheWicked
     enemy <- genEncounterCard Cards.swarmOfRats
     location <- testLocationWith id
-    drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll
       [ placedLocation location
       , SetEncounterDeck (Deck [enemy])
       , loadDeck investigator [smiteTheWicked]
       , moveTo investigator location
-      , drawing
+      , drawCards (toId investigator) investigator 1
       , Resign (toId investigator)
       ]
     chooseOnlyOption "trigger smite the wicked"

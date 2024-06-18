@@ -21,7 +21,6 @@ instance RunMessage Guts2 where
   runMessage msg s@(Guts2 attrs) = case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ n | sid == skillId attrs -> do
       let amount = if n >= 2 then 2 else 1
-      drawing <- drawCards (skillOwner attrs) attrs amount
-      push drawing
+      push $ drawCards (skillOwner attrs) attrs amount
       pure s
     _ -> Guts2 <$> runMessage msg attrs

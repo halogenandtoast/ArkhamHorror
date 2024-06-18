@@ -137,7 +137,7 @@ instance RunMessage PointOfNoReturn where
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       case token.face of
-        Cultist -> push $ InvestigatorDrawEncounterCard iid
+        Cultist -> push $ drawEncounterCard iid Cultist
         ElderThing | n >= 2 -> do
           enemies <-
             select

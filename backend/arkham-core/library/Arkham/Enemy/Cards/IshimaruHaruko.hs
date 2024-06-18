@@ -1,41 +1,26 @@
-module Arkham.Enemy.Cards.IshimaruHaruko (
-  ishimaruHaruko,
-  IshimaruHaruko (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.IshimaruHaruko (ishimaruHaruko, IshimaruHaruko (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype IshimaruHaruko = IshimaruHaruko EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ishimaruHaruko :: EnemyCard IshimaruHaruko
-ishimaruHaruko =
-  enemy IshimaruHaruko Cards.ishimaruHaruko (6, Static 4, 3) (1, 1)
+ishimaruHaruko = enemy IshimaruHaruko Cards.ishimaruHaruko (6, Static 4, 3) (1, 1)
 
 instance HasAbilities IshimaruHaruko where
   getAbilities (IshimaruHaruko a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ EnemyDealtDamage
-            Timing.After
-            NonAttackDamageEffect
-            (EnemyWithId $ toId a)
-            AnySource
-      ]
+    extend a [mkAbility a 1 $ forced $ EnemyDealtDamage #after NonAttackDamageEffect (be a) #any]
 
 instance RunMessage IshimaruHaruko where
   runMessage msg e@(IshimaruHaruko attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          e <$ push (InvestigatorDrawEncounterCard iid)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ drawEncounterCard iid (attrs.ability 1)
+      pure e
     _ -> IshimaruHaruko <$> runMessage msg attrs

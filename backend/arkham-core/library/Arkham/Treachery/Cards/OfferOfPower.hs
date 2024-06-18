@@ -1,8 +1,7 @@
 module Arkham.Treachery.Cards.OfferOfPower where
 
-import Arkham.Prelude
-
 import Arkham.Classes
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -16,7 +15,7 @@ offerOfPower = treachery OfferOfPower Cards.offerOfPower
 instance RunMessage OfferOfPower where
   runMessage msg t@(OfferOfPower attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      drawing <- drawCards iid attrs 2
+      let drawing = drawCards iid attrs 2
       player <- getPlayer iid
       push
         $ chooseOne player

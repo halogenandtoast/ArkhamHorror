@@ -26,9 +26,9 @@ instance HasAbilities Repossession where
   getAbilities (Repossession a)
     | onSide A a =
         [ mkAbility a 1 $ ActionAbility [Action.Draw] $ ClueCost (Static 1) <> ActionCost 1
-        , restrictedAbility a 2 (EachUndefeatedInvestigator $ HandWith $ LengthIs $ AtLeast $ Static 10)
+        , restrictedAbility a 2 (EachUndefeatedInvestigator $ HandWith $ LengthIs $ atLeast 10)
             $ Objective
-            $ ForcedAbility AnyWindow
+            $ forced AnyWindow
         ]
   getAbilities _ = []
 
@@ -38,13 +38,12 @@ instance RunMessage Repossession where
       handSize <- field InvestigatorHandSize iid
       numberOfCardsInHand <- fieldMap InvestigatorHand length iid
       let drawCount = if numberOfCardsInHand > handSize then 3 else 2
-      drawing <- newCardDraw iid (toSource attrs) drawCount
-      push $ DrawCards drawing
+      push $ DrawCards iid $ newCardDraw (attrs.ability 1) iid drawCount
       pure a
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ AdvanceAct (toId attrs) (InvestigatorSource iid) AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      push $ scenarioResolution 1
+      push R1
       pure a
     _ -> Repossession <$> runMessage msg attrs

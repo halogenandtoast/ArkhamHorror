@@ -22,10 +22,9 @@ spec = describe "Wracked by Nightmares" $ do
             . (Asset.placementL .~ InPlayArea (toId investigator))
         )
         investigator
-    drawing <- drawCards (toId investigator) investigator 1
     pushAndRunAll
       [ loadDeck investigator [wrackedByNightmares]
-      , drawing
+      , drawCards (toId investigator) investigator 1
       , ReadyExhausted
       ]
     assert
@@ -40,8 +39,8 @@ spec = describe "Wracked by Nightmares" $ do
       testAsset
         ((Asset.exhaustedL .~ True) . (Asset.ownerL ?~ toId investigator))
         investigator
-    drawing <- drawCards (toId investigator) investigator 1
-    pushAndRunAll [loadDeck investigator [wrackedByNightmares], drawing]
+    pushAndRunAll
+      [loadDeck investigator [wrackedByNightmares], drawCards (toId investigator) investigator 1]
     wrackedByNightmaresId <- selectJust AnyTreachery
     [discardWrackedByNightmares] <-
       field

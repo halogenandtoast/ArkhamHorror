@@ -1,6 +1,7 @@
 module Arkham.Treachery.Cards.Kidnapped (kidnapped, Kidnapped (..)) where
 
 import Arkham.Ability
+import Arkham.Choose
 import Arkham.Classes
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Prelude
@@ -22,7 +23,7 @@ instance HasAbilities Kidnapped where
 
 instance RunMessage Kidnapped where
   runMessage msg t@(Kidnapped attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
       player <- getPlayer iid
       push
         $ chooseOne
@@ -47,10 +48,10 @@ instance RunMessage Kidnapped where
             , AttachTreachery treacheryId (AgendaTarget agendaId)
             ]
       pure t
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ DrawRandomFromScenarioDeck iid PotentialSacrifices (toTarget attrs) 1
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ ChooseFrom iid $ chooseRandom attrs PotentialSacrifices 1
       pure t
-    DrewFromScenarioDeck _ PotentialSacrifices target cards | isTarget attrs target -> do
-      push (PlaceUnderneath AgendaDeckTarget cards)
+    ChoseCards _ chosen | isTarget attrs chosen.target -> do
+      push $ PlaceUnderneath AgendaDeckTarget chosen.cards
       pure t
     _ -> Kidnapped <$> runMessage msg attrs

@@ -73,9 +73,7 @@ loadDeckCards :: Investigator -> [PlayerCard] -> TestAppT ()
 loadDeckCards i = run . LoadDeck (toId i) . Deck
 
 drawCards :: Investigator -> Int -> TestAppT ()
-drawCards i n = do
-  drawing <- Helpers.drawCards (toId i) i n
-  run drawing
+drawCards i n = run $ Helpers.drawCards (toId i) i n
 
 playCard :: Investigator -> Card -> TestAppT ()
 playCard i c = run $ InitiatePlayCard (toId i) c Nothing NoPayment (defaultWindows $ toId i) True
@@ -422,7 +420,7 @@ assertHasNoReaction = do
 drawsCard :: Investigator -> CardDef -> TestAppT ()
 drawsCard i cd = do
   c <- genCard cd
-  drawing <- Helpers.drawCards (toId i) GameSource 1
+  let drawing = Helpers.drawCards (toId i) GameSource 1
   runAll [PutCardOnTopOfDeck (toId i) (Deck.InvestigatorDeck $ toId i) c, drawing]
 
 startSkillTest :: HasCallStack => TestAppT ()

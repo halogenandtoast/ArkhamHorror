@@ -3,8 +3,8 @@ module Arkham.Agenda.Cards.TheOldOnesHunger (TheOldOnesHunger (..), theOldOnesHu
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
-import Arkham.Draw.Types
 import Arkham.GameValue
+import Arkham.Helpers.Choose
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 
@@ -23,12 +23,12 @@ instance RunMessage TheOldOnesHunger where
       if scenarioDeckCount >= 2
         then
           pushAll
-            [ DrawCards lead $ randomTargetCardDraw attrs PotentialSacrifices 1
+            [ randomlyChooseFrom attrs lead PotentialSacrifices 1
             , AdvanceAgendaDeck agendaDeckId (toSource attrs)
             ]
         else push (AdvanceAgendaDeck agendaDeckId (toSource attrs))
       pure a
-    DrewCards _iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
-      push $ PlaceUnderneath AgendaDeckTarget drewCards.cards
+    ChoseCards _ chose | isTarget attrs chose.target -> do
+      push $ PlaceUnderneath AgendaDeckTarget chose.cards
       pure a
     _ -> TheOldOnesHunger <$> runMessage msg attrs

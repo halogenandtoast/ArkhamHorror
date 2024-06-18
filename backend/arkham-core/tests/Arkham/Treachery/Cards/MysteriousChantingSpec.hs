@@ -22,7 +22,7 @@ spec = describe "Mysterious Chanting" $ do
       , spawnAt cultist location1
       , moveTo investigator location1
       , RemoveAllDoomFromPlay defaultRemoveDoomMatchers
-      , InvestigatorDrawEncounterCard (toId investigator)
+      , drawEncounterCard investigator.id GameSource
       ]
     chooseOnlyOption "choose cultist"
     fieldAssert EnemyDoom (== 2) cultist

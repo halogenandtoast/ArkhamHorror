@@ -39,7 +39,7 @@ getMatcher (_ : rest) = getMatcher rest
 instance RunMessage StudyAberrantGateway where
   runMessage msg l@(StudyAberrantGateway attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushM $ drawCards iid (toAbilitySource attrs 1) 3
+      push $ drawCards iid (toAbilitySource attrs 1) 3
       pure l
     UseCardAbility _ (isSource attrs -> True) 2 (getMatcher -> matcher) _ -> do
       case matcher of

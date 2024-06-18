@@ -2130,9 +2130,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (Just $ PlayerCard x)
             (map PlayerCard revealed)
         pure $ a & deckL .~ Deck xs
+  Instead (DoDrawCards iid) msg' | iid == toId a -> do
+    push msg'
+    pure $ a & drawingL .~ Nothing
   DrawCards iid cardDraw | iid == toId a && cardDrawAction cardDraw -> do
     let
-      iid = investigatorId
       source = cardDrawSource cardDraw
       n = cardDrawAmount cardDraw
     beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #draw)]
@@ -2178,7 +2180,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         -- takes one horror.
 
         let
-          iid = investigatorId
           source = cardDrawSource cardDraw
           n = cardDrawAmount cardDraw
 

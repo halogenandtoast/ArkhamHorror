@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.EngineCar_177 (
-  engineCar_177,
-  EngineCar_177 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.EngineCar_177 (engineCar_177, EngineCar_177 (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
@@ -13,8 +8,8 @@ import Arkham.Location.Cards qualified as Cards (engineCar_177)
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype EngineCar_177 = EngineCar_177 LocationAttrs
   deriving anyclass (IsLocation)
@@ -40,17 +35,11 @@ instance HasModifiersFor EngineCar_177 where
 
 instance HasAbilities EngineCar_177 where
   getAbilities (EngineCar_177 x) =
-    withBaseAbilities x
-      $ [ restrictedAbility x 1 Here
-          $ ForcedAbility
-          $ RevealLocation Timing.After You
-          $ LocationWithId
-          $ toId x
-        | locationRevealed x
-        ]
+    extendRevealed x [restrictedAbility x 1 Here $ forced $ RevealLocation #after You (be x)]
 
 instance RunMessage EngineCar_177 where
   runMessage msg l@(EngineCar_177 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      l <$ pushAll (replicate 3 $ InvestigatorDrawEncounterCard iid)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ drawEncounterCards iid attrs 3
+      pure l
     _ -> EngineCar_177 <$> runMessage msg attrs

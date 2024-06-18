@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Direction
+import Arkham.Draw.Types
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Investigate ()
@@ -34,10 +35,9 @@ boneFilledCaverns =
 
 instance HasModifiersFor BoneFilledCaverns where
   getModifiersFor (InvestigatorTarget iid) (BoneFilledCaverns (attrs `With` metadata)) = do
-    case affectedInvestigator metadata of
-      Just iid' | iid == iid' -> do
-        pure $ toModifiers attrs [FewerSlots #hand 1]
-      _ -> pure []
+    pure $ case affectedInvestigator metadata of
+      Just iid' | iid == iid' -> toModifiers attrs [FewerSlots #hand 1]
+      _ -> []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BoneFilledCaverns where
@@ -46,11 +46,11 @@ instance HasAbilities BoneFilledCaverns where
       $ [ restrictedAbility
             attrs
             1
-            ( AnyCriterion
-                [ Negate (exists $ LocationInDirection dir (LocationWithId $ toId attrs)) | dir <- [Below, RightOf]
+            ( oneOf
+                [ Negate (exists $ LocationInDirection dir (be attrs)) | dir <- [Below, RightOf]
                 ]
             )
-            $ ForcedAbility (RevealLocation #when Anyone $ LocationWithId $ toId attrs)
+            $ forced (RevealLocation #when Anyone $ be attrs)
         ]
 
 instance RunMessage BoneFilledCaverns where
@@ -61,10 +61,10 @@ instance RunMessage BoneFilledCaverns where
       pure $ BoneFilledCaverns $ With result (Metadata $ Just investigation.investigator)
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- countM (directionEmpty attrs) [Below, RightOf]
-      push $ DrawFromScenarioDeck iid CatacombsDeck (toTarget attrs) n
+      push $ DrawCards iid $ targetCardDraw attrs CatacombsDeck n
       pure l
-    DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do
-      placeDrawnLocations attrs cards [Below, RightOf]
+    DrewCards _ drewCards | maybe False (isTarget attrs) drewCards.target -> do
+      placeDrawnLocations attrs drewCards.cards [Below, RightOf]
       pure l
     SkillTestEnds _ _ -> pure $ BoneFilledCaverns $ With attrs (Metadata Nothing)
     _ -> BoneFilledCaverns . (`with` metadata) <$> runMessage msg attrs

@@ -22,22 +22,13 @@ newtype WitchHauntedWoodsTheLonelyTree = WitchHauntedWoodsTheLonelyTree Location
 
 witchHauntedWoodsTheLonelyTree :: LocationCard WitchHauntedWoodsTheLonelyTree
 witchHauntedWoodsTheLonelyTree =
-  location
-    WitchHauntedWoodsTheLonelyTree
-    Cards.witchHauntedWoodsTheLonelyTree
-    2
-    (PerPlayer 1)
+  location WitchHauntedWoodsTheLonelyTree Cards.witchHauntedWoodsTheLonelyTree 2 (PerPlayer 1)
 
 instance HasModifiersFor WitchHauntedWoodsTheLonelyTree where
   getModifiersFor (InvestigatorTarget iid) (WitchHauntedWoodsTheLonelyTree a) =
     do
       handLength <- fieldMap InvestigatorHand length iid
-      pure
-        $ toModifiers
-          a
-          [ CannotInvestigateLocation (toId a)
-          | handLength >= 3 && handLength <= 5
-          ]
+      pure $ toModifiers a [CannotInvestigateLocation (toId a) | handLength >= 3 && handLength <= 5]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities WitchHauntedWoodsTheLonelyTree where
@@ -74,10 +65,10 @@ instance RunMessage WitchHauntedWoodsTheLonelyTree where
           <> at_ ("Witch-Haunted Woods" <> not_ (locationWithInvestigator iid))
 
       chooseOtherDraw <- for iidsForDraw $ \other -> do
-        drawing <- newCardDraw other attrs 1
-        pure $ targetLabel other [DrawCards drawing]
+        let drawing = newCardDraw attrs other 1
+        pure $ targetLabel other [DrawCards other drawing]
 
-      drawing <- newCardDraw iid attrs 1
+      let drawing = newCardDraw attrs iid 1
       player <- getPlayer iid
 
       push
@@ -97,7 +88,7 @@ instance RunMessage WitchHauntedWoodsTheLonelyTree where
                 player
                 [ targetLabel
                   other
-                  [toMessage $ (chooseAndDiscardCard other attrs) {discardThen = Just $ DrawCards drawing}]
+                  [toMessage $ (chooseAndDiscardCard other attrs) {discardThen = Just $ DrawCards iid drawing}]
                 | other <- iidsForDiscard
                 ]
             ]

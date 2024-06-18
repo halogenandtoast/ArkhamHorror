@@ -1,16 +1,12 @@
-module Arkham.Agenda.Cards.LockedInside (
-  LockedInside (..),
-  lockedInside,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.LockedInside (LockedInside (..), lockedInside) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
-import Arkham.Draw.Types
 import Arkham.GameValue
+import Arkham.Helpers.Choose
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 
 newtype LockedInside = LockedInside AgendaAttrs
@@ -27,11 +23,11 @@ instance RunMessage LockedInside where
       pushAll
         [ ShuffleScenarioDeckIntoEncounterDeck LunaticsDeck
         , ShuffleEncounterDiscardBackIn
-        , DrawCards lead $ randomTargetCardDraw attrs MonstersDeck 1
+        , randomlyChooseFrom attrs lead MonstersDeck 1
         , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
         ]
       pure a
-    DrewCards _ drew | maybe False (isTarget attrs) drew.target -> do
-      push $ PlaceUnderneath ActDeckTarget drew.cards
+    ChoseCards _ chose | isTarget attrs chose.target -> do
+      push $ PlaceUnderneath ActDeckTarget chose.cards
       pure a
     _ -> LockedInside <$> runMessage msg attrs

@@ -1,11 +1,7 @@
-module Arkham.Treachery.Cards.GiftOfMadnessMisery (
-  giftOfMadnessMisery,
-  GiftOfMadnessMisery (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.GiftOfMadnessMisery (giftOfMadnessMisery, GiftOfMadnessMisery (..)) where
 
 import Arkham.Ability
+import Arkham.Choose
 import Arkham.Classes
 import Arkham.Matcher hiding (
   PlaceUnderneath,
@@ -13,6 +9,7 @@ import Arkham.Matcher hiding (
   treacheryInHandOf,
  )
 import Arkham.Modifier
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
@@ -30,8 +27,7 @@ instance HasModifiersFor GiftOfMadnessMisery where
     pure
       $ toModifiers
         a
-        [ CannotTriggerAbilityMatching
-          (AbilityIsActionAbility <> AbilityOnLocation Anywhere)
+        [ CannotTriggerAbilityMatching (AbilityIsActionAbility <> AbilityOnLocation Anywhere)
         | treacheryInHandOf a == Just iid
         ]
   getModifiersFor _ _ = pure []
@@ -45,13 +41,13 @@ instance RunMessage GiftOfMadnessMisery where
     Revelation iid (isSource attrs -> True) -> do
       push $ addHiddenToHand iid attrs
       pure t
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       pushAll
-        [ DrawRandomFromScenarioDeck iid MonstersDeck (toTarget attrs) 1
-        , toDiscardBy iid (toAbilitySource attrs 1) attrs
+        [ ChooseFrom iid $ chooseRandom attrs MonstersDeck 1
+        , toDiscardBy iid (attrs.ability 1) attrs
         ]
       pure t
-    DrewFromScenarioDeck _ _ (isTarget attrs -> True) cards -> do
-      push $ PlaceUnderneath ActDeckTarget cards
+    ChoseCards _ chosen | isTarget attrs chosen.target -> do
+      push $ PlaceUnderneath ActDeckTarget chosen.cards
       pure t
     _ -> GiftOfMadnessMisery <$> runMessage msg attrs

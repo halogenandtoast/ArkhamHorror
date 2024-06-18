@@ -212,7 +212,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       push $ toMessage $ enemyAttack eid source iid
       pure c
     DrawEncounterCardsCost n -> do
-      pushAll $ replicate n $ InvestigatorDrawEncounterCard iid
+      pushAll $ replicate n $ drawEncounterCard iid source
       pure c
     SkillTestCost stsource sType n -> do
       push $ beginSkillTest iid stsource ScenarioTarget sType n

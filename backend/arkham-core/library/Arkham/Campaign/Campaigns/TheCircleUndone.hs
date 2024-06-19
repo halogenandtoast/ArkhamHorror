@@ -74,12 +74,13 @@ allPrologueInvestigators =
 
 instance RunMessage TheCircleUndone where
   runMessage msg c@(TheCircleUndone attrs) = case msg of
-    StartCampaign | campaignStep attrs == PrologueStep -> do
+    StartCampaign | campaignStep attrs `elem` [PrologueStep, DisappearanceAtTheTwilightEstate] -> do
       -- skip picking decks
       lead <- getActivePlayer
+      let step' = if campaignStep attrs == DisappearanceAtTheTwilightEstate then PrologueStep else campaignStep attrs
       pushAll
-        $ [Ask lead PickCampaignSettings | campaignStep attrs /= PrologueStep]
-        <> [CampaignStep $ campaignStep attrs]
+        $ [Ask lead PickCampaignSettings | campaignStep attrs `notElem` [PrologueStep, DisappearanceAtTheTwilightEstate]]
+        <> [CampaignStep step']
       pure c
     CampaignStep PrologueStep -> do
       players <- allPlayers

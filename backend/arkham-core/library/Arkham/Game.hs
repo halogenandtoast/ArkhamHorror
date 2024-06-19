@@ -887,10 +887,7 @@ getInvestigatorsMatching matcher = do
       modifiers' <- getModifiers (toTarget i)
       pure $ modifierType `elem` modifiers'
     UneliminatedInvestigator ->
-      pure
-        . not
-        . or
-        . sequence [attr investigatorDefeated, attr investigatorResigned]
+      pure . not . or . sequence [attr investigatorDefeated, attr investigatorResigned]
     ResignedInvestigator -> pure . attr investigatorResigned
     InvestigatorEngagedWith enemyMatcher -> \i -> do
       mods <- getModifiers i

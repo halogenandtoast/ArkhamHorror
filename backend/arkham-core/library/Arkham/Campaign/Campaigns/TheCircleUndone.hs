@@ -74,7 +74,7 @@ allPrologueInvestigators =
 
 instance RunMessage TheCircleUndone where
   runMessage msg c@(TheCircleUndone attrs) = case msg of
-    StartCampaign -> do
+    StartCampaign | campaignStep attrs == PrologueStep -> do
       -- skip picking decks
       lead <- getActivePlayer
       pushAll

@@ -2130,6 +2130,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (Just $ PlayerCard x)
             (map PlayerCard revealed)
         pure $ a & deckL .~ Deck xs
+  DrawStartingHand iid | iid == investigatorId -> do
+    modifiers' <- getModifiers (toTarget a)
+    if any (`elem` modifiers') [CannotDrawCards, CannotManipulateDeck]
+      then pure a
+      else do
+        let
+          startingHandAmount = foldr applyModifier 5 modifiers'
+          applyModifier (StartingHand m) n = max 0 (n + m)
+          applyModifier _ n = n
+        (discard, hand, deck) <- drawOpeningHand a startingHandAmount
+        pure
+          $ a
+          & (discardL .~ discard)
+          & (handL .~ hand)
+          & (deckL .~ Deck deck)
   Instead (DoDrawCards iid) msg' | iid == toId a -> do
     push msg'
     pure $ a & drawingL .~ Nothing
@@ -2769,7 +2784,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           $ ShuffleCardsIntoDeck
             (Deck.InvestigatorDeck iid)
             (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
-      PutBack -> when (foundKey cardSource == Zone.FromDeck) (error "Can not take deck")
+      PutBack -> do
+        when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
+        pushAll $ map
+          (\c -> AddFocusedToTopOfDeck iid (toTarget iid') (toCardId c))
+          (reverse $ findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
       RemoveRestFromGame -> do
         -- Try to obtain, then don't add back
         pushAll $ map ObtainCard $ findWithDefault [] Zone.FromDeck (a ^. foundCardsL)

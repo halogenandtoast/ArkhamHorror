@@ -1,16 +1,14 @@
-module Arkham.Asset.Cards.AlyssaGraham (
-  alyssaGraham,
-  AlyssaGraham (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.AlyssaGraham (alyssaGraham, AlyssaGraham (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Capability
+import Arkham.Helpers.Message qualified as Msg
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Strategy
 
 newtype AlyssaGraham = AlyssaGraham AssetAttrs
   deriving anyclass (IsAsset)
@@ -21,47 +19,34 @@ alyssaGraham = ally AlyssaGraham Cards.alyssaGraham (1, 3)
 
 instance HasAbilities AlyssaGraham where
   getAbilities (AlyssaGraham a) =
-    [ controlledAbility
-        a
-        1
-        (exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck])
-        $ FastAbility
-        $ exhaust a
+    [ controlledAbility a 1 (any_ [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck])
+        $ FastAbility (exhaust a)
     ]
 
 instance HasModifiersFor AlyssaGraham where
   getModifiersFor (InvestigatorTarget iid) (AlyssaGraham a) =
-    pure [toModifier a (SkillModifier SkillIntellect 1) | controlledBy a iid]
+    modified a [SkillModifier #intellect 1 | iid `controls` a]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AlyssaGraham where
-  runMessage msg a@(AlyssaGraham attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      targets <- map InvestigatorTarget <$> getInvestigatorIds
+  runMessage msg a@(AlyssaGraham attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      targets <- map toTarget <$> getInvestigatorIds
       let
-        goSearch target =
-          TargetLabel
-            target
-            [lookAt iid source target [fromTopOfDeck 1] AnyCard (DeferSearchedToTarget $ toTarget attrs)]
-      player <- getPlayer iid
-      push $ chooseOne player $ goSearch EncounterDeckTarget : map goSearch targets
+        goSearch t =
+          TargetLabel t [Msg.lookAt iid (attrs.ability 1) t [(FromTopOfDeck 1, PutBack)] #any (defer attrs)]
+      chooseOne iid $ goSearch #encounterDeck : map goSearch targets
       pure a
-    SearchFound iid target deck cards | isTarget attrs target -> do
-      player <- getPlayer iid
+    SearchFound iid (isTarget attrs -> True) deck cards -> do
       canAffectOtherPlayers <- can.affect.otherPlayers iid
-      pushAll
-        [ FocusCards cards
-        , chooseOrRunOne
-            player
-            $ [ Label
-                "Add 1 Doom to Alyssa to move card to bottom"
-                [ UnfocusCards
-                , PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
-                , MoveTopOfDeckToBottom (toSource attrs) deck 1
-                ]
-              | canAffectOtherPlayers
-              ]
-            <> [Label "Leave card on top" [UnfocusCards]]
-        ]
+      push $ FocusCards cards
+      chooseOrRunOne
+        iid
+        $ [ Label "Add 1 Doom to Alyssa to move card to bottom"
+            $ [UnfocusCards, Msg.placeDoom (attrs.ability 1) attrs 1]
+            <> map (PutCardOnBottomOfDeck iid deck) cards
+          | canAffectOtherPlayers
+          ]
+        <> [Label "Leave card on top" [UnfocusCards]]
       pure a
-    _ -> AlyssaGraham <$> runMessage msg attrs
+    _ -> AlyssaGraham <$> lift (runMessage msg attrs)

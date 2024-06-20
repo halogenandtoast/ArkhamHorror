@@ -83,6 +83,9 @@ investigatorTarget _ = Nothing
 _InvestigatorTarget :: Prism' Target InvestigatorId
 _InvestigatorTarget = prism' InvestigatorTarget investigatorTarget
 
+instance IsLabel "encounterDeck" Target where
+  fromLabel = EncounterDeckTarget
+
 instance IsLabel "investigator" (Getting (First InvestigatorId) Target InvestigatorId) where
   fromLabel = _InvestigatorTarget
 

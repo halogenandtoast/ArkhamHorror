@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Investigator.Runner (
@@ -2722,9 +2723,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       card =
         fromJustNote "missing card"
           $ find ((== cardId) . toCardId) (findWithDefault [] cardSource $ a ^. foundCardsL)
-      foundCards = a ^. foundCardsL & ix cardSource %~ filter (/= card)
+      foundCards' = Map.map (filter ((/= toCardId card) . toCardId)) (a ^. foundCardsL)
     push $ addToHand iid' card
-    pure $ a & foundCardsL .~ foundCards
+    pure $ a & foundCardsL .~ foundCards'
   CommitCard _ card -> do
     pure $ a & foundCardsL . each %~ filter (/= card) & discardL %~ filter ((/= card) . toCard)
   AddFocusedToTopOfDeck _ (InvestigatorTarget iid') cardId | iid' == toId a -> do
@@ -2771,7 +2772,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             )
             (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
       PutBackInAnyOrder -> do
-        when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
+        when
+          (foundKey cardSource /= Zone.FromDeck)
+          (error "Expects a deck: Investigator<PutBackInAnyOrder>")
         push
           $ chooseOneAtATime player
           $ mapTargetLabelWith
@@ -2779,16 +2782,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (\c -> [AddFocusedToTopOfDeck iid (toTarget iid') (toCardId c)])
             (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
       ShuffleBackIn -> do
-        when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
+        when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck: Investigator<ShuffleBackIn>")
         pushWhen (notNull $ a ^. foundCardsL)
           $ ShuffleCardsIntoDeck
             (Deck.InvestigatorDeck iid)
             (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
       PutBack -> do
-        when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck")
-        pushAll $ map
-          (\c -> AddFocusedToTopOfDeck iid (toTarget iid') (toCardId c))
-          (reverse $ findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
+        case (foundKey cardSource) of
+          Zone.FromDeck -> do
+            pushAll
+              $ map
+                (\c -> AddFocusedToTopOfDeck iid (toTarget iid') (toCardId c))
+                (reverse $ findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
+          Zone.FromDiscard -> pure () -- we never remove these from the discard
+          other -> error ("Expects a deck: Investigator<PutBack> " <> show other)
       RemoveRestFromGame -> do
         -- Try to obtain, then don't add back
         pushAll $ map ObtainCard $ findWithDefault [] Zone.FromDeck (a ^. foundCardsL)

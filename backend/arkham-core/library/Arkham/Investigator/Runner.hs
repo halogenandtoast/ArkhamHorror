@@ -2723,7 +2723,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       card =
         fromJustNote "missing card"
           $ find ((== cardId) . toCardId) (findWithDefault [] cardSource $ a ^. foundCardsL)
-      foundCards' = Map.map (filter ((/= toCardId card) . toCardId)) (a ^. foundCardsL)
+      foundCards' = Map.map (filter ((/= cardId) . toCardId)) (a ^. foundCardsL)
     push $ addToHand iid' card
     pure $ a & foundCardsL .~ foundCards'
   CommitCard _ card -> do

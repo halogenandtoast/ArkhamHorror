@@ -942,7 +942,7 @@ runGameMessage msg g = case msg of
               )
               (findWithDefault [] Zone.FromDeck foundCards)
         PutBackInAnyOrder -> do
-          when (foundKey cardSource /= Zone.FromDeck) $ error "Expects a deck"
+          when (foundKey cardSource /= Zone.FromDeck) $ error "Expects a deck: Game<PutBackInAnyOrder>"
           lift
             $ push
             $ chooseOneAtATime player

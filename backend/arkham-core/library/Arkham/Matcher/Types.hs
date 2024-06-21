@@ -1045,6 +1045,9 @@ data SkillTestMatcher
   | SkillTestOnCardWithTrait Trait
   deriving stock (Show, Eq, Ord, Data)
 
+instance IsLabel "investigating" SkillTestMatcher where
+  fromLabel = WhileInvestigating Anywhere
+
 instance IsLabel "any" SkillTestMatcher where
   fromLabel = AnySkillTest
 

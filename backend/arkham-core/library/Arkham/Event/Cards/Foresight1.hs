@@ -56,5 +56,5 @@ foresight1Effect :: EffectArgs -> Foresight1Effect
 foresight1Effect = cardEffectWith Foresight1Effect Cards.foresight1 (setEffectMeta False)
 
 instance RunMessage Foresight1Effect where
-  runMessage msg e@(Foresight1Effect attrs) = case msg of
+  runMessage msg (Foresight1Effect attrs) = case msg of
     _ -> Foresight1Effect <$> runMessage msg attrs

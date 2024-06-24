@@ -37,7 +37,7 @@ instance RunMessage ParallelFates2 where
           player
           [ TargetLabel
             target
-            [ lookAt iid attrs target [fromTopOfDeck 6] AnyCard (DeferSearchedToTarget $ toTarget attrs)
+            [ lookAt iid attrs target [fromTopOfDeck 6] AnyCard (defer attrs IsNotDraw)
             ]
           | target <- EncounterDeckTarget : targets
           ]

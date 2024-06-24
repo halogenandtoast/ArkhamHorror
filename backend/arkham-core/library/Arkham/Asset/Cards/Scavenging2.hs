@@ -37,6 +37,6 @@ instance RunMessage Scavenging2 where
   runMessage msg a@(Scavenging2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      push $ search iid source iid [fromDiscard] (CardWithTrait Item) $ DrawOrPlayFound iid 1
+      push $ search iid source iid [fromDiscard] (CardWithTrait Item) $ AddToHandOrPlayFound iid 1
       pure a
     _ -> Scavenging2 <$> runMessage msg attrs

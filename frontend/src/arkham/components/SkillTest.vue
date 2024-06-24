@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
-import StatusBar from '@/arkham/components/StatusBar.vue';
+import Question from '@/arkham/components/Question.vue';
 import { computed } from 'vue';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
 import { Game } from '@/arkham/types/Game';
@@ -242,6 +242,7 @@ const label = function(body: string) {
         @click="$emit('choose', skipTriggersAction)"
         class="skip-triggers-button"
       >Skip Triggers</button>
+      <Question :game="game" :playerId="playerId" @choose="choose" />
       <button
         class="apply-results"
         v-if="applyResultsAction !== -1"

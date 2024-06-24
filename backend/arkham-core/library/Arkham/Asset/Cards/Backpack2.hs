@@ -34,7 +34,7 @@ instance RunMessage Backpack2 where
   runMessage msg a@(Backpack2 attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       let cardMatcher = NonWeakness <> CardWithOneOf [CardWithTrait Item, CardWithTrait Supply]
-      push $ search iid source iid [fromTopOfDeck 12] cardMatcher (DeferSearchedToTarget $ toTarget attrs)
+      push $ search iid source iid [fromTopOfDeck 12] cardMatcher (defer attrs IsNotDraw)
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       additionalTargets <- getAdditionalSearchTargets iid

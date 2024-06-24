@@ -12,6 +12,7 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Name
 import Data.Aeson.TH
+import GHC.Records
 
 newtype DiscardedEncounterCard = DiscardedEncounterCard {unDiscardedEncounterCard :: EncounterCard}
 
@@ -24,6 +25,10 @@ data EncounterCard = MkEncounterCard
   , ecOwner :: Maybe InvestigatorId
   }
   deriving stock (Show, Eq, Ord, Data)
+
+instance HasField "id" EncounterCard CardId where
+  getField = ecId
+  {-# INLINE getField #-}
 
 instance HasCardCode EncounterCard where
   toCardCode = ecCardCode

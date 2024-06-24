@@ -26,7 +26,7 @@ instance RunMessage Flare1 where
       fightableEnemies <- getFightableEnemyIds iid attrs
       player <- getPlayer iid
 
-      let doSearch iid' = targetLabel iid' [search iid' e iid' [fromTopOfDeck 9] #ally (defer $ toTarget e)]
+      let doSearch iid' = targetLabel iid' [search iid' e iid' [fromTopOfDeck 9] #ally (defer e IsNotDraw)]
       let searchForAlly = [CheckAttackOfOpportunity iid False, chooseOne player $ map doSearch investigators]
 
       chooseFight <- toMessage <$> mkChooseFight iid e

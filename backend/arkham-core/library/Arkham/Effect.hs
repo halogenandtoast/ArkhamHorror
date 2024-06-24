@@ -116,7 +116,6 @@ import Arkham.Event.Events (
   exposeWeakness3Effect,
   fightOrFlightEffect,
   followedEffect,
-  foresight1Effect,
   getBehindMeEffect,
   imDoneRunninEffect,
   improvisationEffect,
@@ -420,7 +419,6 @@ allEffects =
     , ("08021", SomeEffect getBehindMeEffect)
     , ("08034", SomeEffect writtenInTheStarsEffect)
     , ("08055", SomeEffect blackMarket2Effect)
-    , ("08064", SomeEffect foresight1Effect)
     , ("09041", SomeEffect empiricalHypothesisEffect)
     , ("50013", SomeEffect twilightBladeEffect)
     , ("50044", SomeEffect jeremiahPierceEffect)

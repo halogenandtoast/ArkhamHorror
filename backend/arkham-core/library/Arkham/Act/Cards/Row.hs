@@ -22,10 +22,7 @@ instance HasAbilities Row where
   getAbilities (Row x)
     | onSide A x =
         [ mkAbility x 1 $ forced $ WouldDrawEncounterCard #when You AnyPhase
-        , restrictedAbility
-            x
-            2
-            (ResourcesOnLocation "Gondola" (AtLeast $ PerPlayer 4))
+        , restrictedAbility x 2 (ResourcesOnLocation "Gondola" (AtLeast $ PerPlayer 4))
             $ Objective
             $ forced AnyWindow
         ]

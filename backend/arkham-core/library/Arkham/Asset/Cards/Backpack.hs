@@ -46,7 +46,7 @@ instance RunMessage Backpack where
           [fromTopOfDeck 6]
           ( NonWeakness <> CardWithOneOf [CardWithTrait Item, CardWithTrait Supply]
           )
-          (DeferSearchedToTarget $ toTarget attrs)
+          (defer attrs IsNotDraw)
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       additionalTargets <- getAdditionalSearchTargets iid

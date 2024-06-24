@@ -34,7 +34,9 @@ instance RunMessage AlyssaGraham where
       targets <- map toTarget <$> getInvestigatorIds
       let
         goSearch t =
-          TargetLabel t [Msg.lookAt iid (attrs.ability 1) t [(FromTopOfDeck 1, PutBack)] #any (defer attrs)]
+          TargetLabel
+            t
+            [Msg.lookAt iid (attrs.ability 1) t [(FromTopOfDeck 1, PutBack)] #any (defer attrs IsNotDraw)]
       chooseOne iid $ goSearch #encounterDeck : map goSearch targets
       pure a
     SearchFound iid (isTarget attrs -> True) deck cards -> do

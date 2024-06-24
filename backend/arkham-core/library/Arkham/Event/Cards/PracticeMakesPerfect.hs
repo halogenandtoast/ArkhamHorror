@@ -1,17 +1,12 @@
-module Arkham.Event.Cards.PracticeMakesPerfect (
-  practiceMakesPerfect,
-  PracticeMakesPerfect (..),
-)
-where
+module Arkham.Event.Cards.PracticeMakesPerfect where
 
-import Arkham.Prelude
-
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Modifiers qualified as Msg
+import Arkham.Helpers.SkillTest (getIsCommittable)
 import Arkham.Matcher
+import Arkham.Strategy
 import Arkham.Trait (Trait (Practiced))
 
 newtype PracticeMakesPerfect = PracticeMakesPerfect EventAttrs
@@ -22,35 +17,21 @@ practiceMakesPerfect :: EventCard PracticeMakesPerfect
 practiceMakesPerfect = event PracticeMakesPerfect Cards.practiceMakesPerfect
 
 instance RunMessage PracticeMakesPerfect where
-  runMessage msg e@(PracticeMakesPerfect attrs) = case msg of
+  runMessage msg e@(PracticeMakesPerfect attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      push
-        $ search
-          iid
-          (toSource attrs)
-          iid
-          [fromTopOfDeck 9]
-          (#skill <> CardWithTrait Practiced)
-          (DeferSearchedToTarget $ toTarget attrs)
+      search iid attrs iid [fromTopOfDeck 9] (#skill <> withTrait Practiced) (defer attrs IsNotDraw)
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       committable <- filterM (getIsCommittable iid) cards
-      player <- getPlayer iid
       let
         choices =
           [ targetLabel
-            (toCardId card)
-            [ skillTestModifiers
-                attrs
-                (toCardId card)
-                [IfSuccessfulModifier ReturnToHandAfterTest, MustBeCommitted]
+            card
+            [ Msg.skillTestModifiers attrs card [IfSuccessfulModifier ReturnToHandAfterTest, MustBeCommitted]
             , SkillTestCommitCard iid card
             ]
           | card <- committable
           ]
-      push
-        $ if null choices
-          then chooseOne player [Label "No cards found" []]
-          else chooseOne player choices
+      chooseOne iid $ if null choices then [Label "No cards found" []] else choices
       pure e
-    _ -> PracticeMakesPerfect <$> runMessage msg attrs
+    _ -> PracticeMakesPerfect <$> lift (runMessage msg attrs)

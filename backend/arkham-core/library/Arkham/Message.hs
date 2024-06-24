@@ -390,6 +390,7 @@ data Message
   | DrawStartingHand InvestigatorId
   | DrawCards InvestigatorId (CardDraw Message)
   | DoDrawCards InvestigatorId
+  | DrawEnded InvestigatorId
   | Instead Message Message
   | ReplaceCurrentCardDraw InvestigatorId (CardDraw Message)
   | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)

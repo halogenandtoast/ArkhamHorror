@@ -42,14 +42,7 @@ instance RunMessage ScrollOfSecrets where
           player
           [ TargetLabel
             target
-            [ lookAt
-                iid
-                attrs
-                target
-                [fromBottomOfDeck 1]
-                AnyCard
-                (DeferSearchedToTarget $ toTarget attrs)
-            ]
+            [lookAt iid attrs target [fromBottomOfDeck 1] AnyCard (defer attrs IsNotDraw)]
           | target <- [EncounterDeckTarget | hasEncounterDeck] <> targets
           ]
       pure a

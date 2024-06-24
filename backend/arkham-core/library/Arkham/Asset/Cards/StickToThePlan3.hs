@@ -37,7 +37,7 @@ instance HasAbilities StickToThePlan3 where
 instance RunMessage StickToThePlan3 where
   runMessage msg a@(StickToThePlan3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ search iid attrs iid [fromDeck] AnyCard (DeferSearchedToTarget $ toTarget attrs)
+      push $ search iid attrs iid [fromDeck] AnyCard (defer attrs IsNotDraw)
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       let

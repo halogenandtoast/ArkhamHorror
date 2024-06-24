@@ -319,7 +319,7 @@ instance RunMessage TheSearchForKadath where
                   EncounterDeckTarget
                   [fromDeck]
                   (cardIs Enemies.nightriders)
-                  (DeferSearchedToTarget $ toTarget attrs)
+                  (defer attrs IsNotDraw)
                , AdvanceToAct 1 Acts.theIsleOfOriab A (toSource attrs)
                , DoStep 1 msg
                ]
@@ -374,7 +374,7 @@ instance RunMessage TheSearchForKadath where
                   EncounterDeckTarget
                   [fromDeck]
                   (cardIs Enemies.priestOfAThousandMasks)
-                  (DeferSearchedToTarget $ toTarget attrs)
+                  (defer attrs IsNotDraw)
                , AdvanceToAct 1 Acts.theKingsDecree A (toSource attrs)
                , DoStep 1 msg
                ]

@@ -1,7 +1,5 @@
 module Arkham.Investigator.Cards.NormanWithers where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Deck qualified as Deck
@@ -10,6 +8,7 @@ import Arkham.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (PlayCard, RevealChaosToken)
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype Metadata = Metadata {playedFromTopOfDeck :: Bool}
@@ -47,8 +46,8 @@ instance HasAbilities NormanWithers where
     [ restrictedAbility
         a
         1
-        (Self <> InvestigatorExists (TopCardOfDeckIs WeaknessCard) <> CanManipulateDeck)
-        (ForcedAbility AnyWindow)
+        (Self <> exists (TopCardOfDeckIs WeaknessCard) <> CanManipulateDeck)
+        (forced AnyWindow)
     ]
 
 instance HasChaosTokenValue NormanWithers where
@@ -62,7 +61,7 @@ instance HasChaosTokenValue NormanWithers where
 
 instance RunMessage NormanWithers where
   runMessage msg nw@(NormanWithers (a `With` metadata)) = case msg of
-    UseCardAbility iid (isSource a -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource a -> True) 1 -> do
       push $ drawCards iid (a.ability 1) 1
       pure nw
     When (RevealChaosToken _ iid token) | iid == toId a -> do

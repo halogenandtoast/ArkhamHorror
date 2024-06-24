@@ -27,6 +27,9 @@ data PlayerCard = MkPlayerCard
   }
   deriving stock (Show, Ord, Data)
 
+instance HasField "id" PlayerCard CardId where
+  getField = pcId
+
 instance Eq PlayerCard where
   pc1 == pc2 = pcId pc1 == pcId pc2
 

@@ -51,7 +51,7 @@ instance RunMessage DrElliHorowitz where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push
         $ search iid source iid [fromTopOfDeck 9] AnyCard -- no filter because we need to handle game logic
-        $ DeferSearchedToTarget (toTarget attrs)
+        $ defer attrs IsNotDraw
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       validCards <-

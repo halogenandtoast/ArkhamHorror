@@ -30,7 +30,7 @@ instance RunMessage MrRook where
   runMessage msg a@(MrRook (attrs `With` meta)) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      let goSearch n = search iid source iid [fromTopOfDeck n] AnyCard (DeferSearchedToTarget $ toTarget attrs)
+      let goSearch n = search iid source iid [fromTopOfDeck n] AnyCard (defer attrs IsDraw)
       player <- getPlayer iid
       push $ chooseOne player [Label ("Top " <> tshow x) [goSearch x] | x <- [3, 6, 9]]
       pure a

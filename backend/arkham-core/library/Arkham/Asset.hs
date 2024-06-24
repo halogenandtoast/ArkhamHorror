@@ -788,6 +788,7 @@ allAssets =
     , SomeAssetCard astronomicalAtlas3
     , SomeAssetCard healingWords3
     , SomeAssetCard grounded3
+    , SomeAssetCard trueMagickReworkingReality5
     , --- survivor [eote]
       SomeAssetCard shortSupply
     , SomeAssetCard schoffnersCatalogue

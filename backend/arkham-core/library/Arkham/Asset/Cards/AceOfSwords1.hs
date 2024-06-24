@@ -1,14 +1,10 @@
-module Arkham.Asset.Cards.AceOfSwords1 (
-  aceOfSwords1,
-  AceOfSwords1 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.AceOfSwords1 (aceOfSwords1, AceOfSwords1 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype AceOfSwords1 = AceOfSwords1 AssetAttrs
   deriving anyclass (IsAsset)
@@ -23,8 +19,7 @@ instance HasModifiersFor AceOfSwords1 where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AceOfSwords1 where
-  getAbilities (AceOfSwords1 a) =
-    [reactionAbility a 1 Free (GameBegins #when) InYourHand]
+  getAbilities (AceOfSwords1 a) = [reactionAbility a 1 Free (GameBegins #when) InYourHand]
 
 instance RunMessage AceOfSwords1 where
   runMessage msg a@(AceOfSwords1 attrs) = case msg of

@@ -107,7 +107,7 @@ const label = function(body: string) {
   <Draggable v-if="title" class="modal" :class="{ hide }">
     <template #handle><h2 v-html="label(title)"></h2></template>
     <section class="status-bar">
-      <Question :game="game" playerId="playerId" @choose="choose" />
+      <Question :game="game" :playerId="playerId" @choose="choose" />
     </section>
   </Draggable>
 </template>

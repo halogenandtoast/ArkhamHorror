@@ -695,6 +695,7 @@ allPlayerAssetCards =
       , trenchKnife
       , tristanBotleyFixerForHire2
       , trueGrit
+      , trueMagickReworkingReality5
       , trustyBullwhip
       , tryAndTryAgain1
       , tryAndTryAgain3
@@ -5036,6 +5037,7 @@ healingWords3 =
   (asset "08068" "Healing Words" 2 Mystic)
     { cdSkills = [#willpower, #willpower]
     , cdCardTraits = singleton Spell
+    , cdUses = uses Charge 4
     , cdSlots = [#arcane]
     , cdLevel = Just 3
     }
@@ -5047,6 +5049,17 @@ grounded3 =
     , cdCardTraits = setFromList [Talent, Composure]
     , cdLimits = [LimitPerTrait Composure 1]
     , cdLevel = Just 3
+    }
+
+trueMagickReworkingReality5 :: CardDef
+trueMagickReworkingReality5 =
+  (asset "08070" ("True Magick" <:> "Reworking Reality") 4 Mystic)
+    { cdSkills = [#willpower, #willpower, #wild]
+    , cdCardTraits = setFromList [Item, Relic, Tome]
+    , cdUses = uses Charge 1
+    , cdLevel = Just 5
+    , cdSlots = [#hand, #arcane]
+    , cdUnique = True
     }
 
 shortSupply :: CardDef

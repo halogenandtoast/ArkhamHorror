@@ -947,11 +947,7 @@ runGameMessage msg g = case msg of
             $ push
             $ chooseOneAtATime player
             $ map
-              ( \c ->
-                  TargetLabel
-                    (CardIdTarget $ toCardId c)
-                    [AddFocusedToTopOfDeck iid EncounterDeckTarget $ toCardId c]
-              )
+              (\c -> targetLabel c [AddFocusedToTopOfDeck iid EncounterDeckTarget c.id])
               (findWithDefault [] Zone.FromDeck foundCards)
         ShuffleBackIn -> lift $ pushAll [ClearFound $ foundKey cardSource, ShuffleDeck Deck.EncounterDeck]
         PutBack -> do

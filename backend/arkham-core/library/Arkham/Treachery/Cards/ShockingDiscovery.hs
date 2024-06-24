@@ -1,10 +1,4 @@
-module Arkham.Treachery.Cards.ShockingDiscovery (
-  shockingDiscovery,
-  ShockingDiscovery (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.ShockingDiscovery where
 
 import Arkham.Ability
 import Arkham.Capability
@@ -13,6 +7,7 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 import Arkham.Window (getBatchId)
@@ -25,7 +20,7 @@ shockingDiscovery :: TreacheryCard ShockingDiscovery
 shockingDiscovery = treachery ShockingDiscovery Cards.shockingDiscovery
 
 instance HasAbilities ShockingDiscovery where
-  getAbilities (ShockingDiscovery x) = [mkAbility x 1 $ ForcedAbility (AmongSearchedCards You)]
+  getAbilities (ShockingDiscovery x) = [mkAbility x 1 $ forced (AmongSearchedCards You)]
 
 -- Forced - When you search your deck and this card is among the searched
 -- cards: Discard it. Cancel the search and all of its effects. Shuffle the

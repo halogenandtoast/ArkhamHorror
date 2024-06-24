@@ -786,6 +786,7 @@ allAssets =
     , SomeAssetCard dragonPole
     , SomeAssetCard closeTheCircle1
     , SomeAssetCard astronomicalAtlas3
+    , SomeAssetCard healingWords3
     , SomeAssetCard grounded3
     , --- survivor [eote]
       SomeAssetCard shortSupply

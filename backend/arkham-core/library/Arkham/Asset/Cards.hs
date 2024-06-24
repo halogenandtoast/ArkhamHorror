@@ -382,6 +382,7 @@ allPlayerAssetCards =
       , haste2
       , hawkEyeFoldingCamera
       , healingWords
+      , healingWords3
       , heirloomOfHyperborea
       , hemisphericMap3
       , henryDeveau
@@ -5027,6 +5028,15 @@ astronomicalAtlas3 =
     { cdSkills = [#willpower, #intellect, #intellect]
     , cdCardTraits = setFromList [Item, Tome]
     , cdSlots = [#hand]
+    , cdLevel = Just 3
+    }
+
+healingWords3 :: CardDef
+healingWords3 =
+  (asset "08068" "Healing Words" 2 Mystic)
+    { cdSkills = [#willpower, #willpower]
+    , cdCardTraits = singleton Spell
+    , cdSlots = [#arcane]
     , cdLevel = Just 3
     }
 

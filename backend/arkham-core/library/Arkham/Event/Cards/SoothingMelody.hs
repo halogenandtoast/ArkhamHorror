@@ -1,10 +1,4 @@
-module Arkham.Event.Cards.SoothingMelody (
-  soothingMelody,
-  SoothingMelody (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.SoothingMelody (soothingMelody, SoothingMelody (..)) where
 
 import Arkham.Card
 import Arkham.Classes
@@ -13,6 +7,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Data.Aeson
 import Data.Aeson.KeyMap qualified as KeyMap
 
@@ -21,12 +16,11 @@ newtype SoothingMelody = SoothingMelody EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 soothingMelody :: EventCard SoothingMelody
-soothingMelody =
-  event SoothingMelody Cards.soothingMelody
+soothingMelody = event SoothingMelody Cards.soothingMelody
 
 instance RunMessage SoothingMelody where
   runMessage msg e@(SoothingMelody attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    PlayThisEvent iid eid | eid == toId attrs -> do
       drawing <- drawCardsIfCan iid attrs 1
       pushAll $ ResolveEventChoice iid eid 1 Nothing [] : toList drawing
       pure e

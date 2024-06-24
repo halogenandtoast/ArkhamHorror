@@ -4370,7 +4370,24 @@ instance HasAbilities Game where
       <> getAbilities (gameInSearchEntities g)
       <> concatMap getAbilities (gameInHandEntities g)
       <> concatMap getAbilities (gameInDiscardEntities g)
+      <> runReader getTrueMagickAbilities g
       <> getAbilities (gameMode g)
+
+getTrueMagickAbilities :: HasGame m => m [Ability]
+getTrueMagickAbilities = do
+  mTrueMagick <- selectOne $ InvestigatorWithModifier TrueMagick
+  case mTrueMagick of
+    Just iid -> do
+      hand <- field InvestigatorHand iid
+      let
+        setAssetPlacement :: forall a. Typeable a => a -> a
+        setAssetPlacement a = case eqT @a @Asset of
+          Just Refl -> overAttrs (\attrs -> attrs {assetPlacement = InPlayArea iid}) a
+          Nothing -> a
+      let handEntities = foldl' (addCardEntityWith iid setAssetPlacement) defaultEntities hand
+      let handAbilities = getAbilities handEntities
+      pure handAbilities
+    Nothing -> pure []
 
 instance HasAbilities GameMode where
   getAbilities (This c) = getAbilities c

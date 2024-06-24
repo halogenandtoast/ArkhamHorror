@@ -2260,7 +2260,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                             ]
                          ]
 
-                msgs' `seq` pure ()
                 windowMsgs <-
                   if null deck'
                     then pure <$> checkWindows ((`mkWindow` Window.DeckHasNoCards iid) <$> [#when, #after])
@@ -2849,14 +2848,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               _ -> True
         )
   SearchEnded iid | iid == investigatorId -> pure $ a & searchL .~ Nothing
-  CancelSearch iid | iid == investigatorId -> do
-    let zoneCards = mapToList (a ^. foundCardsL)
-    updates <- fmap (appEndo . mconcat) $ for zoneCards $ \(zone, cards) -> case zone of
-      Zone.FromDeck -> do
-        deck' <- Deck <$> shuffleM (unDeck investigatorDeck <> onlyPlayerCards cards)
-        pure $ Endo $ deckL .~ deck'
-      _ -> error "Unhandled zone, this was added for Shocking Discovery only which is FromDeck"
-    pure $ a & searchL .~ Nothing & updates
+  CancelSearch iid | iid == investigatorId -> pure $ a & searchL .~ Nothing
   Search searchType iid _ (InvestigatorTarget iid') _ _ _ | iid' == toId a -> do
     let deck = Deck.InvestigatorDeck iid'
     if searchType == Searching

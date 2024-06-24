@@ -208,6 +208,13 @@ data Card
   | VengeanceCard Card
   deriving stock (Show, Ord, Data)
 
+instance HasField "id" Card CardId where
+  getField = \case
+    PlayerCard pc -> pc.id
+    EncounterCard ec -> ec.id
+    VengeanceCard vc -> vc.id
+  {-# INLINE getField #-}
+
 isEncounterCard :: Card -> Bool
 isEncounterCard = \case
   PlayerCard _ -> False

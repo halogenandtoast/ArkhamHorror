@@ -2200,20 +2200,38 @@ runGameMessage msg g = case msg of
         other -> other
     pure $ g & resolvingCardL .~ Nothing & activeCardL %~ unsetActiveCard
   InvestigatorDrewEncounterCard iid card -> do
+    hasForesight <- hasModifier iid (Foresight $ toTitle card)
+    if hasForesight
+      then do
+        canCancel <- (EncounterCard card) <=~> CanCancelRevelationEffect #any
+        if canCancel
+          then do
+            player <- getPlayer iid
+            push
+              $ chooseOne
+                player
+                [ Label
+                    "Cancel card effects and discard it"
+                    [UnfocusCards, CancelNext GameSource RevelationMessage, AddToEncounterDiscard card]
+                , Label "Draw as normal" [UnfocusCards, Do msg]
+                ]
+            pure $ g & focusedCardsL .~ [toCard card]
+          else runMessage (Do msg) g
+      else runMessage (Do msg) g
+  Do (InvestigatorDrewEncounterCard iid card) -> do
     push $ ResolvedCard iid (toCard card)
     let
+      removeCard = filter ((/= Just card) . preview _EncounterCard)
       g' =
         g
-          & (resolvingCardL ?~ EncounterCard card)
-          & (focusedCardsL %~ filter ((/= Just card) . preview _EncounterCard))
-          & ( foundCardsL
-                %~ Map.map
-                  (filter ((/= Just card) . preview _EncounterCard))
-            )
+          & (resolvingCardL ?~ toCard card)
+          & (focusedCardsL %~ removeCard)
+          & (foundCardsL %~ Map.map removeCard)
 
     whenDraw <- checkWindows [mkWhen (Window.DrawCard iid (toCard card) Deck.EncounterDeck)]
     afterDraw <- checkWindows [mkAfter (Window.DrawCard iid (toCard card) Deck.EncounterDeck)]
     -- [ALERT]: If you extend this make sure to update LetMeHandleThis
+    let uiRevelation = getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))
     case toCardType card of
       EnemyType -> do
         investigator <- getInvestigator iid
@@ -2229,22 +2247,19 @@ runGameMessage msg g = case msg of
           & (entitiesL . enemiesL . at enemyId ?~ enemy)
           & (activeCardL ?~ toCard card)
       TreacheryType -> do
-        pid <- getPlayer iid
-        sendRevelation pid (toJSON $ toCard card)
+        uiRevelation
         -- handles draw windows
         push $ DrewTreachery iid (Just Deck.EncounterDeck) (toCard card)
         pure g'
       EncounterAssetType -> do
-        pid <- getPlayer iid
-        sendRevelation pid (toJSON $ toCard card)
+        uiRevelation
         assetId <- getRandom
         let asset = createAsset card assetId
         -- Asset is assumed to have a revelation ability if drawn from encounter deck
         pushAll $ whenDraw : afterDraw : resolve (Revelation iid $ AssetSource assetId)
         pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
       EncounterEventType -> do
-        pid <- getPlayer iid
-        sendRevelation pid (toJSON $ toCard card)
+        uiRevelation
         eventId <- getRandom
         let owner = fromMaybe iid (toCardOwner card)
         let event' = createEvent card owner eventId
@@ -2252,8 +2267,7 @@ runGameMessage msg g = case msg of
         pushAll $ whenDraw : afterDraw : resolve (Revelation iid $ EventSource eventId)
         pure $ g' & (entitiesL . eventsL . at eventId ?~ event')
       LocationType -> do
-        pid <- getPlayer iid
-        sendRevelation pid (toJSON $ toCard card)
+        uiRevelation
         locationId <- getRandom
         let location = createLocation card locationId
 

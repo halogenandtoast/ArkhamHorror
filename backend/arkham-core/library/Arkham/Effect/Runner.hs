@@ -24,6 +24,8 @@ intFromMetadata = \case
 
 instance RunMessage EffectAttrs where
   runMessage msg a@EffectAttrs {..} = case msg of
+    DrawEnded _ | isEndOfWindow a EffectCardDrawWindow -> do
+      a <$ push (DisableEffect effectId)
     SearchEnded _ | isEndOfWindow a EffectSearchWindow -> do
       a <$ push (DisableEffect effectId)
     CancelSearch {} | isEndOfWindow a EffectSearchWindow -> do

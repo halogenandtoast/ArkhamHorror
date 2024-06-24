@@ -180,6 +180,10 @@ phaseModifiers
   :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
 phaseModifiers source target modifiers = createWindowModifierEffect EffectPhaseWindow source target modifiers
 
+cardDrawModifier
+  :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
+cardDrawModifier source target modifiers = createWindowModifierEffect EffectCardDrawWindow source target modifiers
+
 cardResolutionModifier
   :: (Sourceable source, Targetable target, IsCard card)
   => card

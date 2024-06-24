@@ -125,6 +125,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorKeys :: Field Investigator (Set ArkhamKey)
   InvestigatorPlayerId :: Field Investigator PlayerId
   InvestigatorBondedCards :: Field Investigator [Card]
+  InvestigatorDrawing :: Field Investigator (Maybe (CardDraw Message))
   InvestigatorLog :: Field Investigator CampaignLog
   InvestigatorUnhealedHorrorThisRound :: Field Investigator Int
   InvestigatorMeta :: Field Investigator Value
@@ -193,6 +194,7 @@ instance FromJSON (SomeField Investigator) where
     "InvestigatorKeys" -> pure $ SomeField InvestigatorKeys
     "InvestigatorPlayerId" -> pure $ SomeField InvestigatorPlayerId
     "InvestigatorBondedCards" -> pure $ SomeField InvestigatorBondedCards
+    "InvestigatorDrawing" -> pure $ SomeField InvestigatorDrawing
     "InvestigatorLog" -> pure $ SomeField InvestigatorLog
     "InvestigatorUnhealedHorrorThisRound" -> pure $ SomeField InvestigatorUnhealedHorrorThisRound
     "InvestigatorMeta" -> pure $ SomeField InvestigatorMeta

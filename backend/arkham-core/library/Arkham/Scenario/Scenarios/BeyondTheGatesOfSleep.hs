@@ -137,7 +137,7 @@ dreamEffect iid = \case
         iid
         [fromDeck]
         BasicWeaknessCard
-        (DeferSearchedToTarget $ LabeledTarget "Drifter" ScenarioTarget)
+        (defer (LabeledTarget "Drifter" ScenarioTarget) IsNotDraw)
   HunterDream -> pure $ search iid GameSource iid [fromDeck] (CardWithTrait Weapon) (PlayFound iid 1)
   MedicOrAssistantDream -> do
     otherInvestigators <- select $ NotInvestigator $ InvestigatorWithId iid
@@ -161,7 +161,7 @@ dreamEffect iid = \case
         iid
         [fromDeck]
         (oneOf [CardWithTrait Tactic, CardWithTrait Supply])
-        (DeferSearchedToTarget $ LabeledTarget "Veteran" ScenarioTarget)
+        (defer (LabeledTarget "Veteran" ScenarioTarget) IsNotDraw)
   WayfarerDream ->
     pure
       $ search

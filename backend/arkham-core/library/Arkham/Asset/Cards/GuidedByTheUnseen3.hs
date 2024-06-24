@@ -40,7 +40,7 @@ instance RunMessage GuidedByTheUnseen3 where
       canSearchDeck <- can.search.deck iid
       if canSearchDeck
         then
-          search you (attrs.ability 1) iid [fromTopOfDeck 3] AnyCard (DeferSearchedToTarget $ toTarget attrs)
+          search you (attrs.ability 1) iid [fromTopOfDeck 3] AnyCard (defer attrs IsNotDraw)
         else whenM (can.shuffle.deck iid) $ push $ ShuffleDeck $ Deck.InvestigatorDeck iid
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do

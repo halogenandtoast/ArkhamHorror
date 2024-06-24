@@ -26,6 +26,7 @@ data EffectWindow
   | EffectAbilityWindow
   | EffectSearchWindow
   | EffectCardCostWindow CardId
+  | EffectCardDrawWindow
   | EffectUI
   | EffectMoveWindow
   deriving stock (Eq, Show, Generic)

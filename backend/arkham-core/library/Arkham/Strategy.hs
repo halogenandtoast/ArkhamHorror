@@ -35,15 +35,31 @@ data FoundCardsStrategy
   | DrawFound InvestigatorId Int
   | DrawAllFound InvestigatorId
   | DrawFoundUpTo InvestigatorId Int
-  | DeferSearchedToTarget Target
+  | DeferSearchedToTarget Target IsDraw
   | ReturnCards
   | RemoveFoundFromGame InvestigatorId Int
   | DrawOrCommitFound InvestigatorId Int
-  | DrawOrPlayFound InvestigatorId Int
+  | AddToHandOrPlayFound InvestigatorId Int
   deriving stock (Show, Eq, Ord, Data)
 
-defer :: Targetable target => target -> FoundCardsStrategy
-defer = DeferSearchedToTarget . toTarget
+data IsDraw = IsDraw | IsNotDraw
+  deriving stock (Show, Eq, Ord, Data)
+
+isSearchDraw :: FoundCardsStrategy -> Bool
+isSearchDraw = \case
+  PlayFound {} -> False
+  PlayFoundNoCost {} -> False
+  DrawFound {} -> True
+  DrawAllFound {} -> True
+  DrawFoundUpTo {} -> True
+  DeferSearchedToTarget _ isDraw -> isDraw == IsDraw
+  ReturnCards -> False
+  RemoveFoundFromGame {} -> False
+  DrawOrCommitFound {} -> True
+  AddToHandOrPlayFound {} -> False
+
+defer :: Targetable target => target -> IsDraw -> FoundCardsStrategy
+defer t = DeferSearchedToTarget (toTarget t)
 
 data AfterPlayStrategy
   = DiscardThis
@@ -69,6 +85,7 @@ fromDeck = (FromDeck, ShuffleBackIn)
 fromDiscard :: (Zone, ZoneReturnStrategy)
 fromDiscard = (FromDiscard, PutBack)
 
+$(deriveJSON defaultOptions ''IsDraw)
 $(deriveJSON defaultOptions ''DamageStrategy)
 $(deriveJSON defaultOptions ''ZoneReturnStrategy)
 $(deriveJSON defaultOptions ''FoundCardsStrategy)

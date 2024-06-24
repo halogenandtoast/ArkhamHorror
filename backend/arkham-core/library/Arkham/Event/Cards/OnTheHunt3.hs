@@ -35,7 +35,7 @@ instance RunMessage OnTheHunt3 where
       pure e
     PlayThisEvent iid eid | eid == toId attrs -> do
       insteadOf (DoDrawCards iid) (pure ())
-      search iid attrs EncounterDeckTarget [(FromDeck, PutBack)] AnyCard (defer attrs)
+      search iid attrs EncounterDeckTarget [(FromDeck, PutBack)] AnyCard (defer attrs IsDraw)
       pure e
     SearchNoneFound iid (isTarget attrs -> True) -> do
       push $ drawEncounterCard iid attrs

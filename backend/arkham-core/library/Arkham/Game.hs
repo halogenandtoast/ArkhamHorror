@@ -3273,6 +3273,7 @@ instance Projection Investigator where
       InvestigatorMentalTrauma -> pure investigatorMentalTrauma
       InvestigatorPhysicalTrauma -> pure investigatorPhysicalTrauma
       InvestigatorBondedCards -> pure investigatorBondedCards
+      InvestigatorDrawing -> pure investigatorDrawing
       InvestigatorUnhealedHorrorThisRound -> pure investigatorUnhealedHorrorThisRound
       InvestigatorBeganRoundAt -> pure investigatorBeganRoundAt
       InvestigatorResources -> pure $ investigatorResources attrs

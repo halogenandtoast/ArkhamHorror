@@ -767,7 +767,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
 
     case foundStrategy' of
       DrawOrCommitFound {} -> error "CommitFound not implemented for EncounterDeck"
-      DrawOrPlayFound {} -> error "DrawOrPlayFound not implemented for EncounterDeck"
+      AddToHandOrPlayFound {} -> error "AddToHandOrPlayFound not implemented for EncounterDeck"
       RemoveFoundFromGame _ _ -> error "Unhandled"
       DrawFound who n -> do
         let
@@ -789,7 +789,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           $ if null choices
             then chooseOne player [Label "No cards found" []]
             else chooseUpToN player n "Do not draw more cards" choices
-      DeferSearchedToTarget searchTarget -> do
+      DeferSearchedToTarget searchTarget _ -> do
         pushBatch batchId
           $ if null targetCards
             then

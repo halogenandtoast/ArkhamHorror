@@ -18,7 +18,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Projection
-import Arkham.Trait (Trait (Spell))
 import Control.Lens (over)
 import Data.Data.Lens (biplate)
 
@@ -33,47 +32,30 @@ newtype TrueMagickReworkingReality5 = TrueMagickReworkingReality5 (AssetAttrs `W
 trueMagickReworkingReality5 :: AssetCard TrueMagickReworkingReality5
 trueMagickReworkingReality5 = asset (TrueMagickReworkingReality5 . (`with` Metadata Nothing)) Cards.trueMagickReworkingReality5
 
+-- This tooltip is handled specially
 instance HasAbilities TrueMagickReworkingReality5 where
   getAbilities (TrueMagickReworkingReality5 (With attrs _)) =
-    [ doesNotProvokeAttacksOfOpportunity
-        $ (controlledAbility attrs 1 HasTrueMagick $ ActionAbility [] mempty)
-          { abilityDisplayAsAction = False
-          , abilityTooltip = Just "Use True Magick"
-          }
-    , doesNotProvokeAttacksOfOpportunity
-        $ (controlledAbility attrs 1 HasTrueMagick $ FastAbility Free)
-          { abilityDisplayAsAction = False
-          , abilityTooltip = Just "Use True Magick"
-          }
-    , doesNotProvokeAttacksOfOpportunity
-        $ (controlledAbility attrs 1 HasTrueMagick $ ReactionAbility AnyWindow Free)
-          { abilityDisplayAsAction = False
-          , abilityTooltip = Just "Use True Magick"
-          }
+    [ withTooltip "Use True Magick"
+      $ doesNotProvokeAttacksOfOpportunity
+      $ controlledAbility attrs 1 HasTrueMagick aform
+    | aform <- [ActionAbility [] mempty, FastAbility Free, freeReaction AnyWindow]
     ]
 
 instance RunMessage TrueMagickReworkingReality5 where
   runMessage msg (TrueMagickReworkingReality5 (With attrs meta)) = runQueueT $ case msg of
     Do BeginRound -> pure . TrueMagickReworkingReality5 . (`with` meta) $ attrs & usesL . ix Charge %~ max 1
     UseCardAbility iid (isSource attrs -> True) 1 ws _ -> do
-      hand <-
-        fieldMap InvestigatorHand (filter (`cardMatch` (CardWithType AssetType <> CardWithTrait Spell))) iid
-      let
-        replaceAssetId = const attrs.id
-        replaceAssetIds = over biplate replaceAssetId
+      hand <- fieldMap InvestigatorHand (filterCards @CardMatcher (#asset <> #spell)) iid
+      let adjustCost = overCost (over biplate (const attrs.id))
       choices <- forMaybeM hand \card -> do
-        let tmpAsset = createAsset card (AssetId $ unsafeCardIdToUUID card.id)
-            tmpAbilities =
-              map
-                ( \ab -> case ab.source of
-                    AssetSource aid ->
-                      overCost replaceAssetIds
-                        $ ab {abilitySource = proxy (CardIdSource $ unsafeMakeCardId $ unAssetId aid) attrs}
-                    _ -> error "wrong source"
-                )
-                (getAbilities tmpAsset)
-        tmpAbilities' <- filterM (getCanPerformAbility iid ws) tmpAbilities
-        pure $ guard (notNull tmpAbilities') $> (card.id, tmpAbilities')
+        tmpAbilities <-
+          filterM
+            (getCanPerformAbility iid ws)
+            [ adjustCost $ ab {abilitySource = proxy (unsafeMakeCardId $ unAssetId aid) attrs}
+            | ab <- getAbilities (createAsset card $ unsafeFromCardId card.id)
+            , let AssetSource aid = ab.source
+            ]
+        pure $ guard (notNull tmpAbilities) $> (card.id, tmpAbilities)
 
       player <- getPlayer iid
       chooseOne
@@ -90,7 +72,7 @@ instance RunMessage TrueMagickReworkingReality5 where
       pure $ TrueMagickReworkingReality5 $ With (toAttrs iasset') (Metadata $ Just iasset')
     ResolvedAbility ab -> do
       case ab.source of
-        ProxySource (isSource attrs -> True) _ -> pure $ TrueMagickReworkingReality5 $ With attrs (Metadata Nothing)
+        ProxySource _ (isSource attrs -> True) -> pure $ TrueMagickReworkingReality5 $ With attrs (Metadata Nothing)
         _ -> case currentAsset meta of
           Just iasset -> do
             iasset' <- lift $ runMessage msg iasset

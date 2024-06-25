@@ -1,4 +1,4 @@
-module Arkham.Card.Id (CardId, nullCardId, unsafeMakeCardId, unsafeCardIdToUUID) where
+module Arkham.Card.Id (CardId, nullCardId, unsafeMakeCardId, unsafeCardIdToUUID, unsafeFromCardId) where
 
 import Arkham.Prelude
 import Data.UUID (nil)
@@ -13,6 +13,9 @@ unsafeMakeCardId = CardId
 
 unsafeCardIdToUUID :: CardId -> UUID
 unsafeCardIdToUUID (CardId uuid) = uuid
+
+unsafeFromCardId :: Coercible UUID a => CardId -> a
+unsafeFromCardId (CardId uuid) = coerce uuid
 
 nullCardId :: CardId
 nullCardId = CardId nil

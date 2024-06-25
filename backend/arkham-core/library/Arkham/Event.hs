@@ -481,6 +481,7 @@ allEvents =
     , SomeEventCard parallelFates2
     , --- survivor [eote]
       SomeEventCard juryRig
+    , SomeEventCard burnAfterReading1
     , --- rogue/mystic [eote]
       SomeEventCard etherealSlip
     , SomeEventCard etherealSlip2

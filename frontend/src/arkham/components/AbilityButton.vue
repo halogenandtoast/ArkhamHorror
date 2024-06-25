@@ -14,6 +14,10 @@ const props = withDefaults(defineProps<{
 
 const ability = computed<Ability | null>(() => "ability" in props.ability ? props.ability.ability : null)
 
+const isButtonText = computed(() => {
+  return (props.tooltipIsButtonText && tooltip.value) || (tooltip.value && tooltip.value.content == "Use True Magick")
+})
+
 const isAction = (action: Action) => {
   if (props.ability.tag === MessageType.ABILITY_LABEL) {
     if (props.ability.ability.displayAsAction ?? false) {
@@ -137,7 +141,8 @@ const isHaunted = computed(() => ability.value && ability.value.type.tag === "Ha
 const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
 
 const abilityLabel = computed(() => {
-  if (props.tooltipIsButtonText && tooltip.value) {
+  // don't use isButtonText
+  if (isButtonText.value) {
     return tooltip.value.content
   }
 
@@ -186,7 +191,7 @@ const abilityLabel = computed(() => {
 })
 
 const classObject = computed(() => {
-  if (props.tooltipIsButtonText && tooltip.value) {
+  if (isButtonText.value) {
     return {}
   }
   return {
@@ -212,7 +217,7 @@ const classObject = computed(() => {
     class="button"
     :class="classObject"
     @click="$emit('choose', ability)"
-    v-tooltip="!tooltipIsButtonText && tooltip"
+    v-tooltip="!isButtonText && tooltip"
     >{{abilityLabel}}</button>
 </template>
 

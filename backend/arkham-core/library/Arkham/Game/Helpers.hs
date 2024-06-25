@@ -28,7 +28,9 @@ import Arkham.Act.Types (Field (..))
 import Arkham.Action (Action)
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional (AdditionalActionType (BobJenkinsAction), additionalActionType)
-import Arkham.Asset.Types (Field (..))
+import {-# SOURCE #-} Arkham.Asset (createAsset)
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types (Asset, AssetAttrs (assetCardCode), Field (..))
 import Arkham.Attack
 import Arkham.Capability
 import Arkham.Card
@@ -82,7 +84,7 @@ import Arkham.Source
 import Arkham.Story.Types (Field (..))
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Trait (toTraits)
+import Arkham.Trait (Trait (Spell), toTraits)
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), defaultWindows, mkWhen)
 import Arkham.Window qualified as Window
@@ -986,6 +988,31 @@ passesCriteria
   -> Criterion
   -> m Bool
 passesCriteria iid mcard source' windows' = \case
+  Criteria.HasTrueMagick -> do
+    trueMagick <- selectJust $ Matcher.assetIs Assets.trueMagickReworkingReality5
+    attrs <- getAttrs @Asset trueMagick
+    hand <-
+      fieldMap
+        InvestigatorHand
+        (filter (`cardMatch` (Matcher.CardWithType AssetType <> Matcher.CardWithTrait Spell)))
+        iid
+    let
+      replaceAssetId = const attrs.id
+      replaceAssetIds = over biplate replaceAssetId
+    let handEntities =
+          map
+            (overAttrs (\attrs' -> attrs {assetCardCode = assetCardCode attrs'}) . (`createAsset` attrs.id))
+            hand
+    let handAbilities =
+          map
+            ( \ab -> case ab.source of
+                AssetSource aid ->
+                  overCost replaceAssetIds
+                    $ ab {abilitySource = proxy attrs (CardIdSource $ unsafeMakeCardId $ unAssetId aid)}
+                _ -> error "wrong source"
+            )
+            (concatMap getAbilities handEntities)
+    anyM (getCanPerformAbility iid windows') handAbilities
   Criteria.HasCalculation c valueMatcher -> do
     value <- calculate c
     gameValueMatches value valueMatcher
@@ -1126,6 +1153,7 @@ passesCriteria iid mcard source' windows' = \case
   Criteria.ControlsThis ->
     let
       go = \case
+        ProxySource (CardIdSource _) s -> go s
         ProxySource s _ -> go s
         AssetSource aid ->
           elem aid
@@ -1179,6 +1207,7 @@ passesCriteria iid mcard source' windows' = \case
   Criteria.ScenarioDeckWithCard key -> notNull <$> getScenarioDeck key
   Criteria.Uncontrolled -> case source of
     AssetSource aid -> fieldP AssetController isNothing aid
+    ProxySource (CardIdSource _) (AssetSource aid) -> fieldP AssetController isNothing aid
     ProxySource (AssetSource aid) _ -> fieldP AssetController isNothing aid
     _ -> error $ "missing ControlsThis check for source: " <> show source
   Criteria.OnSameLocation -> case source of
@@ -1210,6 +1239,8 @@ passesCriteria iid mcard source' windows' = \case
               pure $ isJust l1 && l1 == l2
         Just _ -> pure False
         Nothing -> pure False
+    ProxySource (CardIdSource _) (AssetSource aid) ->
+      liftA2 (==) (field AssetLocation aid) (field InvestigatorLocation iid)
     ProxySource (AssetSource aid) _ ->
       liftA2 (==) (field AssetLocation aid) (field InvestigatorLocation iid)
     _ -> error $ "missing OnSameLocation check for source: " <> show source
@@ -2875,6 +2906,7 @@ skillTestMatches iid source st = \case
   Matcher.UsingThis -> pure $ case skillTestSource st of
     AbilitySource (ProxySource _ s) _ -> s == source
     AbilitySource s _ -> s == source
+    ProxySource (CardIdSource _) s -> s == source
     ProxySource _ s -> s == source
     s -> s == source
   Matcher.SkillTestSourceMatches sourceMatcher ->
@@ -3179,6 +3211,7 @@ sourceMatches s = \case
       isAssetSource s' = case s' of
         AssetSource aid -> elem aid <$> select am
         AbilitySource (AssetSource aid) _ -> elem aid <$> select am
+        ProxySource (CardIdSource _) pSource -> isAssetSource pSource
         ProxySource pSource _ -> isAssetSource pSource
         BothSource lSource rSource -> orM [isAssetSource lSource, isAssetSource rSource]
         _ -> pure False

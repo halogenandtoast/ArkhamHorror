@@ -35,6 +35,9 @@ data Ability = Ability
   }
   deriving stock (Show, Ord, Data)
 
+instance HasCost Ability where
+  overCost f ab = ab {Arkham.Ability.Types.abilityType = overCost f (abilityType ab)}
+
 instance HasField "source" Ability Source where
   getField = abilitySource
 

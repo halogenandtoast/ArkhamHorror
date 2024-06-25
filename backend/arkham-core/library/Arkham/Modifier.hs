@@ -311,7 +311,6 @@ data ModifierType
   | TraitRestrictedModifier Trait ModifierType
   | TreatAllDamageAsDirect
   | TreatRevealedChaosTokenAs ChaosTokenFace
-  | TrueMagick
   | UseEncounterDeck ScenarioEncounterDeckKey -- The Wages of Sin
   | UseSkillInPlaceOf SkillType SkillType -- oh no, why are these similar, this let's you choose
   | UseSkillInsteadOf SkillType SkillType -- this doesn't

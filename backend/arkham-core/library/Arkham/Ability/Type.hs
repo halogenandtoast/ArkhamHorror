@@ -62,6 +62,9 @@ freeReaction window = ReactionAbility window Free
 forced :: WindowMatcher -> AbilityType
 forced = ForcedAbility
 
+class HasCost c where
+  overCost :: (Cost -> Cost) -> c -> c
+
 pattern FastAbility :: Cost -> AbilityType
 pattern FastAbility cost <- FastAbility' cost []
   where
@@ -82,6 +85,24 @@ data AbilityType
   | Cosmos
   | ForcedWhen {criteria :: Criterion, abilityType :: AbilityType}
   deriving stock (Show, Ord, Eq, Data)
+
+instance HasCost AbilityType where
+  overCost f = \case
+    FastAbility' cost actions -> FastAbility' (f cost) actions
+    ReactionAbility window cost -> ReactionAbility window (f cost)
+    ActionAbility actions cost -> ActionAbility actions (f cost)
+    ActionAbilityWithSkill actions skillType cost ->
+      ActionAbilityWithSkill actions skillType (f cost)
+    ActionAbilityWithBefore actions actionBefore cost ->
+      ActionAbilityWithBefore actions actionBefore (f cost)
+    SilentForcedAbility window -> SilentForcedAbility window
+    ForcedAbility window -> ForcedAbility window
+    ForcedAbilityWithCost window cost -> ForcedAbilityWithCost window (f cost)
+    AbilityEffect cost -> AbilityEffect (f cost)
+    Objective abilityType -> Objective (overCost f abilityType)
+    Haunted -> Haunted
+    Cosmos -> Cosmos
+    ForcedWhen criteria abilityType -> ForcedWhen criteria (overCost f abilityType)
 
 pattern Anytime :: AbilityType
 pattern Anytime <- SilentForcedAbility AnyWindow

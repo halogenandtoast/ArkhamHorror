@@ -206,6 +206,7 @@ data Criterion
   | Negate Criterion
   | DuringAction
   | AffectedByTarot
+  | HasTrueMagick
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not Criterion where

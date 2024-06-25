@@ -315,6 +315,7 @@ displayCostType = \case
     Lock -> pluralize n "Lock"
     Evidence -> tshow n <> " Evidence"
     Leyline -> pluralize n "Leyline"
+    Durability -> tshow n <> " Durability"
   DynamicUseCost _ uType _ -> case uType of
     Aether -> "X Aether"
     Ammo -> "X Ammo"
@@ -322,6 +323,7 @@ displayCostType = \case
     Secret -> "X Secrets"
     Charge -> "X Charges"
     Offering -> "X Offerings"
+    Durability -> "X Durability"
     Try -> "X Tries"
     Bounty -> "X Bounties"
     Whistle -> "X Whistles"
@@ -337,6 +339,7 @@ displayCostType = \case
     Secret -> tshow n <> "-" <> tshow m <> " Secrets"
     Charge -> tshow n <> "-" <> tshow m <> " Charges"
     Offering -> tshow n <> "-" <> tshow m <> " Offerings"
+    Durability -> tshow n <> "-" <> tshow m <> " Durability"
     Try -> tshow n <> "-" <> tshow m <> " Tries"
     Bounty -> tshow n <> "-" <> tshow m <> " Bounties"
     Whistle -> tshow n <> "-" <> tshow m <> " Whistles"

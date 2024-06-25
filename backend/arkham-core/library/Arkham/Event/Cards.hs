@@ -204,6 +204,7 @@ allPlayerEventCards =
       , iveHadWorse2
       , iveHadWorse4
       , joinTheCaravan1
+      , juryRig
       , keepFaith
       , keepFaith2
       , knowledgeIsPower
@@ -2924,6 +2925,15 @@ parallelFates2 =
     , cdLevel = Just 2
     , cdCriteria =
         Just $ exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck]
+    }
+
+juryRig :: CardDef
+juryRig =
+  (event "08074" "Jury-Rig" 0 Survivor)
+    { cdSkills = [#intellect, #combat]
+    , cdCardTraits = singleton Upgrade
+    , cdUses = Uses.Uses Uses.Durability (Static 3)
+    , cdCriteria = Just $ exists $ #item <> AssetControlledBy (affectsOthers AtYourLocation)
     }
 
 etherealSlip :: CardDef

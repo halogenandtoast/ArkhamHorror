@@ -21,6 +21,7 @@ data UseType
   | Offering
   | Leyline
   | Aether
+  | Durability
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''UseType)

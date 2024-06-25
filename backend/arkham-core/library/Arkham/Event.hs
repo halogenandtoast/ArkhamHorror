@@ -479,6 +479,8 @@ allEvents =
     , SomeEventCard windsOfPower1
     , SomeEventCard foresight1
     , SomeEventCard parallelFates2
+    , --- survivor [eote]
+      SomeEventCard juryRig
     , --- rogue/mystic [eote]
       SomeEventCard etherealSlip
     , SomeEventCard etherealSlip2

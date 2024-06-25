@@ -84,6 +84,7 @@ allPlayerEventCards =
       , bloodRite
       , breakingAndEntering
       , breakingAndEntering2
+      , burnAfterReading1
       , burningTheMidnightOil
       , buryThemDeep
       , butterflyEffect1
@@ -2934,6 +2935,19 @@ juryRig =
     , cdCardTraits = singleton Upgrade
     , cdUses = Uses.Uses Uses.Durability (Static 3)
     , cdCriteria = Just $ exists $ #item <> AssetControlledBy (affectsOthers AtYourLocation)
+    }
+
+burnAfterReading1 :: CardDef
+burnAfterReading1 =
+  (event "08076" "Burn After Reading" 1 Survivor)
+    { cdSkills = [#wild]
+    , cdCardTraits = singleton Insight
+    , cdCriteria =
+        Just
+          $ oneOf
+            [ exists $ InHandOf You <> basic (CardWithMaxLevel 5)
+            , canDiscoverCluesAtYourLocation
+            ]
     }
 
 etherealSlip :: CardDef

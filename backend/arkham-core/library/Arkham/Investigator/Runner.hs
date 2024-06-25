@@ -756,7 +756,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   --     then pure $ a & discardL %~ (card :) & handL %~ filter (/= PlayerCard card)
   --     else pure a
   Discarded (AssetTarget aid) _ (EncounterCard _) -> pure $ a & (slotsL %~ removeFromSlots aid)
+  Exile (CardIdTarget cid) -> do
+    let card = fromJustNote "must be in hand" $ find ((== cid) . toCardId) investigatorHand
+    push $ Exiled (CardIdTarget cid) card
+    pure a
   Exiled (AssetTarget aid) _ -> pure $ a & (slotsL %~ removeFromSlots aid)
+  Exiled (CardIdTarget cid) _ -> pure $ a & handL %~ filter ((/= cid) . toCardId)
   RemoveFromGame (AssetTarget aid) -> pure $ a & (slotsL %~ removeFromSlots aid)
   RemoveFromGame (CardIdTarget cid) -> pure $ a & cardsUnderneathL %~ filter ((/= cid) . toCardId)
   -- ChooseFightEnemy iid source mTarget skillType enemyMatcher isAction | iid == investigatorId -> do

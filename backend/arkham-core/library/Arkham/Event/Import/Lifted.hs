@@ -8,9 +8,11 @@ import Arkham.Event.Runner as X (
   IsEvent,
   event,
   getChoiceAmount,
+  getEventMeta,
   push,
   pushAll,
   pushM,
+  pushWhen,
   setMeta,
   usesL,
  )

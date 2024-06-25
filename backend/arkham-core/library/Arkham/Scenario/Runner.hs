@@ -593,20 +593,20 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   ShuffleCardsIntoDeck (Deck.EncounterDeckByKey deckKey) cards -> do
     let
       encounterCards = mapMaybe (preview _EncounterCard) cards
-      filterCards = filter (`notElem` cards)
+      filterOutCards = filter (`notElem` cards)
     deck' <-
       withDeckM
         (shuffleM . (<> encounterCards) . filter (`notElem` encounterCards))
         (a ^. encounterDeckLensFromKey deckKey)
     pure
       $ a
-      & (cardsUnderAgendaDeckL %~ filterCards)
-      & (cardsUnderActDeckL %~ filterCards)
-      & (cardsNextToActDeckL %~ filterCards)
-      & (cardsNextToAgendaDeckL %~ filterCards)
-      & (cardsUnderScenarioReferenceL %~ filterCards)
-      & (setAsideCardsL %~ filterCards)
-      & (victoryDisplayL %~ filterCards)
+      & (cardsUnderAgendaDeckL %~ filterOutCards)
+      & (cardsUnderActDeckL %~ filterOutCards)
+      & (cardsNextToActDeckL %~ filterOutCards)
+      & (cardsNextToAgendaDeckL %~ filterOutCards)
+      & (cardsUnderScenarioReferenceL %~ filterOutCards)
+      & (setAsideCardsL %~ filterOutCards)
+      & (victoryDisplayL %~ filterOutCards)
       & (encounterDeckLensFromKey deckKey .~ deck')
   RequestSetAsideCard target cardCode -> do
     let

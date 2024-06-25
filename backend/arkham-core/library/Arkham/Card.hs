@@ -181,6 +181,9 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   CardWithRevelation -> cdRevelation (toCardDef a) /= NoRevelation
   CardOwnedBy iid -> toCardOwner a == Just iid
 
+filterCards :: IsCardMatcher a => a -> [Card] -> [Card]
+filterCards matcher = filter (`cardMatch` matcher)
+
 instance IsCard PlayerCard where
   toCard = PlayerCard
   toCardId = pcId

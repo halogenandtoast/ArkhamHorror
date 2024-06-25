@@ -77,7 +77,11 @@ _AssetSource = prism' AssetSource $ \case
   _ -> Nothing
 
 instance HasField "asset" Source (Maybe AssetId) where
-  getField = preview _AssetSource
+  getField ab = case ab.source of
+    AssetSource aid -> Just aid
+    ProxySource (CardIdSource _) (AssetSource aid) -> Just aid
+    ProxySource (AssetSource aid) _ -> Just aid
+    _ -> Nothing
 
 $(deriveJSON defaultOptions ''Source)
 

@@ -49,7 +49,7 @@ instance RunMessage ArmageddonEffect where
   runMessage msg e@(ArmageddonEffect attrs) = case msg of
     RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
       let
-        handle assetId = do
+        handleIt assetId = do
           when (token.face == #curse) do
             enemies <- select $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource attrs.source
             stillInPlay <- selectAny $ AssetWithId assetId
@@ -70,8 +70,8 @@ instance RunMessage ArmageddonEffect where
               <> [ disable attrs
                  ]
       case attrs.source of
-        AbilitySource (AssetSource assetId) 1 -> handle assetId
-        AbilitySource (ProxySource _ (AssetSource assetId)) 1 -> handle assetId
+        AbilitySource (AssetSource assetId) 1 -> handleIt assetId
+        AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
         _ -> error "wrong source"
       pure e
     SkillTestEnds _ _ -> do

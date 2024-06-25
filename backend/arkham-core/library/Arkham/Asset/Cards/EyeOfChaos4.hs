@@ -49,8 +49,8 @@ eyeOfChaos4Effect = cardEffect EyeOfChaos4Effect Cards.eyeOfChaos4
 instance RunMessage EyeOfChaos4Effect where
   runMessage msg e@(EyeOfChaos4Effect attrs) = case msg of
     RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
-      case attrs.source of
-        AbilitySource (AssetSource assetId) 1 ->
+      let
+        handleIt assetId = do
           when (token.face == #curse) do
             lids <- select $ ConnectedLocation <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
             stillInPlay <- selectAny $ AssetWithId assetId
@@ -71,6 +71,9 @@ instance RunMessage EyeOfChaos4Effect where
                      ]
                 | stillInPlay || notNull lids
                 ]
+      case attrs.source of
+        AbilitySource (AssetSource assetId) 1 -> handleIt assetId
+        AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
         _ -> error "wrong source"
       pure e
     SkillTestEnds _ _ -> do

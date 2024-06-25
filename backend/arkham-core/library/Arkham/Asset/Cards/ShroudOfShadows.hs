@@ -62,8 +62,8 @@ shroudOfShadowsEffect = cardEffect ShroudOfShadowsEffect Cards.shroudOfShadows
 instance RunMessage ShroudOfShadowsEffect where
   runMessage msg e@(ShroudOfShadowsEffect attrs) = case msg of
     RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
-      case attrs.source of
-        AbilitySource (AssetSource assetId) 1 ->
+      let
+        handleIt assetId = do
           when (token.face == #curse) do
             targets <- getConnectedMoveLocations iid (toSource attrs)
             stillInPlay <- selectAny $ AssetWithId assetId
@@ -83,6 +83,9 @@ instance RunMessage ShroudOfShadowsEffect where
                 ]
               <> [ disable attrs
                  ]
+      case attrs.source of
+        AbilitySource (AssetSource assetId) 1 -> handleIt assetId
+        AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
         _ -> error "wrong source"
       pure e
     SkillTestEnds _ _ -> do

@@ -45,6 +45,9 @@ instance RunMessage BaseballBatEffect where
         AbilitySource (AssetSource assetId) 1 ->
           when (token.face `elem` [Skull, AutoFail])
             $ pushAll [toDiscardBy iid attrs.source assetId, disable attrs]
+        AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 ->
+          when (token.face `elem` [Skull, AutoFail])
+            $ pushAll [toDiscardBy iid attrs.source assetId, disable attrs]
         _ -> error "wrong source"
       pure e
     SkillTestEnds _ _ -> do

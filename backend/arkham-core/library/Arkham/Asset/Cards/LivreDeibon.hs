@@ -30,12 +30,10 @@ instance HasAbilities LivreDeibon where
         $ FastAbility (exhaust a)
     , withTooltip
         "{fast} Exhaust Livre d'Eibon: Commit the top card of your deck to an eligible skill test performed by an investigator at your location."
-        $ restrictedAbility
+        $ controlledAbility
           a
           2
-          ( ControlsThis
-              <> DuringSkillTest SkillTestAtYourLocation
-              <> ExtendedCardExists (TopOfDeckOf You <> EligibleForCurrentSkillTest)
+          ( DuringSkillTest SkillTestAtYourLocation <> exists (TopOfDeckOf You <> EligibleForCurrentSkillTest)
           )
         $ FastAbility (exhaust a)
     ]
@@ -44,7 +42,7 @@ instance RunMessage LivreDeibon where
   runMessage msg a@(LivreDeibon attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       handCards <- field InvestigatorHand iid
-      let drawing = drawCards iid (toAbilitySource attrs 1) 1
+      let drawing = drawCards iid (attrs.ability 1) 1
       player <- getPlayer iid
       push
         $ chooseOne player

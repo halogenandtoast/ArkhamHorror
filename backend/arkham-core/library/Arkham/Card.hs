@@ -181,6 +181,9 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   CardWithRevelation -> cdRevelation (toCardDef a) /= NoRevelation
   CardOwnedBy iid -> toCardOwner a == Just iid
 
+isNonWeakness :: IsCard a => a -> Bool
+isNonWeakness = (`cardMatch` NonWeakness)
+
 filterCards :: IsCardMatcher a => a -> [Card] -> [Card]
 filterCards matcher = filter (`cardMatch` matcher)
 

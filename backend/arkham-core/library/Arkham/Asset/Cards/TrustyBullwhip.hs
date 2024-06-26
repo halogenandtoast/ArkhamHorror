@@ -19,15 +19,12 @@ trustyBullwhip = asset TrustyBullwhip Cards.trustyBullwhip
 
 instance HasAbilities TrustyBullwhip where
   getAbilities (TrustyBullwhip a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbilityWithSkill [#fight] #agility
-        $ ActionCost 1
-    ]
+    [restrictedAbility a 1 ControlsThis $ ActionAbilityWithSkill [#fight] #agility $ ActionCost 1]
 
 instance RunMessage TrustyBullwhip where
   runMessage msg a@(TrustyBullwhip attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = toAbilitySource attrs 1
+      let source = attrs.ability 1
       chooseFight <- aspect iid source (#agility `InsteadOf` #combat) (mkChooseFight iid source)
       pushAll $ leftOr chooseFight
       pure a

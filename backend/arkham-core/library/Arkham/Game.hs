@@ -3603,6 +3603,10 @@ instance Query ExtendedCardMatcher where
         iids <- select who
         cards <- concatMapM (field InvestigatorCardsUnderneath) iids
         pure $ c `elem` cards
+      CardIsBeneathAsset assetMatcher -> do
+        assets <- select assetMatcher
+        cards <- concatMapM (field AssetCardsUnderneath) assets
+        pure $ c `elem` cards
       ExtendedCardWithOneOf ms -> anyM (matches' c) ms
       ExtendedCardMatches ms -> allM (matches' c) ms
 

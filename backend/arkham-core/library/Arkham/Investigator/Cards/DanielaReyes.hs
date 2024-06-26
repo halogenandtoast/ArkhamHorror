@@ -65,7 +65,7 @@ instance RunMessage DanielaReyes where
       canDamage <- enemy <=~> EnemyCanBeDamagedBySource (attrs.ability 1)
       canEvade <- enemy <=~> EnemyCanBeEvadedBy (attrs.ability 1)
       chooseOne iid
-        $ [Label "Deal 1 damage to the enemy" [EnemyDamage enemy $ nonAttack (toSource attrs) 1] | canDamage]
+        $ [Label "Deal 1 damage to the enemy" [EnemyDamage enemy $ nonAttack attrs 1] | canDamage]
         <> [Label "Automatically evade the enemy" [EnemyEvaded attrs.id enemy] | canEvade]
 
       pure i

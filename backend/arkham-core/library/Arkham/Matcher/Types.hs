@@ -651,6 +651,7 @@ instance Monoid TreacheryMatcher where
 data ExtendedCardMatcher
   = BasicCardMatch CardMatcher
   | CardIsBeneathInvestigator Who
+  | CardIsBeneathAsset AssetMatcher
   | CardWithCopyInHand Who
   | NotThisCard
   | ControlledBy Who
@@ -693,6 +694,9 @@ instance IsLabel "any" ExtendedCardMatcher where
 instance IsLabel "ally" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #ally
 
+instance IsLabel "skill" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #skill
+
 instance IsLabel "spell" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #spell
 
@@ -710,6 +714,9 @@ instance IsLabel "enemy" ExtendedCardMatcher where
 
 instance IsLabel "treachery" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #treachery
+
+instance IsLabel "eligible" ExtendedCardMatcher where
+  fromLabel = EligibleForCurrentSkillTest
 
 -- | Only relies on card state, can be used purely with `cardMatch`
 data CardMatcher

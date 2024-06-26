@@ -848,7 +848,8 @@ runGameMessage msg g = case msg of
             other -> other
           _ -> id
 
-    skills' <- filterMapM (fieldMap SkillPlacement (== Limbo) . toId) $ g ^. entitiesL . skillsL
+    skills' <-
+      filterMapM (fieldMap SkillPlacement (== Limbo) . toId) $ g ^. entitiesL . skillsL
 
     skillPairs <- for (mapToList skills') $ \(skillId, skill) -> do
       card <- field SkillCard skillId

@@ -366,6 +366,12 @@ chooseOrRunOne iid msgs = do
   player <- getPlayer iid
   push $ Msg.chooseOrRunOne player msgs
 
+continue :: ReverseQueue m => InvestigatorId -> [Message] -> m ()
+continue iid msgs = Arkham.Message.Lifted.chooseOne iid [Label "Continue" msgs]
+
+choose :: ReverseQueue m => InvestigatorId -> UI Message -> m ()
+choose iid msg = Arkham.Message.Lifted.chooseOne iid [msg]
+
 chooseOne :: ReverseQueue m => InvestigatorId -> [UI Message] -> m ()
 chooseOne iid msgs = do
   player <- getPlayer iid
@@ -628,3 +634,6 @@ afterSkillTest body = do
 costModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 costModifier source target modifier = push $ Msg.costModifier source target modifier
+
+placeUnderneath :: (ReverseQueue m, Targetable target) => target -> [Card] -> m ()
+placeUnderneath (toTarget -> target) cards = push $ Msg.PlaceUnderneath target cards

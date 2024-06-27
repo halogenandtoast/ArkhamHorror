@@ -238,6 +238,9 @@ instance HasField "skills" Card [SkillIcon] where
 instance HasField "cost" Card (Maybe CardCost) where
   getField = cdCost . toCardDef
 
+instance HasField "printedCost" Card Int where
+  getField = maybe 0 toPrintedCost . cdCost . toCardDef
+
 instance HasField "level" Card (Maybe Int) where
   getField = cdLevel . toCardDef
 

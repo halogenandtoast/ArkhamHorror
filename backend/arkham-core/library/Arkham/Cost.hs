@@ -28,6 +28,9 @@ import Arkham.Strategy
 import Arkham.Target
 import Data.Aeson.TH
 import Data.Text qualified as T
+import Control.Lens (Prism', prism', Plated(..), toListOf, cosmos)
+import Data.Data.Lens (uniplate)
+import GHC.Records
 
 totalActionCost :: Cost -> Int
 totalActionCost (ActionCost n) = n
@@ -67,6 +70,12 @@ increaseResourceCost (Costs (a : as)) y = case a of
   _ -> a <> increaseResourceCost (Costs as) y
 increaseResourceCost other _ = other
 
+discardPayments :: Payment -> [(Zone, Card)]
+discardPayments = concat . toListOf (cosmos . _DiscardPayment)
+
+instance HasField "discards" Payment [(Zone, Card)] where
+  getField = discardPayments
+
 data Payment
   = ActionPayment Int
   | AdditionalActionPayment
@@ -93,6 +102,14 @@ data Payment
   | NoPayment
   | SupplyPayment Supply
   deriving stock (Show, Eq, Ord, Data)
+
+instance Plated Payment where
+  plate = uniplate
+
+_DiscardPayment :: Prism' Payment [(Zone, Card)]
+_DiscardPayment = prism' DiscardPayment $ \case
+  DiscardPayment x -> Just x
+  _ -> Nothing
 
 data Cost
   = ActionCost Int

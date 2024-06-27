@@ -81,13 +81,13 @@ instance RunMessage RiteOfEquilibrium5 where
                ]
             <> [ApplyHealing (toSource attrs)]
         else do
-          let continue = DoStep (n - 1) msg'
+          let nextStep = DoStep (n - 1) msg'
 
           chooseOrRunOne iid
-            $ [ targetLabel investigator [HealHorrorDelayed (toTarget investigator) (toSource attrs) 1, continue]
+            $ [ targetLabel investigator [HealHorrorDelayed (toTarget investigator) (toSource attrs) 1, nextStep]
               | (investigator, _) <- healableInvestigators
               ]
-            <> [ targetLabel asset [HealHorrorDelayed (toTarget asset) (toSource attrs) 1, continue]
+            <> [ targetLabel asset [HealHorrorDelayed (toTarget asset) (toSource attrs) 1, nextStep]
                | (asset, _) <- healableAssets
                ]
 

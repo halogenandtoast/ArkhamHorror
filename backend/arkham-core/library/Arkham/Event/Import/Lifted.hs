@@ -15,6 +15,7 @@ import Arkham.Event.Runner as X (
   pushWhen,
   setMeta,
   usesL,
+  is,
  )
 import Arkham.Helpers.Modifiers as X (getModifiers)
 import Arkham.Message as X (
@@ -22,6 +23,7 @@ import Arkham.Message as X (
   toMessage,
   pattern PlaceClues,
   pattern PlayThisEvent,
+  pattern PassedThisSkillTest,
   pattern RemoveDoom,
   pattern UseThisAbility,
  )

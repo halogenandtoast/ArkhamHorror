@@ -45,6 +45,9 @@ totalResourceCost _ = 0
 totalResourcePayment :: Payment -> Int
 totalResourcePayment = sumOf (cosmos . _ResourcePayment)
 
+totalInvestigatorDamagePayment :: Payment -> Int
+totalInvestigatorDamagePayment = sumOf (cosmos . _InvestigatorDamagePayment)
+
 decreaseActionCost :: Cost -> Int -> Cost
 decreaseActionCost (ActionCost x) y = ActionCost $ max 0 (x - y)
 decreaseActionCost (Costs (a : as)) y = case a of
@@ -76,6 +79,9 @@ instance HasField "discards" Payment [(Zone, Card)] where
 
 instance HasField "resources" Payment Int where
   getField = totalResourcePayment
+
+instance HasField "investigatorDamage" Payment Int where
+  getField = totalInvestigatorDamagePayment
 
 data Payment
   = ActionPayment Int
@@ -115,6 +121,11 @@ _DiscardPayment = prism' DiscardPayment $ \case
 _ResourcePayment :: Prism' Payment Int
 _ResourcePayment = prism' ResourcePayment $ \case
   ResourcePayment x -> Just x
+  _ -> Nothing
+
+_InvestigatorDamagePayment :: Prism' Payment Int
+_InvestigatorDamagePayment = prism' InvestigatorDamagePayment $ \case
+  InvestigatorDamagePayment x -> Just x
   _ -> Nothing
 
 data Cost

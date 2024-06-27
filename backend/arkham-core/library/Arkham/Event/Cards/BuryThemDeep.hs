@@ -1,16 +1,8 @@
-module Arkham.Event.Cards.BuryThemDeep (
-  buryThemDeep,
-  BuryThemDeep (..),
-) where
+module Arkham.Event.Cards.BuryThemDeep (buryThemDeep, BuryThemDeep (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Timing qualified as Timing
-import Arkham.Window
-import Arkham.Window qualified as Window
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Window (defeatedEnemy)
 
 newtype BuryThemDeep = BuryThemDeep EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -20,14 +12,9 @@ buryThemDeep :: EventCard BuryThemDeep
 buryThemDeep = event BuryThemDeep Cards.buryThemDeep
 
 instance RunMessage BuryThemDeep where
-  runMessage msg e@(BuryThemDeep attrs) = case msg of
-    InvestigatorPlayEvent _ eid _ [Window Timing.After (Window.EnemyDefeated _ _ enemyId) _] _
-      | eid == toId attrs -> do
-          push $ AddToVictory (toTarget attrs)
-          replaceMessageMatching
-            \case
-              Discard _ (isSource attrs -> True) t -> enemyId `is` t
-              _ -> False
-            (const [AddToVictory (toTarget enemyId)])
-          pure e
-    _ -> BuryThemDeep <$> runMessage msg attrs
+  runMessage msg e@(BuryThemDeep attrs) = runQueueT $ case msg of
+    InvestigatorPlayEvent _ (is attrs -> True) _ (defeatedEnemy -> enemyId) _ -> do
+      addToVictory attrs
+      insteadOfMatching (\case Discard _ _ t -> enemyId `is` t; _ -> False) (addToVictory enemyId)
+      pure e
+    _ -> BuryThemDeep <$> lift (runMessage msg attrs)

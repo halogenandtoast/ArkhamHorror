@@ -23,7 +23,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Prelude
 import Arkham.Resolution
-import Arkham.Scenario.Runner hiding (assignEnemyDamage, story)
+import Arkham.Scenario.Runner hiding (assignEnemyDamage, drawEncounterCard, story)
 import Arkham.Scenario.Setup
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
 import Arkham.Token
@@ -141,7 +141,7 @@ instance RunMessage DarkSideOfTheMoon where
           alarmLevel <- getAlarmLevel iid
           skillValue <- getSkillTestModifiedSkillValue
           when (alarmLevel > skillValue) do
-            afterSkillTest $ push $ drawEncounterCard iid Cultist
+            afterSkillTest $ drawEncounterCard iid Cultist
         Tablet -> do
           placeTokens TabletEffect iid AlarmLevel 1
         _ -> pure ()

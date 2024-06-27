@@ -1,18 +1,9 @@
-module Arkham.Event.Cards.Contraband (
-  contraband,
-  Contraband (..),
-) where
+module Arkham.Event.Cards.Contraband (contraband, Contraband (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Asset.Types
-import Arkham.Asset.Uses
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Investigator
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Use
 import Arkham.Matcher
-import Arkham.Projection
 
 newtype Contraband = Contraband EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -22,41 +13,17 @@ contraband :: EventCard Contraband
 contraband = event Contraband Cards.contraband
 
 instance RunMessage Contraband where
-  runMessage msg e@(Contraband attrs@EventAttrs {..}) = case msg of
-    PlayThisEvent iid eid | eid == eventId -> do
-      investigatorIds <- select =<< guardAffectsColocated iid
+  runMessage msg e@(Contraband attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      investigators <- select $ affectsOthers $ colocatedWith iid
+      assets <- concatForM [Ammo, Supply] \k -> do
+        select (AssetWithUseType k <> AssetNotAtUseLimit <> mapOneOf assetControlledBy investigators)
+          >>= traverse (\aid -> (k,aid,) <$> getAssetUses k aid)
 
-      ammoAssets <-
-        select
-          $ AssetWithUseType Ammo
-          <> AssetNotAtUseLimit
-          <> oneOf (map assetControlledBy investigatorIds)
-
-      ammoAssetsWithUseCount <-
-        map (\(c, aid) -> (Ammo, c, aid))
-          <$> for
-            ammoAssets
-            (\aid -> (,aid) <$> fieldMap AssetUses (findWithDefault 0 Ammo) aid)
-
-      supplyAssets <-
-        select
-          $ AssetWithUseType Supply
-          <> AssetNotAtUseLimit
-          <> oneOf (map assetControlledBy investigatorIds)
-
-      supplyAssetsWithUseCount <-
-        map (\(c, aid) -> (Supply, c, aid))
-          <$> for
-            supplyAssets
-            (\aid -> (,aid) <$> fieldMap AssetUses (findWithDefault 0 Supply) aid)
-
-      player <- getPlayer iid
-      pushAll
-        [ chooseOne
-            player
-            [ targetLabel assetId [AddUses assetId useType' assetUseCount]
-            | (useType', assetUseCount, assetId) <- ammoAssetsWithUseCount <> supplyAssetsWithUseCount
-            ]
+      chooseOne
+        iid
+        [ targetLabel assetId [AddUses assetId useType' assetUseCount]
+        | (useType', assetId, assetUseCount) <- assets
         ]
       pure e
-    _ -> Contraband <$> runMessage msg attrs
+    _ -> Contraband <$> lift (runMessage msg attrs)

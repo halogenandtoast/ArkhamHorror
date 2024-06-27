@@ -1,13 +1,11 @@
 module Arkham.Event.Cards.BellyOfTheBeast (bellyOfTheBeast, BellyOfTheBeast (..)) where
 
-import Arkham.Classes
 import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -24,9 +22,9 @@ toEnemyId ((windowType -> Window.SuccessfulEvadeEnemy _ enemyId _) : _) = enemyI
 toEnemyId (_ : xs) = toEnemyId xs
 
 instance RunMessage BellyOfTheBeast where
-  runMessage msg e@(BellyOfTheBeast attrs) = case msg of
+  runMessage msg e@(BellyOfTheBeast attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ (toEnemyId -> enemyId) _ | eid == toId attrs -> do
       mlid <- selectOne $ locationWithEnemy enemyId
       for_ mlid $ \lid -> push $ Msg.DiscoverClues iid $ discover lid attrs 1
       pure e
-    _ -> BellyOfTheBeast <$> runMessage msg attrs
+    _ -> BellyOfTheBeast <$> lift (runMessage msg attrs)

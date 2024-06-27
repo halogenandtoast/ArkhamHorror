@@ -1,24 +1,17 @@
-module Arkham.Event.Cards.BloodRite (
-  bloodRite,
-  BloodRite (..),
-) where
+module Arkham.Event.Cards.BloodRite (bloodRite, BloodRite (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Card
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query (getPlayer)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Message qualified as Msg
 import Arkham.Projection
-import Data.Aeson
-import Data.Aeson.KeyMap qualified as KeyMap
 
 newtype BloodRite = BloodRite EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -28,68 +21,49 @@ bloodRite :: EventCard BloodRite
 bloodRite = event BloodRite Cards.bloodRite
 
 bloodRiteLimit :: HasGame m => EventAttrs -> m Int
-bloodRiteLimit attrs = do
-  modifiers' <- liftA2 (<>) (getModifiers (toCardId attrs)) (getModifiers attrs)
-  let
-    updateLimit :: Int -> ModifierType -> Int
-    updateLimit x (MetaModifier (Object o)) =
-      case fromJSON <$> KeyMap.lookup "use3" o of
-        Just (Success True) -> 3
-        _ -> x
-    updateLimit x _ = x
-
-  pure $ foldl' updateLimit 2 modifiers'
+bloodRiteLimit attrs = getMetaMaybe 2 (bothTarget attrs.cardId attrs) "use3"
 
 instance RunMessage BloodRite where
-  runMessage msg e@(BloodRite attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ windows _ | eid == eventId -> do
-      limit <- bloodRiteLimit attrs
-      let drawing = drawCards iid attrs limit
-      pushAll
-        [ drawing
-        , PayForCardAbility iid (EventSource eid) windows 1 (DiscardCardPayment [])
-        ]
+  runMessage msg e@(BloodRite attrs) = runQueueT $ case msg of
+    InvestigatorPlayEvent iid (is attrs -> True) _ windows _ -> do
+      drawCardsIfCan iid attrs =<< bloodRiteLimit attrs
+      push $ PayForCardAbility iid (toSource attrs) windows 1 (DiscardCardPayment [])
       pure e
-    PayForCardAbility iid source windows 1 payment@(DiscardCardPayment discardedCards) | isSource attrs source -> do
+    PayForCardAbility iid (isSource attrs -> True) windows 1 payment@(DiscardCardPayment discardedCards) -> do
       limit <- bloodRiteLimit attrs
       if length discardedCards == limit
-        then push (UseCardAbility iid source 1 windows payment)
+        then push $ UseCardAbility iid (toSource attrs) 1 windows payment
         else do
           cards <- fieldMap InvestigatorHand (filter isDiscardable) iid
-          player <- getPlayer iid
-          push
-            $ chooseOne player
+          chooseOne iid
             $ [ targetLabel
-                (toCardId card)
-                [ DiscardCard iid (toSource attrs) (toCardId card)
-                , PayForCardAbility iid source windows 1 (DiscardCardPayment $ card : discardedCards)
+                card
+                [ DiscardCard iid (toSource attrs) card.id
+                , PayForCardAbility iid (toSource attrs) windows 1 (DiscardCardPayment $ card : discardedCards)
                 ]
               | card <- cards
               ]
             <> [ Label
-                  ( "Continue having discarded "
-                      <> tshow (length discardedCards)
-                      <> " cards"
-                  )
-                  [UseCardAbility iid source 1 windows payment]
+                  ("Continue having discarded " <> tshow (length discardedCards) <> " cards")
+                  [UseCardAbility iid (toSource attrs) 1 windows payment]
                ]
       pure e
-    UseCardAbility iid source 1 _ (DiscardCardPayment xs) | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 1 _ (DiscardCardPayment xs) -> do
       enemyIds <- select $ enemyAtLocationWith iid
       canDealDamage <- withoutModifier iid CannotDealDamage
       player <- getPlayer iid
       pushAll
         $ replicate (length xs)
-        $ chooseOne player
-        $ [Label "Gain Resource" [TakeResources iid 1 (toAbilitySource attrs 1) False]]
+        $ Msg.chooseOne player
+        $ [Label "Gain Resource" [TakeResources iid 1 (attrs.ability 1) False]]
         <> [ Label "Spend Resource and Deal 1 Damage To Enemy At Your Location"
             $ [ SpendResources iid 1
-              , chooseOne
+              , Msg.chooseOne
                   player
-                  [targetLabel enemyId [EnemyDamage enemyId $ nonAttack source 1] | enemyId <- enemyIds]
+                  [targetLabel enemy [EnemyDamage enemy $ nonAttack (attrs.ability 1) 1] | enemy <- enemyIds]
               ]
            | canDealDamage
            , notNull enemyIds
            ]
       pure e
-    _ -> BloodRite <$> runMessage msg attrs
+    _ -> BloodRite <$> lift (runMessage msg attrs)

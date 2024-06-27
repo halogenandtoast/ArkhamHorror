@@ -1,15 +1,9 @@
-module Arkham.Event.Cards.CloseCall2 (
-  closeCall2,
-  CloseCall2 (..),
-) where
+module Arkham.Event.Cards.CloseCall2 (closeCall2, CloseCall2 (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Deck
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Window
-import Arkham.Window qualified as Window
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Window (evadedEnemy)
 
 newtype CloseCall2 = CloseCall2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -19,8 +13,8 @@ closeCall2 :: EventCard CloseCall2
 closeCall2 = event CloseCall2 Cards.closeCall2
 
 instance RunMessage CloseCall2 where
-  runMessage msg e@(CloseCall2 attrs) = case msg of
-    InvestigatorPlayEvent _iid eid _ [(windowType -> Window.EnemyEvaded _ enemyId)] _ | attrs `is` eid -> do
-      push $ ShuffleBackIntoEncounterDeck (toTarget enemyId)
+  runMessage msg e@(CloseCall2 attrs) = runQueueT $ case msg of
+    InvestigatorPlayEvent _iid (is attrs -> True) _ (evadedEnemy -> enemyId) _ -> do
+      shuffleIntoDeck EncounterDeck enemyId
       pure e
-    _ -> CloseCall2 <$> runMessage msg attrs
+    _ -> CloseCall2 <$> lift (runMessage msg attrs)

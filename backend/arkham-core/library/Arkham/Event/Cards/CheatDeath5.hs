@@ -1,17 +1,14 @@
-module Arkham.Event.Cards.CheatDeath5 (
-  cheatDeath5,
-  CheatDeath5 (..),
-) where
+module Arkham.Event.Cards.CheatDeath5 (cheatDeath5, CheatDeath5 (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Classes.HasQueue (replaceMessageMatching)
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Message qualified as Msg
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Strategy
 
 newtype CheatDeath5 = CheatDeath5 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -21,33 +18,24 @@ cheatDeath5 :: EventCard CheatDeath5
 cheatDeath5 = eventWith CheatDeath5 Cards.cheatDeath5 $ afterPlayL .~ RemoveThisFromGame
 
 instance RunMessage CheatDeath5 where
-  runMessage msg e@(CheatDeath5 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      enemies <- select $ EnemyIsEngagedWith $ InvestigatorWithId iid
-      treacheries <- select $ TreacheryInThreatAreaOf $ InvestigatorWithId iid
-      locations <- getCanMoveToMatchingLocations iid attrs $ LocationWithoutEnemies
-      yourTurn <- elem iid <$> select TurnInvestigator
-
-      replaceMessageMatching
+  runMessage msg e@(CheatDeath5 attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      lift $ replaceMessageMatching
+        (\case InvestigatorWhenDefeated _ iid' -> iid == iid'; _ -> False)
         \case
-          InvestigatorWhenDefeated _ iid' -> iid == iid'
-          _ -> False
-        \case
-          InvestigatorWhenDefeated source' _ -> [checkDefeated source' iid]
+          InvestigatorWhenDefeated source' _ -> [Msg.checkDefeated source' iid]
           _ -> error "invalid match"
 
-      canHealHorror <- canHaveHorrorHealed attrs iid
-      healable <- canHaveDamageHealed attrs iid
-      player <- getPlayer iid
+      selectEach (enemyEngagedWith iid) (push . DisengageEnemy iid)
+      selectEach (treacheryInThreatAreaOf iid) $ toDiscardBy iid attrs
 
-      pushAll
-        $ map (DisengageEnemy iid) enemies
-        <> map (toDiscardBy iid attrs) treacheries
-        <> [HealHorror (InvestigatorTarget iid) (toSource attrs) 2 | canHealHorror]
-        <> [HealDamage (InvestigatorTarget iid) (toSource attrs) 2 | healable]
-        <> [ chooseOrRunOne player $ targetLabels locations (only . MoveTo . move (toSource attrs) iid)
-           | notNull locations
-           ]
-        <> [ChooseEndTurn iid | yourTurn]
+      pushWhenM (canHaveHorrorHealed attrs iid) $ HealHorror (toTarget iid) (toSource attrs) 2
+      pushWhenM (canHaveDamageHealed attrs iid) $ HealDamage (toTarget iid) (toSource attrs) 2
+
+      locations <- getCanMoveToMatchingLocations iid attrs LocationWithoutEnemies
+      when (notNull locations) do
+        chooseOrRunOne iid $ targetLabels locations (only . MoveTo . move (toSource attrs) iid)
+
+      whenM (iid <=~> TurnInvestigator) $ push $ ChooseEndTurn iid
       pure e
-    _ -> CheatDeath5 <$> runMessage msg attrs
+    _ -> CheatDeath5 <$> lift (runMessage msg attrs)

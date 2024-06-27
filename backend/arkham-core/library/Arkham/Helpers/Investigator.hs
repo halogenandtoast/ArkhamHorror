@@ -23,6 +23,7 @@ import Arkham.Helpers.Slot
 import Arkham.Helpers.Source
 import Arkham.Id
 import Arkham.Investigator.Types
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Message (Message (InvestigatorMulligan))
 import Arkham.Name
@@ -149,7 +150,8 @@ getCanDiscoverClues
   :: HasGame m => IsInvestigate -> InvestigatorId -> LocationId -> m Bool
 getCanDiscoverClues isInvestigation iid lid = do
   modifiers <- getModifiers (toTarget iid)
-  not <$> anyM match modifiers
+  hasClues <- fieldSome LocationClues lid
+  (&& hasClues) . not <$> anyM match modifiers
  where
   match CannotDiscoverClues {} = pure True
   match (CannotDiscoverCluesAt matcher) = elem lid <$> select matcher

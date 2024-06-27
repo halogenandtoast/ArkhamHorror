@@ -38,3 +38,12 @@ mkChooseFightMatch iid source matcher = do
       _ -> False
 
   pure $ chooseFight {chooseFightEnemyMatcher = matcher, chooseFightOverride = isOverriden}
+
+mkFightEnemy
+  :: (Sourceable source, HasGame m, AsId e, IdOf e ~ EnemyId)
+  => InvestigatorId
+  -> source
+  -> e
+  -> m ChooseFight
+mkFightEnemy iid source enemy = do
+  mkChooseFight iid source <&> \cf -> cf {chooseFightEnemyMatcher = EnemyWithId (asId enemy)}

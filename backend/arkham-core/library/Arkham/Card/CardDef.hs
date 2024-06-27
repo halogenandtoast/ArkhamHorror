@@ -161,6 +161,9 @@ instance HasField "fastWindow" CardDef (Maybe WindowMatcher) where
 instance HasField "keywords" CardDef (Set Keyword) where
   getField = cdKeywords
 
+instance HasField "printedCost" CardDef Int where
+  getField = maybe 0 toPrintedCost . cdCost
+
 instance Exists CardDef where
   exists def = case cdCardType def of
     AssetType -> exists $ assetIs def
@@ -241,8 +244,8 @@ instance IsCardMatcher CardDef where
 instance IsLocationMatcher CardDef where
   toLocationMatcher = locationIs
 
-isSignature :: CardDef -> Bool
-isSignature = any isSignatureDeckRestriction . cdDeckRestrictions
+isSignature :: HasCardDef a => a -> Bool
+isSignature = any isSignatureDeckRestriction . cdDeckRestrictions . toCardDef
  where
   isSignatureDeckRestriction = \case
     Signature _ -> True

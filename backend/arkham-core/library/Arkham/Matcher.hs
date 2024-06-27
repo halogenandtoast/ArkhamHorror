@@ -55,6 +55,9 @@ affectsOthers matcher =
 class OneOf a where
   oneOf :: [a] -> a
 
+mapOneOf :: OneOf b => (a -> b) -> [a] -> b
+mapOneOf f = oneOf . map f
+
 instance OneOf SkillTestMatcher where
   oneOf = SkillTestOneOf
 
@@ -229,6 +232,10 @@ locationWithEnemy = LocationWithEnemy . EnemyWithId . asId
 locationWithInvestigator :: InvestigatorId -> LocationMatcher
 locationWithInvestigator = LocationWithInvestigator . InvestigatorWithId
 {-# INLINE locationWithInvestigator #-}
+
+locationWithLowerPrintedShroudThan :: (AsId a, IdOf a ~ LocationId) => a -> LocationMatcher
+locationWithLowerPrintedShroudThan = LocationWithLowerPrintedShroudThan . LocationWithId . asId
+{-# INLINE locationWithLowerPrintedShroudThan #-}
 
 locationWithDiscoverableCluesBy :: InvestigatorId -> LocationMatcher
 locationWithDiscoverableCluesBy =

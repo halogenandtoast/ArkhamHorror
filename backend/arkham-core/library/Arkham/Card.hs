@@ -239,13 +239,16 @@ instance HasField "cost" Card (Maybe CardCost) where
   getField = cdCost . toCardDef
 
 instance HasField "printedCost" Card Int where
-  getField = maybe 0 toPrintedCost . cdCost . toCardDef
+  getField = (.printedCost) . toCardDef
 
 instance HasField "level" Card (Maybe Int) where
   getField = cdLevel . toCardDef
 
 instance HasField "kind" Card CardType where
   getField = cdCardType . toCardDef
+
+instance HasField "owner" Card (Maybe InvestigatorId) where
+  getField = toCardOwner
 
 instance Eq Card where
   a == b = toCardId a == toCardId b

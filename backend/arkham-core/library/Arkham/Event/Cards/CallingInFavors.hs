@@ -1,20 +1,14 @@
-module Arkham.Event.Cards.CallingInFavors (
-  callingInFavors,
-  callingInFavorsEffect,
-  CallingInFavors (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.CallingInFavors (callingInFavors, callingInFavorsEffect, CallingInFavors (..)) where
 
 import Arkham.Asset.Types (Field (..))
-import Arkham.Card
-import Arkham.Classes
-import Arkham.Effect.Runner
+import Arkham.Classes.HasQueue (evalQueueT)
+import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (PlayCard)
 import Arkham.Projection
+import Arkham.Strategy
 
 newtype CallingInFavors = CallingInFavors EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -24,26 +18,17 @@ callingInFavors :: EventCard CallingInFavors
 callingInFavors = event CallingInFavors Cards.callingInFavors
 
 instance RunMessage CallingInFavors where
-  runMessage msg e@(CallingInFavors attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      allies <- select $ #ally <> assetControlledBy iid
-      targetsWithCosts <- for allies \ally -> do
-        cardDef <- field AssetCardDef ally
-        pure (AssetTarget ally, maybe 0 toPrintedCost $ cdCost cardDef)
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ TargetLabel
-            target
-            [ ReturnToHand iid target
-            , createCardEffect Cards.callingInFavors (Just $ EffectInt cost) attrs iid
-            , search iid attrs iid [fromTopOfDeck 9] #ally (PlayFound iid 1)
-            ]
-          | (target, cost) <- targetsWithCosts
-          ]
+  runMessage msg e@(CallingInFavors attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      choices <- selectForToSnd (#ally <> assetControlledBy iid) \ally -> evalQueueT do
+        returnToHand iid ally
+        cost <- fieldMap AssetCardDef (.printedCost) ally
+        createCardEffect Cards.callingInFavors (effectInt cost) attrs iid
+        search iid attrs iid [fromTopOfDeck 9] #ally (PlayFound iid 1)
+
+      chooseOne iid $ map (uncurry targetLabel) choices
       pure e
-    _ -> CallingInFavors <$> runMessage msg attrs
+    _ -> CallingInFavors <$> lift (runMessage msg attrs)
 
 newtype CallingInFavorsEffect = CallingInFavorsEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -54,14 +39,12 @@ callingInFavorsEffect = cardEffect CallingInFavorsEffect Cards.callingInFavors
 
 instance HasModifiersFor CallingInFavorsEffect where
   getModifiersFor (InvestigatorTarget iid) (CallingInFavorsEffect attrs) | iid `is` attrs.source = do
-    case effectMetadata attrs of
-      Just (EffectInt n) -> pure $ toModifiers attrs [ReduceCostOf (#asset <> #ally) n]
+    case attrs.meta of
+      Just (EffectInt n) -> modified attrs [ReduceCostOf (#asset <> #ally) n]
       _ -> error "Invalid metadata"
   getModifiersFor _ _ = pure []
 
 instance RunMessage CallingInFavorsEffect where
-  runMessage msg e@(CallingInFavorsEffect attrs) = case msg of
-    Discard _ _ (EventTarget eid) | EventSource eid == effectSource attrs -> do
-      push $ disable attrs
-      pure e
-    _ -> CallingInFavorsEffect <$> runMessage msg attrs
+  runMessage msg e@(CallingInFavorsEffect attrs) = runQueueT $ case msg of
+    Discard _ _ (EventTarget eid) | EventSource eid == attrs.source -> disableReturn e
+    _ -> CallingInFavorsEffect <$> lift (runMessage msg attrs)

@@ -32,7 +32,8 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message hiding (story)
 import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Phase (Phase)
+import Arkham.Prelude hiding (pred)
 import Arkham.Query
 import Arkham.ScenarioLogKey
 import Arkham.SkillType qualified as SkillType
@@ -261,6 +262,9 @@ createEnemyAt c lid = do
   push msg
   pure enemyId
 
+createEnemyAtLocationMatching_ :: (ReverseQueue m, IsCard card) => card -> LocationMatcher -> m ()
+createEnemyAtLocationMatching_ c = Msg.pushM . Msg.createEnemyAtLocationMatching_ (toCard c)
+
 createSetAsideEnemy
   :: (ReverseQueue m, IsEnemyCreationMethod creation) => CardDef -> creation -> m ()
 createSetAsideEnemy def creation = createSetAsideEnemyWith def creation id
@@ -343,6 +347,16 @@ selectEach matcher f = select matcher >>= traverse_ f
 selectForEach :: (Query a, ReverseQueue m) => a -> (QueryElement a -> m b) -> m [b]
 selectForEach matcher f = select matcher >>= traverse f
 
+selectForToSnd
+  :: (Query a, ReverseQueue m) => a -> (QueryElement a -> m b) -> m [(QueryElement a, b)]
+selectForToSnd matcher f = select matcher >>= (`forToSnd` f)
+
+selectWithNonNull
+  :: (HasCallStack, Query a, ReverseQueue m) => a -> ([QueryElement a] -> m ()) -> m ()
+selectWithNonNull matcher f = do
+  xs <- select matcher
+  unless (null xs) (f xs)
+
 advanceAgendaDeck :: ReverseQueue m => AgendaAttrs -> m ()
 advanceAgendaDeck attrs = push $ AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
 
@@ -418,6 +432,12 @@ addToHand iid cards = do
   for_ cards obtainCard
   push $ AddToHand iid (map toCard cards)
 
+returnToHand :: (Targetable a, ReverseQueue m) => InvestigatorId -> a -> m ()
+returnToHand iid = push . ReturnToHand iid . toTarget
+
+addToVictory :: (ReverseQueue m, Targetable target) => target -> m ()
+addToVictory = push . AddToVictory . toTarget
+
 obtainCard :: (IsCard a, ReverseQueue m) => a -> m ()
 obtainCard = push . ObtainCard . toCard
 
@@ -449,6 +469,15 @@ flipOver iid a = push $ Msg.Flip iid (toSource a) (toTarget a)
 flipOverBy
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 flipOverBy iid source target = push $ Msg.Flip iid (toSource source) (toTarget target)
+
+nextPhaseModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => Phase
+  -> source
+  -> target
+  -> ModifierType
+  -> m ()
+nextPhaseModifier phase source target modifier = push $ Msg.nextPhaseModifier phase source target modifier
 
 skillTestModifiers
   :: forall target source m
@@ -501,6 +530,9 @@ gainResourcesIfCan :: (ReverseQueue m, Sourceable source) => InvestigatorId -> s
 gainResourcesIfCan iid source n = do
   mmsg <- Msg.gainResourcesIfCan iid source n
   for_ mmsg push
+
+drawEncounterCard :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
+drawEncounterCard i source = push $ Msg.drawEncounterCards i source 1
 
 drawCardsIfCan
   :: (ReverseQueue m, Sourceable source)
@@ -570,7 +602,7 @@ eventModifier
 eventModifier source target modifier = push $ Msg.eventModifier source target modifier
 
 cancelRevelation :: (ReverseQueue m, Sourceable a) => a -> m ()
-cancelRevelation a = push $ CancelNext (toSource a) RevelationMessage
+cancelRevelation a = push $ CancelRevelation (toSource a)
 
 cardResolutionModifier
   :: (ReverseQueue m, IsCard card, Sourceable source, Targetable target)
@@ -598,6 +630,15 @@ insteadOf
 insteadOf msg f = do
   msgs <- evalQueueT f
   lift $ replaceMessageMatching (== msg) (const msgs)
+
+insteadOfMatching
+  :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m))
+  => (Message -> Bool)
+  -> QueueT Message (t m) a
+  -> t m ()
+insteadOfMatching pred f = do
+  msgs <- evalQueueT f
+  lift $ replaceMessageMatching pred (const msgs)
 
 don't :: (MonadTrans t, HasQueue Message m) => Message -> t m ()
 don't msg = lift $ popMessageMatching_ (== msg)
@@ -646,3 +687,9 @@ placeUnderneath (toTarget -> target) cards = push $ Msg.PlaceUnderneath target c
 
 gainActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 gainActions iid (toSource -> source) n = push $ Msg.GainActions iid source n
+
+nonAttackEnemyDamage :: (ReverseQueue m, Sourceable a) => a -> Int -> EnemyId -> m ()
+nonAttackEnemyDamage source damage enemy = push $ Msg.EnemyDamage enemy (nonAttack source damage)
+
+exile :: (ReverseQueue m, Targetable target) => target -> m ()
+exile (toTarget -> target) = push $ Msg.Exile target

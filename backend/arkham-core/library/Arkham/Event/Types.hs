@@ -293,6 +293,9 @@ makeLensesWith suffixedFields ''EventAttrs
 setMeta :: ToJSON a => a -> EventAttrs -> EventAttrs
 setMeta a = metaL .~ toJSON a
 
+overMeta :: (FromJSON a, ToJSON a) => (a -> a) -> EventAttrs -> EventAttrs
+overMeta f = metaL %~ (\m -> toJSON (f $ toResult m))
+
 getEventMeta :: FromJSON a => EventAttrs -> Maybe a
 getEventMeta a = case fromJSON (eventMeta a) of
   Error _ -> Nothing

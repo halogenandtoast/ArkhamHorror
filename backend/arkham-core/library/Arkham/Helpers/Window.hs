@@ -13,6 +13,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.SkillTest.Base (SkillTest)
 import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
 import Arkham.Window
@@ -20,6 +21,9 @@ import Arkham.Window qualified as Window
 
 checkWindow :: HasGame m => Window -> m Message
 checkWindow = checkWindows . pure
+
+checkAfter :: HasGame m => WindowType -> m Message
+checkAfter = checkWindows . pure . mkAfter
 
 checkWindows :: HasGame m => [Window] -> m Message
 checkWindows windows' = do
@@ -227,3 +231,9 @@ replaceWindowMany f wf = do
               ws
         ]
       _ -> error "impossible"
+
+windowSkillTest :: [Window] -> Maybe SkillTest
+windowSkillTest = \case
+  [] -> Nothing
+  ((windowType -> Window.InitiatedSkillTest st) : _) -> Just st
+  (_ : rest) -> windowSkillTest rest

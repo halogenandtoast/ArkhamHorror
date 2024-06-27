@@ -26,10 +26,10 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
+import Control.Lens (Plated (..), Prism', cosmos, prism', sumOf, toListOf)
 import Data.Aeson.TH
-import Data.Text qualified as T
-import Control.Lens (Prism', prism', Plated(..), toListOf, cosmos)
 import Data.Data.Lens (uniplate)
+import Data.Text qualified as T
 import GHC.Records
 
 totalActionCost :: Cost -> Int
@@ -43,9 +43,7 @@ totalResourceCost (Costs xs) = sum $ map totalResourceCost xs
 totalResourceCost _ = 0
 
 totalResourcePayment :: Payment -> Int
-totalResourcePayment (ResourcePayment n) = n
-totalResourcePayment (Payments xs) = sum $ map totalResourcePayment xs
-totalResourcePayment _ = 0
+totalResourcePayment = sumOf (cosmos . _ResourcePayment)
 
 decreaseActionCost :: Cost -> Int -> Cost
 decreaseActionCost (ActionCost x) y = ActionCost $ max 0 (x - y)
@@ -75,6 +73,9 @@ discardPayments = concat . toListOf (cosmos . _DiscardPayment)
 
 instance HasField "discards" Payment [(Zone, Card)] where
   getField = discardPayments
+
+instance HasField "resources" Payment Int where
+  getField = totalResourcePayment
 
 data Payment
   = ActionPayment Int
@@ -109,6 +110,11 @@ instance Plated Payment where
 _DiscardPayment :: Prism' Payment [(Zone, Card)]
 _DiscardPayment = prism' DiscardPayment $ \case
   DiscardPayment x -> Just x
+  _ -> Nothing
+
+_ResourcePayment :: Prism' Payment Int
+_ResourcePayment = prism' ResourcePayment $ \case
+  ResourcePayment x -> Just x
   _ -> Nothing
 
 data Cost

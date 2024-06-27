@@ -1,9 +1,7 @@
 module Arkham.Event.Cards.AWatchfulPeace3 (aWatchfulPeace3, AWatchfulPeace3 (..)) where
 
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Prelude
+import Arkham.Event.Import.Lifted
 
 newtype AWatchfulPeace3 = AWatchfulPeace3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -13,10 +11,8 @@ aWatchfulPeace3 :: EventCard AWatchfulPeace3
 aWatchfulPeace3 = event AWatchfulPeace3 Cards.aWatchfulPeace3
 
 instance RunMessage AWatchfulPeace3 where
-  runMessage msg e@(AWatchfulPeace3 attrs) = case msg of
+  runMessage msg e@(AWatchfulPeace3 attrs) = runQueueT $ case msg of
     PlayThisEvent _iid eid | eid == toId attrs -> do
-      popMessageMatching_ \case
-        AllDrawEncounterCard -> True
-        _ -> False
+      don't AllDrawEncounterCard
       pure e
-    _ -> AWatchfulPeace3 <$> runMessage msg attrs
+    _ -> AWatchfulPeace3 <$> lift (runMessage msg attrs)

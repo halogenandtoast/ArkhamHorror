@@ -1,15 +1,10 @@
-module Arkham.Event.Cards.AGlimmerOfHope (
-  aGlimmerOfHope,
-  AGlimmerOfHope (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.AGlimmerOfHope (aGlimmerOfHope, AGlimmerOfHope (..)) where
 
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype AGlimmerOfHope = AGlimmerOfHope EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

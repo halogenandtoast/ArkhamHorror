@@ -1,14 +1,9 @@
-module Arkham.Event.Cards.ATestOfWill (
-  aTestOfWill,
-  ATestOfWill (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.ATestOfWill (aTestOfWill, ATestOfWill (..)) where
 
 import Arkham.Capability
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.SkillTest.Target (getSkillTestTarget)
 import Arkham.Matcher hiding (DrawCard)
 import Arkham.Window
 
@@ -25,18 +20,16 @@ getDetails (_ : rest) = getDetails rest
 getDetails [] = error "missing targets"
 
 instance RunMessage ATestOfWill where
-  runMessage msg e@(ATestOfWill attrs) = case msg of
+  runMessage msg e@(ATestOfWill attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ (getDetails -> details) _ | eid == toId attrs -> do
-      push $ beginSkillTest iid attrs details #willpower (Fixed 3)
+      beginSkillTest iid attrs details #willpower (Fixed 3)
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
-      mTarget <- getSkillTestTarget
-      case mTarget of
+      getSkillTestTarget >>= \case
         Just (BothTarget (InvestigatorTarget iid') (CardTarget c)) -> do
           canAffect <- (iid == iid' ||) <$> can.affect.otherPlayers iid
-          canCancel <- c <=~> CanCancelRevelationEffect (BasicCardMatch AnyCard)
-          pushWhen (canAffect && canCancel)
-            $ CancelNext (toSource attrs) RevelationMessage
+          canCancel <- c <=~> CanCancelRevelationEffect (basic AnyCard)
+          pushWhen (canAffect && canCancel) $ CancelRevelation (toSource attrs)
         _ -> error "Wrong target"
       pure e
-    _ -> ATestOfWill <$> runMessage msg attrs
+    _ -> ATestOfWill <$> lift (runMessage msg attrs)

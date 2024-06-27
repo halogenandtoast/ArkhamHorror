@@ -94,6 +94,9 @@ allEventCards = allPlayerEventCards
 instance Is EventAttrs EventId where
   is = (==) . toId
 
+instance HasField "attachedTo" EventAttrs (Maybe Target) where
+  getField = eventAttachedTarget
+
 instance HasField "id" EventAttrs EventId where
   getField = eventId
 
@@ -114,6 +117,10 @@ instance HasField "controller" EventAttrs InvestigatorId where
 
 instance HasField "ability" EventAttrs (Int -> Source) where
   getField this = toAbilitySource this
+
+instance HasField "cardId" EventAttrs CardId where
+  getField = toCardId
+  {-# INLINE getField #-}
 
 instance HasCardCode EventAttrs where
   toCardCode = eventCardCode

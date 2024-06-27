@@ -211,6 +211,9 @@ pattern RemoveResources source target n = RemoveTokens source target Token.Resou
 pattern CancelNext :: Source -> MessageType -> Message
 pattern CancelNext source msgType = CancelEachNext source [msgType]
 
+pattern CancelRevelation :: Source -> Message
+pattern CancelRevelation source = CancelEachNext source [RevelationMessage]
+
 pattern AttachTreachery :: TreacheryId -> Target -> Message
 pattern AttachTreachery tid target =
   PlaceTreachery tid (TreacheryAttachedTo target)

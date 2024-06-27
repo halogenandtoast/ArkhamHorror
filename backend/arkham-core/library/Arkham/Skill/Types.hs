@@ -62,6 +62,9 @@ data SkillAttrs = SkillAttrs
   }
   deriving stock (Show, Eq, Generic)
 
+instance HasField "cardId" SkillAttrs CardId where
+  getField = skillCardId
+
 instance HasField "controller" SkillAttrs InvestigatorId where
   getField = skillOwner
 

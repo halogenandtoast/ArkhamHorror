@@ -103,6 +103,7 @@ allPlayerSkillCards =
       , signumCrucis2
       , skeptic1
       , steadfast
+      , strengthInNumbers1
       , strokeOfLuck2
       , stunningBlow
       , surprisingFind1
@@ -674,6 +675,14 @@ occultTheory1 :: CardDef
 occultTheory1 =
   (skill "08065" "Occult Theory" [] Mystic)
     { cdCardTraits = setFromList [Practiced, Expert]
+    , cdLevel = Just 1
+    , cdCardInHandEffects = True
+    }
+
+strengthInNumbers1 :: CardDef
+strengthInNumbers1 =
+  (skill "08077" "Strength in Numbers" [#wild] Survivor)
+    { cdCardTraits = setFromList [Innate, Synergy]
     , cdLevel = Just 1
     , cdCardInHandEffects = True
     }

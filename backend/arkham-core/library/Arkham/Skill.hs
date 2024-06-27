@@ -111,6 +111,7 @@ allSkills =
     , SomeSkillCard surveyTheArea1
     , SomeSkillCard savant1
     , SomeSkillCard occultTheory1
+    , SomeSkillCard strengthInNumbers1
     , SomeSkillCard dauntlessSpirit1
     , SomeSkillCard prophesy
     , SomeSkillCard ableBodied

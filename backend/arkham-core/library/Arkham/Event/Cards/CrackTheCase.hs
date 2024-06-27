@@ -1,17 +1,13 @@
-module Arkham.Event.Cards.CrackTheCase (
-  crackTheCase,
-  CrackTheCase (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.CrackTheCase (crackTheCase, CrackTheCase (..)) where
 
 import Arkham.Capability
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Query (getPlayer)
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Projection
 
 newtype CrackTheCase = CrackTheCase EventAttrs
@@ -23,18 +19,16 @@ crackTheCase = event CrackTheCase Cards.crackTheCase
 
 instance RunMessage CrackTheCase where
   runMessage msg e@(CrackTheCase attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    PlayThisEvent iid (is attrs -> True) -> do
       lid <- getJustLocation iid
       iids <- select $ affectsOthers $ investigatorAt lid <> can.gain.resources
       shroud <- field LocationShroud lid
       player <- getPlayer iid
       pushAll
         $ replicate shroud
-        $ chooseOrRunOne
+        $ Msg.chooseOrRunOne
           player
-          [ ComponentLabel
-            (InvestigatorComponent iid' ResourceToken)
-            [TakeResources iid' 1 (toSource attrs) False]
+          [ ResourceLabel iid' [TakeResources iid' 1 (toSource attrs) False]
           | iid' <- iids
           ]
       pure e

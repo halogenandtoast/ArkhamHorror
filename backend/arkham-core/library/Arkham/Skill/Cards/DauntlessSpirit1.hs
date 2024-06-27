@@ -1,15 +1,10 @@
-module Arkham.Skill.Cards.DauntlessSpirit1 (
-  dauntlessSpirit1,
-  DauntlessSpirit1 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.DauntlessSpirit1 (dauntlessSpirit1, DauntlessSpirit1 (..)) where
 
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner

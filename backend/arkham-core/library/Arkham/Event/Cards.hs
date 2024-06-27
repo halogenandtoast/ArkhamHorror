@@ -3341,6 +3341,7 @@ crypticWritings =
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = singleton Insight
     , cdCardInHandEffects = True
+    , cdCriteria = Just $ can.gain.resources You
     }
 
 extensiveResearch :: CardDef
@@ -3377,6 +3378,7 @@ crypticWritings2 =
     , cdCardTraits = singleton Insight
     , cdCardInHandEffects = True
     , cdLevel = Just 2
+    , cdCriteria = Just $ can.gain.resources You
     }
 
 iveGotAPlan2 :: CardDef

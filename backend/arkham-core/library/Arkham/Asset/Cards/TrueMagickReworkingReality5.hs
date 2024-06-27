@@ -53,7 +53,7 @@ instance RunMessage TrueMagickReworkingReality5 where
             (getCanPerformAbility iid ws)
             [ adjustCost $ ab {abilitySource = proxy (unsafeMakeCardId $ unAssetId aid) attrs}
             | ab <- getAbilities (createAsset card $ unsafeFromCardId card.id)
-            , let AssetSource aid = ab.source
+            , aid <- maybeToList (preview _AssetSource ab.source)
             ]
         pure $ guard (notNull tmpAbilities) $> (card.id, tmpAbilities)
 

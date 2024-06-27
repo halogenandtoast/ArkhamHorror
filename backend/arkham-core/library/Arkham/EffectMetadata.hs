@@ -1,13 +1,14 @@
 module Arkham.EffectMetadata (
   EffectMetadata (..),
   effectInt,
+  effectMetaTarget,
 ) where
 
-import Arkham.Prelude
 import Arkham.Ability.Types
 import Arkham.Card.CardCode
 import Arkham.Id
 import Arkham.Modifier
+import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Target
 
@@ -26,3 +27,6 @@ data EffectMetadata window a
 
 effectInt :: Int -> Maybe (EffectMetadata window a)
 effectInt = Just . EffectInt
+
+effectMetaTarget :: Targetable target => target -> Maybe (EffectMetadata window a)
+effectMetaTarget = Just . EffectMetaTarget . toTarget

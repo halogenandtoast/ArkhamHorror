@@ -190,6 +190,8 @@ getAttackDetails :: [Window] -> EnemyAttackDetails
 getAttackDetails = \case
   [] -> error "No chaos token drawn"
   ((windowType -> Window.EnemyWouldAttack details) : _) -> details
+  ((windowType -> Window.EnemyAttacks details) : _) -> details
+  ((windowType -> Window.EnemyAttacksEvenIfCancelled details) : _) -> details
   (_ : rest) -> getAttackDetails rest
 
 getInvestigatedLocation :: [Window] -> LocationId

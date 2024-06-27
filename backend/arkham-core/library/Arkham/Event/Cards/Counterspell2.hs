@@ -1,16 +1,10 @@
-module Arkham.Event.Cards.Counterspell2 (
-  counterspell2,
-  Counterspell2 (..),
-) where
+module Arkham.Event.Cards.Counterspell2 (counterspell2, Counterspell2 (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Game.Helpers
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
+import Arkham.Event.Import.Lifted
+import Arkham.Game.Helpers (cancelChaosToken)
+import Arkham.Helpers.Window (getChaosToken)
+import Arkham.Message.Type (MessageType (..))
 
 newtype Counterspell2 = Counterspell2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -20,11 +14,10 @@ counterspell2 :: EventCard Counterspell2
 counterspell2 = event Counterspell2 Cards.counterspell2
 
 instance RunMessage Counterspell2 where
-  runMessage msg e@(Counterspell2 attrs) = case msg of
-    InvestigatorPlayEvent _ eid _ [(windowType -> Window.RevealChaosToken _ token)] _ | eid == toId attrs -> do
+  runMessage msg e@(Counterspell2 attrs) = runQueueT $ case msg of
+    InvestigatorPlayEvent _ (is attrs -> True) _ (getChaosToken -> token) _ -> do
       cancelChaosToken token
-      pushAll
-        [ CancelEachNext (toSource attrs) [RunWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
-        ]
+      push
+        $ CancelEachNext (toSource attrs) [RunWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
       pure e
-    _ -> Counterspell2 <$> runMessage msg attrs
+    _ -> Counterspell2 <$> lift (runMessage msg attrs)

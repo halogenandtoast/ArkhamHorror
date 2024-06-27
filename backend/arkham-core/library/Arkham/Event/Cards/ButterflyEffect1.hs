@@ -1,11 +1,10 @@
 module Arkham.Event.Cards.ButterflyEffect1 (butterflyEffect1, ButterflyEffect1 (..)) where
 
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Prelude
+import Arkham.Helpers.Query (getPlayer)
+import Arkham.Helpers.SkillTest (getCommittableCards, getCommittedCards, getSkillTestInvestigator)
 import Data.Map.Strict qualified as Map
 
 newtype ButterflyEffect1 = ButterflyEffect1 EventAttrs
@@ -16,8 +15,8 @@ butterflyEffect1 :: EventCard ButterflyEffect1
 butterflyEffect1 = event ButterflyEffect1 Cards.butterflyEffect1
 
 instance RunMessage ButterflyEffect1 where
-  runMessage msg e@(ButterflyEffect1 attrs) = case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
+  runMessage msg e@(ButterflyEffect1 attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       performer <- fromJustNote "must be in skill test" <$> getSkillTestInvestigator
       yourCards <- getCommittableCards iid
       yourCommittedCards <- getCommittedCards iid
@@ -36,10 +35,8 @@ instance RunMessage ButterflyEffect1 where
         $ [
             ( you
             , ChooseOne
-                $ map
-                  (\card -> targetLabel (toCardId card) [CommitCard iid card])
-                  yourCards
-                <> [ targetLabel (toCardId card) [ReturnToHand iid (CardIdTarget $ toCardId card)]
+                $ map (\card -> targetLabel card [CommitCard iid card]) yourCards
+                <> [ targetLabel card [ReturnToHand iid (CardIdTarget card.id)]
                    | card <- yourCommittedCards
                    , card `notElem` mustBeCommited
                    ]
@@ -47,10 +44,8 @@ instance RunMessage ButterflyEffect1 where
           ]
         <> [ ( performerPlayer
              , ChooseOne
-                $ map
-                  (\card -> targetLabel (toCardId card) [CommitCard iid card])
-                  performerCards
-                <> [ targetLabel (toCardId card) [ReturnToHand iid (CardIdTarget $ toCardId card)]
+                $ map (\card -> targetLabel card [CommitCard iid card]) performerCards
+                <> [ targetLabel card [ReturnToHand iid (CardIdTarget card.id)]
                    | card <- performerCommittedCards
                    , card `notElem` mustBeCommited
                    ]
@@ -59,4 +54,4 @@ instance RunMessage ButterflyEffect1 where
            ]
 
       pure e
-    _ -> ButterflyEffect1 <$> runMessage msg attrs
+    _ -> ButterflyEffect1 <$> lift (runMessage msg attrs)

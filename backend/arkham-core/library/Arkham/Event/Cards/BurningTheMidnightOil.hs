@@ -1,13 +1,7 @@
-module Arkham.Event.Cards.BurningTheMidnightOil (
-  burningTheMidnightOil,
-  BurningTheMidnightOil (..),
-) where
+module Arkham.Event.Cards.BurningTheMidnightOil (burningTheMidnightOil, BurningTheMidnightOil (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Investigate
 
 newtype BurningTheMidnightOil = BurningTheMidnightOil EventAttrs
@@ -18,12 +12,9 @@ burningTheMidnightOil :: EventCard BurningTheMidnightOil
 burningTheMidnightOil = event BurningTheMidnightOil Cards.burningTheMidnightOil
 
 instance RunMessage BurningTheMidnightOil where
-  runMessage msg e@(BurningTheMidnightOil attrs) = case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
-      investigation <- mkInvestigate iid attrs
-      pushAll
-        [ TakeResources iid 2 (toSource attrs) False
-        , toMessage investigation
-        ]
+  runMessage msg e@(BurningTheMidnightOil attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      gainResourcesIfCan iid attrs 2
+      pushM $ mkInvestigate iid attrs
       pure e
-    _ -> BurningTheMidnightOil <$> runMessage msg attrs
+    _ -> BurningTheMidnightOil <$> lift (runMessage msg attrs)

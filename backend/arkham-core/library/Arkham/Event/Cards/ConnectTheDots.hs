@@ -1,15 +1,8 @@
-module Arkham.Event.Cards.ConnectTheDots (
-  connectTheDots,
-  ConnectTheDots (..),
-) where
+module Arkham.Event.Cards.ConnectTheDots (connectTheDots, ConnectTheDots (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Investigator
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 
@@ -21,19 +14,16 @@ connectTheDots :: EventCard ConnectTheDots
 connectTheDots = event ConnectTheDots Cards.connectTheDots
 
 instance RunMessage ConnectTheDots where
-  runMessage msg e@(ConnectTheDots attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lid <- getJustLocation iid
+  runMessage msg e@(ConnectTheDots attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       locations <-
         select
-          $ LocationWithLowerPrintedShroudThan (LocationWithId lid)
-          <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [ targetLabel location [Msg.DiscoverClues iid $ discover location attrs 2]
-          | location <- locations
-          ]
+          $ LocationWithLowerPrintedShroudThan (locationWithInvestigator iid)
+          <> locationWithDiscoverableCluesBy iid
+      chooseOrRunOne
+        iid
+        [ targetLabel location [Msg.DiscoverClues iid $ discover location attrs 2]
+        | location <- locations
+        ]
       pure e
-    _ -> ConnectTheDots <$> runMessage msg attrs
+    _ -> ConnectTheDots <$> lift (runMessage msg attrs)

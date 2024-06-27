@@ -14,7 +14,7 @@ cheatTheSystem1 = event CheatTheSystem1 Cards.cheatTheSystem1
 
 instance RunMessage CheatTheSystem1 where
   runMessage msg e@(CheatTheSystem1 attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
+    PlayThisEvent iid (is attrs -> True) -> do
       gainResourcesIfCan iid attrs
         =<< calculate (DifferentClassAmong $ ControlledBy $ InvestigatorWithId iid)
       pure e

@@ -1,11 +1,16 @@
-module Arkham.Helpers.Use where
+module Arkham.Helpers.Use (module Arkham.Helpers.Use, module X) where
 
-import Arkham.Prelude
-
-import Arkham.Asset.Uses
+import Arkham.Asset.Types (Field (..))
+import Arkham.Asset.Uses as X
 import Arkham.Classes.HasGame
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Id
+import Arkham.Prelude
+import Arkham.Projection
+
+getAssetUses :: HasGame m => UseType -> AssetId -> m Int
+getAssetUses k = fieldMap AssetUses (findWithDefault 0 k)
 
 toStartingUses :: HasGame m => Uses GameValue -> m (Map UseType Int)
 toStartingUses uses = toMap <$> asStartingUses uses

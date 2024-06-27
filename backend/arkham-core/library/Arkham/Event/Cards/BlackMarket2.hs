@@ -8,7 +8,8 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv (getCard, getPhase)
 import Arkham.Helpers (unDeck)
-import Arkham.Helpers.Modifiers (ModifierType (..), toModifiers)
+import Arkham.Helpers.Message (handleTargetChoice)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
@@ -24,30 +25,24 @@ blackMarket2 = event BlackMarket2 Cards.blackMarket2
 
 instance RunMessage BlackMarket2 where
   runMessage msg e@(BlackMarket2 attrs) = runQueueT $ case msg of
-    PlayThisEvent _iid eid | eid == toId attrs -> do
+    PlayThisEvent _iid eid | eid == attrs.id -> do
       push $ DoStep 5 msg
       pure . BlackMarket2 $ attrs & setMeta @[CardId] []
-    DoStep n msg'@(PlayThisEvent iid eid) | eid == toId attrs && n > 0 -> do
+    DoStep n msg'@(PlayThisEvent iid eid) | eid == attrs.id && n > 0 -> do
       investigators <- select $ affectsOthers can.manipulate.deck
       if null investigators
         then push $ DoStep 0 msg'
         else do
-          chooseOrRunOne iid
-            $ targetLabels investigators
-            $ only
-            . HandleTargetChoice iid (toSource attrs)
-            . toTarget
+          chooseOrRunOne iid $ targetLabels investigators $ only . handleTargetChoice iid attrs
           push $ DoStep (n - 1) msg'
       pure e
-    DoStep 0 (PlayThisEvent _iid eid) | eid == toId attrs -> do
-      let current = toResult @[CardId] attrs.meta
-      for_ current $ createCardEffect Cards.blackMarket2 Nothing attrs . toTarget
+    DoStep 0 (PlayThisEvent _iid eid) | eid == attrs.id -> do
+      for_ (toResult @[CardId] attrs.meta) $ createCardEffect Cards.blackMarket2 Nothing attrs
       pure e
     HandleTargetChoice _iid (isSource attrs -> True) (InvestigatorTarget iid') -> do
-      let current = toResult @[CardId] attrs.meta
-      cards <- map toCard . take 1 <$> fieldMap InvestigatorDeck unDeck iid'
-      pushAll $ [ObtainCard card | card <- cards] <> [SetAsideCards cards]
-      pure . BlackMarket2 $ attrs & setMeta @[CardId] (map toCardId cards <> current)
+      cards <- fieldMap InvestigatorDeck (map toCard . take 1 . unDeck) iid'
+      pushAll $ map ObtainCard cards <> [SetAsideCards cards]
+      pure . BlackMarket2 $ attrs & overMeta (map toCardId cards <>)
     _ -> BlackMarket2 <$> lift (runMessage msg attrs)
 
 newtype BlackMarket2Effect = BlackMarket2Effect EffectAttrs
@@ -60,14 +55,9 @@ blackMarket2Effect = cardEffectWith BlackMarket2Effect Cards.blackMarket2 (setEf
 instance HasModifiersFor BlackMarket2Effect where
   getModifiersFor (InvestigatorTarget iid) (BlackMarket2Effect attrs) = do
     case attrs.target of
-      CardIdTarget cardId -> do
-        mCard <- selectOne $ SetAsideCardMatch $ CardWithId cardId
-        case mCard of
-          Just card ->
-            pure
-              $ toModifiers
-                attrs
-                [AsIfInHand card | not (isSignature $ toCardDef card) || toCardOwner card == Just iid]
+      CardIdTarget cardId ->
+        selectOne (SetAsideCardMatch $ CardWithId cardId) >>= \case
+          Just card -> modified attrs [AsIfInHand card | not (isSignature card) || card.owner == Just iid]
           _ -> pure [] -- should be disabled
       _ -> error "incorrect target"
   getModifiersFor _ _ = pure []
@@ -80,12 +70,12 @@ instance RunMessage BlackMarket2Effect where
         case attrs.target of
           CardIdTarget cardId -> do
             card <- getCard cardId
-            let owner = fromJustNote ("missing owner: " <> show card) (toCardOwner card)
+            let owner = fromJustNote ("missing owner: " <> show card) card.owner
             push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck owner) [card]
           _ -> error "incorrect target"
-        (disable attrs)
+        disable attrs
       pure e
-    InitiatePlayCard iid card _ _ _ _ | attrs.target == (CardIdTarget $ toCardId card) -> do
+    InitiatePlayCard iid card _ _ _ _ | attrs.target == CardIdTarget card.id -> do
       disable attrs
       addToHand iid [card]
       push msg

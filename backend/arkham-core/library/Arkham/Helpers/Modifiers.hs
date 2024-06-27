@@ -53,6 +53,9 @@ getFullModifiers (toTarget -> target) = do
   filter (filterF . modifierType) <$> getModifiers' target
 
 getModifiers' :: (HasGame m, Targetable a) => a -> m [Modifier]
+getModifiers' (toTarget -> BothTarget t1 t2) = do
+  allMods <- getAllModifiers
+  pure $ findWithDefault [] t1 allMods <> findWithDefault [] t2 allMods
 getModifiers' (toTarget -> target) =
   findWithDefault [] target <$> getAllModifiers
 

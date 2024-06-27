@@ -68,6 +68,9 @@ data Target
   | LabeledTarget Text Target -- Use with caution, this is not a real target
   deriving stock (Show, Eq, Ord, Data)
 
+bothTarget :: (Targetable a, Targetable b) => a -> b -> Target
+bothTarget a b = BothTarget (toTarget a) (toTarget b)
+
 actualTarget :: Target -> Target
 actualTarget = \case
   LabeledTarget _ t -> actualTarget t

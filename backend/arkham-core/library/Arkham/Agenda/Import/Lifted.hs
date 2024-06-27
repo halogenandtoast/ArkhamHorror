@@ -12,6 +12,7 @@ import Arkham.Agenda.Runner as X (
   onSide,
   push,
   pushAll,
+  pushM,
   removeDoomMatchersL,
   pattern R1,
   pattern R2,

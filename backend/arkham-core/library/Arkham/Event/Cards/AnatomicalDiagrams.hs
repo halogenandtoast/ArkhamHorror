@@ -1,16 +1,9 @@
-module Arkham.Event.Cards.AnatomicalDiagrams (
-  anatomicalDiagrams,
-  AnatomicalDiagrams (..),
-) where
+module Arkham.Event.Cards.AnatomicalDiagrams (anatomicalDiagrams, AnatomicalDiagrams (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Matcher
 
 newtype AnatomicalDiagrams = AnatomicalDiagrams EventAttrs
@@ -21,26 +14,13 @@ anatomicalDiagrams :: EventCard AnatomicalDiagrams
 anatomicalDiagrams = event AnatomicalDiagrams Cards.anatomicalDiagrams
 
 instance RunMessage AnatomicalDiagrams where
-  runMessage msg e@(AnatomicalDiagrams attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      enemies <-
-        selectMap EnemyTarget $ EnemyAt YourLocation <> NonEliteEnemy
-      player <- getPlayer iid
-      e
-        <$ pushAll
-          [ chooseOrRunOne
-              player
-              [ TargetLabel
-                enemy
-                [ CreateWindowModifierEffect
-                    EffectTurnWindow
-                    ( EffectModifiers
-                        $ toModifiers attrs [EnemyFight (-2), EnemyEvade (-2)]
-                    )
-                    (toSource attrs)
-                    enemy
-                ]
-              | enemy <- enemies
-              ]
-          ]
-    _ -> AnatomicalDiagrams <$> runMessage msg attrs
+  runMessage msg e@(AnatomicalDiagrams attrs) = runQueueT $ case msg of
+    PlayThisEvent iid eid | eid == attrs.id -> do
+      enemies <- select $ enemyAtLocationWith iid <> NonEliteEnemy
+      chooseOrRunOne
+        iid
+        [ targetLabel enemy [Msg.turnModifiers attrs enemy [EnemyFight (-2), EnemyEvade (-2)]]
+        | enemy <- enemies
+        ]
+      pure e
+    _ -> AnatomicalDiagrams <$> lift (runMessage msg attrs)

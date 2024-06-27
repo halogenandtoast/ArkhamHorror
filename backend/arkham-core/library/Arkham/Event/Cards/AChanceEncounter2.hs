@@ -1,19 +1,10 @@
-module Arkham.Event.Cards.AChanceEncounter2 (
-  aChanceEncounter2,
-  AChanceEncounter2 (..),
-) where
+module Arkham.Event.Cards.AChanceEncounter2 (aChanceEncounter2, AChanceEncounter2 (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Card
-import Arkham.Classes
+import Arkham.Capability
 import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Helpers
-import Arkham.Event.Runner
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Projection
-import Arkham.Trait
+import Arkham.Event.Import.Lifted
+import Arkham.Matcher
 import Arkham.Window (defaultWindows)
 
 newtype AChanceEncounter2 = AChanceEncounter2 EventAttrs
@@ -24,50 +15,24 @@ aChanceEncounter2 :: EventCard AChanceEncounter2
 aChanceEncounter2 = event AChanceEncounter2 Cards.aChanceEncounter2
 
 instance RunMessage AChanceEncounter2 where
-  runMessage msg e@(AChanceEncounter2 attrs) = case msg of
+  runMessage msg e@(AChanceEncounter2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
-      let resources = totalResourcePayment attrs.payment
-      investigatorIds <-
-        filterM
-          ( fmap (notElem CardsCannotLeaveYourDiscardPile)
-              . getModifiers
-              . InvestigatorTarget
-          )
-          =<< getInvestigatorIds
       discards <-
-        concat
-          <$> traverse
-            (fieldMap InvestigatorDiscard (map PlayerCard))
-            investigatorIds
-      let
-        filteredDiscards =
-          filter
-            ( and
-                . sequence
-                  [ elem Ally . toTraits
-                  , (== resources) . maybe 0 toPrintedCost . cdCost . toCardDef
-                  ]
-            )
-            discards
+        select
+          $ InDiscardOf (affectsOthers can.have.cards.leaveDiscard)
+          <> basic (#ally <> CardWithCost attrs.payment.resources)
 
       -- Normally we would not error like this, but verifying card costs to
       -- match what is paid is quite difficult. The front-end should just not
       -- update the game state if invalid due to erroring
-      when (null filteredDiscards) (error "Invalid choice")
+      when (null discards) (error "Invalid choice")
 
-      player <- getPlayer iid
-      pushAll
-        [ FocusCards filteredDiscards
-        , chooseOne
-            player
-            [ targetLabel
-              (toCardId card')
-              [ PutCardIntoPlay iid card' Nothing NoPayment (defaultWindows iid)
-              , RemoveFromDiscard iid (toCardId card')
-              ]
-            | card' <- filteredDiscards
-            ]
-        , UnfocusCards
-        ]
+      focusCards discards \unfocus -> do
+        chooseOne
+          iid
+          [ targetLabel card [PutCardIntoPlay iid card Nothing NoPayment (defaultWindows iid)]
+          | card <- discards
+          ]
+        push unfocus
       pure e
-    _ -> AChanceEncounter2 <$> runMessage msg attrs
+    _ -> AChanceEncounter2 <$> lift (runMessage msg attrs)

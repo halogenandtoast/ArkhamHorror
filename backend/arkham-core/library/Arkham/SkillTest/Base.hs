@@ -50,6 +50,9 @@ data SkillTest = SkillTest
   }
   deriving stock (Show, Eq)
 
+instance HasField "kind" SkillTest SkillTestType where
+  getField = skillTestType
+
 instance HasField "action" SkillTest (Maybe Action) where
   getField = skillTestAction
 

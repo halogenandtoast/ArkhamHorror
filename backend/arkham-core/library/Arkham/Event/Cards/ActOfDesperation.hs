@@ -4,7 +4,6 @@ module Arkham.Event.Cards.ActOfDesperation (
   ActOfDesperation (..),
 ) where
 
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Effect.Import
@@ -42,11 +41,11 @@ actOfDesperationEffect = cardEffect ActOfDesperationEffect Cards.actOfDesperatio
 
 instance RunMessage ActOfDesperationEffect where
   runMessage msg e@(ActOfDesperationEffect attrs) = runQueueT $ case msg of
-      PassedThisSkillTest _ (isSource attrs.source -> True) -> do
-        case (attrs.meta, attrs.target) of
-          (Just (EffectInt n), InvestigatorTarget iid) -> do
-            gainResourcesIfCan iid attrs.source n
-            disableReturn e
-          _ -> error "Invalid call"
-      SkillTestEnds _ _ -> disableReturn e
-      _ -> ActOfDesperationEffect <$> lift (runMessage msg attrs)
+    PassedThisSkillTest _ (isSource attrs.source -> True) -> do
+      case (attrs.meta, attrs.target) of
+        (Just (EffectInt n), InvestigatorTarget iid) -> do
+          gainResourcesIfCan iid attrs.source n
+          disableReturn e
+        _ -> error "Invalid call"
+    SkillTestEnds _ _ -> disableReturn e
+    _ -> ActOfDesperationEffect <$> lift (runMessage msg attrs)

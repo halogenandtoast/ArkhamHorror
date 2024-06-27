@@ -1,13 +1,8 @@
-module Arkham.Event.Cards.AlterFate1 (
-  alterFate1,
-  AlterFate1 (..),
-) where
+module Arkham.Event.Cards.AlterFate1 (alterFate1, AlterFate1 (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Message qualified as Msg
 import Arkham.Matcher
 
 newtype AlterFate1 = AlterFate1 EventAttrs
@@ -18,16 +13,9 @@ alterFate1 :: EventCard AlterFate1
 alterFate1 = event AlterFate1 Cards.alterFate1
 
 instance RunMessage AlterFate1 where
-  runMessage msg e@(AlterFate1 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+  runMessage msg e@(AlterFate1 attrs) = runQueueT $ case msg of
+    PlayThisEvent iid eid | eid == toId attrs -> do
       treacheries <- select $ NotTreachery (TreacheryOnEnemy EliteEnemy) <> TreacheryIsNonWeakness
-      player <- getPlayer iid
-      pushAll
-        [ chooseOne
-            player
-            [ targetLabel treachery [toDiscardBy iid attrs treachery]
-            | treachery <- treacheries
-            ]
-        ]
+      chooseOne iid $ targetLabels treacheries $ only . Msg.toDiscardBy iid attrs
       pure e
-    _ -> AlterFate1 <$> runMessage msg attrs
+    _ -> AlterFate1 <$> lift (runMessage msg attrs)

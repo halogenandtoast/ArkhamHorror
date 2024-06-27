@@ -39,7 +39,7 @@ import Arkham.SkillType qualified as SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Window (Window)
+import Arkham.Window (Window, WindowType)
 import Control.Monad.Trans.Class
 
 class (CardGen m, HasGame m, HasQueue Message m) => ReverseQueue m
@@ -525,6 +525,9 @@ focusCards cards f = do
 checkWindows :: ReverseQueue m => [Window] -> m ()
 checkWindows = Msg.pushM . Msg.checkWindows
 
+checkAfter :: ReverseQueue m => WindowType -> m ()
+checkAfter = Msg.pushM . Msg.checkAfter
+
 cancelTokenDraw :: (MonadTrans t, HasQueue Message m) => t m ()
 cancelTokenDraw = lift Msg.cancelTokenDraw
 
@@ -596,6 +599,9 @@ insteadOf msg f = do
   msgs <- evalQueueT f
   lift $ replaceMessageMatching (== msg) (const msgs)
 
+don't :: (MonadTrans t, HasQueue Message m) => Message -> t m ()
+don't msg = lift $ popMessageMatching_ (== msg)
+
 enemyAttackModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 enemyAttackModifier source target modifier = push $ Msg.enemyAttackModifier source target modifier
@@ -637,3 +643,6 @@ costModifier source target modifier = push $ Msg.costModifier source target modi
 
 placeUnderneath :: (ReverseQueue m, Targetable target) => target -> [Card] -> m ()
 placeUnderneath (toTarget -> target) cards = push $ Msg.PlaceUnderneath target cards
+
+gainActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
+gainActions iid (toSource -> source) n = push $ Msg.GainActions iid source n

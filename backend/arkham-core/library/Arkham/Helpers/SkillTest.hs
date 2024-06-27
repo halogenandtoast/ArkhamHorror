@@ -38,6 +38,17 @@ import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
+getBaseValueDifferenceForSkillTest
+  :: HasGame m => InvestigatorId -> SkillTest -> m Int
+getBaseValueDifferenceForSkillTest iid st = do
+  base <- getBaseValueForSkillTest iid st
+  difficulty <- getModifiedSkillTestDifficulty st
+  pure $ difficulty - base
+
+getBaseValueForSkillTest
+  :: HasGame m => InvestigatorId -> SkillTest -> m Int
+getBaseValueForSkillTest iid st = getBaseValueForSkillTestType iid st.action st.kind
+
 getBaseValueForSkillTestType
   :: HasGame m => InvestigatorId -> Maybe Action -> SkillTestType -> m Int
 getBaseValueForSkillTestType iid mAction = \case

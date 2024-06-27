@@ -9,21 +9,23 @@ import Arkham.Event.Runner as X (
   event,
   getChoiceAmount,
   getEventMeta,
+  is,
   push,
   pushAll,
   pushM,
   pushWhen,
   setMeta,
   usesL,
-  is,
  )
 import Arkham.Helpers.Modifiers as X (getModifiers)
 import Arkham.Message as X (
   Message (..),
   toMessage,
+  pattern CancelRevelation,
+  pattern FailedThisSkillTest,
+  pattern PassedThisSkillTest,
   pattern PlaceClues,
   pattern PlayThisEvent,
-  pattern PassedThisSkillTest,
   pattern RemoveDoom,
   pattern UseThisAbility,
  )

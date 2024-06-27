@@ -1868,6 +1868,7 @@ actOfDesperation =
   (event "05037" "Act of Desperation" 0 Survivor)
     { cdSkills = [#combat, #combat]
     , cdCardTraits = setFromList [Tactic, Gambit]
+    , cdActions = [#fight]
     , cdAdditionalCost =
         Just $ DiscardFromCost 1 (FromHandOf You <> FromPlayAreaOf You) (#item <> CardFillsSlot HandSlot)
     }

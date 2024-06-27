@@ -1,9 +1,8 @@
 module Arkham.Asset.Cards.DejaVu5 (dejaVu5, DejaVu5 (..)) where
 
-import Arkham.Prelude
-
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Prelude
 
 newtype DejaVu5 = DejaVu5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)

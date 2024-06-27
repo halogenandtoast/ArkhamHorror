@@ -1,9 +1,9 @@
 module Arkham.EffectMetadata (
   EffectMetadata (..),
+  effectInt,
 ) where
 
 import Arkham.Prelude
-
 import Arkham.Ability.Types
 import Arkham.Card.CardCode
 import Arkham.Id
@@ -23,3 +23,6 @@ data EffectMetadata window a
   | EffectText Text
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+effectInt :: Int -> Maybe (EffectMetadata window a)
+effectInt = Just . EffectInt

@@ -322,6 +322,7 @@ instance AndThen (CardDraw Message) where
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
+  | AddSubscriber Target
   | SetInvestigator PlayerId Investigator
   | ResolvedAbility Ability -- INTERNAL, See Arbiter of Fates
   | -- Story Card Messages

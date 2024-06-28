@@ -402,6 +402,8 @@ allPlayerAssetCards =
       , hyperawareness4
       , hyperphysicalShotcasterTheoreticalDevice
       , hypnoticTherapy
+      , icePick1
+      , icePick3
       , ichtacaTheForgottenGuardian
       , ikiaqTheCouncilsChosen3
       , inTheKnow1
@@ -5207,6 +5209,26 @@ eonChart4 =
     , cdLevel = Just 4
     , cdSlots = [#accessory]
     }
+
+icePick1 :: CardDef
+icePick1 =
+  fast
+    (multiClassAsset "08105" "Ice Pick" 1 [Seeker, Survivor])
+      { cdCardTraits = setFromList [Item, Charm]
+      , cdSkills = [#combat]
+      , cdSlots = [#hand]
+      , cdLevel = Just 1
+      }
+
+icePick3 :: CardDef
+icePick3 =
+  fast
+    (multiClassAsset "08107" "Ice Pick" 1 [Seeker, Survivor])
+      { cdCardTraits = setFromList [Item, Charm]
+      , cdSkills = [#intellect, #combat]
+      , cdSlots = [#hand]
+      , cdLevel = Just 3
+      }
 
 unscrupulousLoan3 :: CardDef
 unscrupulousLoan3 =

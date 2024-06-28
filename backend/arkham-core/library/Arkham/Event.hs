@@ -483,6 +483,7 @@ allEvents =
       SomeEventCard juryRig
     , SomeEventCard burnAfterReading1
     , SomeEventCard bloodWillHaveBlood2
+    , SomeEventCard fendOff3
     , --- rogue/mystic [eote]
       SomeEventCard etherealSlip
     , SomeEventCard etherealSlip2

@@ -1,16 +1,10 @@
-module Arkham.Treachery.Cards.DanceOfTheYellowKing (
-  danceOfTheYellowKing,
-  DanceOfTheYellowKing (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.DanceOfTheYellowKing (danceOfTheYellowKing, DanceOfTheYellowKing (..)) where
 
 import Arkham.Attack
 import Arkham.Classes
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Matcher
-import Arkham.Projection
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -20,22 +14,20 @@ newtype DanceOfTheYellowKing = DanceOfTheYellowKing TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 danceOfTheYellowKing :: TreacheryCard DanceOfTheYellowKing
-danceOfTheYellowKing =
-  treachery DanceOfTheYellowKing Cards.danceOfTheYellowKing
+danceOfTheYellowKing = treachery DanceOfTheYellowKing Cards.danceOfTheYellowKing
 
 instance RunMessage DanceOfTheYellowKing where
   runMessage msg t@(DanceOfTheYellowKing attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
       anyLunatics <- selectAny $ EnemyWithTrait Lunatic
       push
         $ if anyLunatics
-          then RevelationSkillTest iid source SkillWillpower (SkillTestDifficulty $ Fixed 3)
+          then revelationSkillTest iid attrs #willpower (Fixed 3)
           else gainSurge attrs
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
       lunatics <- select $ NearestEnemy $ EnemyWithTrait Lunatic
-      mlid <- field InvestigatorLocation iid
-      for_ mlid $ \lid -> do
+      withLocationOf iid \lid -> do
         player <- getPlayer iid
         push
           $ chooseOrRunOne

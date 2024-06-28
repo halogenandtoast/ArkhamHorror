@@ -831,6 +831,7 @@ allAssets =
       SomeAssetCard antiquary3
     , --- neutral [eote]
       SomeAssetCard inTheThickOfIt
+    , SomeAssetCard heavyFurs
     , SomeAssetCard sledDog
     , SomeAssetCard rodOfAnimalism1
     , -- The Scarlet Keys

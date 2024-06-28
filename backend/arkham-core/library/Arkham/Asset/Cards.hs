@@ -384,6 +384,7 @@ allPlayerAssetCards =
       , hawkEyeFoldingCamera
       , healingWords
       , healingWords3
+      , heavyFurs
       , heirloomOfHyperborea
       , hemisphericMap3
       , henryDeveau
@@ -5319,6 +5320,14 @@ inTheThickOfIt =
       { cdCardTraits = singleton Curse
       , cdPurchaseTrauma = PurchaseAnyTrauma 2
       }
+
+heavyFurs :: CardDef
+heavyFurs =
+  (asset "08126" "Heavy Furs" 2 Neutral)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Item, Armor]
+    , cdSlots = [#body]
+    }
 
 sledDog :: CardDef
 sledDog =

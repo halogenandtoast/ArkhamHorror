@@ -14,6 +14,7 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillTest.Base (SkillTest)
+import Arkham.Source (Source)
 import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
 import Arkham.Window
@@ -188,7 +189,7 @@ getChaosToken = \case
 
 getAttackDetails :: [Window] -> EnemyAttackDetails
 getAttackDetails = \case
-  [] -> error "No chaos token drawn"
+  [] -> error "No attack details"
   ((windowType -> Window.EnemyWouldAttack details) : _) -> details
   ((windowType -> Window.EnemyAttacks details) : _) -> details
   ((windowType -> Window.EnemyAttacksEvenIfCancelled details) : _) -> details
@@ -196,10 +197,17 @@ getAttackDetails = \case
 
 getInvestigatedLocation :: [Window] -> LocationId
 getInvestigatedLocation = \case
-  [] -> error "No chaos token drawn"
+  [] -> error "No fail or pass skill test"
   ((windowType -> Window.FailInvestigationSkillTest _ lid _) : _) -> lid
   ((windowType -> Window.PassInvestigationSkillTest _ lid _) : _) -> lid
   (_ : rest) -> getInvestigatedLocation rest
+
+getDamageSource :: [Window] -> Source
+getDamageSource = \case
+  [] -> error "No damage"
+  ((windowType -> Window.DealtDamage source _ _ _) : _) -> source
+  ((windowType -> Window.DealtExcessDamage source _ _ _) : _) -> source
+  (_ : rest) -> getDamageSource rest
 
 replaceWindow :: HasQueue Message m => (Window -> Bool) -> (Window -> Window) -> m ()
 replaceWindow f wf = do

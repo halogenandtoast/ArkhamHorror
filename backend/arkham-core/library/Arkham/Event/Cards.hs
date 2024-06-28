@@ -82,6 +82,7 @@ allPlayerEventCards =
       , bloodEclipse1
       , bloodEclipse3
       , bloodRite
+      , bloodWillHaveBlood2
       , breakingAndEntering
       , breakingAndEntering2
       , burnAfterReading1
@@ -2949,6 +2950,18 @@ burnAfterReading1 =
             [ exists $ InHandOf You <> basic (CardWithMaxLevel 5)
             , canDiscoverCluesAtYourLocation
             ]
+    }
+
+bloodWillHaveBlood2 :: CardDef
+bloodWillHaveBlood2 =
+  (event "08079" "Blood Will Have Blood" 1 Survivor)
+    { cdSkills = [#willpower, #combat]
+    , cdCardTraits = setFromList [Pact, Cursed]
+    , cdFastWindow =
+        Just
+          $ EnemyAttacks #after You (not_ (AttackDamagedAsset #ally) <> AttackDealtDamageOrHorror) AnyEnemy
+    , cdLimits = [MaxPerAttack 1]
+    , cdCriteria = can.draw.cards
     }
 
 etherealSlip :: CardDef

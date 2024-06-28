@@ -80,7 +80,10 @@ incrementTokens :: Token -> Tokens -> Tokens
 incrementTokens token = addTokens token 1
 
 decrementTokens :: Token -> Tokens -> Tokens
-decrementTokens token = subtractTokens token 1
+decrementTokens token = decrementTokensBy token 1
+
+decrementTokensBy :: Token -> Int -> Tokens -> Tokens
+decrementTokensBy token n = subtractTokens token n
 
 subtractTokens :: Token -> Int -> Tokens -> Tokens
 subtractTokens token amount = addTokens token (-amount)

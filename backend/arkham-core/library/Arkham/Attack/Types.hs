@@ -2,10 +2,9 @@
 
 module Arkham.Attack.Types where
 
-import Arkham.Prelude
-
 import Arkham.Id
 import {-# SOURCE #-} Arkham.Message
+import Arkham.Prelude
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
@@ -25,15 +24,27 @@ data EnemyAttackDetails = EnemyAttackDetails
   , attackSource :: Source
   , attackCanBeCanceled :: Bool
   , attackAfter :: [Message]
+  , attackDamaged :: Map Target (Int, Int)
   }
   deriving stock (Show, Eq)
 
 instance HasField "target" EnemyAttackDetails Target where
   getField = attackTarget
 
+instance HasField "enemy" EnemyAttackDetails EnemyId where
+  getField = attackEnemy
+
+instance HasField "strategy" EnemyAttackDetails DamageStrategy where
+  getField = attackDamageStrategy
+
+instance HasField "damaged" EnemyAttackDetails (Map Target (Int, Int)) where
+  getField = attackDamaged
+
 damageStrategyL :: Lens' EnemyAttackDetails DamageStrategy
-damageStrategyL =
-  lens attackDamageStrategy $ \m x -> m {attackDamageStrategy = x}
+damageStrategyL = lens attackDamageStrategy $ \m x -> m {attackDamageStrategy = x}
+
+damagedL :: Lens' EnemyAttackDetails (Map Target (Int, Int))
+damagedL = lens attackDamaged $ \m x -> m {attackDamaged = x}
 
 $(deriveJSON defaultOptions ''EnemyAttackType)
 
@@ -48,6 +59,7 @@ instance FromJSON EnemyAttackDetails where
     attackSource <- o .: "attackSource"
     attackCanBeCanceled <- o .: "attackCanBeCanceled"
     attackAfter <- o .:? "attackAfter" .!= []
+    attackDamaged <- o .:? "attackDamaged" .!= mempty
     pure EnemyAttackDetails {..}
 
 $(deriveToJSON defaultOptions ''EnemyAttackDetails)

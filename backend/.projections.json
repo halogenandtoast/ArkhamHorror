@@ -316,7 +316,7 @@
       "",
       "instance RunMessage {dot} where",
       "  runMessage msg e@({dot} attrs) = runQueueT $ case msg of",
-      "    PlayThisEvent _iid eid | eid == toId attrs -> do",
+      "    PlayThisEvent _iid (is attrs -> True) -> do",
       "      pure e",
       "    _ -> {dot} <$> lift (runMessage msg attrs)"
     ]

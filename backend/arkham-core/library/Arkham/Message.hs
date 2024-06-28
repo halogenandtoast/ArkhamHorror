@@ -456,6 +456,7 @@ data Message
   | CancelSkillEffects -- used by scenarios to cancel skill cards
   | CancelHorror InvestigatorId Int
   | CancelDamage InvestigatorId Int
+  | CancelAssetDamage AssetId Source Int
   | CheckAttackOfOpportunity InvestigatorId Bool
   | CheckDefeated Source Target
   | AssignDamage Target
@@ -570,6 +571,7 @@ data Message
   | EnemyAttackIfEngaged EnemyId (Maybe InvestigatorId)
   | EnemyAttacks [Message]
   | ChangeEnemyAttackTarget EnemyId Target
+  | ChangeEnemyAttackDetails EnemyId EnemyAttackDetails
   | CheckEnemyEngagement InvestigatorId
   | EnemyCheckEngagement EnemyId
   | EnemyDamage EnemyId DamageAssignment

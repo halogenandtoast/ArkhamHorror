@@ -2,10 +2,9 @@
 
 module Arkham.Attack (module Arkham.Attack, module Arkham.Attack.Types) where
 
-import Arkham.Prelude
-
 import Arkham.Attack.Types
 import Arkham.Id
+import Arkham.Prelude
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
@@ -27,6 +26,7 @@ enemyAttack (asId -> enemyId) (toSource -> source) (toTarget -> target) =
     , attackSource = source
     , attackCanBeCanceled = True
     , attackAfter = []
+    , attackDamaged = mempty
     }
 
 attackOfOpportunity

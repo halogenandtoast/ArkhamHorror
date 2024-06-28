@@ -731,6 +731,11 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       n <- selectCount (Matcher.AssetWithTrait t)
       pure $ m > n
     _ -> error $ "Not handling card type: " <> show (toCardType c)
+  passesLimit (MaxPerAttack m) = case toCardType c of
+    EventType -> do
+      n <- selectCount $ Matcher.eventIs c
+      pure $ m > n
+    _ -> error $ "Not handling card type: " <> show (toCardType c)
   passesLimit (MaxPerGame m) = do
     n <- getCardUses (toCardCode c)
     pure $ m > n
@@ -3068,9 +3073,15 @@ skillTypeMatches st = \case
 enemyAttackMatches
   :: HasGame m => InvestigatorId -> EnemyAttackDetails -> Matcher.EnemyAttackMatcher -> m Bool
 enemyAttackMatches youId details@EnemyAttackDetails {..} = \case
+  Matcher.EnemyAttackMatches as -> allM (enemyAttackMatches youId details) as
   Matcher.AnyEnemyAttack -> pure True
   Matcher.NotEnemyAttack inner -> not <$> enemyAttackMatches youId details inner
   Matcher.AttackOfOpportunityAttack -> pure $ attackType == AttackOfOpportunity
+  Matcher.AttackDealtDamageOrHorror -> pure $ any ((> 0) . uncurry max) (toList attackDamaged)
+  Matcher.AttackDamagedAsset inner -> do
+    flip anyM (mapToList attackDamaged) \(target, (x, y)) -> case target of
+      AssetTarget aid | x > 0 || y > 0 -> aid <=~> inner
+      _ -> pure False
   Matcher.AttackOfOpportunityAttackYouProvoked ->
     pure $ attackType == AttackOfOpportunity && isTarget youId attackOriginalTarget
   Matcher.AttackViaAlert -> pure $ attackType == AlertAttack

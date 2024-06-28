@@ -794,6 +794,7 @@ allAssets =
     , SomeAssetCard schoffnersCatalogue
     , SomeAssetCard bandages
     , SomeAssetCard bangleOfJinxes1
+    , SomeAssetCard fireExtinguisher3
     , SomeAssetCard plucky3
     , --- guardian/seeker [eote]
       SomeAssetCard medicalStudent

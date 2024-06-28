@@ -3,8 +3,8 @@
 module Arkham.Asset.Uses where
 
 import Arkham.Prelude
-
 import Data.Aeson.TH
+import GHC.OverloadedLabels
 
 data UseType
   = Ammo
@@ -23,6 +23,9 @@ data UseType
   | Aether
   | Durability
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "resource" UseType where
+  fromLabel = Resource
 
 $(deriveJSON defaultOptions ''UseType)
 

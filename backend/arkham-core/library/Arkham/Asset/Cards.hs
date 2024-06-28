@@ -322,6 +322,7 @@ allPlayerAssetCards =
       , finnsTrustyThirtyEight
       , fireAxe
       , fireExtinguisher1
+      , fireExtinguisher3
       , firstAid
       , firstAid3
       , fiveOfPentacles1
@@ -5094,6 +5095,15 @@ bangleOfJinxes1 =
     , cdSlots = [#accessory]
     , cdUses = uses Charge 1
     , cdLevel = Just 1
+    }
+
+fireExtinguisher3 :: CardDef
+fireExtinguisher3 =
+  (asset "08080" "Fire Extinguisher" 2 Survivor)
+    { cdCardTraits = setFromList [Item, Tool, Melee]
+    , cdSkills = [#agility, #agility]
+    , cdLevel = Just 3
+    , cdSlots = [#hand]
     }
 
 plucky3 :: CardDef

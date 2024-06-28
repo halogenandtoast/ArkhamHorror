@@ -23,7 +23,7 @@ instance HasAbilities Zeal where
     [ controlledAbility a 1 (exists $ oneOf [assetIs Cards.hope, assetIs Cards.augur])
         $ forced
         $ AssetEntersPlay #when (be a)
-    , controlledAbility a 2 (exists $ AssetWithId (toId a) <> AssetReady)
+    , controlledAbility a 2 (exists $ be a <> AssetReady)
         $ fightAction
         $ OrCost [exhaust a, discardCost a]
     ]

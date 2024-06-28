@@ -713,7 +713,7 @@ instance RunMessage SkillTest where
                         resolver
                         skillTestAction
                         skillTestSource
-                        (SkillTestInitiatorTarget skillTestTarget)
+                        (Initiator skillTestTarget)
                         skillTestType
                         n
                     )
@@ -728,7 +728,7 @@ instance RunMessage SkillTest where
                         resolver
                         skillTestAction
                         skillTestSource
-                        (SkillTestInitiatorTarget skillTestTarget)
+                        (Initiator skillTestTarget)
                         skillTestType
                         n
                      ]
@@ -755,6 +755,7 @@ instance RunMessage SkillTest where
                 pushAll $ handleChoice skillTestResolveFailureInvestigator player
         Unrun -> pure ()
       pure s
+    AddSubscriber t -> pure $ s & subscribersL <>~ [t]
     RerunSkillTest -> case skillTestResult of
       FailedBy Automatic _ -> pure s
       _ -> do

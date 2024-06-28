@@ -810,6 +810,9 @@ allAssets =
     , SomeAssetCard eonChart1
     , SomeAssetCard geneBeauregard3
     , SomeAssetCard eonChart4
+    , --- seeker/survivor [eote]
+      SomeAssetCard icePick1
+    , SomeAssetCard icePick3
     , --- rogue/survivor [eote]
       SomeAssetCard unscrupulousLoan3
     , SomeAssetCard preciousMementoFromAFormerLife4

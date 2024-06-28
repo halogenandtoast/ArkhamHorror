@@ -1055,6 +1055,9 @@ data SkillTestMatcher
 instance IsLabel "investigating" SkillTestMatcher where
   fromLabel = WhileInvestigating Anywhere
 
+instance IsLabel "fighting" SkillTestMatcher where
+  fromLabel = WhileAttackingAnEnemy AnyEnemy
+
 instance IsLabel "any" SkillTestMatcher where
   fromLabel = AnySkillTest
 

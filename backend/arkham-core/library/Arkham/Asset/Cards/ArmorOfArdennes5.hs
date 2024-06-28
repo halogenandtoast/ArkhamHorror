@@ -1,41 +1,27 @@
-module Arkham.Asset.Cards.ArmorOfArdennes5 (
-  armorOfArdennes5,
-  ArmorOfArdennes5 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.ArmorOfArdennes5 (armorOfArdennes5, ArmorOfArdennes5 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Window (getDamageSource)
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
-import Arkham.Token
-import Arkham.Token qualified as Token
-import Arkham.Window (mkWindow)
-import Arkham.Window qualified as Window
 
 newtype ArmorOfArdennes5 = ArmorOfArdennes5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 armorOfArdennes5 :: AssetCard ArmorOfArdennes5
-armorOfArdennes5 =
-  assetWith ArmorOfArdennes5 Cards.armorOfArdennes5 (healthL ?~ 4)
+armorOfArdennes5 = assetWith ArmorOfArdennes5 Cards.armorOfArdennes5 (healthL ?~ 4)
 
 instance HasAbilities ArmorOfArdennes5 where
   getAbilities (ArmorOfArdennes5 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
-          (AssetDealtDamage Timing.When (SourceIsCancelable AnySource) $ AssetWithId $ toId a)
-          (ExhaustCost $ toTarget a)
+        $ ReactionAbility (AssetDealtDamage #when AnyCancellableSource $ be a) (exhaust a)
     ]
 
 instance RunMessage ArmorOfArdennes5 where
-  runMessage msg (ArmorOfArdennes5 attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      ignoreWindow <-
-        checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
-      push ignoreWindow
-      pure . ArmorOfArdennes5 $ attrs & tokensL %~ decrementTokens Token.Damage
-    _ -> ArmorOfArdennes5 <$> runMessage msg attrs
+  runMessage msg a@(ArmorOfArdennes5 attrs) = runQueueT $ case msg of
+    UseCardAbility _ (isSource attrs -> True) 1 (getDamageSource -> dSource) _ -> do
+      push $ CancelAssetDamage attrs.id dSource 1
+      pure a
+    _ -> ArmorOfArdennes5 <$> lift (runMessage msg attrs)

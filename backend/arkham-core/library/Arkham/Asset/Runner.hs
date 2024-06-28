@@ -102,6 +102,9 @@ instance RunMessage AssetAttrs where
           )
         & (assignedHealthDamageL .~ 0)
         & (assignedSanityDamageL .~ 0)
+    CancelAssetDamage aid _ n | aid == assetId -> do
+      pushM $ checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource a)
+      pure $ a & tokensL %~ decrementTokensBy Token.Damage n
     AssetDefeated aid | aid == assetId -> do
       push $ toDiscard GameSource a
       pure a

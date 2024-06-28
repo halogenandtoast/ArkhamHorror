@@ -1077,6 +1077,11 @@ data SourceMatcher
   | SourceWithCard CardMatcher
   deriving stock (Show, Eq, Ord, Data)
 
+pattern AnyCancellableSource :: SourceMatcher
+pattern AnyCancellableSource <- SourceIsCancelable AnySource
+  where
+    AnyCancellableSource = SourceIsCancelable AnySource
+
 instance IsLabel "investigator" SourceMatcher where
   fromLabel = SourceIsType InvestigatorType
 
@@ -1426,7 +1431,21 @@ data EnemyAttackMatcher
   | AttackViaAlert
   | CancelableEnemyAttack EnemyAttackMatcher
   | NotEnemyAttack EnemyAttackMatcher
+  | AttackDamagedAsset AssetMatcher
+  | AttackDealtDamageOrHorror
+  | EnemyAttackMatches [EnemyAttackMatcher]
   deriving stock (Show, Eq, Ord, Data)
+
+instance Semigroup EnemyAttackMatcher where
+  AnyEnemyAttack <> x = x
+  x <> AnyEnemyAttack = x
+  EnemyAttackMatches xs <> EnemyAttackMatches ys = EnemyAttackMatches $ xs <> ys
+  EnemyAttackMatches xs <> x = EnemyAttackMatches $ xs <> [x]
+  x <> EnemyAttackMatches xs = EnemyAttackMatches $ x : xs
+  x <> y = EnemyAttackMatches [x, y]
+
+instance Monoid EnemyAttackMatcher where
+  mempty = AnyEnemyAttack
 
 instance Not EnemyAttackMatcher where
   not_ = NotEnemyAttack

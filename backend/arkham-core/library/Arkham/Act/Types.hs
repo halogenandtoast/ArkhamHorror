@@ -162,13 +162,7 @@ isSide side attrs aid = aid == attrs.id && onSide side attrs
 
 instance HasAbilities ActAttrs where
   getAbilities attrs@ActAttrs {..} = case actAdvanceCost of
-    Just cost ->
-      [ restrictedAbility
-          attrs
-          999
-          (DuringTurn Anyone)
-          (Objective $ FastAbility cost)
-      ]
+    Just cost -> [restrictedAbility attrs 999 (DuringTurn Anyone) (Objective $ FastAbility cost)]
     Nothing -> []
 
 data Act = forall a. IsAct a => Act a

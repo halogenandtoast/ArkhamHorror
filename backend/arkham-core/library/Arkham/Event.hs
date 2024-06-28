@@ -482,6 +482,7 @@ allEvents =
     , --- survivor [eote]
       SomeEventCard juryRig
     , SomeEventCard burnAfterReading1
+    , SomeEventCard bloodWillHaveBlood2
     , --- rogue/mystic [eote]
       SomeEventCard etherealSlip
     , SomeEventCard etherealSlip2

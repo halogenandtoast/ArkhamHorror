@@ -94,6 +94,9 @@ allEventCards = allPlayerEventCards
 instance Is EventAttrs EventId where
   is = (==) . toId
 
+instance HasField "windows" EventAttrs [Window] where
+  getField = eventWindows
+
 instance HasField "attachedTo" EventAttrs (Maybe Target) where
   getField = eventAttachedTarget
 

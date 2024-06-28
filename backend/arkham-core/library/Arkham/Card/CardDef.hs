@@ -55,6 +55,7 @@ data CardLimit
   = LimitPerInvestigator Int
   | LimitPerTrait Trait Int
   | MaxPerGame Int
+  | MaxPerAttack Int
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''DeckRestriction)

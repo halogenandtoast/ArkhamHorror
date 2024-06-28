@@ -73,6 +73,7 @@ import Arkham.Token qualified as Token
 import Arkham.Trait
 import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
+import Control.Lens (non, _Just)
 import Data.List qualified as List
 import Data.List.Extra (firstJust)
 import Data.Monoid (First (..))
@@ -758,6 +759,8 @@ instance RunMessage EnemyAttrs where
           _ -> False
         \w -> w {Window.windowType = Window.EnemyAttacksEvenIfCancelled details'}
       pure $ a & attackingL ?~ details'
+    ChangeEnemyAttackDetails eid details' | eid == enemyId -> do
+      pure $ a & attackingL ?~ details'
     AfterEnemyAttack eid msgs | eid == enemyId -> do
       let details = fromJustNote "missing attack details" enemyAttacking
       pure $ a & attackingL ?~ details {attackAfter = msgs}
@@ -861,13 +864,13 @@ instance RunMessage EnemyAttrs where
             <> [After (EnemyAttack details)]
         _ -> error "Unhandled"
       pure a
-    After (EnemyAttack details) | attackEnemy details == toId a -> do
-      afterAttacksWindow <- checkWindows [mkAfter $ Window.EnemyAttacks details]
+    After (EnemyAttack details) | details.enemy == a.id -> do
       let updatedDetails = fromJustNote "missing attack details" enemyAttacking
+      afterAttacksWindow <- checkAfter $ Window.EnemyAttacks updatedDetails
       pushAll $ afterAttacksWindow : attackAfter updatedDetails
       pure a
     HealDamage (EnemyTarget eid) source n | eid == enemyId -> do
-      afterWindow <- checkWindows [mkAfter $ Window.Healed DamageType (toTarget a) source n]
+      afterWindow <- checkAfter $ Window.Healed DamageType (toTarget a) source n
       push afterWindow
       pure $ a & tokensL %~ subtractTokens Token.Damage n
     HealAllDamage (EnemyTarget eid) source | eid == enemyId -> do
@@ -1139,6 +1142,14 @@ instance RunMessage EnemyAttrs where
             else push $ DisengageEnemy iid enemyId
         _ -> pure ()
       pure a
+    InvestigatorDamage iid (EnemyAttackSource eid) x y | eid == enemyId -> do
+      pure $ a & attackingL . _Just . damagedL . at (toTarget iid) . non (0, 0) %~ bimap (+ x) (+ y)
+    AssetDamageWithCheck aid (EnemyAttackSource eid) x y _ | eid == enemyId -> do
+      pure $ a & attackingL . _Just . damagedL . at (toTarget aid) . non (0, 0) %~ bimap (+ x) (+ y)
+    CancelAssetDamage aid (EnemyAttackSource eid) x | eid == enemyId -> do
+      pure
+        $ a
+        & (attackingL . _Just . damagedL . at (toTarget aid) . non (0, 0) %~ first (max 0 . subtract x))
     CheckAttackOfOpportunity iid isFast | not isFast && not enemyExhausted -> do
       willAttack <- elem iid <$> select (investigatorEngagedWith enemyId)
       when willAttack $ do
@@ -1156,6 +1167,7 @@ instance RunMessage EnemyAttrs where
             , attackSource = toSource a
             , attackCanBeCanceled = True
             , attackAfter = []
+            , attackDamaged = mempty
             }
       pure a
     InvestigatorDrawEnemy iid eid | eid == enemyId -> do

@@ -673,13 +673,13 @@ instance RunMessage EnemyAttrs where
           push $ EnemyEvaded iid eid'
           pure a
         _ -> do
-          mods <- getModifiers (InvestigatorTarget iid)
-          lid <- fieldJust EnemyLocation eid
+          mods <- getModifiers iid
+          mlid <- field EnemyLocation eid
           let
             updatePlacement =
               if DoNotDisengageEvaded `elem` mods
                 then id
-                else placementL .~ AtLocation lid
+                else maybe id (\lid -> placementL .~ AtLocation lid) mlid
             updateExhausted =
               if DoNotExhaustEvaded `elem` mods
                 then id
@@ -737,12 +737,10 @@ instance RunMessage EnemyAttrs where
         | Keyword.Alert `elem` keywords
         ]
       pure a
-    InitiateEnemyAttack details | attackEnemy details == enemyId -> do
+    InitiateEnemyAttack details | details.enemy == enemyId -> do
       mods <- getModifiers a
       let canBeCancelled = AttacksCannotBeCancelled `notElem` mods
-      let strategy =
-            fromMaybe (attackDamageStrategy details)
-              $ listToMaybe [s | SetAttackDamageStrategy s <- mods]
+      let strategy = fromMaybe details.strategy $ listToMaybe [s | SetAttackDamageStrategy s <- mods]
       push $ EnemyAttack $ details {attackCanBeCanceled = canBeCancelled, attackDamageStrategy = strategy}
       pure a
     ChangeEnemyAttackTarget eid target | eid == enemyId -> do

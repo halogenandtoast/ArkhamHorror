@@ -159,6 +159,7 @@ allPlayerEventCards =
       , extraAmmunition1
       , fangOfTyrthrha4
       , faustianBargain
+      , fendOff3
       , fightOrFlight
       , firstWatch
       , flare1
@@ -2962,6 +2963,14 @@ bloodWillHaveBlood2 =
           $ EnemyAttacks #after You (not_ (AttackDamagedAsset #ally) <> AttackDealtDamageOrHorror) AnyEnemy
     , cdLimits = [MaxPerAttack 1]
     , cdCriteria = can.draw.cards
+    }
+
+fendOff3 :: CardDef
+fendOff3 =
+  (event "08082" "Fend Off" 2 Survivor)
+    { cdSkills = [#agility, #agility]
+    , cdCardTraits = setFromList [Gambit, Trick]
+    , cdFastWindow = Just $ EnemySpawns #when YourLocation NonEliteEnemy
     }
 
 etherealSlip :: CardDef

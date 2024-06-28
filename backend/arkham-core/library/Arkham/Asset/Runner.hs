@@ -273,7 +273,8 @@ instance RunMessage AssetAttrs where
         <> [RemoveFromPlay $ toSource a, discardMsg]
       pure a
     Exile target | a `isTarget` target -> do
-      a <$ pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]
+      pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]
+      pure $ a & exiledL .~ True
     RemoveFromPlay source | isSource a source -> do
       attachedAssets <- select $ AssetAttachedToAsset $ AssetWithId (toId a)
       windowMsg <-

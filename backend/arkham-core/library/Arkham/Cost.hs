@@ -214,6 +214,9 @@ exhaust = ExhaustCost . toTarget
 discardCost :: Targetable a => a -> Cost
 discardCost = DiscardCost FromPlay . toTarget
 
+exileCost :: Targetable a => a -> Cost
+exileCost = ExileCost . toTarget
+
 removeCost :: Targetable a => a -> Cost
 removeCost = RemoveCost . toTarget
 

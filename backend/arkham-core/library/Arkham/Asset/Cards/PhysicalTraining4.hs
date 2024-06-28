@@ -1,15 +1,11 @@
-module Arkham.Asset.Cards.PhysicalTraining4 (
-  physicalTraining4,
-  PhysicalTraining4 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.PhysicalTraining4 (physicalTraining4, PhysicalTraining4 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Modifier
 
 newtype PhysicalTraining4 = PhysicalTraining4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -20,33 +16,19 @@ physicalTraining4 = asset PhysicalTraining4 Cards.physicalTraining4
 
 instance HasAbilities PhysicalTraining4 where
   getAbilities (PhysicalTraining4 a) =
-    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
+    [ controlledAbility a 1 DuringAnySkillTest
         $ FastAbility
-        $ OrCost [ResourceCost 1, UseCost (AssetWithId $ toId a) Resource 1]
+        $ OrCost [ResourceCost 1, UseCost (be a) #resource 1]
     ]
 
 instance RunMessage PhysicalTraining4 where
-  runMessage msg a@(PhysicalTraining4 attrs) = case msg of
-    Do BeginRound -> pure . PhysicalTraining4 $ attrs & usesL . ix Resource %~ max 2
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ Label
-              "Choose Willpower"
-              [ skillTestModifier
-                  attrs
-                  (InvestigatorTarget iid)
-                  (SkillModifier SkillWillpower 1)
-              ]
-          , Label
-              "Choose Combat"
-              [ skillTestModifier
-                  attrs
-                  (InvestigatorTarget iid)
-                  (SkillModifier SkillCombat 1)
-              ]
-          ]
+  runMessage msg a@(PhysicalTraining4 attrs) = runQueueT $ case msg of
+    Do BeginRound -> pure . PhysicalTraining4 $ attrs & usesL . ix #resource %~ max 2
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      chooseOne
+        iid
+        [ Label "Choose Willpower" [Msg.skillTestModifier (attrs.ability 1) iid (SkillModifier #willpower 1)]
+        , Label "Choose Combat" [Msg.skillTestModifier (attrs.ability 1) iid (SkillModifier #combat 1)]
+        ]
       pure a
-    _ -> PhysicalTraining4 <$> runMessage msg attrs
+    _ -> PhysicalTraining4 <$> lift (runMessage msg attrs)

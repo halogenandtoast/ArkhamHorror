@@ -247,6 +247,7 @@ data AssetAttrs = AssetAttrs
   , assetUses :: Map UseType Int
   , assetPrintedUses :: Uses GameValue
   , assetExhausted :: Bool
+  , assetExiled :: Bool
   , assetTokens :: Tokens
   , assetCanLeavePlayByNormalMeans :: Bool
   , assetWhenNoUses :: Maybe WhenNoUses
@@ -282,6 +283,9 @@ instance HasField "flipped" AssetAttrs Bool where
 
 instance HasField "placement" AssetAttrs Placement where
   getField = assetPlacement
+
+instance HasField "exiled" AssetAttrs Bool where
+  getField = assetExiled
 
 instance HasField "exhausted" AssetAttrs Bool where
   getField = assetExhausted
@@ -370,6 +374,7 @@ instance FromJSON AssetAttrs where
     assetUses <- o .: "uses"
     assetPrintedUses <- o .: "printedUses"
     assetExhausted <- o .: "exhausted"
+    assetExiled <- o .: "exiled"
     assetTokens <- o .: "tokens"
     assetCanLeavePlayByNormalMeans <- o .: "canLeavePlayByNormalMeans"
     assetWhenNoUses <- o .: "whenNoUses"
@@ -424,6 +429,7 @@ assetWith f cardDef g =
             , assetUses = mempty
             , assetPrintedUses = cdUses cardDef
             , assetExhausted = False
+            , assetExiled = False
             , assetTokens = mempty
             , assetCanLeavePlayByNormalMeans = True
             , assetWhenNoUses = Nothing

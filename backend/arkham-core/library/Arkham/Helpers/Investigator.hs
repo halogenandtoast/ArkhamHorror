@@ -365,6 +365,7 @@ investigator f cardDef Stats {..} =
         }
 
 matchTarget :: InvestigatorAttrs -> ActionTarget -> Action -> Bool
+matchTarget attrs (AnyActionTarget as) action = any (\at -> matchTarget attrs at action) as
 matchTarget attrs (FirstOneOfPerformed as) action =
   action `elem` as && all (\a -> all (notElem a) $ investigatorActionsPerformed attrs) as
 matchTarget _ (IsAction a) action = action == a

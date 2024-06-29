@@ -6,7 +6,6 @@ import Arkham.ClassSymbol
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Distance
-import Arkham.Event.Types (Event)
 import {-# SOURCE #-} Arkham.GameEnv (getCard, getDistance)
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.Cost
@@ -20,7 +19,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Placement (Placement (Unplaced))
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))

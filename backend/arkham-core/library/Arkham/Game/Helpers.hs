@@ -227,7 +227,9 @@ preventedByInvestigatorModifiers iid ability = do
       if any (`elem` as) (abilityActions ability)
         then fieldP InvestigatorActionsTaken (\taken -> all (\a -> all (notElem a) taken) as) iid
         else pure False
+    IsAction Action.Activate -> pure $ abilityIsActivate ability
     IsAction a -> pure $ a `elem` abilityActions ability
+    AnyActionTarget as -> anyM preventsAbility as
     EnemyAction a matcher -> case abilitySource ability of
       EnemySource eid ->
         if a `elem` abilityActions ability then eid <=~> matcher else pure False
@@ -3361,6 +3363,7 @@ canDo iid action = do
         fieldP InvestigatorActionsPerformed (\taken -> all (\a -> all (notElem a) taken) as) iid
       FirstOneOfPerformed {} -> pure False
       IsAction action' -> pure $ action == action'
+      AnyActionTarget as -> anyM preventsAction as
       EnemyAction {} -> pure False
       IsAnyAction {} -> pure True
 

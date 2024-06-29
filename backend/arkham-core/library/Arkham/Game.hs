@@ -837,8 +837,9 @@ getInvestigatorsMatching matcher = do
         >=> (`gameValueMatches` gameValueMatcher)
     InvestigatorWithDoom gameValueMatcher ->
       (`gameValueMatches` gameValueMatcher) . attr investigatorDoom
-    InvestigatorWithDamage gameValueMatcher ->
-      (`gameValueMatches` gameValueMatcher) . attr investigatorHealthDamage
+    InvestigatorWithDamage gameValueMatcher -> \i -> do
+      t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfDamage
+      gameValueMatches (attr investigatorHealthDamage i + t) gameValueMatcher
     InvestigatorWithHealableHorror -> \i -> do
       let onSelf = attr investigatorSanityDamage i > 0
       mFoolishness <-
@@ -1206,6 +1207,7 @@ abilityMatches a@Ability {..} = \case
     StorySource sid' -> elem sid' <$> select storyMatcher
     ProxySource (StorySource sid') _ -> elem sid' <$> select storyMatcher
     _ -> pure False
+  AbilityIsAction Action.Activate -> pure $ abilityIsActivate a
   AbilityIsAction action -> pure $ action `elem` abilityActions a
   AbilityIsActionAbility -> pure $ abilityIsActionAbility a && not (abilityIndex >= 100 && abilityIndex <= 102)
   AbilityIsFastAbility -> pure $ abilityIsFastAbility a
@@ -1234,70 +1236,36 @@ getGameAbilities = do
   g <- getGame
   let
     blanked a = do
-      modifiers <- getModifiers (toTarget a)
+      modifiers <- getModifiers a
       pure $ Blank `elem` modifiers
     unblanked a = do
-      modifiers <- getModifiers (toTarget a)
+      modifiers <- getModifiers a
       pure $ Blank `notElem` modifiers
-  enemyAbilities <-
-    concatMap getAbilities
-      <$> filterM unblanked (toList $ g ^. entitiesL . enemiesL)
+    findEntities :: Lens' Entities (EntityMap a) -> [a]
+    findEntities l = toList (g ^. entitiesL . l) <> toList (g ^. actionRemovedEntitiesL . l)
+  enemyAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities enemiesL)
   blankedEnemyAbilities <-
-    concatMap (getAbilities . toAttrs)
-      <$> filterM blanked (toList $ g ^. entitiesL . enemiesL)
-  locationAbilities <-
-    concatMap getAbilities
-      <$> filterM unblanked (toList $ g ^. entitiesL . locationsL)
+    concatMap (getAbilities . toAttrs) <$> filterM blanked (findEntities enemiesL)
+  locationAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities locationsL)
   blankedLocationAbilities <-
-    concatMap (getAbilities . toAttrs)
-      <$> filterM blanked (toList $ g ^. entitiesL . locationsL)
-  assetAbilities <-
-    concatMap getAbilities
-      <$> filterM unblanked (toList $ g ^. entitiesL . assetsL)
-  treacheryAbilities <-
-    concatMap getAbilities
-      <$> filterM unblanked (toList $ g ^. entitiesL . treacheriesL)
-  actAbilities <-
-    concatMap getAbilities
-      <$> filterM unblanked (toList $ g ^. entitiesL . actsL)
-  agendaAbilities <-
-    concatMap getAbilities
-      <$> filterM unblanked (toList $ g ^. entitiesL . agendasL)
-  storyAbilities <-
-    concatMap getAbilities
-      <$> filterM unblanked (toList $ g ^. entitiesL . storiesL)
-  skillAbilities <-
-    concatMap getAbilities
-      <$> filterM unblanked (toList $ g ^. entitiesL . skillsL)
+    concatMap (getAbilities . toAttrs) <$> filterM blanked (findEntities locationsL)
+  assetAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities assetsL)
+  treacheryAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities treacheriesL)
+  actAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities actsL)
+  agendaAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities agendasL)
+  storyAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities storiesL)
+  skillAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities skillsL)
   eventAbilities <-
     concatMap getAbilities
-      <$> filterM
-        unblanked
-        ( toList (g ^. entitiesL . eventsL)
-            <> toList (g ^. inSearchEntitiesL . eventsL)
-        )
-  effectAbilities <-
-    concatMap getAbilities
-      <$> filterM unblanked (toList $ g ^. entitiesL . effectsL)
-  investigatorAbilities <-
-    concatMap getAbilities
-      <$> filterM unblanked (toList $ g ^. entitiesL . investigatorsL)
+      <$> filterM unblanked (findEntities eventsL <> toList (g ^. inSearchEntitiesL . eventsL))
+  effectAbilities <- concatMap getAbilities <$> filterM unblanked (toList $ g ^. entitiesL . effectsL)
+  investigatorAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities investigatorsL)
   inHandEventAbilities <-
-    concatMap
-      ( filter inHandAbility
-          . getAbilities
-      )
-      <$> filterM
-        unblanked
-        (toList $ g ^. inHandEntitiesL . each . eventsL)
+    concatMap (filter inHandAbility . getAbilities)
+      <$> filterM unblanked (toList $ g ^. inHandEntitiesL . each . eventsL)
   inDiscardAssetAbilities <-
-    concatMap
-      ( filter inDiscardAbility
-          . getAbilities
-      )
-      <$> filterM
-        unblanked
-        (toList $ g ^. inDiscardEntitiesL . each . assetsL)
+    concatMap (filter inDiscardAbility . getAbilities)
+      <$> filterM unblanked (toList $ g ^. inDiscardEntitiesL . each . assetsL)
   concatMapM replaceMatcherSources
     $ enemyAbilities
     <> blankedEnemyAbilities

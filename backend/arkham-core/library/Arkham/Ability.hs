@@ -61,6 +61,9 @@ abilityIsActionAbility a = case abilityType a of
   ActionAbilityWithBefore {} -> True
   _ -> False
 
+abilityIsActivate :: Ability -> Bool
+abilityIsActivate a = not (abilityIndex a >= 100 && abilityIndex a <= 102) && abilityIsActionAbility a
+
 abilityIsFastAbility :: Ability -> Bool
 abilityIsFastAbility a = case abilityType a of
   FastAbility {} -> True

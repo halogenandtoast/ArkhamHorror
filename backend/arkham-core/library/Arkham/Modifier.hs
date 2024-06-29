@@ -44,6 +44,7 @@ data ModifierType
   | ActionDoesNotCauseAttacksOfOpportunity Action
   | ActionSkillModifier {action :: Action, skillType :: SkillType, value :: Int}
   | ActionsAreFree
+  | IsPointOfDamage
   | AddKeyword Keyword
   | AddSkillIcons [SkillIcon]
   | AddSkillToOtherSkill SkillType SkillType
@@ -407,6 +408,7 @@ data ActionTarget
   | IsAction Action
   | EnemyAction Action EnemyMatcher
   | IsAnyAction
+  | AnyActionTarget [ActionTarget]
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "draw" ActionTarget where

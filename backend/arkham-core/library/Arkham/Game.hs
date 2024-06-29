@@ -62,6 +62,7 @@ import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Git (gitHash)
 import Arkham.Helpers
+import Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.Card (extendedCardMatch, getHasVictoryPoints, iconsForCard)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Enemy (enemyEngagedInvestigators)
@@ -2048,7 +2049,7 @@ getAssetsMatching matcher = do
       starting <- field AssetStartingUses (toId a)
       case starting of
         UsesWithLimit uType _ pl -> do
-          l <- getPlayerCountValue pl
+          l <- calculate pl
           fieldMap AssetUses ((< l) . findWithDefault 0 uType) (toId a)
         Uses {} -> pure True
         NoUses -> pure True
@@ -3465,6 +3466,7 @@ instance Query ExtendedCardMatcher where
               ]
         pure $ c `elem` cards
       NotThisCard -> error "must be replaced"
+      IsThisCard -> error "must be replaced"
       CanCancelRevelationEffect matcher' -> do
         cardIsMatch <- matches' c matcher'
         modifiers <- getModifiers (toCardId c)

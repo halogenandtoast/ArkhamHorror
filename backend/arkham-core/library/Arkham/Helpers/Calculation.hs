@@ -19,6 +19,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Placement (Placement (Limbo))
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
@@ -66,6 +67,7 @@ calculate = go
     CardCostCalculation iid' cId -> getCard cId >>= getModifiedCardCost iid'
     ScenarioInDiscardCountCalculation mtchr -> length <$> findInDiscard mtchr
     InvestigatorTokenCountCalculation iid token -> fieldMap InvestigatorTokens (countTokens token) iid
+    GameValueCalculation gv -> getGameValue gv
     DoomCountCalculation -> getDoomCount
     DistanceFromCalculation iid matcher -> do
       l1 <- getMaybeLocation iid
@@ -85,6 +87,9 @@ calculate = go
         $ filter (`notElem` [Neutral, Mythos])
         . nub
         $ concatMap (toList . cdClassSymbols . toCardDef . toCard) cards
+    DuringEventCalculation c1 c2 -> do
+      inEvent <- selectAny $ EventWithPlacement Limbo
+      go $ if inEvent then c1 else c2
     VengeanceCalculation -> do
       -- getVengeanceInVictoryDisplay
       victoryDisplay <- field ScenarioVictoryDisplay =<< selectJust TheScenario

@@ -33,6 +33,7 @@ import Arkham.Id as X
 import Arkham.Message as X (
   Message (..),
   pattern FailedThisSkillTest,
+  pattern FailedThisSkillTestBy,
   pattern PassedThisSkillTest,
   pattern PassedThisSkillTestBy,
   pattern UseThisAbility,

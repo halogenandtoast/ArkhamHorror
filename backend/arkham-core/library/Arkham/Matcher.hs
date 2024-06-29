@@ -335,6 +335,7 @@ replaceThisCard :: Data a => CardId -> a -> a
 replaceThisCard cardId = over biplate (transform replace)
  where
   replace NotThisCard = basic (NotCard $ CardWithId cardId)
+  replace IsThisCard = basic (CardWithId cardId)
   replace m = m
 
 replaceLocationMatcher :: Data a => LocationId -> LocationMatcher -> a -> a

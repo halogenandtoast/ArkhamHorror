@@ -22,7 +22,7 @@ instance RunMessage JennysTwin45s where
     PaidForCardCost _ card payment | toCardId card == toCardId attrs -> do
       let n = totalResourcePayment payment
       JennysTwin45s
-        <$> runMessage msg (attrs & printedUsesL .~ Uses Ammo (Static n) & usesL .~ singletonMap Ammo n)
+        <$> runMessage msg (attrs & printedUsesL .~ Uses Ammo (Fixed n) & usesL .~ singletonMap Ammo n)
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       chooseFight <- toMessage <$> mkChooseFight iid source

@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Asset.Uses hiding (Key)
 import Arkham.Asset.Uses qualified as Uses
+import Arkham.Calculation
 import Arkham.CampaignLogKey
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -73,8 +74,8 @@ storyWeakness cardCode name encounterSet =
     , cdLevel = Nothing
     }
 
-uses :: UseType -> Int -> Uses GameValue
-uses uType = Uses uType . Static
+uses :: UseType -> Int -> Uses GameCalculation
+uses uType = Uses uType . Fixed
 
 seal :: IsSealing s => s -> Keyword
 seal (toSealing -> s) = Keyword.Seal s
@@ -2770,7 +2771,7 @@ ancientStoneKnowledgeOfTheElders4 =
     { cdCardTraits = setFromList [Item, Relic]
     , cdSkills = [#intellect, #intellect]
     , cdSlots = [#hand]
-    , cdUses = uses Secret 0
+    , cdUses = Uses Secret (RecordedCount YouHaveIdentifiedTheStone)
     , cdKeywords = setFromList [Keyword.Researched YouHaveIdentifiedTheStone]
     , cdLevel = Just 4
     }
@@ -2781,7 +2782,7 @@ ancientStoneMindsInHarmony4 =
     { cdCardTraits = setFromList [Item, Relic]
     , cdSkills = [#willpower, #willpower]
     , cdSlots = [#hand]
-    , cdUses = uses Secret 0
+    , cdUses = Uses Secret (RecordedCount YouHaveIdentifiedTheStone)
     , cdKeywords = setFromList [Keyword.Researched YouHaveIdentifiedTheStone]
     , cdLevel = Just 4
     }
@@ -3358,7 +3359,7 @@ theCouncilsCoffer2 =
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Item, Relic]
     , cdLevel = Just 2
-    , cdUses = Uses Lock (PerPlayer 1)
+    , cdUses = Uses Lock (GameValueCalculation $ PerPlayer 1)
     , cdUnique = True
     }
 
@@ -3392,7 +3393,7 @@ investments =
   (asset "05233" "Investments" 1 Rogue)
     { cdSkills = [#intellect]
     , cdCardTraits = singleton Connection
-    , cdUses = UsesWithLimit Supply (Static 0) (Static 10)
+    , cdUses = UsesWithLimit Supply (Fixed 0) (Fixed 10)
     }
 
 deVermisMysteriis2 :: CardDef
@@ -5024,7 +5025,7 @@ closeTheCircle1 =
     , cdSkills = [#combat, #agility]
     , cdSlots = [#arcane]
     , cdLevel = Just 1
-    , cdUses = uses Charge 0
+    , cdUses = Uses Charge (DifferentClassAmong $ oneOf [InPlayAreaOf You, IsThisCard])
     }
 
 astronomicalAtlas3 :: CardDef
@@ -5135,6 +5136,15 @@ michaelLeigh5 =
     , cdUnique = True
     , cdUses = uses Evidence 0
     , cdLevel = Just 5
+    }
+
+oldShotgun2 :: CardDef
+oldShotgun2 =
+  (multiClassAsset "08088" "Old Shotgun" 0 [Guardian, Rogue])
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Item, Weapon, Firearm]
+    , cdSlots = [#hand, #hand]
+    , cdUses = Uses Ammo (DuringEventCalculation (Fixed 2) (Fixed 0))
     }
 
 brandOfCthugha1 :: CardDef
@@ -5632,7 +5642,7 @@ ancientStoneTransientThoughts4 =
     { cdCardTraits = setFromList [Item, Relic]
     , cdSkills = [#agility, #agility]
     , cdSlots = [#hand]
-    , cdUses = uses Secret 0
+    , cdUses = Uses Secret (RecordedCount YouHaveIdentifiedTheStone)
     , cdKeywords = setFromList [Keyword.Researched YouHaveIdentifiedTheStone]
     , cdLevel = Just 4
     }

@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Action (Action)
 import Arkham.Asset.Uses
+import Arkham.Calculation
 import Arkham.Card.CardCode
 import Arkham.Card.CardType
 import Arkham.Card.Cost
@@ -16,7 +17,6 @@ import {-# SOURCE #-} Arkham.Cost
 import Arkham.Criteria
 import Arkham.Customization
 import Arkham.EncounterSet
-import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
 import Arkham.Keyword (HasKeywords (..), Keyword)
@@ -122,7 +122,7 @@ data CardDef = CardDef
   , cdDoubleSided :: Bool
   , cdLimits :: [CardLimit]
   , cdExceptional :: Bool
-  , cdUses :: Uses GameValue
+  , cdUses :: Uses GameCalculation
   , cdPlayableFromDiscard :: Bool
   , cdStage :: Maybe Int
   , cdSlots :: [SlotType]

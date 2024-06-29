@@ -6,9 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Capability
 import Arkham.Card
-import Arkham.ClassSymbol
 import Arkham.Game.Helpers (canDo, getCanPerformAbility, getPlayableCards)
-import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Message (drawCards)
 import Arkham.Helpers.Modifiers
@@ -44,19 +42,6 @@ instance HasAbilities CloseTheCircle1 where
 
 instance RunMessage CloseTheCircle1 where
   runMessage msg (CloseTheCircle1 (With attrs meta)) = runQueueT $ case msg of
-    InvestigatorPlayedAsset iid aid | aid == toId attrs -> do
-      cards <- select $ ControlledBy (InvestigatorWithId iid)
-
-      let n =
-            count (`notElem` [Neutral, Mythos])
-              . nub
-              . (Mystic :)
-              $ concatMap (toList . cdClassSymbols . toCardDef . toCard) cards
-      CloseTheCircle1
-        . (`with` meta)
-        <$> runMessage
-          msg
-          (attrs {assetPrintedUses = Uses Charge (Static n), assetUses = singletonMap Charge n})
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let windows = defaultWindows iid
       iattrs <- getAttrs @Investigator iid

@@ -45,6 +45,9 @@ totalResourceCost _ = 0
 totalResourcePayment :: Payment -> Int
 totalResourcePayment = sumOf (cosmos . _ResourcePayment)
 
+totalUsesPayment :: Payment -> Int
+totalUsesPayment = sumOf (cosmos . _UsesPayment)
+
 totalInvestigatorDamagePayment :: Payment -> Int
 totalInvestigatorDamagePayment = sumOf (cosmos . _InvestigatorDamagePayment)
 
@@ -121,6 +124,11 @@ _DiscardPayment = prism' DiscardPayment $ \case
 _ResourcePayment :: Prism' Payment Int
 _ResourcePayment = prism' ResourcePayment $ \case
   ResourcePayment x -> Just x
+  _ -> Nothing
+
+_UsesPayment :: Prism' Payment Int
+_UsesPayment = prism' UsesPayment $ \case
+  UsesPayment x -> Just x
   _ -> Nothing
 
 _InvestigatorDamagePayment :: Prism' Payment Int

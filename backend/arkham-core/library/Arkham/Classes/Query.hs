@@ -9,6 +9,9 @@ import Arkham.Target
 import Data.List qualified as List
 import Data.Typeable
 
+selectWhenNotNull :: (HasCallStack, Query a, HasGame m) => a -> ([QueryElement a] -> m ()) -> m ()
+selectWhenNotNull q f = select q >>= \xs -> if null xs then pure () else f xs
+
 selectCount :: (HasCallStack, Query a, HasGame m) => a -> m Int
 selectCount = fmap length . select
 

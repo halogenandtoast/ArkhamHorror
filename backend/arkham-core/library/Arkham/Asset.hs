@@ -799,6 +799,9 @@ allAssets =
     , --- guardian/seeker [eote]
       SomeAssetCard medicalStudent
     , SomeAssetCard michaelLeigh5
+    , --- guardian/rogue [eote]
+      SomeAssetCard oldShotgun2
+    , SomeAssetCard quickdrawHolster4
     , --- guardian/mystic [eote]
       SomeAssetCard brandOfCthugha1
     , SomeAssetCard brandOfCthugha4

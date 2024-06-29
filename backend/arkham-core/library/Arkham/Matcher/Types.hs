@@ -212,6 +212,7 @@ data AssetMatcher
   | AssetWithoutSealedTokens
   | AssetInSlot SlotType
   | AssetInTwoHandSlots
+  | AssetInSingleHand
   | AssetIs CardCode
   | AssetWithCardId CardId
   | AssetCardMatch CardMatcher

@@ -149,7 +149,7 @@ getAbilitiesForTurn attrs = do
 getCanDiscoverClues
   :: HasGame m => IsInvestigate -> InvestigatorId -> LocationId -> m Bool
 getCanDiscoverClues isInvestigation iid lid = do
-  modifiers <- getModifiers (toTarget iid)
+  modifiers <- getModifiers iid
   hasClues <- fieldSome LocationClues lid
   (&& hasClues) . not <$> anyM match modifiers
  where
@@ -454,9 +454,7 @@ getMaybeLocation
 getMaybeLocation = field InvestigatorLocation
 
 withLocationOf :: HasGame m => InvestigatorId -> (LocationId -> m ()) -> m ()
-withLocationOf iid f = do
-  mLocation <- getMaybeLocation iid
-  maybe (pure ()) f mLocation
+withLocationOf iid = forField InvestigatorLocation iid
 
 enemiesColocatedWith :: InvestigatorId -> EnemyMatcher
 enemiesColocatedWith = EnemyAt . LocationWithInvestigator . InvestigatorWithId

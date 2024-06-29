@@ -4,6 +4,7 @@
 module Arkham.Capability where
 
 import Arkham.GameValue
+import Arkham.Id
 import Arkham.Matcher.Patterns
 import Arkham.Matcher.Types
 import Arkham.Modifier
@@ -54,6 +55,11 @@ instance Capable (InvestigatorMatcher -> InvestigatorMatcher) where
   can =
     let can' = can :: Capabilities InvestigatorMatcher
      in fmap (<>) can'
+
+instance Capable (InvestigatorId -> InvestigatorMatcher) where
+  can =
+    let can' = can :: Capabilities InvestigatorMatcher
+     in fmap (flip ((<>) . InvestigatorWithId)) can'
 
 instance Capable (FromSource -> InvestigatorMatcher) where
   can =

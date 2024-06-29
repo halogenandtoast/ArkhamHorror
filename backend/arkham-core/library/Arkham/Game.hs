@@ -1701,6 +1701,30 @@ getLocationsMatching lmatcher = do
 
             pure $ filter ((`elem` valids) . toId) ls
           Nothing -> pure []
+      LocationBetween startMatcher endMatcher destinationMatcher -> do
+        starts <- select startMatcher
+        destinations <- select destinationMatcher
+        valids <- concatForM starts \start -> do
+          let
+            go :: LocationId -> Seq LocationId -> StateT PathState (ReaderT Game m) ()
+            go loc path = do
+              doesMatch <- lift $ loc <=~> endMatcher
+              ps@PathState {..} <- get
+              put
+                $ ps
+                  { _psVisitedLocations = insertSet loc _psVisitedLocations
+                  , _psPaths = if doesMatch then Map.insertWith (<>) loc [path] _psPaths else _psPaths
+                  }
+              connections <- lift $ select $ ConnectedFrom (LocationWithId loc)
+              for_ connections \conn -> unless (conn `elem` _psVisitedLocations) (go conn $ path |> loc)
+          PathState {_psPaths} <- execStateT (go start mempty) (PathState (singleton start) mempty)
+
+          pure $ flip concatMap (mapToList _psPaths) \(_, paths) ->
+            flip mapMaybe paths \case
+              (_ :<| (step :<| _)) | step `elem` destinations -> Just step
+              _ -> Nothing
+
+        pure $ filter ((`elem` valids) . toId) ls
       LocationWithDistanceFromAtMost distance startMatcher matcher -> do
         mstart <- selectOne startMatcher
         case mstart of

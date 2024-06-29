@@ -374,7 +374,7 @@ instance FromJSON AssetAttrs where
     assetUses <- o .: "uses"
     assetPrintedUses <- o .: "printedUses"
     assetExhausted <- o .: "exhausted"
-    assetExiled <- o .: "exiled"
+    assetExiled <- o .:? "exiled" .!= False
     assetTokens <- o .: "tokens"
     assetCanLeavePlayByNormalMeans <- o .: "canLeavePlayByNormalMeans"
     assetWhenNoUses <- o .: "whenNoUses"

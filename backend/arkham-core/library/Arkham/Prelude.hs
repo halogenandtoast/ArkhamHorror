@@ -371,6 +371,11 @@ toResult x = case fromJSON x of
   Success a -> a
   Error e -> error $ "result failure: " <> e
 
+toResultDefault :: FromJSON a => a -> Value -> a
+toResultDefault def x = case fromJSON x of
+  Success a -> a
+  Error _ -> def
+
 maybeResult :: FromJSON a => Value -> Maybe a
 maybeResult x = case fromJSON x of
   Success a -> Just a

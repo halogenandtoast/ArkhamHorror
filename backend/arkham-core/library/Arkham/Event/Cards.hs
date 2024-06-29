@@ -255,6 +255,8 @@ allPlayerEventCards =
       , onTheHunt
       , onTheHunt3
       , onTheLam
+      , onTheTrail1
+      , onTheTrail3
       , oops
       , oops2
       , openGate
@@ -2971,6 +2973,34 @@ fendOff3 =
     { cdSkills = [#agility, #agility]
     , cdCardTraits = setFromList [Gambit, Trick]
     , cdFastWindow = Just $ EnemySpawns #when YourLocation NonEliteEnemy
+    }
+
+onTheTrail1 :: CardDef
+onTheTrail1 =
+  (multiClassEvent "08084" "On the Trail" 1 [Guardian, Seeker])
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Insight, Tactic]
+    , cdLevel = Just 1
+    , cdCriteria =
+        Just
+          $ exists
+          $ oneOf
+            [ CanMoveCloserToLocation ThisCard You (LocationWithEnemy AnyEnemy)
+            , LocationBetween
+                YourLocation
+                (LocationWithEnemy AnyEnemy)
+                (EmptyLocation <> LocationWithDiscoverableCluesBy You)
+            ]
+    }
+
+onTheTrail3 :: CardDef
+onTheTrail3 =
+  (multiClassEvent "08085" "On the Trail" 1 [Guardian, Seeker])
+    { cdSkills = [#intellect, #intellect, #combat, #agility]
+    , cdCardTraits = setFromList [Insight, Tactic]
+    , cdLevel = Just 3
+    , cdCriteria =
+        Just $ exists (CanMoveCloserToLocation ThisCard You (LocationWithEnemy AnyEnemy))
     }
 
 etherealSlip :: CardDef

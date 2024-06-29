@@ -1072,17 +1072,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 <> [ PayAdditionalCost iid batchId leaveCosts
                    , WhenCanMove
                       iid
-                      ( [MoveFrom source iid fromLocationId | fromLocationId <- maybeToList mFromLocation]
-                          <> [ runWhenEntering
-                             , runAtIfEntering
-                             , PayAdditionalCost iid batchId enterCosts
-                             , runWhenMoves
-                             , runAtIfMoves
-                             ]
-                          <> [MoveTo $ move source iid destinationLocationId]
-                          <> [runAfterEnteringMoves]
-                          <> maybeToList mRunAfterLeaving
-                      )
+                      $ [MoveFrom source iid fromLocationId | fromLocationId <- maybeToList mFromLocation]
+                      <> [ runWhenEntering
+                         , runAtIfEntering
+                         , PayAdditionalCost iid batchId enterCosts
+                         , runWhenMoves
+                         , runAtIfMoves
+                         , MoveTo movement
+                         , runAfterEnteringMoves
+                         ]
+                      <> maybeToList mRunAfterLeaving
                    ]
     pure a
   WhenCanMove iid msgs | iid == investigatorId -> do
@@ -1535,10 +1534,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       n' = maybe n (min n) mMax
     canDiscoverClues <- getCanDiscoverClues d.isInvestigate iid lid
 
-    when canDiscoverClues $ do
-      discoveredClues <- min n' <$> field LocationClues lid
-      checkWindowMsg <- checkWindows [mkWhen (Window.DiscoverClues iid lid d.source discoveredClues)]
-      pushAll [checkWindowMsg, Do $ DiscoverClues iid $ d {discoverCount = discoveredClues}]
+    if canDiscoverClues
+      then do
+        discoveredClues <- min n' <$> field LocationClues lid
+        checkWindowMsg <- checkWindows [mkWhen (Window.DiscoverClues iid lid d.source discoveredClues)]
+        pushAll [checkWindowMsg, Do $ DiscoverClues iid $ d {discoverCount = discoveredClues}]
+      else do
+        tokens <- field LocationTokens lid
+        putStrLn $ "Can't discover clues in " <> tshow lid <> ": " <> tshow tokens
     pure a
   Do (DiscoverClues iid d) | iid == investigatorId -> do
     lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
@@ -1949,6 +1952,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           <> [ afterMoveButBeforeEnemyEngagement
              , CheckEnemyEngagement iid
              ]
+          <> moveAfter movement
         pure a
   Do (WhenWillEnterLocation iid lid) | iid == investigatorId -> do
     pure $ a & placementL .~ AtLocation lid

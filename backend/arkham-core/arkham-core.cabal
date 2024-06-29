@@ -1600,6 +1600,8 @@ library
       Arkham.Event.Cards.OnTheHunt
       Arkham.Event.Cards.OnTheHunt3
       Arkham.Event.Cards.OnTheLam
+      Arkham.Event.Cards.OnTheTrail1
+      Arkham.Event.Cards.OnTheTrail3
       Arkham.Event.Cards.Oops
       Arkham.Event.Cards.Oops2
       Arkham.Event.Cards.OpenGate

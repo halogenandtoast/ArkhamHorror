@@ -137,6 +137,9 @@ instance IsLabel "bless" ChaosTokenFace where
 instance IsLabel "curse" ChaosTokenFace where
   fromLabel = CurseToken
 
+allChaosTokenFaces :: [ChaosTokenFace]
+allChaosTokenFaces = [minBound ..]
+
 isNumberChaosToken :: ChaosTokenFace -> Bool
 isNumberChaosToken = \case
   PlusOne -> True

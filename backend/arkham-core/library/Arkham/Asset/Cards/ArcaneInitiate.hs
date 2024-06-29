@@ -1,14 +1,10 @@
-module Arkham.Asset.Cards.ArcaneInitiate (
-  arcaneInitiate,
-  ArcaneInitiate (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.ArcaneInitiate (arcaneInitiate, ArcaneInitiate (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype ArcaneInitiate = ArcaneInitiate AssetAttrs
@@ -20,17 +16,17 @@ arcaneInitiate = ally ArcaneInitiate Cards.arcaneInitiate (1, 2)
 
 instance HasAbilities ArcaneInitiate where
   getAbilities (ArcaneInitiate a) =
-    [ restrictedAbility a 1 ControlsThis $ ForcedAbility $ AssetEntersPlay #when $ AssetWithId (toId a)
+    [ restrictedAbility a 1 ControlsThis $ forced $ AssetEntersPlay #when $ AssetWithId (toId a)
     , restrictedAbility a 2 ControlsThis $ FastAbility (exhaust a)
     ]
 
 instance RunMessage ArcaneInitiate where
   runMessage msg a@(ArcaneInitiate attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
+      push $ PlaceDoom (attrs.ability 1) (toTarget attrs) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      let source = toAbilitySource attrs 2
+      let source = attrs.ability 2
       player <- getPlayer iid
       push
         $ chooseOne player

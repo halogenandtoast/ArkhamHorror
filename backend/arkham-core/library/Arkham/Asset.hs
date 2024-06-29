@@ -804,6 +804,7 @@ allAssets =
     , SomeAssetCard quickdrawHolster4
     , --- guardian/mystic [eote]
       SomeAssetCard brandOfCthugha1
+    , SomeAssetCard nkosiMabatiEnigmaticWarlock3
     , SomeAssetCard brandOfCthugha4
     , --- guardian/survivor [eote]
       SomeAssetCard sledgehammer

@@ -503,6 +503,7 @@ allPlayerAssetCards =
       , newspaper2
       , nightmareBauble3
       , nineOfRods3
+      , nkosiMabatiEnigmaticWarlock3
       , obfuscation
       , observed4
       , occultLexicon
@@ -5167,6 +5168,15 @@ brandOfCthugha1 =
     , cdLevel = Just 1
     , cdUses = uses Charge 6
     , cdSlots = [#arcane]
+    }
+
+nkosiMabatiEnigmaticWarlock3 :: CardDef
+nkosiMabatiEnigmaticWarlock3 =
+  (multiClassAsset "08091" ("Nkosi Mabati" <:> "Enigmatic Warlock") 4 [Guardian, Mystic])
+    { cdSkills = [#willpower, #willpower]
+    , cdCardTraits = setFromList [Spell]
+    , cdLevel = Just 3
+    , cdSlots = [#ally]
     }
 
 brandOfCthugha4 :: CardDef

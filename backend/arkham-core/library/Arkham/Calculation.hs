@@ -54,6 +54,8 @@ data GameCalculation
   | DifferentClassAmong ExtendedCardMatcher
   | EnemyTargetFieldCalculation (Field Enemy Int)
   | CountChaosTokens ChaosTokenMatcher
+  | GameValueCalculation GameValue
+  | DuringEventCalculation GameCalculation GameCalculation
   deriving stock (Show, Ord, Eq, Data, Generic)
   deriving (FromJSON) via MaybeFixed
 

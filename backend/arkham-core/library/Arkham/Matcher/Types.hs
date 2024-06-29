@@ -661,6 +661,7 @@ data ExtendedCardMatcher
   | CardIsBeneathAsset AssetMatcher
   | CardWithCopyInHand Who
   | NotThisCard
+  | IsThisCard
   | ControlledBy Who
   | InHandOf Who
   | InDeckOf Who

@@ -16,7 +16,6 @@ import Arkham.Cost
 import Arkham.Criteria (Criterion, exists, notExists, youExist)
 import Arkham.Criteria qualified as Criteria
 import Arkham.Damage
-import Arkham.GameValue
 import Arkham.History.Types
 import Arkham.Id
 import Arkham.Keyword qualified as Keyword
@@ -2706,7 +2705,7 @@ shrineOfTheMoirai3 =
     , cdCriteria = Just $ exists (LocationWithInvestigator You)
     , cdLevel = Just 3
     , cdUnique = True
-    , cdUses = Uses.Uses Uses.Offering (Static 3)
+    , cdUses = Uses.Uses Uses.Offering (Fixed 3)
     }
 
 toeToToe :: CardDef
@@ -2939,7 +2938,7 @@ juryRig =
   (event "08074" "Jury-Rig" 0 Survivor)
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = singleton Upgrade
-    , cdUses = Uses.Uses Uses.Durability (Static 3)
+    , cdUses = Uses.Uses Uses.Durability (Fixed 3)
     , cdCriteria = Just $ exists $ #item <> AssetControlledBy (affectsOthers AtYourLocation)
     }
 

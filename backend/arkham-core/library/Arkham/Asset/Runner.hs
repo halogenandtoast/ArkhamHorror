@@ -24,6 +24,7 @@ import Arkham.ChaosToken
 import Arkham.Classes.HasGame
 import Arkham.Damage
 import Arkham.DefeatedBy
+import Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.Placement
 import Arkham.Helpers.Use
 import Arkham.Matcher (
@@ -176,7 +177,7 @@ instance RunMessage AssetAttrs where
           InThreatArea iid' -> iid == iid'
           AttachedToInvestigator iid' -> iid == iid'
           _ -> False
-      when shouldResignWith $ push $ ResignWith (AssetTarget assetId)
+      pushWhen shouldResignWith $ ResignWith (AssetTarget assetId)
       pure a
     InvestigatorEliminated iid -> do
       let
@@ -185,14 +186,14 @@ instance RunMessage AssetAttrs where
           InThreatArea iid' -> iid == iid'
           AttachedToInvestigator iid' -> iid == iid'
           _ -> a.controller == Just iid
-      when shouldDiscard $ push $ toDiscard GameSource assetId
+      pushWhen shouldDiscard $ toDiscard GameSource assetId
       pure a
     AddUses aid useType' n | aid == assetId -> case assetPrintedUses of
       NoUses -> pure $ a & usesL . at useType' . non 0 %~ (+ n)
       Uses useType'' _ | useType' == useType'' -> do
         pure $ a & usesL . ix useType' +~ n
       UsesWithLimit useType'' _ pl | useType' == useType'' -> do
-        l <- getPlayerCountValue pl
+        l <- calculate pl
         pure $ a & usesL . ix useType' %~ min l . (+ n)
       _ ->
         error $ "Trying to add the wrong use type, has " <> show assetUses <> ", but got: " <> show useType'
@@ -316,7 +317,7 @@ instance RunMessage AssetAttrs where
         applyModifier usesMap (AdditionalStartingUses n) = case printedUses of
           Uses uType _ -> pure $ adjustMap (+ n) uType usesMap
           UsesWithLimit uType _ pl -> do
-            l <- getPlayerCountValue pl
+            l <- calculate pl
             pure $ adjustMap (min l . (+ n)) uType usesMap
           _ -> pure usesMap
         applyModifier m _ = pure m

@@ -7,6 +7,7 @@ import Arkham.Prelude
 import Arkham.Ability.Types
 import Arkham.Asset.Cards
 import Arkham.Asset.Uses
+import Arkham.Calculation
 import Arkham.Card
 import Arkham.ChaosToken (ChaosToken)
 import Arkham.ClassSymbol
@@ -15,7 +16,6 @@ import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Field
-import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
 import Arkham.Key
@@ -157,7 +157,7 @@ data instance Field Asset :: Type -> Type where
   AssetDoom :: Field Asset Int
   AssetExhausted :: Field Asset Bool
   AssetUses :: Field Asset (Map UseType Int)
-  AssetStartingUses :: Field Asset (Uses GameValue)
+  AssetStartingUses :: Field Asset (Uses GameCalculation)
   AssetController :: Field Asset (Maybe InvestigatorId)
   AssetOwner :: Field Asset (Maybe InvestigatorId)
   AssetLocation :: Field Asset (Maybe LocationId)
@@ -245,7 +245,7 @@ data AssetAttrs = AssetAttrs
   , assetHealth :: Maybe Int
   , assetSanity :: Maybe Int
   , assetUses :: Map UseType Int
-  , assetPrintedUses :: Uses GameValue
+  , assetPrintedUses :: Uses GameCalculation
   , assetExhausted :: Bool
   , assetExiled :: Bool
   , assetTokens :: Tokens

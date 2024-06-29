@@ -372,7 +372,7 @@ instance FromJSON AssetAttrs where
     assetHealth <- o .: "health"
     assetSanity <- o .: "sanity"
     assetUses <- o .: "uses"
-    assetPrintedUses <- o .: "printedUses"
+    assetPrintedUses <- o .: "printedUses" <|> (fmap GameValueCalculation <$> o .: "printedUses")
     assetExhausted <- o .: "exhausted"
     assetExiled <- o .:? "exiled" .!= False
     assetTokens <- o .: "tokens"

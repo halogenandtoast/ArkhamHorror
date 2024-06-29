@@ -33,7 +33,7 @@ deriving anyclass instance ToJSONKey UseType
 deriving anyclass instance FromJSONKey UseType
 
 data Uses n = NoUses | Uses UseType n | UsesWithLimit UseType n n
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Functor)
 
 use :: Uses Int -> Uses Int
 use = useN 1

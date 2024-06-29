@@ -1170,6 +1170,7 @@ runGameMessage msg g = case msg of
                   , eventTarget = mtarget
                   , eventOriginalCardCode = pcOriginalCardCode pc
                   , eventPayment = payment
+                  , eventPlacement = Limbo
                   }
 
           pushAll

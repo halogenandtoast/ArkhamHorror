@@ -248,6 +248,12 @@ instance IsString AssetMatcher where
 instance IsLabel "ally" AssetMatcher where
   fromLabel = AssetWithTrait Ally
 
+instance IsLabel "firearm" AssetMatcher where
+  fromLabel = AssetWithTrait Firearm
+
+instance IsLabel "ranged" AssetMatcher where
+  fromLabel = AssetWithTrait Ranged
+
 instance IsLabel "tome" AssetMatcher where
   fromLabel = AssetWithTrait Tome
 

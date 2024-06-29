@@ -2776,6 +2776,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationWithTreachery treacheryMatcher -> do selectAny $ Matcher.treacheryAt locationId <> treacheryMatcher
 
     -- normal cases
+    Matcher.LocationBetween {} -> locationId <=~> matcher
     Matcher.LocationWithDistanceFromAtLeast {} -> locationId <=~> matcher
     Matcher.LocationWithAccessiblePath {} -> locationId <=~> matcher
     Matcher.CanMoveCloserToLocation {} -> locationId <=~> matcher

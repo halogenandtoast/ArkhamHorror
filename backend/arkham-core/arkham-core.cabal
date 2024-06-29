@@ -1646,6 +1646,7 @@ library
       Arkham.Event.Cards.SneakAttack
       Arkham.Event.Cards.SneakAttack2
       Arkham.Event.Cards.SneakBy
+      Arkham.Event.Cards.Snipe1
       Arkham.Event.Cards.SoothingMelody
       Arkham.Event.Cards.SpectralRazor
       Arkham.Event.Cards.StandTogether

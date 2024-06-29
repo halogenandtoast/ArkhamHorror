@@ -266,6 +266,7 @@ watch(abilities, (abilities) => {
       />
       <template v-if="debug.active">
         <button @click="debug.send(game.id, {tag: 'DefeatEnemy', contents: [id, investigatorId, {tag: 'InvestigatorSource', contents:investigatorId}]})">Defeat</button>
+        <button @click="debug.send(game.id, {tag: 'EnemyEvaded', contents: [investigatorId, id]})">Evade</button>
       </template>
     </div>
 

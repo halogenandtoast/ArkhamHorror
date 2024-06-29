@@ -301,6 +301,7 @@ allPlayerEventCards =
       , sneakAttack
       , sneakAttack2
       , sneakBy
+      , snipe1
       , soothingMelody
       , spectralRazor
       , standTogether
@@ -3001,6 +3002,15 @@ onTheTrail3 =
     , cdLevel = Just 3
     , cdCriteria =
         Just $ exists (CanMoveCloserToLocation ThisCard You (LocationWithEnemy AnyEnemy))
+    }
+
+snipe1 :: CardDef
+snipe1 =
+  (multiClassEvent "08087" "Snipe" 1 [Guardian, Seeker])
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Tactic]
+    , cdLevel = Just 1
+    , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     }
 
 etherealSlip :: CardDef

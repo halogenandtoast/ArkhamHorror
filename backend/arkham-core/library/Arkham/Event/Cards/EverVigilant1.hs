@@ -1,9 +1,4 @@
-module Arkham.Event.Cards.EverVigilant1 (
-  everVigilant1,
-  EverVigilant1 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.EverVigilant1 (everVigilant1, EverVigilant1 (..)) where
 
 import Arkham.Card
 import Arkham.Classes
@@ -13,6 +8,7 @@ import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Window
 
@@ -24,8 +20,8 @@ everVigilant1 :: EventCard EverVigilant1
 everVigilant1 = event EverVigilant1 Cards.everVigilant1
 
 instance HasModifiersFor EverVigilant1 where
-  getModifiersFor (InvestigatorTarget iid) (EverVigilant1 attrs) | iid == eventOwner attrs = do
-    pure $ toModifiers attrs [ReduceCostOf AnyCard 1]
+  getModifiersFor (InvestigatorTarget iid) (EverVigilant1 attrs) | iid == attrs.owner = do
+    modified attrs [ReduceCostOf AnyCard 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage EverVigilant1 where

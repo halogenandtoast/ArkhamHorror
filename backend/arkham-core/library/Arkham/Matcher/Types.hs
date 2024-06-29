@@ -404,6 +404,7 @@ data EventMatcher
   | AnyEvent
   | NotEvent EventMatcher
   | EventWithPlacement Placement
+  | ActiveEvent
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup EventMatcher where

@@ -2219,8 +2219,8 @@ getEventsMatching matcher = do
     EventWithTrait t -> filterM (fmap (member t) . field EventTraits . toId) as
     EventCardMatch cardMatcher ->
       filterM (fmap (`cardMatch` cardMatcher) . field EventCard . toId) as
-    EventWithPlacement placement ->
-      pure $ filter ((== placement) . attr eventPlacement) as
+    EventWithPlacement placement -> pure $ filter ((== placement) . attr eventPlacement) as
+    ActiveEvent -> pure $ filter ((== Limbo) . attr eventPlacement) as
     EventControlledBy investigatorMatcher -> do
       iids <- select investigatorMatcher
       pure $ filter ((`elem` iids) . ownerOfEvent) as

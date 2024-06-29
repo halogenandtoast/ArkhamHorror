@@ -80,6 +80,9 @@ toModifiers = map . toModifier
 modified :: (Sourceable a, Applicative m) => a -> [ModifierType] -> m [Modifier]
 modified a = pure . toModifiers a
 
+maybeModified :: (Sourceable a, Monad m) => a -> MaybeT m [ModifierType] -> m [Modifier]
+maybeModified a = modified a . fromMaybe [] <=< runMaybeT
+
 toModifiersWith :: Sourceable a => a -> (Modifier -> Modifier) -> [ModifierType] -> [Modifier]
 toModifiersWith a f xs = map (f . toModifier a) xs
 

@@ -512,6 +512,7 @@ allPlayerAssetCards =
       , oldBookOfLore3
       , oldHuntingRifle3
       , oldKeyring
+      , oldShotgun2
       , oliveMcBride
       , onYourOwn3
       , onYourOwn3_Exceptional
@@ -549,6 +550,7 @@ allPlayerAssetCards =
       , puzzleBox
       , quickLearner4
       , quickStudy2
+      , quickdrawHolster4
       , rabbitsFoot
       , rabbitsFoot3
       , randallCho
@@ -5145,6 +5147,16 @@ oldShotgun2 =
     , cdCardTraits = setFromList [Item, Weapon, Firearm]
     , cdSlots = [#hand, #hand]
     , cdUses = Uses Ammo (DuringEventCalculation (Fixed 2) (Fixed 0))
+    , cdLevel = Just 2
+    }
+
+quickdrawHolster4 :: CardDef
+quickdrawHolster4 =
+  (multiClassAsset "08089" "Quickdraw Holster" 4 [Guardian, Rogue])
+    { cdSkills = [#combat, #agility, #agility]
+    , cdCardTraits = setFromList [Item, Tool, Illicit]
+    , cdSlots = [#body]
+    , cdLevel = Just 4
     }
 
 brandOfCthugha1 :: CardDef

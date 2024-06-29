@@ -214,6 +214,9 @@ data Card
   | VengeanceCard Card
   deriving stock (Show, Ord, Data)
 
+instance HasField "keywords" Card (Set Keyword) where
+  getField = cdKeywords . toCardDef
+
 instance HasField "id" Card CardId where
   getField = \case
     PlayerCard pc -> pc.id

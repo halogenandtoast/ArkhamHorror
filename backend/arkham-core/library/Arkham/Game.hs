@@ -1981,6 +1981,7 @@ getAssetsMatching matcher = do
     AssetWithTrait t -> filterM (fieldMap AssetTraits (member t) . toId) as
     AssetInSlot slot -> pure $ filter (elem slot . attr assetSlots) as
     AssetInTwoHandSlots -> pure $ filter ((== 2) . count (== HandSlot) . attr assetSlots) as
+    AssetInSingleHand -> pure $ filter ((== 1) . count (== HandSlot) . attr assetSlots) as
     AssetCanLeavePlayByNormalMeans -> pure $ filter canBeDiscarded as
     AssetWithPlacement placement ->
       pure $ filter ((== placement) . attr assetPlacement) as

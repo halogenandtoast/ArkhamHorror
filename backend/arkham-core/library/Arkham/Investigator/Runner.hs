@@ -1799,6 +1799,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ a
       & (tokensL %~ subtractTokens Token.Damage health . subtractTokens Token.Horror sanity)
       & (unhealedHorrorThisRoundL %~ min 0 . subtract sanity)
+      & (assignedHealthHealL %~ deleteMap source)
+      & (assignedSanityHealL %~ deleteMap source)
   HealDamage (InvestigatorTarget iid) source amount | iid == investigatorId -> do
     dmgTreacheries <-
       selectWithField TreacheryCard $ treacheryInThreatAreaOf iid <> TreacheryWithModifier IsPointOfDamage

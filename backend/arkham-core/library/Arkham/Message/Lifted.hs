@@ -489,6 +489,14 @@ skillTestModifiers
 skillTestModifiers (toSource -> source) (toTarget -> target) mods =
   push $ Msg.skillTestModifiers source target mods
 
+turnModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
+turnModifier source target modifier = push $ Msg.turnModifier source target modifier
+
+turnModifiers
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
+turnModifiers source target modifiers = push $ Msg.turnModifiers source target modifiers
+
 skillTestModifier
   :: forall target source m
    . (ReverseQueue m, Sourceable source, Targetable target)

@@ -200,7 +200,6 @@ runGameMessage msg g = case msg of
       $ g
       & (inActionL .~ False)
       & (actionCanBeUndoneL .~ False)
-      & (actionRemovedEntitiesL .~ mempty)
       & (actionDiffL .~ [])
       & (inDiscardEntitiesL .~ mempty)
       & (outOfPlayEntitiesL %~ deleteMap RemovedZone)
@@ -2369,13 +2368,10 @@ runGameMessage msg g = case msg of
   ResolvedAbility _ -> do
     let removedEntitiesF = if length (gameActiveAbilities g) <= 1 then actionRemovedEntitiesL .~ mempty else id
     pure $ g & activeAbilitiesL %~ drop 1 & removedEntitiesF
-  Do (Discarded (EnemyTarget eid) _ _) -> do
-    pure $ g & actionRemovedEntitiesL . enemiesL %~ deleteMap eid
   Discarded (AssetTarget aid) _ (EncounterCard _) -> do
     runMessage (RemoveAsset aid) g
   Discarded (AssetTarget aid) _ _ -> do
-    mAsset <- maybeAsset aid
-    case mAsset of
+    maybeAsset aid >>= \case
       Nothing -> pure g
       Just _ -> runMessage (RemoveAsset aid) g
   DiscardedCost (SearchedCardTarget cid) -> do

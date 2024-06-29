@@ -64,6 +64,7 @@ allPlayerTreacheryCards =
       , acrossSpaceAndTime
       , amnesia
       , angeredSpirits
+      , armInjury
       , atychiphobia
       , bloodlust
       , boughtInBlood
@@ -2071,6 +2072,12 @@ greed :: CardDef
 greed =
   (weakness "08018" "Greed")
     { cdCardTraits = setFromList [Flaw]
+    }
+
+armInjury :: CardDef
+armInjury =
+  (basicWeakness "08130" "Arm Injury")
+    { cdCardTraits = singleton Injury
     }
 
 theZealotsSeal :: CardDef

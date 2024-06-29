@@ -433,6 +433,8 @@ allTreacheries =
     , SomeTreacheryCard buriedSecrets
     , SomeTreacheryCard burdenOfDestiny
     , SomeTreacheryCard greed
+    , -- neutral
+      SomeTreacheryCard armInjury
     , -- Return to the Night of the Zealot
       -- Return to the Gathering
       SomeTreacheryCard theZealotsSeal

@@ -69,6 +69,7 @@ import Arkham.Matcher (
   ExtendedCardMatcher (..),
   InvestigatorMatcher (..),
   LocationMatcher (..),
+  TreacheryMatcher (..),
   assetControlledBy,
   assetIs,
   cardIs,
@@ -76,6 +77,7 @@ import Arkham.Matcher (
   enemyEngagedWith,
   locationWithInvestigator,
   oneOf,
+  treacheryInThreatAreaOf,
  )
 import Arkham.Message qualified as Msg
 import Arkham.Modifier qualified as Modifier
@@ -89,6 +91,7 @@ import Arkham.SkillTest
 import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
@@ -1797,6 +1800,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (tokensL %~ subtractTokens Token.Damage health . subtractTokens Token.Horror sanity)
       & (unhealedHorrorThisRoundL %~ min 0 . subtract sanity)
   HealDamage (InvestigatorTarget iid) source amount | iid == investigatorId -> do
+    dmgTreacheries <-
+      selectWithField TreacheryCard $ treacheryInThreatAreaOf iid <> TreacheryWithModifier IsPointOfDamage
+    if null dmgTreacheries
+      then push $ Do msg
+      else do
+        player <- getPlayer iid
+        push
+          $ chooseOne player
+          $ [ Label
+              ("Heal " <> toTitle c)
+              $ toDiscardBy iid source t
+              : [HealDamage (InvestigatorTarget iid) source (amount - 1) | amount - 1 > 0]
+            | (t, c) <- dmgTreacheries
+            ]
+          <> [Label "Heal remaining normally" [Do msg] | investigatorHealthDamage a > 0]
+    pure a
+  Do (HealDamage (InvestigatorTarget iid) source amount) | iid == investigatorId -> do
     afterWindow <- checkWindows [mkAfter $ Window.Healed DamageType (toTarget a) source amount]
     push afterWindow
     pure $ a & tokensL %~ subtractTokens Token.Damage amount

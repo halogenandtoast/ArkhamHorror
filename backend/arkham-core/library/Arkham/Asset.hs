@@ -816,6 +816,9 @@ allAssets =
     , SomeAssetCard eonChart1
     , SomeAssetCard geneBeauregard3
     , SomeAssetCard eonChart4
+    , --- seeker/mystic [eote]
+      SomeAssetCard divination1
+    , SomeAssetCard divination4
     , --- seeker/survivor [eote]
       SomeAssetCard icePick1
     , SomeAssetCard icePick3

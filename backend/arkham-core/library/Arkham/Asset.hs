@@ -820,7 +820,8 @@ allAssets =
       SomeAssetCard divination1
     , SomeAssetCard divination4
     , --- seeker/survivor [eote]
-      SomeAssetCard icePick1
+      SomeAssetCard professorWilliamWebbFinderOfHiddenConnections
+    , SomeAssetCard icePick1
     , SomeAssetCard icePick3
     , --- rogue/survivor [eote]
       SomeAssetCard unscrupulousLoan3

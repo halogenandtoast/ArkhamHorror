@@ -547,6 +547,7 @@ allPlayerAssetCards =
       , preciousMementoFromAFutureLife4
       , priestOfTwoFaiths1
       , professorWarrenRice
+      , professorWilliamWebbFinderOfHiddenConnections
       , prophesiaeProfanaAtlasOfTheUnknowable5
       , prophetic3
       , protectiveGear2
@@ -5283,6 +5284,20 @@ divination4 =
     , cdUses = uses Charge 6
     , cdLevel = Just 4
     , cdSlots = [#arcane]
+    }
+
+professorWilliamWebbFinderOfHiddenConnections :: CardDef
+professorWilliamWebbFinderOfHiddenConnections =
+  ( multiClassAsset
+      "08104"
+      ("Professor William Webb" <:> "Finder of Hidden Connections")
+      3
+      [Seeker, Survivor]
+  )
+    { cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdSkills = [#intellect]
+    , cdUses = uses Secret 3
+    , cdSlots = [#ally]
     }
 
 icePick1 :: CardDef

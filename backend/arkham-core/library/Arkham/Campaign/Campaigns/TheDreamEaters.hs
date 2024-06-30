@@ -216,7 +216,7 @@ instance RunMessage TheDreamEaters where
         lead <- getActivePlayer
         story prologue
         push
-          $ questionLabel "Which mode would you like to play" lead
+          $ Msg.questionLabel "Which mode would you like to play" lead
           $ ChooseOne
             [ Label "Full Campaign" [CampaignStep (PrologueStepPart 1)]
             , Label "The Dream-Quest" [CampaignStep (PrologueStepPart 2)]
@@ -226,7 +226,7 @@ instance RunMessage TheDreamEaters where
       CampaignStep (PrologueStepPart 1) -> do
         lead <- getActivePlayer
         push
-          $ questionLabel "Which scenario would you like to start with" lead
+          $ Msg.questionLabel "Which scenario would you like to start with" lead
           $ ChooseOne
             [ Label "Beyond the Gates of Sleep" [CampaignStep (PrologueStepPart 11)]
             , Label "Waking Nightmare" [CampaignStep (PrologueStepPart 12)]
@@ -259,7 +259,7 @@ instance RunMessage TheDreamEaters where
       CampaignStep (PrologueStepPart 11) -> do
         players <- allPlayers
         pushAll
-          $ map (\pid -> questionLabel "Choose Deck For Part A" pid ChooseDeck) players
+          $ map (\pid -> Msg.questionLabel "Choose Deck For Part A" pid ChooseDeck) players
           <> [NextCampaignStep (Just BeyondTheGatesOfSleep)]
         let difficulty = campaignDifficulty attrs
         pure
@@ -276,7 +276,7 @@ instance RunMessage TheDreamEaters where
       CampaignStep (PrologueStepPart 12) -> do
         players <- allPlayers
         pushAll
-          $ map (\pid -> questionLabel "Choose Deck For Part B" pid ChooseDeck) players
+          $ map (\pid -> Msg.questionLabel "Choose Deck For Part B" pid ChooseDeck) players
           <> [NextCampaignStep (Just WakingNightmare)]
         let difficulty = campaignDifficulty attrs
         pure
@@ -304,7 +304,7 @@ instance RunMessage TheDreamEaters where
                 if s == BeyondTheGatesOfSleep && WakingNightmare `elem` campaignCompletedSteps attrs
                   then do
                     players <- allPlayers
-                    pushAll $ map (\pid -> questionLabel "Choose Deck For Part A" pid ChooseDeck) players
+                    pushAll $ map (\pid -> Msg.questionLabel "Choose Deck For Part A" pid ChooseDeck) players
                   else do
                     for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
                       let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
@@ -337,7 +337,7 @@ instance RunMessage TheDreamEaters where
                 if s == WakingNightmare && BeyondTheGatesOfSleep `elem` campaignCompletedSteps attrs
                   then do
                     players <- allPlayers
-                    pushAll $ map (\pid -> questionLabel "Choose Deck For Part B" pid ChooseDeck) players
+                    pushAll $ map (\pid -> Msg.questionLabel "Choose Deck For Part B" pid ChooseDeck) players
                   else do
                     for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
                       let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
@@ -396,7 +396,7 @@ instance RunMessage TheDreamEaters where
           next =
             case campaignMode meta of
               FullMode ->
-                questionLabel "Proceed to which scenario" lead
+                Msg.questionLabel "Proceed to which scenario" lead
                   $ ChooseOne
                     [ Label "The Search for Kadath" [NextCampaignStep (Just TheSearchForKadath)]
                     , Label "A Thousand Shapes of Horror" [NextCampaignStep (Just AThousandShapesOfHorror)]
@@ -547,7 +547,7 @@ instance RunMessage TheDreamEaters where
       CampaignStep (InterludeStepPart 2 _ 4) -> do
         lead <- getLeadPlayer
         push
-          $ questionLabel "Proceed to which scenario" lead
+          $ Msg.questionLabel "Proceed to which scenario" lead
           $ ChooseOne
             [ Label "Dark Side of the Moon" [NextCampaignStep (Just DarkSideOfTheMoon)]
             , Label "Point of No Return" [NextCampaignStep (Just PointOfNoReturn)]
@@ -664,7 +664,7 @@ instance RunMessage TheDreamEaters where
       CampaignStep (InterludeStepPart 3 _ 3) -> do
         lead <- getLeadPlayer
         push
-          $ questionLabel "Proceed to which scenario" lead
+          $ Msg.questionLabel "Proceed to which scenario" lead
           $ ChooseOne
             [ Label "Where the Gods Dwell" [NextCampaignStep (Just WhereTheGodsDwell)]
             , Label "Weaver of the Cosmos" [NextCampaignStep (Just WeaverOfTheCosmos)]

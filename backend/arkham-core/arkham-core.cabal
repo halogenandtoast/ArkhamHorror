@@ -499,6 +499,7 @@ library
       Arkham.Asset.Cards.CrystallizerOfDreams
       Arkham.Asset.Cards.CrystalPendulum
       Arkham.Asset.Cards.CurseOfAeons3
+      Arkham.Asset.Cards.CyclopeanHammer5
       Arkham.Asset.Cards.DaisysToteBag
       Arkham.Asset.Cards.DaisysToteBagAdvanced
       Arkham.Asset.Cards.DanielChesterfield
@@ -2876,6 +2877,7 @@ library
       Arkham.Treachery.Cards.LawOfYgirothDiscord
       Arkham.Treachery.Cards.LawOfYgirothPandemonium
       Arkham.Treachery.Cards.LedAstray
+      Arkham.Treachery.Cards.LegInjury
       Arkham.Treachery.Cards.LiberOmniumFinium
       Arkham.Treachery.Cards.LightlessShadow
       Arkham.Treachery.Cards.LightOfAforgomon
@@ -2919,6 +2921,7 @@ library
       Arkham.Treachery.Cards.OutOfBodyExperience
       Arkham.Treachery.Cards.Overgrowth
       Arkham.Treachery.Cards.Overzealous
+      Arkham.Treachery.Cards.Panic
       Arkham.Treachery.Cards.Paranoia
       Arkham.Treachery.Cards.PassageIntoTheVeil
       Arkham.Treachery.Cards.Pitfall
@@ -2981,6 +2984,7 @@ library
       Arkham.Treachery.Cards.StarsOfHyades
       Arkham.Treachery.Cards.Straitjacket
       Arkham.Treachery.Cards.StrangeSigns
+      Arkham.Treachery.Cards.Stupor
       Arkham.Treachery.Cards.TasteOfLifeblood
       Arkham.Treachery.Cards.TerribleSecret
       Arkham.Treachery.Cards.TerrorFromBeyond

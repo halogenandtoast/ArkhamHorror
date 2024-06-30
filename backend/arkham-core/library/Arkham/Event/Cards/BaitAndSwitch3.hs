@@ -66,7 +66,7 @@ instance RunMessage BaitAndSwitch3 where
         _ -> error "Missing event choice"
       pure e
     WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _) | isTarget attrs target -> do
-      choices <- select ConnectedLocation
+      choices <- select $ ConnectedFrom (locationWithInvestigator iid) <> LocationCanBeEnteredBy enemyId
       enemyMoveChoices <- evalQueueT $ chooseOne iid $ targetLabels choices $ only . EnemyMove enemyId
       insertAfterMatching enemyMoveChoices \case
         AfterEvadeEnemy {} -> True

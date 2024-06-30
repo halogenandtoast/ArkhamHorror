@@ -95,6 +95,7 @@ allPlayerTreacheryCards =
       , hypochondria
       , indebted
       , internalInjury
+      , legInjury
       , lostSoul
       , narcolepsy
       , nihilism
@@ -102,6 +103,7 @@ allPlayerTreacheryCards =
       , offerYouCannotRefuse
       , outOfBodyExperience
       , overzealous
+      , panic
       , paranoia
       , poisoned
       , psychosis
@@ -117,6 +119,7 @@ allPlayerTreacheryCards =
       , sirenCall
       , smiteTheWicked
       , starsOfHyades
+      , stupor
       , terribleSecret
       , the13thVision
       , theBellTolls
@@ -2078,6 +2081,24 @@ armInjury :: CardDef
 armInjury =
   (basicWeakness "08130" "Arm Injury")
     { cdCardTraits = singleton Injury
+    }
+
+legInjury :: CardDef
+legInjury =
+  (basicWeakness "08131" "Leg Injury")
+    { cdCardTraits = singleton Injury
+    }
+
+panic :: CardDef
+panic =
+  (basicWeakness "08132" "Panic")
+    { cdCardTraits = singleton Madness
+    }
+
+stupor :: CardDef
+stupor =
+  (basicWeakness "08133" "Stupor")
+    { cdCardTraits = singleton Madness
     }
 
 theZealotsSeal :: CardDef

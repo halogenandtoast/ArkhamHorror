@@ -150,6 +150,9 @@ const cardLabels = computed(() =>
 
     </template>
   </div>
+  <div v-else-if="question && question.tag === 'QuestionLabel'" class="standalone-label">
+      {{label(question.label)}}
+  </div>
 </template>
 
 <style scoped lang="scss">
@@ -394,5 +397,11 @@ h2 {
   font-family: "Teutonic";
   letter-spacing: 1px;
   font-size: 1.7em;
+}
+
+.standalone-label {
+  text-transform: uppercase;
+  color: white;
+  background-color: #222;
 }
 </style>

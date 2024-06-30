@@ -435,6 +435,9 @@ allTreacheries =
     , SomeTreacheryCard greed
     , -- neutral
       SomeTreacheryCard armInjury
+    , SomeTreacheryCard legInjury
+    , SomeTreacheryCard panic
+    , SomeTreacheryCard stupor
     , -- Return to the Night of the Zealot
       -- Return to the Gathering
       SomeTreacheryCard theZealotsSeal

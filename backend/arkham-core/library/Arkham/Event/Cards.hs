@@ -271,6 +271,7 @@ allPlayerEventCards =
       , preparedForTheWorst
       , preposterousSketches
       , preposterousSketches2
+      , protectingTheAnirniq2
       , quantumFlux
       , radiantSmite1
       , readTheSigns
@@ -1843,7 +1844,7 @@ denyExistence =
     , cdFastWindow =
         Just
           $ OrWindowMatcher
-            [ Discarded #when You source (basic AnyCard)
+            [ Discarded #when (Just You) source (basic AnyCard)
             , LostResources #when You source
             , LostActions #when You source
             , InvestigatorWouldTakeDamage #when You source
@@ -2057,7 +2058,7 @@ denyExistence5 =
     , cdFastWindow =
         Just
           $ OrWindowMatcher
-            [ Discarded #when You source (basic AnyCard)
+            [ Discarded #when (Just You) source (basic AnyCard)
             , LostResources #when You source
             , LostActions #when You source
             , InvestigatorWouldTakeDamage #when You source
@@ -3010,6 +3011,21 @@ snipe1 =
     , cdCardTraits = setFromList [Tactic]
     , cdLevel = Just 1
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+    }
+
+protectingTheAnirniq2 :: CardDef
+protectingTheAnirniq2 =
+  (multiClassEvent "08102" "Protecting the Anirniq" 1 [Seeker, Mystic])
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Ritual]
+    , cdLevel = Just 2
+    , cdFastWindow =
+        let validOwner = oneOf [can.draw.cards, can.have.cards.leaveDiscard]
+         in Just
+              $ oneOf
+                [ Discarded #after Nothing SourceIsCardEffect $ basic (#asset <> #ally) <> OwnedBy validOwner
+                , AssetDefeated #after ByAny (#ally <> AssetOwnedBy validOwner)
+                ]
     }
 
 etherealSlip :: CardDef

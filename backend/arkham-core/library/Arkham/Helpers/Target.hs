@@ -20,7 +20,6 @@ targetTraits :: (HasCallStack, HasGame m) => Target -> m (Set Trait)
 targetTraits = \case
   ActDeckTarget -> pure mempty
   ActTarget _ -> pure mempty
-  AfterSkillTestTarget -> pure mempty
   AgendaDeckTarget -> pure mempty
   AgendaTarget _ -> pure mempty
   AssetTarget aid -> field AssetTraits aid

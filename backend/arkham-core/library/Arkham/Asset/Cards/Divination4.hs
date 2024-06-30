@@ -5,8 +5,9 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.Discard
 import Arkham.Discover
-import Arkham.Helpers.Message.Discard (chooseAndDiscardCard)
+import Arkham.Helpers.Message.Discard (discardFromHand)
 import Arkham.Investigate
 import Arkham.Message (getChoiceAmount)
 import Arkham.Modifier
@@ -37,7 +38,7 @@ instance RunMessage Divination4 where
         0 -> pure ()
         1 -> push $ ResolveAmounts iid [("Charges", 1)] (toTarget attrs)
         n -> chooseAmounts iid "Amount of Charges to Spend" (MaxAmountTarget n) [("Charges", (1, n))] attrs
-      pushWhen (n == 0) $ discardFromHand iid (attrs.ability 1) DiscardAndChoose 2
+      pushWhen (n == 0) $ discardFromHand iid (attrs.ability 1) DiscardChoose 2
       pure a
     ResolveAmounts iid (getChoiceAmount "Charges" -> n) (isTarget attrs -> True) -> do
       push $ DiscoverClues iid $ discoverAtYourLocation (attrs.ability 1) n

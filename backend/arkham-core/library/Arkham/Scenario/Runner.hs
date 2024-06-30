@@ -1048,9 +1048,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         pure a
       (card : cards) -> do
         beforeWindow <-
-          checkWindows [mkWindow Timing.When (Window.Discarded iid source (EncounterCard card))]
+          checkWindows [mkWindow Timing.When (Window.Discarded (Just iid) source (EncounterCard card))]
         afterWindow <-
-          checkWindows [mkWindow Timing.After (Window.Discarded iid source (EncounterCard card))]
+          checkWindows [mkWindow Timing.After (Window.Discarded (Just iid) source (EncounterCard card))]
         pushAll
           [ beforeWindow
           , Discarded (CardIdTarget $ toCardId card) source (EncounterCard card)

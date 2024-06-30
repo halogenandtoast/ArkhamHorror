@@ -42,7 +42,7 @@ instance RunMessage DenyExistence5 where
       pure e
     ResolveEvent _ eid _ [w] | eid == toId attrs -> do
       case windowType w of
-        Discarded iid source c -> do
+        Discarded (Just iid) source c -> do
           let drawing = drawCards iid source 1
           replaceMessageMatching (== Do (toMessage $ discardCard iid source c))
             $ \_ -> [drawing]

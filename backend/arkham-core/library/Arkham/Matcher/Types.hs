@@ -665,6 +665,7 @@ data ExtendedCardMatcher
   | NotThisCard
   | IsThisCard
   | ControlledBy Who
+  | OwnedBy Who
   | InHandOf Who
   | InDeckOf Who
   | InPlayAreaOf Who
@@ -936,7 +937,7 @@ data WindowMatcher
   | CancelChaosToken Timing Who ChaosTokenMatcher
   | IgnoreChaosToken Timing Who ChaosTokenMatcher
   | WouldRevealChaosToken Timing Who
-  | Discarded Timing Who SourceMatcher ExtendedCardMatcher
+  | Discarded Timing (Maybe Who) SourceMatcher ExtendedCardMatcher
   | AssetHealed Timing DamageType AssetMatcher SourceMatcher
   | InvestigatorHealed Timing DamageType InvestigatorMatcher SourceMatcher
   | AssetWouldBeDiscarded Timing AssetMatcher
@@ -1088,6 +1089,7 @@ data SourceMatcher
   | NotSource SourceMatcher
   | SourceIs Source
   | SourceWithCard CardMatcher
+  | SourceIsCardEffect
   deriving stock (Show, Eq, Ord, Data)
 
 pattern AnyCancellableSource :: SourceMatcher

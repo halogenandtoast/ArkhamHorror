@@ -29,7 +29,6 @@ data Source
   | ActiveCostSource ActiveCostId
   | ActDeckSource
   | ActSource ActId
-  | AfterSkillTestSource
   | AgendaDeckSource
   | AgendaSource AgendaId
   | AgendaMatcherSource AgendaMatcher

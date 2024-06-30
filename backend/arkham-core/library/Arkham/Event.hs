@@ -489,6 +489,8 @@ allEvents =
     , SomeEventCard onTheTrail3
     , --- guardian/rogue [eote]
       SomeEventCard snipe1
+    , --- seeker/mystic [eote]
+      SomeEventCard protectingTheAnirniq2
     , --- rogue/mystic [eote]
       SomeEventCard etherealSlip
     , SomeEventCard etherealSlip2

@@ -146,7 +146,7 @@ instance RunMessage AThousandShapesOfHorror where
             push $ InitiateEnemyAttack $ enemyAttack theUnnamable (ChaosTokenEffectSource Tablet) iid
         ElderThing -> do
           playerClueCount <- field InvestigatorClues iid
-          let takeDamage = assignDamage iid (ChaosTokenEffectSource ElderThing) 1
+          let takeDamage = Msg.assignDamage iid (ChaosTokenEffectSource ElderThing) 1
           if playerClueCount > 0
             then
               chooseOne

@@ -182,6 +182,10 @@ allGainXp (toSource -> source) = pushAll =<< toGainXp source getXp
 endOfScenario :: ReverseQueue m => m ()
 endOfScenario = push $ EndOfGame Nothing
 
+assignDamage
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
+assignDamage iid (toSource -> source) damage = push $ Msg.assignDamage iid source damage
+
 assignHorror
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 assignHorror iid (toSource -> source) horror = push $ Msg.assignHorror iid source horror

@@ -824,6 +824,9 @@ allAssets =
     , SomeAssetCard icePick1
     , SomeAssetCard professorWilliamWebbFinderOfHiddenConnections2
     , SomeAssetCard icePick3
+    , --- rogue/mystic [eote]
+      SomeAssetCard blur1
+    , SomeAssetCard blur4
     , --- rogue/survivor [eote]
       SomeAssetCard unscrupulousLoan3
     , SomeAssetCard preciousMementoFromAFormerLife4

@@ -13,6 +13,7 @@ import Arkham.Asset.Runner as X (
   cardsUnderneathL,
   controlledBy,
   controls,
+  hasUses,
   healthL,
   is,
   modified,

@@ -267,6 +267,8 @@ allPlayerAssetCards =
       , disciplinePrescienceOfFateBroken
       , disciplineQuiescenceOfThought
       , disciplineQuiescenceOfThoughtBroken
+      , divination1
+      , divination4
       , doubleDouble4
       , downTheRabbitHole
       , drElliHorowitz
@@ -5261,6 +5263,26 @@ eonChart4 =
     , cdUses = uses Secret 3
     , cdLevel = Just 4
     , cdSlots = [#accessory]
+    }
+
+divination1 :: CardDef
+divination1 =
+  (multiClassAsset "08101" "Divination" 3 [Seeker, Mystic])
+    { cdCardTraits = setFromList [Spell, Augury]
+    , cdSkills = [#intellect]
+    , cdUses = uses Charge 4
+    , cdLevel = Just 1
+    , cdSlots = [#arcane]
+    }
+
+divination4 :: CardDef
+divination4 =
+  (multiClassAsset "08103" "Divination" 3 [Seeker, Mystic])
+    { cdCardTraits = setFromList [Spell, Augury]
+    , cdSkills = [#willpower, #intellect]
+    , cdUses = uses Charge 6
+    , cdLevel = Just 4
+    , cdSlots = [#arcane]
     }
 
 icePick1 :: CardDef

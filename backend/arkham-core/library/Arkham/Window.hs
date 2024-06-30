@@ -141,7 +141,7 @@ data WindowType
   | DealtHorror Source Target Int
   | DeckHasNoCards InvestigatorId
   | EncounterDeckRunsOutOfCards
-  | Discarded InvestigatorId Source Card
+  | Discarded (Maybe InvestigatorId) Source Card
   | DiscoverClues InvestigatorId LocationId Source Int
   | DiscoveringLastClue InvestigatorId LocationId
   | SuccessfullyInvestigateWithNoClues InvestigatorId LocationId

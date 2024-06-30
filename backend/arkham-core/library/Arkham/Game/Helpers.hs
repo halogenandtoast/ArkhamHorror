@@ -1850,12 +1850,15 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
     Matcher.AmongSearchedCards whoMatcher -> case wType of
       Window.AmongSearchedCards _ who -> matchWho iid who whoMatcher
       _ -> noMatch
-    Matcher.Discarded timing whoMatcher sourceMatcher cardMatcher ->
+    Matcher.Discarded timing mWhoMatcher sourceMatcher cardMatcher ->
       guardTiming timing $ \case
-        Window.Discarded who source' card ->
+        Window.Discarded mWho source' card ->
           andM
             [ extendedCardMatch card cardMatcher
-            , matchWho iid who whoMatcher
+            , maybe
+                (pure True)
+                (\matcher -> maybe (pure False) (\who -> matchWho iid who matcher) mWho)
+                mWhoMatcher
             , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch
@@ -3264,6 +3267,54 @@ sourceMatches s = \case
         _ -> pure False
      in
       checkSource s
+  Matcher.SourceIsCardEffect -> do
+    let
+      go = \case
+        ChaosTokenSource {} -> False
+        ChaosTokenEffectSource {} -> False
+        ActiveCostSource {} -> False
+        AbilitySource {} -> True
+        ActSource {} -> True
+        ActDeckSource {} -> False
+        AgendaDeckSource {} -> False
+        AgendaSource {} -> True
+        AgendaMatcherSource {} -> True
+        AssetMatcherSource {} -> True
+        ActMatcherSource {} -> True
+        AssetSource {} -> True
+        CardCodeSource {} -> False
+        CardSource {} -> False
+        CardIdSource {} -> False
+        DeckSource {} -> False
+        EffectSource {} -> True
+        EmptyDeckSource {} -> False
+        EncounterCardSource {} -> False
+        EnemyAttackSource {} -> True
+        EnemySource {} -> True
+        EventSource {} -> True
+        GameSource -> False
+        InvestigatorSource {} -> True
+        LocationMatcherSource {} -> True
+        EnemyMatcherSource {} -> True
+        LocationSource {} -> True
+        PlayerCardSource {} -> False
+        ProxySource (CardIdSource _) s' -> go s'
+        ProxySource s' _ -> go s'
+        ResourceSource {} -> False
+        ScenarioSource {} -> False
+        SkillSource {} -> True
+        SkillTestSource {} -> False
+        StorySource {} -> True
+        TestSource {} -> True
+        TreacherySource {} -> True
+        YouSource {} -> False
+        CampaignSource {} -> False
+        ThisCard {} -> True
+        CardCostSource {} -> False
+        BothSource a b -> go a || go b
+        TarotSource {} -> True
+        BatchSource {} -> False
+    pure $ go s
   Matcher.SourceIsType t -> pure $ case t of
     AssetType -> case s of
       AssetSource _ -> True

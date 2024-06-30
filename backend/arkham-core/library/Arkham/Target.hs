@@ -34,7 +34,6 @@ data Target
   | LocationTarget LocationId
   | SetAsideLocationsTarget [Trait]
   | SkillTestTarget
-  | AfterSkillTestTarget
   | TreacheryTarget TreacheryId
   | EncounterDeckTarget
   | ScenarioDeckTarget

@@ -2073,7 +2073,7 @@ runGameMessage msg g = case msg of
   Discarded (InvestigatorTarget iid) source card -> do
     pushM
       $ checkWindows
-      $ (`mkWindow` Window.Discarded iid source card)
+      $ (`mkWindow` Window.Discarded (Just iid) source card)
       <$> [#when, #after]
     pure g
   InvestigatorAssignDamage iid' source _ n 0 | n > 0 -> do
@@ -2370,7 +2370,7 @@ runGameMessage msg g = case msg of
     pure $ g & activeAbilitiesL %~ drop 1 & removedEntitiesF
   Discarded (AssetTarget aid) _ (EncounterCard _) -> do
     runMessage (RemoveAsset aid) g
-  Discarded (AssetTarget aid) _ _ -> do
+  Discarded (AssetTarget aid) _source _card -> do
     maybeAsset aid >>= \case
       Nothing -> pure g
       Just _ -> runMessage (RemoveAsset aid) g
@@ -2425,7 +2425,7 @@ runGameMessage msg g = case msg of
     wouldDo
       (Run $ windows'' <> [Discarded (TreacheryTarget tid) source card])
       (Window.WouldBeDiscarded (TreacheryTarget tid))
-      (Window.Discarded iid source card)
+      (Window.Discarded (Just iid) source card)
 
     pure g
   UpdateHistory iid historyItem -> do

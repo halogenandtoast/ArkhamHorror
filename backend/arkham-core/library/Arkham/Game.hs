@@ -3427,6 +3427,9 @@ instance Query ExtendedCardMatcher where
    where
     matches' :: HasGame m => Card -> ExtendedCardMatcher -> m Bool
     matches' c = \case
+      OwnedBy who -> do
+        iids <- select who
+        pure $ maybe False (`elem` iids) c.owner
       ControlledBy who -> do
         cards <-
           concat

@@ -18,7 +18,6 @@ sourceTraits = \case
   AbilitySource s _ -> sourceTraits s
   ActDeckSource -> pure mempty
   ActSource _ -> pure mempty
-  AfterSkillTestSource -> pure mempty
   AgendaDeckSource -> pure mempty
   AgendaSource _ -> pure mempty
   AgendaMatcherSource _ -> pure mempty

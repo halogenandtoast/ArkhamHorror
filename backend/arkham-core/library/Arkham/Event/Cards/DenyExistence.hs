@@ -42,7 +42,7 @@ instance RunMessage DenyExistence where
       pure e
     ResolveEvent _ eid _ [w] | eid == toId attrs -> do
       case windowType w of
-        Discarded iid source c -> do
+        Discarded (Just iid) source c -> do
           popMessageMatching_ (== Do (toMessage $ discardCard iid source c))
         LostResources iid source n -> do
           popMessageMatching_ (== Do (LoseResources iid source n))

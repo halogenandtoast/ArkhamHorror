@@ -265,13 +265,14 @@ instance RunMessage AssetAttrs where
       pure a
     RemoveFromGame target | a `isTarget` target -> do
       a <$ push (RemoveFromPlay $ toSource a)
-    Discard _ source target | a `isTarget` target -> do
+    Discard mInvestigator source target | a `isTarget` target -> do
       removeFromGame <- a `hasModifier` RemoveFromGameInsteadOfDiscard
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
+      afterWindows <- checkAfter $ Window.Discarded mInvestigator source (toCard a)
       let discardMsg = if removeFromGame then RemoveFromGame (toTarget a) else Discarded (toTarget a) source (toCard a)
       pushAll
         $ windows'
-        <> [RemoveFromPlay $ toSource a, discardMsg]
+        <> [RemoveFromPlay $ toSource a, discardMsg, afterWindows]
       pure a
     Exile target | a `isTarget` target -> do
       pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]

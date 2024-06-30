@@ -19,7 +19,6 @@ import Arkham.Exception
 import Arkham.Helpers.Campaign
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Data.List.Extra (firstJust)
@@ -35,19 +34,12 @@ instance HasAbilities RicesWhereabouts where
   getAbilities (RicesWhereabouts x) =
     [ mkAbility x 1 $ ActionAbility [] $ Costs [ActionCost 1, ClueCost (Static 1)]
     , mkAbility x 2
-        $ ForcedAbility
-        $ Discarded
-          Timing.When
-          You
-          AnySource
-          (basic $ cardIs Assets.jazzMulligan)
+        $ forced
+        $ Discarded #when (Just You) AnySource (basic $ cardIs Assets.jazzMulligan)
     , mkAbility x 3
         $ Objective
-        $ ForcedAbility
-        $ TookControlOfAsset
-          Timing.When
-          You
-          (assetIs Assets.jazzMulligan)
+        $ forced
+        $ TookControlOfAsset #when You (assetIs Assets.jazzMulligan)
     ]
 
 instance RunMessage RicesWhereabouts where

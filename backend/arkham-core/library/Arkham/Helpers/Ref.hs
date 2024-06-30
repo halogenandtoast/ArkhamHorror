@@ -53,7 +53,6 @@ sourceToTarget = \case
   AgendaSource aid -> AgendaTarget aid
   LocationSource lid -> LocationTarget lid
   SkillTestSource -> SkillTestTarget
-  AfterSkillTestSource -> AfterSkillTestTarget
   TreacherySource tid -> TreacheryTarget tid
   EventSource eid -> EventTarget eid
   SkillSource sid -> SkillTarget sid
@@ -98,7 +97,6 @@ targetToSource = \case
   LocationTarget lid -> LocationSource lid
   (SetAsideLocationsTarget _) -> error "can not convert"
   SkillTestTarget -> SkillTestSource
-  AfterSkillTestTarget -> AfterSkillTestSource
   TreacheryTarget tid -> TreacherySource tid
   EncounterDeckTarget -> error "can not covert"
   ScenarioDeckTarget -> error "can not covert"

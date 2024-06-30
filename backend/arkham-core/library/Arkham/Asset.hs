@@ -822,6 +822,7 @@ allAssets =
     , --- seeker/survivor [eote]
       SomeAssetCard professorWilliamWebbFinderOfHiddenConnections
     , SomeAssetCard icePick1
+    , SomeAssetCard professorWilliamWebbFinderOfHiddenConnections2
     , SomeAssetCard icePick3
     , --- rogue/survivor [eote]
       SomeAssetCard unscrupulousLoan3

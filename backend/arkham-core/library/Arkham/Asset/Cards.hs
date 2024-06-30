@@ -548,6 +548,7 @@ allPlayerAssetCards =
       , priestOfTwoFaiths1
       , professorWarrenRice
       , professorWilliamWebbFinderOfHiddenConnections
+      , professorWilliamWebbFinderOfHiddenConnections2
       , prophesiaeProfanaAtlasOfTheUnknowable5
       , prophetic3
       , protectiveGear2
@@ -5309,6 +5310,21 @@ icePick1 =
       , cdSlots = [#hand]
       , cdLevel = Just 1
       }
+
+professorWilliamWebbFinderOfHiddenConnections2 :: CardDef
+professorWilliamWebbFinderOfHiddenConnections2 =
+  ( multiClassAsset
+      "08106"
+      ("Professor William Webb" <:> "Finder of Hidden Connections")
+      3
+      [Seeker, Survivor]
+  )
+    { cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdSkills = [#intellect, #wild]
+    , cdUses = uses Secret 3
+    , cdLevel = Just 2
+    , cdSlots = [#ally]
+    }
 
 icePick3 :: CardDef
 icePick3 =

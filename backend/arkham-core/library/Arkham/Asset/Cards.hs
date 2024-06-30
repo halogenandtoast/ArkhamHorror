@@ -238,6 +238,7 @@ allPlayerAssetCards =
       , crystallineElderSign3
       , crystallizerOfDreams
       , curseOfAeons3
+      , cyclopeanHammer5
       , daisysToteBag
       , daisysToteBagAdvanced
       , darioElAmin
@@ -5182,11 +5183,20 @@ nkosiMabatiEnigmaticWarlock3 =
 brandOfCthugha4 :: CardDef
 brandOfCthugha4 =
   (multiClassAsset "08092" "Brand of Cthugha" 2 [Guardian, Mystic])
-    { cdSkills = [#combat, #willpower]
+    { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spell]
     , cdLevel = Just 4
     , cdUses = uses Charge 9
     , cdSlots = [#arcane]
+    }
+
+cyclopeanHammer5 :: CardDef
+cyclopeanHammer5 =
+  (multiClassAsset "08093" "Cyclopean Hammer" 5 [Guardian, Mystic])
+    { cdSkills = [#willpower, #willpower, #combat, #combat]
+    , cdCardTraits = setFromList [Item, Weapon, Relic, Melee]
+    , cdLevel = Just 5
+    , cdSlots = [#hand, #hand]
     }
 
 sledgehammer :: CardDef

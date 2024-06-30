@@ -45,6 +45,7 @@ data ModifierType
   | ActionSkillModifier {action :: Action, skillType :: SkillType, value :: Int}
   | ActionsAreFree
   | IsPointOfDamage
+  | IsPointOfHorror
   | AddKeyword Keyword
   | AddSkillIcons [SkillIcon]
   | AddSkillToOtherSkill SkillType SkillType

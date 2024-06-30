@@ -1816,7 +1816,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               : [HealDamage (InvestigatorTarget iid) source (amount - 1) | amount - 1 > 0]
             | (t, c) <- dmgTreacheries
             ]
-          <> [Label "Heal remaining normally" [Do msg] | investigatorHealthDamage a > 0]
+          <> [Label "Heal remaining damage normally" [Do msg] | investigatorHealthDamage a > 0]
     pure a
   Do (HealDamage (InvestigatorTarget iid) source amount) | iid == investigatorId -> do
     afterWindow <- checkWindows [mkAfter $ Window.Healed DamageType (toTarget a) source amount]
@@ -1888,6 +1888,26 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
     pure a
   Do (HealHorrorDelayed (isTarget a -> True) source n) -> do
+    let iid = investigatorId
+    cannotHealHorror <- hasModifier a CannotHealHorror
+    unless cannotHealHorror do
+      hrrTreacheries <-
+        selectWithField TreacheryCard $ treacheryInThreatAreaOf iid <> TreacheryWithModifier IsPointOfHorror
+      if null hrrTreacheries
+        then push $ Do (HealHorror (InvestigatorTarget iid) source n)
+        else do
+          player <- getPlayer iid
+          push
+            $ chooseOne player
+            $ [ Label
+                ("Heal " <> toTitle c)
+                $ toDiscardBy iid source t
+                : [Do (HealHorrorDelayed (InvestigatorTarget iid) source (n - 1)) | n - 1 > 0]
+              | (t, c) <- hrrTreacheries
+              ]
+            <> [Label "Heal remaining horror normally" [Do msg] | investigatorSanityDamage a > 0]
+    pure a
+  Do (HealHorror (isTarget a -> True) source n) -> do
     cannotHealHorror <- hasModifier a CannotHealHorror
     if cannotHealHorror
       then pure a

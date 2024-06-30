@@ -841,7 +841,8 @@ getInvestigatorsMatching matcher = do
       t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfDamage
       gameValueMatches (attr investigatorHealthDamage i + t) gameValueMatcher
     InvestigatorWithHealableHorror -> \i -> do
-      let onSelf = attr investigatorSanityDamage i > 0
+      t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfHorror
+      let onSelf = (attr investigatorSanityDamage i + t) > 0
       mFoolishness <-
         selectOne
           $ assetIs Assets.foolishnessFoolishCatOfUlthar
@@ -851,7 +852,8 @@ getInvestigatorsMatching matcher = do
         maybe (pure False) (fieldMap AssetHorror (> 0)) mFoolishness
       pure $ onSelf || foolishness
     InvestigatorWithHorror gameValueMatcher -> \i -> do
-      onSelf <- attr investigatorSanityDamage i `gameValueMatches` gameValueMatcher
+      t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfHorror
+      onSelf <- (attr investigatorSanityDamage i + t) `gameValueMatches` gameValueMatcher
       mFoolishness <-
         selectOne
           $ assetIs Assets.foolishnessFoolishCatOfUlthar
@@ -1705,7 +1707,7 @@ getLocationsMatching lmatcher = do
                   (markDistances start (pure . (`elem` candidates)) mempty)
                   (LPState (pure start) (singleton start) mempty)
             let matches' = Map.keys $ Map.filter (<= distance) distances
-            pure $ filter ((`elem` matches') . toId) ls
+            pure $ filter (and . sequence [(`elem` matches'), (`elem` candidates)] . toId) ls
           Nothing -> pure []
       FarthestLocationFromAll matcher -> do
         iids <- getInvestigatorIds
@@ -3703,7 +3705,8 @@ markDistancesWithInclusion initialLocation target canInclude extraConnectionsMap
   if Seq.null searchQueue
     then do
       result <- lift $ getDistances parentsMap
-      pure $ insertWith (<>) 0 [initialLocation] result
+      includeStart <- lift $ canInclude initialLocation
+      pure $ insertWith (<>) 0 [initialLocation | includeStart] result
     else do
       let
         nextLoc = Seq.index searchQueue 0

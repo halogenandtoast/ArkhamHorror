@@ -5,7 +5,6 @@ import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards (baitAndSwitch)
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers
 import Arkham.Matcher hiding (EnemyEvaded)
 
 newtype BaitAndSwitch = BaitAndSwitch EventAttrs
@@ -25,7 +24,7 @@ instance RunMessage BaitAndSwitch where
       pushAll $ EnemyEvaded iid eid : [WillMoveEnemy eid msg | nonElite]
       pure e
     WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _) | isTarget attrs target -> do
-      choices <- getAccessibleLocations iid attrs
+      choices <- select $ ConnectedFrom (locationWithInvestigator iid) <> LocationCanBeEnteredBy enemyId
       enemyMoveChoices <- evalQueueT $ chooseOne iid $ targetLabels choices $ only . EnemyMove enemyId
       insertAfterMatching
         enemyMoveChoices

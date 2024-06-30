@@ -386,6 +386,11 @@ continue iid msgs = Arkham.Message.Lifted.chooseOne iid [Label "Continue" msgs]
 choose :: ReverseQueue m => InvestigatorId -> UI Message -> m ()
 choose iid msg = Arkham.Message.Lifted.chooseOne iid [msg]
 
+questionLabel :: ReverseQueue m => Text -> InvestigatorId -> Question Message -> m ()
+questionLabel lbl iid q = do
+  pid <- getPlayer iid
+  push $ Ask pid (QuestionLabel lbl Nothing q)
+
 chooseOne :: ReverseQueue m => InvestigatorId -> [UI Message] -> m ()
 chooseOne iid msgs = do
   player <- getPlayer iid

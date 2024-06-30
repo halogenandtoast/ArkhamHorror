@@ -7,7 +7,7 @@ import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Query (getPlayer)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message (questionLabel)
+import Arkham.Message qualified as Msg
 
 newtype RiteOfEquilibrium5 = RiteOfEquilibrium5 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -36,7 +36,7 @@ instance RunMessage RiteOfEquilibrium5 where
       chooseOrRunOne iid
         $ [ Label
             "Add X {curse} tokens to the chaos bag to add X {bless} tokens to the chaos bag."
-            [ questionLabel "Choose X" player
+            [ Msg.questionLabel "Choose X" player
                 $ DropDown
                   [ (tshow x, Run (replicate x (AddChaosToken #curse) <> replicate x (AddChaosToken #bless)))
                   | x <- [1 .. x1]
@@ -46,7 +46,7 @@ instance RunMessage RiteOfEquilibrium5 where
           ]
         <> [ Label
             "Remove X {curse} and X {bless} tokens from the chaos bag to heal X total horror from among cards at your location."
-            [ questionLabel "Choose X" player
+            [ Msg.questionLabel "Choose X" player
                 $ DropDown
                   [ ( tshow x
                     , Run

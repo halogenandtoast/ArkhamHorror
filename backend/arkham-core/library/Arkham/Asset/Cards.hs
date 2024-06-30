@@ -190,6 +190,8 @@ allPlayerAssetCards =
       , bloodPact
       , bloodPact3
       , bloodstainedDagger
+      , blur1
+      , blur4
       , bookOfPsalms
       , bookOfShadows1
       , bookOfShadows3
@@ -5335,6 +5337,26 @@ icePick3 =
       , cdSlots = [#hand]
       , cdLevel = Just 3
       }
+
+blur1 :: CardDef
+blur1 =
+  (multiClassAsset "08109" "Blur" 2 [Rogue, Mystic])
+    { cdCardTraits = setFromList [Spell]
+    , cdSkills = [#agility]
+    , cdSlots = [#arcane]
+    , cdUses = uses Charge 3
+    , cdLevel = Just 1
+    }
+
+blur4 :: CardDef
+blur4 =
+  (multiClassAsset "08111" "Blur" 2 [Rogue, Mystic])
+    { cdCardTraits = setFromList [Spell]
+    , cdSkills = [#willpower, #agility]
+    , cdSlots = [#arcane]
+    , cdUses = uses Charge 3
+    , cdLevel = Just 4
+    }
 
 unscrupulousLoan3 :: CardDef
 unscrupulousLoan3 =

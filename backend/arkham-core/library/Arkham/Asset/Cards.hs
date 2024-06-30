@@ -547,6 +547,7 @@ allPlayerAssetCards =
       , professorWarrenRice
       , prophesiaeProfanaAtlasOfTheUnknowable5
       , prophetic3
+      , protectiveGear2
       , protectiveIncantation1
       , purifyingCorruption4
       , puzzleBox
@@ -5205,6 +5206,15 @@ sledgehammer =
     { cdSkills = [#combat]
     , cdCardTraits = setFromList [Item, Tool, Weapon, Melee]
     , cdSlots = [#hand, #hand]
+    }
+
+protectiveGear2 :: CardDef
+protectiveGear2 =
+  (multiClassAsset "08095" "Protective Gear" 4 [Guardian, Survivor])
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Item, Armor]
+    , cdSlots = [#body]
+    , cdLevel = Just 2
     }
 
 sledgehammer4 :: CardDef

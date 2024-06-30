@@ -21,6 +21,7 @@ import Arkham.Asset.Runner as X (
   pushM,
   pushWhen,
   pushWhenM,
+  sanityL,
   sealedChaosTokensL,
   setMeta,
   toMessage,

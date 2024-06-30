@@ -809,6 +809,7 @@ allAssets =
     , SomeAssetCard cyclopeanHammer5
     , --- guardian/survivor [eote]
       SomeAssetCard sledgehammer
+    , SomeAssetCard protectiveGear2
     , SomeAssetCard sledgehammer4
     , --- seeker/rogue [eote]
       SomeAssetCard pocketTelescope

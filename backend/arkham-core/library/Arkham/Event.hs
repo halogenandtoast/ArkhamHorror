@@ -566,7 +566,7 @@ allEvents =
     , SomeEventCard iveGotAPlan2
     , SomeEventCard mindOverMatter2
     , SomeEventCard seekingAnswers2
-    , -- Winifred Habbacmock
+    , -- Winifred Habbamock
       SomeEventCard pilfer
     , SomeEventCard sneakBy
     , SomeEventCard daringManeuver2

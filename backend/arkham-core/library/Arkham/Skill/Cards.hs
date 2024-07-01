@@ -33,6 +33,7 @@ allPlayerSkillCards =
       , allIn5
       , anythingYouCanDoBetter
       , arrogance
+      , asYouWish
       , beloved
       , bruteForce1
       , copycat3
@@ -694,6 +695,14 @@ dauntlessSpirit1 =
     , cdLevel = Just 1
     , cdCardInHandEffects = True
     }
+
+asYouWish :: CardDef
+asYouWish =
+  signature "09001"
+    $ (skill "09002" "\"As you wish\"" [#wild, #wild, #wild] Neutral)
+      { cdCardTraits = setFromList [Practiced, Expert]
+      , cdCommitRestrictions = [OnlyNotYourTest]
+      }
 
 fightingLessons :: CardDef
 fightingLessons =

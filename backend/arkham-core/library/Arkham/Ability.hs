@@ -230,9 +230,9 @@ abilityTypeActions :: AbilityType -> [Action]
 abilityTypeActions = \case
   FastAbility' _ actions -> actions
   ReactionAbility {} -> []
-  ActionAbility actions _ -> actions
-  ActionAbilityWithSkill actions _ _ -> actions
-  ActionAbilityWithBefore actions _ _ -> actions
+  ActionAbility actions _ -> #activate : actions
+  ActionAbilityWithSkill actions _ _ -> #activate : actions
+  ActionAbilityWithBefore actions _ _ -> #activate : actions
   ForcedAbility _ -> []
   SilentForcedAbility _ -> []
   ForcedAbilityWithCost _ _ -> []

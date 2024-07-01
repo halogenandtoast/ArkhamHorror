@@ -65,6 +65,7 @@ allInvestigatorCards =
       , montereyJack
       , lilyChen
       , bobJenkins
+      , carsonSinclair
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -423,6 +424,14 @@ bobJenkins =
     ("Bob Jenkins" <:> "The Salesman")
     Survivor
     [Entrepreneur]
+
+carsonSinclair :: CardDef
+carsonSinclair =
+  investigator
+    "09001"
+    ("Carson Sinclair" <:> "The Butler")
+    Guardian
+    [Assistant]
 
 nathanielCho :: CardDef
 nathanielCho =

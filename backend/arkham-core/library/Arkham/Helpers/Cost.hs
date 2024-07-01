@@ -78,6 +78,12 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
       _ -> error "Unhandled shuffle attached card into deck cost"
   EnemyAttackCost eid -> selectAny $ Matcher.EnemyWithId eid <> Matcher.EnemyCanAttack (Matcher.InvestigatorWithId iid)
   DrawEncounterCardsCost _n -> can.target.encounterDeck iid
+  CostWhenEnemy mtchr c -> do
+    hasEnemy <- selectAny mtchr
+    if hasEnemy then getCanAffordCost iid source actions windows' c else pure True
+  CostIfEnemy mtchr c1 c2 -> do
+    hasEnemy <- selectAny mtchr
+    getCanAffordCost iid source actions windows' $ if hasEnemy then c1 else c2
   ArchiveOfConduitsUnidentifiedCost -> do
     n <- selectCount Matcher.Anywhere
     pure $ n >= 4

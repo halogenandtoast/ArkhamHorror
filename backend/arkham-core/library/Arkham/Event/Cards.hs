@@ -88,6 +88,7 @@ allPlayerEventCards =
       , burningTheMidnightOil
       , buryThemDeep
       , butterflyEffect1
+      , callForBackup2
       , callingInFavors
       , cheapShot
       , cheapShot2
@@ -509,7 +510,9 @@ sneakAttack =
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = setFromList [Tactic]
     , cdCriteria =
-        Just $ exists (EnemyAt YourLocation <> ExhaustedEnemy) <> Criteria.CanDealDamage
+        Just
+          $ exists (EnemyAt YourLocation <> ExhaustedEnemy <> EnemyCanBeDamagedBySource ThisCard)
+          <> Criteria.CanDealDamage
     , cdAlternateCardCodes = ["01552"]
     }
 
@@ -788,7 +791,9 @@ oops =
     { cdSkills = [#combat, #combat]
     , cdCardTraits = singleton Fortune
     , cdCriteria =
-        Just $ exists (EnemyAt YourLocation <> NotEnemy AttackedEnemy) <> Criteria.CanDealDamage
+        Just
+          $ exists (EnemyAt YourLocation <> NotEnemy AttackedEnemy <> EnemyCanBeDamagedBySource ThisCard)
+          <> Criteria.CanDealDamage
     , cdFastWindow =
         Just
           $ SkillTestResult #after You (WhileAttackingAnEnemy EnemyEngagedWithYou)
@@ -3065,6 +3070,30 @@ hitMe =
     , cdCriteria = Just Criteria.DuringAnySkillTest
     }
 
+callForBackup2 :: CardDef
+callForBackup2 =
+  (event "08129" "Call for Backup" 1 Neutral)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Favor, Synergy]
+    , cdCriteria =
+        let control k = exists (ControlledBy You <> basic (CardWithClass k))
+            healableCardExists d =
+              oneOf
+                [ exists (HealableAsset ThisCard d AnyAsset)
+                , exists (HealableInvestigator ThisCard d Anyone)
+                ]
+         in Just
+              $ oneOf
+                [ control Rogue <> exists AccessibleLocation <> youExist can.move
+                , control Guardian
+                    <> Criteria.CanDealDamage
+                    <> exists (EnemyAt YourLocation <> EnemyCanBeDamagedBySource ThisCard)
+                , control Seeker <> canDiscoverCluesAtYourLocation
+                , control Mystic <> healableCardExists #horror
+                , control Survivor <> healableCardExists #damage
+                ]
+    }
+
 breakingAndEntering2 :: CardDef
 breakingAndEntering2 =
   (event "09074" "Breaking and Entering" 2 Rogue)
@@ -3383,7 +3412,10 @@ manoAMano2 =
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spirit, Bold]
     , cdCriteria =
-        Just $ Criteria.FirstAction <> exists EnemyEngagedWithYou <> Criteria.CanDealDamage
+        Just
+          $ Criteria.FirstAction
+          <> exists (EnemyEngagedWithYou <> EnemyCanBeDamagedBySource ThisCard)
+          <> Criteria.CanDealDamage
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = Just 2
     }

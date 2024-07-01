@@ -5466,7 +5466,7 @@ crafty3 =
 
 antiquary3 :: CardDef
 antiquary3 =
-  (multiClassAsset "08124" "Crafty" 3 [Seeker, Rogue, Mystic])
+  (multiClassAsset "08124" "Antiquary" 3 [Seeker, Rogue, Mystic])
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Talent]
     , cdLevel = Just 3

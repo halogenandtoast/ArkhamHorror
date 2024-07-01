@@ -90,6 +90,7 @@ costSealedChaosTokensL :: Lens' ActiveCost [ChaosToken]
 costSealedChaosTokensL = lens activeCostSealedChaosTokens $ \m x -> m {activeCostSealedChaosTokens = x}
 
 matchTarget :: [[Action]] -> [[Action]] -> ActionTarget -> Action -> Bool
+matchTarget takenActions performedActions (AnyActionTarget as) a = any (\atarget -> matchTarget takenActions performedActions atarget a) as
 matchTarget _takenActions performedActions (FirstOneOfPerformed as) action =
   action `elem` as && all (\a -> all (notElem a) performedActions) as
 matchTarget _ _ (IsAction a) action = action == a

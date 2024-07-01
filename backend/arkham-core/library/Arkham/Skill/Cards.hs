@@ -78,6 +78,7 @@ allPlayerSkillCards =
       , nimble
       , notWithoutAFight
       , occultTheory1
+      , onTheMend
       , opportunist
       , opportunist2
       , overpower
@@ -702,6 +703,15 @@ asYouWish =
     $ (skill "09002" "\"As you wish\"" [#wild, #wild, #wild] Neutral)
       { cdCardTraits = setFromList [Practiced, Expert]
       , cdCommitRestrictions = [OnlyNotYourTest]
+      }
+
+onTheMend :: CardDef
+onTheMend =
+  signature "09004"
+    $ (skill "09006" "On the Mend" [#wild, #wild] Neutral)
+      { cdCardTraits = setFromList [Innate]
+      , cdCommitRestrictions = [OnlyYourTest]
+      , cdCardInHandEffects = True
       }
 
 fightingLessons :: CardDef

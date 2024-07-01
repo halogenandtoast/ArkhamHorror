@@ -272,6 +272,7 @@ data ModifierType
   | NoSurge
   | NonDirectHorrorMustBeAssignToThisFirst
   | NonDirectDamageMustBeAssignToThisFirst
+  | NonDirectDamageMustBeAssignToThisN Int
   | Omnipotent
   | OnlyFirstCopyCardCountsTowardMaximumHandSize
   | PlaceOnBottomOfDeckInsteadOfDiscard

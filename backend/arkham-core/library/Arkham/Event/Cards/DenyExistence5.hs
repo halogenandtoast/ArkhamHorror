@@ -52,7 +52,7 @@ instance RunMessage DenyExistence5 where
         LostActions iid source n -> do
           replaceMessageMatching (== Do (LoseActions iid source n))
             $ \_ -> [GainActions iid source n]
-        WouldTakeDamage source (InvestigatorTarget iid) n -> do
+        WouldTakeDamage source (InvestigatorTarget iid) n _ -> do
           pushAll
             [CancelDamage iid n, HealDamage (InvestigatorTarget iid) source n]
         WouldTakeHorror source (InvestigatorTarget iid) n -> do

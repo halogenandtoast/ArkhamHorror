@@ -33,6 +33,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types hiding (scenario)
 import Arkham.Skill.Types (Skill)
+import Arkham.Story.Types (Story)
 import Arkham.Target
 import Arkham.Treachery.Types (Treachery)
 import Arkham.Window (Window)
@@ -221,6 +222,29 @@ maybeEnemy eid = do
     <|> getInDiscardEntity enemiesL eid g
     <|> getInEncounterDiscardEntity enemiesL eid g
     <|> getRemovedEntity enemiesL eid g
+
+getSkill :: (HasCallStack, HasGame m) => SkillId -> m Skill
+getSkill sid = fromJustNote missingSkill <$> maybeSkill sid
+ where
+  missingSkill = "Unknown skill: " <> show sid
+
+maybeSkill :: HasGame m => SkillId -> m (Maybe Skill)
+maybeSkill sid = do
+  g <- getGame
+  pure
+    $ preview (entitiesL . skillsL . ix sid) g
+    <|> getInDiscardEntity skillsL sid g
+    <|> getRemovedEntity skillsL sid g
+    <|> preview (inHandEntitiesL . each . skillsL . ix sid) g
+    <|> preview (inSearchEntitiesL . skillsL . ix sid) g
+
+getStory :: (HasCallStack, HasGame m) => StoryId -> m Story
+getStory sid = fromJustNote missingStory <$> maybeStory sid
+ where
+  missingStory = "Unknown story: " <> show sid
+
+maybeStory :: HasGame m => StoryId -> m (Maybe Story)
+maybeStory sid = preview (entitiesL . storiesL . ix sid) <$> getGame
 
 getActiveInvestigator :: HasGame m => m Investigator
 getActiveInvestigator = getGame >>= getInvestigator . gameActiveInvestigatorId

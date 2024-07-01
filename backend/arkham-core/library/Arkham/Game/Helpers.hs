@@ -1698,12 +1698,13 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , matchWho iid who whoMatcher
             ]
         _ -> noMatch
-    Matcher.InvestigatorWouldTakeDamage timing whoMatcher sourceMatcher ->
+    Matcher.InvestigatorWouldTakeDamage timing whoMatcher sourceMatcher damageTypeMatcher ->
       guardTiming timing $ \case
-        Window.WouldTakeDamage source' (InvestigatorTarget who) _ ->
+        Window.WouldTakeDamage source' (InvestigatorTarget who) _ strategy ->
           andM
             [ sourceMatches source' sourceMatcher
             , matchWho iid who whoMatcher
+            , pure $ damageTypeMatches strategy damageTypeMatcher
             ]
         Window.WouldTakeDamageOrHorror source' (InvestigatorTarget who) n _ | n > 0 -> do
           andM
@@ -3500,3 +3501,18 @@ getOtherPlayersPlayableCards iid costStatus windows' = do
       playable <- getIsPlayable iid (toSource iid) costStatus windows' c
       pure $ guard playable $> c
     _ -> pure Nothing
+
+damageTypeMatches :: DamageStrategy -> Matcher.DamageTypeMatcher -> Bool
+damageTypeMatches strategy = \case
+  Matcher.IsDirectDamage -> isDirectStrategy
+  Matcher.IsNonDirectDamage -> not isDirectStrategy
+  Matcher.AnyDamageType -> True
+ where
+  isDirectStrategy = case strategy of
+    DamageDirect -> True
+    DamageAny -> False
+    DamageAssetsFirst -> False
+    DamageFirst _ -> False
+    SingleTarget -> False
+    DamageEvenly -> False
+    DamageFromHastur -> False

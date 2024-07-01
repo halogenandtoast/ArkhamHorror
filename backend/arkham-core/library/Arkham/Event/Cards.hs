@@ -1853,7 +1853,7 @@ denyExistence =
             [ Discarded #when (Just You) source (basic AnyCard)
             , LostResources #when You source
             , LostActions #when You source
-            , InvestigatorWouldTakeDamage #when You source
+            , InvestigatorWouldTakeDamage #when You source AnyDamageType
             , InvestigatorWouldTakeHorror #when You source
             ]
     }
@@ -2067,7 +2067,7 @@ denyExistence5 =
             [ Discarded #when (Just You) source (basic AnyCard)
             , LostResources #when You source
             , LostActions #when You source
-            , InvestigatorWouldTakeDamage #when You source
+            , InvestigatorWouldTakeDamage #when You source AnyDamageType
             , InvestigatorWouldTakeHorror #when You source
             ]
     , cdLevel = Just 5

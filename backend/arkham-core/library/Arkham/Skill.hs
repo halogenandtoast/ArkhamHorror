@@ -214,6 +214,7 @@ allSkills =
     , -- The Scarlet Keys
       --- signature [tsk]
       SomeSkillCard asYouWish
+    , SomeSkillCard onTheMend
     , --- guardian [tsk]
       SomeSkillCard fightingLessons
     , -- Return to the Dunwich Legacy

@@ -65,6 +65,12 @@ data SkillAttrs = SkillAttrs
 instance HasField "cardId" SkillAttrs CardId where
   getField = skillCardId
 
+instance HasField "id" SkillAttrs SkillId where
+  getField = skillId
+
+instance HasField "card" SkillAttrs Card where
+  getField = toCard
+
 instance HasField "controller" SkillAttrs InvestigatorId where
   getField = skillOwner
 
@@ -172,6 +178,9 @@ skill f cardDef =
     }
 
 data Skill = forall a. IsSkill a => Skill a
+
+instance HasField "id" Skill SkillId where
+  getField = toId
 
 instance Eq Skill where
   Skill (a :: a) == Skill (b :: b) = case eqT @a @b of

@@ -66,6 +66,7 @@ allInvestigatorCards =
       , lilyChen
       , bobJenkins
       , carsonSinclair
+      , vincentLee
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -432,6 +433,14 @@ carsonSinclair =
     ("Carson Sinclair" <:> "The Butler")
     Guardian
     [Assistant]
+
+vincentLee :: CardDef
+vincentLee =
+  investigator
+    "09004"
+    ("Vincent Lee" <:> "The Doctor")
+    Seeker
+    [Medic]
 
 nathanielCho :: CardDef
 nathanielCho =

@@ -2260,29 +2260,6 @@ getSkillsMatching matcher = do
           )
           as
 
-getSkill :: (HasCallStack, HasGame m) => SkillId -> m Skill
-getSkill sid = fromJustNote missingSkill <$> maybeSkill sid
- where
-  missingSkill = "Unknown skill: " <> show sid
-
-maybeSkill :: HasGame m => SkillId -> m (Maybe Skill)
-maybeSkill sid = do
-  g <- getGame
-  pure
-    $ preview (entitiesL . skillsL . ix sid) g
-    <|> getInDiscardEntity skillsL sid g
-    <|> getRemovedEntity skillsL sid g
-    <|> preview (inHandEntitiesL . each . skillsL . ix sid) g
-    <|> preview (inSearchEntitiesL . skillsL . ix sid) g
-
-getStory :: (HasCallStack, HasGame m) => StoryId -> m Story
-getStory sid = fromJustNote missingStory <$> maybeStory sid
- where
-  missingStory = "Unknown story: " <> show sid
-
-maybeStory :: HasGame m => StoryId -> m (Maybe Story)
-maybeStory sid = preview (entitiesL . storiesL . ix sid) <$> getGame
-
 getStoriesMatching :: HasGame m => StoryMatcher -> m [Story]
 getStoriesMatching matcher = do
   stories <- toList . view (entitiesL . storiesL) <$> getGame

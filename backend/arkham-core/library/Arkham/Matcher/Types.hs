@@ -873,7 +873,7 @@ data WindowMatcher
   | DrawingStartingHand Timing Who
   | InvestigatorDefeated Timing DefeatedByMatcher Who
   | InvestigatorWouldBeDefeated Timing DefeatedByMatcher Who
-  | InvestigatorWouldTakeDamage Timing Who SourceMatcher
+  | InvestigatorWouldTakeDamage Timing Who SourceMatcher DamageTypeMatcher
   | InvestigatorWouldTakeHorror Timing Who SourceMatcher
   | WouldSearchDeck Timing Who DeckMatcher
   | WouldLookAtDeck Timing Who DeckMatcher
@@ -1519,6 +1519,9 @@ data AspectMatcher = AspectIs Aspect
 data HistoryMatcher = DefeatedEnemiesWithTotalHealth ValueMatcher
   deriving stock (Show, Eq, Ord, Data)
 
+data DamageTypeMatcher = IsDirectDamage | IsNonDirectDamage | AnyDamageType
+  deriving stock (Show, Eq, Ord, Data)
+
 $( do
     ability <- deriveJSON defaultOptions ''AbilityMatcher
     act <- deriveJSON defaultOptions ''ActMatcher
@@ -1531,6 +1534,7 @@ $( do
     chaosToken <- deriveJSON defaultOptions ''ChaosTokenMatcher
     counter <- deriveJSON defaultOptions ''CounterMatcher
     damageEffect <- deriveJSON defaultOptions ''DamageEffectMatcher
+    damageType <- deriveJSON defaultOptions ''DamageTypeMatcher
     deck <- deriveJSON defaultOptions ''DeckMatcher
     defeatedBy <- deriveJSON defaultOptions ''DefeatedByMatcher
     enemy <- deriveJSON defaultOptions ''EnemyMatcher
@@ -1572,6 +1576,7 @@ $( do
         , chaosToken
         , counter
         , damageEffect
+        , damageType
         , deck
         , defeatedBy
         , enemy

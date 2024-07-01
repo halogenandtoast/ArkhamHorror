@@ -192,6 +192,7 @@ allPlayerAssetCards =
       , bloodstainedDagger
       , blur1
       , blur4
+      , bonesaw
       , bookOfPsalms
       , bookOfShadows1
       , bookOfShadows3
@@ -739,6 +740,7 @@ allPlayerAssetCards =
       , wishEater
       , wither
       , wither4
+      , woundedBystanderOnDeathsDoorstep
       , yaotl1
       , zeal
       , zebulonWhateley
@@ -5506,6 +5508,21 @@ rodOfAnimalism1 =
     , cdSlots = [#accessory]
     , cdLevel = Just 1
     , cdUnique = True
+    }
+
+bonesaw :: CardDef
+bonesaw =
+  signature "09004"
+    $ (asset "09005" "Bonesaw" 3 Neutral)
+      { cdCardTraits = setFromList [Item, Tool, Melee]
+      , cdSkills = [#intellect, #combat, #wild]
+      , cdSlots = [#hand]
+      }
+
+woundedBystanderOnDeathsDoorstep :: CardDef
+woundedBystanderOnDeathsDoorstep =
+  (weakness "09007" ("Wounded Bystander" <:> "On Death's Doorstep"))
+    { cdCardTraits = setFromList [Ally, Bystander]
     }
 
 runicAxe :: CardDef

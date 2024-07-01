@@ -23,7 +23,7 @@ instance HasAbilities GlimpseOfTheUnderworld where
     [ restrictedAbility attrs 1 (InThreatAreaOf You)
         $ forced
         $ oneOf
-          [ InvestigatorWouldTakeDamage #when You AnySource
+          [ InvestigatorWouldTakeDamage #when You AnySource AnyDamageType
           , InvestigatorWouldTakeHorror #when You AnySource
           ]
     , fastAbility attrs 2 Free (InThreatAreaOf You)

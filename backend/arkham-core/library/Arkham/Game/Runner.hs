@@ -716,7 +716,14 @@ runGameMessage msg g = case msg of
           & actionRemovedEntitiesL
           . enemiesL
           %~ insertEntity enemy
-  RemoveSkill sid -> pure $ g & entitiesL . skillsL %~ deleteMap sid
+  RemoveSkill sid -> do
+    removedEntitiesF <-
+      if notNull (gameActiveAbilities g)
+        then do
+          skill <- getSkill sid
+          pure $ actionRemovedEntitiesL . skillsL %~ insertEntity skill
+        else pure id
+    pure $ g & entitiesL . skillsL %~ deleteMap sid & removedEntitiesF
   When (RemoveEnemy enemy) -> do
     pushM $ checkWindows [mkWhen (Window.LeavePlay $ toTarget enemy)]
     pure g
@@ -905,6 +912,12 @@ runGameMessage msg g = case msg of
               (\k _ -> k `notElem` skillsToRemove)
         )
       & (phaseHistoryL %~ insertHistory iid historyItem)
+      & ( actionRemovedEntitiesL
+            . skillsL
+            %~ foldr
+              (\s m -> Map.insert s.id s m)
+              skills'
+        )
       & setTurnHistory
   Msg.SkillTestEnded -> do
     pure

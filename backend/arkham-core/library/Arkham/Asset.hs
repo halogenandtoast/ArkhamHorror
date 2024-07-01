@@ -852,7 +852,10 @@ allAssets =
     , SomeAssetCard sledDog
     , SomeAssetCard rodOfAnimalism1
     , -- The Scarlet Keys
-      --- guardian [tsk]
+      --- signature
+      SomeAssetCard bonesaw
+    , SomeAssetCard woundedBystanderOnDeathsDoorstep
+    , --- guardian [tsk]
       -- , SomeAssetCard runicAxe
       SomeAssetCard guardDog2
     , SomeAssetCard handcuffs2

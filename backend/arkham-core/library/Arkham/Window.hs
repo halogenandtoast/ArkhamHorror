@@ -23,6 +23,7 @@ import {-# SOURCE #-} Arkham.SkillTest.Base
 import Arkham.SkillTest.Step
 import Arkham.SkillTest.Type
 import Arkham.Source (Source)
+import Arkham.Strategy (DamageStrategy)
 import Arkham.Target (Target)
 import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
@@ -115,6 +116,9 @@ pattern PlacedDamage :: Source -> Target -> Int -> WindowType
 pattern PlacedDamage source target n <- PlacedToken source target Damage n
   where
     PlacedDamage source target n = PlacedToken source target Damage n
+
+data IsDirect = IsDirect | IsNonDirect
+  deriving stock (Show, Eq)
 
 data WindowType
   = ActAdvance ActId
@@ -255,7 +259,7 @@ data WindowType
   | WouldReady Target
   | Readies Target
   | WouldRevealChaosToken Source InvestigatorId
-  | WouldTakeDamage Source Target Int
+  | WouldTakeDamage Source Target Int DamageStrategy
   | WouldTakeDamageOrHorror Source Target Int Int
   | WouldTakeHorror Source Target Int
   | Explored InvestigatorId (Result Card LocationId)
@@ -270,8 +274,9 @@ data WindowType
   deriving stock (Show, Eq)
 
 $( do
+    isDirect <- deriveJSON defaultOptions ''IsDirect
     result <- deriveJSON defaultOptions ''Result
     windowType <- deriveJSON defaultOptions ''WindowType
     window <- deriveJSON defaultOptions ''Window
-    pure $ concat [result, windowType, window]
+    pure $ concat [isDirect, result, windowType, window]
  )

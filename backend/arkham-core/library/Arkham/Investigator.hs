@@ -128,6 +128,7 @@ allInvestigators =
       , SomeInvestigatorCard lilyChen
       , SomeInvestigatorCard bobJenkins
       , SomeInvestigatorCard carsonSinclair
+      , SomeInvestigatorCard vincentLee
       , SomeInvestigatorCard nathanielCho
       , SomeInvestigatorCard harveyWalters
       , SomeInvestigatorCard winifredHabbamock

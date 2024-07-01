@@ -1065,6 +1065,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         pure $ a & deckLens handler .~ Deck cards & discardLens handler %~ (card :)
   SpawnEnemyAt card@(EncounterCard ec) _ -> do
     pure $ a & discardL %~ filter (/= ec) & setAsideCardsL %~ filter (/= card)
+  AddToHand _ cards -> do
+    pure $ a & setAsideCardsL %~ filter (`notElem` cards)
   SpawnEnemyAtEngagedWith (EncounterCard ec) _ _ -> do
     pure $ a & discardL %~ filter (/= ec)
   InvestigatorDrewEncounterCard _ ec -> do

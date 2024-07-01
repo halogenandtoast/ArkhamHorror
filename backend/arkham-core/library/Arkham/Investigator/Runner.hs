@@ -827,8 +827,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [] -> if choose.overriden then AnyEnemy else CanFightEnemy source
         [o] -> CanFightEnemyWithOverride o
         _ -> error "multiple overrides found"
-    enemyIds <-
-      select $ traceShowId $ foldr applyMatcherModifiers (canFightMatcher <> enemyMatcher) modifiers
+    enemyIds <- select $ foldr applyMatcherModifiers (canFightMatcher <> enemyMatcher) modifiers
     player <- getPlayer investigatorId
     push
       $ chooseOne
@@ -1159,7 +1158,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pushAll
         $ [ CheckWindow [iid]
             $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror')
-            : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage) | damage > 0]
+            : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage DamageDirect) | damage > 0]
               <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror') | horror' > 0]
           | damage > 0 || horror' > 0
           ]
@@ -1186,7 +1185,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           pushAll
             $ [ CheckWindow [iid]
                 $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror')
-                : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage) | damage > 0]
+                : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage strategy) | damage > 0]
                   <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror') | horror' > 0]
               | damage > 0 || horror' > 0
               ]
@@ -1252,8 +1251,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     healthDamageableAssets <-
       toList <$> getHealthDamageableAssets iid matcher health damageTargets horrorTargets
 
-    mustBeDamagedFirstBeforeInvestigator <-
-      select (AssetCanBeAssignedDamageBy iid <> AssetWithModifier NonDirectDamageMustBeAssignToThisFirst)
+    canBeAssignedDamage <- select $ AssetCanBeAssignedDamageBy iid
+    mustBeDamagedFirstBeforeInvestigator <- forMaybeM canBeAssignedDamage $ \aid -> do
+      mods <- getModifiers aid
+      let n = sum [x | NonDirectDamageMustBeAssignToThisN x <- mods]
+      let mustAssignRemaining = n > 0 && health <= n && count (== toTarget aid) damageTargets < n
+      pure $ guard (NonDirectDamageMustBeAssignToThisFirst `elem` mods || mustAssignRemaining) $> aid
 
     let
       onlyAssets = any (`elem` mustBeDamagedFirstBeforeInvestigator) healthDamageableAssets
@@ -1361,16 +1364,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         damageTargets
         horrorTargets
 
-    mustBeAssignedDamageFirstBeforeInvestigator <-
-      select
-        ( AssetCanBeAssignedDamageBy iid
-            <> AssetWithModifier NonDirectDamageMustBeAssignToThisFirst
-        )
+    canBeAssignedDamage <- select $ AssetCanBeAssignedDamageBy iid
+    mustBeAssignedDamageFirstBeforeInvestigator <- forMaybeM canBeAssignedDamage $ \aid -> do
+      mods <- getModifiers aid
+      let n = sum [x | NonDirectDamageMustBeAssignToThisN x <- mods]
+      let mustAssignRemaining = n > 0 && health <= n && count (== toTarget aid) damageTargets < n
+      pure $ guard (NonDirectDamageMustBeAssignToThisFirst `elem` mods || mustAssignRemaining) $> aid
 
     mustBeAssignedHorrorFirstBeforeInvestigator <-
       select
         ( AssetCanBeAssignedHorrorBy iid
-            <> AssetWithModifier NonDirectDamageMustBeAssignToThisFirst
+            <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
         )
 
     let
@@ -1440,20 +1444,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 <> map damageAsset healthDamageableAssets
             DamageDirect -> pure [damageInvestigator]
             DamageAny -> do
-              mustBeAssignedDamageFirstBeforeInvestigator <-
-                select
-                  ( AssetCanBeAssignedDamageBy iid
-                      <> AssetWithModifier NonDirectDamageMustBeAssignToThisFirst
-                  )
+              canBeAssignedDamage <- select $ AssetCanBeAssignedDamageBy iid
+              mustBeAssignedDamageFirstBeforeInvestigator <- forMaybeM canBeAssignedDamage $ \aid -> do
+                mods <- getModifiers aid
+                let n = sum [x | NonDirectDamageMustBeAssignToThisN x <- mods]
+                let mustAssignRemaining = n > 0 && health <= n && count (== toTarget aid) damageTargets < n
+                pure $ guard (NonDirectDamageMustBeAssignToThisFirst `elem` mods || mustAssignRemaining) $> aid
               let onlyAssets = any (`elem` mustBeAssignedDamageFirstBeforeInvestigator) healthDamageableAssets
 
               pure $ [damageInvestigator | not onlyAssets] <> map damageAsset healthDamageableAssets
             DamageFromHastur -> do
-              mustBeAssignedDamageFirstBeforeInvestigator <-
-                select
-                  ( AssetCanBeAssignedDamageBy iid
-                      <> AssetWithModifier NonDirectDamageMustBeAssignToThisFirst
-                  )
+              canBeAssignedDamage <- select $ AssetCanBeAssignedDamageBy iid
+              mustBeAssignedDamageFirstBeforeInvestigator <- forMaybeM canBeAssignedDamage $ \aid -> do
+                mods <- getModifiers aid
+                let n = sum [x | NonDirectDamageMustBeAssignToThisN x <- mods]
+                let mustAssignRemaining = n > 0 && health <= n && count (== toTarget aid) damageTargets < n
+                pure $ guard (NonDirectDamageMustBeAssignToThisFirst `elem` mods || mustAssignRemaining) $> aid
               let onlyAssets = any (`elem` mustBeAssignedDamageFirstBeforeInvestigator) healthDamageableAssets
               pure $ [damageInvestigator | not onlyAssets] <> map damageAsset healthDamageableAssets
             DamageFirst def -> do

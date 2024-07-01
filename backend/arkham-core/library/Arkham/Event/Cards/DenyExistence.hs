@@ -48,7 +48,7 @@ instance RunMessage DenyExistence where
           popMessageMatching_ (== Do (LoseResources iid source n))
         LostActions iid source n -> do
           popMessageMatching_ (== Do (LoseActions iid source n))
-        WouldTakeDamage _source (InvestigatorTarget iid) n -> do
+        WouldTakeDamage _source (InvestigatorTarget iid) n _ -> do
           push $ CancelDamage iid n
         WouldTakeHorror _source (InvestigatorTarget iid) n -> do
           push $ CancelHorror iid n

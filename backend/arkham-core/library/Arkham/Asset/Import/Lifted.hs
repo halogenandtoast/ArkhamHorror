@@ -10,6 +10,7 @@ import Arkham.Asset.Runner as X (
   allyWith,
   asset,
   assetWith,
+  canLeavePlayByNormalMeansL,
   cardsUnderneathL,
   controlledBy,
   controls,

@@ -494,6 +494,8 @@ allEvents =
     , --- rogue/mystic [eote]
       SomeEventCard etherealSlip
     , SomeEventCard etherealSlip2
+    , --- rogue/survivor [eote]
+      SomeEventCard hitMe
     , -- The Scarlet Keys
       --- rogue [tsk]
       SomeEventCard breakingAndEntering2

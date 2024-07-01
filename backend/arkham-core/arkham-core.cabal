@@ -1801,6 +1801,7 @@ library
       Arkham.Investigator.Cards.BodyOfAYithian
       Arkham.Investigator.Cards.CalvinWright
       Arkham.Investigator.Cards.CarolynFern
+      Arkham.Investigator.Cards.CarsonSinclair
       Arkham.Investigator.Cards.DaisyWalker
       Arkham.Investigator.Cards.DaisyWalkerParallel
       Arkham.Investigator.Cards.DanielaReyes
@@ -2559,6 +2560,7 @@ library
       Arkham.Skill.Cards.AllIn5
       Arkham.Skill.Cards.AnythingYouCanDoBetter
       Arkham.Skill.Cards.Arrogance
+      Arkham.Skill.Cards.AsYouWish
       Arkham.Skill.Cards.Beloved
       Arkham.Skill.Cards.BruteForce1
       Arkham.Skill.Cards.Copycat3
@@ -2650,6 +2652,7 @@ library
       Arkham.Skill.Cards.ViciousBlow2
       Arkham.Skill.Cards.WatchThis
       Arkham.Skill.Cards.WhispersFromTheDeep
+      Arkham.Skill.Import.Lifted
       Arkham.Skill.Runner
       Arkham.Skill.Skills
       Arkham.Skill.Types
@@ -2969,6 +2972,7 @@ library
       Arkham.Treachery.Cards.SecretsOfTheBeyond
       Arkham.Treachery.Cards.SelfCentered
       Arkham.Treachery.Cards.SelfDestructive
+      Arkham.Treachery.Cards.SelflessToAFault
       Arkham.Treachery.Cards.SellYourSoul
       Arkham.Treachery.Cards.SerpentsCall
       Arkham.Treachery.Cards.SerpentsIre

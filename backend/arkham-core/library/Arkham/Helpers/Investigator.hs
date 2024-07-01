@@ -511,6 +511,7 @@ additionalActionCovers source actions (AdditionalAction _ _ aType) = case aType 
     AbilitiesOnly -> case source of
       AbilitySource {} -> member t <$> sourceTraits source
       _ -> pure False
+  AbilityRestrictedAdditionalAction s idx -> pure $ isAbilitySource s idx source
   ActionRestrictedAdditionalAction a -> pure $ a `elem` actions
   EffectAction _ _ -> pure False
   AnyAdditionalAction -> pure True

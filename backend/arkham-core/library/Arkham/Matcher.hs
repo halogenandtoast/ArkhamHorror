@@ -58,6 +58,9 @@ class OneOf a where
 mapOneOf :: OneOf b => (a -> b) -> [a] -> b
 mapOneOf f = oneOf . map f
 
+notOneOf :: (Not a, OneOf a) => [a] -> a
+notOneOf = not_ . oneOf
+
 instance OneOf SkillTestMatcher where
   oneOf = SkillTestOneOf
 

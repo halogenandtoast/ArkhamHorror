@@ -79,8 +79,9 @@ instance RunMessage DanielaReyes where
             & setMeta (Metadata (eid : enemiesThatAttackedYouSinceTheEndOfYourLastTurn meta) True)
         _ -> pure i
     EndRound -> do
+      attrs' <- lift (runMessage msg attrs)
       let meta = toResult attrs.meta
-      pure . DanielaReyes $ attrs & setMeta (meta {elderSignAutoSucceeds = False})
+      pure . DanielaReyes $ attrs' & setMeta (meta {elderSignAutoSucceeds = False})
     EndTurn iid | iid == attrs.id -> do
       attrs' <- lift (runMessage msg attrs)
       let meta = toResult attrs.meta

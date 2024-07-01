@@ -113,6 +113,7 @@ allPlayerTreacheryCards =
       , searchingForIzzie
       , selfCentered
       , selfDestructive
+      , selflessToAFault
       , sellYourSoul
       , shellShock
       , shockingDiscovery
@@ -2099,6 +2100,12 @@ stupor :: CardDef
 stupor =
   (basicWeakness "08133" "Stupor")
     { cdCardTraits = singleton Madness
+    }
+
+selflessToAFault :: CardDef
+selflessToAFault =
+  (weakness "09003" "Selfless to a Fault")
+    { cdCardTraits = setFromList [Flaw]
     }
 
 theZealotsSeal :: CardDef

@@ -18,6 +18,7 @@ data ActionRestriction = AbilitiesOnly | NoRestriction
 data AdditionalActionType
   = TraitRestrictedAdditionalAction Trait ActionRestriction
   | ActionRestrictedAdditionalAction Action
+  | AbilityRestrictedAdditionalAction Source Int
   | EffectAction Text EffectId
   | AnyAdditionalAction
   | BountyAction -- Tony Morgan

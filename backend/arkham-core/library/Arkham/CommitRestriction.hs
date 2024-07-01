@@ -11,6 +11,7 @@ import Data.Aeson.TH
 data CommitRestriction
   = MaxOnePerTest
   | OnlyYourTest
+  | OnlyNotYourTest
   | OnlyTestWithActions [Action]
   | OnlyIfYourLocationHasClues
   | ScenarioAbility

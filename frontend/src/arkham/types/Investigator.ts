@@ -26,6 +26,7 @@ export const classSymbolDecoder = JsonDecoder.oneOf<ClassSymbol>([
 
 type AdditionalActionType
   = { tag: "ActionRestrictedAdditionalAction" }
+  | { tag: "AbilityRestrictedAdditionalAction" }
   | { tag: "EffectAction", contents: [string, string] }
   | { tag: "TraitRestrictedAdditionalAction" }
   | { tag: "AnyAdditionalAction" }
@@ -41,6 +42,7 @@ export const additionalActionContentsDecoder = JsonDecoder.tuple([JsonDecoder.st
 export const additionalActionTypeDecoder = JsonDecoder.oneOf<AdditionalActionType>(
   [ JsonDecoder.object({ tag: JsonDecoder.isExactly("EffectAction"), contents: additionalActionContentsDecoder}, 'EffectAction')
   , JsonDecoder.object({ tag: JsonDecoder.isExactly("ActionRestrictedAdditionalAction") }, "ActionRestrictedAdditionalAction")
+  , JsonDecoder.object({ tag: JsonDecoder.isExactly("AbilityRestrictedAdditionalAction") }, "AbilityRestrictedAdditionalAction")
   , JsonDecoder.object({ tag: JsonDecoder.isExactly("TraitRestrictedAdditionalAction") }, "TraitRestrictedAdditionalAction")
   , JsonDecoder.object({ tag: JsonDecoder.isExactly("AnyAdditionalAction") }, "AnyAdditionalAction")
   , JsonDecoder.object({ tag: JsonDecoder.isExactly("BountyAction") }, "BountyAction")

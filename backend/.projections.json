@@ -51,7 +51,7 @@
        "    AdvanceAct (isSide B attrs -> True) _ _ -> do",
        "      advanceActDeck attrs",
        "      pure a",
-       "    _ -> {dot} <$> lift (runMessage msg attrs)"
+       "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]
   },
   "arkham-core/library/Arkham/Scenario/Scenarios/*.hs": {
@@ -193,7 +193,7 @@
       "instance RunMessage {dot} where",
       "  runMessage msg t@({dot} attrs) = runQueueT $ case msg of",
       "    Revelation _iid (isSource attrs -> True) -> pure t",
-      "    _ -> {dot} <$> lift (runMessage msg attrs)"
+      "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]
   },
   "arkham-core/library/Arkham/Investigator/Cards/*.hs": {
@@ -291,7 +291,7 @@
       "",
       "instance RunMessage {dot} where",
       "  runMessage msg ({dot} attrs) = runQueueT $ case msg of",
-      "    _ -> {dot} <$> lift (runMessage msg attrs)"
+      "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]
   },
   "arkham-core/library/Arkham/Event/Cards/*.hs": {
@@ -347,7 +347,7 @@
       "",
       "instance RunMessage {dot} where",
       "  runMessage msg ({dot} attrs) = runQueueT $ case msg of",
-      "    _ -> {dot} <$> lift (runMessage msg attrs)"
+      "    _ -> {dot} <$> liftRunMessage msg attrs"
       ]
   },
   "arkham-core/library/Arkham/Skill/Cards/*.hs": {
@@ -401,7 +401,7 @@
        "  runMessage msg s@({dot} attrs) = runQueueT $ case msg of",
        "    ResolveStory _ ResolveIt story' | story' == toId attrs -> do",
        "      pure s",
-       "    _ -> {dot} <$> lift (runMessage msg attrs)"
+       "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]
   },
   "arkham-core/library/Arkham/*.hs": {

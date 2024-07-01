@@ -25,6 +25,8 @@ import Arkham.Source as X
 import Arkham.Stats as X
 import Arkham.Target as X
 import Arkham.Trait as X hiding (Cultist)
+import Data.Aeson (Result (..))
+import Data.Aeson.KeyMap qualified as KeyMap
 
 import Arkham.Action (Action)
 import Arkham.Action qualified as Action
@@ -47,7 +49,7 @@ import Arkham.Discover
 import Arkham.Draw.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Event.Types (Field (..))
-import {-# SOURCE #-} Arkham.Game (withoutCanModifiers)
+import {-# SOURCE #-} Arkham.Game (asIfTurn, withoutCanModifiers)
 import Arkham.Game.Helpers hiding (windows)
 import Arkham.Game.Helpers qualified as Helpers
 import {-# SOURCE #-} Arkham.GameEnv
@@ -104,6 +106,41 @@ import Data.UUID (nil)
 
 instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
+
+overMetaKey
+  :: forall a
+   . (HasCallStack, ToJSON a, FromJSON a)
+  => Key
+  -> (a -> a -> a)
+  -> a
+  -> InvestigatorAttrs
+  -> InvestigatorAttrs
+overMetaKey k f a attrs = case attrs.meta of
+  Object o -> case KeyMap.lookup k o of
+    Just v -> case fromJSON @a v of
+      Success a' -> attrs {investigatorMeta = Object $ KeyMap.insert k (toJSON $ f a' a) o}
+      _ -> error $ "Could not insert meta key, meta is not an a: " <> show v
+    Nothing -> attrs {investigatorMeta = Object $ KeyMap.insert k (toJSON a) o}
+  Null -> attrs {investigatorMeta = object [k .= a]}
+  _ -> error $ "Could not insert meta key, meta is not Null or Object: " <> show attrs.meta
+
+insertMetaKey :: HasCallStack => Key -> InvestigatorAttrs -> InvestigatorAttrs
+insertMetaKey k attrs = case attrs.meta of
+  Object o -> attrs {investigatorMeta = Object $ KeyMap.insert k (toJSON True) o}
+  Null -> attrs {investigatorMeta = object [k .= True]}
+  _ -> error $ "Could not insert meta key, meta is not Null or Object: " <> show attrs.meta
+
+deleteMetaKey :: HasCallStack => Key -> InvestigatorAttrs -> InvestigatorAttrs
+deleteMetaKey k attrs = case attrs.meta of
+  Object o -> attrs {investigatorMeta = Object $ KeyMap.delete k o}
+  Null -> attrs {investigatorMeta = object []}
+  _ -> error $ "Could not delete meta key, meta is not Null or Object: " <> show attrs.meta
+
+lookupMetaKeyWithDefault :: FromJSON a => Key -> a -> InvestigatorAttrs -> a
+lookupMetaKeyWithDefault k def attrs = case attrs.meta of
+  Object o -> maybe def (toResultDefault def) $ KeyMap.lookup k o
+  Null -> def
+  _ -> def
 
 onlyCampaignAbilities :: UsedAbility -> Bool
 onlyCampaignAbilities UsedAbility {..} = case abilityLimitType (abilityLimit usedAbility) of
@@ -3249,7 +3286,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
     let
       windows = [mkWhen (Window.DuringTurn iid), mkWhen Window.FastPlayerWindow, mkWhen Window.NonFast]
-    actions <- getActions iid windows
+    actions <- asIfTurn iid (getActions iid windows)
     anyForced <- anyM (isForcedAbility iid) actions
     if anyForced
       then do
@@ -3324,7 +3361,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             <> [ targetLabel (toCardId c) [InitiatePlayCard investigatorId c Nothing NoPayment windows usesAction]
                | c <- playableCards
                ]
-            <> map ((\f -> f windows []) . AbilityLabel investigatorId) actions
+            <> map
+              ((\f -> f windows []) . AbilityLabel investigatorId)
+              (filter (not . isActionAbility) actions)
       player <- getPlayer investigatorId
       unless (null choices)
         $ push

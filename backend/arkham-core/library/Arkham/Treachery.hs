@@ -438,6 +438,9 @@ allTreacheries =
     , SomeTreacheryCard legInjury
     , SomeTreacheryCard panic
     , SomeTreacheryCard stupor
+    , -- The Scarlet Keys
+      -- signature
+      SomeTreacheryCard selflessToAFault
     , -- Return to the Night of the Zealot
       -- Return to the Gathering
       SomeTreacheryCard theZealotsSeal

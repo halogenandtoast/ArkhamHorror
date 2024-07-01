@@ -318,7 +318,7 @@
       "  runMessage msg e@({dot} attrs) = runQueueT $ case msg of",
       "    PlayThisEvent _iid (is attrs -> True) -> do",
       "      pure e",
-      "    _ -> {dot} <$> lift (runMessage msg attrs)"
+      "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]
   },
   "arkham-core/library/Arkham/Location/Cards/*.hs": {

@@ -186,6 +186,7 @@ allPlayerEventCards =
       , heroicRescue
       , heroicRescue2
       , hidingSpot
+      , hitMe
       , hotStreak2
       , hotStreak4
       , hypnoticGaze
@@ -3053,6 +3054,15 @@ etherealSlip2 =
           <> EnemyAt (RevealedLocation <> CanEnterLocation You)
           <> EnemyCanEnter YourLocation
     , cdLevel = Just 2
+    }
+
+hitMe :: CardDef
+hitMe =
+  (multiClassEvent "08112" "\"Hit me!\"" 1 [Rogue, Survivor])
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Fortune, Gambit]
+    , cdFastWindow = Just $ RevealChaosToken #after You #any
+    , cdCriteria = Just Criteria.DuringAnySkillTest
     }
 
 breakingAndEntering2 :: CardDef

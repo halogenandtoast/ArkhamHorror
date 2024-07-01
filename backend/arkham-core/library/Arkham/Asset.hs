@@ -833,6 +833,9 @@ allAssets =
     , SomeAssetCard preciousMementoFromAFutureLife4
     , --- mystic/survivor [eote]
       SomeAssetCard talismanOfProtection
+    , SomeAssetCard earthlySerenity1
+    , SomeAssetCard enchantedBow2
+    , SomeAssetCard earthlySerenity4
     , --- guardian/mystic/survivor [eote]
       SomeAssetCard prophetic3
     , --- guardian/seeker/mystic [eote]

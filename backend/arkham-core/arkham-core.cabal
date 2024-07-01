@@ -550,6 +550,8 @@ library
       Arkham.Asset.Cards.DrWilliamTMaleson
       Arkham.Asset.Cards.Duke
       Arkham.Asset.Cards.EarlSawyer
+      Arkham.Asset.Cards.EarthlySerenity1
+      Arkham.Asset.Cards.EarthlySerenity4
       Arkham.Asset.Cards.EighteenDerringer
       Arkham.Asset.Cards.EighteenDerringer2
       Arkham.Asset.Cards.ElderSignAmulet3
@@ -563,6 +565,7 @@ library
       Arkham.Asset.Cards.EnchantedBlade
       Arkham.Asset.Cards.EnchantedBladeGuardian3
       Arkham.Asset.Cards.EnchantedBladeMystic3
+      Arkham.Asset.Cards.EnchantedBow2
       Arkham.Asset.Cards.Encyclopedia
       Arkham.Asset.Cards.Encyclopedia2
       Arkham.Asset.Cards.EonChart1

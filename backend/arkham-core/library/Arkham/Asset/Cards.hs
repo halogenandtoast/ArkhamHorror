@@ -288,6 +288,8 @@ allPlayerAssetCards =
       , dreamDiaryDreamsOfAnExplorer3
       , duke
       , earlSawyer
+      , earthlySerenity1
+      , earthlySerenity4
       , eighteenDerringer
       , eighteenDerringer2
       , elderSignAmulet3
@@ -301,6 +303,7 @@ allPlayerAssetCards =
       , enchantedBlade
       , enchantedBladeGuardian3
       , enchantedBladeMystic3
+      , enchantedBow2
       , encyclopedia
       , encyclopedia2
       , eonChart1
@@ -5394,6 +5397,36 @@ talismanOfProtection =
       , cdSkills = [#willpower]
       , cdSlots = [#arcane]
       }
+
+earthlySerenity1 :: CardDef
+earthlySerenity1 =
+  (multiClassAsset "08117" "Earthly Serenity" 2 [Mystic, Survivor])
+    { cdCardTraits = setFromList [Spell]
+    , cdSkills = [#willpower]
+    , cdSlots = [#arcane]
+    , cdUses = uses Charge 4
+    , cdLevel = Just 1
+    }
+
+enchantedBow2 :: CardDef
+enchantedBow2 =
+  (multiClassAsset "08118" "Enchanted Bow" 3 [Mystic, Survivor])
+    { cdCardTraits = setFromList [Spell, Blessed, Weapon, Ranged]
+    , cdSkills = [#willpower, #agility]
+    , cdSlots = [#hand, #hand, #arcane]
+    , cdUses = uses Charge 3
+    , cdLevel = Just 2
+    }
+
+earthlySerenity4 :: CardDef
+earthlySerenity4 =
+  (multiClassAsset "08119" "Earthly Serenity" 2 [Mystic, Survivor])
+    { cdCardTraits = setFromList [Spell]
+    , cdSkills = [#willpower, #willpower]
+    , cdSlots = [#arcane]
+    , cdUses = uses Charge 6
+    , cdLevel = Just 4
+    }
 
 prophetic3 :: CardDef
 prophetic3 =

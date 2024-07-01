@@ -790,7 +790,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [] -> if choose.overriden then AnyEnemy else CanFightEnemy source
         [o] -> CanFightEnemyWithOverride o
         _ -> error "multiple overrides found"
-    enemyIds <- select $ foldr applyMatcherModifiers (canFightMatcher <> enemyMatcher) modifiers
+    enemyIds <-
+      select $ traceShowId $ foldr applyMatcherModifiers (canFightMatcher <> enemyMatcher) modifiers
     player <- getPlayer investigatorId
     push
       $ chooseOne

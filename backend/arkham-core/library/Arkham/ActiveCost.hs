@@ -175,6 +175,14 @@ payCost msg c iid skipAdditionalCosts cost = do
   let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
   case cost of
+    CostIfEnemy mtchr cost1 cost2 -> do
+      hasEnemy <- selectAny mtchr
+      payCost msg c iid skipAdditionalCosts $ if hasEnemy then cost1 else cost2
+    CostWhenEnemy mtchr cost' -> do
+      hasEnemy <- selectAny mtchr
+      if hasEnemy
+        then payCost msg c iid skipAdditionalCosts cost'
+        else pure c
     ArchiveOfConduitsUnidentifiedCost -> do
       locations <- select Anywhere
       push

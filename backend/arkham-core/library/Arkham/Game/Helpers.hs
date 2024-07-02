@@ -3271,8 +3271,8 @@ sourceMatches s = \case
   Matcher.SourceIsCardEffect -> do
     let
       go = \case
-        ChaosTokenSource {} -> False
-        ChaosTokenEffectSource {} -> False
+        ChaosTokenSource {} -> True
+        ChaosTokenEffectSource {} -> True
         ActiveCostSource {} -> False
         AbilitySource {} -> True
         ActSource {} -> True

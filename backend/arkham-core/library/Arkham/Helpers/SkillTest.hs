@@ -13,6 +13,7 @@ import Arkham.Classes.Query hiding (matches)
 import Arkham.CommitRestriction
 import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
+import {-# SOURCE #-} Arkham.GameEnv as X (getSkillTest)
 import Arkham.Helpers.Calculation
 import Arkham.Helpers.Card
 import Arkham.Helpers.Cost

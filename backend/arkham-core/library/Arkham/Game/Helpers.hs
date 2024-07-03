@@ -2344,6 +2344,14 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             , matchWho iid who whoMatcher
             ]
         _ -> noMatch
+    Matcher.AttemptToEvade timing whoMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.AttemptToEvadeEnemy who enemyId ->
+          andM
+            [ enemyMatches enemyId enemyMatcher
+            , matchWho iid who whoMatcher
+            ]
+        _ -> noMatch
     Matcher.EnemyEvaded timing whoMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyEvaded who enemyId ->

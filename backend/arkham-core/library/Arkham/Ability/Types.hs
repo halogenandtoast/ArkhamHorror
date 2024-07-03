@@ -111,8 +111,21 @@ newtype DifferentAbility = DifferentAbility Ability
   deriving newtype (Show, ToJSON, FromJSON)
 
 instance Eq DifferentAbility where
-  (DifferentAbility a) == (DifferentAbility b) = case abilityIndex a of
-    100 -> abilityIndex b == 100
-    101 -> abilityIndex b == 101
-    102 -> abilityIndex b == 102
-    _ -> (abilityCardCode a == abilityCardCode b) && (abilityIndex a == abilityIndex b)
+  (DifferentAbility a) == (DifferentAbility b) =
+    case abilityIndex a of
+      100 -> abilityIndex b == 100 && sameSource
+      101 -> abilityIndex b == 101 && sameSource
+      102 -> abilityIndex b == 102 && sameSource
+      _ -> (abilityCardCode a == abilityCardCode b) && (abilityIndex a == abilityIndex b)
+   where
+    sameSource = case abilitySource a of
+      EnemySource _ -> case abilitySource b of
+        EnemySource _ -> True
+        _ -> False
+      LocationSource _ -> case abilitySource b of
+        LocationSource _ -> True
+        _ -> False
+      InvestigatorSource _ -> case abilitySource b of
+        InvestigatorSource _ -> True
+        _ -> False
+      _ -> error $ "Unhandled samesource in DifferentAbility: " <> show (abilitySource a, abilitySource b)

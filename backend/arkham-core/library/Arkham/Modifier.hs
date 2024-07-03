@@ -50,6 +50,7 @@ data ModifierType
   | AddSkillIcons [SkillIcon]
   | AddSkillToOtherSkill SkillType SkillType
   | AddSkillValue SkillType
+  | SetSkillValue SkillType Int
   | AddSkillValueOf SkillType InvestigatorId
   | AddTrait Trait
   | AdditionalActions Text Source Int

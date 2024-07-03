@@ -67,6 +67,7 @@ allInvestigatorCards =
       , bobJenkins
       , carsonSinclair
       , vincentLee
+      , kymaniJones
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -441,6 +442,14 @@ vincentLee =
     ("Vincent Lee" <:> "The Doctor")
     Seeker
     [Medic]
+
+kymaniJones :: CardDef
+kymaniJones =
+  investigator
+    "09008"
+    ("Kymani Jones" <:> "The Security Consultant")
+    Rogue
+    [Criminal]
 
 nathanielCho :: CardDef
 nathanielCho =

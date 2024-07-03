@@ -906,6 +906,7 @@ data WindowMatcher
   | ActAdvances Timing ActMatcher
   | AgendaWouldAdvance Timing AgendaAdvancementReason AgendaMatcher
   | AssetDefeated Timing DefeatedByMatcher AssetMatcher
+  | AttemptToEvade Timing Who EnemyMatcher
   | EnemyEvaded Timing Who EnemyMatcher
   | EnemyEngaged Timing Who EnemyMatcher
   | MythosStep WindowMythosStepMatcher

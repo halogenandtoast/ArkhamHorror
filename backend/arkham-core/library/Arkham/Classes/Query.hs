@@ -18,6 +18,9 @@ selectCount = fmap length . select
 selectAny :: (HasCallStack, Query a, HasGame m) => a -> m Bool
 selectAny = fmap notNull . selectMap id
 
+whenAny :: (HasCallStack, Query a, HasGame m) => a -> m () -> m ()
+whenAny q f = whenM (selectAny q) f
+
 selectNone :: (HasCallStack, Query a, HasGame m) => a -> m Bool
 selectNone = fmap not . selectAny
 

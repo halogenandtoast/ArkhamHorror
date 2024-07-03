@@ -363,6 +363,7 @@ allPlayerAssetCards =
       , gildedVolto
       , grannyOrne
       , grannyOrne3
+      , grapplingHook
       , gravediggersShovel
       , gravediggersShovel2
       , greenManMedallionHourOfTheHuntress
@@ -5516,6 +5517,15 @@ bonesaw =
     $ (asset "09005" "Bonesaw" 3 Neutral)
       { cdCardTraits = setFromList [Item, Tool, Melee]
       , cdSkills = [#intellect, #combat, #wild]
+      , cdSlots = [#hand]
+      }
+
+grapplingHook :: CardDef
+grapplingHook =
+  signature "09008"
+    $ (asset "09009" "Grappling Hook" 3 Neutral)
+      { cdCardTraits = setFromList [Item, Tool]
+      , cdSkills = [#intellect, #agility, #wild]
       , cdSlots = [#hand]
       }
 

@@ -985,7 +985,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       ]
     pure a
   EvadeEnemy iid eid source mTarget skillType False | iid == investigatorId -> do
-    pushAll [TryEvadeEnemy iid eid source mTarget skillType, AfterEvadeEnemy iid eid]
+    attemptWindow <- checkWindows [mkWhen $ Window.AttemptToEvadeEnemy iid eid]
+    pushAll [attemptWindow, TryEvadeEnemy iid eid source mTarget skillType, AfterEvadeEnemy iid eid]
     pure a
   MoveAction iid lid cost True | iid == investigatorId -> do
     beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #move)]

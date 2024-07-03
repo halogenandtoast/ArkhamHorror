@@ -626,6 +626,7 @@ library
       Arkham.Asset.Cards.GildedVolto
       Arkham.Asset.Cards.GrannyOrne
       Arkham.Asset.Cards.GrannyOrne3
+      Arkham.Asset.Cards.GrapplingHook
       Arkham.Asset.Cards.GravediggersShovel
       Arkham.Asset.Cards.GravediggersShovel2
       Arkham.Asset.Cards.GreenManMedallionHourOfTheHuntress
@@ -1154,6 +1155,7 @@ library
       Arkham.Enemy.Cards.AccursedFollower
       Arkham.Enemy.Cards.Acolyte
       Arkham.Enemy.Cards.AcolyteOfUmordhoth
+      Arkham.Enemy.Cards.AgentFletcher
       Arkham.Enemy.Cards.AgentOfTheKing
       Arkham.Enemy.Cards.AlejandroVela
       Arkham.Enemy.Cards.AlmaHill
@@ -1819,6 +1821,7 @@ library
       Arkham.Investigator.Cards.JeromeDavids
       Arkham.Investigator.Cards.JimCulver
       Arkham.Investigator.Cards.JoeDiamond
+      Arkham.Investigator.Cards.KymaniJones
       Arkham.Investigator.Cards.LeoAnderson
       Arkham.Investigator.Cards.LilyChen
       Arkham.Investigator.Cards.LolaHayes

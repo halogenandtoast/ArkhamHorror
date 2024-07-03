@@ -855,6 +855,7 @@ allAssets =
       --- signature
       SomeAssetCard bonesaw
     , SomeAssetCard woundedBystanderOnDeathsDoorstep
+    , SomeAssetCard grapplingHook
     , --- guardian [tsk]
       -- , SomeAssetCard runicAxe
       SomeAssetCard guardDog2

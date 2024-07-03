@@ -64,6 +64,7 @@ allPlayerEnemyCards =
       , shadowAgents
       , accursedFollower
       , mobGoons
+      , agentFletcher
       , tommyMalloy
       , sacrificialBeast
       , vengefulHound
@@ -1985,6 +1986,13 @@ mobGoons =
   (weakness "08003" "Mob Goons")
     { cdCardTraits = setFromList [Humanoid, Criminal]
     , cdKeywords = singleton Keyword.Hunter
+    }
+
+agentFletcher :: CardDef
+agentFletcher =
+  (weakness "09010" "Agent Fletcher")
+    { cdCardTraits = setFromList [Humanoid, Coterie, Detective]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
     }
 
 corpseHungryGhoul :: CardDef

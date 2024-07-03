@@ -368,6 +368,9 @@ allEnemies =
     , -- Edge of the Earth
       -- signature
       SomeEnemyCard mobGoons
+    , -- The Scarlet Keys
+      -- signature
+      SomeEnemyCard agentFletcher
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

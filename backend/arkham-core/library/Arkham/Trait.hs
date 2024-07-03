@@ -50,6 +50,7 @@ data Trait
   | Condition
   | Connection
   | Conspirator
+  | Coterie
   | Courage
   | Covenant
   | Creature

@@ -38,11 +38,21 @@ import Data.Function (on)
 import Data.List (nubBy)
 
 getSkillValue :: HasGame m => SkillType -> InvestigatorId -> m Int
-getSkillValue st iid = case st of
-  SkillWillpower -> field InvestigatorWillpower iid
-  SkillIntellect -> field InvestigatorIntellect iid
-  SkillCombat -> field InvestigatorCombat iid
-  SkillAgility -> field InvestigatorAgility iid
+getSkillValue st iid = do
+  mods <- getModifiers iid
+  case st of
+    SkillWillpower -> do
+      maybe (field InvestigatorWillpower iid) pure
+        $ minimumMay [n | SetSkillValue SkillWillpower n <- mods]
+    SkillIntellect ->
+      maybe (field InvestigatorIntellect iid) pure
+        $ minimumMay [n | SetSkillValue SkillIntellect n <- mods]
+    SkillCombat ->
+      maybe (field InvestigatorCombat iid) pure
+        $ minimumMay [n | SetSkillValue SkillCombat n <- mods]
+    SkillAgility ->
+      maybe (field InvestigatorAgility iid) pure
+        $ minimumMay [n | SetSkillValue SkillAgility n <- mods]
 
 skillValueFor
   :: forall m
@@ -66,6 +76,7 @@ skillValueFor skill maction tempModifiers iid = go 2 skill
     maybeAdditionalSkill = \case
       SkillModifiersAffectOtherSkill s' t | t == skill -> Just s'
       _ -> Nothing
+    applyBaseModifier (SetSkillValue s' n) m | s == s' && (n <= m || canBeIncreased) = pure n
     applyBaseModifier DoubleBaseSkillValue n | canBeIncreased = pure (n * 2)
     applyBaseModifier _ n = pure n
     applyModifier (AddSkillValue sv) n | canBeIncreased = do
@@ -95,10 +106,12 @@ baseSkillValueFor
   -> m Int
 baseSkillValueFor skill _maction tempModifiers iid = do
   baseValue <- getSkillValue skill iid
-  pure $ foldr applyModifier baseValue tempModifiers
+  pure $ foldr applyAfterModifier (foldr applyModifier baseValue tempModifiers) tempModifiers
  where
   applyModifier (BaseSkillOf skillType m) _ | skillType == skill = m
   applyModifier _ n = n
+  applyAfterModifier (SetSkillValue skillType m) _ | skillType == skill = m
+  applyAfterModifier _ n = n
 
 data DamageFor = DamageForEnemy | DamageForInvestigator
   deriving stock (Eq)

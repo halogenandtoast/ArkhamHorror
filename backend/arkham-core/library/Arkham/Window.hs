@@ -121,7 +121,8 @@ data IsDirect = IsDirect | IsNonDirect
   deriving stock (Show, Eq)
 
 data WindowType
-  = ActAdvance ActId
+  = AttemptToEvadeEnemy InvestigatorId EnemyId
+  | ActAdvance ActId
   | ActivateAbility InvestigatorId [Window] Ability
   | AddedToVictory Card
   | AgendaAdvance AgendaId

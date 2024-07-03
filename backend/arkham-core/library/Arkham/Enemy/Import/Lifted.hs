@@ -14,6 +14,7 @@ import Arkham.Enemy.Runner as X (
   enemyWith,
   flippedL,
   is,
+  preyL,
   push,
   setMeta,
   spawnAtL,

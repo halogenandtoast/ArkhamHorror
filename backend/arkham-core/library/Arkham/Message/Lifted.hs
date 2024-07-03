@@ -15,6 +15,7 @@ import Arkham.DamageEffect
 import Arkham.Deck (IsDeck (..))
 import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.Enemy.Creation
+import Arkham.Evade
 import Arkham.Fight
 import Arkham.Helpers
 import Arkham.Helpers.Campaign
@@ -532,6 +533,13 @@ chooseFightEnemy iid = mkChooseFight iid >=> push . toMessage
 chooseFightEnemyMatch
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> EnemyMatcher -> m ()
 chooseFightEnemyMatch iid source = mkChooseFightMatch iid source >=> push . toMessage
+
+chooseEvadeEnemy :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
+chooseEvadeEnemy iid = mkChooseEvade iid >=> push . toMessage
+
+chooseEvadeEnemyMatch
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> EnemyMatcher -> m ()
+chooseEvadeEnemyMatch iid source = mkChooseEvadeMatch iid source >=> push . toMessage
 
 mapQueue :: (MonadTrans t, HasQueue Message m) => (Message -> Message) -> t m ()
 mapQueue = lift . Msg.mapQueue

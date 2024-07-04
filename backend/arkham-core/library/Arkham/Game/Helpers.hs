@@ -2691,10 +2691,10 @@ skillTestValueMatches iid maction skillTestType = \case
       Nothing -> pure False
       Just n -> case skillTestType of
         SkillSkillTest skillType -> do
-          baseSkill <- baseSkillValueFor skillType maction [] iid
+          baseSkill <- baseSkillValueFor skillType maction iid
           pure $ n > baseSkill
         AndSkillTest types -> do
-          baseSkill <- sum <$> traverse (\skillType -> baseSkillValueFor skillType maction [] iid) types
+          baseSkill <- sum <$> traverse (\skillType -> baseSkillValueFor skillType maction iid) types
           pure $ n > baseSkill
         ResourceSkillTest -> do
           resources <- field InvestigatorResources iid

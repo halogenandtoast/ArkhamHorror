@@ -48,7 +48,8 @@ getSkillValue st iid = do
         SkillCombat -> InvestigatorCombat
         SkillAgility -> InvestigatorAgility
   base <- field fld iid
-  let x = sum [n | SkillModifier st' n <- mods, st' == st]
+  let canBeIncreased = SkillCannotBeIncreased st `notElem` mods
+  let x = if canBeIncreased then sum [n | SkillModifier st' n <- mods, st' == st] else 0
   pure $ fromMaybe (x + base) $ minimumMay [n | SetSkillValue st' n <- mods, st' == st]
 
 skillValueFor
@@ -56,20 +57,19 @@ skillValueFor
    . HasGame m
   => SkillType
   -> Maybe Action
-  -> [ModifierType]
   -> InvestigatorId
   -> m Int
-skillValueFor skill maction tempModifiers iid = go 2 skill
+skillValueFor skill maction iid = go 2 skill =<< getModifiers iid
  where
-  go :: Int -> SkillType -> m Int
-  go 0 _ = error "possible skillValueFor infinite loop"
-  go depth s = do
-    base <- baseSkillValueFor s maction tempModifiers iid
-    base' <- foldrM applyBaseModifier base tempModifiers
-    foldrM applyModifier base' tempModifiers
+  go :: Int -> SkillType -> [ModifierType] -> m Int
+  go 0 _ _ = error "possible skillValueFor infinite loop"
+  go depth s modifiers = do
+    base <- baseSkillValueFor s maction iid
+    base' <- foldrM applyBaseModifier base modifiers
+    foldrM applyModifier base' modifiers
    where
-    canBeIncreased = SkillCannotBeIncreased skill `notElem` tempModifiers
-    matchingSkills = s : mapMaybe maybeAdditionalSkill tempModifiers -- must be the skill we are looking at
+    canBeIncreased = SkillCannotBeIncreased skill `notElem` modifiers
+    matchingSkills = s : mapMaybe maybeAdditionalSkill modifiers -- must be the skill we are looking at
     maybeAdditionalSkill = \case
       SkillModifiersAffectOtherSkill s' t | t == skill -> Just s'
       _ -> Nothing
@@ -83,7 +83,7 @@ skillValueFor skill maction tempModifiers iid = go 2 skill
       m <- getSkillValue sv iid'
       pure $ max 0 (n + m)
     applyModifier (AddSkillToOtherSkill svAdd svType) n | canBeIncreased && svType `elem` matchingSkills = do
-      m <- go (depth - 1) svAdd
+      m <- go (depth - 1) svAdd modifiers
       pure $ max 0 (n + m)
     applyModifier (SkillModifier skillType m) n | canBeIncreased || m < 0 = do
       pure $ if skillType `elem` matchingSkills then max 0 (n + m) else n
@@ -98,12 +98,19 @@ baseSkillValueFor
   :: HasGame m
   => SkillType
   -> Maybe Action
-  -> [ModifierType]
   -> InvestigatorId
   -> m Int
-baseSkillValueFor skill _maction tempModifiers iid = do
-  baseValue <- getSkillValue skill iid
-  pure $ foldr applyAfterModifier (foldr applyModifier baseValue tempModifiers) tempModifiers
+baseSkillValueFor skill _maction iid = do
+  modifiers <- getModifiers iid
+  let
+    fld =
+      case skill of
+        SkillWillpower -> InvestigatorWillpower
+        SkillIntellect -> InvestigatorIntellect
+        SkillCombat -> InvestigatorCombat
+        SkillAgility -> InvestigatorAgility
+  baseValue <- field fld iid
+  pure $ foldr applyAfterModifier (foldr applyModifier baseValue modifiers) modifiers
  where
   applyModifier (BaseSkillOf skillType m) _ | skillType == skill = m
   applyModifier _ n = n
@@ -473,13 +480,12 @@ enemiesColocatedWith = EnemyAt . LocationWithInvestigator . InvestigatorWithId
 modifiedStatsOf
   :: HasGame m => Maybe Action -> InvestigatorId -> m Stats
 modifiedStatsOf maction i = do
-  modifiers' <- getModifiers (InvestigatorTarget i)
   remainingHealth <- field InvestigatorRemainingHealth i
   remainingSanity <- field InvestigatorRemainingSanity i
-  willpower' <- skillValueFor SkillWillpower maction modifiers' i
-  intellect' <- skillValueFor SkillIntellect maction modifiers' i
-  combat' <- skillValueFor SkillCombat maction modifiers' i
-  agility' <- skillValueFor SkillAgility maction modifiers' i
+  willpower' <- skillValueFor SkillWillpower maction i
+  intellect' <- skillValueFor SkillIntellect maction i
+  combat' <- skillValueFor SkillCombat maction i
+  agility' <- skillValueFor SkillAgility maction i
   pure
     Stats
       { willpower = willpower'

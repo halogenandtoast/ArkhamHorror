@@ -1,17 +1,11 @@
-module Arkham.Treachery.Cards.CoverUp (
-  CoverUp (..),
-  coverUp,
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.CoverUp (CoverUp (..), coverUp) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 import Arkham.Window (Window, windowType)
 import Arkham.Window qualified as Window
 
@@ -39,16 +33,16 @@ toClueCount = \case
   _ -> error "Invalid call"
 
 instance RunMessage CoverUp where
-  runMessage msg t@(CoverUp attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(CoverUp attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ AttachTreachery treacheryId (toTarget iid)
+      placeInThreatArea attrs iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 (toClueCount -> n) _ -> do
-      popMessageMatching_ $ \case
+      matchingDon't \case
         Do (DiscoverClues iid' _) -> iid == iid'
         _ -> False
       pure $ CoverUp $ attrs & tokensL %~ subtractTokens Clue n
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       withTreacheryInvestigator attrs $ \tormented -> push (SufferTrauma tormented 0 1)
       pure t
-    _ -> CoverUp <$> runMessage msg attrs
+    _ -> CoverUp <$> liftRunMessage msg attrs

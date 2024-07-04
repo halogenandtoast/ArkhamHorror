@@ -54,4 +54,4 @@ instance RunMessage TheGreatWebVastWeb where
       acrossLocation <- selectJust $ LocationWithLabel acrossLabel
       push $ Move $ move (attrs.ability 1) iid acrossLocation
       pure l
-    _ -> TheGreatWebVastWeb <$> lift (runMessage msg attrs)
+    _ -> TheGreatWebVastWeb <$> liftRunMessage msg attrs

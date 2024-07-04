@@ -59,6 +59,7 @@ instance Query ScenarioMatcher
 instance Query SkillMatcher
 instance Query StoryMatcher
 instance Query ChaosTokenMatcher
+instance Query TargetMatcher
 instance Query TreacheryMatcher
 
 instance Projection Act

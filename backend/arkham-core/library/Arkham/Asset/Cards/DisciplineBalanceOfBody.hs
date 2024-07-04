@@ -58,4 +58,4 @@ instance RunMessage DisciplineBalanceOfBody where
     Flip iid _ (isTarget attrs -> True) -> do
       push $ ReplaceInvestigatorAsset iid attrs.id (flipCard $ toCard attrs)
       pure a
-    _ -> DisciplineBalanceOfBody . (`with` meta) <$> lift (runMessage msg attrs)
+    _ -> DisciplineBalanceOfBody . (`with` meta) <$> liftRunMessage msg attrs

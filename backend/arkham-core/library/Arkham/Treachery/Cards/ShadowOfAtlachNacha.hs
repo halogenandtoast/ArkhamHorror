@@ -23,4 +23,4 @@ instance RunMessage ShadowOfAtlachNacha where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       assignDamageAndHorror iid attrs 1 1
       pure t
-    _ -> ShadowOfAtlachNacha <$> lift (runMessage msg attrs)
+    _ -> ShadowOfAtlachNacha <$> liftRunMessage msg attrs

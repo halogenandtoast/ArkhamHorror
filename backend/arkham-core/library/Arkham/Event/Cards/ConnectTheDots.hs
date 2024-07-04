@@ -26,4 +26,4 @@ instance RunMessage ConnectTheDots where
         | location <- locations
         ]
       pure e
-    _ -> ConnectTheDots <$> lift (runMessage msg attrs)
+    _ -> ConnectTheDots <$> liftRunMessage msg attrs

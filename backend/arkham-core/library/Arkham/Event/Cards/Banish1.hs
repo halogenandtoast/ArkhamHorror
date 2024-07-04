@@ -33,4 +33,4 @@ instance RunMessage Banish1 where
             $ nextPhaseModifier #upkeep attrs eid DoesNotReadyDuringUpkeep
         _ -> error "Wrong target"
       pure e
-    _ -> Banish1 <$> lift (runMessage msg attrs)
+    _ -> Banish1 <$> liftRunMessage msg attrs

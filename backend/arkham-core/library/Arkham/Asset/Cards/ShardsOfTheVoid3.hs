@@ -52,4 +52,4 @@ instance RunMessage ShardsOfTheVoid3 where
             , SealedChaosToken token (toCard attrs)
             ]
       pure a
-    _ -> ShardsOfTheVoid3 <$> lift (runMessage msg attrs)
+    _ -> ShardsOfTheVoid3 <$> liftRunMessage msg attrs

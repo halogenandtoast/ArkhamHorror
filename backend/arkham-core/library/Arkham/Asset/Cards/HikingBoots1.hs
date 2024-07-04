@@ -44,4 +44,4 @@ instance RunMessage HikingBoots1 where
         iid
         [targetLabel location [Move $ move (attrs.ability 1) iid location] | location <- locations]
       pure a
-    _ -> HikingBoots1 <$> lift (runMessage msg attrs)
+    _ -> HikingBoots1 <$> liftRunMessage msg attrs

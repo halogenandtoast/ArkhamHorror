@@ -38,4 +38,4 @@ instance RunMessage TheSentry where
       push $ toMessage $ creation {enemyCreationExhausted = True}
       placeClues attrs creation.enemy =<< perPlayer 1
       pure s
-    _ -> TheSentry <$> runMessage msg attrs
+    _ -> TheSentry <$> liftRunMessage msg attrs

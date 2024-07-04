@@ -46,4 +46,4 @@ instance RunMessage TheSpinnerInDarkness where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> TheSpinnerInDarkness <$> lift (runMessage msg attrs)
+    _ -> TheSpinnerInDarkness <$> liftRunMessage msg attrs

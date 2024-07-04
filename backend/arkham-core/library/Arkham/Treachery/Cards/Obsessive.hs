@@ -1,18 +1,10 @@
-module Arkham.Treachery.Cards.Obsessive (
-  obsessive,
-  Obsessive (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Obsessive (obsessive, Obsessive (..)) where
 
 import Arkham.Ability
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Obsessive = Obsessive TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -23,32 +15,24 @@ obsessive = treachery Obsessive Cards.obsessive
 
 instance HasAbilities Obsessive where
   getAbilities (Obsessive a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You)
-        $ ForcedAbility
-        $ TurnBegins
-          Timing.When
-          You
+    [ restrictedAbility a 1 (InThreatAreaOf You) $ forced $ TurnBegins #when You
     , restrictedAbility a 2 (InThreatAreaOf $ InvestigatorAt YourLocation)
         $ ActionAbility []
         $ ActionCost 2
     ]
 
 instance RunMessage Obsessive where
-  runMessage msg t@(Obsessive attrs) = case msg of
+  runMessage msg t@(Obsessive attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ attachTreachery attrs iid
+      placeInThreatArea attrs iid
       pure t
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      cards <-
-        select
-          $ InHandOf (InvestigatorWithId iid)
-          <> BasicCardMatch
-            (NonWeakness <> CardWithoutKeyword Keyword.Hidden)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      cards <- select $ inHandOf iid <> basic (NonWeakness <> CardWithoutKeyword Keyword.Hidden)
       for_ (nonEmpty cards) $ \cards' -> do
         card <- sample cards'
-        push $ DiscardCard iid (toAbilitySource attrs 1) (toCardId card)
+        push $ DiscardCard iid (attrs.ability 1) card.id
       pure t
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 2) attrs
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      toDiscardBy iid (attrs.ability 2) attrs
       pure t
-    _ -> Obsessive <$> runMessage msg attrs
+    _ -> Obsessive <$> liftRunMessage msg attrs

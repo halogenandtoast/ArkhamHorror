@@ -44,4 +44,4 @@ instance RunMessage Prophetic3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skillTestModifier (attrs.ability 1) iid (AnySkillValue 1)
       pure a
-    _ -> Prophetic3 <$> lift (runMessage msg attrs)
+    _ -> Prophetic3 <$> liftRunMessage msg attrs

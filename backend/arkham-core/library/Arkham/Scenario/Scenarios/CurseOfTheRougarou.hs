@@ -198,4 +198,4 @@ instance RunMessage CurseOfTheRougarou where
       allGainXp attrs
       endOfScenario
       pure s
-    _ -> CurseOfTheRougarou <$> lift (runMessage msg attrs)
+    _ -> CurseOfTheRougarou <$> liftRunMessage msg attrs

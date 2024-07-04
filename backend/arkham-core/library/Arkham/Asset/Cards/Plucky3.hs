@@ -3,7 +3,6 @@ module Arkham.Asset.Cards.Plucky3 (plucky3, Plucky3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Asset.Types (sanityL)
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -33,4 +32,4 @@ instance RunMessage Plucky3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skillTestModifiers (attrs.ability 1) iid [SkillModifier #willpower 1, SkillModifier #intellect 1]
       pure a
-    _ -> Plucky3 <$> lift (runMessage msg attrs)
+    _ -> Plucky3 <$> liftRunMessage msg attrs

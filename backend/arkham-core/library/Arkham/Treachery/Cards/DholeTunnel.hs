@@ -43,4 +43,4 @@ instance RunMessage DholeTunnel where
         iid
         [targetLabel location [Msg.attachTreachery (toId attrs) (toTarget location)] | location <- targets]
       pure t
-    _ -> DholeTunnel <$> lift (runMessage msg attrs)
+    _ -> DholeTunnel <$> liftRunMessage msg attrs

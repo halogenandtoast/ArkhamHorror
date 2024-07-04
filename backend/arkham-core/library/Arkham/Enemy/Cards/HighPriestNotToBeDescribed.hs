@@ -40,4 +40,4 @@ instance RunMessage HighPriestNotToBeDescribed where
       remember StunnedThePriest
       gameModifier (attrs.ability 1) attrs (EnemyFight (-3))
       pure e
-    _ -> HighPriestNotToBeDescribed <$> lift (runMessage msg attrs)
+    _ -> HighPriestNotToBeDescribed <$> liftRunMessage msg attrs

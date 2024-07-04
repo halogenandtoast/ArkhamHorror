@@ -44,4 +44,4 @@ instance RunMessage Antiquary3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skillTestModifier (attrs.ability 1) iid (AnySkillValue 1)
       pure a
-    _ -> Antiquary3 <$> lift (runMessage msg attrs)
+    _ -> Antiquary3 <$> liftRunMessage msg attrs

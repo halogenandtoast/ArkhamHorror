@@ -70,4 +70,4 @@ instance RunMessage QuickdrawHolster4 where
         abilities' <- filterM (getCanPerformAbility iid (defaultWindows iid)) abilities
         chooseOne iid [AbilityLabel iid ab [] [] | ab <- abilities']
       pure a
-    _ -> QuickdrawHolster4 <$> lift (runMessage msg attrs)
+    _ -> QuickdrawHolster4 <$> liftRunMessage msg attrs

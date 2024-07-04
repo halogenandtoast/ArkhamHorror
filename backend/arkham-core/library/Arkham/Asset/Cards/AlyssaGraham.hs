@@ -51,4 +51,4 @@ instance RunMessage AlyssaGraham where
           ]
         <> [Label "Leave card on top" [UnfocusCards]]
       pure a
-    _ -> AlyssaGraham <$> lift (runMessage msg attrs)
+    _ -> AlyssaGraham <$> liftRunMessage msg attrs

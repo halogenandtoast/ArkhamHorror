@@ -21,7 +21,7 @@ instance RunMessage Snipe1 where
     PlayThisEvent iid (is attrs -> True) -> do
       createCardEffect Cards.snipe1 Nothing attrs iid
       pure e
-    _ -> Snipe1 <$> lift (runMessage msg attrs)
+    _ -> Snipe1 <$> liftRunMessage msg attrs
 
 newtype Snipe1Effect = Snipe1Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

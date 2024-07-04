@@ -23,4 +23,4 @@ instance RunMessage LitByDeathFire where
         push $ LoseActions iid (toSource attrs) 1
 
       pure t
-    _ -> LitByDeathFire <$> lift (runMessage msg attrs)
+    _ -> LitByDeathFire <$> liftRunMessage msg attrs

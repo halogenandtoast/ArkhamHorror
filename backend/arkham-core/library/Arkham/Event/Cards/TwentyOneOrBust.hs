@@ -68,4 +68,4 @@ instance RunMessage TwentyOneOrBust where
         | otherwise -> pure ()
       push $ ResetChaosTokens (toSource attrs)
       pure e
-    _ -> TwentyOneOrBust <$> lift (runMessage msg attrs)
+    _ -> TwentyOneOrBust <$> liftRunMessage msg attrs

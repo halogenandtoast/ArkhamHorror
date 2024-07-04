@@ -1,17 +1,10 @@
-module Arkham.Treachery.Cards.DisquietingDreams (
-  disquietingDreams,
-  DisquietingDreams (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.DisquietingDreams (disquietingDreams, DisquietingDreams (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Matcher
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
+import Arkham.Strategy
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype DisquietingDreams = DisquietingDreams TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -22,35 +15,23 @@ disquietingDreams = treachery DisquietingDreams Cards.disquietingDreams
 
 instance HasAbilities DisquietingDreams where
   getAbilities (DisquietingDreams a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You)
-        $ ForcedAbility
-        $ TurnEnds Timing.AtIf You
-    , restrictedAbility a 2 (InThreatAreaOf You)
-        $ ForcedAbility
-        $ EncounterDeckRunsOutOfCards
+    [ restrictedAbility a 1 (InThreatAreaOf You) $ forced $ TurnEnds #at You
+    , restrictedAbility a 2 (InThreatAreaOf You) $ forced $ EncounterDeckRunsOutOfCards
     ]
 
 instance RunMessage DisquietingDreams where
-  runMessage msg t@(DisquietingDreams attrs) = case msg of
+  runMessage msg t@(DisquietingDreams attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs SkillWillpower (Fixed 5)
+      revelationSkillTest iid attrs #willpower (Fixed 5)
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
-      push $ AttachTreachery (toId attrs) (toTarget iid)
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      placeInThreatArea attrs iid
       pure t
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ DiscardTopOfEncounterDeck iid 1 (toSource attrs) Nothing
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ DiscardTopOfEncounterDeck iid 1 (attrs.ability 1) Nothing
       pure t
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      pushAll
-        [ toDiscardBy iid (toAbilitySource attrs 2) attrs
-        , search
-            iid
-            attrs
-            iid
-            [(FromTopOfDeck 10, DiscardRest)]
-            WeaknessCard
-            (DrawFound iid 10)
-        ]
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      toDiscardBy iid (attrs.ability 2) attrs
+      search iid attrs iid [(FromTopOfDeck 10, DiscardRest)] WeaknessCard (DrawFound iid 10)
       pure t
-    _ -> DisquietingDreams <$> runMessage msg attrs
+    _ -> DisquietingDreams <$> liftRunMessage msg attrs

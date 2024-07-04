@@ -64,9 +64,6 @@ notOneOf = not_ . oneOf
 instance OneOf SkillTestMatcher where
   oneOf = SkillTestOneOf
 
-instance OneOf SkillTestTypeMatcher where
-  oneOf = SkillTestTypeOneOf
-
 instance OneOf AbilityMatcher where
   oneOf = AbilityOneOf
 

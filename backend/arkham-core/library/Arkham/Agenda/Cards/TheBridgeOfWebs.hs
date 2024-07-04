@@ -31,4 +31,4 @@ instance RunMessage TheBridgeOfWebs where
       shuffleEncounterDiscardBackIn
       advanceAgendaDeck attrs
       pure a
-    _ -> TheBridgeOfWebs <$> runMessage msg attrs
+    _ -> TheBridgeOfWebs <$> liftRunMessage msg attrs

@@ -25,4 +25,4 @@ instance RunMessage ScoutAhead where
         $ Label "Done Moving" []
         : [targetLabel lid [Move $ move attrs iid lid, DoStep (n - 1) msg'] | lid <- locations]
       pure e
-    _ -> ScoutAhead <$> lift (runMessage msg attrs)
+    _ -> ScoutAhead <$> liftRunMessage msg attrs

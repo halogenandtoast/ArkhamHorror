@@ -43,4 +43,4 @@ instance RunMessage CatsFromSaturn where
         lead
         [targetLabel swarm [Discard Nothing (attrs.ability 1) (toTarget swarm)] | swarm <- swarms]
       pure e
-    _ -> CatsFromSaturn <$> lift (runMessage msg attrs)
+    _ -> CatsFromSaturn <$> liftRunMessage msg attrs

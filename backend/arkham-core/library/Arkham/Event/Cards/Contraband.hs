@@ -26,4 +26,4 @@ instance RunMessage Contraband where
         | (useType', assetId, assetUseCount) <- assets
         ]
       pure e
-    _ -> Contraband <$> lift (runMessage msg attrs)
+    _ -> Contraband <$> liftRunMessage msg attrs

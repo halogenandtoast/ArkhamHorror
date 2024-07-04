@@ -47,4 +47,4 @@ instance RunMessage ScoutingTheVale where
         | (c, rest) <- eachWithRest cards
         ]
       pure s
-    _ -> ScoutingTheVale <$> lift (runMessage msg attrs)
+    _ -> ScoutingTheVale <$> liftRunMessage msg attrs

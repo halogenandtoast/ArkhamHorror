@@ -26,6 +26,9 @@ checkWindow = checkWindows . pure
 checkAfter :: HasGame m => WindowType -> m Message
 checkAfter = checkWindows . pure . mkAfter
 
+checkWhen :: HasGame m => WindowType -> m Message
+checkWhen = checkWindows . pure . mkWhen
+
 checkWindows :: HasGame m => [Window] -> m Message
 checkWindows windows' = do
   mBatchId <- getCurrentBatchId

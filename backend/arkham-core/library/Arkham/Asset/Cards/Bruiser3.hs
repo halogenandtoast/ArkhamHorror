@@ -44,4 +44,4 @@ instance RunMessage Bruiser3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skillTestModifier (attrs.ability 1) iid (AnySkillValue 1)
       pure a
-    _ -> Bruiser3 <$> lift (runMessage msg attrs)
+    _ -> Bruiser3 <$> liftRunMessage msg attrs

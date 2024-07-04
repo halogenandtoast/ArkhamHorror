@@ -8,7 +8,6 @@ import Arkham.Prelude
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 import Arkham.SkillTest.Base

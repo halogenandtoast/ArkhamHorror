@@ -24,4 +24,4 @@ instance RunMessage TheBlackExpanse where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       push R1
       pure a
-    _ -> TheBlackExpanse <$> lift (runMessage msg attrs)
+    _ -> TheBlackExpanse <$> liftRunMessage msg attrs

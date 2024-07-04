@@ -48,4 +48,4 @@ instance RunMessage FoolishnessFoolishCatOfUlthar where
         . FoolishnessFoolishCatOfUlthar
         $ attrs
         & (tokensL %~ subtractTokens Horror amount)
-    _ -> FoolishnessFoolishCatOfUlthar <$> lift (runMessage msg attrs)
+    _ -> FoolishnessFoolishCatOfUlthar <$> liftRunMessage msg attrs

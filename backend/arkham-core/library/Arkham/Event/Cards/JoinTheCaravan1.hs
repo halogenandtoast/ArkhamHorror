@@ -29,4 +29,4 @@ instance RunMessage JoinTheCaravan1 where
         iid
         [targetLabel location [Move $ move (toSource attrs) iid location] | location <- locations]
       pure e
-    _ -> JoinTheCaravan1 <$> lift (runMessage msg attrs)
+    _ -> JoinTheCaravan1 <$> liftRunMessage msg attrs

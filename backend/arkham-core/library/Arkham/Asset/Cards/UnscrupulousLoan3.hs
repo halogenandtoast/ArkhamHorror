@@ -39,4 +39,4 @@ instance RunMessage UnscrupulousLoan3 where
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       push $ Exile (toTarget attrs)
       pure a
-    _ -> UnscrupulousLoan3 <$> lift (runMessage msg attrs)
+    _ -> UnscrupulousLoan3 <$> liftRunMessage msg attrs

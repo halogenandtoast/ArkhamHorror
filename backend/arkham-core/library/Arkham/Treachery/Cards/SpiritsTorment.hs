@@ -1,18 +1,11 @@
-module Arkham.Treachery.Cards.SpiritsTorment (
-  spiritsTorment,
-  SpiritsTorment (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.SpiritsTorment (spiritsTorment, SpiritsTorment (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Message qualified as Msg
 import Arkham.Matcher
-import Arkham.Projection
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype SpiritsTorment = SpiritsTorment TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -23,38 +16,27 @@ spiritsTorment = treachery SpiritsTorment Cards.spiritsTorment
 
 instance HasAbilities SpiritsTorment where
   getAbilities (SpiritsTorment a) =
-    [ mkAbility a 1
-        $ ForcedAbility
-        $ Leaves Timing.When You
-        $ LocationWithTreachery
-        $ TreacheryWithId
-        $ toId a
-    , restrictedAbility a 2 OnSameLocation
-        $ ActionAbility []
-        $ Costs
-          [ActionCost 1, PlaceClueOnLocationCost 1]
+    [ mkAbility a 1 $ forced $ Leaves #when You $ locationWithTreachery a
+    , restrictedAbility a 2 OnSameLocation $ actionAbilityWithCost (PlaceClueOnLocationCost 1)
     ]
 
 instance RunMessage SpiritsTorment where
-  runMessage msg t@(SpiritsTorment attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      mlid <- field InvestigatorLocation iid
-      for_ mlid
-        $ \lid -> push $ AttachTreachery (toId attrs) (LocationTarget lid)
+  runMessage msg t@(SpiritsTorment attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      withLocationOf iid $ attachTreachery attrs
       pure t
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasActions <- elem iid <$> select InvestigatorWithAnyActionsRemaining
-      player <- getPlayer iid
-      push
-        $ if hasActions
-          then
-            chooseOne
-              player
-              [ Label "Take 1 horror" [assignHorror iid source 1]
-              , Label "Lose 1 action" [LoseActions iid source 1]
-              ]
-          else InvestigatorAssignDamage iid source DamageAny 0 1
+      if hasActions
+        then
+          chooseOne
+            iid
+            [ Label "Take 1 horror" [Msg.assignHorror iid (attrs.ability 1) 1]
+            , Label "Lose 1 action" [LoseActions iid (attrs.ability 1) 1]
+            ]
+        else assignHorror iid (attrs.ability 1) 1
       pure t
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      t <$ push (toDiscardBy iid (toAbilitySource attrs 2) attrs)
-    _ -> SpiritsTorment <$> runMessage msg attrs
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      toDiscardBy iid (attrs.ability 2) attrs
+      pure t
+    _ -> SpiritsTorment <$> liftRunMessage msg attrs

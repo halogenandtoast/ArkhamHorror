@@ -1,17 +1,11 @@
-module Arkham.Treachery.Cards.YithianPresence (
-  yithianPresence,
-  YithianPresence (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.YithianPresence (yithianPresence, YithianPresence (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype YithianPresence = YithianPresence TreacheryAttrs
   deriving anyclass (IsTreachery)
@@ -21,36 +15,26 @@ yithianPresence :: TreacheryCard YithianPresence
 yithianPresence = treachery YithianPresence Cards.yithianPresence
 
 instance HasModifiersFor YithianPresence where
-  getModifiersFor (InvestigatorTarget iid) (YithianPresence a)
-    | treacheryOnInvestigator iid a = do
-        yithianPresent <-
-          selectAny
-            $ EnemyWithTrait Yithian
-            <> EnemyAt
-              (locationWithInvestigator iid)
-        mlid <- selectOne $ locationWithInvestigator iid
-        pure
-          $ if yithianPresent
-            then
-              toModifiers a
-                $ CannotTriggerAbilityMatching AbilityOnEncounterCard
-                : [CannotInvestigateLocation lid | lid <- maybeToList mlid]
-            else []
+  getModifiersFor (InvestigatorTarget iid) (YithianPresence a) | treacheryInThreatArea iid a = do
+    yithianPresent <- selectAny $ EnemyWithTrait Yithian <> enemyAtLocationWith iid
+    mlid <- selectOne $ locationWithInvestigator iid
+    modified a
+      $ guard yithianPresent
+      *> ( CannotTriggerAbilityMatching AbilityOnEncounterCard
+            : [CannotInvestigateLocation lid | lid <- maybeToList mlid]
+         )
   getModifiersFor _ _ = pure []
 
 instance HasAbilities YithianPresence where
   getAbilities (YithianPresence a) =
-    [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility []
-        $ ActionCost 1
-        <> HandDiscardCost 2 AnyCard
-    ]
+    [restrictedAbility a 1 OnSameLocation $ actionAbilityWithCost $ HandDiscardCost 2 AnyCard]
 
 instance RunMessage YithianPresence where
-  runMessage msg t@(YithianPresence attrs) = case msg of
-    Revelation iid (isSource attrs -> True) ->
-      t <$ push (AttachTreachery (toId t) (InvestigatorTarget iid))
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 1) (toTarget attrs)
+  runMessage msg t@(YithianPresence attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      placeInThreatArea attrs iid
       pure t
-    _ -> YithianPresence <$> runMessage msg attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      toDiscardBy iid (attrs.ability 1) attrs
+      pure t
+    _ -> YithianPresence <$> liftRunMessage msg attrs

@@ -44,4 +44,4 @@ instance RunMessage Contraband2 where
             ]
         ]
       pure e
-    _ -> Contraband2 <$> lift (runMessage msg attrs)
+    _ -> Contraband2 <$> liftRunMessage msg attrs

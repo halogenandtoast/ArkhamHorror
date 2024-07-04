@@ -24,4 +24,4 @@ instance RunMessage IcePick1 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skillTestModifier (attrs.ability 1) iid (AnySkillValue 1)
       pure a
-    _ -> IcePick1 <$> lift (runMessage msg attrs)
+    _ -> IcePick1 <$> liftRunMessage msg attrs

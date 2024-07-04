@@ -218,6 +218,7 @@ data ModifierType
   | EnemyFightActionCriteria CriteriaOverride
   | EnemyFightWithMin Int (Min Int)
   | EnemyEngageActionCriteria CriteriaOverride
+  | EntersPlayWithDoom Int
   | ExtraResources Int
   | FailTies
   | FewerActions Int
@@ -414,11 +415,26 @@ data ActionTarget
   | AnyActionTarget [ActionTarget]
   deriving stock (Show, Eq, Ord, Data)
 
+instance IsLabel "parley" ActionTarget where
+  fromLabel = IsAction #parley
+
+instance IsLabel "play" ActionTarget where
+  fromLabel = IsAction #play
+
+instance IsLabel "engage" ActionTarget where
+  fromLabel = IsAction #engage
+
+instance IsLabel "resource" ActionTarget where
+  fromLabel = IsAction #resource
+
 instance IsLabel "draw" ActionTarget where
   fromLabel = IsAction #draw
 
 instance IsLabel "move" ActionTarget where
   fromLabel = IsAction #move
+
+instance IsLabel "evade" ActionTarget where
+  fromLabel = IsAction #evade
 
 instance IsLabel "investigate" ActionTarget where
   fromLabel = IsAction #investigate

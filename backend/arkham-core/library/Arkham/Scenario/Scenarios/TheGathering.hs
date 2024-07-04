@@ -136,4 +136,4 @@ instance RunMessage TheGathering where
 
       endOfScenario
       pure s
-    _ -> TheGathering <$> lift (runMessage msg attrs)
+    _ -> TheGathering <$> liftRunMessage msg attrs

@@ -46,4 +46,4 @@ instance RunMessage GreenManMedallionHourOfTheHuntress where
       let x = n `div` 6
       push $ AddDeckBuildingAdjustment iid (ReduceXpCostOfNextCardYouPurchaseBy x)
       pure a
-    _ -> GreenManMedallionHourOfTheHuntress <$> lift (runMessage msg attrs)
+    _ -> GreenManMedallionHourOfTheHuntress <$> liftRunMessage msg attrs

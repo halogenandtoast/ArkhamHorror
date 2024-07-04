@@ -206,7 +206,7 @@ const combat = computed(() => calculateSkill(props.investigator.combat, "SkillCo
 const agility = computed(() => calculateSkill(props.investigator.agility, "SkillAgility", modifiers.value ?? []))
 
 
-// const doom = computed(() => props.player.tokens[TokenType.Doom])
+const doom = computed(() => props.investigator.tokens[TokenType.Doom])
 const clues = computed(() => props.investigator.tokens[TokenType.Clue] || 0)
 const resources = computed(() => props.investigator.tokens[TokenType.Resource] || 0)
 const horror = computed(() => (props.investigator.tokens[TokenType.Horror] || 0) + props.investigator.assignedSanityDamage)
@@ -323,6 +323,8 @@ const leylines = computed(() => props.investigator.tokens[TokenType.Leyline] || 
       <template v-if="debug.active">
         <button class="plus-button" @click="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 0, 1]})">+</button>
       </template>
+
+      <PoolItem v-if="doom > 0" type="doom" :amount="doom" />
 
       <PoolItem
         v-if="alarmLevel > 0"

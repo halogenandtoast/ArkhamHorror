@@ -27,4 +27,4 @@ instance RunMessage BellyOfTheBeast where
       mlid <- selectOne $ locationWithEnemy enemyId
       for_ mlid $ \lid -> push $ Msg.DiscoverClues iid $ discover lid attrs 1
       pure e
-    _ -> BellyOfTheBeast <$> lift (runMessage msg attrs)
+    _ -> BellyOfTheBeast <$> liftRunMessage msg attrs

@@ -35,19 +35,21 @@ instance HasModifiersFor EnchantedBow2 where
 
 instance HasAbilities EnchantedBow2 where
   getAbilities (EnchantedBow2 a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ withAdditionalCost
+        ( CostIfEnemy
+            (EnemyAt YourLocation <> CanBeAttackedBy You)
+            ( CostWhenEnemy
+                ( NonEliteEnemy
+                    <> EnemyWithoutModifier CannotBeAttacked
+                    <> EnemyAt (ConnectedFrom (LocationWithInvestigator $ HasMatchingAsset (be a)))
+                )
+                (UpTo 1 (assetUseCost a Charge 1))
+            )
+            (assetUseCost a Charge 1)
+        )
+        $ restrictedAbility a 1 ControlsThis
         $ fightAction
         $ exhaust a
-        <> CostIfEnemy
-          (EnemyAt YourLocation <> CanBeAttackedBy You)
-          ( CostWhenEnemy
-              ( NonEliteEnemy
-                  <> EnemyWithoutModifier CannotBeAttacked
-                  <> EnemyAt (ConnectedFrom (LocationWithInvestigator $ HasMatchingAsset (be a)))
-              )
-              (UpTo 1 (assetUseCost a Charge 1))
-          )
-          (assetUseCost a Charge 1)
     ]
 
 instance RunMessage EnchantedBow2 where
@@ -75,4 +77,4 @@ instance RunMessage EnchantedBow2 where
       pure . EnchantedBow2 $ setMeta (n > 0) attrs
     ResolvedAbility ab | isSource attrs ab.source -> do
       pure . EnchantedBow2 $ setMeta True attrs
-    _ -> EnchantedBow2 <$> lift (runMessage msg attrs)
+    _ -> EnchantedBow2 <$> liftRunMessage msg attrs

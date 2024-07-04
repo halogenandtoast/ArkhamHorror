@@ -84,9 +84,8 @@ const imageForCard = (card: Card) => {
 }
 
 const treacheries = computed(() => Object.values(props.game.treacheries).
-  filter((t) => t.placement.tag === "TreacheryNextToAgenda").
+  filter((t) => t.placement.tag === "NextToAgenda").
   map((t) => t.id))
-
 
 const debug = useDebug()
 </script>

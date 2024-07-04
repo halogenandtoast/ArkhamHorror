@@ -16,4 +16,4 @@ underworldSupport = asset UnderworldSupport Cards.underworldSupport
 
 instance RunMessage UnderworldSupport where
   runMessage msg (UnderworldSupport attrs) = runQueueT $ case msg of
-    _ -> UnderworldSupport <$> lift (runMessage msg attrs)
+    _ -> UnderworldSupport <$> liftRunMessage msg attrs

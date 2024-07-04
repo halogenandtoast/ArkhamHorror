@@ -59,7 +59,7 @@ toEnemy (_ : xs) = toEnemy xs
 instance RunMessage DanielaReyes where
   runMessage msg i@(DanielaReyes attrs) = runQueueT $ case msg of
     SetupInvestigator iid | iid == attrs.id -> do
-      attrs' <- lift (runMessage msg attrs)
+      attrs' <- liftRunMessage msg attrs
       pure . DanielaReyes $ attrs' & setMeta (Metadata [] False)
     UseCardAbility iid (isSource attrs -> True) 1 (toEnemy -> enemy) _ -> do
       canDamage <- enemy <=~> EnemyCanBeDamagedBySource (attrs.ability 1)
@@ -79,14 +79,14 @@ instance RunMessage DanielaReyes where
             & setMeta (Metadata (eid : enemiesThatAttackedYouSinceTheEndOfYourLastTurn meta) True)
         _ -> pure i
     EndRound -> do
-      attrs' <- lift (runMessage msg attrs)
+      attrs' <- liftRunMessage msg attrs
       let meta = toResult attrs.meta
       pure . DanielaReyes $ attrs' & setMeta (meta {elderSignAutoSucceeds = False})
     EndTurn iid | iid == attrs.id -> do
-      attrs' <- lift (runMessage msg attrs)
+      attrs' <- liftRunMessage msg attrs
       let meta = toResult attrs.meta
       pure . DanielaReyes $ attrs' & setMeta (meta {enemiesThatAttackedYouSinceTheEndOfYourLastTurn = []})
     ElderSignEffect iid | attrs `is` iid -> do
       pushWhen (elderSignAutoSucceeds $ toResult attrs.meta) PassSkillTest
       pure i
-    _ -> DanielaReyes <$> lift (runMessage msg attrs)
+    _ -> DanielaReyes <$> liftRunMessage msg attrs

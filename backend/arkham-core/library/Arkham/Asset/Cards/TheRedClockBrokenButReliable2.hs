@@ -54,4 +54,4 @@ instance RunMessage TheRedClockBrokenButReliable2 where
             | location <- locations
             ]
       pure a
-    _ -> TheRedClockBrokenButReliable2 <$> lift (runMessage msg attrs)
+    _ -> TheRedClockBrokenButReliable2 <$> liftRunMessage msg attrs

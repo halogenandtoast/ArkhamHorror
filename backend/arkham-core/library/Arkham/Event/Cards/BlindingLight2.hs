@@ -24,7 +24,7 @@ instance RunMessage BlindingLight2 where
       createCardEffect Cards.blindingLight2 Nothing attrs SkillTestTarget
       pushAllM $ leftOr <$> aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvade iid attrs)
       pure e
-    _ -> BlindingLight2 <$> lift (runMessage msg attrs)
+    _ -> BlindingLight2 <$> liftRunMessage msg attrs
 
 newtype BlindingLight2Effect = BlindingLight2Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -47,4 +47,4 @@ instance RunMessage BlindingLight2Effect where
       nonAttackEnemyDamage iid 2 eid
       disableReturn e
     SkillTestEnds _ _ -> disableReturn e
-    _ -> BlindingLight2Effect <$> lift (runMessage msg attrs)
+    _ -> BlindingLight2Effect <$> liftRunMessage msg attrs

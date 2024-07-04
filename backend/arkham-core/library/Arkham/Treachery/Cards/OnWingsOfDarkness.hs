@@ -29,4 +29,4 @@ instance RunMessage OnWingsOfDarkness where
       when (notNull centralLocations) do
         chooseOne iid $ targetLabels centralLocations (only . MoveTo . move attrs iid)
       pure t
-    _ -> OnWingsOfDarkness <$> lift (runMessage msg attrs)
+    _ -> OnWingsOfDarkness <$> liftRunMessage msg attrs

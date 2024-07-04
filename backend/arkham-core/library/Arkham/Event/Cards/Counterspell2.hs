@@ -20,4 +20,4 @@ instance RunMessage Counterspell2 where
       push
         $ CancelEachNext (toSource attrs) [RunWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
       pure e
-    _ -> Counterspell2 <$> lift (runMessage msg attrs)
+    _ -> Counterspell2 <$> liftRunMessage msg attrs

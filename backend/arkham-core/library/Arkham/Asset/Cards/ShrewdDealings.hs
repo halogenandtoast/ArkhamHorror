@@ -47,4 +47,4 @@ instance RunMessage ShrewdDealings where
         | investigator <- investigators
         ]
       pure a
-    _ -> ShrewdDealings <$> lift (runMessage msg attrs)
+    _ -> ShrewdDealings <$> liftRunMessage msg attrs

@@ -270,6 +270,10 @@ instance HasField "ability" EnemyAttrs (Int -> Source) where
 
 data Enemy = forall a. IsEnemy a => Enemy a
 
+instance AsId Enemy where
+  type IdOf Enemy = EnemyId
+  asId = toId
+
 instance HasField "id" Enemy EnemyId where
   getField (Enemy e) = attr enemyId e
 

@@ -27,4 +27,4 @@ instance RunMessage Hallow3 where
       chooseOrRunOne iid [targetLabel target [RemoveDoom (toSource attrs) target 1] | target <- targets]
 
       pure e
-    _ -> Hallow3 <$> lift (runMessage msg attrs)
+    _ -> Hallow3 <$> liftRunMessage msg attrs

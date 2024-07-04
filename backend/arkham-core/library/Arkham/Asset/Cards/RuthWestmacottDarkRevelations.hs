@@ -32,4 +32,4 @@ instance RunMessage RuthWestmacottDarkRevelations where
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       skillTestModifier (attrs.ability 1) SkillTestTarget (Difficulty (-2))
       pure a
-    _ -> RuthWestmacottDarkRevelations <$> lift (runMessage msg attrs)
+    _ -> RuthWestmacottDarkRevelations <$> liftRunMessage msg attrs

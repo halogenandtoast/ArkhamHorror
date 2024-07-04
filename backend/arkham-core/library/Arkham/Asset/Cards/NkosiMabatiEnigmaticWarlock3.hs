@@ -59,4 +59,4 @@ instance RunMessage NkosiMabatiEnigmaticWarlock3 where
           , DrawAnotherChaosToken iid
           ]
       pure a
-    _ -> NkosiMabatiEnigmaticWarlock3 <$> lift (runMessage msg attrs)
+    _ -> NkosiMabatiEnigmaticWarlock3 <$> liftRunMessage msg attrs

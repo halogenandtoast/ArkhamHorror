@@ -35,4 +35,4 @@ instance RunMessage Blur1 where
       gainActions iid (attrs.ability 1) 1
       when (n == 0) $ assignDamage iid (attrs.ability 1) 1
       pure a
-    _ -> Blur1 <$> lift (runMessage msg attrs)
+    _ -> Blur1 <$> liftRunMessage msg attrs

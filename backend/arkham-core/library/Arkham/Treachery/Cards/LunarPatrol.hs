@@ -37,4 +37,4 @@ instance RunMessage LunarPatrol where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       raiseAlarmLevel attrs iid
       pure t
-    _ -> LunarPatrol <$> lift (runMessage msg attrs)
+    _ -> LunarPatrol <$> liftRunMessage msg attrs

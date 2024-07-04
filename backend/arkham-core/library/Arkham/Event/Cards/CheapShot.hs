@@ -24,4 +24,4 @@ instance RunMessage CheapShot where
         Just (EnemyTarget eid) -> push $ EnemyEvaded iid eid
         _ -> pure ()
       pure e
-    _ -> CheapShot <$> lift (runMessage msg attrs)
+    _ -> CheapShot <$> liftRunMessage msg attrs

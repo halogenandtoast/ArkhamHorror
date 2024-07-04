@@ -31,4 +31,4 @@ instance RunMessage ATrailOfTwists where
       shuffleEncounterDiscardBackIn
       advanceAgendaDeck attrs
       pure a
-    _ -> ATrailOfTwists <$> runMessage msg attrs
+    _ -> ATrailOfTwists <$> liftRunMessage msg attrs

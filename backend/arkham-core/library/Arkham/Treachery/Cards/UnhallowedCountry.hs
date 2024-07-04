@@ -1,22 +1,13 @@
-module Arkham.Treachery.Cards.UnhallowedCountry (
-  UnhallowedCountry (..),
-  unhallowedCountry,
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.UnhallowedCountry (UnhallowedCountry (..), unhallowedCountry) where
 
 import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
-import Arkham.Card
-import Arkham.Classes
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype UnhallowedCountry = UnhallowedCountry TreacheryAttrs
   deriving anyclass (IsTreachery)
@@ -27,36 +18,27 @@ unhallowedCountry = treachery UnhallowedCountry Cards.unhallowedCountry
 
 instance HasModifiersFor UnhallowedCountry where
   getModifiersFor (InvestigatorTarget iid) (UnhallowedCountry attrs) =
-    pure
-      $ toModifiers
-        attrs
-        [ CannotPlay (CardWithType AssetType <> CardWithTrait Ally)
-        | treacheryOnInvestigator iid attrs
-        ]
+    modified attrs [CannotPlay (#asset <> #ally) | treacheryInThreatArea iid attrs]
   getModifiersFor (AssetTarget aid) (UnhallowedCountry attrs) = do
     isAlly <- fieldMap AssetTraits (member Ally) aid
     miid <- selectAssetController aid
-    pure $ case miid of
-      Just iid ->
-        toModifiers
-          attrs
-          [Blank | treacheryOnInvestigator iid attrs && isAlly]
+    modified attrs $ case miid of
+      Just iid -> [Blank | treacheryInThreatArea iid attrs && isAlly]
       Nothing -> []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities UnhallowedCountry where
-  getAbilities (UnhallowedCountry x) =
-    [ restrictedAbility x 1 (InThreatAreaOf You)
-        $ ForcedAbility
-        $ TurnEnds #when You
-    ]
+  getAbilities (UnhallowedCountry x) = [restrictedAbility x 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You]
 
 instance RunMessage UnhallowedCountry where
-  runMessage msg t@(UnhallowedCountry attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      t <$ push (RevelationSkillTest iid source SkillWillpower (SkillTestDifficulty $ Fixed 3))
-    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> t <$ push (toDiscardBy iid (toAbilitySource attrs 1) $ toTarget attrs)
-    _ -> UnhallowedCountry <$> runMessage msg attrs
+  runMessage msg t@(UnhallowedCountry attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      placeInThreatArea attrs iid
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      revelationSkillTest iid (attrs.ability 1) #willpower (Fixed 3)
+      pure t
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
+      toDiscardBy iid (attrs.ability 1) attrs
+      pure t
+    _ -> UnhallowedCountry <$> liftRunMessage msg attrs

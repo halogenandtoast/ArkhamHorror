@@ -1,17 +1,11 @@
-module Arkham.Treachery.Cards.CursedLuck (
-  CursedLuck (..),
-  cursedLuck,
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.CursedLuck (CursedLuck (..), cursedLuck) where
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.GameValue
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
@@ -26,28 +20,26 @@ cursedLuck = treachery CursedLuck Cards.cursedLuck
 instance HasModifiersFor CursedLuck where
   getModifiersFor (InvestigatorTarget iid) (CursedLuck attrs) = do
     mSkillTestSource <- getSkillTestSource
-    pure
-      $ toModifiers
-        attrs
-        [ AnySkillValue (-1)
-        | treacheryOnInvestigator iid attrs && isJust mSkillTestSource
-        ]
+    modified
+      attrs
+      [ AnySkillValue (-1)
+      | treacheryInThreatArea iid attrs && isJust mSkillTestSource
+      ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CursedLuck where
   getAbilities (CursedLuck x) =
     [ restrictedAbility x 1 (InThreatAreaOf You)
-        $ ForcedAbility
-        $ SkillTestResult Timing.After You AnySkillTest
-        $ SuccessResult
-        $ AtLeast
-        $ Static 1
+        $ forced
+        $ SkillTestResult #when You AnySkillTest (SuccessResult $ atLeast 1)
     ]
 
 instance RunMessage CursedLuck where
   runMessage msg t@(CursedLuck attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      t <$ push (AttachTreachery (toId attrs) (InvestigatorTarget iid))
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      t <$ push (toDiscardBy iid (toAbilitySource attrs 1) $ toTarget attrs)
+    Revelation iid (isSource attrs -> True) -> do
+      push $ placeInThreatArea attrs iid
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ toDiscardBy iid (attrs.ability 1) attrs
+      pure t
     _ -> CursedLuck <$> runMessage msg attrs

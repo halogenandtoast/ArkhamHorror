@@ -49,4 +49,4 @@ instance RunMessage IcePick3 where
           , Label "Do not Discard" []
           ]
       pure a
-    _ -> IcePick3 <$> lift (runMessage msg attrs)
+    _ -> IcePick3 <$> liftRunMessage msg attrs

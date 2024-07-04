@@ -1,8 +1,4 @@
-module Arkham.Treachery.Cards.CaughtInAWeb (
-  caughtInAWeb,
-  CaughtInAWeb (..),
-)
-where
+module Arkham.Treachery.Cards.CaughtInAWeb (caughtInAWeb, CaughtInAWeb (..)) where
 
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
@@ -18,15 +14,15 @@ caughtInAWeb :: TreacheryCard CaughtInAWeb
 caughtInAWeb = treachery CaughtInAWeb Cards.caughtInAWeb
 
 instance HasModifiersFor CaughtInAWeb where
-  getModifiersFor (InvestigatorTarget iid) (CaughtInAWeb attrs) | treacheryOnInvestigator iid attrs = do
+  getModifiersFor (InvestigatorTarget iid) (CaughtInAWeb attrs) | treacheryInThreatArea iid attrs = do
     alreadyMoved <- fieldMap InvestigatorActionsTaken (any (elem #move)) iid
-    pure $ toModifiers attrs $ SkillModifier #agility (-1) : [CannotTakeAction #move | alreadyMoved]
+    modified attrs $ SkillModifier #agility (-1) : [CannotTakeAction #move | alreadyMoved]
   getModifiersFor _ _ = pure []
 
 instance RunMessage CaughtInAWeb where
   runMessage msg t@(CaughtInAWeb attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      attachTreachery attrs iid
+      placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       beginSkillTest iid (attrs.ability 1) iid #combat (Fixed 3)
@@ -34,4 +30,4 @@ instance RunMessage CaughtInAWeb where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> CaughtInAWeb <$> lift (runMessage msg attrs)
+    _ -> CaughtInAWeb <$> liftRunMessage msg attrs

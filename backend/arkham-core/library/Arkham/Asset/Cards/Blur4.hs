@@ -43,4 +43,4 @@ instance RunMessage Blur4 where
       push $ SpendUses (toTarget attrs) Charge n
       gainActions iid (attrs.ability 1) n
       pure a
-    _ -> Blur4 <$> lift (runMessage msg attrs)
+    _ -> Blur4 <$> liftRunMessage msg attrs

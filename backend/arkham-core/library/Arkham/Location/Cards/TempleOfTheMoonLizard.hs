@@ -71,4 +71,4 @@ instance RunMessage TempleOfTheMoonLizard where
            | discardableCards > 0
            ]
       pure l
-    _ -> TempleOfTheMoonLizard <$> lift (runMessage msg attrs)
+    _ -> TempleOfTheMoonLizard <$> liftRunMessage msg attrs

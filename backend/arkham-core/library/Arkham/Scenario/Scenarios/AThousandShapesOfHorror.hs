@@ -199,4 +199,4 @@ instance RunMessage AThousandShapesOfHorror where
           endOfScenario
         other -> throw $ UnknownResolution other
       pure s
-    _ -> AThousandShapesOfHorror <$> lift (runMessage msg attrs)
+    _ -> AThousandShapesOfHorror <$> liftRunMessage msg attrs

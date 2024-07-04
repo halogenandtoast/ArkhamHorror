@@ -81,6 +81,7 @@ allPlayerTreacheryCards =
       , damned
       , darkFuture
       , dayOfReckoning
+      , deafeningSilence
       , detachedFromReality
       , doomed
       , drawingTheSign
@@ -2106,6 +2107,12 @@ selflessToAFault :: CardDef
 selflessToAFault =
   (weakness "09003" "Selfless to a Fault")
     { cdCardTraits = setFromList [Flaw]
+    }
+
+deafeningSilence :: CardDef
+deafeningSilence =
+  (weakness "09014" "Deafening Silence")
+    { cdCardTraits = setFromList [Omen]
     }
 
 theZealotsSeal :: CardDef

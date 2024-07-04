@@ -44,4 +44,4 @@ instance RunMessage EarthlySerenity4 where
           , Label "Spend a charge to heal" [SpendUses (toTarget attrs) Charge 1, Msg.chooseOne player choices]
           ]
       pure a
-    _ -> EarthlySerenity4 <$> lift (runMessage msg attrs)
+    _ -> EarthlySerenity4 <$> liftRunMessage msg attrs

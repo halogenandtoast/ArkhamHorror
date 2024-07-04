@@ -51,7 +51,6 @@ data ActAttrs = ActAttrs
   , actSequence :: AS.ActSequence
   , actAdvanceCost :: Maybe Cost
   , actClues :: Int
-  , actTreacheries :: Set TreacheryId
   , actDeckId :: Int
   , actBreaches :: Maybe Int
   , actUsedWheelOfFortuneX :: Bool
@@ -77,9 +76,6 @@ metaL = lens actMeta $ \m x -> m {actMeta = x}
 breachesL :: Lens' ActAttrs (Maybe Int)
 breachesL = lens actBreaches $ \m x -> m {actBreaches = x}
 
-treacheriesL :: Lens' ActAttrs (Set TreacheryId)
-treacheriesL = lens actTreacheries $ \m x -> m {actTreacheries = x}
-
 actWith
   :: (Int, AS.ActSide)
   -> (ActAttrs -> a)
@@ -99,7 +95,6 @@ actWith (n, side) f cardDef mCost g =
             , actSequence = AS.Sequence n side
             , actClues = 0
             , actAdvanceCost = mCost
-            , actTreacheries = mempty
             , actDeckId = deckId
             , actBreaches = Nothing
             , actUsedWheelOfFortuneX = False
@@ -166,6 +161,9 @@ instance HasAbilities ActAttrs where
     Nothing -> []
 
 data Act = forall a. IsAct a => Act a
+
+instance HasField "id" Act ActId where
+  getField = toId
 
 instance Eq Act where
   (Act (a :: a)) == (Act (b :: b)) = case eqT @a @b of

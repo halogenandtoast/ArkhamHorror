@@ -77,9 +77,9 @@ instance RunMessage TrueMagickReworkingReality5 where
           Just iasset -> do
             iasset' <- lift $ runMessage msg iasset
             pure $ TrueMagickReworkingReality5 $ With (toAttrs iasset') (Metadata $ Just iasset')
-          Nothing -> TrueMagickReworkingReality5 . (`with` meta) <$> lift (runMessage msg attrs)
+          Nothing -> TrueMagickReworkingReality5 . (`with` meta) <$> liftRunMessage msg attrs
     _ -> case currentAsset meta of
       Just iasset -> do
         iasset' <- lift $ runMessage msg iasset
         pure $ TrueMagickReworkingReality5 $ With (toAttrs iasset') (Metadata $ Just iasset')
-      Nothing -> TrueMagickReworkingReality5 . (`with` meta) <$> lift (runMessage msg attrs)
+      Nothing -> TrueMagickReworkingReality5 . (`with` meta) <$> liftRunMessage msg attrs

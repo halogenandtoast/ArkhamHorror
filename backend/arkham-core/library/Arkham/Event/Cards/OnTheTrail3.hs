@@ -6,7 +6,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator (getCanDiscoverClues)
 import Arkham.Helpers.Message (handleTargetChoice)
-import Arkham.Id
 import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Movement
 import Arkham.Projection
@@ -39,4 +38,4 @@ instance RunMessage OnTheTrail3 where
       for_ (toResultDefault [] attrs.meta) \lid -> do
         pushWhenM (getCanDiscoverClues NotInvestigate iid lid) $ DiscoverClues iid $ discover lid attrs 1
       pure e
-    _ -> OnTheTrail3 <$> lift (runMessage msg attrs)
+    _ -> OnTheTrail3 <$> liftRunMessage msg attrs

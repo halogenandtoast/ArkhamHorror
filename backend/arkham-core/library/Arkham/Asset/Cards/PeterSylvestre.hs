@@ -30,4 +30,4 @@ instance RunMessage PeterSylvestre where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       push $ HealHorror (toTarget attrs) (attrs.ability 1) 1
       pure a
-    _ -> PeterSylvestre <$> lift (runMessage msg attrs)
+    _ -> PeterSylvestre <$> liftRunMessage msg attrs

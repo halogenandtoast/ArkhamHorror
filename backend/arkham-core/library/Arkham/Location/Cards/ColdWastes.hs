@@ -36,4 +36,4 @@ instance RunMessage ColdWastes where
         $ [Label "Take 1 damage" [Msg.assignDamage iid (attrs.ability 1) 1]]
         <> [Label "Lose 1 action" [LoseActions iid (attrs.ability 1) 1] | actionRemainingCount > 0]
       pure l
-    _ -> ColdWastes <$> lift (runMessage msg attrs)
+    _ -> ColdWastes <$> liftRunMessage msg attrs

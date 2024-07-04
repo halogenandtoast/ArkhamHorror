@@ -34,4 +34,4 @@ instance RunMessage TheGreatWebWebStairs where
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       placeTokens (attrs.ability 1) attrs #doom 1
       pure l
-    _ -> TheGreatWebWebStairs <$> lift (runMessage msg attrs)
+    _ -> TheGreatWebWebStairs <$> liftRunMessage msg attrs

@@ -33,18 +33,14 @@ instance HasModifiersFor CreepingDarkness where
 
 instance HasAbilities CreepingDarkness where
   getAbilities (CreepingDarkness a) =
-    [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility []
-        $ ActionCost
-          2
-    ]
+    [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]
 
 instance RunMessage CreepingDarkness where
   runMessage msg t@(CreepingDarkness attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
       nexus <- selectJust $ locationIs Locations.nexusOfNKai
       pushAll
-        [ AttachTreachery (toId attrs) $ LocationTarget nexus
+        [ attachTreachery attrs nexus
         , PlaceDoom (toSource attrs) (toTarget attrs) 1
         ]
       pure t

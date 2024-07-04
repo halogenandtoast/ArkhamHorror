@@ -64,4 +64,4 @@ instance RunMessage NephthysHuntressOfBast4 where
            | notNull enemies
            ]
       pure a
-    _ -> NephthysHuntressOfBast4 <$> lift (runMessage msg attrs)
+    _ -> NephthysHuntressOfBast4 <$> liftRunMessage msg attrs

@@ -1,21 +1,15 @@
-module Arkham.Treachery.Cards.Wracked (
-  wracked,
-  Wracked (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Wracked (wracked, Wracked (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest (getSkillTestInvestigator, getSkillTestSource)
 import Arkham.History
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Source
 import Arkham.Trait (Trait (Witch))
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Wracked = Wracked TreacheryAttrs
   deriving anyclass (IsTreachery)
@@ -31,15 +25,10 @@ instance HasModifiersFor Wracked where
     case (mSource, mInvestigator) of
       (Just source, Just iid') | iid == iid' -> do
         performed <- historySkillTestsPerformed <$> getHistory RoundHistory iid
-        hasExhaustedWitch <-
-          selectAny
-            $ ExhaustedEnemy
-            <> EnemyWithTrait Witch
-            <> EnemyAt
-              (locationWithInvestigator iid)
+        hasExhaustedWitch <- selectAny $ ExhaustedEnemy <> EnemyWithTrait Witch <> enemyAtLocationWith iid
         pure
           $ toModifiers attrs
-          $ [AnySkillValue (-1) | null performed && treacheryOnInvestigator iid attrs]
+          $ [AnySkillValue (-1) | null performed && treacheryInThreatArea iid attrs]
           <> [ SkillTestAutomaticallySucceeds
              | hasExhaustedWitch && isSource attrs source
              ]
@@ -47,18 +36,17 @@ instance HasModifiersFor Wracked where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Wracked where
-  getAbilities (Wracked a) =
-    [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 1]
+  getAbilities (Wracked a) = [restrictedAbility a 1 OnSameLocation actionAbility]
 
 instance RunMessage Wracked where
-  runMessage msg t@(Wracked attrs) = case msg of
+  runMessage msg t@(Wracked attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ AttachTreachery (toId attrs) (toTarget iid)
+      placeInThreatArea attrs iid
       pure t
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ RevelationSkillTest iid (toSource attrs) SkillWillpower (SkillTestDifficulty $ Fixed 3)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      revelationSkillTest iid attrs #willpower (Fixed 3)
       pure t
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> Wracked <$> runMessage msg attrs
+    _ -> Wracked <$> liftRunMessage msg attrs

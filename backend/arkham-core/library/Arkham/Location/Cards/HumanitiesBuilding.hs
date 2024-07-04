@@ -29,4 +29,4 @@ instance RunMessage HumanitiesBuilding where
       horror <- field InvestigatorHorror iid
       push $ DiscardTopOfDeck iid horror (attrs.ability 1) Nothing
       pure l
-    _ -> HumanitiesBuilding <$> lift (runMessage msg attrs)
+    _ -> HumanitiesBuilding <$> liftRunMessage msg attrs

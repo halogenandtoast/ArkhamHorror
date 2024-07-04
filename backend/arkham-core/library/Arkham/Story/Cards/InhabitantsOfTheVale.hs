@@ -40,4 +40,4 @@ instance RunMessage InhabitantsOfTheVale where
         iid
         [targetLabel enemy [PlaceClues (toSource attrs) (toTarget enemy) 2] | enemy <- enemies]
       pure s
-    _ -> InhabitantsOfTheVale <$> lift (runMessage msg attrs)
+    _ -> InhabitantsOfTheVale <$> liftRunMessage msg attrs

@@ -65,4 +65,4 @@ instance RunMessage Geas2 where
       Geas2 <$> checkPromise attrs iid DrawPromise
     PlayCard iid _ _ _ _ True | Just iid == attrs.controller -> do
       Geas2 <$> checkPromise attrs iid PlayPromise
-    _ -> Geas2 <$> lift (runMessage msg attrs)
+    _ -> Geas2 <$> liftRunMessage msg attrs

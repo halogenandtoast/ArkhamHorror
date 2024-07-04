@@ -37,7 +37,7 @@ instance HasChaosTokenValue LilyChen where
 instance RunMessage LilyChen where
   runMessage msg (LilyChen (With attrs meta)) = runQueueT $ case msg of
     Do BeginRound -> do
-      attrs' <- lift (runMessage msg attrs)
+      attrs' <- liftRunMessage msg attrs
       quiescent <- fieldMap InvestigatorHand ((<= 2) . length) (toId attrs)
       balanced <- selectNone $ enemyAtLocationWith attrs.id
       pure
@@ -55,7 +55,7 @@ instance RunMessage LilyChen where
           $ targetLabels brokenDisciplines (only . Flip attrs.id #elderSign . toTarget)
       pure $ LilyChen $ attrs `with` Metadata False
     StartSkillTest iid | iid == attrs.id -> do
-      attrs' <- lift (runMessage msg attrs)
+      attrs' <- liftRunMessage msg attrs
       let
         meta' = case attrs.meta of
           Object o -> Object $ KM.insert "prescient" (Bool False) o
@@ -72,7 +72,7 @@ instance RunMessage LilyChen where
                 _ -> object ["balanced" .= True, "quiescent" .= True, "prescient" .= True, "aligned" .= False]
           attrs' <- lift $ runMessage msg attrs
           pure . LilyChen . (`with` meta) $ attrs' & setMeta meta'
-        else LilyChen . (`with` meta) <$> lift (runMessage msg attrs)
+        else LilyChen . (`with` meta) <$> liftRunMessage msg attrs
     _ ->
       do
         quiescent <- fieldMap InvestigatorHand ((< 2) . length) attrs.id
@@ -86,4 +86,4 @@ instance RunMessage LilyChen where
             _ ->
               object ["balanced" .= balanced, "quiescent" .= quiescent, "prescient" .= True, "aligned" .= True]
 
-        LilyChen . (`with` meta) . setMeta meta' <$> lift (runMessage msg attrs)
+        LilyChen . (`with` meta) . setMeta meta' <$> liftRunMessage msg attrs

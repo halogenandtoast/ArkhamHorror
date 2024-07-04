@@ -1,15 +1,11 @@
-module Arkham.Treachery.Cards.ToughCrowd (
-  toughCrowd,
-  ToughCrowd (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.ToughCrowd (toughCrowd, ToughCrowd (..)) where
 
 import Arkham.Ability
 import Arkham.Action
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
@@ -27,15 +23,14 @@ instance HasModifiersFor ToughCrowd where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ToughCrowd where
-  getAbilities (ToughCrowd a) =
-    [mkAbility a 1 $ ForcedAbility $ RoundEnds #when]
+  getAbilities (ToughCrowd a) = [mkAbility a 1 $ forced $ RoundEnds #when]
 
 instance RunMessage ToughCrowd where
   runMessage msg t@(ToughCrowd attrs) = case msg of
     Revelation _ (isSource attrs -> True) -> do
-      push $ PlaceTreachery (toId attrs) TreacheryNextToAgenda
+      push $ PlaceTreachery (toId attrs) NextToAgenda
       pure t
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ toDiscard (toAbilitySource attrs 1) attrs
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ toDiscard (attrs.ability 1) attrs
       pure t
     _ -> ToughCrowd <$> runMessage msg attrs

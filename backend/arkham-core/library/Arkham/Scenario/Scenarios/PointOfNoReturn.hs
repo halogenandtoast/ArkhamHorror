@@ -180,4 +180,4 @@ instance RunMessage PointOfNoReturn where
           pure ()
         other -> throw $ UnknownResolution other
       pure s
-    _ -> PointOfNoReturn <$> lift (runMessage msg attrs)
+    _ -> PointOfNoReturn <$> liftRunMessage msg attrs

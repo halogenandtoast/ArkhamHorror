@@ -58,4 +58,4 @@ instance RunMessage UntimelyTransaction1 where
               | (otherInvestigator, otherPlayer) <- otherPlayers
               ]
       pure e
-    _ -> UntimelyTransaction1 <$> lift (runMessage msg attrs)
+    _ -> UntimelyTransaction1 <$> liftRunMessage msg attrs

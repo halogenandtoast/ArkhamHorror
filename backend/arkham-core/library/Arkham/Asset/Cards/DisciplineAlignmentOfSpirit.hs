@@ -51,4 +51,4 @@ instance RunMessage DisciplineAlignmentOfSpirit where
     Flip iid _ (isTarget attrs -> True) -> do
       push $ ReplaceInvestigatorAsset iid attrs.id (flipCard $ toCard attrs)
       pure a
-    _ -> DisciplineAlignmentOfSpirit <$> lift (runMessage msg attrs)
+    _ -> DisciplineAlignmentOfSpirit <$> liftRunMessage msg attrs

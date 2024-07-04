@@ -15,7 +15,10 @@ chicagoTypewriter4 = asset ChicagoTypewriter4 Cards.chicagoTypewriter4
 
 instance HasAbilities ChicagoTypewriter4 where
   getAbilities (ChicagoTypewriter4 a) =
-    [ restrictedAbility a 1 ControlsThis $ fightAction $ AdditionalActionsCost <> assetUseCost a Ammo 1
+    [ withAdditionalCost AdditionalActionsCost
+        $ restrictedAbility a 1 ControlsThis
+        $ fightAction
+        $ assetUseCost a Ammo 1
     ]
 
 getActionsSpent :: Payment -> Int

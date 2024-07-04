@@ -48,4 +48,4 @@ instance RunMessage StellaClark where
                 <> [HealHorror (toTarget attrs) (toSource attrs) 1 | healHorror]
           ]
       pure i
-    _ -> StellaClark <$> lift (runMessage msg attrs)
+    _ -> StellaClark <$> liftRunMessage msg attrs

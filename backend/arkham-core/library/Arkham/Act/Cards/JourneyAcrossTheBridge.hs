@@ -132,4 +132,4 @@ instance RunMessage JourneyAcrossTheBridge where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       advanceVia #other attrs attrs
       pure a
-    _ -> JourneyAcrossTheBridge <$> lift (runMessage msg attrs)
+    _ -> JourneyAcrossTheBridge <$> liftRunMessage msg attrs

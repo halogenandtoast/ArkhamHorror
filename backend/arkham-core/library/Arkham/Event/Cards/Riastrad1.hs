@@ -22,4 +22,4 @@ instance RunMessage Riastrad1 where
       replicateM_ n $ addChaosToken #curse
       skillTestModifiers attrs iid [#combat n, #damage n]
       pure e
-    _ -> Riastrad1 <$> lift (runMessage msg attrs)
+    _ -> Riastrad1 <$> liftRunMessage msg attrs

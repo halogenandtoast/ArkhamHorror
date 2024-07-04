@@ -1,18 +1,12 @@
-module Arkham.Treachery.Cards.PsychopompsSong (
-  psychopompsSong,
-  PsychopompsSong (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.PsychopompsSong (psychopompsSong, PsychopompsSong (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Helpers.Message
+import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Helpers qualified as Msg
+import Arkham.Treachery.Import.Lifted
 
 newtype PsychopompsSong = PsychopompsSong TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -22,25 +16,17 @@ psychopompsSong :: TreacheryCard PsychopompsSong
 psychopompsSong = treachery PsychopompsSong Cards.psychopompsSong
 
 instance HasAbilities PsychopompsSong where
-  getAbilities (PsychopompsSong attrs) = case treacheryAttachedTarget attrs of
-    Just (InvestigatorTarget iid) ->
-      [ mkAbility attrs 1
-          $ ForcedAbility
-          $ DealtDamage Timing.When AnySource
-          $ InvestigatorWithId iid
-      ]
+  getAbilities (PsychopompsSong attrs) = case attrs.inThreatAreaOf of
+    Just iid -> [mkAbility attrs 1 $ forced $ DealtDamage #when AnySource $ InvestigatorWithId iid]
     _ -> []
 
 instance RunMessage PsychopompsSong where
-  runMessage msg t@(PsychopompsSong attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg t@(PsychopompsSong attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       investigators <- getInvestigators
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ [targetLabel iid' [attachTreachery treacheryId iid'] | iid' <- investigators]
+      chooseOrRunOne iid $ targetLabels investigators $ only . Msg.placeInThreatArea attrs
       pure t
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      dealAdditionalDamage iid 2 [toDiscardBy iid (toAbilitySource attrs 1) attrs]
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      dealAdditionalDamage iid 2 [Msg.toDiscardBy iid (attrs.ability 1) attrs]
       pure t
-    _ -> PsychopompsSong <$> runMessage msg attrs
+    _ -> PsychopompsSong <$> liftRunMessage msg attrs

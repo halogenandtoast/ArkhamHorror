@@ -1,16 +1,11 @@
-module Arkham.Treachery.Cards.PossessionTorturous (
-  possessionTorturous,
-  PossessionTorturous (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.PossessionTorturous (possessionTorturous, PossessionTorturous (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype PossessionTorturous = PossessionTorturous TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -21,28 +16,24 @@ possessionTorturous = treachery PossessionTorturous Cards.possessionTorturous
 
 instance HasAbilities PossessionTorturous where
   getAbilities (PossessionTorturous a) =
-    [ restrictedAbility a 1 InYourHand
-        $ ActionAbility [] (ActionCost 1 <> ResourceCost 5)
-    ]
+    [restrictedAbility a 1 InYourHand $ actionAbilityWithCost $ ResourceCost 5]
 
 instance RunMessage PossessionTorturous where
-  runMessage msg t@(PossessionTorturous attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg t@(PossessionTorturous attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       horror <- field InvestigatorHorror iid
       sanity <- field InvestigatorSanity iid
-      pushWhen (horror > sanity * 2)
-        $ InvestigatorKilled (toSource attrs) iid
-      push $ PlaceTreachery (toId attrs) (TreacheryInHandOf iid)
+      when (horror > sanity * 2) $ kill attrs iid
+      placeTreachery attrs (HiddenInHand iid)
       pure t
     EndCheckWindow {} -> case treacheryInHandOf attrs of
       Just iid -> do
         horror <- field InvestigatorHorror iid
         sanity <- field InvestigatorSanity iid
-        pushWhen (horror > sanity * 2)
-          $ InvestigatorKilled (toSource attrs) iid
+        when (horror > sanity * 2) $ kill attrs iid
         pure t
       Nothing -> pure t
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> PossessionTorturous <$> runMessage msg attrs
+    _ -> PossessionTorturous <$> liftRunMessage msg attrs

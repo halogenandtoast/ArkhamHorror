@@ -28,4 +28,4 @@ instance RunMessage ATestOfWill1 where
       pushWhen (canAffect && canCancel) $ CancelRevelation (toSource attrs)
       push $ Exile $ toTarget attrs
       pure e
-    _ -> ATestOfWill1 <$> lift (runMessage msg attrs)
+    _ -> ATestOfWill1 <$> liftRunMessage msg attrs

@@ -39,4 +39,4 @@ instance RunMessage ArchiveOfConduitsUnidentified where
           , Record YouHaveIdentifiedTheGateway
           ]
       pure a
-    _ -> ArchiveOfConduitsUnidentified <$> lift (runMessage msg attrs)
+    _ -> ArchiveOfConduitsUnidentified <$> liftRunMessage msg attrs

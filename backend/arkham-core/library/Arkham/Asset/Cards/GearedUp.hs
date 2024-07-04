@@ -42,4 +42,4 @@ instance RunMessage GearedUp where
             | card <- cards
             ]
       pure a
-    _ -> GearedUp <$> lift (runMessage msg attrs)
+    _ -> GearedUp <$> liftRunMessage msg attrs

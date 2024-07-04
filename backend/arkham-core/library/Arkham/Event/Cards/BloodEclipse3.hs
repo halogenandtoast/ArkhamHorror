@@ -20,4 +20,4 @@ instance RunMessage BloodEclipse3 where
       skillTestModifiers attrs iid [DamageDealt n, SkillModifier #willpower n]
       pushAllM $ leftOr <$> aspect iid attrs (#willpower `InsteadOf` #combat) (mkChooseFight iid attrs)
       pure e
-    _ -> BloodEclipse3 <$> lift (runMessage msg attrs)
+    _ -> BloodEclipse3 <$> liftRunMessage msg attrs

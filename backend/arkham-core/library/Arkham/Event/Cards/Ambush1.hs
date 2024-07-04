@@ -41,4 +41,4 @@ instance RunMessage Ambush1 where
       pushWhen canDealDamage $ EnemyDamage enemyId $ nonAttack source 2
       toDiscardBy attrs.owner source attrs
       pure e
-    _ -> Ambush1 <$> lift (runMessage msg attrs)
+    _ -> Ambush1 <$> liftRunMessage msg attrs

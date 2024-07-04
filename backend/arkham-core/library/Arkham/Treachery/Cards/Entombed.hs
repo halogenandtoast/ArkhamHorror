@@ -1,16 +1,11 @@
-module Arkham.Treachery.Cards.Entombed (
-  entombed,
-  Entombed (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Entombed (entombed, Entombed (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Metadata = Metadata {difficultyReduction :: Int}
   deriving stock (Show, Eq, Generic)
@@ -25,42 +20,30 @@ entombed = treachery (Entombed . (`With` Metadata 0)) Cards.entombed
 
 instance HasModifiersFor Entombed where
   getModifiersFor (InvestigatorTarget iid) (Entombed (attrs `With` _)) =
-    if treacheryOnInvestigator iid attrs
-      then pure $ toModifiers attrs [CannotMove, CannotDisengageEnemies]
-      else pure []
+    modified attrs $ guard (treacheryInThreatArea iid attrs) *> [CannotMove, CannotDisengageEnemies]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Entombed where
-  getAbilities (Entombed (a `With` _)) =
-    [ restrictedAbility a 1 (InThreatAreaOf You)
-        $ ActionAbility []
-        $ ActionCost 1
-    ]
+  getAbilities (Entombed (a `With` _)) = [restrictedAbility a 1 (InThreatAreaOf You) actionAbility]
 
 instance RunMessage Entombed where
-  runMessage msg t@(Entombed (attrs `With` metadata)) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      push $ AttachTreachery (toId attrs) (toTarget iid)
+  runMessage msg t@(Entombed (attrs `With` metadata)) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      placeInThreatArea attrs iid
       pure t
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       let
         difficulty = max 0 (4 - difficultyReduction metadata)
         testChoice sType =
           SkillLabel
             sType
-            [beginSkillTest iid (attrs.ability 1) attrs sType (Fixed difficulty)]
-      player <- getPlayer iid
-      push $ chooseOne player [testChoice #agility, testChoice #combat]
+            [Msg.beginSkillTest iid (attrs.ability 1) attrs sType (Fixed difficulty)]
+      chooseOne iid [testChoice #agility, testChoice #combat]
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
     FailedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
-      pure
-        $ Entombed
-        $ attrs
-        `With` Metadata
-          (difficultyReduction metadata + 1)
-    EndRound -> do
-      pure $ Entombed $ attrs `With` Metadata 0
-    _ -> Entombed . (`with` metadata) <$> runMessage msg attrs
+      pure $ Entombed $ attrs `With` Metadata (difficultyReduction metadata + 1)
+    EndRound -> pure $ Entombed $ attrs `With` Metadata 0
+    _ -> Entombed . (`with` metadata) <$> liftRunMessage msg attrs

@@ -38,4 +38,4 @@ instance RunMessage AstralTravel where
             xs -> [Msg.chooseOne player $ targetLabels xs $ only . Msg.toDiscardBy attrs.controller attrs]
       push $ ResetChaosTokens (toSource attrs)
       pure e
-    _ -> AstralTravel <$> lift (runMessage msg attrs)
+    _ -> AstralTravel <$> liftRunMessage msg attrs

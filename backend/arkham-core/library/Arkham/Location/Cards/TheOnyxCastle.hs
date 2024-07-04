@@ -44,7 +44,7 @@ instance RunMessage TheOnyxCastle where
           treachery
           [ Msg.chooseOrRunOne
               player
-              [ targetLabel investigator [PlaceTreachery treachery (Placement.TreacheryInHandOf investigator)]
+              [ targetLabel investigator [PlaceTreachery treachery (Placement.HiddenInHand investigator)]
               | investigator <- investigators
               ]
           ]
@@ -52,4 +52,4 @@ instance RunMessage TheOnyxCastle where
         ]
 
       pure l
-    _ -> TheOnyxCastle <$> lift (runMessage msg attrs)
+    _ -> TheOnyxCastle <$> liftRunMessage msg attrs

@@ -42,4 +42,4 @@ instance RunMessage Foresight1 where
         | name <- cardNames
         ]
       pure e
-    _ -> Foresight1 <$> lift (runMessage msg attrs)
+    _ -> Foresight1 <$> liftRunMessage msg attrs

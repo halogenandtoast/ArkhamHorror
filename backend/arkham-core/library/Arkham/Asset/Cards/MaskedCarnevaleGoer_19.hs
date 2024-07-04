@@ -47,4 +47,4 @@ instance RunMessage MaskedCarnevaleGoer_19 where
         , chooseOne lead [Label "Continue" [UnfocusCards]]
         ]
       pure a
-    _ -> MaskedCarnevaleGoer_19 <$> lift (runMessage msg attrs)
+    _ -> MaskedCarnevaleGoer_19 <$> liftRunMessage msg attrs

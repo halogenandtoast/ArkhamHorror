@@ -25,13 +25,7 @@ instance HasAbilities ExperimentalTherapiesWard where
       attrs
       [ mkAbility attrs 1
           $ ReactionAbility
-            ( InitiatedSkillTest
-                #when
-                You
-                AnySkillType
-                AnySkillTestValue
-                (InvestigationSkillTest $ LocationWithId $ toId attrs)
-            )
+            (InitiatedSkillTest #when You #any #any (WhileInvestigating $ be attrs))
             (HorrorCost (toSource attrs) YouTarget 1)
       ]
 

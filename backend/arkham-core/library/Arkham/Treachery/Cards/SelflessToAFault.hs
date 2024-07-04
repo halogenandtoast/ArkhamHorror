@@ -22,7 +22,7 @@ instance HasAbilities SelflessToAFault where
 instance RunMessage SelflessToAFault where
   runMessage msg t@(SelflessToAFault attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      attachTreachery attrs iid
+      placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       assignHorror iid (attrs.ability 1) 1

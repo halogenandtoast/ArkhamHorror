@@ -20,4 +20,4 @@ instance RunMessage Counterpunch2 where
       skillTestModifiers attrs iid [SkillModifier #combat 2, DamageDealt 1]
       pushM $ mkFightEnemy iid attrs enemy
       pure e
-    _ -> Counterpunch2 <$> lift (runMessage msg attrs)
+    _ -> Counterpunch2 <$> liftRunMessage msg attrs

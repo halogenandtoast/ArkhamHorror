@@ -17,19 +17,19 @@ torturousChords :: TreacheryCard TorturousChords
 torturousChords = treachery TorturousChords Cards.torturousChords
 
 instance HasModifiersFor TorturousChords where
-  getModifiersFor target (TorturousChords a) | treacheryOn a target = do
-    pure $ toModifiers a [IncreaseCostOf AnyCard 1]
+  getModifiersFor (InvestigatorTarget iid) (TorturousChords a) | treacheryInThreatArea iid a = do
+    modified a [IncreaseCostOf AnyCard 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TorturousChords where
   runMessage msg t@(TorturousChords attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      push $ revelationSkillTest iid source #willpower (Fixed 5)
+    Revelation iid (isSource attrs -> True) -> do
+      push $ revelationSkillTest iid attrs #willpower (Fixed 5)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      push $ attachTreachery attrs iid
+      push $ placeInThreatArea attrs iid
       pure $ TorturousChords $ attrs & tokensL %~ setTokens Resource n
-    PlayCard iid _ _ _ _ False | treacheryOnInvestigator iid attrs -> do
+    PlayCard iid _ _ _ _ False | treacheryInThreatArea iid attrs -> do
       pushWhen (treacheryResources attrs <= 1) (toDiscardBy iid (toSource attrs) attrs)
       pure $ TorturousChords $ attrs & tokensL %~ subtractTokens Resource 1
     _ -> TorturousChords <$> runMessage msg attrs

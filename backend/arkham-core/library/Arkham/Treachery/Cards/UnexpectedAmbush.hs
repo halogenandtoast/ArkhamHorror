@@ -39,4 +39,4 @@ instance RunMessage UnexpectedAmbush where
           | enemy <- nearestEnemies
           ]
       pure t
-    _ -> UnexpectedAmbush <$> lift (runMessage msg attrs)
+    _ -> UnexpectedAmbush <$> liftRunMessage msg attrs

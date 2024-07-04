@@ -56,7 +56,6 @@ data AgendaAttrs = AgendaAttrs
   , agendaCardId :: CardId
   , agendaSequence :: AgendaSequence
   , agendaFlipped :: Bool
-  , agendaTreacheries :: Set TreacheryId
   , agendaCardsUnderneath :: [Card]
   , agendaDeckId :: Int
   , agendaRemoveDoomMatchers :: RemoveDoomMatchers
@@ -134,7 +133,6 @@ agendaWith (n, side) f cardDef threshold g =
             , agendaCardId = cardId
             , agendaSequence = AS.Sequence n side
             , agendaFlipped = False
-            , agendaTreacheries = mempty
             , agendaCardsUnderneath = mempty
             , agendaDeckId = deckId
             , agendaRemoveDoomMatchers = defaultRemoveDoomMatchers
@@ -155,6 +153,9 @@ instance HasCardDef AgendaAttrs where
       error $ "missing card def for agenda " <> show (unAgendaId $ agendaId e)
 
 data Agenda = forall a. IsAgenda a => Agenda a
+
+instance HasField "id" Agenda AgendaId where
+  getField = toId
 
 instance Eq Agenda where
   (Agenda (a :: a)) == (Agenda (b :: b)) = case eqT @a @b of

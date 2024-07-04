@@ -47,4 +47,4 @@ instance RunMessage EndlessWeaving where
         for_ (eid' : swarms) \enemy -> push $ EnemyWillAttack (enemyAttack enemy attrs iid)
 
       pure t
-    _ -> EndlessWeaving <$> lift (runMessage msg attrs)
+    _ -> EndlessWeaving <$> liftRunMessage msg attrs

@@ -61,4 +61,4 @@ instance RunMessage GuidedByTheUnseen3 where
                 | card <- committable
                 ]
       pure a
-    _ -> GuidedByTheUnseen3 <$> lift (runMessage msg attrs)
+    _ -> GuidedByTheUnseen3 <$> liftRunMessage msg attrs

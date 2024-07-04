@@ -1,15 +1,9 @@
-module Arkham.Treachery.Cards.Hypochondria (
-  Hypochondria (..),
-  hypochondria,
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Hypochondria (Hypochondria (..), hypochondria) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Hypochondria = Hypochondria TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -20,19 +14,19 @@ hypochondria = treachery Hypochondria Cards.hypochondria
 
 instance HasAbilities Hypochondria where
   getAbilities (Hypochondria a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $ ForcedAbility $ DealtDamage #after AnySource You
+    [ restrictedAbility a 1 (InThreatAreaOf You) $ forced $ DealtDamage #after AnySource You
     , restrictedAbility a 2 OnSameLocation $ ActionAbility [] (ActionCost 2)
     ]
 
 instance RunMessage Hypochondria where
-  runMessage msg t@(Hypochondria attrs) = case msg of
+  runMessage msg t@(Hypochondria attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ attachTreachery attrs iid
+      placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ directHorror iid (toAbilitySource attrs 1) 1
+      directHorror iid (attrs.ability 1) 1
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 2) attrs
+      toDiscardBy iid (attrs.ability 2) attrs
       pure t
-    _ -> Hypochondria <$> runMessage msg attrs
+    _ -> Hypochondria <$> liftRunMessage msg attrs

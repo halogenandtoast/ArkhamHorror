@@ -25,4 +25,4 @@ instance RunMessage CoupDeGrace where
     EnemyDefeated _ _ (isSource attrs -> True) _ -> do
       drawCardsIfCan attrs.controller attrs 1
       pure e
-    _ -> CoupDeGrace <$> lift (runMessage msg attrs)
+    _ -> CoupDeGrace <$> liftRunMessage msg attrs

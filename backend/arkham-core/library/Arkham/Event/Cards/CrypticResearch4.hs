@@ -19,4 +19,4 @@ instance RunMessage CrypticResearch4 where
       investigators <- select $ affectsOthers $ colocatedWith iid <> can.draw.cards
       chooseOne iid [targetLabel x [drawCards x attrs 3] | x <- investigators]
       pure e
-    _ -> CrypticResearch4 <$> lift (runMessage msg attrs)
+    _ -> CrypticResearch4 <$> liftRunMessage msg attrs

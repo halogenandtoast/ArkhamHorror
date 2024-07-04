@@ -43,4 +43,4 @@ instance RunMessage MedicalTexts where
         Just (InvestigatorTarget iid) -> push $ Msg.assignDamage iid (toAbilitySource attrs 1) 1
         _ -> error "invalid target"
       pure a
-    _ -> MedicalTexts <$> lift (runMessage msg attrs)
+    _ -> MedicalTexts <$> liftRunMessage msg attrs

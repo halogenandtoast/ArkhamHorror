@@ -40,7 +40,7 @@ instance RunMessage WoundedBystanderOnDeathsDoorstep where
     Revelation iid (isSource attrs -> True) -> do
       putCardIntoPlay iid attrs
       pure a
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
       -- handled by modifier
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

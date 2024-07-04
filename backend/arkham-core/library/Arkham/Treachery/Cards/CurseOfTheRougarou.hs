@@ -1,16 +1,9 @@
-module Arkham.Treachery.Cards.CurseOfTheRougarou (
-  CurseOfTheRougarou (..),
-  curseOfTheRougarou,
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.CurseOfTheRougarou (CurseOfTheRougarou (..), curseOfTheRougarou) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype CurseOfTheRougarou = CurseOfTheRougarou TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -21,19 +14,17 @@ curseOfTheRougarou = treachery CurseOfTheRougarou Cards.curseOfTheRougarou
 
 instance HasAbilities CurseOfTheRougarou where
   getAbilities (CurseOfTheRougarou x) =
-    [ restrictedAbility
-        x
-        1
-        ( InThreatAreaOf You <> InvestigatorExists (You <> NoDamageDealtThisTurn)
-        )
-        $ ForcedAbility
-        $ TurnEnds Timing.When You
+    [ restrictedAbility x 1 (InThreatAreaOf You <> youExist NoDamageDealtThisTurn)
+        $ forced
+        $ TurnEnds #when You
     ]
 
 instance RunMessage CurseOfTheRougarou where
-  runMessage msg t@(CurseOfTheRougarou attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      t <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
-    _ -> CurseOfTheRougarou <$> runMessage msg attrs
+  runMessage msg t@(CurseOfTheRougarou attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      placeInThreatArea attrs iid
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignHorror iid (attrs.ability 1) 1
+      pure t
+    _ -> CurseOfTheRougarou <$> liftRunMessage msg attrs

@@ -90,4 +90,4 @@ instance RunMessage TruthAndLies where
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       advanceVia #other attrs attrs
       pure a
-    _ -> TruthAndLies <$> lift (runMessage msg attrs)
+    _ -> TruthAndLies <$> liftRunMessage msg attrs

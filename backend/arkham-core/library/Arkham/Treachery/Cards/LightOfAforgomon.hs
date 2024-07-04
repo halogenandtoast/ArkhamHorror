@@ -31,4 +31,4 @@ instance RunMessage LightOfAforgomon where
           | target <- targetActs <> targetAgendas
           ]
       pure t
-    _ -> LightOfAforgomon <$> lift (runMessage msg attrs)
+    _ -> LightOfAforgomon <$> liftRunMessage msg attrs

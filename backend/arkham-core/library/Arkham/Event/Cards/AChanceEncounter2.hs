@@ -35,4 +35,4 @@ instance RunMessage AChanceEncounter2 where
           ]
         push unfocus
       pure e
-    _ -> AChanceEncounter2 <$> lift (runMessage msg attrs)
+    _ -> AChanceEncounter2 <$> liftRunMessage msg attrs

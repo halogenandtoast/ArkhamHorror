@@ -28,4 +28,4 @@ instance RunMessage TowerOfKoth where
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid attrs Story.anotherPath
       pure . TowerOfKoth $ attrs & canBeFlippedL .~ False
-    _ -> TowerOfKoth <$> lift (runMessage msg attrs)
+    _ -> TowerOfKoth <$> liftRunMessage msg attrs

@@ -19,8 +19,8 @@ searchingTheUnnamable :: ActCard SearchingTheUnnamable
 searchingTheUnnamable = act (1, A) SearchingTheUnnamable Cards.searchingTheUnnamable Nothing
 
 instance RunMessage SearchingTheUnnamable where
-  runMessage msg a@(SearchingTheUnnamable attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> runQueueT do
+  runMessage msg a@(SearchingTheUnnamable attrs) = runQueueT $ case msg of
+    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       -- Set The Unnamable aside. It keeps all tokens and attachments.
       mTheUnnamable <- selectOne $ enemyIs Enemies.theUnnamable
       for_ mTheUnnamable $ \theUnnamable -> do
@@ -69,4 +69,4 @@ instance RunMessage SearchingTheUnnamable where
 
       advanceActDeck attrs
       pure a
-    _ -> SearchingTheUnnamable <$> runMessage msg attrs
+    _ -> SearchingTheUnnamable <$> liftRunMessage msg attrs

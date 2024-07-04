@@ -34,4 +34,4 @@ instance RunMessage CurseOfAeons3 where
         skillTestModifiers (attrs.ability 1) (ChaosTokenTarget token) $ MayChooseToRemoveChaosToken iid
           : [ChaosTokenFaceModifier [#skull] | token == drawnToken]
       pure a
-    _ -> CurseOfAeons3 <$> lift (runMessage msg attrs)
+    _ -> CurseOfAeons3 <$> liftRunMessage msg attrs

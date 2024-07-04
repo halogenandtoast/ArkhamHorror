@@ -61,4 +61,4 @@ instance RunMessage TheSchemesDemise where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       push R1
       pure a
-    _ -> TheSchemesDemise <$> lift (runMessage msg attrs)
+    _ -> TheSchemesDemise <$> liftRunMessage msg attrs

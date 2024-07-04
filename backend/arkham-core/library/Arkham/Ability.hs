@@ -24,6 +24,9 @@ import Arkham.Source
 import Control.Lens (set)
 import GHC.Records
 
+withAdditionalCost :: Cost -> Ability -> Ability
+withAdditionalCost c ab = ab {abilityAdditionalCosts = c : abilityAdditionalCosts ab}
+
 inHandAbility :: Ability -> Bool
 inHandAbility = inHandCriteria . abilityCriteria
  where
@@ -198,6 +201,7 @@ mkAbility entity idx type' =
     , abilityDisplayAsAction = False
     , abilityDelayAdditionalCosts = False
     , abilityBasic = False
+    , abilityAdditionalCosts = []
     }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability

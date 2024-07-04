@@ -35,4 +35,4 @@ instance RunMessage CrisisOfFaith where
         ]
       push $ DoStep (n - 1) msg'
       pure t
-    _ -> CrisisOfFaith <$> lift (runMessage msg attrs)
+    _ -> CrisisOfFaith <$> liftRunMessage msg attrs

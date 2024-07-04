@@ -45,4 +45,4 @@ instance RunMessage TheGreatWebCosmicWeb where
            ]
 
       pure l
-    _ -> TheGreatWebCosmicWeb <$> lift (runMessage msg attrs)
+    _ -> TheGreatWebCosmicWeb <$> liftRunMessage msg attrs

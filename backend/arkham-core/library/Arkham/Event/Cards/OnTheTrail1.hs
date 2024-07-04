@@ -53,4 +53,4 @@ instance RunMessage OnTheTrail1 where
              ]
 
       pure e
-    _ -> OnTheTrail1 <$> lift (runMessage msg attrs)
+    _ -> OnTheTrail1 <$> liftRunMessage msg attrs

@@ -15,4 +15,4 @@ instance RunMessage AceInTheHole3 where
     PlayThisEvent iid eid | eid == attrs.id -> do
       gainActions iid attrs 3
       pure e
-    _ -> AceInTheHole3 <$> lift (runMessage msg attrs)
+    _ -> AceInTheHole3 <$> liftRunMessage msg attrs

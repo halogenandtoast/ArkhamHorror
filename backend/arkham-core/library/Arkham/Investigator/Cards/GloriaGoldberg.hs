@@ -35,13 +35,13 @@ instance HasChaosTokenValue GloriaGoldberg where
 instance RunMessage GloriaGoldberg where
   runMessage msg i@(GloriaGoldberg attrs) = runQueueT $ case msg of
     SetupInvestigator iid | iid == attrs.id -> do
-      attrs' <- lift (runMessage msg attrs)
+      attrs' <- liftRunMessage msg attrs
       pure . GloriaGoldberg $ attrs' & setMeta False
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       searchModifier (attrs.ability 1) iid (LookAtDepth 1)
       pure . GloriaGoldberg $ attrs & setMeta True
     EndSearch {} -> do
-      attrs' <- lift (runMessage msg attrs)
+      attrs' <- liftRunMessage msg attrs
       pure . GloriaGoldberg $ attrs' & setMeta False
     ElderSignEffect iid | attrs `is` iid -> do
       lookAt iid ElderSign EncounterDeckTarget [(FromTopOfDeck 1, PutBack)] AnyCard ReturnCards
@@ -71,4 +71,4 @@ instance RunMessage GloriaGoldberg where
             | card@(EncounterCard ec) <- nonEliteCards
             ]
       pure . GloriaGoldberg $ attrs & setMeta False
-    _ -> GloriaGoldberg <$> lift (runMessage msg attrs)
+    _ -> GloriaGoldberg <$> liftRunMessage msg attrs

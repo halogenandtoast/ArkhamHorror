@@ -83,6 +83,14 @@ instance HasField "asset" Source (Maybe AssetId) where
     AbilitySource s _ -> s.asset
     _ -> Nothing
 
+instance HasField "treachery" Source (Maybe TreacheryId) where
+  getField = \case
+    TreacherySource aid -> Just aid
+    ProxySource (CardIdSource _) s -> s.treachery
+    ProxySource s _ -> s.treachery
+    AbilitySource s _ -> s.treachery
+    _ -> Nothing
+
 $(deriveJSON defaultOptions ''Source)
 
 instance ToJSONKey Source

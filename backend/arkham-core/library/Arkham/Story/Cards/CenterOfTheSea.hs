@@ -26,4 +26,4 @@ instance RunMessage CenterOfTheSea where
         actId <- getCurrentAct
         pushAll [SpendClues n investigators, AdvanceAct actId (toSource attrs) #other]
       pure s
-    _ -> CenterOfTheSea <$> lift (runMessage msg attrs)
+    _ -> CenterOfTheSea <$> liftRunMessage msg attrs

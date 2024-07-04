@@ -39,4 +39,4 @@ instance RunMessage BurnAfterReading1 where
       exile cid
       card <- getCard cid
       pure $ BurnAfterReading1 $ attrs & setMeta (maybe False (<= 5) card.level)
-    _ -> BurnAfterReading1 <$> lift (runMessage msg attrs)
+    _ -> BurnAfterReading1 <$> liftRunMessage msg attrs

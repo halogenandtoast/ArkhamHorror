@@ -92,7 +92,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Movement
 import Arkham.Name
 import Arkham.Phase
-import Arkham.Placement hiding (TreacheryPlacement (..))
+import Arkham.Placement
 import Arkham.Placement qualified as Placement
 import Arkham.PlayerCard
 import Arkham.Projection
@@ -427,9 +427,10 @@ runGameMessage msg g = case msg of
       isSetCost = \case
         SetAbilityCost _ -> True
         _ -> False
-      additionalCosts = flip mapMaybe modifiers' $ \case
-        AdditionalCost c -> Just c
-        _ -> Nothing
+      additionalCosts =
+        abilityAdditionalCosts ability <> flip mapMaybe modifiers' \case
+          AdditionalCost c -> Just c
+          _ -> Nothing
     let
       activeCost =
         ActiveCost
@@ -1140,7 +1141,7 @@ runGameMessage msg g = case msg of
           let isPermanent = cdPermanent $ toCardDef treachery
           if isPermanent
             then do
-              push $ PlaceTreachery tid (Placement.TreacheryAttachedTo $ toTarget iid)
+              push $ PlaceTreachery tid (Placement.InThreatArea iid)
               pure $ g & (entitiesL . treacheriesL %~ insertMap tid treachery)
             else do
               pushAll
@@ -1197,7 +1198,7 @@ runGameMessage msg g = case msg of
         TreacheryType -> do
           tid <- getRandom
           let treachery = createTreachery card iid tid
-          push $ AttachTreachery tid (toTarget iid)
+          push $ PlaceTreachery tid (InThreatArea iid)
           pure $ g & (entitiesL . treacheriesL %~ insertMap tid treachery)
         EncounterAssetType -> do
           -- asset might have been put into play via revelation
@@ -1949,11 +1950,20 @@ runGameMessage msg g = case msg of
   CreateWeaknessInThreatArea card iid -> do
     treacheryId <- getRandom
     let treachery = createTreachery card iid treacheryId
-    push (AttachTreachery treacheryId (InvestigatorTarget iid))
+    push (PlaceTreachery treacheryId (InThreatArea iid))
     pure $ g & entitiesL . treacheriesL . at treacheryId ?~ treachery
   AttachStoryTreacheryTo treacheryId card target -> do
     let treachery = createTreachery card (g ^. leadInvestigatorIdL) treacheryId
-    push (AttachTreachery treacheryId target)
+    push
+      $ PlaceTreachery treacheryId
+      $ case target of
+        LocationTarget lid -> AttachedToLocation lid
+        EnemyTarget eid -> AttachedToEnemy eid
+        AssetTarget aid -> AttachedToAsset aid Nothing
+        ActTarget aid -> AttachedToAct aid
+        AgendaTarget aid -> AttachedToAgenda aid
+        InvestigatorTarget iid -> InThreatArea iid
+        _ -> error $ "unhandled attach target : " <> show target
     pure $ g & entitiesL . treacheriesL . at treacheryId ?~ treachery
   TakeControlOfSetAsideAsset iid card -> do
     assetId <- getRandom

@@ -18,4 +18,4 @@ instance RunMessage AnotherPath where
       placeSetAsideLocation_ Locations.enchantedWoodsStoneTrapdoor
       record TheInvestigatorsFoundAWayOutOfTheUnderworld
       pure s
-    _ -> AnotherPath <$> lift (runMessage msg attrs)
+    _ -> AnotherPath <$> liftRunMessage msg attrs

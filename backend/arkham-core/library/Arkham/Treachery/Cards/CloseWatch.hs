@@ -30,4 +30,4 @@ instance RunMessage CloseWatch where
           ]
         <> [Label "Raise your alarm level by 1" [PlaceTokens (toSource attrs) (toTarget iid) AlarmLevel 1]]
       pure t
-    _ -> CloseWatch <$> lift (runMessage msg attrs)
+    _ -> CloseWatch <$> liftRunMessage msg attrs

@@ -43,4 +43,4 @@ instance RunMessage ArcaneBarrier where
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       toDiscardBy iid attrs attrs
       pure t
-    _ -> ArcaneBarrier <$> lift (runMessage msg attrs)
+    _ -> ArcaneBarrier <$> liftRunMessage msg attrs

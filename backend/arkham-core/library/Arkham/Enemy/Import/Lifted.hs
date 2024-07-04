@@ -3,6 +3,7 @@ module Arkham.Enemy.Import.Lifted (
 )
 where
 
+import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.Enemy.Runner as X (
   EnemyAttrs (..),
@@ -22,7 +23,13 @@ import Arkham.Enemy.Runner as X (
 import Arkham.GameValue as X
 import Arkham.Helpers.Ability as X
 import Arkham.Helpers.Modifiers as X (toModifiers)
-import Arkham.Message as X (Message (..), pattern UseThisAbility)
+import Arkham.Message as X (
+  Message (..),
+  StoryMode (..),
+  pattern FailedThisSkillTest,
+  pattern PassedThisSkillTest,
+  pattern UseThisAbility,
+ )
 import Arkham.Message.Lifted as X
 import Arkham.Prelude as X
 import Arkham.Question as X

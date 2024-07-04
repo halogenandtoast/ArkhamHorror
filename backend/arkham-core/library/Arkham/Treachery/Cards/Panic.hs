@@ -21,9 +21,7 @@ instance HasAbilities Panic where
     [ restrictedAbility a 1 injuryCriteria
         $ forced
         $ ActivateAbility #after You
-        $ oneOf
-        $ AbilityIsAction
-        <$> [#play, #engage, #resource]
+        $ oneOf [#play, #engage, #resource]
     ]
    where
     injuryCriteria = if toResultDefault True a.meta then InThreatAreaOf You else Never
@@ -31,14 +29,12 @@ instance HasAbilities Panic where
 instance RunMessage Panic where
   runMessage msg t@(Panic attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      attachTreachery attrs iid
+      placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      turnModifier
-        (attrs.ability 1)
-        iid
-        (CannotTakeAction $ AnyActionTarget $ map IsAction [#play, #engage, #resource])
+      turnModifier (attrs.ability 1) iid
+        $ CannotTakeAction
+        $ AnyActionTarget [#play, #engage, #resource]
       pure . Panic $ setMeta False attrs
-    EndTurn _ -> do
-      pure . Panic $ setMeta True attrs
-    _ -> Panic <$> lift (runMessage msg attrs)
+    EndTurn _ -> pure . Panic $ setMeta True attrs
+    _ -> Panic <$> liftRunMessage msg attrs

@@ -23,4 +23,4 @@ instance RunMessage IveGotAPlan where
         leftOr <$> aspect iid attrs (#intellect `InsteadOf` #combat) (mkChooseFight iid attrs)
       pushAll chooseFight
       pure e
-    _ -> IveGotAPlan <$> lift (runMessage msg attrs)
+    _ -> IveGotAPlan <$> liftRunMessage msg attrs

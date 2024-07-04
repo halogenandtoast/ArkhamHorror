@@ -38,19 +38,23 @@ import Arkham.Ability.Type
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Id
+import Arkham.Matcher (Be (..), TreacheryMatcher (TreacheryWithId))
 import Arkham.Message qualified as Msg
 import Arkham.Token
-import Arkham.Window (mkAfter, mkWindow)
+import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 addHiddenToHand :: InvestigatorId -> TreacheryAttrs -> Message
-addHiddenToHand iid a = PlaceTreachery (toId a) (TreacheryInHandOf iid)
+addHiddenToHand iid a = PlaceTreachery (toId a) (HiddenInHand iid)
 
 forcedOnElimination :: InvestigatorId -> AbilityType
 forcedOnElimination = ForcedAbility . eliminationWindow
 
 on :: Targetable target => TreacheryAttrs -> target -> Bool
 on = treacheryOn
+
+instance Be TreacheryAttrs TreacheryMatcher where
+  be = TreacheryWithId . toId
 
 instance RunMessage TreacheryAttrs where
   runMessage msg a@TreacheryAttrs {..} = case msg of
@@ -67,8 +71,8 @@ instance RunMessage TreacheryAttrs where
       pure a
     PlaceTreachery tid placement | tid == treacheryId -> do
       case placement of
-        TreacheryAttachedTo (InvestigatorTarget iid) -> do
-          pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid (toCard a)]
+        InThreatArea iid -> do
+          pushM $ checkAfter $ Window.EntersThreatArea iid (toCard a)
         _ -> pure ()
       pure $ a & placementL .~ placement
     PlaceTokens _ (isTarget a -> True) token n -> do
@@ -85,12 +89,12 @@ instance RunMessage TreacheryAttrs where
       pure a
     After (Revelation iid (isSource a -> True)) -> do
       pushWhen
-        (treacheryPlacement == TreacheryLimbo)
+        (treacheryPlacement == Limbo)
         (toDiscardBy iid iid a)
       pure $ a & resolvedL %~ insertSet iid
     RemoveAllAttachments source target -> do
-      case a.placement of
-        TreacheryAttachedTo attached | target == attached -> push $ toDiscard source a
+      case a.placement.attachedTo of
+        Just attached | target == attached -> push $ toDiscard source a
         _ -> pure ()
       pure a
     RemoveAllCopiesOfCardFromGame _ cCode | cCode == toCardCode a -> do

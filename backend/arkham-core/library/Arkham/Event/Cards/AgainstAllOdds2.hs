@@ -22,4 +22,4 @@ instance RunMessage AgainstAllOdds2 where
       skillTestModifier attrs iid (ChangeRevealStrategy $ RevealAndChoose n 1)
       when (n > 1) $ checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs)
       pure e
-    _ -> AgainstAllOdds2 <$> lift (runMessage msg attrs)
+    _ -> AgainstAllOdds2 <$> liftRunMessage msg attrs

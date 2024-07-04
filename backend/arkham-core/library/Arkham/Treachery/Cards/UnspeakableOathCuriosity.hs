@@ -4,16 +4,13 @@ module Arkham.Treachery.Cards.UnspeakableOathCuriosity (
 )
 where
 
-import Arkham.Prelude
-
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Matcher hiding (TreacheryInHandOf)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype UnspeakableOathCuriosity = UnspeakableOathCuriosity TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -25,25 +22,22 @@ unspeakableOathCuriosity = treachery UnspeakableOathCuriosity Cards.unspeakableO
 instance HasAbilities UnspeakableOathCuriosity where
   getAbilities (UnspeakableOathCuriosity attrs) =
     [ restrictedAbility attrs 1 InYourHand
-        $ ForcedAbility
-        $ OrWindowMatcher
-          [ Matcher.GameEnds #when
-          , Matcher.InvestigatorEliminated #when You
-          ]
+        $ forced
+        $ oneOf [Matcher.GameEnds #when, Matcher.InvestigatorEliminated #when You]
     , restrictedAbility attrs 2 InYourHand
         $ freeReaction
         $ SuccessfullyInvestigatedWithNoClues #when You Anywhere
     ]
 
 instance RunMessage UnspeakableOathCuriosity where
-  runMessage msg t@(UnspeakableOathCuriosity attrs) = case msg of
+  runMessage msg t@(UnspeakableOathCuriosity attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ PlaceTreachery (toId attrs) (TreacheryInHandOf iid)
+      placeTreachery attrs (HiddenInHand iid)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ gameModifier attrs iid (XPModifier (-2))
+      gameModifier attrs iid (XPModifier (-2))
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 2) (toTarget attrs)
+      toDiscardBy iid (attrs.ability 2) attrs
       pure t
-    _ -> UnspeakableOathCuriosity <$> runMessage msg attrs
+    _ -> UnspeakableOathCuriosity <$> liftRunMessage msg attrs

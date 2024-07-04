@@ -26,4 +26,4 @@ instance RunMessage AStrangeGhoul where
         actId <- getCurrentAct
         pushAll [SpendClues n investigators, AdvanceAct actId (toSource attrs) #other]
       pure s
-    _ -> AStrangeGhoul <$> lift (runMessage msg attrs)
+    _ -> AStrangeGhoul <$> liftRunMessage msg attrs

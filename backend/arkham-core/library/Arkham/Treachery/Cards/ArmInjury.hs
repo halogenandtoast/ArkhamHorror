@@ -31,7 +31,7 @@ instance HasAbilities ArmInjury where
 instance RunMessage ArmInjury where
   runMessage msg t@(ArmInjury attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      attachTreachery attrs iid
+      placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       turnModifier
@@ -41,4 +41,4 @@ instance RunMessage ArmInjury where
       pure . ArmInjury $ setMeta False attrs
     EndTurn _ -> do
       pure . ArmInjury $ setMeta True attrs
-    _ -> ArmInjury <$> lift (runMessage msg attrs)
+    _ -> ArmInjury <$> liftRunMessage msg attrs

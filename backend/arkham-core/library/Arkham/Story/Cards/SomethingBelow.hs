@@ -52,4 +52,4 @@ instance RunMessage SomethingBelow where
       seaOfBones <- selectJust $ locationIs Locations.seaOfBones
       push $ AttachStoryTreacheryTo treacheryId (toCard ec) (toTarget seaOfBones)
       pure s
-    _ -> SomethingBelow <$> lift (runMessage msg attrs)
+    _ -> SomethingBelow <$> liftRunMessage msg attrs

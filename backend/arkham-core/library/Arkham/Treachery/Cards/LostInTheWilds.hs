@@ -1,16 +1,10 @@
-module Arkham.Treachery.Cards.LostInTheWilds (
-  lostInTheWilds,
-  LostInTheWilds (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.LostInTheWilds (lostInTheWilds, LostInTheWilds (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype LostInTheWilds = LostInTheWilds TreacheryAttrs
   deriving anyclass (IsTreachery)
@@ -20,32 +14,29 @@ lostInTheWilds :: TreacheryCard LostInTheWilds
 lostInTheWilds = treachery LostInTheWilds Cards.lostInTheWilds
 
 instance HasModifiersFor LostInTheWilds where
-  getModifiersFor (InvestigatorTarget iid) (LostInTheWilds attrs) =
-    pure
-      $ toModifiers attrs
-      $ guard (treacheryOnInvestigator iid attrs)
+  getModifiersFor (InvestigatorTarget iid) (LostInTheWilds attrs) = do
+    modified attrs
+      $ guard (treacheryInThreatArea iid attrs)
       *> [CannotMove, CannotExplore]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LostInTheWilds where
   getAbilities (LostInTheWilds a) =
     [ restrictedAbility a 1 (InThreatAreaOf You)
-        $ ForcedAbility
+        $ forced
         $ TurnEnds #when You
     ]
 
 instance RunMessage LostInTheWilds where
-  runMessage msg t@(LostInTheWilds attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      push $ RevelationSkillTest iid source #willpower (SkillTestDifficulty $ Fixed 3)
+  runMessage msg t@(LostInTheWilds attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      revelationSkillTest iid attrs #willpower (Fixed 3)
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n -> do
-      pushAll
-        [ assignHorror iid source n
-        , attachTreachery attrs iid
-        ]
+    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
+      assignHorror iid attrs n
+      placeInThreatArea attrs iid
       pure t
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> LostInTheWilds <$> runMessage msg attrs
+    _ -> LostInTheWilds <$> liftRunMessage msg attrs

@@ -30,7 +30,7 @@ instance RunMessage ActOfDesperation where
           pushM $ mkChooseFight iid attrs
         _ -> error $ "Invalid choice: " <> show attrs.payment
       pure e
-    _ -> ActOfDesperation <$> lift (runMessage msg attrs)
+    _ -> ActOfDesperation <$> liftRunMessage msg attrs
 
 newtype ActOfDesperationEffect = ActOfDesperationEffect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
@@ -48,4 +48,4 @@ instance RunMessage ActOfDesperationEffect where
           disableReturn e
         _ -> error "Invalid call"
     SkillTestEnds _ _ -> disableReturn e
-    _ -> ActOfDesperationEffect <$> lift (runMessage msg attrs)
+    _ -> ActOfDesperationEffect <$> liftRunMessage msg attrs

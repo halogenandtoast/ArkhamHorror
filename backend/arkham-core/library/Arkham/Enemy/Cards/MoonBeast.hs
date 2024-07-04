@@ -31,4 +31,4 @@ instance RunMessage MoonBeast where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       eachInvestigator (reduceAlarmLevel (attrs.ability 2))
       pure e
-    _ -> MoonBeast <$> lift (runMessage msg attrs)
+    _ -> MoonBeast <$> liftRunMessage msg attrs

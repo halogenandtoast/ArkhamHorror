@@ -1,15 +1,9 @@
-module Arkham.Treachery.Cards.Nihilism (
-  nihilism,
-  Nihilism (..),
-)
-where
+module Arkham.Treachery.Cards.Nihilism (nihilism, Nihilism (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner hiding (IgnoreChaosToken)
+import Arkham.Treachery.Import.Lifted hiding (RevealChaosToken)
 
 newtype Nihilism = Nihilism TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -21,7 +15,7 @@ nihilism = treachery Nihilism Cards.nihilism
 instance HasAbilities Nihilism where
   getAbilities (Nihilism a) =
     [ restrictedAbility a 1 (InThreatAreaOf You)
-        $ ForcedAbility
+        $ forced
         $ oneOf
           [ RevealChaosToken #after You #autofail
           , CancelChaosToken #after You #autofail
@@ -31,14 +25,14 @@ instance HasAbilities Nihilism where
     ]
 
 instance RunMessage Nihilism where
-  runMessage msg t@(Nihilism attrs) = case msg of
+  runMessage msg t@(Nihilism attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ attachTreachery attrs iid
+      placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ assignDamageAndHorror iid (toAbilitySource attrs 1) 1 1
+      assignDamageAndHorror iid (attrs.ability 1) 1 1
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 2) attrs
+      toDiscardBy iid (attrs.ability 2) attrs
       pure t
-    _ -> Nihilism <$> runMessage msg attrs
+    _ -> Nihilism <$> liftRunMessage msg attrs

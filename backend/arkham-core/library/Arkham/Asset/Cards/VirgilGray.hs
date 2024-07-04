@@ -63,4 +63,4 @@ instance RunMessage VirgilGray where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       push $ RemoveFromGame $ toTarget attrs
       pure a
-    _ -> VirgilGray <$> lift (runMessage msg attrs)
+    _ -> VirgilGray <$> liftRunMessage msg attrs

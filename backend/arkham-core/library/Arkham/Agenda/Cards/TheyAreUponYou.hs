@@ -24,4 +24,4 @@ instance RunMessage TheyAreUponYou where
         revertAgenda attrs
         placeDoomOnAgenda 2
         pure a
-      _ -> TheyAreUponYou <$> lift (runMessage msg attrs)
+      _ -> TheyAreUponYou <$> liftRunMessage msg attrs

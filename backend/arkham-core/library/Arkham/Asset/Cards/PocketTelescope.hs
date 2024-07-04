@@ -51,4 +51,4 @@ instance RunMessage PocketTelescope where
       abilityModifier (attrs.ability 2) iid (AsIfAt lid)
       pushM $ mkInvestigateLocation iid (attrs.ability 2) lid
       pure a
-    _ -> PocketTelescope <$> lift (runMessage msg attrs)
+    _ -> PocketTelescope <$> liftRunMessage msg attrs

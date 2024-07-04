@@ -17,4 +17,4 @@ instance RunMessage BurningTheMidnightOil where
       gainResourcesIfCan iid attrs 2
       pushM $ mkInvestigate iid attrs
       pure e
-    _ -> BurningTheMidnightOil <$> lift (runMessage msg attrs)
+    _ -> BurningTheMidnightOil <$> liftRunMessage msg attrs

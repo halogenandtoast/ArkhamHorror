@@ -54,4 +54,4 @@ instance RunMessage ForsakenTowerOfPrimevalLight where
         , ShuffleBackIntoEncounterDeck (toTarget eid)
         ]
       pure l
-    _ -> ForsakenTowerOfPrimevalLight <$> lift (runMessage msg attrs)
+    _ -> ForsakenTowerOfPrimevalLight <$> liftRunMessage msg attrs

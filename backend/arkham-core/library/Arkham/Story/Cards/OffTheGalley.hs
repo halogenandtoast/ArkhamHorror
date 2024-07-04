@@ -19,8 +19,8 @@ offTheGalley :: StoryCard OffTheGalley
 offTheGalley = story OffTheGalley Cards.offTheGalley
 
 instance RunMessage OffTheGalley where
-  runMessage msg s@(OffTheGalley attrs) = case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> runQueueT do
+  runMessage msg s@(OffTheGalley attrs) = runQueueT $ case msg of
+    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
       moonBeastGalley <- selectJust $ locationIs Locations.moonBeastGalley
       moonForest <- selectJust $ locationIs Locations.moonForest
       clues <- field LocationClues moonBeastGalley
@@ -36,4 +36,4 @@ instance RunMessage OffTheGalley where
 
       push $ RemoveFromGame (toTarget moonBeastGalley)
       pure s
-    _ -> OffTheGalley <$> runMessage msg attrs
+    _ -> OffTheGalley <$> liftRunMessage msg attrs

@@ -18,4 +18,4 @@ instance RunMessage CheatTheSystem1 where
       gainResourcesIfCan iid attrs
         =<< calculate (DifferentClassAmong $ ControlledBy $ InvestigatorWithId iid)
       pure e
-    _ -> CheatTheSystem1 <$> lift (runMessage msg attrs)
+    _ -> CheatTheSystem1 <$> liftRunMessage msg attrs

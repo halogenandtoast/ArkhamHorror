@@ -35,7 +35,7 @@ instance RunMessage AChanceEncounter where
           ]
         push unfocus
       pure e
-    _ -> AChanceEncounter <$> lift (runMessage msg attrs)
+    _ -> AChanceEncounter <$> liftRunMessage msg attrs
 
 newtype AChanceEncounterEffect = AChanceEncounterEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -53,4 +53,4 @@ instance RunMessage AChanceEncounterEffect where
         push $ Msg.toDiscard attrs.source cardId
         disableReturn e
       _ -> error "Wrong target type"
-    _ -> AChanceEncounterEffect <$> lift (runMessage msg attrs)
+    _ -> AChanceEncounterEffect <$> liftRunMessage msg attrs

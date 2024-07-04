@@ -65,4 +65,4 @@ instance RunMessage ProphesiaeProfanaAtlasOfTheUnknowable5 where
         | investigator <- investigators
         ]
       pure a
-    _ -> ProphesiaeProfanaAtlasOfTheUnknowable5 <$> lift (runMessage msg attrs)
+    _ -> ProphesiaeProfanaAtlasOfTheUnknowable5 <$> liftRunMessage msg attrs

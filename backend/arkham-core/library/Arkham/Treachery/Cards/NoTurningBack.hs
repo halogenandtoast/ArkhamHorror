@@ -24,8 +24,8 @@ noTurningBack = treachery NoTurningBack Cards.noTurningBack
 
 instance HasModifiersFor NoTurningBack where
   getModifiersFor (InvestigatorTarget iid) (NoTurningBack attrs) =
-    case treacheryPlacement attrs of
-      TreacheryAttachedTo (LocationTarget lid) -> do
+    case attrs.placement.attachedTo of
+      Just (LocationTarget lid) -> do
         onNoTurningBack <- iid <=~> investigatorAt lid
         pure
           $ toModifiers
@@ -61,12 +61,7 @@ instance RunMessage NoTurningBack where
           <> LocationWithoutTreachery (treacheryIs Cards.noTurningBack)
       player <- getPlayer iid
       unless (null targets) $ do
-        push
-          $ chooseOrRunOne
-            player
-            [ targetLabel x [AttachTreachery (toId attrs) (LocationTarget x)]
-            | x <- targets
-            ]
+        push $ chooseOrRunOne player [targetLabel x [attachTreachery attrs x] | x <- targets]
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasPickaxe <- getHasSupply iid Pickaxe

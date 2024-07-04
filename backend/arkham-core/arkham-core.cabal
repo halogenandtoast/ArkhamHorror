@@ -1723,6 +1723,8 @@ library
       Arkham.Event.Cards.WindsOfPower1
       Arkham.Event.Cards.WingingIt
       Arkham.Event.Cards.WordOfCommand2
+      Arkham.Event.Cards.WordOfWeal
+      Arkham.Event.Cards.WordOfWoe
       Arkham.Event.Cards.WorkingAHunch
       Arkham.Event.Cards.WrittenInTheStars
       Arkham.Event.Cards.YouHandleThisOne
@@ -1774,6 +1776,7 @@ library
       Arkham.Helpers.Matchers
       Arkham.Helpers.Message
       Arkham.Helpers.Message.Discard
+      Arkham.Helpers.Message.Discard.Lifted
       Arkham.Helpers.Modifiers
       Arkham.Helpers.Placement
       Arkham.Helpers.Projection
@@ -1781,6 +1784,7 @@ library
       Arkham.Helpers.Ref
       Arkham.Helpers.Scenario
       Arkham.Helpers.SkillTest
+      Arkham.Helpers.SkillTest.Lifted
       Arkham.Helpers.SkillTest.Target
       Arkham.Helpers.Slot
       Arkham.Helpers.Source
@@ -1800,6 +1804,7 @@ library
       Arkham.Investigator.Cards.AgnesBaker
       Arkham.Investigator.Cards.AkachiOnyele
       Arkham.Investigator.Cards.AmandaSharpe
+      Arkham.Investigator.Cards.AminaZidane
       Arkham.Investigator.Cards.AshcanPete
       Arkham.Investigator.Cards.BobJenkins
       Arkham.Investigator.Cards.BodyOfAYithian
@@ -2831,6 +2836,7 @@ library
       Arkham.Treachery.Cards.DarkFuture
       Arkham.Treachery.Cards.DayOfReckoning
       Arkham.Treachery.Cards.DeadlyFate
+      Arkham.Treachery.Cards.DeafeningSilence
       Arkham.Treachery.Cards.DeathApproaches
       Arkham.Treachery.Cards.DeceptiveMemories
       Arkham.Treachery.Cards.DeepDark

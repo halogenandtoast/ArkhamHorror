@@ -3,15 +3,14 @@ module Arkham.Treachery.Cards.PossessionMurderous (
   PossessionMurderous (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (TreacheryInHandOf)
+import Arkham.Placement
 import Arkham.Projection
+import Arkham.Strategy
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype PossessionMurderous = PossessionMurderous TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -23,33 +22,26 @@ possessionMurderous = treachery PossessionMurderous Cards.possessionMurderous
 instance HasAbilities PossessionMurderous where
   getAbilities (PossessionMurderous a) =
     [ restrictedAbility a 1 InYourHand
-        $ ActionAbility []
-        $ ActionCost 1
-        <> InvestigatorDamageCost
-          (toSource a)
-          (InvestigatorAt YourLocation)
-          DamageAny
-          2
+        $ actionAbilityWithCost
+          (InvestigatorDamageCost (toSource a) (InvestigatorAt YourLocation) DamageAny 2)
     ]
 
 instance RunMessage PossessionMurderous where
-  runMessage msg t@(PossessionMurderous attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg t@(PossessionMurderous attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       horror <- field InvestigatorHorror iid
       sanity <- field InvestigatorSanity iid
-      pushWhen (horror > sanity * 2)
-        $ InvestigatorKilled (toSource attrs) iid
-      push $ PlaceTreachery (toId attrs) (TreacheryInHandOf iid)
+      when (horror > sanity * 2) $ kill attrs iid
+      placeTreachery attrs (HiddenInHand iid)
       pure t
-    EndCheckWindow {} -> case treacheryPlacement attrs of
-      TreacheryInHandOf iid -> do
+    EndCheckWindow {} -> case attrs.placement of
+      HiddenInHand iid -> do
         horror <- field InvestigatorHorror iid
         sanity <- field InvestigatorSanity iid
-        pushWhen (horror > sanity * 2)
-          $ InvestigatorKilled (toSource attrs) iid
+        when (horror > sanity * 2) $ kill attrs iid
         pure t
       _ -> pure t
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> PossessionMurderous <$> runMessage msg attrs
+    _ -> PossessionMurderous <$> liftRunMessage msg attrs

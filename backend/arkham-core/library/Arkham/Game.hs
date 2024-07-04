@@ -132,7 +132,7 @@ import Arkham.Message qualified as Msg
 import Arkham.ModifierData
 import Arkham.Name
 import Arkham.Phase
-import Arkham.Placement hiding (TreacheryPlacement (..))
+import Arkham.Placement
 import Arkham.Placement qualified as Placement
 import Arkham.Projection
 import Arkham.Scenario
@@ -312,6 +312,18 @@ withEnemyMetadata a = do
   emEvents <- select $ EnemyEvent (toId a)
   pure $ a `with` EnemyMetadata {..}
 
+withAgendaMetadata :: HasGame m => Agenda -> m (With Agenda AgendaMetadata)
+withAgendaMetadata a = do
+  agendamModifiers <- getModifiers' (toTarget a)
+  agendamTreacheries <- select $ TreacheryIsAttachedTo (toTarget a.id)
+  pure $ a `with` AgendaMetadata {..}
+
+withActMetadata :: HasGame m => Act -> m (With Act ActMetadata)
+withActMetadata a = do
+  actmModifiers <- getModifiers' (toTarget a)
+  actmTreacheries <- select $ TreacheryIsAttachedTo (toTarget a.id)
+  pure $ a `with` ActMetadata {..}
+
 withLocationConnectionData
   :: HasGame m
   => With Location ModifierData
@@ -479,8 +491,8 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
             )
       , "assets"
           .= toJSON (runReader (traverse withAssetMetadata (gameAssets g)) g)
-      , "acts" .= toJSON (runReader (traverse withModifiers (gameActs g)) g)
-      , "agendas" .= toJSON (runReader (traverse withModifiers (gameAgendas g)) g)
+      , "acts" .= toJSON (runReader (traverse withActMetadata (gameActs g)) g)
+      , "agendas" .= toJSON (runReader (traverse withAgendaMetadata (gameAgendas g)) g)
       , "treacheries"
           .= toJSON (runReader (traverse withModifiers (gameTreacheries g)) g)
       , "events" .= toJSON (runReader (traverse withModifiers (gameEvents g)) g)
@@ -1031,8 +1043,7 @@ getAgendasMatching matcher = do
     AgendaWithDoom gameValueMatcher ->
       field AgendaDoom . toId >=> (`gameValueMatches` gameValueMatcher)
     AgendaWithTreachery treacheryMatcher -> \agenda -> do
-      treacheries <- select treacheryMatcher
-      pure $ any (`elem` treacheries) (agendaTreacheries $ toAttrs agenda)
+      selectAny $ TreacheryIsAttachedTo (toTarget agenda.id) <> treacheryMatcher
     AgendaWithSequence s -> pure . (== s) . attr agendaSequence
     AgendaWithSide s ->
       pure . (== s) . AS.agendaSide . attr agendaSequence
@@ -1063,9 +1074,8 @@ getActsMatching matcher = do
     ActWithId actId -> pure . (== actId) . toId
     ActWithSide side -> pure . (== side) . AC.actSide . attr actSequence
     ActWithDeckId n -> pure . (== n) . attr actDeckId
-    ActWithTreachery treacheryMatcher -> \act -> do
-      treacheries <- select treacheryMatcher
-      pure $ any (`elem` treacheries) (actTreacheries $ toAttrs act)
+    ActWithTreachery treacheryMatcher -> \act ->
+      selectAny $ TreacheryIsAttachedTo (toTarget act.id) <> treacheryMatcher
     ActCanWheelOfFortuneX -> pure . not . attr actUsedWheelOfFortuneX
     NotAct matcher' -> fmap not . matcherFilter matcher'
 
@@ -1105,14 +1115,7 @@ getTreacheriesMatching matcher = do
   matcherFilter = \case
     AnyTreachery -> pure . const True
     NotTreachery m -> fmap not . matcherFilter m
-    InPlayTreachery -> \t -> do
-      placement <- field TreacheryPlacement (toId t)
-      pure $ case placement of
-        Placement.TreacheryAttachedTo {} -> True
-        Placement.TreacheryInHandOf {} -> False
-        Placement.TreacheryTopOfDeck {} -> False
-        Placement.TreacheryNextToAgenda -> True
-        Placement.TreacheryLimbo -> False
+    InPlayTreachery -> fieldMap TreacheryPlacement isInPlayPlacement . toId
     TreacheryWithResolvedEffectsBy investigatorMatcher -> \t -> do
       iids <- select investigatorMatcher
       pure $ any (`elem` attr treacheryResolved t) iids
@@ -1145,13 +1148,13 @@ getTreacheriesMatching matcher = do
       pure $ treacheryTarget == Just target
     TreacheryInHandOf investigatorMatcher -> \treachery -> do
       iids <- select investigatorMatcher
-      pure $ case treacheryPlacement (toAttrs treachery) of
-        Placement.TreacheryInHandOf iid -> iid `elem` iids
+      pure $ case treachery.placement of
+        Placement.HiddenInHand iid -> iid `elem` iids
         _ -> False
     TreacheryInThreatAreaOf investigatorMatcher -> \treachery -> do
-      targets <- selectMap (Just . InvestigatorTarget) investigatorMatcher
-      let treacheryTarget = attr treacheryAttachedTarget treachery
-      pure $ treacheryTarget `elem` targets
+      case treachery.placement of
+        InThreatArea iid -> iid <=~> investigatorMatcher
+        _ -> pure False
     TreacheryOwnedBy investigatorMatcher -> \treachery -> do
       iids <- select investigatorMatcher
       pure $ case attr treacheryOwner treachery of
@@ -2196,6 +2199,8 @@ getEventsMatching matcher = do
       pure $ filter ((`elem` iids) . ownerOfEvent) as
     EventWithoutModifier modifierType -> do
       filterM (fmap (notElem modifierType) . getModifiers . toId) as
+    EventWithModifier modifierType -> do
+      filterM (fmap (elem modifierType) . getModifiers . toId) as
     EventWithDoom valueMatcher ->
       filterM ((`gameValueMatches` valueMatcher) . attr eventDoom) as
     EventReady -> pure $ filter (not . attr eventExhausted) as
@@ -2954,24 +2959,7 @@ instance Projection Asset where
       AssetAssignedHealthDamage -> pure assetAssignedHealthDamage
       AssetAssignedSanityDamage -> pure assetAssignedSanityDamage
       AssetCustomizations -> pure assetCustomizations
-      AssetLocation -> case assetPlacement of
-        AtLocation lid -> pure $ Just lid
-        AttachedToLocation lid -> pure $ Just lid
-        InPlayArea iid -> field InvestigatorLocation iid
-        InThreatArea iid -> field InvestigatorLocation iid
-        AttachedToInvestigator iid -> field InvestigatorLocation iid
-        AttachedToEnemy eid -> field EnemyLocation eid
-        AttachedToAsset aid' _ -> field AssetLocation aid'
-        AttachedToAct _ -> pure Nothing
-        AttachedToAgenda _ -> pure Nothing
-        Unplaced -> pure Nothing
-        Global -> pure Nothing
-        Limbo -> pure Nothing
-        OutOfPlay _ -> pure Nothing
-        StillInHand _ -> pure Nothing
-        StillInDiscard _ -> pure Nothing
-        StillInEncounterDiscard -> pure Nothing
-        AsSwarm {} -> error "AssetLocation: AsSwarm"
+      AssetLocation -> Helpers.placementLocation assetPlacement
       AssetCardCode -> pure assetCardCode
       AssetCardId -> pure assetCardId
       AssetSlots -> do
@@ -3287,6 +3275,10 @@ instance Projection Investigator where
       InvestigatorResigned -> pure investigatorResigned
       InvestigatorXp -> pure investigatorXp
       InvestigatorSupplies -> pure investigatorSupplies
+
+instance Query TargetMatcher where
+  select matcher = do
+    filterM (`targetMatches` matcher) . overEntities ((: []) . toTarget) . view entitiesL =<< getGame
 
 instance Query ChaosTokenMatcher where
   select matcher = do
@@ -3986,6 +3978,7 @@ instance Projection Treachery where
       attrs@TreacheryAttrs {..} = toAttrs t
       cdef = toCardDef attrs
     case fld of
+      TreacheryLocation -> Helpers.placementLocation treacheryPlacement
       TreacheryTokens -> pure treacheryTokens
       TreacheryPlacement -> pure treacheryPlacement
       TreacheryDrawnBy -> pure treacheryDrawnBy

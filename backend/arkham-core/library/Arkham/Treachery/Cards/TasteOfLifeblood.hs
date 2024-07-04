@@ -43,4 +43,4 @@ instance RunMessage TasteOfLifeblood where
            ]
       push $ DoStep (n - 1) msg'
       pure t
-    _ -> TasteOfLifeblood <$> lift (runMessage msg attrs)
+    _ -> TasteOfLifeblood <$> liftRunMessage msg attrs

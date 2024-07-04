@@ -32,4 +32,4 @@ instance RunMessage EnteringTheUnderworldV1 where
       pushAll [ShuffleCardsIntoDeck Deck.EncounterDeck encounterSets, ShuffleEncounterDiscardBackIn]
       advanceActDeck attrs
       pure a
-    _ -> EnteringTheUnderworldV1 <$> lift (runMessage msg attrs)
+    _ -> EnteringTheUnderworldV1 <$> liftRunMessage msg attrs

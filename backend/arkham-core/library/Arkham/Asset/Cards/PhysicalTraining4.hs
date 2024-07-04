@@ -31,4 +31,4 @@ instance RunMessage PhysicalTraining4 where
         , Label "Choose Combat" [Msg.skillTestModifier (attrs.ability 1) iid (SkillModifier #combat 1)]
         ]
       pure a
-    _ -> PhysicalTraining4 <$> lift (runMessage msg attrs)
+    _ -> PhysicalTraining4 <$> liftRunMessage msg attrs

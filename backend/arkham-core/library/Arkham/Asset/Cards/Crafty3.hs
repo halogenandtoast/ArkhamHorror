@@ -44,4 +44,4 @@ instance RunMessage Crafty3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skillTestModifier (attrs.ability 1) iid (AnySkillValue 1)
       pure a
-    _ -> Crafty3 <$> lift (runMessage msg attrs)
+    _ -> Crafty3 <$> liftRunMessage msg attrs

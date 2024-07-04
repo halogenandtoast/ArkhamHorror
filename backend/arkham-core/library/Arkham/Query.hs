@@ -5,6 +5,7 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Id
 import Arkham.Matcher
+import {-# SOURCE #-} Arkham.Target
 
 type family QueryElement a where
   QueryElement AssetMatcher = AssetId
@@ -27,3 +28,4 @@ type family QueryElement a where
   QueryElement RemainingActMatcher = CardCode
   QueryElement CardMatcher = Card
   QueryElement ChaosTokenMatcher = ChaosToken
+  QueryElement TargetMatcher = Target

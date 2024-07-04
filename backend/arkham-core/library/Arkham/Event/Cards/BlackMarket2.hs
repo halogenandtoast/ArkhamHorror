@@ -43,7 +43,7 @@ instance RunMessage BlackMarket2 where
       cards <- fieldMap InvestigatorDeck (map toCard . take 1 . unDeck) iid'
       pushAll $ map ObtainCard cards <> [SetAsideCards cards]
       pure . BlackMarket2 $ attrs & overMeta (map toCardId cards <>)
-    _ -> BlackMarket2 <$> lift (runMessage msg attrs)
+    _ -> BlackMarket2 <$> liftRunMessage msg attrs
 
 newtype BlackMarket2Effect = BlackMarket2Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -80,4 +80,4 @@ instance RunMessage BlackMarket2Effect where
       addToHand iid [card]
       push msg
       pure e
-    _ -> BlackMarket2Effect <$> lift (runMessage msg attrs)
+    _ -> BlackMarket2Effect <$> liftRunMessage msg attrs

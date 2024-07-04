@@ -121,4 +121,4 @@ instance RunMessage BobJenkins where
 
       revealedCards' <- foldM addCards revealedCards iids
 
-      BobJenkins <$> lift (runMessage msg $ attrs & setMeta (object ["revealedCards" .= revealedCards']))
+      BobJenkins <$> (liftRunMessage msg $ attrs & setMeta (object ["revealedCards" .= revealedCards']))

@@ -36,7 +36,7 @@ instance RunMessage DisciplinePrescienceOfFate where
     Flip iid _ (isTarget attrs -> True) -> do
       push $ ReplaceInvestigatorAsset iid attrs.id (flipCard $ toCard attrs)
       pure a
-    _ -> DisciplinePrescienceOfFate <$> lift (runMessage msg attrs)
+    _ -> DisciplinePrescienceOfFate <$> liftRunMessage msg attrs
 
 newtype DisciplinePrescienceOfFateEffect = DisciplinePrescienceOfFateEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -68,4 +68,4 @@ instance RunMessage DisciplinePrescienceOfFateEffect where
     EndTurn {} -> do
       push $ disable attrs
       pure e
-    _ -> DisciplinePrescienceOfFateEffect <$> lift (runMessage msg attrs)
+    _ -> DisciplinePrescienceOfFateEffect <$> liftRunMessage msg attrs

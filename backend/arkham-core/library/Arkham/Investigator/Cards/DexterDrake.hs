@@ -89,7 +89,7 @@ instance RunMessage DexterDrake where
           $ Label "Do no return an asset" []
           : [targetLabel asset $ ReturnToHand iid (toTarget asset) : maybeToList drawing | asset <- assets]
       pure i
-    _ -> DexterDrake <$> lift (runMessage msg attrs)
+    _ -> DexterDrake <$> liftRunMessage msg attrs
 
 newtype DexterDrakeEffect = DexterDrakeEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

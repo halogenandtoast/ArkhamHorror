@@ -15,4 +15,4 @@ instance RunMessage AWatchfulPeace3 where
     PlayThisEvent _iid eid | eid == toId attrs -> do
       don't AllDrawEncounterCard
       pure e
-    _ -> AWatchfulPeace3 <$> lift (runMessage msg attrs)
+    _ -> AWatchfulPeace3 <$> liftRunMessage msg attrs

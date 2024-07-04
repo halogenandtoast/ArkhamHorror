@@ -358,6 +358,8 @@ allPlayerEventCards =
       , windsOfPower1
       , wingingIt
       , wordOfCommand2
+      , wordOfWeal
+      , wordOfWoe
       , workingAHunch
       , writtenInTheStars
       , youHandleThisOne
@@ -3093,6 +3095,26 @@ callForBackup2 =
                 , control Survivor <> healableCardExists #damage
                 ]
     }
+
+wordOfWoe :: CardDef
+wordOfWoe =
+  signature "09011"
+    $ (event "09012" "Word of Woe" 2 Neutral)
+      { cdCardTraits = setFromList [Pact]
+      , cdFastWindow = Just $ DuringTurn You
+      , cdCriteria =
+          Just
+            $ exists
+              (AssetControlledBy You <> AssetWithPerformableAbility AbilityIsActionAbility [IgnoreAllCosts])
+      }
+
+wordOfWeal :: CardDef
+wordOfWeal =
+  signature "09011"
+    $ (event "09013" "Word of Weal" 0 Neutral)
+      { cdCardTraits = setFromList [Pact]
+      , cdFastWindow = Just $ InitiatedSkillTest #when You #any #any $ SkillTestOnAsset AssetWithAnyDoom
+      }
 
 breakingAndEntering2 :: CardDef
 breakingAndEntering2 =

@@ -26,4 +26,4 @@ instance RunMessage RealitiesInterwoven where
     AdvanceAgenda (isSide B attrs -> True) -> do
       push R2
       pure a
-    _ -> RealitiesInterwoven <$> runMessage msg attrs
+    _ -> RealitiesInterwoven <$> liftRunMessage msg attrs

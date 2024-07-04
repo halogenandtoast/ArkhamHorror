@@ -1,17 +1,10 @@
-module Arkham.Treachery.Cards.WhispersInTheDark (
-  whispersInTheDark,
-  WhispersInTheDark (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.WhispersInTheDark (whispersInTheDark, WhispersInTheDark (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Source
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype WhispersInTheDark = WhispersInTheDark TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -23,19 +16,18 @@ whispersInTheDark = treachery WhispersInTheDark Cards.whispersInTheDark
 instance HasAbilities WhispersInTheDark where
   getAbilities (WhispersInTheDark a) =
     [ haunted "Take 1 horror" (proxied Anywhere a) 1
-    , mkAbility a 2 $ ForcedAbility $ RoundEnds Timing.When
+    , mkAbility a 2 $ ForcedAbility $ RoundEnds #when
     ]
 
 instance RunMessage WhispersInTheDark where
-  runMessage msg t@(WhispersInTheDark attrs) = case msg of
-    Revelation _iid source | isSource attrs source -> do
-      agendaId <- selectJust AnyAgenda
-      push $ AttachTreachery (toId attrs) (AgendaTarget agendaId)
+  runMessage msg t@(WhispersInTheDark attrs) = runQueueT $ case msg of
+    Revelation _iid (isSource attrs -> True) -> do
+      selectJust AnyAgenda >>= attachTreachery attrs
       pure t
-    UseCardAbility iid (isProxySource attrs -> True) 1 _ _ -> do
-      push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+    UseThisAbility iid (isProxySource attrs -> True) 1 -> do
+      assignHorror iid attrs 1
       pure t
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ toDiscard (toAbilitySource attrs 2) (toTarget attrs)
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      toDiscard (attrs.ability 2) attrs
       pure t
-    _ -> WhispersInTheDark <$> runMessage msg attrs
+    _ -> WhispersInTheDark <$> liftRunMessage msg attrs

@@ -68,6 +68,7 @@ allInvestigatorCards =
       , carsonSinclair
       , vincentLee
       , kymaniJones
+      , aminaZidane
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -450,6 +451,14 @@ kymaniJones =
     ("Kymani Jones" <:> "The Security Consultant")
     Rogue
     [Criminal]
+
+aminaZidane :: CardDef
+aminaZidane =
+  investigator
+    "09011"
+    ("Amina Zidane" <:> "The Operator")
+    Mystic
+    [Chosen, Cursed]
 
 nathanielCho :: CardDef
 nathanielCho =

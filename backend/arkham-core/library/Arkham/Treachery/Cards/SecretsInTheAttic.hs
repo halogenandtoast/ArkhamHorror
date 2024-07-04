@@ -41,7 +41,7 @@ instance RunMessage SecretsInTheAttic where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       pushAll
         [ assignHorror iid attrs 1
-        , PlaceTreachery (toId attrs) TreacheryNextToAgenda
+        , PlaceTreachery (toId attrs) NextToAgenda
         ]
       pure t
     UseThisAbility _ (isSource attrs -> True) 1 -> do

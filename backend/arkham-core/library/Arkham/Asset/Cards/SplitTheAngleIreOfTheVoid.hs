@@ -31,4 +31,4 @@ instance RunMessage SplitTheAngleIreOfTheVoid where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ DiscardTopOfEncounterDeck iid 1 (attrs.ability 2) Nothing
       pure a
-    _ -> SplitTheAngleIreOfTheVoid <$> lift (runMessage msg attrs)
+    _ -> SplitTheAngleIreOfTheVoid <$> liftRunMessage msg attrs

@@ -54,4 +54,4 @@ instance RunMessage RollingPits where
         iid
         [targetLabel sea [PlaceClues (toSource attrs) (toTarget sea) 1, DoStep (n - 1) msg'] | sea <- seas]
       pure s
-    _ -> RollingPits <$> lift (runMessage msg attrs)
+    _ -> RollingPits <$> liftRunMessage msg attrs

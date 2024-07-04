@@ -34,7 +34,7 @@ instance RunMessage Backstab3 where
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
       createCardEffect Cards.pilfer3 (effectMetaTarget attrs.cardId) attrs iid
       pure e
-    _ -> Backstab3 <$> lift (runMessage msg attrs)
+    _ -> Backstab3 <$> liftRunMessage msg attrs
 
 newtype Backstab3Effect = Backstab3Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -52,4 +52,4 @@ instance RunMessage Backstab3Effect where
           push $ ReturnToHand iid target
         _ -> error "invalid meta target"
       pure e
-    _ -> Backstab3Effect <$> lift (runMessage msg attrs)
+    _ -> Backstab3Effect <$> liftRunMessage msg attrs

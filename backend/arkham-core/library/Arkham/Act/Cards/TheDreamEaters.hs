@@ -42,4 +42,4 @@ instance RunMessage TheDreamEaters where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       push R2
       pure a
-    _ -> TheDreamEaters <$> lift (runMessage msg attrs)
+    _ -> TheDreamEaters <$> liftRunMessage msg attrs

@@ -26,4 +26,4 @@ instance RunMessage Greed where
           | otherwise = 1
       assignHorror iid attrs x
       pure t
-    _ -> Greed <$> lift (runMessage msg attrs)
+    _ -> Greed <$> liftRunMessage msg attrs

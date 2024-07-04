@@ -29,4 +29,4 @@ instance RunMessage AstoundingRevelation where
         $ ResourceLabel iid [TakeResources iid 2 (attrs.ability 1) False]
         : [targetLabel aid [AddUses aid Secret 1] | aid <- secretAssets]
       pure e
-    _ -> AstoundingRevelation <$> lift (runMessage msg attrs)
+    _ -> AstoundingRevelation <$> liftRunMessage msg attrs

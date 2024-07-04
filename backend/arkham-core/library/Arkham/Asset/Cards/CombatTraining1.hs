@@ -3,7 +3,6 @@ module Arkham.Asset.Cards.CombatTraining1 (combatTraining1, CombatTraining1 (..)
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Asset.Types (sanityL)
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -39,4 +38,4 @@ instance RunMessage CombatTraining1 where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       skillTestModifier (attrs.ability 2) iid (SkillModifier #agility 1)
       pure a
-    _ -> CombatTraining1 <$> lift (runMessage msg attrs)
+    _ -> CombatTraining1 <$> liftRunMessage msg attrs

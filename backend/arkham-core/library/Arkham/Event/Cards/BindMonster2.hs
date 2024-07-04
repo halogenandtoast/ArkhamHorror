@@ -43,7 +43,7 @@ instance RunMessage BindMonster2 where
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs
       pure e
-    _ -> BindMonster2 <$> lift (runMessage msg attrs)
+    _ -> BindMonster2 <$> liftRunMessage msg attrs
 
 newtype BindMonster2Effect = BindMonster2Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -62,4 +62,4 @@ instance RunMessage BindMonster2Effect where
         _ -> pure ()
       pure e
     SkillTestEnds _ _ -> disableReturn e
-    _ -> BindMonster2Effect <$> lift (runMessage msg attrs)
+    _ -> BindMonster2Effect <$> liftRunMessage msg attrs

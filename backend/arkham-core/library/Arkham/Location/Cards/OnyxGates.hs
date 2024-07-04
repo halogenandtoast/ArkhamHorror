@@ -38,4 +38,4 @@ instance RunMessage OnyxGates where
       n <- getRecordCount EvidenceOfKadath
       when (n > 0) (removeTokens (attrs.ability 1) attrs #clue n)
       pure l
-    _ -> OnyxGates <$> lift (runMessage msg attrs)
+    _ -> OnyxGates <$> liftRunMessage msg attrs

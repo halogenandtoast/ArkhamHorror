@@ -44,4 +44,4 @@ instance RunMessage RichardUptonPickman where
       skillTestModifiers source iid [BaseSkillOf #combat 5, NoStandardDamage]
       chooseFightEnemy iid (attrs.ability 1)
       pure a
-    _ -> RichardUptonPickman <$> lift (runMessage msg attrs)
+    _ -> RichardUptonPickman <$> liftRunMessage msg attrs

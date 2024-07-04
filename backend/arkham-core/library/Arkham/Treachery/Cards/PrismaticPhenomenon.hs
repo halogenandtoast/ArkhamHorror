@@ -1,18 +1,12 @@
-module Arkham.Treachery.Cards.PrismaticPhenomenon (
-  prismaticPhenomenon,
-  PrismaticPhenomenon (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.PrismaticPhenomenon (prismaticPhenomenon, PrismaticPhenomenon (..)) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.Classes
+import Arkham.Helpers.Modifiers (ActionTarget (..), ModifierType (..), modified)
+import Arkham.Helpers.SkillTest.Target (getSkillTestTarget)
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype PrismaticPhenomenon = PrismaticPhenomenon TreacheryAttrs
   deriving anyclass (IsTreachery)
@@ -23,38 +17,32 @@ prismaticPhenomenon = treachery PrismaticPhenomenon Cards.prismaticPhenomenon
 
 instance HasModifiersFor PrismaticPhenomenon where
   getModifiersFor (InvestigatorTarget iid) (PrismaticPhenomenon attrs) =
-    pure
-      $ toModifiers attrs
-      $ [ AdditionalActionCostOf (FirstOneOfPerformed [#draw, #resource, #play]) 1
-        | treacheryOnInvestigator iid attrs
-        ]
+    modified
+      attrs
+      [ AdditionalActionCostOf (FirstOneOfPerformed [#draw, #resource, #play]) 1
+      | treacheryInThreatArea iid attrs
+      ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities PrismaticPhenomenon where
   getAbilities (PrismaticPhenomenon a) =
     [ restrictedAbility a 1 (InThreatAreaOf You)
-        $ ForcedAbility
-        $ SkillTestResult #when You (WhileInvestigating Anywhere)
-        $ SuccessResult AnyValue
+        $ forced
+        $ SkillTestResult #when You #investigating #success
     ]
 
 instance RunMessage PrismaticPhenomenon where
-  runMessage msg t@(PrismaticPhenomenon attrs) = case msg of
+  runMessage msg t@(PrismaticPhenomenon attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ attachTreachery attrs iid
+      placeInThreatArea attrs iid
       pure t
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      mTarget <- getSkillTestTarget
-      case mTarget of
+      getSkillTestTarget >>= \case
         Nothing -> error "invalid target"
         Just target -> do
-          push
-            $ skillTestModifier
-              (toAbilitySource attrs 1)
-              target
-              (AlternateSuccessfullInvestigation $ toTarget attrs)
+          skillTestModifier (attrs.ability 1) target (AlternateSuccessfullInvestigation $ toTarget attrs)
       pure t
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> PrismaticPhenomenon <$> runMessage msg attrs
+    _ -> PrismaticPhenomenon <$> liftRunMessage msg attrs

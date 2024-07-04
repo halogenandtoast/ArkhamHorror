@@ -71,4 +71,4 @@ instance RunMessage ForsakenTowerOfIllusionAndMyth where
             , ShuffleBackIntoEncounterDeck (toTarget nyarlathotep)
             ]
       pure l
-    _ -> ForsakenTowerOfIllusionAndMyth <$> lift (runMessage msg attrs)
+    _ -> ForsakenTowerOfIllusionAndMyth <$> liftRunMessage msg attrs

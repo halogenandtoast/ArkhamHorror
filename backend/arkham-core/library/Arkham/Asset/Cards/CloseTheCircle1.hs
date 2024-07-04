@@ -75,4 +75,4 @@ instance RunMessage CloseTheCircle1 where
         pure . CloseTheCircle1 $ attrs `with` Metadata True
     DoStep 1 (UseThisAbility _iid (isSource attrs -> True) 1) -> do
       pure . CloseTheCircle1 $ attrs `with` Metadata False
-    _ -> CloseTheCircle1 . (`with` meta) <$> lift (runMessage msg attrs)
+    _ -> CloseTheCircle1 . (`with` meta) <$> liftRunMessage msg attrs

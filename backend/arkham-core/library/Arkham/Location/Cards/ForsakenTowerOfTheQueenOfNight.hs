@@ -54,4 +54,4 @@ instance RunMessage ForsakenTowerOfTheQueenOfNight where
         , ShuffleBackIntoEncounterDeck (toTarget eid)
         ]
       pure l
-    _ -> ForsakenTowerOfTheQueenOfNight <$> lift (runMessage msg attrs)
+    _ -> ForsakenTowerOfTheQueenOfNight <$> liftRunMessage msg attrs

@@ -31,4 +31,4 @@ instance RunMessage RiteOfSeeking2 where
       skillTestModifiers source iid [SkillModifier #willpower 2, DiscoveredClues 1]
       pushAll $ leftOr investigation
       pure a
-    _ -> RiteOfSeeking2 <$> lift (runMessage msg attrs)
+    _ -> RiteOfSeeking2 <$> liftRunMessage msg attrs

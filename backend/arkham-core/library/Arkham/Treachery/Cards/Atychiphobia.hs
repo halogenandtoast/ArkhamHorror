@@ -1,16 +1,9 @@
-module Arkham.Treachery.Cards.Atychiphobia (
-  atychiphobia,
-  Atychiphobia (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Atychiphobia (atychiphobia, Atychiphobia (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Atychiphobia = Atychiphobia TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -22,20 +15,22 @@ atychiphobia = treachery Atychiphobia Cards.atychiphobia
 instance HasAbilities Atychiphobia where
   getAbilities (Atychiphobia a) =
     [ restrictedAbility a 1 (InThreatAreaOf You)
-        $ ForcedAbility
-        $ SkillTestResult Timing.After You AnySkillTest
-        $ FailureResult AnyValue
+        $ forced
+        $ SkillTestResult #after You AnySkillTest #failure
     , restrictedAbility a 2 (InThreatAreaOf $ InvestigatorAt YourLocation)
         $ ActionAbility []
         $ ActionCost 2
     ]
 
 instance RunMessage Atychiphobia where
-  runMessage msg t@(Atychiphobia attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      t <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      t <$ push (toDiscardBy iid (toAbilitySource attrs 2) $ toTarget attrs)
-    _ -> Atychiphobia <$> runMessage msg attrs
+  runMessage msg t@(Atychiphobia attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      placeInThreatArea attrs iid
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignHorror iid (attrs.ability 1) 1
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      toDiscardBy iid (attrs.ability 2) attrs
+      pure t
+    _ -> Atychiphobia <$> liftRunMessage msg attrs

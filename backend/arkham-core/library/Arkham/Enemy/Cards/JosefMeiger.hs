@@ -3,11 +3,10 @@ module Arkham.Enemy.Cards.JosefMeiger (josefMeiger, JosefMeiger (..)) where
 import Arkham.Ability
 import Arkham.Attack
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner hiding (beginSkillTest)
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
 import Arkham.Trait (Trait (SilverTwilight))
 
@@ -30,9 +29,9 @@ instance HasAbilities JosefMeiger where
       ]
 
 instance RunMessage JosefMeiger where
-  runMessage msg e@(JosefMeiger attrs) = case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> runQueueT do
-      push $ parley iid (attrs.ability 1) attrs #intellect (Fixed 4)
+  runMessage msg e@(JosefMeiger attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      parley iid (attrs.ability 1) attrs #intellect (Fixed 4)
       pure e
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ InitiateEnemyAttack $ enemyAttack (toId attrs) attrs iid
@@ -44,4 +43,4 @@ instance RunMessage JosefMeiger where
       josefsPlan <- genCard Story.josefsPlan
       push $ ReadStory iid josefsPlan ResolveIt (Just $ toTarget attrs)
       pure e
-    _ -> JosefMeiger <$> runMessage msg attrs
+    _ -> JosefMeiger <$> liftRunMessage msg attrs

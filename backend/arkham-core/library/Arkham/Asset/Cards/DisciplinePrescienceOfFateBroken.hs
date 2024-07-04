@@ -35,4 +35,4 @@ instance RunMessage DisciplinePrescienceOfFateBroken where
     Flip iid _ (isTarget attrs -> True) -> do
       push $ ReplaceInvestigatorAsset iid attrs.id (flipCard $ toCard attrs)
       pure a
-    _ -> DisciplinePrescienceOfFateBroken <$> lift (runMessage msg attrs)
+    _ -> DisciplinePrescienceOfFateBroken <$> liftRunMessage msg attrs

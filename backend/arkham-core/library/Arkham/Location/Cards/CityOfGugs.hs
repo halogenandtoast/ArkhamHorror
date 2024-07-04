@@ -29,4 +29,4 @@ instance RunMessage CityOfGugs where
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.theSentry
       pure . CityOfGugs $ attrs & canBeFlippedL .~ False
-    _ -> CityOfGugs <$> lift (runMessage msg attrs)
+    _ -> CityOfGugs <$> liftRunMessage msg attrs

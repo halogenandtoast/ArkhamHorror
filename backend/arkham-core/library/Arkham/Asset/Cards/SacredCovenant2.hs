@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.SkillTest.Base

@@ -50,4 +50,4 @@ instance RunMessage SledDog where
       skillTestModifiers (attrs.ability 2) iid [SkillModifier #combat x, NoStandardDamage, DamageDealt x]
       chooseFightEnemy iid (attrs.ability 2)
       pure a
-    _ -> SledDog <$> lift (runMessage msg attrs)
+    _ -> SledDog <$> liftRunMessage msg attrs

@@ -499,7 +499,10 @@ allEvents =
     , --- neutral [eote]
       SomeEventCard callForBackup2
     , -- The Scarlet Keys
-      --- rogue [tsk]
+      --- signature [tsk]
+      SomeEventCard wordOfWoe
+    , SomeEventCard wordOfWeal
+    , --- rogue [tsk]
       SomeEventCard breakingAndEntering2
     , -- The Feast of Hemloch Vale
       --- survivor [fhv]

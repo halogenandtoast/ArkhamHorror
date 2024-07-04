@@ -40,4 +40,4 @@ instance RunMessage BesetByMonsters where
         then push R2
         else revertAgenda attrs
       pure a
-    _ -> BesetByMonsters <$> lift (runMessage msg attrs)
+    _ -> BesetByMonsters <$> liftRunMessage msg attrs

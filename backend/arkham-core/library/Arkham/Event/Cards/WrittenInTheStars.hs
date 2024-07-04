@@ -41,7 +41,7 @@ instance RunMessage WrittenInTheStars where
           attrs
           (CardIdTarget $ toCardId card)
       pure e
-    _ -> WrittenInTheStars <$> lift (runMessage msg attrs)
+    _ -> WrittenInTheStars <$> liftRunMessage msg attrs
 
 newtype WrittenInTheStarsEffect = WrittenInTheStarsEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -73,4 +73,4 @@ instance RunMessage WrittenInTheStarsEffect where
     EndTurn {} -> do
       disable attrs
       pure e
-    _ -> WrittenInTheStarsEffect <$> lift (runMessage msg attrs)
+    _ -> WrittenInTheStarsEffect <$> liftRunMessage msg attrs

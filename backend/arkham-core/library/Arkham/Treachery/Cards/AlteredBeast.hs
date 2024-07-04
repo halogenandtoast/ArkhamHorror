@@ -1,12 +1,11 @@
 module Arkham.Treachery.Cards.AlteredBeast (AlteredBeast (..), alteredBeast) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Helpers qualified as Msg
+import Arkham.Treachery.Import.Lifted
 
 newtype AlteredBeast = AlteredBeast TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -16,7 +15,7 @@ alteredBeast :: TreacheryCard AlteredBeast
 alteredBeast = treachery AlteredBeast Cards.alteredBeast
 
 instance HasAbilities AlteredBeast where
-  getAbilities (AlteredBeast x) = case treacheryAttachedTarget x of
+  getAbilities (AlteredBeast x) = case x.attached of
     Just (EnemyTarget eid) ->
       [ mkAbility x 1
           $ forced
@@ -26,19 +25,17 @@ instance HasAbilities AlteredBeast where
     _ -> []
 
 instance RunMessage AlteredBeast where
-  runMessage msg t@(AlteredBeast attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(AlteredBeast attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      abominations <- selectTargets $ EnemyWithTrait Abomination
-      player <- getPlayer iid
-      push $ case abominations of
+      selectTargets (EnemyWithTrait Abomination) >>= \case
         [] -> gainSurge attrs
         xs ->
-          chooseOrRunOne player
-            $ [ TargetLabel x [AttachTreachery treacheryId x, HealAllDamage x (toSource attrs)]
+          chooseOrRunOne iid
+            $ [ targetLabel x [Msg.attachTreachery attrs x, HealAllDamage x (toSource attrs)]
               | x <- xs
               ]
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ assignHorror iid attrs 1
+      assignHorror iid attrs 1
       pure t
-    _ -> AlteredBeast <$> runMessage msg attrs
+    _ -> AlteredBeast <$> liftRunMessage msg attrs

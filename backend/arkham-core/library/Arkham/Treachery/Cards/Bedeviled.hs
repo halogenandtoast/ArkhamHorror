@@ -1,19 +1,13 @@
-module Arkham.Treachery.Cards.Bedeviled (
-  bedeviled,
-  Bedeviled (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Bedeviled (bedeviled, Bedeviled (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest (getSkillTestInvestigator, getSkillTestSource)
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Source
 import Arkham.Trait (Trait (Witch))
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Bedeviled = Bedeviled TreacheryAttrs
   deriving anyclass (IsTreachery)
@@ -23,38 +17,31 @@ bedeviled :: TreacheryCard Bedeviled
 bedeviled = treachery Bedeviled Cards.bedeviled
 
 instance HasModifiersFor Bedeviled where
-  getModifiersFor (InvestigatorTarget iid) (Bedeviled attrs) | treacheryOnInvestigator iid attrs = do
+  getModifiersFor (InvestigatorTarget iid) (Bedeviled attrs) | treacheryInThreatArea iid attrs = do
     skillTestModifiers' <- runMaybeT $ do
       source <- MaybeT getSkillTestSource
       investigator <- MaybeT getSkillTestInvestigator
       guard $ isSource attrs source && iid == investigator
-      guardM
-        $ lift
-        $ selectAny
-        $ ExhaustedEnemy
-        <> EnemyWithTrait Witch
-        <> EnemyAt (locationWithInvestigator iid)
+      guardM $ lift $ selectAny $ ExhaustedEnemy <> EnemyWithTrait Witch <> enemyAtLocationWith iid
       pure SkillTestAutomaticallySucceeds
-    pure
-      $ toModifiers attrs
+    modified attrs
       $ CannotTriggerAbilityMatching
         (AbilityIsActionAbility <> AbilityOnCardControlledBy iid)
       : maybeToList skillTestModifiers'
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Bedeviled where
-  getAbilities (Bedeviled a) =
-    [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 1]
+  getAbilities (Bedeviled a) = [restrictedAbility a 1 OnSameLocation actionAbility]
 
 instance RunMessage Bedeviled where
-  runMessage msg t@(Bedeviled attrs) = case msg of
+  runMessage msg t@(Bedeviled attrs) = runQueueT case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ AttachTreachery (toId attrs) (toTarget iid)
+      placeInThreatArea attrs iid
       pure t
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ RevelationSkillTest iid (toSource attrs) SkillWillpower (SkillTestDifficulty $ Fixed 3)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      revelationSkillTest iid attrs #willpower (Fixed 3)
       pure t
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> Bedeviled <$> runMessage msg attrs
+    _ -> Bedeviled <$> liftRunMessage msg attrs

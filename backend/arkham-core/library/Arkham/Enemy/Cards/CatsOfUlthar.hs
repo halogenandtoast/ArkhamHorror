@@ -4,7 +4,6 @@ import Arkham.CampaignLogKey
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.Prelude
 

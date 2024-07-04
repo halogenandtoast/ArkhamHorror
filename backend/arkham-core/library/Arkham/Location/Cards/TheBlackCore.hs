@@ -50,4 +50,4 @@ instance RunMessage TheBlackCore where
     PassedThisSkillTestBy _ (isAbilitySource attrs 2 -> True) n -> do
       removeTokens (attrs.ability 2) attrs Depth n
       pure l
-    _ -> TheBlackCore <$> lift (runMessage msg attrs)
+    _ -> TheBlackCore <$> liftRunMessage msg attrs

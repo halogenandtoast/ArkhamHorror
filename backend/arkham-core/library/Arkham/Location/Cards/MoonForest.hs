@@ -48,4 +48,4 @@ instance RunMessage MoonForest where
     FailedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       raiseAlarmLevel (attrs.ability 2) iid
       pure l
-    _ -> MoonForest <$> lift (runMessage msg attrs)
+    _ -> MoonForest <$> liftRunMessage msg attrs

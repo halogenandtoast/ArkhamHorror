@@ -28,4 +28,4 @@ instance RunMessage ExploringTheMoon where
       shuffleEncounterDiscardBackIn
       advanceActDeck attrs
       pure a
-    _ -> ExploringTheMoon <$> lift (runMessage msg attrs)
+    _ -> ExploringTheMoon <$> liftRunMessage msg attrs

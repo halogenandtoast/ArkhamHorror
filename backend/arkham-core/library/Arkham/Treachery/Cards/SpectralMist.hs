@@ -1,22 +1,15 @@
-module Arkham.Treachery.Cards.SpectralMist (
-  SpectralMist (..),
-  spectralMist,
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.SpectralMist (SpectralMist (..), spectralMist) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.SkillTest
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
 import Arkham.Matcher
-import Arkham.Modifier
-import Arkham.SkillType ()
 import Arkham.Source
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Helpers qualified as Msg
+import Arkham.Treachery.Import.Lifted
 
 newtype SpectralMist = SpectralMist TreacheryAttrs
   deriving anyclass (IsTreachery)
@@ -26,37 +19,26 @@ spectralMist :: TreacheryCard SpectralMist
 spectralMist = treachery SpectralMist Cards.spectralMist
 
 instance HasModifiersFor SpectralMist where
-  getModifiersFor _ (SpectralMist a) = do
-    mInvestigator <- getSkillTestInvestigator
-    case mInvestigator of
-      Just iid -> do
-        lid <- getJustLocation iid
-        pure $ toModifiers a [Difficulty 1 | treacheryOnLocation lid a]
-      _ -> pure []
+  getModifiersFor _ (SpectralMist a) = maybeModified a do
+    iid <- MaybeT getSkillTestInvestigator
+    lid <- MaybeT $ getMaybeLocation iid
+    guard $ a.attached == Just (toTarget lid)
+    pure [Difficulty 1]
 
 instance HasAbilities SpectralMist where
-  getAbilities (SpectralMist a) =
-    [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 1]
+  getAbilities (SpectralMist a) = [restrictedAbility a 1 OnSameLocation actionAbility]
 
 instance RunMessage SpectralMist where
-  runMessage msg t@(SpectralMist attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg t@(SpectralMist attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       targets <-
-        selectTargets
-          $ LocationWithTrait Bayou
-          <> NotLocation
-            (LocationWithTreachery $ treacheryIs Cards.spectralMist)
-      player <- getPlayer iid
-      pushWhen (notNull targets)
-        $ chooseOne
-          player
-          [ targetLabel target [AttachTreachery treacheryId target]
-          | target <- targets
-          ]
+        selectTargets $ withTrait Bayou <> not_ (LocationWithTreachery $ treacheryIs Cards.spectralMist)
+      when (notNull targets) $ chooseOne iid $ targetLabels targets $ only . Msg.attachTreachery attrs
       SpectralMist <$> runMessage msg attrs
-    UseCardAbility iid (TreacherySource tid) 1 _ _ | tid == treacheryId -> do
-      push $ beginSkillTest iid (attrs.ability 1) attrs #intellect (Fixed 2)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      beginSkillTest iid (attrs.ability 1) attrs #intellect (Fixed 2)
       pure t
-    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isAbilitySource attrs 1 source -> do
-      t <$ push (toDiscardBy iid (toAbilitySource attrs 1) attrs)
-    _ -> SpectralMist <$> runMessage msg attrs
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      toDiscardBy iid (attrs.ability 1) attrs
+      pure t
+    _ -> SpectralMist <$> liftRunMessage msg attrs

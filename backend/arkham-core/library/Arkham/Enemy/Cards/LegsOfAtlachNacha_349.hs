@@ -52,4 +52,4 @@ instance RunMessage LegsOfAtlachNacha_349 where
       pure e
     Do (Msg.EnemyEvaded _ eid) | eid == attrs.id -> do
       pure e
-    _ -> LegsOfAtlachNacha_349 <$> lift (runMessage msg attrs)
+    _ -> LegsOfAtlachNacha_349 <$> liftRunMessage msg attrs

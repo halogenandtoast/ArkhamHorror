@@ -48,4 +48,4 @@ instance RunMessage EnteringTheUnderworldV2 where
       richardUptonPickman <- selectJust $ assetIs Assets.richardUptonPickman
       gameModifier attrs richardUptonPickman RemoveFromGameInsteadOfDiscard
       pure a
-    _ -> EnteringTheUnderworldV2 <$> lift (runMessage msg attrs)
+    _ -> EnteringTheUnderworldV2 <$> liftRunMessage msg attrs

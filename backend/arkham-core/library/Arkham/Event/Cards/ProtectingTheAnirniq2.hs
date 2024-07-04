@@ -41,4 +41,4 @@ instance RunMessage ProtectingTheAnirniq2 where
               $ [Label "Return that asset to its owner's hand" [AddToHand owner [c]] | canReturn]
               <> [Label "Its owner draws 3 cards" [DrawCards owner (newCardDraw attrs iid 3)] | canDraw]
       pure e
-    _ -> ProtectingTheAnirniq2 <$> lift (runMessage msg attrs)
+    _ -> ProtectingTheAnirniq2 <$> liftRunMessage msg attrs

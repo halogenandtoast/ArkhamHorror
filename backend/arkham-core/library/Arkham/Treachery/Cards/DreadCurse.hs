@@ -17,4 +17,4 @@ instance RunMessage DreadCurse where
       n <- min 5 <$> getRemainingCurseTokens
       pushAll $ replicate n (AddChaosToken #curse)
       pure t
-    _ -> DreadCurse <$> lift (runMessage msg attrs)
+    _ -> DreadCurse <$> liftRunMessage msg attrs

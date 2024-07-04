@@ -44,4 +44,4 @@ instance RunMessage TheThingInTheRobes where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       advanceVia #other attrs iid
       pure a
-    _ -> TheThingInTheRobes <$> lift (runMessage msg attrs)
+    _ -> TheThingInTheRobes <$> liftRunMessage msg attrs

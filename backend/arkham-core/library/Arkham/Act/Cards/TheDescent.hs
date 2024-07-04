@@ -32,4 +32,4 @@ instance RunMessage TheDescent where
       pushAll [ShuffleCardsIntoDeck Deck.EncounterDeck encounterSets, ShuffleEncounterDiscardBackIn]
       advanceActDeck attrs
       pure a
-    _ -> TheDescent <$> lift (runMessage msg attrs)
+    _ -> TheDescent <$> liftRunMessage msg attrs

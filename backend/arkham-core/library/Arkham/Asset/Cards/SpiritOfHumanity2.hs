@@ -49,4 +49,4 @@ instance RunMessage SpiritOfHumanity2 where
            | canHealHorror
            ]
       pure a
-    _ -> SpiritOfHumanity2 <$> lift (runMessage msg attrs)
+    _ -> SpiritOfHumanity2 <$> liftRunMessage msg attrs

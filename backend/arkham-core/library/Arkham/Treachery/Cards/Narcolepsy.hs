@@ -1,17 +1,10 @@
-module Arkham.Treachery.Cards.Narcolepsy (
-  narcolepsy,
-  Narcolepsy (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Narcolepsy (narcolepsy, Narcolepsy (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Narcolepsy = Narcolepsy TreacheryAttrs
   deriving anyclass (IsTreachery)
@@ -21,11 +14,10 @@ narcolepsy :: TreacheryCard Narcolepsy
 narcolepsy = treachery Narcolepsy Cards.narcolepsy
 
 instance HasModifiersFor Narcolepsy where
-  getModifiersFor (InvestigatorTarget iid) (Narcolepsy attrs) | treacheryOnInvestigator iid attrs = do
-    pure
-      $ toModifiers
-        attrs
-        [CannotTakeAction IsAnyAction, CannotTriggerAbilityMatching AnyAbility, CannotPlay AnyCard]
+  getModifiersFor (InvestigatorTarget iid) (Narcolepsy attrs) | treacheryInThreatArea iid attrs = do
+    modified
+      attrs
+      [CannotTakeAction IsAnyAction, CannotTriggerAbilityMatching AnyAbility, CannotPlay AnyCard]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Narcolepsy where
@@ -37,14 +29,14 @@ instance HasAbilities Narcolepsy where
     ]
 
 instance RunMessage Narcolepsy where
-  runMessage msg t@(Narcolepsy attrs) = case msg of
+  runMessage msg t@(Narcolepsy attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ attachTreachery attrs iid
+      placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 2) attrs
+      toDiscardBy iid (attrs.ability 2) attrs
       pure t
-    _ -> Narcolepsy <$> runMessage msg attrs
+    _ -> Narcolepsy <$> liftRunMessage msg attrs

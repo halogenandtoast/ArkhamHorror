@@ -39,4 +39,4 @@ instance RunMessage MechanicsWrench where
       skillTestModifiers (attrs.ability 2) iid [SkillModifier #combat 2, DamageDealt 1]
       chooseFightEnemyMatch iid (attrs.ability 2) AttackedYouSinceTheEndOfYourLastTurn
       pure a
-    _ -> MechanicsWrench <$> lift (runMessage msg attrs)
+    _ -> MechanicsWrench <$> liftRunMessage msg attrs

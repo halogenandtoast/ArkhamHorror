@@ -18,4 +18,4 @@ instance RunMessage Counterpunch where
     InvestigatorPlayEvent iid (is attrs -> True) _ (attackEnemy . getAttackDetails -> enemy) _ -> do
       pushM $ mkFightEnemy iid attrs enemy
       pure e
-    _ -> Counterpunch <$> lift (runMessage msg attrs)
+    _ -> Counterpunch <$> liftRunMessage msg attrs

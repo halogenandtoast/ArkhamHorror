@@ -1,8 +1,4 @@
-module Arkham.Treachery.Cards.WhisperingChaosEast (
-  whisperingChaosEast,
-  WhisperingChaosEast (..),
-)
-where
+module Arkham.Treachery.Cards.WhisperingChaosEast (whisperingChaosEast, WhisperingChaosEast (..)) where
 
 import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
@@ -18,6 +14,6 @@ whisperingChaosEast = treachery WhisperingChaosEast Cards.whisperingChaosEast
 instance RunMessage WhisperingChaosEast where
   runMessage msg t@(WhisperingChaosEast attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ PlaceTreachery (toId attrs) (TreacheryInHandOf iid)
+      placeTreachery attrs (HiddenInHand iid)
       pure t
-    _ -> WhisperingChaosEast <$> lift (runMessage msg attrs)
+    _ -> WhisperingChaosEast <$> liftRunMessage msg attrs

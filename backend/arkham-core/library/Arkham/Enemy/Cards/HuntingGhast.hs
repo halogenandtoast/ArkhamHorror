@@ -30,4 +30,4 @@ instance RunMessage HuntingGhast where
       for_ gugs $ push . Ready . toTarget
       push $ Msg.EnemyDamage attrs.id $ nonAttack (attrs.ability 1) 1
       pure e
-    _ -> HuntingGhast <$> lift (runMessage msg attrs)
+    _ -> HuntingGhast <$> liftRunMessage msg attrs

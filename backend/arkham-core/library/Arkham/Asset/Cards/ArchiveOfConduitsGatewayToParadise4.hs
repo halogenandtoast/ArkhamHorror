@@ -71,4 +71,4 @@ instance RunMessage ArchiveOfConduitsGatewayToParadise4 where
           $ [DamageLabel iid' [HealDamage (toTarget iid') source n] | canHealDamage]
           <> [HorrorLabel iid' [HealHorror (toTarget iid') source n] | canHealHorror]
       pure a
-    _ -> ArchiveOfConduitsGatewayToParadise4 <$> lift (runMessage msg attrs)
+    _ -> ArchiveOfConduitsGatewayToParadise4 <$> liftRunMessage msg attrs

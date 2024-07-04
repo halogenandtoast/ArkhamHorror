@@ -40,4 +40,4 @@ instance RunMessage PeaksOfThok where
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.inhabitantsOfTheVale
       pure . PeaksOfThok $ attrs & canBeFlippedL .~ False
-    _ -> PeaksOfThok <$> lift (runMessage msg attrs)
+    _ -> PeaksOfThok <$> liftRunMessage msg attrs

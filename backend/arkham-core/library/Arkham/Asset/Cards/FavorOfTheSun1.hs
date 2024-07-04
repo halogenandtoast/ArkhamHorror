@@ -50,4 +50,4 @@ instance RunMessage FavorOfTheSun1 where
       gainResourcesIfCan iid (attrs.ability 1) 1
 
       pure $ FavorOfTheSun1 $ attrs & sealedChaosTokensL %~ filter (/= token)
-    _ -> FavorOfTheSun1 <$> lift (runMessage msg attrs)
+    _ -> FavorOfTheSun1 <$> liftRunMessage msg attrs

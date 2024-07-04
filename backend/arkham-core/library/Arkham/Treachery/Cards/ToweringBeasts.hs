@@ -21,10 +21,8 @@ toweringBeasts :: TreacheryCard ToweringBeasts
 toweringBeasts = treachery ToweringBeasts Cards.toweringBeasts
 
 instance HasModifiersFor ToweringBeasts where
-  getModifiersFor (EnemyTarget eid) (ToweringBeasts attrs)
-    | treacheryOnEnemy eid attrs =
-        pure
-          $ toModifiers attrs [EnemyFight 1, HealthModifier 1]
+  getModifiersFor (EnemyTarget eid) (ToweringBeasts attrs) | treacheryOnEnemy eid attrs = do
+    modified attrs [EnemyFight 1, HealthModifier 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ToweringBeasts where
@@ -39,12 +37,7 @@ instance RunMessage ToweringBeasts where
         push
           $ chooseOne
             player
-            [ targetLabel
-              eid
-              $ [AttachTreachery (toId attrs) (EnemyTarget eid)]
-              <> [ InvestigatorAssignDamage iid source DamageAny 1 0
-                 | lid == locationId
-                 ]
+            [ targetLabel eid $ [attachTreachery attrs eid] <> [assignDamage iid source 1 | lid == locationId]
             | (eid, lid) <- broodWithLocationIds
             ]
       pure t

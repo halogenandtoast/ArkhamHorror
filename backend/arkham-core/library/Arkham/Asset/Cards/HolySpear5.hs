@@ -41,4 +41,4 @@ instance RunMessage HolySpear5 where
       skillTestModifiers (attrs.ability 1) iid [SkillModifier #combat 4, DamageDealt 2]
       chooseFightEnemy iid (attrs.ability 1)
       pure a
-    _ -> HolySpear5 <$> lift (runMessage msg attrs)
+    _ -> HolySpear5 <$> liftRunMessage msg attrs

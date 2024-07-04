@@ -30,4 +30,4 @@ instance RunMessage HealingWords3 where
         chooseOrRunOne iid [targetLabel i [HealDamage (toTarget i) (attrs.ability 1) 1] | i <- targets]
         push $ DoStep (n - 1) msg'
       pure a
-    _ -> HealingWords3 <$> lift (runMessage msg attrs)
+    _ -> HealingWords3 <$> liftRunMessage msg attrs

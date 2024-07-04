@@ -72,4 +72,4 @@ instance RunMessage BaitAndSwitch3 where
         AfterEvadeEnemy {} -> True
         _ -> False
       pure e
-    _ -> BaitAndSwitch3 . (`with` meta) <$> lift (runMessage msg attrs)
+    _ -> BaitAndSwitch3 . (`with` meta) <$> liftRunMessage msg attrs

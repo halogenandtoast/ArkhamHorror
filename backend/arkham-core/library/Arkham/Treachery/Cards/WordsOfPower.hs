@@ -1,15 +1,11 @@
-module Arkham.Treachery.Cards.WordsOfPower (
-  wordsOfPower,
-  WordsOfPower (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.WordsOfPower (wordsOfPower, WordsOfPower (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Game.Helpers
 import Arkham.Matcher hiding (treacheryInThreatAreaOf)
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -23,41 +19,26 @@ wordsOfPower = treachery WordsOfPower Cards.wordsOfPower
 
 instance HasModifiersFor WordsOfPower where
   getModifiersFor (EnemyTarget eid) (WordsOfPower a) = do
-    case treacheryInThreatAreaOf a of
-      Nothing -> pure []
-      Just iid -> do
-        atSameLocation <- eid <=~> EnemyAt (locationWithInvestigator iid)
-        hasDoom <- fieldP EnemyDoom (> 0) eid
-        pure
-          $ toModifiers
-            a
-            [ CannotBeDamagedByPlayerSources
-              (SourceOwnedBy $ InvestigatorWithId iid)
-            | atSameLocation && hasDoom
-            ]
-  getModifiersFor (InvestigatorTarget iid) (WordsOfPower a)
-    | treacheryOnInvestigator iid a = do
-        hasEnemiesWithDoom <-
-          selectAny $ EnemyAt (locationWithInvestigator iid) <> EnemyWithAnyDoom
-        pure
-          $ toModifiers
-            a
-            [ CannotDiscoverCluesAt (locationWithInvestigator iid)
-            | hasEnemiesWithDoom
-            ]
+    maybeModified a do
+      iid <- hoistMaybe $ treacheryInThreatAreaOf a
+      guardM $ lift $ eid <=~> EnemyAt (locationWithInvestigator iid)
+      guardM $ lift $ fieldSome EnemyDoom eid
+      pure [CannotBeDamagedByPlayerSources (SourceOwnedBy $ InvestigatorWithId iid)]
+  getModifiersFor (InvestigatorTarget iid) (WordsOfPower a) | treacheryInThreatArea iid a = do
+    hasEnemiesWithDoom <- selectAny $ enemyAtLocationWith iid <> EnemyWithAnyDoom
+    modified a [CannotDiscoverCluesAt (locationWithInvestigator iid) | hasEnemiesWithDoom]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities WordsOfPower where
   getAbilities (WordsOfPower a) =
-    [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility []
-        $ ActionCost 2
-    ]
+    [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]
 
 instance RunMessage WordsOfPower where
   runMessage msg t@(WordsOfPower attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      t <$ push (AttachTreachery (toId attrs) $ InvestigatorTarget iid)
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      t <$ push (toDiscardBy iid (toAbilitySource attrs 1) attrs)
+    Revelation iid (isSource attrs -> True) -> do
+      push $ placeInThreatArea attrs iid
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ toDiscardBy iid (attrs.ability 1) attrs
+      pure t
     _ -> WordsOfPower <$> runMessage msg attrs

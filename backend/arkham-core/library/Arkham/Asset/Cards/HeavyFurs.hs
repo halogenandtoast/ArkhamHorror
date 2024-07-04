@@ -34,4 +34,4 @@ instance RunMessage HeavyFurs where
         , DrawAnotherChaosToken iid
         ]
       pure a
-    _ -> HeavyFurs <$> lift (runMessage msg attrs)
+    _ -> HeavyFurs <$> liftRunMessage msg attrs

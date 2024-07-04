@@ -24,4 +24,4 @@ instance RunMessage ArmorOfArdennes5 where
     UseCardAbility _ (isSource attrs -> True) 1 (getDamageSource -> dSource) _ -> do
       push $ CancelAssetDamage attrs.id dSource 1
       pure a
-    _ -> ArmorOfArdennes5 <$> lift (runMessage msg attrs)
+    _ -> ArmorOfArdennes5 <$> liftRunMessage msg attrs

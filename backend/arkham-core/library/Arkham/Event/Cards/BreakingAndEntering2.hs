@@ -25,4 +25,4 @@ instance RunMessage BreakingAndEntering2 where
         when (notNull enemies) $ chooseOne iid $ targetLabels enemies (only . EnemyEvaded iid)
       when (n >= 3) $ skillTestModifier attrs attrs ReturnToHandAfterTest
       pure e
-    _ -> BreakingAndEntering2 <$> lift (runMessage msg attrs)
+    _ -> BreakingAndEntering2 <$> liftRunMessage msg attrs

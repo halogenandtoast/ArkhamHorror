@@ -36,4 +36,4 @@ instance RunMessage FalseAwakening where
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       push $ RemoveFromGame (toTarget attrs)
       pure t
-    _ -> FalseAwakening <$> lift (runMessage msg attrs)
+    _ -> FalseAwakening <$> liftRunMessage msg attrs

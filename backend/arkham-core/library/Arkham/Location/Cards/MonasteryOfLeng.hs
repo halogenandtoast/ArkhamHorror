@@ -32,4 +32,4 @@ instance RunMessage MonasteryOfLeng where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       remember ManeuveredThePriestCloser
       pure l
-    _ -> MonasteryOfLeng <$> lift (runMessage msg attrs)
+    _ -> MonasteryOfLeng <$> liftRunMessage msg attrs

@@ -20,7 +20,10 @@ getPaidUse _ = False
 
 instance HasAbilities EnchantedBlade where
   getAbilities (EnchantedBlade attrs) =
-    [restrictedAbility attrs 1 ControlsThis $ fightAction $ UpTo 1 (assetUseCost attrs Charge 1)]
+    [ withAdditionalCost (UpTo 1 $ assetUseCost attrs Charge 1)
+        $ restrictedAbility attrs 1 ControlsThis
+        $ fightAction_
+    ]
 
 instance RunMessage EnchantedBlade where
   runMessage msg a@(EnchantedBlade attrs) = case msg of

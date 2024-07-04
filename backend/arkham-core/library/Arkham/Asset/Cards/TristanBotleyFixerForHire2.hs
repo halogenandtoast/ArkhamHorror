@@ -40,4 +40,4 @@ instance RunMessage TristanBotleyFixerForHire2 where
     InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
       putCardIntoPlay iid attrs
       pure a
-    _ -> TristanBotleyFixerForHire2 <$> lift (runMessage msg attrs)
+    _ -> TristanBotleyFixerForHire2 <$> liftRunMessage msg attrs

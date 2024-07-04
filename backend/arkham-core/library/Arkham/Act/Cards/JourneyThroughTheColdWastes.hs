@@ -30,4 +30,4 @@ instance RunMessage JourneyThroughTheColdWastes where
       createEnemyAt_ highPriestNotToBeDescribed monastaryOfLeng
       advanceActDeck attrs
       pure a
-    _ -> JourneyThroughTheColdWastes <$> lift (runMessage msg attrs)
+    _ -> JourneyThroughTheColdWastes <$> liftRunMessage msg attrs

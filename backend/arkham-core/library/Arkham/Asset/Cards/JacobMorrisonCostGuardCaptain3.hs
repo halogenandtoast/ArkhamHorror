@@ -39,4 +39,4 @@ instance RunMessage JacobMorrisonCostGuardCaptain3 where
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       push $ Ready (toTarget attrs)
       pure a
-    _ -> JacobMorrisonCostGuardCaptain3 <$> lift (runMessage msg attrs)
+    _ -> JacobMorrisonCostGuardCaptain3 <$> liftRunMessage msg attrs

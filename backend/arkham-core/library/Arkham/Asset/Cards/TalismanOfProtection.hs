@@ -63,4 +63,4 @@ instance RunMessage TalismanOfProtection where
         : [HorrorLabel iid [CancelAssignedDamage (toTarget iid) 0 1, DoStep (n - 1) msg'] | h > 0]
           <> [DamageLabel iid [CancelAssignedDamage (toTarget iid) 1 0, DoStep (n - 1) msg'] | d > 0]
       pure a
-    _ -> TalismanOfProtection <$> lift (runMessage msg attrs)
+    _ -> TalismanOfProtection <$> liftRunMessage msg attrs

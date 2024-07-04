@@ -38,11 +38,6 @@ instance RunMessage MaskOfUmordhoth where
             ]
         eids -> do
           player <- getPlayer iid
-          push
-            $ chooseOrRunOne
-              player
-              [ targetLabel eid [AttachTreachery treacheryId (EnemyTarget eid)]
-              | eid <- eids
-              ]
+          push $ chooseOrRunOne player [targetLabel eid [attachTreachery treacheryId eid] | eid <- eids]
       pure t
     _ -> MaskOfUmordhoth <$> runMessage msg attrs

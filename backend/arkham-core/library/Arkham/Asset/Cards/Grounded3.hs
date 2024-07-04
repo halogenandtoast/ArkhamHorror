@@ -3,7 +3,6 @@ module Arkham.Asset.Cards.Grounded3 (grounded3, Grounded3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Asset.Types (sanityL)
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -33,4 +32,4 @@ instance RunMessage Grounded3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skillTestModifiers (attrs.ability 1) iid [AnySkillValue 1]
       pure a
-    _ -> Grounded3 <$> lift (runMessage msg attrs)
+    _ -> Grounded3 <$> liftRunMessage msg attrs

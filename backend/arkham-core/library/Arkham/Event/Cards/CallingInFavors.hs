@@ -28,7 +28,7 @@ instance RunMessage CallingInFavors where
 
       chooseOne iid $ map (uncurry targetLabel) choices
       pure e
-    _ -> CallingInFavors <$> lift (runMessage msg attrs)
+    _ -> CallingInFavors <$> liftRunMessage msg attrs
 
 newtype CallingInFavorsEffect = CallingInFavorsEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -47,4 +47,4 @@ instance HasModifiersFor CallingInFavorsEffect where
 instance RunMessage CallingInFavorsEffect where
   runMessage msg e@(CallingInFavorsEffect attrs) = runQueueT $ case msg of
     Discard _ _ (EventTarget eid) | EventSource eid == attrs.source -> disableReturn e
-    _ -> CallingInFavorsEffect <$> lift (runMessage msg attrs)
+    _ -> CallingInFavorsEffect <$> liftRunMessage msg attrs

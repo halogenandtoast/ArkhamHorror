@@ -45,4 +45,4 @@ instance RunMessage TheGreatWebPrisonOfCocoons where
            ]
 
       pure l
-    _ -> TheGreatWebPrisonOfCocoons <$> lift (runMessage msg attrs)
+    _ -> TheGreatWebPrisonOfCocoons <$> liftRunMessage msg attrs

@@ -1,13 +1,11 @@
 module Arkham.Treachery.Cards.GlimpseOfTheUnderworld (glimpseOfTheUnderworld, GlimpseOfTheUnderworld (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Damage
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -37,9 +35,9 @@ toDamageType ((windowType -> wType) : rest) = case wType of
   _ -> toDamageType rest
 
 instance RunMessage GlimpseOfTheUnderworld where
-  runMessage msg t@(GlimpseOfTheUnderworld attrs) = case msg of
+  runMessage msg t@(GlimpseOfTheUnderworld attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ attachTreachery attrs iid
+      placeInThreatArea attrs iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 (toDamageType -> damageType) _ -> do
       case damageType of
@@ -47,6 +45,7 @@ instance RunMessage GlimpseOfTheUnderworld where
         HorrorType -> dealAdditionalHorror iid 1 []
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      pushAll [toDiscardBy iid (attrs.ability 2) attrs, assignDamageAndHorror iid (attrs.ability 2) 1 1]
+      toDiscardBy iid (attrs.ability 2) attrs
+      assignDamageAndHorror iid (attrs.ability 2) 1 1
       pure t
-    _ -> GlimpseOfTheUnderworld <$> runMessage msg attrs
+    _ -> GlimpseOfTheUnderworld <$> liftRunMessage msg attrs

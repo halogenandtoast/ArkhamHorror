@@ -23,4 +23,4 @@ instance RunMessage BreakingAndEntering where
       enemies <- select $ enemyAtLocationWith iid <> EnemyWithoutModifier CannotBeEvaded
       when (notNull enemies) $ chooseOne iid $ targetLabels enemies (only . EnemyEvaded iid)
       pure e
-    _ -> BreakingAndEntering <$> lift (runMessage msg attrs)
+    _ -> BreakingAndEntering <$> liftRunMessage msg attrs

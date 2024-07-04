@@ -17,4 +17,4 @@ instance RunMessage BuryThemDeep where
       addToVictory attrs
       insteadOfMatching (\case Discard _ _ t -> enemyId `is` t; _ -> False) (addToVictory enemyId)
       pure e
-    _ -> BuryThemDeep <$> lift (runMessage msg attrs)
+    _ -> BuryThemDeep <$> liftRunMessage msg attrs

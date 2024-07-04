@@ -31,12 +31,11 @@ instance RunMessage PoisonousSpores where
   runMessage msg t@(PoisonousSpores attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       mlid <- field InvestigatorLocation iid
-      for_ mlid
-        $ \lid -> push $ AttachTreachery (toId attrs) (LocationTarget lid)
+      for_ mlid $ push . attachTreachery attrs
       pure t
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      case treacheryPlacement attrs of
-        TreacheryAttachedTo (LocationTarget lid) -> do
+      case attrs.placement.attachedTo of
+        Just (LocationTarget lid) -> do
           takesHorror <-
             select
               $ investigatorAt lid

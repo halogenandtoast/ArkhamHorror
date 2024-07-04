@@ -68,4 +68,4 @@ instance RunMessage ProfessorWilliamWebbFinderOfHiddenConnections2 where
         | location <- locations
         ]
       pure a
-    _ -> ProfessorWilliamWebbFinderOfHiddenConnections2 <$> lift (runMessage msg attrs)
+    _ -> ProfessorWilliamWebbFinderOfHiddenConnections2 <$> liftRunMessage msg attrs

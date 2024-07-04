@@ -17,4 +17,4 @@ instance RunMessage CleanThemOut where
       gainResourcesIfCan iid attrs 2
       pushM $ mkChooseFight iid attrs
       pure e
-    _ -> CleanThemOut <$> lift (runMessage msg attrs)
+    _ -> CleanThemOut <$> liftRunMessage msg attrs

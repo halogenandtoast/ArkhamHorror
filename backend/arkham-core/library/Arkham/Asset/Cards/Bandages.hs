@@ -45,4 +45,4 @@ instance RunMessage Bandages where
     UseCardAbility _iid (isSource attrs -> True) 1 (getHealTarget -> target) _ -> do
       push $ HealDamage target (attrs.ability 1) 1
       pure a
-    _ -> Bandages <$> lift (runMessage msg attrs)
+    _ -> Bandages <$> liftRunMessage msg attrs

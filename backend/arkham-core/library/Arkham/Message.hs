@@ -214,10 +214,6 @@ pattern CancelNext source msgType = CancelEachNext source [msgType]
 pattern CancelRevelation :: Source -> Message
 pattern CancelRevelation source = CancelEachNext source [RevelationMessage]
 
-pattern AttachTreachery :: TreacheryId -> Target -> Message
-pattern AttachTreachery tid target =
-  PlaceTreachery tid (TreacheryAttachedTo target)
-
 pattern PlayThisEvent :: InvestigatorId -> EventId -> Message
 pattern PlayThisEvent iid eid <- InvestigatorPlayEvent iid eid _ _ _
 
@@ -509,7 +505,7 @@ data Message
   | CreateEventAt InvestigatorId Card Placement
   | PlaceAsset AssetId Placement
   | PlaceEvent InvestigatorId EventId Placement
-  | PlaceTreachery TreacheryId TreacheryPlacement
+  | PlaceTreachery TreacheryId Placement
   | PlaceSkill SkillId Placement
   | PlaceKey Target ArkhamKey
   | CreateStoryAssetAtLocationMatching Card LocationMatcher

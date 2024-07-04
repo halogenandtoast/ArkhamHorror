@@ -27,7 +27,7 @@ instance HasAbilities CurseOfYig where
 instance RunMessage CurseOfYig where
   runMessage msg t@(CurseOfYig attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ attachTreachery attrs iid
+      push $ placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- getVengeanceInVictoryDisplay

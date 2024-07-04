@@ -43,4 +43,4 @@ instance RunMessage MaskedCarnevaleGoer_17 where
       lead <- getLeadPlayer
       pushAll [FocusCards [donLagorio], chooseOne lead [Label "Continue" [UnfocusCards]]]
       pure a
-    _ -> MaskedCarnevaleGoer_17 <$> lift (runMessage msg attrs)
+    _ -> MaskedCarnevaleGoer_17 <$> liftRunMessage msg attrs

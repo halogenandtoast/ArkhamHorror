@@ -1,17 +1,11 @@
-module Arkham.Treachery.Cards.LawOfYgirothDiscord (
-  lawOfYgirothDiscord,
-  LawOfYgirothDiscord (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.LawOfYgirothDiscord (lawOfYgirothDiscord, LawOfYgirothDiscord (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (TreacheryInHandOf, treacheryInHandOf)
-import Arkham.Message
+import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype LawOfYgirothDiscord = LawOfYgirothDiscord TreacheryAttrs
   deriving anyclass (IsTreachery)
@@ -21,23 +15,21 @@ lawOfYgirothDiscord :: TreacheryCard LawOfYgirothDiscord
 lawOfYgirothDiscord = treachery LawOfYgirothDiscord Cards.lawOfYgirothDiscord
 
 instance HasModifiersFor LawOfYgirothDiscord where
-  getModifiersFor (InvestigatorTarget iid) (LawOfYgirothDiscord a)
-    | treacheryInHandOf a == Just iid =
-        pure $ toModifiers a [CannotCommitCards CardWithOddSkillIcons]
+  getModifiersFor (InvestigatorTarget iid) (LawOfYgirothDiscord a) | treacheryInHandOf a == Just iid = do
+    modified a [CannotCommitCards CardWithOddSkillIcons]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LawOfYgirothDiscord where
   getAbilities (LawOfYgirothDiscord a) =
-    [ restrictedAbility a 1 InYourHand
-        $ actionAbilityWithCost (HandDiscardCost 1 CardWithEvenSkillIcons)
+    [ restrictedAbility a 1 InYourHand $ actionAbilityWithCost (HandDiscardCost 1 CardWithEvenSkillIcons)
     ]
 
 instance RunMessage LawOfYgirothDiscord where
-  runMessage msg t@(LawOfYgirothDiscord attrs) = case msg of
+  runMessage msg t@(LawOfYgirothDiscord attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ PlaceTreachery (toId attrs) (TreacheryInHandOf iid)
+      placeTreachery attrs (HiddenInHand iid)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 1) (toTarget attrs)
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> LawOfYgirothDiscord <$> runMessage msg attrs
+    _ -> LawOfYgirothDiscord <$> liftRunMessage msg attrs

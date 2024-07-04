@@ -35,4 +35,4 @@ instance RunMessage EsotericFormula where
           $ mkChooseFightMatch iid source (EnemyWithTrait Abomination)
       pushAll $ leftOr chooseFight
       pure a
-    _ -> EsotericFormula <$> lift (runMessage msg attrs)
+    _ -> EsotericFormula <$> liftRunMessage msg attrs

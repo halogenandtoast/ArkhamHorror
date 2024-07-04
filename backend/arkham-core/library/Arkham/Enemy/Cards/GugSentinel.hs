@@ -36,4 +36,4 @@ instance RunMessage GugSentinel where
         assignHorror iid (attrs.ability 1) 1
 
       pure e
-    _ -> GugSentinel <$> lift (runMessage msg attrs)
+    _ -> GugSentinel <$> liftRunMessage msg attrs

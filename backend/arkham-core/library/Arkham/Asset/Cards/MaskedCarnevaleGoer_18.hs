@@ -48,4 +48,4 @@ instance RunMessage MaskedCarnevaleGoer_18 where
         , Flip iid source (toTarget attrs)
         ]
       pure a
-    _ -> MaskedCarnevaleGoer_18 <$> lift (runMessage msg attrs)
+    _ -> MaskedCarnevaleGoer_18 <$> liftRunMessage msg attrs

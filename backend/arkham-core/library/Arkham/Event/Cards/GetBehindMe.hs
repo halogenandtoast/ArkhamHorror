@@ -21,7 +21,7 @@ instance RunMessage GetBehindMe where
     PlayThisEvent iid eid | eid == toId attrs -> do
       createCardEffect Cards.getBehindMe Nothing attrs iid
       pure e
-    _ -> GetBehindMe <$> lift (runMessage msg attrs)
+    _ -> GetBehindMe <$> liftRunMessage msg attrs
 
 newtype GetBehindMeEffect = GetBehindMeEffect EffectAttrs
   deriving anyclass (IsEffect, HasModifiersFor)
@@ -52,4 +52,4 @@ instance RunMessage GetBehindMeEffect where
     EndPhase -> do
       disable attrs
       pure e
-    _ -> GetBehindMeEffect <$> lift (runMessage msg attrs)
+    _ -> GetBehindMeEffect <$> liftRunMessage msg attrs

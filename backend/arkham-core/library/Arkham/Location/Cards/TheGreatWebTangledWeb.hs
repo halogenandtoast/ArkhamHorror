@@ -35,4 +35,4 @@ instance RunMessage TheGreatWebTangledWeb where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       placeDoom (attrs.ability 1) attrs 1
       pure l
-    _ -> TheGreatWebTangledWeb <$> lift (runMessage msg attrs)
+    _ -> TheGreatWebTangledWeb <$> liftRunMessage msg attrs

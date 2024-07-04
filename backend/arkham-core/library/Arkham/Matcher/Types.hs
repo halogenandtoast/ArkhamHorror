@@ -394,6 +394,7 @@ data EventMatcher
   | EventAt LocationMatcher
   | EventWithDoom ValueMatcher
   | EventAttachedToAsset AssetMatcher
+  | EventWithModifier ModifierType
   | EventWithoutModifier ModifierType
   | EventIs CardCode
   | EventReady
@@ -533,6 +534,7 @@ instance IsMatcher LocationMatcher
 instance IsMatcher EnemyMatcher
 instance IsMatcher AssetMatcher
 instance IsMatcher InvestigatorMatcher
+instance IsMatcher TreacheryMatcher
 class IsMatcher b => Be a b where
   be :: a -> b
 
@@ -547,6 +549,9 @@ instance Be LocationId LocationMatcher where
 
 instance Be EnemyId EnemyMatcher where
   be = EnemyWithId
+
+instance Be TreacheryId TreacheryMatcher where
+  be = TreacheryWithId
 
 instance IsString LocationMatcher where
   fromString = LocationWithTitle . fromString
@@ -947,7 +952,7 @@ data WindowMatcher
   | EnemyDiscarded Timing SourceMatcher EnemyMatcher
   | TreacheryDiscarded Timing SourceMatcher TreacheryMatcher
   | WouldPerformRevelationSkillTest Timing Who
-  | InitiatedSkillTest Timing Who SkillTypeMatcher SkillTestValueMatcher SkillTestTypeMatcher
+  | InitiatedSkillTest Timing Who SkillTypeMatcher SkillTestValueMatcher SkillTestMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | SkillTestEnded Timing Who SkillTestMatcher
   | PlacedCounter Timing Who SourceMatcher CounterMatcher ValueMatcher
@@ -1043,7 +1048,7 @@ data SkillTestMatcher
   = WhileInvestigating LocationMatcher
   | WhileAttackingAnEnemy EnemyMatcher
   | WhileEvadingAnEnemy EnemyMatcher
-  | SkillTestForAction ActionMatcher
+  | SkillTestWithAction ActionMatcher
   | SkillTestWithSkill SkillMatcher
   | SkillTestWithSkillType SkillType
   | AnySkillTest
@@ -1052,7 +1057,9 @@ data SkillTestMatcher
   | SkillTestAtYourLocation
   | SkillTestOfInvestigator InvestigatorMatcher
   | SkillTestOnTreachery TreacheryMatcher
+  | SkillTestOnAsset AssetMatcher
   | UsingThis
+  | SkillTestOnEncounterCard
   | SkillTestSourceMatches SourceMatcher
   | SkillTestMatches [SkillTestMatcher]
   | SkillTestOneOf [SkillTestMatcher]
@@ -1065,6 +1072,9 @@ data SkillTestMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "investigating" SkillTestMatcher where
+  fromLabel = WhileInvestigating Anywhere
+
+instance IsLabel "investigation" SkillTestMatcher where
   fromLabel = WhileInvestigating Anywhere
 
 instance IsLabel "fighting" SkillTestMatcher where
@@ -1121,6 +1131,8 @@ data TargetMatcher
   | ActTargetMatches ActMatcher
   | AgendaTargetMatches AgendaMatcher
   | ScenarioCardTarget
+  | TargetWithDoom
+  | TargetAtLocation LocationMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup TargetMatcher where
@@ -1169,20 +1181,6 @@ data ValueMatcher
   | EqualTo GameValue
   | AnyValue
   deriving stock (Show, Eq, Ord, Data)
-
-data SkillTestTypeMatcher
-  = InvestigationSkillTest LocationMatcher
-  | AnySkillTestType
-  | SkillTestWithAction ActionMatcher
-  | SkillTestOnEncounterCard
-  | SkillTestTypeOneOf [SkillTestTypeMatcher]
-  deriving stock (Show, Eq, Ord, Data)
-
-instance IsLabel "investigation" SkillTestTypeMatcher where
-  fromLabel = InvestigationSkillTest Anywhere
-
-instance IsLabel "any" SkillTestTypeMatcher where
-  fromLabel = AnySkillTestType
 
 data SkillTestValueMatcher
   = SkillTestGameValue ValueMatcher
@@ -1359,8 +1357,26 @@ data AbilityMatcher
   | NotAbility AbilityMatcher
   deriving stock (Show, Eq, Ord, Data)
 
+instance IsLabel "parley" AbilityMatcher where
+  fromLabel = AbilityIsAction #parley
+
+instance IsLabel "draw" AbilityMatcher where
+  fromLabel = AbilityIsAction #draw
+
+instance IsLabel "play" AbilityMatcher where
+  fromLabel = AbilityIsAction #play
+
+instance IsLabel "engage" AbilityMatcher where
+  fromLabel = AbilityIsAction #engage
+
+instance IsLabel "resource" AbilityMatcher where
+  fromLabel = AbilityIsAction #resource
+
 instance IsLabel "move" AbilityMatcher where
   fromLabel = AbilityIsAction #move
+
+instance IsLabel "resign" AbilityMatcher where
+  fromLabel = AbilityIsAction #resign
 
 instance IsLabel "investigate" AbilityMatcher where
   fromLabel = AbilityIsAction #investigate
@@ -1553,7 +1569,6 @@ $( do
     skill <- deriveJSON defaultOptions ''SkillMatcher
     skillTest <- deriveJSON defaultOptions ''SkillTestMatcher
     skillTestResult <- deriveJSON defaultOptions ''SkillTestResultMatcher
-    skillTestType <- deriveJSON defaultOptions ''SkillTestTypeMatcher
     skillTestValue <- deriveJSON defaultOptions ''SkillTestValueMatcher
     skillType <- deriveJSON defaultOptions ''SkillTypeMatcher
     source <- deriveJSON defaultOptions ''SourceMatcher
@@ -1595,7 +1610,6 @@ $( do
         , skill
         , skillTest
         , skillTestResult
-        , skillTestType
         , skillTestValue
         , skillType
         , source

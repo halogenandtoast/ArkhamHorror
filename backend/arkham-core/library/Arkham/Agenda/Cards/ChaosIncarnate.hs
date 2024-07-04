@@ -17,4 +17,4 @@ instance RunMessage ChaosIncarnate where
         push $ InvestigatorDefeated (toSource attrs) iid
         push $ DrivenInsane iid
       pure a
-    _ -> ChaosIncarnate <$> lift (runMessage msg attrs)
+    _ -> ChaosIncarnate <$> liftRunMessage msg attrs

@@ -66,4 +66,4 @@ instance RunMessage TheWeaverOfTheCosmos where
       push $ Flip lead (toSource attrs) (toTarget atlachNacha)
       advanceActDeck attrs
       pure a
-    _ -> TheWeaverOfTheCosmos <$> lift (runMessage msg attrs)
+    _ -> TheWeaverOfTheCosmos <$> liftRunMessage msg attrs

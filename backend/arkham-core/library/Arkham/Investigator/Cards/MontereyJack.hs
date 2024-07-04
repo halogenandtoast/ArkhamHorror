@@ -62,4 +62,4 @@ instance RunMessage MontereyJack where
           $ [Label "Gain 1 resource" [x] | x <- toList mGainResources]
           <> [Label "Draw 1 card" [x] | x <- toList mDrawCards]
       pure i
-    _ -> MontereyJack <$> lift (runMessage msg attrs)
+    _ -> MontereyJack <$> liftRunMessage msg attrs

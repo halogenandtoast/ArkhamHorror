@@ -1,10 +1,4 @@
-module Arkham.Treachery.Cards.DarkFuture (
-  darkFuture,
-  DarkFuture (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.DarkFuture (darkFuture, DarkFuture (..)) where
 
 import Arkham.Ability
 import Arkham.ChaosBag.RevealStrategy
@@ -12,8 +6,8 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.RequestedChaosTokenStrategy
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -25,23 +19,22 @@ darkFuture :: TreacheryCard DarkFuture
 darkFuture = treachery DarkFuture Cards.darkFuture
 
 instance HasModifiersFor DarkFuture where
-  getModifiersFor (InvestigatorTarget iid) (DarkFuture a) | treacheryOnInvestigator iid a = do
-    pure
-      $ toModifiers a
+  getModifiersFor (InvestigatorTarget iid) (DarkFuture a) | treacheryInThreatArea iid a = do
+    modified a
       $ map CannotCancelOrIgnoreChaosToken [ElderSign, Skull, Cultist, Tablet, ElderThing, AutoFail]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DarkFuture where
   getAbilities (DarkFuture a) =
     [ restrictedAbility a 1 (InThreatAreaOf You)
-        $ ForcedAbility
-        $ TurnEnds Timing.After You
+        $ forced
+        $ TurnEnds #after You
     ]
 
 instance RunMessage DarkFuture where
   runMessage msg t@(DarkFuture attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ AttachTreachery (toId attrs) $ InvestigatorTarget iid
+      push $ placeInThreatArea attrs iid
       pure t
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 5) SetAside

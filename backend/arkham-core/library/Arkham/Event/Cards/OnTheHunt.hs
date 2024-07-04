@@ -38,4 +38,4 @@ instance RunMessage OnTheHunt where
           | card <- enemyCards
           ]
       pure e
-    _ -> OnTheHunt <$> lift (runMessage msg attrs)
+    _ -> OnTheHunt <$> liftRunMessage msg attrs

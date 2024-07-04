@@ -39,13 +39,6 @@ instance RunMessage AgendaAttrs where
       pure $ a & doomL +~ n
     RemoveDoom _ (AgendaTarget aid) n | aid == agendaId -> do
       pure $ a & doomL %~ max 0 . subtract n
-    Discard _ _ (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
-    Discard _ _ (AgendaTarget aid) | aid == toId a -> do
-      pushAll
-        [toDiscard GameSource tid | tid <- setToList agendaTreacheries]
-      pure a
-    AttachTreachery tid (AgendaTarget aid) | aid == agendaId -> do
-      pure $ a & treacheriesL %~ insertSet tid
     AdvanceAgendaBy aid advanceMethod | aid == agendaId && agendaSide agendaSequence == A -> do
       lead <- getLeadPlayer
       push $ chooseOne lead [targetLabel agendaId [AdvanceAgendaBy agendaId advanceMethod]]

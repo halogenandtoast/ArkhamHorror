@@ -64,7 +64,6 @@ import Arkham.Matcher (
 import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Movement
-import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.SkillType ()

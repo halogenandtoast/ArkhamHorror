@@ -36,4 +36,4 @@ instance RunMessage Barricade3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       toDiscardBy iid (attrs.ability 1) attrs
       pure e
-    _ -> Barricade3 <$> lift (runMessage msg attrs)
+    _ -> Barricade3 <$> liftRunMessage msg attrs

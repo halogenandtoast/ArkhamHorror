@@ -70,4 +70,4 @@ instance RunMessage AriadnesTwine3 where
         | target <- assets
         ]
       pure a
-    _ -> AriadnesTwine3 <$> lift (runMessage msg attrs)
+    _ -> AriadnesTwine3 <$> liftRunMessage msg attrs

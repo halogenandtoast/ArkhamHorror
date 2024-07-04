@@ -103,4 +103,4 @@ instance RunMessage BeyondDreams where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       advanceVia #other attrs iid
       pure a
-    _ -> BeyondDreams <$> lift (runMessage msg attrs)
+    _ -> BeyondDreams <$> liftRunMessage msg attrs

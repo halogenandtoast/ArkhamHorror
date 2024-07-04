@@ -170,6 +170,9 @@ getPlacementLocation = \case
   Global -> pure Nothing
   OutOfPlay _ -> pure Nothing
   AsSwarm eid _ -> field EnemyLocation eid
+  HiddenInHand _ -> pure Nothing
+  OnTopOfDeck _ -> pure Nothing
+  NextToAgenda -> pure Nothing
 
 createActiveCostForAdditionalCardCosts
   :: (MonadRandom m, HasGame m)

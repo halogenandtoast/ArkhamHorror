@@ -27,4 +27,4 @@ instance RunMessage WebSpinner where
       mLocation <- select $ locationWithEnemy attrs.id
       for_ mLocation \lid -> placeDoom (attrs.ability 1) lid 1
       pure e
-    _ -> WebSpinner <$> lift (runMessage msg attrs)
+    _ -> WebSpinner <$> liftRunMessage msg attrs

@@ -20,4 +20,4 @@ instance RunMessage HarmonyRestored2 where
       push $ ReturnChaosTokensToPool x
       gainResourcesIfCan iid attrs (length x)
       pure e
-    _ -> HarmonyRestored2 <$> lift (runMessage msg attrs)
+    _ -> HarmonyRestored2 <$> liftRunMessage msg attrs

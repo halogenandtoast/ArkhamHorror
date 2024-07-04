@@ -38,4 +38,4 @@ instance RunMessage CheatDeath5 where
 
       whenM (iid <=~> TurnInvestigator) $ push $ ChooseEndTurn iid
       pure e
-    _ -> CheatDeath5 <$> lift (runMessage msg attrs)
+    _ -> CheatDeath5 <$> liftRunMessage msg attrs

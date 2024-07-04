@@ -34,4 +34,4 @@ instance RunMessage PracticeMakesPerfect where
           ]
       chooseOne iid $ if null choices then [Label "No cards found" []] else choices
       pure e
-    _ -> PracticeMakesPerfect <$> lift (runMessage msg attrs)
+    _ -> PracticeMakesPerfect <$> liftRunMessage msg attrs

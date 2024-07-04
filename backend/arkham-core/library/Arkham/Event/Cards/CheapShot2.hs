@@ -26,7 +26,7 @@ instance RunMessage CheapShot2 where
         Just (EnemyTarget eid) -> push $ EnemyEvaded iid eid
         _ -> pure ()
       pure e
-    _ -> CheapShot2 <$> lift (runMessage msg attrs)
+    _ -> CheapShot2 <$> liftRunMessage msg attrs
 
 newtype CheapShot2Effect = CheapShot2Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -44,4 +44,4 @@ instance RunMessage CheapShot2Effect where
           returnToHand iid cardId
         _ -> error "invalid meta target"
       pure e
-    _ -> CheapShot2Effect <$> lift (runMessage msg attrs)
+    _ -> CheapShot2Effect <$> liftRunMessage msg attrs

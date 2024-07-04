@@ -48,7 +48,7 @@ instance RunMessage PurifyingCorruption4 where
     PlaceTokens _ (isTarget attrs -> True) Corruption n -> do
       when (attrs.token Corruption + n >= 3) $ do
         push $ RemoveFromGame (toTarget attrs)
-      PurifyingCorruption4 <$> lift (runMessage msg attrs)
+      PurifyingCorruption4 <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       canHealDamage <- canHaveDamageHealed (attrs.ability 2) iid
       canHealHorror <- canHaveHorrorHealed (attrs.ability 2) iid
@@ -64,4 +64,4 @@ instance RunMessage PurifyingCorruption4 where
            | attrs.token Corruption > 0
            ]
       pure a
-    _ -> PurifyingCorruption4 <$> lift (runMessage msg attrs)
+    _ -> PurifyingCorruption4 <$> liftRunMessage msg attrs

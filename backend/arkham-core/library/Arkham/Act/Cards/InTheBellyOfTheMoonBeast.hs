@@ -39,4 +39,4 @@ instance RunMessage InTheBellyOfTheMoonBeast where
 
       advanceActDeck attrs
       pure a
-    _ -> InTheBellyOfTheMoonBeast <$> lift (runMessage msg attrs)
+    _ -> InTheBellyOfTheMoonBeast <$> liftRunMessage msg attrs

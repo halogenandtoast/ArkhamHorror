@@ -47,4 +47,4 @@ instance RunMessage TheBeastUnleashed where
       for_ investigators \investigator -> assignHorror investigator attrs 3
       chooseOne lead [Label "Resolution 4" [R4]]
       pure a
-    _ -> TheBeastUnleashed <$> lift (runMessage msg attrs)
+    _ -> TheBeastUnleashed <$> liftRunMessage msg attrs

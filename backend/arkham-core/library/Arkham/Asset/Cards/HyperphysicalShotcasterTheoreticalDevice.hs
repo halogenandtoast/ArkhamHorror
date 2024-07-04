@@ -353,4 +353,4 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
           | n == 4 = Matterweaver
           | otherwise = error "Invalid manifest"
       pure . HyperphysicalShotcasterTheoreticalDevice . (`with` Metadata (Just manifest')) $ attrs
-    _ -> HyperphysicalShotcasterTheoreticalDevice . (`with` meta) <$> lift (runMessage msg attrs)
+    _ -> HyperphysicalShotcasterTheoreticalDevice . (`with` meta) <$> liftRunMessage msg attrs

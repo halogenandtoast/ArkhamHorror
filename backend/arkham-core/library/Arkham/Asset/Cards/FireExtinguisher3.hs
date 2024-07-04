@@ -33,4 +33,4 @@ instance RunMessage FireExtinguisher3 where
       when attrs.exiled do
         pushAll $ map (Discard (Just iid) (attrs.ability 1) . toTarget) enemies
       pure a
-    _ -> FireExtinguisher3 <$> runMessage msg attrs
+    _ -> FireExtinguisher3 <$> liftRunMessage msg attrs

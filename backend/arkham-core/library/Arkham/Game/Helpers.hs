@@ -191,9 +191,10 @@ getCanPerformAbility !iid !ws !ability = do
     actions = case abilityType ability of
       ActionAbilityWithBefore _ beforeAction _ -> [beforeAction]
       _ -> abilityActions ability
-    additionalCosts = flip mapMaybe abilityModifiers $ \case
-      AdditionalCost x -> Just x
-      _ -> Nothing
+    additionalCosts =
+      abilityAdditionalCosts ability <> flip mapMaybe abilityModifiers \case
+        AdditionalCost x -> Just x
+        _ -> Nothing
     cost = abilityCost ability
     criteria = foldr setCriteria (abilityCriteria ability) abilityModifiers
     setCriteria :: ModifierType -> Criterion -> Criterion
@@ -985,6 +986,9 @@ onSameLocation iid = \case
   StillInHand _ -> pure False
   StillInDiscard _ -> pure False
   StillInEncounterDiscard -> pure False
+  HiddenInHand _ -> pure False
+  OnTopOfDeck _ -> pure False
+  NextToAgenda -> pure False
 
 passesCriteria
   :: (HasCallStack, HasGame m)
@@ -1218,38 +1222,14 @@ passesCriteria iid mcard source' windows' = \case
     ProxySource (AssetSource aid) _ -> fieldP AssetController isNothing aid
     _ -> error $ "missing ControlsThis check for source: " <> show source
   Criteria.OnSameLocation -> case source of
-    StorySource sid -> do
-      placement <- field StoryPlacement sid
-      onSameLocation iid placement
-    AssetSource aid -> do
-      placement <- field AssetPlacement aid
-      onSameLocation iid placement
-    EnemySource eid -> do
-      placement <- field EnemyPlacement eid
-      case placement of
-        Global -> pure True
-        _ ->
-          liftA2
-            (==)
-            (selectOne $ Matcher.LocationWithEnemy $ Matcher.EnemyWithId eid)
-            (field InvestigatorLocation iid)
-    TreacherySource tid ->
-      field TreacheryAttachedTarget tid >>= \case
-        Just (LocationTarget lid) ->
-          fieldP InvestigatorLocation (== Just lid) iid
-        Just (InvestigatorTarget iid') ->
-          if iid == iid'
-            then pure True
-            else do
-              l1 <- field InvestigatorLocation iid
-              l2 <- field InvestigatorLocation iid'
-              pure $ isJust l1 && l1 == l2
-        Just _ -> pure False
-        Nothing -> pure False
-    ProxySource (CardIdSource _) (AssetSource aid) ->
-      liftA2 (==) (field AssetLocation aid) (field InvestigatorLocation iid)
-    ProxySource (AssetSource aid) _ ->
-      liftA2 (==) (field AssetLocation aid) (field InvestigatorLocation iid)
+    StorySource sid -> onSameLocation iid =<< field StoryPlacement sid
+    AssetSource aid -> onSameLocation iid =<< field AssetPlacement aid
+    EnemySource eid -> onSameLocation iid =<< field EnemyPlacement eid
+    TreacherySource tid -> onSameLocation iid =<< field TreacheryPlacement tid
+    ProxySource (CardIdSource _) (AssetSource aid) -> do
+      onSameLocation iid =<< field AssetPlacement aid
+    ProxySource (AssetSource aid) _ -> do
+      onSameLocation iid =<< field AssetPlacement aid
     _ -> error $ "missing OnSameLocation check for source: " <> show source
   Criteria.DuringTurn (Matcher.replaceYouMatcher iid -> who) -> selectAny (Matcher.TurnInvestigator <> who)
   Criteria.CardExists cardMatcher -> selectAny cardMatcher
@@ -2158,7 +2138,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             Window.WouldPassSkillTest who -> matchWho iid who whoMatcher
             _ -> noMatch
       isWindowMatch skillTestResultMatcher
-    Matcher.InitiatedSkillTest timing whoMatcher skillTypeMatcher skillValueMatcher skillTestTypeMatcher ->
+    Matcher.InitiatedSkillTest timing whoMatcher skillTypeMatcher skillValueMatcher skillTestMatcher ->
       guardTiming timing $ \case
         Window.InitiatedSkillTest st -> case skillTestType st of
           SkillSkillTest skillType | skillTypeMatches skillType skillTypeMatcher -> do
@@ -2169,7 +2149,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
                   (skillTestAction st)
                   (skillTestType st)
                   skillValueMatcher
-              , skillTestTypeMatches iid st skillTestTypeMatcher
+              , skillTestMatches iid source st skillTestMatcher
               ]
           _ -> noMatch
         _ -> noMatch
@@ -2720,50 +2700,6 @@ skillTestValueMatches iid maction skillTestType = \case
           resources <- field InvestigatorResources iid
           pure $ n > resources
 
-targetMatches :: HasGame m => Target -> Matcher.TargetMatcher -> m Bool
-targetMatches s = \case
-  Matcher.TargetMatchesAny ms -> anyM (targetMatches s) ms
-  Matcher.TargetIs s' -> pure $ s == s'
-  Matcher.AnyTarget -> pure True
-  Matcher.TargetMatches ms -> allM (targetMatches s) ms
-  Matcher.LocationTargetMatches locationMatcher -> case s of
-    LocationTarget lid -> lid <=~> locationMatcher
-    ProxyTarget proxyTarget _ -> targetMatches proxyTarget (Matcher.LocationTargetMatches locationMatcher)
-    BothTarget left right ->
-      orM
-        [ targetMatches left (Matcher.LocationTargetMatches locationMatcher)
-        , targetMatches right (Matcher.LocationTargetMatches locationMatcher)
-        ]
-    _ -> pure False
-  Matcher.ActTargetMatches actMatcher -> case s of
-    ActTarget aid -> aid <=~> actMatcher
-    ProxyTarget proxyTarget _ -> targetMatches proxyTarget (Matcher.ActTargetMatches actMatcher)
-    BothTarget left right ->
-      orM
-        [ targetMatches left (Matcher.ActTargetMatches actMatcher)
-        , targetMatches right (Matcher.ActTargetMatches actMatcher)
-        ]
-    _ -> pure False
-  Matcher.AgendaTargetMatches agendaMatcher -> case s of
-    AgendaTarget aid -> aid <=~> agendaMatcher
-    ProxyTarget proxyTarget _ -> targetMatches proxyTarget (Matcher.AgendaTargetMatches agendaMatcher)
-    BothTarget left right ->
-      orM
-        [ targetMatches left (Matcher.AgendaTargetMatches agendaMatcher)
-        , targetMatches right (Matcher.AgendaTargetMatches agendaMatcher)
-        ]
-    _ -> pure False
-  Matcher.ScenarioCardTarget -> case s of
-    EnemyTarget _ -> pure True
-    TreacheryTarget _ -> pure True
-    AgendaTarget _ -> pure True
-    ActTarget _ -> pure True
-    LocationTarget _ -> pure True
-    ProxyTarget proxyTarget _ -> targetMatches proxyTarget Matcher.ScenarioCardTarget
-    BothTarget left right ->
-      orM [targetMatches left Matcher.ScenarioCardTarget, targetMatches right Matcher.ScenarioCardTarget]
-    _ -> pure False
-
 enemyMatches :: HasGame m => EnemyId -> Matcher.EnemyMatcher -> m Bool
 enemyMatches !enemyId !mtchr = elem enemyId <$> select mtchr
 
@@ -2912,6 +2848,7 @@ skillTestMatches
   -> Matcher.SkillTestMatcher
   -> m Bool
 skillTestMatches iid source st = \case
+  Matcher.SkillTestOnEncounterCard -> skillTestSource st `sourceMatches` Matcher.EncounterCardSource
   Matcher.NotSkillTest matcher ->
     not <$> skillTestMatches iid source st matcher
   Matcher.AnySkillTest -> pure True
@@ -2943,7 +2880,7 @@ skillTestMatches iid source st = \case
       . filter (maybe False (`elem` iids) . chaosTokenRevealedBy)
       $ skillTestRevealedChaosTokens st
   Matcher.SkillTestFromRevelation -> pure $ skillTestIsRevelation st
-  Matcher.SkillTestForAction actionMatcher -> case skillTestAction st of
+  Matcher.SkillTestWithAction actionMatcher -> case skillTestAction st of
     Just action -> actionMatches iid action actionMatcher
     Nothing -> pure False
   Matcher.WhileInvestigating locationMatcher -> case skillTestAction st of
@@ -2953,8 +2890,11 @@ skillTestMatches iid source st = \case
         elem lid <$> select locationMatcher
       _ -> pure False
     _ -> pure False
-  Matcher.SkillTestOnTreachery treacheryMatcher -> case skillTestSource st of
-    TreacherySource tid -> elem tid <$> select treacheryMatcher
+  Matcher.SkillTestOnTreachery treacheryMatcher -> case st.source.treachery of
+    Just tid -> elem tid <$> select treacheryMatcher
+    _ -> pure False
+  Matcher.SkillTestOnAsset assetMatcher -> case st.source.asset of
+    Just aid -> elem aid <$> select assetMatcher
     _ -> pure False
   Matcher.WhileAttackingAnEnemy enemyMatcher -> case skillTestAction st of
     Just Action.Fight -> case skillTestTarget st of
@@ -3428,17 +3368,6 @@ canDo iid action = do
       IsAnyAction {} -> pure True
 
   not <$> anyM prevents mods
-
-skillTestTypeMatches
-  :: HasGame m => InvestigatorId -> SkillTest -> Matcher.SkillTestTypeMatcher -> m Bool
-skillTestTypeMatches iid st = \case
-  Matcher.SkillTestTypeOneOf as -> anyM (skillTestTypeMatches iid st) as
-  Matcher.AnySkillTestType -> pure True
-  Matcher.SkillTestOnEncounterCard -> skillTestSource st `sourceMatches` Matcher.EncounterCardSource
-  Matcher.SkillTestWithAction actionMatcher -> maybe (pure False) (\a -> actionMatches iid a actionMatcher) (skillTestAction st)
-  Matcher.InvestigationSkillTest locationMatcher -> case toActionTarget (skillTestTarget st) of
-    LocationTarget lid -> andM [lid <=~> locationMatcher, pure $ skillTestAction st == Just #investigate]
-    _ -> pure False
 
 getCanMoveTo :: (Sourceable source, HasGame m) => InvestigatorId -> source -> LocationId -> m Bool
 getCanMoveTo iid source lid = elem lid <$> getCanMoveToLocations iid source

@@ -40,7 +40,7 @@ instance HasAbilities ChildrenOfValusia where
 instance RunMessage ChildrenOfValusia where
   runMessage msg t@(ChildrenOfValusia attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
-      push $ PlaceTreachery (toId attrs) TreacheryNextToAgenda
+      push $ PlaceTreachery (toId attrs) NextToAgenda
       pure t
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       push $ toDiscard (toAbilitySource attrs 1) attrs

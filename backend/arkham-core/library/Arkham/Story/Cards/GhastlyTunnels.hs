@@ -25,4 +25,4 @@ instance RunMessage GhastlyTunnels where
       ghast <- createEnemyAt card vaultsOfZin
       placeClues attrs ghast 1
       pure s
-    _ -> GhastlyTunnels <$> lift (runMessage msg attrs)
+    _ -> GhastlyTunnels <$> liftRunMessage msg attrs

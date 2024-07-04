@@ -215,7 +215,7 @@
       "",
       "{dot|snakecase|camelcase} :: InvestigatorCard {dot}",
       "{dot|snakecase|camelcase} = investigator {dot} Cards.{dot|snakecase|camelcase} $",
-      "  Stats { health = 0, sanity = 0, willpower = 0, intellect = 0, combat = 0, agility = 0 }",
+      "  Stats {open} health = 0, sanity = 0, willpower = 0, intellect = 0, combat = 0, agility = 0 {close}",
       "",
       "instance HasAbilities {dot} where",
       "  getAbilities ({dot} _) = []",

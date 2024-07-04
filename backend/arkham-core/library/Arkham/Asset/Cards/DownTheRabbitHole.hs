@@ -16,4 +16,4 @@ downTheRabbitHole = asset DownTheRabbitHole Cards.downTheRabbitHole
 
 instance RunMessage DownTheRabbitHole where
   runMessage msg (DownTheRabbitHole attrs) = runQueueT $ case msg of
-    _ -> DownTheRabbitHole <$> lift (runMessage msg attrs)
+    _ -> DownTheRabbitHole <$> liftRunMessage msg attrs

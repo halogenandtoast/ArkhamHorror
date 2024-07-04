@@ -57,6 +57,6 @@ passedCircleTest iid attrs = do
   push $ chooseOne player [brazierChoice, Label "Leave brazier alone" []]
 
 pattern DuringCircleAction :: Criterion
-pattern DuringCircleAction <- DuringSkillTest (SkillTestForAction (ActionIs Circle))
+pattern DuringCircleAction <- DuringSkillTest (SkillTestWithAction (ActionIs Circle))
   where
-    DuringCircleAction = DuringSkillTest (SkillTestForAction (ActionIs Circle))
+    DuringCircleAction = DuringSkillTest (SkillTestWithAction (ActionIs Circle))

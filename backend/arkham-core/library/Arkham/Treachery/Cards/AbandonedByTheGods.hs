@@ -38,4 +38,4 @@ instance RunMessage AbandonedByTheGods where
       eachInvestigator \iid -> do
         push $ discardAll iid attrs (oneOf [#event, #asset] <> oneOf (map CardWithCost xs))
       pure t
-    _ -> AbandonedByTheGods <$> lift (runMessage msg attrs)
+    _ -> AbandonedByTheGods <$> liftRunMessage msg attrs

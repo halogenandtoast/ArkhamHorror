@@ -46,4 +46,4 @@ instance RunMessage AstronomicalAtlas3 where
         when (isNonWeakness card) $ placeUnderneath attrs [card]
         push $ Do (SearchFound iid t deck cards)
       pure a
-    _ -> AstronomicalAtlas3 <$> lift (runMessage msg attrs)
+    _ -> AstronomicalAtlas3 <$> liftRunMessage msg attrs

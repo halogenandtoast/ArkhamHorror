@@ -1,12 +1,8 @@
-module Arkham.Treachery.Cards.Indebted (
-  Indebted (..),
-  indebted,
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Indebted (Indebted (..), indebted) where
 
 import Arkham.Classes
 import Arkham.Modifier
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
@@ -24,11 +20,12 @@ instance HasModifiersFor Indebted where
       $ toModifiersWith
         attrs
         setActiveDuringSetup
-        [StartingResources (-2) | treacheryOnInvestigator iid attrs]
+        [StartingResources (-2) | treacheryInThreatArea iid attrs]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Indebted where
-  runMessage msg t@(Indebted attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      t <$ push (AttachTreachery treacheryId $ InvestigatorTarget iid)
+  runMessage msg t@(Indebted attrs) = case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      push $ placeInThreatArea attrs iid
+      pure t
     _ -> Indebted <$> runMessage msg attrs

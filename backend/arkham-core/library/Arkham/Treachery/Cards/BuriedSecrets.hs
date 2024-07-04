@@ -30,7 +30,7 @@ instance HasModifiersFor BuriedSecrets where
 instance RunMessage BuriedSecrets where
   runMessage msg t@(BuriedSecrets attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      attachTreachery attrs iid
+      placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       pushM $ mkInvestigate iid (attrs.ability 1) <&> setTarget attrs
@@ -51,4 +51,4 @@ instance RunMessage BuriedSecrets where
             , Label "Do Nothing" []
             ]
       pure t
-    _ -> BuriedSecrets <$> lift (runMessage msg attrs)
+    _ -> BuriedSecrets <$> liftRunMessage msg attrs

@@ -19,8 +19,8 @@ endlessDescent :: TreacheryCard EndlessDescent
 endlessDescent = treachery EndlessDescent Cards.endlessDescent
 
 instance RunMessage EndlessDescent where
-  runMessage msg t@(EndlessDescent attrs) = case msg of
-    Revelation _iid (isSource attrs -> True) -> runQueueT $ do
+  runMessage msg t@(EndlessDescent attrs) = runQueueT $ case msg of
+    Revelation _iid (isSource attrs -> True) -> do
       locations <- selectSortedBy LocationLabel (LocationWithTitle "Mysterious Stairs")
       case locations of
         a : b : rest -> do
@@ -63,4 +63,4 @@ instance RunMessage EndlessDescent where
 
       push $ AddToVictory (toTarget attrs)
       pure t
-    _ -> EndlessDescent <$> runMessage msg attrs
+    _ -> EndlessDescent <$> liftRunMessage msg attrs

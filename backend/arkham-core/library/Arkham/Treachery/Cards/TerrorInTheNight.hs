@@ -1,18 +1,11 @@
-module Arkham.Treachery.Cards.TerrorInTheNight (
-  terrorInTheNight,
-  TerrorInTheNight (..),
-) where
+module Arkham.Treachery.Cards.TerrorInTheNight (terrorInTheNight, TerrorInTheNight (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Projection
-import Arkham.SkillType
-import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype TerrorInTheNight = TerrorInTheNight TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities, HasModifiersFor)
@@ -22,27 +15,20 @@ terrorInTheNight :: TreacheryCard TerrorInTheNight
 terrorInTheNight = treachery TerrorInTheNight Cards.terrorInTheNight
 
 instance RunMessage TerrorInTheNight where
-  runMessage msg t@(TerrorInTheNight attrs) = case msg of
+  runMessage msg t@(TerrorInTheNight attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ RevelationSkillTest iid (toSource attrs) SkillWillpower (SkillTestDifficulty $ Fixed 4)
+      revelationSkillTest iid attrs #willpower (Fixed 4)
       pure t
-    FailedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n ->
-      do
-        aid <- selectJust AnyAgenda
-        other <- select $ treacheryIs Cards.terrorInTheNight
-        iids <- getInvestigatorIds
-        attached <-
-          filterM
-            (fieldMap TreacheryPlacement (== TreacheryAttachedTo (toTarget aid)))
-            other
-        pushAll
-          $ AttachTreachery (toId attrs) (toTarget aid)
-          : [gainSurge attrs | n >= 3]
-            <> ( guard (length attached >= 2)
-                  *> ( toDiscard (toSource attrs) (toTarget attrs)
-                        : map (toDiscard (toSource attrs) . toTarget) attached
-                          <> [assignHorror iid attrs 3 | iid <- iids]
-                     )
-               )
-        pure t
-    _ -> TerrorInTheNight <$> runMessage msg attrs
+    FailedThisSkillTestBy _ (isSource attrs -> True) n -> do
+      aid <- selectJust AnyAgenda
+      other <- select $ treacheryIs Cards.terrorInTheNight
+      iids <- getInvestigatorIds
+      attached <- filterByField TreacheryPlacement (== AttachedToAgenda aid) other
+      attachTreachery attrs aid
+      when (n >= 3) $ gainSurge attrs
+      when (length attached >= 2) do
+        toDiscard attrs attrs
+        for_ attached $ toDiscard attrs
+        for_ iids \iid -> assignHorror iid attrs 3
+      pure t
+    _ -> TerrorInTheNight <$> liftRunMessage msg attrs

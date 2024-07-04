@@ -35,4 +35,4 @@ instance RunMessage JuryRig where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skillTestModifier (attrs.ability 1) iid (AnySkillValue 2)
       pure e
-    _ -> JuryRig <$> lift (runMessage msg attrs)
+    _ -> JuryRig <$> liftRunMessage msg attrs

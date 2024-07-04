@@ -67,14 +67,14 @@ instance RunMessage TheDarkCrater where
       mlid <- getDiscoverLocation iid d
       if mlid == Just attrs.id
         then do
-          attrs' <- lift (runMessage msg attrs)
+          attrs' <- liftRunMessage msg attrs
           let meta = toResult @Meta attrs.meta
           pure
             $ TheDarkCrater
             $ attrs'
             & setMeta (meta {discoveredCluesThisTurn = iid : discoveredCluesThisTurn meta})
-        else TheDarkCrater <$> lift (runMessage msg attrs)
+        else TheDarkCrater <$> liftRunMessage msg attrs
     After (EndTurn _) -> do
       let meta = toResult @Meta attrs.meta
       pure $ TheDarkCrater $ attrs & setMeta (meta {discoveredCluesThisTurn = []})
-    _ -> TheDarkCrater <$> lift (runMessage msg attrs)
+    _ -> TheDarkCrater <$> liftRunMessage msg attrs

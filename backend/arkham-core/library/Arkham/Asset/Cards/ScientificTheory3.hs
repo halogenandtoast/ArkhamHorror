@@ -3,7 +3,6 @@ module Arkham.Asset.Cards.ScientificTheory3 (scientificTheory3, ScientificTheory
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Asset.Types (sanityL)
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -33,4 +32,4 @@ instance RunMessage ScientificTheory3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skillTestModifiers (attrs.ability 1) iid [SkillModifier #intellect 1, SkillModifier #combat 1]
       pure a
-    _ -> ScientificTheory3 <$> lift (runMessage msg attrs)
+    _ -> ScientificTheory3 <$> liftRunMessage msg attrs

@@ -36,4 +36,4 @@ instance RunMessage FangOfTyrthrha4 where
           iid
           [Label "Move to enemy location" [Move $ move attrs iid enemyLocation], Label "Don't move" []]
       pure e
-    _ -> FangOfTyrthrha4 <$> lift (runMessage msg attrs)
+    _ -> FangOfTyrthrha4 <$> liftRunMessage msg attrs

@@ -37,4 +37,4 @@ instance RunMessage ButterflySwords2 where
         chooseFightEnemy iid (attrs.ability 1)
       chooseOrRunOne iid $ Label "Do not fight again" [] : [Label "Fight again" fight | canFight]
       pure a
-    _ -> ButterflySwords2 <$> lift (runMessage msg attrs)
+    _ -> ButterflySwords2 <$> liftRunMessage msg attrs

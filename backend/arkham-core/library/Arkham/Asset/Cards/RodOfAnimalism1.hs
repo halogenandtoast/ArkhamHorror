@@ -41,4 +41,4 @@ instance RunMessage RodOfAnimalism1 where
       let source = toAbilitySource attrs 1
       costModifier source iid (ReduceCostOf (CardWithId $ toCardId card) 1)
       pure a
-    _ -> RodOfAnimalism1 <$> lift (runMessage msg attrs)
+    _ -> RodOfAnimalism1 <$> liftRunMessage msg attrs

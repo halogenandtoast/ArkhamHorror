@@ -80,4 +80,4 @@ instance RunMessage FluteOfTheOuterGods4 where
         <> [ targetLabel enemy [EnemyDamage enemy $ nonAttack eid damage] | damage > 0, enemy <- damageableEnemies
            ]
       pure a
-    _ -> FluteOfTheOuterGods4 <$> lift (runMessage msg attrs)
+    _ -> FluteOfTheOuterGods4 <$> liftRunMessage msg attrs

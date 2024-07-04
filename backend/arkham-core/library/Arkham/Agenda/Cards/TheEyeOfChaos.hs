@@ -78,4 +78,4 @@ instance RunMessage TheEyeOfChaos where
 
       advanceAgendaDeck attrs
       pure a
-    _ -> TheEyeOfChaos <$> lift (runMessage msg attrs)
+    _ -> TheEyeOfChaos <$> liftRunMessage msg attrs

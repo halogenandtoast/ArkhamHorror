@@ -22,4 +22,4 @@ instance RunMessage ShortSupply where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ DiscardTopOfDeck iid 10 (toSource attrs) Nothing
       pure a
-    _ -> ShortSupply <$> lift (runMessage msg attrs)
+    _ -> ShortSupply <$> liftRunMessage msg attrs

@@ -7,7 +7,6 @@ import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Effect.Runner
 import Arkham.Evade
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Movement
 import Arkham.Prelude
 import Arkham.SkillTest.Base

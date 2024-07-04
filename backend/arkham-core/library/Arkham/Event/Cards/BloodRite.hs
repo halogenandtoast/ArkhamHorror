@@ -66,4 +66,4 @@ instance RunMessage BloodRite where
            , notNull enemyIds
            ]
       pure e
-    _ -> BloodRite <$> lift (runMessage msg attrs)
+    _ -> BloodRite <$> liftRunMessage msg attrs

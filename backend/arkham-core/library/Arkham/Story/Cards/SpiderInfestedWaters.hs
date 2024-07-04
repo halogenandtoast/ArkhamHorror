@@ -32,4 +32,4 @@ instance RunMessage SpiderInfestedWaters where
       spider <- createEnemyAt (toCard ec) seaOfPitch
       placeClues attrs spider 1
       pure s
-    _ -> SpiderInfestedWaters <$> lift (runMessage msg attrs)
+    _ -> SpiderInfestedWaters <$> liftRunMessage msg attrs

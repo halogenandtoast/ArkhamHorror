@@ -33,4 +33,4 @@ instance RunMessage CrypticWritings2 where
     InHand iid' (UseThisAbility iid (isSource attrs -> True) 1) | iid' == iid -> do
       push $ InitiatePlayCard iid (toCard attrs) Nothing NoPayment (defaultWindows iid) False
       pure e
-    _ -> CrypticWritings2 <$> lift (runMessage msg attrs)
+    _ -> CrypticWritings2 <$> liftRunMessage msg attrs

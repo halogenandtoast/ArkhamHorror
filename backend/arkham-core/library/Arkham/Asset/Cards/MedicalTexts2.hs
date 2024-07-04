@@ -46,4 +46,4 @@ instance RunMessage MedicalTexts2 where
             <> [Label "Deal 1 damage to that investigator" [Msg.assignDamage iid (toAbilitySource attrs 1) 1]]
         _ -> error "invalid target"
       pure a
-    _ -> MedicalTexts2 <$> lift (runMessage msg attrs)
+    _ -> MedicalTexts2 <$> liftRunMessage msg attrs

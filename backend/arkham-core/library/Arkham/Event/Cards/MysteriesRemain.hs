@@ -32,4 +32,4 @@ instance RunMessage MysteriesRemain where
            ]
 
       pure e
-    _ -> MysteriesRemain <$> lift (runMessage msg attrs)
+    _ -> MysteriesRemain <$> liftRunMessage msg attrs

@@ -42,4 +42,4 @@ instance RunMessage TrustyBullwhip where
                  ]
           _ -> error "impossible"
       pure a
-    _ -> TrustyBullwhip <$> lift (runMessage msg attrs)
+    _ -> TrustyBullwhip <$> liftRunMessage msg attrs

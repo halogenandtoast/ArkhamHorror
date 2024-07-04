@@ -6,15 +6,13 @@ where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.Classes
 import Arkham.Evade
-import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Modifiers (ModifierType (..), modified)
 import Arkham.Matcher hiding (EnemyEvaded, TreacheryInHandOf)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype UnspeakableOathCowardice = UnspeakableOathCowardice TreacheryAttrs
   deriving anyclass (IsTreachery)
@@ -35,38 +33,36 @@ evasionCriteria =
 
 instance HasModifiersFor UnspeakableOathCowardice where
   getModifiersFor (AbilityTarget iid ability) (UnspeakableOathCowardice a)
-    | treacheryOwner a == Just iid
+    | a.owner == Just iid
     , abilitySource ability == toSource a
     , abilityIndex ability == 2 =
-        pure $ toModifiers a [CanModify evasionCriteria]
+        modified a [CanModify evasionCriteria]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities UnspeakableOathCowardice where
   getAbilities (UnspeakableOathCowardice attrs) =
     [ restrictedAbility attrs 1 InYourHand
-        $ ForcedAbility
-        $ OrWindowMatcher
-          [ Matcher.GameEnds #when
-          , Matcher.InvestigatorEliminated #when You
-          ]
+        $ forced
+        $ oneOf [Matcher.GameEnds #when, Matcher.InvestigatorEliminated #when You]
     , evadeAbility attrs 2 (ActionCost 1) InYourHand
     ]
 
 instance RunMessage UnspeakableOathCowardice where
-  runMessage msg t@(UnspeakableOathCowardice attrs) = case msg of
+  runMessage msg t@(UnspeakableOathCowardice attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ PlaceTreachery (toId attrs) (TreacheryInHandOf iid)
+      placeTreachery attrs (HiddenInHand iid)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ gameModifier attrs iid (XPModifier (-2))
+      gameModifier attrs iid (XPModifier (-2))
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = toAbilitySource attrs 2
       let matcher = ExhaustedEnemy <> UnengagedEnemy
-      chooseEvade <- toMessage . setTarget attrs <$> mkChooseEvadeMatch iid source matcher
-      pushAll [skillTestModifier (toAbilitySource attrs 2) iid evasionCriteria, chooseEvade]
+      skillTestModifier (toAbilitySource attrs 2) iid evasionCriteria
+      pushM $ toMessage . setTarget attrs <$> mkChooseEvadeMatch iid source matcher
       pure t
     Successful (Action.Evade, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
-      pushAll [EnemyEvaded iid eid, toDiscardBy iid (toAbilitySource attrs 2) $ toTarget attrs]
+      push $ EnemyEvaded iid eid
+      toDiscardBy iid (attrs.ability 2) attrs
       pure t
-    _ -> UnspeakableOathCowardice <$> runMessage msg attrs
+    _ -> UnspeakableOathCowardice <$> liftRunMessage msg attrs

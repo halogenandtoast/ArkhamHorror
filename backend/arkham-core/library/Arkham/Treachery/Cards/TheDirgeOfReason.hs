@@ -25,4 +25,4 @@ instance RunMessage TheDirgeOfReason where
         shuffleIntoDeck iid attrs
 
       pure t
-    _ -> TheDirgeOfReason <$> lift (runMessage msg attrs)
+    _ -> TheDirgeOfReason <$> liftRunMessage msg attrs

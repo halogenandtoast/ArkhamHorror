@@ -1,14 +1,10 @@
-module Arkham.Treachery.Cards.FateOfAllFools (
-  fateOfAllFools,
-  FateOfAllFools (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.FateOfAllFools (fateOfAllFools, FateOfAllFools (..)) where
 
 import Arkham.Classes
+import Arkham.Helpers.Message qualified as Msg
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype FateOfAllFools = FateOfAllFools TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -18,23 +14,20 @@ fateOfAllFools :: TreacheryCard FateOfAllFools
 fateOfAllFools = treachery FateOfAllFools Cards.fateOfAllFools
 
 instance RunMessage FateOfAllFools where
-  runMessage msg t@(FateOfAllFools attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      mAlreadyInPlay <- selectOne $ treacheryIs Cards.fateOfAllFools <> TreacheryInThreatAreaOf Anyone
-      case mAlreadyInPlay of
+  runMessage msg t@(FateOfAllFools attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      selectOne (treacheryIs Cards.fateOfAllFools <> TreacheryInThreatAreaOf Anyone) >>= \case
         Just tid -> do
           iid' <- selectJust $ HasMatchingTreachery $ TreacheryWithId tid
-          player <- getPlayer iid
-          push
-            $ chooseOne
-              player
-              [ Label
-                  "An investigator with another copy of Fate of All Fools in his or her threat area takes 2 direct damage."
-                  [directDamage iid' attrs 2]
-              , Label
-                  "Place 1 doom on another copy of Fate of All Fools."
-                  [PlaceDoom (toSource attrs) (toTarget tid) 1]
-              ]
-        Nothing -> push $ AttachTreachery (toId attrs) (InvestigatorTarget iid)
+          chooseOne
+            iid
+            [ Label
+                "An investigator with another copy of Fate of All Fools in his or her threat area takes 2 direct damage."
+                [Msg.directDamage iid' attrs 2]
+            , Label
+                "Place 1 doom on another copy of Fate of All Fools."
+                [PlaceDoom (toSource attrs) (toTarget tid) 1]
+            ]
+        Nothing -> placeInThreatArea attrs iid
       pure t
-    _ -> FateOfAllFools <$> runMessage msg attrs
+    _ -> FateOfAllFools <$> liftRunMessage msg attrs

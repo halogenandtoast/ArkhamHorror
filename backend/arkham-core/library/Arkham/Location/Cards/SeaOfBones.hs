@@ -29,4 +29,4 @@ instance RunMessage SeaOfBones where
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.somethingBelow
       pure . SeaOfBones $ attrs & canBeFlippedL .~ False
-    _ -> SeaOfBones <$> lift (runMessage msg attrs)
+    _ -> SeaOfBones <$> liftRunMessage msg attrs

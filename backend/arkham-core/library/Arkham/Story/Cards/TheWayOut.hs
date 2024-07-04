@@ -26,4 +26,4 @@ instance RunMessage TheWayOut where
         actId <- getCurrentAct
         pushAll [SpendClues n investigators, AdvanceAct actId (toSource attrs) #other]
       pure s
-    _ -> TheWayOut <$> lift (runMessage msg attrs)
+    _ -> TheWayOut <$> liftRunMessage msg attrs

@@ -38,4 +38,4 @@ instance RunMessage BurdenOfDestiny where
         <> [Label "Take 1 damage and 1 horror." [Msg.assignDamageAndHorror iid attrs 1 1]]
 
       pure t
-    _ -> BurdenOfDestiny <$> lift (runMessage msg attrs)
+    _ -> BurdenOfDestiny <$> liftRunMessage msg attrs

@@ -32,4 +32,4 @@ instance RunMessage BaitAndSwitch where
           AfterEvadeEnemy {} -> True
           _ -> False
       pure e
-    _ -> BaitAndSwitch <$> lift (runMessage msg attrs)
+    _ -> BaitAndSwitch <$> liftRunMessage msg attrs

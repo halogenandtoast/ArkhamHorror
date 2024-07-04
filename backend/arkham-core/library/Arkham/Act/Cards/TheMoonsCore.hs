@@ -45,4 +45,4 @@ instance RunMessage TheMoonsCore where
       placeSetAsideLocation_ Locations.theWhiteShip
       advanceActDeck attrs
       pure a
-    _ -> TheMoonsCore <$> lift (runMessage msg attrs)
+    _ -> TheMoonsCore <$> liftRunMessage msg attrs

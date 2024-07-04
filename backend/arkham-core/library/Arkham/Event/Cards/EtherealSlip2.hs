@@ -30,4 +30,4 @@ instance RunMessage EtherealSlip2 where
         ]
 
       pure e
-    _ -> EtherealSlip2 <$> lift (runMessage msg attrs)
+    _ -> EtherealSlip2 <$> liftRunMessage msg attrs

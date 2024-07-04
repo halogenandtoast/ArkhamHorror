@@ -39,7 +39,7 @@ instance RunMessage RiteOfSeeking where
       skillTestModifier (attrs.ability 1) iid (DiscoveredClues 1)
       pushAll $ leftOr investigation
       pure a
-    _ -> RiteOfSeeking <$> lift (runMessage msg attrs)
+    _ -> RiteOfSeeking <$> liftRunMessage msg attrs
 
 newtype RiteOfSeekingEffect = RiteOfSeekingEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -67,4 +67,4 @@ instance RunMessage RiteOfSeekingEffect where
         InvestigatorTarget iid -> push $ EndTurn iid
         _ -> pure ()
       pure e
-    _ -> RiteOfSeekingEffect <$> lift (runMessage msg attrs)
+    _ -> RiteOfSeekingEffect <$> liftRunMessage msg attrs

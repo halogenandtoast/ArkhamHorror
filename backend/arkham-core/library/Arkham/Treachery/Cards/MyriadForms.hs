@@ -42,4 +42,4 @@ instance RunMessage MyriadForms where
     DoStep 1 (Revelation _iid (isSource attrs -> True)) -> do
       unless (toResult @Bool attrs.meta) $ gainSurge attrs
       pure t
-    _ -> MyriadForms <$> lift (runMessage msg attrs)
+    _ -> MyriadForms <$> liftRunMessage msg attrs

@@ -35,4 +35,4 @@ instance RunMessage DisciplineQuiescenceOfThoughtBroken where
     Flip iid _ (isTarget attrs -> True) -> do
       push $ ReplaceInvestigatorAsset iid attrs.id (flipCard $ toCard attrs)
       pure a
-    _ -> DisciplineQuiescenceOfThoughtBroken <$> lift (runMessage msg attrs)
+    _ -> DisciplineQuiescenceOfThoughtBroken <$> liftRunMessage msg attrs

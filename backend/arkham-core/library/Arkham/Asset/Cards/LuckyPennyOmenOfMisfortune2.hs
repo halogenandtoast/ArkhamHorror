@@ -41,4 +41,4 @@ instance RunMessage LuckyPennyOmenOfMisfortune2 where
           when (token.face == #bless) do
             drawCardsIfCan iid (attrs.ability 1) 1
       pure a
-    _ -> LuckyPennyOmenOfMisfortune2 <$> lift (runMessage msg attrs)
+    _ -> LuckyPennyOmenOfMisfortune2 <$> liftRunMessage msg attrs

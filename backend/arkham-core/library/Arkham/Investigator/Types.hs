@@ -452,6 +452,10 @@ instance HasField "ability" InvestigatorAttrs (Int -> Source) where
 
 data Investigator = forall a. IsInvestigator a => Investigator a
 
+instance AsId Investigator where
+  type IdOf Investigator = InvestigatorId
+  asId = toId
+
 instance HasField "placement" Investigator Placement where
   getField (Investigator a) = attr investigatorPlacement a
 

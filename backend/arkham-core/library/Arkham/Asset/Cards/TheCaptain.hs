@@ -31,4 +31,4 @@ instance RunMessage TheCaptain where
       actId <- selectJust AnyAct
       push $ AdvanceAct actId (toSource attrs) #other
       pure a
-    _ -> TheCaptain <$> lift (runMessage msg attrs)
+    _ -> TheCaptain <$> liftRunMessage msg attrs

@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Treachery.Cards.HospitalDebtsSpec (spec) where
 
 import Arkham.Treachery.Cards qualified as Treacheries

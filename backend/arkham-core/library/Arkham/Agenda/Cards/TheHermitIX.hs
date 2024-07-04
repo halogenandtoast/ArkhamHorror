@@ -60,4 +60,4 @@ instance RunMessage TheHermitIX where
       playerCount <- getPlayerCount
       push $ GainClues iid (attrs.ability 1) $ if playerCount >= 3 then 2 else 1
       pure a
-    _ -> TheHermitIX . (`with` meta) <$> lift (runMessage msg attrs)
+    _ -> TheHermitIX . (`with` meta) <$> liftRunMessage msg attrs

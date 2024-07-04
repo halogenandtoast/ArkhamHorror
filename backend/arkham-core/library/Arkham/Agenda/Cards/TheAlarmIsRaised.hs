@@ -26,4 +26,4 @@ instance RunMessage TheAlarmIsRaised where
           findAndDrawEncounterCard lead Enemies.catsFromSaturn
         advanceAgendaDeck attrs
         pure a
-      _ -> TheAlarmIsRaised <$> lift (runMessage msg attrs)
+      _ -> TheAlarmIsRaised <$> liftRunMessage msg attrs

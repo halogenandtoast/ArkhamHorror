@@ -158,4 +158,4 @@ instance RunMessage TheMidnightMasks where
             forceAddCampaignCardToDeckChoice investigators Assets.litaChantler
           _ -> error $ "Unhandled option: " <> show option
       pure s
-    _ -> TheMidnightMasks <$> lift (runMessage msg attrs)
+    _ -> TheMidnightMasks <$> liftRunMessage msg attrs

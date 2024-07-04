@@ -78,4 +78,4 @@ instance RunMessage ArchiveOfConduitsGatewayToAcheron4 where
 
       chooseOrRunOne iid choices
       pure a
-    _ -> ArchiveOfConduitsGatewayToAcheron4 <$> lift (runMessage msg attrs)
+    _ -> ArchiveOfConduitsGatewayToAcheron4 <$> liftRunMessage msg attrs

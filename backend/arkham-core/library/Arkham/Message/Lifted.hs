@@ -195,6 +195,12 @@ assignDamageAndHorror
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> Int -> m ()
 assignDamageAndHorror iid (toSource -> source) damage horror = push $ Msg.assignDamageAndHorror iid source damage horror
 
+directDamage :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
+directDamage iid source = push . Msg.directDamage iid source
+
+directHorror :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
+directHorror iid source = push . Msg.directHorror iid source
+
 findAndDrawEncounterCard
   :: (ReverseQueue m, IsCardMatcher a) => InvestigatorId -> a -> m ()
 findAndDrawEncounterCard iid matcher = push $ Msg.findAndDrawEncounterCard iid matcher
@@ -255,6 +261,15 @@ forceAddCampaignCardToDeckChoice choices cardDef = do
 
 defeatEnemy :: (ReverseQueue m, Sourceable source) => EnemyId -> InvestigatorId -> source -> m ()
 defeatEnemy enemyId investigatorId = Msg.defeatEnemy enemyId investigatorId >=> pushAll
+
+createEnemyEngagedWithPrey :: ReverseQueue m => Card -> m EnemyId
+createEnemyEngagedWithPrey c = do
+  creation <- Msg.createEnemy c SpawnEngagedWithPrey
+  push $ CreateEnemy creation
+  pure $ enemyCreationEnemyId creation
+
+createEnemyEngagedWithPrey_ :: ReverseQueue m => Card -> m ()
+createEnemyEngagedWithPrey_ = void . createEnemyEngagedWithPrey
 
 createEnemyAt_
   :: (ReverseQueue m, IsCard card) => card -> LocationId -> m ()
@@ -323,6 +338,10 @@ placeClues source target n = push $ PlaceClues (toSource source) (toTarget targe
 placeDoom
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
 placeDoom source target n = push $ PlaceDoom (toSource source) (toTarget target) n
+
+removeDoom
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
+removeDoom source target n = push $ RemoveDoom (toSource source) (toTarget target) n
 
 placeTokens
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
@@ -548,6 +567,10 @@ toDiscardBy
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 toDiscardBy iid source target = push $ Msg.toDiscardBy iid source target
 
+toDiscard
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
+toDiscard source target = push $ Msg.toDiscard source target
+
 putCardIntoPlay :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 putCardIntoPlay iid card = push $ Msg.putCardIntoPlay iid card
 
@@ -622,9 +645,20 @@ revealing iid (toSource -> source) (toTarget -> target) zone = Msg.push $ Msg.re
 shuffleIntoDeck :: (ReverseQueue m, IsDeck deck, Targetable target) => deck -> target -> m ()
 shuffleIntoDeck deck target = push $ Msg.shuffleIntoDeck deck target
 
+reduceCostOf :: (Sourceable source, IsCard card, ReverseQueue m) => source -> card -> Int -> m ()
+reduceCostOf source card n = push $ Msg.reduceCostOf source card n
+
 eventModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 eventModifier source target modifier = push $ Msg.eventModifier source target modifier
+
+dealAdditionalDamage
+  :: (HasQueue Message m, MonadTrans t) => InvestigatorId -> Int -> [Message] -> t m ()
+dealAdditionalDamage iid amount additionalMessages = lift $ Msg.dealAdditionalDamage iid amount additionalMessages
+
+dealAdditionalHorror
+  :: (HasQueue Message m, MonadTrans t) => InvestigatorId -> Int -> [Message] -> t m ()
+dealAdditionalHorror iid amount additionalMessages = lift $ Msg.dealAdditionalHorror iid amount additionalMessages
 
 cancelRevelation :: (ReverseQueue m, Sourceable a) => a -> m ()
 cancelRevelation a = push $ CancelRevelation (toSource a)
@@ -667,6 +701,9 @@ insteadOfMatching pred f = do
 
 don't :: (MonadTrans t, HasQueue Message m) => Message -> t m ()
 don't msg = lift $ popMessageMatching_ (== msg)
+
+matchingDon't :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
+matchingDon't f = lift $ popMessageMatching_ f
 
 enemyAttackModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
@@ -718,3 +755,6 @@ nonAttackEnemyDamage source damage enemy = push $ Msg.EnemyDamage enemy (nonAtta
 
 exile :: (ReverseQueue m, Targetable target) => target -> m ()
 exile (toTarget -> target) = push $ Msg.Exile target
+
+failSkillTest :: ReverseQueue m => m ()
+failSkillTest = push Msg.FailSkillTest

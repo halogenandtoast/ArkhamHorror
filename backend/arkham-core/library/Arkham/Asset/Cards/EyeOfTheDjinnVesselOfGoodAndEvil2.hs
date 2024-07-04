@@ -33,7 +33,7 @@ instance RunMessage EyeOfTheDjinnVesselOfGoodAndEvil2 where
       createCardEffect Cards.eyeOfTheDjinnVesselOfGoodAndEvil2 Nothing (attrs.ability 1) attrs
       createCardEffect Cards.eyeOfTheDjinnVesselOfGoodAndEvil2 Nothing (attrs.ability 1) iid
       pure a
-    _ -> EyeOfTheDjinnVesselOfGoodAndEvil2 <$> lift (runMessage msg attrs)
+    _ -> EyeOfTheDjinnVesselOfGoodAndEvil2 <$> liftRunMessage msg attrs
 
 newtype EyeOfTheDjinnVesselOfGoodAndEvil2Effect = EyeOfTheDjinnVesselOfGoodAndEvil2Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)

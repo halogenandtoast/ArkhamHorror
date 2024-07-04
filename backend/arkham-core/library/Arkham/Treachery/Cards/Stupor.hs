@@ -21,9 +21,7 @@ instance HasAbilities Stupor where
     [ restrictedAbility a 1 injuryCriteria
         $ forced
         $ ActivateAbility #after You
-        $ oneOf
-        $ AbilityIsAction
-        <$> [#parley, #draw, #investigate]
+        $ oneOf [#parley, #draw, #investigate]
     ]
    where
     injuryCriteria = if toResultDefault True a.meta then InThreatAreaOf You else Never
@@ -31,14 +29,12 @@ instance HasAbilities Stupor where
 instance RunMessage Stupor where
   runMessage msg t@(Stupor attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      attachTreachery attrs iid
+      placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      turnModifier
-        (attrs.ability 1)
-        iid
-        (CannotTakeAction $ AnyActionTarget $ map IsAction [#parley, #draw, #investigate])
+      turnModifier (attrs.ability 1) iid
+        $ CannotTakeAction
+        $ AnyActionTarget [#parley, #draw, #investigate]
       pure . Stupor $ setMeta False attrs
-    EndTurn _ -> do
-      pure . Stupor $ setMeta True attrs
-    _ -> Stupor <$> lift (runMessage msg attrs)
+    EndTurn _ -> pure . Stupor $ setMeta True attrs
+    _ -> Stupor <$> liftRunMessage msg attrs

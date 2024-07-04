@@ -2,12 +2,10 @@ module Arkham.Treachery.Cards.DeceptiveMemories (deceptiveMemories, DeceptiveMem
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Classes
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Matcher
-import Arkham.Message
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype DeceptiveMemories = DeceptiveMemories TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -25,17 +23,17 @@ instance HasAbilities DeceptiveMemories where
     ]
 
 instance RunMessage DeceptiveMemories where
-  runMessage msg t@(DeceptiveMemories attrs) = case msg of
+  runMessage msg t@(DeceptiveMemories attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ attachTreachery attrs iid
+      placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ chooseAndDiscardCard iid (attrs.ability 1)
+      chooseAndDiscardCard iid (attrs.ability 1)
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ beginSkillTest iid (attrs.ability 2) iid #willpower (Fixed 3)
+      beginSkillTest iid (attrs.ability 2) iid #willpower (Fixed 3)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
-      push $ toDiscardBy iid (toSource attrs) attrs
+      toDiscardBy iid (attrs.ability 2) attrs
       pure t
-    _ -> DeceptiveMemories <$> runMessage msg attrs
+    _ -> DeceptiveMemories <$> liftRunMessage msg attrs

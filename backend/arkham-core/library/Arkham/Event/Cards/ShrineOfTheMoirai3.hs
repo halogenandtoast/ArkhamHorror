@@ -45,4 +45,4 @@ instance RunMessage ShrineOfTheMoirai3 where
           | target <- targets
           ]
       pure e
-    _ -> ShrineOfTheMoirai3 <$> lift (runMessage msg attrs)
+    _ -> ShrineOfTheMoirai3 <$> liftRunMessage msg attrs

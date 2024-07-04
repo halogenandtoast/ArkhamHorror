@@ -19,4 +19,4 @@ instance RunMessage SilentStirring where
         eachInvestigator (raiseAlarmLevel attrs)
         advanceAgendaDeck attrs
         pure a
-      _ -> SilentStirring <$> lift (runMessage msg attrs)
+      _ -> SilentStirring <$> liftRunMessage msg attrs

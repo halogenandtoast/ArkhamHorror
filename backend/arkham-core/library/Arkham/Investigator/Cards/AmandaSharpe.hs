@@ -47,7 +47,7 @@ instance HasChaosTokenValue AmandaSharpe where
 instance RunMessage AmandaSharpe where
   runMessage msg i@(AmandaSharpe attrs) = runQueueT $ case msg of
     SetupInvestigator iid | iid == attrs.id -> do
-      attrs' <- lift (runMessage msg attrs)
+      attrs' <- liftRunMessage msg attrs
       pure . AmandaSharpe $ attrs' & setMeta @(Maybe CardId) Nothing
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       mdrawing <- drawCardsIfCan attrs.id attrs 1
@@ -116,4 +116,4 @@ instance RunMessage AmandaSharpe where
             , Label "Do not double skill icons" []
             ]
       pure i
-    _ -> AmandaSharpe <$> lift (runMessage msg attrs)
+    _ -> AmandaSharpe <$> liftRunMessage msg attrs

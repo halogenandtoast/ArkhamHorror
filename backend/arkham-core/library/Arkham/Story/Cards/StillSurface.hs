@@ -26,4 +26,4 @@ instance RunMessage StillSurface where
       unless (null seas) do
         chooseOne iid [targetLabel sea [Flip iid (toSource attrs) (toTarget sea)] | sea <- seas]
       pure s
-    _ -> StillSurface <$> lift (runMessage msg attrs)
+    _ -> StillSurface <$> liftRunMessage msg attrs

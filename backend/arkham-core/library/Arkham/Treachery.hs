@@ -441,6 +441,7 @@ allTreacheries =
     , -- The Scarlet Keys
       -- signature
       SomeTreacheryCard selflessToAFault
+    , SomeTreacheryCard deafeningSilence
     , -- Return to the Night of the Zealot
       -- Return to the Gathering
       SomeTreacheryCard theZealotsSeal

@@ -34,7 +34,6 @@ import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Matcher hiding (FastPlayerWindow)
 import Arkham.Tarot
-import Arkham.Timing qualified as Timing
 import Arkham.Window
 import Arkham.Window qualified as Window
 
@@ -70,21 +69,10 @@ instance RunMessage ActAttrs where
     AdvanceAct aid _ advanceMode | aid == actId && onFrontSide a -> do
       pushAll =<< advanceActSideA a advanceMode
       pure $ a & (sequenceL .~ Sequence (unActStep $ actStep actSequence) (backSide a))
-    AttachTreachery tid (ActTarget aid) | aid == actId -> do
-      pure $ a & treacheriesL %~ insertSet tid
-    Discard _ _ (ActTarget aid) | aid == toId a -> do
-      pushAll
-        [toDiscard GameSource (TreacheryTarget tid) | tid <- setToList actTreacheries]
-      pure a
-    Discard _ _ (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
     InvestigatorResigned _ -> do
       investigatorIds <- select UneliminatedInvestigator
-      whenMsg <-
-        checkWindows
-          [mkWindow Timing.When AllUndefeatedInvestigatorsResigned]
-      afterMsg <-
-        checkWindows
-          [mkWindow Timing.When AllUndefeatedInvestigatorsResigned]
+      whenMsg <- checkWhen AllUndefeatedInvestigatorsResigned
+      afterMsg <- checkAfter AllUndefeatedInvestigatorsResigned
       when
         (null investigatorIds)
         (pushAll [whenMsg, afterMsg, AllInvestigatorsResigned])

@@ -8,6 +8,7 @@ import Arkham.Ability.Limit
 import Arkham.Ability.Type
 import Arkham.Card.CardCode
 import Arkham.Card.EncounterCard
+import Arkham.Cost
 import Arkham.Criteria (Criterion)
 import Arkham.Json
 import Arkham.Matcher
@@ -32,6 +33,7 @@ data Ability = Ability
   , abilityDisplayAsAction :: Bool
   , abilityDelayAdditionalCosts :: Bool
   , abilityBasic :: Bool
+  , abilityAdditionalCosts :: [Cost]
   }
   deriving stock (Show, Ord, Data)
 
@@ -105,6 +107,7 @@ instance FromJSON Ability where
     abilityDisplayAsAction <- o .: "displayAsAction"
     abilityDelayAdditionalCosts <- o .:? "delayAdditionalCosts" .!= False
     abilityBasic <- o .:? "basic" .!= False
+    abilityAdditionalCosts <- o .:? "additionalCosts" .!= []
     pure Ability {..}
 
 newtype DifferentAbility = DifferentAbility Ability

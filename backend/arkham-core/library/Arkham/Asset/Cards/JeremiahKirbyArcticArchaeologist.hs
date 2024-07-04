@@ -51,4 +51,4 @@ instance RunMessage JeremiahKirbyArcticArchaeologist where
         , Label "Odd" [revealTopOfDeck CardWithOddCost]
         ]
       pure a
-    _ -> JeremiahKirbyArcticArchaeologist <$> lift (runMessage msg attrs)
+    _ -> JeremiahKirbyArcticArchaeologist <$> liftRunMessage msg attrs

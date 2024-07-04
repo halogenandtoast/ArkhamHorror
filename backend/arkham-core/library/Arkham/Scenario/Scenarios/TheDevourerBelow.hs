@@ -153,4 +153,4 @@ instance RunMessage TheDevourerBelow where
             forceAddCampaignCardToDeckChoice investigators Assets.litaChantler
           _ -> error $ "Unhandled option: " <> show option
       pure s
-    _ -> TheDevourerBelow <$> lift (runMessage msg attrs)
+    _ -> TheDevourerBelow <$> liftRunMessage msg attrs

@@ -32,4 +32,4 @@ instance RunMessage ATestOfWill where
           pushWhen (canAffect && canCancel) $ CancelRevelation (toSource attrs)
         _ -> error "Wrong target"
       pure e
-    _ -> ATestOfWill <$> lift (runMessage msg attrs)
+    _ -> ATestOfWill <$> liftRunMessage msg attrs

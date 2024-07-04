@@ -74,4 +74,4 @@ instance RunMessage ArchiveOfConduitsGatewayToAldebaran4 where
 
       chooseOrRunOne iid choices
       pure a
-    _ -> ArchiveOfConduitsGatewayToAldebaran4 <$> lift (runMessage msg attrs)
+    _ -> ArchiveOfConduitsGatewayToAldebaran4 <$> liftRunMessage msg attrs

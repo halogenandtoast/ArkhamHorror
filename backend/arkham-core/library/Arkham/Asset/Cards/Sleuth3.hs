@@ -44,4 +44,4 @@ instance RunMessage Sleuth3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skillTestModifier (attrs.ability 1) iid (AnySkillValue 1)
       pure a
-    _ -> Sleuth3 <$> lift (runMessage msg attrs)
+    _ -> Sleuth3 <$> liftRunMessage msg attrs

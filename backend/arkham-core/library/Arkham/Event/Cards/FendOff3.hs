@@ -36,4 +36,4 @@ instance RunMessage FendOff3 where
       push $ EnemyEvaded iid enemy
       push $ PlaceEvent iid attrs.id (AttachedToEnemy enemy)
       pure e
-    _ -> FendOff3 <$> lift (runMessage msg attrs)
+    _ -> FendOff3 <$> liftRunMessage msg attrs

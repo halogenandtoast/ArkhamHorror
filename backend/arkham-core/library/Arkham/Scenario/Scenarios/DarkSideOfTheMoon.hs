@@ -174,4 +174,4 @@ instance RunMessage DarkSideOfTheMoon where
           endOfScenario
         other -> throw $ UnknownResolution other
       pure s
-    _ -> DarkSideOfTheMoon <$> lift (runMessage msg attrs)
+    _ -> DarkSideOfTheMoon <$> liftRunMessage msg attrs

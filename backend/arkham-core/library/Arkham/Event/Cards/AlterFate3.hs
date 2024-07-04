@@ -18,4 +18,4 @@ instance RunMessage AlterFate3 where
       treacheries <- select $ NotTreachery (TreacheryOnEnemy EliteEnemy) <> TreacheryIsNonWeakness
       chooseOne iid $ targetLabels treacheries $ only . Msg.toDiscardBy iid attrs
       pure e
-    _ -> AlterFate3 <$> lift (runMessage msg attrs)
+    _ -> AlterFate3 <$> liftRunMessage msg attrs

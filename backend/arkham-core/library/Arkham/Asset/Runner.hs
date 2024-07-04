@@ -31,7 +31,6 @@ import Arkham.Matcher (
   AssetMatcher (AnyAsset, AssetAttachedToAsset, AssetWithId),
  )
 import Arkham.Message qualified as Msg
-import Arkham.Placement
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Token
@@ -311,10 +310,11 @@ instance RunMessage AssetAttrs where
       -- we specifically use the investigator source here because the
       -- asset has no knowledge of being owned yet, and this will allow
       -- us to bring the investigator's id into scope
-      modifiers <- getModifiers (toTarget a)
+      modifiers <- (<>) <$> getModifiers (toTarget a) <*> getModifiers (toCardId a)
       let printedUses = cdUses (toCardDef a)
       startingUses <- toStartingUses printedUses
       let
+        startingDoom = sum [n | EntersPlayWithDoom n <- modifiers]
         applyModifier usesMap (AdditionalStartingUses n) = case printedUses of
           Uses uType _ -> pure $ adjustMap (+ n) uType usesMap
           UsesWithLimit uType _ pl -> do
@@ -331,7 +331,9 @@ instance RunMessage AssetAttrs where
 
       pushAll
         $ [ActionCannotBeUndone | not assetCanLeavePlayByNormalMeans]
-        <> [whenEnterMsg, afterEnterMsg]
+        <> [whenEnterMsg]
+        <> [PlaceDoom GameSource (toTarget a) startingDoom | startingDoom > 0]
+        <> [afterEnterMsg]
 
       let placementF = case assetPlacement of
             Unplaced -> placementL .~ InPlayArea iid

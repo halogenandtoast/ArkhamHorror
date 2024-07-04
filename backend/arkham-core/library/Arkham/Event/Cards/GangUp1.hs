@@ -19,4 +19,4 @@ instance RunMessage GangUp1 where
         $ ForEach (DifferentClassAmong $ ControlledBy You) [SkillModifier #combat 1, DamageDealt 1]
       chooseFightEnemy iid attrs
       pure e
-    _ -> GangUp1 <$> lift (runMessage msg attrs)
+    _ -> GangUp1 <$> liftRunMessage msg attrs

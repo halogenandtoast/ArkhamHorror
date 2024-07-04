@@ -30,4 +30,4 @@ instance RunMessage MeditativeTrance where
           $ [DamageLabel iid [HealDamage (toTarget iid) source 1, DoStep (n - 1) msg'] | withDamage]
           <> [HorrorLabel iid [HealHorror (toTarget iid) source 1, DoStep (n - 1) msg'] | withHorror]
       pure e
-    _ -> MeditativeTrance <$> lift (runMessage msg attrs)
+    _ -> MeditativeTrance <$> liftRunMessage msg attrs

@@ -45,8 +45,8 @@ toOption = \case
       [SetScenarioMeta $ toJSON TimelessRealm]
 
 instance RunMessage SeekOutTheNight where
-  runMessage msg a@(SeekOutTheNight attrs) = case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> runQueueT $ do
+  runMessage msg a@(SeekOutTheNight attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       lead <- getLeadPlayer
       n <- scenarioFieldMap ScenarioMeta toResult
       push $ ShuffleEncounterDiscardBackIn
@@ -58,4 +58,4 @@ instance RunMessage SeekOutTheNight where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       push R1
       pure a
-    _ -> SeekOutTheNight <$> runMessage msg attrs
+    _ -> SeekOutTheNight <$> liftRunMessage msg attrs

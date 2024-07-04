@@ -36,4 +36,4 @@ instance RunMessage LiberOmniumFinium where
         _ -> push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
 
       pure t
-    _ -> LiberOmniumFinium <$> lift (runMessage msg attrs)
+    _ -> LiberOmniumFinium <$> liftRunMessage msg attrs

@@ -17,4 +17,4 @@ instance RunMessage CloseCall2 where
     InvestigatorPlayEvent _iid (is attrs -> True) _ (evadedEnemy -> enemyId) _ -> do
       shuffleIntoDeck EncounterDeck enemyId
       pure e
-    _ -> CloseCall2 <$> lift (runMessage msg attrs)
+    _ -> CloseCall2 <$> liftRunMessage msg attrs

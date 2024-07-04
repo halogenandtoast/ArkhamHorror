@@ -92,4 +92,4 @@ instance RunMessage RiteOfEquilibrium5 where
                ]
 
       pure e
-    _ -> RiteOfEquilibrium5 <$> lift (runMessage msg attrs)
+    _ -> RiteOfEquilibrium5 <$> liftRunMessage msg attrs

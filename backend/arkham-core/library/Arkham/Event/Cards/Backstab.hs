@@ -19,4 +19,4 @@ instance RunMessage Backstab where
       skillTestModifier attrs iid (DamageDealt 2)
       pushAllM $ leftOr <$> aspect iid attrs (#agility `InsteadOf` #combat) (mkChooseFight iid attrs)
       pure e
-    _ -> Backstab <$> lift (runMessage msg attrs)
+    _ -> Backstab <$> liftRunMessage msg attrs

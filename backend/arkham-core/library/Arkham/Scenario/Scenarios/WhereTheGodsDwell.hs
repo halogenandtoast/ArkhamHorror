@@ -201,4 +201,4 @@ instance RunMessage WhereTheGodsDwell where
         other -> throw $ UnknownResolution other
 
       pure s
-    _ -> WhereTheGodsDwell <$> lift (runMessage msg attrs)
+    _ -> WhereTheGodsDwell <$> liftRunMessage msg attrs

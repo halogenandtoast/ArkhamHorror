@@ -23,4 +23,4 @@ instance RunMessage AnatomicalDiagrams where
         | enemy <- enemies
         ]
       pure e
-    _ -> AnatomicalDiagrams <$> lift (runMessage msg attrs)
+    _ -> AnatomicalDiagrams <$> liftRunMessage msg attrs

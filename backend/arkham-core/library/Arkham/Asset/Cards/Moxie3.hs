@@ -3,7 +3,6 @@ module Arkham.Asset.Cards.Moxie3 (moxie3, Moxie3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Asset.Types (sanityL)
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -33,4 +32,4 @@ instance RunMessage Moxie3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skillTestModifiers (attrs.ability 1) iid [SkillModifier #willpower 1, SkillModifier #agility 1]
       pure a
-    _ -> Moxie3 <$> lift (runMessage msg attrs)
+    _ -> Moxie3 <$> liftRunMessage msg attrs

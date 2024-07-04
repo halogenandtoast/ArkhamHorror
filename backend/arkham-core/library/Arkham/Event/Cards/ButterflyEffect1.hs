@@ -54,4 +54,4 @@ instance RunMessage ButterflyEffect1 where
            ]
 
       pure e
-    _ -> ButterflyEffect1 <$> lift (runMessage msg attrs)
+    _ -> ButterflyEffect1 <$> liftRunMessage msg attrs

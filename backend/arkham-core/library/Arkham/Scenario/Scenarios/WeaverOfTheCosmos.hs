@@ -220,4 +220,4 @@ instance RunMessage WeaverOfTheCosmos where
         other -> throw $ UnknownResolution other
 
       pure s
-    _ -> WeaverOfTheCosmos <$> lift (runMessage msg attrs)
+    _ -> WeaverOfTheCosmos <$> liftRunMessage msg attrs

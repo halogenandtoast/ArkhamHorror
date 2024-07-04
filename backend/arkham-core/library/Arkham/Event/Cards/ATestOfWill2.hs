@@ -19,4 +19,4 @@ instance RunMessage ATestOfWill2 where
     FailedThisSkillTest _ (isSource attrs -> True) -> do
       push $ Exile (toTarget attrs)
       pure e
-    _ -> ATestOfWill2 <$> lift (runMessage msg attrs)
+    _ -> ATestOfWill2 <$> liftRunMessage msg attrs

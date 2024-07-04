@@ -17,4 +17,4 @@ instance RunMessage BloodWillHaveBlood2 where
       let details = getAttackDetails attrs.windows
       drawCardsIfCan iid attrs $ sum . map (uncurry (+)) $ toList details.damaged
       pure e
-    _ -> BloodWillHaveBlood2 <$> lift (runMessage msg attrs)
+    _ -> BloodWillHaveBlood2 <$> liftRunMessage msg attrs

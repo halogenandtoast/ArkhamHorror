@@ -58,4 +58,4 @@ instance RunMessage PlateauOfLengWhereTheGodsDwell where
         other -> other
 
       pure l
-    _ -> PlateauOfLengWhereTheGodsDwell <$> lift (runMessage msg attrs)
+    _ -> PlateauOfLengWhereTheGodsDwell <$> liftRunMessage msg attrs

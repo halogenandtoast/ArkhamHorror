@@ -37,7 +37,7 @@ instance RunMessage Divination4 where
       case attrs.use Charge of
         0 -> pure ()
         1 -> push $ ResolveAmounts iid [("Charges", 1)] (toTarget attrs)
-        n -> chooseAmounts iid "Amount of Charges to Spend" (MaxAmountTarget n) [("Charges", (1, n))] attrs
+        x -> chooseAmounts iid "Amount of Charges to Spend" (MaxAmountTarget x) [("Charges", (1, x))] attrs
       pushWhen (n == 0) $ discardFromHand iid (attrs.ability 1) DiscardChoose 2
       pure a
     ResolveAmounts iid (getChoiceAmount "Charges" -> n) (isTarget attrs -> True) -> do

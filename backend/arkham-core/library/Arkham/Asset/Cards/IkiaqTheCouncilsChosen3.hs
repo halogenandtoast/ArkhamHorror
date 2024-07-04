@@ -58,4 +58,4 @@ instance RunMessage IkiaqTheCouncilsChosen3 where
         pushAll $ drawThisCard owner weakness
       IkiaqTheCouncilsChosen3
         <$> lift (runMessage msg $ attrs & cardsUnderneathL %~ filter (`notElem` weaknesses))
-    _ -> IkiaqTheCouncilsChosen3 <$> lift (runMessage msg attrs)
+    _ -> IkiaqTheCouncilsChosen3 <$> liftRunMessage msg attrs

@@ -15,7 +15,7 @@ protectiveGear2 = assetWith ProtectiveGear2 Cards.protectiveGear2 $ (healthL ?~ 
 
 instance HasAbilities ProtectiveGear2 where
   getAbilities (ProtectiveGear2 x) =
-    [ controlledAbility x 1 undefined
+    [ restrictedAbility x 1 ControlsThis
         $ ReactionAbility
           (DrawCard #when You (basic $ #treachery <> CardWithTrait Hazard) AnyDeck)
           (DamageCost (x.ability 1) (toTarget x) 1 <> HorrorCost (x.ability 1) (toTarget x) 1)
@@ -23,7 +23,7 @@ instance HasAbilities ProtectiveGear2 where
 
 instance RunMessage ProtectiveGear2 where
   runMessage msg a@(ProtectiveGear2 attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
       cancelRevelation (attrs.ability 1)
       pure a
-    _ -> ProtectiveGear2 <$> lift (runMessage msg attrs)
+    _ -> ProtectiveGear2 <$> liftRunMessage msg attrs

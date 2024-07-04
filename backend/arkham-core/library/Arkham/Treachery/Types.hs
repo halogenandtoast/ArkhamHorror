@@ -139,6 +139,7 @@ treacheryOnTopOfDeck attrs = case attrs.placement of
 treacheryInThreatAreaOf :: TreacheryAttrs -> Maybe InvestigatorId
 treacheryInThreatAreaOf attrs = case attrs.placement of
   InThreatArea iid -> Just iid
+  AttachedToInvestigator iid -> Just iid
   _ -> Nothing
 
 instance HasField "inThreatAreaOf" TreacheryAttrs (Maybe InvestigatorId) where

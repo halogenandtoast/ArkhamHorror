@@ -1153,7 +1153,8 @@ getTreacheriesMatching matcher = do
         _ -> False
     TreacheryInThreatAreaOf investigatorMatcher -> \treachery -> do
       case treachery.placement of
-        InThreatArea iid -> iid <=~> investigatorMatcher
+        InThreatArea iid -> iid <=~> IncludeEliminated investigatorMatcher
+        AttachedToInvestigator iid -> iid <=~> IncludeEliminated investigatorMatcher
         _ -> pure False
     TreacheryOwnedBy investigatorMatcher -> \treachery -> do
       iids <- select investigatorMatcher

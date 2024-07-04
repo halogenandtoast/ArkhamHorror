@@ -665,12 +665,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         ]
     pure a
   AddToDiscard iid pc | iid == investigatorId -> do
-    -- Handle Essence of the Dream
     let
-      discardF =
-        if toCardCode pc == "06113"
-          then bondedCardsL %~ (toCard pc :)
-          else discardL %~ (pc :)
+      discardF = case cdWhenDiscarded (toCardDef pc) of
+        ToDiscard -> discardL %~ (pc :)
+        ToBonded -> bondedCardsL %~ (toCard pc :)
+        ToSetAside -> id
+
+    when (cdWhenDiscarded (toCardDef pc) == ToSetAside) do
+      pushAll [ObtainCard (toCard pc), SetAsideCards [toCard pc]]
+
     pure
       $ a
       & (deckL %~ Deck . filter (/= pc) . unDeck)
@@ -734,18 +737,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             handDiscard
               { discardAmount = max 0 (discardAmount handDiscard - 1)
               }
-          -- Essence of the Dream
-          discardF =
-            if toCardCode pc == "06113"
-              then bondedCardsL %~ (toCard pc :)
-              else discardL %~ (pc :)
-        pure
-          $ a
-          & handL
-          %~ filter (/= card)
-          & discardF
-          & discardingL
-          %~ fmap updateHandDiscard
+        push $ AddToDiscard iid pc
+        pure $ a & handL %~ filter (/= card) & discardingL %~ fmap updateHandDiscard
       EncounterCard _ -> pure $ a & handL %~ filter (/= card) -- TODO: This should discard to the encounter discard
       VengeanceCard _ -> error "vengeance card"
   DoneDiscarding iid | iid == investigatorId -> case investigatorDiscarding of

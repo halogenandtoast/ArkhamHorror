@@ -491,6 +491,7 @@ essenceOfTheDream =
     { cdCardTraits = setFromList [Practiced, Expert]
     , cdKeywords = singleton (Keyword.Bonded 1 "06112")
     , cdLevel = Nothing
+    , cdWhenDiscarded = ToBonded
     }
 
 momentum1 :: CardDef
@@ -711,7 +712,7 @@ onTheMend =
     $ (skill "09006" "On the Mend" [#wild, #wild] Neutral)
       { cdCardTraits = setFromList [Innate]
       , cdCommitRestrictions = [OnlyYourTest]
-      , cdCardInHandEffects = True
+      , cdWhenDiscarded = ToSetAside
       }
 
 fightingLessons :: CardDef

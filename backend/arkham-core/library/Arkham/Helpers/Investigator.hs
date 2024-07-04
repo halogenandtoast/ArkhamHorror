@@ -40,19 +40,16 @@ import Data.List (nubBy)
 getSkillValue :: HasGame m => SkillType -> InvestigatorId -> m Int
 getSkillValue st iid = do
   mods <- getModifiers iid
-  case st of
-    SkillWillpower -> do
-      maybe (field InvestigatorWillpower iid) pure
-        $ minimumMay [n | SetSkillValue SkillWillpower n <- mods]
-    SkillIntellect ->
-      maybe (field InvestigatorIntellect iid) pure
-        $ minimumMay [n | SetSkillValue SkillIntellect n <- mods]
-    SkillCombat ->
-      maybe (field InvestigatorCombat iid) pure
-        $ minimumMay [n | SetSkillValue SkillCombat n <- mods]
-    SkillAgility ->
-      maybe (field InvestigatorAgility iid) pure
-        $ minimumMay [n | SetSkillValue SkillAgility n <- mods]
+  let
+    fld =
+      case st of
+        SkillWillpower -> InvestigatorWillpower
+        SkillIntellect -> InvestigatorIntellect
+        SkillCombat -> InvestigatorCombat
+        SkillAgility -> InvestigatorAgility
+  base <- field fld iid
+  let x = sum [n | SkillModifier st' n <- mods, st' == st]
+  pure $ fromMaybe (x + base) $ minimumMay [n | SetSkillValue st' n <- mods, st' == st]
 
 skillValueFor
   :: forall m

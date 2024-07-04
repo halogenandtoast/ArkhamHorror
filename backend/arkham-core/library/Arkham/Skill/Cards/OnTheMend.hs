@@ -12,9 +12,4 @@ onTheMend = skill OnTheMend Cards.onTheMend
 
 instance RunMessage OnTheMend where
   runMessage msg s@(OnTheMend attrs) = runQueueT $ case msg of
-    AddToDiscard _iid pc | pc.id == attrs.cardId -> do
-      push $ ObtainCard attrs.card
-      push $ RemoveSkill attrs.id
-      push $ SetAsideCards [attrs.card]
-      pure s
     _ -> OnTheMend <$> liftRunMessage msg attrs

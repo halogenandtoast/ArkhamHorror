@@ -53,8 +53,8 @@ getBaseValueForSkillTest iid st = getBaseValueForSkillTestType iid st.action st.
 getBaseValueForSkillTestType
   :: HasGame m => InvestigatorId -> Maybe Action -> SkillTestType -> m Int
 getBaseValueForSkillTestType iid mAction = \case
-  SkillSkillTest skillType -> baseSkillValueFor skillType mAction [] iid
-  AndSkillTest types -> sum <$> traverse (\skillType -> baseSkillValueFor skillType mAction [] iid) types
+  SkillSkillTest skillType -> baseSkillValueFor skillType mAction iid
+  AndSkillTest types -> sum <$> traverse (\skillType -> baseSkillValueFor skillType mAction iid) types
   ResourceSkillTest -> field InvestigatorResources iid
 
 getSkillTestRevealedChaosTokens :: HasGame m => m [ChaosToken]
@@ -480,10 +480,10 @@ getSkillTestDifficultyDifferenceFromBaseValue iid skillTest = do
   skillDifficulty <- getModifiedSkillTestDifficulty skillTest
   case skillTestType skillTest of
     SkillSkillTest skillType -> do
-      baseValue <- baseSkillValueFor skillType Nothing [] iid
+      baseValue <- baseSkillValueFor skillType Nothing iid
       pure $ skillDifficulty - baseValue
     AndSkillTest types -> do
-      baseValue <- sum <$> traverse (\skillType -> baseSkillValueFor skillType Nothing [] iid) types
+      baseValue <- sum <$> traverse (\skillType -> baseSkillValueFor skillType Nothing iid) types
       pure $ skillDifficulty - baseValue
     ResourceSkillTest -> do
       resources <- field InvestigatorResources iid

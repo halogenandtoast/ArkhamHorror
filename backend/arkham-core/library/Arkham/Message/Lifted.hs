@@ -758,6 +758,9 @@ gainActions iid (toSource -> source) n = push $ Msg.GainActions iid source n
 nonAttackEnemyDamage :: (ReverseQueue m, Sourceable a) => a -> Int -> EnemyId -> m ()
 nonAttackEnemyDamage source damage enemy = push $ Msg.EnemyDamage enemy (nonAttack source damage)
 
+attackEnemyDamage :: (ReverseQueue m, Sourceable a) => a -> Int -> EnemyId -> m ()
+attackEnemyDamage source damage enemy = push $ Msg.EnemyDamage enemy (attack source damage)
+
 exile :: (ReverseQueue m, Targetable target) => target -> m ()
 exile (toTarget -> target) = push $ Msg.Exile target
 

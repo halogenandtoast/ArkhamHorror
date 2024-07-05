@@ -69,6 +69,7 @@ allPlayerTreacheryCards =
       , bloodlust
       , boughtInBlood
       , burdenOfDestiny
+      , burdenOfLeadership
       , buriedSecrets
       , callOfTheUnknown
       , calledByTheMists
@@ -2120,6 +2121,12 @@ ruinedFilm :: CardDef
 ruinedFilm =
   (weakness "09017" "Ruined Film")
     { cdCardTraits = setFromList [Blunder]
+    }
+
+burdenOfLeadership :: CardDef
+burdenOfLeadership =
+  (weakness "09020" "Burden of Leadership")
+    { cdCardTraits = setFromList [Flaw]
     }
 
 theZealotsSeal :: CardDef

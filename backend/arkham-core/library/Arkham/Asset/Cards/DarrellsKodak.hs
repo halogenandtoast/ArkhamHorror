@@ -46,7 +46,7 @@ instance RunMessage DarrellsKodak where
     UseCardAbility _iid (isSource attrs -> True) 1 (getKodakTarget -> target) _ -> do
       placeTokens (attrs.ability 1) target Evidence 1
       pure a
-    UseCardAbility iid (isSource attrs -> True) 2 (discoveredClues -> n) _ -> do
+    UseCardAbility _iid (isSource attrs -> True) 2 (discoveredClues -> n) _ -> do
       push $ DoStep n msg
       pure a
     DoStep n msg'@(UseCardAbility iid (isSource attrs -> True) 2 (discoveredLocation -> lid) _) | n > 0 -> do

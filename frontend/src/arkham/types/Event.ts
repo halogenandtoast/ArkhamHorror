@@ -1,5 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
+import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import {
   Card,
   cardDecoder,
@@ -13,7 +14,7 @@ export type Event = {
   exhausted: boolean;
   sealedChaosTokens: ChaosToken[];
   cardsUnderneath: Card[];
-  uses: Record<string, number>;
+  tokens: Tokens;
 }
 
 export const eventDecoder = JsonDecoder.object<Event>({
@@ -24,5 +25,5 @@ export const eventDecoder = JsonDecoder.object<Event>({
   exhausted: JsonDecoder.boolean,
   sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
-  uses: JsonDecoder.array(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.number], 'Uses'), 'Uses[]').map((x) => x.reduce((acc, [k, v]) => (acc[k] = v, acc), {} as Record<string, number>)),
+  tokens: tokensDecoder,
 }, 'Event');

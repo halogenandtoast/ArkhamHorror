@@ -857,6 +857,7 @@ allAssets =
     , SomeAssetCard woundedBystanderOnDeathsDoorstep
     , SomeAssetCard grapplingHook
     , SomeAssetCard darrellsKodak
+    , SomeAssetCard bonnieWalshLoyalAssistant
     , --- guardian [tsk]
       -- , SomeAssetCard runicAxe
       SomeAssetCard guardDog2

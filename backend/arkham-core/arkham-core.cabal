@@ -452,6 +452,7 @@ library
       Arkham.Asset.Cards.Blur1
       Arkham.Asset.Cards.Blur4
       Arkham.Asset.Cards.Bonesaw
+      Arkham.Asset.Cards.BonnieWalshLoyalAssistant
       Arkham.Asset.Cards.BookOfPsalms
       Arkham.Asset.Cards.BookOfShadows1
       Arkham.Asset.Cards.BookOfShadows3
@@ -1812,6 +1813,7 @@ library
       Arkham.Investigator.Cards.CalvinWright
       Arkham.Investigator.Cards.CarolynFern
       Arkham.Investigator.Cards.CarsonSinclair
+      Arkham.Investigator.Cards.CharlieKane
       Arkham.Investigator.Cards.DaisyWalker
       Arkham.Investigator.Cards.DaisyWalkerParallel
       Arkham.Investigator.Cards.DanielaReyes
@@ -2800,6 +2802,7 @@ library
       Arkham.Treachery.Cards.BoughtInBlood
       Arkham.Treachery.Cards.BrokenRails
       Arkham.Treachery.Cards.BurdenOfDestiny
+      Arkham.Treachery.Cards.BurdenOfLeadership
       Arkham.Treachery.Cards.BurdensOfThePast
       Arkham.Treachery.Cards.BuriedSecrets
       Arkham.Treachery.Cards.CalledByTheMists

@@ -70,6 +70,7 @@ allInvestigatorCards =
       , kymaniJones
       , aminaZidane
       , darrellSimmons
+      , charlieKane
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -468,6 +469,14 @@ darrellSimmons =
     ("Darrell Simmons" <:> "The Photographer")
     Survivor
     [Reporter]
+
+charlieKane :: CardDef
+charlieKane =
+  investigator
+    "09018"
+    ("Charlie Kane" <:> "The Politician")
+    Neutral
+    [Civic, Socialite]
 
 nathanielCho :: CardDef
 nathanielCho =

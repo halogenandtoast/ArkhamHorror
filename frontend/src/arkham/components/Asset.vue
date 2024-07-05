@@ -109,13 +109,6 @@ const debug = useDebug()
 
 const doom = computed(() => props.asset.tokens[TokenType.Doom])
 const clues = computed(() => props.asset.tokens[TokenType.Clue])
-const resources = computed(() => props.asset.tokens[TokenType.Resource])
-const leylines = computed(() => props.asset.tokens[TokenType.Leyline])
-const charges = computed(() => props.asset.tokens[TokenType.Charge])
-const secrets = computed(() => props.asset.tokens[TokenType.Secret])
-const corruption = computed(() => props.asset.tokens[TokenType.Corruption])
-const offerings = computed(() => props.asset.tokens[TokenType.Offering])
-
 const uses = computed(() => Object.entries(props.asset.tokens).filter(([k, v]) => isUse(k) && v > 0))
 const formatUse = (k: string) => k.replace(/([a-z])([A-Z])/g, '$1 $2')
 

@@ -77,8 +77,14 @@ increaseResourceCost other _ = other
 discardPayments :: Payment -> [(Zone, Card)]
 discardPayments = concat . toListOf (cosmos . _DiscardPayment)
 
+exhaustedPayments :: Payment -> [Target]
+exhaustedPayments = concat . toListOf (cosmos . _ExhaustPayment)
+
 instance HasField "discards" Payment [(Zone, Card)] where
   getField = discardPayments
+
+instance HasField "exhausted" Payment [Target] where
+  getField = exhaustedPayments
 
 instance HasField "resources" Payment Int where
   getField = totalResourcePayment
@@ -119,6 +125,11 @@ instance Plated Payment where
 _DiscardPayment :: Prism' Payment [(Zone, Card)]
 _DiscardPayment = prism' DiscardPayment $ \case
   DiscardPayment x -> Just x
+  _ -> Nothing
+
+_ExhaustPayment :: Prism' Payment [Target]
+_ExhaustPayment = prism' ExhaustPayment $ \case
+  ExhaustPayment x -> Just x
   _ -> Nothing
 
 _ResourcePayment :: Prism' Payment Int

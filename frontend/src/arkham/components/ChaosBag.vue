@@ -138,7 +138,7 @@ const choose = (idx: number) => emit('choose', idx)
 
 .portrait {
   width: $card-width;
-  height: fit-content;
+  height: auto;
 }
 
 .token-debug {
@@ -165,7 +165,7 @@ const choose = (idx: number) => emit('choose', idx)
   justify-content: center;
   img {
     width: 30px;
-    height: fit-content;
+    height: auto;
   }
 }
 

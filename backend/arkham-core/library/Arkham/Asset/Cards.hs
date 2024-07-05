@@ -5583,6 +5583,7 @@ runicAxe =
     , cdSkills = [#combat]
     , cdSlots = [#hand, #hand]
     , cdUses = uses Charge 4
+    , cdUnique = True
     , cdCustomizations =
         mapFromList
           [ (Heirloom, 1)

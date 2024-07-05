@@ -193,6 +193,7 @@ allPlayerAssetCards =
       , blur1
       , blur4
       , bonesaw
+      , bonnieWalshLoyalAssistant
       , bookOfPsalms
       , bookOfShadows1
       , bookOfShadows3
@@ -5542,6 +5543,15 @@ darrellsKodak =
     $ (asset "09016" ("Darrell's Kodak" <:> "Proof in the Pudding") 2 Neutral)
       { cdCardTraits = setFromList [Item, Tool]
       , cdSkills = [#intellect, #agility, #wild]
+      }
+
+bonnieWalshLoyalAssistant :: CardDef
+bonnieWalshLoyalAssistant =
+  signature "09018"
+    $ (asset "09019" ("Bonnie Walsh" <:> "Loyal Assistant") 3 Neutral)
+      { cdCardTraits = setFromList [Ally, Civic, Assistant]
+      , cdSkills = [#wild, #wild]
+      , cdUnique = True
       }
 
 runicAxe :: CardDef

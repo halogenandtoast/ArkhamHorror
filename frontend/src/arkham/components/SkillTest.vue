@@ -314,7 +314,7 @@ const label = function(body: string) {
 
 .portrait {
   width: $card-width;
-  height: fit-content;
+  height: auto;
 }
 
 .committed-skills {

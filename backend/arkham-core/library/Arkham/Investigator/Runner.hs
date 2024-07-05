@@ -50,7 +50,7 @@ import Arkham.Draw.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.Game (asIfTurn, withoutCanModifiers)
-import Arkham.Game.Helpers hiding (windows)
+import Arkham.Game.Helpers hiding (discoveredClues, windows)
 import Arkham.Game.Helpers qualified as Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers

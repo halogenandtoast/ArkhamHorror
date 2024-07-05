@@ -143,6 +143,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     FastAbility' _ mAction ->
       pushAll $ PayCosts activeCostId : [PerformedActions iid [action] | action <- toList mAction]
     ForcedWhen _ aType -> startAbilityPayment activeCost iid window aType source provokeAttacksOfOpportunity
+    CustomizationReaction {} -> push (PayCosts activeCostId)
     ReactionAbility {} -> push (PayCosts activeCostId)
     ActionAbilityWithBefore actions' _ _ -> handleActions (Action.Activate : actions')
     ActionAbilityWithSkill actions' _ _ -> handleActions $ Action.Activate : actions'
@@ -869,7 +870,7 @@ instance RunMessage ActiveCost where
           pushAll [PayCosts acId, PayCostFinished acId]
           pure c
         ForCard isPlayAction card -> do
-          modifiers' <- getModifiers iid
+          modifiers' <- (<>) <$> getModifiers iid <*> getModifiers card
           let
             cardDef = toCardDef card
             modifiersPreventAttackOfOpportunity = ActionDoesNotCauseAttacksOfOpportunity #play `elem` modifiers'

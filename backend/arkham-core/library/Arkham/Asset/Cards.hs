@@ -411,6 +411,7 @@ allPlayerAssetCards =
       , holyRosary2
       , holySpear5
       , hope
+      , huntersArmor
       , hyperawareness
       , hyperawareness2
       , hyperawareness4
@@ -590,6 +591,7 @@ allPlayerAssetCards =
       , robesOfEndlessNight2
       , rodOfAnimalism1
       , rolands38Special
+      , runicAxe
       , ruthWestmacottDarkRevelations
       , sacredCovenant2
       , safeguard
@@ -5553,6 +5555,26 @@ bonnieWalshLoyalAssistant =
       , cdSkills = [#wild, #wild]
       , cdUnique = True
       }
+
+huntersArmor :: CardDef
+huntersArmor =
+  (asset "09021" "Hunter's Armor" 4 Guardian)
+    { cdCardTraits = setFromList [Item, Armor]
+    , cdSkills = [#willpower]
+    , cdSlots = [#body]
+    , cdKeywords = setFromList [Keyword.Customizable]
+    , cdCardInHandEffects = True
+    , cdCustomizations =
+        mapFromList
+          [ (Enchanted, 1)
+          , (ProtectiveRunes, 2)
+          , (Durable, 2)
+          , (Hallowed, 2)
+          , (Lightweight, 2)
+          , (Hexdrinker, 3)
+          , (ArmorOfThorns, 3)
+          ]
+    }
 
 runicAxe :: CardDef
 runicAxe =

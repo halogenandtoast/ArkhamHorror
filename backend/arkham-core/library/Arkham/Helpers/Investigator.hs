@@ -192,11 +192,7 @@ data FitsSlots = FitsSlots | MissingSlots [SlotType]
 fitsAvailableSlots :: HasGame m => AssetId -> InvestigatorAttrs -> m FitsSlots
 fitsAvailableSlots aid a = do
   assetCard <- field Field.AssetCard aid
-  slotTypes <- do
-    baseSlots <- field Field.AssetSlots aid
-    modifiers <- getModifiers aid
-    pure $ filter ((`notElem` modifiers) . DoNotTakeUpSlot) baseSlots
-
+  slotTypes <- field Field.AssetSlots aid
   canHoldMap :: Map SlotType [SlotType] <- do
     mods <- getModifiers a
     let

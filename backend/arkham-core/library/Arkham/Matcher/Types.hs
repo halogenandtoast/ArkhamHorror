@@ -1092,6 +1092,7 @@ instance IsLabel "failed" SkillTestMatcher where
 data SourceMatcher
   = SourceWithTrait Trait
   | SourceIsEnemyAttack EnemyMatcher
+  | SourceIsTreacheryEffect TreacheryMatcher
   | SourceIsAsset AssetMatcher
   | EncounterCardSource
   | SourceMatchesAny [SourceMatcher]

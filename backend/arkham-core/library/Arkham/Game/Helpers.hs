@@ -256,6 +256,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
         else anyM (canDoAction iid ab) actions
     FastAbility' _ [] -> pure True
     FastAbility' _ actions -> anyM (canDoAction iid ab) actions
+    CustomizationReaction {} -> pure True
     ReactionAbility _ _ -> pure True
     ForcedAbility _ -> pure True
     SilentForcedAbility _ -> pure True
@@ -387,6 +388,7 @@ getCanAffordAbilityCost iid a@Ability {..} = do
     ActionAbilityWithBefore _ beforeAction cost ->
       getCanAffordCost iid (toSource a) [beforeAction] [] (f cost)
     ReactionAbility _ cost -> getCanAffordCost iid (toSource a) [] [] (f cost)
+    CustomizationReaction _ _ cost -> getCanAffordCost iid (toSource a) [] [] (f cost)
     FastAbility' cost actions -> getCanAffordCost iid (toSource a) actions [] (f cost)
     ForcedAbilityWithCost _ cost ->
       getCanAffordCost iid (toSource a) [] [] (f cost)
@@ -450,6 +452,8 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
         let
           go = \case
             ReactionAbility _ _ ->
+              pure $ notElem ability (map usedAbility usedAbilities)
+            CustomizationReaction {} ->
               pure $ notElem ability (map usedAbility usedAbilities)
             ForcedWhen _ aType -> go aType
             ForcedAbility _ -> pure $ notElem ability (map usedAbility usedAbilities)
@@ -3152,6 +3156,7 @@ isForcedAbilityType iid source = \case
   Objective aType -> isForcedAbilityType iid source aType
   FastAbility' {} -> pure False
   ReactionAbility {} -> pure False
+  CustomizationReaction {} -> pure False
   ActionAbility {} -> pure False
   ActionAbilityWithSkill {} -> pure False
   ActionAbilityWithBefore {} -> pure False
@@ -3174,6 +3179,9 @@ sourceMatches s = \case
   Matcher.SourceWithTrait t -> elem t <$> sourceTraits s
   Matcher.SourceIsEnemyAttack em -> case s of
     EnemyAttackSource eid -> elem eid <$> select em
+    _ -> pure False
+  Matcher.SourceIsTreacheryEffect tm -> case s of
+    TreacherySource tid -> elem tid <$> select tm
     _ -> pure False
   Matcher.SourceIsAsset am ->
     let

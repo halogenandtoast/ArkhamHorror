@@ -230,6 +230,14 @@ getDamageSource = \case
   ((windowType -> Window.DealtExcessDamage source _ _ _) : _) -> source
   (_ : rest) -> getDamageSource rest
 
+getDamageOrHorrorSource :: [Window] -> Source
+getDamageOrHorrorSource = \case
+  [] -> error "No damage"
+  ((windowType -> Window.DealtDamage source _ _ _) : _) -> source
+  ((windowType -> Window.DealtHorror source _ _) : _) -> source
+  ((windowType -> Window.DealtExcessDamage source _ _ _) : _) -> source
+  (_ : rest) -> getDamageSource rest
+
 replaceWindow :: HasQueue Message m => (Window -> Bool) -> (Window -> Window) -> m ()
 replaceWindow f wf = do
   replaceMessageMatching

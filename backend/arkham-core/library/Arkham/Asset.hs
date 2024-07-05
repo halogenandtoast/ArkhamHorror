@@ -859,8 +859,9 @@ allAssets =
     , SomeAssetCard darrellsKodak
     , SomeAssetCard bonnieWalshLoyalAssistant
     , --- guardian [tsk]
-      -- , SomeAssetCard runicAxe
-      SomeAssetCard guardDog2
+      SomeAssetCard huntersArmor
+    , SomeAssetCard runicAxe
+    , SomeAssetCard guardDog2
     , SomeAssetCard handcuffs2
     , --- seeker [tsk]
       SomeAssetCard empiricalHypothesis

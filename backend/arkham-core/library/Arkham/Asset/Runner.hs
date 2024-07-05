@@ -33,11 +33,11 @@ import Arkham.Matcher (
 import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Window (mkAfter, mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (non)
+import Data.Map.Strict qualified as Map
 
 defeated :: HasGame m => AssetAttrs -> Source -> m (Maybe DefeatedBy)
 defeated AssetAttrs {assetId, assetAssignedHealthDamage, assetAssignedSanityDamage} source = do
@@ -78,6 +78,19 @@ instance RunMessage AssetAttrs where
           else a <$ push (Ready $ toTarget a)
       _ -> a <$ push (Ready $ toTarget a)
     RemoveAllDoom _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Doom
+    PlaceTokens _ target tType n | isTarget a target && tokenIsUse tType -> case assetPrintedUses of
+      NoUses -> pure $ a & tokensL . at tType . non 0 %~ (+ n)
+      Uses useType'' _ | tType == useType'' -> do
+        pure $ a & tokensL . ix tType +~ n
+      UsesWithLimit useType'' _ pl | tType == useType'' -> do
+        l <- calculate pl
+        pure $ a & tokensL . ix tType %~ min l . (+ n)
+      _ ->
+        error
+          $ "Trying to add the wrong use type, has "
+          <> show assetPrintedUses
+          <> ", but got: "
+          <> show tType
     PlaceTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ addTokens tType n
     MoveTokens source _ tType n | isSource a source -> pure $ a & tokensL %~ subtractTokens tType n
     MoveTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ addTokens tType n
@@ -188,14 +201,18 @@ instance RunMessage AssetAttrs where
       pushWhen shouldDiscard $ toDiscard GameSource assetId
       pure a
     AddUses aid useType' n | aid == assetId -> case assetPrintedUses of
-      NoUses -> pure $ a & usesL . at useType' . non 0 %~ (+ n)
+      NoUses -> pure $ a & tokensL . at useType' . non 0 %~ (+ n)
       Uses useType'' _ | useType' == useType'' -> do
-        pure $ a & usesL . ix useType' +~ n
+        pure $ a & tokensL . ix useType' +~ n
       UsesWithLimit useType'' _ pl | useType' == useType'' -> do
         l <- calculate pl
-        pure $ a & usesL . ix useType' %~ min l . (+ n)
+        pure $ a & tokensL . ix useType' %~ min l . (+ n)
       _ ->
-        error $ "Trying to add the wrong use type, has " <> show assetUses <> ", but got: " <> show useType'
+        error
+          $ "Trying to add the wrong use type, has "
+          <> show assetPrintedUses
+          <> ", but got: "
+          <> show useType'
     MoveUses (isSource a -> True) _ useType' n -> do
       runMessage (Do (SpendUses (toTarget a) useType' n)) a
     MoveUses _ (isTarget a -> True) useType' n -> do
@@ -234,9 +251,9 @@ instance RunMessage AssetAttrs where
       pure a
     Do (SpendUses target useType' n) | isTarget a target -> do
       case assetPrintedUses of
-        NoUses -> pure $ a & usesL . ix useType' %~ max 0 . subtract n
+        NoUses -> pure $ a & tokensL . ix useType' %~ max 0 . subtract n
         Uses useType'' _ | useType' == useType'' -> do
-          let m = findWithDefault 0 useType' assetUses
+          let m = findWithDefault 0 useType' assetTokens
           let remainingUses = max 0 (m - n)
           when (remainingUses == 0) $ for_ assetWhenNoUses \case
             DiscardWhenNoUses -> push $ Discard assetController GameSource (toTarget a)
@@ -244,9 +261,9 @@ instance RunMessage AssetAttrs where
               for_ assetController \iid ->
                 push $ ReturnToHand iid $ toTarget a
             NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
-          pure $ a & usesL . ix useType' .~ remainingUses
+          pure $ a & tokensL . ix useType' .~ remainingUses
         UsesWithLimit useType'' _ _ | useType' == useType'' -> do
-          let m = findWithDefault 0 useType' assetUses
+          let m = findWithDefault 0 useType' assetTokens
           let remainingUses = max 0 (m - n)
           when (remainingUses == 0) $ for_ assetWhenNoUses \case
             DiscardWhenNoUses -> push $ Discard assetController GameSource (toTarget a)
@@ -254,7 +271,7 @@ instance RunMessage AssetAttrs where
               for_ assetController \iid ->
                 push $ ReturnToHand iid $ toTarget a
             NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
-          pure $ a & usesL . ix useType' .~ remainingUses
+          pure $ a & tokensL . ix useType' .~ remainingUses
         _ -> error "Trying to use the wrong use type"
     AttachAsset aid target | aid == assetId -> do
       case target of
@@ -341,17 +358,18 @@ instance RunMessage AssetAttrs where
           controllerF = case assetController of
             Nothing -> controllerL ?~ iid
             Just _ -> id
+          currentUses = Map.filterWithKey (\k _ -> tokenIsUse k) assetTokens
 
       uses <-
-        if assetUses == mempty
+        if currentUses == mempty
           then foldM applyModifier startingUses modifiers
-          else pure assetUses
+          else pure mempty
 
       pure
         $ a
         & placementF
         & controllerF
-        & (usesL .~ uses)
+        & (tokensL %~ Map.unionWith (+) uses . coerce)
     TakeControlOfAsset iid aid | aid == assetId -> do
       push
         =<< checkWindows

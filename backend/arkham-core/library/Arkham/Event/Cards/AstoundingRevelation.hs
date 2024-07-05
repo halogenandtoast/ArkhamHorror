@@ -1,7 +1,7 @@
 module Arkham.Event.Cards.AstoundingRevelation (astoundingRevelation, AstoundingRevelation (..)) where
 
 import Arkham.Ability
-import Arkham.Asset.Uses (UseType (..))
+import Arkham.Asset.Uses
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher

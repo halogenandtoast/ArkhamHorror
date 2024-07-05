@@ -23,7 +23,7 @@ instance HasAbilities PhysicalTraining4 where
 
 instance RunMessage PhysicalTraining4 where
   runMessage msg a@(PhysicalTraining4 attrs) = runQueueT $ case msg of
-    Do BeginRound -> pure . PhysicalTraining4 $ attrs & usesL . ix #resource %~ max 2
+    Do BeginRound -> pure . PhysicalTraining4 $ attrs & tokensL . ix #resource %~ max 2
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOne
         iid

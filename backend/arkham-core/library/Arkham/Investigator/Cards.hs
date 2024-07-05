@@ -69,6 +69,7 @@ allInvestigatorCards =
       , vincentLee
       , kymaniJones
       , aminaZidane
+      , darrellSimmons
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -459,6 +460,14 @@ aminaZidane =
     ("Amina Zidane" <:> "The Operator")
     Mystic
     [Chosen, Cursed]
+
+darrellSimmons :: CardDef
+darrellSimmons =
+  investigator
+    "09015"
+    ("Darrell Simmons" <:> "The Photographer")
+    Survivor
+    [Reporter]
 
 nathanielCho :: CardDef
 nathanielCho =

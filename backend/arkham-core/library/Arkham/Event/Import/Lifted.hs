@@ -20,7 +20,7 @@ import Arkham.Event.Runner as X (
   pushWhen,
   pushWhenM,
   setMeta,
-  usesL,
+  tokensL,
  )
 import Arkham.Helpers.Modifiers as X (getModifiers)
 import Arkham.Message as X (

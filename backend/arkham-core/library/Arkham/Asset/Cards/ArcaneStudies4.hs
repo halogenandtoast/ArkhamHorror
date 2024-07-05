@@ -26,7 +26,7 @@ instance HasAbilities ArcaneStudies4 where
 
 instance RunMessage ArcaneStudies4 where
   runMessage msg a@(ArcaneStudies4 attrs) = case msg of
-    Do BeginRound -> pure . ArcaneStudies4 $ attrs & usesL . ix Resource %~ max 2
+    Do BeginRound -> pure . ArcaneStudies4 $ attrs & tokensL . ix Resource %~ max 2
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       player <- getPlayer iid
       push

@@ -31,7 +31,7 @@ instance RunMessage JuryRig where
     PlayThisEvent iid eid | eid == toId attrs -> do
       assets <- select $ #item <> AssetControlledBy (affectsOthers $ colocatedWith iid)
       chooseOne iid [targetLabel a [PlaceEvent iid eid $ AttachedToAsset a Nothing] | a <- assets]
-      pure . JuryRig $ attrs & usesL . at Durability .~ Just 3
+      pure . JuryRig $ attrs & tokensL . at Durability .~ Just 3
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skillTestModifier (attrs.ability 1) iid (AnySkillValue 2)
       pure e

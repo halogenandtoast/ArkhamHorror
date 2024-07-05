@@ -113,6 +113,7 @@ const resources = computed(() => props.enemy.tokens[TokenType.Resource])
 const leylines = computed(() => props.enemy.tokens[TokenType.Leyline])
 const lostSouls = computed(() => props.enemy.tokens[TokenType.LostSoul])
 const bounties = computed(() => props.enemy.tokens[TokenType.Bounty])
+const evidence = computed(() => props.enemy.tokens[TokenType.Evidence])
 
 const omnipotent = computed(() => {
   const {modifiers} = props.enemy
@@ -217,6 +218,7 @@ watch(abilities, (abilities) => {
             <PoolItem v-if="leylines && leylines > 0" type="resource" tooltip="Leyline" :amount="leylines" />
             <PoolItem v-if="lostSouls && lostSouls > 0" type="resource" :amount="lostSouls" />
             <PoolItem v-if="bounties && bounties > 0" type="resource" :amount="bounties" />
+            <PoolItem v-if="evidence && evidence > 0" type="resource" :amount="evidence" />
             <Token
               v-for="(sealedToken, index) in enemy.sealedChaosTokens"
               :key="index"

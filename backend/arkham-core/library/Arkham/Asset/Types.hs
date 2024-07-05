@@ -20,16 +20,16 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Key
 import Arkham.Matcher.Types (AssetMatcher (AssetWithId), Be (..))
-import Arkham.Message hiding (AssetDamage, Damage)
+import Arkham.Message hiding (AssetDamage)
 import Arkham.Name
 import Arkham.Placement
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
-import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Trait (Trait)
 import Data.Data
+import Data.Map.Strict qualified as Map
 import GHC.Records
 
 data Asset = forall a. IsAsset a => Asset a
@@ -244,7 +244,6 @@ data AssetAttrs = AssetAttrs
   , assetSlots :: [SlotType]
   , assetHealth :: Maybe Int
   , assetSanity :: Maybe Int
-  , assetUses :: Map UseType Int
   , assetPrintedUses :: Uses GameCalculation
   , assetExhausted :: Bool
   , assetExiled :: Bool
@@ -264,6 +263,9 @@ data AssetAttrs = AssetAttrs
   , assetFlipped :: Bool
   }
   deriving stock (Show, Eq, Generic)
+
+assetUses :: AssetAttrs -> Map UseType Int
+assetUses = Map.filterWithKey (\k _ -> tokenIsUse k) . coerce . assetTokens
 
 instance Is AssetAttrs AssetId where
   is = (==) . toId
@@ -303,7 +305,7 @@ instance HasField "owner" AssetAttrs (Maybe InvestigatorId) where
   getField = assetOwner
 
 instance HasField "uses" AssetAttrs (Map UseType Int) where
-  getField = assetUses
+  getField = Map.filterWithKey (\k _ -> tokenIsUse k) . coerce . assetTokens
 
 instance HasField "tokens" AssetAttrs Tokens where
   getField = assetTokens
@@ -371,11 +373,11 @@ instance FromJSON AssetAttrs where
     assetSlots <- o .: "slots"
     assetHealth <- o .: "health"
     assetSanity <- o .: "sanity"
-    assetUses <- o .: "uses"
+    deprecatedAssetUses <- o .:? "uses" .!= mempty
     assetPrintedUses <- o .: "printedUses" <|> (fmap GameValueCalculation <$> o .: "printedUses")
     assetExhausted <- o .: "exhausted"
     assetExiled <- o .:? "exiled" .!= False
-    assetTokens <- o .: "tokens"
+    assetTokens <- Map.unionWith (+) deprecatedAssetUses <$> o .: "tokens"
     assetCanLeavePlayByNormalMeans <- o .: "canLeavePlayByNormalMeans"
     assetWhenNoUses <- o .: "whenNoUses"
     assetIsStory <- o .: "isStory"
@@ -426,7 +428,6 @@ assetWith f cardDef g =
             , assetSlots = cdSlots cardDef
             , assetHealth = Nothing
             , assetSanity = Nothing
-            , assetUses = mempty
             , assetPrintedUses = cdUses cardDef
             , assetExhausted = False
             , assetExiled = False

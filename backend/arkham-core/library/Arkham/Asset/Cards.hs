@@ -247,6 +247,7 @@ allPlayerAssetCards =
       , darioElAmin
       , darkHorse
       , darkRitual
+      , darrellsKodak
       , davidRenfield
       , dayanaEsperence3
       , deathXiii1
@@ -5520,6 +5521,12 @@ bonesaw =
       , cdSlots = [#hand]
       }
 
+woundedBystanderOnDeathsDoorstep :: CardDef
+woundedBystanderOnDeathsDoorstep =
+  (weakness "09007" ("Wounded Bystander" <:> "On Death's Doorstep"))
+    { cdCardTraits = setFromList [Ally, Bystander]
+    }
+
 grapplingHook :: CardDef
 grapplingHook =
   signature "09008"
@@ -5529,11 +5536,13 @@ grapplingHook =
       , cdSlots = [#hand]
       }
 
-woundedBystanderOnDeathsDoorstep :: CardDef
-woundedBystanderOnDeathsDoorstep =
-  (weakness "09007" ("Wounded Bystander" <:> "On Death's Doorstep"))
-    { cdCardTraits = setFromList [Ally, Bystander]
-    }
+darrellsKodak :: CardDef
+darrellsKodak =
+  signature "09015"
+    $ (asset "09016" ("Darrell's Kodak" <:> "Proof in the Pudding") 2 Neutral)
+      { cdCardTraits = setFromList [Item, Tool]
+      , cdSkills = [#intellect, #agility, #wild]
+      }
 
 runicAxe :: CardDef
 runicAxe =

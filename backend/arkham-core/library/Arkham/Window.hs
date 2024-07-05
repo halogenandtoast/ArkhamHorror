@@ -27,7 +27,6 @@ import Arkham.Strategy (DamageStrategy)
 import Arkham.Target (Target)
 import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
-import Arkham.Token
 import Arkham.Token qualified as Token
 import Data.Aeson.TH
 import GHC.Records
@@ -158,6 +157,7 @@ data WindowType
   | DuringTurn InvestigatorId
   | EndOfGame
   | EndTurn InvestigatorId
+  | TreacheryEntersPlay TreacheryId
   | EnemyAttacked InvestigatorId Source EnemyId
   | EnemyAttacks EnemyAttackDetails
   | EnemyAttacksEvenIfCancelled EnemyAttackDetails

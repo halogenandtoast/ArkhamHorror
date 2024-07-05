@@ -55,5 +55,5 @@ instance RunMessage TheCouncilsCoffer2 where
           [SkillLabel sType [chooseSkillTest sType] | sType <- allSkills]
       pure a
     PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
-      pure . TheCouncilsCoffer2 $ attrs & usesL . ix Lock %~ max 0 . subtract 1
+      pure . TheCouncilsCoffer2 $ attrs & tokensL . ix Lock %~ max 0 . subtract 1
     _ -> TheCouncilsCoffer2 <$> runMessage msg attrs

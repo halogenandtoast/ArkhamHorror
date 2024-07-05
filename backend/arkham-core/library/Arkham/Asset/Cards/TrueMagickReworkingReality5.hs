@@ -43,7 +43,7 @@ instance HasAbilities TrueMagickReworkingReality5 where
 
 instance RunMessage TrueMagickReworkingReality5 where
   runMessage msg (TrueMagickReworkingReality5 (With attrs meta)) = runQueueT $ case msg of
-    Do BeginRound -> pure . TrueMagickReworkingReality5 . (`with` meta) $ attrs & usesL . ix Charge %~ max 1
+    Do BeginRound -> pure . TrueMagickReworkingReality5 . (`with` meta) $ attrs & tokensL . ix Charge %~ max 1
     UseCardAbility iid (isSource attrs -> True) 1 ws _ -> do
       hand <- fieldMap InvestigatorHand (filterCards @CardMatcher (#asset <> #spell)) iid
       let adjustCost = overCost (over biplate (const attrs.id))

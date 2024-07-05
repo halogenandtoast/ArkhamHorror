@@ -111,6 +111,7 @@ allPlayerTreacheryCards =
       , rationalThought
       , rexsCurse
       , rookieMistake
+      , ruinedFilm
       , searchingForIzzie
       , selfCentered
       , selfDestructive
@@ -2113,6 +2114,12 @@ deafeningSilence :: CardDef
 deafeningSilence =
   (weakness "09014" "Deafening Silence")
     { cdCardTraits = setFromList [Omen]
+    }
+
+ruinedFilm :: CardDef
+ruinedFilm =
+  (weakness "09017" "Ruined Film")
+    { cdCardTraits = setFromList [Blunder]
     }
 
 theZealotsSeal :: CardDef

@@ -15,6 +15,7 @@ import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Story from '@/arkham/components/Story.vue';
 import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Asset';
+import {isUse} from '@/arkham/types/Token';
 import { Card } from '../types/Card';
 
 const props = defineProps<{
@@ -115,6 +116,9 @@ const secrets = computed(() => props.asset.tokens[TokenType.Secret])
 const corruption = computed(() => props.asset.tokens[TokenType.Corruption])
 const offerings = computed(() => props.asset.tokens[TokenType.Offering])
 
+const uses = computed(() => Object.entries(props.asset.tokens).filter(([k, v]) => isUse(k) && v > 0))
+const formatUse = (k: string) => k.replace(/([a-z])([A-Z])/g, '$1 $2')
+
 const damage = computed(() => props.asset.tokens[TokenType.Damage])
 const horror = computed(() => props.asset.tokens[TokenType.Horror])
 
@@ -122,23 +126,12 @@ const hasPool = computed(() => {
   const {
     sanity,
     health,
-    uses,
     tokens,
     sealedChaosTokens,
     keys,
   } = props.asset;
 
-  return cardCode.value == 'c07189' || (Object.values(tokens).some((v) => v > 0) || sealedChaosTokens.length > 0 || keys.length > 0 || uses || sanity || health
-    || (doom.value ?? 0) > 0
-    || (clues.value ?? 0) > 0
-    || (resources.value ?? 0) > 0
-    || (leylines.value ?? 0) > 0
-    || (charges.value ?? 0) > 0
-    || (secrets.value ?? 0) > 0
-    || (corruption.value ?? 0) > 0
-    || (offerings.value ?? 0) > 0
-    || (damage.value ?? 0) > 0
-    || (horror.value ?? 0) > 0)
+  return cardCode.value == 'c07189' || (Object.values(tokens).some((v) => v > 0) || sealedChaosTokens.length > 0 || keys.length > 0 || sanity || health)
 })
 
 const choose = (idx: number) => emits('choose', idx)
@@ -193,10 +186,11 @@ const assetStory = computed(() => {
           <div class="keys" v-if="keys.length > 0">
             <Key v-for="key in keys" :key="key" :name="key" />
           </div>
-          <template v-for="[use, amount] in Object.entries(asset.uses)" :key="use">
+          <template v-for="[use, amount] in uses" :key="use">
             <PoolItem
               v-if="amount > 0"
               type="resource"
+              :tooltip="formatUse(use)"
               :amount="amount"
             />
           </template>
@@ -216,12 +210,6 @@ const assetStory = computed(() => {
           />
           <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
           <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
-          <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
-          <PoolItem v-if="leylines && leylines > 0" type="resource" tooltip="Leyline" :amount="leylines" />
-          <PoolItem v-if="charges && charges > 0" type="resource" :amount="charges" />
-          <PoolItem v-if="secrets && secrets > 0" type="resource" :amount="secrets" />
-          <PoolItem v-if="corruption && corruption > 0" type="resource" :amount="corruption" />
-          <PoolItem v-if="offerings && offerings > 0" type="resource" :amount="offerings" />
           <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
         </div>
 

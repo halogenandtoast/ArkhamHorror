@@ -70,10 +70,13 @@ instance RunMessage TreacheryAttrs where
       push $ toDiscard GameSource a
       pure a
     PlaceTreachery tid placement | tid == treacheryId -> do
+      let entersPlay = isOutOfPlayPlacement a.placement && isInPlayPlacement placement
       case placement of
         InThreatArea iid -> do
-          pushM $ checkAfter $ Window.EntersThreatArea iid (toCard a)
-        _ -> pure ()
+          pushM $ checkWindows $ Window.mkAfter (Window.EntersThreatArea iid $ toCard a)
+            : [Window.mkAfter $ Window.TreacheryEntersPlay tid | entersPlay]
+        _ -> when entersPlay do
+          pushM $ checkAfter $ Window.TreacheryEntersPlay tid
       pure $ a & placementL .~ placement
     PlaceTokens _ (isTarget a -> True) token n -> do
       pure $ a & tokensL %~ addTokens token n

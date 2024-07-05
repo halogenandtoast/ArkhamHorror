@@ -40,7 +40,7 @@ instance HasAbilities Antiquary3 where
 
 instance RunMessage Antiquary3 where
   runMessage msg a@(Antiquary3 attrs) = runQueueT $ case msg of
-    Do BeginRound -> pure . Antiquary3 $ attrs & usesL . ix Resource %~ max 2
+    Do BeginRound -> pure . Antiquary3 $ attrs & tokensL . ix Resource %~ max 2
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skillTestModifier (attrs.ability 1) iid (AnySkillValue 1)
       pure a

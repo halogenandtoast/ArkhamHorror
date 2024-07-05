@@ -131,6 +131,7 @@ allInvestigators =
       , SomeInvestigatorCard vincentLee
       , SomeInvestigatorCard kymaniJones
       , SomeInvestigatorCard aminaZidane
+      , SomeInvestigatorCard darrellSimmons
       , SomeInvestigatorCard nathanielCho
       , SomeInvestigatorCard harveyWalters
       , SomeInvestigatorCard winifredHabbamock

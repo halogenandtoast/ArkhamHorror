@@ -22,7 +22,7 @@ instance HasAbilities DigDeep4 where
 
 instance RunMessage DigDeep4 where
   runMessage msg a@(DigDeep4 attrs) = case msg of
-    Do BeginRound -> pure . DigDeep4 $ attrs & usesL . ix Resource %~ max 2
+    Do BeginRound -> pure . DigDeep4 $ attrs & tokensL . ix Resource %~ max 2
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       player <- getPlayer iid
       let source = attrs.ability 1

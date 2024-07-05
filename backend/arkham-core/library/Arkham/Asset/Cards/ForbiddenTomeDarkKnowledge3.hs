@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Damage
+import Arkham.DamageEffect
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 
@@ -51,7 +52,7 @@ instance RunMessage ForbiddenTomeDarkKnowledge3 where
         selectTargets $ HealableInvestigator (toSource attrs) DamageType $ colocatedWith iid
       assets <-
         selectTargets $ HealableAsset (toSource attrs) DamageType $ AssetAt (locationWithInvestigator iid)
-      enemies <- selectTargets $ EnemyAt $ locationWithInvestigator iid
+      enemies <- select $ EnemyAt $ locationWithInvestigator iid
       player <- getPlayer iid
       push
         $ chooseOne
@@ -61,7 +62,7 @@ instance RunMessage ForbiddenTomeDarkKnowledge3 where
             [ HealDamage target (toSource attrs) 1
             , chooseOne
                 player
-                [ TargetLabel enemy [Damage enemy (toSource attrs) 1]
+                [ targetLabel enemy [EnemyDamage enemy $ nonAttack (toSource attrs) 1]
                 | enemy <- enemies
                 ]
             ]

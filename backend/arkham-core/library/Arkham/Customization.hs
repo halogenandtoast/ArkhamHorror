@@ -11,6 +11,15 @@ data Customization
   | Lightweight -- 4
   | Hexdrinker -- 5
   | ArmorOfThorns -- 6
+  | -- Runic Axe 09021
+    Heirloom -- 0
+  | InscriptionOfGlory -- 1
+  | InscriptionOfTheElders -- 2
+  | InscriptionOfTheHunt -- 3
+  | InscriptionOfFury -- 4
+  | AncientPower -- 5
+  | Saga -- 6
+  | Scriptweaver -- 7
   | -- Empirical Hypothesis 09041
     PessimisticOutlook -- 0
   | TrialAndError -- 1

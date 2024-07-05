@@ -5578,10 +5578,22 @@ huntersArmor =
 
 runicAxe :: CardDef
 runicAxe =
-  (asset "09022" "Runix Axe" 4 Guardian)
+  (asset "09022" "Runic Axe" 4 Guardian)
     { cdCardTraits = setFromList [Item, Weapon, Melee]
     , cdSkills = [#combat]
     , cdSlots = [#hand, #hand]
+    , cdUses = uses Charge 4
+    , cdCustomizations =
+        mapFromList
+          [ (Heirloom, 1)
+          , (InscriptionOfGlory, 1)
+          , (InscriptionOfTheElders, 1)
+          , (InscriptionOfTheHunt, 1)
+          , (InscriptionOfFury, 1)
+          , (AncientPower, 3)
+          , (Saga, 3)
+          , (Scriptweaver, 4)
+          ]
     }
 
 guardDog2 :: CardDef

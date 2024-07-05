@@ -43,7 +43,6 @@ import Arkham.SlotType
 import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Timing
-import Arkham.Token
 import Arkham.Trait
 import Arkham.Zone
 import Control.Lens.Plated (Plated)
@@ -390,6 +389,7 @@ data EventMatcher
   | EventWithTrait Trait
   | EventWithClass ClassSymbol
   | EventWithCardId CardId
+  | EventWithToken Token
   | EventControlledBy InvestigatorMatcher
   | EventAt LocationMatcher
   | EventWithDoom ValueMatcher
@@ -608,6 +608,7 @@ data SkillMatcher
   | YourSkill
   | AnySkill
   | NotSkill SkillMatcher
+  | SkillWithToken Token
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup SkillMatcher where
@@ -625,6 +626,7 @@ data TreacheryMatcher
   = TreacheryWithTitle Text
   | TreacheryWithFullTitle Text Text
   | TreacheryWithId TreacheryId
+  | TreacheryWithToken Token
   | TreacheryWithDoom ValueMatcher
   | TreacheryWithHorror ValueMatcher
   | TreacheryWithTrait Trait
@@ -915,6 +917,7 @@ data WindowMatcher
   | EnemyEvaded Timing Who EnemyMatcher
   | EnemyEngaged Timing Who EnemyMatcher
   | MythosStep WindowMythosStepMatcher
+  | TreacheryEntersPlay Timing TreacheryMatcher
   | AgendaEntersPlay Timing AgendaMatcher
   | AssetEntersPlay Timing AssetMatcher
   | AssetLeavesPlay Timing AssetMatcher

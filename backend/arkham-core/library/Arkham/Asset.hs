@@ -856,6 +856,7 @@ allAssets =
       SomeAssetCard bonesaw
     , SomeAssetCard woundedBystanderOnDeathsDoorstep
     , SomeAssetCard grapplingHook
+    , SomeAssetCard darrellsKodak
     , --- guardian [tsk]
       -- , SomeAssetCard runicAxe
       SomeAssetCard guardDog2

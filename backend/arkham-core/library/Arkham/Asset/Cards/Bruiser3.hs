@@ -40,7 +40,7 @@ instance HasAbilities Bruiser3 where
 
 instance RunMessage Bruiser3 where
   runMessage msg a@(Bruiser3 attrs) = runQueueT $ case msg of
-    Do BeginRound -> pure . Bruiser3 $ attrs & usesL . ix Resource %~ max 2
+    Do BeginRound -> pure . Bruiser3 $ attrs & tokensL . ix Resource %~ max 2
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skillTestModifier (attrs.ability 1) iid (AnySkillValue 1)
       pure a

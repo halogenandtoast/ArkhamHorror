@@ -22,7 +22,7 @@ instance HasAbilities Hyperawareness4 where
 
 instance RunMessage Hyperawareness4 where
   runMessage msg a@(Hyperawareness4 attrs) = case msg of
-    Do BeginRound -> pure . Hyperawareness4 $ attrs & usesL . ix Resource %~ max 2
+    Do BeginRound -> pure . Hyperawareness4 $ attrs & tokensL . ix Resource %~ max 2
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       player <- getPlayer iid
       let source = attrs.ability 1

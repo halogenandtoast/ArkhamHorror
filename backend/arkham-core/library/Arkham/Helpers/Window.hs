@@ -134,6 +134,24 @@ splitWithWindows msg windows' = do
     <> [msg]
     <> [CheckWindow iids $ map (mkWindow Timing.After) windows']
 
+discoveredClues :: [Window] -> Int
+discoveredClues =
+  fromMaybe (error "missing discovery") . asum . map \case
+    (windowType -> Window.DiscoverClues _ _ _ n) -> Just n
+    _ -> Nothing
+
+discoveredLocation :: [Window] -> LocationId
+discoveredLocation =
+  fromMaybe (error "missing discovery") . asum . map \case
+    (windowType -> Window.DiscoverClues _ lid _ _) -> Just lid
+    _ -> Nothing
+
+discoveredLocationAndClues :: [Window] -> (LocationId, Int)
+discoveredLocationAndClues =
+  fromMaybe (error "missing discovery") . asum . map \case
+    (windowType -> Window.DiscoverClues _ lid _ n) -> Just (lid, n)
+    _ -> Nothing
+
 defeatedEnemy :: [Window] -> EnemyId
 defeatedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case

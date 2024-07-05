@@ -442,6 +442,7 @@ allTreacheries =
       -- signature
       SomeTreacheryCard selflessToAFault
     , SomeTreacheryCard deafeningSilence
+    , SomeTreacheryCard ruinedFilm
     , -- Return to the Night of the Zealot
       -- Return to the Gathering
       SomeTreacheryCard theZealotsSeal

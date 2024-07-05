@@ -1,58 +1,87 @@
 import { JsonDecoder } from 'ts.data.json';
 
-// data Token = Resource | Damage | Horror | Clue | Doom | TokenAs Text Token
-
 export type Token
-  = 'Doom'
-  | 'Clue'
-  | 'Resource'
-  | 'Damage'
-  | 'Horror'
-  | 'Charge'
-  | 'Secret'
-  | 'Corruption'
-  | 'LostSoul'
+  = 'Aether'
+  | 'AlarmLevel'
+  | 'Ammo'
   | 'Bounty'
-  | 'Offering'
+  | 'Charge'
+  | 'Clue'
+  | 'Corruption'
+  | 'Damage'
   | 'Depth'
+  | 'Doom'
+  | 'Durability'
+  | 'Evidence'
+  | 'Horror'
+  | 'Key'
   | 'Leyline'
-  | 'AlarmLevel';
+  | 'Lock'
+  | 'LostSoul'
+  | 'Offering'
+  | 'Resource'
+  | 'Secret'
+  | 'Supply'
+  | 'Try'
+  | 'Whistle'
 
 export const TokenType = {
-  Doom: 'Doom',
-  Clue: 'Clue',
-  Resource: 'Resource',
-  Damage: 'Damage',
-  Horror: 'Horror',
-  Charge: 'Charge',
-  Secret: 'Secret',
-  Corruption: 'Corruption',
-  LostSoul: 'LostSoul',
-  Bounty: 'Bounty',
-  Offering: 'Offering',
-  Depth: 'Depth',
-  Leyline: 'Leyline',
+  Aether: 'Aether',
   AlarmLevel: 'AlarmLevel',
+  Ammo: 'Ammo',
+  Bounty: 'Bounty',
+  Charge: 'Charge',
+  Clue: 'Clue',
+  Corruption: 'Corruption',
+  Damage: 'Damage',
+  Depth: 'Depth',
+  Doom: 'Doom',
+  Durability: 'Durability',
+  Evidence: 'Evidence',
+  Horror: 'Horror',
+  Key: 'Key',
+  Leyline: 'Leyline',
+  Lock: 'Lock',
+  LostSoul: 'LostSoul',
+  Offering: 'Offering',
+  Resource: 'Resource',
+  Secret: 'Secret',
+  Supply: 'Supply',
+  Try: 'Try',
+  Whistle: 'Whistle',
 } as const;
 
 export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>([
-  JsonDecoder.isExactly('Doom'),
-  JsonDecoder.isExactly('Clue'),
-  JsonDecoder.isExactly('Resource'),
-  JsonDecoder.isExactly('Damage'),
-  JsonDecoder.isExactly('Horror'),
-  JsonDecoder.isExactly('Charge'),
-  JsonDecoder.isExactly('Secret'),
-  JsonDecoder.isExactly('Corruption'),
-  JsonDecoder.isExactly('LostSoul'),
-  JsonDecoder.isExactly('Bounty'),
-  JsonDecoder.isExactly('Offering'),
-  JsonDecoder.isExactly('Depth'),
-  JsonDecoder.isExactly('Leyline'),
+  JsonDecoder.isExactly('Aether'),
   JsonDecoder.isExactly('AlarmLevel'),
+  JsonDecoder.isExactly('Ammo'),
+  JsonDecoder.isExactly('Bounty'),
+  JsonDecoder.isExactly('Charge'),
+  JsonDecoder.isExactly('Clue'),
+  JsonDecoder.isExactly('Corruption'),
+  JsonDecoder.isExactly('Damage'),
+  JsonDecoder.isExactly('Depth'),
+  JsonDecoder.isExactly('Doom'),
+  JsonDecoder.isExactly('Durability'),
+  JsonDecoder.isExactly('Evidence'),
+  JsonDecoder.isExactly('Horror'),
+  JsonDecoder.isExactly('Key'),
+  JsonDecoder.isExactly('Leyline'),
+  JsonDecoder.isExactly('Lock'),
+  JsonDecoder.isExactly('LostSoul'),
+  JsonDecoder.isExactly('Offering'),
+  JsonDecoder.isExactly('Resource'),
+  JsonDecoder.isExactly('Secret'),
+  JsonDecoder.isExactly('Supply'),
+  JsonDecoder.isExactly('Try'),
+  JsonDecoder.isExactly('Whistle'),
 ], 'Token');
 
 export type Tokens = { [key in Token]?: number };
+
+export function isUse(t: Token): boolean {
+  return t !== 'Damage' && t !== 'Horror' && t !== 'Clue' && t !== 'Doom';
+}
 
 export const tokensDecoder =
   JsonDecoder.array<[Token, number]>(

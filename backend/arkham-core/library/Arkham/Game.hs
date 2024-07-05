@@ -1167,6 +1167,7 @@ getTreacheriesMatching matcher = do
     TreacheryWithDoom gameValueMatcher -> \t -> do
       doom <- field TreacheryDoom (toId t)
       doom `gameValueMatches` gameValueMatcher
+    TreacheryWithToken tkn -> \t -> fieldMap TreacheryTokens (Token.hasToken tkn) (toId t)
     TreacheryMatches matchers ->
       \treachery -> allM (`matcherFilter` treachery) matchers
     TreacheryOneOf matchers ->
@@ -2033,7 +2034,7 @@ getAssetsMatching matcher = do
         ( \a -> do
             uses <- toStartingUses =<< field AssetStartingUses (toId a)
             pure $ flip all (mapToList uses) $ \(uType, uCount) ->
-              findWithDefault 0 uType (attr assetUses a) < uCount
+              findWithDefault 0 uType (attr assetTokens a) < uCount
         )
         as
     AssetWithUseType uType ->
@@ -2204,6 +2205,7 @@ getEventsMatching matcher = do
       filterM (fmap (elem modifierType) . getModifiers . toId) as
     EventWithDoom valueMatcher ->
       filterM ((`gameValueMatches` valueMatcher) . attr eventDoom) as
+    EventWithToken tkn -> filterM (\e -> fieldMap EventTokens (Token.hasToken tkn) (toId e)) as
     EventReady -> pure $ filter (not . attr eventExhausted) as
     EventMatches ms -> foldM filterMatcher as ms
     EventOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
@@ -2248,6 +2250,7 @@ getSkillsMatching matcher = do
       pure $ filter ((`elem` iids) . attr skillOwner) as
     SkillWithPlacement placement ->
       pure $ filter ((== placement) . attr skillPlacement) as
+    SkillWithToken _ -> pure [] -- update if we ever have a skill that can hold tokens
     SkillIs cardCode ->
       pure $ filter ((== cardCode) . toCardCode) as
     SkillMatches ms -> foldM filterMatcher as ms
@@ -2945,7 +2948,7 @@ instance Projection Asset where
       AssetDoom -> pure $ assetDoom attrs
       AssetExhausted -> pure assetExhausted
       AssetPlacement -> pure assetPlacement
-      AssetUses -> pure assetUses
+      AssetUses -> pure $ Map.filterWithKey (\k _ -> Token.tokenIsUse k) (coerce assetTokens)
       AssetStartingUses -> pure . cdUses $ toCardDef attrs
       AssetController -> do
         modifiers' <- getModifiers (AssetTarget aid)
@@ -3814,7 +3817,8 @@ eventField e fld = do
     EventWindows -> pure eventWindows
     EventCardId -> pure eventCardId
     EventSealedChaosTokens -> pure eventSealedChaosTokens
-    EventUses -> pure eventUses
+    EventUses -> pure $ Map.filterWithKey (\k _ -> Token.tokenIsUse k) eventTokens
+    EventTokens -> pure eventTokens
     EventPlacement -> pure eventPlacement
     EventTraits -> pure $ cdCardTraits cdef
     EventAbilities -> pure $ getAbilities e

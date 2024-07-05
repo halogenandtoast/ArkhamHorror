@@ -1,36 +1,11 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Arkham.Asset.Uses where
+module Arkham.Asset.Uses (module Arkham.Asset.Uses, module Arkham.Token) where
 
 import Arkham.Prelude
-import Data.Aeson.TH
-import GHC.OverloadedLabels
+import Arkham.Token
 
-data UseType
-  = Ammo
-  | Supply
-  | Secret
-  | Charge
-  | Try
-  | Bounty
-  | Whistle
-  | Resource
-  | Key
-  | Lock
-  | Evidence
-  | Offering
-  | Leyline
-  | Aether
-  | Durability
-  deriving stock (Show, Eq, Ord, Data)
-
-instance IsLabel "resource" UseType where
-  fromLabel = Resource
-
-$(deriveJSON defaultOptions ''UseType)
-
-deriving anyclass instance ToJSONKey UseType
-deriving anyclass instance FromJSONKey UseType
+type UseType = Token
 
 data Uses n = NoUses | Uses UseType n | UsesWithLimit UseType n n
   deriving stock (Show, Eq, Ord, Data, Functor)

@@ -509,6 +509,7 @@ library
       Arkham.Asset.Cards.DarioElAmin
       Arkham.Asset.Cards.DarkHorse
       Arkham.Asset.Cards.DarkRitual
+      Arkham.Asset.Cards.DarrellsKodak
       Arkham.Asset.Cards.DavidRenfield
       Arkham.Asset.Cards.DayanaEsperence3
       Arkham.Asset.Cards.DeathXIII1
@@ -1814,6 +1815,7 @@ library
       Arkham.Investigator.Cards.DaisyWalker
       Arkham.Investigator.Cards.DaisyWalkerParallel
       Arkham.Investigator.Cards.DanielaReyes
+      Arkham.Investigator.Cards.DarrellSimmons
       Arkham.Investigator.Cards.DexterDrake
       Arkham.Investigator.Cards.DianaStanley
       Arkham.Investigator.Cards.FatherMateo
@@ -2980,6 +2982,7 @@ library
       Arkham.Treachery.Cards.RottingRemains
       Arkham.Treachery.Cards.RottingRemainsBloodOnTheAltar
       Arkham.Treachery.Cards.RuinAndDestruction
+      Arkham.Treachery.Cards.RuinedFilm
       Arkham.Treachery.Cards.SearchingForIzzie
       Arkham.Treachery.Cards.SecretsInTheAttic
       Arkham.Treachery.Cards.SecretsOfTheBeyond

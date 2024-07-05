@@ -2266,6 +2266,9 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
       _ -> noMatch
     Matcher.OrWindowMatcher matchers ->
       anyM (windowMatches iid source window') matchers
+    Matcher.TreacheryEntersPlay timing treacheryMatcher -> guardTiming timing $ \case
+      Window.TreacheryEntersPlay treacheryId -> treacheryId <=~> treacheryMatcher
+      _ -> noMatch
     Matcher.EnemySpawns timing whereMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemySpawns enemyId locationId ->

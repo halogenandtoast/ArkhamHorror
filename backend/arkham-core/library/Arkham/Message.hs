@@ -74,7 +74,6 @@ import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
 import Arkham.Tarot
-import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Trait
 import Arkham.Window (Window, WindowType)
@@ -514,7 +513,6 @@ data Message
   | CreatedEffect EffectId (Maybe (EffectMetadata Window Message)) Source Target
   | CrossOutRecord CampaignLogKey
   | SetCampaignLog CampaignLog
-  | Damage Target Source Int
   | DeckHasNoCards InvestigatorId (Maybe Target)
   | DisableEffect EffectId
   | Discard (Maybe InvestigatorId) Source Target

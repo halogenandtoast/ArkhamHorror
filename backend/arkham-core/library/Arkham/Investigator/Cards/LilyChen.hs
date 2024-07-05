@@ -1,7 +1,6 @@
 module Arkham.Investigator.Cards.LilyChen (lilyChen, LilyChen (..)) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Helpers.Investigator (startsWith)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (Field (InvestigatorHand))

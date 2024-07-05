@@ -53,6 +53,7 @@ data instance Field Event :: Type -> Type where
   EventCardId :: Field Event CardId
   EventSealedChaosTokens :: Field Event [ChaosToken]
   EventUses :: Field Event (Map UseType Int)
+  EventTokens :: Field Event (Map UseType Int)
   EventWindows :: Field Event [Window]
 
 data instance Field (InHandEntity Event) :: Type -> Type where
@@ -84,7 +85,7 @@ data EventAttrs = EventAttrs
   , eventWindows :: [Window]
   , eventTarget :: Maybe Target
   , eventMeta :: Value
-  , eventUses :: Map UseType Int
+  , eventTokens :: Map UseType Int
   }
   deriving stock (Show, Eq, Generic)
 
@@ -157,7 +158,8 @@ instance FromJSON EventAttrs where
     eventWindows <- o .: "windows"
     eventTarget <- o .: "target"
     eventMeta <- o .:? "meta" .!= Null
-    eventUses <- o .:? "uses" .!= mempty
+    deprecatedEventUses <- o .:? "uses" .!= mempty
+    eventTokens <- o .:? "tokens" .!= deprecatedEventUses
 
     pure EventAttrs {..}
 
@@ -200,7 +202,7 @@ event f cardDef =
             , eventWindows = []
             , eventTarget = Nothing
             , eventMeta = Null
-            , eventUses = mempty
+            , eventTokens = mempty
             }
     }
 

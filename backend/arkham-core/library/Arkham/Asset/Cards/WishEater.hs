@@ -44,7 +44,9 @@ instance RunMessage WishEater where
       attrs' <- runMessage msg attrs
       emptyVesselCard <- field AssetCard emptyVessel
       push $ PlaceInBonded iid emptyVesselCard
-      pure $ WishEater (attrs' {assetUses = singletonMap Charge charges})
+      pure
+        $ WishEater
+          (attrs' {assetTokens = singletonMap Charge charges <> assetTokens attrs'})
     UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> [token]) _ -> do
       let source = toAbilitySource attrs 1
       healDamage <- canHaveDamageHealed source iid

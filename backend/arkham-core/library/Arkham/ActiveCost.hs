@@ -606,7 +606,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       push $ SpendActions iid source' actions' modifiedActionCost
       withPayment $ ActionPayment x
     UseCost assetMatcher uType n -> do
-      assets <- select assetMatcher
+      assets <- select $ assetMatcher <> AssetWithTokens (atLeast n) uType
       push $ chooseOrRunOne player [targetLabel aid [SpendUses (AssetTarget aid) uType n] | aid <- assets]
       withPayment $ UsesPayment n
     EventUseCost eventMatcher uType n -> do

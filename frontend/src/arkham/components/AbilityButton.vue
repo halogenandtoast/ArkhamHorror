@@ -172,6 +172,10 @@ const abilityLabel = computed(() => {
     return "Objective"
   }
 
+  if (ability.value.type.tag === "CustomizationReaction") {
+    return ability.value.type.label
+  }
+
   if (isReactionAbility.value === true) {
     return ""
   }

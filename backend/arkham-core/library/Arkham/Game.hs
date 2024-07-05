@@ -2968,7 +2968,10 @@ instance Projection Asset where
       AssetCardId -> pure assetCardId
       AssetSlots -> do
         mods <- getModifiers aid
-        pure $ assetSlots <> [s | AdditionalSlot s <- mods]
+        pure
+          $ filter ((`notElem` mods) . DoNotTakeUpSlot)
+          $ assetSlots
+          <> [s | AdditionalSlot s <- mods]
       AssetSealedChaosTokens -> pure assetSealedChaosTokens
       AssetCardsUnderneath -> pure assetCardsUnderneath
       -- virtual

@@ -3,7 +3,15 @@ module Arkham.Customization where
 import Arkham.Prelude
 
 data Customization
-  = -- Empirical Hypothesis 09041
+  = -- Hunter's Armor 09021
+    Enchanted -- 0
+  | ProtectiveRunes -- 1
+  | Durable -- 2
+  | Hallowed -- 3
+  | Lightweight -- 4
+  | Hexdrinker -- 5
+  | ArmorOfThorns -- 6
+  | -- Empirical Hypothesis 09041
     PessimisticOutlook -- 0
   | TrialAndError -- 1
   | IndepedentVariable -- 2

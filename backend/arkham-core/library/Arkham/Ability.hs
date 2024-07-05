@@ -234,6 +234,7 @@ abilityTypeActions :: AbilityType -> [Action]
 abilityTypeActions = \case
   FastAbility' _ actions -> actions
   ReactionAbility {} -> []
+  CustomizationReaction {} -> []
   ActionAbility actions _ -> #activate : actions
   ActionAbilityWithSkill actions _ _ -> #activate : actions
   ActionAbilityWithBefore actions _ _ -> #activate : actions
@@ -250,6 +251,7 @@ abilityTypeCost :: AbilityType -> Cost
 abilityTypeCost = \case
   FastAbility' cost _ -> cost
   ReactionAbility _ cost -> cost
+  CustomizationReaction _ _ cost -> cost
   ActionAbility _ cost -> cost
   ActionAbilityWithSkill _ _ cost -> cost
   ActionAbilityWithBefore _ _ cost -> cost
@@ -267,6 +269,8 @@ modifyCost f = \case
   FastAbility' cost mAction -> FastAbility' (f cost) mAction
   ReactionAbility window cost ->
     ReactionAbility window $ f cost
+  CustomizationReaction label window cost ->
+    CustomizationReaction label window $ f cost
   ActionAbility mAction cost ->
     ActionAbility mAction $ f cost
   ActionAbilityWithSkill mAction skill cost ->
@@ -314,6 +318,7 @@ defaultAbilityWindow = \case
   SilentForcedAbility window -> window
   ForcedAbilityWithCost window _ -> window
   ReactionAbility window _ -> window
+  CustomizationReaction _ window _ -> window
   AbilityEffect _ -> AnyWindow
   Haunted -> AnyWindow
   Cosmos -> AnyWindow
@@ -328,6 +333,7 @@ isFastAbilityType = \case
   ForcedAbilityWithCost {} -> False
   Objective aType -> isFastAbilityType aType
   ReactionAbility {} -> False
+  CustomizationReaction {} -> False
   ActionAbility {} -> False
   ActionAbilityWithSkill {} -> False
   ActionAbilityWithBefore {} -> False
@@ -344,6 +350,7 @@ isReactionAbilityType = \case
   Objective aType -> isReactionAbilityType aType
   FastAbility' {} -> False
   ReactionAbility {} -> True
+  CustomizationReaction {} -> False
   ActionAbility {} -> False
   ActionAbilityWithSkill {} -> False
   ActionAbilityWithBefore {} -> False
@@ -360,6 +367,7 @@ isSilentForcedAbilityType = \case
   Objective aType -> isSilentForcedAbilityType aType
   FastAbility' {} -> False
   ReactionAbility {} -> False
+  CustomizationReaction {} -> False
   ActionAbility {} -> False
   ActionAbilityWithSkill {} -> False
   ActionAbilityWithBefore {} -> False
@@ -384,6 +392,7 @@ defaultAbilityLimit = \case
   SilentForcedAbility _ -> GroupLimit PerWindow 1
   ForcedAbilityWithCost _ _ -> GroupLimit PerWindow 1
   ReactionAbility _ _ -> PlayerLimit PerWindow 1
+  CustomizationReaction {} -> PlayerLimit PerWindow 1
   FastAbility' {} -> NoLimit
   ActionAbility _ _ -> NoLimit
   ActionAbilityWithBefore {} -> NoLimit

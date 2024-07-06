@@ -670,6 +670,91 @@ const getImage = (el: HTMLElement): string | null => {
   left: var(--left-5);
 }
 
+// Empirical Hypothesis
+.tick-09041 {
+  --top-0: 18.4%;
+  --top-1: 25.2%;
+  --top-2: 31.8%;
+  --top-3: 38.3%;
+  --top-4: 45.0%;
+  --top-5: 57.4%;
+  --top-6: 67.0%;
+  --top-7: 76.5%;
+  --left-1: 8.6%;
+  --left-2: 11.5%;
+  --left-3: 14.4%;
+  --left-4: 17.5%;
+}
+
+.customization-09041-0-1 {
+  top: var(--top-0);
+  left: var(--left-1);
+}
+.customization-09041-1-1 {
+  top: var(--top-1);
+  left: var(--left-1);
+}
+.customization-09041-2-1 {
+  top: var(--top-2);
+  left: var(--left-1);
+}
+.customization-09041-3-1 {
+  top: var(--top-3);
+  left: var(--left-1);
+}
+.customization-09041-4-1 {
+  top: var(--top-4);
+  left: var(--left-1);
+}
+.customization-09041-4-2 {
+  top: var(--top-4);
+  left: var(--left-2);
+}
+.customization-09041-5-1 {
+  top: var(--top-5);
+  left: var(--left-1);
+}
+.customization-09041-5-2 {
+  top: var(--top-5);
+  left: var(--left-2);
+}
+.customization-09041-5-3 {
+  top: var(--top-5);
+  left: var(--left-3);
+}
+.customization-09041-5-4 {
+  top: var(--top-5);
+  left: var(--left-4);
+}
+.customization-09041-6-1 {
+  top: var(--top-6);
+  left: var(--left-1);
+}
+.customization-09041-6-2 {
+  top: var(--top-6);
+  left: var(--left-2);
+}
+.customization-09041-6-3 {
+  top: var(--top-6);
+  left: var(--left-3);
+}
+.customization-09041-7-1 {
+  top: var(--top-7);
+  left: var(--left-1);
+}
+.customization-09041-7-2 {
+  top: var(--top-7);
+  left: var(--left-2);
+}
+.customization-09041-7-3 {
+  top: var(--top-7);
+  left: var(--left-3);
+}
+.customization-09041-7-4 {
+  top: var(--top-7);
+  left: var(--left-4);
+}
+
 // Hyperphysical Shotcaster
 .tick-09119 {
   --top-0: 19.0%;

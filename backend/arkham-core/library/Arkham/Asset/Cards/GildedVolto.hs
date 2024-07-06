@@ -54,7 +54,7 @@ instance HasModifiersFor GildedVoltoEffect where
   getModifiersFor target (GildedVoltoEffect a) | target == a.target = do
     pure [toModifier a $ CanBecomeFast #asset]
   getModifiersFor (CardTarget card) (GildedVoltoEffect a) | (toTarget <$> toCardOwner card) == Just a.target = do
-    pure [toModifier a BecomesFast | cardMatch card (CardWithType AssetType)]
+    pure [toModifier a (BecomesFast FastPlayerWindow) | cardMatch card (CardWithType AssetType)]
   getModifiersFor _ _ = pure []
 
 instance RunMessage GildedVoltoEffect where

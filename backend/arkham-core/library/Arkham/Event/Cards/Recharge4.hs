@@ -64,7 +64,7 @@ instance RunMessage Recharge4 where
                       tokens
                       (toId attrs)
                   )
-                  [AddUses aid Charge 1]
-            else push (AddUses aid Charge 4)
+                  [AddUses (toSource attrs) aid Charge 1]
+            else push (AddUses (toSource attrs) aid Charge 4)
           pure e
     _ -> Recharge4 . (`with` meta) <$> runMessage msg attrs

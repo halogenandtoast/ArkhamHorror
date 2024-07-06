@@ -37,7 +37,9 @@ instance RunMessage TasteOfLifeblood where
             "Place 1 of your clues on nearest enemy"
             [ Msg.chooseOrRunOne
                 player
-                [targetLabel enemy [MovedClues (toSource iid) (toTarget enemy) 1] | enemy <- enemies]
+                [ targetLabel enemy [Msg.MovedClues (toSource attrs) (toSource iid) (toTarget enemy) 1]
+                | enemy <- enemies
+                ]
             ]
            | clues > 0 && notNull enemies
            ]

@@ -20,8 +20,7 @@ instance HasAbilities JuryRig where
     [ controlledAbility
         a
         1
-        ( DuringSkillTest $ SkillTestSourceMatches $ SourceIsAsset $ AssetWithAttachedEvent $ EventWithId a.id
-        )
+        (DuringSkillTest $ SkillTestSourceMatches $ SourceIsAsset $ assetWithAttachedEvent a)
         $ FastAbility
         $ EventUseCost (EventWithId a.id) Durability 1
     ]

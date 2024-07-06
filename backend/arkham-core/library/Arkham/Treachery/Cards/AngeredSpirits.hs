@@ -31,7 +31,8 @@ instance RunMessage AngeredSpirits where
       placeInThreatArea attrs iid
       pure t
     UseCardAbility _ (isSource attrs -> True) 1 _ (ExhaustPayment [target]) -> do
-      pushAll [SpendUses target Charge 1, PlaceResources (attrs.ability 1) (toTarget attrs) 1]
+      pushAll
+        [SpendUses (attrs.ability 1) target Charge 1, PlaceResources (attrs.ability 1) (toTarget attrs) 1]
       pure t
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       withTreacheryInvestigator attrs \tormented -> push (SufferTrauma tormented 1 0)

@@ -15,6 +15,7 @@ import Arkham.ClassSymbol
 import Arkham.Cost
 import Arkham.Criteria (Criterion, exists, notExists, youExist)
 import Arkham.Criteria qualified as Criteria
+import Arkham.Customization
 import Arkham.Damage
 import Arkham.History.Types
 import Arkham.Id
@@ -110,6 +111,7 @@ allPlayerEventCards =
       , crypticWritings2
       , cunningDistraction
       , customAmmunition3
+      , customModifications
       , daringManeuver
       , daringManeuver2
       , darkInsight
@@ -1620,7 +1622,7 @@ customAmmunition3 =
         Just
           $ exists
           $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
-          <> AssetWithTrait Firearm
+          <> #firearm
           <> NotAsset (AssetWithAttachedEvent $ EventCardMatch $ cardIs customAmmunition3)
     , cdFastWindow = Just $ DuringTurn You
     , cdLevel = Just 3
@@ -3115,6 +3117,25 @@ wordOfWeal =
       { cdCardTraits = setFromList [Pact]
       , cdFastWindow = Just $ InitiatedSkillTest #when You #any #any $ SkillTestOnAsset AssetWithAnyDoom
       }
+
+customModifications :: CardDef
+customModifications =
+  (event "09023" "Custom Modifications" 3 Guardian)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Upgrade, Supply]
+    , cdCriteria =
+        Just $ exists $ AssetControlledBy You <> #firearm <> not_ (AssetWithAttachedEvent $ EventIs "09023")
+    , cdCardInHandEffects = True
+    , cdCustomizations =
+        mapFromList
+          [ (NotchedSight, 1)
+          , (ExtendedStock, 2)
+          , (Counterbalance, 2)
+          , (LeatherGrip, 3)
+          , (ExtendedMagazine, 3)
+          , (QuicksilverBullets, 4)
+          ]
+    }
 
 breakingAndEntering2 :: CardDef
 breakingAndEntering2 =

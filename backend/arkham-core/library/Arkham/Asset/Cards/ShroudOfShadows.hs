@@ -71,7 +71,7 @@ instance RunMessage ShroudOfShadowsEffect where
             pushAll
               $ [ chooseOrRunOne
                   player
-                  $ [Label "Place 1 Charge on Shroud of Shadows" [AddUses assetId Charge 1] | stillInPlay]
+                  $ [Label "Place 1 Charge on Shroud of Shadows" [AddUses attrs.source assetId Charge 1] | stillInPlay]
                   <> [ Label
                         "Move to a connecting location"
                         [ chooseOne

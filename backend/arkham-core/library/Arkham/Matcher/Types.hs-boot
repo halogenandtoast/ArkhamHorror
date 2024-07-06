@@ -95,3 +95,12 @@ instance FromJSON AspectMatcher
 instance Show AspectMatcher
 instance Eq AspectMatcher
 instance Ord AspectMatcher
+
+data WindowMatcher
+
+instance Data WindowMatcher
+instance ToJSON WindowMatcher
+instance FromJSON WindowMatcher
+instance Show WindowMatcher
+instance Eq WindowMatcher
+instance Ord WindowMatcher

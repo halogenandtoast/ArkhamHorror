@@ -408,6 +408,9 @@ data EventMatcher
   | ActiveEvent
   deriving stock (Show, Eq, Ord, Data)
 
+instance Not EventMatcher where
+  not_ = NotEvent
+
 instance Semigroup EventMatcher where
   EventMatches xs <> EventMatches ys = EventMatches (xs <> ys)
   EventMatches xs <> x = EventMatches (x : xs)
@@ -871,7 +874,7 @@ type ToWhere = Where
 
 data WindowMatcher
   = EnemyDefeated Timing Who DefeatedByMatcher EnemyMatcher
-  | SpentUses Timing Who UseType AssetMatcher ValueMatcher
+  | SpentUses Timing Who SourceMatcher UseType AssetMatcher ValueMatcher
   | WouldPayCardCost Timing Who CardMatcher
   | WouldBeShuffledIntoDeck DeckMatcher CardMatcher
   | AddedToVictory Timing CardMatcher
@@ -897,7 +900,7 @@ data WindowMatcher
   | PlaceUnderneath Timing TargetMatcher CardMatcher
   | WouldPlaceDoomCounter Timing SourceMatcher TargetMatcher
   | PlacedDoomCounter Timing SourceMatcher TargetMatcher
-  | PlacedToken Timing Token
+  | PlacedToken Timing SourceMatcher TargetMatcher Token
   | WouldPlaceBreach Timing TargetMatcher
   | PlacedBreach Timing TargetMatcher
   | PlacedBreaches Timing TargetMatcher
@@ -914,6 +917,7 @@ data WindowMatcher
   | AgendaWouldAdvance Timing AgendaAdvancementReason AgendaMatcher
   | AssetDefeated Timing DefeatedByMatcher AssetMatcher
   | AttemptToEvade Timing Who EnemyMatcher
+  | AttachCard Timing (Maybe Who) CardMatcher TargetMatcher
   | EnemyEvaded Timing Who EnemyMatcher
   | EnemyEngaged Timing Who EnemyMatcher
   | MythosStep WindowMythosStepMatcher
@@ -1094,6 +1098,7 @@ data SourceMatcher
   | SourceIsEnemyAttack EnemyMatcher
   | SourceIsTreacheryEffect TreacheryMatcher
   | SourceIsAsset AssetMatcher
+  | SourceIsEvent EventMatcher
   | EncounterCardSource
   | SourceMatchesAny [SourceMatcher]
   | SourceOwnedBy InvestigatorMatcher

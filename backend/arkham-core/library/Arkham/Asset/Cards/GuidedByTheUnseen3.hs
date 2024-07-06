@@ -54,7 +54,7 @@ instance RunMessage GuidedByTheUnseen3 where
               : [ targetLabel
                   card
                   [ unfocus
-                  , SpendUses (toTarget attrs) Secret 1
+                  , SpendUses (attrs.ability 1) (toTarget attrs) Secret 1
                   , Msg.skillTestModifier attrs (toCardId card) MustBeCommitted
                   , SkillTestCommitCard iid card
                   ]

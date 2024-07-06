@@ -69,7 +69,8 @@ instance RunMessage GeneBeauregard3 where
       push
         $ chooseOrRunOne
           player
-          [targetLabel l [MovedClues (toSource yourLocation) (toTarget l) 1] | l <- connected]
+          [ targetLabel l [MovedClues (attrs.ability 1) (toSource yourLocation) (toTarget l) 1] | l <- connected
+          ]
 
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 2 -> do
@@ -79,7 +80,8 @@ instance RunMessage GeneBeauregard3 where
       push
         $ chooseOrRunOne
           player
-          [targetLabel l [MovedClues (toSource l) (toTarget yourLocation) 1] | l <- connected]
+          [ targetLabel l [MovedClues (attrs.ability 1) (toSource l) (toTarget yourLocation) 1] | l <- connected
+          ]
 
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 3 -> do

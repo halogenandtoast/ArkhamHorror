@@ -101,6 +101,6 @@ instance RunMessage TonyMorgan where
       pure $ TonyMorgan $ attrs `with` Meta False
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       bountyContracts <- selectJust $ assetIs Assets.bountyContracts
-      push $ AddUses bountyContracts Bounty 1
+      push $ AddUses #elderSign bountyContracts Bounty 1
       pure i
     _ -> TonyMorgan . (`with` meta) <$> runMessage msg attrs

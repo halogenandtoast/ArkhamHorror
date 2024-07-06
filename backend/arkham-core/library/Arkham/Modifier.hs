@@ -80,7 +80,7 @@ data ModifierType
   | PlayUnderControlOf InvestigatorId
   | AttacksCannotBeCancelled
   | BaseSkillOf {skillType :: SkillType, value :: Int}
-  | BecomesFast
+  | BecomesFast WindowMatcher
   | Blank
   | BlankExceptForcedAbilities
   | Blocked

@@ -22,7 +22,7 @@ instance RunMessage Contraband where
 
       chooseOne
         iid
-        [ targetLabel assetId [AddUses assetId useType' assetUseCount]
+        [ targetLabel assetId [AddUses (toSource attrs) assetId useType' assetUseCount]
         | (useType', assetId, assetUseCount) <- assets
         ]
       pure e

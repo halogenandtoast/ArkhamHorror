@@ -48,6 +48,6 @@ instance RunMessage Tonys38LongColt where
     EnemyDefeated eid _ (isAbilitySource attrs 2 -> True) _ -> do
       hadBounty <- eid <=~> EnemyWithBounty
       bountyContracts <- selectJust $ assetIs Cards.bountyContracts
-      pushWhen hadBounty $ AddUses bountyContracts Bounty 1
+      pushWhen hadBounty $ AddUses (attrs.ability 2) bountyContracts Bounty 1
       pure a
     _ -> Tonys38LongColt <$> runMessage msg attrs

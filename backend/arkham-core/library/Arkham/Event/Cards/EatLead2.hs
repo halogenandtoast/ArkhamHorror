@@ -54,7 +54,7 @@ instance RunMessage EatLead2 where
         ignoreWindow <-
           checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
         pushAll
-          [ SpendUses (AssetTarget aid) Ammo ammo
+          [ SpendUses (toSource attrs) (AssetTarget aid) Ammo ammo
           , skillTestModifier attrs iid (ChangeRevealStrategy $ RevealAndChoose ammo 1)
           , ignoreWindow
           ]

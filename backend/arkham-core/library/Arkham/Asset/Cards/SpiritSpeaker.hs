@@ -45,7 +45,7 @@ instance RunMessage SpiritSpeaker where
                 $ Label "Return to hand" [ReturnToHand iid target]
                 : [ Label
                     "Move all charges to your resource pool"
-                    [ SpendUses target Charge n
+                    [ SpendUses (attrs.ability 1) target Charge n
                     , TakeResources iid n (toAbilitySource attrs 1) False
                     , toDiscardBy iid (toAbilitySource attrs 1) target
                     ]

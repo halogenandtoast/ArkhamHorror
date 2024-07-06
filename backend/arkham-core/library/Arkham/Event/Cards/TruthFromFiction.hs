@@ -23,6 +23,7 @@ instance RunMessage TruthFromFiction where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       assets <- select $ assetControlledBy iid <> AssetCanHaveUses Uses.Secret
       player <- getPlayer iid
-      push $ chooseOne player [targetLabel aid [AddUses aid Uses.Secret 2] | aid <- assets]
+      push
+        $ chooseOne player [targetLabel aid [AddUses (toSource attrs) aid Uses.Secret 2] | aid <- assets]
       pure e
     _ -> TruthFromFiction <$> runMessage msg attrs

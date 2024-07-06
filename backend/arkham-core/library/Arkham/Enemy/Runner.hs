@@ -26,7 +26,6 @@ import Arkham.Spawn as X
 import Arkham.Target as X
 
 import Arkham.Action qualified as Action
-import Arkham.Asset.Uses qualified as Uses
 import Arkham.Attack
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
@@ -869,7 +868,7 @@ instance RunMessage EnemyAttrs where
     HealDamage (EnemyTarget eid) source n | eid == enemyId -> do
       afterWindow <- checkAfter $ Window.Healed DamageType (toTarget a) source n
       push afterWindow
-      pure $ a & tokensL %~ subtractTokens Token.Damage n
+      runMessage (RemoveTokens source (toTarget a) #damage n) a
     HealAllDamage (EnemyTarget eid) source | eid == enemyId -> do
       afterWindow <-
         checkWindows [mkAfter $ Window.Healed DamageType (toTarget a) source (enemyDamage a)]
@@ -1022,7 +1021,8 @@ instance RunMessage EnemyAttrs where
                            )
 
               pushAll $ [whenExcessMsg, afterExcessMsg, whenMsg, afterMsg] <> defeatMsgs
-          pure $ a & tokensL %~ addTokens Token.Damage amount' & assignedDamageL .~ mempty
+          a' <- if amount' > 0 then runMessage (PlaceTokens source (toTarget a) #damage amount') a else pure a
+          pure $ a' & assignedDamageL .~ mempty
     DefeatEnemy eid _ source | eid == enemyId -> do
       canBeDefeated <- withoutModifier a CannotBeDefeated
       modifiedHealth <- fieldJust EnemyHealth (toId a)
@@ -1250,31 +1250,26 @@ instance RunMessage EnemyAttrs where
     RemoveAllDoom _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Doom
     RemoveTokens _ target token amount | isTarget a target -> do
       pure $ a & tokensL %~ subtractTokens token amount
-    MoveTokens source _ tType n | isSource a source -> pure $ a & tokensL %~ subtractTokens tType n
-    MoveTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ addTokens tType n
-    MoveUses _ target Uses.Leyline n | isTarget a target -> pure $ a & tokensL %~ addTokens Leyline n
-    PlaceTokens source target Doom amount | isTarget a target -> do
-      cannotPlaceDoom <- hasModifier a CannotPlaceDoomOnThis
-      if cannotPlaceDoom
-        then pure a
-        else do
-          pushAllM $ windows [Window.PlacedDoom source (toTarget a) amount]
-          pure $ a & tokensL %~ addTokens Doom amount
+    MoveTokens s source _ tType n | isSource a source -> runMessage (RemoveTokens s (toTarget a) tType n) a
+    MoveTokens s _ target tType n | isTarget a target -> runMessage (PlaceTokens s (toTarget a) tType n) a
     PlaceTokens source target token n | isTarget a target -> do
-      case token of
-        Clue -> pushAllM $ windows [Window.PlacedClues source (toTarget a) n]
-        _ -> pure ()
-      pure $ a & tokensL %~ addTokens token n
+      if token == #doom
+        then do
+          cannotPlaceDoom <- hasModifier a CannotPlaceDoomOnThis
+          if cannotPlaceDoom
+            then pure a
+            else do
+              pushAllM $ windows [Window.PlacedDoom source (toTarget a) n]
+              pure $ a & tokensL %~ addTokens Doom n
+        else do
+          case token of
+            Clue -> pushAllM $ windows [Window.PlacedClues source (toTarget a) n]
+            _ -> pure ()
+          pure $ a & tokensL %~ addTokens token n
     PlaceKey (isTarget a -> True) k -> do
       pure $ a & keysL %~ insertSet k
     PlaceKey (isTarget a -> False) k -> do
       pure $ a & keysL %~ deleteSet k
-    RemoveClues _ target n | isTarget a target -> do
-      pure $ a & tokensL %~ subtractTokens Clue n
-    MovedClues _ (isTarget a -> True) n -> do
-      pure $ a & tokensL %~ addTokens #clue n
-    MovedClues (isSource a -> True) _ n -> do
-      pure $ a & tokensL %~ subtractTokens #clue n
     FlipClues target n | isTarget a target -> do
       pure $ a & tokensL %~ flipClues n
     PlaceEnemyInVoid eid | eid == enemyId -> do

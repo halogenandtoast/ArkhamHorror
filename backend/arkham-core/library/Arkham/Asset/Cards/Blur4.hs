@@ -40,7 +40,7 @@ instance RunMessage Blur4 where
       when (n == 0) $ assignDamage iid (attrs.ability 1) 2
       pure a
     ResolveAmounts iid (getChoiceAmount "Charges" -> n) (isTarget attrs -> True) -> do
-      push $ SpendUses (toTarget attrs) Charge n
+      push $ SpendUses (attrs.ability 1) (toTarget attrs) Charge n
       gainActions iid (attrs.ability 1) n
       pure a
     _ -> Blur4 <$> liftRunMessage msg attrs

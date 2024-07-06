@@ -42,7 +42,9 @@ instance RunMessage ArchiveOfConduitsGatewayToParadise4 where
       investigators <- select $ affectsOthers Anyone
       chooseOrRunOne
         iid
-        [ targetLabel investigator [MoveUses (toSource attrs) (toTarget investigator) Leyline 1]
+        [ targetLabel
+          investigator
+          [MoveTokens (attrs.ability 1) (toSource attrs) (toTarget investigator) Leyline 1]
         | investigator <- investigators
         ]
       pure a

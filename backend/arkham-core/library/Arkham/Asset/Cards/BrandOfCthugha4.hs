@@ -41,7 +41,7 @@ instance RunMessage BrandOfCthugha4 where
     ResolveAmounts iid (getChoiceAmount "Charges" -> n) (isTarget attrs -> True) -> do
       pushAll
         [ skillTestModifier (attrs.ability 1) iid (DamageDealt n)
-        , SpendUses (toTarget attrs) Charge n
+        , SpendUses (attrs.ability 1) (toTarget attrs) Charge n
         ]
       pure a
     _ -> BrandOfCthugha4 <$> runMessage msg attrs

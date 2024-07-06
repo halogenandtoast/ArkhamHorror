@@ -33,6 +33,6 @@ instance RunMessage TheChthonianStone3 where
       push
         $ If
           (Window.RevealChaosTokenAssetAbilityEffect iid tokens (toId attrs))
-          [SpendUses (toTarget attrs) Charge 1]
+          [SpendUses (attrs.ability 1) (toTarget attrs) Charge 1]
       pure a
     _ -> TheChthonianStone3 <$> runMessage msg attrs

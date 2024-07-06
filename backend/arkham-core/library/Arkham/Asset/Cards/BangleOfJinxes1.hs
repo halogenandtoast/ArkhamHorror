@@ -29,6 +29,6 @@ instance RunMessage BangleOfJinxes1 where
       push $ skillTestModifier attrs iid (AnySkillValue 2)
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ AddUses (toId a) Charge 1
+      push $ AddUses (attrs.ability 2) (toId a) Charge 1
       pure a
     _ -> BangleOfJinxes1 <$> runMessage msg attrs

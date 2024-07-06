@@ -60,7 +60,7 @@ fence1Effect = cardEffect Fence1Effect Cards.fence1
 
 instance HasModifiersFor Fence1Effect where
   getModifiersFor target (Fence1Effect attrs) | target == effectTarget attrs = do
-    pure $ toModifiers attrs [BecomesFast]
+    pure $ toModifiers attrs [BecomesFast FastPlayerWindow]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Fence1Effect where

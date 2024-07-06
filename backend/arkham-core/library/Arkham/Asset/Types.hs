@@ -274,6 +274,9 @@ instance Is AssetAttrs AssetId where
 instance Be AssetAttrs AssetMatcher where
   be = AssetWithId . assetId
 
+instance HasField "customizations" AssetAttrs (IntMap Int) where
+  getField = assetCustomizations
+
 instance HasField "cardId" AssetAttrs CardId where
   getField = assetCardId
 

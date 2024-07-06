@@ -23,6 +23,9 @@ instance RunMessage ExtraAmmunition1 where
       investigatorTargets <- guardAffectsColocated iid
       firearms <- select $ AssetWithTrait Firearm <> AssetControlledBy investigatorTargets
       player <- getPlayer iid
-      push $ chooseOrRunOne player [targetLabel firearm [AddUses firearm Ammo 3] | firearm <- firearms]
+      push
+        $ chooseOrRunOne
+          player
+          [targetLabel firearm [AddUses (toSource attrs) firearm Ammo 3] | firearm <- firearms]
       pure e
     _ -> ExtraAmmunition1 <$> runMessage msg attrs

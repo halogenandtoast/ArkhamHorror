@@ -11,7 +11,13 @@ import Arkham.Event.Runner
 import Arkham.Id
 
 createEvent :: IsCard a => a -> InvestigatorId -> EventId -> Event
-createEvent a iid eid = lookupEvent (toCardCode a) iid eid (toCardId a)
+createEvent a iid eid =
+  let this = lookupEvent (toCardCode a) iid eid (toCardId a)
+   in overAttrs (\attrs -> attrs {eventCustomizations = customizations}) this
+ where
+  customizations = case toCard a of
+    PlayerCard pc -> pcCustomizations pc
+    _ -> mempty
 
 instance RunMessage Event where
   runMessage msg (Event a) = Event <$> runMessage msg a
@@ -502,6 +508,8 @@ allEvents =
       --- signature [tsk]
       SomeEventCard wordOfWoe
     , SomeEventCard wordOfWeal
+    , --- guardian [tsk]
+      SomeEventCard customModifications
     , --- rogue [tsk]
       SomeEventCard breakingAndEntering2
     , -- The Feast of Hemloch Vale

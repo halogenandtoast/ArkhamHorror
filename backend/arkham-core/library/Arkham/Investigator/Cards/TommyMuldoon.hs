@@ -109,12 +109,12 @@ instance RunMessage TommyMuldoon where
               $ chooseOrRunOne player
               $ [Label "Done moving damage/horror" [] | n == 11]
               <> [ AssetHorrorLabel asset
-                  $ MovedHorror (toSource iid) (toTarget asset) 1
+                  $ MovedHorror #elderSign (toSource iid) (toTarget asset) 1
                   : [HandleAbilityOption iid (toSource ElderSign) 11 | n == 1]
                  | asset <- assetsWithSanity
                  ]
               <> [ AssetDamageLabel asset
-                  $ MovedDamage (toSource iid) (toTarget asset) 1
+                  $ MovedDamage #elderSign (toSource iid) (toTarget asset) 1
                   : [HandleAbilityOption iid (toSource ElderSign) 11 | n == 1]
                  | asset <- assetsWithHealth
                  ]
@@ -130,12 +130,12 @@ instance RunMessage TommyMuldoon where
             $ chooseOrRunOne player
             $ [Label "Done moving damage/horror" [] | n == 22]
             <> [ AssetHorrorLabel asset
-                $ MovedHorror (toSource asset) (toTarget iid) 1
+                $ MovedHorror #elderSign (toSource asset) (toTarget iid) 1
                 : [HandleAbilityOption iid (toSource ElderSign) 22 | n == 2]
                | asset <- assetsWithHorror
                ]
             <> [ AssetDamageLabel asset
-                $ MovedDamage (toSource asset) (toTarget iid) 1
+                $ MovedDamage #elderSign (toSource asset) (toTarget iid) 1
                 : [HandleAbilityOption iid (toSource ElderSign) 22 | n == 2]
                | asset <- assetsWithDamage
                ]
@@ -149,6 +149,6 @@ instance RunMessage TommyMuldoon where
 
       pushAll
         $ [TakeResources iid tommyResources (toAbilitySource attrs 1) False | tommyResources > 0]
-        <> [AddUses becky Ammo beckyUses | beckyUses > 0]
+        <> [AddUses #elderSign becky Ammo beckyUses | beckyUses > 0]
       pure i
     _ -> TommyMuldoon <$> runMessage msg attrs

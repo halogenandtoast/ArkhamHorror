@@ -33,8 +33,8 @@ instance RunMessage LostInTime where
           push
             $ chooseOne player
             $ [ targetLabel aid
-                $ [MovedDamage (toSource aid) (toTarget iid) dmg | dmg > 0]
-                <> [MovedHorror (toSource aid) (toTarget iid) hrr | hrr > 0]
+                $ [MovedDamage (toSource attrs) (toSource aid) (toTarget iid) dmg | dmg > 0]
+                <> [MovedHorror (toSource attrs) (toSource aid) (toTarget iid) hrr | hrr > 0]
                 <> [shuffleIntoDeck iid aid]
               | (aid, dmg, hrr) <- assetsWithDamageAndHorror
               ]

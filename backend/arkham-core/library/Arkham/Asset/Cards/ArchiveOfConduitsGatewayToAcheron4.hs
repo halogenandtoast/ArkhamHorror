@@ -40,7 +40,7 @@ instance RunMessage ArchiveOfConduitsGatewayToAcheron4 where
       locations <- select RevealedLocation
       chooseOne
         iid
-        [ targetLabel location [MoveUses (toSource attrs) (toTarget location) Leyline 1]
+        [ targetLabel location [MoveTokens (attrs.ability 1) (toSource attrs) (toTarget location) Leyline 1]
         | location <- locations
         ]
       pure a

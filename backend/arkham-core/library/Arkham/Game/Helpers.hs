@@ -836,7 +836,10 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       duringTurnWindow = mkWhen (Window.DuringTurn iid)
       notFastWindow = any (`elem` windows') [duringTurnWindow]
       canBecomeFast = CannotPlay Matcher.FastCard `notElem` modifiers && foldr applyModifier False modifiers
-      canBecomeFastWindow = guard canBecomeFast $> Matcher.DuringTurn Matcher.You
+      canBecomeFastWindow =
+        guard canBecomeFast
+          $> fromMaybe (Matcher.DuringTurn Matcher.You) (listToMaybe [w | BecomesFast w <- modifiers])
+      applyModifier (BecomesFast _) _ = True
       applyModifier (CanBecomeFast cardMatcher) _ = cardMatch c cardMatcher
       applyModifier (CanBecomeFastOrReduceCostOf cardMatcher _) _ = canAffordCost && cardMatch c cardMatcher
       applyModifier _ val = val
@@ -1564,6 +1567,17 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
   let isMatch = pure True
   let guardTiming t body = if timing' == t then body wType else noMatch
   case mtchr of
+    Matcher.AttachCard timing mWhoMatcher cardMatcher targetMatcher -> guardTiming timing \case
+      Window.AttachCard mWho card target -> do
+        andM
+          [ maybe
+              (pure True)
+              (\matcher -> maybe (pure False) (\who -> matchWho iid who matcher) mWho)
+              mWhoMatcher
+          , pure $ card `cardMatch` cardMatcher
+          , target `targetMatches` targetMatcher
+          ]
+      _ -> noMatch
     Matcher.WindowWhen criteria mtchr' -> do
       (&&)
         <$> passesCriteria iid Nothing source [window'] criteria
@@ -1576,8 +1590,13 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
     Matcher.SkillTestStep timing step -> guardTiming timing \case
       Window.SkillTestStep step' -> pure $ step == step'
       _ -> noMatch
-    Matcher.PlacedToken timing token -> guardTiming timing \case
-      Window.PlacedToken _ _ token' _ -> pure $ token == token'
+    Matcher.PlacedToken timing sourceMatcher targetMatcher token -> guardTiming timing \case
+      Window.PlacedToken source' target' token' _ ->
+        andM
+          [ targetMatches target' targetMatcher
+          , sourceMatches source' sourceMatcher
+          , pure $ token == token'
+          ]
       _ -> noMatch
     Matcher.EntersThreatArea timing whoMatcher cardMatcher -> guardTiming timing \case
       Window.EntersThreatArea who card -> do
@@ -1593,10 +1612,11 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
           , pure $ card `cardMatch` cardMatcher
           ]
       _ -> noMatch
-    Matcher.SpentUses timing whoMatcher uType assetMatcher valueMatcher -> guardTiming timing $ \case
-      Window.SpentUses who assetId uType' n | uType == uType' -> do
+    Matcher.SpentUses timing whoMatcher sourceMatcher uType assetMatcher valueMatcher -> guardTiming timing $ \case
+      Window.SpentUses who source' assetId uType' n | uType == uType' -> do
         andM
           [ matchWho iid who whoMatcher
+          , sourceMatches source' sourceMatcher
           , assetId <=~> assetMatcher
           , gameValueMatches n valueMatcher
           ]
@@ -3156,7 +3176,7 @@ isForcedAbilityType iid source = \case
   Objective aType -> isForcedAbilityType iid source aType
   FastAbility' {} -> pure False
   ReactionAbility {} -> pure False
-  CustomizationReaction {} -> pure False
+  CustomizationReaction {} -> pure True -- TODO: Keep an eye on this
   ActionAbility {} -> pure False
   ActionAbilityWithSkill {} -> pure False
   ActionAbilityWithBefore {} -> pure False
@@ -3194,6 +3214,17 @@ sourceMatches s = \case
         _ -> pure False
      in
       isAssetSource s
+  Matcher.SourceIsEvent am ->
+    let
+      isEventSource s' = case s' of
+        EventSource aid -> elem aid <$> select am
+        AbilitySource (EventSource aid) _ -> elem aid <$> select am
+        ProxySource (CardIdSource _) pSource -> isEventSource pSource
+        ProxySource pSource _ -> isEventSource pSource
+        BothSource lSource rSource -> orM [isEventSource lSource, isEventSource rSource]
+        _ -> pure False
+     in
+      isEventSource s
   Matcher.AnySource -> pure True
   Matcher.SourceMatches ms -> allM (sourceMatches s) ms
   Matcher.SourceOwnedBy whoMatcher ->

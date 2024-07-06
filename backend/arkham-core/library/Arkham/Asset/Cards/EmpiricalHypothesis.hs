@@ -205,20 +205,20 @@ instance HasAbilities EmpiricalHypothesisEffect where
   getAbilities _ = []
 
 -- TODO: Determine if this is a delayed effect, lasting effect, or replaced
--- Currently treating is as thought it is replaced, if this switchings to
+-- Currently treating is as though it is replaced, if this switchings to
 -- delayed: then we would disable on the AddUses line and remove the HandleAbilityOption
 -- lasting: remove the HandleAbilityOption
 instance RunMessage EmpiricalHypothesisEffect where
   runMessage msg e@(EmpiricalHypothesisEffect attrs) = case msg of
     CreatedEffect eid _ (AssetSource aid) _ | eid == toId attrs -> do
-      peerReview <- getHasCustomization aid PeerReview
+      peerReview <- getHasCustomization @Asset aid PeerReview
       EmpiricalHypothesisEffect
         <$> runMessage
           msg
           (attrs {effectExtraMetadata = toJSON $ EmpiricalHypothesisEffectMetadata 0 False peerReview})
     UseThisAbility _ (ProxySource _ (isSource attrs -> True)) 1 -> do
       case attrs.source of
-        AssetSource aid -> push $ AddUses aid Evidence 1
+        AssetSource aid -> push $ AddUses attrs.source aid Evidence 1
         _ -> error $ "invalid effect source: " <> show attrs.source
       pure e
     EndRound | isJust attrs.meta -> do

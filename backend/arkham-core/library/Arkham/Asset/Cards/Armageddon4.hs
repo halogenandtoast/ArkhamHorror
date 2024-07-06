@@ -57,7 +57,9 @@ instance RunMessage Armageddon4Effect where
             pushAll
               $ [ chooseOrRunOne
                   player
-                  $ [Label "Place 1 Charge on Armageddon4" [AddUses assetId Charge 1] | stillInPlay]
+                  $ [ Label "Place 1 Charge on Armageddon4" [AddUses attrs.source assetId Charge 1]
+                    | stillInPlay
+                    ]
                   <> [ Label
                         "Deal 1 damage to an enemy at your location"
                         [ chooseOne

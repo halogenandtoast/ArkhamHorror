@@ -575,7 +575,7 @@ payCost msg c iid skipAdditionalCosts cost = do
                             0
                             total
                             (tshow uType <> " from " <> name)
-                            (SpendUses (toTarget assetId) uType 1)
+                            (SpendUses source (toTarget assetId) uType 1)
                       )
                       resourcesFromAssets
       withPayment $ ResourcePayment x
@@ -608,11 +608,13 @@ payCost msg c iid skipAdditionalCosts cost = do
       withPayment $ ActionPayment x
     UseCost assetMatcher uType n -> do
       assets <- select $ assetMatcher <> AssetWithTokens (atLeast n) uType
-      push $ chooseOrRunOne player [targetLabel aid [SpendUses (AssetTarget aid) uType n] | aid <- assets]
+      push
+        $ chooseOrRunOne player [targetLabel aid [SpendUses source (AssetTarget aid) uType n] | aid <- assets]
       withPayment $ UsesPayment n
     EventUseCost eventMatcher uType n -> do
       events <- select eventMatcher
-      push $ chooseOrRunOne player [targetLabel eid [SpendUses (EventTarget eid) uType n] | eid <- events]
+      push
+        $ chooseOrRunOne player [targetLabel eid [SpendUses source (EventTarget eid) uType n] | eid <- events]
       withPayment $ UsesPayment n
     DynamicUseCost assetMatcher uType costValue -> case costValue of
       DrawnCardsValue -> do
@@ -623,7 +625,8 @@ payCost msg c iid skipAdditionalCosts cost = do
             _ -> getDrawnCards xs
           n = getDrawnCards c.windows
         assets <- select assetMatcher
-        push $ chooseOrRunOne player [targetLabel aid [SpendUses (AssetTarget aid) uType n] | aid <- assets]
+        push
+          $ chooseOrRunOne player [targetLabel aid [SpendUses source (AssetTarget aid) uType n] | aid <- assets]
         withPayment $ UsesPayment n
     UseCostUpTo assetMatcher uType n m -> do
       assets <- select assetMatcher

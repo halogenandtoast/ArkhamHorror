@@ -159,7 +159,7 @@ getWindowSkippable attrs ws (windowType -> Window.PlayCard iid card@(PlayerCard 
   modifiers'' <- getModifiers (CardTarget card)
   cost <- getModifiedCardCost iid card
   let allModifiers = modifiers' <> modifiers''
-  let isFast = isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` allModifiers
+  let isFast = isJust $ cdFastWindow (toCardDef card) <|> listToMaybe [w | BecomesFast w <- allModifiers]
   andM
     [ withAlteredGame withoutCanModifiers
         $ getCanAffordCost (toId attrs) pc [#play] ws (ResourceCost cost)
@@ -185,7 +185,7 @@ getWindowSkippable attrs ws (windowType -> Window.WouldPayCardCost iid _ _ card@
   modifiers'' <- getModifiers (CardTarget card)
   cost <- getModifiedCardCost iid card
   let allModifiers = modifiers' <> modifiers''
-  let isFast = isJust (cdFastWindow $ toCardDef pc) || BecomesFast `elem` allModifiers
+  let isFast = isJust $ cdFastWindow (toCardDef card) <|> listToMaybe [w | BecomesFast w <- allModifiers]
   andM
     [ withAlteredGame withoutCanModifiers
         $ getCanAffordCost (toId attrs) pc [#play] ws (ResourceCost cost)
@@ -1835,9 +1835,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         $ checkWindows
         $ [mkAfter (Window.Healed DamageType (toTarget a) source health) | health > 0]
         <> [mkAfter (Window.Healed HorrorType (toTarget a) source sanity) | sanity > 0]
+
+    a' <- if health > 0 then runMessage (RemoveTokens source (toTarget a) #damage health) a else pure a
+    a'' <-
+      if sanity > 0 then runMessage (RemoveTokens source (toTarget a) #horror sanity) a' else pure a'
+
     pure
-      $ a
-      & (tokensL %~ subtractTokens Token.Damage health . subtractTokens Token.Horror sanity)
+      $ a''
       & (unhealedHorrorThisRoundL %~ min 0 . subtract sanity)
       & (assignedHealthHealL %~ deleteMap source)
       & (assignedSanityHealL %~ deleteMap source)
@@ -1861,10 +1865,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Do (HealDamage (InvestigatorTarget iid) source amount) | iid == investigatorId -> do
     afterWindow <- checkWindows [mkAfter $ Window.Healed DamageType (toTarget a) source amount]
     push afterWindow
-    pure $ a & tokensL %~ subtractTokens Token.Damage amount
+    runMessage (RemoveTokens source (toTarget a) #damage amount) a
   HealDamageDelayed (isTarget a -> True) source n -> do
     pure $ a & assignedHealthHealL %~ insertWith (+) source n
-  HealHorrorWithAdditional (InvestigatorTarget iid) _ amount | iid == investigatorId -> do
+  HealHorrorWithAdditional (InvestigatorTarget iid) source amount | iid == investigatorId -> do
     -- exists to have no callbacks, and to be resolved with AdditionalHealHorror
     cannotHealHorror <- hasModifier a CannotHealHorror
     if cannotHealHorror
@@ -1874,9 +1878,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         -- healInvestigator = componentLabel HorrorToken thing [HealDamage thing source 1]
 
         let totalHealed = min amount (investigatorSanityDamage a)
+        a' <-
+          if amount > 0 then runMessage (RemoveTokens source (toTarget a) #horror totalHealed) a else pure a
         pure
-          $ a
-          & (tokensL %~ subtractTokens Horror amount)
+          $ a'
           & (horrorHealedL .~ totalHealed)
           & (unhealedHorrorThisRoundL %~ min 0 . subtract totalHealed)
   AdditionalHealHorror (InvestigatorTarget iid) source additional | iid == investigatorId -> do
@@ -1892,9 +1897,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 $ Window.Healed HorrorType (toTarget a) source (investigatorHorrorHealed + additional)
             ]
         push afterWindow
+        a' <-
+          if additional > 0
+            then runMessage (RemoveTokens source (toTarget a) #horror additional) a
+            else pure a
         pure
-          $ a
-          & (tokensL %~ subtractTokens Horror additional)
+          $ a'
           & (horrorHealedL .~ 0)
           & (unhealedHorrorThisRoundL %~ min 0 . subtract additional)
   HealHorror (InvestigatorTarget iid) source amount | iid == investigatorId -> do
@@ -1952,31 +1960,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     if cannotHealHorror
       then pure a
       else pure $ a & assignedSanityHealL %~ insertWith (+) source n
-  MovedClues _ (isTarget a -> True) amount -> do
-    pure $ a & tokensL %~ addTokens #clue amount
-  MovedClues (isSource a -> True) _ amount -> do
-    pure $ a & tokensL %~ subtractTokens #clue amount
-  MovedHorror source (isTarget a -> True) amount -> do
-    push $ checkDefeated source a
-    pure $ a & tokensL %~ addTokens #horror amount
-  MovedHorror (isSource a -> True) _ amount -> do
-    pure $ a & tokensL %~ subtractTokens #horror amount
+  MoveTokens s _ (isTarget a -> True) tType amount -> runMessage (PlaceTokens s (toTarget a) tType amount) a
+  MoveTokens s (isSource a -> True) _ tType amount -> runMessage (RemoveTokens s (toTarget a) tType amount) a
+  MoveTokens s (ResourceSource iid) _ _ n | iid == investigatorId -> runMessage (RemoveTokens s (toTarget a) #resource n) a
+  MoveTokens s _ (ResourceTarget iid) _ n | iid == investigatorId -> runMessage (PlaceTokens s (toTarget a) #resource n) a
   ReassignHorror (isSource a -> True) _ n -> do
     pure $ a & assignedSanityDamageL %~ max 0 . subtract n
-  MovedDamage source (isTarget a -> True) amount -> do
-    push $ checkDefeated source a
-    pure $ a & tokensL %~ addTokens #damage amount
-  MovedDamage (isSource a -> True) _ amount -> do
-    pure $ a & tokensL %~ subtractTokens #damage amount
-  HealHorrorDirectly (InvestigatorTarget iid) _ amount | iid == investigatorId -> do
+  HealHorrorDirectly (InvestigatorTarget iid) source amount | iid == investigatorId -> do
     -- USE ONLY WHEN NO CALLBACKS
+    a' <- if amount > 0 then runMessage (RemoveTokens source (toTarget a) #horror amount) a else pure a
     pure
-      $ a
-      & (tokensL %~ subtractTokens #horror amount)
+      $ a'
       & (unhealedHorrorThisRoundL %~ min 0 . subtract amount)
-  HealDamageDirectly (InvestigatorTarget iid) _ amount | iid == investigatorId -> do
+  HealDamageDirectly (InvestigatorTarget iid) source amount | iid == investigatorId && amount > 0 -> do
     -- USE ONLY WHEN NO CALLBACKS
-    pure $ a & tokensL %~ subtractTokens Token.Damage amount
+    runMessage (RemoveTokens source (toTarget a) #damage amount) a
   InvestigatorWhenDefeated source iid | iid == investigatorId -> do
     modifiedHealth <- field InvestigatorHealth (toId a)
     modifiedSanity <- field InvestigatorSanity (toId a)
@@ -2438,8 +2436,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     afterWindowMsg <- checkWindows [mkAfter (Window.LostResources iid source n)]
     pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
     pure a
-  Do (LoseResources iid _ n) | iid == investigatorId -> do
-    pure $ a & tokensL %~ subtractTokens Resource n
+  Do (LoseResources iid source n) | iid == investigatorId -> runMessage (RemoveTokens source (toTarget a) #resource n) a
   LoseAllResources iid | iid == investigatorId -> pure $ a & tokensL %~ removeAllTokens Resource
   TakeResources iid n source True | iid == investigatorId -> do
     beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #resource)]
@@ -2458,13 +2455,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   TakeResources iid n source False | iid == investigatorId -> do
     canGain <- can.gain.resources (sourceToFromSource source) iid
-    pure $ if canGain then a & tokensL %~ addTokens Resource n else a
-  MoveUses _ target Uses.Leyline n | isTarget a target -> pure $ a & tokensL %~ addTokens Leyline n
-  MoveTokens source _ tType n | isSource a source -> pure $ a & tokensL %~ subtractTokens tType n
-  MoveTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ addTokens tType n
-  MoveTokens _ (ResourceTarget iid) _tType n | iid == investigatorId -> do
-    pure $ a & tokensL %~ addTokens Resource n
-  PlaceTokens _ (isTarget a -> True) token n -> do
+    if canGain
+      then runMessage (PlaceTokens source (toTarget a) #resource n) a
+      else pure a
+  PlaceTokens source (isTarget a -> True) token n -> do
+    when (token == #damage || token == #horror) do
+      push $ checkDefeated source a
     pure $ a & tokensL %~ addTokens token n
   RemoveTokens _ (isTarget a -> True) token n -> do
     pure $ a & tokensL %~ subtractTokens token n
@@ -2788,10 +2784,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         & (foundCardsL . each %~ filter (/= PlayerCard pc))
     EncounterCard _ -> pure a
     VengeanceCard _ -> pure a
-  MoveUses (ResourceSource iid) _ _ n | iid == investigatorId -> do
-    pure $ a & tokensL %~ subtractTokens Resource n
-  MoveUses _ (ResourceTarget iid) _ n | iid == investigatorId -> do
-    pure $ a & tokensL %~ addTokens Resource n
   AddToHand iid cards | iid == investigatorId -> do
     let
       choices = mapMaybe cardChoice cards
@@ -3195,9 +3187,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -- [AsIfAt] assuming as if is still in effect
     mlid <- field InvestigatorLocation iid
     let cluesToPlace = min n (investigatorClues a)
-    for_ mlid $ \lid ->
-      push $ PlaceTokens source (LocationTarget lid) Clue cluesToPlace
-    pure $ a & tokensL %~ subtractTokens Clue cluesToPlace
+    for_ mlid $ \lid -> push $ PlaceTokens source (LocationTarget lid) Clue cluesToPlace
+    runMessage (RemoveTokens source (toTarget a) #clue cluesToPlace) a
   InvestigatorPlaceAllCluesOnLocation iid source | iid == investigatorId -> do
     -- [AsIfAt] assuming as if is still in effect
     mlid <- field InvestigatorLocation iid

@@ -27,7 +27,7 @@ instance RunMessage FortyFiveThompsonGuardian3 where
       chooseFight <- toMessage <$> mkChooseFight iid source
       pushAll [skillTestModifiers source iid [DamageDealt 1, SkillModifier #combat 2], chooseFight]
       pure a
-    SpendUses (isTarget attrs -> True) Ammo n -> do
+    SpendUses _ (isTarget attrs -> True) Ammo n -> do
       for_ attrs.controller \iid -> do
         push $ PlaceResources (toSource attrs) (toTarget iid) n
       FortyFiveThompsonGuardian3 <$> runMessage msg attrs

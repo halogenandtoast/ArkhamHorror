@@ -146,6 +146,26 @@ instance Sourceable a => Is a Source where
 instance Targetable a => Is a Target where
   is = isTarget
 
+pattern MovedDamage :: Source -> Source -> Target -> Int -> Message
+pattern MovedDamage source source' target n <- MoveTokens source source' target Token.Damage n
+  where
+    MovedDamage source source' target n = MoveTokens source source' target Token.Damage n
+
+pattern MovedHorror :: Source -> Source -> Target -> Int -> Message
+pattern MovedHorror source source' target n <- MoveTokens source source' target Token.Horror n
+  where
+    MovedHorror source source' target n = MoveTokens source source' target Token.Horror n
+
+pattern MovedClues :: Source -> Source -> Target -> Int -> Message
+pattern MovedClues source source' target n <- MoveTokens source source' target Token.Clue n
+  where
+    MovedClues source source' target n = MoveTokens source source' target Token.Clue n
+
+pattern MoveUses :: Source -> Source -> Target -> UseType -> Int -> Message
+pattern MoveUses source source' target useType' n <- MoveTokens source source' target useType' n
+  where
+    MoveUses source source' target useType' n = MoveTokens source source' target useType' n
+
 pattern AdvanceAgenda :: AgendaId -> Message
 pattern AdvanceAgenda aid <- AdvanceAgendaBy aid AgendaAdvancedWithDoom
   where
@@ -408,7 +428,7 @@ data Message
   | RemoveAllChaosTokens ChaosTokenFace
   | RemoveChaosToken ChaosTokenFace
   | -- Asset Uses
-    AddUses AssetId UseType Int
+    AddUses Source AssetId UseType Int
   | -- Asks
     AskPlayer Message
   | Ask PlayerId (Question Message)
@@ -619,10 +639,7 @@ data Message
   | HealHorror Target Source Int
   | HealDamageDelayed Target Source Int
   | HealHorrorDelayed Target Source Int
-  | MovedHorror Source Target Int
   | ReassignHorror Source Target Int
-  | MovedDamage Source Target Int
-  | MovedClues Source Target Int
   | HealHorrorWithAdditional Target Source Int
   | AdditionalHealHorror Target Source Int
   | HealDamageDirectly Target Source Int
@@ -747,7 +764,7 @@ data Message
   | PlaceLocationMatching CardMatcher
   | PlaceTokens Source Target Token Int
   | RemoveTokens Source Target Token Int
-  | MoveTokens Source Target Token Int
+  | MoveTokens Source Source Target Token Int
   | PlaceUnderneath Target [Card]
   | PlacedUnderneath Target Card
   | PlaceNextTo Target [Card]
@@ -901,8 +918,7 @@ data Message
   | SpawnEnemyAtEngagedWith Card LocationId InvestigatorId
   | SpendClues Int [InvestigatorId]
   | SpendResources InvestigatorId Int
-  | SpendUses Target UseType Int
-  | MoveUses Source Target UseType Int
+  | SpendUses Source Target UseType Int
   | SpentAllUses Target
   | StartCampaign
   | StartScenario ScenarioId

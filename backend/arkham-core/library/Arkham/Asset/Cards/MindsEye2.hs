@@ -38,6 +38,6 @@ instance RunMessage MindsEye2 where
         ]
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
-      push $ AddUses (toId a) Secret 2
+      push $ AddUses (attrs.ability 2) (toId a) Secret 2
       pure a
     _ -> MindsEye2 <$> runMessage msg attrs

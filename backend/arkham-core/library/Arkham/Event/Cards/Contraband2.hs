@@ -32,13 +32,15 @@ instance RunMessage Contraband2 where
             "Place 2 ammo or supply tokens on that asset and draw 1 card."
             [ Msg.chooseOne
                 player
-                [targetLabel assetId [AddUses assetId useType' 2, drawing] | (useType', assetId, _) <- assets]
+                [ targetLabel assetId [AddUses (toSource attrs) assetId useType' 2, drawing]
+                | (useType', assetId, _) <- assets
+                ]
             ]
         , Label
             "Double the number of ammo or supply tokens on that asset."
             [ Msg.chooseOne
                 player
-                [ targetLabel assetId [AddUses assetId useType' assetUseCount]
+                [ targetLabel assetId [AddUses (toSource attrs) assetId useType' assetUseCount]
                 | (useType', assetId, assetUseCount) <- assets
                 ]
             ]

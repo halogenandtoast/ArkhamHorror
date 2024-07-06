@@ -26,7 +26,7 @@ instance RunMessage Lockpicks1 where
   runMessage msg a@(Lockpicks1 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       investigation <- mkInvestigate iid (toAbilitySource attrs 1)
-      pushAll [createCardEffect Cards.lockpicks1 Nothing attrs iid, toMessage investigation]
+      pushAll [createCardEffect Cards.lockpicks1 Nothing (attrs.ability 1) iid, toMessage investigation]
       pure a
     _ -> Lockpicks1 <$> runMessage msg attrs
 
@@ -49,10 +49,10 @@ instance RunMessage Lockpicks1Effect where
       pure e
     PassedThisSkillTestBy _ _ n | n < 2 -> do
       let aid = fromJustNote "must be an asset" attrs.source.asset
-      pushAll [SpendUses (AssetTarget aid) Supply 1, disable attrs]
+      pushAll [SpendUses attrs.source (AssetTarget aid) Supply 1, disable attrs]
       pure e
     FailedThisSkillTestBy _ _ n | n < 2 -> do
       let aid = fromJustNote "must be an asset" attrs.source.asset
-      pushAll [SpendUses (AssetTarget aid) Supply 1, disable attrs]
+      pushAll [SpendUses attrs.source (AssetTarget aid) Supply 1, disable attrs]
       pure e
     _ -> Lockpicks1Effect <$> runMessage msg attrs

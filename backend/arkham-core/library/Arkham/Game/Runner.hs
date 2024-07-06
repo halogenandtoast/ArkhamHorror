@@ -1095,10 +1095,8 @@ runGameMessage msg g = case msg of
           ]
     let
       isFast = case card of
-        PlayerCard pc ->
-          isJust (cdFastWindow $ toCardDef pc)
-            || BecomesFast
-            `elem` allModifiers
+        PlayerCard _ ->
+          isJust $ cdFastWindow (toCardDef card) <|> listToMaybe [w | BecomesFast w <- allModifiers]
         _ -> False
       isPlayAction = if isFast then NotPlayAction else IsPlayAction
     activeCost <- createActiveCostForCard iid card isPlayAction windows'

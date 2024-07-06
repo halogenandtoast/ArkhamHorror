@@ -11,7 +11,7 @@ data Customization
   | Lightweight -- 4
   | Hexdrinker -- 5
   | ArmorOfThorns -- 6
-  | -- Runic Axe 09021
+  | -- Runic Axe 09022
     Heirloom -- 0
   | InscriptionOfGlory -- 1
   | InscriptionOfTheElders -- 2
@@ -20,6 +20,13 @@ data Customization
   | AncientPower -- 5
   | Saga -- 6
   | Scriptweaver -- 7
+  | -- Custom Modifications 09023
+    NotchedSight -- 0
+  | ExtendedStock -- 1
+  | Counterbalance -- 2
+  | LeatherGrip -- 3
+  | ExtendedMagazine -- 4
+  | QuicksilverBullets -- 5
   | -- Empirical Hypothesis 09041
     PessimisticOutlook -- 0
   | TrialAndError -- 1

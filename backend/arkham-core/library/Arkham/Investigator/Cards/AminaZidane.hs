@@ -54,6 +54,8 @@ instance RunMessage AminaZidane where
         n <- getDoomOnTarget target
         chooseOne
           iid
-          [targetLabel target' [MoveTokens (targetToSource target) target' #doom n] | target' <- targets]
+          [ targetLabel target' [MoveTokens #elderSign (targetToSource target) target' #doom n]
+          | target' <- targets
+          ]
       pure i
     _ -> AminaZidane <$> liftRunMessage msg attrs

@@ -39,7 +39,7 @@ instance RunMessage EmergencyCache3 where
                   "Add Supply"
                   [ chooseOrRunOne
                       player
-                      [ targetLabel asset [AddUses asset Supply 1]
+                      [ targetLabel asset [AddUses (toSource attrs) asset Supply 1]
                       | asset <- supplyAssets
                       ]
                   ]

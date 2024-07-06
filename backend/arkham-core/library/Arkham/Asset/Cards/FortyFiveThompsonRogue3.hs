@@ -43,7 +43,9 @@ instance RunMessage FortyFiveThompsonRogue3 where
               $ Label "Do not damage any enemies" []
               : [ targetLabel
                   eid'
-                  [SpendUses (toTarget attrs) Ammo 1, InvestigatorDamageEnemy iid eid' (toSource attrs)]
+                  [ SpendUses (attrs.ability 1) (toTarget attrs) Ammo 1
+                  , InvestigatorDamageEnemy iid eid' (toSource attrs)
+                  ]
                 | canDealDamage
                 , eid' <- enemies
                 ]

@@ -65,6 +65,6 @@ instance RunMessage Recharge2 where
                       (toId attrs)
                   )
                   [toDiscardBy (eventController attrs) attrs aid]
-            else push (AddUses aid Charge 3)
+            else push (AddUses (toSource attrs) aid Charge 3)
           pure e
     _ -> Recharge2 . (`with` meta) <$> runMessage msg attrs

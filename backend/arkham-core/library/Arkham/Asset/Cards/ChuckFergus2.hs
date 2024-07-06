@@ -70,7 +70,7 @@ instance RunMessage ChuckFergus2 where
                 [ CreateWindowModifierEffect
                     EffectEventWindow
                     ( EffectModifiers
-                        $ toModifiers attrs [BecomesFast]
+                        $ toModifiers attrs [BecomesFast FastPlayerWindow]
                     )
                     (toSource attrs)
                     (CardIdTarget $ toCardId card)
@@ -102,7 +102,7 @@ instance RunMessage ChuckFergus2 where
         $ CreateWindowModifierEffect
           EffectEventWindow
           ( EffectModifiers
-              $ toModifiers attrs [BecomesFast]
+              $ toModifiers attrs [BecomesFast FastPlayerWindow]
           )
           (toSource attrs)
           (CardIdTarget $ toCardId card)

@@ -15,6 +15,7 @@ export type Event = {
   sealedChaosTokens: ChaosToken[];
   cardsUnderneath: Card[];
   tokens: Tokens;
+  customizations: [number, number][];
 }
 
 export const eventDecoder = JsonDecoder.object<Event>({
@@ -26,4 +27,5 @@ export const eventDecoder = JsonDecoder.object<Event>({
   sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
   tokens: tokensDecoder,
+  customizations: JsonDecoder.array<[number, number]>(JsonDecoder.tuple([JsonDecoder.number, JsonDecoder.number], 'Customization'), 'Customization[]'),
 }, 'Event');

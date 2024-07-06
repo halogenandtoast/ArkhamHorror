@@ -38,7 +38,7 @@ instance RunMessage Investments where
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       unless (findWithDefault 0 Supply (assetUses attrs) == 10)
         $ push
-        $ AddUses (toId attrs) Supply 1
+        $ AddUses (attrs.ability 1) (toId attrs) Supply 1
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       let n = findWithDefault 0 Supply (assetUses attrs)

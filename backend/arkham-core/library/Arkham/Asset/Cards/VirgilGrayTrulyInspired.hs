@@ -10,7 +10,6 @@ import Arkham.Asset.Runner
 import Arkham.Capability
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.Token
 
 newtype VirgilGrayTrulyInspired = VirgilGrayTrulyInspired AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -31,10 +30,8 @@ instance HasAbilities VirgilGrayTrulyInspired where
             ]
         )
         $ freeReaction
-        $ PlacedToken #after AlarmLevel
-    , mkAbility x 2
-        $ forced
-        $ AssetLeavesPlay #when (be x)
+        $ PlacedToken #after AnySource AnyTarget AlarmLevel
+    , mkAbility x 2 $ forced $ AssetLeavesPlay #when (be x)
     ]
 
 instance RunMessage VirgilGrayTrulyInspired where

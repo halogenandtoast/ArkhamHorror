@@ -33,7 +33,7 @@ instance HasAbilities MichaelLeigh5 where
 instance RunMessage MichaelLeigh5 where
   runMessage msg a@(MichaelLeigh5 attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ AddUses (toId a) Evidence 1
+      push $ AddUses (attrs.ability 1) (toId a) Evidence 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ skillTestModifier (toAbilitySource attrs 1) iid (DamageDealt 1)

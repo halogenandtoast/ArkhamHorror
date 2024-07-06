@@ -57,7 +57,9 @@ instance RunMessage DarrellsKodak where
         iid
         [ targetLabel
           target
-          [MoveTokens (targetToSource target) (toTarget attrs) Evidence 1, DoStep (n - 1) msg']
+          [ MoveTokens (attrs.ability 2) (targetToSource target) (toTarget attrs) Evidence 1
+          , DoStep (n - 1) msg'
+          ]
         | target <- enemies <> treacheries
         ]
       pure a

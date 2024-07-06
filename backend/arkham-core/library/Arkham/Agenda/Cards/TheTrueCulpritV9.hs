@@ -63,7 +63,7 @@ instance RunMessage TheTrueCulpritV9 where
       ResolveAmounts _ (getChoiceAmount "Clues" -> n) (isTarget attrs -> True) -> do
         tomeOfRituals <- selectJust $ assetIs Cards.tomeOfRituals
         harvestedBrain <- selectJust $ treacheryIs Cards.harvestedBrain
-        push $ MovedClues (toSource tomeOfRituals) (toTarget harvestedBrain) n
+        push $ MovedClues (attrs.ability 1) (toSource tomeOfRituals) (toTarget harvestedBrain) n
         pure a
       UseThisAbility _ (isSource attrs -> True) 2 -> do
         push $ AdvanceAgendaBy (toId attrs) AgendaAdvancedWithOther

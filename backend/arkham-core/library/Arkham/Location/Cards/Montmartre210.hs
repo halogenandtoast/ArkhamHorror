@@ -49,8 +49,8 @@ instance RunMessage Montmartre210 where
       player <- getPlayer iid
       push
         $ chooseOne player
-        $ [targetLabel asset [AddUses asset Ammo 1] | asset <- ammoAssets]
-        <> [ targetLabel asset [AddUses asset Supply 1]
+        $ [targetLabel asset [AddUses (attrs.ability 1) asset Ammo 1] | asset <- ammoAssets]
+        <> [ targetLabel asset [AddUses (attrs.ability 1) asset Supply 1]
            | asset <- supplyAssets
            ]
       pure a

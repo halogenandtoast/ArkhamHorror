@@ -44,12 +44,7 @@ instance RunMessage CustomAmmunition3 where
         select
           $ AssetControlledBy (affectsOthers $ colocatedWith iid)
           <> AssetWithTrait Firearm
-          <> NotAsset
-            ( AssetWithAttachedEvent
-                $ EventCardMatch
-                $ cardIs
-                  Cards.customAmmunition3
-            )
+          <> NotAsset (AssetWithAttachedEvent $ EventCardMatch $ cardIs Cards.customAmmunition3)
       player <- getPlayer iid
       push
         $ chooseOne
@@ -57,7 +52,7 @@ instance RunMessage CustomAmmunition3 where
           [ targetLabel
             asset
             [ PlaceEvent iid eid (AttachedToAsset asset Nothing)
-            , AddUses asset Ammo 2
+            , AddUses (toSource attrs) asset Ammo 2
             ]
           | asset <- assets
           ]

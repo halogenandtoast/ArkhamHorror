@@ -25,17 +25,19 @@ twilaKatherinePrice3 = ally TwilaKatherinePrice3 Cards.twilaKatherinePrice3 (1, 
 instance HasAbilities TwilaKatherinePrice3 where
   getAbilities (TwilaKatherinePrice3 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility (SpentUses #after You Charge (AssetWithTrait Spell) (atLeast 1)) (exhaust a)
+        $ ReactionAbility
+          (SpentUses #after You AnySource Charge (AssetWithTrait Spell) (atLeast 1))
+          (exhaust a)
     ]
 
 getSpellAsset :: [Window] -> AssetId
 getSpellAsset [] = error "No spell asset found"
-getSpellAsset ((windowType -> Window.SpentUses _ aid _ _) : _) = aid
+getSpellAsset ((windowType -> Window.SpentUses _ _ aid _ _) : _) = aid
 getSpellAsset (_ : ws) = getSpellAsset ws
 
 instance RunMessage TwilaKatherinePrice3 where
   runMessage msg a@(TwilaKatherinePrice3 attrs) = case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (getSpellAsset -> aid) _ -> do
-      push $ AddUses aid Charge 1
+      push $ AddUses (attrs.ability 1) aid Charge 1
       pure a
     _ -> TwilaKatherinePrice3 <$> runMessage msg attrs

@@ -86,10 +86,6 @@ instance RunMessage LocationAttrs where
     UpdateLocation lid upd | lid == locationId -> do
       -- TODO: we may want life cycles around this, generally this might just be a bad idea
       pure $ updateLocation [upd] a
-    MovedClues _ (isTarget a -> True) n -> do
-      pure $ a & tokensL %~ addTokens #clue n
-    MovedClues (isSource a -> True) _ n -> do
-      pure $ a & tokensL %~ subtractTokens #clue n
     FlipClues target n | isTarget a target -> do
       let clueCount = max 0 $ subtract n $ locationClues a
       pure $ a & tokensL %~ flipClues n & withoutCluesL .~ (clueCount == 0)
@@ -231,47 +227,43 @@ instance RunMessage LocationAttrs where
     MoveAllCluesTo source target | not (isTarget a target) -> do
       when (locationClues a > 0) (push $ PlaceClues source (toTarget a) (locationClues a))
       pure $ a & tokensL %~ removeAllTokens Clue & withoutCluesL .~ True
-    PlaceClues source target n | isTarget a target -> do
-      modifiers' <- getModifiers a
-      windows' <- windows [Window.PlacedClues source (toTarget a) n]
-      if CannotPlaceClues `elem` modifiers'
-        then pure a
-        else do
-          let clueCount = locationClues a + n
-          pushAll windows'
-          pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
     PlaceCluesUpToClueValue lid source n | lid == locationId -> do
       clueValue <- getPlayerCountValue locationRevealClues
       let n' = min n (clueValue - locationClues a)
       a <$ push (PlaceClues source (toTarget a) n')
-    PlaceDoom _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Doom n
-    RemoveDoom _ target n | isTarget a target -> do
-      pure $ a & tokensL %~ subtractTokens Doom n
-    PlaceResources source target n | isTarget a target -> do
-      windows' <- windows [Window.PlacedResources source (toTarget a) n]
-      pushAll windows'
-      pure $ a & tokensL %~ addTokens Resource n
-    RemoveResources _ target n | isTarget a target -> do
-      pure $ a & tokensL %~ subtractTokens Resource n
-    PlaceHorror _ target n | isTarget a target -> pure $ a & tokensL %~ addTokens Horror n
-    PlaceDamage source target n | isTarget a target -> do
-      windows' <- windows [Window.PlacedDamage source (toTarget a) n]
-      pushAll windows'
-      pure $ a & tokensL %~ addTokens #damage n
-    RemoveDamage _source target n | isTarget a target -> do
-      pure $ a & tokensL %~ subtractTokens #damage n
-    RemoveClues _ (LocationTarget lid) n | lid == locationId -> do
-      let clueCount = max 0 $ subtract n $ locationClues a
-      pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
     RemoveAllClues _ target | isTarget a target -> do
       pure $ a & tokensL %~ removeAllTokens Clue & withoutCluesL .~ True
     RemoveAllDoom _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Doom
     RemoveAllTokens _ target | isTarget a target -> pure $ a & tokensL %~ mempty
-    PlaceTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ addTokens tType n
-    MoveTokens source _ tType n | isSource a source -> pure $ a & tokensL %~ subtractTokens tType n
-    MoveTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ addTokens tType n
-    MoveUses _ target Uses.Leyline n | isTarget a target -> pure $ a & tokensL %~ addTokens Leyline n
-    RemoveTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ subtractTokens tType n
+    PlaceTokens source target tType n | isTarget a target -> do
+      if tType == Clue
+        then do
+          modifiers' <- getModifiers a
+          placedCluesWindows <- windows [Window.PlacedClues source (toTarget a) n]
+          placedTokensWindows <- windows [Window.PlacedToken source (toTarget a) tType n]
+          if CannotPlaceClues `elem` modifiers'
+            then pure a
+            else do
+              let clueCount = locationClues a + n
+              pushAll $ placedCluesWindows <> placedTokensWindows
+              pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
+        else do
+          pushM $ checkAfter $ Window.PlacedToken source target tType n
+          when (tType == Damage) do
+            windows' <- windows [Window.PlacedDamage source (toTarget a) n]
+            pushAll windows'
+          when (tType == Resource) do
+            windows' <- windows [Window.PlacedResources source (toTarget a) n]
+            pushAll windows'
+          pure $ a & tokensL %~ addTokens tType n
+    MoveTokens s source _ tType n | isSource a source -> runMessage (RemoveTokens s (toTarget a) tType n) a
+    MoveTokens s _ target tType n | isTarget a target -> runMessage (PlaceTokens s target tType n) a
+    RemoveTokens _ target tType n | isTarget a target -> do
+      if tType == Clue
+        then do
+          let clueCount = max 0 $ subtract n $ locationClues a
+          pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
+        else pure $ a & tokensL %~ subtractTokens tType n
     PlacedLocation _ _ lid | lid == locationId -> do
       if locationRevealed
         then do

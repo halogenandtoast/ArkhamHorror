@@ -27,6 +27,6 @@ instance RunMessage AstoundingRevelation where
       secretAssets <- select $ assetControlledBy iid <> AssetWithUseType Secret
       chooseOne iid
         $ ResourceLabel iid [TakeResources iid 2 (attrs.ability 1) False]
-        : [targetLabel aid [AddUses aid Secret 1] | aid <- secretAssets]
+        : [targetLabel aid [AddUses (attrs.ability 1) aid Secret 1] | aid <- secretAssets]
       pure e
     _ -> AstoundingRevelation <$> liftRunMessage msg attrs

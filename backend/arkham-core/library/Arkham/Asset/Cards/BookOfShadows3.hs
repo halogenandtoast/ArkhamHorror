@@ -39,6 +39,6 @@ instance RunMessage BookOfShadows3 where
       player <- getPlayer iid
       pushIfAny spellAssets
         $ chooseOne player
-        $ targetLabels spellAssets (\spellAsset -> only $ AddUses spellAsset Charge 1)
+        $ targetLabels spellAssets (\spellAsset -> only $ AddUses (attrs.ability 1) spellAsset Charge 1)
       pure a
     _ -> BookOfShadows3 <$> runMessage msg attrs

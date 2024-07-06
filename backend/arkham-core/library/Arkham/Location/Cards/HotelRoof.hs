@@ -81,7 +81,7 @@ instance RunMessage HotelRoof where
              in guard (amount > 0) $> (iid', amount)
       alienDevice <- selectJust $ assetIs Assets.alienDevice
       pushAll
-        $ [ MovedClues (toSource iid) (toTarget alienDevice) n
+        $ [ MovedClues (attrs.ability 2) (toSource iid) (toTarget alienDevice) n
           | (iid, n) <- iidsWithAmounts
           ]
       pure l

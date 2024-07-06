@@ -82,7 +82,7 @@ instance RunMessage Room212 where
              in guard (amount > 0) $> (iid', amount)
       sinisterSolution <- selectJust $ assetIs Assets.sinisterSolution
       pushAll
-        $ [ MovedClues (toSource iid) (toTarget sinisterSolution) n
+        $ [ MovedClues (attrs.ability 1) (toSource iid) (toTarget sinisterSolution) n
           | (iid, n) <- iidsWithAmounts
           ]
       pure l

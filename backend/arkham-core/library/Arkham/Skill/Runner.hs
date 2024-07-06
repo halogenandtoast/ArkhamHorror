@@ -21,7 +21,7 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.Entity
 import Arkham.Classes.RunMessage
-import Arkham.Helpers.Window (checkWindows)
+import Arkham.Helpers.Window (checkAfter, checkWindows)
 import Arkham.Placement
 import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
@@ -38,6 +38,8 @@ instance RunMessage SkillAttrs where
     InvestigatorCommittedSkill _ skillId | skillId == toId a -> do
       pure $ a {skillPlacement = Limbo}
     PlaceSkill sid placement | sid == toId a -> do
+      for_ placement.attachedTo \target ->
+        pushM $ checkAfter $ Window.AttachCard (Just a.controller) (toCard a) target
       pure $ a {skillPlacement = placement}
     RemoveAllAttachments source target -> do
       case placementToAttached a.placement of

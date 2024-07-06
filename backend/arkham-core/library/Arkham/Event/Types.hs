@@ -86,14 +86,22 @@ data EventAttrs = EventAttrs
   , eventTarget :: Maybe Target
   , eventMeta :: Value
   , eventTokens :: Map UseType Int
+  , eventCustomizations :: IntMap Int
   }
   deriving stock (Show, Eq, Generic)
 
 allEventCards :: Map CardCode CardDef
 allEventCards = allPlayerEventCards
 
+instance AsId EventAttrs where
+  type IdOf EventAttrs = EventId
+  asId = toId
+
 instance Is EventAttrs EventId where
   is = (==) . toId
+
+instance HasField "customizations" EventAttrs (IntMap Int) where
+  getField = eventCustomizations
 
 instance HasField "windows" EventAttrs [Window] where
   getField = eventWindows
@@ -160,6 +168,7 @@ instance FromJSON EventAttrs where
     eventMeta <- o .:? "meta" .!= Null
     deprecatedEventUses <- o .:? "uses" .!= mempty
     eventTokens <- o .:? "tokens" .!= deprecatedEventUses
+    eventCustomizations <- o .:? "customizations" .!= mempty
 
     pure EventAttrs {..}
 
@@ -203,6 +212,7 @@ event f cardDef =
             , eventTarget = Nothing
             , eventMeta = Null
             , eventTokens = mempty
+            , eventCustomizations = mempty
             }
     }
 
@@ -218,9 +228,12 @@ instance Named EventAttrs where
 
 instance Targetable EventAttrs where
   toTarget = EventTarget . toId
-  isTarget EventAttrs {eventId} (EventTarget eid) = eventId == eid
-  isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
-  isTarget _ _ = False
+  isTarget attrs@EventAttrs {..} = \case
+    EventTarget eid -> eventId == eid
+    CardCodeTarget cardCode -> cdCardCode (toCardDef attrs) == cardCode
+    CardIdTarget cardId -> cardId == eventCardId
+    SkillTestInitiatorTarget target -> isTarget attrs target
+    _ -> False
 
 instance Sourceable EventAttrs where
   toSource = EventSource . toId

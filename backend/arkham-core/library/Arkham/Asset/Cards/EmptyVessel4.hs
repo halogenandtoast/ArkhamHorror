@@ -37,7 +37,7 @@ instance HasAbilities EmptyVessel4 where
 instance RunMessage EmptyVessel4 where
   runMessage msg a@(EmptyVessel4 attrs) = case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      push $ AddUses (toId a) Charge 1
+      push $ AddUses (attrs.ability 1) (toId a) Charge 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       wishEater <- fromJustNote "missing wish eater" . listToMaybe <$> searchBonded iid Cards.wishEater

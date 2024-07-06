@@ -43,7 +43,7 @@ instance RunMessage EasttownArkhamPoliceStation where
       push
         $ chooseOne
           player
-          [ targetLabel assetId [AddUses assetId useType' 2]
+          [ targetLabel assetId [AddUses (attrs.ability 1) assetId useType' 2]
           | (useType', assetId) <- ammoAssets <> supplyAssets
           ]
       pure l

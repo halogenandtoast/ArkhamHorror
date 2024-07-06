@@ -72,8 +72,11 @@ instance RunMessage EldritchSophist where
         $ chooseOrRunOne player
         $ [ Label
             "Move Charge"
-            [ chooseOne player [targetLabel c [SpendUses (toTarget aid) Charge 1, AddUses c Charge 1]]
-            | c <- chargeChoices
+            [ chooseOne
+                player
+                [ targetLabel c [MoveTokens (attrs.ability 1) (toSource aid) (toTarget c) Charge 1]
+                | c <- chargeChoices
+                ]
             ]
           | hasCharge
           ]
@@ -81,7 +84,9 @@ instance RunMessage EldritchSophist where
             "Move Secret"
             [ chooseOne
                 player
-                [targetLabel c [SpendUses (toTarget aid) Secret 1, AddUses c Secret 1] | c <- secretChoices]
+                [ targetLabel c [MoveTokens (attrs.ability 1) (toSource aid) (toTarget c) Secret 1]
+                | c <- secretChoices
+                ]
             ]
            | hasSecret
            ]

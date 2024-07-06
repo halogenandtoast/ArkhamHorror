@@ -25,9 +25,9 @@ instance RunMessage Suggestion1 where
       pushAll [skillTestModifier source iid (AddSkillValue #willpower), chooseEvade]
       pure a
     PassedThisSkillTestBy _ (isSource attrs -> True) n | n < 2 -> do
-      push $ SpendUses (toTarget attrs) Charge 1
+      push $ SpendUses (attrs.ability 1) (toTarget attrs) Charge 1
       pure a
     FailedThisSkillTest _ (isSource attrs -> True) -> do
-      push $ SpendUses (toTarget attrs) Charge 1
+      push $ SpendUses (attrs.ability 1) (toTarget attrs) Charge 1
       pure a
     _ -> Suggestion1 <$> runMessage msg attrs

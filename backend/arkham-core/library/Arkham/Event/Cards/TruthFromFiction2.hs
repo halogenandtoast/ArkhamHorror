@@ -28,6 +28,6 @@ instance RunMessage TruthFromFiction2 where
       player <- getPlayer iid
       pushAll
         $ replicate n
-        $ chooseOne player [targetLabel aid [AddUses aid Uses.Secret 1] | aid <- assets]
+        $ chooseOne player [targetLabel aid [AddUses (toSource attrs) aid Uses.Secret 1] | aid <- assets]
       pure e
     _ -> TruthFromFiction2 <$> runMessage msg attrs

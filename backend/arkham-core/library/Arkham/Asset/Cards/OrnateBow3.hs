@@ -38,6 +38,6 @@ instance RunMessage OrnateBow3 where
         : leftOr chooseFight
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ AddUses (toId attrs) Ammo 1
+      push $ AddUses (attrs.ability 2) (toId attrs) Ammo 1
       pure a
     _ -> OrnateBow3 <$> runMessage msg attrs

@@ -41,7 +41,9 @@ instance RunMessage EarthlySerenity1 where
         chooseOne
           iid
           [ Label "Do not spend a charge to heal" []
-          , Label "Spend a charge to heal" [SpendUses (toTarget attrs) Charge 1, Msg.chooseOne player choices]
+          , Label
+              "Spend a charge to heal"
+              [SpendUses (attrs.ability 1) (toTarget attrs) Charge 1, Msg.chooseOne player choices]
           ]
       pure a
     _ -> EarthlySerenity1 <$> liftRunMessage msg attrs

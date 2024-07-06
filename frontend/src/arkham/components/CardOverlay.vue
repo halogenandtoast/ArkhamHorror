@@ -518,6 +518,81 @@ const getImage = (el: HTMLElement): string | null => {
   left: var(--left-4);
 }
 
+// Custom Modifications
+.tick-09023 {
+  --top-0: 19.1%;
+  --top-1: 33.4%;
+  --top-2: 40.9%;
+  --top-3: 51.7%;
+  --top-4: 62.5%;
+  --top-5: 73.3%;
+  --left-1: 8.6%;
+  --left-2: 11.9%;
+  --left-3: 15.4%;
+  --left-4: 19.1%;
+}
+
+.customization-09023-0-1 {
+  top: var(--top-0);
+  left: var(--left-1);
+}
+.customization-09023-1-1 {
+  top: var(--top-1);
+  left: var(--left-1);
+}
+.customization-09023-1-2 {
+  top: var(--top-1);
+  left: var(--left-2);
+}
+.customization-09023-2-1 {
+  top: var(--top-2);
+  left: var(--left-1);
+}
+.customization-09023-2-2 {
+  top: var(--top-2);
+  left: var(--left-2);
+}
+.customization-09023-3-1 {
+  top: var(--top-3);
+  left: var(--left-1);
+}
+.customization-09023-3-2 {
+  top: var(--top-3);
+  left: var(--left-2);
+}
+.customization-09023-3-3 {
+  top: var(--top-3);
+  left: var(--left-3);
+}
+.customization-09023-4-1 {
+  top: var(--top-4);
+  left: var(--left-1);
+}
+.customization-09023-4-2 {
+  top: var(--top-4);
+  left: var(--left-2);
+}
+.customization-09023-4-3 {
+  top: var(--top-4);
+  left: var(--left-3);
+}
+.customization-09023-5-1 {
+  top: var(--top-5);
+  left: var(--left-1);
+}
+.customization-09023-5-2 {
+  top: var(--top-5);
+  left: var(--left-2);
+}
+.customization-09023-5-3 {
+  top: var(--top-5);
+  left: var(--left-3);
+}
+.customization-09023-5-4 {
+  top: var(--top-5);
+  left: var(--left-4);
+}
+
 .tick-09119 {
   --top-0: 19.0%;
   --top-1: 28.4%;

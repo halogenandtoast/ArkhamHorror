@@ -30,7 +30,7 @@ instance RunMessage EighteenDerringer2 where
       pushAll [skillTestModifiers attrs iid [DamageDealt 1, SkillModifier #combat amount], chooseFight]
       pure . EighteenDerringer2 $ attrs `with` Metadata False
     FailedThisSkillTest _ (isSource attrs -> True) -> do
-      push $ AddUses (toId attrs) Ammo 1
+      push $ AddUses (attrs.ability 1) (toId attrs) Ammo 1
       pure . EighteenDerringer2 $ attrs `with` Metadata True
     EndRound -> pure . EighteenDerringer2 $ attrs `with` Metadata False
     _ -> EighteenDerringer2 . (`with` metadata) <$> runMessage msg attrs

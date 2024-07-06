@@ -59,7 +59,7 @@ daisysToteBagAdvancedEffect = cardEffect DaisysToteBagAdvancedEffect Cards.daisy
 
 instance HasModifiersFor DaisysToteBagAdvancedEffect where
   getModifiersFor target (DaisysToteBagAdvancedEffect attrs) | target == attrs.target = do
-    pure $ toModifiers attrs [BecomesFast]
+    pure $ toModifiers attrs [BecomesFast FastPlayerWindow]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DaisysToteBagAdvancedEffect where

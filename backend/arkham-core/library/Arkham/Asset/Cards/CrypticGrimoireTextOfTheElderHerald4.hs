@@ -40,7 +40,7 @@ instance RunMessage CrypticGrimoireTextOfTheElderHerald4 where
   runMessage msg a@(CrypticGrimoireTextOfTheElderHerald4 attrs) = case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       n <- count ((== #curse) . (.face)) <$> getSkillTestResolvedChaosTokens
-      push $ AddUses attrs.id Secret n
+      push $ AddUses (attrs.ability 1) attrs.id Secret n
       pure a
     UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> c) _ -> do
       push $ costModifier (toAbilitySource attrs 1) iid (ReduceCostOf (CardWithId $ toCardId c) 1)

@@ -33,7 +33,7 @@ instance RunMessage TheRedClockBrokenButReliable5 where
           iid
           [ Label
               "Take all charges here as resources"
-              [MoveUses (toSource attrs) (ResourceTarget iid) Charge charges]
+              [MoveTokens (attrs.ability 1) (toSource attrs) (ResourceTarget iid) Charge charges]
           , Label "Leave charges" []
           ]
 
@@ -44,7 +44,7 @@ instance RunMessage TheRedClockBrokenButReliable5 where
           | charges == 1 = [DoStep 3 msg]
           | charges == 2 = [GainActions iid (attrs.ability 1) 2]
           | otherwise = []
-      pushAll $ AddUses attrs.id Charge 1 : otherMessages
+      pushAll $ AddUses (attrs.ability 1) attrs.id Charge 1 : otherMessages
       pure a
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
       locations <- getCanMoveToLocations iid (attrs.ability 1)

@@ -118,7 +118,9 @@ runEventMessage msg a@EventAttrs {..} = case msg of
   ReturnChaosTokens tokens -> pure $ a & sealedChaosTokensL %~ filter (`notElem` tokens)
   UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
   RemoveAllChaosTokens face -> pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
-  PlaceEvent _ eid placement | eid == eventId -> do
+  PlaceEvent iid eid placement | eid == eventId -> do
+    for_ placement.attachedTo \target ->
+      pushM $ checkAfter $ Window.AttachCard (Just iid) (toCard a) target
     case placement of
       InThreatArea iid -> do
         pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid (toCard a)]
@@ -173,6 +175,6 @@ runEventMessage msg a@EventAttrs {..} = case msg of
       Just attached | target == attached -> push $ toDiscard source a
       _ -> pure ()
     pure a
-  SpendUses target useType' n | isTarget a target -> do
+  SpendUses _ target useType' n | isTarget a target -> do
     pure $ a & tokensL . ix useType' %~ max 0 . subtract n
   _ -> pure a

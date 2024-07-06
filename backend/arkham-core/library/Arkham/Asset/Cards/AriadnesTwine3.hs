@@ -58,7 +58,7 @@ instance RunMessage AriadnesTwine3 where
       assets <- select $ assetControlledBy iid <> AssetWithUses Secret
       chooseOrRunOne
         iid
-        [ targetLabel target [MoveUses (toSource target) (ResourceTarget iid) Secret 1]
+        [ targetLabel target [MoveTokens (attrs.ability 1) (toSource target) (ResourceTarget iid) Secret 1]
         | target <- assets
         ]
       pure a
@@ -66,7 +66,7 @@ instance RunMessage AriadnesTwine3 where
       assets <- select $ assetControlledBy iid <> oneOf [AssetWithUseType Secret, AssetWithoutUses]
       chooseOrRunOne
         iid
-        [ targetLabel target [MoveUses (ResourceSource iid) (toTarget target) Secret 1]
+        [ targetLabel target [MoveTokens (attrs.ability 1) (ResourceSource iid) (toTarget target) Secret 1]
         | target <- assets
         ]
       pure a

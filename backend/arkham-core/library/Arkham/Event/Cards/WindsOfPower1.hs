@@ -29,7 +29,7 @@ instance RunMessage WindsOfPower1 where
   runMessage msg e@(WindsOfPower1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       assets <- select $ assetControlledBy iid <> AssetCanHaveUses Charge
-      chooseOne iid [targetLabel asset [AddUses asset Charge 2] | asset <- assets]
+      chooseOne iid [targetLabel asset [AddUses (toSource attrs) asset Charge 2] | asset <- assets]
       pure e
     InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _) | iid' == iid -> do
       push $ InitiatePlayCard iid (toCard attrs) Nothing NoPayment (defaultWindows iid) False

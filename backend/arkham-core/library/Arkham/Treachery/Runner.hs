@@ -70,6 +70,8 @@ instance RunMessage TreacheryAttrs where
       push $ toDiscard GameSource a
       pure a
     PlaceTreachery tid placement | tid == treacheryId -> do
+      for_ placement.attachedTo \target ->
+        pushM $ checkAfter $ Window.AttachCard Nothing (toCard a) target
       let entersPlay = isOutOfPlayPlacement a.placement && isInPlayPlacement placement
       case placement of
         InThreatArea iid -> do
@@ -78,10 +80,10 @@ instance RunMessage TreacheryAttrs where
         _ -> when entersPlay do
           pushM $ checkAfter $ Window.TreacheryEntersPlay tid
       pure $ a & placementL .~ placement
-    PlaceTokens _ (isTarget a -> True) token n -> do
-      pure $ a & tokensL %~ addTokens token n
-    MoveTokens source _ tType n | isSource a source -> pure $ a & tokensL %~ subtractTokens tType n
-    MoveTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ addTokens tType n
+    PlaceTokens _ (isTarget a -> True) token n -> pure $ a & tokensL %~ addTokens token n
+    RemoveTokens _ (isTarget a -> True) token n -> pure $ a & tokensL %~ subtractTokens token n
+    MoveTokens s source _ tType n | isSource a source -> runMessage (RemoveTokens s (toTarget a) tType n) a
+    MoveTokens s _ target tType n | isTarget a target -> runMessage (PlaceTokens s (toTarget a) tType n) a
     PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget a -> do
       push $ toDiscard GameSource a
       pure a

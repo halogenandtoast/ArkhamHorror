@@ -25,6 +25,6 @@ instance RunMessage EighteenDerringer where
       pushAll [skillTestModifiers source iid [DamageDealt 1, SkillModifier #combat 2], chooseFight]
       pure a
     FailedThisSkillTest _ (isSource attrs -> True) -> do
-      push $ AddUses (toId attrs) Ammo 1
+      push $ AddUses (attrs.ability 1) (toId attrs) Ammo 1
       pure a
     _ -> EighteenDerringer <$> runMessage msg attrs

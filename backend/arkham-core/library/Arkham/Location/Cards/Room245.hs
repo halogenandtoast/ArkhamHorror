@@ -92,7 +92,7 @@ instance RunMessage Room245 where
              in guard (amount > 0) $> (iid', amount)
       timeWornLocket <- selectJust $ assetIs Assets.timeWornLocket
       pushAll
-        $ [ MovedClues (toSource iid) (toTarget timeWornLocket) n
+        $ [ MovedClues (attrs.ability 1) (toSource iid) (toTarget timeWornLocket) n
           | (iid, n) <- iidsWithAmounts
           ]
       pure l

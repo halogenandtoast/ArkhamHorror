@@ -69,7 +69,7 @@ instance RunMessage OldBookOfLore3 where
         hand <- field InvestigatorHand iid'
         let cards = filter (`elem` hand) targetCards
         let windows' = [mkWhen (Window.DuringTurn iid)]
-        let source = toAbilitySource attrs 1
+        let source = attrs.ability 1
 
         when (hasUses attrs) $ do
           choices <- forMaybeM cards \card -> do
@@ -80,7 +80,7 @@ instance RunMessage OldBookOfLore3 where
               $ guard playable
               $> targetLabel
                 (toCardId card)
-                [ SpendUses (toTarget attrs) Secret 1
+                [ SpendUses source (toTarget attrs) Secret 1
                 , createCardEffect Cards.oldBookOfLore3 Nothing attrs (toCardId card)
                 , PayCardCost iid' card windows'
                 , DoStep 1 (SearchFound iid target deck (deleteFirst card targetCards))

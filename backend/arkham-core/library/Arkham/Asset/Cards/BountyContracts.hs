@@ -58,8 +58,8 @@ instance RunMessage BountyContracts where
     ResolveAmounts _ choices (ProxyTarget (isTarget attrs -> True) (EnemyTarget enemy)) -> do
       let bounties = getChoiceAmount "Bounties" choices
       pushAll
-        [ SpendUses (toTarget attrs) Bounty bounties
-        , PlaceTokens (toAbilitySource attrs 1) (toTarget enemy) Token.Bounty bounties
+        [ SpendUses (attrs.ability 1) (toTarget attrs) Bounty bounties
+        , PlaceTokens (attrs.ability 1) (toTarget enemy) Token.Bounty bounties
         ]
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 (getEnemy -> enemy) _ -> do

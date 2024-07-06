@@ -36,10 +36,10 @@ instance RunMessage Enraptured where
         unless (null chargeAssets && null secretAssets)
           $ push
           $ chooseOne player
-          $ [ targetLabel aid [AddUses aid Uses.Charge 1]
+          $ [ targetLabel aid [AddUses (toSource attrs) aid Uses.Charge 1]
             | aid <- chargeAssets
             ]
-          <> [ targetLabel aid [AddUses aid Uses.Secret 1]
+          <> [ targetLabel aid [AddUses (toSource attrs) aid Uses.Secret 1]
              | aid <- secretAssets
              ]
         pure s

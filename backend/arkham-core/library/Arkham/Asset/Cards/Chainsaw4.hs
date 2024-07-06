@@ -33,7 +33,7 @@ instance RunMessage Chainsaw4 where
           push
             $ chooseOne
               player
-              [ Label "Place 1 supply on Chainsaw" [AddUses (toId attrs) Supply 1]
+              [ Label "Place 1 supply on Chainsaw" [AddUses (attrs.ability 1) (toId attrs) Supply 1]
               , Label "Deal 1 damage to the attacked enemy" [EnemyDamage eid $ nonAttack (attrs.ability 1) 1]
               ]
         _ -> error "invalid call"

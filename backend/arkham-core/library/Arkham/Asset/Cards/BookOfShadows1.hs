@@ -41,7 +41,7 @@ instance RunMessage BookOfShadows1 where
         $ push
         $ chooseOne
           player
-          [ targetLabel aid' [AddUses aid' Charge 1]
+          [ targetLabel aid' [AddUses (attrs.ability 1) aid' Charge 1]
           | aid' <- spellAssetIds
           ]
       pure a

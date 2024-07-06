@@ -58,7 +58,7 @@ instance RunMessage TheTrueCulpritV5 where
         vengefulSpecter <- selectJust $ enemyIs Cards.vengefulSpecter
         moveableClues <- fieldMap AssetClues (min n) sinisterSolution
         pushWhen (moveableClues > 0)
-          $ MovedClues (toSource sinisterSolution) (toTarget vengefulSpecter) moveableClues
+          $ MovedClues (attrs.ability 1) (toSource sinisterSolution) (toTarget vengefulSpecter) moveableClues
         pure a
       UseThisAbility _ (isSource attrs -> True) 2 -> do
         push $ AdvanceAgendaBy (toId attrs) AgendaAdvancedWithOther

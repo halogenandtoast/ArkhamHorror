@@ -83,7 +83,7 @@ instance RunMessage OfficeMurderAtTheExcelsiorHotel where
              in guard (amount > 0) $> (iid', amount)
       managersKey <- selectJust $ assetIs Assets.managersKey
       pushAll
-        $ [ MovedClues (toSource iid) (toTarget managersKey) n
+        $ [ MovedClues (attrs.ability 1) (toSource iid) (toTarget managersKey) n
           | (iid, n) <- iidsWithAmounts
           ]
       pure l

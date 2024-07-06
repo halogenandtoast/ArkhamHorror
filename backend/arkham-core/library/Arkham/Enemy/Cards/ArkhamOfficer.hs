@@ -35,12 +35,13 @@ instance RunMessage ArkhamOfficer where
   runMessage msg e@(ArkhamOfficer attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       location <- selectJust $ locationWithEnemy (toId attrs)
-      pushAll [MovedClues (toSource location) (toTarget attrs) 1, FlipClues (toTarget attrs) 1]
+      pushAll
+        [MovedClues (attrs.ability 1) (toSource location) (toTarget attrs) 1, FlipClues (toTarget attrs) 1]
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ parley iid (toAbilitySource attrs 1) iid #willpower (Fixed 3)
+      push $ parley iid (attrs.ability 2) iid #willpower (Fixed 3)
       pure e
-    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       player <- getPlayer iid
       let exhausted = enemyExhausted attrs
       doom <- fieldMap EnemyTokens (countTokens #doom) (toId attrs)
@@ -50,7 +51,7 @@ instance RunMessage ArkhamOfficer where
         $ [Label "Automatically evade Arkham Officer" [Msg.EnemyEvaded iid (toId attrs)] | not exhausted]
         <> [ Label
             "Flip one of its doom to its clue side and take control of it."
-            [FlipDoom (toTarget attrs) 1, MovedClues (toSource attrs) (toTarget iid) 1]
+            [FlipDoom (toTarget attrs) 1, MovedClues (attrs.ability 2) (toSource attrs) (toTarget iid) 1]
            | doom > 0
            ]
       pure e

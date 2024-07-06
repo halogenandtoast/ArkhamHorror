@@ -121,6 +121,7 @@ data IsDirect = IsDirect | IsNonDirect
 
 data WindowType
   = AttemptToEvadeEnemy InvestigatorId EnemyId
+  | AttachCard (Maybe InvestigatorId) Card Target
   | ActAdvance ActId
   | ActivateAbility InvestigatorId [Window] Ability
   | AddedToVictory Card
@@ -207,6 +208,7 @@ data WindowType
   | PhaseEnds Phase
   | PlaceUnderneath Target Card
   | PlacedToken Source Target Token Int
+  | SpentToken Source Target Token Int
   | LostResources InvestigatorId Source Int
   | LostActions InvestigatorId Source Int
   | WouldPlaceDoom Source Target Int
@@ -240,7 +242,7 @@ data WindowType
   | RevealChaosTokenAssetAbilityEffect InvestigatorId [ChaosToken] AssetId
   | RevealChaosTokenWithNegativeModifier InvestigatorId ChaosToken
   | WouldPerformRevelationSkillTest InvestigatorId
-  | SpentUses InvestigatorId AssetId UseType Int
+  | SpentUses InvestigatorId Source AssetId UseType Int
   | SkillTest SkillTestType
   | SkillTestEnded SkillTest
   | SuccessfulAttackEnemy InvestigatorId EnemyId Int

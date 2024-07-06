@@ -6,7 +6,6 @@ import Arkham.Asset.Runner
 import Arkham.Evade
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype Suggestion4 = Suggestion4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -19,7 +18,7 @@ instance HasAbilities Suggestion4 where
   getAbilities (Suggestion4 a) =
     [ evadeAbility a 1 (ActionCost 1 <> exhaust a) ControlsThis
     , restrictedAbility a 2 ControlsThis
-        $ ReactionAbility (EnemyWouldAttack Timing.When You (CancelableEnemyAttack AnyEnemyAttack) AnyEnemy)
+        $ ReactionAbility (EnemyWouldAttack #when You (CancelableEnemyAttack AnyEnemyAttack) AnyEnemy)
         $ assetUseCost a Charge 1
     ]
 
@@ -31,10 +30,10 @@ instance RunMessage Suggestion4 where
       pushAll [skillTestModifier source iid (AddSkillValue #willpower), chooseEvade]
       pure a
     PassedThisSkillTestBy _ (isSource attrs -> True) n | n < 2 -> do
-      push $ SpendUses (toTarget attrs) Charge 1
+      push $ SpendUses (attrs.ability 1) (toTarget attrs) Charge 1
       pure a
     FailedThisSkillTest _ (isSource attrs -> True) -> do
-      push $ SpendUses (toTarget attrs) Charge 1
+      push $ SpendUses (attrs.ability 1) (toTarget attrs) Charge 1
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       push $ CancelNext (toAbilitySource attrs 2) AttackMessage

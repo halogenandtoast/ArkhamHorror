@@ -49,10 +49,10 @@ instance RunMessage Venturer where
       player <- getPlayer iid
       push
         $ chooseOne player
-        $ [ targetLabel aid [AddUses aid Supply 1]
+        $ [ targetLabel aid [AddUses (attrs.ability 1) aid Supply 1]
           | aid <- supplyAssets
           ]
-        <> [ targetLabel aid [AddUses aid Ammo 1]
+        <> [ targetLabel aid [AddUses (attrs.ability 1) aid Ammo 1]
            | aid <- ammoAssets
            ]
       pure a

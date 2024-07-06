@@ -31,7 +31,7 @@ instance RunMessage Blur1 where
         ]
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
-      push $ SpendUses (toTarget attrs) Charge 1
+      push $ SpendUses (attrs.ability 1) (toTarget attrs) Charge 1
       gainActions iid (attrs.ability 1) 1
       when (n == 0) $ assignDamage iid (attrs.ability 1) 1
       pure a

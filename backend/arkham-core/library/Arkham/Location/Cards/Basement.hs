@@ -74,7 +74,7 @@ instance RunMessage Basement where
              in guard (amount > 0) $> (iid', amount)
       tomeOfRituals <- selectJust $ assetIs Assets.tomeOfRituals
       pushAll
-        $ [ MovedClues (toSource iid) (toTarget tomeOfRituals) n
+        $ [ MovedClues (attrs.ability 2) (toSource iid) (toTarget tomeOfRituals) n
           | (iid, n) <- iidsWithAmounts
           ]
       pure l

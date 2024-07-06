@@ -33,6 +33,6 @@ instance RunMessage OldKeyring where
         ]
       pure a
     PassedThisSkillTest _ (isSource attrs -> True) -> do
-      push $ SpendUses (toTarget attrs) Key 1
+      push $ SpendUses (attrs.ability 1) (toTarget attrs) Key 1
       pure a
     _ -> OldKeyring <$> runMessage msg attrs

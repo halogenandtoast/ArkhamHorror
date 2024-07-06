@@ -593,6 +593,84 @@ const getImage = (el: HTMLElement): string | null => {
   left: var(--left-4);
 }
 
+// Alchemical Distillation
+.tick-09040 {
+  --top-0: 19.1%;
+  --top-1: 26.7%;
+  --top-2: 34.3%;
+  --top-3: 45.1%;
+  --top-4: 52.8%;
+  --top-5: 60.2%;
+  --top-6: 74.3%;
+  --left-1: 8.6%;
+  --left-2: 11.9%;
+  --left-3: 15.4%;
+  --left-4: 19.1%;
+  --left-5: 22.4%;
+}
+
+.customization-09040-0-1 {
+  top: var(--top-0);
+  left: var(--left-1);
+}
+.customization-09040-1-1 {
+  top: var(--top-1);
+  left: var(--left-1);
+}
+.customization-09040-2-1 {
+  top: var(--top-2);
+  left: var(--left-1);
+}
+.customization-09040-3-1 {
+  top: var(--top-3);
+  left: var(--left-1);
+}
+.customization-09040-4-1 {
+  top: var(--top-4);
+  left: var(--left-1);
+}
+.customization-09040-4-2 {
+  top: var(--top-4);
+  left: var(--left-2);
+}
+.customization-09040-5-1 {
+  top: var(--top-5);
+  left: var(--left-1);
+}
+.customization-09040-5-2 {
+  top: var(--top-5);
+  left: var(--left-2);
+}
+.customization-09040-5-3 {
+  top: var(--top-5);
+  left: var(--left-3);
+}
+.customization-09040-5-4 {
+  top: var(--top-5);
+  left: var(--left-4);
+}
+.customization-09040-6-1 {
+  top: var(--top-6);
+  left: var(--left-1);
+}
+.customization-09040-6-2 {
+  top: var(--top-6);
+  left: var(--left-2);
+}
+.customization-09040-6-3 {
+  top: var(--top-6);
+  left: var(--left-3);
+}
+.customization-09040-6-4 {
+  top: var(--top-6);
+  left: var(--left-4);
+}
+.customization-09040-6-5 {
+  top: var(--top-6);
+  left: var(--left-5);
+}
+
+// Hyperphysical Shotcaster
 .tick-09119 {
   --top-0: 19.0%;
   --top-1: 28.4%;

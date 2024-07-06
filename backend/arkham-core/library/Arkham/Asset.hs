@@ -864,7 +864,8 @@ allAssets =
     , SomeAssetCard guardDog2
     , SomeAssetCard handcuffs2
     , --- seeker [tsk]
-      SomeAssetCard empiricalHypothesis
+      SomeAssetCard alchemicalDistillation
+    , SomeAssetCard empiricalHypothesis
     , SomeAssetCard fingerprintKit4
     , --- rogue [tsk]
       SomeAssetCard chuckFergus2

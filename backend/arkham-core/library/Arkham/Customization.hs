@@ -27,6 +27,14 @@ data Customization
   | LeatherGrip -- 3
   | ExtendedMagazine -- 4
   | QuicksilverBullets -- 5
+  | -- Alchemical Distillation 09040
+    MendingDistillate -- 0
+  | CalmingDistillate -- 1
+  | EnlighteningDistillate -- 2
+  | QuickeningDistillate -- 3
+  | Refined -- 4
+  | Empowered -- 5
+  | Perfected -- 6
   | -- Empirical Hypothesis 09041
     PessimisticOutlook -- 0
   | TrialAndError -- 1

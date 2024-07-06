@@ -192,13 +192,12 @@ instance RunMessage AssetAttrs where
     AddUses source aid useType' n | aid == assetId -> runMessage (PlaceTokens source (toTarget a) useType' n) a
     SpendUses source target useType' n | isTarget a target -> do
       mods <- getModifiers a
-      let otherSources = [source | ProvidesUses uType source <- mods, uType == useType']
-      otherSourcePairs <- for otherSources \source -> do
-        case source of
-          AssetSource aid' -> do
-            uses <- fieldMap AssetUses (findWithDefault 0 useType') aid'
-            pure (AssetTarget aid', uses)
-          _ -> error $ "Unhandled source: " <> show source
+      let otherSources = [s | ProvidesUses uType s <- mods, uType == useType']
+      otherSourcePairs <- for otherSources \case
+        AssetSource aid' -> do
+          uses <- fieldMap AssetUses (findWithDefault 0 useType') aid'
+          pure (AssetTarget aid', uses)
+        _ -> error $ "Unhandled source: " <> show source
 
       -- window should be independent of other sources since they are spent from this asset
       for_ assetController $ \controller ->
@@ -301,7 +300,7 @@ instance RunMessage AssetAttrs where
       -- we specifically use the investigator source here because the
       -- asset has no knowledge of being owned yet, and this will allow
       -- us to bring the investigator's id into scope
-      modifiers <- (<>) <$> getModifiers (toTarget a) <*> getModifiers (toCardId a)
+      modifiers <- getCombinedModifiers [toTarget a, CardIdTarget (toCardId a)]
       let printedUses = cdUses (toCardDef a)
       startingUses <- toStartingUses printedUses
       let

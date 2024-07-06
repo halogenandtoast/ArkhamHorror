@@ -122,6 +122,7 @@ allPlayerAssetCards =
       , aceOfSwords1
       , adaptable1
       , agencyBackup5
+      , alchemicalDistillation
       , alchemicalTransmutation
       , alchemicalTransmutation2
       , alejandroVela
@@ -5584,6 +5585,7 @@ runicAxe =
     , cdSlots = [#hand, #hand]
     , cdUses = uses Charge 4
     , cdUnique = True
+    , cdKeywords = setFromList [Keyword.Customizable]
     , cdCustomizations =
         mapFromList
           [ (Heirloom, 1)
@@ -5614,6 +5616,26 @@ handcuffs2 =
       , cdSkills = [#combat, #agility]
       , cdLevel = Just 2
       }
+
+alchemicalDistillation :: CardDef
+alchemicalDistillation =
+  (asset "09040" "Alchemical Distillation" 2 Seeker)
+    { cdCardTraits = setFromList [Item, Science]
+    , cdSkills = [#willpower]
+    , cdSlots = [#hand]
+    , cdUses = uses Supply 3
+    , cdKeywords = setFromList [Keyword.Customizable]
+    , cdCustomizations =
+        mapFromList
+          [ (MendingDistillate, 1)
+          , (CalmingDistillate, 1)
+          , (EnlighteningDistillate, 1)
+          , (QuickeningDistillate, 1)
+          , (Refined, 2)
+          , (Empowered, 4)
+          , (Perfected, 5)
+          ]
+    }
 
 empiricalHypothesis :: CardDef
 empiricalHypothesis =

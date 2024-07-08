@@ -392,7 +392,7 @@
   },
   { "id": "03", "name": "The Path to Carcosa" },
   { "id": "04", "name": "The Forgotten Age" },
-  { "id": "05", "name": "The Circle Undone", "beta": true, "settings": [
+  { "id": "05", "name": "The Circle Undone", "settings": [
     {
       "key": "Disappearance at the Twilight Estate",
       "scenarioId": "05043",
@@ -951,5 +951,5 @@
       "settings": []
     }
   ]},
-  { "id": "06", "name": "The Dream-Eaters", "beta": true }
+  { "id": "06", "name": "The Dream-Eaters" }
 ]

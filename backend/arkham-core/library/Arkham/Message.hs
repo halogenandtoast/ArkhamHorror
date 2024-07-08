@@ -874,7 +874,7 @@ data Message
       Source
       Target
       [(Zone, ZoneReturnStrategy)]
-      CardMatcher
+      ExtendedCardMatcher
       FoundCardsStrategy
   | ResolveSearch InvestigatorId
   | SearchFound InvestigatorId Target DeckSignifier [Card]

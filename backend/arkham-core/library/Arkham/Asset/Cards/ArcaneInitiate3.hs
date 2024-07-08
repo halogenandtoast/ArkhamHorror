@@ -1,16 +1,11 @@
-module Arkham.Asset.Cards.ArcaneInitiate3 (
-  arcaneInitiate3,
-  ArcaneInitiate3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.ArcaneInitiate3 (arcaneInitiate3, ArcaneInitiate3 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Message qualified as Msg
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
-import Arkham.Trait
+import Arkham.Strategy
 
 newtype ArcaneInitiate3 = ArcaneInitiate3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,35 +16,23 @@ arcaneInitiate3 = ally ArcaneInitiate3 Cards.arcaneInitiate3 (1, 3)
 
 instance HasAbilities ArcaneInitiate3 where
   getAbilities (ArcaneInitiate3 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ForcedAbility
-        $ AssetEntersPlay Timing.When
-        $ AssetWithId
-        $ toId a
-    , restrictedAbility a 2 ControlsThis
-        $ FastAbility
-        $ ExhaustCost
-        $ toTarget
-          a
+    [ restrictedAbility a 1 ControlsThis $ forced $ AssetEntersPlay #when (be a)
+    , restrictedAbility a 2 ControlsThis $ FastAbility (exhaust a)
     ]
 
 instance RunMessage ArcaneInitiate3 where
-  runMessage msg a@(ArcaneInitiate3 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ Label "Place 1 doom" [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1]
-          , Label "Place 2 horror" [PlaceHorror (toAbilitySource attrs 1) (toTarget attrs) 2]
-          ]
+  runMessage msg a@(ArcaneInitiate3 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      chooseOne
+        iid
+        [ Label "Place 1 doom" [Msg.placeDoom (attrs.ability 1) attrs 1]
+        , Label "Place 2 horror" [Msg.placeHorror (attrs.ability 1) attrs 2]
+        ]
       pure a
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel iid [search iid source iid [fromTopOfDeck 3] (CardWithTrait Spell) $ DrawFound iid 1]
-          ]
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      let source = attrs.ability 2
+      chooseOne
+        iid
+        [targetLabel iid [Msg.search iid source iid [fromTopOfDeck 3] #spell $ DrawFound iid 1]]
       pure a
     _ -> ArcaneInitiate3 <$> runMessage msg attrs

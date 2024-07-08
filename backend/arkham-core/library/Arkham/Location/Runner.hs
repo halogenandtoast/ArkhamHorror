@@ -31,7 +31,6 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Action qualified as Action
-import Arkham.Asset.Uses qualified as Uses
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.HasGame

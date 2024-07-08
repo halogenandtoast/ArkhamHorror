@@ -94,7 +94,7 @@ const choose = (index: number) => emits('choose', index)
       :class="{ 'event--can-interact': cardAction !== -1, exhausted }"
       class="card event"
       @click="$emit('choose', cardAction)"
-      :data-customizations="event.customizations"
+      :data-customizations="JSON.stringify(event.customizations)"
     />
     <div v-if="hasPool" class="pool">
       <PoolItem v-if="event.doom > 0" type="doom" :amount="event.doom" />

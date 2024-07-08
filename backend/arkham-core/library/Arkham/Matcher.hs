@@ -318,6 +318,9 @@ fromSets = oneOf . map CardFromEncounterSet
 
 -- ** Extended Card Helpers **
 
+inDeckOf :: InvestigatorId -> ExtendedCardMatcher
+inDeckOf = InDeckOf . InvestigatorWithId
+
 inHandOf :: InvestigatorId -> ExtendedCardMatcher
 inHandOf = InHandOf . InvestigatorWithId
 
@@ -326,6 +329,9 @@ inDiscardOf = InDiscardOf . InvestigatorWithId
 
 basic :: CardMatcher -> ExtendedCardMatcher
 basic = BasicCardMatch
+
+basicCardIs :: HasCardCode a => a -> ExtendedCardMatcher
+basicCardIs = basic . cardIs
 
 -- ** Card List Helpers **
 

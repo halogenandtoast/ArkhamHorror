@@ -449,7 +449,7 @@ instance RunMessage Scenario where
               source
               iid
               [fromDeck]
-              (Matcher.CardWithSubType BasicWeakness)
+              (Matcher.basic $ Matcher.CardWithSubType BasicWeakness)
               (RemoveFoundFromGame iid 1)
             | iid <- investigators
             ]

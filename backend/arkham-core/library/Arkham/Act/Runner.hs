@@ -32,9 +32,9 @@ import Arkham.Target as X
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Classes.HasGame
-import Arkham.Matcher hiding (FastPlayerWindow)
+import Arkham.Matcher hiding (FastPlayerWindow, InvestigatorResigned)
 import Arkham.Tarot
-import Arkham.Window
+import Arkham.Window hiding (InvestigatorResigned)
 import Arkham.Window qualified as Window
 
 advanceActDeck :: ActAttrs -> Message

@@ -313,13 +313,8 @@ instance RunMessage TheSearchForKadath where
             <> placeOriabRest
             <> map (AddToVictory . toTarget) victoryLocations
             <> map RemoveLocation locations
-            <> [ search
-                  leadId
-                  (toSource attrs)
-                  EncounterDeckTarget
-                  [fromDeck]
-                  (cardIs Enemies.nightriders)
-                  (defer attrs IsNotDraw)
+            <> [ search leadId attrs EncounterDeckTarget [fromDeck] (basicCardIs Enemies.nightriders)
+                  $ defer attrs IsNotDraw
                , AdvanceToAct 1 Acts.theIsleOfOriab A (toSource attrs)
                , DoStep 1 msg
                ]
@@ -368,13 +363,8 @@ instance RunMessage TheSearchForKadath where
             <> map (AddToVictory . toTarget) victoryLocations
             <> map RemoveLocation locations
             <> [ ShuffleCardsIntoDeck Deck.EncounterDeck [theCrawlingMist]
-               , search
-                  leadId
-                  attrs
-                  EncounterDeckTarget
-                  [fromDeck]
-                  (cardIs Enemies.priestOfAThousandMasks)
-                  (defer attrs IsNotDraw)
+               , search leadId attrs EncounterDeckTarget [fromDeck] (basicCardIs Enemies.priestOfAThousandMasks)
+                  $ defer attrs IsNotDraw
                , AdvanceToAct 1 Acts.theKingsDecree A (toSource attrs)
                , DoStep 1 msg
                ]

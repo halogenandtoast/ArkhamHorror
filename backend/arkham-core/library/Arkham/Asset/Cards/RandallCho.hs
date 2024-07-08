@@ -1,17 +1,11 @@
-module Arkham.Asset.Cards.RandallCho (
-  randallCho,
-  RandallCho (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.RandallCho (randallCho, RandallCho (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (InvestigatorDamage)
-import Arkham.Card.CardType
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Zone qualified as Zone
 
@@ -24,11 +18,7 @@ randallCho = ally RandallCho Cards.randallCho (1, 3)
 
 instance HasAbilities RandallCho where
   getAbilities (RandallCho x) =
-    [ restrictedAbility x 1 ControlsThis
-        $ ReactionAbility
-          (AssetEntersPlay Timing.After $ AssetWithId $ toId x)
-          Free
-    ]
+    [restrictedAbility x 1 ControlsThis $ freeReaction $ AssetEntersPlay #after (be x)]
 
 instance RunMessage RandallCho where
   runMessage msg a@(RandallCho attrs) = case msg of
@@ -47,10 +37,10 @@ instance RunMessage RandallCho where
                 "Search your deck and discard pile for a Weapon asset, play it (paying its cost), and shuffle your deck"
                 [ search
                     iid
-                    (toSource attrs)
-                    (InvestigatorTarget iid)
+                    (attrs.ability 1)
+                    iid
                     [(Zone.FromDeck, ShuffleBackIn), (Zone.FromDiscard, PutBack)]
-                    (CardWithType AssetType <> CardWithTrait Weapon)
+                    (basic $ #asset <> withTrait Weapon)
                     (PlayFound iid 1)
                 ]
           ]

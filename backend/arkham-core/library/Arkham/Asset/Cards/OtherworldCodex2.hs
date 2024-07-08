@@ -35,10 +35,10 @@ instance RunMessage OtherworldCodex2 where
       push
         $ search
           iid
-          (toAbilitySource attrs 1)
+          (attrs.ability 1)
           EncounterDeckTarget
           [fromTopOfDeck 9]
-          (NotCard $ CardWithTrait Elite)
+          (basic $ NotCard $ CardWithTrait Elite)
           (defer attrs IsNotDraw)
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do

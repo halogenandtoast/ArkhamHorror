@@ -250,7 +250,7 @@ getMeta target k = do
 
 getMetaMaybe :: (HasGame m, Targetable target, FromJSON a) => a -> target -> Key -> m a
 getMetaMaybe def target k = do
-  metas <- mapMaybe (preview _MetaModifier) . traceShowId <$> getModifiers target
+  metas <- mapMaybe (preview _MetaModifier) <$> getModifiers target
   let
     value = getFirst $ flip foldMap metas $ \case
       Object o -> case fromJSON <$> KeyMap.lookup k o of

@@ -28,12 +28,12 @@ instance HasModifiersFor ArkhamPoliceStation where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ArkhamPoliceStation where
-  getAbilities (ArkhamPoliceStation attrs) = withRevealedAbilities attrs [restrictedAbility attrs 1 Here actionAbility]
+  getAbilities (ArkhamPoliceStation attrs) = extendRevealed attrs [restrictedAbility attrs 1 Here actionAbility]
 
 instance RunMessage ArkhamPoliceStation where
   runMessage msg l@(ArkhamPoliceStation attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      push $ search iid source iid [fromTopOfDeck 6] (CardWithTrait Weapon) (DrawFound iid 1)
+      push $ search iid source iid [fromTopOfDeck 6] (basic $ withTrait Weapon) (DrawFound iid 1)
       pure l
     _ -> ArkhamPoliceStation <$> runMessage msg attrs

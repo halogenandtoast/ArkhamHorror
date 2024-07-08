@@ -37,6 +37,7 @@ import Arkham.Classes
 import Arkham.Classes.HasDistance
 import Arkham.Classes.HasGame
 import Arkham.Cost qualified as Cost
+import Arkham.Customization (CustomizationChoice (..))
 import Arkham.Damage
 import Arkham.Difficulty
 import Arkham.Distance
@@ -121,6 +122,7 @@ import Arkham.Matcher hiding (
   FastPlayerWindow,
   InvestigatorDefeated,
   InvestigatorEliminated,
+  InvestigatorResigned,
   LocationCard,
   PlayCard,
   RevealLocation,
@@ -1213,6 +1215,9 @@ abilityMatches a@Ability {..} = \case
   AbilityOnStory storyMatcher -> case abilitySource of
     StorySource sid' -> elem sid' <$> select storyMatcher
     ProxySource (StorySource sid') _ -> elem sid' <$> select storyMatcher
+    _ -> pure False
+  AbilityOnAsset assetMatcher -> case abilitySource.asset of
+    Just aid -> elem aid <$> select assetMatcher
     _ -> pure False
   AbilityIsAction Action.Activate -> pure $ abilityIsActivate a
   AbilityIsAction action -> pure $ action `elem` abilityActions a
@@ -2967,7 +2972,7 @@ instance Projection Asset where
       AssetCardCode -> pure assetCardCode
       AssetCardId -> pure assetCardId
       AssetSlots -> do
-        mods <- getModifiers aid
+        mods <- getCombinedModifiers [toTarget aid, toTarget assetCardId]
         pure
           $ filter ((`notElem` mods) . DoNotTakeUpSlot)
           $ assetSlots
@@ -3403,6 +3408,12 @@ instance Query ExtendedCardMatcher where
    where
     matches' :: HasGame m => Card -> ExtendedCardMatcher -> m Bool
     matches' c = \case
+      ChosenViaCustomization inner -> do
+        selectOne inner >>= \case
+          Just (PlayerCard pc) -> do
+            let titles = [t | ChosenCard t <- concatMap snd (toList pc.customizations)]
+            pure $ c `cardMatch` oneOf (CardWithTitle <$> titles)
+          _ -> pure False
       OwnedBy who -> do
         iids <- select who
         pure $ maybe False (`elem` iids) c.owner
@@ -3823,6 +3834,7 @@ eventField e fld = do
     EventUses -> pure $ Map.filterWithKey (\k _ -> Token.tokenIsUse k) eventTokens
     EventTokens -> pure eventTokens
     EventPlacement -> pure eventPlacement
+    EventCustomizations -> pure eventCustomizations
     EventTraits -> pure $ cdCardTraits cdef
     EventAbilities -> pure $ getAbilities e
     EventOwner -> pure eventOwner

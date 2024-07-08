@@ -325,6 +325,7 @@ allPlayerEventCards =
       , telescopicSight3
       , temptFate
       , thePaintedWorld
+      , theRavenQuill
       , theStygianEye3
       , theTruthBeckons
       , thinkOnYourFeet
@@ -3134,6 +3135,37 @@ customModifications =
           , (LeatherGrip, 3)
           , (ExtendedMagazine, 3)
           , (QuicksilverBullets, 4)
+          ]
+    }
+
+theRavenQuill :: CardDef
+theRavenQuill =
+  (event "09042" "The Raven Quill" 3 Seeker)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Item, Relic, Upgrade]
+    , cdCriteria =
+        Just
+          $ oneOf
+            [ Criteria.ChosenCustomizationCardIsInPlay
+            , Criteria.HasCustomization SupernaturalRecord
+                <> oneOf
+                  [ can.search.deck You
+                  , exists
+                      $ PlayableCard (UnpaidCost NoAction)
+                      $ oneOf [InHandOf You, InDiscardOf You]
+                      <> ChosenViaCustomization IsThisCard
+                  ]
+            ]
+    , cdCustomizations =
+        mapFromList
+          [ (ChoicePlaceholder, 0)
+          , (LivingQuill, 1)
+          , (SpectralBinding, 1)
+          , (MysticVane, 2)
+          , (EndlessInkwell, 2)
+          , (EnergySap, 2)
+          , (InterwovenInk, 3)
+          , (SupernaturalRecord, 4)
           ]
     }
 

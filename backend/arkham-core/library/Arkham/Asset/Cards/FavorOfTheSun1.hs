@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Matcher
 import Arkham.Window (mkWhen)
 import Arkham.Window qualified as Window

@@ -73,7 +73,7 @@ instance RunMessage TheYithianRelic where
       player <- getPlayer iid
       push $ case mDiscard of
         Just relic -> chooseOne player [targetLabel (toCardId relic) [addToHand iid relic]]
-        Nothing -> search iid attrs iid [fromDeck] (CardWithTitle "Relic of Ages") (DrawFound iid 1)
+        Nothing -> search iid attrs iid [fromDeck] (basic $ CardWithTitle "Relic of Ages") (DrawFound iid 1)
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       relic <- selectJust $ AssetWithTitle "Relic of Ages"

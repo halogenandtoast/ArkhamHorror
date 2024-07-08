@@ -42,7 +42,7 @@ instance RunMessage Scrying3 where
           player
           [ TargetLabel
             target
-            [lookAt iid source target [(FromTopOfDeck 3, PutBackInAnyOrder)] AnyCard (defer attrs IsNotDraw)]
+            [lookAt iid source target [(FromTopOfDeck 3, PutBackInAnyOrder)] #any (defer attrs IsNotDraw)]
           | target <- [EncounterDeckTarget | hasEncounterDeck] <> targets
           ]
       pure a

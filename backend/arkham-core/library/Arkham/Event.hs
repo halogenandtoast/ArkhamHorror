@@ -510,6 +510,8 @@ allEvents =
     , SomeEventCard wordOfWeal
     , --- guardian [tsk]
       SomeEventCard customModifications
+    , --- seeker [tsk]
+      SomeEventCard theRavenQuill
     , --- rogue [tsk]
       SomeEventCard breakingAndEntering2
     , -- The Feast of Hemloch Vale

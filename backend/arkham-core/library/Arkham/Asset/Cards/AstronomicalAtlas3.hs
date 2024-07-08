@@ -27,7 +27,7 @@ instance HasAbilities AstronomicalAtlas3 where
 instance RunMessage AstronomicalAtlas3 where
   runMessage msg a@(AstronomicalAtlas3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      lookAt iid (attrs.ability 1) iid [(FromTopOfDeck 1, PutBack)] AnyCard (defer attrs IsNotDraw)
+      lookAt iid (attrs.ability 1) iid [(FromTopOfDeck 1, PutBack)] #any (defer attrs IsNotDraw)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       focusCards attrs.cardsUnderneath $ \unfocus -> chooseOrRunOne iid $ flip map attrs.cardsUnderneath \card ->

@@ -1,17 +1,11 @@
-module Arkham.Asset.Cards.Backpack (
-  backpack,
-  Backpack (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Backpack (backpack, Backpack (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding (Supply)
-import Arkham.Card
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), getAdditionalSearchTargets)
 import Arkham.Matcher hiding (PlaceUnderneath)
-import Arkham.Timing qualified as Timing
-import Arkham.Trait
+import Arkham.Strategy
 
 newtype Backpack = Backpack AssetAttrs
   deriving anyclass (IsAsset)
@@ -21,58 +15,36 @@ backpack :: AssetCard Backpack
 backpack = asset Backpack Cards.backpack
 
 instance HasModifiersFor Backpack where
-  getModifiersFor (InvestigatorTarget iid) (Backpack attrs)
-    | controlledBy attrs iid =
-        pure
-          $ toModifiers attrs (map AsIfInHand $ assetCardsUnderneath attrs)
+  getModifiersFor (InvestigatorTarget iid) (Backpack attrs) | controlledBy attrs iid = do
+    modified attrs (AsIfInHand <$> attrs.cardsUnderneath)
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Backpack where
   getAbilities (Backpack a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
-          (AssetEntersPlay Timing.After $ AssetWithId $ toId a)
-          Free
-    ]
+    [restrictedAbility a 1 ControlsThis $ freeReaction $ AssetEntersPlay #after (be a)]
 
 instance RunMessage Backpack where
-  runMessage msg a@(Backpack attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push
-        $ search
-          iid
-          source
-          iid
-          [fromTopOfDeck 6]
-          ( NonWeakness <> CardWithOneOf [CardWithTrait Item, CardWithTrait Supply]
-          )
-          (defer attrs IsNotDraw)
+  runMessage msg a@(Backpack attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = attrs.ability 1
+      let matcher = basic $ NonWeakness <> oneOf [#item, #supply]
+      search iid source iid [fromTopOfDeck 6] matcher (defer attrs IsNotDraw)
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       additionalTargets <- getAdditionalSearchTargets iid
-      player <- getPlayer iid
-      pushAll
-        [ chooseUpToN
-            player
-            (3 + additionalTargets)
-            "Done choosing cards"
-            [ TargetLabel
-              (CardIdTarget $ toCardId c)
-              [PlaceUnderneath (toTarget attrs) [c]]
-            | c <- cards
-            ]
-        ]
+      chooseUpToN
+        iid
+        (3 + additionalTargets)
+        "Done choosing cards"
+        [targetLabel c [PlaceUnderneath (toTarget attrs) [c]] | c <- cards]
       pure a
-    SearchNoneFound iid target | isTarget attrs target -> do
-      player <- getPlayer iid
-      push $ chooseOne player [Label "No Cards Found" []]
+    SearchNoneFound iid (isTarget attrs -> True) -> do
+      chooseOne iid [Label "No Cards Found" []]
       pure a
-    InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `elem` assetCardsUnderneath attrs ->
-      do
-        let
-          remaining = deleteFirstMatch (== card) $ assetCardsUnderneath attrs
-        pushAll
-          $ [toDiscardBy iid attrs attrs | null remaining]
-          <> [addToHand iid card, msg]
-        pure $ Backpack $ attrs & cardsUnderneathL .~ remaining
-    _ -> Backpack <$> runMessage msg attrs
+    InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `elem` attrs.cardsUnderneath -> do
+      let remaining = deleteFirstMatch (== card) attrs.cardsUnderneath
+      when (null remaining) $ toDiscardBy iid attrs attrs
+      addToHand iid [card]
+      push msg
+      pure $ Backpack $ attrs & cardsUnderneathL .~ remaining
+    _ -> Backpack <$> liftRunMessage msg attrs

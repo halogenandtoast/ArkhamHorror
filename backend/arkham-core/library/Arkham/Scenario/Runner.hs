@@ -756,7 +756,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           )
           mempty
           cardSources
-      targetCards = filter (`cardMatch` cardMatcher) $ concat $ toList foundCards
+    targetCards <- filterM (`extendedCardMatch` cardMatcher) $ concat $ toList foundCards
     pushBatch batchId $ EndSearch iid source EncounterDeckTarget cardSources
     player <- getPlayer iid
 

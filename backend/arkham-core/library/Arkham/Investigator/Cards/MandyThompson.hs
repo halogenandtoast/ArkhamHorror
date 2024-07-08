@@ -1,10 +1,4 @@
-module Arkham.Investigator.Cards.MandyThompson (
-  mandyThompson,
-  MandyThompson (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.MandyThompson (mandyThompson, MandyThompson (..)) where
 
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Modifiers
@@ -12,6 +6,7 @@ import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Window (Window, windowType)
 import Arkham.Window qualified as Window
 
@@ -61,7 +56,7 @@ instance RunMessage MandyThompson where
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       pushAll
-        [ search iid ElderSign iid [fromTopOfDeck 3] AnyCard (DrawOrCommitFound iid 1)
+        [ search iid ElderSign iid [fromTopOfDeck 3] #any (DrawOrCommitFound iid 1)
         , ShuffleDeck (Deck.InvestigatorDeck iid)
         ]
       pure i

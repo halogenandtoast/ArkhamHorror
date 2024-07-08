@@ -1,18 +1,11 @@
-module Arkham.Asset.Cards.WhittonGreene (
-  whittonGreene,
-  WhittonGreene (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.WhittonGreene (whittonGreene, WhittonGreene (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card.CardType
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype WhittonGreene = WhittonGreene AssetAttrs
@@ -26,39 +19,20 @@ instance HasAbilities WhittonGreene where
   getAbilities (WhittonGreene x) =
     [ restrictedAbility x 1 ControlsThis
         $ ReactionAbility
-          ( OrWindowMatcher
-              [ Matcher.RevealLocation Timing.After You Anywhere
-              , PutLocationIntoPlay Timing.After You Anywhere
-              ]
-          )
-          (ExhaustCost $ toTarget x)
+          (oneOf [Matcher.RevealLocation #after You Anywhere, PutLocationIntoPlay #after You Anywhere])
+          (exhaust x)
     ]
 
 instance HasModifiersFor WhittonGreene where
-  getModifiersFor (InvestigatorTarget iid) (WhittonGreene a)
-    | controlledBy a iid = do
-        active <-
-          selectAny
-            ( AssetControlledBy (InvestigatorWithId iid)
-                <> AssetOneOf [AssetWithTrait Tome, AssetWithTrait Relic]
-            )
-        pure $ toModifiers a [SkillModifier SkillIntellect 1 | active]
+  getModifiersFor (InvestigatorTarget iid) (WhittonGreene a) | controlledBy a iid = do
+    active <- selectAny $ assetControlledBy iid <> oneOf (withTrait <$> [Tome, Relic])
+    pure $ toModifiers a [SkillModifier #intellect 1 | active]
   getModifiersFor _ _ = pure []
 
 instance RunMessage WhittonGreene where
   runMessage msg a@(WhittonGreene attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              ( search
-                  iid
-                  source
-                  (InvestigatorTarget iid)
-                  [fromTopOfDeck 6]
-                  ( CardWithType AssetType
-                      <> CardWithOneOf (map CardWithTrait [Tome, Relic])
-                  )
-                  (DrawFound iid 1)
-              )
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let matcher = basic $ #asset <> oneOf (withTrait <$> [Tome, Relic])
+      push $ search iid (attrs.ability 1) iid [fromTopOfDeck 6] matcher (DrawFound iid 1)
+      pure a
     _ -> WhittonGreene <$> runMessage msg attrs

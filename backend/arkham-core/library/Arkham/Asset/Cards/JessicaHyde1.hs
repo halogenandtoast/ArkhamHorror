@@ -1,16 +1,10 @@
-module Arkham.Asset.Cards.JessicaHyde1 (
-  jessicaHyde1,
-  JessicaHyde1 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.JessicaHyde1 (jessicaHyde1, JessicaHyde1 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.Token
+import Arkham.Prelude
 
 newtype JessicaHyde1 = JessicaHyde1 AssetAttrs
   deriving anyclass (IsAsset)

@@ -19,7 +19,7 @@ getHasCustomization
      , IdOf a ~ EntityId a
      , Projection a
      , HasCardDef (EntityAttrs a)
-     , HasField "customizations" (EntityAttrs a) (IntMap Int)
+     , HasField "customizations" (EntityAttrs a) Customizations
      )
   => IdOf a
   -> Customization
@@ -27,13 +27,33 @@ getHasCustomization
 getHasCustomization aid c = (`hasCustomization` c) <$> getAttrs @a aid
 
 hasCustomization
-  :: (HasCardDef a, HasField "customizations" a (IntMap Int)) => a -> Customization -> Bool
-hasCustomization attrs n = case mCustomizationIndex of
+  :: (HasCardDef a, HasField "customizations" a Customizations)
+  => a
+  -> Customization
+  -> Bool
+hasCustomization attrs = hasCustomization_ cardCustomizations attrs.customizations
+ where
+  cardCustomizations = cdCustomizations $ toCardDef attrs
+
+hasCustomization_ :: Map Customization Int -> Customizations -> Customization -> Bool
+hasCustomization_ cardCustomizations customizations n = case mCustomizationIndex of
   Nothing -> False
   Just i -> valueOf i == requiredXp
  where
-  customizations = attrs.customizations
-  valueOf x = IntMap.findWithDefault 0 x customizations
+  valueOf x = fst $ IntMap.findWithDefault (0, []) x customizations
   requiredXp = Map.findWithDefault 100 n cardCustomizations
   mCustomizationIndex = elemIndex n $ Map.keys cardCustomizations
+
+getCustomizations
+  :: (HasCardDef a, HasField "customizations" a Customizations) => a -> [Customization]
+getCustomizations attrs = getCustomizations_ cardCustomizations attrs.customizations
+ where
   cardCustomizations = cdCustomizations $ toCardDef attrs
+
+getCustomizations_ :: Map Customization Int -> Customizations -> [Customization]
+getCustomizations_ cardCustomizations customizations = flip concatMap (withIndex ks) \(n, k) ->
+  guard (valueOf n == requiredXp k) $> k
+ where
+  valueOf n = fst $ IntMap.findWithDefault (0, []) n customizations
+  requiredXp k = Map.findWithDefault 100 k cardCustomizations
+  ks = Map.keys cardCustomizations

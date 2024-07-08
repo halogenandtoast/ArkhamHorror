@@ -19,7 +19,8 @@ practiceMakesPerfect = event PracticeMakesPerfect Cards.practiceMakesPerfect
 instance RunMessage PracticeMakesPerfect where
   runMessage msg e@(PracticeMakesPerfect attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      search iid attrs iid [fromTopOfDeck 9] (#skill <> withTrait Practiced) (defer attrs IsNotDraw)
+      search iid attrs iid [fromTopOfDeck 9] (basic $ #skill <> withTrait Practiced)
+        $ defer attrs IsNotDraw
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       committable <- filterM (getIsCommittable iid) cards

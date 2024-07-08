@@ -42,7 +42,7 @@ instance RunMessage DrElliHorowitz where
   runMessage msg a@(DrElliHorowitz attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       -- no filter because we need to handle game logic
-      search iid (attrs.ability 1) iid [fromTopOfDeck 9] AnyCard $ defer attrs IsNotDraw
+      search iid (attrs.ability 1) iid [fromTopOfDeck 9] #any $ defer attrs IsNotDraw
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       let validCards = filterCards (CardWithType AssetType <> CardWithTrait Relic) cards

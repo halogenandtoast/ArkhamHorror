@@ -1,9 +1,4 @@
-module Arkham.Asset.Cards.PowderOfIbnGhazi (
-  powderOfIbnGhazi,
-  PowderOfIbnGhazi (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.PowderOfIbnGhazi (powderOfIbnGhazi, PowderOfIbnGhazi (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -11,7 +6,7 @@ import Arkham.Asset.Runner
 import Arkham.CampaignLogKey
 import Arkham.Exception
 import Arkham.Matcher
-import Arkham.Token
+import Arkham.Prelude
 
 newtype PowderOfIbnGhazi = PowderOfIbnGhazi AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

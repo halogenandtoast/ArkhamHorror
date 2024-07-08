@@ -1,9 +1,13 @@
 module Arkham.Customization where
 
 import Arkham.Prelude
+import Arkham.SkillType (SkillType)
+import Arkham.Trait (Trait)
 
 data Customization
-  = -- Hunter's Armor 09021
+  = -- placeholder, must be the top entry because the map has to be ordered
+    ChoicePlaceholder
+  | -- Hunter's Armor 09021
     Enchanted -- 0
   | ProtectiveRunes -- 1
   | Durable -- 2
@@ -44,6 +48,14 @@ data Customization
   | ResearchGrant -- 5
   | IrrefutableProof -- 6
   | AlternativeHypothesis -- 7
+  | -- The Raven Quill 09042
+    LivingQuill -- 0
+  | SpectralBinding -- 1
+  | MysticVane -- 2
+  | EndlessInkwell -- 3
+  | EnergySap -- 4
+  | InterwovenInk -- 5
+  | SupernaturalRecord -- 6
   | -- Hyperphysical Shotcaster 09119
     Railshooter -- 0
   | Telescanner -- 1
@@ -54,3 +66,9 @@ data Customization
   | EmpoweredConfiguration -- 6
   deriving stock (Show, Eq, Ord, Data, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)
+
+data CustomizationChoice = ChosenCard Text | ChosenSkill SkillType | ChosenTrait Trait
+  deriving stock (Show, Eq, Ord, Data, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+type Customizations = IntMap (Int, [CustomizationChoice])

@@ -14,14 +14,19 @@ please file a bug.
 
 * Multiplayer up to 4 players
 * Multiplayer solitaire
+* Tarot Readings
 * Deck import from ArkhamDB
 
 ## Finished Content
 
 ### Player Cards
 
-* All player cards through The Dream-Eaters cycle
+* All player cards until The Scarlet Keys (in progress)
+* All player cards from the return to boxes
 * All the standalone investigator cards
+* All the promo investigator cards
+* The following parallel investigator cards:
+  - Daisy Walker
 
 ### Campaigns
 
@@ -30,14 +35,14 @@ please file a bug.
 * The Dunwich Legacy
 * The Path To Carcosa
 * The Forgotten Age
-* The Circle Undone [Beta]
-* The Dream-Eaters [In Progress]
+* The Circle Undone
+* The Dream-Eaters
 
 ### Side Stories
 
 * The Curse of the Rougarou
 * Carnevale of Horrors
-* Murder at the Excelsior Hotel [Beta]
+* Murder at the Excelsior Hotel
 
 ## I just want to try this out on my computer
 

@@ -58,17 +58,16 @@
   { "id": "04277", "name": "The Depths of Yoth", "campaign": "04" },
   { "id": "04314", "name": "Shattered Aeons", "campaign": "04" },
 
-  { "id": "05043", "name": "Disappearance at the Twilight Estate", "campaign": "05", "beta": true },
-  { "id": "05050", "name": "The Witching Hour", "campaign": "05", "beta": true },
-  { "id": "05065", "name": "At Death's Doorstep", "campaign": "05", "beta": true },
-  { "id": "05120", "name": "The Secret Name", "campaign": "05", "beta": true },
-  { "id": "05161", "name": "The Wages of Sin", "campaign": "05", "beta": true },
-  { "id": "05197", "name": "For the Greater Good", "campaign": "05", "beta": true },
+  { "id": "05043", "name": "Disappearance at the Twilight Estate", "campaign": "05" },
+  { "id": "05050", "name": "The Witching Hour", "campaign": "05" },
+  { "id": "05065", "name": "At Death's Doorstep", "campaign": "05" },
+  { "id": "05120", "name": "The Secret Name", "campaign": "05" },
+  { "id": "05161", "name": "The Wages of Sin", "campaign": "05" },
+  { "id": "05197", "name": "For the Greater Good", "campaign": "05" },
   {
     "id": "05238",
     "name": "Union and Disillusion",
     "campaign": "05",
-    "beta": true,
     "settings": [
       { "key": "MissingPersons", "recordable": "RecordableCardCode", "type": "ToggleCrossedOut", "content": [
         { "label": "Gaveriella Mizrah", "key": "05046", "content": true },
@@ -182,14 +181,12 @@
     "id": "05284",
     "name": "In the Clutches of Chaos",
     "campaign": "05",
-    "beta": true,
     "settings": []
   },
   {
     "id": "05325",
     "name": "Before the Black Throne",
     "campaign": "05",
-    "beta": true,
     "settings": [
         {
           "key": "ThePathWindsBeforeYou",
@@ -203,21 +200,18 @@
     "id": "06039",
     "name": "Beyond the Gates of Sleep",
     "campaign": "06",
-    "beta": true,
     "settings": []
   },
   {
     "id": "06063",
     "name": "Waking Nightmare",
     "campaign": "06",
-    "beta": true,
     "settings": []
   },
   {
     "id": "06119",
     "name": "The Search for Kadath",
     "campaign": "06",
-    "beta": true,
     "settings": [
       { "key": "TheInvestigatorsParleyedWithTheZoogs", "type": "ToggleKey", "content": false }
     ]
@@ -226,35 +220,30 @@
     "id": "06168",
     "name": "A Thousand Shapes of Horror",
     "campaign": "06",
-    "beta": true,
     "settings": []
   },
   {
     "id": "06206",
     "name": "Dark Side of the Moon",
     "campaign": "06",
-    "beta": true,
     "settings": []
   },
   {
     "id": "06247",
     "name": "Point of No Return",
     "campaign": "06",
-    "beta": true,
     "settings": []
   },
   {
     "id": "06286",
     "name": "Where the Gods Dwell",
     "campaign": "06",
-    "beta": true,
     "settings": []
   },
   {
     "id": "06333",
     "name": "Weaver of the Cosmos",
     "campaign": "06",
-    "beta": true,
     "settings": []
   }
 ]

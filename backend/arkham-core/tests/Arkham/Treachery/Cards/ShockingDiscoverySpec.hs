@@ -38,8 +38,7 @@ spec = describe "Shocking Discovery" do
         run $ SetEncounterDeck (Deck [rats])
         withProp @"deck" (Deck cards) self
         self `moveTo` location
-        run
-          $ search (toId self) (TestSource mempty) (toId self) [fromDeck] AnyCard (DrawFound (toId self) 1)
+        run $ search (toId self) (TestSource mempty) (toId self) [fromDeck] #any (DrawFound (toId self) 1)
         skip -- do not use mandy's ability
         useForcedAbility
         asDefs self.discard `shouldReturn` [Treacheries.shockingDiscovery]

@@ -7,7 +7,6 @@ import TestImport.Lifted hiding (EnemyDamage)
 import Arkham.ActiveCost
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Types (Field (..))
-import Arkham.Asset.Uses (UseType (Ammo))
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Matcher (AbilityMatcher (..), assetIs)

@@ -2,7 +2,6 @@ module Arkham.Event.Cards.OccultEvidenceSpec (spec) where
 
 import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Cards (mandyThompson)
-import Arkham.Matcher
 import TestImport.New
 
 spec :: Spec
@@ -19,8 +18,7 @@ spec = describe "Occult Evidence" do
       cards <- shuffleM (occultEvidence : otherCards)
       withProp @"deck" (Deck cards) self
       self `moveTo` location
-      run
-        $ search (toId self) (TestSource mempty) (toId self) [fromDeck] AnyCard (DrawFound (toId self) 1)
+      run $ search (toId self) (TestSource mempty) (toId self) [fromDeck] #any (DrawFound (toId self) 1)
       skip -- do not use mandy's ability
       useReaction
       self.clues `shouldReturn` 1

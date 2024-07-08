@@ -12,7 +12,7 @@ spec = describe "Pendant of the Queen" do
       segmentsOfOnyx <- replicateM 3 $ genCard Assets.segmentOfOnyx1
       withProp @"bonded" segmentsOfOnyx self
       pendantOfTheQueen <- self `putAssetIntoPlay` Assets.pendantOfTheQueen
-      run $ SpendUses (toTarget pendantOfTheQueen) Charge 3
+      run $ SpendUses GameSource (toTarget pendantOfTheQueen) Charge 3
       assertNone $ assetIs Assets.pendantOfTheQueen
       (unDeck <$> self.deck) `shouldMatchListM` onlyPlayerCards segmentsOfOnyx
 

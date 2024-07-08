@@ -905,7 +905,7 @@ instance RunMessage ActiveCost where
                ]
           pure c
         ForAbility a@Ability {..} -> do
-          modifiers' <- traceShowId <$> getCombinedModifiers [toTarget iid, AbilityTarget iid a]
+          modifiers' <- getCombinedModifiers [toTarget iid, AbilityTarget iid a]
           let
             modifiersPreventAttackOfOpportunity =
               any ((`elem` modifiers') . ActionDoesNotCauseAttacksOfOpportunity) a.actions

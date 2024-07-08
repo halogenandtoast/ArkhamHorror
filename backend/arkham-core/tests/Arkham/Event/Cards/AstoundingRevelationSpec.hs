@@ -2,7 +2,6 @@ module Arkham.Event.Cards.AstoundingRevelationSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Event.Cards qualified as Events
-import Arkham.Matcher
 import TestImport.New
 
 spec :: Spec
@@ -13,7 +12,7 @@ spec = describe "Astounding Revelation" do
         astoundingRevelation <- genPlayerCard Events.astoundingRevelation
         withProp @"deck" (Deck [astoundingRevelation]) self
         run
-          $ search (toId self) (TestSource mempty) (toTarget self) [fromDeck] AnyCard (DrawFound (toId self) 1)
+          $ search (toId self) (TestSource mempty) (toTarget self) [fromDeck] #any (DrawFound (toId self) 1)
         useReaction
         chooseOnlyOption "Take resources"
         self.resources `shouldReturn` 2
@@ -24,7 +23,7 @@ spec = describe "Astounding Revelation" do
         astoundingRevelation <- genPlayerCard Events.astoundingRevelation
         withProp @"deck" (Deck [astoundingRevelation]) self
         run
-          $ search (toId self) (TestSource mempty) (toTarget self) [fromDeck] AnyCard (DrawFound (toId self) 1)
+          $ search (toId self) (TestSource mempty) (toTarget self) [fromDeck] #any (DrawFound (toId self) 1)
         useReaction
         chooseTarget forbiddenKnowledge
         self.resources `shouldReturn` 0
@@ -36,7 +35,7 @@ spec = describe "Astounding Revelation" do
         astoundingRevelation2 <- genPlayerCard Events.astoundingRevelation
         withProp @"deck" (Deck [astoundingRevelation1, astoundingRevelation2]) self
         run
-          $ search (toId self) (TestSource mempty) (toTarget self) [fromDeck] AnyCard (DrawFound (toId self) 1)
+          $ search (toId self) (TestSource mempty) (toTarget self) [fromDeck] #any (DrawFound (toId self) 1)
         useReactionOf (EventSource $ EventId $ unsafeCardIdToUUID $ toCardId astoundingRevelation1)
         chooseOnlyOption "Take resources"
         chooseOnlyOption "Add other to hand"

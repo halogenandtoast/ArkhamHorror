@@ -50,7 +50,6 @@ import Arkham.Phase
 import Arkham.Projection
 import Arkham.SkillTest.Runner
 import Arkham.SkillTestResult
-import Arkham.Token (Token)
 import Arkham.Token qualified as Token
 import Arkham.Treachery.Types
 import Arkham.Window (defaultWindows)
@@ -613,7 +612,7 @@ discardedWhenNoUses def = it "is discarded when no uses" . gameTest $ \self -> d
     Nothing -> expectationFailure "asset has no uses"
     Just useType' -> do
       let useCount' = useCount uses
-      run $ SpendUses (toTarget this) useType' useCount'
+      run $ SpendUses GameSource (toTarget this) useType' useCount'
   assert $ selectNone $ Matcher.assetIs def
   asDefs self.discard `shouldReturn` [def]
 

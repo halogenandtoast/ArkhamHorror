@@ -71,7 +71,7 @@ spec = describe "Mandy Thompson" $ do
           (TestSource mempty)
           EncounterDeckTarget
           [fromTopOfDeck 3]
-          AnyCard
+          #any
           (DrawFound (toId roland) 1)
       useReaction
       chooseOptionMatching "3 additional cards" \case
@@ -101,7 +101,7 @@ spec = describe "Mandy Thompson" $ do
           (TestSource mempty)
           EncounterDeckTarget
           [fromTopOfDeck 3]
-          AnyCard
+          #any
           (DrawFound (toId roland) 1)
       useReaction
       chooseOptionMatching "1 additional target" \case

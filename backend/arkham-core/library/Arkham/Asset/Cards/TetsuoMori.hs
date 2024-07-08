@@ -75,14 +75,9 @@ instance RunMessage TetsuoMori where
       player <- getPlayer iid'
       push
         $ chooseOrRunOne player
-        $ [ Label
-            "Search Discard"
-            [search iid' source iid' [fromDiscard] (CardWithTrait Item) (DrawFound iid' 1)]
+        $ [ Label "Search Discard" [search iid' source iid' [fromDiscard] #item (DrawFound iid' 1)]
           | discardWithItem
           ]
-        <> [ Label
-              "Search Deck"
-              [search iid' source iid' [fromTopOfDeck 9] (CardWithTrait Item) (DrawFound iid' 1)]
-           ]
+        <> [Label "Search Deck" [search iid' source iid' [fromTopOfDeck 9] #item (DrawFound iid' 1)]]
       pure a
     _ -> TetsuoMori <$> runMessage msg attrs

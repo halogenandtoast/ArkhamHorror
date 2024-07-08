@@ -41,10 +41,10 @@ instance RunMessage JoeMazurewiczsRoom where
       push
         $ search
           iid
-          (toSource attrs)
-          (InvestigatorTarget iid)
+          attrs
+          iid
           [fromDeck]
-          (CardWithOneOf [CardWithTrait Blessed, CardWithTrait Item])
+          (basic $ oneOf [withTrait Blessed, withTrait Item])
           (DrawFound iid 1)
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do

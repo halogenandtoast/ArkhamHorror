@@ -41,7 +41,7 @@ instance RunMessage ScrollOfSecretsSeeker3 where
       push
         $ chooseOne player
         $ [ targetLabel target
-            $ [lookAt iid attrs target [fromBottomOfDeck 3] AnyCard (defer attrs IsNotDraw)]
+            $ [lookAt iid attrs target [fromBottomOfDeck 3] #any (defer attrs IsNotDraw)]
           | target <- [EncounterDeckTarget | hasEncounterDeck] <> targets
           ]
       pure a

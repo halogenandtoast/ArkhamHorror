@@ -415,10 +415,15 @@ questionLabel lbl iid q = do
   pid <- getPlayer iid
   push $ Ask pid (QuestionLabel lbl Nothing q)
 
-chooseOne :: ReverseQueue m => InvestigatorId -> [UI Message] -> m ()
+chooseOne :: (HasCallStack, ReverseQueue m) => InvestigatorId -> [UI Message] -> m ()
 chooseOne iid msgs = do
   player <- getPlayer iid
   push $ Msg.chooseOne player msgs
+
+chooseUpToN :: ReverseQueue m => InvestigatorId -> Int -> Text -> [UI Message] -> m ()
+chooseUpToN iid n label msgs = do
+  player <- getPlayer iid
+  push $ Msg.chooseUpToN player n label msgs
 
 chooseOneAtATime :: ReverseQueue m => InvestigatorId -> [UI Message] -> m ()
 chooseOneAtATime iid msgs = do
@@ -622,7 +627,7 @@ search
   -> source
   -> target
   -> [(Zone, ZoneReturnStrategy)]
-  -> CardMatcher
+  -> ExtendedCardMatcher
   -> FoundCardsStrategy
   -> m ()
 search iid source target zones matcher strategy = Msg.push $ Msg.search iid source target zones matcher strategy
@@ -633,7 +638,7 @@ lookAt
   -> source
   -> target
   -> [(Zone, ZoneReturnStrategy)]
-  -> CardMatcher
+  -> ExtendedCardMatcher
   -> FoundCardsStrategy
   -> m ()
 lookAt iid source target zones matcher strategy = Msg.push $ Msg.lookAt iid source target zones matcher strategy

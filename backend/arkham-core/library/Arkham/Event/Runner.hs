@@ -122,13 +122,13 @@ runEventMessage msg a@EventAttrs {..} = case msg of
     for_ placement.attachedTo \target ->
       pushM $ checkAfter $ Window.AttachCard (Just iid) (toCard a) target
     case placement of
-      InThreatArea iid -> do
-        pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid (toCard a)]
+      InThreatArea iid' -> do
+        pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid' (toCard a)]
       AttachedToEnemy eid' -> do
         p <- field EnemyPlacement eid'
         case p of
-          InThreatArea iid -> do
-            pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid (toCard a)]
+          InThreatArea iid' -> do
+            pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid' (toCard a)]
           _ -> pure ()
       _ -> pure ()
     pure $ a & placementL .~ placement

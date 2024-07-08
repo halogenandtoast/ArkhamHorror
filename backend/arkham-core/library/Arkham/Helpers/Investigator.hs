@@ -24,7 +24,7 @@ import Arkham.Helpers.Source
 import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Location.Types (Field (..))
-import Arkham.Matcher hiding (InvestigatorDefeated)
+import Arkham.Matcher hiding (InvestigatorDefeated, InvestigatorResigned)
 import Arkham.Message (Message (InvestigatorMulligan))
 import Arkham.Name
 import Arkham.Placement

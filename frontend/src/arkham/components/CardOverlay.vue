@@ -53,13 +53,32 @@ const customizationTicks = computed(() => {
   if (cardCode.value && customizations.value) {
     const customizationObject: string[] = [];
 
-    customizations.value.forEach((customization: [number, number]) => {
+    customizations.value.forEach((customization: [number, [number, string[]]]) => {
         const firstValue = customization[0];
-        const secondValue = customization[1];
+        const secondValue = customization[1][0];
         for (let i = 1; i <= secondValue; i++) {
           const key = `customization-${cardCode.value}-${firstValue}-${i}`;
           customizationObject.push(key);
         }
+    });
+
+    return customizationObject;
+  }
+
+  return [];
+});
+
+const customizationLabels = computed(() => {
+  if (cardCode.value && customizations.value) {
+    const customizationObject: [string, string][] = [];
+
+    customizations.value.forEach((customization: [number, [number, string[]]]) => {
+      const firstValue = customization[0];
+      const thirdValue = customization[1][1];
+      for (let j = 0; j < thirdValue.length; j++) {
+        const key = `label-${cardCode.value}-${firstValue}-${j}`;
+        customizationObject.push([key, thirdValue[j]]);
+      }
     });
 
     return customizationObject;
@@ -74,14 +93,7 @@ const customizations = computed(() => {
 
   if (!str) return null;
 
-  const pairs = str.split(",").map(Number); // Convert string to array of numbers
-  const customizations = [];
-
-  // Group pairs into tuples
-  for (let i = 0; i < pairs.length; i += 2) {
-    customizations.push([pairs[i], pairs[i + 1]]);
-  }
-
+  const customizations = JSON.parse(str);
   return customizations.length === 0 ? null : customizations;
 });
 
@@ -223,6 +235,14 @@ const getImage = (el: HTMLElement): string | null => {
     <img class="horror horror-3" v-if="horror && horror >= 3" :src="imgsrc('horror-overlay.png')"/>
     <div v-if="customizationTicks.length > 0" class="customizations-wrapper">
       <img v-if="customizationsCard" :src="customizationsCard" />
+      <div v-for="label in customizationLabels" :key="label[0]" :class="`label label-${cardCode} ${label[0]}`">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="20" viewBox="0 0 100 20">
+         <g>
+          <path id="svg-text" d="M 0 10 H 100" fill="transparent" stroke="lightgray" />
+          <text><textPath xlink:href="#svg-text" method="stretch" lengthAdjust="spacingAndGlyphs" textLength="100%">{{ label[1] }}</textpath></text>
+         </g>
+        </svg>
+      </div>
       <div v-for="tick in customizationTicks" :key="tick" :class="`tick tick-${cardCode} ${tick}`">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg>
       </div>
@@ -348,6 +368,13 @@ const getImage = (el: HTMLElement): string | null => {
   width: fit-content;
   height: fit-content;
   margin-left: 2px;
+}
+
+.label {
+  line-height: 1;
+  position: absolute;
+  width: 100%;
+  height: 1em;
 }
 
 .tick {
@@ -751,6 +778,124 @@ const getImage = (el: HTMLElement): string | null => {
   left: var(--left-3);
 }
 .customization-09041-7-4 {
+  top: var(--top-7);
+  left: var(--left-4);
+}
+
+// The Raven Quill
+.tick-09042 {
+  --top-1: 24.8%;
+  --top-2: 31.2%;
+  --top-3: 37.7%;
+  --top-4: 44.4%;
+  --top-5: 51.0%;
+  --top-6: 60.3%;
+  --top-7: 70.0%;
+  --left-1: 8.6%;
+  --left-2: 11.5%;
+  --left-3: 14.4%;
+  --left-4: 17.5%;
+}
+
+.label-09042-0-0 {
+  top: 18%;
+  left: 52%;
+  width: 40%;
+  height: 5%;
+  svg {
+    width: 100%;
+    height: 100%;
+    path {
+      d: path("M 0 14 H 100");
+    }
+  }
+}
+
+.label-09042-4-0 {
+  top: 46.5%;
+  left: 18%;
+  width: 36%;
+  height: 5%;
+  svg {
+    width: 100%;
+    height: 100%;
+    path {
+      d: path("M 0 14 H 100");
+    }
+  }
+}
+
+.label-09042-4-1 {
+  top: 46.5%;
+  left: 55%;
+  width: 35%;
+  height: 5%;
+  svg {
+    width: 100%;
+    height: 100%;
+    path {
+      d: path("M 0 14 H 100");
+    }
+  }
+}
+
+.customization-09042-1-1 {
+  top: var(--top-1);
+  left: var(--left-1);
+}
+.customization-09042-2-1 {
+  top: var(--top-2);
+  left: var(--left-1);
+}
+.customization-09042-3-1 {
+  top: var(--top-3);
+  left: var(--left-1);
+}
+.customization-09042-3-2 {
+  top: var(--top-3);
+  left: var(--left-2);
+}
+.customization-09042-4-1 {
+  top: var(--top-4);
+  left: var(--left-1);
+}
+.customization-09042-4-2 {
+  top: var(--top-4);
+  left: var(--left-2);
+}
+.customization-09042-5-1 {
+  top: var(--top-5);
+  left: var(--left-1);
+}
+.customization-09042-5-2 {
+  top: var(--top-5);
+  left: var(--left-2);
+}
+.customization-09042-6-1 {
+  top: var(--top-6);
+  left: var(--left-1);
+}
+.customization-09042-6-2 {
+  top: var(--top-6);
+  left: var(--left-2);
+}
+.customization-09042-6-3 {
+  top: var(--top-6);
+  left: var(--left-3);
+}
+.customization-09042-7-1 {
+  top: var(--top-7);
+  left: var(--left-1);
+}
+.customization-09042-7-2 {
+  top: var(--top-7);
+  left: var(--left-2);
+}
+.customization-09042-7-3 {
+  top: var(--top-7);
+  left: var(--left-3);
+}
+.customization-09042-7-4 {
   top: var(--top-7);
   left: var(--left-4);
 }

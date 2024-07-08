@@ -25,13 +25,8 @@ instance RunMessage NightTerrors where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      lookAt
-        iid
-        (attrs.ability 1)
-        iid
-        [(FromTopOfDeck 3, RemoveRestFromGame)]
-        WeaknessCard
-        (DrawAllFound iid)
+      lookAt iid (attrs.ability 1) iid [(FromTopOfDeck 3, RemoveRestFromGame)] #weakness
+        $ DrawAllFound iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       beginSkillTest iid (attrs.ability 2) iid #willpower (Fixed 4)

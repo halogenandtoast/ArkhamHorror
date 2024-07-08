@@ -39,8 +39,7 @@ instance RunMessage GuidedByTheUnseen3 where
       iid <- fromJustNote "not skill test" <$> getSkillTestInvestigator
       canSearchDeck <- can.search.deck iid
       if canSearchDeck
-        then
-          search you (attrs.ability 1) iid [fromTopOfDeck 3] AnyCard (defer attrs IsNotDraw)
+        then search you (attrs.ability 1) iid [fromTopOfDeck 3] #any (defer attrs IsNotDraw)
         else whenM (can.shuffle.deck iid) $ push $ ShuffleDeck $ Deck.InvestigatorDeck iid
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do

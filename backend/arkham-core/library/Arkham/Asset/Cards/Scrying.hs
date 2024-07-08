@@ -40,6 +40,6 @@ instance RunMessage Scrying where
       push
         $ chooseOne player
         $ targetLabels ([EncounterDeckTarget | hasEncounterDeck] <> targets)
-        $ \target -> only $ lookAt iid source target [(FromTopOfDeck 3, PutBackInAnyOrder)] AnyCard ReturnCards
+        $ \target -> only $ lookAt iid source target [(FromTopOfDeck 3, PutBackInAnyOrder)] #any ReturnCards
       pure a
     _ -> Scrying <$> runMessage msg attrs

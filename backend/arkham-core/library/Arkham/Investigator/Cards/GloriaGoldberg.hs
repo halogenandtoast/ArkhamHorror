@@ -44,7 +44,7 @@ instance RunMessage GloriaGoldberg where
       attrs' <- liftRunMessage msg attrs
       pure . GloriaGoldberg $ attrs' & setMeta False
     ElderSignEffect iid | attrs `is` iid -> do
-      lookAt iid ElderSign EncounterDeckTarget [(FromTopOfDeck 1, PutBack)] AnyCard ReturnCards
+      lookAt iid ElderSign EncounterDeckTarget [(FromTopOfDeck 1, PutBack)] #any ReturnCards
       pure i
     FoundCards cards -> do
       when (toResult attrs.meta) do

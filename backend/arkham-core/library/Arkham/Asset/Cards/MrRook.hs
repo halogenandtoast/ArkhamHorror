@@ -1,15 +1,12 @@
-module Arkham.Asset.Cards.MrRook (
-  mrRook,
-  MrRook (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.MrRook (mrRook, MrRook (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype Metadata = Metadata {chosenCards :: [Card]}
   deriving stock (Show, Eq, Generic)
@@ -29,8 +26,7 @@ instance HasAbilities MrRook where
 instance RunMessage MrRook where
   runMessage msg a@(MrRook (attrs `With` meta)) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = toAbilitySource attrs 1
-      let goSearch n = search iid source iid [fromTopOfDeck n] AnyCard (defer attrs IsDraw)
+      let goSearch n = search iid (attrs.ability 1) iid [fromTopOfDeck n] #any (defer attrs IsDraw)
       player <- getPlayer iid
       push $ chooseOne player [Label ("Top " <> tshow x) [goSearch x] | x <- [3, 6, 9]]
       pure a
@@ -39,9 +35,9 @@ instance RunMessage MrRook where
       pushAll
         [ FocusCards cards
         , chooseOne player
-            $ [ targetLabel (toCardId card)
+            $ [ targetLabel card
                 $ [ UnfocusCards
-                  , HandleTargetChoice iid (toSource attrs) (CardTarget card)
+                  , handleTargetChoice iid attrs card
                   , DoStep 1 msg
                   ]
               | card <- cards
@@ -69,7 +65,7 @@ instance RunMessage MrRook where
                 $ [ targetLabel
                     (toCardId card)
                     [ UnfocusCards
-                    , HandleTargetChoice iid (toSource attrs) (CardTarget card)
+                    , handleTargetChoice iid attrs card
                     , DoStep 1 msg'
                     ]
                   | card <- cards
@@ -82,6 +78,7 @@ instance RunMessage MrRook where
     DoStep 2 (SearchFound iid (isTarget attrs -> True) _ _) -> do
       push $ AddToHand iid (chosenCards meta)
       pure $ MrRook (attrs `with` Metadata [])
-    HandleTargetChoice _ (isSource attrs -> True) (CardTarget card) -> do
+    HandleTargetChoice _ (isSource attrs -> True) (CardIdTarget cid) -> do
+      card <- getCard cid
       pure $ MrRook $ attrs `with` Metadata {chosenCards = card : chosenCards meta}
     _ -> MrRook . (`with` meta) <$> runMessage msg attrs

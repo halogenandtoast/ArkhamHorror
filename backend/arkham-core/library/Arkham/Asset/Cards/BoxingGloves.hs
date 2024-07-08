@@ -33,7 +33,7 @@ instance RunMessage BoxingGloves where
   runMessage msg a@(BoxingGloves attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push
-        $ search iid (toAbilitySource attrs 1) iid [fromTopOfDeck 6] (#event <> CardWithTrait Spirit)
+        $ search iid (attrs.ability 1) iid [fromTopOfDeck 6] (basic $ #event <> withTrait Spirit)
         $ DrawFound iid 1
       pure a
     _ -> BoxingGloves <$> runMessage msg attrs

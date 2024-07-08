@@ -153,7 +153,7 @@ removeAllMessagesMatchingM matcher = do
   withQueue_ $ const queue'
 
 insertAfterMatching
-  :: HasQueue msg m => [msg] -> (msg -> Bool) -> m ()
+  :: (HasCallStack, HasQueue msg m) => [msg] -> (msg -> Bool) -> m ()
 insertAfterMatching msgs p = withQueue_ \queue ->
   let (before, rest) = break p queue
    in case rest of

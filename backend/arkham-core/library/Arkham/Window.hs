@@ -189,6 +189,7 @@ data WindowType
   | InvestigatorDefeated DefeatedBy InvestigatorId
   | InvestigatorWouldBeDefeated DefeatedBy InvestigatorId
   | InvestigatorEliminated InvestigatorId
+  | InvestigatorResigned InvestigatorId
   | LastClueRemovedFromAsset AssetId
   | LeavePlay Target
   | Leaving InvestigatorId LocationId

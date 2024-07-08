@@ -282,7 +282,7 @@ data InvestigatorSearch = InvestigatorSearch
   , searchingSource :: Source
   , searchingTarget :: Target
   , searchingZones :: [(Zone, ZoneReturnStrategy)]
-  , searchingMatcher :: CardMatcher
+  , searchingMatcher :: ExtendedCardMatcher
   , searchingFoundCardsStrategy :: FoundCardsStrategy
   , searchingFoundCards :: Map Zone [Card]
   }

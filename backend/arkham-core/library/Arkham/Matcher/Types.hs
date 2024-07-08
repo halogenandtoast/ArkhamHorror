@@ -44,6 +44,7 @@ import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Timing
 import Arkham.Trait
+import Arkham.Trait qualified as Trait
 import Arkham.Zone
 import Control.Lens.Plated (Plated)
 import Data.Aeson.TH
@@ -265,6 +266,9 @@ instance IsLabel "item" AssetMatcher where
 
 instance IsLabel "mystic" AssetMatcher where
   fromLabel = AssetWithClass Mystic
+
+instance IsLabel "exhausted" AssetMatcher where
+  fromLabel = AssetExhausted
 
 instance Semigroup AssetMatcher where
   AssetWithHighestPrintedCost x <> AssetWithHighestPrintedCost y = AssetWithHighestPrintedCost (x <> y)
@@ -698,6 +702,7 @@ data ExtendedCardMatcher
   | CanCancelAllEffects ExtendedCardMatcher
   | CardWithoutModifier ModifierType
   | CardIsCommittedBy InvestigatorMatcher
+  | ChosenViaCustomization ExtendedCardMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated ExtendedCardMatcher
@@ -712,6 +717,21 @@ instance Semigroup ExtendedCardMatcher where
 instance IsLabel "any" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #any
 
+instance IsLabel "guardian" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #guardian
+
+instance IsLabel "seeker" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #seeker
+
+instance IsLabel "rogue" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #rogue
+
+instance IsLabel "mystic" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #mystic
+
+instance IsLabel "survivor" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #survivor
+
 instance IsLabel "ally" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #ally
 
@@ -724,6 +744,12 @@ instance IsLabel "spell" ExtendedCardMatcher where
 instance IsLabel "item" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #item
 
+instance IsLabel "tome" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #tome
+
+instance IsLabel "weapon" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #weapon
+
 instance IsLabel "asset" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #asset
 
@@ -735,6 +761,9 @@ instance IsLabel "enemy" ExtendedCardMatcher where
 
 instance IsLabel "treachery" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #treachery
+
+instance IsLabel "weakness" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #weakness
 
 instance IsLabel "eligible" ExtendedCardMatcher where
   fromLabel = EligibleForCurrentSkillTest
@@ -793,6 +822,9 @@ instance IsString CardMatcher where
 instance IsLabel "any" CardMatcher where
   fromLabel = AnyCard
 
+instance IsLabel "tarot" CardMatcher where
+  fromLabel = CardWithTrait Tarot
+
 instance IsLabel "tome" CardMatcher where
   fromLabel = CardWithTrait Tome
 
@@ -801,6 +833,18 @@ instance IsLabel "spell" CardMatcher where
 
 instance IsLabel "item" CardMatcher where
   fromLabel = CardWithTrait Item
+
+instance IsLabel "supply" CardMatcher where
+  fromLabel = CardWithTrait Trait.Supply
+
+instance IsLabel "weapon" CardMatcher where
+  fromLabel = CardWithTrait Weapon
+
+instance IsLabel "guardian" CardMatcher where
+  fromLabel = CardWithClass Guardian
+
+instance IsLabel "mystic" CardMatcher where
+  fromLabel = CardWithClass Mystic
 
 instance IsLabel "survivor" CardMatcher where
   fromLabel = CardWithClass Survivor
@@ -831,6 +875,9 @@ instance IsLabel "asset" CardMatcher where
 
 instance IsLabel "ally" CardMatcher where
   fromLabel = CardWithTrait Ally
+
+instance IsLabel "weakness" CardMatcher where
+  fromLabel = WeaknessCard
 
 isEnemyCard :: CardMatcher -> CardMatcher
 isEnemyCard = (#enemy <>)
@@ -1003,6 +1050,7 @@ data WindowMatcher
   | GameBegins Timing
   | GameEnds Timing
   | InvestigatorEliminated Timing Who
+  | InvestigatorResigned Timing Who
   | AnyWindow
   | NotAnyWindow
   | CommittedCards Timing Who CardListMatcher
@@ -1344,6 +1392,7 @@ instance IsLabel "draw" ActionMatcher where
 
 data AbilityMatcher
   = AbilityOnLocation LocationMatcher
+  | AbilityOnAsset AssetMatcher
   | AbilityOnStory StoryMatcher
   | AbilityWindow WindowMatcher
   | AbilityIsAction Action

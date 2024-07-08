@@ -9,7 +9,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
 import Arkham.ChaosToken
 import Arkham.Game.Helpers (cancelChaosToken)
-import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Helpers.Window (getChaosToken)
 import Arkham.Matcher
 import Arkham.Message (MessageType (..))

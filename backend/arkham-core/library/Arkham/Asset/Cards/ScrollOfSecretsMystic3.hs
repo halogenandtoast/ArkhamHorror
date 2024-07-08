@@ -36,7 +36,7 @@ instance RunMessage ScrollOfSecretsMystic3 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       targets <- selectTargets $ affectsOthers can.manipulate.deck
       hasEncounterDeck <- can.target.encounterDeck iid
-      let doSearch target x = lookAt iid attrs target [x 1] AnyCard (defer attrs IsNotDraw)
+      let doSearch target x = lookAt iid attrs target [x 1] #any (defer attrs IsNotDraw)
       player <- getPlayer iid
       push
         $ chooseOne

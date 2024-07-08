@@ -1,15 +1,9 @@
-module Arkham.Enemy.Cards.EztliGuardian (
-  eztliGuardian,
-  EztliGuardian (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.EztliGuardian (eztliGuardian, EztliGuardian (..)) where
 
 import Arkham.Ability
 import Arkham.Attack
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (PhaseStep)
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Trait
@@ -25,29 +19,27 @@ eztliGuardian =
     ?~ SpawnAt
       (FirstLocation [EmptyLocation <> LocationWithTrait Ancient, EmptyLocation])
 
-investigatorMatcher :: EnemyId -> InvestigatorMatcher
-investigatorMatcher eid = InvestigatorAt $ ConnectedFrom $ locationWithEnemy eid
+atConnected :: EnemyId -> InvestigatorMatcher
+atConnected eid = InvestigatorAt $ ConnectedFrom $ locationWithEnemy eid
 
 instance HasAbilities EztliGuardian where
   getAbilities (EztliGuardian a) =
-    withBaseAbilities a
-      $ [ groupLimit PerPhase
-            $ restrictedAbility a 1 (InvestigatorExists $ investigatorMatcher $ toId a)
-            $ ForcedAbility
-            $ PhaseStep #when EnemiesAttackStep
-        ]
+    extend
+      a
+      [ groupLimit PerPhase
+          $ restrictedAbility a 1 (exists (atConnected a.id) <> exists (be a <> ReadyEnemy <> UnengagedEnemy))
+          $ forced
+          $ PhaseStep #when EnemiesAttackStep
+      ]
 
 instance RunMessage EztliGuardian where
-  runMessage msg e@(EztliGuardian attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      adjacentInvestigators <- select $ investigatorMatcher $ toId attrs
-      insertAfterMatching
-        [ EnemyWillAttack
-          $ (enemyAttack (toId attrs) attrs iid)
+  runMessage msg e@(EztliGuardian attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      selectEach (atConnected attrs.id) \iid ->
+        push
+          $ EnemyWillAttack
+          $ (enemyAttack attrs.id (attrs.ability 1) iid)
             { attackDamageStrategy = enemyDamageStrategy attrs
             }
-        | iid <- adjacentInvestigators
-        ]
-        (== EnemiesAttack)
       pure e
-    _ -> EztliGuardian <$> runMessage msg attrs
+    _ -> EztliGuardian <$> liftRunMessage msg attrs

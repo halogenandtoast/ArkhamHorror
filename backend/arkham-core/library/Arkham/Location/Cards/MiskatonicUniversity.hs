@@ -32,10 +32,10 @@ instance RunMessage MiskatonicUniversity where
       push
         $ search
           iid
-          (toAbilitySource attrs 1)
-          (toTarget iid)
+          (attrs.ability 1)
+          iid
           [fromTopOfDeck 6]
-          (CardWithOneOf $ map CardWithTrait [Tome, Spell])
+          (basic $ oneOf $ withTrait <$> [Tome, Spell])
           (DrawFound iid 1)
       pure l
     _ -> MiskatonicUniversity <$> runMessage msg attrs

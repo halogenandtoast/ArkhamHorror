@@ -34,28 +34,40 @@ const cardLabels = computed(() =>
     }))
 
 // focused cards are handled by the player's choice modal
-const focusedCards = computed(() => {
+const searchedCards = computed(() => {
   const investigator = Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)
-  const playerCards = Object.values(investigator?.foundCards ?? []).flat()
+  const playerCards = Object.values(investigator?.foundCards ?? [])
   if (playerCards.length > 0) {
     return playerCards
   }
 
-  const encounterCards = Object.values(props.game.foundCards).flat()
+  const encounterCards = Object.values(props.game.foundCards)
   if (encounterCards.length > 0) {
     return encounterCards
+  }
+
+  return []
+})
+
+const focusedCards = computed(() => {
+  if (searchedCards.value.length > 0) {
+    return []
   }
 
   return props.game.focusedCards
 })
 
-const showChoices = computed(() => !props.game.skillTest && focusedCards.value.length == 0 && choices.value.some((c) => { return c.tag === MessageType.DONE || c.tag === MessageType.LABEL || c.tag === MessageType.SKILL_LABEL || c.tag === MessageType.SKILL_LABEL_WITH_LABEL || c.tag == MessageType.PORTRAIT_LABEL }))
+const showChoices = computed(() => !props.game.skillTest && searchedCards.value.length == 0 && focusedCards.value.length == 0 && choices.value.some((c) => { return c.tag === MessageType.DONE || c.tag === MessageType.LABEL || c.tag === MessageType.SKILL_LABEL || c.tag === MessageType.SKILL_LABEL_WITH_LABEL || c.tag == MessageType.PORTRAIT_LABEL }))
 
 const title = computed(() => {
   if (props.game.skillTest) {
     return null
   }
   if (focusedCards.value.length > 0) {
+    return null
+  }
+
+  if (searchedCards.value.length > 0) {
     return null
   }
 

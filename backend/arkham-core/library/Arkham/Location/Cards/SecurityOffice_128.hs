@@ -1,46 +1,27 @@
-module Arkham.Location.Cards.SecurityOffice_128 (
-  securityOffice_128,
-  SecurityOffice_128 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.SecurityOffice_128 (securityOffice_128, SecurityOffice_128 (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (securityOffice_128)
-import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Strategy
 
 newtype SecurityOffice_128 = SecurityOffice_128 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 securityOffice_128 :: LocationCard SecurityOffice_128
-securityOffice_128 =
-  location SecurityOffice_128 Cards.securityOffice_128 2 (PerPlayer 1)
+securityOffice_128 = location SecurityOffice_128 Cards.securityOffice_128 2 (PerPlayer 1)
 
 instance HasAbilities SecurityOffice_128 where
   getAbilities (SecurityOffice_128 x) =
-    withBaseAbilities
+    extendRevealed
       x
-      [ limitedAbility (PlayerLimit PerTurn 1)
-        $ restrictedAbility x 1 Here (ActionAbility [] $ ActionCost 2)
-      | locationRevealed x
-      ]
+      [playerLimit PerTurn $ restrictedAbility x 1 Here (ActionAbility [] $ ActionCost 2)]
 
 instance RunMessage SecurityOffice_128 where
-  runMessage msg l@(SecurityOffice_128 attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          l
-            <$ push
-              ( search
-                  iid
-                  source
-                  (InvestigatorTarget iid)
-                  [fromTopOfDeck 6]
-                  mempty
-                  (DrawFound iid 1)
-              )
-    _ -> SecurityOffice_128 <$> runMessage msg attrs
+  runMessage msg l@(SecurityOffice_128 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      search iid (attrs.ability 1) iid [fromTopOfDeck 6] (basic #any) (DrawFound iid 1)
+      pure l
+    _ -> SecurityOffice_128 <$> liftRunMessage msg attrs

@@ -26,10 +26,7 @@ instance HasModifiersFor JeremiahKirbyArcticArchaeologist where
 
 instance HasAbilities JeremiahKirbyArcticArchaeologist where
   getAbilities (JeremiahKirbyArcticArchaeologist a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ freeReaction
-        $ AssetEntersPlay #when (be a)
-    ]
+    [restrictedAbility a 1 ControlsThis $ freeReaction $ AssetEntersPlay #when (be a)]
 
 instance RunMessage JeremiahKirbyArcticArchaeologist where
   runMessage msg a@(JeremiahKirbyArcticArchaeologist attrs) = runQueueT $ case msg of
@@ -37,18 +34,11 @@ instance RunMessage JeremiahKirbyArcticArchaeologist where
       -- technically the choose is part of the cost, but I don't think we care
       let source = attrs.ability 1
       let revealTopOfDeck mtch =
-            Search
-              Revealing
-              iid
-              source
-              (toTarget iid)
-              [(FromTopOfDeck 5, ShuffleBackIn)]
-              mtch
-              (DrawAllFound iid)
+            Search Revealing iid source (toTarget iid) [fromTopOfDeck 5] mtch (DrawAllFound iid)
       chooseOne
         iid
-        [ Label "Even" [revealTopOfDeck CardWithEvenCost]
-        , Label "Odd" [revealTopOfDeck CardWithOddCost]
+        [ Label "Even" [revealTopOfDeck $ basic CardWithEvenCost]
+        , Label "Odd" [revealTopOfDeck $ basic CardWithOddCost]
         ]
       pure a
     _ -> JeremiahKirbyArcticArchaeologist <$> liftRunMessage msg attrs

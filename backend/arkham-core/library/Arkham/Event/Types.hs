@@ -12,6 +12,7 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
+import Arkham.Customization
 import Arkham.Event.Cards
 import Arkham.Id
 import Arkham.Json
@@ -55,6 +56,7 @@ data instance Field Event :: Type -> Type where
   EventUses :: Field Event (Map UseType Int)
   EventTokens :: Field Event (Map UseType Int)
   EventWindows :: Field Event [Window]
+  EventCustomizations :: Field Event Customizations
 
 data instance Field (InHandEntity Event) :: Type -> Type where
   InHandEventCardId :: Field (InHandEntity Event) CardId
@@ -86,7 +88,7 @@ data EventAttrs = EventAttrs
   , eventTarget :: Maybe Target
   , eventMeta :: Value
   , eventTokens :: Map UseType Int
-  , eventCustomizations :: IntMap Int
+  , eventCustomizations :: Customizations
   }
   deriving stock (Show, Eq, Generic)
 
@@ -100,7 +102,10 @@ instance AsId EventAttrs where
 instance Is EventAttrs EventId where
   is = (==) . toId
 
-instance HasField "customizations" EventAttrs (IntMap Int) where
+instance HasField "ready" EventAttrs Bool where
+  getField = not . eventExhausted
+
+instance HasField "customizations" EventAttrs Customizations where
   getField = eventCustomizations
 
 instance HasField "windows" EventAttrs [Window] where

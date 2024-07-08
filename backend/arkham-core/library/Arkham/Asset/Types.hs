@@ -15,6 +15,7 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
+import Arkham.Customization
 import Arkham.Field
 import Arkham.Id
 import Arkham.Json
@@ -167,7 +168,7 @@ data instance Field Asset :: Type -> Type where
   AssetSealedChaosTokens :: Field Asset [ChaosToken]
   AssetPlacement :: Field Asset Placement
   AssetCardsUnderneath :: Field Asset [Card]
-  AssetCustomizations :: Field Asset (IntMap Int)
+  AssetCustomizations :: Field Asset Customizations
   AssetAssignedHealthHeal :: Field Asset (Map Source Int)
   AssetAssignedSanityHeal :: Field Asset (Map Source Int)
   AssetAssignedHealthDamage :: Field Asset Int
@@ -258,7 +259,7 @@ data AssetAttrs = AssetAttrs
   , assetAssignedSanityDamage :: Int
   , assetAssignedHealthHeal :: Map Source Int
   , assetAssignedSanityHeal :: Map Source Int
-  , assetCustomizations :: IntMap Int
+  , assetCustomizations :: Customizations
   , assetMeta :: Value
   , assetFlipped :: Bool
   }
@@ -274,7 +275,7 @@ instance Is AssetAttrs AssetId where
 instance Be AssetAttrs AssetMatcher where
   be = AssetWithId . assetId
 
-instance HasField "customizations" AssetAttrs (IntMap Int) where
+instance HasField "customizations" AssetAttrs Customizations where
   getField = assetCustomizations
 
 instance HasField "cardId" AssetAttrs CardId where

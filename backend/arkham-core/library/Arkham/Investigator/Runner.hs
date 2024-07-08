@@ -32,7 +32,6 @@ import Arkham.Action (Action)
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Asset.Types (Field (..))
-import Arkham.Asset.Uses qualified as Uses
 import Arkham.CampaignLog
 import Arkham.Capability
 import Arkham.Card
@@ -565,6 +564,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         deck <- shuffleM (investigatorDiscard <> coerce investigatorDeck)
         pure $ a & discardL .~ [] & deckL .~ Deck deck
   Resign iid | iid == investigatorId -> do
+    pushM $ checkWhen $ Window.InvestigatorResigned iid
     pushAll $ resolve (Msg.InvestigatorResigned iid)
     pure $ a & endedTurnL .~ True
   Msg.InvestigatorDefeated source iid -> do
@@ -2059,7 +2059,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
     requirements <- concatForM assetIds $ \assetId -> do
       assetCard <- field AssetCard assetId
-      mods <- getModifiers assetId
+      mods <- getCombinedModifiers [toTarget assetId, toTarget assetCard]
       let slotFilter sType = DoNotTakeUpSlot sType `notElem` mods
       slots <- field AssetSlots assetId
       pure $ (assetId,assetCard,) <$> filter slotFilter slots
@@ -2962,6 +2962,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             ( \hmap (cardSource, _) -> case cardSource of
                 Zone.FromDeck ->
                   insertWith (<>) Zone.FromDeck (map PlayerCard $ unDeck investigatorDeck) hmap
+                Zone.FromHand -> insertWith (<>) Zone.FromHand investigatorHand hmap
                 Zone.FromTopOfDeck n ->
                   insertWith
                     (<>)
@@ -3000,7 +3001,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             applyMod (AdditionalTargets n) = over biplate (+ n)
             applyMod _ = id
             foundStrategy' = foldr applyMod foundStrategy mods
-            targetCards = Map.map (filter (`cardMatch` cardMatcher)) foundCards
+          targetCards <- traverse (filterM (`extendedCardMatch` cardMatcher)) foundCards
 
           player <- getPlayer iid
           case foundStrategy' of

@@ -115,30 +115,20 @@ dreamLabel = \case
 
 dreamEffect :: HasGame m => InvestigatorId -> Dream -> m Message
 dreamEffect iid = \case
-  GuardianDream -> pure $ search iid GameSource iid [fromDeck] (CardWithClass Guardian) (PlayFound iid 1)
-  SeekerDream -> pure $ search iid GameSource iid [fromDeck] (CardWithClass Seeker) (PlayFound iid 1)
-  RogueDream -> pure $ search iid GameSource iid [fromDeck] (CardWithClass Rogue) (PlayFound iid 1)
-  MysticDream -> pure $ search iid GameSource iid [fromDeck] (CardWithClass Mystic) (PlayFound iid 1)
-  SurvivorDream -> pure $ search iid GameSource iid [fromDeck] (CardWithClass Survivor) (PlayFound iid 1)
+  GuardianDream -> pure $ search iid GameSource iid [fromDeck] #guardian (PlayFound iid 1)
+  SeekerDream -> pure $ search iid GameSource iid [fromDeck] #seeker (PlayFound iid 1)
+  RogueDream -> pure $ search iid GameSource iid [fromDeck] #rogue (PlayFound iid 1)
+  MysticDream -> pure $ search iid GameSource iid [fromDeck] #mystic (PlayFound iid 1)
+  SurvivorDream -> pure $ search iid GameSource iid [fromDeck] #survivor (PlayFound iid 1)
   CriminalDream ->
     pure
-      $ search
-        iid
-        GameSource
-        iid
-        [fromDeck]
-        (oneOf [CardWithTrait Criminal, CardWithTrait Illicit])
-        (PlayFound iid 1)
+      $ search iid GameSource iid [fromDeck] (basic $ oneOf $ withTrait <$> [Criminal, Illicit])
+      $ PlayFound iid 1
   DrifterDream ->
     pure
-      $ search
-        iid
-        GameSource
-        iid
-        [fromDeck]
-        BasicWeaknessCard
-        (defer (LabeledTarget "Drifter" ScenarioTarget) IsNotDraw)
-  HunterDream -> pure $ search iid GameSource iid [fromDeck] (CardWithTrait Weapon) (PlayFound iid 1)
+      $ search iid GameSource iid [fromDeck] (basic BasicWeaknessCard)
+      $ defer (LabeledTarget "Drifter" ScenarioTarget) IsNotDraw
+  HunterDream -> pure $ search iid GameSource iid [fromDeck] (basic $ withTrait Weapon) (PlayFound iid 1)
   MedicOrAssistantDream -> do
     otherInvestigators <- select $ NotInvestigator $ InvestigatorWithId iid
     player <- getPlayer iid
@@ -152,25 +142,15 @@ dreamEffect iid = \case
           ]
         | investigator <- otherInvestigators
         ]
-  MiskatonicOrScholarDream -> pure $ search iid GameSource iid [fromDeck] (CardWithTrait Tome) (PlayFound iid 1)
+  MiskatonicOrScholarDream -> pure $ search iid GameSource iid [fromDeck] (basic $ withTrait Tome) (PlayFound iid 1)
   VeteranDream ->
     pure
-      $ search
-        iid
-        GameSource
-        iid
-        [fromDeck]
-        (oneOf [CardWithTrait Tactic, CardWithTrait Supply])
-        (defer (LabeledTarget "Veteran" ScenarioTarget) IsNotDraw)
+      $ search iid GameSource iid [fromDeck] (basic $ oneOf $ withTrait <$> [Tactic, Supply])
+      $ defer (LabeledTarget "Veteran" ScenarioTarget) IsNotDraw
   WayfarerDream ->
     pure
-      $ search
-        iid
-        GameSource
-        iid
-        [fromDeck]
-        (oneOf [CardWithTrait Wayfarer, CardWithTrait Relic])
-        (PlayFound iid 1)
+      $ search iid GameSource iid [fromDeck] (basic $ oneOf $ withTrait <$> [Wayfarer, Relic])
+      $ PlayFound iid 1
   NeutralDream1 -> do
     pure $ takeResources iid ScenarioSource 2
   NeutralDream2 -> do

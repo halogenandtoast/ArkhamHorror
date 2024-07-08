@@ -42,7 +42,7 @@ instance RunMessage OldBookOfLore3 where
       push
         $ chooseOrRunOne player
         $ targetLabels investigators \iid' -> do
-          only $ search iid' source iid' [fromTopOfDeck 3] AnyCard (defer attrs IsDraw)
+          only $ search iid' source iid' [fromTopOfDeck 3] #any (defer attrs IsDraw)
       pure a
     SearchFound _ (isTarget attrs -> True) (Deck.InvestigatorDeck iid') targetCards -> do
       -- TODO after search is an entity we can fix this as this is gross

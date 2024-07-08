@@ -14,17 +14,35 @@ const props = defineProps<{
   playerId: string
 }>()
 
+function zoneToLabel(s: string) {
+  switch(s) {
+    case "FromDeck": return "From Deck"
+    case "FromHand": return "From Hand"
+    case "FromDiscard": return "From Discard"
+    default: return s
+  }
+}
+
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const investigator = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId))
-const focusedCards = computed(() => {
-  const playerCards = Object.values(investigator.value?.foundCards ?? []).flat()
+const searchedCards = computed(() => {
+  const playerCards = Object.entries(investigator.value?.foundCards ?? [])
   if (playerCards.length > 0) {
-    return playerCards
+    console.log(playerCards)
+    return playerCards.filter(([, c]) => c.length > 0)
   }
 
-  const encounterCards = Object.values(props.game.foundCards).flat()
+  const encounterCards = Object.entries(props.game.foundCards)
   if (encounterCards.length > 0) {
     return encounterCards
+  }
+
+  return []
+})
+
+const focusedCards = computed(() => {
+  if (searchedCards.value.length > 0) {
+    return []
   }
 
   return props.game.focusedCards
@@ -245,7 +263,7 @@ const cardLabels = computed(() =>
     }))
 
 const showChoices = computed(() =>
-  focusedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value
+  focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value
 )
 
 const title = computed(() => {
@@ -294,6 +312,31 @@ const title = computed(() => {
           :key="index"
           @choose="$emit('choose', $event)"
         />
+      </div>
+
+      <div v-if="showChoices" class="choices">
+        <template v-for="(choice, index) in choices" :key="index">
+          <div v-if="choice.tag === MessageType.LABEL">
+            <button @click="$emit('choose', index)" v-html="replaceIcons(choice.label)"></button>
+          </div>
+        </template>
+      </div>
+    </div>
+    <div v-else-if="searchedCards.length > 0 && choices.length > 0" class="modal">
+      <div class="modal-contents searched-cards">
+        <div v-for="[group, cards] in searchedCards" :key="group" class="group">
+          <h2>{{zoneToLabel(group)}}</h2>
+          <div class="group-cards">
+            <Card
+              v-for="card in cards"
+              :card="card"
+              :game="game"
+              :playerId="playerId"
+              :key="`${group}-${card}`"
+              @choose="$emit('choose', $event)"
+            />
+          </div>
+        </div>
       </div>
 
       <div v-if="showChoices" class="choices">
@@ -408,6 +451,21 @@ const title = computed(() => {
     &:hover {
       background-color: #311b3e;
     }
+  }
+}
+
+.searched-cards {
+  flex-direction: column;
+  overflow-x: auto;
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  .group-cards {
+    display: flex;
+    flex-wrap: wrap;
   }
 }
 </style>

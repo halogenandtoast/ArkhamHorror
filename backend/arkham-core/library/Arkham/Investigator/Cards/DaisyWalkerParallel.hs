@@ -59,7 +59,9 @@ instance RunMessage DaisyWalkerParallel where
       push
         $ chooseOne
           player
-          [ targetLabel iid [search iid attrs attrs [fromDiscard] (#asset <> withTrait Tome) $ DrawFound iid 1]
+          [ targetLabel
+              iid
+              [search iid attrs attrs [fromDiscard] (basic $ #asset <> withTrait Tome) $ DrawFound iid 1]
           , Label "Do not use Daisy's ability" []
           ]
       pure i

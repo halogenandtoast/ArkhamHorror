@@ -1,9 +1,4 @@
-module Arkham.Asset.Cards.ScrollOfSecrets (
-  scrollOfSecrets,
-  ScrollOfSecrets (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.ScrollOfSecrets (scrollOfSecrets, ScrollOfSecrets (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -12,6 +7,7 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype ScrollOfSecrets = ScrollOfSecrets AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -40,9 +36,7 @@ instance RunMessage ScrollOfSecrets where
       push
         $ chooseOne
           player
-          [ TargetLabel
-            target
-            [lookAt iid attrs target [fromBottomOfDeck 1] AnyCard (defer attrs IsNotDraw)]
+          [ targetLabel target [lookAt iid attrs target [fromBottomOfDeck 1] #any (defer attrs IsNotDraw)]
           | target <- [EncounterDeckTarget | hasEncounterDeck] <> targets
           ]
       pure a
@@ -53,24 +47,16 @@ instance RunMessage ScrollOfSecrets where
         , chooseOrRunOne
             player
             [ targetLabel
-              (toCardId card)
+              card
               [ chooseOne
                   player
                   [ Label "Discard" [AddToEncounterDiscard card]
                   , Label
                       "Place on bottom of encounter deck"
-                      [ PutCardOnBottomOfDeck
-                          iid
-                          Deck.EncounterDeck
-                          (EncounterCard card)
-                      ]
+                      [PutCardOnBottomOfDeck iid Deck.EncounterDeck (EncounterCard card)]
                   , Label
                       "Place on top of encounter deck"
-                      [ PutCardOnTopOfDeck
-                          iid
-                          Deck.EncounterDeck
-                          (EncounterCard card)
-                      ]
+                      [PutCardOnTopOfDeck iid Deck.EncounterDeck (EncounterCard card)]
                   ]
               ]
             | card <- onlyEncounterCards cards

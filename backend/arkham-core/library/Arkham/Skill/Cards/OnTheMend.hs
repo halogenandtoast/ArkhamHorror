@@ -11,5 +11,5 @@ onTheMend :: SkillCard OnTheMend
 onTheMend = skill OnTheMend Cards.onTheMend
 
 instance RunMessage OnTheMend where
-  runMessage msg s@(OnTheMend attrs) = runQueueT $ case msg of
+  runMessage msg (OnTheMend attrs) = runQueueT $ case msg of
     _ -> OnTheMend <$> liftRunMessage msg attrs

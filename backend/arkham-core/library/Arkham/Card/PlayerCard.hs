@@ -9,6 +9,7 @@ import Arkham.Card.CardDef
 import Arkham.Card.Class
 import Arkham.Card.Cost
 import Arkham.Card.Id
+import Arkham.Customization
 import Arkham.Enemy.Cards (allSpecialEnemyCards)
 import Arkham.Id
 import Arkham.Json
@@ -23,12 +24,15 @@ data PlayerCard = MkPlayerCard
   , pcOwner :: Maybe InvestigatorId
   , pcCardCode :: CardCode
   , pcOriginalCardCode :: CardCode
-  , pcCustomizations :: IntMap Int
+  , pcCustomizations :: Customizations
   }
   deriving stock (Show, Ord, Data)
 
 instance HasField "id" PlayerCard CardId where
   getField = pcId
+
+instance HasField "customizations" PlayerCard Customizations where
+  getField = pcCustomizations
 
 instance Eq PlayerCard where
   pc1 == pc2 = pcId pc1 == pcId pc2
@@ -71,4 +75,14 @@ lookupPlayerCard cardDef cardId =
 setPlayerCardOwner :: InvestigatorId -> PlayerCard -> PlayerCard
 setPlayerCardOwner iid pc = pc {pcOwner = Just iid}
 
-$(deriveJSON (aesonOptions $ Just "pc") ''PlayerCard)
+instance FromJSON PlayerCard where
+  parseJSON = withObject "PlayerCard" $ \o -> do
+    pcId <- o .: "id"
+    pcCardCode <- o .: "cardCode"
+    pcOriginalCardCode <- o .: "originalCardCode"
+    pcOwner <- o .:? "owner"
+    -- fallBack :: IntMap Int <- o .:? "customizations" .!= mempty
+    pcCustomizations <- o .:? "customizations" .!= mempty -- IntMap.map (,[]) fallBack
+    pure $ MkPlayerCard {..}
+
+$(deriveToJSON (aesonOptions $ Just "pc") ''PlayerCard)

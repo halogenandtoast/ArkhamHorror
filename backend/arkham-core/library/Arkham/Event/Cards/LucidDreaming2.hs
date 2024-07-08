@@ -26,7 +26,7 @@ instance RunMessage LucidDreaming2 where
       push
         $ chooseOne
           player
-          [ targetLabel (toCardId card) [search iid attrs iid [fromDeck] (cardIs card) (DrawFound iid 1)]
+          [ targetLabel (toCardId card) [search iid attrs iid [fromDeck] (basic $ cardIs card) (DrawFound iid 1)]
           | card <- cards
           ]
       pure e

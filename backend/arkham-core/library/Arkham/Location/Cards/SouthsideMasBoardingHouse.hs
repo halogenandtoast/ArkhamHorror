@@ -3,14 +3,10 @@ module Arkham.Location.Cards.SouthsideMasBoardingHouse (
   southsideMasBoardingHouse,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (southsideMasBoardingHouse)
-import Arkham.Location.Runner
-import Arkham.Matcher
+import Arkham.Location.Import.Lifted
+import Arkham.Strategy
 
 newtype SouthsideMasBoardingHouse = SouthsideMasBoardingHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -21,16 +17,11 @@ southsideMasBoardingHouse = location SouthsideMasBoardingHouse Cards.southsideMa
 
 instance HasAbilities SouthsideMasBoardingHouse where
   getAbilities (SouthsideMasBoardingHouse x) =
-    withRevealedAbilities x
-      $ [ limitedAbility (PlayerLimit PerGame 1)
-            $ restrictedAbility x 1 Here (ActionAbility [] $ ActionCost 1)
-        ]
+    extendRevealed x [playerLimit PerGame $ restrictedAbility x 1 Here actionAbility]
 
 instance RunMessage SouthsideMasBoardingHouse where
-  runMessage msg l@(SouthsideMasBoardingHouse attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push
-        $ search iid (toAbilitySource attrs 1) (toTarget iid) [fromDeck] IsAlly
-        $ DrawFound iid 1
+  runMessage msg l@(SouthsideMasBoardingHouse attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      search iid (attrs.ability 1) iid [fromDeck] #ally $ DrawFound iid 1
       pure l
-    _ -> SouthsideMasBoardingHouse <$> runMessage msg attrs
+    _ -> SouthsideMasBoardingHouse <$> liftRunMessage msg attrs

@@ -13,6 +13,7 @@ import Arkham.Campaigns.TheForgottenAge.Supply (Supply)
 import Arkham.Capability (Capabilities, Capable (..), FromSource)
 import Arkham.Cost.Status (CostStatus)
 import Arkham.Criteria.Override
+import Arkham.Customization
 import Arkham.Direction (GridDirection)
 import Arkham.GameValue (GameValue (Static))
 import Arkham.History.Types (HistoryType)
@@ -207,6 +208,8 @@ data Criterion
   | DuringAction
   | AffectedByTarot
   | HasTrueMagick
+  | ChosenCustomizationCardIsInPlay
+  | HasCustomization Customization
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not Criterion where

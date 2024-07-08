@@ -39,13 +39,14 @@ import Arkham.ClassSymbol
 import Arkham.Classes hiding (isMatch)
 import Arkham.Classes.HasGame
 import Arkham.Criteria qualified as Criteria
+import Arkham.Customization
 import Arkham.DamageEffect
 import Arkham.Deck hiding (InvestigatorDeck, InvestigatorDiscard)
 import Arkham.Deck qualified as Deck
 import Arkham.DefeatedBy
 import Arkham.Effect.Types (Field (..))
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Event.Types (Field (..))
+import Arkham.Event.Types (Event, Field (..))
 import {-# SOURCE #-} Arkham.Game
 import Arkham.Game.Settings
 import {-# SOURCE #-} Arkham.GameEnv
@@ -53,6 +54,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Calculation
 import Arkham.Helpers.Card
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.Customization
 import Arkham.Helpers.Investigator (
   baseSkillValueFor,
   getActionCost,
@@ -1006,6 +1008,30 @@ passesCriteria
   -> Criterion
   -> m Bool
 passesCriteria iid mcard source' windows' = \case
+  Criteria.HasCustomization c -> do
+    case mcard of
+      (Just (PlayerCard card, _)) -> pure $ hasCustomization_ (cdCustomizations $ toCardDef card) card.customizations c
+      _ -> case source' of
+        EventSource aid -> do
+          attrs <- getAttrs @Event aid
+          pure $ hasCustomization attrs c
+        _ -> error $ "Unhandled source: " <> show source' <> " " <> show mcard
+  Criteria.ChosenCustomizationCardIsInPlay -> do
+    case mcard of
+      (Just (PlayerCard card, _)) -> do
+        let customizations = pcCustomizations card
+        let titles = [t | ChosenCard t <- concatMap snd (toList customizations)]
+        selectAny
+          $ Matcher.basic (Matcher.oneOf $ Matcher.CardWithTitle <$> titles)
+          <> Matcher.InPlayAreaOf (Matcher.InvestigatorWithId iid)
+      _ -> case source' of
+        EventSource aid -> do
+          customizations <- field EventCustomizations aid
+          let titles = [t | ChosenCard t <- concatMap snd (toList customizations)]
+          selectAny
+            $ Matcher.basic (Matcher.oneOf $ Matcher.CardWithTitle <$> titles)
+            <> Matcher.InPlayAreaOf (Matcher.InvestigatorWithId iid)
+        _ -> error $ "Unhandled source: " <> show source' <> " " <> show mcard
   Criteria.HasTrueMagick -> do
     trueMagick <- selectJust $ Matcher.assetIs Assets.trueMagickReworkingReality5
     attrs <- getAttrs @Asset trueMagick
@@ -2066,6 +2092,10 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
     Matcher.GameEnds timing -> guardTiming timing (pure . (== Window.EndOfGame))
     Matcher.InvestigatorEliminated timing whoMatcher -> guardTiming timing $ \case
       Window.InvestigatorEliminated who ->
+        matchWho iid who (Matcher.IncludeEliminated $ Matcher.replaceYouMatcher iid whoMatcher)
+      _ -> noMatch
+    Matcher.InvestigatorResigned timing whoMatcher -> guardTiming timing $ \case
+      Window.InvestigatorResigned who ->
         matchWho iid who (Matcher.IncludeEliminated $ Matcher.replaceYouMatcher iid whoMatcher)
       _ -> noMatch
     Matcher.PutLocationIntoPlay timing whoMatcher locationMatcher ->

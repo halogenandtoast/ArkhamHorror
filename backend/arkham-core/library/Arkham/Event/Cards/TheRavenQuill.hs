@@ -27,32 +27,23 @@ theRavenQuill = event TheRavenQuill Cards.theRavenQuill
 
 instance HasModifiersFor TheRavenQuill where
   getModifiersFor target (TheRavenQuill a) | a.attachedTo == Just target = do
-    let
-      spectralBinding = do
-        guard $ a `hasCustomization` SpectralBinding
-        DoNotTakeUpSlot <$> [minBound ..]
-    modified a spectralBinding
+    modified a $ guardCustomization a SpectralBinding (DoNotTakeUpSlot <$> [minBound ..])
   getModifiersFor (AbilityTarget _ ab) (TheRavenQuill a) | a.attachedTo == fmap AssetTarget ab.source.asset = do
-    let
-      livingQuill = do
-        guard $ a `hasCustomization` LivingQuill
-        ActionDoesNotCauseAttacksOfOpportunity <$> ab.actions
-    modified a livingQuill
+    modified a
+      $ guardCustomization a LivingQuill (ActionDoesNotCauseAttacksOfOpportunity <$> ab.actions)
   getModifiersFor (InvestigatorTarget iid) (TheRavenQuill a) = do
     maybeModified a do
       guard $ a `hasCustomization` MysticVane
       source <- MaybeT getSkillTestSource
       guard $ a.attachedTo == fmap AssetTarget source.asset
-      iid' <- MaybeT getSkillTestInvestigator
-      guard $ iid == iid'
+      guardM $ fmap (iid ==) (MaybeT getSkillTestInvestigator)
       pure [AnySkillValue 2]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheRavenQuill where
   getAbilities (TheRavenQuill a) =
     [ restrictedAbility a 1 ControlsThis
-        $ freeReaction
-        $ oneOf [GameEnds #when, InvestigatorResigned #when You]
+        $ freeReaction (oneOf [GameEnds #when, InvestigatorResigned #when You])
     ]
       <> [ controlledAbility
           a
@@ -80,7 +71,15 @@ instance RunMessage TheRavenQuill where
       let titles = [t | ChosenCard t <- concatMap snd (toList attrs.customizations)]
       assets <- select $ assetControlledBy iid <> oneOf (AssetWithTitle <$> titles)
 
-      -- you may search your deck, discard pile, and hand for a copy of a named asset
+      defaultChoose <-
+        evalQueueT
+          $ when (notNull assets)
+          $ chooseOne
+            iid
+            [ targetLabel asset [PlaceEvent iid attrs.id (AttachedToAsset asset Nothing), RefillSlots iid]
+            | asset <- assets
+            ]
+
       if attrs `hasCustomization` SupernaturalRecord
         then do
           canSearch <- can.search.deck iid
@@ -90,61 +89,26 @@ instance RunMessage TheRavenQuill where
               $ oneOf (inHandOf iid : inDiscardOf iid : [inDeckOf iid | canSearch])
               <> basic (oneOf $ CardWithTitle <$> titles)
           if null cards
-            then
-              chooseOne
-                iid
-                [ targetLabel asset [PlaceEvent iid attrs.id (AttachedToAsset asset Nothing), RefillSlots iid]
-                | asset <- assets
-                ]
-            else do
-              defaultChoose' <-
-                if notNull assets
-                  then
-                    do evalQueueT
-                      $ chooseOne
-                        iid
-                        [ targetLabel asset [PlaceEvent iid attrs.id (AttachedToAsset asset Nothing), RefillSlots iid]
-                        | asset <- assets
-                        ]
-                  else pure []
-              chooseOrRunOne
-                iid
+            then pushAll defaultChoose
+            else
+              chooseOrRunOne iid
                 $ Label
                   "Search your deck, discard pile, and hand for a copy of a named asset and play it (paying its cost). Then, attach The Raven Quill to it."
                   [DoStep 1 msg]
-                : [Label "Do not search" defaultChoose' | notNull assets]
-        else
-          chooseOne
-            iid
-            [ targetLabel asset [PlaceEvent iid attrs.id (AttachedToAsset asset Nothing), RefillSlots iid]
-            | asset <- assets
-            ]
-
+                : [Label "Do not search" defaultChoose | notNull assets]
+        else pushAll defaultChoose
       pure e
     DoStep 1 (PlayThisEvent iid (is attrs -> True)) -> do
-      let titles = [t | ChosenCard t <- concatMap snd (toList attrs.customizations)]
       canSearch <- can.search.deck iid
-      search
-        iid
-        attrs
-        iid
-        ((FromHand, PutBack) : (FromDiscard, PutBack) : [(FromDeck, ShuffleBackIn) | canSearch])
-        (PlayableCard (UnpaidCost NoAction) $ basic $ oneOf $ CardWithTitle <$> titles)
-        (defer attrs IsNotDraw)
+      let sources = ((FromHand, PutBack) : (FromDiscard, PutBack) : [(FromDeck, ShuffleBackIn) | canSearch])
+      let titles = [t | ChosenCard t <- concatMap snd (toList attrs.customizations)]
+      let matcher = (PlayableCard (UnpaidCost NoAction) $ basic $ oneOf $ CardWithTitle <$> titles)
+      search iid attrs iid sources matcher (defer attrs IsNotDraw)
       pure e
-    SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
-      for_ cards \card ->
-        cardResolutionModifiers attrs attrs card $ DoNotTakeUpSlot <$> [minBound ..]
-      chooseOne
-        iid
-        [ targetLabel
-          card
-          [ Msg.addToHand iid card
-          , PayCardCost iid card (defaultWindows iid)
-          , handleTargetChoice iid attrs card
-          ]
-        | card <- cards
-        ]
+    SearchFound iid (isTarget attrs -> True) _ xs | notNull xs -> do
+      let ws = defaultWindows iid
+      for_ xs \x -> cardResolutionModifiers attrs attrs x $ DoNotTakeUpSlot <$> [minBound ..]
+      chooseOne iid $ targetLabels xs \x -> [Msg.addToHand iid x, PayCardCost iid x ws, handleTargetChoice iid attrs x]
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (CardIdTarget cid) -> do
       selectOne (AssetWithCardId cid)

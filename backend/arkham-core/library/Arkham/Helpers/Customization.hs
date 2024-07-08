@@ -13,6 +13,14 @@ import Data.List (elemIndex)
 import Data.Map.Strict qualified as Map
 import GHC.Records
 
+guardCustomization
+  :: (Alternative f, HasCardDef a, HasField "customizations" a Customizations)
+  => a
+  -> Customization
+  -> f b
+  -> f b
+guardCustomization a c b = guard (a `hasCustomization` c) *> b
+
 getHasCustomization
   :: forall a m
    . ( HasGame m

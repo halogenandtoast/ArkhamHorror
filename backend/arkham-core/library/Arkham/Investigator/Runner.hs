@@ -1562,29 +1562,45 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   FlipClues target n | isTarget a target -> do
     pure $ a & tokensL %~ flipClues n
-  DiscoverClues iid d | iid == investigatorId -> do
+  DiscoverClues iid d | iid == investigatorId -> runQueueT do
     mods <- getModifiers iid
-    lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
-    modifiers <- getModifiers lid
-    let additionalDiscovered = getSum $ fold [Sum x | DiscoveredClues x <- mods]
-    let n = d.count + additionalDiscovered
-    let
-      getMaybeMax :: ModifierType -> Maybe Int -> Maybe Int
-      getMaybeMax (MaxCluesDiscovered x) Nothing = Just x
-      getMaybeMax (MaxCluesDiscovered x) (Just x') = Just $ min x x'
-      getMaybeMax _ x = x
-      mMax :: Maybe Int = foldr getMaybeMax Nothing modifiers
-      n' = maybe n (min n) mMax
-    canDiscoverClues <- getCanDiscoverClues d.isInvestigate iid lid
+    let additionalDiscoveredAt = Map.fromListWith (<>) [(olid, Sum x) | DiscoveredCluesAt olid x <- mods]
+    let additionalDiscovered = getSum (fold [Sum x | DiscoveredClues x <- mods])
 
+    lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
+
+    let
+      total lid' n = do
+        let
+          getMaybeMax :: ModifierType -> Maybe Int -> Maybe Int
+          getMaybeMax (MaxCluesDiscovered x) Nothing = Just x
+          getMaybeMax (MaxCluesDiscovered x) (Just x') = Just $ min x x'
+          getMaybeMax _ x = x
+        mMax :: Maybe Int <- foldr getMaybeMax Nothing <$> getModifiers lid'
+        pure $ maybe n (min n) mMax
+
+    canDiscoverClues <- getCanDiscoverClues d.isInvestigate iid lid
     if canDiscoverClues
       then do
-        discoveredClues <- min n' <$> field LocationClues lid
+        base <- total lid (d.count + additionalDiscovered)
+        discoveredClues <- min base <$> field LocationClues lid
         checkWindowMsg <- checkWindows [mkWhen (Window.DiscoverClues iid lid d.source discoveredClues)]
         pushAll [checkWindowMsg, Do $ DiscoverClues iid $ d {discoverCount = discoveredClues}]
       else do
         tokens <- field LocationTokens lid
         putStrLn $ "Can't discover clues in " <> tshow lid <> ": " <> tshow tokens
+
+    for_ (mapToList additionalDiscoveredAt) \(lid', n) -> do
+      whenM (getCanDiscoverClues d.isInvestigate iid lid') do
+        discoveredClues' <- min <$> total lid' (getSum n) <*> field LocationClues lid'
+        when (discoveredClues' > 0) do
+          checkWindowMsg' <- checkWindows [mkWhen (Window.DiscoverClues iid lid' d.source discoveredClues')]
+          pushAll
+            [ checkWindowMsg'
+            , Do
+                $ DiscoverClues iid
+                $ d {discoverLocation = DiscoverAtLocation lid', discoverCount = discoveredClues'}
+            ]
     pure a
   Do (DiscoverClues iid d) | iid == investigatorId -> do
     lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d

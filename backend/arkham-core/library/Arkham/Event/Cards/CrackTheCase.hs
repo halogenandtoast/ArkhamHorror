@@ -22,7 +22,7 @@ instance RunMessage CrackTheCase where
     PlayThisEvent iid (is attrs -> True) -> do
       lid <- getJustLocation iid
       iids <- select $ affectsOthers $ investigatorAt lid <> can.gain.resources
-      shroud <- field LocationShroud lid
+      shroud <- fieldMap LocationShroud (fromMaybe 0) lid
       player <- getPlayer iid
       pushAll
         $ replicate shroud

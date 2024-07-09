@@ -56,7 +56,7 @@ instance RunMessage ContainingTheOutbreak where
                 (toAbilitySource source 1)
                 iid
                 #willpower
-                (LocationFieldCalculation lid LocationShroud)
+                (LocationMaybeFieldCalculation lid LocationShroud)
              ]
         pure a
     PassedThisSkillTest

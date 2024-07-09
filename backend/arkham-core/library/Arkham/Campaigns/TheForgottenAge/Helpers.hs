@@ -127,7 +127,7 @@ explore iid source cardMatcher exploreRule matchCount = do
       msgs <-
         if cdCardType (toCardDef x) == LocationType
           then do
-            let historyItem = mempty {historySuccessfulExplore = True}
+            let historyItem = HistoryItem HistorySuccessfulExplore True
 
             (lid, locationAction) <- case exploreRule of
               PlaceExplored -> placeLocation x
@@ -184,7 +184,7 @@ explore iid source cardMatcher exploreRule matchCount = do
       msgs <- do
         placements <- traverse placeLocation xs
         let
-          historyItem = mempty {historySuccessfulExplore = True}
+          historyItem = HistoryItem HistorySuccessfulExplore True
           locationIds = map fst placements
 
         afterPutIntoPlayWindow <-

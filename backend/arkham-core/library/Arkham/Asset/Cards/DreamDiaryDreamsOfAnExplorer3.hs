@@ -34,7 +34,7 @@ instance HasModifiersFor DreamDiaryDreamsOfAnExplorer3 where
       guard $ toCardOwner card == a.controller
       controller <- hoistMaybe a.controller
       location <- MaybeT $ field InvestigatorLocation controller
-      guardM $ lift $ fieldMap LocationShroud (>= 4) location
+      guardM $ lift $ fieldMap LocationShroud (maybe False (>= 4)) location
       pure $ AddSkillIcons [#wild, #wild]
     pure $ toModifiers a $ toList mMods
   getModifiersFor _ _ = pure []

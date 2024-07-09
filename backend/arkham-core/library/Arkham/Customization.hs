@@ -49,13 +49,21 @@ data Customization
   | IrrefutableProof -- 6
   | AlternativeHypothesis -- 7
   | -- The Raven Quill 09042
-    LivingQuill -- 0
-  | SpectralBinding -- 1
-  | MysticVane -- 2
-  | EndlessInkwell -- 3
-  | EnergySap -- 4
-  | InterwovenInk -- 5
-  | SupernaturalRecord -- 6
+    -- 0 is ChoicePlaceholder
+    LivingQuill -- 1
+  | SpectralBinding -- 2
+  | MysticVane -- 3
+  | EndlessInkwell -- 4
+  | EnergySap -- 5
+  | InterwovenInk -- 6
+  | SupernaturalRecord -- 7
+  | -- Damning Testimony 09059
+    SearchWarrant -- 0
+  | FabricatedEvidence -- 1
+  | Blackmail -- 2
+  | Extort -- 3
+  | Surveil -- 4
+  | Expose -- 5
   | -- Hyperphysical Shotcaster 09119
     Railshooter -- 0
   | Telescanner -- 1

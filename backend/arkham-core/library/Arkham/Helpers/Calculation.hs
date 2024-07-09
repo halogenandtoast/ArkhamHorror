@@ -61,8 +61,11 @@ calculate = go
         Just (EnemyTarget eid) -> field fld eid
         _ -> pure 0
     LocationFieldCalculation lid fld -> field fld lid
+    LocationMaybeFieldCalculation lid fld -> fromJustNote "missing maybe field" <$> field fld lid
     InvestigatorLocationFieldCalculation iid fld -> do
       maybe (pure 0) (field fld) =<< field InvestigatorLocation iid
+    InvestigatorLocationMaybeFieldCalculation iid fld -> do
+      maybe (pure 0) (fieldMap fld (fromMaybe 0)) =<< field InvestigatorLocation iid
     CardCostCalculation iid' cId -> getCard cId >>= getModifiedCardCost iid'
     ScenarioInDiscardCountCalculation mtchr -> length <$> findInDiscard mtchr
     InvestigatorTokenCountCalculation iid token -> fieldMap InvestigatorTokens (countTokens token) iid

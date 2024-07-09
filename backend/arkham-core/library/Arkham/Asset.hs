@@ -868,7 +868,8 @@ allAssets =
     , SomeAssetCard empiricalHypothesis
     , SomeAssetCard fingerprintKit4
     , --- rogue [tsk]
-      SomeAssetCard chuckFergus2
+      SomeAssetCard damningTestimony
+    , SomeAssetCard chuckFergus2
     , --- neutral [tsk]
       SomeAssetCard hyperphysicalShotcasterTheoreticalDevice
     , -- The Feast of Hemloch Vale

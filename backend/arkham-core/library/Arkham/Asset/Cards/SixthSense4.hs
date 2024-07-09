@@ -52,14 +52,17 @@ instance RunMessage SixthSense4Effect where
     RevealChaosToken _ iid token -> case effectTarget of
       InvestigationTarget iid' lid | iid == iid' -> do
         when (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing]) $ do
-          currentShroud <- field LocationShroud lid
+          currentShroud <- fieldJust LocationShroud lid
           locations <-
-            selectWithField LocationShroud
-              $ RevealedLocation
-              <> LocationMatchAny
-                [ LocationWithDistanceFrom n Anywhere
-                | n <- [1 .. 2]
-                ]
+            selectWithField
+              LocationShroud
+              ( RevealedLocation
+                  <> LocationMatchAny
+                    [ LocationWithDistanceFrom n Anywhere
+                    | n <- [1 .. 2]
+                    ]
+              )
+              <&> mapMaybe (\(loc, mshroud) -> (loc,) <$> mshroud)
 
           locationsWithAdditionalCosts <- forMaybeM locations \location@(lid', _) -> do
             mods <- getModifiers lid'

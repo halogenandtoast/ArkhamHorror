@@ -23,7 +23,7 @@ instance RunMessage WallsClosingIn where
           iid
           attrs
           #willpower
-          (InvestigatorLocationFieldCalculation iid LocationShroud)
+          (InvestigatorLocationMaybeFieldCalculation iid LocationShroud)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       player <- getPlayer iid

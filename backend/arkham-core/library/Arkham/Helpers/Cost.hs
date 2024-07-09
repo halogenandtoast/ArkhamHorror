@@ -56,9 +56,12 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
   OptionalCost {} -> pure True
   AddCurseTokensEqualToShroudCost -> do
     mloc <- field InvestigatorLocation iid
-    shroud <- maybe (pure 0) (field LocationShroud) mloc
-    x <- getRemainingCurseTokens
-    pure $ x >= shroud
+    mShroud <- maybe (pure Nothing) (field LocationShroud) mloc
+    case mShroud of
+      Nothing -> pure False
+      Just shroud -> do
+        x <- getRemainingCurseTokens
+        pure $ x >= shroud
   AddCurseTokensEqualToSkillTestDifficulty -> do
     getSkillTestDifficulty >>= \case
       Nothing -> pure False

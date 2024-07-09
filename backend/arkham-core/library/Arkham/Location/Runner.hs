@@ -102,7 +102,7 @@ instance RunMessage LocationAttrs where
             investigation.source
             target
             investigation.skillType
-            (LocationFieldCalculation a.id LocationShroud)
+            (LocationMaybeFieldCalculation a.id LocationShroud)
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
       let clues = locationClues a
@@ -379,10 +379,14 @@ locationInvestigatorsWithClues :: HasGame m => LocationAttrs -> m [InvestigatorI
 locationInvestigatorsWithClues attrs =
   filterM (fieldMap InvestigatorClues (> 0)) =<< select (investigatorAt $ toId attrs)
 
-getModifiedShroudValueFor :: HasGame m => LocationAttrs -> m Int
+getModifiedShroudValueFor :: (HasCallStack, HasGame m) => LocationAttrs -> m Int
 getModifiedShroudValueFor attrs = do
   modifiers' <- getModifiers (toTarget attrs)
-  pure $ foldr applyPostModifier (foldr applyModifier (locationShroud attrs) modifiers') modifiers'
+  pure
+    $ foldr
+      applyPostModifier
+      (foldr applyModifier (fromJustNote "Missing shroud" $ locationShroud attrs) modifiers')
+      modifiers'
  where
   applyModifier (ShroudModifier m) n = max 0 (n + m)
   applyModifier _ n = n
@@ -392,7 +396,7 @@ getModifiedShroudValueFor attrs = do
 getInvestigateAllowed :: HasGame m => InvestigatorId -> LocationAttrs -> m Bool
 getInvestigateAllowed _iid attrs = do
   modifiers' <- getModifiers (toTarget attrs)
-  pure $ none isCannotInvestigate modifiers'
+  pure $ none isCannotInvestigate modifiers' && isJust (locationShroud attrs)
  where
   isCannotInvestigate CannotInvestigate {} = True
   isCannotInvestigate (CannotInvestigateLocation lid) = lid == toId attrs

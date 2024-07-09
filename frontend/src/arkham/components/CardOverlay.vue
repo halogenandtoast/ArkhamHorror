@@ -93,7 +93,8 @@ const customizations = computed(() => {
 
   if (!str) return null;
 
-  const customizations = JSON.parse(str);
+  let customizations
+  try { customizations = JSON.parse(str) } catch (e) { console.log(str); customizations = [] } ;
   return customizations.length === 0 ? null : customizations;
 });
 
@@ -900,6 +901,81 @@ const getImage = (el: HTMLElement): string | null => {
   left: var(--left-4);
 }
 
+// Damning Testimony
+.tick-09059 {
+  --top-0: 18.6%;
+  --top-1: 32.7%;
+  --top-2: 40.2%;
+  --top-3: 47.6%;
+  --top-4: 61.9%;
+  --top-5: 72.9%;
+  --left-1: 8.5%;
+  --left-2: 11.9%;
+  --left-3: 15.2%;
+  --left-4: 18.5%;
+}
+
+.customization-09059-0-1 {
+  top: var(--top-0);
+  left: var(--left-1);
+}
+.customization-09059-1-1 {
+  top: var(--top-1);
+  left: var(--left-1);
+}
+.customization-09059-1-2 {
+  top: var(--top-1);
+  left: var(--left-2);
+}
+.customization-09059-2-1 {
+  top: var(--top-2);
+  left: var(--left-1);
+}
+.customization-09059-2-2 {
+  top: var(--top-2);
+  left: var(--left-2);
+}
+.customization-09059-3-1 {
+  top: var(--top-3);
+  left: var(--left-1);
+}
+.customization-09059-3-2 {
+  top: var(--top-3);
+  left: var(--left-2);
+}
+.customization-09059-3-3 {
+  top: var(--top-3);
+  left: var(--left-3);
+}
+.customization-09059-4-1 {
+  top: var(--top-4);
+  left: var(--left-1);
+}
+.customization-09059-4-2 {
+  top: var(--top-4);
+  left: var(--left-2);
+}
+.customization-09059-4-3 {
+  top: var(--top-4);
+  left: var(--left-3);
+}
+.customization-09059-5-1 {
+  top: var(--top-5);
+  left: var(--left-1);
+}
+.customization-09059-5-2 {
+  top: var(--top-5);
+  left: var(--left-2);
+}
+.customization-09059-5-3 {
+  top: var(--top-5);
+  left: var(--left-3);
+}
+.customization-09059-5-4 {
+  top: var(--top-5);
+  left: var(--left-4);
+}
+
 // Hyperphysical Shotcaster
 .tick-09119 {
   --top-0: 19.0%;
@@ -915,12 +991,10 @@ const getImage = (el: HTMLElement): string | null => {
   --left-4: 17.3%;
 }
 
-
 .customization-09119-0-1 {
   top: var(--top-0);
   left: var(--left-1);
 }
-
 .customization-09119-0-2 {
   top: var(--top-0);
   left: var(--left-2);

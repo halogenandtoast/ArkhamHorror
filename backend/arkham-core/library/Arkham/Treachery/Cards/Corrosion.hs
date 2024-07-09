@@ -32,8 +32,7 @@ assetMatcher = DiscardableAsset <> AssetWithTrait Item <> AssetControlledBy You
 instance RunMessage Corrosion where
   runMessage msg t@(Corrosion attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      shroud <-
-        maybe (pure 0) (field LocationShroud) =<< field InvestigatorLocation iid
+      shroud <- maybe (pure 0) (fieldJust LocationShroud) =<< field InvestigatorLocation iid
       hasAssets <- selectAny assetMatcher
       hasHandAssets <-
         fieldP

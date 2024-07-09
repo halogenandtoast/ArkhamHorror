@@ -513,7 +513,8 @@ allEvents =
     , --- seeker [tsk]
       SomeEventCard theRavenQuill
     , --- rogue [tsk]
-      SomeEventCard breakingAndEntering2
+      SomeEventCard friendsInLowPlaces
+    , SomeEventCard breakingAndEntering2
     , -- The Feast of Hemloch Vale
       --- survivor [fhv]
       SomeEventCard keepFaith2

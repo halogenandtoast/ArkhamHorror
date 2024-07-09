@@ -880,6 +880,7 @@ data Message
   | SearchFound InvestigatorId Target DeckSignifier [Card]
   | FoundCards (Map Zone [Card])
   | SearchNoneFound InvestigatorId Target
+  | UpdateSearchReturnStrategy InvestigatorId Zone ZoneReturnStrategy
   | SetActions InvestigatorId Source Int
   | SetEncounterDeck (Deck EncounterCard)
   | SetLayout [GridTemplateRow]

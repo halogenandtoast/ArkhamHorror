@@ -64,6 +64,14 @@ data Customization
   | Extort -- 3
   | Surveil -- 4
   | Expose -- 5
+  | -- Friends in Low Places 09060
+    Helpful -- 0
+  | Versatile -- 1
+  | Bolstering -- 2
+  | Clever -- 3
+  | Prompt -- 4
+  | Experienced -- 5
+  | Swift -- 6
   | -- Hyperphysical Shotcaster 09119
     Railshooter -- 0
   | Telescanner -- 1

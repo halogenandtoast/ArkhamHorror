@@ -171,6 +171,7 @@ allPlayerEventCards =
       , forewarned1
       , fortuitousDiscovery
       , fortuneOrFate2
+      , friendsInLowPlaces
       , galvanize1
       , gangUp1
       , gazeOfOuraxsh2
@@ -3166,6 +3167,26 @@ theRavenQuill =
           , (EnergySap, 2)
           , (InterwovenInk, 3)
           , (SupernaturalRecord, 4)
+          ]
+    }
+
+friendsInLowPlaces :: CardDef
+friendsInLowPlaces =
+  (event "09060" "Friends in Low Places" 0 Rogue)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Favor]
+    , cdCardInHandEffects = True
+    , cdCriteria = Just $ can.manipulate.deck You
+    , cdCustomizations =
+        mapFromList
+          [ (ChoicePlaceholder, 0)
+          , (Helpful, 1)
+          , (Versatile, 2)
+          , (Bolstering, 2)
+          , (Clever, 2)
+          , (Prompt, 2)
+          , (Experienced, 3)
+          , (Swift, 3)
           ]
     }
 

@@ -66,8 +66,14 @@ getSkillTestResolvedChaosTokens = maybe [] skillTestResolvedChaosTokens <$> getS
 getSkillTestInvestigator :: HasGame m => m (Maybe InvestigatorId)
 getSkillTestInvestigator = fmap skillTestInvestigator <$> getSkillTest
 
+isSkillTestInvestigator :: HasGame m => InvestigatorId -> m Bool
+isSkillTestInvestigator iid = maybe False (== iid) <$> getSkillTestInvestigator
+
 getSkillTestSource :: HasGame m => m (Maybe Source)
 getSkillTestSource = getsSkillTest skillTestSource
+
+isSkillTestSource :: (HasGame m, Sourceable source) => source -> m Bool
+isSkillTestSource source = maybe False (isSource source) <$> getSkillTestSource
 
 getSkillTestBaseSkill :: HasGame m => InvestigatorId -> m (Maybe Int)
 getSkillTestBaseSkill iid = do
@@ -96,6 +102,9 @@ getSkillTestSkillTypes =
 
 getSkillTestMatchingSkillIcons :: HasGame m => m (Set SkillIcon)
 getSkillTestMatchingSkillIcons = maybe mempty keysSet <$> getsSkillTest skillTestIconValues
+
+isInvestigation :: HasGame m => m Bool
+isInvestigation = (== Just #investigate) <$> getSkillTestAction
 
 getIsBeingInvestigated :: HasGame m => LocationId -> m Bool
 getIsBeingInvestigated lid = do

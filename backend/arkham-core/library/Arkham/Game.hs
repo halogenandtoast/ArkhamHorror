@@ -1361,9 +1361,9 @@ getLocationsMatching lmatcher = do
         if null ls'
           then pure []
           else do
-            highestShroud <-
-              getMax0 <$> foldMapM (fieldMap LocationShroud Max0 . toId) ls'
-            filterM (fieldMap LocationShroud (== highestShroud) . toId) ls'
+            ls'' <- mapMaybeM (\l -> (l,) <$$> field LocationShroud l.id) ls'
+            let highestShroud = getMax0 $ foldMap (Max0 . snd) ls''
+            pure $ map fst $ filter ((== highestShroud) . snd) ls''
       IsIchtacasDestination -> do
         allKeys <- toList <$> scenarioField ScenarioRemembered
         let
@@ -1376,8 +1376,9 @@ getLocationsMatching lmatcher = do
         if null ls'
           then pure []
           else do
-            let lowestShroud = getMin $ foldMap (Min . attr locationShroud) ls'
-            pure $ filter ((< lowestShroud) . attr locationShroud) ls'
+            ls'' <- mapMaybeM (\l -> (l,) <$$> field LocationShroud l.id) ls'
+            let lowestShroud = getMin $ foldMap (Min . snd) ls''
+            pure $ map fst $ filter ((< lowestShroud) . snd) ls''
       LocationWithDiscoverableCluesBy whoMatcher -> do
         ls' <- getLocationsMatching LocationWithAnyClues
         filterM
@@ -1468,7 +1469,7 @@ getLocationsMatching lmatcher = do
           ls
       LocationWithShroud gameValueMatcher -> do
         filterM
-          (field LocationShroud . toId >=> (`gameValueMatches` gameValueMatcher))
+          (field LocationShroud . toId >=> maybe (pure False) (`gameValueMatches` gameValueMatcher))
           ls
       LocationWithMostClues locationMatcher -> do
         matches' <- getLocationsMatching locationMatcher
@@ -1792,8 +1793,13 @@ getLocationsMatching lmatcher = do
             <$> getLocationsMatching x
             <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
         pure $ filter ((`member` matches') . toId) ls
-      InvestigatableLocation -> flip filterM ls
-        $ \l -> notElem CannotInvestigate <$> getModifiers (toTarget l)
+      InvestigatableLocation -> do
+        flip filterM ls
+          $ \l ->
+            andM
+              [ fieldMap LocationShroud isJust l.id
+              , notElem CannotInvestigate <$> getModifiers (toTarget l)
+              ]
       ConnectedTo matcher -> do
         -- locations with connections to locations that match
         -- so we filter each location by generating it's connections
@@ -2859,7 +2865,10 @@ instance Projection Location where
       LocationHorror -> pure $ locationHorror attrs
       LocationDamage -> pure $ locationDamage attrs
       LocationDoom -> pure $ locationDoom attrs
-      LocationShroud -> getModifiedShroudValueFor attrs
+      LocationShroud ->
+        if isRevealed l && isJust locationShroud
+          then Just <$> getModifiedShroudValueFor attrs
+          else pure Nothing
       LocationBrazier -> pure locationBrazier
       LocationBreaches -> pure locationBreaches
       LocationTraits -> do

@@ -2854,7 +2854,9 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationWithHorror valueMatcher ->
       (`gameValueMatches` valueMatcher) =<< field LocationHorror locationId
     Matcher.LocationWithShroud valueMatcher ->
-      (`gameValueMatches` valueMatcher) =<< field LocationShroud locationId
+      field LocationShroud locationId >>= \case
+        Nothing -> pure False
+        Just shroud -> gameValueMatches shroud valueMatcher
     Matcher.LocationWithMostClues locationMatcher ->
       elem locationId
         <$> select (Matcher.LocationWithMostClues locationMatcher)

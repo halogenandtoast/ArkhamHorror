@@ -67,7 +67,7 @@ data instance Field Location :: Type -> Type where
   LocationHorror :: Field Location Int
   LocationDamage :: Field Location Int
   LocationDoom :: Field Location Int
-  LocationShroud :: Field Location Int
+  LocationShroud :: Field Location (Maybe Int)
   LocationConnectedMatchers :: Field Location [LocationMatcher]
   LocationRevealedConnectedMatchers :: Field Location [LocationMatcher]
   LocationRevealed :: Field Location Bool
@@ -251,7 +251,7 @@ locationWith f def shroud' revealClues g =
             , locationLabel = nameToLabel (cdName def)
             , locationRevealClues = revealClues
             , locationTokens = mempty
-            , locationShroud = shroud'
+            , locationShroud = Just shroud'
             , locationRevealed = not (cdDoubleSided def)
             , locationSymbol = fromJustNote "missing location symbol" (cdLocationSymbol def)
             , locationRevealedSymbol =

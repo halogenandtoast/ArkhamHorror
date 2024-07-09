@@ -29,7 +29,7 @@ instance HasModifiersFor LolaSantiago3 where
 instance HasAbilities LolaSantiago3 where
   getAbilities (LolaSantiago3 a) =
     [ controlledAbility a 1 ClueOnLocation
-        $ FastAbility (exhaust a <> FieldResourceCost (FieldCost YourLocation LocationShroud))
+        $ FastAbility (exhaust a <> MaybeFieldResourceCost (MaybeFieldCost YourLocation LocationShroud))
     ]
 
 instance RunMessage LolaSantiago3 where

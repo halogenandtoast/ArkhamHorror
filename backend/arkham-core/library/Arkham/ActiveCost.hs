@@ -498,7 +498,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       pure c
     AddCurseTokensEqualToShroudCost -> do
       mloc <- field InvestigatorLocation iid
-      shroud <- maybe (pure 0) (field LocationShroud) mloc
+      shroud <- maybe (pure 0) (fieldJust LocationShroud) mloc
       x <- min shroud <$> getRemainingCurseTokens
       pushAll $ replicate x $ AddChaosToken CurseToken
       pure c

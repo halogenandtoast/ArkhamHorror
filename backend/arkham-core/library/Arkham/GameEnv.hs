@@ -167,6 +167,9 @@ getHistory RoundHistory iid = do
   phaseH <- getHistory PhaseHistory iid
   pure $ roundH <> phaseH
 
+getHistoryField :: HasGame m => HistoryType -> InvestigatorId -> HistoryField k -> m k
+getHistoryField htype iid fld = viewHistoryField fld <$> getHistory htype iid
+
 getDistance :: HasGame m => LocationId -> LocationId -> m (Maybe Distance)
 getDistance l1 l2 = do
   game <- getGame

@@ -139,10 +139,10 @@ instance RunMessage RunicAxe where
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       withLocationOf iid \loc -> do
         let elderCount = count (== Elders) (inscriptions meta)
-        shroud <- field LocationShroud loc
-        pushWhen (elderCount > 0 && n >= shroud)
-          $ DiscoverClues iid
-          $ discover loc (attrs.ability 1) elderCount
+        field LocationShroud loc >>= traverse_ \shroud -> do
+          pushWhen (elderCount > 0 && n >= shroud)
+            $ DiscoverClues iid
+            $ discover loc (attrs.ability 1) elderCount
 
       let furyCount = count (== Fury) (inscriptions meta)
       when (furyCount > 0) do

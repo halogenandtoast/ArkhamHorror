@@ -27,7 +27,7 @@ data LocationAttrs = LocationAttrs
   , locationLabel :: Text
   , locationRevealClues :: GameValue
   , locationTokens :: Tokens
-  , locationShroud :: Int
+  , locationShroud :: Maybe Int
   , locationRevealed :: Bool
   , locationSymbol :: LocationSymbol
   , locationRevealedSymbol :: LocationSymbol

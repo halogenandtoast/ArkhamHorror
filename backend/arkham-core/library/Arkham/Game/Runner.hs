@@ -192,7 +192,7 @@ runGameMessage msg g = case msg of
   FinishAction -> do
     iid <- getActiveInvestigatorId
     let
-      historyItem = mempty {historyActionsCompleted = 1}
+      historyItem = HistoryItem HistoryActionsCompleted 1
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
@@ -540,7 +540,7 @@ runGameMessage msg g = case msg of
     pure $ g & activeInvestigatorIdL .~ iid & turnPlayerInvestigatorIdL ?~ iid
   MoveTo (moveTarget -> InvestigatorTarget iid) -> do
     let
-      historyItem = mempty {historyMoved = True}
+      historyItem = HistoryItem HistoryMoved True
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
@@ -558,22 +558,20 @@ runGameMessage msg g = case msg of
       iid = fromMaybe lead miid
       placement' = maybe (enemyPlacement attrs) AtLocation mlid
       historyItem =
-        mempty
-          { historyEnemiesDefeated =
-              [ DefeatedEnemyAttrs
-                  { defeatedEnemyAttrs = attrs {enemyPlacement = placement'}
-                  , defeatedEnemyHealth = enemyHealth
-                  }
-              ]
-          }
+        HistoryItem
+          HistoryEnemiesDefeated
+          [ DefeatedEnemyAttrs
+              { defeatedEnemyAttrs = attrs {enemyPlacement = placement'}
+              , defeatedEnemyHealth = enemyHealth
+              }
+          ]
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
   Successful (Action.Investigate, LocationTarget lid) iid _ _ _ -> do
     let
-      historyItem =
-        mempty {historyLocationsSuccessfullyInvestigated = singleton lid}
+      historyItem = HistoryItem HistoryLocationsSuccessfullyInvestigated (singleton lid)
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
@@ -901,7 +899,7 @@ runGameMessage msg g = case msg of
         Just ResourceSkillTest -> []
         Nothing -> []
       skillsToRemove = mapMaybe snd skillPairs
-      historyItem = mempty {historySkillTestsPerformed = [skillTypes]}
+      historyItem = HistoryItem HistorySkillTestsPerformed [skillTypes]
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
@@ -1101,7 +1099,7 @@ runGameMessage msg g = case msg of
       isPlayAction = if isFast then NotPlayAction else IsPlayAction
     activeCost <- createActiveCostForCard iid card isPlayAction windows'
 
-    let historyItem = mempty {historyPlayedCards = [card]}
+    let historyItem = HistoryItem HistoryPlayedCards [card]
         turn = isJust $ view turnPlayerInvestigatorIdL g
         setTurnHistory = if turn then turnHistoryL %~ insertHistory iid historyItem else id
 
@@ -2103,7 +2101,7 @@ runGameMessage msg g = case msg of
       Nothing -> pure g
       Just iid -> do
         let
-          historyItem = mempty {historyDealtDamageTo = [InvestigatorTarget iid']}
+          historyItem = HistoryItem HistoryDealtDamageTo [InvestigatorTarget iid']
           turn = isJust $ view turnPlayerInvestigatorIdL g
           setTurnHistory = if turn then turnHistoryL %~ insertHistory iid historyItem else id
 
@@ -2117,7 +2115,7 @@ runGameMessage msg g = case msg of
     -- the iid for cases where we aren't looking at a specific investigator
     let
       iid = fromMaybe lead miid
-      historyItem = mempty {historyDealtDamageTo = [EnemyTarget eid]}
+      historyItem = HistoryItem HistoryDealtDamageTo [EnemyTarget eid]
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
@@ -2306,7 +2304,7 @@ runGameMessage msg g = case msg of
     let
       treachery =
         overAttrs (drawnFromL .~ mdeck) $ createTreachery card iid treacheryId
-      historyItem = mempty {historyTreacheriesDrawn = [toCardCode treachery]}
+      historyItem = HistoryItem HistoryTreacheriesDrawn [toCardCode treachery]
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
@@ -2356,7 +2354,7 @@ runGameMessage msg g = case msg of
       <> [ResolveTreachery iid treacheryId]
 
     let
-      historyItem = mempty {historyTreacheriesDrawn = [toCardCode treachery]}
+      historyItem = HistoryItem HistoryTreacheriesDrawn [toCardCode treachery]
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id

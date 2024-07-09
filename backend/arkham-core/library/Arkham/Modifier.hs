@@ -194,6 +194,7 @@ data ModifierType
   | DamageTaken Int
   | Difficulty Int
   | DiscoveredClues Int
+  | DiscoveredCluesAt LocationId Int
   | DoNotDisengageEvaded
   | DoNotDrawChaosTokensForSkillChecks
   | DoNotExhaustEvaded

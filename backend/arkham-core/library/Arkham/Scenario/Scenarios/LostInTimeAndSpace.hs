@@ -74,7 +74,7 @@ instance HasChaosTokenValue LostInTimeAndSpace where
     Tablet -> pure $ toChaosTokenValue attrs Tablet 3 5
     ElderThing -> do
       mlid <- field InvestigatorLocation iid
-      shroud <- maybe (pure 0) (field LocationShroud) mlid
+      shroud <- maybe (pure 0) (fieldJust LocationShroud) mlid
       pure $ toChaosTokenValue attrs ElderThing shroud (shroud * 2)
     otherFace -> getChaosTokenValue iid otherFace attrs
 

@@ -988,7 +988,7 @@ data Message
   | BeginCardPayment Card
   | FinishCardPayment Card
   | ReplaceCard CardId Card
-  | UpdateHistory InvestigatorId History
+  | UpdateHistory InvestigatorId HistoryItem
   | -- The Forgotten Age
     PickSupply InvestigatorId Supply
   | UseSupply InvestigatorId Supply

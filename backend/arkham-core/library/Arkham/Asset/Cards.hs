@@ -246,6 +246,7 @@ allPlayerAssetCards =
       , cyclopeanHammer5
       , daisysToteBag
       , daisysToteBagAdvanced
+      , damningTestimony
       , darioElAmin
       , darkHorse
       , darkRitual
@@ -5666,6 +5667,25 @@ fingerprintKit4 =
     , cdSlots = [#hand]
     , cdUses = uses Supply 3
     , cdLevel = Just 4
+    }
+
+damningTestimony :: CardDef
+damningTestimony =
+  (asset "09059" "Damning Testimony" 4 Rogue)
+    { cdCardTraits = setFromList [Item, Illicit]
+    , cdSkills = [#intellect]
+    , cdKeywords = setFromList [Keyword.Customizable]
+    , cdUses = uses Evidence 3
+    , cdSlots = [#hand]
+    , cdCustomizations =
+        mapFromList
+          [ (SearchWarrant, 1)
+          , (FabricatedEvidence, 2)
+          , (Blackmail, 2)
+          , (Extort, 3)
+          , (Surveil, 3)
+          , (Expose, 4)
+          ]
     }
 
 chuckFergus2 :: CardDef

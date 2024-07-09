@@ -62,7 +62,7 @@ instance HasChaosTokenValue TheLastKing where
     Tablet -> pure $ ChaosTokenValue Tablet (NegativeModifier 4)
     ElderThing -> do
       lid <- getJustLocation iid
-      shroud <- field LocationShroud lid
+      shroud <- fieldJust LocationShroud lid
       pure $ ChaosTokenValue ElderThing (NegativeModifier shroud)
     otherFace -> getChaosTokenValue iid otherFace attrs
 

@@ -43,7 +43,9 @@ data GameCalculation
   | EnemyFieldCalculation EnemyId (Field Enemy Int)
   | VictoryDisplayCountCalculation CardMatcher
   | LocationFieldCalculation LocationId (Field Location Int)
+  | LocationMaybeFieldCalculation LocationId (Field Location (Maybe Int))
   | InvestigatorLocationFieldCalculation InvestigatorId (Field Location Int)
+  | InvestigatorLocationMaybeFieldCalculation InvestigatorId (Field Location (Maybe Int))
   | CardCostCalculation InvestigatorId CardId
   | ScenarioInDiscardCountCalculation CardMatcher
   | DoomCountCalculation

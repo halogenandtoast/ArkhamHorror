@@ -2888,8 +2888,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       <>~ cards'
       & bondedCardsL
       <>~ map toCard essenceOfTheDreams
-  EndSearch iid _ (InvestigatorTarget iid') cardSources | iid == investigatorId -> do
+  UpdateSearchReturnStrategy iid zone returnStrategy | iid == investigatorId -> do
+    let
+      updateZone = \case
+        (z@(FromTopOfDeck _), _) | zone == FromDeck -> (z, returnStrategy)
+        (z@(FromBottomOfDeck _), _) | zone == FromDeck -> (z, returnStrategy)
+        (z, _) | z == zone -> (z, returnStrategy)
+        other -> other
+    case investigatorSearch of
+      Nothing -> error "Invalid call, no search for investigator"
+      Just s -> pure $ a & searchL ?~ s {searchingZones = map updateZone (searchingZones s)}
+  EndSearch iid _ (InvestigatorTarget iid') _ | iid == investigatorId -> do
     push (SearchEnded iid)
+    let cardSources = maybe [] searchingZones investigatorSearch
     let
       foundKey = \case
         Zone.FromTopOfDeck _ -> Zone.FromDeck

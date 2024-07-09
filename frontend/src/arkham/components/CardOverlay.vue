@@ -976,6 +976,109 @@ const getImage = (el: HTMLElement): string | null => {
   left: var(--left-4);
 }
 
+// Friends in Low Places
+.tick-09060 {
+  --top-1: 24.3%;
+  --top-2: 34.0%;
+  --top-3: 46.5%;
+  --top-4: 56.0%;
+  --top-5: 65.4%;
+  --top-6: 72.1%;
+  --top-7: 78.6%;
+  --left-1: 8.5%;
+  --left-2: 11.3%;
+  --left-3: 14.2%;
+}
+
+.label-09060-0-0 {
+  top: 18%;
+  left: 29%;
+  width: 40%;
+  height: 5%;
+  svg {
+    width: 100%;
+    height: 100%;
+    path {
+      d: path("M 0 14 H 100");
+    }
+  }
+}
+
+.label-09060-2-0 {
+  top: 33.4%;
+  left: 66%;
+  width: 25%;
+  height: 5%;
+  svg {
+    width: 100%;
+    height: 100%;
+    path {
+      d: path("M 0 14 H 100");
+    }
+  }
+}
+
+.customization-09060-1-1 {
+  top: var(--top-1);
+  left: var(--left-1);
+}
+.customization-09060-2-1 {
+  top: var(--top-2);
+  left: var(--left-1);
+}
+.customization-09060-2-2 {
+  top: var(--top-2);
+  left: var(--left-2);
+}
+.customization-09060-3-1 {
+  top: var(--top-3);
+  left: var(--left-1);
+}
+.customization-09060-3-2 {
+  top: var(--top-3);
+  left: var(--left-2);
+}
+.customization-09060-4-1 {
+  top: var(--top-4);
+  left: var(--left-1);
+}
+.customization-09060-4-2 {
+  top: var(--top-4);
+  left: var(--left-2);
+}
+.customization-09060-5-1 {
+  top: var(--top-5);
+  left: var(--left-1);
+}
+.customization-09060-5-2 {
+  top: var(--top-5);
+  left: var(--left-2);
+}
+.customization-09060-6-1 {
+  top: var(--top-6);
+  left: var(--left-1);
+}
+.customization-09060-6-2 {
+  top: var(--top-6);
+  left: var(--left-2);
+}
+.customization-09060-6-3 {
+  top: var(--top-6);
+  left: var(--left-3);
+}
+.customization-09060-7-1 {
+  top: var(--top-7);
+  left: var(--left-1);
+}
+.customization-09060-7-2 {
+  top: var(--top-7);
+  left: var(--left-2);
+}
+.customization-09060-7-3 {
+  top: var(--top-7);
+  left: var(--left-3);
+}
+
 // Hyperphysical Shotcaster
 .tick-09119 {
   --top-0: 19.0%;

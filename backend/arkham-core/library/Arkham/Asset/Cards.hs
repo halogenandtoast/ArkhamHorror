@@ -4846,7 +4846,7 @@ butterflySwords2 =
 
 combatTraining3 :: CardDef
 combatTraining3 =
-  (asset "08027" "Combat Training" 1 Guardian)
+  (asset "08027" "Combat Training" 0 Guardian)
     { cdSkills = [#combat, #combat, #agility, #agility]
     , cdCardTraits = setFromList [Talent, Composure]
     , cdLimits = [LimitPerTrait Composure 1]
@@ -4873,7 +4873,7 @@ forcedLearning =
 
 jeremiahKirbyArcticArchaeologist :: CardDef
 jeremiahKirbyArcticArchaeologist =
-  (asset "08032" ("Jeremiah Kirby" <:> "Artic Archaeologist") 4 Seeker)
+  (asset "08032" ("Jeremiah Kirby" <:> "Arctic Archaeologist") 4 Seeker)
     { cdCardTraits = setFromList [Ally, Miskatonic, Wayfarer]
     , cdSkills = [#intellect]
     , cdSlots = [#ally]
@@ -4896,6 +4896,7 @@ hikingBoots1 =
     { cdCardTraits = setFromList [Item, Clothing, Footwear]
     , cdSkills = [#agility]
     , cdLimits = [LimitPerTrait Footwear 1]
+    , cdLevel = Just 1
     }
 
 medicalTexts2 :: CardDef
@@ -4944,7 +4945,7 @@ archiveOfConduitsGatewayToAldebaran4 :: CardDef
 archiveOfConduitsGatewayToAldebaran4 =
   (asset "08043" ("Archive of Conduits" <:> "Gateway to Aldebaran") 4 Seeker)
     { cdCardTraits = setFromList [Ritual]
-    , cdSkills = [#intellect, #intellect, #wild]
+    , cdSkills = [#agility, #agility, #wild]
     , cdSlots = [#arcane]
     , cdDeckRestrictions = [PerDeckLimit 1]
     , cdLevel = Just 4
@@ -4956,7 +4957,7 @@ archiveOfConduitsGatewayToParadise4 :: CardDef
 archiveOfConduitsGatewayToParadise4 =
   (asset "08044" ("Archive of Conduits" <:> "Gateway to Paradise") 4 Seeker)
     { cdCardTraits = setFromList [Ritual]
-    , cdSkills = [#intellect, #intellect, #wild]
+    , cdSkills = [#willpower, #willpower, #wild]
     , cdSlots = [#arcane]
     , cdDeckRestrictions = [PerDeckLimit 1]
     , cdLevel = Just 4
@@ -4971,6 +4972,7 @@ prophesiaeProfanaAtlasOfTheUnknowable5 =
     , cdCardTraits = setFromList [Item, Relic, Tome]
     , cdSlots = [#hand]
     , cdLevel = Just 5
+    , cdUnique = True
     }
 
 underworldSupport :: CardDef
@@ -5043,7 +5045,7 @@ dragonPole =
 
 closeTheCircle1 :: CardDef
 closeTheCircle1 =
-  (asset "08062" "Close the Circle" 3 Mystic)
+  (asset "08062" "Close the Circle" 2 Mystic)
     { cdCardTraits = setFromList [Ritual, Synergy]
     , cdSkills = [#combat, #agility]
     , cdSlots = [#arcane]
@@ -5194,9 +5196,10 @@ nkosiMabatiEnigmaticWarlock3 :: CardDef
 nkosiMabatiEnigmaticWarlock3 =
   (multiClassAsset "08091" ("Nkosi Mabati" <:> "Enigmatic Warlock") 4 [Guardian, Mystic])
     { cdSkills = [#willpower, #willpower]
-    , cdCardTraits = setFromList [Spell]
+    , cdCardTraits = setFromList [Ally, Sorcerer]
     , cdLevel = Just 3
     , cdSlots = [#ally]
+    , cdUnique = True
     }
 
 brandOfCthugha4 :: CardDef
@@ -5241,6 +5244,7 @@ sledgehammer4 =
     { cdSkills = [#combat, #combat, #combat]
     , cdCardTraits = setFromList [Item, Tool, Weapon, Melee]
     , cdSlots = [#hand, #hand]
+    , cdLevel = Just 4
     }
 
 pocketTelescope :: CardDef
@@ -5313,13 +5317,14 @@ professorWilliamWebbFinderOfHiddenConnections =
     , cdSkills = [#intellect]
     , cdUses = uses Secret 3
     , cdSlots = [#ally]
+    , cdUnique = True
     }
 
 icePick1 :: CardDef
 icePick1 =
   fast
     (multiClassAsset "08105" "Ice Pick" 1 [Seeker, Survivor])
-      { cdCardTraits = setFromList [Item, Charm]
+      { cdCardTraits = setFromList [Item, Melee, Tool]
       , cdSkills = [#combat]
       , cdSlots = [#hand]
       , cdLevel = Just 1
@@ -5338,13 +5343,14 @@ professorWilliamWebbFinderOfHiddenConnections2 =
     , cdUses = uses Secret 3
     , cdLevel = Just 2
     , cdSlots = [#ally]
+    , cdUnique = True
     }
 
 icePick3 :: CardDef
 icePick3 =
   fast
     (multiClassAsset "08107" "Ice Pick" 1 [Seeker, Survivor])
-      { cdCardTraits = setFromList [Item, Charm]
+      { cdCardTraits = setFromList [Item, Melee, Tool]
       , cdSkills = [#intellect, #combat]
       , cdSlots = [#hand]
       , cdLevel = Just 3
@@ -5373,7 +5379,7 @@ blur4 =
 unscrupulousLoan3 :: CardDef
 unscrupulousLoan3 =
   (multiClassAsset "08113" "Unscrupulous Loan" 0 [Rogue, Survivor])
-    { cdCardTraits = setFromList [Item, Charm, Blessed]
+    { cdCardTraits = setFromList [Pact]
     , cdLimits = [LimitPerInvestigator 1]
     , cdLevel = Just 3
     }
@@ -5705,6 +5711,7 @@ hyperphysicalShotcasterTheoreticalDevice =
     , cdSkills = [#wild]
     , cdKeywords = setFromList [Keyword.Customizable]
     , cdUses = uses Aether 4
+    , cdUnique = True
     , cdCustomizations =
         mapFromList
           [ (Railshooter, 2)

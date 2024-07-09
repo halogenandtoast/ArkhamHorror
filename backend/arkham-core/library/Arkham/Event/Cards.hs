@@ -2744,6 +2744,7 @@ gangUp1 =
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spirit, Synergy]
     , cdActions = [#fight]
+    , cdLevel = Just 1
     }
 
 sweepingKick1 :: CardDef
@@ -2781,10 +2782,10 @@ onTheHunt3 =
 
 fangOfTyrthrha4 :: CardDef
 fangOfTyrthrha4 =
-  (event "08029" "Fang of Thr'thrha" 3 Guardian)
+  (event "08029" "Fang of Tyr'thrha" 3 Guardian)
     { cdCardTraits = singleton Spell
     , cdActions = [#fight]
-    , cdSkills = [#willpower, #intellect, #combat]
+    , cdSkills = [#combat, #combat, #agility, #agility]
     , cdLevel = Just 4
     , cdCriteria =
         Just
@@ -2807,7 +2808,7 @@ writtenInTheStars =
 
 joinTheCaravan1 :: CardDef
 joinTheCaravan1 =
-  (event "08036" "Join the Caravan" 10 Seeker)
+  (event "08036" "Join the Caravan" 5 Seeker)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Insight, Synergy]
     , cdFastWindow = Just $ DuringTurn You
@@ -2850,6 +2851,7 @@ counterespionage1 =
     , cdCriteria = Just $ oneOf [Criteria.EventWindowInvestigatorIs You, Criteria.CanAffordCostIncrease 2] -- WindowInvestigatorIs only handles draw card right now
     , cdFastWindow = Just $ DrawCard #when Anyone (basic NonWeaknessTreachery) AnyDeck
     , cdCardInHandEffects = True
+    , cdLevel = Just 1
     }
 
 cheatTheSystem1 :: CardDef
@@ -2893,8 +2895,7 @@ moneyTalks2 =
 blackMarket2 :: CardDef
 blackMarket2 =
   (event "08055" "Black Market" 1 Rogue)
-    { cdSkills = [#wild]
-    , cdCardTraits = setFromList [Favor]
+    { cdCardTraits = setFromList [Favor]
     , cdCriteria = Just $ exists (affectsOthers can.manipulate.deck) <> youExist can.reveal.cards
     , cdFastWindow = Just $ PhaseBegins #after #investigation
     , cdLevel = Just 2
@@ -2966,6 +2967,7 @@ burnAfterReading1 =
             [ exists $ InHandOf You <> basic (CardWithMaxLevel 5)
             , canDiscoverCluesAtYourLocation
             ]
+    , cdLevel = Just 1
     }
 
 bloodWillHaveBlood2 :: CardDef
@@ -2978,6 +2980,7 @@ bloodWillHaveBlood2 =
           $ EnemyAttacks #after You (not_ (AttackDamagedAsset #ally) <> AttackDealtDamageOrHorror) AnyEnemy
     , cdLimits = [MaxPerAttack 1]
     , cdCriteria = can.draw.cards
+    , cdLevel = Just 2
     }
 
 fendOff3 :: CardDef
@@ -2986,6 +2989,7 @@ fendOff3 =
     { cdSkills = [#agility, #agility]
     , cdCardTraits = setFromList [Gambit, Trick]
     , cdFastWindow = Just $ EnemySpawns #when YourLocation NonEliteEnemy
+    , cdLevel = Just 3
     }
 
 onTheTrail1 :: CardDef
@@ -3018,7 +3022,7 @@ onTheTrail3 =
 
 snipe1 :: CardDef
 snipe1 =
-  (multiClassEvent "08087" "Snipe" 1 [Guardian, Seeker])
+  (multiClassEvent "08087" "Snipe" 0 [Guardian, Rogue])
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic]
     , cdLevel = Just 1
@@ -3081,6 +3085,7 @@ callForBackup2 =
   (event "08129" "Call for Backup" 1 Neutral)
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Favor, Synergy]
+    , cdLevel = Just 2
     , cdCriteria =
         let control k = exists (ControlledBy You <> basic (CardWithClass k))
             healableCardExists d =
@@ -3144,6 +3149,7 @@ theRavenQuill =
   (event "09042" "The Raven Quill" 3 Seeker)
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = setFromList [Item, Relic, Upgrade]
+    , cdUnique = True
     , cdCriteria =
         Just
           $ oneOf

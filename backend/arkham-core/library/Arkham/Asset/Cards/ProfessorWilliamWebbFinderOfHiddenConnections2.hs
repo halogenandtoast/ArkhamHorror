@@ -25,7 +25,7 @@ professorWilliamWebbFinderOfHiddenConnections2 =
   ally
     ProfessorWilliamWebbFinderOfHiddenConnections2
     Cards.professorWilliamWebbFinderOfHiddenConnections2
-    (1, 2)
+    (1, 3)
 
 instance HasAbilities ProfessorWilliamWebbFinderOfHiddenConnections2 where
   getAbilities (ProfessorWilliamWebbFinderOfHiddenConnections2 a) =

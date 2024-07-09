@@ -395,7 +395,7 @@ danielaReyes =
     "08001"
     ("Daniela Reyes" <:> "The Mechanic")
     Guardian
-    [Miskatonic]
+    [Entrepreneur]
 
 normanWithers :: CardDef
 normanWithers =

@@ -66,6 +66,7 @@ data CardJson = CardJson
   , skill_wild :: Maybe Int
   , faction_name :: String
   , faction2_name :: Maybe String
+  , faction3_name :: Maybe String
   , victory :: Maybe Int
   , enemy_fight :: Maybe Int
   , health :: Maybe Int
@@ -140,7 +141,7 @@ data EnemyDamageMismatch
       (Int, Int)
   deriving stock (Show)
 
-data ClassMismatch = ClassMismatch CardCode Name String (Set ClassSymbol)
+data ClassMismatch = ClassMismatch CardCode Name [String] (Set ClassSymbol)
   deriving stock (Show)
 
 data SkillsMismatch = SkillsMismatch CardCode Name [SkillIcon] [SkillIcon]
@@ -154,7 +155,7 @@ data TraitsMismatch
       (Set Trait)
   deriving stock (Show)
 
-data ShroudMismatch = ShroudMismatch CardCode Name Int Int
+data ShroudMismatch = ShroudMismatch CardCode Name (Maybe Int) (Maybe Int)
   deriving stock (Show)
 
 data ClueMismatch = ClueMismatch CardCode Name Int Int
@@ -398,13 +399,20 @@ getValidationResults cards = runValidateT $ do
           ( sort
               ( mapMaybe
                   normalizeClassSymbol
-                  (toClassSymbol faction_name : maybe [] (pure . toClassSymbol) faction2_name)
+                  ( toClassSymbol faction_name
+                      : maybe [] (pure . toClassSymbol) faction2_name <> maybe [] (pure . toClassSymbol) faction3_name
+                  )
               )
               /= sort (mapMaybe (normalizeClassSymbol . Just) (setToList $ cdClassSymbols card))
               && type_code /= "story"
           )
           $ do
-            invariant $ ClassMismatch code (cdName card) faction_name (cdClassSymbols card)
+            invariant $
+              ClassMismatch
+                code
+                (cdName card)
+                (faction_name : catMaybes [faction2_name, faction3_name])
+                (cdClassSymbols card)
         when
           ( sort (normalizeSkills code $ getSkills cardJson)
               /= sort (replaceWildMinus $ cdSkills card)
@@ -487,12 +495,12 @@ getValidationResults cards = runValidateT $ do
         Nothing -> unless (ignoreCardCode ccode) (invariant $ unknownCard ccode)
         Just CardJson {..} -> do
           when
-            (max 0 (fromMaybe 0 shroud) /= locationShroud attrs)
+            ((max 0 <$> shroud) /= locationShroud attrs)
             ( invariant $
                 ShroudMismatch
                   code
                   (cdName $ toCardDef attrs)
-                  (max 0 $ fromMaybe 0 shroud)
+                  (max 0 <$> shroud)
                   (locationShroud attrs)
             )
           when

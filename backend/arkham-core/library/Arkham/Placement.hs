@@ -37,7 +37,7 @@ data Placement
   | Limbo
   | Global
   | OutOfPlay OutOfPlayZone
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
 
 instance HasField "attachedTo" Placement (Maybe Target) where
   getField = placementToAttached
@@ -117,5 +117,9 @@ treacheryPlacementToPlacement = \case
   TreacheryLimbo -> Limbo
   TreacheryTopOfDeck iid -> OnTopOfDeck iid
 
-$(deriveJSON defaultOptions ''Placement)
 $(deriveJSON defaultOptions ''TreacheryPlacement)
+
+instance FromJSON Placement where
+  parseJSON o = genericParseJSON defaultOptions o <|> (treacheryPlacementToPlacement <$> parseJSON o)
+
+$(deriveToJSON defaultOptions ''Placement)

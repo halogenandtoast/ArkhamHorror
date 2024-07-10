@@ -1280,7 +1280,9 @@ instance RunMessage EnemyAttrs where
         & (exhaustedL .~ False)
         & (tokensL %~ removeAllTokens Doom . removeAllTokens Clue . removeAllTokens Token.Damage)
     PlaceEnemy eid placement | eid == enemyId -> do
-      push $ EnemyCheckEngagement eid
+      case placement of
+        AtLocation _ -> push $ EnemyCheckEngagement eid
+        _ -> pure ()
       checkEntersThreatArea a placement
       pure $ a & placementL .~ placement
     Blanked msg' -> runMessage msg' a

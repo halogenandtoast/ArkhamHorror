@@ -968,6 +968,7 @@ data WindowMatcher
   | EnemyEvaded Timing Who EnemyMatcher
   | EnemyEngaged Timing Who EnemyMatcher
   | MythosStep WindowMythosStepMatcher
+  | LocationEntersPlay Timing LocationMatcher
   | TreacheryEntersPlay Timing TreacheryMatcher
   | AgendaEntersPlay Timing AgendaMatcher
   | AssetEntersPlay Timing AssetMatcher

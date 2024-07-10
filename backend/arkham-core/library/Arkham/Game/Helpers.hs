@@ -748,6 +748,9 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
   passesLimit (MaxPerGame m) = do
     n <- getCardUses (toCardCode c)
     pure $ m > n
+  passesLimit (MaxPerRound m) = do
+    n <- getCardUses (toCardCode c)
+    pure $ m > n
   go :: forall n. HasGame n => n Bool
   go = withDepthGuard 3 False $ do
     attrs <- getAttrs @Investigator iid
@@ -2105,6 +2108,10 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
             [ matchWho iid who whoMatcher
             , locationMatches iid source window' locationId locationMatcher
             ]
+        _ -> noMatch
+    Matcher.LocationEntersPlay timing locationMatcher ->
+      guardTiming timing $ \case
+        Window.LocationEntersPlay locationId -> locationMatches iid source window' locationId locationMatcher
         _ -> noMatch
     Matcher.PlayerHasPlayableCard cardMatcher -> do
       -- TODO: do we need to grab the card source?

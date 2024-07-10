@@ -264,6 +264,7 @@ instance RunMessage LocationAttrs where
           pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
         else pure $ a & tokensL %~ subtractTokens tType n
     PlacedLocation _ _ lid | lid == locationId -> do
+      pushM $ checkAfter $ Window.LocationEntersPlay lid
       if locationRevealed
         then do
           modifiers' <- getModifiers (toTarget a)
@@ -274,9 +275,9 @@ instance RunMessage LocationAttrs where
           let currentClues = countTokens Clue locationTokens
 
           pushAll
-            [ PlaceClues (toSource a) (toTarget a) locationClueCount
-            | locationClueCount > 0
-            ]
+            $ [ PlaceClues (toSource a) (toTarget a) locationClueCount
+              | locationClueCount > 0
+              ]
           pure $ a & withoutCluesL .~ (locationClueCount + currentClues == 0)
         else pure a
     RevealLocation miid lid | lid == locationId -> do

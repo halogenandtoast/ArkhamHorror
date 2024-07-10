@@ -55,6 +55,7 @@ data CardLimit
   = LimitPerInvestigator Int
   | LimitPerTrait Trait Int
   | MaxPerGame Int
+  | MaxPerRound Int
   | MaxPerAttack Int
   deriving stock (Show, Eq, Ord, Data)
 

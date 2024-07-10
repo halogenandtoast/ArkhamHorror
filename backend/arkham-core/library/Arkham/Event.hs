@@ -514,6 +514,7 @@ allEvents =
       SomeEventCard theRavenQuill
     , --- rogue [tsk]
       SomeEventCard friendsInLowPlaces
+    , SomeEventCard honedInstinct
     , SomeEventCard breakingAndEntering2
     , -- The Feast of Hemloch Vale
       --- survivor [fhv]

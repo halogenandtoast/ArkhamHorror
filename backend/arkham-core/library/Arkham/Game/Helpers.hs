@@ -1580,8 +1580,12 @@ cardInFastWindows
   -> [Window]
   -> Matcher.WindowMatcher
   -> m Bool
-cardInFastWindows iid source _ windows' matcher =
-  anyM (\window -> windowMatches iid source window matcher) windows'
+cardInFastWindows iid source card windows' matcher =
+  anyM (\window -> windowMatches iid source' window matcher) windows'
+ where
+  source' = case card of
+    PlayerCard pc -> BothSource source (PlayerCardSource pc)
+    _ -> source
 
 windowMatches
   :: (HasGame m, HasCallStack)
@@ -1591,7 +1595,13 @@ windowMatches
   -> Matcher.WindowMatcher
   -> m Bool
 windowMatches _ _ (windowType -> Window.DoNotCheckWindow) _ = pure True
-windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType)) mtchr = do
+windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wType)) mtchr = do
+  let
+    (source, mcard) =
+      case rawSource of
+        BothSource s (PlayerCardSource pc) -> (s, Just (PlayerCard pc, UnpaidCost NeedsAction))
+        _ -> (rawSource, Nothing)
+
   let noMatch = pure False
   let isMatch = pure True
   let guardTiming t body = if timing' == t then body wType else noMatch
@@ -1609,8 +1619,8 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
       _ -> noMatch
     Matcher.WindowWhen criteria mtchr' -> do
       (&&)
-        <$> passesCriteria iid Nothing source [window'] criteria
-        <*> windowMatches iid source window' mtchr'
+        <$> passesCriteria iid mcard source [window'] criteria
+        <*> windowMatches iid rawSource window' mtchr'
     Matcher.NotAnyWindow -> noMatch
     Matcher.AnyWindow -> isMatch
     Matcher.ScenarioCountIncremented timing k -> guardTiming timing \case
@@ -1726,6 +1736,11 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
     Matcher.InvestigatorTakeHorror timing whoMatcher sourceMatcher ->
       guardTiming timing $ \case
         Window.TakeHorror source' (InvestigatorTarget who) ->
+          andM
+            [ sourceMatches source' sourceMatcher
+            , matchWho iid who whoMatcher
+            ]
+        Window.DealtHorror source' (InvestigatorTarget who) _ ->
           andM
             [ sourceMatches source' sourceMatcher
             , matchWho iid who whoMatcher
@@ -2326,7 +2341,7 @@ windowMatches iid source window'@(windowTiming &&& windowType -> (timing', wType
           Just who -> matchWho iid who whoMatcher
       _ -> noMatch
     Matcher.OrWindowMatcher matchers ->
-      anyM (windowMatches iid source window') matchers
+      anyM (windowMatches iid rawSource window') matchers
     Matcher.TreacheryEntersPlay timing treacheryMatcher -> guardTiming timing $ \case
       Window.TreacheryEntersPlay treacheryId -> treacheryId <=~> treacheryMatcher
       _ -> noMatch
@@ -3048,10 +3063,12 @@ deckMatch iid deckSignifier = \case
   Matcher.DeckOneOf matchers' -> anyM (deckMatch iid deckSignifier) matchers'
 
 agendaMatches :: HasGame m => AgendaId -> Matcher.AgendaMatcher -> m Bool
-agendaMatches !agendaId !mtchr = elem agendaId <$> select mtchr
+agendaMatches _ Matcher.AnyAgenda = pure True
+agendaMatches !agendaId mtchr = elem agendaId <$> select mtchr
 
 actMatches :: HasGame m => ActId -> Matcher.ActMatcher -> m Bool
-actMatches !actId !mtchr = elem actId <$> select mtchr
+actMatches _ Matcher.AnyAct = pure True
+actMatches !actId mtchr = elem actId <$> select mtchr
 
 actionMatches :: HasGame m => InvestigatorId -> Action -> Matcher.ActionMatcher -> m Bool
 actionMatches _ _ Matcher.AnyAction = pure True

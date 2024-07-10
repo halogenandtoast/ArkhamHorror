@@ -1079,6 +1079,116 @@ const getImage = (el: HTMLElement): string | null => {
   left: var(--left-3);
 }
 
+// Honed Instinct
+.tick-09061 {
+  --top-0: 19.0%;
+  --top-1: 25.6%;
+  --top-2: 32.3%;
+  --top-3: 38.6%;
+  --top-4: 45.4%;
+  --top-5: 52.1%;
+  --top-6: 58.6%;
+  --top-7: 68.2%;
+  --left-1: 8.4%;
+  --left-2: 11.3%;
+  --left-3: 14.2%;
+  --left-4: 17.3%;
+  --left-5: 20.6%;
+}
+
+.customization-09061-0-1 {
+  top: var(--top-0);
+  left: var(--left-1);
+}
+.customization-09061-0-2 {
+  top: var(--top-0);
+  left: var(--left-2);
+}
+.customization-09061-1-1 {
+  top: var(--top-1);
+  left: var(--left-1);
+}
+.customization-09061-1-2 {
+  top: var(--top-1);
+  left: var(--left-2);
+}
+.customization-09061-2-1 {
+  top: var(--top-2);
+  left: var(--left-1);
+}
+.customization-09061-2-2 {
+  top: var(--top-2);
+  left: var(--left-2);
+}
+.customization-09061-3-1 {
+  top: var(--top-3);
+  left: var(--left-1);
+}
+.customization-09061-3-2 {
+  top: var(--top-3);
+  left: var(--left-2);
+}
+.customization-09061-4-1 {
+  top: var(--top-4);
+  left: var(--left-1);
+}
+.customization-09061-4-2 {
+  top: var(--top-4);
+  left: var(--left-2);
+}
+.customization-09061-5-1 {
+  top: var(--top-5);
+  left: var(--left-1);
+}
+.customization-09061-5-2 {
+  top: var(--top-5);
+  left: var(--left-2);
+}
+.customization-09061-5-3 {
+  top: var(--top-5);
+  left: var(--left-3);
+}
+.customization-09061-5-4 {
+  top: var(--top-5);
+  left: var(--left-4);
+}
+.customization-09061-6-1 {
+  top: var(--top-6);
+  left: var(--left-1);
+}
+.customization-09061-6-2 {
+  top: var(--top-6);
+  left: var(--left-2);
+}
+.customization-09061-6-3 {
+  top: var(--top-6);
+  left: var(--left-3);
+}
+.customization-09061-6-4 {
+  top: var(--top-6);
+  left: var(--left-4);
+}
+.customization-09061-7-1 {
+  top: var(--top-7);
+  left: var(--left-1);
+}
+.customization-09061-7-2 {
+  top: var(--top-7);
+  left: var(--left-2);
+}
+.customization-09061-7-3 {
+  top: var(--top-7);
+  left: var(--left-3);
+}
+.customization-09061-7-4 {
+  top: var(--top-7);
+  left: var(--left-4);
+}
+.customization-09061-7-5 {
+  top: var(--top-7);
+  left: var(--left-5);
+}
+
 // Hyperphysical Shotcaster
 .tick-09119 {
   --top-0: 19.0%;

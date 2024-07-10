@@ -95,11 +95,13 @@ instance RunMessage AgendaAttrs where
               <$> selectAgg Sum AgendaDoom (NotAgenda $ AgendaWithId $ toId a)
           totalDoom <- subtract otherAgendaDoom <$> getDoomCount
           when (totalDoom >= modifiedPerPlayerDoomThreshold) $ do
-            leadInvestigatorId <- getLeadInvestigatorId
+            whenWindow <- checkWhen $ Window.AgendaAdvance agendaId
+            afterWindow <- checkAfter $ Window.AgendaAdvance agendaId
             pushAll
-              [ CheckWindow [leadInvestigatorId] [mkWhen (Window.AgendaAdvance agendaId)]
+              [ whenWindow
               , RemoveAllDoomFromPlay agendaRemoveDoomMatchers
               , AdvanceAgenda agendaId
+              , afterWindow
               ]
           pure a
     RemoveAllDoom _ (isTarget a -> True) -> do

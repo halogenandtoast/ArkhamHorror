@@ -870,6 +870,8 @@ allAssets =
     , --- rogue [tsk]
       SomeAssetCard damningTestimony
     , SomeAssetCard chuckFergus2
+    , --- mystic [tsk]
+      SomeAssetCard livingInk
     , --- neutral [tsk]
       SomeAssetCard hyperphysicalShotcasterTheoreticalDevice
     , -- The Feast of Hemloch Vale

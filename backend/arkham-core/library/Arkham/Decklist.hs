@@ -99,7 +99,7 @@ parseCustomizations = IntMap.fromList <$> sepBy parseEntry (char ',')
   parseSkillTypes = sepBy1 parseSkillType (char '^')
   parseSkillType =
     ChosenSkill
-      <$> ( (string "willpower" $> SkillCombat)
+      <$> ( (string "willpower" $> SkillWillpower)
               <|> (string "intellect" $> SkillIntellect)
               <|> (string "combat" $> SkillCombat)
               <|> (string "agility" $> SkillAgility)

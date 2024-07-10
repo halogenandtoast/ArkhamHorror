@@ -6,6 +6,7 @@ import Arkham.Asset.Runner as X (
   AssetCard,
   Field (..),
   IsAsset,
+  WhenNoUses (..),
   ally,
   allyWith,
   asset,
@@ -14,6 +15,7 @@ import Arkham.Asset.Runner as X (
   cardsUnderneathL,
   controlledBy,
   controls,
+  getAssetMetaDefault,
   handleTargetChoice,
   hasUses,
   healthL,
@@ -30,6 +32,7 @@ import Arkham.Asset.Runner as X (
   toMessage,
   toModifiers,
   tokensL,
+  whenNoUsesL,
  )
 import Arkham.Calculation as X
 import Arkham.Classes as X

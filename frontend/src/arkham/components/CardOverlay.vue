@@ -76,8 +76,30 @@ const customizationLabels = computed(() => {
       const firstValue = customization[0];
       const thirdValue = customization[1][1];
       for (let j = 0; j < thirdValue.length; j++) {
-        const key = `label-${cardCode.value}-${firstValue}-${j}`;
-        customizationObject.push([key, thirdValue[j]]);
+        if (thirdValue[j].tag === "ChosenCard" || thirdValue[j].tag === "ChosenTrait") {
+          const key = `label-${cardCode.value}-${firstValue}-${j}`;
+          customizationObject.push([key, thirdValue[j].contents]);
+        }
+      }
+    });
+
+    return customizationObject;
+  }
+
+  return [];
+});
+
+const customizationSkills = computed(() => {
+  if (cardCode.value && customizations.value) {
+    const customizationObject: string[] = [];
+
+    customizations.value.forEach((customization: [number, [number, string[]]]) => {
+      const firstValue = customization[0];
+      const thirdValue = customization[1][1];
+      for (let j = 0; j < thirdValue.length; j++) {
+        if (thirdValue[j].tag === "ChosenSkill") {
+          customizationObject.push(`skill-${cardCode.value}-${thirdValue[j].contents}`);
+        }
       }
     });
 
@@ -244,6 +266,8 @@ const getImage = (el: HTMLElement): string | null => {
          </g>
         </svg>
       </div>
+      <div v-for="skill in customizationSkills" :key="skill" :class="`skill skill-${cardCode} ${skill}`">
+      </div>
       <div v-for="tick in customizationTicks" :key="tick" :class="`tick tick-${cardCode} ${tick}`">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg>
       </div>
@@ -251,7 +275,7 @@ const getImage = (el: HTMLElement): string | null => {
   </div>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 .fight, .evade, .health {
   font-family: "Teutonic";
   position: absolute;
@@ -388,6 +412,17 @@ const getImage = (el: HTMLElement): string | null => {
     width: 100%;
     height: 100%;
   }
+}
+
+.skill {
+  line-height: 0;
+  position: absolute;
+  width: 7%;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  border: 1px solid #222;
+  box-sizing: border-box;
+  background-color: rgba(0,0,0,0.4);
 }
 
 // Hunter's Armor
@@ -1187,6 +1222,101 @@ const getImage = (el: HTMLElement): string | null => {
 .customization-09061-7-5 {
   top: var(--top-7);
   left: var(--left-5);
+}
+
+// Living Ink
+.tick-09079 {
+  --top-1: 25.5%;
+  --top-2: 36.5%;
+  --top-3: 50.7%;
+  --top-4: 61.6%;
+  --top-5: 65.7%;
+  --top-6: 69.9%;
+  --top-7: 80.8%;
+  --left-1: 8.4%;
+  --left-2: 11.8%;
+  --left-3: 15.2%;
+}
+
+.skill-09079-SkillWillpower {
+  top: 18.6%;
+  left: 42.5%;
+}
+
+.skill-09079-SkillIntellect {
+  top: 18.6%;
+  left: 55%;
+}
+
+.skill-09079-SkillCombat {
+  top: 18.6%;
+  left: 68.4%;
+}
+
+.skill-09079-SkillAgility {
+  top: 18.6%;
+  left: 81%;
+}
+
+.customization-09079-1-1 {
+  top: var(--top-1);
+  left: var(--left-1);
+}
+.customization-09079-2-1 {
+  top: var(--top-2);
+  left: var(--left-1);
+}
+.customization-09079-3-1 {
+  top: var(--top-3);
+  left: var(--left-1);
+}
+.customization-09079-3-2 {
+  top: var(--top-3);
+  left: var(--left-2);
+}
+.customization-09079-4-1 {
+  top: var(--top-4);
+  left: var(--left-1);
+}
+.customization-09079-4-2 {
+  top: var(--top-4);
+  left: var(--left-2);
+}
+.customization-09079-5-1 {
+  top: var(--top-5);
+  left: var(--left-1);
+}
+.customization-09079-5-2 {
+  top: var(--top-5);
+  left: var(--left-2);
+}
+.customization-09079-5-3 {
+  top: var(--top-5);
+  left: var(--left-3);
+}
+.customization-09079-6-1 {
+  top: var(--top-6);
+  left: var(--left-1);
+}
+.customization-09079-6-2 {
+  top: var(--top-6);
+  left: var(--left-2);
+}
+.customization-09079-6-3 {
+  top: var(--top-6);
+  left: var(--left-3);
+}
+.customization-09079-7-1 {
+  top: var(--top-7);
+  left: var(--left-1);
+}
+.customization-09079-7-2 {
+  top: var(--top-7);
+  left: var(--left-2);
+}
+.customization-09079-7-3 {
+  top: var(--top-7);
+  left: var(--left-3);
 }
 
 // Hyperphysical Shotcaster

@@ -463,6 +463,7 @@ allPlayerAssetCards =
       , liquidCourage
       , liquidCourage1
       , litaChantler
+      , livingInk
       , livreDeibon
       , lockpicks
       , lockpicks1
@@ -5702,6 +5703,26 @@ chuckFergus2 =
     , cdSlots = [#ally]
     , cdLevel = Just 2
     , cdUnique = True
+    }
+
+livingInk :: CardDef
+livingInk =
+  (asset "09079" "Living Ink" 0 Mystic)
+    { cdCardTraits = setFromList [Ritual]
+    , cdKeywords = setFromList [Keyword.Customizable]
+    , cdUses = uses Charge 3
+    , cdSlots = [#body]
+    , cdCustomizations =
+        mapFromList
+          [ (ChoicePlaceholder, 0)
+          , (ShiftingInk, 1)
+          , (SubtleDepiction, 1)
+          , (ImbuedInk, 2)
+          , (EldritchInk, 2)
+          , (EldritchInk2, 3)
+          , (MacabreDepiction, 3)
+          , (Vibrancy, 3)
+          ]
     }
 
 hyperphysicalShotcasterTheoreticalDevice :: CardDef

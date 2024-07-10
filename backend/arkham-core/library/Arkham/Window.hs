@@ -231,6 +231,7 @@ data WindowType
   | PlayCard InvestigatorId Card
   | PlayEventDiscarding InvestigatorId EventId
   | PutLocationIntoPlay InvestigatorId LocationId
+  | LocationEntersPlay LocationId
   | RevealLocation InvestigatorId LocationId
   | FlipLocation InvestigatorId LocationId
   | RevealChaosToken InvestigatorId ChaosToken

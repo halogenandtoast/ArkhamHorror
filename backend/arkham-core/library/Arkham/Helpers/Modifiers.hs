@@ -177,6 +177,10 @@ eventModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 eventModifier source target modifier = createWindowModifierEffect EffectEventWindow source target [modifier]
 
+eventModifiers
+  :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
+eventModifiers source target modifiers = createWindowModifierEffect EffectEventWindow source target modifiers
+
 movementModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 movementModifier source target modifier = createWindowModifierEffect EffectMoveWindow source target [modifier]

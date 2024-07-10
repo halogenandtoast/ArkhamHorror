@@ -1125,6 +1125,7 @@ runGameMessage msg g = case msg of
         let
           recordLimit g'' = \case
             MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
+            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
             _ -> g''
         pure $ foldl' recordLimit g' (cdLimits $ toCardDef card)
   PutCardIntoPlay iid card mtarget payment windows' -> do
@@ -1735,7 +1736,20 @@ runGameMessage msg g = case msg of
     pure g
   EndRound -> do
     pushAllEnd [BeginRoundWindow, BeginRound, Begin MythosPhase]
-    pure $ g & (roundHistoryL .~ mempty)
+    let
+      isPerRound = \case
+        MaxPerRound _ -> True
+        _ -> False
+    let roundEndUses =
+          map cdCardCode
+            . filter (any isPerRound . cdLimits)
+            . mapMaybe lookupCardDef
+            $ Map.keys (view cardUsesL g)
+    pure
+      $ g
+      & (roundHistoryL .~ mempty)
+      & cardUsesL
+      %~ Map.filterWithKey (\k _ -> k `notElem` roundEndUses)
   Begin MythosPhase {} -> do
     let playerOrder = g ^. playerOrderL
     mGloria <- selectOne $ investigatorIs Investigators.gloriaGoldberg

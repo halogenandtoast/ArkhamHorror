@@ -65,13 +65,23 @@ data Customization
   | Surveil -- 4
   | Expose -- 5
   | -- Friends in Low Places 09060
-    Helpful -- 0
-  | Versatile -- 1
-  | Bolstering -- 2
-  | Clever -- 3
-  | Prompt -- 4
-  | Experienced -- 5
-  | Swift -- 6
+    -- 0 is ChoicePlaceholder
+    Helpful -- 1
+  | Versatile -- 2
+  | Bolstering -- 3
+  | Clever -- 4
+  | Prompt -- 5
+  | Experienced -- 6
+  | Swift -- 7
+  | -- Honed Instinct 09061
+    ReflexResponse -- 0
+  | SituationalAwareness -- 1
+  | KillerInstinct -- 2
+  | GutReaction -- 3
+  | MuscleMemory -- 4
+  | SharpenedTalent -- 5
+  | ImpulseControl -- 6
+  | ForceOfHabit -- 7
   | -- Hyperphysical Shotcaster 09119
     Railshooter -- 0
   | Telescanner -- 1

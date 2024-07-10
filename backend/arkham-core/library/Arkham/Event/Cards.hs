@@ -191,6 +191,7 @@ allPlayerEventCards =
       , heroicRescue2
       , hidingSpot
       , hitMe
+      , honedInstinct
       , hotStreak2
       , hotStreak4
       , hypnoticGaze
@@ -3193,6 +3194,40 @@ friendsInLowPlaces =
           , (Prompt, 2)
           , (Experienced, 3)
           , (Swift, 3)
+          ]
+    }
+
+honedInstinct :: CardDef
+honedInstinct =
+  (event "09061" "Honed Instinct" 1 Rogue)
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Gambit]
+    , cdCardInHandEffects = True
+    , cdLimits = [MaxPerRound 1]
+    , cdFastWindow =
+        Just
+          $ oneOf
+            [ AgendaAdvances #after AnyAgenda
+            , ActAdvances #after AnyAct
+            , SkillTestResult #after You AnySkillTest $ SuccessResult (atLeast 3)
+            , WindowWhen (Criteria.HasCustomization ReflexResponse) $ InvestigatorTakeDamage #after You AnySource
+            , WindowWhen (Criteria.HasCustomization ReflexResponse) $ InvestigatorTakeHorror #after You AnySource
+            , WindowWhen (Criteria.HasCustomization SituationalAwareness) $ LocationEntersPlay #after Anywhere
+            , WindowWhen (Criteria.HasCustomization SituationalAwareness) $ RevealLocation #after Anyone Anywhere
+            , WindowWhen (Criteria.HasCustomization KillerInstinct) $ EnemyEngaged #after You AnyEnemy
+            , WindowWhen (Criteria.HasCustomization GutReaction) $ EntersThreatArea #after You #treachery
+            , WindowWhen (Criteria.HasCustomization MuscleMemory) $ PlayCard #after You #asset
+            ]
+    , cdCustomizations =
+        mapFromList
+          [ (ReflexResponse, 1)
+          , (SituationalAwareness, 1)
+          , (KillerInstinct, 1)
+          , (GutReaction, 1)
+          , (MuscleMemory, 1)
+          , (SharpenedTalent, 2)
+          , (ImpulseControl, 3)
+          , (ForceOfHabit, 5)
           ]
     }
 

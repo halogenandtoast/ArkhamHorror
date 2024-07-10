@@ -112,6 +112,7 @@ const hasPool = computed(() => {
       :class="{'card--can-interact': cardAction !== -1}"
       class="card"
       :src="image"
+      :data-customizations="JSON.stringify(cardContents.customizations)"
       @click="emit('choose', cardAction)"
     />
     <span class="vengeance" v-if="card.tag === 'VengeanceCard'">Vengeance 1</span>

@@ -1,5 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Tokens } from '@/arkham/types/Token';
+import { customizationsDecoder, Customization } from '@/arkham/types/Customization';
 
 export type Card = PlayerCard | EncounterCard | VengeanceCard;
 
@@ -65,6 +66,7 @@ export type CardContents = {
   isFlipped?: boolean
   tokens: Tokens
   art?: string
+  customizations?: Customization[]
 }
 
 export type VengeanceCard = {
@@ -90,6 +92,7 @@ export const cardContentsDecoder = JsonDecoder.object<CardContents>(
     isFlipped: JsonDecoder.optional(JsonDecoder.boolean),
     tokens: JsonDecoder.constant({}),
     art: JsonDecoder.optional(JsonDecoder.string),
+    customizations: JsonDecoder.optional(customizationsDecoder),
   },
   'CardContents',
 );

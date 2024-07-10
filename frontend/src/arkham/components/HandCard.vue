@@ -226,6 +226,7 @@ function oilPaintEffect(canvas, radius, intensity) {
       :class="classObject"
       class="card"
       :src="image"
+      :data-customizations="JSON.stringify(card.contents.customizations)"
       @click="$emit('choose', cardAction)"
     />
 

@@ -533,3 +533,11 @@ discardWhenNoUses = whenNoUsesL ?~ DiscardWhenNoUses
 
 setMeta :: ToJSON a => a -> AssetAttrs -> AssetAttrs
 setMeta a = metaL .~ toJSON a
+
+getAssetMeta :: FromJSON a => AssetAttrs -> Maybe a
+getAssetMeta a = case fromJSON (assetMeta a) of
+  Error _ -> Nothing
+  Success a' -> Just a'
+
+getAssetMetaDefault :: FromJSON a => a -> AssetAttrs -> a
+getAssetMetaDefault def = fromMaybe def . getAssetMeta

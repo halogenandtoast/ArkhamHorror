@@ -82,6 +82,15 @@ data Customization
   | SharpenedTalent -- 5
   | ImpulseControl -- 6
   | ForceOfHabit -- 7
+  | -- Living Ink 09079
+    -- 0 is ChoicePlaceholder
+    ShiftingInk -- 1
+  | SubtleDepiction -- 2
+  | ImbuedInk -- 3
+  | EldritchInk -- 4
+  | EldritchInk2 -- 5
+  | MacabreDepiction -- 6
+  | Vibrancy -- 7
   | -- Hyperphysical Shotcaster 09119
     Railshooter -- 0
   | Telescanner -- 1

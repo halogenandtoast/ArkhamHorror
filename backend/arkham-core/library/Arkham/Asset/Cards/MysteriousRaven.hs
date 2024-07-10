@@ -28,7 +28,7 @@ instance HasAbilities MysteriousRaven where
         (ClueOnLocation <> exists (You <> InvestigatorCanDiscoverCluesAt YourLocation))
         $ FastAbility
         $ DiscardCost FromPlay (toTarget a)
-        <> DamageCost (toSource a) YouTarget 1
+        <> HorrorCost (toSource a) YouTarget 1
     ]
 
 instance RunMessage MysteriousRaven where

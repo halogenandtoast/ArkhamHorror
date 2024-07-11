@@ -13,6 +13,7 @@ import Arkham.Cost.FieldCost
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.Customization
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator (additionalActionCovers)
 import Arkham.Helpers.Matchers
@@ -87,6 +88,12 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
   CostIfEnemy mtchr c1 c2 -> do
     hasEnemy <- selectAny mtchr
     getCanAffordCost iid source actions windows' $ if hasEnemy then c1 else c2
+  CostIfCustomization customization c1 c2 -> do
+    case source of
+      (CardSource (PlayerCard pc)) ->
+        getCanAffordCost iid source actions windows'
+          $ if pc `hasCustomization` customization then c1 else c2
+      _ -> error "Not implemented"
   ArchiveOfConduitsUnidentifiedCost -> do
     n <- selectCount Matcher.Anywhere
     pure $ n >= 4
@@ -280,7 +287,7 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
   HandDiscardAnyNumberCost cardMatcher -> do
     cards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
     pure $ count (`cardMatch` cardMatcher) cards > 0
-  ReturnMatchingAssetToHandCost assetMatcher -> selectAny assetMatcher
+  ReturnMatchingAssetToHandCost assetMatcher -> selectAny $ Matcher.AssetCanLeavePlayByNormalMeans <> assetMatcher
   ReturnAssetToHandCost assetId -> selectAny $ Matcher.AssetWithId assetId
   SealCost tokenMatcher -> do
     tokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens

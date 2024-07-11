@@ -18,6 +18,7 @@ import {-# SOURCE #-} Arkham.Card
 import Arkham.ChaosToken (ChaosToken)
 import Arkham.Classes.Entity
 import {-# SOURCE #-} Arkham.Cost.FieldCost
+import Arkham.Customization
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Matcher
@@ -201,6 +202,7 @@ data Cost
   | UseCostUpTo AssetMatcher UseType Int Int -- (e.g. Spend 1-5 ammo, see M1918 BAR)
   | CostWhenEnemy EnemyMatcher Cost
   | CostIfEnemy EnemyMatcher Cost Cost
+  | CostIfCustomization Customization Cost Cost
   | UpTo Int Cost
   | SealCost ChaosTokenMatcher
   | SealMultiCost Int ChaosTokenMatcher
@@ -258,6 +260,7 @@ displayCostType = \case
     "Place 1 resource on 4 different locations, as leylines."
   CostWhenEnemy _ c -> displayCostType c
   CostIfEnemy _ _ c -> displayCostType c
+  CostIfCustomization _ _ c -> displayCostType c
   AsIfAtLocationCost _ c -> displayCostType c
   ShuffleAttachedCardIntoDeckCost _ _ -> "Shuffle attached card into deck"
   AddCurseTokenCost n -> "Add " <> tshow n <> " {curse} " <> pluralize n "token" <> "to the chaos bag"

@@ -872,6 +872,7 @@ allAssets =
     , SomeAssetCard chuckFergus2
     , --- mystic [tsk]
       SomeAssetCard livingInk
+    , SomeAssetCard summonedServitor
     , --- neutral [tsk]
       SomeAssetCard hyperphysicalShotcasterTheoreticalDevice
     , -- The Feast of Hemloch Vale

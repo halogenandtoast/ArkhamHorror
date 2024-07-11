@@ -21,10 +21,16 @@ mkChooseEvade iid source =
       , chooseEvadeTarget = Nothing
       , chooseEvadeSkillType = #agility
       , chooseEvadeIsAction = False
+      , chooseEvadeOverride = False
       }
 
 mkChooseEvadeMatch
   :: (Sourceable source, HasGame m) => InvestigatorId -> source -> EnemyMatcher -> m ChooseEvade
 mkChooseEvadeMatch iid source matcher = do
   chooseEvade <- mkChooseEvade iid source
-  pure $ chooseEvade {chooseEvadeEnemyMatcher = matcher}
+  let
+    isOverriden = case matcher of
+      CanEvadeEnemyWithOverride {} -> True
+      _ -> False
+
+  pure $ chooseEvade {chooseEvadeEnemyMatcher = matcher, chooseEvadeOverride = isOverriden}

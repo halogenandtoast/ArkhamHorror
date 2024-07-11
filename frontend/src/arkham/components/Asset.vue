@@ -332,5 +332,6 @@ const assetStory = computed(() => {
   gap: 5px;
   bottom:100%;
   left: 0;
+  z-index: 1000;
 }
 </style>

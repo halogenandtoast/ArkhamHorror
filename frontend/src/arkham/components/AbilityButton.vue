@@ -176,6 +176,10 @@ const abilityLabel = computed(() => {
     return ability.value.type.label
   }
 
+  if (ability.value.type.tag === "ServitorAbility") {
+    return ability.value.type.action
+  }
+
   if (isReactionAbility.value === true) {
     return ""
   }
@@ -232,6 +236,7 @@ const classObject = computed(() => {
   cursor: pointer;
   border-radius: 4px;
   background-color: #555;
+  z-index: 1000;
 }
 
 .objective-button {

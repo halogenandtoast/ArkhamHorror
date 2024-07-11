@@ -370,6 +370,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
     additionalActions <- getAdditionalActions (toAttrs investigator')
     engagedEnemies <- select (enemyEngagedWith $ toId investigator')
     assets <- select (AssetWithPlacement $ InPlayArea $ toId investigator')
+    assets' <- select (AssetWithPlacement $ InThreatArea $ toId investigator')
     skills <- select (SkillWithPlacement $ InPlayArea $ toId investigator')
     events <-
       select
@@ -386,7 +387,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
         object
           [ "additionalActions" .= additionalActions
           , "engagedEnemies" .= engagedEnemies
-          , "assets" .= assets
+          , "assets" .= (assets <> assets')
           , "events" .= events
           , "skills" .= skills
           , "treacheries" .= treacheries

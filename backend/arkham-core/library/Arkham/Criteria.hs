@@ -313,6 +313,12 @@ data EnemyCriterion
   | EnemyMatchesCriteria [EnemyCriterion]
   deriving stock (Show, Eq, Ord, Data)
 
+fightOverride :: EnemyMatcher -> EnemyMatcher
+fightOverride = CanFightEnemyWithOverride . CriteriaOverride . EnemyCriteria . ThisEnemy
+
+evadeOverride :: EnemyMatcher -> EnemyMatcher
+evadeOverride = CanEvadeEnemyWithOverride . CriteriaOverride . EnemyCriteria . ThisEnemy
+
 instance Semigroup EnemyCriterion where
   EnemyMatchesCriteria xs <> EnemyMatchesCriteria ys =
     EnemyMatchesCriteria $ xs <> ys

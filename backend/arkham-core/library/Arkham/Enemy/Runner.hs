@@ -729,10 +729,12 @@ instance RunMessage EnemyAttrs where
         ]
       pure a
     Failed (Action.Evade, _) iid _ target _ | isTarget a target -> do
+      mods <- getModifiers iid
       keywords <- getModifiedKeywords a
       pushAll
         [ EnemyAttack $ viaAlert $ (enemyAttack enemyId a iid) {attackDamageStrategy = enemyDamageStrategy}
         | Keyword.Alert `elem` keywords
+        , IgnoreRetaliate `notElem` mods
         ]
       pure a
     InitiateEnemyAttack details | details.enemy == enemyId -> do

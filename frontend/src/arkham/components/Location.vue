@@ -393,7 +393,6 @@ const debug = useDebug()
 
   div {
     transition: all 0.2s;
-    isolation: isolate;
   }
 
   div:not(:last-child) {

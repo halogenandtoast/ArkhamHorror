@@ -94,8 +94,9 @@ parseCustomizations = IntMap.fromList <$> sepBy parseEntry (char ',')
       (char '^')
   parseCustomization = do
     n <- parseInt
-    choices <- optionMaybe $ char '|' *> (try parseSkillTypes <|> try parseTraits <|> parseCardCodes)
+    choices <- optionMaybe $ char '|' *> (try parseSkillTypes <|> try parseTraits <|> try parseIndex <|> parseCardCodes)
     pure (n, fromMaybe [] choices)
+  parseIndex = pure . ChosenIndex <$> parseInt
   parseSkillTypes = sepBy1 parseSkillType (char '^')
   parseSkillType =
     ChosenSkill

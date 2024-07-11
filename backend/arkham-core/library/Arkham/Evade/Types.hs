@@ -15,6 +15,7 @@ data ChooseEvade = ChooseEvade
   , chooseEvadeTarget :: Maybe Target
   , chooseEvadeSkillType :: SkillType
   , chooseEvadeIsAction :: Bool
+  , chooseEvadeOverride :: Bool
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -36,6 +37,9 @@ instance HasField "target" ChooseEvade (Maybe Target) where
 
 instance HasField "matcher" ChooseEvade EnemyMatcher where
   getField = chooseEvadeEnemyMatcher
+
+instance HasField "overriden" ChooseEvade Bool where
+  getField = chooseEvadeOverride
 
 instance WithTarget ChooseEvade where
   getTarget = chooseEvadeTarget

@@ -484,10 +484,12 @@ controls :: (Entity attrs, EntityAttrs attrs ~ AssetAttrs) => InvestigatorId -> 
 controls iid attrs = toAttrs attrs `controlledBy` iid
 
 controlledBy :: AssetAttrs -> InvestigatorId -> Bool
-controlledBy AssetAttrs {..} iid = case assetPlacement of
-  InPlayArea iid' -> iid == iid'
-  AttachedToAsset _ (Just (InPlayArea iid')) -> iid == iid'
-  _ -> False
+controlledBy AssetAttrs {..} iid =
+  if isInPlayPlacement assetPlacement
+    then case assetController of
+      Nothing -> False
+      Just iid' -> iid == iid'
+    else False
 
 attachedToEnemy :: AssetAttrs -> EnemyId -> Bool
 attachedToEnemy AssetAttrs {..} eid = case assetPlacement of
@@ -541,3 +543,8 @@ getAssetMeta a = case fromJSON (assetMeta a) of
 
 getAssetMetaDefault :: FromJSON a => a -> AssetAttrs -> a
 getAssetMetaDefault def = fromMaybe def . getAssetMeta
+
+overMeta :: (ToJSON a, FromJSON a) => (a -> a -> a) -> a -> AssetAttrs -> AssetAttrs
+overMeta f a attrs = case fromJSON attrs.meta of
+  Error _ -> attrs & metaL .~ toJSON a
+  Success a' -> attrs & metaL .~ toJSON (f a' a)

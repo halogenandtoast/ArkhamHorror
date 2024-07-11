@@ -94,11 +94,30 @@ const customizationSkills = computed(() => {
     const customizationObject: string[] = [];
 
     customizations.value.forEach((customization: [number, [number, string[]]]) => {
-      const firstValue = customization[0];
       const thirdValue = customization[1][1];
       for (let j = 0; j < thirdValue.length; j++) {
         if (thirdValue[j].tag === "ChosenSkill") {
           customizationObject.push(`skill-${cardCode.value}-${thirdValue[j].contents}`);
+        }
+      }
+    });
+
+    return customizationObject;
+  }
+
+  return [];
+});
+
+const customizationIndexes = computed(() => {
+  if (cardCode.value && customizations.value) {
+    const customizationObject: string[] = [];
+
+    customizations.value.forEach((customization: [number, [number, string[]]]) => {
+      const firstValue = customization[0];
+      const thirdValue = customization[1][1];
+      for (let j = 0; j < thirdValue.length; j++) {
+        if (thirdValue[j].tag === "ChosenIndex") {
+          customizationObject.push(`index-${cardCode.value}-${firstValue}-${thirdValue[j].contents}`);
         }
       }
     });
@@ -268,6 +287,8 @@ const getImage = (el: HTMLElement): string | null => {
       </div>
       <div v-for="skill in customizationSkills" :key="skill" :class="`skill skill-${cardCode} ${skill}`">
       </div>
+      <div v-for="index in customizationIndexes" :key="index" :class="`index index-${cardCode} ${index}`">
+      </div>
       <div v-for="tick in customizationTicks" :key="tick" :class="`tick tick-${cardCode} ${tick}`">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg>
       </div>
@@ -415,6 +436,17 @@ const getImage = (el: HTMLElement): string | null => {
 }
 
 .skill {
+  line-height: 0;
+  position: absolute;
+  width: 7%;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  border: 1px solid #222;
+  box-sizing: border-box;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.index {
   line-height: 0;
   position: absolute;
   width: 7%;
@@ -1317,6 +1349,100 @@ const getImage = (el: HTMLElement): string | null => {
 .customization-09079-7-3 {
   top: var(--top-7);
   left: var(--left-3);
+}
+
+// Summoned Servitor
+.tick-09080 {
+  --top-0: 18.3%;
+  --top-1: 27.8%;
+  --top-2: 37.4%;
+  --top-3: 49.8%;
+  --top-4: 56.4%;
+  --top-5: 66.0%;
+  --top-6: 72.6%;
+  --top-7: 82.0%;
+  --left-1: 8.4%;
+  --left-2: 11.2%;
+  --left-3: 14.3%;
+  --left-4: 17.3%;
+  --left-5: 20.3%;
+}
+
+.index-09080-5-0 {
+  top: 68.4%;
+  height: 4%;
+  border-radius: 40%;
+  left: 36.5%;
+  width: 11.5%;
+}
+
+.index-09080-5-1 {
+  top: 68.4%;
+  height: 4%;
+  border-radius: 40%;
+  left: 49.5%;
+  width: 14%;
+}
+
+.customization-09080-0-1 {
+  top: var(--top-0);
+  left: var(--left-1);
+}
+.customization-09080-1-1 {
+  top: var(--top-1);
+  left: var(--left-1);
+}
+.customization-09080-2-1 {
+  top: var(--top-2);
+  left: var(--left-1);
+}
+.customization-09080-3-1 {
+  top: var(--top-3);
+  left: var(--left-1);
+}
+.customization-09080-4-1 {
+  top: var(--top-4);
+  left: var(--left-1);
+}
+.customization-09080-5-1 {
+  top: var(--top-5);
+  left: var(--left-1);
+}
+.customization-09080-5-2 {
+  top: var(--top-5);
+  left: var(--left-2);
+}
+.customization-09080-6-1 {
+  top: var(--top-6);
+  left: var(--left-1);
+}
+.customization-09080-6-2 {
+  top: var(--top-6);
+  left: var(--left-2);
+}
+.customization-09080-6-3 {
+  top: var(--top-6);
+  left: var(--left-3);
+}
+.customization-09080-7-1 {
+  top: var(--top-7);
+  left: var(--left-1);
+}
+.customization-09080-7-2 {
+  top: var(--top-7);
+  left: var(--left-2);
+}
+.customization-09080-7-3 {
+  top: var(--top-7);
+  left: var(--left-3);
+}
+.customization-09080-7-4 {
+  top: var(--top-7);
+  left: var(--left-4);
+}
+.customization-09080-7-5 {
+  top: var(--top-7);
+  left: var(--left-5);
 }
 
 // Hyperphysical Shotcaster

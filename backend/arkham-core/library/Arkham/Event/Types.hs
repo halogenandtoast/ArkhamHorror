@@ -24,6 +24,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Window (Window)
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Typeable
 import GHC.Records
 
@@ -57,6 +58,7 @@ data instance Field Event :: Type -> Type where
   EventTokens :: Field Event (Map UseType Int)
   EventWindows :: Field Event [Window]
   EventCustomizations :: Field Event Customizations
+  EventMeta :: Field Event Value
 
 data instance Field (InHandEntity Event) :: Type -> Type where
   InHandEventCardId :: Field (InHandEntity Event) CardId
@@ -323,3 +325,27 @@ getEventMeta :: FromJSON a => EventAttrs -> Maybe a
 getEventMeta a = case fromJSON (eventMeta a) of
   Error _ -> Nothing
   Success a' -> Just a'
+
+setMetaKey :: (ToJSON a, HasCallStack) => Key -> a -> EventAttrs -> EventAttrs
+setMetaKey k v attrs = case attrs.meta of
+  Object o -> attrs {eventMeta = Object $ KeyMap.insert k (toJSON v) o}
+  Null -> attrs {eventMeta = object [k .= v]}
+  _ -> error $ "Could not insert meta key, meta is not Null or Object: " <> show attrs.meta
+
+getMetaKey :: Key -> EventAttrs -> Bool
+getMetaKey k attrs = case attrs.meta of
+  Object o -> case KeyMap.lookup k o of
+    Nothing -> False
+    Just v -> case fromJSON v of
+      Error _ -> False
+      Success v' -> v'
+  _ -> False
+
+getMetaKeyDefault :: FromJSON a => Key -> a -> EventAttrs -> a
+getMetaKeyDefault k def attrs = case attrs.meta of
+  Object o -> case KeyMap.lookup k o of
+    Nothing -> def
+    Just v -> case fromJSON v of
+      Error _ -> def
+      Success v' -> v'
+  _ -> def

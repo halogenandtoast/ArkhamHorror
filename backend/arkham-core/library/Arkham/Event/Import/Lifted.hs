@@ -11,7 +11,10 @@ import Arkham.Event.Runner as X (
   eventWith,
   getChoiceAmount,
   getEventMeta,
+  getMetaKey,
+  getMetaKeyDefault,
   is,
+  metaL,
   overMeta,
   push,
   pushAll,
@@ -20,6 +23,7 @@ import Arkham.Event.Runner as X (
   pushWhen,
   pushWhenM,
   setMeta,
+  setMetaKey,
   tokensL,
  )
 import Arkham.Helpers.Modifiers as X (getModifiers)

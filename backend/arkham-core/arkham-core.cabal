@@ -1642,6 +1642,7 @@ library
       Arkham.Event.Cards.Persuasion
       Arkham.Event.Cards.Pilfer
       Arkham.Event.Cards.Pilfer3
+      Arkham.Event.Cards.PowerWord
       Arkham.Event.Cards.PracticeMakesPerfect
       Arkham.Event.Cards.Premonition
       Arkham.Event.Cards.PreparedForTheWorst

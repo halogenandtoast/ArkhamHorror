@@ -430,6 +430,11 @@ chooseOneAtATime iid msgs = do
   player <- getPlayer iid
   push $ Msg.chooseOneAtATime player msgs
 
+chooseOrRunOneAtATime :: ReverseQueue m => InvestigatorId -> [UI Message] -> m ()
+chooseOrRunOneAtATime iid msgs = do
+  player <- getPlayer iid
+  push $ Msg.chooseOrRunOneAtATime player msgs
+
 chooseOneDropDown :: ReverseQueue m => InvestigatorId -> [(Text, Message)] -> m ()
 chooseOneDropDown iid msgs = do
   player <- getPlayer iid

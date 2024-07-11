@@ -61,6 +61,7 @@ import Arkham.Game.Runner ()
 import Arkham.Game.Settings
 import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameValue (GameValue (Static))
 import Arkham.Git (gitHash)
 import Arkham.Helpers
 import Arkham.Helpers.Calculation (calculate)
@@ -1472,6 +1473,15 @@ getLocationsMatching lmatcher = do
         filterM
           (field LocationShroud . toId >=> maybe (pure False) (`gameValueMatches` gameValueMatcher))
           ls
+      LocationWithShroudLessThanOrEqualToLessThanEnemyMaybeField eid fld -> do
+        mval <- field fld eid
+        case mval of
+          Nothing -> pure []
+          Just v ->
+            filterM
+              ( field LocationShroud . toId >=> maybe (pure False) (`gameValueMatches` LessThanOrEqualTo (Static v))
+              )
+              ls
       LocationWithMostClues locationMatcher -> do
         matches' <- getLocationsMatching locationMatcher
         maxes <$> forToSnd matches' (pure . attr locationClues)
@@ -2206,6 +2216,13 @@ getEventsMatching matcher = do
     EventWithTrait t -> filterM (fmap (member t) . field EventTraits . toId) as
     EventCardMatch cardMatcher ->
       filterM (fmap (`cardMatch` cardMatcher) . field EventCard . toId) as
+    EventWithMetaKey k -> flip filterM as \e -> do
+      case attr eventMeta e of
+        Object o ->
+          case KeyMap.lookup k o of
+            Just (Bool b) -> pure b
+            _ -> pure False
+        _ -> pure False
     EventWithPlacement placement -> pure $ filter ((== placement) . attr eventPlacement) as
     ActiveEvent -> pure $ filter ((== Limbo) . attr eventPlacement) as
     EventControlledBy investigatorMatcher -> do
@@ -2343,6 +2360,11 @@ enemyMatcherFilter = \case
       Just discardee -> do
         iids <- select investigatorMatcher
         pure $ discardee `elem` iids
+  EnemyWhenEvent eventMatcher -> \_ -> selectAny eventMatcher
+  EnemyWhenLocation locationMatcher -> \_ -> selectAny locationMatcher
+  EnemyWhenInvestigator investigatorMatcher -> \_ -> selectAny investigatorMatcher
+  EnemyWhenOtherEnemy otherEnemyMatcher -> \enemy -> do
+    selectAny (not_ (EnemyWithId $ toId enemy) <> otherEnemyMatcher)
   EnemyWithHealth -> fieldMap EnemyHealth isJust . toId
   CanBeAttackedBy matcher -> \enemy -> do
     iids <- select matcher
@@ -2384,6 +2406,12 @@ enemyMatcherFilter = \case
     y <- field q (toId enemy)
     pure $ x >= y
   EnemyWithNonZeroField p -> fieldMap p (> 0) . toId
+  EnemyWithMaybeFieldLessThanOrEqualToThis eid fld -> \enemy -> do
+    x <- field fld eid
+    y <- field fld enemy.id
+    pure $ case (x, y) of
+      (Just x', Just y') -> y' <= x'
+      _ -> False
   IncludeOmnipotent matcher -> enemyMatcherFilter matcher
   OutOfPlayEnemy _ matcher -> enemyMatcherFilter matcher
   EnemyWithCardId cardId -> pure . (== cardId) . toCardId
@@ -2407,6 +2435,12 @@ enemyMatcherFilter = \case
     assets <- select assetMatcher
     lmAssets <- select $ EnemyAsset $ toId enemy
     pure . notNull $ List.intersect assets lmAssets
+  EnemyWithAttachedEvent eventMatcher -> \enemy -> do
+    events <- select eventMatcher
+    flip anyM events \eid ->
+      field EventPlacement eid <&> \case
+        AttachedToEnemy eid' -> eid' == enemy.id
+        _ -> False
   FarthestEnemyFromAll enemyMatcher -> \enemy -> do
     locations <- select $ FarthestLocationFromAll $ LocationWithEnemy enemyMatcher
     enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)
@@ -3845,6 +3879,7 @@ eventField e fld = do
     EventTokens -> pure eventTokens
     EventPlacement -> pure eventPlacement
     EventCustomizations -> pure eventCustomizations
+    EventMeta -> pure eventMeta
     EventTraits -> pure $ cdCardTraits cdef
     EventAbilities -> pure $ getAbilities e
     EventOwner -> pure eventOwner

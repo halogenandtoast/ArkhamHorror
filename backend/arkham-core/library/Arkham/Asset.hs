@@ -873,6 +873,8 @@ allAssets =
     , --- mystic [tsk]
       SomeAssetCard livingInk
     , SomeAssetCard summonedServitor
+    , --- survivor [tsk]
+      SomeAssetCard pocketMultiTool
     , --- neutral [tsk]
       SomeAssetCard hyperphysicalShotcasterTheoreticalDevice
     , -- The Feast of Hemloch Vale

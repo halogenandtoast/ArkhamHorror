@@ -553,6 +553,7 @@ allPlayerAssetCards =
       , plucky1
       , plucky3
       , pnakoticManuscripts5
+      , pocketMultiTool
       , pocketTelescope
       , policeBadge2
       , powderOfIbnGhazi
@@ -5753,6 +5754,26 @@ summonedServitor =
           , (Dominance, 2)
           , (DreamingCall, 3)
           , (DæmonicInfluence, 5)
+          ]
+    }
+
+pocketMultiTool :: CardDef
+pocketMultiTool =
+  (asset "09099" "Pocket Multi Tool" 3 Survivor)
+    { cdCardTraits = setFromList [Item, Tool]
+    , cdSkills = [#wild]
+    , cdKeywords = setFromList [Keyword.Customizable]
+    , cdSlots = [#hand]
+    , cdLimits = [LimitPerInvestigator 1]
+    , cdCustomizations =
+        mapFromList
+          [ (Detachable, 1)
+          , (PryBar, 1)
+          , (SharpenedKnife, 2)
+          , (SignalMirror, 2)
+          , (MagnifyingLens, 2)
+          , (LuckyCharm, 3)
+          , (SpringLoaded, 4)
           ]
     }
 

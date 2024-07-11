@@ -235,6 +235,9 @@ isInvestigating iid lid =
 inAttackSkillTest :: HasGame m => m Bool
 inAttackSkillTest = (== Just #fight) <$> getSkillTestAction
 
+inEvasionSkillTest :: HasGame m => m Bool
+inEvasionSkillTest = (== Just #evade) <$> getSkillTestAction
+
 getIsPerilous :: HasGame m => SkillTest -> m Bool
 getIsPerilous skillTest = case skillTestSource skillTest of
   TreacherySource tid -> do

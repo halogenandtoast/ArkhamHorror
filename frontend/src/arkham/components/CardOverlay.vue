@@ -1445,6 +1445,158 @@ const getImage = (el: HTMLElement): string | null => {
   left: var(--left-5);
 }
 
+// Power Word
+.tick-09081 {
+  --top-0: 18.5%;
+  --top-1: 28.2%;
+  --top-2: 37.6%;
+  --top-3: 47.1%;
+  --top-4: 56.7%;
+  --top-5: 63.4%;
+  --top-6: 72.9%;
+  --top-7: 79.5%;
+  --left-1: 8.4%;
+  --left-2: 11.2%;
+  --left-3: 14.2%;
+}
+
+.customization-09081-0-1 {
+  top: var(--top-0);
+  left: var(--left-1);
+}
+.customization-09081-1-1 {
+  top: var(--top-1);
+  left: var(--left-1);
+}
+.customization-09081-2-1 {
+  top: var(--top-2);
+  left: var(--left-1);
+}
+.customization-09081-3-1 {
+  top: var(--top-3);
+  left: var(--left-1);
+}
+.customization-09081-4-1 {
+  top: var(--top-4);
+  left: var(--left-1);
+}
+.customization-09081-4-2 {
+  top: var(--top-4);
+  left: var(--left-2);
+}
+.customization-09081-5-1 {
+  top: var(--top-5);
+  left: var(--left-1);
+}
+.customization-09081-5-2 {
+  top: var(--top-5);
+  left: var(--left-2);
+}
+.customization-09081-5-3 {
+  top: var(--top-5);
+  left: var(--left-3);
+}
+.customization-09081-6-1 {
+  top: var(--top-6);
+  left: var(--left-1);
+}
+.customization-09081-6-2 {
+  top: var(--top-6);
+  left: var(--left-2);
+}
+.customization-09081-6-3 {
+  top: var(--top-6);
+  left: var(--left-3);
+}
+.customization-09081-7-1 {
+  top: var(--top-7);
+  left: var(--left-1);
+}
+.customization-09081-7-2 {
+  top: var(--top-7);
+  left: var(--left-2);
+}
+.customization-09081-7-3 {
+  top: var(--top-7);
+  left: var(--left-3);
+}
+
+// Pocket Multi Tool
+.tick-09099 {
+  --top-0: 19.1%;
+  --top-1: 30.0%;
+  --top-2: 37.6%;
+  --top-3: 45.0%;
+  --top-4: 52.7%;
+  --top-5: 60.1%;
+  --top-6: 67.8%;
+  --left-1: 8.4%;
+  --left-2: 11.6%;
+  --left-3: 15.2%;
+  --left-4: 18.4%;
+}
+
+.customization-09099-0-1 {
+  top: var(--top-0);
+  left: var(--left-1);
+}
+.customization-09099-1-1 {
+  top: var(--top-1);
+  left: var(--left-1);
+}
+.customization-09099-2-1 {
+  top: var(--top-2);
+  left: var(--left-1);
+}
+.customization-09099-2-2 {
+  top: var(--top-2);
+  left: var(--left-2);
+}
+.customization-09099-3-1 {
+  top: var(--top-3);
+  left: var(--left-1);
+}
+.customization-09099-3-2 {
+  top: var(--top-3);
+  left: var(--left-2);
+}
+.customization-09099-4-1 {
+  top: var(--top-4);
+  left: var(--left-1);
+}
+.customization-09099-4-2 {
+  top: var(--top-4);
+  left: var(--left-2);
+}
+.customization-09099-5-1 {
+  top: var(--top-5);
+  left: var(--left-1);
+}
+.customization-09099-5-2 {
+  top: var(--top-5);
+  left: var(--left-2);
+}
+.customization-09099-5-3 {
+  top: var(--top-5);
+  left: var(--left-3);
+}
+.customization-09099-6-1 {
+  top: var(--top-6);
+  left: var(--left-1);
+}
+.customization-09099-6-2 {
+  top: var(--top-6);
+  left: var(--left-2);
+}
+.customization-09099-6-3 {
+  top: var(--top-6);
+  left: var(--left-3);
+}
+.customization-09099-6-4 {
+  top: var(--top-6);
+  left: var(--left-4);
+}
+
 // Hyperphysical Shotcaster
 .tick-09119 {
   --top-0: 19.0%;

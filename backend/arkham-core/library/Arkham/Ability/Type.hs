@@ -75,6 +75,7 @@ data AbilityType
   | ReactionAbility {window :: WindowMatcher, cost :: Cost}
   | CustomizationReaction {label :: Text, window :: WindowMatcher, cost :: Cost}
   | ActionAbility {actions :: [Action], cost :: Cost}
+  | ServitorAbility {action :: Action}
   | ActionAbilityWithSkill {actions :: [Action], skillType :: SkillType, cost :: Cost}
   | ActionAbilityWithBefore {actions :: [Action], actionBefore :: Action, cost :: Cost} -- Action is first type, before is second
   | SilentForcedAbility {window :: WindowMatcher}
@@ -93,6 +94,7 @@ instance HasCost AbilityType where
     ReactionAbility window cost -> ReactionAbility window (f cost)
     CustomizationReaction label window cost -> CustomizationReaction label window (f cost)
     ActionAbility actions cost -> ActionAbility actions (f cost)
+    ServitorAbility action -> ServitorAbility action
     ActionAbilityWithSkill actions skillType cost ->
       ActionAbilityWithSkill actions skillType (f cost)
     ActionAbilityWithBefore actions actionBefore cost ->
@@ -126,6 +128,7 @@ abilityTypeCostL f = \case
   ForcedAbilityWithCost window cost -> ForcedAbilityWithCost window <$> f cost
   AbilityEffect cost -> AbilityEffect <$> f cost
   Objective abilityType -> Objective <$> abilityTypeCostL f abilityType
+  ServitorAbility action -> pure $ ServitorAbility action
   Haunted -> pure Haunted
   Cosmos -> pure Cosmos
   ForcedWhen criteria abilityType ->

@@ -670,6 +670,7 @@ allPlayerAssetCards =
       , suggestion1
       , suggestion4
       , summonedHound1
+      , summonedServitor
       , survivalKnife
       , survivalKnife2
       , switchblade
@@ -5722,6 +5723,36 @@ livingInk =
           , (EldritchInk2, 3)
           , (MacabreDepiction, 3)
           , (Vibrancy, 3)
+          ]
+    }
+
+summonedServitor :: CardDef
+summonedServitor =
+  (asset "09080" "Summoned Servitor" 2 Mystic)
+    { cdCardTraits = setFromList [Ritual]
+    , cdSkills = [#willpower]
+    , cdKeywords = setFromList [Keyword.Customizable]
+    , cdSlots = [#ally, #arcane]
+    , cdUnique = True
+    , cdCardInHandEffects = True
+    , cdAdditionalCost =
+        Just
+          $ CostIfCustomization
+            DreamingCall
+            ( OrCost
+                [ReturnMatchingAssetToHandCost $ AssetControlledBy You, DiscardAssetCost $ AssetControlledBy You]
+            )
+            (DiscardAssetCost $ AssetControlledBy You)
+    , cdCustomizations =
+        mapFromList
+          [ (ArmoredCarapace, 1)
+          , (ClawsThatCatch, 1)
+          , (JawsThatSnatch, 1)
+          , (EyesOfFlame, 1)
+          , (WingsOfNight, 1)
+          , (Dominance, 2)
+          , (DreamingCall, 3)
+          , (DæmonicInfluence, 5)
           ]
     }
 

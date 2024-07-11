@@ -42,6 +42,9 @@ instance RunMessage TheKingInYellow where
     Revelation iid (isSource attrs -> True) -> do
       push $ putCardIntoPlay iid attrs
       pure a
+    CardEnteredPlay iid card | card.id == attrs.cardId -> do
+      push $ PlaceAsset attrs.id (InThreatArea iid)
+      pure $ a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
       pure a

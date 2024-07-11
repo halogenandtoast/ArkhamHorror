@@ -91,6 +91,16 @@ data Customization
   | EldritchInk2 -- 5
   | MacabreDepiction -- 6
   | Vibrancy -- 7
+  | -- Summoned Servitor 09080
+    -- 0 is ChoicePlaceholder
+    ArmoredCarapace -- 0
+  | ClawsThatCatch -- 1
+  | JawsThatSnatch -- 2
+  | EyesOfFlame -- 3
+  | WingsOfNight -- 4
+  | Dominance -- 5
+  | DreamingCall -- 6
+  | DæmonicInfluence -- 7
   | -- Hyperphysical Shotcaster 09119
     Railshooter -- 0
   | Telescanner -- 1
@@ -102,7 +112,7 @@ data Customization
   deriving stock (Show, Eq, Ord, Data, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)
 
-data CustomizationChoice = ChosenCard Text | ChosenSkill SkillType | ChosenTrait Trait
+data CustomizationChoice = ChosenCard Text | ChosenSkill SkillType | ChosenTrait Trait | ChosenIndex Int
   deriving stock (Show, Eq, Ord, Data, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

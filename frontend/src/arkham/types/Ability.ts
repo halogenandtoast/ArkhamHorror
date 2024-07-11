@@ -4,6 +4,16 @@ import { Cost, costDecoder } from '@/arkham/types/Cost';
 import { Action, actionDecoder } from '@/arkham/types/Action';
 import { SkillType, skillTypeDecoder } from '@/arkham/types/SkillType';
 
+export type ServitorAbility = {
+  tag: "ServitorAbility"
+  action: Action
+}
+
+export const servitorAbilityDecoder = JsonDecoder.object<ServitorAbility>({
+  tag: JsonDecoder.isExactly("ServitorAbility"),
+  action: actionDecoder
+}, 'ServitorAbility')
+
 export type FastAbility = {
   tag: "FastAbility"
   cost: Cost
@@ -133,7 +143,7 @@ export const hauntedDecoder = JsonDecoder.object<Haunted>({
 }, 'Haunted')
 
 
-export type AbilityType = FastAbility | ReactionAbility | CustomizationReaction | ActionAbility | ActionAbilityWithSkill | ActionAbilityWithBefore | SilentForcedAbility | ForcedAbility | ForcedAbilityWithCost | AbilityEffect | Objective | Haunted
+export type AbilityType = ServitorAbility | FastAbility | ReactionAbility | CustomizationReaction | ActionAbility | ActionAbilityWithSkill | ActionAbilityWithBefore | SilentForcedAbility | ForcedAbility | ForcedAbilityWithCost | AbilityEffect | Objective | Haunted
 
 export type ForcedWhen = {
   tag: "ForcedWhen"
@@ -147,6 +157,7 @@ export const forcedWhenDecoder = JsonDecoder.object<ForcedWhen>({
 
 
 export const abilityTypeDecoder: JsonDecoder.Decoder<AbilityType> = JsonDecoder.oneOf<AbilityType>([
+  servitorAbilityDecoder,
   fastAbilityDecoder,
   reactionAbilityDecoder,
   customizationReactionDecoder,

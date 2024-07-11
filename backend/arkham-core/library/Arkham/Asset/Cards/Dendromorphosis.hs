@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
+import Arkham.Placement
 import Arkham.Prelude
 
 newtype Dendromorphosis = Dendromorphosis AssetAttrs
@@ -27,6 +28,9 @@ instance RunMessage Dendromorphosis where
     Revelation iid (isSource attrs -> True) -> do
       push $ putCardIntoPlay iid attrs
       pure a
+    CardEnteredPlay iid card | card.id == attrs.cardId -> do
+      push $ PlaceAsset attrs.id (InThreatArea iid)
+      pure $ a
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       push $ Msg.AssetDamage (toId a) (attrs.ability 1) 1 0
       pure a

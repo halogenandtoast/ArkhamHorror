@@ -31,6 +31,7 @@ import Data.Aeson.KeyMap qualified as KeyMap
 import Arkham.Action (Action)
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.CampaignLog
 import Arkham.Capability
@@ -638,6 +639,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       InPlayArea iid | iid == investigatorId -> do
         push $ InvestigatorPlayAsset iid aid
         pure a
+      InThreatArea iid | iid == investigatorId -> do
+        push $ InvestigatorPlayAsset iid aid
+        pure a
+      AtLocation _ -> do
+        isServitor <- aid <=~> assetIs Assets.summonedServitor
+        if isServitor
+          then pure a
+          else pure $ a & (slotsL %~ removeFromSlots aid)
       _ -> pure $ a & (slotsL %~ removeFromSlots aid)
   PlaceKey (isTarget a -> True) k -> pure $ a & keysL %~ insertSet k
   PlaceKey (isTarget a -> False) k -> pure $ a & keysL %~ deleteSet k
@@ -901,13 +910,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       push $ EnemyDamage eid $ attack source damage
     pure a
   ChooseEvadeEnemy choose | choose.investigator == investigatorId -> do
-    let iid = investigatorId
+    modifiers <- getModifiers a
     let source = choose.source
     let mTarget = choose.target
     let skillType = choose.skillType
     let enemyMatcher = choose.matcher
     let isAction = choose.isAction
-    modifiers <- getModifiers (InvestigatorTarget iid)
     let
       isOverride = \case
         EnemyEvadeActionCriteria override -> Just override
@@ -920,15 +928,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         _ -> original
       applyMatcherModifiers _ n = n
       canEvadeMatcher = case overrides of
-        [] -> CanEvadeEnemy source
+        [] -> if choose.overriden then AnyEnemy else CanEvadeEnemy source
         [o] -> CanEvadeEnemyWithOverride o
         _ -> error "multiple overrides found"
     enemyIds <- select $ foldr applyMatcherModifiers (canEvadeMatcher <> enemyMatcher) modifiers
-    player <- getPlayer iid
+    player <- getPlayer a.id
     push
       $ chooseOne
         player
-        [ EvadeLabel eid [ChosenEvadeEnemy source eid, EvadeEnemy iid eid source mTarget skillType isAction]
+        [ EvadeLabel eid [ChosenEvadeEnemy source eid, EvadeEnemy a.id eid source mTarget skillType isAction]
         | eid <- enemyIds
         ]
     pure a

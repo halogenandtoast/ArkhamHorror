@@ -264,6 +264,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
     SilentForcedAbility _ -> pure True
     ForcedAbilityWithCost _ _ -> pure True
     AbilityEffect _ -> pure True
+    ServitorAbility _ -> pure True
 
 canDoAction :: HasGame m => InvestigatorId -> Ability -> Action -> m Bool
 canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
@@ -381,6 +382,7 @@ getCanAffordAbilityCost iid a@Ability {..} = do
   go costF abilityType
  where
   go f = \case
+    ServitorAbility _ -> pure True
     Haunted -> pure True
     Cosmos -> pure True
     ActionAbility actions cost ->
@@ -471,6 +473,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
             Objective {} -> pure True
             Haunted -> pure True
             Cosmos -> pure True
+            ServitorAbility _ -> pure True -- should be disabled by the servitor
         go (abilityType ability)
       PlayerLimit (PerSearch trait) n -> do
         let traitMatchingUsedAbilities = filter (elem trait . usedAbilityTraits) usedAbilities
@@ -3237,6 +3240,7 @@ isForcedAbilityType iid source = \case
   ActionAbilityWithSkill {} -> pure False
   ActionAbilityWithBefore {} -> pure False
   AbilityEffect {} -> pure False
+  ServitorAbility {} -> pure False
   Haunted {} -> pure True -- Maybe? we wanted this to basically never be valid but still take forced precedence
   Cosmos {} -> pure True -- Maybe? we wanted this to basically never be valid but still take forced precedence
   ForcedWhen c _ -> passesCriteria iid Nothing source [] c

@@ -243,6 +243,7 @@ data ModifierType
   | HunterConnectedTo LocationId
   | IgnoreAllCosts
   | IgnoreAloof
+  | IgnoreAlert
   | IgnoreChaosToken
   | IgnoreChaosTokenEffects
   | IgnoreHandSizeReduction

@@ -243,6 +243,7 @@ abilityTypeActions = \case
   ForcedAbilityWithCost _ _ -> []
   AbilityEffect _ -> []
   Haunted -> []
+  ServitorAbility action -> [action]
   Cosmos -> []
   Objective aType -> abilityTypeActions aType
   ForcedWhen _ aType -> abilityTypeActions aType
@@ -261,6 +262,7 @@ abilityTypeCost = \case
   AbilityEffect cost -> cost
   Haunted -> Free
   Cosmos -> Free
+  ServitorAbility _ -> Free
   Objective aType -> abilityTypeCost aType
   ForcedWhen _ aType -> abilityTypeCost aType
 
@@ -284,6 +286,7 @@ modifyCost f = \case
     ForcedAbilityWithCost window $ f cost
   AbilityEffect cost -> AbilityEffect cost -- modifiers don't yet apply here
   Haunted -> Haunted
+  ServitorAbility action -> ServitorAbility action
   Cosmos -> Cosmos
   Objective aType' -> Objective $ modifyCost f aType'
   ForcedWhen c aType' -> ForcedWhen c $ modifyCost f aType'
@@ -321,6 +324,7 @@ defaultAbilityWindow = \case
   CustomizationReaction _ window _ -> window
   AbilityEffect _ -> AnyWindow
   Haunted -> AnyWindow
+  ServitorAbility _ -> Matcher.DuringTurn You
   Cosmos -> AnyWindow
   Objective aType -> defaultAbilityWindow aType
   ForcedWhen _ aType -> defaultAbilityWindow aType
@@ -339,6 +343,7 @@ isFastAbilityType = \case
   ActionAbilityWithBefore {} -> False
   AbilityEffect {} -> False
   Haunted {} -> False
+  ServitorAbility {} -> False
   Cosmos {} -> False
   ForcedWhen _ aType -> isFastAbilityType aType
 
@@ -356,6 +361,7 @@ isReactionAbilityType = \case
   ActionAbilityWithBefore {} -> False
   AbilityEffect {} -> False
   Haunted {} -> False
+  ServitorAbility {} -> False
   Cosmos {} -> False
   ForcedWhen _ aType -> isReactionAbilityType aType
 
@@ -373,6 +379,7 @@ isSilentForcedAbilityType = \case
   ActionAbilityWithBefore {} -> False
   AbilityEffect {} -> False
   Haunted {} -> False
+  ServitorAbility {} -> False
   Cosmos {} -> False
   ForcedWhen _ aType -> isSilentForcedAbilityType aType
 
@@ -400,6 +407,7 @@ defaultAbilityLimit = \case
   AbilityEffect _ -> NoLimit
   Objective aType -> defaultAbilityLimit aType
   Haunted -> NoLimit
+  ServitorAbility _ -> NoLimit
   Cosmos -> NoLimit
   ForcedWhen _ aType -> defaultAbilityLimit aType
 

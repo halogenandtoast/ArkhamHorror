@@ -31,6 +31,7 @@ import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.Customization
 import Arkham.Helpers.Message
 import Arkham.Helpers.SkillTest (beginSkillTest, getSkillTestDifficulty, getSkillTestTarget)
 import Arkham.Id
@@ -137,6 +138,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     ForcedAbility _ -> pure ()
     SilentForcedAbility _ -> pure ()
     Haunted -> pure ()
+    ServitorAbility _ -> pure ()
     Cosmos -> pure ()
     ForcedAbilityWithCost {} -> push (PayCosts activeCostId)
     AbilityEffect {} -> push (PayCosts activeCostId)
@@ -177,6 +179,12 @@ payCost msg c iid skipAdditionalCosts cost = do
   let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
   case cost of
+    CostIfCustomization customization cost1 cost2 -> do
+      case source of
+        (CardSource (PlayerCard pc)) ->
+          payCost msg c iid skipAdditionalCosts
+            $ if pc `hasCustomization` customization then cost1 else cost2
+        _ -> error "Not implemented"
     CostIfEnemy mtchr cost1 cost2 -> do
       hasEnemy <- selectAny mtchr
       payCost msg c iid skipAdditionalCosts $ if hasEnemy then cost1 else cost2
@@ -759,7 +767,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           ]
       pure c
     ReturnMatchingAssetToHandCost assetMatcher -> do
-      assets <- select assetMatcher
+      assets <- select $ AssetCanLeavePlayByNormalMeans <> assetMatcher
       push $ chooseOne player $ targetLabels assets $ only . pay . ReturnAssetToHandCost
       pure c
     ReturnAssetToHandCost assetId -> do

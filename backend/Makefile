@@ -36,6 +36,13 @@ core:
 	  --file-watch \
 		$(EXTRA_STACK_FLAGS)
 
+.PHONY: core.ghci
+core.ghci:
+	stack ghci --test --no-run-tests arkham-core:lib \
+	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
+	  --interleaved-output \
+		$(EXTRA_STACK_FLAGS)
+
 .PHONY: validate
 validate:
 	cd validate && \

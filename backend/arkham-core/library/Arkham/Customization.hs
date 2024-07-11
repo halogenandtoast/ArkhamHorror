@@ -109,6 +109,14 @@ data Customization
   | Bonded -- 5
   | Tonguetwister -- 6
   | ThriceSpoken -- 7
+  | -- Pocket Multi Tool 09099
+    Detachable -- 0
+  | PryBar -- 1
+  | SharpenedKnife -- 2
+  | SignalMirror -- 3
+  | MagnifyingLens -- 4
+  | LuckyCharm -- 5
+  | SpringLoaded -- 6
   | -- Hyperphysical Shotcaster 09119
     Railshooter -- 0
   | Telescanner -- 1

@@ -516,6 +516,8 @@ allEvents =
       SomeEventCard friendsInLowPlaces
     , SomeEventCard honedInstinct
     , SomeEventCard breakingAndEntering2
+    , --- mystic [tsk]
+      SomeEventCard powerWord
     , -- The Feast of Hemloch Vale
       --- survivor [fhv]
       SomeEventCard keepFaith2

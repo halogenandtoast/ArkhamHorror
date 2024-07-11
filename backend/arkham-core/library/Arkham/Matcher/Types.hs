@@ -305,12 +305,14 @@ data EnemyMatcher
   | EnemyWithClues ValueMatcher
   | EnemyWithEqualFields (Field Enemy Int) (Field Enemy Int)
   | EnemyWithNonZeroField (Field Enemy Int)
+  | EnemyWithMaybeFieldLessThanOrEqualToThis EnemyId (Field Enemy (Maybe Int))
   | EnemyWithRemainingHealth ValueMatcher
   | EnemyWithDamage ValueMatcher
   | EnemyWithDoom ValueMatcher
   | EnemyWithMostDoom EnemyMatcher
   | EnemyIsEngagedWith InvestigatorMatcher
   | EnemyWithAsset AssetMatcher
+  | EnemyWithAttachedEvent EventMatcher
   | NearestEnemy EnemyMatcher
   | FarthestEnemyFrom InvestigatorId EnemyMatcher
   | FarthestEnemyFromAll EnemyMatcher
@@ -361,6 +363,10 @@ data EnemyMatcher
   | EnemyWithHealth
   | DefeatedEnemy EnemyMatcher
   | CanBeAttackedBy InvestigatorMatcher
+  | EnemyWhenEvent EventMatcher
+  | EnemyWhenLocation LocationMatcher
+  | EnemyWhenInvestigator InvestigatorMatcher
+  | EnemyWhenOtherEnemy EnemyMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup EnemyMatcher where
@@ -410,6 +416,7 @@ data EventMatcher
   | NotEvent EventMatcher
   | EventWithPlacement Placement
   | ActiveEvent
+  | EventWithMetaKey Key
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not EventMatcher where
@@ -458,6 +465,7 @@ data LocationMatcher
   | LocationWithClues ValueMatcher
   | LocationWithHorror ValueMatcher
   | LocationWithShroud ValueMatcher
+  | LocationWithShroudLessThanOrEqualToLessThanEnemyMaybeField EnemyId (Field Enemy (Maybe Int))
   | LocationWithMostClues LocationMatcher
   | LocationWithEnemy EnemyMatcher
   | LocationCanBeEnteredBy EnemyId

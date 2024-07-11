@@ -272,6 +272,7 @@ allPlayerEventCards =
       , persuasion
       , pilfer
       , pilfer3
+      , powerWord
       , practiceMakesPerfect
       , premonition
       , preparedForTheWorst
@@ -3239,6 +3240,26 @@ breakingAndEntering2 =
     , cdActions = [#investigate]
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = Just 2
+    }
+
+powerWord :: CardDef
+powerWord =
+  (event "09081" "Power Word" 3 Mystic)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Spell]
+    , cdFastWindow = Just $ DuringTurn You
+    , cdCriteria = Just $ exists $ EnemyAt YourLocation <> NonEliteEnemy
+    , cdCustomizations =
+        mapFromList
+          [ (Betray, 1)
+          , (Mercy, 1)
+          , (Confess, 1)
+          , (Distract, 1)
+          , (GreaterControl, 2)
+          , (Bonded, 3)
+          , (Tonguetwister, 3)
+          , (ThriceSpoken, 3)
+          ]
     }
 
 keepFaith2 :: CardDef

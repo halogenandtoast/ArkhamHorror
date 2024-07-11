@@ -92,7 +92,6 @@ data Customization
   | MacabreDepiction -- 6
   | Vibrancy -- 7
   | -- Summoned Servitor 09080
-    -- 0 is ChoicePlaceholder
     ArmoredCarapace -- 0
   | ClawsThatCatch -- 1
   | JawsThatSnatch -- 2
@@ -101,6 +100,15 @@ data Customization
   | Dominance -- 5
   | DreamingCall -- 6
   | DæmonicInfluence -- 7
+  | -- Power Word 09081
+    Betray -- 0
+  | Mercy -- 1
+  | Confess -- 2
+  | Distract -- 3
+  | GreaterControl -- 4
+  | Bonded -- 5
+  | Tonguetwister -- 6
+  | ThriceSpoken -- 7
   | -- Hyperphysical Shotcaster 09119
     Railshooter -- 0
   | Telescanner -- 1

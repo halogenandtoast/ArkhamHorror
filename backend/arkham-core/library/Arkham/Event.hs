@@ -510,6 +510,7 @@ allEvents =
     , SomeEventCard wordOfWeal
     , --- guardian [tsk]
       SomeEventCard customModifications
+    , SomeEventCard bolas
     , --- seeker [tsk]
       SomeEventCard theRavenQuill
     , --- rogue [tsk]

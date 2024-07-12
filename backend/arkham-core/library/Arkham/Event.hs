@@ -512,6 +512,7 @@ allEvents =
       SomeEventCard customModifications
     , SomeEventCard bolas
     , SomeEventCard breachTheDoor
+    , SomeEventCard grievousWound
     , --- seeker [tsk]
       SomeEventCard theRavenQuill
     , --- rogue [tsk]

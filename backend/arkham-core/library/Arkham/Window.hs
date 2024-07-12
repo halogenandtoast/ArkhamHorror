@@ -247,7 +247,7 @@ data WindowType
   | SpentUses InvestigatorId Source AssetId UseType Int
   | SkillTest SkillTestType
   | SkillTestEnded SkillTest
-  | SuccessfulAttackEnemy InvestigatorId EnemyId Int
+  | SuccessfulAttackEnemy InvestigatorId Source EnemyId Int
   | SuccessfulEvadeEnemy InvestigatorId EnemyId Int
   | SuccessfulInvestigation InvestigatorId LocationId
   | TakeDamage Source DamageEffect Target Int

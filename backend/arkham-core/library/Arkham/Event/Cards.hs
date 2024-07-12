@@ -184,6 +184,7 @@ allPlayerEventCards =
       , glimpseTheUnthinkable1
       , glimpseTheUnthinkable5
       , glory
+      , grievousWound
       , gritYourTeeth
       , guidance
       , hallow3
@@ -3163,6 +3164,15 @@ breachTheDoor =
   (event "09026" "Breach the Door" 2 Guardian)
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = setFromList [Insight, Tactic, Police]
+    }
+
+grievousWound :: CardDef
+grievousWound =
+  (event "09027" "Grievous Wound" 1 Guardian)
+    { cdSkills = [#combat, #combat]
+    , cdCardTraits = setFromList [Tactic]
+    , cdFastWindow =
+        Just $ EnemyAttackedSuccessfully #after You (SourceIsAsset $ AssetWithTrait Melee) NonEliteEnemy
     }
 
 theRavenQuill :: CardDef

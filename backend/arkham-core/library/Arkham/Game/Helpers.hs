@@ -2309,7 +2309,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
                         , locationMatches iid source window' lid whereMatcher
                         ]
                     _ -> noMatch
-                  Window.SuccessfulAttackEnemy who enemyId n -> case skillMatcher of
+                  Window.SuccessfulAttackEnemy who _ enemyId n -> case skillMatcher of
                     Matcher.WhileAttackingAnEnemy enemyMatcher ->
                       andM
                         [ matchWho iid who whoMatcher
@@ -2408,12 +2408,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , sourceMatches attackSource sourceMatcher
             ]
         _ -> noMatch
-    Matcher.EnemyAttackedSuccessfully timing whoMatcher enemyMatcher ->
+    Matcher.EnemyAttackedSuccessfully timing whoMatcher sourceMatcher enemyMatcher ->
       guardTiming timing $ \case
-        Window.SuccessfulAttackEnemy who enemyId _ -> do
+        Window.SuccessfulAttackEnemy who source enemyId _ -> do
           andM
             [ enemyMatches enemyId enemyMatcher
             , matchWho iid who whoMatcher
+            , sourceMatches source sourceMatcher
             ]
         _ -> noMatch
     Matcher.AttemptToEvade timing whoMatcher enemyMatcher ->

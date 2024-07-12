@@ -1158,10 +1158,15 @@ passesCriteria iid mcard source' windows' = \case
           else do
             -- todo we should make a cleaner method for this
             fieldMap InDiscardAssetCardId (`elem` discard) aid
+      SkillSource aid -> do
+        inPlay <- selectAny $ Matcher.SkillWithId aid
+        if inPlay
+          then pure False
+          else pure $ unsafeToCardId aid `elem` discard
       InvestigatorSource _ -> case mcard of
         Just (card, _) -> pure $ toCardId card `elem` discard
         _ -> error "No card available to check"
-      _ -> error $ "source not handled for in your hand: " <> show source
+      _ -> error $ "source not handled for in your discard: " <> show source
   Criteria.InThreatAreaOf (Matcher.replaceYouMatcher iid -> who) -> do
     case source of
       TreacherySource tid ->

@@ -7,6 +7,7 @@ import {-# SOURCE #-} Arkham.Card.CardDef
 import {-# SOURCE #-} Arkham.Card.EncounterCard
 import Arkham.Card.Id
 import {-# SOURCE #-} Arkham.Card.PlayerCard
+import Arkham.Customization
 import Arkham.Id
 import Arkham.Trait
 
@@ -32,6 +33,8 @@ class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toCard :: HasCallStack => a -> Card
   toCardId :: a -> CardId
   toCardOwner :: a -> Maybe InvestigatorId
+  toCustomizations :: a -> Customizations
+  toCustomizations _ = mempty
 
 instance IsCard Card
 instance IsCard PlayerCard

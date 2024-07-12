@@ -5,6 +5,7 @@ import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.CommitRestriction
+import Arkham.Customization
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Keyword qualified as Keyword
@@ -60,6 +61,7 @@ allPlayerSkillCards =
       , fearless2
       , fey1
       , fightingLessons
+      , grizzled
       , guts
       , guts2
       , hatchetMan
@@ -721,6 +723,24 @@ fightingLessons =
     { cdCardTraits = setFromList [Practiced]
     , cdCommitRestrictions = [OnlyTestWithActions [#fight, #evade]]
     , cdCardInHandEffects = True
+    }
+
+grizzled :: CardDef
+grizzled =
+  (skill "09101" "Grizzled" [#wild] Survivor)
+    { cdCardTraits = setFromList [Innate, Developed]
+    , cdKeywords = setFromList [Keyword.Customizable]
+    , cdCardInHandEffects = True
+    , cdCardInDiscardEffects = True
+    , cdCustomizations =
+        mapFromList
+          [ (ChoicePlaceholder, 0)
+          , (Specialist, 1)
+          , (Specialist2, 2)
+          , (Nemesis, 3)
+          , (MythosHardened, 4)
+          , (AlwaysPrepared, 5)
+          ]
     }
 
 riseToTheOccasion3 :: CardDef

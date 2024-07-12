@@ -28,7 +28,6 @@ const investigator = computed(() => Object.values(props.game.investigators).find
 const searchedCards = computed(() => {
   const playerCards = Object.entries(investigator.value?.foundCards ?? [])
   if (playerCards.length > 0) {
-    console.log(playerCards)
     return playerCards.filter(([, c]) => c.length > 0)
   }
 

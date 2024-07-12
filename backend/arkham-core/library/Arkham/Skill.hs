@@ -11,7 +11,13 @@ import Arkham.Skill.Runner
 import Arkham.Skill.Skills
 
 createSkill :: IsCard a => a -> InvestigatorId -> SkillId -> Skill
-createSkill a iid sId = lookupSkill (toCardCode a) iid sId (toCardId a)
+createSkill a iid sId =
+  let this = lookupSkill (toCardCode a) iid sId (toCardId a)
+   in overAttrs (\attrs -> attrs {skillCustomizations = customizations}) this
+ where
+  customizations = case toCard a of
+    PlayerCard pc -> pcCustomizations pc
+    _ -> mempty
 
 instance RunMessage Skill where
   runMessage msg (Skill a) = Skill <$> runMessage msg a
@@ -217,6 +223,8 @@ allSkills =
     , SomeSkillCard onTheMend
     , --- guardian [tsk]
       SomeSkillCard fightingLessons
+    , --- survivor [tsk]
+      SomeSkillCard grizzled
     , -- Return to the Dunwich Legacy
       --- survivor [rtdwl]
       SomeSkillCard riseToTheOccasion3

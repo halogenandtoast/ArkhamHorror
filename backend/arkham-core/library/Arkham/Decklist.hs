@@ -17,6 +17,7 @@ import Data.Aeson.Key (fromText)
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.IntMap qualified as IntMap
 import Data.Map.Strict qualified as Map
+import Data.Text qualified as T
 import Text.Parsec (
   ParsecT,
   alphaNum,
@@ -27,6 +28,7 @@ import Text.Parsec (
   parse,
   sepBy,
   sepBy1,
+  space,
   string,
   try,
   unexpected,
@@ -94,7 +96,10 @@ parseCustomizations = IntMap.fromList <$> sepBy parseEntry (char ',')
       (char '^')
   parseCustomization = do
     n <- parseInt
-    choices <- optionMaybe $ char '|' *> (try parseSkillTypes <|> try parseTraits <|> try parseIndex <|> parseCardCodes)
+    choices <-
+      optionMaybe
+        $ char '|'
+        *> (try parseSkillTypes <|> try parseTraits <|> try parseIndex <|> try parseCardCodes <|> pure [])
     pure (n, fromMaybe [] choices)
   parseIndex = pure . ChosenIndex <$> parseInt
   parseSkillTypes = sepBy1 parseSkillType (char '^')
@@ -107,7 +112,7 @@ parseCustomizations = IntMap.fromList <$> sepBy parseEntry (char ',')
           )
   parseTraits = sepBy1 parseTrait (char '^')
   parseTrait = do
-    t <- many1 alphaNum
-    case fromJSON @Trait (String $ pack t) of
+    t <- many1 (alphaNum <|> space)
+    case fromJSON @Trait (String . traceShowId . T.concat . T.words . T.toTitle $ pack t) of
       Success x -> pure $ ChosenTrait x
       _ -> unexpected ("invalid trait: " ++ t)

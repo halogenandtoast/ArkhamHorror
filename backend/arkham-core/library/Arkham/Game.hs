@@ -313,6 +313,7 @@ withEnemyMetadata a = do
   emTreacheries <- select $ TreacheryOnEnemy $ EnemyWithId (toId a)
   emAssets <- select $ EnemyAsset (toId a)
   emEvents <- select $ EnemyEvent (toId a)
+  emSkills <- select $ EnemySkill (toId a)
   pure $ a `with` EnemyMetadata {..}
 
 withAgendaMetadata :: HasGame m => Agenda -> m (With Agenda AgendaMetadata)
@@ -2264,6 +2265,7 @@ getSkillsMatching matcher = do
   filterMatcher skills matcher
  where
   filterMatcher as = \case
+    EnemySkill eid -> filterM (fieldP SkillPlacement (== AttachedToEnemy eid) . toId) as
     SkillWithTitle title -> pure $ filter (`hasTitle` title) as
     SkillWithFullTitle title subtitle ->
       pure $ filter ((== (title <:> subtitle)) . toName) as
@@ -3027,9 +3029,7 @@ instance Projection Asset where
       AssetClasses -> pure . cdClassSymbols $ toCardDef attrs
       AssetTraits -> pure . cdCardTraits $ toCardDef attrs
       AssetCardDef -> pure $ toCardDef attrs
-      AssetCard -> pure $ case lookupCard assetCardCode assetCardId of
-        PlayerCard pc -> PlayerCard $ pc {pcOwner = assetOwner}
-        ec -> ec
+      AssetCard -> pure $ toCard a
       AssetAbilities -> pure $ getAbilities a
 
 instance Projection (DiscardedEntity Asset) where
@@ -3885,9 +3885,7 @@ eventField e fld = do
     EventOwner -> pure eventOwner
     EventController -> pure eventController
     EventDoom -> pure eventDoom
-    EventCard ->
-      -- an event might need to be converted back to its original card
-      pure $ lookupCard eventOriginalCardCode eventCardId
+    EventCard -> pure $ toCard e
 
 instance Projection Event where
   getAttrs eid = toAttrs <$> getEvent eid
@@ -4019,9 +4017,28 @@ instance Projection Skill where
       cdef = toCardDef attrs
     case fld of
       SkillTraits -> pure $ cdCardTraits cdef
-      SkillCard -> pure $ lookupCard skillCardCode skillCardId
+      SkillCard -> pure $ toCard s
       SkillOwner -> pure skillOwner
       SkillPlacement -> pure skillPlacement
+
+instance Projection (InDiscardEntity Skill) where
+  getAttrs aid = do
+    let missingSkill = "No discarded skill: " <> show aid
+    toAttrs . fromJustNote missingSkill <$> project @(InDiscardEntity Skill) aid
+  project aid =
+    fmap InDiscardEntity
+      . lookup aid
+      . entitiesSkills
+      . mconcat
+      . Map.elems
+      . gameInDiscardEntities
+      <$> getGame
+  field f aid = do
+    let missingSkill = "No discarded skill: " <> show aid
+    a <- fromJustNote missingSkill <$> project @(InDiscardEntity Skill) aid
+    let attrs = toAttrs a
+    case f of
+      InDiscardSkillCardId -> pure $ toCardId attrs
 
 instance Projection Story where
   getAttrs sid = toAttrs <$> getStory sid

@@ -18,8 +18,8 @@ toModifiedStartingUses
   :: (HasGame m, IsCard a, Targetable a) => a -> Uses GameCalculation -> m (Map UseType Int)
 toModifiedStartingUses a startingUses = do
   modifiers <- getCombinedModifiers [toTarget a, CardIdTarget (toCardId a)]
-  startingUses <- toStartingUses startingUses
-  foldM applyModifier startingUses modifiers
+  sUses <- toStartingUses startingUses
+  foldM applyModifier sUses modifiers
  where
   applyModifier usesMap (AdditionalStartingUses n) = case startingUses of
     Uses uType _ -> pure $ adjustMap (+ n) uType usesMap

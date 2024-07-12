@@ -125,6 +125,13 @@ data Customization
   | RemoteConfiguration -- 4
   | Net -- 5
   | ExplosiveDevice -- 6
+  | -- Grizzled 09101
+    -- 0 is ChoicePlaceholder
+    Specialist -- 1
+  | Specialist2 -- 2
+  | Nemesis -- 3
+  | MythosHardened -- 4
+  | AlwaysPrepared -- 5
   | -- Hyperphysical Shotcaster 09119
     Railshooter -- 0
   | Telescanner -- 1

@@ -1673,6 +1673,134 @@ const getImage = (el: HTMLElement): string | null => {
   left: var(--left-4);
 }
 
+// Grizzled
+.tick-09101 {
+  --top-1: 25.4%;
+  --top-2: 33.6%;
+  --top-3: 41.6%;
+  --top-4: 59.7%;
+  --top-5: 74.6%;
+  --left-1: 8.4%;
+  --left-2: 12.0%;
+  --left-3: 15.3%;
+  --left-4: 19.0%;
+  --left-5: 22.4%;
+}
+
+.label-09101-0-0 {
+  top: 18%;
+  left: 35.2%;
+  width: 25%;
+  height: 5%;
+  svg {
+    width: 100%;
+    height: 100%;
+    path {
+      d: path("M 0 14 H 100");
+    }
+  }
+}
+.label-09101-0-1 {
+  top: 18%;
+  left: 64%;
+  width: 25%;
+  height: 5%;
+  svg {
+    width: 100%;
+    height: 100%;
+    path {
+      d: path("M 0 14 H 100");
+    }
+  }
+}
+.label-09101-1-0 {
+  top: 27.5%;
+  left: 8%;
+  width: 25%;
+  height: 5%;
+  svg {
+    width: 100%;
+    height: 100%;
+    path {
+      d: path("M 0 14 H 100");
+    }
+  }
+}
+.label-09101-2-0 {
+  top: 35.5%;
+  left: 8%;
+  width: 25%;
+  height: 5%;
+  svg {
+    width: 100%;
+    height: 100%;
+    path {
+      d: path("M 0 14 H 100");
+    }
+  }
+}
+
+.customization-09101-1-1 {
+  top: var(--top-1);
+  left: var(--left-1);
+}
+.customization-09101-2-1 {
+  top: var(--top-2);
+  left: var(--left-1);
+}
+.customization-09101-2-2 {
+  top: var(--top-2);
+  left: var(--left-2);
+}
+.customization-09101-3-1 {
+  top: var(--top-3);
+  left: var(--left-1);
+}
+.customization-09101-3-2 {
+  top: var(--top-3);
+  left: var(--left-2);
+}
+.customization-09101-3-3 {
+  top: var(--top-3);
+  left: var(--left-3);
+}
+.customization-09101-4-1 {
+  top: var(--top-4);
+  left: var(--left-1);
+}
+.customization-09101-4-2 {
+  top: var(--top-4);
+  left: var(--left-2);
+}
+.customization-09101-4-3 {
+  top: var(--top-4);
+  left: var(--left-3);
+}
+.customization-09101-4-4 {
+  top: var(--top-4);
+  left: var(--left-4);
+}
+.customization-09101-5-1 {
+  top: var(--top-5);
+  left: var(--left-1);
+}
+.customization-09101-5-2 {
+  top: var(--top-5);
+  left: var(--left-2);
+}
+.customization-09101-5-3 {
+  top: var(--top-5);
+  left: var(--left-3);
+}
+.customization-09101-5-4 {
+  top: var(--top-5);
+  left: var(--left-4);
+}
+.customization-09101-5-5 {
+  top: var(--top-5);
+  left: var(--left-5);
+}
+
 // Hyperphysical Shotcaster
 .tick-09119 {
   --top-0: 19.0%;

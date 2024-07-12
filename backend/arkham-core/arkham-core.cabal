@@ -1764,6 +1764,7 @@ library
       Arkham.Game.Utils
       Arkham.GameEnv
       Arkham.GameValue
+      Arkham.GHCI
       Arkham.Git
       Arkham.Helpers
       Arkham.Helpers.Ability
@@ -2614,6 +2615,7 @@ library
       Arkham.Skill.Cards.Fearless2
       Arkham.Skill.Cards.Fey1
       Arkham.Skill.Cards.FightingLessons
+      Arkham.Skill.Cards.Grizzled
       Arkham.Skill.Cards.Guts
       Arkham.Skill.Cards.Guts2
       Arkham.Skill.Cards.HatchetMan

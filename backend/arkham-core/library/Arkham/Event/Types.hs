@@ -195,6 +195,7 @@ instance IsCard EventAttrs where
   toCard = defaultToCard
   toCardId = eventCardId
   toCardOwner = Just . eventOwner
+  toCustomizations = eventCustomizations
 
 eventWith
   :: (EventAttrs -> a)
@@ -310,8 +311,11 @@ instance Sourceable Event where
 
 instance IsCard Event where
   toCardId = toCardId . toAttrs
-  toCard e = lookupCard (eventOriginalCardCode . toAttrs $ e) (toCardId e)
+  toCard e = case lookupCard (eventOriginalCardCode . toAttrs $ e) (toCardId e) of
+    PlayerCard pc -> PlayerCard $ pc {pcCustomizations = toCustomizations e}
+    ec -> ec
   toCardOwner = toCardOwner . toAttrs
+  toCustomizations = toCustomizations . toAttrs
 
 getEventId :: Event -> EventId
 getEventId = eventId . toAttrs

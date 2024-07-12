@@ -24,7 +24,7 @@ instance HasAbilities GavriellaMizrah where
     withBaseAbilities a
       $ [ mkAbility a 1
             $ ForcedAbility
-            $ EnemyAttackedSuccessfully Timing.After You
+            $ EnemyAttackedSuccessfully Timing.After You AnySource
             $ EnemyWithId
             $ toId a
         ]

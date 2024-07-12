@@ -1001,7 +1001,7 @@ data WindowMatcher
   | EnemyAttacks Timing Who EnemyAttackMatcher EnemyMatcher
   | EnemyAttacksEvenIfCancelled Timing Who EnemyAttackMatcher EnemyMatcher
   | EnemyAttacked Timing Who SourceMatcher EnemyMatcher
-  | EnemyAttackedSuccessfully Timing Who EnemyMatcher
+  | EnemyAttackedSuccessfully Timing Who SourceMatcher EnemyMatcher
   | RevealChaosToken Timing Who ChaosTokenMatcher
   | TokensWouldBeRemovedFromChaosBag Timing ChaosTokenMatcher
   | ResolvesChaosToken Timing Who ChaosTokenMatcher

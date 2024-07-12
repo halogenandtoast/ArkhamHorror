@@ -158,6 +158,14 @@ defeatedEnemy =
     (windowType -> Window.EnemyDefeated _ _ eid) -> Just eid
     _ -> Nothing
 
+attackedEnemy :: [Window] -> EnemyId
+attackedEnemy =
+  fromMaybe (error "missing enemy") . asum . map \case
+    (windowType -> Window.EnemyAttacked _ _ eid) -> Just eid
+    (windowType -> Window.SuccessfulAttackEnemy _ _ eid _) -> Just eid
+    (windowType -> Window.FailAttackEnemy _ eid _) -> Just eid
+    _ -> Nothing
+
 evadedEnemy :: [Window] -> EnemyId
 evadedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case

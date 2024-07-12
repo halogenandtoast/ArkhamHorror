@@ -227,6 +227,7 @@ data AssetMatcher
   | AssetWithSanity
   | AssetWithFewestClues AssetMatcher
   | AssetCanBeAssignedDamageBy InvestigatorId
+  | AssetCanBeDamagedBySource Source
   | AssetCanBeAssignedHorrorBy InvestigatorId
   | AssetWithCardsUnderneath CardListMatcher
   | ClosestAsset LocationId AssetMatcher

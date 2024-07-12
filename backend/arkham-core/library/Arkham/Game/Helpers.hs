@@ -3193,6 +3193,15 @@ sourceCanDamageEnemy eid source = do
     CannotBeDamaged -> pure True
     _ -> pure False
 
+sourceCanDamageAsset :: HasGame m => AssetId -> Source -> m Bool
+sourceCanDamageAsset eid source = do
+  mods <- getModifiers eid
+  not <$> anyM prevents mods
+ where
+  prevents = \case
+    CannotBeDamagedBySourcesExcept matcher -> not <$> sourceMatches source matcher
+    _ -> pure False
+
 getPotentialSlots
   :: (HasGame m, IsCard a) => a -> InvestigatorId -> m [SlotType]
 getPotentialSlots card iid = do

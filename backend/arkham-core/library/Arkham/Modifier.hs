@@ -123,6 +123,7 @@ data ModifierType
   | CannotBeDamaged
   | CannotBeDamagedByPlayerSources SourceMatcher
   | CannotBeDamagedByPlayerSourcesExcept SourceMatcher
+  | CannotBeDamagedBySourcesExcept SourceMatcher
   | CannotBeDefeated
   | CannotBeEngaged
   | CannotBeEngagedBy EnemyMatcher

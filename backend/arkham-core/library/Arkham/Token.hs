@@ -21,6 +21,7 @@ data Token
   | Evidence
   | Horror
   | Key
+  | Lead
   | Leyline
   | Lock
   | LostSoul

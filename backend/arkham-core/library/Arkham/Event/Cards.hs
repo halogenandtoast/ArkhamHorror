@@ -84,6 +84,7 @@ allPlayerEventCards =
       , bloodRite
       , bloodWillHaveBlood2
       , bolas
+      , breachTheDoor
       , breakingAndEntering
       , breakingAndEntering2
       , burnAfterReading1
@@ -3155,6 +3156,13 @@ bolas =
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic]
     , cdActions = [#evade]
+    }
+
+breachTheDoor :: CardDef
+breachTheDoor =
+  (event "09026" "Breach the Door" 2 Guardian)
+    { cdSkills = [#intellect, #combat]
+    , cdCardTraits = setFromList [Insight, Tactic, Police]
     }
 
 theRavenQuill :: CardDef

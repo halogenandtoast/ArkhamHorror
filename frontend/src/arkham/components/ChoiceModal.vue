@@ -103,6 +103,16 @@ const setInitialAmounts = () => {
     }, {})
   }
 
+const doneLabel = computed(() => {
+  const doneIndex = choices.value.findIndex((c) => c.tag === MessageType.DONE)
+
+  if (doneIndex !== -1) {
+    return { label: choices.value[doneIndex].label, index: doneIndex } // choices.value[doneIndex].label
+  }
+
+  return null
+})
+
 onMounted(setInitialAmounts)
 
 watch(
@@ -379,6 +389,10 @@ const title = computed(() => {
         </form>
       </div>
     </div>
+
+    <div v-if="doneLabel">
+      <button class="done" @click="$emit('choose', doneLabel.index)">{{doneLabel.label}}</button>
+    </div>
   </Draggable>
 </template>
 
@@ -465,6 +479,22 @@ const title = computed(() => {
   .group-cards {
     display: flex;
     flex-wrap: wrap;
+  }
+}
+
+.done {
+  width: 100%;
+  border: 0;
+  margin: 0;
+  padding: 10px;
+  text-transform: uppercase;
+  background-color: #532e61;
+  font-weight: bold;
+  border-radius: 0 0 1.2em 1.2em;
+  color: #EEE;
+  font: Arial, sans-serif;
+  &:hover {
+    background-color: #311b3e;
   }
 }
 </style>

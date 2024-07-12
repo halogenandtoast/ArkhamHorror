@@ -83,6 +83,7 @@ allPlayerEventCards =
       , bloodEclipse3
       , bloodRite
       , bloodWillHaveBlood2
+      , bolas
       , breakingAndEntering
       , breakingAndEntering2
       , burnAfterReading1
@@ -3146,6 +3147,14 @@ customModifications =
           , (ExtendedMagazine, 3)
           , (QuicksilverBullets, 4)
           ]
+    }
+
+bolas :: CardDef
+bolas =
+  (event "09025" "Bolas" 1 Guardian)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Tactic]
+    , cdActions = [#evade]
     }
 
 theRavenQuill :: CardDef

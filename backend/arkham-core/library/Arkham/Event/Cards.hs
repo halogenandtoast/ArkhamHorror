@@ -250,6 +250,7 @@ allPlayerEventCards =
       , monsterSlayer
       , monsterSlayer5
       , moonlightRitual
+      , motivationalSpeech
       , mysteriesRemain
       , mystifyingSong
       , narrowEscape
@@ -3173,6 +3174,14 @@ grievousWound =
     , cdCardTraits = setFromList [Tactic]
     , cdFastWindow =
         Just $ EnemyAttackedSuccessfully #after You (SourceIsAsset $ AssetWithTrait Melee) NonEliteEnemy
+    }
+
+motivationalSpeech :: CardDef
+motivationalSpeech =
+  (event "09028" "Motivational Speech" 0 Guardian)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Spirit]
+    , cdActions = [#parley]
     }
 
 theRavenQuill :: CardDef

@@ -123,6 +123,7 @@ import Arkham.Event.Events (
   letMeHandleThisEffect,
   marksmanship1Effect,
   mystifyingSongEffect,
+  oneInTheChamberEffect,
   pilfer3Effect,
   sleightOfHandEffect,
   slipAway2Effect,
@@ -425,6 +426,7 @@ allEffects =
     , ("08087", SomeEffect snipe1Effect)
     , ("09008", SomeEffect kymaniJonesEffect)
     , ("09009", SomeEffect grapplingHookEffect)
+    , ("09029", SomeEffect oneInTheChamberEffect)
     , ("09041", SomeEffect empiricalHypothesisEffect)
     , ("50013", SomeEffect twilightBladeEffect)
     , ("50044", SomeEffect jeremiahPierceEffect)

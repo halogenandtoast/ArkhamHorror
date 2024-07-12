@@ -210,6 +210,7 @@ data WindowType
   | PlaceUnderneath Target Card
   | PlacedToken Source Target Token Int
   | SpentToken Source Target Token Int
+  | AttackOrEffectSpentLastUse Source Target Token
   | LostResources InvestigatorId Source Int
   | LostActions InvestigatorId Source Int
   | WouldPlaceDoom Source Target Int

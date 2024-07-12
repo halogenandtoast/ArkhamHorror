@@ -57,6 +57,9 @@ getBaseValueForSkillTestType iid mAction = \case
   AndSkillTest types -> sum <$> traverse (\skillType -> baseSkillValueFor skillType mAction iid) types
   ResourceSkillTest -> field InvestigatorResources iid
 
+inSkillTest :: HasGame m => m Bool
+inSkillTest = isJust <$> getSkillTest
+
 getSkillTestRevealedChaosTokens :: HasGame m => m [ChaosToken]
 getSkillTestRevealedChaosTokens = maybe [] skillTestRevealedChaosTokens <$> getSkillTest
 

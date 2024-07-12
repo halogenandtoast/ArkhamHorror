@@ -514,6 +514,7 @@ allEvents =
     , SomeEventCard breachTheDoor
     , SomeEventCard grievousWound
     , SomeEventCard motivationalSpeech
+    , SomeEventCard oneInTheChamber
     , --- seeker [tsk]
       SomeEventCard theRavenQuill
     , --- rogue [tsk]

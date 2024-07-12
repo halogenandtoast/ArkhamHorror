@@ -95,6 +95,11 @@ instance HasField "metadata" EffectAttrs (Maybe (EffectMetadata Window Message))
 instance HasField "meta" EffectAttrs (Maybe (EffectMetadata Window Message)) where
   getField = effectMetadata
 
+instance HasField "metaTarget" EffectAttrs (Maybe Target) where
+  getField e = case e.meta of
+    Just (EffectMetaTarget t) -> Just t
+    _ -> Nothing
+
 instance HasField "extra" EffectAttrs Value where
   getField = effectExtraMetadata
 

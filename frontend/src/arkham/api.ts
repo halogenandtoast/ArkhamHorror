@@ -44,7 +44,14 @@ export const fetchGameReplay = (gameId: string, step: number): Promise<FetchRepl
 
 export const fetchGames = (): Promise<Game[]> => api
   .get('arkham/games')
-  .then((resp) => JsonDecoder.array(gameDecoder, 'ArkhamGame[]').decodeToPromise(resp.data));
+  .then((resp) => {
+      const failed = resp.data.filter((g) => g.error !== undefined)
+      if (failed.length > 0) {
+        console.log(failed)
+      }
+
+      return JsonDecoder.array(gameDecoder, 'ArkhamGame[]').decodeToPromise(resp.data.filter((g: any) => g.error === undefined))
+  });
 
 export const fetchDecks = (): Promise<Deck[]> => api
   .get('arkham/decks')

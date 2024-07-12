@@ -260,6 +260,7 @@ allPlayerEventCards =
       , obscureStudies
       , occultEvidence
       , occultInvocation
+      , oneInTheChamber
       , oneTwoPunch
       , oneTwoPunch5
       , onTheHunt
@@ -3182,6 +3183,20 @@ motivationalSpeech =
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Spirit]
     , cdActions = [#parley]
+    }
+
+oneInTheChamber :: CardDef
+oneInTheChamber =
+  (event "09029" "One in the Chamber" 1 Guardian)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Fortune, Tactic]
+    , cdFastWindow =
+        Just
+          $ AttackOrEffectSpentLastUse
+            #after
+            AnySource
+            (AssetTargetMatches $ AssetWithTrait Firearm <> AssetControlledBy You)
+            Uses.Ammo
     }
 
 theRavenQuill :: CardDef

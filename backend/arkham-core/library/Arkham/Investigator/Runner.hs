@@ -1678,6 +1678,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             [ CheckWindow [iid] [mkWhen (Window.PlayCard iid card)]
             , PlayCard iid card mtarget payment windows' asAction
             , afterPlayCard
+            , ResolvedPlayCard iid card
             ]
     pure a
   CardEnteredPlay _ card -> do

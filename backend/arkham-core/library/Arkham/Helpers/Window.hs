@@ -15,6 +15,7 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.SkillTest.Base (SkillTest)
 import Arkham.Source (Source)
+import Arkham.Target
 import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
 import Arkham.Window
@@ -170,6 +171,12 @@ evadedEnemy :: [Window] -> EnemyId
 evadedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
     (windowType -> Window.EnemyEvaded _ eid) -> Just eid
+    _ -> Nothing
+
+fromAsset :: [Window] -> AssetId
+fromAsset =
+  fromMaybe (error "missing asset") . asum . map \case
+    (windowType -> Window.AttackOrEffectSpentLastUse _ (AssetTarget aid) _) -> Just aid
     _ -> Nothing
 
 spawnedEnemy :: [Window] -> EnemyId

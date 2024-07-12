@@ -85,10 +85,10 @@ instance RunMessage AssetAttrs where
         then case assetPrintedUses of
           NoUses -> pure $ a & tokensL . at tType . non 0 %~ (+ n)
           Uses useType'' _ | tType == useType'' -> do
-            pure $ a & tokensL . ix tType +~ n
+            pure $ a & tokensL . at tType . non 0 %~ (+ n)
           UsesWithLimit useType'' _ pl | tType == useType'' -> do
             l <- calculate pl
-            pure $ a & tokensL . ix tType %~ min l . (+ n)
+            pure $ a & tokensL . at tType . non 0 %~ min l . (+ n)
           _ ->
             error
               $ "Trying to add the wrong use type, has "
@@ -247,6 +247,30 @@ instance RunMessage AssetAttrs where
                 ]
       pure a
     Do (SpendUses source target useType' n) | isTarget a target -> do
+      when (n >= a.use useType') do
+        -- N.B. we either need to find the end of the attack and insert this
+        -- when it ends or an effect. This window is currently only specific to
+        -- One in the Chamber and this might not be exhaustive so if a bug
+        -- comes in this could be a likely culprit. It might also have to do
+        -- with when we actually issue the resolved play card message
+        afterLast <- checkAfter $ Window.AttackOrEffectSpentLastUse source (toTarget a) useType'
+        case source of
+          AbilitySource s i -> insertAfterMatching [afterLast] \case
+            ResolvedAbility ab -> ab.source == s && ab.index == i
+            _ -> False
+          CardSource c -> insertAfterMatching [afterLast] \case
+            ResolvedPlayCard _ c' -> c.id == c'.id
+            _ -> False
+          EventSource e -> do
+            mAbility <- findFromQueue \case
+              ResolvedAbility _ -> True
+              _ -> False
+            case mAbility of
+              Nothing -> insertAfterMatching [afterLast] \case
+                FinishedEvent e' -> e == e'
+                _ -> False
+              Just msg' -> insertAfterMatching [afterLast] (== msg')
+          _ -> pure ()
       pushM $ checkAfter $ Window.SpentToken source (toTarget a) useType' n
       runMessage (RemoveTokens source target useType' n) a
     AttachAsset aid target | aid == assetId -> do

@@ -46,6 +46,7 @@ library
       Entity.Arkham.ArkhamDBDecklist
       Entity.Arkham.Deck
       Entity.Arkham.Game
+      Entity.Arkham.GameRaw
       Entity.Arkham.LogEntry
       Entity.Arkham.Player
       Entity.Arkham.Step

@@ -30,10 +30,12 @@ import Data.ByteString.Lazy qualified as BSL
 import Data.Coerce
 import Data.Map.Strict qualified as Map
 import Data.String.Conversions.Monomorphic (toStrictByteString)
+import Data.Text qualified as T
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (update)
 import Database.Redis (publish, runRedis)
 import Entity.Answer
+import Entity.Arkham.GameRaw
 import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.))
 import Import qualified as P
@@ -123,12 +125,28 @@ getApiV1ArkhamGamesR = do
       distinct
         $ from
         $ table @ArkhamPlayer
-        `innerJoin` table @ArkhamGame
-          `on` (\(players :& games) -> players.arkhamGameId ==. games.id)
+        `innerJoin` table @ArkhamGameRaw
+          `on` (\(players :& games) -> coerce players.arkhamGameId ==. games.id)
     where_ $ players.userId ==. val userId
     orderBy [desc $ games.updatedAt]
     pure games
-  pure $ map (`toPublicGame` mempty) games
+
+  pure $ flip map games \(Entity gameId game) -> do
+    case fromJSON (arkhamGameRawCurrentData game) of
+      Success a ->
+        toPublicGame
+          ( Entity (coerce gameId)
+              $ ArkhamGame
+                { arkhamGameName = arkhamGameRawName game
+                , arkhamGameCurrentData = a
+                , arkhamGameStep = arkhamGameRawStep game
+                , arkhamGameMultiplayerVariant = arkhamGameRawMultiplayerVariant game
+                , arkhamGameCreatedAt = arkhamGameRawCreatedAt game
+                , arkhamGameUpdatedAt = arkhamGameRawUpdatedAt game
+                }
+          )
+          mempty
+      Error e -> FailedToLoadGame ("Failed to load " <> tshow gameId <> ": " <> T.pack e)
 
 data CreateGamePost = CreateGamePost
   { deckIds :: [Maybe ArkhamDeckId]

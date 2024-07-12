@@ -932,6 +932,7 @@ type ToWhere = Where
 data WindowMatcher
   = EnemyDefeated Timing Who DefeatedByMatcher EnemyMatcher
   | SpentUses Timing Who SourceMatcher UseType AssetMatcher ValueMatcher
+  | AttackOrEffectSpentLastUse Timing SourceMatcher TargetMatcher UseType
   | WouldPayCardCost Timing Who CardMatcher
   | WouldBeShuffledIntoDeck DeckMatcher CardMatcher
   | AddedToVictory Timing CardMatcher
@@ -1198,6 +1199,7 @@ data TargetMatcher
   | LocationTargetMatches LocationMatcher
   | ActTargetMatches ActMatcher
   | AgendaTargetMatches AgendaMatcher
+  | AssetTargetMatches AssetMatcher
   | ScenarioCardTarget
   | TargetWithDoom
   | TargetAtLocation LocationMatcher

@@ -774,6 +774,7 @@ data Message
   | PlayCard InvestigatorId Card (Maybe Target) Payment [Window] Bool
   | CardEnteredPlay InvestigatorId Card
   | ResolvedCard InvestigatorId Card
+  | ResolvedPlayCard InvestigatorId Card
   | PlayerWindow InvestigatorId [UI Message] Bool
   | PutCampaignCardIntoPlay InvestigatorId CardDef
   | PutCardIntoPlay InvestigatorId Card (Maybe Target) Payment [Window]

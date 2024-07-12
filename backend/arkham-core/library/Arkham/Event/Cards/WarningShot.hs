@@ -1,14 +1,10 @@
-module Arkham.Event.Cards.WarningShot (
-  warningShot,
-  WarningShot (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.WarningShot (warningShot, WarningShot (..)) where
 
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype WarningShot = WarningShot EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -19,12 +15,8 @@ warningShot = event WarningShot Cards.warningShot
 
 instance RunMessage WarningShot where
   runMessage msg e@(WarningShot attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      eids <-
-        select
-          $ NonEliteEnemy
-          <> EnemyAt
-            (locationWithInvestigator iid)
+    PlayThisEvent iid eid | eid == toId attrs -> do
+      eids <- select $ NonEliteEnemy <> enemyAtLocationWith iid
 
       lids <-
         nub <$> concatForM eids \eid' -> do

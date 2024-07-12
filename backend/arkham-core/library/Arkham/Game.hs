@@ -440,16 +440,18 @@ withSkillTestModifiers a = do
   modifiers' <- getModifiers' (toTarget a)
   pure $ a `with` ModifierData modifiers'
 
-data PublicGame gid = PublicGame gid Text [Text] Game
+data PublicGame gid = PublicGame gid Text [Text] Game | FailedToLoadGame Text
   deriving stock (Show)
 
 getConnectedMatcher :: HasGame m => Location -> m LocationMatcher
 getConnectedMatcher = Helpers.getConnectedMatcher . toId
 
 instance ToJSON gid => ToJSON (PublicGame gid) where
+  toJSON (FailedToLoadGame e) = object ["tag" .= String "FailedToLoadGame", "error" .= toJSON e]
   toJSON (PublicGame gid name glog g@Game {..}) =
     object
-      [ "name" .= toJSON name
+      [ "tag" .= String "PublicGame"
+      , "name" .= toJSON name
       , "id" .= toJSON gid
       , "log" .= toJSON glog
       , "git" .= toJSON gameGitRevision

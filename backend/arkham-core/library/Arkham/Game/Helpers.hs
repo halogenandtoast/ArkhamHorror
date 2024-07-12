@@ -1664,6 +1664,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , pure $ card `cardMatch` cardMatcher
           ]
       _ -> noMatch
+    Matcher.AttackOrEffectSpentLastUse timing sourceMatcher targetMatcher uType -> guardTiming timing $ \case
+      Window.AttackOrEffectSpentLastUse source' target' uType' | uType == uType' -> do
+        andM
+          [ sourceMatches source' sourceMatcher
+          , targetMatches target' targetMatcher
+          ]
+      _ -> noMatch
     Matcher.SpentUses timing whoMatcher sourceMatcher uType assetMatcher valueMatcher -> guardTiming timing $ \case
       Window.SpentUses who source' assetId uType' n | uType == uType' -> do
         andM
@@ -2410,11 +2417,11 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         _ -> noMatch
     Matcher.EnemyAttackedSuccessfully timing whoMatcher sourceMatcher enemyMatcher ->
       guardTiming timing $ \case
-        Window.SuccessfulAttackEnemy who source enemyId _ -> do
+        Window.SuccessfulAttackEnemy who source' enemyId _ -> do
           andM
             [ enemyMatches enemyId enemyMatcher
             , matchWho iid who whoMatcher
-            , sourceMatches source sourceMatcher
+            , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch
     Matcher.AttemptToEvade timing whoMatcher enemyMatcher ->

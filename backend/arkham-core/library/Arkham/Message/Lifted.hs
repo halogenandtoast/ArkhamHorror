@@ -759,6 +759,17 @@ afterSkillTest body = do
   msgs <- evalQueueT body
   insertAfterMatching msgs (== EndSkillTestWindow)
 
+delayIfSkillTest
+  :: (HasGame (t m), MonadTrans t, HasQueue Message m, HasQueue Message (t m))
+  => QueueT Message (t m) a
+  -> t m ()
+delayIfSkillTest body = do
+  msgs <- evalQueueT body
+  delay <- Msg.inSkillTest
+  if delay
+    then insertAfterMatching msgs (== EndSkillTestWindow)
+    else pushAll msgs
+
 costModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 costModifier source target modifier = push $ Msg.costModifier source target modifier

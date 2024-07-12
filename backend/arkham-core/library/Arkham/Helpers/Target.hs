@@ -122,6 +122,15 @@ targetMatches s = \case
         , targetMatches right (AgendaTargetMatches agendaMatcher)
         ]
     _ -> pure False
+  AssetTargetMatches assetMatcher -> case s of
+    AssetTarget aid -> aid <=~> assetMatcher
+    ProxyTarget proxyTarget _ -> targetMatches proxyTarget (AssetTargetMatches assetMatcher)
+    BothTarget left right ->
+      orM
+        [ targetMatches left (AssetTargetMatches assetMatcher)
+        , targetMatches right (AssetTargetMatches assetMatcher)
+        ]
+    _ -> pure False
   ScenarioCardTarget -> case s of
     EnemyTarget _ -> pure True
     TreacheryTarget _ -> pure True

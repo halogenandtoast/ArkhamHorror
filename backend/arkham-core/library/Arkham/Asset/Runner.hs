@@ -24,6 +24,7 @@ import Arkham.ChaosToken
 import Arkham.Classes.HasGame
 import Arkham.Damage
 import Arkham.DefeatedBy
+import Arkham.Event.Types (Field (EventUses))
 import Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.Placement
 import Arkham.Helpers.Use
@@ -218,6 +219,9 @@ instance RunMessage AssetAttrs where
         AssetSource aid' -> do
           uses <- fieldMap AssetUses (findWithDefault 0 useType') aid'
           pure (AssetTarget aid', uses)
+        EventSource eid' -> do
+          uses <- fieldMap EventUses (findWithDefault 0 useType') eid'
+          pure (EventTarget eid', uses)
         _ -> error $ "Unhandled source: " <> show source
 
       -- window should be independent of other sources since they are spent from this asset
@@ -301,16 +305,8 @@ instance RunMessage AssetAttrs where
       -- us to bring the investigator's id into scope
       modifiers <- getCombinedModifiers [toTarget a, CardIdTarget (toCardId a)]
       let printedUses = cdUses (toCardDef a)
-      startingUses <- toStartingUses printedUses
-      let
-        startingDoom = sum [n | EntersPlayWithDoom n <- modifiers]
-        applyModifier usesMap (AdditionalStartingUses n) = case printedUses of
-          Uses uType _ -> pure $ adjustMap (+ n) uType usesMap
-          UsesWithLimit uType _ pl -> do
-            l <- calculate pl
-            pure $ adjustMap (min l . (+ n)) uType usesMap
-          _ -> pure usesMap
-        applyModifier m _ = pure m
+      startingUses <- toModifiedStartingUses a printedUses
+      let startingDoom = sum [n | EntersPlayWithDoom n <- modifiers]
       whenEnterMsg <-
         checkWindows
           [mkWindow Timing.When (Window.EnterPlay $ toTarget a)]
@@ -332,10 +328,7 @@ instance RunMessage AssetAttrs where
             Just _ -> id
           currentUses = Map.filterWithKey (\k _ -> tokenIsUse k) assetTokens
 
-      uses <-
-        if currentUses == mempty
-          then foldM applyModifier startingUses modifiers
-          else pure mempty
+      let uses = if currentUses == mempty then startingUses else mempty
 
       pure
         $ a

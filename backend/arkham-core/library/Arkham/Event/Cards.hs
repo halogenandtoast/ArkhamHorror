@@ -231,6 +231,7 @@ allPlayerEventCards =
       , lucky3
       , lure1
       , lure2
+      , makeshiftTrap
       , manipulateDestiny2
       , manoAMano1
       , manoAMano2
@@ -3259,6 +3260,25 @@ powerWord =
           , (Bonded, 3)
           , (Tonguetwister, 3)
           , (ThriceSpoken, 3)
+          ]
+    }
+
+makeshiftTrap :: CardDef
+makeshiftTrap =
+  (event "09100" "Makeshift Trap" 1 Survivor)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Improvised, Trap]
+    , cdUses = Uses.Uses Uses.Time (Fixed 2)
+    , cdCardInHandEffects = True
+    , cdCustomizations =
+        mapFromList
+          [ (ImprovedTimer, 1)
+          , (Tripwire, 1)
+          , (Simple, 2)
+          , (Poisonous, 2)
+          , (RemoteConfiguration, 2)
+          , (Net, 3)
+          , (ExplosiveDevice, 4)
           ]
     }
 

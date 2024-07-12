@@ -79,7 +79,7 @@ instance HasAbilities PowerWord where
         | notNull commands
         ]
           <> [ restrictedAbility a 2 ControlsThis $ FastAbility Free
-             | traceShowId (a `hasCustomization` GreaterControl)
+             | a `hasCustomization` GreaterControl
              ]
     _ -> []
 

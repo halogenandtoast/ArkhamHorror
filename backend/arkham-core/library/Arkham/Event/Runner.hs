@@ -21,12 +21,15 @@ import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
 import Arkham.Target as X
 
+import Arkham.Asset.Types (Field (AssetUses))
+import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window
 import Arkham.Matcher (EnemyMatcher (..))
@@ -35,6 +38,7 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.Window (mkAfter)
 import Arkham.Window qualified as Window
+import Control.Lens (non)
 
 instance RunMessage EventAttrs where
   runMessage msg a@EventAttrs {..} = do
@@ -141,21 +145,21 @@ runEventMessage msg a@EventAttrs {..} = case msg of
 
       afterPlay = foldl' modifyAfterPlay eventAfterPlay mods
 
-    after <- checkWindows [mkAfter (Window.PlayEventDiscarding (eventController a) (toId a))]
+    after <- checkWindows [mkAfter (Window.PlayEventDiscarding eventController (toId a))]
 
     if LeaveCardWhereItIs `elem` mods
       then push $ RemoveEvent $ toId a
       else case eventPlacement of
         Unplaced -> case afterPlay of
-          DiscardThis -> pushAll [after, toDiscardBy (eventController a) GameSource a]
+          DiscardThis -> pushAll [after, toDiscardBy eventController GameSource a]
           RemoveThisFromGame -> push (RemoveEvent $ toId a)
-          ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck $ eventController a) (toTarget a))
-          ReturnThisToHand -> push (ReturnToHand (eventController a) (toTarget a))
+          ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck eventController) (toTarget a))
+          ReturnThisToHand -> push (ReturnToHand eventController (toTarget a))
         Limbo -> case afterPlay of
-          DiscardThis -> pushAll [after, toDiscardBy (eventController a) GameSource a]
+          DiscardThis -> pushAll [after, toDiscardBy eventController GameSource a]
           RemoveThisFromGame -> push (RemoveEvent $ toId a)
-          ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck $ eventController a) (toTarget a))
-          ReturnThisToHand -> push (ReturnToHand (eventController a) (toTarget a))
+          ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck eventController) (toTarget a))
+          ReturnThisToHand -> push (ReturnToHand eventController (toTarget a))
         _ -> pure ()
     pure a
   InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do
@@ -175,6 +179,60 @@ runEventMessage msg a@EventAttrs {..} = case msg of
       Just attached | target == attached -> push $ toDiscard source a
       _ -> pure ()
     pure a
-  SpendUses _ target useType' n | isTarget a target -> do
-    pure $ a & tokensL . ix useType' %~ max 0 . subtract n
+  SpendUses source target useType' n | isTarget a target -> do
+    mods <- getModifiers a
+    let otherSources = [s | ProvidesUses uType s <- mods, uType == useType']
+    otherSourcePairs <- for otherSources \case
+      AssetSource aid' -> do
+        uses <- fieldMap AssetUses (findWithDefault 0 useType') aid'
+        pure (AssetTarget aid', uses)
+      EventSource eid' -> do
+        uses <- fieldMap EventUses (findWithDefault 0 useType') eid'
+        pure (EventTarget eid', uses)
+      _ -> error $ "Unhandled source: " <> show source
+
+    -- window should be independent of other sources since they are spent from this asset
+    -- for_ eventController $ \controller ->
+    --   pushM $ checkWindows [mkAfter $ Window.SpentUses controller source (toId a) useType' n]
+
+    if null otherSourcePairs
+      then push $ Do msg
+      else do
+        -- we may want a nicer way to handle this, but for the now the
+        -- logic is to duplicate the choice for each use (the ui can only
+        -- display it being clickable) and then to remove that choice from
+        -- the list when used.
+        player <- getPlayer a.controller
+        push
+          $ chooseN player n
+          $ replicate (a.use useType') (targetLabel a [Do msg])
+          <> concat
+            [ replicate x (targetLabel otherTarget [Do $ SpendUses source otherTarget useType' n])
+            | (otherTarget, x) <- otherSourcePairs
+            ]
+    pure a
+  Do (SpendUses source target useType' n) | isTarget a target -> do
+    pushM $ checkAfter $ Window.SpentToken source (toTarget a) useType' n
+    runMessage (RemoveTokens source target useType' n) a
+  MoveTokens s source _ tType n | isSource a source -> runMessage (RemoveTokens s (toTarget a) tType n) a
+  MoveTokens s _ target tType n | isTarget a target -> runMessage (PlaceTokens s (toTarget a) tType n) a
+  RemoveTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ subtractTokens tType n
+  PlaceTokens source target tType n | isTarget a target -> do
+    pushM $ checkAfter $ Window.PlacedToken source target tType n
+    if tokenIsUse tType
+      then case eventPrintedUses of
+        NoUses -> pure $ a & tokensL . at tType . non 0 %~ (+ n)
+        Uses useType'' _ | tType == useType'' -> pure $ a & tokensL . at tType . non 0 %~ (+ n)
+        UsesWithLimit useType'' _ pl | tType == useType'' -> do
+          l <- calculate pl
+          pure $ a & tokensL . at tType . non 0 %~ min l . (+ n)
+        _ ->
+          error
+            $ "Trying to add the wrong use type, has "
+            <> show eventPrintedUses
+            <> ", but got: "
+            <> show tType
+      else do
+        pushWhen (tType == Horror) $ checkDefeated source a
+        pure $ a & tokensL %~ addTokens tType n
   _ -> pure a

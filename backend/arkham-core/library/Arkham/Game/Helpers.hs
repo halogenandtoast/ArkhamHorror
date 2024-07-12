@@ -843,10 +843,15 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       handleCriteriaReplacement m _ = m
       duringTurnWindow = mkWhen (Window.DuringTurn iid)
       notFastWindow = any (`elem` windows') [duringTurnWindow]
-      canBecomeFast = CannotPlay Matcher.FastCard `notElem` modifiers && foldr applyModifier False modifiers
+      canBecomeFast =
+        CannotPlay Matcher.FastCard
+          `notElem` modifiers
+          && foldr applyModifier False (nub $ cardModifiers <> modifiers)
       canBecomeFastWindow =
         guard canBecomeFast
-          $> fromMaybe (Matcher.DuringTurn Matcher.You) (listToMaybe [w | BecomesFast w <- modifiers])
+          $> fromMaybe
+            (Matcher.DuringTurn Matcher.You)
+            (listToMaybe [w | BecomesFast w <- cardModifiers <> modifiers])
       applyModifier (BecomesFast _) _ = True
       applyModifier (CanBecomeFast cardMatcher) _ = cardMatch c cardMatcher
       applyModifier (CanBecomeFastOrReduceCostOf cardMatcher _) _ = canAffordCost && cardMatch c cardMatcher

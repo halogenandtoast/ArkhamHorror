@@ -3883,6 +3883,7 @@ eventField e fld = do
     EventTraits -> pure $ cdCardTraits cdef
     EventAbilities -> pure $ getAbilities e
     EventOwner -> pure eventOwner
+    EventController -> pure eventController
     EventDoom -> pure eventDoom
     EventCard ->
       -- an event might need to be converted back to its original card

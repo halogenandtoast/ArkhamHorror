@@ -28,6 +28,7 @@ data Token
   | Resource
   | Secret
   | Supply
+  | Time
   | Try
   | Whistle
   deriving stock (Show, Eq, Ord, Generic, Data)

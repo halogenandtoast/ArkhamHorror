@@ -106,9 +106,10 @@ getModifiedKeywords e = do
 
 canEnterLocation :: HasGame m => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do
-  modifiers' <- getModifiers lid
+  modifiers' <- (<>) <$> getModifiers lid <*> getModifiers eid
   not <$> flip anyM modifiers' \case
     Modifier.CannotBeEnteredBy matcher -> eid <=~> matcher
+    Modifier.CannotMove -> fieldMap EnemyPlacement isInPlayPlacement eid
     _ -> pure False
 
 getFightableEnemyIds :: (HasGame m, Sourceable source) => InvestigatorId -> source -> m [EnemyId]

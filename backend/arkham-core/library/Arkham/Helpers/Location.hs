@@ -2,7 +2,7 @@ module Arkham.Helpers.Location where
 
 import Arkham.Prelude
 
-import Arkham.Asset.Types (Field (..))
+import Arkham.Asset.Types (AssetAttrs, Field (..))
 import Arkham.Card.CardDef
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
@@ -71,10 +71,25 @@ placementLocation = \case
   OnTopOfDeck _ -> pure Nothing
   NextToAgenda -> pure Nothing
 
-onSameLocation :: HasGame m => Placement -> Placement -> m Bool
+class Locateable a where
+  getLocationOf :: HasGame m => a -> m (Maybe LocationId)
+
+instance Locateable InvestigatorId where
+  getLocationOf = field InvestigatorLocation
+
+instance Locateable AssetId where
+  getLocationOf = field AssetPlacement >=> placementLocation
+
+instance Locateable AssetAttrs where
+  getLocationOf = getLocationOf . toId
+
+instance Locateable Placement where
+  getLocationOf = placementLocation
+
+onSameLocation :: (HasGame m, Locateable a, Locateable b) => a -> b -> m Bool
 onSameLocation a b = do
-  mlid1 <- placementLocation a
-  mlid2 <- placementLocation b
+  mlid1 <- getLocationOf a
+  mlid2 <- getLocationOf b
   pure $ case (mlid1, mlid2) of
     (Just l1, Just l2) -> l1 == l2
     _ -> False

@@ -199,13 +199,14 @@ getHealthDamageableAssets
   :: HasGame m
   => InvestigatorId
   -> AssetMatcher
+  -> Source
   -> Int
   -> [Target]
   -> [Target]
   -> m (Set AssetId)
-getHealthDamageableAssets _ _ 0 _ _ = pure mempty
-getHealthDamageableAssets iid matcher _ damageTargets horrorTargets = do
-  allAssets <- select $ matcher <> AssetCanBeAssignedDamageBy iid
+getHealthDamageableAssets _ _ _ 0 _ _ = pure mempty
+getHealthDamageableAssets iid matcher source _ damageTargets horrorTargets = do
+  allAssets <- select $ matcher <> AssetCanBeAssignedDamageBy iid <> AssetCanBeDamagedBySource source
   excludes <- do
     modifiers <- getModifiers iid
     excludeMatchers <- forMaybeM modifiers $ \case
@@ -224,13 +225,14 @@ getSanityDamageableAssets
   :: HasGame m
   => InvestigatorId
   -> AssetMatcher
+  -> Source
   -> Int
   -> [Target]
   -> [Target]
   -> m (Set AssetId)
-getSanityDamageableAssets _ _ 0 _ _ = pure mempty
-getSanityDamageableAssets iid matcher _ damageTargets horrorTargets = do
-  allAssets <- select $ matcher <> AssetCanBeAssignedHorrorBy iid
+getSanityDamageableAssets _ _ _ 0 _ _ = pure mempty
+getSanityDamageableAssets iid matcher source _ damageTargets horrorTargets = do
+  allAssets <- select $ matcher <> AssetCanBeAssignedHorrorBy iid <> AssetCanBeDamagedBySource source
   excludes <- do
     modifiers <- getModifiers iid
     excludeMatchers <- forMaybeM modifiers $ \case
@@ -1253,9 +1255,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   InvestigatorDoAssignDamage iid source DamageEvenly matcher health 0 damageTargets horrorTargets | iid == toId a -> do
     healthDamageableAssets <-
-      toList <$> getHealthDamageableAssets iid matcher health damageTargets horrorTargets
+      toList <$> getHealthDamageableAssets iid matcher source health damageTargets horrorTargets
 
-    canBeAssignedDamage <- select $ AssetCanBeAssignedDamageBy iid
+    canBeAssignedDamage <- select $ AssetCanBeAssignedDamageBy iid <> AssetCanBeDamagedBySource source
     mustBeDamagedFirstBeforeInvestigator <- forMaybeM canBeAssignedDamage $ \aid -> do
       mods <- getModifiers aid
       let n = sum [x | NonDirectDamageMustBeAssignToThisN x <- mods]
@@ -1305,6 +1307,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         <$> getSanityDamageableAssets
           iid
           matcher
+          source
           sanity
           damageTargets
           horrorTargets
@@ -1312,6 +1315,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       select
         ( AssetCanBeAssignedHorrorBy iid
             <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
+            <> AssetCanBeDamagedBySource source
         )
     let
       onlyAssets = any (`elem` mustBeDamagedFirstBeforeInvestigator) sanityDamageableAssets
@@ -1357,6 +1361,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       getHealthDamageableAssets
         iid
         matcher
+        source
         health
         damageTargets
         horrorTargets
@@ -1364,11 +1369,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       getSanityDamageableAssets
         iid
         matcher
+        source
         sanity
         damageTargets
         horrorTargets
 
-    canBeAssignedDamage <- select $ AssetCanBeAssignedDamageBy iid
+    canBeAssignedDamage <- select $ AssetCanBeAssignedDamageBy iid <> AssetCanBeDamagedBySource source
     mustBeAssignedDamageFirstBeforeInvestigator <- forMaybeM canBeAssignedDamage $ \aid -> do
       mods <- getModifiers aid
       let n = sum [x | NonDirectDamageMustBeAssignToThisN x <- mods]
@@ -1379,6 +1385,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       select
         ( AssetCanBeAssignedHorrorBy iid
             <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
+            <> AssetCanBeDamagedBySource source
         )
 
     let
@@ -1425,7 +1432,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       if health > 0
         then do
           healthDamageableAssets <-
-            toList <$> getHealthDamageableAssets iid matcher health damageTargets horrorTargets
+            toList <$> getHealthDamageableAssets iid matcher source health damageTargets horrorTargets
           let
             assignRestOfHealthDamage =
               InvestigatorDoAssignDamage investigatorId source strategy matcher (health - 1) sanity
@@ -1448,7 +1455,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 <> map damageAsset healthDamageableAssets
             DamageDirect -> pure [damageInvestigator]
             DamageAny -> do
-              canBeAssignedDamage <- select $ AssetCanBeAssignedDamageBy iid
+              canBeAssignedDamage <- select $ AssetCanBeAssignedDamageBy iid <> AssetCanBeDamagedBySource source
               mustBeAssignedDamageFirstBeforeInvestigator <- forMaybeM canBeAssignedDamage $ \aid -> do
                 mods <- getModifiers aid
                 let n = sum [x | NonDirectDamageMustBeAssignToThisN x <- mods]
@@ -1458,7 +1465,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
               pure $ [damageInvestigator | not onlyAssets] <> map damageAsset healthDamageableAssets
             DamageFromHastur -> do
-              canBeAssignedDamage <- select $ AssetCanBeAssignedDamageBy iid
+              canBeAssignedDamage <- select $ AssetCanBeAssignedDamageBy iid <> AssetCanBeDamagedBySource source
               mustBeAssignedDamageFirstBeforeInvestigator <- forMaybeM canBeAssignedDamage $ \aid -> do
                 mods <- getModifiers aid
                 let n = sum [x | NonDirectDamageMustBeAssignToThisN x <- mods]
@@ -1482,7 +1489,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         then do
           sanityDamageableAssets <-
             toList
-              <$> getSanityDamageableAssets iid matcher sanity damageTargets horrorTargets
+              <$> getSanityDamageableAssets iid matcher source sanity damageTargets horrorTargets
           let
             assignRestOfSanityDamage =
               InvestigatorDoAssignDamage investigatorId source strategy matcher health (sanity - 1)
@@ -1500,35 +1507,24 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 ]
           case strategy of
             DamageAssetsFirst ->
-              pure
-                $ [damageInvestigator | null sanityDamageableAssets]
-                <> map damageAsset sanityDamageableAssets
+              pure $ [damageInvestigator | null sanityDamageableAssets] <> map damageAsset sanityDamageableAssets
             DamageDirect -> pure [damageInvestigator]
             DamageAny -> do
               mustBeAssignedDamageFirstBeforeInvestigator <-
                 select
-                  ( AssetCanBeAssignedHorrorBy iid
-                      <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
-                  )
-
+                  $ AssetCanBeAssignedHorrorBy iid
+                  <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
+                  <> AssetCanBeDamagedBySource source
               let onlyAssets = any (`elem` mustBeAssignedDamageFirstBeforeInvestigator) sanityDamageableAssets
-              pure
-                $ [ damageInvestigator
-                  | not onlyAssets
-                  ]
-                <> map damageAsset sanityDamageableAssets
+              pure $ [damageInvestigator | not onlyAssets] <> map damageAsset sanityDamageableAssets
             DamageFromHastur -> do
               mustBeAssignedDamageFirstBeforeInvestigator <-
                 select
-                  ( AssetCanBeAssignedHorrorBy iid
-                      <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
-                  )
+                  $ AssetCanBeAssignedHorrorBy iid
+                  <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
+                  <> AssetCanBeDamagedBySource source
               let onlyAssets = any (`elem` mustBeAssignedDamageFirstBeforeInvestigator) sanityDamageableAssets
-              pure
-                $ [ damageInvestigator
-                  | not onlyAssets
-                  ]
-                <> map damageAsset sanityDamageableAssets
+              pure $ [damageInvestigator | not onlyAssets] <> map damageAsset sanityDamageableAssets
             DamageFirst def -> do
               validAssets <-
                 List.intersect sanityDamageableAssets
@@ -3576,8 +3572,7 @@ takeUpkeepResources a = do
           , not cannotGainResourcesFromPlayerCardEffects || sourceToFromSource s /= FromPlayerCardEffect
           ]
   let amount = 1 + additionalAmount
-  let cannotGainResources = CannotGainResources `elem` mods
-  if cannotGainResources
+  if CannotGainResources `elem` mods
     then pure a
     else
       if MayChooseNotToTakeUpkeepResources `elem` mods

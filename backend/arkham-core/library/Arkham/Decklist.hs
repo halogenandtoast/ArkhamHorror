@@ -113,6 +113,6 @@ parseCustomizations = IntMap.fromList <$> sepBy parseEntry (char ',')
   parseTraits = sepBy1 parseTrait (char '^')
   parseTrait = do
     t <- many1 (alphaNum <|> space)
-    case fromJSON @Trait (String . traceShowId . T.concat . T.words . T.toTitle $ pack t) of
+    case fromJSON @Trait (String . T.concat . T.words . T.toTitle $ pack t) of
       Success x -> pure $ ChosenTrait x
       _ -> unexpected ("invalid trait: " ++ t)

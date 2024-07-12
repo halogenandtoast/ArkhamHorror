@@ -522,6 +522,7 @@ allPlayerAssetCards =
       , nkosiMabatiEnigmaticWarlock3
       , obfuscation
       , observed4
+      , obsidianBracelet
       , occultLexicon
       , occultLexicon3
       , occultScraps
@@ -5607,6 +5608,14 @@ runicAxe =
           , (Saga, 3)
           , (Scriptweaver, 4)
           ]
+    }
+
+obsidianBracelet :: CardDef
+obsidianBracelet =
+  (asset "09024" "Obsidian Bracelet" 3 Guardian)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Charm]
+    , cdSlots = [#hand]
     }
 
 guardDog2 :: CardDef

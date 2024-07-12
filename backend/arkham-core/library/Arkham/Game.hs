@@ -2111,6 +2111,11 @@ getAssetsMatching matcher = do
         isSanityDamageable a =
           fieldP AssetRemainingSanity (maybe (toId a `elem` otherDamageableAssetIds) (> 0)) (toId a)
       filterM isSanityDamageable assets
+    AssetCanBeDamagedBySource source -> flip filterM as \asset -> do
+      mods <- getModifiers asset
+      flip allM mods $ \case
+        CannotBeDamagedBySourcesExcept sourceMatcher -> sourceMatches source sourceMatcher
+        _ -> pure True
     AssetWithoutSealedTokens -> do
       pure $ filter (null . attr assetSealedChaosTokens) as
     AssetWithSealedChaosTokens n chaosTokenMatcher -> do

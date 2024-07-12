@@ -275,8 +275,8 @@ const getImage = (el: HTMLElement): string | null => {
     <img class="horror horror-1" v-if="horror && horror >= 1" :src="imgsrc('horror-overlay.png')"/>
     <img class="horror horror-2" v-if="horror && horror >= 2" :src="imgsrc('horror-overlay.png')"/>
     <img class="horror horror-3" v-if="horror && horror >= 3" :src="imgsrc('horror-overlay.png')"/>
-    <div v-if="customizationTicks.length > 0" class="customizations-wrapper">
-      <img v-if="customizationsCard" :src="customizationsCard" />
+    <div v-if="customizationsCard" class="customizations-wrapper">
+      <img :src="customizationsCard" />
       <div v-for="label in customizationLabels" :key="label[0]" :class="`label label-${cardCode} ${label[0]}`">
         <svg xmlns="http://www.w3.org/2000/svg" width="100" height="20" viewBox="0 0 100 20">
          <g>
@@ -1593,6 +1593,82 @@ const getImage = (el: HTMLElement): string | null => {
   left: var(--left-3);
 }
 .customization-09099-6-4 {
+  top: var(--top-6);
+  left: var(--left-4);
+}
+
+// Makeshift Trap
+.tick-09100 {
+  --top-0: 19.2%;
+  --top-1: 26.8%;
+  --top-2: 37.6%;
+  --top-3: 45.0%;
+  --top-4: 55.9%;
+  --top-5: 66.9%;
+  --top-6: 77.8%;
+  --left-1: 8.4%;
+  --left-2: 11.8%;
+  --left-3: 15.2%;
+  --left-4: 18.7%;
+}
+
+.customization-09100-0-1 {
+  top: var(--top-0);
+  left: var(--left-1);
+}
+.customization-09100-1-1 {
+  top: var(--top-1);
+  left: var(--left-1);
+}
+.customization-09100-2-1 {
+  top: var(--top-2);
+  left: var(--left-1);
+}
+.customization-09100-2-2 {
+  top: var(--top-2);
+  left: var(--left-2);
+}
+.customization-09100-3-1 {
+  top: var(--top-3);
+  left: var(--left-1);
+}
+.customization-09100-3-2 {
+  top: var(--top-3);
+  left: var(--left-2);
+}
+.customization-09100-4-1 {
+  top: var(--top-4);
+  left: var(--left-1);
+}
+.customization-09100-4-2 {
+  top: var(--top-4);
+  left: var(--left-2);
+}
+.customization-09100-5-1 {
+  top: var(--top-5);
+  left: var(--left-1);
+}
+.customization-09100-5-2 {
+  top: var(--top-5);
+  left: var(--left-2);
+}
+.customization-09100-5-3 {
+  top: var(--top-5);
+  left: var(--left-3);
+}
+.customization-09100-6-1 {
+  top: var(--top-6);
+  left: var(--left-1);
+}
+.customization-09100-6-2 {
+  top: var(--top-6);
+  left: var(--left-2);
+}
+.customization-09100-6-3 {
+  top: var(--top-6);
+  left: var(--left-3);
+}
+.customization-09100-6-4 {
   top: var(--top-6);
   left: var(--left-4);
 }

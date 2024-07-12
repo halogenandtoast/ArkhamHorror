@@ -518,6 +518,8 @@ allEvents =
     , SomeEventCard breakingAndEntering2
     , --- mystic [tsk]
       SomeEventCard powerWord
+    , --- survivor [tsk]
+      SomeEventCard makeshiftTrap
     , -- The Feast of Hemloch Vale
       --- survivor [fhv]
       SomeEventCard keepFaith2

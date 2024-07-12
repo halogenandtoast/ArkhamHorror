@@ -117,6 +117,14 @@ data Customization
   | MagnifyingLens -- 4
   | LuckyCharm -- 5
   | SpringLoaded -- 6
+  | -- Makeshift Trap 09100
+    ImprovedTimer -- 0
+  | Tripwire -- 1
+  | Simple -- 2
+  | Poisonous -- 3
+  | RemoteConfiguration -- 4
+  | Net -- 5
+  | ExplosiveDevice -- 6
   | -- Hyperphysical Shotcaster 09119
     Railshooter -- 0
   | Telescanner -- 1

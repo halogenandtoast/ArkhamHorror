@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Uses
+import Arkham.Calculation
 import Arkham.Card
 import Arkham.ChaosToken (ChaosToken)
 import Arkham.Classes.Entity
@@ -25,6 +26,7 @@ import Arkham.Target
 import Arkham.Trait
 import Arkham.Window (Window)
 import Data.Aeson.KeyMap qualified as KeyMap
+import Data.Map.Strict qualified as Map
 import Data.Typeable
 import GHC.Records
 
@@ -50,6 +52,7 @@ data instance Field Event :: Type -> Type where
   EventTraits :: Field Event (Set Trait)
   EventAbilities :: Field Event [Ability]
   EventOwner :: Field Event InvestigatorId
+  EventController :: Field Event InvestigatorId
   EventDoom :: Field Event Int
   EventCard :: Field Event Card
   EventCardId :: Field Event CardId
@@ -63,10 +66,6 @@ data instance Field Event :: Type -> Type where
 data instance Field (InHandEntity Event) :: Type -> Type where
   InHandEventCardId :: Field (InHandEntity Event) CardId
 
--- These could be different, update in the future
-eventController :: EventAttrs -> InvestigatorId
-eventController = eventOwner
-
 eventAttachedTarget :: EventAttrs -> Maybe Target
 eventAttachedTarget = placementToAttached . eventPlacement
 
@@ -76,6 +75,7 @@ data EventAttrs = EventAttrs
   , eventOriginalCardCode :: CardCode
   , eventId :: EventId
   , eventOwner :: InvestigatorId
+  , eventController :: InvestigatorId
   , eventDoom :: Int
   , eventExhausted :: Bool
   , eventBeingPaidFor :: Bool
@@ -91,6 +91,7 @@ data EventAttrs = EventAttrs
   , eventMeta :: Value
   , eventTokens :: Map UseType Int
   , eventCustomizations :: Customizations
+  , eventPrintedUses :: Uses GameCalculation
   }
   deriving stock (Show, Eq, Generic)
 
@@ -103,6 +104,12 @@ instance AsId EventAttrs where
 
 instance Is EventAttrs EventId where
   is = (==) . toId
+
+instance HasField "uses" EventAttrs (Map UseType Int) where
+  getField = Map.filterWithKey (\k _ -> tokenIsUse k) . coerce . eventTokens
+
+instance HasField "use" EventAttrs (UseType -> Int) where
+  getField a uType = findWithDefault 0 uType a.uses
 
 instance HasField "ready" EventAttrs Bool where
   getField = not . eventExhausted
@@ -122,6 +129,9 @@ instance HasField "id" EventAttrs EventId where
 instance HasField "meta" EventAttrs Value where
   getField = eventMeta
 
+instance HasField "tokens" EventAttrs Tokens where
+  getField = eventTokens
+
 instance HasField "placement" EventAttrs Placement where
   getField = eventPlacement
 
@@ -132,7 +142,7 @@ instance HasField "owner" EventAttrs InvestigatorId where
   getField = eventOwner
 
 instance HasField "controller" EventAttrs InvestigatorId where
-  getField = eventOwner
+  getField = eventController
 
 instance HasField "ability" EventAttrs (Int -> Source) where
   getField this = toAbilitySource this
@@ -160,6 +170,7 @@ instance FromJSON EventAttrs where
     eventOriginalCardCode <- o .: "originalCardCode"
     eventId <- o .: "id"
     eventOwner <- o .: "owner"
+    eventController <- o .:? "controller" .!= eventOwner
     eventDoom <- o .: "doom"
     eventExhausted <- o .: "exhausted"
     eventBeingPaidFor <- o .: "beingPaidFor"
@@ -176,6 +187,7 @@ instance FromJSON EventAttrs where
     deprecatedEventUses <- o .:? "uses" .!= mempty
     eventTokens <- o .:? "tokens" .!= deprecatedEventUses
     eventCustomizations <- o .:? "customizations" .!= mempty
+    eventPrintedUses <- o .:? "printedUses" .!= NoUses
 
     pure EventAttrs {..}
 
@@ -204,6 +216,7 @@ event f cardDef =
             , eventOriginalCardCode = toCardCode cardDef
             , eventId = eid
             , eventOwner = iid
+            , eventController = iid
             , eventDoom = 0
             , eventExhausted = False
             , -- currently only relevant to time warp
@@ -220,6 +233,7 @@ event f cardDef =
             , eventMeta = Null
             , eventTokens = mempty
             , eventCustomizations = mempty
+            , eventPrintedUses = cdUses cardDef
             }
     }
 

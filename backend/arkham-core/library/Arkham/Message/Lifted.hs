@@ -780,3 +780,7 @@ exile (toTarget -> target) = push $ Msg.Exile target
 
 failSkillTest :: ReverseQueue m => m ()
 failSkillTest = push Msg.FailSkillTest
+
+uiEffect
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
+uiEffect s t m = push $ Msg.uiEffect s t m

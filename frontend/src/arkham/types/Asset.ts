@@ -6,7 +6,7 @@ import {
 } from '@/arkham/types/Card';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
-import { customizationsDecoder } from '@/arkham/types/Customization';
+import { Customization, customizationsDecoder } from '@/arkham/types/Customization';
 
 export type Asset = {
   id: string;
@@ -24,7 +24,7 @@ export type Asset = {
   cardsUnderneath: Card[];
   sealedChaosTokens: ChaosToken[];
   keys: ArkhamKey[];
-  customizations: [number, number][];
+  customizations: Customization[];
 }
 
 export const assetDecoder = JsonDecoder.object<Asset>({

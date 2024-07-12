@@ -20,6 +20,7 @@ import Arkham.Action (Action)
 import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
 import Arkham.Classes.GameLogger
+import Arkham.Customization
 import Arkham.EncounterCard
 import Arkham.Enemy.Cards (allSpecialEnemyCards)
 import Arkham.Id
@@ -75,13 +76,15 @@ instance IsCard Card where
 --
 defaultToCard :: (HasCallStack, IsCard a) => a -> Card
 defaultToCard a = case lookupCard (cdCardCode $ toCardDef a) (toCardId a) of
-  PlayerCard pc -> PlayerCard $ pc {pcOwner = toCardOwner a}
+  PlayerCard pc -> PlayerCard $ pc {pcOwner = toCardOwner a, pcCustomizations = toCustomizations a}
   ec -> ec
 
 class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toCard :: HasCallStack => a -> Card
   toCardId :: a -> CardId
   toCardOwner :: a -> Maybe InvestigatorId
+  toCustomizations :: a -> Customizations
+  toCustomizations _ = mempty
 
 class MonadRandom m => CardGen m where
   genEncounterCard :: HasCardDef a => a -> m EncounterCard

@@ -875,12 +875,12 @@ runGameMessage msg g = case msg of
           | LeaveCardWhereItIs `elem` mods ->
               (Run [], Just skillId)
           | otherwise -> case skillAfterPlay (toAttrs skill) of
-              DiscardThis ->
-                ( AddToDiscard
-                    (skillOwner $ toAttrs skill)
-                    (lookupPlayerCard (toCardDef skill) (toCardId skill))
-                , Just skillId
-                )
+              DiscardThis -> case toCard skill of
+                PlayerCard pc ->
+                  ( AddToDiscard (skillOwner $ toAttrs skill) pc
+                  , Just skillId
+                  )
+                _ -> error "Unhandled encounter card skill"
               RemoveThisFromGame ->
                 (RemoveFromGame (SkillTarget skillId), Nothing)
               ReturnThisToHand ->

@@ -3136,6 +3136,7 @@ customModifications =
     , cdCriteria =
         Just $ exists $ AssetControlledBy You <> #firearm <> not_ (AssetWithAttachedEvent $ EventIs "09023")
     , cdCardInHandEffects = True
+    , cdKeywords = setFromList [Keyword.Customizable]
     , cdCustomizations =
         mapFromList
           [ (NotchedSight, 1)
@@ -3153,6 +3154,7 @@ theRavenQuill =
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = setFromList [Item, Relic, Upgrade]
     , cdUnique = True
+    , cdKeywords = setFromList [Keyword.Customizable]
     , cdCriteria =
         Just
           $ oneOf
@@ -3186,6 +3188,7 @@ friendsInLowPlaces =
     , cdCardTraits = setFromList [Favor]
     , cdCardInHandEffects = True
     , cdCriteria = Just $ can.manipulate.deck You
+    , cdKeywords = setFromList [Keyword.Customizable]
     , cdCustomizations =
         mapFromList
           [ (ChoicePlaceholder, 0)
@@ -3205,6 +3208,7 @@ honedInstinct =
     { cdSkills = [#agility]
     , cdCardTraits = setFromList [Gambit]
     , cdCardInHandEffects = True
+    , cdKeywords = setFromList [Keyword.Customizable]
     , cdLimits = [MaxPerRound 1]
     , cdFastWindow =
         Just
@@ -3250,6 +3254,7 @@ powerWord =
     , cdCardTraits = setFromList [Spell]
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria = Just $ exists $ EnemyAt YourLocation <> NonEliteEnemy
+    , cdKeywords = setFromList [Keyword.Customizable]
     , cdCustomizations =
         mapFromList
           [ (Betray, 1)
@@ -3270,6 +3275,7 @@ makeshiftTrap =
     , cdCardTraits = setFromList [Improvised, Trap]
     , cdUses = Uses.Uses Uses.Time (Fixed 2)
     , cdCardInHandEffects = True
+    , cdKeywords = setFromList [Keyword.Customizable]
     , cdCustomizations =
         mapFromList
           [ (ImprovedTimer, 1)

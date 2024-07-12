@@ -622,6 +622,7 @@ data SkillMatcher
   | EligibleSkill
   | YourSkill
   | AnySkill
+  | EnemySkill EnemyId
   | NotSkill SkillMatcher
   | SkillWithToken Token
   deriving stock (Show, Eq, Ord, Data)

@@ -20,6 +20,7 @@ import Control.Lens (Getting, Prism', prism')
 import Data.Aeson.TH
 import Data.Monoid (First)
 import GHC.OverloadedLabels
+import GHC.Records
 
 data ForSkillTest = ForSkillTest
 
@@ -66,6 +67,13 @@ data Target
   | ActiveCostTarget ActiveCostId
   | LabeledTarget Text Target -- Use with caution, this is not a real target
   deriving stock (Show, Eq, Ord, Data)
+
+instance HasField "enemy" Target (Maybe EnemyId) where
+  getField = \case
+    EnemyTarget aid -> Just aid
+    ProxyTarget (CardIdTarget _) t -> t.enemy
+    ProxyTarget t _ -> t.enemy
+    _ -> Nothing
 
 bothTarget :: (Targetable a, Targetable b) => a -> b -> Target
 bothTarget a b = BothTarget (toTarget a) (toTarget b)

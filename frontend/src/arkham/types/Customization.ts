@@ -6,7 +6,7 @@ type CustomizationOption =
   | {tag: "ChosenTrait", contents: string}
   | {tag: "ChosenIndex", contents: number}
 
-type Customization =  [number, CustomizationOption[]];
+export type Customization =  [number, CustomizationOption[]];
 
 const customizationOptionDecoder = JsonDecoder.oneOf([
   JsonDecoder.object<CustomizationOption>(

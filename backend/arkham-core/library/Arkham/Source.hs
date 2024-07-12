@@ -83,6 +83,14 @@ instance HasField "asset" Source (Maybe AssetId) where
     AbilitySource s _ -> s.asset
     _ -> Nothing
 
+instance HasField "enemy" Source (Maybe EnemyId) where
+  getField = \case
+    EnemySource aid -> Just aid
+    ProxySource (CardIdSource _) s -> s.enemy
+    ProxySource s _ -> s.enemy
+    AbilitySource s _ -> s.enemy
+    _ -> Nothing
+
 instance HasField "treachery" Source (Maybe TreacheryId) where
   getField = \case
     TreacherySource aid -> Just aid

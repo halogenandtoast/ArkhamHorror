@@ -75,6 +75,7 @@ instance Projection (OutOfPlayEntity Enemy)
 instance Projection Event
 instance Projection (InHandEntity Event)
 instance Projection (InHandEntity Skill)
+instance Projection (InDiscardEntity Skill)
 instance Projection Investigator
 instance Projection Location
 instance Projection Scenario

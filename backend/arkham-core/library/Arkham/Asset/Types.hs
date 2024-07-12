@@ -77,6 +77,8 @@ instance IsCard Asset where
   {-# INLINE toCardId #-}
   toCardOwner (Asset a) = toCardOwner (toAttrs a)
   {-# INLINE toCardOwner #-}
+  toCustomizations (Asset a) = toCustomizations (toAttrs a)
+  {-# INLINE toCustomizations #-}
 
 instance Eq Asset where
   Asset (a :: a) == Asset (b :: b) = case eqT @a @b of
@@ -403,9 +405,10 @@ instance FromJSON AssetAttrs where
 instance IsCard AssetAttrs where
   toCardId = assetCardId
   toCard a = case lookupCard (assetOriginalCardCode a) (toCardId a) of
-    PlayerCard pc -> PlayerCard $ pc {pcOwner = assetOwner a}
+    PlayerCard pc -> PlayerCard $ pc {pcOwner = assetOwner a, pcCustomizations = toCustomizations a}
     ec -> ec
   toCardOwner = assetOwner
+  toCustomizations = assetCustomizations
 
 asset
   :: (AssetAttrs -> a)

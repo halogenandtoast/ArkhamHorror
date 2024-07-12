@@ -113,6 +113,7 @@ data Trait
   | Injury
   | Innate
   | Innocent
+  | Insect
   | Insight
   | Instrument
   | Item

@@ -9,6 +9,7 @@ import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Cost
+import Arkham.Customization
 import Arkham.Id
 import Arkham.Json
 import Arkham.Name
@@ -39,6 +40,9 @@ class
 
 type SkillCard a = CardBuilder (InvestigatorId, SkillId) a
 
+data instance Field (InDiscardEntity Skill) :: Type -> Type where
+  InDiscardSkillCardId :: Field (InDiscardEntity Skill) CardId
+
 data instance Field Skill :: Type -> Type where
   SkillTraits :: Field Skill (Set Trait)
   SkillCard :: Field Skill Card
@@ -59,8 +63,15 @@ data SkillAttrs = SkillAttrs
   , skillPlacement :: Placement
   , skillSealedChaosTokens :: [ChaosToken]
   , skillMeta :: Value
+  , skillCustomizations :: Customizations
   }
   deriving stock (Show, Eq, Generic)
+
+instance HasField "attachedTo" SkillAttrs (Maybe Target) where
+  getField = placementToAttached . skillPlacement
+
+instance HasField "customizations" SkillAttrs Customizations where
+  getField = skillCustomizations
 
 instance HasField "cardId" SkillAttrs CardId where
   getField = skillCardId
@@ -110,6 +121,7 @@ instance IsCard SkillAttrs where
   toCard = defaultToCard
   toCardId = skillCardId
   toCardOwner = Just . skillOwner
+  toCustomizations = skillCustomizations
 
 instance ToJSON SkillAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "skill"
@@ -127,6 +139,7 @@ instance FromJSON SkillAttrs where
     skillPlacement <- o .: "placement"
     skillSealedChaosTokens <- o .:? "sealedChaosTokens" .!= []
     skillMeta <- o .:? "meta" .!= Null
+    skillCustomizations <- o .:? "customizations" .!= mempty
     pure $ SkillAttrs {..}
 
 instance Entity SkillAttrs where
@@ -141,8 +154,12 @@ instance Named SkillAttrs where
 
 instance Targetable SkillAttrs where
   toTarget = SkillTarget . skillId
-  isTarget SkillAttrs {skillId} (SkillTarget sid) = skillId == sid
-  isTarget _ _ = False
+  isTarget attrs@SkillAttrs {..} = \case
+    SkillTarget eid -> skillId == eid
+    CardCodeTarget cardCode -> cdCardCode (toCardDef attrs) == cardCode
+    CardIdTarget cardId -> cardId == skillCardId
+    SkillTestInitiatorTarget target -> isTarget attrs target
+    _ -> False
 
 instance Sourceable SkillAttrs where
   toSource = SkillSource . skillId
@@ -174,6 +191,7 @@ skill f cardDef =
             , skillPlacement = Unplaced
             , skillSealedChaosTokens = []
             , skillMeta = Null
+            , skillCustomizations = mempty
             }
     }
 
@@ -227,6 +245,7 @@ instance IsCard Skill where
   toCard = toCard . toAttrs
   toCardId = toCardId . toAttrs
   toCardOwner = toCardOwner . toAttrs
+  toCustomizations = toCustomizations . toAttrs
 
 data SomeSkillCard = forall a. IsSkill a => SomeSkillCard (SkillCard a)
 

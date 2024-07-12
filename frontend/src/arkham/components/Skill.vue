@@ -76,6 +76,7 @@ const choose = (index: number) => emits('choose', index)
       :class="{ 'skill--can-interact': cardAction !== -1 }"
       class="card skill"
       @click="choose(cardAction)"
+      :data-customizations="JSON.stringify(skill.customizations)"
     />
     <AbilityButton
       v-for="ability in abilities"

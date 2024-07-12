@@ -1108,7 +1108,7 @@ chooseSome1 pid doneText msgs = Ask pid (ChooseSome1 doneText msgs)
 chooseUpToN :: PlayerId -> Int -> Text -> [UI Message] -> Message
 chooseUpToN _ _ _ [] = throw $ InvalidState "No messages for chooseSome"
 chooseUpToN pid n doneText msgs =
-  Ask pid (ChooseUpToN n $ Label doneText [] : msgs)
+  Ask pid (ChooseUpToN n $ Done doneText : msgs)
 
 chooseN :: PlayerId -> Int -> [UI Message] -> Message
 chooseN _ _ [] = throw $ InvalidState "No messages for chooseN"

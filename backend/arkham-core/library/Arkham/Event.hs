@@ -511,6 +511,7 @@ allEvents =
     , --- guardian [tsk]
       SomeEventCard customModifications
     , SomeEventCard bolas
+    , SomeEventCard breachTheDoor
     , --- seeker [tsk]
       SomeEventCard theRavenQuill
     , --- rogue [tsk]

@@ -2,7 +2,7 @@ module Arkham.Asset.Cards where
 
 import Arkham.Prelude
 
-import Arkham.Asset.Uses hiding (Key)
+import Arkham.Asset.Uses hiding (Key, Lead)
 import Arkham.Asset.Uses qualified as Uses
 import Arkham.Calculation
 import Arkham.CampaignLogKey

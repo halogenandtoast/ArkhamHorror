@@ -15,6 +15,7 @@ export type Token
   | 'Evidence'
   | 'Horror'
   | 'Key'
+  | 'Lead'
   | 'Leyline'
   | 'Lock'
   | 'LostSoul'
@@ -41,6 +42,7 @@ export const TokenType = {
   Evidence: 'Evidence',
   Horror: 'Horror',
   Key: 'Key',
+  Lead: 'Lead',
   Leyline: 'Leyline',
   Lock: 'Lock',
   LostSoul: 'LostSoul',
@@ -67,6 +69,7 @@ export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>
   JsonDecoder.isExactly('Evidence'),
   JsonDecoder.isExactly('Horror'),
   JsonDecoder.isExactly('Key'),
+  JsonDecoder.isExactly('Lead'),
   JsonDecoder.isExactly('Leyline'),
   JsonDecoder.isExactly('Lock'),
   JsonDecoder.isExactly('LostSoul'),

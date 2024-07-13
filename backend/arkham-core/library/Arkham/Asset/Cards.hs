@@ -588,6 +588,7 @@ allPlayerAssetCards =
       , relicOfAgesRepossessThePast
       , relicOfAgesUnleashTheTimestream
       , researchLibrarian
+      , researchNotes
       , riotWhistle
       , riteOfSanctification
       , riteOfSeeking
@@ -5704,6 +5705,14 @@ grimMemoir =
     , cdCardTraits = setFromList [Item, Tome]
     , cdSlots = [#hand]
     , cdUses = uses Secret 4
+    }
+
+researchNotes :: CardDef
+researchNotes =
+  (asset "09045" "Research Notes" 1 Seeker)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Item, Tome, Science]
+    , cdSlots = [#hand]
     }
 
 damningTestimony :: CardDef

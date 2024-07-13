@@ -959,6 +959,7 @@ data WindowMatcher
   | WouldPlaceDoomCounter Timing SourceMatcher TargetMatcher
   | PlacedDoomCounter Timing SourceMatcher TargetMatcher
   | PlacedToken Timing SourceMatcher TargetMatcher Token
+  | InvestigatorPlacedFromTheirPool Timing Who SourceMatcher TargetMatcher Token
   | WouldPlaceBreach Timing TargetMatcher
   | PlacedBreach Timing TargetMatcher
   | PlacedBreaches Timing TargetMatcher
@@ -1163,6 +1164,8 @@ data SourceMatcher
   | SourceMatchesAny [SourceMatcher]
   | SourceOwnedBy InvestigatorMatcher
   | SourceIsType CardType
+  | SourceIsPlayerCard
+  | SourceIsPlayerCardAbility
   | AnySource
   | SourceIsCancelable SourceMatcher
   | SourceMatches [SourceMatcher]

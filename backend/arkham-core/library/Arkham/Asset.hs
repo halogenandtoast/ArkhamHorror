@@ -870,6 +870,7 @@ allAssets =
     , SomeAssetCard fingerprintKit4
     , SomeAssetCard dissectionTools
     , SomeAssetCard grimMemoir
+    , SomeAssetCard researchNotes
     , --- rogue [tsk]
       SomeAssetCard damningTestimony
     , SomeAssetCard chuckFergus2

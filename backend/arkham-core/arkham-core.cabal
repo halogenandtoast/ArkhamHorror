@@ -861,6 +861,7 @@ library
       Arkham.Asset.Cards.RelicOfAgesRepossessThePast
       Arkham.Asset.Cards.RelicOfAgesUnleashTheTimestream
       Arkham.Asset.Cards.ResearchLibrarian
+      Arkham.Asset.Cards.ResearchNotes
       Arkham.Asset.Cards.RichardUptonPickman
       Arkham.Asset.Cards.RiotWhistle
       Arkham.Asset.Cards.RiteOfSanctification
@@ -1468,6 +1469,7 @@ library
       Arkham.Event.Cards.ButterflyEffect1
       Arkham.Event.Cards.CallForBackup2
       Arkham.Event.Cards.CallingInFavors
+      Arkham.Event.Cards.CaptivatingDiscovery
       Arkham.Event.Cards.CheapShot
       Arkham.Event.Cards.CheapShot2
       Arkham.Event.Cards.CheatDeath5
@@ -1807,6 +1809,7 @@ library
       Arkham.Helpers.Query
       Arkham.Helpers.Ref
       Arkham.Helpers.Scenario
+      Arkham.Helpers.Search
       Arkham.Helpers.SkillTest
       Arkham.Helpers.SkillTest.Lifted
       Arkham.Helpers.SkillTest.Target

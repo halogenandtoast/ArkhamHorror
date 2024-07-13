@@ -3304,6 +3304,7 @@ instance Projection Investigator where
       InvestigatorDoom -> pure $ investigatorDoom attrs
       InvestigatorClues -> pure $ investigatorClues attrs
       InvestigatorTokens -> pure $ investigatorTokens
+      InvestigatorSearch -> pure $ investigatorSearch
       InvestigatorHand -> do
         -- Include in hand treacheries
         ts <-

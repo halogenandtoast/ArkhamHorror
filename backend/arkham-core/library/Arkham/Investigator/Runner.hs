@@ -3023,11 +3023,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure
         $ a
         & searchL
-        ?~ InvestigatorSearch searchType iid source target cardSources cardMatcher foundStrategy foundCards
+        ?~ MkInvestigatorSearch searchType iid source target cardSources cardMatcher foundStrategy foundCards
   ResolveSearch x | x == investigatorId -> do
     case investigatorSearch of
       Just
-        (InvestigatorSearch _ iid source (InvestigatorTarget iid') _ cardMatcher foundStrategy foundCards) -> do
+        (MkInvestigatorSearch _ iid source (InvestigatorTarget iid') _ cardMatcher foundStrategy foundCards) -> do
           mods <- getModifiers iid
           let
             applyMod (AdditionalTargets n) = over biplate (+ n)
@@ -3220,7 +3220,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -- [AsIfAt] assuming as if is still in effect
     mlid <- field InvestigatorLocation iid
     let cluesToPlace = min n (investigatorClues a)
-    for_ mlid $ \lid -> push $ PlaceTokens source (LocationTarget lid) Clue cluesToPlace
+    for_ mlid $ \lid -> do
+      after <-
+        checkAfter $ Window.InvestigatorPlacedFromTheirPool iid source (toTarget lid) Clue cluesToPlace
+      pushAll [PlaceTokens source (LocationTarget lid) Clue cluesToPlace, after]
     runMessage (RemoveTokens source (toTarget a) #clue cluesToPlace) a
   InvestigatorPlaceAllCluesOnLocation iid source | iid == investigatorId -> do
     -- [AsIfAt] assuming as if is still in effect

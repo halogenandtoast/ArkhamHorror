@@ -1619,6 +1619,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
   let isMatch = pure True
   let guardTiming t body = if timing' == t then body wType else noMatch
   case mtchr of
+    Matcher.InvestigatorPlacedFromTheirPool timing whoMatcher sourceMatcher targetMatcher tType -> guardTiming timing \case
+      Window.InvestigatorPlacedFromTheirPool who source' target' tType' _ | tType == tType' -> do
+        andM
+          [ matchWho iid who whoMatcher
+          , target' `targetMatches` targetMatcher
+          , source' `sourceMatches` sourceMatcher
+          ]
+      _ -> noMatch
     Matcher.AttachCard timing mWhoMatcher cardMatcher targetMatcher -> guardTiming timing \case
       Window.AttachCard mWho card target -> do
         andM
@@ -3452,6 +3460,21 @@ sourceMatches s = \case
         _ -> False
      in
       pure $ check s
+  Matcher.SourceIsPlayerCard ->
+    let
+      check = \case
+        AbilitySource source' _ -> check source'
+        AssetSource _ -> True
+        EventSource _ -> True
+        SkillSource _ -> True
+        InvestigatorSource _ -> True
+        _ -> False
+     in
+      pure $ check s
+  Matcher.SourceIsPlayerCardAbility ->
+    case s of
+      AbilitySource s' _ -> sourceMatches s' Matcher.SourceIsPlayerCard
+      _ -> pure False
   Matcher.SourceWithCard cardMatcher -> do
     let
       getCardSource = \case

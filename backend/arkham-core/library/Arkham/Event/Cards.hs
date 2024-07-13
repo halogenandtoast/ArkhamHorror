@@ -94,6 +94,7 @@ allPlayerEventCards =
       , butterflyEffect1
       , callForBackup2
       , callingInFavors
+      , captivatingDiscovery
       , cheapShot
       , cheapShot2
       , cheatDeath5
@@ -3239,6 +3240,14 @@ bizarreDiagnosis =
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = setFromList [Insight, Science]
     , cdCriteria = Just $ exists (You <> InvestigatorWithAnyClues <> InvestigatorAt Anywhere)
+    }
+
+captivatingDiscovery :: CardDef
+captivatingDiscovery =
+  (event "09047" "Captivating Discovery" 1 Seeker)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Insight]
+    , cdCriteria = Just $ can.search.deck You
     }
 
 friendsInLowPlaces :: CardDef

@@ -377,6 +377,21 @@ const title = computed(() => {
       </div>
     </div>
     <div v-else-if="amountsLabel" class="modal amount-modal">
+      <div v-if="searchedCards.length > 0" class="modal-contents searched-cards">
+        <div v-for="[group, cards] in searchedCards" :key="group" class="group">
+          <h2>{{zoneToLabel(group)}}</h2>
+          <div class="group-cards">
+            <Card
+              v-for="card in cards"
+              :card="card"
+              :game="game"
+              :playerId="playerId"
+              :key="`${group}-${card}`"
+              @choose="$emit('choose', $event)"
+            />
+          </div>
+        </div>
+      </div>
       <div class="modal-contents amount-contents">
         <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
           <legend>{{paymentAmountsLabel}}</legend>

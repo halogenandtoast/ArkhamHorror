@@ -130,6 +130,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorUnhealedHorrorThisRound :: Field Investigator Int
   InvestigatorMeta :: Field Investigator Value
   InvestigatorBeganRoundAt :: Field Investigator (Maybe LocationId)
+  InvestigatorSearch :: Field Investigator (Maybe InvestigatorSearch)
   --
   InvestigatorSupplies :: Field Investigator [Supply]
 
@@ -276,7 +277,7 @@ instance HasCardCode InvestigatorAttrs where
 instance HasCardCode (With InvestigatorAttrs meta) where
   toCardCode (With x _) = investigatorCardCode x
 
-data InvestigatorSearch = InvestigatorSearch
+data InvestigatorSearch = MkInvestigatorSearch
   { searchingType :: SearchType
   , searchingInvestigator :: InvestigatorId
   , searchingSource :: Source

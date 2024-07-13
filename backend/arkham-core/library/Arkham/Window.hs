@@ -209,6 +209,7 @@ data WindowType
   | PhaseEnds Phase
   | PlaceUnderneath Target Card
   | PlacedToken Source Target Token Int
+  | InvestigatorPlacedFromTheirPool InvestigatorId Source Target Token Int
   | SpentToken Source Target Token Int
   | AttackOrEffectSpentLastUse Source Target Token
   | LostResources InvestigatorId Source Int

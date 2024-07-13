@@ -18,6 +18,7 @@ import Arkham.Source (Source)
 import Arkham.Target
 import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
+import Arkham.Token
 import Arkham.Window
 import Arkham.Window qualified as Window
 
@@ -184,6 +185,12 @@ spawnedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
     (windowType -> Window.EnemySpawns eid _) -> Just eid
     _ -> Nothing
+
+placedTokens :: Token -> [Window] -> Int
+placedTokens _ [] = 0
+placedTokens t ((windowType -> Window.PlacedToken _ _ token n) : xs) | token == t = n + placedTokens t xs
+placedTokens t ((windowType -> Window.InvestigatorPlacedFromTheirPool _ _ _ token n) : xs) | token == t = n + placedTokens t xs
+placedTokens t (_ : xs) = placedTokens t xs
 
 cardPlayed :: [Window] -> Card
 cardPlayed [] = error "missing play card window"

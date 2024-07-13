@@ -518,6 +518,7 @@ allEvents =
     , --- seeker [tsk]
       SomeEventCard theRavenQuill
     , SomeEventCard bizarreDiagnosis
+    , SomeEventCard captivatingDiscovery
     , --- rogue [tsk]
       SomeEventCard friendsInLowPlaces
     , SomeEventCard honedInstinct

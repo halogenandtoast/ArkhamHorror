@@ -65,6 +65,7 @@ allPlayerSkillCards =
       , guts
       , guts2
       , hatchetMan
+      , helpingHand
       , inquiringMind
       , inspiringPresence
       , intrepid
@@ -723,6 +724,13 @@ fightingLessons =
     { cdCardTraits = setFromList [Practiced]
     , cdCommitRestrictions = [OnlyTestWithActions [#fight, #evade]]
     , cdCardInHandEffects = True
+    }
+
+helpingHand :: CardDef
+helpingHand =
+  (skill "09031" "Helping Hand" [] Guardian)
+    { cdCardTraits = setFromList [Innate]
+    , cdCommitRestrictions = [MaxOnePerTest]
     }
 
 grizzled :: CardDef

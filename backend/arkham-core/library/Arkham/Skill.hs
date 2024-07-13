@@ -224,6 +224,8 @@ allSkills =
     , --- guardian [tsk]
       SomeSkillCard fightingLessons
     , SomeSkillCard helpingHand
+    , --- seeker [tsk]
+      SomeSkillCard analysis
     , --- survivor [tsk]
       SomeSkillCard grizzled
     , -- Return to the Dunwich Legacy

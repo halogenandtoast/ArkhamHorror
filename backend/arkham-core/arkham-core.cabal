@@ -2600,6 +2600,7 @@ library
       Arkham.Skill.Cards
       Arkham.Skill.Cards.AbleBodied
       Arkham.Skill.Cards.AllIn5
+      Arkham.Skill.Cards.Analysis
       Arkham.Skill.Cards.AnythingYouCanDoBetter
       Arkham.Skill.Cards.Arrogance
       Arkham.Skill.Cards.AsYouWish

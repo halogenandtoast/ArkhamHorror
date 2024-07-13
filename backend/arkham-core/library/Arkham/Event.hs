@@ -519,6 +519,7 @@ allEvents =
       SomeEventCard theRavenQuill
     , SomeEventCard bizarreDiagnosis
     , SomeEventCard captivatingDiscovery
+    , SomeEventCard mapTheArea
     , --- rogue [tsk]
       SomeEventCard friendsInLowPlaces
     , SomeEventCard honedInstinct

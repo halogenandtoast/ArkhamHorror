@@ -240,6 +240,7 @@ allPlayerEventCards =
       , manipulateDestiny2
       , manoAMano1
       , manoAMano2
+      , mapTheArea
       , marksmanship1
       , meditativeTrance
       , mindOverMatter
@@ -3248,6 +3249,14 @@ captivatingDiscovery =
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Insight]
     , cdCriteria = Just $ can.search.deck You
+    }
+
+mapTheArea :: CardDef
+mapTheArea =
+  (event "09048" "Map the Area" 1 Seeker)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Insight, Tactic]
+    , cdActions = [#investigate]
     }
 
 friendsInLowPlaces :: CardDef

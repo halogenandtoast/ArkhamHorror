@@ -32,6 +32,7 @@ allPlayerSkillCards =
       toCardCodePairs
       [ ableBodied
       , allIn5
+      , analysis
       , anythingYouCanDoBetter
       , arrogance
       , asYouWish
@@ -731,6 +732,12 @@ helpingHand =
   (skill "09031" "Helping Hand" [] Guardian)
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [MaxOnePerTest]
+    }
+
+analysis :: CardDef
+analysis =
+  (skill "09049" "Analysis" [#wild] Seeker)
+    { cdCardTraits = setFromList [Practiced]
     }
 
 grizzled :: CardDef

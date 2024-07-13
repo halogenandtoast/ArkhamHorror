@@ -296,6 +296,9 @@ buildChaosTokenEffect
 buildChaosTokenEffect eid metadata source token =
   Effect $ chaosTokenEffect' eid metadata source token
 
+effectIsForNextGame :: Effect -> Bool
+effectIsForNextGame e = e.window == Just EffectSetupWindow
+
 instance FromJSON Effect where
   parseJSON = withObject "Effect" $ \o -> do
     cCode <- o .: "cardCode"

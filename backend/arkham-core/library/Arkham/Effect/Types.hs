@@ -74,6 +74,12 @@ instance HasCardCode EffectAttrs where
 instance HasField "id" EffectAttrs EffectId where
   getField = effectId
 
+instance HasField "window" EffectAttrs (Maybe EffectWindow) where
+  getField = effectWindow
+
+instance HasField "window" Effect (Maybe EffectWindow) where
+  getField = effectWindow . toAttrs
+
 finishedL :: Lens' EffectAttrs Bool
 finishedL = lens effectFinished $ \m x -> m {effectFinished = x}
 

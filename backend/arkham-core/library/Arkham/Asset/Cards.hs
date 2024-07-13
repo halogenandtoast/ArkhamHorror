@@ -301,6 +301,7 @@ allPlayerAssetCards =
       , eighteenDerringer2
       , elderSignAmulet3
       , eldritchSophist
+      , embezzeledTreasure
       , empiricalHypothesis
       , empowerSelfAcuity2
       , empowerSelfAlacrity2
@@ -5741,6 +5742,13 @@ disguise =
     { cdSkills = [#agility]
     , cdCardTraits = setFromList [Talent, Trick, Illicit]
     , cdUses = uses Supply 4
+    }
+
+embezzeledTreasure :: CardDef
+embezzeledTreasure =
+  (asset "09063" "Embezzeled Treasure" 0 Rogue)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Item, Illicit]
     }
 
 chuckFergus2 :: CardDef

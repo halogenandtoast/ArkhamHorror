@@ -232,7 +232,7 @@ runGameMessage msg g = case msg of
       & (entitiesL . agendasL .~ mempty)
       & (entitiesL . treacheriesL .~ mempty)
       & (entitiesL . eventsL .~ mempty)
-      & (entitiesL . effectsL .~ mempty)
+      & (entitiesL . effectsL %~ filterMap effectIsForNextGame)
       & (entitiesL . skillsL .~ mempty)
       & (entitiesL . storiesL .~ mempty)
       & (inDiscardEntitiesL .~ mempty)

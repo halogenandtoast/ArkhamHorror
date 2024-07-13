@@ -874,6 +874,7 @@ allAssets =
     , --- rogue [tsk]
       SomeAssetCard damningTestimony
     , SomeAssetCard disguise
+    , SomeAssetCard embezzeledTreasure
     , SomeAssetCard chuckFergus2
     , --- mystic [tsk]
       SomeAssetCard livingInk

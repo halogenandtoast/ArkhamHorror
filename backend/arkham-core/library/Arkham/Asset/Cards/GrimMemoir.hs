@@ -4,8 +4,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.Helpers.Message qualified as Msg
 import Arkham.Investigate
-import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
 newtype GrimMemoir = GrimMemoir AssetAttrs
@@ -25,8 +25,7 @@ instance RunMessage GrimMemoir where
       pushM $ mkInvestigate iid (attrs.ability 1)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
-      chooseOneM iid do
-        labeled "Draw 1 card" $ drawCardsIfCan iid (attrs.ability 1) 1
-        labeled "Do not draw card" nothing
+      mmsg <- Msg.drawCardsIfCan iid (attrs.ability 1) 1
+      for_ mmsg \draw -> chooseOne iid $ [Label "Draw 1 card" [draw], Label "Do not draw card" []]
       pure a
     _ -> GrimMemoir <$> liftRunMessage msg attrs

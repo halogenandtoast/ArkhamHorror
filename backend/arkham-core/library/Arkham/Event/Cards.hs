@@ -76,6 +76,7 @@ allPlayerEventCards =
       , barricade3
       , bellyOfTheBeast
       , bindMonster2
+      , bizarreDiagnosis
       , blackMarket2
       , blindingLight
       , blindingLight2
@@ -3230,6 +3231,14 @@ theRavenQuill =
           , (InterwovenInk, 3)
           , (SupernaturalRecord, 4)
           ]
+    }
+
+bizarreDiagnosis :: CardDef
+bizarreDiagnosis =
+  (event "09046" "Bizarre Diagnosis" 0 Seeker)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Insight, Science]
+    , cdCriteria = Just $ exists (You <> InvestigatorWithAnyClues <> InvestigatorAt Anywhere)
     }
 
 friendsInLowPlaces :: CardDef

@@ -536,6 +536,7 @@ library
       Arkham.Asset.Cards.DisciplineQuiescenceOfThoughtBroken
       Arkham.Asset.Cards.DiscOfItzamna
       Arkham.Asset.Cards.DiscOfItzamna2
+      Arkham.Asset.Cards.DissectionTools
       Arkham.Asset.Cards.Divination1
       Arkham.Asset.Cards.Divination4
       Arkham.Asset.Cards.DoubleDouble4
@@ -637,6 +638,7 @@ library
       Arkham.Asset.Cards.GregoryGry
       Arkham.Asset.Cards.GreteWagner
       Arkham.Asset.Cards.GreteWagner3
+      Arkham.Asset.Cards.GrimMemoir
       Arkham.Asset.Cards.GrimmsFairyTales
       Arkham.Asset.Cards.GrislyTotem
       Arkham.Asset.Cards.GrislyTotemSeeker3
@@ -2450,6 +2452,7 @@ library
       Arkham.Matcher.Types
       Arkham.Message
       Arkham.Message.Lifted
+      Arkham.Message.Lifted.Choose
       Arkham.Message.Type
       Arkham.Modifier
       Arkham.ModifierData

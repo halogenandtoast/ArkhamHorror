@@ -868,6 +868,8 @@ allAssets =
       SomeAssetCard alchemicalDistillation
     , SomeAssetCard empiricalHypothesis
     , SomeAssetCard fingerprintKit4
+    , SomeAssetCard dissectionTools
+    , SomeAssetCard grimMemoir
     , --- rogue [tsk]
       SomeAssetCard damningTestimony
     , SomeAssetCard chuckFergus2

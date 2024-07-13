@@ -274,6 +274,7 @@ allPlayerAssetCards =
       , disciplinePrescienceOfFateBroken
       , disciplineQuiescenceOfThought
       , disciplineQuiescenceOfThoughtBroken
+      , dissectionTools
       , divination1
       , divination4
       , doubleDouble4
@@ -374,6 +375,7 @@ allPlayerAssetCards =
       , gregoryGry
       , greteWagner
       , greteWagner3
+      , grimMemoir
       , grimmsFairyTales
       , grislyTotem
       , grislyTotemSeeker3
@@ -5685,6 +5687,23 @@ fingerprintKit4 =
     , cdSlots = [#hand]
     , cdUses = uses Supply 3
     , cdLevel = Just 4
+    }
+
+dissectionTools :: CardDef
+dissectionTools =
+  (asset "09043" "Dissection Tools" 2 Seeker)
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Item, Tool, Science]
+    , cdSlots = [#hand]
+    }
+
+grimMemoir :: CardDef
+grimMemoir =
+  (asset "09044" "Grim Memoir" 3 Seeker)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Item, Tome]
+    , cdSlots = [#hand]
+    , cdUses = uses Secret 4
     }
 
 damningTestimony :: CardDef

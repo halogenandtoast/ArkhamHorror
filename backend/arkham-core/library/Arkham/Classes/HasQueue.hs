@@ -17,7 +17,7 @@ runQueueT body = do
   pushAll $ reverse msgs
   pure a
 
-evalQueueT :: HasQueue msg m => QueueT msg m a -> m [msg]
+evalQueueT :: MonadIO m => QueueT msg m a -> m [msg]
 evalQueueT body = do
   inbox <- newIORef []
   _ <- runReaderT (unQueueT body) (Queue inbox)

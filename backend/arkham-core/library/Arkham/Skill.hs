@@ -223,6 +223,7 @@ allSkills =
     , SomeSkillCard onTheMend
     , --- guardian [tsk]
       SomeSkillCard fightingLessons
+    , SomeSkillCard helpingHand
     , --- survivor [tsk]
       SomeSkillCard grizzled
     , -- Return to the Dunwich Legacy

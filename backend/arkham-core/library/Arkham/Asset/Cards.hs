@@ -274,6 +274,7 @@ allPlayerAssetCards =
       , disciplinePrescienceOfFateBroken
       , disciplineQuiescenceOfThought
       , disciplineQuiescenceOfThoughtBroken
+      , disguise
       , dissectionTools
       , divination1
       , divination4
@@ -5732,6 +5733,14 @@ damningTestimony =
           , (Surveil, 3)
           , (Expose, 4)
           ]
+    }
+
+disguise :: CardDef
+disguise =
+  (asset "09062" "Disguise" 3 Rogue)
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Talent, Trick, Illicit]
+    , cdUses = uses Supply 4
     }
 
 chuckFergus2 :: CardDef

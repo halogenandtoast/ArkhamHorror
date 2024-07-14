@@ -223,6 +223,7 @@ allPlayerEventCards =
       , juryRig
       , keepFaith
       , keepFaith2
+      , kickingTheHornetsNest
       , knowledgeIsPower
       , lessonLearned2
       , letGodSortThemOut
@@ -3353,6 +3354,14 @@ illTakeThat =
           $ InHandOf You
           <> #item
           <> #asset
+    }
+
+kickingTheHornetsNest :: CardDef
+kickingTheHornetsNest =
+  (event "09068" "Kicking the Hornets Nest" 0 Rogue)
+    { cdSkills = [#intellect, #combat]
+    , cdCardTraits = setFromList [Gambit, Tactic]
+    , cdCriteria = can.target.encounterDeck
     }
 
 breakingAndEntering2 :: CardDef

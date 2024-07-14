@@ -526,6 +526,7 @@ allEvents =
     , SomeEventCard hiddenPocket
     , SomeEventCard hitAndRun
     , SomeEventCard illTakeThat
+    , SomeEventCard kickingTheHornetsNest
     , SomeEventCard breakingAndEntering2
     , --- mystic [tsk]
       SomeEventCard powerWord

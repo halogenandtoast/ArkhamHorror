@@ -117,6 +117,7 @@ import Arkham.Event.Events (
   fightOrFlightEffect,
   followedEffect,
   getBehindMeEffect,
+  hitAndRunEffect,
   imDoneRunninEffect,
   improvisationEffect,
   letMeHandleThisEffect,
@@ -430,6 +431,7 @@ allEffects =
     , ("09009", SomeEffect grapplingHookEffect)
     , ("09029", SomeEffect oneInTheChamberEffect)
     , ("09041", SomeEffect empiricalHypothesisEffect)
+    , ("09066", SomeEffect hitAndRunEffect)
     , ("50044", SomeEffect jeremiahPierceEffect)
     , ("52007", SomeEffect alchemicalTransmutation2Effect)
     , ("52008", SomeEffect stormOfSpirits3Effect)

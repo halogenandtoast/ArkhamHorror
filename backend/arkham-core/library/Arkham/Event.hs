@@ -524,6 +524,7 @@ allEvents =
       SomeEventCard friendsInLowPlaces
     , SomeEventCard honedInstinct
     , SomeEventCard hiddenPocket
+    , SomeEventCard hitAndRun
     , SomeEventCard breakingAndEntering2
     , --- mystic [tsk]
       SomeEventCard powerWord

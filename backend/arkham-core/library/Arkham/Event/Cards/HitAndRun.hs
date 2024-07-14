@@ -1,4 +1,4 @@
-module Arkham.Event.Cards.SleightOfHand (sleightOfHand, sleightOfHandEffect, SleightOfHand (..)) where
+module Arkham.Event.Cards.HitAndRun (hitAndRun, hitAndRunEffect, HitAndRun (..)) where
 
 import Arkham.Cost
 import Arkham.Cost.Status qualified as Cost
@@ -9,42 +9,42 @@ import Arkham.Helpers.Query (selectAssetController)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 
-newtype SleightOfHand = SleightOfHand EventAttrs
+newtype HitAndRun = HitAndRun EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-sleightOfHand :: EventCard SleightOfHand
-sleightOfHand = event SleightOfHand Cards.sleightOfHand
+hitAndRun :: EventCard HitAndRun
+hitAndRun = event HitAndRun Cards.hitAndRun
 
-instance RunMessage SleightOfHand where
-  runMessage msg e@(SleightOfHand attrs) = runQueueT $ case msg of
+instance RunMessage HitAndRun where
+  runMessage msg e@(HitAndRun attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      cards <- select $ PlayableCard Cost.PaidCost $ inHandOf iid <> basic #item
+      cards <- select $ PlayableCard Cost.PaidCost $ inHandOf iid <> basic (#ally <> #asset)
       chooseOne
         iid
         [ targetLabel
           card
           [ PutCardIntoPlay iid card (Just $ toTarget attrs) NoPayment windows'
-          , Msg.createCardEffect Cards.sleightOfHand Nothing attrs card
+          , Msg.createCardEffect Cards.hitAndRun Nothing attrs card
           ]
         | card <- cards
         ]
       pure e
-    _ -> SleightOfHand <$> liftRunMessage msg attrs
+    _ -> HitAndRun <$> liftRunMessage msg attrs
 
-newtype SleightOfHandEffect = SleightOfHandEffect EffectAttrs
+newtype HitAndRunEffect = HitAndRunEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-sleightOfHandEffect :: EffectArgs -> SleightOfHandEffect
-sleightOfHandEffect = cardEffect SleightOfHandEffect Cards.sleightOfHand
+hitAndRunEffect :: EffectArgs -> HitAndRunEffect
+hitAndRunEffect = cardEffect HitAndRunEffect Cards.hitAndRun
 
-instance RunMessage SleightOfHandEffect where
-  runMessage msg e@(SleightOfHandEffect attrs) = runQueueT $ case msg of
+instance RunMessage HitAndRunEffect where
+  runMessage msg e@(HitAndRunEffect attrs) = runQueueT $ case msg of
     EndTurn _ -> do
       case attrs.target of
         CardIdTarget cid -> do
           selectOne (AssetWithCardId cid) >>= traverse_ \aid -> selectAssetController aid >>= traverse_ \controller -> returnToHand controller aid
         _ -> pure ()
       disableReturn e
-    _ -> SleightOfHandEffect <$> liftRunMessage msg attrs
+    _ -> HitAndRunEffect <$> liftRunMessage msg attrs

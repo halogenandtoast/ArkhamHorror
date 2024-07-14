@@ -35,7 +35,7 @@ instance HasAbilities LibraryDocent1 where
         1
         ( ControlsThis
             <> PlayableCardExistsWithCostReduction
-              2
+              (Reduce 2)
               ( HandCardWithDifferentTitleFromAtLeastOneAsset
                   You
                   (AssetWithTrait Tome)

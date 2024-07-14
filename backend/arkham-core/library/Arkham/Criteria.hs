@@ -116,6 +116,9 @@ pattern DuringAnySkillTest <- DuringSkillTest AnySkillTest
   where
     DuringAnySkillTest = DuringSkillTest AnySkillTest
 
+data CostReduction = Reduce Int | ReduceBySuccessAmount
+  deriving stock (Show, Eq, Ord, Data)
+
 data Criterion
   = AssetExists AssetMatcher
   | DifferentAssetsExist AssetMatcher AssetMatcher
@@ -167,7 +170,7 @@ data Criterion
   | CardWithDoomExists
   | ControlsThis -- really controls this
   | PlayableCardExists CostStatus ExtendedCardMatcher
-  | PlayableCardExistsWithCostReduction Int ExtendedCardMatcher
+  | PlayableCardExistsWithCostReduction CostReduction ExtendedCardMatcher
   | ResourcesOnThis ValueMatcher
   | ResourcesOnLocation Where ValueMatcher
   | ReturnableCardInDiscard DiscardSignifier [Trait]
@@ -357,6 +360,7 @@ instance Capable (FromSource -> InvestigatorMatcher -> Criterion) where
           (\(m :: FromSource -> InvestigatorMatcher) fSource matcher -> exists (m fSource <> matcher))
           can'
 
+$(deriveJSON defaultOptions ''CostReduction)
 $(deriveJSON defaultOptions ''DiscardSignifier)
 $(deriveJSON defaultOptions ''UnderZone)
 $(deriveJSON defaultOptions ''EnemyCriterion)

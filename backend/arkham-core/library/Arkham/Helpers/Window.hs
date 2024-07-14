@@ -245,6 +245,12 @@ getInvestigatedLocation = \case
   ((windowType -> Window.PassInvestigationSkillTest _ lid _) : _) -> lid
   (_ : rest) -> getInvestigatedLocation rest
 
+getPassedBy :: [Window] -> Int
+getPassedBy = \case
+  [] -> 0
+  ((windowType -> Window.PassInvestigationSkillTest _ _ n) : _) -> n
+  (_ : rest) -> getPassedBy rest
+
 getDamageSource :: [Window] -> Source
 getDamageSource = \case
   [] -> error "No damage"

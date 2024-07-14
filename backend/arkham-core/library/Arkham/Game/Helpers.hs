@@ -1291,8 +1291,11 @@ passesCriteria iid mcard source' windows' = \case
     case mSkillTest of
       Nothing -> pure False
       Just st -> cardListMatches (concat $ toList (skillTestCommittedCards st)) cardListMatcher
-  Criteria.PlayableCardExistsWithCostReduction n cardMatcher -> do
+  Criteria.PlayableCardExistsWithCostReduction reduction cardMatcher -> do
     mTurnInvestigator <- selectOne Matcher.TurnInvestigator
+    let n = case reduction of
+          Reduce x -> x
+          ReduceBySuccessAmount -> getPassedBy windows'
     let
       updatedWindows = case mTurnInvestigator of
         Nothing -> windows'

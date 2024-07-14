@@ -33,7 +33,10 @@ instance HasModifiersFor LeoAnderson where
 
 instance HasAbilities LeoAnderson where
   getAbilities (LeoAnderson a) =
-    [ restrictedAbility a 1 (Self <> PlayableCardExistsWithCostReduction 1 (InHandOf You <> #ally))
+    [ restrictedAbility
+        a
+        1
+        (Self <> PlayableCardExistsWithCostReduction (Reduce 1) (InHandOf You <> #ally))
         $ freeReaction (TurnBegins #after You)
     ]
 

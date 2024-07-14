@@ -13,7 +13,7 @@ import Arkham.Card.CardType
 import Arkham.Card.Cost
 import Arkham.ClassSymbol
 import Arkham.Cost
-import Arkham.Criteria (Criterion, exists, notExists, youExist)
+import Arkham.Criteria (CostReduction (..), Criterion, exists, notExists, youExist)
 import Arkham.Criteria qualified as Criteria
 import Arkham.Customization
 import Arkham.Damage
@@ -205,6 +205,7 @@ allPlayerEventCards =
       , hypnoticGaze2
       , ifItBleeds
       , illSeeYouInHell
+      , illTakeThat
       , imDoneRunnin
       , imOuttaHere
       , impromptuBarrier
@@ -1046,7 +1047,7 @@ everVigilant1 =
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = singleton Tactic
     , cdLevel = Just 1
-    , cdCriteria = Just $ Criteria.PlayableCardExistsWithCostReduction 1 $ #asset <> InHandOf You
+    , cdCriteria = Just $ Criteria.PlayableCardExistsWithCostReduction (Reduce 1) $ #asset <> InHandOf You
     }
 
 noStoneUnturned :: CardDef
@@ -1083,7 +1084,7 @@ uncageTheSoul =
     , cdCardTraits = singleton Spirit
     , cdCriteria =
         Just
-          $ Criteria.PlayableCardExistsWithCostReduction 3
+          $ Criteria.PlayableCardExistsWithCostReduction (Reduce 3)
           $ InHandOf You
           <> basic (oneOf [CardWithTrait Spell, CardWithTrait Ritual])
     }
@@ -3333,6 +3334,25 @@ hitAndRun =
     , cdCardTraits = setFromList [Tactic, Trick]
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria = Just $ Criteria.PlayableCardExists PaidCost $ InHandOf You <> #ally <> #asset
+    }
+
+illTakeThat :: CardDef
+illTakeThat =
+  (event "09067" "\"I'll take that!\"" 0 Rogue)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Trick, Upgrade, Illicit]
+    , cdFastWindow =
+        Just
+          $ oneOf
+            [ SkillTestResult #after You (WhileInvestigating Anywhere) #success
+            , SkillTestResult #after You (WhileEvadingAnEnemy $ EnemyWithTrait Humanoid) #success
+            ]
+    , cdCriteria =
+        Just
+          $ Criteria.PlayableCardExistsWithCostReduction ReduceBySuccessAmount
+          $ InHandOf You
+          <> #item
+          <> #asset
     }
 
 breakingAndEntering2 :: CardDef

@@ -196,6 +196,7 @@ allPlayerEventCards =
       , heroicRescue2
       , hiddenPocket
       , hidingSpot
+      , hitAndRun
       , hitMe
       , honedInstinct
       , hotStreak2
@@ -3323,6 +3324,15 @@ hiddenPocket =
     , cdCardTraits = setFromList [Upgrade, Illicit]
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria = Just $ exists $ AssetControlledBy You <> mapOneOf AssetWithTrait [Clothing, Armor]
+    }
+
+hitAndRun :: CardDef
+hitAndRun =
+  (event "09066" "Sleight of Hand" 1 Rogue)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Tactic, Trick]
+    , cdFastWindow = Just $ DuringTurn You
+    , cdCriteria = Just $ Criteria.PlayableCardExists PaidCost $ InHandOf You <> #ally <> #asset
     }
 
 breakingAndEntering2 :: CardDef

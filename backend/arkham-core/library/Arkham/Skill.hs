@@ -226,6 +226,8 @@ allSkills =
     , SomeSkillCard helpingHand
     , --- seeker [tsk]
       SomeSkillCard analysis
+    , --- rogue [tsk]
+      SomeSkillCard calculatedRisk
     , --- survivor [tsk]
       SomeSkillCard grizzled
     , -- Return to the Dunwich Legacy

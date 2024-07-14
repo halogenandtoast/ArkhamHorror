@@ -875,7 +875,9 @@ allAssets =
       SomeAssetCard damningTestimony
     , SomeAssetCard disguise
     , SomeAssetCard embezzeledTreasure
+    , SomeAssetCard thievesKit
     , SomeAssetCard chuckFergus2
+    , SomeAssetCard thievesKit3
     , --- mystic [tsk]
       SomeAssetCard livingInk
     , SomeAssetCard summonedServitor

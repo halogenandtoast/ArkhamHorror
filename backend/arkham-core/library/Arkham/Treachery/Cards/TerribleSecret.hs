@@ -1,8 +1,4 @@
-module Arkham.Treachery.Cards.TerribleSecret (
-  terribleSecret,
-  TerribleSecret (..),
-)
-where
+module Arkham.Treachery.Cards.TerribleSecret (terribleSecret, TerribleSecret (..)) where
 
 import Arkham.Prelude
 
@@ -41,9 +37,10 @@ instance RunMessage TerribleSecret where
                 , c <- maybeToList (preview _PlayerCard pc)
                 ]
             , UnfocusCards
+            , DoStep 1 msg
             ]
       pure t
-    AfterRevelation iid tid | tid == toId attrs -> do
+    DoStep 1 (Revelation iid source) | isSource attrs source -> do
       cardsUnderneath <- field InvestigatorCardsUnderneath iid
       push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 (length cardsUnderneath)
       pure t

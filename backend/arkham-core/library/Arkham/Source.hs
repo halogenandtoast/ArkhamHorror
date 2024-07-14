@@ -119,6 +119,9 @@ toProxySource a source = ProxySource source (toSource a)
 proxy :: (Sourceable a, Sourceable b) => a -> b -> Source
 proxy a b = ProxySource (toSource a) (toSource b)
 
+bothSource :: (Sourceable a, Sourceable b) => a -> b -> Source
+bothSource a b = BothSource (toSource a) (toSource b)
+
 instance Sourceable Source where
   toSource = id
   isSource = (==)

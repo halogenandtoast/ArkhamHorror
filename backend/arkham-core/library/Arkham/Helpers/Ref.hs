@@ -30,6 +30,10 @@ targetToMaybeCard = \case
   CardTarget c -> pure $ Just c
   SearchedCardTarget cId -> Just <$> getCard cId
   CardIdTarget cId -> Just <$> getCard cId
+  BothTarget a b -> do
+    aCard <- targetToMaybeCard a
+    bCard <- targetToMaybeCard b
+    pure $ aCard <|> bCard
   _ -> pure Nothing
 
 sourceToCard :: (HasCallStack, HasGame m) => Source -> m Card

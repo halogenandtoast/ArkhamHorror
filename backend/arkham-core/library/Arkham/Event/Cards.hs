@@ -194,6 +194,7 @@ allPlayerEventCards =
       , harmonyRestored2
       , heroicRescue
       , heroicRescue2
+      , hiddenPocket
       , hidingSpot
       , hitMe
       , honedInstinct
@@ -3313,6 +3314,15 @@ honedInstinct =
           , (ImpulseControl, 3)
           , (ForceOfHabit, 5)
           ]
+    }
+
+hiddenPocket :: CardDef
+hiddenPocket =
+  (event "09065" "Hidden Pocket" 1 Rogue)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Upgrade, Illicit]
+    , cdFastWindow = Just $ DuringTurn You
+    , cdCriteria = Just $ exists $ AssetControlledBy You <> mapOneOf AssetWithTrait [Clothing, Armor]
     }
 
 breakingAndEntering2 :: CardDef

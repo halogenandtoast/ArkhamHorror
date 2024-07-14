@@ -183,6 +183,9 @@ getCanSpendClues attrs = do
   match CannotSpendClues {} = True
   match _ = False
 
+providedSlot :: Sourceable source => InvestigatorAttrs -> source -> Bool
+providedSlot attrs source = any (isSlotSource source) $ concat $ toList (investigatorSlots attrs)
+
 removeFromSlots
   :: AssetId -> Map SlotType [Slot] -> Map SlotType [Slot]
 removeFromSlots aid = fmap (map (removeIfMatches aid))

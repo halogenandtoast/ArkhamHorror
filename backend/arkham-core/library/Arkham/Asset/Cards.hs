@@ -718,6 +718,8 @@ allPlayerAssetCards =
       , theTowerXVI
       , theWorldXxi3
       , thermos
+      , thievesKit
+      , thievesKit3
       , thirtyFiveWinchester
       , thirtyTwoColt
       , thirtyTwoColt2
@@ -5751,6 +5753,15 @@ embezzeledTreasure =
     , cdCardTraits = setFromList [Item, Illicit]
     }
 
+thievesKit :: CardDef
+thievesKit =
+  (asset "09064" "Thieves' Kit" 3 Rogue)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Item, Tool, Illicit]
+    , cdUses = uses Supply 6
+    , cdSlots = [#hand]
+    }
+
 chuckFergus2 :: CardDef
 chuckFergus2 =
   (asset "09072" ("Chuck Fergus" <:> "O'Bannion Driver") 4 Rogue)
@@ -5759,6 +5770,16 @@ chuckFergus2 =
     , cdSlots = [#ally]
     , cdLevel = Just 2
     , cdUnique = True
+    }
+
+thievesKit3 :: CardDef
+thievesKit3 =
+  (asset "09075" "Thieves' Kit" 3 Rogue)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Item, Tool, Illicit]
+    , cdUses = uses Supply 6
+    , cdSlots = [#hand]
+    , cdLevel = Just 3
     }
 
 livingInk :: CardDef

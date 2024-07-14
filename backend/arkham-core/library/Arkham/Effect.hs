@@ -86,7 +86,6 @@ import Arkham.Asset.Assets (
   sixthSenseEffect,
   songOfTheDead2Effect,
   thirtyFiveWinchesterEffect,
-  twilightBladeEffect,
   wellConnected3Effect,
   wellConnectedEffect,
   wither4Effect,
@@ -431,7 +430,6 @@ allEffects =
     , ("09009", SomeEffect grapplingHookEffect)
     , ("09029", SomeEffect oneInTheChamberEffect)
     , ("09041", SomeEffect empiricalHypothesisEffect)
-    , ("50013", SomeEffect twilightBladeEffect)
     , ("50044", SomeEffect jeremiahPierceEffect)
     , ("52007", SomeEffect alchemicalTransmutation2Effect)
     , ("52008", SomeEffect stormOfSpirits3Effect)

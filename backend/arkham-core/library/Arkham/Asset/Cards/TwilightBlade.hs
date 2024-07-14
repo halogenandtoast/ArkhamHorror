@@ -1,11 +1,9 @@
-module Arkham.Asset.Cards.TwilightBlade (twilightBlade, twilightBladeEffect, TwilightBlade (..)) where
+module Arkham.Asset.Cards.TwilightBlade (twilightBlade, TwilightBlade (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
 import Arkham.Fight
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -44,27 +42,13 @@ instance RunMessage TwilightBlade where
   runMessage msg a@(TwilightBlade attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
-      pushAll
-        [ createCardEffect Cards.twilightBlade Nothing source iid
-        , chooseFight
-        ]
+      chooseFight <- mkChooseFight iid source
+      player <- getPlayer iid
+      push
+        $ chooseOne
+          player
+          [ Label "Use Willpower" [toMessage $ withSkillType #willpower chooseFight]
+          , Label "Use Combat" [toMessage chooseFight]
+          ]
       pure a
     _ -> TwilightBlade <$> runMessage msg attrs
-
-newtype TwilightBladeEffect = TwilightBladeEffect EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-
-twilightBladeEffect :: EffectArgs -> TwilightBladeEffect
-twilightBladeEffect = cardEffect TwilightBladeEffect Cards.twilightBlade
-
-instance HasModifiersFor TwilightBladeEffect where
-  getModifiersFor target (TwilightBladeEffect a) | target == a.target = do
-    pure $ toModifiers a [UseSkillInPlaceOf SkillCombat SkillWillpower]
-  getModifiersFor _ _ = pure []
-
-instance RunMessage TwilightBladeEffect where
-  runMessage msg e@(TwilightBladeEffect attrs) = case msg of
-    SkillTestEnds _ _ -> e <$ push (disable attrs)
-    _ -> TwilightBladeEffect <$> runMessage msg attrs

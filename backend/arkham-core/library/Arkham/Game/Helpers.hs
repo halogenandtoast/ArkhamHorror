@@ -3229,6 +3229,7 @@ getPotentialSlots card iid = do
     passesRestriction = \case
       RestrictedSlot _ matcher _ -> cardMatch card matcher
       Slot {} -> True
+      AdjustableSlot {} -> True
   map fst
     <$> filterM
       ( \(_, slot) ->

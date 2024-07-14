@@ -389,7 +389,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       <> [TakeStartingResources investigatorId]
     pure $ a & (deckL .~ Deck deck''') & bondedCardsL .~ bondedCards
   ReturnToHand iid (AssetTarget aid) | iid == investigatorId -> do
+    pushWhen (providedSlot a aid) $ RefillSlots a.id
     pure $ a & (slotsL %~ removeFromSlots aid)
+  ReturnToHand iid (EventTarget aid) | iid == investigatorId -> do
+    pushWhen (providedSlot a aid) $ RefillSlots a.id
+    pure a
   ReturnToHand iid (CardTarget card) | iid == investigatorId -> do
     -- Card is assumed to be in your discard
     -- but since find card can also return cards in your hand
@@ -622,8 +626,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   RemoveAllDoom _ (InvestigatorTarget iid) | iid == investigatorId -> do
     pure $ a & tokensL %~ removeAllTokens Doom
   RemovedFromPlay source@(AssetSource aid) -> do
-    -- TODO: Do we need to refill slots?
-    pure $ a & (slotsL . each %~ filter ((/= source) . slotSource)) & (slotsL %~ removeFromSlots aid)
+    pushWhen (providedSlot a aid) $ RefillSlots a.id
+    pure
+      $ a
+      & (slotsL . each %~ filter ((not . isSlotSource source)))
+      & (slotsL %~ removeFromSlots aid)
+  RemovedFromPlay source@(EventSource aid) -> do
+    pushWhen (providedSlot a aid) $ RefillSlots a.id
+    pure
+      $ a
+      & (slotsL . each %~ filter ((not . isSlotSource source)))
   TakeControlOfAsset iid aid | iid == investigatorId -> do
     a <$ push (InvestigatorPlayAsset iid aid)
   TakeControlOfAsset iid aid | iid /= investigatorId -> do
@@ -765,11 +777,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ShuffleIntoDeck (Deck.InvestigatorDeck iid) (AssetTarget aid) | iid == investigatorId -> do
     card <- fromJustNote "missing card" . preview _PlayerCard <$> field AssetCard aid
     deck' <- shuffleM (card : unDeck investigatorDeck)
+    pushWhen (providedSlot a aid) $ RefillSlots a.id
     push $ After msg
     pure $ a & (deckL .~ Deck deck') & (slotsL %~ removeFromSlots aid)
   ShuffleIntoDeck (Deck.InvestigatorDeck iid) (EventTarget eid) | iid == investigatorId -> do
     card <- fromJustNote "missing card" . preview _PlayerCard <$> field EventCard eid
     deck' <- shuffleM (card : unDeck investigatorDeck)
+    pushWhen (providedSlot a eid) $ RefillSlots a.id
     push $ After msg
     pure $ a & (deckL .~ Deck deck')
   ShuffleIntoDeck (Deck.InvestigatorDeck iid) (SkillTarget aid) | iid == investigatorId -> do
@@ -801,14 +815,29 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   --   if shouldDiscard
   --     then pure $ a & discardL %~ (card :) & handL %~ filter (/= PlayerCard card)
   --     else pure a
-  Discarded (AssetTarget aid) _ (EncounterCard _) -> pure $ a & (slotsL %~ removeFromSlots aid)
+  Discarded (AssetTarget aid) _ (EncounterCard _) -> do
+    pushWhen (providedSlot a aid) $ RefillSlots a.id
+    pure $ a & (slotsL %~ removeFromSlots aid)
+  Discarded (EventTarget aid) _ _ -> do
+    pushWhen (providedSlot a aid) $ RefillSlots a.id
+    pure a
   Exile (CardIdTarget cid) -> do
     let card = fromJustNote "must be in hand" $ find ((== cid) . toCardId) investigatorHand
     push $ Exiled (CardIdTarget cid) card
     pure a
-  Exiled (AssetTarget aid) _ -> pure $ a & (slotsL %~ removeFromSlots aid)
+  Exiled (AssetTarget aid) _ -> do
+    pushWhen (providedSlot a aid) $ RefillSlots a.id
+    pure $ a & (slotsL %~ removeFromSlots aid)
+  Exiled (EventTarget aid) _ -> do
+    pushWhen (providedSlot a aid) $ RefillSlots a.id
+    pure a
   Exiled (CardIdTarget cid) _ -> pure $ a & handL %~ filter ((/= cid) . toCardId)
-  RemoveFromGame (AssetTarget aid) -> pure $ a & (slotsL %~ removeFromSlots aid)
+  RemoveFromGame (AssetTarget aid) -> do
+    pushWhen (providedSlot a aid) $ RefillSlots a.id
+    pure $ a & (slotsL %~ removeFromSlots aid)
+  RemoveFromGame (EventTarget aid) -> do
+    pushWhen (providedSlot a aid) $ RefillSlots a.id
+    pure a
   RemoveFromGame (CardIdTarget cid) -> pure $ a & cardsUnderneathL %~ filter ((/= cid) . toCardId)
   -- ChooseFightEnemy iid source mTarget skillType enemyMatcher isAction | iid == investigatorId -> do
   ChooseFightEnemy choose | choose.investigator == investigatorId -> do
@@ -1707,8 +1736,52 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -- additional slot we'll have called RefillSlots already, and then this
     -- will have taken up the necessary slot so we remove it here so it can be
     -- placed correctly later
-    pushAll [InvestigatorClearUnusedAssetSlots iid, Do (InvestigatorPlayAsset iid aid)]
+    pushAll
+      [ InvestigatorClearUnusedAssetSlots iid
+      , InvestigatorAdjustAssetSlots iid aid
+      , Do (InvestigatorPlayAsset iid aid)
+      ]
     pure $ a & slotsL %~ removeFromSlots aid
+  InvestigatorAdjustAssetSlots iid aid | iid == investigatorId -> do
+    slots <- field AssetSlots aid
+    assetCard <- field AssetCard aid
+    let
+      adjustableSlotsFor = \case
+        AdjustableSlot _ _ stypes _ -> stypes
+        _ -> []
+      adjustableSlots sType =
+        filterM
+          ( \(sType', slot) ->
+              andM
+                [pure $ sType /= sType', pure $ sType `elem` adjustableSlotsFor slot, canPutIntoSlot assetCard slot]
+          )
+          $ concatMap (\(t, bs) -> (t,) <$> bs)
+          $ mapToList (a ^. slotsL)
+    choices <- concatForM slots $ \sType -> do
+      slots' <- adjustableSlots sType
+      for slots' \(sType', slot) -> do
+        card <- sourceToCard (slotSource slot)
+        pure
+          $ Label
+            ("Change slot from " <> (toTitle card) <> " to " <> tshow sType)
+            [InvestigatorAdjustSlot iid slot sType' sType]
+
+    when (notNull choices) do
+      player <- getPlayer iid
+      push $ chooseSome player "Do not change slots" choices
+
+    pure $ a
+  InvestigatorAdjustSlot iid slot fromSlotType toSlotType | iid == investigatorId -> do
+    push $ RefillSlots iid
+    pure
+      $ a
+      & slotsL
+      %~ ix fromSlotType
+      %~ filter (/= slot)
+      & slotsL
+      %~ at toSlotType
+      . non []
+      %~ (emptySlot slot :)
   InvestigatorClearUnusedAssetSlots iid | iid == investigatorId -> do
     updatedSlots <- for (mapToList investigatorSlots) $ \(slotType, slots) -> do
       slots' <- for slots $ \slot -> do
@@ -2068,12 +2141,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let
       slots = findWithDefault [] slotType investigatorSlots
       emptiedSlots = sort $ slot : map emptySlot slots
-    push $ RefillSlots iid
+    push $ RefillSlots a.id
     pure $ a & slotsL %~ insertMap slotType emptiedSlots
   RemoveSlot iid slotType | iid == investigatorId -> do
     -- This arbitrarily removes the first slot of the given type provided that
     -- it is granted by the investigator
-    push $ RefillSlots iid
+    push $ RefillSlots a.id
     pure $ a & slotsL . ix slotType %~ deleteFirstMatch (isSource a . slotSource)
   RefillSlots iid | iid == investigatorId -> do
     assetIds <- select $ AssetWithPlacement (InPlayArea iid)

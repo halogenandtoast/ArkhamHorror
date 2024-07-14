@@ -708,6 +708,8 @@ data Message
   | InvestigatorPlaceCluesOnLocation InvestigatorId Source Int
   | InvestigatorPlayAsset InvestigatorId AssetId
   | InvestigatorClearUnusedAssetSlots InvestigatorId
+  | InvestigatorAdjustAssetSlots InvestigatorId AssetId
+  | InvestigatorAdjustSlot InvestigatorId Slot SlotType SlotType
   | InvestigatorPlayedAsset InvestigatorId AssetId
   | InvestigatorPlayEvent InvestigatorId EventId (Maybe Target) [Window] Zone
   | FinishedEvent EventId

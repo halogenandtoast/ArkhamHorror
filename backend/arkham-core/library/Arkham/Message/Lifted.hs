@@ -420,6 +420,18 @@ chooseOne iid msgs = do
   player <- getPlayer iid
   push $ Msg.chooseOne player msgs
 
+chooseOneToHandle
+  :: (HasCallStack, ReverseQueue m, Targetable target, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> [target]
+  -> m ()
+chooseOneToHandle iid source targets =
+  Arkham.Message.Lifted.chooseOne iid
+    $ targetLabels targets
+    $ only
+    . Msg.handleTargetChoice iid source
+
 chooseUpToN :: ReverseQueue m => InvestigatorId -> Int -> Text -> [UI Message] -> m ()
 chooseUpToN iid n label msgs = do
   player <- getPlayer iid

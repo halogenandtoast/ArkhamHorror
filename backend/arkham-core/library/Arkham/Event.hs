@@ -523,6 +523,7 @@ allEvents =
     , --- rogue [tsk]
       SomeEventCard friendsInLowPlaces
     , SomeEventCard honedInstinct
+    , SomeEventCard hiddenPocket
     , SomeEventCard breakingAndEntering2
     , --- mystic [tsk]
       SomeEventCard powerWord

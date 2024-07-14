@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed)
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Import.Lifted
+import Arkham.Investigator.Import.Lifted hiding (healDamage)
 import Arkham.Matcher hiding (RevealChaosToken)
 
 newtype StellaClark = StellaClark InvestigatorAttrs

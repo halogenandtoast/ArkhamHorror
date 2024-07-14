@@ -629,6 +629,7 @@ focusChaosTokens tokens f = do
   f UnfocusChaosTokens
 
 focusCards :: ReverseQueue m => [Card] -> (Message -> m ()) -> m ()
+focusCards [] _ = pure ()
 focusCards cards f = do
   push $ FocusCards cards
   f UnfocusCards

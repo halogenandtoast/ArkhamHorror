@@ -38,7 +38,7 @@ instance HasAbilities DexterDrake where
             <> DuringTurn You
             <> oneOf
               [ PlayableCardExistsWithCostReduction
-                  1
+                  (Reduce 1)
                   (HandCardWithDifferentTitleFromAtLeastOneAsset You AnyAsset AnyCard)
               , ExtendedCardExists (InHandOf You <> basic (cardIs Assets.occultScraps))
               ]

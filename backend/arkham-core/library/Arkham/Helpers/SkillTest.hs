@@ -424,6 +424,7 @@ getIsCommittable a c = do
                     OnlyInvestigator matcher -> iid <=~> matcher
                     OnlyCardCommittedToTest -> pure $ null committedCardTitles
                     OnlyYourTest -> pure $ iid == a
+                    OnlyTestDuringYourTurn -> iid <=~> TurnInvestigator
                     OnlyNotYourTest -> pure $ iid /= a
                     MustBeCommittedToYourTest -> pure $ iid == a
                     OnlyIfYourLocationHasClues -> maybe (pure False) (fieldMap LocationClues (> 0)) mlid

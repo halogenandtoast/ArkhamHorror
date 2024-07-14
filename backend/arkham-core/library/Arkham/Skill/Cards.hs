@@ -38,6 +38,7 @@ allPlayerSkillCards =
       , asYouWish
       , beloved
       , bruteForce1
+      , calculatedRisk
       , copycat3
       , cunning
       , curiosity
@@ -738,6 +739,13 @@ analysis :: CardDef
 analysis =
   (skill "09049" "Analysis" [#wild] Seeker)
     { cdCardTraits = setFromList [Practiced]
+    }
+
+calculatedRisk :: CardDef
+calculatedRisk =
+  (skill "09070" "Calculated Risk" [] Rogue)
+    { cdCardTraits = setFromList [Gambit, Fated]
+    , cdCommitRestrictions = [OnlyYourTest, OnlyTestDuringYourTurn, MaxOnePerTest]
     }
 
 grizzled :: CardDef

@@ -2614,6 +2614,7 @@ library
       Arkham.Skill.Cards.AsYouWish
       Arkham.Skill.Cards.Beloved
       Arkham.Skill.Cards.BruteForce1
+      Arkham.Skill.Cards.CalculatedRisk
       Arkham.Skill.Cards.Copycat3
       Arkham.Skill.Cards.Cunning
       Arkham.Skill.Cards.Curiosity

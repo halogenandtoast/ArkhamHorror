@@ -21,6 +21,7 @@ data CommitRestriction
   | OnlyCardCommittedToTest
   | MustBeCommittedToYourTest
   | OnlyInvestigator InvestigatorMatcher
+  | OnlyTestDuringYourTurn
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''CommitRestriction)

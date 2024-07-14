@@ -974,6 +974,8 @@ runGameMessage msg g = case msg of
           lift $ pushAll $ map ObtainCard $ findWithDefault [] Zone.FromDeck foundCards
 
     pure g
+  FinishedSearch -> do
+    pure $ g & foundCardsL .~ mempty
   AddToEncounterDiscard card -> do
     pure
       $ g

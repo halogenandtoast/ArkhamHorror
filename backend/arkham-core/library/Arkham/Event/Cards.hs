@@ -143,6 +143,7 @@ allPlayerEventCards =
       , eatLead2
       , eavesdrop
       , eideticMemory3
+      , eldritchInitiation
       , eldritchInspiration
       , eldritchInspiration1
       , elusive
@@ -3393,6 +3394,13 @@ powerWord =
           , (Tonguetwister, 3)
           , (ThriceSpoken, 3)
           ]
+    }
+
+eldritchInitiation :: CardDef
+eldritchInitiation =
+  (event "09086" "Eldritch Initiation" 1 Mystic)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Ritual]
     }
 
 makeshiftTrap :: CardDef

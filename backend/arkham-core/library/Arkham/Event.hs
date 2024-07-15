@@ -530,6 +530,7 @@ allEvents =
     , SomeEventCard breakingAndEntering2
     , --- mystic [tsk]
       SomeEventCard powerWord
+    , SomeEventCard eldritchInitiation
     , --- survivor [tsk]
       SomeEventCard makeshiftTrap
     , -- The Feast of Hemloch Vale

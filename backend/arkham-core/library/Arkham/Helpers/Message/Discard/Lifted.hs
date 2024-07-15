@@ -1,4 +1,4 @@
-module Arkham.Helpers.Message.Discard.Lifted where
+module Arkham.Helpers.Message.Discard.Lifted (module Arkham.Discard, module Arkham.Helpers.Message.Discard.Lifted) where
 
 import Arkham.Card
 import Arkham.Classes.HasQueue

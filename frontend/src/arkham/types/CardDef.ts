@@ -21,6 +21,7 @@ export type CardDef = {
 const cardCostDecoder = JsonDecoder.oneOf<CardCost>([
   JsonDecoder.object({ contents: JsonDecoder.number, tag: JsonDecoder.isExactly("StaticCost") }, 'StaticCost'),
   JsonDecoder.object({ tag: JsonDecoder.isExactly("DynamicCost") }, 'DynamicCost'),
+  JsonDecoder.object({ tag: JsonDecoder.isExactly("MaxDynamicCost") }, 'MaxDynamicCost').map(() => ({ tag: "DynamicCost"})),
   JsonDecoder.object({ tag: JsonDecoder.isExactly("DiscardAmountCost") }, 'DiscardAmountCost')
 ], 'CardCost')
 

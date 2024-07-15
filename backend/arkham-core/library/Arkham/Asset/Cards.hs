@@ -433,6 +433,7 @@ allPlayerAssetCards =
       , ichtacaTheForgottenGuardian
       , idolOfXanatosWatcherBeyondTime
       , ikiaqTheCouncilsChosen3
+      , improvisedShield
       , inTheKnow1
       , inTheThickOfIt
       , ineffableTruth
@@ -5925,6 +5926,15 @@ idolOfXanatosWatcherBeyondTime =
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Item, Relic]
     , cdSlots = [#accessory]
+    }
+
+improvisedShield :: CardDef
+improvisedShield =
+  (asset "09103" "Improvised Shield" 1 Survivor)
+    { cdCardTraits = setFromList [Item, Armor, Improvised]
+    , cdSlots = [#hand]
+    , cdCriteria = Just Criteria.InYourDiscard
+    , cdPlayableFromDiscard = True
     }
 
 hyperphysicalShotcasterTheoreticalDevice :: CardDef

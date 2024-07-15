@@ -891,6 +891,7 @@ allAssets =
     , --- survivor [tsk]
       SomeAssetCard pocketMultiTool
     , SomeAssetCard idolOfXanatosWatcherBeyondTime
+    , SomeAssetCard improvisedShield
     , --- neutral [tsk]
       SomeAssetCard hyperphysicalShotcasterTheoreticalDevice
     , -- The Feast of Hemloch Vale

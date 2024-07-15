@@ -13,6 +13,8 @@ import Arkham.Classes.Query
 import Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Deck (IsDeck (..))
+import Arkham.Discover as X (IsInvestigate (..))
+import Arkham.Discover qualified as Msg
 import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.Enemy.Creation
 import Arkham.Evade
@@ -21,6 +23,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Campaign qualified as Msg
 import Arkham.Helpers.Enemy qualified as Msg
+import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
 import Arkham.Helpers.Log qualified as Msg
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers (ModifierType (MetaModifier), getMetaMaybe)
@@ -540,6 +543,10 @@ nextPhaseModifier
   -> m ()
 nextPhaseModifier phase source target modifier = push $ Msg.nextPhaseModifier phase source target modifier
 
+roundModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
+roundModifier source target modifier = push $ Msg.roundModifier source target modifier
+
 skillTestModifiers
   :: forall target source m
    . (ReverseQueue m, Sourceable source, Targetable target)
@@ -821,6 +828,13 @@ uiEffect s t m = push $ Msg.uiEffect s t m
 healDamage
   :: (ReverseQueue m, Sourceable source, Targetable target) => target -> source -> Int -> m ()
 healDamage target source n = push $ Msg.HealDamage (toTarget target) (toSource source) n
+
+discoverAtYourLocation
+  :: (ReverseQueue m, Sourceable source) => IsInvestigate -> InvestigatorId -> source -> Int -> m ()
+discoverAtYourLocation isInvestigate iid s n = do
+  withLocationOf iid \loc -> do
+    whenM (getCanDiscoverClues isInvestigate iid loc) do
+      push $ Msg.DiscoverClues iid $ Msg.discoverAtYourLocation s n
 
 doStep :: ReverseQueue m => Int -> Message -> m ()
 doStep n msg = push $ Msg.DoStep n msg

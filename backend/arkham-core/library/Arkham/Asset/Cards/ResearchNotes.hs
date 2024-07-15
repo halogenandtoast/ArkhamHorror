@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Discover
 import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
 import Arkham.Helpers.Window (placedTokens)
 import Arkham.Matcher hiding (DiscoverClues)
@@ -46,9 +45,7 @@ instance RunMessage ResearchNotes where
             chooseAmount iid "Evidence" "Evidence" 0 spendable attrs
       pure a
     ResolveAmounts iid (getChoiceAmount "Evidence" -> n) (isTarget attrs -> True) | n > 0 -> do
-      pushAll
-        [ SpendUses (attrs.ability 2) (toTarget attrs) Evidence n
-        , DiscoverClues iid $ discoverAtYourLocation (attrs.ability 2) n
-        ]
+      push $ SpendUses (attrs.ability 2) (toTarget attrs) Evidence n
+      discoverAtYourLocation NotInvestigate iid (attrs.ability 2) n
       pure a
     _ -> ResearchNotes <$> liftRunMessage msg attrs

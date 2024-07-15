@@ -2742,6 +2742,16 @@ enemyMatcherFilter = \case
                 ]
           )
           (getAbilities enemy)
+  EnemyCanBeDefeatedBy source -> \enemy ->
+    do
+      modifiers <- getModifiers enemy
+      let
+        prevents = \case
+          CanOnlyBeDefeatedBy matcher -> not <$> sourceMatches source matcher
+          CanOnlyBeDefeatedByDamage -> pure True
+          CannotBeDefeated -> pure True
+          _ -> pure False
+      noneM prevents modifiers
   EnemyCanBeEvadedBy _source -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers iid

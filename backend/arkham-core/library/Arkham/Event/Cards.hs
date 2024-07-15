@@ -152,6 +152,7 @@ allPlayerEventCards =
       , emergencyCache2
       , emergencyCache3
       , enchantWeapon3
+      , endOfTheRoad
       , etherealForm
       , etherealSlip
       , etherealSlip2
@@ -3448,6 +3449,14 @@ makeshiftTrap =
           , (Net, 3)
           , (ExplosiveDevice, 4)
           ]
+    }
+
+endOfTheRoad :: CardDef
+endOfTheRoad =
+  (event "09104" "End of the Road" 0 Survivor)
+    { cdCardTraits = setFromList [Insight, Spirit]
+    , cdFastWindow = Just $ DuringTurn You
+    , cdCriteria = Just $ exists FinalAgenda
     }
 
 keepFaith2 :: CardDef

@@ -535,6 +535,7 @@ allEvents =
     , SomeEventCard stringOfCurses
     , --- survivor [tsk]
       SomeEventCard makeshiftTrap
+    , SomeEventCard endOfTheRoad
     , -- The Feast of Hemloch Vale
       --- survivor [fhv]
       SomeEventCard keepFaith2

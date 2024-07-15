@@ -1,16 +1,10 @@
-module Arkham.Asset.Cards.FleshWard (
-  fleshWard,
-  FleshWard (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.FleshWard (fleshWard, FleshWard (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..), mkWindow)
+import Arkham.Prelude
 import Arkham.Window qualified as Window
 
 newtype FleshWard = FleshWard AssetAttrs
@@ -24,35 +18,22 @@ instance HasAbilities FleshWard where
   getAbilities (FleshWard a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-          (DealtDamageOrHorror Timing.When (SourceIsCancelable $ SourceIsEnemyAttack AnyEnemy) You)
-        $ exhaust a
-        <> UseCost (AssetWithId $ toId a) Charge 1
+          (DealtDamageOrHorror #when (SourceIsCancelable $ SourceIsEnemyAttack AnyEnemy) You)
+          (exhaust a <> assetUseCost a Charge 1)
     ]
-
-dealtDamage :: [Window] -> Bool
-dealtDamage [] = False
-dealtDamage ((windowType -> Window.WouldTakeDamageOrHorror _ _ n _) : _) = n > 0
-dealtDamage (_ : xs) = dealtDamage xs
-
-dealtHorror :: [Window] -> Bool
-dealtHorror [] = False
-dealtHorror ((windowType -> Window.WouldTakeDamageOrHorror _ _ _ n) : _) = n > 0
-dealtHorror (_ : xs) = dealtDamage xs
 
 instance RunMessage FleshWard where
   runMessage msg a@(FleshWard attrs) = case msg of
-    UseCardAbility iid source 1 windows' _ | isSource attrs source -> do
-      ignoreWindow <-
-        checkWindows
-          [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toAbilitySource attrs 1)]
+    UseCardAbility iid (isSource attrs -> True) 1 windows' _ -> do
+      ignoreWindow <- checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect $ attrs.ability 1
       player <- getPlayer iid
       push
         $ chooseOrRunOne player
         $ [ Label "Cancel 1 damage" [CancelDamage iid 1, ignoreWindow]
-          | dealtDamage windows'
+          | dealtDamage windows' > 0
           ]
         <> [ Label "Cancel 1 horror" [CancelHorror iid 1, ignoreWindow]
-           | dealtHorror windows'
+           | dealtHorror windows' > 0
            ]
       pure a
     _ -> FleshWard <$> runMessage msg attrs

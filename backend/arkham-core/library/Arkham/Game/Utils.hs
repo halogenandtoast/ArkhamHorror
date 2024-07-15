@@ -22,6 +22,7 @@ import Arkham.Game.Helpers hiding (
   getSpendableClueCount,
   withModifiers,
  )
+import Arkham.Helpers.Calculation
 import Arkham.Helpers.Investigator (getActionCost)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..), Investigator, investigatorResources)
@@ -192,7 +193,7 @@ createActiveCostForAdditionalCardCosts iid card = do
       flip mapMaybe (setToList $ cdKeywords $ toCardDef card) $ \case
         Keyword.Seal sealing -> case sealing of
           Sealing matcher -> Just $ Cost.SealCost matcher
-          SealUpTo n matcher -> Just $ Cost.UpTo n $ Cost.SealCost matcher
+          SealUpTo n matcher -> Just $ Cost.UpTo (Fixed n) $ Cost.SealCost matcher
           SealUpToX _ -> Nothing
         _ -> Nothing
     cost = mconcat $ additionalCosts <> sealChaosTokenCosts
@@ -274,23 +275,26 @@ createActiveCostForCard iid card isPlayAction windows' = do
     actions = case cdActions (toCardDef card) of
       [] -> [Action.Play | isPlayAction == IsPlayAction]
       as -> as
-    resourceCost =
-      if resources == 0
-        then
-          if isDynamic card
-            then
-              Cost.UpTo
-                (investigatorResources $ toAttrs investigator')
-                (Cost.ResourceCost 1)
-            else Cost.Free
-        else Cost.ResourceCost resources
     sealChaosTokenCosts =
       flip mapMaybe (setToList $ cdKeywords $ toCardDef card) $ \case
         Keyword.Seal sealing -> case sealing of
           Sealing matcher -> Just $ Cost.SealCost matcher
-          SealUpTo n matcher -> Just $ Cost.UpTo n $ Cost.SealCost matcher
+          SealUpTo n matcher -> Just $ Cost.UpTo (Fixed n) $ Cost.SealCost matcher
           SealUpToX _ -> Nothing
         _ -> Nothing
+
+    resourceCost =
+      if resources == 0
+        then
+          if isDynamic card
+            then case maxDynamic card of
+              Nothing -> Cost.UpTo (Fixed $ investigatorResources $ toAttrs investigator') (Cost.ResourceCost 1)
+              Just c ->
+                Cost.UpTo
+                  (MaxCalculation c (Fixed $ investigatorResources $ toAttrs investigator'))
+                  (Cost.ResourceCost 1)
+            else Cost.Free
+        else Cost.ResourceCost resources
 
   additionalActionCosts <-
     sum <$> flip mapMaybeM allModifiers \case

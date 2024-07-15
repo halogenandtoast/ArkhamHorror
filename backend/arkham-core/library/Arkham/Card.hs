@@ -17,6 +17,7 @@ import Arkham.Card.Id as X
 import Arkham.Card.PlayerCard as X (PlayerCard (..))
 
 import Arkham.Action (Action)
+import Arkham.Calculation
 import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
 import Arkham.Classes.GameLogger
@@ -315,9 +316,18 @@ instance HasCost Card where
 isDynamic :: Card -> Bool
 isDynamic (PlayerCard card) = case cdCost (toCardDef card) of
   Just DynamicCost -> True
+  Just (MaxDynamicCost _) -> True
   _ -> False
 isDynamic (EncounterCard _) = False
 isDynamic (VengeanceCard _) = False
+
+maxDynamic :: Card -> Maybe GameCalculation
+maxDynamic (PlayerCard card) = case cdCost (toCardDef card) of
+  Just DynamicCost -> Nothing
+  Just (MaxDynamicCost x) -> Just x
+  _ -> Nothing
+maxDynamic (EncounterCard _) = Nothing
+maxDynamic (VengeanceCard _) = Nothing
 
 isFastCard :: Card -> Bool
 isFastCard (PlayerCard card) =

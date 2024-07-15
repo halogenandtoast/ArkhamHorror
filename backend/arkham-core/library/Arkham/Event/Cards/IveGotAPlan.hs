@@ -18,7 +18,9 @@ instance RunMessage IveGotAPlan where
   runMessage msg e@(IveGotAPlan attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == attrs.id -> do
       skillTestModifier attrs iid
-        $ ForEach (MaxCalculation 3 (InvestigatorFieldCalculation iid InvestigatorClues)) [DamageDealt 1]
+        $ ForEach
+          (MaxCalculation (Fixed 3) (InvestigatorFieldCalculation iid InvestigatorClues))
+          [DamageDealt 1]
       chooseFight <-
         leftOr <$> aspect iid attrs (#intellect `InsteadOf` #combat) (mkChooseFight iid attrs)
       pushAll chooseFight

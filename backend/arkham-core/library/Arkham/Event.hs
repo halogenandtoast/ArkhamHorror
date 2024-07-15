@@ -531,6 +531,7 @@ allEvents =
     , --- mystic [tsk]
       SomeEventCard powerWord
     , SomeEventCard eldritchInitiation
+    , SomeEventCard explosiveWard
     , --- survivor [tsk]
       SomeEventCard makeshiftTrap
     , -- The Feast of Hemloch Vale

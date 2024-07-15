@@ -112,6 +112,7 @@ import Arkham.Event.Events (
   callingInFavorsEffect,
   cheapShot2Effect,
   eideticMemory3Effect,
+  explosiveWardEffect,
   exposeWeakness1Effect,
   exposeWeakness3Effect,
   fightOrFlightEffect,
@@ -432,6 +433,7 @@ allEffects =
     , ("09029", SomeEffect oneInTheChamberEffect)
     , ("09041", SomeEffect empiricalHypothesisEffect)
     , ("09066", SomeEffect hitAndRunEffect)
+    , ("09087", SomeEffect explosiveWardEffect)
     , ("50044", SomeEffect jeremiahPierceEffect)
     , ("52007", SomeEffect alchemicalTransmutation2Effect)
     , ("52008", SomeEffect stormOfSpirits3Effect)

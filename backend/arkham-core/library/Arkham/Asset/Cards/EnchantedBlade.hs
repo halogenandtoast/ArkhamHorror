@@ -20,7 +20,7 @@ getPaidUse _ = False
 
 instance HasAbilities EnchantedBlade where
   getAbilities (EnchantedBlade attrs) =
-    [ withAdditionalCost (UpTo 1 $ assetUseCost attrs Charge 1)
+    [ withAdditionalCost (UpTo (Fixed 1) $ assetUseCost attrs Charge 1)
         $ restrictedAbility attrs 1 ControlsThis
         $ fightAction_
     ]

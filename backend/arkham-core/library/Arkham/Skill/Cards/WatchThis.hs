@@ -3,11 +3,11 @@ module Arkham.Skill.Cards.WatchThis (
   WatchThis (..),
 ) where
 
-import Arkham.Prelude
-
+import Arkham.Calculation
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Message
+import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 
@@ -20,7 +20,7 @@ watchThis =
   skillWith
     WatchThis
     Cards.watchThis
-    (additionalCostL ?~ UpTo 3 (ResourceCost 1))
+    (additionalCostL ?~ UpTo (Fixed 3) (ResourceCost 1))
 
 paymentAmount :: Payment -> Int
 paymentAmount (Payments xs) = sum $ map paymentAmount xs

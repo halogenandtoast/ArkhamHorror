@@ -15,6 +15,7 @@ import Arkham.Helpers.Investigator
 import Arkham.Helpers.Log
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest.Target
+import Arkham.Helpers.Slot
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
@@ -30,7 +31,7 @@ calculate = go
  where
   go = \case
     Fixed n -> pure n
-    MaxCalculation n d -> min n <$> go d
+    MaxCalculation n d -> min <$> go n <*> go d
     DividedByCalculation d n -> (`div` n) <$> go d
     SumCalculation ds -> sum <$> traverse go ds
     SubtractCalculation d1 d2 -> (-) <$> go d1 <*> go d2
@@ -109,3 +110,7 @@ calculate = go
             LocationVengeance
             (LocationWithModifier InVictoryDisplayForCountingVengeance)
       pure $ inVictoryDisplay + locationsWithModifier + vengeanceCards
+    EmptySlotsCalculation investigatorMatcher slotType -> do
+      investigators <- select investigatorMatcher
+      slots <- concatMapM (fieldMap InvestigatorSlots (findWithDefault [] slotType)) investigators
+      pure $ count isEmptySlot slots

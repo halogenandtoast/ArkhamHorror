@@ -43,7 +43,7 @@ instance HasAbilities EnchantedBow2 where
                     <> EnemyWithoutModifier CannotBeAttacked
                     <> EnemyAt (ConnectedFrom (LocationWithInvestigator $ HasMatchingAsset (be a)))
                 )
-                (UpTo 1 (assetUseCost a Charge 1))
+                (UpTo (Fixed 1) (assetUseCost a Charge 1))
             )
             (assetUseCost a Charge 1)
         )

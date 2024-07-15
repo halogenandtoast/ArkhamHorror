@@ -27,7 +27,7 @@ chooseOneM iid choices = do
 
 forcedWhen :: Monad m => Bool -> ChooseT m () -> ChooseT m ()
 forcedWhen b action =
-  if traceShowId b
+  if b
     then do
       censor id action
       put True

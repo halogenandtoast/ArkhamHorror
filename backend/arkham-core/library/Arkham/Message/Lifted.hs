@@ -420,6 +420,11 @@ chooseOne iid msgs = do
   player <- getPlayer iid
   push $ Msg.chooseOne player msgs
 
+chooseSome :: ReverseQueue m => InvestigatorId -> Text -> [UI Message] -> m ()
+chooseSome iid done msgs = do
+  player <- getPlayer iid
+  push $ Msg.chooseSome player done msgs
+
 chooseOneToHandle
   :: (HasCallStack, ReverseQueue m, Targetable target, Sourceable source)
   => InvestigatorId

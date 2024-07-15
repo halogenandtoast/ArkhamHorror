@@ -5882,7 +5882,7 @@ dowsingRod4 =
 
 onyxPentacle4 :: CardDef
 onyxPentacle4 =
-  (asset "09099" "Onyx Pentacle" 3 Mystic)
+  (asset "09098" "Onyx Pentacle" 3 Mystic)
     { cdSkills = [#agility, #agility]
     , cdCardTraits = setFromList [Item, Charm]
     , cdSlots = [#hand]

@@ -11,6 +11,7 @@ build-type:     Simple
 library
   exposed-modules:
       Arkham.Ability
+      Arkham.Ability.Builder
       Arkham.Ability.Limit
       Arkham.Ability.Type
       Arkham.Ability.Types
@@ -472,6 +473,8 @@ library
       Arkham.Asset.Cards.ButterflySwords5
       Arkham.Asset.Cards.CatBurglar1
       Arkham.Asset.Cards.CelaenoFragments
+      Arkham.Asset.Cards.CeremonialSickle
+      Arkham.Asset.Cards.CeremonialSickle4
       Arkham.Asset.Cards.Chainsaw4
       Arkham.Asset.Cards.Charisma3
       Arkham.Asset.Cards.CharlesRossEsq
@@ -542,6 +545,8 @@ library
       Arkham.Asset.Cards.Divination4
       Arkham.Asset.Cards.DoubleDouble4
       Arkham.Asset.Cards.DownTheRabbitHole
+      Arkham.Asset.Cards.DowsingRod
+      Arkham.Asset.Cards.DowsingRod4
       Arkham.Asset.Cards.DragonPole
       Arkham.Asset.Cards.DrawingThin
       Arkham.Asset.Cards.DreamDiary

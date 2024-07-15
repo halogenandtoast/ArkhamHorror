@@ -220,6 +220,7 @@ data ModifierType
   | EnemyFightActionCriteria CriteriaOverride
   | EnemyFightWithMin Int (Min Int)
   | EnemyEngageActionCriteria CriteriaOverride
+  | InvestigateActionCriteria CriteriaOverride
   | EntersPlayWithDoom Int
   | ExtraResources Int
   | FailTies

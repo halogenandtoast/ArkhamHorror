@@ -7,32 +7,50 @@ import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Question
 import Arkham.Target
+import Control.Monad.State.Strict
 import Control.Monad.Writer.Strict
 
-newtype ChooseT m a = ChooseT {unChooseT :: WriterT [UI Message] m a}
-  deriving newtype (Functor, Applicative, Monad, MonadWriter [UI Message], MonadTrans, MonadIO)
+newtype ChooseT m a = ChooseT {unChooseT :: StateT Bool (WriterT [UI Message] m) a}
+  deriving newtype
+    (Functor, Applicative, Monad, MonadWriter [UI Message], MonadState Bool, MonadIO)
+
+instance MonadTrans ChooseT where
+  lift = ChooseT . lift . lift
 
 runChooseT :: ReverseQueue m => ChooseT m a -> m [UI Message]
-runChooseT m = execWriterT (unChooseT m)
+runChooseT = execWriterT . (`evalStateT` False) . unChooseT
 
 chooseOneM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOneM iid choices = do
   choices' <- runChooseT choices
   unless (null choices') $ chooseOne iid choices'
 
+forcedWhen :: Monad m => Bool -> ChooseT m () -> ChooseT m ()
+forcedWhen b action =
+  if b
+    then do
+      put True
+      censor (const []) action
+    else action
+
+unterminated :: ReverseQueue m => ChooseT m () -> ChooseT m ()
+unterminated action = do
+  b <- get
+  unless b action
+
 labeled :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
-labeled label action = do
+labeled label action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [Label label msgs]
 
 targeting :: (ReverseQueue m, Targetable target) => target -> QueueT Message m () -> ChooseT m ()
-targeting target action = do
+targeting target action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [targetLabel target msgs]
 
 targets
   :: (ReverseQueue m, Targetable target) => [target] -> (target -> QueueT Message m ()) -> ChooseT m ()
-targets ts action = for_ ts \t -> targeting t (action t)
+targets ts action = unterminated $ for_ ts \t -> targeting t (action t)
 
 nothing :: Monad m => QueueT Message m ()
 nothing = pure ()

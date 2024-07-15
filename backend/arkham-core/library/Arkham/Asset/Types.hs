@@ -29,6 +29,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Trait (Trait)
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Data
 import Data.Map.Strict qualified as Map
 import GHC.Records
@@ -307,6 +308,9 @@ instance HasField "ready" AssetAttrs Bool where
 instance HasField "horror" AssetAttrs Int where
   getField = assetHorror
 
+instance HasField "doom" AssetAttrs Int where
+  getField = assetDoom
+
 instance HasField "controller" AssetAttrs (Maybe InvestigatorId) where
   getField = assetController
 
@@ -551,3 +555,32 @@ overMeta :: (ToJSON a, FromJSON a) => (a -> a -> a) -> a -> AssetAttrs -> AssetA
 overMeta f a attrs = case fromJSON attrs.meta of
   Error _ -> attrs & metaL .~ toJSON a
   Success a' -> attrs & metaL .~ toJSON (f a' a)
+
+setMetaKey :: (ToJSON a, HasCallStack) => Key -> a -> AssetAttrs -> AssetAttrs
+setMetaKey k v attrs = case attrs.meta of
+  Object o -> attrs {assetMeta = Object $ KeyMap.insert k (toJSON v) o}
+  Null -> attrs {assetMeta = object [k .= v]}
+  _ -> error $ "Could not insert meta key, meta is not Null or Object: " <> show attrs.meta
+
+unsetMetaKey :: Key -> AssetAttrs -> AssetAttrs
+unsetMetaKey k attrs = case attrs.meta of
+  Object o -> attrs {assetMeta = Object $ KeyMap.delete k o}
+  _ -> attrs
+
+getMetaKey :: Key -> AssetAttrs -> Bool
+getMetaKey k attrs = case attrs.meta of
+  Object o -> case KeyMap.lookup k o of
+    Nothing -> False
+    Just v -> case fromJSON v of
+      Error _ -> False
+      Success v' -> v'
+  _ -> False
+
+getMetaKeyDefault :: FromJSON a => Key -> a -> AssetAttrs -> a
+getMetaKeyDefault k def attrs = case attrs.meta of
+  Object o -> case KeyMap.lookup k o of
+    Nothing -> def
+    Just v -> case fromJSON v of
+      Error _ -> def
+      Success v' -> v'
+  _ -> def

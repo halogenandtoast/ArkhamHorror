@@ -213,6 +213,8 @@ allPlayerAssetCards =
       , butterflySwords5
       , catBurglar1
       , celaenoFragments
+      , ceremonialSickle
+      , ceremonialSickle4
       , chainsaw4
       , charisma3
       , charlesRossEsq
@@ -280,6 +282,8 @@ allPlayerAssetCards =
       , divination4
       , doubleDouble4
       , downTheRabbitHole
+      , dowsingRod
+      , dowsingRod4
       , drElliHorowitz
       , drFrancisMorgan
       , drHenryArmitage
@@ -5830,6 +5834,40 @@ summonedServitor =
           , (DreamingCall, 3)
           , (DæmonicInfluence, 5)
           ]
+    }
+
+ceremonialSickle :: CardDef
+ceremonialSickle =
+  (asset "09082" "Ceremonial Sickle" 3 Mystic)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Item, Charm, Weapon, Melee]
+    , cdSlots = [#hand]
+    }
+
+dowsingRod :: CardDef
+dowsingRod =
+  (asset "09083" "Dowsing Rod" 4 Mystic)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Item, Charm]
+    , cdSlots = [#hand]
+    }
+
+ceremonialSickle4 :: CardDef
+ceremonialSickle4 =
+  (asset "09096" "Ceremonial Sickle" 3 Mystic)
+    { cdSkills = [#combat, #combat]
+    , cdCardTraits = setFromList [Item, Charm, Weapon, Melee]
+    , cdSlots = [#hand]
+    , cdLevel = Just 4
+    }
+
+dowsingRod4 :: CardDef
+dowsingRod4 =
+  (asset "09097" "Dowsing Rod" 4 Mystic)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Item, Charm]
+    , cdSlots = [#hand]
+    , cdLevel = Just 4
     }
 
 pocketMultiTool :: CardDef

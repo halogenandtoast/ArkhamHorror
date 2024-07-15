@@ -395,6 +395,7 @@ allPlayerAssetCards =
       , guardianAngel
       , guidedByTheUnseen3
       , guidingSpirit1
+      , hallowedChalice
       , hallowedMirror
       , hallowedMirror3
       , handcuffs
@@ -5850,6 +5851,14 @@ dowsingRod :: CardDef
 dowsingRod =
   (asset "09083" "Dowsing Rod" 4 Mystic)
     { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Item, Charm]
+    , cdSlots = [#hand]
+    }
+
+hallowedChalice :: CardDef
+hallowedChalice =
+  (asset "09084" "Hallowed Chalice" 3 Mystic)
+    { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Item, Charm]
     , cdSlots = [#hand]
     }

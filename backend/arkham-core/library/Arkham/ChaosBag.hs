@@ -503,6 +503,18 @@ instance RunMessage ChaosBag where
         & (chaosTokensL %~ filter (`notElem` tokensToPool))
         & (setAsideChaosTokensL %~ filter (`notElem` tokensToPool))
         & (tokenPoolL <>~ filter ((`elem` [#bless, #curse]) . (.face)) tokensToPool)
+    PassSkillTest -> do
+      removeAllMessagesMatching \case
+        NextChaosBagStep {} -> True
+        RunBag {} -> True
+        _ -> False
+      runMessage (ResetChaosTokens GameSource) c
+    FailSkillTest -> do
+      removeAllMessagesMatching \case
+        NextChaosBagStep {} -> True
+        RunBag {} -> True
+        _ -> False
+      runMessage (ResetChaosTokens GameSource) c
     ResetChaosTokens _source -> do
       returnAllBlessed <-
         getIsSkillTest >>= \case

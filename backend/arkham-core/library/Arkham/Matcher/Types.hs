@@ -1138,6 +1138,7 @@ data SkillTestMatcher
   | SkillTestWithRevealedChaosTokenCount Int ChaosTokenMatcher
   | SkillTestWithResolvedChaosTokenBy InvestigatorMatcher ChaosTokenMatcher
   | SkillTestOnCardWithTrait Trait
+  | SkillTestWithDifficulty ValueMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "investigating" SkillTestMatcher where

@@ -66,7 +66,7 @@ data ModifierType
   | AlternateEvadeField (SomeField Enemy)
   | AlternateFightField (SomeField Enemy)
   | AlternateResourceCost CardMatcher Cost
-  | AlternateSuccessfullEvasion
+  | AlternateSuccess Target
   | AlternateSuccessfullInvestigation Target
   | AlternateUpkeepDraw Target
   | AlternativeReady Source

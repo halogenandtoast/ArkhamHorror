@@ -160,6 +160,7 @@ allPlayerEventCards =
       , everVigilant1
       , evidence
       , evidence1
+      , exploitWeakness
       , explosiveWard
       , exposeWeakness1
       , exposeWeakness3
@@ -3457,6 +3458,19 @@ endOfTheRoad =
     { cdCardTraits = setFromList [Insight, Spirit]
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria = Just $ exists FinalAgenda
+    }
+
+exploitWeakness :: CardDef
+exploitWeakness =
+  (event "09105" "Exploit Weakness" 2 Survivor)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Tactic, Trick]
+    , cdFastWindow = Just $ WouldRevealChaosToken #when You
+    , cdCriteria =
+        Just
+          $ Criteria.DuringSkillTest
+          $ oneOf [WhileAttackingAnEnemy AnyEnemy, WhileEvadingAnEnemy AnyEnemy]
+          <> SkillTestWithDifficulty (static 0)
     }
 
 keepFaith2 :: CardDef

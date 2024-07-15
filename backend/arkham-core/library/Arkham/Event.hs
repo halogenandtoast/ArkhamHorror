@@ -532,6 +532,7 @@ allEvents =
       SomeEventCard powerWord
     , SomeEventCard eldritchInitiation
     , SomeEventCard explosiveWard
+    , SomeEventCard stringOfCurses
     , --- survivor [tsk]
       SomeEventCard makeshiftTrap
     , -- The Feast of Hemloch Vale

@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Discover
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)

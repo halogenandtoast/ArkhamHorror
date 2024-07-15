@@ -6,7 +6,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Discard
-import Arkham.Discover
 import Arkham.Helpers.Message.Discard (discardFromHand)
 import Arkham.Investigate
 import Arkham.Message (getChoiceAmount)
@@ -41,6 +40,6 @@ instance RunMessage Divination4 where
       pushWhen (n == 0) $ discardFromHand iid (attrs.ability 1) DiscardChoose 2
       pure a
     ResolveAmounts iid (getChoiceAmount "Charges" -> n) (isTarget attrs -> True) -> do
-      push $ DiscoverClues iid $ discoverAtYourLocation (attrs.ability 1) n
+      discoverAtYourLocation NotInvestigate iid (attrs.ability 1) n
       pure a
     _ -> Divination4 <$> liftRunMessage msg attrs

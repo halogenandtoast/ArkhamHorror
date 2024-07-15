@@ -3,11 +3,9 @@ module Arkham.Event.Cards.CallForBackup2 (callForBackup2, CallForBackup2 (..)) w
 import Arkham.ClassSymbol
 import Arkham.Classes.HasGame
 import Arkham.Damage
-import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers (getAccessibleLocations)
-import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Query (getPlayer)
 import Arkham.Matcher
@@ -68,9 +66,7 @@ instance RunMessage CallForBackup2 where
       pure e
     DoStep 3 msg'@(PlayThisEvent iid (is attrs -> True)) -> do
       hasSeeker <- control Seeker
-      withLocationOf iid \lid -> do
-        canDiscover <- getCanDiscoverClues NotInvestigate iid lid
-        pushWhen (hasSeeker && canDiscover) $ Msg.DiscoverClues iid $ discoverAtYourLocation attrs 1
+      when hasSeeker $ discoverAtYourLocation NotInvestigate iid attrs 1
       push $ DoStep 4 msg'
       pure e
     DoStep 4 msg'@(PlayThisEvent iid (is attrs -> True)) -> do

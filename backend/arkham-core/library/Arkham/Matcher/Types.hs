@@ -327,6 +327,7 @@ data EnemyMatcher
   | CanFightEnemy Source
   | CanEvadeEnemy Source -- This checks for an ability
   | EnemyCanBeEvadedBy Source -- This is not checking for an ability
+  | EnemyCanBeDefeatedBy Source
   | CanFightEnemyWithOverride CriteriaOverride
   | CanEvadeEnemyWithOverride CriteriaOverride -- This checks for an ability but overrides the criteria
   | CanEngageEnemy Source

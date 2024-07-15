@@ -332,6 +332,7 @@ allPlayerEventCards =
       , stirringUpTrouble1
       , stormOfSpirits
       , stormOfSpirits3
+      , stringOfCurses
       , sureGamble3
       , sweepingKick1
       , swiftReflexes
@@ -3413,6 +3414,20 @@ explosiveWard =
     , cdCost = Just $ MaxDynamicCost $ EmptySlotsCalculation You #arcane
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdCriteria = Just $ exists $ EnemyIsEngagedWith You <> NonEliteEnemy
+    }
+
+stringOfCurses :: CardDef
+stringOfCurses =
+  (event "09088" "String of Curses" 1 Mystic)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Spell]
+    , cdActions = [#parley]
+    , cdCriteria =
+        Just
+          $ exists
+          $ NonEliteEnemy
+          <> EnemyAt YourLocation
+          <> oneOf [EnemyCanBeEvadedBy ThisCard, EnemyWithAnyDoom <> EnemyCanBeDefeatedBy ThisCard]
     }
 
 makeshiftTrap :: CardDef

@@ -6,7 +6,6 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Fight
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Token
 
 newtype CeremonialSickle = CeremonialSickle AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -44,6 +43,6 @@ instance RunMessage CeremonialSickle where
       pure $ overAttrs (setMetaKey "option2" True) a
     EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
       let option2 = getMetaKey "option2" attrs
-      when (attrs.use Doom > 0 && option2) $ removeDoom (attrs.ability 1) attrs 1
+      when (attrs.doom > 0 && option2) $ removeDoom (attrs.ability 1) attrs 1
       pure a
     _ -> CeremonialSickle <$> liftRunMessage msg attrs

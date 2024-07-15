@@ -32,10 +32,11 @@ instance RunMessage DowsingRod4 where
       accessibleLocations <- getAccessibleLocations iid attrs
       chooseOneM iid do
         when (attrs.ready && notNull accessibleLocations) $ forcedWhen isForced do
-          labeled "Exhaust Dowsing Rod4 and place 1 doom on it to move to a connecting location."
+          labeled
+            "Exhaust Dowsing Rod and place 1 doom on it to move to a connecting location and get +2 skill value for this investigation."
             $ doStep 2 msg
         labeled
-          "If this investigation discovers the last clue at a location, remove 1 doom from Dowsing Rod4."
+          "If this investigation discovers the last clue at a location, ready Dowsing Rod and remove all doom from it."
           $ doStep 3 msg
       doStep 1 msg
       pure $ overAttrs (unsetMetaKey "option2") a

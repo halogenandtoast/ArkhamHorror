@@ -883,8 +883,10 @@ allAssets =
     , SomeAssetCard summonedServitor
     , SomeAssetCard ceremonialSickle
     , SomeAssetCard dowsingRod
+    , SomeAssetCard onyxPentacle
     , SomeAssetCard ceremonialSickle4
     , SomeAssetCard dowsingRod4
+    , SomeAssetCard onyxPentacle4
     , --- survivor [tsk]
       SomeAssetCard pocketMultiTool
     , --- neutral [tsk]

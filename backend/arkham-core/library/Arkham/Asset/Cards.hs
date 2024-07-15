@@ -542,6 +542,8 @@ allPlayerAssetCards =
       , oliveMcBride
       , onYourOwn3
       , onYourOwn3_Exceptional
+      , onyxPentacle
+      , onyxPentacle4
       , ornateBow3
       , otherworldCodex2
       , otherworldlyCompass2
@@ -5852,6 +5854,14 @@ dowsingRod =
     , cdSlots = [#hand]
     }
 
+onyxPentacle :: CardDef
+onyxPentacle =
+  (asset "09085" "Onyx Pentacle" 3 Mystic)
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Item, Charm]
+    , cdSlots = [#hand]
+    }
+
 ceremonialSickle4 :: CardDef
 ceremonialSickle4 =
   (asset "09096" "Ceremonial Sickle" 3 Mystic)
@@ -5865,6 +5875,15 @@ dowsingRod4 :: CardDef
 dowsingRod4 =
   (asset "09097" "Dowsing Rod" 4 Mystic)
     { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Item, Charm]
+    , cdSlots = [#hand]
+    , cdLevel = Just 4
+    }
+
+onyxPentacle4 :: CardDef
+onyxPentacle4 =
+  (asset "09099" "Onyx Pentacle" 3 Mystic)
+    { cdSkills = [#agility, #agility]
     , cdCardTraits = setFromList [Item, Charm]
     , cdSlots = [#hand]
     , cdLevel = Just 4

@@ -6,7 +6,6 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Fight
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Token
 
 newtype CeremonialSickle4 = CeremonialSickle4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -25,9 +24,10 @@ instance RunMessage CeremonialSickle4 where
       chooseOneM iid do
         when attrs.ready do
           labeled
-            "Exhaust Ceremonial Sickle (4) and place 1 doom on it to get +1 skill value and deal +1 damage for this attack."
+            "Exhaust Ceremonial Sickle and place 1 doom on it to get +3 skill value and deal +1 damage for this attack."
             $ doStep 1 msg
-        labeled "If this attack defeats an enemy, remove 1 doom from Ceremonial Sickle (4)" $ doStep 2 msg
+        labeled "If this attack defeats an enemy, ready Ceremonial Sickle and remove all doom from it."
+          $ doStep 2 msg
       fight <- mkChooseFight iid (attrs.ability 1)
       chooseOneM iid do
         labeled "Use your {willpower}" $ push $ withSkillType #willpower fight

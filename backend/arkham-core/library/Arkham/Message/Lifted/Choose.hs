@@ -27,10 +27,10 @@ chooseOneM iid choices = do
 
 forcedWhen :: Monad m => Bool -> ChooseT m () -> ChooseT m ()
 forcedWhen b action =
-  if b
+  if traceShowId b
     then do
+      censor id action
       put True
-      censor (const []) action
     else action
 
 unterminated :: ReverseQueue m => ChooseT m () -> ChooseT m ()

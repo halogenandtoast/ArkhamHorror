@@ -202,6 +202,16 @@ cardDrawn [] = error "missing play card window"
 cardDrawn ((windowType -> Window.DrawCard _ c _) : _) = c
 cardDrawn (_ : xs) = cardDrawn xs
 
+dealtDamage :: [Window] -> Int
+dealtDamage [] = 0
+dealtDamage ((windowType -> Window.WouldTakeDamageOrHorror _ _ n _) : _) = n
+dealtDamage (_ : xs) = dealtDamage xs
+
+dealtHorror :: [Window] -> Int
+dealtHorror [] = 0
+dealtHorror ((windowType -> Window.WouldTakeDamageOrHorror _ _ _ n) : _) = n
+dealtHorror (_ : xs) = dealtDamage xs
+
 enters
   :: (Be investigator InvestigatorMatcher, Be location LocationMatcher)
   => Timing

@@ -75,6 +75,9 @@ increaseResourceCost (Costs (a : as)) y = case a of
   _ -> a <> increaseResourceCost (Costs as) y
 increaseResourceCost other _ = other
 
+totalDiscardCardPayments :: Payment -> Int
+totalDiscardCardPayments = length . concat . toListOf (cosmos . _DiscardCardPayment)
+
 discardPayments :: Payment -> [(Zone, Card)]
 discardPayments = concat . toListOf (cosmos . _DiscardPayment)
 
@@ -126,6 +129,11 @@ instance Plated Payment where
 _DiscardPayment :: Prism' Payment [(Zone, Card)]
 _DiscardPayment = prism' DiscardPayment $ \case
   DiscardPayment x -> Just x
+  _ -> Nothing
+
+_DiscardCardPayment :: Prism' Payment [Card]
+_DiscardCardPayment = prism' DiscardCardPayment $ \case
+  DiscardCardPayment x -> Just x
   _ -> Nothing
 
 _ExhaustPayment :: Prism' Payment [Target]

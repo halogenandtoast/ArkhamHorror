@@ -890,6 +890,7 @@ allAssets =
     , SomeAssetCard onyxPentacle4
     , --- survivor [tsk]
       SomeAssetCard pocketMultiTool
+    , SomeAssetCard idolOfXanatosWatcherBeyondTime
     , --- neutral [tsk]
       SomeAssetCard hyperphysicalShotcasterTheoreticalDevice
     , -- The Feast of Hemloch Vale

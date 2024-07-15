@@ -431,6 +431,7 @@ allPlayerAssetCards =
       , icePick1
       , icePick3
       , ichtacaTheForgottenGuardian
+      , idolOfXanatosWatcherBeyondTime
       , ikiaqTheCouncilsChosen3
       , inTheKnow1
       , inTheThickOfIt
@@ -5916,6 +5917,14 @@ pocketMultiTool =
           , (LuckyCharm, 3)
           , (SpringLoaded, 4)
           ]
+    }
+
+idolOfXanatosWatcherBeyondTime :: CardDef
+idolOfXanatosWatcherBeyondTime =
+  (asset "09102" ("Idol of Xanatos" <:> "Watcher Beyond Time") 3 Survivor)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Relic]
+    , cdSlots = [#accessory]
     }
 
 hyperphysicalShotcasterTheoreticalDevice :: CardDef

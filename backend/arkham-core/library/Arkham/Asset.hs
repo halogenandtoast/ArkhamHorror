@@ -883,6 +883,7 @@ allAssets =
     , SomeAssetCard summonedServitor
     , SomeAssetCard ceremonialSickle
     , SomeAssetCard dowsingRod
+    , SomeAssetCard hallowedChalice
     , SomeAssetCard onyxPentacle
     , SomeAssetCard ceremonialSickle4
     , SomeAssetCard dowsingRod4

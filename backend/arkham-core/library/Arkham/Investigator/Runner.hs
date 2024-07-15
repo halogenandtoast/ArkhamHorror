@@ -1645,9 +1645,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         let clueCount = min locationClues d.count
         locationWindows <-
           checkWindows
-            ( mkAfter (Window.DiscoverClues iid lid d.source clueCount)
-                : [mkAfter (Window.DiscoveringLastClue iid lid) | lastClue]
-            )
+            $ mkAfter (Window.DiscoverClues iid lid d.source clueCount)
+            : [mkAfter (Window.DiscoveringLastClue iid lid) | lastClue]
 
         pushAll
           [ locationWindows

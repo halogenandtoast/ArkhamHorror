@@ -31,7 +31,7 @@ instance HasAbilities FoulSwamp where
     withRevealedAbilities attrs
       $ [ restrictedAbility attrs 1 Here
             $ ActionAbility []
-            $ Costs [ActionCost 1, UpTo 3 (HorrorCost (toSource attrs) YouTarget 1)]
+            $ Costs [ActionCost 1, UpTo (Fixed 3) (HorrorCost (toSource attrs) YouTarget 1)]
         ]
 
 instance RunMessage FoulSwamp where

@@ -14,12 +14,13 @@ import {-# SOURCE #-} Arkham.Location.Types (Location)
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.ScenarioLogKey
+import Arkham.SlotType
 import Arkham.Token
 import Data.Aeson.TH
 
 data GameCalculation
   = Fixed Int
-  | MaxCalculation Int GameCalculation
+  | MaxCalculation GameCalculation GameCalculation
   | DividedByCalculation GameCalculation Int
   | SumCalculation [GameCalculation]
   | SubtractCalculation GameCalculation GameCalculation
@@ -58,6 +59,7 @@ data GameCalculation
   | CountChaosTokens ChaosTokenMatcher
   | GameValueCalculation GameValue
   | DuringEventCalculation GameCalculation GameCalculation
+  | EmptySlotsCalculation InvestigatorMatcher SlotType
   deriving stock (Show, Ord, Eq, Data, Generic)
   deriving (FromJSON) via MaybeFixed
 

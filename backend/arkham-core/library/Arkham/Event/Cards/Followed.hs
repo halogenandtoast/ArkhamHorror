@@ -36,7 +36,7 @@ instance RunMessage Followed where
             (toSource attrs)
             iid
             [ ForEach
-                (MaxCalculation 5 $ EnemyFieldCalculation enemy Field.EnemyDamage)
+                (MaxCalculation (Fixed 5) $ EnemyFieldCalculation enemy Field.EnemyDamage)
                 [SkillModifier #intellect 1]
             , DiscoveredClues 1
             ]

@@ -44,6 +44,7 @@ instance HasCost PlayerCard where
   getCost c = case cdCost (toCardDef c) of
     Just (StaticCost n) -> n
     Just DynamicCost -> 0
+    Just (MaxDynamicCost _) -> 0
     Just DiscardAmountCost -> 0
     Nothing -> 0
 

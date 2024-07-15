@@ -20,7 +20,7 @@ getUsesPaid _ = 0
 
 instance HasAbilities EnchantedBladeMystic3 where
   getAbilities (EnchantedBladeMystic3 attrs) =
-    [ withAdditionalCost (UpTo 2 $ assetUseCost attrs Charge 1)
+    [ withAdditionalCost (UpTo (Fixed 2) $ assetUseCost attrs Charge 1)
         $ restrictedAbility attrs 1 ControlsThis fightAction_
     ]
 

@@ -30,6 +30,7 @@ import Arkham.EffectMetadata
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Helpers
+import Arkham.Helpers.Calculation
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Message
@@ -271,23 +272,26 @@ payCost msg c iid skipAdditionalCosts cost = do
     Costs xs -> do
       pushAll $ map pay xs
       pure c
-    UpTo 0 _ -> pure c
-    UpTo n cost' -> do
-      canAfford <- andM $ map (\a -> getCanAffordCost iid source [a] [] cost') actions
-      maxUpTo <- case cost' of
-        ResourceCost resources -> do
-          availableResources <- getSpendableResources iid
-          pure $ min n (availableResources `div` resources)
-        SealCost matcher -> selectCount matcher
-        _ -> pure n
-      name <- fieldMap InvestigatorName toTitle iid
-      pushWhen canAfford
-        $ Ask player
-        $ ChoosePaymentAmounts
-          ("Pay " <> displayCostType cost)
-          Nothing
-          [PaymentAmountChoice iid 0 maxUpTo name $ pay cost']
-      pure c
+    UpTo calc cost' -> do
+      n <- calculate calc
+      if n == 0
+        then pure c
+        else do
+          canAfford <- andM $ map (\a -> getCanAffordCost iid source [a] [] cost') actions
+          maxUpTo <- case cost' of
+            ResourceCost resources -> do
+              availableResources <- getSpendableResources iid
+              pure $ min n (availableResources `div` resources)
+            SealCost matcher -> selectCount matcher
+            _ -> pure n
+          name <- fieldMap InvestigatorName toTitle iid
+          pushWhen canAfford
+            $ Ask player
+            $ ChoosePaymentAmounts
+              ("Pay " <> displayCostType cost)
+              Nothing
+              [PaymentAmountChoice iid 0 maxUpTo name $ pay cost']
+          pure c
     DiscardTopOfDeckCost n -> do
       cards <- fieldMap InvestigatorDeck (map PlayerCard . take n . unDeck) iid
       push $ DiscardTopOfDeck iid n source Nothing

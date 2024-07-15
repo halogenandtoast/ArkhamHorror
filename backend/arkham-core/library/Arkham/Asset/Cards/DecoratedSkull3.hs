@@ -32,7 +32,11 @@ instance HasAbilities DecoratedSkull3 where
               ]
           )
           Free
-    , restrictedAbility a 2 ControlsThis (actionAbilityWithCost $ UpTo 3 $ assetUseCost a Charge 1)
+    , restrictedAbility
+        a
+        2
+        ControlsThis
+        (actionAbilityWithCost $ UpTo (Fixed 3) $ assetUseCost a Charge 1)
     ]
 
 getUsesPaid :: Payment -> Int

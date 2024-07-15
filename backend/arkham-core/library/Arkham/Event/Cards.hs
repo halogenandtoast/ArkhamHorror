@@ -159,6 +159,7 @@ allPlayerEventCards =
       , everVigilant1
       , evidence
       , evidence1
+      , explosiveWard
       , exposeWeakness1
       , exposeWeakness3
       , extensiveResearch
@@ -1713,7 +1714,7 @@ bloodEclipse3 =
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spell, Spirit]
     , cdActions = [#fight]
-    , cdAdditionalCost = Just $ UpTo 3 $ InvestigatorDamageCost ThisCard You DamageAny 1
+    , cdAdditionalCost = Just $ UpTo (Fixed 3) $ InvestigatorDamageCost ThisCard You DamageAny 1
     , cdLevel = Just 3
     }
 
@@ -3403,6 +3404,17 @@ eldritchInitiation =
     , cdCardTraits = setFromList [Ritual]
     }
 
+explosiveWard :: CardDef
+explosiveWard =
+  (event "09087" "Explosive Ward" 0 Mystic)
+    { cdSkills = [#combat, #combat]
+    , cdCardTraits = setFromList [Spell]
+    , cdBeforeEffect = True
+    , cdCost = Just $ MaxDynamicCost $ EmptySlotsCalculation You #arcane
+    , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+    , cdCriteria = Just $ exists $ EnemyIsEngagedWith You <> NonEliteEnemy
+    }
+
 makeshiftTrap :: CardDef
 makeshiftTrap =
   (event "09100" "Makeshift Trap" 1 Survivor)
@@ -3796,7 +3808,7 @@ occultInvocation =
   (event "60217" "Occult Invocation" 2 Seeker)
     { cdSkills = [#combat, #intellect]
     , cdCardTraits = singleton Spell
-    , cdAdditionalCost = Just $ UpTo 2 $ HandDiscardCost 1 AnyCard
+    , cdAdditionalCost = Just $ UpTo (Fixed 2) $ HandDiscardCost 1 AnyCard
     , cdActions = [#fight]
     }
 

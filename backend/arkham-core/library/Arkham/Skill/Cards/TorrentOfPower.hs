@@ -6,6 +6,7 @@ module Arkham.Skill.Cards.TorrentOfPower (
 import Arkham.Prelude
 
 import Arkham.Asset.Uses
+import Arkham.Calculation
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
@@ -25,7 +26,7 @@ torrentOfPower =
   skillWith
     TorrentOfPower
     Cards.torrentOfPower
-    (additionalCostL ?~ UpTo 3 (UseCost (AssetControlledBy You) Charge 1))
+    (additionalCostL ?~ UpTo (Fixed 3) (UseCost (AssetControlledBy You) Charge 1))
 
 chargesSpent :: Payment -> Int
 chargesSpent (Payments xs) = sum $ map chargesSpent xs

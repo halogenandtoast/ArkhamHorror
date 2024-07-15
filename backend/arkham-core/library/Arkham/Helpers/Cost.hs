@@ -352,6 +352,7 @@ getModifiedCardCost iid c@(PlayerCard _) = do
   getStartingCost = case cdCost pcDef of
     Just (StaticCost n) -> pure n
     Just DynamicCost -> pure 0
+    Just (MaxDynamicCost _) -> pure 0
     Just DiscardAmountCost -> fieldMap InvestigatorDiscard (count ((== toCardCode c) . toCardCode)) iid
     Nothing -> pure 0
   -- A card like The Painted World which has no cost, but can be "played", should not have it's cost modified

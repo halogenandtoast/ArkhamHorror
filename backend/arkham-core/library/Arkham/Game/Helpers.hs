@@ -892,7 +892,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
           Keyword.Sealing matcher -> do
             if costStatus == PaidCost then Nothing else Just $ SealCost matcher
           Keyword.SealUpTo n matcher -> do
-            if costStatus == PaidCost then Nothing else Just $ UpTo n (SealCost matcher)
+            if costStatus == PaidCost then Nothing else Just $ UpTo (Fixed n) (SealCost matcher)
           Keyword.SealUpToX _ -> Nothing
         _ -> Nothing
 

@@ -12,7 +12,7 @@ import Arkham.Cost.Status as X
 import Arkham.Zone as X
 
 import Arkham.Asset.Uses
-import {-# SOURCE #-} Arkham.Calculation
+import Arkham.Calculation
 import Arkham.Campaigns.TheForgottenAge.Supply
 import {-# SOURCE #-} Arkham.Card
 import Arkham.ChaosToken (ChaosToken)
@@ -203,7 +203,7 @@ data Cost
   | CostWhenEnemy EnemyMatcher Cost
   | CostIfEnemy EnemyMatcher Cost Cost
   | CostIfCustomization Customization Cost Cost
-  | UpTo Int Cost
+  | UpTo GameCalculation Cost
   | SealCost ChaosTokenMatcher
   | SealMultiCost Int ChaosTokenMatcher
   | AddCurseTokenCost Int
@@ -441,7 +441,8 @@ displayCostType = \case
     Lock -> tshow n <> "-" <> tshow m <> " Locks"
     Evidence -> tshow n <> "-" <> tshow m <> " Evidence"
     Leyline -> tshow n <> "-" <> tshow m <> " Leylines"
-  UpTo n c -> displayCostType c <> " up to " <> pluralize n "time"
+  UpTo (Fixed n) c -> displayCostType c <> " up to " <> pluralize n "time"
+  UpTo _ c -> displayCostType c <> " up to X times"
   SealCost _ -> "Seal token"
   SealMultiCost n _ -> "Seal " <> tshow n <> " matching tokens"
   SealChaosTokenCost _ -> "Seal token"

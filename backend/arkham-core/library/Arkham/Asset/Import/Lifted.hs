@@ -16,6 +16,7 @@ import Arkham.Asset.Runner as X (
   controlledBy,
   controls,
   getAssetMetaDefault,
+  getMetaKey,
   handleTargetChoice,
   hasUses,
   healthL,
@@ -30,9 +31,11 @@ import Arkham.Asset.Runner as X (
   sanityL,
   sealedChaosTokensL,
   setMeta,
+  setMetaKey,
   toMessage,
   toModifiers,
   tokensL,
+  unsetMetaKey,
   whenNoUsesL,
  )
 import Arkham.Calculation as X

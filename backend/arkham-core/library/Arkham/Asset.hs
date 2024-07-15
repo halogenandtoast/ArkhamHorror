@@ -881,6 +881,10 @@ allAssets =
     , --- mystic [tsk]
       SomeAssetCard livingInk
     , SomeAssetCard summonedServitor
+    , SomeAssetCard ceremonialSickle
+    , SomeAssetCard dowsingRod
+    , SomeAssetCard ceremonialSickle4
+    , SomeAssetCard dowsingRod4
     , --- survivor [tsk]
       SomeAssetCard pocketMultiTool
     , --- neutral [tsk]

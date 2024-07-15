@@ -816,3 +816,6 @@ uiEffect s t m = push $ Msg.uiEffect s t m
 healDamage
   :: (ReverseQueue m, Sourceable source, Targetable target) => target -> source -> Int -> m ()
 healDamage target source n = push $ Msg.HealDamage (toTarget target) (toSource source) n
+
+doStep :: ReverseQueue m => Int -> Message -> m ()
+doStep n msg = push $ Msg.DoStep n msg

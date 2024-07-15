@@ -627,8 +627,12 @@ instance RunMessage EnemyAttrs where
         ]
 
       pure a
-    Successful (Action.Fight, _) iid source target _ | isTarget a target -> do
-      push $ InvestigatorDamageEnemy iid enemyId source
+    Successful (Action.Fight, _) iid source target n | isTarget a target -> do
+      mods <- getModifiers a
+      let alternateSuccess = [t | AlternateSuccess t <- mods]
+      pushWhen (null alternateSuccess) $ InvestigatorDamageEnemy iid enemyId source
+      for_ alternateSuccess $ \target' ->
+        push $ Successful (Action.Fight, toTarget a) iid source target' n
       pure a
     FailedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isTarget a target -> do
       pushAll
@@ -716,8 +720,12 @@ instance RunMessage EnemyAttrs where
         , afterWindow
         ]
       pure a
-    Successful (Action.Evade, _) iid _ target _ | isTarget a target -> do
-      push $ EnemyEvaded iid enemyId
+    Successful (Action.Evade, _) iid source target n | isTarget a target -> do
+      mods <- getModifiers a
+      let alternateSuccess = [t | AlternateSuccess t <- mods]
+      pushWhen (null alternateSuccess) $ EnemyEvaded iid enemyId
+      for_ alternateSuccess $ \target' ->
+        push $ Successful (Action.Evade, toTarget a) iid source target' n
       pure a
     FailedSkillTest iid (Just Action.Evade) source (Initiator target) _ n | isTarget a target -> do
       whenWindow <- checkWindows [mkWhen $ Window.FailEvadeEnemy iid enemyId n]

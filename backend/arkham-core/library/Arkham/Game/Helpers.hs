@@ -2962,6 +2962,10 @@ skillTestMatches
   -> Matcher.SkillTestMatcher
   -> m Bool
 skillTestMatches iid source st = \case
+  Matcher.SkillTestWithDifficulty gv ->
+    getSkillTestDifficulty >>= \case
+      Nothing -> pure False
+      Just n -> gameValueMatches n gv
   Matcher.SkillTestOnEncounterCard -> skillTestSource st `sourceMatches` Matcher.EncounterCardSource
   Matcher.NotSkillTest matcher ->
     not <$> skillTestMatches iid source st matcher

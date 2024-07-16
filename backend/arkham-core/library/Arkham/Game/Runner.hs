@@ -308,7 +308,8 @@ runGameMessage msg g = case msg of
     pure $ g & (phaseL .~ InvestigationPhase)
   BeginGame -> do
     (before, _, after) <- frame Window.GameBegins
-    pushAll [before, after]
+    iids <- getInvestigatorsInOrder
+    pushAll $ before : map (`ForInvestigator` BeginGame) iids <> [after]
     pure g
   InvestigatorsMulligan -> do
     iids <- getInvestigatorsInOrder
@@ -1128,6 +1129,7 @@ runGameMessage msg g = case msg of
           recordLimit g'' = \case
             MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
             MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
+            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
             _ -> g''
         pure $ foldl' recordLimit g' (cdLimits $ toCardDef card)
   PutCardIntoPlay iid card mtarget payment windows' -> do
@@ -1741,6 +1743,7 @@ runGameMessage msg g = case msg of
     let
       isPerRound = \case
         MaxPerRound _ -> True
+        MaxPerTraitPerRound _ _ -> True
         _ -> False
     let roundEndUses =
           map cdCardCode
@@ -2203,6 +2206,22 @@ runGameMessage msg g = case msg of
       -- Asset is assumed to have a revelation ability if drawn from encounter deck
       pushAll $ resolve $ Revelation iid (AssetSource assetId)
       pure $ g & (entitiesL . assetsL . at assetId ?~ asset)
+    EventType -> do
+      pid <- getPlayer iid
+      sendRevelation pid (toJSON $ toCard card)
+      eventId <- getRandom
+      pushAll $ resolve $ Revelation iid (EventSource eventId)
+      let
+        recordLimit g'' = \case
+          MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
+          MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
+          MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
+          _ -> g''
+      pure
+        $ foldl'
+          recordLimit
+          (g & entitiesL . eventsL . at eventId ?~ createEvent card iid eventId)
+          (cdLimits $ toCardDef card)
     PlayerEnemyType -> do
       enemyId <- getRandom
       let enemy = createEnemy card enemyId

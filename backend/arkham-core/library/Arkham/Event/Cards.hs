@@ -245,6 +245,7 @@ allPlayerEventCards =
       , lure1
       , lure2
       , makeshiftTrap
+      , makingPreparations
       , manipulateDestiny2
       , manoAMano1
       , manoAMano2
@@ -3471,6 +3472,16 @@ exploitWeakness =
           $ Criteria.DuringSkillTest
           $ oneOf [WhileAttackingAnEnemy AnyEnemy, WhileEvadingAnEnemy AnyEnemy]
           <> SkillTestWithDifficulty (static 0)
+    }
+
+makingPreparations :: CardDef
+makingPreparations =
+  (event "09106" "Making Preparations" 0 Survivor)
+    { cdCardTraits = setFromList [Dilemma, Tactic]
+    , cdRevelation = IsRevelation
+    , cdCost = Nothing
+    , cdLimits = [MaxPerTraitPerRound Dilemma 2]
+    , cdCriteria = Just Criteria.Never
     }
 
 keepFaith2 :: CardDef

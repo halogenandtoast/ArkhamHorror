@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Ability.Types
 import Arkham.ActiveCost.Base
 import {-# SOURCE #-} Arkham.Card (Card, CardCode, CardId)
+import Arkham.Card.CardDef
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
@@ -51,6 +52,7 @@ getSettings :: HasGame m => m Settings
 getAllPlayers :: HasGame m => m [PlayerId]
 getActivePlayer :: HasGame m => m PlayerId
 getCardUses :: HasGame m => CardCode -> m Int
+getAllCardUses :: HasGame m => m [CardDef]
 
 data GameEnv = GameEnv
   { gameEnvGame :: IORef Game

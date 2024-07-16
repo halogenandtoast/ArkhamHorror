@@ -162,6 +162,10 @@ runEventMessage msg a@EventAttrs {..} = case msg of
           ReturnThisToHand -> push (ReturnToHand eventController (toTarget a))
         _ -> pure ()
     pure a
+  After (Revelation _iid (isSource a -> True)) -> do
+    result <- runMessage (FinishedEvent a.id) a
+    push $ ObtainCard (toCard result)
+    pure result
   InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do
     pure $ a & placementL .~ Limbo
   PlaceUnderneath (isTarget a -> True) cards -> do

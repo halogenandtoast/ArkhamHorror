@@ -526,8 +526,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     additionalHandCards <-
       (additionalStartingCards <>) <$> traverse genCard investigatorStartsWithInHand
 
+    -- need the virtual hand to get correct length
+    hand' <- field InvestigatorHand iid
+
+    pushAll
+      $ [ShuffleDiscardBackIn iid, window]
+      <> [ InvestigatorMulligan iid
+         | (a ^. mulligansTakenL + 1) < allowedMulligans
+         , startingHandAmount - length hand' > 0
+         ]
+    pure
+      $ a
+      & (tokensL %~ setTokens Resource startingResources)
+      & (discardL .~ discard)
+      & (handL .~ hand <> additionalHandCards)
+      & (deckL .~ Deck deck)
+      & (mulligansTakenL +~ 1)
+  ForInvestigator iid BeginGame | iid == investigatorId -> do
     -- if we have any cards with revelations on them, we need to trigger them
-    let revelationCards = filter (hasRevelation . toCardDef) (additionalHandCards <> hand)
+    let revelationCards = filter (hasRevelation . toCardDef) investigatorHand
     let
       choices = mapMaybe cardChoice revelationCards
       cardChoice = \case
@@ -543,26 +560,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 else Nothing
         _ -> Nothing
 
-    -- need the virtual hand to get correct length
-    hand' <- field InvestigatorHand iid
-
-    player <- getPlayer iid
-    pushAll
-      $ [ShuffleDiscardBackIn iid, window]
-      <> [ chooseOrRunOneAtATime player [targetLabel (toCardId card) [msg'] | (card, msg') <- choices]
-         | notNull choices
-         ]
-      <> [ InvestigatorMulligan iid
-         | (a ^. mulligansTakenL + 1) < allowedMulligans
-         , startingHandAmount - length hand' > 0
-         ]
-    pure
-      $ a
-      & (tokensL %~ setTokens Resource startingResources)
-      & (discardL .~ discard)
-      & (handL .~ hand <> additionalHandCards)
-      & (deckL .~ Deck deck)
-      & (mulligansTakenL +~ 1)
+    when (notNull choices) do
+      player <- getPlayer iid
+      push $ chooseOrRunOneAtATime player [targetLabel (toCardId card) [msg'] | (card, msg') <- choices]
+    pure a
   ShuffleDiscardBackIn iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     if null investigatorDiscard || CardsCannotLeaveYourDiscardPile `elem` modifiers'
@@ -2879,19 +2880,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     VengeanceCard _ -> pure a
   AddToHand iid cards | iid == investigatorId -> do
     let
-      choices = mapMaybe cardChoice cards
       cardChoice = \case
         card@(PlayerCard card') -> do
-          if hasRevelation card'
-            then
-              if toCardType card' == PlayerTreacheryType
-                then Just (card, DrewTreachery iid Nothing card)
-                else Just (card, Revelation iid $ PlayerCardSource card')
-            else
-              if toCardType card' == PlayerEnemyType
-                then Just (card, DrewPlayerEnemy iid card)
-                else Nothing
-        _ -> Nothing
+          inLimit <- passesLimits iid card
+          pure
+            $ if hasRevelation card' && inLimit
+              then
+                if toCardType card' == PlayerTreacheryType
+                  then Just (card, DrewTreachery iid Nothing card)
+                  else Just (card, Revelation iid $ PlayerCardSource card')
+              else
+                if toCardType card' == PlayerEnemyType
+                  then Just (card, DrewPlayerEnemy iid card)
+                  else Nothing
+        _ -> pure Nothing
+    choices <- mapMaybeM cardChoice cards
     player <- getPlayer iid
     pushWhen (notNull choices)
       $ chooseOrRunOneAtATime player [targetLabel (toCardId card) [msg'] | (card, msg') <- choices]

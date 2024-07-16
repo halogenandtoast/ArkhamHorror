@@ -2517,7 +2517,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              ]
           <> [Label "Draw normally" [windowMsg]]
       else push windowMsg
-    pure a
+    pure $ a & foundCardsL %~ Map.map (filter ((/= card.id) . toCardId))
   InvestigatorSpendClues iid n | iid == investigatorId -> do
     pure $ a & tokensL %~ subtractTokens Clue n
   SpendResources iid _ | iid == investigatorId -> do

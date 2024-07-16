@@ -67,6 +67,23 @@ moveToMatch (toSource -> moveSource) (toTarget -> moveTarget) matcher =
     , moveAfter = []
     }
 
+moveTowardsMatching
+  :: (Targetable target, Sourceable source)
+  => source
+  -> target
+  -> LocationMatcher
+  -> Movement
+moveTowardsMatching (toSource -> moveSource) (toTarget -> moveTarget) matcher =
+  Movement
+    { moveSource
+    , moveTarget
+    , moveDestination = ToLocationMatching matcher
+    , moveMeans = Towards
+    , moveCancelable = True
+    , movePayAdditionalCosts = True
+    , moveAfter = []
+    }
+
 moveToLocationMatcher :: Movement -> LocationMatcher
 moveToLocationMatcher = destinationToLocationMatcher . moveDestination
 

@@ -1523,6 +1523,16 @@ getLocationsMatching lmatcher = do
         matchingLocationIds <- map toId <$> getLocationsMatching matcher
         matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
         pure $ filter ((`elem` matches') . toId) ls
+      LocationFartherFrom pivot matcher -> do
+        selectOne matcher >>= \case
+          Nothing -> pure []
+          Just start ->
+            if start == pivot
+              then pure $ filter ((/= start) . toId) ls
+              else
+                getDistance start pivot >>= \case
+                  Nothing -> pure []
+                  Just n -> filterM (fmap (maybe False (> n)) . getDistance start . toId) ls
       CanEnterLocation investigatorMatcher -> do
         iid <- selectJust investigatorMatcher
         blocked <- getLocationsMatching BlockedLocation

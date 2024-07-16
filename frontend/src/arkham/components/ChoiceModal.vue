@@ -390,14 +390,6 @@ const title = computed(() => {
           </div>
         </div>
       </div>
-
-      <div v-if="showChoices" class="choices">
-        <template v-for="(choice, index) in choices" :key="index">
-          <div v-if="choice.tag === MessageType.LABEL">
-            <button @click="$emit('choose', index)" v-html="replaceIcons(choice.label)"></button>
-          </div>
-        </template>
-      </div>
     </div>
     <div v-else-if="paymentAmountsLabel" class="modal amount-modal">
       <div class="modal-contents amount-contents">
@@ -760,6 +752,7 @@ button {
     font-size: 1.2em;
     width: 100%;
     white-space: nowrap;
+    text-wrap: wrap;
     &:before {
       font-family: "ArkhamIcons";
       content: "\E91A";

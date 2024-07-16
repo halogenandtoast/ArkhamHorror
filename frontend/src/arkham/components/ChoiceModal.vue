@@ -14,10 +14,11 @@ import Question from '@/arkham/components/Question.vue';
 export interface Props {
   game: Game
   playerId: string
+  noStory?: boolean
 }
 
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), { noStory: false })
 const emit = defineEmits(['choose'])
 const hide = ref(false)
 const { t } = useI18n()
@@ -323,6 +324,10 @@ const title = computed(() => {
   if (question.value && question.value.tag === QuestionType.READ) {
     if (question.value.flavorText.title) {
       return question.value.flavorText.title
+    }
+
+    if (props.noStory) {
+      return null
     }
 
     return "Story"

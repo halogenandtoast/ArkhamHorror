@@ -137,6 +137,7 @@ const choose = (idx: number) => emit('choose', idx)
   <ChoiceModal
     :game="game"
     :playerId="playerId"
+    :noStory="true"
     @choose="$emit('choose', $event)"
   />
 </template>

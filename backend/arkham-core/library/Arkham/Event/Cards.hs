@@ -315,6 +315,7 @@ allPlayerEventCards =
       , secondWind
       , seekingAnswers
       , seekingAnswers2
+      , shedALight
       , shortcut
       , shortcut2
       , shrineOfTheMoirai3
@@ -3493,6 +3494,19 @@ predatorOrPrey =
     , cdCost = Nothing
     , cdLimits = [MaxPerTraitPerRound Dilemma 2]
     , cdCriteria = Just Criteria.Never
+    }
+
+shedALight :: CardDef
+shedALight =
+  (event "09108" "Shed a Light" 2 Survivor)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Insight, Trick]
+    , cdFastWindow = Just $ WouldRevealChaosToken #when You
+    , cdCriteria =
+        Just
+          $ Criteria.DuringSkillTest
+          $ WhileInvestigating Anywhere
+          <> SkillTestWithDifficulty (static 0)
     }
 
 keepFaith2 :: CardDef

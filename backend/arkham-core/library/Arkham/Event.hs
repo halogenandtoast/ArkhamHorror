@@ -539,6 +539,7 @@ allEvents =
     , SomeEventCard exploitWeakness
     , SomeEventCard makingPreparations
     , SomeEventCard predatorOrPrey
+    , SomeEventCard shedALight
     , -- The Feast of Hemloch Vale
       --- survivor [fhv]
       SomeEventCard keepFaith2

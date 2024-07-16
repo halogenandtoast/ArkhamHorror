@@ -1693,6 +1693,7 @@ library
       Arkham.Event.Cards.ReadTheSigns
       Arkham.Event.Cards.Recharge2
       Arkham.Event.Cards.Recharge4
+      Arkham.Event.Cards.Refine
       Arkham.Event.Cards.Reliable1
       Arkham.Event.Cards.Riastrad1
       Arkham.Event.Cards.RighteousHunt1

@@ -3,6 +3,9 @@ module Arkham.Customization where
 import Arkham.Prelude
 import Arkham.SkillType (SkillType)
 import Arkham.Trait (Trait)
+import Data.IntMap.Strict qualified as IntMap
+import Data.List (elemIndex)
+import Data.Map.Strict qualified as Map
 
 data Customization
   = -- placeholder, must be the top entry because the map has to be ordered
@@ -148,3 +151,25 @@ data CustomizationChoice = ChosenCard Text | ChosenSkill SkillType | ChosenTrait
   deriving anyclass (ToJSON, FromJSON)
 
 type Customizations = IntMap (Int, [CustomizationChoice])
+
+hasCustomization_ :: Map Customization Int -> Customizations -> Customization -> Bool
+hasCustomization_ cardCustomizations customizations n = remaining == Just 0
+ where
+  remaining = remainingCheckMarks_ cardCustomizations customizations n
+
+remainingCheckMarks_ :: Map Customization Int -> Customizations -> Customization -> Maybe Int
+remainingCheckMarks_ cardCustomizations customizations n = case mCustomizationIndex of
+  Nothing -> Nothing
+  Just i -> Just $ requiredXp - valueOf i
+ where
+  valueOf x = fst $ IntMap.findWithDefault (0, []) x customizations
+  requiredXp = Map.findWithDefault 100 n cardCustomizations
+  mCustomizationIndex = elemIndex n $ Map.keys cardCustomizations
+
+getCustomizations_ :: Map Customization Int -> Customizations -> [Customization]
+getCustomizations_ cardCustomizations customizations = flip concatMap (withIndex ks) \(n, k) ->
+  guard (valueOf n == requiredXp k) $> k
+ where
+  valueOf n = fst $ IntMap.findWithDefault (0, []) n customizations
+  requiredXp k = Map.findWithDefault 100 k cardCustomizations
+  ks = Map.keys cardCustomizations

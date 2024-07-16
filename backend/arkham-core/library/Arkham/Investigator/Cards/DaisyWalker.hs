@@ -14,6 +14,7 @@ import Arkham.Matcher
 newtype DaisyWalker = DaisyWalker InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 daisyWalker :: InvestigatorCard DaisyWalker
 daisyWalker =

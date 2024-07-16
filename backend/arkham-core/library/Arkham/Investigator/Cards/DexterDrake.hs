@@ -23,6 +23,7 @@ import Arkham.Window (defaultWindows)
 newtype DexterDrake = DexterDrake InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 dexterDrake :: InvestigatorCard DexterDrake
 dexterDrake =
@@ -94,6 +95,7 @@ instance RunMessage DexterDrake where
 newtype DexterDrakeEffect = DexterDrakeEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 dexterDrakeEffect :: EffectArgs -> DexterDrakeEffect
 dexterDrakeEffect = cardEffect DexterDrakeEffect Cards.dexterDrake

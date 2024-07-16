@@ -20,7 +20,7 @@ import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
 import Arkham.Trait
-import Data.Typeable
+import Data.Data
 import GHC.Records
 
 class
@@ -196,6 +196,11 @@ skill f cardDef =
     }
 
 data Skill = forall a. IsSkill a => Skill a
+
+instance Data Skill where
+  gunfold _ _ _ = error "gunfold(Skill)"
+  toConstr _ = error "toConstr(Skill)"
+  dataTypeOf _ = error "dataTypeOf(Skill)"
 
 instance HasField "id" Skill SkillId where
   getField = toId

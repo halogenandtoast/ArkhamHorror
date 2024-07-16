@@ -15,7 +15,7 @@ data CampaignLog = CampaignLog
   , campaignLogOrderedKeys :: [CampaignLogKey]
   , campaignLogOptions :: Set CampaignOption
   }
-  deriving stock (Show, Generic, Eq)
+  deriving stock (Show, Generic, Eq, Data)
 
 instance HasField "recorded" CampaignLog (Set CampaignLogKey) where
   getField = campaignLogRecorded

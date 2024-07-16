@@ -9,6 +9,7 @@ import Arkham.Investigator.Import.Lifted
 newtype CalvinWright = CalvinWright InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 calvinWright :: InvestigatorCard CalvinWright
 calvinWright =

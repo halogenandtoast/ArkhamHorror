@@ -10,6 +10,7 @@ import Arkham.Matcher hiding (RevealChaosToken)
 newtype StellaClark = StellaClark InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 stellaClark :: InvestigatorCard StellaClark
 stellaClark =

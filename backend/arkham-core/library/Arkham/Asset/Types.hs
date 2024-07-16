@@ -498,6 +498,9 @@ controlledBy AssetAttrs {..} iid =
       Just iid' -> iid == iid'
     else False
 
+ownedBy :: AssetAttrs -> InvestigatorId -> Bool
+ownedBy a iid = a.owner == Just iid
+
 attachedToEnemy :: AssetAttrs -> EnemyId -> Bool
 attachedToEnemy AssetAttrs {..} eid = case assetPlacement of
   AttachedToEnemy eid' -> eid == eid'

@@ -55,6 +55,11 @@ data Update a where
     -> Int
     -> Update a
 
+instance Typeable a => Data (Update a) where
+  gunfold _ _ _ = error "gunfold(Update a)"
+  toConstr _ = error "toConstr(Update a)"
+  dataTypeOf _ = error "dataTypeOf(Update a)"
+
 instance Show (Update a) where
   show (Update f v) = show f <> " = " <> show v
   show (IncrementBy f v) = show f <> " + " <> show v

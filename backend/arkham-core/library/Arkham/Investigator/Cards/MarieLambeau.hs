@@ -21,6 +21,7 @@ import Arkham.Token
 newtype MarieLambeau = MarieLambeau InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 marieAction :: AdditionalActionType
 marieAction = TraitRestrictedAdditionalAction Spell Additional.NoRestriction

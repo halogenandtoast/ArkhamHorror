@@ -12,7 +12,7 @@ import Data.Aeson.TH
 import GHC.Records
 
 data EnemyAttackType = AttackOfOpportunity | RegularAttack | AlertAttack
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 data EnemyAttackDetails = EnemyAttackDetails
   { attackTarget :: Target
@@ -26,7 +26,7 @@ data EnemyAttackDetails = EnemyAttackDetails
   , attackAfter :: [Message]
   , attackDamaged :: Map Target (Int, Int)
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 instance HasField "target" EnemyAttackDetails Target where
   getField = attackTarget

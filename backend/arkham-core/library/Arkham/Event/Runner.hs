@@ -30,6 +30,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Calculation (calculate)
+import Arkham.Helpers.Customization
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window
 import Arkham.Matcher (EnemyMatcher (..))
@@ -39,6 +40,7 @@ import Arkham.Projection
 import Arkham.Window (mkAfter)
 import Arkham.Window qualified as Window
 import Control.Lens (non)
+import Data.IntMap.Strict qualified as IntMap
 
 instance RunMessage EventAttrs where
   runMessage msg a@EventAttrs {..} = do
@@ -52,6 +54,12 @@ instance RunMessage EventAttrs where
 
 runEventMessage :: Runner EventAttrs
 runEventMessage msg a@EventAttrs {..} = case msg of
+  IncreaseCustomization iid cardCode customization choices | toCardCode a == cardCode && a.owner == iid -> do
+    case customizationIndex a customization of
+      Nothing -> pure a
+      Just i ->
+        pure
+          $ a {eventCustomizations = IntMap.adjust (second (const choices) . first (+ 1)) i eventCustomizations}
   SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
   AttachEvent eid target | eid == eventId -> do
     case target of

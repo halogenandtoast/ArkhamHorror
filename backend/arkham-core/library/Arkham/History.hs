@@ -12,9 +12,9 @@ import Arkham.SkillType
 import Arkham.Target
 import Control.Monad.Fail (fail)
 import Data.Aeson.TH
+import Data.Data
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
-import Data.Typeable
 
 data DefeatedEnemyAttrs = DefeatedEnemyAttrs
   { defeatedEnemyAttrs :: EnemyAttrs
@@ -90,6 +90,11 @@ data HistoryItem where
   HistoryItem :: (Show k, Eq k, ToJSON k, Typeable k) => HistoryField k -> k -> HistoryItem
 
 deriving stock instance Show HistoryItem
+
+instance Data HistoryItem where
+  gunfold _ _ _ = error "gunfold(HistoryItem)"
+  toConstr _ = error "toConstr(HistoryItem)"
+  dataTypeOf _ = error "dataTypeOf(HistoryItem)"
 
 instance Eq HistoryItem where
   (HistoryItem (fld1 :: HistoryField k1) k1) == (HistoryItem (fld2 :: HistoryField k2) k2) = case eqT @k1 @k2 of

@@ -11,7 +11,7 @@ import Data.Aeson.TH
 import GHC.Records
 
 data ChooseKind = RandomlyChoose
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 data Choose = Choose
   { chooseFrom :: Collection
@@ -20,7 +20,7 @@ data Choose = Choose
   , chooseAmount :: Int
   , chooseKind :: ChooseKind
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 instance HasField "amount" Choose Int where
   getField = chooseAmount
@@ -32,7 +32,7 @@ instance HasField "collection" Choose Collection where
   getField = chooseFrom
 
 data Chosen = Chosen Choose [Card]
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 instance HasField "cards" Chosen [Card] where
   getField (Chosen _ cards) = cards

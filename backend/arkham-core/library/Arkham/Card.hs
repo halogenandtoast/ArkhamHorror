@@ -137,6 +137,11 @@ printedCardCost = maybe 0 toPrintedCost . cdCost . toCardDef
 cardMatch :: (IsCard a, IsCardMatcher cardMatcher, HasCallStack) => a -> cardMatcher -> Bool
 cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   AnyCard -> True
+  CardWithAvailableCustomization -> case toCard a of
+    PlayerCard pc ->
+      let customizations = cdCustomizations $ toCardDef a
+      in any (not . hasCustomization_ customizations (pcCustomizations pc)) (keys customizations)
+    _ -> False
   CardWithOddCost -> maybe False (odd . toPrintedCost) (cdCost $ toCardDef a)
   CardWithEvenCost -> maybe False (even . toPrintedCost) (cdCost $ toCardDef a)
   CardWithCost n -> maybe False ((== n) . toPrintedCost) (cdCost $ toCardDef a)

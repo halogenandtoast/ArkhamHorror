@@ -17,7 +17,7 @@ data ChooseEvade = ChooseEvade
   , chooseEvadeIsAction :: Bool
   , chooseEvadeOverride :: Bool
   }
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 instance HasField "investigator" ChooseEvade InvestigatorId where

@@ -14,6 +14,7 @@ import Arkham.Message (uiToRun)
 newtype MontereyJack = MontereyJack InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 montereyJack :: InvestigatorCard MontereyJack
 montereyJack =

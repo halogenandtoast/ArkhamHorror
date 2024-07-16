@@ -20,6 +20,7 @@ import Arkham.Window qualified as Window
 newtype TrishScarborough = TrishScarborough InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 trishScarborough :: InvestigatorCard TrishScarborough
 trishScarborough =

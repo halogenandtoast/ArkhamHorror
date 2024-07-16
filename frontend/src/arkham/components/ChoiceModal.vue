@@ -370,14 +370,6 @@ const title = computed(() => {
           @choose="$emit('choose', $event)"
         />
       </div>
-
-      <div v-if="showChoices" class="choices">
-        <template v-for="(choice, index) in choices" :key="index">
-          <div v-if="choice.tag === MessageType.LABEL">
-            <button @click="$emit('choose', index)" v-html="replaceIcons(choice.label)"></button>
-          </div>
-        </template>
-      </div>
     </div>
     <div v-else-if="searchedCards.length > 0 && choices.length > 0" class="modal">
       <div class="modal-contents searched-cards">

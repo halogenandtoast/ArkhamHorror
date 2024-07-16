@@ -16,6 +16,7 @@ import Arkham.Projection
 newtype SilasMarsh = SilasMarsh InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 silasMarsh :: InvestigatorCard SilasMarsh
 silasMarsh =

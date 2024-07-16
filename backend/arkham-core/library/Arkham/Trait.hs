@@ -67,6 +67,7 @@ data Trait
   | Developed
   | Dhole
   | Dilemma
+  | Double
   | Dreamer
   | Dreamlands
   | Drifter

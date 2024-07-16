@@ -18,7 +18,7 @@ data ChooseFight = ChooseFight
   , chooseFightOnlyChoose :: Bool
   , chooseFightOverride :: Bool
   }
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 instance HasField "investigator" ChooseFight InvestigatorId where

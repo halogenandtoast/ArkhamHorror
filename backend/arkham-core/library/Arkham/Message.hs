@@ -31,6 +31,7 @@ import Arkham.ChaosToken
 import Arkham.Choose
 import Arkham.ClassSymbol
 import Arkham.Cost
+import Arkham.Customization
 import Arkham.DamageEffect
 import Arkham.Deck
 import Arkham.DeckBuilding.Adjustment
@@ -118,7 +119,7 @@ storyWithChooseOne lead pids flavor choices =
     (mapFromList [(pid, Read flavor $ if pid == lead then choices else []) | pid <- pids])
 
 data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
-  deriving stock (Generic, Eq, Show)
+  deriving stock (Generic, Eq, Show, Data)
   deriving anyclass (FromJSON, ToJSON)
 
 instance IsLabel "clues" AdvancementMethod where
@@ -128,7 +129,7 @@ instance IsLabel "other" AdvancementMethod where
   fromLabel = AdvancedWithOther
 
 data AgendaAdvancementMethod = AgendaAdvancedWithDoom | AgendaAdvancedWithOther
-  deriving stock (Generic, Eq, Show)
+  deriving stock (Generic, Eq, Show, Data)
   deriving anyclass (FromJSON, ToJSON)
 
 instance IsLabel "doom" AgendaAdvancementMethod where
@@ -246,7 +247,7 @@ createCardEffect
 createCardEffect def mMeta (toSource -> source) (toTarget -> target) = CreateEffect (toCardCode def) mMeta source target
 
 data AbilityRef = AbilityRef Source Int
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 getChoiceAmount :: Text -> [(Text, Int)] -> Int
@@ -290,27 +291,27 @@ instance IsMessage (EnemyCreation Message) where
   {-# INLINE toMessage #-}
 
 data ReplaceStrategy = DefaultReplace | Swap
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data StoryMode = ResolveIt | DoNotResolveIt
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data IncludeDiscard = IncludeDiscard | ExcludeDiscard
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data SearchType = Searching | Looking | Revealing
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype FromSkillType = FromSkillType SkillType
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype ToSkillType = ToSkillType SkillType
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 pattern BeginSkillTest :: SkillTest -> Message
@@ -326,7 +327,7 @@ pattern AssetDamage aid source damage horror <- AssetDamageWithCheck aid source 
 type IsSameAction = Bool
 
 data CanAdvance = CanAdvance | CanNotAdvance
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 class AndThen a where
@@ -1002,6 +1003,7 @@ data Message
   | SetScenarioMeta Value
   | DoStep Int Message
   | ForInvestigator InvestigatorId Message
+  | ForTarget Target Message
   | ForPlayer PlayerId Message
   | ForSkillType SkillType Message
   | -- The Circle Undone
@@ -1031,12 +1033,13 @@ data Message
   | IfEnemyExists EnemyMatcher [Message]
   | ExcessDamage EnemyId [Message]
   | AddDeckBuildingAdjustment InvestigatorId DeckBuildingAdjustment
+  | IncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]
   | -- Commit
     Do Message
   | DoBatch BatchId Message
   | -- UI
     ClearUI
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 $(deriveJSON defaultOptions ''Message)
 

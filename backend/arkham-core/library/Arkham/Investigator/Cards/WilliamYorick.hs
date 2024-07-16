@@ -16,6 +16,7 @@ import Arkham.Window qualified as Window
 newtype WilliamYorick = WilliamYorick InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 williamYorick :: InvestigatorCard WilliamYorick
 williamYorick =
@@ -60,6 +61,7 @@ instance RunMessage WilliamYorick where
 newtype WilliamYorickEffect = WilliamYorickEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 williamYorickEffect :: EffectArgs -> WilliamYorickEffect
 williamYorickEffect = cardEffect WilliamYorickEffect Cards.williamYorick

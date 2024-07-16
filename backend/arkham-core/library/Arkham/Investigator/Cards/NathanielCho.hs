@@ -16,6 +16,7 @@ import Arkham.Window qualified as Window
 newtype NathanielCho = NathanielCho InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 nathanielCho :: InvestigatorCard NathanielCho
 nathanielCho =
@@ -55,6 +56,7 @@ instance RunMessage NathanielCho where
 newtype NathanielChoEffect = NathanielChoEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 nathanielChoEffect :: EffectArgs -> NathanielChoEffect
 nathanielChoEffect = cardEffect NathanielChoEffect Cards.nathanielCho

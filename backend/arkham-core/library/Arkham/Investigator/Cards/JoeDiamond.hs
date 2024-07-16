@@ -21,12 +21,13 @@ import Arkham.Window qualified as Window
 import Data.Map.Strict qualified as Map
 
 newtype Metadata = Metadata {revealedHunchCard :: Maybe CardId}
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype JoeDiamond = JoeDiamond (InvestigatorAttrs `With` Metadata)
-  deriving anyclass (IsInvestigator)
+  deriving anyclass IsInvestigator
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock Data
 
 joeDiamond :: InvestigatorCard JoeDiamond
 joeDiamond =

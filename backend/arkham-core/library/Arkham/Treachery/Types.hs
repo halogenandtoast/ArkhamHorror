@@ -23,7 +23,7 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Trait
 import Arkham.Treachery.Cards
-import Data.Typeable
+import Data.Data
 import GHC.Records
 
 class
@@ -296,6 +296,11 @@ is (CardIdTarget cardId) t = cardId == toCardId t
 is _ _ = False
 
 data Treachery = forall a. IsTreachery a => Treachery a
+
+instance Data Treachery where
+  gunfold _ _ _ = error "gunfold(Treachery)"
+  toConstr _ = error "toConstr(Treachery)"
+  dataTypeOf _ = error "dataTypeOf(Treachery)"
 
 instance HasField "owner" Treachery (Maybe InvestigatorId) where
   getField (Treachery a) = attr treacheryOwner a

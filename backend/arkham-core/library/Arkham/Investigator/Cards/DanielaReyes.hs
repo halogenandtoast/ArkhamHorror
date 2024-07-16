@@ -22,6 +22,7 @@ data Metadata = Metadata
 newtype DanielaReyes = DanielaReyes InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 danielaReyes :: InvestigatorCard DanielaReyes
 danielaReyes =

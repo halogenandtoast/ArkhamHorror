@@ -49,7 +49,7 @@ data Entities = Entities
   , entitiesSkills :: EntityMap Skill
   , entitiesStories :: EntityMap Story
   }
-  deriving stock (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic, Data)
 
 instance ToJSON Entities where
   toJSON = genericToJSON $ aesonOptions $ Just "entities"

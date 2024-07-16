@@ -13,6 +13,7 @@ import Arkham.Prelude
 newtype SisterMary = SisterMary InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 sisterMary :: InvestigatorCard SisterMary
 sisterMary =

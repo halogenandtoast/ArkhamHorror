@@ -15,12 +15,12 @@ nTimes 1 f = f
 nTimes n f = f . nTimes (n - 1) f
 
 data Pos = Pos Int Int
-  deriving stock (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 -- Todo hardcode a and b, store location id for empty space
 data CosmosLocation a b = EmptySpace Pos a | CosmosLocation Pos b
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 cosmosLocationToPosition :: CosmosLocation a b -> Pos
@@ -36,7 +36,7 @@ data CosmosRow a b
       (Seq (Maybe (CosmosLocation a b)))
       (Maybe (CosmosLocation a b))
       (Seq (Maybe (CosmosLocation a b)))
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 initCosmos :: Cosmos a b
@@ -55,7 +55,7 @@ data Cosmos a b = Cosmos
   , cosmosCenter :: CosmosRow a b
   , cosmosBelow :: Seq (CosmosRow a b)
   }
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 -- First check do we need to extend cosmos in a direction, if so extend

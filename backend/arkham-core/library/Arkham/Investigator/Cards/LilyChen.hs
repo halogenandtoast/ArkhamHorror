@@ -10,12 +10,13 @@ import Arkham.Trait (Trait (Broken))
 import Data.Aeson.KeyMap qualified as KM
 
 newtype Metadata = Metadata {flipDiscipline :: Bool}
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype LilyChen = LilyChen (InvestigatorAttrs `With` Metadata)
   deriving anyclass (IsInvestigator, HasAbilities, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock Data
 
 lilyChen :: InvestigatorCard LilyChen
 lilyChen =

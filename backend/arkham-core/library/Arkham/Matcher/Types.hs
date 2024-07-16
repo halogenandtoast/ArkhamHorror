@@ -827,6 +827,7 @@ data CardMatcher
   | CardWithEvenSkillIcons
   | CardWithOddNumberOfWordsInTitle
   | CardWithEvenNumberOfWordsInTitle
+  | CardWithAvailableCustomization
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not CardMatcher where

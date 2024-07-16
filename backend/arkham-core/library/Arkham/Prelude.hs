@@ -218,6 +218,7 @@ deleteFirstMatch f (a' : as) | f a' = as
 deleteFirstMatch f (b' : as) = b' : deleteFirstMatch f as
 
 data With a b = With a b
+  deriving stock Data
 
 instance (Eq a, Eq b) => Eq (With a b) where
   With a1 b1 == With a2 b2 = a1 == a2 && b1 == b2

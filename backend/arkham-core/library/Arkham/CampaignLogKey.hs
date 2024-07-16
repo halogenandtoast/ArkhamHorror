@@ -9,8 +9,8 @@ import Arkham.Prelude hiding (toLower)
 import Control.Monad.Fail
 import Data.Aeson.TH
 import Data.Char (isUpper, toLower)
+import Data.Data
 import Data.Text qualified as T
-import Data.Typeable
 
 data CampaignLogKey
   = -- | The Night of the Zealot
@@ -373,6 +373,11 @@ data SomeRecorded where
   SomeRecorded :: Recordable a => RecordableType a -> Recorded a -> SomeRecorded
 
 deriving stock instance Show SomeRecorded
+
+instance Data SomeRecorded where
+  gunfold _ _ _ = error "gunfold(SomeRecorded)"
+  toConstr _ = error "toConstr(SomeRecorded)"
+  dataTypeOf _ = error "dataTypeOf(SomeRecorded)"
 
 instance Eq SomeRecorded where
   (SomeRecorded _ (a :: a)) == (SomeRecorded _ (b :: b)) = case eqT @a @b of

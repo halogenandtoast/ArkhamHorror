@@ -17,7 +17,7 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Story.Cards
 import Arkham.Target
-import Data.Typeable
+import Data.Data
 import GHC.Records
 
 class
@@ -132,6 +132,11 @@ instance Sourceable StoryAttrs where
   isSource _ _ = False
 
 data Story = forall a. IsStory a => Story a
+
+instance Data Story where
+  gunfold _ _ _ = error "gunfold(Story)"
+  toConstr _ = error "toConstr(Story)"
+  dataTypeOf _ = error "dataTypeOf(Story)"
 
 instance Eq Story where
   (Story (a :: a)) == (Story (b :: b)) = case eqT @a @b of

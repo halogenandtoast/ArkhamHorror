@@ -13,6 +13,7 @@ import Arkham.Matcher
 newtype AminaZidane = AminaZidane InvestigatorAttrs
   deriving anyclass (IsInvestigator)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 aminaZidane :: InvestigatorCard AminaZidane
 aminaZidane =

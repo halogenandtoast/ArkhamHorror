@@ -17,7 +17,7 @@ import Arkham.Name
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Data.Typeable
+import Data.Data
 import GHC.Records
 
 class
@@ -161,6 +161,11 @@ instance HasAbilities ActAttrs where
     Nothing -> []
 
 data Act = forall a. IsAct a => Act a
+
+instance Data Act where
+  gunfold _ _ _ = error "gunfold(Act)"
+  toConstr _ = error "toConstr(Act)"
+  dataTypeOf _ = error "dataTypeOf(Act)"
 
 instance HasField "id" Act ActId where
   getField = toId

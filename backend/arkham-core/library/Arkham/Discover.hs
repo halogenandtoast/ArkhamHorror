@@ -11,10 +11,10 @@ import Data.Aeson.TH
 import GHC.Records
 
 data IsInvestigate = IsInvestigate | NotInvestigate
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
 
 data DiscoverLocation = DiscoverYourLocation | DiscoverAtLocation LocationId
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 data Discover = Discover
   { discoverCount :: Int
@@ -22,7 +22,7 @@ data Discover = Discover
   , discoverSource :: Source
   , discoverAction :: Maybe Action
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 instance HasField "count" Discover Int where
   getField = (.discoverCount)

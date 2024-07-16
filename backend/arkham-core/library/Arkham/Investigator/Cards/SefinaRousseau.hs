@@ -13,6 +13,7 @@ import Arkham.Investigator.Runner
 newtype SefinaRousseau = SefinaRousseau InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 sefinaRousseau :: InvestigatorCard SefinaRousseau
 sefinaRousseau =

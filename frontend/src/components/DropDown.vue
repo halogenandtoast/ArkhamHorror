@@ -20,6 +20,7 @@ const submit = function() {
 <template>
   <form @submit.prevent="submit">
     <select v-model="choice">
+      <option value="Choose One" disabled>Choose One</option>
       <option v-for="(option, idx) in options" :value="idx" :key="idx">{{option}}</option>
     </select>
     <button type="submit">Choose</button>

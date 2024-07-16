@@ -26,6 +26,7 @@ import Arkham.Damage
 import Arkham.DefeatedBy
 import Arkham.Event.Types (Field (EventUses))
 import Arkham.Helpers.Calculation (calculate)
+import Arkham.Helpers.Customization
 import Arkham.Helpers.Placement
 import Arkham.Helpers.Use
 import Arkham.Matcher (
@@ -38,6 +39,7 @@ import Arkham.Token qualified as Token
 import Arkham.Window (mkAfter, mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (non)
+import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
 
 defeated :: HasGame m => AssetAttrs -> Source -> m (Maybe DefeatedBy)
@@ -64,6 +66,12 @@ instance RunMessage Asset where
 
 instance RunMessage AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of
+    IncreaseCustomization iid cardCode customization choices | toCardCode a == cardCode && a `ownedBy` iid -> do
+      case customizationIndex a customization of
+        Nothing -> pure a
+        Just i ->
+          pure
+            $ a {assetCustomizations = IntMap.adjust (second (const choices) . first (+ 1)) i assetCustomizations}
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     SealedChaosToken token card | toCardId card == toCardId a -> do
       pure $ a & sealedChaosTokensL %~ (token :)

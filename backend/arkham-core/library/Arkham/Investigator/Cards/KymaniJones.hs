@@ -13,6 +13,7 @@ import Arkham.Projection
 newtype KymaniJones = KymaniJones InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 kymaniJones :: InvestigatorCard KymaniJones
 kymaniJones =
@@ -51,6 +52,7 @@ instance RunMessage KymaniJones where
 newtype KymaniJonesEffect = KymaniJonesEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 kymaniJonesEffect :: EffectArgs -> KymaniJonesEffect
 kymaniJonesEffect = cardEffect KymaniJonesEffect Cards.kymaniJones

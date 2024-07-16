@@ -10,12 +10,13 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher
 
 newtype YithianMetadata = YithianMetadata {originalBody :: Value}
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype BodyOfAYithian = BodyOfAYithian (InvestigatorAttrs `With` YithianMetadata)
-  deriving anyclass (IsInvestigator)
+  deriving anyclass IsInvestigator
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock Data
 
 instance HasModifiersFor BodyOfAYithian where
   getModifiersFor (AssetTarget aid) (BodyOfAYithian (a `With` _)) = do

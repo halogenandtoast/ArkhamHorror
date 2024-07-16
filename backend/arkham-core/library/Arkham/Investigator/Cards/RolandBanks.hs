@@ -13,6 +13,7 @@ import Arkham.Projection
 newtype RolandBanks = RolandBanks InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 rolandBanks :: InvestigatorCard RolandBanks
 rolandBanks =

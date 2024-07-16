@@ -3,6 +3,7 @@ module Arkham.Helpers where
 import Arkham.Prelude hiding (toLower, toUpper, unpack)
 
 import Data.Char (isLetter, toLower, toUpper)
+import Data.Data
 import Data.Foldable (foldr, foldrM)
 import Data.Foldable qualified as Foldable
 
@@ -48,6 +49,12 @@ newtype Deck a = Deck {unDeck :: [a]}
     , SemiSequence
     , GrowingAppend
     )
+
+instance Data a => Data (Deck a) where
+  gfoldl k z (Deck a) = z Deck `k` a
+  gunfold _ _ = error "gunfold"
+  toConstr _ = error "toConstr"
+  dataTypeOf _ = error "dataTypeOf"
 
 type instance Element (Deck a) = a
 

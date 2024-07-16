@@ -118,7 +118,7 @@ baseSkillValueFor skill _maction iid = do
   applyAfterModifier _ n = n
 
 data DamageFor = DamageForEnemy | DamageForInvestigator
-  deriving stock (Eq)
+  deriving stock Eq
 
 damageValueFor :: HasGame m => Int -> InvestigatorId -> DamageFor -> m Int
 damageValueFor baseValue iid damageFor = do

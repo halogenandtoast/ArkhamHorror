@@ -13,6 +13,7 @@ import Arkham.Matcher
 newtype MarkHarrigan = MarkHarrigan InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 markHarrigan :: InvestigatorCard MarkHarrigan
 markHarrigan =

@@ -22,11 +22,11 @@ data SkillTestBaseValue
   = SkillBaseValue SkillType
   | AndSkillBaseValue [SkillType]
   | HalfResourcesOf InvestigatorId
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 newtype SkillTestDifficulty = SkillTestDifficulty GameCalculation
   deriving newtype (Show, Ord, Eq, Generic, FromJSON, ToJSON)
-  deriving stock (Data)
+  deriving stock Data
 
 data SkillTest = SkillTest
   { skillTestInvestigator :: InvestigatorId
@@ -48,7 +48,7 @@ data SkillTest = SkillTest
   , skillTestIconValues :: Map SkillIcon Int
   , skillTestCard :: Maybe CardId
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 instance HasField "source" SkillTest Source where
   getField = skillTestSource
@@ -92,7 +92,7 @@ data SkillTestResultsData = SkillTestResultsData
   , skillTestResultsResultModifiers :: Maybe Int
   , skillTestResultsSuccess :: Bool
   }
-  deriving stock (Eq, Show)
+  deriving stock (Eq, Show, Data)
 
 initSkillTest
   :: (Sourceable source, Targetable target)

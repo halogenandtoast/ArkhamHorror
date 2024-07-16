@@ -13,6 +13,7 @@ import Arkham.Slot
 newtype CharlieKane = CharlieKane InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 charlieKane :: InvestigatorCard CharlieKane
 charlieKane =

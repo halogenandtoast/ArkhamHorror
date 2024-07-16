@@ -17,6 +17,7 @@ import Arkham.Window qualified as Window
 newtype FatherMateo = FatherMateo InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 fatherMateo :: InvestigatorCard FatherMateo
 fatherMateo =
@@ -48,6 +49,7 @@ instance RunMessage FatherMateo where
 newtype FatherMateoElderSignEffect = FatherMateoElderSignEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 fatherMateoElderSignEffect :: EffectArgs -> FatherMateoElderSignEffect
 fatherMateoElderSignEffect = cardEffect FatherMateoElderSignEffect Cards.fatherMateo

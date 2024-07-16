@@ -46,6 +46,7 @@ import Arkham.Game.Json ()
 import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.Customization
 import Arkham.Helpers.Enemy (spawnAt)
 import Arkham.Helpers.Investigator hiding (investigator, matchTarget)
 import Arkham.Helpers.Message hiding (
@@ -115,8 +116,10 @@ import Arkham.Treachery.Types (Field (..), drawnFromL)
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
-import Control.Lens (each, itraverseOf, itraversed, non, set)
+import Control.Lens (each, itraverseOf, itraversed, non, over, set)
 import Control.Monad.State.Strict (evalStateT, get, put)
+import Data.Data.Lens (biplate)
+import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
 import Data.Set qualified as Set
 import Data.These
@@ -130,6 +133,50 @@ getInvestigatorsInOrder = do
 
 runGameMessage :: Runner Game
 runGameMessage msg g = case msg of
+  IncreaseCustomization iid cardCode customization choices -> do
+    cards <- select $ OwnedBy (InvestigatorWithId iid) <> basic (CardWithCardCode cardCode)
+
+    cards' <- forMaybeM cards \case
+      card@(PlayerCard pc) -> do
+        case customizationIndex card customization of
+          Nothing -> pure Nothing
+          Just i -> do
+            let card' =
+                  pc
+                    { pcCustomizations =
+                        IntMap.alter
+                          (Just . maybe (1, choices) (second (const choices) . first (+ 1)))
+                          i
+                          (pcCustomizations pc)
+                    }
+            replaceCard card.id (PlayerCard card')
+            pure $ Just card'
+      _ -> pure Nothing
+
+    let swapCard c d = if d.id == c.id then c else d
+
+    pure
+      $ g
+      & entitiesL
+      %~ (\e -> foldr (over biplate . swapCard) e cards')
+      & actionRemovedEntitiesL
+      %~ (\e -> foldr (over biplate . swapCard) e cards')
+      & outOfPlayEntitiesL
+      %~ (\e -> foldr (over biplate . swapCard) e cards')
+      & inHandEntitiesL
+      %~ (\e -> foldr (over biplate . swapCard) e cards')
+      & inDiscardEntitiesL
+      %~ (\e -> foldr (over biplate . swapCard) e cards')
+      & inSearchEntitiesL
+      %~ (\e -> foldr (over biplate . swapCard) e cards')
+      & focusedCardsL
+      %~ (\e -> foldr (over biplate . swapCard) e cards')
+      & removedFromPlayL
+      %~ (\e -> foldr (over biplate . swapCard) e cards')
+      & activeCardL
+      %~ (\e -> foldr (over biplate . swapCard) e cards')
+      & resolvingCardL
+      %~ (\e -> foldr (over biplate . swapCard) e cards')
   LoadDecklist playerId decklist -> do
     -- if the player is changing decks during the game (i.e. prologue investigators) we need to replace the old investigator
     let mOldId = toId <$> find ((== playerId) . attr investigatorPlayerId) (toList $ gameInvestigators g)

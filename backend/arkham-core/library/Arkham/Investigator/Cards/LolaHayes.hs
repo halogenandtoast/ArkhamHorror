@@ -11,6 +11,7 @@ import Arkham.Matcher
 newtype LolaHayes = LolaHayes InvestigatorAttrs
   deriving anyclass (IsInvestigator)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 instance HasModifiersFor LolaHayes where
   getModifiersFor target (LolaHayes attrs) | attrs `is` target = do

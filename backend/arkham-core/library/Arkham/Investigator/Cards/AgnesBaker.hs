@@ -13,6 +13,7 @@ import Arkham.Matcher hiding (NonAttackDamageEffect)
 newtype AgnesBaker = AgnesBaker InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 agnesBaker :: InvestigatorCard AgnesBaker
 agnesBaker =

@@ -21,6 +21,7 @@ import Arkham.Window qualified as Window
 newtype DianaStanley = DianaStanley InvestigatorAttrs
   deriving anyclass (IsInvestigator)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 dianaStanley :: InvestigatorCard DianaStanley
 dianaStanley =

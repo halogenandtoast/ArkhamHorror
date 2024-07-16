@@ -20,7 +20,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Window (Window)
-import Data.Typeable
+import Data.Data
 import GHC.Records
 
 class
@@ -66,7 +66,7 @@ data EffectAttrs = EffectAttrs
   -- to track and escape recursion
   , effectExtraMetadata :: Value
   }
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
 
 instance HasCardCode EffectAttrs where
   toCardCode = effectCardCode
@@ -184,6 +184,11 @@ instance Sourceable EffectAttrs where
   isSource _ _ = False
 
 data Effect = forall a. IsEffect a => Effect a
+
+instance Data Effect where
+  gunfold _ _ _ = error "gunfold(Effect)"
+  toConstr _ = error "toConstr(Effect)"
+  dataTypeOf _ = error "dataTypeOf(Effect)"
 
 instance Eq Effect where
   (Effect (a :: a)) == (Effect (b :: b)) = case eqT @a @b of

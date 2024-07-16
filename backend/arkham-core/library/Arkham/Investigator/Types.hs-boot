@@ -5,6 +5,7 @@ import Arkham.Prelude
 
 data Investigator
 
+instance Data Investigator
 instance Show Investigator
 instance Eq Investigator
 instance ToJSON Investigator

@@ -17,6 +17,7 @@ import Arkham.Trait (Trait (Elite))
 newtype GloriaGoldberg = GloriaGoldberg InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock Data
 
 gloriaGoldberg :: InvestigatorCard GloriaGoldberg
 gloriaGoldberg =

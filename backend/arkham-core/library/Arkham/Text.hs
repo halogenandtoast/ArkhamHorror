@@ -7,13 +7,14 @@ import Arkham.Prelude
 import Data.Aeson.TH
 
 newtype Tooltip = Tooltip Text
+  deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, Ord)
 
 data FlavorText = FlavorText
   { flavorTitle :: Maybe Text
   , flavorBody :: [Text]
   }
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 i18n :: Text -> FlavorText
 i18n = FlavorText Nothing . pure . toI18n

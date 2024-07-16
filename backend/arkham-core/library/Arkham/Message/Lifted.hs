@@ -440,6 +440,17 @@ chooseOneToHandle iid source targets =
     $ only
     . Msg.handleTargetChoice iid source
 
+chooseOneToHandleWith
+  :: (HasCallStack, ReverseQueue m, Targetable target, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> [target]
+  -> Message
+  -> m ()
+chooseOneToHandleWith iid source targets msg =
+  Arkham.Message.Lifted.chooseOne iid
+    $ targetLabels targets \target -> [Msg.handleTargetChoice iid source target, msg]
+
 handleOneAtATime
   :: (ReverseQueue m, Targetable target, Sourceable source)
   => InvestigatorId

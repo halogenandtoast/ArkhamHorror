@@ -303,6 +303,7 @@ allPlayerEventCards =
       , readTheSigns
       , recharge2
       , recharge4
+      , refine
       , reliable1
       , riastrad1
       , righteousHunt1
@@ -3507,6 +3508,14 @@ shedALight =
           $ Criteria.DuringSkillTest
           $ WhileInvestigating Anywhere
           <> SkillTestWithDifficulty (static 0)
+    }
+
+refine :: CardDef
+refine =
+  (event "09121" "Refine" 3 Neutral)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Supply, Double]
+    , cdCriteria = Just $ exists $ OwnedBy You <> basic CardWithAvailableCustomization
     }
 
 keepFaith2 :: CardDef

@@ -24,7 +24,7 @@ data CampaignOption
   | TakePuzzleBox
   | ProceedToInterlude3
   | DebugOption
-  deriving stock (Eq, Show, Ord)
+  deriving stock (Eq, Show, Ord, Data)
 
 $(deriveJSON defaultOptions ''CampaignOption)
 

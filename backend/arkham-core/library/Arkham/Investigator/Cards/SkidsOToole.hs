@@ -13,6 +13,7 @@ import Arkham.Matcher hiding (DuringTurn)
 newtype SkidsOToole = SkidsOToole InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 skidsOToole :: InvestigatorCard SkidsOToole
 skidsOToole =

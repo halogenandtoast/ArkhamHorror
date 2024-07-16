@@ -26,8 +26,8 @@ import Arkham.Target
 import Arkham.Trait
 import Arkham.Window (Window)
 import Data.Aeson.KeyMap qualified as KeyMap
+import Data.Data
 import Data.Map.Strict qualified as Map
-import Data.Typeable
 import GHC.Records
 
 class
@@ -264,6 +264,11 @@ instance Sourceable EventAttrs where
 
 data Event = forall a. IsEvent a => Event a
 
+instance Data Event where
+  gunfold _ _ _ = error "gunfold(Event)"
+  toConstr _ = error "toConstr(Event)"
+  dataTypeOf _ = error "dataTypeOf(Event)"
+
 instance HasField "placement" Event Placement where
   getField (Event a) = (toAttrs a).placement
 
@@ -322,6 +327,9 @@ getEventId = eventId . toAttrs
 
 ownerOfEvent :: Event -> InvestigatorId
 ownerOfEvent = eventOwner . toAttrs
+
+instance HasField "owner" Event InvestigatorId where
+  getField = attr eventOwner
 
 data SomeEventCard = forall a. IsEvent a => SomeEventCard (EventCard a)
 

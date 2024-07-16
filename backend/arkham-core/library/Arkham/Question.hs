@@ -23,10 +23,10 @@ data Component
   = InvestigatorComponent {investigatorId :: InvestigatorId, tokenType :: GameTokenType}
   | InvestigatorDeckComponent {investigatorId :: InvestigatorId}
   | AssetComponent {assetId :: AssetId, tokenType :: GameTokenType}
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data GameTokenType = ResourceToken | ClueToken | DamageToken | HorrorToken | DoomToken
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 pattern DamageLabel :: InvestigatorId -> [msg] -> UI msg
 pattern DamageLabel iid msgs <- ComponentLabel (InvestigatorComponent iid DamageToken) msgs
@@ -76,7 +76,7 @@ data UI msg
   | EffectActionButton {tooltip :: Tooltip, effectId :: EffectId, messages :: [msg]}
   | Done {label :: Text}
   | SkipTriggersButton {investigatorId :: InvestigatorId}
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 data PaymentAmountChoice msg = PaymentAmountChoice
   { investigatorId :: InvestigatorId
@@ -85,17 +85,17 @@ data PaymentAmountChoice msg = PaymentAmountChoice
   , title :: Text
   , message :: msg
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 data AmountChoice = AmountChoice
   { label :: Text
   , minBound :: Int
   , maxBound :: Int
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 data AmountTarget = MinAmountTarget Int | MaxAmountTarget Int | TotalAmountTarget Int | AmountOneOf [Int]
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 data Question msg
   = ChooseOne {choices :: [UI msg]}
@@ -129,10 +129,10 @@ data Question msg
   | DropDown {options :: [(Text, msg)]}
   | PickScenarioSettings
   | PickCampaignSettings
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 data ChoosePlayerChoice = SetLeadInvestigator | SetTurnPlayer
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 targetLabel
   :: (Targetable target, msg ~ Element (t msg), MonoFoldable (t msg))

@@ -32,14 +32,14 @@ import Data.Aeson.TH
 import GHC.Records
 
 data Result b a = Success a | Failure b
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Data)
 
 data Window = Window
   { windowTiming :: Timing
   , windowType :: WindowType
   , windowBatchId :: Maybe BatchId
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 replaceWindowType :: WindowType -> Window -> Window
 replaceWindowType wType window = window {windowType = wType}
@@ -117,7 +117,7 @@ pattern PlacedDamage source target n <- PlacedToken source target Damage n
     PlacedDamage source target n = PlacedToken source target Damage n
 
 data IsDirect = IsDirect | IsNonDirect
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 data WindowType
   = AttemptToEvadeEnemy InvestigatorId EnemyId
@@ -278,7 +278,7 @@ data WindowType
   | ScenarioCountIncremented ScenarioCountKey
   | -- used to avoid checking a window
     DoNotCheckWindow
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 $( do
     isDirect <- deriveJSON defaultOptions ''IsDirect

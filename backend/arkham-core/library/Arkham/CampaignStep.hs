@@ -16,7 +16,7 @@ data CampaignStep
   | EpilogueStepPart Int
   | InvestigatorCampaignStep InvestigatorId CampaignStep
   | ResupplyPoint
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data InterludeKey
@@ -28,5 +28,5 @@ data InterludeKey
     ThePriceOfProgress4
   | ThePriceOfProgress5
   | ThePriceOfProgress6
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

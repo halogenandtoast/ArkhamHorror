@@ -540,6 +540,8 @@ allEvents =
     , SomeEventCard makingPreparations
     , SomeEventCard predatorOrPrey
     , SomeEventCard shedALight
+    , --- neutral [tsk]
+      SomeEventCard refine
     , -- The Feast of Hemloch Vale
       --- survivor [fhv]
       SomeEventCard keepFaith2

@@ -19,10 +19,10 @@ data Movement = Movement
   , movePayAdditionalCosts :: Bool
   , moveAfter :: [Message]
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 data MovementMeans = Direct | OneAtATime | Towards
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 uncancellableMove :: Movement -> Movement
 uncancellableMove m = m {moveCancelable = False}
@@ -31,7 +31,7 @@ afterMove :: [Message] -> Movement -> Movement
 afterMove msgs m = m {moveAfter = msgs}
 
 data Destination = ToLocation LocationId | ToLocationMatching LocationMatcher
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 move
   :: (Targetable target, Sourceable source)

@@ -18,6 +18,7 @@ import Arkham.Skill.Cards qualified as Skills
 newtype AmandaSharpe = AmandaSharpe InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 amandaSharpe :: InvestigatorCard AmandaSharpe
 amandaSharpe =

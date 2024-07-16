@@ -11,6 +11,7 @@ import Arkham.Token
 newtype DarrellSimmons = DarrellSimmons InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 darrellSimmons :: InvestigatorCard DarrellSimmons
 darrellSimmons =

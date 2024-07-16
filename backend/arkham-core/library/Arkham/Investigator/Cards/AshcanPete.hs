@@ -14,6 +14,7 @@ import Arkham.Modifier
 newtype AshcanPete = AshcanPete InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 ashcanPete :: InvestigatorCard AshcanPete
 ashcanPete =

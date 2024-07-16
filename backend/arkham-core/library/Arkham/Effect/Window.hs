@@ -29,7 +29,7 @@ data EffectWindow
   | EffectCardDrawWindow
   | EffectUI
   | EffectMoveWindow
-  deriving stock (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 instance IsLabel "skillTest" EffectWindow where

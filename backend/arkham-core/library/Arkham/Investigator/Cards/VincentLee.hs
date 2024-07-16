@@ -16,6 +16,7 @@ import Arkham.Window (Window, WindowType (Healed), windowType)
 newtype VincentLee = VincentLee InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 vincentLee :: InvestigatorCard VincentLee
 vincentLee =

@@ -10,5 +10,5 @@ data ArkhamDBDecklist = ArkhamDBDecklist
   , investigator_name :: Text
   , meta :: Maybe Text
   }
-  deriving stock (Generic, Show, Eq)
+  deriving stock (Generic, Show, Eq, Data)
   deriving anyclass (FromJSON, ToJSON)

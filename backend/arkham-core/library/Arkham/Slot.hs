@@ -21,7 +21,7 @@ data Slot
   | RestrictedSlot {source :: Source, matcher :: CardMatcher, assets :: [AssetId]}
   | AdjustableSlot
       {source :: Source, restriction :: Maybe CardMatcher, slotTypes :: [SlotType], assets :: [AssetId]}
-  deriving stock (Show, Generic)
+  deriving stock (Show, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 slotSource :: Slot -> Source

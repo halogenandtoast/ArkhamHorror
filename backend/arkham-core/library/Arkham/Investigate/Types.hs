@@ -16,7 +16,7 @@ data Investigate = MkInvestigate
   , investigateTarget :: Maybe Target
   , investigateIsAction :: Bool
   }
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 instance HasField "investigator" Investigate InvestigatorId where

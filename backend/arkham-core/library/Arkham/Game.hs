@@ -441,7 +441,7 @@ withSkillTestModifiers a = do
   pure $ a `with` ModifierData modifiers'
 
 data PublicGame gid = PublicGame gid Text [Text] Game | FailedToLoadGame Text
-  deriving stock (Show)
+  deriving stock Show
 
 getConnectedMatcher :: HasGame m => Location -> m LocationMatcher
 getConnectedMatcher = Helpers.getConnectedMatcher . toId
@@ -3744,7 +3744,7 @@ data PathState = PathState
   { _psVisitedLocations :: Set LocationId
   , _psPaths :: Map LocationId [Seq LocationId]
   }
-  deriving stock (Show)
+  deriving stock Show
 
 getLongestPath
   :: HasGame m => LocationId -> (LocationId -> m Bool) -> m [LocationId]

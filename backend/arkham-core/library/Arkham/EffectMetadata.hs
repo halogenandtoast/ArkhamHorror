@@ -22,7 +22,7 @@ data EffectMetadata window a
   | EffectAbility (Ability, [window])
   | EffectCost ActiveCostId
   | EffectText Text
-  deriving stock (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 effectInt :: Int -> Maybe (EffectMetadata window a)

@@ -15,5 +15,5 @@ data UsedAbility = UsedAbility
   , usedDepth :: Int
   , usedAbilityTraits :: Set Trait
   }
-  deriving stock (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

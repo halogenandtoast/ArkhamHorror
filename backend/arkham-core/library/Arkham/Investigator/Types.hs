@@ -47,6 +47,7 @@ import Data.Text qualified as T
 import GHC.Records
 
 instance Data Investigator where
+  gfoldl k z (Investigator a) = z Investigator `k` a
   gunfold _ _ _ = error "gunfold(Investigator)"
   toConstr _ = error "toConstr(Investigator)"
   dataTypeOf _ = error "dataTypeOf(Investigator)"
@@ -72,6 +73,7 @@ class
   , HasChaosTokenValue a
   , RunMessage a
   , Entity a
+  , Data a
   , EntityId a ~ InvestigatorId
   , EntityAttrs a ~ InvestigatorAttrs
   ) =>
@@ -269,7 +271,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , -- deck building
     investigatorDeckBuildingAdjustments :: [DeckBuildingAdjustment]
   }
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
 
 instance HasCardCode InvestigatorAttrs where
   toCardCode = investigatorCardCode
@@ -287,7 +289,7 @@ data InvestigatorSearch = MkInvestigatorSearch
   , searchingFoundCardsStrategy :: FoundCardsStrategy
   , searchingFoundCards :: Map Zone [Card]
   }
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 investigatorDoom :: InvestigatorAttrs -> Int
@@ -306,7 +308,7 @@ investigatorSanityDamage :: InvestigatorAttrs -> Int
 investigatorSanityDamage = countTokens Horror . investigatorTokens
 
 data DrawingCards = DrawingCards Deck.DeckSignifier Int [Card]
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 instance HasTraits InvestigatorAttrs where

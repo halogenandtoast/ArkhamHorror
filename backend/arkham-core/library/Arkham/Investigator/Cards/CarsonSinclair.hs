@@ -12,6 +12,7 @@ import Arkham.Matcher
 newtype CarsonSinclair = CarsonSinclair InvestigatorAttrs
   deriving anyclass (IsInvestigator)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving stock (Data)
 
 carsonSinclair :: InvestigatorCard CarsonSinclair
 carsonSinclair =

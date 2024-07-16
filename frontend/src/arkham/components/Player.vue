@@ -176,13 +176,13 @@ const cardRowTitle = ref("")
 
 const topOfDeckTreachery = computed(() => {
   const mTreacheryId = Object.values(props.game.treacheries).
-    filter((t) => t.placement.tag === "TreacheryTopOfDeck" && t.placement.contents === id.value).
+    filter((t) => t.placement.tag === "OnTopOfDeck" && t.placement.contents === id.value).
     map((t) => t.id)[0]
   return mTreacheryId ? props.game.treacheries[mTreacheryId] : null
 })
 
 const inHandTreacheries = computed(() => Object.values(props.game.treacheries).
-  filter((t) => t.placement.tag === "TreacheryInHandOf" && t.placement.contents === id.value).
+  filter((t) => t.placement.tag === "HiddenInHand" && t.placement.contents === id.value).
   map((t) => t.id))
 
 const doShowCards = (event: Event, cards: ComputedRef<ArkhamCard.Card[]>, title: string, isDiscards: boolean) => {

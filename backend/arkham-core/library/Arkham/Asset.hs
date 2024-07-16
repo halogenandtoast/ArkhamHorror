@@ -894,6 +894,7 @@ allAssets =
     , SomeAssetCard improvisedShield
     , --- neutral [tsk]
       SomeAssetCard hyperphysicalShotcasterTheoreticalDevice
+    , SomeAssetCard toolBelt
     , -- The Feast of Hemloch Vale
       --- guardian [tsk]
       SomeAssetCard blessedBlade4

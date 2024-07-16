@@ -2001,6 +2001,13 @@ getAssetsMatching matcher = do
     AssetOwnedBy investigatorMatcher -> do
       iids <- select investigatorMatcher
       filterM (fieldP AssetOwner (maybe False (`elem` iids)) . toId) as
+    AssetInPlayAreaOf investigatorMatcher -> do
+      iids <- select investigatorMatcher
+      let
+        inPlayArea = \case
+          InPlayArea iid' -> iid' `elem` iids
+          _ -> False
+      filterM (fieldP AssetPlacement inPlayArea . toId) as
     AssetAttachedToAsset assetMatcher -> do
       placements <- select assetMatcher
       let

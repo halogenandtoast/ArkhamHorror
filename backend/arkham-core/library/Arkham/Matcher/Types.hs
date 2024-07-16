@@ -188,6 +188,7 @@ data AssetMatcher
   | AssetAttachedToAsset AssetMatcher
   | AssetWithAttachedEvent EventMatcher
   | AssetControlledBy InvestigatorMatcher
+  | AssetInPlayAreaOf InvestigatorMatcher
   | AssetOwnedBy InvestigatorMatcher
   | AssetMatches [AssetMatcher]
   | AssetOneOf [AssetMatcher]
@@ -258,6 +259,9 @@ instance IsLabel "ranged" AssetMatcher where
 
 instance IsLabel "tome" AssetMatcher where
   fromLabel = AssetWithTrait Tome
+
+instance IsLabel "tool" AssetMatcher where
+  fromLabel = AssetWithTrait Tool
 
 instance IsLabel "spell" AssetMatcher where
   fromLabel = AssetWithTrait Spell

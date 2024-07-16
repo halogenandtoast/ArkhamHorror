@@ -735,6 +735,7 @@ allPlayerAssetCards =
       , timewornBrand5
       , tokenOfFaith
       , tonys38LongColt
+      , toolBelt
       , toothOfEztli
       , trackShoes
       , treasureHunter1
@@ -5955,6 +5956,13 @@ hyperphysicalShotcasterTheoreticalDevice =
           , (AethericLink, 4)
           , (EmpoweredConfiguration, 4)
           ]
+    }
+
+toolBelt :: CardDef
+toolBelt =
+  (asset "09120" "Tool Belt" 2 Neutral)
+    { cdCardTraits = setFromList [Item, Clothing]
+    , cdSlots = [#body]
     }
 
 blessedBlade4 :: CardDef

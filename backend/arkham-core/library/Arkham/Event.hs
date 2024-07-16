@@ -538,6 +538,7 @@ allEvents =
     , SomeEventCard endOfTheRoad
     , SomeEventCard exploitWeakness
     , SomeEventCard makingPreparations
+    , SomeEventCard predatorOrPrey
     , -- The Feast of Hemloch Vale
       --- survivor [fhv]
       SomeEventCard keepFaith2

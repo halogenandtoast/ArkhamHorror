@@ -292,6 +292,7 @@ allPlayerEventCards =
       , pilfer3
       , powerWord
       , practiceMakesPerfect
+      , predatorOrPrey
       , premonition
       , preparedForTheWorst
       , preposterousSketches
@@ -3477,6 +3478,16 @@ exploitWeakness =
 makingPreparations :: CardDef
 makingPreparations =
   (event "09106" "Making Preparations" 0 Survivor)
+    { cdCardTraits = setFromList [Dilemma, Tactic]
+    , cdRevelation = IsRevelation
+    , cdCost = Nothing
+    , cdLimits = [MaxPerTraitPerRound Dilemma 2]
+    , cdCriteria = Just Criteria.Never
+    }
+
+predatorOrPrey :: CardDef
+predatorOrPrey =
+  (event "09107" "Predator or Prey" 0 Survivor)
     { cdCardTraits = setFromList [Dilemma, Tactic]
     , cdRevelation = IsRevelation
     , cdCost = Nothing

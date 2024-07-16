@@ -440,6 +440,18 @@ chooseOneToHandle iid source targets =
     $ only
     . Msg.handleTargetChoice iid source
 
+handleOneAtATime
+  :: (ReverseQueue m, Targetable target, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> [target]
+  -> m ()
+handleOneAtATime iid source targets =
+  Arkham.Message.Lifted.chooseOneAtATime iid
+    $ targetLabels targets
+    $ only
+    . Msg.handleTargetChoice iid source
+
 chooseUpToN :: ReverseQueue m => InvestigatorId -> Int -> Text -> [UI Message] -> m ()
 chooseUpToN iid n label msgs = do
   player <- getPlayer iid
@@ -838,3 +850,6 @@ discoverAtYourLocation isInvestigate iid s n = do
 
 doStep :: ReverseQueue m => Int -> Message -> m ()
 doStep n msg = push $ Msg.DoStep n msg
+
+disengageEnemy :: ReverseQueue m => InvestigatorId -> EnemyId -> m ()
+disengageEnemy iid eid = push $ Msg.DisengageEnemy iid eid

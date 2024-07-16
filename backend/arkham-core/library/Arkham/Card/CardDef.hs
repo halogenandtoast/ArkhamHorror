@@ -57,6 +57,7 @@ data CardLimit
   | MaxPerGame Int
   | MaxPerRound Int
   | MaxPerAttack Int
+  | MaxPerTraitPerRound Trait Int
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''DeckRestriction)

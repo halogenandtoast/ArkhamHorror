@@ -732,28 +732,6 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
   prevents (CannotPlay matcher) = cardMatch c matcher
   prevents (CannotPutIntoPlay matcher) = cardMatch c matcher
   prevents _ = False
-  passesLimit :: forall n. HasGame n => CardLimit -> n Bool
-  passesLimit (LimitPerInvestigator m) = case toCardType c of
-    AssetType -> do
-      n <- selectCount $ Matcher.assetControlledBy iid <> Matcher.AssetWithTitle (nameTitle $ toName c)
-      pure $ m > n
-    _ -> error $ "Not handling card type: " <> show (toCardType c)
-  passesLimit (LimitPerTrait t m) = case toCardType c of
-    AssetType -> do
-      n <- selectCount (Matcher.AssetWithTrait t)
-      pure $ m > n
-    _ -> error $ "Not handling card type: " <> show (toCardType c)
-  passesLimit (MaxPerAttack m) = case toCardType c of
-    EventType -> do
-      n <- selectCount $ Matcher.eventIs c
-      pure $ m > n
-    _ -> error $ "Not handling card type: " <> show (toCardType c)
-  passesLimit (MaxPerGame m) = do
-    n <- getCardUses (toCardCode c)
-    pure $ m > n
-  passesLimit (MaxPerRound m) = do
-    n <- getCardUses (toCardCode c)
-    pure $ m > n
   go :: forall n. HasGame n => n Bool
   go = withDepthGuard 3 False $ do
     attrs <- getAttrs @Investigator iid
@@ -882,7 +860,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
             $ hasFightActions iid (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
         else hasFightActions iid (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
 
-    passesLimits <- allM passesLimit (cdLimits pcDef)
+    passesLimits' <- passesLimits iid c
     let
       additionalCosts = flip mapMaybe cardModifiers $ \case
         AdditionalCost x -> Just x
@@ -961,7 +939,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
             || cdOverrideActionPlayableIfCriteriaMet pcDef
          )
       && passesCriterias
-      && passesLimits
+      && passesLimits'
       && passesUnique
       && passesSlots
       && canAffordAdditionalCosts
@@ -3614,3 +3592,32 @@ damageTypeMatches strategy = \case
     SingleTarget -> False
     DamageEvenly -> False
     DamageFromHastur -> False
+
+passesLimits :: HasGame m => InvestigatorId -> Card -> m Bool
+passesLimits iid c = allM go (cdLimits $ toCardDef c)
+ where
+  go = \case
+    LimitPerInvestigator m -> case toCardType c of
+      AssetType -> do
+        n <- selectCount $ Matcher.assetControlledBy iid <> Matcher.AssetWithTitle (nameTitle $ toName c)
+        pure $ m > n
+      _ -> error $ "Not handling card type: " <> show (toCardType c)
+    LimitPerTrait t m -> case toCardType c of
+      AssetType -> do
+        n <- selectCount (Matcher.AssetWithTrait t)
+        pure $ m > n
+      _ -> error $ "Not handling card type: " <> show (toCardType c)
+    MaxPerAttack m -> case toCardType c of
+      EventType -> do
+        n <- selectCount $ Matcher.eventIs c
+        pure $ m > n
+      _ -> error $ "Not handling card type: " <> show (toCardType c)
+    MaxPerGame m -> do
+      n <- getCardUses (toCardCode c)
+      pure $ m > n
+    MaxPerRound m -> do
+      n <- getCardUses (toCardCode c)
+      pure $ m > n
+    MaxPerTraitPerRound t m -> do
+      n <- count (elem t) . map toTraits <$> getAllCardUses
+      pure $ m > n

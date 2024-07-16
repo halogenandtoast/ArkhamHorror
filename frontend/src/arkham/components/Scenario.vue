@@ -17,7 +17,6 @@ import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
-import StatusBar from '@/arkham/components/StatusBar.vue';
 import Key from '@/arkham/components/Key.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
 import Connections from '@/arkham/components/Connections.vue';
@@ -355,7 +354,6 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
         <button @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'BlessToken'})">Add Bless Token</button>
         <button @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'CurseToken'})">Add Curse Token</button>
       </div>
-      <StatusBar :game="game" :playerId="playerId" @choose="choose" />
       <CardRow
         v-if="showCards.ref.length > 0"
         :game="game"

@@ -17,10 +17,11 @@ export interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
+const { t } = useI18n()
 const choose = (idx: number) => emit('choose', idx)
+
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const question = computed(() => props.game.question[props.playerId])
-const { t } = useI18n()
 const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
 
 // focused cards are handled by the player's choice modal
@@ -39,7 +40,7 @@ const focusedCards = computed(() => {
   return props.game.focusedCards
 })
 
-const showChoices = computed(() => !props.game.skillTest && focusedCards.value.length == 0 && choices.value.some((c) => { return c.tag === MessageType.DONE || c.tag === MessageType.LABEL || c.tag === MessageType.SKILL_LABEL || c.tag === MessageType.SKILL_LABEL_WITH_LABEL || c.tag == MessageType.PORTRAIT_LABEL }))
+const showChoices = computed(() => !props.game.skillTest && choices.value.some((c) => { return c.tag === MessageType.DONE || c.tag === MessageType.LABEL || c.tag === MessageType.SKILL_LABEL || c.tag === MessageType.SKILL_LABEL_WITH_LABEL || c.tag == MessageType.PORTRAIT_LABEL }))
 
 const label = function(body: string) {
   if (body.startsWith("$")) {
@@ -250,7 +251,7 @@ section {
 }
 
 .intro-text {
-  width: 50vw;
+  max-width: 50vw;
   text-align: justify;
   background: linear-gradient(#DFDAD8, darken(#DFDAD8, 10%));
   padding: 10px;
@@ -354,7 +355,6 @@ button {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 100%;
   margin-inline: 10px;
   button {
     font-size: 1.2em;

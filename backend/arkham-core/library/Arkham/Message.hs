@@ -1003,6 +1003,7 @@ data Message
   | DoStep Int Message
   | ForInvestigator InvestigatorId Message
   | ForPlayer PlayerId Message
+  | ForSkillType SkillType Message
   | -- The Circle Undone
     BecomePrologueInvestigator InvestigatorId InvestigatorId
   | PutLocationInFrontOf InvestigatorId LocationId

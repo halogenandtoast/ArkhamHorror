@@ -537,6 +537,7 @@ allEvents =
       SomeEventCard makeshiftTrap
     , SomeEventCard endOfTheRoad
     , SomeEventCard exploitWeakness
+    , SomeEventCard makingPreparations
     , -- The Feast of Hemloch Vale
       --- survivor [fhv]
       SomeEventCard keepFaith2

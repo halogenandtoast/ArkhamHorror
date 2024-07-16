@@ -10,9 +10,10 @@ import {-# SOURCE #-} Arkham.Card (
   CardGen (..),
   CardId,
   isEncounterCard,
+  lookupCardDef,
   unsafeMakeCardId,
  )
-import Arkham.Card.CardDef (toCardDef)
+import Arkham.Card.CardDef (CardDef, toCardDef)
 import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
 import Arkham.Classes.GameLogger
@@ -33,6 +34,7 @@ import Arkham.SkillTest.Base
 import Arkham.Target
 import Arkham.Window
 import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
+import Data.Map.Strict qualified as Map
 
 instance CanRun GameT
 
@@ -232,3 +234,11 @@ getIgnoreCanModifiers = gameIgnoreCanModifiers <$> getGame
 
 getCardUses :: HasGame m => CardCode -> m Int
 getCardUses cCode = findWithDefault 0 cCode . gameCardUses <$> getGame
+
+getAllCardUses :: HasGame m => m [CardDef]
+getAllCardUses =
+  mapMaybe lookupCardDef
+    . concatMap (\(k, v) -> replicate v k)
+    . Map.toList
+    . gameCardUses
+    <$> getGame

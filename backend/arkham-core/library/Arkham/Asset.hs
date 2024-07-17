@@ -863,6 +863,7 @@ allAssets =
     , SomeAssetCard runicAxe
     , SomeAssetCard obsidianBracelet
     , SomeAssetCard bestowResolve2
+    , SomeAssetCard fieldAgent2
     , SomeAssetCard guardDog2
     , SomeAssetCard handcuffs2
     , --- seeker [tsk]

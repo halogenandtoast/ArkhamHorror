@@ -242,6 +242,9 @@ assetUseCost a uType n = UseCost (AssetWithId $ toId a) uType n
 exhaust :: Targetable a => a -> Cost
 exhaust = ExhaustCost . toTarget
 
+horrorCost :: (Sourceable source, Targetable source) => source -> Int -> Cost
+horrorCost source = HorrorCost (toSource source) (toTarget source)
+
 discardCost :: Targetable a => a -> Cost
 discardCost = DiscardCost FromPlay . toTarget
 

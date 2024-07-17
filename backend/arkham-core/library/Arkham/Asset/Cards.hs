@@ -337,6 +337,7 @@ allPlayerAssetCards =
       , feedTheMind
       , feedTheMind3
       , fence1
+      , fieldAgent2
       , fieldwork
       , fineClothes
       , fingerprintKit
@@ -5643,6 +5644,15 @@ bestowResolve2 =
     , cdCardTraits = setFromList [Ritual]
     , cdSlots = [#arcane]
     , cdUses = uses Charge 4
+    , cdLevel = Just 2
+    }
+
+fieldAgent2 :: CardDef
+fieldAgent2 =
+  (asset "09033" "Field Agent" 4 Guardian)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Ally, Agency]
+    , cdSlots = [#ally]
     , cdLevel = Just 2
     }
 

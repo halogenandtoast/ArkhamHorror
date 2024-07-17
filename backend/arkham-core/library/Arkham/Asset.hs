@@ -866,6 +866,7 @@ allAssets =
     , SomeAssetCard fieldAgent2
     , SomeAssetCard guardDog2
     , SomeAssetCard handcuffs2
+    , SomeAssetCard martyrsVambraceRemnantOfTheUnknown3
     , --- seeker [tsk]
       SomeAssetCard alchemicalDistillation
     , SomeAssetCard empiricalHypothesis

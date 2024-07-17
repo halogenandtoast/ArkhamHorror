@@ -497,6 +497,7 @@ allPlayerAssetCards =
       , mariaDeSilva
       , marinersCompass
       , marinersCompass2
+      , martyrsVambraceRemnantOfTheUnknown3
       , maskedCarnevaleGoer_17
       , maskedCarnevaleGoer_18
       , maskedCarnevaleGoer_19
@@ -5673,6 +5674,15 @@ handcuffs2 =
       , cdSkills = [#combat, #agility]
       , cdLevel = Just 2
       }
+
+martyrsVambraceRemnantOfTheUnknown3 :: CardDef
+martyrsVambraceRemnantOfTheUnknown3 =
+  (asset "09037" ("Martyr's Vambrace" <:> "Remnant of the Unknown") 2 Guardian)
+    { cdSkills = [#willpower, #wild]
+    , cdCardTraits = setFromList [Item, Charm, Armor]
+    , cdSlots = [#accessory]
+    , cdLevel = Just 3
+    }
 
 alchemicalDistillation :: CardDef
 alchemicalDistillation =

@@ -48,6 +48,7 @@ data ModifierType
   | IsPointOfHorror
   | AddKeyword Keyword
   | AddSkillIcons [SkillIcon]
+  | ReplaceAllSkillIconsWithWild
   | AddSkillToOtherSkill SkillType SkillType
   | AddSkillValue SkillType
   | SetSkillValue SkillType Int

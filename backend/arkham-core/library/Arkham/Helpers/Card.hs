@@ -119,18 +119,17 @@ findUniqueCard def = findJustCard (`cardMatch` (cardIs def <> CardIsUnique))
 
 iconsForCard :: HasGame m => Card -> m [SkillIcon]
 iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
-  modifiers' <- getModifiers (CardIdTarget pcId)
+  mods <- getModifiers (CardIdTarget pcId)
+  let wildReplace = if ReplaceAllSkillIconsWithWild `elem` mods then const #wild else id
   pure
-    $ foldr
-      applyAfterSkillModifiers
-      (foldr applySkillModifiers (cdSkills $ toCardDef c) modifiers')
-      modifiers'
+    $ map wildReplace
+    $ foldr applyAfter (foldr apply (cdSkills $ toCardDef c) mods) mods
  where
-  applySkillModifiers (AddSkillIcons xs) ys = xs <> ys
-  applySkillModifiers (RemoveSkillIcons xs) ys = ys \\ xs
-  applySkillModifiers _ ys = ys
-  applyAfterSkillModifiers DoubleSkillIcons ys = ys <> ys
-  applyAfterSkillModifiers _ ys = ys
+  apply (AddSkillIcons xs) ys = xs <> ys
+  apply (RemoveSkillIcons xs) ys = ys \\ xs
+  apply _ ys = ys
+  applyAfter DoubleSkillIcons ys = ys <> ys
+  applyAfter _ ys = ys
 iconsForCard _ = pure []
 
 getCardEntityTarget :: HasGame m => Card -> m Target

@@ -182,6 +182,7 @@ allPlayerAssetCards =
       , beatCop2
       , becky
       , berettaM19184
+      , bestowResolve2
       , blackjack
       , blackjack2
       , blasphemousCovenant2
@@ -5633,6 +5634,16 @@ obsidianBracelet =
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Item, Charm]
     , cdSlots = [#hand]
+    }
+
+bestowResolve2 :: CardDef
+bestowResolve2 =
+  (asset "09032" "Bestow Resolve" 2 Guardian)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Ritual]
+    , cdSlots = [#arcane]
+    , cdUses = uses Charge 4
+    , cdLevel = Just 2
     }
 
 guardDog2 :: CardDef

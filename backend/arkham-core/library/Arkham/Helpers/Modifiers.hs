@@ -58,9 +58,13 @@ getFullModifiers (toTarget -> target) = do
 getModifiers' :: (HasGame m, Targetable a) => a -> m [Modifier]
 getModifiers' (toTarget -> BothTarget t1 t2) = do
   allMods <- getAllModifiers
-  pure $ findWithDefault [] t1 allMods <> findWithDefault [] t2 allMods
-getModifiers' (toTarget -> target) =
-  findWithDefault [] target <$> getAllModifiers
+  pure
+    $ findWithDefault [] t1 allMods
+    <> findWithDefault [] t2 allMods
+    <> findWithDefault [] ThisTarget allMods
+getModifiers' (toTarget -> target) = do
+  allMods <- getAllModifiers
+  pure $ findWithDefault [] ThisTarget allMods <> findWithDefault [] target allMods
 
 hasModifier
   :: (HasGame m, Targetable a) => a -> ModifierType -> m Bool

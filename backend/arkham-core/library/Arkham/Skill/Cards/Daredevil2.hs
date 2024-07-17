@@ -26,7 +26,7 @@ instance RunMessage Daredevil2 where
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
       push
         $ RevealUntilFirst iid (toSource attrs) (InvestigatorDeck iid)
-        $ CommittableCard iid (basic $ #rogue <> #skill)
+        $ CommittableCard (InvestigatorWithId iid) (basic $ #rogue <> #skill)
       Daredevil2 <$> runMessage msg attrs
     RequestedPlayerCard iid (isSource attrs -> True) mcard (map toCard -> rest) -> do
       player <- getPlayer iid

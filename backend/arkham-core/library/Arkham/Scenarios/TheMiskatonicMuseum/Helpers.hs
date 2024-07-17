@@ -17,5 +17,4 @@ getHuntingHorrorWith matcher =
   selectOne $ enemyIs Cards.huntingHorror <> matcher
 
 getRestrictedHall :: HasGame m => m LocationId
-getRestrictedHall =
-  selectJust $ LocationWithFullTitle "Exhibit Hall" "Restricted Hall"
+getRestrictedHall = selectJust $ LocationWithFullTitle "Exhibit Hall" "Restricted Hall"

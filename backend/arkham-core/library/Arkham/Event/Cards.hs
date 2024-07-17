@@ -295,6 +295,7 @@ allPlayerEventCards =
       , predatorOrPrey
       , premonition
       , preparedForTheWorst
+      , preparedForTheWorst2
       , preposterousSketches
       , preposterousSketches2
       , protectingTheAnirniq2
@@ -894,6 +895,7 @@ preparedForTheWorst =
   (event "02184" "Prepared for the Worst" 1 Guardian)
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = singleton Tactic
+    , cdCriteria = can.search.deck You
     }
 
 preposterousSketches :: CardDef
@@ -3213,6 +3215,15 @@ oneInTheChamber =
             AnySource
             (AssetTargetMatches $ AssetWithTrait Firearm <> AssetControlledBy You)
             Uses.Ammo
+    }
+
+
+preparedForTheWorst2 :: CardDef
+preparedForTheWorst2 =
+  (event "09036" "Prepared for the Worst" 0 Guardian)
+    { cdSkills = [#intellect, #combat, #agility]
+    , cdCardTraits = singleton Tactic
+    , cdCriteria = Just $ exists $ affectsOthers $ can.search.deck  <> InvestigatorAt YourLocation
     }
 
 theRavenQuill :: CardDef

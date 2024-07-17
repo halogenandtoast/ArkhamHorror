@@ -515,6 +515,7 @@ allEvents =
     , SomeEventCard grievousWound
     , SomeEventCard motivationalSpeech
     , SomeEventCard oneInTheChamber
+    , SomeEventCard preparedForTheWorst2
     , --- seeker [tsk]
       SomeEventCard theRavenQuill
     , SomeEventCard bizarreDiagnosis

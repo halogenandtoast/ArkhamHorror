@@ -92,7 +92,7 @@ instance RunMessage Refine where
                     )
                   | (n, z) <- withIndex zs
                   ]
-            _ -> error "expected exactly one required choice"
+            _ -> error "expected at least one choice"
           else push msg'
 
       pure e

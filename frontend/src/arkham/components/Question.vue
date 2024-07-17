@@ -98,11 +98,11 @@ const cardLabels = computed(() =>
     </p>
   </div>
 
-  <div class="question-label" v-if="question && question.tag === 'DropDown'">
+  <div class="question-label dropdown" v-if="question && question.tag === 'DropDown'">
     <DropDown @choose="choose" :options="question.options" />
   </div>
 
-  <div class="question-label" v-if="question && question.tag === 'QuestionLabel' && question.question.tag === 'DropDown'">
+  <div class="question-label dropdown" v-if="question && question.tag === 'QuestionLabel' && question.question.tag === 'DropDown'">
     <DropDown @choose="choose" :options="question.question.options" />
   </div>
 
@@ -403,5 +403,35 @@ h2 {
   text-transform: uppercase;
   color: white;
   background-color: #222;
+}
+
+.dropdown {
+  padding: 10px;
+  :deep(form) {
+    min-width: 30vw;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    select {
+      font-size: 1.2em;
+      padding: 5px;
+    }
+
+    button {
+      text-align: center;
+      font-size: 1.2em;
+      transition: all 0.3s ease-in;
+      border: 0;
+      padding: 10px;
+      background-color: #532e61;
+      border-radius: 0.6em;
+      color: #EEE;
+      font: Arial, sans-serif;
+      &:hover {
+        background-color: #311b3e;
+      }
+    }
+  }
 }
 </style>

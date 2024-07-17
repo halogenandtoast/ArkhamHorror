@@ -5,6 +5,7 @@ module Arkham.Effect.Window (
 import Arkham.Prelude
 
 import Arkham.Card.Id
+import Arkham.Id
 import Arkham.Phase
 import GHC.OverloadedLabels
 
@@ -29,6 +30,7 @@ data EffectWindow
   | EffectCardDrawWindow
   | EffectUI
   | EffectMoveWindow
+  | EffectRevelationWindow TreacheryId
   deriving stock (Eq, Show, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 

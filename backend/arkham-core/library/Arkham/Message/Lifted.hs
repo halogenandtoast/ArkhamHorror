@@ -592,6 +592,26 @@ setupModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 setupModifier source target modifier = push $ Msg.setupModifier source target modifier
 
+revelationModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => source
+  -> target
+  -> TreacheryId
+  -> ModifierType
+  -> m ()
+revelationModifier (toSource -> source) (toTarget -> target) tid modifier =
+  push $ Msg.revelationModifier source target tid modifier
+
+revelationModifiers
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => source
+  -> target
+  -> TreacheryId
+  -> [ModifierType]
+  -> m ()
+revelationModifiers (toSource -> source) (toTarget -> target) tid modifiers =
+  push $ Msg.revelationModifiers source target tid modifiers
+
 skillTestModifier
   :: forall target source m
    . (ReverseQueue m, Sourceable source, Targetable target)

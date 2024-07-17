@@ -66,6 +66,7 @@ targetTraits = \case
   BatchTarget {} -> pure mempty
   ActiveCostTarget {} -> pure mempty
   LabeledTarget _ t -> targetTraits t
+  ThisTarget -> pure mempty
 
 targetMatches :: forall m. HasGame m => Target -> TargetMatcher -> m Bool
 targetMatches s = \case

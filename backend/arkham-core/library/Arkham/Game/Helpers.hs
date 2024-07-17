@@ -61,7 +61,7 @@ import Arkham.Helpers.Investigator (
   getCanAfford,
  )
 import Arkham.Helpers.Message hiding (AssetDamage, InvestigatorDamage, PaidCost)
-import Arkham.Helpers.SkillTest (getSkillTestDifficulty)
+import Arkham.Helpers.SkillTest (getIsPerilous, getSkillTestDifficulty)
 import Arkham.Helpers.Tarot
 import Arkham.History
 import Arkham.Id
@@ -2941,6 +2941,10 @@ skillTestMatches
   -> Matcher.SkillTestMatcher
   -> m Bool
 skillTestMatches iid source st = \case
+  Matcher.PerilousSkillTest -> getIsPerilous st
+  Matcher.IfSkillTestMatcher p thenMatcher elseMatcher -> do
+    p' <- skillTestMatches iid source st p
+    skillTestMatches iid source st $ if p' then thenMatcher else elseMatcher
   Matcher.SkillTestWithDifficulty gv ->
     getSkillTestDifficulty >>= \case
       Nothing -> pure False

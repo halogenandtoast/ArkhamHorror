@@ -862,6 +862,7 @@ allAssets =
       SomeAssetCard huntersArmor
     , SomeAssetCard runicAxe
     , SomeAssetCard obsidianBracelet
+    , SomeAssetCard bestowResolve2
     , SomeAssetCard guardDog2
     , SomeAssetCard handcuffs2
     , --- seeker [tsk]

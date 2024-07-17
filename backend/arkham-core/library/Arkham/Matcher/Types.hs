@@ -712,13 +712,14 @@ data ExtendedCardMatcher
   | PlayableCardWithNoCost ActionStatus ExtendedCardMatcher
   | PlayableCard CostStatus ExtendedCardMatcher
   | PlayableCardWithCriteria ActionStatus CriteriaOverride ExtendedCardMatcher
-  | CommittableCard InvestigatorId ExtendedCardMatcher
+  | CommittableCard InvestigatorMatcher ExtendedCardMatcher
   | CardWithPerformableAbility AbilityMatcher [ModifierType]
   | CanCancelRevelationEffect ExtendedCardMatcher
   | CanCancelAllEffects ExtendedCardMatcher
   | CardWithoutModifier ModifierType
   | CardIsCommittedBy InvestigatorMatcher
   | ChosenViaCustomization ExtendedCardMatcher
+  | PassesCommitRestrictions ExtendedCardMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated ExtendedCardMatcher
@@ -825,6 +826,8 @@ data CardMatcher
   | CardWithCost Int
   | CardWithOddSkillIcons
   | CardWithEvenSkillIcons
+  | CardWithAnySkills
+  | CardWithNoSkills
   | CardWithOddNumberOfWordsInTitle
   | CardWithEvenNumberOfWordsInTitle
   | CardWithAvailableCustomization
@@ -1145,6 +1148,8 @@ data SkillTestMatcher
   | SkillTestWithResolvedChaosTokenBy InvestigatorMatcher ChaosTokenMatcher
   | SkillTestOnCardWithTrait Trait
   | SkillTestWithDifficulty ValueMatcher
+  | PerilousSkillTest
+  | IfSkillTestMatcher SkillTestMatcher SkillTestMatcher SkillTestMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "investigating" SkillTestMatcher where

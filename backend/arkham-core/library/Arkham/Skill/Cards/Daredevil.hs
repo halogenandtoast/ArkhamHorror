@@ -28,7 +28,7 @@ instance RunMessage Daredevil where
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
       push
         $ DiscardUntilFirst iid (toSource attrs) (InvestigatorDeck iid)
-        $ CommittableCard iid
+        $ CommittableCard (InvestigatorWithId iid)
         $ BasicCardMatch
         $ CardWithClass Rogue
         <> CardWithType SkillType

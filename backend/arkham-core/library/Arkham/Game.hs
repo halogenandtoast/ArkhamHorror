@@ -36,6 +36,7 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Classes.HasDistance
 import Arkham.Classes.HasGame
+import Arkham.CommitRestriction
 import Arkham.Cost qualified as Cost
 import Arkham.Customization (CustomizationChoice (..))
 import Arkham.Damage
@@ -934,7 +935,7 @@ getInvestigatorsMatching matcher = do
       history <- getHistory TurnHistory (toId i)
       pure $ not (historySuccessfulExplore history)
     InvestigatorWithCommittableCard -> \i -> do
-      selectAny $ CommittableCard (toId i) (basic AnyCard)
+      selectAny $ CommittableCard (InvestigatorWithId $ toId i) (basic AnyCard)
     InvestigatorWithUnhealedHorror -> fieldMap InvestigatorUnhealedHorrorThisRound (> 0) . toId
     InvestigatorWithFilledSlot sType -> \i -> do
       slots <- fieldMap InvestigatorSlots (findWithDefault [] sType) (toId i)
@@ -3561,6 +3562,58 @@ instance Query ExtendedCardMatcher where
       SetAsideCardMatch matcher' -> do
         cards <- scenarioField ScenarioSetAsideCards
         pure $ c `elem` filter (`cardMatch` matcher') cards
+      PassesCommitRestrictions inner -> do
+        let
+          passesCommitRestriction card = \case
+            CommittableTreachery -> error "unhandled"
+            MaxOnePerTest -> do
+              allCommittedCards <- selectAll InvestigatorCommittedCards Anyone
+              let committedCardTitles = map toTitle allCommittedCards
+              pure $ toTitle card `notElem` committedCardTitles
+            OnlyInvestigator imatcher ->
+              getSkillTestInvestigator >>= \case
+                Nothing -> pure False
+                Just iid -> iid <=~> imatcher
+            OnlyCardCommittedToTest -> do
+              allCommittedCards <- selectAll InvestigatorCommittedCards Anyone
+              let committedCardTitles = map toTitle allCommittedCards
+              pure $ null committedCardTitles
+            OnlyYourTest ->
+              getSkillTestInvestigator <&> \case
+                Nothing -> False
+                Just iid -> Just iid == card.owner
+            OnlyTestDuringYourTurn -> maybe (pure False) (<=~> TurnInvestigator) card.owner
+            OnlyNotYourTest ->
+              getSkillTestInvestigator <&> \case
+                Nothing -> False
+                Just iid -> Just iid /= card.owner
+            MustBeCommittedToYourTest ->
+              getSkillTestInvestigator <&> \case
+                Nothing -> False
+                Just iid -> Just iid == card.owner
+            OnlyIfYourLocationHasClues ->
+              getSkillTestInvestigator >>= \case
+                Nothing -> pure False
+                Just iid -> field InvestigatorLocation iid >>= maybe (pure False) (fieldMap LocationClues (> 0))
+            OnlyTestWithActions as ->
+              getSkillTest <&> \case
+                Nothing -> False
+                Just st -> maybe False (`elem` as) (skillTestAction st)
+            ScenarioAbility -> getIsScenarioAbility
+            SelfCanCommitWhen imatcher -> case card.owner of
+              Nothing -> pure False
+              Just iid -> iid <=~> imatcher
+            MinSkillTestValueDifference n ->
+              getSkillTest >>= \case
+                Nothing -> pure False
+                Just st ->
+                  getSkillTestInvestigator >>= \case
+                    Nothing -> pure False
+                    Just a -> do
+                      x <- getSkillTestDifficultyDifferenceFromBaseValue a st
+                      pure $ x >= n
+
+        andM [allM (passesCommitRestriction c) (cdCommitRestrictions $ toCardDef c), c <=~> inner]
       UnderScenarioReferenceMatch matcher' -> do
         cards <- scenarioField ScenarioCardsUnderScenarioReference
         pure $ c `elem` filter (`cardMatch` matcher') cards
@@ -3629,7 +3682,8 @@ instance Query ExtendedCardMatcher where
             )
             results
         pure $ c `elem` playable
-      CommittableCard iid matcher' -> do
+      CommittableCard imatch matcher' -> do
+        iid <- selectJust imatch
         cards <- getCommittableCards iid
         matchInitial <- c `matches'` matcher'
         pure $ matchInitial && c `elem` cards

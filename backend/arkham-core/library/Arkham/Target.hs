@@ -66,6 +66,7 @@ data Target
   | BatchTarget BatchId
   | ActiveCostTarget ActiveCostId
   | LabeledTarget Text Target -- Use with caution, this is not a real target
+  | ThisTarget -- Used with withModifiers
   deriving stock (Show, Eq, Ord, Data)
 
 instance HasField "enemy" Target (Maybe EnemyId) where

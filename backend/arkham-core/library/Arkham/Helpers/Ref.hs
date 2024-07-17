@@ -90,6 +90,7 @@ sourceToTarget = \case
 
 targetToSource :: Target -> Source
 targetToSource = \case
+  ThisTarget -> error "not converted"
   InvestigatorTarget iid -> InvestigatorSource iid
   InvestigatorHandTarget iid -> InvestigatorSource iid
   InvestigatorDiscardTarget iid -> InvestigatorSource iid

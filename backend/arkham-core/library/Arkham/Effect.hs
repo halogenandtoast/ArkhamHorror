@@ -121,7 +121,6 @@ import Arkham.Event.Events (
   hitAndRunEffect,
   imDoneRunninEffect,
   improvisationEffect,
-  letMeHandleThisEffect,
   marksmanship1Effect,
   mystifyingSongEffect,
   oneInTheChamberEffect,
@@ -332,7 +331,6 @@ allEffects =
     , ("03005", SomeEffect williamYorickEffect)
     , ("03012", SomeEffect thePaintedWorldEffect)
     , ("03018", SomeEffect improvisationEffect)
-    , ("03022", SomeEffect letMeHandleThisEffect)
     , ("03024", SomeEffect fieldworkEffect)
     , ("03029", SomeEffect sleightOfHandEffect)
     , ("03031", SomeEffect lockpicks1Effect)

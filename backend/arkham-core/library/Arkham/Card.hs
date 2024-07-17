@@ -228,6 +228,9 @@ data Card
 instance HasField "keywords" Card (Set Keyword) where
   getField = cdKeywords . toCardDef
 
+instance HasField "isRevelation" Card Bool where
+  getField = isRevelation . cdRevelation . toCardDef
+
 instance HasField "id" Card CardId where
   getField = \case
     PlayerCard pc -> pc.id

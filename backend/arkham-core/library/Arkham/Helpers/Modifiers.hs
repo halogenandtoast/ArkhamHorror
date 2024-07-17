@@ -110,7 +110,7 @@ skillTestModifiers
   -> [ModifierType]
   -> Message
 skillTestModifiers (toSource -> source) (toTarget -> target) mods =
-  CreateWindowModifierEffect #skillTest (EffectModifiers $ toModifiers source mods) source target
+  CreateWindowModifierEffect #skillTest (effectModifiers source mods) source target
 
 effectModifiers :: Sourceable a => a -> [ModifierType] -> EffectMetadata Window Message
 effectModifiers source = EffectModifiers . toModifiers source
@@ -234,7 +234,7 @@ abilityModifier source target modifier = createWindowModifierEffect EffectAbilit
 
 chaosTokenEffect :: Sourceable source => source -> ChaosToken -> ModifierType -> Message
 chaosTokenEffect (toSource -> source) token modifier =
-  CreateChaosTokenEffect (EffectModifiers $ toModifiers source [modifier]) source token
+  CreateChaosTokenEffect (effectModifiers source [modifier]) source token
 
 uiEffect :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 uiEffect source target modifier = createWindowModifierEffect EffectUI source target [modifier]
@@ -266,3 +266,27 @@ getMetaMaybe def target k = do
         _ -> First Nothing
       _ -> First Nothing
   pure $ fromMaybe def value
+
+revelationModifiers
+  :: (Sourceable source, Targetable target)
+  => source
+  -> target
+  -> TreacheryId
+  -> [ModifierType]
+  -> Message
+revelationModifiers (toSource -> source) (toTarget -> target) tid modifiers =
+  CreateWindowModifierEffect
+    (EffectRevelationWindow tid)
+    (effectModifiers source modifiers)
+    source
+    target
+
+revelationModifier
+  :: (Sourceable source, Targetable target)
+  => source
+  -> target
+  -> TreacheryId
+  -> ModifierType
+  -> Message
+revelationModifier (toSource -> source) (toTarget -> target) tid mod =
+  revelationModifiers source target tid [mod]

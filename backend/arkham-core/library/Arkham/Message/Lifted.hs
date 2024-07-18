@@ -45,6 +45,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Window (Window, WindowType)
+import Arkham.Window qualified as Window
 import Control.Monad.Trans.Class
 
 class (CardGen m, HasGame m, HasQueue Message m) => ReverseQueue m
@@ -677,6 +678,11 @@ chooseEvadeEnemyMatch iid source = mkChooseEvadeMatch iid source >=> push . toMe
 mapQueue :: (MonadTrans t, HasQueue Message m) => (Message -> Message) -> t m ()
 mapQueue = lift . Msg.mapQueue
 
+quietCancelCardDraw :: (MonadTrans t, HasQueue Message m) => Card -> t m ()
+quietCancelCardDraw card = lift $ Msg.removeAllMessagesMatching \case
+  Do (InvestigatorDrewEncounterCard _ c) -> c.id == card.id
+  _ -> False
+
 toDiscardBy
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 toDiscardBy iid source target = push $ Msg.toDiscardBy iid source target
@@ -912,3 +918,6 @@ doStep n msg = push $ Msg.DoStep n msg
 
 disengageEnemy :: ReverseQueue m => InvestigatorId -> EnemyId -> m ()
 disengageEnemy iid eid = push $ Msg.DisengageEnemy iid eid
+
+cancelledOrIgnoredCardOrGameEffect :: (ReverseQueue m, Sourceable source) => source -> m ()
+cancelledOrIgnoredCardOrGameEffect source = checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource source)

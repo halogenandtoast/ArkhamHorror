@@ -2299,6 +2299,17 @@ runGameMessage msg g = case msg of
     pure $ g & resolvingCardL .~ Nothing & activeCardL %~ unsetActiveCard
   InvestigatorDrewEncounterCard iid card -> do
     hasForesight <- hasModifier iid (Foresight $ toTitle card)
+    whenDraw <- checkWindows [mkWhen (Window.DrawCard iid (toCard card) Deck.EncounterDeck)]
+    let uiRevelation = getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))
+    case toCardType card of
+      EnemyType -> do
+        investigator <- getInvestigator iid
+        sendEnemy (toTitle investigator <> " drew Enemy") (toJSON $ toCard card)
+      TreacheryType -> uiRevelation
+      EncounterAssetType -> uiRevelation
+      EncounterEventType -> uiRevelation
+      LocationType -> uiRevelation
+      _ -> pure ()
     if hasForesight
       then do
         canCancel <- (EncounterCard card) <=~> CanCancelRevelationEffect #any
@@ -2311,11 +2322,15 @@ runGameMessage msg g = case msg of
                 [ Label
                     "Cancel card effects and discard it"
                     [UnfocusCards, CancelNext GameSource RevelationMessage, AddToEncounterDiscard card]
-                , Label "Draw as normal" [UnfocusCards, Do msg]
+                , Label "Draw as normal" [UnfocusCards, whenDraw, Do msg]
                 ]
             pure $ g & focusedCardsL .~ [toCard card]
-          else runMessage (Do msg) g
-      else runMessage (Do msg) g
+          else do
+            pushAll [whenDraw, Do msg]
+            pure g
+      else do
+        pushAll [whenDraw, Do msg]
+        pure g
   Do (InvestigatorDrewEncounterCard iid card) -> do
     push $ ResolvedCard iid (toCard card)
     let
@@ -2326,18 +2341,14 @@ runGameMessage msg g = case msg of
           & (focusedCardsL %~ removeCard)
           & (foundCardsL %~ Map.map removeCard)
 
-    whenDraw <- checkWindows [mkWhen (Window.DrawCard iid (toCard card) Deck.EncounterDeck)]
     afterDraw <- checkWindows [mkAfter (Window.DrawCard iid (toCard card) Deck.EncounterDeck)]
     -- [ALERT]: If you extend this make sure to update LetMeHandleThis
-    let uiRevelation = getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))
     case toCardType card of
       EnemyType -> do
-        investigator <- getInvestigator iid
-        sendEnemy (toTitle investigator <> " drew Enemy") (toJSON $ toCard card)
         enemyId <- getRandom
         let enemy = createEnemy card enemyId
         pushAll
-          $ [whenDraw, afterDraw, InvestigatorDrawEnemy iid enemyId]
+          $ [afterDraw, InvestigatorDrawEnemy iid enemyId]
           <> [Revelation iid (EnemySource enemyId) | hasRevelation card]
           <> [UnsetActiveCard]
         pure
@@ -2345,33 +2356,28 @@ runGameMessage msg g = case msg of
           & (entitiesL . enemiesL . at enemyId ?~ enemy)
           & (activeCardL ?~ toCard card)
       TreacheryType -> do
-        uiRevelation
         -- handles draw windows
         push $ DrewTreachery iid (Just Deck.EncounterDeck) (toCard card)
         pure g'
       EncounterAssetType -> do
-        uiRevelation
         assetId <- getRandom
         let asset = createAsset card assetId
         -- Asset is assumed to have a revelation ability if drawn from encounter deck
-        pushAll $ whenDraw : afterDraw : resolve (Revelation iid $ AssetSource assetId)
+        pushAll $ afterDraw : resolve (Revelation iid $ AssetSource assetId)
         pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
       EncounterEventType -> do
-        uiRevelation
         eventId <- getRandom
         let owner = fromMaybe iid (toCardOwner card)
         let event' = createEvent card owner eventId
         -- Event is assumed to have a revelation ability if drawn from encounter deck
-        pushAll $ whenDraw : afterDraw : resolve (Revelation iid $ EventSource eventId)
+        pushAll $ afterDraw : resolve (Revelation iid $ EventSource eventId)
         pure $ g' & (entitiesL . eventsL . at eventId ?~ event')
       LocationType -> do
-        uiRevelation
         locationId <- getRandom
         let location = createLocation card locationId
 
         pushAll
-          $ whenDraw
-          : afterDraw
+          $ afterDraw
           : PlacedLocation (toName location) (toCardCode card) locationId
           : resolve (Revelation iid (LocationSource locationId))
         pure $ g' & (entitiesL . locationsL . at locationId ?~ location)

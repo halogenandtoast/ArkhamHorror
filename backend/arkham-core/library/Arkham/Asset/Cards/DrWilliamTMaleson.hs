@@ -2,13 +2,11 @@ module Arkham.Asset.Cards.DrWilliamTMaleson (drWilliamTMaleson, DrWilliamTMaleso
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Card
+import Arkham.Asset.Import.Lifted
 import Arkham.Deck qualified as Deck
+import Arkham.Helpers.Scenario (getEncounterDeckKey)
+import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Window (mkAfter)
-import Arkham.Window qualified as Window
 
 newtype DrWilliamTMaleson = DrWilliamTMaleson AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,27 +19,17 @@ instance HasAbilities DrWilliamTMaleson where
   getAbilities (DrWilliamTMaleson attrs) =
     [ restrictedAbility attrs 1 ControlsThis
         $ ReactionAbility
-          (DrawCard #when You (basic IsEncounterCard) (DeckOf You))
-        $ Costs [ExhaustCost (toTarget attrs), PlaceClueOnLocationCost 1]
+          (DrawCard #when You (basic IsEncounterCard) EncounterDeck)
+          (exhaust attrs <> PlaceClueOnLocationCost 1)
     ]
 
-dropUntilDraw :: [Message] -> [Message]
-dropUntilDraw = dropWhile (notElem DrawEncounterCardMessage . messageType)
-
 instance RunMessage DrWilliamTMaleson where
-  runMessage msg a@(DrWilliamTMaleson attrs) = case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      ignoreWindow <-
-        checkWindows
-          [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect $ attrs.ability 1)]
-      card <- withQueue $ \queue -> case dropUntilDraw queue of
-        InvestigatorDrewEncounterCard _ card' : queue' -> (queue', card')
-        _ -> error "unhandled"
-      key <- getEncounterDeckKey (toCardId card)
-      pushAll
-        [ ShuffleCardsIntoDeck (Deck.EncounterDeckByKey key) [EncounterCard card]
-        , drawEncounterCard iid attrs
-        , ignoreWindow
-        ]
+  runMessage msg a@(DrWilliamTMaleson attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
+      quietCancelCardDraw card
+      deck <- Deck.EncounterDeckByKey <$> getEncounterDeckKey card.id
+      push $ ShuffleCardsIntoDeck deck [card]
+      drawEncounterCard iid attrs
+      cancelledOrIgnoredCardOrGameEffect $ attrs.ability 1
       pure a
-    _ -> DrWilliamTMaleson <$> runMessage msg attrs
+    _ -> DrWilliamTMaleson <$> liftRunMessage msg attrs

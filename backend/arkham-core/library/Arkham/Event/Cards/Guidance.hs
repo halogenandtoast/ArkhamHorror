@@ -1,13 +1,7 @@
-module Arkham.Event.Cards.Guidance (
-  guidance,
-  Guidance (..),
-) where
+module Arkham.Event.Cards.Guidance (guidance, Guidance (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher
 
 newtype Guidance = Guidance EventAttrs
@@ -18,19 +12,11 @@ guidance :: EventCard Guidance
 guidance = event Guidance Cards.guidance
 
 instance RunMessage Guidance where
-  runMessage msg e@(Guidance attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      investigators <-
-        select $ NotYou <> InvestigatorAt YourLocation <> YetToTakeTurn
-      player <- getPlayer iid
-      pushAll
-        [ chooseOne
-            player
-            [ targetLabel
-              investigator
-              [GainActions investigator (toSource attrs) 1]
-            | investigator <- investigators
-            ]
-        ]
+  runMessage msg e@(Guidance attrs) = runQueueT $ case msg of
+    PlayThisEvent iid eid | eid == toId attrs -> do
+      selectOneToHandle iid attrs $ NotYou <> InvestigatorAt YourLocation <> YetToTakeTurn
       pure e
-    _ -> Guidance <$> runMessage msg attrs
+    HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget investigator) -> do
+      push $ GainActions investigator (toSource attrs) 1
+      pure e
+    _ -> Guidance <$> liftRunMessage msg attrs

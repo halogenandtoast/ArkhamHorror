@@ -8,6 +8,7 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
+import Arkham.Matcher
 import Arkham.Prelude
 
 newtype SwiftReflexes = SwiftReflexes EventAttrs
@@ -24,9 +25,10 @@ instance RunMessage SwiftReflexes where
   runMessage msg e@(SwiftReflexes attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       iid' <- getActiveInvestigatorId
+      turn <- selectJust TurnInvestigator
       pushAll
         $ [SetActiveInvestigator iid | iid /= iid']
-        <> [ turnModifier attrs iid
+        <> [ turnModifier turn attrs iid
               $ GiveAdditionalAction
               $ AdditionalAction "Swift Reflexes" (toSource attrs) #any
            , PlayerWindow iid [] False

@@ -575,6 +575,15 @@ nextPhaseModifier
   -> m ()
 nextPhaseModifier phase source target modifier = push $ Msg.nextPhaseModifier phase source target modifier
 
+endOfPhaseModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => Phase
+  -> source
+  -> target
+  -> ModifierType
+  -> m ()
+endOfPhaseModifier phase source target modifier = push $ Msg.endOfPhaseModifier phase source target modifier
+
 roundModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 roundModifier source target modifier = push $ Msg.roundModifier source target modifier
@@ -590,12 +599,22 @@ skillTestModifiers (toSource -> source) (toTarget -> target) mods =
   push $ Msg.skillTestModifiers source target mods
 
 turnModifier
-  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
-turnModifier source target modifier = push $ Msg.turnModifier source target modifier
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => InvestigatorId
+  -> source
+  -> target
+  -> ModifierType
+  -> m ()
+turnModifier iid source target modifier = push $ Msg.turnModifier iid source target modifier
 
 turnModifiers
-  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
-turnModifiers source target modifiers = push $ Msg.turnModifiers source target modifiers
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => InvestigatorId
+  -> source
+  -> target
+  -> [ModifierType]
+  -> m ()
+turnModifiers iid source target modifiers = push $ Msg.turnModifiers iid source target modifiers
 
 setupModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()

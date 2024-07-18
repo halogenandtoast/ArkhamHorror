@@ -8,8 +8,9 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Effect.Runner
-import {-# SOURCE #-} Arkham.GameEnv (getIsSkillTest)
+import {-# SOURCE #-} Arkham.GameEnv (getIsSkillTest, getPhase)
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Window (Window)
 
@@ -49,6 +50,12 @@ instance HasModifiersFor WindowModifierEffect where
           Just EffectSkillTestWindow -> do
             isSkillTest <- getIsSkillTest
             pure $ guard isSkillTest *> modifiers
+          Just (EffectPhaseWindowFor p) -> do
+            p' <- getPhase
+            pure $ guard (p == p') *> modifiers
+          Just (EffectTurnWindow iid) -> do
+            isTurn <- iid <=~> TurnInvestigator
+            pure $ guard isTurn *> modifiers
           _ -> pure modifiers
         _ -> pure []
   getModifiersFor _ _ = pure []

@@ -1,9 +1,4 @@
-module Arkham.Asset.Cards.DrWilliamTMaleson (
-  drWilliamTMaleson,
-  DrWilliamTMaleson (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.DrWilliamTMaleson (drWilliamTMaleson, DrWilliamTMaleson (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -11,6 +6,7 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Window (mkAfter)
 import Arkham.Window qualified as Window
 

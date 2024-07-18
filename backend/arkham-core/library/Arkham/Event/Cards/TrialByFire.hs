@@ -25,6 +25,6 @@ instance RunMessage TrialByFire where
       push
         $ chooseOne
           player
-          [SkillLabel skill [turnModifier attrs iid (BaseSkillOf skill 5)] | skill <- allSkills]
+          [SkillLabel skill [turnModifier iid attrs iid (BaseSkillOf skill 5)] | skill <- allSkills]
       pure e
     _ -> TrialByFire <$> runMessage msg attrs

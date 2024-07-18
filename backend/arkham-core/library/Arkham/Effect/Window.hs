@@ -12,12 +12,13 @@ import GHC.OverloadedLabels
 data EffectWindow
   = EffectPhaseWindow
   | EffectPhaseWindowFor Phase
+  | EffectUntilEndOfPhaseWindowFor Phase
   | EffectCostWindow
   | EffectSkillTestWindow
   | EffectRoundWindow
   | EffectNextActionWindow
   | EffectSetupWindow
-  | EffectTurnWindow
+  | EffectTurnWindow InvestigatorId
   | EffectNextTurnWindow
   | EffectCardResolutionWindow CardId
   | EffectGameWindow

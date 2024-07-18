@@ -26,6 +26,6 @@ instance RunMessage Safeguard2 where
   runMessage msg a@(Safeguard2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       iid' <- selectJust TurnInvestigator
-      push $ turnModifier attrs iid $ CanMoveWith $ InvestigatorWithId iid'
+      push $ turnModifier iid' attrs iid $ CanMoveWith $ InvestigatorWithId iid'
       pure a
     _ -> Safeguard2 <$> runMessage msg attrs

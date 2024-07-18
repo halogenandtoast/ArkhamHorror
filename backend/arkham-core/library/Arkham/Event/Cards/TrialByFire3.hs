@@ -24,7 +24,7 @@ instance RunMessage TrialByFire3 where
       player <- getPlayer iid
       push
         $ chooseOne player
-        $ [ SkillLabel skill [turnModifiers attrs iid $ BaseSkillOf skill 7 : map (`BaseSkillOf` 5) rest]
+        $ [ SkillLabel skill [turnModifiers iid attrs iid $ BaseSkillOf skill 7 : map (`BaseSkillOf` 5) rest]
           | (skill, rest) <- eachWithRest allSkills
           ]
       pure e

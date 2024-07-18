@@ -17,6 +17,6 @@ willToSurvive3 = event WillToSurvive3 Cards.willToSurvive3
 instance RunMessage WillToSurvive3 where
   runMessage msg e@(WillToSurvive3 attrs) = case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
-      push $ turnModifier attrs iid DoNotDrawChaosTokensForSkillChecks
+      push $ turnModifier iid attrs iid DoNotDrawChaosTokensForSkillChecks
       pure e
     _ -> WillToSurvive3 <$> runMessage msg attrs

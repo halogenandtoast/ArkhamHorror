@@ -30,7 +30,11 @@ instance RunMessage Galvanize1 where
             $ [targetLabel aid [Ready (AssetTarget aid)] | aid <- assets]
           | notNull assets
           ]
-        <> [ turnModifier attrs iid (GiveAdditionalAction $ AdditionalAction "Galvanize" (toSource attrs) #fight)
+        <> [ turnModifier
+              iid
+              attrs
+              iid
+              (GiveAdditionalAction $ AdditionalAction "Galvanize" (toSource attrs) #fight)
            ]
       pure e
     _ -> Galvanize1 <$> runMessage msg attrs

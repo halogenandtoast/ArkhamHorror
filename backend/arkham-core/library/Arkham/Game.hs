@@ -4489,6 +4489,14 @@ handleTraitRestrictedModifiers g = do
               (<>)
               target
               [Modifier source mt isSetup]
+        Modifier source (NonTraitRestrictedModifier t mt) isSetup -> do
+          traits <- runReaderT (targetTraits target) g
+          when (t `notMember` traits)
+            $ modify
+            $ insertWith
+              (<>)
+              target
+              [Modifier source mt isSetup]
         _ -> pure ()
   pure $ g {gameModifiers = modifiers'}
 

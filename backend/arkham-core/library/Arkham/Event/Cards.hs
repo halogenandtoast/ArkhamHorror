@@ -195,6 +195,7 @@ allPlayerEventCards =
       , grievousWound
       , gritYourTeeth
       , guidance
+      , guidance1
       , hallow3
       , handOfFate
       , harmonyRestored2
@@ -3304,6 +3305,17 @@ existentialRiddle1 =
     , cdCardTraits = setFromList [Insight, Paradox]
     , cdActions = [#parley]
     , cdCriteria = Just $ exists (EnemyAt YourLocation <> NonEliteEnemy)
+    , cdLevel = Just 1
+    }
+
+guidance1 :: CardDef
+guidance1 =
+  (event "09053" "Guidance" 0 Seeker)
+    { cdSkills = [#willpower, #wild]
+    , cdCardTraits = setFromList [Insight]
+    , cdCriteria = Just $ exists (affectsOthers $ InvestigatorAt YourLocation <> NotYou <> YetToTakeTurn)
+    , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+    , cdLevel = Just 1
     }
 
 friendsInLowPlaces :: CardDef

@@ -30,8 +30,9 @@ instance RunMessage Stealth3 where
     AfterSkillTestEnds (isSource attrs -> True) target@(EnemyTarget eid) (SucceededBy _ _) -> do
       let iid = getController attrs
       canDisengage <- iid <=~> InvestigatorCanDisengage
+      isYourTurn <- iid <=~> TurnInvestigator
       pushAll
-        $ [turnModifier attrs target (EnemyCannotEngage iid)]
+        $ [turnModifier iid attrs target (EnemyCannotEngage iid) | isYourTurn]
         <> [DisengageEnemy iid eid | canDisengage]
       pure a
     _ -> Stealth3 <$> runMessage msg attrs

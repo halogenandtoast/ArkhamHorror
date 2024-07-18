@@ -7,7 +7,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Stupor = Stupor TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stupor :: TreacheryCard Stupor
@@ -32,7 +32,8 @@ instance RunMessage Stupor where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      turnModifier (attrs.ability 1) iid
+      iid' <- selectJust TurnInvestigator
+      turnModifier iid' (attrs.ability 1) iid
         $ CannotTakeAction
         $ AnyActionTarget [#parley, #draw, #investigate]
       pure . Stupor $ setMeta False attrs

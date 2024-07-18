@@ -17,10 +17,11 @@ instance RunMessage AnatomicalDiagrams where
   runMessage msg e@(AnatomicalDiagrams attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == attrs.id -> do
       enemies <- select $ enemyAtLocationWith iid <> NonEliteEnemy
-      chooseOrRunOne
-        iid
-        [ targetLabel enemy [Msg.turnModifiers attrs enemy [EnemyFight (-2), EnemyEvade (-2)]]
-        | enemy <- enemies
-        ]
+      selectOne TurnInvestigator >>= traverse_ \iid' -> do
+        chooseOrRunOne
+          iid
+          [ targetLabel enemy [Msg.turnModifiers iid' attrs enemy [EnemyFight (-2), EnemyEvade (-2)]]
+          | enemy <- enemies
+          ]
       pure e
     _ -> AnatomicalDiagrams <$> liftRunMessage msg attrs

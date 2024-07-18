@@ -31,8 +31,8 @@ instance RunMessage MakingPreparations where
       let negativeSkills = filter (`notElem` chosenSkills meta) skills
       eachInvestigator \iid -> do
         for_ negativeSkills $ \s -> do
-          nextPhaseModifier InvestigationPhase attrs iid $ SkillModifier s (-1)
+          endOfPhaseModifier InvestigationPhase attrs iid $ SkillModifier s (-1)
         for_ (chosenSkills meta) $ \s -> do
-          nextPhaseModifier InvestigationPhase attrs iid $ SkillModifier s 1
+          endOfPhaseModifier InvestigationPhase attrs iid $ SkillModifier s 1
       pure e
     _ -> MakingPreparations . (`with` meta) <$> liftRunMessage msg attrs

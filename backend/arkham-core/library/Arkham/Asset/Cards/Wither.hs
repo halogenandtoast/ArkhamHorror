@@ -9,6 +9,7 @@ import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Effect.Runner
 import Arkham.Fight
+import Arkham.Matcher (InvestigatorMatcher (TurnInvestigator))
 import Arkham.Window qualified as Window
 
 newtype Wither = Wither AssetAttrs
@@ -46,11 +47,12 @@ instance RunMessage WitherEffect where
     RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
       enemyId <- fromJustNote "no attacked enemy" <$> getAttackedEnemy
       when (token.face `elem` [Skull, Cultist, Tablet, ElderThing]) do
+        iid' <- selectJust TurnInvestigator
         pushAll
           [ If
               (Window.RevealChaosTokenEffect iid token attrs.id)
               [ CreateWindowModifierEffect
-                  EffectTurnWindow
+                  (EffectTurnWindow iid')
                   ( EffectModifiers $ toModifiers attrs [EnemyFightWithMin (-1) (Min 1), EnemyEvadeWithMin (-1) (Min 1)]
                   )
                   attrs.source

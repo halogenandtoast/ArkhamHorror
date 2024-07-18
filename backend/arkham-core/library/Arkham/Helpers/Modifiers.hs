@@ -134,12 +134,22 @@ reduceCostOf :: (Sourceable source, IsCard card) => source -> card -> Int -> Mes
 reduceCostOf source (toCard -> card) n = createCostModifiers source card [ReduceCostOf (CardWithId $ toCardId card) n]
 
 turnModifier
-  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
-turnModifier source target modifier = createWindowModifierEffect EffectTurnWindow source target [modifier]
+  :: (Sourceable source, Targetable target)
+  => InvestigatorId
+  -> source
+  -> target
+  -> ModifierType
+  -> Message
+turnModifier iid source target modifier = createWindowModifierEffect (EffectTurnWindow iid) source target [modifier]
 
 turnModifiers
-  :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
-turnModifiers source target modifiers = createWindowModifierEffect EffectTurnWindow source target modifiers
+  :: (Sourceable source, Targetable target)
+  => InvestigatorId
+  -> source
+  -> target
+  -> [ModifierType]
+  -> Message
+turnModifiers iid source target modifiers = createWindowModifierEffect (EffectTurnWindow iid) source target modifiers
 
 nextTurnModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
@@ -168,6 +178,10 @@ gameModifier source target modifier = createWindowModifierEffect EffectGameWindo
 nextPhaseModifier
   :: (Sourceable source, Targetable target) => Phase -> source -> target -> ModifierType -> Message
 nextPhaseModifier phase source target modifier = createWindowModifierEffect (EffectPhaseWindowFor phase) source target [modifier]
+
+endOfPhaseModifier
+  :: (Sourceable source, Targetable target) => Phase -> source -> target -> ModifierType -> Message
+endOfPhaseModifier phase source target modifier = createWindowModifierEffect (EffectUntilEndOfPhaseWindowFor phase) source target [modifier]
 
 enemyAttackModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message

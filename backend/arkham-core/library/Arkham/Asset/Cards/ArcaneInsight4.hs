@@ -33,10 +33,11 @@ instance RunMessage ArcaneInsight4 where
   runMessage msg a@(ArcaneInsight4 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       mlid <- field InvestigatorLocation iid
-      for_ mlid $ \lid ->
+      for_ mlid $ \lid -> do
+        iid' <- selectJust TurnInvestigator
         push
           $ CreateWindowModifierEffect
-            EffectTurnWindow
+            (EffectTurnWindow iid')
             (EffectModifiers $ toModifiers attrs [ShroudModifier (-2)])
             (toSource attrs)
             (LocationTarget lid)

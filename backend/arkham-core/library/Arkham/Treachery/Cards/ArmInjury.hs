@@ -7,7 +7,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype ArmInjury = ArmInjury TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 armInjury :: TreacheryCard ArmInjury
@@ -34,7 +34,9 @@ instance RunMessage ArmInjury where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      iid' <- selectJust TurnInvestigator
       turnModifier
+        iid'
         (attrs.ability 1)
         iid
         (CannotTakeAction $ AnyActionTarget $ map IsAction [#fight, #activate])

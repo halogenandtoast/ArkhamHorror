@@ -36,12 +36,15 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     EndPhase -> do
       phase <- getPhase
-      when (isEndOfWindow a (EffectPhaseWindowFor phase))
-        $ push (DisableEffect effectId)
+      pushWhen
+        ( isEndOfWindow a (EffectPhaseWindowFor phase)
+            || isEndOfWindow a (EffectUntilEndOfPhaseWindowFor phase)
+        )
+        $ (DisableEffect effectId)
       pure a
     BeginTurn _ | isEndOfWindow a EffectNextTurnWindow -> do
       a <$ push (DisableEffect effectId)
-    EndTurn _ | isEndOfWindow a EffectTurnWindow -> do
+    EndTurn iid | isEndOfWindow a (EffectTurnWindow iid) -> do
       a <$ push (DisableEffect effectId)
     EndRound | isEndOfWindow a EffectRoundWindow -> do
       a <$ push (DisableEffect effectId)

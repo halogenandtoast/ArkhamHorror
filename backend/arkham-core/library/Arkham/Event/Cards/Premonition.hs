@@ -1,9 +1,4 @@
-module Arkham.Event.Cards.Premonition (
-  premonition,
-  Premonition (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.Premonition (premonition, Premonition (..)) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -14,8 +9,8 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.RequestedChaosTokenStrategy
-import Arkham.Timing qualified as Timing
 
 newtype Premonition = Premonition EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
@@ -26,13 +21,13 @@ premonition = event Premonition Cards.premonition
 
 instance HasAbilities Premonition where
   getAbilities (Premonition a) =
-    [ mkAbility a 1 $ ForcedAbility $ WouldRevealChaosToken Timing.When Anyone
+    [ mkAbility a 1 $ forced $ WouldRevealChaosToken #when Anyone
     | notNull (eventSealedChaosTokens a)
     ]
 
 instance RunMessage Premonition where
   runMessage msg e@(Premonition attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+    PlayThisEvent iid eid | eid == toId attrs -> do
       pushAll
         [ PlaceEvent iid eid (InPlayArea iid)
         , RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) RemoveChaosTokens
@@ -51,5 +46,6 @@ instance RunMessage Premonition where
           <> [ ReplaceCurrentDraw (toSource attrs) iid
                 $ Choose (toSource attrs) 1 ResolveChoice [Resolved ts] []
              ]
+          <> [toDiscardBy iid (attrs.ability 1) attrs]
       pure e
     _ -> Premonition <$> runMessage msg attrs

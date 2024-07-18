@@ -516,6 +516,7 @@ allEvents =
     , SomeEventCard motivationalSpeech
     , SomeEventCard oneInTheChamber
     , SomeEventCard preparedForTheWorst2
+    , SomeEventCard everVigilant4
     , --- seeker [tsk]
       SomeEventCard theRavenQuill
     , SomeEventCard bizarreDiagnosis

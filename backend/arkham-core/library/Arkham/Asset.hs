@@ -867,6 +867,7 @@ allAssets =
     , SomeAssetCard guardDog2
     , SomeAssetCard handcuffs2
     , SomeAssetCard martyrsVambraceRemnantOfTheUnknown3
+    , SomeAssetCard girishKadakiaIcpcPunjabDetective4
     , --- seeker [tsk]
       SomeAssetCard alchemicalDistillation
     , SomeAssetCard empiricalHypothesis

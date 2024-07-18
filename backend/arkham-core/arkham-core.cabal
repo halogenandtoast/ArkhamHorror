@@ -638,6 +638,7 @@ library
       Arkham.Asset.Cards.Geas2
       Arkham.Asset.Cards.GeneBeauregard3
       Arkham.Asset.Cards.GildedVolto
+      Arkham.Asset.Cards.GirishKadakiaICPCPunjabDetective4
       Arkham.Asset.Cards.GrannyOrne
       Arkham.Asset.Cards.GrannyOrne3
       Arkham.Asset.Cards.GrapplingHook
@@ -1551,6 +1552,7 @@ library
       Arkham.Event.Cards.EtherealSlip2
       Arkham.Event.Cards.Eucatastrophe3
       Arkham.Event.Cards.EverVigilant1
+      Arkham.Event.Cards.EverVigilant4
       Arkham.Event.Cards.Evidence
       Arkham.Event.Cards.Evidence1
       Arkham.Event.Cards.ExploitWeakness

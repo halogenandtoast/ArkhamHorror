@@ -158,6 +158,7 @@ allPlayerEventCards =
       , etherealSlip2
       , eucatastrophe3
       , everVigilant1
+      , everVigilant4
       , evidence
       , evidence1
       , exploitWeakness
@@ -3217,13 +3218,25 @@ oneInTheChamber =
             Uses.Ammo
     }
 
-
 preparedForTheWorst2 :: CardDef
 preparedForTheWorst2 =
   (event "09036" "Prepared for the Worst" 0 Guardian)
     { cdSkills = [#intellect, #combat, #agility]
     , cdCardTraits = singleton Tactic
-    , cdCriteria = Just $ exists $ affectsOthers $ can.search.deck  <> InvestigatorAt YourLocation
+    , cdCriteria = Just $ exists $ affectsOthers $ can.search.deck <> InvestigatorAt YourLocation
+    }
+
+everVigilant4 :: CardDef
+everVigilant4 =
+  (event "09039" "Ever Vigilant" 0 Guardian)
+    { cdSkills = [#willpower, #intellect, #intellect]
+    , cdCardTraits = singleton Tactic
+    , cdLevel = Just 4
+    , cdCriteria =
+        Just
+          $ Criteria.PlayableCardExistsWithCostReduction (Reduce 1)
+          $ #asset
+          <> InHandOf (affectsOthers $ InvestigatorAt YourLocation)
     }
 
 theRavenQuill :: CardDef

@@ -878,6 +878,7 @@ allAssets =
     , SomeAssetCard orphicTheory1
     , SomeAssetCard drWilliamTMaleson2
     , SomeAssetCard pressPass2
+    , SomeAssetCard surgicalKit3
     , SomeAssetCard fingerprintKit4
     , --- rogue [tsk]
       SomeAssetCard damningTestimony

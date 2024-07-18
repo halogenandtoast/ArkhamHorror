@@ -42,6 +42,8 @@ instance RunMessage EffectAttrs where
         )
         $ (DisableEffect effectId)
       pure a
+    BeginTurn iid | isEndOfWindow a (EffectNextTurnWindow iid) -> do
+      a <$ push (DisableEffect effectId)
     EndTurn iid | isEndOfWindow a (EffectTurnWindow iid) -> do
       a <$ push (DisableEffect effectId)
     EndRound | isEndOfWindow a EffectRoundWindow -> do

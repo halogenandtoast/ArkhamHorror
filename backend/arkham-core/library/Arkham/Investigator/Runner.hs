@@ -1924,6 +1924,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let health = findWithDefault 0 source investigatorAssignedHealthHeal
     let sanity = if cannotHealHorror then 0 else findWithDefault 0 source investigatorAssignedSanityHeal
 
+    push $ Do msg
+    when (health > 0 || sanity > 0) do
+      pushM
+        $ checkWindows
+        $ [mkWhen (Window.Healed DamageType (toTarget a) source health) | health > 0]
+        <> [mkWhen (Window.Healed HorrorType (toTarget a) source sanity) | sanity > 0]
+    pure a
+  Do (ApplyHealing source) -> do
+    cannotHealHorror <- hasModifier a CannotHealHorror
+    let health = findWithDefault 0 source investigatorAssignedHealthHeal
+    let sanity = if cannotHealHorror then 0 else findWithDefault 0 source investigatorAssignedSanityHeal
+
     when (health > 0 || sanity > 0) do
       pushM
         $ checkWindows
@@ -1940,10 +1952,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (assignedHealthHealL %~ deleteMap source)
       & (assignedSanityHealL %~ deleteMap source)
   HealDamage (InvestigatorTarget iid) source amount | iid == investigatorId -> do
+    whenWindow <- checkWindows [mkWhen $ Window.Healed DamageType (toTarget a) source amount]
     dmgTreacheries <-
       selectWithField TreacheryCard $ treacheryInThreatAreaOf iid <> TreacheryWithModifier IsPointOfDamage
     if null dmgTreacheries
-      then push $ Do msg
+      then pushAll [whenWindow, Do msg]
       else do
         player <- getPlayer iid
         push
@@ -1954,7 +1967,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               : [HealDamage (InvestigatorTarget iid) source (amount - 1) | amount - 1 > 0]
             | (t, c) <- dmgTreacheries
             ]
-          <> [Label "Heal remaining damage normally" [Do msg] | investigatorHealthDamage a > 0]
+          <> [Label "Heal remaining damage normally" [whenWindow, Do msg] | investigatorHealthDamage a > 0]
     pure a
   Do (HealDamage (InvestigatorTarget iid) source amount) | iid == investigatorId -> do
     afterWindow <- checkWindows [mkAfter $ Window.Healed DamageType (toTarget a) source amount]
@@ -2519,7 +2532,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       else push windowMsg
     pure $ a & foundCardsL %~ Map.map (filter ((/= card.id) . toCardId))
   InvestigatorSpendClues iid n | iid == investigatorId -> do
-    pushM $ checkAfter $ SpentClues iid n
+    pushM $ checkAfter $ Window.SpentClues iid n
     pure $ a & tokensL %~ subtractTokens Clue n
   SpendResources iid _ | iid == investigatorId -> do
     push $ Do msg

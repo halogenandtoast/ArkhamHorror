@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Token
 
 newtype PressPass2 = PressPass2 AssetAttrs
@@ -28,10 +29,10 @@ instance HasAbilities PressPass2 where
 
 instance RunMessage PressPass2 where
   runMessage msg a@(PressPass2 attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       isTurn <- iid <=~> TurnInvestigator
       if isTurn
-        then push $ GainActions iid attrs 1
+        then push $ GainActions iid (attrs.ability 1) 1
         else turnModifier iid (attrs.ability 1) iid (AdditionalActions "Press Pass" (attrs.ability 1) 1)
       pure a
     _ -> PressPass2 <$> liftRunMessage msg attrs

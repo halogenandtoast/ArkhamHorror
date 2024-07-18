@@ -697,12 +697,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           pushAll [ShuffleEncounterDiscardBackIn, Do (DrawCards iid drawing)]
         pure a
       -- This case should not happen but this safeguards against it
-      (card : encounterDeck) -> do
-        when (null encounterDeck) $ do
+      xs -> do
+        let (drew, rest) = splitAt drawing.amount xs
+        push $ DrewCards iid $ finalizeDraw drawing $ map toCard drew
+        when (null rest) $ do
           windows' <- checkWindows [mkWhen Window.EncounterDeckRunsOutOfCards]
           pushAll [windows', ShuffleEncounterDiscardBackIn]
-        pushAll [UnsetActiveCard, InvestigatorDrewEncounterCard iid card]
-        pure $ a & (deckLens handler .~ Deck encounterDeck)
+        pure $ a & (deckLens handler .~ Deck rest)
   Search searchType iid _ EncounterDeckTarget _ _ _ -> do
     case searchType of
       Searching ->

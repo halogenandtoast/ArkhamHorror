@@ -21,7 +21,7 @@ instance RunMessage MakingPreparations where
   runMessage msg e@(MakingPreparations (With attrs meta)) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       let skills = [#willpower, #intellect, #combat, #agility]
-      chooseN iid 2 [SkillLabel s [ForSkillType s msg] | (i, s) <- withIndex skills]
+      chooseN iid 2 [SkillLabel s [ForSkillType s msg] | s <- skills]
       doStep 1 msg
       pure e
     ForSkillType s (Revelation _iid (isSource attrs -> True)) -> do

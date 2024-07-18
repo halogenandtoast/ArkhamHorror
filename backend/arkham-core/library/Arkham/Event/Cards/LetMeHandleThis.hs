@@ -1,6 +1,5 @@
 module Arkham.Event.Cards.LetMeHandleThis (letMeHandleThis, LetMeHandleThis (..)) where
 
-import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.EncounterCard
@@ -21,6 +20,6 @@ instance RunMessage LetMeHandleThis where
       lift $ changeEncounterCardDrawer card.id iid
       when card.isRevelation do
         selectOne (TreacheryWithCardId card.id) >>= traverse_ \tid -> do
-          revelationModifier attrs iid tid (AnySkillValue 2)
+          revelationModifier attrs iid tid $ AnySkillValue 2
       pure e
     _ -> LetMeHandleThis <$> liftRunMessage msg attrs

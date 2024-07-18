@@ -291,6 +291,7 @@ allPlayerAssetCards =
       , drMilanChristopher
       , drShivaniMaheswaran
       , drWilliamTMaleson
+      , drWilliamTMaleson2
       , dragonPole
       , drawingThin
       , dreamEnhancingSerum
@@ -5754,6 +5755,16 @@ orphicTheory1 =
     , cdSlots = [#arcane]
     , cdLevel = Just 1
     , cdUses = uses Secret 4
+    }
+
+drWilliamTMaleson2 :: CardDef
+drWilliamTMaleson2 =
+  (asset "09054" ("Dr. William T. Maleson" <:> "Working on Something Big") 1 Seeker)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdUnique = True
+    , cdSlots = [#ally]
+    , cdLevel = Just 2
     }
 
 fingerprintKit4 :: CardDef

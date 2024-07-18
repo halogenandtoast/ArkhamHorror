@@ -151,14 +151,6 @@ turnModifiers
   -> Message
 turnModifiers iid source target modifiers = createWindowModifierEffect (EffectTurnWindow iid) source target modifiers
 
-nextTurnModifier
-  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
-nextTurnModifier source target modifier = createWindowModifierEffect EffectNextTurnWindow source target [modifier]
-
-nextTurnModifiers
-  :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
-nextTurnModifiers source target modifiers = createWindowModifierEffect EffectNextTurnWindow source target modifiers
-
 createRoundModifier
   :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
 createRoundModifier = createWindowModifierEffect EffectRoundWindow

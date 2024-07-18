@@ -871,10 +871,12 @@ allAssets =
     , --- seeker [tsk]
       SomeAssetCard alchemicalDistillation
     , SomeAssetCard empiricalHypothesis
-    , SomeAssetCard fingerprintKit4
     , SomeAssetCard dissectionTools
     , SomeAssetCard grimMemoir
     , SomeAssetCard researchNotes
+    , SomeAssetCard labCoat1
+    , SomeAssetCard orphicTheory1
+    , SomeAssetCard fingerprintKit4
     , --- rogue [tsk]
       SomeAssetCard damningTestimony
     , SomeAssetCard disguise

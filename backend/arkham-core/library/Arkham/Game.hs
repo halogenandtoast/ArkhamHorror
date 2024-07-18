@@ -1123,6 +1123,7 @@ getTreacheriesMatching matcher = do
   matcherFilter = \case
     AnyTreachery -> pure . const True
     NotTreachery m -> fmap not . matcherFilter m
+    HiddenTreachery -> fieldMap TreacheryPlacement isHiddenPlacement . toId
     InPlayTreachery -> fieldMap TreacheryPlacement isInPlayPlacement . toId
     TreacheryWithResolvedEffectsBy investigatorMatcher -> \t -> do
       iids <- select investigatorMatcher

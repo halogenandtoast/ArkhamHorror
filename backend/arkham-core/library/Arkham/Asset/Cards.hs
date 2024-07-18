@@ -463,6 +463,7 @@ allPlayerAssetCards =
       , knightOfSwords3
       , knuckleduster
       , kukri
+      , labCoat1
       , laboratoryAssistant
       , ladyEsprit
       , lantern
@@ -552,6 +553,7 @@ allPlayerAssetCards =
       , onyxPentacle
       , onyxPentacle4
       , ornateBow3
+      , orphicTheory1
       , otherworldCodex2
       , otherworldlyCompass2
       , painkillers
@@ -5733,6 +5735,25 @@ empiricalHypothesis =
           , (IrrefutableProof, 3)
           , (AlternativeHypothesis, 4)
           ]
+    }
+
+labCoat1 :: CardDef
+labCoat1 =
+  (asset "09050" "Lab Coat" 2 Seeker)
+    { cdCardTraits = setFromList [Item, Clothing, Science]
+    , cdSkills = [#willpower]
+    , cdSlots = [#body]
+    , cdLevel = Just 1
+    }
+
+orphicTheory1 :: CardDef
+orphicTheory1 =
+  (asset "09051" "Orphic Theory" 2 Seeker)
+    { cdCardTraits = setFromList [Spell]
+    , cdSkills = [#intellect]
+    , cdSlots = [#arcane]
+    , cdLevel = Just 1
+    , cdUses = uses Secret 4
     }
 
 fingerprintKit4 :: CardDef

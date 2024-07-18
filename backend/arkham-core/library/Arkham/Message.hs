@@ -752,6 +752,7 @@ data Message
   | NextChaosBagStep Source (Maybe InvestigatorId) RequestedChaosTokenStrategy
   | Noop
   | PassSkillTest
+  | PassSkillTestBy Int
   | PassedSkillTest InvestigatorId (Maybe Action) Source Target SkillTestType Int
   | PaidAbilityCost InvestigatorId (Maybe Action) Payment
   | PayCardCost InvestigatorId Card [Window]

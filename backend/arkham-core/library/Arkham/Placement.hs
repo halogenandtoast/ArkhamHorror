@@ -5,6 +5,7 @@ module Arkham.Placement (
   placementToAttached,
   isOutOfPlayPlacement,
   isInPlayPlacement,
+  isHiddenPlacement,
   treacheryPlacementToPlacement,
 ) where
 
@@ -93,6 +94,11 @@ isInPlayPlacement = \case
   OutOfPlay {} -> False
   HiddenInHand _ -> False
   OnTopOfDeck _ -> False
+
+isHiddenPlacement :: Placement -> Bool
+isHiddenPlacement = \case
+  HiddenInHand _ -> True
+  _ -> False
 
 data TreacheryPlacement
   = TreacheryAttachedTo Target

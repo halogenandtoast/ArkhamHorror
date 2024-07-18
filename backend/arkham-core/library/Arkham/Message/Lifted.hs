@@ -428,6 +428,15 @@ chooseSome iid done msgs = do
   player <- getPlayer iid
   push $ Msg.chooseSome player done msgs
 
+selectOneToHandle
+  :: (HasCallStack, ReverseQueue m, Targetable (QueryElement matcher), Query matcher, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> matcher
+  -> m ()
+selectOneToHandle iid source matcher =
+  select matcher >>= \results -> if notNull results then chooseOneToHandle iid source results else pure ()
+
 chooseOneToHandle
   :: (HasCallStack, ReverseQueue m, Targetable target, Sourceable source)
   => InvestigatorId

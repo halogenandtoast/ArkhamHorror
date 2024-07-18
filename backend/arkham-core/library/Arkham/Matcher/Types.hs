@@ -666,6 +666,7 @@ data TreacheryMatcher
   | TreacheryWithModifier ModifierType
   | AnyTreachery
   | InPlayTreachery
+  | HiddenTreachery
   | TreacheryOwnedBy InvestigatorMatcher
   | TreacheryMatches [TreacheryMatcher]
   | TreacheryOneOf [TreacheryMatcher]
@@ -1147,6 +1148,7 @@ data SkillTestMatcher
   | SkillTestWithRevealedChaosTokenCount Int ChaosTokenMatcher
   | SkillTestWithResolvedChaosTokenBy InvestigatorMatcher ChaosTokenMatcher
   | SkillTestOnCardWithTrait Trait
+  | SkillTestOnCard CardMatcher
   | SkillTestWithDifficulty ValueMatcher
   | PerilousSkillTest
   | IfSkillTestMatcher SkillTestMatcher SkillTestMatcher SkillTestMatcher

@@ -122,7 +122,6 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           Nothing
 
       tid1 <- getRandom
-      tid2 <- getRandom
 
       pushAll
         $ [ SetEncounterDeck
@@ -155,9 +154,6 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
         <> [createNetherMist | isJust mJeromeDavids]
         <> [ SpawnEnemyAtEngagedWith shadowHound billiardsRoomId valentinoId
            | valentinoId <- maybeToList mValentinoRivas
-           ]
-        <> [ AttachStoryTreacheryTo tid2 obscuringFog (toTarget officeId)
-           | isJust mJeromeDavids
            ]
         <> [ SpawnEnemyAtEngagedWith wraith balconyId pennyId
            | pennyId <- maybeToList mPennyWhite

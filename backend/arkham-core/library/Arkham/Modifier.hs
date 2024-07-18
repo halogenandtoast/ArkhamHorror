@@ -319,6 +319,7 @@ data ModifierType
   | UpkeepResources Int
   | TopCardOfDeckIsRevealed
   | TraitRestrictedModifier Trait ModifierType
+  | NonTraitRestrictedModifier Trait ModifierType
   | TreatAllDamageAsDirect
   | TreatRevealedChaosTokenAs ChaosTokenFace
   | UseEncounterDeck ScenarioEncounterDeckKey -- The Wages of Sin

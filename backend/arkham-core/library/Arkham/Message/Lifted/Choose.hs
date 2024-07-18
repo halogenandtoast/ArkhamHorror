@@ -6,6 +6,7 @@ import Arkham.Message (Message)
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Question
+import Arkham.SkillType
 import Arkham.Target
 import Control.Monad.State.Strict
 import Control.Monad.Writer.Strict
@@ -42,6 +43,11 @@ labeled :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
 labeled label action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [Label label msgs]
+
+skillLabeled :: ReverseQueue m => SkillType -> QueueT Message m () -> ChooseT m ()
+skillLabeled skillType action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [SkillLabel skillType msgs]
 
 targeting :: (ReverseQueue m, Targetable target) => target -> QueueT Message m () -> ChooseT m ()
 targeting target action = unterminated do

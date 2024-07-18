@@ -522,6 +522,7 @@ allEvents =
     , SomeEventCard bizarreDiagnosis
     , SomeEventCard captivatingDiscovery
     , SomeEventCard mapTheArea
+    , SomeEventCard existentialRiddle1
     , --- rogue [tsk]
       SomeEventCard friendsInLowPlaces
     , SomeEventCard honedInstinct

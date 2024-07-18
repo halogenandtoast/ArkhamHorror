@@ -161,6 +161,7 @@ allPlayerEventCards =
       , everVigilant4
       , evidence
       , evidence1
+      , existentialRiddle1
       , exploitWeakness
       , explosiveWard
       , exposeWeakness1
@@ -3294,6 +3295,15 @@ mapTheArea =
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Insight, Tactic]
     , cdActions = [#investigate]
+    }
+
+existentialRiddle1 :: CardDef
+existentialRiddle1 =
+  (event "09052" "Existential Riddle" 1 Seeker)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Insight, Paradox]
+    , cdActions = [#parley]
+    , cdCriteria = Just $ exists (EnemyAt YourLocation <> NonEliteEnemy)
     }
 
 friendsInLowPlaces :: CardDef

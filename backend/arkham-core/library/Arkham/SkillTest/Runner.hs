@@ -311,6 +311,10 @@ instance RunMessage SkillTest where
       player <- getPlayer skillTestInvestigator
       push $ chooseOne player [SkillTestApplyResultsButton]
       pure $ s & resultL .~ SucceededBy Automatic modifiedSkillValue'
+    PassSkillTestBy n -> do
+      player <- getPlayer skillTestInvestigator
+      push $ chooseOne player [SkillTestApplyResultsButton]
+      pure $ s & resultL .~ SucceededBy NonAutomatic n
     FailSkillTest -> do
       resultsData <- autoFailSkillTestResultsData s
       difficulty <- getModifiedSkillTestDifficulty s

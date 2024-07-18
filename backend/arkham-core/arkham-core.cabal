@@ -734,6 +734,7 @@ library
       Arkham.Asset.Cards.KnightOfSwords3
       Arkham.Asset.Cards.Knuckleduster
       Arkham.Asset.Cards.Kukri
+      Arkham.Asset.Cards.LabCoat1
       Arkham.Asset.Cards.LaboratoryAssistant
       Arkham.Asset.Cards.LadyEsprit
       Arkham.Asset.Cards.Lantern
@@ -825,6 +826,7 @@ library
       Arkham.Asset.Cards.OnyxPentacle
       Arkham.Asset.Cards.OnyxPentacle4
       Arkham.Asset.Cards.OrnateBow3
+      Arkham.Asset.Cards.OrphicTheory1
       Arkham.Asset.Cards.OtherworldCodex2
       Arkham.Asset.Cards.OtherworldlyCompass2
       Arkham.Asset.Cards.Painkillers

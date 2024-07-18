@@ -374,6 +374,7 @@ allPlayerAssetCards =
       , geas2
       , geneBeauregard3
       , gildedVolto
+      , girishKadakiaIcpcPunjabDetective4
       , grannyOrne
       , grannyOrne3
       , grapplingHook
@@ -5682,6 +5683,15 @@ martyrsVambraceRemnantOfTheUnknown3 =
     , cdCardTraits = setFromList [Item, Charm, Armor]
     , cdSlots = [#accessory]
     , cdLevel = Just 3
+    }
+
+girishKadakiaIcpcPunjabDetective4 :: CardDef
+girishKadakiaIcpcPunjabDetective4 =
+  (asset "09038" ("Girish Kadakia" <:> "ICPC Punjab Detective") 4 Guardian)
+    { cdSkills = [#willpower, #wild]
+    , cdCardTraits = setFromList [Ally, Police]
+    , cdSlots = [#ally]
+    , cdLevel = Just 4
     }
 
 alchemicalDistillation :: CardDef

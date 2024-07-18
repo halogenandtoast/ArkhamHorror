@@ -288,5 +288,5 @@ revelationModifier
   -> TreacheryId
   -> ModifierType
   -> Message
-revelationModifier (toSource -> source) (toTarget -> target) tid mod =
-  revelationModifiers source target tid [mod]
+revelationModifier (toSource -> source) (toTarget -> target) tid modifier =
+  revelationModifiers source target tid [modifier]

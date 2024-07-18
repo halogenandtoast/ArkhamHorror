@@ -148,6 +148,7 @@ data WindowType
   | EncounterDeckRunsOutOfCards
   | Discarded (Maybe InvestigatorId) Source Card
   | DiscoverClues InvestigatorId LocationId Source Int
+  | SpentClues InvestigatorId Int
   | DiscoveringLastClue InvestigatorId LocationId
   | SuccessfullyInvestigateWithNoClues InvestigatorId LocationId
   | WouldDrawCard InvestigatorId DeckSignifier

@@ -580,6 +580,7 @@ allPlayerAssetCards =
       , powderOfIbnGhazi
       , preciousMementoFromAFormerLife4
       , preciousMementoFromAFutureLife4
+      , pressPass2
       , priestOfTwoFaiths1
       , professorWarrenRice
       , professorWilliamWebbFinderOfHiddenConnections
@@ -5764,6 +5765,15 @@ drWilliamTMaleson2 =
     , cdCardTraits = setFromList [Ally, Miskatonic]
     , cdUnique = True
     , cdSlots = [#ally]
+    , cdLevel = Just 2
+    }
+
+pressPass2 :: CardDef
+pressPass2 =
+  (asset "09055" "Press Pass" 4 Seeker)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Item, Charm]
+    , cdSlots = [#accessory]
     , cdLevel = Just 2
     }
 

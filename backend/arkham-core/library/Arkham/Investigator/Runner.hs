@@ -2519,6 +2519,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       else push windowMsg
     pure $ a & foundCardsL %~ Map.map (filter ((/= card.id) . toCardId))
   InvestigatorSpendClues iid n | iid == investigatorId -> do
+    pushM $ checkAfter $ SpentClues iid n
     pure $ a & tokensL %~ subtractTokens Clue n
   SpendResources iid _ | iid == investigatorId -> do
     push $ Do msg

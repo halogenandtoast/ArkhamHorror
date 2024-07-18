@@ -969,6 +969,7 @@ data WindowMatcher
   | PlaceUnderneath Timing TargetMatcher CardMatcher
   | WouldPlaceDoomCounter Timing SourceMatcher TargetMatcher
   | PlacedDoomCounter Timing SourceMatcher TargetMatcher
+  | SpentClues Timing InvestigatorMatcher ValueMatcher
   | PlacedToken Timing SourceMatcher TargetMatcher Token
   | InvestigatorPlacedFromTheirPool Timing Who SourceMatcher TargetMatcher Token
   | WouldPlaceBreach Timing TargetMatcher

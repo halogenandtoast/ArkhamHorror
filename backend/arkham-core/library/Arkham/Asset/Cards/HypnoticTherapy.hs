@@ -1,18 +1,11 @@
-module Arkham.Asset.Cards.HypnoticTherapy (
-  hypnoticTherapy,
-  HypnoticTherapy (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.HypnoticTherapy (hypnoticTherapy, HypnoticTherapy (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Damage
+import Arkham.Helpers.Investigator (healAdditional)
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
-import Arkham.Window
-import Data.Monoid
+import Arkham.Prelude
 
 newtype HypnoticTherapy = HypnoticTherapy AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -23,13 +16,10 @@ hypnoticTherapy = asset HypnoticTherapy Cards.hypnoticTherapy
 
 instance HasAbilities HypnoticTherapy where
   getAbilities (HypnoticTherapy a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility []
-        $ ActionCost 1
-        <> exhaust a
+    [ restrictedAbility a 1 ControlsThis $ actionAbilityWithCost (exhaust a)
     , restrictedAbility a 2 ControlsThis
         $ ReactionAbility
-          ( InvestigatorHealed Timing.After HorrorType (affectsOthers Anyone)
+          ( InvestigatorHealed #after #horror (affectsOthers Anyone)
               $ SourceOwnedBy You
               <> NotSource (SourceIs (toSource a))
           )
@@ -61,29 +51,6 @@ instance RunMessage HypnoticTherapy where
           ]
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 ws' _ -> do
-      -- this is meant to heal additional so we'd directly heal one more
-      -- (without triggering a window), and then overwrite the original window
-      -- to heal for one more
-      let
-        updateHealed = \case
-          Window timing (Healed HorrorType t s n) mBatchId ->
-            Window timing (Healed HorrorType t s (n + 1)) mBatchId
-          other -> other
-        getHealedTarget = \case
-          (windowType -> Healed HorrorType t _ _) -> Just t
-          _ -> Nothing
-        healedTarget =
-          fromJustNote "wrong call"
-            $ getFirst
-            $ foldMap (First . getHealedTarget) ws'
-
-      replaceMessageMatching
-        \case
-          RunWindow _ ws -> ws == ws'
-          _ -> False
-        \case
-          RunWindow iid' ws -> [RunWindow iid' $ map updateHealed ws]
-          _ -> error "invalid window"
-      push $ HealHorrorDirectly healedTarget (toAbilitySource attrs 2) 1
+      healAdditional (attrs.ability 2) #horror ws' 1
       pure a
     _ -> HypnoticTherapy <$> runMessage msg attrs

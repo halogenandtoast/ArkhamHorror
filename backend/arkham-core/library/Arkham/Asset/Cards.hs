@@ -695,6 +695,7 @@ allPlayerAssetCards =
       , suggestion4
       , summonedHound1
       , summonedServitor
+      , surgicalKit3
       , survivalKnife
       , survivalKnife2
       , switchblade
@@ -5774,6 +5775,15 @@ pressPass2 =
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Item, Charm]
     , cdSlots = [#accessory]
+    , cdLevel = Just 2
+    }
+
+surgicalKit3 :: CardDef
+surgicalKit3 =
+  (asset "09056" "Surgical Kit" 2 Seeker)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Item, Tool, Science]
+    , cdUses = uses Supply 4
     , cdLevel = Just 2
     }
 

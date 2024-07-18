@@ -19,6 +19,7 @@ data EffectWindow
   | EffectNextActionWindow
   | EffectSetupWindow
   | EffectTurnWindow InvestigatorId
+  | EffectNextTurnWindow InvestigatorId
   | EffectCardResolutionWindow CardId
   | EffectGameWindow
   | EffectAttackWindow

@@ -479,6 +479,8 @@ data Message
   | CheckDefeated Source Target
   | AssignDamage Target
   | CancelAssignedDamage Target Int Int
+  | AssignedDamage Target
+  | AssignedHealing Target
   | CheckHandSize InvestigatorId
   | CheckWindow [InvestigatorId] [Window]
   | ChooseOneRewardByEachPlayer [CardDef] [InvestigatorId]

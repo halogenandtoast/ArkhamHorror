@@ -194,6 +194,7 @@ data ModifierType
   | HorrorDealt Int
   | DamageDealtToInvestigator Int
   | DamageTaken Int
+  | HealingTaken Int
   | Difficulty Int
   | DiscoveredClues Int
   | DiscoveredCluesAt LocationId Int

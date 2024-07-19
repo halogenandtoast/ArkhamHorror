@@ -8,3 +8,6 @@ import Arkham.Target
 
 getSkillTestTarget :: HasGame m => m (Maybe Target)
 getSkillTestTarget = fmap skillTestTarget <$> getSkillTest
+
+withSkillTestTarget :: HasGame m => (Target -> m ()) -> m ()
+withSkillTestTarget f = getSkillTestTarget >>= traverse_ f

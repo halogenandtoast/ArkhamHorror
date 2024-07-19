@@ -930,6 +930,7 @@ instance RunMessage EnemyAttrs where
           unless (damageAssignmentDelayed damageAssignment')
             $ push
             $ checkDefeated source eid
+          push $ AssignedDamage (toTarget a)
           pure
             $ a
             & assignedDamageL

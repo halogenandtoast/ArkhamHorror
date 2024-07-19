@@ -1873,7 +1873,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (discardL %~ filter ((/= card) . PlayerCard))
       & (handL %~ filter (/= card))
   Msg.InvestigatorDamage iid _ damage horror | iid == investigatorId -> do
-    pure $ a & assignedHealthDamageL +~ damage & assignedSanityDamageL +~ horror
+    mods <- getModifiers a
+    let n = sum [x | DamageTaken x <- mods]
+    pure $ a & assignedHealthDamageL +~ (max 0 $ damage + n) & assignedSanityDamageL +~ horror
   DrivenInsane iid | iid == investigatorId -> do
     pure $ a & mentalTraumaL .~ investigatorSanity
   CheckDefeated source (isTarget a -> True) | not (a ^. defeatedL || a ^. resignedL) -> do
@@ -1905,6 +1907,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       else push $ AssignDamage (InvestigatorTarget $ toId a)
     pure a
   AssignDamage target | isTarget a target -> do
+    push $ AssignedDamage target
     pure
       $ a
       & tokensL
@@ -1937,6 +1940,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let sanity = if cannotHealHorror then 0 else findWithDefault 0 source investigatorAssignedSanityHeal
 
     when (health > 0 || sanity > 0) do
+      push $ AssignedHealing (toTarget a)
       pushM
         $ checkWindows
         $ [mkAfter (Window.Healed DamageType (toTarget a) source health) | health > 0]
@@ -1951,7 +1955,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (unhealedHorrorThisRoundL %~ min 0 . subtract sanity)
       & (assignedHealthHealL %~ deleteMap source)
       & (assignedSanityHealL %~ deleteMap source)
-  HealDamage (InvestigatorTarget iid) source amount | iid == investigatorId -> do
+  HealDamage (InvestigatorTarget iid) source amount' | iid == investigatorId -> do
+    mods <- getModifiers a
+    let n = sum [x | HealingTaken x <- mods]
+    let amount = amount' + n
     whenWindow <- checkWindows [mkWhen $ Window.Healed DamageType (toTarget a) source amount]
     dmgTreacheries <-
       selectWithField TreacheryCard $ treacheryInThreatAreaOf iid <> TreacheryWithModifier IsPointOfDamage
@@ -1972,6 +1979,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Do (HealDamage (InvestigatorTarget iid) source amount) | iid == investigatorId -> do
     afterWindow <- checkWindows [mkAfter $ Window.Healed DamageType (toTarget a) source amount]
     push afterWindow
+    push $ AssignedHealing (toTarget a)
     runMessage (RemoveTokens source (toTarget a) #damage amount) a
   HealDamageDelayed (isTarget a -> True) source n -> do
     pure $ a & assignedHealthHealL %~ insertWith (+) source n
@@ -2012,7 +2020,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           $ a'
           & (horrorHealedL .~ 0)
           & (unhealedHorrorThisRoundL %~ min 0 . subtract additional)
-  HealHorror (InvestigatorTarget iid) source amount | iid == investigatorId -> do
+  HealHorror (InvestigatorTarget iid) source amount' | iid == investigatorId -> do
+    mods <- getModifiers a
+    let n = sum [x | HealingTaken x <- mods]
+    let amount = amount' + n
     cannotHealHorror <- hasModifier a CannotHealHorror
     unless cannotHealHorror
       $ pushAll [HealHorrorDelayed (InvestigatorTarget iid) source amount, ApplyHealing source]

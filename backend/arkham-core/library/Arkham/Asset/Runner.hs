@@ -155,8 +155,10 @@ instance RunMessage AssetAttrs where
       push $ toDiscard GameSource a
       pure a
     Msg.AssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do
+      mods <- getModifiers a
+      let n = sum [x | DamageTaken x <- mods]
       pushAll
-        $ [PlaceDamage source (toTarget a) damage | damage > 0]
+        $ [PlaceDamage source (toTarget a) (damage + n) | damage > 0]
         <> [PlaceHorror source (toTarget a) horror | horror > 0]
         <> [checkDefeated source aid | doCheck]
       pure a
@@ -183,24 +185,48 @@ instance RunMessage AssetAttrs where
           $ [mkWindow Timing.After (Window.Healed DamageType (toTarget a) source health) | health > 0]
           <> [mkWindow Timing.After (Window.Healed DamageType (toTarget a) source sanity) | sanity > 0]
       pure $ a & tokensL %~ subtractTokens Token.Damage health . subtractTokens Token.Horror sanity
-    HealDamage (isTarget a -> True) source n -> do
+    HealDamage (isTarget a -> True) source amount -> do
+      mods <- getModifiers a
+      let n = sum [x | HealingTaken x <- mods]
+      let amount' = amount + n
       afterWindow <- checkWindows [mkWindow Timing.After (Window.Healed DamageType (toTarget a) source n)]
+      push $ AssignedHealing (toTarget a)
       push afterWindow
-      runMessage (RemoveTokens source (toTarget a) Token.Damage n) a
-    HealDamageDelayed (isTarget a -> True) source n -> do
-      pure $ a & assignedHealthHealL %~ insertWith (+) source n
-    HealHorror (isTarget a -> True) source n -> do
+      runMessage (RemoveTokens source (toTarget a) Token.Damage amount') a
+    HealDamageDelayed (isTarget a -> True) source amount -> do
+      mods <- getModifiers a
+      let n = sum [x | HealingTaken x <- mods]
+      let amount' = amount + n
+      push $ AssignedHealing (toTarget a)
+      pure $ a & assignedHealthHealL %~ insertWith (+) source amount'
+    HealHorror (isTarget a -> True) source amount -> do
+      mods <- getModifiers a
+      let n = sum [x | HealingTaken x <- mods]
+      let amount' = amount + n
+      push $ AssignedHealing (toTarget a)
       afterWindow <- checkWindows [mkWindow Timing.After (Window.Healed HorrorType (toTarget a) source n)]
       push afterWindow
-      runMessage (RemoveTokens source (toTarget a) Token.Horror n) a
-    HealHorrorDelayed (isTarget a -> True) source n -> do
-      pure $ a & assignedSanityHealL %~ insertWith (+) source n
+      runMessage (RemoveTokens source (toTarget a) Token.Horror amount') a
+    HealHorrorDelayed (isTarget a -> True) source amount -> do
+      mods <- getModifiers a
+      let n = sum [x | HealingTaken x <- mods]
+      let amount' = amount + n
+      push $ AssignedHealing (toTarget a)
+      pure $ a & assignedSanityHealL %~ insertWith (+) source amount'
     HealHorrorDirectly target source amount | isTarget a target -> do
       -- USE ONLY WHEN NO CALLBACKS
-      runMessage (RemoveTokens source (toTarget a) Token.Horror amount) a
+      mods <- getModifiers a
+      let n = sum [x | HealingTaken x <- mods]
+      let amount' = amount + n
+      push $ AssignedHealing (toTarget a)
+      runMessage (RemoveTokens source (toTarget a) Token.Horror amount') a
     HealDamageDirectly target source amount | isTarget a target -> do
       -- USE ONLY WHEN NO CALLBACKS
-      runMessage (RemoveTokens source (toTarget a) Token.Damage amount) a
+      mods <- getModifiers a
+      let n = sum [x | HealingTaken x <- mods]
+      let amount' = amount + n
+      push $ AssignedHealing (toTarget a)
+      runMessage (RemoveTokens source (toTarget a) Token.Damage amount') a
     When (InvestigatorResigned iid) -> do
       let
         shouldResignWith = case assetPlacement of

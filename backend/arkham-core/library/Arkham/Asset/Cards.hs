@@ -381,6 +381,7 @@ allPlayerAssetCards =
       , grapplingHook
       , gravediggersShovel
       , gravediggersShovel2
+      , graysAnatomyTheDoctorsBible5
       , greenManMedallionHourOfTheHuntress
       , gregoryGry
       , greteWagner
@@ -5740,6 +5741,31 @@ empiricalHypothesis =
           ]
     }
 
+dissectionTools :: CardDef
+dissectionTools =
+  (asset "09043" "Dissection Tools" 2 Seeker)
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Item, Tool, Science]
+    , cdSlots = [#hand]
+    }
+
+grimMemoir :: CardDef
+grimMemoir =
+  (asset "09044" "Grim Memoir" 3 Seeker)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Item, Tome]
+    , cdSlots = [#hand]
+    , cdUses = uses Secret 4
+    }
+
+researchNotes :: CardDef
+researchNotes =
+  (asset "09045" "Research Notes" 1 Seeker)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Item, Tome, Science]
+    , cdSlots = [#hand]
+    }
+
 labCoat1 :: CardDef
 labCoat1 =
   (asset "09050" "Lab Coat" 2 Seeker)
@@ -5797,29 +5823,13 @@ fingerprintKit4 =
     , cdLevel = Just 4
     }
 
-dissectionTools :: CardDef
-dissectionTools =
-  (asset "09043" "Dissection Tools" 2 Seeker)
-    { cdSkills = [#agility]
-    , cdCardTraits = setFromList [Item, Tool, Science]
+graysAnatomyTheDoctorsBible5 :: CardDef
+graysAnatomyTheDoctorsBible5 =
+  (asset "09058" ("Gray's Anatomy" <:> "The Doctor's Bible") 3 Seeker)
+    { cdCardTraits = setFromList [Item, Tome]
+    , cdSkills = [#willpower, #intellect, #wild]
     , cdSlots = [#hand]
-    }
-
-grimMemoir :: CardDef
-grimMemoir =
-  (asset "09044" "Grim Memoir" 3 Seeker)
-    { cdSkills = [#intellect]
-    , cdCardTraits = setFromList [Item, Tome]
-    , cdSlots = [#hand]
-    , cdUses = uses Secret 4
-    }
-
-researchNotes :: CardDef
-researchNotes =
-  (asset "09045" "Research Notes" 1 Seeker)
-    { cdSkills = [#intellect]
-    , cdCardTraits = setFromList [Item, Tome, Science]
-    , cdSlots = [#hand]
+    , cdLevel = Just 5
     }
 
 damningTestimony :: CardDef

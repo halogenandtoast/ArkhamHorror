@@ -57,6 +57,7 @@ import Arkham.Asset.Assets (
   fireExtinguisher1Effect,
   gildedVoltoEffect,
   grapplingHookEffect,
+  graysAnatomyTheDoctorsBible5Effect,
   gregoryGryEffect,
   grislyTotemSeeker3Effect,
   grislyTotemSurvivor3Effect,
@@ -430,6 +431,7 @@ allEffects =
     , ("09009", SomeEffect grapplingHookEffect)
     , ("09029", SomeEffect oneInTheChamberEffect)
     , ("09041", SomeEffect empiricalHypothesisEffect)
+    , ("09058", SomeEffect graysAnatomyTheDoctorsBible5Effect)
     , ("09066", SomeEffect hitAndRunEffect)
     , ("09087", SomeEffect explosiveWardEffect)
     , ("50044", SomeEffect jeremiahPierceEffect)

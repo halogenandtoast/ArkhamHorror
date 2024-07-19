@@ -880,6 +880,7 @@ allAssets =
     , SomeAssetCard pressPass2
     , SomeAssetCard surgicalKit3
     , SomeAssetCard fingerprintKit4
+    , SomeAssetCard graysAnatomyTheDoctorsBible5
     , --- rogue [tsk]
       SomeAssetCard damningTestimony
     , SomeAssetCard disguise

@@ -106,6 +106,11 @@ instance HasField "metaTarget" EffectAttrs (Maybe Target) where
     Just (EffectMetaTarget t) -> Just t
     _ -> Nothing
 
+instance HasField "metaInt" EffectAttrs (Maybe Int) where
+  getField e = case e.meta of
+    Just (EffectInt t) -> Just t
+    _ -> Nothing
+
 instance HasField "extra" EffectAttrs Value where
   getField = effectExtraMetadata
 

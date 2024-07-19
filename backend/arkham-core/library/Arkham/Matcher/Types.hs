@@ -190,6 +190,7 @@ data AssetMatcher
   | AssetControlledBy InvestigatorMatcher
   | AssetInPlayAreaOf InvestigatorMatcher
   | AssetOwnedBy InvestigatorMatcher
+  | UnownedAsset
   | AssetMatches [AssetMatcher]
   | AssetOneOf [AssetMatcher]
   | AssetAtLocation LocationId
@@ -1578,8 +1579,24 @@ data ScenarioMatcher = TheScenario
 data CampaignMatcher = TheCampaign
   deriving stock (Show, Eq, Ord, Data)
 
-data EffectMatcher = AnyEffect | EffectWithCardCode CardCode
+data EffectMatcher
+  = AnyEffect
+  | EffectWithCardCode CardCode
+  | EffectWithMetaInt Int
+  | EffectWithTarget Target
+  | EffectMatches [EffectMatcher]
   deriving stock (Show, Eq, Ord, Data)
+
+instance Semigroup EffectMatcher where
+  AnyEffect <> x = x
+  x <> AnyEffect = x
+  EffectMatches xs <> EffectMatches ys = EffectMatches $ xs <> ys
+  EffectMatches xs <> x = EffectMatches $ xs <> [x]
+  x <> EffectMatches xs = EffectMatches $ x : xs
+  x <> y = EffectMatches [x, y]
+
+instance Monoid EffectMatcher where
+  mempty = AnyEffect
 
 data SkillTypeMatcher
   = AnySkillType

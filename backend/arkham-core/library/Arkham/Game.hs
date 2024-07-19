@@ -583,6 +583,9 @@ getEffectsMatching matcher = do
   go = \case
     AnyEffect -> pure . const True
     EffectWithCardCode cCode -> fieldMap EffectCardCode (== cCode) . toId
+    EffectWithMetaInt n -> pure . maybe False (== n) . (.metaInt) . toAttrs
+    EffectMatches as -> \e -> allM (`go` e) as
+    EffectWithTarget t -> pure . (== t) . (.target) . toAttrs
 
 getCampaignsMatching :: HasGame m => CampaignMatcher -> m [Campaign]
 getCampaignsMatching matcher = do
@@ -2000,6 +2003,7 @@ getAssetsMatching matcher = do
     AssetControlledBy investigatorMatcher -> do
       iids <- select investigatorMatcher
       filterM (fieldP AssetController (maybe False (`elem` iids)) . toId) as
+    UnownedAsset -> filterM (fieldP AssetOwner isNothing . toId) as
     AssetOwnedBy investigatorMatcher -> do
       iids <- select investigatorMatcher
       filterM (fieldP AssetOwner (maybe False (`elem` iids)) . toId) as
@@ -3493,7 +3497,7 @@ instance Query ExtendedCardMatcher where
     g <- getGame
     filterM (`matches'` matcher) (Map.elems $ gameCards g)
    where
-    matches' :: HasGame m => Card -> ExtendedCardMatcher -> m Bool
+    matches' :: forall m. HasGame m => Card -> ExtendedCardMatcher -> m Bool
     matches' c = \case
       ChosenViaCustomization inner -> do
         selectOne inner >>= \case

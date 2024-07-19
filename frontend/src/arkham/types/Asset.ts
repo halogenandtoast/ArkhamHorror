@@ -25,6 +25,7 @@ export type Asset = {
   sealedChaosTokens: ChaosToken[];
   keys: ArkhamKey[];
   customizations: Customization[];
+  marketDeck?: Card[]
 }
 
 export const assetDecoder = JsonDecoder.object<Asset>({
@@ -44,4 +45,5 @@ export const assetDecoder = JsonDecoder.object<Asset>({
   sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
   keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
   customizations: customizationsDecoder,
+  marketDeck: JsonDecoder.optional(JsonDecoder.array<Card>(cardDecoder, 'Card[]')),
 }, 'Asset');

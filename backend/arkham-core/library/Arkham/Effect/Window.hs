@@ -26,6 +26,7 @@ data EffectWindow
   | FirstEffectWindow [EffectWindow]
   | EffectEventWindow
   | EffectAbilityWindow
+  | EffectGainResourcesWindow InvestigatorId
   | EffectSearchWindow
   | EffectCardCostWindow CardId
   | EffectCardDrawWindow

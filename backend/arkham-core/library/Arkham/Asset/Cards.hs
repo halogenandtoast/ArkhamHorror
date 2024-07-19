@@ -692,6 +692,7 @@ allPlayerAssetCards =
       , strangeSolutionFreezingVariant4
       , strangeSolutionRestorativeConcoction4
       , strayCat
+      , stylishCoat1
       , suggestion1
       , suggestion4
       , summonedHound1
@@ -5873,6 +5874,15 @@ thievesKit =
     , cdCardTraits = setFromList [Item, Tool, Illicit]
     , cdUses = uses Supply 6
     , cdSlots = [#hand]
+    }
+
+stylishCoat1 :: CardDef
+stylishCoat1 =
+  (asset "09071" "Stylish Coat" 2 Rogue)
+    { cdCardTraits = setFromList [Item, Clothing, Science]
+    , cdSkills = [#agility]
+    , cdSlots = [#body]
+    , cdLevel = Just 1
     }
 
 chuckFergus2 :: CardDef

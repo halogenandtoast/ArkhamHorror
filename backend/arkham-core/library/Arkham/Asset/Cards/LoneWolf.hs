@@ -1,15 +1,9 @@
-module Arkham.Asset.Cards.LoneWolf (
-  loneWolf,
-  LoneWolf (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.LoneWolf (loneWolf, LoneWolf (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype LoneWolf = LoneWolf AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -19,17 +13,11 @@ loneWolf :: AssetCard LoneWolf
 loneWolf = asset LoneWolf Cards.loneWolf
 
 instance HasAbilities LoneWolf where
-  getAbilities (LoneWolf x) =
-    [ restrictedAbility
-        x
-        1
-        (ControlsThis <> InvestigatorIsAlone)
-        (ReactionAbility (TurnBegins Timing.When You) Free)
-    ]
+  getAbilities (LoneWolf x) = [controlledAbility x 1 InvestigatorIsAlone $ freeReaction $ TurnBegins #when You]
 
 instance RunMessage LoneWolf where
-  runMessage msg a@(LoneWolf attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ TakeResources iid 1 (toAbilitySource attrs 1) False
+  runMessage msg a@(LoneWolf attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      gainResourcesIfCan iid (attrs.ability 1) 1
       pure a
-    _ -> LoneWolf <$> runMessage msg attrs
+    _ -> LoneWolf <$> liftRunMessage msg attrs

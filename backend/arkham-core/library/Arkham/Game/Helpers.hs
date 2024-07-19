@@ -2642,6 +2642,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       Window.GainsClues who _ n ->
         andM [matchWho iid who whoMatcher, gameValueMatches n valueMatcher]
       _ -> noMatch
+    Matcher.GainsResources timing whoMatcher sourceMatcher valueMatcher -> guardTiming timing $ \case
+      Window.GainsResources who source' n ->
+        andM
+          [ matchWho iid who whoMatcher
+          , gameValueMatches n valueMatcher
+          , sourceMatches source' sourceMatcher
+          ]
+      _ -> noMatch
     Matcher.DiscoveringLastClue timing whoMatcher whereMatcher ->
       guardTiming timing $ \case
         Window.DiscoveringLastClue who lid ->

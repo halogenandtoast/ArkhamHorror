@@ -44,7 +44,7 @@ instance RunMessage InTheKnow1 where
             location
             [ Would
                 batchId
-                [ abilityModifier (toAbilitySource attrs 1) iid (AsIfAt location)
+                [ abilityModifier ability.ref (attrs.ability 1) iid (AsIfAt location)
                 , PayAdditionalCost iid batchId costs
                 , UseAbility iid ability windows'
                 ]

@@ -67,7 +67,12 @@ data UI msg
   | GridLabel {gridLabel :: Text, messages :: [msg]}
   | TarotLabel {tarotCard :: TarotCard, messages :: [msg]}
   | AbilityLabel
-      {investigatorId :: InvestigatorId, ability :: Ability, windows :: [Window], messages :: [msg]}
+      { investigatorId :: InvestigatorId
+      , ability :: Ability
+      , windows :: [Window]
+      , before :: [msg]
+      , messages :: [msg]
+      }
   | ComponentLabel {component :: Component, messages :: [msg]}
   | EndTurnButton {investigatorId :: InvestigatorId, messages :: [msg]}
   | StartSkillTestButton {investigatorId :: InvestigatorId}

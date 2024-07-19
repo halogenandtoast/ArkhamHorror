@@ -45,6 +45,7 @@ instance RunMessage GrapplingHook where
             iid
             (overCost (`decreaseActionCost` 1) $ doesNotProvokeAttacksOfOpportunity ab)
             []
+            []
             [HandleTargetChoice iid (toSource attrs) (AbilityTarget iid ab), DoStep (n - 1) msg']
           | DifferentAbility ab <- filter (`notElem` chosenAbilities meta) abilities'
           ]

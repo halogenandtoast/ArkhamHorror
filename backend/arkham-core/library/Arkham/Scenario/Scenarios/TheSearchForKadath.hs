@@ -296,7 +296,7 @@ instance RunMessage TheSearchForKadath where
           guard (notNull tenebrousNightgaunts)
             *> [ chooseOneAtATime
                   player
-                  [ AbilityLabel leadId (mkAbility (SourceableWithCardCode cc t) 1 $ forced NotAnyWindow) [] []
+                  [ AbilityLabel leadId (mkAbility (SourceableWithCardCode cc t) 1 $ forced NotAnyWindow) [] [] []
                   | (t, cc) <- tenebrousNightgaunts
                   ]
                ]

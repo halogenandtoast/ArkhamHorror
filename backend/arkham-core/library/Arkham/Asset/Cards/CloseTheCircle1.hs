@@ -20,7 +20,7 @@ newtype Metadata = Metadata {active :: Bool}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype CloseTheCircle1 = CloseTheCircle1 (AssetAttrs `With` Metadata)
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 closeTheCircle1 :: AssetCard CloseTheCircle1
@@ -70,7 +70,7 @@ instance RunMessage CloseTheCircle1 where
              | canPlay
              , c <- playableCards
              ]
-          <> map ((\f -> f windows []) . AbilityLabel iid) abilities
+          <> map ((\f -> f windows [] []) . AbilityLabel iid) abilities
         lift $ push $ DoStep 1 msg
         pure . CloseTheCircle1 $ attrs `with` Metadata True
     DoStep 1 (UseThisAbility _iid (isSource attrs -> True) 1) -> do

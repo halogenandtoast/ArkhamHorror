@@ -21,7 +21,7 @@ runHauntedAbilities iid = do
   hauntedAbilities <- getHauntedAbilities iid
   player <- getPlayer iid
   pushWhen (notNull hauntedAbilities)
-    $ chooseOneAtATime player [AbilityLabel iid ab [] [] | ab <- hauntedAbilities]
+    $ chooseOneAtATime player [AbilityLabel iid ab [] [] [] | ab <- hauntedAbilities]
 
 runLocationHauntedAbilities
   :: (HasGame m, HasQueue Message m) => InvestigatorId -> LocationId -> m ()
@@ -29,7 +29,7 @@ runLocationHauntedAbilities iid lid = do
   hauntedAbilities <- select $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
   player <- getPlayer iid
   pushWhen (notNull hauntedAbilities)
-    $ chooseOneAtATime player [AbilityLabel iid ab [] [] | ab <- hauntedAbilities]
+    $ chooseOneAtATime player [AbilityLabel iid ab [] [] [] | ab <- hauntedAbilities]
 
 getMementosDiscoveredCount :: HasGame m => m Int
 getMementosDiscoveredCount = length <$> getRecordSet MementosDiscovered

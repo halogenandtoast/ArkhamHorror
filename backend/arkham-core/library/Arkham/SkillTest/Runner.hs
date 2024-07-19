@@ -774,7 +774,7 @@ instance RunMessage SkillTest where
                         skillTestType
                         n
                      ]
-                  <> [ chooseOneAtATime player [AbilityLabel resolver ab [] [] | ab <- hauntedAbilities]
+                  <> [ chooseOneAtATime player [AbilityLabel resolver ab [] [] [] | ab <- hauntedAbilities]
                      | notNull hauntedAbilities
                      ]
 

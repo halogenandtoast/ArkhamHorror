@@ -890,6 +890,7 @@ allAssets =
     , SomeAssetCard chuckFergus2
     , SomeAssetCard dirtyFighting2
     , SomeAssetCard thievesKit3
+    , SomeAssetCard triggerMan3
     , --- mystic [tsk]
       SomeAssetCard livingInk
     , SomeAssetCard summonedServitor

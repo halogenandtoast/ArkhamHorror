@@ -117,6 +117,7 @@ baseSkillValueFor skill _maction iid = do
   pure $ foldr applyAfterModifier (foldr applyModifier baseValue modifiers) modifiers
  where
   applyModifier (BaseSkillOf skillType m) _ | skillType == skill = m
+  applyModifier (BaseSkill m) _ = m
   applyModifier _ n = n
   applyAfterModifier (SetSkillValue skillType m) _ | skillType == skill = m
   applyAfterModifier _ n = n

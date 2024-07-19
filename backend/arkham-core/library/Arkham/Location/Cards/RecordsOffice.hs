@@ -47,7 +47,7 @@ instance RunMessage RecordsOffice where
 
       pushAll
         $ [ chooseOne player
-              $ map (\ab -> AbilityLabel iid ab (defaultWindows iid) []) available
+              $ map (\ab -> AbilityLabel iid ab (defaultWindows iid) [] []) available
           ]
         <> [DoStep (n + 1) msg' | n < 4]
 

@@ -70,7 +70,7 @@ instance RunMessage Haste2 where
       canPlay <- canDo iid #play
       push
         $ chooseOne player
-        $ map (\ab -> AbilityLabel iid ab (defaultWindows iid) []) available
+        $ map (\ab -> AbilityLabel iid ab (defaultWindows iid) [] []) available
         <> [ ComponentLabel (InvestigatorComponent iid ResourceToken) [TakeResources iid 1 (toSource a') False]
            | canAffordTakeResources
            , canTakeResource

@@ -36,7 +36,7 @@ import Arkham.Scenarios.TheWagesOfSin.Story
 import Arkham.Trait (Trait (Spectral), toTraits)
 
 newtype TheWagesOfSin = TheWagesOfSin ScenarioAttrs
-  deriving anyclass (IsScenario)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor TheWagesOfSin where
@@ -201,7 +201,7 @@ instance RunMessage TheWagesOfSin where
               <> AbilityIsForcedAbility
           unless (null abilities) $ do
             player <- getPlayer iid
-            push $ chooseOne player [AbilityLabel iid ability [] [] | ability <- abilities]
+            push $ chooseOne player [AbilityLabel iid ability [] [] [] | ability <- abilities]
         ElderThing | isEasyStandard attrs -> do
           mAction <- getSkillTestAction
           when (maybe False (`elem` [Action.Fight, Action.Evade]) mAction) $ do

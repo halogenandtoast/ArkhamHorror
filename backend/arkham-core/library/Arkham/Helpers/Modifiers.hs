@@ -5,6 +5,7 @@ module Arkham.Helpers.Modifiers (
 
 import Arkham.Prelude
 
+import Arkham.Ability.Types
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.HasGame
@@ -262,8 +263,13 @@ setupModifier
 setupModifier source target modifier = createWindowModifierEffect EffectSetupWindow source target [modifier]
 
 abilityModifier
-  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
-abilityModifier source target modifier = createWindowModifierEffect EffectAbilityWindow source target [modifier]
+  :: (Sourceable source, Targetable target)
+  => AbilityRef
+  -> source
+  -> target
+  -> ModifierType
+  -> Message
+abilityModifier abilityRef source target modifier = createWindowModifierEffect (EffectAbilityWindow abilityRef) source target [modifier]
 
 chaosTokenEffect :: Sourceable source => source -> ChaosToken -> ModifierType -> Message
 chaosTokenEffect (toSource -> source) token modifier =

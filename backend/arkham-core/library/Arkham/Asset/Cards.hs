@@ -753,6 +753,7 @@ allPlayerAssetCards =
       , treasureHunter1
       , trenchCoat
       , trenchKnife
+      , triggerMan3
       , tristanBotleyFixerForHire2
       , trueGrit
       , trueMagickReworkingReality5
@@ -5913,6 +5914,15 @@ thievesKit3 =
     , cdUses = uses Supply 6
     , cdSlots = [#hand]
     , cdLevel = Just 3
+    }
+
+triggerMan3 :: CardDef
+triggerMan3 =
+  (asset "09076" "Trigger Man" 4 Rogue)
+    { cdCardTraits = setFromList [Ally, Criminal]
+    , cdSkills = [#combat]
+    , cdLevel = Just 3
+    , cdSlots = [#ally]
     }
 
 livingInk :: CardDef

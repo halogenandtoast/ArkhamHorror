@@ -32,7 +32,7 @@ instance RunMessage BurdensOfThePast where
           player <- getPlayer iid
           when (notNull abilities)
             $ push
-            $ chooseOneAtATime player [AbilityLabel iid ability [] [] | ability <- abilities]
+            $ chooseOneAtATime player [AbilityLabel iid ability [] [] [] | ability <- abilities]
         else push $ GainSurge (toSource attrs) (toTarget attrs)
       pure t
     _ -> BurdensOfThePast <$> runMessage msg attrs

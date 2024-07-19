@@ -38,6 +38,7 @@ data ModifierType
   = ForEach GameCalculation [ModifierType]
   | AbilityModifier Target Int ModifierType
   | ActionCostModifier Int
+  | IgnoreActionCost
   | AdditionalActionCostOf ActionTarget Int
   | ActionCostOf ActionTarget Int -- TODO: Don't use this for anything than decreasing
   | ActionCostSetToModifier Int
@@ -81,6 +82,7 @@ data ModifierType
   | PlayUnderControlOf InvestigatorId
   | AttacksCannotBeCancelled
   | BaseSkillOf {skillType :: SkillType, value :: Int}
+  | BaseSkill Int
   | BecomesFast WindowMatcher
   | Blank
   | BlankExceptForcedAbilities

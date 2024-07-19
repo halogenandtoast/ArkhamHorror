@@ -70,6 +70,6 @@ instance RunMessage KnowledgeIsPower where
           <> oneOf [AbilityIsActionAbility, AbilityIsFastAbility]
       abilities' <- filterM (getCanPerformAbility iid (Window.defaultWindows iid)) abilities
       player <- getPlayer iid
-      push $ chooseOne player [AbilityLabel iid ab [] [] | ab <- abilities']
+      push $ chooseOne player [AbilityLabel iid ab [] [] [] | ab <- abilities']
       pure e
     _ -> KnowledgeIsPower <$> runMessage msg attrs

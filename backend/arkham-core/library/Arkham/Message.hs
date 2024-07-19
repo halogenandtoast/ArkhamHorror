@@ -246,10 +246,6 @@ createCardEffect
   -> Message
 createCardEffect def mMeta (toSource -> source) (toTarget -> target) = CreateEffect (toCardCode def) mMeta source target
 
-data AbilityRef = AbilityRef Source Int
-  deriving stock (Show, Eq, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
-
 getChoiceAmount :: Text -> [(Text, Int)] -> Int
 getChoiceAmount key choices =
   let choicesMap = mapFromList @(Map Text Int) choices
@@ -1066,7 +1062,7 @@ uiToRun = \case
   EvadeLabel _ msgs -> Run msgs
   FightLabel _ msgs -> Run msgs
   EngageLabel _ msgs -> Run msgs
-  AbilityLabel iid ab windows msgs -> Run $ UseAbility iid ab windows : msgs
+  AbilityLabel iid ab windows before msgs -> Run $ before <> [UseAbility iid ab windows] <> msgs
   ComponentLabel _ msgs -> Run msgs
   EndTurnButton _ msgs -> Run msgs
   StartSkillTestButton iid -> Run [StartSkillTest iid]

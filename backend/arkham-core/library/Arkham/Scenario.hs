@@ -591,7 +591,7 @@ instance RunMessage Scenario where
         let abilities = getAbilities card
         player <- getPlayer investigator
         for_ abilities $ \ability -> do
-          push $ chooseOne player [AbilityLabel investigator ability [] []]
+          push $ chooseOne player [AbilityLabel investigator ability [] [] []]
       pure result
     PreScenarioSetup -> do
       result <- go

@@ -4,6 +4,7 @@ module Arkham.Effect.Window (
 
 import Arkham.Prelude
 
+import Arkham.Ability.Types
 import Arkham.Card.Id
 import Arkham.Id
 import Arkham.Phase
@@ -25,7 +26,7 @@ data EffectWindow
   | EffectAttackWindow
   | FirstEffectWindow [EffectWindow]
   | EffectEventWindow
-  | EffectAbilityWindow
+  | EffectAbilityWindow AbilityRef
   | EffectGainResourcesWindow InvestigatorId
   | EffectSearchWindow
   | EffectCardCostWindow CardId

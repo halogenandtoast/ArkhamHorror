@@ -41,7 +41,7 @@ instance RunMessage UnfinishedBusiness_L where
       pure s
     ResolveStory iid DoNotResolveIt story' | story' == toId attrs -> do
       player <- getPlayer iid
-      push $ chooseOne player [AbilityLabel iid (mkAbility attrs 1 $ ForcedAbility AnyWindow) [] []]
+      push $ chooseOne player [AbilityLabel iid (mkAbility attrs 1 $ ForcedAbility AnyWindow) [] [] []]
       pure s
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       enemy <- selectJust $ enemyIs Enemies.heretic_K

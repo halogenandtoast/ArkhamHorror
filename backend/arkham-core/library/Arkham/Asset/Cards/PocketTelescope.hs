@@ -48,7 +48,7 @@ instance RunMessage PocketTelescope where
         ]
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 2 -> True) (LocationTarget lid) -> do
-      abilityModifier (attrs.ability 2) iid (AsIfAt lid)
+      abilityModifier (AbilityRef (toSource attrs) 2) (attrs.ability 2) iid (AsIfAt lid)
       pushM $ mkInvestigateLocation iid (attrs.ability 2) lid
       pure a
     _ -> PocketTelescope <$> liftRunMessage msg attrs

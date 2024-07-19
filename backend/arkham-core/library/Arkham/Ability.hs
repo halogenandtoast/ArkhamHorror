@@ -299,6 +299,7 @@ applyCostModifiers = foldl' applyCostModifier
 
 applyCostModifier :: Cost -> ModifierType -> Cost
 applyCostModifier _ IgnoreAllCosts = Free
+applyCostModifier (ActionCost _) IgnoreActionCost = Free
 applyCostModifier (ActionCost n) (ActionCostModifier m) =
   ActionCost (max 0 $ n + m)
 applyCostModifier (Costs (x : xs)) modifier@(ActionCostModifier _) = case x of

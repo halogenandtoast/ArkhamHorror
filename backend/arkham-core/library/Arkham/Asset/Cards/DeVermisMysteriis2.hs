@@ -45,7 +45,7 @@ instance RunMessage DeVermisMysteriis2 where
         $ [ targetLabel
             (toCardId card)
             [ costModifier attrs (toCardId card) (ReduceCostOf (CardWithId $ toCardId card) 1)
-            , abilityModifier attrs (toCardId card) RemoveFromGameInsteadOfDiscard
+            , eventModifier attrs (toCardId card) RemoveFromGameInsteadOfDiscard
             , AddToHand iid [card]
             , PayCardCost iid card windows''
             , RemoveFromGame (CardIdTarget $ toCardId card)

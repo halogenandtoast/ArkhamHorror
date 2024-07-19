@@ -31,7 +31,7 @@ instance RunMessage WordOfWoe where
       abilities <- selectMap adjustAbility $ AssetAbility (AssetWithId aid) <> AbilityIsActionAbility
       abilities' <- filterM (getCanPerformAbility iid (defaultWindows iid)) abilities
       placeDoom attrs aid 1
-      chooseOne iid [AbilityLabel iid ab [] [DoStep 1 msg] | ab <- abilities']
+      chooseOne iid [AbilityLabel iid ab [] [] [DoStep 1 msg] | ab <- abilities']
       pure e
     DoStep 1 (HandleTargetChoice iid (isSource attrs -> True) _) -> do
       wordOfWeal <- selectOne $ inDiscardOf iid <> basic (cardIs Cards.wordOfWeal)

@@ -891,6 +891,7 @@ allAssets =
     , SomeAssetCard dirtyFighting2
     , SomeAssetCard thievesKit3
     , SomeAssetCard triggerMan3
+    , SomeAssetCard underworldMarket2
     , --- mystic [tsk]
       SomeAssetCard livingInk
     , SomeAssetCard summonedServitor

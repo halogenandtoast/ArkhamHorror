@@ -764,6 +764,7 @@ allPlayerAssetCards =
       , twentyFiveAutomatic2
       , twilaKatherinePrice3
       , twilightBlade
+      , underworldMarket2
       , underworldSupport
       , unscrupulousLoan3
       , untilTheEndOfTime
@@ -5924,6 +5925,15 @@ triggerMan3 =
     , cdLevel = Just 3
     , cdSlots = [#ally]
     }
+
+underworldMarket2 :: CardDef
+underworldMarket2 =
+  permanent
+    $ (asset "09077" "Underworld Market" 0 Rogue)
+      { cdCardTraits = setFromList [Connection, Illicit]
+      , cdExceptional = True
+      , cdLevel = Just 2
+      }
 
 livingInk :: CardDef
 livingInk =

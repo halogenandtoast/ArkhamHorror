@@ -21,5 +21,5 @@ spec = describe "Ward of Protection" $ do
       chooseTarget wardOfProtection
       applyAllHorror
       self.horror `shouldReturn` 1
-      assert $ selectNone AnyTreachery
+      assertNone AnyTreachery
       scenarioField ScenarioDiscard `shouldReturn` [frozenInFear]

@@ -5,6 +5,7 @@ import Arkham.Capability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (PlayCard)
 import Arkham.Helpers.Modifiers (getMetaMaybe)
+import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -31,7 +32,7 @@ instance HasAbilities Counterespionage1 where
 instance RunMessage Counterespionage1 where
   runMessage msg e@(Counterespionage1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      cancelRevelation attrs
+      cancelRevelation attrs (cardDrawn attrs.windows)
       useYourDeck <- getMetaMaybe False attrs.cardId "yourDeck"
       if useYourDeck
         then drawCardsIfCan iid attrs 1

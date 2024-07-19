@@ -189,6 +189,9 @@ pattern ControlledAsset <- AssetControlledBy Anyone
 
 -- ** Enemy Patterns **
 
+pattern IgnoreAloofFightable :: EnemyMatcher
+pattern IgnoreAloofFightable = EnemyMatchAll [EnemyAt YourLocation, CanBeAttackedBy You]
+
 pattern EnemyEngagedWithYou :: EnemyMatcher
 pattern EnemyEngagedWithYou <- EnemyIsEngagedWith You
   where

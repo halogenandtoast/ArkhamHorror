@@ -2557,7 +2557,15 @@ enemyMatcherFilter = \case
   EnemyOneOf ms -> \enemy -> anyM (`enemyMatcherFilter` enemy) ms
   EnemyWithTrait t -> fmap (member t) . field EnemyTraits . toId
   EnemyWithoutTrait t -> fmap (notMember t) . field EnemyTraits . toId
-  EnemyWithKeyword k -> fmap (elem k) . field EnemyKeywords . toId
+  EnemyWithKeyword k -> \enemy -> do
+    keywords <- setToList <$> field EnemyKeywords (toId enemy)
+    mods <- getModifiers (toId enemy)
+    let
+      filteredKeywords = flip filter keywords \case
+        Keyword.Aloof -> IgnoreAloof `notElem` mods
+        Keyword.Retaliate -> IgnoreRetaliate `notElem` mods
+        _ -> True
+    pure $ k `elem` filteredKeywords
   PatrolEnemy ->
     let
       isPatrol = \case

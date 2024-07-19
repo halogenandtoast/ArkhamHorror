@@ -943,3 +943,17 @@ disengageEnemy iid eid = push $ Msg.DisengageEnemy iid eid
 
 cancelledOrIgnoredCardOrGameEffect :: (ReverseQueue m, Sourceable source) => source -> m ()
 cancelledOrIgnoredCardOrGameEffect source = checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource source)
+
+cancelCardDraw
+  :: (Sourceable source, ReverseQueue (t m), HasQueue Message m, MonadTrans t)
+  => source
+  -> Card
+  -> t m ()
+cancelCardDraw source card = do
+  lift $ Msg.removeAllMessagesMatching \case
+    Do (InvestigatorDrewEncounterCard _ c) -> c.id == card.id
+    InvestigatorDrewEncounterCard _ c -> c.id == card.id
+    Do (InvestigatorDrewPlayerCard _ c) -> c.id == card.id
+    InvestigatorDrewPlayerCard _ c -> c.id == card.id
+    _ -> False
+  cancelledOrIgnoredCardOrGameEffect source

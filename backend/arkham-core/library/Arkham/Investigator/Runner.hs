@@ -356,7 +356,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let (permanentCards, deck'') = partition (cdPermanent . toCardDef) (unDeck deck')
     let deck''' =
           filter
-            ( or
+            ( and
                 . sequence
                   [ (`notElem` investigatorStartsWithInHand) . toCardDef
                   , not

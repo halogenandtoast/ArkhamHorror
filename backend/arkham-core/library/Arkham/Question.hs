@@ -169,5 +169,43 @@ $(deriveJSON defaultOptions ''PaymentAmountChoice)
 $(deriveJSON defaultOptions ''ChoosePlayerChoice)
 $(deriveJSON defaultOptions ''AmountChoice)
 $(deriveJSON defaultOptions ''AmountTarget)
-$(deriveJSON defaultOptions ''UI)
+$(deriveToJSON defaultOptions ''UI)
+
+instance FromJSON msg => FromJSON (UI msg) where
+  parseJSON = withObject "UI" $ \o -> do
+    tag :: Text <- o .: "tag"
+    case tag of
+      "Label" -> Label <$> o .: "label" <*> o .: "messages"
+      "TooltipLabel" -> TooltipLabel <$> o .: "label" <*> o .: "tooltip" <*> o .: "messages"
+      "CardLabel" -> CardLabel <$> o .: "card" <*> o .: "messages"
+      "PortraitLabel" -> PortraitLabel <$> o .: "investigatorId" <*> o .: "messages"
+      "TargetLabel" -> TargetLabel <$> o .: "target" <*> o .: "messages"
+      "SkillLabel" -> SkillLabel <$> o .: "skillType" <*> o .: "messages"
+      "SkillLabelWithLabel" -> SkillLabelWithLabel <$> o .: "label" <*> o .: "skillType" <*> o .: "messages"
+      "EvadeLabel" -> EvadeLabel <$> o .: "enemyId" <*> o .: "messages"
+      "FightLabel" -> FightLabel <$> o .: "enemyId" <*> o .: "messages"
+      "EngageLabel" -> EngageLabel <$> o .: "enemyId" <*> o .: "messages"
+      "GridLabel" -> GridLabel <$> o .: "gridLabel" <*> o .: "messages"
+      "TarotLabel" -> TarotLabel <$> o .: "tarotCard" <*> o .: "messages"
+      "AbilityLabel" ->
+        AbilityLabel
+          <$> o
+          .: "investigatorId"
+          <*> o
+          .: "ability"
+          <*> o
+          .: "windows"
+          <*> (o .:? "before" .!= [])
+          <*> o
+          .: "messages"
+      "ComponentLabel" -> ComponentLabel <$> o .: "component" <*> o .: "messages"
+      "EndTurnButton" -> EndTurnButton <$> o .: "investigatorId" <*> o .: "messages"
+      "StartSkillTestButton" -> StartSkillTestButton <$> o .: "investigatorId"
+      "SkillTestApplyResultsButton" -> pure SkillTestApplyResultsButton
+      "ChaosTokenGroupChoice" -> ChaosTokenGroupChoice <$> o .: "source" <*> o .: "investigatorId" <*> o .: "step"
+      "EffectActionButton" -> EffectActionButton <$> o .: "tooltip" <*> o .: "effectId" <*> o .: "messages"
+      "Done" -> Done <$> o .: "label"
+      "SkipTriggersButton" -> SkipTriggersButton <$> o .: "investigatorId"
+      _ -> error "Invalid parse"
+
 $(deriveJSON defaultOptions ''Question)

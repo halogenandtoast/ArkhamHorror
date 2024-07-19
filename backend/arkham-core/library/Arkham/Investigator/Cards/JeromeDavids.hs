@@ -10,6 +10,7 @@ import Arkham.Card
 import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
@@ -62,8 +63,8 @@ instance HasChaosTokenValue JeromeDavids where
 
 instance RunMessage JeromeDavids where
   runMessage msg i@(JeromeDavids attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ CancelNext (toSource attrs) RevelationMessage
+    UseCardAbility _ (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
+      push $ cardResolutionModifier card (attrs.ability 1) card IgnoreRevelation
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       push $ Msg.DiscoverClues iid $ discoverAtYourLocation ElderSign 1

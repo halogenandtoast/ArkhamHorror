@@ -166,6 +166,14 @@ const assetStory = computed(() => {
     <Story v-if="assetStory" :story="assetStory" :game="game" :playerId="playerId" @choose="choose"/>
     <div v-else class="asset" :data-index="asset.cardId">
       <div class="card-frame">
+        <div v-if="asset.marketDeck" class="market-deck">
+          <img
+            class="deck card"
+            :src="imgsrc('player_back.jpg')"
+            width="150px"
+          />
+          <span class="deck-size">{{asset.marketDeck.length}}</span>
+        </div>
         <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract, exhausted}">
           <img
             :data-id="id"
@@ -334,4 +342,24 @@ const assetStory = computed(() => {
   left: 0;
   z-index: 1000;
 }
+
+.deck-size {
+  pointer-events: none;
+  position: absolute;
+  font-weight: bold;
+  font-size: 1.2em;
+  color: rgba(255, 255, 255, 0.6);
+  left: 50%;
+  top: 40%;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 10px;
+  border-radius: 20px;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.market-deck {
+  position: relative;
+  margin-right: 5px;
+}
+
 </style>

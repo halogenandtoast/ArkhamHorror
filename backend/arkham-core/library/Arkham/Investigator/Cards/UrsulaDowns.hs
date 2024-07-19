@@ -51,7 +51,7 @@ instance RunMessage UrsulaDowns where
       push
         $ AskPlayer
         $ chooseOne player
-        $ map ((\f -> f windows' []) . AbilityLabel iid) (filter (`abilityIs` #investigate) actions)
+        $ map ((\f -> f windows' [] []) . AbilityLabel iid) (filter (`abilityIs` #investigate) actions)
         <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- playableCards]
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do

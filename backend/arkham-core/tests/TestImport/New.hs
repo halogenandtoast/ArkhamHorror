@@ -817,7 +817,7 @@ resolveAmounts self choices = do
 chooseFight :: TestAppT ()
 chooseFight = do
   chooseOptionMatching "choose fight" \case
-    AbilityLabel _ ability _ _ -> Action.Fight `elem` abilityActions ability
+    AbilityLabel _ ability _ _ _ -> Action.Fight `elem` abilityActions ability
     _ -> False
 
 assertMaxAmountChoice :: HasCallStack => Int -> TestAppT ()

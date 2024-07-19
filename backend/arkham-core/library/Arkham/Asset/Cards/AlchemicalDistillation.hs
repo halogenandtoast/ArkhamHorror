@@ -15,7 +15,7 @@ import Arkham.Matcher
 import Arkham.Movement
 
 newtype AlchemicalDistillation = AlchemicalDistillation AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alchemicalDistillation :: AssetCard AlchemicalDistillation
@@ -39,7 +39,11 @@ instance RunMessage AlchemicalDistillation where
             iid
             [ Label
                 "Empower (increase difficulty by 2)"
-                [ Msg.abilityModifier (attrs.ability 1) attrs (MetaModifier $ object ["empowered" .= True])
+                [ Msg.abilityModifier
+                    (AbilityRef (toSource attrs) 1)
+                    (attrs.ability 1)
+                    attrs
+                    (MetaModifier $ object ["empowered" .= True])
                 , Do msg
                 ]
             , Label "Do not empower" [Do msg]

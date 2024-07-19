@@ -13,7 +13,7 @@ import Arkham.Prelude
 import Arkham.Projection
 
 newtype Duke = Duke AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 duke :: AssetCard Duke
@@ -63,7 +63,7 @@ instance RunMessage Duke where
       let
         investigateActions =
           map
-            ( (\f -> f windows' [])
+            ( (\f -> f windows' [] [])
                 . AbilityLabel iid
                 . ( \a' ->
                       a'

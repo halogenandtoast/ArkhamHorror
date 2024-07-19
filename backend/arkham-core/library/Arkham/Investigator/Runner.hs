@@ -259,7 +259,7 @@ runWindow attrs windows actions playableCards = do
         let
           (silent, normal) = partition isSilentForcedAbility actions
           toForcedAbilities = map (($ windows) . UseAbility iid)
-          toUseAbilities = map ((\f -> f windows []) . AbilityLabel iid)
+          toUseAbilities = map ((\f -> f windows [] []) . AbilityLabel iid)
         -- Silent forced abilities should trigger automatically
         pushAll
           $ toForcedAbilities silent
@@ -278,7 +278,7 @@ runWindow attrs windows actions playableCards = do
             | c <- playableCards
             ]
           <> map
-            (\(ability, windows') -> AbilityLabel iid ability windows' [RunWindow iid windows])
+            (\(ability, windows') -> AbilityLabel iid ability windows' [] [RunWindow iid windows])
             actionsWithMatchingWindows
           <> [SkipTriggersButton iid | skippable]
 
@@ -2716,7 +2716,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              | card <- uncommittableCards
              ]
           <> map
-            (\action -> AbilityLabel iid action [window] [beginMessage])
+            (\action -> AbilityLabel iid action [window] [] [beginMessage])
             actions
           <> triggerMessage
       else
@@ -3434,7 +3434,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         let
           (silent, normal) = partition isSilentForcedAbility actions
           toForcedAbilities = map (($ windows) . UseAbility iid)
-          toUseAbilities = map ((\f -> f windows []) . AbilityLabel iid)
+          toUseAbilities = map ((\f -> f windows [] []) . AbilityLabel iid)
         player <- getPlayer iid
         pushAll
           $ toForcedAbilities silent
@@ -3485,7 +3485,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
              , c <- playableCards
              ]
           <> [EndTurnButton iid [ChooseEndTurn iid]]
-          <> map ((\f -> f windows []) . AbilityLabel iid) actions
+          <> map ((\f -> f windows [] []) . AbilityLabel iid) actions
           <> effectActions
     pure a
   PlayerWindow iid additionalActions isAdditional | iid /= investigatorId -> do
@@ -3502,7 +3502,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                | c <- playableCards
                ]
             <> map
-              ((\f -> f windows []) . AbilityLabel investigatorId)
+              ((\f -> f windows [] []) . AbilityLabel investigatorId)
               (filter (not . isActionAbility) actions)
       player <- getPlayer investigatorId
       unless (null choices)

@@ -60,7 +60,7 @@ instance RunMessage TrueMagickReworkingReality5 where
       player <- getPlayer iid
       chooseOne
         iid
-        [ targetLabel cardId [RevealCard cardId, Msg.chooseOne player [AbilityLabel iid a ws [] | a <- as]]
+        [ targetLabel cardId [RevealCard cardId, Msg.chooseOne player [AbilityLabel iid a ws [] [] | a <- as]]
         | (cardId, as) <- choices
         ]
 

@@ -198,6 +198,9 @@ isNonWeakness = (`cardMatch` NonWeakness)
 filterCards :: IsCardMatcher a => a -> [Card] -> [Card]
 filterCards matcher = filter (`cardMatch` matcher)
 
+card_ :: CardMatcher -> CardMatcher
+card_ = id
+
 instance IsCard PlayerCard where
   toCard = PlayerCard
   toCardId = pcId

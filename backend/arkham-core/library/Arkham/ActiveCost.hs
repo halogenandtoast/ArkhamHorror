@@ -256,7 +256,7 @@ payCost msg c iid skipAdditionalCosts cost = do
     ResolveEachHauntedAbility lid -> do
       hauntedAbilities <- select $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
       pushIfAny hauntedAbilities
-        $ chooseOneAtATime player [AbilityLabel iid ab [] [] | ab <- hauntedAbilities]
+        $ chooseOneAtATime player [AbilityLabel iid ab [] [] [] | ab <- hauntedAbilities]
       -- No need to record payment... yet
       pure c
     OrCost xs -> do

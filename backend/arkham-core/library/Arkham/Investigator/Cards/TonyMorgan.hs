@@ -78,7 +78,7 @@ instance RunMessage TonyMorgan where
           | canPlay
           , c <- playableCards
           ]
-        <> map ((\f -> f windows' []) . AbilityLabel iid) actions
+        <> map ((\f -> f windows' [] []) . AbilityLabel iid) actions
       pure
         $ TonyMorgan
         . (`with` Meta True)

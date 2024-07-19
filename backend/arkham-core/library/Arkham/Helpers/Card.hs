@@ -9,6 +9,7 @@ import Arkham.Ability
 import Arkham.ActiveCost.Base
 import Arkham.Asset.Types
 import Arkham.Card
+import Arkham.ChaosBag.Base (chaosBagChaosTokens)
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasGame
@@ -18,12 +19,17 @@ import Arkham.Enemy.Types
 import {-# SOURCE #-} Arkham.Entities
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Campaign
+import Arkham.Helpers.Matchers
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Scenario (scenarioFieldMap)
 import Arkham.Id
+import Arkham.Keyword (Sealing (..))
+import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Types
 import Arkham.Matcher hiding (AssetCard, LocationCard)
 import Arkham.Message
 import Arkham.Projection
+import Arkham.Scenario.Types (Field (..))
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -162,3 +168,14 @@ drawThisPlayerCard iid card = case toCardType card of
   other | hasRevelation card && other `notElem` [PlayerTreacheryType, PlayerEnemyType] -> do
     [Revelation iid (PlayerCardSource card), ResolvedCard iid (PlayerCard card)]
   _ -> []
+
+playIsValidAfterSeal :: HasGame m => InvestigatorId -> Card -> m Bool
+playIsValidAfterSeal iid c = do
+  tokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
+  let sealChaosTokenMatchers = flip mapMaybe (setToList c.keywords) \case
+        Keyword.Seal sealing -> case sealing of
+          Sealing matcher -> Just matcher
+          SealUpTo _ matcher -> Just matcher
+          SealUpToX _ -> Nothing
+        _ -> Nothing
+  allM (\matcher -> anyM (\t -> matchChaosToken iid t matcher) tokens) sealChaosTokenMatchers

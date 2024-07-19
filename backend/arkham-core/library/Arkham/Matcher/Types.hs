@@ -844,6 +844,9 @@ instance IsString CardMatcher where
 instance IsLabel "any" CardMatcher where
   fromLabel = AnyCard
 
+instance IsLabel "illicit" CardMatcher where
+  fromLabel = CardWithTrait Illicit
+
 instance IsLabel "tarot" CardMatcher where
   fromLabel = CardWithTrait Tarot
 
@@ -1475,6 +1478,9 @@ instance IsLabel "investigate" AbilityMatcher where
 
 instance IsLabel "evade" AbilityMatcher where
   fromLabel = AbilityIsAction #evade
+
+instance IsLabel "action" AbilityMatcher where
+  fromLabel = AbilityIsActionAbility
 
 instance Not AbilityMatcher where
   not_ = NotAbility

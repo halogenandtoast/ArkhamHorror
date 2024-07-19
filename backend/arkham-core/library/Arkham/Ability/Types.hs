@@ -46,6 +46,16 @@ instance HasField "source" Ability Source where
 instance HasField "index" Ability Int where
   getField = abilityIndex
 
+instance HasField "ref" Ability AbilityRef where
+  getField = abilityToRef
+
+data AbilityRef = AbilityRef Source Int
+  deriving stock (Show, Eq, Generic, Data)
+  deriving anyclass (ToJSON, FromJSON)
+
+abilityToRef :: Ability -> AbilityRef
+abilityToRef a = AbilityRef a.source a.index
+
 data AbilityMetadata
   = IntMetadata Int
   | TargetMetadata Target

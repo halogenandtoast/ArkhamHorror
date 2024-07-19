@@ -68,6 +68,6 @@ instance RunMessage QuickdrawHolster4 where
         let nullifyActionCost ab = applyAbilityModifiers ab [ActionCostSetToModifier 0]
         abilities <- selectMap nullifyActionCost $ AbilityIsAction #fight <> AssetAbility (AssetWithId aid)
         abilities' <- filterM (getCanPerformAbility iid (defaultWindows iid)) abilities
-        chooseOne iid [AbilityLabel iid ab [] [] | ab <- abilities']
+        chooseOne iid [AbilityLabel iid ab [] [] [] | ab <- abilities']
       pure a
     _ -> QuickdrawHolster4 <$> liftRunMessage msg attrs

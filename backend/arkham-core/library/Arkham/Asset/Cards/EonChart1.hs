@@ -51,7 +51,7 @@ instance RunMessage EonChart1 where
         $ AskPlayer
         $ Msg.chooseOne player
         $ map
-          ((\f -> f windows' []) . AbilityLabel iid)
+          ((\f -> f windows' [] []) . AbilityLabel iid)
           (filter (\x -> any (abilityIs x) [#move, #evade, #investigate]) actions)
         <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- playableCards]
       pure a

@@ -18,7 +18,7 @@ import Arkham.Skill.Cards qualified as Skills
 newtype AmandaSharpe = AmandaSharpe InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 amandaSharpe :: InvestigatorCard AmandaSharpe
 amandaSharpe =
@@ -87,6 +87,7 @@ instance RunMessage AmandaSharpe where
                       1
                       (ForcedAbility AnyWindow)
                   )
+                  []
                   []
                   [HandleTargetChoice iid (attrs.ability 1) (CardIdTarget $ toCardId whispersFromTheDeep)]
               ]

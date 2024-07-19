@@ -1,5 +1,6 @@
 module Arkham.Message.Lifted (module X, module Arkham.Message.Lifted) where
 
+import Arkham.Ability.Types
 import Arkham.Act.Types (ActAttrs (actDeckId))
 import Arkham.Agenda.Types (AgendaAttrs (agendaDeckId))
 import Arkham.Calculation
@@ -846,8 +847,13 @@ enemyAttackModifier
 enemyAttackModifier source target modifier = push $ Msg.enemyAttackModifier source target modifier
 
 abilityModifier
-  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
-abilityModifier source target modifier = push $ Msg.abilityModifier source target modifier
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => AbilityRef
+  -> source
+  -> target
+  -> ModifierType
+  -> m ()
+abilityModifier ab source target modifier = push $ Msg.abilityModifier ab source target modifier
 
 batched :: ReverseQueue m => (BatchId -> QueueT Message m ()) -> m ()
 batched f = do
@@ -863,9 +869,14 @@ withCost iid cost f = batched \batchId -> payBatchCost batchId iid cost >> f
 
 oncePerAbility
   :: (ReverseQueue m, Sourceable attrs, Targetable attrs) => attrs -> Int -> m () -> m ()
-oncePerAbility attrs _n f = do
+oncePerAbility attrs n f = do
   unlessM (getMetaMaybe False attrs "_oncePerAbility") do
-    abilityModifier attrs attrs (MetaModifier $ object ["_oncePerAbility" .= True]) >> f
+    abilityModifier
+      (AbilityRef (toSource attrs) n)
+      attrs
+      attrs
+      (MetaModifier $ object ["_oncePerAbility" .= True])
+      >> f
 
 insertAfterMatching :: (MonadTrans t, HasQueue msg m) => [msg] -> (msg -> Bool) -> t m ()
 insertAfterMatching msgs p = lift $ Msg.insertAfterMatching msgs p

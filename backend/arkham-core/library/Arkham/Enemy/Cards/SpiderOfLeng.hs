@@ -29,7 +29,8 @@ instance RunMessage SpiderOfLeng where
       player <- getLeadPlayer
       swarmsOfSpiders <- select $ enemyIs Cards.swarmOfSpiders
       if null swarmsOfSpiders
-        then push $ findEncounterCard lead attrs [FromEncounterDeck, FromEncounterDiscard] Cards.swarmOfSpiders
+        then
+          push $ findEncounterCard lead attrs [FromEncounterDeck, FromEncounterDiscard] Cards.swarmOfSpiders
         else do
           push
             $ chooseOneAtATime player [targetLabel eid [PlaceSwarmCards lead eid 1] | eid <- swarmsOfSpiders]
@@ -37,7 +38,7 @@ instance RunMessage SpiderOfLeng where
     FoundEncounterCard _iid (isTarget attrs -> True) card -> do
       creation <- createEnemy card (locationWithEnemy $ toId attrs)
       pushAll
-        [ abilityModifier (attrs.ability 1) creation.enemy NoInitialSwarm
+        [ abilityModifier (AbilityRef (toSource attrs) 1) (attrs.ability 1) creation.enemy NoInitialSwarm
         , toMessage creation
         ]
       pure e

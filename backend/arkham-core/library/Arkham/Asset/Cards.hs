@@ -267,6 +267,7 @@ allPlayerAssetCards =
       , digDeep
       , digDeep2
       , digDeep4
+      , dirtyFighting2
       , discOfItzamna
       , discOfItzamna2
       , disciplineAlignmentOfSpirit
@@ -5893,6 +5894,15 @@ chuckFergus2 =
     , cdSlots = [#ally]
     , cdLevel = Just 2
     , cdUnique = True
+    }
+
+dirtyFighting2 :: CardDef
+dirtyFighting2 =
+  (asset "09073" "Dirty Fighting" 3 Rogue)
+    { cdCardTraits = setFromList [Talent, Trick, Illicit]
+    , cdSkills = [#combat]
+    , cdLevel = Just 2
+    , cdLimits = [LimitPerInvestigator 1]
     }
 
 thievesKit3 :: CardDef

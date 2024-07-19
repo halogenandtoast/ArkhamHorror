@@ -888,6 +888,7 @@ allAssets =
     , SomeAssetCard thievesKit
     , SomeAssetCard stylishCoat1
     , SomeAssetCard chuckFergus2
+    , SomeAssetCard dirtyFighting2
     , SomeAssetCard thievesKit3
     , --- mystic [tsk]
       SomeAssetCard livingInk

@@ -183,6 +183,7 @@ data WindowType
   | FailSkillTestAtOrLess InvestigatorId Int
   | FastPlayerWindow
   | GainsClues InvestigatorId Source Int
+  | GainsResources InvestigatorId Source Int
   | Healed DamageType Target Source Int
   | InDiscardWindow InvestigatorId Window
   | InHandWindow InvestigatorId Window

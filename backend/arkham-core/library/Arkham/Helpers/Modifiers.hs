@@ -205,6 +205,15 @@ eventModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 eventModifier source target modifier = createWindowModifierEffect EffectEventWindow source target [modifier]
 
+gainResourcesModifier
+  :: (Sourceable source, Targetable target)
+  => InvestigatorId
+  -> source
+  -> target
+  -> ModifierType
+  -> Message
+gainResourcesModifier iid source target modifier = createWindowModifierEffect (EffectGainResourcesWindow iid) source target [modifier]
+
 eventModifiers
   :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
 eventModifiers source target modifiers = createWindowModifierEffect EffectEventWindow source target modifiers

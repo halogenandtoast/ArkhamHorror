@@ -69,6 +69,8 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     ResolvedAbility {} | isEndOfWindow a EffectAbilityWindow -> do
       a <$ push (DisableEffect effectId)
+    Do (TakeResources iid _ _ _) | isEndOfWindow a (EffectGainResourcesWindow iid) -> do
+      a <$ push (DisableEffect effectId)
     ClearUI | isEndOfWindow a EffectUI -> do
       a <$ push (DisableEffect effectId)
     MoveAction _ _ _ False | isEndOfWindow a EffectMoveWindow -> do

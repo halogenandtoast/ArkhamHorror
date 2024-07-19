@@ -2575,7 +2575,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   TakeResources iid n source False | iid == investigatorId -> do
     canGain <- can.gain.resources (sourceToFromSource source) iid
     if canGain
-      then runMessage (PlaceTokens source (toTarget a) #resource n) a
+      then do
+        beforeWindowMsg <- checkWindows [mkWhen (Window.GainsResources iid source n)]
+        pushAll [beforeWindowMsg, Do msg]
+      else pure ()
+    pure a
+  Do (TakeResources iid n source False) | iid == investigatorId -> do
+    canGain <- can.gain.resources (sourceToFromSource source) iid
+    if canGain
+      then do
+        mods <- getModifiers a
+        let additional = sum [x | AdditionalResources x <- mods]
+        runMessage (PlaceTokens source (toTarget a) #resource (n + additional)) a
       else pure a
   PlaceTokens source (isTarget a -> True) token n -> do
     when (token == #damage || token == #horror) do

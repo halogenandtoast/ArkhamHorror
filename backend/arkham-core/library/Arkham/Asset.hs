@@ -886,6 +886,7 @@ allAssets =
     , SomeAssetCard disguise
     , SomeAssetCard embezzeledTreasure
     , SomeAssetCard thievesKit
+    , SomeAssetCard stylishCoat1
     , SomeAssetCard chuckFergus2
     , SomeAssetCard thievesKit3
     , --- mystic [tsk]

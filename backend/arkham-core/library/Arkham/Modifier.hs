@@ -225,6 +225,7 @@ data ModifierType
   | InvestigateActionCriteria CriteriaOverride
   | EntersPlayWithDoom Int
   | ExtraResources Int
+  | AdditionalResources Int
   | FailTies
   | FewerActions Int
   | FewerSlots SlotType Int

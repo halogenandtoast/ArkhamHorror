@@ -769,6 +769,15 @@ shuffleIntoDeck deck target = push $ Msg.shuffleIntoDeck deck target
 reduceCostOf :: (Sourceable source, IsCard card, ReverseQueue m) => source -> card -> Int -> m ()
 reduceCostOf source card n = push $ Msg.reduceCostOf source card n
 
+gainResourcesModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => InvestigatorId
+  -> source
+  -> target
+  -> ModifierType
+  -> m ()
+gainResourcesModifier iid source target modifier = push $ Msg.gainResourcesModifier iid source target modifier
+
 eventModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 eventModifier source target modifier = push $ Msg.eventModifier source target modifier

@@ -8,6 +8,7 @@ module TestImport.Lifted (
 ) where
 
 import TestImport as X hiding (
+  assertNone,
   expectationFailure,
   pending,
   shouldBe,

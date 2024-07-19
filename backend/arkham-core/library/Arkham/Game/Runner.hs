@@ -1192,8 +1192,10 @@ runGameMessage msg g = case msg of
               push $ PlaceTreachery tid (Placement.InThreatArea iid)
               pure $ g & (entitiesL . treacheriesL %~ insertMap tid treachery)
             else do
+              modifiers' <- getCombinedModifiers [TreacheryTarget tid, CardIdTarget cardId]
+              let ignoreRevelation = IgnoreRevelation `elem` modifiers'
               pushAll
-                $ resolve (Revelation iid (TreacherySource tid))
+                $ (guard (not ignoreRevelation) *> resolve (Revelation iid (TreacherySource tid)))
                 <> [UnsetActiveCard]
               pure
                 $ g
@@ -2343,13 +2345,16 @@ runGameMessage msg g = case msg of
 
     afterDraw <- checkWindows [mkAfter (Window.DrawCard iid (toCard card) Deck.EncounterDeck)]
     -- [ALERT]: If you extend this make sure to update LetMeHandleThis
+    --
+    modifiers' <- getModifiers card
+    let ignoreRevelation = IgnoreRevelation `elem` modifiers'
     case toCardType card of
       EnemyType -> do
         enemyId <- getRandom
         let enemy = createEnemy card enemyId
         pushAll
           $ [afterDraw, InvestigatorDrawEnemy iid enemyId]
-          <> [Revelation iid (EnemySource enemyId) | hasRevelation card]
+          <> [Revelation iid (EnemySource enemyId) | hasRevelation card && not ignoreRevelation]
           <> [UnsetActiveCard]
         pure
           $ g'
@@ -2363,14 +2368,16 @@ runGameMessage msg g = case msg of
         assetId <- getRandom
         let asset = createAsset card assetId
         -- Asset is assumed to have a revelation ability if drawn from encounter deck
-        pushAll $ afterDraw : resolve (Revelation iid $ AssetSource assetId)
+        pushAll $ afterDraw
+          : (guard (not ignoreRevelation) *> resolve (Revelation iid $ AssetSource assetId))
         pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
       EncounterEventType -> do
         eventId <- getRandom
         let owner = fromMaybe iid (toCardOwner card)
         let event' = createEvent card owner eventId
         -- Event is assumed to have a revelation ability if drawn from encounter deck
-        pushAll $ afterDraw : resolve (Revelation iid $ EventSource eventId)
+        pushAll $ afterDraw
+          : (guard (not ignoreRevelation) *> resolve (Revelation iid $ EventSource eventId))
         pure $ g' & (entitiesL . eventsL . at eventId ?~ event')
       LocationType -> do
         locationId <- getRandom
@@ -2379,7 +2386,7 @@ runGameMessage msg g = case msg of
         pushAll
           $ afterDraw
           : PlacedLocation (toName location) (toCardCode card) locationId
-          : resolve (Revelation iid (LocationSource locationId))
+          : (guard (not ignoreRevelation) *> resolve (Revelation iid (LocationSource locationId)))
         pure $ g' & (entitiesL . locationsL . at locationId ?~ location)
       _ ->
         error
@@ -2415,7 +2422,7 @@ runGameMessage msg g = case msg of
     whenDraw <- checkWindows [mkWhen $ Window.DrawCard iid (toCard treachery) Deck.EncounterDeck]
     afterDraw <- checkWindows [mkAfter $ Window.DrawCard iid (toCard treachery) Deck.EncounterDeck]
 
-    modifiers' <- getModifiers (TreacheryTarget treacheryId)
+    modifiers' <- getCombinedModifiers [TreacheryTarget treacheryId, CardIdTarget $ toCardId treachery]
     let ignoreRevelation = IgnoreRevelation `elem` modifiers'
 
     pushAll

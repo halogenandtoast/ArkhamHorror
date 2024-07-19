@@ -3,6 +3,7 @@ module Arkham.Asset.Cards.ProtectiveGear2 (protectiveGear2, ProtectiveGear2 (..)
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher
 import Arkham.Trait (Trait (Hazard))
 
@@ -23,7 +24,7 @@ instance HasAbilities ProtectiveGear2 where
 
 instance RunMessage ProtectiveGear2 where
   runMessage msg a@(ProtectiveGear2 attrs) = runQueueT $ case msg of
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      cancelRevelation (attrs.ability 1)
+    UseCardAbility _iid (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
+      cancelRevelation (attrs.ability 1) card
       pure a
     _ -> ProtectiveGear2 <$> liftRunMessage msg attrs

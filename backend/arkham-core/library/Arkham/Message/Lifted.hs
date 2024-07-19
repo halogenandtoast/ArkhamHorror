@@ -26,7 +26,7 @@ import Arkham.Helpers.Enemy qualified as Msg
 import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
 import Arkham.Helpers.Log qualified as Msg
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers (ModifierType (MetaModifier), getMetaMaybe)
+import Arkham.Helpers.Modifiers (ModifierType (IgnoreRevelation, MetaModifier), getMetaMaybe)
 import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest qualified as Msg
@@ -785,8 +785,10 @@ dealAdditionalHorror
   :: (HasQueue Message m, MonadTrans t) => InvestigatorId -> Int -> [Message] -> t m ()
 dealAdditionalHorror iid amount additionalMessages = lift $ Msg.dealAdditionalHorror iid amount additionalMessages
 
-cancelRevelation :: (ReverseQueue m, Sourceable a) => a -> m ()
-cancelRevelation a = push $ CancelRevelation (toSource a)
+cancelRevelation :: (ReverseQueue m, Sourceable a, IsCard card) => a -> card -> m ()
+cancelRevelation a card = do
+  cardResolutionModifier card a (CardIdTarget $ toCardId card) IgnoreRevelation
+  push $ CancelRevelation (toSource a)
 
 cardResolutionModifier
   :: (ReverseQueue m, IsCard card, Sourceable source, Targetable target)

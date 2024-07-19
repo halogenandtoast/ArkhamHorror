@@ -1,10 +1,8 @@
 module Arkham.Event.Cards.WardOfProtection where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Window (cardDrawn)
 
 newtype WardOfProtection = WardOfProtection EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -14,11 +12,9 @@ wardOfProtection :: EventCard WardOfProtection
 wardOfProtection = event WardOfProtection Cards.wardOfProtection
 
 instance RunMessage WardOfProtection where
-  runMessage msg e@(WardOfProtection attrs) = case msg of
+  runMessage msg e@(WardOfProtection attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
-      pushAll
-        [ CancelNext (toSource attrs) RevelationMessage
-        , assignHorror iid eid 1
-        ]
+      cancelRevelation attrs (cardDrawn attrs.windows)
+      assignHorror iid eid 1
       pure e
-    _ -> WardOfProtection <$> runMessage msg attrs
+    _ -> WardOfProtection <$> liftRunMessage msg attrs

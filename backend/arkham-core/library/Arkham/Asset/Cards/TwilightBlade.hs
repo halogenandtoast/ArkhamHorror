@@ -10,10 +10,9 @@ import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.SkillType
 
 newtype TwilightBlade = TwilightBlade AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 twilightBlade :: AssetCard TwilightBlade

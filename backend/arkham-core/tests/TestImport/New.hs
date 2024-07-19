@@ -437,6 +437,11 @@ inWindow self body = do
   run $ CheckWindow [toId self] (defaultWindows $ toId self)
   body
 
+assertNone :: (Query a, Show a) => a -> TestAppT ()
+assertNone a = do
+  res <- select a
+  when (notNull res) $ expectationFailure $ "expected " <> show a <> " to produce no results"
+
 chooseTarget :: (HasCallStack, Targetable target) => target -> TestAppT ()
 chooseTarget (toTarget -> target) =
   chooseOptionMatching "choose target" \case

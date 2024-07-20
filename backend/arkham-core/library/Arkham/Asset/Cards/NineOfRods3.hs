@@ -2,11 +2,10 @@ module Arkham.Asset.Cards.NineOfRods3 (nineOfRods3, NineOfRods3 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Deck qualified as Deck
-import Arkham.Helpers.Card (getCardEntityTarget)
+import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype NineOfRods3 = NineOfRods3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -27,18 +26,13 @@ instance HasAbilities NineOfRods3 where
     ]
 
 instance RunMessage NineOfRods3 where
-  runMessage msg a@(NineOfRods3 attrs) = case msg of
+  runMessage msg a@(NineOfRods3 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
-      target <- getCardEntityTarget card
-      pushAll
-        [ CancelNext (toSource attrs) RevelationMessage
-        , CancelNext (toSource attrs) DrawEnemyMessage
-        , CancelSurge (toSource attrs)
-        , ShuffleIntoDeck Deck.EncounterDeck target
-        , drawEncounterCard iid attrs
-        ]
+      cancelCardDraw (attrs.ability 1) card
+      push $ ShuffleCardsIntoDeck Deck.EncounterDeck [card]
+      drawEncounterCard iid attrs
       pure a
     InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
-      push $ putCardIntoPlay iid attrs
+      putCardIntoPlay iid attrs
       pure a
-    _ -> NineOfRods3 <$> runMessage msg attrs
+    _ -> NineOfRods3 <$> liftRunMessage msg attrs

@@ -2490,7 +2490,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 pushAll
                   $ windowMsgs
                   <> [DeckHasNoCards iid Nothing | null deck']
-                  <> [InvestigatorDrewPlayerCard iid card | card <- allDrawn]
                   <> [before]
                   <> msgs'
                   <> [after]
@@ -2508,14 +2507,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   $ a
                   & (handL %~ (<> map PlayerCard (filter (`cardMatch` NotCard CardWithRevelation) allDrawn)))
                   & (deckL .~ Deck deck')
-  InvestigatorDrewPlayerCard iid card -> do
+  InvestigatorDrewPlayerCard iid card | iid == investigatorId -> do
     hasForesight <- hasModifier iid (Foresight $ toTitle card)
-    windowMsg <-
-      checkWindows [mkAfter (Window.DrawCard iid (PlayerCard card) $ Deck.InvestigatorDeck iid)]
+    whenDraw <- checkWindows [mkWhen $ Window.DrawCard iid (toCard card) (Deck.InvestigatorDeck iid)]
     if hasForesight
       then do
-        player <- getPlayer iid
+        canCancel <- (PlayerCard card) <=~> CanCancelRevelationEffect #any
         availableResources <- getSpendableResources iid
+        player <- getPlayer iid
         playable <-
           getIsPlayableWithResources
             iid
@@ -2524,7 +2523,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (Cost.UnpaidCost NoAction)
             (Window.defaultWindows iid)
             (toCard card)
-        canCancel <- (PlayerCard card) <=~> CanCancelRevelationEffect #any
         push
           $ chooseOrRunOne player
           $ [ Label
@@ -2539,9 +2537,41 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               ]
              | playable
              ]
-          <> [Label "Draw normally" [windowMsg]]
-      else push windowMsg
-    pure $ a & foundCardsL %~ Map.map (filter ((/= card.id) . toCardId))
+          <> [Label "Draw normally" [whenDraw, Do msg]]
+      else pushAll [whenDraw, Do msg]
+    let uiRevelation = getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))
+    case toCardType card of
+      EnemyType -> sendEnemy (toTitle a <> " drew Enemy") (toJSON $ toCard card)
+      TreacheryType -> uiRevelation
+      EncounterAssetType -> uiRevelation
+      EncounterEventType -> uiRevelation
+      LocationType -> uiRevelation
+      _ -> pure ()
+    pure a
+  Do (InvestigatorDrewPlayerCard iid card) | iid == investigatorId -> do
+    afterDraw <- checkWindows [mkAfter $ Window.DrawCard iid (toCard card) (Deck.InvestigatorDeck iid)]
+    inLimit <- passesLimits iid (toCard card)
+    if hasRevelation card && inLimit
+      then
+        if toCardType card == PlayerTreacheryType
+          then pushAll [DrewTreachery iid Nothing (toCard card), afterDraw]
+          else pushAll [Revelation iid $ PlayerCardSource card, afterDraw]
+      else
+        if toCardType card == PlayerEnemyType
+          then pushAll [DrewPlayerEnemy iid (toCard card), afterDraw]
+          else push afterDraw
+
+    let
+      cardFilter :: IsCard c => [c] -> [c]
+      cardFilter = filter ((/= card.id) . toCardId)
+    pure
+      $ a
+      & (handL %~ (toCard card :))
+      & (foundCardsL . each %~ cardFilter)
+      & (cardsUnderneathL %~ cardFilter)
+      & (discardL %~ cardFilter)
+      & (foundCardsL . each %~ cardFilter)
+      & (bondedCardsL %~ cardFilter)
   InvestigatorSpendClues iid n | iid == investigatorId -> do
     pushM $ checkAfter $ Window.SpentClues iid n
     pure $ a & tokensL %~ subtractTokens Clue n
@@ -2915,29 +2945,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     EncounterCard _ -> pure a
     VengeanceCard _ -> pure a
   AddToHand iid cards | iid == investigatorId -> do
-    let
-      cardChoice = \case
-        card@(PlayerCard card') -> do
-          inLimit <- passesLimits iid card
-          pure
-            $ if hasRevelation card' && inLimit
-              then
-                if toCardType card' == PlayerTreacheryType
-                  then Just (card, DrewTreachery iid Nothing card)
-                  else Just (card, Revelation iid $ PlayerCardSource card')
-              else
-                if toCardType card' == PlayerEnemyType
-                  then Just (card, DrewPlayerEnemy iid card)
-                  else Nothing
-        _ -> pure Nothing
-    choices <- mapMaybeM cardChoice cards
     player <- getPlayer iid
-    pushWhen (notNull choices)
-      $ chooseOrRunOneAtATime player [targetLabel (toCardId card) [msg'] | (card, msg') <- choices]
+    let
+      handleCard = \case
+        PlayerCard pc -> InvestigatorDrewPlayerCard iid pc
+        EncounterCard ec -> InvestigatorDrewEncounterCard iid ec
+        VengeanceCard {} -> error "Can not add vengeance card to hand"
+    pushWhen (notNull cards)
+      $ chooseOrRunOneAtATime
+        player
+        [targetLabel card [handleCard card] | card <- cards]
     assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
     pure
       $ a
-      & (handL %~ (cards <>))
       & (cardsUnderneathL %~ filter (`notElem` cards))
       & (slotsL %~ flip (foldr removeFromSlots) assetIds)
       & (discardL %~ filter ((`notElem` cards) . PlayerCard))
@@ -3186,7 +3206,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                         then
                           chooseOne
                             player
-                            [ Label "Draw it" [addFoundToHand, asDrawCard card]
+                            [ Label "Draw it" [addFoundToHand]
                             , Label "Commit to skill test" [CommitCard who card]
                             ]
                         else addFoundToHand
@@ -3194,11 +3214,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   | (zone, cards) <- mapToList targetCards
                   , card <- cards
                   , let addFoundToHand = AddFocusedToHand iid (toTarget who) zone (toCardId card)
-                  , let
-                      asDrawCard = \case
-                        PlayerCard pc -> InvestigatorDrewPlayerCard iid pc
-                        EncounterCard ec -> InvestigatorDrewEncounterCard iid ec
-                        VengeanceCard vc -> asDrawCard vc
                   ]
               push
                 $ if null choices
@@ -3220,14 +3235,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 choices =
                   [ targetLabel
                     card
-                    [AddFocusedToHand iid (toTarget who) zone (toCardId card), asDrawCard card]
+                    [AddFocusedToHand iid (toTarget who) zone (toCardId card)]
                   | (zone, cards) <- mapToList targetCards
                   , card <- cards
-                  , let
-                      asDrawCard = \case
-                        PlayerCard pc -> InvestigatorDrewPlayerCard iid pc
-                        EncounterCard ec -> InvestigatorDrewEncounterCard iid ec
-                        VengeanceCard vc -> asDrawCard vc
                   ]
               push
                 $ if null choices

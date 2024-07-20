@@ -8,14 +8,13 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Helpers.Card (drawThisCard, getCardEntityTarget)
+import Arkham.Helpers.Card (drawThisCard)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher
-import Arkham.Message
 
 newtype IkiaqTheCouncilsChosen3 = IkiaqTheCouncilsChosen3 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ikiaqTheCouncilsChosen3 :: AssetCard IkiaqTheCouncilsChosen3
@@ -43,13 +42,8 @@ instance HasAbilities IkiaqTheCouncilsChosen3 where
 instance RunMessage IkiaqTheCouncilsChosen3 where
   runMessage msg (IkiaqTheCouncilsChosen3 attrs) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
-      target <- getCardEntityTarget card
+      cancelCardDraw attrs card
       let cardIds = toCardId card : toResult @[CardId] attrs.meta
-      pushAll
-        [ CancelEachNext (toSource attrs) [RevelationMessage, DrawEnemyMessage]
-        , CancelSurge (toSource attrs)
-        , QuietlyRemoveFromGame target
-        ]
       pure . IkiaqTheCouncilsChosen3 $ attrs & cardsUnderneathL %~ (card :) & setMeta cardIds
     RemovedFromPlay (isSource attrs -> True) -> do
       let cardIds = toResult @[CardId] attrs.meta

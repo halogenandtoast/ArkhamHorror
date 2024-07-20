@@ -2419,16 +2419,12 @@ runGameMessage msg g = case msg of
       & setTurnHistory
   ResolveTreachery iid treacheryId -> do
     treachery <- getTreachery treacheryId
-    whenDraw <- checkWindows [mkWhen $ Window.DrawCard iid (toCard treachery) Deck.EncounterDeck]
-    afterDraw <- checkWindows [mkAfter $ Window.DrawCard iid (toCard treachery) Deck.EncounterDeck]
 
     modifiers' <- getCombinedModifiers [TreacheryTarget treacheryId, CardIdTarget $ toCardId treachery]
     let ignoreRevelation = IgnoreRevelation `elem` modifiers'
 
     pushAll
-      $ whenDraw
-      : afterDraw
-      : if ignoreRevelation
+      $ if ignoreRevelation
         then [toDiscardBy iid GameSource (TreacheryTarget treacheryId)]
         else
           resolve (Revelation iid (TreacherySource treacheryId))

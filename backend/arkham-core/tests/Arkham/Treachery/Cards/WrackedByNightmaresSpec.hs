@@ -30,7 +30,7 @@ spec = describe "Wracked by Nightmares" $ do
       <> treacheryIs Cards.wrackedByNightmares
     fieldAssert AssetExhausted (== True) asset
 
-  it "trigger actions removes restriction and takes two actions" $ gameTest $ \investigator -> do
+  it "trigger actions removes restriction and takes two actions" . gameTest $ \investigator -> do
     wrackedByNightmares <- genPlayerCard Cards.wrackedByNightmares
     asset <-
       testAsset

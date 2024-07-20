@@ -99,6 +99,7 @@ allPlayerEventCards =
       , cheapShot2
       , cheatDeath5
       , cheatTheSystem1
+      , cleanSneak4
       , cleanThemOut
       , closeCall2
       , connectTheDots
@@ -3427,6 +3428,24 @@ breakingAndEntering2 =
     , cdActions = [#investigate]
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = Just 2
+    }
+
+cleanSneak4 :: CardDef
+cleanSneak4 =
+  (event "09078" "Clean Sneak" 0 Rogue)
+    { cdSkills = [#agility, #agility]
+    , cdCardTraits = setFromList [Gambit, Trick]
+    , cdFastWindow = Just $ DuringTurn You
+    , cdCriteria =
+        Just
+          $ exists (EnemyAt YourLocation <> not_ IsSwarm <> ExhaustedEnemy)
+          <> oneOf
+            [ youExist (oneOf [can.gain.resources, can.draw.cards])
+            , exists
+                (EnemyAt YourLocation <> not_ IsSwarm <> ExhaustedEnemy <> EnemyCanBeDamagedBySource ThisCard)
+            , exists (LocationWithDiscoverableCluesBy You)
+            ]
+    , cdLevel = Just 4
     }
 
 powerWord :: CardDef

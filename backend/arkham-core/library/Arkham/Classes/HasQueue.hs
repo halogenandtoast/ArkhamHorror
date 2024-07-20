@@ -138,6 +138,12 @@ popMessageMatching matcher = withQueue \queue ->
         [] -> (before, Nothing)
         (msg' : rest) -> (before <> rest, Just msg')
 
+popMessagesMatching :: HasQueue msg m => (msg -> Bool) -> m [msg]
+popMessagesMatching f = withQueue \queue ->
+  let go acc [] = acc
+      go (a, b) (msg : rest) = if f msg then go (a, b <> [msg]) rest else go (a <> [msg], b) rest
+   in go ([], []) queue
+
 popMessageMatching_ :: HasQueue msg m => (msg -> Bool) -> m ()
 popMessageMatching_ = void . popMessageMatching
 

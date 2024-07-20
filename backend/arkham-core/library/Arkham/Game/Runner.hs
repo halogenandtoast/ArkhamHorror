@@ -1866,9 +1866,15 @@ runGameMessage msg g = case msg of
 
     if inSkillTestWindow
       then do
-        insertAfterMatching [msg] (== EndSkillTestWindow)
+        msgs <- popMessagesMatching \case
+          MoveWithSkillTest _ -> True
+          _ -> False
+        insertAfterMatching (msg : msgs) (== EndSkillTestWindow)
         pure g
       else do
+        mapQueue \case
+          MoveWithSkillTest x -> x
+          x -> x
         let iid = skillTest.investigator
         windows' <- windows [Window.InitiatedSkillTest skillTest]
         let defaultCase = windows' <> [BeginSkillTestAfterFast]

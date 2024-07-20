@@ -25,12 +25,14 @@ underworldMarket2 :: AssetCard UnderworldMarket2
 underworldMarket2 = asset (UnderworldMarket2 . (`with` Meta [])) Cards.underworldMarket2
 
 instance HasAbilities UnderworldMarket2 where
-  getAbilities (UnderworldMarket2 (With attrs _)) =
+  getAbilities (UnderworldMarket2 (With attrs meta)) =
     [ restrictedAbility attrs 1 ControlsThis
         $ freeReaction
         $ DrawingStartingHand #when You
-    , restrictedAbility attrs 2 ControlsThis $ freeReaction $ TurnBegins #when You
+    , controlledAbility attrs 2 criteria $ freeReaction $ TurnBegins #when You
     ]
+   where
+    criteria = if length (marketDeck meta) > 0 then NoRestriction else Never
 
 instance RunMessage UnderworldMarket2 where
   runMessage msg a@(UnderworldMarket2 (With attrs meta)) = runQueueT $ case msg of

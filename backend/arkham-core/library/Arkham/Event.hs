@@ -531,6 +531,7 @@ allEvents =
     , SomeEventCard hitAndRun
     , SomeEventCard illTakeThat
     , SomeEventCard kickingTheHornetsNest
+    , SomeEventCard quickGetaway
     , SomeEventCard breakingAndEntering2
     , SomeEventCard cleanSneak4
     , --- mystic [tsk]

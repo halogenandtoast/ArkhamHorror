@@ -334,6 +334,7 @@ instance AndThen (CardDraw Message) where
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
+  | MoveWithSkillTest Message
   | AddSubscriber Target
   | WithSource Source Message
   | SetInvestigator PlayerId Investigator

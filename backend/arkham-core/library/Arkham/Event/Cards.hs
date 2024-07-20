@@ -304,6 +304,7 @@ allPlayerEventCards =
       , preposterousSketches2
       , protectingTheAnirniq2
       , quantumFlux
+      , quickGetaway
       , radiantSmite1
       , readTheSigns
       , recharge2
@@ -3418,6 +3419,16 @@ kickingTheHornetsNest =
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = setFromList [Gambit, Tactic]
     , cdCriteria = can.target.encounterDeck
+    }
+
+quickGetaway :: CardDef
+quickGetaway =
+  (event "09069" "Quick Getaway" 2 Rogue)
+    { cdSkills = [#agility, #agility]
+    , cdCardTraits = setFromList [Trick]
+    , cdActions = [#evade]
+    , cdFastWindow =
+        Just $ EnemyAttacks #when You AnyEnemyAttack (EnemyWithEvade <> EnemyIsEngagedWith You)
     }
 
 breakingAndEntering2 :: CardDef

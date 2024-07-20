@@ -3,6 +3,7 @@ module Arkham.Message.Lifted (module X, module Arkham.Message.Lifted) where
 import Arkham.Ability.Types
 import Arkham.Act.Types (ActAttrs (actDeckId))
 import Arkham.Agenda.Types (AgendaAttrs (agendaDeckId))
+import Arkham.Attack.Types
 import Arkham.Calculation
 import Arkham.CampaignLogKey
 import Arkham.Card
@@ -1000,3 +1001,9 @@ cancelCardDraw source card = do
     _ -> False
   for_ mtarget $ push . QuietlyRemoveFromGame
   cancelledOrIgnoredCardOrGameEffect source
+
+cancelAttack :: ReverseQueue m => Sourceable source => source -> EnemyAttackDetails -> m ()
+cancelAttack source _ = push $ CancelNext (toSource source) AttackMessage
+
+moveWithSkillTest :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
+moveWithSkillTest f = lift $ Arkham.Classes.HasQueue.mapQueue \msg -> if f msg then MoveWithSkillTest msg else msg

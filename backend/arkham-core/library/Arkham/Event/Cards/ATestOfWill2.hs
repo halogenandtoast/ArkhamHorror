@@ -3,7 +3,6 @@ module Arkham.Event.Cards.ATestOfWill2 (aTestOfWill2, ATestOfWill2 (..)) where
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Window (cardDrawn)
-import Arkham.Matcher
 
 newtype ATestOfWill2 = ATestOfWill2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

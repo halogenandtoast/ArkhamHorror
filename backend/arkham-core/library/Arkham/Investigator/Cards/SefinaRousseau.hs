@@ -4,7 +4,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Draw.Types
 import Arkham.Event.Cards qualified as Events
 import Arkham.Helpers
 import Arkham.Investigator.Cards qualified as Cards

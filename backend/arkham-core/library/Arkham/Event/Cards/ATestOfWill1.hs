@@ -23,9 +23,7 @@ getDetails [] = error "missing targets"
 instance RunMessage ATestOfWill1 where
   runMessage msg e@(ATestOfWill1 attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ (getDetails -> (who, card)) _ | eid == toId attrs -> do
-      canAffect <- (iid == who ||) <$> can.affect.otherPlayers iid
-      canCancel <- card <=~> CanCancelRevelationEffect (basic AnyCard)
-      pushWhen (canAffect && canCancel) $ CancelRevelation (toSource attrs)
+      cancelRevelation attrs card
       push $ Exile $ toTarget attrs
       pure e
     _ -> ATestOfWill1 <$> liftRunMessage msg attrs

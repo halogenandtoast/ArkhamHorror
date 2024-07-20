@@ -382,6 +382,18 @@ payCost msg c iid skipAdditionalCosts cost = do
     DiscardCardCost card -> do
       push $ toMessage $ discardCard iid c.source card
       withPayment $ DiscardCardPayment [card]
+    DiscardUnderneathCardCost assetId cardMatcher -> do
+      cards <- filterM (<=~> cardMatcher) =<< field AssetCardsUnderneath assetId
+      let
+        discardIt = \case
+          PlayerCard pc -> [AddToDiscard owner pc | owner <- maybeToList (pcOwner pc)]
+          EncounterCard ec -> [AddToEncounterDiscard ec]
+          _ -> error "Unhandled"
+      pushAll
+        [ FocusCards cards
+        , chooseOrRunOne player [targetLabel card (UnfocusCards : discardIt card) | card <- cards]
+        ]
+      pure c
     DiscardDrawnCardCost -> do
       let
         getDrawnCard [] = error "can not find drawn card in windows"

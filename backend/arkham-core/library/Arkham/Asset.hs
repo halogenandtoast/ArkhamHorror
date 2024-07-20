@@ -899,6 +899,7 @@ allAssets =
     , SomeAssetCard dowsingRod
     , SomeAssetCard hallowedChalice
     , SomeAssetCard onyxPentacle
+    , SomeAssetCard bindersJarInterdimensionalPrison1
     , SomeAssetCard ceremonialSickle4
     , SomeAssetCard dowsingRod4
     , SomeAssetCard onyxPentacle4

@@ -3,7 +3,6 @@ module Arkham.Event.Cards.QuickGetaway (quickGetaway, QuickGetaway (..)) where
 import Arkham.Attack.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.SkillTest (inSkillTest)
 import Arkham.Helpers.Window (getAttackDetails)
 import Arkham.Window (Window (..), WindowType (..))
 
@@ -21,7 +20,6 @@ quickGetaway = event (QuickGetaway . (`with` Meta Nothing)) Cards.quickGetaway
 instance RunMessage QuickGetaway where
   runMessage msg e@(QuickGetaway (With attrs meta)) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      needsToMoveAttack <- inSkillTest
       let details = getAttackDetails attrs.windows
           isEnemyAttackWindow = \case
             EnemyAttacksEvenIfCancelled details' -> details.enemy == details'.enemy

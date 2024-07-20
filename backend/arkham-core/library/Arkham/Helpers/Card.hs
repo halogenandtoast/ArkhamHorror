@@ -138,15 +138,15 @@ iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
   applyAfter _ ys = ys
 iconsForCard _ = pure []
 
-getCardEntityTarget :: HasGame m => Card -> m Target
+getCardEntityTarget :: HasGame m => Card -> m (Maybe Target)
 getCardEntityTarget card = case toCardType card of
-  EnemyType -> toTarget <$> selectJust (EnemyWithCardId $ toCardId card)
-  PlayerEnemyType -> toTarget <$> selectJust (EnemyWithCardId $ toCardId card)
-  TreacheryType -> toTarget <$> selectJust (TreacheryWithCardId $ toCardId card)
-  PlayerTreacheryType -> toTarget <$> selectJust (TreacheryWithCardId $ toCardId card)
-  LocationType -> toTarget <$> selectJust (LocationWithCardId $ toCardId card)
-  AssetType -> toTarget <$> selectJust (AssetWithCardId $ toCardId card)
-  EncounterAssetType -> toTarget <$> selectJust (AssetWithCardId $ toCardId card)
+  EnemyType -> toTarget <$$> selectOne (EnemyWithCardId $ toCardId card)
+  PlayerEnemyType -> toTarget <$$> selectOne (EnemyWithCardId $ toCardId card)
+  TreacheryType -> toTarget <$$> selectOne (TreacheryWithCardId $ toCardId card)
+  PlayerTreacheryType -> toTarget <$$> selectOne (TreacheryWithCardId $ toCardId card)
+  LocationType -> toTarget <$$> selectOne (LocationWithCardId $ toCardId card)
+  AssetType -> toTarget <$$> selectOne (AssetWithCardId $ toCardId card)
+  EncounterAssetType -> toTarget <$$> selectOne (AssetWithCardId $ toCardId card)
   other -> error $ "Unhandled type: " <> show other
 
 drawThisCard :: IsCard card => InvestigatorId -> card -> [Message]

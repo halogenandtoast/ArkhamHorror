@@ -23,6 +23,7 @@ import Arkham.Fight
 import Arkham.Helpers
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Campaign qualified as Msg
+import Arkham.Helpers.Card (getCardEntityTarget)
 import Arkham.Helpers.Enemy qualified as Msg
 import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
 import Arkham.Helpers.Log qualified as Msg
@@ -30,6 +31,7 @@ import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers (ModifierType (IgnoreRevelation, MetaModifier), getMetaMaybe)
 import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Query
+import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.Window qualified as Msg
 import Arkham.Helpers.Xp
@@ -950,10 +952,21 @@ cancelCardDraw
   -> Card
   -> t m ()
 cancelCardDraw source card = do
+  mtarget <- getCardEntityTarget card
   lift $ Msg.removeAllMessagesMatching \case
     Do (InvestigatorDrewEncounterCard _ c) -> c.id == card.id
     InvestigatorDrewEncounterCard _ c -> c.id == card.id
     Do (InvestigatorDrewPlayerCard _ c) -> c.id == card.id
     InvestigatorDrewPlayerCard _ c -> c.id == card.id
+    DrewTreachery _ _ c -> c.id == card.id
+    DrewPlayerEnemy _ c -> c.id == card.id
+    Revelation _ (PlayerCardSource c) -> c.id == card.id
+    When (Revelation _ s) -> Just (sourceToTarget s) == mtarget
+    Revelation _ s -> Just (sourceToTarget s) == mtarget
+    After (Revelation _ s) -> Just (sourceToTarget s) == mtarget
+    AfterRevelation _ tid -> case mtarget of
+      Just (TreacheryTarget tid') -> tid == tid'
+      _ -> False
     _ -> False
+  for_ mtarget $ push . QuietlyRemoveFromGame
   cancelledOrIgnoredCardOrGameEffect source

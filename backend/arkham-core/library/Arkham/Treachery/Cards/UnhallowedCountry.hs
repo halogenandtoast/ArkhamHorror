@@ -10,7 +10,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype UnhallowedCountry = UnhallowedCountry TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unhallowedCountry :: TreacheryCard UnhallowedCountry
@@ -36,7 +36,7 @@ instance RunMessage UnhallowedCountry where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      revelationSkillTest iid (attrs.ability 1) #willpower (Fixed 3)
+      beginSkillTest iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure t
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs

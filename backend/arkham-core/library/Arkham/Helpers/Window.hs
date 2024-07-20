@@ -136,31 +136,31 @@ splitWithWindows msg windows' = do
     <> [msg]
     <> [CheckWindow iids $ map (mkWindow Timing.After) windows']
 
-discoveredClues :: [Window] -> Int
+discoveredClues :: HasCallStack => [Window] -> Int
 discoveredClues =
   fromMaybe (error "missing discovery") . asum . map \case
     (windowType -> Window.DiscoverClues _ _ _ n) -> Just n
     _ -> Nothing
 
-discoveredLocation :: [Window] -> LocationId
+discoveredLocation :: HasCallStack => [Window] -> LocationId
 discoveredLocation =
   fromMaybe (error "missing discovery") . asum . map \case
     (windowType -> Window.DiscoverClues _ lid _ _) -> Just lid
     _ -> Nothing
 
-discoveredLocationAndClues :: [Window] -> (LocationId, Int)
+discoveredLocationAndClues :: HasCallStack => [Window] -> (LocationId, Int)
 discoveredLocationAndClues =
   fromMaybe (error "missing discovery") . asum . map \case
     (windowType -> Window.DiscoverClues _ lid _ n) -> Just (lid, n)
     _ -> Nothing
 
-defeatedEnemy :: [Window] -> EnemyId
+defeatedEnemy :: HasCallStack => [Window] -> EnemyId
 defeatedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
     (windowType -> Window.EnemyDefeated _ _ eid) -> Just eid
     _ -> Nothing
 
-attackedEnemy :: [Window] -> EnemyId
+attackedEnemy :: HasCallStack => [Window] -> EnemyId
 attackedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
     (windowType -> Window.EnemyAttacked _ _ eid) -> Just eid
@@ -168,19 +168,19 @@ attackedEnemy =
     (windowType -> Window.FailAttackEnemy _ eid _) -> Just eid
     _ -> Nothing
 
-evadedEnemy :: [Window] -> EnemyId
+evadedEnemy :: HasCallStack => [Window] -> EnemyId
 evadedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
     (windowType -> Window.EnemyEvaded _ eid) -> Just eid
     _ -> Nothing
 
-fromAsset :: [Window] -> AssetId
+fromAsset :: HasCallStack => [Window] -> AssetId
 fromAsset =
   fromMaybe (error "missing asset") . asum . map \case
     (windowType -> Window.AttackOrEffectSpentLastUse _ (AssetTarget aid) _) -> Just aid
     _ -> Nothing
 
-spawnedEnemy :: [Window] -> EnemyId
+spawnedEnemy :: HasCallStack => [Window] -> EnemyId
 spawnedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
     (windowType -> Window.EnemySpawns eid _) -> Just eid
@@ -192,17 +192,17 @@ placedTokens t ((windowType -> Window.PlacedToken _ _ token n) : xs) | token == 
 placedTokens t ((windowType -> Window.InvestigatorPlacedFromTheirPool _ _ _ token n) : xs) | token == t = n + placedTokens t xs
 placedTokens t (_ : xs) = placedTokens t xs
 
-cardPlayed :: [Window] -> Card
+cardPlayed :: HasCallStack => [Window] -> Card
 cardPlayed [] = error "missing play card window"
 cardPlayed ((windowType -> Window.PlayCard _ c) : _) = c
 cardPlayed (_ : xs) = cardPlayed xs
 
-cardDrawn :: [Window] -> Card
+cardDrawn :: HasCallStack => [Window] -> Card
 cardDrawn [] = error "missing play card window"
 cardDrawn ((windowType -> Window.DrawCard _ c _) : _) = c
 cardDrawn (_ : xs) = cardDrawn xs
 
-cardDrawnBy :: [Window] -> (InvestigatorId, Card)
+cardDrawnBy :: HasCallStack => [Window] -> (InvestigatorId, Card)
 cardDrawnBy [] = error "missing play card window"
 cardDrawnBy ((windowType -> Window.DrawCard iid c _) : _) = (iid, c)
 cardDrawnBy (_ : xs) = cardDrawnBy xs
@@ -238,14 +238,14 @@ moves
 moves timing who source destination =
   Arkham.Matcher.Moves timing (be who) AnySource (be source) (be destination)
 
-getChaosToken :: [Window] -> ChaosToken
+getChaosToken :: HasCallStack => [Window] -> ChaosToken
 getChaosToken = \case
   [] -> error "No chaos token drawn"
   ((windowType -> Window.RevealChaosToken _ token) : _) -> token
   ((windowType -> Window.ResolvesChaosToken _ token) : _) -> token
   (_ : rest) -> getChaosToken rest
 
-getAttackDetails :: [Window] -> EnemyAttackDetails
+getAttackDetails :: HasCallStack => [Window] -> EnemyAttackDetails
 getAttackDetails = \case
   [] -> error "No attack details"
   ((windowType -> Window.EnemyWouldAttack details) : _) -> details
@@ -253,7 +253,7 @@ getAttackDetails = \case
   ((windowType -> Window.EnemyAttacksEvenIfCancelled details) : _) -> details
   (_ : rest) -> getAttackDetails rest
 
-getInvestigatedLocation :: [Window] -> LocationId
+getInvestigatedLocation :: HasCallStack => [Window] -> LocationId
 getInvestigatedLocation = \case
   [] -> error "No fail or pass skill test"
   ((windowType -> Window.FailInvestigationSkillTest _ lid _) : _) -> lid
@@ -266,14 +266,14 @@ getPassedBy = \case
   ((windowType -> Window.PassInvestigationSkillTest _ _ n) : _) -> n
   (_ : rest) -> getPassedBy rest
 
-getDamageSource :: [Window] -> Source
+getDamageSource :: HasCallStack => [Window] -> Source
 getDamageSource = \case
   [] -> error "No damage"
   ((windowType -> Window.DealtDamage source _ _ _) : _) -> source
   ((windowType -> Window.DealtExcessDamage source _ _ _) : _) -> source
   (_ : rest) -> getDamageSource rest
 
-getDamageOrHorrorSource :: [Window] -> Source
+getDamageOrHorrorSource :: HasCallStack => [Window] -> Source
 getDamageOrHorrorSource = \case
   [] -> error "No damage"
   ((windowType -> Window.DealtDamage source _ _ _) : _) -> source
@@ -281,7 +281,8 @@ getDamageOrHorrorSource = \case
   ((windowType -> Window.DealtExcessDamage source _ _ _) : _) -> source
   (_ : rest) -> getDamageSource rest
 
-replaceWindow :: HasQueue Message m => (Window -> Bool) -> (Window -> Window) -> m ()
+replaceWindow
+  :: (HasCallStack, HasQueue Message m) => (Window -> Bool) -> (Window -> Window) -> m ()
 replaceWindow f wf = do
   replaceMessageMatching
     \case
@@ -292,7 +293,7 @@ replaceWindow f wf = do
       _ -> error "impossible"
 
 replaceWindowMany
-  :: HasQueue Message m => (WindowType -> Bool) -> (WindowType -> [WindowType]) -> m ()
+  :: (HasCallStack, HasQueue Message m) => (WindowType -> Bool) -> (WindowType -> [WindowType]) -> m ()
 replaceWindowMany f wf = do
   replaceAllMessagesMatching
     \case

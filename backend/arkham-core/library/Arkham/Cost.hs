@@ -180,6 +180,7 @@ data Cost
   | DiscardTopOfDeckCost Int
   | DiscardCost Zone Target
   | DiscardCardCost Card
+  | DiscardUnderneathCardCost AssetId ExtendedCardMatcher
   | DiscardRandomCardCost
   | DiscardFromCost Int CostZone CardMatcher
   | DiscardDrawnCardCost
@@ -355,6 +356,7 @@ displayCostType = \case
   InvestigatorDamageCost _ _ _ n -> tshow n <> " Damage"
   DiscardCost zone _ -> "Discard from " <> zoneLabel zone
   DiscardCardCost _ -> "Discard Card"
+  DiscardUnderneathCardCost _ _ -> "Discard card beneath"
   DiscardRandomCardCost -> "Discard Random Card"
   DiscardFromCost n _ _ -> "Discard " <> tshow n
   DiscardDrawnCardCost -> "Discard Drawn Card"

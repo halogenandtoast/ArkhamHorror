@@ -2381,6 +2381,7 @@ getEnemiesMatching matcher = do
 
 enemyMatcherFilter :: HasGame m => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
+  AttackingEnemy -> \e -> fieldMap EnemyAttacking isJust (toId e)
   EnemyWithToken tkn -> \e -> fieldMap EnemyTokens (Token.hasToken tkn) (toId e)
   DefeatedEnemy matcher -> \e ->
     if attr enemyDefeated e
@@ -3507,6 +3508,13 @@ instance Query ExtendedCardMatcher where
    where
     matches' :: forall m. HasGame m => Card -> ExtendedCardMatcher -> m Bool
     matches' c = \case
+      CardWithSharedTraitToAttackingEnemy -> do
+        mEnemy <- selectOne AttackingEnemy
+        case mEnemy of
+          Nothing -> pure False
+          Just eid -> do
+            traits <- fieldMap EnemyTraits toList eid
+            pure $ c `cardMatch` oneOf (CardWithTrait <$> traits)
       ChosenViaCustomization inner -> do
         selectOne inner >>= \case
           Just (PlayerCard pc) -> do

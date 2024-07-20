@@ -239,6 +239,9 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
           traverse (field AssetCard) assets
         CostZones zs -> concatMapM getCards zs
     (>= n) . length <$> getCards zone
+  DiscardUnderneathCardCost assetId cardMatcher -> do
+    cards <- field AssetCardsUnderneath assetId
+    anyM (<=~> cardMatcher) cards
   DiscardCost _ _ -> pure True -- TODO: Make better
   DiscardCardCost _ -> pure True -- TODO: Make better
   DiscardRandomCardCost -> iid <=~> Matcher.InvestigatorWithDiscardableCard

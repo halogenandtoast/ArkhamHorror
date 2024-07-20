@@ -328,6 +328,7 @@ data EnemyMatcher
   | EnemyWithCardId CardId
   | AnyEnemy
   | EnemyCanAttack InvestigatorMatcher
+  | AttackingEnemy
   | AttackedYouSinceTheEndOfYourLastTurn
   | CanFightEnemy Source
   | CanEvadeEnemy Source -- This checks for an ability
@@ -722,6 +723,7 @@ data ExtendedCardMatcher
   | CardIsCommittedBy InvestigatorMatcher
   | ChosenViaCustomization ExtendedCardMatcher
   | PassesCommitRestrictions ExtendedCardMatcher
+  | CardWithSharedTraitToAttackingEnemy
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated ExtendedCardMatcher

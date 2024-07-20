@@ -2172,6 +2172,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -- it is granted by the investigator
     push $ RefillSlots a.id
     pure $ a & slotsL . ix slotType %~ deleteFirstMatch (isSource a . slotSource)
+  RemoveSlotFrom iid source slotType | iid == investigatorId -> do
+    -- This arbitrarily removes the first slot of the given type provided that
+    -- it is granted by the investigator
+    push $ RefillSlots a.id
+    pure $ a & slotsL . ix slotType %~ deleteFirstMatch (isSource source . slotSource)
   RefillSlots iid | iid == investigatorId -> do
     assetIds <- select $ AssetWithPlacement (InPlayArea iid)
 

@@ -399,6 +399,7 @@ data Message
   | -- Slot Messages
     AddSlot InvestigatorId SlotType Slot
   | RemoveSlot InvestigatorId SlotType
+  | RemoveSlotFrom InvestigatorId Source SlotType
   | -- Adding Cards to Encounter Deck
     AddToEncounterDeck EncounterCard
   | -- Scenario Deck Messages

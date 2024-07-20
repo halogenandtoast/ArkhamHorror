@@ -183,6 +183,7 @@ allPlayerAssetCards =
       , becky
       , berettaM19184
       , bestowResolve2
+      , bindersJarInterdimensionalPrison1
       , blackjack
       , blackjack2
       , blasphemousCovenant2
@@ -6015,6 +6016,16 @@ onyxPentacle =
     { cdSkills = [#agility]
     , cdCardTraits = setFromList [Item, Charm]
     , cdSlots = [#hand]
+    }
+
+bindersJarInterdimensionalPrison1 :: CardDef
+bindersJarInterdimensionalPrison1 =
+  (asset "09089" ("Binders Jar" <:> "Interdimensional Prison") 2 Mystic)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Relic]
+    , cdSlots = [#accessory]
+    , cdUnique = True
+    , cdLevel = Just 1
     }
 
 ceremonialSickle4 :: CardDef

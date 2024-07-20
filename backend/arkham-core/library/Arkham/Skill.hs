@@ -228,6 +228,8 @@ allSkills =
       SomeSkillCard analysis
     , --- rogue [tsk]
       SomeSkillCard calculatedRisk
+    , --- mystic [tsk]
+      SomeSkillCard ghastlyPossession1
     , --- survivor [tsk]
       SomeSkillCard grizzled
     , -- Return to the Dunwich Legacy

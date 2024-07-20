@@ -63,6 +63,7 @@ allPlayerSkillCards =
       , fearless2
       , fey1
       , fightingLessons
+      , ghastlyPossession1
       , grizzled
       , guts
       , guts2
@@ -746,6 +747,12 @@ calculatedRisk =
   (skill "09070" "Calculated Risk" [] Rogue)
     { cdCardTraits = setFromList [Gambit, Fated]
     , cdCommitRestrictions = [OnlyYourTest, OnlyTestDuringYourTurn, MaxOnePerTest]
+    }
+
+ghastlyPossession1 :: CardDef
+ghastlyPossession1 =
+  (skill "09090" "Ghastly Possession" [#wild] Mystic)
+    { cdCardTraits = setFromList [Innate, Spell]
     }
 
 grizzled :: CardDef

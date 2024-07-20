@@ -29,7 +29,7 @@ instance RunMessage ATestOfWill where
         Just (BothTarget (InvestigatorTarget iid') (CardTarget c)) -> do
           canAffect <- (iid == iid' ||) <$> can.affect.otherPlayers iid
           canCancel <- c <=~> CanCancelRevelationEffect (basic AnyCard)
-          pushWhen (canAffect && canCancel) $ CancelRevelation (toSource attrs)
+          when (canAffect && canCancel) $ cancelRevelation attrs c
         _ -> error "Wrong target"
       pure e
     _ -> ATestOfWill <$> liftRunMessage msg attrs

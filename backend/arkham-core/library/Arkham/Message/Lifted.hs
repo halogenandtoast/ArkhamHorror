@@ -476,6 +476,36 @@ handleOneAtATime iid source targets =
     $ only
     . Msg.handleTargetChoice iid source
 
+handleOneAtATimeSelect
+  :: (ReverseQueue m, Sourceable source, Query matcher, Targetable (QueryElement matcher))
+  => InvestigatorId
+  -> source
+  -> matcher
+  -> m ()
+handleOneAtATimeSelect iid source = handleOneAtATime iid source <=< select
+
+handleN
+  :: (ReverseQueue m, Targetable target, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> Int
+  -> [target]
+  -> m ()
+handleN iid source n targets =
+  Arkham.Message.Lifted.chooseN iid n
+    $ targetLabels targets
+    $ only
+    . Msg.handleTargetChoice iid source
+
+handleNSelect
+  :: (ReverseQueue m, Sourceable source, Query matcher, Targetable (QueryElement matcher))
+  => InvestigatorId
+  -> source
+  -> Int
+  -> matcher
+  -> m ()
+handleNSelect iid source n matcher = handleN iid source n =<< select matcher
+
 chooseUpToN :: ReverseQueue m => InvestigatorId -> Int -> Text -> [UI Message] -> m ()
 chooseUpToN iid n label msgs = do
   player <- getPlayer iid

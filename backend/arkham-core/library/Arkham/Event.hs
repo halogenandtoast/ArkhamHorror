@@ -532,6 +532,7 @@ allEvents =
     , SomeEventCard illTakeThat
     , SomeEventCard kickingTheHornetsNest
     , SomeEventCard breakingAndEntering2
+    , SomeEventCard cleanSneak4
     , --- mystic [tsk]
       SomeEventCard powerWord
     , SomeEventCard eldritchInitiation

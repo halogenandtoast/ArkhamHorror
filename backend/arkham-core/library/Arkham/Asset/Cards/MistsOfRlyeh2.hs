@@ -27,12 +27,13 @@ instance RunMessage MistsOfRlyeh2 where
   runMessage msg a@(MistsOfRlyeh2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
+      sid <- getRandom
       chooseEvade <-
-        leftOr <$> aspect iid source (#willpower `InsteadOf` #agility) (mkChooseEvade iid source)
+        leftOr <$> aspect iid source (#willpower `InsteadOf` #agility) (mkChooseEvade sid iid source)
       pushAll
-        $ [ createCardEffect Cards.mistsOfRlyeh2 (Just $ EffectInt 1) source iid
-          , createCardEffect Cards.mistsOfRlyeh2 (Just $ EffectInt 2) source iid
-          , skillTestModifier source iid (SkillModifier #willpower 1)
+        $ [ createCardEffect Cards.mistsOfRlyeh2 (effectInt 1) source sid
+          , createCardEffect Cards.mistsOfRlyeh2 (effectInt 2) source sid
+          , skillTestModifier sid source iid (SkillModifier #willpower 1)
           ]
         <> chooseEvade
       pure a
@@ -47,37 +48,40 @@ mistsOfRlyeh2Effect = cardEffect MistsOfRlyeh2Effect Cards.mistsOfRlyeh2
 
 instance RunMessage MistsOfRlyeh2Effect where
   runMessage msg e@(MistsOfRlyeh2Effect attrs@EffectAttrs {..}) = case msg of
-    RevealChaosToken _ iid token | effectMetadata == Just (EffectInt 1) -> case effectTarget of
-      InvestigatorTarget iid' | iid == iid' -> do
-        when (token.face `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-          $ pushAll
+    RevealChaosToken _ iid token | attrs.metaInt == Just 1 -> do
+      whenJustM getSkillTest \st -> do
+        let triggers =
+              token.face
+                `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
+                && iid
+                == st.investigator
+                && isTarget st attrs.target
+        when triggers do
+          pushAll
             [ If
                 (Window.RevealChaosTokenEffect iid token effectId)
                 [toMessage $ chooseAndDiscardCard iid effectSource]
             , DisableEffect effectId
             ]
-        pure e
-      _ -> pure e
-    SkillTestEnds _ _ | effectMetadata == Just (EffectInt 2) -> do
-      case effectTarget of
-        InvestigatorTarget iid -> do
-          mSkillTestResult <- fmap skillTestResult <$> getSkillTest
-          case mSkillTestResult of
-            Just (SucceededBy _ _) -> do
-              unblockedConnectedLocationIds <- getAccessibleLocations iid attrs
-              player <- getPlayer iid
-              let
-                moveOptions =
-                  chooseOrRunOne player
-                    $ [Label "Do not move to a connecting location" []]
-                    <> [ targetLabel lid [Move $ move attrs iid lid]
-                       | lid <- unblockedConnectedLocationIds
-                       ]
-              pushAll [moveOptions, DisableEffect effectId]
-            _ -> push (DisableEffect effectId)
-        _ -> error "Invalid Target"
       pure e
-    SkillTestEnds _ _ -> do
+    SkillTestEnds sid _ _ | attrs.metaInt == Just 2 && isTarget sid attrs.target -> do
+      whenJustM getSkillTestInvestigator \iid -> do
+        mSkillTestResult <- fmap skillTestResult <$> getSkillTest
+        case mSkillTestResult of
+          Just (SucceededBy _ _) -> do
+            unblockedConnectedLocationIds <- getAccessibleLocations iid attrs
+            player <- getPlayer iid
+            let
+              moveOptions =
+                chooseOrRunOne player
+                  $ [Label "Do not move to a connecting location" []]
+                  <> [ targetLabel lid [Move $ move attrs iid lid]
+                     | lid <- unblockedConnectedLocationIds
+                     ]
+            pushAll [moveOptions, DisableEffect effectId]
+          _ -> push (DisableEffect effectId)
+      pure e
+    SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
       push $ DisableEffect effectId
       pure e
     _ -> MistsOfRlyeh2Effect <$> runMessage msg attrs

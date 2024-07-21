@@ -1,15 +1,10 @@
-module Arkham.Treachery.Cards.SnakeBite (
-  snakeBite,
-  SnakeBite (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.SnakeBite (snakeBite, SnakeBite (..)) where
 
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -23,7 +18,8 @@ snakeBite = treachery SnakeBite Cards.snakeBite
 instance RunMessage SnakeBite where
   runMessage msg t@(SnakeBite attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ RevelationSkillTest iid source SkillAgility (SkillTestDifficulty $ Fixed 3)
+      sid <- getRandom
+      push $ RevelationSkillTest sid iid source #agility (SkillTestDifficulty $ Fixed 3)
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ -> do
       allies <- select $ AllyAsset <> AssetControlledBy (InvestigatorWithId iid)

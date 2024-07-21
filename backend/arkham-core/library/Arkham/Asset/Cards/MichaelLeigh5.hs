@@ -7,7 +7,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype MichaelLeigh5 = MichaelLeigh5 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 michaelLeigh5 :: AssetCard MichaelLeigh5
@@ -36,6 +36,7 @@ instance RunMessage MichaelLeigh5 where
       push $ AddUses (attrs.ability 1) (toId a) Evidence 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ skillTestModifier (toAbilitySource attrs 1) iid (DamageDealt 1)
+      withSkillTest \sid ->
+        push $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
       pure a
     _ -> MichaelLeigh5 <$> runMessage msg attrs

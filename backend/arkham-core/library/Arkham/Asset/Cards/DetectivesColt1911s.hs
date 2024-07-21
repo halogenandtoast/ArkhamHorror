@@ -14,7 +14,7 @@ import Arkham.Projection
 import Arkham.Trait (Trait (Insight, Tool))
 
 newtype DetectivesColt1911s = DetectivesColt1911s AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 detectivesColt1911s :: AssetCard DetectivesColt1911s
@@ -37,9 +37,10 @@ instance RunMessage DetectivesColt1911s where
   runMessage msg a@(DetectivesColt1911s attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
       pushAll
-        [ skillTestModifiers source iid [DamageDealt 1, SkillModifier #combat 1]
+        [ skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat 1]
         , chooseFight
         ]
       pure a

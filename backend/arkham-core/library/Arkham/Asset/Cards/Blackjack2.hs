@@ -8,7 +8,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype Blackjack2 = Blackjack2 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blackjack2 :: AssetCard Blackjack2
@@ -32,9 +32,10 @@ instance RunMessage Blackjack2 where
   runMessage msg a@(Blackjack2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
       pushAll
-        [ skillTestModifiers source iid [SkillModifier #combat 2, DoesNotDamageOtherInvestigator]
+        [ skillTestModifiers sid source iid [SkillModifier #combat 2, DoesNotDamageOtherInvestigator]
         , chooseFight
         ]
       pure a

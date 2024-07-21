@@ -7,7 +7,7 @@ import Arkham.Fight
 import Arkham.Prelude
 
 newtype MonstrousTransformation = MonstrousTransformation AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 monstrousTransformation :: AssetCard MonstrousTransformation
@@ -32,7 +32,8 @@ instance RunMessage MonstrousTransformation where
   runMessage msg a@(MonstrousTransformation attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
-      pushAll [skillTestModifier source iid (DamageDealt 1), chooseFight]
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
+      pushAll [skillTestModifier sid source iid (DamageDealt 1), chooseFight]
       pure a
     _ -> MonstrousTransformation <$> runMessage msg attrs

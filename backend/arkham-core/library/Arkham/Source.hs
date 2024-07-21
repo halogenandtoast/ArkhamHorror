@@ -55,7 +55,7 @@ data Source
   | ResourceSource InvestigatorId
   | ScenarioSource
   | SkillSource SkillId
-  | SkillTestSource
+  | SkillTestSource SkillTestId
   | StorySource StoryId
   | TestSource (Set Trait)
   | ChaosTokenSource ChaosToken
@@ -156,6 +156,9 @@ instance Sourceable EnemyId where
 
 instance Sourceable EventId where
   toSource = EventSource
+
+instance Sourceable SkillTestId where
+  toSource = SkillTestSource
 
 instance Sourceable ChaosTokenFace where
   toSource = ChaosTokenEffectSource

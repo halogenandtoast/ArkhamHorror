@@ -10,7 +10,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype CurseOfYig = CurseOfYig TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 curseOfYig :: TreacheryCard CurseOfYig
@@ -31,7 +31,8 @@ instance RunMessage CurseOfYig where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- getVengeanceInVictoryDisplay
-      push $ beginSkillTest iid (attrs.ability 1) iid #willpower (Fixed $ 2 + n)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed $ 2 + n)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ toDiscardBy iid (attrs.ability 1) attrs

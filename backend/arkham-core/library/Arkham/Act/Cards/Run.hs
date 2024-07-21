@@ -46,15 +46,16 @@ instance RunMessage Run where
         Nothing -> error "investigator should have advanced"
         Just iid -> do
           player <- getPlayer iid
+          sid <- getRandom
           pushAll
             $ chooseOne
               player
               [ Label
                   "Attempt to dodge the creature"
-                  [beginSkillTest iid attrs attrs #agility (Fixed 3)]
+                  [beginSkillTest sid iid attrs attrs #agility (Fixed 3)]
               , Label
                   "Attempt to endure the creature's extreme heat"
-                  [beginSkillTest iid attrs attrs #combat (Fixed 3)]
+                  [beginSkillTest sid iid attrs attrs #combat (Fixed 3)]
               ]
             : [advanceActDeck attrs]
       pure a

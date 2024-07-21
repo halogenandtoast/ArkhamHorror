@@ -1,17 +1,11 @@
-module Arkham.Asset.Cards.GregoryGry (
-  gregoryGry,
-  gregoryGryEffect,
-  GregoryGry (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.GregoryGry (gregoryGry, gregoryGryEffect, GregoryGry (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Effect.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype GregoryGry = GregoryGry AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -57,7 +51,7 @@ instance RunMessage GregoryGryEffect where
           pushAll [disable attrs, takeResources iid attrs.source n]
         _ -> error "Wrong metadata"
       pure e
-    SkillTestEnds _ _ -> do
+    SkillTestEnds _ _ _ -> do
       push $ disable attrs
       pure e
     _ -> GregoryGryEffect <$> runMessage msg attrs

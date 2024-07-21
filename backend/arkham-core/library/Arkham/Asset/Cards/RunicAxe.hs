@@ -30,7 +30,7 @@ newtype Metadata = Metadata {inscriptions :: [Inscription]}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype RunicAxe = RunicAxe (AssetAttrs `With` Metadata)
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 runicAxe :: AssetCard RunicAxe
@@ -92,7 +92,7 @@ instance RunMessage RunicAxe where
         then chooseFightEnemyMatch iid (attrs.ability 1) $ CanFightEnemyWithOverride (override attrs iid)
         else chooseFightEnemy iid (attrs.ability 1)
       pure a
-    ChoseEnemy iid (isAbilitySource attrs 1 -> True) eid -> do
+    ChoseEnemy sid iid (isAbilitySource attrs 1 -> True) eid -> do
       when (attrs.use Charge > 0) do
         needsHunt <-
           not
@@ -110,7 +110,7 @@ instance RunMessage RunicAxe where
                 | i <- choices
                 ]
       pure a
-    Do msg'@(ChoseEnemy iid (isAbilitySource attrs 1 -> True) _) -> do
+    Do msg'@(ChoseEnemy sid iid (isAbilitySource attrs 1 -> True) _) -> do
       choices <- availableInscriptions iid attrs meta
       chooseOne iid
         $ Label "Do not use additional imbue from Saga " []
@@ -118,7 +118,7 @@ instance RunMessage RunicAxe where
           | i <- choices
           ]
       pure a
-    DoStep n (ChoseEnemy iid (isAbilitySource attrs 1 -> True) eid) -> do
+    DoStep n (ChoseEnemy sid iid (isAbilitySource attrs 1 -> True) eid) -> do
       let inscription = toEnum n
       send $ "Imbued Runic Axe with " <> tshow inscription
       case inscription of

@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Trait
 
 newtype LitaChantler = LitaChantler AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 litaChantler :: AssetCard LitaChantler
@@ -32,6 +32,7 @@ instance HasAbilities LitaChantler where
 instance RunMessage LitaChantler where
   runMessage msg a@(LitaChantler attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (attackedEnemy -> enemyId) _ -> do
-      push $ skillTestModifier attrs enemyId (DamageTaken 1)
+      withSkillTest \sid ->
+        push $ skillTestModifier sid attrs enemyId (DamageTaken 1)
       pure a
     _ -> LitaChantler <$> runMessage msg attrs

@@ -32,12 +32,13 @@ instance RunMessage MeatCleaver where
   runMessage msg a@(MeatCleaver attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ payments -> do
       let source = attrs.ability 1
+      sid <- getRandom
       remainingSanity <- field InvestigatorRemainingSanity iid
       let n = if remainingSanity <= 3 then 2 else 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
       pushAll
-        [ skillTestModifiers attrs iid $ SkillModifier #combat n : [DamageDealt 1 | paidHorror payments]
-        , createCardEffect Cards.meatCleaver Nothing source iid
+        [ skillTestModifiers sid attrs iid $ SkillModifier #combat n : [DamageDealt 1 | paidHorror payments]
+        , createCardEffect Cards.meatCleaver (effectMetaTarget sid) source iid
         , chooseFight
         ]
       pure a
@@ -59,5 +60,6 @@ instance RunMessage MeatCleaverEffect where
           pushAll $ [HealHorror (toTarget iid) attrs.source 1 | canBeHealed] <> [disable attrs]
         _ -> error "Invalid target"
       pure e
-    SkillTestEnds _ _ -> e <$ push (disable attrs)
+    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
+      e <$ push (disable attrs)
     _ -> MeatCleaverEffect <$> runMessage msg attrs

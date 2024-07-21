@@ -1,9 +1,4 @@
-module Arkham.Treachery.Cards.CreepingDarkness (
-  creepingDarkness,
-  CreepingDarkness (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.CreepingDarkness (creepingDarkness, CreepingDarkness (..)) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
@@ -14,11 +9,12 @@ import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype CreepingDarkness = CreepingDarkness TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 creepingDarkness :: TreacheryCard CreepingDarkness
@@ -47,15 +43,15 @@ instance RunMessage CreepingDarkness where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasTorches <- getHasSupply iid Torches
       player <- getPlayer iid
+      sid <- getRandom
       push
         $ chooseOrRunOne player
         $ Label
           "Test {willpower} (3)"
-          [beginSkillTest iid (attrs.ability 1) attrs #willpower (Fixed 3)]
-        : [Label "Check supplies" [toDiscardBy iid (toAbilitySource attrs 1) (toTarget attrs)] | hasTorches]
+          [beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 3)]
+        : [Label "Check supplies" [toDiscardBy iid (attrs.ability 1) attrs] | hasTorches]
       pure t
-    PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
-        pure t
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+      pure t
     _ -> CreepingDarkness <$> runMessage msg attrs

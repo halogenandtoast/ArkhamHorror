@@ -1,10 +1,4 @@
-module Arkham.Asset.Cards.ShiningTrapezohedron4 (
-  shiningTrapezohedron4,
-  ShiningTrapezohedron4 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.ShiningTrapezohedron4 (shiningTrapezohedron4, ShiningTrapezohedron4 (..)) where
 
 import Arkham.Ability
 import Arkham.ActiveCost.Base
@@ -15,11 +9,12 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype ShiningTrapezohedron4 = ShiningTrapezohedron4 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shiningTrapezohedron4 :: AssetCard ShiningTrapezohedron4
@@ -43,8 +38,10 @@ getWindowCard (_ : rest) = getWindowCard rest
 instance RunMessage ShiningTrapezohedron4 where
   runMessage msg a@(ShiningTrapezohedron4 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getWindowCard -> (acId, _batchId, card)) _ -> do
+      sid <- getRandom
       push
         $ beginSkillTest
+          sid
           iid
           (attrs.ability 1)
           (ActiveCostTarget acId)

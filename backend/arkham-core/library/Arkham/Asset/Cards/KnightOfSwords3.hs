@@ -22,15 +22,18 @@ instance HasAbilities KnightOfSwords3 where
 instance RunMessage KnightOfSwords3 where
   runMessage msg a@(KnightOfSwords3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ Label
-              "Discard Knight of Swords to get +3 instead"
-              [skillTestModifier attrs iid (AnySkillValue 3), RecalculateSkillTestResults]
-          , Label "Do not discard" [skillTestModifier attrs iid (AnySkillValue 1), RecalculateSkillTestResults]
-          ]
+      withSkillTest \sid -> do
+        player <- getPlayer iid
+        push
+          $ chooseOne
+            player
+            [ Label
+                "Discard Knight of Swords to get +3 instead"
+                [skillTestModifier sid attrs iid (AnySkillValue 3), RecalculateSkillTestResults]
+            , Label
+                "Do not discard"
+                [skillTestModifier sid attrs iid (AnySkillValue 1), RecalculateSkillTestResults]
+            ]
       pure a
     InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
       push $ putCardIntoPlay iid attrs

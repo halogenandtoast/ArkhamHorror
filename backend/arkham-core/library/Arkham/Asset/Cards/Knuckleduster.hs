@@ -9,7 +9,7 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Prelude
 
 newtype Knuckleduster = Knuckleduster AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 knuckleduster :: AssetCard Knuckleduster
@@ -31,7 +31,8 @@ instance RunMessage Knuckleduster where
   runMessage msg a@(Knuckleduster attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
-      pushAll [skillTestModifier source iid (DamageDealt 1), chooseFight]
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
+      pushAll [skillTestModifier sid source iid (DamageDealt 1), chooseFight]
       pure a
     _ -> Knuckleduster <$> runMessage msg attrs

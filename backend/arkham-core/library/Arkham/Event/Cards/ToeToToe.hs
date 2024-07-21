@@ -47,7 +47,7 @@ instance RunMessage ToeToToeEffect where
     CreatedEffect eid _ (InvestigatorSource iid) _target | eid == toId attrs -> do
       pushM $ toMessage . setTarget attrs <$> onlyChooseFight (mkChooseFight iid (toSource attrs))
       pure e
-    ChoseEnemy _iid (isSource attrs -> True) enemy -> do
+    ChoseEnemy sid _iid (isSource attrs -> True) enemy -> do
       case attrs.meta of
         Just (EffectCost acId) -> do
           card <- case attrs.target of

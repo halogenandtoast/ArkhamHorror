@@ -47,9 +47,9 @@ instance HasModifiersFor WindowModifierEffect where
     | target == effectTarget = case effectMetadata of
         Just (EffectModifiers modifiers) -> case effectWindow of
           Just EffectSetupWindow -> pure $ map setActiveDuringSetup modifiers
-          Just EffectSkillTestWindow -> do
-            isSkillTest <- getIsSkillTest
-            pure $ guard isSkillTest *> modifiers
+          Just (EffectSkillTestWindow sid) -> do
+            msid <- getSkillTestId
+            pure $ guard (msid == Just sid) *> modifiers
           Just (EffectPhaseWindowFor p) -> do
             p' <- getPhase
             pure $ guard (p == p') *> modifiers

@@ -26,16 +26,18 @@ instance HasAbilities BloodstainedDagger where
 instance RunMessage BloodstainedDagger where
   runMessage msg a@(BloodstainedDagger attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseFight <- toMessage <$> mkChooseFight iid (attrs.ability 1)
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
       pushAll
-        [ skillTestModifier attrs iid (SkillModifier #combat 2)
+        [ skillTestModifier sid attrs iid (SkillModifier #combat 2)
         , chooseFight
         ]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      chooseFight <- toMessage <$> mkChooseFight iid (attrs.ability 2)
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 2)
       pushAll
-        [ skillTestModifiers attrs iid [SkillModifier #combat 2, DamageDealt 1]
+        [ skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
         , chooseFight
         ]
       pure a

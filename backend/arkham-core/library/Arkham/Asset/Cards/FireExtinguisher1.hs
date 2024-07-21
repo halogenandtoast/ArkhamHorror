@@ -27,15 +27,17 @@ instance RunMessage FireExtinguisher1 where
   runMessage msg a@(FireExtinguisher1 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
-      pushAll [skillTestModifier source iid (SkillModifier #combat 1), chooseFight]
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
+      pushAll [skillTestModifier sid source iid (SkillModifier #combat 1), chooseFight]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
-      chooseEvade <- toMessage <$> mkChooseEvade iid source
+      sid <- getRandom
+      chooseEvade <- toMessage <$> mkChooseEvade sid iid source
       pushAll
-        [ skillTestModifier source iid (SkillModifier #agility 3)
-        , createCardEffect Cards.fireExtinguisher1 Nothing source SkillTestTarget
+        [ skillTestModifier sid source iid (SkillModifier #agility 3)
+        , createCardEffect Cards.fireExtinguisher1 Nothing source (SkillTestTarget sid)
         , chooseEvade
         ]
       pure a
@@ -50,9 +52,13 @@ fireExtinguisher1Effect = cardEffect FireExtinguisher1Effect Cards.fireExtinguis
 
 instance RunMessage FireExtinguisher1Effect where
   runMessage msg e@(FireExtinguisher1Effect attrs) = case msg of
-    PassedSkillTest iid (Just Action.Evade) _ (Initiator (EnemyTarget _)) _ _ | SkillTestTarget == attrs.target -> do
-      evasions <- selectMap (EnemyEvaded iid) $ enemyEngagedWith iid
-      pushAll $ evasions <> [disable attrs]
+    PassedSkillTest iid (Just Action.Evade) _ (Initiator (EnemyTarget _)) _ _ -> do
+      withSkillTest \sid -> do
+        when (isTarget sid attrs.target) do
+          evasions <- selectMap (EnemyEvaded iid) $ enemyEngagedWith iid
+          pushAll $ evasions <> [disable attrs]
       pure e
-    SkillTestEnds _ _ -> e <$ push (disable attrs)
+    SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
+      push $ disable attrs
+      pure e
     _ -> FireExtinguisher1Effect <$> runMessage msg attrs

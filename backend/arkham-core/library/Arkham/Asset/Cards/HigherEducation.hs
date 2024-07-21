@@ -26,9 +26,11 @@ instance HasAbilities HigherEducation where
 instance RunMessage HigherEducation where
   runMessage msg a@(HigherEducation attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ skillTestModifier attrs iid (SkillModifier #willpower 1)
+      withSkillTest \sid ->
+        push $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ skillTestModifier attrs iid (SkillModifier #intellect 1)
+      withSkillTest \sid ->
+        push $ skillTestModifier sid (attrs.ability 2) iid (SkillModifier #intellect 1)
       pure a
     _ -> HigherEducation <$> runMessage msg attrs

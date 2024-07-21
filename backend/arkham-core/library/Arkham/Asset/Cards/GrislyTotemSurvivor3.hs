@@ -10,8 +10,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Import
 import Arkham.Helpers.Card
 import Arkham.Matcher
 import Arkham.SkillType
@@ -51,18 +50,19 @@ toSkillLabel (SkillIcon sType) = case sType of
 instance RunMessage GrislyTotemSurvivor3 where
   runMessage msg a@(GrislyTotemSurvivor3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getCard -> card) _ -> do
-      icons <- setFromList @(Set SkillIcon) <$> iconsForCard card
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [ Label
-            (toSkillLabel icon)
-            [ skillTestModifier attrs (toCardId card) (AddSkillIcons [icon])
-            , createCardEffect Cards.grislyTotemSurvivor3 Nothing attrs (CardTarget card)
+      withSkillTest \sid -> do
+        icons <- setFromList @(Set SkillIcon) <$> iconsForCard card
+        player <- getPlayer iid
+        push
+          $ chooseOrRunOne
+            player
+            [ Label
+              (toSkillLabel icon)
+              [ skillTestModifier sid attrs (toCardId card) (AddSkillIcons [icon])
+              , createCardEffect Cards.grislyTotemSurvivor3 (effectMetaTarget sid) attrs (CardTarget card)
+              ]
+            | icon <- setToList icons
             ]
-          | icon <- setToList icons
-          ]
       pure a
     _ -> GrislyTotemSurvivor3 <$> runMessage msg attrs
 
@@ -71,19 +71,20 @@ newtype GrislyTotemSurvivor3Effect = GrislyTotemSurvivor3Effect EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grislyTotemSurvivor3Effect :: EffectArgs -> GrislyTotemSurvivor3Effect
-grislyTotemSurvivor3Effect =
-  cardEffect GrislyTotemSurvivor3Effect Cards.grislyTotemSurvivor3
+grislyTotemSurvivor3Effect = cardEffect GrislyTotemSurvivor3Effect Cards.grislyTotemSurvivor3
 
 instance RunMessage GrislyTotemSurvivor3Effect where
   runMessage msg e@(GrislyTotemSurvivor3Effect attrs@EffectAttrs {..}) =
     case msg of
       FailedSkillTest _ _ _ SkillTestInitiatorTarget {} _ _ -> do
-        case effectTarget of
-          CardTarget card -> for_ (toCardOwner card) $ \iid ->
-            push $ ReturnToHand iid (toTarget $ toCardId card)
-          _ -> pure ()
+        withSkillTest \sid -> do
+          when (attrs.metaTarget == Just (SkillTestTarget sid)) $ do
+            case effectTarget of
+              CardTarget card -> for_ (toCardOwner card) $ \iid ->
+                push $ ReturnToHand iid (toTarget $ toCardId card)
+              _ -> pure ()
         pure e
-      SkillTestEnds _ _ -> do
+      SkillTestEnds sid _ _ | attrs.metaTarget == Just (SkillTestTarget sid) -> do
         push $ DisableEffect effectId
         pure e
       _ -> GrislyTotemSurvivor3Effect <$> runMessage msg attrs

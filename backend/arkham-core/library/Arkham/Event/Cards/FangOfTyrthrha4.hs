@@ -28,7 +28,7 @@ instance RunMessage FangOfTyrthrha4 where
         $ EnemyAt RevealedLocation
 
       pure e
-    ChoseEnemy iid (isSource attrs -> True) enemy -> do
+    ChoseEnemy sid iid (isSource attrs -> True) enemy -> do
       enemyLocation <- fieldJust EnemyLocation enemy
       yourLocation <- field InvestigatorLocation iid
       when (Just enemyLocation /= yourLocation) do

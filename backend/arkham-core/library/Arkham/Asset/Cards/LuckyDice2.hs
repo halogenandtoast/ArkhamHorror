@@ -52,7 +52,7 @@ luckyDice2Effect :: EffectArgs -> LuckyDice2Effect
 luckyDice2Effect = cardEffect (LuckyDice2Effect . (`with` Metadata False)) Cards.luckyDice2
 
 instance HasModifiersFor LuckyDice2Effect where
-  getModifiersFor target (LuckyDice2Effect (attrs `With` _)) | target == effectTarget attrs = do
+  getModifiersFor target (LuckyDice2Effect (attrs `With` _)) | target == attrs.target = do
     pure $ toModifiers attrs [IgnoreChaosToken]
   getModifiersFor _ _ = pure []
 
@@ -60,10 +60,9 @@ instance RunMessage LuckyDice2Effect where
   runMessage msg e@(LuckyDice2Effect (attrs@EffectAttrs {..} `With` (Metadata hasDrawn))) =
     case msg of
       Msg.RevealChaosToken _ _ token -> do
-        when (not hasDrawn && chaosTokenFace token == AutoFail) $ do
-          case effectSource of
-            AssetSource aid -> push (RemoveFromGame $ AssetTarget aid)
-            _ -> error "wrong source"
+        when (not hasDrawn && token.face == AutoFail) $ do
+          for_ attrs.source.asset \aid ->
+            push $ RemoveFromGame $ AssetTarget aid
         pure $ LuckyDice2Effect $ attrs `with` Metadata True
-      SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
+      SkillTestEnds _ _ _ -> e <$ push (DisableEffect effectId)
       _ -> LuckyDice2Effect . (`with` Metadata hasDrawn) <$> runMessage msg attrs

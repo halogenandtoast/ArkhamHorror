@@ -30,9 +30,10 @@ instance RunMessage AlchemicalTransmutation2 where
   runMessage msg a@(AlchemicalTransmutation2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
+      sid <- getRandom
       pushAll
-        [ createCardEffect Cards.alchemicalTransmutation2 Nothing source iid
-        , beginSkillTest iid (attrs.ability 1) attrs #willpower (Fixed 0)
+        [ createCardEffect Cards.alchemicalTransmutation2 Nothing source (SkillTestTarget sid)
+        , beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 0)
         ]
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) (min 4 -> n) -> do
@@ -51,16 +52,17 @@ instance RunMessage AlchemicalTransmutation2Effect where
   runMessage msg e@(AlchemicalTransmutation2Effect attrs) =
     case msg of
       RevealChaosToken _ iid token | toTarget iid == effectTarget attrs -> do
-        let triggers = chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
-        when triggers $ do
-          pushAll
-            [ If
-                (Window.RevealChaosTokenEffect iid token (toId attrs))
-                [assignDamage iid (effectSource attrs) 1]
-            , DisableEffect $ toId attrs
-            ]
+        getSkillTest >>= traverse_ \st -> do
+          let triggers = chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
+          when (triggers && iid == st.investigator && attrs.target == SkillTestTarget st.id) $ do
+            pushAll
+              [ If
+                  (Window.RevealChaosTokenEffect iid token (toId attrs))
+                  [assignDamage iid (effectSource attrs) 1]
+              , DisableEffect $ toId attrs
+              ]
         pure e
-      SkillTestEnds _ _ -> do
+      SkillTestEnds sid _ _ | attrs.target == SkillTestTarget sid -> do
         push $ DisableEffect $ toId attrs
         pure e
       _ -> AlchemicalTransmutation2Effect <$> runMessage msg attrs

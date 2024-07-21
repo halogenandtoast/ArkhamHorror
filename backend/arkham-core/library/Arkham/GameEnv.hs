@@ -150,6 +150,9 @@ instance MonadRandom GameT where
 getSkillTest :: HasGame m => m (Maybe SkillTest)
 getSkillTest = gameSkillTest <$> getGame
 
+getSkillTestId :: HasGame m => m (Maybe SkillTestId)
+getSkillTestId = fmap skillTestId . gameSkillTest <$> getGame
+
 getIsSkillTest :: HasGame m => m Bool
 getIsSkillTest = isJust <$> getSkillTest
 

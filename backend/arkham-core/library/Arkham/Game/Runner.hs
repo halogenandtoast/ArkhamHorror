@@ -1868,7 +1868,7 @@ runGameMessage msg g = case msg of
       let defaultCase = windows' <> [BeginSkillTestAfterFast]
 
       performRevelationSkillTestWindow <-
-        checkWindows [mkWhen $ Window.WouldPerformRevelationSkillTest iid]
+        checkWindows [mkWhen $ Window.WouldPerformRevelationSkillTest iid skillTest.id]
 
       msgs <- case skillTestType skillTest of
         ResourceSkillTest -> pure defaultCase

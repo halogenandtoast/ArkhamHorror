@@ -16,6 +16,7 @@ import Arkham.SkillType (SkillIcon (..), SkillType)
 import Arkham.Source
 import Arkham.Target
 import Data.Aeson.TH
+import Data.UUID (nil)
 import GHC.Records
 
 data SkillTestBaseValue
@@ -29,7 +30,8 @@ newtype SkillTestDifficulty = SkillTestDifficulty GameCalculation
   deriving stock Data
 
 data SkillTest = SkillTest
-  { skillTestInvestigator :: InvestigatorId
+  { skillTestId :: SkillTestId
+  , skillTestInvestigator :: InvestigatorId
   , skillTestResolveFailureInvestigator :: InvestigatorId
   , skillTestType :: SkillTestType
   , skillTestBaseValue :: SkillTestBaseValue
@@ -49,6 +51,9 @@ data SkillTest = SkillTest
   , skillTestCard :: Maybe CardId
   }
   deriving stock (Show, Eq, Data)
+
+instance HasField "id" SkillTest SkillTestId where
+  getField = skillTestId
 
 instance HasField "source" SkillTest Source where
   getField = skillTestSource
@@ -75,13 +80,13 @@ allSkillTestChaosTokens :: SkillTest -> [ChaosToken]
 allSkillTestChaosTokens SkillTest {..} = skillTestSetAsideChaosTokens
 
 instance Targetable SkillTest where
-  toTarget _ = SkillTestTarget
-  isTarget _ SkillTestTarget = True
+  toTarget s = SkillTestTarget s.id
+  isTarget s (SkillTestTarget sid) = s.id == sid
   isTarget _ _ = False
 
 instance Sourceable SkillTest where
-  toSource _ = SkillTestSource
-  isSource _ SkillTestSource = True
+  toSource s = SkillTestSource s.id
+  isSource s (SkillTestSource sid) = sid == s.id
   isSource _ _ = False
 
 data SkillTestResultsData = SkillTestResultsData
@@ -96,14 +101,16 @@ data SkillTestResultsData = SkillTestResultsData
 
 initSkillTest
   :: (Sourceable source, Targetable target)
-  => InvestigatorId
+  => SkillTestId
+  -> InvestigatorId
   -> source
   -> target
   -> SkillType
   -> SkillTestDifficulty
   -> SkillTest
-initSkillTest iid source target skillType =
+initSkillTest sid iid source target skillType =
   buildSkillTest
+    sid
     iid
     source
     target
@@ -112,16 +119,18 @@ initSkillTest iid source target skillType =
 
 buildSkillTest
   :: (Sourceable source, Targetable target)
-  => InvestigatorId
+  => SkillTestId
+  -> InvestigatorId
   -> source
   -> target
   -> SkillTestType
   -> SkillTestBaseValue
   -> SkillTestDifficulty
   -> SkillTest
-buildSkillTest iid (toSource -> source) (toTarget -> target) stType bValue difficulty =
+buildSkillTest sid iid (toSource -> source) (toTarget -> target) stType bValue difficulty = do
   SkillTest
-    { skillTestInvestigator = iid
+    { skillTestId = sid
+    , skillTestInvestigator = iid
     , skillTestResolveFailureInvestigator = iid
     , skillTestType = stType
     , skillTestBaseValue = bValue
@@ -166,6 +175,7 @@ $(deriveJSON defaultOptions ''SkillTestResultsData)
 
 instance FromJSON SkillTest where
   parseJSON = withObject "skillTest" $ \o -> do
+    skillTestId <- o .:? "id" .!= SkillTestId nil
     skillTestInvestigator <- o .: "investigator"
     skillTestResolveFailureInvestigator <- o .: "resolveFailureInvestigator"
     skillTestType <- o .: "type"

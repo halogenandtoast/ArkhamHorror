@@ -1,8 +1,4 @@
-module Arkham.Asset.Cards.BlessedBlade (
-  blessedBlade,
-  BlessedBlade (..),
-)
-where
+module Arkham.Asset.Cards.BlessedBlade (blessedBlade, BlessedBlade (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -27,25 +23,26 @@ instance HasAbilities BlessedBlade where
 instance RunMessage BlessedBlade where
   runMessage msg a@(BlessedBlade attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseFight <- toMessage <$> mkChooseFight iid (attrs.ability 1)
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
       pushAll
-        [ skillTestModifier (attrs.ability 1) iid (SkillModifier #combat 1)
+        [ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 1)
         , chooseFight
         ]
       pure a
-    RevealChaosToken SkillTestSource iid token -> do
+    RevealChaosToken (SkillTestSource sid) iid token -> do
       s <- fromJustNote "Must be in skillTest" <$> getSkillTestSource
       if isAbilitySource attrs 1 s
         then do
-          let meta = toResult @Bool attrs.meta
-          if meta && token.face `elem` [#bless, #eldersign]
+          let meta = toResult attrs.meta
+          if meta == sid && token.face `elem` [#bless, #eldersign]
             then do
-              push $ skillTestModifier (attrs.ability 1) iid (DamageDealt 1)
-              pure . BlessedBlade $ attrs & setMeta @Bool False
+              push $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+              pure . BlessedBlade $ attrs & setMeta sid
             else pure a
         else pure a
-    SkillTestEnds _ _ -> do
-      pure . BlessedBlade $ attrs & setMeta @Bool True
+    SkillTestEnds sid _ _ | maybe False (== sid) (getAssetMeta attrs) -> do
+      pure . BlessedBlade $ attrs & unsetMeta
     BeforeRevealChaosTokens -> do
       void $ runMaybeT $ do
         source <- MaybeT getSkillTestSource

@@ -21,7 +21,7 @@ instance HasAbilities OrnateBow3 where
     [ restrictedAbility a 1 ControlsThis
         $ ActionAbilityWithSkill [Action.Fight] #agility
         $ ActionCost 1
-        <> UseCost (AssetWithId $ toId a) Ammo 1
+        <> assetUseCost a Ammo 1
     , controlledAbility
         a
         2
@@ -33,8 +33,9 @@ instance RunMessage OrnateBow3 where
   runMessage msg a@(OrnateBow3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- aspect iid source (#agility `InsteadOf` #combat) (mkChooseFight iid source)
-      pushAll $ skillTestModifiers source iid [DamageDealt 2, SkillModifier #agility 2]
+      sid <- getRandom
+      chooseFight <- aspect iid source (#agility `InsteadOf` #combat) (mkChooseFight sid iid source)
+      pushAll $ skillTestModifiers sid source iid [DamageDealt 2, SkillModifier #agility 2]
         : leftOr chooseFight
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do

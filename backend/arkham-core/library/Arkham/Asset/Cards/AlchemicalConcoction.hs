@@ -23,12 +23,13 @@ instance RunMessage AlchemicalConcoction where
   runMessage msg a@(AlchemicalConcoction attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       let source = attrs.ability 1
-      chooseFight <- aspect iid source (#intellect `InsteadOf` #combat) (mkChooseFight iid source)
+      sid <- getRandom
+      chooseFight <- aspect iid source (#intellect `InsteadOf` #combat) (mkChooseFight sid iid source)
       pushAll $ leftOr chooseFight
       pure a
-    ChoseEnemy iid (isAbilitySource attrs 1 -> True) eid -> do
+    ChoseEnemy sid iid (isAbilitySource attrs 1 -> True) eid -> do
       isTheExperiment <- eid <=~> enemyIs Enemies.theExperiment
-      pushWhen isTheExperiment $ skillTestModifier (attrs.ability 1) iid (DamageDealt 6)
+      pushWhen isTheExperiment $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 6)
       pure a
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       push $ RemoveFromGame (toTarget attrs)

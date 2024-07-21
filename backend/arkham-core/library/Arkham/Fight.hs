@@ -14,8 +14,9 @@ withSkillType skillType chooseFight = chooseFight {chooseFightSkillType = skillT
 onlyChooseFight :: Functor m => m ChooseFight -> m ChooseFight
 onlyChooseFight = fmap $ \chooseFight -> chooseFight {chooseFightOnlyChoose = True}
 
-mkChooseFight :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m ChooseFight
-mkChooseFight iid source =
+mkChooseFight
+  :: (Sourceable source, HasGame m) => SkillTestId -> InvestigatorId -> source -> m ChooseFight
+mkChooseFight sid iid source =
   pure
     $ ChooseFight
       { chooseFightInvestigator = iid
@@ -26,12 +27,18 @@ mkChooseFight iid source =
       , chooseFightIsAction = False
       , chooseFightOnlyChoose = False
       , chooseFightOverride = False
+      , chooseFightSkillTest = sid
       }
 
 mkChooseFightMatch
-  :: (Sourceable source, HasGame m) => InvestigatorId -> source -> EnemyMatcher -> m ChooseFight
-mkChooseFightMatch iid source matcher = do
-  chooseFight <- mkChooseFight iid source
+  :: (Sourceable source, HasGame m)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> EnemyMatcher
+  -> m ChooseFight
+mkChooseFightMatch sid iid source matcher = do
+  chooseFight <- mkChooseFight sid iid source
   let
     isOverriden = case matcher of
       CanFightEnemyWithOverride {} -> True
@@ -41,9 +48,10 @@ mkChooseFightMatch iid source matcher = do
 
 mkFightEnemy
   :: (Sourceable source, HasGame m, AsId e, IdOf e ~ EnemyId)
-  => InvestigatorId
+  => SkillTestId
+  -> InvestigatorId
   -> source
   -> e
   -> m ChooseFight
-mkFightEnemy iid source enemy = do
-  mkChooseFight iid source <&> \cf -> cf {chooseFightEnemyMatcher = EnemyWithId (asId enemy)}
+mkFightEnemy sid iid source enemy = do
+  mkChooseFight sid iid source <&> \cf -> cf {chooseFightEnemyMatcher = EnemyWithId (asId enemy)}

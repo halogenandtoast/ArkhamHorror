@@ -32,12 +32,13 @@ instance RunMessage IneffableTruth5 where
   runMessage msg a@(IneffableTruth5 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
+      sid <- getRandom
       chooseEvade <-
-        leftOr <$> aspect iid source (#willpower `InsteadOf` #agility) (mkChooseEvade iid source)
+        leftOr <$> aspect iid source (#willpower `InsteadOf` #agility) (mkChooseEvade sid iid source)
       pushAll
-        $ [ createCardEffect Cards.ineffableTruth5 Nothing source iid
-          , createCardEffect Cards.ineffableTruth5 Nothing source SkillTestTarget
-          , skillTestModifier source iid (SkillModifier #willpower 3)
+        $ [ createCardEffect Cards.ineffableTruth5 (effectInt 1) source sid
+          , createCardEffect Cards.ineffableTruth5 (effectInt 2) source sid
+          , skillTestModifier sid source iid (SkillModifier #willpower 3)
           ]
         <> chooseEvade
       pure a
@@ -53,22 +54,32 @@ ineffableTruth5Effect = cardEffect IneffableTruth5Effect Cards.ineffableTruth5
 instance RunMessage IneffableTruth5Effect where
   runMessage msg e@(IneffableTruth5Effect attrs) = case msg of
     RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
-      when
-        (token.face `elem` [ElderSign, PlusOne, Zero])
-        $ pushAll
-          [ If
-              (Window.RevealChaosTokenEffect iid token attrs.id)
-              [LoseResources iid attrs.source 2]
-          , disable attrs
-          ]
+      whenJustM getSkillTest \st -> do
+        let triggers =
+              token.face
+                `elem` [ElderSign, PlusOne, Zero]
+                && iid
+                == st.investigator
+                && isTarget st attrs.target
+                && attrs.metaInt
+                == Just 1
+        when triggers do
+          pushAll
+            [ If
+                (Window.RevealChaosTokenEffect iid token attrs.id)
+                [LoseResources iid attrs.source 2]
+            , disable attrs
+            ]
       pure e
-    SkillTestEnds _ _ ->
-      e <$ push (disable attrs)
-    PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
-      | SkillTestTarget == attrs.target -> do
+    SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
+      push $ disable attrs
+      pure e
+    PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget (EnemyTarget eid)) _ _ -> do
+      withSkillTest \sid -> do
+        when (isTarget sid attrs.target && attrs.metaInt == Just 2) do
           pushAll
             [ EnemyDamage eid $ nonAttack iid 2
             , disable attrs
             ]
-          pure e
+      pure e
     _ -> IneffableTruth5Effect <$> runMessage msg attrs

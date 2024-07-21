@@ -24,7 +24,8 @@ instance RunMessage Rolands38Special where
       anyClues <- selectAny $ locationWithInvestigator iid <> LocationWithAnyClues
       let source = attrs.ability 1
       let n = if anyClues then 3 else 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
-      pushAll [skillTestModifiers source iid [DamageDealt 1, SkillModifier #combat n], chooseFight]
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
+      pushAll [skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat n], chooseFight]
       pure a
     _ -> Rolands38Special <$> runMessage msg attrs

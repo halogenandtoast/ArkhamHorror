@@ -28,6 +28,7 @@ instance RunMessage MysteriousGateway where
       lead <- getLeadPlayer
       investigatorIds <- select $ InvestigatorAt $ LocationWithTitle "Guest Hall"
       (holeInTheWallId, placeHoleInTheWall) <- placeSetAsideLocation Locations.holeInTheWall
+      sid <- getRandom
       pushAll
         [ placeHoleInTheWall
         , chooseOne
@@ -35,7 +36,7 @@ instance RunMessage MysteriousGateway where
             [ targetLabel
               iid'
               [ MoveTo $ move (toSource attrs) iid' holeInTheWallId
-              , beginSkillTest iid' (ActSource aid) iid' #willpower (Fixed 4)
+              , beginSkillTest sid iid' (ActSource aid) iid' #willpower (Fixed 4)
               ]
             | iid' <- investigatorIds
             ]

@@ -27,7 +27,8 @@ instance HasAbilities IshimaruHaruko where
 instance RunMessage IshimaruHaruko where
   runMessage msg a@(IshimaruHaruko attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ parley iid (attrs.ability 1) attrs #willpower (Fixed 2)
+      sid <- getRandom
+      push $ parley sid iid (attrs.ability 1) attrs #willpower (Fixed 2)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       modifiers <- getModifiers iid

@@ -49,16 +49,17 @@ toSkillLabel (SkillIcon sType) = case sType of
 instance RunMessage GrislyTotemSeeker3 where
   runMessage msg a@(GrislyTotemSeeker3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getCard -> card) _ -> do
-      icons <- setFromList @(Set SkillIcon) <$> iconsForCard card
-      player <- getPlayer iid
-      pushAll
-        [ chooseOrRunOne player
-            $ [ Label (toSkillLabel icon)
-                $ [skillTestModifier (toAbilitySource attrs 1) (toCardId card) (AddSkillIcons [icon])]
-              | icon <- setToList icons
-              ]
-        , createCardEffect Cards.grislyTotemSeeker3 Nothing (toAbilitySource attrs 1) (toTarget iid)
-        ]
+      withSkillTest \sid -> do
+        icons <- setFromList @(Set SkillIcon) <$> iconsForCard card
+        player <- getPlayer iid
+        pushAll
+          [ chooseOrRunOne player
+              $ [ Label (toSkillLabel icon)
+                  $ [skillTestModifier sid (attrs.ability 1) card (AddSkillIcons [icon])]
+                | icon <- setToList icons
+                ]
+          , createCardEffect Cards.grislyTotemSeeker3 Nothing (toAbilitySource attrs 1) sid
+          ]
       pure a
     _ -> GrislyTotemSeeker3 <$> runMessage msg attrs
 
@@ -73,10 +74,12 @@ instance RunMessage GrislyTotemSeeker3Effect where
   runMessage msg e@(GrislyTotemSeeker3Effect attrs) =
     case msg of
       PassedSkillTest iid _ _ _ _ _ -> do
-        let drawing = drawCards iid (effectSource attrs) 1
-        pushAll [DisableEffect (toId attrs), drawing]
+        withSkillTest \sid -> do
+          when (isTarget sid attrs.target) do
+            let drawing = drawCards iid (effectSource attrs) 1
+            pushAll [DisableEffect (toId attrs), drawing]
         pure e
-      SkillTestEnds _ _ -> do
+      SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
         push $ DisableEffect $ toId attrs
         pure e
       _ -> GrislyTotemSeeker3Effect <$> runMessage msg attrs

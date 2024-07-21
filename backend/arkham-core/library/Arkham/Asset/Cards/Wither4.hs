@@ -28,11 +28,12 @@ instance RunMessage Wither4 where
   runMessage msg a@(Wither4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
+      sid <- getRandom
       chooseFight <-
-        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight iid source)
+        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
       pushAll
-        $ [ createCardEffect Cards.wither4 Nothing source iid
-          , skillTestModifier source iid (SkillModifier #willpower 2)
+        $ [ createCardEffect Cards.wither4 (effectMetaTarget sid) source iid
+          , skillTestModifier sid source iid (SkillModifier #willpower 2)
           ]
         <> chooseFight
       pure a
@@ -48,24 +49,29 @@ wither4Effect = cardEffect Wither4Effect Cards.wither4
 instance RunMessage Wither4Effect where
   runMessage msg e@(Wither4Effect attrs) = case msg of
     RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
-      enemyId <- fromJustNote "no attacked enemy" <$> getAttackedEnemy
-      when (token.face `elem` [Skull, Cultist, Tablet, ElderThing]) do
-        iid' <- selectJust TurnInvestigator
-        pushAll
-          [ If
-              (Window.RevealChaosTokenEffect iid token attrs.id)
-              [ CreateWindowModifierEffect
-                  (EffectTurnWindow iid')
-                  ( EffectModifiers
-                      $ toModifiers
+      withSkillTest \sid -> do
+        enemyId <- fromJustNote "no attacked enemy" <$> getAttackedEnemy
+        let triggers =
+              token.face
+                `elem` [Skull, Cultist, Tablet, ElderThing]
+                && maybe False (isTarget sid) attrs.metaTarget
+        when triggers do
+          iid' <- selectJust TurnInvestigator
+          pushAll
+            [ If
+                (Window.RevealChaosTokenEffect iid token attrs.id)
+                [ CreateWindowModifierEffect
+                    (EffectTurnWindow iid')
+                    ( effectModifiers
                         attrs
                         [EnemyFightWithMin (-1) (Min 1), EnemyEvadeWithMin (-1) (Min 1), HealthModifierWithMin (-1) (Min 1)]
-                  )
-                  attrs.source
-                  (toTarget enemyId)
-              ]
-          , disable attrs
-          ]
+                    )
+                    attrs.source
+                    (toTarget enemyId)
+                ]
+            , disable attrs
+            ]
       pure e
-    SkillTestEnds _ _ -> e <$ push (disable attrs)
+    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
+      e <$ push (disable attrs)
     _ -> Wither4Effect <$> runMessage msg attrs

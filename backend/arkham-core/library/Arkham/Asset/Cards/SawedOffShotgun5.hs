@@ -19,14 +19,17 @@ instance HasAbilities SawedOffShotgun5 where
 instance RunMessage SawedOffShotgun5 where
   runMessage msg a@(SawedOffShotgun5 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ mkChooseFight iid (attrs.ability 1)
+      sid <- getRandom
+      pushM $ mkChooseFight sid iid (attrs.ability 1)
       pure a
     FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
-      -- This has to be handled specially for cards like Oops!
-      let val = max 1 (min 6 n)
-      push $ skillTestModifier (attrs.ability 1) iid (DamageDealtToInvestigator val)
+      withSkillTest \sid -> do
+        -- This has to be handled specially for cards like Oops!
+        let val = max 1 (min 6 n)
+        push $ skillTestModifier sid (attrs.ability 1) iid (DamageDealtToInvestigator val)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
-      push $ skillTestModifier (attrs.ability 1) iid (DamageDealt $ max 1 (min 6 n))
+      withSkillTest \sid -> do
+        push $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt $ max 1 (min 6 n))
       pure a
     _ -> SawedOffShotgun5 <$> runMessage msg attrs

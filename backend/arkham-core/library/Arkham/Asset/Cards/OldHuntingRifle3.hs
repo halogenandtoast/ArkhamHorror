@@ -38,10 +38,11 @@ instance RunMessage OldHuntingRifle3 where
   runMessage msg a@(OldHuntingRifle3 (attrs `With` meta)) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
-      pushAll [skillTestModifiers source iid [SkillModifier #combat 3, DamageDealt 2], chooseFight]
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
+      pushAll [skillTestModifiers sid source iid [SkillModifier #combat 3, DamageDealt 2], chooseFight]
       pure a
-    Msg.RevealChaosToken SkillTestSource _ t | t.face `elem` [Skull, AutoFail] -> do
+    Msg.RevealChaosToken (SkillTestSource _) _ t | t.face `elem` [Skull, AutoFail] -> do
       mSkillTestSource <- getSkillTestSource
       for_ mSkillTestSource $ \skillTestSource ->
         pushWhen (isAbilitySource attrs 1 skillTestSource) FailSkillTest

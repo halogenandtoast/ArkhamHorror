@@ -547,9 +547,12 @@ setMeta :: ToJSON a => a -> AssetAttrs -> AssetAttrs
 setMeta a = metaL .~ toJSON a
 
 getAssetMeta :: FromJSON a => AssetAttrs -> Maybe a
-getAssetMeta a = case fromJSON (assetMeta a) of
+getAssetMeta attrs = case fromJSON attrs.meta of
   Error _ -> Nothing
-  Success a' -> Just a'
+  Success v' -> Just v'
+
+unsetMeta :: AssetAttrs -> AssetAttrs
+unsetMeta = metaL .~ Null
 
 getAssetMetaDefault :: FromJSON a => a -> AssetAttrs -> a
 getAssetMetaDefault def = fromMaybe def . getAssetMeta

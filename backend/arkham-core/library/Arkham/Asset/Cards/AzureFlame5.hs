@@ -28,11 +28,12 @@ instance RunMessage AzureFlame5 where
   runMessage msg a@(AzureFlame5 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
+      sid <- getRandom
       chooseFight <-
-        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight iid source)
+        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
       pushAll
-        $ [ skillTestModifiers attrs iid [DamageDealt 2, SkillModifier #willpower 3]
-          , createCardEffect Cards.azureFlame5 Nothing source iid
+        $ [ skillTestModifiers sid attrs iid [DamageDealt 2, SkillModifier #willpower 3]
+          , createCardEffect Cards.azureFlame5 Nothing source sid
           ]
         <> chooseFight
       pure a
@@ -48,13 +49,18 @@ azureFlame5Effect = cardEffect AzureFlame5Effect Cards.azureFlame5
 instance RunMessage AzureFlame5Effect where
   runMessage msg e@(AzureFlame5Effect attrs@EffectAttrs {..}) = case msg of
     RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget -> do
-      when (token.face `elem` [ElderSign, PlusOne, Zero])
-        $ pushAll
-          [ If
-              (Window.RevealChaosTokenEffect iid token effectId)
-              [InvestigatorAssignDamage iid effectSource DamageAny 2 0]
-          , DisableEffect effectId
-          ]
+      whenJustM getSkillTest \st -> do
+        let triggers =
+              token.face `elem` [ElderSign, PlusOne, Zero] && iid == st.investigator && isTarget st attrs.target
+        when triggers do
+          pushAll
+            [ If
+                (Window.RevealChaosTokenEffect iid token effectId)
+                [InvestigatorAssignDamage iid effectSource DamageAny 2 0]
+            , DisableEffect effectId
+            ]
       pure e
-    SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
+    SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
+      push $ DisableEffect effectId
+      pure e
     _ -> AzureFlame5Effect <$> runMessage msg attrs

@@ -22,19 +22,21 @@ instance RunMessage Kukri where
   runMessage msg a@(Kukri attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
-      pushAll [skillTestModifier source iid (SkillModifier #combat 1), chooseFight]
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
+      pushAll [skillTestModifier sid source iid (SkillModifier #combat 1), chooseFight]
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      actionRemainingCount <- field InvestigatorRemainingActions iid
-      player <- getPlayer iid
-      pushWhen (actionRemainingCount > 0)
-        $ chooseOne
-          player
-          [ Label
-              "Spend 1 action to deal +1 damage"
-              [LoseActions iid (attrs.ability 1) 1, skillTestModifier attrs iid (DamageDealt 1)]
-          , Label "Skip additional Kukri damage" []
-          ]
+      withSkillTest \sid -> do
+        actionRemainingCount <- field InvestigatorRemainingActions iid
+        player <- getPlayer iid
+        pushWhen (actionRemainingCount > 0)
+          $ chooseOne
+            player
+            [ Label
+                "Spend 1 action to deal +1 damage"
+                [LoseActions iid (attrs.ability 1) 1, skillTestModifier sid attrs iid (DamageDealt 1)]
+            , Label "Skip additional Kukri damage" []
+            ]
       pure a
     _ -> Kukri <$> runMessage msg attrs

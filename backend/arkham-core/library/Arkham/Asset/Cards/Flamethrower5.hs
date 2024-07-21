@@ -26,11 +26,12 @@ instance RunMessage Flamethrower5 where
   runMessage msg a@(Flamethrower5 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
+      sid <- getRandom
       enemies <- withMaybeMaxField Field.EnemyFight =<< select (enemyEngagedWith iid)
       chooseFight <-
-        toMessage . setTarget attrs <$> mkChooseFightMatch iid source (oneOf $ map EnemyWithId enemies)
+        toMessage . setTarget attrs <$> mkChooseFightMatch sid iid source (oneOf $ map EnemyWithId enemies)
       pushAll
-        [ skillTestModifier attrs iid (SkillModifier #combat 4)
+        [ skillTestModifier sid attrs iid (SkillModifier #combat 4)
         , chooseFight
         ]
       pure a

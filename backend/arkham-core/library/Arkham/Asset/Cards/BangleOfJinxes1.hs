@@ -26,7 +26,8 @@ instance HasAbilities BangleOfJinxes1 where
 instance RunMessage BangleOfJinxes1 where
   runMessage msg a@(BangleOfJinxes1 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ skillTestModifier attrs iid (AnySkillValue 2)
+      withSkillTest \sid ->
+        push $ skillTestModifier sid attrs iid (AnySkillValue 2)
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       push $ AddUses (attrs.ability 2) (toId a) Charge 1

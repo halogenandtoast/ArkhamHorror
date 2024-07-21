@@ -21,8 +21,9 @@ instance RunMessage EighteenDerringer where
   runMessage msg a@(EighteenDerringer attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
-      pushAll [skillTestModifiers source iid [DamageDealt 1, SkillModifier #combat 2], chooseFight]
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
+      pushAll [skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat 2], chooseFight]
       pure a
     FailedThisSkillTest _ (isSource attrs -> True) -> do
       push $ AddUses (attrs.ability 1) (toId attrs) Ammo 1

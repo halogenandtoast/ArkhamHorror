@@ -27,7 +27,7 @@ instance RunMessage NarrowEscape where
       pushAll
         [ CancelNext (toSource attrs) AttackMessage
         , CreateWindowModifierEffect
-            (FirstEffectWindow [EffectSkillTestWindow, EffectTurnWindow iid'])
+            (FirstEffectWindow [EffectNextSkillTestWindow, EffectTurnWindow iid'])
             (EffectModifiers $ toModifiers attrs [AnySkillValue 2])
             (toSource attrs)
             (InvestigatorTarget iid)

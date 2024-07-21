@@ -20,24 +20,26 @@ instance HasAbilities BerettaM19184 where
 instance RunMessage BerettaM19184 where
   runMessage msg a@(BerettaM19184 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseFight <- toMessage <$> mkChooseFight iid (attrs.ability 1)
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
       pushAll
-        [ skillTestModifiers (attrs.ability 1) iid [DamageDealt 1, SkillModifier #combat 4]
+        [ skillTestModifiers sid (attrs.ability 1) iid [DamageDealt 1, SkillModifier #combat 4]
         , chooseFight
         ]
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
-      if n >= 4
-        then pushAll [ready attrs, skillTestModifier (attrs.ability 1) iid (DamageDealt 1)]
-        else do
-          player <- getPlayer iid
-          push
-            $ chooseOne
-              player
-              [ Label "Ready Beretta M1918" [ready attrs]
-              , Label
-                  "Deal an additional +1 damage"
-                  [skillTestModifier (attrs.ability 1) iid (DamageDealt 1)]
-              ]
+      withSkillTest \sid ->
+        if n >= 4
+          then pushAll [ready attrs, skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)]
+          else do
+            player <- getPlayer iid
+            push
+              $ chooseOne
+                player
+                [ Label "Ready Beretta M1918" [ready attrs]
+                , Label
+                    "Deal an additional +1 damage"
+                    [skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)]
+                ]
       pure a
     _ -> BerettaM19184 <$> runMessage msg attrs

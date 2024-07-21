@@ -301,14 +301,15 @@ instance RunMessage APhantomOfTruth where
       when (isHardExpert attrs) cultistEffect
       pure s
     ResolveChaosToken _ Tablet _ -> do
-      pushAll
-        [ CreateWindowModifierEffect
-            EffectSkillTestWindow
-            (EffectModifiers $ toModifiers attrs [CancelSkills])
-            (ChaosTokenEffectSource Tablet)
-            SkillTestTarget
-        , CancelSkillEffects
-        ]
+      withSkillTest \sid ->
+        pushAll
+          [ CreateWindowModifierEffect
+              (EffectSkillTestWindow sid)
+              (EffectModifiers $ toModifiers attrs [CancelSkills])
+              (ChaosTokenEffectSource Tablet)
+              SkillTestTarget
+          , CancelSkillEffects
+          ]
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> case chaosTokenFace token of
       Cultist | isEasyStandard attrs -> s <$ cultistEffect

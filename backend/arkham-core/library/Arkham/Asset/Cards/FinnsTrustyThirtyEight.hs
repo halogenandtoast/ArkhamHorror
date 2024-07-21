@@ -8,7 +8,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype FinnsTrustyThirtyEight = FinnsTrustyThirtyEight AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 finnsTrustyThirtyEight :: AssetCard FinnsTrustyThirtyEight
@@ -31,7 +31,8 @@ instance RunMessage FinnsTrustyThirtyEight where
   runMessage msg a@(FinnsTrustyThirtyEight attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
-      pushAll [skillTestModifier source iid (SkillModifier #combat 2), chooseFight]
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
+      pushAll [skillTestModifier sid source iid (SkillModifier #combat 2), chooseFight]
       pure a
     _ -> FinnsTrustyThirtyEight <$> runMessage msg attrs

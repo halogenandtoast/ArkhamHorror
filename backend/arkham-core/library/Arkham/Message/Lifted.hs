@@ -1,7 +1,8 @@
 module Arkham.Message.Lifted (module X, module Arkham.Message.Lifted) where
 
-import Arkham.Ability.Types
+import Arkham.Ability
 import Arkham.Act.Types (ActAttrs (actDeckId))
+import Arkham.Action (Action)
 import Arkham.Agenda.Types (AgendaAttrs (agendaDeckId))
 import Arkham.Attack.Types
 import Arkham.Calculation
@@ -12,7 +13,6 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue hiding (insertAfterMatching)
 import Arkham.Classes.HasQueue as X (runQueueT)
 import Arkham.Classes.Query
-import Arkham.Cost
 import Arkham.DamageEffect
 import Arkham.Deck (IsDeck (..))
 import Arkham.Discover as X (IsInvestigate (..))
@@ -21,6 +21,7 @@ import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.Enemy.Creation
 import Arkham.Evade
 import Arkham.Fight
+import Arkham.Game.Helpers (getActionsWith, getIsPlayable)
 import Arkham.Helpers
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Campaign qualified as Msg
@@ -29,7 +30,7 @@ import Arkham.Helpers.Enemy qualified as Msg
 import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
 import Arkham.Helpers.Log qualified as Msg
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers (ModifierType (IgnoreRevelation, MetaModifier), getMetaMaybe)
+import Arkham.Helpers.Modifiers (getMetaMaybe)
 import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref (sourceToTarget)
@@ -37,18 +38,21 @@ import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.Window qualified as Msg
 import Arkham.Helpers.Xp
 import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message hiding (story)
+import Arkham.Modifier
 import Arkham.Movement
 import Arkham.Phase (Phase)
 import Arkham.Prelude hiding (pred)
+import Arkham.Projection
 import Arkham.Query
 import Arkham.ScenarioLogKey
 import Arkham.SkillType qualified as SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
-import Arkham.Window (Window, WindowType)
+import Arkham.Window (Window, WindowType, defaultWindows)
 import Arkham.Window qualified as Window
 import Control.Monad.Trans.Class
 
@@ -1007,3 +1011,17 @@ cancelAttack source _ = push $ CancelNext (toSource source) AttackMessage
 
 moveWithSkillTest :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
 moveWithSkillTest f = lift $ Arkham.Classes.HasQueue.mapQueue \msg -> if f msg then MoveWithSkillTest msg else msg
+
+performActionAction
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Action -> m ()
+performActionAction iid source action = do
+  let windows' = defaultWindows iid
+  let decreaseCost = flip applyAbilityModifiers [ActionCostModifier (-1)]
+  actions <- filter (`abilityIs` action) <$> getActionsWith iid windows' decreaseCost
+  handCards <- field InvestigatorHand iid
+  let actionCards = filter (elem action . cdActions . toCardDef) handCards
+  playableCards <- filterM (getIsPlayable iid source (UnpaidCost NoAction) windows') actionCards
+  when (notNull actions || notNull playableCards) do
+    Arkham.Message.Lifted.chooseOne iid
+      $ map ((\f -> f windows' [] []) . AbilityLabel iid) actions
+      <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- playableCards]

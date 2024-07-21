@@ -1,15 +1,10 @@
-module Arkham.Asset.Cards.ArcaneStudies2 (
-  ArcaneStudies2 (..),
-  arcaneStudies2,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.ArcaneStudies2 (ArcaneStudies2 (..), arcaneStudies2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Prelude
 
 newtype ArcaneStudies2 = ArcaneStudies2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -34,22 +29,12 @@ instance HasAbilities ArcaneStudies2 where
 
 instance RunMessage ArcaneStudies2 where
   runMessage msg a@(ArcaneStudies2 attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              ( skillTestModifier
-                  attrs
-                  (InvestigatorTarget iid)
-                  (SkillModifier SkillWillpower 1)
-              )
-    UseCardAbility iid source 2 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              ( skillTestModifier
-                  attrs
-                  (InvestigatorTarget iid)
-                  (SkillModifier SkillIntellect 1)
-              )
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      withSkillTest \sid ->
+        push $ skillTestModifier sid attrs iid (SkillModifier #willpower 1)
+      pure a
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      withSkillTest \sid ->
+        push $ skillTestModifier sid attrs iid (SkillModifier #intellect 1)
+      pure a
     _ -> ArcaneStudies2 <$> runMessage msg attrs

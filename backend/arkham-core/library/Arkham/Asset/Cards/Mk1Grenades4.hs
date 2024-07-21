@@ -23,8 +23,9 @@ instance RunMessage Mk1Grenades4 where
   runMessage msg a@(Mk1Grenades4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage . setTarget attrs <$> mkChooseFight iid source
-      pushAll [skillTestModifier source iid (SkillModifier #combat 2), chooseFight]
+      sid <- getRandom
+      chooseFight <- toMessage . setTarget attrs <$> mkChooseFight sid iid source
+      pushAll [skillTestModifier sid source iid (SkillModifier #combat 2), chooseFight]
       pure a
     Successful (Action.Fight, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
       let

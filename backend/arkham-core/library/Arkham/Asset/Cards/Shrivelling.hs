@@ -33,11 +33,12 @@ instance RunMessage Shrivelling where
   runMessage msg a@(Shrivelling attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       let source = attrs.ability 1
+      sid <- getRandom
       chooseFight <-
-        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight iid source)
+        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
       pushAll
-        $ [ skillTestModifier source iid (DamageDealt 1)
-          , createCardEffect Cards.shrivelling Nothing source iid
+        $ [ skillTestModifier sid source iid (DamageDealt 1)
+          , createCardEffect Cards.shrivelling (effectMetaTarget sid) source iid
           ]
         <> chooseFight
       pure a
@@ -54,11 +55,13 @@ instance RunMessage ShrivellingEffect where
   runMessage msg e@(ShrivellingEffect attrs) = case msg of
     RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
       let horror = maybe 1 intFromMetadata attrs.metadata
-      when (token.face `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        $ pushAll
+      when (token.face `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) do
+        pushAll
           [ If (Window.RevealChaosTokenEffect iid token (toId attrs)) [assignHorror iid attrs.source horror]
           , disable attrs
           ]
       pure e
-    SkillTestEnds _ _ -> e <$ push (disable attrs)
+    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
+      push $ disable attrs
+      pure e
     _ -> ShrivellingEffect <$> runMessage msg attrs

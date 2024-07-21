@@ -56,7 +56,7 @@ sourceToTarget = \case
   ChaosTokenEffectSource _ -> error "not implemented"
   AgendaSource aid -> AgendaTarget aid
   LocationSource lid -> LocationTarget lid
-  SkillTestSource -> SkillTestTarget
+  SkillTestSource sid -> SkillTestTarget sid
   TreacherySource tid -> TreacheryTarget tid
   EventSource eid -> EventTarget eid
   SkillSource sid -> SkillTarget sid
@@ -101,7 +101,7 @@ targetToSource = \case
   PhaseTarget _ -> error "no need"
   LocationTarget lid -> LocationSource lid
   (SetAsideLocationsTarget _) -> error "can not convert"
-  SkillTestTarget -> SkillTestSource
+  SkillTestTarget sid -> SkillTestSource sid
   TreacheryTarget tid -> TreacherySource tid
   EncounterDeckTarget -> error "can not covert"
   ScenarioDeckTarget -> error "can not covert"

@@ -1,15 +1,10 @@
-module Arkham.Asset.Cards.FeedTheMind3 (
-  feedTheMind3,
-  FeedTheMind3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.FeedTheMind3 (feedTheMind3, FeedTheMind3 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype FeedTheMind3 = FeedTheMind3 AssetAttrs
@@ -21,17 +16,14 @@ feedTheMind3 = asset FeedTheMind3 Cards.feedTheMind3
 
 instance HasAbilities FeedTheMind3 where
   getAbilities (FeedTheMind3 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbility []
-        $ ActionCost 1
-        <> ExhaustCost (toTarget a)
-        <> UseCost (AssetWithId $ toId a) Secret 1
+    [ restrictedAbility a 1 ControlsThis $ actionAbilityWithCost $ exhaust a <> assetUseCost a Secret 1
     ]
 
 instance RunMessage FeedTheMind3 where
   runMessage msg a@(FeedTheMind3 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid (attrs.ability 1) iid #intellect (Fixed 0)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 0)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       let drawing = drawCards iid (attrs.ability 1) n

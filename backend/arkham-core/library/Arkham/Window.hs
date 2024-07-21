@@ -247,7 +247,7 @@ data WindowType
   | RevealChaosTokenEventEffect InvestigatorId [ChaosToken] EventId
   | RevealChaosTokenAssetAbilityEffect InvestigatorId [ChaosToken] AssetId
   | RevealChaosTokenWithNegativeModifier InvestigatorId ChaosToken
-  | WouldPerformRevelationSkillTest InvestigatorId
+  | WouldPerformRevelationSkillTest InvestigatorId SkillTestId
   | SpentUses InvestigatorId Source AssetId UseType Int
   | SkillTest SkillTestType
   | SkillTestEnded SkillTest

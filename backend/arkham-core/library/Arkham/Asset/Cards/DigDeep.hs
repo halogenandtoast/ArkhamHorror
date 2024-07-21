@@ -1,14 +1,10 @@
-module Arkham.Asset.Cards.DigDeep (
-  DigDeep (..),
-  digDeep,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.DigDeep (DigDeep (..), digDeep) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype DigDeep = DigDeep AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -30,9 +26,11 @@ instance HasAbilities DigDeep where
 instance RunMessage DigDeep where
   runMessage msg a@(DigDeep attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ skillTestModifier (toAbilitySource attrs 1) iid (SkillModifier #willpower 1)
+      withSkillTest \sid ->
+        push $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ skillTestModifier (toAbilitySource attrs 2) iid (SkillModifier #agility 1)
+      withSkillTest \sid ->
+        push $ skillTestModifier sid (attrs.ability 2) iid (SkillModifier #agility 1)
       pure a
     _ -> DigDeep <$> runMessage msg attrs

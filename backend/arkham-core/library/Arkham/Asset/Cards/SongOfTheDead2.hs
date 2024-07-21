@@ -17,17 +17,19 @@ songOfTheDead2 :: AssetCard SongOfTheDead2
 songOfTheDead2 = asset SongOfTheDead2 Cards.songOfTheDead2
 
 instance HasAbilities SongOfTheDead2 where
-  getAbilities (SongOfTheDead2 x) = [restrictedAbility x 1 ControlsThis $ fightAction (assetUseCost x Charge 1)]
+  getAbilities (SongOfTheDead2 x) =
+    [restrictedAbility x 1 ControlsThis $ fightAction (assetUseCost x Charge 1)]
 
 instance RunMessage SongOfTheDead2 where
   runMessage msg a@(SongOfTheDead2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
+      sid <- getRandom
       chooseFight <-
-        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight iid source)
+        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
       pushAll
-        $ [ skillTestModifier source iid (SkillModifier #willpower 1)
-          , createCardEffect Cards.songOfTheDead2 Nothing source iid
+        $ [ skillTestModifier sid source iid (SkillModifier #willpower 1)
+          , createCardEffect Cards.songOfTheDead2 (effectMetaTarget sid) source iid
           ]
         <> chooseFight
       pure a
@@ -44,11 +46,14 @@ instance HasModifiersFor SongOfTheDead2Effect
 
 instance RunMessage SongOfTheDead2Effect where
   runMessage msg e@(SongOfTheDead2Effect attrs@EffectAttrs {..}) = case msg of
-    RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget && token.face == #skull -> do
-      push
-        $ If
-          (Window.RevealChaosTokenEffect iid token effectId)
-          [skillTestModifier attrs effectTarget (DamageDealt 2)]
+    RevealChaosToken _ iid token | isTarget iid attrs.target && token.face == #skull -> do
+      withSkillTest \sid ->
+        push
+          $ If
+            (Window.RevealChaosTokenEffect iid token effectId)
+            [skillTestModifier sid attrs effectTarget (DamageDealt 2)]
       pure e
-    SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
+    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
+      push $ DisableEffect effectId
+      pure e
     _ -> SongOfTheDead2Effect <$> runMessage msg attrs

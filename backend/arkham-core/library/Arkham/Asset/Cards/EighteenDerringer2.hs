@@ -26,8 +26,10 @@ instance RunMessage EighteenDerringer2 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       let amount = if givesBonus metadata then 3 else 2
-      chooseFight <- toMessage <$> mkChooseFight iid source
-      pushAll [skillTestModifiers attrs iid [DamageDealt 1, SkillModifier #combat amount], chooseFight]
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
+      pushAll
+        [skillTestModifiers sid attrs iid [DamageDealt 1, SkillModifier #combat amount], chooseFight]
       pure . EighteenDerringer2 $ attrs `with` Metadata False
     FailedThisSkillTest _ (isSource attrs -> True) -> do
       push $ AddUses (attrs.ability 1) (toId attrs) Ammo 1

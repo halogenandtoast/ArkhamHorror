@@ -44,7 +44,8 @@ instance HasAbilities BeyondTheMistV3 where
 instance RunMessage BeyondTheMistV3 where
   runMessage msg a@(BeyondTheMistV3 attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ skillTestModifier (toSource attrs) SkillTestTarget (Difficulty (-2))
+      withSkillTest \sid ->
+        push $ skillTestModifier sid (toSource attrs) (SkillTestTarget sid) (Difficulty (-2))
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       push $ AdvanceAct (toId a) (toSource attrs) AdvancedWithOther

@@ -29,10 +29,11 @@ instance RunMessage Armageddon where
   runMessage msg a@(Armageddon attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      chooseFight <- aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight iid source)
+      sid <- getRandom
+      chooseFight <- aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
       pushAll
-        $ [ skillTestModifier source iid (DamageDealt 1)
-          , createCardEffect Cards.armageddon Nothing source iid
+        $ [ skillTestModifier sid source iid (DamageDealt 1)
+          , createCardEffect Cards.armageddon (effectMetaTarget sid) source iid
           ]
         <> leftOr chooseFight
       pure a
@@ -48,35 +49,37 @@ armageddonEffect = cardEffect ArmageddonEffect Cards.armageddon
 instance RunMessage ArmageddonEffect where
   runMessage msg e@(ArmageddonEffect attrs) = case msg of
     RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
-      let
-        handleIt assetId = do
-          when (token.face == #curse) do
-            enemies <- select $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource attrs.source
-            stillInPlay <- selectAny $ AssetWithId assetId
-            player <- getPlayer iid
-            pushAll
-              $ [ chooseOrRunOne
-                  player
-                  $ [ Label "Place 1 Charge on Armageddon" [AddUses attrs.source assetId Charge 1]
-                    | stillInPlay
-                    ]
-                  <> [ Label
-                        "Deal 1 damage to an enemy at your location"
-                        [ chooseOne
-                            player
-                            [targetLabel enemy [EnemyDamage enemy $ nonAttack attrs.source 1] | enemy <- enemies]
+      withSkillTest \sid -> do
+        when (maybe False (isTarget sid) attrs.metaTarget) $ do
+          let
+            handleIt assetId = do
+              when (token.face == #curse) do
+                enemies <- select $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource attrs.source
+                stillInPlay <- selectAny $ AssetWithId assetId
+                player <- getPlayer iid
+                pushAll
+                  $ [ chooseOrRunOne
+                      player
+                      $ [ Label "Place 1 Charge on Armageddon" [AddUses attrs.source assetId Charge 1]
+                        | stillInPlay
                         ]
+                      <> [ Label
+                            "Deal 1 damage to an enemy at your location"
+                            [ chooseOne
+                                player
+                                [targetLabel enemy [EnemyDamage enemy $ nonAttack attrs.source 1] | enemy <- enemies]
+                            ]
+                         ]
+                    | stillInPlay || notNull enemies
+                    ]
+                  <> [ disable attrs
                      ]
-                | stillInPlay || notNull enemies
-                ]
-              <> [ disable attrs
-                 ]
-      case attrs.source of
-        AbilitySource (AssetSource assetId) 1 -> handleIt assetId
-        AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
-        _ -> error "wrong source"
+          case attrs.source of
+            AbilitySource (AssetSource assetId) 1 -> handleIt assetId
+            AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
+            _ -> error "wrong source"
       pure e
-    SkillTestEnds _ _ -> do
+    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
       push (disable attrs)
       pure e
     _ -> ArmageddonEffect <$> runMessage msg attrs

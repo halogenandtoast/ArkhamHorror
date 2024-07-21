@@ -27,7 +27,8 @@ instance RunMessage GarroteWire2 where
   runMessage msg a@(GarroteWire2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFightMatch iid source (EnemyWithRemainingHealth $ static 1)
-      pushAll [skillTestModifier source iid (SkillModifier #combat 2), chooseFight]
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFightMatch sid iid source (EnemyWithRemainingHealth $ static 1)
+      pushAll [skillTestModifier sid source iid (SkillModifier #combat 2), chooseFight]
       pure a
     _ -> GarroteWire2 <$> runMessage msg attrs

@@ -15,7 +15,8 @@ data EffectWindow
   | EffectPhaseWindowFor Phase
   | EffectUntilEndOfPhaseWindowFor Phase
   | EffectCostWindow
-  | EffectSkillTestWindow
+  | EffectSkillTestWindow SkillTestId
+  | EffectNextSkillTestWindow
   | EffectRoundWindow
   | EffectNextActionWindow
   | EffectSetupWindow
@@ -37,5 +38,5 @@ data EffectWindow
   deriving stock (Eq, Show, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
-instance IsLabel "skillTest" EffectWindow where
+instance IsLabel "skillTest" (SkillTestId -> EffectWindow) where
   fromLabel = EffectSkillTestWindow

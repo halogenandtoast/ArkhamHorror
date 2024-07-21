@@ -26,16 +26,20 @@ instance RunMessage FortyOneDerringer2 where
   runMessage msg a@(FortyOneDerringer2 (attrs `With` metadata)) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
-      pushAll [skillTestModifier source iid (SkillModifier #combat 2), chooseFight]
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
+      pushAll [skillTestModifier sid source iid (SkillModifier #combat 2), chooseFight]
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 1 -> do
-      push (skillTestModifier attrs iid (DamageDealt 1))
-      if n >= 3 && not (gotExtraAction metadata)
-        then do
-          push $ GainActions iid (attrs.ability 1) 1
-          pure $ FortyOneDerringer2 (attrs `With` Metadata True)
-        else pure a
+      getSkillTestId >>= \case
+        Nothing -> pure a
+        Just sid -> do
+          push (skillTestModifier sid attrs iid (DamageDealt 1))
+          if n >= 3 && not (gotExtraAction metadata)
+            then do
+              push $ GainActions iid (attrs.ability 1) 1
+              pure $ FortyOneDerringer2 (attrs `With` Metadata True)
+            else pure a
     EndTurn (controlledBy attrs -> True) ->
       pure $ FortyOneDerringer2 (attrs `With` Metadata False)
     _ -> FortyOneDerringer2 . (`with` metadata) <$> runMessage msg attrs

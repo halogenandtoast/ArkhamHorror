@@ -30,13 +30,14 @@ instance RunMessage ArkhamAsylum where
       let skills = setFromList [#combat, #agility, #intellect] `difference` chosenSkills metadata
       lead <- getLeadPlayer
       investigators <- getInvestigatorIds
+      sid <- getRandom
       push
         $ chooseOne lead
         $ [ Label
             ("Any investigator tests " <> tshow sk)
             [ chooseOrRunOne
                 lead
-                [targetLabel iid [beginSkillTest iid attrs attrs sk (Fixed 4)] | iid <- investigators]
+                [targetLabel iid [beginSkillTest sid iid attrs attrs sk (Fixed 4)] | iid <- investigators]
             ]
           | sk <- setToList skills
           ]

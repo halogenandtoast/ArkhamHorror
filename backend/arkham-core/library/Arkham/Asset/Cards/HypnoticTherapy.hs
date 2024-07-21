@@ -23,13 +23,14 @@ instance HasAbilities HypnoticTherapy where
               $ SourceOwnedBy You
               <> NotSource (SourceIs (toSource a))
           )
-        $ exhaust a
+          (exhaust a)
     ]
 
 instance RunMessage HypnoticTherapy where
   runMessage msg a@(HypnoticTherapy attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid (attrs.ability 1) iid #intellect (Fixed 2)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 2)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       targetsWithCardDrawAndHeal <- do

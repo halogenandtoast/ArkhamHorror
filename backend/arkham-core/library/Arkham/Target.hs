@@ -34,7 +34,7 @@ data Target
   | InvestigatorDiscardTarget InvestigatorId -- used for cards in discard
   | LocationTarget LocationId
   | SetAsideLocationsTarget [Trait]
-  | SkillTestTarget
+  | SkillTestTarget SkillTestId
   | TreacheryTarget TreacheryId
   | EncounterDeckTarget
   | ScenarioDeckTarget
@@ -166,6 +166,9 @@ instance Targetable SkillId where
 
 instance Targetable StoryId where
   toTarget = StoryTarget
+
+instance Targetable SkillTestId where
+  toTarget = SkillTestTarget
 
 toActionTarget :: Target -> Target
 toActionTarget (ProxyTarget _ actionTarget) = actionTarget

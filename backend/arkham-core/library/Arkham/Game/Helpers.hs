@@ -1898,7 +1898,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         _ -> noMatch
     Matcher.WouldPerformRevelationSkillTest timing whoMatcher ->
       guardTiming timing $ \case
-        Window.WouldPerformRevelationSkillTest who -> matchWho iid who whoMatcher
+        Window.WouldPerformRevelationSkillTest who _ -> matchWho iid who whoMatcher
         _ -> noMatch
     Matcher.WouldDrawEncounterCard timing whoMatcher phaseMatcher ->
       guardTiming timing $ \case

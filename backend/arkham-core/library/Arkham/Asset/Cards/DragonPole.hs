@@ -10,7 +10,7 @@ import Arkham.Prelude
 import Arkham.Projection
 
 newtype DragonPole = DragonPole AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dragonPole :: AssetCard DragonPole
@@ -35,6 +35,7 @@ instance RunMessage DragonPole where
       push $ AddSlot iid ArcaneSlot (Slot (toSource attrs) [])
       DragonPole <$> runMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ mkChooseFight iid (attrs.ability 1)
+      sid <- getRandom
+      pushM $ mkChooseFight sid iid (attrs.ability 1)
       pure a
     _ -> DragonPole <$> runMessage msg attrs

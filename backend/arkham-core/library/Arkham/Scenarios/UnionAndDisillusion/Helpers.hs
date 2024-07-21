@@ -29,16 +29,18 @@ unlightBrazier locationId = UpdateLocation locationId (LocationBrazier ?=. Unlit
 
 circleTest
   :: (Sourceable source, Targetable target, HasQueue Message m)
-  => InvestigatorId
+  => SkillTestId
+  -> InvestigatorId
   -> source
   -> target
   -> [SkillType]
   -> GameCalculation
   -> m ()
-circleTest iid source target skillTypes n =
+circleTest sid iid source target skillTypes n =
   push
     $ BeginSkillTest
     $ buildSkillTest
+      sid
       iid
       source
       target

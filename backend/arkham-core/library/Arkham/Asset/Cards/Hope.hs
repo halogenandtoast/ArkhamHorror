@@ -45,10 +45,11 @@ instance RunMessage Hope where
           iid
       player <- getPlayer iid
       hopeCard <- field AssetCard (toId attrs)
-      chooseEvade <- toMessage <$> mkChooseEvade iid source
+      sid <- getRandom
+      chooseEvade <- toMessage <$> mkChooseEvade sid iid source
       pushAll
-        $ [skillTestModifier source iid (BaseSkillOf #agility 5)]
-        <> [skillTestModifier source iid SkillTestAutomaticallySucceeds | discarded]
+        $ [skillTestModifier sid source iid (BaseSkillOf #agility 5)]
+        <> [skillTestModifier sid source iid SkillTestAutomaticallySucceeds | discarded]
         <> [chooseEvade]
         <> [ questionLabel "Put into play from discard" player
             $ ChooseOne

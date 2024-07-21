@@ -49,9 +49,11 @@ instance RunMessage ContainingTheOutbreak where
       1
       _
       (getPaidClues -> paidClues) -> do
+        sid <- getRandom
         pushAll
-          $ [skillTestModifier source SkillTestTarget SkillTestAutomaticallySucceeds | paidClues]
+          $ [skillTestModifier sid source (SkillTestTarget sid) SkillTestAutomaticallySucceeds | paidClues]
           <> [ beginSkillTest
+                sid
                 iid
                 (toAbilitySource source 1)
                 iid

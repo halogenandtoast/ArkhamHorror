@@ -20,9 +20,10 @@ instance RunMessage Blackjack where
   runMessage msg a@(Blackjack attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
       pushAll
-        [ skillTestModifiers source iid [SkillModifier #combat 1, DoesNotDamageOtherInvestigator]
+        [ skillTestModifiers sid source iid [SkillModifier #combat 1, DoesNotDamageOtherInvestigator]
         , chooseFight
         ]
       pure a

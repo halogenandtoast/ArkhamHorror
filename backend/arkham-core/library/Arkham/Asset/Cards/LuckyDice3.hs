@@ -70,5 +70,5 @@ instance RunMessage LuckyDice3Effect where
                 Just iid -> push (ReturnToHand iid $ AssetTarget aid)
             _ -> error "wrong source"
         pure $ LuckyDice3Effect $ attrs `with` Metadata True
-      SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
+      SkillTestEnds _ _ _ -> e <$ push (DisableEffect effectId)
       _ -> LuckyDice3Effect . (`with` Metadata hasDrawn) <$> runMessage msg attrs

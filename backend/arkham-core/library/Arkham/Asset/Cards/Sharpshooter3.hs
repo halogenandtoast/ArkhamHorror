@@ -1,9 +1,4 @@
-module Arkham.Asset.Cards.Sharpshooter3 (
-  sharpshooter3,
-  Sharpshooter3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Sharpshooter3 (sharpshooter3, Sharpshooter3 (..)) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -12,6 +7,7 @@ import Arkham.Asset.Runner
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Field
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Firearm))
@@ -27,11 +23,8 @@ instance HasAbilities Sharpshooter3 where
   getAbilities (Sharpshooter3 a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-          ( ActivateAbility Timing.When You
-              $ AssetAbility (AssetWithTrait Firearm)
-              <> AbilityIsAction Action.Fight
-          )
-          (ExhaustCost (toTarget a))
+          (ActivateAbility #when You $ AssetAbility #firearm <> AbilityIsAction #fight)
+          (exhaust a)
     ]
 
 instance RunMessage Sharpshooter3 where
@@ -46,8 +39,8 @@ instance RunMessage Sharpshooter3 where
           [ skillTestModifiers
               attrs
               iid
-              [ UseSkillInsteadOf SkillCombat SkillAgility
-              , SkillModifiersAffectOtherSkill SkillCombat SkillAgility
+              [ UseSkillInsteadOf #combat #agility
+              , SkillModifiersAffectOtherSkill #combat #agility
               ]
           ]
         : ( if anyFightableWithEvade
@@ -64,8 +57,8 @@ instance RunMessage Sharpshooter3 where
                     [ skillTestModifiers
                         attrs
                         iid
-                        [ UseSkillInsteadOf SkillCombat SkillAgility
-                        , SkillModifiersAffectOtherSkill SkillCombat SkillAgility
+                        [ UseSkillInsteadOf #combat #agility
+                        , SkillModifiersAffectOtherSkill #combat #agility
                         , AlternateFightField (SomeField Field.EnemyEvade)
                         ]
                     ]

@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.SkillType
 
 newtype MariaDeSilva = MariaDeSilva AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -28,11 +27,11 @@ instance HasAbilities MariaDeSilva where
 
 instance RunMessage MariaDeSilva where
   runMessage msg a@(MariaDeSilva attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ parley iid source attrs SkillIntellect (Fixed 3)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
+      push $ parley sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
       pure a
-    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          push $ PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1
-          pure a
+    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
+      push $ PlaceClues (attrs.ability 1) (toTarget attrs) 1
+      pure a
     _ -> MariaDeSilva <$> runMessage msg attrs

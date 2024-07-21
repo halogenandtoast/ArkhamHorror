@@ -28,9 +28,10 @@ instance RunMessage EnchantedBladeMystic3 where
   runMessage msg a@(EnchantedBladeMystic3 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (getUsesPaid -> usesPaid) -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
       pushAll
-        [ skillTestModifiers source iid
+        [ skillTestModifiers sid source iid
             $ [SkillModifier #combat (2 + usesPaid)]
             <> [DamageDealt usesPaid | usesPaid > 0]
         , chooseFight

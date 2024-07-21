@@ -246,15 +246,16 @@ instance RunMessage WhereDoomAwaits where
                 )
           )
     ResolveChaosToken drawnToken Cultist iid -> do
-      pushAll
-        [ CreateWindowModifierEffect
-            EffectSkillTestWindow
-            (EffectModifiers $ toModifiers attrs [CancelSkills])
-            (ChaosTokenSource drawnToken)
-            SkillTestTarget
-        , CancelSkillEffects
-        , DrawAnotherChaosToken iid
-        ]
+      withSkillTest \sid ->
+        pushAll
+          [ CreateWindowModifierEffect
+              (EffectSkillTestWindow sid)
+              (EffectModifiers $ toModifiers attrs [CancelSkills])
+              (ChaosTokenSource drawnToken)
+              SkillTestTarget
+          , CancelSkillEffects
+          , DrawAnotherChaosToken iid
+          ]
       pure s
     ResolveChaosToken drawnToken ElderThing iid -> do
       push

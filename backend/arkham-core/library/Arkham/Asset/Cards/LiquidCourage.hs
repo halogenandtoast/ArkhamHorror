@@ -1,16 +1,11 @@
-module Arkham.Asset.Cards.LiquidCourage (
-  liquidCourage,
-  LiquidCourage (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.LiquidCourage (liquidCourage, LiquidCourage (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Damage
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Prelude
 
 newtype LiquidCourage = LiquidCourage AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -24,7 +19,7 @@ instance HasAbilities LiquidCourage where
     [ controlledAbility
         x
         1
-        (exists (HealableInvestigator (toSource x) HorrorType $ InvestigatorAt YourLocation))
+        (exists (HealableInvestigator (toSource x) #horror $ InvestigatorAt YourLocation))
         $ actionAbilityWithCost (assetUseCost x Supply 1)
     ]
 
@@ -33,21 +28,22 @@ instance RunMessage LiquidCourage where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       iids <- select $ HealableInvestigator (toSource attrs) HorrorType $ colocatedWith iid
       player <- getPlayer iid
+      sid <- getRandom
       pushIfAny iids
         $ chooseOrRunOne
           player
           [ targetLabel
             iid'
             [ HealHorrorWithAdditional (toTarget iid') (toSource attrs) 1
-            , beginSkillTest iid' (attrs.ability 1) iid' SkillWillpower (Fixed 2)
+            , beginSkillTest sid iid' (attrs.ability 1) iid' #willpower (Fixed 2)
             ]
           | iid' <- iids
           ]
       pure a
-    PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ AdditionalHealHorror (toTarget iid) (toSource attrs) 1
       pure a
-    FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
+    FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       pushAll
         [ AdditionalHealHorror (toTarget iid) (toSource attrs) 0
         , toMessage $ randomDiscard iid (toSource attrs)

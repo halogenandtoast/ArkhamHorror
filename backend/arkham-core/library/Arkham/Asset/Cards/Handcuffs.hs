@@ -12,7 +12,7 @@ import Arkham.Prelude
 import Arkham.Trait (Trait (Humanoid))
 
 newtype Handcuffs = Handcuffs AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 handcuffs :: AssetCard Handcuffs
@@ -37,13 +37,14 @@ instance RunMessage Handcuffs where
   runMessage msg a@(Handcuffs attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
+      sid <- getRandom
       chooseEvade <-
         leftOr
           <$> aspect
             iid
             source
             (#combat `InsteadOf` #agility)
-            (setTarget attrs <$> mkChooseEvadeMatch iid source (EnemyWithTrait Humanoid))
+            (setTarget attrs <$> mkChooseEvadeMatch sid iid source (EnemyWithTrait Humanoid))
       pushAll chooseEvade
       pure a
     Successful (Action.Evade, EnemyTarget enemyId) iid _ (isTarget attrs -> True) _ ->

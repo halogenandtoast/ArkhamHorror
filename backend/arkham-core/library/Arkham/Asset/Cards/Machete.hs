@@ -8,7 +8,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype Machete = Machete AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 machete :: AssetCard Machete
@@ -31,7 +31,8 @@ instance RunMessage Machete where
   runMessage msg a@(Machete attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
-      pushAll [skillTestModifier source iid (SkillModifier #combat 1), chooseFight]
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
+      pushAll [skillTestModifier sid source iid (SkillModifier #combat 1), chooseFight]
       pure a
     _ -> Machete <$> runMessage msg attrs

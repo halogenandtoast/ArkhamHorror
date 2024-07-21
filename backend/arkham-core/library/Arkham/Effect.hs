@@ -274,12 +274,12 @@ lookupEffect cardCode eid mmetadata source target =
     Nothing -> error $ "Unknown effect: " <> show cardCode
     Just (SomeEffect f) -> Effect $ f (eid, mmetadata, source, target)
 
-buildChaosTokenValueEffect :: EffectId -> Int -> Source -> Target -> Effect
-buildChaosTokenValueEffect eid n source =
+buildChaosTokenValueEffect :: SkillTestId -> EffectId -> Int -> Source -> Target -> Effect
+buildChaosTokenValueEffect sid eid n source =
   buildWindowModifierEffect
     eid
     (EffectModifiers [Modifier source (ChaosTokenValueModifier n) False])
-    EffectSkillTestWindow
+    (EffectSkillTestWindow sid)
     source
 
 buildWindowModifierEffect

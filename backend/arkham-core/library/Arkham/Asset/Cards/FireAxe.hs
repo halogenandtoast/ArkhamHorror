@@ -11,7 +11,7 @@ import Arkham.Prelude
 import Arkham.Projection
 
 newtype FireAxe = FireAxe AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fireAxe :: AssetCard FireAxe
@@ -38,9 +38,11 @@ instance HasAbilities FireAxe where
 instance RunMessage FireAxe where
   runMessage msg a@(FireAxe attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ mkChooseFight iid (attrs.ability 1)
+      sid <- getRandom
+      pushM $ mkChooseFight sid iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ skillTestModifier attrs iid (SkillModifier #combat 2)
+      withSkillTest \sid ->
+        push $ skillTestModifier sid attrs iid (SkillModifier #combat 2)
       pure a
     _ -> FireAxe <$> runMessage msg attrs

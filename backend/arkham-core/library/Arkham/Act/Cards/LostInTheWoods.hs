@@ -22,7 +22,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Map.Strict qualified as Map
 
 newtype LostInTheWoods = LostInTheWoods ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor LostInTheWoods where
@@ -89,11 +89,12 @@ instance RunMessage LostInTheWoods where
           Just (lid, _) -> do
             (enemyId, enemyCreation) <- createEnemyAt enemyCard lid Nothing
             player <- getPlayer iid
+            sid <- getRandom
             pure
               [ enemyCreation
               , chooseOne
                   player
-                  [ SkillLabel skillType [beginSkillTest iid attrs enemyId skillType (Fixed 3)]
+                  [ SkillLabel skillType [beginSkillTest sid iid attrs enemyId skillType (Fixed 3)]
                   | skillType <- [SkillWillpower, SkillAgility]
                   ]
               ]

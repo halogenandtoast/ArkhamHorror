@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.CrossingTheThreshold (
-  CrossingTheThreshold (..),
-  crossingTheThreshold,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.CrossingTheThreshold (CrossingTheThreshold (..), crossingTheThreshold) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -13,8 +8,7 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype Metadata = Metadata {advancingInvestigator :: Maybe InvestigatorId}
@@ -27,20 +21,11 @@ newtype CrossingTheThreshold = CrossingTheThreshold (ActAttrs `With` Metadata)
 
 crossingTheThreshold :: ActCard CrossingTheThreshold
 crossingTheThreshold =
-  act
-    (1, A)
-    (CrossingTheThreshold . (`with` Metadata Nothing))
-    Cards.crossingTheThreshold
-    Nothing
+  act (1, A) (CrossingTheThreshold . (`with` Metadata Nothing)) Cards.crossingTheThreshold Nothing
 
 instance HasAbilities CrossingTheThreshold where
   getAbilities (CrossingTheThreshold (a `With` _)) =
-    [ mkAbility a 1
-      $ Objective
-      $ ForcedAbility
-      $ Explored Timing.After You
-      $ SuccessfulExplore Anywhere
-    | onSide A a
+    [ mkAbility a 1 $ Objective $ forced $ Explored #after You $ SuccessfulExplore Anywhere | onSide A a
     ]
 
 instance RunMessage CrossingTheThreshold where
@@ -49,27 +34,19 @@ instance RunMessage CrossingTheThreshold where
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
       pure . CrossingTheThreshold $ attrs `with` Metadata (Just iid)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      let
-        iid =
-          fromJustNote "no advancing investigator"
-            $ advancingInvestigator metadata
+      let iid = fromJustNote "no advancing investigator" $ advancingInvestigator metadata
+      sid <- getRandom
       pushAll
-        [ beginSkillTest
-            iid
-            (toSource attrs)
-            (InvestigatorTarget iid)
-            SkillWillpower
-            (Fixed 4)
+        [ beginSkillTest sid iid attrs iid #willpower (Fixed 4)
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
       pure a
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        push
-          $ SearchCollectionForRandom iid (toSource attrs)
-          $ BasicWeaknessCard
-          <> CardWithOneOf (map CardWithTrait [Madness, Injury])
-        pure a
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      push
+        $ SearchCollectionForRandom iid (toSource attrs)
+        $ BasicWeaknessCard
+        <> CardWithOneOf (map CardWithTrait [Madness, Injury])
+      pure a
     RequestedPlayerCard iid (isSource attrs -> True) (Just card) _ -> do
       push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
       pure a

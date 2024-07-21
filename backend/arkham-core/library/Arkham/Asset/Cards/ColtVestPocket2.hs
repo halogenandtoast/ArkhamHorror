@@ -26,9 +26,10 @@ instance HasAbilities ColtVestPocket2 where
 instance RunMessage ColtVestPocket2 where
   runMessage msg a@(ColtVestPocket2 (attrs `With` meta)) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      chooseFight <- toMessage <$> mkChooseFight iid (attrs.ability 1)
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
       pushAll
-        [ skillTestModifiers attrs iid [SkillModifier #combat 2, DamageDealt 1]
+        [ skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
         , chooseFight
         ]
       pure . ColtVestPocket2 $ attrs `with` Metadata True

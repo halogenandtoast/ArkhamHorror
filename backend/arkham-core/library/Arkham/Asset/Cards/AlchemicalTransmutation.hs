@@ -30,9 +30,10 @@ instance RunMessage AlchemicalTransmutation where
   runMessage msg a@(AlchemicalTransmutation attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
+      sid <- getRandom
       pushAll
-        [ createCardEffect Cards.alchemicalTransmutation Nothing source iid
-        , beginSkillTest iid (attrs.ability 1) attrs #willpower (Fixed 1)
+        [ createCardEffect Cards.alchemicalTransmutation Nothing source (SkillTestTarget sid)
+        , beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 1)
         ]
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) (min 3 -> n) -> do
@@ -50,17 +51,18 @@ alchemicalTransmutationEffect = cardEffect AlchemicalTransmutationEffect Cards.a
 instance RunMessage AlchemicalTransmutationEffect where
   runMessage msg e@(AlchemicalTransmutationEffect attrs) =
     case msg of
-      RevealChaosToken _ iid token | toTarget iid == effectTarget attrs -> do
-        let triggers = chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
-        when triggers $ do
-          pushAll
-            [ If
-                (Window.RevealChaosTokenEffect iid token (toId attrs))
-                [assignDamage iid (effectSource attrs) 1]
-            , DisableEffect $ toId attrs
-            ]
+      RevealChaosToken _ iid token -> do
+        getSkillTest >>= traverse_ \st -> do
+          let triggers = chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
+          when (triggers && iid == st.investigator && isTarget st attrs.target) $ do
+            pushAll
+              [ If
+                  (Window.RevealChaosTokenEffect iid token (toId attrs))
+                  [assignDamage iid (effectSource attrs) 1]
+              , DisableEffect $ toId attrs
+              ]
         pure e
-      SkillTestEnds _ _ -> do
+      SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
         push $ DisableEffect $ toId attrs
         pure e
       _ -> AlchemicalTransmutationEffect <$> runMessage msg attrs

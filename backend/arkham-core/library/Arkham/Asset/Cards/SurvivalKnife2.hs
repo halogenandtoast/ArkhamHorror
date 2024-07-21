@@ -34,17 +34,19 @@ instance RunMessage SurvivalKnife2 where
   runMessage msg a@(SurvivalKnife2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
       pushAll
-        [ skillTestModifiers source iid [SkillModifier #combat 2]
+        [ skillTestModifiers sid source iid [SkillModifier #combat 2]
         , chooseFight
         ]
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 (toEnemy -> enemy) _ -> do
       let source = toAbilitySource attrs 2
+      sid <- getRandom
       pushAll
-        [ skillTestModifiers source iid [SkillModifier #combat 2, DamageDealt 1]
-        , FightEnemy iid enemy source Nothing #combat False
+        [ skillTestModifiers sid (attrs.ability 2) iid [SkillModifier #combat 2, DamageDealt 1]
+        , FightEnemy sid iid enemy source Nothing #combat False
         ]
       pure a
     _ -> SurvivalKnife2 <$> runMessage msg attrs

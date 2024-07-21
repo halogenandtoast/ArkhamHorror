@@ -23,8 +23,9 @@ instance HasAbilities ColtVestPocket where
 instance RunMessage ColtVestPocket where
   runMessage msg a@(ColtVestPocket attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseFight <- toMessage <$> mkChooseFight iid (attrs.ability 1)
-      pushAll [skillTestModifiers attrs iid [SkillModifier #combat 1, DamageDealt 1], chooseFight]
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
+      pushAll [skillTestModifiers sid attrs iid [SkillModifier #combat 1, DamageDealt 1], chooseFight]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ toDiscardBy iid (attrs.ability 2) attrs

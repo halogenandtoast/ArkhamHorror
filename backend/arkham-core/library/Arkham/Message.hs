@@ -607,14 +607,14 @@ data Message
   | EnemySpawnFromVoid (Maybe InvestigatorId) LocationId EnemyId
   | EnemySpawnedAt LocationId EnemyId
   | EngageEnemy InvestigatorId EnemyId (Maybe Target) Bool
-  | EvadeEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
+  | EvadeEnemy SkillTestId InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
   | Exhaust Target
   | ExhaustThen Target [Message]
   | FailSkillTest
   | FailedAttackEnemy InvestigatorId EnemyId
   | FailedSkillTest InvestigatorId (Maybe Action) Source Target SkillTestType Int
-  | ChoseEnemy InvestigatorId Source EnemyId
-  | FightEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
+  | ChoseEnemy SkillTestId InvestigatorId Source EnemyId
+  | FightEnemy SkillTestId InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
   | FindAndDrawEncounterCard InvestigatorId CardMatcher IncludeDiscard
   | FindEncounterCard InvestigatorId Target [ScenarioZone] CardMatcher
   | FinishedWithMulligan InvestigatorId
@@ -865,7 +865,7 @@ data Message
   | RevealChaosToken Source InvestigatorId ChaosToken
   | Revelation InvestigatorId Source
   | RevelationChoice InvestigatorId Source Int
-  | RevelationSkillTest InvestigatorId Source SkillType SkillTestDifficulty
+  | RevelationSkillTest SkillTestId InvestigatorId Source SkillType SkillTestDifficulty
   | Run [Message]
   | RunBag Source (Maybe InvestigatorId) RequestedChaosTokenStrategy
   | RunDrawFromBag Source (Maybe InvestigatorId) RequestedChaosTokenStrategy
@@ -915,8 +915,8 @@ data Message
   | SkillTestApplyResultsAfter
   | SkillTestAsk Message
   | SkillTestCommitCard InvestigatorId Card
-  | SkillTestEnds InvestigatorId Source
-  | SkillTestEnded
+  | SkillTestEnds SkillTestId InvestigatorId Source
+  | SkillTestEnded SkillTestId
   | AfterSkillTestEnds Source Target SkillTest.SkillTestResult
   | EndSkillTestWindow
   | SkillTestResults SkillTestResultsData

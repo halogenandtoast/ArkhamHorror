@@ -11,7 +11,7 @@ import Arkham.Prelude
 import Arkham.Projection
 
 newtype SeaChangeHarpoon = SeaChangeHarpoon AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 seaChangeHarpoon :: AssetCard SeaChangeHarpoon
@@ -34,10 +34,11 @@ instance RunMessage SeaChangeHarpoon where
   runMessage msg a@(SeaChangeHarpoon attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
-      pushAll [skillTestModifier source iid (SkillModifier #combat 1), chooseFight]
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
+      pushAll [skillTestModifier sid source iid (SkillModifier #combat 1), chooseFight]
       pure a
-    SkillTestEnds iid (isAbilitySource attrs 1 -> True) -> do
+    SkillTestEnds _ iid (isAbilitySource attrs 1 -> True) -> do
       miid <- getSkillTestInvestigator
       when (Just iid == miid) do
         player <- getPlayer iid

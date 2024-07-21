@@ -10,7 +10,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..), pattern PlacedDamage, pattern PlacedHorror)
 
 newtype EnchantedArmor2 = EnchantedArmor2 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 enchantedArmor2 :: AssetCard EnchantedArmor2
@@ -52,17 +52,13 @@ instance RunMessage EnchantedArmor2 where
     UseCardAbility _ (isSource attrs -> True) 1 (getTotal attrs -> (x, y)) _ -> do
       for_ attrs.owner \owner -> do
         stillAlive <- selectAny $ InvestigatorWithId owner
+        sid <- getRandom
         pushWhen stillAlive
-          $ beginSkillTest
-            owner
-            (attrs.ability 1)
-            owner
-            #willpower
-            ( SumCalculation
-                [ AssetFieldCalculation attrs.id AssetDamage
-                , AssetFieldCalculation attrs.id AssetHorror
-                ]
-            )
+          $ beginSkillTest sid owner (attrs.ability 1) owner #willpower
+          $ SumCalculation
+            [ AssetFieldCalculation attrs.id AssetDamage
+            , AssetFieldCalculation attrs.id AssetHorror
+            ]
       pure $ EnchantedArmor2 $ attrs & setMeta (x, y)
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       let (x, y) = toResult @(Int, Int) attrs.meta

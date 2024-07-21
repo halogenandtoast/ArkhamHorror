@@ -46,10 +46,11 @@ instance RunMessage MomentOfDoom where
   runMessage msg a@(MomentOfDoom attrs) = case msg of
     UseCardAbility iid p@(ProxySource _ (isSource attrs -> True)) 1 _ _ -> do
       player <- getPlayer iid
+      sid <- getRandom
       push
         $ chooseOne
           player
-          [ SkillLabel skill [beginSkillTest iid (AbilitySource p 1) attrs skill (Fixed 4)]
+          [ SkillLabel skill [beginSkillTest sid iid (AbilitySource p 1) attrs skill (Fixed 4)]
           | skill <- [#willpower, #intellect]
           ]
       pure a

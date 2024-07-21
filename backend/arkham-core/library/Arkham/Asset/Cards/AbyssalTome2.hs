@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Projection
 
 newtype AbyssalTome2 = AbyssalTome2 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 abyssalTome2 :: AssetCard AbyssalTome2
@@ -33,8 +33,9 @@ instance RunMessage AbyssalTome2 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       player <- getPlayer iid
 
+      sid <- getRandom
       choices <- for [#intellect, #willpower, #combat] \sType -> do
-        chooseFight <- withSkillType sType <$> mkChooseFight iid (attrs.ability 1)
+        chooseFight <- withSkillType sType <$> mkChooseFight sid iid (attrs.ability 1)
         pure $ SkillLabel sType [toMessage chooseFight]
 
       pushAll

@@ -22,10 +22,11 @@ instance RunMessage BaseballBat where
   runMessage msg a@(BaseballBat attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid (attrs.ability 1)
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
       pushAll
-        [ skillTestModifiers source iid [SkillModifier #combat 2, DamageDealt 1]
-        , createCardEffect Cards.baseballBat Nothing source iid
+        [ skillTestModifiers sid source iid [SkillModifier #combat 2, DamageDealt 1]
+        , createCardEffect Cards.baseballBat (effectMetaTarget sid) source iid
         , chooseFight
         ]
       pure a
@@ -41,16 +42,18 @@ baseballBatEffect = cardEffect BaseballBatEffect Cards.baseballBat
 instance RunMessage BaseballBatEffect where
   runMessage msg e@(BaseballBatEffect attrs) = case msg of
     RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
-      case attrs.source of
-        AbilitySource (AssetSource assetId) 1 ->
-          when (token.face `elem` [Skull, AutoFail])
-            $ pushAll [toDiscardBy iid attrs.source assetId, disable attrs]
-        AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 ->
-          when (token.face `elem` [Skull, AutoFail])
-            $ pushAll [toDiscardBy iid attrs.source assetId, disable attrs]
-        _ -> error "wrong source"
+      withSkillTest \sid -> do
+        when (maybe False (isTarget sid) attrs.metaTarget) $ do
+          case attrs.source of
+            AbilitySource (AssetSource assetId) 1 ->
+              when (token.face `elem` [Skull, AutoFail])
+                $ pushAll [toDiscardBy iid attrs.source assetId, disable attrs]
+            AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 ->
+              when (token.face `elem` [Skull, AutoFail])
+                $ pushAll [toDiscardBy iid attrs.source assetId, disable attrs]
+            _ -> error "wrong source"
       pure e
-    SkillTestEnds _ _ -> do
+    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
       push (disable attrs)
       pure e
     _ -> BaseballBatEffect <$> runMessage msg attrs

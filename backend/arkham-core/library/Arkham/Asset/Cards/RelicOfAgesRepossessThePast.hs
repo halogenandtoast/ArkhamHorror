@@ -3,12 +3,10 @@ module Arkham.Asset.Cards.RelicOfAgesRepossessThePast (
   RelicOfAgesRepossessThePast (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.SkillType
+import Arkham.Prelude
 
 newtype Metadata = Metadata {successTriggered :: Bool}
   deriving stock (Show, Eq, Generic)
@@ -32,17 +30,18 @@ instance RunMessage RelicOfAgesRepossessThePast where
   runMessage msg a@(RelicOfAgesRepossessThePast (attrs `With` metadata)) =
     case msg of
       UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+        sid <- getRandom
         let
-          chooseSkillTest skillType = beginSkillTest iid (attrs.ability 1) iid skillType (Fixed 4)
+          chooseSkillTest skillType = beginSkillTest sid iid (attrs.ability 1) iid skillType (Fixed 4)
         player <- getPlayer iid
         push
           $ chooseOne
             player
             [ SkillLabel skillType [chooseSkillTest skillType]
-            | skillType <- [SkillWillpower, SkillIntellect]
+            | skillType <- [#willpower, #intellect]
             ]
         pure a
-      PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ | not (successTriggered metadata) -> do
+      PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) | not (successTriggered metadata) -> do
         targets <- targetsWithDoom
         player <- getPlayer iid
         push
@@ -50,5 +49,4 @@ instance RunMessage RelicOfAgesRepossessThePast where
             player
             [targetLabel target [RemoveDoom (toAbilitySource attrs 1) target 1] | target <- targets]
         pure . RelicOfAgesRepossessThePast $ attrs `with` Metadata True
-      _ ->
-        RelicOfAgesRepossessThePast . (`with` metadata) <$> runMessage msg attrs
+      _ -> RelicOfAgesRepossessThePast . (`with` metadata) <$> runMessage msg attrs

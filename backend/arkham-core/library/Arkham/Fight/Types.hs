@@ -6,6 +6,7 @@ import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
+import Data.UUID (nil)
 import GHC.Records
 
 data ChooseFight = ChooseFight
@@ -17,9 +18,23 @@ data ChooseFight = ChooseFight
   , chooseFightIsAction :: Bool
   , chooseFightOnlyChoose :: Bool
   , chooseFightOverride :: Bool
+  , chooseFightSkillTest :: SkillTestId
   }
   deriving stock (Show, Eq, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass ToJSON
+
+instance FromJSON ChooseFight where
+  parseJSON = withObject "ChooseFight" $ \o -> do
+    chooseFightInvestigator <- o .: "chooseFightInvestigator"
+    chooseFightEnemyMatcher <- o .: "chooseFightEnemyMatcher"
+    chooseFightSource <- o .: "chooseFightSource"
+    chooseFightTarget <- o .:? "chooseFightTarget"
+    chooseFightSkillType <- o .: "chooseFightSkillType"
+    chooseFightIsAction <- o .: "chooseFightIsAction"
+    chooseFightOnlyChoose <- o .: "chooseFightOnlyChoose"
+    chooseFightOverride <- o .: "chooseFightOverride"
+    chooseFightSkillTest <- o .:? "chooseFightSkillTest" .!= SkillTestId nil
+    pure ChooseFight {..}
 
 instance HasField "investigator" ChooseFight InvestigatorId where
   getField = chooseFightInvestigator

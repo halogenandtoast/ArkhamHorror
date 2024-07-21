@@ -870,8 +870,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         player
         [ FightLabel
           eid
-          $ ChoseEnemy investigatorId source eid
-          : [ FightEnemy investigatorId eid source mTarget skillType isAction
+          $ ChoseEnemy choose.skillTest investigatorId source eid
+          : [ FightEnemy choose.skillTest investigatorId eid source mTarget skillType isAction
             | not choose.onlyChoose
             ]
         | eid <- enemyIds

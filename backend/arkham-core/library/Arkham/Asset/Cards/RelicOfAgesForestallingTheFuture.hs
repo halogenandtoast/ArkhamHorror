@@ -3,12 +3,11 @@ module Arkham.Asset.Cards.RelicOfAgesForestallingTheFuture (
   RelicOfAgesForestallingTheFuture (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.SkillType
 
 newtype Metadata = Metadata {successTriggered :: Bool}
@@ -32,9 +31,9 @@ instance HasAbilities RelicOfAgesForestallingTheFuture where
 instance RunMessage RelicOfAgesForestallingTheFuture where
   runMessage msg a@(RelicOfAgesForestallingTheFuture (attrs `With` metadata)) =
     case msg of
-      UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-        let
-          chooseSkillTest skillType = beginSkillTest iid attrs iid skillType (Fixed 4)
+      UseThisAbility iid (isSource attrs -> True) 1 -> do
+        sid <- getRandom
+        let chooseSkillTest skillType = beginSkillTest sid iid attrs iid skillType (Fixed 4)
         player <- getPlayer iid
         push
           $ chooseOne
@@ -43,11 +42,11 @@ instance RunMessage RelicOfAgesForestallingTheFuture where
             | skillType <- [SkillWillpower, SkillIntellect]
             ]
         pure a
-      PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ | not (successTriggered metadata) -> do
+      PassedThisSkillTest _ (isSource attrs -> True) | not (successTriggered metadata) -> do
         agenda <- selectJust AnyAgenda
         push $ RemoveDoom (toAbilitySource attrs 1) (AgendaTarget agenda) 1
         pure . RelicOfAgesForestallingTheFuture $ attrs `with` Metadata True
-      FailedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+      FailedThisSkillTest _ (isSource attrs -> True) -> do
         push $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
         pure a
       _ -> RelicOfAgesForestallingTheFuture . (`with` metadata) <$> runMessage msg attrs

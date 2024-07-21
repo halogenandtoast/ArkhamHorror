@@ -1,14 +1,9 @@
-module Arkham.Asset.Cards.QuickLearner4 (
-  quickLearner4,
-  QuickLearner4 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.QuickLearner4 (quickLearner4, QuickLearner4 (..)) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.SkillTest.Base
 
@@ -21,7 +16,7 @@ quickLearner4 =
   asset QuickLearner4 Cards.quickLearner4
 
 instance HasModifiersFor QuickLearner4 where
-  getModifiersFor SkillTestTarget (QuickLearner4 a) = do
+  getModifiersFor (SkillTestTarget _) (QuickLearner4 a) = do
     mSkillTestInvestigator <- fmap skillTestInvestigator <$> getSkillTest
     case mSkillTestInvestigator of
       Just iid | controlledBy a iid -> do

@@ -21,10 +21,11 @@ instance HasAbilities BlessedBlade4 where
 instance RunMessage BlessedBlade4 where
   runMessage msg a@(BlessedBlade4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseFight <- toMessage <$> mkChooseFight iid (attrs.ability 1)
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
       pushAll
-        [ skillTestModifier (attrs.ability 1) iid (SkillModifier #combat 2)
-        , skillTestModifier (attrs.ability 1) SkillTestTarget ReturnBlessedToChaosBag
+        [ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 2)
+        , skillTestModifier sid (attrs.ability 1) (SkillTestTarget sid) ReturnBlessedToChaosBag
         , chooseFight
         ]
       pure a

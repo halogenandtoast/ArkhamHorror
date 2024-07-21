@@ -96,22 +96,24 @@ toModifiersWith a f xs = map (f . toModifier a) xs
 
 skillTestModifier
   :: (Sourceable source, Targetable target)
-  => source
+  => SkillTestId
+  -> source
   -> target
   -> ModifierType
   -> Message
-skillTestModifier source target modifier =
-  skillTestModifiers source target [modifier]
+skillTestModifier sid source target modifier =
+  skillTestModifiers sid source target [modifier]
 
 skillTestModifiers
   :: forall target source
    . (Sourceable source, Targetable target)
-  => source
+  => SkillTestId
+  -> source
   -> target
   -> [ModifierType]
   -> Message
-skillTestModifiers (toSource -> source) (toTarget -> target) mods =
-  CreateWindowModifierEffect #skillTest (effectModifiers source mods) source target
+skillTestModifiers sid (toSource -> source) (toTarget -> target) mods =
+  CreateWindowModifierEffect (#skillTest sid) (effectModifiers source mods) source target
 
 effectModifiers :: Sourceable a => a -> [ModifierType] -> EffectMetadata Window Message
 effectModifiers source = EffectModifiers . toModifiers source

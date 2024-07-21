@@ -1,19 +1,12 @@
-module Arkham.Asset.Cards.InnocentReveler (
-  innocentReveler,
-  InnocentReveler (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.InnocentReveler (innocentReveler, InnocentReveler (..)) where
 
 import Arkham.Ability
-import Arkham.Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Matcher hiding (PlaceUnderneath)
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype InnocentReveler = InnocentReveler AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,45 +14,30 @@ newtype InnocentReveler = InnocentReveler AssetAttrs
 
 innocentReveler :: AssetCard InnocentReveler
 innocentReveler =
-  allyWith
-    InnocentReveler
-    Cards.innocentReveler
-    (2, 2)
-    ((slotsL .~ mempty) . (isStoryL .~ True))
+  allyWith InnocentReveler Cards.innocentReveler (2, 2) $ (slotsL .~ mempty) . (isStoryL .~ True)
 
 instance HasAbilities InnocentReveler where
   getAbilities (InnocentReveler x) =
-    [ restrictedAbility x 1 (Uncontrolled <> OnSameLocation)
-        $ ActionAbility [Parley] (ActionCost 1)
-    , mkAbility x 2
-        $ ForcedAbility
-        $ AssetWouldBeDiscarded Timing.When
-        $ AssetWithId
-        $ toId x
+    [ restrictedAbility x 1 (Uncontrolled <> OnSameLocation) parleyAction_
+    , mkAbility x 2 $ forced $ AssetWouldBeDiscarded #when (be x)
     ]
 
 instance RunMessage InnocentReveler where
   runMessage msg a@(InnocentReveler attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push
-        $ parley
-          iid
-          source
-          (toTarget attrs)
-          SkillIntellect
-          (Fixed 2)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
+      push $ parley sid iid (attrs.ability 1) (toTarget attrs) #intellect (Fixed 2)
       pure a
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
       investigatorIds <- getInvestigatorIds
-      let
-        card = PlayerCard $ lookupPlayerCard (toCardDef attrs) (toCardId attrs)
-      a
-        <$ pushAll
-          ( PlaceUnderneath AgendaDeckTarget [card]
-              : [ InvestigatorAssignDamage iid' (toSource attrs) DamageAny 0 1
-                | iid' <- investigatorIds
-                ]
-          )
-    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> a <$ push (TakeControlOfAsset iid $ toId attrs)
+      let card = PlayerCard $ lookupPlayerCard (toCardDef attrs) (toCardId attrs)
+      pushAll
+        $ PlaceUnderneath AgendaDeckTarget [card]
+        : [ assignHorror iid' (attrs.ability 2) 1
+          | iid' <- investigatorIds
+          ]
+      pure a
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      push $ TakeControlOfAsset iid attrs.id
+      pure a
     _ -> InnocentReveler <$> runMessage msg attrs

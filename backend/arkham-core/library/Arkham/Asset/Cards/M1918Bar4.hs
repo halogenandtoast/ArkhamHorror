@@ -28,9 +28,10 @@ instance RunMessage M1918Bar4 where
     UseCardAbility iid (isSource attrs -> True) 1 _ payments -> do
       let uses = totalUses payments
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
       pushAll
-        [ skillTestModifiers source iid [SkillModifier #combat uses, DamageDealt (uses - 1)]
+        [ skillTestModifiers sid source iid [SkillModifier #combat uses, DamageDealt (uses - 1)]
         , chooseFight
         ]
       pure a

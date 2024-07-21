@@ -19,9 +19,10 @@ instance HasAbilities FortyFiveAutomatic where
 instance RunMessage FortyFiveAutomatic where
   runMessage msg a@(FortyFiveAutomatic attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseFight <- toMessage <$> mkChooseFight iid (attrs.ability 1)
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
       pushAll
-        [ skillTestModifiers (attrs.ability 1) iid [DamageDealt 1, SkillModifier #combat 1]
+        [ skillTestModifiers sid (attrs.ability 1) iid [DamageDealt 1, SkillModifier #combat 1]
         , chooseFight
         ]
       pure a

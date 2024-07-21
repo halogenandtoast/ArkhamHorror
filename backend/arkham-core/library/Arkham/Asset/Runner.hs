@@ -7,7 +7,7 @@ module Arkham.Asset.Runner (
 
 import Arkham.Prelude
 
-import Arkham.Asset.Helpers as X hiding (defeated)
+import Arkham.Asset.Helpers as X hiding (defeated, getMeta)
 import Arkham.Asset.Types as X
 import Arkham.Asset.Uses as X
 import Arkham.Calculation as X

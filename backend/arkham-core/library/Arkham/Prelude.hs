@@ -360,6 +360,9 @@ instance Foldable Only where
 forMaybeM :: Monad m => [a] -> (a -> m (Maybe b)) -> m [b]
 forMaybeM xs f = catMaybes <$> traverse f xs
 
+whenJustM :: Monad m => m (Maybe a) -> (a -> m ()) -> m ()
+whenJustM mma f = mma >>= traverse_ f
+
 concatMapMaybe :: (a -> Maybe [b]) -> [a] -> [b]
 concatMapMaybe f = concat . mapMaybe f
 

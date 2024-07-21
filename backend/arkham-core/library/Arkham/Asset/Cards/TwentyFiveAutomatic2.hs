@@ -2,13 +2,14 @@ module Arkham.Asset.Cards.TwentyFiveAutomatic2 (twentyFiveAutomatic2, TwentyFive
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding (EnemyEvaded)
-import Arkham.Fight
+import Arkham.Asset.Import.Lifted hiding (EnemyEvaded)
+import Arkham.Asset.Uses
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.SkillTest (getSkillTestSource, getSkillTestTarget)
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype TwentyFiveAutomatic2 = TwentyFiveAutomatic2 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 twentyFiveAutomatic2 :: AssetCard TwentyFiveAutomatic2
@@ -23,17 +24,23 @@ instance HasAbilities TwentyFiveAutomatic2 where
         $ EnemyAt YourLocation
     ]
 
+instance HasModifiersFor TwentyFiveAutomatic2 where
+  getModifiersFor (InvestigatorTarget iid) (TwentyFiveAutomatic2 attrs) = do
+    maybeModified attrs do
+      guard $ attrs `controlledBy` iid
+      EnemyTarget eid' <- MaybeT getSkillTestTarget
+      liftGuardM $ eid' <=~> ExhaustedEnemy
+      source <- MaybeT getSkillTestSource
+      guard $ isAbilitySource attrs 1 source
+      pure [SkillModifier #combat 2, DamageDealt 1]
+  getModifiersFor _ _ = pure []
+
 instance RunMessage TwentyFiveAutomatic2 where
-  runMessage msg a@(TwentyFiveAutomatic2 attrs) = case msg of
+  runMessage msg a@(TwentyFiveAutomatic2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ mkChooseFight iid (attrs.ability 1)
+      chooseFightEnemy iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      pushM $ mkChooseFight iid (attrs.ability 1)
+      chooseFightEnemy iid (attrs.ability 1)
       pure a
-    ChoseEnemy iid (isAbilitySource attrs 1 -> True) eid -> do
-      exhausted <- eid <=~> ExhaustedEnemy
-      when exhausted do
-        push $ skillTestModifiers (attrs.ability 1) iid [SkillModifier #combat 2, DamageDealt 1]
-      pure a
-    _ -> TwentyFiveAutomatic2 <$> runMessage msg attrs
+    _ -> TwentyFiveAutomatic2 <$> liftRunMessage msg attrs

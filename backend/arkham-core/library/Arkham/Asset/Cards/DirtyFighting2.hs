@@ -36,6 +36,6 @@ instance RunMessage DirtyFighting2 where
   runMessage msg a@(DirtyFighting2 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (evadedEnemy -> enemy) _ -> do
       skillTestModifier (attrs.ability 1) enemy IgnoreAloof
-      chooseFightEnemyMatch iid (attrs.ability 1) (EnemyWithId enemy)
+      performActionAction iid (attrs.ability 1) #fight
       pure a
     _ -> DirtyFighting2 <$> liftRunMessage msg attrs

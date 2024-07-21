@@ -1,15 +1,12 @@
 module Arkham.Investigator.Cards.UrsulaDowns (ursulaDowns, UrsulaDowns (..)) where
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Movement
-import Arkham.Prelude
-import Arkham.Projection
-import Arkham.Window (defaultWindows)
 
 newtype Metadata = Metadata {moveAfterTest :: Bool}
   deriving stock (Show, Eq, Generic, Data)
@@ -38,32 +35,21 @@ instance HasChaosTokenValue UrsulaDowns where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage UrsulaDowns where
-  runMessage msg i@(UrsulaDowns (attrs `With` metadata)) = case msg of
+  runMessage msg i@(UrsulaDowns (attrs `With` metadata)) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let windows' = defaultWindows iid
-      let decreaseCost = flip applyAbilityModifiers [ActionCostModifier (-1)]
-      actions <- getActionsWith iid windows' decreaseCost
-      handCards <- field InvestigatorHand iid
-      let investigateCards = filter (elem #investigate . cdActions . toCardDef) handCards
-      playableCards <-
-        filterM (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) windows') investigateCards
-      player <- getPlayer iid
-      push
-        $ AskPlayer
-        $ chooseOne player
-        $ map ((\f -> f windows' [] []) . AbilityLabel iid) (filter (`abilityIs` #investigate) actions)
-        <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- playableCards]
+      performActionAction iid attrs #investigate
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       pure $ UrsulaDowns $ attrs `with` Metadata True
     SkillTestEnds _ _ | moveAfterTest metadata -> do
       targets <- getAccessibleLocations (toId attrs) attrs
       player <- getPlayer (toId attrs)
-      pushWhen (notNull targets)
-        $ chooseOne player
-        $ [ Label "Do not move to a connecting location" []
+      when (notNull targets) do
+        chooseOne
+          attrs.id
+          [ Label "Do not move to a connecting location" []
           , Label "Move to a connecting location"
-              $ [chooseOne player $ targetLabels targets (only . Move . move (toSource attrs) (toId attrs))]
+              $ [Msg.chooseOne player $ targetLabels targets (only . Move . move attrs attrs)]
           ]
       pure $ UrsulaDowns $ attrs `with` Metadata False
-    _ -> UrsulaDowns . (`with` metadata) <$> runMessage msg attrs
+    _ -> UrsulaDowns . (`with` metadata) <$> liftRunMessage msg attrs

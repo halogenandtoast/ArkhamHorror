@@ -23,7 +23,7 @@ instance RunMessage HonedInstinct where
     PlayThisEvent iid (is attrs -> True) -> do
       when (attrs `hasCustomization` SharpenedTalent) do
         eventModifiers attrs iid [SkillModifier sType 2 | sType <- [minBound ..]]
-      pushAll [PlayerWindow iid [] True, DoStep 1 msg]
+      pushAll [GainActions iid (toSource attrs) 1, PlayerWindow iid [] True, DoStep 1 msg]
       pure e
     DoStep 1 (PlayThisEvent iid (is attrs -> True)) -> do
       when (attrs `hasCustomization` ForceOfHabit) do
@@ -31,7 +31,7 @@ instance RunMessage HonedInstinct where
           iid
           [ Label
               "Perform another action and remove this from game  (Force of Habit)"
-              [PlayerWindow iid [] True, RemoveFromGame (toTarget attrs)]
+              [GainActions iid (toSource attrs) 1, PlayerWindow iid [] True, RemoveFromGame (toTarget attrs)]
           , Label "Do not perform another action" []
           ]
       pure e

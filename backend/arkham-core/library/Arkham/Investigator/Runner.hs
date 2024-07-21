@@ -893,33 +893,36 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       <> [EngageEnemy iid eid Nothing False, afterWindowMsg, FinishAction]
     pure a
   FightEnemy iid eid source mTarget skillType True | iid == investigatorId -> do
-    modifiers' <- getModifiers (toTarget a)
-    beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid #fight]
-    afterWindowMsg <- checkWindows [mkAfter $ Window.PerformAction iid #fight]
-    let
-      performedActions = setFromList @(Set Action) $ concat investigatorActionsPerformed
-      -- takenActions = setFromList @(Set Action) investigatorActionsTaken
-      applyFightCostModifiers :: Cost -> ModifierType -> Cost
-      applyFightCostModifiers costToEnter (AdditionalActionCostOf actionTarget n) =
-        case actionTarget of
-          FirstOneOfPerformed as
-            | #fight `elem` as
-            , null (performedActions `intersect` setFromList as) -> do
-                increaseActionCost costToEnter n
-          IsAction Action.Fight -> increaseActionCost costToEnter n
-          _ -> costToEnter
-      applyFightCostModifiers costToEnter _ = costToEnter
-    pushAll
-      [ BeginAction
-      , beforeWindowMsg
-      , TakeActions iid [#fight] (foldl' applyFightCostModifiers (ActionCost 1) modifiers')
-      , FightEnemy iid eid source mTarget skillType False
-      , afterWindowMsg
-      , FinishAction
-      ]
+    handleSkillTestNesting_ msg do
+      modifiers' <- getModifiers (toTarget a)
+      beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid #fight]
+      afterWindowMsg <- checkWindows [mkAfter $ Window.PerformAction iid #fight]
+      let
+        performedActions = setFromList @(Set Action) $ concat investigatorActionsPerformed
+        -- takenActions = setFromList @(Set Action) investigatorActionsTaken
+        applyFightCostModifiers :: Cost -> ModifierType -> Cost
+        applyFightCostModifiers costToEnter (AdditionalActionCostOf actionTarget n) =
+          case actionTarget of
+            FirstOneOfPerformed as
+              | #fight `elem` as
+              , null (performedActions `intersect` setFromList as) -> do
+                  increaseActionCost costToEnter n
+            IsAction Action.Fight -> increaseActionCost costToEnter n
+            _ -> costToEnter
+        applyFightCostModifiers costToEnter _ = costToEnter
+      pushAll
+        [ BeginAction
+        , beforeWindowMsg
+        , TakeActions iid [#fight] (foldl' applyFightCostModifiers (ActionCost 1) modifiers')
+        , FightEnemy iid eid source mTarget skillType False
+        , afterWindowMsg
+        , FinishAction
+        ]
     pure a
   FightEnemy iid eid source mTarget skillType False | iid == investigatorId -> do
-    a <$ push (AttackEnemy iid eid source mTarget skillType)
+    handleSkillTestNesting_ msg do
+      push (AttackEnemy iid eid source mTarget skillType)
+    pure a
   FailedAttackEnemy iid eid | iid == investigatorId -> do
     doesNotDamageOtherInvestigators <- hasModifier a DoesNotDamageOtherInvestigator
     unless doesNotDamageOtherInvestigators $ do
@@ -994,34 +997,36 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         ]
     pure a
   EvadeEnemy iid eid source mTarget skillType True | iid == investigatorId -> do
-    modifiers' <- getModifiers (toTarget a)
-    beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid #evade]
-    afterWindowMsg <- checkWindows [mkAfter $ Window.PerformAction iid #evade]
-    let
-      performedActions = setFromList @(Set Action) $ concat investigatorActionsPerformed
-      -- takenActions = setFromList @(Set Action) investigatorActionsTaken
-      applyEvadeCostModifiers :: Cost -> ModifierType -> Cost
-      applyEvadeCostModifiers costToEnter (AdditionalActionCostOf actionTarget n) =
-        case actionTarget of
-          FirstOneOfPerformed as
-            | #evade `elem` as
-            , null (performedActions `intersect` setFromList as) ->
-                increaseActionCost costToEnter n
-          IsAction Action.Evade -> increaseActionCost costToEnter n
-          _ -> costToEnter
-      applyEvadeCostModifiers costToEnter _ = costToEnter
-    pushAll
-      [ BeginAction
-      , beforeWindowMsg
-      , TakeActions iid [#evade] (foldl' applyEvadeCostModifiers (ActionCost 1) modifiers')
-      , EvadeEnemy iid eid source mTarget skillType False
-      , afterWindowMsg
-      , FinishAction
-      ]
+    handleSkillTestNesting_ msg do
+      modifiers' <- getModifiers (toTarget a)
+      beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid #evade]
+      afterWindowMsg <- checkWindows [mkAfter $ Window.PerformAction iid #evade]
+      let
+        performedActions = setFromList @(Set Action) $ concat investigatorActionsPerformed
+        -- takenActions = setFromList @(Set Action) investigatorActionsTaken
+        applyEvadeCostModifiers :: Cost -> ModifierType -> Cost
+        applyEvadeCostModifiers costToEnter (AdditionalActionCostOf actionTarget n) =
+          case actionTarget of
+            FirstOneOfPerformed as
+              | #evade `elem` as
+              , null (performedActions `intersect` setFromList as) ->
+                  increaseActionCost costToEnter n
+            IsAction Action.Evade -> increaseActionCost costToEnter n
+            _ -> costToEnter
+        applyEvadeCostModifiers costToEnter _ = costToEnter
+      pushAll
+        [ BeginAction
+        , beforeWindowMsg
+        , TakeActions iid [#evade] (foldl' applyEvadeCostModifiers (ActionCost 1) modifiers')
+        , EvadeEnemy iid eid source mTarget skillType False
+        , afterWindowMsg
+        , FinishAction
+        ]
     pure a
   EvadeEnemy iid eid source mTarget skillType False | iid == investigatorId -> do
-    attemptWindow <- checkWindows [mkWhen $ Window.AttemptToEvadeEnemy iid eid]
-    pushAll [attemptWindow, TryEvadeEnemy iid eid source mTarget skillType, AfterEvadeEnemy iid eid]
+    handleSkillTestNesting_ msg do
+      attemptWindow <- checkWindows [mkWhen $ Window.AttemptToEvadeEnemy iid eid]
+      pushAll [attemptWindow, TryEvadeEnemy iid eid source mTarget skillType, AfterEvadeEnemy iid eid]
     pure a
   MoveAction iid lid cost True | iid == investigatorId -> do
     beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #move)]
@@ -1570,25 +1575,26 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push $ chooseOne player $ healthDamageMessages <> sanityDamageMessages
     pure a
   Investigate investigation | investigation.investigator == investigatorId && investigation.isAction -> do
-    (beforeWindowMsg, _, afterWindowMsg) <- frame (Window.PerformAction investigatorId #investigate)
-    modifiers <- getModifiers @LocationId investigation.location
-    modifiers' <- getModifiers a
-    let
-      investigateCost = foldr applyModifier 1 modifiers
-      applyModifier (AdditionalActionCostOf (IsAction Action.Investigate) m) n = max 0 (n + m)
-      applyModifier _ n = n
-    pushAll
-      $ [ BeginAction
-        , beforeWindowMsg
-        , TakeActions investigatorId [#investigate] (ActionCost investigateCost)
-        ]
-      <> [ CheckAttackOfOpportunity investigatorId False
-         | ActionDoesNotCauseAttacksOfOpportunity #investigate `notElem` modifiers'
-         ]
-      <> [ toMessage $ investigation {investigateIsAction = False}
-         , afterWindowMsg
-         , FinishAction
-         ]
+    handleSkillTestNesting_ msg do
+      (beforeWindowMsg, _, afterWindowMsg) <- frame (Window.PerformAction investigatorId #investigate)
+      modifiers <- getModifiers @LocationId investigation.location
+      modifiers' <- getModifiers a
+      let
+        investigateCost = foldr applyModifier 1 modifiers
+        applyModifier (AdditionalActionCostOf (IsAction Action.Investigate) m) n = max 0 (n + m)
+        applyModifier _ n = n
+      pushAll
+        $ [ BeginAction
+          , beforeWindowMsg
+          , TakeActions investigatorId [#investigate] (ActionCost investigateCost)
+          ]
+        <> [ CheckAttackOfOpportunity investigatorId False
+           | ActionDoesNotCauseAttacksOfOpportunity #investigate `notElem` modifiers'
+           ]
+        <> [ toMessage $ investigation {investigateIsAction = False}
+           , afterWindowMsg
+           , FinishAction
+           ]
     pure a
   GainClues iid source n | iid == investigatorId -> do
     window <- checkWindows ((`mkWindow` Window.GainsClues iid source n) <$> [#when, #after])

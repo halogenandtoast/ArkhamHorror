@@ -526,3 +526,22 @@ placeDoomOnAgendaAndCheckAdvance = PlaceDoomOnAgenda 1 CanAdvance
 handleTargetChoice
   :: (Sourceable source, Targetable target) => InvestigatorId -> source -> target -> Message
 handleTargetChoice iid (toSource -> source) (toTarget -> target) = HandleTargetChoice iid source target
+
+handleSkillTestNesting :: HasQueue Message m => Message -> a -> m a -> m a
+handleSkillTestNesting msg a action = do
+  inSkillTestWindow <- fromQueue $ elem EndSkillTestWindow
+  if inSkillTestWindow
+    then do
+      msgs <- popMessagesMatching \case
+        MoveWithSkillTest _ -> True
+        _ -> False
+      insertAfterMatching (msg : msgs) (== EndSkillTestWindow)
+      pure a
+    else do
+      mapQueue \case
+        MoveWithSkillTest x -> x
+        x -> x
+      action
+
+handleSkillTestNesting_ :: HasQueue Message m => Message -> m () -> m ()
+handleSkillTestNesting_ msg action = handleSkillTestNesting msg () action

@@ -60,35 +60,35 @@ class
 type LocationCard a = CardBuilder LocationId a
 
 data instance Field Location :: Type -> Type where
-  LocationTokens :: Field Location Tokens
-  LocationClues :: Field Location Int
-  LocationRevealClues :: Field Location GameValue
-  LocationResources :: Field Location Int
-  LocationHorror :: Field Location Int
-  LocationDamage :: Field Location Int
-  LocationDoom :: Field Location Int
-  LocationShroud :: Field Location (Maybe Int)
-  LocationConnectedMatchers :: Field Location [LocationMatcher]
-  LocationRevealedConnectedMatchers :: Field Location [LocationMatcher]
-  LocationRevealed :: Field Location Bool
-  LocationConnectsTo :: Field Location (Set Direction)
-  LocationCardsUnderneath :: Field Location [Card]
-  LocationInvestigateSkill :: Field Location SkillType
-  LocationInFrontOf :: Field Location (Maybe InvestigatorId)
-  LocationCardId :: Field Location CardId
+  LocationAbilities :: Field Location [Ability]
   LocationBrazier :: Field Location (Maybe Brazier)
   LocationBreaches :: Field Location (Maybe BreachStatus)
-  LocationLabel :: Field Location Text
-  -- virtual
-  LocationTraits :: Field Location (Set Trait)
-  LocationKeywords :: Field Location (Set Keyword)
-  LocationUnrevealedName :: Field Location Name
-  LocationName :: Field Location Name
-  LocationConnectedLocations :: Field Location (Set LocationId)
-  LocationCardDef :: Field Location CardDef
   LocationCard :: Field Location Card
-  LocationAbilities :: Field Location [Ability]
+  LocationCardDef :: Field Location CardDef
+  LocationCardId :: Field Location CardId
+  LocationCardsUnderneath :: Field Location [Card]
+  LocationClues :: Field Location Int
+  LocationConnectedLocations :: Field Location (Set LocationId)
+  LocationConnectedMatchers :: Field Location [LocationMatcher]
+  LocationConnectsTo :: Field Location (Set Direction)
+  LocationDamage :: Field Location Int
+  LocationDoom :: Field Location Int
+  LocationHorror :: Field Location Int
+  LocationInFrontOf :: Field Location (Maybe InvestigatorId)
+  LocationInvestigateSkill :: Field Location SkillType
+  LocationKeywords :: Field Location (Set Keyword)
+  LocationLabel :: Field Location Text
+  LocationName :: Field Location Name
   LocationPrintedSymbol :: Field Location LocationSymbol
+  LocationResources :: Field Location Int
+  LocationRevealClues :: Field Location GameValue
+  LocationRevealed :: Field Location Bool
+  LocationRevealedConnectedMatchers :: Field Location [LocationMatcher]
+  LocationShroud :: Field Location (Maybe Int)
+  LocationJustShroud :: Field Location Int
+  LocationTokens :: Field Location Tokens
+  LocationTraits :: Field Location (Set Trait)
+  LocationUnrevealedName :: Field Location Name
   LocationVengeance :: Field Location (Maybe Int)
 
 deriving stock instance Show (Field Location typ)
@@ -104,6 +104,7 @@ fieldLens = \case
   LocationHorror -> tokensL . at Horror . non 0
   LocationDoom -> tokensL . at Doom . non 0
   LocationShroud -> shroudL
+  LocationJustShroud -> virtual
   LocationConnectedMatchers -> connectedMatchersL
   LocationRevealedConnectedMatchers -> revealedConnectedMatchersL
   LocationRevealed -> revealedL
@@ -143,39 +144,46 @@ instance Typeable typ => FromJSON (Field Location typ) where
   parseJSON x = do
     z <- parseJSON @(SomeField Location) x
     case z of
-      SomeField (f :: Field Location k) -> case eqT @typ @k of
-        Just Refl -> pure f
-        Nothing -> error "type mismatch"
+      SomeField (f :: Field Location k) ->
+        case eqT @typ @k of
+          Just Refl -> pure f
+          Nothing -> case f of
+            LocationShroud -> case eqT @typ @Int of
+              Just Refl -> pure LocationJustShroud
+              Nothing -> error $ "type mismatch: " <> show z <> " field: " <> show f <> " originally : " <> show x
+            _ -> error $ "type mismatch: " <> show z <> " field: " <> show f <> " originally : " <> show x
 
 instance FromJSON (SomeField Location) where
   parseJSON = withText "Field Location" $ \case
-    "LocationInFrontOf" -> pure $ SomeField LocationInFrontOf
-    "LocationInvestigateSkill" -> pure $ SomeField LocationInvestigateSkill
-    "LocationClues" -> pure $ SomeField LocationClues
-    "LocationRevealClues" -> pure $ SomeField LocationRevealClues
-    "LocationResources" -> pure $ SomeField LocationResources
-    "LocationDamage" -> pure $ SomeField LocationDamage
-    "LocationHorror" -> pure $ SomeField LocationHorror
-    "LocationDoom" -> pure $ SomeField LocationDoom
-    "LocationShroud" -> pure $ SomeField LocationShroud
-    "LocationTraits" -> pure $ SomeField LocationTraits
-    "LocationKeywords" -> pure $ SomeField LocationKeywords
-    "LocationUnrevealedName" -> pure $ SomeField LocationUnrevealedName
-    "LocationName" -> pure $ SomeField LocationName
-    "LocationConnectedMatchers" -> pure $ SomeField LocationConnectedMatchers
-    "LocationRevealedConnectedMatchers" ->
-      pure $ SomeField LocationRevealedConnectedMatchers
-    "LocationRevealed" -> pure $ SomeField LocationRevealed
-    "LocationConnectsTo" -> pure $ SomeField LocationConnectsTo
-    "LocationCardsUnderneath" -> pure $ SomeField LocationCardsUnderneath
-    "LocationConnectedLocations" -> pure $ SomeField LocationConnectedLocations
-    "LocationCardDef" -> pure $ SomeField LocationCardDef
-    "LocationCard" -> pure $ SomeField LocationCard
     "LocationAbilities" -> pure $ SomeField LocationAbilities
-    "LocationPrintedSymbol" -> pure $ SomeField LocationPrintedSymbol
-    "LocationVengeance" -> pure $ SomeField LocationVengeance
     "LocationBrazier" -> pure $ SomeField LocationBrazier
     "LocationBreaches" -> pure $ SomeField LocationBreaches
+    "LocationCard" -> pure $ SomeField LocationCard
+    "LocationCardDef" -> pure $ SomeField LocationCardDef
+    "LocationCardId" -> pure $ SomeField LocationCardId
+    "LocationCardsUnderneath" -> pure $ SomeField LocationCardsUnderneath
+    "LocationClues" -> pure $ SomeField LocationClues
+    "LocationConnectedLocations" -> pure $ SomeField LocationConnectedLocations
+    "LocationConnectedMatchers" -> pure $ SomeField LocationConnectedMatchers
+    "LocationConnectsTo" -> pure $ SomeField LocationConnectsTo
+    "LocationDamage" -> pure $ SomeField LocationDamage
+    "LocationDoom" -> pure $ SomeField LocationDoom
+    "LocationHorror" -> pure $ SomeField LocationHorror
+    "LocationInFrontOf" -> pure $ SomeField LocationInFrontOf
+    "LocationInvestigateSkill" -> pure $ SomeField LocationInvestigateSkill
+    "LocationKeywords" -> pure $ SomeField LocationKeywords
+    "LocationLabel" -> pure $ SomeField LocationLabel
+    "LocationName" -> pure $ SomeField LocationName
+    "LocationPrintedSymbol" -> pure $ SomeField LocationPrintedSymbol
+    "LocationResources" -> pure $ SomeField LocationResources
+    "LocationRevealClues" -> pure $ SomeField LocationRevealClues
+    "LocationRevealed" -> pure $ SomeField LocationRevealed
+    "LocationRevealedConnectedMatchers" -> pure $ SomeField LocationRevealedConnectedMatchers
+    "LocationShroud" -> pure $ SomeField LocationShroud
+    "LocationTokens" -> pure $ SomeField LocationTokens
+    "LocationTraits" -> pure $ SomeField LocationTraits
+    "LocationUnrevealedName" -> pure $ SomeField LocationUnrevealedName
+    "LocationVengeance" -> pure $ SomeField LocationVengeance
     _ -> error "no such field"
 
 instance Entity LocationAttrs where

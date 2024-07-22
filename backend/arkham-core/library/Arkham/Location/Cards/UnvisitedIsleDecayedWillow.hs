@@ -21,7 +21,7 @@ import Arkham.Matcher
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype UnvisitedIsleDecayedWillow = UnvisitedIsleDecayedWillow LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unvisitedIsleDecayedWillow :: LocationCard UnvisitedIsleDecayedWillow
@@ -50,7 +50,8 @@ instance HasAbilities UnvisitedIsleDecayedWillow where
 instance RunMessage UnvisitedIsleDecayedWillow where
   runMessage msg l@(UnvisitedIsleDecayedWillow attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      circleTest iid attrs attrs [#intellect, #combat] (Fixed 9)
+      sid <- getRandom
+      circleTest sid iid attrs attrs [#intellect, #combat] (Fixed 9)
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ toMessage $ chooseAndDiscardCard iid attrs

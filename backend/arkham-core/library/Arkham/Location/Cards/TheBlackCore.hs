@@ -13,7 +13,7 @@ import Arkham.Projection
 import Arkham.Token
 
 newtype TheBlackCore = TheBlackCore LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theBlackCore :: LocationCard TheBlackCore
@@ -42,9 +42,11 @@ instance RunMessage TheBlackCore where
       placeTokens (attrs.ability 1) attrs Depth (3 + n)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
+      sid <- getRandom
       chooseOne
         iid
-        [ SkillLabel s [Msg.beginSkillTest iid (attrs.ability 2) iid s (Fixed 3)] | s <- [#willpower, #combat]
+        [ SkillLabel s [Msg.beginSkillTest sid iid (attrs.ability 2) iid s (Fixed 3)]
+        | s <- [#willpower, #combat]
         ]
       pure l
     PassedThisSkillTestBy _ (isAbilitySource attrs 2 -> True) n -> do

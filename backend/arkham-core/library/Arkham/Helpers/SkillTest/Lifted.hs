@@ -27,72 +27,79 @@ import Arkham.Helpers.SkillTest qualified as Msg
 
 revelationSkillTest
   :: (Sourceable source, ReverseQueue m)
-  => InvestigatorId
+  => SkillTestId
+  -> InvestigatorId
   -> source
   -> SkillType
   -> GameCalculation
   -> m ()
-revelationSkillTest iid source sType calc = push $ Msg.revelationSkillTest iid source sType calc
+revelationSkillTest sid iid source sType calc = push $ Msg.revelationSkillTest sid iid source sType calc
 
 beginSkillTest
   :: (Sourceable source, Targetable target, ReverseQueue m)
-  => InvestigatorId
+  => SkillTestId
+  -> InvestigatorId
   -> source
   -> target
   -> SkillType
   -> GameCalculation
   -> m ()
-beginSkillTest iid source target sType n = push $ Msg.beginSkillTest iid source target sType n
+beginSkillTest sid iid source target sType n = push $ Msg.beginSkillTest sid iid source target sType n
 
 parley
   :: (Sourceable source, Targetable target, ReverseQueue m)
-  => InvestigatorId
+  => SkillTestId
+  -> InvestigatorId
   -> source
   -> target
   -> SkillType
   -> GameCalculation
   -> m ()
-parley iid source target sType n = push $ Msg.parley iid source target sType n
+parley sid iid source target sType n = push $ Msg.parley sid iid source target sType n
 
 exploreTest
   :: (Sourceable source, Targetable target, ReverseQueue m)
-  => InvestigatorId
+  => SkillTestId
+  -> InvestigatorId
   -> source
   -> target
   -> SkillType
   -> GameCalculation
   -> m ()
-exploreTest iid source target sType n = push $ Msg.exploreTest iid source target sType n
+exploreTest sid iid source target sType n = push $ Msg.exploreTest sid iid source target sType n
 
 fight
   :: (Sourceable source, Targetable target, ReverseQueue m)
-  => InvestigatorId
+  => SkillTestId
+  -> InvestigatorId
   -> source
   -> target
   -> SkillType
   -> GameCalculation
   -> m ()
-fight iid source target sType n = push $ Msg.fight iid source target sType n
+fight sid iid source target sType n = push $ Msg.fight sid iid source target sType n
 
 evade
   :: (Sourceable source, Targetable target, ReverseQueue m)
-  => InvestigatorId
+  => SkillTestId
+  -> InvestigatorId
   -> source
   -> target
   -> SkillType
   -> GameCalculation
   -> m ()
-evade iid source target sType n = push $ Msg.evade iid source target sType n
+evade sid iid source target sType n = push $ Msg.evade sid iid source target sType n
 
 investigate
   :: (Sourceable source, Targetable target, ReverseQueue m)
-  => InvestigatorId
+  => SkillTestId
+  -> InvestigatorId
   -> source
   -> target
   -> SkillType
   -> GameCalculation
   -> m ()
-investigate iid source target sType n = push $ Msg.investigate iid source target sType n
+investigate sid iid source target sType n = push $ Msg.investigate sid iid source target sType n
 
 pushAfterSkillTest :: (MonadTrans t, HasQueue Message m) => Message -> t m ()
 pushAfterSkillTest =

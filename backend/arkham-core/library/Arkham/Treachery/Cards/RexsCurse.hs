@@ -35,5 +35,5 @@ instance RunMessage RexsCurse where
     FailedSkillTest iid _ _ _ _ _ | treacheryInThreatArea iid attrs -> do
       when (active meta) (shuffleIntoDeck iid attrs)
       pure $ RexsCurse (attrs `With` Metadata False)
-    SkillTestEnds _ _ -> pure $ RexsCurse (attrs `With` Metadata False)
+    SkillTestEnds {} -> pure $ RexsCurse (attrs `With` Metadata False)
     _ -> RexsCurse . (`with` meta) <$> liftRunMessage msg attrs

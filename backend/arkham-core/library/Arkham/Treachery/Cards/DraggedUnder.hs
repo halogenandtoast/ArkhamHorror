@@ -21,7 +21,8 @@ instance HasAbilities DraggedUnder where
 instance RunMessage DraggedUnder where
   runMessage msg t@(DraggedUnder attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      revelationSkillTest iid attrs #agility (Fixed 3)
+      sid <- getRandom
+      revelationSkillTest sid iid attrs #agility (Fixed 3)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
@@ -29,7 +30,8 @@ instance RunMessage DraggedUnder where
       toDiscardBy iid source attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      beginSkillTest iid (attrs.ability 2) iid #agility (Fixed 3)
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 2) iid #agility (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       when (isNothing attrs.attached) (placeInThreatArea attrs iid)

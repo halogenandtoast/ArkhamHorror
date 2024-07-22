@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.SkillType
 import Arkham.Source
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
@@ -37,7 +36,9 @@ instance RunMessage RipplesOnTheSurface where
   runMessage msg t@(RipplesOnTheSurface attrs@TreacheryAttrs {..}) =
     case msg of
       Revelation iid source | isSource attrs source -> do
-        t <$ push (RevelationSkillTest iid source SkillWillpower (SkillTestDifficulty $ Fixed 3))
+        sid <- getRandom
+        push $ revelationSkillTest sid iid source #willpower (Fixed 3)
+        pure t
       FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget {} _ n | tid == treacheryId -> do
         push $ InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAny 0 n
         pure t

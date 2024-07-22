@@ -32,7 +32,8 @@ instance HasModifiersFor Stealth3 where
 instance RunMessage Stealth3 where
   runMessage msg a@(Stealth3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ setTarget attrs <$> mkChooseEvade iid (attrs.ability 1)
+      sid <- getRandom
+      pushM $ setTarget attrs <$> mkChooseEvade sid iid (attrs.ability 1)
       pure a
     AfterSkillTestEnds (isAbilitySource attrs 1 -> True) target@(EnemyTarget eid) (SucceededBy _ _) -> do
       for_ attrs.controller \iid -> do

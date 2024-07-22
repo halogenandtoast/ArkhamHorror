@@ -36,7 +36,8 @@ instance RunMessage MechanicsWrench where
 
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      skillTestModifiers (attrs.ability 2) iid [SkillModifier #combat 2, DamageDealt 1]
-      chooseFightEnemyMatch iid (attrs.ability 2) AttackedYouSinceTheEndOfYourLastTurn
+      sid <- getRandom
+      skillTestModifiers sid (attrs.ability 2) iid [SkillModifier #combat 2, DamageDealt 1]
+      chooseFightEnemyMatch sid iid (attrs.ability 2) AttackedYouSinceTheEndOfYourLastTurn
       pure a
     _ -> MechanicsWrench <$> liftRunMessage msg attrs

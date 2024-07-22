@@ -27,16 +27,19 @@ instance HasAbilities MarinersCompass2 where
 instance RunMessage MarinersCompass2 where
   runMessage msg a@(MarinersCompass2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ mkInvestigate iid (attrs.ability 1)
+      sid <- getRandom
+      pushM $ mkInvestigate sid iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ skillTestModifier attrs iid (SkillModifier #intellect 1)
+      withSkillTest \sid ->
+        push $ skillTestModifier sid attrs iid (SkillModifier #intellect 1)
       pure a
     FailedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
       pushWhen attrs.exhausted $ ready attrs
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       noResources <- fieldNone InvestigatorResources iid
-      pushWhen noResources $ skillTestModifier attrs iid (DiscoveredClues 1)
+      withSkillTest \sid ->
+        pushWhen noResources $ skillTestModifier sid attrs iid (DiscoveredClues 1)
       pure a
     _ -> MarinersCompass2 <$> runMessage msg attrs

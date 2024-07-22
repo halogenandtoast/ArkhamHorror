@@ -21,7 +21,7 @@ import Arkham.Window (Window (windowType))
 import Arkham.Window qualified as Window
 
 newtype Meta = Meta {hasUsedSuccess :: [InvestigatorId]}
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (FromJSON, ToJSON)
 
 newtype TempleOfTheMoonLizard = TempleOfTheMoonLizard LocationAttrs
@@ -48,7 +48,8 @@ getClues [] = 0
 instance RunMessage TempleOfTheMoonLizard where
   runMessage msg l@(TempleOfTheMoonLizard attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      beginSkillTest iid (attrs.ability 1) iid #willpower (Fixed 5)
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 5)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       let meta = toResult @Meta attrs.meta

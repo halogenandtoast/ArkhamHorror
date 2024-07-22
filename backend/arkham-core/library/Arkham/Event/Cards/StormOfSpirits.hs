@@ -24,9 +24,10 @@ stormOfSpirits = event StormOfSpirits Cards.stormOfSpirits
 instance RunMessage StormOfSpirits where
   runMessage msg e@(StormOfSpirits attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
+      sid <- getRandom
       chooseFight <-
         leftOr
-          <$> aspect iid attrs (#willpower `InsteadOf` #combat) (setTarget attrs <$> mkChooseFight iid attrs)
+          <$> aspect iid attrs (#willpower `InsteadOf` #combat) (setTarget attrs <$> mkChooseFight sid iid attrs)
       pushAll
         $ createCardEffect Cards.stormOfSpirits Nothing attrs iid
         : chooseFight
@@ -63,7 +64,7 @@ instance RunMessage StormOfSpiritsEffect where
           , DisableEffect $ toId attrs
           ]
       pure e
-    SkillTestEnds _ _ -> do
+    SkillTestEnds _ _ _ -> do
       push (DisableEffect $ toId attrs)
       pure e
     _ -> StormOfSpiritsEffect <$> runMessage msg attrs

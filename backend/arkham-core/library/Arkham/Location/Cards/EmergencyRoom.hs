@@ -15,14 +15,14 @@ import Arkham.Matcher
 import Arkham.SkillTest.Base
 
 newtype EmergencyRoom = EmergencyRoom LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 emergencyRoom :: LocationCard EmergencyRoom
 emergencyRoom = location EmergencyRoom Cards.emergencyRoom 2 (PerPlayer 1)
 
 instance HasModifiersFor EmergencyRoom where
-  getModifiersFor SkillTestTarget (EmergencyRoom attrs) = do
+  getModifiersFor (SkillTestTarget _) (EmergencyRoom attrs) = do
     mSkillTest <- getSkillTest
     case mSkillTest of
       Just st -> do

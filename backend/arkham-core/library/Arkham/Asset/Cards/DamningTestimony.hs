@@ -10,7 +10,12 @@ import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Modifiers qualified as Msg
-import Arkham.Helpers.SkillTest (isInvestigation, isSkillTestInvestigator, isSkillTestSource)
+import Arkham.Helpers.SkillTest (
+  isInvestigation,
+  isSkillTestInvestigator,
+  isSkillTestSource,
+  withSkillTest,
+ )
 import Arkham.Investigate
 import Arkham.Investigate.Types
 import Arkham.Matcher hiding (EnemyEvaded)
@@ -22,7 +27,7 @@ newtype Metadata = Metadata {chosenEnemy :: Maybe EnemyId}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype DamningTestimony = DamningTestimony (AssetAttrs `With` Metadata)
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor DamningTestimony where
@@ -59,7 +64,8 @@ instance RunMessage DamningTestimony where
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
       withLocationOf iid \lid -> do
         enemyLoc <- fieldJust EnemyLocation eid
-        investigate <- mkInvestigate iid (attrs.ability 1)
+        sid <- getRandom
+        investigate <- mkInvestigate sid iid (attrs.ability 1)
         investigatable <- enemyLoc <=~> InvestigatableLocation
         if attrs `hasCustomization` Surveil && enemyLoc /= lid && investigatable
           then
@@ -76,52 +82,53 @@ instance RunMessage DamningTestimony where
       push $ DoStep 0 msg
       pure a
     DoStep n msg'@(PassedThisSkillTest iid (isAbilitySource attrs 1 -> True)) -> do
-      when (attrs.use Evidence > 0) do
-        for_ (chosenEnemy meta) \eid -> do
-          mAdditional <- runMaybeT do
-            guard $ not $ testBit n 0
-            lid <- MaybeT $ field EnemyLocation eid
-            guardM $ lift $ getCanDiscoverClues IsInvestigate iid lid
-            pure
-              $ Label
-                "Spend 1 Evidence to discover 1 additional clue at the chosen enemy's location."
-                [ SpendUses (attrs.ability 1) (toTarget attrs) Evidence 1
-                , Msg.skillTestModifier (attrs.ability 1) iid (DiscoveredCluesAt lid 1)
-                , DoStep (setBit 0 n) msg'
-                ]
+      withSkillTest \sid -> do
+        when (attrs.use Evidence > 0) do
+          for_ (chosenEnemy meta) \eid -> do
+            mAdditional <- runMaybeT do
+              guard $ not $ testBit n 0
+              lid <- MaybeT $ field EnemyLocation eid
+              guardM $ lift $ getCanDiscoverClues IsInvestigate iid lid
+              pure
+                $ Label
+                  "Spend 1 Evidence to discover 1 additional clue at the chosen enemy's location."
+                  [ SpendUses (attrs.ability 1) (toTarget attrs) Evidence 1
+                  , Msg.skillTestModifier sid (attrs.ability 1) iid (DiscoveredCluesAt lid 1)
+                  , DoStep (setBit 0 n) msg'
+                  ]
 
-          mExtort <- runMaybeT do
-            guard $ not $ testBit n 1
-            guard $ attrs `hasCustomization` Extort
-            guardM $ lift $ eid <=~> ReadyEnemy
-            pure
-              $ Label
-                "Spend 1 Evidence to automatically evade the chosen enemy."
-                [ SpendUses (attrs.ability 1) (toTarget attrs) Evidence 1
-                , EnemyEvaded iid eid
-                , DoStep (setBit 1 n) msg'
-                ]
+            mExtort <- runMaybeT do
+              guard $ not $ testBit n 1
+              guard $ attrs `hasCustomization` Extort
+              guardM $ lift $ eid <=~> ReadyEnemy
+              pure
+                $ Label
+                  "Spend 1 Evidence to automatically evade the chosen enemy."
+                  [ SpendUses (attrs.ability 1) (toTarget attrs) Evidence 1
+                  , EnemyEvaded iid eid
+                  , DoStep (setBit 1 n) msg'
+                  ]
 
-          mExpose <- runMaybeT do
-            guard $ not $ testBit n 2
-            guard $ attrs `hasCustomization` Expose
-            guardM $ lift $ eid <=~> NonEliteEnemy
-            x <- MaybeT $ field EnemyRemainingHealth eid
-            guard $ attrs.use Evidence >= x
-            pure
-              $ Label
-                ( "Spend X("
-                    <> tshow x
-                    <> ") Evidence to discard the chosen enemy if it is non-Elite. X is that enemy's remaining health."
-                )
-                [ SpendUses (attrs.ability 1) (toTarget attrs) Evidence x
-                , Msg.toDiscardBy iid (attrs.ability 1) eid
-                , DoStep (setBit 2 n) msg'
-                ]
+            mExpose <- runMaybeT do
+              guard $ not $ testBit n 2
+              guard $ attrs `hasCustomization` Expose
+              guardM $ lift $ eid <=~> NonEliteEnemy
+              x <- MaybeT $ field EnemyRemainingHealth eid
+              guard $ attrs.use Evidence >= x
+              pure
+                $ Label
+                  ( "Spend X("
+                      <> tshow x
+                      <> ") Evidence to discard the chosen enemy if it is non-Elite. X is that enemy's remaining health."
+                  )
+                  [ SpendUses (attrs.ability 1) (toTarget attrs) Evidence x
+                  , Msg.toDiscardBy iid (attrs.ability 1) eid
+                  , DoStep (setBit 2 n) msg'
+                  ]
 
-          let choices = catMaybes [mAdditional, mExtort, mExpose]
-          when (notNull choices) do
-            chooseOne iid $ Label "Do not spend Evidence" [] : choices
+            let choices = catMaybes [mAdditional, mExtort, mExpose]
+            when (notNull choices) do
+              chooseOne iid $ Label "Do not spend Evidence" [] : choices
 
       pure a
     _ -> DamningTestimony . (`with` meta) <$> liftRunMessage msg attrs

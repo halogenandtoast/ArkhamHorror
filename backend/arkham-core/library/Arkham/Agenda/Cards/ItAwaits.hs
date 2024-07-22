@@ -33,11 +33,12 @@ instance RunMessage ItAwaits where
         lead <- getLead
         theWraithRecognizesTheCrucifix <- WornCrucifix `inRecordSet` MementosDiscovered
         investigators <- getInvestigators
+        sid <- getRandom
         pushAll
           $ ritualSuicideMessages
           <> [findAndDrawEncounterCard lead (cardIs Treacheries.daemonicPiping)]
           <> ( guard (not theWraithRecognizesTheCrucifix)
-                *> [beginSkillTest iid attrs iid #willpower (Fixed 4) | iid <- investigators]
+                *> [beginSkillTest sid iid attrs iid #willpower (Fixed 4) | iid <- investigators]
              )
           <> [advanceAgendaDeck attrs]
         pure a

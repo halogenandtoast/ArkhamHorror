@@ -31,8 +31,10 @@ instance RunMessage TheRitualBegins where
   runMessage msg a@(TheRitualBegins attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       investigators <- getInvestigators
+      sid <- getRandom
       pushAll
-        $ [ beginSkillTest investigator attrs investigator #willpower (Fixed 6) | investigator <- investigators
+        $ [ beginSkillTest sid investigator attrs investigator #willpower (Fixed 6)
+          | investigator <- investigators
           ]
         <> [advanceAgendaDeck attrs]
       pure a

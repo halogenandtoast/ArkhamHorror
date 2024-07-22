@@ -15,7 +15,7 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 
 newtype TrappersCabin = TrappersCabin LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 trappersCabin :: LocationCard TrappersCabin
@@ -37,7 +37,8 @@ instance HasAbilities TrappersCabin where
 instance RunMessage TrappersCabin where
   runMessage msg l@(TrappersCabin attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ beginSkillTest iid (attrs.ability 1) attrs #intellect (Fixed 3)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       bearTrap <- getSetAsideCard Assets.bearTrap

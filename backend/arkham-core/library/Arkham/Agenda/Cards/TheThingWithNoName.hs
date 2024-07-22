@@ -12,7 +12,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype TheThingWithNoName = TheThingWithNoName AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theThingWithNoName :: AgendaCard TheThingWithNoName
@@ -37,7 +37,8 @@ instance RunMessage TheThingWithNoName where
       pushAll [ShuffleEncounterDiscardBackIn, advanceAgendaDeck attrs]
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ beginSkillTest iid (attrs.ability 1) iid #willpower (Fixed 2)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 2)
       pure a
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       theUnnamable <- selectJust $ enemyIs Enemies.theUnnamable

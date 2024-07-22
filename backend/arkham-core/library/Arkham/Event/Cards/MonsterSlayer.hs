@@ -17,9 +17,10 @@ monsterSlayer = event MonsterSlayer Cards.monsterSlayer
 instance RunMessage MonsterSlayer where
   runMessage msg e@(MonsterSlayer attrs) = case msg of
     PlayThisEvent iid eid | eid == attrs.id -> do
-      chooseFight <- toMessage <$> mkChooseFight iid attrs
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid attrs
       pushAll
-        [ skillTestModifier attrs iid (DamageDealt 1)
+        [ skillTestModifier sid attrs iid (DamageDealt 1)
         , chooseFight
         ]
       pure e

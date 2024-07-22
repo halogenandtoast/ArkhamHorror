@@ -11,7 +11,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype PrimordialGateway = PrimordialGateway TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 primordialGateway :: TreacheryCard PrimordialGateway
@@ -36,9 +36,10 @@ instance RunMessage PrimordialGateway where
       push $ PlaceBreaches (toTarget location) amount
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      sid <- getRandom
       chooseOne
         iid
-        [ SkillLabel sType [Msg.beginSkillTest iid (attrs.ability 1) (toTarget attrs) sType (Fixed 4)]
+        [ SkillLabel sType [Msg.beginSkillTest sid iid (attrs.ability 1) (toTarget attrs) sType (Fixed 4)]
         | sType <- [#intellect, #willpower]
         ]
       pure t

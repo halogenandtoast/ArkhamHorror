@@ -25,11 +25,12 @@ stormOfSpirits3 = event StormOfSpirits3 Cards.stormOfSpirits3
 instance RunMessage StormOfSpirits3 where
   runMessage msg e@(StormOfSpirits3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+      sid <- getRandom
       chooseFight <-
         leftOr
-          <$> aspect iid attrs (#willpower `InsteadOf` #combat) (setTarget attrs <$> mkChooseFight iid attrs)
+          <$> aspect iid attrs (#willpower `InsteadOf` #combat) (setTarget attrs <$> mkChooseFight sid iid attrs)
       pushAll
-        $ [ skillTestModifier attrs iid (SkillModifier #willpower 2)
+        $ [ skillTestModifier sid attrs iid (SkillModifier #willpower 2)
           , createCardEffect Cards.stormOfSpirits3 Nothing attrs iid
           ]
         <> chooseFight
@@ -67,7 +68,7 @@ instance RunMessage StormOfSpirits3Effect where
           , DisableEffect $ toId attrs
           ]
       pure e
-    SkillTestEnds _ _ -> do
+    SkillTestEnds _ _ _ -> do
       push (DisableEffect $ toId attrs)
       pure e
     _ -> StormOfSpirits3Effect <$> runMessage msg attrs

@@ -45,7 +45,8 @@ instance RunMessage StepsOfYhagharl where
         $ \madnessCard -> push $ InvestigatorDrewEncounterCard iid madnessCard
       StepsOfYhagharl <$> runMessage msg attrs
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ beginSkillTest iid (attrs.ability 1) (InvestigatorTarget iid) SkillWillpower (Fixed 2)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) (InvestigatorTarget iid) SkillWillpower (Fixed 2)
       pure l
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
       | isAbilitySource attrs 1 source -> do

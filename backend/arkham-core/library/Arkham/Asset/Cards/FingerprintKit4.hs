@@ -23,9 +23,10 @@ instance HasAbilities FingerprintKit4 where
 instance RunMessage FingerprintKit4 where
   runMessage msg a@(FingerprintKit4 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      investigation <- mkInvestigate iid (toAbilitySource attrs 1)
+      sid <- getRandom
+      investigation <- mkInvestigate sid iid (toAbilitySource attrs 1)
       pushAll
-        [ skillTestModifiers attrs iid [SkillModifier #intellect 2, DiscoveredClues 2]
+        [ skillTestModifiers sid attrs iid [SkillModifier #intellect 2, DiscoveredClues 2]
         , toMessage investigation
         ]
       pure a

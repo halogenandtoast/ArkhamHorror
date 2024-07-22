@@ -8,7 +8,7 @@ import Arkham.Modifier
 import Arkham.Movement
 
 newtype SledDog = SledDog AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sledDog :: AssetCard SledDog
@@ -47,7 +47,12 @@ instance RunMessage SledDog where
           ]
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ (getExhaustedCount -> x) -> do
-      skillTestModifiers (attrs.ability 2) iid [SkillModifier #combat x, NoStandardDamage, DamageDealt x]
-      chooseFightEnemy iid (attrs.ability 2)
+      sid <- getRandom
+      skillTestModifiers
+        sid
+        (attrs.ability 2)
+        iid
+        [SkillModifier #combat x, NoStandardDamage, DamageDealt x]
+      chooseFightEnemy sid iid (attrs.ability 2)
       pure a
     _ -> SledDog <$> liftRunMessage msg attrs

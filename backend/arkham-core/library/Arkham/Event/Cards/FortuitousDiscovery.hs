@@ -24,13 +24,14 @@ fortuitousDiscovery =
 instance RunMessage FortuitousDiscovery where
   runMessage msg e@(FortuitousDiscovery attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      investigation <- mkInvestigate iid attrs
+      sid <- getRandom
+      investigation <- mkInvestigate sid iid attrs
       x <-
         selectCount
           $ InDiscardOf (InvestigatorWithId iid)
           <> BasicCardMatch (cardIs Cards.fortuitousDiscovery)
       pushAll
-        [ skillTestModifiers (toSource attrs) iid [SkillModifier #intellect x, DiscoveredClues x]
+        [ skillTestModifiers sid (toSource attrs) iid [SkillModifier #intellect x, DiscoveredClues x]
         , toMessage investigation
         ]
       pure e

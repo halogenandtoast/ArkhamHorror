@@ -15,7 +15,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 
 newtype AscendingPath = AscendingPath LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ascendingPath :: LocationCard AscendingPath
@@ -41,7 +41,8 @@ instance HasAbilities AscendingPath where
 instance RunMessage AscendingPath where
   runMessage msg l@(AscendingPath attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ mkInvestigate iid (toAbilitySource attrs 1)
+      sid <- getRandom
+      pushM $ mkInvestigate sid iid (toAbilitySource attrs 1)
       pure l
     Successful (Action.Investigate, _) _ (isAbilitySource attrs 1 -> True) _ _ -> do
       alteredPaths <- getSetAsideCardsMatching "Altered Path"

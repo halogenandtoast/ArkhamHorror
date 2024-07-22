@@ -40,7 +40,7 @@ instance RunMessage TheRedClockBrokenButReliable5 where
       -- Other messages needs to consider the charge we just added
       let
         otherMessages
-          | charges == 0 = [Msg.skillTestModifier (attrs.ability 1) iid (AnySkillValue 4)]
+          | charges == 0 = [Msg.nextSkillTestModifier (attrs.ability 1) iid (AnySkillValue 4)]
           | charges == 1 = [DoStep 3 msg]
           | charges == 2 = [GainActions iid (attrs.ability 1) 2]
           | otherwise = []

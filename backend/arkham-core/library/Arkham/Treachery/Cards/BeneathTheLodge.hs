@@ -1,15 +1,10 @@
-module Arkham.Treachery.Cards.BeneathTheLodge (
-  beneathTheLodge,
-  BeneathTheLodge (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.BeneathTheLodge (beneathTheLodge, BeneathTheLodge (..)) where
 
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword qualified as Keyword
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
@@ -23,7 +18,7 @@ beneathTheLodge :: TreacheryCard BeneathTheLodge
 beneathTheLodge = treachery BeneathTheLodge Cards.beneathTheLodge
 
 instance HasModifiersFor BeneathTheLodge where
-  getModifiersFor SkillTestTarget (BeneathTheLodge attrs) = do
+  getModifiersFor (SkillTestTarget _) (BeneathTheLodge attrs) = do
     mSource <- getSkillTestSource
     mInvestigator <- getSkillTestInvestigator
     case (mSource, mInvestigator) of
@@ -39,7 +34,8 @@ instance HasModifiersFor BeneathTheLodge where
 instance RunMessage BeneathTheLodge where
   runMessage msg t@(BeneathTheLodge attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs SkillIntellect (Fixed 3)
+      sid <- getRandom
+      push $ revelationSkillTest sid iid attrs #intellect (Fixed 3)
       pure t
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n | isSource attrs source -> do
       push $ HandlePointOfFailure iid (toTarget attrs) n

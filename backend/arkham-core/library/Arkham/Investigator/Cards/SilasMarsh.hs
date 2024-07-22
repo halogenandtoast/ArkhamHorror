@@ -16,7 +16,7 @@ import Arkham.Projection
 newtype SilasMarsh = SilasMarsh InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 silasMarsh :: InvestigatorCard SilasMarsh
 silasMarsh =
@@ -64,16 +64,17 @@ instance RunMessage SilasMarsh where
 
       when (notNull skills) do
         player <- getPlayer iid
-        pushAll
-          [ FocusCards skills
-          , chooseOne player $ Label "Do not commit skills" []
-              : [ targetLabel
-                  (CardIdTarget $ toCardId card)
-                  [ CommitCard iid card
-                  , skillTestModifier @Source #elderSign (CardIdTarget $ toCardId card) ReturnToHandAfterTest
+        withSkillTest \sid -> do
+          pushAll
+            [ FocusCards skills
+            , chooseOne player $ Label "Do not commit skills" []
+                : [ targetLabel
+                    (CardIdTarget $ toCardId card)
+                    [ CommitCard iid card
+                    , skillTestModifier @Source sid #elderSign (CardIdTarget $ toCardId card) ReturnToHandAfterTest
+                    ]
+                  | card <- skills
                   ]
-                | card <- skills
-                ]
-          ]
+            ]
       pure i
     _ -> SilasMarsh <$> runMessage msg attrs

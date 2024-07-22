@@ -1,15 +1,10 @@
-module Arkham.Treachery.Cards.FinalMistake (
-  finalMistake,
-  FinalMistake (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.FinalMistake (finalMistake, FinalMistake (..)) where
 
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Types
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -23,15 +18,14 @@ finalMistake = treachery FinalMistake Cards.finalMistake
 instance RunMessage FinalMistake where
   runMessage msg t@(FinalMistake attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      doom <-
-        getSum
-          <$> selectAgg Sum LocationDoom (locationWithInvestigator iid)
+      doom <- getSum <$> selectAgg Sum LocationDoom (locationWithInvestigator iid)
+      sid <- getRandom
       pushAll
-        [ skillTestModifier source SkillTestTarget (Difficulty doom)
-        , RevelationSkillTest iid source SkillAgility (SkillTestDifficulty $ Fixed 2)
+        [ skillTestModifier sid source (SkillTestTarget sid) (Difficulty doom)
+        , revelationSkillTest sid iid source #agility (Fixed 2)
         ]
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ -> do
-      push $ InvestigatorAssignDamage iid source DamageAny 2 0
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      push $ assignDamage iid attrs 2
       pure t
     _ -> FinalMistake <$> runMessage msg attrs

@@ -42,9 +42,10 @@ instance RunMessage UnearthTheAncients2 where
     HandleTargetChoice _ (isSource attrs -> True) (CardTarget card) -> do
       pure $ UnearthTheAncients2 $ attrs `with` Metadata (card : chosenCards metadata)
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
-      investigation <- mkInvestigate iid attrs
+      sid <- getRandom
+      investigation <- mkInvestigate sid iid attrs
       pushAll
-        [ skillTestModifier attrs SkillTestTarget (SetDifficulty $ sum $ map getCost $ chosenCards metadata)
+        [ skillTestModifier sid attrs sid (SetDifficulty $ sum $ map getCost $ chosenCards metadata)
         , toMessage investigation
         ]
       pure e

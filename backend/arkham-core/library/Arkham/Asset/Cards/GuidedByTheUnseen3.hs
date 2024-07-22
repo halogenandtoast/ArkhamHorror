@@ -8,7 +8,7 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Modifiers qualified as Msg
-import Arkham.Helpers.SkillTest (getIsCommittable, getSkillTestInvestigator)
+import Arkham.Helpers.SkillTest (getIsCommittable, getSkillTestInvestigator, withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Strategy
@@ -47,14 +47,14 @@ instance RunMessage GuidedByTheUnseen3 where
       focusCards cards \unfocus -> do
         if attrs.use Secret == 0 || null committable
           then chooseOne iid [Label "Continue" [unfocus]]
-          else
+          else withSkillTest \sid ->
             -- MustBeCommitted prevents being able to uncommit, as it is really "committed"
             chooseOne iid $ Label "Do not commit any cards" [unfocus]
               : [ targetLabel
                   card
                   [ unfocus
                   , SpendUses (attrs.ability 1) (toTarget attrs) Secret 1
-                  , Msg.skillTestModifier attrs (toCardId card) MustBeCommitted
+                  , Msg.skillTestModifier sid attrs (toCardId card) MustBeCommitted
                   , SkillTestCommitCard iid card
                   ]
                 | card <- committable

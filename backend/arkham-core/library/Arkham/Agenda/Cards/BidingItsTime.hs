@@ -54,9 +54,10 @@ instance RunMessage BidingItsTime where
       location <- fieldJust InvestigatorLocation lead
       investigators <- select $ colocatedWith lead
       enemyCreation <- createEnemy card location
+      sid <- getRandom
       pushAll
         $ toMessage enemyCreation
-        : [ beginSkillTest iid source (enemyCreationEnemyId enemyCreation) #agility (Fixed 4)
+        : [ beginSkillTest sid iid source (enemyCreationEnemyId enemyCreation) #agility (Fixed 4)
           | iid <- investigators
           ]
       pure a

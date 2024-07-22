@@ -41,7 +41,8 @@ instance RunMessage ForsakenTowerOfTheQueenOfNight where
         ]
       pure l
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget nyarlathotep) -> do
-      push $ EvadeEnemy iid nyarlathotep (attrs.ability 1) (Just $ toTarget attrs) #agility False
+      sid <- getRandom
+      push $ EvadeEnemy sid iid nyarlathotep (attrs.ability 1) (Just $ toTarget attrs) #agility False
       pure l
     Successful (Action.Evade, EnemyTarget eid) _iid _ (isTarget attrs -> True) _ -> do
       discardWhisperingChaos attrs

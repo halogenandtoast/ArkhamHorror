@@ -39,11 +39,12 @@ instance RunMessage Gondola where
       pure l
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       player <- getPlayer iid
+      sid <- getRandom
       push
         $ chooseOne
           player
-          [ Label "Test {combat} (2)" [beginSkillTest iid (attrs.ability 1) attrs #combat (Fixed 2)]
-          , Label "Test {agility} (2)" [beginSkillTest iid (attrs.ability 1) attrs #agility (Fixed 2)]
+          [ Label "Test {combat} (2)" [beginSkillTest sid iid (attrs.ability 1) attrs #combat (Fixed 2)]
+          , Label "Test {agility} (2)" [beginSkillTest sid iid (attrs.ability 1) attrs #agility (Fixed 2)]
           ]
       pure l
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _ | isAbilitySource attrs 1 source -> do

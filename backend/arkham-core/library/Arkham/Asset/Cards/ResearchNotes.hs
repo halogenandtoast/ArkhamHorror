@@ -35,7 +35,8 @@ instance RunMessage ResearchNotes where
       placeTokens (attrs.ability 1) attrs Evidence n
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      beginSkillTest iid (attrs.ability 2) iid #intellect (Fixed 0)
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 2) iid #intellect (Fixed 0)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 2 -> True) n | n > 0 -> do
       let spendable = min n (attrs.use Evidence)

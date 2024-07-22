@@ -7,6 +7,7 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -30,6 +31,7 @@ instance HasAbilities RuthWestmacottDarkRevelations where
 instance RunMessage RuthWestmacottDarkRevelations where
   runMessage msg a@(RuthWestmacottDarkRevelations attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      skillTestModifier (attrs.ability 1) SkillTestTarget (Difficulty (-2))
+      withSkillTest \sid ->
+        skillTestModifier sid (attrs.ability 1) (SkillTestTarget sid) (Difficulty (-2))
       pure a
     _ -> RuthWestmacottDarkRevelations <$> liftRunMessage msg attrs

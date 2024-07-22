@@ -10,7 +10,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype PulledByTheStars = PulledByTheStars TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pulledByTheStars :: TreacheryCard PulledByTheStars
@@ -25,7 +25,7 @@ instance HasAbilities PulledByTheStars where
     ]
 
 instance HasModifiersFor PulledByTheStars where
-  getModifiersFor SkillTestTarget (PulledByTheStars attrs) = do
+  getModifiersFor (SkillTestTarget _) (PulledByTheStars attrs) = do
     mSource <- getSkillTestSource
     mInvestigator <- getSkillTestInvestigator
     case (mSource, mInvestigator) of
@@ -44,7 +44,8 @@ instance RunMessage PulledByTheStars where
       assignHorror iid (toAbilitySource attrs 1) 2
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      beginSkillTest iid (toAbilitySource attrs 2) iid #willpower (Fixed 3)
+      sid <- getRandom
+      beginSkillTest sid iid (toAbilitySource attrs 2) iid #willpower (Fixed 3)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       toDiscardBy iid attrs attrs

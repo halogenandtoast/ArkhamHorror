@@ -52,7 +52,7 @@ instance RunMessage Defiance2Effect where
         checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
       push ignoreWindow
       pure $ Defiance2Effect $ attrs & finishedL .~ True
-    SkillTestEnds _ _ -> do
+    SkillTestEnds _ _ _ -> do
       push (DisableEffect effectId)
       pure e
     _ -> Defiance2Effect <$> runMessage msg attrs

@@ -5,14 +5,13 @@ module Arkham.Treachery.Cards.ChillingPresence (
 )
 where
 
-import Arkham.Prelude
-
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Effect.Runner
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
+import Arkham.Prelude
 import Arkham.Trait (Trait (Geist))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -27,9 +26,10 @@ chillingPresence = treachery ChillingPresence Cards.chillingPresence
 instance RunMessage ChillingPresence where
   runMessage msg t@(ChillingPresence attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
+      sid <- getRandom
       pushAll
-        [ createCardEffect Cards.chillingPresence Nothing (toSource attrs) (toTarget iid)
-        , revelationSkillTest iid attrs #willpower (Fixed 3)
+        [ createCardEffect Cards.chillingPresence Nothing attrs sid
+        , revelationSkillTest sid iid attrs #willpower (Fixed 3)
         ]
 
       pure t
@@ -68,7 +68,7 @@ chillingPresenceEffect = cardEffect ChillingPresenceEffect Cards.chillingPresenc
 
 instance RunMessage ChillingPresenceEffect where
   runMessage msg e@(ChillingPresenceEffect attrs) = case msg of
-    Msg.RevealChaosToken _ iid token -> do
+    Msg.RevealChaosToken (SkillTestSource sid) iid token | isTarget sid attrs.target -> do
       when (chaosTokenFace token == #eldersign) $ do
         geists <- select $ EnemyWithTrait Geist
         when (notNull geists) $ do
@@ -87,7 +87,7 @@ instance RunMessage ChillingPresenceEffect where
               , Label "Skip" []
               ]
       pure e
-    SkillTestEnds _ _ -> do
+    SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
       push $ disable attrs
       pure e
     _ -> ChillingPresenceEffect <$> runMessage msg attrs

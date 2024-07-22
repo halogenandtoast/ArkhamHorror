@@ -1,14 +1,9 @@
-module Arkham.Treachery.Cards.HuntedByByakhee (
-  huntedByByakhee,
-  HuntedByByakhee (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.HuntedByByakhee (huntedByByakhee, HuntedByByakhee (..)) where
 
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -22,20 +17,16 @@ huntedByByakhee = treachery HuntedByByakhee Cards.huntedByByakhee
 
 instance RunMessage HuntedByByakhee where
   runMessage msg t@(HuntedByByakhee attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (RevelationSkillTest iid source SkillAgility (SkillTestDifficulty $ Fixed 6))
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
-      | isSource attrs source -> do
-          t
-            <$ pushAll
-              [ DiscardTopOfEncounterDeck
-                  iid
-                  n
-                  (toSource attrs)
-                  (Just $ toTarget attrs)
-              , ShuffleDeck Deck.EncounterDeck
-              ]
+    Revelation iid source | isSource attrs source -> do
+      sid <- getRandom
+      push $ revelationSkillTest sid iid source #agility (Fixed 6)
+      pure t
+    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
+      pushAll
+        [ DiscardTopOfEncounterDeck iid n (toSource attrs) (Just $ toTarget attrs)
+        , ShuffleDeck Deck.EncounterDeck
+        ]
+      pure t
     DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       player <- getPlayer iid
       let

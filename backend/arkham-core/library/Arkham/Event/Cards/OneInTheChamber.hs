@@ -43,7 +43,7 @@ instance HasModifiersFor OneInTheChamberEffect where
 
 instance RunMessage OneInTheChamberEffect where
   runMessage msg e@(OneInTheChamberEffect attrs) = runQueueT $ case msg of
-    SkillTestEnded -> do
+    SkillTestEnded _ -> do
       whenM inAttackSkillTest do
         getSkillTestSource >>= traverse_ \source -> do
           for_ source.asset \aid -> when (Just (AssetTarget aid) == attrs.metaTarget) (disable attrs)

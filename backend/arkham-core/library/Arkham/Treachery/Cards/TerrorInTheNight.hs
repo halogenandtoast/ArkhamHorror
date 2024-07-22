@@ -17,7 +17,8 @@ terrorInTheNight = treachery TerrorInTheNight Cards.terrorInTheNight
 instance RunMessage TerrorInTheNight where
   runMessage msg t@(TerrorInTheNight attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      revelationSkillTest iid attrs #willpower (Fixed 4)
+      sid <- getRandom
+      revelationSkillTest sid iid attrs #willpower (Fixed 4)
       pure t
     FailedThisSkillTestBy _ (isSource attrs -> True) n -> do
       aid <- selectJust AnyAgenda

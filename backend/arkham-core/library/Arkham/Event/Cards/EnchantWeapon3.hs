@@ -13,7 +13,7 @@ import Arkham.Projection
 import Arkham.Trait (Trait (Relic, Weapon))
 
 newtype EnchantWeapon3 = EnchantWeapon3 EventAttrs
-  deriving anyclass (IsEvent)
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 enchantWeapon3 :: EventCard EnchantWeapon3
@@ -54,6 +54,8 @@ instance RunMessage EnchantWeapon3 where
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       owner <- field EventOwner (toId attrs)
-      push $ skillTestModifiers (attrs.ability 1) iid [AddSkillValueOf #willpower owner, DamageDealt 1]
+      withSkillTest \sid ->
+        push
+          $ skillTestModifiers sid (attrs.ability 1) iid [AddSkillValueOf #willpower owner, DamageDealt 1]
       pure e
     _ -> EnchantWeapon3 <$> runMessage msg attrs

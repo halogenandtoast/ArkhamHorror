@@ -1,11 +1,4 @@
-module Arkham.Event.Cards.Followed (
-  followed,
-  followedEffect,
-  Followed (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.Followed (followed, followedEffect, Followed (..)) where
 
 import Arkham.Card
 import Arkham.Classes
@@ -17,6 +10,7 @@ import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Modifiers
 import Arkham.Investigate
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype Followed = Followed EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -28,12 +22,14 @@ followed = event Followed Cards.followed
 instance RunMessage Followed where
   runMessage msg e@(Followed attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      investigation <- mkInvestigate iid attrs
+      sid <- getRandom
+      investigation <- mkInvestigate sid iid attrs
       enemy <- fromJustNote "damage should be set" <$> getMeta (toCardId attrs) "enemy"
 
       pushAll
         [ skillTestModifiers
-            (toSource attrs)
+            sid
+            attrs
             iid
             [ ForEach
                 (MaxCalculation (Fixed 5) $ EnemyFieldCalculation enemy Field.EnemyDamage)

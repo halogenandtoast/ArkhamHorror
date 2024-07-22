@@ -20,8 +20,9 @@ instance HasAbilities ThievesKit3 where
 instance RunMessage ThievesKit3 where
   runMessage msg a@(ThievesKit3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigate <- mkInvestigate iid (attrs.ability 1)
-      skillTestModifier (attrs.ability 1) iid (AnySkillValue 1)
+      sid <- getRandom
+      investigate <- mkInvestigate sid iid (attrs.ability 1)
+      skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
       chooseOne
         iid
         [ Label "Use {agility}" [toMessage $ withSkillType #agility investigate]

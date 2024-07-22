@@ -1,15 +1,11 @@
-module Arkham.Asset.Cards.OldKeyring (
-  oldKeyring,
-  OldKeyring (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.OldKeyring (oldKeyring, OldKeyring (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype OldKeyring = OldKeyring AssetAttrs
@@ -26,9 +22,10 @@ instance RunMessage OldKeyring where
   runMessage msg a@(OldKeyring attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       lid <- fieldJust InvestigatorLocation iid
-      investigation <- mkInvestigate iid (toAbilitySource attrs 1)
+      sid <- getRandom
+      investigation <- mkInvestigate sid iid (toAbilitySource attrs 1)
       pushAll
-        [ skillTestModifier (toAbilitySource attrs 1) lid (ShroudModifier (-2))
+        [ skillTestModifier sid (toAbilitySource attrs 1) lid (ShroudModifier (-2))
         , toMessage investigation
         ]
       pure a

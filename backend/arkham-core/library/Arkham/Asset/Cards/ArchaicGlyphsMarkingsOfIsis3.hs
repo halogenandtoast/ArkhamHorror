@@ -27,7 +27,8 @@ archaicGlyphsMarkingsOfIsis3 = asset ArchaicGlyphsMarkingsOfIsis3 Cards.archaicG
 instance RunMessage ArchaicGlyphsMarkingsOfIsis3 where
   runMessage msg a@(ArchaicGlyphsMarkingsOfIsis3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ mkInvestigate iid (toAbilitySource attrs 1) <&> setTarget attrs
+      sid <- getRandom
+      pushM $ mkInvestigate sid iid (toAbilitySource attrs 1) <&> setTarget attrs
       pure a
     Successful (Action.Investigate, LocationTarget lid) iid source (isTarget attrs -> True) n -> do
       assets <-

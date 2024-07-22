@@ -19,7 +19,8 @@ instance RunMessage AgainstAllOdds2 where
   runMessage msg e@(AgainstAllOdds2 attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ (windowSkillTest -> Just st) _ | eid == toId attrs -> do
       n <- getBaseValueDifferenceForSkillTest iid st
-      skillTestModifier attrs iid (ChangeRevealStrategy $ RevealAndChoose n 1)
+      withSkillTest \sid ->
+        skillTestModifier sid attrs iid (ChangeRevealStrategy $ RevealAndChoose n 1)
       when (n > 1) $ checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs)
       pure e
     _ -> AgainstAllOdds2 <$> liftRunMessage msg attrs

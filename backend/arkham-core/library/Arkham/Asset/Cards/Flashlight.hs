@@ -25,9 +25,10 @@ instance RunMessage Flashlight where
   runMessage msg a@(Flashlight attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       lid <- getJustLocation iid
-      investigation <- mkInvestigate iid (toAbilitySource attrs 1)
+      sid <- getRandom
+      investigation <- mkInvestigate sid iid (toAbilitySource attrs 1)
       pushAll
-        [ skillTestModifier attrs lid (ShroudModifier (-2))
+        [ skillTestModifier sid attrs lid (ShroudModifier (-2))
         , toMessage investigation
         ]
       pure a

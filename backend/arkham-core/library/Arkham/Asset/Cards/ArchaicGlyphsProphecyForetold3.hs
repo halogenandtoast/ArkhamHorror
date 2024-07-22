@@ -27,7 +27,8 @@ archaicGlyphsProphecyForetold3 = asset ArchaicGlyphsProphecyForetold3 Cards.arch
 instance RunMessage ArchaicGlyphsProphecyForetold3 where
   runMessage msg a@(ArchaicGlyphsProphecyForetold3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ mkInvestigate iid (toAbilitySource attrs 1) <&> setTarget attrs
+      sid <- getRandom
+      pushM $ mkInvestigate sid iid (toAbilitySource attrs 1) <&> setTarget attrs
       pure a
     Successful (Action.Investigate, LocationTarget lid) iid _ (isTarget attrs -> True) _ -> do
       enemies <- select $ enemyEngagedWith iid

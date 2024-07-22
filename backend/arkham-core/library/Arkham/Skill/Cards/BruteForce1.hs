@@ -37,7 +37,9 @@ instance RunMessage BruteForce1 where
       mSource <- getSkillTestSource
       mInvestigator <- getSkillTestInvestigator
       case (mAction, mSource, mInvestigator) of
-        (Just Action.Fight, Just (AbilitySource (EnemySource _) AbilityAttack), Just iid) -> push $ skillTestModifier (toSource attrs) iid (DamageDealt 2)
+        (Just Action.Fight, Just (AbilitySource (EnemySource _) AbilityAttack), Just iid) -> do
+          withSkillTest \sid ->
+            push $ skillTestModifier sid (toSource attrs) iid (DamageDealt 2)
         _ -> pure ()
       pure s
     _ -> BruteForce1 <$> runMessage msg attrs

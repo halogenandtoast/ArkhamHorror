@@ -34,10 +34,11 @@ instance RunMessage ForbiddingShore where
   runMessage msg l@(ForbiddingShore attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       player <- getPlayer iid
+      sid <- getRandom
       push
         $ chooseOne
           player
-          [ SkillLabel skillType [beginSkillTest iid attrs attrs skillType (Fixed 3)]
+          [ SkillLabel skillType [beginSkillTest sid iid attrs attrs skillType (Fixed 3)]
           | skillType <- [#willpower, #intellect]
           ]
       pure l

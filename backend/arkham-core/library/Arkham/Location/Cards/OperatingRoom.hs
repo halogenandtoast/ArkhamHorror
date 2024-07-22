@@ -23,10 +23,11 @@ instance RunMessage OperatingRoom where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       investigators <- select $ affectsOthers $ investigatorAt attrs.id
       player <- getPlayer iid
+      sid <- getRandom
       push
         $ chooseOrRunOne
           player
-          [ targetLabel target [beginSkillTest iid (attrs.ability 1) target #intellect (Fixed 4)]
+          [ targetLabel target [beginSkillTest sid iid (attrs.ability 1) target #intellect (Fixed 4)]
           | target <- investigators
           ]
       pure l

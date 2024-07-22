@@ -4,6 +4,7 @@ import Arkham.Ability.Builder
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Game.Helpers (getAccessibleLocations)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigate
 import Arkham.Matcher hiding (DiscoveringLastClue)
 import Arkham.Message.Lifted.Choose
@@ -41,19 +42,21 @@ instance RunMessage DowsingRod4 where
       doStep 1 msg
       pure $ overAttrs (unsetMetaKey "option2") a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      investigate <- mkInvestigate iid (attrs.ability 1)
+      sid <- getRandom
+      investigate <- mkInvestigate sid iid (attrs.ability 1)
 
       chooseOneM iid do
         labeled "Use your {willpower}" $ push $ withSkillType #willpower investigate
         labeled "get +1 {intellect}" do
-          skillTestModifier (attrs.ability 1) iid $ SkillModifier #intellect 1
+          skillTestModifier sid (attrs.ability 1) iid $ SkillModifier #intellect 1
           push investigate
       pure a
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       push $ Exhaust (toTarget attrs)
       placeDoom (attrs.ability 1) attrs 1
       accessibleLocationIds <- getAccessibleLocations iid attrs
-      skillTestModifier (attrs.ability 1) iid $ AnySkillValue 2
+      withSkillTest \sid ->
+        skillTestModifier sid (attrs.ability 1) iid $ AnySkillValue 2
       chooseOne iid $ targetLabels accessibleLocationIds (only . Move . move attrs iid)
       pure a
     DoStep 3 (UseThisAbility _ (isSource attrs -> True) 1) -> do
@@ -68,6 +71,6 @@ instance RunMessage DowsingRod4 where
           push $ RemoveAllDoom (attrs.ability 1) (toTarget attrs)
           pure $ overAttrs (unsetMetaKey "option2") a
         else pure a
-    SkillTestEnds _ (isSource attrs -> True) -> do
+    SkillTestEnds _ _ (isSource attrs -> True) -> do
       pure $ overAttrs (unsetMetaKey "option2") a
     _ -> DowsingRod4 <$> liftRunMessage msg attrs

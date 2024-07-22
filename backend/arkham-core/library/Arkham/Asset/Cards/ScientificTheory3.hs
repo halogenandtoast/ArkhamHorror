@@ -3,11 +3,12 @@ module Arkham.Asset.Cards.ScientificTheory3 (scientificTheory3, ScientificTheory
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
 
 newtype ScientificTheory3 = ScientificTheory3 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scientificTheory3 :: AssetCard ScientificTheory3
@@ -30,6 +31,7 @@ instance HasModifiersFor ScientificTheory3 where
 instance RunMessage ScientificTheory3 where
   runMessage msg a@(ScientificTheory3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skillTestModifiers (attrs.ability 1) iid [SkillModifier #intellect 1, SkillModifier #combat 1]
+      withSkillTest \sid ->
+        skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #intellect 1, SkillModifier #combat 1]
       pure a
     _ -> ScientificTheory3 <$> liftRunMessage msg attrs

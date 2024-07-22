@@ -16,6 +16,7 @@ counterpunch = event Counterpunch Cards.counterpunch
 instance RunMessage Counterpunch where
   runMessage msg e@(Counterpunch attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid (is attrs -> True) _ (attackEnemy . getAttackDetails -> enemy) _ -> do
-      pushM $ mkFightEnemy iid attrs enemy
+      sid <- getRandom
+      pushM $ mkFightEnemy sid iid attrs enemy
       pure e
     _ -> Counterpunch <$> liftRunMessage msg attrs

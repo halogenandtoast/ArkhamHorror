@@ -34,11 +34,13 @@ instance RunMessage HolySpear5 where
           [ Label "Release a {bless} token" [UnsealChaosToken blessToken]
           , Label "Do not release a {bless} token" []
           ]
-      skillTestModifiers (attrs.ability 1) iid [SkillModifier #combat 2, DamageDealt 1]
-      chooseFightEnemy iid (attrs.ability 1)
+      sid <- getRandom
+      skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #combat 2, DamageDealt 1]
+      chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      skillTestModifiers (attrs.ability 1) iid [SkillModifier #combat 4, DamageDealt 2]
-      chooseFightEnemy iid (attrs.ability 1)
+      sid <- getRandom
+      skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #combat 4, DamageDealt 2]
+      chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     _ -> HolySpear5 <$> liftRunMessage msg attrs

@@ -30,9 +30,10 @@ instance HasAbilities AncientStone1 where
 instance RunMessage AncientStone1 where
   runMessage msg a@(AncientStone1 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigation <- mkInvestigate iid (toAbilitySource attrs 1) <&> setTarget attrs
+      sid <- getRandom
+      investigation <- mkInvestigate sid iid (toAbilitySource attrs 1) <&> setTarget attrs
       pushAll
-        [ skillTestModifiers @LocationId attrs investigation.location [ShroudModifier 3]
+        [ skillTestModifiers @LocationId sid attrs investigation.location [ShroudModifier 3]
         , toMessage investigation
         ]
       pure a

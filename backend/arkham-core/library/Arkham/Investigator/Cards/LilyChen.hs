@@ -48,7 +48,7 @@ instance RunMessage LilyChen where
           (object ["aligned" .= True, "balanced" .= balanced, "prescient" .= True, "quiescent" .= quiescent])
     ElderSignEffect iid | iid == toId attrs -> do
       pure $ LilyChen $ attrs `with` Metadata True
-    SkillTestEnds iid _ | attrs.id == iid && flipDiscipline meta -> do
+    SkillTestEnds _ iid _ | attrs.id == iid && flipDiscipline meta -> do
       brokenDisciplines <- select $ AssetWithTrait Broken <> AssetWithTitle "Discipline"
       unless (null brokenDisciplines) do
         chooseOne attrs.id

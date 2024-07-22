@@ -38,7 +38,8 @@ instance RunMessage DestroyedPath where
       push $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) amount
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      pushM $ mkInvestigate iid (toAbilitySource attrs 2)
+      sid <- getRandom
+      pushM $ mkInvestigate sid iid (toAbilitySource attrs 2)
       pure l
     Successful (Action.Investigate, _) _ (isAbilitySource attrs 2 -> True) _ _ -> do
       push $ RemoveDoom (toAbilitySource attrs 2) (toTarget attrs) 1

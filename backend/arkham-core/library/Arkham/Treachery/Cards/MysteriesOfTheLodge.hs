@@ -4,14 +4,13 @@ module Arkham.Treachery.Cards.MysteriesOfTheLodge (
   MysteriesOfTheLodge (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait (Trait (Cultist))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -27,10 +26,7 @@ instance RunMessage MysteriesOfTheLodge where
   runMessage msg t@(MysteriesOfTheLodge attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       enemies <-
-        select
-          $ NearestEnemy
-          $ EnemyWithTrait Cultist
-          <> EnemyWithoutModifier CannotPlaceDoomOnThis
+        select $ NearestEnemy $ EnemyWithTrait Cultist <> EnemyWithoutModifier CannotPlaceDoomOnThis
       case enemies of
         [] -> push $ gainSurge attrs
         xs -> do
@@ -41,11 +37,7 @@ instance RunMessage MysteriesOfTheLodge where
                 [ targetLabel
                   eid
                   [ PlaceDoom (toSource attrs) (EnemyTarget eid) 1
-                  , createCardEffect
-                      Cards.mysteriesOfTheLodge
-                      Nothing
-                      source
-                      (EnemyTarget eid)
+                  , createCardEffect Cards.mysteriesOfTheLodge Nothing source (EnemyTarget eid)
                   ]
                 | eid <- xs
                 ]
@@ -62,7 +54,7 @@ mysteriesOfTheLodgeEffect =
   cardEffect MysteriesOfTheLodgeEffect Cards.mysteriesOfTheLodge
 
 instance HasModifiersFor MysteriesOfTheLodgeEffect where
-  getModifiersFor SkillTestTarget (MysteriesOfTheLodgeEffect a) = do
+  getModifiersFor (SkillTestTarget _) (MysteriesOfTheLodgeEffect a) = do
     mTarget <- getSkillTestTarget
     mAction <- getSkillTestAction
     pure $ toModifiers a $ case (mTarget, mAction) of

@@ -20,7 +20,8 @@ thirdTimesACharm2 = event ThirdTimesACharm2 Cards.thirdTimesACharm2
 instance RunMessage ThirdTimesACharm2 where
   runMessage msg e@(ThirdTimesACharm2 attrs) = case msg of
     PlayThisEvent _iid eid | eid == toId attrs -> do
-      push $ createCardEffect Cards.thirdTimesACharm2 (Just $ EffectInt 2) attrs SkillTestTarget
+      withSkillTest \sid ->
+        push $ createCardEffect Cards.thirdTimesACharm2 (Just $ EffectInt 2) attrs sid
       pure e
     _ -> ThirdTimesACharm2 <$> runMessage msg attrs
 
@@ -35,14 +36,16 @@ thirdTimesACharm2Effect = cardEffect ThirdTimesACharm2Effect Cards.thirdTimesACh
 -- rely on the EffectMetadata, but it didn't seem to be working
 instance HasAbilities ThirdTimesACharm2Effect where
   getAbilities (ThirdTimesACharm2Effect a) = case a.meta of
-    Just (EffectInt n) ->
-      [ withTooltip "Cancel it, return it to the chaos bag, and reveal a new chaos token"
-        $ limitedAbility (GroupLimit PerTestOrAbility 2)
-        $ mkAbility (proxied SkillTestSource a) 1
-        $ freeReaction
-        $ RevealChaosToken #when You #any
-      | n > 0
-      ]
+    Just (EffectInt n) -> case a.target of
+      SkillTestTarget sid ->
+        [ withTooltip "Cancel it, return it to the chaos bag, and reveal a new chaos token"
+          $ limitedAbility (GroupLimit PerTestOrAbility 2)
+          $ mkAbility (proxied (SkillTestSource sid) a) 1
+          $ freeReaction
+          $ RevealChaosToken #when You #any
+        | n > 0
+        ]
+      _ -> error "incorrect source"
     _ -> []
 
 instance RunMessage ThirdTimesACharm2Effect where
@@ -59,7 +62,7 @@ instance RunMessage ThirdTimesACharm2Effect where
             ]
           pure $ ThirdTimesACharm2Effect $ attrs & metadataL ?~ EffectInt (n - 1)
         _ -> error "wrong meta"
-    SkillTestEnded -> do
+    SkillTestEnded {} -> do
       push $ disable attrs
       pure e
     _ -> ThirdTimesACharm2Effect <$> runMessage msg attrs

@@ -17,7 +17,7 @@ import Arkham.Matcher
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype TheGeistTrap = TheGeistTrap LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theGeistTrap :: LocationCard TheGeistTrap
@@ -45,7 +45,8 @@ instance HasAbilities TheGeistTrap where
 instance RunMessage TheGeistTrap where
   runMessage msg l@(TheGeistTrap attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      circleTest iid attrs attrs [#willpower, #intellect, #combat, #agility] (Fixed 20)
+      sid <- getRandom
+      circleTest sid iid attrs attrs [#willpower, #intellect, #combat, #agility] (Fixed 20)
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1

@@ -30,13 +30,14 @@ instance RunMessage GetOverHere where
           <> EnemyAt
             (LocationMatchAny [m, ConnectedFrom m, LocationWithDistanceFrom 2 m])
       player <- getPlayer iid
+      sid <- getRandom
       pushAll
         [ chooseOne
             player
             [ targetLabel
               enemy
               [ EnemyEngageInvestigator enemy iid
-              , FightEnemy iid enemy (toSource attrs) Nothing SkillCombat False
+              , FightEnemy sid iid enemy (toSource attrs) Nothing SkillCombat False
               ]
             | enemy <- enemies
             ]

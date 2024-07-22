@@ -39,7 +39,8 @@ instance HasAbilities BaseOfTheHill where
 instance RunMessage BaseOfTheHill where
   runMessage msg l@(BaseOfTheHill attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      pushM $ mkInvestigate iid (toAbilitySource attrs 1)
+      sid <- getRandom
+      pushM $ mkInvestigate sid iid (toAbilitySource attrs 1)
       pure l
     Successful (Action.Investigate, _) _ (AbilitySource source 1) _ _ | isSource attrs source -> do
       divergingPaths <- getSetAsideCardsMatching $ CardWithTitle "Diverging Path"

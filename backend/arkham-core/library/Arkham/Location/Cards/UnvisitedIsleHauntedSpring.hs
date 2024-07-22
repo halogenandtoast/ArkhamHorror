@@ -19,7 +19,7 @@ import Arkham.Matcher
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype UnvisitedIsleHauntedSpring = UnvisitedIsleHauntedSpring LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unvisitedIsleHauntedSpring :: LocationCard UnvisitedIsleHauntedSpring
@@ -48,7 +48,8 @@ instance HasAbilities UnvisitedIsleHauntedSpring where
 instance RunMessage UnvisitedIsleHauntedSpring where
   runMessage msg l@(UnvisitedIsleHauntedSpring attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      circleTest iid attrs attrs [#intellect, #agility] (Fixed 9)
+      sid <- getRandom
+      circleTest sid iid attrs attrs [#intellect, #agility] (Fixed 9)
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       hasAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid

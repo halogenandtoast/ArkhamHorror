@@ -42,5 +42,5 @@ instance RunMessage Deduction2Effect where
           push $ DiscoverClues iid $ viaInvestigate $ discover lid (toSource attrs) 1
           pure e
         _ -> pure e
-    SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
+    SkillTestEnds _ _ _ -> e <$ push (DisableEffect effectId)
     _ -> Deduction2Effect <$> runMessage msg attrs

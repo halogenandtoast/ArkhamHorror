@@ -3,6 +3,7 @@ module Arkham.Event.Cards.HitMe (hitMe, HitMe (..)) where
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Modifier
 import Arkham.RequestedChaosTokenStrategy
 
@@ -19,8 +20,9 @@ instance RunMessage HitMe where
       push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
       pure e
     RequestedChaosTokens (isSource attrs -> True) miid tokens -> do
-      for_ tokens $ \token -> do
-        skillTestModifier attrs (ChaosTokenTarget token) NegativeToPositive
-      push $ RequestedChaosTokens SkillTestSource miid tokens
+      withSkillTest \sid -> do
+        for_ tokens $ \token -> do
+          skillTestModifier sid attrs (ChaosTokenTarget token) NegativeToPositive
+        push $ RequestedChaosTokens (SkillTestSource sid) miid tokens
       pure e
     _ -> HitMe <$> liftRunMessage msg attrs

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Fight
-import Arkham.Helpers.SkillTest (getSkillTestTarget)
+import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -21,13 +21,15 @@ instance HasAbilities CyclopeanHammer5 where
 instance RunMessage CyclopeanHammer5 where
   runMessage msg a@(CyclopeanHammer5 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skillTestModifiers (attrs.ability 1) iid [DamageDealt 1, AddSkillValue #willpower]
-      pushM $ mkChooseFight iid (attrs.ability 1)
+      sid <- getRandom
+      skillTestModifiers sid (attrs.ability 1) iid [DamageDealt 1, AddSkillValue #willpower]
+      pushM $ mkChooseFight sid iid (attrs.ability 1)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       getSkillTestTarget >>= \case
         Just (EnemyTarget enemy) -> whenM (enemy <=~> NonEliteEnemy) do
-          when (n >= 3) $ skillTestModifier (attrs.ability 1) iid (DamageDealt 1)
+          when (n >= 3) do
+            withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
           choices <-
             select
               $ LocationWithDistanceFromAtMost

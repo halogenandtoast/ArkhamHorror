@@ -56,7 +56,7 @@ prescientEffect = cardEffect PrescientEffect Cards.prescient
 
 instance RunMessage PrescientEffect where
   runMessage msg e@(PrescientEffect attrs@EffectAttrs {..}) = case msg of
-    SkillTestEnds _ _ -> do
+    SkillTestEnds _ _ _ -> do
       mSkillTest <- getSkillTest
       let
         iid = case effectTarget of

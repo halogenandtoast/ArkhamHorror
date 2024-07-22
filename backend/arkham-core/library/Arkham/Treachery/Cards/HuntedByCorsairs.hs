@@ -36,10 +36,11 @@ instance RunMessage HuntedByCorsairs where
       pure t
     UseThisAbility iid source@(isProxySource attrs -> True) 2 -> do
       player <- getPlayer iid
+      sid <- getRandom
       push
         $ chooseOne
           player
-          [ SkillLabel sType [beginSkillTest iid (AbilitySource source 2) attrs sType (Fixed 4)]
+          [ SkillLabel sType [beginSkillTest sid iid (AbilitySource source 2) attrs sType (Fixed 4)]
           | sType <- [#intellect, #agility]
           ]
       pure t

@@ -11,7 +11,7 @@ import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Trait (Trait (Ghoul))
 
 newtype RichardUptonPickman = RichardUptonPickman AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 richardUptonPickman :: AssetCard RichardUptonPickman
@@ -41,7 +41,8 @@ instance RunMessage RichardUptonPickman where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 1
-      skillTestModifiers source iid [BaseSkillOf #combat 5, NoStandardDamage]
-      chooseFightEnemy iid (attrs.ability 1)
+      sid <- getRandom
+      skillTestModifiers sid source iid [BaseSkillOf #combat 5, NoStandardDamage]
+      chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     _ -> RichardUptonPickman <$> liftRunMessage msg attrs

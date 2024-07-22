@@ -40,16 +40,16 @@ instance RunMessage EndlessCaverns where
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) -> do
       player <- getPlayer iid
       hasRope <- getHasSupply iid Rope
+      sid <- getRandom
       unless hasRope
         $ push
         $ chooseOne
           player
-          [ SkillLabel #combat [beginSkillTest iid attrs attrs #combat (Fixed 5)]
-          , SkillLabel #agility [beginSkillTest iid attrs attrs #agility (Fixed 5)]
+          [ SkillLabel #combat [beginSkillTest sid iid attrs attrs #combat (Fixed 5)]
+          , SkillLabel #agility [beginSkillTest sid iid attrs attrs #agility (Fixed 5)]
           ]
       pure a
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          push $ SufferTrauma iid 1 0
-          pure a
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+      push $ SufferTrauma iid 1 0
+      pure a
     _ -> EndlessCaverns <$> runMessage msg attrs

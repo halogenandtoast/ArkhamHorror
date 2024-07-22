@@ -35,7 +35,7 @@ momentum1Effect :: EffectArgs -> Momentum1Effect
 momentum1Effect = cardEffect Momentum1Effect Cards.momentum1
 
 instance HasModifiersFor Momentum1Effect where
-  getModifiersFor SkillTestTarget (Momentum1Effect attrs) = do
+  getModifiersFor (SkillTestTarget _) (Momentum1Effect attrs) = do
     mMods <- runMaybeT $ do
       investigator <- MaybeT getSkillTestInvestigator
       guard $ investigator `is` effectTarget attrs
@@ -49,7 +49,7 @@ instance RunMessage Momentum1Effect where
     EndPhase -> do
       push $ disable attrs
       pure e
-    SkillTestEnds iid _ | iid `is` attrs.target -> do
+    SkillTestEnds _ iid _ | iid `is` attrs.target -> do
       push $ disable attrs
       pure e
     _ -> Momentum1Effect <$> runMessage msg attrs

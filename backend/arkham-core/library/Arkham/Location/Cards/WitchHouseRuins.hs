@@ -31,7 +31,8 @@ instance RunMessage WitchHouseRuins where
     Msg.RevealLocation _ lid | lid == toId attrs -> do
       WitchHouseRuins <$> runMessage msg (attrs & labelL .~ "witchHouseRuins")
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ mkInvestigate iid (toAbilitySource attrs 1)
+      sid <- getRandom
+      pushM $ mkInvestigate sid iid (toAbilitySource attrs 1)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ LoseActions iid (toSource attrs) 1

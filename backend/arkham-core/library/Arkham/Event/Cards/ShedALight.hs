@@ -2,7 +2,7 @@ module Arkham.Event.Cards.ShedALight (shedALight, ShedALight (..)) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.SkillTest.Target
+import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -25,10 +25,12 @@ instance RunMessage ShedALight where
         _ -> error "Wrong target type"
       pure e
     DoStep 1 (PlayThisEvent iid (is attrs -> True)) -> do
-      skillTestModifier attrs iid (DiscoveredClues 1)
-      push PassSkillTest
+      withSkillTest \sid -> do
+        skillTestModifier sid attrs iid (DiscoveredClues 1)
+        push PassSkillTest
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do
-      skillTestModifier attrs iid (DiscoveredCluesAt lid 1)
+      withSkillTest \sid -> do
+        skillTestModifier sid attrs iid (DiscoveredCluesAt lid 1)
       pure e
     _ -> ShedALight <$> liftRunMessage msg attrs

@@ -31,13 +31,14 @@ instance RunMessage Stairwell where
       UseThisAbility iid (isSource attrs -> True) 1 -> do
         basementLocations <- select $ LocationWithTrait Basement
         player <- getPlayer iid
+        sid <- getRandom
         push
           $ chooseOne
             player
             [ targetLabel
               basementLocation
               [ toMessage $ move (attrs.ability 1) iid basementLocation
-              , beginSkillTest iid (attrs.ability 1) iid #agility (Fixed 4)
+              , beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 4)
               ]
             | basementLocation <- basementLocations
             ]

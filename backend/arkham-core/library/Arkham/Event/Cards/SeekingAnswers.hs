@@ -20,7 +20,8 @@ seekingAnswers = event SeekingAnswers Cards.seekingAnswers
 instance RunMessage SeekingAnswers where
   runMessage msg e@(SeekingAnswers attrs@EventAttrs {..}) = case msg of
     PlayThisEvent iid eid | eid == eventId -> do
-      pushM $ mkInvestigate iid attrs <&> setTarget attrs
+      sid <- getRandom
+      pushM $ mkInvestigate sid iid attrs <&> setTarget attrs
       pure e
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
       lids <- select $ ConnectedLocation <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)

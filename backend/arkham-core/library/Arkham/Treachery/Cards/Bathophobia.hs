@@ -1,11 +1,7 @@
-module Arkham.Treachery.Cards.Bathophobia (
-  bathophobia,
-  Bathophobia (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Bathophobia (bathophobia, Bathophobia (..)) where
 
 import Arkham.Classes
+import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -20,12 +16,10 @@ bathophobia = treachery Bathophobia Cards.bathophobia
 instance RunMessage Bathophobia where
   runMessage msg t@(Bathophobia attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
+      sid <- getRandom
       push
-        $ revelationSkillTest
-          iid
-          attrs
-          #willpower
-          (SumCalculation [Fixed 1, ScenarioCount CurrentDepth])
+        $ revelationSkillTest sid iid attrs #willpower
+        $ SumCalculation [Fixed 1, ScenarioCount CurrentDepth]
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       push $ assignHorror iid attrs 2

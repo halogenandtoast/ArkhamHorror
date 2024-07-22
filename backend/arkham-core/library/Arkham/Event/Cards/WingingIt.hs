@@ -26,10 +26,11 @@ instance RunMessage WingingIt where
   runMessage msg e@(WingingIt attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ zone | eid == toId attrs -> do
       lid <- fieldJust InvestigatorLocation iid
-      let modifiers = [skillTestModifier attrs iid (DiscoveredClues 1) | zone == Zone.FromDiscard]
-      investigation <- mkInvestigate iid attrs
+      sid <- getRandom
+      let modifiers = [skillTestModifier sid attrs iid (DiscoveredClues 1) | zone == Zone.FromDiscard]
+      investigation <- mkInvestigate sid iid attrs
       pushAll
-        $ skillTestModifier attrs lid (ShroudModifier (-1))
+        $ skillTestModifier sid attrs lid (ShroudModifier (-1))
         : modifiers
           <> [toMessage investigation]
           <> [ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs) | zone == Zone.FromDiscard]

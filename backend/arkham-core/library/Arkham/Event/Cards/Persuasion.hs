@@ -31,12 +31,14 @@ instance RunMessage Persuasion where
           enemies <-
             select $ enemyAt location <> EnemyWithTrait Humanoid <> NonWeaknessEnemy <> CanParleyEnemy iid
           player <- getPlayer iid
+          sid <- getRandom
           pushAll
             [ chooseOne
                 player
                 [ targetLabel
                   enemy
                   [ parley
+                      sid
                       iid
                       (toSource attrs)
                       (EnemyTarget enemy)

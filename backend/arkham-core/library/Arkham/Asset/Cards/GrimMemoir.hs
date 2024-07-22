@@ -21,8 +21,9 @@ instance HasAbilities GrimMemoir where
 instance RunMessage GrimMemoir where
   runMessage msg a@(GrimMemoir attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skillTestModifier (attrs.ability 1) iid (SkillModifier #intellect 2)
-      pushM $ mkInvestigate iid (attrs.ability 1)
+      sid <- getRandom
+      skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 2)
+      pushM $ mkInvestigate sid iid (attrs.ability 1)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
       mmsg <- Msg.drawCardsIfCan iid (attrs.ability 1) 1

@@ -1,12 +1,8 @@
-module Arkham.Treachery.Cards.Abduction (
-  abduction,
-  Abduction (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Abduction (abduction, Abduction (..)) where
 
 import Arkham.Classes
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -20,7 +16,8 @@ abduction = treachery Abduction Cards.abduction
 instance RunMessage Abduction where
   runMessage msg t@(Abduction attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs #willpower (Fixed 3)
+      sid <- getRandom
+      push $ revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       allies <- selectTargets $ assetControlledBy iid <> #ally <> DiscardableAsset

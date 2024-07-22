@@ -1,8 +1,4 @@
-module Arkham.Treachery.Cards.Somniphobia (
-  somniphobia,
-  Somniphobia (..),
-)
-where
+module Arkham.Treachery.Cards.Somniphobia (somniphobia, Somniphobia (..)) where
 
 import Arkham.Card
 import Arkham.Classes
@@ -25,9 +21,10 @@ instance RunMessage Somniphobia where
       -- can't revelation because we need to update the skills map
       -- push $ revelationSkillTest iid attrs #willpower 5
 
+      sid <- getRandom
       let card = toCard attrs
       let skillTest =
-            (initSkillTest iid attrs iid #willpower (SkillTestDifficulty $ Fixed 5))
+            (initSkillTest sid iid attrs iid #willpower (SkillTestDifficulty $ Fixed 5))
               { skillTestIsRevelation = True
               }
       let

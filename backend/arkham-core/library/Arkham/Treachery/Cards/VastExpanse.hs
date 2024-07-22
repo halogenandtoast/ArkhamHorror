@@ -16,17 +16,15 @@ vastExpanse = treachery VastExpanse Cards.vastExpanse
 
 instance RunMessage VastExpanse where
   runMessage msg t@(VastExpanse attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
       extradimensionalCount <- selectCount $ LocationWithTrait Extradimensional
+      sid <- getRandom
       push
         $ if extradimensionalCount == 0
           then gainSurge attrs
           else
-            revelationSkillTest
-              iid
-              source
-              #willpower
-              (MaxCalculation (Fixed 5) (CountLocations $ LocationWithTrait Extradimensional))
+            revelationSkillTest sid iid attrs #willpower
+              $ MaxCalculation (Fixed 5) (CountLocations $ LocationWithTrait Extradimensional)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       push $ assignHorror iid attrs n

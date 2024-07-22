@@ -55,9 +55,8 @@ defianceEffect :: EffectArgs -> DefianceEffect
 defianceEffect = cardEffect DefianceEffect Cards.defiance
 
 instance HasModifiersFor DefianceEffect where
-  getModifiersFor target (DefianceEffect a)
-    | effectTarget a == target =
-        pure $ toModifiers a [IgnoreChaosTokenEffects]
+  getModifiersFor target (DefianceEffect a) | effectTarget a == target = do
+    pure $ toModifiers a [IgnoreChaosTokenEffects]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DefianceEffect where
@@ -67,7 +66,7 @@ instance RunMessage DefianceEffect where
         checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
       push ignoreWindow
       pure $ DefianceEffect $ attrs & finishedL .~ True
-    SkillTestEnds _ _ -> do
+    SkillTestEnds _ _ _ -> do
       push (DisableEffect effectId)
       pure e
     _ -> DefianceEffect <$> runMessage msg attrs

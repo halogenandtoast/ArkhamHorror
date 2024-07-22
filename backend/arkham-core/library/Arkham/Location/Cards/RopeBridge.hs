@@ -40,23 +40,23 @@ instance HasAbilities RopeBridge where
 instance RunMessage RopeBridge where
   runMessage msg l@(RopeBridge attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ beginSkillTest iid (attrs.ability 1) (toTarget attrs) SkillAgility (Fixed 2)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) (toTarget attrs) SkillAgility (Fixed 2)
       pure l
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isAbilitySource attrs 1 source -> do
-          mRiverCanyon <-
-            find ((== "River Canyon") . nameTitle . cdName . toCardDef)
-              <$> getExplorationDeck
-          (riverCanyonId, mPlacement) <- case mRiverCanyon of
-            Just riverCanyon -> second Just <$> placeLocation riverCanyon
-            Nothing -> (,Nothing) <$> selectJust (LocationWithTitle "River Canyon")
-          pushAll
-            $ [ CancelNext (toSource attrs) ExploreMessage
-              , InvestigatorAssignDamage iid source DamageAny 2 0
-              , SetActions iid source 0
-              , ChooseEndTurn iid
-              ]
-            <> maybeToList mPlacement
-            <> [MoveTo $ move source iid riverCanyonId]
-          pure l
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isAbilitySource attrs 1 source -> do
+      mRiverCanyon <-
+        find ((== "River Canyon") . nameTitle . cdName . toCardDef)
+          <$> getExplorationDeck
+      (riverCanyonId, mPlacement) <- case mRiverCanyon of
+        Just riverCanyon -> second Just <$> placeLocation riverCanyon
+        Nothing -> (,Nothing) <$> selectJust (LocationWithTitle "River Canyon")
+      pushAll
+        $ [ CancelNext (toSource attrs) ExploreMessage
+          , InvestigatorAssignDamage iid source DamageAny 2 0
+          , SetActions iid source 0
+          , ChooseEndTurn iid
+          ]
+        <> maybeToList mPlacement
+        <> [MoveTo $ move source iid riverCanyonId]
+      pure l
     _ -> RopeBridge <$> runMessage msg attrs

@@ -13,7 +13,7 @@ import Arkham.Effect.Runner hiding (createCardEffect)
 import Arkham.Modifier
 
 newtype DisciplinePrescienceOfFate = DisciplinePrescienceOfFate AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 disciplinePrescienceOfFate :: AssetCard DisciplinePrescienceOfFate
@@ -54,7 +54,7 @@ instance HasModifiersFor DisciplinePrescienceOfFateEffect where
 
 instance RunMessage DisciplinePrescienceOfFateEffect where
   runMessage msg e@(DisciplinePrescienceOfFateEffect attrs) = runQueueT $ case msg of
-    SkillTestEnded -> do
+    SkillTestEnded {} -> do
       case attrs.source of
         AbilitySource (AssetSource inner) _ -> case attrs.target of
           InvestigatorTarget iid -> flipOverBy iid attrs.source inner

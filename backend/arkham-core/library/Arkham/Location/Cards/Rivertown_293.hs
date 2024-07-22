@@ -26,7 +26,8 @@ instance HasAbilities Rivertown_293 where
 instance RunMessage Rivertown_293 where
   runMessage msg l@(Rivertown_293 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid (attrs.ability 1) attrs #intellect (Fixed 2)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed 2)
       pure l
     PassedSkillTest _iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ n -> do
       let n' = min (maybe 0 countBreaches $ locationBreaches attrs) n

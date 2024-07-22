@@ -125,13 +125,14 @@ instance HasModifiersFor Marksmanship1Effect where
 
 instance RunMessage Marksmanship1Effect where
   runMessage msg e@(Marksmanship1Effect attrs@EffectAttrs {..}) = case msg of
-    FightEnemy iid eid _ _ _ _ -> do
+    FightEnemy sid iid eid _ _ _ _ -> do
       ignored <-
         selectAny $ EnemyWithId eid <> EnemyOneOf [EnemyWithKeyword Retaliate, EnemyWithKeyword Aloof]
       ignoreWindow <-
         checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect effectSource)]
       pushAll
         $ skillTestModifiers
+          sid
           (toSource attrs)
           (InvestigatorTarget iid)
           [IgnoreRetaliate, IgnoreAloof]
@@ -143,15 +144,12 @@ instance RunMessage Marksmanship1Effect where
         for_ mSkillTestTarget $ \case
           target@(EnemyTarget eid) | effectTarget == target -> do
             engaged <- eid <=~> enemyEngagedWith iid
-            unless engaged
-              $ push
-              $ skillTestModifier
-                attrs
-                (InvestigatorTarget iid)
-                (DamageDealt 1)
+            unless engaged do
+              withSkillTest \sid ->
+                push $ skillTestModifier sid attrs (InvestigatorTarget iid) (DamageDealt 1)
           _ -> pure ()
         pure e
-    SkillTestEnds _ _ -> do
+    SkillTestEnds _ _ _ -> do
       push $ DisableEffect effectId
       pure e
     _ -> Marksmanship1Effect <$> runMessage msg attrs

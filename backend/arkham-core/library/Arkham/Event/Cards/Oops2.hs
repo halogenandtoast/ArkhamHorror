@@ -40,9 +40,10 @@ instance RunMessage Oops2 where
               $ [ targetLabel x [InvestigatorDamageEnemy iid x (toSource enemy)]
                 | x <- xs
                 ]
-      pushAll
-        [ skillTestModifier (toSource attrs) iid DoesNotDamageOtherInvestigator
-        , damageMsg
-        ]
+      withSkillTest \sid ->
+        pushAll
+          [ skillTestModifier sid (toSource attrs) iid DoesNotDamageOtherInvestigator
+          , damageMsg
+          ]
       pure e
     _ -> Oops2 <$> runMessage msg attrs

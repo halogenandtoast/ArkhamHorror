@@ -1,14 +1,9 @@
-module Arkham.Treachery.Cards.MorbidAwareness (
-  morbidAwareness,
-  MorbidAwareness (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.MorbidAwareness (morbidAwareness, MorbidAwareness (..)) where
 
 import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -23,12 +18,10 @@ morbidAwareness = treachery MorbidAwareness Cards.morbidAwareness
 instance RunMessage MorbidAwareness where
   runMessage msg t@(MorbidAwareness attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
+      sid <- getRandom
       push
-        $ revelationSkillTest
-          iid
-          attrs
-          #willpower
-          (SubtractCalculation (Fixed 6) (DistanceFromCalculation iid "Room 212"))
+        $ revelationSkillTest sid iid attrs #willpower
+        $ SubtractCalculation (Fixed 6) (DistanceFromCalculation iid "Room 212")
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       hasClues <- fieldMap InvestigatorClues (> 0) iid

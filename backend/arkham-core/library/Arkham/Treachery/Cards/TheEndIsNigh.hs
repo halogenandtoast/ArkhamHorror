@@ -1,15 +1,10 @@
-module Arkham.Treachery.Cards.TheEndIsNigh (
-  theEndIsNigh,
-  TheEndIsNigh (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.TheEndIsNigh (theEndIsNigh, TheEndIsNigh (..)) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Trait (Trait (Cultist))
 import Arkham.Treachery.Cards qualified as Cards
@@ -25,12 +20,10 @@ theEndIsNigh = treachery TheEndIsNigh Cards.theEndIsNigh
 instance RunMessage TheEndIsNigh where
   runMessage msg t@(TheEndIsNigh attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
+      sid <- getRandom
       push
-        $ revelationSkillTest
-          iid
-          attrs
-          #willpower
-          (SumCalculation [Fixed 1, CurrentAgendaStepCalculation (Fixed 4)])
+        $ revelationSkillTest sid iid attrs #willpower
+        $ SumCalculation [Fixed 1, CurrentAgendaStepCalculation (Fixed 4)]
       pure t
     FailedThisSkillTest _ (isSource attrs -> True) -> do
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth

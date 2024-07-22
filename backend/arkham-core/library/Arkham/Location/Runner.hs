@@ -98,6 +98,7 @@ instance RunMessage LocationAttrs where
         let target = maybe (toTarget a) (ProxyTarget (toTarget a)) investigation.target
         push
           $ investigate
+            investigation.skillTest
             iid
             investigation.source
             target
@@ -358,7 +359,8 @@ instance RunMessage LocationAttrs where
         triggerSource = case source of
           ProxySource _ s -> s
           _ -> InvestigatorSource iid
-      pushM $ mkInvestigateLocation iid triggerSource (toId a)
+      sid <- getRandom
+      pushM $ mkInvestigateLocation sid iid triggerSource (toId a)
       pure a
     UseCardAbility iid source 102 _ _ | isSource a source -> do
       -- free because already paid for by ability

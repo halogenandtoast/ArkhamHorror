@@ -1,14 +1,9 @@
-module Arkham.Treachery.Cards.Shadowed (
-  shadowed,
-  Shadowed (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Shadowed (shadowed, Shadowed (..)) where
 
 import Arkham.Classes
 import Arkham.Enemy.Types
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner hiding (EnemyFight)
@@ -32,17 +27,14 @@ instance RunMessage Shadowed where
             ]
         else do
           player <- getPlayer iid
+          sid <- getRandom
           push
             $ chooseOrRunOne
               player
               [ targetLabel
                 cultist
                 [ PlaceDoom (toSource attrs) (toTarget cultist) 1
-                , RevelationSkillTest
-                    iid
-                    source
-                    SkillWillpower
-                    (SkillTestDifficulty $ EnemyMaybeFieldCalculation cultist EnemyFight)
+                , revelationSkillTest sid iid source #willpower (EnemyMaybeFieldCalculation cultist EnemyFight)
                 ]
               | cultist <- cultists
               ]

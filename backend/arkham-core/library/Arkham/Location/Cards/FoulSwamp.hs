@@ -14,7 +14,7 @@ import Arkham.Location.Runner
 import Arkham.ScenarioLogKey
 
 newtype FoulSwamp = FoulSwamp LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 foulSwamp :: LocationCard FoulSwamp
@@ -44,9 +44,10 @@ instance RunMessage FoulSwamp where
           _ -> Sum 0
         n = getSum $ horrorPayment payments
         source = toAbilitySource attrs 1
+      sid <- getRandom
       pushAll
-        [ skillTestModifier source iid $ SkillModifier #willpower n
-        , beginSkillTest iid (attrs.ability 1) attrs #willpower (Fixed 7)
+        [ skillTestModifier sid source iid $ SkillModifier #willpower n
+        , beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 7)
         ]
       pure l
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do

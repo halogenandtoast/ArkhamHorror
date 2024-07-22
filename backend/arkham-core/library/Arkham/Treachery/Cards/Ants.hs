@@ -1,12 +1,8 @@
-module Arkham.Treachery.Cards.Ants (
-  ants,
-  Ants (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Ants (ants, Ants (..)) where
 
 import Arkham.Classes
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -24,7 +20,8 @@ ants = treachery Ants Cards.ants
 instance RunMessage Ants where
   runMessage msg t@(Ants attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs #agility (Fixed 3)
+      sid <- getRandom
+      push $ revelationSkillTest sid iid attrs #agility (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       push $ RevelationChoice iid (toSource attrs) n

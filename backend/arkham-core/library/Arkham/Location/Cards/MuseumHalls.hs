@@ -12,7 +12,7 @@ import Arkham.Prelude
 import Arkham.Scenario.Deck
 
 newtype MuseumHalls = MuseumHalls LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 museumHalls :: LocationCard MuseumHalls
@@ -47,7 +47,8 @@ instance RunMessage MuseumHalls where
   runMessage msg l@(MuseumHalls attrs) = case msg of
     UseThisAbility iid this@(isProxySource attrs -> True) 1 | unrevealed attrs -> do
       museumEntrance <- selectJust $ LocationWithTitle "Museum Entrance"
-      push $ beginSkillTest iid (toAbilitySource this 1) museumEntrance #combat (Fixed 5)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (toAbilitySource this 1) museumEntrance #combat (Fixed 5)
       pure l
     UseThisAbility iid (isSource attrs -> True) 1 | revealed attrs -> do
       push $ DrawCards iid $ targetCardDraw attrs ExhibitDeck 1

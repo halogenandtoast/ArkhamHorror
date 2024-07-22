@@ -60,6 +60,9 @@ instance HasField "overriden" ChooseFight Bool where
 instance HasField "onlyChoose" ChooseFight Bool where
   getField = chooseFightOnlyChoose
 
+instance HasField "skillTest" ChooseFight SkillTestId where
+  getField = chooseFightSkillTest
+
 instance WithTarget ChooseFight where
   getTarget = chooseFightTarget
   setTarget t i = i {chooseFightTarget = Just (toTarget t)}

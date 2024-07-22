@@ -28,8 +28,9 @@ instance RunMessage RadiantSmite1 where
   runMessage msg e@(RadiantSmite1 attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       blessedTokens <- min 3 <$> selectCount (ChaosTokenFaceIs #bless)
+      sid <- getRandom
       chooseFight <-
-        leftOr <$> aspect iid attrs (#willpower `InsteadOf` #combat) (mkChooseFight iid attrs)
+        leftOr <$> aspect iid attrs (#willpower `InsteadOf` #combat) (mkChooseFight sid iid attrs)
       player <- getPlayer iid
       pushAll
         $ [ chooseAmounts

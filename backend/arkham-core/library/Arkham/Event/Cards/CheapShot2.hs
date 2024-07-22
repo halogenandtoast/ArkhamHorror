@@ -17,8 +17,9 @@ cheapShot2 = event CheapShot2 Cards.cheapShot2
 instance RunMessage CheapShot2 where
   runMessage msg e@(CheapShot2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      skillTestModifier attrs iid (AddSkillValue #agility)
-      pushM $ mkChooseFight iid attrs
+      sid <- getRandom
+      skillTestModifier sid attrs iid (AddSkillValue #agility)
+      pushM $ mkChooseFight sid iid attrs
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n | n >= 1 -> do
       when (n >= 3) $ createCardEffect Cards.cheapShot2 (effectMetaTarget attrs.cardId) attrs iid

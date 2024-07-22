@@ -15,7 +15,7 @@ import Arkham.SkillTest.Type
 import Arkham.SkillType
 
 newtype Metadata = Metadata {chosenSkills :: Set SkillType}
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (ToJSON, FromJSON)
   deriving newtype (Show, Eq)
 
@@ -54,6 +54,7 @@ instance RunMessage MadnessCoils where
       let skills = setFromList [#willpower, #intellect] `difference` chosenSkills metadata
       lead <- getLeadPlayer
       investigatorIds <- getInvestigatorIds
+      sid <- getRandom
       push
         $ chooseOne lead
         $ map
@@ -62,7 +63,7 @@ instance RunMessage MadnessCoils where
                 ("Any investigator tests " <> tshow sk)
                 [ chooseOrRunOne
                     lead
-                    [targetLabel iid [beginSkillTest iid attrs attrs sk (Fixed 4)] | iid <- investigatorIds]
+                    [targetLabel iid [beginSkillTest sid iid attrs attrs sk (Fixed 4)] | iid <- investigatorIds]
                 ]
           )
           (setToList skills)

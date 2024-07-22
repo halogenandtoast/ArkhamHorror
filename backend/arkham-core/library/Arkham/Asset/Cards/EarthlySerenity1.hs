@@ -22,7 +22,8 @@ instance HasAbilities EarthlySerenity1 where
 instance RunMessage EarthlySerenity1 where
   runMessage msg a@(EarthlySerenity1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      beginSkillTest iid (attrs.ability 1) iid #willpower (Fixed 1)
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 1)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       push $ DoStep n msg

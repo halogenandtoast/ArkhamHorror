@@ -40,12 +40,13 @@ instance RunMessage DowsingRod where
       doStep 1 msg
       pure $ overAttrs (unsetMetaKey "option2") a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      investigate <- mkInvestigate iid (attrs.ability 1)
+      sid <- getRandom
+      investigate <- mkInvestigate sid iid (attrs.ability 1)
 
       chooseOneM iid do
         labeled "Use your {willpower}" $ push $ withSkillType #willpower investigate
         labeled "get +1 {intellect}" do
-          skillTestModifier (attrs.ability 1) iid $ SkillModifier #intellect 1
+          skillTestModifier sid (attrs.ability 1) iid $ SkillModifier #intellect 1
           push investigate
       pure a
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
@@ -65,6 +66,6 @@ instance RunMessage DowsingRod where
           removeDoom (attrs.ability 1) attrs 1
           pure $ overAttrs (unsetMetaKey "option2") a
         else pure a
-    SkillTestEnds _ (isSource attrs -> True) -> do
+    SkillTestEnds _ _ (isSource attrs -> True) -> do
       pure $ overAttrs (unsetMetaKey "option2") a
     _ -> DowsingRod <$> liftRunMessage msg attrs

@@ -10,7 +10,7 @@ import Arkham.Prelude
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
 
 newtype Meta = Meta {hasUsedSuccess :: [InvestigatorId]}
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (FromJSON, ToJSON)
 
 newtype MoonForest = MoonForest LocationAttrs
@@ -33,7 +33,8 @@ instance HasAbilities MoonForest where
 instance RunMessage MoonForest where
   runMessage msg l@(MoonForest attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      beginSkillTest iid (attrs.ability 1) iid #agility (Fixed 5)
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 5)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       let meta = toResult @Meta attrs.meta
@@ -43,7 +44,8 @@ instance RunMessage MoonForest where
           reduceAlarmLevel (attrs.ability 1) iid
           pure $ MoonForest $ attrs & setMeta (meta {hasUsedSuccess = iid : hasUsedSuccess meta})
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      pushM $ mkChooseEvade iid (attrs.ability 2)
+      sid <- getRandom
+      pushM $ mkChooseEvade sid iid (attrs.ability 2)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       raiseAlarmLevel (attrs.ability 2) iid

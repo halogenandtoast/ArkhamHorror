@@ -23,9 +23,10 @@ instance HasAbilities FingerprintKit where
 instance RunMessage FingerprintKit where
   runMessage msg a@(FingerprintKit attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigation <- mkInvestigate iid (toAbilitySource attrs 1)
+      sid <- getRandom
+      investigation <- mkInvestigate sid iid (toAbilitySource attrs 1)
       pushAll
-        [ skillTestModifiers attrs iid [SkillModifier #intellect 1, DiscoveredClues 1]
+        [ skillTestModifiers sid attrs iid [SkillModifier #intellect 1, DiscoveredClues 1]
         , toMessage investigation
         ]
       pure a

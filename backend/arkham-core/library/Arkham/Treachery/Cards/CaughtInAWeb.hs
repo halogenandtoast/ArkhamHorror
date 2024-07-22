@@ -25,7 +25,8 @@ instance RunMessage CaughtInAWeb where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      beginSkillTest iid (attrs.ability 1) iid #combat (Fixed 3)
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 1) iid #combat (Fixed 3)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs

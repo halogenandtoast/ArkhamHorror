@@ -11,6 +11,7 @@ import Arkham.Asset.Uses
 import Arkham.Capability
 import Arkham.Discover
 import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Modifier
 
@@ -56,10 +57,12 @@ instance RunMessage ProfessorWilliamWebbFinderOfHiddenConnections2 where
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       -- We redirect success to this, but do nothing since the ability handles it
       withLocationOf iid \lid ->
-        skillTestModifier
-          (attrs.ability 1)
-          (toTarget lid)
-          (AlternateSuccessfullInvestigation (toTarget attrs))
+        withSkillTest \sid ->
+          skillTestModifier
+            sid
+            (attrs.ability 1)
+            (toTarget lid)
+            (AlternateSuccessfullInvestigation (toTarget attrs))
       locations <-
         select $ ConnectedFrom (locationWithInvestigator iid) <> locationWithDiscoverableCluesBy iid
       chooseOne

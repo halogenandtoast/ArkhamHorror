@@ -14,12 +14,23 @@ riastrad1 = event Riastrad1 Cards.riastrad1
 instance RunMessage Riastrad1 where
   runMessage msg e@(Riastrad1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
+      sid <- getRandom
       n <- min 3 <$> getRemainingCurseTokens
-      when (n > 0) $ chooseAmount iid "Add {curse} tokens to chaos bag" "Curse Tokens" 0 n attrs
-      chooseFightEnemy iid attrs
+      when (n > 0) do
+        chooseAmount
+          iid
+          "Add {curse} tokens to chaos bag"
+          "Curse Tokens"
+          0
+          n
+          (ProxyTarget (toTarget sid) (toTarget attrs))
+      chooseFightEnemy sid iid attrs
       pure e
-    ResolveAmounts iid (getChoiceAmount "Curse Tokens" -> n) (isTarget attrs -> True) | n > 0 -> do
-      replicateM_ n $ addChaosToken #curse
-      skillTestModifiers attrs iid [#combat n, #damage n]
-      pure e
+    ResolveAmounts
+      iid
+      (getChoiceAmount "Curse Tokens" -> n)
+      (ProxyTarget (SkillTestTarget sid) (isTarget attrs -> True)) | n > 0 -> do
+        replicateM_ n $ addChaosToken #curse
+        skillTestModifiers sid attrs iid [#combat n, #damage n]
+        pure e
     _ -> Riastrad1 <$> liftRunMessage msg attrs

@@ -23,7 +23,8 @@ seekingAnswers2 = event SeekingAnswers2 Cards.seekingAnswers2
 instance RunMessage SeekingAnswers2 where
   runMessage msg e@(SeekingAnswers2 attrs@EventAttrs {..}) = case msg of
     PlayThisEvent iid eid | eid == eventId -> do
-      pushM $ mkInvestigate iid attrs <&> setTarget attrs
+      sid <- getRandom
+      pushM $ mkInvestigate sid iid attrs <&> setTarget attrs
       pure e
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
       pushAll

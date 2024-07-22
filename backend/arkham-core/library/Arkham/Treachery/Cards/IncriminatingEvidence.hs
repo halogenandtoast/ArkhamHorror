@@ -1,10 +1,4 @@
-module Arkham.Treachery.Cards.IncriminatingEvidence (
-  incriminatingEvidence,
-  IncriminatingEvidence (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.IncriminatingEvidence (incriminatingEvidence, IncriminatingEvidence (..)) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -12,21 +6,21 @@ import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Prelude
 import Arkham.Trait (Trait (CrimeScene))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype IncriminatingEvidence = IncriminatingEvidence TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 incriminatingEvidence :: TreacheryCard IncriminatingEvidence
 incriminatingEvidence = treachery IncriminatingEvidence Cards.incriminatingEvidence
 
 instance HasModifiersFor IncriminatingEvidence where
-  getModifiersFor target (IncriminatingEvidence a)
-    | target `elem` treacheryAttachedTarget a =
-        pure $ toModifiers a [AddTrait CrimeScene, ShroudModifier 2]
+  getModifiersFor target (IncriminatingEvidence a) | target `elem` treacheryAttachedTarget a = do
+    pure $ toModifiers a [AddTrait CrimeScene, ShroudModifier 2]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities IncriminatingEvidence where
@@ -52,9 +46,9 @@ instance RunMessage IncriminatingEvidence where
       pure t
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       case treacheryAttachedTarget attrs of
-        Just (LocationTarget lid) -> do
+        Just (LocationTarget lid) -> withSkillTest \sid ->
           push
-            $ skillTestModifier (toAbilitySource attrs 1) lid (AlternateSuccessfullInvestigation $ toTarget attrs)
+            $ skillTestModifier sid (attrs.ability 1) lid (AlternateSuccessfullInvestigation $ toTarget attrs)
         _ -> error "Unexpected"
       pure t
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do

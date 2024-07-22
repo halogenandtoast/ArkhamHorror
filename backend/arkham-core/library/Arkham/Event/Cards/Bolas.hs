@@ -11,7 +11,7 @@ import Arkham.Matcher
 import Arkham.Placement
 
 newtype Bolas = Bolas EventAttrs
-  deriving anyclass (IsEvent)
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bolas :: EventCard Bolas
@@ -31,7 +31,8 @@ instance HasAbilities Bolas where
 instance RunMessage Bolas where
   runMessage msg e@(Bolas attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      pushAllM $ leftOr <$> aspect iid attrs (#combat `InsteadOf` #agility) (mkChooseEvade iid attrs)
+      sid <- getRandom
+      pushAllM $ leftOr <$> aspect iid attrs (#combat `InsteadOf` #agility) (mkChooseEvade sid iid attrs)
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       getSkillTestTarget >>= traverse_ \case

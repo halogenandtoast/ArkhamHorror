@@ -54,15 +54,14 @@ copycat3Effect = cardEffect Copycat3Effect Cards.copycat3
 
 instance RunMessage Copycat3Effect where
   runMessage msg e@(Copycat3Effect attrs@EffectAttrs {..}) = case msg of
-    SkillTestEnds _ _ -> do
+    SkillTestEnds _ _ _ -> do
       case (effectMetadata, effectTarget) of
-        (Just (EffectMetaTarget (CardIdTarget cardId)), InvestigatorTarget iid) ->
-          do
-            card <- getCard cardId
-            pushAll
-              [ DisableEffect effectId
-              , PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) card
-              ]
+        (Just (EffectMetaTarget (CardIdTarget cardId)), InvestigatorTarget iid) -> do
+          card <- getCard cardId
+          pushAll
+            [ DisableEffect effectId
+            , PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) card
+            ]
         _ -> error "invalid target or effectMetaTarget"
       pure e
     _ -> Copycat3Effect <$> runMessage msg attrs

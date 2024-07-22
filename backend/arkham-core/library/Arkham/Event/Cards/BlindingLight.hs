@@ -19,9 +19,12 @@ blindingLight = event BlindingLight Cards.blindingLight
 instance RunMessage BlindingLight where
   runMessage msg e@(BlindingLight attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
+      sid <- getRandom
       createCardEffect Cards.blindingLight Nothing attrs iid
-      createCardEffect Cards.blindingLight Nothing attrs SkillTestTarget
-      pushAllM $ leftOr <$> aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvade iid attrs)
+      createCardEffect Cards.blindingLight Nothing attrs sid
+      pushAllM
+        $ leftOr
+        <$> aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvade sid iid attrs)
       pure e
     _ -> BlindingLight <$> liftRunMessage msg attrs
 
@@ -39,8 +42,11 @@ instance RunMessage BlindingLightEffect where
         push $ If (Window.RevealChaosTokenEffect iid token attrs.id) [LoseActions iid (toSource attrs) 1]
         disable attrs
       pure e
-    PassedSkillTest iid (Just Action.Evade) _ (Initiator (EnemyTarget eid)) _ _ | attrs.target == SkillTestTarget -> do
-      nonAttackEnemyDamage iid 1 eid
-      disableReturn e
-    SkillTestEnds _ _ -> disableReturn e
+    PassedSkillTest iid (Just Action.Evade) _ (Initiator (EnemyTarget eid)) _ _ -> do
+      case attrs.target of
+        SkillTestTarget _ -> do
+          nonAttackEnemyDamage iid 1 eid
+          disableReturn e
+        _ -> pure e
+    SkillTestEnds _ _ _ -> disableReturn e
     _ -> BlindingLightEffect <$> liftRunMessage msg attrs

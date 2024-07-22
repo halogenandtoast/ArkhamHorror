@@ -29,12 +29,13 @@ instance RunMessage SixthSense4 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
       lid <- getJustLocation iid
+      sid <- getRandom
       investigation <-
-        aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate iid source)
+        aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
 
       pushAll
-        $ [ createCardEffect Cards.sixthSense4 Nothing source (InvestigationTarget iid lid)
-          , skillTestModifier (attrs.ability 1) iid (SkillModifier #willpower 2)
+        $ [ createCardEffect Cards.sixthSense4 (effectMetaTarget sid) source (InvestigationTarget iid lid)
+          , skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 2)
           ]
         <> leftOr investigation
       pure a
@@ -49,7 +50,7 @@ sixthSense4Effect = cardEffect SixthSense4Effect Cards.sixthSense4
 
 instance RunMessage SixthSense4Effect where
   runMessage msg e@(SixthSense4Effect attrs@EffectAttrs {..}) = case msg of
-    RevealChaosToken _ iid token -> case effectTarget of
+    RevealChaosToken (SkillTestSource sid) iid token | maybe False (isTarget sid) attrs.metaTarget -> case effectTarget of
       InvestigationTarget iid' lid | iid == iid' -> do
         when (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing]) $ do
           currentShroud <- fieldJust LocationShroud lid
@@ -87,18 +88,10 @@ instance RunMessage SixthSense4Effect where
                                 player
                                 [ Label
                                     "Use new location's shroud"
-                                    [ skillTestModifier
-                                        (AbilitySource effectSource 1)
-                                        SkillTestTarget
-                                        (SetDifficulty shroud)
-                                    ]
+                                    [skillTestModifier sid (AbilitySource effectSource 1) sid (SetDifficulty shroud)]
                                 , Label
                                     "Use original locations shroud"
-                                    [ skillTestModifier
-                                        (AbilitySource effectSource 1)
-                                        SkillTestTarget
-                                        (SetDifficulty currentShroud)
-                                    ]
+                                    [skillTestModifier sid (AbilitySource effectSource 1) sid (SetDifficulty currentShroud)]
                                 ]
                             ]
                         ]
@@ -109,5 +102,5 @@ instance RunMessage SixthSense4Effect where
             ]
         pure e
       _ -> error "Invalid target"
-    SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
+    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> e <$ push (DisableEffect effectId)
     _ -> SixthSense4Effect <$> runMessage msg attrs

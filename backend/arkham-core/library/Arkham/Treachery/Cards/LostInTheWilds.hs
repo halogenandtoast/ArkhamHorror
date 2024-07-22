@@ -7,7 +7,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype LostInTheWilds = LostInTheWilds TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lostInTheWilds :: TreacheryCard LostInTheWilds
@@ -30,7 +30,8 @@ instance HasAbilities LostInTheWilds where
 instance RunMessage LostInTheWilds where
   runMessage msg t@(LostInTheWilds attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      revelationSkillTest iid attrs #willpower (Fixed 3)
+      sid <- getRandom
+      revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       assignHorror iid attrs n

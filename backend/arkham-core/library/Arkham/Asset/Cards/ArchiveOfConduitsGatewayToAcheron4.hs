@@ -59,8 +59,9 @@ instance RunMessage ArchiveOfConduitsGatewayToAcheron4 where
           $ LocationWithToken Token.Leyline
           <> CanEnterLocation (InvestigatorWithId iid')
       player <- getPlayer iid
+      sid <- getRandom
       choices <- for locations \location -> do
-        investigate <- mkInvestigateLocation iid' (attrs.ability 2) location
+        investigate <- mkInvestigateLocation sid iid' (attrs.ability 2) location
         pure
           $ targetLabel
             location

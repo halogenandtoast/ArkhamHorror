@@ -1,16 +1,11 @@
-module Arkham.Skill.Cards.SharpVision1 (
-  sharpVision1,
-  SharpVision1 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.SharpVision1 (sharpVision1, SharpVision1 (..)) where
 
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Constants
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
+import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 
@@ -37,7 +32,9 @@ instance RunMessage SharpVision1 where
       mSource <- getSkillTestSource
       mInvestigator <- getSkillTestInvestigator
       case (mAction, mSource, mInvestigator) of
-        (Just Action.Investigate, Just (AbilitySource (LocationSource _) AbilityInvestigate), Just iid) -> push $ skillTestModifier (toSource attrs) iid (DiscoveredClues 1)
+        (Just Action.Investigate, Just (AbilitySource (LocationSource _) AbilityInvestigate), Just iid) -> do
+          withSkillTest \sid ->
+            push $ skillTestModifier sid (toSource attrs) iid (DiscoveredClues 1)
         _ -> pure ()
       pure s
     _ -> SharpVision1 <$> runMessage msg attrs

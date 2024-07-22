@@ -15,7 +15,7 @@ import Arkham.Matcher
 import Arkham.SkillType
 
 newtype NotreDame = NotreDame LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 notreDame :: LocationCard NotreDame
@@ -40,7 +40,8 @@ instance HasAbilities NotreDame where
 instance RunMessage NotreDame where
   runMessage msg l@(NotreDame attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ beginSkillTest iid (attrs.ability 1) attrs SkillWillpower (Fixed 6)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) attrs SkillWillpower (Fixed 6)
       pure l
     PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isAbilitySource attrs 1 source -> do
       agenda <- selectJust AnyAgenda

@@ -17,7 +17,8 @@ cryptChill = treachery CryptChill Cards.cryptChill
 instance RunMessage CryptChill where
   runMessage msg t@(CryptChill attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs #willpower (Fixed 4)
+      sid <- getRandom
+      push $ revelationSkillTest sid iid attrs #willpower (Fixed 4)
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       hasAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid

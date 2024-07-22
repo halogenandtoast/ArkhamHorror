@@ -32,9 +32,10 @@ instance RunMessage GreenRoom where
   runMessage msg l@(GreenRoom attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      investigation <- mkInvestigate iid source
+      sid <- getRandom
+      investigation <- mkInvestigate sid iid source
       pushAll
-        [ skillTestModifier source iid (SkillModifier #intellect 3)
+        [ skillTestModifier sid source iid (SkillModifier #intellect 3)
         , toMessage investigation
         , DiscardHand iid source
         ]

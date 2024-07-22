@@ -1,14 +1,8 @@
-module Arkham.Treachery.Cards.MarkedForDeath (
-  markedForDeath,
-  MarkedForDeath (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.MarkedForDeath (markedForDeath, MarkedForDeath (..)) where
 
 import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -21,17 +15,13 @@ markedForDeath = treachery MarkedForDeath Cards.markedForDeath
 
 instance RunMessage MarkedForDeath where
   runMessage msg t@(MarkedForDeath attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
+      sid <- getRandom
       push
-        $ RevelationSkillTest
-          iid
-          source
-          SkillAgility
-          ( SkillTestDifficulty $ SumCalculation [Fixed 2, InvestigatorFieldCalculation iid InvestigatorHorror]
-          )
+        $ revelationSkillTest sid iid attrs #agility
+        $ SumCalculation [Fixed 2, InvestigatorFieldCalculation iid InvestigatorHorror]
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          push (InvestigatorAssignDamage iid source DamageAny 2 0)
-          pure t
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      push $ assignDamage iid attrs 2
+      pure t
     _ -> MarkedForDeath <$> runMessage msg attrs

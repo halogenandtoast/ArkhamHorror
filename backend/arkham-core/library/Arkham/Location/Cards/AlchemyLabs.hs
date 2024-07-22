@@ -13,7 +13,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype AlchemyLabs = AlchemyLabs LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alchemyLabs :: LocationCard AlchemyLabs
@@ -36,7 +36,8 @@ instance HasAbilities AlchemyLabs where
 instance RunMessage AlchemyLabs where
   runMessage msg l@(AlchemyLabs attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ mkInvestigate iid (toAbilitySource attrs 1)
+      sid <- getRandom
+      pushM $ mkInvestigate sid iid (toAbilitySource attrs 1)
       pure l
     Successful (Action.Investigate, _) iid (isAbilitySource attrs 1 -> True) _ _ -> do
       maid <- selectOne $ assetIs Cards.alchemicalConcoction

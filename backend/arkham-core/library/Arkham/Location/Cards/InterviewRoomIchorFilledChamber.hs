@@ -11,7 +11,6 @@ import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype InterviewRoomIchorFilledChamber = InterviewRoomIchorFilledChamber LocationAttrs
@@ -39,16 +38,10 @@ instance HasAbilities InterviewRoomIchorFilledChamber where
 instance RunMessage InterviewRoomIchorFilledChamber where
   runMessage msg l@(InterviewRoomIchorFilledChamber attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push
-        $ beginSkillTest
-          iid
-          (attrs.ability 1)
-          (InvestigatorTarget iid)
-          SkillWillpower
-          (Fixed 3)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure l
-    FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ n ->
-      do
-        push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 n
-        pure l
+    FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ n -> do
+      push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 n
+      pure l
     _ -> InterviewRoomIchorFilledChamber <$> runMessage msg attrs

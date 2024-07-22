@@ -3,16 +3,13 @@ module Arkham.Location.Cards.PatientConfinementDrearyCell (
   PatientConfinementDrearyCell (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
+import Arkham.Prelude
 import Arkham.ScenarioLogKey
-import Arkham.SkillType
 
 newtype PatientConfinementDrearyCell = PatientConfinementDrearyCell LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -29,19 +26,14 @@ patientConfinementDrearyCell =
 
 instance HasAbilities PatientConfinementDrearyCell where
   getAbilities (PatientConfinementDrearyCell attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility [] (ActionCost 1)
-      | locationRevealed attrs
-      ]
+    extendRevealed attrs [restrictedAbility attrs 1 Here actionAbility]
 
 instance RunMessage PatientConfinementDrearyCell where
   runMessage msg l@(PatientConfinementDrearyCell attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          l
-            <$ push
-              (beginSkillTest iid (attrs.ability 1) (toTarget attrs) SkillIntellect (Fixed 2))
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed 2)
+      pure l
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isAbilitySource attrs 1 source -> l <$ push (Remember KnowTheGuardsPatrols)
     _ -> PatientConfinementDrearyCell <$> runMessage msg attrs

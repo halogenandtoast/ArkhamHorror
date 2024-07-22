@@ -1,10 +1,4 @@
-module Arkham.Asset.Cards.Clairvoyance (
-  clairvoyance,
-  clairvoyanceEffect,
-  Clairvoyance (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Clairvoyance (clairvoyance, clairvoyanceEffect, Clairvoyance (..)) where
 
 import Arkham.Ability
 import Arkham.Aspect
@@ -13,6 +7,7 @@ import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Effect.Runner
 import Arkham.Investigate
+import Arkham.Prelude
 import Arkham.Window qualified as Window
 
 newtype Clairvoyance = Clairvoyance AssetAttrs
@@ -29,11 +24,13 @@ instance RunMessage Clairvoyance where
   runMessage msg a@(Clairvoyance attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       let source = toAbilitySource attrs 1
-      investigation <- aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate iid source)
+      sid <- getRandom
+      investigation <-
+        aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
 
       pushAll
-        $ [ createCardEffect Cards.clairvoyance Nothing source iid
-          , skillTestModifier attrs iid (DiscoveredClues 1)
+        $ [ createCardEffect Cards.clairvoyance (effectMetaTarget sid) source iid
+          , skillTestModifier sid attrs iid (DiscoveredClues 1)
           ]
         <> leftOr investigation
       pure a
@@ -48,12 +45,12 @@ clairvoyanceEffect = cardEffect ClairvoyanceEffect Cards.clairvoyance
 
 instance RunMessage ClairvoyanceEffect where
   runMessage msg e@(ClairvoyanceEffect attrs@EffectAttrs {..}) = case msg of
-    RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget -> do
-      when (chaosTokenFace token `elem` [ElderSign, PlusOne, Zero])
-        $ pushAll
+    RevealChaosToken (SkillTestSource sid) iid token | InvestigatorTarget iid == effectTarget && maybe False (isTarget sid) attrs.metaTarget -> do
+      when (chaosTokenFace token `elem` [ElderSign, PlusOne, Zero]) do
+        pushAll
           [ If (Window.RevealChaosTokenEffect iid token effectId) [assignHorror iid effectSource 1]
           , DisableEffect effectId
           ]
       pure e
-    SkillTestEnds _ _ -> e <$ push (DisableEffect effectId)
+    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> e <$ push (DisableEffect effectId)
     _ -> ClairvoyanceEffect <$> runMessage msg attrs

@@ -20,7 +20,7 @@ import Arkham.Window qualified as Window
 newtype TrishScarborough = TrishScarborough InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 trishScarborough :: InvestigatorCard TrishScarborough
 trishScarborough =
@@ -82,14 +82,15 @@ instance RunMessage TrishScarborough where
           locations <- select $ RevealedLocation <> maybe Anywhere (not_ . LocationWithId) mLocation
           when (notNull locations) do
             player <- getPlayer iid
-            push $ chooseOne player $ Label "Do not choose a different location" []
-              : [ targetLabel
-                  location
-                  [ SetSkillTestTarget (toTarget location)
-                  , skillTestModifier attrs iid (AsIfAt location)
+            withSkillTest \sid -> do
+              push $ chooseOne player $ Label "Do not choose a different location" []
+                : [ targetLabel
+                    location
+                    [ SetSkillTestTarget (toTarget location)
+                    , skillTestModifier sid attrs iid (AsIfAt location)
+                    ]
+                  | location <- locations
                   ]
-                | location <- locations
-                ]
         _ -> pure ()
       pure i
     _ -> TrishScarborough <$> runMessage msg attrs

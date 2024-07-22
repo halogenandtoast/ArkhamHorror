@@ -22,8 +22,9 @@ instance HasAbilities Disguise where
 instance RunMessage Disguise where
   runMessage msg a@(Disguise attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skillTestModifier (attrs.ability 1) iid (SkillModifier #agility 2)
-      chooseEvadeEnemy iid (attrs.ability 1)
+      sid <- getRandom
+      skillTestModifier sid (attrs.ability 1) iid (SkillModifier #agility 2)
+      chooseEvadeEnemy sid iid (attrs.ability 1)
       pure a
     PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
       getSkillTestTarget >>= traverse_ \case

@@ -24,7 +24,7 @@ newtype Metadata = Metadata {affectedInvestigator :: Maybe InvestigatorId}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype BoneFilledCaverns = BoneFilledCaverns (LocationAttrs `With` Metadata)
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 boneFilledCaverns :: LocationCard BoneFilledCaverns
@@ -66,5 +66,5 @@ instance RunMessage BoneFilledCaverns where
     DrewCards _ drewCards | maybe False (isTarget attrs) drewCards.target -> do
       placeDrawnLocations attrs drewCards.cards [Below, RightOf]
       pure l
-    SkillTestEnds _ _ -> pure $ BoneFilledCaverns $ With attrs (Metadata Nothing)
+    SkillTestEnds _ _ _ -> pure $ BoneFilledCaverns $ With attrs (Metadata Nothing)
     _ -> BoneFilledCaverns . (`with` metadata) <$> runMessage msg attrs

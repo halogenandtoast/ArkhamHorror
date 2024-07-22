@@ -29,11 +29,12 @@ instance RunMessage Daring where
     InvestigatorCommittedSkill _ sid | sid == toId attrs -> do
       mtarget <- getSkillTestTarget
       case mtarget of
-        Just target@(EnemyTarget _) ->
-          push $ skillTestModifiers attrs target [AddKeyword Keyword.Retaliate, AddKeyword Keyword.Alert]
+        Just target@(EnemyTarget _) -> do
+          withSkillTest \stId ->
+            push $ skillTestModifiers stId attrs target [AddKeyword Keyword.Retaliate, AddKeyword Keyword.Alert]
         _ -> error "Target was invalid"
       Daring <$> runMessage msg attrs
-    SkillTestEnds _ _ -> do
+    SkillTestEnds _ _ _ -> do
       push $ drawCards (skillOwner attrs) attrs 1
       pure s
     _ -> Daring <$> runMessage msg attrs

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Modifiers qualified as Msg
-import Arkham.Helpers.SkillTest.Target
+import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
@@ -33,13 +33,14 @@ instance RunMessage DreamlandsEclipse where
       getSkillTestTarget >>= \case
         Nothing -> error "invalid window"
         Just target -> do
-          chooseOne
-            iid
-            [ Label "Take 1 horror" [Msg.assignHorror iid source 1]
-            , Label
-                "Your location gets +2 shroud for this investigation"
-                [Msg.skillTestModifier source target (ShroudModifier 2)]
-            ]
+          withSkillTest \sid ->
+            chooseOne
+              iid
+              [ Label "Take 1 horror" [Msg.assignHorror iid source 1]
+              , Label
+                  "Your location gets +2 shroud for this investigation"
+                  [Msg.skillTestModifier sid source target (ShroudModifier 2)]
+              ]
       pure t
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       toDiscard (attrs.ability 2) attrs

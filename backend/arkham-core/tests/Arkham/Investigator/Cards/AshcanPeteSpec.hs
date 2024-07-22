@@ -47,10 +47,11 @@ spec = describe "\"Ashcan\" Pete" $ do
       putCardIntoPlay ashcanPete Assets.duke
       duke <- selectJust $ assetIs Assets.duke
 
+      sid <- getRandom
       pushAndRunAll
         [ SetChaosTokens [ElderSign]
         , Exhaust (toTarget duke)
-        , beginSkillTest ashcanPete SkillIntellect 2
+        , beginSkillTest sid ashcanPete SkillIntellect 2
         ]
       chooseOnlyOption "start skill test"
       chooseOnlyOption "apply results"

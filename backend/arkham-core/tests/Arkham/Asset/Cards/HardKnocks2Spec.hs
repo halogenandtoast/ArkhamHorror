@@ -18,7 +18,8 @@ spec = describe "Hard Knocks (2)" $ do
       putCardIntoPlay investigator Assets.hardKnocks2
       didPassTest <- didPassSkillTestBy investigator SkillCombat 0
       pushAndRun $ SetChaosTokens [Zero]
-      pushAndRun $ beginSkillTest investigator SkillCombat 3
+      sid <- getRandom
+      pushAndRun $ beginSkillTest sid investigator SkillCombat 3
       chooseOptionMatching
         "use ability"
         ( \case
@@ -50,7 +51,8 @@ spec = describe "Hard Knocks (2)" $ do
       didPassTest <- didPassSkillTestBy investigator SkillAgility 0
 
       pushAndRun $ SetChaosTokens [Zero]
-      pushAndRun $ beginSkillTest investigator SkillAgility 3
+      sid <- getRandom
+      pushAndRun $ beginSkillTest sid investigator SkillAgility 3
       chooseOptionMatching
         "use ability"
         ( \case

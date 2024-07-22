@@ -15,7 +15,8 @@ spec = describe "Grotesque Statue (4)" $ do
       self `putCardIntoPlay` Assets.grotesqueStatue4
       setChaosTokens [AutoFail, Zero]
 
-      run $ beginSkillTest self SkillIntellect 0
+      sid <- getRandom
+      run $ beginSkillTest sid self SkillIntellect 0
       startSkillTest
       useReaction
 

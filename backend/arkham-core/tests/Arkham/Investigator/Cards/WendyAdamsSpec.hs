@@ -12,7 +12,8 @@ spec = describe "Wendy Adams" $ do
       card <- testPlayerCard id
       setChaosTokens [MinusOne]
       self `addToHand` PlayerCard card
-      runSkillTest self #willpower 3
+      sid <- getRandom
+      runSkillTest sid self #willpower 3
       useReaction
       click "discard card"
       assertPassedSkillTest
@@ -25,5 +26,6 @@ spec = describe "Wendy Adams" $ do
       -- N.B: We must run the skill test to resolve the effect of the Elder Sign
       self `putCardIntoPlay` Assets.wendysAmulet
       setChaosTokens [ElderSign]
-      runSkillTest self #willpower 20
+      sid <- getRandom
+      runSkillTest sid self #willpower 20
       assertPassedSkillTest

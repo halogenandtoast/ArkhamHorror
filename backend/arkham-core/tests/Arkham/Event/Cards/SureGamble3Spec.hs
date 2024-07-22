@@ -11,7 +11,8 @@ spec = describe "Sure Gamble (3)" $ do
     sureGamble3 <- genCard Events.sureGamble3
     self `addToHand` sureGamble3
     setChaosTokens [MinusOne]
-    run $ beginSkillTest self #intellect 1
+    sid <- getRandom
+    run $ beginSkillTest sid self #intellect 1
     startSkillTest
     chooseTarget sureGamble3
     assertPassedSkillTest

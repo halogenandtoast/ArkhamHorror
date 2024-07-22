@@ -14,7 +14,8 @@ spec = describe "Mind over Matter" $ do
     setChaosTokens [Zero]
     duringTurn self $ do
       self `playEvent` Events.mindOverMatter
-      run $ beginSkillTest self #combat 1
+      sid1 <- getRandom
+      run $ beginSkillTest sid1 self #combat 1
       chooseOptionMatching "use intellect instead of combat" \case
         SkillLabel SkillIntellect _ -> True
         _ -> False
@@ -22,7 +23,8 @@ spec = describe "Mind over Matter" $ do
       assertPassedSkillTest
       applyResults
 
-      run $ beginSkillTest self #agility 1
+      sid2 <- getRandom
+      run $ beginSkillTest sid2 self #agility 1
       chooseOptionMatching "use intellect instead of agility" \case
         SkillLabel SkillIntellect _ -> True
         _ -> False
@@ -37,7 +39,9 @@ spec = describe "Mind over Matter" $ do
       setChaosTokens [Zero]
       duringTurn self $ do
         self `playEvent` Events.mindOverMatter
+        sid <- getRandom
         circleTest
+          sid
           (toId self)
           (TestSource mempty)
           TestTarget
@@ -60,7 +64,9 @@ spec = describe "Mind over Matter" $ do
       setChaosTokens [Zero]
       duringTurn self $ do
         self `playEvent` Events.mindOverMatter
+        sid <- getRandom
         circleTest
+          sid
           (toId self)
           (TestSource mempty)
           TestTarget

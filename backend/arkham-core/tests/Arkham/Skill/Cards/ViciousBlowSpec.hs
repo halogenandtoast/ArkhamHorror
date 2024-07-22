@@ -14,7 +14,7 @@ spec = describe "Vicious Blow" $ do
     enemy `spawnAt` location
     self `moveTo` location
     self `addToHand` viciousBlow
-    self `fightEnemy` enemy
+    void $ self `fightEnemy` enemy
     chooseTarget viciousBlow
     startSkillTest
     click "Apply results"

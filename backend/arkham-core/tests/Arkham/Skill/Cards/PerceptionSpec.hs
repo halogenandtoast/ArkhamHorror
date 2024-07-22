@@ -15,7 +15,8 @@ spec = describe "Perception" $ do
     self `addToHand` perception
     withEach [(Zero, map toCard cards), (MinusOne, [])] $ \(token, expectedHand) -> do
       setChaosTokens [token]
-      run $ beginSkillTest self #intellect 2
+      sid <- getRandom
+      run $ beginSkillTest sid self #intellect 2
       commit perception
       startSkillTest
       applyResults

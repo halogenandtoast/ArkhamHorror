@@ -6,7 +6,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 

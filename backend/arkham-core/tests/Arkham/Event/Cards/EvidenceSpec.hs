@@ -15,7 +15,7 @@ spec = describe "Evidence!" do
     self `addToHand` evidence
     enemy `spawnAt` location
     self `moveTo` location
-    self `fightEnemy` enemy
+    void $ self `fightEnemy` enemy
     click "Begin skill test"
     click "Apply results"
     chooseTarget $ toCardId evidence

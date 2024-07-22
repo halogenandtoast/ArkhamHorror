@@ -18,7 +18,8 @@ spec = describe "Hyperawareness (2)" $ do
     didPassTest <- didPassSkillTestBy investigator SkillIntellect 0
 
     pushAndRun $ SetChaosTokens [Zero]
-    pushAndRun $ beginSkillTest investigator SkillIntellect 3
+    sid <- getRandom
+    pushAndRun $ beginSkillTest sid investigator SkillIntellect 3
     chooseOptionMatching
       "use ability"
       ( \case
@@ -48,7 +49,8 @@ spec = describe "Hyperawareness (2)" $ do
     didPassTest <- didPassSkillTestBy investigator SkillAgility 0
 
     pushAndRun $ SetChaosTokens [Zero]
-    pushAndRun $ beginSkillTest investigator SkillAgility 3
+    sid <- getRandom
+    pushAndRun $ beginSkillTest sid investigator SkillAgility 3
     chooseOptionMatching
       "use ability"
       ( \case

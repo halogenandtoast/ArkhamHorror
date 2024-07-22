@@ -74,17 +74,17 @@ grislyTotemSurvivor3Effect :: EffectArgs -> GrislyTotemSurvivor3Effect
 grislyTotemSurvivor3Effect = cardEffect GrislyTotemSurvivor3Effect Cards.grislyTotemSurvivor3
 
 instance RunMessage GrislyTotemSurvivor3Effect where
-  runMessage msg e@(GrislyTotemSurvivor3Effect attrs@EffectAttrs {..}) =
+  runMessage msg e@(GrislyTotemSurvivor3Effect attrs) =
     case msg of
       FailedSkillTest _ _ _ SkillTestInitiatorTarget {} _ _ -> do
         withSkillTest \sid -> do
           when (attrs.metaTarget == Just (SkillTestTarget sid)) $ do
-            case effectTarget of
+            case attrs.target of
               CardTarget card -> for_ (toCardOwner card) $ \iid ->
                 push $ ReturnToHand iid (toTarget $ toCardId card)
               _ -> pure ()
         pure e
       SkillTestEnds sid _ _ | attrs.metaTarget == Just (SkillTestTarget sid) -> do
-        push $ DisableEffect effectId
+        push $ DisableEffect attrs.id
         pure e
       _ -> GrislyTotemSurvivor3Effect <$> runMessage msg attrs

@@ -23,9 +23,10 @@ instance RunMessage TheHungeringBlade1 where
   runMessage msg a@(TheHungeringBlade1 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
       pushAll
-        [ skillTestModifiers source iid $ DamageDealt 1
+        [ skillTestModifiers sid source iid $ DamageDealt 1
             : [ ForEach
                   (CountTreacheries $ treacheryIs Treacheries.bloodlust <> TreacheryIsAttachedTo (toTarget attrs))
                   [SkillModifier #combat 1]

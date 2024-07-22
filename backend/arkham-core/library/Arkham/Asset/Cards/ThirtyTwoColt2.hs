@@ -23,9 +23,10 @@ instance RunMessage ThirtyTwoColt2 where
   runMessage msg a@(ThirtyTwoColt2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
       pushAll
-        [ skillTestModifier source iid (DamageDealt 1)
+        [ skillTestModifier sid source iid (DamageDealt 1)
         , chooseFight
         ]
       pure a

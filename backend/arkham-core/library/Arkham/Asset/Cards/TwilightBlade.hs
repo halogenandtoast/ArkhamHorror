@@ -41,7 +41,8 @@ instance RunMessage TwilightBlade where
   runMessage msg a@(TwilightBlade attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       let source = attrs.ability 1
-      chooseFight <- mkChooseFight iid source
+      sid <- getRandom
+      chooseFight <- mkChooseFight sid iid source
       player <- getPlayer iid
       push
         $ chooseOne

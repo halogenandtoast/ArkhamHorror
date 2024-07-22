@@ -1,15 +1,9 @@
-module Arkham.Treachery.Cards.ClawsOfSteam (
-  clawsOfSteam,
-  ClawsOfSteam (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.ClawsOfSteam (clawsOfSteam, ClawsOfSteam (..)) where
 
 import Arkham.Classes
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
+import Arkham.Effect.Import
 import Arkham.Game.Helpers
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Source
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -23,23 +17,14 @@ clawsOfSteam = treachery ClawsOfSteam Cards.clawsOfSteam
 
 instance RunMessage ClawsOfSteam where
   runMessage msg t@(ClawsOfSteam attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (RevelationSkillTest iid source SkillWillpower (SkillTestDifficulty $ Fixed 3))
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source ->
-          t
-            <$ pushAll
-              [ CreateWindowModifierEffect
-                  EffectRoundWindow
-                  (EffectModifiers $ toModifiers attrs [CannotMove])
-                  source
-                  (InvestigatorTarget iid)
-              , InvestigatorAssignDamage
-                  iid
-                  (TreacherySource treacheryId)
-                  DamageAssetsFirst
-                  2
-                  0
-              ]
+    Revelation iid (isSource attrs -> True) -> do
+      sid <- getRandom
+      push $ revelationSkillTest sid iid source #willpower (Fixed 3)
+      pure t
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      pushAll
+        [ roundModifier source iid CannotMove
+        , InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAssetsFirst 2 0
+        ]
+      pure t
     _ -> ClawsOfSteam <$> runMessage msg attrs

@@ -12,7 +12,7 @@ import Arkham.Prelude
 import Arkham.SkillType
 
 newtype StrangeSolutionAcidicIchor4 = StrangeSolutionAcidicIchor4 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeSolutionAcidicIchor4 :: AssetCard StrangeSolutionAcidicIchor4
@@ -33,6 +33,7 @@ instance HasModifiersFor StrangeSolutionAcidicIchor4 where
 instance RunMessage StrangeSolutionAcidicIchor4 where
   runMessage msg a@(StrangeSolutionAcidicIchor4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ mkChooseFight iid (attrs.ability 1)
+      sid <- getRandom
+      pushM $ mkChooseFight sid iid (attrs.ability 1)
       pure a
     _ -> StrangeSolutionAcidicIchor4 <$> runMessage msg attrs

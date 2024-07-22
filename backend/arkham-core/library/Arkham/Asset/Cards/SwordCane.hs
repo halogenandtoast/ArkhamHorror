@@ -38,14 +38,16 @@ instance RunMessage SwordCane where
       evadeableEnemies <- select $ CanEvadeEnemy source
       player <- getPlayer iid
 
+      sid <- getRandom
+
       evadeChoices <- for [#willpower, #agility] \sk -> do
-        chooseEvade <- toMessage . Arkham.Evade.withSkillType sk <$> mkChooseEvade iid source
+        chooseEvade <- toMessage . Arkham.Evade.withSkillType sk <$> mkChooseEvade sid iid source
         pure $ SkillLabel sk [chooseEvade]
 
       let doEvade = chooseOne player evadeChoices
 
       fightChoices <- for [#willpower, #combat] \sk -> do
-        chooseFight <- toMessage . Arkham.Fight.withSkillType sk <$> mkChooseFight iid source
+        chooseFight <- toMessage . Arkham.Fight.withSkillType sk <$> mkChooseFight sid iid source
         pure $ SkillLabel sk [chooseFight]
 
       let doFight = chooseOne player fightChoices

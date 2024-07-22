@@ -77,4 +77,5 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     Move _ | isEndOfWindow a EffectMoveWindow -> do
       a <$ push (DisableEffect effectId)
+    NextSkillTest sid -> pure $ replaceNextSkillTest sid a
     _ -> pure a

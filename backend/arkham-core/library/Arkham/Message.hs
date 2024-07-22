@@ -335,6 +335,7 @@ instance AndThen (CardDraw Message) where
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | MoveWithSkillTest Message
+  | NextSkillTest SkillTestId
   | AddSubscriber Target
   | WithSource Source Message
   | SetInvestigator PlayerId Investigator
@@ -952,9 +953,9 @@ data Message
   | TakeStartingResources InvestigatorId
   | TakenActions InvestigatorId [Action]
   | PerformedActions InvestigatorId [Action]
-  | ChosenEvadeEnemy Source EnemyId
+  | ChosenEvadeEnemy SkillTestId Source EnemyId
   | TriggerSkillTest InvestigatorId
-  | TryEvadeEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
+  | TryEvadeEnemy SkillTestId InvestigatorId EnemyId Source (Maybe Target) SkillType
   | UnfocusCards
   | ClearFound Zone
   | UnfocusTargets

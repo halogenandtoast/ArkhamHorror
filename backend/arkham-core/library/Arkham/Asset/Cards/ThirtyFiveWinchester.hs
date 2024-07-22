@@ -28,10 +28,11 @@ instance RunMessage ThirtyFiveWinchester where
   runMessage msg a@(ThirtyFiveWinchester attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
       pushAll
-        [ skillTestModifier source iid (SkillModifier #combat 2)
-        , createCardEffect Cards.thirtyFiveWinchester Nothing source iid
+        [ skillTestModifier sid source iid (SkillModifier #combat 2)
+        , createCardEffect Cards.thirtyFiveWinchester Nothing source sid
         , chooseFight
         ]
       pure a
@@ -46,17 +47,15 @@ thirtyFiveWinchesterEffect = cardEffect ThirtyFiveWinchesterEffect Cards.thirtyF
 
 instance RunMessage ThirtyFiveWinchesterEffect where
   runMessage msg e@(ThirtyFiveWinchesterEffect attrs) = case msg of
-    ResolveChaosToken _ chaosTokenFace _ -> do
-      case attrs.target of
-        InvestigatorTarget iid ->
-          when (chaosTokenFace `elem` [PlusOne, Zero, ElderSign])
-            $ pushAll
-              [ disable attrs
-              , skillTestModifier attrs.source iid (DamageDealt 2)
-              ]
-        _ -> error "Wrong target type"
+    ResolveChaosToken _ chaosTokenFace iid -> do
+      withSkillTest \sid -> do
+        when (isTarget sid attrs.target && chaosTokenFace `elem` [PlusOne, Zero, ElderSign]) do
+          pushAll
+            [ disable attrs
+            , skillTestModifier sid attrs.source iid (DamageDealt 2)
+            ]
       pure e
-    SkillTestEnds {} -> do
+    SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
       push $ disable attrs
       pure e
     _ -> ThirtyFiveWinchesterEffect <$> runMessage msg attrs

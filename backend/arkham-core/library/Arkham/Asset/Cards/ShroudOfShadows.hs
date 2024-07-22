@@ -30,10 +30,15 @@ instance RunMessage ShroudOfShadows where
   runMessage msg a@(ShroudOfShadows attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
+      sid <- getRandom
       chooseEvade <-
-        aspect iid source (#willpower `InsteadOf` #agility) (setTarget attrs <$> mkChooseEvade iid source)
+        aspect
+          iid
+          source
+          (#willpower `InsteadOf` #agility)
+          (setTarget attrs <$> mkChooseEvade sid iid source)
       pushAll
-        $ createCardEffect Cards.shroudOfShadows Nothing source iid
+        $ createCardEffect Cards.shroudOfShadows Nothing source sid
         : leftOr chooseEvade
       pure a
     Successful (Action.Evade, EnemyTarget eid) iid _ target _ | isTarget attrs target -> do
@@ -61,7 +66,7 @@ shroudOfShadowsEffect = cardEffect ShroudOfShadowsEffect Cards.shroudOfShadows
 
 instance RunMessage ShroudOfShadowsEffect where
   runMessage msg e@(ShroudOfShadowsEffect attrs) = case msg of
-    RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
+    RevealChaosToken (SkillTestSource sid) iid token | isTarget sid attrs.target -> do
       let
         handleIt assetId = do
           when (token.face == #curse) do
@@ -88,7 +93,7 @@ instance RunMessage ShroudOfShadowsEffect where
         AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
         _ -> error "wrong source"
       pure e
-    SkillTestEnds _ _ -> do
+    SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
       push (disable attrs)
       pure e
     _ -> ShroudOfShadowsEffect <$> runMessage msg attrs

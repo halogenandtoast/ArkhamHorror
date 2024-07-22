@@ -4,12 +4,13 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Trait (Trait (Armor, Firearm, Melee))
 
 newtype Bruiser3 = Bruiser3 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bruiser3 :: AssetCard Bruiser3
@@ -42,6 +43,7 @@ instance RunMessage Bruiser3 where
   runMessage msg a@(Bruiser3 attrs) = runQueueT $ case msg of
     Do BeginRound -> pure . Bruiser3 $ attrs & tokensL . ix Resource %~ max 2
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skillTestModifier (attrs.ability 1) iid (AnySkillValue 1)
+      withSkillTest \sid ->
+        skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
       pure a
     _ -> Bruiser3 <$> liftRunMessage msg attrs

@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers qualified as Msg
-import Arkham.Helpers.SkillTest (getSkillTestTarget)
+import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Matcher
 import Arkham.Modifier
@@ -31,29 +31,32 @@ instance HasAbilities Bonesaw where
 instance RunMessage Bonesaw where
   runMessage msg a@(Bonesaw attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skillTestModifier (attrs.ability 1) iid (SkillModifier #combat 2)
-      chooseFightEnemy iid (attrs.ability 1)
+      sid <- getRandom
+      skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 2)
+      chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      chooseOne
-        iid
-        [ Label
-            "Take 1 damage to do +1 damage"
-            [ Msg.assignDamage iid (attrs.ability 1) 1
-            , Msg.skillTestModifier (attrs.ability 1) iid (DamageDealt 1)
-            ]
-        , Label "Do not take damage" []
-        ]
+      withSkillTest \sid ->
+        chooseOne
+          iid
+          [ Label
+              "Take 1 damage to do +1 damage"
+              [ Msg.assignDamage iid (attrs.ability 1) 1
+              , Msg.skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+              ]
+          , Label "Do not take damage" []
+          ]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       investigators <- select $ HealableInvestigator (attrs.ability 2) #damage $ colocatedWith iid
+      sid <- getRandom
       when (notNull investigators) do
         chooseOne
           iid
           [ targetLabel
             iid'
             [ HealDamage (toTarget iid') (attrs.ability 2) 5
-            , Msg.beginSkillTest iid (attrs.ability 2) (toTarget iid') #intellect (Fixed 4)
+            , Msg.beginSkillTest sid iid (attrs.ability 2) iid' #intellect (Fixed 4)
             ]
           | iid' <- investigators
           ]

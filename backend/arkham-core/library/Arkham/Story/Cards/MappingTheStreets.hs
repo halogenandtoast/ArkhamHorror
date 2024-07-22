@@ -1,16 +1,11 @@
-module Arkham.Story.Cards.MappingTheStreets (
-  MappingTheStreets (..),
-  mappingTheStreets,
-) where
-
-import Arkham.Prelude
+module Arkham.Story.Cards.MappingTheStreets (MappingTheStreets (..), mappingTheStreets) where
 
 import Arkham.DamageEffect
 import Arkham.Game.Helpers
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Runner
 
@@ -26,13 +21,9 @@ instance RunMessage MappingTheStreets where
     ResolveStory iid _ story' | story' == toId attrs -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- perPlayer 1
+      sid <- getRandom
       pushAll
-        [ beginSkillTest
-            iid
-            (toSource attrs)
-            (InvestigatorTarget iid)
-            SkillIntellect
-            (Fixed 3)
+        [ beginSkillTest sid iid attrs iid #intellect (Fixed 3)
         , Msg.EnemyDamage hastur $ storyDamage iid n
         ]
       pure s

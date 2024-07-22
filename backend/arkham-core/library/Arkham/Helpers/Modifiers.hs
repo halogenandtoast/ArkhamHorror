@@ -115,6 +115,25 @@ skillTestModifiers
 skillTestModifiers sid (toSource -> source) (toTarget -> target) mods =
   CreateWindowModifierEffect (#skillTest sid) (effectModifiers source mods) source target
 
+nextSkillTestModifier
+  :: (Sourceable source, Targetable target)
+  => source
+  -> target
+  -> ModifierType
+  -> Message
+nextSkillTestModifier source target modifier =
+  nextSkillTestModifiers source target [modifier]
+
+nextSkillTestModifiers
+  :: forall target source
+   . (Sourceable source, Targetable target)
+  => source
+  -> target
+  -> [ModifierType]
+  -> Message
+nextSkillTestModifiers (toSource -> source) (toTarget -> target) mods =
+  CreateWindowModifierEffect EffectNextSkillTestWindow (effectModifiers source mods) source target
+
 effectModifiers :: Sourceable a => a -> [ModifierType] -> EffectMetadata Window Message
 effectModifiers source = EffectModifiers . toModifiers source
 

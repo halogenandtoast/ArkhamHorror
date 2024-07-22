@@ -3,7 +3,7 @@ module Arkham.Asset.Cards.CurseOfAeons3 (curseOfAeons3, CurseOfAeons3 (..)) wher
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
-import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens)
+import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, withSkillTest)
 import Arkham.Helpers.Window (getChaosToken)
 import Arkham.Matcher
 import Arkham.Modifier
@@ -30,8 +30,9 @@ instance RunMessage CurseOfAeons3 where
       tokens <- nub . (drawnToken :) . filter ((== #curse) . (.face)) <$> getSkillTestRevealedChaosTokens
 
       push $ ChaosTokenCanceled iid (attrs.ability 1) drawnToken
-      for_ tokens \token ->
-        skillTestModifiers (attrs.ability 1) (ChaosTokenTarget token) $ MayChooseToRemoveChaosToken iid
-          : [ChaosTokenFaceModifier [#skull] | token == drawnToken]
+      withSkillTest \sid -> do
+        for_ tokens \token ->
+          skillTestModifiers sid (attrs.ability 1) (ChaosTokenTarget token) $ MayChooseToRemoveChaosToken iid
+            : [ChaosTokenFaceModifier [#skull] | token == drawnToken]
       pure a
     _ -> CurseOfAeons3 <$> liftRunMessage msg attrs

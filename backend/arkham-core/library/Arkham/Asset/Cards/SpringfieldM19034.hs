@@ -25,9 +25,10 @@ instance RunMessage SpringfieldM19034 where
   runMessage msg a@(SpringfieldM19034 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFightMatch iid source EnemyNotEngagedWithYou
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFightMatch sid iid source EnemyNotEngagedWithYou
       pushAll
-        [ skillTestModifiers attrs iid [DamageDealt 2, SkillModifier #combat 3]
+        [ skillTestModifiers sid attrs iid [DamageDealt 2, SkillModifier #combat 3]
         , chooseFight
         ]
       pure a

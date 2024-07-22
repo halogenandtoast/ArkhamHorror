@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Effect.Import
 import Arkham.Fight
 import Arkham.Prelude
 
@@ -22,12 +23,13 @@ instance RunMessage Shrivelling3 where
   runMessage msg a@(Shrivelling3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
+      sid <- getRandom
       chooseFight <-
-        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight iid source)
+        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
       -- reusing shrivelling(0)'s effect
       pushAll
-        $ [ skillTestModifiers attrs iid [SkillModifier #willpower 2, DamageDealt 1]
-          , createCardEffect Cards.shrivelling Nothing source iid
+        $ [ skillTestModifiers sid attrs iid [SkillModifier #willpower 2, DamageDealt 1]
+          , createCardEffect Cards.shrivelling Nothing source sid
           ]
         <> chooseFight
       pure a

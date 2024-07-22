@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -45,7 +46,8 @@ instance RunMessage BestowResolve2 where
       pure a
     HandleTargetChoice iid (isSource attrs -> True) (CardIdTarget cid) -> do
       card <- getCard cid
-      skillTestModifier (attrs.ability 1) cid ReplaceAllSkillIconsWithWild
+      withSkillTest \sid ->
+        skillTestModifier sid (attrs.ability 1) cid ReplaceAllSkillIconsWithWild
       push $ SkillTestCommitCard iid card
       pure a
     _ -> BestowResolve2 <$> liftRunMessage msg attrs

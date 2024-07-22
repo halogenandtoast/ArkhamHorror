@@ -21,6 +21,7 @@ import Arkham.Tarot
 import Arkham.Trait
 import Control.Lens (Prism', prism')
 import Data.Aeson.TH
+import Data.UUID (nil)
 import GHC.OverloadedLabels
 import GHC.Records
 
@@ -68,7 +69,7 @@ data Source
   | BothSource Source Source
   | TarotSource TarotCard
   | BatchSource BatchId
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
 
 _AssetSource :: Prism' Source AssetId
 _AssetSource = prism' AssetSource $ \case
@@ -99,7 +100,16 @@ instance HasField "treachery" Source (Maybe TreacheryId) where
     AbilitySource s _ -> s.treachery
     _ -> Nothing
 
-$(deriveJSON defaultOptions ''Source)
+$(deriveToJSON defaultOptions ''Source)
+
+instance FromJSON Source where
+  parseJSON = withObject "Source" $ \o -> do
+    tag :: Text <- o .: "tag"
+    case tag of
+      "SkillTestSource" -> do
+        eSkillTestId <- (Left <$> o .: "skillTestId") <|> (Right <$> pure ())
+        pure $ either SkillTestSource (\_ -> SkillTestSource (SkillTestId nil)) eSkillTestId
+      _ -> genericParseJSON defaultOptions (Object o)
 
 instance ToJSONKey Source
 instance FromJSONKey Source

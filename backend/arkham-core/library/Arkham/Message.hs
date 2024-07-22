@@ -79,6 +79,7 @@ import Arkham.Token qualified as Token
 import Arkham.Trait
 import Arkham.Window (Window, WindowType)
 import Data.Aeson.TH
+import Data.UUID (nil)
 import GHC.OverloadedLabels
 
 messageType :: Message -> Maybe MessageType
@@ -1041,9 +1042,91 @@ data Message
   | DoBatch BatchId Message
   | -- UI
     ClearUI
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Eq, Data, Generic)
 
-$(deriveJSON defaultOptions ''Message)
+$(deriveToJSON defaultOptions ''Message)
+
+instance FromJSON Message where
+  parseJSON = withObject "Message" $ \o -> do
+    tag :: Text <- o .: "tag"
+    case tag of
+      "AttackEnemy" -> do
+        -- SkillTestId InvestigatorId EnemyId Source (Maybe Target) SkillType
+        eContents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        pure
+          $ either
+            (\(st, i, e, s, mt, stype) -> AttackEnemy st i e s mt stype)
+            (\(i, e, s, mt, stype) -> AttackEnemy (SkillTestId nil) i e s mt stype)
+            eContents
+      "CreateChaosTokenValueEffect" -> do
+        -- SkillTestId Int Source Target
+        eContents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        pure
+          $ either
+            (\(st, i, s, t) -> CreateChaosTokenValueEffect st i s t)
+            (\(i, s, t) -> CreateChaosTokenValueEffect (SkillTestId nil) i s t)
+            eContents
+      "EvadeEnemy" -> do
+        -- SkillTestId InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
+        eContents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        pure
+          $ either
+            (\(st, i, e, s, mt, stype, b) -> EvadeEnemy st i e s mt stype b)
+            (\(i, e, s, mt, stype, b) -> EvadeEnemy (SkillTestId nil) i e s mt stype b)
+            eContents
+      "ChoseEnemy" -> do
+        -- SkillTestId InvestigatorId Source EnemyId
+        eContents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        pure
+          $ either
+            (\(st, i, s, e) -> ChoseEnemy st i s e)
+            (\(i, s, e) -> ChoseEnemy (SkillTestId nil) i s e)
+            eContents
+      "FightEnemy" -> do
+        -- SkillTestId InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
+        eContents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        pure
+          $ either
+            (\(st, i, e, s, mt, stype, b) -> FightEnemy st i e s mt stype b)
+            (\(i, e, s, mt, stype, b) -> FightEnemy (SkillTestId nil) i e s mt stype b)
+            eContents
+      "RevelationSkillTest" -> do
+        -- SkillTestId InvestigatorId Source SkillType SkillTestDifficulty
+        eContents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        pure
+          $ either
+            (\(st, i, s, mt, d) -> RevelationSkillTest st i s mt d)
+            (\(i, s, mt, d) -> RevelationSkillTest (SkillTestId nil) i s mt d)
+            eContents
+      "SkillTestEnds" -> do
+        -- SkillTestId InvestigatorId Source
+        eContents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        pure
+          $ either
+            (\(st, i, s) -> SkillTestEnds st i s)
+            (\(i, s) -> SkillTestEnds (SkillTestId nil) i s)
+            eContents
+      "SkillTestEnded" -> do
+        -- SkillTestId
+        st <- o .:? "contents" .!= SkillTestId nil
+        pure $ Arkham.Message.SkillTestEnded st
+      "ChosenEvadeEnemy" -> do
+        -- SkillTestId Source EnemyId
+        eContents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        pure
+          $ either
+            (\(st, s, e) -> ChosenEvadeEnemy st s e)
+            (\(s, e) -> ChosenEvadeEnemy (SkillTestId nil) s e)
+            eContents
+      "TryEvadeEnemy" -> do
+        -- SkillTestId InvestigatorId EnemyId Source (Maybe Target) SkillType
+        eContents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        pure
+          $ either
+            (\(st, i, e, s, mt, stype) -> TryEvadeEnemy st i e s mt stype)
+            (\(i, e, s, mt, stype) -> TryEvadeEnemy (SkillTestId nil) i e s mt stype)
+            eContents
+      _ -> genericParseJSON defaultOptions (Object o)
 
 stepMessage :: Int -> Message -> Message
 stepMessage n = \case

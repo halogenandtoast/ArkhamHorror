@@ -27,12 +27,15 @@ instance RunMessage Stealth where
     ChosenEvadeEnemy sid source@(isSource attrs -> True) eid -> do
       push $ skillTestModifier sid source eid (EnemyEvade (-2))
       pure a
-    AfterSkillTestEnds (isSource attrs -> True) target@(EnemyTarget eid) (SucceededBy _ _) -> do
-      let iid = getController attrs
-      canDisengage <- iid <=~> InvestigatorCanDisengage
-      isYourTurn <- iid <=~> TurnInvestigator
-      pushAll
-        $ [turnModifier iid attrs target (EnemyCannotEngage iid) | isYourTurn]
-        <> [DisengageEnemy iid eid | canDisengage]
-      pure a
+    AfterSkillTestEnds
+      (isAbilitySource attrs 1 -> True)
+      (ProxyTarget (EnemyTarget eid) _)
+      (SucceededBy {}) -> do
+        let iid = getController attrs
+        canDisengage <- iid <=~> InvestigatorCanDisengage
+        isYourTurn <- iid <=~> TurnInvestigator
+        pushAll
+          $ [turnModifier iid attrs (toTarget eid) (EnemyCannotEngage iid) | isYourTurn]
+          <> [DisengageEnemy iid eid | canDisengage]
+        pure a
     _ -> Stealth <$> runMessage msg attrs

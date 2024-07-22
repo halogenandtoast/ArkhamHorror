@@ -1,7 +1,7 @@
 module Arkham.Skill.Cards.GhastlyPossession1 (ghastlyPossession1, GhastlyPossession1 (..)) where
 
 import Arkham.Asset.Types (Field (..))
-import Arkham.Helpers.SkillTest (getSkillTestSource)
+import Arkham.Helpers.SkillTest (getSkillTestSource, withSkillTest)
 import Arkham.Helpers.Use
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -33,14 +33,15 @@ instance RunMessage GhastlyPossession1 where
             let half = n `div` 2
             pure $ min (n - current) half
 
-          chooseOneM iid do
-            labeled "Place 1 doom on that asset. Ghastly Posession gains {wild}{wild}" do
-              placeDoom attrs (toTarget aid) 1
-              skillTestModifier attrs attrs.cardId $ AddSkillIcons [#wild, #wild]
-            when (hasDoom || isJust mAddAmount) do
-              labeled
-                "If this test is successful, either remove 1 doom from that asset, or replenish half of its uses (rounded down)"
-                $ doStep 1 msg
+          withSkillTest \stId -> do
+            chooseOneM iid do
+              labeled "Place 1 doom on that asset. Ghastly Posession gains {wild}{wild}" do
+                placeDoom attrs (toTarget aid) 1
+                skillTestModifier stId attrs attrs.cardId $ AddSkillIcons [#wild, #wild]
+              when (hasDoom || isJust mAddAmount) do
+                labeled
+                  "If this test is successful, either remove 1 doom from that asset, or replenish half of its uses (rounded down)"
+                  $ doStep 1 msg
       pure s
     DoStep 1 (InvestigatorCommittedSkill _iid sid) | sid == toId attrs -> do
       pure . GhastlyPossession1 $ attrs & setMeta True

@@ -1,15 +1,10 @@
-module Arkham.Treachery.Cards.NoxiousFumes (
-  noxiousFumes,
-  NoxiousFumes (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.NoxiousFumes (noxiousFumes, NoxiousFumes (..)) where
 
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.SkillTest.Type
 import Arkham.SkillType
 import Arkham.Target
@@ -28,11 +23,12 @@ instance RunMessage NoxiousFumes where
     Revelation iid (isSource attrs -> True) -> do
       investigators <- select $ colocatedWith iid
       investigatorPlayers <- traverse (traverseToSnd getPlayer) investigators
+      sid <- getRandom
 
       pushAll
         [ chooseOne
           player
-          [ SkillLabel skill [revelationSkillTest investigator attrs skill (Fixed 3)]
+          [ SkillLabel skill [revelationSkillTest sid investigator attrs skill (Fixed 3)]
           | skill <- [#agility, #combat]
           ]
         | (investigator, player) <- investigatorPlayers
@@ -42,12 +38,7 @@ instance RunMessage NoxiousFumes where
     PassedSkillTest iid _ (isSource attrs -> True) Initiator {} (SkillSkillTest SkillAgility) _ -> do
       accessibleLocationIds <- getAccessibleLocations iid attrs
       player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ TargetLabel (LocationTarget lid) [Move $ move attrs iid lid]
-          | lid <- accessibleLocationIds
-          ]
+      push $ chooseOne player [targetLabel lid [Move $ move attrs iid lid] | lid <- accessibleLocationIds]
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) Initiator {} (SkillSkillTest SkillAgility) _ -> do
       push $ assignDamage iid (toSource attrs) 2

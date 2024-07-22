@@ -1,16 +1,11 @@
-module Arkham.Treachery.Cards.TimelineDestabilization (
-  timelineDestabilization,
-  TimelineDestabilization (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.TimelineDestabilization (timelineDestabilization, TimelineDestabilization (..)) where
 
 import Arkham.Classes
 import Arkham.Deck
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
-import Arkham.SkillType
 import Arkham.Trait (Trait (Ancient))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -20,21 +15,17 @@ newtype TimelineDestabilization = TimelineDestabilization TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 timelineDestabilization :: TreacheryCard TimelineDestabilization
-timelineDestabilization =
-  treachery TimelineDestabilization Cards.timelineDestabilization
+timelineDestabilization = treachery TimelineDestabilization Cards.timelineDestabilization
 
 instance RunMessage TimelineDestabilization where
   runMessage msg t@(TimelineDestabilization attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
+      sid <- getRandom
       push
-        $ RevelationSkillTest
-          iid
-          (toSource attrs)
-          SkillWillpower
-          ( SkillTestDifficulty $ SumCalculation [Fixed 1, CountLocations (LocationWithTrait Ancient)]
-          )
+        $ revelationSkillTest sid iid attrs #willpower
+        $ SumCalculation [Fixed 1, CountLocations (LocationWithTrait Ancient)]
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
       card <- field TreacheryCard (toId attrs)
       pushAll
         [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1

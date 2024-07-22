@@ -165,7 +165,7 @@ nonAttackOfOpportunityActions = [#fight, #evade, #resign, #parley]
 
 payCost
   :: forall m
-   . (HasGame m, HasQueue Message m, HasCallStack)
+   . (HasGame m, HasQueue Message m, HasCallStack, MonadRandom m)
   => Message
   -> ActiveCost
   -> InvestigatorId
@@ -234,7 +234,8 @@ payCost msg c iid skipAdditionalCosts cost = do
       pushAll $ replicate n $ drawEncounterCard iid source
       pure c
     SkillTestCost stsource sType n -> do
-      push $ beginSkillTest iid stsource ScenarioTarget sType n
+      sid <- getRandom
+      push $ beginSkillTest sid iid stsource ScenarioTarget sType n
       pure c
     AsIfAtLocationCost _ _ -> error "Can not be paid because withModifiers only HasGame, but can't adjust the queue"
     ShuffleAttachedCardIntoDeckCost target cardMatcher -> do

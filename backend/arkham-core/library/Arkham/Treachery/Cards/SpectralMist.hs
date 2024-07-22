@@ -12,7 +12,7 @@ import Arkham.Treachery.Helpers qualified as Msg
 import Arkham.Treachery.Import.Lifted
 
 newtype SpectralMist = SpectralMist TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 spectralMist :: TreacheryCard SpectralMist
@@ -36,7 +36,8 @@ instance RunMessage SpectralMist where
       when (notNull targets) $ chooseOne iid $ targetLabels targets $ only . Msg.attachTreachery attrs
       SpectralMist <$> runMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      beginSkillTest iid (attrs.ability 1) attrs #intellect (Fixed 2)
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed 2)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs

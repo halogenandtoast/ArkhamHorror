@@ -1,12 +1,8 @@
-module Arkham.Treachery.Cards.UmordhothsWrath (
-  umordhothsWrath,
-  UmordhothsWrath (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.UmordhothsWrath (umordhothsWrath, UmordhothsWrath (..)) where
 
 import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -21,7 +17,8 @@ umordhothsWrath = treachery UmordhothsWrath Cards.umordhothsWrath
 instance RunMessage UmordhothsWrath where
   runMessage msg t@(UmordhothsWrath attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ revelationSkillTest iid attrs #willpower (Fixed 5)
+      sid <- getRandom
+      push $ revelationSkillTest sid iid attrs #willpower (Fixed 5)
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n -> do
       push $ HandlePointOfFailure iid (toTarget attrs) n

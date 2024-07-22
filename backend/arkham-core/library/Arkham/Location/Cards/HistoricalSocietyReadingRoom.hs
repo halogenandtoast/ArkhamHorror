@@ -38,7 +38,8 @@ instance HasAbilities HistoricalSocietyReadingRoom where
 instance RunMessage HistoricalSocietyReadingRoom where
   runMessage msg l@(HistoricalSocietyReadingRoom attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 | locationRevealed attrs -> do
-      pushM $ mkInvestigate iid (toAbilitySource attrs 1)
+      sid <- getRandom
+      pushM $ mkInvestigate sid iid (toAbilitySource attrs 1)
       pure l
     UseThisAbility _ (isSource attrs -> True) 1 | not (locationRevealed attrs) -> do
       push $ Msg.RevealLocation Nothing (toId attrs)

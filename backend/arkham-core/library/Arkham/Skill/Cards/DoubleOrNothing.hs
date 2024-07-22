@@ -18,7 +18,7 @@ doubleOrNothing :: SkillCard DoubleOrNothing
 doubleOrNothing = skill DoubleOrNothing Cards.doubleOrNothing
 
 instance HasModifiersFor DoubleOrNothing where
-  getModifiersFor SkillTestTarget (DoubleOrNothing attrs) =
+  getModifiersFor (SkillTestTarget _) (DoubleOrNothing attrs) =
     pure $ toModifiers attrs [DoubleDifficulty, DoubleSuccess]
   getModifiersFor _ _ = pure []
 

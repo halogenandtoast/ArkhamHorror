@@ -1,13 +1,8 @@
-module Arkham.Treachery.Cards.ChaosManifest (
-  chaosManifest,
-  ChaosManifest (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.ChaosManifest (chaosManifest, ChaosManifest (..)) where
 
 import Arkham.Classes
 import Arkham.Helpers.Query
+import Arkham.Prelude
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -22,9 +17,10 @@ chaosManifest = treachery ChaosManifest Cards.chaosManifest
 instance RunMessage ChaosManifest where
   runMessage msg t@(ChaosManifest attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs #willpower (Fixed 3)
+      sid <- getRandom
+      push $ revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
-    FailedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n -> do
+    FailedThisSkillTestBy _ (isSource attrs -> True) n -> do
       lead <- getLeadPlayer
       locations <- sampleLocations n
       push

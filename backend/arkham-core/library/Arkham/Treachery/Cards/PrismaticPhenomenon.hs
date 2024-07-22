@@ -3,13 +3,13 @@ module Arkham.Treachery.Cards.PrismaticPhenomenon (prismaticPhenomenon, Prismati
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Helpers.Modifiers (ActionTarget (..), ModifierType (..), modified)
-import Arkham.Helpers.SkillTest.Target (getSkillTestTarget)
+import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype PrismaticPhenomenon = PrismaticPhenomenon TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 prismaticPhenomenon :: TreacheryCard PrismaticPhenomenon
@@ -39,8 +39,8 @@ instance RunMessage PrismaticPhenomenon where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       getSkillTestTarget >>= \case
         Nothing -> error "invalid target"
-        Just target -> do
-          skillTestModifier (attrs.ability 1) target (AlternateSuccessfullInvestigation $ toTarget attrs)
+        Just target -> withSkillTest \sid ->
+          skillTestModifier sid (attrs.ability 1) target (AlternateSuccessfullInvestigation $ toTarget attrs)
       pure t
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
       toDiscardBy iid (attrs.ability 1) attrs

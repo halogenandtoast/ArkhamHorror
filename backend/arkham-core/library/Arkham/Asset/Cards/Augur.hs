@@ -45,10 +45,11 @@ instance RunMessage Augur where
           iid
       player <- getPlayer iid
       augurCard <- field AssetCard (toId attrs)
-      investigation <- mkInvestigate iid source
+      sid <- getRandom
+      investigation <- mkInvestigate sid iid source
       pushAll
-        $ [skillTestModifier source iid (BaseSkillOf #intellect 5)]
-        <> [skillTestModifier source iid SkillTestAutomaticallySucceeds | discarded]
+        $ [skillTestModifier sid source iid (BaseSkillOf #intellect 5)]
+        <> [skillTestModifier sid source iid SkillTestAutomaticallySucceeds | discarded]
         <> [toMessage investigation]
         <> [ questionLabel "Put into play from discard" player
             $ ChooseOne

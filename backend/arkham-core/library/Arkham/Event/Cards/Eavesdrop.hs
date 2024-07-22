@@ -39,7 +39,8 @@ instance RunMessage Eavesdrop where
         ]
       pure e
     HandleTargetChoice iid source (EnemyTarget eid) | isSource attrs source -> do
-      push $ beginSkillTest iid attrs attrs #intellect (EnemyMaybeFieldCalculation eid EnemyEvade)
+      sid <- getRandom
+      push $ beginSkillTest sid iid attrs attrs #intellect (EnemyMaybeFieldCalculation eid EnemyEvade)
       pure e
     PassedSkillTest iid _ _ target _ _ | isTarget attrs target -> do
       push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toSource attrs) 2

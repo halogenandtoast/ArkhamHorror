@@ -1,12 +1,9 @@
-module Arkham.Skill.Cards.NauticalProwess (
-  nauticalProwess,
-  NauticalProwess (..),
-)
-where
+module Arkham.Skill.Cards.NauticalProwess (nauticalProwess, NauticalProwess (..)) where
 
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
@@ -29,14 +26,15 @@ instance RunMessage NauticalProwess where
         then do
           mDrawing <- drawCardsIfCan attrs.owner attrs 1
           player <- getPlayer attrs.owner
-          push
-            $ chooseOrRunOne player
-            $ [ Label
-                  "Nautical Prowess gains {wild}{wild}"
-                  [ skillTestModifier attrs (CardIdTarget $ toCardId attrs) $ AddSkillIcons [#wild, #wild]
-                  ]
-              ]
-            <> [Label "Draw 1 card" [drawing] | drawing <- toList mDrawing]
+          withSkillTest \sid ->
+            push
+              $ chooseOrRunOne player
+              $ [ Label
+                    "Nautical Prowess gains {wild}{wild}"
+                    [ skillTestModifier sid attrs (CardIdTarget $ toCardId attrs) $ AddSkillIcons [#wild, #wild]
+                    ]
+                ]
+              <> [Label "Draw 1 card" [drawing] | drawing <- toList mDrawing]
           pure . NauticalProwess $ attrs & setMeta @Bool True
         else pure s
     _ -> NauticalProwess <$> runMessage msg attrs

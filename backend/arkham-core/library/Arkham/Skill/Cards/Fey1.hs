@@ -33,7 +33,7 @@ instance RunMessage Fey1Effect where
   runMessage msg e@(Fey1Effect attrs) = case msg of
     RevealChaosToken _ _ token -> do
       pure $ if token.face == #curse then Fey1Effect $ setEffectMeta True attrs else e
-    SkillTestEnded -> do
+    SkillTestEnded _ -> do
       let shouldReturn = toResult @Bool attrs.extra
       (card, owner) <- case attrs.source of
         SkillSource s -> (,) <$> field SkillCard s <*> field SkillOwner s

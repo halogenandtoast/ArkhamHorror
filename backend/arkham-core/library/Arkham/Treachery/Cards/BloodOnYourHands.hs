@@ -1,14 +1,9 @@
-module Arkham.Treachery.Cards.BloodOnYourHands (
-  bloodOnYourHands,
-  BloodOnYourHands (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.BloodOnYourHands (bloodOnYourHands, BloodOnYourHands (..)) where
 
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Prelude
 import Arkham.Trait (Trait (CrimeScene, Innocent))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -23,12 +18,10 @@ bloodOnYourHands = treachery BloodOnYourHands Cards.bloodOnYourHands
 instance RunMessage BloodOnYourHands where
   runMessage msg t@(BloodOnYourHands attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
+      sid <- getRandom
       push
-        $ revelationSkillTest
-          iid
-          (toSource attrs)
-          #willpower
-          (SumCalculation [Fixed 2, VictoryDisplayCountCalculation $ CardWithTrait Innocent])
+        $ revelationSkillTest sid iid attrs #willpower
+        $ SumCalculation [Fixed 2, VictoryDisplayCountCalculation $ CardWithTrait Innocent]
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       atCrimeScene <- iid <=~> InvestigatorAt (LocationWithTrait CrimeScene)

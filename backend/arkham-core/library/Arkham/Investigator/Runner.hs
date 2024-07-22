@@ -914,7 +914,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [ BeginAction
         , beforeWindowMsg
         , TakeActions iid [#fight] (foldl' applyFightCostModifiers (ActionCost 1) modifiers')
-        , FightEnemy iid eid source mTarget skillType False
+        , FightEnemy sid iid eid source mTarget skillType False
         , afterWindowMsg
         , FinishAction
         ]
@@ -971,7 +971,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push
       $ chooseOne
         player
-        [ EvadeLabel eid [ChosenEvadeEnemy source eid, EvadeEnemy a.id eid source mTarget skillType isAction]
+        [ EvadeLabel
+          eid
+          [ ChosenEvadeEnemy choose.skillTest source eid
+          , EvadeEnemy choose.skillTest a.id eid source mTarget skillType isAction
+          ]
         | eid <- enemyIds
         ]
     pure a
@@ -1018,7 +1022,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [ BeginAction
         , beforeWindowMsg
         , TakeActions iid [#evade] (foldl' applyEvadeCostModifiers (ActionCost 1) modifiers')
-        , EvadeEnemy iid eid source mTarget skillType False
+        , EvadeEnemy sid iid eid source mTarget skillType False
         , afterWindowMsg
         , FinishAction
         ]
@@ -1026,7 +1030,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   EvadeEnemy sid iid eid source mTarget skillType False | iid == investigatorId -> do
     handleSkillTestNesting_ sid msg do
       attemptWindow <- checkWindows [mkWhen $ Window.AttemptToEvadeEnemy iid eid]
-      pushAll [attemptWindow, TryEvadeEnemy iid eid source mTarget skillType, AfterEvadeEnemy iid eid]
+      pushAll [attemptWindow, TryEvadeEnemy sid iid eid source mTarget skillType, AfterEvadeEnemy iid eid]
     pure a
   MoveAction iid lid cost True | iid == investigatorId -> do
     beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #move)]
@@ -2715,7 +2719,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pushAll [whenWindow, whenWindow2, afterWindow2, afterWindow]
     pure a
   BeforeSkillTest skillTest | skillTestInvestigator skillTest == toId a -> do
-    skillTestModifiers' <- getModifiers SkillTestTarget
+    skillTestModifiers' <- getModifiers (SkillTestTarget skillTest.id)
     push
       $ if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
         then StartSkillTest investigatorId
@@ -2735,7 +2739,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let window = mkWhen (Window.SkillTest $ skillTestType skillTest)
     actions <- getActions iid [window]
 
-    skillTestModifiers' <- getModifiers SkillTestTarget
+    skillTestModifiers' <- getModifiers (SkillTestTarget skillTest.id)
     committableCards <- getCommittableCards (toId a)
     let
       mustCommit = any (elem MustBeCommittedToYourTest . cdCommitRestrictions . toCardDef) committableCards
@@ -3654,7 +3658,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         | usedAbility used == ability = used {usedTimes = max 0 (usedTimes used - 1)}
         | otherwise = used
     pure $ a & usedAbilitiesL %~ map updateUsed
-  SkillTestEnds _ _ -> do
+  SkillTestEnds _ _ _ -> do
     pure
       $ a
       & usedAbilitiesL

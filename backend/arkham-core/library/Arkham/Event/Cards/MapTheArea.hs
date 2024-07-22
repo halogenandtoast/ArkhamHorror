@@ -19,7 +19,7 @@ mapTheArea :: EventCard MapTheArea
 mapTheArea = event MapTheArea Cards.mapTheArea
 
 instance HasModifiersFor MapTheArea where
-  getModifiersFor SkillTestTarget (MapTheArea a) = do
+  getModifiersFor (SkillTestTarget _) (MapTheArea a) = do
     maybeModified a do
       iid <- MaybeT getSkillTestInvestigator
       lid <- MaybeT $ getMaybeLocation iid
@@ -30,10 +30,11 @@ instance HasModifiersFor MapTheArea where
 instance RunMessage MapTheArea where
   runMessage msg e@(MapTheArea attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
+      sid <- getRandom
       chooseOneM iid do
-        labeled "Add your {willpower}" $ skillTestModifier attrs iid (AddSkillValue #willpower)
-        labeled "Add your {agility}" $ skillTestModifier attrs iid (AddSkillValue #agility)
-      pushM $ setTarget attrs <$> mkInvestigate iid attrs
+        labeled "Add your {willpower}" $ skillTestModifier sid attrs iid (AddSkillValue #willpower)
+        labeled "Add your {agility}" $ skillTestModifier sid attrs iid (AddSkillValue #agility)
+      pushM $ setTarget attrs <$> mkInvestigate sid iid attrs
       pure e
     Successful (Action.Investigate, LocationTarget lid) iid _ (isTarget attrs -> True) _ -> do
       whenM (selectNone $ EventAt $ LocationWithId lid) do

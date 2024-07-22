@@ -40,15 +40,17 @@ instance RunMessage HotelRoof where
   runMessage msg l@(HotelRoof attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       player <- getPlayer iid
+      sid <- getRandom
       push
         $ chooseOne
           player
-          [ SkillLabel skill [beginSkillTest iid (toAbilitySource attrs 1) iid skill (Fixed 4)]
+          [ SkillLabel skill [beginSkillTest sid iid (toAbilitySource attrs 1) iid skill (Fixed 4)]
           | skill <- [#agility, #combat]
           ]
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ beginSkillTest iid (toAbilitySource attrs 2) iid #willpower (Fixed 3)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (toAbilitySource attrs 2) iid #willpower (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       rooms <-

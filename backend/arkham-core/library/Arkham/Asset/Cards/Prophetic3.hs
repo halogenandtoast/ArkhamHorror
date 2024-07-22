@@ -4,12 +4,13 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Trait (Trait (Fortune, Spell, Spirit))
 
 newtype Prophetic3 = Prophetic3 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 prophetic3 :: AssetCard Prophetic3
@@ -42,6 +43,7 @@ instance RunMessage Prophetic3 where
   runMessage msg a@(Prophetic3 attrs) = runQueueT $ case msg of
     Do BeginRound -> pure . Prophetic3 $ attrs & tokensL . ix Resource %~ max 2
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skillTestModifier (attrs.ability 1) iid (AnySkillValue 1)
+      withSkillTest \sid ->
+        skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
       pure a
     _ -> Prophetic3 <$> liftRunMessage msg attrs

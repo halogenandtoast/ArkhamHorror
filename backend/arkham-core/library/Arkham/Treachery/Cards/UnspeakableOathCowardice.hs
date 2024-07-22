@@ -15,7 +15,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype UnspeakableOathCowardice = UnspeakableOathCowardice TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unspeakableOathCowardice :: TreacheryCard UnspeakableOathCowardice
@@ -58,8 +58,9 @@ instance RunMessage UnspeakableOathCowardice where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = toAbilitySource attrs 2
       let matcher = ExhaustedEnemy <> UnengagedEnemy
-      skillTestModifier (toAbilitySource attrs 2) iid evasionCriteria
-      pushM $ toMessage . setTarget attrs <$> mkChooseEvadeMatch iid source matcher
+      sid <- getRandom
+      skillTestModifier sid (toAbilitySource attrs 2) iid evasionCriteria
+      pushM $ toMessage . setTarget attrs <$> mkChooseEvadeMatch sid iid source matcher
       pure t
     Successful (Action.Evade, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
       push $ EnemyEvaded iid eid

@@ -36,9 +36,10 @@ instance RunMessage SpectralRazor where
               ]
       pure e
     DoStep 1 (PlayThisEvent iid eid) | eid == toId attrs -> do
-      chooseFight <- toMessage <$> mkChooseFight iid attrs
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid attrs
       pushAll
-        [ skillTestModifier attrs iid (AddSkillValue #willpower)
+        [ skillTestModifier sid attrs iid (AddSkillValue #willpower)
         , createCardEffect Cards.spectralRazor Nothing attrs iid
         , chooseFight
         ]

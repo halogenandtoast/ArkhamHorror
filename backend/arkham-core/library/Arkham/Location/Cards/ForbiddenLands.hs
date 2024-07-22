@@ -9,7 +9,7 @@ import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
 
 newtype Meta = Meta {skillTestCount :: Int}
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (ToJSON, FromJSON)
 
 newtype ForbiddenLands = ForbiddenLands LocationAttrs
@@ -40,15 +40,18 @@ instance HasAbilities ForbiddenLands where
 instance RunMessage ForbiddenLands where
   runMessage msg l@(ForbiddenLands attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ beginSkillTest iid (attrs.ability 1) iid #combat (Fixed 1)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) iid #combat (Fixed 1)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       case skillTestCount (toResult attrs.meta) of
         0 -> do
-          push $ beginSkillTest iid (attrs.ability 1) iid #agility (Fixed 2)
+          sid <- getRandom
+          push $ beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 2)
           pure $ ForbiddenLands $ attrs & metaL .~ toJSON (Meta 1)
         1 -> do
-          push $ beginSkillTest iid (attrs.ability 1) iid #willpower (Fixed 3)
+          sid <- getRandom
+          push $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
           pure $ ForbiddenLands $ attrs & metaL .~ toJSON (Meta 2)
         2 -> do
           canFlip <- toId attrs <=~> LocationCanBeFlipped

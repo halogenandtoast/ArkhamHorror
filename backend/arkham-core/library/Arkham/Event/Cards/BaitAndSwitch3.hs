@@ -52,8 +52,9 @@ instance RunMessage BaitAndSwitch3 where
            ]
       pure e
     ResolveEventChoice iid eid n _ _ | eid == attrs.id -> do
-      pushM $ setTarget attrs <$> mkChooseEvade iid attrs
-      when (n == 2) $ skillTestModifier attrs iid $ EnemyEvadeActionCriteria override
+      sid <- getRandom
+      pushM $ setTarget attrs <$> mkChooseEvade sid iid attrs
+      when (n == 2) $ skillTestModifier sid attrs iid $ EnemyEvadeActionCriteria override
       pure $ BaitAndSwitch3 (attrs `with` Metadata (Just n))
     Successful (Action.Evade, EnemyTarget eid) iid _ target _ | isTarget attrs target -> do
       nonElite <- eid <=~> NonEliteEnemy

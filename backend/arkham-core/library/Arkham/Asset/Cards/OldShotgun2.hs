@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Fight
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Modifier
 
 newtype OldShotgun2 = OldShotgun2 AssetAttrs
@@ -20,13 +21,16 @@ instance HasAbilities OldShotgun2 where
 instance RunMessage OldShotgun2 where
   runMessage msg a@(OldShotgun2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skillTestModifiers (attrs.ability 1) iid [SkillModifier #combat 3, NoStandardDamage]
-      pushM $ mkChooseFight iid (attrs.ability 1)
+      sid <- getRandom
+      skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #combat 3, NoStandardDamage]
+      pushM $ mkChooseFight sid iid (attrs.ability 1)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
-      skillTestModifier (attrs.ability 1) iid (DamageDealt $ max 1 $ min 3 n)
+      withSkillTest \sid ->
+        skillTestModifier sid (attrs.ability 1) iid (DamageDealt $ max 1 $ min 3 n)
       pure a
     FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
-      skillTestModifier (attrs.ability 1) iid (DamageDealtToInvestigator $ max 1 $ min 3 n)
+      withSkillTest \sid ->
+        skillTestModifier sid (attrs.ability 1) iid (DamageDealtToInvestigator $ max 1 $ min 3 n)
       pure a
     _ -> OldShotgun2 <$> liftRunMessage msg attrs

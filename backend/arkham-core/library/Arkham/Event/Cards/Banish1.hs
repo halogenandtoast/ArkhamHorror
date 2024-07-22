@@ -19,9 +19,10 @@ banish1 = event Banish1 Cards.banish1
 instance RunMessage Banish1 where
   runMessage msg e@(Banish1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
+      sid <- getRandom
       pushAllM
         $ leftOr
-        <$> aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvadeMatch iid attrs NonEliteEnemy)
+        <$> aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvadeMatch sid iid attrs NonEliteEnemy)
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       getSkillTestTarget >>= \case

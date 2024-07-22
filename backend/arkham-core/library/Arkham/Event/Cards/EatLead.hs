@@ -1,9 +1,4 @@
-module Arkham.Event.Cards.EatLead (
-  eatLead,
-  EatLead (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.EatLead (eatLead, EatLead (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Uses
@@ -14,6 +9,7 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window
 import Arkham.Id
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
@@ -36,11 +32,12 @@ instance RunMessage EatLead where
         AssetSource aid -> do
           ignoreWindow <-
             checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
-          pushAll
-            [ SpendUses (toSource attrs) (AssetTarget aid) Ammo 1
-            , skillTestModifier attrs iid (ChangeRevealStrategy $ RevealAndChoose 1 1)
-            , ignoreWindow
-            ]
+          withSkillTest \sid -> do
+            pushAll
+              [ SpendUses (toSource attrs) (AssetTarget aid) Ammo 1
+              , skillTestModifier sid attrs iid (ChangeRevealStrategy $ RevealAndChoose 1 1)
+              , ignoreWindow
+              ]
           pure . EatLead $ attrs `with` Metadata (Just aid)
         _ -> error "Invalid source"
     _ -> EatLead . (`with` metadata) <$> runMessage msg attrs

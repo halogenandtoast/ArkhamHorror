@@ -31,7 +31,8 @@ instance RunMessage DeceptiveMemories where
       chooseAndDiscardCard iid (attrs.ability 1)
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      beginSkillTest iid (attrs.ability 2) iid #willpower (Fixed 3)
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 2) iid #willpower (Fixed 3)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       toDiscardBy iid (attrs.ability 2) attrs

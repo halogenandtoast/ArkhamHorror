@@ -32,10 +32,11 @@ instance RunMessage MtNgranek where
       pure . MtNgranek $ attrs & canBeFlippedL .~ False
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       player <- getPlayer iid
+      sid <- getRandom
       push
         $ chooseOne
           player
-          [ SkillLabel sType [beginSkillTest iid (attrs.ability 1) iid sType (Fixed 3)]
+          [ SkillLabel sType [beginSkillTest sid iid (attrs.ability 1) iid sType (Fixed 3)]
           | sType <- [#combat, #agility]
           ]
       pure l

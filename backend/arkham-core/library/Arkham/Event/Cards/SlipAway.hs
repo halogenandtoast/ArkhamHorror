@@ -19,9 +19,10 @@ slipAway = event SlipAway Cards.slipAway
 instance RunMessage SlipAway where
   runMessage msg e@(SlipAway attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      chooseEvade <- toMessage <$> mkChooseEvade iid attrs
+      sid <- getRandom
+      chooseEvade <- toMessage <$> mkChooseEvade sid iid attrs
       pushAll
-        [ skillTestModifier attrs iid (AddSkillValue SkillAgility)
+        [ skillTestModifier sid attrs iid (AddSkillValue SkillAgility)
         , chooseEvade
         ]
       pure e

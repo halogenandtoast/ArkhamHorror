@@ -1,9 +1,4 @@
-module Arkham.Treachery.Cards.SerpentsIre (
-  serpentsIre,
-  SerpentsIre (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.SerpentsIre (serpentsIre, SerpentsIre (..)) where
 
 import Arkham.Attack
 import Arkham.Classes
@@ -11,8 +6,8 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Trait (Trait (Serpent))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner hiding (EnemyFight)
@@ -62,18 +57,13 @@ instance RunMessage SerpentsIre where
       spawned <- selectAny $ EnemyWithId eid
       if spawned
         then do
-          push
-            $ RevelationSkillTest
-              iid
-              (toSource attrs)
-              SkillAgility
-              (SkillTestDifficulty $ EnemyMaybeFieldCalculation eid EnemyFight)
+          sid <- getRandom
+          push $ revelationSkillTest sid iid attrs #agility (EnemyMaybeFieldCalculation eid EnemyFight)
           pure . SerpentsIre $ attrs `with` Metadata (Just eid)
         else pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        case selectedEnemy meta of
-          Nothing -> error "enemy must be set"
-          Just eid -> push $ InitiateEnemyAttack $ enemyAttack eid attrs iid
-        pure . SerpentsIre $ attrs `with` Metadata Nothing
+    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+      case selectedEnemy meta of
+        Nothing -> error "enemy must be set"
+        Just eid -> push $ InitiateEnemyAttack $ enemyAttack eid attrs iid
+      pure . SerpentsIre $ attrs `with` Metadata Nothing
     _ -> SerpentsIre . (`with` meta) <$> runMessage msg attrs

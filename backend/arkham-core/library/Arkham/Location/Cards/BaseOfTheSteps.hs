@@ -15,7 +15,7 @@ import Arkham.Matcher
 import Arkham.Projection
 
 newtype BaseOfTheSteps = BaseOfTheSteps LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baseOfTheSteps :: LocationCard BaseOfTheSteps
@@ -36,8 +36,10 @@ instance HasAbilities BaseOfTheSteps where
 instance RunMessage BaseOfTheSteps where
   runMessage msg l@(BaseOfTheSteps attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
       push
         $ beginSkillTest
+          sid
           iid
           (toAbilitySource attrs 1)
           iid

@@ -3,11 +3,12 @@ module Arkham.Asset.Cards.Moxie3 (moxie3, Moxie3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
 
 newtype Moxie3 = Moxie3 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 moxie3 :: AssetCard Moxie3
@@ -30,6 +31,7 @@ instance HasModifiersFor Moxie3 where
 instance RunMessage Moxie3 where
   runMessage msg a@(Moxie3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skillTestModifiers (attrs.ability 1) iid [SkillModifier #willpower 1, SkillModifier #agility 1]
+      withSkillTest \sid ->
+        skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #willpower 1, SkillModifier #agility 1]
       pure a
     _ -> Moxie3 <$> liftRunMessage msg attrs

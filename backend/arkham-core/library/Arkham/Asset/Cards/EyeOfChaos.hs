@@ -30,8 +30,10 @@ instance RunMessage EyeOfChaos where
   runMessage msg a@(EyeOfChaos attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      investigation <- aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate iid source)
-      pushAll $ createCardEffect Cards.eyeOfChaos Nothing source iid : leftOr investigation
+      sid <- getRandom
+      investigation <-
+        aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
+      pushAll $ createCardEffect Cards.eyeOfChaos (effectMetaTarget sid) source iid : leftOr investigation
       pure a
     _ -> EyeOfChaos <$> runMessage msg attrs
 
@@ -44,7 +46,7 @@ eyeOfChaosEffect = cardEffect EyeOfChaosEffect Cards.eyeOfChaos
 
 instance RunMessage EyeOfChaosEffect where
   runMessage msg e@(EyeOfChaosEffect attrs) = case msg of
-    RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
+    RevealChaosToken (SkillTestSource sid) iid token | InvestigatorTarget iid == attrs.target && maybe False (isTarget sid) attrs.metaTarget -> do
       let
         handleIt assetId = do
           when (token.face == #curse) do
@@ -73,7 +75,7 @@ instance RunMessage EyeOfChaosEffect where
         AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
         _ -> error "wrong source"
       pure e
-    SkillTestEnds _ _ -> do
+    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
       push (disable attrs)
       pure e
     _ -> EyeOfChaosEffect <$> runMessage msg attrs

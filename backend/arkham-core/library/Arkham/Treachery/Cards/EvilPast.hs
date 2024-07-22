@@ -26,7 +26,8 @@ instance RunMessage EvilPast where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       assignHorror iid attrs 2
-      beginSkillTest iid (attrs.ability 1) iid #willpower (Fixed 3)
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs

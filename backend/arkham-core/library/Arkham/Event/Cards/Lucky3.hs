@@ -27,7 +27,7 @@ instance RunMessage Lucky3 where
           let drawing = drawCards iid attrs 1
           pushAll
             [ drawing
-            , skillTestModifier attrs iid' (AnySkillValue 3)
+            , skillTestModifier skillTest.id attrs iid' (AnySkillValue 3)
             , RerunSkillTest
             ]
       pure e

@@ -10,7 +10,7 @@ import Arkham.Prelude
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
 
 newtype CityOfTheMoonBeasts = CityOfTheMoonBeasts LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cityOfTheMoonBeasts :: LocationCard CityOfTheMoonBeasts
@@ -31,7 +31,9 @@ instance HasAbilities CityOfTheMoonBeasts where
 instance RunMessage CityOfTheMoonBeasts where
   runMessage msg l@(CityOfTheMoonBeasts attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      eachInvestigator $ \iid -> beginSkillTest iid (attrs.ability 1) iid #agility (Fixed 2)
+      eachInvestigator $ \iid -> do
+        sid <- getRandom
+        beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 2)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       raiseAlarmLevel (attrs.ability 1) iid

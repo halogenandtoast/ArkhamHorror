@@ -32,7 +32,8 @@ instance HasAbilities TheGreatWebCosmicWeb where
 instance RunMessage TheGreatWebCosmicWeb where
   runMessage msg l@(TheGreatWebCosmicWeb attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      beginSkillTest iid (attrs.ability 1) iid #willpower (Fixed 3)
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure l
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       canDiscard <- iid <=~> InvestigatorWithDiscardableCard

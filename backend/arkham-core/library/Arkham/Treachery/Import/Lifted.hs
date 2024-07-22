@@ -59,12 +59,13 @@ import Arkham.Treachery.Helpers qualified as Msg
 
 revelationSkillTest
   :: (Sourceable source, ReverseQueue m)
-  => InvestigatorId
+  => SkillTestId
+  -> InvestigatorId
   -> source
   -> SkillType
   -> GameCalculation
   -> m ()
-revelationSkillTest iid source sType n = push $ Msg.revelationSkillTest iid source sType n
+revelationSkillTest sid iid source sType n = push $ Msg.revelationSkillTest sid iid source sType n
 
 attachTreachery
   :: ( ReverseQueue m

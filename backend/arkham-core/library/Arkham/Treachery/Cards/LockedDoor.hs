@@ -9,7 +9,7 @@ import Arkham.Treachery.Helpers qualified as Msg
 import Arkham.Treachery.Import.Lifted
 
 newtype LockedDoor = LockedDoor TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lockedDoor :: TreacheryCard LockedDoor
@@ -31,7 +31,8 @@ instance RunMessage LockedDoor where
         \locations -> chooseOrRunOne iid $ targetLabels locations $ only . Msg.attachTreachery attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let chooseSkillTest sType = SkillLabel sType [Msg.beginSkillTest iid (attrs.ability 1) attrs sType (Fixed 4)]
+      sid <- getRandom
+      let chooseSkillTest sType = SkillLabel sType [Msg.beginSkillTest sid iid (attrs.ability 1) attrs sType (Fixed 4)]
       chooseOne iid $ map chooseSkillTest [#combat, #agility]
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

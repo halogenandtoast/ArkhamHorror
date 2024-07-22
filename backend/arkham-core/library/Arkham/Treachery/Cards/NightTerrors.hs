@@ -29,7 +29,8 @@ instance RunMessage NightTerrors where
         $ DrawAllFound iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      beginSkillTest iid (attrs.ability 2) iid #willpower (Fixed 4)
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 2) iid #willpower (Fixed 4)
       toDiscardBy iid (attrs.ability 2) attrs
       pure t
     _ -> NightTerrors <$> liftRunMessage msg attrs

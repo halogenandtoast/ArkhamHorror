@@ -1,9 +1,4 @@
-module Arkham.Treachery.Cards.CrashingFloods (
-  crashingFloods,
-  CrashingFloods (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.CrashingFloods (crashingFloods, CrashingFloods (..)) where
 
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types (Field (AgendaSequence))
@@ -11,8 +6,8 @@ import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Id
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -32,17 +27,15 @@ getStep (Just agenda) = do
 
 instance RunMessage CrashingFloods where
   runMessage msg t@(CrashingFloods attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t
-            <$ pushAll
-              [RevelationSkillTest iid source SkillAgility (SkillTestDifficulty $ Fixed 3)]
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          n <- getStep =<< selectOne (AgendaWithSide AS.A)
-          pushAll
-            [ InvestigatorAssignDamage iid source DamageAny n 0
-            , LoseActions iid source n
-            ]
-          pure t
+    Revelation iid (isSource attrs -> True) -> do
+      sid <- getRandom
+      push $ revelationSkillTest sid iid attrs #agility (Fixed 3)
+      pure t
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      n <- getStep =<< selectOne (AgendaWithSide AS.A)
+      pushAll
+        [ InvestigatorAssignDamage iid (toSource attrs) DamageAny n 0
+        , LoseActions iid (toSource attrs) n
+        ]
+      pure t
     _ -> CrashingFloods <$> runMessage msg attrs

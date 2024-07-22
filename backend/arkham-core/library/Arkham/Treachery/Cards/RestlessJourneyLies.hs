@@ -17,7 +17,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype RestlessJourneyLies = RestlessJourneyLies TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 restlessJourneyLies :: TreacheryCard RestlessJourneyLies
@@ -61,9 +61,10 @@ restlessJourneyLiesEffect = cardEffect RestlessJourneyLiesEffect Cards.restlessJ
 instance RunMessage RestlessJourneyLiesEffect where
   runMessage msg e@(RestlessJourneyLiesEffect attrs) = runQueueT $ case msg of
     CreatedEffect eid _ source (InvestigatorTarget iid) | eid == attrs.id -> do
-      beginSkillTest iid source iid #agility (Fixed 3)
+      sid <- getRandom
+      beginSkillTest sid iid source iid #agility (Fixed 3)
       pure e
-    SkillTestEnds _iid (isSource attrs -> True) -> disableReturn e
+    SkillTestEnds _ _iid (isSource attrs -> True) -> disableReturn e
     FailedThisSkillTest _iid source | attrs.source == source -> do
       placeDoomOnAgendaAndCheckAdvance 1
       disableReturn e

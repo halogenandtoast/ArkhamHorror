@@ -19,7 +19,9 @@ forcedIntoHiding = treachery ForcedIntoHiding Cards.forcedIntoHiding
 instance RunMessage ForcedIntoHiding where
   runMessage msg t@(ForcedIntoHiding attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs #willpower (InvestigatorTokenCountCalculation iid AlarmLevel)
+      sid <- getRandom
+      push
+        $ revelationSkillTest sid iid attrs #willpower (InvestigatorTokenCountCalculation iid AlarmLevel)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       let

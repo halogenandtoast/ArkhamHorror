@@ -2,6 +2,7 @@ module Arkham.Event.Cards.BreakingAndEntering2 (breakingAndEntering2, BreakingAn
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigate
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Modifier
@@ -16,13 +17,15 @@ breakingAndEntering2 = event BreakingAndEntering2 Cards.breakingAndEntering2
 instance RunMessage BreakingAndEntering2 where
   runMessage msg e@(BreakingAndEntering2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      skillTestModifier attrs iid (AddSkillValue #agility)
-      pushM $ mkInvestigate iid attrs
+      sid <- getRandom
+      skillTestModifier sid attrs iid (AddSkillValue #agility)
+      pushM $ mkInvestigate sid iid attrs
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n -> do
       when (n >= 1) do
         enemies <- select $ enemyAtLocationWith iid <> EnemyWithoutModifier CannotBeEvaded
         when (notNull enemies) $ chooseOne iid $ targetLabels enemies (only . EnemyEvaded iid)
-      when (n >= 3) $ skillTestModifier attrs attrs ReturnToHandAfterTest
+      withSkillTest \sid ->
+        when (n >= 3) $ skillTestModifier sid attrs attrs ReturnToHandAfterTest
       pure e
     _ -> BreakingAndEntering2 <$> liftRunMessage msg attrs

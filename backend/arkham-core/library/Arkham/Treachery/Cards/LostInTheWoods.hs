@@ -1,8 +1,4 @@
-module Arkham.Treachery.Cards.LostInTheWoods (
-  lostInTheWoods,
-  LostInTheWoods (..),
-)
-where
+module Arkham.Treachery.Cards.LostInTheWoods (lostInTheWoods, LostInTheWoods (..)) where
 
 import Arkham.Classes
 import Arkham.Message
@@ -22,7 +18,8 @@ instance RunMessage LostInTheWoods where
     Revelation _iid (isSource attrs -> True) -> do
       investigators <- getInvestigators
       for_ investigators $ \iid' -> do
-        push $ revelationSkillTest iid' attrs #willpower (Fixed 3)
+        sid <- getRandom
+        push $ revelationSkillTest sid iid' attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       pushAll

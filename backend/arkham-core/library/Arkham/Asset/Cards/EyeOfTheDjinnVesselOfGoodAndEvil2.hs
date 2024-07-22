@@ -29,9 +29,18 @@ instance RunMessage EyeOfTheDjinnVesselOfGoodAndEvil2 where
   runMessage msg a@(EyeOfTheDjinnVesselOfGoodAndEvil2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sTypes <- getSkillTestSkillTypes
-      skillTestModifiers (attrs.ability 1) iid [BaseSkillOf sType 5 | sType <- sTypes]
-      createCardEffect Cards.eyeOfTheDjinnVesselOfGoodAndEvil2 Nothing (attrs.ability 1) attrs
-      createCardEffect Cards.eyeOfTheDjinnVesselOfGoodAndEvil2 Nothing (attrs.ability 1) iid
+      withSkillTest \sid -> do
+        skillTestModifiers sid (attrs.ability 1) iid [BaseSkillOf sType 5 | sType <- sTypes]
+        createCardEffect
+          Cards.eyeOfTheDjinnVesselOfGoodAndEvil2
+          (effectMetaTarget sid)
+          (attrs.ability 1)
+          attrs
+        createCardEffect
+          Cards.eyeOfTheDjinnVesselOfGoodAndEvil2
+          (effectMetaTarget sid)
+          (attrs.ability 1)
+          iid
       pure a
     _ -> EyeOfTheDjinnVesselOfGoodAndEvil2 <$> liftRunMessage msg attrs
 
@@ -48,7 +57,7 @@ eyeOfTheDjinnVesselOfGoodAndEvil2Effect =
 
 instance RunMessage EyeOfTheDjinnVesselOfGoodAndEvil2Effect where
   runMessage msg e@(EyeOfTheDjinnVesselOfGoodAndEvil2Effect attrs) = case msg of
-    RevealChaosToken _ _ token -> do
+    RevealChaosToken (SkillTestSource sid) _ token | maybe False (isTarget sid) attrs.metaTarget -> do
       case attrs.target of
         AssetTarget aid ->
           when (token.face == #bless) do
@@ -60,7 +69,7 @@ instance RunMessage EyeOfTheDjinnVesselOfGoodAndEvil2Effect where
             pushAll [disable attrs, GainActions iid attrs.source 1]
         _ -> error "Invalid target"
       pure e
-    SkillTestEnded -> do
+    SkillTestEnded sid | maybe False (isTarget sid) attrs.metaTarget -> do
       push $ disable attrs
       pure e
     _ -> EyeOfTheDjinnVesselOfGoodAndEvil2Effect <$> runMessage msg attrs

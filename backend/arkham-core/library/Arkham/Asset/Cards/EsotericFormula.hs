@@ -28,11 +28,12 @@ instance RunMessage EsotericFormula where
   runMessage msg a@(EsotericFormula attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      skillTestModifier source iid
+      sid <- getRandom
+      skillTestModifier sid source iid
         $ ForEach (EnemyTargetFieldCalculation EnemyClues) [SkillModifier #willpower 2]
       chooseFight <-
         aspect iid source (#willpower `InsteadOf` #combat)
-          $ mkChooseFightMatch iid source (EnemyWithTrait Abomination)
+          $ mkChooseFightMatch sid iid source (EnemyWithTrait Abomination)
       pushAll $ leftOr chooseFight
       pure a
     _ -> EsotericFormula <$> liftRunMessage msg attrs

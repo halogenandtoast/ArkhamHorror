@@ -23,7 +23,7 @@ import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype TelescopicSight3 = TelescopicSight3 EventAttrs
-  deriving anyclass (IsEvent)
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 telescopicSight3 :: EventCard TelescopicSight3
@@ -146,7 +146,7 @@ instance HasModifiersFor TelescopicSight3Effect where
 instance RunMessage TelescopicSight3Effect where
   runMessage msg e@(TelescopicSight3Effect attrs@EffectAttrs {..}) =
     case msg of
-      FightEnemy iid eid _ _ _ _ -> do
+      FightEnemy sid iid eid _ _ _ _ -> do
         ignored <-
           selectAny
             $ EnemyWithId eid
@@ -160,12 +160,13 @@ instance RunMessage TelescopicSight3Effect where
             ]
         pushAll
           $ skillTestModifiers
+            sid
             (toSource attrs)
             (InvestigatorTarget iid)
             [IgnoreRetaliate, IgnoreAloof]
           : [ignoreWindow | ignored]
         pure . TelescopicSight3Effect $ attrs & targetL .~ EnemyTarget eid
-      SkillTestEnds _ _ -> do
+      SkillTestEnds _ _ _ -> do
         push $ DisableEffect effectId
         pure e
       _ -> TelescopicSight3Effect <$> runMessage msg attrs

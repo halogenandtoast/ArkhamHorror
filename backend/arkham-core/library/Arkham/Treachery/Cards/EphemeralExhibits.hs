@@ -15,7 +15,8 @@ ephemeralExhibits = treachery EphemeralExhibits Cards.ephemeralExhibits
 instance RunMessage EphemeralExhibits where
   runMessage msg t@(EphemeralExhibits attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs #intellect (Fixed 3)
+      sid <- getRandom
+      push $ revelationSkillTest sid iid attrs #intellect (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       push $ LoseActions iid (toSource attrs) n

@@ -158,8 +158,8 @@ iconValuesForSkillTestType = \case
  where
   base = mapFromList [(#wild, 1), (#wildMinus, -1)]
 
-resetSkillTest :: SkillTest -> SkillTest
-resetSkillTest skillTest =
+resetSkillTest :: SkillTestId -> SkillTest -> SkillTest
+resetSkillTest sid skillTest =
   skillTest
     { skillTestSetAsideChaosTokens = mempty
     , skillTestRevealedChaosTokens = mempty
@@ -168,6 +168,7 @@ resetSkillTest skillTest =
     , skillTestResult = Unrun
     , skillTestCommittedCards = mempty
     , skillTestSubscribers = [toTarget $ skillTestInvestigator skillTest]
+    , skillTestId = sid
     }
 
 $(deriveJSON defaultOptions ''SkillTestBaseValue)

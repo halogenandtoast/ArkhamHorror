@@ -33,8 +33,10 @@ instance HasAbilities FoyerMurderAtTheExcelsiorHotel where
 instance RunMessage FoyerMurderAtTheExcelsiorHotel where
   runMessage msg l@(FoyerMurderAtTheExcelsiorHotel attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getBatchId -> batchId) _ -> do
+      sid <- getRandom
       push
         $ beginSkillTest
+          sid
           iid
           (toAbilitySource attrs 1)
           (BatchTarget batchId)

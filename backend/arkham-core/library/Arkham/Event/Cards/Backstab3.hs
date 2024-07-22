@@ -28,8 +28,9 @@ instance HasModifiersFor Backstab3 where
 instance RunMessage Backstab3 where
   runMessage msg e@(Backstab3 attrs@EventAttrs {..}) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      skillTestModifier attrs iid (DamageDealt 2)
-      pushAllM $ leftOr <$> aspect iid attrs (#agility `InsteadOf` #combat) (mkChooseFight iid attrs)
+      sid <- getRandom
+      skillTestModifier sid attrs iid (DamageDealt 2)
+      pushAllM $ leftOr <$> aspect iid attrs (#agility `InsteadOf` #combat) (mkChooseFight sid iid attrs)
       pure e
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
       createCardEffect Cards.pilfer3 (effectMetaTarget attrs.cardId) attrs iid

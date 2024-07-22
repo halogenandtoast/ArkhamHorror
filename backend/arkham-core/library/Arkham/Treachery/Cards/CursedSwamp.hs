@@ -1,15 +1,10 @@
-module Arkham.Treachery.Cards.CursedSwamp (
-  CursedSwamp (..),
-  cursedSwamp,
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.CursedSwamp (CursedSwamp (..), cursedSwamp) where
 
 import Arkham.Classes
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Source
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
@@ -34,10 +29,12 @@ instance HasModifiersFor CursedSwamp where
   getModifiersFor _ _ = pure []
 
 instance RunMessage CursedSwamp where
-  runMessage msg t@(CursedSwamp attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      t <$ push (RevelationSkillTest iid source SkillWillpower (SkillTestDifficulty $ Fixed 3))
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget {} _ n | tid == treacheryId -> do
-      push $ InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAny n 0
+  runMessage msg t@(CursedSwamp attrs) = case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      sid <- getRandom
+      push $ revelationSkillTest sid iid attrs #willpower (Fixed 3)
+      pure t
+    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
+      push $ assignDamage iid attrs n
       pure t
     _ -> CursedSwamp <$> runMessage msg attrs

@@ -17,7 +17,7 @@ import Arkham.Placement
 import Arkham.Projection
 
 newtype SummonedServitor = SummonedServitor AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 summonedServitor :: AssetCard SummonedServitor
@@ -104,23 +104,28 @@ instance RunMessage SummonedServitor where
         ]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      skillTestModifiers (attrs.ability 2) iid [BaseSkillOf #combat 4, IgnoreAloof, IgnoreRetaliate]
+      sid <- getRandom
+      skillTestModifiers sid (attrs.ability 2) iid [BaseSkillOf #combat 4, IgnoreAloof, IgnoreRetaliate]
       chooseFightEnemyMatch
+        sid
         iid
         (attrs.ability 2)
         (fightOverride $ EnemyAt $ locationWithAsset attrs.id)
       pure . SummonedServitor $ overMeta (<>) [Action.Fight] attrs
     UseThisAbility iid (isSource attrs -> True) 3 -> do
-      skillTestModifiers (attrs.ability 2) iid [BaseSkillOf #agility 4, IgnoreAlert]
+      sid <- getRandom
+      skillTestModifiers sid (attrs.ability 2) iid [BaseSkillOf #agility 4, IgnoreAlert]
       chooseEvadeEnemyMatch
+        sid
         iid
         (attrs.ability 2)
         (evadeOverride $ EnemyAt (locationWithAsset attrs.id) <> EnemyCanBeEvadedBy (attrs.ability 3))
       pure . SummonedServitor $ overMeta (<>) [Action.Evade] attrs
     UseThisAbility iid (isSource attrs -> True) 4 -> do
       lid <- selectJust $ locationWithAsset attrs.id
-      skillTestModifiers (attrs.ability 4) iid [BaseSkillOf #intellect 4]
-      pushM $ mkInvestigateLocation iid (attrs.ability 4) lid
+      sid <- getRandom
+      skillTestModifiers sid (attrs.ability 4) iid [BaseSkillOf #intellect 4]
+      pushM $ mkInvestigateLocation sid iid (attrs.ability 4) lid
       pure . SummonedServitor $ overMeta (<>) [Action.Investigate] attrs
     BeginTurn iid | attrs `controlledBy` iid -> do
       pure . SummonedServitor $ setMeta @[Action] [] attrs

@@ -26,9 +26,10 @@ instance RunMessage MedicalTexts where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let controllerId = getController attrs
       investigators <- select $ affectsOthers $ colocatedWith controllerId
+      sid <- getRandom
       chooseOne iid
         $ targetLabels investigators
-        $ \iid' -> only $ Msg.beginSkillTest iid (attrs.ability 1) iid' #intellect (Fixed 2)
+        $ \iid' -> only $ Msg.beginSkillTest sid iid (attrs.ability 1) iid' #intellect (Fixed 2)
       pure a
     PassedThisSkillTest who (isAbilitySource attrs 1 -> True) -> do
       getSkillTestTarget >>= \case

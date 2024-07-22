@@ -33,11 +33,12 @@ instance RunMessage ExpeditionIntoTheWild where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       setAsideAgentsOfYig <- getSetAsideEncounterSet AgentsOfYig
       iids <- getInvestigatorIds
+      sid <- getRandom
       pushAll
         $ [ ShuffleEncounterDiscardBackIn
           , ShuffleCardsIntoDeck Deck.EncounterDeck setAsideAgentsOfYig
           ]
-        <> [beginSkillTest iid attrs iid #willpower (Fixed 3) | iid <- iids]
+        <> [beginSkillTest sid iid attrs iid #willpower (Fixed 3) | iid <- iids]
         <> [advanceAgendaDeck attrs]
       pure a
     FailedThisSkillTest iid (isSource attrs -> True) -> do

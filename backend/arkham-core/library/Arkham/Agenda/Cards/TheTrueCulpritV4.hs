@@ -46,9 +46,14 @@ instance RunMessage TheTrueCulpritV4 where
     case msg of
       UseThisAbility iid p@(ProxySource _ (isSource attrs -> True)) 1 -> do
         let source = toAbilitySource p 1
+        sid <- getRandom
         chooseFight <-
           leftOr
-            <$> aspect iid source (#willpower `InsteadOf` #combat) (setTarget attrs <$> mkChooseFight iid source)
+            <$> aspect
+              iid
+              source
+              (#willpower `InsteadOf` #combat)
+              (setTarget attrs <$> mkChooseFight sid iid source)
         pushAll chooseFight
         pure a
       Successful (Action.Fight, target) _ _ (isTarget attrs -> True) _ -> do

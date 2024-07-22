@@ -12,7 +12,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.ScenarioLogKey
-import Arkham.SkillType
 
 newtype PatientConfinementOccupiedCell = PatientConfinementOccupiedCell LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -37,11 +36,11 @@ instance HasAbilities PatientConfinementOccupiedCell where
 
 instance RunMessage PatientConfinementOccupiedCell where
   runMessage msg l@(PatientConfinementOccupiedCell attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          l
-            <$ push
-              (beginSkillTest iid (attrs.ability 1) (toTarget attrs) SkillCombat (Fixed 2))
-    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isAbilitySource attrs 1 source -> l <$ push (Remember ReleasedADangerousPatient)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) attrs #combat (Fixed 2)
+      pure l
+    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
+      push $ Remember ReleasedADangerousPatient
+      pure l
     _ -> PatientConfinementOccupiedCell <$> runMessage msg attrs

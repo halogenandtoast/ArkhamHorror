@@ -18,7 +18,8 @@ deadlyFate = treachery DeadlyFate Cards.deadlyFate
 instance RunMessage DeadlyFate where
   runMessage msg t@(DeadlyFate attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ RevelationSkillTest iid (toSource attrs) #willpower (SkillTestDifficulty $ Fixed 3)
+      sid <- getRandom
+      push $ revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       push $ DiscardUntilFirst iid (toSource attrs) Deck.EncounterDeck $ basic #enemy

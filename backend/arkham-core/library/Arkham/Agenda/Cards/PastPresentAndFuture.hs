@@ -43,11 +43,12 @@ instance RunMessage PastPresentAndFuture where
       sacrificedToYogSothoth <- getRecordCount SacrificedToYogSothoth
       investigatorIds <- getInvestigatorIds
       lead <- getLead
+      sid <- getRandom
       pushAll
         $ [ ShuffleEncounterDiscardBackIn
           , DiscardUntilFirst lead (toSource attrs) Deck.EncounterDeck (basic $ CardWithType LocationType)
           ]
-        <> [ beginSkillTest iid attrs iid #willpower (RecordedCount SacrificedToYogSothoth)
+        <> [ beginSkillTest sid iid attrs iid #willpower (RecordedCount SacrificedToYogSothoth)
            | sacrificedToYogSothoth > 0
            , iid <- investigatorIds
            ]

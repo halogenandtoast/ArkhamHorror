@@ -5,6 +5,7 @@ import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.Effect.Import
 import Arkham.Helpers.Investigator
 import Arkham.Investigate
 import Arkham.Modifier
@@ -24,11 +25,12 @@ instance RunMessage RiteOfSeeking2 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
       lid <- getJustLocation iid
+      sid <- getRandom
       investigation <-
-        aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate iid source)
+        aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
 
-      createCardEffect Cards.riteOfSeeking Nothing source (InvestigationTarget iid lid) -- same effect as base
-      skillTestModifiers source iid [SkillModifier #willpower 2, DiscoveredClues 1]
+      createCardEffect Cards.riteOfSeeking (effectMetaTarget sid) source (InvestigationTarget iid lid) -- same effect as base
+      skillTestModifiers sid source iid [SkillModifier #willpower 2, DiscoveredClues 1]
       pushAll $ leftOr investigation
       pure a
     _ -> RiteOfSeeking2 <$> liftRunMessage msg attrs

@@ -22,7 +22,8 @@ instance HasModifiersFor BreachTheDoor where
 instance RunMessage BreachTheDoor where
   runMessage msg e@(BreachTheDoor attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      beginSkillTest iid attrs iid #combat (Fixed 1)
+      sid <- getRandom
+      beginSkillTest sid iid attrs iid #combat (Fixed 1)
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n -> do
       withLocationOf iid \lid -> do

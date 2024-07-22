@@ -2,6 +2,7 @@ module Arkham.Investigator.Cards.ZoeySamaras where
 
 import Arkham.Ability
 import Arkham.Game.Helpers
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
@@ -10,7 +11,7 @@ import Arkham.Prelude
 newtype ZoeySamaras = ZoeySamaras InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 zoeySamaras :: InvestigatorCard ZoeySamaras
 zoeySamaras =
@@ -35,6 +36,7 @@ instance RunMessage ZoeySamaras where
       push $ takeResources iid (toAbilitySource attrs 1) 1
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
-      push $ skillTestModifier attrs attrs (DamageDealt 1)
+      withSkillTest \sid ->
+        push $ skillTestModifier sid attrs attrs (DamageDealt 1)
       pure i
     _ -> ZoeySamaras <$> runMessage msg attrs

@@ -36,7 +36,9 @@ instance RunMessage ForsakenTowerOfPrimevalLight where
         ]
       pure l
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget nyarlathotep) -> do
+      sid <- getRandom
       beginSkillTest
+        sid
         iid
         (attrs.ability 1)
         (toTarget nyarlathotep)

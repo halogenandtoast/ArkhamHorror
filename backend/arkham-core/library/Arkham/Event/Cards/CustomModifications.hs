@@ -14,6 +14,7 @@ import Arkham.Helpers.SkillTest (
   getSkillTestSource,
   getSkillTestTarget,
   inAttackSkillTest,
+  withSkillTest,
  )
 import Arkham.Matcher
 import Arkham.Message.Type
@@ -25,7 +26,7 @@ import Arkham.Window (revealedChaosTokens)
 -- attached asset, this attack deals +1 damage.
 
 newtype CustomModifications = CustomModifications EventAttrs
-  deriving anyclass (IsEvent)
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 customModifications :: EventCard CustomModifications
@@ -130,6 +131,7 @@ instance RunMessage CustomModifications where
       pure e
     When (PassedThisSkillTestBy iid (AbilitySource source _) n) | maybe False ((`isSource` source) . targetToSource) (attrs.attachedTo) && n >= 3 -> do
       whenM inAttackSkillTest do
-        skillTestModifier (attrs.ability 3) iid (DamageDealt 1)
+        withSkillTest \sid ->
+          skillTestModifier sid (attrs.ability 3) iid (DamageDealt 1)
       pure e
     _ -> CustomModifications <$> liftRunMessage msg attrs

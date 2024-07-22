@@ -30,11 +30,12 @@ instance RunMessage SummonedHound1 where
       fightableEnemies <- select $ CanFightEnemy (toSource attrs)
       player <- getPlayer iid
       mLocation <- field InvestigatorLocation iid
-      doFight <- toMessage <$> mkChooseFight iid (attrs.ability 1)
+      sid <- getRandom
+      doFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
       mDoInvestigate :: Maybe Investigate.Investigate <- case mLocation of
         Just lid -> do
           canInvestigate <- lid <=~> InvestigatableLocation
-          doInvestigate <- mkInvestigate iid (toAbilitySource attrs 1)
+          doInvestigate <- mkInvestigate sid iid (toAbilitySource attrs 1)
           pure $ guard canInvestigate $> doInvestigate
         Nothing -> pure Nothing
 
@@ -42,20 +43,20 @@ instance RunMessage SummonedHound1 where
         ([], Nothing) -> error "invalid call"
         ([], Just doInvestigate) ->
           pushAll
-            [ skillTestModifier (toAbilitySource attrs 1) iid (BaseSkillOf #intellect 5)
+            [ skillTestModifier sid (toAbilitySource attrs 1) iid (BaseSkillOf #intellect 5)
             , toMessage doInvestigate
             ]
-        (_ : _, Nothing) -> pushAll [skillTestModifier (toAbilitySource attrs 1) iid (BaseSkillOf #combat 5), doFight]
+        (_ : _, Nothing) -> pushAll [skillTestModifier sid (toAbilitySource attrs 1) iid (BaseSkillOf #combat 5), doFight]
         (_ : _, Just doInvestigate) -> do
           push
             $ chooseOne
               player
               [ Label
                   "Investigate"
-                  [ skillTestModifier (toAbilitySource attrs 1) iid (BaseSkillOf #intellect 5)
+                  [ skillTestModifier sid (toAbilitySource attrs 1) iid (BaseSkillOf #intellect 5)
                   , toMessage doInvestigate
                   ]
-              , Label "Fight" [skillTestModifier (toAbilitySource attrs 1) iid (BaseSkillOf #combat 5), doFight]
+              , Label "Fight" [skillTestModifier sid (toAbilitySource attrs 1) iid (BaseSkillOf #combat 5), doFight]
               ]
       pure a
     _ -> SummonedHound1 <$> runMessage msg attrs

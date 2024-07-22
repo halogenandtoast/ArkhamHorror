@@ -8,10 +8,11 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (AssetExhausted, RevealChaosToken)
 import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 
 newtype JacobMorrisonCostGuardCaptain3 = JacobMorrisonCostGuardCaptain3 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jacobMorrisonCostGuardCaptain3 :: AssetCard JacobMorrisonCostGuardCaptain3
@@ -33,7 +34,7 @@ instance HasAbilities JacobMorrisonCostGuardCaptain3 where
 instance RunMessage JacobMorrisonCostGuardCaptain3 where
   runMessage msg a@(JacobMorrisonCostGuardCaptain3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skillTestModifier attrs iid (AnySkillValue 2)
+      withSkillTest \sid -> skillTestModifier sid attrs iid (AnySkillValue 2)
       push RecalculateSkillTestResults
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do

@@ -9,7 +9,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype CruelInterrogations = CruelInterrogations TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cruelInterrogations :: TreacheryCard CruelInterrogations
@@ -33,7 +33,8 @@ instance RunMessage CruelInterrogations where
         gainSurge attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      beginSkillTest iid (attrs.ability 1) iid #willpower (Fixed 2)
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 2)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs

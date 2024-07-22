@@ -17,7 +17,10 @@ instance RunMessage BloodEclipse3 where
   runMessage msg e@(BloodEclipse3 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       let n = attrs.payment.investigatorDamage
-      skillTestModifiers attrs iid [DamageDealt n, SkillModifier #willpower n]
-      pushAllM $ leftOr <$> aspect iid attrs (#willpower `InsteadOf` #combat) (mkChooseFight iid attrs)
+      sid <- getRandom
+      skillTestModifiers sid attrs iid [DamageDealt n, SkillModifier #willpower n]
+      pushAllM
+        $ leftOr
+        <$> aspect iid attrs (#willpower `InsteadOf` #combat) (mkChooseFight sid iid attrs)
       pure e
     _ -> BloodEclipse3 <$> liftRunMessage msg attrs

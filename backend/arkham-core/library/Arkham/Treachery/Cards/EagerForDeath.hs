@@ -1,13 +1,8 @@
-module Arkham.Treachery.Cards.EagerForDeath (
-  EagerForDeath (..),
-  eagerForDeath,
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.EagerForDeath (EagerForDeath (..), eagerForDeath) where
 
 import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -20,15 +15,13 @@ eagerForDeath = treachery EagerForDeath Cards.eagerForDeath
 
 instance RunMessage EagerForDeath where
   runMessage msg t@(EagerForDeath attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
+      sid <- getRandom
       push
-        $ RevelationSkillTest iid source SkillWillpower
-        $ SkillTestDifficulty
+        $ revelationSkillTest sid iid attrs #willpower
         $ SumCalculation [Fixed 2, InvestigatorFieldCalculation iid InvestigatorDamage]
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          push (InvestigatorAssignDamage iid source DamageAny 0 2)
-
-          pure t
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      push $ assignHorror iid attrs 2
+      pure t
     _ -> EagerForDeath <$> runMessage msg attrs

@@ -1,11 +1,9 @@
-module Arkham.Investigator.Cards.MinhThiPhan (
-  minhThiPhan,
-  MinhThiPhan (..),
-) where
+module Arkham.Investigator.Cards.MinhThiPhan (minhThiPhan, MinhThiPhan (..)) where
 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
@@ -17,7 +15,7 @@ import Arkham.Window qualified as Window
 newtype MinhThiPhan = MinhThiPhan InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 minhThiPhan :: InvestigatorCard MinhThiPhan
 minhThiPhan =
@@ -40,14 +38,18 @@ instance HasChaosTokenValue MinhThiPhan where
 instance RunMessage MinhThiPhan where
   runMessage msg i@(MinhThiPhan attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 [(windowType -> Window.CommittedCard _ card)] _ -> do
-      push $ skillTestModifier (toAbilitySource attrs 1) (toCardId card) (AddSkillIcons [#wild])
+      withSkillTest \sid ->
+        push $ skillTestModifier sid (toAbilitySource attrs 1) (toCardId card) (AddSkillIcons [#wild])
       pure i
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
-      skills <- selectWithField Field.SkillCard AnySkill
-      player <- getPlayer iid
-      pushWhen (notNull skills)
-        $ chooseOne player
-        $ Label "Do not choose a skill to return to your hand" []
-        : [targetLabel c [skillTestModifier (toSource ElderSign) s ReturnToHandAfterTest] | (s, c) <- skills]
+      withSkillTest \sid -> do
+        skills <- selectWithField Field.SkillCard AnySkill
+        player <- getPlayer iid
+        pushWhen (notNull skills)
+          $ chooseOne player
+          $ Label "Do not choose a skill to return to your hand" []
+          : [ targetLabel c [skillTestModifier sid (toSource ElderSign) s ReturnToHandAfterTest]
+            | (s, c) <- skills
+            ]
       pure i
     _ -> MinhThiPhan <$> runMessage msg attrs

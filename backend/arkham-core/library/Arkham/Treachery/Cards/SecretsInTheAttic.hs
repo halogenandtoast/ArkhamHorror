@@ -1,8 +1,4 @@
-module Arkham.Treachery.Cards.SecretsInTheAttic (
-  secretsInTheAttic,
-  SecretsInTheAttic (..),
-)
-where
+module Arkham.Treachery.Cards.SecretsInTheAttic (secretsInTheAttic, SecretsInTheAttic (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
@@ -13,7 +9,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype SecretsInTheAttic = SecretsInTheAttic TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 secretsInTheAttic :: TreacheryCard SecretsInTheAttic
@@ -36,7 +32,8 @@ instance HasAbilities SecretsInTheAttic where
 instance RunMessage SecretsInTheAttic where
   runMessage msg t@(SecretsInTheAttic attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs #willpower (Fixed 3)
+      sid <- getRandom
+      push $ revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       pushAll

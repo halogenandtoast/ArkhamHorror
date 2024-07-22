@@ -44,7 +44,8 @@ instance HasAbilities Duke where
 instance RunMessage Duke where
   runMessage msg a@(Duke attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ mkChooseFight iid (attrs.ability 1)
+      sid <- getRandom
+      pushM $ mkChooseFight sid iid (attrs.ability 1)
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 windows' _ -> do
       let source = attrs.ability 2
@@ -84,10 +85,12 @@ instance RunMessage Duke where
       pure a
     DoStep 1 (UseCardAbility iid (isSource attrs -> True) 2 _ _) -> do
       lid <- getJustLocation iid
-      investigate' <- mkInvestigateLocation iid attrs lid
+      sid <- getRandom
+      investigate' <- mkInvestigateLocation sid iid attrs lid
       push $ CheckAdditionalActionCosts iid (toTarget lid) #investigate [toMessage investigate']
       pure a
     UseCardAbility iid (ProxySource (LocationSource lid) (isAbilitySource attrs 2 -> True)) 101 _ _ -> do
-      pushM $ mkInvestigateLocation iid attrs lid
+      sid <- getRandom
+      pushM $ mkInvestigateLocation sid iid attrs lid
       pure a
     _ -> Duke <$> runMessage msg attrs

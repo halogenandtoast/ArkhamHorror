@@ -30,7 +30,8 @@ instance RunMessage SearchingForIzzie where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withTreacheryLocation attrs $ \locationId -> do
-        pushM $ mkInvestigateLocation iid (toAbilitySource attrs 1) locationId <&> setTarget attrs
+        sid <- getRandom
+        pushM $ mkInvestigateLocation sid iid (toAbilitySource attrs 1) locationId <&> setTarget attrs
         pure t
     Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target -> do
       push $ toDiscardBy iid (toAbilitySource attrs 1) target

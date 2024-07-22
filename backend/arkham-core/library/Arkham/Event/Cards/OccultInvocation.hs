@@ -20,10 +20,11 @@ instance RunMessage OccultInvocation where
   runMessage msg e@(OccultInvocation attrs) = case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
       let n = totalDiscardCardPayments attrs.payment
+      sid <- getRandom
       chooseFight <-
-        leftOr <$> aspect iid attrs (#willpower `InsteadOf` #combat) (mkChooseFight iid attrs)
+        leftOr <$> aspect iid attrs (#willpower `InsteadOf` #combat) (mkChooseFight sid iid attrs)
       pushAll
-        $ skillTestModifiers attrs iid [DamageDealt n, SkillModifier #intellect n]
+        $ skillTestModifiers sid attrs iid [DamageDealt n, SkillModifier #intellect n]
         : chooseFight
       pure e
     _ -> OccultInvocation <$> runMessage msg attrs

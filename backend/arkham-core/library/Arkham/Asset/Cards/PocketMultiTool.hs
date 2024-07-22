@@ -9,6 +9,7 @@ import Arkham.Helpers.SkillTest (
   inAttackSkillTest,
   inEvasionSkillTest,
   isInvestigation,
+  withSkillTest,
  )
 import Arkham.Matcher
 import Arkham.Modifier
@@ -54,10 +55,12 @@ instance RunMessage PocketMultiTool where
           liftGuardM $ isInvestigation
           pure 1
 
-      skillTestModifier
-        (attrs.ability 1)
-        iid
-        (AnySkillValue (1 + pryBar + sharpenedKnife + signalMirror + magnifyingLens))
+      withSkillTest \sid ->
+        skillTestModifier
+          sid
+          (attrs.ability 1)
+          iid
+          (AnySkillValue (1 + pryBar + sharpenedKnife + signalMirror + magnifyingLens))
       pushWhen (attrs `hasCustomization` SpringLoaded) RerunSkillTest
       pure a
     FailedThisSkillTest iid _ | attrs `controlledBy` iid -> do

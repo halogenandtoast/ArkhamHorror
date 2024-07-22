@@ -1,16 +1,11 @@
-module Arkham.Treachery.Cards.DismalCurse (
-  dismalCurse,
-  DismalCurse (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.DismalCurse (dismalCurse, DismalCurse (..)) where
 
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Prelude
 import Arkham.Projection
-import Arkham.SkillType
 import Arkham.Source
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -35,12 +30,13 @@ instance HasModifiersFor DismalCurse where
 instance RunMessage DismalCurse where
   runMessage msg t@(DismalCurse attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      push $ RevelationSkillTest iid source SkillWillpower (SkillTestDifficulty $ Fixed 3)
+      sid <- getRandom
+      push $ revelationSkillTest sid iid source #willpower (Fixed 3)
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
       horror <- field InvestigatorHorror iid
       sanity <- field InvestigatorSanity iid
       let damage = if horror > sanity * 2 then 4 else 2
-      push $ InvestigatorAssignDamage iid source DamageAny damage 0
+      push $ assignDamage iid attrs damage
       pure t
     _ -> DismalCurse <$> runMessage msg attrs

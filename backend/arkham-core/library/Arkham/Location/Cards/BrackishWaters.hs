@@ -11,7 +11,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype BrackishWaters = BrackishWaters LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brackishWaters :: LocationCard BrackishWaters
@@ -35,7 +35,8 @@ instance HasAbilities BrackishWaters where
 instance RunMessage BrackishWaters where
   runMessage msg l@(BrackishWaters attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ beginSkillTest iid (attrs.ability 1) attrs #agility (Fixed 3)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) attrs #agility (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       fishingNet <- getSetAsideCard Assets.fishingNet

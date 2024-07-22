@@ -11,7 +11,7 @@ import Arkham.Prelude
 import Arkham.Projection
 
 newtype MysteriousStairs_186 = MysteriousStairs_186 LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mysteriousStairs_186 :: LocationCard MysteriousStairs_186
@@ -50,10 +50,11 @@ instance RunMessage MysteriousStairs_186 where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       choices <- mins <$> traverse (traverseToSnd (`getSkillValue` iid)) [minBound .. maxBound]
       player <- getPlayer iid
+      sid <- getRandom
       push
         $ chooseOrRunOne
           player
-          [ SkillLabel skill [beginSkillTest iid (attrs.ability 2) iid skill (Fixed 2)]
+          [ SkillLabel skill [beginSkillTest sid iid (attrs.ability 2) iid skill (Fixed 2)]
           | skill <- choices
           ]
       pure l

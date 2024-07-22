@@ -58,6 +58,7 @@ instance RunMessage Bloodlust where
 
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ skillTestModifier (toAbilitySource attrs 1) iid (DamageDealt 1)
+      withSkillTest \sid ->
+        push $ skillTestModifier sid (toAbilitySource attrs 1) iid (DamageDealt 1)
       pure t
     _ -> Bloodlust <$> runMessage msg attrs

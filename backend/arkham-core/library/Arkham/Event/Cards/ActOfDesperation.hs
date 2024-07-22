@@ -25,9 +25,10 @@ instance RunMessage ActOfDesperation where
       case attrs.payment.discards of
         [(zone, discard)] -> do
           let n = discard.printedCost
-          skillTestModifiers attrs iid $ DamageDealt 1 : [SkillModifier #combat n | n > 0]
+          sid <- getRandom
+          skillTestModifiers sid attrs iid $ DamageDealt 1 : [SkillModifier #combat n | n > 0]
           when (zone == FromPlay && n > 0) $ createCardEffect Cards.actOfDesperation (effectInt n) attrs iid
-          pushM $ mkChooseFight iid attrs
+          pushM $ mkChooseFight sid iid attrs
         _ -> error $ "Invalid choice: " <> show attrs.payment
       pure e
     _ -> ActOfDesperation <$> liftRunMessage msg attrs
@@ -47,5 +48,5 @@ instance RunMessage ActOfDesperationEffect where
           gainResourcesIfCan iid attrs.source n
           disableReturn e
         _ -> error "Invalid call"
-    SkillTestEnds _ _ -> disableReturn e
+    SkillTestEnds _ _ _ -> disableReturn e
     _ -> ActOfDesperationEffect <$> liftRunMessage msg attrs

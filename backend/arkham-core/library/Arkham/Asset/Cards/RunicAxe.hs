@@ -87,12 +87,14 @@ instance RunMessage RunicAxe where
       let replenish = if attrs `hasCustomization` Saga then 2 else 1
       pure . RunicAxe . (`with` meta) $ attrs & tokensL . ix Charge %~ \n -> if n < 4 then n + replenish else n
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skillTestModifier (attrs.ability 1) iid (SkillModifier #combat 1)
+      sid <- getRandom
+      skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 1)
       if attrs `hasCustomization` InscriptionOfTheHunt && attrs.use Charge > 0
-        then chooseFightEnemyMatch iid (attrs.ability 1) $ CanFightEnemyWithOverride (override attrs iid)
-        else chooseFightEnemy iid (attrs.ability 1)
+        then
+          chooseFightEnemyMatch sid iid (attrs.ability 1) $ CanFightEnemyWithOverride (override attrs iid)
+        else chooseFightEnemy sid iid (attrs.ability 1)
       pure a
-    ChoseEnemy sid iid (isAbilitySource attrs 1 -> True) eid -> do
+    ChoseEnemy _sid iid (isAbilitySource attrs 1 -> True) eid -> do
       when (attrs.use Charge > 0) do
         needsHunt <-
           not
@@ -110,7 +112,7 @@ instance RunMessage RunicAxe where
                 | i <- choices
                 ]
       pure a
-    Do msg'@(ChoseEnemy sid iid (isAbilitySource attrs 1 -> True) _) -> do
+    Do msg'@(ChoseEnemy _sid iid (isAbilitySource attrs 1 -> True) _) -> do
       choices <- availableInscriptions iid attrs meta
       chooseOne iid
         $ Label "Do not use additional imbue from Saga " []
@@ -122,8 +124,8 @@ instance RunMessage RunicAxe where
       let inscription = toEnum n
       send $ "Imbued Runic Axe with " <> tshow inscription
       case inscription of
-        Accuracy -> skillTestModifier (attrs.ability 1) iid (SkillModifier #combat 2)
-        Power -> skillTestModifier (attrs.ability 1) iid (DamageDealt 1)
+        Accuracy -> skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 2)
+        Power -> skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
         Glory -> pure ()
         Elders -> pure ()
         Hunt -> do

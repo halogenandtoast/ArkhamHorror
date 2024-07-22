@@ -42,7 +42,7 @@ instance HasModifiersFor Snipe1Effect where
 instance RunMessage Snipe1Effect where
   runMessage msg e@(Snipe1Effect attrs) = runQueueT $ case msg of
     EndTurn iid | attrs.target == toTarget iid -> disableReturn e
-    SkillTestEnds iid (AssetSource aid) | attrs.target == toTarget iid -> do
+    SkillTestEnds _ iid (AssetSource aid) | attrs.target == toTarget iid -> do
       whenM (aid <=~> oneOf @AssetMatcher [#firearm, #ranged]) do
         mAction <- getSkillTestAction
         when (mAction == Just #fight) (disable attrs)

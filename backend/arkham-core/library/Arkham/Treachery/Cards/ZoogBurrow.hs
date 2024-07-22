@@ -1,14 +1,9 @@
-module Arkham.Treachery.Cards.ZoogBurrow (
-  zoogBurrow,
-  ZoogBurrow (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.ZoogBurrow (zoogBurrow, ZoogBurrow (..)) where
 
 import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Prelude
 import Arkham.Trait (Trait (Zoog))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -23,7 +18,8 @@ zoogBurrow = treachery ZoogBurrow Cards.zoogBurrow
 instance RunMessage ZoogBurrow where
   runMessage msg t@(ZoogBurrow attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs #agility (Fixed 3)
+      sid <- getRandom
+      push $ revelationSkillTest sid iid attrs #agility (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       zoogs <- select $ NearestEnemyTo iid $ EnemyWithTrait Zoog <> SwarmingEnemy <> NotEnemy IsSwarm

@@ -33,8 +33,9 @@ instance HasModifiersFor IveGotAPlan2 where
 instance RunMessage IveGotAPlan2 where
   runMessage msg e@(IveGotAPlan2 attrs) = case msg of
     PlayThisEvent iid eid | eid == attrs.id -> do
+      sid <- getRandom
       chooseFight <-
-        leftOr <$> aspect iid attrs (#intellect `InsteadOf` #combat) (mkChooseFight iid attrs)
+        leftOr <$> aspect iid attrs (#intellect `InsteadOf` #combat) (mkChooseFight sid iid attrs)
       pushAll chooseFight
       pure e
     _ -> IveGotAPlan2 <$> runMessage msg attrs

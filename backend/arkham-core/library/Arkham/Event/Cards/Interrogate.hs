@@ -31,12 +31,13 @@ instance RunMessage Interrogate where
       location <- fieldJust InvestigatorLocation iid
       enemies <- select $ enemyAt location <> EnemyWithTrait Humanoid <> CanParleyEnemy iid
       player <- getPlayer iid
+      sid <- getRandom
       push
         $ chooseOne
           player
           [ targetLabel
             enemy
-            [ parley iid attrs enemy #combat
+            [ parley sid iid attrs enemy #combat
                 $ SumCalculation [Fixed 3, EnemyFieldCalculation enemy EnemyHealthDamage]
             ]
           | enemy <- enemies

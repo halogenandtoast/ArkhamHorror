@@ -22,7 +22,7 @@ import Arkham.Matcher
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype UnvisitedIsleMossCoveredSteps = UnvisitedIsleMossCoveredSteps LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unvisitedIsleMossCoveredSteps :: LocationCard UnvisitedIsleMossCoveredSteps
@@ -51,7 +51,8 @@ instance HasAbilities UnvisitedIsleMossCoveredSteps where
 instance RunMessage UnvisitedIsleMossCoveredSteps where
   runMessage msg l@(UnvisitedIsleMossCoveredSteps attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      circleTest iid attrs attrs [#combat, #agility] (Fixed 10)
+      sid <- getRandom
+      circleTest sid iid attrs attrs [#combat, #agility] (Fixed 10)
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ createCardEffect Cards.unvisitedIsleMossCoveredSteps Nothing attrs iid

@@ -20,15 +20,16 @@ fangOfTyrthrha4 = event FangOfTyrthrha4 Cards.fangOfTyrthrha4
 instance RunMessage FangOfTyrthrha4 where
   runMessage msg e@(FangOfTyrthrha4 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      skillTestModifiers attrs iid [AddSkillToOtherSkill #agility #combat, DamageDealt 3]
-      chooseFightEnemyMatch iid attrs
+      sid <- getRandom
+      skillTestModifiers sid attrs iid [AddSkillToOtherSkill #agility #combat, DamageDealt 3]
+      chooseFightEnemyMatch sid iid attrs
         $ CanFightEnemyWithOverride
         $ CriteriaOverride
         $ enemyExists
         $ EnemyAt RevealedLocation
 
       pure e
-    ChoseEnemy sid iid (isSource attrs -> True) enemy -> do
+    ChoseEnemy _sid iid (isSource attrs -> True) enemy -> do
       enemyLocation <- fieldJust EnemyLocation enemy
       yourLocation <- field InvestigatorLocation iid
       when (Just enemyLocation /= yourLocation) do

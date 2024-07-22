@@ -53,10 +53,11 @@ instance RunMessage UnfinishedBusiness_D where
       pure s
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       player <- getPlayer iid
+      sid <- getRandom
       push
         $ chooseOne
           player
-          [ SkillLabel sType [beginSkillTest iid (attrs.ability 2) attrs sType (Fixed 4)]
+          [ SkillLabel sType [beginSkillTest sid iid (attrs.ability 2) attrs sType (Fixed 4)]
           | sType <- [SkillWillpower, SkillAgility]
           ]
       pure s

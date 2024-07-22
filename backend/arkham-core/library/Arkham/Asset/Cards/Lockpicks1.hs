@@ -25,8 +25,12 @@ instance HasAbilities Lockpicks1 where
 instance RunMessage Lockpicks1 where
   runMessage msg a@(Lockpicks1 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      investigation <- mkInvestigate iid (toAbilitySource attrs 1)
-      pushAll [createCardEffect Cards.lockpicks1 Nothing (attrs.ability 1) iid, toMessage investigation]
+      sid <- getRandom
+      investigation <- mkInvestigate sid iid (toAbilitySource attrs 1)
+      pushAll
+        [ createCardEffect Cards.lockpicks1 (effectMetaTarget sid) (attrs.ability 1) iid
+        , toMessage investigation
+        ]
       pure a
     _ -> Lockpicks1 <$> runMessage msg attrs
 
@@ -44,15 +48,19 @@ instance HasModifiersFor Lockpicks1Effect where
 
 instance RunMessage Lockpicks1Effect where
   runMessage msg e@(Lockpicks1Effect attrs) = case msg of
-    SkillTestEnds _ _ -> do
+    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
       push $ disable attrs
       pure e
     PassedThisSkillTestBy _ _ n | n < 2 -> do
-      let aid = fromJustNote "must be an asset" attrs.source.asset
-      pushAll [SpendUses attrs.source (AssetTarget aid) Supply 1, disable attrs]
+      withSkillTest \sid -> do
+        when (maybe False (isTarget sid) attrs.metaTarget) $ do
+          let aid = fromJustNote "must be an asset" attrs.source.asset
+          pushAll [SpendUses attrs.source (AssetTarget aid) Supply 1, disable attrs]
       pure e
     FailedThisSkillTestBy _ _ n | n < 2 -> do
-      let aid = fromJustNote "must be an asset" attrs.source.asset
-      pushAll [SpendUses attrs.source (AssetTarget aid) Supply 1, disable attrs]
+      withSkillTest \sid -> do
+        when (maybe False (isTarget sid) attrs.metaTarget) $ do
+          let aid = fromJustNote "must be an asset" attrs.source.asset
+          pushAll [SpendUses attrs.source (AssetTarget aid) Supply 1, disable attrs]
       pure e
     _ -> Lockpicks1Effect <$> runMessage msg attrs

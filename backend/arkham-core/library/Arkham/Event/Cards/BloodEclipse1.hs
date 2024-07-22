@@ -16,7 +16,10 @@ bloodEclipse1 = event BloodEclipse1 Cards.bloodEclipse1
 instance RunMessage BloodEclipse1 where
   runMessage msg e@(BloodEclipse1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
-      skillTestModifiers attrs iid [DamageDealt 2, SkillModifier #willpower 2]
-      pushAllM $ leftOr <$> aspect iid attrs (#willpower `InsteadOf` #combat) (mkChooseFight iid attrs)
+      sid <- getRandom
+      skillTestModifiers sid attrs iid [DamageDealt 2, SkillModifier #willpower 2]
+      pushAllM
+        $ leftOr
+        <$> aspect iid attrs (#willpower `InsteadOf` #combat) (mkChooseFight sid iid attrs)
       pure e
     _ -> BloodEclipse1 <$> liftRunMessage msg attrs

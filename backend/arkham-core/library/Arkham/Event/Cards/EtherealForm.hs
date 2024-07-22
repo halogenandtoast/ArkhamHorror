@@ -18,9 +18,10 @@ etherealForm = event EtherealForm Cards.etherealForm
 instance RunMessage EtherealForm where
   runMessage msg e@(EtherealForm attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      chooseEvade <- toMessage <$> mkChooseEvade iid attrs
+      sid <- getRandom
+      chooseEvade <- toMessage <$> mkChooseEvade sid iid attrs
       pushAll
-        [ skillTestModifier attrs iid (AddSkillValue #willpower)
+        [ skillTestModifier sid attrs iid (AddSkillValue #willpower)
         , chooseEvade
         ]
       pure e

@@ -32,6 +32,7 @@ instance HasAbilities ExperimentalTherapiesWard where
 instance RunMessage ExperimentalTherapiesWard where
   runMessage msg l@(ExperimentalTherapiesWard attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ skillTestModifier (toAbilitySource attrs 1) attrs (ShroudModifier (-2))
+      sid <- getRandom
+      push $ skillTestModifier sid (toAbilitySource attrs 1) attrs (ShroudModifier (-2))
       pure l
     _ -> ExperimentalTherapiesWard <$> runMessage msg attrs

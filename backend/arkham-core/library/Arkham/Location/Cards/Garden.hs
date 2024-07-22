@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.Garden (
-  garden,
-  Garden (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.Garden (garden, Garden (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
@@ -11,11 +6,12 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
+import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
 
 newtype Garden = Garden LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 garden :: LocationCard Garden
@@ -39,17 +35,10 @@ instance HasAbilities Garden where
 
 instance RunMessage Garden where
   runMessage msg l@(Garden attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          l
-            <$ push
-              ( beginSkillTest
-                  iid
-                  (attrs.ability 1)
-                  (toTarget attrs)
-                  SkillAgility
-                  (Fixed 2)
-              )
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) (toTarget attrs) SkillAgility (Fixed 2)
+      pure l
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
       | isAbilitySource attrs 1 source -> l <$ push (Remember DistractedTheGuards)
     _ -> Garden <$> runMessage msg attrs

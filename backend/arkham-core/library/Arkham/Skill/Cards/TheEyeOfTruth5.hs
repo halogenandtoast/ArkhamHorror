@@ -50,7 +50,7 @@ theEyeOfTruth5Effect :: EffectArgs -> TheEyeOfTruth5Effect
 theEyeOfTruth5Effect = cardEffect TheEyeOfTruth5Effect Cards.theEyeOfTruth5
 
 instance HasModifiersFor TheEyeOfTruth5Effect where
-  getModifiersFor SkillTestTarget (TheEyeOfTruth5Effect a) = do
+  getModifiersFor (SkillTestTarget _) (TheEyeOfTruth5Effect a) = do
     mSource <- getSkillTestSource
     case (mSource, effectTarget a) of
       (Just (TreacherySource tid), CardIdTarget cardId) -> do

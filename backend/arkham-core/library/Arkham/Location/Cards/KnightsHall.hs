@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.KnightsHall (
-  knightsHall,
-  KnightsHall (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.KnightsHall (knightsHall, KnightsHall (..)) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -13,6 +8,7 @@ import Arkham.Investigate
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
+import Arkham.Prelude
 import Arkham.ScenarioLogKey
 
 newtype KnightsHall = KnightsHall LocationAttrs
@@ -35,7 +31,8 @@ instance HasAbilities KnightsHall where
 instance RunMessage KnightsHall where
   runMessage msg l@(KnightsHall attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ mkInvestigate iid (toAbilitySource attrs 1) <&> withSkillType #agility
+      sid <- getRandom
+      pushM $ mkInvestigate sid iid (toAbilitySource attrs 1) <&> withSkillType #agility
       pure l
     Successful (Action.Investigate, _) _ (AbilitySource source 1) _ _ | isSource attrs source -> do
       push $ Remember FoundTheTowerKey

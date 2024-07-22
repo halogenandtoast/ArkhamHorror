@@ -9,7 +9,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
 newtype OnyxPentacle = OnyxPentacle AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 onyxPentacle :: AssetCard OnyxPentacle
@@ -49,9 +49,10 @@ instance RunMessage OnyxPentacle where
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       push $ Exhaust (toTarget attrs)
       placeDoom (attrs.ability 1) attrs 1
-      skillTestModifier (attrs.ability 1) iid $ AnySkillValue 1
+      sid <- getRandom
+      skillTestModifier sid (attrs.ability 1) iid $ AnySkillValue 1
       evade <-
-        mkChooseEvadeMatch iid (attrs.ability 1)
+        mkChooseEvadeMatch sid iid (attrs.ability 1)
           $ evadeOverride
           $ EnemyCanBeEvadedBy (attrs.ability 1)
           <> oneOf
@@ -61,15 +62,16 @@ instance RunMessage OnyxPentacle where
       chooseOneM iid do
         labeled "Use your {willpower}" $ push $ withSkillType #willpower evade
         labeled "get +1 {agility}" do
-          skillTestModifier (attrs.ability 1) iid (SkillModifier #agility 1)
+          skillTestModifier sid (attrs.ability 1) iid (SkillModifier #agility 1)
           push evade
       pure a
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      evade <- mkChooseEvade iid (attrs.ability 1)
+      sid <- getRandom
+      evade <- mkChooseEvade sid iid (attrs.ability 1)
       chooseOneM iid do
         labeled "Use your {willpower}" $ push $ withSkillType #willpower evade
         labeled "get +1 {agility}" do
-          skillTestModifier (attrs.ability 1) iid (SkillModifier #agility 1)
+          skillTestModifier sid (attrs.ability 1) iid (SkillModifier #agility 1)
           push evade
       pure $ overAttrs (setMetaKey "option2" True) a
     PassedThisSkillTestBy _ (isAbilitySource attrs 1 -> True) n | n >= 2 -> do

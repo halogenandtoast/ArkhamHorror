@@ -2,6 +2,7 @@ module Arkham.Investigator.Cards.DarrellSimmons (darrellSimmons, DarrellSimmons 
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
@@ -11,7 +12,7 @@ import Arkham.Token
 newtype DarrellSimmons = DarrellSimmons InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 darrellSimmons :: InvestigatorCard DarrellSimmons
 darrellSimmons =
@@ -34,7 +35,8 @@ instance HasChaosTokenValue DarrellSimmons where
 instance RunMessage DarrellSimmons where
   runMessage msg i@(DarrellSimmons attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skillTestModifier iid SkillTestTarget (Difficulty (-2))
+      withSkillTest \sid ->
+        skillTestModifier sid iid sid (Difficulty (-2))
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       assets <- select $ assetControlledBy iid <> AssetCanHaveUses Evidence

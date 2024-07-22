@@ -3,7 +3,7 @@ module Arkham.Investigator.Cards.CharlieKane (charlieKane, CharlieKane (..)) whe
 import Arkham.Ability
 import Arkham.Asset.Types (Field (AssetCard))
 import Arkham.Helpers.Modifiers (ModifierType (..))
-import Arkham.Helpers.SkillTest (getSkillTestMatchingSkillIcons)
+import Arkham.Helpers.SkillTest (getSkillTestMatchingSkillIcons, withSkillTest)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher hiding (AssetCard)
@@ -13,7 +13,7 @@ import Arkham.Slot
 newtype CharlieKane = CharlieKane InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 charlieKane :: InvestigatorCard CharlieKane
 charlieKane =
@@ -41,7 +41,8 @@ instance RunMessage CharlieKane where
       n <- case p.exhausted of
         [AssetTarget aid] -> fieldMap AssetCard (count (`elem` icons) . (.skills)) aid
         _ -> error "Unhandled"
-      skillTestModifier (attrs.ability 1) iid (AnySkillValue (1 + n))
+      withSkillTest \sid ->
+        skillTestModifier sid (attrs.ability 1) iid (AnySkillValue (1 + n))
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       allies <-

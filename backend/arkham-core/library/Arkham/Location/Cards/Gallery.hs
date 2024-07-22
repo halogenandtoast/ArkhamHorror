@@ -35,18 +35,12 @@ instance HasAbilities Gallery where
 instance RunMessage Gallery where
   runMessage msg l@(Gallery attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push
-        $ beginSkillTest
-          iid
-          (attrs.ability 1)
-          iid
-          SkillWillpower
-          (Fixed 2)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) iid SkillWillpower (Fixed 2)
       pure l
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isAbilitySource attrs 1 source -> do
-          clueCount <- field InvestigatorClues iid
-          when (clueCount > 0) $ do
-            pushAll [InvestigatorSpendClues iid 1, PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1]
-          pure l
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isAbilitySource attrs 1 source -> do
+      clueCount <- field InvestigatorClues iid
+      when (clueCount > 0) $ do
+        pushAll [InvestigatorSpendClues iid 1, PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1]
+      pure l
     _ -> Gallery <$> runMessage msg attrs

@@ -4,14 +4,12 @@ module Arkham.Treachery.Cards.WatchersGazeUnionAndDisillusion (
 )
 where
 
-import Arkham.Prelude
-
 import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -26,7 +24,9 @@ instance RunMessage WatchersGazeUnionAndDisillusion where
   runMessage msg t@(WatchersGazeUnionAndDisillusion attrs) = case msg of
     Revelation _iid (isSource attrs -> True) -> do
       investigators <- getInvestigators
-      pushAll [revelationSkillTest iid attrs SkillWillpower (Fixed 5) | iid <- investigators]
+      sid <- getRandom
+      for_ investigators $ \iid ->
+        push $ revelationSkillTest sid iid attrs #willpower (Fixed 5)
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       yourLocationIsHaunted <- selectAny $ locationWithInvestigator iid <> HauntedLocation

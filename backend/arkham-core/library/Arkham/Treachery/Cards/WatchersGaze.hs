@@ -1,14 +1,9 @@
-module Arkham.Treachery.Cards.WatchersGaze (
-  watchersGaze,
-  WatchersGaze (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.WatchersGaze (watchersGaze, WatchersGaze (..)) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -21,28 +16,17 @@ watchersGaze = treachery WatchersGaze Cards.watchersGaze
 
 instance RunMessage WatchersGaze where
   runMessage msg t@(WatchersGaze attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      innocentRevelerIds <-
-        select
-          (AssetControlledBy You <> assetIs Assets.innocentReveler)
+    Revelation iid (isSource attrs -> True) -> do
+      innocentRevelerIds <- select $ assetControlledBy iid <> assetIs Assets.innocentReveler
       investigatorsWithRevelers <-
-        catMaybes
-          <$> traverse
-            (selectOne . HasMatchingAsset . AssetWithId)
-            innocentRevelerIds
-      t
-        <$ pushAll
-          [ RevelationSkillTest iid' source SkillWillpower (SkillTestDifficulty $ Fixed 4)
-          | iid' <- nub (iid : investigatorsWithRevelers)
-          ]
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> do
-          push
-            $ InvestigatorAssignDamage
-              iid
-              source
-              (DamageFirst Assets.innocentReveler)
-              0
-              1
-          pure t
+        catMaybes <$> traverse (selectOne . HasMatchingAsset . AssetWithId) innocentRevelerIds
+      sid <- getRandom
+      pushAll
+        [ revelationSkillTest sid iid' attrs #willpower (Fixed 4)
+        | iid' <- nub (iid : investigatorsWithRevelers)
+        ]
+      pure t
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      push $ InvestigatorAssignDamage iid (toSource attrs) (DamageFirst Assets.innocentReveler) 0 1
+      pure t
     _ -> WatchersGaze <$> runMessage msg attrs

@@ -16,7 +16,7 @@ import Arkham.Matcher
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 
 newtype WhateleyRuins_251 = WhateleyRuins_251 LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whateleyRuins_251 :: LocationCard WhateleyRuins_251
@@ -34,7 +34,8 @@ instance HasAbilities WhateleyRuins_251 where
 instance RunMessage WhateleyRuins_251 where
   runMessage msg l@(WhateleyRuins_251 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ beginSkillTest iid (toAbilitySource attrs 1) attrs #intellect (Fixed 4)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (toAbilitySource attrs 1) attrs #intellect (Fixed 4)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       abominations <- getBroodOfYogSothoth

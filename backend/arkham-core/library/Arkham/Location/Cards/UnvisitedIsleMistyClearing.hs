@@ -19,7 +19,7 @@ import Arkham.Matcher
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype UnvisitedIsleMistyClearing = UnvisitedIsleMistyClearing LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unvisitedIsleMistyClearing :: LocationCard UnvisitedIsleMistyClearing
@@ -48,7 +48,8 @@ instance HasAbilities UnvisitedIsleMistyClearing where
 instance RunMessage UnvisitedIsleMistyClearing where
   runMessage msg l@(UnvisitedIsleMistyClearing attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      circleTest iid attrs attrs [#willpower, #agility] (Fixed 11)
+      sid <- getRandom
+      circleTest sid iid attrs attrs [#willpower, #agility] (Fixed 11)
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       player <- getPlayer iid

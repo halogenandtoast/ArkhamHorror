@@ -1,7 +1,5 @@
 module Arkham.Event.Cards.Flare1 where
 
-import Arkham.Prelude
-
 import Arkham.Asset.Helpers
 import Arkham.Capability
 import Arkham.Card
@@ -11,6 +9,7 @@ import Arkham.Event.Runner
 import Arkham.Fight
 import Arkham.Helpers.Enemy
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype Flare1 = Flare1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -29,12 +28,13 @@ instance RunMessage Flare1 where
       let doSearch iid' = targetLabel iid' [search iid' e iid' [fromTopOfDeck 9] #ally (defer e IsNotDraw)]
       let searchForAlly = [CheckAttackOfOpportunity iid False, chooseOne player $ map doSearch investigators]
 
-      chooseFight <- toMessage <$> mkChooseFight iid e
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid e
 
       push
         $ chooseOrRunOne player
         $ [ Label "Fight"
-            $ [ skillTestModifiers attrs iid [SkillModifier #combat 3, DamageDealt 2]
+            $ [ skillTestModifiers sid attrs iid [SkillModifier #combat 3, DamageDealt 2]
               , chooseFight
               , Exile (toTarget e)
               ]

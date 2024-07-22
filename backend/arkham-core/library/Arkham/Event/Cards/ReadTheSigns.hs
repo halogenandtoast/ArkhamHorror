@@ -22,9 +22,11 @@ readTheSigns = event ReadTheSigns Cards.readTheSigns
 instance RunMessage ReadTheSigns where
   runMessage msg e@(ReadTheSigns attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      investigation <- mkInvestigate iid attrs
+      sid <- getRandom
+      investigation <- mkInvestigate sid iid attrs
       pushAll
         [ skillTestModifiers
+            sid
             attrs
             iid
             [AddSkillValue #willpower, DiscoveredClues 1, MayIgnoreLocationEffectsAndKeywords]

@@ -30,7 +30,8 @@ instance RunMessage QuickGetaway where
         CheckWindow _ ws -> any (isEnemyAttackWindow . windowType) ws
         _ -> False
 
-      push $ EvadeEnemy iid details.enemy (toSource attrs) Nothing #agility False
+      sid <- getRandom
+      push $ EvadeEnemy sid iid details.enemy (toSource attrs) Nothing #agility False
       pure . QuickGetaway $ attrs `with` Meta (Just details)
     PassedThisSkillTest _iid (isSource attrs -> True) -> do
       for_ (attackDetails meta) \details -> do

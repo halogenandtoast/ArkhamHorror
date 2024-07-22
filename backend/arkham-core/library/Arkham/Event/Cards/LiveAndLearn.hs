@@ -1,14 +1,10 @@
-module Arkham.Event.Cards.LiveAndLearn (
-  liveAndLearn,
-  LiveAndLearn (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.LiveAndLearn (liveAndLearn, LiveAndLearn (..)) where
 
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
+import Arkham.Prelude
 import Arkham.SkillTest
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -23,9 +19,11 @@ liveAndLearn = event LiveAndLearn Cards.liveAndLearn
 instance RunMessage LiveAndLearn where
   runMessage msg e@(LiveAndLearn attrs) = case msg of
     InvestigatorPlayEvent iid eid _ [windowType -> Window.SkillTestEnded st] _ | eid == toId attrs -> do
+      sid <- getRandom
       push
-        $ BeginSkillTestWithPreMessages' [skillTestModifier attrs iid (AnySkillValue 2)]
+        $ BeginSkillTestWithPreMessages' [skillTestModifier sid attrs iid (AnySkillValue 2)]
         $ ( buildSkillTest
+              sid
               iid
               (skillTestSource st)
               (skillTestTarget st)

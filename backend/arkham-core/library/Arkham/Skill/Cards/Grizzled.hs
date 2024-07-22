@@ -18,7 +18,7 @@ import Arkham.SkillType
 import Arkham.Treachery.Types (Field (TreacheryTraits))
 
 newtype Grizzled = Grizzled SkillAttrs
-  deriving anyclass (IsSkill)
+  deriving anyclass IsSkill
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor Grizzled where
@@ -44,7 +44,7 @@ instance HasModifiersFor Grizzled where
                 else pure 0
       guard $ n > 0
       pure [AddSkillIcons $ concat $ replicate @[[SkillIcon]] n [WildIcon, WildIcon]]
-  getModifiersFor SkillTestTarget (Grizzled a) = case a.attachedTo of
+  getModifiersFor (SkillTestTarget _) (Grizzled a) = case a.attachedTo of
     Just (EnemyTarget eid) -> do
       maybeModified a do
         source <- MaybeT $ getSkillTestSource

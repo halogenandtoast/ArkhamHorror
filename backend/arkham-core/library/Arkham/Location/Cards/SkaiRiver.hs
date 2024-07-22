@@ -30,12 +30,13 @@ instance RunMessage SkaiRiver where
   runMessage msg l@(SkaiRiver attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getBatchId -> batchId) _ -> do
       player <- getPlayer iid
+      sid <- getRandom
       push
         $ chooseOne
           player
           [ SkillLabel
             sType
-            [beginSkillTest iid (toAbilitySource attrs 1) (BatchTarget batchId) sType (Fixed 2)]
+            [beginSkillTest sid iid (toAbilitySource attrs 1) (BatchTarget batchId) sType (Fixed 2)]
           | sType <- [#willpower, #agility]
           ]
       pure l

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers qualified as Msg
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -25,10 +26,13 @@ instance RunMessage PhysicalTraining4 where
   runMessage msg a@(PhysicalTraining4 attrs) = runQueueT $ case msg of
     Do BeginRound -> pure . PhysicalTraining4 $ attrs & tokensL . ix #resource %~ max 2
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseOne
-        iid
-        [ Label "Choose Willpower" [Msg.skillTestModifier (attrs.ability 1) iid (SkillModifier #willpower 1)]
-        , Label "Choose Combat" [Msg.skillTestModifier (attrs.ability 1) iid (SkillModifier #combat 1)]
-        ]
+      withSkillTest \sid ->
+        chooseOne
+          iid
+          [ Label
+              "Choose Willpower"
+              [Msg.skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 1)]
+          , Label "Choose Combat" [Msg.skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 1)]
+          ]
       pure a
     _ -> PhysicalTraining4 <$> liftRunMessage msg attrs

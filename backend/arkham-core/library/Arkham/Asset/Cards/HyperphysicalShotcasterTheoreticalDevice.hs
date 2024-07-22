@@ -32,7 +32,7 @@ newtype Metadata = Metadata {manifest :: Maybe Customization}
 
 newtype HyperphysicalShotcasterTheoreticalDevice
   = HyperphysicalShotcasterTheoreticalDevice (With AssetAttrs Metadata)
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hyperphysicalShotcasterTheoreticalDevice :: AssetCard HyperphysicalShotcasterTheoreticalDevice
@@ -103,19 +103,20 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
   runMessage msg a@(HyperphysicalShotcasterTheoreticalDevice (With attrs meta)) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       -- Todo extend this to full ability
+      sid <- getRandom
       when (attrs `hasCustomization` EmpoweredConfiguration)
-        $ skillTestModifier attrs iid (AnySkillValue 2)
+        $ skillTestModifier sid attrs iid (AnySkillValue 2)
       case manifest meta of
         Just Railshooter -> do
-          skillTestModifier attrs iid (DamageDealt 1)
-          doFight <- Fight.mkChooseFight iid attrs
+          skillTestModifier sid attrs iid (DamageDealt 1)
+          doFight <- Fight.mkChooseFight sid iid attrs
           chooseOne
             iid
             [ SkillLabel sType [toMessage $ Fight.withSkillType sType doFight]
             | sType <- [#willpower, #agility, #intellect, #combat]
             ]
         Just Telescanner -> do
-          doInvestigate <- setTarget attrs <$> Investigate.mkInvestigate iid attrs
+          doInvestigate <- setTarget attrs <$> Investigate.mkInvestigate sid iid attrs
           chooseOne
             iid
             [ SkillLabel sType [toMessage $ Investigate.withSkillType sType doInvestigate]
@@ -231,7 +232,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
         Just Realitycollapser -> do
           chooseOne
             iid
-            [ SkillLabel sType [Msg.beginSkillTest iid (attrs.ability 1) attrs sType (Fixed 3)]
+            [ SkillLabel sType [Msg.beginSkillTest sid iid (attrs.ability 1) attrs sType (Fixed 3)]
             | sType <- allSkills
             ]
         Just Matterweaver -> do
@@ -249,14 +250,16 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
       card <- getCard cid
       let cost = printedCardCost card
+      sid <- getRandom
       chooseOne
         iid
-        [ SkillLabel sType [Msg.beginSkillTest iid (attrs.ability 1) (toCardId card) sType (Fixed cost)]
+        [ SkillLabel sType [Msg.beginSkillTest sid iid (attrs.ability 1) (toCardId card) sType (Fixed cost)]
         | sType <- allSkills
         ]
       pure a
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n < 2 -> do
-      doEvade <- Evade.mkChooseEvade iid attrs
+      sid <- getRandom
+      doEvade <- Evade.mkChooseEvade sid iid attrs
       chooseOne
         iid
         [ SkillLabel sType [toMessage $ Evade.withSkillType sType doEvade]

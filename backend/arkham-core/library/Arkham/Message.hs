@@ -448,7 +448,7 @@ data Message
     AttachAsset AssetId Target
   | AttachEvent EventId Target
   | AttachStoryTreacheryTo TreacheryId Card Target
-  | AttackEnemy InvestigatorId EnemyId Source (Maybe Target) SkillType
+  | AttackEnemy SkillTestId InvestigatorId EnemyId Source (Maybe Target) SkillType
   | BeforeRevealChaosTokens
   | BeforeSkillTest SkillTest
   | ChangeSkillTestType SkillTestType SkillTestBaseValue

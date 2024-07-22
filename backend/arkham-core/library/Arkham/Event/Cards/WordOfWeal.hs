@@ -3,6 +3,7 @@ module Arkham.Event.Cards.WordOfWeal (wordOfWeal, WordOfWeal (..)) where
 import Arkham.Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -16,7 +17,8 @@ wordOfWeal = event WordOfWeal Cards.wordOfWeal
 instance RunMessage WordOfWeal where
   runMessage msg e@(WordOfWeal attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      skillTestModifier attrs iid (AddSkillValue #willpower)
+      withSkillTest \sid ->
+        skillTestModifier sid attrs iid (AddSkillValue #willpower)
 
       wordOfWoe <- selectOne $ inDiscardOf iid <> basic (cardIs Cards.wordOfWoe)
 

@@ -1,8 +1,7 @@
 module Arkham.Treachery.Cards.RottingRemains where
 
-import Arkham.Prelude
-
 import Arkham.Classes
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -16,7 +15,8 @@ rottingRemains = treachery RottingRemains Cards.rottingRemains
 instance RunMessage RottingRemains where
   runMessage msg t@(RottingRemains attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ revelationSkillTest iid attrs #willpower (Fixed 3)
+      sid <- getRandom
+      push $ revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       push $ assignHorror iid attrs n

@@ -20,7 +20,7 @@ import Arkham.Name
 import Arkham.Projection
 
 newtype Room212 = Room212 LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 room212 :: LocationCard Room212
@@ -56,7 +56,8 @@ instance HasAbilities Room212 where
 instance RunMessage Room212 where
   runMessage msg l@(Room212 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ beginSkillTest iid (attrs.ability 1) iid #intellect (Fixed 3)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       player <- getPlayer iid
@@ -87,7 +88,8 @@ instance RunMessage Room212 where
           ]
       pure l
     UseThisAbility iid p@(ProxySource _ (isSource attrs -> True)) 1 -> do
-      push $ beginSkillTest iid (toAbilitySource p 1) iid #agility (Fixed 4)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (toAbilitySource p 1) iid #agility (Fixed 4)
       pure l
     PassedThisSkillTest iid source@(AbilitySource (ProxySource _ (isSource attrs -> True)) 1) -> do
       pushAll [Msg.RevealLocation Nothing (toId attrs), Move $ move source iid (toId attrs)]

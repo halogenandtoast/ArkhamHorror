@@ -16,7 +16,8 @@ sneakBy = event SneakBy Cards.sneakBy
 instance RunMessage SneakBy where
   runMessage msg e@(SneakBy attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      chooseEvade <- toMessage <$> mkChooseEvade iid attrs
+      sid <- getRandom
+      chooseEvade <- toMessage <$> mkChooseEvade sid iid attrs
       pushAll
         [ TakeResources iid 2 (toSource attrs) False
         , chooseEvade

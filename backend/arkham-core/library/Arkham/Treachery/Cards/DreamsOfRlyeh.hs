@@ -9,7 +9,7 @@ import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype DreamsOfRlyeh = DreamsOfRlyeh TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dreamsOfRlyeh :: TreacheryCard DreamsOfRlyeh
@@ -31,7 +31,8 @@ instance RunMessage DreamsOfRlyeh where
       push $ placeInThreatArea attrs iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid (attrs.ability 1) iid #willpower (Fixed 3)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ toDiscardBy iid (attrs.ability 1) attrs

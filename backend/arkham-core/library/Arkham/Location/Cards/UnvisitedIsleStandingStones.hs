@@ -22,7 +22,7 @@ import Arkham.Matcher
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype UnvisitedIsleStandingStones = UnvisitedIsleStandingStones LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unvisitedIsleStandingStones :: LocationCard UnvisitedIsleStandingStones
@@ -54,10 +54,12 @@ instance HasAbilities UnvisitedIsleStandingStones where
 instance RunMessage UnvisitedIsleStandingStones where
   runMessage msg l@(UnvisitedIsleStandingStones attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      circleTest iid attrs attrs [#willpower, #intellect] (Fixed 10)
+      sid <- getRandom
+      circleTest sid iid attrs attrs [#willpower, #intellect] (Fixed 10)
       pure l
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ createCardEffect Cards.unvisitedIsleStandingStones Nothing attrs SkillTestTarget
+      withSkillTest \sid ->
+        push $ createCardEffect Cards.unvisitedIsleStandingStones Nothing attrs (SkillTestTarget sid)
       pure l
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       passedCircleTest iid attrs
@@ -72,7 +74,7 @@ unvisitedIsleStandingStonesEffect :: EffectArgs -> UnvisitedIsleStandingStonesEf
 unvisitedIsleStandingStonesEffect = cardEffect UnvisitedIsleStandingStonesEffect Cards.unvisitedIsleStandingStones
 
 instance HasModifiersFor UnvisitedIsleStandingStonesEffect where
-  getModifiersFor SkillTestTarget (UnvisitedIsleStandingStonesEffect a) = do
+  getModifiersFor (SkillTestTarget _) (UnvisitedIsleStandingStonesEffect a) = do
     mAction <- getSkillTestAction
     case mAction of
       Just Action.Circle -> pure $ toModifiers a [Difficulty 2]

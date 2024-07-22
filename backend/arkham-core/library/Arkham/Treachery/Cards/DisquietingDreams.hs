@@ -22,7 +22,8 @@ instance HasAbilities DisquietingDreams where
 instance RunMessage DisquietingDreams where
   runMessage msg t@(DisquietingDreams attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      revelationSkillTest iid attrs #willpower (Fixed 5)
+      sid <- getRandom
+      revelationSkillTest sid iid attrs #willpower (Fixed 5)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       placeInThreatArea attrs iid

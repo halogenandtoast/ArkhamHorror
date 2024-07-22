@@ -8,7 +8,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
-import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
+import Arkham.Helpers.SkillTest (getSkillTestInvestigator, withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
@@ -37,9 +37,10 @@ instance HasAbilities GirishKadakiaICPCPunjabDetective4 where
 instance RunMessage GirishKadakiaICPCPunjabDetective4 where
   runMessage msg a@(GirishKadakiaICPCPunjabDetective4 attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      getSkillTestInvestigator >>= traverse_ \iid -> do
-        skillTestModifier (attrs.ability 1) iid (AnySkillValue 2)
-      push $ AddSubscriber (toTarget attrs)
+      withSkillTest \sid -> do
+        getSkillTestInvestigator >>= traverse_ \iid -> do
+          skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 2)
+        push $ AddSubscriber (toTarget attrs)
       pure a
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
       canHealHorror <- attrs.id <=~> HealableAsset (attrs.ability 1) #horror AnyAsset

@@ -1,16 +1,11 @@
-module Arkham.Treachery.Cards.EncephalonSignal (
-  encephalonSignal,
-  EncephalonSignal (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.EncephalonSignal (encephalonSignal, EncephalonSignal (..)) where
 
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Prelude
 import Arkham.Trait (Trait (Humanoid))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -26,11 +21,12 @@ instance RunMessage EncephalonSignal where
   runMessage msg t@(EncephalonSignal attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       mOtherworldlyMeddler <- selectOne $ enemyIs Enemies.otherworldlyMeddler
+      sid <- getRandom
       pushAll
         $ [ PlaceDoom (toSource attrs) (toTarget otherworldlyMeddler) 1
           | otherworldlyMeddler <- toList mOtherworldlyMeddler
           ]
-        <> [revelationSkillTest iid attrs #willpower (Fixed 4)]
+        <> [revelationSkillTest sid iid attrs #willpower (Fixed 4)]
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       player <- getPlayer iid

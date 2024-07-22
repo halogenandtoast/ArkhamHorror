@@ -26,13 +26,14 @@ impromptuBarrier = event (ImpromptuBarrier . (`with` Metadata False)) Cards.impr
 instance RunMessage ImpromptuBarrier where
   runMessage msg e@(ImpromptuBarrier (attrs `With` meta)) = case msg of
     InvestigatorPlayEvent iid eid _ _ zone | eid == toId attrs -> do
-      chooseEvade <- toMessage . setTarget attrs <$> mkChooseEvade iid attrs
+      sid <- getRandom
+      chooseEvade <- toMessage . setTarget attrs <$> mkChooseEvade sid iid attrs
       pushAll
         $ chooseEvade
         : [ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs) | zone == FromDiscard]
       pure . ImpromptuBarrier $ attrs `with` Metadata (zone == FromDiscard)
-    ChosenEvadeEnemy (isSource attrs -> True) eid -> do
-      push $ skillTestModifier attrs eid (EnemyEvade (-1))
+    ChosenEvadeEnemy sid (isSource attrs -> True) eid -> do
+      push $ skillTestModifier sid attrs eid (EnemyEvade (-1))
       pure e
     Successful (Action.Evade, EnemyTarget enemyId) iid _ (isTarget attrs -> True) n -> do
       enemies <-
@@ -40,8 +41,9 @@ instance RunMessage ImpromptuBarrier where
           . filter (maybe False (<= n) . snd)
           <$> selectWithField Enemy.EnemyEvade (at_ (locationWithEnemy enemyId) <> not_ (EnemyWithId enemyId))
       player <- getPlayer iid
+      sid <- getRandom
       chooseEvade <-
-        toMessage . setTarget attrs <$> mkChooseEvadeMatch iid attrs (oneOf $ map EnemyWithId enemies)
+        toMessage . setTarget attrs <$> mkChooseEvadeMatch sid iid attrs (oneOf $ map EnemyWithId enemies)
       pushAll
         $ EnemyEvaded iid enemyId
         : [ chooseOne

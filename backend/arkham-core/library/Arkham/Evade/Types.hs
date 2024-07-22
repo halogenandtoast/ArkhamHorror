@@ -55,6 +55,9 @@ instance HasField "matcher" ChooseEvade EnemyMatcher where
 instance HasField "overriden" ChooseEvade Bool where
   getField = chooseEvadeOverride
 
+instance HasField "skillTest" ChooseEvade SkillTestId where
+  getField = chooseEvadeSkillTest
+
 instance WithTarget ChooseEvade where
   getTarget = chooseEvadeTarget
   setTarget t i = i {chooseEvadeTarget = Just (toTarget t)}

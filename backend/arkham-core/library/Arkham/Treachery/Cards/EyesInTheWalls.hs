@@ -1,12 +1,7 @@
-module Arkham.Treachery.Cards.EyesInTheWalls (
-  eyesInTheWalls,
-  EyesInTheWalls (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.EyesInTheWalls (eyesInTheWalls, EyesInTheWalls (..)) where
 
 import Arkham.Classes
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -19,11 +14,11 @@ eyesInTheWalls = treachery EyesInTheWalls Cards.eyesInTheWalls
 
 instance RunMessage EyesInTheWalls where
   runMessage msg t@(EyesInTheWalls attrs) = case msg of
-    Revelation iid source
-      | isSource attrs source ->
-          t <$ push (RevelationSkillTest iid source SkillWillpower (SkillTestDifficulty $ Fixed 3))
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
-      | isSource attrs source ->
-          t
-            <$ push (InvestigatorAssignDamage iid source DamageEvenly 0 n)
+    Revelation iid (isSource attrs -> True) -> do
+      sid <- getRandom
+      push $ revelationSkillTest sid iid attrs #willpower (Fixed 3)
+      pure t
+    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
+      push $ InvestigatorAssignDamage iid (toSource attrs) DamageEvenly 0 n
+      pure t
     _ -> EyesInTheWalls <$> runMessage msg attrs

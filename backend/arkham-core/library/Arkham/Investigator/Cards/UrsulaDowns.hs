@@ -41,7 +41,7 @@ instance RunMessage UrsulaDowns where
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       pure $ UrsulaDowns $ attrs `with` Metadata True
-    SkillTestEnds _ _ | moveAfterTest metadata -> do
+    SkillTestEnds _ _ _ | moveAfterTest metadata -> do
       targets <- getAccessibleLocations (toId attrs) attrs
       player <- getPlayer (toId attrs)
       when (notNull targets) do

@@ -25,7 +25,8 @@ instance RunMessage AcridMiasma where
       for_ mLocation $ attachTreachery (toId attrs)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      beginSkillTest iid (attrs.ability 1) iid #willpower (Fixed 2)
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 2)
       pure t
     -- not revelation but puts card into active
     FailedThisSkillTest iid (isSource attrs -> True) -> do

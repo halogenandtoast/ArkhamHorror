@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Window (mkWhen)
 import Arkham.Window qualified as Window
@@ -45,7 +46,8 @@ instance RunMessage FavorOfTheSun1 where
       cancelTokenDraw
       push $ SetChaosTokenAside token
       checkWindows [mkWhen (Window.RevealChaosToken iid token)]
-      push $ RequestedChaosTokens SkillTestSource (Just iid) [token]
+      withSkillTest \sid ->
+        push $ RequestedChaosTokens (SkillTestSource sid) (Just iid) [token]
       gainResourcesIfCan iid (attrs.ability 1) 1
 
       pure $ FavorOfTheSun1 $ attrs & sealedChaosTokensL %~ filter (/= token)

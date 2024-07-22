@@ -3,8 +3,6 @@ module Arkham.Asset.Cards.TheNecronomiconPetrusDeDaciaTranslation5 (
   TheNecronomiconPetrusDeDaciaTranslation5 (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
@@ -12,6 +10,7 @@ import Arkham.DamageEffect
 import Arkham.Discover
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message qualified as Msg
+import Arkham.Prelude
 
 newtype TheNecronomiconPetrusDeDaciaTranslation5 = TheNecronomiconPetrusDeDaciaTranslation5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -20,9 +19,7 @@ newtype TheNecronomiconPetrusDeDaciaTranslation5 = TheNecronomiconPetrusDeDaciaT
 theNecronomiconPetrusDeDaciaTranslation5
   :: AssetCard TheNecronomiconPetrusDeDaciaTranslation5
 theNecronomiconPetrusDeDaciaTranslation5 =
-  asset
-    TheNecronomiconPetrusDeDaciaTranslation5
-    Cards.theNecronomiconPetrusDeDaciaTranslation5
+  asset TheNecronomiconPetrusDeDaciaTranslation5 Cards.theNecronomiconPetrusDeDaciaTranslation5
 
 instance HasAbilities TheNecronomiconPetrusDeDaciaTranslation5 where
   getAbilities (TheNecronomiconPetrusDeDaciaTranslation5 a) =
@@ -45,7 +42,8 @@ instance RunMessage TheNecronomiconPetrusDeDaciaTranslation5 where
   runMessage msg a@(TheNecronomiconPetrusDeDaciaTranslation5 attrs) =
     case msg of
       UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-        push $ skillTestModifier (toAbilitySource attrs 1) iid (AnySkillValue 2)
+        withSkillTest \sid ->
+          push $ skillTestModifier sid (toAbilitySource attrs 1) iid (AnySkillValue 2)
         pure a
       UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
         push $ drawCards iid (toAbilitySource attrs 2) 2

@@ -20,19 +20,24 @@ instance RunMessage Shotgun4 where
   runMessage msg a@(Shotgun4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
-      pushAll [skillTestModifier source iid (SkillModifier #combat 3), chooseFight]
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
+      pushAll [skillTestModifier sid source iid (SkillModifier #combat 3), chooseFight]
       pure a
     FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
-      let val = max 1 (min 5 n)
-      -- sort of annoying but we need to handle oops here, but also the investigator damage
-      push
-        $ skillTestModifiers
-          (attrs.ability 1)
-          iid
-          [NoStandardDamage, DamageDealt 1, DamageDealtToInvestigator (val - 1)]
+      withSkillTest \sid -> do
+        let val = max 1 (min 5 n)
+        -- sort of annoying but we need to handle oops here, but also the investigator damage
+        push
+          $ skillTestModifiers
+            sid
+            (attrs.ability 1)
+            iid
+            [NoStandardDamage, DamageDealt 1, DamageDealtToInvestigator (val - 1)]
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
-      push $ skillTestModifiers (attrs.ability 1) iid [NoStandardDamage, DamageDealt $ max 1 (min 5 n)]
+      withSkillTest \sid -> do
+        push
+          $ skillTestModifiers sid (attrs.ability 1) iid [NoStandardDamage, DamageDealt $ max 1 (min 5 n)]
       pure a
     _ -> Shotgun4 <$> runMessage msg attrs

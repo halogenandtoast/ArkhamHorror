@@ -32,7 +32,8 @@ instance HasAbilities SophieInLovingMemory where
 instance RunMessage SophieInLovingMemory where
   runMessage msg a@(SophieInLovingMemory attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ skillTestModifier (attrs.ability 1) iid (AnySkillValue 2)
+      withSkillTest \sid ->
+        push $ skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 2)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ Flip iid (attrs.ability 2) (toTarget attrs)

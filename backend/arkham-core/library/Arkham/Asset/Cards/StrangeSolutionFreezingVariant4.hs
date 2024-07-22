@@ -12,7 +12,7 @@ import Arkham.Prelude
 import Arkham.SkillType
 
 newtype StrangeSolutionFreezingVariant4 = StrangeSolutionFreezingVariant4 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeSolutionFreezingVariant4 :: AssetCard StrangeSolutionFreezingVariant4
@@ -36,6 +36,7 @@ instance HasModifiersFor StrangeSolutionFreezingVariant4 where
 instance RunMessage StrangeSolutionFreezingVariant4 where
   runMessage msg a@(StrangeSolutionFreezingVariant4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ mkChooseEvade iid (attrs.ability 1)
+      sid <- getRandom
+      pushM $ mkChooseEvade sid iid (attrs.ability 1)
       pure a
     _ -> StrangeSolutionFreezingVariant4 <$> runMessage msg attrs

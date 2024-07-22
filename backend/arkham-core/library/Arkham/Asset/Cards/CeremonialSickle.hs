@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Fight
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
@@ -21,23 +22,25 @@ instance HasAbilities CeremonialSickle where
 instance RunMessage CeremonialSickle where
   runMessage msg a@(CeremonialSickle attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
       chooseOneM iid do
         when attrs.ready do
           labeled
             "Exhaust Ceremonial Sickle and place 1 doom on it to get +1 skill value and deal +1 damage for this attack."
             $ doStep 1 msg
         labeled "If this attack defeats an enemy, remove 1 doom from Ceremonial Sickle" $ doStep 2 msg
-      fight <- mkChooseFight iid (attrs.ability 1)
+      fight <- mkChooseFight sid iid (attrs.ability 1)
       chooseOneM iid do
         labeled "Use your {willpower}" $ push $ withSkillType #willpower fight
         labeled "get +1 {combat}" do
-          skillTestModifier (attrs.ability 1) iid (SkillModifier #combat 1)
+          skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 1)
           push fight
       pure $ overAttrs (unsetMetaKey "option2") a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       push $ Exhaust (toTarget attrs)
       placeDoom (attrs.ability 1) attrs 1
-      skillTestModifiers (attrs.ability 1) iid [AnySkillValue 1, DamageDealt 1]
+      withSkillTest \sid ->
+        skillTestModifiers sid (attrs.ability 1) iid [AnySkillValue 1, DamageDealt 1]
       pure a
     DoStep 2 (UseThisAbility _ (isSource attrs -> True) 1) -> do
       pure $ overAttrs (setMetaKey "option2" True) a

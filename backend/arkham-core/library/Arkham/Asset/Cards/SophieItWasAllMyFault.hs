@@ -9,7 +9,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype SophieItWasAllMyFault = SophieItWasAllMyFault AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sophieItWasAllMyFault :: AssetCard SophieItWasAllMyFault
@@ -39,7 +39,8 @@ instance RunMessage SophieItWasAllMyFault where
     -- unintentionally and required triggering the forced ability to flip her
     -- back over again.
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ skillTestModifier (attrs.ability 1) iid (AnySkillValue 2)
+      withSkillTest \sid ->
+        push $ skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 2)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ Flip iid (toSource attrs) (toTarget attrs)

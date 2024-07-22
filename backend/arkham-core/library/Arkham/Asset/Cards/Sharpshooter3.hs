@@ -1,16 +1,12 @@
 module Arkham.Asset.Cards.Sharpshooter3 (sharpshooter3, Sharpshooter3 (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Field
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
-import Arkham.Trait (Trait (Firearm))
 
 newtype Sharpshooter3 = Sharpshooter3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -36,7 +32,7 @@ instance RunMessage Sharpshooter3 where
         $ chooseOrRunOne player
         $ Label
           "This attack uses {agility} instead of {combat}. All modifiers to your {combat} for this attack modify your instead."
-          [ skillTestModifiers
+          [ nextSkillTestModifiers
               attrs
               iid
               [ UseSkillInsteadOf #combat #agility
@@ -47,14 +43,14 @@ instance RunMessage Sharpshooter3 where
               then
                 [ Label
                     "Use the attacked enemy's evade value for this attack, instead of their fight value."
-                    [ skillTestModifier
+                    [ nextSkillTestModifier
                         attrs
                         iid
                         (AlternateFightField (SomeField Field.EnemyEvade))
                     ]
                 , Label
                     "Do both"
-                    [ skillTestModifiers
+                    [ nextSkillTestModifiers
                         attrs
                         iid
                         [ UseSkillInsteadOf #combat #agility

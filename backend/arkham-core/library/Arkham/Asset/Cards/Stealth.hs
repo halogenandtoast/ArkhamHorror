@@ -21,10 +21,11 @@ instance HasAbilities Stealth where
 instance RunMessage Stealth where
   runMessage msg a@(Stealth attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ setTarget attrs <$> mkChooseEvade iid (attrs.ability 1)
+      withSkillTest \sid ->
+        pushM $ setTarget attrs <$> mkChooseEvade sid iid (attrs.ability 1)
       pure a
-    ChosenEvadeEnemy source@(isSource attrs -> True) eid -> do
-      push $ skillTestModifier source eid (EnemyEvade (-2))
+    ChosenEvadeEnemy sid source@(isSource attrs -> True) eid -> do
+      push $ skillTestModifier sid source eid (EnemyEvade (-2))
       pure a
     AfterSkillTestEnds (isSource attrs -> True) target@(EnemyTarget eid) (SucceededBy _ _) -> do
       let iid = getController attrs

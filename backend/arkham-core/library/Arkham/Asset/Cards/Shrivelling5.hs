@@ -23,12 +23,13 @@ instance RunMessage Shrivelling5 where
   runMessage msg a@(Shrivelling5 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
+      sid <- getRandom
       chooseFight <-
-        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight iid source)
+        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
       -- \^ reusing shrivelling(0)'s effect with a damage override
       pushAll
-        $ [ skillTestModifiers attrs iid [SkillModifier #willpower 3, DamageDealt 2]
-          , createCardEffect Cards.shrivelling (Just $ EffectInt 2) source iid
+        $ [ skillTestModifiers sid attrs iid [SkillModifier #willpower 3, DamageDealt 2]
+          , createCardEffect Cards.shrivelling (effectInt 2) source sid
           ]
         <> chooseFight
       pure a

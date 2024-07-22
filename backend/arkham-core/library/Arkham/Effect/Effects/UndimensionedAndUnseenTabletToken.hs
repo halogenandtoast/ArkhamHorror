@@ -41,10 +41,7 @@ instance RunMessage UndimensionedAndUnseenTabletToken where
   runMessage msg e@(UndimensionedAndUnseenTabletToken attrs) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId attrs -> do
       broodOfYogSothoth <- getBroodOfYogSothoth
-      broodOfYogSothothWithClues <-
-        filterM
-          (fieldMap EnemyClues (> 0))
-          broodOfYogSothoth
+      broodOfYogSothothWithClues <- filterM (fieldMap EnemyClues (> 0)) broodOfYogSothoth
       difficulty <- scenarioField ScenarioDifficulty
       let
         result =
@@ -55,9 +52,7 @@ instance RunMessage UndimensionedAndUnseenTabletToken where
       unless (null broodOfYogSothothWithClues) $ do
         push
           $ chooseOne player
-          $ Label
-            ("Do not remove clues from Brood of Yog-Sothoth and " <> result)
-            []
+          $ Label ("Do not remove clues from Brood of Yog-Sothoth and " <> result) []
           : [ targetLabel
               enemyId
               [ RemoveAllClues (ChaosTokenEffectSource Tablet) (toTarget enemyId)
@@ -66,5 +61,5 @@ instance RunMessage UndimensionedAndUnseenTabletToken where
             | enemyId <- broodOfYogSothothWithClues
             ]
       pure e
-    SkillTestEnds _ _ -> e <$ push (DisableEffect $ effectId attrs)
+    SkillTestEnds _ _ _ -> e <$ push (DisableEffect $ effectId attrs)
     _ -> UndimensionedAndUnseenTabletToken <$> runMessage msg attrs

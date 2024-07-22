@@ -234,13 +234,14 @@ findEncounterCard iid target cardMatcher =
 
 beginSkillTest
   :: (ReverseQueue m, Sourceable source, Targetable target)
-  => InvestigatorId
+  => SkillTestId
+  -> InvestigatorId
   -> source
   -> target
   -> SkillType.SkillType
   -> GameCalculation
   -> m ()
-beginSkillTest iid source target sType n = push $ Msg.beginSkillTest iid source target sType n
+beginSkillTest sid iid source target sType n = push $ Msg.beginSkillTest sid iid source target sType n
 
 gameOverIf :: ReverseQueue m => Bool -> m ()
 gameOverIf t = when t (push GameOver)
@@ -630,12 +631,13 @@ roundModifier source target modifier = push $ Msg.roundModifier source target mo
 skillTestModifiers
   :: forall target source m
    . (ReverseQueue m, Sourceable source, Targetable target)
-  => source
+  => SkillTestId
+  -> source
   -> target
   -> [ModifierType]
   -> m ()
-skillTestModifiers (toSource -> source) (toTarget -> target) mods =
-  push $ Msg.skillTestModifiers source target mods
+skillTestModifiers sid (toSource -> source) (toTarget -> target) mods =
+  push $ Msg.skillTestModifiers sid source target mods
 
 turnModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)
@@ -682,12 +684,23 @@ revelationModifiers (toSource -> source) (toTarget -> target) tid modifiers =
 skillTestModifier
   :: forall target source m
    . (ReverseQueue m, Sourceable source, Targetable target)
+  => SkillTestId
+  -> source
+  -> target
+  -> ModifierType
+  -> m ()
+skillTestModifier sid (toSource -> source) (toTarget -> target) x =
+  push $ Msg.skillTestModifier sid source target x
+
+nextSkillTestModifier
+  :: forall target source m
+   . (ReverseQueue m, Sourceable source, Targetable target)
   => source
   -> target
   -> ModifierType
   -> m ()
-skillTestModifier (toSource -> source) (toTarget -> target) x =
-  push $ Msg.skillTestModifier source target x
+nextSkillTestModifier (toSource -> source) (toTarget -> target) x =
+  push $ Msg.nextSkillTestModifier source target x
 
 searchModifier
   :: forall target source m
@@ -699,19 +712,31 @@ searchModifier
 searchModifier (toSource -> source) (toTarget -> target) modifier =
   push $ Msg.searchModifier source target modifier
 
-chooseFightEnemy :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
-chooseFightEnemy iid = mkChooseFight iid >=> push . toMessage
+chooseFightEnemy
+  :: (ReverseQueue m, Sourceable source) => SkillTestId -> InvestigatorId -> source -> m ()
+chooseFightEnemy sid iid = mkChooseFight sid iid >=> push . toMessage
 
 chooseFightEnemyMatch
-  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> EnemyMatcher -> m ()
-chooseFightEnemyMatch iid source = mkChooseFightMatch iid source >=> push . toMessage
+  :: (ReverseQueue m, Sourceable source)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> EnemyMatcher
+  -> m ()
+chooseFightEnemyMatch sid iid source = mkChooseFightMatch sid iid source >=> push . toMessage
 
-chooseEvadeEnemy :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
-chooseEvadeEnemy iid = mkChooseEvade iid >=> push . toMessage
+chooseEvadeEnemy
+  :: (ReverseQueue m, Sourceable source) => SkillTestId -> InvestigatorId -> source -> m ()
+chooseEvadeEnemy sid iid = mkChooseEvade sid iid >=> push . toMessage
 
 chooseEvadeEnemyMatch
-  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> EnemyMatcher -> m ()
-chooseEvadeEnemyMatch iid source = mkChooseEvadeMatch iid source >=> push . toMessage
+  :: (ReverseQueue m, Sourceable source)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> EnemyMatcher
+  -> m ()
+chooseEvadeEnemyMatch sid iid source = mkChooseEvadeMatch sid iid source >=> push . toMessage
 
 mapQueue :: (MonadTrans t, HasQueue Message m) => (Message -> Message) -> t m ()
 mapQueue = lift . Msg.mapQueue

@@ -32,10 +32,11 @@ instance RunMessage SpectralWeb where
     UseCardAbility iid (isSource attrs -> True) 1 _ (toSpentClues -> x) -> do
       player <- getPlayer iid
       let source = attrs.ability 1
+      sid <- getRandom
       choices <- for [#willpower, #combat] \sType -> do
-        chooseFight <- toMessage . withSkillType sType <$> mkChooseFight iid source
+        chooseFight <- toMessage . withSkillType sType <$> mkChooseFight sid iid source
         pure
-          $ SkillLabel sType [skillTestModifiers source iid [AnySkillValue x, DamageDealt x], chooseFight]
+          $ SkillLabel sType [skillTestModifiers sid source iid [AnySkillValue x, DamageDealt x], chooseFight]
       push $ chooseOne player choices
       pure a
     _ -> SpectralWeb <$> runMessage msg attrs

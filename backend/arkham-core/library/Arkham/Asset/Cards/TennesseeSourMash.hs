@@ -24,11 +24,13 @@ instance HasAbilities TennesseeSourMash where
 instance RunMessage TennesseeSourMash where
   runMessage msg a@(TennesseeSourMash attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ skillTestModifier attrs iid (SkillModifier #willpower 2)
+      withSkillTest \sid ->
+        push $ skillTestModifier sid attrs iid (SkillModifier #willpower 2)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
-      chooseFight <- toMessage <$> mkChooseFight iid source
-      pushAll [skillTestModifier source iid (SkillModifier #combat 3), chooseFight]
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
+      pushAll [skillTestModifier sid source iid (SkillModifier #combat 3), chooseFight]
       pure a
     _ -> TennesseeSourMash <$> runMessage msg attrs

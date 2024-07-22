@@ -527,8 +527,9 @@ handleTargetChoice
   :: (Sourceable source, Targetable target) => InvestigatorId -> source -> target -> Message
 handleTargetChoice iid (toSource -> source) (toTarget -> target) = HandleTargetChoice iid source target
 
-handleSkillTestNesting :: HasQueue Message m => Message -> a -> m a -> m a
-handleSkillTestNesting msg a action = do
+handleSkillTestNesting :: HasQueue Message m => SkillTestId -> Message -> a -> m a -> m a
+handleSkillTestNesting sid msg a action = do
+  push $ NextSkillTest sid
   inSkillTestWindow <- fromQueue $ elem EndSkillTestWindow
   if inSkillTestWindow
     then do
@@ -543,5 +544,5 @@ handleSkillTestNesting msg a action = do
         x -> x
       action
 
-handleSkillTestNesting_ :: HasQueue Message m => Message -> m () -> m ()
-handleSkillTestNesting_ msg action = handleSkillTestNesting msg () action
+handleSkillTestNesting_ :: HasQueue Message m => SkillTestId -> Message -> m () -> m ()
+handleSkillTestNesting_ sid msg action = handleSkillTestNesting sid msg () action

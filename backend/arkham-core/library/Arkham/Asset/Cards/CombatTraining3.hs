@@ -3,11 +3,12 @@ module Arkham.Asset.Cards.CombatTraining3 (combatTraining3, CombatTraining3 (..)
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
 
 newtype CombatTraining3 = CombatTraining3 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 combatTraining3 :: AssetCard CombatTraining3
@@ -30,6 +31,7 @@ instance HasModifiersFor CombatTraining3 where
 instance RunMessage CombatTraining3 where
   runMessage msg a@(CombatTraining3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skillTestModifiers (attrs.ability 1) iid [SkillModifier #combat 1, SkillModifier #agility 1]
+      withSkillTest \sid ->
+        skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #combat 1, SkillModifier #agility 1]
       pure a
     _ -> CombatTraining3 <$> liftRunMessage msg attrs

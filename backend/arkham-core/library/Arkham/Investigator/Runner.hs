@@ -892,8 +892,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          ]
       <> [EngageEnemy iid eid Nothing False, afterWindowMsg, FinishAction]
     pure a
-  FightEnemy iid eid source mTarget skillType True | iid == investigatorId -> do
-    handleSkillTestNesting_ msg do
+  FightEnemy sid iid eid source mTarget skillType True | iid == investigatorId -> do
+    handleSkillTestNesting_ sid msg do
       modifiers' <- getModifiers (toTarget a)
       beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid #fight]
       afterWindowMsg <- checkWindows [mkAfter $ Window.PerformAction iid #fight]
@@ -919,8 +919,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         , FinishAction
         ]
     pure a
-  FightEnemy iid eid source mTarget skillType False | iid == investigatorId -> do
-    handleSkillTestNesting_ msg do
+  FightEnemy sid iid eid source mTarget skillType False | iid == investigatorId -> do
+    handleSkillTestNesting_ sid msg do
       push (AttackEnemy iid eid source mTarget skillType)
     pure a
   FailedAttackEnemy iid eid | iid == investigatorId -> do
@@ -996,8 +996,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         | eid <- enemyIds
         ]
     pure a
-  EvadeEnemy iid eid source mTarget skillType True | iid == investigatorId -> do
-    handleSkillTestNesting_ msg do
+  EvadeEnemy sid iid eid source mTarget skillType True | iid == investigatorId -> do
+    handleSkillTestNesting_ sid msg do
       modifiers' <- getModifiers (toTarget a)
       beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid #evade]
       afterWindowMsg <- checkWindows [mkAfter $ Window.PerformAction iid #evade]
@@ -1023,8 +1023,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         , FinishAction
         ]
     pure a
-  EvadeEnemy iid eid source mTarget skillType False | iid == investigatorId -> do
-    handleSkillTestNesting_ msg do
+  EvadeEnemy sid iid eid source mTarget skillType False | iid == investigatorId -> do
+    handleSkillTestNesting_ sid msg do
       attemptWindow <- checkWindows [mkWhen $ Window.AttemptToEvadeEnemy iid eid]
       pushAll [attemptWindow, TryEvadeEnemy iid eid source mTarget skillType, AfterEvadeEnemy iid eid]
     pure a
@@ -1575,7 +1575,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     push $ chooseOne player $ healthDamageMessages <> sanityDamageMessages
     pure a
   Investigate investigation | investigation.investigator == investigatorId && investigation.isAction -> do
-    handleSkillTestNesting_ msg do
+    handleSkillTestNesting_ investigation.skillTest msg do
       (beforeWindowMsg, _, afterWindowMsg) <- frame (Window.PerformAction investigatorId #investigate)
       modifiers <- getModifiers @LocationId investigation.location
       modifiers' <- getModifiers a

@@ -1,15 +1,11 @@
-module Arkham.Asset.Cards.WellPrepared2 (
-  wellPrepared2,
-  WellPrepared2 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.WellPrepared2 (wellPrepared2, WellPrepared2 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card.CardDef
 import Arkham.Matcher hiding (AssetCard)
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype WellPrepared2 = WellPrepared2 AssetAttrs
@@ -24,43 +20,34 @@ instance HasAbilities WellPrepared2 where
     [ controlledAbility
         a
         1
-        ( exists $ NotAsset (AssetWithId $ toId a) <> AssetControlledBy You <> AssetWithMatchingSkillTestIcon
+        ( exists $ not_ (AssetWithId $ toId a) <> AssetControlledBy You <> AssetWithMatchingSkillTestIcon
         )
         $ FastAbility
-        $ ExhaustCost
-        $ toTarget a
+        $ exhaust a
     ]
 
 instance RunMessage WellPrepared2 where
   runMessage msg a@(WellPrepared2 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      matchingIcons <- getSkillTestMatchingSkillIcons
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      withSkillTest \sid -> do
+        matchingIcons <- getSkillTestMatchingSkillIcons
 
-      assetIds <-
-        select
-          $ NotAsset (AssetWithId $ toId attrs)
-          <> AssetControlledBy (InvestigatorWithId iid)
-          <> AssetWithMatchingSkillTestIcon
-      assetIdsWithIconCount <- for assetIds $ \aid -> do
-        x <-
-          fieldMap
-            AssetCard
-            ( length
-                . filter (`member` matchingIcons)
-                . cdSkills
-                . toCardDef
-            )
-            aid
-        pure (aid, x)
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel
-            aid
-            [ skillTestModifier (toSource attrs) (InvestigatorTarget iid) (AnySkillValue x)
+        assetIds <-
+          select
+            $ not_ (AssetWithId $ toId attrs)
+            <> assetControlledBy iid
+            <> AssetWithMatchingSkillTestIcon
+        assetIdsWithIconCount <- for assetIds $ \aid -> do
+          x <- fieldMap AssetCard (length . filter (`member` matchingIcons) . cdSkills . toCardDef) aid
+          pure (aid, x)
+        player <- getPlayer iid
+        push
+          $ chooseOne
+            player
+            [ targetLabel
+              aid
+              [skillTestModifier sid (toSource attrs) (InvestigatorTarget iid) (AnySkillValue x)]
+            | (aid, x) <- assetIdsWithIconCount
             ]
-          | (aid, x) <- assetIdsWithIconCount
-          ]
       pure a
     _ -> WellPrepared2 <$> runMessage msg attrs

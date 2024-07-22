@@ -8,7 +8,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype TrenchKnife = TrenchKnife AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 trenchKnife :: AssetCard TrenchKnife
@@ -27,9 +27,10 @@ instance RunMessage TrenchKnife where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemyCount <- selectCount $ enemyEngagedWith iid
       let source = attrs.ability 1
-      chooseFight <- toMessage <$> mkChooseFight iid source
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
       pushAll
-        [ skillTestModifier attrs iid (SkillModifier #combat enemyCount)
+        [ skillTestModifier sid attrs iid (SkillModifier #combat enemyCount)
         , chooseFight
         ]
       pure a

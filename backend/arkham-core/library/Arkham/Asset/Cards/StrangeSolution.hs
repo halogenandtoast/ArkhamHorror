@@ -1,15 +1,11 @@
-module Arkham.Asset.Cards.StrangeSolution (
-  strangeSolution,
-  StrangeSolution (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.StrangeSolution (strangeSolution, StrangeSolution (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.CampaignLogKey
 import Arkham.Capability
+import Arkham.Prelude
 
 newtype StrangeSolution = StrangeSolution AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -24,7 +20,8 @@ instance HasAbilities StrangeSolution where
 instance RunMessage StrangeSolution where
   runMessage msg a@(StrangeSolution attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ beginSkillTest iid (attrs.ability 1) iid #intellect (Fixed 4)
+      sid <- getRandom
+      push $ beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 4)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       let drawing = drawCards iid (attrs.ability 1) 2

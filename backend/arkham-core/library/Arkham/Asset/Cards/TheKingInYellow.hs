@@ -10,7 +10,7 @@ import Arkham.Prelude hiding (head)
 import Arkham.Projection
 
 newtype TheKingInYellow = TheKingInYellow AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theKingInYellow :: AssetCard TheKingInYellow
@@ -28,7 +28,7 @@ instance HasAbilities TheKingInYellow where
     ]
 
 instance HasModifiersFor TheKingInYellow where
-  getModifiersFor SkillTestTarget (TheKingInYellow attrs) = do
+  getModifiersFor (SkillTestTarget _) (TheKingInYellow attrs) = do
     case assetPlacement attrs of
       InPlayArea minh -> do
         commitedCardsCount <- fieldMap InvestigatorCommittedCards length minh

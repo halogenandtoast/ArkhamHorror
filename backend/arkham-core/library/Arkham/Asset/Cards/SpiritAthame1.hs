@@ -25,13 +25,15 @@ instance HasAbilities SpiritAthame1 where
 instance RunMessage SpiritAthame1 where
   runMessage msg a@(SpiritAthame1 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ skillTestModifier (attrs.ability 1) iid (AnySkillValue 2)
+      withSkillTest \sid ->
+        push $ skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 2)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
-      chooseFight <- toMessage <$> mkChooseFight iid source
+      sid <- getRandom
+      chooseFight <- toMessage <$> mkChooseFight sid iid source
       pushAll
-        [ skillTestModifier source iid (SkillModifier #combat 2)
+        [ skillTestModifier sid source iid (SkillModifier #combat 2)
         , chooseFight
         ]
       pure a

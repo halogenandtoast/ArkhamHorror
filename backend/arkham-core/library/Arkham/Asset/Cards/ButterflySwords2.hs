@@ -23,8 +23,9 @@ instance HasAbilities ButterflySwords2 where
 instance RunMessage ButterflySwords2 where
   runMessage msg a@(ButterflySwords2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skillTestModifier attrs iid $ SkillModifier #combat 1
-      chooseFightEnemy iid (attrs.ability 1)
+      sid <- getRandom
+      skillTestModifier sid attrs iid $ SkillModifier #combat 1
+      chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     AfterSkillTestEnds (isAbilitySource attrs 1 -> True) _ _ | not attrs.exhausted -> do
       iid <- fromJustNote "no investigator" <$> getSkillTestInvestigator
@@ -32,9 +33,10 @@ instance RunMessage ButterflySwords2 where
       pure a
     ForInvestigator iid (AfterSkillTestEnds (isAbilitySource attrs 1 -> True) _ _) | not attrs.exhausted -> do
       canFight <- hasFightActions iid (DuringTurn You) (defaultWindows iid)
+      sid <- getRandom
       fight <- evalQueueT $ withCost iid (exhaust attrs) do
-        skillTestModifiers attrs iid [AddSkillValue #agility, DamageDealt 1]
-        chooseFightEnemy iid (attrs.ability 1)
+        skillTestModifiers sid attrs iid [AddSkillValue #agility, DamageDealt 1]
+        chooseFightEnemy sid iid (attrs.ability 1)
       chooseOrRunOne iid $ Label "Do not fight again" [] : [Label "Fight again" fight | canFight]
       pure a
     _ -> ButterflySwords2 <$> liftRunMessage msg attrs

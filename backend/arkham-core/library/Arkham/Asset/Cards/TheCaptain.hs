@@ -21,9 +21,10 @@ instance HasAbilities TheCaptain where
 instance RunMessage TheCaptain where
   runMessage msg a@(TheCaptain attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
       chooseOne
         iid
-        [ SkillLabel s [parley iid (attrs.ability 1) iid s MaxAlarmLevelCalculation]
+        [ SkillLabel s [parley sid iid (attrs.ability 1) iid s MaxAlarmLevelCalculation]
         | s <- [#willpower, #intellect]
         ]
       pure a

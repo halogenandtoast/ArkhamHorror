@@ -31,22 +31,25 @@ instance HasModifiersFor TheBlackCat5 where
 instance RunMessage TheBlackCat5 where
   runMessage msg a@(TheBlackCat5 attrs) = case msg of
     TargetResolveChaosToken (isTarget attrs -> True) token Tablet _ -> do
-      pushAll
-        [ skillTestModifier attrs token (ChangeChaosTokenModifier $ NegativeModifier 1)
-        , AssetDamageWithCheck (toId attrs) (ChaosTokenEffectSource Tablet) 1 0 True
-        ]
+      withSkillTest \sid ->
+        pushAll
+          [ skillTestModifier sid attrs token (ChangeChaosTokenModifier $ NegativeModifier 1)
+          , AssetDamageWithCheck (toId attrs) (ChaosTokenEffectSource Tablet) 1 0 True
+          ]
       pure a
     TargetResolveChaosToken (isTarget attrs -> True) token ElderThing _ -> do
-      pushAll
-        [ skillTestModifier attrs token (ChangeChaosTokenModifier $ NegativeModifier 1)
-        , AssetDamageWithCheck (toId attrs) (ChaosTokenEffectSource Tablet) 0 1 True
-        ]
+      withSkillTest \sid ->
+        pushAll
+          [ skillTestModifier sid attrs token (ChangeChaosTokenModifier $ NegativeModifier 1)
+          , AssetDamageWithCheck (toId attrs) (ChaosTokenEffectSource Tablet) 0 1 True
+          ]
       pure a
     TargetResolveChaosToken (isTarget attrs -> True) token ElderSign _ -> do
-      pushAll
-        [ skillTestModifier attrs token (ChangeChaosTokenModifier $ PositiveModifier 5)
-        , HealAllDamage (toTarget attrs) (ChaosTokenEffectSource ElderSign)
-        , HealAllHorror (toTarget attrs) (ChaosTokenEffectSource ElderSign)
-        ]
+      withSkillTest \sid ->
+        pushAll
+          [ skillTestModifier sid attrs token (ChangeChaosTokenModifier $ PositiveModifier 5)
+          , HealAllDamage (toTarget attrs) (ChaosTokenEffectSource ElderSign)
+          , HealAllHorror (toTarget attrs) (ChaosTokenEffectSource ElderSign)
+          ]
       pure a
     _ -> TheBlackCat5 <$> runMessage msg attrs

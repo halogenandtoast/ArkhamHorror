@@ -23,8 +23,9 @@ instance HasAbilities Blur4 where
 instance RunMessage Blur4 where
   runMessage msg a@(Blur4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skillTestModifier (attrs.ability 1) iid (AnySkillValue 2)
-      evade <- mkChooseEvade iid (attrs.ability 1)
+      sid <- getRandom
+      skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 2)
+      evade <- mkChooseEvade sid iid (attrs.ability 1)
       chooseOne
         iid
         [ Label "Use willpower" [toMessage $ withSkillType #willpower evade]

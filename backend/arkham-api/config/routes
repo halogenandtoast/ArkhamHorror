@@ -32,3 +32,4 @@
           /undo ApiV1ArkhamGameUndoR PUT
           /spectate ApiV1ArkhamGameSpectateR GET
           /export ApiV1ArkhamGameExportR GET
+          /reload ApiV1ArkhamGameReloadR GET

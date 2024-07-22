@@ -3,6 +3,7 @@ module Api.Handler.Arkham.Game.Debug (
   postApiV1ArkhamGamesImportR,
   postApiV1ArkhamGamesFixR,
   getApiV1ArkhamGamesReloadR,
+  getApiV1ArkhamGameReloadR,
 ) where
 
 import Api.Arkham.Export
@@ -60,6 +61,14 @@ getApiV1ArkhamGamesReloadR = do
     try @_ @SomeException (runDB $ Persist.get gameId >>= traverse_ (Persist.replace gameId))
 
   stepIds <- runDB $ selectKeysList @ArkhamStep [] []
+  for_ stepIds $ \stepId -> do
+    try @_ @SomeException (runDB $ Persist.get stepId >>= traverse_ (Persist.replace stepId))
+
+getApiV1ArkhamGameReloadR :: ArkhamGameId -> Handler ()
+getApiV1ArkhamGameReloadR gameId = do
+  _ <- try @_ @SomeException (runDB $ Persist.get gameId >>= traverse_ (Persist.replace gameId))
+
+  stepIds <- runDB $ selectKeysList @ArkhamStep [ArkhamStepArkhamGameId Persist.==. gameId] []
   for_ stepIds $ \stepId -> do
     try @_ @SomeException (runDB $ Persist.get stepId >>= traverse_ (Persist.replace stepId))
 

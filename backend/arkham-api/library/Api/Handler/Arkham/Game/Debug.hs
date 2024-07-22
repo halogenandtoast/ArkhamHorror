@@ -2,6 +2,7 @@ module Api.Handler.Arkham.Game.Debug (
   getApiV1ArkhamGameExportR,
   postApiV1ArkhamGamesImportR,
   postApiV1ArkhamGamesFixR,
+  getApiV1ArkhamGamesReloadR,
 ) where
 
 import Api.Arkham.Export
@@ -19,7 +20,7 @@ import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.))
 import Json
 import Safe (fromJustNote)
-import UnliftIO.Exception (catch)
+import UnliftIO.Exception (catch, try)
 
 getApiV1ArkhamGameExportR :: ArkhamGameId -> Handler ArkhamExport
 getApiV1ArkhamGameExportR gameId = do
@@ -51,6 +52,16 @@ postApiV1ArkhamGamesFixR = do
     let handleBrokenGame :: SomeException -> Handler ()
         handleBrokenGame _ = void $ runDB (Persist.delete gameId)
     void (runDB (Persist.get gameId) :: Handler (Maybe ArkhamGame)) `catch` handleBrokenGame
+
+getApiV1ArkhamGamesReloadR :: Handler ()
+getApiV1ArkhamGamesReloadR = do
+  gameIds <- runDB $ selectKeysList @ArkhamGame [] []
+  for_ gameIds $ \gameId -> do
+    try @_ @SomeException (runDB $ Persist.get gameId >>= traverse_ (Persist.replace gameId))
+
+  stepIds <- runDB $ selectKeysList @ArkhamStep [] []
+  for_ stepIds $ \stepId -> do
+    try @_ @SomeException (runDB $ Persist.get stepId >>= traverse_ (Persist.replace stepId))
 
 postApiV1ArkhamGamesImportR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesImportR = do

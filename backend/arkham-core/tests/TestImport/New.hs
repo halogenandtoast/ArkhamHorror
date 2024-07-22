@@ -146,17 +146,23 @@ instance CanMoveTo Location where
 instance CanMoveTo LocationId where
   moveTo i l = run $ Move $ move (toSource i) (toId i) l
 
-fightEnemy :: Investigator -> Enemy -> TestAppT ()
-fightEnemy i e = run $ FightEnemy (toId i) (toId e) (toSource i) Nothing SkillCombat False
+fightEnemy :: Investigator -> Enemy -> TestAppT SkillTestId
+fightEnemy i e = do
+  sid <- getRandom
+  run $ FightEnemy sid (toId i) (toId e) (toSource i) Nothing SkillCombat False
+  pure sid
 
 evadeEnemy :: Investigator -> Enemy -> TestAppT ()
-evadeEnemy i e = run $ EvadeEnemy (toId i) (toId e) (toSource i) Nothing SkillAgility False
+evadeEnemy i e = do
+  sid <- getRandom
+  run $ EvadeEnemy sid (toId i) (toId e) (toSource i) Nothing SkillAgility False
 
 evadedEnemy :: Investigator -> Enemy -> TestAppT ()
 evadedEnemy i e = run $ EnemyEvaded (toId i) (toId e)
 
 investigate :: Investigator -> Location -> TestAppT ()
-investigate i l =
+investigate i l = do
+  sid <- getRandom
   run
     $ Investigate
     $ MkInvestigate
@@ -166,6 +172,7 @@ investigate i l =
       , investigateSource = TestSource mempty
       , investigateTarget = Nothing
       , investigateIsAction = False
+      , investigateSkillTest = sid
       }
 
 instance HasField "engagedEnemies" Investigator (TestAppT [EnemyId]) where
@@ -365,9 +372,9 @@ assertFailedSkillTest = do
     SucceededBy {} -> expectationFailure "Expected skill test to fail, but passed"
     Unrun {} -> expectationFailure "Expected skill test to pass, but is unrun"
 
-runSkillTest :: HasCallStack => Investigator -> SkillType -> Int -> TestAppT ()
-runSkillTest i st n = do
-  run $ Helpers.Message.beginSkillTest i st n
+runSkillTest :: HasCallStack => SkillTestId -> Investigator -> SkillType -> Int -> TestAppT ()
+runSkillTest sid i st n = do
+  run $ Helpers.Message.beginSkillTest sid i st n
   click "start skill test"
 
 discoverClues :: Investigator -> Int -> TestAppT ()
@@ -708,8 +715,9 @@ unlessSetting f body = do
 
 failSkillTest :: Investigator -> TestAppT ()
 failSkillTest self = do
+  sid <- getRandom
   setChaosTokens [AutoFail]
-  runSkillTest self #combat 1
+  runSkillTest sid self #combat 1
   applyResults
 
 maxCommittedPerSkillTest :: Int -> CardDef -> SpecWith ()

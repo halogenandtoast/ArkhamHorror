@@ -32,7 +32,8 @@ spec = describe "Patrice Hathaway" do
       flashlights <- replicateM 4 $ genPlayerCard Assets.flashlight
       withProp @"discard" (knife : flashlights) self
       setChaosTokens [ElderSign]
-      runSkillTest self #agility 100
+      sid <- getRandom
+      runSkillTest sid self #agility 100
       applyResults
       chooseFirstOption "Shuffle"
       chooseTarget knife

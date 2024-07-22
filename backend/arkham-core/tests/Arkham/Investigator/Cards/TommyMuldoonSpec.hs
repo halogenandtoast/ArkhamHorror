@@ -29,7 +29,8 @@ spec = describe "Tommy Muldoon" $ do
       withProp @"horror" 1 self
       beatCop2 <- self `putAssetIntoPlay` Assets.beatCop2
       setChaosTokens [ElderSign]
-      runSkillTest self #agility 100
+      sid <- getRandom
+      runSkillTest sid self #agility 100
       chooseFirstOption "Move up to 2 damage and/or horror from Tommy Muldoon to an asset you control"
       chooseOptionMatching "move horror to asset" \case
         ComponentLabel (AssetComponent _ HorrorToken) _ -> True
@@ -47,7 +48,8 @@ spec = describe "Tommy Muldoon" $ do
       beatCop2 <- self `putAssetIntoPlay` Assets.beatCop2
       run $ AssetDamage beatCop2 (TestSource mempty) 2 1
       setChaosTokens [ElderSign]
-      runSkillTest self #agility 100
+      sid <- getRandom
+      runSkillTest sid self #agility 100
       chooseFirstOption "Move up to 2 damage and/or horror from an asset you control to Tommy Muldoon"
       chooseOptionMatching "move horror to tommy muldoon" \case
         ComponentLabel (AssetComponent _ HorrorToken) _ -> True

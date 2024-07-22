@@ -9,12 +9,14 @@ spec = describe "Will to Survive (3)" $ do
     withProp @"intellect" 3 self
     setChaosTokens [AutoFail]
     self `playEvent` Events.willToSurvive3
-    runSkillTest self #intellect 3
+    sid <- getRandom
+    runSkillTest sid self #intellect 3
     assertPassedSkillTest
 
   it "it is cancelled at the end of the turn" . gameTest $ \self -> do
     withProp @"intellect" 3 self
     setChaosTokens [AutoFail]
     duringTurn self $ self `playEvent` Events.willToSurvive3
-    runSkillTest self SkillIntellect 3
+    sid <- getRandom
+    runSkillTest sid self SkillIntellect 3
     assertFailedSkillTest

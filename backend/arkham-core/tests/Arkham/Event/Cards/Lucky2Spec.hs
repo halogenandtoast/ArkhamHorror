@@ -14,7 +14,8 @@ spec = describe "Lucky! (2)" $ do
     self `addToHand` lucky2
 
     setChaosTokens [Zero]
-    runSkillTest self #intellect 3
+    sid <- getRandom
+    runSkillTest sid self #intellect 3
     assertFailedSkillTest
     chooseTarget lucky2
     self.skillValue `shouldReturn` 3
@@ -32,7 +33,8 @@ spec = describe "Lucky! (2)" $ do
     self `addToHand` lucky2
 
     setChaosTokens [AutoFail]
-    runSkillTest self #intellect 2
+    sid <- getRandom
+    runSkillTest sid self #intellect 2
     assertFailedSkillTest
     chooseTarget lucky2
     assertFailedSkillTest

@@ -18,7 +18,8 @@ spec = describe "Physical Training (2)" $ do
     didPassTest <- didPassSkillTestBy investigator SkillWillpower 0
 
     pushAndRun $ SetChaosTokens [Zero]
-    pushAndRun $ beginSkillTest investigator SkillWillpower 3
+    sid <- getRandom
+    pushAndRun $ beginSkillTest sid investigator SkillWillpower 3
     chooseOptionMatching
       "use ability"
       ( \case
@@ -48,7 +49,8 @@ spec = describe "Physical Training (2)" $ do
     didPassTest <- didPassSkillTestBy investigator SkillCombat 0
 
     pushAndRun $ SetChaosTokens [Zero]
-    pushAndRun $ beginSkillTest investigator SkillCombat 3
+    sid <- getRandom
+    pushAndRun $ beginSkillTest sid investigator SkillCombat 3
     chooseOptionMatching
       "use ability"
       ( \case

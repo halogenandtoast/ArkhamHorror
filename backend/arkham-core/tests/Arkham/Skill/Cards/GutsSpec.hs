@@ -15,7 +15,8 @@ spec = describe "Guts" $ do
     self `addToHand` guts
     withEach [(Zero, map toCard cards), (MinusOne, [])] $ \(token, expectedHand) -> do
       setChaosTokens [token]
-      run $ beginSkillTest self #willpower 2
+      sid <- getRandom
+      run $ beginSkillTest sid self #willpower 2
       commit guts
       startSkillTest
       applyResults

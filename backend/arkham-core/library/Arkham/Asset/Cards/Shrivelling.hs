@@ -38,7 +38,7 @@ instance RunMessage Shrivelling where
         leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
       pushAll
         $ [ skillTestModifier sid source iid (DamageDealt 1)
-          , createCardEffect Cards.shrivelling Nothing source iid
+          , createCardEffect Cards.shrivelling Nothing source sid
           ]
         <> chooseFight
       pure a

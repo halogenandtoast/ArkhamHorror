@@ -12,7 +12,8 @@ spec = describe "Fearless" $ do
     self `addToHand` fearless
     withEach [(Zero, 0), (MinusOne, 1)] $ \(token, expectedHorror) -> do
       setChaosTokens [token]
-      run $ beginSkillTest self #willpower 1
+      sid <- getRandom
+      run $ beginSkillTest sid self #willpower 1
       commit fearless
       startSkillTest
       applyResults

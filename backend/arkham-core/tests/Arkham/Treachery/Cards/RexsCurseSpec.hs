@@ -27,12 +27,14 @@ spec = describe "Rex's Curse" $ do
 
     didRunMessage <- didPassSkillTestBy investigator SkillIntellect 1
 
+    sid <- getRandom
     pushAndRunAll
       [ SetChaosTokens [PlusOne]
       , loadDeck investigator [rexsCurse]
       , drawCards (toId investigator) investigator 1
       , BeginSkillTest
           $ initSkillTest
+            sid
             (toId investigator)
             (TestSource mempty)
             TestTarget
@@ -52,16 +54,21 @@ spec = describe "Rex's Curse" $ do
   it "is shuffled back into your deck if you fail the test" $ gameTest $ \investigator -> do
     updateInvestigator investigator (intellectL .~ 5)
     rexsCurse <- genPlayerCard Cards.rexsCurse
+    sid <- getRandom
     pushAndRunAll
       [ SetChaosTokens [MinusOne]
       , loadDeck investigator [rexsCurse]
       , drawCards (toId investigator) investigator 1
-      , beginSkillTest investigator SkillIntellect 4
+      , beginSkillTest sid investigator SkillIntellect 4
       ]
     chooseOnlyOption "start skill test"
     -- we sneak in this modifier to cause the next test (with the same token) to fail instead
     pushAndRun
-      $ skillTestModifier (TestSource mempty) (toTarget investigator) (SkillModifier SkillIntellect (-1))
+      $ skillTestModifier
+        sid
+        (TestSource mempty)
+        (toTarget investigator)
+        (SkillModifier SkillIntellect (-1))
     chooseOnlyOption "trigger rex's curse"
     chooseOnlyOption "apply results"
     assert

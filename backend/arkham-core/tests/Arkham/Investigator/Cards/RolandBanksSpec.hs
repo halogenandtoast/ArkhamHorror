@@ -13,7 +13,7 @@ spec = describe "Roland Banks" $ do
       setChaosTokens [Zero]
       enemy `spawnAt` location
       self `moveTo` location
-      self `fightEnemy` enemy
+      void $ self `fightEnemy` enemy
       click "start skill test"
       click "apply results"
       useReaction
@@ -39,7 +39,7 @@ spec = describe "Roland Banks" $ do
         setChaosTokens [Zero]
         enemy `spawnAt` location
         self `moveTo` location
-        self `fightEnemy` enemy
+        void $ self `fightEnemy` enemy
         click "start skill test"
         click "apply results"
         assertHasNoReaction

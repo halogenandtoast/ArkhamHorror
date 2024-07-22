@@ -3,10 +3,8 @@ module Arkham.Asset.Cards.WellConnected3 (wellConnected3, wellConnected3Effect, 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Import
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection
 
@@ -25,7 +23,7 @@ instance HasAbilities WellConnected3 where
 
 instance RunMessage WellConnected3 where
   runMessage msg a@(WellConnected3 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseCardAbility _iid (isSource attrs -> True) 1 _ _ -> do
       withSkillTest \sid ->
         push $ createCardEffect Cards.wellConnected3 Nothing (toSource attrs) sid
       pure a
@@ -52,8 +50,8 @@ instance HasModifiersFor WellConnected3Effect where
   getModifiersFor _ _ = pure []
 
 instance RunMessage WellConnected3Effect where
-  runMessage msg e@(WellConnected3Effect attrs@EffectAttrs {..}) = case msg of
+  runMessage msg e@(WellConnected3Effect attrs) = case msg of
     SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
-      push (DisableEffect effectId)
+      push (DisableEffect attrs.id)
       pure e
     _ -> WellConnected3Effect <$> runMessage msg attrs

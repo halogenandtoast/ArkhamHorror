@@ -15,10 +15,12 @@ spec = describe "Jim Culver" $ do
       didResolveSkull <- createMessageChecker $ \case
         ResolveChaosToken _ token _ -> token == Skull
         _ -> False
+      sid <- getRandom
       pushAndRunAll
         [ SetChaosTokens [ElderSign]
         , BeginSkillTest
             $ initSkillTest
+              sid
               (toId jimCulver)
               (TestSource mempty)
               TestTarget
@@ -37,11 +39,12 @@ spec = describe "Jim Culver" $ do
 
     it "is a +1" $ gameTestWith Investigators.jimCulver $ \jimCulver -> do
       didPassTest <- didPassSkillTestBy jimCulver SkillIntellect 2
-
+      sid <- getRandom
       pushAndRunAll
         [ SetChaosTokens [ElderSign]
         , BeginSkillTest
             $ initSkillTest
+              sid
               (toId jimCulver)
               (TestSource mempty)
               TestTarget
@@ -61,11 +64,12 @@ spec = describe "Jim Culver" $ do
   context "ability" $ do
     it "changes skull modifier to 0" $ gameTestWith Investigators.jimCulver $ \jimCulver -> do
       didPassTest <- didPassSkillTestBy jimCulver SkillIntellect 1
-
+      sid <- getRandom
       pushAndRunAll
         [ SetChaosTokens [Skull]
         , BeginSkillTest
             $ initSkillTest
+              sid
               (toId jimCulver)
               (TestSource mempty)
               TestTarget

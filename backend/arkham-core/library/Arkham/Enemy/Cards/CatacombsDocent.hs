@@ -36,7 +36,8 @@ instance HasAbilities CatacombsDocent where
 instance RunMessage CatacombsDocent where
   runMessage msg e@(CatacombsDocent attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ parley iid attrs attrs #intellect (Fixed 4)
+      sid <- getRandom
+      push $ parley sid iid attrs attrs #intellect (Fixed 4)
       pure e
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       unrevealedLocations <- select UnrevealedLocation

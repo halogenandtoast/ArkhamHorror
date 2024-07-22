@@ -531,7 +531,7 @@ data Message
   | PlaceSkill SkillId Placement
   | PlaceKey Target ArkhamKey
   | CreateStoryAssetAtLocationMatching Card LocationMatcher
-  | CreateChaosTokenValueEffect Int Source Target
+  | CreateChaosTokenValueEffect SkillTestId Int Source Target
   | CreateWeaknessInThreatArea Card InvestigatorId
   | CreatedEffect EffectId (Maybe (EffectMetadata Window Message)) Source Target
   | CrossOutRecord CampaignLogKey

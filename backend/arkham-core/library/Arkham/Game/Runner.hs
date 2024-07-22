@@ -385,8 +385,8 @@ runGameMessage msg g = case msg of
     (effectId, effect) <- createEffect cardCode meffectMetadata source target
     push (CreatedEffect effectId meffectMetadata source target)
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
-  CreateChaosTokenValueEffect n source target -> do
-    (effectId, effect) <- createChaosTokenValueEffect n source target
+  CreateChaosTokenValueEffect sid n source target -> do
+    (effectId, effect) <- createChaosTokenValueEffect sid n source target
     push
       $ CreatedEffect
         effectId
@@ -888,7 +888,7 @@ runGameMessage msg g = case msg of
         _ -> pure g
       _ -> pure g
   SkillTestResults resultsData -> pure $ g & skillTestResultsL ?~ resultsData
-  Do (SkillTestEnds iid _) -> do
+  Do (SkillTestEnds _ iid _) -> do
     let result = skillTestResult <$> g ^. skillTestL
     let
       resultF =
@@ -966,7 +966,7 @@ runGameMessage msg g = case msg of
               skills'
         )
       & setTurnHistory
-  Msg.SkillTestEnded -> do
+  Msg.SkillTestEnded _ -> do
     pure
       $ g
       & (skillTestL .~ Nothing)
@@ -2229,13 +2229,13 @@ runGameMessage msg g = case msg of
   --     , SetActiveInvestigator (g ^. activeInvestigatorIdL)
   --     ]
   --   pure g
-  RevelationSkillTest iid (TreacherySource tid) skillType difficulty -> do
+  RevelationSkillTest sid iid (TreacherySource tid) skillType difficulty -> do
     -- [ALERT] If changed update (DreamersCurse, Somniphobia)
     card <- field TreacheryCard tid
 
     let
       skillTest =
-        (initSkillTest iid tid tid skillType difficulty)
+        (initSkillTest sid iid tid tid skillType difficulty)
           { skillTestIsRevelation = True
           }
     pushAll [BeginSkillTest skillTest, UnsetActiveCard]

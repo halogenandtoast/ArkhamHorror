@@ -32,7 +32,8 @@ instance RunMessage SpiresOfCarcosa where
         placeDoom attrs lid 2
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ mkInvestigate iid (attrs.ability 1) <&> setTarget attrs
+      sid <- getRandom
+      pushM $ mkInvestigate sid iid (attrs.ability 1) <&> setTarget attrs
       pure t
     Successful (Action.Investigate, _) _ _ (isTarget attrs -> True) _ -> do
       case attrs.attached of

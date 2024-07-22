@@ -40,13 +40,10 @@ instance RunMessage HasturTheKingInYellow where
       pushAll $ map (InitiateEnemyAttack . enemyAttack (toId attrs) attrs) iids
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
+      sid <- getRandom
       push
-        $ beginSkillTest
-          iid
-          (toAbilitySource attrs 2)
-          attrs
-          #willpower
-          (EnemyMaybeFieldCalculation attrs.id EnemyFight)
+        $ beginSkillTest sid iid (toAbilitySource attrs 2) attrs #willpower
+        $ EnemyMaybeFieldCalculation attrs.id EnemyFight
       pure e
     PassedThisSkillTest _ (isSource attrs -> True) -> do
       push $ Exhaust (toTarget attrs)

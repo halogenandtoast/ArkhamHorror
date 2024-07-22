@@ -21,6 +21,7 @@ import Arkham.EffectMetadata
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
@@ -252,7 +253,7 @@ instance RunMessage WhereDoomAwaits where
               (EffectSkillTestWindow sid)
               (EffectModifiers $ toModifiers attrs [CancelSkills])
               (ChaosTokenSource drawnToken)
-              SkillTestTarget
+              (SkillTestTarget sid)
           , CancelSkillEffects
           , DrawAnotherChaosToken iid
           ]
@@ -267,7 +268,8 @@ instance RunMessage WhereDoomAwaits where
       pure s
     DiscardedTopOfDeck _iid cards _ target@(ChaosTokenTarget (chaosTokenFace -> ElderThing)) -> do
       let n = sum $ map (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef) cards
-      push $ CreateChaosTokenValueEffect (-n) (toSource attrs) target
+      withSkillTest \sid ->
+        push $ CreateChaosTokenValueEffect sid (-n) (toSource attrs) target
       pure s
     ScenarioResolution NoResolution ->
       s <$ push (ScenarioResolution $ Resolution 2)

@@ -218,10 +218,10 @@ createEffect cardCode meffectMetadata source target = do
   pure (eid, lookupEffect cardCode eid meffectMetadata source target)
 
 createChaosTokenValueEffect
-  :: MonadRandom m => Int -> Source -> Target -> m (EffectId, Effect)
-createChaosTokenValueEffect n source target = do
+  :: MonadRandom m => SkillTestId -> Int -> Source -> Target -> m (EffectId, Effect)
+createChaosTokenValueEffect sid n source target = do
   eid <- getRandom
-  pure (eid, buildChaosTokenValueEffect eid n source target)
+  pure (eid, buildChaosTokenValueEffect sid eid n source target)
 
 createWindowModifierEffect
   :: MonadRandom m

@@ -13,7 +13,7 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 
 newtype TheCrawlingMist = TheCrawlingMist EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theCrawlingMist :: EnemyCard TheCrawlingMist
@@ -26,7 +26,7 @@ theCrawlingMist =
     (preyL .~ Prey MostCardsInHand)
 
 instance HasModifiersFor TheCrawlingMist where
-  getModifiersFor SkillTestTarget (TheCrawlingMist a) = do
+  getModifiersFor (SkillTestTarget _) (TheCrawlingMist a) = do
     mTarget <- getSkillTestTarget
     mAction <- getSkillTestAction
     mInvestigator <- getSkillTestInvestigator

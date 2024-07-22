@@ -7,7 +7,6 @@ module Arkham.Enemy.Cards.IchtacaScionOfYig (
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.Card
 import Arkham.ChaosToken
@@ -16,7 +15,6 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.SkillType
 import Arkham.Story.Cards qualified as Story
 
 newtype IchtacaScionOfYig = IchtacaScionOfYig EnemyAttrs
@@ -29,28 +27,15 @@ ichtacaScionOfYig =
 
 instance HasAbilities IchtacaScionOfYig where
   getAbilities (IchtacaScionOfYig a) =
-    withBaseAbilities
-      a
-      [ restrictedAbility a 1 OnSameLocation
-          $ ActionAbility [Action.Parley]
-          $ ActionCost 1
-      ]
+    withBaseAbilities a [restrictedAbility a 1 OnSameLocation parleyAction_]
 
 instance RunMessage IchtacaScionOfYig where
   runMessage msg e@(IchtacaScionOfYig attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      sid <- getRandom
       pushAll
-        [ createCardEffect
-            Cards.ichtacaScionOfYig
-            Nothing
-            (toSource attrs)
-            SkillTestTarget
-        , parley
-            iid
-            (toSource attrs)
-            (toTarget attrs)
-            SkillIntellect
-            (Fixed 5)
+        [ createCardEffect Cards.ichtacaScionOfYig Nothing attrs sid
+        , parley sid iid attrs attrs #intellect (Fixed 5)
         ]
       pure e
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
@@ -74,15 +59,17 @@ ichtacaScionOfYigEffect =
   cardEffect IchtacaScionOfYigEffect Cards.ichtacaScionOfYig
 
 instance HasModifiersFor IchtacaScionOfYigEffect where
-  getModifiersFor (ChaosTokenTarget token) (IchtacaScionOfYigEffect a)
-    | effectTarget a == SkillTestTarget && chaosTokenFace token == Cultist =
+  getModifiersFor (ChaosTokenTarget token) (IchtacaScionOfYigEffect a) | chaosTokenFace token == Cultist = do
+    getSkillTestId >>= \case
+      Just sid | isTarget sid a.target -> do
         pure $ toModifiers a [ChangeChaosTokenModifier AutoSuccessModifier]
+      _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage IchtacaScionOfYigEffect where
   runMessage msg e@(IchtacaScionOfYigEffect attrs@EffectAttrs {..}) =
     case msg of
-      SkillTestEnds _ _ | effectTarget == SkillTestTarget -> do
+      SkillTestEnds sid _ _ | isTarget sid effectTarget -> do
         push $ DisableEffect effectId
         pure e
       _ -> IchtacaScionOfYigEffect <$> runMessage msg attrs

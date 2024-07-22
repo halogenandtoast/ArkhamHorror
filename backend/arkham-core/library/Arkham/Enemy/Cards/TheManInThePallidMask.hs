@@ -42,9 +42,10 @@ instance RunMessage TheManInThePallidMask where
   runMessage msg e@(TheManInThePallidMask attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       lid <- getJustLocation iid
-      investigation <- mkInvestigate iid source <&> setTarget attrs
+      sid <- getRandom
+      investigation <- mkInvestigate sid iid source <&> setTarget attrs
       pushAll
-        [ skillTestModifier source (LocationTarget lid) (ShroudModifier 2)
+        [ skillTestModifier sid source (LocationTarget lid) (ShroudModifier 2)
         , toMessage investigation
         ]
       pure e

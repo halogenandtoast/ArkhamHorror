@@ -32,7 +32,8 @@ instance HasAbilities Ichtaca where
 instance RunMessage Ichtaca where
   runMessage msg e@(Ichtaca attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ parley iid source attrs SkillIntellect (Fixed 4)
+      sid <- getRandom
+      push $ parley sid iid source attrs SkillIntellect (Fixed 4)
       pure e
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
       push $ PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1

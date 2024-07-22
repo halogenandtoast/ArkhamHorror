@@ -39,7 +39,8 @@ instance RunMessage ArkhamOfficer where
         [MovedClues (attrs.ability 1) (toSource location) (toTarget attrs) 1, FlipClues (toTarget attrs) 1]
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ parley iid (attrs.ability 2) iid #willpower (Fixed 3)
+      sid <- getRandom
+      push $ parley sid iid (attrs.ability 2) iid #willpower (Fixed 3)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       player <- getPlayer iid

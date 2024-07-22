@@ -49,7 +49,7 @@ totalModifiedSkillValue s = do
 
 calculateSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
 calculateSkillTestResultsData s = do
-  modifiers' <- getModifiers SkillTestTarget
+  modifiers' <- getModifiers (SkillTestTarget s.id)
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
   let cancelSkills = CancelSkills `elem` modifiers'
   iconCount <- if cancelSkills then pure 0 else skillIconCount s
@@ -161,19 +161,19 @@ instance RunMessage SkillTest where
       pure $ s {skillTestTarget = target}
     Discard _ _ target | target == skillTestTarget -> do
       pushAll
-        [ SkillTestEnds skillTestInvestigator skillTestSource
-        , Do (SkillTestEnds skillTestInvestigator skillTestSource)
+        [ SkillTestEnds skillTestId skillTestInvestigator skillTestSource
+        , Do (SkillTestEnds skillTestId skillTestInvestigator skillTestSource)
         ]
       pure s
     RemoveFromGame target | target == skillTestTarget -> do
       pushAll
-        [ SkillTestEnds skillTestInvestigator skillTestSource
-        , Do (SkillTestEnds skillTestInvestigator skillTestSource)
+        [ SkillTestEnds skillTestId skillTestInvestigator skillTestSource
+        , Do (SkillTestEnds skillTestId skillTestInvestigator skillTestSource)
         ]
       pure s
     TriggerSkillTest iid -> do
       modifiers' <- getModifiers iid
-      modifiers'' <- getModifiers SkillTestTarget
+      modifiers'' <- getModifiers (SkillTestTarget skillTestId)
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
         then do
           let
@@ -259,8 +259,8 @@ instance RunMessage SkillTest where
         , RunSkillTest iid
         ]
       pure s
-    RequestedChaosTokens SkillTestSource (Just iid) chaosTokenFaces -> do
-      skillTestModifiers' <- getModifiers SkillTestTarget
+    RequestedChaosTokens (SkillTestSource sid) (Just iid) chaosTokenFaces -> do
+      skillTestModifiers' <- getModifiers (SkillTestTarget sid)
       windowMsg <- checkWindows [mkWhen Window.FastPlayerWindow]
       push
         $ if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
@@ -271,7 +271,7 @@ instance RunMessage SkillTest where
           else RevealSkillTestChaosTokens iid
       for_ chaosTokenFaces $ \chaosTokenFace -> do
         let
-          revealMsg = RevealChaosToken SkillTestSource iid chaosTokenFace
+          revealMsg = RevealChaosToken (SkillTestSource sid) iid chaosTokenFace
         pushAll
           [ When revealMsg
           , CheckWindow [iid] [mkWindow Timing.AtIf (Window.RevealChaosToken iid chaosTokenFace)]
@@ -355,8 +355,8 @@ instance RunMessage SkillTest where
                         difficulty
                     )
                  , chooseOne player [SkillTestApplyResultsButton]
-                 , SkillTestEnds resolver skillTestSource
-                 , Do (SkillTestEnds resolver skillTestSource)
+                 , SkillTestEnds skillTestId resolver skillTestSource
+                 , Do (SkillTestEnds skillTestId resolver skillTestSource)
                  ]
 
       if needsChoice
@@ -442,7 +442,7 @@ instance RunMessage SkillTest where
     AddToVictory (SkillTarget sid) -> do
       card <- field Field.SkillCard sid
       pure $ s & committedCardsL . each %~ filter (/= card)
-    Do (SkillTestEnds _ _) -> do
+    Do (SkillTestEnds _ _ _) -> do
       -- Skill Cards are in the environment and will be discarded normally
       -- However, all other cards need to be discarded here.
       let
@@ -469,7 +469,7 @@ instance RunMessage SkillTest where
         : discardMessages
           <> skillTestEndsWindows
           <> [ AfterSkillTestEnds skillTestSource skillTestTarget skillTestResult
-             , Msg.SkillTestEnded
+             , Msg.SkillTestEnded skillTestId
              ]
       pure s
     ReturnToHand _ (CardIdTarget cardId) -> do
@@ -580,8 +580,8 @@ instance RunMessage SkillTest where
       -- If we haven't already decided to end the skill test we need to end it
       unless valid
         $ pushAll
-          [ SkillTestEnds skillTestInvestigator skillTestSource
-          , Do (SkillTestEnds skillTestInvestigator skillTestSource) -- -> ST.8 -- Skill test ends
+          [ SkillTestEnds skillTestId skillTestInvestigator skillTestSource
+          , Do (SkillTestEnds skillTestId skillTestInvestigator skillTestSource) -- -> ST.8 -- Skill test ends
           ]
       modifiers' <- getModifiers (toTarget s)
       let

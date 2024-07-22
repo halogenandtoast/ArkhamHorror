@@ -12,7 +12,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype BuriedSecrets = BuriedSecrets TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 buriedSecrets :: TreacheryCard BuriedSecrets
@@ -33,7 +33,8 @@ instance RunMessage BuriedSecrets where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushM $ mkInvestigate iid (attrs.ability 1) <&> setTarget attrs
+      sid <- getRandom
+      pushM $ mkInvestigate sid iid (attrs.ability 1) <&> setTarget attrs
       pure t
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
       toDiscardBy iid (attrs.ability 1) attrs

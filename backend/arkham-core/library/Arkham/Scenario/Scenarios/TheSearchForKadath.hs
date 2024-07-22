@@ -257,11 +257,12 @@ instance RunMessage TheSearchForKadath where
         _ -> pure ()
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
-      case chaosTokenFace token of
-        ElderThing -> void $ runMaybeT $ do
-          Action.Investigate <- MaybeT getSkillTestAction
-          lift $ push $ skillTestModifier ElderThing iid (DiscoveredClues 1)
-        _ -> pure ()
+      withSkillTest \sid ->
+        case chaosTokenFace token of
+          ElderThing -> void $ runMaybeT $ do
+            Action.Investigate <- MaybeT getSkillTestAction
+            lift $ push $ skillTestModifier sid ElderThing iid (DiscoveredClues 1)
+          _ -> pure ()
       pure s
     DoStep 1 (SetScenarioMeta _) -> do
       tenebrousNightgaunts <- select $ enemyIs Enemies.tenebrousNightgaunt <> EnemyWithPlacement Unplaced

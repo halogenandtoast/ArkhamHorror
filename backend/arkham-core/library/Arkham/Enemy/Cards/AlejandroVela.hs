@@ -30,9 +30,10 @@ instance HasAbilities AlejandroVela where
 instance RunMessage AlejandroVela where
   runMessage msg e@(AlejandroVela attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
       pushAll
-        [ createCardEffect Cards.alejandroVela Nothing (toAbilitySource attrs 1) SkillTestTarget
-        , parley iid (toAbilitySource attrs 1) attrs #intellect (Fixed 5)
+        [ createCardEffect Cards.alejandroVela Nothing (toAbilitySource attrs 1) sid
+        , parley sid iid (toAbilitySource attrs 1) attrs #intellect (Fixed 5)
         ]
       pure e
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
@@ -55,15 +56,17 @@ alejandroVelaEffect :: EffectArgs -> AlejandroVelaEffect
 alejandroVelaEffect = cardEffect AlejandroVelaEffect Cards.alejandroVela
 
 instance HasModifiersFor AlejandroVelaEffect where
-  getModifiersFor (ChaosTokenTarget token) (AlejandroVelaEffect a)
-    | a.target == SkillTestTarget && token.face == Tablet =
+  getModifiersFor (ChaosTokenTarget token) (AlejandroVelaEffect a) | token.face == Tablet = do
+    getSkillTestId >>= \case
+      Just sid | isTarget sid a.target -> do
         pure $ toModifiers a [ChangeChaosTokenModifier AutoSuccessModifier]
+      _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage AlejandroVelaEffect where
   runMessage msg e@(AlejandroVelaEffect attrs) =
     case msg of
-      SkillTestEnds _ _ | attrs.target == SkillTestTarget -> do
+      SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
         push $ disable attrs
         pure e
       _ -> AlejandroVelaEffect <$> runMessage msg attrs

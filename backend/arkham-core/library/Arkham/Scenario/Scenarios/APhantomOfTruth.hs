@@ -16,6 +16,7 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import Arkham.Helpers
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
@@ -307,7 +308,7 @@ instance RunMessage APhantomOfTruth where
               (EffectSkillTestWindow sid)
               (EffectModifiers $ toModifiers attrs [CancelSkills])
               (ChaosTokenEffectSource Tablet)
-              SkillTestTarget
+              (SkillTestTarget sid)
           , CancelSkillEffects
           ]
       pure s

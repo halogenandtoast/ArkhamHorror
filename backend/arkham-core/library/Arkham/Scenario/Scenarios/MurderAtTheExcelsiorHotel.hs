@@ -19,6 +19,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -182,19 +183,21 @@ instance RunMessage MurderAtTheExcelsiorHotel where
         when (clues > 0) do
           player <- getPlayer iid
           let n = if isEasyStandard attrs then 1 else 2
-          push
-            $ chooseOne
-              player
-              [ Label
-                  ("Place one of your clues on your location to treat this as a -" <> tshow n)
-                  [ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Tablet) 1
-                  , skillTestModifier
-                      (ChaosTokenEffectSource Tablet)
-                      token
-                      (ChangeChaosTokenModifier (NegativeModifier n))
-                  ]
-              , Label "Skip" []
-              ]
+          withSkillTest \sid ->
+            push
+              $ chooseOne
+                player
+                [ Label
+                    ("Place one of your clues on your location to treat this as a -" <> tshow n)
+                    [ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Tablet) 1
+                    , skillTestModifier
+                        sid
+                        (ChaosTokenEffectSource Tablet)
+                        token
+                        (ChangeChaosTokenModifier (NegativeModifier n))
+                    ]
+                , Label "Skip" []
+                ]
 
       pure s
     ResolveChaosToken _ ElderThing iid -> do

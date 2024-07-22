@@ -8,7 +8,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype CatsOfUlthar = CatsOfUlthar EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 catsOfUlthar :: EnemyCard CatsOfUlthar
@@ -19,7 +19,7 @@ catsOfUlthar = enemy CatsOfUlthar Cards.catsOfUlthar (1, Static 1, 1) (1, 0)
 -- additional. It might be better in the future to move this as a modifier
 -- directly on the skill test
 instance HasModifiersFor CatsOfUlthar where
-  getModifiersFor SkillTestTarget (CatsOfUlthar a) = do
+  getModifiersFor (SkillTestTarget _) (CatsOfUlthar a) = do
     modifiers <-
       toList <$> runMaybeT do
         st <- MaybeT getSkillTest

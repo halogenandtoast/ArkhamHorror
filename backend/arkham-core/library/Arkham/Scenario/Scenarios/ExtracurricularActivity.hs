@@ -14,6 +14,7 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Campaign
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message
@@ -24,7 +25,7 @@ import Arkham.Scenario.Runner
 import Arkham.Scenarios.ExtracurricularActivity.FlavorText
 
 newtype ExtracurricularActivity = ExtracurricularActivity ScenarioAttrs
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
@@ -146,7 +147,8 @@ instance RunMessage ExtracurricularActivity where
       pure s
     DiscardedTopOfDeck _iid cards _ target@(ChaosTokenTarget (chaosTokenFace -> ElderThing)) -> do
       let n = sum $ map (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef) cards
-      push $ CreateChaosTokenValueEffect (-n) (toSource attrs) target
+      withSkillTest \sid ->
+        push $ CreateChaosTokenValueEffect sid (-n) (toSource attrs) target
       pure s
     ScenarioResolution NoResolution -> do
       players <- allPlayers

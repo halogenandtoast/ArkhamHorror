@@ -33,12 +33,13 @@ instance RunMessage KamanThah where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- perPlayer 1
       player <- getPlayer iid
+      sid <- getRandom
       push
         $ chooseOne
           player
           [ SkillLabel
             sType
-            [parley iid (toAbilitySource attrs 1) iid sType (Fixed $ 2 + n)]
+            [parley sid iid (toAbilitySource attrs 1) iid sType (Fixed $ 2 + n)]
           | sType <- [#willpower, #intellect]
           ]
       pure e

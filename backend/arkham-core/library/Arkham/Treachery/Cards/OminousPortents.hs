@@ -30,6 +30,7 @@ instance RunMessage OminousPortents where
     Revelation iid (isSource attrs -> True) -> do
       mTopSpectralCard <- headMay . unDeck <$> getSpectralDeck
       player <- getPlayer iid
+      sid <- getRandom
       push
         $ chooseOrRunOne player
         $ [ Label
@@ -45,7 +46,7 @@ instance RunMessage OminousPortents where
           ]
         <> [ Label
               "Test {willpower} (3). If you fail take 2 horror."
-              [revelationSkillTest iid attrs SkillWillpower (Fixed 3)]
+              [revelationSkillTest sid iid attrs SkillWillpower (Fixed 3)]
            ]
       pure t
     _ -> OminousPortents <$> runMessage msg attrs

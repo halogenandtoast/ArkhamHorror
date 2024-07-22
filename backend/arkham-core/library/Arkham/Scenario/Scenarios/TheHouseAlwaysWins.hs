@@ -16,6 +16,7 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message
 import Arkham.Resolution
@@ -25,7 +26,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheHouseAlwaysWins.Story
 
 newtype TheHouseAlwaysWins = TheHouseAlwaysWins ScenarioAttrs
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
@@ -130,22 +131,24 @@ instance RunMessage TheHouseAlwaysWins where
       let requiredResources = if isEasyStandard attrs then 2 else 3
       resourceCount <- getSpendableResources iid
       player <- getPlayer iid
-      pushWhen (resourceCount >= requiredResources)
-        $ chooseOne
-          player
-          [ Label
-              ( "Spend "
-                  <> tshow requiredResources
-                  <> " resources to treat this token as a 0"
-              )
-              [ SpendResources iid requiredResources
-              , CreateChaosTokenValueEffect
-                  (if isEasyStandard attrs then 2 else 3)
-                  (ChaosTokenSource drawnToken)
-                  (ChaosTokenTarget drawnToken)
-              ]
-          , Label "Do not spend resources" []
-          ]
+      withSkillTest \sid -> do
+        pushWhen (resourceCount >= requiredResources)
+          $ chooseOne
+            player
+            [ Label
+                ( "Spend "
+                    <> tshow requiredResources
+                    <> " resources to treat this token as a 0"
+                )
+                [ SpendResources iid requiredResources
+                , CreateChaosTokenValueEffect
+                    sid
+                    (if isEasyStandard attrs then 2 else 3)
+                    (ChaosTokenSource drawnToken)
+                    (ChaosTokenTarget drawnToken)
+                ]
+            , Label "Do not spend resources" []
+            ]
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ ->
       s <$ case chaosTokenFace token of

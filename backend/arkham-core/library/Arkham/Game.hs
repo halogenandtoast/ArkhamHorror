@@ -4467,18 +4467,18 @@ preloadModifiers g = case gameMode g of
                     (SomeEntity <$> modeCampaign (gameMode g))
               )
           )
-          ( SkillTestTarget
-              : map ChaosTokenTarget tokens
-                <> map ChaosTokenFaceTarget [minBound .. maxBound]
-                <> map toTarget entities
-                <> map CardTarget (toList $ gameCards g)
-                <> map CardIdTarget (keys $ gameCards g)
-                <> map
-                  (InvestigatorHandTarget . toId)
-                  (toList $ entitiesInvestigators $ gameEntities g)
-                <> map (AbilityTarget (gameActiveInvestigatorId g)) (getAbilities g)
-                <> map ActiveCostTarget (keys $ gameActiveCost g)
-                <> map PhaseTarget [minBound ..]
+          ( [SkillTestTarget st.id | st <- maybeToList $ gameSkillTest g]
+              <> map ChaosTokenTarget tokens
+              <> map ChaosTokenFaceTarget [minBound .. maxBound]
+              <> map toTarget entities
+              <> map CardTarget (toList $ gameCards g)
+              <> map CardIdTarget (keys $ gameCards g)
+              <> map
+                (InvestigatorHandTarget . toId)
+                (toList $ entitiesInvestigators $ gameEntities g)
+              <> map (AbilityTarget (gameActiveInvestigatorId g)) (getAbilities g)
+              <> map ActiveCostTarget (keys $ gameActiveCost g)
+              <> map PhaseTarget [minBound ..]
           )
     allModifiers `seq` pure $ g {gameModifiers = Map.map (filter modifierFilter) allModifiers}
  where

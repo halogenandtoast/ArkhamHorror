@@ -921,7 +921,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   FightEnemy sid iid eid source mTarget skillType False | iid == investigatorId -> do
     handleSkillTestNesting_ sid msg do
-      push (AttackEnemy iid eid source mTarget skillType)
+      push (AttackEnemy sid iid eid source mTarget skillType)
     pure a
   FailedAttackEnemy iid eid | iid == investigatorId -> do
     doesNotDamageOtherInvestigators <- hasModifier a DoesNotDamageOtherInvestigator

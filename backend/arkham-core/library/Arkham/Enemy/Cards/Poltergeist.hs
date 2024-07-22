@@ -16,7 +16,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Trait
 
 newtype Poltergeist = Poltergeist EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 poltergeist :: EnemyCard Poltergeist
@@ -48,7 +48,8 @@ instance HasModifiersFor Poltergeist where
 instance RunMessage Poltergeist where
   runMessage msg e@(Poltergeist attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ parley iid source attrs #intellect (Fixed 3)
+      sid <- getRandom
+      push $ parley sid iid source attrs #intellect (Fixed 3)
       pure e
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
       push (Msg.EnemyDamage (toId attrs) $ nonAttack source 1)

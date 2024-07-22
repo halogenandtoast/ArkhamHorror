@@ -39,9 +39,10 @@ instance RunMessage YithianObserver where
   runMessage msg e@(YithianObserver attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       emptyHand <- fieldMap InvestigatorHand null iid
-      push
-        $ if emptyHand
-          then skillTestModifiers attrs attrs [DamageDealt 1, HorrorDealt 1]
-          else toMessage $ randomDiscard iid attrs
+      withSkillTest \sid ->
+        push
+          $ if emptyHand
+            then skillTestModifiers sid attrs attrs [DamageDealt 1, HorrorDealt 1]
+            else toMessage $ randomDiscard iid attrs
       pure e
     _ -> YithianObserver <$> runMessage msg attrs

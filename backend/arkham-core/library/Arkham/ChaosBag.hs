@@ -517,14 +517,14 @@ instance RunMessage ChaosBag where
       runMessage (ResetChaosTokens GameSource) c
     ResetChaosTokens _source -> do
       returnAllBlessed <-
-        getIsSkillTest >>= \case
-          True -> hasModifier SkillTestTarget ReturnBlessedToChaosBag
-          False -> pure True
+        getSkillTestId >>= \case
+          Just sid -> hasModifier (SkillTestTarget sid) ReturnBlessedToChaosBag
+          Nothing -> pure True
 
       returnAllCursed <-
-        getIsSkillTest >>= \case
-          True -> hasModifier SkillTestTarget ReturnCursedToChaosBag
-          False -> pure True
+        getSkillTestId >>= \case
+          Just sid -> hasModifier (SkillTestTarget sid) ReturnCursedToChaosBag
+          Nothing -> pure True
 
       -- TODO: We need to decide which tokens to keep, i.e. Blessed Blade (4)
       (tokensToReturn, tokensToPool) <- flip partitionM chaosBagSetAsideChaosTokens \token -> do

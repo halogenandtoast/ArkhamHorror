@@ -1102,7 +1102,7 @@ data WindowMatcher
   | EntersThreatArea Timing Who CardMatcher
   | ScenarioCountIncremented Timing ScenarioCountKey
   | WindowWhen Criterion WindowMatcher
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
 
 data PhaseStepMatcher = EnemiesAttackStep | HuntersMoveStep
   deriving stock (Show, Eq, Ord, Data)
@@ -1160,7 +1160,7 @@ data SkillTestMatcher
   | SkillTestWithDifficulty ValueMatcher
   | PerilousSkillTest
   | IfSkillTestMatcher SkillTestMatcher SkillTestMatcher SkillTestMatcher
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
 
 instance IsLabel "investigating" SkillTestMatcher where
   fromLabel = WhileInvestigating Anywhere
@@ -1683,7 +1683,7 @@ $( do
     prey <- deriveJSON defaultOptions ''PreyMatcher
     removeDoom <- deriveJSON defaultOptions ''RemoveDoomMatchers
     skill <- deriveJSON defaultOptions ''SkillMatcher
-    skillTest <- deriveJSON defaultOptions ''SkillTestMatcher
+    skillTest <- deriveToJSON defaultOptions ''SkillTestMatcher
     skillTestResult <- deriveJSON defaultOptions ''SkillTestResultMatcher
     skillTestValue <- deriveJSON defaultOptions ''SkillTestValueMatcher
     skillType <- deriveJSON defaultOptions ''SkillTypeMatcher
@@ -1693,7 +1693,7 @@ $( do
     targetList <- deriveJSON defaultOptions ''TargetListMatcher
     treachery <- deriveJSON defaultOptions ''TreacheryMatcher
     value <- deriveJSON defaultOptions ''ValueMatcher
-    window <- deriveJSON defaultOptions ''WindowMatcher
+    window <- deriveToJSON defaultOptions ''WindowMatcher
     windowMythosStep <- deriveJSON defaultOptions ''WindowMythosStepMatcher
     pure
       $ concat
@@ -1738,3 +1738,21 @@ $( do
         , windowMythosStep
         ]
  )
+
+instance FromJSON SkillTestMatcher where
+  parseJSON = withObject "SkillTestMatcher" $ \o -> do
+    t :: Text <- o .: "tag"
+    case t of
+      "AnySkillTestType" -> pure AnySkillTest
+      _ -> genericParseJSON defaultOptions (Object o)
+
+instance FromJSON WindowMatcher where
+  parseJSON = withObject "WindowMatcher" $ \o -> do
+    t :: Text <- o .: "tag"
+    case t of
+      "EnemyAttackedSuccessfully" -> do
+        econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case econtents of
+          Left (a, b, c) -> pure $ EnemyAttackedSuccessfully a b AnySource c
+          Right (a, b, c, d) -> pure $ EnemyAttackedSuccessfully a b c d
+      _ -> genericParseJSON defaultOptions (Object o)

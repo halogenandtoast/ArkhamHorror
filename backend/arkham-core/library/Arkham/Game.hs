@@ -2961,6 +2961,7 @@ instance Projection Location where
         if isRevealed l && isJust locationShroud
           then Just <$> getModifiedShroudValueFor attrs
           else pure Nothing
+      LocationJustShroud -> getModifiedShroudValueFor attrs
       LocationBrazier -> pure locationBrazier
       LocationBreaches -> pure locationBreaches
       LocationTraits -> do

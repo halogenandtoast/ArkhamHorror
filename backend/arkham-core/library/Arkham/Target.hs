@@ -19,6 +19,7 @@ import Arkham.Trait
 import Control.Lens (Getting, Prism', prism')
 import Data.Aeson.TH
 import Data.Monoid (First)
+import Data.UUID (nil)
 import GHC.OverloadedLabels
 import GHC.Records
 
@@ -67,7 +68,7 @@ data Target
   | ActiveCostTarget ActiveCostId
   | LabeledTarget Text Target -- Use with caution, this is not a real target
   | ThisTarget -- Used with withModifiers
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Eq, Ord, Data, Generic)
 
 instance HasField "enemy" Target (Maybe EnemyId) where
   getField = \case
@@ -182,7 +183,16 @@ _EnemyTarget :: Traversal' Target EnemyId
 _EnemyTarget f (EnemyTarget enemy) = EnemyTarget <$> f enemy
 _EnemyTarget _ other = pure other
 
-$(deriveJSON defaultOptions ''Target)
+$(deriveToJSON defaultOptions ''Target)
+
+instance FromJSON Target where
+  parseJSON = withObject "Target" $ \o -> do
+    tag :: Text <- o .: "tag"
+    case tag of
+      "SkillTestTarget" -> do
+        eSkillTestId <- (Left <$> o .: "skillTestId") <|> (Right <$> pure ())
+        pure $ either SkillTestTarget (\_ -> SkillTestTarget (SkillTestId nil)) eSkillTestId
+      _ -> genericParseJSON defaultOptions (Object o)
 
 instance FromJSONKey Target
 instance ToJSONKey Target

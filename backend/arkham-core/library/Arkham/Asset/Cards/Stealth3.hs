@@ -22,7 +22,7 @@ instance HasAbilities Stealth3 where
 
 instance HasModifiersFor Stealth3 where
   getModifiersFor (EnemyTarget eid) (Stealth3 attrs) = maybeModified attrs do
-    EnemyTarget eid' <- MaybeT getSkillTestTarget
+    ProxyTarget (EnemyTarget eid') _ <- MaybeT getSkillTestTarget
     guard $ eid' == eid
     source <- MaybeT getSkillTestSource
     guard $ isAbilitySource attrs 1 source
@@ -35,11 +35,14 @@ instance RunMessage Stealth3 where
       sid <- getRandom
       pushM $ setTarget attrs <$> mkChooseEvade sid iid (attrs.ability 1)
       pure a
-    AfterSkillTestEnds (isAbilitySource attrs 1 -> True) target@(EnemyTarget eid) (SucceededBy _ _) -> do
-      for_ attrs.controller \iid -> do
-        canDisengage <- iid <=~> InvestigatorCanDisengage
-        isYourTurn <- iid <=~> TurnInvestigator
-        when isYourTurn $ turnModifier iid attrs target (EnemyCannotEngage iid)
-        pushWhen canDisengage $ DisengageEnemy iid eid
-      pure a
+    AfterSkillTestEnds
+      (isAbilitySource attrs 1 -> True)
+      (ProxyTarget (EnemyTarget eid) _)
+      (SucceededBy {}) -> do
+        for_ attrs.controller \iid -> do
+          canDisengage <- iid <=~> InvestigatorCanDisengage
+          isYourTurn <- iid <=~> TurnInvestigator
+          when isYourTurn $ turnModifier iid attrs eid (EnemyCannotEngage iid)
+          pushWhen canDisengage $ DisengageEnemy iid eid
+        pure a
     _ -> Stealth3 <$> liftRunMessage msg attrs

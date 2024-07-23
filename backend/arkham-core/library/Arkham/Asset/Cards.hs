@@ -163,6 +163,7 @@ allPlayerAssetCards =
       , armageddon4
       , armorOfArdennes5
       , artStudent
+      , astralMirror2
       , astronomicalAtlas3
       , augur
       , augustLindquist
@@ -6026,6 +6027,15 @@ bindersJarInterdimensionalPrison1 =
     , cdSlots = [#accessory]
     , cdUnique = True
     , cdLevel = Just 1
+    }
+
+astralMirror2 :: CardDef
+astralMirror2 =
+  (asset "09091" "Astral Mirror" 3 Mystic)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Ritual]
+    , cdSlots = [#body]
+    , cdLevel = Just 2
     }
 
 ceremonialSickle4 :: CardDef

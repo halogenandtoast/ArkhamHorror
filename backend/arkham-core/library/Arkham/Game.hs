@@ -3747,6 +3747,13 @@ instance Query ExtendedCardMatcher where
           skills <- selectFields SkillCard (SkillWithPlacement $ InPlayArea i)
           pure $ assets <> events <> skills
         pure $ c `elem` cards
+      WillGoIntoSlot s -> do
+        mods <- getModifiers c
+        let slots =
+              filter ((`notElem` mods) . DoNotTakeUpSlot)
+                $ cdSlots (toCardDef c)
+                <> [t | AdditionalSlot t <- mods]
+        pure $ s `elem` slots
       CardIsBeneathInvestigator who -> do
         iids <- select who
         cards <- concatMapM (field InvestigatorCardsUnderneath) iids

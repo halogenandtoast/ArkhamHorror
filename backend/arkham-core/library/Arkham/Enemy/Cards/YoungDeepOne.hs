@@ -1,17 +1,9 @@
-module Arkham.Enemy.Cards.YoungDeepOne (
-  YoungDeepOne (..),
-  youngDeepOne,
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.YoungDeepOne (YoungDeepOne (..), youngDeepOne) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype YoungDeepOne = YoungDeepOne EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -19,24 +11,16 @@ newtype YoungDeepOne = YoungDeepOne EnemyAttrs
 
 youngDeepOne :: EnemyCard YoungDeepOne
 youngDeepOne =
-  enemyWith
-    YoungDeepOne
-    Cards.youngDeepOne
-    (3, Static 3, 3)
-    (1, 1)
-    (preyL .~ Prey (InvestigatorWithLowestSkill SkillCombat))
+  enemyWith YoungDeepOne Cards.youngDeepOne (3, Static 3, 3) (1, 1)
+    $ preyL
+    .~ Prey (InvestigatorWithLowestSkill #combat)
 
 instance HasAbilities YoungDeepOne where
-  getAbilities (YoungDeepOne a) =
-    withBaseAbilities a
-      $ [ forcedAbility a 1
-            $ EnemyEngaged Timing.After You
-            $ EnemyWithId (toId a)
-        ]
+  getAbilities (YoungDeepOne a) = extend a [forcedAbility a 1 $ EnemyEngaged #after You (be a)]
 
 instance RunMessage YoungDeepOne where
-  runMessage msg e@(YoungDeepOne attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ assignDamage iid attrs 1
+  runMessage msg e@(YoungDeepOne attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignHorror iid attrs 1
       pure e
-    _ -> YoungDeepOne <$> runMessage msg attrs
+    _ -> YoungDeepOne <$> liftRunMessage msg attrs

@@ -1589,7 +1589,7 @@ windowMatches
   -> Matcher.WindowMatcher
   -> m Bool
 windowMatches _ _ (windowType -> Window.DoNotCheckWindow) _ = pure True
-windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wType)) mtchr = do
+windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wType)) umtchr = do
   let
     (source, mcard) =
       case rawSource of
@@ -1599,6 +1599,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
   let noMatch = pure False
   let isMatch = pure True
   let guardTiming t body = if timing' == t then body wType else noMatch
+  let mtchr = Matcher.replaceYouMatcher iid umtchr
   case mtchr of
     Matcher.InvestigatorPlacedFromTheirPool timing whoMatcher sourceMatcher targetMatcher tType -> guardTiming timing \case
       Window.InvestigatorPlacedFromTheirPool who source' target' tType' _ | tType == tType' -> do

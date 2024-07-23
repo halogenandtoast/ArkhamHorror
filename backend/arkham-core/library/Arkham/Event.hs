@@ -539,6 +539,7 @@ allEvents =
     , SomeEventCard eldritchInitiation
     , SomeEventCard explosiveWard
     , SomeEventCard stringOfCurses
+    , SomeEventCard moonlightRitual2
     , --- survivor [tsk]
       SomeEventCard makeshiftTrap
     , SomeEventCard endOfTheRoad

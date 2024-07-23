@@ -266,6 +266,7 @@ allPlayerEventCards =
       , monsterSlayer
       , monsterSlayer5
       , moonlightRitual
+      , moonlightRitual2
       , motivationalSpeech
       , mysteriesRemain
       , mystifyingSong
@@ -3510,6 +3511,17 @@ stringOfCurses =
           $ NonEliteEnemy
           <> EnemyAt YourLocation
           <> oneOf [EnemyCanBeEvadedBy ThisCard, EnemyWithAnyDoom <> EnemyCanBeDefeatedBy ThisCard]
+    }
+
+moonlightRitual2 :: CardDef
+moonlightRitual2 =
+  (event "09093" "Moonlight Ritual" 0 Mystic)
+    { cdSkills = [#intellect, #agility, #wild]
+    , cdCardTraits = setFromList [Spell, Insight]
+    , cdFastWindow = Just $ DuringTurn You
+    , cdCriteria =
+        Just (exists $ TargetWithDoom <> TargetAtLocation YourLocation <> not_ (TargetWithTrait Elite))
+    , cdLevel = Just 2
     }
 
 makeshiftTrap :: CardDef

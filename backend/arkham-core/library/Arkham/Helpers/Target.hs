@@ -70,6 +70,8 @@ targetTraits = \case
 
 targetMatches :: forall m. HasGame m => Target -> TargetMatcher -> m Bool
 targetMatches s = \case
+  NotTarget inner -> not <$> targetMatches s inner
+  TargetWithTrait t -> (t `member`) <$> targetTraits s
   TargetMatchesAny ms -> anyM (targetMatches s) ms
   TargetIs s' -> pure $ s == s'
   TargetAtLocation ls -> do

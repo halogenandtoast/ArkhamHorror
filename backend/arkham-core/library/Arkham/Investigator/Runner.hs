@@ -2968,16 +2968,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     EncounterCard _ -> pure a
     VengeanceCard _ -> pure a
   AddToHand iid cards | iid == investigatorId -> do
-    player <- getPlayer iid
-    let
-      handleCard = \case
-        PlayerCard pc -> InvestigatorDrewPlayerCard iid pc
-        EncounterCard ec -> InvestigatorDrewEncounterCard iid ec
-        VengeanceCard {} -> error "Can not add vengeance card to hand"
-    pushWhen (notNull cards)
-      $ chooseOrRunOneAtATime
-        player
-        [targetLabel card [handleCard card] | card <- cards]
+    for_ (reverse cards) \case
+      PlayerCard pc -> push $ InvestigatorDrewPlayerCard iid pc
+      EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
+      VengeanceCard {} -> error "Can not add vengeance card to hand"
     assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
     pure
       $ a

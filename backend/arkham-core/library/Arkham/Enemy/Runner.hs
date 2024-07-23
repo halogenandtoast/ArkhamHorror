@@ -228,8 +228,6 @@ instance RunMessage EnemyAttrs where
             investigatorIds <- select $ investigatorAt lid
             pushAll $ EnemyEntered eid lid : [EnemyEngageInvestigator eid iid | iid <- investigatorIds]
       pure a
-    EnemySpawnedAt lid eid | eid == enemyId -> do
-      a <$ push (EnemyEntered eid lid)
     EnemyEntered eid lid | eid == enemyId -> do
       case enemyPlacement of
         AsSwarm eid' _ -> do

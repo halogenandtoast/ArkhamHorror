@@ -57,9 +57,14 @@ data CardDrew = CardDrew
   }
   deriving stock (Show, Eq, Ord, Data)
 
+instance HasField "isEncounterDraw" (CardDraw msg) Bool where
+  getField a = case a.deck of
+    EncounterDeck {} -> True
+    _ -> False
+
 instance HasField "isPlayerDraw" (CardDraw msg) Bool where
   getField a = case a.deck of
-    InvestigatorDeck _ -> True
+    InvestigatorDeck {} -> True
     _ -> False
 
 instance HasField "target" CardDrew (Maybe Target) where

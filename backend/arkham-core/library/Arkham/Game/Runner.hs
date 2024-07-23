@@ -1845,15 +1845,11 @@ runGameMessage msg g = case msg of
     pushAll msgs
     pure $ g & phaseStepL ?~ step
   AllDrawEncounterCard -> do
-    investigators <-
-      traverse (traverseToSnd getPlayer) =<< filterM (fmap not . isEliminated) =<< getInvestigatorsInOrder
-    pushAll
-      $ [ chooseOne
-          player
-          [TargetLabel EncounterDeckTarget [drawEncounterCard iid GameSource]]
-        | (iid, player) <- investigators
-        ]
-      <> [SetActiveInvestigator $ g ^. activeInvestigatorIdL]
+    investigators <- filterM (fmap not . isEliminated) =<< getInvestigatorsInOrder
+    push $ SetActiveInvestigator $ g ^. activeInvestigatorIdL
+    for_ (reverse investigators) \iid -> do
+      player <- getPlayer iid
+      push $ chooseOne player [TargetLabel EncounterDeckTarget [drawEncounterCard iid GameSource]]
     pure g
   EndMythos -> do
     pushAll

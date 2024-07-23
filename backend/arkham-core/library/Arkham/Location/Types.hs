@@ -171,6 +171,7 @@ instance FromJSON (SomeField Location) where
     "LocationHorror" -> pure $ SomeField LocationHorror
     "LocationInFrontOf" -> pure $ SomeField LocationInFrontOf
     "LocationInvestigateSkill" -> pure $ SomeField LocationInvestigateSkill
+    "LocationJustShroud" -> pure $ SomeField LocationJustShroud
     "LocationKeywords" -> pure $ SomeField LocationKeywords
     "LocationLabel" -> pure $ SomeField LocationLabel
     "LocationName" -> pure $ SomeField LocationName

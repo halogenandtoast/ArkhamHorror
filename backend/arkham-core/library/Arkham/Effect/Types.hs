@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Effect.Types where
 
 import Arkham.Prelude
@@ -20,6 +22,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Window (Window)
+import Data.Aeson.TH
 import Data.Data
 import GHC.Records
 
@@ -66,7 +69,7 @@ data EffectAttrs = EffectAttrs
   -- to track and escape recursion
   , effectExtraMetadata :: Value
   }
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Eq, Data)
 
 replaceNextSkillTest :: SkillTestId -> EffectAttrs -> EffectAttrs
 replaceNextSkillTest sid e = e {effectWindow = replaceNextSkillTestWindow e.window}
@@ -149,23 +152,6 @@ targetL = lens effectTarget $ \m x -> m {effectTarget = x}
 
 metadataL :: Lens' EffectAttrs (Maybe (EffectMetadata Window Message))
 metadataL = lens effectMetadata $ \m x -> m {effectMetadata = x}
-
-instance ToJSON EffectAttrs where
-  toJSON = genericToJSON $ aesonOptions $ Just "effect"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "effect"
-
-instance FromJSON EffectAttrs where
-  parseJSON = withObject "EffectAttrs" $ \o -> do
-    effectId <- o .: "id"
-    effectCardCode <- o .: "cardCode"
-    effectTarget <- o .: "target"
-    effectSource <- o .: "source"
-    effectTraits <- o .: "traits"
-    effectMetadata <- o .: "metadata"
-    effectWindow <- o .: "window"
-    effectFinished <- o .: "finished"
-    effectExtraMetadata <- o .:? "extraMetadata" .!= Null
-    pure EffectAttrs {..}
 
 instance HasAbilities EffectAttrs
 
@@ -251,3 +237,5 @@ disable = disableEffect
 
 setEffectMeta :: ToJSON a => a -> EffectAttrs -> EffectAttrs
 setEffectMeta a = extraL .~ toJSON a
+
+$(deriveJSON (aesonOptions $ Just "effect") ''EffectAttrs)

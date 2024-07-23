@@ -1,9 +1,12 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.TokenStrategy where
 
-import ClassyPrelude
-
 import Arkham.Json
+import Arkham.Prelude
+import Data.Aeson.TH
 
 data TokenStrategy = DefaultTokenStrategy | DrawXResolveOne Int
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving stock (Show, Eq)
+
+$(deriveJSON defaultOptions ''TokenStrategy)

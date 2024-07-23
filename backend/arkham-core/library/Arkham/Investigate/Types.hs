@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Investigate.Types where
 
 import Arkham.Prelude
@@ -6,7 +8,7 @@ import Arkham.Id
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
-import Data.UUID (nil)
+import Data.Aeson.TH
 import GHC.Records
 
 data Investigate = MkInvestigate
@@ -18,19 +20,9 @@ data Investigate = MkInvestigate
   , investigateIsAction :: Bool
   , investigateSkillTest :: SkillTestId
   }
-  deriving stock (Show, Eq, Generic, Data)
-  deriving anyclass ToJSON
+  deriving stock (Show, Eq, Data)
 
-instance FromJSON Investigate where
-  parseJSON = withObject "Investigate" $ \o -> do
-    investigateInvestigator <- o .: "investigateInvestigator"
-    investigateLocation <- o .: "investigateLocation"
-    investigateSkillType <- o .: "investigateSkillType"
-    investigateSource <- o .: "investigateSource"
-    investigateTarget <- o .:? "investigateTarget"
-    investigateIsAction <- o .: "investigateIsAction"
-    investigateSkillTest <- o .:? "investigateSkillTestId" .!= SkillTestId nil
-    pure $ MkInvestigate {..}
+$(deriveJSON defaultOptions ''Investigate)
 
 instance HasField "investigator" Investigate InvestigatorId where
   getField = investigateInvestigator

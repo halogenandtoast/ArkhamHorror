@@ -17,6 +17,7 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Story.Cards
 import Arkham.Target
+import Data.Aeson.TH
 import Data.Data
 import GHC.Records
 
@@ -51,7 +52,7 @@ data StoryAttrs = StoryAttrs
   , storyMeta :: Value
   , storyRemoveAfterResolution :: Bool
   }
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq)
 
 instance HasField "ability" StoryAttrs (Int -> Source) where
   getField = toAbilitySource
@@ -92,21 +93,6 @@ instance HasCardDef StoryAttrs where
 instance HasCardCode Story where
   toCardCode (Story a) = toCardCode (toAttrs a)
   {-# INLINE toCardCode #-}
-
-instance ToJSON StoryAttrs where
-  toJSON = genericToJSON $ aesonOptions $ Just "story"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "story"
-
-instance FromJSON StoryAttrs where
-  parseJSON = withObject "StoryAttrs" $ \o -> do
-    storyId <- o .: "id"
-    storyCardId <- o .: "cardId"
-    storyPlacement <- o .: "placement"
-    storyOtherSide <- o .: "otherSide"
-    storyFlipped <- o .: "flipped"
-    storyMeta <- o .: "meta"
-    storyRemoveAfterResolution <- o .:? "removeAfterResolution" .!= True
-    pure StoryAttrs {..}
 
 instance Entity StoryAttrs where
   type EntityId StoryAttrs = StoryId
@@ -187,3 +173,5 @@ someStoryCardCode :: SomeStoryCard -> CardCode
 someStoryCardCode = liftSomeStoryCard cbCardCode
 
 makeLensesWith suffixedFields ''StoryAttrs
+
+$(deriveJSON (aesonOptions $ Just "story") ''StoryAttrs)

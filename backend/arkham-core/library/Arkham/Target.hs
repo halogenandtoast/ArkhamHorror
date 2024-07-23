@@ -19,7 +19,6 @@ import Arkham.Trait
 import Control.Lens (Getting, Prism', prism')
 import Data.Aeson.TH
 import Data.Monoid (First)
-import Data.UUID (nil)
 import GHC.OverloadedLabels
 import GHC.Records
 
@@ -183,16 +182,7 @@ _EnemyTarget :: Traversal' Target EnemyId
 _EnemyTarget f (EnemyTarget enemy) = EnemyTarget <$> f enemy
 _EnemyTarget _ other = pure other
 
-$(deriveToJSON defaultOptions ''Target)
-
-instance FromJSON Target where
-  parseJSON = withObject "Target" $ \o -> do
-    tag :: Text <- o .: "tag"
-    case tag of
-      "SkillTestTarget" -> do
-        eSkillTestId <- (Left <$> o .: "skillTestId") <|> (Right <$> pure ())
-        pure $ either SkillTestTarget (\_ -> SkillTestTarget (SkillTestId nil)) eSkillTestId
-      _ -> genericParseJSON defaultOptions (Object o)
+$(deriveJSON defaultOptions ''Target)
 
 instance FromJSONKey Target
 instance ToJSONKey Target

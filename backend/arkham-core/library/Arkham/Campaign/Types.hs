@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-dodgy-imports #-}
 
 module Arkham.Campaign.Types where
@@ -23,6 +24,7 @@ import Arkham.Resolution
 import Arkham.Source
 import Arkham.Target
 import Control.Monad.Writer hiding (filterM)
+import Data.Aeson.TH
 import Data.List.NonEmpty qualified as NE
 import Data.Typeable
 import GHC.Records
@@ -121,25 +123,6 @@ instance Entity CampaignAttrs where
   toAttrs = id
   overAttrs f = f
 
-instance ToJSON CampaignAttrs where
-  toJSON = genericToJSON $ aesonOptions $ Just "campaign"
-
-instance FromJSON CampaignAttrs where
-  parseJSON = withObject "CampaignAttrs" $ \o -> do
-    campaignId <- o .: "id"
-    campaignName <- o .: "name"
-    campaignDecks <- o .: "decks"
-    campaignStoryCards <- o .: "storyCards"
-    campaignDifficulty <- o .: "difficulty"
-    campaignChaosBag <- o .: "chaosBag"
-    campaignLog <- o .: "log"
-    campaignStep <- o .: "step"
-    campaignCompletedSteps <- o .: "completedSteps"
-    campaignResolutions <- o .: "resolutions"
-    campaignModifiers <- o .: "modifiers"
-    campaignMeta <- o .:? "meta" .!= Null
-    pure CampaignAttrs {..}
-
 addRandomBasicWeaknessIfNeeded
   :: MonadRandom m => Int -> Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
 addRandomBasicWeaknessIfNeeded playerCount deck = do
@@ -226,3 +209,5 @@ difficultyOf = campaignDifficulty . toAttrs
 
 chaosBagOf :: Campaign -> [ChaosTokenFace]
 chaosBagOf = campaignChaosBag . toAttrs
+
+$(deriveJSON (aesonOptions $ Just "campaign") ''CampaignAttrs)

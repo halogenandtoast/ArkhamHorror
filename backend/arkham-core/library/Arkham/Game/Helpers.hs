@@ -1387,6 +1387,8 @@ passesCriteria iid mcard source' windows' = \case
       ]
   Criteria.AssetExists matcher -> do
     selectAny (Matcher.replaceYouMatcher iid matcher)
+  Criteria.TargetExists matcher -> do
+    selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.DifferentAssetsExist matcher1 matcher2 -> do
     m1 <- select (Matcher.replaceYouMatcher iid matcher1)
     m2 <- select (Matcher.replaceYouMatcher iid matcher2)

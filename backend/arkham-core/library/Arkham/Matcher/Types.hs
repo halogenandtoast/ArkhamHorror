@@ -1230,7 +1230,12 @@ data TargetMatcher
   | ScenarioCardTarget
   | TargetWithDoom
   | TargetAtLocation LocationMatcher
+  | NotTarget TargetMatcher
+  | TargetWithTrait Trait
   deriving stock (Show, Eq, Ord, Data)
+
+instance Not TargetMatcher where
+  not_ = NotTarget
 
 instance Semigroup TargetMatcher where
   AnyTarget <> x = x

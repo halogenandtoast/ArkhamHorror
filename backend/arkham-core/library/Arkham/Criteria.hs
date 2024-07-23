@@ -121,6 +121,7 @@ data CostReduction = Reduce Int | ReduceBySuccessAmount
 
 data Criterion
   = AssetExists AssetMatcher
+  | TargetExists TargetMatcher
   | DifferentAssetsExist AssetMatcher AssetMatcher
   | DifferentEnemiesExist EnemyMatcher EnemyMatcher
   | EventExists EventMatcher
@@ -247,6 +248,9 @@ overrideExists = CriteriaOverride . exists
 
 notExists :: Exists a => a -> Criterion
 notExists = not_ . exists
+
+instance Exists TargetMatcher where
+  exists = TargetExists
 
 instance Exists EventMatcher where
   exists = EventExists

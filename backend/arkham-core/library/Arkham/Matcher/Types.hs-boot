@@ -104,3 +104,12 @@ instance FromJSON WindowMatcher
 instance Show WindowMatcher
 instance Eq WindowMatcher
 instance Ord WindowMatcher
+
+data ExtendedCardMatcher
+
+instance Data ExtendedCardMatcher
+instance ToJSON ExtendedCardMatcher
+instance FromJSON ExtendedCardMatcher
+instance Show ExtendedCardMatcher
+instance Eq ExtendedCardMatcher
+instance Ord ExtendedCardMatcher

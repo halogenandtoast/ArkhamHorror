@@ -692,6 +692,7 @@ instance Monoid TreacheryMatcher where
 -- | Relies on game state, can not be used purely
 data ExtendedCardMatcher
   = BasicCardMatch CardMatcher
+  | WillGoIntoSlot SlotType
   | CardIsBeneathInvestigator Who
   | CardIsBeneathAsset AssetMatcher
   | CardWithCopyInHand Who

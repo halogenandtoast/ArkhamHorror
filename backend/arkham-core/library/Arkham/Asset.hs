@@ -900,6 +900,7 @@ allAssets =
     , SomeAssetCard hallowedChalice
     , SomeAssetCard onyxPentacle
     , SomeAssetCard bindersJarInterdimensionalPrison1
+    , SomeAssetCard astralMirror2
     , SomeAssetCard ceremonialSickle4
     , SomeAssetCard dowsingRod4
     , SomeAssetCard onyxPentacle4

@@ -526,6 +526,10 @@ canHaveDamageHealed a = selectAny . HealableInvestigator (toSource a) DamageType
 additionalActionCovers
   :: HasGame m => Source -> [Action] -> AdditionalAction -> m Bool
 additionalActionCovers source actions (AdditionalAction _ _ aType) = case aType of
+  PlayCardRestrictedAdditionalAction matcher -> case source of
+    CardSource c -> elem c <$> select matcher
+    PlayerCardSource pc -> elem (toCard pc) <$> select matcher
+    _ -> pure False
   TraitRestrictedAdditionalAction t actionRestriction -> case actionRestriction of
     NoRestriction -> member t <$> sourceTraits source
     AbilitiesOnly -> case source of

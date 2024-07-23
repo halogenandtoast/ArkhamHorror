@@ -99,26 +99,7 @@ abilityDelayAdditionalCostsL :: Lens' Ability Bool
 abilityDelayAdditionalCostsL = lens abilityDelayAdditionalCosts $ \m x -> m {abilityDelayAdditionalCosts = x}
 
 $(deriveJSON defaultOptions ''AbilityMetadata)
-$(deriveToJSON (aesonOptions $ Just "ability") ''Ability)
-
-instance FromJSON Ability where
-  parseJSON = withObject "Ability" $ \o -> do
-    abilitySource <- o .: "source"
-    abilityCardCode <- o .: "cardCode"
-    abilityIndex <- o .: "index"
-    abilityType <- o .: "type"
-    abilityLimit <- o .: "limit"
-    abilityWindow <- o .: "window"
-    abilityMetadata <- o .:? "metadata"
-    abilityCriteria <- o .: "criteria"
-    abilityDoesNotProvokeAttacksOfOpportunity <- o .: "doesNotProvokeAttacksOfOpportunity"
-    abilityTooltip <- o .:? "tooltip"
-    abilityCanBeCancelled <- o .: "canBeCancelled"
-    abilityDisplayAsAction <- o .: "displayAsAction"
-    abilityDelayAdditionalCosts <- o .:? "delayAdditionalCosts" .!= False
-    abilityBasic <- o .:? "basic" .!= False
-    abilityAdditionalCosts <- o .:? "additionalCosts" .!= []
-    pure Ability {..}
+$(deriveJSON (aesonOptions $ Just "ability") ''Ability)
 
 newtype DifferentAbility = DifferentAbility Ability
   deriving newtype (Show, ToJSON, FromJSON)

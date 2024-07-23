@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Fight.Types where
 
 import Arkham.Id
@@ -6,7 +8,7 @@ import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
-import Data.UUID (nil)
+import Data.Aeson.TH
 import GHC.Records
 
 data ChooseFight = ChooseFight
@@ -20,21 +22,7 @@ data ChooseFight = ChooseFight
   , chooseFightOverride :: Bool
   , chooseFightSkillTest :: SkillTestId
   }
-  deriving stock (Show, Eq, Generic, Data)
-  deriving anyclass ToJSON
-
-instance FromJSON ChooseFight where
-  parseJSON = withObject "ChooseFight" $ \o -> do
-    chooseFightInvestigator <- o .: "chooseFightInvestigator"
-    chooseFightEnemyMatcher <- o .: "chooseFightEnemyMatcher"
-    chooseFightSource <- o .: "chooseFightSource"
-    chooseFightTarget <- o .:? "chooseFightTarget"
-    chooseFightSkillType <- o .: "chooseFightSkillType"
-    chooseFightIsAction <- o .: "chooseFightIsAction"
-    chooseFightOnlyChoose <- o .: "chooseFightOnlyChoose"
-    chooseFightOverride <- o .: "chooseFightOverride"
-    chooseFightSkillTest <- o .:? "chooseFightSkillTest" .!= SkillTestId nil
-    pure ChooseFight {..}
+  deriving stock (Show, Eq, Data)
 
 instance HasField "investigator" ChooseFight InvestigatorId where
   getField = chooseFightInvestigator
@@ -66,3 +54,5 @@ instance HasField "skillTest" ChooseFight SkillTestId where
 instance WithTarget ChooseFight where
   getTarget = chooseFightTarget
   setTarget t i = i {chooseFightTarget = Just (toTarget t)}
+
+$(deriveJSON defaultOptions ''ChooseFight)

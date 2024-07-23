@@ -94,16 +94,4 @@ destinationToLocationMatcher = \case
 
 $(deriveJSON defaultOptions ''MovementMeans)
 $(deriveJSON defaultOptions ''Destination)
-
-instance FromJSON Movement where
-  parseJSON = withObject "Movement" $ \o -> do
-    moveSource <- o .: "moveSource"
-    moveTarget <- o .: "moveTarget"
-    moveDestination <- o .: "moveDestination"
-    moveMeans <- o .: "moveMeans"
-    moveCancelable <- o .: "moveCancelable"
-    movePayAdditionalCosts <- o .: "movePayAdditionalCosts"
-    moveAfter <- o .:? "moveAfter" .!= []
-    pure Movement {..}
-
-$(deriveToJSON defaultOptions ''Movement)
+$(deriveJSON defaultOptions ''Movement)

@@ -3,12 +3,11 @@
 
 module Arkham.Game.Json where
 
-import Arkham.Prelude
-
 import Arkham.Game.Base
+import Arkham.Prelude
 import Data.Aeson.TH
 
--- being json instances into scope
+-- bring json instances into scope
 
 import Arkham.Campaign ()
 import Arkham.Entities ()

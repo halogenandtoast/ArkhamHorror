@@ -11,7 +11,7 @@ import Arkham.Treachery.Runner
 
 newtype HospitalDebts = HospitalDebts TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, Generic, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hospitalDebts :: TreacheryCard HospitalDebts
 hospitalDebts = treachery HospitalDebts Cards.hospitalDebts

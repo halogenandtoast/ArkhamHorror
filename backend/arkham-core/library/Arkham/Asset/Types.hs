@@ -30,6 +30,7 @@ import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Trait (Trait)
 import Data.Aeson.KeyMap qualified as KeyMap
+import Data.Aeson.TH
 import Data.Data
 import Data.Map.Strict qualified as Map
 import GHC.Records
@@ -266,7 +267,7 @@ data AssetAttrs = AssetAttrs
   , assetMeta :: Value
   , assetFlipped :: Bool
   }
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq)
 
 assetUses :: AssetAttrs -> Map UseType Int
 assetUses = Map.filterWithKey (\k _ -> tokenIsUse k) . coerce . assetTokens
@@ -370,41 +371,6 @@ instance HasCardDef AssetAttrs where
   toCardDef a = case lookup (assetCardCode a) allAssetCards of
     Just def -> def
     Nothing -> error $ "missing card def for asset " <> show (assetCardCode a)
-
-instance ToJSON AssetAttrs where
-  toJSON = genericToJSON $ aesonOptions $ Just "asset"
-
-instance FromJSON AssetAttrs where
-  parseJSON = withObject "AssetAttrs" $ \o -> do
-    assetId <- o .: "id"
-    assetCardId <- o .: "cardId"
-    assetCardCode <- o .: "cardCode"
-    assetOriginalCardCode <- o .: "originalCardCode"
-    assetPlacement <- o .: "placement"
-    assetOwner <- o .: "owner"
-    assetController <- o .: "controller"
-    assetSlots <- o .: "slots"
-    assetHealth <- o .: "health"
-    assetSanity <- o .: "sanity"
-    deprecatedAssetUses <- o .:? "uses" .!= mempty
-    assetPrintedUses <- o .: "printedUses" <|> (fmap GameValueCalculation <$> o .: "printedUses")
-    assetExhausted <- o .: "exhausted"
-    assetExiled <- o .:? "exiled" .!= False
-    assetTokens <- Map.unionWith (+) deprecatedAssetUses <$> o .: "tokens"
-    assetCanLeavePlayByNormalMeans <- o .: "canLeavePlayByNormalMeans"
-    assetWhenNoUses <- o .: "whenNoUses"
-    assetIsStory <- o .: "isStory"
-    assetCardsUnderneath <- o .: "cardsUnderneath"
-    assetSealedChaosTokens <- o .: "sealedChaosTokens"
-    assetKeys <- o .: "keys"
-    assetAssignedHealthDamage <- o .: "assignedHealthDamage"
-    assetAssignedHealthHeal <- (o .:? "assignedHealthHeal" .!= mempty) <|> pure mempty
-    assetAssignedSanityDamage <- o .: "assignedSanityDamage"
-    assetAssignedSanityHeal <- (o .:? "assignedSanityHeal" .!= mempty) <|> pure mempty
-    assetCustomizations <- o .:? "customizations" .!= mempty
-    assetMeta <- o .:? "meta" .!= Null
-    assetFlipped <- o .:? "flipped" .!= False
-    pure AssetAttrs {..}
 
 instance IsCard AssetAttrs where
   toCardId = assetCardId
@@ -590,3 +556,5 @@ getMetaKeyDefault k def attrs = case attrs.meta of
       Error _ -> def
       Success v' -> v'
   _ -> def
+
+$(deriveJSON (aesonOptions $ Just "asset") ''AssetAttrs)

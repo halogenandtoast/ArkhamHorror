@@ -2,8 +2,6 @@
 
 module Arkham.Treachery.Types where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Card
 import Arkham.ChaosToken (ChaosToken)
@@ -17,12 +15,14 @@ import Arkham.Json
 import Arkham.Keyword
 import Arkham.Name
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait
 import Arkham.Treachery.Cards
+import Data.Aeson.TH
 import Data.Data
 import GHC.Records
 
@@ -80,7 +80,7 @@ data TreacheryAttrs = TreacheryAttrs
   , treacheryMeta :: Value
   , treacherySealedChaosTokens :: [ChaosToken]
   }
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq)
 
 instance AsId Treachery where
   type IdOf Treachery = TreacheryId
@@ -153,28 +153,6 @@ instance HasCardDef TreacheryAttrs where
     Just def -> def
     Nothing ->
       error $ "missing card def for treachery " <> show (treacheryCardCode a)
-
-instance ToJSON TreacheryAttrs where
-  toJSON = genericToJSON $ aesonOptions $ Just "treachery"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "treachery"
-
-instance FromJSON TreacheryAttrs where
-  parseJSON = withObject "TreacheryAttrs" $ \o -> do
-    treacheryId <- o .: "id"
-    treacheryCardId <- o .: "cardId"
-    treacheryCardCode <- o .: "cardCode"
-    treacheryOwner <- o .: "owner"
-    treacheryTokens <- o .: "tokens"
-    treacheryPlacement <- o .: "placement" <|> (treacheryPlacementToPlacement <$> o .: "placement")
-    treacheryCanBeCommitted <- o .: "canBeCommitted"
-    treacheryDrawnBy <- o .: "drawnBy"
-    treacheryDrawnFrom <- o .: "drawnFrom"
-    treacheryResolved <- o .: "resolved"
-    treacheryDiscardedBy <- o .: "discardedBy"
-    treacheryMeta <- o .:? "meta" .!= Null
-    treacherySealedChaosTokens <- o .:? "sealedChaosTokens" .!= []
-
-    pure $ TreacheryAttrs {..}
 
 instance Entity TreacheryAttrs where
   type EntityId TreacheryAttrs = TreacheryId
@@ -371,3 +349,5 @@ makeLensesWith suffixedFields ''TreacheryAttrs
 
 setMeta :: ToJSON a => a -> TreacheryAttrs -> TreacheryAttrs
 setMeta a = metaL .~ toJSON a
+
+$(deriveJSON (aesonOptions $ Just "treachery") ''TreacheryAttrs)

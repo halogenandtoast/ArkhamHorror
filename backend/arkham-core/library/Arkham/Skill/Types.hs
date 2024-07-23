@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Skill.Types where
 
 import Arkham.Prelude
@@ -20,6 +22,7 @@ import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
 import Arkham.Trait
+import Data.Aeson.TH
 import Data.Data
 import GHC.Records
 
@@ -65,7 +68,7 @@ data SkillAttrs = SkillAttrs
   , skillMeta :: Value
   , skillCustomizations :: Customizations
   }
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq)
 
 instance HasField "attachedTo" SkillAttrs (Maybe Target) where
   getField = placementToAttached . skillPlacement
@@ -122,25 +125,6 @@ instance IsCard SkillAttrs where
   toCardId = skillCardId
   toCardOwner = Just . skillOwner
   toCustomizations = skillCustomizations
-
-instance ToJSON SkillAttrs where
-  toJSON = genericToJSON $ aesonOptions $ Just "skill"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "skill"
-
-instance FromJSON SkillAttrs where
-  parseJSON = withObject "SkillAttrs" \o -> do
-    skillCardCode <- o .: "cardCode"
-    skillCardId <- o .: "cardId"
-    skillId <- o .: "id"
-    skillOwner <- o .: "owner"
-    skillAdditionalCost <- o .: "additionalCost"
-    skillAdditionalPayment <- o .: "additionalPayment"
-    skillAfterPlay <- o .: "afterPlay"
-    skillPlacement <- o .: "placement"
-    skillSealedChaosTokens <- o .:? "sealedChaosTokens" .!= []
-    skillMeta <- o .:? "meta" .!= Null
-    skillCustomizations <- o .:? "customizations" .!= mempty
-    pure $ SkillAttrs {..}
 
 instance Entity SkillAttrs where
   type EntityId SkillAttrs = SkillId
@@ -268,3 +252,5 @@ controlledBy SkillAttrs {..} iid = case skillPlacement of
   InPlayArea iid' -> iid == iid'
   AttachedToAsset _ (Just (InPlayArea iid')) -> iid == iid'
   _ -> False
+
+$(deriveJSON (aesonOptions $ Just "skill") ''SkillAttrs)

@@ -167,18 +167,4 @@ insertHistory
   -> Map InvestigatorId History
 insertHistory iid histitem = Map.alter (Just . insertHistoryItem histitem . fromMaybe mempty) iid
 
-instance FromJSON History where
-  parseJSON = withObject "History" $ \o -> do
-    historyTreacheriesDrawn <- o .: "historyTreacheriesDrawn"
-    historyDealtDamageTo <- o .: "historyDealtDamageTo"
-    historyEnemiesDefeated <- o .: "historyEnemiesDefeated"
-    historyMoved <- o .: "historyMoved"
-    historyLocationsSuccessfullyInvestigated <- o .: "historyLocationsSuccessfullyInvestigated"
-    historySuccessfulExplore <- o .: "historySuccessfulExplore"
-    historyActionsCompleted <- o .: "historyActionsCompleted"
-    historySkillTestsPerformed <- o .: "historySkillTestsPerformed"
-    historyPlayedCards <- o .: "historyPlayedCards"
-    historyCluesDiscovered <- o .:? "historyCluesDiscovered" .!= mempty
-    pure History {..}
-
-$(deriveToJSON defaultOptions ''History)
+$(deriveJSON defaultOptions ''History)

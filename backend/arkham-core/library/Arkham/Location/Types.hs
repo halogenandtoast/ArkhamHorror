@@ -147,11 +147,7 @@ instance Typeable typ => FromJSON (Field Location typ) where
       SomeField (f :: Field Location k) ->
         case eqT @typ @k of
           Just Refl -> pure f
-          Nothing -> case f of
-            LocationShroud -> case eqT @typ @Int of
-              Just Refl -> pure LocationJustShroud
-              Nothing -> error $ "type mismatch: " <> show z <> " field: " <> show f <> " originally : " <> show x
-            _ -> error $ "type mismatch: " <> show z <> " field: " <> show f <> " originally : " <> show x
+          Nothing -> error $ "type mismatch: " <> show z <> " field: " <> show f <> " originally : " <> show x
 
 instance FromJSON (SomeField Location) where
   parseJSON = withText "Field Location" $ \case

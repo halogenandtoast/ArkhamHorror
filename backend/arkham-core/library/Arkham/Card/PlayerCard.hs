@@ -76,14 +76,4 @@ lookupPlayerCard cardDef cardId =
 setPlayerCardOwner :: InvestigatorId -> PlayerCard -> PlayerCard
 setPlayerCardOwner iid pc = pc {pcOwner = Just iid}
 
-instance FromJSON PlayerCard where
-  parseJSON = withObject "PlayerCard" $ \o -> do
-    pcId <- o .: "id"
-    pcCardCode <- o .: "cardCode"
-    pcOriginalCardCode <- o .: "originalCardCode"
-    pcOwner <- o .:? "owner"
-    -- fallBack :: IntMap Int <- o .:? "customizations" .!= mempty
-    pcCustomizations <- o .:? "customizations" .!= mempty -- IntMap.map (,[]) fallBack
-    pure $ MkPlayerCard {..}
-
-$(deriveToJSON (aesonOptions $ Just "pc") ''PlayerCard)
+$(deriveJSON (aesonOptions $ Just "pc") ''PlayerCard)

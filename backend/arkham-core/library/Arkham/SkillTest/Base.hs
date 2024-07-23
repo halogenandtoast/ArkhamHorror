@@ -16,7 +16,6 @@ import Arkham.SkillType (SkillIcon (..), SkillType)
 import Arkham.Source
 import Arkham.Target
 import Data.Aeson.TH
-import Data.UUID (nil)
 import GHC.Records
 
 data SkillTestBaseValue
@@ -173,28 +172,4 @@ resetSkillTest sid skillTest =
 
 $(deriveJSON defaultOptions ''SkillTestBaseValue)
 $(deriveJSON defaultOptions ''SkillTestResultsData)
-
-instance FromJSON SkillTest where
-  parseJSON = withObject "skillTest" $ \o -> do
-    skillTestId <- o .:? "id" .!= SkillTestId nil
-    skillTestInvestigator <- o .: "investigator"
-    skillTestResolveFailureInvestigator <- o .: "resolveFailureInvestigator"
-    skillTestType <- o .: "type"
-    skillTestBaseValue <- o .: "baseValue"
-    skillTestDifficulty <- o .: "difficulty"
-    skillTestSetAsideChaosTokens <- o .: "setAsideChaosTokens"
-    skillTestRevealedChaosTokens <- o .: "revealedChaosTokens"
-    skillTestResolvedChaosTokens <- o .: "resolvedChaosTokens"
-    skillTestToResolveChaosTokens <- o .:? "toResolveChaosTokens" .!= []
-    skillTestResult <- o .: "result"
-    skillTestCommittedCards <- o .: "committedCards"
-    skillTestSource <- o .: "source"
-    skillTestTarget <- o .: "target"
-    skillTestAction <- o .: "action"
-    skillTestSubscribers <- o .: "subscribers"
-    skillTestIsRevelation <- o .: "isRevelation"
-    skillTestIconValues <- o .:? "iconValues" .!= iconValuesForSkillTestType skillTestType
-    skillTestCard <- o .:? "card"
-    pure SkillTest {..}
-
-$(deriveToJSON (aesonOptions $ Just "skillTest") ''SkillTest)
+$(deriveJSON (aesonOptions $ Just "skillTest") ''SkillTest)

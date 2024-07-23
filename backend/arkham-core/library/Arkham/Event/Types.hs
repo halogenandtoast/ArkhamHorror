@@ -26,6 +26,7 @@ import Arkham.Target
 import Arkham.Trait
 import Arkham.Window (Window)
 import Data.Aeson.KeyMap qualified as KeyMap
+import Data.Aeson.TH
 import Data.Data
 import Data.Map.Strict qualified as Map
 import GHC.Records
@@ -93,7 +94,7 @@ data EventAttrs = EventAttrs
   , eventCustomizations :: Customizations
   , eventPrintedUses :: Uses GameCalculation
   }
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq)
 
 allEventCards :: Map CardCode CardDef
 allEventCards = allPlayerEventCards
@@ -158,38 +159,6 @@ instance HasCardDef EventAttrs where
   toCardDef a = case lookup (eventCardCode a) allEventCards of
     Just def -> def
     Nothing -> error $ "missing card def for asset " <> show (eventCardCode a)
-
-instance ToJSON EventAttrs where
-  toJSON = genericToJSON $ aesonOptions $ Just "event"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "event"
-
-instance FromJSON EventAttrs where
-  parseJSON = withObject "EventAttrs" \o -> do
-    eventCardCode <- o .: "cardCode"
-    eventCardId <- o .: "cardId"
-    eventOriginalCardCode <- o .: "originalCardCode"
-    eventId <- o .: "id"
-    eventOwner <- o .: "owner"
-    eventController <- o .:? "controller" .!= eventOwner
-    eventDoom <- o .: "doom"
-    eventExhausted <- o .: "exhausted"
-    eventBeingPaidFor <- o .: "beingPaidFor"
-    eventPayment <- o .:? "payment" .!= NoPayment
-    eventPaymentMessages <- o .: "paymentMessages"
-    eventSealedChaosTokens <- o .: "sealedChaosTokens"
-    eventCardsUnderneath <- o .: "cardsUnderneath"
-    eventPlacement <- o .: "placement"
-    eventAfterPlay <- o .: "afterPlay"
-    eventPlayedFrom <- o .: "playedFrom"
-    eventWindows <- o .: "windows"
-    eventTarget <- o .: "target"
-    eventMeta <- o .:? "meta" .!= Null
-    deprecatedEventUses <- o .:? "uses" .!= mempty
-    eventTokens <- o .:? "tokens" .!= deprecatedEventUses
-    eventCustomizations <- o .:? "customizations" .!= mempty
-    eventPrintedUses <- o .:? "printedUses" .!= NoUses
-
-    pure EventAttrs {..}
 
 instance IsCard EventAttrs where
   toCard = defaultToCard
@@ -375,3 +344,5 @@ getMetaKeyDefault k def attrs = case attrs.meta of
       Error _ -> def
       Success v' -> v'
   _ -> def
+
+$(deriveJSON (aesonOptions $ Just "event") ''EventAttrs)

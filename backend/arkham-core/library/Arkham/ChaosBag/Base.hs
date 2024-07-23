@@ -1,10 +1,12 @@
-module Arkham.ChaosBag.Base where
+{-# LANGUAGE TemplateHaskell #-}
 
-import Arkham.Prelude
+module Arkham.ChaosBag.Base where
 
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken
 import Arkham.Json
+import Arkham.Prelude
+import Data.Aeson.TH
 
 data ChaosBag = ChaosBag
   { chaosBagChaosTokens :: [ChaosToken]
@@ -22,19 +24,7 @@ allChaosBagChaosTokens ChaosBag {..} =
     <> chaosBagSetAsideChaosTokens
     <> chaosBagRevealedChaosTokens
 
-instance ToJSON ChaosBag where
-  toJSON = genericToJSON $ aesonOptions $ Just "chaosBag"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "chaosBag"
-
-instance FromJSON ChaosBag where
-  parseJSON = withObject "ChaosBag" $ \o -> do
-    chaosBagChaosTokens <- o .: "chaosTokens"
-    chaosBagSetAsideChaosTokens <- o .: "setAsideChaosTokens"
-    chaosBagRevealedChaosTokens <- o .: "revealedChaosTokens"
-    chaosBagChoice <- o .: "choice"
-    chaosBagForceDraw <- o .: "forceDraw"
-    chaosBagTokenPool <- o .:? "tokenPool" .!= []
-    pure ChaosBag {..}
+$(deriveJSON (aesonOptions $ Just "chaosBag") ''ChaosBag)
 
 emptyChaosBag :: ChaosBag
 emptyChaosBag =

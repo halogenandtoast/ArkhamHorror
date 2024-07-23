@@ -374,7 +374,6 @@ data Message
   | AdvanceCurrentAgenda
   | ReplaceLocation LocationId Card ReplaceStrategy
   | ReplaceEnemy EnemyId Card ReplaceStrategy
-  | ReplacedLocation LocationId LocationId
   | ReplaceAgenda AgendaId Card
   | RevertAgenda AgendaId
   | ResetAgendaDeckToStage Int
@@ -606,7 +605,6 @@ data Message
   | EnemySpawnEngagedWithPrey EnemyId
   | EnemySpawnEngagedWith EnemyId InvestigatorMatcher
   | EnemySpawnFromVoid (Maybe InvestigatorId) LocationId EnemyId
-  | EnemySpawnedAt LocationId EnemyId
   | EngageEnemy InvestigatorId EnemyId (Maybe Target) Bool
   | EvadeEnemy SkillTestId InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
   | Exhaust Target
@@ -958,7 +956,6 @@ data Message
   | TryEvadeEnemy SkillTestId InvestigatorId EnemyId Source (Maybe Target) SkillType
   | UnfocusCards
   | ClearFound Zone
-  | UnfocusTargets
   | UnfocusChaosTokens
   | SealChaosToken ChaosToken
   | SealedChaosToken ChaosToken Card
@@ -993,8 +990,6 @@ data Message
   | UndoAction
   | BeginAction
   | FinishAction
-  | BeginCardPayment Card
-  | FinishCardPayment Card
   | ReplaceCard CardId Card
   | UpdateHistory InvestigatorId HistoryItem
   | -- The Forgotten Age
@@ -1009,8 +1004,7 @@ data Message
   | ForPlayer PlayerId Message
   | ForSkillType SkillType Message
   | -- The Circle Undone
-    BecomePrologueInvestigator InvestigatorId InvestigatorId
-  | PutLocationInFrontOf InvestigatorId LocationId
+    PutLocationInFrontOf InvestigatorId LocationId
   | PutLocationInCenter LocationId
   | PlaceBreaches Target Int
   | RemoveBreaches Target Int

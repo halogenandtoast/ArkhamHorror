@@ -2381,23 +2381,27 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pushAll $ mMsg <> [msg']
     pure $ a & drawingL .~ Nothing
   DrawCards iid cardDraw | iid == toId a -> do
+    phase <- getPhase
     wouldDrawCard <- checkWindows [mkWhen (Window.WouldDrawCard iid cardDraw.deck)]
+    drawEncounterCardWindow <- checkWindows [mkWhen $ Window.WouldDrawEncounterCard a.id phase]
     if cardDrawAction cardDraw
       then do
         beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #draw)]
         afterWindowMsg <- checkWindows [mkAfter (Window.PerformAction iid #draw)]
         pushAll
-          [ BeginAction
-          , beforeWindowMsg
-          , TakeActions iid [#draw] (ActionCost 1)
-          , CheckAttackOfOpportunity iid False
-          , wouldDrawCard
-          , DoDrawCards iid
-          , DrawEnded iid
-          , afterWindowMsg
-          , FinishAction
-          ]
-      else pushAll [wouldDrawCard, DoDrawCards iid, DrawEnded iid]
+          $ [BeginAction, beforeWindowMsg]
+          <> [drawEncounterCardWindow | cardDraw.isEncounterDraw]
+          <> [ TakeActions iid [#draw] (ActionCost 1)
+             , CheckAttackOfOpportunity iid False
+             , wouldDrawCard
+             , DoDrawCards iid
+             , DrawEnded iid
+             , afterWindowMsg
+             , FinishAction
+             ]
+      else
+        pushAll $ wouldDrawCard
+          : [drawEncounterCardWindow | cardDraw.isEncounterDraw] <> [DoDrawCards iid, DrawEnded iid]
     pure $ a & drawingL ?~ cardDraw
   MoveTopOfDeckToBottom _ (Deck.InvestigatorDeck iid) n | iid == investigatorId -> do
     let (cards, deck) = draw n investigatorDeck
@@ -2405,6 +2409,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   DoDrawCards iid | iid == toId a -> do
     for_ (a ^. drawingL) \d -> push $ Do (DrawCards iid d)
     pure $ a & drawingL .~ Nothing
+  ReplaceCurrentCardDraw iid drawing | iid == investigatorId -> do
+    pure $ a & drawingL ?~ drawing
   Do (DrawCards iid cardDraw) | iid == toId a && cardDraw.deck == Deck.InvestigatorDeck iid -> do
     case cardDraw.kind of
       StartingHandCardDraw -> do

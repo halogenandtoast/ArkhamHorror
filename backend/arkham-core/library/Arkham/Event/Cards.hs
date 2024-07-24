@@ -237,6 +237,7 @@ allPlayerEventCards =
       , lessonLearned2
       , letGodSortThemOut
       , letMeHandleThis
+      , lifeline1
       , liveAndLearn
       , lodgeDebts
       , logicalReasoning
@@ -3623,6 +3624,17 @@ atACrossroads1 =
     , cdCost = Nothing
     , cdLimits = [MaxPerTraitPerRound Dilemma 2]
     , cdCriteria = Just Criteria.Never
+    , cdLevel = Just 1
+    }
+
+lifeline1 :: CardDef
+lifeline1 =
+  (event "09110" "Lifeline" 1 Survivor)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Fortune]
+    , cdLimits = [MaxPerTurn 1]
+    , cdFastWindow =
+        Just $ TurnWouldEnd #when (affectsOthers $ InvestigatorWithAnyFailedSkillTestsThisTurn)
     , cdLevel = Just 1
     }
 

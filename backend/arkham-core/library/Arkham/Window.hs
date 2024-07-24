@@ -158,6 +158,7 @@ data WindowType
   | DrawingStartingHand InvestigatorId
   | DuringTurn InvestigatorId
   | EndOfGame
+  | WouldEndTurn InvestigatorId
   | EndTurn InvestigatorId
   | TreacheryEntersPlay TreacheryId
   | EnemyAttacked InvestigatorId Source EnemyId

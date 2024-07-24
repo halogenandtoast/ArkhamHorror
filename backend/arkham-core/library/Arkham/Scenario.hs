@@ -178,7 +178,7 @@ instance HasModifiersFor TarotCard where
             history <- getHistory TurnHistory iid
             currentSkillTypes <- getSkillTestSkillTypes
             let
-              skillTypes = concat $ historySkillTestsPerformed history
+              skillTypes = concatMap fst $ historySkillTestsPerformed history
               firstIntellectTest = #intellect `notElem` skillTypes && #intellect `elem` currentSkillTypes
             pure
               . toModifiers source
@@ -193,7 +193,7 @@ instance HasModifiersFor TarotCard where
             history <- getHistory TurnHistory iid
             currentSkillTypes <- getSkillTestSkillTypes
             let
-              skillTypes = concat $ historySkillTestsPerformed history
+              skillTypes = concatMap fst $ historySkillTestsPerformed history
               firstAgilityTest = #agility `notElem` skillTypes && #agility `elem` currentSkillTypes
             pure
               . toModifiers source
@@ -208,7 +208,7 @@ instance HasModifiersFor TarotCard where
             history <- getHistory TurnHistory iid
             currentSkillTypes <- getSkillTestSkillTypes
             let
-              skillTypes = concat $ historySkillTestsPerformed history
+              skillTypes = concatMap fst $ historySkillTestsPerformed history
               firstCombatTest = #combat `notElem` skillTypes && #combat `elem` currentSkillTypes
             pure
               . toModifiers source
@@ -223,7 +223,7 @@ instance HasModifiersFor TarotCard where
             history <- getHistory TurnHistory iid
             currentSkillTypes <- getSkillTestSkillTypes
             let
-              skillTypes = concat $ historySkillTestsPerformed history
+              skillTypes = concatMap fst $ historySkillTestsPerformed history
               firstWillpowerTest = #willpower `notElem` skillTypes && #willpower `elem` currentSkillTypes
             pure
               . toModifiers source

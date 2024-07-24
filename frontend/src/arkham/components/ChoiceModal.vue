@@ -48,7 +48,7 @@ const searchedCards = computed(() => {
 
   const encounterCards = Object.entries(props.game.foundCards)
   if (encounterCards.length > 0) {
-    return encounterCards
+    return playerCards.filter(([, c]) => c.length > 0)
   }
 
   return []
@@ -292,7 +292,7 @@ const cardLabels = computed(() =>
     }))
 
 const showChoices = computed(() =>
-  focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value || modalChoices.value.length > 0
+  focusedChaosTokens.value.length > 0 || focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value || modalChoices.value.length > 0
 )
 
 function isModalChoice(choice: Message) {

@@ -525,6 +525,8 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . effectsL %~ deleteMap effectId & removedEntitiesF
   FocusCards cards -> pure $ g & focusedCardsL .~ cards
   UnfocusCards -> pure $ g & focusedCardsL .~ mempty
+  ClearFound FromDeck -> do
+    pure $ g & foundCardsL %~ Map.filterWithKey (\k _ -> not (zoneIsFromDeck k))
   ClearFound zone -> pure $ g & foundCardsL . at zone ?~ mempty
   FocusTarotCards cards -> pure $ g & focusedTarotCardsL .~ cards
   UnfocusTarotCards -> pure $ g & focusedTarotCardsL .~ mempty

@@ -26,6 +26,13 @@ data Zone
   | FromCollection
   deriving stock (Show, Eq, Ord, Data)
 
+zoneIsFromDeck :: Zone -> Bool
+zoneIsFromDeck = \case
+  FromDeck -> True
+  FromTopOfDeck _ -> True
+  FromBottomOfDeck _ -> True
+  _ -> False
+
 data ScenarioZone
   = FromEncounterDeck
   | FromEncounterDiscard
@@ -49,6 +56,7 @@ instance ToJSONKey Zone where
    where
     textKey = \case
       FromTopOfDeck _ -> "FromDeck"
+      FromBottomOfDeck _ -> "FromDeck"
       FromOutOfPlay outOfPlayZone -> case outOfPlayZone of
         VoidZone -> "FromVoid"
         PursuitZone -> "FromPursuit"

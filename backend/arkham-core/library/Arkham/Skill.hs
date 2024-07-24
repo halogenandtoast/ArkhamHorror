@@ -232,6 +232,7 @@ allSkills =
       SomeSkillCard ghastlyPossession1
     , --- survivor [tsk]
       SomeSkillCard grizzled
+    , SomeSkillCard gumption1
     , -- Return to the Dunwich Legacy
       --- survivor [rtdwl]
       SomeSkillCard riseToTheOccasion3

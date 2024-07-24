@@ -33,7 +33,7 @@ instance HasAbilities KatjaEastbankKeeperOfEsotericLore2 where
 instance RunMessage KatjaEastbankKeeperOfEsotericLore2 where
   runMessage msg a@(KatjaEastbankKeeperOfEsotericLore2 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
-      quietCancelCardDraw attrs card
+      quietCancelCardDraw card
       push $ PlaceUnderneath (toTarget attrs) [card]
       drawCardsIfCan iid (attrs.ability 1) 1
       pure a

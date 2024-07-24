@@ -6,6 +6,7 @@ import { imgsrc, replaceIcons } from '@/arkham/helpers';
 import { QuestionType } from '@/arkham/types/Question';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { tarotCardImage } from '@/arkham/types/TarotCard';
+import { cardImage } from '@/arkham/types/Card';
 import DropDown from '@/components/DropDown.vue';
 import Token from '@/arkham/components/Token.vue';
 import type { Game } from '@/arkham/types/Game';
@@ -35,6 +36,10 @@ const label = function(body: string) {
 
 const cardLabelImage = (cardCode: string) => {
   return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
+}
+
+const cardIdImage = (cardId: string) => {
+  return (imgsrc(cardImage(props.game.cards[cardId])))
 }
 
 const portraitLabelImage = (investigatorId: string) => {
@@ -67,10 +72,24 @@ const chaosBagChoice = computed(() => {
   return props.game.scenario?.chaosBag.choice
 })
 
+const cardPiles = computed(() => {
+  return choices.value.flatMap((choice, index) => {
+    return choice.tag === "CardPile" ? [{pile: choice.pile, index}] : []
+  })
+})
 </script>
 
 <template>
   <ChaosBagChoice v-if="chaosBagChoice" :choice="chaosBagChoice" :game="game" :playerId="playerId" @choose="choose" />
+  <div v-if="cardPiles.length > 0" class="cardPiles">
+    <div v-for="{pile, index} in cardPiles" :key="pile" class="card-pile" @click="choose(index)">
+      <div v-for="card in pile" :key="card" class="pile-card">
+        <img class="card" :src="cardIdImage(card.cardId)" />
+        <img v-if="card.cardOwner" class="portrait" :src="portraitLabelImage(card.cardOwner)" />
+      </div>
+    </div>
+  </div>
+
   <div v-if="cardLabels.length > 0" class="cardLabels">
     <template v-for="{choice, index} in cardLabels" :key="index">
       <img class="card" :src="cardLabelImage(choice.cardCode)" @click="choose(index)" />
@@ -427,6 +446,32 @@ h2 {
         background-color: #311b3e;
       }
     }
+  }
+}
+
+.cardPiles {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-pile {
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  margin: 10px;
+  border-radius: 10px;
+  justify-content: center;
+  gap: 10px;
+
+  .portrait {
+      width: calc($card-width / 2);
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
   }
 }
 </style>

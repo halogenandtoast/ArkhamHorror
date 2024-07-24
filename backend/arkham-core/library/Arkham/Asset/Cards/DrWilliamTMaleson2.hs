@@ -31,7 +31,7 @@ instance HasAbilities DrWilliamTMaleson2 where
 instance RunMessage DrWilliamTMaleson2 where
   runMessage msg a@(DrWilliamTMaleson2 (With attrs meta)) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (cardDrawnBy -> (iid, EncounterCard card)) _ -> do
-      quietCancelCardDraw (attrs.ability 1) (EncounterCard card)
+      quietCancelCardDraw (EncounterCard card)
       push $ DrawCards iid $ setTarget attrs $ newCardDraw (attrs.ability 1) Deck.EncounterDeck 1
       pure . DrWilliamTMaleson2 $ attrs `with` Meta (Just card)
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do

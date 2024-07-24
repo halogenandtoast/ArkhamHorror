@@ -1070,6 +1070,7 @@ uiToRun = \case
   EffectActionButton _ _ msgs -> Run msgs
   Done _ -> Run []
   SkipTriggersButton _ -> Run []
+  CardPile _ msgs -> Run msgs
 
 chooseOrRunOne :: PlayerId -> [UI Message] -> Message
 chooseOrRunOne _ [x] = uiToRun x

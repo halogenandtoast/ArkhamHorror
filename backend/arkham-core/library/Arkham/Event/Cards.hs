@@ -201,6 +201,7 @@ allPlayerEventCards =
       , hallow3
       , handOfFate
       , harmonyRestored2
+      , heedTheDream2
       , heroicRescue
       , heroicRescue2
       , hiddenPocket
@@ -3643,6 +3644,17 @@ natureOfTheBeast1 :: CardDef
 natureOfTheBeast1 =
   (event "09111" "Nature of the Beast" 0 Survivor)
     { cdCardTraits = setFromList [Dilemma, Insight]
+    , cdRevelation = IsRevelation
+    , cdCost = Nothing
+    , cdLimits = [MaxPerTraitPerRound Dilemma 2]
+    , cdCriteria = Just Criteria.Never
+    , cdLevel = Just 1
+    }
+
+heedTheDream2 :: CardDef
+heedTheDream2 =
+  (event "09115" "Heed the Dream" 0 Survivor)
+    { cdCardTraits = setFromList [Augury, Dilemma]
     , cdRevelation = IsRevelation
     , cdCost = Nothing
     , cdLimits = [MaxPerTraitPerRound Dilemma 2]

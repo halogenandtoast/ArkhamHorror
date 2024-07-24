@@ -65,6 +65,7 @@ allPlayerSkillCards =
       , fightingLessons
       , ghastlyPossession1
       , grizzled
+      , gumption1
       , guts
       , guts2
       , hatchetMan
@@ -771,6 +772,13 @@ grizzled =
           , (MythosHardened, 4)
           , (AlwaysPrepared, 5)
           ]
+    }
+
+gumption1 :: CardDef
+gumption1 =
+  (skill "09112" "Gumption" [] Survivor)
+    { cdCardTraits = setFromList [Innate]
+    , cdCommitRestrictions = [MaxOnePerTest]
     }
 
 riseToTheOccasion3 :: CardDef

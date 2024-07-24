@@ -901,6 +901,8 @@ allAssets =
     , SomeAssetCard onyxPentacle
     , SomeAssetCard bindersJarInterdimensionalPrison1
     , SomeAssetCard astralMirror2
+    , SomeAssetCard elleRubashPurifyingPurpose2
+    , SomeAssetCard sinEater3
     , SomeAssetCard ceremonialSickle4
     , SomeAssetCard dowsingRod4
     , SomeAssetCard onyxPentacle4

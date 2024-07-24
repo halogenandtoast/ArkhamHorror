@@ -113,27 +113,28 @@ instance RunMessage AssetAttrs where
         $ pushAll
         =<< windows
           [Window.LastClueRemovedFromAsset (toId a)]
-      case assetPrintedUses of
-        NoUses -> pure ()
-        Uses tType' _ | tType == tType' -> do
-          let m = findWithDefault 0 tType assetTokens
-          let remainingUses = max 0 (m - n)
-          when (remainingUses == 0) $ for_ assetWhenNoUses \case
-            DiscardWhenNoUses -> push $ Discard assetController GameSource (toTarget a)
-            ReturnToHandWhenNoUses ->
-              for_ assetController \iid ->
-                push $ ReturnToHand iid $ toTarget a
-            NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
-        UsesWithLimit tType' _ _ | tType == tType' -> do
-          let m = findWithDefault 0 tType assetTokens
-          let remainingUses = max 0 (m - n)
-          when (remainingUses == 0) $ for_ assetWhenNoUses \case
-            DiscardWhenNoUses -> push $ Discard assetController GameSource (toTarget a)
-            ReturnToHandWhenNoUses ->
-              for_ assetController \iid ->
-                push $ ReturnToHand iid $ toTarget a
-            NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
-        _ -> error "Trying to use the wrong use type"
+      when (tokenIsUse tType) do
+        case assetPrintedUses of
+          NoUses -> pure ()
+          Uses tType' _ | tType == tType' -> do
+            let m = findWithDefault 0 tType assetTokens
+            let remainingUses = max 0 (m - n)
+            when (remainingUses == 0) $ for_ assetWhenNoUses \case
+              DiscardWhenNoUses -> push $ Discard assetController GameSource (toTarget a)
+              ReturnToHandWhenNoUses ->
+                for_ assetController \iid ->
+                  push $ ReturnToHand iid $ toTarget a
+              NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
+          UsesWithLimit tType' _ _ | tType == tType' -> do
+            let m = findWithDefault 0 tType assetTokens
+            let remainingUses = max 0 (m - n)
+            when (remainingUses == 0) $ for_ assetWhenNoUses \case
+              DiscardWhenNoUses -> push $ Discard assetController GameSource (toTarget a)
+              ReturnToHandWhenNoUses ->
+                for_ assetController \iid ->
+                  push $ ReturnToHand iid $ toTarget a
+              NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
+          _ -> error "Trying to use the wrong use type"
       pure $ a & tokensL %~ subtractTokens tType n
     CheckDefeated source (isTarget a -> True) -> do
       mDefeated <- defeated a source

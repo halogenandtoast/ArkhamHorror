@@ -573,6 +573,7 @@ library
       Arkham.Asset.Cards.EighteenDerringer2
       Arkham.Asset.Cards.ElderSignAmulet3
       Arkham.Asset.Cards.EldritchSophist
+      Arkham.Asset.Cards.ElleRubashPurifyingPurpose2
       Arkham.Asset.Cards.EmbezzeledTreasure
       Arkham.Asset.Cards.EmpiricalHypothesis
       Arkham.Asset.Cards.EmpowerSelfAcuity2
@@ -939,6 +940,7 @@ library
       Arkham.Asset.Cards.SignMagick
       Arkham.Asset.Cards.SignMagick3
       Arkham.Asset.Cards.SilassNet
+      Arkham.Asset.Cards.SinEater3
       Arkham.Asset.Cards.SinisterSolution
       Arkham.Asset.Cards.SixthSense
       Arkham.Asset.Cards.SixthSense4

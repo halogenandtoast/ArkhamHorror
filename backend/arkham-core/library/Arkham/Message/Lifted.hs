@@ -470,6 +470,27 @@ chooseOneToHandleWith iid source targets msg =
   Arkham.Message.Lifted.chooseOne iid
     $ targetLabels targets \target -> [Msg.handleTargetChoice iid source target, msg]
 
+selectOrRunOneToHandle
+  :: (HasCallStack, ReverseQueue m, Targetable (QueryElement matcher), Query matcher, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> matcher
+  -> m ()
+selectOrRunOneToHandle iid source matcher =
+  select matcher >>= \results -> if notNull results then chooseOrRunOneToHandle iid source results else pure ()
+
+chooseOrRunOneToHandle
+  :: (ReverseQueue m, Targetable target, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> [target]
+  -> m ()
+chooseOrRunOneToHandle iid source targets =
+  Arkham.Message.Lifted.chooseOrRunOne iid
+    $ targetLabels targets
+    $ only
+    . Msg.handleTargetChoice iid source
+
 handleOneAtATime
   :: (ReverseQueue m, Targetable target, Sourceable source)
   => InvestigatorId

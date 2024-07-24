@@ -56,6 +56,7 @@ data CardLimit
   | LimitPerTrait Trait Int
   | MaxPerGame Int
   | MaxPerRound Int
+  | MaxPerTurn Int
   | MaxPerAttack Int
   | MaxPerTraitPerRound Trait Int
   deriving stock (Show, Eq, Ord, Data)

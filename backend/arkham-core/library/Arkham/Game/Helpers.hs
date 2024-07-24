@@ -2162,6 +2162,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.TurnEnds timing whoMatcher -> guardTiming timing $ \case
       Window.TurnEnds who -> matchWho iid who whoMatcher
       _ -> noMatch
+    Matcher.TurnWouldEnd timing whoMatcher -> guardTiming timing $ \case
+      Window.WouldEndTurn who -> matchWho iid who whoMatcher
+      _ -> noMatch
     Matcher.RoundBegins timing -> guardTiming timing (pure . (== Window.AtBeginningOfRound))
     Matcher.RoundEnds timing -> guardTiming timing (pure . (== Window.AtEndOfRound))
     Matcher.Enters timing whoMatcher whereMatcher -> guardTiming timing $ \case
@@ -3637,6 +3640,9 @@ passesLimits iid c = allM go (cdLimits $ toCardDef c)
         pure $ m > n
       _ -> error $ "Not handling card type: " <> show (toCardType c)
     MaxPerGame m -> do
+      n <- getCardUses (toCardCode c)
+      pure $ m > n
+    MaxPerTurn m -> do
       n <- getCardUses (toCardCode c)
       pure $ m > n
     MaxPerRound m -> do

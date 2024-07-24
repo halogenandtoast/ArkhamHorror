@@ -8,6 +8,7 @@ import Arkham.Card
 import Arkham.Enemy.Types.Attrs
 import Arkham.History.Types
 import Arkham.Id
+import Arkham.SkillTestResult
 import Arkham.SkillType
 import Arkham.Target
 import Control.Monad.Fail (fail)
@@ -31,7 +32,7 @@ data History = History
   , historyLocationsSuccessfullyInvestigated :: Set LocationId
   , historySuccessfulExplore :: Bool
   , historyActionsCompleted :: Int
-  , historySkillTestsPerformed :: [[SkillType]]
+  , historySkillTestsPerformed :: [([SkillType], SkillTestResult)]
   , historyPlayedCards :: [Card]
   , historyCluesDiscovered :: Map LocationId Int
   }
@@ -45,7 +46,7 @@ data HistoryField k where
   HistoryLocationsSuccessfullyInvestigated :: HistoryField (Set LocationId)
   HistorySuccessfulExplore :: HistoryField Bool
   HistoryActionsCompleted :: HistoryField Int
-  HistorySkillTestsPerformed :: HistoryField [[SkillType]]
+  HistorySkillTestsPerformed :: HistoryField [([SkillType], SkillTestResult)]
   HistoryPlayedCards :: HistoryField [Card]
   HistoryCluesDiscovered :: HistoryField (Map LocationId Int)
 

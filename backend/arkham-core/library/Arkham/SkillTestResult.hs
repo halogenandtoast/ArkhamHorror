@@ -15,5 +15,11 @@ data SkillTestResult
   | FailedBy SkillTestResultType Int
   deriving stock (Show, Eq, Ord, Data)
 
+isFailedResult :: SkillTestResult -> Bool
+isFailedResult = \case
+  FailedBy {} -> True
+  SucceededBy {} -> False
+  Unrun -> False
+
 $(deriveJSON defaultOptions ''SkillTestResultType)
 $(deriveJSON defaultOptions ''SkillTestResult)

@@ -2269,7 +2269,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             , let assets = assetsInSlotsOf aid'
             ]
         pure a
-  ChooseEndTurn iid | iid == investigatorId -> pure $ a & endedTurnL .~ True
+  ChooseEndTurn iid | iid == investigatorId -> pure a
   Do BeginRound -> do
     actionsForTurn <- getAbilitiesForTurn a
     current <- getMaybeLocation a.id
@@ -3599,6 +3599,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   EndTurn iid | iid == toId a -> do
     pure
       $ a
+      & endedTurnL
+      .~ True
       & usedAbilitiesL
       %~ filter
         ( \UsedAbility {..} ->

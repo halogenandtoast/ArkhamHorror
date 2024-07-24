@@ -160,11 +160,13 @@ runEventMessage msg a@EventAttrs {..} = case msg of
       else case eventPlacement of
         Unplaced -> case afterPlay of
           DiscardThis -> pushAll [after, toDiscardBy eventController GameSource a]
+          ExileThis -> pushAll [after, Exile (toTarget a)]
           RemoveThisFromGame -> push (RemoveEvent $ toId a)
           ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck eventController) (toTarget a))
           ReturnThisToHand -> push (ReturnToHand eventController (toTarget a))
         Limbo -> case afterPlay of
           DiscardThis -> pushAll [after, toDiscardBy eventController GameSource a]
+          ExileThis -> pushAll [after, Exile (toTarget a)]
           RemoveThisFromGame -> push (RemoveEvent $ toId a)
           ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck eventController) (toTarget a))
           ReturnThisToHand -> push (ReturnToHand eventController (toTarget a))
@@ -184,6 +186,9 @@ runEventMessage msg a@EventAttrs {..} = case msg of
     pure $ a & cardsUnderneathL %~ filter (/= card)
   AddToHand _ cards -> do
     pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
+  Exile target | a `isTarget` target -> do
+    pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]
+    pure a
   ShuffleCardsIntoDeck _ cards ->
     pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
   RemoveAllAttachments source target -> do

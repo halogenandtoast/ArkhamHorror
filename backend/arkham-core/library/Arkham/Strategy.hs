@@ -63,6 +63,7 @@ defer t = DeferSearchedToTarget (toTarget t)
 
 data AfterPlayStrategy
   = DiscardThis
+  | ExileThis
   | RemoveThisFromGame
   | ShuffleThisBackIntoDeck
   | ReturnThisToHand

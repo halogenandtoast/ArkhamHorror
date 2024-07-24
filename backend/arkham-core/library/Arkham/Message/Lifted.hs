@@ -1071,3 +1071,15 @@ performActionAction iid source action = do
     Arkham.Message.Lifted.chooseOne iid
       $ map ((\f -> f windows' [] []) . AbilityLabel iid) actions
       <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- playableCards]
+
+cancelEndTurn :: (MonadTrans t, HasQueue Message m) => InvestigatorId -> t m ()
+cancelEndTurn iid = lift $ Msg.removeAllMessagesMatching \case
+  When (EndTurn iid') -> iid == iid'
+  EndTurn iid' -> iid == iid'
+  After (EndTurn iid') -> iid == iid'
+  CheckWindow _ ws -> any isEndTurnWindow ws
+  _ -> False
+ where
+  isEndTurnWindow w = case w.kind of
+    Window.TurnEnds _ -> True
+    _ -> False

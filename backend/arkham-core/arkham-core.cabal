@@ -1645,6 +1645,7 @@ library
       Arkham.Event.Cards.LessonLearned2
       Arkham.Event.Cards.LetGodSortThemOut
       Arkham.Event.Cards.LetMeHandleThis
+      Arkham.Event.Cards.Lifeline1
       Arkham.Event.Cards.LiveAndLearn
       Arkham.Event.Cards.LodgeDebts
       Arkham.Event.Cards.LogicalReasoning

@@ -145,6 +145,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.WakingNightmare.InfestationBag
 import Arkham.Skill.Types (Field (..), Skill, SkillAttrs (..))
 import Arkham.SkillTest.Runner
+import Arkham.SkillTestResult
 import Arkham.Source
 import Arkham.Story
 import Arkham.Story.Cards qualified as Stories
@@ -638,6 +639,9 @@ getInvestigatorsMatching matcher = do
   includeEliminated _ = False
   go = \case
     ThatInvestigator -> error "ThatInvestigator must be resolved in criteria"
+    InvestigatorWithAnyFailedSkillTestsThisTurn -> \i -> do
+      x <- getHistoryField TurnHistory (toId i) HistorySkillTestsPerformed
+      pure $ any (isFailedResult . snd) x
     OwnsAsset matcher' -> selectAny . (<> matcher') . AssetOwnedBy . InvestigatorWithId . toId
     InvestigatorHasCardWithDamage -> \i -> do
       orM

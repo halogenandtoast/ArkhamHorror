@@ -147,6 +147,7 @@ data InvestigatorMatcher
   | DistanceFromRoundStart ValueMatcher
   | InvestigatorWithMetaKey Text
   | InvestigatorWithFilledSlot SlotType
+  | InvestigatorWithAnyFailedSkillTestsThisTurn
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated InvestigatorMatcher
@@ -1062,6 +1063,7 @@ data WindowMatcher
   | EnemyMovedTo Timing Where MovesVia EnemyMatcher
   | FastPlayerWindow
   | TurnBegins Timing Who
+  | TurnWouldEnd Timing Who
   | TurnEnds Timing Who
   | RoundBegins Timing
   | RoundEnds Timing

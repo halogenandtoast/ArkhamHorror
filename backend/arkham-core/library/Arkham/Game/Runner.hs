@@ -931,6 +931,12 @@ runGameMessage msg g = case msg of
                   , Just skillId
                   )
                 _ -> error "Unhandled encounter card skill"
+              ExileThis -> case toCard skill of
+                PlayerCard pc ->
+                  ( Exile (toTarget skillId)
+                  , Just skillId
+                  )
+                _ -> error "Unhandled encounter card skill"
               RemoveThisFromGame ->
                 (RemoveFromGame (SkillTarget skillId), Nothing)
               ReturnThisToHand ->
@@ -949,7 +955,10 @@ runGameMessage msg g = case msg of
         Just ResourceSkillTest -> []
         Nothing -> []
       skillsToRemove = mapMaybe snd skillPairs
-      historyItem = HistoryItem HistorySkillTestsPerformed [skillTypes]
+      historyItem =
+        HistoryItem
+          HistorySkillTestsPerformed
+          [(skillTypes, fromMaybe Unrun $ skillTestResult <$> g ^. skillTestL)]
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
@@ -1679,8 +1688,9 @@ runGameMessage msg g = case msg of
         ]
     pure $ g & activeInvestigatorIdL .~ gameLeadInvestigatorId g
   ChooseEndTurn iid -> do
+    wouldWindow <- checkWindows [mkWhen $ Window.WouldEndTurn iid]
     msgs <- resolveWithWindow (EndTurn iid) (Window.TurnEnds iid)
-    pushAll msgs
+    pushAll $ wouldWindow : msgs
     pure g
   After (EndTurn _) ->
     pure $ g & turnHistoryL .~ mempty & turnPlayerInvestigatorIdL .~ Nothing

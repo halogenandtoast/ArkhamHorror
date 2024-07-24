@@ -183,6 +183,12 @@ assetIs = AssetIs . toCardCode
 assetControlledBy :: InvestigatorId -> AssetMatcher
 assetControlledBy = AssetControlledBy . InvestigatorWithId
 
+assetAttachedToAsset :: AssetId -> AssetMatcher
+assetAttachedToAsset = AssetAttachedToAsset . AssetWithId
+
+assetInPlayAreaOf :: InvestigatorId -> AssetMatcher
+assetInPlayAreaOf = AssetInPlayAreaOf . InvestigatorWithId
+
 assetWithAttachedEvent :: (AsId a, IdOf a ~ EventId) => a -> AssetMatcher
 assetWithAttachedEvent = AssetWithAttachedEvent . EventWithId . asId
 

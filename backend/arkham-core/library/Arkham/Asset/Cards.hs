@@ -310,6 +310,7 @@ allPlayerAssetCards =
       , eighteenDerringer2
       , elderSignAmulet3
       , eldritchSophist
+      , elleRubashPurifyingPurpose2
       , embezzeledTreasure
       , empiricalHypothesis
       , empowerSelfAcuity2
@@ -663,6 +664,7 @@ allPlayerAssetCards =
       , signMagick
       , signMagick3
       , silassNet
+      , sinEater3
       , sixthSense
       , sixthSense4
       , sledDog
@@ -6037,6 +6039,25 @@ astralMirror2 =
     , cdSlots = [#body]
     , cdLevel = Just 2
     }
+
+elleRubashPurifyingPurpose2 :: CardDef
+elleRubashPurifyingPurpose2 =
+  (asset "09092" ("Elle Rubash" <:> "Purifying Purpose") 3 Mystic)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Ally, Witch]
+    , cdSlots = [#ally]
+    , cdLevel = Just 2
+    , cdUnique = True
+    }
+
+sinEater3 :: CardDef
+sinEater3 =
+  permanent
+    $ (asset "09094" "Sin-Eater" 0 Mystic)
+      { cdCardTraits = setFromList [Ritual]
+      , cdLevel = Just 3
+      , cdExceptional = True
+      }
 
 ceremonialSickle4 :: CardDef
 ceremonialSickle4 =

@@ -9,6 +9,7 @@ import Arkham.Classes.Query
 import Arkham.Enemy.Types
 import Arkham.Event.Types
 import {-# SOURCE #-} Arkham.Game ()
+import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Investigator.Types
 import Arkham.Location.Types
 import Arkham.Matcher
@@ -65,6 +66,14 @@ getDoomCount = do
             InvestigatorDoom
             (UneliminatedInvestigator <> InvestigatorWithoutModifier DoomSubtracts)
         ]
+  addDoomAssets <- select $ AssetWithAnyDoom <> AssetWithoutModifier DoomSubtracts
+  ignoredDoomAdd <-
+    sum <$> for addDoomAssets \aid -> do
+      doom <- field AssetDoom aid
+      mods <- getModifiers aid
+      pure $ sum $ flip mapMaybe mods \case
+        IgnoreDoomOnThis n -> Just (min n doom)
+        _ -> Nothing
 
   subtracts <-
     getSum
@@ -81,4 +90,13 @@ getDoomCount = do
             InvestigatorDoom
             (UneliminatedInvestigator <> InvestigatorWithModifier DoomSubtracts)
         ]
-  pure $ max 0 (adds - subtracts)
+
+  subtractDoomAssets <- select $ AssetWithAnyDoom <> AssetWithModifier DoomSubtracts
+  ignoredDoomSubtract <-
+    sum <$> for subtractDoomAssets \aid -> do
+      doom <- field AssetDoom aid
+      mods <- getModifiers aid
+      pure $ sum $ flip mapMaybe mods \case
+        IgnoreDoomOnThis n -> Just (min n doom)
+        _ -> Nothing
+  pure $ max 0 ((adds - ignoredDoomAdd) - (subtracts + ignoredDoomSubtract))

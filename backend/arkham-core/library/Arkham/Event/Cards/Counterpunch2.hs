@@ -19,6 +19,6 @@ instance RunMessage Counterpunch2 where
     InvestigatorPlayEvent iid (is attrs -> True) _ (attackEnemy . getAttackDetails -> enemy) _ -> do
       sid <- getRandom
       skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
-      pushM $ mkFightEnemy sid iid attrs enemy
+      pushM $ withFightOverride <$> mkFightEnemy sid iid attrs enemy
       pure e
     _ -> Counterpunch2 <$> liftRunMessage msg attrs

@@ -17,6 +17,6 @@ instance RunMessage Counterpunch where
   runMessage msg e@(Counterpunch attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid (is attrs -> True) _ (attackEnemy . getAttackDetails -> enemy) _ -> do
       sid <- getRandom
-      pushM $ mkFightEnemy sid iid attrs enemy
+      pushM $ withFightOverride <$> mkFightEnemy sid iid attrs enemy
       pure e
     _ -> Counterpunch <$> liftRunMessage msg attrs

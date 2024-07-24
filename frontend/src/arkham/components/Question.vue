@@ -9,6 +9,7 @@ import { tarotCardImage } from '@/arkham/types/TarotCard';
 import DropDown from '@/components/DropDown.vue';
 import Token from '@/arkham/components/Token.vue';
 import type { Game } from '@/arkham/types/Game';
+import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';
 
 export interface Props {
   game: Game
@@ -23,23 +24,6 @@ const choose = (idx: number) => emit('choose', idx)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const question = computed(() => props.game.question[props.playerId])
 const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
-
-// focused cards are handled by the player's choice modal
-const focusedCards = computed(() => {
-  const investigator = Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)
-  const playerCards = Object.values(investigator?.foundCards ?? []).flat()
-  if (playerCards.length > 0) {
-    return playerCards
-  }
-
-  const encounterCards = Object.values(props.game.foundCards).flat()
-  if (encounterCards.length > 0) {
-    return encounterCards
-  }
-
-  return props.game.focusedCards
-})
-
 const showChoices = computed(() => !props.game.skillTest && choices.value.some((c) => { return c.tag === MessageType.DONE || c.tag === MessageType.LABEL || c.tag === MessageType.SKILL_LABEL || c.tag === MessageType.SKILL_LABEL_WITH_LABEL || c.tag == MessageType.PORTRAIT_LABEL }))
 
 const label = function(body: string) {
@@ -74,9 +58,19 @@ const cardLabels = computed(() =>
     flatMap((choice, index) => {
       return choice.tag === "CardLabel" ? [{choice, index}] : []
     }))
+
+const chaosBagChoice = computed(() => {
+  if (props.game.skillTest) {
+    //if we are in a skill test, it will handle this display
+    return null;
+  }
+  return props.game.scenario?.chaosBag.choice
+})
+
 </script>
 
 <template>
+  <ChaosBagChoice v-if="chaosBagChoice" :choice="chaosBagChoice" :game="game" :playerId="playerId" @choose="choose" />
   <div v-if="cardLabels.length > 0" class="cardLabels">
     <template v-for="{choice, index} in cardLabels" :key="index">
       <img class="card" :src="cardLabelImage(choice.cardCode)" @click="choose(index)" />

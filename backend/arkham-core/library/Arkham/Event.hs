@@ -540,6 +540,7 @@ allEvents =
     , SomeEventCard explosiveWard
     , SomeEventCard stringOfCurses
     , SomeEventCard moonlightRitual2
+    , SomeEventCard uncageTheSoul3
     , --- survivor [tsk]
       SomeEventCard makeshiftTrap
     , SomeEventCard endOfTheRoad

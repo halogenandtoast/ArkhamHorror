@@ -1,10 +1,4 @@
-module Arkham.Event.Cards.UncageTheSoul (
-  uncageTheSoul,
-  uncageTheSoulEffect,
-  UncageTheSoul (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.UncageTheSoul (uncageTheSoul, uncageTheSoulEffect, UncageTheSoul (..)) where
 
 import Arkham.Card
 import Arkham.Classes
@@ -14,6 +8,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import Arkham.Matcher hiding (PlayCard)
+import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Window (mkWhen)
 import Arkham.Window qualified as Window

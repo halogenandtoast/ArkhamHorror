@@ -390,6 +390,7 @@ data Message
   | -- Adding Cards to Hand
     AddFocusedToHand InvestigatorId Target Zone CardId
   | AddToHand InvestigatorId [Card]
+  | AddToHandQuiet InvestigatorId [Card] -- used for playing cards
   | ReturnToHand InvestigatorId Target
   | -- Adding Cards to Deck
     AddFocusedToTopOfDeck InvestigatorId Target CardId

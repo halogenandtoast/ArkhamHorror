@@ -2980,6 +2980,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (discardL %~ filter ((`notElem` cards) . PlayerCard))
       & (foundCardsL . each %~ filter (`notElem` cards))
       & (bondedCardsL %~ filter (`notElem` cards))
+  AddToHandQuiet iid cards | iid == investigatorId -> do
+    assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
+    pure
+      $ a
+      & (cardsUnderneathL %~ filter (`notElem` cards))
+      & (slotsL %~ flip (foldr removeFromSlots) assetIds)
+      & (discardL %~ filter ((`notElem` cards) . PlayerCard))
+      & (foundCardsL . each %~ filter (`notElem` cards))
+      & (bondedCardsL %~ filter (`notElem` cards))
   SwapPlaces (aTarget, _) (_, newLocation) | a `is` aTarget -> do
     push $ CheckEnemyEngagement a.id
     pure $ a & placementL .~ AtLocation newLocation

@@ -267,6 +267,9 @@ instance IsLabel "tool" AssetMatcher where
 instance IsLabel "spell" AssetMatcher where
   fromLabel = AssetWithTrait Spell
 
+instance IsLabel "ritual" AssetMatcher where
+  fromLabel = AssetWithTrait Ritual
+
 instance IsLabel "item" AssetMatcher where
   fromLabel = AssetWithTrait Item
 
@@ -695,6 +698,7 @@ data ExtendedCardMatcher
   | WillGoIntoSlot SlotType
   | CardIsBeneathInvestigator Who
   | CardIsBeneathAsset AssetMatcher
+  | CardIsAsset AssetMatcher
   | CardWithCopyInHand Who
   | NotThisCard
   | IsThisCard
@@ -858,6 +862,9 @@ instance IsLabel "tome" CardMatcher where
 
 instance IsLabel "spell" CardMatcher where
   fromLabel = CardWithTrait Spell
+
+instance IsLabel "ritual" CardMatcher where
+  fromLabel = CardWithTrait Ritual
 
 instance IsLabel "item" CardMatcher where
   fromLabel = CardWithTrait Item

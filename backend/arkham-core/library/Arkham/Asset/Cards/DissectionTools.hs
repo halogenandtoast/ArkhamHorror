@@ -8,7 +8,7 @@ import Arkham.Matcher
 import Arkham.Token
 
 newtype DissectionTools = DissectionTools AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dissectionTools :: AssetCard DissectionTools
@@ -33,6 +33,6 @@ instance HasAbilities DissectionTools where
 instance RunMessage DissectionTools where
   runMessage msg a@(DissectionTools attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      placeTokens (attrs.ability 1) attrs Resource 1
+      placeTokens (attrs.ability 1) attrs Evidence 1
       pure a
     _ -> DissectionTools <$> liftRunMessage msg attrs

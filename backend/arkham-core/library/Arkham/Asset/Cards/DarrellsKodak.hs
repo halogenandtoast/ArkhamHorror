@@ -20,7 +20,9 @@ darrellsKodak = asset DarrellsKodak Cards.darrellsKodak
 instance HasAbilities DarrellsKodak where
   getAbilities (DarrellsKodak a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility (oneOf [EnemySpawns #after Anywhere AnyEnemy]) (exhaust a)
+        $ ReactionAbility
+          (oneOf [EnemySpawns #after Anywhere AnyEnemy, TreacheryEntersPlay #after AnyTreachery])
+          (exhaust a)
     , restrictedAbility a 2 ControlsThis
         $ freeReaction
         $ DiscoverClues

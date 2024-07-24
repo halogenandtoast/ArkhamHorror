@@ -20,7 +20,9 @@ const props = defineProps<{
 const emit = defineEmits<{ close: [] }>()
 const placeTokens = ref(false);
 const placeTokenType = ref<TokenType>("Evidence");
-const anyTokens = computed(() => Object.values(props.asset.tokens).some(t => t > 0))
+
+const isNumber = (value: unknown): value is number => typeof value === 'number';
+const anyTokens = computed(() => Object.values(props.asset.tokens).some(t => isNumber(t) && t > 0))
 
 const investigatorId = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId)?.id)
 const id = computed(() => props.asset.id)
@@ -39,6 +41,8 @@ const uses = computed(() => Object.entries(props.asset.tokens).filter(([k, v]) =
 const formatUse = (k: string) => k.replace(/([a-z])([A-Z])/g, '$1 $2')
 const damage = computed(() => props.asset.tokens[TokenType.Damage])
 const horror = computed(() => props.asset.tokens[TokenType.Horror])
+
+const tokenTypes = Object.values(TokenType);
 
 const hasPool = computed(() => {
   const {
@@ -92,8 +96,7 @@ const hasPool = computed(() => {
       </div>
       <div v-if="placeTokens" class="buttons">
         <select v-model="placeTokenType">
-          <option value="Evidence">Evidence</option>
-          <option value="Secret">Secret</option>
+          <option v-for="token in tokenTypes" :key="token" :value="token">{{ token }}</option>
         </select>
         <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{ tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}, placeTokenType, 1]})">Place</button>
         <button @click="placeTokens = false">Back</button>

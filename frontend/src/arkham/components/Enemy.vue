@@ -219,7 +219,7 @@ watch(abilities, (abilities) => {
             <PoolItem v-if="leylines && leylines > 0" type="resource" tooltip="Leyline" :amount="leylines" />
             <PoolItem v-if="lostSouls && lostSouls > 0" type="resource" :amount="lostSouls" />
             <PoolItem v-if="bounties && bounties > 0" type="resource" :amount="bounties" />
-            <PoolItem v-if="evidence && evidence > 0" type="resource" :amount="evidence" />
+            <PoolItem v-if="evidence && evidence > 0" type="resource" tooltip="Evidence" :amount="evidence" />
             <Token
               v-for="(sealedToken, index) in enemy.sealedChaosTokens"
               :key="index"

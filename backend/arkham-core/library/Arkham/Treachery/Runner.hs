@@ -72,7 +72,7 @@ instance RunMessage TreacheryAttrs where
     PlaceTreachery tid placement | tid == treacheryId -> do
       for_ placement.attachedTo \target ->
         pushM $ checkAfter $ Window.AttachCard Nothing (toCard a) target
-      let entersPlay = isOutOfPlayPlacement a.placement && isInPlayPlacement placement
+      let entersPlay = not (isInPlayPlacement a.placement) && isInPlayPlacement placement
       case placement of
         InThreatArea iid -> do
           pushM $ checkWindows $ Window.mkAfter (Window.EntersThreatArea iid $ toCard a)

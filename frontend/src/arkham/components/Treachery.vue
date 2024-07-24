@@ -73,6 +73,7 @@ const doom = computed(() => props.treachery.tokens[TokenType.Doom])
 const clues = computed(() => props.treachery.tokens[TokenType.Clue])
 const resources = computed(() => props.treachery.tokens[TokenType.Resource])
 const horror = computed(() => props.treachery.tokens[TokenType.Horror])
+const evidence = computed(() => props.treachery.tokens[TokenType.Evidence])
 
 const cardAction = computed(() => choices.value.findIndex(canInteract))
 </script>
@@ -112,6 +113,7 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
         type="doom"
         :amount="doom"
       />
+      <PoolItem v-if="evidence && evidence > 0" type="resource" tooltip="Evidence" :amount="evidence" />
       <Token v-for="(sealedToken, index) in treachery.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
     </div>
 

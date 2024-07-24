@@ -14,6 +14,9 @@ withSkillType skillType chooseFight = chooseFight {chooseFightSkillType = skillT
 onlyChooseFight :: Functor m => m ChooseFight -> m ChooseFight
 onlyChooseFight = fmap $ \chooseFight -> chooseFight {chooseFightOnlyChoose = True}
 
+withFightOverride :: ChooseFight -> ChooseFight
+withFightOverride chooseFight = chooseFight {chooseFightOverride = True}
+
 mkChooseFight
   :: (Sourceable source, HasGame m) => SkillTestId -> InvestigatorId -> source -> m ChooseFight
 mkChooseFight sid iid source =

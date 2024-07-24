@@ -911,6 +911,7 @@ allAssets =
     , SomeAssetCard idolOfXanatosWatcherBeyondTime
     , SomeAssetCard improvisedShield
     , SomeAssetCard baseballBat2
+    , SomeAssetCard katjaEastbankKeeperOfEsotericLore2
     , --- neutral [tsk]
       SomeAssetCard hyperphysicalShotcasterTheoreticalDevice
     , SomeAssetCard toolBelt

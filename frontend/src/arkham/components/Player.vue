@@ -577,6 +577,7 @@ function onLeave(el: Element, done: () => void) {
   margin-top: 10px;
   button {
     white-space: nowrap;
+    text-wrap: pretty;
   }
   &:deep(.card) {
     margin: 0;

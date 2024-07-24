@@ -548,6 +548,7 @@ allEvents =
     , SomeEventCard makingPreparations
     , SomeEventCard predatorOrPrey
     , SomeEventCard shedALight
+    , SomeEventCard atACrossroads1
     , --- neutral [tsk]
       SomeEventCard refine
     , -- The Feast of Hemloch Vale

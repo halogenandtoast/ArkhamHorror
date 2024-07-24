@@ -105,6 +105,7 @@ import Arkham.Enemy.Enemies (
 import Arkham.Event.Events (
   aChanceEncounterEffect,
   actOfDesperationEffect,
+  atACrossroads1Effect,
   backstab3Effect,
   bindMonster2Effect,
   blackMarket2Effect,
@@ -434,6 +435,7 @@ allEffects =
     , ("09058", SomeEffect graysAnatomyTheDoctorsBible5Effect)
     , ("09066", SomeEffect hitAndRunEffect)
     , ("09087", SomeEffect explosiveWardEffect)
+    , ("09109", SomeEffect atACrossroads1Effect)
     , ("50044", SomeEffect jeremiahPierceEffect)
     , ("52007", SomeEffect alchemicalTransmutation2Effect)
     , ("52008", SomeEffect stormOfSpirits3Effect)

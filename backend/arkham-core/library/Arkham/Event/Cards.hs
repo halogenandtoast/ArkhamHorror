@@ -61,12 +61,13 @@ allPlayerEventCards =
       , aceInTheHole3
       , actOfDesperation
       , againstAllOdds2
+      , alterFate1
+      , alterFate3
       , ambush1
       , anatomicalDiagrams
       , astoundingRevelation
       , astralTravel
-      , alterFate1
-      , alterFate3
+      , atACrossroads1
       , backstab
       , backstab3
       , banish1
@@ -3612,6 +3613,17 @@ shedALight =
           $ Criteria.DuringSkillTest
           $ WhileInvestigating Anywhere
           <> SkillTestWithDifficulty (static 0)
+    }
+
+atACrossroads1 :: CardDef
+atACrossroads1 =
+  (event "09109" "At a Crossroads" 0 Survivor)
+    { cdCardTraits = setFromList [Dilemma, Insight]
+    , cdRevelation = IsRevelation
+    , cdCost = Nothing
+    , cdLimits = [MaxPerTraitPerRound Dilemma 2]
+    , cdCriteria = Just Criteria.Never
+    , cdLevel = Just 1
     }
 
 refine :: CardDef

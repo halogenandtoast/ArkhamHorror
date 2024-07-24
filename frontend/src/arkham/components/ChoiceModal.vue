@@ -749,7 +749,7 @@ button {
     font-size: 1.2em;
     width: 100%;
     white-space: nowrap;
-    text-wrap: wrap;
+    text-wrap: pretty;
     &:before {
       font-family: "ArkhamIcons";
       content: "\E91A";

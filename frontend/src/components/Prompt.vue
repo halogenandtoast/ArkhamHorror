@@ -124,5 +124,6 @@ const cancelFun = computed(() => typeof props.cancel === 'function' ? props.canc
   text-indent: 100%;
   color: transparent;
   white-space: nowrap;
+  text-wrap: pretty;
 }
 </style>

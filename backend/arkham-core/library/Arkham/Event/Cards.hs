@@ -374,6 +374,7 @@ allPlayerEventCards =
       , truthFromFiction2
       , twentyOneOrBust
       , uncageTheSoul
+      , uncageTheSoul3
       , underSurveillance1
       , unearthTheAncients
       , unearthTheAncients2
@@ -3522,6 +3523,21 @@ moonlightRitual2 =
     , cdCriteria =
         Just (exists $ TargetWithDoom <> TargetAtLocation YourLocation <> not_ (TargetWithTrait Elite))
     , cdLevel = Just 2
+    }
+
+uncageTheSoul3 :: CardDef
+uncageTheSoul3 =
+  (event "09095" "Uncage the Soul" 0 Mystic)
+    { cdSkills = [#willpower, #wild]
+    , cdCardTraits = singleton Spirit
+    , cdCriteria =
+        Just
+          $ Criteria.PlayableCardExistsWithCostReduction (Reduce 3)
+          $ oneOf
+            [ InHandOf You <> basic (oneOf [#spell, #ritual])
+            , InDiscardOf You <> basic (oneOf [#spell, #ritual])
+            , CardIsAsset $ AssetControlledBy You <> oneOf [#spell, #ritual]
+            ]
     }
 
 makeshiftTrap :: CardDef

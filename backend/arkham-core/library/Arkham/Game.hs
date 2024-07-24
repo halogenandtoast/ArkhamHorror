@@ -3762,6 +3762,9 @@ instance Query ExtendedCardMatcher where
         assets <- select assetMatcher
         cards <- concatMapM (field AssetCardsUnderneath) assets
         pure $ c `elem` cards
+      CardIsAsset assetMatcher -> do
+        cards <- selectFields AssetCard assetMatcher
+        pure $ c `elem` cards
       ExtendedCardWithOneOf ms -> anyM (matches' c) ms
       ExtendedCardMatches ms -> allM (matches' c) ms
 

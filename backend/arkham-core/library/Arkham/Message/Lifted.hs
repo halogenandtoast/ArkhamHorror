@@ -1028,15 +1028,14 @@ cancelCardDraw
   -> Card
   -> t m ()
 cancelCardDraw source card = do
-  quietCancelCardDraw source card
+  quietCancelCardDraw card
   cancelledOrIgnoredCardOrGameEffect source
 
 quietCancelCardDraw
-  :: (Sourceable source, ReverseQueue (t m), HasQueue Message m, MonadTrans t)
-  => source
-  -> Card
+  :: (ReverseQueue (t m), HasQueue Message m, MonadTrans t)
+  => Card
   -> t m ()
-quietCancelCardDraw source card = do
+quietCancelCardDraw card = do
   mtarget <- getCardEntityTarget card
   lift $ Msg.removeAllMessagesMatching \case
     Do (InvestigatorDrewEncounterCard _ c) -> c.id == card.id

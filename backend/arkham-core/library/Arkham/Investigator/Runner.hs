@@ -1727,6 +1727,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (discardL %~ filter ((/= card) . PlayerCard))
       & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
       & (cardsUnderneathL %~ filter ((/= card) . toCard))
+      & (foundCardsL . each %~ filter (/= card))
   ObtainCard card -> do
     pure
       $ a
@@ -1734,6 +1735,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (discardL %~ filter ((/= card) . toCard))
       & (deckL %~ Deck . filter ((/= card) . toCard) . unDeck)
       & (cardsUnderneathL %~ filter ((/= card) . toCard))
+      & (foundCardsL . each %~ filter (/= card))
   PutCampaignCardIntoPlay iid cardDef -> do
     let mcard = find ((== cardDef) . toCardDef) (unDeck investigatorDeck)
     case mcard of

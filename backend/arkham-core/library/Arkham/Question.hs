@@ -8,7 +8,7 @@ import Arkham.Prelude
 
 import Arkham.Ability.Types
 import Arkham.Campaigns.TheForgottenAge.Supply
-import Arkham.Card.CardCode
+import Arkham.Card
 import Arkham.ChaosBagStepState
 import Arkham.Id
 import Arkham.SkillType
@@ -81,6 +81,13 @@ data UI msg
   | EffectActionButton {tooltip :: Tooltip, effectId :: EffectId, messages :: [msg]}
   | Done {label :: Text}
   | SkipTriggersButton {investigatorId :: InvestigatorId}
+  | CardPile {pile :: [PileCard], messages :: [msg]}
+  deriving stock (Show, Eq, Data)
+
+data PileCard = PileCard
+  { cardId :: CardId
+  , cardOwner :: Maybe InvestigatorId
+  }
   deriving stock (Show, Eq, Data)
 
 data PaymentAmountChoice msg = PaymentAmountChoice
@@ -169,5 +176,6 @@ $(deriveJSON defaultOptions ''PaymentAmountChoice)
 $(deriveJSON defaultOptions ''ChoosePlayerChoice)
 $(deriveJSON defaultOptions ''AmountChoice)
 $(deriveJSON defaultOptions ''AmountTarget)
+$(deriveJSON defaultOptions ''PileCard)
 $(deriveJSON defaultOptions ''UI)
 $(deriveJSON defaultOptions ''Question)

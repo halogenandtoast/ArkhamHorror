@@ -27,6 +27,7 @@ export enum MessageType {
   SKIP_TRIGGERS_BUTTON = 'SkipTriggersButton',
   TOKEN_GROUP_CHOICE = 'ChaosTokenGroupChoice',
   EFFECT_ACTION_BUTTON = 'EffectActionButton',
+  CARD_PILE = 'CardPile',
 }
 
 export type AbilityMessage = {
@@ -48,6 +49,16 @@ export type Done = {
 export type Label = {
   tag: MessageType.LABEL
   label: string
+}
+
+export type CardPile = {
+  tag: MessageType.CARD_PILE
+  pile: PileCard[]
+}
+
+export type PileCard = {
+  cardId: string
+  cardOwner: string | null
 }
 
 export type TooltipLabel = {
@@ -249,7 +260,7 @@ export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestAp
     tag: JsonDecoder.isExactly(MessageType.SKILL_TEST_APPLY_RESULTS_BUTTON),
   }, 'SkillTestApplyResultsButton')
 
-export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | SkillLabelWithLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | EngageLabel | GridLabel | TarotLabel | Done | ChaosTokenGroupChoice | EffectActionButton | SkipTriggersButton;
+export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | SkillLabelWithLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | EngageLabel | GridLabel | TarotLabel | Done | ChaosTokenGroupChoice | EffectActionButton | SkipTriggersButton | CardPile;
 
 export const skipTriggersDecoder = JsonDecoder.object<SkipTriggersButton>(
   {
@@ -268,6 +279,18 @@ export const labelDecoder = JsonDecoder.object<Label>(
     tag: JsonDecoder.isExactly(MessageType.LABEL),
     label: JsonDecoder.string
   }, 'Label')
+
+export const pileCardDecoder = JsonDecoder.object<PileCard>(
+  {
+    cardId: JsonDecoder.string,
+    cardOwner: JsonDecoder.nullable(JsonDecoder.string)
+  }, 'pileCardDecoder')
+
+export const cardPileDecoder = JsonDecoder.object<CardPile>(
+  {
+    tag: JsonDecoder.isExactly(MessageType.CARD_PILE),
+    pile: JsonDecoder.array<PileCard>(pileCardDecoder, "CardId[]")
+  }, 'cardPileDecoder')
 
 export const tooltipLabelDecoder = JsonDecoder.object<TooltipLabel>(
   {
@@ -336,6 +359,7 @@ export const effectActionButtonDecoder = JsonDecoder.object<EffectActionButton>(
 export const messageDecoder = JsonDecoder.oneOf<Message>(
   [
     labelDecoder,
+    cardPileDecoder,
     tooltipLabelDecoder,
     skillLabelDecoder,
     skillLabelWithLabelDecoder,

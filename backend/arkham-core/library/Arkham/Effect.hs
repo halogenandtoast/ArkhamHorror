@@ -40,6 +40,7 @@ import Arkham.Asset.Assets (
   azureFlame3Effect,
   azureFlame5Effect,
   azureFlameEffect,
+  baseballBat2Effect,
   baseballBatEffect,
   charlesRossEsqEffect,
   clairvoyance3Effect,
@@ -436,6 +437,7 @@ allEffects =
     , ("09066", SomeEffect hitAndRunEffect)
     , ("09087", SomeEffect explosiveWardEffect)
     , ("09109", SomeEffect atACrossroads1Effect)
+    , ("09113", SomeEffect baseballBat2Effect)
     , ("50044", SomeEffect jeremiahPierceEffect)
     , ("52007", SomeEffect alchemicalTransmutation2Effect)
     , ("52008", SomeEffect stormOfSpirits3Effect)

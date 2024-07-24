@@ -178,6 +178,7 @@ allPlayerAssetCards =
       , bangleOfJinxes1
       , baronSamedi
       , baseballBat
+      , baseballBat2
       , bauta
       , beatCop
       , beatCop2
@@ -6121,6 +6122,14 @@ improvisedShield =
     , cdSlots = [#hand]
     , cdCriteria = Just Criteria.InYourDiscard
     , cdPlayableFromDiscard = True
+    }
+
+baseballBat2 :: CardDef
+baseballBat2 =
+  (asset "09113" "Baseball Bat" 2 Survivor)
+    { cdSkills = [#combat, #combat]
+    , cdCardTraits = setFromList [Item, Weapon, Melee]
+    , cdSlots = [#hand, #hand]
     }
 
 hyperphysicalShotcasterTheoreticalDevice :: CardDef

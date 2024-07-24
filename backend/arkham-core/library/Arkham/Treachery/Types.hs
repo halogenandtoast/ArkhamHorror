@@ -202,19 +202,19 @@ treacheryOnAgenda = flip treacheryOn
 treacheryOnAct :: ActId -> TreacheryAttrs -> Bool
 treacheryOnAct = flip treacheryOn
 
-withTreacheryEnemy :: TreacheryAttrs -> (EnemyId -> m a) -> m a
+withTreacheryEnemy :: HasCallStack => TreacheryAttrs -> (EnemyId -> m a) -> m a
 withTreacheryEnemy attrs f = case treacheryAttachedTarget attrs of
   Just (EnemyTarget eid) -> f eid
   _ ->
     error $ show (cdName $ toCardDef attrs) <> " must be attached to an enemy"
 
-withTreacheryLocation :: TreacheryAttrs -> (LocationId -> m a) -> m a
+withTreacheryLocation :: HasCallStack => TreacheryAttrs -> (LocationId -> m a) -> m a
 withTreacheryLocation attrs f = case treacheryAttachedTarget attrs of
   Just (LocationTarget lid) -> f lid
   _ ->
     error $ show (cdName $ toCardDef attrs) <> " must be attached to a location"
 
-withTreacheryInvestigator :: TreacheryAttrs -> (InvestigatorId -> m a) -> m a
+withTreacheryInvestigator :: HasCallStack => TreacheryAttrs -> (InvestigatorId -> m a) -> m a
 withTreacheryInvestigator attrs f = case attrs.inThreatAreaOf of
   Just iid -> f iid
   _ ->
@@ -222,7 +222,7 @@ withTreacheryInvestigator attrs f = case attrs.inThreatAreaOf of
       $ show (cdName $ toCardDef attrs)
       <> " must be in the threat area of an investigator"
 
-withTreacheryOwner :: TreacheryAttrs -> (InvestigatorId -> m a) -> m a
+withTreacheryOwner :: HasCallStack => TreacheryAttrs -> (InvestigatorId -> m a) -> m a
 withTreacheryOwner attrs f = case treacheryOwner attrs of
   Just iid -> f iid
   _ ->

@@ -9,18 +9,18 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype SirenCall = SirenCall TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sirenCall :: TreacheryCard SirenCall
 sirenCall = treachery SirenCall Cards.sirenCall
 
 instance HasModifiersFor SirenCall where
-  getModifiersFor (CardIdTarget cid) (SirenCall attrs) = do
-    withTreacheryInvestigator attrs $ \iid -> do
-      matchingIcons <- (#wild :) . toList <$> getSkillTestMatchingSkillIcons
-      n <- count (`elem` matchingIcons) . cdSkills . toCardDef <$> getCard cid
-      pure $ toModifiers attrs [AdditionalCostToCommit iid $ ResourceCost n]
+  getModifiersFor (CardIdTarget cid) (SirenCall attrs) = maybeModified attrs do
+    iid <- hoistMaybe attrs.inThreatAreaOf
+    matchingIcons <- lift $ (#wild :) . toList <$> getSkillTestMatchingSkillIcons
+    n <- lift $ count (`elem` matchingIcons) . cdSkills . toCardDef <$> getCard cid
+    pure [AdditionalCostToCommit iid $ ResourceCost n]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities SirenCall where

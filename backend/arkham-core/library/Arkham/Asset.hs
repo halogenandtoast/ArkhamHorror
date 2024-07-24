@@ -910,6 +910,7 @@ allAssets =
       SomeAssetCard pocketMultiTool
     , SomeAssetCard idolOfXanatosWatcherBeyondTime
     , SomeAssetCard improvisedShield
+    , SomeAssetCard baseballBat2
     , --- neutral [tsk]
       SomeAssetCard hyperphysicalShotcasterTheoreticalDevice
     , SomeAssetCard toolBelt

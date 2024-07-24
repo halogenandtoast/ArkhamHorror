@@ -17,7 +17,7 @@ newtype ElleRubashPurifyingPurpose2 = ElleRubashPurifyingPurpose2 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 elleRubashPurifyingPurpose2 :: AssetCard ElleRubashPurifyingPurpose2
-elleRubashPurifyingPurpose2 = asset ElleRubashPurifyingPurpose2 Cards.elleRubashPurifyingPurpose2
+elleRubashPurifyingPurpose2 = ally ElleRubashPurifyingPurpose2 Cards.elleRubashPurifyingPurpose2 (1, 2)
 
 instance HasModifiersFor ElleRubashPurifyingPurpose2 where
   getModifiersFor (InvestigatorTarget iid) (ElleRubashPurifyingPurpose2 a) | a `controlledBy` iid = do

@@ -26,7 +26,7 @@ instance HasAbilities DrWilliamTMaleson where
 instance RunMessage DrWilliamTMaleson where
   runMessage msg a@(DrWilliamTMaleson attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
-      quietCancelCardDraw card
+      quietCancelCardDraw (attrs.ability 1) card
       deck <- Deck.EncounterDeckByKey <$> getEncounterDeckKey card.id
       push $ ShuffleCardsIntoDeck deck [card]
       drawEncounterCard iid attrs

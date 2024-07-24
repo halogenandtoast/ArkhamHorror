@@ -762,11 +762,6 @@ chooseEvadeEnemyMatch sid iid source = mkChooseEvadeMatch sid iid source >=> pus
 mapQueue :: (MonadTrans t, HasQueue Message m) => (Message -> Message) -> t m ()
 mapQueue = lift . Msg.mapQueue
 
-quietCancelCardDraw :: (MonadTrans t, HasQueue Message m) => Card -> t m ()
-quietCancelCardDraw card = lift $ Msg.removeAllMessagesMatching \case
-  Do (InvestigatorDrewEncounterCard _ c) -> c.id == card.id
-  _ -> False
-
 toDiscardBy
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 toDiscardBy iid source target = push $ Msg.toDiscardBy iid source target
@@ -1033,6 +1028,15 @@ cancelCardDraw
   -> Card
   -> t m ()
 cancelCardDraw source card = do
+  quietCancelCardDraw source card
+  cancelledOrIgnoredCardOrGameEffect source
+
+quietCancelCardDraw
+  :: (Sourceable source, ReverseQueue (t m), HasQueue Message m, MonadTrans t)
+  => source
+  -> Card
+  -> t m ()
+quietCancelCardDraw source card = do
   mtarget <- getCardEntityTarget card
   lift $ Msg.removeAllMessagesMatching \case
     Do (InvestigatorDrewEncounterCard _ c) -> c.id == card.id
@@ -1050,7 +1054,6 @@ cancelCardDraw source card = do
       _ -> False
     _ -> False
   for_ mtarget $ push . QuietlyRemoveFromGame
-  cancelledOrIgnoredCardOrGameEffect source
 
 cancelAttack :: ReverseQueue m => Sourceable source => source -> EnemyAttackDetails -> m ()
 cancelAttack source _ = push $ CancelNext (toSource source) AttackMessage

@@ -461,6 +461,7 @@ allPlayerAssetCards =
       , jimsTrumpet
       , joeyTheRatVigil
       , joeyTheRatVigil3
+      , katjaEastbankKeeperOfEsotericLore2
       , keenEye
       , keenEye3
       , kerosene1
@@ -6130,6 +6131,16 @@ baseballBat2 =
     { cdSkills = [#combat, #combat]
     , cdCardTraits = setFromList [Item, Weapon, Melee]
     , cdSlots = [#hand, #hand]
+    }
+
+katjaEastbankKeeperOfEsotericLore2 :: CardDef
+katjaEastbankKeeperOfEsotericLore2 =
+  (asset "09114" ("Katja Eastbank" <:> "Keeper of Esoteric Lore") 3 Survivor)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Ally, Scholar]
+    , cdSlots = [#ally]
+    , cdLevel = Just 2
+    , cdUnique = True
     }
 
 hyperphysicalShotcasterTheoreticalDevice :: CardDef

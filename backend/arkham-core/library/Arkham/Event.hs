@@ -550,6 +550,7 @@ allEvents =
     , SomeEventCard shedALight
     , SomeEventCard atACrossroads1
     , SomeEventCard lifeline1
+    , SomeEventCard natureOfTheBeast1
     , --- neutral [tsk]
       SomeEventCard refine
     , -- The Feast of Hemloch Vale

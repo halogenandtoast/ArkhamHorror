@@ -42,16 +42,13 @@ const investigator = computed(() => Object.values(props.game.investigators).find
 
 const searchedCards = computed(() => {
   const playerCards = Object.entries(investigator.value?.foundCards ?? [])
-  if (playerCards.length > 0) {
-    return playerCards.filter(([, c]) => c.length > 0)
-  }
+
+  const playerZones = playerCards.filter(([, c]) => c.length > 0)
 
   const encounterCards = Object.entries(props.game.foundCards)
-  if (encounterCards.length > 0) {
-    return playerCards.filter(([, c]) => c.length > 0)
-  }
+  const encounterZones = encounterCards.filter(([, c]) => c.length > 0)
 
-  return []
+  return [...playerZones, ...encounterZones]
 })
 
 const focusedCards = computed(() => {
@@ -371,7 +368,7 @@ const title = computed(() => {
         />
       </div>
     </div>
-    <div v-else-if="searchedCards.length > 0 && choices.length > 0" class="modal">
+    <div v-if="searchedCards.length > 0 && choices.length > 0" class="modal">
       <div class="modal-contents searched-cards">
         <div v-for="[group, cards] in searchedCards" :key="group" class="group">
           <h2>{{zoneToLabel(group)}}</h2>
@@ -388,7 +385,7 @@ const title = computed(() => {
         </div>
       </div>
     </div>
-    <div v-else-if="paymentAmountsLabel" class="modal amount-modal">
+    <div v-if="paymentAmountsLabel" class="modal amount-modal">
       <div class="modal-contents amount-contents">
         <form @submit.prevent="submitPaymentAmounts" :disabled="unmetAmountRequirements">
           <legend>{{paymentAmountsLabel}}</legend>
@@ -408,7 +405,7 @@ const title = computed(() => {
         </form>
       </div>
     </div>
-    <div v-else-if="amountsLabel" class="modal amount-modal">
+    <div v-if="amountsLabel" class="modal amount-modal">
       <div v-if="searchedCards.length > 0" class="modal-contents searched-cards">
         <div v-for="[group, cards] in searchedCards" :key="group" class="group">
           <h2>{{zoneToLabel(group)}}</h2>

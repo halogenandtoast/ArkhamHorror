@@ -932,7 +932,7 @@ runGameMessage msg g = case msg of
                   )
                 _ -> error "Unhandled encounter card skill"
               ExileThis -> case toCard skill of
-                PlayerCard pc ->
+                PlayerCard _ ->
                   ( Exile (toTarget skillId)
                   , Just skillId
                   )

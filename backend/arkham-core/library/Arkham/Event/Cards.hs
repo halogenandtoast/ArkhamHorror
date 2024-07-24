@@ -273,6 +273,7 @@ allPlayerEventCards =
       , mysteriesRemain
       , mystifyingSong
       , narrowEscape
+      , natureOfTheBeast1
       , noStoneUnturned
       , noStoneUnturned5
       , nothingLeftToLose3
@@ -3635,6 +3636,17 @@ lifeline1 =
     , cdLimits = [MaxPerTurn 1]
     , cdFastWindow =
         Just $ TurnWouldEnd #when (affectsOthers $ InvestigatorWithAnyFailedSkillTestsThisTurn)
+    , cdLevel = Just 1
+    }
+
+natureOfTheBeast1 :: CardDef
+natureOfTheBeast1 =
+  (event "09111" "Nature of the Beast" 0 Survivor)
+    { cdCardTraits = setFromList [Dilemma, Insight]
+    , cdRevelation = IsRevelation
+    , cdCost = Nothing
+    , cdLimits = [MaxPerTraitPerRound Dilemma 2]
+    , cdCriteria = Just Criteria.Never
     , cdLevel = Just 1
     }
 

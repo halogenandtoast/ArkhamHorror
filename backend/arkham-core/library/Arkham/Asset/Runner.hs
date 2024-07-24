@@ -108,6 +108,8 @@ instance RunMessage AssetAttrs where
           pure $ a & tokensL %~ addTokens tType n
     MoveTokens s source _ tType n | isSource a source -> runMessage (RemoveTokens s (toTarget a) tType n) a
     MoveTokens s _ target tType n | isTarget a target -> runMessage (PlaceTokens s (toTarget a) tType n) a
+    ClearTokens target | isTarget a target -> do
+      pure $ a & tokensL .~ mempty
     RemoveTokens _ target tType n | isTarget a target -> do
       when (tType == Clue && assetClues a - n <= 0)
         $ pushAll

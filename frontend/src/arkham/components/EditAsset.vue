@@ -19,6 +19,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{ close: [] }>()
 const placeTokens = ref(false);
+const placeTokenType = ref<TokenType>("Evidence");
+const anyTokens = computed(() => Object.values(props.asset.tokens).some(t => t > 0))
 
 const investigatorId = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId)?.id)
 const id = computed(() => props.asset.id)
@@ -89,11 +91,16 @@ const hasPool = computed(() => {
         </div>
       </div>
       <div v-if="placeTokens" class="buttons">
-        <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{ tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}, 'Secret', 1]})">Place Secret</button>
+        <select v-model="placeTokenType">
+          <option value="Evidence">Evidence</option>
+          <option value="Secret">Secret</option>
+        </select>
+        <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{ tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}, placeTokenType, 1]})">Place</button>
         <button @click="placeTokens = false">Back</button>
       </div>
       <div v-else class="buttons">
         <button @click="placeTokens = true">Place Tokens</button>
+        <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'ClearTokens', contents: { tag: 'AssetTarget', contents: id}})">Remove All Tokens</button>
         <button v-if="!asset.owner" @click="debug.send(game.id, {tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">Take control</button>
         <button v-if="exhausted" @click="debug.send(game.id, {tag: 'Ready', contents: { tag: 'AssetTarget', contents: id}})">Ready</button>
         <button v-else @click="debug.send(game.id, {tag: 'Exhaust', contents: { tag: 'AssetTarget', contents: id}})">Exhaust</button>

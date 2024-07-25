@@ -905,7 +905,13 @@ instance RunMessage ActiveCost where
             actions = [Action.Play | isPlayAction == IsPlayAction] <> cardDef.actions
             mEffect =
               guard cardDef.beforeEffect
-                *> [createCardEffect cardDef (Just $ EffectCost acId) iid (toCardId card), CheckAdditionalCosts acId]
+                *> [ createCardEffect
+                      cardDef
+                      (Just $ EffectCost acId)
+                      (BothSource (InvestigatorSource iid) (CardSource card))
+                      (toCardId card)
+                   , CheckAdditionalCosts acId
+                   ]
           batchId <- getRandom
           beforeWindowMsg <- checkWindows $ map (mkWhen . Window.PerformAction iid) actions
           wouldPayWindowMsg <- checkWindows [mkWhen $ Window.WouldPayCardCost iid acId batchId card]

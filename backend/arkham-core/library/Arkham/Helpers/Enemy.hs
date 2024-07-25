@@ -8,6 +8,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Enemy.Types
+import Arkham.Game.Helpers (sourceMatches)
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
@@ -135,8 +136,10 @@ getFightableEnemyIds iid (toSource -> source) = do
         ( \case
             Modifier.CanOnlyBeAttackedByAbilityOn cardCodes -> case source of
               (AssetSource aid) ->
-                (`member` cardCodes) <$> field AssetCardCode aid
+                (`notMember` cardCodes) <$> field AssetCardCode aid
               _ -> pure True
+            Modifier.CannotBeAttackedByPlayerSourcesExcept sourceMatcher ->
+              not <$> sourceMatches source sourceMatcher
             _ -> pure False
         )
         modifiers'

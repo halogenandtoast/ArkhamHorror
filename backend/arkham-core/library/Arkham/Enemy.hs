@@ -371,6 +371,8 @@ allEnemies =
     , -- The Scarlet Keys
       -- signature
       SomeEnemyCard agentFletcher
+    , -- basic weakness
+      SomeEnemyCard lurkerInTheDark
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

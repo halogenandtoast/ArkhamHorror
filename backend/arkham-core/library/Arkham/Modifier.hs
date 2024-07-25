@@ -105,6 +105,7 @@ data ModifierType
   | CanModify ModifierType
   | CanMoveWith InvestigatorMatcher
   | CanOnlyBeAttackedByAbilityOn (Set CardCode)
+  | CannotBeAttackedByPlayerSourcesExcept SourceMatcher
   | CanOnlyBeDefeatedBy SourceMatcher
   | CanOnlyBeDefeatedByDamage
   | CanOnlyUseCardsInRole ClassSymbol

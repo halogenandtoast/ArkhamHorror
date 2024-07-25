@@ -61,6 +61,9 @@ mapOneOf f = oneOf . map f
 notOneOf :: (Not a, OneOf a) => [a] -> a
 notOneOf = not_ . oneOf
 
+instance OneOf SourceMatcher where
+  oneOf = SourceMatchesAny
+
 instance OneOf SkillTestMatcher where
   oneOf = SkillTestOneOf
 

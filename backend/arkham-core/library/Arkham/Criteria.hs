@@ -202,6 +202,7 @@ data Criterion
   | HasCalculation GameCalculation ValueMatcher
   | HasRemainingBlessTokens
   | HasRemainingCurseTokens
+  | OnlySources SourceMatcher
   | -- Special Criterion
     AtLeastNCriteriaMet Int [Criterion]
   | Criteria [Criterion]

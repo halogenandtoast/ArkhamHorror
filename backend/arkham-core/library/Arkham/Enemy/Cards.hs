@@ -65,6 +65,7 @@ allPlayerEnemyCards =
       , accursedFollower
       , mobGoons
       , agentFletcher
+      , lurkerInTheDark
       , tommyMalloy
       , sacrificialBeast
       , vengefulHound
@@ -1993,6 +1994,14 @@ agentFletcher =
   (weakness "09010" "Agent Fletcher")
     { cdCardTraits = setFromList [Humanoid, Coterie, Detective]
     , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
+    }
+
+lurkerInTheDark :: CardDef
+lurkerInTheDark =
+  (basicWeakness "09124" "Lurker in the Dark")
+    { cdCardTraits = setFromList [Monster, Shoggoth]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdDeckRestrictions = [OnlyClass Guardian]
     }
 
 corpseHungryGhoul :: CardDef

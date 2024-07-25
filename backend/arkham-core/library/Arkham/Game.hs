@@ -1873,7 +1873,7 @@ getLocationsMatching lmatcher = do
         (<> others) <$> getLocationsMatching (getAnyLocationMatcher matcherSupreme)
       LocationWhenCriteria criteria -> do
         iid <- getLead
-        passes <- passesCriteria iid Nothing GameSource [] criteria
+        passes <- passesCriteria iid Nothing GameSource GameSource [] criteria
         pure $ if passes then ls else []
       AccessibleFrom matcher -> do
         getLocationsMatching (Unblocked <> ConnectedFrom matcher)
@@ -2681,8 +2681,8 @@ enemyMatcherFilter = \case
       Just loc -> elem loc <$> select locationMatcher
   CanFightEnemy source -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
-    modifiers' <- getModifiers (InvestigatorTarget iid)
-    enemyModifiers <- getModifiers (EnemyTarget $ toId enemy)
+    modifiers' <- getModifiers iid
+    enemyModifiers <- getModifiers enemy.id
     sourceModifiers <- case source of
       AbilitySource abSource idx -> do
         abilities <- getAbilitiesMatching $ AbilityIs abSource idx
@@ -2709,7 +2709,15 @@ enemyMatcherFilter = \case
     excluded <-
       elem (toId enemy)
         <$> select (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
-    if excluded
+    sourceIsExcluded <- flip anyM enemyModifiers \case
+      CanOnlyBeAttackedByAbilityOn cardCodes -> case source of
+        (AssetSource aid) ->
+          (`notMember` cardCodes) <$> field AssetCardCode aid
+        _ -> pure True
+      CannotBeAttackedByPlayerSourcesExcept sourceMatcher ->
+        not <$> sourceMatches source sourceMatcher
+      _ -> pure False
+    if excluded || sourceIsExcluded
       then pure False
       else
         anyM
@@ -2723,7 +2731,7 @@ enemyMatcherFilter = \case
                     . overrideFunc
                 ]
           )
-          (getAbilities enemy)
+          (map (setRequestor source) $ getAbilities enemy)
   CanFightEnemyWithOverride override -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers (EnemyTarget $ toId enemy)

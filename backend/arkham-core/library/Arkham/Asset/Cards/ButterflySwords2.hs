@@ -32,7 +32,7 @@ instance RunMessage ButterflySwords2 where
       oncePerAbility attrs 1 $ afterSkillTest $ forInvestigator iid msg
       pure a
     ForInvestigator iid (AfterSkillTestEnds (isAbilitySource attrs 1 -> True) _ _) | not attrs.exhausted -> do
-      canFight <- hasFightActions iid (DuringTurn You) (defaultWindows iid)
+      canFight <- hasFightActions iid (attrs.ability 1) (DuringTurn You) (defaultWindows iid)
       sid <- getRandom
       fight <- evalQueueT $ withCost iid (exhaust attrs) do
         skillTestModifiers sid attrs iid [AddSkillValue #agility, DamageDealt 1]

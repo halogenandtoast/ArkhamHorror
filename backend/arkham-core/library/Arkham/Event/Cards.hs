@@ -320,6 +320,7 @@ allPlayerEventCards =
       , righteousHunt1
       , riteOfEquilibrium5
       , sacrifice1
+      , salvage2
       , sceneOfTheCrime
       , scoutAhead
       , scroungeForSupplies
@@ -3660,6 +3661,20 @@ heedTheDream2 =
     , cdLimits = [MaxPerTraitPerRound Dilemma 2]
     , cdCriteria = Just Criteria.Never
     , cdLevel = Just 1
+    }
+
+salvage2 :: CardDef
+salvage2 =
+  (event "09116" "Salvage" 0 Survivor)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Insight]
+    , cdCriteria =
+        Just
+          $ exists
+          $ InDiscardOf You
+          <> basic #item
+          <> oneOf [basic CardWithNonZeroCost, PlayableCard (UnpaidCost NoAction) #any]
+    , cdLevel = Just 2
     }
 
 refine :: CardDef

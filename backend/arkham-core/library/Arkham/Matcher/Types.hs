@@ -834,6 +834,7 @@ data CardMatcher
   | CardWithOddCost
   | CardWithEvenCost
   | CardWithCost Int
+  | CardWithNonZeroCost
   | CardWithOddSkillIcons
   | CardWithEvenSkillIcons
   | CardWithAnySkills

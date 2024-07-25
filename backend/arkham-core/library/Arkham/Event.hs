@@ -552,6 +552,7 @@ allEvents =
     , SomeEventCard lifeline1
     , SomeEventCard natureOfTheBeast1
     , SomeEventCard heedTheDream2
+    , SomeEventCard salvage2
     , --- neutral [tsk]
       SomeEventCard refine
     , -- The Feast of Hemloch Vale

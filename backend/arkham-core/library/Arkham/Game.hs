@@ -1141,7 +1141,7 @@ getRemainingActsMatching matcher = do
     ActCanWheelOfFortuneX -> pure . const True
     NotAct matcher' -> fmap not . matcherFilter matcher'
 
-getTreacheriesMatching :: HasGame m => TreacheryMatcher -> m [Treachery]
+getTreacheriesMatching :: (HasCallStack, HasGame m) => TreacheryMatcher -> m [Treachery]
 getTreacheriesMatching matcher = do
   allGameTreacheries <- toList . view (entitiesL . treacheriesL) <$> getGame
   filterM (matcherFilter matcher) allGameTreacheries
@@ -1171,9 +1171,10 @@ getTreacheriesMatching matcher = do
     TreacheryWithCardId cardId -> pure . (== cardId) . toCardId
     TreacheryIs cardCode -> pure . (== cardCode) . toCardCode
     TreacheryAt locationMatcher -> \treachery -> do
-      targets <- selectMap (Just . LocationTarget) locationMatcher
-      let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
-      pure $ treacheryTarget `elem` targets
+      targets <- select locationMatcher
+      Helpers.placementLocation treachery.placement <&> \case
+        Nothing -> False
+        Just lid -> lid `elem` targets
     TreacheryOnEnemy enemyMatcher -> \treachery -> do
       targets <- selectMap (Just . EnemyTarget) enemyMatcher
       let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
@@ -3315,11 +3316,7 @@ getEnemyField f e = do
       ec -> ec
     EnemyCardCode -> pure enemyCardCode
     EnemyCardId -> pure enemyCardId
-    EnemyLocation -> case enemyPlacement of
-      AtLocation lid -> pure $ Just lid
-      InThreatArea iid -> field InvestigatorLocation iid
-      AsSwarm eid' _ -> field EnemyLocation eid'
-      _ -> pure Nothing
+    EnemyLocation -> Helpers.placementLocation enemyPlacement
 
 instance Projection Investigator where
   getAttrs iid = toAttrs <$> getInvestigator iid

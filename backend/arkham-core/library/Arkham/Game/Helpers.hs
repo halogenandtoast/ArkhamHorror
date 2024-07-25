@@ -182,7 +182,7 @@ getAsIfInHandCards iid = do
     <> cardsAddedViaModifiers
 
 getCanPerformAbility
-  :: HasGame m => InvestigatorId -> [Window] -> Ability -> m Bool
+  :: (HasCallStack, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
 getCanPerformAbility !iid !ws !ability = do
   -- can perform an ability means you can afford it
   -- it is in the right window

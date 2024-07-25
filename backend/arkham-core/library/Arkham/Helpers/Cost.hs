@@ -230,8 +230,12 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
     -- filter
     let
       getCards = \case
-        FromHandOf whoMatcher ->
-          fmap (filter (`cardMatch` cardMatcher) . concat)
+        FromHandOf whoMatcher -> do
+          let
+            excludeCards = case source of
+              CardSource c -> [c]
+              _ -> mempty
+          fmap (filter (`cardMatch` cardMatcher) . filter (`notElem` excludeCards) . concat)
             . traverse (field InvestigatorHand)
             =<< select whoMatcher
         FromPlayAreaOf whoMatcher -> do
@@ -285,10 +289,20 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
         iid
     pure $ length discards >= n
   HandDiscardCost n cardMatcher -> do
-    cards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
+    let
+      excludeCards = case source of
+        CardSource c -> [c]
+        _ -> mempty
+    cards <-
+      mapMaybe (preview _PlayerCard) . filter (`notElem` excludeCards) <$> field InvestigatorHand iid
     pure $ count (`cardMatch` cardMatcher) cards >= n
   HandDiscardAnyNumberCost cardMatcher -> do
-    cards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
+    let
+      excludeCards = case source of
+        CardSource c -> [c]
+        _ -> mempty
+    cards <-
+      mapMaybe (preview _PlayerCard) . filter (`notElem` excludeCards) <$> field InvestigatorHand iid
     pure $ count (`cardMatch` cardMatcher) cards > 0
   ReturnMatchingAssetToHandCost assetMatcher -> selectAny $ Matcher.AssetCanLeavePlayByNormalMeans <> assetMatcher
   ReturnAssetToHandCost assetId -> selectAny $ Matcher.AssetWithId assetId

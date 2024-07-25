@@ -556,6 +556,8 @@ allEvents =
     , SomeEventCard fickleFortune3
     , --- neutral [tsk]
       SomeEventCard refine
+    , --- basic weakness [tsk]
+      SomeEventCard quantumParadox
     , -- The Feast of Hemloch Vale
       --- survivor [fhv]
       SomeEventCard keepFaith2

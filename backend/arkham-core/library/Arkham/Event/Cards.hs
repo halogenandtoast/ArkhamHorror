@@ -310,6 +310,7 @@ allPlayerEventCards =
       , preposterousSketches2
       , protectingTheAnirniq2
       , quantumFlux
+      , quantumParadox
       , quickGetaway
       , radiantSmite1
       , readTheSigns
@@ -3695,6 +3696,17 @@ refine =
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Supply, Double]
     , cdCriteria = Just $ exists $ OwnedBy You <> basic CardWithAvailableCustomization
+    }
+
+quantumParadox :: CardDef
+quantumParadox =
+  (event "09125" "Quantum Paradox" 0 Neutral)
+    { cdCardTraits = setFromList [Paradox]
+    , cdCardSubType = Just BasicWeakness
+    , cdLevel = Nothing
+    , cdCardInHandEffects = True
+    , cdAdditionalCost = Just $ HandDiscardCost 4 #any
+    , cdDeckRestrictions = [OnlyClass Seeker]
     }
 
 keepFaith2 :: CardDef

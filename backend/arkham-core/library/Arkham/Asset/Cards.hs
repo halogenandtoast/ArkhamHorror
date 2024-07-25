@@ -680,6 +680,7 @@ allPlayerAssetCards =
       , somethingWorthFightingFor
       , sophieInLovingMemory
       , sophieItWasAllMyFault
+      , soulSanctification3
       , spectralWeb
       , spiritAthame1
       , stealth
@@ -6191,6 +6192,14 @@ flashlight3 =
     , cdSlots = [#hand]
     , cdLevel = Just 3
     }
+
+soulSanctification3 :: CardDef
+soulSanctification3 =
+  permanent
+    (asset "09123" "Soul Sanctification" 0 Neutral)
+      { cdCardTraits = setFromList [Ritual]
+      , cdLevel = Just 3
+      }
 
 blessedBlade4 :: CardDef
 blessedBlade4 =

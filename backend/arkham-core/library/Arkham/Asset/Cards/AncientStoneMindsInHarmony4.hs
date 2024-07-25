@@ -22,8 +22,8 @@ instance HasAbilities AncientStoneMindsInHarmony4 where
         a
         1
         ( oneOf
-            [ exists (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
-            , exists (AssetAt YourLocation <> AssetWithHorror)
+            [ exists (HealableInvestigator (a.ability 1) #horror $ InvestigatorAt YourLocation)
+            , exists (HealableAsset (a.ability 1) #horror $ AssetAt YourLocation)
             ]
         )
         $ ReactionAbility (DrawsCards #when You AnyValue) (DynamicUseCost (be a) Secret DrawnCardsValue)

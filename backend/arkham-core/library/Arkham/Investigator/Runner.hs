@@ -1958,9 +1958,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         $ [mkAfter (Window.Healed DamageType (toTarget a) source health) | health > 0]
         <> [mkAfter (Window.Healed HorrorType (toTarget a) source sanity) | sanity > 0]
 
-    a' <- if health > 0 then runMessage (RemoveTokens source (toTarget a) #damage health) a else pure a
+    let overHealDamage = max 0 (health - a.healthDamage)
+    let overHealSanity = max 0 (sanity - a.sanityDamage)
+    let trueHealth = min health a.healthDamage
+    let trueSanity = min sanity a.sanityDamage
+
+    pushWhen (overHealDamage > 0) $ ExcessHealDamage a.id overHealDamage
+    pushWhen (overHealSanity > 0) $ ExcessHealHorror a.id overHealSanity
+
+    a' <-
+      if trueHealth > 0
+        then runMessage (RemoveTokens source (toTarget a) #damage trueHealth) a
+        else pure a
     a'' <-
-      if sanity > 0 then runMessage (RemoveTokens source (toTarget a) #horror sanity) a' else pure a'
+      if trueSanity > 0
+        then runMessage (RemoveTokens source (toTarget a) #horror trueSanity) a'
+        else pure a'
 
     pure
       $ a''

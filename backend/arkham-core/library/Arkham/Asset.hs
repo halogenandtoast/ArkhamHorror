@@ -917,6 +917,7 @@ allAssets =
       SomeAssetCard hyperphysicalShotcasterTheoreticalDevice
     , SomeAssetCard toolBelt
     , SomeAssetCard flashlight3
+    , SomeAssetCard soulSanctification3
     , -- The Feast of Hemloch Vale
       --- guardian [tsk]
       SomeAssetCard blessedBlade4

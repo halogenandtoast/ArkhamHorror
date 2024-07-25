@@ -869,7 +869,8 @@ getInvestigatorsMatching matcher = do
       gameValueMatches (attr investigatorHealthDamage i + t) gameValueMatcher
     InvestigatorWithHealableHorror -> \i -> do
       t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfHorror
-      let onSelf = (attr investigatorSanityDamage i + t) > 0
+      mods <- getModifiers i.id
+      let onSelf = (attr investigatorSanityDamage i + t) > 0 || CanHealAtFull #horror `elem` mods
       mFoolishness <-
         selectOne
           $ assetIs Assets.foolishnessFoolishCatOfUlthar
@@ -970,12 +971,30 @@ getInvestigatorsMatching matcher = do
       case damageType of
         DamageType -> do
           if CannotAffectOtherPlayersWithPlayerEffectsExceptDamage `elem` mods
-            then elem (toId i) <$> select (matcher' <> You <> InvestigatorWithAnyDamage)
-            else elem (toId i) <$> select (matcher' <> InvestigatorWithAnyDamage)
+            then
+              elem (toId i)
+                <$> select
+                  ( matcher'
+                      <> You
+                      <> oneOf [InvestigatorWithAnyDamage, InvestigatorWithModifier (CanHealAtFull damageType)]
+                  )
+            else
+              elem (toId i)
+                <$> select
+                  (matcher' <> oneOf [InvestigatorWithAnyDamage, InvestigatorWithModifier (CanHealAtFull damageType)])
         HorrorType -> do
           if CannotHealHorror `elem` mods
-            then elem (toId i) <$> select (matcher' <> You <> InvestigatorWithAnyHorror)
-            else elem (toId i) <$> select (matcher' <> InvestigatorWithAnyHorror)
+            then
+              elem (toId i)
+                <$> select
+                  ( matcher'
+                      <> You
+                      <> oneOf [InvestigatorWithAnyHorror, InvestigatorWithModifier (CanHealAtFull damageType)]
+                  )
+            else
+              elem (toId i)
+                <$> select
+                  (matcher' <> oneOf [InvestigatorWithAnyHorror, InvestigatorWithModifier (CanHealAtFull damageType)])
     InvestigatorWithMostCardsInPlayArea -> \i ->
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
     InvestigatorWithKey key -> \i ->

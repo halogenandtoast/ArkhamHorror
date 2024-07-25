@@ -827,6 +827,7 @@ library
       Arkham.Asset.Cards.OldBookOfLore3
       Arkham.Asset.Cards.OldHuntingRifle3
       Arkham.Asset.Cards.OldKeyring
+      Arkham.Asset.Cards.OldKeyring3
       Arkham.Asset.Cards.OldShotgun2
       Arkham.Asset.Cards.OliveMcBride
       Arkham.Asset.Cards.OnYourOwn3
@@ -1584,6 +1585,7 @@ library
       Arkham.Event.Cards.FangOfTyrthrha4
       Arkham.Event.Cards.FaustianBargain
       Arkham.Event.Cards.FendOff3
+      Arkham.Event.Cards.FickleFortune3
       Arkham.Event.Cards.FightOrFlight
       Arkham.Event.Cards.FirstWatch
       Arkham.Event.Cards.Flare1

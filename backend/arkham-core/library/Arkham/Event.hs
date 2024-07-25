@@ -553,6 +553,7 @@ allEvents =
     , SomeEventCard natureOfTheBeast1
     , SomeEventCard heedTheDream2
     , SomeEventCard salvage2
+    , SomeEventCard fickleFortune3
     , --- neutral [tsk]
       SomeEventCard refine
     , -- The Feast of Hemloch Vale

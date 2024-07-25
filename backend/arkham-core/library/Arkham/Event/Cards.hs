@@ -174,6 +174,7 @@ allPlayerEventCards =
       , fangOfTyrthrha4
       , faustianBargain
       , fendOff3
+      , fickleFortune3
       , fightOrFlight
       , firstWatch
       , flare1
@@ -3675,6 +3676,17 @@ salvage2 =
           <> basic #item
           <> oneOf [basic CardWithNonZeroCost, PlayableCard (UnpaidCost NoAction) #any]
     , cdLevel = Just 2
+    }
+
+fickleFortune3 :: CardDef
+fickleFortune3 =
+  (event "09118" "Fickle Fortune" 0 Survivor)
+    { cdCardTraits = setFromList [Dilemma, Fortune]
+    , cdRevelation = IsRevelation
+    , cdCost = Nothing
+    , cdLimits = [MaxPerTraitPerRound Dilemma 2]
+    , cdCriteria = Just Criteria.Never
+    , cdLevel = Just 1
     }
 
 refine :: CardDef

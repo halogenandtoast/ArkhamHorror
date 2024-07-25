@@ -1003,6 +1003,10 @@ healDamage
   :: (ReverseQueue m, Sourceable source, Targetable target) => target -> source -> Int -> m ()
 healDamage target source n = push $ Msg.HealDamage (toTarget target) (toSource source) n
 
+healHorror
+  :: (ReverseQueue m, Sourceable source, Targetable target) => target -> source -> Int -> m ()
+healHorror target source n = push $ Msg.HealHorror (toTarget target) (toSource source) n
+
 discoverAtYourLocation
   :: (ReverseQueue m, Sourceable source) => IsInvestigate -> InvestigatorId -> source -> Int -> m ()
 discoverAtYourLocation isInvestigate iid s n = do

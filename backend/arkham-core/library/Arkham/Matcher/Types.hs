@@ -1182,6 +1182,9 @@ instance IsLabel "investigation" SkillTestMatcher where
 instance IsLabel "fighting" SkillTestMatcher where
   fromLabel = WhileAttackingAnEnemy AnyEnemy
 
+instance IsLabel "evading" SkillTestMatcher where
+  fromLabel = WhileEvadingAnEnemy AnyEnemy
+
 instance IsLabel "any" SkillTestMatcher where
   fromLabel = AnySkillTest
 

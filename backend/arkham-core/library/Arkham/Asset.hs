@@ -916,6 +916,7 @@ allAssets =
     , --- neutral [tsk]
       SomeAssetCard hyperphysicalShotcasterTheoreticalDevice
     , SomeAssetCard toolBelt
+    , SomeAssetCard flashlight3
     , -- The Feast of Hemloch Vale
       --- guardian [tsk]
       SomeAssetCard blessedBlade4

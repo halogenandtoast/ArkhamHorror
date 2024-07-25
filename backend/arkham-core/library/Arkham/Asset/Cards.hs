@@ -357,6 +357,7 @@ allPlayerAssetCards =
       , fiveOfPentacles1
       , flamethrower5
       , flashlight
+      , flashlight3
       , fleshWard
       , fluteOfTheOuterGods4
       , foolishnessFoolishCatOfUlthar
@@ -6179,6 +6180,16 @@ toolBelt =
   (asset "09120" "Tool Belt" 2 Neutral)
     { cdCardTraits = setFromList [Item, Clothing]
     , cdSlots = [#body]
+    }
+
+flashlight3 :: CardDef
+flashlight3 =
+  (asset "09122" "Flashlight" 2 Neutral)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Item, Tool]
+    , cdUses = uses Supply 4
+    , cdSlots = [#hand]
+    , cdLevel = Just 3
     }
 
 blessedBlade4 :: CardDef

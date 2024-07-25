@@ -637,6 +637,8 @@ data Message
   | HealAllDamage Target Source
   | HealAllHorror Target Source
   | HealAllDamageAndHorror Target Source
+  | ExcessHealDamage InvestigatorId Int
+  | ExcessHealHorror InvestigatorId Int
   | HealDamage Target Source Int
   | HealHorror Target Source Int
   | HealDamageDelayed Target Source Int

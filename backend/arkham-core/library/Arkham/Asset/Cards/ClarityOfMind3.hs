@@ -19,13 +19,10 @@ clarityOfMind3 = asset ClarityOfMind3 Cards.clarityOfMind3
 
 instance HasAbilities ClarityOfMind3 where
   getAbilities (ClarityOfMind3 a) =
-    [ restrictedAbility
+    [ controlledAbility
         a
         1
-        ( ControlsThis
-            <> InvestigatorExists
-              (InvestigatorAt YourLocation <> InvestigatorWithAnyHorror)
-        )
+        (exists $ HealableInvestigator (a.ability 1) #horror $ InvestigatorAt YourLocation)
         $ actionAbilityWithCost (assetUseCost a Charge 1)
     ]
 

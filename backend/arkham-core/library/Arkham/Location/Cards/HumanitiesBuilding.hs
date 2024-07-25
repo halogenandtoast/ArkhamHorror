@@ -18,7 +18,7 @@ instance HasAbilities HumanitiesBuilding where
   getAbilities (HumanitiesBuilding attrs) =
     extendRevealed
       attrs
-      [ restrictedAbility attrs 1 (Here <> youExist InvestigatorWithAnyHorror)
+      [ restrictedAbility attrs 1 (Here <> exists (HealableInvestigator (attrs.ability 1) #horror You))
           $ forced
           $ TurnEnds #when You
       ]

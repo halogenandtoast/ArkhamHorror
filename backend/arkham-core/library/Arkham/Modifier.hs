@@ -15,6 +15,7 @@ import Arkham.ChaosToken
 import Arkham.ClassSymbol
 import {-# SOURCE #-} Arkham.Cost
 import Arkham.Criteria.Override
+import Arkham.Damage
 import {-# SOURCE #-} Arkham.Enemy.Types
 import Arkham.Field
 import Arkham.Id
@@ -158,6 +159,7 @@ data ModifierType
   | CannotGainResources
   | CannotGainResourcesFromPlayerCardEffects
   | CannotRevealCards
+  | CanHealAtFull DamageType
   | CannotHealHorror
   | CannotHealHorrorOnOtherCards Target
   | CannotInvestigate

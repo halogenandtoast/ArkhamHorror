@@ -53,14 +53,14 @@ instance RunMessage Kerosene1 where
           <$> selectAgg
             Sum
             InvestigatorHorror
-            (affectsOthers $ colocatedWith iid <> InvestigatorWithAnyHorror)
+            (HealableInvestigator (attrs.ability 1) #horror $ colocatedWith iid)
       totalAssetHorror <-
         getSum
           <$> selectAgg
             Sum
             AssetHorror
-            ( AssetAt (locationWithInvestigator iid)
-                <> AssetWithHorror
+            ( HealableAsset (attrs.ability 1) #horror
+                $ AssetAt (locationWithInvestigator iid)
                 <> AssetControlledBy (affectsOthers Anyone)
             )
 

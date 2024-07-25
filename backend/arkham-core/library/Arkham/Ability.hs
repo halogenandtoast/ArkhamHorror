@@ -188,6 +188,7 @@ mkAbility :: (Sourceable a, HasCardCode a) => a -> Int -> AbilityType -> Ability
 mkAbility entity idx type' =
   Ability
     { abilitySource = toSource entity
+    , abilityRequestor = Just $ toSource entity
     , abilityCardCode = toCardCode entity
     , abilityIndex = idx
     , abilityType = type'

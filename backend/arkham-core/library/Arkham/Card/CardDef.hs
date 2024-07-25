@@ -36,6 +36,7 @@ data DeckRestriction
   | TraitPerDeckLimit Trait Int
   | MultiplayerOnly
   | PurchaseAtDeckCreation
+  | OnlyClass ClassSymbol
   deriving stock (Show, Eq, Ord, Data)
 
 data AttackOfOpportunityModifier

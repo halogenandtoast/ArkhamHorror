@@ -178,7 +178,7 @@ getWindowSkippable _ _ w@(windowType -> Window.ActivateAbility iid _ ab) = do
   andM
     [ getCanAffordUseWith excludeOne CanNotIgnoreAbilityLimit iid ab [w]
     , withAlteredGame withoutCanModifiers
-        $ passesCriteria iid Nothing (abilitySource ab) [w] (abilityCriteria ab)
+        $ passesCriteria iid Nothing ab.source ab.requestor [w] (abilityCriteria ab)
     ]
 getWindowSkippable attrs ws (windowType -> Window.WouldPayCardCost iid _ _ card@(PlayerCard pc)) | iid == toId attrs = do
   modifiers' <- getModifiers (toCardId card)

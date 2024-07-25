@@ -45,21 +45,27 @@ toeToToeEffect = cardEffect ToeToToeEffect Cards.toeToToe
 -- effect is triggered by cdBeforeEffect
 instance RunMessage ToeToToeEffect where
   runMessage msg e@(ToeToToeEffect attrs) = case msg of
-    CreatedEffect eid _ (InvestigatorSource iid) _target | eid == toId attrs -> do
+    CreatedEffect eid _ (BothSource (InvestigatorSource iid) cardSource) _target | eid == toId attrs -> do
       sid <- getRandom
-      pushM $ toMessage . setTarget attrs <$> onlyChooseFight (mkChooseFight sid iid (toSource attrs))
+      pushM $ toMessage . setTarget attrs <$> onlyChooseFight (mkChooseFight sid iid cardSource)
       pure e
-    ChoseEnemy _sid _iid (isSource attrs -> True) enemy -> do
-      case attrs.meta of
-        Just (EffectCost acId) -> do
-          card <- case attrs.target of
-            CardIdTarget cid -> getCard cid
-            _ -> error "ToeToToeEffect: cardId should be CardIdTarget"
-          pushAll
-            [ disable attrs
-            , costModifier attrs (ActiveCostTarget acId) (AdditionalCost $ EnemyAttackCost enemy)
-            , cardResolutionModifier card attrs attrs.target (MetaModifier $ object ["chosenEnemy" .= enemy])
-            ]
-        _ -> error "invalid before effect meta"
+    ChoseEnemy _sid _iid source enemy -> do
+      let
+        cardSource = case attrs.source of
+          BothSource _ x -> x
+          _ -> error "invalid source"
+      if source == cardSource
+        then case attrs.meta of
+          Just (EffectCost acId) -> do
+            card <- case attrs.target of
+              CardIdTarget cid -> getCard cid
+              _ -> error "ToeToToeEffect: cardId should be CardIdTarget"
+            pushAll
+              [ disable attrs
+              , costModifier attrs (ActiveCostTarget acId) (AdditionalCost $ EnemyAttackCost enemy)
+              , cardResolutionModifier card attrs attrs.target (MetaModifier $ object ["chosenEnemy" .= enemy])
+              ]
+          _ -> error "invalid before effect meta"
+        else pure ()
       pure e
     _ -> ToeToToeEffect <$> runMessage msg attrs

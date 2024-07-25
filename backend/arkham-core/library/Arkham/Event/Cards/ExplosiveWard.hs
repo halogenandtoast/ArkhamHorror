@@ -35,7 +35,7 @@ explosiveWardEffect = cardEffect ExplosiveWardEffect Cards.explosiveWard
 -- effect is triggered by cdBeforeEffect
 instance RunMessage ExplosiveWardEffect where
   runMessage msg e@(ExplosiveWardEffect attrs) = runQueueT case msg of
-    CreatedEffect eid _ (InvestigatorSource iid) _target | eid == toId attrs -> do
+    CreatedEffect eid _ (BothSource (InvestigatorSource iid) _) _target | eid == toId attrs -> do
       assets <- select $ assetControlledBy iid <> AssetInSlot #arcane <> DiscardableAsset
       when (notNull assets) do
         chooseSome

@@ -51,7 +51,7 @@ followedEffect = cardEffect FollowedEffect Cards.followed
 -- effect is triggered by cdBeforeEffect
 instance RunMessage FollowedEffect where
   runMessage msg e@(FollowedEffect attrs) = case msg of
-    CreatedEffect eid _ (InvestigatorSource iid) target | eid == toId attrs -> do
+    CreatedEffect eid _ (BothSource (InvestigatorSource iid) _) target | eid == toId attrs -> do
       enemies <- select $ enemyAtLocationWith iid
       player <- getPlayer iid
       card <- case attrs.target of

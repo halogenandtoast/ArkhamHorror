@@ -145,6 +145,13 @@ const enemies = computed(() => {
     .filter((e) => props.game.enemies[e].placement.tag === 'OtherPlacement' && props.game.enemies[e].asSelfLocation === null)
 })
 
+const treacheries = computed(() => {
+  const enemyIds = props.location.treacheries;
+
+  return enemyIds
+    .filter((e) => props.game.treacheries[e].placement.tag === 'OtherPlacement' && props.game.treacheries[e].asSelfLocation === null)
+})
+
 const blocked = computed(() => {
   const investigator = Object.values(props.game.investigators).find(i => i.playerId === props.playerId)
   const { modifiers } = investigator ?? { modifiers: [] }
@@ -250,7 +257,7 @@ const debug = useDebug()
     </div>
     <div class="attachments">
       <Treachery
-        v-for="treacheryId in location.treacheries"
+        v-for="treacheryId in treacheries"
         :key="treacheryId"
         :treachery="game.treacheries[treacheryId]"
         :game="game"

@@ -912,6 +912,7 @@ allAssets =
     , SomeAssetCard improvisedShield
     , SomeAssetCard baseballBat2
     , SomeAssetCard katjaEastbankKeeperOfEsotericLore2
+    , SomeAssetCard oldKeyring3
     , --- neutral [tsk]
       SomeAssetCard hyperphysicalShotcasterTheoreticalDevice
     , SomeAssetCard toolBelt

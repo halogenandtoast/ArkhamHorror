@@ -554,6 +554,7 @@ allPlayerAssetCards =
       , oldBookOfLore3
       , oldHuntingRifle3
       , oldKeyring
+      , oldKeyring3
       , oldShotgun2
       , oliveMcBride
       , onYourOwn3
@@ -6141,6 +6142,16 @@ katjaEastbankKeeperOfEsotericLore2 =
     , cdSlots = [#ally]
     , cdLevel = Just 2
     , cdUnique = True
+    }
+
+oldKeyring3 :: CardDef
+oldKeyring3 =
+  (asset "09117" "Old Keyring" 1 Survivor)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Item, Tool]
+    , cdUses = uses Uses.Key 3
+    , cdSlots = [#hand]
+    , cdLevel = Just 3
     }
 
 hyperphysicalShotcasterTheoreticalDevice :: CardDef

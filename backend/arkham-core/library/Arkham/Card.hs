@@ -143,6 +143,7 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
        in any (not . hasCustomization_ customizations (pcCustomizations pc)) (keys customizations)
     _ -> False
   CardWithOddCost -> maybe False (odd . toPrintedCost) (cdCost $ toCardDef a)
+  CardWithNonZeroCost -> maybe False ((> 0) . toPrintedCost) (cdCost $ toCardDef a)
   CardWithEvenCost -> maybe False (even . toPrintedCost) (cdCost $ toCardDef a)
   CardWithCost n -> maybe False ((== n) . toPrintedCost) (cdCost $ toCardDef a)
   CardWithOddSkillIcons -> odd $ length (cdSkills $ toCardDef a)

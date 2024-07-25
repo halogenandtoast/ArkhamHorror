@@ -595,9 +595,6 @@ returnToHand iid = push . ReturnToHand iid . toTarget
 addToVictory :: (ReverseQueue m, Targetable target) => target -> m ()
 addToVictory = push . AddToVictory . toTarget
 
-obtainCard :: (IsCard a, ReverseQueue m) => a -> m ()
-obtainCard = push . ObtainCard . toCard
-
 createCardEffect
   :: (ReverseQueue m, Sourceable source, Targetable target)
   => CardDef
@@ -1085,3 +1082,14 @@ cancelEndTurn iid = lift $ Msg.removeAllMessagesMatching \case
   isEndTurnWindow w = case w.kind of
     Window.TurnEnds _ -> True
     _ -> False
+
+obtainCard :: (IsCard a, ReverseQueue m) => a -> m ()
+obtainCard = push . ObtainCard . toCard
+
+playCardPayingCost :: ReverseQueue m => InvestigatorId -> Card -> m ()
+playCardPayingCost iid card = do
+  addToHand iid [card]
+  payCardCost iid card
+
+payCardCost :: ReverseQueue m => InvestigatorId -> Card -> m ()
+payCardCost iid card = push $ Msg.PayCardCost iid card (defaultWindows iid)

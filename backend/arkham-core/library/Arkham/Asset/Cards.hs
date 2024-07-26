@@ -185,6 +185,7 @@ allPlayerAssetCards =
       , becky
       , berettaM19184
       , bestowResolve2
+      , bewitching3
       , bindersJarInterdimensionalPrison1
       , blackjack
       , blackjack2
@@ -6263,6 +6264,15 @@ britishBullDog2 =
     , cdCardInHandEffects = True
     , cdLevel = Just 2
     }
+
+bewitching3 :: CardDef
+bewitching3 =
+  permanent
+    (asset "10079" "Bewitching" 0 Rogue)
+      { cdCardTraits = setFromList [Talent, Trick]
+      , cdExceptional = True
+      , cdLevel = Just 3
+      }
 
 marinersCompass2 :: CardDef
 marinersCompass2 =

@@ -262,6 +262,9 @@ instance RunMessage SkillTest where
     RequestedChaosTokens (SkillTestSource sid) (Just iid) chaosTokenFaces -> do
       skillTestModifiers' <- getModifiers (SkillTestTarget sid)
       windowMsg <- checkWindows [mkWhen Window.FastPlayerWindow]
+      popMessageMatching_ $ \case
+        RevealSkillTestChaosTokens _ -> True
+        _ -> False
       push
         $ if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
           then
@@ -295,7 +298,8 @@ instance RunMessage SkillTest where
         \token -> do
           faces <- getModifiedChaosTokenFaces [token]
           pure [(token, face) | face <- faces]
-      pushAll $ afterRevealMsg
+      pushAll $ UnfocusChaosTokens
+        : afterRevealMsg
         : [ Will (ResolveChaosToken drawnChaosToken chaosTokenFace iid)
           | (drawnChaosToken, chaosTokenFace) <- revealedChaosTokenFaces
           ]

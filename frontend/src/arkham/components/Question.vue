@@ -15,9 +15,10 @@ import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';
 export interface Props {
   game: Game
   playerId: string
+  isSkillTest?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), { isSkillTest: false })
 const emit = defineEmits(['choose'])
 const { t } = useI18n()
 const choose = (idx: number) => emit('choose', idx)
@@ -119,7 +120,9 @@ const cardPiles = computed(() => {
     <DropDown @choose="choose" :options="question.question.options" />
   </div>
 
-  <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="choose" />
+  <template v-if="!isSkillTest">
+    <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="choose" />
+  </template>
 
   <div v-if="showChoices" class="choices">
     <template v-for="(choice, index) in choices" :key="index">

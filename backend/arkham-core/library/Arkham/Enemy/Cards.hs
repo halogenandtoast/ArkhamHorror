@@ -66,6 +66,7 @@ allPlayerEnemyCards =
       , mobGoons
       , agentFletcher
       , lurkerInTheDark
+      , ectoplasmicHorror
       , tommyMalloy
       , sacrificialBeast
       , vengefulHound
@@ -2002,6 +2003,14 @@ lurkerInTheDark =
     { cdCardTraits = setFromList [Monster, Shoggoth]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdDeckRestrictions = [OnlyClass Guardian]
+    }
+
+ectoplasmicHorror :: CardDef
+ectoplasmicHorror =
+  (basicWeakness "09127" "Ectoplasmic Horror")
+    { cdCardTraits = setFromList [Monster, Geist]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdDeckRestrictions = [OnlyClass Mystic]
     }
 
 corpseHungryGhoul :: CardDef

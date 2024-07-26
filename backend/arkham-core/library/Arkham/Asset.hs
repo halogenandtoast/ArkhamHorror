@@ -925,7 +925,9 @@ allAssets =
     , SomeAssetCard cleaningKit3
     , SomeAssetCard blessedBlade4
     , --- seeker [tsk]
-      SomeAssetCard mouseMaskTheMeekWatcher
+      SomeAssetCard microscope
+    , SomeAssetCard mouseMaskTheMeekWatcher
+    , SomeAssetCard microscope4
     , --- rogue [tsk]
       SomeAssetCard britishBullDog
     , SomeAssetCard foxMaskTheWiseTrickster

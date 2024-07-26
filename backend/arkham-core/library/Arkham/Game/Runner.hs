@@ -1360,7 +1360,8 @@ runGameMessage msg g = case msg of
     push =<< checkWindows [mkAfter (Window.EnemyEngaged iid eid)]
     pure g
   EnemyEngageInvestigator eid iid -> do
-    push =<< checkWindows [mkAfter (Window.EnemyEngaged iid eid)]
+    (before, _, after) <- frame (Window.EnemyEngaged iid eid)
+    pushAll [before, after]
     pure g
   SkillTestAsk (Ask iid1 (ChooseOne c1)) -> do
     mNextMessage <- peekMessage

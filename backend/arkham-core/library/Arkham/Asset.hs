@@ -927,6 +927,7 @@ allAssets =
       SomeAssetCard britishBullDog
     , SomeAssetCard foxMaskTheWiseTrickster
     , SomeAssetCard britishBullDog2
+    , SomeAssetCard bewitching3
     , --- survivor [tsk]
       SomeAssetCard marinersCompass2
     , -- Return to Night of the Zealot

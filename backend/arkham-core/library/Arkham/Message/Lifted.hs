@@ -720,6 +720,16 @@ nextSkillTestModifier
 nextSkillTestModifier (toSource -> source) (toTarget -> target) x =
   push $ Msg.nextSkillTestModifier source target x
 
+nextSkillTestModifiers
+  :: forall target source m
+   . (ReverseQueue m, Sourceable source, Targetable target)
+  => source
+  -> target
+  -> [ModifierType]
+  -> m ()
+nextSkillTestModifiers (toSource -> source) (toTarget -> target) x =
+  push $ Msg.nextSkillTestModifiers source target x
+
 searchModifier
   :: forall target source m
    . (ReverseQueue m, Sourceable source, Targetable target)

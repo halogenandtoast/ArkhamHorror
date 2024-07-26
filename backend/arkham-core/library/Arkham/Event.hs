@@ -563,6 +563,7 @@ allEvents =
     , -- The Feast of Hemloch Vale
       --- rogue [fhv]
       SomeEventCard bankJob
+    , SomeEventCard falseSurrender
     , --- survivor [fhv]
       SomeEventCard keepFaith2
     , -- Return to Night of the Zealot

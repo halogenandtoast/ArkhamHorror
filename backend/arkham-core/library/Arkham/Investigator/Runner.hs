@@ -854,6 +854,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         CanModify (EnemyFightActionCriteria override) -> Just override
         _ -> Nothing
       overrides = mapMaybe isOverride modifiers
+      mustChooseMatchers = fold [mx | MustChooseEnemy mx <- modifiers]
       applyMatcherModifiers :: ModifierType -> EnemyMatcher -> EnemyMatcher
       applyMatcherModifiers (Modifier.AlternateFightField someField) original = case someField of
         SomeField Field.EnemyEvade -> original <> EnemyWithEvade
@@ -863,7 +864,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [] -> if choose.overriden then AnyEnemy else CanFightEnemy source
         [o] -> CanFightEnemyWithOverride o
         _ -> error "multiple overrides found"
-    enemyIds <- select $ foldr applyMatcherModifiers (canFightMatcher <> enemyMatcher) modifiers
+    enemyIds <-
+      select
+        $ foldr applyMatcherModifiers (canFightMatcher <> enemyMatcher <> mustChooseMatchers) modifiers
     player <- getPlayer investigatorId
     push
       $ chooseOne
@@ -957,6 +960,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         CanModify (EnemyEvadeActionCriteria override) -> Just override
         _ -> Nothing
       overrides = mapMaybe isOverride modifiers
+      mustChooseMatchers = fold [mx | MustChooseEnemy mx <- modifiers]
       applyMatcherModifiers :: ModifierType -> EnemyMatcher -> EnemyMatcher
       applyMatcherModifiers (Modifier.AlternateEvadeField someField) original = case someField of
         SomeField Field.EnemyEvade -> original <> EnemyWithEvade
@@ -966,7 +970,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         [] -> if choose.overriden then AnyEnemy else CanEvadeEnemy source
         [o] -> CanEvadeEnemyWithOverride o
         _ -> error "multiple overrides found"
-    enemyIds <- select $ foldr applyMatcherModifiers (canEvadeMatcher <> enemyMatcher) modifiers
+    enemyIds <-
+      select
+        $ foldr applyMatcherModifiers (canEvadeMatcher <> enemyMatcher <> mustChooseMatchers) modifiers
     player <- getPlayer a.id
     push
       $ chooseOne

@@ -172,6 +172,7 @@ allPlayerEventCards =
       , extensiveResearch
       , extensiveResearch1
       , extraAmmunition1
+      , falseSurrender
       , fangOfTyrthrha4
       , faustianBargain
       , fendOff3
@@ -3742,6 +3743,18 @@ bankJob =
     , cdCardTraits = setFromList [Gambit, Double, Illicit]
     , cdCriteria = Just (exists $ affectsOthers $ InvestigatorAt YourLocation <> can.gain.resources)
     , cdAdditionalCost = Just AdditionalActionCost
+    }
+
+falseSurrender :: CardDef
+falseSurrender =
+  (event "10070" "False Surrender" 1 Rogue)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Tactic, Trick]
+    , cdActions = [#parley]
+    , cdCriteria =
+        Just
+          $ exists (EnemyAt YourLocation)
+          <> exists (PlayableCardWithCostReduction NoAction 1 $ InHandOf You <> basic (#asset <> #weapon))
     }
 
 keepFaith2 :: CardDef

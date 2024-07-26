@@ -105,9 +105,7 @@ instance RunMessage AssetAttrs where
               <> show assetPrintedUses
               <> ", but got: "
               <> show tType
-        else do
-          pushWhen (tType `elem` [Horror, Damage]) $ checkDefeated source a
-          pure $ a & tokensL %~ addTokens tType n
+        else pure $ a & tokensL %~ addTokens tType n
     MoveTokens s source _ tType n | isSource a source -> do
       runMessage (RemoveTokens s (toTarget a) tType n) a
     MoveTokens s _ target tType n | isTarget a target -> do

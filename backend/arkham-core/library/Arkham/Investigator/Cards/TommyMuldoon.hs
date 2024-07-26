@@ -23,7 +23,7 @@ import Arkham.Window qualified as Window
 newtype TommyMuldoon = TommyMuldoon InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 tommyMuldoon :: InvestigatorCard TommyMuldoon
 tommyMuldoon =

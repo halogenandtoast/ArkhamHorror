@@ -251,15 +251,26 @@ instance RunMessage AssetAttrs where
     AddUses source aid useType' n | aid == assetId -> runMessage (PlaceTokens source (toTarget a) useType' n) a
     SpendUses source target useType' n | isTarget a target -> do
       mods <- getModifiers a
-      let otherSources = [s | ProvidesUses uType s <- mods, uType == useType']
-      otherSourcePairs <- for otherSources \case
-        AssetSource aid' -> do
-          uses <- fieldMap AssetUses (findWithDefault 0 useType') aid'
-          pure (AssetTarget aid', uses)
-        EventSource eid' -> do
-          uses <- fieldMap EventUses (findWithDefault 0 useType') eid'
-          pure (EventTarget eid', uses)
-        _ -> error $ "Unhandled source: " <> show source
+      otherSourcePairs <- forMaybeM mods \case
+        ProvidesUses uType s | uType == useType' -> do
+          case s of
+            AssetSource aid' -> do
+              uses <- fieldMap AssetUses (findWithDefault 0 useType') aid'
+              pure $ Just (AssetTarget aid', uType, uses)
+            EventSource eid' -> do
+              uses <- fieldMap EventUses (findWithDefault 0 useType') eid'
+              pure $ Just (EventTarget eid', uType, uses)
+            _ -> error $ "Unhandled source: " <> show source
+        ProvidesProxyUses pType uType s | uType == useType' -> do
+          case s of
+            AssetSource aid' -> do
+              uses <- fieldMap AssetUses (findWithDefault 0 pType) aid'
+              pure $ Just (AssetTarget aid', pType, uses)
+            EventSource eid' -> do
+              uses <- fieldMap EventUses (findWithDefault 0 pType) eid'
+              pure $ Just (EventTarget eid', pType, uses)
+            _ -> error $ "Unhandled source: " <> show source
+        _ -> pure Nothing
 
       -- window should be independent of other sources since they are spent from this asset
       for_ assetController $ \controller ->
@@ -279,8 +290,8 @@ instance RunMessage AssetAttrs where
               $ chooseN player n
               $ replicate (a.use useType') (targetLabel a [Do msg])
               <> concat
-                [ replicate x (targetLabel otherTarget [Do $ SpendUses source otherTarget useType' n])
-                | (otherTarget, x) <- otherSourcePairs
+                [ replicate x (targetLabel otherTarget [Do $ SpendUses source otherTarget actualUseType n])
+                | (otherTarget, actualUseType, x) <- otherSourcePairs
                 ]
       pure a
     Do (SpendUses source target useType' n) | isTarget a target -> do

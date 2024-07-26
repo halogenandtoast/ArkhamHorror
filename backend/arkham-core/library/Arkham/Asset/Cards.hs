@@ -208,6 +208,7 @@ allPlayerAssetCards =
       , boxingGloves3
       , brandOfCthugha1
       , brandOfCthugha4
+      , britishBullDog
       , brotherXavier1
       , bruiser3
       , bulletproofVest3
@@ -234,6 +235,7 @@ allPlayerAssetCards =
       , clairvoyance3
       , clairvoyance5
       , claspOfBlackOnyx
+      , cleaningKit
       , closeTheCircle1
       , coltVestPocket
       , coltVestPocket2
@@ -374,6 +376,7 @@ allPlayerAssetCards =
       , fortyOneDerringer
       , fortyOneDerringer2
       , fourOfCups1
+      , foxMaskTheWiseTrickster
       , garroteWire2
       , gateBox
       , gavriellaMizrah
@@ -6201,6 +6204,15 @@ soulSanctification3 =
       , cdLevel = Just 3
       }
 
+cleaningKit :: CardDef
+cleaningKit =
+  (asset "10020" "Cleaning Kit" 3 Guardian)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Item, Tool]
+    , cdSlots = [#accessory]
+    , cdUses = uses Supply 3
+    }
+
 blessedBlade4 :: CardDef
 blessedBlade4 =
   (asset "10034" "Blessed Blade" 3 Guardian)
@@ -6208,6 +6220,25 @@ blessedBlade4 =
     , cdSkills = [#willpower, #combat]
     , cdSlots = [#hand]
     , cdLevel = Just 4
+    }
+
+britishBullDog :: CardDef
+britishBullDog =
+  (asset "10065" "British Bull Dog" 3 Rogue)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+    , cdSlots = [#hand]
+    , cdUses = uses Ammo 3
+    , cdCardInHandEffects = True
+    }
+
+foxMaskTheWiseTrickster :: CardDef
+foxMaskTheWiseTrickster =
+  (asset "10067" ("Fox Mask" <:> "The Wise Trickster") 1 Rogue)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Item, Charm, Mask]
+    , cdUses = uses Offering 2
+    , cdLimits = [LimitPerTrait Mask 1]
     }
 
 marinersCompass2 :: CardDef

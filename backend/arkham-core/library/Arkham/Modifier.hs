@@ -118,6 +118,7 @@ data ModifierType
   | CanSpendResourcesOnCardFromInvestigator InvestigatorMatcher CardMatcher
   | CanSpendUsesAsResourceOnCardFromInvestigator AssetId UseType InvestigatorMatcher CardMatcher
   | ProvidesUses UseType Source
+  | ProvidesProxyUses UseType UseType Source
   | CancelAttacksByEnemies Card EnemyMatcher
   | CancelSkills
   | CannotAffectOtherPlayersWithPlayerEffectsExceptDamage

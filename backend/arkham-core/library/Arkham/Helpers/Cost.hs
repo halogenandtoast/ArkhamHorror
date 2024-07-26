@@ -153,15 +153,23 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
     uses <- flip evalStateT assets $ do
       sum <$> for assets \asset -> do
         mods <- lift $ getModifiers asset
-        let otherSources = [s | ProvidesUses uType' (AssetSource s) <- mods, uType' == uType]
         alreadyCounted <- get
         fromOtherSources <-
-          sum <$> for otherSources \otherSource -> do
-            if otherSource `elem` alreadyCounted
-              then pure 0
-              else do
-                put $ otherSource : alreadyCounted
-                lift $ fieldMap AssetUses (findWithDefault 0 uType) otherSource
+          sum <$> for mods \case
+            ProvidesUses uType' (AssetSource s) | uType' == uType -> do
+              if s `elem` alreadyCounted
+                then pure 0
+                else do
+                  put $ s : alreadyCounted
+                  lift $ fieldMap AssetUses (findWithDefault 0 uType) s
+            ProvidesProxyUses pType uType' (AssetSource s) | uType' == uType -> do
+              if s `elem` alreadyCounted
+                then pure 0
+                else do
+                  put $ s : alreadyCounted
+                  lift $ fieldMap AssetUses (findWithDefault 0 pType) s
+            _ -> pure 0
+
         lift $ fieldMap AssetUses ((+ fromOtherSources) . findWithDefault 0 uType) asset
     pure $ uses >= n
   EventUseCost eventMatcher uType n -> do

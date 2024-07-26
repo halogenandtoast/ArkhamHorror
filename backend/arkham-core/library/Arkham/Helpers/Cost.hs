@@ -125,6 +125,12 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
   DiscardHandCost {} -> pure True
   DiscardTopOfDeckCost {} -> pure True
   AdditionalActionsCost {} -> pure True
+  AdditionalActionsCostThatReducesResourceCostBy n cost -> do
+    spendableActions <- field InvestigatorRemainingActions iid
+    let totalActions = totalActionCost cost
+    let reduction = max 0 ((spendableActions - totalActions) * n)
+    withModifiers iid (toModifiers source [ExtraResources reduction]) do
+      getCanAffordCost iid source actions windows' cost
   RevealCost {} -> pure True
   Costs xs ->
     and <$> traverse (getCanAffordCost iid source actions windows') xs
@@ -190,6 +196,7 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
         additionalActionCount <- countM (additionalActionCovers source actions) additionalActions
         actionCount <- field InvestigatorRemainingActions iid
         pure $ (actionCount + additionalActionCount) >= modifiedActionCost
+  AdditionalActionCost -> getCanAffordCost iid source actions windows' (ActionCost 1)
   AssetClueCost _ aMatcher gv -> do
     totalClueCost <- getPlayerCountValue gv
     clues <- getSum <$> selectAgg Sum AssetClues aMatcher

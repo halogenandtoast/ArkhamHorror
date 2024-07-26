@@ -159,7 +159,9 @@ _InvestigatorDamagePayment = prism' InvestigatorDamagePayment $ \case
 data Cost
   = ActionCost Int
   | IncreaseCostOfThis CardId Int
+  | AdditionalActionCost -- use the plural instead as this is internal
   | AdditionalActionsCost
+  | AdditionalActionsCostThatReducesResourceCostBy Int Cost
   | AssetClueCost Text AssetMatcher GameValue
   | ClueCost GameValue
   | ClueCostX
@@ -237,6 +239,8 @@ data Cost
   | ArchiveOfConduitsUnidentifiedCost -- this either
   deriving stock (Show, Eq, Ord, Data)
 
+instance Plated Cost
+
 assetUseCost :: (Entity a, EntityId a ~ AssetId) => a -> UseType -> Int -> Cost
 assetUseCost a uType n = UseCost (AssetWithId $ toId a) uType n
 
@@ -297,6 +301,7 @@ displayCostType = \case
   ShuffleDiscardCost n _ ->
     "Shuffle " <> pluralize n "matching card" <> " into your deck"
   AdditionalActionsCost -> "Additional Action"
+  AdditionalActionsCostThatReducesResourceCostBy _ _ -> "Additional Action"
   AssetClueCost lbl _ gv -> case gv of
     Static n -> pluralize n "Clue" <> " from " <> lbl
     PerPlayer n -> pluralize n "Clue" <> " per Player from " <> lbl
@@ -479,6 +484,9 @@ displayCostType = \case
   IncreaseCostOfThis _ n -> "Increase its cost by " <> tshow n
 
 instance Semigroup Cost where
+  AdditionalActionsCostThatReducesResourceCostBy n1 a <> AdditionalActionsCostThatReducesResourceCostBy n2 b = AdditionalActionsCostThatReducesResourceCostBy (max n1 n2) (a <> b)
+  AdditionalActionsCostThatReducesResourceCostBy n a <> b = AdditionalActionsCostThatReducesResourceCostBy n (a <> b)
+  a <> AdditionalActionsCostThatReducesResourceCostBy n b = AdditionalActionsCostThatReducesResourceCostBy n (a <> b)
   Free <> a = a
   a <> Free = a
   Costs xs <> Costs ys = Costs (xs <> ys)

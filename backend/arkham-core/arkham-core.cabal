@@ -1710,6 +1710,7 @@ library
       Arkham.Event.Cards.ParallelFates
       Arkham.Event.Cards.ParallelFates2
       Arkham.Event.Cards.PayDay1
+      Arkham.Event.Cards.PayYourDue
       Arkham.Event.Cards.Perseverance
       Arkham.Event.Cards.Persuasion
       Arkham.Event.Cards.Pilfer

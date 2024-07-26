@@ -296,6 +296,7 @@ allPlayerEventCards =
       , parallelFates
       , parallelFates2
       , payDay1
+      , payYourDue
       , perseverance
       , persuasion
       , pilfer
@@ -3706,6 +3707,17 @@ quantumParadox =
     , cdLevel = Nothing
     , cdCardInHandEffects = True
     , cdAdditionalCost = Just $ HandDiscardCost 4 #any
+    , cdDeckRestrictions = [OnlyClass Seeker]
+    }
+
+payYourDue :: CardDef
+payYourDue =
+  (event "09126" "Pay Your Due" 10 Neutral)
+    { cdCardTraits = setFromList [Paradox]
+    , cdCardSubType = Just BasicWeakness
+    , cdLevel = Nothing
+    , cdCardInHandEffects = True
+    , cdAdditionalCost = Just $ AdditionalActionsCostThatReducesResourceCostBy 5 mempty
     , cdDeckRestrictions = [OnlyClass Seeker]
     }
 

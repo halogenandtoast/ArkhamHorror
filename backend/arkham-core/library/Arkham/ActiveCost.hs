@@ -27,6 +27,7 @@ import Arkham.Cost.FieldCost
 import Arkham.Deck qualified as Deck
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
+import {-# SOURCE #-} Arkham.Game (withoutCanModifiers)
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Helpers
@@ -56,7 +57,7 @@ import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Window (Window (..), mkAfter, mkWhen)
 import Arkham.Window qualified as Window
-import Control.Lens (non)
+import Control.Lens (non, transform)
 import GHC.Records
 
 activeCostActions :: ActiveCost -> [Action]
@@ -612,12 +613,45 @@ payCost msg c iid skipAdditionalCosts cost = do
           player
           [ Label
               "Spend 1 additional action"
-              [ pay (ActionCost 1)
+              [ pay AdditionalActionCost
               , PaidAbilityCost iid Nothing AdditionalActionPayment
               , msg
               ]
           , Label ("Done spending additional actions (" <> tshow currentlyPaid <> " spent so far)") []
           ]
+      pure c
+    AdditionalActionsCostThatReducesResourceCostBy n nested -> do
+      actionRemainingCount <- field InvestigatorRemainingActions iid
+      let currentlyPaid = countAdditionalActionPayments c.payments
+      case c.target of
+        ForCard _ _ -> do
+          let
+            go = \case
+              ResourceCost x -> ResourceCost (max 0 (x - n))
+              x -> x
+            reduceResourceCost = transform go
+            lockedActions = totalActionCost nested
+          canAffordNested <-
+            withAlteredGame withoutCanModifiers $ getCanAffordCost iid source actions c.windows nested
+          if actionRemainingCount > lockedActions
+            then
+              push
+                $ chooseOrRunOne player
+                $ Label
+                  "Spend 1 additional action"
+                  [ pay AdditionalActionCost
+                  , PaidAbilityCost iid Nothing AdditionalActionPayment
+                  , PayCost acId iid skipAdditionalCosts
+                      $ AdditionalActionsCostThatReducesResourceCostBy n
+                      $ reduceResourceCost nested
+                  ]
+                : [ Label
+                    ("Done spending additional actions (" <> tshow currentlyPaid <> " spent so far)")
+                    [PayCost acId iid skipAdditionalCosts nested]
+                  | canAffordNested
+                  ]
+            else push $ PayCost acId iid skipAdditionalCosts nested
+        _ -> error "Unhandled active cost target for AdditionalActionsCostThatReducesResourceCostBy"
       pure c
     ActionCost x -> do
       costModifier' <- if skipAdditionalCosts then pure 0 else getActionCostModifier c
@@ -631,6 +665,16 @@ payCost msg c iid skipAdditionalCosts cost = do
           _ -> source
       push $ SpendActions iid source' actions' modifiedActionCost
       withPayment $ ActionPayment x
+    AdditionalActionCost -> do
+      let
+        actions' = case c.target of
+          ForAbility a -> a.actions
+          _ -> []
+        source' = case activeCostTarget c of
+          ForAbility a -> toSource a
+          _ -> source
+      push $ SpendActions iid source' actions' 1
+      withPayment AdditionalActionPayment
     UseCost assetMatcher uType n -> do
       assets <- select $ assetMatcher <> AssetWithTokens (atLeast n) uType
       push

@@ -558,6 +558,7 @@ allEvents =
       SomeEventCard refine
     , --- basic weakness [tsk]
       SomeEventCard quantumParadox
+    , SomeEventCard payYourDue
     , -- The Feast of Hemloch Vale
       --- survivor [fhv]
       SomeEventCard keepFaith2

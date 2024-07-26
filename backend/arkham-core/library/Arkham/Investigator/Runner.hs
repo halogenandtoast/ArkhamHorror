@@ -1806,8 +1806,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         case slotItems slot of
           [] -> pure slot
           assets -> do
-            ignored <- filterM (\aid -> hasModifier (AssetTarget aid) (DoNotTakeUpSlot slotType)) assets
-            pure $ foldr removeIfMatches slot ignored
+            ignored <- flip filterM assets \aid ->
+              orM
+                [ fieldMap AssetSlots (notElem slotType) aid
+                , hasModifier (AssetTarget aid) (DoNotTakeUpSlot slotType)
+                ]
+            assetsToRemove :: [[AssetId]] <-
+              forMaybeM assets \aid -> runMaybeT do
+                guard $ aid `notElem` ignored
+                mods <- lift $ getModifiers aid
+                let lessSlots = sum [x | TakeUpFewerSlots sType x <- mods, sType == slotType]
+                guard $ lessSlots > 0
+                pure $ replicate lessSlots aid
+            pure $ foldr removeIfMatchesOnce (foldr removeIfMatches slot ignored) (concat assetsToRemove)
       pure (slotType, slots')
     pure $ a & slotsL .~ mapFromList updatedSlots
   Do (InvestigatorPlayAsset iid aid) | iid == investigatorId -> do
@@ -2216,7 +2227,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       mods <- getCombinedModifiers [toTarget assetId, toTarget assetCard]
       let slotFilter sType = DoNotTakeUpSlot sType `notElem` mods
       slots <- field AssetSlots assetId
-      pure $ (assetId,assetCard,) <$> filter slotFilter slots
+      let slotsToRemove = concat [replicate n sType | TakeUpFewerSlots sType n <- mods]
+      pure $ (assetId,assetCard,) <$> filter slotFilter (slots \\ slotsToRemove)
 
     let allSlots :: [(SlotType, Slot)] = concatMap (\(k, vs) -> (k,) . emptySlot <$> vs) $ Map.assocs (a ^. slotsL)
 

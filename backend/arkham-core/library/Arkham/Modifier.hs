@@ -210,6 +210,7 @@ data ModifierType
   | DoNotExhaustEvaded
   | DoNotRemoveDoom
   | DoNotTakeUpSlot SlotType
+  | TakeUpFewerSlots SlotType Int
   | DoesNotDamageOtherInvestigator
   | DoesNotReadyDuringUpkeep
   | DoomSubtracts

@@ -61,3 +61,9 @@ removeIfMatches aid = \case
   Slot source assets -> Slot source (filter (/= aid) assets)
   RestrictedSlot source trait assets -> RestrictedSlot source trait (filter (/= aid) assets)
   AdjustableSlot source restriction trait assets -> AdjustableSlot source restriction trait (filter (/= aid) assets)
+
+removeIfMatchesOnce :: AssetId -> Slot -> Slot
+removeIfMatchesOnce aid = \case
+  Slot source assets -> Slot source (deleteFirst aid assets)
+  RestrictedSlot source trait assets -> RestrictedSlot source trait (deleteFirst aid assets)
+  AdjustableSlot source restriction trait assets -> AdjustableSlot source restriction trait (deleteFirst aid assets)

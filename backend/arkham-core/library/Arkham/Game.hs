@@ -3124,7 +3124,9 @@ instance Projection Asset where
       AssetCardId -> pure assetCardId
       AssetSlots -> do
         mods <- getCombinedModifiers [toTarget aid, toTarget assetCardId]
+        let slotsToRemove = concat [replicate n s | TakeUpFewerSlots s n <- mods]
         pure
+          $ (\\ slotsToRemove)
           $ filter ((`notElem` mods) . DoNotTakeUpSlot)
           $ assetSlots
           <> [s | AdditionalSlot s <- mods]
@@ -3803,8 +3805,10 @@ instance Query ExtendedCardMatcher where
         pure $ c `elem` cards
       WillGoIntoSlot s -> do
         mods <- getModifiers c
+        let slotsToRemove = concat [replicate x sl | TakeUpFewerSlots sl x <- mods]
         let slots =
-              filter ((`notElem` mods) . DoNotTakeUpSlot)
+              (\\ slotsToRemove)
+                . filter ((`notElem` mods) . DoNotTakeUpSlot)
                 $ cdSlots (toCardDef c)
                 <> [t | AdditionalSlot t <- mods]
         pure $ s `elem` slots

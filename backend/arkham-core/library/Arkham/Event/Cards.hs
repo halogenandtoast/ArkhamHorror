@@ -375,6 +375,7 @@ allPlayerEventCards =
       , thirdTimesACharm2
       , tidesOfFate
       , timeWarp2
+      , tinker
       , toeToToe
       , trialByFire
       , trialByFire3
@@ -3734,6 +3735,16 @@ underprepared =
     , cdDeckRestrictions = [OnlyClass Survivor]
     , cdCriteria =
         Just $ youExist (HandWith (LengthIs $ atMost 1) <> InvestigatorWithResources (atMost 1))
+    }
+
+tinker :: CardDef
+tinker =
+  (event "10028" "Tinker" 1 Guardian)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Insight, Upgrade]
+    , cdFastWindow = Just $ DuringTurn You
+    , cdCriteria =
+        Just (exists $ #tool <> AssetInPlayAreaOf You <> not_ (AssetWithAttachedEvent $ EventIs "10028"))
     }
 
 bankJob :: CardDef

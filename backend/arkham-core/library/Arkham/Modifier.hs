@@ -140,6 +140,7 @@ data ModifierType
   | CannotBeMoved
   | CannotBeRevealed
   | CannotCancelHorror
+  | MustChooseEnemy EnemyMatcher
   | CannotCancelOrIgnoreChaosToken ChaosTokenFace
   | ReturnBlessedToChaosBag
   | ReturnCursedToChaosBag

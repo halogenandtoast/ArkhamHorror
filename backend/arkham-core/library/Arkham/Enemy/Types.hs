@@ -268,6 +268,9 @@ instance Sourceable EnemyAttrs where
 instance HasField "ability" EnemyAttrs (Int -> Source) where
   getField = toAbilitySource
 
+instance HasField "doom" EnemyAttrs Int where
+  getField = countTokens Doom . enemyTokens
+
 data Enemy = forall a. IsEnemy a => Enemy a
 
 instance AsId Enemy where

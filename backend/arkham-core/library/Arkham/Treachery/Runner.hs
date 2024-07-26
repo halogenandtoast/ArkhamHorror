@@ -80,7 +80,10 @@ instance RunMessage TreacheryAttrs where
         _ -> when entersPlay do
           pushM $ checkAfter $ Window.TreacheryEntersPlay tid
       pure $ a & placementL .~ placement
-    PlaceTokens _ (isTarget a -> True) token n -> pure $ a & tokensL %~ addTokens token n
+    PlaceTokens source (isTarget a -> True) token n -> do
+      when (token == Doom && a.doom == 0) do
+        pushM $ checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source (toTarget a) n
+      pure $ a & tokensL %~ addTokens token n
     RemoveTokens _ (isTarget a -> True) token n -> pure $ a & tokensL %~ subtractTokens token n
     MoveTokens s source _ tType n | isSource a source -> runMessage (RemoveTokens s (toTarget a) tType n) a
     MoveTokens s _ target tType n | isTarget a target -> runMessage (PlaceTokens s (toTarget a) tType n) a

@@ -219,6 +219,7 @@ allPlayerAssetCards =
       , butterflySwords2
       , butterflySwords5
       , catBurglar1
+      , catMaskTheCapriciousMeddler
       , celaenoFragments
       , ceremonialSickle
       , ceremonialSickle4
@@ -687,6 +688,7 @@ allPlayerAssetCards =
       , sophieInLovingMemory
       , sophieItWasAllMyFault
       , soulSanctification3
+      , sparrowMaskTheWanderersCompanion
       , spectralWeb
       , spiritAthame1
       , stealth
@@ -797,6 +799,7 @@ allPlayerAssetCards =
       , wishEater
       , wither
       , wither4
+      , wolfMaskTheMoonsSire
       , woundedBystanderOnDeathsDoorstep
       , yaotl1
       , zeal
@@ -6216,6 +6219,15 @@ cleaningKit =
     , cdUses = uses Supply 3
     }
 
+wolfMaskTheMoonsSire :: CardDef
+wolfMaskTheMoonsSire =
+  (asset "10023" ("Wolf Mask" <:> "The Moon's Sire") 1 Guardian)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Item, Charm, Mask]
+    , cdUses = uses Offering 2
+    , cdLimits = [LimitPerTrait Mask 1]
+    }
+
 cleaningKit3 :: CardDef
 cleaningKit3 =
   (asset "10033" "Cleaning Kit" 3 Guardian)
@@ -6233,6 +6245,15 @@ blessedBlade4 =
     , cdSkills = [#willpower, #combat]
     , cdSlots = [#hand]
     , cdLevel = Just 4
+    }
+
+mouseMaskTheMeekWatcher :: CardDef
+mouseMaskTheMeekWatcher =
+  (asset "10043" ("Mouse Mask" <:> "The Meek Watcher") 1 Seeker)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Item, Charm, Mask]
+    , cdUses = uses Offering 2
+    , cdLimits = [LimitPerTrait Mask 1]
     }
 
 britishBullDog :: CardDef
@@ -6273,6 +6294,24 @@ bewitching3 =
       , cdExceptional = True
       , cdLevel = Just 3
       }
+
+catMaskTheCapriciousMeddler :: CardDef
+catMaskTheCapriciousMeddler =
+  (asset "10084" ("Cat Mask" <:> "The Capricious Meddler") 1 Mystic)
+    { cdSkills = [#willpower, #combat]
+    , cdCardTraits = setFromList [Item, Charm, Mask]
+    , cdUses = uses Offering 2
+    , cdLimits = [LimitPerTrait Mask 1]
+    }
+
+sparrowMaskTheWanderersCompanion :: CardDef
+sparrowMaskTheWanderersCompanion =
+  (asset "10111" ("Sparrow Mask" <:> "The Wanderer's Companion") 1 Seeker)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Item, Charm, Mask]
+    , cdUses = uses Offering 2
+    , cdLimits = [LimitPerTrait Mask 1]
+    }
 
 marinersCompass2 :: CardDef
 marinersCompass2 =

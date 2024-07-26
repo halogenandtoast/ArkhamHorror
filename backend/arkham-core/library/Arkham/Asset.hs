@@ -921,15 +921,21 @@ allAssets =
     , -- The Feast of Hemloch Vale
       --- guardian [tsk]
       SomeAssetCard cleaningKit
+    , SomeAssetCard wolfMaskTheMoonsSire
     , SomeAssetCard cleaningKit3
     , SomeAssetCard blessedBlade4
+    , --- seeker [tsk]
+      SomeAssetCard mouseMaskTheMeekWatcher
     , --- rogue [tsk]
       SomeAssetCard britishBullDog
     , SomeAssetCard foxMaskTheWiseTrickster
     , SomeAssetCard britishBullDog2
     , SomeAssetCard bewitching3
+    , --- mystic [tsk]
+      SomeAssetCard catMaskTheCapriciousMeddler
     , --- survivor [tsk]
-      SomeAssetCard marinersCompass2
+      SomeAssetCard sparrowMaskTheWanderersCompanion
+    , SomeAssetCard marinersCompass2
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

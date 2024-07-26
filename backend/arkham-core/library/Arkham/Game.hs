@@ -458,7 +458,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       , "log" .= toJSON glog
       , "git" .= toJSON gameGitRevision
       , "mode" .= toJSON gameMode
-      , "modifiers" .= toJSON gameModifiers
+      , "modifiers" .= (toJSON $ Map.filter notNull gameModifiers)
       , "encounterDeckSize"
           .= toJSON
             ( maybe 0 (length . attr scenarioEncounterDeck)

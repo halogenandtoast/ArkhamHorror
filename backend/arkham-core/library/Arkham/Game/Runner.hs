@@ -2564,6 +2564,10 @@ preloadEntities g = do
         setAssetPlacement a = case eqT @a @Asset of
           Just Refl -> overAttrs (\attrs -> attrs {assetPlacement = StillInHand (toId investigator')}) a
           Nothing -> a
+        setEventPlacement :: forall a. Typeable a => a -> a
+        setEventPlacement a = case eqT @a @Event of
+          Just Refl -> overAttrs (\attrs -> attrs {eventPlacement = StillInHand (toId investigator')}) a
+          Nothing -> a
         handEffectCards =
           filter (cdCardInHandEffects . toCardDef)
             $ investigatorHand (toAttrs investigator')
@@ -2575,7 +2579,7 @@ preloadEntities g = do
             let
               handEntities =
                 foldl'
-                  (addCardEntityWith (toId investigator') setAssetPlacement)
+                  (addCardEntityWith (toId investigator') (setEventPlacement . setAssetPlacement))
                   defaultEntities
                   handEffectCards
              in

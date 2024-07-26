@@ -300,6 +300,7 @@ displayCostType = \case
   DiscardHandCost -> "Discard your entire hand"
   ShuffleDiscardCost n _ ->
     "Shuffle " <> pluralize n "matching card" <> " into your deck"
+  AdditionalActionCost -> "Additional Action"
   AdditionalActionsCost -> "Additional Action"
   AdditionalActionsCostThatReducesResourceCostBy _ _ -> "Additional Action"
   AssetClueCost lbl _ gv -> case gv of

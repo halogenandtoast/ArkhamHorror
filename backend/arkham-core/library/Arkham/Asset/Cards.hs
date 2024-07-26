@@ -521,6 +521,7 @@ allPlayerAssetCards =
       , maskedCarnevaleGoer_19
       , maskedCarnevaleGoer_20
       , maskedCarnevaleGoer_21
+      , matchbox
       , mauserC96
       , mauserC962
       , meatCleaver
@@ -6322,6 +6323,14 @@ catMaskTheCapriciousMeddler =
     , cdCardTraits = setFromList [Item, Charm, Mask]
     , cdUses = uses Offering 2
     , cdLimits = [LimitPerTrait Mask 1]
+    }
+
+matchbox :: CardDef
+matchbox =
+  (asset "10108" "Matchbox" 1 Survivor)
+    { cdCardTraits = setFromList [Item, Tool]
+    , cdSkills = [#intellect]
+    , cdUses = uses Supply 3
     }
 
 sparrowMaskTheWanderersCompanion :: CardDef

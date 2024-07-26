@@ -936,7 +936,8 @@ allAssets =
     , --- mystic [tsk]
       SomeAssetCard catMaskTheCapriciousMeddler
     , --- survivor [tsk]
-      SomeAssetCard sparrowMaskTheWanderersCompanion
+      SomeAssetCard matchbox
+    , SomeAssetCard sparrowMaskTheWanderersCompanion
     , SomeAssetCard marinersCompass2
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]

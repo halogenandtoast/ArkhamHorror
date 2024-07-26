@@ -29,7 +29,7 @@ instance HasAbilities CandlelitTunnels where
   getAbilities (CandlelitTunnels attrs) =
     extendRevealed
       attrs
-      [ groupLimit PerGame $ restrictedAbility attrs 1 Here actionAbility
+      [ skillTestAbility $ groupLimit PerGame $ restrictedAbility attrs 1 Here actionAbility
       , restrictedAbility
           attrs
           2

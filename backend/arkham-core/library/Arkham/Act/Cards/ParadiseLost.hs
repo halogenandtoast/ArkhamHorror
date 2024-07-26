@@ -29,14 +29,15 @@ paradiseLost = act (4, A) ParadiseLost Cards.paradiseLost Nothing
 instance HasAbilities ParadiseLost where
   getAbilities (ParadiseLost a)
     | onSide A a =
-        [ restrictedAbility
-            a
-            1
-            ( InvestigatorExists
-                $ You
-                <> InvestigatorAt
-                  (LocationWithoutClues <> LocationWithTrait Shattered)
-            )
+        [ skillTestAbility
+            $ restrictedAbility
+              a
+              1
+              ( InvestigatorExists
+                  $ You
+                  <> InvestigatorAt
+                    (LocationWithoutClues <> LocationWithTrait Shattered)
+              )
             $ ActionAbility []
             $ ActionCost 1
         , restrictedAbility

@@ -16,7 +16,9 @@ billiardsRoom = location BilliardsRoom Cards.billiardsRoom 3 (Static 0)
 
 instance HasAbilities BilliardsRoom where
   getAbilities (BilliardsRoom a) =
-    withBaseAbilities a [playerLimit PerRound $ restrictedAbility a 1 Here actionAbility]
+    withBaseAbilities
+      a
+      [playerLimit PerRound $ skillTestAbility $ restrictedAbility a 1 Here actionAbility]
 
 instance RunMessage BilliardsRoom where
   runMessage msg l@(BilliardsRoom attrs) = case msg of

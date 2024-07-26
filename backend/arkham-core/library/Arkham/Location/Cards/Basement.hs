@@ -27,7 +27,7 @@ instance HasAbilities Basement where
   getAbilities (Basement attrs) =
     withRevealedAbilities
       attrs
-      [ restrictedAbility attrs 1 Here actionAbility
+      [ skillTestAbility $ restrictedAbility attrs 1 Here actionAbility
       , restrictedAbility
           attrs
           2

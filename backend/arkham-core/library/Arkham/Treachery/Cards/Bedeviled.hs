@@ -31,7 +31,7 @@ instance HasModifiersFor Bedeviled where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Bedeviled where
-  getAbilities (Bedeviled a) = [restrictedAbility a 1 OnSameLocation actionAbility]
+  getAbilities (Bedeviled a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]
 
 instance RunMessage Bedeviled where
   runMessage msg t@(Bedeviled attrs) = runQueueT case msg of

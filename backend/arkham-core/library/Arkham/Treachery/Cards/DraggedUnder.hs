@@ -15,7 +15,7 @@ draggedUnder = treachery DraggedUnder Cards.draggedUnder
 instance HasAbilities DraggedUnder where
   getAbilities (DraggedUnder x) =
     [ restrictedAbility x 1 (InThreatAreaOf You) $ forced $ Leaves #when You Anywhere
-    , restrictedAbility x 2 (InThreatAreaOf You) $ forced $ TurnEnds #when You
+    , skillTestAbility $ restrictedAbility x 2 (InThreatAreaOf You) $ forced $ TurnEnds #when You
     ]
 
 instance RunMessage DraggedUnder where

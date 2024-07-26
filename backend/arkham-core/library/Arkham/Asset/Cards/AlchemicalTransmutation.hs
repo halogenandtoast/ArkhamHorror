@@ -22,7 +22,8 @@ alchemicalTransmutation = asset AlchemicalTransmutation Cards.alchemicalTransmut
 
 instance HasAbilities AlchemicalTransmutation where
   getAbilities (AlchemicalTransmutation a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ skillTestAbility
+        $ restrictedAbility a 1 ControlsThis
         $ actionAbilityWithCost (exhaust a <> assetUseCost a Charge 1)
     ]
 

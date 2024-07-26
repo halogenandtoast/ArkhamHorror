@@ -26,7 +26,11 @@ instance HasAbilities CityOfTheMoonBeasts where
   getAbilities (CityOfTheMoonBeasts attrs) =
     extendRevealed
       attrs
-      [restrictedAbility attrs 1 (exists (investigatorAt attrs)) $ forced $ RoundEnds #when]
+      [ skillTestAbility
+          $ restrictedAbility attrs 1 (exists (investigatorAt attrs))
+          $ forced
+          $ RoundEnds #when
+      ]
 
 instance RunMessage CityOfTheMoonBeasts where
   runMessage msg l@(CityOfTheMoonBeasts attrs) = runQueueT $ case msg of

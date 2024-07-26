@@ -21,7 +21,7 @@ falseAwakening :: TreacheryCard FalseAwakening
 falseAwakening = treachery FalseAwakening Cards.falseAwakening
 
 instance HasAbilities FalseAwakening where
-  getAbilities (FalseAwakening a) = [mkAbility a 1 actionAbility]
+  getAbilities (FalseAwakening a) = [skillTestAbility $ mkAbility a 1 actionAbility]
 
 instance RunMessage FalseAwakening where
   runMessage msg t@(FalseAwakening attrs) = runQueueT $ case msg of

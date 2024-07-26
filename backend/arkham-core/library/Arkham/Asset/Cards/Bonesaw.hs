@@ -20,7 +20,8 @@ bonesaw = asset Bonesaw Cards.bonesaw
 instance HasAbilities Bonesaw where
   getAbilities (Bonesaw a) =
     [ restrictedAbility a 1 ControlsThis fightAction_
-    , playerLimit PerGame
+    , skillTestAbility
+        $ playerLimit PerGame
         $ controlledAbility
           a
           2

@@ -22,7 +22,7 @@ instance HasAbilities ChapultepecPark where
       [ restrictedAbility attrs 1 Here
           $ ForcedAbility
           $ SkillTestResult #after You (SkillTestWithSkillType #willpower) (FailureResult AnyValue)
-      , restrictedAbility attrs 2 Here exploreAction_
+      , skillTestAbility $ restrictedAbility attrs 2 Here exploreAction_
       ]
 
 instance RunMessage ChapultepecPark where

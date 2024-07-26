@@ -20,7 +20,7 @@ instance HasAbilities Morgue where
   getAbilities (Morgue attrs) =
     withRevealedAbilities
       attrs
-      [ restrictedAbility attrs 1 Here actionAbility
+      [ skillTestAbility $ restrictedAbility attrs 1 Here actionAbility
       , mkAbility attrs 2 $ forced $ DiscoveringLastClue #after Anyone $ LocationWithId $ toId attrs
       ]
 

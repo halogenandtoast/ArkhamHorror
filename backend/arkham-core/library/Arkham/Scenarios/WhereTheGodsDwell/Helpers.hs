@@ -30,7 +30,11 @@ forsakenTowerCriteria attrs =
     <> exists (EnemyInHandOf You <> EnemyWithTitle "Nyarlathotep")
 
 forsakenTowerAbilities :: LocationAttrs -> [Ability]
-forsakenTowerAbilities attrs = [restrictedAbility attrs 1 (forsakenTowerCriteria attrs) actionAbility]
+forsakenTowerAbilities attrs = [markSkillTest $ restrictedAbility attrs 1 (forsakenTowerCriteria attrs) actionAbility]
+ where
+  markSkillTest = case toCardCode attrs of
+    "06305" -> skillTestAbility
+    _ -> id
 
 getWhisperingChaos :: HasGame m => LocationAttrs -> m TreacheryId
 getWhisperingChaos attrs = selectJust $ treacheryIs (whichWhisperingChaos attrs)

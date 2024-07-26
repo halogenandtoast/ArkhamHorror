@@ -28,11 +28,13 @@ instance HasAbilities HotelRoof where
   getAbilities (HotelRoof attrs) =
     withRevealedAbilities
       attrs
-      [ withTooltip
-          "{action}: Test {agility} (4) or {combat} (4). If you succeed, move to either Room 212, Room 225, or Room 245."
+      [ skillTestAbility
+          $ withTooltip
+            "{action}: Test {agility} (4) or {combat} (4). If you succeed, move to either Room 212, Room 225, or Room 245."
           $ restrictedAbility attrs 1 Here actionAbility
-      , withTooltip
-          "{action}: Test {willpower} (3). If you succeed, move any number of clues controlled by investigators at this location to Alien Device (if it is in play)."
+      , skillTestAbility
+          $ withTooltip
+            "{action}: Test {willpower} (3). If you succeed, move any number of clues controlled by investigators at this location to Alien Device (if it is in play)."
           $ restrictedAbility attrs 2 Here actionAbility
       ]
 

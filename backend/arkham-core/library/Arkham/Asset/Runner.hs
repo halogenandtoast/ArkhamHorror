@@ -272,10 +272,6 @@ instance RunMessage AssetAttrs where
             _ -> error $ "Unhandled source: " <> show source
         _ -> pure Nothing
 
-      -- window should be independent of other sources since they are spent from this asset
-      for_ assetController $ \controller ->
-        pushM $ checkWindows [mkAfter $ Window.SpentUses controller source (toId a) useType' n]
-
       if null otherSourcePairs
         then push $ Do msg
         else case a.controller of
@@ -319,7 +315,17 @@ instance RunMessage AssetAttrs where
                 _ -> False
               Just msg' -> insertAfterMatching [afterLast] (== msg')
           _ -> pure ()
-      pushM $ checkAfter $ Window.SpentToken source (toTarget a) useType' n
+      runQueueT do
+        (before, _, after) <- frame $ Window.SpentToken source (toTarget a) useType' n
+        -- window should be independent of other sources since they are spent from this asset
+        push before
+        for_ assetController $ \controller ->
+          when (tokenIsUse useType') do
+            (before1, _, after1) <- frame $ Window.SpentUses controller source (toId a) useType' n
+            push before1
+            push after1
+        push after
+
       runMessage (RemoveTokens source target useType' n) a
     AttachAsset aid target | aid == assetId -> do
       case target of

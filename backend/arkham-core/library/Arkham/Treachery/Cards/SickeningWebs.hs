@@ -29,7 +29,7 @@ instance HasModifiersFor SickeningWebs where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities SickeningWebs where
-  getAbilities (SickeningWebs x) = [restrictedAbility x 1 OnSameLocation actionAbility]
+  getAbilities (SickeningWebs x) = [skillTestAbility $ restrictedAbility x 1 OnSameLocation actionAbility]
 
 instance RunMessage SickeningWebs where
   runMessage msg t@(SickeningWebs attrs) = case msg of

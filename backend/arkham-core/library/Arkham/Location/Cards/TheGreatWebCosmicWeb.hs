@@ -27,7 +27,7 @@ theGreatWebCosmicWeb =
 
 instance HasAbilities TheGreatWebCosmicWeb where
   getAbilities (TheGreatWebCosmicWeb attrs) =
-    extendRevealed attrs [forcedAbility attrs 1 $ Enters #after You $ be attrs]
+    extendRevealed attrs [skillTestAbility $ forcedAbility attrs 1 $ Enters #after You $ be attrs]
 
 instance RunMessage TheGreatWebCosmicWeb where
   runMessage msg l@(TheGreatWebCosmicWeb attrs) = runQueueT $ case msg of

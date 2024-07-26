@@ -36,11 +36,12 @@ instance HasAbilities TheDarkCrater where
     let meta = toResult @Meta attrs.meta
      in extendRevealed
           attrs
-          [ restrictedAbility attrs 1 Here actionAbility
-          , restrictedAbility
-              attrs
-              2
-              (Here <> youExist (oneOf $ map InvestigatorWithId (discoveredCluesThisTurn meta)))
+          [ skillTestAbility $ restrictedAbility attrs 1 Here actionAbility
+          , skillTestAbility
+              $ restrictedAbility
+                attrs
+                2
+                (Here <> youExist (oneOf $ map InvestigatorWithId (discoveredCluesThisTurn meta)))
               $ forced
               $ TurnEnds #when You
           ]

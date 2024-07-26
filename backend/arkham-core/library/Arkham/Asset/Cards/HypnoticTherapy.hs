@@ -16,7 +16,7 @@ hypnoticTherapy = asset HypnoticTherapy Cards.hypnoticTherapy
 
 instance HasAbilities HypnoticTherapy where
   getAbilities (HypnoticTherapy a) =
-    [ restrictedAbility a 1 ControlsThis $ actionAbilityWithCost (exhaust a)
+    [ skillTestAbility $ restrictedAbility a 1 ControlsThis $ actionAbilityWithCost (exhaust a)
     , restrictedAbility a 2 ControlsThis
         $ ReactionAbility
           ( InvestigatorHealed #after #horror (affectsOthers Anyone)

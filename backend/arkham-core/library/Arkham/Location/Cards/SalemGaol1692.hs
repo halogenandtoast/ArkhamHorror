@@ -25,7 +25,8 @@ instance HasAbilities SalemGaol1692 where
   getAbilities (SalemGaol1692 a) =
     withRevealedAbilities
       a
-      [ limitedAbility (PlayerLimit PerGame 1)
+      [ skillTestAbility
+          $ limitedAbility (PlayerLimit PerGame 1)
           $ restrictedAbility a 1 Here
           $ ActionAbility []
           $ ActionCost 1

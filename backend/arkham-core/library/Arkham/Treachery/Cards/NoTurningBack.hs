@@ -35,15 +35,16 @@ instance HasModifiersFor NoTurningBack where
 
 instance HasAbilities NoTurningBack where
   getAbilities (NoTurningBack a) =
-    [ restrictedAbility
-        a
-        1
-        ( OnLocation
-            $ LocationMatchAny
-              [ LocationWithTreachery (TreacheryWithId $ toId a)
-              , ConnectedTo (LocationWithTreachery (TreacheryWithId $ toId a))
-              ]
-        )
+    [ skillTestAbility
+        $ restrictedAbility
+          a
+          1
+          ( OnLocation
+              $ LocationMatchAny
+                [ LocationWithTreachery (TreacheryWithId $ toId a)
+                , ConnectedTo (LocationWithTreachery (TreacheryWithId $ toId a))
+                ]
+          )
         $ ActionAbility []
         $ ActionCost 1
     ]

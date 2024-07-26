@@ -20,7 +20,7 @@ gardenDistrict = location GardenDistrict Cards.gardenDistrict 1 (Static 0)
 instance HasAbilities GardenDistrict where
   getAbilities (GardenDistrict attrs) =
     withBaseAbilities attrs
-      $ [ restrictedAbility attrs 1 Here $ ActionAbility [] $ ActionCost 1
+      $ [ skillTestAbility $ restrictedAbility attrs 1 Here $ ActionAbility [] $ ActionCost 1
         | locationRevealed attrs
         ]
 

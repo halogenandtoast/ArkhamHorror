@@ -33,7 +33,8 @@ instance HasModifiersFor ColdSpringGlen_245 where
 instance HasAbilities ColdSpringGlen_245 where
   getAbilities (ColdSpringGlen_245 attrs) =
     withBaseAbilities attrs
-      $ [ mkAbility attrs 1
+      $ [ skillTestAbility
+          $ mkAbility attrs 1
           $ ReactionAbility
             (ChosenRandomLocation Timing.After $ LocationWithId $ toId attrs)
             Free

@@ -26,7 +26,8 @@ instance HasAbilities FoyerMurderAtTheExcelsiorHotel where
     withRevealedAbilities
       attrs
       [ withTooltip " You flee the scene of the crime." $ locationResignAction attrs
-      , restrictedAbility attrs 1 (exists $ enemyAt (toId attrs) <> EnemyWithTrait Guest)
+      , skillTestAbility
+          $ restrictedAbility attrs 1 (exists $ enemyAt (toId attrs) <> EnemyWithTrait Guest)
           $ ForcedAbility (Leaves #when You $ LocationWithId $ toId attrs)
       ]
 

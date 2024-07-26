@@ -26,7 +26,7 @@ instance HasModifiersFor SpectralMist where
     pure [Difficulty 1]
 
 instance HasAbilities SpectralMist where
-  getAbilities (SpectralMist a) = [restrictedAbility a 1 OnSameLocation actionAbility]
+  getAbilities (SpectralMist a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]
 
 instance RunMessage SpectralMist where
   runMessage msg t@(SpectralMist attrs) = runQueueT $ case msg of

@@ -26,7 +26,7 @@ patientConfinementDrearyCell =
 
 instance HasAbilities PatientConfinementDrearyCell where
   getAbilities (PatientConfinementDrearyCell attrs) =
-    extendRevealed attrs [restrictedAbility attrs 1 Here actionAbility]
+    extendRevealed attrs [skillTestAbility $ restrictedAbility attrs 1 Here actionAbility]
 
 instance RunMessage PatientConfinementDrearyCell where
   runMessage msg l@(PatientConfinementDrearyCell attrs) = case msg of

@@ -31,7 +31,8 @@ instance HasAbilities BaseOfTheSteps where
   getAbilities (BaseOfTheSteps a) =
     withRevealedAbilities
       a
-      [forcedAbility a 1 $ Enters #after (You <> HandWith (LengthIs $ atLeast 1)) $ be a]
+      [ skillTestAbility $ forcedAbility a 1 $ Enters #after (You <> HandWith (LengthIs $ atLeast 1)) $ be a
+      ]
 
 instance RunMessage BaseOfTheSteps where
   runMessage msg l@(BaseOfTheSteps attrs) = case msg of

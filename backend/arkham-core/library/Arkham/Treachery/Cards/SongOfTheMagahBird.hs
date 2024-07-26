@@ -19,7 +19,7 @@ songOfTheMagahBird = treachery SongOfTheMagahBird Cards.songOfTheMagahBird
 instance HasAbilities SongOfTheMagahBird where
   getAbilities (SongOfTheMagahBird a) =
     [ mkAbility a 1 $ forced $ Leaves #after You $ locationWithTreachery a
-    , restrictedAbility a 2 OnSameLocation actionAbility
+    , skillTestAbility $ restrictedAbility a 2 OnSameLocation actionAbility
     ]
 
 instance RunMessage SongOfTheMagahBird where

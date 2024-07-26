@@ -1468,6 +1468,8 @@ data AbilityMatcher
   | AbilityIs Source Int
   | AnyAbility
   | BasicAbility
+  | ActiveAbility
+  | AbilityIsSkillTest
   | AbilityOnEncounterCard
   | AbilityOnCard CardMatcher
   | AbilityOnCardControlledBy InvestigatorId

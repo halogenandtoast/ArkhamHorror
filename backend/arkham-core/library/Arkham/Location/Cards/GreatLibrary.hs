@@ -27,7 +27,8 @@ instance HasAbilities GreatLibrary where
   getAbilities (GreatLibrary attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 Here
+      [ skillTestAbility
+          $ restrictedAbility attrs 1 Here
           $ ActionAbility []
           $ ActionCost 1
           <> ClueCost (PerPlayer 1)

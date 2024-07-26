@@ -19,7 +19,7 @@ instance HasAbilities DeceptiveMemories where
     [ restrictedAbility a 1 (InThreatAreaOf You)
         $ forced
         $ EntersThreatArea #after You (NotCard $ CardWithId $ toCardId a)
-    , restrictedAbility a 2 Here actionAbility
+    , skillTestAbility $ restrictedAbility a 2 Here actionAbility
     ]
 
 instance RunMessage DeceptiveMemories where

@@ -19,7 +19,7 @@ medicalTexts :: AssetCard MedicalTexts
 medicalTexts = asset MedicalTexts Cards.medicalTexts
 
 instance HasAbilities MedicalTexts where
-  getAbilities (MedicalTexts a) = [restrictedAbility a 1 ControlsThis #action]
+  getAbilities (MedicalTexts a) = [skillTestAbility $ restrictedAbility a 1 ControlsThis #action]
 
 instance RunMessage MedicalTexts where
   runMessage msg a@(MedicalTexts attrs) = runQueueT $ case msg of

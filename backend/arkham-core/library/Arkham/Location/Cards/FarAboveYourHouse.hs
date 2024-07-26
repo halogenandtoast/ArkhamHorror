@@ -23,7 +23,8 @@ farAboveYourHouse =
 instance HasAbilities FarAboveYourHouse where
   getAbilities (FarAboveYourHouse attrs) =
     withBaseAbilities attrs
-      $ [ mkAbility attrs 1
+      $ [ skillTestAbility
+          $ mkAbility attrs 1
           $ ForcedAbility
           $ RevealLocation Timing.After You
           $ LocationWithId

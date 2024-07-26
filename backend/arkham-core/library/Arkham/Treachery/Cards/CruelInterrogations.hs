@@ -21,7 +21,7 @@ instance HasModifiersFor CruelInterrogations where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CruelInterrogations where
-  getAbilities (CruelInterrogations a) = [restrictedAbility a 1 OnSameLocation actionAbility]
+  getAbilities (CruelInterrogations a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]
 
 instance RunMessage CruelInterrogations where
   runMessage msg t@(CruelInterrogations attrs) = runQueueT $ case msg of

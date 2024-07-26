@@ -23,11 +23,12 @@ instance HasModifiersFor ConspiracyOfBlood where
 
 instance HasAbilities ConspiracyOfBlood where
   getAbilities (ConspiracyOfBlood attrs) =
-    [ restrictedAbility
-        (proxied (EnemyMatcherSource $ EnemyWithTrait Cultist) attrs)
-        1
-        OnSameLocation
-        parleyAction_
+    [ skillTestAbility
+        $ restrictedAbility
+          (proxied (EnemyMatcherSource $ EnemyWithTrait Cultist) attrs)
+          1
+          OnSameLocation
+          parleyAction_
     ]
 
 instance RunMessage ConspiracyOfBlood where

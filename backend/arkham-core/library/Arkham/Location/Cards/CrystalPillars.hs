@@ -17,7 +17,9 @@ crystalPillars = location CrystalPillars Cards.crystalPillars 1 (PerPlayer 2)
 
 instance HasAbilities CrystalPillars where
   getAbilities (CrystalPillars attrs) =
-    withBaseAbilities attrs [mkAbility attrs 1 $ forced $ Enters #after You (be attrs)]
+    withBaseAbilities
+      attrs
+      [skillTestAbility $ mkAbility attrs 1 $ forced $ Enters #after You (be attrs)]
 
 instance RunMessage CrystalPillars where
   runMessage msg l@(CrystalPillars attrs) = case msg of

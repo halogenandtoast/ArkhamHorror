@@ -19,7 +19,7 @@ jeremiahPierce =
 
 instance HasAbilities JeremiahPierce where
   getAbilities (JeremiahPierce attrs) =
-    withBaseAbilities attrs [restrictedAbility attrs 1 OnSameLocation parleyAction_]
+    withBaseAbilities attrs [skillTestAbility $ restrictedAbility attrs 1 OnSameLocation parleyAction_]
 
 instance RunMessage JeremiahPierce where
   runMessage msg e@(JeremiahPierce attrs) = case msg of

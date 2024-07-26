@@ -209,6 +209,7 @@ allPlayerAssetCards =
       , brandOfCthugha1
       , brandOfCthugha4
       , britishBullDog
+      , britishBullDog2
       , brotherXavier1
       , bruiser3
       , bulletproofVest3
@@ -236,6 +237,7 @@ allPlayerAssetCards =
       , clairvoyance5
       , claspOfBlackOnyx
       , cleaningKit
+      , cleaningKit3
       , closeTheCircle1
       , coltVestPocket
       , coltVestPocket2
@@ -6213,6 +6215,16 @@ cleaningKit =
     , cdUses = uses Supply 3
     }
 
+cleaningKit3 :: CardDef
+cleaningKit3 =
+  (asset "10033" "Cleaning Kit" 3 Guardian)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Item, Tool]
+    , cdSlots = [#accessory]
+    , cdUses = uses Supply 4
+    , cdLevel = Just 3
+    }
+
 blessedBlade4 :: CardDef
 blessedBlade4 =
   (asset "10034" "Blessed Blade" 3 Guardian)
@@ -6239,6 +6251,17 @@ foxMaskTheWiseTrickster =
     , cdCardTraits = setFromList [Item, Charm, Mask]
     , cdUses = uses Offering 2
     , cdLimits = [LimitPerTrait Mask 1]
+    }
+
+britishBullDog2 :: CardDef
+britishBullDog2 =
+  (asset "10077" "British Bull Dog" 3 Rogue)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+    , cdSlots = [#hand]
+    , cdUses = uses Ammo 3
+    , cdCardInHandEffects = True
+    , cdLevel = Just 2
     }
 
 marinersCompass2 :: CardDef

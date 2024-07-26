@@ -30,14 +30,15 @@ mendTheShatter = act (4, A) MendTheShatter Cards.mendTheShatter Nothing
 instance HasAbilities MendTheShatter where
   getAbilities (MendTheShatter a)
     | onSide A a =
-        [ restrictedAbility
-            a
-            1
-            ( InvestigatorExists
-                $ You
-                <> InvestigatorAt
-                  (LocationWithoutClues <> LocationWithTrait Shattered)
-            )
+        [ skillTestAbility
+            $ restrictedAbility
+              a
+              1
+              ( InvestigatorExists
+                  $ You
+                  <> InvestigatorAt
+                    (LocationWithoutClues <> LocationWithTrait Shattered)
+              )
             $ ActionAbility []
             $ ActionCost 1
         , restrictedAbility

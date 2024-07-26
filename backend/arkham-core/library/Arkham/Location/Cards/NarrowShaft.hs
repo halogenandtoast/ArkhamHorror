@@ -30,7 +30,10 @@ instance HasAbilities NarrowShaft where
   getAbilities (NarrowShaft attrs) =
     withRevealedAbilities
       attrs
-      [ mkAbility attrs 1 $ forced $ Moves #when You AnySource (be attrs) UnrevealedLocation
+      [ skillTestAbility
+          $ mkAbility attrs 1
+          $ forced
+          $ Moves #when You AnySource (be attrs) UnrevealedLocation
       , restrictedAbility
           attrs
           2

@@ -24,7 +24,7 @@ relicOfAgesRepossessThePast =
 
 instance HasAbilities RelicOfAgesRepossessThePast where
   getAbilities (RelicOfAgesRepossessThePast (a `With` _)) =
-    [restrictedAbility a 1 ControlsThis $ FastAbility $ exhaust a]
+    [skillTestAbility $ restrictedAbility a 1 ControlsThis $ FastAbility $ exhaust a]
 
 instance RunMessage RelicOfAgesRepossessThePast where
   runMessage msg a@(RelicOfAgesRepossessThePast (attrs `With` metadata)) =

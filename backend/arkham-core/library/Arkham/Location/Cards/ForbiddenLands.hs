@@ -30,11 +30,12 @@ instance HasAbilities ForbiddenLands where
   getAbilities (ForbiddenLands attrs) =
     withRevealedAbilities
       attrs
-      [ restrictedAbility
-          attrs
-          1
-          (Here <> exists (LocationWithId (toId attrs) <> LocationCanBeFlipped))
-          actionAbility
+      [ skillTestAbility
+          $ restrictedAbility
+            attrs
+            1
+            (Here <> exists (LocationWithId (toId attrs) <> LocationCanBeFlipped))
+            actionAbility
       ]
 
 instance RunMessage ForbiddenLands where

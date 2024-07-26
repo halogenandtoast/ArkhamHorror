@@ -25,7 +25,8 @@ arkhamWoodsUnhallowedGround =
 instance HasAbilities ArkhamWoodsUnhallowedGround where
   getAbilities (ArkhamWoodsUnhallowedGround x) =
     withRevealedAbilities x
-      $ [ forcedAbility x 1
+      $ [ skillTestAbility
+            $ forcedAbility x 1
             $ Enters Timing.After You
             $ LocationWithId (toId x)
         ]

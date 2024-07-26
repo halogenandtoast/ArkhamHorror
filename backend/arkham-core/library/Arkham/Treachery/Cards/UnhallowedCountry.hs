@@ -28,7 +28,7 @@ instance HasModifiersFor UnhallowedCountry where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities UnhallowedCountry where
-  getAbilities (UnhallowedCountry x) = [restrictedAbility x 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You]
+  getAbilities (UnhallowedCountry x) = [skillTestAbility $ restrictedAbility x 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You]
 
 instance RunMessage UnhallowedCountry where
   runMessage msg t@(UnhallowedCountry attrs) = runQueueT $ case msg of

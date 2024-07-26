@@ -21,11 +21,12 @@ instance HasAbilities JosefMeiger where
   getAbilities (JosefMeiger a) =
     withBaseAbilities
       a
-      [ restrictedAbility
-          a
-          1
-          (OnSameLocation <> notExists (withTrait SilverTwilight <> EnemyWithAnyDoom <> not_ (be a)))
-          parleyAction_
+      [ skillTestAbility
+          $ restrictedAbility
+            a
+            1
+            (OnSameLocation <> notExists (withTrait SilverTwilight <> EnemyWithAnyDoom <> not_ (be a)))
+            parleyAction_
       ]
 
 instance RunMessage JosefMeiger where

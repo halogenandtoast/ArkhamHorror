@@ -31,7 +31,8 @@ instance HasAbilities NotreDame where
   getAbilities (NotreDame attrs) =
     withRevealedAbilities
       attrs
-      [ limitedAbility (GroupLimit PerGame 1)
+      [ skillTestAbility
+          $ limitedAbility (GroupLimit PerGame 1)
           $ restrictedAbility attrs 1 Here
           $ ActionAbility []
           $ ActionCost 1

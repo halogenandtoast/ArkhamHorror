@@ -29,7 +29,8 @@ instance HasAbilities CatacombsDocent where
   getAbilities (CatacombsDocent a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 (OnSameLocation <> LocationExists UnrevealedLocation)
+      [ skillTestAbility
+          $ restrictedAbility a 1 (OnSameLocation <> LocationExists UnrevealedLocation)
           $ ActionAbility [Action.Parley] (ActionCost 1)
       ]
 

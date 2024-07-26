@@ -24,7 +24,7 @@ instance HasAbilities Nasht where
   getAbilities (Nasht x) =
     withBaseAbilities
       x
-      [ mkAbility x 1 parleyAction_
+      [ skillTestAbility $ mkAbility x 1 parleyAction_
       , mkAbility x 2 $ forced $ EnemyDefeated #after You ByAny $ be x
       ]
 

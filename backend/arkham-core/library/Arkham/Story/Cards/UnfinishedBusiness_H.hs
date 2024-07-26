@@ -31,12 +31,13 @@ instance HasAbilities UnfinishedBusiness_H where
   getAbilities (UnfinishedBusiness_H x) = case storyPlacement x of
     InThreatArea _ ->
       [ restrictedAbility x 1 (InThreatAreaOf You) $ ForcedAbility $ RoundEnds Timing.When
-      , restrictedAbility
-          x
-          2
-          ( OnSameLocation
-              <> LocationExists (YourLocation <> LocationWithTitle "Heretics' Graves" <> LocationWithoutClues)
-          )
+      , skillTestAbility
+          $ restrictedAbility
+            x
+            2
+            ( OnSameLocation
+                <> LocationExists (YourLocation <> LocationWithTitle "Heretics' Graves" <> LocationWithoutClues)
+            )
           $ ActionAbility []
           $ ActionCost 1
       ]

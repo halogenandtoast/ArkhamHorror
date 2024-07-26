@@ -23,7 +23,8 @@ instance HasAbilities TwilightAbyss where
   getAbilities (TwilightAbyss a) =
     withRevealedAbilities
       a
-      [mkAbility a 1 $ ForcedAbility $ Enters Timing.After You $ LocationWithId $ toId a]
+      [ skillTestAbility $ mkAbility a 1 $ ForcedAbility $ Enters Timing.After You $ LocationWithId $ toId a
+      ]
 
 instance RunMessage TwilightAbyss where
   runMessage msg l@(TwilightAbyss attrs) = case msg of

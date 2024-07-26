@@ -32,7 +32,7 @@ instance HasModifiersFor RestlessJourneyHardship where
 
 instance HasAbilities RestlessJourneyHardship where
   getAbilities (RestlessJourneyHardship a) =
-    [restrictedAbility a 1 InYourHand $ FastAbility Free]
+    [skillTestAbility $ restrictedAbility a 1 InYourHand $ FastAbility Free]
 
 instance RunMessage RestlessJourneyHardship where
   runMessage msg t@(RestlessJourneyHardship attrs) = runQueueT $ case msg of

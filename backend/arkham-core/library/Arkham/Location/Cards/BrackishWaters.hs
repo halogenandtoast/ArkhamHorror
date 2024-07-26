@@ -27,7 +27,8 @@ instance HasAbilities BrackishWaters where
   getAbilities (BrackishWaters attrs) =
     extendRevealed
       attrs
-      [ restrictedAbility attrs 1 (Here <> notExists (assetIs Assets.fishingNet))
+      [ skillTestAbility
+          $ restrictedAbility attrs 1 (Here <> notExists (assetIs Assets.fishingNet))
           $ actionAbilityWithCost
           $ DiscardFromCost 2 (FromHandOf You <> FromPlayAreaOf You) #asset
       ]

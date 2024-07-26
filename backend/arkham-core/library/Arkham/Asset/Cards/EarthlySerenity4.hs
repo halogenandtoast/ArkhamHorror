@@ -17,7 +17,7 @@ earthlySerenity4 :: AssetCard EarthlySerenity4
 earthlySerenity4 = asset EarthlySerenity4 Cards.earthlySerenity4
 
 instance HasAbilities EarthlySerenity4 where
-  getAbilities (EarthlySerenity4 a) = [restrictedAbility a 1 ControlsThis actionAbility]
+  getAbilities (EarthlySerenity4 a) = [skillTestAbility $ restrictedAbility a 1 ControlsThis actionAbility]
 
 instance RunMessage EarthlySerenity4 where
   runMessage msg a@(EarthlySerenity4 attrs) = runQueueT $ case msg of

@@ -21,7 +21,8 @@ instance HasModifiersFor TrackShoes where
 
 instance HasAbilities TrackShoes where
   getAbilities (TrackShoes attrs) =
-    [ restrictedAbility attrs 1 ControlsThis
+    [ skillTestAbility
+        $ restrictedAbility attrs 1 ControlsThis
         $ ReactionAbility (MovedButBeforeEnemyEngagement #after You Anywhere) (exhaust attrs)
     ]
 

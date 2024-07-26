@@ -14,7 +14,7 @@ towerOfKoth :: LocationCard TowerOfKoth
 towerOfKoth = location TowerOfKoth Cards.towerOfKoth 5 (Static 0)
 
 instance HasAbilities TowerOfKoth where
-  getAbilities (TowerOfKoth attrs) = extendRevealed attrs [restrictedAbility attrs 1 Here actionAbility]
+  getAbilities (TowerOfKoth attrs) = extendRevealed attrs [skillTestAbility $ restrictedAbility attrs 1 Here actionAbility]
 
 instance RunMessage TowerOfKoth where
   runMessage msg l@(TowerOfKoth attrs) = runQueueT $ case msg of

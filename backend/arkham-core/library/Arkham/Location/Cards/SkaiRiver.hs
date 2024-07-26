@@ -20,7 +20,8 @@ instance HasAbilities SkaiRiver where
   getAbilities (SkaiRiver x) =
     withRevealedAbilities
       x
-      [ restrictedAbility x 1 (exists $ LocationWithId (toId x) <> LocationCanBeFlipped)
+      [ skillTestAbility
+          $ restrictedAbility x 1 (exists $ LocationWithId (toId x) <> LocationCanBeFlipped)
           $ forced
           $ Leaves #when You
           $ be x

@@ -26,7 +26,7 @@ room245 = locationWith Room245 Cards.room245 2 (PerPlayer 1) (labelL .~ "room245
 
 instance HasAbilities Room245 where
   getAbilities (Room245 attrs) =
-    withRevealedAbilities attrs [restrictedAbility attrs 1 Here actionAbility]
+    withRevealedAbilities attrs [skillTestAbility $ restrictedAbility attrs 1 Here actionAbility]
 
 instance RunMessage Room245 where
   runMessage msg l@(Room245 attrs) = case msg of

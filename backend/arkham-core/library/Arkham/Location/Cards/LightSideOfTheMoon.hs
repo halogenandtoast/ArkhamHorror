@@ -22,7 +22,7 @@ lightSideOfTheMoon = locationWith LightSideOfTheMoon Cards.lightSideOfTheMoon 5 
 
 instance HasAbilities LightSideOfTheMoon where
   getAbilities (LightSideOfTheMoon attrs) =
-    extendRevealed attrs [restrictedAbility attrs 1 Here actionAbility]
+    extendRevealed attrs [skillTestAbility $ restrictedAbility attrs 1 Here actionAbility]
 
 instance RunMessage LightSideOfTheMoon where
   runMessage msg l@(LightSideOfTheMoon attrs) = runQueueT $ case msg of

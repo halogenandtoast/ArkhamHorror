@@ -26,7 +26,8 @@ instance HasModifiersFor TheThingWithNoName where
 
 instance HasAbilities TheThingWithNoName where
   getAbilities (TheThingWithNoName a) =
-    [ restrictedAbility a 1 (exists $ enemyIs Enemies.theUnnamable <> EnemyAt YourLocation <> ReadyEnemy)
+    [ skillTestAbility
+        $ restrictedAbility a 1 (exists $ enemyIs Enemies.theUnnamable <> EnemyAt YourLocation <> ReadyEnemy)
         $ forced
         $ TurnBegins #when You
     ]

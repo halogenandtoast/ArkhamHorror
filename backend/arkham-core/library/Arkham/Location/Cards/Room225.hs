@@ -22,14 +22,17 @@ instance HasAbilities Room225 where
   getAbilities (Room225 attrs) =
     withRevealedAbilities
       attrs
-      [ withTooltip
-          "{action}: Test {willpower} (3). If you succeed, remember that the investigators \"cleaned up the blood.\""
+      [ skillTestAbility
+          $ withTooltip
+            "{action}: Test {willpower} (3). If you succeed, remember that the investigators \"cleaned up the blood.\""
           $ restrictedAbility attrs 1 Here actionAbility
-      , withTooltip
-          "{action}: Test {combat} (3). If you succeed, remember that the investigators \"hid the body.\""
+      , skillTestAbility
+          $ withTooltip
+            "{action}: Test {combat} (3). If you succeed, remember that the investigators \"hid the body.\""
           $ restrictedAbility attrs 2 Here actionAbility
-      , withTooltip
-          "{action}: Test {intellect} (3). If you succeed, remember that the investigators \"tidied up the room.\""
+      , skillTestAbility
+          $ withTooltip
+            "{action}: Test {intellect} (3). If you succeed, remember that the investigators \"tidied up the room.\""
           $ restrictedAbility attrs 3 Here actionAbility
       ]
 

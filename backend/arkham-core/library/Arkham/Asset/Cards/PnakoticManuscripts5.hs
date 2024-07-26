@@ -28,7 +28,8 @@ instance HasAbilities PnakoticManuscripts5 where
         $ ReactionAbility
           (WouldPerformRevelationSkillTest #when (affectsOthers $ InvestigatorAt YourLocation))
           (assetUseCost a Secret 1)
-    , restrictedAbility a 2 ControlsThis
+    , skillTestAbility
+        $ restrictedAbility a 2 ControlsThis
         $ actionAbilityWithCost
         $ assetUseCost a Secret 1
     ]

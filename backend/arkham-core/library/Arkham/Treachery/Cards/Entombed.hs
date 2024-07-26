@@ -24,7 +24,7 @@ instance HasModifiersFor Entombed where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Entombed where
-  getAbilities (Entombed (a `With` _)) = [restrictedAbility a 1 (InThreatAreaOf You) actionAbility]
+  getAbilities (Entombed (a `With` _)) = [skillTestAbility $ restrictedAbility a 1 (InThreatAreaOf You) actionAbility]
 
 instance RunMessage Entombed where
   runMessage msg t@(Entombed (attrs `With` metadata)) = runQueueT $ case msg of

@@ -28,6 +28,7 @@ instance HasAbilities TheTrueCulpritV5 where
   getAbilities (TheTrueCulpritV5 attrs) =
     guard (onSide A attrs)
       *> [ doesNotProvokeAttacksOfOpportunity
+            $ skillTestAbility
             $ controlledAbility
               (proxied (assetIs Cards.sinisterSolution) attrs)
               1

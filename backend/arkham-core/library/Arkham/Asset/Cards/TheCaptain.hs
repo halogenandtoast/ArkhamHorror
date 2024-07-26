@@ -16,7 +16,9 @@ theCaptain = asset TheCaptain Cards.theCaptain
 
 instance HasAbilities TheCaptain where
   getAbilities (TheCaptain x) =
-    [restrictedAbility x 1 (EachUndefeatedInvestigator $ at_ "The White Ship") parleyAction_]
+    [ skillTestAbility
+        $ restrictedAbility x 1 (EachUndefeatedInvestigator $ at_ "The White Ship") parleyAction_
+    ]
 
 instance RunMessage TheCaptain where
   runMessage msg a@(TheCaptain attrs) = runQueueT $ case msg of

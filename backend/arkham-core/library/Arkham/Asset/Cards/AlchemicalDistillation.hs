@@ -28,7 +28,11 @@ instance HasModifiersFor AlchemicalDistillation where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AlchemicalDistillation where
-  getAbilities (AlchemicalDistillation a) = [restrictedAbility a 1 ControlsThis $ actionAbilityWithCost (assetUseCost a Supply 1)]
+  getAbilities (AlchemicalDistillation a) =
+    [ skillTestAbility
+        $ restrictedAbility a 1 ControlsThis
+        $ actionAbilityWithCost (assetUseCost a Supply 1)
+    ]
 
 instance RunMessage AlchemicalDistillation where
   runMessage msg a@(AlchemicalDistillation attrs) = runQueueT $ case msg of

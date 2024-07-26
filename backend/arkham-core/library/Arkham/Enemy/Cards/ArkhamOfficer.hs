@@ -28,7 +28,7 @@ instance HasAbilities ArkhamOfficer where
       [ restrictedAbility attrs 1 (exists $ locationWithEnemy (toId attrs) <> LocationWithAnyClues)
           $ ForcedAbility
           $ PhaseEnds #when #enemy
-      , restrictedAbility attrs 2 OnSameLocation parleyAction_
+      , skillTestAbility $ restrictedAbility attrs 2 OnSameLocation parleyAction_
       ]
 
 instance RunMessage ArkhamOfficer where

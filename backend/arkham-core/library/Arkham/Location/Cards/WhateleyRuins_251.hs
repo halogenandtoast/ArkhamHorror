@@ -29,7 +29,7 @@ instance HasModifiersFor WhateleyRuins_251 where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities WhateleyRuins_251 where
-  getAbilities (WhateleyRuins_251 attrs) = withRevealedAbilities attrs [restrictedAbility attrs 1 Here actionAbility]
+  getAbilities (WhateleyRuins_251 attrs) = withRevealedAbilities attrs [skillTestAbility $ restrictedAbility attrs 1 Here actionAbility]
 
 instance RunMessage WhateleyRuins_251 where
   runMessage msg l@(WhateleyRuins_251 attrs) = case msg of

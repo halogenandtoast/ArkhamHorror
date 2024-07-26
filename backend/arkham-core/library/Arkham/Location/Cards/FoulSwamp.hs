@@ -29,7 +29,8 @@ instance HasModifiersFor FoulSwamp where
 instance HasAbilities FoulSwamp where
   getAbilities (FoulSwamp attrs) =
     withRevealedAbilities attrs
-      $ [ restrictedAbility attrs 1 Here
+      $ [ skillTestAbility
+            $ restrictedAbility attrs 1 Here
             $ ActionAbility []
             $ Costs [ActionCost 1, UpTo (Fixed 3) (HorrorCost (toSource attrs) YouTarget 1)]
         ]

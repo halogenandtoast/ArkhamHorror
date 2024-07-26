@@ -19,7 +19,7 @@ privateRoom = location PrivateRoom Cards.privateRoom 4 (Static 0)
 
 instance HasAbilities PrivateRoom where
   getAbilities (PrivateRoom attrs) =
-    withRevealedAbilities attrs [restrictedAbility attrs 1 Here parleyAction_]
+    withRevealedAbilities attrs [skillTestAbility $ restrictedAbility attrs 1 Here parleyAction_]
 
 instance RunMessage PrivateRoom where
   runMessage msg l@(PrivateRoom attrs) = case msg of

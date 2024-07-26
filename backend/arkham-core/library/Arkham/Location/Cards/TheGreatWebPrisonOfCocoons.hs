@@ -27,7 +27,7 @@ theGreatWebPrisonOfCocoons =
 
 instance HasAbilities TheGreatWebPrisonOfCocoons where
   getAbilities (TheGreatWebPrisonOfCocoons attrs) =
-    extendRevealed attrs [forcedAbility attrs 1 $ Enters #after You $ be attrs]
+    extendRevealed attrs [skillTestAbility $ forcedAbility attrs 1 $ Enters #after You $ be attrs]
 
 instance RunMessage TheGreatWebPrisonOfCocoons where
   runMessage msg l@(TheGreatWebPrisonOfCocoons attrs) = runQueueT $ case msg of

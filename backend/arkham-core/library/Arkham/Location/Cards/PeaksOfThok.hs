@@ -18,8 +18,8 @@ instance HasAbilities PeaksOfThok where
   getAbilities (PeaksOfThok attrs) =
     extendRevealed
       attrs
-      [ restrictedAbility attrs 1 Here actionAbility
-      , mkAbility attrs 2 $ forced $ Leaves #after You (be attrs)
+      [ skillTestAbility $ restrictedAbility attrs 1 Here actionAbility
+      , skillTestAbility $ mkAbility attrs 2 $ forced $ Leaves #after You (be attrs)
       ]
 
 instance RunMessage PeaksOfThok where

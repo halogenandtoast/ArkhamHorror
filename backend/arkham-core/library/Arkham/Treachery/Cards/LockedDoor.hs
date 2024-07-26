@@ -21,7 +21,7 @@ instance HasModifiersFor LockedDoor where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LockedDoor where
-  getAbilities (LockedDoor a) = [restrictedAbility a 1 OnSameLocation actionAbility]
+  getAbilities (LockedDoor a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]
 
 instance RunMessage LockedDoor where
   runMessage msg t@(LockedDoor attrs) = runQueueT $ case msg of

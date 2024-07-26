@@ -30,7 +30,8 @@ instance HasModifiersFor TrappersCabin where
 instance HasAbilities TrappersCabin where
   getAbilities (TrappersCabin attrs) =
     withRevealedAbilities attrs
-      $ [ restrictedAbility attrs 1 (Here <> Negate (exists $ assetIs Assets.bearTrap))
+      $ [ skillTestAbility
+            $ restrictedAbility attrs 1 (Here <> Negate (exists $ assetIs Assets.bearTrap))
             $ actionAbilityWithCost (ResourceCost 5)
         ]
 

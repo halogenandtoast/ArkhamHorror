@@ -14,7 +14,11 @@ feedTheMind = asset FeedTheMind Cards.feedTheMind
 
 instance HasAbilities FeedTheMind where
   getAbilities (FeedTheMind a) =
-    [ restrictedAbility a 1 ControlsThis $ actionAbilityWithCost $ exhaust a <> assetUseCost a Secret 1
+    [ skillTestAbility
+        $ restrictedAbility a 1 ControlsThis
+        $ actionAbilityWithCost
+        $ exhaust a
+        <> assetUseCost a Secret 1
     ]
 
 instance RunMessage FeedTheMind where

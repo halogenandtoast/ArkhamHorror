@@ -37,8 +37,9 @@ instance HasAbilities Room212 where
       then
         withBaseAbilities
           attrs
-          [ withTooltip
-              "{action}: Test {agility} (4) to attempt to pick the lock. If you succeed, reveal Room 212 and immediately move to it."
+          [ skillTestAbility
+              $ withTooltip
+                "{action}: Test {agility} (4) to attempt to pick the lock. If you succeed, reveal Room 212 and immediately move to it."
               $ restrictedAbility
                 (proxied (LocationMatcherSource "Second Floor Hall") attrs)
                 1

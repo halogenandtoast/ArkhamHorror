@@ -21,7 +21,11 @@ bindMonster2 = event BindMonster2 Cards.bindMonster2
 
 instance HasAbilities BindMonster2 where
   getAbilities (BindMonster2 x) = case x.attachedTo of
-    Just (EnemyTarget eid) -> [restricted x 1 ControlsThis $ freeReaction (EnemyWouldReady #when $ EnemyWithId eid)]
+    Just (EnemyTarget eid) ->
+      [ skillTestAbility
+          $ restricted x 1 ControlsThis
+          $ freeReaction (EnemyWouldReady #when $ EnemyWithId eid)
+      ]
     _ -> []
 
 instance RunMessage BindMonster2 where

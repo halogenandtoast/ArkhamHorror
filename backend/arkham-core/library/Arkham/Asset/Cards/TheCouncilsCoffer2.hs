@@ -23,7 +23,8 @@ instance HasAbilities TheCouncilsCoffer2 where
     [ limitedAbility (MaxPer Cards.theCouncilsCoffer2 PerCampaign 1)
         $ restrictedAbility a 0 (if findWithDefault 0 Lock (assetUses a) == 0 then NoRestriction else Never)
         $ SilentForcedAbility AnyWindow
-    , restrictedAbility a 1 OnSameLocation
+    , skillTestAbility
+        $ restrictedAbility a 1 OnSameLocation
         $ ActionAbility []
         $ ActionCost 2
     ]

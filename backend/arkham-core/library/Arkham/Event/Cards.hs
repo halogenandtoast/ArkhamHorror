@@ -384,6 +384,7 @@ allPlayerEventCards =
       , uncageTheSoul
       , uncageTheSoul3
       , underSurveillance1
+      , underprepared
       , unearthTheAncients
       , unearthTheAncients2
       , untimelyTransaction1
@@ -3719,6 +3720,18 @@ payYourDue =
     , cdCardInHandEffects = True
     , cdAdditionalCost = Just $ AdditionalActionsCostThatReducesResourceCostBy 5 mempty
     , cdDeckRestrictions = [OnlyClass Seeker]
+    }
+
+underprepared :: CardDef
+underprepared =
+  (event "09128" "Underprepared" 1 Neutral)
+    { cdCardTraits = setFromList [Blunder]
+    , cdCardSubType = Just BasicWeakness
+    , cdLevel = Nothing
+    , cdCardInHandEffects = True
+    , cdDeckRestrictions = [OnlyClass Survivor]
+    , cdCriteria =
+        Just $ youExist (HandWith (LengthIs $ atMost 1) <> InvestigatorWithResources (atMost 1))
     }
 
 keepFaith2 :: CardDef

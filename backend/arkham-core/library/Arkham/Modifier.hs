@@ -296,6 +296,7 @@ data ModifierType
   | RemoveFromGameInsteadOfDiscard
   | RemoveKeyword Keyword
   | RemoveSkillIcons [SkillIcon]
+  | FewerMatchingIconsPerCard Int
   | RemoveTrait Trait
   | ResolvesFailedEffects
   | ReturnToHandAfterTest

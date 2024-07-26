@@ -305,13 +305,18 @@ skillIconCount :: HasGame m => SkillTest -> m Int
 skillIconCount SkillTest {..} = do
   mods <- getModifiers (SkillTestTarget skillTestId)
   let
-    addedIcons = filter matches $ flip concatMap mods \case
+    addedIcons = foldMap (Sum . toValue) . filter matches $ flip concatMap mods \case
       AddSkillIcons icons -> icons
       _ -> []
-  totalIcons <-
-    foldr ((+) . toValue) 0
-      . (<> addedIcons)
-      <$> concatMapM iconsForCard (concat $ toList skillTestCommittedCards)
+  cardIcons <- flip foldMapM (mapToList skillTestCommittedCards) \(iid, cards) -> do
+    flip foldMapM cards \card -> do
+      icons <- sort . map toValue . filter matches <$> iconsForCard card
+      imods <- getModifiers iid
+      let less = sum [n | FewerMatchingIconsPerCard n <- imods]
+      pure $ foldMap Sum $ drop less icons
+
+  let totalIcons = getSum (cardIcons <> addedIcons)
+
   case skillTestType of
     SkillSkillTest sType -> do
       investigatorModifiers <- getModifiers skillTestInvestigator

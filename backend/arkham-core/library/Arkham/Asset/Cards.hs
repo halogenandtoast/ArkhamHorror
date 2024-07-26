@@ -542,6 +542,7 @@ allPlayerAssetCards =
       , monstrousTransformation
       , moonPendant2
       , moonstone
+      , mouseMaskTheMeekWatcher
       , moxie1
       , moxie3
       , mrRook

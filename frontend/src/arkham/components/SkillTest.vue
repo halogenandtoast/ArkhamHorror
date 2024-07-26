@@ -240,7 +240,7 @@ const label = function(body: string) {
         @click="$emit('choose', skipTriggersAction)"
         class="skip-triggers-button"
       >Skip Triggers</button>
-      <Question :game="game" :playerId="playerId" @choose="choose" />
+      <Question :game="game" :playerId="playerId" @choose="choose" :isSkillTest="true" />
       <button
         class="apply-results"
         v-if="applyResultsAction !== -1"

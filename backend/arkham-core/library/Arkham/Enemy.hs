@@ -373,6 +373,7 @@ allEnemies =
       SomeEnemyCard agentFletcher
     , -- basic weakness
       SomeEnemyCard lurkerInTheDark
+    , SomeEnemyCard ectoplasmicHorror
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

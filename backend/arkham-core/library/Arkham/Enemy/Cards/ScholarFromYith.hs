@@ -27,7 +27,8 @@ instance HasAbilities ScholarFromYith where
     withBaseAbilities
       a
       [ mkAbility a 1 $ forced $ EnemyAttacks #when You AnyEnemyAttack (be a)
-      , restrictedAbility a 2 (exists $ EnemyIsEngagedWith You <> ReadyEnemy) parleyAction_
+      , skillTestAbility
+          $ restrictedAbility a 2 (exists $ EnemyIsEngagedWith You <> ReadyEnemy) parleyAction_
       ]
 
 instance RunMessage ScholarFromYith where

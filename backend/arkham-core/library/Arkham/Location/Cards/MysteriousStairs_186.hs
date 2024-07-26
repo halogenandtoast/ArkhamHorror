@@ -38,7 +38,7 @@ instance HasAbilities MysteriousStairs_186 where
     extendRevealed
       attrs
       [ mkAbility attrs 1 $ forced $ RevealLocation #when Anyone (be attrs)
-      , restrictedAbility attrs 2 Here actionAbility
+      , skillTestAbility $ restrictedAbility attrs 2 Here actionAbility
       ]
 
 instance RunMessage MysteriousStairs_186 where

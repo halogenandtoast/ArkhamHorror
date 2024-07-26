@@ -26,7 +26,7 @@ instance HasAbilities ResearchNotes where
           SourceIsPlayerCard
           (LocationTargetMatches YourLocation)
           Clue
-    , restrictedAbility a 2 ControlsThis actionAbility
+    , skillTestAbility $ restrictedAbility a 2 ControlsThis actionAbility
     ]
 
 instance RunMessage ResearchNotes where

@@ -35,7 +35,7 @@ instance HasAbilities HotelGuest where
           (exists $ EnemyWithId (toId a) <> EnemyAt (LocationWithTrait CrimeScene))
           $ ForcedAbility
           $ PhaseEnds #when #enemy
-      , restrictedAbility a 2 OnSameLocation parleyAction_
+      , skillTestAbility $ restrictedAbility a 2 OnSameLocation parleyAction_
       ]
 
 instance RunMessage HotelGuest where

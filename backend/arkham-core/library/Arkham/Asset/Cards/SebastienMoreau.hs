@@ -17,7 +17,7 @@ sebastienMoreau = asset SebastienMoreau Cards.sebastienMoreau
 
 instance HasAbilities SebastienMoreau where
   getAbilities (SebastienMoreau a) =
-    [ restrictedAbility a 1 OnSameLocation parleyAction_
+    [ skillTestAbility $ restrictedAbility a 1 OnSameLocation parleyAction_
     , groupLimit PerGame
         $ restrictedAbility a 2 (not_ $ exists Story.sickeningReality_68)
         $ forced

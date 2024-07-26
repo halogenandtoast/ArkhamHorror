@@ -921,10 +921,12 @@ allAssets =
     , -- The Feast of Hemloch Vale
       --- guardian [tsk]
       SomeAssetCard cleaningKit
+    , SomeAssetCard cleaningKit3
     , SomeAssetCard blessedBlade4
     , --- rogue [tsk]
       SomeAssetCard britishBullDog
     , SomeAssetCard foxMaskTheWiseTrickster
+    , SomeAssetCard britishBullDog2
     , --- survivor [tsk]
       SomeAssetCard marinersCompass2
     , -- Return to Night of the Zealot

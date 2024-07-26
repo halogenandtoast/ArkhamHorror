@@ -29,7 +29,8 @@ instance HasAbilities LaboratoryOfTheGreatRace where
   getAbilities (LaboratoryOfTheGreatRace attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 (Here <> NoCluesOnThis)
+      [ skillTestAbility
+          $ restrictedAbility attrs 1 (Here <> NoCluesOnThis)
           $ ActionAbility []
           $ ActionCost 1
       ]

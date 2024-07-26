@@ -27,7 +27,7 @@ ichtacaScionOfYig =
 
 instance HasAbilities IchtacaScionOfYig where
   getAbilities (IchtacaScionOfYig a) =
-    withBaseAbilities a [restrictedAbility a 1 OnSameLocation parleyAction_]
+    withBaseAbilities a [skillTestAbility $ restrictedAbility a 1 OnSameLocation parleyAction_]
 
 instance RunMessage IchtacaScionOfYig where
   runMessage msg e@(IchtacaScionOfYig attrs) = case msg of

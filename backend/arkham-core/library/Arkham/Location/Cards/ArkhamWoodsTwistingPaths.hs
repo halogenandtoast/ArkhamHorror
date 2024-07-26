@@ -18,7 +18,7 @@ arkhamWoodsTwistingPaths = location ArkhamWoodsTwistingPaths Cards.arkhamWoodsTw
 
 instance HasAbilities ArkhamWoodsTwistingPaths where
   getAbilities (ArkhamWoodsTwistingPaths attrs) =
-    withRevealedAbilities attrs [forcedAbility attrs 1 $ Leaves #when You $ be attrs]
+    withRevealedAbilities attrs [skillTestAbility $ forcedAbility attrs 1 $ Leaves #when You $ be attrs]
 
 instance RunMessage ArkhamWoodsTwistingPaths where
   runMessage msg l@(ArkhamWoodsTwistingPaths attrs) = case msg of

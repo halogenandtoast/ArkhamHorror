@@ -23,11 +23,12 @@ instance HasAbilities UnfinishedBusiness_B where
   getAbilities (UnfinishedBusiness_B x) = case storyPlacement x of
     InThreatArea _ ->
       [ restrictedAbility x 1 (InThreatAreaOf You) $ forced $ RoundEnds #when
-      , restrictedAbility
-          x
-          2
-          (OnSameLocation <> exists (YourLocation <> "Chapel Crypt" <> LocationWithoutClues))
-          actionAbility
+      , skillTestAbility
+          $ restrictedAbility
+            x
+            2
+            (OnSameLocation <> exists (YourLocation <> "Chapel Crypt" <> LocationWithoutClues))
+            actionAbility
       ]
     _ -> []
 

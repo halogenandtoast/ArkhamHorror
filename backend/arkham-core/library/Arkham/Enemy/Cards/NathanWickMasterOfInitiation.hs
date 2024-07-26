@@ -24,7 +24,8 @@ instance HasAbilities NathanWickMasterOfInitiation where
   getAbilities (NathanWickMasterOfInitiation attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 OnSameLocation
+      [ skillTestAbility
+          $ restrictedAbility attrs 1 OnSameLocation
           $ ActionAbility [Action.Parley]
           $ ActionCost 1
       ]

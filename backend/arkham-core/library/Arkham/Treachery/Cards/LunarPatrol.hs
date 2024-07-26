@@ -18,7 +18,7 @@ lunarPatrol = treachery LunarPatrol Cards.lunarPatrol
 
 instance HasAbilities LunarPatrol where
   getAbilities (LunarPatrol a) =
-    [ restrictedAbility a 1 OnSameLocation actionAbility
+    [ skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility
     , mkAbility a 2 $ forced $ Leaves #when You $ locationWithTreachery a
     ]
 

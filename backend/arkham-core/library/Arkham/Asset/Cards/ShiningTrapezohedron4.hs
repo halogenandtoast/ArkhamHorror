@@ -22,7 +22,9 @@ shiningTrapezohedron4 = asset ShiningTrapezohedron4 Cards.shiningTrapezohedron4
 
 instance HasAbilities ShiningTrapezohedron4 where
   getAbilities (ShiningTrapezohedron4 a) =
-    [ restrictedAbility a 1 ControlsThis $ ReactionAbility (WouldPayCardCost #when You #spell) (exhaust a)
+    [ skillTestAbility
+        $ restrictedAbility a 1 ControlsThis
+        $ ReactionAbility (WouldPayCardCost #when You #spell) (exhaust a)
     ]
 
 instance HasModifiersFor ShiningTrapezohedron4 where

@@ -24,11 +24,12 @@ instance HasAbilities Fold where
     withBaseAbilities x
       $ if onSide A x
         then
-          [ restrictedAbility
-              (proxied (AssetMatcherSource $ assetIs Cards.peterClover) x)
-              1
-              (Uncontrolled <> OnSameLocation)
-              (ActionAbility [Parley] $ ActionCost 1)
+          [ skillTestAbility
+              $ restrictedAbility
+                (proxied (AssetMatcherSource $ assetIs Cards.peterClover) x)
+                1
+                (Uncontrolled <> OnSameLocation)
+                (ActionAbility [Parley] $ ActionCost 1)
           , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned
               $ Objective
               $ ForcedAbility AnyWindow

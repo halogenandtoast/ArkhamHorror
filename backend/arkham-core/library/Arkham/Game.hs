@@ -1232,6 +1232,10 @@ abilityMatches a@Ability {..} = \case
     abilities <- concatMap getAbilities <$> (traverse getAsset =<< select assetMatcher)
     pure $ a `elem` abilities
   TriggeredAbility -> pure $ isTriggeredAbility a
+  ActiveAbility -> do
+    active <- view activeAbilitiesL <$> getGame
+    pure $ a `elem` active
+  AbilityIsSkillTest -> pure abilityTriggersSkillTest
   AbilityOnCardControlledBy iid -> do
     let
       sourceMatch = \case
@@ -3629,6 +3633,15 @@ instance Query ExtendedCardMatcher where
         let
           passesCommitRestriction card = \case
             CommittableTreachery -> error "unhandled"
+            AnyCommitRestriction cs -> anyM (passesCommitRestriction card) cs
+            OnlyFightAgainst ematcher ->
+              getSkillTestTarget >>= \case
+                Just (EnemyTarget eid) -> andM [(== Just #fight) <$> getSkillTestAction, eid <=~> ematcher]
+                _ -> pure False
+            OnlyEvasionAgainst ematcher ->
+              getSkillTestTarget >>= \case
+                Just (EnemyTarget eid) -> andM [(== Just #evade) <$> getSkillTestAction, eid <=~> ematcher]
+                _ -> pure False
             MaxOnePerTest -> do
               allCommittedCards <- selectAll InvestigatorCommittedCards Anyone
               let committedCardTitles = map toTitle allCommittedCards

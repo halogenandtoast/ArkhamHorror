@@ -15,7 +15,10 @@ henryDeveau = asset HenryDeveau Cards.henryDeveau
 
 instance HasAbilities HenryDeveau where
   getAbilities (HenryDeveau a) =
-    [restrictedAbility a 1 OnSameLocation $ parleyAction (DiscardFromCost 1 (FromHandOf You) AnyCard)]
+    [ skillTestAbility
+        $ restrictedAbility a 1 OnSameLocation
+        $ parleyAction (DiscardFromCost 1 (FromHandOf You) AnyCard)
+    ]
 
 instance RunMessage HenryDeveau where
   runMessage msg a@(HenryDeveau attrs) = case msg of

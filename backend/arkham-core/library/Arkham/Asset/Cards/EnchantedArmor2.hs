@@ -26,7 +26,8 @@ instance HasModifiersFor EnchantedArmor2 where
 
 instance HasAbilities EnchantedArmor2 where
   getAbilities (EnchantedArmor2 attrs) =
-    [ restrictedAbility attrs 1 ControlsThis
+    [ skillTestAbility
+        $ restrictedAbility attrs 1 ControlsThis
         $ forced
         $ oneOf
           [PlacedCounterOnAsset #after (be attrs) AnySource cType $ atLeast 1 | cType <- [#horror, #damage]]

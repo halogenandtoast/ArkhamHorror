@@ -15,7 +15,7 @@ strangeSolution :: AssetCard StrangeSolution
 strangeSolution = asset StrangeSolution Cards.strangeSolution
 
 instance HasAbilities StrangeSolution where
-  getAbilities (StrangeSolution x) = [restrictedAbility x 1 ControlsThis actionAbility]
+  getAbilities (StrangeSolution x) = [skillTestAbility $ restrictedAbility x 1 ControlsThis actionAbility]
 
 instance RunMessage StrangeSolution where
   runMessage msg a@(StrangeSolution attrs) = case msg of

@@ -29,7 +29,7 @@ instance HasModifiersFor CreepingDarkness where
 
 instance HasAbilities CreepingDarkness where
   getAbilities (CreepingDarkness a) =
-    [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]
+    [skillTestAbility $ restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]
 
 instance RunMessage CreepingDarkness where
   runMessage msg t@(CreepingDarkness attrs) = case msg of

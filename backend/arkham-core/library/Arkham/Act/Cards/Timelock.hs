@@ -29,14 +29,15 @@ timelock = act (4, A) Timelock Cards.timelock Nothing
 instance HasAbilities Timelock where
   getAbilities (Timelock a)
     | onSide A a =
-        [ restrictedAbility
-            a
-            1
-            ( InvestigatorExists
-                $ You
-                <> InvestigatorAt
-                  (LocationWithoutClues <> LocationWithTrait Shattered)
-            )
+        [ skillTestAbility
+            $ restrictedAbility
+              a
+              1
+              ( InvestigatorExists
+                  $ You
+                  <> InvestigatorAt
+                    (LocationWithoutClues <> LocationWithTrait Shattered)
+              )
             $ ActionAbility []
             $ ActionCost 1
         , restrictedAbility

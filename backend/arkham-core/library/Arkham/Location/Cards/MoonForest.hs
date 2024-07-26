@@ -24,7 +24,7 @@ instance HasAbilities MoonForest where
   getAbilities (MoonForest attrs) =
     extendRevealed
       attrs
-      [ restrictedAbility attrs 1 Here actionAbility
+      [ skillTestAbility $ restrictedAbility attrs 1 Here actionAbility
       , playerLimit PerRound
           $ restrictedAbility attrs 2 (Here <> not_ DuringAction)
           $ FastAbility' Free [#evade]

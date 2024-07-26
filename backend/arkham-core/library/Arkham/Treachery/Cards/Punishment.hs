@@ -28,7 +28,11 @@ instance HasModifiersFor Punishment where
 
 instance HasAbilities Punishment where
   getAbilities (Punishment a) =
-    [restrictedAbility a 1 (InThreatAreaOf You) $ forced $ EnemyDefeated #after Anyone ByAny AnyEnemy]
+    [ skillTestAbility
+        $ restrictedAbility a 1 (InThreatAreaOf You)
+        $ forced
+        $ EnemyDefeated #after Anyone ByAny AnyEnemy
+    ]
 
 instance RunMessage Punishment where
   runMessage msg t@(Punishment attrs) = runQueueT $ case msg of

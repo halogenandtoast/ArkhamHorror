@@ -17,11 +17,12 @@ jordanPerry = asset JordanPerry Cards.jordanPerry
 
 instance HasAbilities JordanPerry where
   getAbilities (JordanPerry a) =
-    [ restrictedAbility
-        a
-        1
-        (OnSameLocation <> youExist (InvestigatorWithResources $ atLeast 10))
-        parleyAction_
+    [ skillTestAbility
+        $ restrictedAbility
+          a
+          1
+          (OnSameLocation <> youExist (InvestigatorWithResources $ atLeast 10))
+          parleyAction_
     , groupLimit PerGame
         $ restrictedAbility a 2 (not_ $ exists Story.sickeningReality_66)
         $ forced

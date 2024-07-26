@@ -17,7 +17,8 @@ ishimaruHaruko = asset IshimaruHaruko Cards.ishimaruHaruko
 
 instance HasAbilities IshimaruHaruko where
   getAbilities (IshimaruHaruko a) =
-    [ restrictedAbility a 1 (OnSameLocation <> youExist (HandWith (LengthIs $ atLeast 6))) parleyAction_
+    [ skillTestAbility
+        $ restrictedAbility a 1 (OnSameLocation <> youExist (HandWith (LengthIs $ atLeast 6))) parleyAction_
     , groupLimit PerGame
         $ restrictedAbility a 2 (not_ $ exists Story.sickeningReality_67)
         $ forced

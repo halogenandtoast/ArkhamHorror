@@ -23,11 +23,12 @@ instance HasAbilities AllIn where
   getAbilities (AllIn x) =
     withBaseAbilities x
       $ guard (onSide A x)
-      *> [ restrictedAbility
-            (proxied (AssetMatcherSource $ assetIs Assets.drFrancisMorgan) x)
-            1
-            (Uncontrolled <> OnSameLocation)
-            parleyAction_
+      *> [ skillTestAbility
+            $ restrictedAbility
+              (proxied (AssetMatcherSource $ assetIs Assets.drFrancisMorgan) x)
+              1
+              (Uncontrolled <> OnSameLocation)
+              parleyAction_
          , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned
             $ Objective
             $ forced AnyWindow

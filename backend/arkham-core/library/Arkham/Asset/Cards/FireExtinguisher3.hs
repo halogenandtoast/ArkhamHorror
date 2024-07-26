@@ -17,7 +17,10 @@ fireExtinguisher3 = asset FireExtinguisher3 Cards.fireExtinguisher3
 instance HasAbilities FireExtinguisher3 where
   getAbilities (FireExtinguisher3 a) =
     [ restrictedAbility a 1 ControlsThis fightAction_
-    , restrictedAbility a 2 ControlsThis $ evadeAction $ OrCost [discardCost a, exileCost a]
+    , notSkillTestAbility
+        $ restrictedAbility a 2 ControlsThis
+        $ evadeAction
+        $ OrCost [discardCost a, exileCost a]
     ]
 
 instance RunMessage FireExtinguisher3 where

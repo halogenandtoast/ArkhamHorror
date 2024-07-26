@@ -27,11 +27,12 @@ theTrueCulpritV9 = agenda (3, A) TheTrueCulpritV9 Cards.theTrueCulpritV9 (Static
 instance HasAbilities TheTrueCulpritV9 where
   getAbilities (TheTrueCulpritV9 attrs) =
     guard (onSide A attrs)
-      *> [ restrictedAbility
-            (proxied (locationIs Cards.room212) attrs)
-            1
-            (exists (assetIs Cards.tomeOfRituals <> AssetAt (locationIs Cards.room212)))
-            actionAbility
+      *> [ skillTestAbility
+            $ restrictedAbility
+              (proxied (locationIs Cards.room212) attrs)
+              1
+              (exists (assetIs Cards.tomeOfRituals <> AssetAt (locationIs Cards.room212)))
+              actionAbility
          , restrictedAbility
             attrs
             2

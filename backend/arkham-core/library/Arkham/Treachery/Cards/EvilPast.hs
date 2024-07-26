@@ -14,7 +14,7 @@ evilPast = treachery EvilPast Cards.evilPast
 
 instance HasAbilities EvilPast where
   getAbilities (EvilPast a) =
-    [restrictedAbility a 1 (InThreatAreaOf You) $ forced EncounterDeckRunsOutOfCards]
+    [skillTestAbility $ restrictedAbility a 1 (InThreatAreaOf You) $ forced EncounterDeckRunsOutOfCards]
 
 instance RunMessage EvilPast where
   runMessage msg t@(EvilPast attrs) = runQueueT $ case msg of

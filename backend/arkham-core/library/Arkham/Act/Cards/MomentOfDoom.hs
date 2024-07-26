@@ -29,10 +29,11 @@ instance HasAbilities MomentOfDoom where
   getAbilities (MomentOfDoom attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility
-          (proxied (AssetMatcherSource $ assetIs Assets.relicOfAgesRepossessThePast) attrs)
-          1
-          ControlsThis
+      [ skillTestAbility
+          $ restrictedAbility
+            (proxied (AssetMatcherSource $ assetIs Assets.relicOfAgesRepossessThePast) attrs)
+            1
+            ControlsThis
           $ ActionAbility []
           $ ActionCost 1
       , mkAbility attrs 2

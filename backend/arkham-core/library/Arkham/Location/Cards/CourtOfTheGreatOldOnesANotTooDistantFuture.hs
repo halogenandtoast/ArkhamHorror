@@ -34,7 +34,8 @@ instance HasAbilities CourtOfTheGreatOldOnesANotTooDistantFuture where
   getAbilities (CourtOfTheGreatOldOnesANotTooDistantFuture a) =
     withRevealedAbilities
       a
-      [ mkAbility a 1
+      [ skillTestAbility
+          $ mkAbility a 1
           $ ForcedAbility
           $ Enters Timing.After You
           $ LocationWithId

@@ -188,7 +188,8 @@ mkAbility :: (Sourceable a, HasCardCode a) => a -> Int -> AbilityType -> Ability
 mkAbility entity idx type' =
   Ability
     { abilitySource = toSource entity
-    , abilityRequestor = Just $ toSource entity
+    , abilityRequestor = toSource entity
+    , abilityTriggersSkillTest = abilityTypeTriggersSkillTest type'
     , abilityCardCode = toCardCode entity
     , abilityIndex = idx
     , abilityType = type'
@@ -226,6 +227,9 @@ isFastAbility Ability {abilityType} = isFastAbilityType abilityType
 isActionAbility :: Ability -> Bool
 isActionAbility Ability {abilityType} =
   notNull $ abilityTypeActions abilityType
+
+abilityTypeTriggersSkillTest :: AbilityType -> Bool
+abilityTypeTriggersSkillTest = any (`elem` [#fight, #evade, #investigate, #circle]) . abilityTypeActions
 
 isTriggeredAbility :: Ability -> Bool
 isTriggeredAbility =

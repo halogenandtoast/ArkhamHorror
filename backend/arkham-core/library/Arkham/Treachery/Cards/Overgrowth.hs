@@ -23,7 +23,7 @@ instance HasModifiersFor Overgrowth where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Overgrowth where
-  getAbilities (Overgrowth a) = [restrictedAbility a 1 OnSameLocation actionAbility]
+  getAbilities (Overgrowth a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]
 
 instance RunMessage Overgrowth where
   runMessage msg t@(Overgrowth attrs) = case msg of

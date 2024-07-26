@@ -21,7 +21,7 @@ interviewRoomRestrainingChamber =
 
 instance HasAbilities InterviewRoomRestrainingChamber where
   getAbilities (InterviewRoomRestrainingChamber attrs) =
-    withBaseAbilities attrs [restrictedAbility attrs 1 Here parleyAction_]
+    withBaseAbilities attrs [skillTestAbility $ restrictedAbility attrs 1 Here parleyAction_]
 
 instance RunMessage InterviewRoomRestrainingChamber where
   runMessage msg l@(InterviewRoomRestrainingChamber attrs) = case msg of

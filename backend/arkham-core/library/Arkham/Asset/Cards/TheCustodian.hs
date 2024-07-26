@@ -17,7 +17,8 @@ theCustodian = asset TheCustodian Cards.theCustodian
 instance HasAbilities TheCustodian where
   getAbilities (TheCustodian a) =
     [ restrictedAbility a 1 ControlsThis $ freeReaction (PhaseBegins #when #investigation)
-    , withCriteria (mkAbility a 2 #parley)
+    , skillTestAbility
+        $ withCriteria (mkAbility a 2 #parley)
         $ Uncontrolled
         <> OnSameLocation
         <> InvestigatorExists (You <> InvestigatorWithAnyClues)

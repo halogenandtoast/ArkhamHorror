@@ -28,7 +28,7 @@ instance HasModifiersFor TheSpinnerInDarkness where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheSpinnerInDarkness where
-  getAbilities (TheSpinnerInDarkness attrs) = [restrictedAbility attrs 1 OnSameLocation actionAbility]
+  getAbilities (TheSpinnerInDarkness attrs) = [skillTestAbility $ restrictedAbility attrs 1 OnSameLocation actionAbility]
 
 instance RunMessage TheSpinnerInDarkness where
   runMessage msg t@(TheSpinnerInDarkness attrs) = runQueueT $ case msg of

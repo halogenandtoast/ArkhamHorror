@@ -433,6 +433,13 @@ getIsCommittable a c = do
                   committedCardTitles = map toTitle allCommittedCards
                   passesCommitRestriction = \case
                     CommittableTreachery -> error "unhandled"
+                    AnyCommitRestriction cs -> anyM passesCommitRestriction cs
+                    OnlyFightAgainst matcher -> case skillTestTarget skillTest of
+                      EnemyTarget eid -> andM [pure $ skillTestAction skillTest == Just #fight, eid <=~> matcher]
+                      _ -> pure False
+                    OnlyEvasionAgainst matcher -> case skillTestTarget skillTest of
+                      EnemyTarget eid -> andM [pure $ skillTestAction skillTest == Just #evade, eid <=~> matcher]
+                      _ -> pure False
                     MaxOnePerTest -> pure $ toTitle card `notElem` committedCardTitles
                     OnlyInvestigator matcher -> iid <=~> matcher
                     OnlyCardCommittedToTest -> pure $ null committedCardTitles

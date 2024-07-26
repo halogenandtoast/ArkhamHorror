@@ -26,7 +26,7 @@ instance HasModifiersFor FrozenInFear where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FrozenInFear where
-  getAbilities (FrozenInFear a) = [restrictedAbility a 1 (InThreatAreaOf You) $ forced $ TurnEnds #after You]
+  getAbilities (FrozenInFear a) = [skillTestAbility $ restrictedAbility a 1 (InThreatAreaOf You) $ forced $ TurnEnds #after You]
 
 instance RunMessage FrozenInFear where
   runMessage msg t@(FrozenInFear attrs) = case msg of

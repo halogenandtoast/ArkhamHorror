@@ -25,7 +25,7 @@ instance HasAbilities KeeperOfSecrets where
   getAbilities (KeeperOfSecrets a) =
     withBaseAbilities a
       $ [ restrictedAbility a 1 CanPlaceDoomOnThis $ ForcedAbility $ PhaseEnds #when #mythos
-        , restrictedAbility a 2 OnSameLocation parleyAction_
+        , skillTestAbility $ restrictedAbility a 2 OnSameLocation parleyAction_
         ]
 
 instance RunMessage KeeperOfSecrets where

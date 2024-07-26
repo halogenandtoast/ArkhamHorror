@@ -29,7 +29,8 @@ stepsOfYhagharl =
 instance HasAbilities StepsOfYhagharl where
   getAbilities (StepsOfYhagharl attrs) =
     withBaseAbilities attrs
-      $ [ mkAbility attrs 1
+      $ [ skillTestAbility
+          $ mkAbility attrs 1
           $ ForcedAbility
           $ Leaves Timing.When You
           $ LocationWithId

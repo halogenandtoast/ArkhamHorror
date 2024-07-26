@@ -18,7 +18,9 @@ kitchen = location Kitchen Cards.kitchen 2 (PerPlayer 1)
 
 instance HasAbilities Kitchen where
   getAbilities (Kitchen attrs) =
-    extendRevealed attrs [restrictedAbility attrs 1 (Here <> NoCluesOnThis) actionAbility]
+    extendRevealed
+      attrs
+      [skillTestAbility $ restrictedAbility attrs 1 (Here <> NoCluesOnThis) actionAbility]
 
 instance HasModifiersFor Kitchen where
   getModifiersFor (LocationTarget lid) (Kitchen attrs) | lid == toId attrs = do

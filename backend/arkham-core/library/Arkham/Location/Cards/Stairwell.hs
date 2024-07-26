@@ -21,7 +21,10 @@ instance HasAbilities Stairwell where
   getAbilities (Stairwell attrs) =
     withRevealedAbilities
       attrs
-      [ mkAbility attrs 1 $ freeReaction $ moves #after You (not_ $ LocationWithTrait Basement) attrs
+      [ skillTestAbility
+          $ mkAbility attrs 1
+          $ freeReaction
+          $ moves #after You (not_ $ LocationWithTrait Basement) attrs
       , mkAbility attrs 2 $ ForcedAbility $ BecomesInfested #after $ LocationWithId $ toId attrs
       ]
 

@@ -73,6 +73,7 @@ allPlayerEventCards =
       , banish1
       , baitAndSwitch
       , baitAndSwitch3
+      , bankJob
       , barricade
       , barricade3
       , bellyOfTheBeast
@@ -3732,6 +3733,15 @@ underprepared =
     , cdDeckRestrictions = [OnlyClass Survivor]
     , cdCriteria =
         Just $ youExist (HandWith (LengthIs $ atMost 1) <> InvestigatorWithResources (atMost 1))
+    }
+
+bankJob :: CardDef
+bankJob =
+  (event "10069" "Bank Job" 2 Rogue)
+    { cdSkills = [#intellect, #combat, #agility]
+    , cdCardTraits = setFromList [Gambit, Double, Illicit]
+    , cdCriteria = Just (exists $ affectsOthers $ InvestigatorAt YourLocation <> can.gain.resources)
+    , cdAdditionalCost = Just AdditionalActionCost
     }
 
 keepFaith2 :: CardDef

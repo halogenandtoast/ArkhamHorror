@@ -36,7 +36,8 @@ instance HasAbilities LodgeNeophyte where
           $ EnemySpawns Timing.After Anywhere
           $ EnemyWithId
           $ toId a
-      , restrictedAbility a 2 OnSameLocation
+      , skillTestAbility
+          $ restrictedAbility a 2 OnSameLocation
           $ ActionAbility [Action.Parley]
           $ ActionCost 1
       ]

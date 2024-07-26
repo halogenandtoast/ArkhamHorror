@@ -27,11 +27,12 @@ theTrueCulpritV2 = agenda (3, A) TheTrueCulpritV2 Cards.theTrueCulpritV2 (Static
 instance HasAbilities TheTrueCulpritV2 where
   getAbilities (TheTrueCulpritV2 attrs) =
     guard (onSide A attrs)
-      *> [ controlledAbility
-            (proxied (assetIs Cards.sinisterSolution) attrs)
-            1
-            (exists $ You <> InvestigatorAt "Room 212")
-            actionAbility
+      *> [ skillTestAbility
+            $ controlledAbility
+              (proxied (assetIs Cards.sinisterSolution) attrs)
+              1
+              (exists $ You <> InvestigatorAt "Room 212")
+              actionAbility
          , mkAbility attrs 2
             $ Objective
             $ ForcedAbility

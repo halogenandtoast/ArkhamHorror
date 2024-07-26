@@ -31,7 +31,7 @@ instance HasModifiersFor RestlessJourneyLies where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities RestlessJourneyLies where
-  getAbilities (RestlessJourneyLies a) = [restrictedAbility a 1 InYourHand $ FastAbility Free]
+  getAbilities (RestlessJourneyLies a) = [skillTestAbility $ restrictedAbility a 1 InYourHand $ FastAbility Free]
 
 instance RunMessage RestlessJourneyLies where
   runMessage msg t@(RestlessJourneyLies attrs) = runQueueT $ case msg of

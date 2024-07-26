@@ -22,7 +22,7 @@ jazzMulligan =
 
 instance HasAbilities JazzMulligan where
   getAbilities (JazzMulligan x) =
-    [restrictedAbility x 1 (Uncontrolled <> OnSameLocation) parleyAction_]
+    [skillTestAbility $ restrictedAbility x 1 (Uncontrolled <> OnSameLocation) parleyAction_]
 
 instance HasModifiersFor JazzMulligan where
   getModifiersFor (LocationTarget lid) (JazzMulligan attrs) = do

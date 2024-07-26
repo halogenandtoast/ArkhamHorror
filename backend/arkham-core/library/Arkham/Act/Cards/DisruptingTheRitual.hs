@@ -19,7 +19,7 @@ disruptingTheRitual =
 instance HasAbilities DisruptingTheRitual where
   getAbilities (DisruptingTheRitual a)
     | onSide A a =
-        [ mkAbility a 1 $ ActionAbility [] $ Costs [ActionCost 1, ClueCost (Static 1)]
+        [ skillTestAbility $ mkAbility a 1 $ ActionAbility [] $ Costs [ActionCost 1, ClueCost (Static 1)]
         , restrictedAbility a 2 (CluesOnThis $ AtLeast $ PerPlayer 2) $ Objective $ ForcedAbility AnyWindow
         ]
   getAbilities _ = []

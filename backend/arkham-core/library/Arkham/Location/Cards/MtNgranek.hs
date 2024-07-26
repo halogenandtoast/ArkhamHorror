@@ -20,7 +20,8 @@ instance HasAbilities MtNgranek where
   getAbilities (MtNgranek attrs) =
     veiled
       attrs
-      [ restrictedAbility attrs 1 (not_ $ Remembered ObtainedSuppliesFromBaharna)
+      [ skillTestAbility
+          $ restrictedAbility attrs 1 (not_ $ Remembered ObtainedSuppliesFromBaharna)
           $ forced
           $ oneOf [Enters #after You (be attrs), DiscoverClues #after You (be attrs) AnyValue]
       ]

@@ -17,7 +17,7 @@ constanceDumaine = asset ConstanceDumaine Cards.constanceDumaine
 
 instance HasAbilities ConstanceDumaine where
   getAbilities (ConstanceDumaine a) =
-    [ restrictedAbility a 1 OnSameLocation parleyAction_
+    [ skillTestAbility $ restrictedAbility a 1 OnSameLocation parleyAction_
     , groupLimit PerGame
         $ restrictedAbility a 2 (not_ $ exists Story.sickeningReality_65)
         $ forced

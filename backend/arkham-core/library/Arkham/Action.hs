@@ -69,3 +69,6 @@ instance IsLabel "draw" Action where
 
 instance IsLabel "explore" Action where
   fromLabel = Explore
+
+instance IsLabel "circle" Action where
+  fromLabel = Circle

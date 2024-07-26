@@ -25,7 +25,7 @@ graysAnatomyTheDoctorsBible5 = asset GraysAnatomyTheDoctorsBible5 Cards.graysAna
 
 instance HasAbilities GraysAnatomyTheDoctorsBible5 where
   getAbilities (GraysAnatomyTheDoctorsBible5 attrs) =
-    [restrictedAbility attrs 1 ControlsThis actionAbility]
+    [skillTestAbility $ restrictedAbility attrs 1 ControlsThis actionAbility]
 
 instance RunMessage GraysAnatomyTheDoctorsBible5 where
   runMessage msg a@(GraysAnatomyTheDoctorsBible5 attrs) = runQueueT $ case msg of

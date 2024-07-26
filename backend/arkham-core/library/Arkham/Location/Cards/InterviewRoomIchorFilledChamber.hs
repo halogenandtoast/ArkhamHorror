@@ -28,7 +28,8 @@ interviewRoomIchorFilledChamber =
 instance HasAbilities InterviewRoomIchorFilledChamber where
   getAbilities (InterviewRoomIchorFilledChamber a) =
     withBaseAbilities a
-      $ [ mkAbility a 1
+      $ [ skillTestAbility
+            $ mkAbility a 1
             $ ForcedAbility
             $ Enters Timing.After You
             $ LocationWithId

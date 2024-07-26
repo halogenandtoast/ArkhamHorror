@@ -36,7 +36,7 @@ instance HasModifiersFor Wracked where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Wracked where
-  getAbilities (Wracked a) = [restrictedAbility a 1 OnSameLocation actionAbility]
+  getAbilities (Wracked a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]
 
 instance RunMessage Wracked where
   runMessage msg t@(Wracked attrs) = runQueueT $ case msg of

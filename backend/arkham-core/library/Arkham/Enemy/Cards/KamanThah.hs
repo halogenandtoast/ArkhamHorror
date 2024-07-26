@@ -24,7 +24,7 @@ instance HasAbilities KamanThah where
   getAbilities (KamanThah x) =
     withBaseAbilities
       x
-      [ mkAbility x 1 parleyAction_
+      [ skillTestAbility $ mkAbility x 1 parleyAction_
       , mkAbility x 2 $ ForcedAbility $ EnemyDefeated #after You ByAny $ EnemyWithId $ toId x
       ]
 

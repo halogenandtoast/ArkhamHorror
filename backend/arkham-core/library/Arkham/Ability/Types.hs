@@ -34,18 +34,25 @@ data Ability = Ability
   , abilityDelayAdditionalCosts :: Bool
   , abilityBasic :: Bool
   , abilityAdditionalCosts :: [Cost]
-  , abilityRequestor :: Maybe Source
+  , abilityRequestor :: Source
+  , abilityTriggersSkillTest :: Bool
   }
   deriving stock (Show, Ord, Data)
 
+skillTestAbility :: Ability -> Ability
+skillTestAbility ab = ab {abilityTriggersSkillTest = True}
+
+notSkillTestAbility :: Ability -> Ability
+notSkillTestAbility ab = ab {abilityTriggersSkillTest = False}
+
 setRequestor :: Sourceable source => source -> Ability -> Ability
-setRequestor source ab = ab {abilityRequestor = Just (toSource source)}
+setRequestor source ab = ab {abilityRequestor = toSource source}
 
 instance HasCost Ability where
   overCost f ab = ab {Arkham.Ability.Types.abilityType = overCost f (abilityType ab)}
 
 instance HasField "requestor" Ability Source where
-  getField ab = fromMaybe (abilitySource ab) (abilityRequestor ab)
+  getField = abilityRequestor
 
 instance HasField "source" Ability Source where
   getField = abilitySource
@@ -106,7 +113,28 @@ abilityDelayAdditionalCostsL :: Lens' Ability Bool
 abilityDelayAdditionalCostsL = lens abilityDelayAdditionalCosts $ \m x -> m {abilityDelayAdditionalCosts = x}
 
 $(deriveJSON defaultOptions ''AbilityMetadata)
-$(deriveJSON (aesonOptions $ Just "ability") ''Ability)
+$(deriveToJSON (aesonOptions $ Just "ability") ''Ability)
+
+instance FromJSON Ability where
+  parseJSON = withObject "Ability" $ \o -> do
+    abilitySource <- o .: "source"
+    abilityCardCode <- o .: "cardCode"
+    abilityIndex <- o .: "index"
+    abilityType <- o .: "type"
+    abilityLimit <- o .: "limit"
+    abilityWindow <- o .: "window"
+    abilityMetadata <- o .:? "metadata"
+    abilityCriteria <- o .: "criteria"
+    abilityDoesNotProvokeAttacksOfOpportunity <- o .: "doesNotProvokeAttacksOfOpportunity"
+    abilityTooltip <- o .:? "tooltip"
+    abilityCanBeCancelled <- o .: "canBeCancelled"
+    abilityDisplayAsAction <- o .: "displayAsAction"
+    abilityDelayAdditionalCosts <- o .: "delayAdditionalCosts"
+    abilityBasic <- o .: "basic"
+    abilityAdditionalCosts <- o .: "additionalCosts"
+    abilityRequestor <- o .:? "requestor" .!= abilitySource
+    abilityTriggersSkillTest <- o .:? "triggersSkillTest" .!= False
+    pure Ability {..}
 
 newtype DifferentAbility = DifferentAbility Ability
   deriving newtype (Show, ToJSON, FromJSON)

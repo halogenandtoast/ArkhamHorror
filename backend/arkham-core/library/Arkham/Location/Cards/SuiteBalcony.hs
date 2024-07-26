@@ -27,6 +27,7 @@ instance HasAbilities SuiteBalcony where
     withRevealedAbilities
       attrs
       [ doesNotProvokeAttacksOfOpportunity
+          $ skillTestAbility
           $ restrictedAbility
             attrs
             1

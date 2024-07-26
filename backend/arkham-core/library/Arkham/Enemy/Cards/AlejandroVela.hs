@@ -25,7 +25,7 @@ alejandroVela = enemy AlejandroVela Cards.alejandroVela (6, PerPlayer 4, 3) (1, 
 
 instance HasAbilities AlejandroVela where
   getAbilities (AlejandroVela a) =
-    withBaseAbilities a [restrictedAbility a 1 OnSameLocation parleyAction_]
+    withBaseAbilities a [skillTestAbility $ restrictedAbility a 1 OnSameLocation parleyAction_]
 
 instance RunMessage AlejandroVela where
   runMessage msg e@(AlejandroVela attrs) = case msg of

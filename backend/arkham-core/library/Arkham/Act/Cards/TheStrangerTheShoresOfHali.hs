@@ -63,7 +63,8 @@ theStrangerTheShoresOfHaliEffect = cardEffect TheStrangerTheShoresOfHaliEffect C
 
 instance HasAbilities TheStrangerTheShoresOfHaliEffect where
   getAbilities (TheStrangerTheShoresOfHaliEffect attrs) =
-    [ playerLimit PerRound
+    [ skillTestAbility
+        $ playerLimit PerRound
         $ mkAbility (proxied LocationWithAnyHorror attrs) 1 (forced $ Leaves #when You ThisLocation)
     ]
 

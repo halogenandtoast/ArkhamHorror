@@ -24,7 +24,8 @@ instance HasAbilities Ichtaca where
   getAbilities (Ichtaca a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 OnSameLocation
+      [ skillTestAbility
+          $ restrictedAbility a 1 OnSameLocation
           $ ActionAbility [Action.Parley]
           $ ActionCost 1
       ]

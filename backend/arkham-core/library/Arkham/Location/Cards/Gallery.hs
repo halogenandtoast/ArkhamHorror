@@ -28,7 +28,7 @@ instance HasAbilities Gallery where
   getAbilities (Gallery attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 Here $ ForcedAbility $ TurnEnds Timing.After You
+      [ skillTestAbility $ restrictedAbility attrs 1 Here $ ForcedAbility $ TurnEnds Timing.After You
       | locationRevealed attrs
       ]
 

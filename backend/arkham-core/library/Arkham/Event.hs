@@ -561,7 +561,9 @@ allEvents =
     , SomeEventCard payYourDue
     , SomeEventCard underprepared
     , -- The Feast of Hemloch Vale
-      --- survivor [fhv]
+      --- rogue [fhv]
+      SomeEventCard bankJob
+    , --- survivor [fhv]
       SomeEventCard keepFaith2
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]

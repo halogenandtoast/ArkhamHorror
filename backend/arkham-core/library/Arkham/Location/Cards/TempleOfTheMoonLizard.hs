@@ -36,7 +36,7 @@ instance HasAbilities TempleOfTheMoonLizard where
   getAbilities (TempleOfTheMoonLizard attrs) =
     extendRevealed
       attrs
-      [ restrictedAbility attrs 1 Here actionAbility
+      [ skillTestAbility $ restrictedAbility attrs 1 Here actionAbility
       , restrictedAbility attrs 2 Here $ forced $ DiscoverClues #after You (be attrs) AnyValue
       ]
 

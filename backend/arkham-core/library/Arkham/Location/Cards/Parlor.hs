@@ -28,11 +28,12 @@ instance HasAbilities Parlor where
     withRevealedAbilities attrs
       $ [ withTooltip "\"This is too much for me!\" You run out the front door, fleeing in panic."
             $ locationResignAction attrs
-        , restrictedAbility
-            (proxied (assetIs Cards.litaChantler) attrs)
-            1
-            (Uncontrolled <> OnSameLocation)
-            #parley
+        , skillTestAbility
+            $ restrictedAbility
+              (proxied (assetIs Cards.litaChantler) attrs)
+              1
+              (Uncontrolled <> OnSameLocation)
+              #parley
         ]
 
 instance RunMessage Parlor where

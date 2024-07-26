@@ -19,7 +19,8 @@ mariaDeSilva = asset MariaDeSilva Cards.mariaDeSilva
 
 instance HasAbilities MariaDeSilva where
   getAbilities (MariaDeSilva a) =
-    [ restrictedAbility a 1 OnSameLocation
+    [ skillTestAbility
+        $ restrictedAbility a 1 OnSameLocation
         $ ActionAbility
           [Action.Parley]
           (ActionCost 1 <> ResourceCost 1)

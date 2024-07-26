@@ -26,7 +26,7 @@ relicOfAgesForestallingTheFuture =
 
 instance HasAbilities RelicOfAgesForestallingTheFuture where
   getAbilities (RelicOfAgesForestallingTheFuture (a `With` _)) =
-    [restrictedAbility a 1 ControlsThis $ FastAbility $ exhaust a]
+    [skillTestAbility $ restrictedAbility a 1 ControlsThis $ FastAbility $ exhaust a]
 
 instance RunMessage RelicOfAgesForestallingTheFuture where
   runMessage msg a@(RelicOfAgesForestallingTheFuture (attrs `With` metadata)) =

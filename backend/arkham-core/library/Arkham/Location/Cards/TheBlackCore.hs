@@ -32,7 +32,7 @@ instance HasAbilities TheBlackCore where
     extendRevealed
       attrs
       [ mkAbility attrs 1 $ forced $ RevealLocation #after Anyone $ be attrs
-      , restrictedAbility attrs 2 Here actionAbility
+      , skillTestAbility $ restrictedAbility attrs 2 Here actionAbility
       ]
 
 instance RunMessage TheBlackCore where

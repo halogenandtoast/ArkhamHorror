@@ -30,7 +30,8 @@ instance HasAbilities RopeBridge where
   getAbilities (RopeBridge attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility attrs 1 Here
+      [ skillTestAbility
+          $ restrictedAbility attrs 1 Here
           $ ForcedAbility
           $ AttemptExplore
             Timing.When

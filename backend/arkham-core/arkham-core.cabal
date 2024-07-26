@@ -469,6 +469,7 @@ library
       Arkham.Asset.Cards.BrandOfCthugha1
       Arkham.Asset.Cards.BrandOfCthugha4
       Arkham.Asset.Cards.BritishBullDog
+      Arkham.Asset.Cards.BritishBullDog2
       Arkham.Asset.Cards.BrotherXavier1
       Arkham.Asset.Cards.Bruiser3
       Arkham.Asset.Cards.BulletproofVest3
@@ -496,6 +497,7 @@ library
       Arkham.Asset.Cards.ClarityOfMind3
       Arkham.Asset.Cards.ClaspOfBlackOnyx
       Arkham.Asset.Cards.CleaningKit
+      Arkham.Asset.Cards.CleaningKit3
       Arkham.Asset.Cards.CloseTheCircle1
       Arkham.Asset.Cards.ColtVestPocket
       Arkham.Asset.Cards.ColtVestPocket2
@@ -1491,6 +1493,7 @@ library
       Arkham.Event.Cards.BaitAndSwitch
       Arkham.Event.Cards.BaitAndSwitch3
       Arkham.Event.Cards.Banish1
+      Arkham.Event.Cards.BankJob
       Arkham.Event.Cards.Barricade
       Arkham.Event.Cards.Barricade3
       Arkham.Event.Cards.BellyOfTheBeast
@@ -2719,6 +2722,7 @@ library
       Arkham.Skill.Cards.LastChance
       Arkham.Skill.Cards.Leadership
       Arkham.Skill.Cards.Leadership2
+      Arkham.Skill.Cards.LongShot
       Arkham.Skill.Cards.ManualDexterity
       Arkham.Skill.Cards.ManualDexterity2
       Arkham.Skill.Cards.Momentum1

@@ -781,6 +781,18 @@ gumption1 =
     , cdCommitRestrictions = [MaxOnePerTest]
     }
 
+longShot :: CardDef
+longShot =
+  (skill "10116" "Long Shot" [] Survivor)
+    { cdCardTraits = setFromList [Practiced]
+    , cdCommitRestrictions =
+        [ AnyCommitRestriction
+            [ OnlyFightAgainst (EnemyAt $ oneOf [YourLocation, ConnectedLocation])
+            , OnlyEvasionAgainst (EnemyAt $ oneOf [YourLocation, ConnectedLocation])
+            ]
+        ]
+    }
+
 riseToTheOccasion3 :: CardDef
 riseToTheOccasion3 =
   ( skill

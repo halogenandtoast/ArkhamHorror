@@ -18,7 +18,7 @@ innocentReveler =
 
 instance HasAbilities InnocentReveler where
   getAbilities (InnocentReveler x) =
-    [ restrictedAbility x 1 (Uncontrolled <> OnSameLocation) parleyAction_
+    [ skillTestAbility $ restrictedAbility x 1 (Uncontrolled <> OnSameLocation) parleyAction_
     , mkAbility x 2 $ forced $ AssetWouldBeDiscarded #when (be x)
     ]
 

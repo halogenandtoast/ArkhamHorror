@@ -16,7 +16,7 @@ nightTerrors = treachery NightTerrors Cards.nightTerrors
 instance HasAbilities NightTerrors where
   getAbilities (NightTerrors a) =
     [ restrictedAbility a 1 (InThreatAreaOf You) $ forced $ SkillTestResult #after You #any #failure
-    , restrictedAbility a 2 (InThreatAreaOf You) actionAbility
+    , skillTestAbility $ restrictedAbility a 2 (InThreatAreaOf You) actionAbility
     ]
 
 instance RunMessage NightTerrors where

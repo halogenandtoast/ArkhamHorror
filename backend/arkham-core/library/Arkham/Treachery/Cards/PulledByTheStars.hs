@@ -21,7 +21,7 @@ instance HasAbilities PulledByTheStars where
     [ restrictedAbility a 1 (InThreatAreaOf You)
         $ forced
         $ TurnEnds #when (You <> not_ InvestigatorThatMovedDuringTurn)
-    , restrictedAbility a 2 OnSameLocation actionAbility
+    , skillTestAbility $ restrictedAbility a 2 OnSameLocation actionAbility
     ]
 
 instance HasModifiersFor PulledByTheStars where

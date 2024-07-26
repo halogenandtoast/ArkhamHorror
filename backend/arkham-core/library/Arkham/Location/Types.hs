@@ -211,6 +211,9 @@ instance Sourceable LocationAttrs where
 instance HasField "id" LocationAttrs LocationId where
   getField = locationId
 
+instance HasField "doom" LocationAttrs Int where
+  getField = countTokens Doom . locationTokens
+
 instance HasField "ability" LocationAttrs (Int -> Source) where
   getField this = toAbilitySource this
 

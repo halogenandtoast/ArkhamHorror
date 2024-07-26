@@ -143,6 +143,9 @@ agendaWith (n, side) f cardDef threshold g =
 instance HasField "id" AgendaAttrs AgendaId where
   getField = agendaId
 
+instance HasField "doom" AgendaAttrs Int where
+  getField = agendaDoom
+
 instance HasField "ability" AgendaAttrs (Int -> Source) where
   getField this = toAbilitySource this
 

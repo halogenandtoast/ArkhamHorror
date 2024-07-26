@@ -236,6 +236,8 @@ runEventMessage msg a@EventAttrs {..} = case msg of
   RemoveTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ subtractTokens tType n
   PlaceTokens source target tType n | isTarget a target -> do
     pushM $ checkAfter $ Window.PlacedToken source target tType n
+    when (tType == Doom && a.doom == 0) do
+      pushM $ checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source target n
     if tokenIsUse tType
       then case eventPrintedUses of
         NoUses -> pure $ a & tokensL . at tType . non 0 %~ (+ n)

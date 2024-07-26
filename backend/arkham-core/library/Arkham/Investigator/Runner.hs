@@ -2663,6 +2663,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         runMessage (PlaceTokens source (toTarget a) #resource (n + additional)) a
       else pure a
   PlaceTokens source (isTarget a -> True) token n -> do
+    when (token == Doom && a.doom == 0) do
+      pushM $ checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source (toTarget a) n
     when (token == #damage || token == #horror) do
       push $ checkDefeated source a
     pure $ a & tokensL %~ addTokens token n

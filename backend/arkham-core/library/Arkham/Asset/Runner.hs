@@ -89,6 +89,8 @@ instance RunMessage AssetAttrs where
     RemoveAllDoom _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Doom
     PlaceTokens source target tType n | isTarget a target -> do
       pushM $ checkAfter $ Window.PlacedToken source target tType n
+      when (tType == Doom && a.doom == 0) do
+        pushM $ checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source target n
       if tokenIsUse tType
         then case assetPrintedUses of
           NoUses -> pure $ a & tokensL . at tType . non 0 %~ (+ n)
@@ -104,10 +106,28 @@ instance RunMessage AssetAttrs where
               <> ", but got: "
               <> show tType
         else do
-          pushWhen (tType == Horror) $ checkDefeated source a
+          pushWhen (tType `elem` [Horror, Damage]) $ checkDefeated source a
           pure $ a & tokensL %~ addTokens tType n
-    MoveTokens s source _ tType n | isSource a source -> runMessage (RemoveTokens s (toTarget a) tType n) a
-    MoveTokens s _ target tType n | isTarget a target -> runMessage (PlaceTokens s (toTarget a) tType n) a
+    MoveTokens s source _ tType n | isSource a source -> do
+      runMessage (RemoveTokens s (toTarget a) tType n) a
+    MoveTokens s _ target tType n | isTarget a target -> do
+      if tokenIsUse tType
+        then case assetPrintedUses of
+          NoUses -> pure $ a & tokensL . at tType . non 0 %~ (+ n)
+          Uses useType'' _ | tType == useType'' -> do
+            pure $ a & tokensL . at tType . non 0 %~ (+ n)
+          UsesWithLimit useType'' _ pl | tType == useType'' -> do
+            l <- calculate pl
+            pure $ a & tokensL . at tType . non 0 %~ min l . (+ n)
+          _ ->
+            error
+              $ "Trying to add the wrong use type, has "
+              <> show assetPrintedUses
+              <> ", but got: "
+              <> show tType
+        else do
+          pushWhen (tType `elem` [Horror, Damage]) $ checkDefeated s a
+          pure $ a & tokensL %~ addTokens tType n
     ClearTokens target | isTarget a target -> do
       pure $ a & tokensL .~ mempty
     RemoveTokens _ target tType n | isTarget a target -> do

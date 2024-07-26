@@ -479,6 +479,7 @@ library
       Arkham.Asset.Cards.ButterflySwords2
       Arkham.Asset.Cards.ButterflySwords5
       Arkham.Asset.Cards.CatBurglar1
+      Arkham.Asset.Cards.CatMaskTheCapriciousMeddler
       Arkham.Asset.Cards.CelaenoFragments
       Arkham.Asset.Cards.CeremonialSickle
       Arkham.Asset.Cards.CeremonialSickle4
@@ -813,6 +814,7 @@ library
       Arkham.Asset.Cards.MonstrousTransformation
       Arkham.Asset.Cards.MoonPendant2
       Arkham.Asset.Cards.Moonstone
+      Arkham.Asset.Cards.MouseMaskTheMeekWatcher
       Arkham.Asset.Cards.Moxie1
       Arkham.Asset.Cards.Moxie3
       Arkham.Asset.Cards.MrPeabody
@@ -965,6 +967,7 @@ library
       Arkham.Asset.Cards.SophieInLovingMemory
       Arkham.Asset.Cards.SophieItWasAllMyFault
       Arkham.Asset.Cards.SoulSanctification3
+      Arkham.Asset.Cards.SparrowMaskTheWanderersCompanion
       Arkham.Asset.Cards.SpectralWeb
       Arkham.Asset.Cards.SpiritAthame1
       Arkham.Asset.Cards.SpiritOfHumanity2
@@ -1079,6 +1082,7 @@ library
       Arkham.Asset.Cards.WishEater
       Arkham.Asset.Cards.Wither
       Arkham.Asset.Cards.Wither4
+      Arkham.Asset.Cards.WolfMaskTheMoonsSire
       Arkham.Asset.Cards.WoundedBystanderOnDeathsDoorstep
       Arkham.Asset.Cards.Yaotl1
       Arkham.Asset.Cards.Zeal

@@ -2016,6 +2016,10 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       Window.PlacedDoom source' target _ ->
         andM [targetMatches target targetMatcher, sourceMatches source' sourceMatcher]
       _ -> noMatch
+    Matcher.PlacedDoomCounterOnTargetWithNoDoom timing sourceMatcher targetMatcher -> guardTiming timing $ \case
+      Window.PlacedDoomCounterOnTargetWithNoDoom source' target _ ->
+        andM [targetMatches target targetMatcher, sourceMatches source' sourceMatcher]
+      _ -> noMatch
     Matcher.WouldPlaceBreach timing targetMatcher -> guardTiming timing $ \case
       Window.WouldPlaceBreach target -> targetMatches target targetMatcher
       _ -> noMatch

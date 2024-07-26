@@ -249,6 +249,8 @@ instance RunMessage LocationAttrs where
               pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
         else do
           pushM $ checkAfter $ Window.PlacedToken source target tType n
+          when (tType == Doom && a.doom == 0) do
+            pushM $ checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source target n
           when (tType == Damage) do
             windows' <- windows [Window.PlacedDamage source (toTarget a) n]
             pushAll windows'

@@ -1270,6 +1270,8 @@ instance RunMessage EnemyAttrs where
           if cannotPlaceDoom
             then pure a
             else do
+              when (token == Doom && a.doom == 0) do
+                pushM $ checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source target n
               pushAllM $ windows [Window.PlacedDoom source (toTarget a) n]
               pure $ a & tokensL %~ addTokens Doom n
         else do

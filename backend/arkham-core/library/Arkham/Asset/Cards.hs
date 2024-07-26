@@ -530,6 +530,8 @@ allPlayerAssetCards =
       , medicalTexts2
       , medicoDellaPeste
       , michaelLeigh5
+      , microscope
+      , microscope4
       , mindsEye2
       , miskatonicArchaeologyFunding4
       , missDoyle1
@@ -6248,6 +6250,14 @@ blessedBlade4 =
     , cdLevel = Just 4
     }
 
+microscope :: CardDef
+microscope =
+  (asset "10042" "Microscope" 2 Seeker)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Item, Tool, Science]
+    , cdSlots = [#hand]
+    }
+
 mouseMaskTheMeekWatcher :: CardDef
 mouseMaskTheMeekWatcher =
   (asset "10043" ("Mouse Mask" <:> "The Meek Watcher") 1 Seeker)
@@ -6255,6 +6265,15 @@ mouseMaskTheMeekWatcher =
     , cdCardTraits = setFromList [Item, Charm, Mask]
     , cdUses = uses Offering 2
     , cdLimits = [LimitPerTrait Mask 1]
+    }
+
+microscope4 :: CardDef
+microscope4 =
+  (asset "10058" "Microscope" 2 Seeker)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Item, Tool, Science]
+    , cdSlots = [#hand]
+    , cdLevel = Just 4
     }
 
 britishBullDog :: CardDef

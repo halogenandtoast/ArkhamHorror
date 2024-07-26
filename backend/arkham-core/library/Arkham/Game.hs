@@ -2016,6 +2016,19 @@ getAssetsMatching matcher = do
       filterM ((`gameValueMatches` valueMatcher) . attr assetClues) as
     AssetWithTokens valueMatcher tokenType ->
       filterM ((`gameValueMatches` valueMatcher) . Token.countTokens tokenType . attr assetTokens) as
+    AssetWithSpendableUses valueMatcher tokenType -> flip filterM as \a -> do
+      let n = Token.countTokens tokenType $ attr assetTokens a
+      mods <- getModifiers (toId a)
+      fromOtherSources <-
+        sum <$> for mods \case
+          ProvidesUses uType' (AssetSource s)
+            | uType' == tokenType ->
+                fieldMap AssetUses (findWithDefault 0 tokenType) s
+          ProvidesProxyUses pType uType' (AssetSource s)
+            | uType' == tokenType ->
+                fieldMap AssetUses (findWithDefault 0 pType) s
+          _ -> pure 0
+      gameValueMatches (n + fromOtherSources) valueMatcher
     AssetWithHorror -> filterM (fieldMap AssetHorror (> 0) . toId) as
     AssetWithTrait t -> filterM (fieldMap AssetTraits (member t) . toId) as
     AssetInSlot slot -> pure $ filter (elem slot . attr assetSlots) as

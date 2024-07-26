@@ -210,6 +210,7 @@ data AssetMatcher
   | AssetWithDoom ValueMatcher
   | AssetWithClues ValueMatcher
   | AssetWithTokens ValueMatcher Token
+  | AssetWithSpendableUses ValueMatcher UseType
   | AssetWithHighestPrintedCost AssetMatcher
   | AssetWithSealedChaosTokens Int ChaosTokenMatcher
   | AssetWithoutSealedTokens
@@ -1149,6 +1150,7 @@ data SkillTestMatcher
   = WhileInvestigating LocationMatcher
   | WhileAttackingAnEnemy EnemyMatcher
   | WhileEvadingAnEnemy EnemyMatcher
+  | WhileParleyingWithAnEnemy EnemyMatcher
   | SkillTestWithAction ActionMatcher
   | SkillTestWithSkill SkillMatcher
   | SkillTestWithSkillType SkillType

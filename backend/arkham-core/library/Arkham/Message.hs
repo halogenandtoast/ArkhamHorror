@@ -1074,7 +1074,7 @@ uiToRun = \case
   SkipTriggersButton _ -> Run []
   CardPile _ msgs -> Run msgs
 
-chooseOrRunOne :: PlayerId -> [UI Message] -> Message
+chooseOrRunOne :: HasCallStack => PlayerId -> [UI Message] -> Message
 chooseOrRunOne _ [x] = uiToRun x
 chooseOrRunOne pid msgs = chooseOne pid msgs
 

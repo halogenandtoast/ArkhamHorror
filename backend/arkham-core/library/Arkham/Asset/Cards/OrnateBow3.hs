@@ -22,11 +22,12 @@ instance HasAbilities OrnateBow3 where
         $ ActionAbilityWithSkill [Action.Fight] #agility
         $ ActionCost 1
         <> assetUseCost a Ammo 1
-    , controlledAbility
-        a
-        2
-        (exists $ AssetWithId (toId a) <> NotAsset (AssetWithUses Ammo))
-        actionAbility
+    , withTooltip "You nock another arrow"
+        $ controlledAbility
+          a
+          2
+          (exists $ AssetWithId (toId a) <> NotAsset (AssetWithUses Ammo))
+          actionAbility
     ]
 
 instance RunMessage OrnateBow3 where

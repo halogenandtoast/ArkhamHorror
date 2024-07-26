@@ -920,7 +920,11 @@ allAssets =
     , SomeAssetCard soulSanctification3
     , -- The Feast of Hemloch Vale
       --- guardian [tsk]
-      SomeAssetCard blessedBlade4
+      SomeAssetCard cleaningKit
+    , SomeAssetCard blessedBlade4
+    , --- rogue [tsk]
+      SomeAssetCard britishBullDog
+    , SomeAssetCard foxMaskTheWiseTrickster
     , --- survivor [tsk]
       SomeAssetCard marinersCompass2
     , -- Return to Night of the Zealot

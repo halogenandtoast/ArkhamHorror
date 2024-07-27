@@ -32,14 +32,15 @@ instance HasAbilities AsylumHallsEasternPatientWing_170 where
   getAbilities (AsylumHallsEasternPatientWing_170 attrs) =
     withBaseAbilities
       attrs
-      [ restrictedAbility
-        attrs
-        1
-        ( Here
-            <> EnemyCriteria
-              (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Lunatic)
-        )
-        $ ActionAbility []
+      [ notSkillTestAbility
+        $ restrictedAbility
+          attrs
+          1
+          ( Here
+              <> EnemyCriteria
+                (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Lunatic)
+          )
+        $ ActionAbility [#evade]
         $ Costs [ActionCost 1, HorrorCost (toSource attrs) YouTarget 1]
       | locationRevealed attrs
       ]

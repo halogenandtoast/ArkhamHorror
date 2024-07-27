@@ -18,7 +18,7 @@ import Arkham.Name
 import Arkham.Trait (Trait (Cultist, Guest, Innocent))
 
 newtype TheTrueCulpritV7 = TheTrueCulpritV7 AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theTrueCulpritV7 :: AgendaCard TheTrueCulpritV7
@@ -33,12 +33,13 @@ instance HasModifiersFor TheTrueCulpritV7 where
 instance HasAbilities TheTrueCulpritV7 where
   getAbilities (TheTrueCulpritV7 attrs) =
     guard (onSide A attrs)
-      *> ( [ controlledAbility
-            (proxied (assetIs asset) attrs)
-            1
-            ( exists (enemyIs Cards.dimensionalShambler <> EnemyAt YourLocation <> CanEvadeEnemy (toSource attrs))
-            )
-            (evadeAction $ AssetClueCost (toTitle asset) (assetIs asset) $ Static 1)
+      *> ( [ notSkillTestAbility
+            $ controlledAbility
+              (proxied (assetIs asset) attrs)
+              1
+              ( exists (enemyIs Cards.dimensionalShambler <> EnemyAt YourLocation <> CanEvadeEnemy (toSource attrs))
+              )
+              (evadeAction $ AssetClueCost (toTitle asset) (assetIs asset) $ Static 1)
            | asset <-
               [ Cards.alienDevice
               , Cards.managersKey

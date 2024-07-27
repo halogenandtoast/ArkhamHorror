@@ -50,8 +50,9 @@ instance HasAbilities OfficeMurderAtTheExcelsiorHotel where
       else
         withRevealedAbilities
           attrs
-          [ withTooltip
-              "{action}: Test {intellect} (0). For each point you succeed by, you may move 1 clue controlled by an investigator in the Office to Manager's key (if it is in play)."
+          [ skillTestAbility
+              $ withTooltip
+                "{action}: Test {intellect} (0). For each point you succeed by, you may move 1 clue controlled by an investigator in the Office to Manager's key (if it is in play)."
               $ restrictedAbility attrs 1 Here actionAbility
           ]
 

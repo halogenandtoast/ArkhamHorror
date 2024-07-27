@@ -573,6 +573,9 @@ allEvents =
       SomeEventCard bankJob
     , SomeEventCard falseSurrender
     , SomeEventCard grift
+    , SomeEventCard vamp
+    , SomeEventCard snitch2
+    , SomeEventCard vamp3
     , --- survivor [fhv]
       SomeEventCard pushedToTheLimit
     , SomeEventCard keepFaith2

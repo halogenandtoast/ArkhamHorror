@@ -3071,6 +3071,9 @@ skillTestMatches iid source st = \case
       EnemyTarget eid -> elem eid <$> select enemyMatcher
       _ -> pure False
     _ -> pure False
+  Matcher.WhileParleying -> case skillTestAction st of
+    Just Action.Parley -> pure True
+    _ -> pure False
   Matcher.SkillTestWithSkill sk -> selectAny sk
   Matcher.SkillTestWithSkillType sType -> pure $ case skillTestType st of
     SkillSkillTest sType' -> sType' == sType

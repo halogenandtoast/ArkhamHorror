@@ -353,6 +353,7 @@ allPlayerEventCards =
       , sneakAttack2
       , sneakBy
       , snipe1
+      , snitch2
       , soothingMelody
       , spectralRazor
       , standTogether
@@ -398,6 +399,8 @@ allPlayerEventCards =
       , unearthTheAncients2
       , untimelyTransaction1
       , unsolvedCase
+      , vamp
+      , vamp3
       , vantagePoint
       , voiceOfRa
       , wardOfProtection
@@ -3827,6 +3830,36 @@ grift =
     , cdCardTraits = setFromList [Trick, Illicit]
     , cdActions = [#parley]
     , cdCriteria = Just $ exists (EnemyAt YourLocation)
+    }
+
+vamp :: CardDef
+vamp =
+  (event "10074" "Vamp" 1 Rogue)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Trick]
+    , cdActions = [#parley]
+    , cdCriteria = Just $ exists (EnemyAt YourLocation)
+    }
+
+snitch2 :: CardDef
+snitch2 =
+  (event "10078" "Snitch" 1 Rogue)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Favor, Trick]
+    , cdFastWindow = Just $ SkillTestResult #after You #parley #success
+    , cdCriteria =
+        Just
+          $ exists (LocationWithDiscoverableCluesBy You <> oneOf [YourLocation, ConnectedFrom YourLocation])
+    }
+
+vamp3 :: CardDef
+vamp3 =
+  (event "10081" "Vamp" 1 Rogue)
+    { cdSkills = [#wild, #wild]
+    , cdCardTraits = setFromList [Trick]
+    , cdActions = [#parley]
+    , cdCriteria = Just $ exists (EnemyAt YourLocation)
+    , cdLevel = Just 3
     }
 
 pushedToTheLimit :: CardDef

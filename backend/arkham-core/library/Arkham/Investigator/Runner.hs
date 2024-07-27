@@ -80,6 +80,7 @@ import Arkham.Matcher (
   locationWithInvestigator,
   oneOf,
   treacheryInThreatAreaOf,
+  pattern AssetWithAnyClues,
  )
 import Arkham.Message qualified as Msg
 import Arkham.Modifier qualified as Modifier
@@ -618,9 +619,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   -- InvestigatorWhenEliminated is handled by the scenario
   InvestigatorEliminated iid | iid == investigatorId -> do
     mlid <- field InvestigatorLocation iid
-    pushAll
-      $ [PlaceTokens (toSource a) (toTarget lid) Clue (investigatorClues a) | lid <- toList mlid]
-      <> [PlaceKey (toTarget lid) k | k <- toList investigatorKeys, lid <- toList mlid]
+    for_ mlid $ \lid -> do
+      assets <- select $ assetControlledBy iid <> AssetWithAnyClues
+      pushAll
+        $ PlaceTokens (toSource a) (toTarget lid) Clue (investigatorClues a)
+        : [PlaceKey (toTarget lid) k | k <- toList investigatorKeys]
+      for_ assets \asset -> do
+        assetClues <- field AssetClues asset
+        push $ MoveTokens GameSource (AssetSource asset) (toTarget lid) Clue assetClues
     pure $ a & tokensL %~ (removeAllTokens Clue . removeAllTokens Resource) & keysL .~ mempty
   RemoveAllClues _ (InvestigatorTarget iid) | iid == investigatorId -> do
     pure $ a & tokensL %~ removeAllTokens Clue
@@ -1677,6 +1683,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & tokensL %~ removeAllTokens Clue
   MoveAllCluesTo source target | not (isTarget a target) -> do
     when (investigatorClues a > 0) (push $ PlaceTokens source target Clue $ investigatorClues a)
+    assets <- select $ assetControlledBy a.id <> AssetWithAnyClues
+    for_ assets \aid -> do
+      clues <- field AssetClues aid
+      push $ MoveTokens source (AssetSource aid) target Clue clues
     pure $ a & tokensL %~ removeAllTokens Clue
   InitiatePlayCardAsChoose iid card choices msgs chosenCardStrategy payment windows' asAction | iid == toId a -> do
     event <- selectJust $ EventWithCardId $ toCardId card
@@ -2629,7 +2639,35 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (foundCardsL . each %~ cardFilter)
       & (bondedCardsL %~ cardFilter)
   InvestigatorSpendClues iid n | iid == investigatorId -> do
+    assetsWithClues <- select $ assetControlledBy iid <> AssetWithAnyClues
     pushM $ checkAfter $ Window.SpentClues iid n
+    if null assetsWithClues
+      then push $ Do msg
+      else push $ DoStep n msg
+    pure a
+  DoStep n msg'@(InvestigatorSpendClues iid _) | n > 0 && iid == investigatorId -> do
+    assets <- select $ assetControlledBy iid <> AssetWithAnyClues
+    if null assets
+      then push $ Do $ InvestigatorSpendClues iid n
+      else do
+        -- if all we have is enough clues, then spend all of them
+        clues <- field InvestigatorClues iid
+        if clues == n
+          then do
+            push $ Do (InvestigatorSpendClues iid $ investigatorClues a)
+            for_ assets \asset -> do
+              assetClues <- field AssetClues asset
+              push $ RemoveTokens (toSource iid) (toTarget asset) Clue assetClues
+          else do
+            player <- getPlayer iid
+            pushAll
+              [ chooseOne player
+                  $ ClueLabel iid [Do (InvestigatorSpendClues iid 1)]
+                  : [targetLabel asset [RemoveTokens (toSource iid) (toTarget asset) Clue 1] | asset <- assets]
+              , DoStep (n - 1) msg'
+              ]
+    pure a
+  Do (InvestigatorSpendClues iid n) | iid == investigatorId -> do
     pure $ a & tokensL %~ subtractTokens Clue n
   SpendResources iid _ | iid == investigatorId -> do
     push $ Do msg
@@ -3399,14 +3437,50 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   SpendXP iid amount | iid == investigatorId -> do
     pure $ a & xpL %~ max 0 . subtract amount
   InvestigatorPlaceCluesOnLocation iid source n | iid == investigatorId -> do
+    -- so this is a bit complicated, we want to move but trigger windows only once instead of 1 at a time, so we sneak in the number we've placed into the n value later on (called x)
+    assets <- select $ assetControlledBy iid <> AssetWithAnyClues
+    if null assets
+      then push $ DoStep 0 msg
+      else push $ DoStep n (InvestigatorPlaceCluesOnLocation iid source 0)
+    pure a
+  DoStep 0 msg'@(InvestigatorPlaceCluesOnLocation iid source x) | iid == investigatorId && x > 0 -> do
+    mlid <- field InvestigatorLocation iid
+    for_ mlid $ \lid -> do
+      after <- checkAfter $ Window.InvestigatorPlacedFromTheirPool iid source (toTarget lid) Clue x
+      pushAll [Do msg', after]
+    pure a
+  DoStep n msg'@(InvestigatorPlaceCluesOnLocation iid source x) | iid == investigatorId && n > 0 -> do
+    mlid <- field InvestigatorLocation iid
+    for_ mlid \lid -> do
+      assets <- select $ assetControlledBy iid <> AssetWithAnyClues
+      if null assets
+        then push $ DoStep 0 (InvestigatorPlaceCluesOnLocation iid source (x + n))
+        else do
+          -- if all we have is enough clues, then spend all of them
+          clues <- field InvestigatorClues iid
+          if clues == n
+            then do
+              push $ Do (InvestigatorPlaceCluesOnLocation iid source $ investigatorClues a)
+              for_ assets \asset -> do
+                assetClues <- field AssetClues asset
+                push $ MoveTokens source (toSource asset) (toTarget lid) Clue assetClues
+            else do
+              player <- getPlayer iid
+              pushAll
+                [ chooseOne player
+                    $ ClueLabel iid [DoStep (n - 1) (InvestigatorPlaceCluesOnLocation iid source (x + 1))]
+                    : [ targetLabel asset [MoveTokens source (toSource asset) (toTarget lid) Clue 1, DoStep (n - 1) msg']
+                      | asset <- assets
+                      ]
+                ]
+    pure a
+  Do (InvestigatorPlaceCluesOnLocation iid source n) | iid == investigatorId -> do
     -- [AsIfAt] assuming as if is still in effect
     mlid <- field InvestigatorLocation iid
     let cluesToPlace = min n (investigatorClues a)
     for_ mlid $ \lid -> do
-      after <-
-        checkAfter $ Window.InvestigatorPlacedFromTheirPool iid source (toTarget lid) Clue cluesToPlace
-      pushAll [PlaceTokens source (LocationTarget lid) Clue cluesToPlace, after]
-    runMessage (RemoveTokens source (toTarget a) #clue cluesToPlace) a
+      push $ MoveTokens source (toSource a) (LocationTarget lid) Clue cluesToPlace
+    pure a
   InvestigatorPlaceAllCluesOnLocation iid source | iid == investigatorId -> do
     -- [AsIfAt] assuming as if is still in effect
     mlid <- field InvestigatorLocation iid

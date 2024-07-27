@@ -852,8 +852,9 @@ getInvestigatorsMatching matcher = do
         (toId i)
         UneliminatedInvestigator
         (getSkillValue skillType)
-    InvestigatorWithClues gameValueMatcher ->
-      (`gameValueMatches` gameValueMatcher) . attr investigatorClues
+    InvestigatorWithClues gameValueMatcher -> \i -> do
+      clues <- field InvestigatorClues (toId i)
+      gameValueMatches clues gameValueMatcher
     InvestigatorWithResources gameValueMatcher ->
       (`gameValueMatches` gameValueMatcher) . attr investigatorResources
     InvestigatorWithSpendableResources gameValueMatcher ->
@@ -3398,7 +3399,9 @@ instance Projection Investigator where
       InvestigatorBeganRoundAt -> pure investigatorBeganRoundAt
       InvestigatorResources -> pure $ investigatorResources attrs
       InvestigatorDoom -> pure $ investigatorDoom attrs
-      InvestigatorClues -> pure $ investigatorClues attrs
+      InvestigatorClues -> do
+        controlledAssetClues <- getSum <$> selectAgg Sum AssetClues (assetControlledBy attrs.id)
+        pure $ investigatorClues attrs + controlledAssetClues
       InvestigatorTokens -> pure $ investigatorTokens
       InvestigatorSearch -> pure $ investigatorSearch
       InvestigatorHand -> do

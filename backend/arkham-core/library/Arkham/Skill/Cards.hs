@@ -77,6 +77,7 @@ allPlayerSkillCards =
       , lastChance
       , leadership
       , leadership2
+      , longShot
       , manualDexterity
       , manualDexterity2
       , momentum1

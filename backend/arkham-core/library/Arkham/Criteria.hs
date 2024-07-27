@@ -170,6 +170,7 @@ data Criterion
   | OwnCardWithDoom
   | CardWithDoomExists
   | ControlsThis -- really controls this
+  | OwnsThis -- just the owner
   | PlayableCardExists CostStatus ExtendedCardMatcher
   | PlayableCardExistsWithCostReduction CostReduction ExtendedCardMatcher
   | ResourcesOnThis ValueMatcher
@@ -215,6 +216,7 @@ data Criterion
   | HasTrueMagick
   | ChosenCustomizationCardIsInPlay
   | HasCustomization Customization
+  | IfYouOweBiancaDieKatz
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not Criterion where

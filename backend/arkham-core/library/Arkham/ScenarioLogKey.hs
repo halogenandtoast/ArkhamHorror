@@ -77,13 +77,26 @@ data ScenarioLogKey
   | TidiedUpTheRoom
   | ThePoliceDon'tBelieveYou
   | ThePoliceAreOnYourSide
+  | -- Investigator Cards
+    YouOweBiancaResources (Labeled InvestigatorId) Int
   deriving stock (Eq, Show, Ord, Data)
 
-data ScenarioCountKey = CurrentDepth | SignOfTheGods | Distortion
+data ScenarioCountKey
+  = CurrentDepth
+  | SignOfTheGods
+  | Distortion
   deriving stock (Eq, Show, Ord, Data)
 
 instance ToGameLoggerFormat ScenarioLogKey where
   format = \case
+    YouOweBiancaResources (Labeled name iid) n ->
+      "{investigator:\""
+        <> display name
+        <> "\":"
+        <> tshow iid
+        <> "} owes Bianca "
+        <> tshow n
+        <> " resources"
     IchtacasPrey (Labeled name eid) -> "{enemy:\"" <> display name <> "\":" <> tshow eid <> "} is Ichtaca's Prey"
     IchtacasDestination (Labeled name lid) -> "{location:\"" <> display name <> "\":" <> tshow lid <> "} is Ichtaca's Destination"
     HadADrink (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} had a drink"

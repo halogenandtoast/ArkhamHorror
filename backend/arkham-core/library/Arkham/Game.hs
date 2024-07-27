@@ -2301,6 +2301,9 @@ getEventsMatching matcher = do
     EventControlledBy investigatorMatcher -> do
       iids <- select investigatorMatcher
       pure $ filter ((`elem` iids) . ownerOfEvent) as
+    EventOwnedBy investigatorMatcher -> do
+      iids <- select investigatorMatcher
+      pure $ filter ((`elem` iids) . ownerOfEvent) as
     EventWithoutModifier modifierType -> do
       filterM (fmap (notElem modifierType) . getModifiers . toId) as
     EventWithModifier modifierType -> do
@@ -2349,6 +2352,9 @@ getSkillsMatching matcher = do
         as
     SkillWithTrait t -> filterM (fmap (member t) . field SkillTraits . toId) as
     SkillControlledBy investigatorMatcher -> do
+      iids <- select investigatorMatcher
+      pure $ filter ((`elem` iids) . attr skillOwner) as
+    SkillOwnedBy investigatorMatcher -> do
       iids <- select investigatorMatcher
       pure $ filter ((`elem` iids) . attr skillOwner) as
     SkillWithPlacement placement ->
@@ -2645,6 +2651,10 @@ enemyMatcherFilter = \case
     iids <- select investigatorMatcher
     engagedInvestigators <- enemyEngagedInvestigators (toId enemy)
     pure $ any (`elem` engagedInvestigators) iids
+  EnemyOwnedBy investigatorMatcher -> \enemy -> do
+    case enemyBearer (toAttrs enemy) of
+      Just iid -> selectAny $ InvestigatorWithId iid <> investigatorMatcher
+      Nothing -> pure False
   EnemyWithMostRemainingHealth enemyMatcher -> \enemy -> do
     matches' <- getEnemiesMatching enemyMatcher
     elem enemy

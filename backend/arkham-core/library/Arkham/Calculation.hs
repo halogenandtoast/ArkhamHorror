@@ -61,6 +61,7 @@ data GameCalculation
   | GameValueCalculation GameValue
   | DuringEventCalculation GameCalculation GameCalculation
   | EmptySlotsCalculation InvestigatorMatcher SlotType
+  | AmountYouOweToBiancaDieKatz InvestigatorMatcher
   deriving stock (Show, Ord, Eq, Data, Generic)
   deriving FromJSON via MaybeFixed
 

@@ -446,6 +446,7 @@ library
       Arkham.Asset.Cards.BerettaM19184
       Arkham.Asset.Cards.BestowResolve2
       Arkham.Asset.Cards.Bewitching3
+      Arkham.Asset.Cards.BiancaDieKatzSingingYourSong
       Arkham.Asset.Cards.BindersJarInterdimensionalPrison1
       Arkham.Asset.Cards.Blackjack
       Arkham.Asset.Cards.Blackjack2
@@ -1241,6 +1242,7 @@ library
       Arkham.Enemy.Cards.Basilisk
       Arkham.Enemy.Cards.BeastOfAldebaran
       Arkham.Enemy.Cards.BeingsOfIb
+      Arkham.Enemy.Cards.BiancaDieKatz
       Arkham.Enemy.Cards.BillyCooper
       Arkham.Enemy.Cards.BoaConstrictor
       Arkham.Enemy.Cards.BogGator

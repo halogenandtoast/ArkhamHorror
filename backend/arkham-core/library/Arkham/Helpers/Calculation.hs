@@ -21,9 +21,11 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
+import Arkham.ScenarioLogKey
 import Arkham.Target
 import Arkham.Token
 
@@ -116,3 +118,10 @@ calculate = go
       investigators <- select investigatorMatcher
       slots <- concatMapM (fieldMap InvestigatorSlots (findWithDefault [] slotType)) investigators
       pure $ count isEmptySlot slots
+    AmountYouOweToBiancaDieKatz investigatorMatcher -> do
+      i <- selectJust investigatorMatcher
+      let
+        toResources = \case
+          (YouOweBiancaResources (Labeled _ iid') n) | i == iid' -> n
+          _ -> 0
+      sum . map toResources . toList <$> scenarioField ScenarioRemembered

@@ -356,6 +356,7 @@ data EnemyMatcher
   | EnemyInHandOf InvestigatorMatcher
   | CanParleyEnemy InvestigatorId
   | EnemyMatchAll [EnemyMatcher]
+  | EnemyOwnedBy InvestigatorMatcher
   | EnemyOneOf [EnemyMatcher]
   | EnemyWithMostRemainingHealth EnemyMatcher
   | EnemyWithoutModifier ModifierType
@@ -420,6 +421,7 @@ data EventMatcher
   | EventWithCardId CardId
   | EventWithToken Token
   | EventControlledBy InvestigatorMatcher
+  | EventOwnedBy InvestigatorMatcher
   | EventAt LocationMatcher
   | EventWithDoom ValueMatcher
   | EventAttachedToAsset AssetMatcher
@@ -637,6 +639,7 @@ data SkillMatcher
   | SkillWithClass ClassSymbol
   | SkillWithCardId CardId
   | SkillControlledBy InvestigatorMatcher
+  | SkillOwnedBy InvestigatorMatcher
   | SkillWithPlacement Placement
   | SkillMatches [SkillMatcher]
   | SkillIs CardCode

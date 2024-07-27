@@ -67,6 +67,7 @@ allPlayerEnemyCards =
       , agentFletcher
       , lurkerInTheDark
       , ectoplasmicHorror
+      , biancaDieKatz
       , tommyMalloy
       , sacrificialBeast
       , vengefulHound
@@ -2011,6 +2012,14 @@ ectoplasmicHorror =
     { cdCardTraits = setFromList [Monster, Geist]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdDeckRestrictions = [OnlyClass Mystic]
+    }
+
+biancaDieKatz :: CardDef
+biancaDieKatz =
+  (weakness "10063" "Bianca \"Die Katz\"")
+    { cdCardTraits = setFromList [Humanoid, Criminal, Socialite]
+    , cdKeywords = setFromList [Keyword.Bonded 1 "10062", Keyword.Hunter]
+    , cdVictoryPoints = Just 0
     }
 
 corpseHungryGhoul :: CardDef

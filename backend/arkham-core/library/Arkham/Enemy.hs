@@ -374,6 +374,9 @@ allEnemies =
     , -- basic weakness
       SomeEnemyCard lurkerInTheDark
     , SomeEnemyCard ectoplasmicHorror
+    , -- The Feast of Hemloch Vale
+      -- rogue (bonded) [fhv]
+      SomeEnemyCard biancaDieKatz
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeEnemyCard corpseHungryGhoul

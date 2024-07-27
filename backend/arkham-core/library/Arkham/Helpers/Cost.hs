@@ -12,6 +12,7 @@ import Arkham.Cost
 import Arkham.Cost.FieldCost
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
+import {-# SOURCE #-} Arkham.Helpers.Calculation
 import Arkham.Helpers.Card (extendedCardMatch)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Customization
@@ -357,6 +358,10 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
     ns <- catMaybes <$> selectFields fld mtchr
     resources <- getSpendableResources iid
     pure $ any (resources >=) ns
+  CalculatedResourceCost calc -> do
+    n <- calculate (Matcher.replaceYouMatcher iid calc)
+    resources <- getSpendableResources iid
+    pure $ resources >= n
   SupplyCost locationMatcher supply ->
     iid
       <=~> ( Matcher.InvestigatorWithSupply supply

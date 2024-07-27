@@ -362,6 +362,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   Remember logKey -> do
     send $ "Remember \"" <> format logKey <> "\""
     pure $ a & logL %~ insertSet logKey
+  ScenarioCountSet logKey n -> do
+    pushM $ checkWindows [mkAfter $ Window.ScenarioCountIncremented logKey]
+    pure $ a & countsL %~ Map.alter (const (Just n)) logKey
   ScenarioCountIncrementBy logKey n -> do
     pushM $ checkWindows [mkAfter $ Window.ScenarioCountIncremented logKey]
     pure $ a & countsL %~ Map.alter (Just . maybe n (+ n)) logKey
@@ -1129,8 +1132,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     deck' <- shuffleM $ fromMaybe [] (view (decksL . at deckKey) a)
     pure $ a & decksL . at deckKey ?~ deck'
   ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey deckKey) cards -> do
-    deck' <-
-      shuffleM $ cards <> maybe [] (filter (`notElem` cards)) (view (decksL . at deckKey) a)
+    let
+      filterOutCards = filter (`notElem` cards)
+    deck' <- shuffleM $ cards <> maybe [] filterOutCards (view (decksL . at deckKey) a)
     pure
       $ a
       & decksL
@@ -1139,6 +1143,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & discardL
       %~ filter
         ((`notElem` cards) . EncounterCard)
+      & (victoryDisplayL %~ filterOutCards)
   RemoveLocation lid -> do
     investigatorIds <-
       select $ Matcher.InvestigatorAt $ Matcher.LocationWithId lid

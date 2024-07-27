@@ -447,6 +447,7 @@ allTreacheries =
     , -- The Feast of Hemloch Vale
       -- signature
       SomeTreacheryCard hastyRepairs
+    , SomeTreacheryCard failedExperiment
     , -- Return to the Night of the Zealot
       -- Return to the Gathering
       SomeTreacheryCard theZealotsSeal

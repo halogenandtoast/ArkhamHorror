@@ -53,6 +53,8 @@ allPlayerEventCards =
       toCardCodePairs
       [ aChanceEncounter
       , aChanceEncounter2
+      , aethericCurrentYoth
+      , aethericCurrentYuggoth
       , adHoc
       , aGlimmerOfHope
       , aTestOfWill
@@ -179,6 +181,7 @@ allPlayerEventCards =
       , fendOff3
       , fickleFortune3
       , fightOrFlight
+      , fineTuning1
       , firstWatch
       , flare1
       , followed
@@ -3748,6 +3751,28 @@ adHoc =
       , cdCriteria = Just $ exists $ AssetControlledBy You <> oneOf [#tool, #weapon]
       }
 
+aethericCurrentYuggoth :: CardDef
+aethericCurrentYuggoth =
+  signature "10004"
+    $ (event "10006" ("Aetheric Current" <:> "Yuggoth") 0 Neutral)
+      { cdSkills = [#combat]
+      , cdKeywords = singleton (Keyword.Bonded 1 "06005")
+      , cdCardTraits = setFromList [Science]
+      , cdActions = [#fight]
+      , cdCriteria = Just $ exists $ AssetIs "10005b"
+      }
+
+aethericCurrentYoth :: CardDef
+aethericCurrentYoth =
+  signature "10004"
+    $ (event "10007" ("Aetheric Current" <:> "Yoth") 0 Neutral)
+      { cdSkills = [#agility]
+      , cdKeywords = singleton (Keyword.Bonded 1 "06005")
+      , cdCardTraits = setFromList [Science]
+      , cdActions = [#evade]
+      , cdCriteria = Just $ exists $ AssetIs "10005b"
+      }
+
 tinker :: CardDef
 tinker =
   (event "10028" "Tinker" 1 Guardian)
@@ -3756,6 +3781,21 @@ tinker =
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria =
         Just (exists $ #tool <> AssetInPlayAreaOf You <> not_ (AssetWithAttachedEvent $ EventIs "10028"))
+    }
+
+fineTuning1 :: CardDef
+fineTuning1 =
+  (event "10054" "Fine Tuning" 2 Seeker)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Insight, Upgrade]
+    , cdCriteria =
+        Just
+          ( exists
+              $ oneOf [#tool, #science]
+              <> AssetControlledBy You
+              <> not_ (AssetWithAttachedEvent $ EventIs "10054")
+          )
+    , cdLevel = Just 1
     }
 
 bankJob :: CardDef

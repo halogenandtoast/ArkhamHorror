@@ -38,6 +38,7 @@ import Arkham.Target
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
+import Data.Foldable (foldrM)
 
 getBaseValueDifferenceForSkillTest
   :: HasGame m => InvestigatorId -> SkillTest -> m Int
@@ -351,11 +352,14 @@ getModifiedSkillTestDifficulty s = do
   let
     preModifiedDifficulty =
       foldr applyPreModifier baseDifficulty modifiers'
-  pure $ foldr applyModifier preModifiedDifficulty modifiers'
+  foldrM applyModifier preModifiedDifficulty modifiers'
  where
-  applyModifier (Difficulty m) n = max 0 (n + m)
-  applyModifier DoubleDifficulty n = n * 2
-  applyModifier _ n = n
+  applyModifier (Difficulty m) n = pure $ max 0 (n + m)
+  applyModifier (CalculatedDifficulty calc) n = do
+    m <- calculate calc
+    pure $ max 0 (n + m)
+  applyModifier DoubleDifficulty n = pure $ n * 2
+  applyModifier _ n = pure n
   applyPreModifier (SetDifficulty m) _ = m
   applyPreModifier _ n = n
 

@@ -72,6 +72,7 @@ allInvestigatorCards =
       , darrellSimmons
       , charlieKane
       , wilsonRichards
+      , kateWinthrop
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -486,6 +487,14 @@ wilsonRichards =
     ("Wilson Richards" <:> "The Handyman")
     Guardian
     [Drifter]
+
+kateWinthrop :: CardDef
+kateWinthrop =
+  investigator
+    "10004"
+    ("Kate Winthrop" <:> "The Scientist")
+    Seeker
+    [Miskatonic, Scholar]
 
 nathanielCho :: CardDef
 nathanielCho =

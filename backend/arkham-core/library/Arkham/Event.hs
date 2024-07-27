@@ -563,8 +563,12 @@ allEvents =
     , -- The Feast of Hemloch Vale
       --- signature [fhv]
       SomeEventCard adHoc
+    , SomeEventCard aethericCurrentYuggoth
+    , SomeEventCard aethericCurrentYoth
     , --- guardian [fhv]
       SomeEventCard tinker
+    , --- seeker [fhv]
+      SomeEventCard fineTuning1
     , --- rogue [fhv]
       SomeEventCard bankJob
     , SomeEventCard falseSurrender

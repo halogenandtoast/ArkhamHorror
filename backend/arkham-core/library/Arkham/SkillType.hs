@@ -1,5 +1,6 @@
 module Arkham.SkillType where
 
+import Arkham.Classes.GameLogger
 import Arkham.Prelude
 import GHC.OverloadedLabels
 
@@ -13,6 +14,13 @@ data SkillType
   | SkillAgility
   deriving stock (Show, Eq, Bounded, Enum, Generic, Ord, Data)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+instance ToGameLoggerFormat SkillType where
+  format = \case
+    SkillWillpower -> "{willpower}"
+    SkillIntellect -> "{intellect}"
+    SkillCombat -> "{combat}"
+    SkillAgility -> "{agility}"
 
 allSkills :: [SkillType]
 allSkills = [minBound ..]

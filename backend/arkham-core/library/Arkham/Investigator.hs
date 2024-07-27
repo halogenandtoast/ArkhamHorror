@@ -134,6 +134,7 @@ allInvestigators =
       , SomeInvestigatorCard darrellSimmons
       , SomeInvestigatorCard charlieKane
       , SomeInvestigatorCard wilsonRichards
+      , SomeInvestigatorCard kateWinthrop
       , SomeInvestigatorCard nathanielCho
       , SomeInvestigatorCard harveyWalters
       , SomeInvestigatorCard winifredHabbamock

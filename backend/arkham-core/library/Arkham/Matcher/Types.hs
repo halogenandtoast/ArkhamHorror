@@ -272,6 +272,9 @@ instance IsLabel "tool" AssetMatcher where
 instance IsLabel "spell" AssetMatcher where
   fromLabel = AssetWithTrait Spell
 
+instance IsLabel "science" AssetMatcher where
+  fromLabel = AssetWithTrait Science
+
 instance IsLabel "ritual" AssetMatcher where
   fromLabel = AssetWithTrait Ritual
 

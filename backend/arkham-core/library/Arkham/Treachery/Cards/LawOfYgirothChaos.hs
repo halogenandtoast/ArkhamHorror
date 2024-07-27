@@ -8,7 +8,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype LawOfYgirothChaos = LawOfYgirothChaos TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lawOfYgirothChaos :: TreacheryCard LawOfYgirothChaos
@@ -23,7 +23,9 @@ instance HasModifiersFor LawOfYgirothChaos where
 
 instance HasAbilities LawOfYgirothChaos where
   getAbilities (LawOfYgirothChaos a) =
-    [restrictedAbility a 1 InYourHand $ actionAbilityWithCost (HandDiscardCost 1 CardWithEvenCost)]
+    [ restrictedAbility a 1 InYourHand
+        $ actionAbilityWithCost (HandDiscardCost 1 $ basic CardWithEvenCost)
+    ]
 
 instance RunMessage LawOfYgirothChaos where
   runMessage msg t@(LawOfYgirothChaos attrs) = runQueueT $ case msg of

@@ -26,7 +26,11 @@ instance HasAbilities MindsEye2 where
           ( InitiatedSkillTest #when You (SkillTypeOneOf [#intellect, #combat, #agility]) AnySkillTestValue #any
           )
           (assetUseCost attrs Secret 1)
-    , restrictedAbility attrs 2 ControlsThis $ FastAbility $ HandDiscardCost 1 $ cardIs Cards.mindsEye2
+    , restrictedAbility attrs 2 ControlsThis
+        $ FastAbility
+        $ HandDiscardCost 1
+        $ basic
+        $ cardIs Cards.mindsEye2
     ]
 
 instance RunMessage MindsEye2 where

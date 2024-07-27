@@ -32,6 +32,7 @@ import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Calculation
+import Arkham.Helpers.Card (extendedCardMatch)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Message
@@ -789,7 +790,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       pure c
     -- push (SpendClues totalClues iids)
     -- withPayment $ CluePayment totalClues
-    HandDiscardCost x cardMatcher -> do
+    HandDiscardCost x extendedCardMatcher -> do
       handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
       let
         notCostCard = case activeCostTarget c of
@@ -797,7 +798,10 @@ payCost msg c iid skipAdditionalCosts cost = do
           ForAdditionalCost {} -> const True
           ForCard _ card' -> (/= card')
           ForCost card' -> (/= card')
-        cards = filter (and . sequence [(`cardMatch` cardMatcher), notCostCard . PlayerCard]) handCards
+      cards <-
+        filterM
+          (andM . sequence [(`extendedCardMatch` extendedCardMatcher), pure . notCostCard . PlayerCard])
+          handCards
       push
         $ chooseN
           player
@@ -808,7 +812,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           | card <- cards
           ]
       pure c
-    HandDiscardAnyNumberCost cardMatcher -> do
+    HandDiscardAnyNumberCost extendedCardMatcher -> do
       handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
       let
         notCostCard = case activeCostTarget c of
@@ -816,7 +820,10 @@ payCost msg c iid skipAdditionalCosts cost = do
           ForAdditionalCost {} -> const True
           ForCard _ card' -> (/= card')
           ForCost card' -> (/= card')
-        cards = filter (and . sequence [(`cardMatch` cardMatcher), notCostCard . PlayerCard]) handCards
+      cards <-
+        filterM
+          (andM . sequence [(`extendedCardMatch` extendedCardMatcher), pure . notCostCard . PlayerCard])
+          handCards
       name <- fieldMap InvestigatorName toTitle iid
       push
         $ Ask player
@@ -824,7 +831,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           "Number of cards to pay"
           Nothing
           [ PaymentAmountChoice iid 1 (length cards) name
-              $ pay (HandDiscardCost 1 cardMatcher)
+              $ pay (HandDiscardCost 1 extendedCardMatcher)
           ]
       pure c
     ReturnMatchingAssetToHandCost assetMatcher -> do

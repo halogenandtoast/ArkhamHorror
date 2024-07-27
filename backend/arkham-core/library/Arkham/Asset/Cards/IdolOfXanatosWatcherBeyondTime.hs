@@ -19,7 +19,7 @@ instance HasAbilities IdolOfXanatosWatcherBeyondTime where
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
           (DealtDamageOrHorror #when (SourceIsCancelable AnySource) You)
-          (exhaust a <> UpTo (Fixed 3) (HandDiscardCost 1 AnyCard))
+          (exhaust a <> UpTo (Fixed 3) (HandDiscardCost 1 #any))
     ]
 
 idolOfXanatosWatcherBeyondTime :: AssetCard IdolOfXanatosWatcherBeyondTime

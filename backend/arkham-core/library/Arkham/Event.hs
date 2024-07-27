@@ -561,7 +561,9 @@ allEvents =
     , SomeEventCard payYourDue
     , SomeEventCard underprepared
     , -- The Feast of Hemloch Vale
-      --- guardian [fhv]
+      --- signature [fhv]
+      SomeEventCard adHoc
+    , --- guardian [fhv]
       SomeEventCard tinker
     , --- rogue [fhv]
       SomeEventCard bankJob

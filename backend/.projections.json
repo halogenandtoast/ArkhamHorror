@@ -212,6 +212,7 @@
       "newtype {dot} = {dot} InvestigatorAttrs",
       "  deriving anyclass (IsInvestigator, HasModifiersFor)",
       "  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)",
+      "  deriving stock Data",
       "",
       "{dot|snakecase|camelcase} :: InvestigatorCard {dot}",
       "{dot|snakecase|camelcase} = investigator {dot} Cards.{dot|snakecase|camelcase} $",

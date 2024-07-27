@@ -53,6 +53,7 @@ allPlayerEventCards =
       toCardCodePairs
       [ aChanceEncounter
       , aChanceEncounter2
+      , adHoc
       , aGlimmerOfHope
       , aTestOfWill
       , aTestOfWill1
@@ -3738,6 +3739,15 @@ underprepared =
         Just $ youExist (HandWith (LengthIs $ atMost 1) <> InvestigatorWithResources (atMost 1))
     }
 
+adHoc :: CardDef
+adHoc =
+  signature "10001"
+    $ (event "10002" "Ad Hoc" 2 Neutral)
+      { cdSkills = [#wild, #wild]
+      , cdCardTraits = setFromList [Improvised, Upgrade]
+      , cdCriteria = Just $ exists $ AssetControlledBy You <> oneOf [#tool, #weapon]
+      }
+
 tinker :: CardDef
 tinker =
   (event "10028" "Tinker" 1 Guardian)
@@ -4158,7 +4168,7 @@ occultInvocation =
   (event "60217" "Occult Invocation" 2 Seeker)
     { cdSkills = [#combat, #intellect]
     , cdCardTraits = singleton Spell
-    , cdAdditionalCost = Just $ UpTo (Fixed 2) $ HandDiscardCost 1 AnyCard
+    , cdAdditionalCost = Just $ UpTo (Fixed 2) $ HandDiscardCost 1 #any
     , cdActions = [#fight]
     }
 

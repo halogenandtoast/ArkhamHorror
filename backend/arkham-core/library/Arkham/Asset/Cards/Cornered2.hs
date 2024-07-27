@@ -18,7 +18,7 @@ instance HasAbilities Cornered2 where
     [ playerLimit PerTestOrAbility
         $ controlledAbility a 1 (DuringSkillTest AnySkillTest)
         $ FastAbility
-        $ HandDiscardCost 1 AnyCard
+        $ HandDiscardCost 1 #any
     ]
 
 instance RunMessage Cornered2 where

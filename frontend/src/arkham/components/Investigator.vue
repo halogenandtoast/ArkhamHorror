@@ -165,6 +165,10 @@ function calculateSkill(base: number, skillType: string, modifiers: Modifier[]) 
     if (modifier.type.tag === "BaseSkillOf" && modifier.type.skillType === skillType) {
       modified = modifier.type.value
     }
+
+    if (modifier.type.tag === "BaseSkill" && props.game.skillTest && props.game.skillTest.skills.includes(skillType)) {
+      modified = modifier.type.contents
+    }
   })
 
   modifiers.forEach((modifier) => {

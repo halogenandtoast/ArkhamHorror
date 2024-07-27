@@ -71,6 +71,7 @@ allInvestigatorCards =
       , aminaZidane
       , darrellSimmons
       , charlieKane
+      , wilsonRichards
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -477,6 +478,14 @@ charlieKane =
     ("Charlie Kane" <:> "The Politician")
     Neutral
     [Civic, Socialite]
+
+wilsonRichards :: CardDef
+wilsonRichards =
+  investigator
+    "10001"
+    ("Wilson Richards" <:> "The Handyman")
+    Guardian
+    [Drifter]
 
 nathanielCho :: CardDef
 nathanielCho =

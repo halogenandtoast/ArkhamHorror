@@ -35,7 +35,7 @@ instance HasAbilities RivertownAbandonedWarehouse where
             $ restrictedAbility attrs 1 Here
             $ ActionAbility []
             $ Costs
-              [ActionCost 1, HandDiscardCost 1 $ CardWithSkillIcon #willpower]
+              [ActionCost 1, HandDiscardCost 1 $ basic $ CardWithSkillIcon #willpower]
         ]
 
 willpowerCount :: Payment -> Int

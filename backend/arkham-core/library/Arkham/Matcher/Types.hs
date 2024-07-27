@@ -565,6 +565,7 @@ class IsMatcher a
 instance IsMatcher LocationMatcher
 instance IsMatcher EnemyMatcher
 instance IsMatcher AssetMatcher
+instance IsMatcher EventMatcher
 instance IsMatcher InvestigatorMatcher
 instance IsMatcher TreacheryMatcher
 class IsMatcher b => Be a b where

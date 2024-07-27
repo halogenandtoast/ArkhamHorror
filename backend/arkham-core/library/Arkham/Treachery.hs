@@ -444,6 +444,9 @@ allTreacheries =
     , SomeTreacheryCard deafeningSilence
     , SomeTreacheryCard ruinedFilm
     , SomeTreacheryCard burdenOfLeadership
+    , -- The Feast of Hemloch Vale
+      -- signature
+      SomeTreacheryCard hastyRepairs
     , -- Return to the Night of the Zealot
       -- Return to the Gathering
       SomeTreacheryCard theZealotsSeal

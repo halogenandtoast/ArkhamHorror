@@ -31,7 +31,7 @@ instance HasAbilities CongregationalChurch_209 where
           <> [ restrictedAbility attrs 1 Here
               $ ActionAbility []
               $ Costs
-                [ActionCost 1, HandDiscardCost 1 AnyCard]
+                [ActionCost 1, HandDiscardCost 1 #any]
              | locationRevealed attrs
              ]
 

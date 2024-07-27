@@ -23,7 +23,7 @@ instance HasAbilities DownstairsDoorwayDen where
       [ restrictedAbility attrs 1 (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (be attrs))
           $ ReactionAbility
             (SkillTestResult #after You (whileInvestigating attrs) #success)
-            (HandDiscardCost 1 AnyCard)
+            (HandDiscardCost 1 #any)
       , restrictedAbility attrs 2 Here
           $ FastAbility
           $ GroupClueCost (PerPlayer 1) (LocationWithId $ toId attrs)

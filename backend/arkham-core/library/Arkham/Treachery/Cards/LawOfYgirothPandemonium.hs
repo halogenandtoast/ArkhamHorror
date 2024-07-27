@@ -12,7 +12,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype LawOfYgirothPandemonium = LawOfYgirothPandemonium TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lawOfYgirothPandemonium :: TreacheryCard LawOfYgirothPandemonium
@@ -28,7 +28,7 @@ instance HasModifiersFor LawOfYgirothPandemonium where
 instance HasAbilities LawOfYgirothPandemonium where
   getAbilities (LawOfYgirothPandemonium a) =
     [ restrictedAbility a 1 InYourHand
-        $ actionAbilityWithCost (HandDiscardCost 1 CardWithEvenNumberOfWordsInTitle)
+        $ actionAbilityWithCost (HandDiscardCost 1 $ basic CardWithEvenNumberOfWordsInTitle)
     ]
 
 instance RunMessage LawOfYgirothPandemonium where

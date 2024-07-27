@@ -23,6 +23,7 @@ instance HasAbilities SpiritualResolve5 where
     [ restrictedAbility attrs 1 ControlsThis
         $ FastAbility
         $ HandDiscardCost 1
+        $ basic
         $ cardIs Cards.spiritualResolve5
     ]
 

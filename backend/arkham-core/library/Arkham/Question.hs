@@ -28,6 +28,11 @@ data Component
 data GameTokenType = ResourceToken | ClueToken | DamageToken | HorrorToken | DoomToken
   deriving stock (Show, Eq, Ord, Data)
 
+pattern ClueLabel :: InvestigatorId -> [msg] -> UI msg
+pattern ClueLabel iid msgs <- ComponentLabel (InvestigatorComponent iid ClueToken) msgs
+  where
+    ClueLabel iid msgs = ComponentLabel (InvestigatorComponent iid ClueToken) msgs
+
 pattern DamageLabel :: InvestigatorId -> [msg] -> UI msg
 pattern DamageLabel iid msgs <- ComponentLabel (InvestigatorComponent iid DamageToken) msgs
   where

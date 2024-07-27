@@ -572,6 +572,7 @@ allEvents =
     , --- rogue [fhv]
       SomeEventCard bankJob
     , SomeEventCard falseSurrender
+    , SomeEventCard grift
     , --- survivor [fhv]
       SomeEventCard pushedToTheLimit
     , SomeEventCard keepFaith2

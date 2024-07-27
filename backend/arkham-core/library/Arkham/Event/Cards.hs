@@ -202,6 +202,7 @@ allPlayerEventCards =
       , glimpseTheUnthinkable5
       , glory
       , grievousWound
+      , grift
       , gritYourTeeth
       , guidance
       , guidance1
@@ -3817,6 +3818,15 @@ falseSurrender =
         Just
           $ exists (EnemyAt YourLocation)
           <> exists (PlayableCardWithCostReduction NoAction 1 $ InHandOf You <> basic (#asset <> #weapon))
+    }
+
+grift :: CardDef
+grift =
+  (event "10071" "Grift" 0 Rogue)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Trick, Illicit]
+    , cdActions = [#parley]
+    , cdCriteria = Just $ exists (EnemyAt YourLocation)
     }
 
 pushedToTheLimit :: CardDef

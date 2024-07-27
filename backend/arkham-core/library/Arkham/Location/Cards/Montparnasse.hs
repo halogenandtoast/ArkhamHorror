@@ -28,7 +28,7 @@ instance HasAbilities Montparnasse where
       [ limitedAbility (PlayerLimit PerRound 1)
         $ restrictedAbility attrs 1 Here
         $ FastAbility
-        $ HandDiscardCost 1 AnyCard
+        $ HandDiscardCost 1 #any
       | locationRevealed attrs
       ]
 

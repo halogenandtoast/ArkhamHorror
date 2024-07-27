@@ -17,6 +17,7 @@ import Arkham.Customization
 import Arkham.Event.Cards
 import Arkham.Id
 import Arkham.Json
+import Arkham.Matcher.Types (Be (..), EventMatcher (EventWithId))
 import Arkham.Message
 import Arkham.Name
 import Arkham.Placement
@@ -98,6 +99,9 @@ data EventAttrs = EventAttrs
 
 allEventCards :: Map CardCode CardDef
 allEventCards = allPlayerEventCards
+
+instance Be EventAttrs EventMatcher where
+  be = EventWithId . eventId
 
 instance AsId EventAttrs where
   type IdOf EventAttrs = EventId

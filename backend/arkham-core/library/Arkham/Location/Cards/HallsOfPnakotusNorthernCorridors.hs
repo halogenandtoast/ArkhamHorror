@@ -33,7 +33,7 @@ instance HasAbilities HallsOfPnakotusNorthernCorridors where
       attrs
       [ restrictedAbility attrs 1 (Here <> DuringTurn You)
           $ FastAbility
-          $ HandDiscardCost 1 AnyCard
+          $ HandDiscardCost 1 #any
       ]
 
 instance RunMessage HallsOfPnakotusNorthernCorridors where

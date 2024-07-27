@@ -14,7 +14,7 @@ import Arkham.Modifier
 newtype AshcanPete = AshcanPete InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 ashcanPete :: InvestigatorCard AshcanPete
 ashcanPete =
@@ -25,7 +25,7 @@ ashcanPete =
 instance HasAbilities AshcanPete where
   getAbilities (AshcanPete x) =
     [ playerLimit PerRound
-        $ withCriteria (mkAbility x 1 (FastAbility $ HandDiscardCost 1 AnyCard))
+        $ withCriteria (mkAbility x 1 (FastAbility $ HandDiscardCost 1 #any))
         $ Self
         <> exists (AssetControlledBy You <> AssetExhausted)
         <> Negate (SelfHasModifier ControlledAssetsCannotReady)

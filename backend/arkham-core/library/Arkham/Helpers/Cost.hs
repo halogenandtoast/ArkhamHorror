@@ -12,6 +12,7 @@ import Arkham.Cost
 import Arkham.Cost.FieldCost
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Card (extendedCardMatch)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Customization
 import Arkham.Helpers.GameValue
@@ -303,22 +304,22 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
         (filter (`cardMatch` cardMatcher))
         iid
     pure $ length discards >= n
-  HandDiscardCost n cardMatcher -> do
+  HandDiscardCost n extendedCardMatcher -> do
     let
       excludeCards = case source of
         CardSource c -> [c]
         _ -> mempty
     cards <-
       mapMaybe (preview _PlayerCard) . filter (`notElem` excludeCards) <$> field InvestigatorHand iid
-    pure $ count (`cardMatch` cardMatcher) cards >= n
-  HandDiscardAnyNumberCost cardMatcher -> do
+    (>= n) <$> countM (`extendedCardMatch` extendedCardMatcher) cards
+  HandDiscardAnyNumberCost extendedCardMatcher -> do
     let
       excludeCards = case source of
         CardSource c -> [c]
         _ -> mempty
     cards <-
       mapMaybe (preview _PlayerCard) . filter (`notElem` excludeCards) <$> field InvestigatorHand iid
-    pure $ count (`cardMatch` cardMatcher) cards > 0
+    (> 0) <$> countM (`extendedCardMatch` extendedCardMatcher) cards
   ReturnMatchingAssetToHandCost assetMatcher -> selectAny $ Matcher.AssetCanLeavePlayByNormalMeans <> assetMatcher
   ReturnAssetToHandCost assetId -> selectAny $ Matcher.AssetWithId assetId
   SealCost tokenMatcher -> do

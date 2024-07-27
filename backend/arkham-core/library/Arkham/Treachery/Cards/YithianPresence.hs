@@ -8,7 +8,7 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype YithianPresence = YithianPresence TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yithianPresence :: TreacheryCard YithianPresence
@@ -27,7 +27,7 @@ instance HasModifiersFor YithianPresence where
 
 instance HasAbilities YithianPresence where
   getAbilities (YithianPresence a) =
-    [restrictedAbility a 1 OnSameLocation $ actionAbilityWithCost $ HandDiscardCost 2 AnyCard]
+    [restrictedAbility a 1 OnSameLocation $ actionAbilityWithCost $ HandDiscardCost 2 #any]
 
 instance RunMessage YithianPresence where
   runMessage msg t@(YithianPresence attrs) = runQueueT $ case msg of

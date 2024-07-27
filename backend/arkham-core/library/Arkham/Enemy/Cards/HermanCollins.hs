@@ -10,7 +10,6 @@ import Arkham.Action
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Matcher
 
 newtype HermanCollins = HermanCollins EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -24,7 +23,7 @@ instance HasAbilities HermanCollins where
     withBaseAbilities attrs
       $ [ restrictedAbility attrs 1 OnSameLocation
             $ ActionAbility [Parley]
-            $ Costs [ActionCost 1, HandDiscardCost 4 AnyCard]
+            $ Costs [ActionCost 1, HandDiscardCost 4 #any]
         ]
 
 instance RunMessage HermanCollins where

@@ -1484,6 +1484,7 @@ library
       Arkham.Event.Cards.AChanceEncounter
       Arkham.Event.Cards.AChanceEncounter2
       Arkham.Event.Cards.ActOfDesperation
+      Arkham.Event.Cards.AdHoc
       Arkham.Event.Cards.AgainstAllOdds2
       Arkham.Event.Cards.AGlimmerOfHope
       Arkham.Event.Cards.AlterFate1
@@ -1976,6 +1977,7 @@ library
       Arkham.Investigator.Cards.VincentLee
       Arkham.Investigator.Cards.WendyAdams
       Arkham.Investigator.Cards.WilliamYorick
+      Arkham.Investigator.Cards.WilsonRichards
       Arkham.Investigator.Cards.WinifredHabbamock
       Arkham.Investigator.Cards.ZoeySamaras
       Arkham.Investigator.DamageAssignment
@@ -3016,6 +3018,7 @@ library
       Arkham.Treachery.Cards.GraveLightSpectral
       Arkham.Treachery.Cards.Greed
       Arkham.Treachery.Cards.HarvestedBrain
+      Arkham.Treachery.Cards.HastyRepairs
       Arkham.Treachery.Cards.Haunted
       Arkham.Treachery.Cards.HospitalDebts
       Arkham.Treachery.Cards.HuntedByByakhee

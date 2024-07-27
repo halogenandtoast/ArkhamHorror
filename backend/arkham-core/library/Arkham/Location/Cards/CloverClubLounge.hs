@@ -31,7 +31,7 @@ instance HasAbilities CloverClubLounge where
           $ ActionAbility []
           $ Costs
             [ ActionCost 1
-            , HandDiscardCost 1 $ CardWithType AssetType <> CardWithTrait Ally
+            , HandDiscardCost 1 $ #ally <> #asset
             ]
         | locationRevealed attrs
         ]

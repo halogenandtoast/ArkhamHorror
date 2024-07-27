@@ -10,7 +10,7 @@ import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
 
 newtype Serannian = Serannian LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 serannian :: LocationCard Serannian
@@ -21,8 +21,8 @@ instance HasModifiersFor Serannian where
     pure
       $ toModifiers
         attrs
-        [ AdditionalCostToEnter $ HandDiscardCost 1 AnyCard
-        , AdditionalCostToLeave $ HandDiscardCost 1 AnyCard
+        [ AdditionalCostToEnter $ HandDiscardCost 1 #any
+        , AdditionalCostToLeave $ HandDiscardCost 1 #any
         ]
   getModifiersFor _ _ = pure []
 

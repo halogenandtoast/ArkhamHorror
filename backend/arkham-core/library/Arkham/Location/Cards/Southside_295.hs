@@ -22,7 +22,7 @@ southside_295 = location Southside_295 Cards.southside_295 2 (Static 0)
 instance HasAbilities Southside_295 where
   getAbilities (Southside_295 attrs) =
     withRevealedAbilities attrs
-      $ [fastAbility attrs 1 (HandDiscardAnyNumberCost AnyCard) $ withBreaches attrs Here]
+      $ [fastAbility attrs 1 (HandDiscardAnyNumberCost #any) $ withBreaches attrs Here]
 
 countCards :: Payment -> Int
 countCards (DiscardCardPayment cards) = length cards

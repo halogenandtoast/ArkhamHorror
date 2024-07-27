@@ -44,7 +44,7 @@ instance RunMessage CharlieKane where
       withSkillTest \sid ->
         skillTestModifier sid (attrs.ability 1) iid (AnySkillValue (1 + n))
       pure i
-    ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
+    ElderSignEffect iid | attrs `is` iid -> do
       allies <-
         select
           $ AssetExhausted

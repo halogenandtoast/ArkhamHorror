@@ -133,6 +133,7 @@ allInvestigators =
       , SomeInvestigatorCard aminaZidane
       , SomeInvestigatorCard darrellSimmons
       , SomeInvestigatorCard charlieKane
+      , SomeInvestigatorCard wilsonRichards
       , SomeInvestigatorCard nathanielCho
       , SomeInvestigatorCard harveyWalters
       , SomeInvestigatorCard winifredHabbamock

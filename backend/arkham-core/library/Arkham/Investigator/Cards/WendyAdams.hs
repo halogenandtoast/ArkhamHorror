@@ -16,7 +16,7 @@ import Arkham.Window qualified as Window
 newtype WendyAdams = WendyAdams InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 wendyAdams :: InvestigatorCard WendyAdams
 wendyAdams =
@@ -33,7 +33,7 @@ instance HasAbilities WendyAdams where
     [ playerLimit PerTestOrAbility
         $ restrictedAbility attrs 1 Self
         $ ReactionAbility (Matcher.RevealChaosToken #when You AnyChaosToken)
-        $ HandDiscardCost 1 AnyCard
+        $ HandDiscardCost 1 #any
     ]
 
 instance RunMessage WendyAdams where

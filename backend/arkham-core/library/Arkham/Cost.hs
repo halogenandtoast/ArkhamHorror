@@ -81,6 +81,9 @@ totalDiscardCardPayments = length . concat . toListOf (cosmos . _DiscardCardPaym
 discardPayments :: Payment -> [(Zone, Card)]
 discardPayments = concat . toListOf (cosmos . _DiscardPayment)
 
+discardedCards :: Payment -> [Card]
+discardedCards = concat . toListOf (cosmos . _DiscardCardPayment)
+
 exhaustedPayments :: Payment -> [Target]
 exhaustedPayments = concat . toListOf (cosmos . _ExhaustPayment)
 
@@ -191,8 +194,8 @@ data Cost
   | EnemyDoomCost Int EnemyMatcher
   | EnemyAttackCost EnemyId
   | ExileCost Target
-  | HandDiscardCost Int CardMatcher
-  | HandDiscardAnyNumberCost CardMatcher
+  | HandDiscardCost Int ExtendedCardMatcher
+  | HandDiscardAnyNumberCost ExtendedCardMatcher
   | ReturnMatchingAssetToHandCost AssetMatcher
   | ReturnAssetToHandCost AssetId
   | SkillTestCost Source SkillType GameCalculation

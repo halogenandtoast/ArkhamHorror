@@ -92,6 +92,7 @@ allPlayerTreacheryCards =
       , finalRhapsody
       , finePrint
       , greed
+      , hastyRepairs
       , haunted
       , hospitalDebts
       , hypochondria
@@ -2127,6 +2128,12 @@ burdenOfLeadership :: CardDef
 burdenOfLeadership =
   (weakness "09020" "Burden of Leadership")
     { cdCardTraits = setFromList [Flaw]
+    }
+
+hastyRepairs :: CardDef
+hastyRepairs =
+  (weakness "10003" "Hasty Repairs")
+    { cdCardTraits = setFromList [Blunder]
     }
 
 theZealotsSeal :: CardDef

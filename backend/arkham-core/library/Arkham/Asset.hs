@@ -933,9 +933,11 @@ allAssets =
     , SomeAssetCard microscope4
     , --- rogue [tsk]
       SomeAssetCard britishBullDog
+    , SomeAssetCard fakeCredentials
     , SomeAssetCard foxMaskTheWiseTrickster
     , SomeAssetCard britishBullDog2
     , SomeAssetCard bewitching3
+    , SomeAssetCard fakeCredentials4
     , --- mystic [tsk]
       SomeAssetCard catMaskTheCapriciousMeddler
     , --- survivor [tsk]

@@ -11,7 +11,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Token
 

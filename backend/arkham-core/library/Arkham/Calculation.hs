@@ -52,6 +52,7 @@ data GameCalculation
   | DoomCountCalculation
   | DistanceFromCalculation InvestigatorId LocationMatcher
   | InvestigatorTokenCountCalculation InvestigatorId Token
+  | AssetTokenCountCalculation AssetId Token
   | MaxAlarmLevelCalculation -- getMaxAlarmLevel
   | VengeanceCalculation -- getVengeanceInVictoryDisplay
   | DifferentClassAmong ExtendedCardMatcher
@@ -61,7 +62,7 @@ data GameCalculation
   | DuringEventCalculation GameCalculation GameCalculation
   | EmptySlotsCalculation InvestigatorMatcher SlotType
   deriving stock (Show, Ord, Eq, Data, Generic)
-  deriving (FromJSON) via MaybeFixed
+  deriving FromJSON via MaybeFixed
 
 newtype MaybeFixed = MaybeFixed GameCalculation
 

@@ -53,6 +53,8 @@ getCanAffordCost
   -> m Bool
 getCanAffordCost iid (toSource -> source) actions windows' = \case
   UnpayableCost -> pure False
+  ChooseEnemyCost mtcr -> selectAny mtcr
+  ChosenEnemyCost eid -> selectAny (Matcher.EnemyWithId eid)
   Free -> pure True
   UpTo {} -> pure True
   OptionalCost {} -> pure True

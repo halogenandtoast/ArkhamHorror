@@ -9,6 +9,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator (searchBonded, withLocationOf)
+import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message (getChoiceAmount)
 import Arkham.Name
@@ -40,7 +41,7 @@ instance RunMessage BiancaDieKatzSingingYourSong where
     ResolveAmounts iid (getChoiceAmount "Resources" -> n) (isTarget attrs -> True) -> do
       moveTokens (attrs.ability 1) attrs iid Resource n
       sid <- getRandom
-      beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed n)
+      parley sid iid (attrs.ability 1) iid #agility (Fixed n)
       pure . BiancaDieKatzSingingYourSong $ attrs `with` Meta n
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       name <- field InvestigatorName iid

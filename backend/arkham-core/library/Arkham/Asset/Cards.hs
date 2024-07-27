@@ -318,6 +318,7 @@ allPlayerAssetCards =
       , eighteenDerringer2
       , elderSignAmulet3
       , eldritchSophist
+      , eldritchTongue
       , elleRubashPurifyingPurpose2
       , embezzeledTreasure
       , empiricalHypothesis
@@ -6413,6 +6414,15 @@ marinersCompass2 =
     , cdSkills = [#intellect, #intellect]
     , cdSlots = [#hand]
     , cdLevel = Just 2
+    }
+
+eldritchTongue :: CardDef
+eldritchTongue =
+  (asset "10128" "Eldritch Tongue" 2 Neutral)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Ritual]
+    , cdSlots = [#arcane]
+    , cdUses = uses Charge 4
     }
 
 physicalTraining2 :: CardDef

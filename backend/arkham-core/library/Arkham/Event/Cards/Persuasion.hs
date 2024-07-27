@@ -29,7 +29,11 @@ instance RunMessage Persuasion where
       case mlocation of
         Just location -> do
           enemies <-
-            select $ enemyAt location <> EnemyWithTrait Humanoid <> NonWeaknessEnemy <> CanParleyEnemy iid
+            select
+              $ enemyAt location
+              <> EnemyWithTrait Humanoid
+              <> NonWeaknessEnemy
+              <> canParleyEnemy iid
           player <- getPlayer iid
           sid <- getRandom
           pushAll

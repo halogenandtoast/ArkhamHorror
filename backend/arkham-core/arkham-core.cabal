@@ -581,6 +581,7 @@ library
       Arkham.Asset.Cards.EighteenDerringer2
       Arkham.Asset.Cards.ElderSignAmulet3
       Arkham.Asset.Cards.EldritchSophist
+      Arkham.Asset.Cards.EldritchTongue
       Arkham.Asset.Cards.ElleRubashPurifyingPurpose2
       Arkham.Asset.Cards.EmbezzeledTreasure
       Arkham.Asset.Cards.EmpiricalHypothesis
@@ -1474,6 +1475,7 @@ library
       Arkham.Enemy.Cards.YoungDeepOne
       Arkham.Enemy.Cards.YoungPsychopath
       Arkham.Enemy.Cards.YourWorstNightmare
+      Arkham.Enemy.Cards.Zamacona
       Arkham.Enemy.Creation
       Arkham.Enemy.Enemies
       Arkham.Enemy.Helpers
@@ -1514,6 +1516,7 @@ library
       Arkham.Event.Cards.BankJob
       Arkham.Event.Cards.Barricade
       Arkham.Event.Cards.Barricade3
+      Arkham.Event.Cards.Beguile
       Arkham.Event.Cards.BellyOfTheBeast
       Arkham.Event.Cards.BindMonster2
       Arkham.Event.Cards.BizarreDiagnosis
@@ -1934,6 +1937,7 @@ library
       Arkham.Investigator.Cards
       Arkham.Investigator.Cards.AgnesBaker
       Arkham.Investigator.Cards.AkachiOnyele
+      Arkham.Investigator.Cards.AlessandraZorzi
       Arkham.Investigator.Cards.AmandaSharpe
       Arkham.Investigator.Cards.AminaZidane
       Arkham.Investigator.Cards.AshcanPete

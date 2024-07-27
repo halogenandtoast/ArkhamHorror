@@ -21,6 +21,7 @@ instance RunMessage StringOfCurses where
       selectWithNonNull
         ( NonEliteEnemy
             <> EnemyAt YourLocation
+            <> canParleyEnemy iid
             <> oneOf
               [EnemyCanBeEvadedBy (toSource attrs), EnemyWithAnyDoom <> EnemyCanBeDefeatedBy (toSource attrs)]
         )

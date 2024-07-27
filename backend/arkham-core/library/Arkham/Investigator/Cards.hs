@@ -73,6 +73,7 @@ allInvestigatorCards =
       , charlieKane
       , wilsonRichards
       , kateWinthrop
+      , alessandraZorzi
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -495,6 +496,14 @@ kateWinthrop =
     ("Kate Winthrop" <:> "The Scientist")
     Seeker
     [Miskatonic, Scholar]
+
+alessandraZorzi :: CardDef
+alessandraZorzi =
+  investigator
+    "10009"
+    ("Alessandra Zorzi" <:> "The Countess")
+    Rogue
+    [Drifter, Socialite]
 
 nathanielCho :: CardDef
 nathanielCho =

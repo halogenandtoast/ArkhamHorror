@@ -49,6 +49,7 @@ import Arkham.Asset.Assets (
   crystalPendulumEffect,
   daisysToteBagAdvancedEffect,
   disciplinePrescienceOfFateEffect,
+  eldritchTongueEffect,
   empiricalHypothesisEffect,
   eyeOfChaos4Effect,
   eyeOfChaosEffect,
@@ -438,6 +439,7 @@ allEffects =
     , ("09087", SomeEffect explosiveWardEffect)
     , ("09109", SomeEffect atACrossroads1Effect)
     , ("09113", SomeEffect baseballBat2Effect)
+    , ("10128", SomeEffect eldritchTongueEffect)
     , ("50044", SomeEffect jeremiahPierceEffect)
     , ("52007", SomeEffect alchemicalTransmutation2Effect)
     , ("52008", SomeEffect stormOfSpirits3Effect)

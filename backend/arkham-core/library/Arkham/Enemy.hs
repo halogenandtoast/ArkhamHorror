@@ -375,7 +375,9 @@ allEnemies =
       SomeEnemyCard lurkerInTheDark
     , SomeEnemyCard ectoplasmicHorror
     , -- The Feast of Hemloch Vale
-      -- rogue (bonded) [fhv]
+      -- signature [fhv]
+      SomeEnemyCard zamacona
+    , -- rogue (bonded) [fhv]
       SomeEnemyCard biancaDieKatz
     , -- Return to Night of the Zealot
       -- Return to the Gathering

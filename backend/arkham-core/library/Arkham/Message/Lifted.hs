@@ -794,6 +794,15 @@ chooseEvadeEnemy
   :: (ReverseQueue m, Sourceable source) => SkillTestId -> InvestigatorId -> source -> m ()
 chooseEvadeEnemy sid iid = mkChooseEvade sid iid >=> push . toMessage
 
+chooseEvadeEnemyEdit
+  :: (ReverseQueue m, Sourceable source)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> (ChooseEvade -> ChooseEvade)
+  -> m ()
+chooseEvadeEnemyEdit sid iid source f = mkChooseEvade sid iid source >>= push . toMessage . f
+
 chooseEvadeEnemyWithSkillChoice
   :: (ReverseQueue m, Sourceable source)
   => SkillTestId

@@ -939,6 +939,8 @@ runGameMessage msg g = case msg of
                 _ -> error "Unhandled encounter card skill"
               RemoveThisFromGame ->
                 (RemoveFromGame (SkillTarget skillId), Nothing)
+              AbsoluteRemoveThisFromGame ->
+                (RemoveFromGame (SkillTarget skillId), Nothing)
               ReturnThisToHand ->
                 (ReturnToHand (skillOwner $ toAttrs skill) (SkillTarget skillId), Nothing)
               ShuffleThisBackIntoDeck ->

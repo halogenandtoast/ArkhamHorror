@@ -25,14 +25,14 @@ instance HasModifiersFor ExistentialRiddle1 where
 instance RunMessage ExistentialRiddle1 where
   runMessage msg e@(ExistentialRiddle1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      selectOneToHandle iid attrs $ enemyAtLocationWith iid <> NonEliteEnemy
+      selectOneToHandle iid attrs $ enemyAtLocationWith iid <> NonEliteEnemy <> canParleyEnemy iid
       pure e
     HandleTargetChoice iid (is attrs -> True) (EnemyTarget eid) -> do
       handLength <- fieldMap InvestigatorHand length iid
       sid <- getRandom
       chooseOne
         iid
-        [ SkillLabel sType [Msg.beginSkillTest sid iid attrs eid sType (Fixed $ max 0 (8 - handLength))]
+        [ SkillLabel sType [Msg.parley sid iid attrs eid sType (Fixed $ max 0 (8 - handLength))]
         | sType <- [#willpower, #intellect]
         ]
       pure e

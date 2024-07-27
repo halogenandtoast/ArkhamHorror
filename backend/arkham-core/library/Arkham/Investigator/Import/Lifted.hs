@@ -30,6 +30,7 @@ import Arkham.Investigator.Runner as X (
 import Arkham.Message as X (
   Message (..),
   pattern ElderSignEffect,
+  pattern PassedSkillTestWithToken,
   pattern PassedThisSkillTestBy,
   pattern UseThisAbility,
  )

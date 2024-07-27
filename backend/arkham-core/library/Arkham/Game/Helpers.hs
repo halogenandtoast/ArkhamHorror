@@ -312,10 +312,10 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
         [o] -> notNull <$> select (Matcher.CanEngageEnemyWithOverride o)
         _ -> error "multiple overrides found"
   Action.Parley -> case abilitySource of
-    EnemySource eid -> eid <=~> Matcher.CanParleyEnemy iid
+    EnemySource eid -> eid <=~> Matcher.canParleyEnemy iid
     AssetSource _ -> pure True
     LocationSource _ -> pure True
-    _ -> selectAny (Matcher.CanParleyEnemy iid)
+    _ -> selectAny (Matcher.canParleyEnemy iid)
   Action.Investigate -> case abilitySource of
     LocationSource _ -> pure True
     _ -> notNull <$> select Matcher.InvestigatableLocation
@@ -1661,6 +1661,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         <*> windowMatches iid rawSource window' mtchr'
     Matcher.NotAnyWindow -> noMatch
     Matcher.AnyWindow -> isMatch
+    Matcher.FirstTimeParleyingThisRound timing whoMatcher -> guardTiming timing \case
+      Window.FirstTimeParleyingThisRound who -> matchWho iid who whoMatcher
+      _ -> noMatch
     Matcher.ScenarioCountIncremented timing k -> guardTiming timing \case
       Window.ScenarioCountIncremented k' -> pure $ k == k'
       _ -> noMatch

@@ -49,7 +49,7 @@ instance RunMessage HotelGuest where
       push
         $ chooseOne
           player
-          [ SkillLabel skill [beginSkillTest sid iid (toAbilitySource attrs 2) attrs skill (Fixed 3)]
+          [ SkillLabel skill [parley sid iid (toAbilitySource attrs 2) attrs skill (Fixed 3)]
           | skill <- [#willpower, #intellect]
           ]
       pure e

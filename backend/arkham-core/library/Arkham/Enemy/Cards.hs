@@ -67,6 +67,7 @@ allPlayerEnemyCards =
       , agentFletcher
       , lurkerInTheDark
       , ectoplasmicHorror
+      , zamacona
       , biancaDieKatz
       , tommyMalloy
       , sacrificialBeast
@@ -2012,6 +2013,13 @@ ectoplasmicHorror =
     { cdCardTraits = setFromList [Monster, Geist]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdDeckRestrictions = [OnlyClass Mystic]
+    }
+
+zamacona :: CardDef
+zamacona =
+  (weakness "10011" "Zamacona")
+    { cdCardTraits = setFromList [Humanoid, Criminal]
+    , cdKeywords = setFromList [Keyword.Elusive]
     }
 
 biancaDieKatz :: CardDef

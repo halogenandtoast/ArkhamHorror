@@ -212,6 +212,9 @@ enemyAt = EnemyAt . LocationWithId . asId
 enemyAtLocationWith :: InvestigatorId -> EnemyMatcher
 enemyAtLocationWith = EnemyAt . locationWithInvestigator
 
+canParleyEnemy :: InvestigatorId -> EnemyMatcher
+canParleyEnemy = CanParleyEnemy . InvestigatorWithId
+
 enemyEngagedWith :: InvestigatorId -> EnemyMatcher
 enemyEngagedWith = EnemyIsEngagedWith . InvestigatorWithId
 

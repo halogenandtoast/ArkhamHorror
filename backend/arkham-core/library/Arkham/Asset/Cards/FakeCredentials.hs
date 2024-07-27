@@ -23,8 +23,8 @@ fakeCredentials = asset (FakeCredentials . (`with` Meta Nothing)) Cards.fakeCred
 instance HasAbilities FakeCredentials where
   getAbilities (FakeCredentials (With x _)) =
     [ skillTestAbility
-        $ controlledAbility x 1 (exists $ EnemyAt YourLocation)
-        $ parleyAction (exhaust x <> ChooseEnemyCost (EnemyAt YourLocation))
+        $ restrictedAbility x 1 ControlsThis
+        $ parleyAction (exhaust x <> ChooseEnemyCost (EnemyAt YourLocation <> CanParleyEnemy You))
     ]
 
 instance RunMessage FakeCredentials where

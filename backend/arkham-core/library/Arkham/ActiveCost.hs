@@ -669,6 +669,8 @@ payCost msg c iid skipAdditionalCosts cost = do
         modifiedActionCost = max 0 (x + costModifier')
         actions' = case c.target of
           ForAbility a -> a.actions
+          ForCard IsPlayAction c' -> #play : c'.actions
+          ForCard NotPlayAction c' -> c'.actions
           _ -> []
         source' = case activeCostTarget c of
           ForAbility a -> toSource a

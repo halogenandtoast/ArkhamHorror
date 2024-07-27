@@ -582,6 +582,7 @@ data Message
   | EnemiesAttack
   | EnemyWillAttack EnemyAttackDetails
   | EnemyAttack EnemyAttackDetails
+  | HandleElusive EnemyId
   | InitiateEnemyAttack EnemyAttackDetails
   | PerformEnemyAttack EnemyId -- Internal
   | AfterEnemyAttack EnemyId [Message]

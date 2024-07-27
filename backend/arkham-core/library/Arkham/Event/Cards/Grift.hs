@@ -3,6 +3,7 @@ module Arkham.Event.Cards.Grift (grift, Grift (..)) where
 import Arkham.Attack
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Id
 import Arkham.Matcher
 
@@ -20,11 +21,11 @@ grift = event (Grift . (`with` Meta Nothing)) Cards.grift
 instance RunMessage Grift where
   runMessage msg e@(Grift (With attrs meta)) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      selectOneToHandle iid attrs $ EnemyAt $ locationWithInvestigator iid
+      selectOneToHandle iid attrs $ EnemyAt (locationWithInvestigator iid) <> canParleyEnemy iid
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
       sid <- getRandom
-      beginSkillTest sid iid attrs iid #agility (Fixed 0)
+      parley sid iid attrs iid #agility (Fixed 0)
       pure . Grift $ With attrs (meta {chosenEnemy = Just eid})
     PassedThisSkillTestBy iid (isSource attrs -> True) n -> do
       gainResourcesIfCan iid attrs $ min 6 n

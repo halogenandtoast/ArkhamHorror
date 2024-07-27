@@ -56,7 +56,7 @@
   { "name": "The Scarlet Keys Investigator Expansion", "min": 9001, "max": 9128, "playerCards": 128, "code": "tskp", "cycle": 9 },
   { "name": "The Scarlet Keys Campaign Expansion", "min": 9501, "max": 9770, "playerCards": 0, "code": "tskc", "cycle": 9 },
 
-  { "name": "The Feast of Hemloch Vale Investigator Expansion", "min": 10001, "max": 10138, "playerCards": 137, "code": "fhvp", "cycle": 10 },
+  { "name": "The Feast of Hemloch Vale Investigator Expansion", "min": 10001, "max": 10138, "playerCards": 138, "code": "fhvp", "cycle": 10 },
   { "name": "The Feast of Hemloch Vale Campaign Expansion", "min": 10501, "max": 10742, "playerCards": 0, "code": "fhvc", "cycle": 10 },
 
   { "name": "Return to Night of the Zealot", "min": 50001, "max": 50046, "playerCards": 10, "code": "rtnotz", "cycle": 50 },

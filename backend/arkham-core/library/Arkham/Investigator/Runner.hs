@@ -2661,9 +2661,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           else do
             player <- getPlayer iid
             pushAll
-              [ chooseOne player
-                  $ ClueLabel iid [Do (InvestigatorSpendClues iid 1)]
-                  : [targetLabel asset [RemoveTokens (toSource iid) (toTarget asset) Clue 1] | asset <- assets]
+              [ chooseOne
+                  player
+                  $ [ClueLabel iid [Do (InvestigatorSpendClues iid 1)] | investigatorClues a > 0]
+                  <> [targetLabel asset [RemoveTokens (toSource iid) (toTarget asset) Clue 1] | asset <- assets]
               , DoStep (n - 1) msg'
               ]
     pure a
@@ -3467,11 +3468,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             else do
               player <- getPlayer iid
               pushAll
-                [ chooseOne player
-                    $ ClueLabel iid [DoStep (n - 1) (InvestigatorPlaceCluesOnLocation iid source (x + 1))]
-                    : [ targetLabel asset [MoveTokens source (toSource asset) (toTarget lid) Clue 1, DoStep (n - 1) msg']
-                      | asset <- assets
+                [ chooseOne
+                    player
+                    $ [ ClueLabel iid [DoStep (n - 1) (InvestigatorPlaceCluesOnLocation iid source (x + 1))]
+                      | investigatorClues a > 0
                       ]
+                    <> [ targetLabel asset [MoveTokens source (toSource asset) (toTarget lid) Clue 1, DoStep (n - 1) msg']
+                       | asset <- assets
+                       ]
                 ]
     pure a
   Do (InvestigatorPlaceCluesOnLocation iid source n) | iid == investigatorId -> do

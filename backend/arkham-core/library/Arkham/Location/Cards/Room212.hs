@@ -49,8 +49,9 @@ instance HasAbilities Room212 where
       else
         withRevealedAbilities
           attrs
-          [ withTooltip
-              "{action}: Test {intellect} (3). If you succeed, move any number of clues controlled by investigators at this location to Sinister Solution (if it is in play)."
+          [ skillTestAbility
+              $ withTooltip
+                "{action}: Test {intellect} (3). If you succeed, move any number of clues controlled by investigators at this location to Sinister Solution (if it is in play)."
               $ restrictedAbility attrs 1 Here actionAbility
           ]
 

@@ -84,21 +84,20 @@ standaloneChaosTokens =
 
 instance RunMessage ThreadsOfFate where
   runMessage msg s@(ThreadsOfFate attrs) = case msg of
-    SetChaosTokensForScenario -> do
-      whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
-      pure s
     StandaloneSetup -> do
       lead <- getLeadPlayer
-      push
-        $ chooseOne
-          lead
-          [ Label
-              "The investigators gave custody of the relic to Alejandro."
-              [Record TheInvestigatorsGaveCustodyOfTheRelicToAlejandro]
-          , Label
-              "The investigators gave custody of the relic to Harlan Earnstone."
-              [Record TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone]
-          ]
+      pushAll
+        [ SetChaosTokens standaloneChaosTokens
+        , chooseOne
+            lead
+            [ Label
+                "The investigators gave custody of the relic to Alejandro."
+                [Record TheInvestigatorsGaveCustodyOfTheRelicToAlejandro]
+            , Label
+                "The investigators gave custody of the relic to Harlan Earnstone."
+                [Record TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone]
+            ]
+        ]
       pure s
     Setup -> do
       players <- allPlayers

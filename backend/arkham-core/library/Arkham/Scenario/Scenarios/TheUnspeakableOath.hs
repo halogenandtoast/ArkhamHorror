@@ -113,10 +113,9 @@ investigatorDefeat = do
 
 instance RunMessage TheUnspeakableOath where
   runMessage msg s@(TheUnspeakableOath attrs) = case msg of
-    SetChaosTokensForScenario -> do
-      whenM getIsStandalone $ do
-        randomToken <- sample (Cultist :| [Tablet, ElderThing])
-        push (SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken])
+    StandaloneSetup -> do
+      randomToken <- sample (Cultist :| [Tablet, ElderThing])
+      push (SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken])
       pure s
     Setup -> do
       gatheredCards <-

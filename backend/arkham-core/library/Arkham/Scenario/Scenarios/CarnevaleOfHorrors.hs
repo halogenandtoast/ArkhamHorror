@@ -33,7 +33,7 @@ import Arkham.Trait hiding (Cultist)
 import Data.List.NonEmpty qualified as NE
 
 newtype CarnevaleOfHorrors = CarnevaleOfHorrors ScenarioAttrs
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 

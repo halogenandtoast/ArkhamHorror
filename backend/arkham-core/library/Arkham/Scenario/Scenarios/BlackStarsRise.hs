@@ -85,7 +85,7 @@ instance HasChaosTokenValue BlackStarsRise where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 data Version = TheFloodBelow | TheVortexAbove
-  deriving stock (Eq)
+  deriving stock Eq
 
 versions :: NonEmpty Version
 versions = TheFloodBelow :| [TheVortexAbove]
@@ -113,16 +113,14 @@ standaloneChaosTokens =
 
 instance RunMessage BlackStarsRise where
   runMessage msg s@(BlackStarsRise attrs) = case msg of
-    SetChaosTokensForScenario -> do
-      whenStandalone $ do
-        randomToken <- sample $ Cultist :| [Tablet, ElderThing]
-        push $ SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
-      pure s
     StandaloneSetup -> do
       lead <- getLead
       theManInThePallidMask <- genCard Enemies.theManInThePallidMask
-      push
-        $ ShuffleCardsIntoDeck (InvestigatorDeck lead) [theManInThePallidMask]
+      randomToken <- sample $ Cultist :| [Tablet, ElderThing]
+      pushAll
+        [ SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
+        , ShuffleCardsIntoDeck (InvestigatorDeck lead) [theManInThePallidMask]
+        ]
       pure s
     Setup -> do
       investigatorIds <- allInvestigatorIds

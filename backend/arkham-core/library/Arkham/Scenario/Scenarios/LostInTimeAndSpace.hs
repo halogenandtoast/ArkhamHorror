@@ -116,8 +116,8 @@ readInvestigatorDefeat a = do
 
 instance RunMessage LostInTimeAndSpace where
   runMessage msg s@(LostInTimeAndSpace attrs) = case msg of
-    SetChaosTokensForScenario -> do
-      whenStandalone $ push (SetChaosTokens standaloneChaosTokens)
+    StandaloneSetup -> do
+      push (SetChaosTokens standaloneChaosTokens)
       pure s
     Setup -> do
       players <- allPlayers

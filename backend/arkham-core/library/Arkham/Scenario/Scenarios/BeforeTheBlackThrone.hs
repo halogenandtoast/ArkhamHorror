@@ -80,8 +80,31 @@ readInvestigatorDefeat = do
         $ [story players investigatorDefeat]
         <> map DrivenInsane defeatedInvestigatorIds
 
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
+  [ PlusOne
+  , Zero
+  , Zero
+  , MinusOne
+  , MinusOne
+  , MinusTwo
+  , MinusTwo
+  , MinusThree
+  , MinusFour
+  , Skull
+  , Skull
+  , Cultist
+  , Tablet
+  , ElderThing
+  , AutoFail
+  , ElderSign
+  ]
+
 instance RunMessage BeforeTheBlackThrone where
   runMessage msg s@(BeforeTheBlackThrone attrs) = case msg of
+    StandaloneSetup -> do
+      push $ SetChaosTokens standaloneChaosTokens
+      pure s
     PreScenarioSetup -> do
       players <- allPlayers
       pushAll [story players intro]

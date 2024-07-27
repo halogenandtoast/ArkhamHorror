@@ -59,6 +59,26 @@ instance HasChaosTokenValue InTheClutchesOfChaos where
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+standaloneChaosTokens :: [ChaosTokenFace]
+standaloneChaosTokens =
+  [ PlusOne
+  , Zero
+  , Zero
+  , MinusOne
+  , MinusOne
+  , MinusTwo
+  , MinusTwo
+  , MinusThree
+  , MinusFour
+  , Skull
+  , Skull
+  , Cultist
+  , Tablet
+  , ElderThing
+  , AutoFail
+  , ElderSign
+  ]
+
 instance RunMessage InTheClutchesOfChaos where
   runMessage msg s@(InTheClutchesOfChaos attrs) = case msg of
     PreScenarioSetup -> do
@@ -73,7 +93,8 @@ instance RunMessage InTheClutchesOfChaos where
     StandaloneSetup -> do
       lead <- getLeadPlayer
       pushAll
-        [ chooseOne
+        [ SetChaosTokens standaloneChaosTokens
+        , chooseOne
             lead
             [ Label "Anette Mason is possessed by evil." [Record AnetteMasonIsPossessedByEvil]
             , Label

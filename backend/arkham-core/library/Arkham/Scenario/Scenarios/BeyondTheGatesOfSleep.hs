@@ -9,6 +9,8 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDreamEaters.ChaosBag
+import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.ClassSymbol
@@ -246,6 +248,9 @@ instance RunMessage BeyondTheGatesOfSleep where
       choices <- traverse chooseDream availableDreams
 
       push $ chooseOne player choices
+      pure s
+    StandaloneSetup -> do
+      push $ SetChaosTokens (initChaosBag TheDreamQuest $ scenarioDifficulty attrs)
       pure s
     Setup -> do
       (seventySteps, placeSeventySteps) <- placeLocationCard Locations.seventySteps

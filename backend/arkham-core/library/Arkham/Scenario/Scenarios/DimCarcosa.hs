@@ -37,7 +37,7 @@ import Arkham.Trait (Trait (AncientOne, Monster))
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype DimCarcosa = DimCarcosa ScenarioAttrs
-  deriving anyclass (IsScenario)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dimCarcosa :: Difficulty -> DimCarcosa
@@ -104,9 +104,6 @@ standaloneChaosTokens =
 
 instance RunMessage DimCarcosa where
   runMessage msg s@(DimCarcosa attrs) = case msg of
-    SetChaosTokensForScenario -> do
-      whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
-      pure s
     StandaloneSetup -> do
       leadInvestigatorId <- getLeadInvestigatorId
       lead <- getLeadPlayer
@@ -116,7 +113,8 @@ instance RunMessage DimCarcosa where
           if pathOpened == YouOpenedThePathBelow then Tablet else ElderThing
 
       pushAll
-        [ chooseOne
+        [ SetChaosTokens standaloneChaosTokens
+        , chooseOne
             lead
             [ Label "Conviction" [RecordCount Conviction 8]
             , Label "Doubt" [RecordCount Doubt 8]

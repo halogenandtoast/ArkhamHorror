@@ -107,17 +107,14 @@ cultistEffect = do
 
 instance RunMessage APhantomOfTruth where
   runMessage msg s@(APhantomOfTruth attrs) = case msg of
-    SetChaosTokensForScenario -> do
-      whenM getIsStandalone $ do
-        randomToken <- sample (Cultist :| [Tablet, ElderThing])
-        push (SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken])
-      pure s
     StandaloneSetup -> do
       lead <- getLeadPlayer
       leadId <- getLeadInvestigatorId
       theManInThePallidMask <- genCard Enemies.theManInThePallidMask
+      randomToken <- sample (Cultist :| [Tablet, ElderThing])
       pushAll
-        [ chooseOne
+        [ SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
+        , chooseOne
             lead
             [ Label "Conviction" [RecordCount Conviction 1]
             , Label "Doubt" [RecordCount Doubt 1]

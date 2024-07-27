@@ -99,15 +99,9 @@ instance HasChaosTokenValue UndimensionedAndUnseen where
 
 instance RunMessage UndimensionedAndUnseen where
   runMessage msg s@(UndimensionedAndUnseen attrs) = case msg of
-    SetChaosTokensForScenario -> do
-      whenStandalone $ push (SetChaosTokens standaloneChaosTokens)
-      pure s
-    StandaloneSetup ->
-      pure
-        . UndimensionedAndUnseen
-        $ attrs
-        & standaloneCampaignLogL
-        .~ standaloneCampaignLog
+    StandaloneSetup -> do
+      push (SetChaosTokens standaloneChaosTokens)
+      pure . UndimensionedAndUnseen $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
     Setup -> do
       players <- allPlayers
       lead <- getLeadPlayer

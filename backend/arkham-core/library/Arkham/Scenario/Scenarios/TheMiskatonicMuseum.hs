@@ -27,7 +27,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Zone
 
 newtype TheMiskatonicMuseum = TheMiskatonicMuseum ScenarioAttrs
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
@@ -86,8 +86,8 @@ standaloneChaosTokens =
 
 instance RunMessage TheMiskatonicMuseum where
   runMessage msg s@(TheMiskatonicMuseum attrs@ScenarioAttrs {..}) = case msg of
-    SetChaosTokensForScenario -> do
-      whenStandalone $ push (SetChaosTokens standaloneChaosTokens)
+    StandaloneSetup -> do
+      push (SetChaosTokens standaloneChaosTokens)
       pure s
     LookAtTopOfDeck iid ScenarioDeckTarget n -> do
       case fromJustNote "must be set" (lookup ExhibitDeck scenarioDecks) of

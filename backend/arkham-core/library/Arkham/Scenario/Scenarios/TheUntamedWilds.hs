@@ -11,6 +11,7 @@ import Arkham.Act.Types
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheForgottenAge.ChaosBag
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.ChaosToken
@@ -78,6 +79,9 @@ instance HasChaosTokenValue TheUntamedWilds where
 
 instance RunMessage TheUntamedWilds where
   runMessage msg s@(TheUntamedWilds attrs) = case msg of
+    StandaloneSetup -> do
+      push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
+      pure s
     Setup -> do
       players <- allPlayers
       (expeditionCampId, placeExpeditionCamp) <-

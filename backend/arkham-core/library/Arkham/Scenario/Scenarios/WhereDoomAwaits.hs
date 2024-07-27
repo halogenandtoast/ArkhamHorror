@@ -108,10 +108,8 @@ instance HasChaosTokenValue WhereDoomAwaits where
 
 instance RunMessage WhereDoomAwaits where
   runMessage msg s@(WhereDoomAwaits attrs) = case msg of
-    SetChaosTokensForScenario -> do
-      standalone <- getIsStandalone
-      s <$ if standalone then push (SetChaosTokens standaloneChaosTokens) else pure ()
     StandaloneSetup -> do
+      push (SetChaosTokens standaloneChaosTokens)
       pure
         . WhereDoomAwaits
         $ attrs

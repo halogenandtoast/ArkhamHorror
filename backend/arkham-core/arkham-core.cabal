@@ -865,6 +865,7 @@ library
       Arkham.Asset.Cards.PhysicalTraining4
       Arkham.Asset.Cards.Pickpocketing
       Arkham.Asset.Cards.Pickpocketing2
+      Arkham.Asset.Cards.Pitchfork
       Arkham.Asset.Cards.Plucky1
       Arkham.Asset.Cards.Plucky3
       Arkham.Asset.Cards.PnakoticManuscripts5
@@ -1740,6 +1741,7 @@ library
       Arkham.Event.Cards.PreposterousSketches
       Arkham.Event.Cards.PreposterousSketches2
       Arkham.Event.Cards.ProtectingTheAnirniq2
+      Arkham.Event.Cards.PushedToTheLimit
       Arkham.Event.Cards.QuantumFlux
       Arkham.Event.Cards.QuantumParadox
       Arkham.Event.Cards.QuickGetaway

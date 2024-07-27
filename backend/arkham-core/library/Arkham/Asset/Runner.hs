@@ -127,6 +127,16 @@ instance RunMessage AssetAttrs where
           pushWhen (tType `elem` [Horror, Damage]) $ checkDefeated s a
           pure $ a & tokensL %~ addTokens tType n
     ClearTokens target | isTarget a target -> do
+      when (assetClues a > 0)
+        $ pushAll
+        =<< windows
+          [Window.LastClueRemovedFromAsset (toId a)]
+      for_ assetWhenNoUses \case
+        DiscardWhenNoUses -> push $ Discard assetController GameSource (toTarget a)
+        ReturnToHandWhenNoUses ->
+          for_ assetController \iid ->
+            push $ ReturnToHand iid $ toTarget a
+        NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
       pure $ a & tokensL .~ mempty
     RemoveTokens _ target tType n | isTarget a target -> do
       when (tType == Clue && assetClues a - n <= 0)
@@ -438,6 +448,8 @@ instance RunMessage AssetAttrs where
               <$> [Timing.When, Timing.After]
           )
       pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
+    LoseControlOfAsset aid | aid == assetId -> do
+      pure $ a & controllerL .~ Nothing
     ReplacedInvestigatorAsset iid aid | aid == assetId -> do
       pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
     AddToScenarioDeck key target | isTarget a target -> do

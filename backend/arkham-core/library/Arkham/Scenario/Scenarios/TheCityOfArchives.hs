@@ -90,8 +90,8 @@ standaloneChaosTokens =
 
 instance RunMessage TheCityOfArchives where
   runMessage msg s@(TheCityOfArchives attrs) = case msg of
-    SetChaosTokensForScenario -> do
-      whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
+    StandaloneSetup -> do
+      push $ SetChaosTokens standaloneChaosTokens
       pure s
     CheckWindow _ [Window Timing.When (Window.DrawingStartingHand iid) _] -> do
       uniqueItemAssetCards <-

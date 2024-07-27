@@ -171,8 +171,8 @@ instance RunMessage TheBoundaryBeyond where
             <> [UseSupply iid Gasoline | iid <- maybeToList withGasoline]
             <> [story players introPart2]
       pure s
-    SetChaosTokensForScenario -> do
-      whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
+    StandaloneSetup -> do
+      push $ SetChaosTokens standaloneChaosTokens
       pure s
     Setup -> do
       setAsidePoisonedCount <- getSetAsidePoisonedCount

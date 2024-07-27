@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.ThePathToCarcosa.ChaosBag
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -60,6 +61,9 @@ instance HasChaosTokenValue CurtainCall where
 
 instance RunMessage CurtainCall where
   runMessage msg s@(CurtainCall attrs) = case msg of
+    StandaloneSetup -> do
+      push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
+      pure s
     Setup -> do
       encounterDeck <-
         buildEncounterDeckExcluding

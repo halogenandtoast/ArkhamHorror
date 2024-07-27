@@ -4,7 +4,9 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDreamEaters.ChaosBag
 import Arkham.Campaigns.TheDreamEaters.Helpers
+import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -59,6 +61,9 @@ instance HasChaosTokenValue WakingNightmare where
 
 instance RunMessage WakingNightmare where
   runMessage msg s@(WakingNightmare attrs) = case msg of
+    StandaloneSetup -> do
+      push $ SetChaosTokens (initChaosBag TheWebOfDreams $ scenarioDifficulty attrs)
+      pure s
     PreScenarioSetup -> do
       players <- allPlayers
       lead <- getLeadPlayer

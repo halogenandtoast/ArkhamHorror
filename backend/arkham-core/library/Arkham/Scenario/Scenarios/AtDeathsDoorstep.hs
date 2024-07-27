@@ -103,9 +103,6 @@ standaloneCampaignLog =
 
 instance RunMessage AtDeathsDoorstep where
   runMessage msg s@(AtDeathsDoorstep attrs) = case msg of
-    SetChaosTokensForScenario -> do
-      whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
-      pure s
     PreScenarioSetup -> do
       players <- allPlayers
       pushAll
@@ -116,6 +113,7 @@ instance RunMessage AtDeathsDoorstep where
         ]
       pure s
     StandaloneSetup -> do
+      push $ SetChaosTokens standaloneChaosTokens
       pure $ overAttrs (standaloneCampaignLogL .~ standaloneCampaignLog) s
     Setup -> do
       encounterDeck <-

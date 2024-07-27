@@ -11,6 +11,7 @@ import Arkham.Act.Types (Field (ActSequence))
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.ChaosBag
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
 import Arkham.ChaosToken
@@ -60,6 +61,9 @@ instance HasChaosTokenValue TheWitchingHour where
 
 instance RunMessage TheWitchingHour where
   runMessage msg s@(TheWitchingHour attrs) = case msg of
+    StandaloneSetup -> do
+      push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
+      pure s
     PreScenarioSetup -> do
       players <- allPlayers
       lead <- getLeadPlayer

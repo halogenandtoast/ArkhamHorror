@@ -36,7 +36,7 @@ newtype BloodOnTheAltarMetadata = BloodOnTheAltarMetadata {sacrifices :: [Card]}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype BloodOnTheAltar = BloodOnTheAltar (ScenarioAttrs `With` BloodOnTheAltarMetadata)
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
@@ -100,8 +100,8 @@ getRemoveNecronomicon = do
 instance RunMessage BloodOnTheAltar where
   runMessage msg s@(BloodOnTheAltar (attrs@ScenarioAttrs {..} `With` metadata@(BloodOnTheAltarMetadata sacrificed))) =
     case msg of
-      SetChaosTokensForScenario -> do
-        whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
+      StandaloneSetup -> do
+        push $ SetChaosTokens standaloneChaosTokens
         pure s
       Setup -> do
         players <- allPlayers

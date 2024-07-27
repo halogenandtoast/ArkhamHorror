@@ -112,36 +112,35 @@ standaloneCampaignLog =
 
 instance RunMessage ShatteredAeons where
   runMessage msg s@(ShatteredAeons attrs) = case msg of
-    SetChaosTokensForScenario -> do
-      whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
-      pure s
     StandaloneSetup -> do
       lead <- getLeadPlayer
-      push
-        $ chooseOne
-          lead
-          [ Label
-              "Ichtaca is set against you. Add 3 {tablet} tokens to the chaos bag."
-              [ Record IchtacaIsSetAgainstYou
-              , AddChaosToken Tablet
-              , AddChaosToken Tablet
-              , AddChaosToken Tablet
-              ]
-          , Label
-              "Alejandro is set against you. Add 3 {cultist} tokens to the chaos bag."
-              [ Record AlejandroIsSetAgainstYou
-              , AddChaosToken Cultist
-              , AddChaosToken Cultist
-              , AddChaosToken Cultist
-              ]
-          , Label
-              " Ichtaca is set against you. Alejandro is set against you. Add2 {elderThing} tokens to the chaos bag. Choose this option for the ultimate challenge."
-              [ Record IchtacaIsSetAgainstYou
-              , Record AlejandroIsSetAgainstYou
-              , AddChaosToken ElderThing
-              , AddChaosToken ElderThing
-              ]
-          ]
+      pushAll
+        [ SetChaosTokens standaloneChaosTokens
+        , chooseOne
+            lead
+            [ Label
+                "Ichtaca is set against you. Add 3 {tablet} tokens to the chaos bag."
+                [ Record IchtacaIsSetAgainstYou
+                , AddChaosToken Tablet
+                , AddChaosToken Tablet
+                , AddChaosToken Tablet
+                ]
+            , Label
+                "Alejandro is set against you. Add 3 {cultist} tokens to the chaos bag."
+                [ Record AlejandroIsSetAgainstYou
+                , AddChaosToken Cultist
+                , AddChaosToken Cultist
+                , AddChaosToken Cultist
+                ]
+            , Label
+                " Ichtaca is set against you. Alejandro is set against you. Add2 {elderThing} tokens to the chaos bag. Choose this option for the ultimate challenge."
+                [ Record IchtacaIsSetAgainstYou
+                , Record AlejandroIsSetAgainstYou
+                , AddChaosToken ElderThing
+                , AddChaosToken ElderThing
+                ]
+            ]
+        ]
 
       pure
         . ShatteredAeons

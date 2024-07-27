@@ -117,16 +117,15 @@ instance HasChaosTokenValue HeartOfTheElders where
 
 runAMessage :: Runner HeartOfTheElders
 runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
-  SetChaosTokensForScenario -> do
-    whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
-    pure s
   StandaloneSetup -> do
     lead <- getLeadPlayer
-    push
-      $ questionLabel
-        "The investigators may choose how many paths are known to you (choose a number between 0 and 5). The more paths are known to you, the quicker and easier the scenario will be."
-        lead
-      $ ChooseOne [Label (tshow n) [RecordCount PathsAreKnownToYou n] | n <- [0 .. 5]]
+    pushAll
+      [ SetChaosTokens standaloneChaosTokens
+      , questionLabel
+          "The investigators may choose how many paths are known to you (choose a number between 0 and 5). The more paths are known to you, the quicker and easier the scenario will be."
+          lead
+          $ ChooseOne [Label (tshow n) [RecordCount PathsAreKnownToYou n] | n <- [0 .. 5]]
+      ]
     pure s
   Setup -> do
     players <- allPlayers

@@ -106,9 +106,6 @@ standaloneCampaignLog =
 
 instance RunMessage UnionAndDisillusion where
   runMessage msg s@(UnionAndDisillusion attrs) = case msg of
-    SetChaosTokensForScenario -> do
-      pushWhenM getIsStandalone (SetChaosTokens standaloneChaosTokens)
-      pure s
     PreScenarioSetup -> do
       players <- allPlayers
       lead <- getLeadPlayer
@@ -128,6 +125,7 @@ instance RunMessage UnionAndDisillusion where
         ]
       pure s
     StandaloneSetup -> do
+      push (SetChaosTokens standaloneChaosTokens)
       pure $ overAttrs (setStandaloneCampaignLog standaloneCampaignLog) s
     Setup -> do
       encounterDeck <-

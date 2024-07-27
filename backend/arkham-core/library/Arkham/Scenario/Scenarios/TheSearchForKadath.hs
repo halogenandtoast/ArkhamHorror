@@ -114,11 +114,8 @@ readInvestigatorDefeat = do
 
 instance RunMessage TheSearchForKadath where
   runMessage msg s@(TheSearchForKadath attrs) = case msg of
-    SetChaosTokensForScenario -> do
-      whenM getIsStandalone $ do
-        push $ SetChaosTokens standaloneChaosTokens
-      pure s
     StandaloneSetup -> do
+      push $ SetChaosTokens standaloneChaosTokens
       pure
         . TheSearchForKadath
         $ attrs

@@ -93,20 +93,19 @@ standaloneCampaignLog =
 
 instance RunMessage TheDepthsOfYoth where
   runMessage msg s@(TheDepthsOfYoth attrs) = case msg of
-    SetChaosTokensForScenario -> do
-      whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
-      pure s
     StandaloneSetup -> do
       lead <- getLeadPlayer
-      push
-        $ questionLabel
-          "The investigators may choose how many tally marks are under “Yig’s Fury.” The lower the number chosen, the safer and easier the scenario will be."
-          lead
-        $ ChooseAmounts
-          "Fury"
-          (MaxAmountTarget 9000)
-          [AmountChoice "Fury" 0 9000]
-          (toTarget attrs)
+      pushAll
+        [ SetChaosTokens standaloneChaosTokens
+        , questionLabel
+            "The investigators may choose how many tally marks are under “Yig’s Fury.” The lower the number chosen, the safer and easier the scenario will be."
+            lead
+            $ ChooseAmounts
+              "Fury"
+              (MaxAmountTarget 9000)
+              [AmountChoice "Fury" 0 9000]
+              (toTarget attrs)
+        ]
       pure
         . TheDepthsOfYoth
         $ attrs

@@ -109,15 +109,14 @@ instance RunMessage ForTheGreaterGood where
       pure s
     StandaloneSetup -> do
       lead <- getLeadPlayer
-      push
-        $ chooseOne
-          lead
-          [ Label "The investigators are members of the Lodge." [Record TheInvestigatorsAreMembersOfTheLodge]
-          , Label "The investigators are not members of the Lodge." []
-          ]
-      pure s
-    SetChaosTokensForScenario -> do
-      pushWhenM getIsStandalone (SetChaosTokens standaloneChaosTokens)
+      pushAll
+        [ SetChaosTokens standaloneChaosTokens
+        , chooseOne
+            lead
+            [ Label "The investigators are members of the Lodge." [Record TheInvestigatorsAreMembersOfTheLodge]
+            , Label "The investigators are not members of the Lodge." []
+            ]
+        ]
       pure s
     Setup -> do
       encounterDeck <-

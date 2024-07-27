@@ -101,14 +101,10 @@ standaloneChaosTokens =
 
 instance RunMessage EchoesOfThePast where
   runMessage msg s@(EchoesOfThePast attrs) = case msg of
-    SetChaosTokensForScenario -> do
-      -- TODO: move to helper since consistent
-      standalone <- getIsStandalone
+    StandaloneSetup -> do
       randomToken <- sample (Cultist :| [Tablet, ElderThing])
-      s
-        <$ if standalone
-          then push (SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken])
-          else pure ()
+      push (SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken])
+      pure s
     Setup -> do
       investigatorIds <- allInvestigatorIds
       players <- allPlayers

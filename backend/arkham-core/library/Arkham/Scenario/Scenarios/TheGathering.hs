@@ -29,7 +29,7 @@ import Arkham.Scenario.Setup
 import Arkham.Trait (Trait (Ghoul))
 
 newtype TheGathering = TheGathering ScenarioAttrs
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
@@ -55,8 +55,8 @@ theGatheringAgendaDeck = [Agendas.whatsGoingOn, Agendas.riseOfTheGhouls, Agendas
 
 instance RunMessage TheGathering where
   runMessage msg s@(TheGathering attrs) = runQueueT $ case msg of
-    SetChaosTokensForScenario -> do
-      pushWhenM getIsStandalone $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
+    StandaloneSetup -> do
+      push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
       pure s
     PreScenarioSetup -> do
       story $ i18nWithTitle "nightOfTheZealot.theGathering.intro"

@@ -10,6 +10,7 @@ import Arkham.Act.Types (Field (..))
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.ChaosBag
 import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Card
 import Arkham.ChaosToken
@@ -55,6 +56,9 @@ instance HasChaosTokenValue DisappearanceAtTheTwilightEstate where
 
 instance RunMessage DisappearanceAtTheTwilightEstate where
   runMessage msg s@(DisappearanceAtTheTwilightEstate attrs) = case msg of
+    StandaloneSetup -> do
+      push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
+      pure s
     Setup -> do
       -- At Death's Doorstep is only locations so we will manually gather
       encounterDeck <-

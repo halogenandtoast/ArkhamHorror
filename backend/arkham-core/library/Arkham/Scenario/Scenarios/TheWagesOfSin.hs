@@ -96,8 +96,8 @@ instance RunMessage TheWagesOfSin where
       players <- allPlayers
       push $ story players intro
       pure s
-    SetChaosTokensForScenario -> do
-      whenM getIsStandalone $ push (SetChaosTokens standaloneChaosTokens)
+    StandaloneSetup -> do
+      push (SetChaosTokens standaloneChaosTokens)
       pure s
     Setup -> do
       -- The locations are all "single-sided" because we need to handle the

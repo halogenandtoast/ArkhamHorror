@@ -127,8 +127,8 @@ instance RunMessage TheSecretName where
         <> [story players intro5 | learnedNothing]
         <> [story players intro6 | neverSeenOrHeardFromAgain]
       pure s
-    SetChaosTokensForScenario -> do
-      whenM getIsStandalone $ push (SetChaosTokens standaloneChaosTokens)
+    StandaloneSetup -> do
+      push (SetChaosTokens standaloneChaosTokens)
       pure s
     Setup -> do
       encounterDeck <-

@@ -132,7 +132,7 @@ instance RunMessage MurderAtTheExcelsiorHotel where
               & (decksL . at LeadsDeck ?~ leadsDeck)
               & (setAsideCardsL .~ setAsideCards)
           )
-    SetChaosTokensForScenario -> do
+    StandaloneSetup -> do
       let
         tokens =
           if isEasyStandard attrs
@@ -310,7 +310,6 @@ instance RunMessage MurderAtTheExcelsiorHotel where
         <> [StandaloneSetup | standalone]
         <> [ ChooseLeadInvestigator
            , SetupInvestigators
-           , SetChaosTokensForScenario -- (chaosBagOf campaign')
            , InvestigatorsMulligan
            , Setup
            , EndSetup

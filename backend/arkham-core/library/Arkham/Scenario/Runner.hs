@@ -103,7 +103,6 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         let deck' = deck <> hand <> discard
         push $ LoadDeck iid (Deck deck')
     pure a
-  Setup -> a <$ pushAllEnd [BeginGame, BeginRound, Begin InvestigationPhase]
   BeginGame -> do
     mFalseAwakening <- getMaybeCampaignStoryCard Treacheries.falseAwakening
     for_ mFalseAwakening \falseAwakening -> do

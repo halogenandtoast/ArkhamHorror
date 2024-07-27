@@ -32,7 +32,7 @@ import Arkham.Trait qualified as Trait
 import Data.List qualified as List
 
 newtype TheMidnightMasks = TheMidnightMasks ScenarioAttrs
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
@@ -72,8 +72,8 @@ allCultists =
 
 instance RunMessage TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs) = runQueueT $ case msg of
-    SetChaosTokensForScenario -> do
-      pushWhenM getIsStandalone $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
+    StandaloneSetup -> do
+      push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
       pure s
     PreScenarioSetup -> do
       forcedToFindOthers <- getHasRecord LitaWasForcedToFindOthersToHelpHerCause

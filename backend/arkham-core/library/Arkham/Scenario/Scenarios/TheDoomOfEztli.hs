@@ -153,10 +153,8 @@ investigatorDefeat attrs = do
 
 instance RunMessage TheDoomOfEztli where
   runMessage msg s@(TheDoomOfEztli (attrs `With` metadata)) = case msg of
-    SetChaosTokensForScenario -> do
-      whenM getIsStandalone $ push $ SetChaosTokens standaloneChaosTokens
-      pure s
-    StandaloneSetup ->
+    StandaloneSetup -> do
+      push $ SetChaosTokens standaloneChaosTokens
       pure
         . TheDoomOfEztli
         . (`with` metadata)

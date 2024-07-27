@@ -25,7 +25,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Maybe (fromJust)
 
 newtype CurseOfTheRougarou = CurseOfTheRougarou ScenarioAttrs
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
@@ -93,7 +93,7 @@ instance RunMessage CurseOfTheRougarou where
         , Agendas.theCurseSpreads
         ]
       setActDeck [Acts.findingLadyEsprit, Acts.huntingTheRougarou]
-    SetChaosTokensForScenario -> do
+    StandaloneSetup -> do
       let
         tokens =
           if isEasyStandard attrs

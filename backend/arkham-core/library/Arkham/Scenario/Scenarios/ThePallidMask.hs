@@ -134,17 +134,13 @@ standaloneChaosTokens =
 
 instance RunMessage ThePallidMask where
   runMessage msg s@(ThePallidMask attrs) = case msg of
-    SetChaosTokensForScenario -> do
-      whenM getIsStandalone $ do
-        randomToken <- sample (Cultist :| [Tablet, ElderThing])
-        push (SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken])
-      pure s
     StandaloneSetup -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      push
-        $ AddCampaignCardToDeck
-          leadInvestigatorId
-          Enemies.theManInThePallidMask
+      randomToken <- sample (Cultist :| [Tablet, ElderThing])
+      pushAll
+        [ SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
+        , AddCampaignCardToDeck leadInvestigatorId Enemies.theManInThePallidMask
+        ]
       pure
         . ThePallidMask
         $ attrs

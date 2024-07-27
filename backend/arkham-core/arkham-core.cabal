@@ -1788,6 +1788,7 @@ library
       Arkham.Event.Cards.SneakAttack2
       Arkham.Event.Cards.SneakBy
       Arkham.Event.Cards.Snipe1
+      Arkham.Event.Cards.Snitch2
       Arkham.Event.Cards.SoothingMelody
       Arkham.Event.Cards.SpectralRazor
       Arkham.Event.Cards.StandTogether
@@ -1834,6 +1835,8 @@ library
       Arkham.Event.Cards.UnearthTheAncients2
       Arkham.Event.Cards.UnsolvedCase
       Arkham.Event.Cards.UntimelyTransaction1
+      Arkham.Event.Cards.Vamp
+      Arkham.Event.Cards.Vamp3
       Arkham.Event.Cards.VantagePoint
       Arkham.Event.Cards.VoiceOfRa
       Arkham.Event.Cards.WardOfProtection

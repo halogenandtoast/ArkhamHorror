@@ -1165,6 +1165,7 @@ data SkillTestMatcher
   | WhileAttackingAnEnemy EnemyMatcher
   | WhileEvadingAnEnemy EnemyMatcher
   | WhileParleyingWithAnEnemy EnemyMatcher
+  | WhileParleying
   | SkillTestWithAction ActionMatcher
   | SkillTestWithSkill SkillMatcher
   | SkillTestWithSkillType SkillType
@@ -1197,6 +1198,9 @@ instance IsLabel "investigating" SkillTestMatcher where
 
 instance IsLabel "investigation" SkillTestMatcher where
   fromLabel = WhileInvestigating Anywhere
+
+instance IsLabel "parley" SkillTestMatcher where
+  fromLabel = WhileParleying
 
 instance IsLabel "fighting" SkillTestMatcher where
   fromLabel = WhileAttackingAnEnemy AnyEnemy

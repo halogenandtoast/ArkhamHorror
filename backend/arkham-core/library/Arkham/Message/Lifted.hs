@@ -1045,10 +1045,14 @@ gainActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -
 gainActions iid (toSource -> source) n = push $ Msg.GainActions iid source n
 
 nonAttackEnemyDamage :: (ReverseQueue m, Sourceable a) => a -> Int -> EnemyId -> m ()
-nonAttackEnemyDamage source damage enemy = push $ Msg.EnemyDamage enemy (nonAttack source damage)
+nonAttackEnemyDamage source damage enemy = do
+  whenM (enemy <=~> EnemyCanBeDamagedBySource (toSource source)) do
+    push $ Msg.EnemyDamage enemy (nonAttack source damage)
 
 attackEnemyDamage :: (ReverseQueue m, Sourceable a) => a -> Int -> EnemyId -> m ()
-attackEnemyDamage source damage enemy = push $ Msg.EnemyDamage enemy (attack source damage)
+attackEnemyDamage source damage enemy = do
+  whenM (enemy <=~> EnemyCanBeDamagedBySource (toSource source)) do
+    push $ Msg.EnemyDamage enemy (attack source damage)
 
 exile :: (ReverseQueue m, Targetable target) => target -> m ()
 exile (toTarget -> target) = push $ Msg.Exile target
@@ -1176,3 +1180,6 @@ payCardCost iid card = push $ Msg.PayCardCost iid card (defaultWindows iid)
 
 removeFromGame :: (ReverseQueue m, Targetable target) => target -> m ()
 removeFromGame = push . Msg.RemoveFromGame . toTarget
+
+automaticallyEvadeEnemy :: ReverseQueue m => InvestigatorId -> EnemyId -> m ()
+automaticallyEvadeEnemy iid eid = push $ Msg.EnemyEvaded iid eid

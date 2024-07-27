@@ -567,7 +567,8 @@ allEvents =
       SomeEventCard bankJob
     , SomeEventCard falseSurrender
     , --- survivor [fhv]
-      SomeEventCard keepFaith2
+      SomeEventCard pushedToTheLimit
+    , SomeEventCard keepFaith2
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

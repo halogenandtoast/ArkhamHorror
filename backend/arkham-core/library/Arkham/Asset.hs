@@ -937,6 +937,7 @@ allAssets =
       SomeAssetCard catMaskTheCapriciousMeddler
     , --- survivor [tsk]
       SomeAssetCard matchbox
+    , SomeAssetCard pitchfork
     , SomeAssetCard sparrowMaskTheWanderersCompanion
     , SomeAssetCard marinersCompass2
     , -- Return to Night of the Zealot

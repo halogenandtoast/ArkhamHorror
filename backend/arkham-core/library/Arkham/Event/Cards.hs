@@ -312,6 +312,7 @@ allPlayerEventCards =
       , preposterousSketches
       , preposterousSketches2
       , protectingTheAnirniq2
+      , pushedToTheLimit
       , quantumFlux
       , quantumParadox
       , quickGetaway
@@ -3766,6 +3767,22 @@ falseSurrender =
         Just
           $ exists (EnemyAt YourLocation)
           <> exists (PlayableCardWithCostReduction NoAction 1 $ InHandOf You <> basic (#asset <> #weapon))
+    }
+
+pushedToTheLimit :: CardDef
+pushedToTheLimit =
+  (event "10113" "Pushed to the Limit" 2 Survivor)
+    { cdSkills = [#willpower, #combat]
+    , cdCardTraits = setFromList [Tactic, Improvised]
+    , cdCriteria =
+        Just
+          ( exists
+              $ oneOf [#tool, #weapon]
+              <> #asset
+              <> InDiscardOf You
+              <> CardWithPerformableAbility AbilityIsActionAbility [IgnoreAllCosts]
+          )
+    , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     }
 
 keepFaith2 :: CardDef

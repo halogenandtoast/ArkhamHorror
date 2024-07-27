@@ -778,6 +778,9 @@ instance IsLabel "item" ExtendedCardMatcher where
 instance IsLabel "tome" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #tome
 
+instance IsLabel "tool" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #tool
+
 instance IsLabel "weapon" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #weapon
 
@@ -877,6 +880,9 @@ instance IsLabel "item" CardMatcher where
 
 instance IsLabel "supply" CardMatcher where
   fromLabel = CardWithTrait Trait.Supply
+
+instance IsLabel "tool" CardMatcher where
+  fromLabel = CardWithTrait Tool
 
 instance IsLabel "weapon" CardMatcher where
   fromLabel = CardWithTrait Weapon

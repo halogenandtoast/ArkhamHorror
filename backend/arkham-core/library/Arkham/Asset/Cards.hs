@@ -591,6 +591,7 @@ allPlayerAssetCards =
       , physicalTraining4
       , pickpocketing
       , pickpocketing2
+      , pitchfork
       , plucky1
       , plucky3
       , pnakoticManuscripts5
@@ -6331,6 +6332,14 @@ matchbox =
     { cdCardTraits = setFromList [Item, Tool]
     , cdSkills = [#intellect]
     , cdUses = uses Supply 3
+    }
+
+pitchfork :: CardDef
+pitchfork =
+  (asset "10110" "Pitchfork" 3 Survivor)
+    { cdCardTraits = setFromList [Item, Tool, Weapon, Melee]
+    , cdSkills = [#combat, #agility]
+    , cdSlots = [#hand, #hand]
     }
 
 sparrowMaskTheWanderersCompanion :: CardDef

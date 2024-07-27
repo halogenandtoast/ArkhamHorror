@@ -340,6 +340,8 @@ allPlayerAssetCards =
       , eyeOfChaos
       , eyeOfChaos4
       , eyeOfTheDjinnVesselOfGoodAndEvil2
+      , fakeCredentials
+      , fakeCredentials4
       , falseCovenant2
       , familiarSpirit
       , familyInheritance
@@ -6312,6 +6314,14 @@ britishBullDog =
     , cdCardInHandEffects = True
     }
 
+fakeCredentials :: CardDef
+fakeCredentials =
+  (asset "10066" "Fake Credentials" 3 Rogue)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Item, Illicit]
+    , cdSlots = [#hand]
+    }
+
 foxMaskTheWiseTrickster :: CardDef
 foxMaskTheWiseTrickster =
   (asset "10067" ("Fox Mask" <:> "The Wise Trickster") 1 Rogue)
@@ -6340,6 +6350,15 @@ bewitching3 =
       , cdExceptional = True
       , cdLevel = Just 3
       }
+
+fakeCredentials4 :: CardDef
+fakeCredentials4 =
+  (asset "10082" "Fake Credentials" 2 Rogue)
+    { cdSkills = [#intellect, #agility]
+    , cdCardTraits = setFromList [Item, Illicit]
+    , cdSlots = [#hand]
+    , cdLevel = Just 4
+    }
 
 catMaskTheCapriciousMeddler :: CardDef
 catMaskTheCapriciousMeddler =

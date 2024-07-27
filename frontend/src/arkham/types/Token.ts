@@ -23,6 +23,7 @@ export type Token
   | 'Resource'
   | 'Secret'
   | 'Supply'
+  | 'Suspicion'
   | 'Time'
   | 'Try'
   | 'Whistle'
@@ -50,6 +51,7 @@ export const TokenType = {
   Resource: 'Resource',
   Secret: 'Secret',
   Supply: 'Supply',
+  Suspicion: 'Suspicion',
   Try: 'Try',
   Whistle: 'Whistle',
 } as const;
@@ -77,6 +79,7 @@ export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>
   JsonDecoder.isExactly('Resource'),
   JsonDecoder.isExactly('Secret'),
   JsonDecoder.isExactly('Supply'),
+  JsonDecoder.isExactly('Suspicion'),
   JsonDecoder.isExactly('Time'),
   JsonDecoder.isExactly('Try'),
   JsonDecoder.isExactly('Whistle'),

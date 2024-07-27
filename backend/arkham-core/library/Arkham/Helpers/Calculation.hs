@@ -1,5 +1,6 @@
 module Arkham.Helpers.Calculation (module Arkham.Helpers.Calculation, module Arkham.Calculation) where
 
+import Arkham.Asset.Types (Field (..))
 import Arkham.Calculation
 import Arkham.Card
 import Arkham.ClassSymbol
@@ -70,6 +71,7 @@ calculate = go
     CardCostCalculation iid' cId -> getCard cId >>= getModifiedCardCost iid'
     ScenarioInDiscardCountCalculation mtchr -> length <$> findInDiscard mtchr
     InvestigatorTokenCountCalculation iid token -> fieldMap InvestigatorTokens (countTokens token) iid
+    AssetTokenCountCalculation aid token -> fieldMap AssetTokens (countTokens token) aid
     GameValueCalculation gv -> getGameValue gv
     DoomCountCalculation -> getDoomCount
     DistanceFromCalculation iid matcher -> do

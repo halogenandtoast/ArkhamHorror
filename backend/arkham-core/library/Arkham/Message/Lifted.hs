@@ -1065,6 +1065,21 @@ discoverAtYourLocation isInvestigate iid s n = do
     whenM (getCanDiscoverClues isInvestigate iid loc) do
       push $ Msg.DiscoverClues iid $ Msg.discoverAtYourLocation s n
 
+discoverAtMatchingLocation
+  :: (ReverseQueue m, Sourceable source)
+  => IsInvestigate
+  -> InvestigatorId
+  -> source
+  -> LocationMatcher
+  -> Int
+  -> m ()
+discoverAtMatchingLocation isInvestigate iid s mtchr n = do
+  locations <- filterM (getCanDiscoverClues isInvestigate iid) =<< select mtchr
+  when (notNull locations) do
+    Arkham.Message.Lifted.chooseOrRunOne
+      iid
+      [targetLabel location [Msg.DiscoverClues iid $ Msg.discover location s n] | location <- locations]
+
 doStep :: ReverseQueue m => Int -> Message -> m ()
 doStep n msg = push $ Msg.DoStep n msg
 

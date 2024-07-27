@@ -81,6 +81,9 @@ totalDiscardCardPayments = length . concat . toListOf (cosmos . _DiscardCardPaym
 discardPayments :: Payment -> [(Zone, Card)]
 discardPayments = concat . toListOf (cosmos . _DiscardPayment)
 
+chosenEnemyPayment :: Payment -> Maybe EnemyId
+chosenEnemyPayment = listToMaybe . toListOf (cosmos . _ChosenEnemyPayment)
+
 discardedCards :: Payment -> [Card]
 discardedCards = concat . toListOf (cosmos . _DiscardCardPayment)
 
@@ -102,6 +105,7 @@ instance HasField "investigatorDamage" Payment Int where
 data Payment
   = ActionPayment Int
   | AdditionalActionPayment
+  | ChosenEnemyPayment EnemyId
   | CluePayment InvestigatorId Int
   | DoomPayment Int
   | ResourcePayment Int
@@ -128,6 +132,11 @@ data Payment
 
 instance Plated Payment where
   plate = uniplate
+
+_ChosenEnemyPayment :: Prism' Payment EnemyId
+_ChosenEnemyPayment = prism' ChosenEnemyPayment $ \case
+  ChosenEnemyPayment x -> Just x
+  _ -> Nothing
 
 _DiscardPayment :: Prism' Payment [(Zone, Card)]
 _DiscardPayment = prism' DiscardPayment $ \case
@@ -172,6 +181,8 @@ data Cost
   | GroupClueCostRange (Int, Int) LocationMatcher
   | PlaceClueOnLocationCost Int
   | ExhaustCost Target
+  | ChooseEnemyCost EnemyMatcher
+  | ChosenEnemyCost EnemyId
   | DiscardAssetCost AssetMatcher
   | ExhaustAssetCost AssetMatcher
   | ExhaustXAssetCost AssetMatcher
@@ -267,6 +278,8 @@ data DynamicUseCostValue = DrawnCardsValue
 
 displayCostType :: Cost -> Text
 displayCostType = \case
+  ChooseEnemyCost _ -> "Choose an enemy"
+  ChosenEnemyCost _ -> "Choose an enemy"
   ExhaustXAssetCost _ -> "Exhaust X copies"
   EnemyAttackCost _ -> "The chosen enemy makes an attack against you"
   UnpayableCost -> "Unpayable"
@@ -398,6 +411,7 @@ displayCostType = \case
     Aether -> tshow n <> " Aether"
     Ammo -> tshow n <> " Ammo"
     Supply -> if n == 1 then "1 Supply" else tshow n <> " Supplies"
+    Suspicion -> tshow n <> " Suspicion"
     Secret -> pluralize n "Secret"
     Charge -> pluralize n "Charge"
     Offering -> pluralize n "Offering"
@@ -423,6 +437,7 @@ displayCostType = \case
     Corruption -> "X Corruptions"
     Aether -> "X Aether"
     Ammo -> "X Ammo"
+    Suspicion -> "X Suspicion"
     Supply -> "X Supplies"
     Secret -> "X Secrets"
     Charge -> "X Charges"
@@ -449,6 +464,7 @@ displayCostType = \case
     Aether -> tshow n <> "-" <> tshow m <> " Aether"
     Corruption -> tshow n <> "-" <> tshow m <> " Corruption"
     Ammo -> tshow n <> "-" <> tshow m <> " Ammo"
+    Suspicion -> tshow n <> "-" <> tshow m <> " Suspicion"
     Supply -> tshow n <> "-" <> tshow m <> " Supplies"
     Secret -> tshow n <> "-" <> tshow m <> " Secrets"
     Charge -> tshow n <> "-" <> tshow m <> " Charges"

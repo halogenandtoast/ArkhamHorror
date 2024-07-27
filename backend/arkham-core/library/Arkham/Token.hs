@@ -29,6 +29,7 @@ data Token
   | Resource
   | Secret
   | Supply
+  | Suspicion
   | Time
   | Try
   | Whistle

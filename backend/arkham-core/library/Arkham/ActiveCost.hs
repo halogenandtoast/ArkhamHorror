@@ -521,6 +521,10 @@ payCost msg c iid skipAdditionalCosts cost = do
               (Just $ AmountOneOf ns)
               [PaymentAmountChoice iid 0 resources name (PayCost acId iid True (ResourceCost 1))]
       pure c
+    CalculatedResourceCost calc -> do
+      n <- calculate calc
+      push $ PayCost acId iid True (ResourceCost n)
+      pure c
     ScenarioResourceCost n -> do
       push $ RemoveTokens c.source ScenarioTarget Token.Resource n
       withPayment $ ResourcePayment n

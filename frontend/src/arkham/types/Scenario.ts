@@ -91,12 +91,23 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
       JsonDecoder.tuple([tarotScopeDecoder, JsonDecoder.array(tarotCardDecoder, 'TarotCard[]')], '[TarotScope, TarotCard[]]'),
       '[TarotScope, TarotCard[]][]'
     ).map(res => res.reduce<TarotCard[]>((acc, [k, vs]) => [...acc, ...vs.map(v => ({ ...v, scope: k }))], [])),
-  counts: JsonDecoder.array<[string, number]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.number], '[string, number]'), '[string, number][]').map<Record<string, number>>(res => {
-    return res.reduce<Record<string, number>>((acc, [k, v]) => {
-      acc[k] = v
-      return acc
-    }, {})
-  }),
+  counts:
+    JsonDecoder.array<[string, number]>(
+      JsonDecoder.oneOf([
+        JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.number], '[string, number]'),
+        JsonDecoder.tuple([JsonDecoder.object(
+            { tag: JsonDecoder.string }
+            , 'count with arg'
+        ), JsonDecoder.number], '[string, number]').map(([a, b]) => [a.tag, b]),
+      ], 'counts'),
+      '[string, number][]'
+    ).
+    map<Record<string, number>>(res => {
+      return res.reduce<Record<string, number>>((acc, [k, v]) => {
+        acc[k] = v
+        return acc
+      }, {})
+    }),
   encounterDecks: JsonDecoder.array<[string, [CardContents[], CardContents[]]]>(
     JsonDecoder.tuple([
       JsonDecoder.string,

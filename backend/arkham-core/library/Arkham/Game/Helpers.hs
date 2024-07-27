@@ -75,6 +75,7 @@ import Arkham.Phase
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..), ScenarioDeckKey (ExplorationDeck))
+import Arkham.ScenarioLogKey
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos qualified as Cosmos
 import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Arkham.Skill.Types (Field (..))
@@ -1002,6 +1003,12 @@ passesCriteria
   -> Criterion
   -> m Bool
 passesCriteria iid mcard source' requestor windows' = \case
+  Criteria.IfYouOweBiancaDieKatz -> do
+    let
+      isValid = \case
+        (YouOweBiancaResources (Labeled _ iid') _) -> iid == iid'
+        _ -> False
+    any isValid <$> scenarioField ScenarioRemembered
   Criteria.OnlySources mtchr -> sourceMatches requestor mtchr
   Criteria.HasCustomization c -> do
     case mcard of
@@ -1208,6 +1215,26 @@ passesCriteria iid mcard source' requestor windows' = \case
         SkillSource sid ->
           elem sid
             <$> select (Matcher.SkillControlledBy $ Matcher.InvestigatorWithId iid)
+        _ -> pure False
+     in
+      go source
+  Criteria.OwnsThis ->
+    let
+      go = \case
+        ProxySource (CardIdSource _) s -> go s
+        ProxySource s _ -> go s
+        AssetSource aid ->
+          elem aid
+            <$> select (Matcher.AssetOwnedBy $ Matcher.InvestigatorWithId iid)
+        EventSource eid ->
+          elem eid
+            <$> select (Matcher.EventOwnedBy $ Matcher.InvestigatorWithId iid)
+        SkillSource sid ->
+          elem sid
+            <$> select (Matcher.SkillOwnedBy $ Matcher.InvestigatorWithId iid)
+        EnemySource eid ->
+          elem eid
+            <$> select (Matcher.EnemyOwnedBy $ Matcher.InvestigatorWithId iid)
         _ -> pure False
      in
       go source

@@ -186,6 +186,7 @@ allPlayerAssetCards =
       , berettaM19184
       , bestowResolve2
       , bewitching3
+      , biancaDieKatzSingingYourSong
       , bindersJarInterdimensionalPrison1
       , blackjack
       , blackjack2
@@ -6302,6 +6303,17 @@ microscope4 =
     , cdCardTraits = setFromList [Item, Tool, Science]
     , cdSlots = [#hand]
     , cdLevel = Just 4
+    }
+
+biancaDieKatzSingingYourSong :: CardDef
+biancaDieKatzSingingYourSong =
+  (asset "10062" ("Bianca \"Die Katz\"" <:> "Singing Your Song") 2 Rogue)
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Ally, Criminal, Socialite]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdUses = uses Resource 10
+    , cdSlots = [#ally]
+    , cdBondedWith = [(1, "10063")]
     }
 
 britishBullDog :: CardDef

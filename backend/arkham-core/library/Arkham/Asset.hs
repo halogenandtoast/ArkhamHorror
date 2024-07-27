@@ -932,7 +932,8 @@ allAssets =
     , SomeAssetCard mouseMaskTheMeekWatcher
     , SomeAssetCard microscope4
     , --- rogue [tsk]
-      SomeAssetCard britishBullDog
+      SomeAssetCard biancaDieKatzSingingYourSong
+    , SomeAssetCard britishBullDog
     , SomeAssetCard fakeCredentials
     , SomeAssetCard foxMaskTheWiseTrickster
     , SomeAssetCard britishBullDog2

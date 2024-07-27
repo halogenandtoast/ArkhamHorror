@@ -368,6 +368,16 @@ removeTokens
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
 removeTokens source lid token n = push $ RemoveTokens (toSource source) (toTarget lid) token n
 
+moveTokens
+  :: (ReverseQueue m, Sourceable source, Sourceable from, Targetable destination)
+  => source
+  -> from
+  -> destination
+  -> Token
+  -> Int
+  -> m ()
+moveTokens source from destination token n = push $ Msg.MoveTokens (toSource source) (toSource from) (toTarget destination) token n
+
 drawAnotherChaosToken :: ReverseQueue m => InvestigatorId -> m ()
 drawAnotherChaosToken = push . DrawAnotherChaosToken
 
@@ -1163,3 +1173,6 @@ playCardPayingCost iid card = do
 
 payCardCost :: ReverseQueue m => InvestigatorId -> Card -> m ()
 payCardCost iid card = push $ Msg.PayCardCost iid card (defaultWindows iid)
+
+removeFromGame :: (ReverseQueue m, Targetable target) => target -> m ()
+removeFromGame = push . Msg.RemoveFromGame . toTarget

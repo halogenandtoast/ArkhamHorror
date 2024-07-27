@@ -203,6 +203,7 @@ data ModifierType
   | DamageTaken Int
   | HealingTaken Int
   | Difficulty Int
+  | CalculatedDifficulty GameCalculation
   | DiscoveredClues Int
   | DiscoveredCluesAt LocationId Int
   | DoNotDisengageEvaded

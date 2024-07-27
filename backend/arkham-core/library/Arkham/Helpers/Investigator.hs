@@ -504,7 +504,7 @@ getAvailableSkillsFor
   :: HasGame m => SkillType -> InvestigatorId -> m (Set SkillType)
 getAvailableSkillsFor skillType iid = do
   modifiers <- getModifiers (InvestigatorTarget iid)
-  pure $ foldr applyModifier (singleton skillType) modifiers
+  pure $ traceShowId $ foldr applyModifier (singleton skillType) modifiers
  where
   applyModifier (UseSkillInPlaceOf toReplace toUse) skills
     | toReplace == skillType = insertSet toUse skills

@@ -630,6 +630,8 @@ library
       Arkham.Asset.Cards.Flashlight3
       Arkham.Asset.Cards.FleshWard
       Arkham.Asset.Cards.FluteOfTheOuterGods4
+      Arkham.Asset.Cards.FluxStabilizerActive
+      Arkham.Asset.Cards.FluxStabilizerInactive
       Arkham.Asset.Cards.FoolishnessFoolishCatOfUlthar
       Arkham.Asset.Cards.ForbiddenKnowledge
       Arkham.Asset.Cards.ForbiddenTome
@@ -1485,6 +1487,8 @@ library
       Arkham.Event.Cards.AChanceEncounter2
       Arkham.Event.Cards.ActOfDesperation
       Arkham.Event.Cards.AdHoc
+      Arkham.Event.Cards.AethericCurrentYoth
+      Arkham.Event.Cards.AethericCurrentYuggoth
       Arkham.Event.Cards.AgainstAllOdds2
       Arkham.Event.Cards.AGlimmerOfHope
       Arkham.Event.Cards.AlterFate1
@@ -1608,6 +1612,7 @@ library
       Arkham.Event.Cards.FendOff3
       Arkham.Event.Cards.FickleFortune3
       Arkham.Event.Cards.FightOrFlight
+      Arkham.Event.Cards.FineTuning1
       Arkham.Event.Cards.FirstWatch
       Arkham.Event.Cards.Flare1
       Arkham.Event.Cards.Followed
@@ -1946,6 +1951,7 @@ library
       Arkham.Investigator.Cards.JeromeDavids
       Arkham.Investigator.Cards.JimCulver
       Arkham.Investigator.Cards.JoeDiamond
+      Arkham.Investigator.Cards.KateWinthrop
       Arkham.Investigator.Cards.KymaniJones
       Arkham.Investigator.Cards.LeoAnderson
       Arkham.Investigator.Cards.LilyChen
@@ -2997,6 +3003,7 @@ library
       Arkham.Treachery.Cards.Expulsion
       Arkham.Treachery.Cards.ExtradimensionalVisions
       Arkham.Treachery.Cards.EyesInTheWalls
+      Arkham.Treachery.Cards.FailedExperiment
       Arkham.Treachery.Cards.FalseAwakening
       Arkham.Treachery.Cards.FalseAwakeningPointOfNoReturn
       Arkham.Treachery.Cards.FalseLead

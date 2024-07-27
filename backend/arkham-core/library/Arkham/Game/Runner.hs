@@ -2038,8 +2038,9 @@ runGameMessage msg g = case msg of
     pushAll [TakeControlOfAsset iid assetId]
     pure $ g & entitiesL . assetsL . at assetId ?~ asset
   ReplaceInvestigatorAsset iid assetId card -> do
+    tokens <- field AssetTokens assetId
     replaceCard (toCardId card) card
-    let asset = createAsset card assetId
+    let asset = overAttrs (\attrs -> attrs {assetTokens = tokens}) (createAsset card assetId)
     push (ReplacedInvestigatorAsset iid assetId)
     pure $ g & entitiesL . assetsL . at assetId ?~ asset
   When (EnemySpawn _ lid eid) -> do

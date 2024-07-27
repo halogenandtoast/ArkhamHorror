@@ -9,6 +9,7 @@ import Arkham.Calculation
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
+import Arkham.Classes.GameLogger
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue hiding (insertAfterMatching)
 import Arkham.Classes.HasQueue as X (runQueueT)
@@ -20,7 +21,9 @@ import Arkham.Discover qualified as Msg
 import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.Enemy.Creation
 import Arkham.Evade
+import Arkham.Evade qualified as Evade
 import Arkham.Fight
+import Arkham.Fight qualified as Fight
 import Arkham.Game.Helpers (getActionsWith, getIsPlayable)
 import Arkham.Helpers
 import Arkham.Helpers.Campaign
@@ -48,6 +51,7 @@ import Arkham.Prelude hiding (pred)
 import Arkham.Projection
 import Arkham.Query
 import Arkham.ScenarioLogKey
+import Arkham.SkillType
 import Arkham.SkillType qualified as SkillType
 import Arkham.Source
 import Arkham.Target
@@ -744,6 +748,29 @@ chooseFightEnemy
   :: (ReverseQueue m, Sourceable source) => SkillTestId -> InvestigatorId -> source -> m ()
 chooseFightEnemy sid iid = mkChooseFight sid iid >=> push . toMessage
 
+chooseFightEnemyEdit
+  :: (ReverseQueue m, Sourceable source)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> (ChooseFight -> ChooseFight)
+  -> m ()
+chooseFightEnemyEdit sid iid source f = mkChooseFight sid iid source >>= push . toMessage . f
+
+chooseFightEnemyWithSkillChoice
+  :: (ReverseQueue m, Sourceable source)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> [SkillType]
+  -> m ()
+chooseFightEnemyWithSkillChoice sid iid source skillTypes = do
+  fight <- mkChooseFight sid iid source
+  let using = toMessage . (`Fight.withSkillType` fight)
+  Arkham.Message.Lifted.chooseOne
+    iid
+    [Label ("Use " <> format sType) [using sType] | sType <- skillTypes]
+
 chooseFightEnemyMatch
   :: (ReverseQueue m, Sourceable source)
   => SkillTestId
@@ -756,6 +783,20 @@ chooseFightEnemyMatch sid iid source = mkChooseFightMatch sid iid source >=> pus
 chooseEvadeEnemy
   :: (ReverseQueue m, Sourceable source) => SkillTestId -> InvestigatorId -> source -> m ()
 chooseEvadeEnemy sid iid = mkChooseEvade sid iid >=> push . toMessage
+
+chooseEvadeEnemyWithSkillChoice
+  :: (ReverseQueue m, Sourceable source)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> [SkillType]
+  -> m ()
+chooseEvadeEnemyWithSkillChoice sid iid source skillTypes = do
+  fight <- mkChooseEvade sid iid source
+  let using = toMessage . (`Evade.withSkillType` fight)
+  Arkham.Message.Lifted.chooseOne
+    iid
+    [Label ("Use " <> format sType) [using sType] | sType <- skillTypes]
 
 chooseEvadeEnemyMatch
   :: (ReverseQueue m, Sourceable source)

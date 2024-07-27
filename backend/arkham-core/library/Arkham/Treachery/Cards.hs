@@ -87,6 +87,7 @@ allPlayerTreacheryCards =
       , doomed
       , drawingTheSign
       , dreadCurse
+      , failedExperiment
       , falseAwakening
       , falseAwakeningPointOfNoReturn
       , finalRhapsody
@@ -2133,6 +2134,12 @@ burdenOfLeadership =
 hastyRepairs :: CardDef
 hastyRepairs =
   (weakness "10003" "Hasty Repairs")
+    { cdCardTraits = setFromList [Blunder]
+    }
+
+failedExperiment :: CardDef
+failedExperiment =
+  (weakness "10008" "Failed Experiment")
     { cdCardTraits = setFromList [Blunder]
     }
 

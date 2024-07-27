@@ -15,6 +15,7 @@ import Arkham.Asset.Runner as X (
   cardsUnderneathL,
   controlledBy,
   controls,
+  flippedL,
   getAssetMetaDefault,
   getMetaKey,
   handleTargetChoice,

@@ -919,7 +919,10 @@ allAssets =
     , SomeAssetCard flashlight3
     , SomeAssetCard soulSanctification3
     , -- The Feast of Hemloch Vale
-      --- guardian [tsk]
+      --- signature [tsk]
+      SomeAssetCard fluxStabilizerInactive
+    , SomeAssetCard fluxStabilizerActive
+    , --- guardian [tsk]
       SomeAssetCard cleaningKit
     , SomeAssetCard wolfMaskTheMoonsSire
     , SomeAssetCard cleaningKit3

@@ -366,6 +366,8 @@ allPlayerAssetCards =
       , flashlight3
       , fleshWard
       , fluteOfTheOuterGods4
+      , fluxStabilizerActive
+      , fluxStabilizerInactive
       , foolishnessFoolishCatOfUlthar
       , forbiddenKnowledge
       , forbiddenTome
@@ -6213,6 +6215,28 @@ soulSanctification3 =
     (asset "09123" "Soul Sanctification" 0 Neutral)
       { cdCardTraits = setFromList [Ritual]
       , cdLevel = Just 3
+      }
+
+fluxStabilizerInactive :: CardDef
+fluxStabilizerInactive =
+  signature "10004"
+    $ permanent
+    $ (asset "10005" ("Flux Stablizer" <:> "Inactive") 0 Guardian)
+      { cdCardTraits = setFromList [Item, Tool, Science]
+      , cdUnique = True
+      , cdBondedWith = [(1, "10006"), (1, "10007")]
+      , cdOtherSide = Just "10005b"
+      }
+
+fluxStabilizerActive :: CardDef
+fluxStabilizerActive =
+  signature "10004"
+    $ permanent
+    $ (asset "10005b" ("Flux Stablizer" <:> "Active") 0 Guardian)
+      { cdCardTraits = setFromList [Item, Tool, Science]
+      , cdUnique = True
+      , cdBondedWith = [(1, "10006"), (1, "10007")]
+      , cdOtherSide = Just "10005"
       }
 
 cleaningKit :: CardDef

@@ -109,23 +109,9 @@ instance RunMessage AssetAttrs where
     MoveTokens s source _ tType n | isSource a source -> do
       runMessage (RemoveTokens s (toTarget a) tType n) a
     MoveTokens s _ target tType n | isTarget a target -> do
-      if tokenIsUse tType
-        then case assetPrintedUses of
-          NoUses -> pure $ a & tokensL . at tType . non 0 %~ (+ n)
-          Uses useType'' _ | tType == useType'' -> do
-            pure $ a & tokensL . at tType . non 0 %~ (+ n)
-          UsesWithLimit useType'' _ pl | tType == useType'' -> do
-            l <- calculate pl
-            pure $ a & tokensL . at tType . non 0 %~ min l . (+ n)
-          _ ->
-            error
-              $ "Trying to add the wrong use type, has "
-              <> show assetPrintedUses
-              <> ", but got: "
-              <> show tType
-        else do
-          pushWhen (tType `elem` [Horror, Damage]) $ checkDefeated s a
-          pure $ a & tokensL %~ addTokens tType n
+      a' <- runMessage (PlaceTokens s (toTarget a) tType n) a
+      pushWhen (tType `elem` [Horror, Damage]) $ checkDefeated s a'
+      pure a'
     ClearTokens target | isTarget a target -> do
       when (assetClues a > 0)
         $ pushAll

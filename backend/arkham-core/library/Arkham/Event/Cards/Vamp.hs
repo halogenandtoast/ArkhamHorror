@@ -2,7 +2,7 @@ module Arkham.Event.Cards.Vamp (vamp, Vamp (..)) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.SkillTest (getSkillTestSkillTypes)
+import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.SkillType
@@ -21,7 +21,7 @@ vamp = event (Vamp . (`with` Meta Nothing)) Cards.vamp
 instance RunMessage Vamp where
   runMessage msg e@(Vamp (With attrs meta)) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      selectOneToHandle iid attrs $ EnemyAt $ locationWithInvestigator iid
+      selectOneToHandle iid attrs $ EnemyAt (locationWithInvestigator iid) <> canParleyEnemy iid
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
       let skills = [#willpower, #intellect, #combat, #agility]
@@ -29,7 +29,7 @@ instance RunMessage Vamp where
       pure . Vamp $ attrs `with` meta {chosenEnemy = Just eid}
     ForSkillType sType (HandleTargetChoice iid (isSource attrs -> True) _) -> do
       sid <- getRandom
-      beginSkillTest sid iid attrs iid sType (Fixed 3)
+      parley sid iid attrs iid sType (Fixed 3)
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       for_ (chosenEnemy meta) $ \eid -> do

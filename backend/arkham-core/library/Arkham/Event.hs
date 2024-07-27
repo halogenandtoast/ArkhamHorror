@@ -565,6 +565,7 @@ allEvents =
       SomeEventCard adHoc
     , SomeEventCard aethericCurrentYuggoth
     , SomeEventCard aethericCurrentYoth
+    , SomeEventCard beguile
     , --- guardian [fhv]
       SomeEventCard tinker
     , --- seeker [fhv]

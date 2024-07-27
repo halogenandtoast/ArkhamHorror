@@ -2975,6 +2975,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   TakenActions iid actions | iid == investigatorId -> do
     let previous = fromMaybe [] $ lastMay investigatorActionsPerformed
     let duplicated = actions `List.intersect` previous
+
+    when (#parley `elem` actions && #parley `notElem` previous)
+      $ pushM
+      $ checkWindows [mkWhen (Window.FirstTimeParleyingThisRound iid)]
+
     when (notNull duplicated)
       $ pushM
       $ checkWindows [mkAfter (Window.PerformedSameTypeOfAction iid duplicated)]
@@ -2983,6 +2988,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   PerformedActions iid actions | iid == investigatorId -> do
     let previous = fromMaybe [] $ lastMay investigatorActionsPerformed
     let duplicated = actions `List.intersect` previous
+
+    when (#parley `elem` actions && #parley `notElem` previous)
+      $ pushM
+      $ checkWindows [mkWhen (Window.FirstTimeParleyingThisRound iid)]
+
     when (notNull duplicated)
       $ pushM
       $ checkWindows [mkAfter (Window.PerformedSameTypeOfAction iid duplicated)]

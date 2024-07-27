@@ -919,19 +919,19 @@ allAssets =
     , SomeAssetCard flashlight3
     , SomeAssetCard soulSanctification3
     , -- The Feast of Hemloch Vale
-      --- signature [tsk]
+      --- signature [fhv]
       SomeAssetCard fluxStabilizerInactive
     , SomeAssetCard fluxStabilizerActive
-    , --- guardian [tsk]
+    , --- guardian [fhv]
       SomeAssetCard cleaningKit
     , SomeAssetCard wolfMaskTheMoonsSire
     , SomeAssetCard cleaningKit3
     , SomeAssetCard blessedBlade4
-    , --- seeker [tsk]
+    , --- seeker [fhv]
       SomeAssetCard microscope
     , SomeAssetCard mouseMaskTheMeekWatcher
     , SomeAssetCard microscope4
-    , --- rogue [tsk]
+    , --- rogue [fhv]
       SomeAssetCard biancaDieKatzSingingYourSong
     , SomeAssetCard britishBullDog
     , SomeAssetCard fakeCredentials
@@ -939,13 +939,15 @@ allAssets =
     , SomeAssetCard britishBullDog2
     , SomeAssetCard bewitching3
     , SomeAssetCard fakeCredentials4
-    , --- mystic [tsk]
+    , --- mystic [fhv]
       SomeAssetCard catMaskTheCapriciousMeddler
-    , --- survivor [tsk]
+    , --- survivor [fhv]
       SomeAssetCard matchbox
     , SomeAssetCard pitchfork
     , SomeAssetCard sparrowMaskTheWanderersCompanion
     , SomeAssetCard marinersCompass2
+    , --- neutral [fhv]
+      SomeAssetCard eldritchTongue
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

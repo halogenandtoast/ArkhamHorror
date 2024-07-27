@@ -162,15 +162,18 @@ runEventMessage msg a@EventAttrs {..} = case msg of
           DiscardThis -> pushAll [after, toDiscardBy eventController GameSource a]
           ExileThis -> pushAll [after, Exile (toTarget a)]
           RemoveThisFromGame -> push (RemoveEvent $ toId a)
+          AbsoluteRemoveThisFromGame -> push (RemoveEvent $ toId a)
           ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck eventController) (toTarget a))
           ReturnThisToHand -> push (ReturnToHand eventController (toTarget a))
         Limbo -> case afterPlay of
           DiscardThis -> pushAll [after, toDiscardBy eventController GameSource a]
           ExileThis -> pushAll [after, Exile (toTarget a)]
-          RemoveThisFromGame -> push (RemoveEvent $ toId a)
+          AbsoluteRemoveThisFromGame -> push (RemoveEvent $ toId a)
           ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck eventController) (toTarget a))
           ReturnThisToHand -> push (ReturnToHand eventController (toTarget a))
-        _ -> pure ()
+        _ -> case afterPlay of
+          AbsoluteRemoveThisFromGame -> push (RemoveEvent $ toId a)
+          _ -> pure ()
     pure a
   After (Revelation _iid (isSource a -> True)) -> do
     result <- runMessage (FinishedEvent a.id) a

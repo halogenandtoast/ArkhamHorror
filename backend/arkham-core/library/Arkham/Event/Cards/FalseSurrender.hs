@@ -32,7 +32,7 @@ instance HasModifiersFor FalseSurrender where
 instance RunMessage FalseSurrender where
   runMessage msg e@(FalseSurrender (With attrs meta)) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      selectOneToHandle iid attrs $ enemyAtLocationWith iid
+      selectOneToHandle iid attrs $ enemyAtLocationWith iid <> canParleyEnemy iid
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
       selectOneToHandle iid attrs

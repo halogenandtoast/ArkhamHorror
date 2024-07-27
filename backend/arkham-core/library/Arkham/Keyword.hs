@@ -19,6 +19,7 @@ data Sealing = Sealing ChaosTokenMatcher | SealUpTo Int ChaosTokenMatcher | Seal
 data Keyword
   = Alert
   | Aloof
+  | Elusive
   | Fast
   | Hidden
   | Hunter

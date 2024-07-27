@@ -53,6 +53,7 @@ import Arkham.Matcher (
   PreyMatcher (..),
   investigatorAt,
   investigatorEngagedWith,
+  locationWithEnemy,
   locationWithInvestigator,
   oneOf,
   preyWith,
@@ -604,6 +605,10 @@ instance RunMessage EnemyAttrs where
     AttackEnemy sid iid eid source mTarget skillType | eid == enemyId -> do
       whenWindow <- checkWindows [mkWhen (Window.EnemyAttacked iid source enemyId)]
       afterWindow <- checkWindows [mkAfter (Window.EnemyAttacked iid source enemyId)]
+      keywords <- getModifiedKeywords a
+
+      pushWhen (Keyword.Elusive `elem` keywords) $ HandleElusive eid
+
       pushAll
         [ whenWindow
         , fight
@@ -615,6 +620,24 @@ instance RunMessage EnemyAttrs where
             (EnemyMaybeFieldCalculation eid EnemyFight)
         , afterWindow
         ]
+      pure a
+    HandleElusive eid | eid == enemyId -> do
+      -- just a reminder that the messages are handled in reverse, so exhaust happens last
+      whenM (eid <=~> ReadyEnemy) do
+        push $ Exhaust (toTarget a)
+
+        emptyConnectedLocations <-
+          select $ ConnectedFrom (locationWithEnemy eid) <> not_ (LocationWithInvestigator Anyone)
+        lead <- getLeadPlayer
+        if notNull emptyConnectedLocations
+          then do
+            push $ chooseOrRunOne lead [targetLabel lid [EnemyMove eid lid] | lid <- emptyConnectedLocations]
+          else do
+            otherConnectedLocations <-
+              select $ ConnectedFrom (locationWithEnemy eid) <> LocationWithInvestigator Anyone
+            push $ chooseOrRunOne lead [targetLabel lid [EnemyMove eid lid] | lid <- otherConnectedLocations]
+
+        push $ DisengageEnemyFromAll eid
       pure a
     PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isActionTarget a target -> do
       whenWindow <- checkWindows [mkWhen (Window.SuccessfulAttackEnemy iid source enemyId n)]
@@ -769,6 +792,8 @@ instance RunMessage EnemyAttrs where
       pure $ a & attackingL ?~ details'
     AfterEnemyAttack eid msgs | eid == enemyId -> do
       let details = fromJustNote "missing attack details" enemyAttacking
+      keywords <- getModifiedKeywords a
+      pushWhen (Keyword.Elusive `elem` keywords) $ HandleElusive eid
       pure $ a & attackingL ?~ details {attackAfter = msgs}
     EnemyAttack details | attackEnemy details == enemyId -> do
       case attackTarget details of

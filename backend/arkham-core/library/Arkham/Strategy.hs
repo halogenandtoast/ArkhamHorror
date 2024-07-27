@@ -67,6 +67,7 @@ data AfterPlayStrategy
   | RemoveThisFromGame
   | ShuffleThisBackIntoDeck
   | ReturnThisToHand
+  | AbsoluteRemoveThisFromGame
   deriving stock (Show, Eq, Ord, Data)
 
 data ChosenCardStrategy

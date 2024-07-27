@@ -74,7 +74,7 @@ instance HasAbilities PowerWord where
         [ controlledAbility
           a
           1
-          (handleThriceSpoken $ EnemyWithId eid <> EnemyAt fromLocation)
+          (handleThriceSpoken $ EnemyWithId eid <> EnemyAt fromLocation <> CanParleyEnemy You)
           parleyAction_
         | notNull commands
         ]

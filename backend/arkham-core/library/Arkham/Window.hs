@@ -121,6 +121,7 @@ data IsDirect = IsDirect | IsNonDirect
 
 data WindowType
   = AttemptToEvadeEnemy InvestigatorId EnemyId
+  | FirstTimeParleyingThisRound InvestigatorId
   | AttachCard (Maybe InvestigatorId) Card Target
   | ActAdvance ActId
   | ActivateAbility InvestigatorId [Window] Ability

@@ -2,7 +2,6 @@ module Arkham.Event.Cards where
 
 import Arkham.Prelude
 
-import Arkham.Action qualified as Action
 import Arkham.Agenda.AdvancementReason
 import Arkham.Asset.Uses qualified as Uses
 import Arkham.Calculation
@@ -79,6 +78,7 @@ allPlayerEventCards =
       , bankJob
       , barricade
       , barricade3
+      , beguile
       , bellyOfTheBeast
       , bindMonster2
       , bizarreDiagnosis
@@ -1618,9 +1618,9 @@ persuasion =
     , cdCardTraits = setFromList [Insight, Trick]
     , cdCriteria =
         Just
-          $ exists (NonWeaknessEnemy <> EnemyWithTrait Humanoid <> EnemyAt YourLocation)
+          $ exists (NonWeaknessEnemy <> EnemyWithTrait Humanoid <> EnemyAt YourLocation <> CanParleyEnemy You)
           <> exists (You <> can.target.encounterDeck)
-    , cdActions = [Action.Parley]
+    , cdActions = [#parley]
     }
 
 counterspell2 :: CardDef
@@ -1870,8 +1870,8 @@ interrogate =
   (event "05020" "Interrogate" 2 Guardian)
     { cdSkills = [#combat, #intellect]
     , cdCardTraits = setFromList [Tactic, Insight]
-    , cdCriteria = Just $ exists $ EnemyWithTrait Humanoid <> EnemyAt YourLocation
-    , cdActions = [Action.Parley]
+    , cdCriteria = Just $ exists $ EnemyWithTrait Humanoid <> EnemyAt YourLocation <> CanParleyEnemy You
+    , cdActions = [#parley]
     }
 
 delayTheInevitable :: CardDef
@@ -3329,7 +3329,7 @@ existentialRiddle1 =
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Insight, Paradox]
     , cdActions = [#parley]
-    , cdCriteria = Just $ exists (EnemyAt YourLocation <> NonEliteEnemy)
+    , cdCriteria = Just $ exists (EnemyAt YourLocation <> NonEliteEnemy <> CanParleyEnemy You)
     , cdLevel = Just 1
     }
 
@@ -3777,6 +3777,16 @@ aethericCurrentYoth =
       , cdCriteria = Just $ exists $ AssetIs "10005b"
       }
 
+beguile :: CardDef
+beguile =
+  signature "10009"
+    $ (event "10010" "Beguile" 2 Neutral)
+      { cdSkills = [#wild]
+      , cdCardTraits = setFromList [Trick]
+      , cdFastWindow = Just $ DuringTurn You
+      , cdCriteria = Just $ exists $ NonEliteEnemy <> EnemyAt YourLocation
+      }
+
 tinker :: CardDef
 tinker =
   (event "10028" "Tinker" 1 Guardian)
@@ -3819,7 +3829,7 @@ falseSurrender =
     , cdActions = [#parley]
     , cdCriteria =
         Just
-          $ exists (EnemyAt YourLocation)
+          $ exists (EnemyAt YourLocation <> CanParleyEnemy You)
           <> exists (PlayableCardWithCostReduction NoAction 1 $ InHandOf You <> basic (#asset <> #weapon))
     }
 
@@ -3829,7 +3839,7 @@ grift =
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Trick, Illicit]
     , cdActions = [#parley]
-    , cdCriteria = Just $ exists (EnemyAt YourLocation)
+    , cdCriteria = Just $ exists (EnemyAt YourLocation <> CanParleyEnemy You)
     }
 
 vamp :: CardDef
@@ -3838,7 +3848,7 @@ vamp =
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Trick]
     , cdActions = [#parley]
-    , cdCriteria = Just $ exists (EnemyAt YourLocation)
+    , cdCriteria = Just $ exists (EnemyAt YourLocation <> CanParleyEnemy You)
     }
 
 snitch2 :: CardDef
@@ -3858,7 +3868,7 @@ vamp3 =
     { cdSkills = [#wild, #wild]
     , cdCardTraits = setFromList [Trick]
     , cdActions = [#parley]
-    , cdCriteria = Just $ exists (EnemyAt YourLocation)
+    , cdCriteria = Just $ exists (EnemyAt YourLocation <> CanParleyEnemy You)
     , cdLevel = Just 3
     }
 

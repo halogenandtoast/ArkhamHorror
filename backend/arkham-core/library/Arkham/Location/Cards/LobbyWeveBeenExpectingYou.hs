@@ -15,7 +15,7 @@ import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
 
 newtype LobbyWeveBeenExpectingYou = LobbyWeveBeenExpectingYou LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lobbyWeveBeenExpectingYou :: LocationCard LobbyWeveBeenExpectingYou
@@ -37,7 +37,7 @@ instance HasAbilities LobbyWeveBeenExpectingYou where
           (proxied (LocationMatcherSource $ LocationWithTitle "Lodge Gates") attrs)
           1
           (OnLocation $ LocationWithTitle "Lodge Gates")
-          (ActionAbility [] $ ActionCost 1)
+          (ActionAbility [#parley] $ ActionCost 1)
       | unrevealed attrs
       ]
 

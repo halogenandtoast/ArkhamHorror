@@ -354,7 +354,7 @@ data EnemyMatcher
   | ExhaustedEnemy
   | NonWeaknessEnemy
   | EnemyInHandOf InvestigatorMatcher
-  | CanParleyEnemy InvestigatorId
+  | CanParleyEnemy InvestigatorMatcher
   | EnemyMatchAll [EnemyMatcher]
   | EnemyOwnedBy InvestigatorMatcher
   | EnemyOneOf [EnemyMatcher]
@@ -806,6 +806,9 @@ instance IsLabel "treachery" ExtendedCardMatcher where
 instance IsLabel "weakness" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #weakness
 
+instance IsLabel "parley" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #parley
+
 instance IsLabel "eligible" ExtendedCardMatcher where
   fromLabel = EligibleForCurrentSkillTest
 
@@ -930,6 +933,9 @@ instance IsLabel "asset" CardMatcher where
 instance IsLabel "ally" CardMatcher where
   fromLabel = CardWithTrait Ally
 
+instance IsLabel "parley" CardMatcher where
+  fromLabel = CardWithAction #parley
+
 instance IsLabel "weakness" CardMatcher where
   fromLabel = WeaknessCard
 
@@ -975,6 +981,7 @@ type ToWhere = Where
 
 data WindowMatcher
   = EnemyDefeated Timing Who DefeatedByMatcher EnemyMatcher
+  | FirstTimeParleyingThisRound Timing Who
   | SpentUses Timing Who SourceMatcher UseType AssetMatcher ValueMatcher
   | AttackOrEffectSpentLastUse Timing SourceMatcher TargetMatcher UseType
   | WouldPayCardCost Timing Who CardMatcher

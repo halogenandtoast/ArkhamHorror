@@ -922,6 +922,7 @@ allAssets =
       --- signature [fhv]
       SomeAssetCard fluxStabilizerInactive
     , SomeAssetCard fluxStabilizerActive
+    , SomeAssetCard bookOfLivingMythsChronicleOfWonders
     , --- guardian [fhv]
       SomeAssetCard cleaningKit
     , SomeAssetCard wolfMaskTheMoonsSire

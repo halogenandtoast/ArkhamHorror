@@ -134,6 +134,7 @@ import Arkham.Event.Events (
   sleightOfHandEffect,
   slipAway2Effect,
   snipe1Effect,
+  spectralRazor2Effect,
   spectralRazorEffect,
   stormOfSpirits3Effect,
   stormOfSpiritsEffect,
@@ -459,6 +460,7 @@ allEffects =
     , ("09109", SomeEffect atACrossroads1Effect)
     , ("09113", SomeEffect baseballBat2Effect)
     , ("10056", SomeEffect prismaticSpectaclesLensToTheOtherworld2Effect)
+    , ("10102", SomeEffect spectralRazor2Effect)
     , ("10128", SomeEffect eldritchTongueEffect)
     , ("50044", SomeEffect jeremiahPierceEffect)
     , ("52007", SomeEffect alchemicalTransmutation2Effect)

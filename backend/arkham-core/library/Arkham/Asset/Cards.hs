@@ -201,6 +201,7 @@ allPlayerAssetCards =
       , blur4
       , bonesaw
       , bonnieWalshLoyalAssistant
+      , bookOfLivingMythsChronicleOfWonders
       , bookOfPsalms
       , bookOfShadows1
       , bookOfShadows3
@@ -6248,6 +6249,16 @@ fluxStabilizerActive =
       , cdOtherSide = Just "10005"
       }
 
+bookOfLivingMythsChronicleOfWonders :: CardDef
+bookOfLivingMythsChronicleOfWonders =
+  signature "10012"
+    $ (asset "10013" ("Book of Living Myths" <:> "Chronicle of Wonders") 2 Neutral)
+      { cdSkills = [#willpower, #intellect, #wild]
+      , cdCardTraits = setFromList [Item, Tome, Blessed, Cursed]
+      , cdUnique = True
+      , cdSlots = [#hand]
+      }
+
 cleaningKit :: CardDef
 cleaningKit =
   (asset "10020" "Cleaning Kit" 3 Guardian)
@@ -6313,7 +6324,7 @@ gabrielCarilloTrustedConfidante1 =
 
 prismaticSpectaclesLensToTheOtherworld2 :: CardDef
 prismaticSpectaclesLensToTheOtherworld2 =
-  (asset "10054" ("Prismatic Spectacles" <:> "Lens to the Otherworld") 2 Seeker)
+  (asset "10056" ("Prismatic Spectacles" <:> "Lens to the Otherworld") 2 Seeker)
     { cdSkills = [#intellect]
     , cdCardTraits = setFromList [Item, Relic, Cursed]
     , cdSlots = [#accessory]

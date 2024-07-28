@@ -377,6 +377,7 @@ allEnemies =
     , -- The Feast of Hemloch Vale
       -- signature [fhv]
       SomeEnemyCard zamacona
+    , SomeEnemyCard weepingYurei
     , -- rogue (bonded) [fhv]
       SomeEnemyCard biancaDieKatz
     , -- Return to Night of the Zealot

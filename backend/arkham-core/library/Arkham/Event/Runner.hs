@@ -168,6 +168,7 @@ runEventMessage msg a@EventAttrs {..} = case msg of
         Limbo -> case afterPlay of
           DiscardThis -> pushAll [after, toDiscardBy eventController GameSource a]
           ExileThis -> pushAll [after, Exile (toTarget a)]
+          RemoveThisFromGame -> push (RemoveEvent $ toId a)
           AbsoluteRemoveThisFromGame -> push (RemoveEvent $ toId a)
           ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck eventController) (toTarget a))
           ReturnThisToHand -> push (ReturnToHand eventController (toTarget a))

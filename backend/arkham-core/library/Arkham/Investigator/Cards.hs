@@ -74,6 +74,7 @@ allInvestigatorCards =
       , wilsonRichards
       , kateWinthrop
       , alessandraZorzi
+      , kohakuNarukami
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -504,6 +505,14 @@ alessandraZorzi =
     ("Alessandra Zorzi" <:> "The Countess")
     Rogue
     [Drifter, Socialite]
+
+kohakuNarukami :: CardDef
+kohakuNarukami =
+  investigator
+    "10012"
+    ("Kōhaku Narukami" <:> "The Folklorist")
+    Mystic
+    [Scholar, Blessed, Cursed]
 
 nathanielCho :: CardDef
 nathanielCho =

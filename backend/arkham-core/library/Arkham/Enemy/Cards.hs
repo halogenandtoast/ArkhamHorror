@@ -68,6 +68,7 @@ allPlayerEnemyCards =
       , lurkerInTheDark
       , ectoplasmicHorror
       , zamacona
+      , weepingYurei
       , biancaDieKatz
       , tommyMalloy
       , sacrificialBeast
@@ -2020,6 +2021,13 @@ zamacona =
   (weakness "10011" "Zamacona")
     { cdCardTraits = setFromList [Humanoid, Criminal]
     , cdKeywords = setFromList [Keyword.Elusive]
+    }
+
+weepingYurei :: CardDef
+weepingYurei =
+  (weakness "10014" "Weeping Yurei")
+    { cdCardTraits = setFromList [Monster, Geist]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Elusive, Keyword.Hunter]
     }
 
 biancaDieKatz :: CardDef

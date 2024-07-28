@@ -21,23 +21,27 @@ theKeyOfSolomonSecretsOfTheUnknown4 = asset TheKeyOfSolomonSecretsOfTheUnknown4 
 
 instance HasAbilities TheKeyOfSolomonSecretsOfTheUnknown4 where
   getAbilities (TheKeyOfSolomonSecretsOfTheUnknown4 a) =
-    [ controlledAbility
-        a
-        1
-        ( HasMoreBlessThanCurseTokens
-            <> oneOf
-              [ any_
-                  [ HealableInvestigator (a.ability 1) kind $ InvestigatorAt YourLocation
-                  | kind <- [#damage, #horror]
-                  ]
-              , any_
-                  [ HealableAsset (a.ability 1) kind $ AssetAt YourLocation <> #ally
-                  | kind <- [#damage, #horror]
-                  ]
-              ]
-        )
+    [ withTooltip
+        "If there are more {bless} than {curse} tokens in the chaos bag, remove 1 {bless} token from the chaos bag and exhaust The Key of Solomon: Heal up to 2 damage and/or horror from an investigator or _Ally_ asset at your location."
+        $ controlledAbility
+          a
+          1
+          ( HasMoreBlessThanCurseTokens
+              <> oneOf
+                [ any_
+                    [ HealableInvestigator (a.ability 1) kind $ InvestigatorAt YourLocation
+                    | kind <- [#damage, #horror]
+                    ]
+                , any_
+                    [ HealableAsset (a.ability 1) kind $ AssetAt YourLocation <> #ally
+                    | kind <- [#damage, #horror]
+                    ]
+                ]
+          )
         $ FastAbility (exhaust a <> ReturnChaosTokensToPoolCost 1 #bless)
-    , controlledAbility a 2 (HasMoreCurseThanBlessTokens <> can.gain.resources You)
+    , withTooltip
+        " If there are more {curse} than {bless} tokens in the chaos bag, remove 1 {curse} token from the chaos bag and exhaust The Key of Solomon: Gain 2 resources."
+        $ controlledAbility a 2 (HasMoreCurseThanBlessTokens <> can.gain.resources You)
         $ FastAbility (exhaust a <> ReturnChaosTokensToPoolCost 1 #curse)
     ]
 
@@ -58,7 +62,7 @@ instance RunMessage TheKeyOfSolomonSecretsOfTheUnknown4 where
             ]
       chooseOneToHandle iid (attrs.ability 1) (assets <> investigators)
       pure a
-    HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (AssetTarget aid) -> do
+    HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (AssetTarget _aid) -> do
       doStep 2 msg
       pure a
     DoStep n msg'@(HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (AssetTarget aid)) | n > 0 -> do
@@ -75,7 +79,7 @@ instance RunMessage TheKeyOfSolomonSecretsOfTheUnknown4 where
            ]
         <> [Label "Done Healing" []]
       pure a
-    HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (InvestigatorTarget aid) -> do
+    HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (InvestigatorTarget _) -> do
       doStep 2 msg
       pure a
     DoStep n msg'@(HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (InvestigatorTarget iid')) | n > 0 -> do

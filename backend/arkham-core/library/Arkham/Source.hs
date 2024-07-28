@@ -115,7 +115,7 @@ instance FromJSON Source where
     tag :: Text <- o .: "tag"
     case tag of
       "SkillTestSource" -> do
-        eSkillTestId <- (Left <$> o .: "skillTestId") <|> (Right <$> pure ())
+        eSkillTestId <- (Left <$> o .: "contents") <|> (Right <$> pure ())
         pure $ either SkillTestSource (\_ -> SkillTestSource (SkillTestId nil)) eSkillTestId
       _ -> genericParseJSON defaultOptions (Object o)
 

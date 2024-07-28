@@ -875,6 +875,9 @@ checkWindows = Msg.pushM . Msg.checkWindows
 checkAfter :: ReverseQueue m => WindowType -> m ()
 checkAfter = Msg.pushM . Msg.checkAfter
 
+checkWhen :: ReverseQueue m => WindowType -> m ()
+checkWhen = Msg.pushM . Msg.checkWhen
+
 cancelTokenDraw :: (MonadTrans t, HasQueue Message m) => t m ()
 cancelTokenDraw = lift Msg.cancelTokenDraw
 

@@ -1180,6 +1180,7 @@ data SkillTestMatcher
   | SkillTestWasFailed
   | YourSkillTest SkillTestMatcher
   | SkillTestAtYourLocation
+  | SkillTestAt LocationMatcher
   | SkillTestOfInvestigator InvestigatorMatcher
   | SkillTestOnTreachery TreacheryMatcher
   | SkillTestOnAsset AssetMatcher

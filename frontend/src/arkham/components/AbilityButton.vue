@@ -5,6 +5,7 @@ import type { AbilityLabel, FightLabel, EvadeLabel, EngageLabel } from '@/arkham
 import type { Ability } from '@/arkham/types/Ability';
 import type { Action } from '@/arkham/types/Action';
 import { MessageType } from '@/arkham/types/Message';
+import { replaceIcons } from '@/arkham/helpers';
 
 const props = withDefaults(defineProps<{
  ability: AbilityLabel | FightLabel | EvadeLabel | EngageLabel
@@ -78,15 +79,7 @@ const isSingleActionAbility = computed(() => {
 const tooltip = computed(() => {
   const body = ability.value && ability.value.tooltip
   if (body) {
-    const content = body.
-      replace('{action}', '<span class="action-icon"></span>').
-      replace('{fast}', '<span class="fast-icon"></span>').
-      replace('{reaction}', '<span class="reaction-icon"></span>').
-      replace('{willpower}', '<span class="willpower-icon"></span>').
-      replace('{intellect}', '<span class="intellect-icon"></span>').
-      replace('{combat}', '<span class="combat-icon"></span>').
-      replace('{agility}', '<span class="agility-icon"></span>').
-      replace(/_([^_]*)_/g, '<b>$1</b>')
+    const content = replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>')
     return { content, html: true }
   }
 

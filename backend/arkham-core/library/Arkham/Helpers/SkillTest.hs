@@ -514,9 +514,6 @@ cancelTokenDraw = do
   popMessageMatching_ $ \case
     RunBag {} -> True
     _ -> False
-  popMessageMatching_ $ \case
-    RunSkillTest {} -> True
-    _ -> False
 
 getSkillTestDifficultyDifferenceFromBaseValue :: HasGame m => InvestigatorId -> SkillTest -> m Int
 getSkillTestDifficultyDifferenceFromBaseValue iid skillTest = do

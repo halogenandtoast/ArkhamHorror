@@ -1064,8 +1064,14 @@ passesCriteria iid mcard source' requestor windows' = \case
     gameValueMatches value valueMatcher
   Criteria.HasRemainingBlessTokens -> (> 0) <$> getRemainingBlessTokens
   Criteria.HasRemainingCurseTokens -> (> 0) <$> getRemainingCurseTokens
-  Criteria.HasMoreBlessThanCurseTokens -> (>) <$> getRemainingBlessTokens <*> getRemainingCurseTokens
-  Criteria.HasMoreCurseThanBlessTokens -> (>) <$> getRemainingCurseTokens <*> getRemainingBlessTokens
+  Criteria.HasMoreBlessThanCurseTokens ->
+    (>)
+      <$> selectCount (Matcher.ChaosTokenFaceIs #bless)
+      <*> selectCount (Matcher.ChaosTokenFaceIs #curse)
+  Criteria.HasMoreCurseThanBlessTokens ->
+    (>)
+      <$> selectCount (Matcher.ChaosTokenFaceIs #curse)
+      <*> selectCount (Matcher.ChaosTokenFaceIs #bless)
   Criteria.CanMoveTo matcher -> notNull <$> getCanMoveToMatchingLocations iid source matcher
   Criteria.CanMoveThis dir -> do
     case source of
@@ -3033,10 +3039,13 @@ skillTestMatches iid source st = \case
   Matcher.SkillTestSourceMatches sourceMatcher ->
     sourceMatches (skillTestSource st) sourceMatcher
   Matcher.SkillTestWithRevealedChaosToken matcher ->
-    anyM (`chaosTokenMatches` Matcher.IncludeSealed matcher) $ skillTestRevealedChaosTokens st
+    anyM (`chaosTokenMatches` Matcher.IncludeSealed matcher)
+      $ skillTestRevealedChaosTokens st
   Matcher.SkillTestWithRevealedChaosTokenCount n matcher ->
     (>= n)
-      <$> countM (`chaosTokenMatches` Matcher.IncludeSealed matcher) (skillTestRevealedChaosTokens st)
+      <$> countM
+        (`chaosTokenMatches` Matcher.IncludeSealed matcher)
+        (skillTestRevealedChaosTokens st)
   Matcher.SkillTestOnCardWithTrait t -> elem t <$> sourceTraits (skillTestSource st)
   Matcher.SkillTestOnCard match -> (`cardMatch` match) <$> sourceToCard (skillTestSource st)
   Matcher.SkillTestWithResolvedChaosTokenBy whoMatcher matcher -> do
@@ -3089,8 +3098,10 @@ skillTestMatches iid source st = \case
     mlid1 <- field InvestigatorLocation iid
     mlid2 <- field InvestigatorLocation st.investigator
     case (mlid1, mlid2) of
-      (Just lid1, Just lid2) -> pure $ lid1 == lid2 && (canAffectOthers || iid == st.investigator)
+      (Just lid1, Just lid2) ->
+        pure $ lid1 == lid2 && (canAffectOthers || iid == st.investigator)
       _ -> pure False
+  Matcher.SkillTestAt mtchr -> targetMatches st.target (Matcher.TargetAtLocation mtchr)
   Matcher.SkillTestOfInvestigator whoMatcher -> st.investigator <=~> whoMatcher
   Matcher.SkillTestMatches ms -> allM (skillTestMatches iid source st) ms
   Matcher.SkillTestOneOf ms -> anyM (skillTestMatches iid source st) ms

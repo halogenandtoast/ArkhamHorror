@@ -374,6 +374,16 @@ instance RunMessage AssetAttrs where
           <> [Discard Nothing GameSource (toTarget a') | a' <- attachedAssets]
           <> [RemovedFromPlay source]
       pure a
+    PlaceInBonded _iid card -> do
+      when (toCard a == card) do
+        removeAllMessagesMatching \case
+          Discarded (AssetTarget aid) _ _ -> aid == a.id
+          CheckWindow _ ws -> flip any ws \case
+            (Window.windowType -> Window.Discarded _ _ c) -> toCard a == c
+            _ -> False
+          _ -> False
+        push $ RemoveFromGame (toTarget a)
+      pure a
     PlaceKey (isTarget a -> True) k -> do
       pure $ a & (keysL %~ insertSet k)
     HealAllDamage (isTarget a -> True) source | assetDamage a > 0 -> do

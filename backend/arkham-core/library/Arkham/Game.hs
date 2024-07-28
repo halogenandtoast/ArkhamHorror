@@ -3464,7 +3464,11 @@ instance Query ChaosTokenMatcher where
           if isInfestation
             then getInfestationTokens
             else getBagChaosTokens
-    filterM (go matcher) ((if inTokenPool matcher then [] else tokens) <> tokenPool)
+    filterM
+      (go matcher)
+      ( (if inTokenPool matcher then [] else tokens)
+          <> tokenPool
+      )
    where
     includeSealed = \case
       IncludeSealed _ -> True

@@ -3892,6 +3892,8 @@ spectralRazor2 =
     , cdOverrideActionPlayableIfCriteriaMet = True
     }
 
+-- We need to include the token pool because after this skill test the tokens
+-- might have been removed.
 sealOfTheElders5 :: CardDef
 sealOfTheElders5 =
   (event "10105" "Seal of the Elders" 0 Mystic)
@@ -3901,7 +3903,10 @@ sealOfTheElders5 =
         Just
           $ SkillTestEnded #after Anyone
           $ SkillTestAtYourLocation
-          <> oneOf [SkillTestWithRevealedChaosTokenCount 2 #curse, SkillTestWithRevealedChaosTokenCount 2 #bless]
+          <> oneOf
+            [ SkillTestWithRevealedChaosTokenCount 2 (IncludeTokenPool #curse)
+            , SkillTestWithRevealedChaosTokenCount 2 (IncludeTokenPool #bless)
+            ]
     , cdBondedWith = [(1, "10106"), (1, "10107")]
     }
 

@@ -84,6 +84,7 @@ targetMatches s = \case
       AssetTarget aid -> isLocation AssetLocation aid
       InvestigatorTarget iid -> isLocation InvestigatorLocation iid
       EnemyTarget eid -> isLocation EnemyLocation eid
+      LocationTarget lid -> pure $ lid `elem` locations
       TreacheryTarget tid -> isLocation TreacheryLocation tid
       EventTarget eid -> fieldMapM EventPlacement placementLocation eid <&> maybe False (`elem` locations)
       _ -> pure False

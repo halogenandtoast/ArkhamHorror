@@ -750,6 +750,7 @@ allPlayerAssetCards =
       , theGoldPocketWatch4
       , theHierophantV3
       , theHungeringBlade1
+      , theKeyOfSolomonSecretsOfTheUnknown4
       , theKingInYellow
       , theMoonXiii1
       , theNecronomicon
@@ -6380,6 +6381,15 @@ catMaskTheCapriciousMeddler =
     , cdCardTraits = setFromList [Item, Charm, Mask]
     , cdUses = uses Offering 2
     , cdLimits = [LimitPerTrait Mask 1]
+    }
+
+theKeyOfSolomonSecretsOfTheUnknown4 :: CardDef
+theKeyOfSolomonSecretsOfTheUnknown4 =
+  (asset "10104" ("The Key of Solomon" <:> "Secrets of the Unknown") 2 Mystic)
+    { cdSkills = [#willpower, #intellect, #wild, #wild]
+    , cdCardTraits = setFromList [Item, Tome, Blessed, Cursed]
+    , cdSlots = [#hand]
+    , cdLevel = Just 4
     }
 
 matchbox :: CardDef

@@ -930,6 +930,7 @@ allAssets =
     , --- seeker [fhv]
       SomeAssetCard microscope
     , SomeAssetCard mouseMaskTheMeekWatcher
+    , SomeAssetCard prismaticSpectaclesLensToTheOtherworld2
     , SomeAssetCard microscope4
     , --- rogue [fhv]
       SomeAssetCard biancaDieKatzSingingYourSong

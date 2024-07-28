@@ -1064,6 +1064,8 @@ passesCriteria iid mcard source' requestor windows' = \case
     gameValueMatches value valueMatcher
   Criteria.HasRemainingBlessTokens -> (> 0) <$> getRemainingBlessTokens
   Criteria.HasRemainingCurseTokens -> (> 0) <$> getRemainingCurseTokens
+  Criteria.HasMoreBlessThanCurseTokens -> (>) <$> getRemainingBlessTokens <*> getRemainingCurseTokens
+  Criteria.HasMoreCurseThanBlessTokens -> (>) <$> getRemainingCurseTokens <*> getRemainingBlessTokens
   Criteria.CanMoveTo matcher -> notNull <$> getCanMoveToMatchingLocations iid source matcher
   Criteria.CanMoveThis dir -> do
     case source of

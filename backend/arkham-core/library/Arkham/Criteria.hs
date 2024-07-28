@@ -202,7 +202,9 @@ data Criterion
   | HasCampaignCount CampaignLogKey ValueMatcher
   | HasCalculation GameCalculation ValueMatcher
   | HasRemainingBlessTokens
+  | HasMoreBlessThanCurseTokens
   | HasRemainingCurseTokens
+  | HasMoreCurseThanBlessTokens
   | OnlySources SourceMatcher
   | -- Special Criterion
     AtLeastNCriteriaMet Int [Criterion]

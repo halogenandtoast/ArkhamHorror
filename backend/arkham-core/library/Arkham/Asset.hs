@@ -941,6 +941,7 @@ allAssets =
     , SomeAssetCard fakeCredentials4
     , --- mystic [fhv]
       SomeAssetCard catMaskTheCapriciousMeddler
+    , SomeAssetCard theKeyOfSolomonSecretsOfTheUnknown4
     , --- survivor [fhv]
       SomeAssetCard matchbox
     , SomeAssetCard pitchfork

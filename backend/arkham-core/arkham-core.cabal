@@ -1029,6 +1029,7 @@ library
       Arkham.Asset.Cards.TheGoldPocketWatch4
       Arkham.Asset.Cards.TheHierophantV3
       Arkham.Asset.Cards.TheHungeringBlade1
+      Arkham.Asset.Cards.TheKeyOfSolomonSecretsOfTheUnknown4
       Arkham.Asset.Cards.TheKingInYellow
       Arkham.Asset.Cards.TheMoonXIII1
       Arkham.Asset.Cards.TheNecronomicon
@@ -1887,6 +1888,7 @@ library
       Arkham.Helpers.Ability
       Arkham.Helpers.Act
       Arkham.Helpers.Agenda
+      Arkham.Helpers.Asset
       Arkham.Helpers.Calculation
       Arkham.Helpers.Campaign
       Arkham.Helpers.Card

@@ -609,6 +609,7 @@ allPlayerAssetCards =
       , preciousMementoFromAFutureLife4
       , pressPass2
       , priestOfTwoFaiths1
+      , prismaticSpectaclesLensToTheOtherworld2
       , professorWarrenRice
       , professorWilliamWebbFinderOfHiddenConnections
       , professorWilliamWebbFinderOfHiddenConnections2
@@ -6296,6 +6297,15 @@ mouseMaskTheMeekWatcher =
     , cdCardTraits = setFromList [Item, Charm, Mask]
     , cdUses = uses Offering 2
     , cdLimits = [LimitPerTrait Mask 1]
+    }
+
+prismaticSpectaclesLensToTheOtherworld2 :: CardDef
+prismaticSpectaclesLensToTheOtherworld2 =
+  (asset "10054" ("Prismatic Spectacles" <:> "Lens to the Otherworld") 2 Seeker)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Item, Relic, Cursed]
+    , cdSlots = [#accessory]
+    , cdLevel = Just 2
     }
 
 microscope4 :: CardDef

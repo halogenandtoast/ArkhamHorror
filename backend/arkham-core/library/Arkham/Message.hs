@@ -523,6 +523,7 @@ data Message
   | -- end  new payment bs
     CreateWindowModifierEffect EffectWindow (EffectMetadata Window Message) Source Target
   | CreateChaosTokenEffect (EffectMetadata Window Message) Source ChaosToken
+  | CreateOnRevealChaosTokenEffect SkillTestId ChaosTokenMatcher Source Target Message
   | CreateAssetAt AssetId Card Placement
   | CreateEventAt InvestigatorId Card Placement
   | PlaceAsset AssetId Placement

@@ -387,6 +387,7 @@ allPlayerAssetCards =
       , fortyOneDerringer2
       , fourOfCups1
       , foxMaskTheWiseTrickster
+      , gabrielCarilloTrustedConfidante1
       , garroteWire2
       , gateBox
       , gavriellaMizrah
@@ -478,6 +479,7 @@ allPlayerAssetCards =
       , katjaEastbankKeeperOfEsotericLore2
       , keenEye
       , keenEye3
+      , keeperOfTheKeyCelestialWard
       , kerosene1
       , keyOfYs
       , kleptomania
@@ -670,6 +672,7 @@ allPlayerAssetCards =
       , sealOfTheSeventhSign5
       , segmentOfOnyx1
       , sergeantMonroe
+      , servantOfBrassDaemonaicVassal
       , shardsOfTheVoid3
       , sharpshooter3
       , shieldOfFaith2
@@ -6299,6 +6302,15 @@ mouseMaskTheMeekWatcher =
     , cdLimits = [LimitPerTrait Mask 1]
     }
 
+gabrielCarilloTrustedConfidante1 :: CardDef
+gabrielCarilloTrustedConfidante1 =
+  (asset "10052" ("Gabriel Carillo" <:> "Trusted Confidante") 4 Seeker)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Ally, Scholar, Cursed]
+    , cdSlots = [#ally]
+    , cdLevel = Just 1
+    }
+
 prismaticSpectaclesLensToTheOtherworld2 :: CardDef
 prismaticSpectaclesLensToTheOtherworld2 =
   (asset "10054" ("Prismatic Spectacles" <:> "Lens to the Otherworld") 2 Seeker)
@@ -6400,6 +6412,22 @@ theKeyOfSolomonSecretsOfTheUnknown4 =
     , cdCardTraits = setFromList [Item, Tome, Blessed, Cursed]
     , cdSlots = [#hand]
     , cdLevel = Just 4
+    }
+
+keeperOfTheKeyCelestialWard :: CardDef
+keeperOfTheKeyCelestialWard =
+  (asset "10106" ("Keeper of the Key" <:> "Celestial Ward") 0 Mystic)
+    { cdCardTraits = setFromList [Summon]
+    , cdKeywords = singleton (Keyword.Bonded 1 "10105")
+    , cdCost = Nothing
+    }
+
+servantOfBrassDaemonaicVassal :: CardDef
+servantOfBrassDaemonaicVassal =
+  (asset "10107" ("Servant of Brass" <:> "Daemonaic Vassal") 0 Mystic)
+    { cdCardTraits = setFromList [Summon]
+    , cdKeywords = singleton (Keyword.Bonded 1 "10105")
+    , cdCost = Nothing
     }
 
 matchbox :: CardDef

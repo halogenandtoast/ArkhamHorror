@@ -68,6 +68,7 @@ data EffectAttrs = EffectAttrs
   -- ^ Sometimes an effect may cause infinite recursion, this bool can be used
   -- to track and escape recursion
   , effectExtraMetadata :: Value
+  , effectSkillTest :: Maybe SkillTestId
   }
   deriving stock (Show, Eq, Data)
 
@@ -89,6 +90,9 @@ instance HasField "window" EffectAttrs (Maybe EffectWindow) where
 
 instance HasField "window" Effect (Maybe EffectWindow) where
   getField = effectWindow . toAttrs
+
+instance HasField "skillTest" Effect (Maybe SkillTestId) where
+  getField = effectSkillTest . toAttrs
 
 finishedL :: Lens' EffectAttrs Bool
 finishedL = lens effectFinished $ \m x -> m {effectFinished = x}
@@ -145,6 +149,7 @@ baseAttrs cardCode eid meffectMetadata source target =
     , effectWindow = Nothing
     , effectFinished = False
     , effectExtraMetadata = Null
+    , effectSkillTest = Nothing
     }
 
 targetL :: Lens' EffectAttrs Target

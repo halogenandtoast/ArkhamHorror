@@ -323,6 +323,7 @@ allPlayerEventCards =
       , quickGetaway
       , radiantSmite1
       , readTheSigns
+      , readTheSigns2
       , recharge2
       , recharge4
       , refine
@@ -335,6 +336,7 @@ allPlayerEventCards =
       , sceneOfTheCrime
       , scoutAhead
       , scroungeForSupplies
+      , sealOfTheElders5
       , searchForTheTruth
       , secondWind
       , seekingAnswers
@@ -356,6 +358,7 @@ allPlayerEventCards =
       , snitch2
       , soothingMelody
       , spectralRazor
+      , spectralRazor2
       , standTogether
       , standTogether3
       , stargazing1
@@ -2336,7 +2339,6 @@ readTheSigns =
     { cdSkills = [#willpower, #intellect]
     , cdActions = [#investigate]
     , cdCardTraits = setFromList [Spell]
-    , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     }
 
 foolMeOnce1 :: CardDef
@@ -3870,6 +3872,37 @@ vamp3 =
     , cdActions = [#parley]
     , cdCriteria = Just $ exists (EnemyAt YourLocation <> CanParleyEnemy You)
     , cdLevel = Just 3
+    }
+
+readTheSigns2 :: CardDef
+readTheSigns2 =
+  (event "10101" "Read the Signs" 2 Mystic)
+    { cdSkills = [#willpower, #intellect, #wild]
+    , cdActions = [#investigate]
+    , cdCardTraits = setFromList [Spell]
+    }
+
+spectralRazor2 :: CardDef
+spectralRazor2 =
+  (event "10102" "Spectral Razor" 2 Mystic)
+    { cdSkills = [#willpower, #combat, #wild]
+    , cdCardTraits = singleton Spell
+    , cdActions = [#fight]
+    , cdCriteria = Just $ exists $ oneOf [CanFightEnemy ThisCard, CanEngageEnemy ThisCard]
+    , cdOverrideActionPlayableIfCriteriaMet = True
+    }
+
+sealOfTheElders5 :: CardDef
+sealOfTheElders5 =
+  (event "10105" "Seal of the Elders" 0 Mystic)
+    { cdSkills = [#willpower, #combat]
+    , cdCardTraits = setFromList [Spell, Pact, Blessed, Cursed]
+    , cdFastWindow =
+        Just
+          $ SkillTestEnded #after Anyone
+          $ SkillTestAtYourLocation
+          <> oneOf [SkillTestWithRevealedChaosTokenCount 2 #curse, SkillTestWithRevealedChaosTokenCount 2 #bless]
+    , cdBondedWith = [(1, "10106"), (1, "10107")]
     }
 
 pushedToTheLimit :: CardDef

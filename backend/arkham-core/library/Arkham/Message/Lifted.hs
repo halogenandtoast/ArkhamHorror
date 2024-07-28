@@ -924,6 +924,16 @@ gainResourcesModifier
   -> m ()
 gainResourcesModifier iid source target modifier = push $ Msg.gainResourcesModifier iid source target modifier
 
+onRevealChaosTokenEffect
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => SkillTestId
+  -> ChaosTokenMatcher
+  -> source
+  -> target
+  -> Message
+  -> m ()
+onRevealChaosTokenEffect sid matchr source target msg = push $ Msg.onRevealChaosTokenEffect sid matchr source target msg
+
 eventModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 eventModifier source target modifier = push $ Msg.eventModifier source target modifier
@@ -1102,6 +1112,18 @@ discoverAtMatchingLocation isInvestigate iid s mtchr n = do
     Arkham.Message.Lifted.chooseOrRunOne
       iid
       [targetLabel location [Msg.DiscoverClues iid $ Msg.discover location s n] | location <- locations]
+
+discoverAt
+  :: (ReverseQueue m, Sourceable source, AsId a, IdOf a ~ LocationId)
+  => IsInvestigate
+  -> InvestigatorId
+  -> source
+  -> a
+  -> Int
+  -> m ()
+discoverAt isInvestigate iid s lid n = do
+  canDiscover <- getCanDiscoverClues isInvestigate iid (asId lid)
+  Msg.pushWhen canDiscover $ Msg.DiscoverClues iid $ Msg.discover lid s n
 
 doStep :: ReverseQueue m => Int -> Message -> m ()
 doStep n msg = push $ Msg.DoStep n msg

@@ -515,6 +515,10 @@ runGameMessage msg g = case msg of
         source
         (ChaosTokenTarget token)
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
+  CreateOnRevealChaosTokenEffect sid matchr source target message -> do
+    (effectId, effect) <- createOnRevealChaosTokenEffect sid matchr source target message
+    push $ CreatedEffect effectId Nothing source target
+    pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   DisableEffect effectId -> do
     removedEntitiesF <-
       if notNull (gameActiveAbilities g)

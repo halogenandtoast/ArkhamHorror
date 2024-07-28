@@ -14,6 +14,7 @@ import Arkham.Effect.Types
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Source
@@ -80,6 +81,7 @@ import Arkham.Asset.Assets (
   mrPeabodyEffect,
   oldBookOfLore3Effect,
   pnakoticManuscripts5Effect,
+  prismaticSpectaclesLensToTheOtherworld2Effect,
   riteOfSeekingEffect,
   showmanshipEffect,
   shrivellingEffect,
@@ -250,6 +252,18 @@ createChaosTokenEffect effectMetadata source token = do
   eid <- getRandom
   pure (eid, buildChaosTokenEffect eid effectMetadata source token)
 
+createOnRevealChaosTokenEffect
+  :: MonadRandom m
+  => SkillTestId
+  -> ChaosTokenMatcher
+  -> Source
+  -> Target
+  -> Message
+  -> m (EffectId, Effect)
+createOnRevealChaosTokenEffect sid matchr source target message = do
+  eid <- getRandom
+  pure (eid, buildOnRevealChaosTokenEffect eid sid matchr source target message)
+
 createSurgeEffect
   :: (MonadRandom m, Sourceable source, Targetable target)
   => source
@@ -299,6 +313,11 @@ buildChaosTokenEffect
   :: EffectId -> EffectMetadata Window Message -> Source -> ChaosToken -> Effect
 buildChaosTokenEffect eid metadata source token =
   Effect $ chaosTokenEffect' eid metadata source token
+
+buildOnRevealChaosTokenEffect
+  :: EffectId -> SkillTestId -> ChaosTokenMatcher -> Source -> Target -> Message -> Effect
+buildOnRevealChaosTokenEffect eid sid matchr source token msg =
+  Effect $ onRevealChaosTokenEffect' eid sid matchr source token msg
 
 effectIsForNextGame :: Effect -> Bool
 effectIsForNextGame e = e.window == Just EffectSetupWindow
@@ -439,6 +458,7 @@ allEffects =
     , ("09087", SomeEffect explosiveWardEffect)
     , ("09109", SomeEffect atACrossroads1Effect)
     , ("09113", SomeEffect baseballBat2Effect)
+    , ("10056", SomeEffect prismaticSpectaclesLensToTheOtherworld2Effect)
     , ("10128", SomeEffect eldritchTongueEffect)
     , ("50044", SomeEffect jeremiahPierceEffect)
     , ("52007", SomeEffect alchemicalTransmutation2Effect)
@@ -477,5 +497,6 @@ allEffects =
     , ("90002", SomeEffect daisysToteBagAdvancedEffect)
     , ("wmode", SomeEffect windowModifierEffect)
     , ("tokef", SomeEffect chaosTokenEffect)
+    , ("ontok", SomeEffect onRevealChaosTokenEffect)
     , ("surge", SomeEffect surgeEffect)
     ]

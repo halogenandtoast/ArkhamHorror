@@ -296,6 +296,16 @@ chaosTokenEffect :: Sourceable source => source -> ChaosToken -> ModifierType ->
 chaosTokenEffect (toSource -> source) token modifier =
   CreateChaosTokenEffect (effectModifiers source [modifier]) source token
 
+onRevealChaosTokenEffect
+  :: (Sourceable source, Targetable target)
+  => SkillTestId
+  -> ChaosTokenMatcher
+  -> source
+  -> target
+  -> Message
+  -> Message
+onRevealChaosTokenEffect sid matchr source target msg = CreateOnRevealChaosTokenEffect sid matchr (toSource source) (toTarget target) msg
+
 uiEffect :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 uiEffect source target modifier = createWindowModifierEffect EffectUI source target [modifier]
 

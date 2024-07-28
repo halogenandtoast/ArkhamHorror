@@ -930,6 +930,7 @@ allAssets =
     , --- seeker [fhv]
       SomeAssetCard microscope
     , SomeAssetCard mouseMaskTheMeekWatcher
+    , SomeAssetCard gabrielCarilloTrustedConfidante1
     , SomeAssetCard prismaticSpectaclesLensToTheOtherworld2
     , SomeAssetCard microscope4
     , --- rogue [fhv]
@@ -943,6 +944,8 @@ allAssets =
     , --- mystic [fhv]
       SomeAssetCard catMaskTheCapriciousMeddler
     , SomeAssetCard theKeyOfSolomonSecretsOfTheUnknown4
+    , SomeAssetCard keeperOfTheKeyCelestialWard
+    , SomeAssetCard servantOfBrassDaemonaicVassal
     , --- survivor [fhv]
       SomeAssetCard matchbox
     , SomeAssetCard pitchfork

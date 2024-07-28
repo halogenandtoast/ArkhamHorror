@@ -238,6 +238,12 @@ moves
 moves timing who source destination =
   Arkham.Matcher.Moves timing (be who) AnySource (be source) (be destination)
 
+getRevealedChaosTokens :: [Window] -> [ChaosToken]
+getRevealedChaosTokens = \case
+  [] -> []
+  ((windowType -> Window.SkillTestEnded st) : _) -> st.revealedChaosTokens
+  (_ : rest) -> getRevealedChaosTokens rest
+
 getChaosToken :: HasCallStack => [Window] -> ChaosToken
 getChaosToken = \case
   [] -> error "No chaos token drawn"

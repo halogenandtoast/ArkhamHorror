@@ -651,6 +651,7 @@ library
       Arkham.Asset.Cards.FortyOneDerringer2
       Arkham.Asset.Cards.FourOfCups1
       Arkham.Asset.Cards.FoxMaskTheWiseTrickster
+      Arkham.Asset.Cards.GabrielCarilloTrustedConfidante1
       Arkham.Asset.Cards.GarroteWire2
       Arkham.Asset.Cards.GateBox
       Arkham.Asset.Cards.GavriellaMizrah
@@ -748,6 +749,7 @@ library
       Arkham.Asset.Cards.KatjaEastbankKeeperOfEsotericLore2
       Arkham.Asset.Cards.KeenEye
       Arkham.Asset.Cards.KeenEye3
+      Arkham.Asset.Cards.KeeperOfTheKeyCelestialWard
       Arkham.Asset.Cards.Kerosene1
       Arkham.Asset.Cards.KeyOfYs
       Arkham.Asset.Cards.KeyToTheChamber
@@ -946,6 +948,7 @@ library
       Arkham.Asset.Cards.SebastienMoreau
       Arkham.Asset.Cards.SegmentOfOnyx1
       Arkham.Asset.Cards.SergeantMonroe
+      Arkham.Asset.Cards.ServantOfBrassDaemonaicVassal
       Arkham.Asset.Cards.ShardsOfTheVoid3
       Arkham.Asset.Cards.Sharpshooter3
       Arkham.Asset.Cards.ShieldOfFaith2
@@ -1210,6 +1213,7 @@ library
       Arkham.Effect
       Arkham.Effect.Effects
       Arkham.Effect.Effects.ChaosTokenEffect
+      Arkham.Effect.Effects.OnRevealChaosTokenEffect
       Arkham.Effect.Effects.SurgeEffect
       Arkham.Effect.Effects.UndimensionedAndUnseenTabletToken
       Arkham.Effect.Effects.WindowModifierEffect
@@ -1763,6 +1767,7 @@ library
       Arkham.Event.Cards.QuickGetaway
       Arkham.Event.Cards.RadiantSmite1
       Arkham.Event.Cards.ReadTheSigns
+      Arkham.Event.Cards.ReadTheSigns2
       Arkham.Event.Cards.Recharge2
       Arkham.Event.Cards.Recharge4
       Arkham.Event.Cards.Refine
@@ -1775,6 +1780,7 @@ library
       Arkham.Event.Cards.SceneOfTheCrime
       Arkham.Event.Cards.ScoutAhead
       Arkham.Event.Cards.ScroungeForSupplies
+      Arkham.Event.Cards.SealOfTheElders5
       Arkham.Event.Cards.SearchForTheTruth
       Arkham.Event.Cards.SecondWind
       Arkham.Event.Cards.SeekingAnswers
@@ -1796,6 +1802,7 @@ library
       Arkham.Event.Cards.Snitch2
       Arkham.Event.Cards.SoothingMelody
       Arkham.Event.Cards.SpectralRazor
+      Arkham.Event.Cards.SpectralRazor2
       Arkham.Event.Cards.StandTogether
       Arkham.Event.Cards.StandTogether3
       Arkham.Event.Cards.Stargazing1

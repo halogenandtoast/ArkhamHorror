@@ -40,6 +40,7 @@ windowModifierEffect' eid metadata effectWindow source target =
       , effectWindow = Just effectWindow
       , effectFinished = False
       , effectExtraMetadata = Null
+      , effectSkillTest = Nothing
       }
 
 instance HasModifiersFor WindowModifierEffect where

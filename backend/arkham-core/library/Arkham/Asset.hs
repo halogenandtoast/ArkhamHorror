@@ -952,6 +952,7 @@ allAssets =
     , SomeAssetCard pitchfork
     , SomeAssetCard sparrowMaskTheWanderersCompanion
     , SomeAssetCard hatchet1
+    , SomeAssetCard huntingJacket2
     , SomeAssetCard marinersCompass2
     , --- neutral [fhv]
       SomeAssetCard eldritchTongue

@@ -431,6 +431,7 @@ allPlayerAssetCards =
       , hardKnocks2
       , hardKnocks4
       , haste2
+      , hatchet1
       , hawkEyeFoldingCamera
       , healingWords
       , healingWords3
@@ -6464,6 +6465,15 @@ sparrowMaskTheWanderersCompanion =
     , cdCardTraits = setFromList [Item, Charm, Mask]
     , cdUses = uses Offering 2
     , cdLimits = [LimitPerTrait Mask 1]
+    }
+
+hatchet1 :: CardDef
+hatchet1 =
+  (asset "10117" "Hatchet" 2 Survivor)
+    { cdCardTraits = setFromList [Item, Tool, Weapon, Ranged]
+    , cdSkills = [#agility]
+    , cdSlots = [#hand]
+    , cdLevel = Just 1
     }
 
 marinersCompass2 :: CardDef

@@ -951,6 +951,7 @@ allAssets =
       SomeAssetCard matchbox
     , SomeAssetCard pitchfork
     , SomeAssetCard sparrowMaskTheWanderersCompanion
+    , SomeAssetCard hatchet1
     , SomeAssetCard marinersCompass2
     , --- neutral [fhv]
       SomeAssetCard eldritchTongue

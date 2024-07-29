@@ -439,7 +439,7 @@ payCost msg c iid skipAdditionalCosts cost = do
         push $ assignHorror iid source x
         withPayment $ HorrorPayment x
       AssetTarget aid -> do
-        push $ AssetDamage aid source 0 x
+        push $ DealAssetDamage aid source 0 x
         withPayment $ HorrorPayment x
       _ -> error "can't target for horror cost"
     HorrorCostX source' -> do
@@ -472,7 +472,7 @@ payCost msg c iid skipAdditionalCosts cost = do
         push $ assignDamage iid source x
         withPayment $ DamagePayment x
       AssetTarget aid -> do
-        push $ AssetDamage aid source x 0
+        push $ DealAssetDamage aid source x 0
         withPayment $ DamagePayment x
       _ -> error "can't target for damage cost"
     DirectDamageCost _ investigatorMatcher x -> do

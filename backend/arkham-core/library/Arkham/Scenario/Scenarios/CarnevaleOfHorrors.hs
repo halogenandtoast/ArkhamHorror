@@ -295,10 +295,10 @@ instance RunMessage CarnevaleOfHorrors where
               player
               [ ComponentLabel
                   (AssetComponent x DamageToken)
-                  [AssetDamage x (ChaosTokenSource token) 1 0]
+                  [DealAssetDamage x (ChaosTokenSource token) 1 0]
               , ComponentLabel
                   (AssetComponent x HorrorToken)
-                  [AssetDamage x (ChaosTokenSource token) 0 1]
+                  [DealAssetDamage x (ChaosTokenSource token) 0 1]
               ]
         xs ->
           push
@@ -310,10 +310,10 @@ instance RunMessage CarnevaleOfHorrors where
                     player
                     [ ComponentLabel
                         (AssetComponent x DamageToken)
-                        [AssetDamage x (ChaosTokenSource token) 1 0]
+                        [DealAssetDamage x (ChaosTokenSource token) 1 0]
                     , ComponentLabel
                         (AssetComponent x HorrorToken)
-                        [AssetDamage x (ChaosTokenSource token) 0 1]
+                        [DealAssetDamage x (ChaosTokenSource token) 0 1]
                     ]
                 ]
               | x <- xs
@@ -338,10 +338,10 @@ instance RunMessage CarnevaleOfHorrors where
                   player
                   [ ComponentLabel
                       (AssetComponent x DamageToken)
-                      [AssetDamage x (ChaosTokenSource token) 1 0]
+                      [DealAssetDamage x (ChaosTokenSource token) 1 0]
                   , ComponentLabel
                       (AssetComponent x HorrorToken)
-                      [AssetDamage x (ChaosTokenSource token) 0 1]
+                      [DealAssetDamage x (ChaosTokenSource token) 0 1]
                   ]
             xs ->
               push
@@ -353,10 +353,10 @@ instance RunMessage CarnevaleOfHorrors where
                         player
                         [ ComponentLabel
                             (AssetComponent x DamageToken)
-                            [AssetDamage x (ChaosTokenSource token) 1 0]
+                            [DealAssetDamage x (ChaosTokenSource token) 1 0]
                         , ComponentLabel
                             (AssetComponent x HorrorToken)
-                            [AssetDamage x (ChaosTokenSource token) 0 1]
+                            [DealAssetDamage x (ChaosTokenSource token) 0 1]
                         ]
                     ]
                   | x <- xs

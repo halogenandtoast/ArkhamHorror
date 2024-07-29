@@ -7,9 +7,8 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding (AssetDamage)
+import Arkham.Asset.Runner
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Message (pattern AssetDamage)
 import Arkham.Trait
 
 newtype PeterClover = PeterClover AssetAttrs
@@ -35,7 +34,7 @@ instance HasAbilities PeterClover where
 instance RunMessage PeterClover where
   runMessage msg a@(PeterClover attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ AssetDamage (toId attrs) (toAbilitySource attrs 1) 1 0
+      push $ DealAssetDamage (toId attrs) (toAbilitySource attrs 1) 1 0
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       criminals <- select $ EnemyWithTrait Criminal <> EnemyAt YourLocation

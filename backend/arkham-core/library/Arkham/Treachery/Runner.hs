@@ -17,7 +17,6 @@ import Arkham.Classes.Query as X
 import Arkham.Classes.RunMessage as X
 import Arkham.Helpers.Investigator as X (eliminationWindow)
 import Arkham.Helpers.Message as X hiding (
-  AssetDamage,
   DeckHasNoCards,
   EnemyDefeated,
   InvestigatorDamage,

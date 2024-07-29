@@ -1,7 +1,7 @@
 module Arkham.Event.Cards.BloodRite (bloodRite, BloodRite (..)) where
 
 import Arkham.Classes.HasGame
-import Arkham.Cost
+import Arkham.Cost hiding (discardedCards)
 import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted

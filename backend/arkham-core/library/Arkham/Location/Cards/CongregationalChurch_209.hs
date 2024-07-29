@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.Matcher
 
 newtype CongregationalChurch_209 = CongregationalChurch_209 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -5,9 +5,9 @@ module Arkham.Act.Cards.PlanningTheEscape (
 
 import Arkham.Prelude
 
-import Arkham.Ability
+import Arkham.Ability hiding (discardedCards)
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Runner hiding (discardedCards)
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
@@ -18,7 +18,7 @@ import Arkham.SkillType
 import Arkham.Trait
 
 newtype PlanningTheEscape = PlanningTheEscape ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 planningTheEscape :: ActCard PlanningTheEscape

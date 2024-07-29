@@ -32,6 +32,6 @@ instance RunMessage Dendromorphosis where
       push $ PlaceAsset attrs.id (InThreatArea iid)
       pure $ a
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      push $ Msg.AssetDamage (toId a) (attrs.ability 1) 1 0
+      push $ Msg.DealAssetDamage (toId a) (attrs.ability 1) 1 0
       pure a
     _ -> Dendromorphosis <$> runMessage msg attrs

@@ -13,7 +13,7 @@ import Arkham.Asset.Uses as X
 import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.GameValue as X
-import Arkham.Helpers.Message as X hiding (AssetDamage, RevealChaosToken)
+import Arkham.Helpers.Message as X hiding (RevealChaosToken)
 import Arkham.Helpers.SkillTest as X
 import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
@@ -29,6 +29,7 @@ import Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Placement
 import Arkham.Helpers.Use
+import Arkham.Investigator.Types (Field (InvestigatorRemainingHealth, InvestigatorRemainingSanity))
 import Arkham.Matcher (
   AssetMatcher (AnyAsset, AssetAttachedToAsset, AssetWithId),
  )
@@ -66,6 +67,73 @@ instance RunMessage Asset where
 
 instance RunMessage AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of
+    Msg.DealAssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do
+      case a.controller of
+        Nothing -> runMessage (Msg.AssignAssetDamageWithCheck aid source damage horror doCheck) a
+        Just iid -> do
+          mods <- getModifiers aid
+
+          damageHank <-
+            filterM
+              (fieldP InvestigatorRemainingHealth (> 0))
+              [x | damage > 0, CanAssignDamageToInvestigator x <- mods]
+          horrorHank <-
+            filterM
+              (fieldP InvestigatorRemainingSanity (> 0))
+              [x | horror > 0, CanAssignDamageToInvestigator x <- mods]
+
+          if null damageHank && null horrorHank
+            then runMessage (Msg.AssignAssetDamageWithCheck aid source damage horror doCheck) a
+            else do
+              -- since we need to assign we'll disable doCheck on subsequent calls, so we need to queue the check now
+              pushAll [checkDefeated source aid | doCheck]
+              let
+                assignRestOfHealthDamage =
+                  Msg.DealAssetDamageWithCheck aid source (damage - 1) horror False
+                assignRestOfSanityDamage =
+                  Msg.DealAssetDamageWithCheck aid source damage (horror - 1) False
+                damageAsset =
+                  AssetDamageLabel
+                    aid
+                    [ Msg.AssignAssetDamageWithCheck aid source 1 0 False
+                    , assignRestOfHealthDamage
+                    ]
+                damageInvestigator iid' =
+                  DamageLabel
+                    iid'
+                    [ Msg.InvestigatorDamage iid' source 1 0
+                    , assignRestOfHealthDamage
+                    ]
+                horrorAsset =
+                  AssetHorrorLabel
+                    aid
+                    [ Msg.AssignAssetDamageWithCheck aid source 1 0 False
+                    , assignRestOfSanityDamage
+                    ]
+                horrorInvestigator iid' =
+                  HorrorLabel
+                    iid'
+                    [ Msg.InvestigatorDamage iid' source 1 0
+                    , assignRestOfSanityDamage
+                    ]
+              player <- getPlayer iid
+              push
+                $ chooseOne player
+                $ [damageAsset | damage > 0]
+                <> [horrorAsset | horror > 0]
+                <> [damageInvestigator iid' | damage > 0, iid' <- damageHank]
+                <> [horrorInvestigator iid' | horror > 0, iid' <- damageHank]
+              pure a
+    Msg.DealAssetDirectDamage aid source damage horror | aid == assetId -> do
+      runMessage (Msg.AssignAssetDamageWithCheck aid source damage horror True) a
+    Msg.AssignAssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do
+      mods <- getModifiers a
+      let n = sum [x | DamageTaken x <- mods]
+      pushAll
+        $ [PlaceDamage source (toTarget a) (damage + n) | damage > 0]
+        <> [PlaceHorror source (toTarget a) horror | horror > 0]
+        <> [checkDefeated source aid | doCheck]
+      pure a
     IncreaseCustomization iid cardCode customization choices | toCardCode a == cardCode && a `ownedBy` iid -> do
       case customizationIndex a customization of
         Nothing -> pure a
@@ -174,14 +242,6 @@ instance RunMessage AssetAttrs where
       pure $ a & tokensL %~ decrementTokensBy Token.Damage n
     AssetDefeated source aid | aid == assetId -> do
       push $ toDiscard source a
-      pure a
-    Msg.AssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do
-      mods <- getModifiers a
-      let n = sum [x | DamageTaken x <- mods]
-      pushAll
-        $ [PlaceDamage source (toTarget a) (damage + n) | damage > 0]
-        <> [PlaceHorror source (toTarget a) horror | horror > 0]
-        <> [checkDefeated source aid | doCheck]
       pure a
     ReassignHorror source (isTarget a -> True) n -> do
       alreadyChecked <- assertQueue \case

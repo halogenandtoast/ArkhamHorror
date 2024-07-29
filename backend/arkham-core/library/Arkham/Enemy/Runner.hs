@@ -1177,7 +1177,7 @@ instance RunMessage EnemyAttrs where
       pure a
     InvestigatorDamage iid (EnemyAttackSource eid) x y | eid == enemyId -> do
       pure $ a & attackingL . _Just . damagedL . at (toTarget iid) . non (0, 0) %~ bimap (+ x) (+ y)
-    AssetDamageWithCheck aid (EnemyAttackSource eid) x y _ | eid == enemyId -> do
+    AssignAssetDamageWithCheck aid (EnemyAttackSource eid) x y _ | eid == enemyId -> do
       pure $ a & attackingL . _Just . damagedL . at (toTarget aid) . non (0, 0) %~ bimap (+ x) (+ y)
     CancelAssetDamage aid (EnemyAttackSource eid) x | eid == enemyId -> do
       pure

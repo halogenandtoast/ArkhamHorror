@@ -43,6 +43,6 @@ instance RunMessage SanctumDoorwayCeremonyRoom where
         assets <- select $ assetAt $ toId attrs
         pushAll
           $ [InvestigatorDirectDamage iid (toAbilitySource attrs 1) 0 1 | iid <- investigators]
-          <> [AssetDamage aid (toAbilitySource attrs 1) 0 1 | aid <- assets]
+          <> [DealAssetDirectDamage aid (toAbilitySource attrs 1) 0 1 | aid <- assets]
       pure l
     _ -> SanctumDoorwayCeremonyRoom <$> runMessage msg attrs

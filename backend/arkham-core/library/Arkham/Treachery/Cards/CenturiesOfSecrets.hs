@@ -30,6 +30,6 @@ instance RunMessage CenturiesOfSecrets where
         assetIds <- select $ assetControlledBy iid <> AllyAsset
         pushAll
           $ InvestigatorDirectDamage iid (toSource attrs) 1 0
-          : [Msg.AssetDamage aid (toSource attrs) 1 0 | aid <- assetIds]
+          : [Msg.DealAssetDirectDamage aid (toSource attrs) 1 0 | aid <- assetIds]
       pure t
     _ -> CenturiesOfSecrets <$> runMessage msg attrs

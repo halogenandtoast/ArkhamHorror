@@ -34,14 +34,14 @@ instance RunMessage TheBlackCat5 where
       withSkillTest \sid ->
         pushAll
           [ skillTestModifier sid attrs token (ChangeChaosTokenModifier $ NegativeModifier 1)
-          , AssetDamageWithCheck (toId attrs) (ChaosTokenEffectSource Tablet) 1 0 True
+          , DealAssetDirectDamage (toId attrs) (ChaosTokenEffectSource Tablet) 1 0
           ]
       pure a
     TargetResolveChaosToken (isTarget attrs -> True) token ElderThing _ -> do
       withSkillTest \sid ->
         pushAll
           [ skillTestModifier sid attrs token (ChangeChaosTokenModifier $ NegativeModifier 1)
-          , AssetDamageWithCheck (toId attrs) (ChaosTokenEffectSource Tablet) 0 1 True
+          , DealAssetDirectDamage (toId attrs) (ChaosTokenEffectSource Tablet) 0 1
           ]
       pure a
     TargetResolveChaosToken (isTarget attrs -> True) token ElderSign _ -> do

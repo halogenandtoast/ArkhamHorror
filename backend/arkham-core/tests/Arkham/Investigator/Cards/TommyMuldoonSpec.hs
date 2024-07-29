@@ -9,13 +9,13 @@ spec = describe "Tommy Muldoon" $ do
   context "When an asset you control is defeated" $ do
     it "gain x resources, where x is the total damage and horror on that asset" . gameTestWith tommyMuldoon $ \self -> do
       beatCop2 <- self `putAssetIntoPlay` Assets.beatCop2
-      run $ AssetDamage beatCop2 (TestSource mempty) 3 1
+      run $ DealAssetDamage beatCop2 (TestSource mempty) 3 1
       useReaction
       self.resources `shouldReturn` 4
 
     it "that asset is shuffled into your deck" . gameTestWith tommyMuldoon $ \self -> do
       beatCop2 <- self `putAssetIntoPlay` Assets.beatCop2
-      run $ AssetDamage beatCop2 (TestSource mempty) 3 1
+      run $ DealAssetDamage beatCop2 (TestSource mempty) 3 1
       useReaction
       self.discard `shouldReturn` []
       asDefs self.deck `shouldReturn` [Assets.beatCop2]
@@ -46,7 +46,7 @@ spec = describe "Tommy Muldoon" $ do
 
     it "or vice versa" . gameTestWith tommyMuldoon $ \self -> do
       beatCop2 <- self `putAssetIntoPlay` Assets.beatCop2
-      run $ AssetDamage beatCop2 (TestSource mempty) 2 1
+      run $ DealAssetDamage beatCop2 (TestSource mempty) 2 1
       setChaosTokens [ElderSign]
       sid <- getRandom
       runSkillTest sid self #agility 100

@@ -26,7 +26,9 @@ instance Show TargetType where
   show AssetOwnerControls = "an asset the owner controls"
 
 testPermutations :: [(MoveType, SourceType, TargetType)]
-testPermutations = [(dType, sType, tType) | dType <- [MoveDamage, MoveHorror], sType <- [You, AssetYouControl], tType <- [Owner, AssetOwnerControls]]
+testPermutations =
+  [ (dType, sType, tType) | dType <- [MoveDamage, MoveHorror], sType <- [You, AssetYouControl], tType <- [Owner, AssetOwnerControls]
+  ]
 
 spec :: Spec
 spec = describe "Solemn Vow" do
@@ -41,47 +43,51 @@ spec = describe "Solemn Vow" do
     solemnVow.owner `shouldReturn` Just (toId self)
 
   context "if the owner of Solemn Vow is at your location" do
-    context "exhaust solemn vow, move 1 damage or horror from a card you control to a card that investigator controls" do
-      for_ testPermutations $ \(dType, sType, tType) -> do
-        it ("can move a " <> show dType <> " from " <> show sType <>  " to " <> show tType) . gameTest $ \self -> do
-          leoDeLuca <- self `putAssetIntoPlay` Assets.leoDeLuca
-          roland <- addInvestigator rolandBanks & prop @"damage" 1 & prop @"horror" 1
-          beatCop2 <- roland `putAssetIntoPlay` Assets.beatCop2
-          run $ AssetDamage beatCop2 (TestSource mempty) 1 1
-          location <- testLocation
-          self `moveTo` location
-          roland `moveTo` location
-          solemnVow <- self `putAssetIntoPlay` Assets.solemnVow
-          setActive roland
-          [useSolemnVow] <- roland `getActionsFrom` solemnVow
-          roland `useAbility` useSolemnVow
+    context
+      "exhaust solemn vow, move 1 damage or horror from a card you control to a card that investigator controls"
+      do
+        for_ testPermutations $ \(dType, sType, tType) -> do
+          it ("can move a " <> show dType <> " from " <> show sType <> " to " <> show tType) . gameTest $ \self -> do
+            leoDeLuca <- self `putAssetIntoPlay` Assets.leoDeLuca
+            roland <- addInvestigator rolandBanks & prop @"damage" 1 & prop @"horror" 1
+            beatCop2 <- roland `putAssetIntoPlay` Assets.beatCop2
+            run $ DealAssetDamage beatCop2 (TestSource mempty) 1 1
+            location <- testLocation
+            self `moveTo` location
+            roland `moveTo` location
+            solemnVow <- self `putAssetIntoPlay` Assets.solemnVow
+            setActive roland
+            [useSolemnVow] <- roland `getActionsFrom` solemnVow
+            roland `useAbility` useSolemnVow
 
-          let
-            fromToken = if dType == MoveDamage then DamageToken else HorrorToken
-            fromMatcher =
-              case sType of
-                You -> \case
-                  ComponentLabel (InvestigatorComponent _ tok) _ -> tok == fromToken
-                  _ -> False
-                AssetYouControl -> \case
-                  ComponentLabel (AssetComponent _ tok) _ -> tok == fromToken
-                  _ -> False
-            
-          chooseOptionMatching "Choose source" fromMatcher
+            let
+              fromToken = if dType == MoveDamage then DamageToken else HorrorToken
+              fromMatcher =
+                case sType of
+                  You -> \case
+                    ComponentLabel (InvestigatorComponent _ tok) _ -> tok == fromToken
+                    _ -> False
+                  AssetYouControl -> \case
+                    ComponentLabel (AssetComponent _ tok) _ -> tok == fromToken
+                    _ -> False
 
-          case tType of
-            Owner -> chooseTarget self
-            AssetOwnerControls -> chooseTarget leoDeLuca
-      
-          roland.damage `shouldReturn` (if (dType, sType) == (MoveDamage, You) then 0 else 1)
-          roland.horror `shouldReturn` (if (dType, sType) == (MoveHorror, You) then 0 else 1)
-          beatCop2.damage `shouldReturn` (if (dType, sType) == (MoveDamage, AssetYouControl) then 0 else 1)
-          beatCop2.horror `shouldReturn` (if (dType, sType) == (MoveHorror, AssetYouControl) then 0 else 1)
+            chooseOptionMatching "Choose source" fromMatcher
 
-          self.damage `shouldReturn` (if (dType, tType) == (MoveDamage, Owner) then 1 else 0)
-          self.horror `shouldReturn` (if (dType, tType) == (MoveHorror, Owner) then 1 else 0)
-          leoDeLuca.damage `shouldReturn` (if (dType, tType) == (MoveDamage, AssetOwnerControls) then 1 else 0)
-          leoDeLuca.horror `shouldReturn` (if (dType, tType) == (MoveHorror, AssetOwnerControls) then 1 else 0)
+            case tType of
+              Owner -> chooseTarget self
+              AssetOwnerControls -> chooseTarget leoDeLuca
+
+            roland.damage `shouldReturn` (if (dType, sType) == (MoveDamage, You) then 0 else 1)
+            roland.horror `shouldReturn` (if (dType, sType) == (MoveHorror, You) then 0 else 1)
+            beatCop2.damage `shouldReturn` (if (dType, sType) == (MoveDamage, AssetYouControl) then 0 else 1)
+            beatCop2.horror `shouldReturn` (if (dType, sType) == (MoveHorror, AssetYouControl) then 0 else 1)
+
+            self.damage `shouldReturn` (if (dType, tType) == (MoveDamage, Owner) then 1 else 0)
+            self.horror `shouldReturn` (if (dType, tType) == (MoveHorror, Owner) then 1 else 0)
+            leoDeLuca.damage
+              `shouldReturn` (if (dType, tType) == (MoveDamage, AssetOwnerControls) then 1 else 0)
+            leoDeLuca.horror
+              `shouldReturn` (if (dType, tType) == (MoveHorror, AssetOwnerControls) then 1 else 0)
 
   context "if the owner of Solemn Vow is not at your location" do
     it "can't be used" . gameTest $ \self -> do

@@ -1337,7 +1337,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       damageAsset aid =
         ComponentLabel
           (AssetComponent aid DamageToken)
-          [ Msg.AssetDamageWithCheck aid source 1 0 False
+          [ Msg.AssignAssetDamageWithCheck aid source 1 0 False
           , assignRestOfHealthDamage (damageTargets <> [AssetTarget aid]) mempty
           ]
       damageInvestigator iid' =
@@ -1388,7 +1388,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       damageAsset aid =
         ComponentLabel
           (AssetComponent aid HorrorToken)
-          [ Msg.AssetDamageWithCheck aid source 0 1 False
+          [ Msg.AssignAssetDamageWithCheck aid source 0 1 False
           , assignRestOfSanityDamage mempty (horrorTargets <> [AssetTarget aid])
           ]
       damageInvestigator iid' =
@@ -1451,7 +1451,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       toAssetMessage (asset, (h, s)) =
         TargetLabel
           (AssetTarget asset)
-          [ Msg.AssetDamageWithCheck asset source (min h health) (min s sanity) False
+          [ Msg.AssignAssetDamageWithCheck asset source (min h health) (min s sanity) False
           , continue h s (AssetTarget asset)
           ]
       toInvestigatorMessage (hank, (h, s)) =
@@ -1495,7 +1495,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             damageAsset aid =
               AssetDamageLabel
                 aid
-                [ Msg.AssetDamageWithCheck aid source 1 0 False
+                [ Msg.AssignAssetDamageWithCheck aid source 1 0 False
                 , assignRestOfHealthDamage (AssetTarget aid : damageTargets) horrorTargets
                 ]
             damageInvestigator iid' =
@@ -1565,7 +1565,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             damageAsset aid =
               AssetHorrorLabel
                 aid
-                [ Msg.AssetDamageWithCheck aid source 0 1 False
+                [ Msg.AssignAssetDamageWithCheck aid source 0 1 False
                 , assignRestOfSanityDamage damageTargets (toTarget aid : horrorTargets)
                 ]
           case strategy of

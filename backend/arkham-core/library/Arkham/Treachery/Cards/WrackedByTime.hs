@@ -42,7 +42,7 @@ instance RunMessage WrackedByTime where
     FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
       push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
       pure t
-    Msg.AssetDamage aid (isSource attrs -> True) _ _ -> do
+    Msg.AssignAssetDamageWithCheck aid (isSource attrs -> True) _ _ _ -> do
       pure . WrackedByTime $ attrs `with` Metadata (insertSet aid $ damagedAssets meta)
     After (Revelation _ (isSource attrs -> True)) -> do
       assets <-

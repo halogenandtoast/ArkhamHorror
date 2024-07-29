@@ -5,7 +5,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Story
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
 

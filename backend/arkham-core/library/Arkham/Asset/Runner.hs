@@ -112,6 +112,8 @@ instance RunMessage AssetAttrs where
       a' <- runMessage (PlaceTokens s (toTarget a) tType n) a
       pushWhen (tType `elem` [Horror, Damage]) $ checkDefeated s a'
       pure a'
+    MoveTokensNoDefeated s _ target tType n | isTarget a target -> do
+      runMessage (PlaceTokens s (toTarget a) tType n) a
     ClearTokens target | isTarget a target -> do
       when (assetClues a > 0)
         $ pushAll
@@ -156,7 +158,7 @@ instance RunMessage AssetAttrs where
       mDefeated <- defeated a source
       for_ mDefeated \defeatedBy -> do
         (before, _, after) <- frame (Window.AssetDefeated (toId a) defeatedBy)
-        pushAll $ [before] <> resolve (AssetDefeated assetId) <> [after]
+        pushAll $ [before] <> resolve (AssetDefeated source assetId) <> [after]
       -- TODO: Investigator uses AssignDamage target
       pure
         $ a
@@ -168,8 +170,8 @@ instance RunMessage AssetAttrs where
     CancelAssetDamage aid _ n | aid == assetId -> do
       pushM $ checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource a)
       pure $ a & tokensL %~ decrementTokensBy Token.Damage n
-    AssetDefeated aid | aid == assetId -> do
-      push $ toDiscard GameSource a
+    AssetDefeated source aid | aid == assetId -> do
+      push $ toDiscard source a
       pure a
     Msg.AssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do
       mods <- getModifiers a

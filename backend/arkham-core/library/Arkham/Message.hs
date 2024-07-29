@@ -443,7 +443,7 @@ data Message
   | AllInvestigatorsResigned
   | AllRandomDiscard Source CardMatcher
   | AssetDamageWithCheck AssetId Source Int Int Bool
-  | AssetDefeated AssetId
+  | AssetDefeated Source AssetId
   | -- Attach
     AttachAsset AssetId Target
   | AttachEvent EventId Target
@@ -775,6 +775,7 @@ data Message
   | RemoveTokens Source Target Token Int
   | ClearTokens Target
   | MoveTokens Source Source Target Token Int
+  | MoveTokensNoDefeated Source Source Target Token Int
   | PlaceUnderneath Target [Card]
   | PlacedUnderneath Target Card
   | PlaceNextTo Target [Card]

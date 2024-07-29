@@ -448,6 +448,7 @@ allTreacheries =
       -- signature
       SomeTreacheryCard hastyRepairs
     , SomeTreacheryCard failedExperiment
+    , SomeTreacheryCard wheresPa
     , -- Return to the Night of the Zealot
       -- Return to the Gathering
       SomeTreacheryCard theZealotsSeal

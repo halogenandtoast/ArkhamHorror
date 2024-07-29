@@ -19,7 +19,7 @@ instance HasAbilities Pitchfork where
     restrictedAbility a 1 ControlsThis fightAction_
       : case a.placement of
         AttachedToLocation lid ->
-          [ withTooltip "Take control of Pitchfork" $ restrictedAbility (proxied lid a) 1 Here actionAbility
+          [ withTooltip "Take control of Pitchfork" $ restrictedAbility (proxied lid a) 2 Here actionAbility
           ]
         _ -> []
    where
@@ -36,7 +36,7 @@ instance RunMessage Pitchfork where
         push $ PlaceAsset attrs.id $ AttachedToLocation lid
         push $ LoseControlOfAsset attrs.id
       pure a
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
+    UseThisAbility iid (isProxySource attrs -> True) 2 -> do
       push $ TakeControlOfAsset iid attrs.id
       pure a
     _ -> Pitchfork <$> liftRunMessage msg attrs

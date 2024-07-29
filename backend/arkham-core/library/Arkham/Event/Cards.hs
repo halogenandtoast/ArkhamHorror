@@ -365,6 +365,7 @@ allPlayerEventCards =
       , stirringUpTrouble1
       , stormOfSpirits
       , stormOfSpirits3
+      , stouthearted
       , stringOfCurses
       , sureGamble3
       , sweepingKick1
@@ -3788,6 +3789,16 @@ beguile =
       , cdCardTraits = setFromList [Trick]
       , cdFastWindow = Just $ DuringTurn You
       , cdCriteria = Just $ exists $ NonEliteEnemy <> EnemyAt YourLocation
+      }
+
+stouthearted :: CardDef
+stouthearted =
+  signature "10015"
+    $ (event "10017" "Stouthearted" 2 Neutral)
+      { cdSkills = [#willpower, #combat, #wild]
+      , cdCardTraits = setFromList [Spirit]
+      , cdCriteria = Just $ youExist $ oneOf [InvestigatorWithAnyDamage, InvestigatorWithAnyHorror]
+      , cdFastWindow = Just $ EnemyEngaged #when You (NonEliteEnemy <> EnemyWithHealth)
       }
 
 tinker :: CardDef

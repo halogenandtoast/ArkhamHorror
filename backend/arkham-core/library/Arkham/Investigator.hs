@@ -137,6 +137,7 @@ allInvestigators =
       , SomeInvestigatorCard kateWinthrop
       , SomeInvestigatorCard alessandraZorzi
       , SomeInvestigatorCard kohakuNarukami
+      , SomeInvestigatorCard hankSamson
       , SomeInvestigatorCard nathanielCho
       , SomeInvestigatorCard harveyWalters
       , SomeInvestigatorCard winifredHabbamock

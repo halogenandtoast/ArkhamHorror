@@ -140,6 +140,7 @@ allPlayerTreacheryCards =
       , unspeakableOathCuriosity
       , voiceOfTheMessenger
       , whatHaveYouDone
+      , wheresPa
       , wrackedByNightmares
       , yaztaroth
       , liberOmniumFinium
@@ -2141,6 +2142,12 @@ failedExperiment :: CardDef
 failedExperiment =
   (weakness "10008" "Failed Experiment")
     { cdCardTraits = setFromList [Blunder]
+    }
+
+wheresPa :: CardDef
+wheresPa =
+  (weakness "10018" "\"Where's Pa?\"")
+    { cdCardTraits = setFromList [Flaw]
     }
 
 theZealotsSeal :: CardDef

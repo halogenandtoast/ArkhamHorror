@@ -642,6 +642,22 @@ getInvestigatorsMatching matcher = do
     InvestigatorWithAnyFailedSkillTestsThisTurn -> \i -> do
       x <- getHistoryField TurnHistory (toId i) HistorySkillTestsPerformed
       pure $ any (isFailedResult . snd) x
+    InvestigatorCanBeAssignedDamageBy iid -> \i -> do
+      mods <- getModifiers iid
+      let
+        damageable = flip any mods $ \case
+          CanAssignDamageToInvestigator iid' -> toId i == iid'
+          _ -> False
+      isHealthDamageable <- fieldP InvestigatorRemainingHealth (> 0) (toId i)
+      pure $ damageable && isHealthDamageable
+    InvestigatorCanBeAssignedHorrorBy iid -> \i -> do
+      mods <- getModifiers iid
+      let
+        damageable = flip any mods $ \case
+          CanAssignHorrorToInvestigator iid' -> toId i == iid'
+          _ -> False
+      isSanityDamageable <- fieldP InvestigatorRemainingSanity (> 0) (toId i)
+      pure $ damageable && isSanityDamageable
     OwnsAsset matcher' -> selectAny . (<> matcher') . AssetOwnedBy . InvestigatorWithId . toId
     InvestigatorHasCardWithDamage -> \i -> do
       orM
@@ -2147,6 +2163,8 @@ getAssetsMatching matcher = do
         (fieldMap AssetStartingUses (== NoUses) . toId)
         as
     AssetWithAnyRemainingHealth -> do
+      -- TODO: This is mainly for wrong place, right time, but we need to
+      -- determine if we can move damange/horror to things that can be assigned
       let isHealthDamageable a = fieldP AssetRemainingHealth (maybe False (> 0)) (toId a)
       filterM isHealthDamageable as
     AssetWithAnyRemainingSanity -> do
@@ -4573,7 +4591,9 @@ preloadModifiers g = case gameMode g of
               <> map ActiveCostTarget (keys $ gameActiveCost g)
               <> map PhaseTarget [minBound ..]
           )
-    allModifiers `seq` pure $ g {gameModifiers = Map.map (filter modifierFilter) allModifiers}
+    allModifiers
+      `seq` pure
+      $ g {gameModifiers = Map.filter notNull $ Map.map (filter modifierFilter) allModifiers}
  where
   entities = overEntities (: []) (gameEntities g)
   inHandEntities =

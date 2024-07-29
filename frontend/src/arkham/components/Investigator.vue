@@ -135,7 +135,7 @@ const image = computed(() => {
     return imgsrc("cards/04244.jpg");
   }
 
-  return imgsrc(`cards/${props.investigator.cardCode.replace('c', '')}.jpg`);
+  return imgsrc(`cards/${props.investigator.art.replace('c', '')}.jpg`);
 })
 
 const portraitImage = computed(() => {

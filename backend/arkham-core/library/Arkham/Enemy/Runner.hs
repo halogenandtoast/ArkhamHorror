@@ -792,8 +792,6 @@ instance RunMessage EnemyAttrs where
       pure $ a & attackingL ?~ details'
     AfterEnemyAttack eid msgs | eid == enemyId -> do
       let details = fromJustNote "missing attack details" enemyAttacking
-      keywords <- getModifiedKeywords a
-      pushWhen (Keyword.Elusive `elem` keywords) $ HandleElusive eid
       pure $ a & attackingL ?~ details {attackAfter = msgs}
     EnemyAttack details | attackEnemy details == enemyId -> do
       case attackTarget details of
@@ -897,7 +895,9 @@ instance RunMessage EnemyAttrs where
       pure a
     After (EnemyAttack details) | details.enemy == a.id -> do
       let updatedDetails = fromJustNote "missing attack details" enemyAttacking
+      keywords <- getModifiedKeywords a
       afterAttacksWindow <- checkAfter $ Window.EnemyAttacks updatedDetails
+      pushWhen (Keyword.Elusive `elem` keywords) $ HandleElusive a.id
       pushAll $ afterAttacksWindow : attackAfter updatedDetails
       pure a
     HealDamage (EnemyTarget eid) source n | eid == enemyId -> do

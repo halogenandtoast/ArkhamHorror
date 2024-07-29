@@ -321,8 +321,9 @@ button {
 }
 
 .card {
-  width: $card-width;
+  width: min-width($card-width * 2);
   margin: 2px;
+  height: max($card-width * 2);
 }
 
 .question-label {

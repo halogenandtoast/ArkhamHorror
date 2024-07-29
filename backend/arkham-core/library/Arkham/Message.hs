@@ -549,6 +549,7 @@ data Message
   | DiscardTopOfEncounterDeck InvestigatorId Int Source (Maybe Target)
   | DiscardTopOfEncounterDeckWithDiscardedCards InvestigatorId Int Source (Maybe Target) [EncounterCard]
   | Discarded Target Source Card
+  | DiscardedCard CardId
   | DiscardedTopOfEncounterDeck InvestigatorId [EncounterCard] Source Target
   | DiscardedTopOfDeck InvestigatorId [PlayerCard] Source Target
   | DiscoverClues InvestigatorId Discover

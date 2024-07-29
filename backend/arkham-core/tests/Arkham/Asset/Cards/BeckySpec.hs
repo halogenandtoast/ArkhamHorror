@@ -11,7 +11,7 @@ spec = describe "Becky" $ do
   it "Each resource gained by tommy muldoon's ability may be placed on Becky as ammo" . gameTestWith tommyMuldoon $ \self -> do
     becky <- self `putAssetIntoPlay` Assets.becky
     beatCop2 <- self `putAssetIntoPlay` Assets.beatCop2
-    run $ AssetDamage beatCop2 (TestSource mempty) 3 1
+    run $ DealAssetDamage beatCop2 (TestSource mempty) 3 1
     useReaction
     resolveAmounts self [("Tommy Muldoon Resources", 2), ("Becky Resources", 2)]
     self.resources `shouldReturn` 2

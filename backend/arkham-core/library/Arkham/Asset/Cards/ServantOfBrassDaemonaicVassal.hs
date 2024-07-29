@@ -32,7 +32,7 @@ instance RunMessage ServantOfBrassDaemonaicVassal where
       selectOneToHandle iid (attrs.ability 1)
         $ EnemyAt (oneOf [locationWithInvestigator iid, ConnectedFrom (locationWithInvestigator iid)])
         <> EnemyCanBeDamagedBySource (attrs.ability 1)
-      push $ Msg.AssetDamage attrs.id (attrs.ability 1) 1 0
+      push $ Msg.DealAssetDamage attrs.id (attrs.ability 1) 1 0
       pure a
     HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (EnemyTarget eid) -> do
       nonAttackEnemyDamage (attrs.ability 1) 2 eid

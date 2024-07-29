@@ -9,7 +9,7 @@ import Arkham.Asset.Types
 import Arkham.Classes
 import Arkham.Damage
 import Arkham.Matcher hiding (AssetExhausted)
-import Arkham.Message hiding (AssetDamage)
+import Arkham.Message
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner

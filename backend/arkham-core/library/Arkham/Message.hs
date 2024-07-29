@@ -315,10 +315,10 @@ pattern BeginSkillTest skillTest <- BeginSkillTestWithPreMessages' [] skillTest
   where
     BeginSkillTest skillTest = BeginSkillTestWithPreMessages' [] skillTest
 
-pattern AssetDamage :: AssetId -> Source -> Int -> Int -> Message
-pattern AssetDamage aid source damage horror <- AssetDamageWithCheck aid source damage horror True
+pattern DealAssetDamage :: AssetId -> Source -> Int -> Int -> Message
+pattern DealAssetDamage aid source damage horror <- DealAssetDamageWithCheck aid source damage horror True
   where
-    AssetDamage aid source damage horror = AssetDamageWithCheck aid source damage horror True
+    DealAssetDamage aid source damage horror = DealAssetDamageWithCheck aid source damage horror True
 
 type IsSameAction = Bool
 
@@ -442,7 +442,9 @@ data Message
   | AllDrawEncounterCard
   | AllInvestigatorsResigned
   | AllRandomDiscard Source CardMatcher
-  | AssetDamageWithCheck AssetId Source Int Int Bool
+  | DealAssetDamageWithCheck AssetId Source Int Int Bool
+  | DealAssetDirectDamage AssetId Source Int Int
+  | AssignAssetDamageWithCheck AssetId Source Int Int Bool
   | AssetDefeated Source AssetId
   | -- Attach
     AttachAsset AssetId Target

@@ -30,6 +30,8 @@ instance RunMessage NamelessRuins where
       allies <- select $ assetControlledBy iid <> #ally
       player <- getPlayer iid
       push
-        $ chooseOne player [targetLabel ally [AssetDamage ally (attrs.ability 1) 1 0] | ally <- allies]
+        $ chooseOne
+          player
+          [targetLabel ally [DealAssetDirectDamage ally (attrs.ability 1) 1 0] | ally <- allies]
       pure l
     _ -> NamelessRuins <$> runMessage msg attrs

@@ -21,7 +21,7 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Key
 import Arkham.Matcher.Types (AssetMatcher (AssetWithId), Be (..))
-import Arkham.Message hiding (AssetDamage)
+import Arkham.Message
 import Arkham.Name
 import Arkham.Placement
 import Arkham.Slot

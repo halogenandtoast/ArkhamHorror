@@ -1,6 +1,7 @@
 module Arkham.Investigator.Cards.HankSamson (hankSamson, HankSamson (..)) where
 
 import Arkham.Ability
+import Arkham.Asset.Types (Field (..))
 import Arkham.Capability
 import Arkham.Classes.HasQueue (replaceMessageMatching)
 import Arkham.Game.Helpers (onSameLocation)
@@ -10,6 +11,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified, modified)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
+import Arkham.Projection
 
 newtype HankSamson = HankSamson InvestigatorAttrs
   deriving anyclass IsInvestigator
@@ -25,6 +27,11 @@ instance HasModifiersFor HankSamson where
   getModifiersFor (InvestigatorTarget iid) (HankSamson a) | iid /= a.id = do
     maybeModified a do
       liftGuardM $ onSameLocation iid a.placement
+      pure [CanAssignDamageToInvestigator (toId a), CanAssignHorrorToInvestigator (toId a)]
+  getModifiersFor (AssetTarget aid) (HankSamson a) = do
+    maybeModified a do
+      liftGuardM $ onSameLocation a.id =<< field AssetPlacement aid
+      liftGuardM $ aid <=~> AllyAsset
       pure [CanAssignDamageToInvestigator (toId a), CanAssignHorrorToInvestigator (toId a)]
   getModifiersFor target (HankSamson a) | isTarget a target = do
     if investigatorArt a == "10015" then pure [] else modified a [CannotHealHorror, CannotHealDamage]

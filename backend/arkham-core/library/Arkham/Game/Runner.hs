@@ -50,7 +50,6 @@ import Arkham.Helpers.Customization
 import Arkham.Helpers.Enemy (spawnAt)
 import Arkham.Helpers.Investigator hiding (investigator, matchTarget)
 import Arkham.Helpers.Message hiding (
-  AssetDamage,
   EnemyDamage,
   InvestigatorDamage,
   InvestigatorDefeated,

@@ -35,7 +35,7 @@ instance RunMessage PassageIntoTheVeil where
           , Label
               "Take 1 direct damage and deal 1 damage to each of your Ally assets"
               $ InvestigatorDirectDamage iid (toSource attrs) 1 0
-              : [Msg.AssetDamage aid (toSource attrs) 1 0 | aid <- assetIds]
+              : [Msg.DealAssetDamage aid (toSource attrs) 1 0 | aid <- assetIds]
           ]
       pure t
     _ -> PassageIntoTheVeil <$> runMessage msg attrs

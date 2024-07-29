@@ -10,6 +10,6 @@ spec = describe "Peter Sylvestre" $ do
   it "removes one horror at the end of your turn" . gameTest $ \self -> do
     peterSylvestre <- self `putAssetIntoPlay` Assets.peterSylvestre
     duringTurn self $ do
-      run $ AssetDamage peterSylvestre (TestSource mempty) 0 1
+      run $ DealAssetDamage peterSylvestre (TestSource mempty) 0 1
 
     assertChanges peterSylvestre.horror 1 0 useReaction

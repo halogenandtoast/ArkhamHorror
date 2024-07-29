@@ -60,7 +60,7 @@ import Arkham.Helpers.Investigator (
   getActionCost,
   getCanAfford,
  )
-import Arkham.Helpers.Message hiding (AssetDamage, InvestigatorDamage, PaidCost)
+import Arkham.Helpers.Message hiding (InvestigatorDamage, PaidCost)
 import Arkham.Helpers.SkillTest (getIsPerilous, getSkillTestDifficulty)
 import Arkham.Helpers.Tarot
 import Arkham.History

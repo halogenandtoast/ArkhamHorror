@@ -72,7 +72,6 @@ import Arkham.Helpers.Enemy (enemyEngagedInvestigators)
 import Arkham.Helpers.Investigator hiding (investigator, matchTarget)
 import Arkham.Helpers.Location qualified as Helpers
 import Arkham.Helpers.Message hiding (
-  AssetDamage,
   EnemyDamage,
   InvestigatorDamage,
   InvestigatorDefeated,

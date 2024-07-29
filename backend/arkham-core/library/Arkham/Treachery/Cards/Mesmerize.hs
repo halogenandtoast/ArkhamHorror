@@ -61,7 +61,7 @@ instance RunMessage MesmerizeEffect where
               player <- getPlayer iid
               pushAll
                 [ chooseOne player $ targetLabels locationTargets (only . AttachAsset aid)
-                , AssetDamage aid (effectSource attrs) 1 1
+                , DealAssetDamage aid (effectSource attrs) 1 1
                 , disable attrs
                 ]
             _ -> error "Must be investigator target"

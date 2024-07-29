@@ -22,7 +22,7 @@ instance RunMessage BurdenOfLeadership where
           $ [Label "Exhaust" [Exhaust (toTarget ally)] | isReady]
           <> [ Label
                 "Deal 1 direct damage and 1 direct horror"
-                [AssetDamageWithCheck ally (toSource attrs) 1 1 True]
+                [DealAssetDirectDamage ally (toSource attrs) 1 1]
              ]
       chooseOneAtATime iid $ map (uncurry targetLabel) choices
       pure t

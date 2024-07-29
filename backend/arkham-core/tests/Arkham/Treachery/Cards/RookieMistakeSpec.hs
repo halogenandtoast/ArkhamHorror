@@ -12,8 +12,8 @@ spec = describe "Rookie Mistake" $ do
     beatCop2 <- self `putAssetIntoPlay` Assets.beatCop2
     elderSignAmulet3 <- self `putAssetIntoPlay` Assets.elderSignAmulet3
     self `putCardIntoPlay` Assets.guardDog
-    run $ AssetDamage beatCop2 (TestSource mempty) 1 0
-    run $ AssetDamage elderSignAmulet3 (TestSource mempty) 0 1
+    run $ DealAssetDamage beatCop2 (TestSource mempty) 1 0
+    run $ DealAssetDamage elderSignAmulet3 (TestSource mempty) 0 1
     self `drawsCard` Treacheries.rookieMistake
     asDefs self.discard
       `shouldMatchListM` [Treacheries.rookieMistake, Assets.beatCop2, Assets.elderSignAmulet3]

@@ -34,7 +34,7 @@ instance RunMessage BalconySpectral where
       push
         $ chooseOneAtATime player
         $ targetLabel iid [InvestigatorDirectDamage iid (toSource attrs) 1 0]
-        : [ targetLabel asset [AssetDamage asset (toSource attrs) 1 0]
+        : [ targetLabel asset [DealAssetDirectDamage asset (toSource attrs) 1 0]
           | asset <- assets
           ]
       pure l

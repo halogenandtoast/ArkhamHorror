@@ -450,6 +450,7 @@ allPlayerAssetCards =
       , holySpear5
       , hope
       , huntersArmor
+      , huntingJacket2
       , hyperawareness
       , hyperawareness2
       , hyperawareness4
@@ -6474,6 +6475,15 @@ hatchet1 =
     , cdSkills = [#agility]
     , cdSlots = [#hand]
     , cdLevel = Just 1
+    }
+
+huntingJacket2 :: CardDef
+huntingJacket2 =
+  (asset "10121" "Hunting Jacket" 2 Survivor)
+    { cdCardTraits = setFromList [Item, Clothing]
+    , cdSkills = [#agility]
+    , cdSlots = [#body]
+    , cdLevel = Just 2
     }
 
 marinersCompass2 :: CardDef

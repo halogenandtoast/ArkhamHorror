@@ -2146,6 +2146,12 @@ getAssetsMatching matcher = do
       filterM
         (fieldMap AssetStartingUses (== NoUses) . toId)
         as
+    AssetWithAnyRemainingHealth -> do
+      let isHealthDamageable a = fieldP AssetRemainingHealth (maybe False (> 0)) (toId a)
+      filterM isHealthDamageable as
+    AssetWithAnyRemainingSanity -> do
+      let isSanityDamageable a = fieldP AssetRemainingSanity (maybe False (> 0)) (toId a)
+      filterM isSanityDamageable as
     AssetCanBeAssignedDamageBy iid -> do
       modifiers' <- getModifiers (InvestigatorTarget iid)
       let

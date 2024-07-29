@@ -422,6 +422,7 @@ allPlayerEventCards =
       , wordOfWoe
       , workingAHunch
       , writtenInTheStars
+      , wrongPlaceRightTime
       , youHandleThisOne
       , youOweMeOne
       ]
@@ -3924,6 +3925,20 @@ pushedToTheLimit =
               <> CardWithPerformableAbility AbilityIsActionAbility [IgnoreAllCosts]
           )
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+    }
+
+wrongPlaceRightTime :: CardDef
+wrongPlaceRightTime =
+  (event "10115" "Wrong Place, Right Time" 0 Survivor)
+    { cdSkills = [#willpower, #agility, #wild]
+    , cdCardTraits = setFromList [Spirit, Double]
+    , cdAdditionalCost = Just AdditionalActionCost
+    , cdCriteria =
+        Just
+          $ oneOf
+            [ youExist InvestigatorWithAnyDamage <> exists (AssetAt YourLocation <> AssetWithHealth)
+            , youExist InvestigatorWithAnyHorror <> exists (AssetAt YourLocation <> AssetWithSanity)
+            ]
     }
 
 keepFaith2 :: CardDef

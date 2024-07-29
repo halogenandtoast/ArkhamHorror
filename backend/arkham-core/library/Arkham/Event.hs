@@ -583,6 +583,7 @@ allEvents =
     , SomeEventCard sealOfTheElders5
     , --- survivor [fhv]
       SomeEventCard pushedToTheLimit
+    , SomeEventCard wrongPlaceRightTime
     , SomeEventCard keepFaith2
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]

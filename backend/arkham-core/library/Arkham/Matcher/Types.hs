@@ -229,6 +229,8 @@ data AssetMatcher
   | AssetWithHorror
   | AssetWithHealth
   | AssetWithSanity
+  | AssetWithAnyRemainingHealth
+  | AssetWithAnyRemainingSanity
   | AssetWithFewestClues AssetMatcher
   | AssetCanBeAssignedDamageBy InvestigatorId
   | AssetCanBeDamagedBySource Source

@@ -70,6 +70,7 @@ export type Investigator = {
   id: string;
   playerId: string;
   cardCode: string;
+  art: string;
   class: ClassSymbol;
   health: number;
   sanity: number;
@@ -154,6 +155,7 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   id: JsonDecoder.string,
   playerId: JsonDecoder.string,
   cardCode: JsonDecoder.string,
+  art: JsonDecoder.string,
   class: classSymbolDecoder,
   health: JsonDecoder.number,
   sanity: JsonDecoder.number,

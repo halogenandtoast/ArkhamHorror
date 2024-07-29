@@ -65,6 +65,8 @@ pattern MostHorror <- MostToken Horror
 data InvestigatorMatcher
   = InvestigatorAt LocationMatcher
   | InvestigatorIs CardCode
+  | InvestigatorCanBeAssignedDamageBy InvestigatorId
+  | InvestigatorCanBeAssignedHorrorBy InvestigatorId
   | InvestigatorCanMoveTo Source LocationMatcher
   | InvestigatorWithToken Token
   | You

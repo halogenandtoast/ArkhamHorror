@@ -93,6 +93,8 @@ data ModifierType
   | BountiesOnly
   | CanAssignDamageToAsset AssetId
   | CanAssignHorrorToAsset AssetId
+  | CanAssignDamageToInvestigator InvestigatorId
+  | CanAssignHorrorToInvestigator InvestigatorId
   | CanBeAssignedDirectDamage
   | CanBeFoughtAsIfAtYourLocation
   | CanBecomeFast CardMatcher
@@ -164,6 +166,7 @@ data ModifierType
   | CannotRevealCards
   | CanHealAtFull DamageType
   | CannotHealHorror
+  | CannotHealDamage
   | CannotHealHorrorOnOtherCards Target
   | CannotInvestigate
   | CannotInvestigateLocation LocationId

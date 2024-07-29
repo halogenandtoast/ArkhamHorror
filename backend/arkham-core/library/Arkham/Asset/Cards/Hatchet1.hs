@@ -21,7 +21,8 @@ instance HasAbilities Hatchet1 where
     [restrictedAbility a 1 ControlsThis fightAction_]
       <> case a.placement of
         AttachedToEnemy eid ->
-          [ restrictedAbility (proxied eid a) 1 OnSameLocation
+          [ withTooltip "Take control of Hatchet"
+              $ restrictedAbility (proxied eid a) 2 OnSameLocation
               $ freeReaction
               $ Matcher.EnemyDefeated #when Anyone ByAny
               $ EnemyWithId eid
@@ -49,7 +50,7 @@ instance RunMessage Hatchet1 where
             push $ PlaceAsset attrs.id (AttachedToEnemy eid)
         _ -> pure ()
       pure a
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
+    UseThisAbility iid (isProxySource attrs -> True) 2 -> do
       push $ TakeControlOfAsset iid attrs.id
       pure a
     _ -> Hatchet1 <$> liftRunMessage msg attrs

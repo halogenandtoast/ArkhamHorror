@@ -139,9 +139,9 @@ pattern InvestigatorCanHealHorror <-
 
 -- Placeholder
 pattern InvestigatorCanHealDamage :: InvestigatorMatcher
-pattern InvestigatorCanHealDamage <- Anyone
+pattern InvestigatorCanHealDamage <- InvestigatorWithoutModifier CannotHealDamage
   where
-    InvestigatorCanHealDamage = Anyone
+    InvestigatorCanHealDamage = InvestigatorWithoutModifier CannotHealDamage
 
 -- ** Event Patterns **
 

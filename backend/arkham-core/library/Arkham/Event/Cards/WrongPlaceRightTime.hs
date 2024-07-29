@@ -10,7 +10,7 @@ import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Helpers.Query (getPlayer)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Matcher
+import Arkham.Matcher hiding (AssetDefeated)
 import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Arkham.Strategy
@@ -35,7 +35,7 @@ instance RunMessage WrongPlaceRightTime where
     PlayThisEvent _iid (is attrs -> True) -> do
       doStep 5 msg
       pure e
-    DoStep 0 msg'@(PlayThisEvent iid (is attrs -> True)) -> do
+    DoStep 0 (PlayThisEvent _iid (is attrs -> True)) -> do
       for_ (nub $ chosenAssets meta) \asset -> do
         push $ CheckDefeated (toSource attrs) (toTarget asset)
       pure e
@@ -81,6 +81,9 @@ instance RunMessage WrongPlaceRightTime where
                ]
 
       pure e
-    HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
+    HandleTargetChoice _iid (isSource attrs -> True) (AssetTarget aid) -> do
       pure . WrongPlaceRightTime $ attrs `with` Meta (aid : chosenAssets meta)
+    AssetDefeated (isSource attrs -> True) _ -> do
+      drawCardsIfCan attrs.controller attrs 1
+      pure e
     _ -> WrongPlaceRightTime . (`with` meta) <$> liftRunMessage msg attrs

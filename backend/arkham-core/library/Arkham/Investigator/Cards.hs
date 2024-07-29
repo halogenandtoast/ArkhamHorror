@@ -75,6 +75,7 @@ allInvestigatorCards =
       , kateWinthrop
       , alessandraZorzi
       , kohakuNarukami
+      , hankSamson
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -513,6 +514,14 @@ kohakuNarukami =
     ("Kōhaku Narukami" <:> "The Folklorist")
     Mystic
     [Scholar, Blessed, Cursed]
+
+hankSamson :: CardDef
+hankSamson =
+  investigator
+    "10015"
+    ("Hank Samson" <:> "The Farmhand")
+    Survivor
+    [Assistant, Warden]
 
 nathanielCho :: CardDef
 nathanielCho =

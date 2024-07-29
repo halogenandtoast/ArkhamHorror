@@ -114,6 +114,8 @@ instance RunMessage AssetAttrs where
       pure a'
     MoveTokensNoDefeated s _ target tType n | isTarget a target -> do
       runMessage (PlaceTokens s (toTarget a) tType n) a
+    MoveTokensNoDefeated s source _ tType n | isSource a source -> do
+      runMessage (RemoveTokens s (toTarget a) tType n) a
     ClearTokens target | isTarget a target -> do
       when (assetClues a > 0)
         $ pushAll
@@ -359,6 +361,7 @@ instance RunMessage AssetAttrs where
       pushAll
         $ windows'
         <> [RemoveFromPlay $ toSource a, discardMsg, afterWindows]
+      for_ a.cardsUnderneath $ push . DiscardedCard . toCardId
       pure a
     Exile target | a `isTarget` target -> do
       pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]

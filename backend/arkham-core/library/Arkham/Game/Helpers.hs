@@ -1298,6 +1298,8 @@ passesCriteria iid mcard source' requestor windows' = \case
       onSameLocation iid =<< field AssetPlacement aid
     ProxySource (AssetSource aid) _ -> do
       onSameLocation iid =<< field AssetPlacement aid
+    ProxySource (EnemySource eid) _ -> do
+      onSameLocation iid =<< field EnemyPlacement eid
     _ -> error $ "missing OnSameLocation check for source: " <> show source
   Criteria.DuringTurn (Matcher.replaceYouMatcher iid -> who) -> selectAny (Matcher.TurnInvestigator <> who)
   Criteria.CardExists cardMatcher -> selectAny cardMatcher

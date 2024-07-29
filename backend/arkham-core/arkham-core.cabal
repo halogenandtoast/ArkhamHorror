@@ -1813,6 +1813,7 @@ library
       Arkham.Event.Cards.StirringUpTrouble1
       Arkham.Event.Cards.StormOfSpirits
       Arkham.Event.Cards.StormOfSpirits3
+      Arkham.Event.Cards.Stouthearted
       Arkham.Event.Cards.StringOfCurses
       Arkham.Event.Cards.SureGamble3
       Arkham.Event.Cards.SweepingKick1
@@ -1972,6 +1973,7 @@ library
       Arkham.Investigator.Cards.FinnEdwards
       Arkham.Investigator.Cards.GavriellaMizrah
       Arkham.Investigator.Cards.GloriaGoldberg
+      Arkham.Investigator.Cards.HankSamson
       Arkham.Investigator.Cards.HarveyWalters
       Arkham.Investigator.Cards.JacquelineFine
       Arkham.Investigator.Cards.JennyBarnes
@@ -3237,6 +3239,7 @@ library
       Arkham.Treachery.Cards.WatchersGazeUnionAndDisillusion
       Arkham.Treachery.Cards.WatchersGrasp
       Arkham.Treachery.Cards.WhatHaveYouDone
+      Arkham.Treachery.Cards.WheresPa
       Arkham.Treachery.Cards.WhisperedBargain
       Arkham.Treachery.Cards.WhisperingChaosEast
       Arkham.Treachery.Cards.WhisperingChaosNorth

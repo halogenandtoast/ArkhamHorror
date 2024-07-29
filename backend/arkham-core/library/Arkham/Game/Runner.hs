@@ -1041,6 +1041,17 @@ runGameMessage msg g = case msg of
     pure g
   FinishedSearch -> do
     pure $ g & foundCardsL .~ mempty
+  DiscardedCard cardId -> do
+    let
+      handleCard card = case card of
+        PlayerCard pc -> case pc.owner of
+          Just iid -> pushAll [ObtainCard card, AddToDiscard iid pc]
+          Nothing -> push $ ObtainCard card
+        EncounterCard ec -> pushAll [ObtainCard card, AddToEncounterDiscard ec]
+        VengeanceCard vc -> handleCard vc
+
+    handleCard =<< getCard cardId
+    pure g
   AddToEncounterDiscard card -> do
     pure
       $ g

@@ -130,6 +130,7 @@ allPlayerAssetCards =
       , alyssaGraham
       , analyticalMind
       , ancestralKnowledge3
+      , ancestralToken
       , ancientCovenant2
       , ancientStone1
       , ancientStoneKnowledgeOfTheElders4
@@ -6266,6 +6267,14 @@ bookOfLivingMythsChronicleOfWonders =
       , cdUnique = True
       , cdSlots = [#hand]
       }
+
+ancestralToken :: CardDef
+ancestralToken =
+  (asset "10019" "Ancestral Token" 3 Guardian)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Charm, Blessed]
+    , cdSlots = [#accessory]
+    }
 
 cleaningKit :: CardDef
 cleaningKit =

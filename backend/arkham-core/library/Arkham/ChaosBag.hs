@@ -666,6 +666,9 @@ instance RunMessage ChaosBag where
           pushAll
             ( FocusChaosTokens tokens'
                 : checkWindowMsgs
+                  <> case miid of
+                    Nothing -> []
+                    Just iid -> map (RevealChaosToken source iid) tokens'
                   <> [RequestedChaosTokens source miid tokens', UnfocusChaosTokens]
             )
           pure $ c & choiceL .~ Nothing

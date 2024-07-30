@@ -98,6 +98,7 @@ allPlayerSkillCards =
       , prescient
       , promiseOfPower
       , prophesy
+      , purified
       , quickThinking
       , reckless
       , recklessAssault
@@ -779,6 +780,13 @@ gumption1 :: CardDef
 gumption1 =
   (skill "09112" "Gumption" [] Survivor)
     { cdCardTraits = setFromList [Innate]
+    , cdCommitRestrictions = [MaxOnePerTest]
+    }
+
+purified :: CardDef
+purified =
+  (skill "10029" "Purified" [] Guardian)
+    { cdCardTraits = setFromList [Innate, Blessed]
     , cdCommitRestrictions = [MaxOnePerTest]
     }
 

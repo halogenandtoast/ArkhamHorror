@@ -1,5 +1,6 @@
 module Arkham.Event.Cards.TaskForce (taskForce, TaskForce (..)) where
 
+import Arkham.Ability
 import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (discoverAtYourLocation)
@@ -25,7 +26,7 @@ instance RunMessage TaskForce where
     PlayThisEvent _iid (is attrs -> True) -> do
       doStep 0 msg
       pure e
-    DoStep 0 (PlayThisEvent iid (is attrs -> True)) -> do
+    DoStep 0 msg'@(PlayThisEvent iid (is attrs -> True)) -> do
       canUseAbility <-
         (1 `notElem` usedOptions meta &&)
           <$> selectAny
@@ -49,24 +50,26 @@ instance RunMessage TaskForce where
             )
 
       when (canUseAbility || canMove || canDiscover) do
-        chooseOneAtATime iid
+        chooseOne iid
           $ [ Label
               "...resolve an {action} ability on an asset they control without paying its {action} cost."
-              [DoStep 1 msg]
+              [DoStep 1 msg']
             | canUseAbility
             ]
-          <> [Label "...move to a connecting location." [DoStep 2 msg] | canMove]
-          <> [Label "...discover 1 clue at their location" [DoStep 3 msg] | canDiscover]
+          <> [Label "...move to a connecting location." [DoStep 2 msg'] | canMove]
+          <> [Label "...discover 1 clue at their location" [DoStep 3 msg'] | canDiscover]
 
       pure e
     DoStep 1 msg'@(PlayThisEvent iid (is attrs -> True)) -> do
       investigators <- select $ colocatedWith iid
       investigatorsWithAbilities <- flip mapMaybeM investigators \iid' -> do
         abilities <-
-          select
-            $ PerformableAbilityBy (InvestigatorWithId iid') [IgnoreActionCost]
-            <> AbilityIsActionAbility
-            <> AbilityOnAsset (assetControlledBy iid')
+          map (`applyAbilityModifiers` [IgnoreActionCost])
+            <$> select
+              ( PerformableAbilityBy (InvestigatorWithId iid') [IgnoreActionCost]
+                  <> AbilityIsActionAbility
+                  <> AbilityOnAsset (assetControlledBy iid')
+              )
         player <- getPlayer iid'
         pure $ if null abilities then Nothing else Just (player, iid', abilities)
       chooseOrRunOne

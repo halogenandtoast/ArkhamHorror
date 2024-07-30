@@ -1,14 +1,10 @@
 module Arkham.Event.Cards.ScarletRot (scarletRot, ScarletRot (..)) where
 
 import Arkham.Ability
-import Arkham.Capability
 import Arkham.Card
-import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (EnemyDefeated)
-import Arkham.Helpers.GameValue
 import Arkham.Matcher
-import Arkham.Projection
 
 newtype ScarletRot = ScarletRot EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
@@ -30,7 +26,7 @@ instance HasAbilities ScarletRot where
 
 instance RunMessage ScarletRot where
   runMessage msg e@(ScarletRot attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
       for_ attrs.attachedTo \case
         EnemyTarget eid -> nonAttackEnemyDamage (attrs.ability 1) 1 eid
         _ -> pure ()

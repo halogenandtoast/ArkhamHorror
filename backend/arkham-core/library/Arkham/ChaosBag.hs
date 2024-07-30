@@ -663,12 +663,21 @@ instance RunMessage ChaosBag where
               <> formatAsSentence tokens'
               <> " chaos "
               <> (if length tokens' == 1 then "token" else "tokens")
+
+          -- the skill test handles revealing its own tokens so we only reveal
+          -- here if the source was something else and we have an investigator
+          -- to reveal "to"
+          let
+            revealF =
+              case (source, miid) of
+                (SkillTestSource _, _) -> const []
+                (_, Nothing) -> const []
+                (_, Just iid) -> map (RevealChaosToken source iid)
+
           pushAll
             ( FocusChaosTokens tokens'
                 : checkWindowMsgs
-                  <> case miid of
-                    Nothing -> []
-                    Just iid -> map (RevealChaosToken source iid) tokens'
+                  <> revealF tokens'
                   <> [RequestedChaosTokens source miid tokens', UnfocusChaosTokens]
             )
           pure $ c & choiceL .~ Nothing

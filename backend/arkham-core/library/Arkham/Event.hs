@@ -568,7 +568,10 @@ allEvents =
     , SomeEventCard beguile
     , SomeEventCard stouthearted
     , --- guardian [fhv]
-      SomeEventCard tinker
+      SomeEventCard absolution
+    , SomeEventCard guidedByFaith
+    , SomeEventCard holdUp
+    , SomeEventCard tinker
     , --- seeker [fhv]
       SomeEventCard fineTuning1
     , --- rogue [fhv]

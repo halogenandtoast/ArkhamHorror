@@ -302,9 +302,9 @@ onRevealChaosTokenEffect
   -> ChaosTokenMatcher
   -> source
   -> target
+  -> [Message]
   -> Message
-  -> Message
-onRevealChaosTokenEffect sid matchr source target msg = CreateOnRevealChaosTokenEffect sid matchr (toSource source) (toTarget target) msg
+onRevealChaosTokenEffect sid matchr source target msgs = CreateOnRevealChaosTokenEffect sid matchr (toSource source) (toTarget target) msgs
 
 uiEffect :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 uiEffect source target modifier = createWindowModifierEffect EffectUI source target [modifier]

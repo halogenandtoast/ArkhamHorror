@@ -3,7 +3,6 @@ module Arkham.Event.Cards.ReadTheSigns2 (readTheSigns2, ReadTheSigns2 (..)) wher
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..))
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Investigate
 import Arkham.Matcher
 import Arkham.Strategy
@@ -24,8 +23,8 @@ instance RunMessage ReadTheSigns2 where
         attrs
         iid
         [AddSkillValue #willpower, DiscoveredClues 1, MayIgnoreLocationEffectsAndKeywords]
-      onRevealChaosTokenEffect sid IsSymbol attrs attrs
-        $ Msg.eventModifier attrs attrs (SetAfterPlay ReturnThisToHand)
+      onRevealChaosTokenEffect sid IsSymbol attrs attrs do
+        eventModifier attrs attrs (SetAfterPlay ReturnThisToHand)
       pushM $ mkInvestigate sid iid attrs
       pure e
     _ -> ReadTheSigns2 <$> liftRunMessage msg attrs

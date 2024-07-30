@@ -41,6 +41,8 @@ import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.Window qualified as Msg
 import Arkham.Helpers.Xp
 import Arkham.Id
+import Arkham.Investigate
+import Arkham.Investigate qualified as Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message hiding (story)
@@ -660,6 +662,10 @@ roundModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 roundModifier source target modifier = push $ Msg.roundModifier source target modifier
 
+roundModifiers
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
+roundModifiers source target modifiers = push $ Msg.roundModifiers source target modifiers
+
 skillTestModifiers
   :: forall target source m
    . (ReverseQueue m, Sourceable source, Targetable target)
@@ -826,6 +832,20 @@ chooseEvadeEnemyMatch
   -> m ()
 chooseEvadeEnemyMatch sid iid source = mkChooseEvadeMatch sid iid source >=> push . toMessage
 
+investigateWithSkillChoice
+  :: (ReverseQueue m, Sourceable source)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> [SkillType]
+  -> m ()
+investigateWithSkillChoice sid iid source skillTypes = do
+  inv <- mkInvestigate sid iid source
+  let using = toMessage . (`Investigate.withSkillType` inv)
+  Arkham.Message.Lifted.chooseOne
+    iid
+    [Label ("Use " <> format sType) [using sType] | sType <- skillTypes]
+
 mapQueue :: (MonadTrans t, HasQueue Message m) => (Message -> Message) -> t m ()
 mapQueue = lift . Msg.mapQueue
 
@@ -933,9 +953,11 @@ onRevealChaosTokenEffect
   -> ChaosTokenMatcher
   -> source
   -> target
-  -> Message
+  -> QueueT Message m ()
   -> m ()
-onRevealChaosTokenEffect sid matchr source target msg = push $ Msg.onRevealChaosTokenEffect sid matchr source target msg
+onRevealChaosTokenEffect sid matchr source target f = do
+  msgs <- evalQueueT f
+  push $ Msg.onRevealChaosTokenEffect sid matchr source target msgs
 
 eventModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()

@@ -6,7 +6,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Fight
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Matcher
 import Arkham.Strategy
@@ -41,8 +40,8 @@ instance RunMessage SpectralRazor2 where
       sid <- getRandom
       skillTestModifier sid attrs iid (AddSkillValue #willpower)
       createCardEffect Cards.spectralRazor2 Nothing attrs iid
-      onRevealChaosTokenEffect sid IsSymbol attrs attrs
-        $ Msg.eventModifier attrs attrs (SetAfterPlay ReturnThisToHand)
+      onRevealChaosTokenEffect sid IsSymbol attrs attrs do
+        eventModifier attrs attrs (SetAfterPlay ReturnThisToHand)
       pushM $ mkChooseFight sid iid attrs
       pure e
     _ -> SpectralRazor2 <$> liftRunMessage msg attrs

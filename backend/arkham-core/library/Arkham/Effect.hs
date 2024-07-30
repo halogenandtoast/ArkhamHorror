@@ -259,11 +259,11 @@ createOnRevealChaosTokenEffect
   -> ChaosTokenMatcher
   -> Source
   -> Target
-  -> Message
+  -> [Message]
   -> m (EffectId, Effect)
-createOnRevealChaosTokenEffect sid matchr source target message = do
+createOnRevealChaosTokenEffect sid matchr source target messages = do
   eid <- getRandom
-  pure (eid, buildOnRevealChaosTokenEffect eid sid matchr source target message)
+  pure (eid, buildOnRevealChaosTokenEffect eid sid matchr source target messages)
 
 createSurgeEffect
   :: (MonadRandom m, Sourceable source, Targetable target)
@@ -316,9 +316,9 @@ buildChaosTokenEffect eid metadata source token =
   Effect $ chaosTokenEffect' eid metadata source token
 
 buildOnRevealChaosTokenEffect
-  :: EffectId -> SkillTestId -> ChaosTokenMatcher -> Source -> Target -> Message -> Effect
-buildOnRevealChaosTokenEffect eid sid matchr source token msg =
-  Effect $ onRevealChaosTokenEffect' eid sid matchr source token msg
+  :: EffectId -> SkillTestId -> ChaosTokenMatcher -> Source -> Target -> [Message] -> Effect
+buildOnRevealChaosTokenEffect eid sid matchr source token msgs =
+  Effect $ onRevealChaosTokenEffect' eid sid matchr source token msgs
 
 effectIsForNextGame :: Effect -> Bool
 effectIsForNextGame e = e.window == Just EffectSetupWindow

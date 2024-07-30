@@ -927,6 +927,7 @@ allAssets =
       SomeAssetCard ancestralToken
     , SomeAssetCard cleaningKit
     , SomeAssetCard katana
+    , SomeAssetCard ofuda
     , SomeAssetCard wolfMaskTheMoonsSire
     , SomeAssetCard cleaningKit3
     , SomeAssetCard blessedBlade4

@@ -24,16 +24,16 @@ onRevealChaosTokenEffect'
   -> ChaosTokenMatcher
   -> Source
   -> Target
-  -> Message
+  -> [Message]
   -> OnRevealChaosTokenEffect
-onRevealChaosTokenEffect' eid skillTestId matchr source target msg =
+onRevealChaosTokenEffect' eid skillTestId matchr source target msgs =
   OnRevealChaosTokenEffect
     $ EffectAttrs
       { effectId = eid
       , effectSource = source
       , effectTarget = target
       , effectCardCode = "ontok"
-      , effectMetadata = Just (EffectMessages [msg])
+      , effectMetadata = Just (EffectMessages msgs)
       , effectTraits = mempty
       , effectWindow = Nothing
       , effectFinished = False

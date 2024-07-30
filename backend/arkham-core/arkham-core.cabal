@@ -850,6 +850,7 @@ library
       Arkham.Asset.Cards.OccultLexicon
       Arkham.Asset.Cards.OccultLexicon3
       Arkham.Asset.Cards.OccultScraps
+      Arkham.Asset.Cards.Ofuda
       Arkham.Asset.Cards.OldBookOfLore
       Arkham.Asset.Cards.OldBookOfLore3
       Arkham.Asset.Cards.OldHuntingRifle3
@@ -1506,6 +1507,7 @@ library
       Arkham.Evade.Types
       Arkham.Event
       Arkham.Event.Cards
+      Arkham.Event.Cards.Absolution
       Arkham.Event.Cards.AbyssalRot
       Arkham.Event.Cards.AceInTheHole3
       Arkham.Event.Cards.AChanceEncounter
@@ -1664,6 +1666,7 @@ library
       Arkham.Event.Cards.GritYourTeeth
       Arkham.Event.Cards.Guidance
       Arkham.Event.Cards.Guidance1
+      Arkham.Event.Cards.GuidedByFaith
       Arkham.Event.Cards.Hallow3
       Arkham.Event.Cards.HandOfFate
       Arkham.Event.Cards.HarmonyRestored2
@@ -1674,6 +1677,7 @@ library
       Arkham.Event.Cards.HidingSpot
       Arkham.Event.Cards.HitAndRun
       Arkham.Event.Cards.HitMe
+      Arkham.Event.Cards.HoldUp
       Arkham.Event.Cards.HonedInstinct
       Arkham.Event.Cards.HotStreak2
       Arkham.Event.Cards.HotStreak4

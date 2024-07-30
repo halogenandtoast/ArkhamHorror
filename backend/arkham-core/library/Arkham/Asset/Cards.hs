@@ -577,6 +577,7 @@ allPlayerAssetCards =
       , occultLexicon
       , occultLexicon3
       , occultScraps
+      , ofuda
       , oldBookOfLore
       , oldBookOfLore3
       , oldHuntingRifle3
@@ -6292,6 +6293,14 @@ katana =
     { cdSkills = [#combat]
     , cdCardTraits = setFromList [Item, Weapon, Melee]
     , cdSlots = [#hand, #hand]
+    }
+
+ofuda :: CardDef
+ofuda =
+  (asset "10022" "Ofuda" 2 Guardian)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Charm, Blessed]
+    , cdUses = uses Charge 1
     }
 
 wolfMaskTheMoonsSire :: CardDef

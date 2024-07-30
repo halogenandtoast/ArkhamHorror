@@ -50,7 +50,8 @@ allPlayerEventCards =
   mapFromList
     $ concatMap
       toCardCodePairs
-      [ abyssalRot
+      [ absolution
+      , abyssalRot
       , aChanceEncounter
       , aChanceEncounter2
       , aemberRot
@@ -208,6 +209,7 @@ allPlayerEventCards =
       , gritYourTeeth
       , guidance
       , guidance1
+      , guidedByFaith
       , hallow3
       , handOfFate
       , harmonyRestored2
@@ -218,6 +220,7 @@ allPlayerEventCards =
       , hidingSpot
       , hitAndRun
       , hitMe
+      , holdUp
       , honedInstinct
       , hotStreak2
       , hotStreak4
@@ -3805,6 +3808,40 @@ stouthearted =
       , cdCriteria = Just $ youExist $ oneOf [InvestigatorWithAnyDamage, InvestigatorWithAnyHorror]
       , cdFastWindow = Just $ EnemyEngaged #when You (NonEliteEnemy <> EnemyWithHealth)
       }
+
+absolution :: CardDef
+absolution =
+  (event "10024" "Absolution" 0 Guardian)
+    { cdSkills = [#willpower, #willpower]
+    , cdCardTraits = setFromList [Spell, Blessed]
+    , cdCriteria =
+        Just
+          $ oneOf
+            [ Criteria.HasRemainingBlessTokens
+            , oneOf
+                [ exists $ HealableInvestigator ThisCard #horror $ InvestigatorAt YourLocation
+                , exists $ HealableAsset ThisCard #horror $ AssetAt YourLocation
+                ]
+            ]
+    , cdCost = Just DynamicCost
+    }
+
+guidedByFaith :: CardDef
+guidedByFaith =
+  (event "10025" "Guided by Faith" 2 Guardian)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Spirit, Blessed]
+    , cdActions = [#investigate]
+    }
+
+holdUp :: CardDef
+holdUp =
+  (event "10026" "Hold Up" 1 Guardian)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Tactic, Trick]
+    , cdActions = [#parley]
+    , cdCriteria = Just $ exists (EnemyAt YourLocation) <> exists (InHandOf You <> #item <> #asset)
+    }
 
 tinker :: CardDef
 tinker =

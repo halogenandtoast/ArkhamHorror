@@ -167,6 +167,7 @@ data Trait
   | Ritual
   | River
   | Riverside
+  | Rot
   | Ruins
   | Salem
   | Sanctum

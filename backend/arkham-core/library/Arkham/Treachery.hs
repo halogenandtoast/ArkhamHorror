@@ -445,7 +445,7 @@ allTreacheries =
     , SomeTreacheryCard ruinedFilm
     , SomeTreacheryCard burdenOfLeadership
     , -- The Feast of Hemloch Vale
-      -- signature
+      -- signature [fhv]
       SomeTreacheryCard hastyRepairs
     , SomeTreacheryCard failedExperiment
     , SomeTreacheryCard wheresPa

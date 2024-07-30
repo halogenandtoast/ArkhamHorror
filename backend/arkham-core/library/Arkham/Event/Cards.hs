@@ -50,8 +50,10 @@ allPlayerEventCards =
   mapFromList
     $ concatMap
       toCardCodePairs
-      [ aChanceEncounter
+      [ abyssalRot
+      , aChanceEncounter
       , aChanceEncounter2
+      , aemberRot
       , aethericCurrentYoth
       , aethericCurrentYuggoth
       , adHoc
@@ -318,6 +320,7 @@ allPlayerEventCards =
       , preposterousSketches2
       , protectingTheAnirniq2
       , pushedToTheLimit
+      , putrescentRot
       , quantumFlux
       , quantumParadox
       , quickGetaway
@@ -333,6 +336,7 @@ allPlayerEventCards =
       , riteOfEquilibrium5
       , sacrifice1
       , salvage2
+      , scarletRot
       , sceneOfTheCrime
       , scoutAhead
       , scroungeForSupplies
@@ -406,6 +410,7 @@ allPlayerEventCards =
       , vamp
       , vamp3
       , vantagePoint
+      , virescentRot
       , voiceOfRa
       , wardOfProtection
       , wardOfProtection2
@@ -3884,6 +3889,46 @@ vamp3 =
     , cdActions = [#parley]
     , cdCriteria = Just $ exists (EnemyAt YourLocation <> CanParleyEnemy You)
     , cdLevel = Just 3
+    }
+
+abyssalRot :: CardDef
+abyssalRot =
+  (event "10086" "Abyssal Rot" 0 Mystic)
+    { cdCardTraits = setFromList [Spell, Rot, Cursed]
+    , cdCost = Nothing
+    , cdKeywords = setFromList [Keyword.Bonded 1 "10085", Keyword.Bonded 1 "10098"]
+    }
+
+aemberRot :: CardDef
+aemberRot =
+  (event "10087" "Aember Rot" 0 Mystic)
+    { cdCardTraits = setFromList [Spell, Rot, Cursed]
+    , cdCost = Nothing
+    , cdKeywords = setFromList [Keyword.Bonded 1 "10085", Keyword.Bonded 1 "10098"]
+    }
+
+putrescentRot :: CardDef
+putrescentRot =
+  (event "10088" "Putrescent Rot" 0 Mystic)
+    { cdCardTraits = setFromList [Spell, Rot, Cursed]
+    , cdCost = Nothing
+    , cdKeywords = setFromList [Keyword.Bonded 1 "10085", Keyword.Bonded 1 "10098"]
+    }
+
+scarletRot :: CardDef
+scarletRot =
+  (event "10089" "Scarlet Rot" 0 Mystic)
+    { cdCardTraits = setFromList [Spell, Rot, Cursed]
+    , cdCost = Nothing
+    , cdKeywords = setFromList [Keyword.Bonded 1 "10085", Keyword.Bonded 1 "10098"]
+    }
+
+virescentRot :: CardDef
+virescentRot =
+  (event "10090" "Virescent Rot" 0 Mystic)
+    { cdCardTraits = setFromList [Spell, Rot, Cursed]
+    , cdCost = Nothing
+    , cdKeywords = setFromList [Keyword.Bonded 1 "10085", Keyword.Bonded 1 "10098"]
     }
 
 readTheSigns2 :: CardDef

@@ -944,6 +944,8 @@ allAssets =
     , SomeAssetCard fakeCredentials4
     , --- mystic [fhv]
       SomeAssetCard catMaskTheCapriciousMeddler
+    , SomeAssetCard rodOfCarnamagosScepterOfTheMadSeer
+    , SomeAssetCard rodOfCarnamagosScepterOfTheMadSeer2
     , SomeAssetCard theKeyOfSolomonSecretsOfTheUnknown4
     , SomeAssetCard keeperOfTheKeyCelestialWard
     , SomeAssetCard servantOfBrassDaemonaicVassal
@@ -956,6 +958,11 @@ allAssets =
     , SomeAssetCard marinersCompass2
     , --- neutral [fhv]
       SomeAssetCard eldritchTongue
+    , --- basic weaknesses [fhv]
+      SomeAssetCard maimedHand
+    , SomeAssetCard backInjury
+    , SomeAssetCard theSilverMoth
+    , SomeAssetCard vowOfDrzytelech
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

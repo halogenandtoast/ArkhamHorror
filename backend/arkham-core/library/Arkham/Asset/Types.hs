@@ -342,6 +342,11 @@ instance HasField "ability" AssetAttrs (Int -> Source) where
 instance HasField "damage" AssetAttrs Int where
   getField = assetDamage
 
+instance HasField "inThreatAreaOf" AssetAttrs (Maybe InvestigatorId) where
+  getField attrs = case attrs.placement of
+    InThreatArea iid -> Just iid
+    _ -> Nothing
+
 assetDoom :: AssetAttrs -> Int
 assetDoom = countTokens Doom . assetTokens
 

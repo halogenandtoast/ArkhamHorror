@@ -579,7 +579,12 @@ allEvents =
     , SomeEventCard snitch2
     , SomeEventCard vamp3
     , --- mystic [fhv]
-      SomeEventCard readTheSigns2
+      SomeEventCard abyssalRot
+    , SomeEventCard aemberRot
+    , SomeEventCard putrescentRot
+    , SomeEventCard scarletRot
+    , SomeEventCard virescentRot
+    , SomeEventCard readTheSigns2
     , SomeEventCard spectralRazor2
     , SomeEventCard sealOfTheElders5
     , --- survivor [fhv]

@@ -1240,6 +1240,11 @@ abilityMatches a@Ability {..} = \case
       let ab = applyAbilityModifiers a modifiers'
       iid <- view activeInvestigatorIdL <$> getGame
       getCanPerformAbility iid (Window.defaultWindows iid) ab
+  PerformableAbilityBy investigatorMatcher modifiers' -> do
+    withDepthGuard 3 False $ do
+      let ab = applyAbilityModifiers a modifiers'
+      iids <- select investigatorMatcher
+      anyM (\iid -> getCanPerformAbility iid (Window.defaultWindows iid) ab) iids
   NotAbility inner -> not <$> abilityMatches a inner
   AnyAbility -> pure True
   BasicAbility -> pure abilityBasic
@@ -2246,6 +2251,16 @@ getAssetsMatching matcher = do
       let adjustAbility ab = applyAbilityModifiers ab modifiers'
       abilities <- selectMap adjustAbility $ abilityMatcher <> AssetAbility (AssetWithId $ toId asset)
       notNull <$> filterM (getCanPerformAbility iid (Window.defaultWindows iid)) abilities
+    AssetWithPerformableAbilityBy investigatorMatcher abilityMatcher modifiers' -> flip filterM as $ \asset -> do
+      investigators <- select investigatorMatcher
+      let adjustAbility ab = applyAbilityModifiers ab modifiers'
+      flip anyM investigators \iid -> do
+        controlsThis <- toId asset <=~> assetControlledBy iid
+        if controlsThis
+          then do
+            abilities <- selectMap adjustAbility $ abilityMatcher <> AssetAbility (AssetWithId $ toId asset)
+            notNull <$> filterM (getCanPerformAbility iid (Window.defaultWindows iid)) abilities
+          else pure False
     ClosestAsset start assetMatcher -> flip filterM as $ \asset -> do
       aids <- select assetMatcher
       if toId asset `elem` aids

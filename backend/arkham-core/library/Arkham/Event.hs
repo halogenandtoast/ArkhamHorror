@@ -571,6 +571,7 @@ allEvents =
       SomeEventCard absolution
     , SomeEventCard guidedByFaith
     , SomeEventCard holdUp
+    , SomeEventCard taskForce
     , SomeEventCard tinker
     , --- seeker [fhv]
       SomeEventCard fineTuning1

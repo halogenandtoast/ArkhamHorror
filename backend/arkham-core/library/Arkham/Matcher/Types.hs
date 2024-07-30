@@ -393,6 +393,8 @@ data EnemyMatcher
   | EnemyWhenOtherEnemy EnemyMatcher
   deriving stock (Show, Eq, Ord, Data)
 
+instance Plated EnemyMatcher
+
 instance Semigroup EnemyMatcher where
   AnyEnemy <> x = x
   x <> AnyEnemy = x
@@ -1486,6 +1488,7 @@ instance IsLabel "draw" ActionMatcher where
 data AbilityMatcher
   = AbilityOnLocation LocationMatcher
   | AbilityOnAsset AssetMatcher
+  | AbilityOnEnemy EnemyMatcher
   | AbilityOnStory StoryMatcher
   | AbilityWindow WindowMatcher
   | AbilityIsAction Action

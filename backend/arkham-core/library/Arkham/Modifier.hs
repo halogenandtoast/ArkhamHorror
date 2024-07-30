@@ -75,6 +75,8 @@ data ModifierType
   | AlternativeReady Source
   | AnySkillValue Int
   | AsIfAt LocationId
+  | IgnoreOnSameLocation
+  | IgnoreEngagementRequirement
   | AsIfEnemyFight Int
   | AsIfEngagedWith EnemyId
   | AsIfInHand Card

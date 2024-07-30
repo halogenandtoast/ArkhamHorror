@@ -234,7 +234,9 @@ allSkills =
       SomeSkillCard grizzled
     , SomeSkillCard gumption1
     , -- The Feast of Hemloch Vale
-      --- survivor [fhv]
+      --- guardian [fhv]
+      SomeSkillCard purified
+    , --- survivor [fhv]
       SomeSkillCard longShot
     , -- Return to the Dunwich Legacy
       --- survivor [rtdwl]

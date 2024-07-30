@@ -360,7 +360,7 @@ instance RunMessage LocationAttrs where
       let
         triggerSource = case source of
           ProxySource _ s -> s
-          _ -> InvestigatorSource iid
+          _ -> a.ability 101
       sid <- getRandom
       pushM $ mkInvestigateLocation sid iid triggerSource (toId a)
       pure a

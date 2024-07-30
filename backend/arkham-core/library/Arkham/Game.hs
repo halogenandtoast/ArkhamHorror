@@ -1273,6 +1273,9 @@ abilityMatches a@Ability {..} = \case
   AbilityOnAsset assetMatcher -> case abilitySource.asset of
     Just aid -> elem aid <$> select assetMatcher
     _ -> pure False
+  AbilityOnEnemy enemyMatcher -> case abilitySource.enemy of
+    Just eid -> elem eid <$> select enemyMatcher
+    _ -> pure False
   AbilityIsAction Action.Activate -> pure $ abilityIsActivate a
   AbilityIsAction action -> pure $ action `elem` abilityActions a
   AbilityIsActionAbility -> pure $ abilityIsActionAbility a && not (abilityIndex >= 100 && abilityIndex <= 102)

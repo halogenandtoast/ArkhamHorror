@@ -1289,18 +1289,22 @@ passesCriteria iid mcard source' requestor windows' = \case
     ProxySource (CardIdSource _) (AssetSource aid) -> fieldP AssetController isNothing aid
     ProxySource (AssetSource aid) _ -> fieldP AssetController isNothing aid
     _ -> error $ "missing ControlsThis check for source: " <> show source
-  Criteria.OnSameLocation -> case source of
-    StorySource sid -> onSameLocation iid =<< field StoryPlacement sid
-    AssetSource aid -> onSameLocation iid =<< field AssetPlacement aid
-    EnemySource eid -> onSameLocation iid =<< field EnemyPlacement eid
-    TreacherySource tid -> onSameLocation iid =<< field TreacheryPlacement tid
-    ProxySource (CardIdSource _) (AssetSource aid) -> do
-      onSameLocation iid =<< field AssetPlacement aid
-    ProxySource (AssetSource aid) _ -> do
-      onSameLocation iid =<< field AssetPlacement aid
-    ProxySource (EnemySource eid) _ -> do
-      onSameLocation iid =<< field EnemyPlacement eid
-    _ -> error $ "missing OnSameLocation check for source: " <> show source
+  Criteria.OnSameLocation -> do
+    ignored <- hasModifier iid IgnoreOnSameLocation
+    if ignored
+      then pure True
+      else case source of
+        StorySource sid -> onSameLocation iid =<< field StoryPlacement sid
+        AssetSource aid -> onSameLocation iid =<< field AssetPlacement aid
+        EnemySource eid -> onSameLocation iid =<< field EnemyPlacement eid
+        TreacherySource tid -> onSameLocation iid =<< field TreacheryPlacement tid
+        ProxySource (CardIdSource _) (AssetSource aid) -> do
+          onSameLocation iid =<< field AssetPlacement aid
+        ProxySource (AssetSource aid) _ -> do
+          onSameLocation iid =<< field AssetPlacement aid
+        ProxySource (EnemySource eid) _ -> do
+          onSameLocation iid =<< field EnemyPlacement eid
+        _ -> error $ "missing OnSameLocation check for source: " <> show source
   Criteria.DuringTurn (Matcher.replaceYouMatcher iid -> who) -> selectAny (Matcher.TurnInvestigator <> who)
   Criteria.CardExists cardMatcher -> selectAny cardMatcher
   Criteria.ExtendedCardExists cardMatcher ->
@@ -1366,13 +1370,17 @@ passesCriteria iid mcard source' requestor windows' = \case
   Criteria.FirstAction -> fieldP InvestigatorActionsTaken null iid
   Criteria.NoRestriction -> pure True
   Criteria.OnLocation locationMatcher -> do
-    mlid <- field InvestigatorLocation iid
-    case mlid of
-      Nothing -> pure False
-      Just lid ->
-        anyM
-          (\window -> locationMatches iid source window lid locationMatcher)
-          windows'
+    ignored <- hasModifier iid IgnoreOnSameLocation
+    if ignored
+      then pure True
+      else do
+        mlid <- field InvestigatorLocation iid
+        case mlid of
+          Nothing -> pure False
+          Just lid ->
+            anyM
+              (\window -> locationMatches iid source window lid locationMatcher)
+              windows'
   Criteria.ReturnableCardInDiscard discardSignifier traits -> do
     let
       investigatorMatcher = case discardSignifier of

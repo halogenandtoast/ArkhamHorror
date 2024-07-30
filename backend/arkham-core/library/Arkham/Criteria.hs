@@ -119,6 +119,14 @@ pattern DuringAnySkillTest <- DuringSkillTest AnySkillTest
 data CostReduction = Reduce Int | ReduceBySuccessAmount
   deriving stock (Show, Eq, Ord, Data)
 
+overCriteria :: (Criterion -> Criterion) -> Criterion -> Criterion
+overCriteria f = \case
+  AtLeastNCriteriaMet n cs -> f (AtLeastNCriteriaMet n (map f cs))
+  Criteria cs -> f (Criteria (map f cs))
+  AnyCriterion cs -> f (AnyCriterion (map f cs))
+  Negate c -> f (Negate (f c))
+  c -> f c
+
 data Criterion
   = AssetExists AssetMatcher
   | TargetExists TargetMatcher

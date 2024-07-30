@@ -21,7 +21,8 @@ import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
 import Arkham.Source
-import Control.Lens (set)
+import Control.Lens (over, set, transform)
+import Data.Data.Lens (biplate)
 import GHC.Records
 
 withAdditionalCost :: Cost -> Ability -> Ability
@@ -207,8 +208,11 @@ mkAbility entity idx type' =
     }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability
-applyAbilityModifiers a@Ability {abilityType} modifiers =
-  a {Arkham.Ability.Types.abilityType = applyAbilityTypeModifiers abilityType modifiers}
+applyAbilityModifiers a@Ability {abilityType, abilityCriteria} modifiers =
+  a
+    { Arkham.Ability.Types.abilityType = applyAbilityTypeModifiers abilityType modifiers
+    , Arkham.Ability.Types.abilityCriteria = applyAbilityCriteriaModifiers abilityCriteria modifiers
+    }
 
 overrideAbilityCriteria :: CriteriaOverride -> Ability -> Ability
 overrideAbilityCriteria (CriteriaOverride override) ab =
@@ -298,6 +302,31 @@ modifyCost f = \case
 
 applyAbilityTypeModifiers :: AbilityType -> [ModifierType] -> AbilityType
 applyAbilityTypeModifiers aType modifiers = modifyCost (`applyCostModifiers` modifiers) aType
+
+applyAbilityCriteriaModifiers :: Criterion -> [ModifierType] -> Criterion
+applyAbilityCriteriaModifiers c modifiers = foldr applyCriterionModifier c modifiers
+ where
+  isLocationCheck = \case
+    OnSameLocation -> True
+    OnLocation _ -> True
+    _ -> False
+  replaceEngagementCheck = \case
+    EnemyIsEngagedWith _ -> AnyEnemy
+    other -> other
+  handleEnemyCriterion = \case
+    EnemyExists em -> EnemyExists $ over biplate (transform replaceEngagementCheck) em
+    NotAttackingEnemy -> NotAttackingEnemy
+    EnemyExistsAtAttachedLocation em -> EnemyExistsAtAttachedLocation $ over biplate (transform replaceEngagementCheck) em
+    ThisEnemy em -> ThisEnemy $ over biplate (transform replaceEngagementCheck) em
+    EnemyMatchesCriteria ems -> EnemyMatchesCriteria $ map handleEnemyCriterion ems
+  handleEngagementCheck = \case
+    EnemyCriteria ec -> EnemyCriteria $ handleEnemyCriterion ec
+    other -> other
+  k x y z = if x z then y else z
+  applyCriterionModifier :: ModifierType -> Criterion -> Criterion
+  applyCriterionModifier IgnoreOnSameLocation c' = overCriteria (k isLocationCheck NoRestriction) c'
+  applyCriterionModifier IgnoreEngagementRequirement c' = overCriteria handleEngagementCheck c'
+  applyCriterionModifier _ c' = c'
 
 applyCostModifiers :: Cost -> [ModifierType] -> Cost
 applyCostModifiers = foldl' applyCostModifier

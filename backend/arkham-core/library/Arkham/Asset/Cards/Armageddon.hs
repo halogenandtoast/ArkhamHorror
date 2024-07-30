@@ -60,20 +60,18 @@ instance RunMessage ArmageddonEffect where
                 pushAll
                   $ [ chooseOrRunOne
                       player
-                      $ [ Label "Place 1 Charge on Armageddon" [AddUses attrs.source assetId Charge 1]
+                      $ [ Label "Place 1 Charge on Armageddon" [disable attrs, AddUses attrs.source assetId Charge 1]
                         | stillInPlay
                         ]
                       <> [ Label
                             "Deal 1 damage to an enemy at your location"
                             [ chooseOne
                                 player
-                                [targetLabel enemy [EnemyDamage enemy $ nonAttack attrs.source 1] | enemy <- enemies]
+                                [targetLabel enemy [disable attrs, EnemyDamage enemy $ nonAttack attrs.source 1] | enemy <- enemies]
                             ]
                          ]
                     | stillInPlay || notNull enemies
                     ]
-                  <> [ disable attrs
-                     ]
           case attrs.source of
             AbilitySource (AssetSource assetId) 1 -> handleIt assetId
             AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId

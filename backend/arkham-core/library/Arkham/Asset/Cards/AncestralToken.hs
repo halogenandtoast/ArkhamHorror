@@ -25,7 +25,7 @@ instance HasAbilities AncestralToken where
 
 instance RunMessage AncestralToken where
   runMessage msg a@(AncestralToken attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (defeatedEnemy -> eid) _ -> do
+    UseCardAbility _iid (isSource attrs -> True) 1 (defeatedEnemy -> eid) _ -> do
       field EnemyHealthActual eid >>= traverse_ \healthValue -> do
         health <- getGameValue healthValue
         n <- getRemainingBlessTokens

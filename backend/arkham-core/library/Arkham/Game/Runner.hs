@@ -519,13 +519,7 @@ runGameMessage msg g = case msg of
     push $ CreatedEffect effectId Nothing source target
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   DisableEffect effectId -> do
-    removedEntitiesF <-
-      if notNull (gameActiveAbilities g)
-        then do
-          effect <- getEffect effectId
-          pure $ actionRemovedEntitiesL . effectsL %~ insertEntity effect
-        else pure id
-    pure $ g & entitiesL . effectsL %~ deleteMap effectId & removedEntitiesF
+    pure $ g & entitiesL . effectsL %~ deleteMap effectId
   FocusCards cards -> pure $ g & focusedCardsL .~ cards
   UnfocusCards -> pure $ g & focusedCardsL .~ mempty
   ClearFound FromDeck -> do

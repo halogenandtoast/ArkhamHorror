@@ -378,6 +378,7 @@ allPlayerEventCards =
       , sweepingKick1
       , swiftReflexes
       , swiftReload2
+      , taskForce
       , taunt
       , taunt2
       , taunt3
@@ -3841,6 +3842,31 @@ holdUp =
     , cdCardTraits = setFromList [Tactic, Trick]
     , cdActions = [#parley]
     , cdCriteria = Just $ exists (EnemyAt YourLocation) <> exists (InHandOf You <> #item <> #asset)
+    }
+
+taskForce :: CardDef
+taskForce =
+  (event "10027" "Task Force" 2 Guardian)
+    { cdSkills = [#intellect, #combat, #agility]
+    , cdCardTraits = setFromList [Tactic, Double]
+    , cdAdditionalCost = Just AdditionalActionCost
+    , cdCriteria =
+        Just
+          $ oneOf
+            [ exists
+                ( AssetWithPerformableAbilityBy
+                    (affectsOthers $ InvestigatorAt YourLocation)
+                    AbilityIsActionAbility
+                    [IgnoreActionCost]
+                )
+            , exists
+                ( affectsOthers
+                    $ InvestigatorAt YourLocation
+                    <> InvestigatorCanMoveTo ThisCard (ConnectedFrom YourLocation)
+                )
+            , exists
+                (YourLocation <> LocationWithDiscoverableCluesBy (affectsOthers $ InvestigatorAt YourLocation))
+            ]
     }
 
 tinker :: CardDef

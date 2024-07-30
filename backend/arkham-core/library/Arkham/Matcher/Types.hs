@@ -247,6 +247,7 @@ data AssetMatcher
   | HealableAsset Source DamageType AssetMatcher
   | AssetWithPlacement Placement
   | AssetWithPerformableAbility AbilityMatcher [ModifierType]
+  | AssetWithPerformableAbilityBy InvestigatorMatcher AbilityMatcher [ModifierType]
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not AssetMatcher where
@@ -1509,6 +1510,7 @@ data AbilityMatcher
   | AssetAbility AssetMatcher
   | HauntedAbility
   | PerformableAbility [ModifierType]
+  | PerformableAbilityBy InvestigatorMatcher [ModifierType]
   | TriggeredAbility
   | NotAbility AbilityMatcher
   deriving stock (Show, Eq, Ord, Data)

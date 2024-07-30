@@ -924,7 +924,8 @@ allAssets =
     , SomeAssetCard fluxStabilizerActive
     , SomeAssetCard bookOfLivingMythsChronicleOfWonders
     , --- guardian [fhv]
-      SomeAssetCard cleaningKit
+      SomeAssetCard ancestralToken
+    , SomeAssetCard cleaningKit
     , SomeAssetCard wolfMaskTheMoonsSire
     , SomeAssetCard cleaningKit3
     , SomeAssetCard blessedBlade4

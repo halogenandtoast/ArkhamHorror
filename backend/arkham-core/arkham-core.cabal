@@ -429,6 +429,7 @@ library
       Arkham.Asset.Cards.AzureFlame
       Arkham.Asset.Cards.AzureFlame3
       Arkham.Asset.Cards.AzureFlame5
+      Arkham.Asset.Cards.BackInjury
       Arkham.Asset.Cards.Backpack
       Arkham.Asset.Cards.Backpack2
       Arkham.Asset.Cards.Bandages
@@ -794,6 +795,7 @@ library
       Arkham.Asset.Cards.MadameLabranche
       Arkham.Asset.Cards.MagnifyingGlass
       Arkham.Asset.Cards.MagnifyingGlass1
+      Arkham.Asset.Cards.MaimedHand
       Arkham.Asset.Cards.ManagersKey
       Arkham.Asset.Cards.MariaDeSilva
       Arkham.Asset.Cards.MarinersCompass
@@ -925,6 +927,8 @@ library
       Arkham.Asset.Cards.RobesOfEndlessNight
       Arkham.Asset.Cards.RobesOfEndlessNight2
       Arkham.Asset.Cards.RodOfAnimalism1
+      Arkham.Asset.Cards.RodOfCarnamagosScepterOfTheMadSeer
+      Arkham.Asset.Cards.RodOfCarnamagosScepterOfTheMadSeer2
       Arkham.Asset.Cards.Rolands38Special
       Arkham.Asset.Cards.RunicAxe
       Arkham.Asset.Cards.RuthWestmacottDarkRevelations
@@ -1049,6 +1053,7 @@ library
       Arkham.Asset.Cards.TheRedGlovedMan5
       Arkham.Asset.Cards.Thermos
       Arkham.Asset.Cards.TheSilverKey
+      Arkham.Asset.Cards.TheSilverMoth
       Arkham.Asset.Cards.TheSkeletonKey2
       Arkham.Asset.Cards.TheStarXVII3
       Arkham.Asset.Cards.TheTatteredCloak
@@ -1091,6 +1096,7 @@ library
       Arkham.Asset.Cards.Versatile2
       Arkham.Asset.Cards.VirgilGray
       Arkham.Asset.Cards.VirgilGrayTrulyInspired
+      Arkham.Asset.Cards.VowOfDrzytelech
       Arkham.Asset.Cards.WellConnected
       Arkham.Asset.Cards.WellConnected3
       Arkham.Asset.Cards.WellPrepared2
@@ -1498,11 +1504,13 @@ library
       Arkham.Evade.Types
       Arkham.Event
       Arkham.Event.Cards
+      Arkham.Event.Cards.AbyssalRot
       Arkham.Event.Cards.AceInTheHole3
       Arkham.Event.Cards.AChanceEncounter
       Arkham.Event.Cards.AChanceEncounter2
       Arkham.Event.Cards.ActOfDesperation
       Arkham.Event.Cards.AdHoc
+      Arkham.Event.Cards.AemberRot
       Arkham.Event.Cards.AethericCurrentYoth
       Arkham.Event.Cards.AethericCurrentYuggoth
       Arkham.Event.Cards.AgainstAllOdds2
@@ -1766,6 +1774,7 @@ library
       Arkham.Event.Cards.PreposterousSketches2
       Arkham.Event.Cards.ProtectingTheAnirniq2
       Arkham.Event.Cards.PushedToTheLimit
+      Arkham.Event.Cards.PutrescentRot
       Arkham.Event.Cards.QuantumFlux
       Arkham.Event.Cards.QuantumParadox
       Arkham.Event.Cards.QuickGetaway
@@ -1781,6 +1790,7 @@ library
       Arkham.Event.Cards.RiteOfEquilibrium5
       Arkham.Event.Cards.Sacrifice1
       Arkham.Event.Cards.Salvage2
+      Arkham.Event.Cards.ScarletRot
       Arkham.Event.Cards.SceneOfTheCrime
       Arkham.Event.Cards.ScoutAhead
       Arkham.Event.Cards.ScroungeForSupplies
@@ -1855,6 +1865,7 @@ library
       Arkham.Event.Cards.Vamp
       Arkham.Event.Cards.Vamp3
       Arkham.Event.Cards.VantagePoint
+      Arkham.Event.Cards.VirescentRot
       Arkham.Event.Cards.VoiceOfRa
       Arkham.Event.Cards.WardOfProtection
       Arkham.Event.Cards.WardOfProtection2

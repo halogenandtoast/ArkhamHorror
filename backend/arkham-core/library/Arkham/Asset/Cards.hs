@@ -170,6 +170,7 @@ allPlayerAssetCards =
       , azureFlame
       , azureFlame3
       , azureFlame5
+      , backInjury
       , backpack
       , backpack2
       , bandages
@@ -523,6 +524,7 @@ allPlayerAssetCards =
       , madameLabranche
       , magnifyingGlass
       , magnifyingGlass1
+      , maimedHand
       , mariaDeSilva
       , marinersCompass
       , marinersCompass2
@@ -650,6 +652,8 @@ allPlayerAssetCards =
       , robesOfEndlessNight
       , robesOfEndlessNight2
       , rodOfAnimalism1
+      , rodOfCarnamagosScepterOfTheMadSeer
+      , rodOfCarnamagosScepterOfTheMadSeer2
       , rolands38Special
       , runicAxe
       , ruthWestmacottDarkRevelations
@@ -769,6 +773,7 @@ allPlayerAssetCards =
       , theRedClockBrokenButReliable5
       , theRedGlovedMan5
       , theSilverKey
+      , theSilverMoth
       , theSkeletonKey2
       , theStarXvii3
       , theTatteredCloak
@@ -809,6 +814,7 @@ allPlayerAssetCards =
       , venturer
       , versatile2
       , virgilGray
+      , vowOfDrzytelech
       , wellConnected
       , wellConnected3
       , wellPrepared2
@@ -6418,6 +6424,25 @@ catMaskTheCapriciousMeddler =
     , cdLimits = [LimitPerTrait Mask 1]
     }
 
+rodOfCarnamagosScepterOfTheMadSeer :: CardDef
+rodOfCarnamagosScepterOfTheMadSeer =
+  (asset "10085" ("Rod of Carnamagos" <:> "Scepter of the Mad Seer") 2 Mystic)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Relic, Occult, Cursed]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdSlots = [#hand]
+    , cdBondedWith = [(1, "10086"), (1, "10087"), (1, "10088"), (1, "10089"), (1, "10090")]
+    }
+
+rodOfCarnamagosScepterOfTheMadSeer2 :: CardDef
+rodOfCarnamagosScepterOfTheMadSeer2 =
+  (asset "10098" ("Rod of Carnamagos" <:> "Scepter of the Mad Seer") 2 Mystic)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Relic, Occult, Cursed]
+    , cdSlots = [#hand]
+    , cdBondedWith = [(1, "10086"), (1, "10087"), (1, "10088"), (1, "10089"), (1, "10090")]
+    }
+
 theKeyOfSolomonSecretsOfTheUnknown4 :: CardDef
 theKeyOfSolomonSecretsOfTheUnknown4 =
   (asset "10104" ("The Key of Solomon" <:> "Secrets of the Unknown") 2 Mystic)
@@ -6502,6 +6527,34 @@ eldritchTongue =
     , cdCardTraits = setFromList [Ritual]
     , cdSlots = [#arcane]
     , cdUses = uses Charge 4
+    }
+
+maimedHand :: CardDef
+maimedHand =
+  (basicWeakness "10135" "Maimed Hand")
+    { cdCardTraits = setFromList [Injury]
+    , cdSlots = [#hand]
+    }
+
+backInjury :: CardDef
+backInjury =
+  (basicWeakness "10136" "Back Injury")
+    { cdCardTraits = setFromList [Injury]
+    , cdSlots = [#body]
+    }
+
+theSilverMoth :: CardDef
+theSilverMoth =
+  (basicWeakness "10137" "The Silver Moth")
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdSlots = [#accessory]
+    }
+
+vowOfDrzytelech :: CardDef
+vowOfDrzytelech =
+  (basicWeakness "10138" "Vow of Dryztelech")
+    { cdCardTraits = setFromList [Pact]
+    , cdSlots = [#arcane]
     }
 
 physicalTraining2 :: CardDef

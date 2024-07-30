@@ -566,6 +566,10 @@ checkAll (toId -> iid) capabilities = iid <=~> fold capabilities
 searchBonded :: (HasGame m, AsId iid, IdOf iid ~ InvestigatorId) => iid -> CardDef -> m [Card]
 searchBonded (asId -> iid) def = fieldMap InvestigatorBondedCards (filter ((== def) . toCardDef)) iid
 
+searchBondedFor
+  :: (HasGame m, AsId iid, IdOf iid ~ InvestigatorId) => iid -> CardMatcher -> m [Card]
+searchBondedFor (asId -> iid) matcher = fieldMap InvestigatorBondedCards (filter (`cardMatch` matcher)) iid
+
 -- TODO: Decide if we want to use or keep these instances, these let you do
 -- >       canModifyDeck <- can.manipulate.deck attrs
 

@@ -1,8 +1,4 @@
-module Arkham.Asset.Cards.Shrivelling (
-  Shrivelling (..),
-  shrivelling,
-  shrivellingEffect,
-) where
+module Arkham.Asset.Cards.Shrivelling (Shrivelling (..), shrivelling, shrivellingEffect) where
 
 import Arkham.Ability
 import Arkham.Aspect

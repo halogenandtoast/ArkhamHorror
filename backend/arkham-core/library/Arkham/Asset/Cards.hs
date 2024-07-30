@@ -481,6 +481,7 @@ allPlayerAssetCards =
       , jimsTrumpet
       , joeyTheRatVigil
       , joeyTheRatVigil3
+      , katana
       , katjaEastbankKeeperOfEsotericLore2
       , keenEye
       , keenEye3
@@ -6283,6 +6284,14 @@ cleaningKit =
     , cdCardTraits = setFromList [Item, Tool]
     , cdSlots = [#accessory]
     , cdUses = uses Supply 3
+    }
+
+katana :: CardDef
+katana =
+  (asset "10021" "Katana" 4 Guardian)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Item, Weapon, Melee]
+    , cdSlots = [#hand, #hand]
     }
 
 wolfMaskTheMoonsSire :: CardDef

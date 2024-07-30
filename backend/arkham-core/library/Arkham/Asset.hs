@@ -926,6 +926,7 @@ allAssets =
     , --- guardian [fhv]
       SomeAssetCard ancestralToken
     , SomeAssetCard cleaningKit
+    , SomeAssetCard katana
     , SomeAssetCard wolfMaskTheMoonsSire
     , SomeAssetCard cleaningKit3
     , SomeAssetCard blessedBlade4

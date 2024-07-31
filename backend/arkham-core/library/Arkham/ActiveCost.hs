@@ -149,6 +149,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
       pushAll $ PayCosts activeCostId : [PerformedActions iid [action] | action <- toList mAction]
     ForcedWhen _ aType -> startAbilityPayment activeCost iid window aType source provokeAttacksOfOpportunity
     CustomizationReaction {} -> push (PayCosts activeCostId)
+    ConstantReaction {} -> push (PayCosts activeCostId)
     ReactionAbility {} -> push (PayCosts activeCostId)
     ActionAbilityWithBefore actions' _ _ -> handleActions (Action.Activate : actions')
     ActionAbilityWithSkill actions' _ _ -> handleActions $ Action.Activate : actions'

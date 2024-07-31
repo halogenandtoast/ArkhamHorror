@@ -452,6 +452,7 @@ data Message
   | AttachStoryTreacheryTo TreacheryId Card Target
   | AttackEnemy SkillTestId InvestigatorId EnemyId Source (Maybe Target) SkillType
   | BeforeRevealChaosTokens
+  | AfterRevealChaosTokens
   | BeforeSkillTest SkillTest
   | ChangeSkillTestType SkillTestType SkillTestBaseValue
   | -- Game State Control

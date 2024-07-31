@@ -244,6 +244,7 @@ abilityTypeActions = \case
   FastAbility' _ actions -> actions
   ReactionAbility {} -> []
   CustomizationReaction {} -> []
+  ConstantReaction {} -> []
   ActionAbility actions _ -> #activate : actions
   ActionAbilityWithSkill actions _ _ -> #activate : actions
   ActionAbilityWithBefore actions _ _ -> #activate : actions
@@ -262,6 +263,7 @@ abilityTypeCost = \case
   FastAbility' cost _ -> cost
   ReactionAbility _ cost -> cost
   CustomizationReaction _ _ cost -> cost
+  ConstantReaction _ _ cost -> cost
   ActionAbility _ cost -> cost
   ActionAbilityWithSkill _ _ cost -> cost
   ActionAbilityWithBefore _ _ cost -> cost
@@ -282,6 +284,8 @@ modifyCost f = \case
     ReactionAbility window $ f cost
   CustomizationReaction label window cost ->
     CustomizationReaction label window $ f cost
+  ConstantReaction label window cost ->
+    ConstantReaction label window $ f cost
   ActionAbility mAction cost ->
     ActionAbility mAction $ f cost
   ActionAbilityWithSkill mAction skill cost ->
@@ -357,6 +361,7 @@ defaultAbilityWindow = \case
   ForcedAbilityWithCost window _ -> window
   ReactionAbility window _ -> window
   CustomizationReaction _ window _ -> window
+  ConstantReaction _ window _ -> window
   AbilityEffect _ -> AnyWindow
   Haunted -> AnyWindow
   ServitorAbility _ -> Matcher.DuringTurn You
@@ -373,6 +378,7 @@ isFastAbilityType = \case
   Objective aType -> isFastAbilityType aType
   ReactionAbility {} -> False
   CustomizationReaction {} -> False
+  ConstantReaction {} -> False
   ActionAbility {} -> False
   ActionAbilityWithSkill {} -> False
   ActionAbilityWithBefore {} -> False
@@ -391,6 +397,7 @@ isReactionAbilityType = \case
   FastAbility' {} -> False
   ReactionAbility {} -> True
   CustomizationReaction {} -> False
+  ConstantReaction {} -> True
   ActionAbility {} -> False
   ActionAbilityWithSkill {} -> False
   ActionAbilityWithBefore {} -> False
@@ -409,6 +416,7 @@ isSilentForcedAbilityType = \case
   FastAbility' {} -> False
   ReactionAbility {} -> False
   CustomizationReaction {} -> False
+  ConstantReaction {} -> False
   ActionAbility {} -> False
   ActionAbilityWithSkill {} -> False
   ActionAbilityWithBefore {} -> False
@@ -435,6 +443,7 @@ defaultAbilityLimit = \case
   ForcedAbilityWithCost _ _ -> GroupLimit PerWindow 1
   ReactionAbility _ _ -> PlayerLimit PerWindow 1
   CustomizationReaction {} -> PlayerLimit PerWindow 1
+  ConstantReaction {} -> PlayerLimit PerWindow 1
   FastAbility' {} -> NoLimit
   ActionAbility _ _ -> NoLimit
   ActionAbilityWithBefore {} -> NoLimit

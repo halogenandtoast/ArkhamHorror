@@ -250,6 +250,9 @@ data AssetMatcher
   | AssetWithPerformableAbilityBy InvestigatorMatcher AbilityMatcher [ModifierType]
   deriving stock (Show, Eq, Ord, Data)
 
+asset_ :: AssetMatcher -> AssetMatcher
+asset_ = id
+
 instance Not AssetMatcher where
   not_ = NotAsset
 
@@ -258,6 +261,9 @@ instance IsString AssetMatcher where
 
 instance IsLabel "ally" AssetMatcher where
   fromLabel = AssetWithTrait Ally
+
+instance IsLabel "melee" AssetMatcher where
+  fromLabel = AssetWithTrait Melee
 
 instance IsLabel "firearm" AssetMatcher where
   fromLabel = AssetWithTrait Firearm

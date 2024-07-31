@@ -48,6 +48,19 @@ export const customizationReactionDecoder = JsonDecoder.object<CustomizationReac
   cost: costDecoder
 }, 'CustomizationReaction')
 
+export type ConstantReaction = {
+  tag: "ConstantReaction"
+  label: string
+  cost: Cost
+  // window :: WindowMatcher
+}
+
+export const constantReactionDecoder = JsonDecoder.object<ConstantReaction>({
+  tag: JsonDecoder.isExactly("ConstantReaction"),
+  label: JsonDecoder.string,
+  cost: costDecoder
+}, 'ConstantReaction')
+
 export type ActionAbility = {
   tag: "ActionAbility"
   actions: Action[]
@@ -143,7 +156,7 @@ export const hauntedDecoder = JsonDecoder.object<Haunted>({
 }, 'Haunted')
 
 
-export type AbilityType = ServitorAbility | FastAbility | ReactionAbility | CustomizationReaction | ActionAbility | ActionAbilityWithSkill | ActionAbilityWithBefore | SilentForcedAbility | ForcedAbility | ForcedAbilityWithCost | AbilityEffect | Objective | Haunted
+export type AbilityType = ServitorAbility | FastAbility | ReactionAbility | CustomizationReaction | ConstantReaction | ActionAbility | ActionAbilityWithSkill | ActionAbilityWithBefore | SilentForcedAbility | ForcedAbility | ForcedAbilityWithCost | AbilityEffect | Objective | Haunted
 
 export type ForcedWhen = {
   tag: "ForcedWhen"
@@ -161,6 +174,7 @@ export const abilityTypeDecoder: JsonDecoder.Decoder<AbilityType> = JsonDecoder.
   fastAbilityDecoder,
   reactionAbilityDecoder,
   customizationReactionDecoder,
+  constantReactionDecoder,
   actionAbilityDecoder,
   actionAbilityWithSkillDecoder,
   actionAbilityWithBeforeDecoder,

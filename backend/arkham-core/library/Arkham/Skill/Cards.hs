@@ -116,6 +116,7 @@ allPlayerSkillCards =
       , steadfast
       , strengthInNumbers1
       , strokeOfLuck2
+      , strongArmed1
       , stunningBlow
       , surprisingFind1
       , surveyTheArea1
@@ -788,6 +789,12 @@ purified =
   (skill "10029" "Purified" [] Guardian)
     { cdCardTraits = setFromList [Innate, Blessed]
     , cdCommitRestrictions = [MaxOnePerTest]
+    }
+
+strongArmed1 :: CardDef
+strongArmed1 =
+  (skill "10031" "Strong-Armed" [#combat, #agility] Guardian)
+    { cdCardTraits = setFromList [Innate]
     }
 
 longShot :: CardDef

@@ -1,14 +1,10 @@
-module Arkham.Event.Cards.StandTogether (
-  standTogether,
-  StandTogether (..),
-) where
+module Arkham.Event.Cards.StandTogether (standTogether, StandTogether (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Capability
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype StandTogether = StandTogether EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -18,21 +14,14 @@ standTogether :: EventCard StandTogether
 standTogether = event StandTogether Cards.standTogether
 
 instance RunMessage StandTogether where
-  runMessage msg e@(StandTogether attrs) = case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
-      investigators <- select $ notInvestigator iid <> colocatedWith iid
-      player <- getPlayer iid
-      choices <- for investigators $ \iid' -> do
-        gainResources <- gainResourcesIfCan iid' (toSource attrs) 2
-        pure (iid', maybeToList gainResources)
-
-      youGainResources <- gainResourcesIfCan iid (toSource attrs) 2
-
-      pushAll
-        $ [ chooseOrRunOne
-            player
-            [targetLabel iid' $ msgs <> maybeToList youGainResources]
-          | (iid', msgs) <- choices
-          ]
+  runMessage msg e@(StandTogether attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      selectWhenNotNull (notInvestigator iid <> colocatedWith iid) \investigators -> do
+        chooseOrRunOneM iid do
+          for_ investigators \iid' -> do
+            targeting iid' do
+              gainResourcesIfCan iid (toSource attrs) 2
+              whenM (can.affect.otherPlayers iid) do
+                gainResourcesIfCan iid' (toSource attrs) 2
       pure e
-    _ -> StandTogether <$> runMessage msg attrs
+    _ -> StandTogether <$> liftRunMessage msg attrs

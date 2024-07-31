@@ -347,6 +347,7 @@ allPlayerEventCards =
       , sealOfTheElders5
       , searchForTheTruth
       , secondWind
+      , secondWind2
       , seekingAnswers
       , seekingAnswers2
       , shedALight
@@ -3893,6 +3894,17 @@ handEyeCoordination1 =
               <> AssetWithPerformableAbility AbilityIsActionAbility [IgnoreActionCost]
           )
     , cdLevel = Just 1
+    }
+
+secondWind2 :: CardDef
+secondWind2 =
+  (event "10032" "Second Wind" 0 Guardian)
+    { cdSkills = [#willpower, #wild]
+    , cdCardTraits = setFromList [Spirit, Bold]
+    , cdCriteria =
+        Just
+          $ Criteria.FirstAction
+          <> oneOf [exists (HealableInvestigator ThisCard DamageType You), can.draw.cards You]
     }
 
 fineTuning1 :: CardDef

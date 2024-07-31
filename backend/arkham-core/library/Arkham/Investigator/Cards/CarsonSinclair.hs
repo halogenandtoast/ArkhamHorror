@@ -10,9 +10,9 @@ import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
 
 newtype CarsonSinclair = CarsonSinclair InvestigatorAttrs
-  deriving anyclass (IsInvestigator)
+  deriving anyclass IsInvestigator
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 carsonSinclair :: InvestigatorCard CarsonSinclair
 carsonSinclair =
@@ -57,7 +57,7 @@ instance RunMessage CarsonSinclair where
         chooseOne iid $ targetLabels investigators $ only . handleTargetChoice iid (attrs.ability 1)
       pure i
     HandleTargetChoice _ (isAbilitySource attrs 1 -> True) (InvestigatorTarget iid') -> do
-      push $ PlayerWindow iid' [] True
+      pushAll [GainActions iid' (attrs.ability 1) 1, PlayerWindow iid' [] False]
       pure . CarsonSinclair $ attrs & overMetaKey "used" (<>) [iid']
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       drawCardsIfCan attrs.id attrs 1

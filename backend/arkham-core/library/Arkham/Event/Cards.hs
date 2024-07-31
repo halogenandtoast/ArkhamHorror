@@ -3849,7 +3849,7 @@ taskForce =
   (event "10027" "Task Force" 2 Guardian)
     { cdSkills = [#intellect, #combat, #agility]
     , cdCardTraits = setFromList [Tactic, Double]
-    , cdAdditionalCost = Just AdditionalActionCost
+    , cdAdditionalCost = Just (ActionCost 1)
     , cdCriteria =
         Just
           $ oneOf
@@ -3900,7 +3900,7 @@ bankJob =
     { cdSkills = [#intellect, #combat, #agility]
     , cdCardTraits = setFromList [Gambit, Double, Illicit]
     , cdCriteria = Just (exists $ affectsOthers $ InvestigatorAt YourLocation <> can.gain.resources)
-    , cdAdditionalCost = Just AdditionalActionCost
+    , cdAdditionalCost = Just (ActionCost 1)
     }
 
 falseSurrender :: CardDef
@@ -4051,7 +4051,7 @@ wrongPlaceRightTime =
   (event "10115" "Wrong Place, Right Time" 0 Survivor)
     { cdSkills = [#willpower, #agility, #wild]
     , cdCardTraits = setFromList [Spirit, Double]
-    , cdAdditionalCost = Just AdditionalActionCost
+    , cdAdditionalCost = Just (ActionCost 1)
     , cdCriteria =
         Just
           $ oneOf

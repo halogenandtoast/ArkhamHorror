@@ -911,8 +911,8 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
     -- PlayableCardWithCostReduction matcher currently only used by Dexter
     -- Drake and De Vermis Mysteriis (2) which are non-action situations
     canAffordAdditionalCosts <-
-      allM
-        (getCanAffordCost iid (CardSource c) [] windows')
+      getCanAffordCost iid (CardSource c) [] windows'
+        $ fold
         $ [ ActionCost actionCost
           | actionCost > 0 && source /= GameSource && not inFastWindow
           ]

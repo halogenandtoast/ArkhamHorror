@@ -1239,3 +1239,6 @@ removeFromGame = push . Msg.RemoveFromGame . toTarget
 
 automaticallyEvadeEnemy :: ReverseQueue m => InvestigatorId -> EnemyId -> m ()
 automaticallyEvadeEnemy iid eid = push $ Msg.EnemyEvaded iid eid
+
+placeInBonded :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
+placeInBonded iid = push . PlaceInBonded iid . toCard

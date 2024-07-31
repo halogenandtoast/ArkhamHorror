@@ -192,6 +192,7 @@ allPlayerAssetCards =
       , bindersJarInterdimensionalPrison1
       , blackjack
       , blackjack2
+      , bladeOfYothTheFathersIre
       , blasphemousCovenant2
       , blessedBlade
       , blessedBlade4
@@ -345,6 +346,7 @@ allPlayerAssetCards =
       , eyeOfChaos
       , eyeOfChaos4
       , eyeOfTheDjinnVesselOfGoodAndEvil2
+      , eyesOfValusiaTheMothersCunning4
       , fakeCredentials
       , fakeCredentials4
       , falseCovenant2
@@ -6329,6 +6331,28 @@ blessedBlade4 =
     , cdSkills = [#willpower, #combat]
     , cdSlots = [#hand]
     , cdLevel = Just 4
+    }
+
+eyesOfValusiaTheMothersCunning4 :: CardDef
+eyesOfValusiaTheMothersCunning4 =
+  (asset "10035" ("Eyes of Valusia" <:> "The Mother's Cunning") 3 Guardian)
+    { cdCardTraits = setFromList [Item, Relic, Spell]
+    , cdSkills = [#willpower, #combat]
+    , cdSlots = [#hand, #arcane]
+    , cdLevel = Just 4
+    , cdUnique = True
+    , cdBondedWith = [(1, "10036")]
+    }
+
+bladeOfYothTheFathersIre :: CardDef
+bladeOfYothTheFathersIre =
+  (asset "10036" ("Blade of Yoth" <:> "The Father's Ire") 0 Guardian)
+    { cdCardTraits = setFromList [Item, Relic, Weapon, Melee]
+    , cdSkills = [#combat, #agility]
+    , cdSlots = [#hand, #arcane]
+    , cdKeywords = singleton (Keyword.Bonded 1 "10035")
+    , cdUnique = True
+    , cdCost = Nothing
     }
 
 microscope :: CardDef

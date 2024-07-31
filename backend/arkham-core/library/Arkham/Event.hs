@@ -574,6 +574,7 @@ allEvents =
     , SomeEventCard taskForce
     , SomeEventCard tinker
     , SomeEventCard handEyeCoordination1
+    , SomeEventCard secondWind2
     , --- seeker [fhv]
       SomeEventCard fineTuning1
     , --- rogue [fhv]

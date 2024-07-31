@@ -511,10 +511,20 @@ instance Semigroup Cost where
   a <> AdditionalActionsCostThatReducesResourceCostBy n b = AdditionalActionsCostThatReducesResourceCostBy n (a <> b)
   Free <> a = a
   a <> Free = a
-  Costs xs <> Costs ys = Costs (xs <> ys)
-  Costs xs <> a = Costs (a : xs)
-  a <> Costs xs = Costs (a : xs)
-  a <> b = Costs [a, b]
+  ActionCost x <> ActionCost y = ActionCost (x + y)
+  ResourceCost x <> ResourceCost y = ResourceCost (x + y)
+  Costs xs <> Costs ys = Costs (combineCosts $ sort $ xs <> ys)
+  Costs xs <> a = Costs (combineCosts $ sort $ a : xs)
+  a <> Costs xs = Costs (combineCosts $ sort $ a : xs)
+  a <> b = Costs $ sort [a, b]
+
+combineCosts :: [Cost] -> [Cost]
+combineCosts l@[] = l
+combineCosts l@[_] = l
+combineCosts (x : y : rest) = case (x, y) of
+  (ActionCost a, ActionCost b) -> combineCosts $ ActionCost (a + b) : rest
+  (ResourceCost a, ResourceCost b) -> combineCosts $ ResourceCost (a + b) : rest
+  _ -> x : combineCosts (y : rest)
 
 instance Monoid Cost where
   mempty = Free

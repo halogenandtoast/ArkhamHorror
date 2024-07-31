@@ -211,6 +211,7 @@ allPlayerEventCards =
       , guidance1
       , guidedByFaith
       , hallow3
+      , handEyeCoordination1
       , handOfFate
       , harmonyRestored2
       , heedTheDream2
@@ -3877,6 +3878,21 @@ tinker =
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria =
         Just (exists $ #tool <> AssetInPlayAreaOf You <> not_ (AssetWithAttachedEvent $ EventIs "10028"))
+    }
+
+handEyeCoordination1 :: CardDef
+handEyeCoordination1 =
+  (event "10054" "Fine Tuning" 1 Guardian)
+    { cdSkills = [#intellect, #combat]
+    , cdCardTraits = setFromList [Insight]
+    , cdCriteria =
+        Just
+          ( exists
+              $ AssetControlledBy You
+              <> oneOf [#tool, #weapon]
+              <> AssetWithPerformableAbility AbilityIsActionAbility [IgnoreActionCost]
+          )
+    , cdLevel = Just 1
     }
 
 fineTuning1 :: CardDef

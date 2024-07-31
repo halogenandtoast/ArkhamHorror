@@ -573,6 +573,7 @@ allEvents =
     , SomeEventCard holdUp
     , SomeEventCard taskForce
     , SomeEventCard tinker
+    , SomeEventCard handEyeCoordination1
     , --- seeker [fhv]
       SomeEventCard fineTuning1
     , --- rogue [fhv]

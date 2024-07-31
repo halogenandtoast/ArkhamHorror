@@ -55,6 +55,7 @@ import Arkham.Asset.Assets (
   eyeOfChaos4Effect,
   eyeOfChaosEffect,
   eyeOfTheDjinnVesselOfGoodAndEvil2Effect,
+  eyesOfValusiaTheMothersCunning4Effect,
   fence1Effect,
   fieldworkEffect,
   fireExtinguisher1Effect,
@@ -459,6 +460,7 @@ allEffects =
     , ("09087", SomeEffect explosiveWardEffect)
     , ("09109", SomeEffect atACrossroads1Effect)
     , ("09113", SomeEffect baseballBat2Effect)
+    , ("10035", SomeEffect eyesOfValusiaTheMothersCunning4Effect)
     , ("10056", SomeEffect prismaticSpectaclesLensToTheOtherworld2Effect)
     , ("10102", SomeEffect spectralRazor2Effect)
     , ("10128", SomeEffect eldritchTongueEffect)

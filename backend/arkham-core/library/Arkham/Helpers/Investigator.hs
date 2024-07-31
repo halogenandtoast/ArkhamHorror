@@ -566,6 +566,12 @@ checkAll (toId -> iid) capabilities = iid <=~> fold capabilities
 searchBonded :: (HasGame m, AsId iid, IdOf iid ~ InvestigatorId) => iid -> CardDef -> m [Card]
 searchBonded (asId -> iid) def = fieldMap InvestigatorBondedCards (filter ((== def) . toCardDef)) iid
 
+searchBondedJust :: (HasGame m, AsId iid, IdOf iid ~ InvestigatorId) => iid -> CardDef -> m Card
+searchBondedJust (asId -> iid) def =
+  fromJustNote "must be"
+    . listToMaybe
+    <$> fieldMap InvestigatorBondedCards (filter ((== def) . toCardDef)) iid
+
 searchBondedFor
   :: (HasGame m, AsId iid, IdOf iid ~ InvestigatorId) => iid -> CardMatcher -> m [Card]
 searchBondedFor (asId -> iid) matcher = fieldMap InvestigatorBondedCards (filter (`cardMatch` matcher)) iid

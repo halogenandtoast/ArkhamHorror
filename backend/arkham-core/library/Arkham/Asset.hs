@@ -931,6 +931,8 @@ allAssets =
     , SomeAssetCard wolfMaskTheMoonsSire
     , SomeAssetCard cleaningKit3
     , SomeAssetCard blessedBlade4
+    , SomeAssetCard eyesOfValusiaTheMothersCunning4
+    , SomeAssetCard bladeOfYothTheFathersIre
     , --- seeker [fhv]
       SomeAssetCard microscope
     , SomeAssetCard mouseMaskTheMeekWatcher

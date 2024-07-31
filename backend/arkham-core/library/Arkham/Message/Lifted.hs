@@ -1242,3 +1242,6 @@ automaticallyEvadeEnemy iid eid = push $ Msg.EnemyEvaded iid eid
 
 placeInBonded :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 placeInBonded iid = push . PlaceInBonded iid . toCard
+
+endYourTurn :: ReverseQueue m => InvestigatorId -> m ()
+endYourTurn iid = push $ ChooseEndTurn iid

@@ -575,6 +575,7 @@ allEvents =
     , SomeEventCard tinker
     , SomeEventCard handEyeCoordination1
     , SomeEventCard secondWind2
+    , SomeEventCard flurryOfBlows5
     , --- seeker [fhv]
       SomeEventCard fineTuning1
     , --- rogue [fhv]

@@ -187,6 +187,7 @@ allPlayerEventCards =
       , fineTuning1
       , firstWatch
       , flare1
+      , flurryOfBlows5
       , followed
       , foolMeOnce1
       , foresight1
@@ -3905,6 +3906,24 @@ secondWind2 =
         Just
           $ Criteria.FirstAction
           <> oneOf [exists (HealableInvestigator ThisCard DamageType You), can.draw.cards You]
+    , cdLevel = Just 2
+    }
+
+flurryOfBlows5 :: CardDef
+flurryOfBlows5 =
+  (event "10037" "Flurry of Blows" 2 Guardian)
+    { cdSkills = [#combat, #agility, #wild]
+    , cdCardTraits = setFromList [Tactic, Double, Fated]
+    , cdCriteria =
+        Just
+          $ exists
+            ( AssetControlledBy You
+                <> #melee
+                <> AssetWithPerformableAbility (AbilityIsAction #fight) [IgnoreActionCost]
+            )
+    , cdAdditionalCost = Just (ActionCost 1)
+    , cdActions = [#fight]
+    , cdLevel = Just 5
     }
 
 fineTuning1 :: CardDef

@@ -26,7 +26,7 @@ const choose = (idx: number) => emit('choose', idx)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const question = computed(() => props.game.question[props.playerId])
 const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
-const showChoices = computed(() => !props.game.skillTest && choices.value.some((c) => { return c.tag === MessageType.DONE || c.tag === MessageType.LABEL || c.tag === MessageType.SKILL_LABEL || c.tag === MessageType.SKILL_LABEL_WITH_LABEL || c.tag == MessageType.PORTRAIT_LABEL }))
+const showChoices = computed(() => !props.game.skillTest && choices.value.some((c) => { return c.tag === MessageType.DONE || c.tag === MessageType.LABEL || c.tag === MessageType.SKILL_LABEL || c.tag === MessageType.SKILL_LABEL_WITH_LABEL || c.tag == MessageType.PORTRAIT_LABEL || (c.tag === MessageType.ABILITY_LABEL && c.ability.displayAsAction) }))
 
 const label = function(body: string) {
   if (body.startsWith("$")) {
@@ -128,6 +128,9 @@ const cardPiles = computed(() => {
     <template v-for="(choice, index) in choices" :key="index">
       <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
         <button @click="choose(index)" v-tooltip="choice.tooltip">{{choice.label}}</button>
+      </template>
+      <template v-if="choice.tag === MessageType.ABILITY_LABEL && choice.ability.type.tag === 'ConstantReaction'">
+        <button @click="choose(index)">{{choice.ability.type.label}}</button>
       </template>
       <template v-if="choice.tag === 'PortraitLabel'">
         <img class="portrait card active" :src="portraitLabelImage(choice.investigatorId)" @click="choose(index)" />

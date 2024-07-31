@@ -73,6 +73,7 @@ pattern FastAbility cost <- FastAbility' cost []
 data AbilityType
   = FastAbility' {cost :: Cost, actions :: [Action]}
   | ReactionAbility {window :: WindowMatcher, cost :: Cost}
+  | ConstantReaction {label :: Text, window :: WindowMatcher, cost :: Cost}
   | CustomizationReaction {label :: Text, window :: WindowMatcher, cost :: Cost}
   | ActionAbility {actions :: [Action], cost :: Cost}
   | ServitorAbility {action :: Action}
@@ -93,6 +94,7 @@ instance HasCost AbilityType where
     FastAbility' cost actions -> FastAbility' (f cost) actions
     ReactionAbility window cost -> ReactionAbility window (f cost)
     CustomizationReaction label window cost -> CustomizationReaction label window (f cost)
+    ConstantReaction label window cost -> ConstantReaction label window (f cost)
     ActionAbility actions cost -> ActionAbility actions (f cost)
     ServitorAbility action -> ServitorAbility action
     ActionAbilityWithSkill actions skillType cost ->
@@ -118,6 +120,7 @@ abilityTypeCostL f = \case
   FastAbility' cost action -> (`FastAbility'` action) <$> f cost
   ReactionAbility window cost -> ReactionAbility window <$> f cost
   CustomizationReaction label window cost -> CustomizationReaction label window <$> f cost
+  ConstantReaction label window cost -> ConstantReaction label window <$> f cost
   ActionAbility action cost -> ActionAbility action <$> f cost
   ActionAbilityWithSkill action skillType cost ->
     ActionAbilityWithSkill action skillType <$> f cost

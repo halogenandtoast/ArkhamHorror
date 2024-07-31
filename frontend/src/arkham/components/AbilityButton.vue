@@ -169,6 +169,10 @@ const abilityLabel = computed(() => {
     return ability.value.type.label
   }
 
+  if (ability.value.type.tag === "ConstantReaction") {
+    return ability.value.type.label
+  }
+
   if (ability.value.type.tag === "ServitorAbility") {
     return ability.value.type.action
   }

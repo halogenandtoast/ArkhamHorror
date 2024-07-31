@@ -236,6 +236,7 @@ allSkills =
     , -- The Feast of Hemloch Vale
       --- guardian [fhv]
       SomeSkillCard purified
+    , SomeSkillCard strongArmed1
     , --- survivor [fhv]
       SomeSkillCard longShot
     , -- Return to the Dunwich Legacy

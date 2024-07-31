@@ -21,7 +21,6 @@ import Arkham.Matcher hiding (IgnoreChaosToken, RevealChaosToken)
 import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
-import Arkham.Skill.Cards qualified as Skills
 import Arkham.Skill.Types as Field
 import Arkham.SkillTest.Step
 import Arkham.SkillTestResult
@@ -207,38 +206,6 @@ instance RunMessage SkillTest where
                 [ RequestChaosTokens (toSource s) (Just iid) revealStrategy SetAside
                 , RunSkillTest iid
                 ]
-      pure s
-    After (RevealChaosToken _ _ _) -> do
-      analysis <-
-        filterM (\(_, iid) -> iid <=~> (InvestigatorAt Anywhere <> InvestigatorWithAnyClues))
-          =<< selectWithField SkillOwner (skillIs Skills.analysis)
-      when (notNull analysis) do
-        analysis' <- traverse (\(a, iid) -> (a,iid,) <$> getPlayer iid) analysis
-        push
-          $ AskMap
-          $ mapFromList
-          $ map
-            ( \(a, iid, p) ->
-                ( p
-                , ChooseOne
-                    [ Label
-                        "Place 1 clue on your location to use Analysis"
-                        [InvestigatorPlaceCluesOnLocation iid (SkillSource a) 1, WithSource (SkillSource a) msg]
-                    , Label "Do not use Analysis" []
-                    ]
-                )
-            )
-            analysis'
-      pure s
-    WithSource source@(SkillSource _) (After (RevealChaosToken _ _ token)) -> do
-      cancelChaosToken token
-      pushAll
-        [ CancelEachNext source [RunWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
-        , ReturnChaosTokens [token]
-        , UnfocusChaosTokens
-        , DrawAnotherChaosToken skillTestInvestigator
-        , RerunSkillTest
-        ]
       pure s
     DrawAnotherChaosToken iid -> do
       player <- getPlayer skillTestInvestigator

@@ -113,6 +113,7 @@ allPlayerEventCards =
       , connectTheDots
       , contraband
       , contraband2
+      , controlVariable
       , coupDeGrace
       , counterespionage1
       , counterpunch
@@ -3951,6 +3952,18 @@ uncannyGrowth =
           , Keyword.Bonded 1 "10060"
           , Keyword.Bonded 1 "10061"
           ]
+    }
+
+controlVariable :: CardDef
+controlVariable =
+  (event "10046" "Control Variable" 1 Seeker)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Insight, Science, Cursed]
+    , cdCriteria =
+        Just
+          $ Criteria.DuringSkillTest SkillTestAtYourLocation
+          <> canDiscoverCluesAtYourLocation
+    , cdFastWindow = Just $ RevealChaosToken #after Anyone #curse
     }
 
 fineTuning1 :: CardDef

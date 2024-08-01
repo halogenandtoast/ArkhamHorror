@@ -3,7 +3,7 @@ module Arkham.Investigator.Cards.KymaniJones (kymaniJones, kymaniJonesEffect, Ky
 import Arkham.Ability
 import Arkham.Effect.Import
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
+import Arkham.Helpers.SkillTest (getSkillTestTarget)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher hiding (SkillTestEnded)
@@ -41,9 +41,8 @@ instance RunMessage KymaniJones where
       chooseOne iid [targetLabel enemy [EngageEnemy iid enemy Nothing False] | enemy <- enemies]
       pure i
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      withSkillTest \sid -> do
-        skillTestModifier sid (attrs.ability 1) iid (AddSkillValue #intellect)
-        createCardEffect Cards.kymaniJones Nothing (attrs.ability 1) iid
+      nextSkillTestModifier (attrs.ability 1) iid (AddSkillValue #intellect)
+      createCardEffect Cards.kymaniJones Nothing (attrs.ability 1) iid
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       whenAny (ExhaustedEnemy <> enemyAtLocationWith iid) $ push PassSkillTest

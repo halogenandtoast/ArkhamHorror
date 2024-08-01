@@ -404,6 +404,7 @@ allPlayerEventCards =
       , timeWarp2
       , tinker
       , toeToToe
+      , transmogrify
       , trialByFire
       , trialByFire3
       , trueSurvivor3
@@ -4004,6 +4005,14 @@ throwTheBookAtThem =
     , cdCardTraits = setFromList [Gambit, Improvised]
     , cdCriteria = Just $ exists $ AssetControlledBy You <> #tome
     , cdActions = [#fight]
+    }
+
+transmogrify :: CardDef
+transmogrify =
+  (event "10060" "Transmogrify" 1 Seeker)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Gambit, Science]
+    , cdActions = [#evade]
     }
 
 fineTuning1 :: CardDef

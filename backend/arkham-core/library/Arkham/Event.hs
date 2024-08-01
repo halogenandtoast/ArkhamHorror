@@ -583,6 +583,7 @@ allEvents =
     , SomeEventCard testingSprint
     , SomeEventCard thoroughInquiry
     , SomeEventCard throwTheBookAtThem
+    , SomeEventCard transmogrify
     , SomeEventCard fineTuning1
     , --- rogue [fhv]
       SomeEventCard bankJob

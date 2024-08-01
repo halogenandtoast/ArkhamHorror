@@ -827,8 +827,8 @@ chooseEvadeEnemyWithSkillChoice
   -> [SkillType]
   -> m ()
 chooseEvadeEnemyWithSkillChoice sid iid source skillTypes = do
-  fight <- mkChooseEvade sid iid source
-  let using = toMessage . (`Evade.withSkillType` fight)
+  evade <- mkChooseEvade sid iid source
+  let using = toMessage . (`Evade.withSkillType` evade)
   Arkham.Message.Lifted.chooseOne
     iid
     [Label ("Use " <> format sType) [using sType] | sType <- skillTypes]

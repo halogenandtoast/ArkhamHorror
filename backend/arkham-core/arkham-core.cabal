@@ -1856,6 +1856,7 @@ library
       Arkham.Event.Cards.Teamwork
       Arkham.Event.Cards.TelescopicSight3
       Arkham.Event.Cards.TemptFate
+      Arkham.Event.Cards.TestingSprint
       Arkham.Event.Cards.ThePaintedWorld
       Arkham.Event.Cards.TheRavenQuill
       Arkham.Event.Cards.TheStarsAreRight
@@ -2784,6 +2785,7 @@ library
       Arkham.Skill.Cards.DreamParasite
       Arkham.Skill.Cards.DreamsOfTheDeepTheDeepGate
       Arkham.Skill.Cards.Enraptured
+      Arkham.Skill.Cards.EsotericMethod1
       Arkham.Skill.Cards.EssenceOfTheDream
       Arkham.Skill.Cards.Eureka
       Arkham.Skill.Cards.ExpeditiousRetreat1

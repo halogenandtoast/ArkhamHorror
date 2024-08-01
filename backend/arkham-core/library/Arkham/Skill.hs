@@ -237,6 +237,8 @@ allSkills =
       --- guardian [fhv]
       SomeSkillCard purified
     , SomeSkillCard strongArmed1
+    , --- seeker [fhv]
+      SomeSkillCard esotericMethod1
     , --- survivor [fhv]
       SomeSkillCard longShot
     , -- Return to the Dunwich Legacy

@@ -605,6 +605,7 @@ library
       Arkham.Asset.Cards.EsotericAtlas1
       Arkham.Asset.Cards.EsotericAtlas2
       Arkham.Asset.Cards.EsotericFormula
+      Arkham.Asset.Cards.EvanescentAscensionTheMorningStar
       Arkham.Asset.Cards.ExpeditionJournal
       Arkham.Asset.Cards.EyeOfChaos
       Arkham.Asset.Cards.EyeOfChaos4
@@ -1737,6 +1738,7 @@ library
       Arkham.Event.Cards.MindOverMatter2
       Arkham.Event.Cards.MindWipe1
       Arkham.Event.Cards.MindWipe3
+      Arkham.Event.Cards.MiracleWish5
       Arkham.Event.Cards.MomentOfRespite3
       Arkham.Event.Cards.MoneyTalks
       Arkham.Event.Cards.MoneyTalks2

@@ -103,6 +103,9 @@ instance OneOf AssetMatcher where
 instance OneOf TreacheryMatcher where
   oneOf = TreacheryOneOf
 
+instance OneOf SkillTestResultMatcher where
+  oneOf = ResultOneOf
+
 class WithTrait a where
   withTrait :: Trait -> a
 

@@ -37,7 +37,7 @@ instance RunMessage QuickThinkingEffect where
   runMessage msg e@(QuickThinkingEffect attrs) = case msg of
     AfterSkillTestEnds {} -> case effectTarget attrs of
       InvestigatorTarget iid -> do
-        pushAll [disable attrs, PlayerWindow iid [] True]
+        pushAll [disable attrs, GainActions iid attrs.source 1, PlayerWindow iid [] False]
         pure e
       _ -> error "wrong target"
     _ -> QuickThinkingEffect <$> runMessage msg attrs

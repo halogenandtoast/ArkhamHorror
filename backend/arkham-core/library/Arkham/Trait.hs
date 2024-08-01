@@ -164,6 +164,7 @@ data Trait
   | Relic
   | Reporter
   | Research
+  | Resolute
   | Ritual
   | River
   | Riverside

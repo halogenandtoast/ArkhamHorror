@@ -2,21 +2,37 @@
 import { computed } from 'vue';
 import { PickSupplies  } from '@/arkham/types/Question';
 import { MessageType } from '@/arkham/types/Message';
+import { imgsrc } from '@/arkham/helpers';
 
 const props = defineProps<{
-  question: PickSupplies
+  game: Game,
+  question: PickSupplies,
+  playerId: string
 }>()
 const emit = defineEmits(['choose'])
 const choose = (idx: number) => emit('choose', idx)
 
+
+const investigatorId = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)?.id)
 const pointsRemaining = computed(() => props.question.pointsRemaining)
 const supplies = computed(() => props.question.choices.slice(1))
 const chosenSupplies = computed(() => {
  return props.question.chosenSupplies.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
 })
 
+const portrait = (investigatorId: string) => {
+  const player = props.game.investigators[investigatorId]
+
+  if (player.isYithian) {
+    return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
+  }
+
+  return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
+}
+
 </script>
 <template>
+  <img :src="portrait(investigatorId)" alt="Investigator Portrait" class="portrait" />
   <div class="pick-supplies">
     <h2>Pick Supplies ({{pointsRemaining}} points remaining)</h2>
 
@@ -121,5 +137,9 @@ ul li {
   margin-bottom: 5px;
   border-radius: 5px;
   font-weight: 600;
+}
+
+.portrait {
+  width: 150px;
 }
 </style>

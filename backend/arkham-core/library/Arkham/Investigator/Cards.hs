@@ -76,6 +76,7 @@ allInvestigatorCards =
       , alessandraZorzi
       , kohakuNarukami
       , hankSamson
+      , hankSamsonB
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -522,6 +523,14 @@ hankSamson =
     ("Hank Samson" <:> "The Farmhand")
     Survivor
     [Assistant, Warden]
+
+hankSamsonB :: CardDef
+hankSamsonB =
+  investigator
+    "10016a"
+    ("Hank Samson" <:> "The Farmhand")
+    Survivor
+    [Assistant, Resolute]
 
 nathanielCho :: CardDef
 nathanielCho =

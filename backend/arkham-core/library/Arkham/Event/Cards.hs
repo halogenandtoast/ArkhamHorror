@@ -3885,7 +3885,7 @@ tinker =
 
 handEyeCoordination1 :: CardDef
 handEyeCoordination1 =
-  (event "10054" "Fine Tuning" 1 Guardian)
+  (event "10030" "Fine Tuning" 1 Guardian)
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = setFromList [Insight]
     , cdCriteria =

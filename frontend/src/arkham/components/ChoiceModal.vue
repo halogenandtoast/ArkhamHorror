@@ -289,7 +289,7 @@ const cardLabels = computed(() =>
     }))
 
 const showChoices = computed(() =>
-  focusedChaosTokens.value.length > 0 || focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value || modalChoices.value.length > 0 || cardLabels.value.length > 0
+  focusedChaosTokens.value.length > 0 || focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value || modalChoices.value.length > 0 || cardLabels.value.length > 0 || (question.value && question.value.tag === "DropDown")
 )
 
 function isModalChoice(choice: Message) {

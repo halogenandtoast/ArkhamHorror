@@ -1579,6 +1579,7 @@ library
       Arkham.Event.Cards.ConnectTheDots
       Arkham.Event.Cards.Contraband
       Arkham.Event.Cards.Contraband2
+      Arkham.Event.Cards.ControlVariable
       Arkham.Event.Cards.Counterespionage1
       Arkham.Event.Cards.Counterpunch
       Arkham.Event.Cards.Counterpunch2

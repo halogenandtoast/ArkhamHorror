@@ -579,6 +579,7 @@ allEvents =
     , SomeEventCard miracleWish5
     , --- seeker [fhv]
       SomeEventCard uncannyGrowth
+    , SomeEventCard controlVariable
     , SomeEventCard fineTuning1
     , --- rogue [fhv]
       SomeEventCard bankJob

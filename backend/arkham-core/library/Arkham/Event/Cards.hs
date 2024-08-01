@@ -398,6 +398,7 @@ allPlayerEventCards =
       , thinkOnYourFeet
       , thinkOnYourFeet2
       , thirdTimesACharm2
+      , thoroughInquiry
       , tidesOfFate
       , timeWarp2
       , tinker
@@ -3979,6 +3980,20 @@ testingSprint =
           $ exists
           $ InvestigatableLocation
           <> oneOf [YourLocation, ConnectedFrom YourLocation]
+    }
+
+thoroughInquiry :: CardDef
+thoroughInquiry =
+  (event "10048" "Thorough Inquiry" 2 Seeker)
+    { cdSkills = [#intellect, #agility, #wild]
+    , cdCardTraits = setFromList [Insight, Double]
+    , cdAdditionalCost = Just (ActionCost 1)
+    , cdCriteria =
+        Just
+          $ exists
+          $ affectsOthers
+          $ InvestigatorAt YourLocation
+          <> can.draw.cards
     }
 
 fineTuning1 :: CardDef

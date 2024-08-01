@@ -581,6 +581,7 @@ allEvents =
       SomeEventCard uncannyGrowth
     , SomeEventCard controlVariable
     , SomeEventCard testingSprint
+    , SomeEventCard thoroughInquiry
     , SomeEventCard fineTuning1
     , --- rogue [fhv]
       SomeEventCard bankJob

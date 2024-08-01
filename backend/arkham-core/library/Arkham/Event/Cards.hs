@@ -390,6 +390,7 @@ allPlayerEventCards =
       , teamwork
       , telescopicSight3
       , temptFate
+      , testingSprint
       , thePaintedWorld
       , theRavenQuill
       , theStygianEye3
@@ -3964,6 +3965,20 @@ controlVariable =
           $ Criteria.DuringSkillTest SkillTestAtYourLocation
           <> canDiscoverCluesAtYourLocation
     , cdFastWindow = Just $ RevealChaosToken #after Anyone #curse
+    }
+
+testingSprint :: CardDef
+testingSprint =
+  (event "10047" "Testing Spring" 1 Seeker)
+    { cdSkills = [#willpower, #intellect, #agility]
+    , cdCardTraits = setFromList [Insight, Double]
+    , cdAdditionalCost = Just (ActionCost 1)
+    , cdActions = [#investigate]
+    , cdCriteria =
+        Just
+          $ exists
+          $ InvestigatableLocation
+          <> oneOf [YourLocation, ConnectedFrom YourLocation]
     }
 
 fineTuning1 :: CardDef

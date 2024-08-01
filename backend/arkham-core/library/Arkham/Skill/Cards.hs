@@ -57,6 +57,7 @@ allPlayerSkillCards =
       , dreamsOfTheDeepTheDeepGate
       , enraptured
       , essenceOfTheDream
+      , esotericMethod1
       , eureka
       , expeditiousRetreat1
       , fearless
@@ -795,6 +796,12 @@ strongArmed1 :: CardDef
 strongArmed1 =
   (skill "10031" "Strong-Armed" [#combat, #agility] Guardian)
     { cdCardTraits = setFromList [Innate]
+    }
+
+esotericMethod1 :: CardDef
+esotericMethod1 =
+  (skill "10055" "Esoteric Method" [#wild, #wild, #wild, #wild] Seeker)
+    { cdCardTraits = setFromList [Practiced, Cursed]
     }
 
 longShot :: CardDef

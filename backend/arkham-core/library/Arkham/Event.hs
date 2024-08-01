@@ -580,6 +580,7 @@ allEvents =
     , --- seeker [fhv]
       SomeEventCard uncannyGrowth
     , SomeEventCard controlVariable
+    , SomeEventCard testingSprint
     , SomeEventCard fineTuning1
     , --- rogue [fhv]
       SomeEventCard bankJob

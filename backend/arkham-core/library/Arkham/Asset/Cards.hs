@@ -342,6 +342,7 @@ allPlayerAssetCards =
       , esotericAtlas1
       , esotericAtlas2
       , esotericFormula
+      , evanescentAscensionTheMorningStar
       , expeditionJournal
       , eyeOfChaos
       , eyeOfChaos4
@@ -6351,6 +6352,16 @@ bladeOfYothTheFathersIre =
     , cdSkills = [#combat, #agility]
     , cdSlots = [#hand, #arcane]
     , cdKeywords = singleton (Keyword.Bonded 1 "10035")
+    , cdUnique = True
+    , cdCost = Nothing
+    }
+
+evanescentAscensionTheMorningStar :: CardDef
+evanescentAscensionTheMorningStar =
+  (asset "10039" ("Evanescent Ascension" <:> "The Morning Star") 0 Guardian)
+    { cdCardTraits = setFromList [Ritual, Pact, Blessed]
+    , cdSlots = [#arcane]
+    , cdKeywords = singleton (Keyword.Bonded 1 "10038")
     , cdUnique = True
     , cdCost = Nothing
     }

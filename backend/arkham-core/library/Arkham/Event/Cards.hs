@@ -278,6 +278,7 @@ allPlayerEventCards =
       , mindOverMatter2
       , mindWipe1
       , mindWipe3
+      , miracleWish5
       , momentOfRespite3
       , moneyTalks
       , moneyTalks2
@@ -3924,6 +3925,17 @@ flurryOfBlows5 =
     , cdAdditionalCost = Just (ActionCost 1)
     , cdActions = [#fight]
     , cdLevel = Just 5
+    }
+
+miracleWish5 :: CardDef
+miracleWish5 =
+  (event "10038" "Miracle Wish" 0 Guardian)
+    { cdSkills = [#willpower, #wild]
+    , cdCardTraits = setFromList [Favor, Blessed]
+    , cdCriteria = Just $ Criteria.DuringSkillTest SkillTestAtYourLocation
+    , cdFastWindow = Just $ RevealChaosToken #after You #bless
+    , cdLevel = Just 5
+    , cdBondedWith = [(1, "10039")]
     }
 
 fineTuning1 :: CardDef

@@ -197,6 +197,7 @@ data ModifierType
   | SetAttackDamageStrategy DamageStrategy
   | ChaosTokenFaceModifier [ChaosTokenFace]
   | ChaosTokenValueModifier Int
+  | AddChaosTokenValue ChaosTokenValue
   | CommitCost Cost
   | ConnectedToWhen LocationMatcher LocationMatcher
   | ControlledAssetsCannotReady

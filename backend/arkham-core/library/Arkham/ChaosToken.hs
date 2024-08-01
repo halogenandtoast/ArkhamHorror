@@ -10,7 +10,7 @@ import GHC.OverloadedLabels
 import GHC.Records
 
 newtype ChaosTokenId = ChaosTokenId {getChaosTokenId :: UUID}
-  deriving stock (Data)
+  deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, Ord, Random)
 
 data ChaosTokenModifier
@@ -49,7 +49,7 @@ instance Semigroup ChaosTokenModifier where
         LT -> NegativeModifier calc
 
 data ChaosTokenValue = ChaosTokenValue ChaosTokenFace ChaosTokenModifier
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Eq, Ord, Data)
 
 chaosTokenValue :: ChaosTokenValue -> Maybe Int
 chaosTokenValue (ChaosTokenValue _ modifier) = chaosTokenModifierToInt modifier

@@ -32,6 +32,7 @@ data Token
   | Suspicion
   | Time
   | Try
+  | Wish
   | Whistle
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)

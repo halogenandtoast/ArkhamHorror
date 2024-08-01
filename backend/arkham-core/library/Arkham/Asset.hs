@@ -933,6 +933,7 @@ allAssets =
     , SomeAssetCard blessedBlade4
     , SomeAssetCard eyesOfValusiaTheMothersCunning4
     , SomeAssetCard bladeOfYothTheFathersIre
+    , SomeAssetCard evanescentAscensionTheMorningStar
     , --- seeker [fhv]
       SomeAssetCard microscope
     , SomeAssetCard mouseMaskTheMeekWatcher

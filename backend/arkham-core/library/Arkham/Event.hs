@@ -576,6 +576,7 @@ allEvents =
     , SomeEventCard handEyeCoordination1
     , SomeEventCard secondWind2
     , SomeEventCard flurryOfBlows5
+    , SomeEventCard miracleWish5
     , --- seeker [fhv]
       SomeEventCard fineTuning1
     , --- rogue [fhv]

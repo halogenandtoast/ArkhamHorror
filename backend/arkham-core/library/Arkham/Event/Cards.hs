@@ -399,6 +399,7 @@ allPlayerEventCards =
       , thinkOnYourFeet2
       , thirdTimesACharm2
       , thoroughInquiry
+      , throwTheBookAtThem
       , tidesOfFate
       , timeWarp2
       , tinker
@@ -3994,6 +3995,15 @@ thoroughInquiry =
           $ affectsOthers
           $ InvestigatorAt YourLocation
           <> can.draw.cards
+    }
+
+throwTheBookAtThem :: CardDef
+throwTheBookAtThem =
+  (event "10049" "\"Throw the Book at Them!\"" 1 Seeker)
+    { cdSkills = [#intellect, #combat]
+    , cdCardTraits = setFromList [Gambit, Improvised]
+    , cdCriteria = Just $ exists $ AssetControlledBy You <> #tome
+    , cdActions = [#fight]
     }
 
 fineTuning1 :: CardDef

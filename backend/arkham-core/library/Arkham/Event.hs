@@ -582,6 +582,7 @@ allEvents =
     , SomeEventCard controlVariable
     , SomeEventCard testingSprint
     , SomeEventCard thoroughInquiry
+    , SomeEventCard throwTheBookAtThem
     , SomeEventCard fineTuning1
     , --- rogue [fhv]
       SomeEventCard bankJob

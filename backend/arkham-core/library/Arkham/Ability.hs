@@ -340,14 +340,8 @@ applyCostModifier _ IgnoreAllCosts = Free
 applyCostModifier (ActionCost _) IgnoreActionCost = Free
 applyCostModifier (ActionCost n) (ActionCostModifier m) =
   ActionCost (max 0 $ n + m)
-applyCostModifier (Costs (x : xs)) modifier@(ActionCostModifier _) = case x of
-  ActionCost _ -> Costs (applyCostModifier x modifier : xs)
-  other -> other <> applyCostModifier (Costs xs) modifier
 applyCostModifier (ActionCost _) (ActionCostSetToModifier m) = ActionCost m
-applyCostModifier (Costs (x : xs)) modifier@(ActionCostSetToModifier _) =
-  case x of
-    ActionCost _ -> Costs (applyCostModifier x modifier : xs)
-    other -> other <> applyCostModifier (Costs xs) modifier
+applyCostModifier (Costs xs) modifier = Costs $ map (`applyCostModifier` modifier) xs
 applyCostModifier cost _ = cost
 
 defaultAbilityWindow :: AbilityType -> WindowMatcher

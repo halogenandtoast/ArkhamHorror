@@ -935,7 +935,8 @@ allAssets =
     , SomeAssetCard bladeOfYothTheFathersIre
     , SomeAssetCard evanescentAscensionTheMorningStar
     , --- seeker [fhv]
-      SomeAssetCard microscope
+      SomeAssetCard chemistrySet
+    , SomeAssetCard microscope
     , SomeAssetCard mouseMaskTheMeekWatcher
     , SomeAssetCard gabrielCarilloTrustedConfidante1
     , SomeAssetCard prismaticSpectaclesLensToTheOtherworld2

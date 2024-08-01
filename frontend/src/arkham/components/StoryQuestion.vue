@@ -119,7 +119,7 @@ const choose = (idx: number) => emit('choose', idx)
   </div>
 
   <div class="question-label" v-else-if="question && question.tag === 'PickSupplies'">
-    <PickSupplies :question="question" @choose="choose" />
+    <PickSupplies :game="game" :playerId="playerId" :question="question" @choose="choose" />
   </div>
   <template v-else-if="choices.length > 0">
     <div class="choices">
@@ -138,6 +138,7 @@ const choose = (idx: number) => emit('choose', idx)
     :game="game"
     :playerId="playerId"
     :noStory="true"
+    v-if="!question || question.tag !== 'PickSupplies'"
     @choose="$emit('choose', $event)"
   />
 </template>

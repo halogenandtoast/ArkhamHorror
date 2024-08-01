@@ -232,6 +232,7 @@ allPlayerAssetCards =
       , charisma3
       , charlesRossEsq
       , charonsObol1
+      , chemistrySet
       , cherishedKeepsake
       , cherishedKeepsake1
       , chicagoTypewriter4
@@ -6364,6 +6365,14 @@ evanescentAscensionTheMorningStar =
     , cdKeywords = singleton (Keyword.Bonded 1 "10038")
     , cdUnique = True
     , cdCost = Nothing
+    }
+
+chemistrySet :: CardDef
+chemistrySet =
+  (asset "10040" "Chemistry Set" 2 Seeker)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Item, Tool, Science]
+    , cdSlots = [#accessory]
     }
 
 microscope :: CardDef

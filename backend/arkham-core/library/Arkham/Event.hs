@@ -578,7 +578,8 @@ allEvents =
     , SomeEventCard flurryOfBlows5
     , SomeEventCard miracleWish5
     , --- seeker [fhv]
-      SomeEventCard fineTuning1
+      SomeEventCard uncannyGrowth
+    , SomeEventCard fineTuning1
     , --- rogue [fhv]
       SomeEventCard bankJob
     , SomeEventCard falseSurrender

@@ -19,6 +19,7 @@ data Token
   | Doom
   | Durability
   | Evidence
+  | Growth
   | Horror
   | Key
   | Lead

@@ -380,6 +380,16 @@ moveTokens
   -> m ()
 moveTokens source from destination token n = push $ Msg.MoveTokens (toSource source) (toSource from) (toTarget destination) token n
 
+moveTokensNoDefeated
+  :: (ReverseQueue m, Sourceable source, Sourceable from, Targetable destination)
+  => source
+  -> from
+  -> destination
+  -> Token
+  -> Int
+  -> m ()
+moveTokensNoDefeated source from destination token n = push $ Msg.MoveTokensNoDefeated (toSource source) (toSource from) (toTarget destination) token n
+
 drawAnotherChaosToken :: ReverseQueue m => InvestigatorId -> m ()
 drawAnotherChaosToken = push . DrawAnotherChaosToken
 
@@ -979,6 +989,13 @@ cancelRevelation :: (ReverseQueue m, Sourceable a, IsCard card) => a -> card -> 
 cancelRevelation a card = do
   cardResolutionModifier card a (CardIdTarget $ toCardId card) IgnoreRevelation
   push $ CancelRevelation (toSource a)
+
+cancelCardEffects :: (ReverseQueue m, Sourceable a, IsCard card) => a -> card -> m ()
+cancelCardEffects a card = do
+  cardResolutionModifier card a (CardIdTarget $ toCardId card) IgnoreRevelation
+  push $ CancelRevelation (toSource a)
+  push $ CancelNext (toSource a) DrawEnemyMessage
+  push $ CancelSurge (toSource a)
 
 cardResolutionModifier
   :: (ReverseQueue m, IsCard card, Sourceable source, Targetable target)

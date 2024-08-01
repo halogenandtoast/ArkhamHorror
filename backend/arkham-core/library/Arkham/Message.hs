@@ -1015,6 +1015,7 @@ data Message
   | ForInvestigator InvestigatorId Message
   | ForTarget Target Message
   | ForPlayer PlayerId Message
+  | ForChoice Int Message
   | ForSkillType SkillType Message
   | -- The Circle Undone
     PutLocationInFrontOf InvestigatorId LocationId

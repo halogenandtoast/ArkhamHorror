@@ -136,6 +136,7 @@ allPlayerSkillCards =
       , viciousBlow
       , viciousBlow2
       , watchThis
+      , wellFunded
       , whispersFromTheDeep
       ]
 
@@ -758,6 +759,7 @@ ghastlyPossession1 :: CardDef
 ghastlyPossession1 =
   (skill "09090" "Ghastly Possession" [#wild] Mystic)
     { cdCardTraits = setFromList [Innate, Spell]
+    , cdLevel = Just 1
     }
 
 grizzled :: CardDef
@@ -783,6 +785,7 @@ gumption1 =
   (skill "09112" "Gumption" [] Survivor)
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [MaxOnePerTest]
+    , cdLevel = Just 1
     }
 
 purified :: CardDef
@@ -796,12 +799,21 @@ strongArmed1 :: CardDef
 strongArmed1 =
   (skill "10031" "Strong-Armed" [#combat, #agility] Guardian)
     { cdCardTraits = setFromList [Innate]
+    , cdLevel = Just 1
+    }
+
+wellFunded :: CardDef
+wellFunded =
+  (skill "10051" "Well-Funded" [#wild] Seeker)
+    { cdCardTraits = setFromList [Fortune]
+    , cdCardInHandEffects = True
     }
 
 esotericMethod1 :: CardDef
 esotericMethod1 =
   (skill "10055" "Esoteric Method" [#wild, #wild, #wild, #wild] Seeker)
     { cdCardTraits = setFromList [Practiced, Cursed]
+    , cdLevel = Just 1
     }
 
 longShot :: CardDef

@@ -301,6 +301,7 @@ allPlayerAssetCards =
       , downTheRabbitHole
       , dowsingRod
       , dowsingRod4
+      , drCharlesWestIiiKnowsHisPurpose
       , drElliHorowitz
       , drFrancisMorgan
       , drHenryArmitage
@@ -6373,6 +6374,15 @@ chemistrySet =
     { cdSkills = [#intellect]
     , cdCardTraits = setFromList [Item, Tool, Science]
     , cdSlots = [#accessory]
+    }
+
+drCharlesWestIiiKnowsHisPurpose :: CardDef
+drCharlesWestIiiKnowsHisPurpose =
+  (asset "10041" ("Dr. Charles West III" <:> "Knows His Purpose") 3 Seeker)
+    { cdSkills = [#intellect, #combat]
+    , cdCardTraits = setFromList [Ally, Science]
+    , cdSlots = [#ally]
+    , cdUnique = True
     }
 
 microscope :: CardDef

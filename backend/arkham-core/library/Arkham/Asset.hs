@@ -936,6 +936,7 @@ allAssets =
     , SomeAssetCard evanescentAscensionTheMorningStar
     , --- seeker [fhv]
       SomeAssetCard chemistrySet
+    , SomeAssetCard drCharlesWestIiiKnowsHisPurpose
     , SomeAssetCard microscope
     , SomeAssetCard mouseMaskTheMeekWatcher
     , SomeAssetCard gabrielCarilloTrustedConfidante1

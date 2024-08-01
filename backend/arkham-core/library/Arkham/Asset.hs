@@ -939,9 +939,13 @@ allAssets =
     , SomeAssetCard drCharlesWestIiiKnowsHisPurpose
     , SomeAssetCard microscope
     , SomeAssetCard mouseMaskTheMeekWatcher
+    , SomeAssetCard ravenousMyconidUnidentified
     , SomeAssetCard gabrielCarilloTrustedConfidante1
     , SomeAssetCard prismaticSpectaclesLensToTheOtherworld2
     , SomeAssetCard microscope4
+    , SomeAssetCard ravenousMyconidSentientStrain4
+    , SomeAssetCard ravenousMyconidCarnivorousStrain4
+    , SomeAssetCard ravenousMyconidNurturingStrain4
     , --- rogue [fhv]
       SomeAssetCard biancaDieKatzSingingYourSong
     , SomeAssetCard britishBullDog

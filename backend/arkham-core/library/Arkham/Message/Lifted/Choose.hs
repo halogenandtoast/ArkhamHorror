@@ -49,6 +49,26 @@ labeled label action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [Label label msgs]
 
+damageLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
+damageLabeled iid action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [DamageLabel iid msgs]
+
+horrorLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
+horrorLabeled iid action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [HorrorLabel iid msgs]
+
+assetDamageLabeled :: ReverseQueue m => AssetId -> QueueT Message m () -> ChooseT m ()
+assetDamageLabeled aid action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [AssetDamageLabel aid msgs]
+
+assetHorrorLabeled :: ReverseQueue m => AssetId -> QueueT Message m () -> ChooseT m ()
+assetHorrorLabeled aid action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [AssetHorrorLabel aid msgs]
+
 skillLabeled :: ReverseQueue m => SkillType -> QueueT Message m () -> ChooseT m ()
 skillLabeled skillType action = unterminated do
   msgs <- lift $ evalQueueT action

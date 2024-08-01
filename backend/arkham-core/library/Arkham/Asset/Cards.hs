@@ -642,6 +642,10 @@ allPlayerAssetCards =
       , randallCho
       , randolphCarterChainedToTheWakingWorld
       , randolphCarterExpertDreamer
+      , ravenousMyconidCarnivorousStrain4
+      , ravenousMyconidNurturingStrain4
+      , ravenousMyconidSentientStrain4
+      , ravenousMyconidUnidentified
       , recallTheFuture2
       , relentless
       , relicHunter3
@@ -6402,6 +6406,15 @@ mouseMaskTheMeekWatcher =
     , cdLimits = [LimitPerTrait Mask 1]
     }
 
+ravenousMyconidUnidentified :: CardDef
+ravenousMyconidUnidentified =
+  (asset "10044" ("Ravenous Myconid" <:> "Unidentified") 2 Seeker)
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Creature, Monster, Flora, Science]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdBondedWith = [(1, "10045")]
+    }
+
 gabrielCarilloTrustedConfidante1 :: CardDef
 gabrielCarilloTrustedConfidante1 =
   (asset "10052" ("Gabriel Carillo" <:> "Trusted Confidante") 4 Seeker)
@@ -6426,6 +6439,39 @@ microscope4 =
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = setFromList [Item, Tool, Science]
     , cdSlots = [#hand]
+    , cdLevel = Just 4
+    }
+
+ravenousMyconidSentientStrain4 :: CardDef
+ravenousMyconidSentientStrain4 =
+  (asset "10059" ("Ravenous Myconid" <:> "Sentient Strait") 2 Seeker)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Creature, Science]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdKeywords = singleton $ Keyword.Researched YouHaveClassifiedANewSpecies
+    , cdBondedWith = [(1, "10045")]
+    , cdLevel = Just 4
+    }
+
+ravenousMyconidCarnivorousStrain4 :: CardDef
+ravenousMyconidCarnivorousStrain4 =
+  (asset "10060" ("Ravenous Myconid" <:> "Carnivorous Strain") 2 Seeker)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Monster, Science]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdKeywords = singleton $ Keyword.Researched YouHaveClassifiedANewSpecies
+    , cdBondedWith = [(1, "10045")]
+    , cdLevel = Just 4
+    }
+
+ravenousMyconidNurturingStrain4 :: CardDef
+ravenousMyconidNurturingStrain4 =
+  (asset "10061" ("Ravenous Myconid" <:> "Nurturing Strain") 2 Seeker)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Flora, Science]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdKeywords = singleton $ Keyword.Researched YouHaveClassifiedANewSpecies
+    , cdBondedWith = [(1, "10045")]
     , cdLevel = Just 4
     }
 

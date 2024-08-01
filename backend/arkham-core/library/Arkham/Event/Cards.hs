@@ -409,6 +409,7 @@ allPlayerEventCards =
       , twentyOneOrBust
       , uncageTheSoul
       , uncageTheSoul3
+      , uncannyGrowth
       , underSurveillance1
       , underprepared
       , unearthTheAncients
@@ -3936,6 +3937,20 @@ miracleWish5 =
     , cdFastWindow = Just $ RevealChaosToken #after You #bless
     , cdLevel = Just 5
     , cdBondedWith = [(1, "10039")]
+    }
+
+uncannyGrowth :: CardDef
+uncannyGrowth =
+  (event "10045" "Uncanny Growth" 1 Seeker)
+    { cdCardTraits = setFromList [Insight, Science]
+    , cdActions = [#investigate]
+    , cdKeywords =
+        setFromList
+          [ Keyword.Bonded 1 "10044"
+          , Keyword.Bonded 1 "10059"
+          , Keyword.Bonded 1 "10060"
+          , Keyword.Bonded 1 "10061"
+          ]
     }
 
 fineTuning1 :: CardDef

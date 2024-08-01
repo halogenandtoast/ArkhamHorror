@@ -287,6 +287,7 @@ data CampaignLogKey
   | YouHaveInterpretedTheDreams
   | YouHaveTranslatedTheGrimoire
   | YouHaveIdentifiedTheGateway
+  | YouHaveClassifiedANewSpecies
   deriving stock (Eq, Show, Ord, Data)
 
 $(deriveJSON defaultOptions ''CampaignLogKey)

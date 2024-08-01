@@ -916,6 +916,10 @@ library
       Arkham.Asset.Cards.RandallCho
       Arkham.Asset.Cards.RandolphCarterChainedToTheWakingWorld
       Arkham.Asset.Cards.RandolphCarterExpertDreamer
+      Arkham.Asset.Cards.RavenousMyconidCarnivorousStrain4
+      Arkham.Asset.Cards.RavenousMyconidNurturingStrain4
+      Arkham.Asset.Cards.RavenousMyconidSentientStrain4
+      Arkham.Asset.Cards.RavenousMyconidUnidentified
       Arkham.Asset.Cards.RecallTheFuture2
       Arkham.Asset.Cards.Relentless
       Arkham.Asset.Cards.RelicHunter3
@@ -1872,6 +1876,7 @@ library
       Arkham.Event.Cards.TwentyOneOrBust
       Arkham.Event.Cards.UncageTheSoul
       Arkham.Event.Cards.UncageTheSoul3
+      Arkham.Event.Cards.UncannyGrowth
       Arkham.Event.Cards.Underprepared
       Arkham.Event.Cards.UnderSurveillance1
       Arkham.Event.Cards.UnearthTheAncients

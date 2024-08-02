@@ -249,6 +249,7 @@ allSkills =
     , --- survivor [fhv]
       SomeSkillCard longShot
     , SomeSkillCard persistence1
+    , SomeSkillCard providential2
     , --- neutral [fhv]
       SomeSkillCard wellDressed
     , -- Return to the Dunwich Legacy

@@ -104,6 +104,7 @@ allPlayerSkillCards =
       , prescient
       , promiseOfPower
       , prophesy
+      , providential2
       , purified
       , quickThinking
       , reckless
@@ -865,6 +866,13 @@ persistence1 =
     { cdCardTraits = setFromList [Practiced]
     , cdLevel = Just 1
     , cdCardInDiscardEffects = True
+    }
+
+providential2 :: CardDef
+providential2 =
+  (skill "10125" "Providential" [#willpower, #combat, #wild] Survivor)
+    { cdCardTraits = setFromList [Innate, Blessed]
+    , cdLevel = Just 2
     }
 
 wellDressed :: CardDef

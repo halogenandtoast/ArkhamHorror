@@ -98,6 +98,7 @@ allPlayerSkillCards =
       , overpower2
       , perception
       , perception2
+      , persistence1
       , planOfAction
       , predestined
       , prescient
@@ -856,6 +857,14 @@ longShot =
             , OnlyEvasionAgainst (EnemyAt $ oneOf [YourLocation, ConnectedLocation])
             ]
         ]
+    }
+
+persistence1 :: CardDef
+persistence1 =
+  (skill "10118" "Persistence" [#wild] Survivor)
+    { cdCardTraits = setFromList [Practiced]
+    , cdLevel = Just 1
+    , cdCardInDiscardEffects = True
     }
 
 wellDressed :: CardDef

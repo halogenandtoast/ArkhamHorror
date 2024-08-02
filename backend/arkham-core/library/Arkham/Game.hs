@@ -4589,6 +4589,7 @@ preloadModifiers g = case gameMode g of
           ( `toTargetModifiers`
               ( entities
                   <> inHandEntities
+                  <> inDiscardEntities
                   <> maybeToList
                     (SomeEntity <$> modeScenario (gameMode g))
                   <> maybeToList
@@ -4615,6 +4616,8 @@ preloadModifiers g = case gameMode g of
   entities = overEntities (: []) (gameEntities g)
   inHandEntities =
     concatMap (overEntities (: [])) (toList $ gameInHandEntities g)
+  inDiscardEntities =
+    concatMap (overEntities (: [])) (toList $ gameInDiscardEntities g)
   tokens =
     nub
       $ maybe [] allSkillTestChaosTokens (gameSkillTest g)

@@ -99,7 +99,7 @@ import Arkham.Projection
 import Arkham.Scenario
 import Arkham.Scenario.Types hiding (scenario)
 import Arkham.Skill
-import Arkham.Skill.Types (Field (..), SkillAttrs (..))
+import Arkham.Skill.Types (Field (..), Skill, SkillAttrs (..))
 import Arkham.SkillTest.Runner
 import Arkham.SkillTestResult
 import Arkham.Source
@@ -873,7 +873,15 @@ runGameMessage msg g = case msg of
       PlayerCard pc -> case toCardType pc of
         SkillType -> do
           skillId <- getRandom
-          let skill = createSkill pc iid skillId
+          let hasInDiscardEffects = cdCardInDiscardEffects (toCardDef card)
+          inDiscard <- selectAny $ inDiscardOf iid <> basic (CardWithId card.id)
+
+          let setPlacement =
+                overAttrs
+                  ( \attrs ->
+                      attrs {skillPlacement = if hasInDiscardEffects && inDiscard then StillInDiscard iid else Unplaced}
+                  )
+          let skill = setPlacement $ createSkill pc iid skillId
           push $ InvestigatorCommittedSkill iid skillId
           for_ (skillAdditionalCost $ toAttrs skill) $ \cost -> do
             let ability = abilityEffect skill cost
@@ -2597,6 +2605,10 @@ preloadEntities g = do
         setAssetPlacement a = case eqT @a @Asset of
           Just Refl -> overAttrs (\attrs -> attrs {assetPlacement = StillInDiscard (toId investigator')}) a
           Nothing -> a
+        setSkillPlacement :: forall a. Typeable a => a -> a
+        setSkillPlacement a = case eqT @a @Skill of
+          Just Refl -> overAttrs (\attrs -> attrs {skillPlacement = StillInDiscard (toId investigator')}) a
+          Nothing -> a
         discardEffectCards =
           map PlayerCard
             . filter (cdCardInDiscardEffects . toCardDef)
@@ -2608,7 +2620,7 @@ preloadEntities g = do
             let
               discardEntities =
                 foldl'
-                  (addCardEntityWith (toId investigator') setAssetPlacement)
+                  (addCardEntityWith (toId investigator') (setAssetPlacement . setSkillPlacement))
                   defaultEntities
                   discardEffectCards
              in

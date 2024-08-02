@@ -456,7 +456,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     VengeanceCard _ -> error "vengeance card"
   PutCardOnBottomOfDeck _ Deck.EncounterDeck card -> case card of
     EncounterCard ec -> do
-      let encounterDeck = withDeck (<> [ec]) scenarioEncounterDeck
+      let encounterDeck = withDeck ((<> [ec]) . deleteFirst ec) scenarioEncounterDeck
       pure
         $ a
         & (setAsideCardsL %~ deleteFirstMatch (== card))

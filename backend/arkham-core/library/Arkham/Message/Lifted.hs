@@ -642,6 +642,24 @@ gameModifiers
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
 gameModifiers source target = traverse_ (gameModifier source target)
 
+nextTurnModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => InvestigatorId
+  -> source
+  -> target
+  -> ModifierType
+  -> m ()
+nextTurnModifier iid source target modifier = push $ Msg.nextTurnModifier iid source target modifier
+
+nextTurnModifiers
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => InvestigatorId
+  -> source
+  -> target
+  -> [ModifierType]
+  -> m ()
+nextTurnModifiers iid source target modifiers = push $ Msg.nextTurnModifiers iid source target modifiers
+
 flipOver
   :: (ReverseQueue m, Sourceable a, Targetable a) => InvestigatorId -> a -> m ()
 flipOver iid a = push $ Msg.Flip iid (toSource a) (toTarget a)

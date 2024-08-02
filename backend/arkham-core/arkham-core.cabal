@@ -1537,6 +1537,7 @@ library
       Arkham.Event.Cards.AlterFate3
       Arkham.Event.Cards.Ambush1
       Arkham.Event.Cards.AnatomicalDiagrams
+      Arkham.Event.Cards.AntediluvianHymn
       Arkham.Event.Cards.AstoundingRevelation
       Arkham.Event.Cards.AstralTravel
       Arkham.Event.Cards.AtACrossroads1
@@ -1554,6 +1555,7 @@ library
       Arkham.Event.Cards.Barricade3
       Arkham.Event.Cards.Beguile
       Arkham.Event.Cards.BellyOfTheBeast
+      Arkham.Event.Cards.BideYourTime
       Arkham.Event.Cards.BindMonster2
       Arkham.Event.Cards.BizarreDiagnosis
       Arkham.Event.Cards.BlackMarket2

@@ -84,6 +84,7 @@ allPlayerSkillCards =
       , longShot
       , manualDexterity
       , manualDexterity2
+      , mesmericInfluence1
       , momentum1
       , nauticalProwess
       , neitherRainNorSnow
@@ -835,8 +836,14 @@ lightfooted =
 
 accursed :: CardDef
 accursed =
-  (skill "10095" "Lightfooted" [#wild] Mystic)
+  (skill "10095" "Accursed" [#wild] Mystic)
     { cdCardTraits = setFromList [Innate, Cursed]
+    }
+
+mesmericInfluence1 :: CardDef
+mesmericInfluence1 =
+  (skill "10096" "Mesmeric Influence" [#willpower, #wild] Mystic)
+    { cdCardTraits = setFromList [Practiced]
     }
 
 longShot :: CardDef

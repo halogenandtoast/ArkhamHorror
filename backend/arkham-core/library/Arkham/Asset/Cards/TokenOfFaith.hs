@@ -22,7 +22,11 @@ instance HasAbilities TokenOfFaith where
   getAbilities (TokenOfFaith x) =
     [ restrictedAbility x 1 (ControlsThis <> HasRemainingBlessTokens)
         $ ReactionAbility
-          (SkillTestEnded #after Anyone $ SkillTestWithRevealedChaosToken $ oneOf [#curse, #autofail])
+          ( SkillTestEnded #after Anyone
+              $ SkillTestWithRevealedChaosToken
+              $ IncludeTokenPool
+              $ oneOf [#curse, #autofail]
+          )
           (exhaust x)
     ]
 
@@ -33,7 +37,8 @@ getTokens = concatMapMaybe \case
 
 instance RunMessage TokenOfFaith where
   runMessage msg a@(TokenOfFaith attrs) = case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 (getTokens -> tokens) _ -> do
+    UseCardAbility _iid (isSource attrs -> True) 1 (getTokens -> tokens') _ -> do
+      let tokens = filter ((`elem` [#autofail, #curse]) . (.face)) tokens'
       n <- min (length tokens) <$> getRemainingBlessTokens
       pushAll $ replicate n $ AddChaosToken #bless
       pure a

@@ -978,6 +978,8 @@ allAssets =
     , SomeAssetCard huntingJacket2
     , SomeAssetCard marinersCompass2
     , SomeAssetCard survivalTechnique2
+    , SomeAssetCard tokenOfFaith3
+    , SomeAssetCard darkHorse5
     , --- neutral [fhv]
       SomeAssetCard eldritchTongue
     , --- basic weaknesses [fhv]

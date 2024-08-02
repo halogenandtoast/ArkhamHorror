@@ -591,6 +591,7 @@ allPlayerAssetCards =
       , oldKeyring3
       , oldShotgun2
       , oliveMcBride
+      , oliveMcBride2
       , onYourOwn3
       , onYourOwn3_Exceptional
       , onyxPentacle
@@ -6605,6 +6606,16 @@ wickedAthame =
     { cdSkills = [#combat]
     , cdCardTraits = setFromList [Item, Weapon, Melee, Cursed]
     , cdSlots = [#hand]
+    }
+
+oliveMcBride2 :: CardDef
+oliveMcBride2 =
+  (asset "10097" ("Olive McBride" <:> "Will Try Anything Once") 2 Mystic)
+    { cdCardTraits = setFromList [Ally, Witch]
+    , cdSkills = [#willpower, #willpower]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdLevel = Just 2
     }
 
 rodOfCarnamagosScepterOfTheMadSeer2 :: CardDef

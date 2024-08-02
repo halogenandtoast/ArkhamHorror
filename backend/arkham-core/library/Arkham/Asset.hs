@@ -977,6 +977,7 @@ allAssets =
     , SomeAssetCard fireAxe2
     , SomeAssetCard huntingJacket2
     , SomeAssetCard marinersCompass2
+    , SomeAssetCard survivalTechnique2
     , --- neutral [fhv]
       SomeAssetCard eldritchTongue
     , --- basic weaknesses [fhv]

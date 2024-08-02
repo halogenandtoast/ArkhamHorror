@@ -1195,6 +1195,10 @@ getTreacheriesMatching matcher = do
       targets <- selectMap (Just . EnemyTarget) enemyMatcher
       let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
       pure $ treacheryTarget `elem` targets
+    TreacheryAttachedToLocation mtchr -> \treachery -> do
+      case treachery.placement of
+        AttachedToLocation lid -> lid <=~> mtchr
+        _ -> pure False
     TreacheryIsAttachedTo target -> \treachery -> do
       let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
       pure $ treacheryTarget == Just target
@@ -3841,6 +3845,21 @@ instance Query ExtendedCardMatcher where
               (fieldMap InvestigatorDeck (map PlayerCard . unDeck))
               iids
         pure $ c `elem` cards
+      CardIsAttachedToLocation mtch -> do
+        mAsset <- selectOne $ AssetWithCardId c.id
+        mEvent <- selectOne $ EventWithCardId c.id
+        mSkill <- selectOne $ SkillWithCardId c.id
+
+        let
+          atLocation = \case
+            AttachedToLocation lid -> lid <=~> mtch
+            _ -> pure False
+
+        orM
+          [ maybe (pure False) (fieldMapM AssetPlacement atLocation) mAsset
+          , maybe (pure False) (fieldMapM EventPlacement atLocation) mEvent
+          , maybe (pure False) (fieldMapM SkillPlacement atLocation) mSkill
+          ]
       EligibleForCurrentSkillTest -> do
         skillIcons <- getSkillTestMatchingSkillIcons
         pure $ any (`member` skillIcons) c.skills || (null c.skills && toCardType c == SkillType)

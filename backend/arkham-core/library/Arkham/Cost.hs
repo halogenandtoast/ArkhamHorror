@@ -84,6 +84,9 @@ discardPayments = concat . toListOf (cosmos . _DiscardPayment)
 chosenEnemyPayment :: Payment -> Maybe EnemyId
 chosenEnemyPayment = listToMaybe . toListOf (cosmos . _ChosenEnemyPayment)
 
+chosenCardPayment :: Payment -> Maybe CardId
+chosenCardPayment = listToMaybe . toListOf (cosmos . _ChosenCardPayment)
+
 addedCurseTokenPayment :: Payment -> Int
 addedCurseTokenPayment = sum . toListOf (cosmos . _AddCurseTokenPayment)
 
@@ -109,6 +112,7 @@ data Payment
   = ActionPayment Int
   | AdditionalActionPayment
   | ChosenEnemyPayment EnemyId
+  | ChosenCardPayment CardId
   | CluePayment InvestigatorId Int
   | DoomPayment Int
   | ResourcePayment Int
@@ -145,6 +149,11 @@ _AddCurseTokenPayment = prism' AddCurseTokenPayment $ \case
 _ChosenEnemyPayment :: Prism' Payment EnemyId
 _ChosenEnemyPayment = prism' ChosenEnemyPayment $ \case
   ChosenEnemyPayment x -> Just x
+  _ -> Nothing
+
+_ChosenCardPayment :: Prism' Payment CardId
+_ChosenCardPayment = prism' ChosenCardPayment $ \case
+  ChosenCardPayment x -> Just x
   _ -> Nothing
 
 _DiscardPayment :: Prism' Payment [(Zone, Card)]
@@ -192,6 +201,8 @@ data Cost
   | ExhaustCost Target
   | ChooseEnemyCost EnemyMatcher
   | ChosenEnemyCost EnemyId
+  | ChooseExtendedCardCost ExtendedCardMatcher
+  | ChosenCardCost CardId
   | DiscardAssetCost AssetMatcher
   | ExhaustAssetCost AssetMatcher
   | ExhaustXAssetCost AssetMatcher
@@ -290,7 +301,9 @@ data DynamicUseCostValue = DrawnCardsValue
 displayCostType :: Cost -> Text
 displayCostType = \case
   ChooseEnemyCost _ -> "Choose an enemy"
+  ChooseExtendedCardCost _ -> "Choose a card that matches"
   ChosenEnemyCost _ -> "Choose an enemy"
+  ChosenCardCost _ -> "Choose a card that matches"
   ExhaustXAssetCost _ -> "Exhaust X copies"
   EnemyAttackCost _ -> "The chosen enemy makes an attack against you"
   UnpayableCost -> "Unpayable"

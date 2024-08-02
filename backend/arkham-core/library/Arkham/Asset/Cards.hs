@@ -726,33 +726,33 @@ allPlayerAssetCards =
       , smokingPipe
       , solemnVow
       , somethingWorthFightingFor
+      , songOfTheDead2
       , sophieInLovingMemory
       , sophieItWasAllMyFault
       , soulSanctification3
       , sparrowMaskTheWanderersCompanion
-      , spectralWeb
       , speakToTheDead
+      , spectralWeb
       , spiritAthame1
-      , steadyHanded1
-      , stealth
-      , stealth3
-      , stickToThePlan3
-      , streetwise
-      , streetwise3
-      , studious3
-      , songOfTheDead2
       , spiritOfHumanity2
       , spiritSpeaker
       , spiritualResolve5
       , splitTheAngleIreOfTheVoid
       , springfieldM19034
       , stHubertsKey
+      , steadyHanded1
+      , stealth
+      , stealth3
+      , stickToThePlan3
       , strangeSolution
       , strangeSolutionAcidicIchor4
       , strangeSolutionEmpoweringElixir4
       , strangeSolutionFreezingVariant4
       , strangeSolutionRestorativeConcoction4
       , strayCat
+      , streetwise
+      , streetwise3
+      , studious3
       , stylishCoat1
       , suggestion1
       , suggestion4
@@ -761,6 +761,7 @@ allPlayerAssetCards =
       , surgicalKit3
       , survivalKnife
       , survivalKnife2
+      , survivalTechnique2
       , switchblade
       , switchblade2
       , swordCane
@@ -6731,6 +6732,14 @@ marinersCompass2 =
     { cdCardTraits = setFromList [Item, Tool]
     , cdSkills = [#intellect, #intellect]
     , cdSlots = [#hand]
+    , cdLevel = Just 2
+    }
+
+survivalTechnique2 :: CardDef
+survivalTechnique2 =
+  (asset "10123" "Survival Technique" 2 Survivor)
+    { cdCardTraits = setFromList [Talent, Science]
+    , cdSkills = [#agility]
     , cdLevel = Just 2
     }
 

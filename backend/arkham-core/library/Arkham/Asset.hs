@@ -973,6 +973,8 @@ allAssets =
     , SomeAssetCard pitchfork
     , SomeAssetCard sparrowMaskTheWanderersCompanion
     , SomeAssetCard hatchet1
+    , SomeAssetCard devilFriendOrFoe2
+    , SomeAssetCard fireAxe2
     , SomeAssetCard huntingJacket2
     , SomeAssetCard marinersCompass2
     , --- neutral [fhv]

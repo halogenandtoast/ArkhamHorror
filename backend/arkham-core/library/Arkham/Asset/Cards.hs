@@ -273,6 +273,7 @@ allPlayerAssetCards =
       , darrellsKodak
       , davidRenfield
       , dayanaEsperence3
+      , deVermisMysteriis2
       , deathXiii1
       , decoratedSkull
       , decoratedSkull3
@@ -280,7 +281,7 @@ allPlayerAssetCards =
       , delilahORourke3
       , dendromorphosis
       , detectivesColt1911s
-      , deVermisMysteriis2
+      , devilFriendOrFoe2
       , digDeep
       , digDeep2
       , digDeep4
@@ -370,6 +371,7 @@ allPlayerAssetCards =
       , fingerprintKit4
       , finnsTrustyThirtyEight
       , fireAxe
+      , fireAxe2
       , fireExtinguisher1
       , fireExtinguisher3
       , firstAid
@@ -6695,6 +6697,24 @@ hatchet1 =
     , cdSlots = [#hand]
     , cdLevel = Just 1
     }
+
+devilFriendOrFoe2 :: CardDef
+devilFriendOrFoe2 =
+  (asset "10119" ("\"Devil\"" <:> "Friend or Foe?") 1 Survivor)
+    { cdCardTraits = setFromList [Ally, Creature, Cursed]
+    , cdSkills = [#agility]
+    , cdSlots = [#ally]
+    , cdLevel = Just 2
+    }
+
+fireAxe2 :: CardDef
+fireAxe2 =
+  fast
+    $ (asset "10120" "Fire Axe" 1 Survivor)
+      { cdSkills = [#combat, #combat]
+      , cdCardTraits = setFromList [Item, Weapon, Melee]
+      , cdSlots = [#hand]
+      }
 
 huntingJacket2 :: CardDef
 huntingJacket2 =

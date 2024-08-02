@@ -543,6 +543,7 @@ library
       Arkham.Asset.Cards.Dendromorphosis
       Arkham.Asset.Cards.DetectivesColt1911s
       Arkham.Asset.Cards.DeVermisMysteriis2
+      Arkham.Asset.Cards.DevilFriendOrFoe2
       Arkham.Asset.Cards.DigDeep
       Arkham.Asset.Cards.DigDeep2
       Arkham.Asset.Cards.DigDeep4
@@ -632,6 +633,7 @@ library
       Arkham.Asset.Cards.FingerprintKit4
       Arkham.Asset.Cards.FinnsTrustyThirtyEight
       Arkham.Asset.Cards.FireAxe
+      Arkham.Asset.Cards.FireAxe2
       Arkham.Asset.Cards.FireExtinguisher1
       Arkham.Asset.Cards.FireExtinguisher3
       Arkham.Asset.Cards.FirstAid

@@ -545,14 +545,9 @@ runGameMessage msg g = case msg of
     let skillsF = maybe id deleteMap mSkillId
     pure
       $ g
-      & focusedCardsL
-      %~ filter (/= c)
-      & foundCardsL
-      . each
-      %~ filter (/= c)
-      & entitiesL
-      . skillsL
-      %~ skillsF
+      & (focusedCardsL %~ filter (/= c))
+      & (foundCardsL . each %~ filter (/= c))
+      & (entitiesL . skillsL %~ skillsF)
   ShuffleCardsIntoDeck _ cards ->
     pure
       $ g

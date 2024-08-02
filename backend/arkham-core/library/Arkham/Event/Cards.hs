@@ -50,26 +50,27 @@ allPlayerEventCards =
   mapFromList
     $ concatMap
       toCardCodePairs
-      [ absolution
-      , abyssalRot
-      , aChanceEncounter
+      [ aChanceEncounter
       , aChanceEncounter2
-      , aemberRot
-      , aethericCurrentYoth
-      , aethericCurrentYuggoth
-      , adHoc
       , aGlimmerOfHope
       , aTestOfWill
       , aTestOfWill1
       , aTestOfWill2
       , aWatchfulPeace3
+      , absolution
+      , abyssalRot
       , aceInTheHole3
       , actOfDesperation
+      , adHoc
+      , aemberRot
+      , aethericCurrentYoth
+      , aethericCurrentYuggoth
       , againstAllOdds2
       , alterFate1
       , alterFate3
       , ambush1
       , anatomicalDiagrams
+      , antediluvianHymn
       , astoundingRevelation
       , astralTravel
       , atACrossroads1
@@ -83,6 +84,7 @@ allPlayerEventCards =
       , barricade3
       , beguile
       , bellyOfTheBeast
+      , bideYourTime
       , bindMonster2
       , bizarreDiagnosis
       , blackMarket2
@@ -4187,6 +4189,15 @@ virescentRot =
     , cdKeywords = setFromList [Keyword.Bonded 1 "10085", Keyword.Bonded 1 "10098"]
     }
 
+antediluvianHymn :: CardDef
+antediluvianHymn =
+  (event "10093" "Antediluvian Hymn" 2 Mystic)
+    { cdSkills = [#willpower, #intellect, #combat]
+    , cdCardTraits = setFromList [Augury, Double]
+    , cdAdditionalCost = Just (ActionCost 1)
+    , cdCriteria = can.target.encounterDeck
+    }
+
 readTheSigns2 :: CardDef
 readTheSigns2 =
   (event "10101" "Read the Signs" 2 Mystic)
@@ -4261,6 +4272,14 @@ keepFaith2 =
     , cdFastWindow = Just FastPlayerWindow
     , cdCriteria = Just Criteria.HasRemainingBlessTokens
     , cdLevel = Just 2
+    }
+
+bideYourTime :: CardDef
+bideYourTime =
+  (event "10129" "Bide Your Time" 0 Neutral)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Double]
+    , cdAdditionalCost = Just (ActionCost 1)
     }
 
 dynamiteBlast2 :: CardDef

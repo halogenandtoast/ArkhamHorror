@@ -113,6 +113,7 @@ import Arkham.Event.Events (
   actOfDesperationEffect,
   atACrossroads1Effect,
   backstab3Effect,
+  bideYourTimeEffect,
   bindMonster2Effect,
   blackMarket2Effect,
   blindingLight2Effect,
@@ -468,6 +469,7 @@ allEffects =
     , ("10072", SomeEffect illPayYouBackEffect)
     , ("10102", SomeEffect spectralRazor2Effect)
     , ("10128", SomeEffect eldritchTongueEffect)
+    , ("10129", SomeEffect bideYourTimeEffect)
     , ("50044", SomeEffect jeremiahPierceEffect)
     , ("52007", SomeEffect alchemicalTransmutation2Effect)
     , ("52008", SomeEffect stormOfSpirits3Effect)

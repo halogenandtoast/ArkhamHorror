@@ -288,8 +288,14 @@ const cardLabels = computed(() =>
       return choice.tag === "CardLabel" ? [[choice, index]] : []
     }))
 
+const tarotLabels = computed(() =>
+  choices.value.
+    flatMap((choice, index) => {
+      return choice.tag === "TarotLabel" ? [{choice, index}] : []
+    }))
+
 const showChoices = computed(() =>
-  focusedChaosTokens.value.length > 0 || focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value || modalChoices.value.length > 0 || cardLabels.value.length > 0 || (question.value && question.value.tag === "DropDown")
+  focusedChaosTokens.value.length > 0 || focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value || modalChoices.value.length > 0 || cardLabels.value.length > 0 || (question.value && question.value.tag === "DropDown") || tarotLabels.value.length > 0
 )
 
 function isModalChoice(choice: Message) {

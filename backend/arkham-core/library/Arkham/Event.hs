@@ -603,6 +603,7 @@ allEvents =
     , SomeEventCard putrescentRot
     , SomeEventCard scarletRot
     , SomeEventCard virescentRot
+    , SomeEventCard antediluvianHymn
     , SomeEventCard readTheSigns2
     , SomeEventCard spectralRazor2
     , SomeEventCard sealOfTheElders5
@@ -610,6 +611,8 @@ allEvents =
       SomeEventCard pushedToTheLimit
     , SomeEventCard wrongPlaceRightTime
     , SomeEventCard keepFaith2
+    , --- netural [fhv]
+      SomeEventCard bideYourTime
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

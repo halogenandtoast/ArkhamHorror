@@ -726,6 +726,7 @@ allPlayerAssetCards =
       , soulSanctification3
       , sparrowMaskTheWanderersCompanion
       , spectralWeb
+      , speakToTheDead
       , spiritAthame1
       , steadyHanded1
       , stealth
@@ -6586,6 +6587,15 @@ rodOfCarnamagosScepterOfTheMadSeer =
     , cdDeckRestrictions = [PerDeckLimit 1]
     , cdSlots = [#hand]
     , cdBondedWith = [(1, "10086"), (1, "10087"), (1, "10088"), (1, "10089"), (1, "10090")]
+    }
+
+speakToTheDead :: CardDef
+speakToTheDead =
+  (asset "10091" "Speak to the Dead" 1 Mystic)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Talent, Ritual]
+    , cdSlots = [#arcane]
+    , cdUses = uses Offering 6
     }
 
 rodOfCarnamagosScepterOfTheMadSeer2 :: CardDef

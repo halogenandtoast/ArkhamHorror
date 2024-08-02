@@ -798,6 +798,9 @@ instance IsLabel "item" ExtendedCardMatcher where
 instance IsLabel "tome" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #tome
 
+instance IsLabel "ritual" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #ritual
+
 instance IsLabel "illicit" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #illicit
 
@@ -1127,7 +1130,7 @@ data WindowMatcher
   | PlayEventDiscarding Timing Who EventMatcher
   | PhaseBegins Timing PhaseMatcher
   | PhaseEnds Timing PhaseMatcher
-  | PlayerHasPlayableCard ExtendedCardMatcher
+  | PlayerHasPlayableCard CostStatus ExtendedCardMatcher
   | RevealLocation Timing Who Where
   | FlipLocation Timing Who Where
   | PutLocationIntoPlay Timing Who Where

@@ -2776,6 +2776,7 @@ library
       Arkham.Skill
       Arkham.Skill.Cards
       Arkham.Skill.Cards.AbleBodied
+      Arkham.Skill.Cards.Accursed
       Arkham.Skill.Cards.AllIn5
       Arkham.Skill.Cards.Analysis
       Arkham.Skill.Cards.AnythingYouCanDoBetter

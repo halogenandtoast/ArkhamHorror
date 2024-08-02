@@ -681,6 +681,7 @@ allPlayerAssetCards =
       , scientificTheory3
       , scrapper
       , scrapper3
+      , scrimshawCharmFromDistantShores
       , scrollOfProphecies
       , scrollOfSecrets
       , scrollOfSecretsMystic3
@@ -6529,6 +6530,14 @@ foxMaskTheWiseTrickster =
     , cdCardTraits = setFromList [Item, Charm, Mask]
     , cdUses = uses Offering 2
     , cdLimits = [LimitPerTrait Mask 1]
+    }
+
+scrimshawCharmFromDistantShores :: CardDef
+scrimshawCharmFromDistantShores =
+  (asset "10068" ("Scrimshaw Charm" <:> "From Distant Shores") 1 Rogue)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Charm, Cursed]
+    , cdSlots = [#accessory]
     }
 
 britishBullDog2 :: CardDef

@@ -76,6 +76,9 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
   AddCurseTokenCost n -> do
     x <- getRemainingCurseTokens
     pure $ x >= n
+  AddCurseTokensCost n _ -> do
+    x <- getRemainingCurseTokens
+    pure $ x >= n
   SkillTestCost {} -> pure True
   AsIfAtLocationCost lid c -> do
     withModifiers' iid (toModifiers source [AsIfAt lid])

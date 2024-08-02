@@ -532,6 +532,19 @@ payCost msg c iid skipAdditionalCosts cost = do
     AddCurseTokenCost n -> do
       x <- min n <$> getRemainingCurseTokens
       pushAll $ replicate x $ AddChaosToken CurseToken
+      withPayment $ AddCurseTokenPayment x
+    AddCurseTokensCost n m -> do
+      maxTokens <- min m <$> getRemainingCurseTokens
+      name <- fieldMap InvestigatorName toTitle iid
+
+      push
+        $ Ask player
+        $ ChoosePaymentAmounts
+          ("Pay " <> displayCostType cost)
+          Nothing
+          [ PaymentAmountChoice iid n maxTokens name
+              $ pay (AddCurseTokenCost 1)
+          ]
       pure c
     AddCurseTokensEqualToShroudCost -> do
       mloc <- field InvestigatorLocation iid

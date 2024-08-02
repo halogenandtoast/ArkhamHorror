@@ -388,7 +388,7 @@ const title = computed(() => {
     <div v-if="paymentAmountsLabel" class="modal amount-modal">
       <div class="modal-contents amount-contents">
         <form @submit.prevent="submitPaymentAmounts" :disabled="unmetAmountRequirements">
-          <legend>{{paymentAmountsLabel}}</legend>
+          <legend v-html="paymentAmountsLabel"></legend>
           <template v-for="amountChoice in paymentAmountsChoices" :key="amountChoice.investigatorId">
             <div v-if="amountChoice.maxBound !== 0">
               {{amountChoice.title}}

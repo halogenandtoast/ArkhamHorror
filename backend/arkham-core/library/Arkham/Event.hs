@@ -612,7 +612,8 @@ allEvents =
     , SomeEventCard etherealWeaving3
     , SomeEventCard sealOfTheElders5
     , --- survivor [fhv]
-      SomeEventCard pushedToTheLimit
+      SomeEventCard elaborateDistraction
+    , SomeEventCard pushedToTheLimit
     , SomeEventCard wrongPlaceRightTime
     , SomeEventCard keepFaith2
     , --- netural [fhv]

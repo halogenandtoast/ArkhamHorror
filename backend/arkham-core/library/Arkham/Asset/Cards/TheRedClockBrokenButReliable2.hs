@@ -9,7 +9,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Game.Helpers (getCanMoveToLocations)
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Movement
@@ -28,21 +27,21 @@ instance RunMessage TheRedClockBrokenButReliable2 where
   runMessage msg a@(TheRedClockBrokenButReliable2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let charges = attrs.use Charge
-      let
-        otherMessages
-          | charges == 1 = [Msg.nextSkillTestModifier (attrs.ability 1) iid (AnySkillValue 3)]
-          | charges == 2 = [DoStep 2 msg]
-          | charges == 3 = [GainActions iid (attrs.ability 1) 1]
-          | otherwise = []
       chooseOrRunOne
         iid
-        $ [Label "Place 1 charge here" [AddUses (attrs.ability 1) attrs.id Charge 1]]
+        $ [Label "Place 1 charge here" [AddUses (attrs.ability 1) attrs.id Charge 1, Do msg]]
         <> [ Label
             "Take all charges here as resources"
-            $ MoveTokens (attrs.ability 1) (toSource attrs) (ResourceTarget iid) Charge charges
-            : otherMessages
+            [MoveTokens (attrs.ability 1) (toSource attrs) (ResourceTarget iid) Charge charges]
            | charges > 0
            ]
+      pure a
+    Do msg'@(UseThisAbility iid (isSource attrs -> True) 1) -> do
+      case attrs.use Charge of
+        1 -> nextSkillTestModifier (attrs.ability 1) iid (AnySkillValue 3)
+        2 -> doStep 2 msg'
+        3 -> push $ GainActions iid (attrs.ability 1) 1
+        _ -> pure ()
       pure a
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
       locations <- getCanMoveToLocations iid (attrs.ability 1)

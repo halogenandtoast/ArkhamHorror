@@ -9,7 +9,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Game.Helpers (getCanMoveToLocations)
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Movement
@@ -37,14 +36,14 @@ instance RunMessage TheRedClockBrokenButReliable5 where
           , Label "Leave charges" []
           ]
 
-      -- Other messages needs to consider the charge we just added
-      let
-        otherMessages
-          | charges == 0 = [Msg.nextSkillTestModifier (attrs.ability 1) iid (AnySkillValue 4)]
-          | charges == 1 = [DoStep 3 msg]
-          | charges == 2 = [GainActions iid (attrs.ability 1) 2]
-          | otherwise = []
-      pushAll $ AddUses (attrs.ability 1) attrs.id Charge 1 : otherMessages
+      pushAll [AddUses (attrs.ability 1) attrs.id Charge 1, Do msg]
+      pure a
+    Do msg'@(UseThisAbility iid (isSource attrs -> True) 1) -> do
+      case attrs.use Charge of
+        1 -> nextSkillTestModifier (attrs.ability 1) iid (AnySkillValue 4)
+        2 -> doStep 3 msg'
+        3 -> push $ GainActions iid (attrs.ability 1) 2
+        _ -> pure ()
       pure a
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
       locations <- getCanMoveToLocations iid (attrs.ability 1)

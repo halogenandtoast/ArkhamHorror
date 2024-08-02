@@ -837,6 +837,7 @@ allPlayerAssetCards =
       , wendysAmulet
       , whittonGreene
       , whittonGreene2
+      , wickedAthame
       , wishEater
       , wither
       , wither4
@@ -6596,6 +6597,14 @@ speakToTheDead =
     , cdCardTraits = setFromList [Talent, Ritual]
     , cdSlots = [#arcane]
     , cdUses = uses Offering 6
+    }
+
+wickedAthame :: CardDef
+wickedAthame =
+  (asset "10092" ("Wicked Athame" <:> "Cursed Blade") 2 Mystic)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Item, Weapon, Melee, Cursed]
+    , cdSlots = [#hand]
     }
 
 rodOfCarnamagosScepterOfTheMadSeer2 :: CardDef

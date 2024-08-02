@@ -961,6 +961,7 @@ allAssets =
       SomeAssetCard catMaskTheCapriciousMeddler
     , SomeAssetCard rodOfCarnamagosScepterOfTheMadSeer
     , SomeAssetCard speakToTheDead
+    , SomeAssetCard wickedAthame
     , SomeAssetCard rodOfCarnamagosScepterOfTheMadSeer2
     , SomeAssetCard theKeyOfSolomonSecretsOfTheUnknown4
     , SomeAssetCard keeperOfTheKeyCelestialWard

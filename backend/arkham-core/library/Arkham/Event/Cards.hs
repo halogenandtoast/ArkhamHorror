@@ -146,6 +146,7 @@ allPlayerEventCards =
       , dirtyDeeds3
       , dodge
       , dodge2
+      , drainEssence
       , drawnToTheFlame
       , dumbLuck
       , dumbLuck2
@@ -4196,6 +4197,15 @@ antediluvianHymn =
     , cdCardTraits = setFromList [Augury, Double]
     , cdAdditionalCost = Just (ActionCost 1)
     , cdCriteria = can.target.encounterDeck
+    }
+
+drainEssence :: CardDef
+drainEssence =
+  (event "10094" "Drain Essence" 2 Mystic)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Spell]
+    , cdActions = [#parley]
+    , cdCriteria = Just $ exists (EnemyAt YourLocation <> EnemyWithFight)
     }
 
 readTheSigns2 :: CardDef

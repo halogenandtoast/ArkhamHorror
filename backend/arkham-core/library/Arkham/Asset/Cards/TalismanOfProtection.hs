@@ -6,7 +6,7 @@ where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Import.Lifted hiding (checkDefeated)
 import Arkham.Card
 import Arkham.Classes.HasQueue (replaceMessageMatching)
 import Arkham.Helpers.Message (checkDefeated)

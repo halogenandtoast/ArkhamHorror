@@ -192,6 +192,7 @@ allPlayerAssetCards =
       , bindersJarInterdimensionalPrison1
       , blackjack
       , blackjack2
+      , blackmailFile
       , bladeOfYothTheFathersIre
       , blasphemousCovenant2
       , blessedBlade
@@ -6494,6 +6495,13 @@ biancaDieKatzSingingYourSong =
     , cdUses = uses Resource 10
     , cdSlots = [#ally]
     , cdBondedWith = [(1, "10063")]
+    }
+
+blackmailFile :: CardDef
+blackmailFile =
+  (asset "10064" "Blackmail File" 2 Rogue)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Tome, Illicit]
     }
 
 britishBullDog :: CardDef

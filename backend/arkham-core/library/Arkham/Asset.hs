@@ -949,6 +949,7 @@ allAssets =
     , SomeAssetCard ravenousMyconidNurturingStrain4
     , --- rogue [fhv]
       SomeAssetCard biancaDieKatzSingingYourSong
+    , SomeAssetCard blackmailFile
     , SomeAssetCard britishBullDog
     , SomeAssetCard fakeCredentials
     , SomeAssetCard foxMaskTheWiseTrickster

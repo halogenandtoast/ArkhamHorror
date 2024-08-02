@@ -92,6 +92,14 @@ instance HasField "event" Source (Maybe EventId) where
     AbilitySource s _ -> s.event
     _ -> Nothing
 
+instance HasField "location" Source (Maybe LocationId) where
+  getField = \case
+    LocationSource lid -> Just lid
+    ProxySource (CardIdSource _) s -> s.location
+    ProxySource s _ -> s.location
+    AbilitySource s _ -> s.location
+    _ -> Nothing
+
 instance HasField "enemy" Source (Maybe EnemyId) where
   getField = \case
     EnemySource aid -> Just aid

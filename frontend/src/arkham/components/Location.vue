@@ -146,10 +146,10 @@ const enemies = computed(() => {
 })
 
 const treacheries = computed(() => {
-  const enemyIds = props.location.treacheries;
+  const treacheryIds = props.location.treacheries;
 
-  return enemyIds
-    .filter((e) => props.game.treacheries[e].placement.tag === 'OtherPlacement' && props.game.treacheries[e].asSelfLocation === null)
+  return treacheryIds
+    .filter((e) => props.game.treacheries[e].placement.tag === 'OtherPlacement')
 })
 
 const blocked = computed(() => {

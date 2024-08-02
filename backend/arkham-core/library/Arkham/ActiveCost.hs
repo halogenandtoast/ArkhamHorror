@@ -183,6 +183,11 @@ payCost msg c iid skipAdditionalCosts cost = do
   let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
   case cost of
+    ChooseExtendedCardCost mtch -> do
+      cards <- select mtch
+      push $ chooseOne player $ targetLabels cards $ only . pay . ChosenCardCost . toCardId
+      pure c
+    ChosenCardCost cid -> withPayment $ ChosenCardPayment cid
     ChooseEnemyCost mtch -> do
       enemies <- select mtch
       push $ chooseOne player $ targetLabels enemies $ only . pay . ChosenEnemyCost

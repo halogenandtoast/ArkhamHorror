@@ -55,7 +55,9 @@ getCanAffordCost
 getCanAffordCost iid (toSource -> source) actions windows' = \case
   UnpayableCost -> pure False
   ChooseEnemyCost mtcr -> selectAny mtcr
+  ChooseExtendedCardCost mtcr -> selectAny mtcr
   ChosenEnemyCost eid -> selectAny (Matcher.EnemyWithId eid)
+  ChosenCardCost cid -> selectAny (Matcher.basic $ Matcher.CardWithId cid)
   Free -> pure True
   UpTo {} -> pure True
   OptionalCost {} -> pure True

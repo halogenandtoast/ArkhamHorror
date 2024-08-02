@@ -3063,6 +3063,11 @@ skillTestMatches iid source st = \case
         (skillTestRevealedChaosTokens st)
   Matcher.SkillTestOnCardWithTrait t -> elem t <$> sourceTraits (skillTestSource st)
   Matcher.SkillTestOnCard match -> (`cardMatch` match) <$> sourceToCard (skillTestSource st)
+  Matcher.SkillTestOnLocation match -> case skillTestSource st of
+    AbilitySource s n | n < 100 -> case s.location of
+      Just lid -> lid <=~> match
+      Nothing -> pure False
+    _ -> pure False
   Matcher.SkillTestWithResolvedChaosTokenBy whoMatcher matcher -> do
     iids <- select whoMatcher
     anyM (`chaosTokenMatches` Matcher.IncludeSealed matcher)

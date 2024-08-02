@@ -687,6 +687,7 @@ data TreacheryMatcher
   | TreacheryInThreatAreaOf InvestigatorMatcher
   | TreacheryIs CardCode
   | TreacheryIsAttachedTo Target
+  | TreacheryAttachedToLocation LocationMatcher
   | TreacheryWithCardId CardId
   | TreacheryAt LocationMatcher
   | TreacheryOnEnemy EnemyMatcher
@@ -725,6 +726,7 @@ data ExtendedCardMatcher
   | CardIsBeneathAsset AssetMatcher
   | CardIsAsset AssetMatcher
   | CardWithCopyInHand Who
+  | CardIsAttachedToLocation LocationMatcher
   | NotThisCard
   | IsThisCard
   | ControlledBy Who
@@ -1202,6 +1204,7 @@ data SkillTestMatcher
   | SkillTestAt LocationMatcher
   | SkillTestOfInvestigator InvestigatorMatcher
   | SkillTestOnTreachery TreacheryMatcher
+  | SkillTestOnLocation LocationMatcher
   | SkillTestOnAsset AssetMatcher
   | UsingThis
   | SkillTestOnEncounterCard

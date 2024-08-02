@@ -953,6 +953,7 @@ allAssets =
     , SomeAssetCard britishBullDog
     , SomeAssetCard fakeCredentials
     , SomeAssetCard foxMaskTheWiseTrickster
+    , SomeAssetCard scrimshawCharmFromDistantShores
     , SomeAssetCard britishBullDog2
     , SomeAssetCard bewitching3
     , SomeAssetCard fakeCredentials4

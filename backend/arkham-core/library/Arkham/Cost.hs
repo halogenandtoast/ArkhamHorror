@@ -84,6 +84,9 @@ discardPayments = concat . toListOf (cosmos . _DiscardPayment)
 chosenEnemyPayment :: Payment -> Maybe EnemyId
 chosenEnemyPayment = listToMaybe . toListOf (cosmos . _ChosenEnemyPayment)
 
+addedCurseTokenPayment :: Payment -> Int
+addedCurseTokenPayment = sum . toListOf (cosmos . _AddCurseTokenPayment)
+
 discardedCards :: Payment -> [Card]
 discardedCards = concat . toListOf (cosmos . _DiscardCardPayment)
 
@@ -128,10 +131,16 @@ data Payment
   | ReturnToHandPayment Card
   | NoPayment
   | SupplyPayment Supply
+  | AddCurseTokenPayment Int
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Payment where
   plate = uniplate
+
+_AddCurseTokenPayment :: Prism' Payment Int
+_AddCurseTokenPayment = prism' AddCurseTokenPayment $ \case
+  AddCurseTokenPayment x -> Just x
+  _ -> Nothing
 
 _ChosenEnemyPayment :: Prism' Payment EnemyId
 _ChosenEnemyPayment = prism' ChosenEnemyPayment $ \case
@@ -233,6 +242,7 @@ data Cost
   | SealCost ChaosTokenMatcher
   | SealMultiCost Int ChaosTokenMatcher
   | AddCurseTokenCost Int
+  | AddCurseTokensCost Int Int
   | AddCurseTokensEqualToShroudCost
   | AddCurseTokensEqualToSkillTestDifficulty
   | ReleaseChaosTokenCost ChaosToken
@@ -297,6 +307,7 @@ displayCostType = \case
   AsIfAtLocationCost _ c -> displayCostType c
   ShuffleAttachedCardIntoDeckCost _ _ -> "Shuffle attached card into deck"
   AddCurseTokenCost n -> "Add " <> tshow n <> " {curse} " <> pluralize n "token" <> "to the chaos bag"
+  AddCurseTokensCost n m -> "Add " <> tshow n <> "-" <> tshow m <> " {curse} tokens to the chaos bag"
   AddCurseTokensEqualToShroudCost -> "Add {curse} tokens to the chaos bag equal to your location's shroud value"
   AddCurseTokensEqualToSkillTestDifficulty -> "Add {curse} tokens to this test's difficulty"
   ShuffleIntoDeckCost _ -> "Shuffle into deck"

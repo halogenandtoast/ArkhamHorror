@@ -63,7 +63,7 @@ const requiresModal = computed(() => {
   if (props.noStory && question.value?.tag === QuestionType.READ) {
     return false
   }
-  return props.game.focusedChaosTokens.length > 0 || focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value || choicesRequireModal.value
+  return props.game.focusedChaosTokens.length > 0 || cardLabels.value.length > 0 || tarotLabels.value.length > 0 || focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value || choicesRequireModal.value
 })
 
 const question = computed(() => props.game.question[props.playerId])
@@ -88,6 +88,12 @@ const label = function(body: string) {
 }
 
 const skillTestResults = computed(() => props.game.skillTestResults)
+
+const tarotLabels = computed(() =>
+  choices.value.
+    flatMap((choice, index) => {
+      return choice.tag === "TarotLabel" ? [{choice, index}] : []
+    }))
 
 const cardLabels = computed(() =>
   choices.value.

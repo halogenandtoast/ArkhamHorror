@@ -231,6 +231,7 @@ allPlayerEventCards =
       , hypnoticGaze
       , hypnoticGaze2
       , ifItBleeds
+      , illPayYouBack
       , illSeeYouInHell
       , illTakeThat
       , imDoneRunnin
@@ -4069,6 +4070,15 @@ grift =
     , cdCardTraits = setFromList [Trick, Illicit]
     , cdActions = [#parley]
     , cdCriteria = Just $ exists (EnemyAt YourLocation <> CanParleyEnemy You)
+    }
+
+illPayYouBack :: CardDef
+illPayYouBack =
+  (event "10072" "\"I'll Pay You Back!\"" 0 Rogue)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Gambit, Trick]
+    , cdFastWindow = Just $ DuringTurn You
+    , cdCriteria = Just $ exists $ affectsOthers $ InvestigatorAt YourLocation <> not_ You
     }
 
 vamp :: CardDef

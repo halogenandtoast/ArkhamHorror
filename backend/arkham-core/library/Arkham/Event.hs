@@ -590,6 +590,7 @@ allEvents =
       SomeEventCard bankJob
     , SomeEventCard falseSurrender
     , SomeEventCard grift
+    , SomeEventCard illPayYouBack
     , SomeEventCard vamp
     , SomeEventCard snitch2
     , SomeEventCard vamp3

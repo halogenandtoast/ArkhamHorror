@@ -245,6 +245,7 @@ allSkills =
     , SomeSkillCard lightfooted
     , --- mystic [fhv]
       SomeSkillCard accursed
+    , SomeSkillCard mesmericInfluence1
     , --- survivor [fhv]
       SomeSkillCard longShot
     , --- neutral [fhv]

@@ -62,7 +62,7 @@ instance RunMessage SignMagick3 where
     UseCardAbility iid (isSource attrs -> True) 1 (toOriginalAsset -> aid) _ -> do
       let nullifyActionCost ab = applyAbilityModifiers ab [ActionCostSetToModifier 0]
       abilities <-
-        selectMap nullifyActionCost
+        selectMap (doesNotProvokeAttacksOfOpportunity . nullifyActionCost)
           $ AbilityIsActionAbility
           <> AssetAbility
             ( NotAsset (AssetWithId aid)

@@ -103,6 +103,7 @@ allPlayerEventCards =
       , buryThemDeep
       , butterflyEffect1
       , callForBackup2
+      , callTheBeyond2
       , callingInFavors
       , captivatingDiscovery
       , cheapShot
@@ -169,6 +170,8 @@ allPlayerEventCards =
       , enchantWeapon3
       , endOfTheRoad
       , etherealForm
+      , etherealForm2
+      , etherealWeaving3
       , etherealSlip
       , etherealSlip2
       , eucatastrophe3
@@ -4208,6 +4211,34 @@ drainEssence =
     , cdCriteria = Just $ exists (EnemyAt YourLocation <> EnemyWithFight)
     }
 
+callTheBeyond2 :: CardDef
+callTheBeyond2 =
+  (event "10099" "Call the Beyond" 0 Mystic)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Ritual, Cursed]
+    , cdAdditionalCost = Just $ AddCurseTokenCost 3
+    , cdCriteria =
+        Just
+          $ exists
+            ( AssetControlledBy You
+                <> oneOf [AssetWithUseType Uses.Charge, AssetWithUseType Uses.Secret]
+                <> oneOf
+                  [ AssetNotAtUsesX
+                  , AssetWithPerformableAbility
+                      (oneOf [AbilityIsActionAbility, AbilityIsFastAbility])
+                      [IgnoreActionCost]
+                  ]
+            )
+    }
+
+etherealForm2 :: CardDef
+etherealForm2 =
+  (event "10100" "Ethereal Form" 2 Mystic)
+    { cdSkills = [#willpower, #agility, #wild]
+    , cdActions = [#evade]
+    , cdCardTraits = setFromList [Spell]
+    }
+
 readTheSigns2 :: CardDef
 readTheSigns2 =
   (event "10101" "Read the Signs" 2 Mystic)
@@ -4224,6 +4255,16 @@ spectralRazor2 =
     , cdActions = [#fight]
     , cdCriteria = Just $ exists $ oneOf [CanFightEnemy ThisCard, CanEngageEnemy ThisCard]
     , cdOverrideActionPlayableIfCriteriaMet = True
+    }
+
+etherealWeaving3 :: CardDef
+etherealWeaving3 =
+  (event "10103" "Ethereal Weaving" 1 Mystic)
+    { cdSkills = [#willpower, #agility, #wild]
+    , cdCardTraits = setFromList [Spirit, Double]
+    , cdAdditionalCost = Just (ActionCost 1)
+    , cdCriteria =
+        Just $ Criteria.PlayableCardExistsWithCostReduction (Reduce 1) $ InHandOf You <> #spell <> #event
     }
 
 -- We need to include the token pool because after this skill test the tokens

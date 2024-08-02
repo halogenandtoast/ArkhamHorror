@@ -28,7 +28,10 @@ instance RunMessage WordOfWoe where
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
       let adjustAbility ab = applyAbilityModifiers ab [IgnoreAllCosts]
-      abilities <- selectMap adjustAbility $ AssetAbility (AssetWithId aid) <> AbilityIsActionAbility
+      abilities <-
+        selectMap (doesNotProvokeAttacksOfOpportunity . adjustAbility)
+          $ AssetAbility (AssetWithId aid)
+          <> AbilityIsActionAbility
       abilities' <- filterM (getCanPerformAbility iid (defaultWindows iid)) abilities
       placeDoom attrs aid 1
       chooseOne iid [AbilityLabel iid ab [] [] [DoStep 1 msg] | ab <- abilities']

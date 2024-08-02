@@ -1576,6 +1576,7 @@ library
       Arkham.Event.Cards.ButterflyEffect1
       Arkham.Event.Cards.CallForBackup2
       Arkham.Event.Cards.CallingInFavors
+      Arkham.Event.Cards.CallTheBeyond2
       Arkham.Event.Cards.CaptivatingDiscovery
       Arkham.Event.Cards.CheapShot
       Arkham.Event.Cards.CheapShot2
@@ -1641,8 +1642,10 @@ library
       Arkham.Event.Cards.EnchantWeapon3
       Arkham.Event.Cards.EndOfTheRoad
       Arkham.Event.Cards.EtherealForm
+      Arkham.Event.Cards.EtherealForm2
       Arkham.Event.Cards.EtherealSlip
       Arkham.Event.Cards.EtherealSlip2
+      Arkham.Event.Cards.EtherealWeaving3
       Arkham.Event.Cards.Eucatastrophe3
       Arkham.Event.Cards.EverVigilant1
       Arkham.Event.Cards.EverVigilant4

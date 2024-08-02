@@ -962,6 +962,7 @@ allAssets =
     , SomeAssetCard rodOfCarnamagosScepterOfTheMadSeer
     , SomeAssetCard speakToTheDead
     , SomeAssetCard wickedAthame
+    , SomeAssetCard oliveMcBride2
     , SomeAssetCard rodOfCarnamagosScepterOfTheMadSeer2
     , SomeAssetCard theKeyOfSolomonSecretsOfTheUnknown4
     , SomeAssetCard keeperOfTheKeyCelestialWard

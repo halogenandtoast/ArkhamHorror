@@ -941,6 +941,7 @@ allAssets =
     , SomeAssetCard mouseMaskTheMeekWatcher
     , SomeAssetCard ravenousMyconidUnidentified
     , SomeAssetCard gabrielCarilloTrustedConfidante1
+    , SomeAssetCard steadyHanded1
     , SomeAssetCard prismaticSpectaclesLensToTheOtherworld2
     , SomeAssetCard microscope4
     , SomeAssetCard ravenousMyconidSentientStrain4

@@ -91,6 +91,7 @@ import Arkham.Asset.Assets (
   sixthSense4Effect,
   sixthSenseEffect,
   songOfTheDead2Effect,
+  steadyHanded1Effect,
   thirtyFiveWinchesterEffect,
   wellConnected3Effect,
   wellConnectedEffect,
@@ -461,6 +462,7 @@ allEffects =
     , ("09109", SomeEffect atACrossroads1Effect)
     , ("09113", SomeEffect baseballBat2Effect)
     , ("10035", SomeEffect eyesOfValusiaTheMothersCunning4Effect)
+    , ("10053", SomeEffect steadyHanded1Effect)
     , ("10056", SomeEffect prismaticSpectaclesLensToTheOtherworld2Effect)
     , ("10102", SomeEffect spectralRazor2Effect)
     , ("10128", SomeEffect eldritchTongueEffect)

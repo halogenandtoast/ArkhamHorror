@@ -5,6 +5,7 @@ module Arkham.Discover where
 
 import Arkham.Action
 import Arkham.Id
+import {-# SOURCE #-} Arkham.Message
 import Arkham.Prelude
 import Arkham.Source
 import Data.Aeson.TH
@@ -21,6 +22,7 @@ data Discover = Discover
   , discoverLocation :: DiscoverLocation
   , discoverSource :: Source
   , discoverAction :: Maybe Action
+  , discoverThen :: [Message]
   }
   deriving stock (Show, Eq, Data)
 
@@ -55,6 +57,7 @@ discoverAtYourLocation (toSource -> source) n =
     , discoverLocation = DiscoverYourLocation
     , discoverSource = source
     , discoverAction = Nothing
+    , discoverThen = []
     }
 
 discover
@@ -65,6 +68,7 @@ discover a (toSource -> source) n =
     , discoverLocation = DiscoverAtLocation (asId a)
     , discoverSource = source
     , discoverAction = Nothing
+    , discoverThen = []
     }
 
 $( do

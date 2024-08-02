@@ -1140,6 +1140,20 @@ discoverAtYourLocation isInvestigate iid s n = do
     whenM (getCanDiscoverClues isInvestigate iid loc) do
       push $ Msg.DiscoverClues iid $ Msg.discoverAtYourLocation s n
 
+discoverAtYourLocationAndThen
+  :: (ReverseQueue m, Sourceable source)
+  => IsInvestigate
+  -> InvestigatorId
+  -> source
+  -> Int
+  -> QueueT Message m ()
+  -> m ()
+discoverAtYourLocationAndThen isInvestigate iid s n andThenMsgs = do
+  withLocationOf iid \loc -> do
+    whenM (getCanDiscoverClues isInvestigate iid loc) do
+      msgs <- evalQueueT andThenMsgs
+      push $ Msg.DiscoverClues iid $ (Msg.discoverAtYourLocation s n) {Msg.discoverThen = msgs}
+
 discoverAtMatchingLocation
   :: (ReverseQueue m, Sourceable source)
   => IsInvestigate

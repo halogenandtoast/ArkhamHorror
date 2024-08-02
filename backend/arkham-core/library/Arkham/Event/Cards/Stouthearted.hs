@@ -3,7 +3,6 @@ module Arkham.Event.Cards.Stouthearted (stouthearted, Stouthearted (..)) where
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (InvestigatorDamage)
-import Arkham.Helpers.Message (checkDefeated)
 import Arkham.Helpers.Window (engagedEnemy)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
@@ -22,9 +21,9 @@ instance RunMessage Stouthearted where
       health <- fieldJust EnemyRemainingHealth eid
       doStep (min 2 health) msg
       pure e
-    DoStep 0 (PlayThisEvent _iid (is attrs -> True)) -> do
+    DoStep 0 (PlayThisEvent iid (is attrs -> True)) -> do
       let eid = engagedEnemy attrs.windows
-      push $ checkDefeated attrs eid
+      checkDefeated iid eid
       pure e
     DoStep n msg'@(PlayThisEvent iid (is attrs -> True)) | n > 0 -> do
       let eid = engagedEnemy attrs.windows

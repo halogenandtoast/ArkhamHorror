@@ -604,6 +604,7 @@ allEvents =
     , SomeEventCard scarletRot
     , SomeEventCard virescentRot
     , SomeEventCard antediluvianHymn
+    , SomeEventCard drainEssence
     , SomeEventCard readTheSigns2
     , SomeEventCard spectralRazor2
     , SomeEventCard sealOfTheElders5

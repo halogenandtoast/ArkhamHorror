@@ -243,6 +243,8 @@ allSkills =
     , --- rogue [fhv]
       SomeSkillCard diabolicalLuck
     , SomeSkillCard lightfooted
+    , --- mystic [fhv]
+      SomeSkillCard accursed
     , --- survivor [fhv]
       SomeSkillCard longShot
     , --- neutral [fhv]

@@ -31,6 +31,7 @@ allPlayerSkillCards =
     $ concatMap
       toCardCodePairs
       [ ableBodied
+      , accursed
       , allIn5
       , analysis
       , anythingYouCanDoBetter
@@ -830,6 +831,12 @@ lightfooted :: CardDef
 lightfooted =
   (skill "10076" "Lightfooted" [#agility] Rogue)
     { cdCardTraits = setFromList [Practiced, Trick]
+    }
+
+accursed :: CardDef
+accursed =
+  (skill "10095" "Lightfooted" [#wild] Mystic)
+    { cdCardTraits = setFromList [Innate, Cursed]
     }
 
 longShot :: CardDef

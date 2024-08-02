@@ -969,6 +969,7 @@ allAssets =
     , SomeAssetCard servantOfBrassDaemonaicVassal
     , --- survivor [fhv]
       SomeAssetCard matchbox
+    , SomeAssetCard peltShipment
     , SomeAssetCard pitchfork
     , SomeAssetCard sparrowMaskTheWanderersCompanion
     , SomeAssetCard hatchet1

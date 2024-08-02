@@ -24,6 +24,7 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.Trait hiding (Evidence, Supply)
+import Arkham.Trait qualified as Trait
 
 storyAsset :: CardCode -> Name -> Int -> EncounterSet -> CardDef
 storyAsset cardCode name cost encounterSet =
@@ -605,6 +606,7 @@ allPlayerAssetCards =
       , paradoxicalCovenant2
       , pathfinder1
       , patricesViolin
+      , peltShipment
       , pendantOfTheQueen
       , pennyWhite
       , peterSylvestre
@@ -6658,6 +6660,14 @@ matchbox =
     { cdCardTraits = setFromList [Item, Tool]
     , cdSkills = [#intellect]
     , cdUses = uses Supply 3
+    }
+
+peltShipment :: CardDef
+peltShipment =
+  (asset "10109" "Pelt Shipment" 0 Survivor)
+    { cdCardTraits = setFromList [Item, Trait.Supply]
+    , cdCost = Nothing
+    , cdCardInHandEffects = True
     }
 
 pitchfork :: CardDef

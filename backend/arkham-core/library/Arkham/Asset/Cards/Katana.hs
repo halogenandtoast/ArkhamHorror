@@ -32,8 +32,9 @@ instance RunMessage Katana where
       when attrs.ready do
         withSkillTest \sid -> do
           chooseOneM iid do
-            labeled "Exhaust Katana to deal +2 damage for this attack"
-              $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 2)
+            labeled "Exhaust Katana to deal +2 damage for this attack" do
+              skillTestModifier sid (attrs.ability 1) iid (DamageDealt 2)
+              push $ Exhaust (toTarget attrs)
             labeled "Do not exhaust" nothing
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

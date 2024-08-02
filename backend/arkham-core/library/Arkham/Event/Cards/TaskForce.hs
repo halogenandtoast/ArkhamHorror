@@ -64,7 +64,7 @@ instance RunMessage TaskForce where
       investigators <- select $ colocatedWith iid
       investigatorsWithAbilities <- flip mapMaybeM investigators \iid' -> do
         abilities <-
-          map (`applyAbilityModifiers` [IgnoreActionCost])
+          map ((`applyAbilityModifiers` [IgnoreActionCost]) . doesNotProvokeAttacksOfOpportunity)
             <$> select
               ( PerformableAbilityBy (InvestigatorWithId iid') [IgnoreActionCost]
                   <> AbilityIsActionAbility

@@ -605,8 +605,11 @@ allEvents =
     , SomeEventCard virescentRot
     , SomeEventCard antediluvianHymn
     , SomeEventCard drainEssence
+    , SomeEventCard callTheBeyond2
+    , SomeEventCard etherealForm2
     , SomeEventCard readTheSigns2
     , SomeEventCard spectralRazor2
+    , SomeEventCard etherealWeaving3
     , SomeEventCard sealOfTheElders5
     , --- survivor [fhv]
       SomeEventCard pushedToTheLimit

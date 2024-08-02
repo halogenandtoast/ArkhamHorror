@@ -42,7 +42,7 @@ instance RunMessage DirtyDeeds3 where
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (CardIdTarget cid) -> do
       abilities <-
-        map (`applyAbilityModifiers` [IgnoreAllCosts])
+        map ((`applyAbilityModifiers` [IgnoreAllCosts]) . doesNotProvokeAttacksOfOpportunity)
           <$> select
             ( PerformableAbility [IgnoreAllCosts]
                 <> oneOf [AbilityIsActionAbility, AbilityIsFastAbility]

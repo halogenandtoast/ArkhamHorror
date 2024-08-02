@@ -63,7 +63,7 @@ instance RunMessage TriggerMan3 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       abilities <-
-        select
+        selectMap ((`applyAbilityModifiers` [IgnoreActionCost]) . doesNotProvokeAttacksOfOpportunity)
           $ PerformableAbility [IgnoreActionCost]
           <> AbilityOnAsset (AssetAttachedToAsset $ be attrs)
           <> #action

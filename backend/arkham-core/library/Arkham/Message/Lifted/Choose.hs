@@ -31,6 +31,11 @@ chooseOrRunOneM iid choices = do
   choices' <- runChooseT choices
   unless (null choices') $ chooseOrRunOne iid choices'
 
+chooseOneAtATimeM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
+chooseOneAtATimeM iid choices = do
+  choices' <- runChooseT choices
+  unless (null choices') $ chooseOneAtATime iid choices'
+
 forcedWhen :: Monad m => Bool -> ChooseT m () -> ChooseT m ()
 forcedWhen b action =
   if b

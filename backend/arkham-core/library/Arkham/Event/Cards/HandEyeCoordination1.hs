@@ -21,7 +21,7 @@ instance RunMessage HandEyeCoordination1 where
   runMessage msg e@(HandEyeCoordination1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       abilities <-
-        map (`applyAbilityModifiers` [IgnoreActionCost])
+        map ((`applyAbilityModifiers` [IgnoreActionCost]) . doesNotProvokeAttacksOfOpportunity)
           <$> select
             ( PerformableAbility [IgnoreActionCost]
                 <> AbilityIsActionAbility

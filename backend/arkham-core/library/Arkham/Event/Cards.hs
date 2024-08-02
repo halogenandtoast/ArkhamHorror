@@ -110,6 +110,7 @@ allPlayerEventCards =
       , cleanSneak4
       , cleanThemOut
       , closeCall2
+      , confound3
       , connectTheDots
       , contraband
       , contraband2
@@ -4009,7 +4010,7 @@ throwTheBookAtThem =
 
 transmogrify :: CardDef
 transmogrify =
-  (event "10060" "Transmogrify" 1 Seeker)
+  (event "10050" "Transmogrify" 1 Seeker)
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Gambit, Science]
     , cdActions = [#evade]
@@ -4028,6 +4029,16 @@ fineTuning1 =
               <> not_ (AssetWithAttachedEvent $ EventIs "10054")
           )
     , cdLevel = Just 1
+    }
+
+confound3 :: CardDef
+confound3 =
+  (event "10057" "Confound" 2 Seeker)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Insight, Trick]
+    , cdActions = [#parley]
+    , cdCriteria = Just $ exists $ EnemyAt YourLocation <> EnemyWithEvade
+    , cdLevel = Just 3
     }
 
 bankJob :: CardDef

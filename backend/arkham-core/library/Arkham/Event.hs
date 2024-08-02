@@ -585,6 +585,7 @@ allEvents =
     , SomeEventCard throwTheBookAtThem
     , SomeEventCard transmogrify
     , SomeEventCard fineTuning1
+    , SomeEventCard confound3
     , --- rogue [fhv]
       SomeEventCard bankJob
     , SomeEventCard falseSurrender

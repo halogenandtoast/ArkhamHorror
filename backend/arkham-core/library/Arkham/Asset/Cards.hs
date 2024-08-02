@@ -725,6 +725,7 @@ allPlayerAssetCards =
       , sparrowMaskTheWanderersCompanion
       , spectralWeb
       , spiritAthame1
+      , steadyHanded1
       , stealth
       , stealth3
       , stickToThePlan3
@@ -6422,6 +6423,15 @@ gabrielCarilloTrustedConfidante1 =
     , cdCardTraits = setFromList [Ally, Scholar, Cursed]
     , cdSlots = [#ally]
     , cdLevel = Just 1
+    }
+
+steadyHanded1 :: CardDef
+steadyHanded1 =
+  (asset "10053" "Steady Handed" 2 Seeker)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Talent, Science]
+    , cdLevel = Just 1
+    , cdLimits = [LimitPerInvestigator 1]
     }
 
 prismaticSpectaclesLensToTheOtherworld2 :: CardDef

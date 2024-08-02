@@ -88,6 +88,9 @@ instance HasField "id" EffectAttrs EffectId where
 instance HasField "window" EffectAttrs (Maybe EffectWindow) where
   getField = effectWindow
 
+instance HasField "skillTest" EffectAttrs (Maybe SkillTestId) where
+  getField = effectSkillTest
+
 instance HasField "window" Effect (Maybe EffectWindow) where
   getField = effectWindow . toAttrs
 

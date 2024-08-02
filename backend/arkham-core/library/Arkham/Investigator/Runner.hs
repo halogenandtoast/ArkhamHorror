@@ -1661,7 +1661,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         base <- total lid (d.count + additionalDiscovered)
         discoveredClues <- min base <$> field LocationClues lid
         checkWindowMsg <- checkWindows [mkWhen (Window.DiscoverClues iid lid d.source discoveredClues)]
-        pushAll [checkWindowMsg, Do $ DiscoverClues iid $ d {discoverCount = discoveredClues}]
+        pushAll
+          [ checkWindowMsg
+          , Do
+              $ DiscoverClues iid
+              $ d
+                { discoverCount = discoveredClues
+                , discoverThen = guard (discoveredClues >= d.discoverCount) *> d.discoverThen
+                }
+          ]
       else do
         tokens <- field LocationTokens lid
         putStrLn $ "Can't discover clues in " <> tshow lid <> ": " <> tshow tokens
@@ -1692,10 +1700,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             : [mkAfter (Window.DiscoveringLastClue iid lid) | lastClue]
 
         pushAll
-          [ locationWindows
-          , RemoveClues d.source (LocationTarget lid) clueCount
-          , After $ GainClues iid d.source clueCount
-          ]
+          $ [ locationWindows
+            , RemoveClues d.source (LocationTarget lid) clueCount
+            , After $ GainClues iid d.source clueCount
+            ]
+          <> d.discoverThen
         send $ format a <> " discovered " <> pluralize clueCount "clue"
         pure $ a & tokensL %~ addTokens Clue clueCount
       else pure a

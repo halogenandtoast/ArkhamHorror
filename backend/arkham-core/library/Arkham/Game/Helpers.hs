@@ -2202,11 +2202,12 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       guardTiming timing $ \case
         Window.LocationEntersPlay locationId -> locationMatches iid source window' locationId locationMatcher
         _ -> noMatch
-    Matcher.PlayerHasPlayableCard cardMatcher -> do
+    Matcher.PlayerHasPlayableCard costStatus cardMatcher -> do
+      -- This is the for the Painted
       -- TODO: do we need to grab the card source?
       -- cards <- filter (/= c) <$> getList cardMatcher
       cards <- select cardMatcher
-      anyM (getIsPlayable iid source (UnpaidCost NoAction) [window']) cards
+      anyM (getIsPlayable iid source costStatus [window']) cards
     Matcher.PhaseBegins timing phaseMatcher -> guardTiming timing $ \case
       Window.AnyPhaseBegins -> pure $ phaseMatcher == Matcher.AnyPhase
       Window.PhaseBegins p -> matchPhase p phaseMatcher

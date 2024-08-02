@@ -1076,7 +1076,7 @@ thePaintedWorld =
       , cdSkipPlayWindows = True
       , cdFastWindow =
           Just
-            $ PlayerHasPlayableCard
+            $ PlayerHasPlayableCard (UnpaidCost NeedsAction)
             $ CardIsBeneathInvestigator You
             <> basic (NonExceptional <> #event)
       , cdCost = Nothing
@@ -1478,7 +1478,10 @@ eideticMemory3 =
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = singleton Spirit
     , cdFastWindow =
-        Just $ PlayerHasPlayableCard $ InDiscardOf Anyone <> basic (CardWithTrait Insight <> #event)
+        Just
+          $ PlayerHasPlayableCard (UnpaidCost NeedsAction)
+          $ InDiscardOf Anyone
+          <> basic (CardWithTrait Insight <> #event)
     , cdLevel = Just 3
     , cdCost = Nothing
     }

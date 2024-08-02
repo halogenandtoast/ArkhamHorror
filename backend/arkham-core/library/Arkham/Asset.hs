@@ -960,6 +960,7 @@ allAssets =
     , --- mystic [fhv]
       SomeAssetCard catMaskTheCapriciousMeddler
     , SomeAssetCard rodOfCarnamagosScepterOfTheMadSeer
+    , SomeAssetCard speakToTheDead
     , SomeAssetCard rodOfCarnamagosScepterOfTheMadSeer2
     , SomeAssetCard theKeyOfSolomonSecretsOfTheUnknown4
     , SomeAssetCard keeperOfTheKeyCelestialWard

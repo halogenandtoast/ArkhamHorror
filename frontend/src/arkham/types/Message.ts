@@ -386,3 +386,16 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
   ],
   'Message',
 );
+
+export function choiceRequiresModal(c: Message) {
+  switch (c.tag) {
+    case 'Done': return true;
+    case 'Label': return true;
+    case 'SkillLabel': return true;
+    case 'SkillLabelWithLabel': return true;
+    case 'PortraitLabel': return true;
+    case 'AbilityLabel': return c.ability.displayAsAction;
+    case 'CardLabel': return true;
+    default: return false;
+  }
+}

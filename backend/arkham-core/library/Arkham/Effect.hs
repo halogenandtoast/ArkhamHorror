@@ -127,6 +127,7 @@ import Arkham.Event.Events (
   followedEffect,
   getBehindMeEffect,
   hitAndRunEffect,
+  illPayYouBackEffect,
   imDoneRunninEffect,
   improvisationEffect,
   marksmanship1Effect,
@@ -464,6 +465,7 @@ allEffects =
     , ("10035", SomeEffect eyesOfValusiaTheMothersCunning4Effect)
     , ("10053", SomeEffect steadyHanded1Effect)
     , ("10056", SomeEffect prismaticSpectaclesLensToTheOtherworld2Effect)
+    , ("10072", SomeEffect illPayYouBackEffect)
     , ("10102", SomeEffect spectralRazor2Effect)
     , ("10128", SomeEffect eldritchTongueEffect)
     , ("50044", SomeEffect jeremiahPierceEffect)

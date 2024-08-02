@@ -159,6 +159,7 @@ allPlayerEventCards =
       , eatLead2
       , eavesdrop
       , eideticMemory3
+      , elaborateDistraction
       , eldritchInitiation
       , eldritchInspiration
       , eldritchInspiration1
@@ -4283,6 +4284,20 @@ sealOfTheElders5 =
             , SkillTestWithRevealedChaosTokenCount 2 (IncludeTokenPool #bless)
             ]
     , cdBondedWith = [(1, "10106"), (1, "10107")]
+    }
+
+elaborateDistraction :: CardDef
+elaborateDistraction =
+  (event "10112" "Elaborate Distraction" 3 Survivor)
+    { cdSkills = [#willpower, #combat, #agility]
+    , cdCardTraits = setFromList [Trick, Double]
+    , cdAdditionalCost = Just (ActionCost 1)
+    , cdCriteria =
+        Just
+          $ exists
+          $ EnemyAt (oneOf [YourLocation, ConnectedFrom YourLocation])
+          <> oneOf [NonEliteEnemy <> EnemyCanBeEvadedBy ThisCard, EnemyCanBeDamagedBySource ThisCard]
+    , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     }
 
 pushedToTheLimit :: CardDef

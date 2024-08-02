@@ -1610,6 +1610,7 @@ library
       Arkham.Event.Cards.DenyExistence
       Arkham.Event.Cards.DenyExistence5
       Arkham.Event.Cards.DevilsLuck
+      Arkham.Event.Cards.DirtyDeeds3
       Arkham.Event.Cards.Dodge
       Arkham.Event.Cards.Dodge2
       Arkham.Event.Cards.DrawnToTheFlame
@@ -1846,6 +1847,8 @@ library
       Arkham.Event.Cards.StandTogether3
       Arkham.Event.Cards.Stargazing1
       Arkham.Event.Cards.StirringUpTrouble1
+      Arkham.Event.Cards.StirThePot
+      Arkham.Event.Cards.StirThePot5
       Arkham.Event.Cards.StormOfSpirits
       Arkham.Event.Cards.StormOfSpirits3
       Arkham.Event.Cards.Stouthearted
@@ -2789,6 +2792,7 @@ library
       Arkham.Skill.Cards.Defiance
       Arkham.Skill.Cards.Defiance2
       Arkham.Skill.Cards.DesperateSearch
+      Arkham.Skill.Cards.DiabolicalLuck
       Arkham.Skill.Cards.DoubleOrNothing
       Arkham.Skill.Cards.DreamParasite
       Arkham.Skill.Cards.DreamsOfTheDeepTheDeepGate
@@ -2815,6 +2819,7 @@ library
       Arkham.Skill.Cards.LastChance
       Arkham.Skill.Cards.Leadership
       Arkham.Skill.Cards.Leadership2
+      Arkham.Skill.Cards.Lightfooted
       Arkham.Skill.Cards.LongShot
       Arkham.Skill.Cards.ManualDexterity
       Arkham.Skill.Cards.ManualDexterity2
@@ -2873,6 +2878,7 @@ library
       Arkham.Skill.Cards.ViciousBlow
       Arkham.Skill.Cards.ViciousBlow2
       Arkham.Skill.Cards.WatchThis
+      Arkham.Skill.Cards.WellDressed
       Arkham.Skill.Cards.WellFunded
       Arkham.Skill.Cards.WhispersFromTheDeep
       Arkham.Skill.Import.Lifted

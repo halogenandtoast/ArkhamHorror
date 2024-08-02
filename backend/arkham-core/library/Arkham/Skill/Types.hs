@@ -70,6 +70,9 @@ data SkillAttrs = SkillAttrs
   }
   deriving stock (Show, Eq)
 
+instance HasField "ability" SkillAttrs (Int -> Source) where
+  getField this = toAbilitySource this
+
 instance HasField "attachedTo" SkillAttrs (Maybe Target) where
   getField = placementToAttached . skillPlacement
 

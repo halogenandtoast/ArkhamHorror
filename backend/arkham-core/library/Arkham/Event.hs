@@ -591,9 +591,12 @@ allEvents =
     , SomeEventCard falseSurrender
     , SomeEventCard grift
     , SomeEventCard illPayYouBack
+    , SomeEventCard stirThePot
     , SomeEventCard vamp
     , SomeEventCard snitch2
+    , SomeEventCard dirtyDeeds3
     , SomeEventCard vamp3
+    , SomeEventCard stirThePot5
     , --- mystic [fhv]
       SomeEventCard abyssalRot
     , SomeEventCard aemberRot

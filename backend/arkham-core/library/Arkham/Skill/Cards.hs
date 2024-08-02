@@ -52,6 +52,7 @@ allPlayerSkillCards =
       , defiance
       , defiance2
       , desperateSearch
+      , diabolicalLuck
       , doubleOrNothing
       , dreamParasite
       , dreamsOfTheDeepTheDeepGate
@@ -78,6 +79,7 @@ allPlayerSkillCards =
       , lastChance
       , leadership
       , leadership2
+      , lightfooted
       , longShot
       , manualDexterity
       , manualDexterity2
@@ -136,6 +138,7 @@ allPlayerSkillCards =
       , viciousBlow
       , viciousBlow2
       , watchThis
+      , wellDressed
       , wellFunded
       , whispersFromTheDeep
       ]
@@ -816,6 +819,19 @@ esotericMethod1 =
     , cdLevel = Just 1
     }
 
+diabolicalLuck :: CardDef
+diabolicalLuck =
+  (skill "10075" "Diabolical Luck" [#wild] Rogue)
+    { cdCardTraits = setFromList [Fortune, Cursed]
+    , cdCardInHandEffects = True
+    }
+
+lightfooted :: CardDef
+lightfooted =
+  (skill "10076" "Lightfooted" [#agility] Rogue)
+    { cdCardTraits = setFromList [Practiced, Trick]
+    }
+
 longShot :: CardDef
 longShot =
   (skill "10116" "Long Shot" [] Survivor)
@@ -826,6 +842,12 @@ longShot =
             , OnlyEvasionAgainst (EnemyAt $ oneOf [YourLocation, ConnectedLocation])
             ]
         ]
+    }
+
+wellDressed :: CardDef
+wellDressed =
+  (skill "10130" "Well-Dressed" [#wild] Neutral)
+    { cdCardTraits = setFromList [Practiced, Fortune]
     }
 
 riseToTheOccasion3 :: CardDef

@@ -798,6 +798,9 @@ instance IsLabel "item" ExtendedCardMatcher where
 instance IsLabel "tome" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #tome
 
+instance IsLabel "illicit" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #illicit
+
 instance IsLabel "tool" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #tool
 

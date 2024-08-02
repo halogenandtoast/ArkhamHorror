@@ -141,6 +141,7 @@ allPlayerEventCards =
       , denyExistence
       , denyExistence5
       , devilsLuck
+      , dirtyDeeds3
       , dodge
       , dodge2
       , drawnToTheFlame
@@ -376,6 +377,8 @@ allPlayerEventCards =
       , standTogether
       , standTogether3
       , stargazing1
+      , stirThePot
+      , stirThePot5
       , stirringUpTrouble1
       , stormOfSpirits
       , stormOfSpirits3
@@ -4081,6 +4084,15 @@ illPayYouBack =
     , cdCriteria = Just $ exists $ affectsOthers $ InvestigatorAt YourLocation <> not_ You
     }
 
+stirThePot :: CardDef
+stirThePot =
+  (event "10073" "Stir the Pot" 3 Rogue)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Trick, Gambit]
+    , cdActions = [#parley]
+    , cdCriteria = Just $ exists $ EnemyAt YourLocation
+    }
+
 vamp :: CardDef
 vamp =
   (event "10074" "Vamp" 1 Rogue)
@@ -4101,6 +4113,17 @@ snitch2 =
           $ exists (LocationWithDiscoverableCluesBy You <> oneOf [YourLocation, ConnectedFrom YourLocation])
     }
 
+dirtyDeeds3 :: CardDef
+dirtyDeeds3 =
+  (event "10080" "Dirty Deeds" 1 Rogue)
+    { cdSkills = [#combat, #agility, #wild]
+    , cdCardTraits = setFromList [Favor, Double, Illicit]
+    , cdCriteria = can.search.deck
+    , cdAdditionalCost = Just (ActionCost 1)
+    , cdLevel = Just 3
+    , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+    }
+
 vamp3 :: CardDef
 vamp3 =
   (event "10081" "Vamp" 1 Rogue)
@@ -4109,6 +4132,16 @@ vamp3 =
     , cdActions = [#parley]
     , cdCriteria = Just $ exists (EnemyAt YourLocation <> CanParleyEnemy You)
     , cdLevel = Just 3
+    }
+
+stirThePot5 :: CardDef
+stirThePot5 =
+  (event "10083" "Stir the Pot" 3 Rogue)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Trick, Gambit]
+    , cdActions = [#parley]
+    , cdCriteria = Just $ exists $ EnemyAt YourLocation
+    , cdLevel = Just 5
     }
 
 abyssalRot :: CardDef

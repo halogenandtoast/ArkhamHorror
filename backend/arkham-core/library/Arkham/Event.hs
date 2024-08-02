@@ -614,6 +614,7 @@ allEvents =
     , --- survivor [fhv]
       SomeEventCard elaborateDistraction
     , SomeEventCard pushedToTheLimit
+    , SomeEventCard stallForTime
     , SomeEventCard wrongPlaceRightTime
     , SomeEventCard keepFaith2
     , --- netural [fhv]

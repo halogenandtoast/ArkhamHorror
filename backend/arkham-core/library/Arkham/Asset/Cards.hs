@@ -269,6 +269,7 @@ allPlayerAssetCards =
       , damningTestimony
       , darioElAmin
       , darkHorse
+      , darkHorse5
       , darkRitual
       , darrellsKodak
       , davidRenfield
@@ -809,6 +810,7 @@ allPlayerAssetCards =
       , thirtyTwoColt2
       , timewornBrand5
       , tokenOfFaith
+      , tokenOfFaith3
       , tonys38LongColt
       , toolBelt
       , toothOfEztli
@@ -6742,6 +6744,24 @@ survivalTechnique2 =
     , cdSkills = [#agility]
     , cdLevel = Just 2
     }
+
+tokenOfFaith3 :: CardDef
+tokenOfFaith3 =
+  (asset "10126" "Token of Faith" 2 Survivor)
+    { cdCardTraits = setFromList [Item, Charm, Blessed]
+    , cdSkills = [#willpower, #intellect]
+    , cdSlots = [#accessory]
+    , cdLevel = Just 3
+    }
+
+darkHorse5 :: CardDef
+darkHorse5 =
+  permanent
+    $ (asset "10127" "Dark Horse" 0 Survivor)
+      { cdCardTraits = singleton Condition
+      , cdDeckRestrictions = [PerDeckLimit 1]
+      , cdLevel = Just 5
+      }
 
 eldritchTongue :: CardDef
 eldritchTongue =

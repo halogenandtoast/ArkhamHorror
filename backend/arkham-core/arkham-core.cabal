@@ -531,6 +531,7 @@ library
       Arkham.Asset.Cards.DanielChesterfield
       Arkham.Asset.Cards.DarioElAmin
       Arkham.Asset.Cards.DarkHorse
+      Arkham.Asset.Cards.DarkHorse5
       Arkham.Asset.Cards.DarkRitual
       Arkham.Asset.Cards.DarrellsKodak
       Arkham.Asset.Cards.DavidRenfield
@@ -1088,6 +1089,7 @@ library
       Arkham.Asset.Cards.TimewornBrand5
       Arkham.Asset.Cards.TimeWornLocket
       Arkham.Asset.Cards.TokenOfFaith
+      Arkham.Asset.Cards.TokenOfFaith3
       Arkham.Asset.Cards.TomeOfRituals
       Arkham.Asset.Cards.Tonys38LongColt
       Arkham.Asset.Cards.ToolBelt

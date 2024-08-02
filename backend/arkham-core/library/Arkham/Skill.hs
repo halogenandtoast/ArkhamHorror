@@ -240,8 +240,13 @@ allSkills =
     , --- seeker [fhv]
       SomeSkillCard wellFunded
     , SomeSkillCard esotericMethod1
+    , --- rogue [fhv]
+      SomeSkillCard diabolicalLuck
+    , SomeSkillCard lightfooted
     , --- survivor [fhv]
       SomeSkillCard longShot
+    , --- neutral [fhv]
+      SomeSkillCard wellDressed
     , -- Return to the Dunwich Legacy
       --- survivor [rtdwl]
       SomeSkillCard riseToTheOccasion3

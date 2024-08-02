@@ -248,6 +248,7 @@ allSkills =
     , SomeSkillCard mesmericInfluence1
     , --- survivor [fhv]
       SomeSkillCard longShot
+    , SomeSkillCard persistence1
     , --- neutral [fhv]
       SomeSkillCard wellDressed
     , -- Return to the Dunwich Legacy

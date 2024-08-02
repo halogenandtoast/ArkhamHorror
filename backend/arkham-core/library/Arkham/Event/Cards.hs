@@ -381,6 +381,7 @@ allPlayerEventCards =
       , soothingMelody
       , spectralRazor
       , spectralRazor2
+      , stallForTime
       , standTogether
       , standTogether3
       , stargazing1
@@ -4314,6 +4315,15 @@ pushedToTheLimit =
               <> CardWithPerformableAbility AbilityIsActionAbility [IgnoreAllCosts]
           )
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+    }
+
+stallForTime :: CardDef
+stallForTime =
+  (event "10114" "Stall for Time" 1 Survivor)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Tactic, Trick]
+    , cdCriteria = Just (exists $ EnemyAt YourLocation <> oneOf [EnemyWithEvade, EnemyWithFight])
+    , cdActions = [#parley]
     }
 
 wrongPlaceRightTime :: CardDef

@@ -396,6 +396,7 @@ export function choiceRequiresModal(c: Message) {
     case 'PortraitLabel': return true;
     case 'AbilityLabel': return c.ability.displayAsAction;
     case 'CardLabel': return true;
+    case 'TarotLabel': return true;
     default: return false;
   }
 }

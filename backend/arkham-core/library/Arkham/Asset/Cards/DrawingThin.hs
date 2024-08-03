@@ -27,7 +27,7 @@ instance RunMessage DrawingThin where
         let drawing = drawCards iid (attrs.ability 1) 1
         player <- getPlayer iid
         pushAll
-          [ skillTestModifier sid (attrs.ability 1) sid (Difficulty 2)
+          [ IncreaseSkillTestDifficulty 2
           , chooseOne
               player
               [ Label "Take 2 resources" [TakeResources iid 2 (toAbilitySource attrs 1) False]

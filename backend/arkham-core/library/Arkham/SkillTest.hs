@@ -19,6 +19,9 @@ import Arkham.Target
 cardL :: Lens' SkillTest (Maybe CardId)
 cardL = lens skillTestCard $ \m x -> m {skillTestCard = x}
 
+difficultyL :: Lens' SkillTest SkillTestDifficulty
+difficultyL = lens skillTestDifficulty $ \m x -> m {skillTestDifficulty = x}
+
 subscribersL :: Lens' SkillTest [Target]
 subscribersL = lens skillTestSubscribers $ \m x -> m {skillTestSubscribers = x}
 

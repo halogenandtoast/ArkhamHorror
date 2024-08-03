@@ -46,6 +46,7 @@ instance RunMessage Pantalone where
             SkillBaseValue _ -> SkillBaseValue #intellect
             AndSkillBaseValue _ -> SkillBaseValue #intellect
             HalfResourcesOf x -> HalfResourcesOf x
+            x@(FixedBaseValue _) -> x
       push $ ChangeSkillTestType (SkillSkillTest #intellect) newBase
       pure a
     _ -> Pantalone <$> runMessage msg attrs

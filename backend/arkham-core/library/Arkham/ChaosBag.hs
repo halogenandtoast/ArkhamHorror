@@ -145,7 +145,7 @@ resolveFirstUnresolved source iid strategy = \case
               modify'
                 ( (forceDrawL .~ Nothing)
                     . (chaosTokensL .~ remaining)
-                    . (setAsideChaosTokensL %~ (drawn <>))
+                    . (setAsideChaosTokensL %~ (<> drawn))
                 )
               pure (Resolved drawn, [])
             Just drawn -> do
@@ -153,12 +153,12 @@ resolveFirstUnresolved source iid strategy = \case
               modify'
                 ( (forceDrawL .~ Nothing)
                     . (chaosTokensL .~ remaining)
-                    . (setAsideChaosTokensL %~ ([drawn] <>))
+                    . (setAsideChaosTokensL %~ (<> [drawn]))
                 )
               pure (Resolved [drawn], [])
         Nothing -> do
           (drawn, remaining) <- splitAt 1 <$> shuffleM bagChaosTokens
-          modify' ((chaosTokensL .~ remaining) . (setAsideChaosTokensL %~ (drawn <>)))
+          modify' ((chaosTokensL .~ remaining) . (setAsideChaosTokensL %~ (<> drawn)))
           pure (Resolved drawn, [])
     Choose chooseSource n tokenStrategy steps tokens' ->
       pure (Decided $ ChooseMatch chooseSource n tokenStrategy steps tokens' AnyChaosToken, [])
@@ -699,7 +699,7 @@ instance RunMessage ChaosBag where
         pure $ c & choiceL ?~ updatedChoice
     RevealChaosToken _source _iid token ->
       -- TODO: we may need a map of source to tokens here
-      pure $ c & revealedChaosTokensL %~ (token :)
+      pure $ c & revealedChaosTokensL %~ (<> [token])
     ReturnChaosTokens tokens' ->
       pure
         $ c
@@ -730,7 +730,7 @@ instance RunMessage ChaosBag where
         & revealedChaosTokensL
         %~ filter (/= token)
     SetChaosTokenAside token -> do
-      pure $ c & setAsideChaosTokensL %~ (token :)
+      pure $ c & setAsideChaosTokensL %~ (<> [token])
     UnsealChaosToken token -> do
       pure $ c & chaosTokensL %~ (token :)
     RemoveAllChaosTokens face ->

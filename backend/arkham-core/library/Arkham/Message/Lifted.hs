@@ -1321,3 +1321,8 @@ changeDrawnBy drawer newDrawer =
       InvestigatorDrawEnemy _ eid -> [InvestigatorDrawEnemy newDrawer eid]
       Do (InvestigatorDrewEncounterCard _ c) -> [Do (InvestigatorDrewEncounterCard newDrawer c)]
       _ -> error "wrong message found"
+
+chaosTokenEffect
+  :: (ReverseQueue m, Sourceable source) => source -> ChaosToken -> ModifierType -> m ()
+chaosTokenEffect (toSource -> source) token modifier =
+  push $ Msg.chaosTokenEffect source token modifier

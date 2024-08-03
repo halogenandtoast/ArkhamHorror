@@ -258,10 +258,10 @@ instance RunMessage SkillTest where
           , revealMsg
           , After revealMsg
           ]
-      pure $ s & (setAsideChaosTokensL %~ (chaosTokenFaces <>))
+      pure $ s & (setAsideChaosTokensL %~ (<> chaosTokenFaces))
     RevealChaosToken SkillTestSource {} iid token -> do
       pushM $ checkWindows [mkAfter $ Window.RevealChaosToken iid token]
-      pure $ s & revealedChaosTokensL %~ (token :) & toResolveChaosTokensL %~ nub . (token :)
+      pure $ s & revealedChaosTokensL %~ (<> [token]) & toResolveChaosTokensL %~ nub . (<> [token])
     RevealSkillTestChaosTokens iid -> do
       -- NOTE: this exists here because of Sacred Covenant (2), we want to
       -- cancel the modifiers but retain the effects so the effects are queued,

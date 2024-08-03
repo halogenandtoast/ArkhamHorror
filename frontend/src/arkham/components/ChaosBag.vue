@@ -66,7 +66,7 @@ function imageFor(tokenFace: string) {
 
 const revealedChaosTokens = computed(() => {
   if (props.game.focusedChaosTokens.length > 0) {
-    return props.game.focusedChaosTokens;
+    return [...props.game.skillTestChaosTokens, ...props.game.focusedChaosTokens]
   }
 
   return props.game.skillTestChaosTokens;
@@ -94,7 +94,7 @@ const choose = (idx: number) => emit('choose', idx)
 <template>
   <div class="chaos-bag">
     <div class="chaos-bag-contents">
-      <Token v-for="(revealedToken, index) in revealedChaosTokens" :key="index" :token="revealedToken" :playerId="playerId" :game="game" @choose="choose" />
+      <Token v-for="revealedToken in revealedChaosTokens" :key="revealedToken.id" :token="revealedToken" :playerId="playerId" :game="game" @choose="choose" />
       <img
         v-if="tokenAction !== -1"
         class="token token--can-draw"

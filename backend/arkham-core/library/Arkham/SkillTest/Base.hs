@@ -22,6 +22,7 @@ data SkillTestBaseValue
   = SkillBaseValue SkillType
   | AndSkillBaseValue [SkillType]
   | HalfResourcesOf InvestigatorId
+  | FixedBaseValue Int
   deriving stock (Show, Eq, Data)
 
 newtype SkillTestDifficulty = SkillTestDifficulty GameCalculation
@@ -153,6 +154,7 @@ iconValuesForSkillTestType :: SkillTestType -> Map SkillIcon Int
 iconValuesForSkillTestType = \case
   SkillSkillTest skillType -> base <> singletonMap (SkillIcon skillType) 1
   AndSkillTest skillTypes -> base <> mapFromList (map ((,1) . SkillIcon) skillTypes)
+  BaseValueSkillTest _ skillTypeMap -> mapFromList skillTypeMap
   ResourceSkillTest -> base
  where
   base = mapFromList [(#wild, 1), (#wildMinus, -1)]

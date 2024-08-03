@@ -96,6 +96,7 @@ allPlayerTreacheryCards =
       , hastyRepairs
       , haunted
       , hospitalDebts
+      , hospitalDebtsAdvanced
       , hypochondria
       , indebted
       , internalInjury
@@ -2426,6 +2427,13 @@ chillingPresence :: CardDef
 chillingPresence =
   (treachery "84042" "Chilling Presence" SinsOfThePast 3)
     { cdCardTraits = singleton Terror
+    }
+
+hospitalDebtsAdvanced :: CardDef
+hospitalDebtsAdvanced =
+  (weakness "90010" "Hospital Debts")
+    { cdCardTraits = setFromList [Task]
+    , cdKeywords = singleton Keyword.Advanced
     }
 
 theDirgeOfReason :: CardDef

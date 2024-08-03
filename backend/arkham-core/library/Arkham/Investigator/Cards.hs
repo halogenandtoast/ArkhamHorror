@@ -84,6 +84,7 @@ allInvestigatorCards =
       , stellaClark
       , gloriaGoldberg
       , daisyWalkerParallel
+      , skidsOTooleParallel
       ]
 
 allEncounterInvestigatorCards :: Map CardCode CardDef
@@ -583,3 +584,7 @@ gloriaGoldberg =
 daisyWalkerParallel :: CardDef
 daisyWalkerParallel =
   investigator "90001" ("Daisy Walker" <:> "The Librarian") Seeker [Miskatonic]
+
+skidsOTooleParallel :: CardDef
+skidsOTooleParallel =
+  investigator "90008" ("\"Skids\" O'Toole" <:> "The Ex-Con") Rogue [Criminal]

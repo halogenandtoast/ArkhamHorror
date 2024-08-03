@@ -2880,6 +2880,7 @@ skillTestValueMatches iid maction skillTestType = \case
         ResourceSkillTest -> do
           resources <- field InvestigatorResources iid
           pure $ n > resources
+        BaseValueSkillTest x _ -> pure $ n > x
 
 enemyMatches :: HasGame m => EnemyId -> Matcher.EnemyMatcher -> m Bool
 enemyMatches !enemyId !mtchr = elem enemyId <$> select mtchr
@@ -3121,6 +3122,7 @@ skillTestMatches iid source st = \case
     SkillSkillTest sType' -> sType' == sType
     AndSkillTest types -> sType `elem` types
     ResourceSkillTest -> False
+    BaseValueSkillTest _ _ -> False
   Matcher.SkillTestAtYourLocation -> do
     canAffectOthers <- withoutModifier iid CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
     mlid1 <- field InvestigatorLocation iid

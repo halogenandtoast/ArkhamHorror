@@ -983,6 +983,8 @@ allAssets =
     , --- neutral [fhv]
       SomeAssetCard eldritchTongue
     , SomeAssetCard occultReliquary3
+    , SomeAssetCard brokenDiademCrownOfDyingLight5
+    , SomeAssetCard twilightDiademCrownOfDyingLight
     , --- basic weaknesses [fhv]
       SomeAssetCard maimedHand
     , SomeAssetCard backInjury

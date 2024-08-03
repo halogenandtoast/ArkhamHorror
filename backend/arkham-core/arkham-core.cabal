@@ -477,6 +477,7 @@ library
       Arkham.Asset.Cards.BrandOfCthugha4
       Arkham.Asset.Cards.BritishBullDog
       Arkham.Asset.Cards.BritishBullDog2
+      Arkham.Asset.Cards.BrokenDiademCrownOfDyingLight5
       Arkham.Asset.Cards.BrotherXavier1
       Arkham.Asset.Cards.Bruiser3
       Arkham.Asset.Cards.BulletproofVest3
@@ -1110,6 +1111,7 @@ library
       Arkham.Asset.Cards.TwentyFiveAutomatic2
       Arkham.Asset.Cards.TwilaKatherinePrice3
       Arkham.Asset.Cards.TwilightBlade
+      Arkham.Asset.Cards.TwilightDiademCrownOfDyingLight
       Arkham.Asset.Cards.UnderworldMarket2
       Arkham.Asset.Cards.UnderworldSupport
       Arkham.Asset.Cards.UnscrupulousLoan3

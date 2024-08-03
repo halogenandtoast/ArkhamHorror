@@ -218,6 +218,7 @@ allPlayerAssetCards =
       , brandOfCthugha4
       , britishBullDog
       , britishBullDog2
+      , brokenDiademCrownOfDyingLight5
       , brotherXavier1
       , bruiser3
       , bulletproofVest3
@@ -830,6 +831,7 @@ allPlayerAssetCards =
       , twentyFiveAutomatic2
       , twilaKatherinePrice3
       , twilightBlade
+      , twilightDiademCrownOfDyingLight
       , underworldMarket2
       , underworldSupport
       , unscrupulousLoan3
@@ -6781,6 +6783,27 @@ occultReliquary3 =
       , cdDeckRestrictions = [PerDeckLimit 1]
       , cdLevel = Just 3
       }
+
+brokenDiademCrownOfDyingLight5 :: CardDef
+brokenDiademCrownOfDyingLight5 =
+  (asset "10133" ("Broken Diadem" <:> "Crown of Dying Light") 1 Neutral)
+    { cdCardTraits = setFromList [Item, Charm, Mask]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdLimits = [LimitPerTrait Mask 1]
+    , cdLevel = Just 5
+    , cdUnique = True
+    , cdBondedWith = [(1, "10134")]
+    }
+
+twilightDiademCrownOfDyingLight :: CardDef
+twilightDiademCrownOfDyingLight =
+  (asset "10134" ("Twilight Diadem" <:> "Crown of Dying Light") 0 Neutral)
+    { cdCardTraits = setFromList [Item, Charm, Mask, Blessed]
+    , cdCost = Nothing
+    , cdLimits = [LimitPerTrait Mask 1]
+    , cdUnique = True
+    , cdKeywords = singleton (Keyword.Bonded 1 "10133")
+    }
 
 maimedHand :: CardDef
 maimedHand =

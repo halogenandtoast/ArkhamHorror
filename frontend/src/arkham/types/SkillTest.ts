@@ -16,6 +16,7 @@ export const sourceDecoder = JsonDecoder.object<Source>({
 export type SkillTest = {
   investigator: string;
   setAsideChaosTokens: ChaosToken[];
+  revealedChaosTokens: ChaosToken[];
   // result: SkillTestResult;
   committedCards: Card[]
   source: Source;
@@ -41,6 +42,7 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     action: JsonDecoder.nullable(JsonDecoder.string),
     modifiedDifficulty: JsonDecoder.number,
     setAsideChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
+    revealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     // result: skillTestResultDecoder,
     committedCards: JsonDecoder.dictionary(JsonDecoder.array(cardDecoder, 'Card[]'), 'Record<string, Card[]>').map((record) => Object.values(record).flat()),
     source: sourceDecoder,

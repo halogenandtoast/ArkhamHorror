@@ -119,7 +119,6 @@ const classObject = computed(() => ({
   cursor: pointer;
 }
 
-
 .cancelled {
   filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8);
 }

@@ -33,7 +33,7 @@ instance RunMessage EnchantedBlade where
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       pushAll
-        [ skillTestModifiers sid attrs iid $ [SkillModifier #combat amount] <> [DamageDealt 1 | paidUse]
+        [ skillTestModifiers sid source iid $ [SkillModifier #combat amount] <> [DamageDealt 1 | paidUse]
         , chooseFight
         ]
       pure a

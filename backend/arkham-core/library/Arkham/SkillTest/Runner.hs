@@ -154,6 +154,7 @@ instance RunMessage SkillTest where
       let
         stType = case skillTestType of
           ResourceSkillTest -> ResourceSkillTest
+          x@(BaseValueSkillTest _ _) -> x
           SkillSkillTest currentType -> if currentType == fsType then SkillSkillTest tsType else SkillSkillTest currentType
           AndSkillTest types -> AndSkillTest $ map (\t -> if t == fsType then tsType else t) types
         stBaseValue = case skillTestBaseValue of

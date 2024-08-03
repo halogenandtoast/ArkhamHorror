@@ -75,6 +75,13 @@ increaseResourceCost (Costs (a : as)) y = case a of
   _ -> a <> increaseResourceCost (Costs as) y
 increaseResourceCost other _ = other
 
+decreaseResourceCost :: Cost -> Int -> Cost
+decreaseResourceCost (ResourceCost x) y = ResourceCost $ max 0 (x - y)
+decreaseResourceCost (Costs (a : as)) y = case a of
+  ResourceCost x -> Costs (ResourceCost (max 0 $ x - y) : as)
+  _ -> a <> decreaseResourceCost (Costs as) y
+decreaseResourceCost other _ = other
+
 totalDiscardCardPayments :: Payment -> Int
 totalDiscardCardPayments = length . concat . toListOf (cosmos . _DiscardCardPayment)
 

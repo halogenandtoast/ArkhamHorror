@@ -1172,6 +1172,8 @@ allAssets =
       --- Read or Die
       SomeAssetCard daisysToteBagAdvanced
     , SomeAssetCard theNecronomiconAdvanced
+    , --- Bad Blood
+      SomeAssetCard heirloomOfHyperboreaAdvanced
     , -- Promo
       --- Hour of the Huntress
       SomeAssetCard greenManMedallionHourOfTheHuntress

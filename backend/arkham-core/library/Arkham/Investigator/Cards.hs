@@ -85,6 +85,7 @@ allInvestigatorCards =
       , gloriaGoldberg
       , daisyWalkerParallel
       , skidsOTooleParallel
+      , agnesBakerParallel
       ]
 
 allEncounterInvestigatorCards :: Map CardCode CardDef
@@ -588,3 +589,7 @@ daisyWalkerParallel =
 skidsOTooleParallel :: CardDef
 skidsOTooleParallel =
   investigator "90008" ("\"Skids\" O'Toole" <:> "The Ex-Con") Rogue [Criminal]
+
+agnesBakerParallel :: CardDef
+agnesBakerParallel =
+  investigator "90017" ("Agnes Baker" <:> "The Waitress") Mystic [Sorcerer]

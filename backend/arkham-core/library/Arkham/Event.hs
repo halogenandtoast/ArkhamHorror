@@ -707,6 +707,8 @@ allEvents =
     , -- Parallel
       -- All or Nothing
       SomeEventCard onTheLamAdvanced
+    , -- Bad Blood
+      SomeEventCard darkMemoryAdvanced
     , -- Promo
       -- The Dirge of Reason
       SomeEventCard mysteriesRemain

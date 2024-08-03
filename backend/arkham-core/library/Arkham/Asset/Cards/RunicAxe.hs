@@ -20,6 +20,7 @@ import Arkham.Modifier
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.Trait (Trait (Relic))
+import Control.Lens (non)
 
 data Inscription = Accuracy | Power | Glory | Elders | Hunt | Fury
   deriving stock (Show, Eq, Generic, Enum, Bounded)
@@ -85,7 +86,7 @@ instance RunMessage RunicAxe where
   runMessage msg a@(RunicAxe (With attrs meta)) = runQueueT $ case msg of
     Do BeginRound -> do
       let replenish = if attrs `hasCustomization` Saga then 2 else 1
-      pure . RunicAxe . (`with` meta) $ attrs & tokensL . ix Charge %~ \n -> if n < 4 then n + replenish else n
+      pure . RunicAxe . (`with` meta) $ attrs & tokensL . at Charge . non 0 %~ \n -> if n < 4 then n + replenish else n
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 1)

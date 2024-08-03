@@ -36,7 +36,7 @@ instance RunMessage Unrelenting1 where
               [ SealChaosToken token
               , SealedChaosToken token (toCard attrs)
               ]
-            | token <- chaosTokensInBag
+            | token <- filter ((/= #autofail) . (.face)) chaosTokensInBag
             ]
         , DoStep 1 msg
         ]

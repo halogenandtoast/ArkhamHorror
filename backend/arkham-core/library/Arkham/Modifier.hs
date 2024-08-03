@@ -266,6 +266,7 @@ data ModifierType
   | IgnoreAloof
   | IgnoreAlert
   | IgnoreChaosToken
+  | IgnoreChaosTokenModifier
   | IgnoreChaosTokenEffects
   | IgnoreHandSizeReduction
   | IgnoreLimit

@@ -858,6 +858,7 @@ library
       Arkham.Asset.Cards.ObsidianBracelet
       Arkham.Asset.Cards.OccultLexicon
       Arkham.Asset.Cards.OccultLexicon3
+      Arkham.Asset.Cards.OccultReliquary3
       Arkham.Asset.Cards.OccultScraps
       Arkham.Asset.Cards.Ofuda
       Arkham.Asset.Cards.OldBookOfLore
@@ -1614,6 +1615,7 @@ library
       Arkham.Event.Cards.DarkMemory
       Arkham.Event.Cards.DarkPact
       Arkham.Event.Cards.DarkProphecy
+      Arkham.Event.Cards.DawnStar1
       Arkham.Event.Cards.DecipheredReality5
       Arkham.Event.Cards.Decoy
       Arkham.Event.Cards.DeepKnowledge

@@ -112,6 +112,7 @@ getModifiedChaosTokenValue s t = do
       modifiedChaosTokenFaces'
  where
   applyModifier IgnoreChaosToken (ChaosTokenValue token _) = ChaosTokenValue token NoModifier
+  applyModifier IgnoreChaosTokenModifier (ChaosTokenValue token _) = ChaosTokenValue token NoModifier
   applyModifier (ChangeChaosTokenModifier modifier') (ChaosTokenValue token _) =
     ChaosTokenValue token modifier'
   applyModifier NegativeToPositive (ChaosTokenValue token (NegativeModifier n)) =
@@ -274,18 +275,17 @@ instance RunMessage SkillTest where
         \token -> do
           faces <- getModifiedChaosTokenFaces [token]
           pure [(token, face) | face <- faces]
+      afterRevealWindow <-
+        checkAfter $ Window.RevealChaosTokensDuringSkillTest iid s skillTestToResolveChaosTokens
       pushAll $ UnfocusChaosTokens
+        : afterRevealMsg
+        : afterRevealWindow
         : afterRevealMsg
         : [ Will (ResolveChaosToken drawnChaosToken chaosTokenFace iid)
           | (drawnChaosToken, chaosTokenFace) <- revealedChaosTokenFaces
           ]
           <> [afterResolveMsg]
-      pure
-        $ s
-        & toResolveChaosTokensL
-        .~ mempty
-        & resolvedChaosTokensL
-        <>~ skillTestToResolveChaosTokens
+      pure $ s & toResolveChaosTokensL .~ mempty & resolvedChaosTokensL <>~ skillTestToResolveChaosTokens
     PassSkillTest -> do
       modifiedSkillValue' <- totalModifiedSkillValue s
       player <- getPlayer skillTestInvestigator

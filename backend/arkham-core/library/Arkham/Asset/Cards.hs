@@ -586,6 +586,7 @@ allPlayerAssetCards =
       , obsidianBracelet
       , occultLexicon
       , occultLexicon3
+      , occultReliquary3
       , occultScraps
       , ofuda
       , oldBookOfLore
@@ -6771,6 +6772,15 @@ eldritchTongue =
     , cdSlots = [#arcane]
     , cdUses = uses Charge 4
     }
+
+occultReliquary3 :: CardDef
+occultReliquary3 =
+  permanent
+    $ (asset "10132" ("Occult Reliquary" <:> "Dubious Source") 0 Neutral)
+      { cdCardTraits = setFromList [Boon, Pact]
+      , cdDeckRestrictions = [PerDeckLimit 1]
+      , cdLevel = Just 3
+      }
 
 maimedHand :: CardDef
 maimedHand =

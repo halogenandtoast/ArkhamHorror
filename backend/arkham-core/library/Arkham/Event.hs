@@ -619,6 +619,7 @@ allEvents =
     , SomeEventCard keepFaith2
     , --- netural [fhv]
       SomeEventCard bideYourTime
+    , SomeEventCard dawnStar1
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

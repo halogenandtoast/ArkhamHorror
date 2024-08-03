@@ -423,6 +423,8 @@ instance RunMessage AssetAttrs where
         <> [RemoveFromPlay $ toSource a, discardMsg, afterWindows]
       for_ a.cardsUnderneath $ push . DiscardedCard . toCardId
       pure a
+    Discard mInvestigator source (CardTarget c) | c.id == toCardId a -> do
+      runMessage (Discard mInvestigator source (toTarget a)) a
     Exile target | a `isTarget` target -> do
       pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]
       pure $ a & exiledL .~ True

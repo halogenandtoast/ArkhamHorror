@@ -242,6 +242,7 @@ data WindowType
   | RevealLocation InvestigatorId LocationId
   | FlipLocation InvestigatorId LocationId
   | RevealChaosToken InvestigatorId ChaosToken
+  | RevealChaosTokensDuringSkillTest InvestigatorId SkillTest [ChaosToken]
   | TokensWouldBeRemovedFromChaosBag [ChaosToken]
   | ResolvesChaosToken InvestigatorId ChaosToken
   | IgnoreChaosToken InvestigatorId ChaosToken

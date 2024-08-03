@@ -136,6 +136,7 @@ allPlayerEventCards =
       , darkMemory
       , darkPact
       , darkProphecy
+      , dawnStar1
       , decipheredReality5
       , decoy
       , deepKnowledge
@@ -4356,6 +4357,14 @@ bideYourTime =
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Double]
     , cdAdditionalCost = Just (ActionCost 1)
+    }
+
+dawnStar1 :: CardDef
+dawnStar1 =
+  (event "10131" "Dawn Star" 1 Neutral)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Ritual, Blessed]
+    , cdFastWindow = Just $ RevealChaosTokensDuringSkillTest #after Anyone SkillTestAtYourLocation #curse
     }
 
 dynamiteBlast2 :: CardDef

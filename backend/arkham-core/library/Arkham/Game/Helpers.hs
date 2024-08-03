@@ -1658,6 +1658,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
   let guardTiming t body = if timing' == t then body wType else noMatch
   let mtchr = Matcher.replaceYouMatcher iid umtchr
   case mtchr of
+    Matcher.RevealChaosTokensDuringSkillTest timing whoMatcher skillTestMatcher chaosTokenMatcher -> guardTiming timing \case
+      Window.RevealChaosTokensDuringSkillTest who st chaosTokens -> do
+        andM
+          [ matchWho iid who whoMatcher
+          , skillTestMatches iid source st skillTestMatcher
+          , anyM (`chaosTokenMatches` Matcher.IncludeSealed chaosTokenMatcher) chaosTokens
+          ]
+      _ -> noMatch
     Matcher.InvestigatorPlacedFromTheirPool timing whoMatcher sourceMatcher targetMatcher tType -> guardTiming timing \case
       Window.InvestigatorPlacedFromTheirPool who source' target' tType' _ | tType == tType' -> do
         andM

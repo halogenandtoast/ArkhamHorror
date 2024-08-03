@@ -120,6 +120,7 @@ import Arkham.Event.Events (
   blindingLightEffect,
   callingInFavorsEffect,
   cheapShot2Effect,
+  dawnStar1Effect,
   eideticMemory3Effect,
   explosiveWardEffect,
   exposeWeakness1Effect,
@@ -470,6 +471,7 @@ allEffects =
     , ("10102", SomeEffect spectralRazor2Effect)
     , ("10128", SomeEffect eldritchTongueEffect)
     , ("10129", SomeEffect bideYourTimeEffect)
+    , ("10131", SomeEffect dawnStar1Effect)
     , ("50044", SomeEffect jeremiahPierceEffect)
     , ("52007", SomeEffect alchemicalTransmutation2Effect)
     , ("52008", SomeEffect stormOfSpirits3Effect)

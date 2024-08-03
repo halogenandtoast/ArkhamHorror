@@ -982,6 +982,7 @@ allAssets =
     , SomeAssetCard darkHorse5
     , --- neutral [fhv]
       SomeAssetCard eldritchTongue
+    , SomeAssetCard occultReliquary3
     , --- basic weaknesses [fhv]
       SomeAssetCard maimedHand
     , SomeAssetCard backInjury

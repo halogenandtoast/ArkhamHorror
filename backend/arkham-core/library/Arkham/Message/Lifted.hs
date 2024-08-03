@@ -473,6 +473,16 @@ selectOneToHandle
 selectOneToHandle iid source matcher =
   select matcher >>= \results -> if notNull results then chooseOneToHandle iid source results else pure ()
 
+selectOneToHandleWith
+  :: (HasCallStack, ReverseQueue m, Targetable (QueryElement matcher), Query matcher, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> Message
+  -> matcher
+  -> m ()
+selectOneToHandleWith iid source msg matcher =
+  select matcher >>= \results -> if notNull results then chooseOneToHandleWith iid source results msg else pure ()
+
 chooseOneToHandle
   :: (HasCallStack, ReverseQueue m, Targetable target, Sourceable source)
   => InvestigatorId

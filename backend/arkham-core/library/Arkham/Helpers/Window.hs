@@ -248,6 +248,7 @@ getRevealedChaosTokens :: [Window] -> [ChaosToken]
 getRevealedChaosTokens = \case
   [] -> []
   ((windowType -> Window.SkillTestEnded st) : _) -> st.revealedChaosTokens
+  ((windowType -> Window.RevealChaosTokensDuringSkillTest _ _ ts) : _) -> ts
   (_ : rest) -> getRevealedChaosTokens rest
 
 getChaosToken :: HasCallStack => [Window] -> ChaosToken

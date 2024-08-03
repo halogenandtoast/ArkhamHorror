@@ -891,6 +891,12 @@ instance IsString CardMatcher where
 instance IsLabel "any" CardMatcher where
   fromLabel = AnyCard
 
+instance IsLabel "blessed" CardMatcher where
+  fromLabel = CardWithTrait Blessed
+
+instance IsLabel "cursed" CardMatcher where
+  fromLabel = CardWithTrait Cursed
+
 instance IsLabel "illicit" CardMatcher where
   fromLabel = CardWithTrait Illicit
 
@@ -1080,6 +1086,7 @@ data WindowMatcher
   | EnemyAttacked Timing Who SourceMatcher EnemyMatcher
   | EnemyAttackedSuccessfully Timing Who SourceMatcher EnemyMatcher
   | RevealChaosToken Timing Who ChaosTokenMatcher
+  | RevealChaosTokensDuringSkillTest Timing Who SkillTestMatcher ChaosTokenMatcher
   | TokensWouldBeRemovedFromChaosBag Timing ChaosTokenMatcher
   | ResolvesChaosToken Timing Who ChaosTokenMatcher
   | CancelChaosToken Timing Who ChaosTokenMatcher

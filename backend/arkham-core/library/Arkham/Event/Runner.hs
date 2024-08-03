@@ -86,6 +86,8 @@ runEventMessage msg a@EventAttrs {..} = case msg of
       $ windows'
       <> [Discarded (toTarget a) source (toCard a), RemoveFromPlay $ toSource a]
     pure a
+  Discard mInvestigator source (CardTarget c) | c.id == toCardId a -> do
+    runMessage (Discard mInvestigator source (toTarget a)) a
   RemoveFromPlay source | isSource a source -> do
     let
       handleDiscard c = case c of

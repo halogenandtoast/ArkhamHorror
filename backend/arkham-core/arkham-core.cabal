@@ -714,6 +714,7 @@ library
       Arkham.Asset.Cards.HealingWords3
       Arkham.Asset.Cards.HeavyFurs
       Arkham.Asset.Cards.HeirloomOfHyperborea
+      Arkham.Asset.Cards.HeirloomOfHyperboreaAdvanced
       Arkham.Asset.Cards.HelplessPassenger
       Arkham.Asset.Cards.HemisphericMap3
       Arkham.Asset.Cards.HenryDeveau
@@ -1615,6 +1616,7 @@ library
       Arkham.Event.Cards.DaringManeuver2
       Arkham.Event.Cards.DarkInsight
       Arkham.Event.Cards.DarkMemory
+      Arkham.Event.Cards.DarkMemoryAdvanced
       Arkham.Event.Cards.DarkPact
       Arkham.Event.Cards.DarkProphecy
       Arkham.Event.Cards.DawnStar1
@@ -2019,6 +2021,7 @@ library
       Arkham.Investigator
       Arkham.Investigator.Cards
       Arkham.Investigator.Cards.AgnesBaker
+      Arkham.Investigator.Cards.AgnesBakerParallel
       Arkham.Investigator.Cards.AkachiOnyele
       Arkham.Investigator.Cards.AlessandraZorzi
       Arkham.Investigator.Cards.AmandaSharpe

@@ -1077,9 +1077,21 @@ instance RunMessage ActiveCost where
         then payCost msg c iid skipAdditionalCosts cost
         else do
           case c.target of
-            ForAdditionalCost batchId -> push $ IgnoreBatch batchId
-            _ -> error $ "Can't afford cost: " <> show cost
-          pure c
+            ForAdditionalCost batchId -> do
+              push $ IgnoreBatch batchId
+              pure c
+            _ -> do
+              isParallelAgnes <- iid <=~> InvestigatorIs "90017"
+              if isParallelAgnes
+                then do
+                  let cost' = decreaseResourceCost cost 2
+                  canStillAfford' <-
+                    withModifiers iid (toModifiers source [ExtraResources extraResources])
+                      $ getCanAffordCost iid source actions c.windows cost'
+                  if canStillAfford'
+                    then payCost msg c iid skipAdditionalCosts cost'
+                    else error $ "Can't afford cost: " <> show cost'
+                else error $ "Can't afford cost: " <> show cost
     SetCost acId cost | acId == c.id -> do
       pure $ c {activeCostCosts = cost}
     PaidCost acId _ _ payment | acId == c.id -> do

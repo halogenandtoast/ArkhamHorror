@@ -46,6 +46,18 @@ const deckUrlToPage = (url: string): string => {
   // to https://arkhamdb.com/deck/view/25027
   return url.replace("/api/public/decklist", "/decklist/view").replace("/api/public/deck", "/deck/view")
 }
+
+function deckInvestigator(deck: Arkham.Deck) {
+  if (deck.list.meta) {
+    try {
+      const result = JSON.parse(deck.list.meta)
+      if (result && result.alternate_front) {
+        return result.alternate_front
+      }
+    } catch (e) { console.log("No parse") }
+  }
+  return deck.list.investigator_code.replace('c', '')
+}
 </script>
 
 <template>
@@ -57,7 +69,7 @@ const deckUrlToPage = (url: string): string => {
     <h2>Existing Decks</h2>
     <transition-group name="deck">
       <div v-for="deck in decks" :key="deck.id" class="deck">
-        <img class="portrait--decklist" :src="imgsrc(`cards/${deck.list.investigator_code.replace('c', '')}.jpg`)" />
+        <img class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator(deck)}.jpg`)" />
         <span class="deck-title"><router-link :to="{ name: 'Deck', params: { deckId: deck.id }}">{{deck.name}}</router-link></span>
         <div class="open-deck">
           <a v-if="deck.url" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>

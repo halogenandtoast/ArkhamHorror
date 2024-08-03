@@ -134,6 +134,7 @@ allPlayerEventCards =
       , daringManeuver2
       , darkInsight
       , darkMemory
+      , darkMemoryAdvanced
       , darkPact
       , darkProphecy
       , dawnStar1
@@ -4996,6 +4997,16 @@ onTheLamAdvanced =
       , cdFastWindow = Just FastPlayerWindow
       , cdKeywords = singleton Keyword.Advanced
       }
+
+darkMemoryAdvanced :: CardDef
+darkMemoryAdvanced =
+  (event "90019" "Dark Memory" 4 Neutral)
+    { cdCardTraits = setFromList [Spell]
+    , cdCardSubType = Just Weakness
+    , cdLevel = Nothing
+    , cdCardInHandEffects = True
+    , cdKeywords = singleton Keyword.Advanced
+    }
 
 mysteriesRemain :: CardDef
 mysteriesRemain =

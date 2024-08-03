@@ -450,6 +450,7 @@ allPlayerAssetCards =
       , healingWords3
       , heavyFurs
       , heirloomOfHyperborea
+      , heirloomOfHyperboreaAdvanced
       , hemisphericMap3
       , henryDeveau
       , henryWan
@@ -8010,6 +8011,17 @@ theNecronomiconAdvanced =
     , cdSlots = [#hand]
     , cdKeywords = setFromList [Keyword.Advanced]
     }
+
+heirloomOfHyperboreaAdvanced :: CardDef
+heirloomOfHyperboreaAdvanced =
+  signature "90017"
+    $ (asset "90018" ("Heirloom of Hyperborea" <:> "Artifact from Another Life") 3 Neutral)
+      { cdSkills = [#willpower, #combat, #wild, #wild]
+      , cdCardTraits = setFromList [Item, Relic]
+      , cdUnique = True
+      , cdSlots = [#accessory]
+      , cdKeywords = setFromList [Keyword.Advanced]
+      }
 
 greenManMedallionHourOfTheHuntress :: CardDef
 greenManMedallionHourOfTheHuntress =

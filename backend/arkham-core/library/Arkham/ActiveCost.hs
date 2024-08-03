@@ -299,12 +299,13 @@ payCost msg c iid skipAdditionalCosts cost = do
             SealCost matcher -> selectCount matcher
             _ -> pure n
           name <- fieldMap InvestigatorName toTitle iid
+          choiceId <- getRandom
           pushWhen canAfford
             $ Ask player
             $ ChoosePaymentAmounts
               ("Pay " <> displayCostType cost)
               Nothing
-              [PaymentAmountChoice iid 0 maxUpTo name $ pay cost']
+              [PaymentAmountChoice choiceId iid 0 maxUpTo name $ pay cost']
           pure c
     DiscardTopOfDeckCost n -> do
       cards <- fieldMap InvestigatorDeck (map PlayerCard . take n . unDeck) iid
@@ -461,12 +462,13 @@ payCost msg c iid skipAdditionalCosts cost = do
       let minimumHorror = max 1 (requiredResources - availableResources)
       sanity <- field InvestigatorRemainingSanity iid
       name <- fieldMap InvestigatorName toTitle iid
+      choiceId <- getRandom
       push
         $ Ask player
         $ ChoosePaymentAmounts
           "Pay X Horror"
           Nothing
-          [ PaymentAmountChoice iid minimumHorror sanity name
+          [ PaymentAmountChoice choiceId iid minimumHorror sanity name
               $ pay (HorrorCost source' (InvestigatorTarget iid) 1)
           ]
       pure c
@@ -505,12 +507,13 @@ payCost msg c iid skipAdditionalCosts cost = do
         _ -> do
           resources <- getSpendableResources iid
           name <- fieldMap InvestigatorName toTitle iid
+          choiceId <- getRandom
           push
             $ Ask player
             $ ChoosePaymentAmounts
               "Pay X resources"
               (Just $ AmountOneOf ns)
-              [PaymentAmountChoice iid 0 resources name (PayCost acId iid True (ResourceCost 1))]
+              [PaymentAmountChoice choiceId iid 0 resources name (PayCost acId iid True (ResourceCost 1))]
       pure c
     MaybeFieldResourceCost (MaybeFieldCost mtchr fld) -> do
       ns <- nub . catMaybes <$> selectFields fld mtchr
@@ -520,12 +523,13 @@ payCost msg c iid skipAdditionalCosts cost = do
         _ -> do
           resources <- getSpendableResources iid
           name <- fieldMap InvestigatorName toTitle iid
+          choiceId <- getRandom
           push
             $ Ask player
             $ ChoosePaymentAmounts
               "Pay X resources"
               (Just $ AmountOneOf ns)
-              [PaymentAmountChoice iid 0 resources name (PayCost acId iid True (ResourceCost 1))]
+              [PaymentAmountChoice choiceId iid 0 resources name (PayCost acId iid True (ResourceCost 1))]
       pure c
     CalculatedResourceCost calc -> do
       n <- calculate calc
@@ -541,13 +545,14 @@ payCost msg c iid skipAdditionalCosts cost = do
     AddCurseTokensCost n m -> do
       maxTokens <- min m <$> getRemainingCurseTokens
       name <- fieldMap InvestigatorName toTitle iid
+      choiceId <- getRandom
 
       push
         $ Ask player
         $ ChoosePaymentAmounts
           ("Pay " <> displayCostType cost)
           Nothing
-          [ PaymentAmountChoice iid n maxTokens name
+          [ PaymentAmountChoice choiceId iid n maxTokens name
               $ pay (AddCurseTokenCost 1)
           ]
       pure c
@@ -616,23 +621,27 @@ payCost msg c iid skipAdditionalCosts cost = do
                 _
                   | sum (map (\(_, _, z) -> z) iidsWithResources) == x && null resourcesFromAssets ->
                       pushAll $ map (\(iid', _, z) -> SpendResources iid' z) iidsWithResources
-                _ ->
+                _ -> do
+                  rs1 <- getRandoms
+                  rs2 <- getRandoms
                   push
                     $ Ask player
                     $ ChoosePaymentAmounts ("Pay " <> tshow x <> " resources") (Just $ TotalAmountTarget x)
                     $ map
-                      (\(iid', name, resources) -> PaymentAmountChoice iid' 0 resources name (SpendResources iid' 1))
-                      iidsWithResources
+                      ( \(choiceId, (iid', name, resources)) -> PaymentAmountChoice choiceId iid' 0 resources name (SpendResources iid' 1)
+                      )
+                      (zip rs1 iidsWithResources)
                     <> map
-                      ( \(iid', assetId, uType, name, total) ->
+                      ( \(choiceId, (iid', assetId, uType, name, total)) ->
                           PaymentAmountChoice
+                            choiceId
                             iid'
                             0
                             total
                             (tshow uType <> " from " <> name)
                             (SpendUses source (toTarget assetId) uType 1)
                       )
-                      resourcesFromAssets
+                      (zip rs2 resourcesFromAssets)
       withPayment $ ResourcePayment x
     AdditionalActionsCost -> do
       actionRemainingCount <- field InvestigatorRemainingActions iid
@@ -734,13 +743,14 @@ payCost msg c iid skipAdditionalCosts cost = do
       let maxUses = min uses m
 
       name <- fieldMap InvestigatorName toTitle iid
+      choiceId <- getRandom
 
       push
         $ Ask player
         $ ChoosePaymentAmounts
           ("Pay " <> displayCostType cost)
           Nothing
-          [ PaymentAmountChoice iid n maxUses name
+          [ PaymentAmountChoice choiceId iid n maxUses name
               $ pay (UseCost assetMatcher uType 1)
           ]
       pure c
@@ -806,13 +816,14 @@ payCost msg c iid skipAdditionalCosts cost = do
             then do
               for_ xs \(iid', _, cCount) -> push (PayCost acId iid' True (ClueCost (Static cCount)))
             else do
+              rs <- getRandoms
               let
                 paymentOptions =
                   map
-                    ( \(iid', name, clues) ->
-                        PaymentAmountChoice iid' 0 clues name $ PayCost acId iid' True (ClueCost (Static 1))
+                    ( \(choiceId, (iid', name, clues)) ->
+                        PaymentAmountChoice choiceId iid' 0 clues name $ PayCost acId iid' True (ClueCost (Static 1))
                     )
-                    iidsWithClues
+                    (zip rs iidsWithClues)
               lead <- getLeadPlayer
               push
                 $ Ask lead
@@ -855,12 +866,13 @@ payCost msg c iid skipAdditionalCosts cost = do
           (andM . sequence [(`extendedCardMatch` extendedCardMatcher), pure . notCostCard . PlayerCard])
           handCards
       name <- fieldMap InvestigatorName toTitle iid
+      choiceId <- getRandom
       push
         $ Ask player
         $ ChoosePaymentAmounts
           "Number of cards to pay"
           Nothing
-          [ PaymentAmountChoice iid 1 (length cards) name
+          [ PaymentAmountChoice choiceId iid 1 (length cards) name
               $ pay (HandDiscardCost 1 extendedCardMatcher)
           ]
       pure c

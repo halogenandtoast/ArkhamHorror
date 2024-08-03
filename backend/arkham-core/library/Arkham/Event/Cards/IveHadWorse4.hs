@@ -28,7 +28,7 @@ instance RunMessage IveHadWorse4 where
           InvestigatorDoAssignDamage iid' _ _ _ damage' horror' _ _ | iid' == iid -> (damage', horror')
           _ -> error "mismatch"
         _ -> error "unhandled"
-      push
+      pushM
         $ chooseAmounts
           player
           "Amount of Damage/Horror to cancel"

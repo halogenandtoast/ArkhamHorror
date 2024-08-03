@@ -30,7 +30,7 @@ instance RunMessage GlimpseTheUnthinkable5 where
           $ InHandOf (InvestigatorWithId iid)
           <> BasicCardMatch NonWeakness
       player <- getPlayer iid
-      push
+      pushM
         $ chooseAmounts
           player
           "Choose number of cards to discard"

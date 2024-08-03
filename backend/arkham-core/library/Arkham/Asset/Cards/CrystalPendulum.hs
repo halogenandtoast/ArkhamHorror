@@ -17,7 +17,7 @@ import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
 newtype CrystalPendulum = CrystalPendulum AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crystalPendulum :: AssetCard CrystalPendulum
@@ -40,7 +40,7 @@ instance RunMessage CrystalPendulum where
   runMessage msg a@(CrystalPendulum attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       player <- getPlayer iid
-      push $ chooseAmounts player "Name a number" (MaxAmountTarget 1000) [("Number", (0, 1000))] attrs
+      pushM $ chooseAmounts player "Name a number" (MaxAmountTarget 1000) [("Number", (0, 1000))] attrs
       pure a
     ResolveAmounts iid (getChoiceAmount "Number" -> n) (isTarget attrs -> True) -> do
       push $ createCardEffect Cards.crystalPendulum (Just $ EffectInt n) (toAbilitySource attrs 1) iid

@@ -3,6 +3,7 @@ module Arkham.Event.Cards.ThoroughInquiry (thoroughInquiry, ThoroughInquiry (..)
 import Arkham.Capability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Name
@@ -31,7 +32,7 @@ instance RunMessage ThoroughInquiry where
             attrs
       pure e
     ResolveAmounts _ amounts (isTarget attrs -> True) -> do
-      for_ amounts $ \(name, n) -> do
+      for_ amounts $ \(nuName -> name, n) -> do
         whenJustM (selectOne $ InvestigatorWithTitle name) \iid ->
           drawCardsIfCan iid attrs n
       pure e

@@ -154,12 +154,14 @@ export type ChooseDeck = {
 }
 
 export type AmountChoice = {
+  choiceId: string
   label: string
   minBound: number
   maxBound: number
 }
 
 export const amountChoiceDecoder = JsonDecoder.object<AmountChoice>({
+  choiceId: JsonDecoder.string,
   label: JsonDecoder.string,
   minBound: JsonDecoder.number,
   maxBound: JsonDecoder.number,
@@ -183,6 +185,7 @@ export const chooseAmountsDecoder = JsonDecoder.object<ChooseAmounts>(
 )
 
 export type PaymentAmountChoice = {
+  choiceId: string
   investigatorId: string
   minBound: number
   maxBound: number
@@ -190,6 +193,7 @@ export type PaymentAmountChoice = {
 }
 
 export const paymentAmountChoiceDecoder = JsonDecoder.object<PaymentAmountChoice>({
+  choiceId: JsonDecoder.string,
   investigatorId: JsonDecoder.string,
   minBound: JsonDecoder.number,
   maxBound: JsonDecoder.number,

@@ -144,7 +144,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded playerCount deck
         weaknesses <- traverse (`genPlayerCardWith` setPlayerCardOwner iid) randomWeaknesses
         pid <- getPlayer iid
-        let purchaseTrauma = initDeckTrauma deck' iid pid (toTarget a)
+        purchaseTrauma <- initDeckTrauma deck' iid pid (toTarget a)
 
         pushAll
           $ LoadDeck iid (withDeck (<> weaknesses) deck')

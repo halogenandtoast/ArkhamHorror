@@ -16,7 +16,7 @@ import Arkham.Matcher
 import Arkham.Projection
 
 newtype WitchHauntedWoodsAbandonedMine = WitchHauntedWoodsAbandonedMine LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 witchHauntedWoodsAbandonedMine :: LocationCard WitchHauntedWoodsAbandonedMine
@@ -76,50 +76,36 @@ instance RunMessage WitchHauntedWoodsAbandonedMine where
             (NotLocation $ locationWithInvestigator iid)
 
       player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel
+
+      choices <- for iids \(iid', otherResources) -> do
+        chooseMsg1 <-
+          chooseAmounts
+            player
+            "Choose amount of resources to move"
+            (MaxAmountTarget 3)
+            [("Resources", (0, resources))]
+            $ ProxyTarget (toTarget attrs)
+            $ ProxyTarget
+              (InvestigatorTarget iid)
+              (InvestigatorTarget iid')
+        chooseMsg2 <-
+          chooseAmounts
+            player
+            "Choose amount of resources to move"
+            (MaxAmountTarget 3)
+            [("Resources", (0, otherResources))]
+            $ ProxyTarget (toTarget attrs)
+            $ ProxyTarget (InvestigatorTarget iid') (InvestigatorTarget iid)
+
+        pure
+          $ targetLabel
             iid'
             [ chooseOrRunOne player
-                $ [ Label
-                    "Move to their pool"
-                    [ chooseAmounts
-                        player
-                        "Choose amount of resources to move"
-                        (MaxAmountTarget 3)
-                        [("Resources", (0, resources))]
-                        ( ProxyTarget
-                            (toTarget attrs)
-                            ( ProxyTarget
-                                (InvestigatorTarget iid)
-                                (InvestigatorTarget iid')
-                            )
-                        )
-                    ]
-                  | resources > 0
-                  ]
-                <> [ Label
-                    "Move to your pool"
-                    [ chooseAmounts
-                        player
-                        "Choose amount of resources to move"
-                        (MaxAmountTarget 3)
-                        [("Resources", (0, otherResources))]
-                        ( ProxyTarget
-                            (toTarget attrs)
-                            ( ProxyTarget
-                                (InvestigatorTarget iid')
-                                (InvestigatorTarget iid)
-                            )
-                        )
-                    ]
-                   | otherResources > 0
-                   ]
+                $ [Label "Move to their pool" [chooseMsg1] | resources > 0]
+                <> [Label "Move to your pool" [chooseMsg2] | otherResources > 0]
             ]
-          | (iid', otherResources) <- iids
-          ]
 
+      push $ chooseOne player choices
       pure l
     ResolveAmounts
       _

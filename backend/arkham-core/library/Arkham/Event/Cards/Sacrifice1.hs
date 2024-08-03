@@ -22,14 +22,17 @@ instance RunMessage Sacrifice1 where
     PlayThisEvent iid eid | eid == toId attrs -> do
       targets <- selectTargets $ #mystic <> DiscardableAsset <> assetControlledBy iid
       player <- getPlayer iid
+      chooseMsg <-
+        chooseAmounts
+          player
+          "Number of cards and resources"
+          (TotalAmountTarget 3)
+          [("Cards", (0, 3)), ("Resources", (0, 3))]
+          attrs
+
       pushAll
         [ chooseOrRunOne player $ targetLabels targets $ only . toDiscardBy iid attrs
-        , chooseAmounts
-            player
-            "Number of cards and resources"
-            (TotalAmountTarget 3)
-            [("Cards", (0, 3)), ("Resources", (0, 3))]
-            attrs
+        , chooseMsg
         ]
       pure e
     ResolveAmounts iid choices (isTarget attrs -> True) -> do

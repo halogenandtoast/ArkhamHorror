@@ -246,9 +246,9 @@ createCardEffect
   -> Message
 createCardEffect def mMeta (toSource -> source) (toTarget -> target) = CreateEffect (toCardCode def) mMeta source target
 
-getChoiceAmount :: Text -> [(Text, Int)] -> Int
+getChoiceAmount :: Text -> [(NamedUUID, Int)] -> Int
 getChoiceAmount key choices =
-  let choicesMap = mapFromList @(Map Text Int) choices
+  let choicesMap = mapFromList @(Map Text Int) $ map (first nuName) choices
    in findWithDefault 0 key choicesMap
 
 class IsMessage msg where
@@ -861,7 +861,7 @@ data Message
   | ReturnChaosTokensToPool [ChaosToken]
   | Resign InvestigatorId
   | ResignWith Target
-  | ResolveAmounts InvestigatorId [(Text, Int)] Target
+  | ResolveAmounts InvestigatorId [(NamedUUID, Int)] Target
   | ResolveEvent InvestigatorId EventId (Maybe Target) [Window]
   | ResolveEventChoice InvestigatorId EventId Int (Maybe Target) [Window]
   | ResolveSkill SkillId
@@ -1139,20 +1139,19 @@ chooseOrRunN _ n msgs | length msgs == n = Run $ map uiToRun msgs
 chooseOrRunN pid n msgs = Ask pid (ChooseN n msgs)
 
 chooseAmounts
-  :: Targetable target
+  :: (Targetable target, MonadRandom m)
   => PlayerId
   -> Text
   -> AmountTarget
   -> [(Text, (Int, Int))]
   -> target
-  -> Message
-chooseAmounts pid label total choiceMap (toTarget -> target) =
-  Ask
-    pid
-    (ChooseAmounts label total amountChoices target)
+  -> m Message
+chooseAmounts pid label total choiceMap (toTarget -> target) = do
+  rs <- getRandoms
+  pure $ Ask pid (ChooseAmounts label total (amountChoices rs) target)
  where
-  amountChoices = map toAmountChoice choiceMap
-  toAmountChoice (l, (m, n)) = AmountChoice l m n
+  amountChoices rs = map toAmountChoice (zip rs choiceMap)
+  toAmountChoice (choiceId, (l, (m, n))) = AmountChoice choiceId l m n
 
 chooseUpgradeDeck :: PlayerId -> Message
 chooseUpgradeDeck pid = Ask pid ChooseUpgradeDeck

@@ -59,16 +59,17 @@ instance RunMessage TommyMuldoon where
       hasBecky <- selectAny (assetIs Assets.becky)
       player <- getPlayer iid
 
+      chooseMsg <-
+        chooseAmounts
+          player
+          ("Distribute " <> tshow (damage + horror) <> " Resources")
+          (TotalAmountTarget $ damage + horror)
+          [("Tommy Muldoon Resources", (0, damage + horror)), ("Becky Resources", (0, damage + horror))]
+          (toTarget iid)
+
       pushAll
         $ if hasBecky
-          then
-            [ chooseAmounts
-                player
-                ("Distribute " <> tshow (damage + horror) <> " Resources")
-                (TotalAmountTarget $ damage + horror)
-                [("Tommy Muldoon Resources", (0, damage + horror)), ("Becky Resources", (0, damage + horror))]
-                (toTarget iid)
-            ]
+          then [chooseMsg]
           else
             [TakeResources iid (damage + horror) (toAbilitySource attrs 1) False]
               <> [ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget asset)]

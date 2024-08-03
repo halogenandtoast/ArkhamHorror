@@ -25,7 +25,7 @@ instance RunMessage DevilsLuck where
     InvestigatorPlayEvent iid eid _ [(windowType -> Window.WouldTakeDamageOrHorror _ _ damage horror)] _
       | eid == toId attrs -> do
           player <- getPlayer iid
-          push
+          pushM
             $ chooseAmounts
               player
               "Amount of Damage/Horror to cancel"

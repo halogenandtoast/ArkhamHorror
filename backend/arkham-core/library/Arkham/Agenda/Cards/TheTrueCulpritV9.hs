@@ -52,13 +52,14 @@ instance RunMessage TheTrueCulpritV9 where
         n <- perPlayer 1
         clues <- fieldMap AssetClues (min n) tomeOfRituals
         player <- getPlayer iid
-        pushWhen (clues > 0)
-          $ chooseAmounts
-            player
-            "Choose amount of clues to move"
-            (MaxAmountTarget n)
-            [("Clues", (0, min n clues))]
-            (toTarget attrs)
+        when (clues > 0) do
+          pushM
+            $ chooseAmounts
+              player
+              "Choose amount of clues to move"
+              (MaxAmountTarget n)
+              [("Clues", (0, min n clues))]
+              (toTarget attrs)
 
         pure a
       ResolveAmounts _ (getChoiceAmount "Clues" -> n) (isTarget attrs -> True) -> do

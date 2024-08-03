@@ -68,7 +68,7 @@ instance RunMessage Room212 where
 
       unless (null iids || isNothing sinisterSolution) $ do
         named <- traverse (\(iid', n) -> (,n) <$> field InvestigatorName iid') iids
-        push
+        pushM
           $ chooseAmounts
             player
             "number of clues to move to Sinister Solution"

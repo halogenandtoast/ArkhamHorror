@@ -34,43 +34,32 @@ instance RunMessage GhastlyRevelation where
       otherInvestigators <- select $ affectsOthers $ notInvestigator iid
       locations <- select Anywhere
       player <- getPlayer iid
+      choices1 <- for otherInvestigators $ \iid' -> do
+        chooseMsg <-
+          chooseAmounts
+            player
+            "Clues to give"
+            (MaxAmountTarget clues)
+            [("Clues", (0, clues))]
+            (ProxyTarget (toTarget attrs) (InvestigatorTarget iid'))
+        pure $ targetLabel iid' [chooseMsg]
+
+      choices2 <- for locations $ \lid -> do
+        chooseMsg <-
+          chooseAmounts
+            player
+            "Clues to give"
+            (MaxAmountTarget clues)
+            [("Clues", (0, clues))]
+            (ProxyTarget (toTarget attrs) (LocationTarget lid))
+        pure $ targetLabel lid [chooseMsg]
+
       push
         $ chooseOrRunOne player
-        $ [ Label
-            "Give any number of your clues to another investigator"
-            [ chooseOrRunOne
-                player
-                [ targetLabel
-                  iid'
-                  [ chooseAmounts
-                      player
-                      "Clues to give"
-                      (MaxAmountTarget clues)
-                      [("Clues", (0, clues))]
-                      (ProxyTarget (toTarget attrs) (InvestigatorTarget iid'))
-                  ]
-                | iid' <- otherInvestigators
-                ]
-            ]
+        $ [ Label "Give any number of your clues to another investigator" [chooseOrRunOne player choices1]
           | notNull otherInvestigators
           ]
-        <> [ Label
-              "Place any number of your clues on any location"
-              [ chooseOrRunOne
-                  player
-                  [ targetLabel
-                    lid
-                    [ chooseAmounts
-                        player
-                        "Clues to give"
-                        (MaxAmountTarget clues)
-                        [("Clues", (0, clues))]
-                        (ProxyTarget (toTarget attrs) (LocationTarget lid))
-                    ]
-                  | lid <- locations
-                  ]
-              ]
-           ]
+        <> [Label "Place any number of your clues on any location" [chooseOrRunOne player choices2]]
       pure e
     ResolveAmounts iid (getChoiceAmount "Clues" -> n) (ProxyTarget (isTarget attrs -> True) target) ->
       do

@@ -57,7 +57,7 @@ instance RunMessage Basement where
 
       unless (null iids || isNothing tomeOfRituals) $ do
         named <- traverse (\(iid', x) -> (,x) <$> field InvestigatorName iid') iids
-        push
+        pushM
           $ chooseAmounts
             player
             "number of clues to move to Tome of Rituals"

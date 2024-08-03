@@ -19,6 +19,7 @@ import Arkham.Message
 import Data.Aeson
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
+import Data.UUID (UUID)
 import Foundation
 import Json
 import Safe (fromJustNote)
@@ -32,7 +33,7 @@ data Answer
   | CampaignSettingsAnswer CampaignSettings
   | DeckAnswer {deckId :: ArkhamDeckId, playerId :: PlayerId}
   deriving stock (Show, Generic)
-  deriving anyclass (FromJSON)
+  deriving anyclass FromJSON
 
 data QuestionResponse = QuestionResponse
   { qrChoice :: Int
@@ -41,11 +42,11 @@ data QuestionResponse = QuestionResponse
   deriving stock (Show, Generic)
 
 newtype PaymentAmountsResponse = PaymentAmountsResponse
-  {parAmounts :: Map Text Int}
+  {parAmounts :: Map UUID Int}
   deriving stock (Show, Generic)
 
 newtype AmountsResponse = AmountsResponse
-  {arAmounts :: Map Text Int}
+  {arAmounts :: Map UUID Int}
   deriving stock (Show, Generic)
 
 instance FromJSON QuestionResponse where
@@ -63,13 +64,13 @@ data StandaloneSetting
   | SetOption CampaignOption Bool
   | ChooseNum CampaignLogKey Int
   | NoChooseRecord
-  deriving stock (Show)
+  deriving stock Show
 
 data SetRecordedEntry
   = SetAsCrossedOut Json.Value
   | SetAsRecorded Json.Value
   | DoNotRecord Json.Value
-  deriving stock (Show)
+  deriving stock Show
 
 makeStandaloneCampaignLog :: [StandaloneSetting] -> CampaignLog
 makeStandaloneCampaignLog = foldl' applySetting mkCampaignLog
@@ -125,7 +126,7 @@ instance FromJSON SetRecordedEntry where
     pure $ if v then SetAsRecorded k else DoNotRecord k
 
 newtype CrossedOutResults = CrossedOutResults [SetRecordedEntry]
-  deriving stock (Show)
+  deriving stock Show
 
 instance FromJSON CrossedOutResults where
   parseJSON jdata = do
@@ -141,12 +142,12 @@ data CampaignRecorded = CampaignRecorded
   { recordable :: SomeRecordableType
   , entries :: [CampaignRecordedEntry]
   }
-  deriving stock (Show)
+  deriving stock Show
 
 data CampaignRecordedEntry
   = CampaignEntryRecorded Json.Value
   | CampaignEntryCrossedOut Json.Value
-  deriving stock (Show)
+  deriving stock Show
 
 instance FromJSON CampaignRecordedEntry where
   parseJSON = withObject "CampaignRecordedEntry" $ \o -> do
@@ -162,7 +163,7 @@ data CampaignSettings = CampaignSettings
   , sets :: Map CampaignLogKey CampaignRecorded
   , options :: [CampaignOption]
   }
-  deriving stock (Show)
+  deriving stock Show
 
 instance FromJSON CampaignSettings where
   parseJSON = withObject "CampaignSettings" $ \o ->
@@ -237,18 +238,23 @@ handleAnswer Game {..} playerId = \case
     let campaignLog' = makeCampaignLog settings'
     pure [SetCampaignLog campaignLog']
   AmountsAnswer response -> case Map.lookup playerId gameQuestion of
-    Just (ChooseAmounts _ _ _ target) ->
+    Just (ChooseAmounts _ _ choices target) -> do
+      let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
+      let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
       pure
         [ ResolveAmounts
             (playerInvestigator gameEntities playerId)
-            (Map.toList $ arAmounts response)
+            (map (first toNamedUUID) $ Map.toList $ arAmounts response)
             target
         ]
-    Just (QuestionLabel _ _ (ChooseAmounts _ _ _ target)) ->
+    Just (QuestionLabel _ _ (ChooseAmounts _ _ choices target)) -> do
+      let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
+      let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
+
       pure
         [ ResolveAmounts
             (playerInvestigator gameEntities playerId)
-            (Map.toList $ arAmounts response)
+            (map (first toNamedUUID) $ Map.toList $ arAmounts response)
             target
         ]
     _ -> error "Wrong question type"
@@ -258,11 +264,11 @@ handleAnswer Game {..} playerId = \case
         let
           costMap =
             Map.fromList
-              $ map (\(PaymentAmountChoice _ _ _ name cost) -> (name, cost)) info
+              $ map (\(PaymentAmountChoice cId _ _ _ _ cost) -> (cId, cost)) info
         pure
           $ concatMap
-            ( \(name, n) ->
-                replicate n (Map.findWithDefault Noop name costMap)
+            ( \(cId, n) ->
+                replicate n (Map.findWithDefault Noop cId costMap)
             )
           $ Map.toList (parAmounts response)
       _ -> error "Wrong question type"

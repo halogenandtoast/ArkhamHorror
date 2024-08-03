@@ -27,7 +27,7 @@ instance RunMessage TowersOfPnakotus where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       discardableCount <- fieldMap InvestigatorHand (count (`cardMatch` NonWeakness)) iid
       player <- getPlayer iid
-      push
+      pushM
         $ chooseAmounts
           player
           "Choose number of cards to discard"

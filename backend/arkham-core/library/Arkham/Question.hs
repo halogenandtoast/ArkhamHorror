@@ -96,7 +96,8 @@ data PileCard = PileCard
   deriving stock (Show, Eq, Data)
 
 data PaymentAmountChoice msg = PaymentAmountChoice
-  { investigatorId :: InvestigatorId
+  { choiceId :: UUID
+  , investigatorId :: InvestigatorId
   , minBound :: Int
   , maxBound :: Int
   , title :: Text
@@ -105,7 +106,8 @@ data PaymentAmountChoice msg = PaymentAmountChoice
   deriving stock (Show, Eq, Data)
 
 data AmountChoice = AmountChoice
-  { label :: Text
+  { choiceId :: UUID
+  , label :: Text
   , minBound :: Int
   , maxBound :: Int
   }

@@ -1796,6 +1796,7 @@ library
       Arkham.Event.Cards.OnTheHunt
       Arkham.Event.Cards.OnTheHunt3
       Arkham.Event.Cards.OnTheLam
+      Arkham.Event.Cards.OnTheLamAdvanced
       Arkham.Event.Cards.OnTheTrail1
       Arkham.Event.Cards.OnTheTrail3
       Arkham.Event.Cards.Oops
@@ -2070,6 +2071,7 @@ library
       Arkham.Investigator.Cards.SilasMarsh
       Arkham.Investigator.Cards.SisterMary
       Arkham.Investigator.Cards.SkidsOToole
+      Arkham.Investigator.Cards.SkidsOTooleParallel
       Arkham.Investigator.Cards.StellaClark
       Arkham.Investigator.Cards.TommyMuldoon
       Arkham.Investigator.Cards.TonyMorgan
@@ -3135,6 +3137,7 @@ library
       Arkham.Treachery.Cards.HastyRepairs
       Arkham.Treachery.Cards.Haunted
       Arkham.Treachery.Cards.HospitalDebts
+      Arkham.Treachery.Cards.HospitalDebtsAdvanced
       Arkham.Treachery.Cards.HuntedByByakhee
       Arkham.Treachery.Cards.HuntedByCorsairs
       Arkham.Treachery.Cards.HuntedDown

@@ -8000,6 +8000,7 @@ daisysToteBagAdvanced =
       { cdSkills = [#willpower, #intellect, #wild, #wild]
       , cdCardTraits = setFromList [Item]
       , cdUnique = True
+      , cdKeywords = setFromList [Keyword.Advanced]
       }
 
 theNecronomiconAdvanced :: CardDef

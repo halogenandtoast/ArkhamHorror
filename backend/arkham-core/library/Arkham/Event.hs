@@ -704,6 +704,9 @@ allEvents =
     , SomeEventCard lookWhatIFound2
     , SomeEventCard dumbLuck2
     , SomeEventCard lucky3
+    , -- Parallel
+      -- All or Nothing
+      SomeEventCard onTheLamAdvanced
     , -- Promo
       -- The Dirge of Reason
       SomeEventCard mysteriesRemain

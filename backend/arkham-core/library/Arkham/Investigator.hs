@@ -145,6 +145,7 @@ allInvestigators =
       , SomeInvestigatorCard jacquelineFine
       , SomeInvestigatorCard gloriaGoldberg
       , SomeInvestigatorCard daisyWalkerParallel
+      , SomeInvestigatorCard skidsOTooleParallel
       ]
 
 becomeYithian :: Investigator -> Investigator

@@ -134,6 +134,7 @@ import Arkham.Event.Events (
   improvisationEffect,
   marksmanship1Effect,
   mystifyingSongEffect,
+  onTheLamAdvancedEffect,
   oneInTheChamberEffect,
   pilfer3Effect,
   sleightOfHandEffect,
@@ -507,6 +508,7 @@ allEffects =
     , ("84014", SomeEffect restaurantEffect)
     , ("84042", SomeEffect chillingPresenceEffect)
     , ("90002", SomeEffect daisysToteBagAdvancedEffect)
+    , ("90009", SomeEffect onTheLamAdvancedEffect)
     , ("wmode", SomeEffect windowModifierEffect)
     , ("tokef", SomeEffect chaosTokenEffect)
     , ("ontok", SomeEffect onRevealChaosTokenEffect)

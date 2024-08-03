@@ -315,6 +315,7 @@ allPlayerEventCards =
       , onTheHunt
       , onTheHunt3
       , onTheLam
+      , onTheLamAdvanced
       , onTheTrail1
       , onTheTrail3
       , oops
@@ -4985,6 +4986,16 @@ lucky3 =
           $ FailureResult AnyValue
     , cdLevel = Just 3
     }
+
+onTheLamAdvanced :: CardDef
+onTheLamAdvanced =
+  signature "90008"
+    $ (event "90009" "On the Lam" 0 Neutral)
+      { cdCardTraits = setFromList [Tactic]
+      , cdSkills = [#intellect, #agility, #wild, #wild]
+      , cdFastWindow = Just FastPlayerWindow
+      , cdKeywords = singleton Keyword.Advanced
+      }
 
 mysteriesRemain :: CardDef
 mysteriesRemain =

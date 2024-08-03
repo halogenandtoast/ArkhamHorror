@@ -1,15 +1,13 @@
-module Arkham.Investigator.Cards.DaisyWalkerParallel (
-  DaisyWalkerParallel (..),
-  daisyWalkerParallel,
-) where
+module Arkham.Investigator.Cards.DaisyWalkerParallel (DaisyWalkerParallel (..), daisyWalkerParallel) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Strategy
 
 newtype DaisyWalkerParallel = DaisyWalkerParallel InvestigatorAttrs
   deriving anyclass IsInvestigator
@@ -23,11 +21,10 @@ daisyWalkerParallel =
 
 instance HasModifiersFor DaisyWalkerParallel where
   getModifiersFor target (DaisyWalkerParallel attrs) | attrs `isTarget` target = do
-    tomeCount <- selectCount $ assetControlledBy attrs.id <> withTrait Tome
-    pure
-      $ toModifiers attrs
-      $ guard (tomeCount > 0)
-      *> [SkillModifier #willpower tomeCount, SanityModifier tomeCount]
+    maybeModified attrs do
+      tomeCount <- lift $ selectCount $ assetControlledBy attrs.id <> #tome
+      guard $ tomeCount > 0
+      pure [SkillModifier #willpower tomeCount, SanityModifier tomeCount]
   getModifiersFor _ _ = pure []
 
 instance HasChaosTokenValue DaisyWalkerParallel where
@@ -38,32 +35,26 @@ instance HasChaosTokenValue DaisyWalkerParallel where
 instance HasAbilities DaisyWalkerParallel where
   getAbilities (DaisyWalkerParallel attrs) =
     [ playerLimit PerGame
-        $ restrictedAbility attrs 1 (Self <> exists (AssetControlledBy You <> withTrait Tome))
+        $ restrictedAbility attrs 1 (Self <> exists (AssetControlledBy You <> #tome))
         $ FastAbility Free
     ]
 
 instance RunMessage DaisyWalkerParallel where
-  runMessage msg i@(DaisyWalkerParallel attrs) = case msg of
+  runMessage msg i@(DaisyWalkerParallel attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' _ -> do
-      tomeAssets <- select $ assetControlledBy iid <> withTrait Tome
+      tomeAssets <- select $ assetControlledBy iid <> #tome
       allAbilities <- getAllAbilities
       let abilitiesForAsset aid = filter (isSource aid . abilitySource) allAbilities
       let pairs' = filter (notNull . snd) $ map (toSnd abilitiesForAsset) tomeAssets
       let toLabel a = AbilityLabel iid a windows' [] []
-      player <- getPlayer iid
-      pushIfAny pairs'
-        $ chooseOneAtATime player
-        $ map (\(tome, actions) -> targetLabel tome [chooseOne player $ map toLabel actions]) pairs'
+      chooseOneAtATimeM iid do
+        for_ pairs' \(tome, actions) -> do
+          targeting tome do
+            chooseOne iid $ map toLabel actions
       pure i
-    ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel
-              iid
-              [search iid attrs attrs [fromDiscard] (basic $ #asset <> withTrait Tome) $ DrawFound iid 1]
-          , Label "Do not use Daisy's ability" []
-          ]
+    ElderSignEffect iid | attrs `is` iid -> do
+      chooseOneM iid do
+        targeting iid $ search iid attrs attrs [fromDiscard] (basic $ #asset <> #tome) $ DrawFound iid 1
+        labeled "Do not use Daisy's ability" nothing
       pure i
-    _ -> DaisyWalkerParallel <$> runMessage msg attrs
+    _ -> DaisyWalkerParallel <$> liftRunMessage msg attrs

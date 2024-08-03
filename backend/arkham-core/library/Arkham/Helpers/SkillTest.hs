@@ -57,6 +57,7 @@ getBaseValueForSkillTestType iid mAction = \case
   SkillSkillTest skillType -> baseSkillValueFor skillType mAction iid
   AndSkillTest types -> sum <$> traverse (\skillType -> baseSkillValueFor skillType mAction iid) types
   ResourceSkillTest -> field InvestigatorResources iid
+  BaseValueSkillTest x _ -> pure x
 
 inSkillTest :: HasGame m => m Bool
 inSkillTest = isJust <$> getSkillTest
@@ -101,6 +102,7 @@ getSkillTestSkillTypes =
   getsSkillTest skillTestType <&> \case
     Just (SkillSkillTest skillType) -> [skillType]
     Just (AndSkillTest types) -> types
+    Just (BaseValueSkillTest _ _types) -> []
     Just ResourceSkillTest -> []
     Nothing -> []
 
@@ -301,6 +303,11 @@ getCurrentSkillValue st = do
         applyModifier (AnySkillValue m) n = max 0 (n + m)
         applyModifier _ n = n
       pure $ foldr applyModifier result mods
+    FixedBaseValue x -> do
+      let
+        applyModifier (AnySkillValue m) n = max 0 (n + m)
+        applyModifier _ n = n
+      pure $ foldr applyModifier x mods
 
 skillIconCount :: HasGame m => SkillTest -> m Int
 skillIconCount SkillTest {..} = do
@@ -331,6 +338,7 @@ skillIconCount SkillTest {..} = do
         $ if any (\sType -> SkillCannotBeIncreased sType `elem` investigatorModifiers) types
           then 0
           else totalIcons
+    BaseValueSkillTest _ _types -> pure totalIcons
     ResourceSkillTest -> pure totalIcons
  where
   matches WildMinusIcon = False
@@ -528,6 +536,7 @@ getSkillTestDifficultyDifferenceFromBaseValue iid skillTest = do
     ResourceSkillTest -> do
       resources <- field InvestigatorResources iid
       pure $ skillDifficulty - resources
+    BaseValueSkillTest x _ -> pure $ skillDifficulty - x
 
 withSkillTest :: HasGame m => (SkillTestId -> m ()) -> m ()
 withSkillTest = whenJustM getSkillTestId

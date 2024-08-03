@@ -955,6 +955,7 @@ runGameMessage msg g = case msg of
         Just (SkillSkillTest skillType) -> [skillType]
         Just (AndSkillTest types) -> types
         Just ResourceSkillTest -> []
+        Just BaseValueSkillTest {} -> []
         Nothing -> []
       skillsToRemove = mapMaybe snd skillPairs
       historyItem =
@@ -1894,6 +1895,7 @@ runGameMessage msg g = case msg of
 
       msgs <- case skillTestType skillTest of
         ResourceSkillTest -> pure defaultCase
+        BaseValueSkillTest {} -> pure defaultCase
         SkillSkillTest skillType -> do
           availableSkills <- getAvailableSkillsFor skillType iid
           player <- getPlayer iid

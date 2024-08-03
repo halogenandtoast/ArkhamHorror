@@ -515,6 +515,9 @@ allTreacheries =
     , SomeTreacheryCard morbidAwareness
     , --- Sins of the Past
       SomeTreacheryCard chillingPresence
+    , -- Parallel
+      --- All or Nothing
+      SomeTreacheryCard hospitalDebtsAdvanced
     , -- Promo
       --- The Dirge of Reason
       SomeTreacheryCard theDirgeOfReason

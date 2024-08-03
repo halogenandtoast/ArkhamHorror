@@ -4,7 +4,7 @@
 
 module Arkham.Question where
 
-import Arkham.Prelude
+import Arkham.Prelude hiding (maxBound, minBound)
 
 import Arkham.Ability.Types
 import Arkham.Campaigns.TheForgottenAge.Supply
@@ -18,6 +18,7 @@ import Arkham.Tarot
 import Arkham.Text
 import Arkham.Window
 import Data.Aeson.TH
+import Data.UUID (nil)
 
 data Component
   = InvestigatorComponent {investigatorId :: InvestigatorId, tokenType :: GameTokenType}
@@ -179,9 +180,25 @@ mapTargetLabelWith g f = map (uncurry targetLabel . (g &&& f))
 
 $(deriveJSON defaultOptions ''GameTokenType)
 $(deriveJSON defaultOptions ''Component)
-$(deriveJSON defaultOptions ''PaymentAmountChoice)
+$(deriveToJSON defaultOptions ''PaymentAmountChoice)
+instance FromJSON msg => FromJSON (PaymentAmountChoice msg) where
+  parseJSON = withObject "PaymentAmountChoice" $ \o -> do
+    choiceId <- o .:? "choiceId" .!= nil
+    investigatorId <- o .: "investigatorId"
+    minBound <- o .: "minBound"
+    maxBound <- o .: "maxBound"
+    title <- o .: "title"
+    message <- o .: "message"
+    pure PaymentAmountChoice {..}
 $(deriveJSON defaultOptions ''ChoosePlayerChoice)
-$(deriveJSON defaultOptions ''AmountChoice)
+$(deriveToJSON defaultOptions ''AmountChoice)
+instance FromJSON AmountChoice where
+  parseJSON = withObject "AmountChoice" $ \o -> do
+    choiceId <- o .:? "choiceId" .!= nil
+    label <- o .: "label"
+    minBound <- o .: "minBound"
+    maxBound <- o .: "maxBound"
+    pure AmountChoice {..}
 $(deriveJSON defaultOptions ''AmountTarget)
 $(deriveJSON defaultOptions ''PileCard)
 $(deriveJSON defaultOptions ''UI)

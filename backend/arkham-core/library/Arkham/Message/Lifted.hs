@@ -1297,3 +1297,17 @@ endYourTurn iid = push $ ChooseEndTurn iid
 
 checkDefeated :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
 checkDefeated source target = push $ Msg.checkDefeated source target
+
+changeDrawnBy :: (MonadTrans t, HasQueue Message m) => InvestigatorId -> InvestigatorId -> t m ()
+changeDrawnBy drawer newDrawer =
+  lift $ replaceMessageMatching
+    \case
+      Revelation me _ -> me == drawer
+      Do (InvestigatorDrewEncounterCard me _) -> me == drawer
+      InvestigatorDrawEnemy me _ -> me == drawer
+      _ -> False
+    \case
+      Revelation _ source' -> [Revelation newDrawer source']
+      InvestigatorDrawEnemy _ eid -> [InvestigatorDrawEnemy newDrawer eid]
+      Do (InvestigatorDrewEncounterCard _ c) -> [Do (InvestigatorDrewEncounterCard newDrawer c)]
+      _ -> error "wrong message found"

@@ -8,6 +8,7 @@ import Arkham.SkillTest as X
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
+import Arkham.Calculation
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
@@ -129,6 +130,9 @@ getModifiedChaosTokenValue s t = do
 
 instance RunMessage SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
+    IncreaseSkillTestDifficulty n -> do
+      -- see: faqs/drawing-thin
+      pure $ s & difficultyL %~ \(SkillTestDifficulty d) -> SkillTestDifficulty (SumCalculation [d, Fixed n])
     ReturnChaosTokens tokens -> do
       pure
         $ s

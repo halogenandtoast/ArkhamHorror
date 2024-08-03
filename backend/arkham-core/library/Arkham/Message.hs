@@ -455,6 +455,7 @@ data Message
   | AfterRevealChaosTokens
   | BeforeSkillTest SkillTest
   | ChangeSkillTestType SkillTestType SkillTestBaseValue
+  | IncreaseSkillTestDifficulty Int
   | -- Game State Control
     BeginGame
   | Begin Phase

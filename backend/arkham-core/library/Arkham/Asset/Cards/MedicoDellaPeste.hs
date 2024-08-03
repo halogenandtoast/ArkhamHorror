@@ -76,6 +76,7 @@ instance RunMessage MedicoDellaPeste where
             SkillBaseValue _ -> SkillBaseValue #willpower
             AndSkillBaseValue _ -> SkillBaseValue #willpower
             HalfResourcesOf x -> HalfResourcesOf x
+            x@(FixedBaseValue _) -> x
       push $ ChangeSkillTestType (SkillSkillTest #willpower) newBase
       pure a
     _ -> MedicoDellaPeste <$> runMessage msg attrs

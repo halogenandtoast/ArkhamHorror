@@ -4,6 +4,16 @@ import Arkham.Prelude
 
 import Arkham.Card.CardCode
 
+data NamedUUID = NamedUUID
+  { nuName :: Text
+  , nuUUID :: UUID
+  }
+  deriving stock (Show, Generic, Ord, Eq, Data)
+  deriving anyclass (ToJSON, FromJSON, FromJSONKey, ToJSONKey)
+
+namedUUID :: MonadRandom m => Text -> m NamedUUID
+namedUUID name = NamedUUID name <$> getRandom
+
 newtype MovementId = MovementId UUID
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)

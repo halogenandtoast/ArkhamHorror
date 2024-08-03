@@ -68,7 +68,7 @@ instance RunMessage HotelRoof where
 
       unless (null iids || isNothing alienDevice) $ do
         named <- traverse (\(iid', n) -> (,n) <$> field InvestigatorName iid') iids
-        push
+        pushM
           $ chooseAmounts
             player
             "number of clues to move to Alien Device"

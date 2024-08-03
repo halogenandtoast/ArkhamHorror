@@ -36,7 +36,7 @@ instance RunMessage IveHadWorse2 where
               if iid' == iid then (damage', horror') else error "mismatch"
             _ -> error "mismatch"
         _ -> error "unhandled"
-      push
+      pushM
         $ chooseAmounts
           player
           "Amount of Damage/Horror to cancel"

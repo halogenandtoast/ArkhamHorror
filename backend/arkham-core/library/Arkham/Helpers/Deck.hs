@@ -42,8 +42,9 @@ getDeck = \case
         ScenarioEncounterDecks
         (map EncounterCard . unDeck . view (at other . non (Deck [], []) . _1))
 
-initDeckTrauma :: Deck PlayerCard -> InvestigatorId -> PlayerId -> Target -> [Message]
-initDeckTrauma deck' iid pid target =
+initDeckTrauma
+  :: MonadRandom m => Deck PlayerCard -> InvestigatorId -> PlayerId -> Target -> m [Message]
+initDeckTrauma deck' iid pid target = do
   let
     toMentalTrauma = \case
       PurchaseMentalTrauma n -> n
@@ -62,13 +63,13 @@ initDeckTrauma deck' iid pid target =
           ( \(toCardDef -> cdPurchaseTrauma -> t) -> (Sum $ toPhysicalTrauma t, Sum $ toMentalTrauma t, Sum $ toAnyTrauma t)
           )
           deck'
-   in
-    [SufferTrauma iid physicalTrauma mentalTrauma | mentalTrauma > 0 || physicalTrauma > 0]
-      <> [ chooseAmounts
-          pid
-          ("Suffer " <> tshow anyTrauma <> " total physical and/or mental trauma")
-          (TotalAmountTarget anyTrauma)
-          [("Physical", (0, anyTrauma)), ("Mental", (0, anyTrauma))]
-          (LabeledTarget "Purchase Trauma" target)
-         | anyTrauma > 0
-         ]
+  chooseMsg <-
+    chooseAmounts
+      pid
+      ("Suffer " <> tshow anyTrauma <> " total physical and/or mental trauma")
+      (TotalAmountTarget anyTrauma)
+      [("Physical", (0, anyTrauma)), ("Mental", (0, anyTrauma))]
+      (LabeledTarget "Purchase Trauma" target)
+  pure
+    $ [SufferTrauma iid physicalTrauma mentalTrauma | mentalTrauma > 0 || physicalTrauma > 0]
+    <> [chooseMsg | anyTrauma > 0]

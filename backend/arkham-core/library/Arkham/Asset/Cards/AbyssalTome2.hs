@@ -38,8 +38,11 @@ instance RunMessage AbyssalTome2 where
         chooseFight <- withSkillType sType <$> mkChooseFight sid iid (attrs.ability 1)
         pure $ SkillLabel sType [toMessage chooseFight]
 
+      chooseMsg <-
+        chooseAmounts player "Amount of Doom to Place" (MaxAmountTarget 3) [("Doom", (0, 3))] attrs
+
       pushAll
-        [ chooseAmounts player "Amount of Doom to Place" (MaxAmountTarget 3) [("Doom", (0, 3))] attrs
+        [ chooseMsg
         , chooseOne player choices
         ]
       pure a

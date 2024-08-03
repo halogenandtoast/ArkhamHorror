@@ -35,7 +35,9 @@ instance RunMessage Divination1 where
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) n -> do
       case attrs.use Charge of
         0 -> pure ()
-        1 -> push $ ResolveAmounts iid [("Charges", 1)] (toTarget attrs)
+        1 -> do
+          charges <- namedUUID "Charges"
+          push $ ResolveAmounts iid [(charges, 1)] (toTarget attrs)
         _ -> chooseAmounts iid "Amount of Charges to Spend" (MaxAmountTarget 2) [("Charges", (1, 2))] attrs
       pushWhen (n == 0) $ chooseAndDiscardCard iid (attrs.ability 1)
       pure a

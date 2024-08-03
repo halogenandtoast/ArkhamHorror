@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Id
 import Arkham.Prelude
 
 newtype BrandOfCthugha4 = BrandOfCthugha4 AssetAttrs
@@ -36,9 +37,11 @@ instance RunMessage BrandOfCthugha4 where
       pushWhen (n == 0) $ LoseActions iid (attrs.ability 1) 2
       case attrs.use Charge of
         0 -> pure ()
-        1 -> push $ ResolveAmounts iid [("Charges", 1)] (toTarget attrs)
+        1 -> do
+          charges <- namedUUID "Charges"
+          push $ ResolveAmounts iid [(charges, 1)] (toTarget attrs)
         (min 3 -> x) ->
-          push
+          pushM
             $ chooseAmounts player "Amount of Charges to Spend" (MaxAmountTarget x) [("Charges", (1, x))] attrs
       pure a
     ResolveAmounts iid (getChoiceAmount "Charges" -> n) (isTarget attrs -> True) -> do

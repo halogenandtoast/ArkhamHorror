@@ -589,7 +589,7 @@ chooseAmounts
   -> m ()
 chooseAmounts iid label total choiceMap target = do
   player <- getPlayer iid
-  push $ Msg.chooseAmounts player label total choiceMap target
+  Msg.pushM $ Msg.chooseAmounts player label total choiceMap target
 
 chooseAmount
   :: (Targetable target, ReverseQueue m)
@@ -602,7 +602,7 @@ chooseAmount
   -> m ()
 chooseAmount iid label choiceLabel minVal maxVal target = do
   player <- getPlayer iid
-  push
+  Msg.pushM
     $ Msg.chooseAmounts player label (MaxAmountTarget maxVal) [(choiceLabel, (minVal, maxVal))] target
 
 chooseN :: ReverseQueue m => InvestigatorId -> Int -> [UI Message] -> m ()

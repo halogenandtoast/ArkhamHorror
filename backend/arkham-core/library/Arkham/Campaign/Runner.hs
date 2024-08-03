@@ -75,7 +75,7 @@ defaultCampaignRunner msg a = case msg of
     playerCount <- getPlayerCount
     (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded playerCount deck
     pid <- getPlayer iid
-    let purchaseTrauma = initDeckTrauma deck' iid pid CampaignTarget
+    purchaseTrauma <- initDeckTrauma deck' iid pid CampaignTarget
     pushAll
       $ map (AddCampaignCardToDeck iid) randomWeaknesses
       <> purchaseTrauma
@@ -96,7 +96,7 @@ defaultCampaignRunner msg a = case msg of
           (unDeck deck)
           (unDeck oldDeck)
 
-    let purchaseTrauma = initDeckTrauma (Deck deckDiff) iid pid CampaignTarget
+    purchaseTrauma <- initDeckTrauma (Deck deckDiff) iid pid CampaignTarget
     -- We remove the random weakness if the upgrade deck still has it listed
     -- since this will have been added at the beginning of the campaign
     playerCount <- getPlayerCount

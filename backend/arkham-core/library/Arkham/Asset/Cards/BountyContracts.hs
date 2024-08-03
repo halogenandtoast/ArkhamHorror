@@ -47,7 +47,7 @@ instance RunMessage BountyContracts where
       player <- getPlayer iid
       health <- fieldJust EnemyHealth enemy
       let maxAmount = min health (min 3 (findWithDefault 0 Bounty $ assetUses attrs))
-      push
+      pushM
         $ chooseAmounts
           player
           "Number of bounties to place"

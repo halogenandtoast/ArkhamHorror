@@ -67,7 +67,7 @@ instance RunMessage Kerosene1 where
       let maxHorror = min 2 (totalInvestigatorHorror + totalAssetHorror)
 
       player <- getPlayer iid
-      push
+      pushM
         $ chooseAmounts
           player
           "Choose amount of horror to heal"

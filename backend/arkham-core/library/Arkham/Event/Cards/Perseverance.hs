@@ -34,16 +34,15 @@ instance RunMessage Perseverance where
       assignedDamage <- field InvestigatorAssignedDamage iid
       assignedHorror <- field InvestigatorAssignedHorror iid
       player <- getPlayer iid
-      pushAll
-        [ chooseAmounts
-            player
-            "Cancel up to 4 damage and or horror"
-            (MaxAmountTarget 4)
-            ( [("Damage", (0, assignedDamage)) | assignedDamage > 0]
-                <> [("Horror", (0, assignedHorror)) | assignedHorror > 0]
-            )
-            (toTarget attrs)
-        ]
+      pushM
+        $ chooseAmounts
+          player
+          "Cancel up to 4 damage and or horror"
+          (MaxAmountTarget 4)
+          ( [("Damage", (0, assignedDamage)) | assignedDamage > 0]
+              <> [("Horror", (0, assignedHorror)) | assignedHorror > 0]
+          )
+          (toTarget attrs)
       pure e
     ResolveAmounts iid choices target | isTarget attrs target -> do
       let

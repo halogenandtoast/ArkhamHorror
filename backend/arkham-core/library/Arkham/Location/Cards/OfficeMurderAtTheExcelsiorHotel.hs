@@ -69,7 +69,7 @@ instance RunMessage OfficeMurderAtTheExcelsiorHotel where
 
       unless (null iids || isNothing managersKey) $ do
         named <- traverse (\(iid', x) -> (,x) <$> field InvestigatorName iid') iids
-        push
+        pushM
           $ chooseAmounts
             player
             "number of clues to move to Alien Device"

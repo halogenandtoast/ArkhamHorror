@@ -119,8 +119,8 @@ const amountSelections = ref<Record<string, number>>({})
 
 const setInitialAmounts = () => {
     const labels = question.value?.tag === QuestionType.CHOOSE_AMOUNTS
-      ? question.value.amountChoices.map((choice) => choice.label)
-      : (paymentAmountsChoices.value ?? []).map((choice) => choice.title)
+      ? question.value.amountChoices.map((choice) => choice.choiceId)
+      : (paymentAmountsChoices.value ?? []).map((choice) => choice.choiceId)
     amountSelections.value = labels.reduce<Record<string, number>>((previousValue, currentValue) => {
       previousValue[currentValue] = 0
       return previousValue
@@ -417,7 +417,7 @@ const cardPiles = computed(() => {
                 type="number"
                 :min="amountChoice.minBound"
                 :max="amountChoice.maxBound"
-                v-model.number="amountSelections[amountChoice.title]"
+                v-model.number="amountSelections[amountChoice.choiceId]"
                 onclick="this.select()"
               />
             </div>
@@ -445,9 +445,9 @@ const cardPiles = computed(() => {
       <div class="modal-contents amount-contents">
         <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
           <legend>{{paymentAmountsLabel}}</legend>
-          <template v-for="paymentChoice in chooseAmountsChoices" :key="paymentChoice.label">
+          <template v-for="paymentChoice in chooseAmountsChoices" :key="paymentChoice.choiceId">
             <div v-if="paymentChoice.maxBound !== 0">
-              {{paymentChoice.label}} <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.label]" onclick="this.select()" />
+              {{paymentChoice.label}} <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" onclick="this.select()" />
             </div>
           </template>
           <button :disabled="unmetAmountRequirements">Submit</button>

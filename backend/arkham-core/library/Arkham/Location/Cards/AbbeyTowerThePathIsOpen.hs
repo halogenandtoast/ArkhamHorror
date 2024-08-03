@@ -19,7 +19,7 @@ import Arkham.Projection
 import Arkham.ScenarioLogKey
 
 newtype AbbeyTowerThePathIsOpen = AbbeyTowerThePathIsOpen LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 abbeyTowerThePathIsOpen :: LocationCard AbbeyTowerThePathIsOpen
@@ -46,7 +46,7 @@ instance RunMessage AbbeyTowerThePathIsOpen where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       maxDiscardAmount <- selectCount $ InHandOf (InvestigatorWithId iid) <> BasicCardMatch NonWeakness
       player <- getPlayer iid
-      push
+      pushM
         $ chooseAmounts
           player
           "Discard up to 3 cards from your hand"

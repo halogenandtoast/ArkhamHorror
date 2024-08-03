@@ -95,6 +95,7 @@ instance RunMessage TheDepthsOfYoth where
   runMessage msg s@(TheDepthsOfYoth attrs) = case msg of
     StandaloneSetup -> do
       lead <- getLeadPlayer
+      choiceId <- getRandom
       pushAll
         [ SetChaosTokens standaloneChaosTokens
         , questionLabel
@@ -103,7 +104,7 @@ instance RunMessage TheDepthsOfYoth where
             $ ChooseAmounts
               "Fury"
               (MaxAmountTarget 9000)
-              [AmountChoice "Fury" 0 9000]
+              [AmountChoice choiceId "Fury" 0 9000]
               (toTarget attrs)
         ]
       pure

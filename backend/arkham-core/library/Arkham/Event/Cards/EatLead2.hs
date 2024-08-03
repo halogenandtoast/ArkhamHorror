@@ -38,7 +38,7 @@ instance RunMessage EatLead2 where
         AssetSource aid -> do
           uses <- fieldMap AssetUses (findWithDefault 0 Ammo) aid
           player <- getPlayer iid
-          push
+          pushM
             $ chooseAmounts
               player
               "Additional ammo to spend"

@@ -68,7 +68,7 @@ instance RunMessage Room245 where
 
       unless (null iids || isNothing timeWornLocket) $ do
         named <- traverse (\(iid', n) -> (,n) <$> field InvestigatorName iid') iids
-        push
+        pushM
           $ chooseAmounts
             player
             "number of clues to move to Time-worn Locket"

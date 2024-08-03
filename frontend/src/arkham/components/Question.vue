@@ -34,6 +34,7 @@ function zoneToLabel(s: string) {
     default: return s
   }
 }
+const inSkillTest = computed(() => props.game.skillTest !== null)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const choosePaymentAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('choosePaymentAmounts')
 const chooseAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('chooseAmounts')
@@ -371,7 +372,7 @@ const cardPiles = computed(() => {
     <DropDown @choose="choose" :options="question.question.options" />
   </div>
 
-  <template v-if="!isSkillTest">
+  <template v-if="!isSkillTest && !inSkillTest">
     <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="choose" />
   </template>
 
@@ -501,7 +502,7 @@ const cardPiles = computed(() => {
   <div v-else-if="question && question.tag === 'QuestionLabel'" class="standalone-label">
       {{label(question.label)}}
   </div>
-  <div v-if="doneLabel">
+  <div v-if="doneLabel && !inSkillTest">
     <button class="done" @click="$emit('choose', doneLabel.index)" v-html="label(doneLabel.label)"></button>
   </div>
 </template>

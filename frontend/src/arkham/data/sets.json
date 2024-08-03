@@ -96,7 +96,7 @@
   { "name": "By the Book", "min": 90024, "max": 90036, "playerCards": 8, "code": "btb", "cycle": 90 },
   { "name": "Red Tide Rising", "min": 90037, "max": 90045, "playerCards": 4, "code": "rtr", "cycle": 90 },
   { "name": "On the Road Again", "min": 90046, "max": 90048, "playerCards": 3, "code": "otr", "cycle": 90 },
-  { "name": "Laid to Rest", "min": 90049, "max": 90058, "playerCards": 4, "code": "ltr", "cycle": 90 },
+  { "name": "Laid to Rest", "min": 90049, "max": 90058, "playerCards": 5, "code": "ltr", "cycle": 90 },
   { "name": "Path to the Righteous", "min": 90059, "max": 90061, "playerCards": 3, "code": "ptr", "cycle": 90 },
   { "name": "Relics of the Past", "min": 90062, "max": 90077, "playerCards": 3, "code": "rop", "cycle": 90 },
   { "name": "Hunting for Answers", "min": 90078, "max": 90080, "playerCards": 3, "code": "hfa", "cycle": 90 }

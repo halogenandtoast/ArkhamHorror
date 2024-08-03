@@ -293,7 +293,7 @@ instance Sourceable Event where
 instance IsCard Event where
   toCardId = toCardId . toAttrs
   toCard e = case lookupCard (eventOriginalCardCode . toAttrs $ e) (toCardId e) of
-    PlayerCard pc -> PlayerCard $ pc {pcCustomizations = toCustomizations e}
+    PlayerCard pc -> PlayerCard $ pc {pcCustomizations = toCustomizations e, pcOwner = toCardOwner e}
     ec -> ec
   toCardOwner = toCardOwner . toAttrs
   toCustomizations = toCustomizations . toAttrs

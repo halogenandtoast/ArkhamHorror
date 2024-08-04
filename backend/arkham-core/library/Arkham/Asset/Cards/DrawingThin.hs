@@ -23,16 +23,15 @@ instance HasAbilities DrawingThin where
 instance RunMessage DrawingThin where
   runMessage msg a@(DrawingThin attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      withSkillTest \sid -> do
-        let drawing = drawCards iid (attrs.ability 1) 1
-        player <- getPlayer iid
-        pushAll
-          [ IncreaseSkillTestDifficulty 2
-          , chooseOne
-              player
-              [ Label "Take 2 resources" [TakeResources iid 2 (toAbilitySource attrs 1) False]
-              , Label "Draw 1 card" [drawing]
-              ]
-          ]
+      let drawing = drawCards iid (attrs.ability 1) 1
+      player <- getPlayer iid
+      pushAll
+        [ IncreaseSkillTestDifficulty 2
+        , chooseOne
+            player
+            [ Label "Take 2 resources" [TakeResources iid 2 (toAbilitySource attrs 1) False]
+            , Label "Draw 1 card" [drawing]
+            ]
+        ]
       pure a
     _ -> DrawingThin <$> runMessage msg attrs

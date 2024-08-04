@@ -790,9 +790,9 @@ resolveAmounts self choices = do
     _ -> error "expected one question"
 
   for_ choices $ \(lbl, value) -> do
-    case find (\(AmountChoice lbl' _ _) -> lbl == lbl') availableChoices of
+    case find (\(AmountChoice _ lbl' _ _) -> lbl == lbl') availableChoices of
       Nothing -> error $ "expected to find " <> show lbl <> " in " <> show availableChoices
-      Just (AmountChoice _ minVal maxVal) -> do
+      Just (AmountChoice _ _ minVal maxVal) -> do
         when (value < minVal)
           $ error
           $ "expected "
@@ -820,7 +820,8 @@ resolveAmounts self choices = do
         <> " to be in "
         <> show ns
 
-  run $ ResolveAmounts (toId self) choices target
+  rs <- getRandoms
+  run $ ResolveAmounts (toId self) (zipWith (\r -> first (`NamedUUID` r)) rs choices) target
 
 chooseFight :: TestAppT ()
 chooseFight = do

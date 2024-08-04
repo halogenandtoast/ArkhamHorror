@@ -3,7 +3,6 @@ module Arkham.Event.Cards.BideYourTime (bideYourTime, bideYourTimeEffect, BideYo
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Modifier
 
 newtype BideYourTime = BideYourTime EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

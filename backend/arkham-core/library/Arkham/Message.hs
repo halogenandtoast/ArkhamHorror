@@ -465,6 +465,7 @@ data Message
   | ReplaceSkillTestSkill FromSkillType ToSkillType
   | BeginSkillTestWithPreMessages Bool [Message] SkillTest
   | BeginSkillTestWithPreMessages' [Message] SkillTest
+  | RepeatSkillTest SkillTestId SkillTest
   | BeginSkillTestAfterFast
   | SetSkillTestTarget Target
   | SetSkillTestResolveFailureInvestigator InvestigatorId

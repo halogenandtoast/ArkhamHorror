@@ -130,6 +130,21 @@ getModifiedChaosTokenValue s t = do
 
 instance RunMessage SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
+    RepeatSkillTest sid skillTest | skillTest.id == skillTestId -> do
+      push
+        $ BeginSkillTestWithPreMessages' []
+        $ ( buildSkillTest
+              sid
+              skillTestInvestigator
+              skillTestSource
+              skillTestTarget
+              skillTestType
+              skillTestBaseValue
+              skillTestDifficulty
+          )
+          { skillTestAction = skillTestAction
+          }
+      pure s
     IncreaseSkillTestDifficulty n -> do
       -- see: faqs/drawing-thin
       pure $ s & difficultyL %~ \(SkillTestDifficulty d) -> SkillTestDifficulty (SumCalculation [d, Fixed n])

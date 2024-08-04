@@ -45,7 +45,7 @@ instance RunMessage SkidsOTooleParallel where
       pure i
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       mx <- runMaybeT $ lift . getBaseSkillTestDifficulty =<< MaybeT getSkillTest
-      for mx \x -> gainResourcesIfCan iid (attrs.ability 1) (2 * x)
+      for_ mx \x -> gainResourcesIfCan iid (attrs.ability 1) (2 * x)
       pure i
     ElderSignEffect (is attrs -> True) -> do
       cards <- select $ inDiscardOf attrs.id <> basic (CardWithMaxLevel 2)

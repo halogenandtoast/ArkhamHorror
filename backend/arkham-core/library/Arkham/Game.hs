@@ -2083,6 +2083,12 @@ getAssetsMatching matcher = do
           InPlayArea iid' -> iid' `elem` iids
           _ -> False
       filterM (fieldP AssetPlacement inPlayArea . toId) as
+    AssetAttachedTo targetMatcher -> do
+      let
+        isValid a = case (assetPlacement (toAttrs a)).attachedTo of
+          Just target -> targetMatches target targetMatcher
+          _ -> pure False
+      filterM isValid as
     AssetAttachedToAsset assetMatcher -> do
       placements <- select assetMatcher
       let
@@ -2365,6 +2371,12 @@ getEventsMatching matcher = do
       flip filterM as $ \a -> do
         mlid <- Helpers.placementLocation a.placement
         pure $ maybe False (`elem` lids) mlid
+    EventAttachedTo targetMatcher -> do
+      let
+        isValid a = case (eventPlacement (toAttrs a)).attachedTo of
+          Just target -> targetMatches target targetMatcher
+          _ -> pure False
+      filterM isValid as
     EventAttachedToAsset assetMatcher -> do
       assets <- selectMap AssetTarget assetMatcher
       let
@@ -2544,6 +2556,8 @@ enemyMatcherFilter = \case
   EnemyWithSealedChaosTokens n chaosTokenMatcher -> \enemy -> do
     (>= n)
       <$> countM (`chaosTokenMatches` IncludeSealed chaosTokenMatcher) (attr enemySealedChaosTokens enemy)
+  EnemyCanMove -> \enemy -> do
+    selectAny $ LocationCanBeEnteredBy (toId enemy) <> ConnectedFrom (locationWithEnemy $ toId enemy)
   EnemyCanEnter locationMatcher -> \enemy -> do
     locations <- select locationMatcher
     flip anyM locations $ \lid -> do

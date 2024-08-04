@@ -622,6 +622,7 @@ allPlayerAssetCards =
       , pennyWhite
       , peterSylvestre
       , peterSylvestre2
+      , petesGuitar
       , physicalTraining
       , physicalTraining2
       , physicalTraining4
@@ -6720,6 +6721,7 @@ devilFriendOrFoe2 =
     , cdSkills = [#agility]
     , cdSlots = [#ally]
     , cdLevel = Just 2
+    , cdUnique = True
     }
 
 fireAxe2 :: CardDef
@@ -8091,6 +8093,14 @@ wendysAmuletAdvanced =
       , cdUnique = True
       , cdSlots = [#accessory]
       , cdKeywords = singleton Keyword.Advanced
+      }
+
+petesGuitar :: CardDef
+petesGuitar =
+  signature "90046"
+    $ (asset "90047" ("Pete's Guitar" <:> "Still Holdin' Up") 2 Neutral)
+      { cdCardTraits = setFromList [Item, Instrument]
+      , cdKeywords = singleton Keyword.Replacement
       }
 
 greenManMedallionHourOfTheHuntress :: CardDef

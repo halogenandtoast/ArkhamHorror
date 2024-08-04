@@ -190,6 +190,7 @@ data AssetMatcher
   | AssetWithTrait Trait
   | AssetAttachedToAsset AssetMatcher
   | AssetWithAttachedEvent EventMatcher
+  | AssetAttachedTo TargetMatcher
   | AssetControlledBy InvestigatorMatcher
   | AssetInPlayAreaOf InvestigatorMatcher
   | AssetOwnedBy InvestigatorMatcher
@@ -328,6 +329,7 @@ data EnemyMatcher
   | EnemyWithToken Token
   | EnemyAt LocationMatcher
   | EnemyCanEnter LocationMatcher
+  | EnemyCanMove
   | EnemyWithSealedChaosTokens Int ChaosTokenMatcher
   | EnemyWithoutTrait Trait
   | EnemyWithKeyword Keyword
@@ -441,6 +443,7 @@ data EventMatcher
   | EventAt LocationMatcher
   | EventWithDoom ValueMatcher
   | EventAttachedToAsset AssetMatcher
+  | EventAttachedTo TargetMatcher
   | EventWithModifier ModifierType
   | EventWithoutModifier ModifierType
   | EventIs CardCode
@@ -1105,6 +1108,7 @@ data WindowMatcher
   | AssetHealed Timing DamageType AssetMatcher SourceMatcher
   | InvestigatorHealed Timing DamageType InvestigatorMatcher SourceMatcher
   | AssetWouldBeDiscarded Timing AssetMatcher
+  | EventWouldBeDiscarded Timing EventMatcher
   | EnemyWouldBeDiscarded Timing EnemyMatcher
   | TreacheryWouldBeDiscarded Timing TreacheryMatcher
   | EnemyDiscarded Timing SourceMatcher EnemyMatcher

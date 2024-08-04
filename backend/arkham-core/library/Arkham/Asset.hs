@@ -1184,6 +1184,8 @@ allAssets =
     , --- Red Tide Rising
       SomeAssetCard tidalMemento
     , SomeAssetCard wendysAmuletAdvanced
+    , --- On the Road Again
+      SomeAssetCard petesGuitar
     , -- Promo
       --- Hour of the Huntress
       SomeAssetCard greenManMedallionHourOfTheHuntress

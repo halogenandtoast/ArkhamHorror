@@ -2187,7 +2187,10 @@ getAssetsMatching matcher = do
         otherDamageableAssetIds = flip mapMaybe modifiers' $ \case
           CanAssignDamageToAsset aid -> Just aid
           _ -> Nothing
-      assets <- filterMatcher as $ oneOf $ assetControlledBy iid : map AssetWithId otherDamageableAssetIds
+      assets <-
+        filterMatcher as
+          $ AssetWithoutModifier (CannotAssignDamage iid)
+          <> oneOf (assetControlledBy iid : map AssetWithId otherDamageableAssetIds)
 
       -- We can damage if remaining health or if no health at all and the modifier specifically says we can
       let
@@ -2201,12 +2204,9 @@ getAssetsMatching matcher = do
           CanAssignHorrorToAsset aid -> Just aid
           _ -> Nothing
       assets <-
-        filterMatcher
-          as
-          ( AssetOneOf
-              $ AssetControlledBy (InvestigatorWithId iid)
-              : map AssetWithId otherDamageableAssetIds
-          )
+        filterMatcher as
+          $ AssetWithoutModifier (CannotAssignDamage iid)
+          <> oneOf (assetControlledBy iid : map AssetWithId otherDamageableAssetIds)
 
       -- We can horror if remaining sanity or if no sanity at all and the modifier specifically says we can
       let

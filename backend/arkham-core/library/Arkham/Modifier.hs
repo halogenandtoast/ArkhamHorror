@@ -152,6 +152,7 @@ data ModifierType
   | CannotCommitCards CardMatcher
   | CannotCommitToOtherInvestigatorsSkillTests
   | CannotDealDamage
+  | CannotAssignDamage InvestigatorId
   | CannotDiscoverClues
   | CannotDiscoverCluesAt LocationMatcher
   | CannotDiscoverCluesExceptAsResultOfInvestigation LocationMatcher

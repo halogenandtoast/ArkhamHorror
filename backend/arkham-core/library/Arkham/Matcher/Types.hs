@@ -900,6 +900,12 @@ instance IsLabel "cursed" CardMatcher where
 instance IsLabel "illicit" CardMatcher where
   fromLabel = CardWithTrait Illicit
 
+instance IsLabel "tactic" CardMatcher where
+  fromLabel = CardWithTrait Tactic
+
+instance IsLabel "insight" CardMatcher where
+  fromLabel = CardWithTrait Insight
+
 instance IsLabel "tarot" CardMatcher where
   fromLabel = CardWithTrait Tarot
 
@@ -1237,6 +1243,9 @@ instance IsLabel "investigation" SkillTestMatcher where
   fromLabel = WhileInvestigating Anywhere
 
 instance IsLabel "parley" SkillTestMatcher where
+  fromLabel = WhileParleying
+
+instance IsLabel "parleying" SkillTestMatcher where
   fromLabel = WhileParleying
 
 instance IsLabel "fighting" SkillTestMatcher where

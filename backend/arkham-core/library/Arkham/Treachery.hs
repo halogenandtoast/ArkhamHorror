@@ -518,6 +518,8 @@ allTreacheries =
     , -- Parallel
       --- All or Nothing
       SomeTreacheryCard hospitalDebtsAdvanced
+    , --- By the Book
+      SomeTreacheryCard coverUpAdvanced
     , -- Promo
       --- The Dirge of Reason
       SomeTreacheryCard theDirgeOfReason

@@ -38,6 +38,9 @@ const id = computed(() => props.asset.id)
 const exhausted = computed(() => props.asset.exhausted)
 const cardCode = computed(() => props.asset.cardCode)
 const image = computed(() => {
+  if (props.asset.flipped) {
+    return imgsrc(`player_back.jpg`)
+  }
   return imgsrc(`cards/${cardCode.value.replace('c', '')}.jpg`)
 })
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
@@ -180,6 +183,7 @@ const assetStory = computed(() => {
         <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract, exhausted}">
           <img
             :data-id="id"
+            :data-image-id="cardCode.replace('c', '')"
             :src="image"
             class="card"
             @click="clicked"

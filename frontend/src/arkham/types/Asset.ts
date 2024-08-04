@@ -18,6 +18,7 @@ export type Asset = {
   tokens: Tokens;
   exhausted: boolean;
   permanent: boolean;
+  flipped: boolean;
   events: string[];
   treacheries: string[];
   assets: string[];
@@ -38,6 +39,7 @@ export const assetDecoder = JsonDecoder.object<Asset>({
   sanity: JsonDecoder.nullable(JsonDecoder.number),
   exhausted: JsonDecoder.boolean,
   permanent: JsonDecoder.boolean,
+  flipped: JsonDecoder.boolean,
   events: JsonDecoder.array<string>(JsonDecoder.string, 'EventId[]'),
   treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
   assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),

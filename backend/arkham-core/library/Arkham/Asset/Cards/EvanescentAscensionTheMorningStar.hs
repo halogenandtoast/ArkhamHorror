@@ -41,7 +41,7 @@ instance RunMessage EvanescentAscensionTheMorningStar where
   runMessage msg a@(EvanescentAscensionTheMorningStar attrs) = runQueueT $ case msg of
     ResolvedCard _ card | toCardId card == toCardId attrs -> do
       EvanescentAscensionTheMorningStar <$> runMessage msg (setMeta True attrs)
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
       whenJustM getSkillTestInvestigator \iid' -> do
         withSkillTest \sid -> do
           tokenId <- getRandom

@@ -1,11 +1,8 @@
 module Arkham.Event.Cards.LiveAndLearn (liveAndLearn, LiveAndLearn (..)) where
 
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Helpers
-import Arkham.Event.Runner
-import Arkham.Prelude
-import Arkham.SkillTest
+import Arkham.Event.Import.Lifted
+import Arkham.Modifier
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -17,23 +14,12 @@ liveAndLearn :: EventCard LiveAndLearn
 liveAndLearn = event LiveAndLearn Cards.liveAndLearn
 
 instance RunMessage LiveAndLearn where
-  runMessage msg e@(LiveAndLearn attrs) = case msg of
+  runMessage msg e@(LiveAndLearn attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ [windowType -> Window.SkillTestEnded st] _ | eid == toId attrs -> do
       sid <- getRandom
-      push
-        $ BeginSkillTestWithPreMessages' [skillTestModifier sid attrs iid (AnySkillValue 2)]
-        $ ( buildSkillTest
-              sid
-              iid
-              (skillTestSource st)
-              (skillTestTarget st)
-              (skillTestType st)
-              (skillTestBaseValue st)
-              (skillTestDifficulty st)
-          )
-          { skillTestAction = skillTestAction st
-          }
+      skillTestModifier sid attrs iid (AnySkillValue 2)
+      push $ RepeatSkillTest sid st
       pure e
     InvestigatorPlayEvent _ eid _ windows' _ | eid == toId attrs -> do
       error $ "Wrong windows: " <> show windows'
-    _ -> LiveAndLearn <$> runMessage msg attrs
+    _ -> LiveAndLearn <$> liftRunMessage msg attrs

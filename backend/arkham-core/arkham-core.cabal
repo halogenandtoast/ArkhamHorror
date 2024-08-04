@@ -549,6 +549,11 @@ library
       Arkham.Asset.Cards.DigDeep
       Arkham.Asset.Cards.DigDeep2
       Arkham.Asset.Cards.DigDeep4
+      Arkham.Asset.Cards.DirectiveConsultExperts
+      Arkham.Asset.Cards.DirectiveDueDiligence
+      Arkham.Asset.Cards.DirectiveLeaveNoDoubt
+      Arkham.Asset.Cards.DirectiveRedTape
+      Arkham.Asset.Cards.DirectiveSeekTheTruth
       Arkham.Asset.Cards.DirtyFighting2
       Arkham.Asset.Cards.DisciplineAlignmentOfSpirit
       Arkham.Asset.Cards.DisciplineAlignmentOfSpiritBroken
@@ -951,6 +956,7 @@ library
       Arkham.Asset.Cards.RodOfCarnamagosScepterOfTheMadSeer
       Arkham.Asset.Cards.RodOfCarnamagosScepterOfTheMadSeer2
       Arkham.Asset.Cards.Rolands38Special
+      Arkham.Asset.Cards.Rolands38SpecialAdvanced
       Arkham.Asset.Cards.RunicAxe
       Arkham.Asset.Cards.RuthWestmacottDarkRevelations
       Arkham.Asset.Cards.SacredCovenant2
@@ -2070,6 +2076,7 @@ library
       Arkham.Investigator.Cards.RexMurphy
       Arkham.Investigator.Cards.RitaYoung
       Arkham.Investigator.Cards.RolandBanks
+      Arkham.Investigator.Cards.RolandBanksParallel
       Arkham.Investigator.Cards.SefinaRousseau
       Arkham.Investigator.Cards.SilasMarsh
       Arkham.Investigator.Cards.SisterMary
@@ -2091,6 +2098,7 @@ library
       Arkham.Investigator.Deck
       Arkham.Investigator.Import.Lifted
       Arkham.Investigator.Investigators
+      Arkham.Investigator.Meta.RolandBanksParallel
       Arkham.Investigator.Runner
       Arkham.Investigator.Types
       Arkham.Json
@@ -3067,6 +3075,7 @@ library
       Arkham.Treachery.Cards.ConspiracyOfBlood
       Arkham.Treachery.Cards.Corrosion
       Arkham.Treachery.Cards.CoverUp
+      Arkham.Treachery.Cards.CoverUpAdvanced
       Arkham.Treachery.Cards.CrashingFloods
       Arkham.Treachery.Cards.CreepingDarkness
       Arkham.Treachery.Cards.CreepingPoison

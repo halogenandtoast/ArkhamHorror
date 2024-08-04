@@ -1174,6 +1174,13 @@ allAssets =
     , SomeAssetCard theNecronomiconAdvanced
     , --- Bad Blood
       SomeAssetCard heirloomOfHyperboreaAdvanced
+    , --- By the Book
+      SomeAssetCard directiveConsultExperts
+    , SomeAssetCard directiveDueDiligence
+    , SomeAssetCard directiveLeaveNoDoubt
+    , SomeAssetCard directiveRedTape
+    , SomeAssetCard directiveSeekTheTruth
+    , SomeAssetCard rolands38SpecialAdvanced
     , -- Promo
       --- Hour of the Huntress
       SomeAssetCard greenManMedallionHourOfTheHuntress

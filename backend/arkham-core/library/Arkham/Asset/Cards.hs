@@ -287,6 +287,11 @@ allPlayerAssetCards =
       , digDeep
       , digDeep2
       , digDeep4
+      , directiveConsultExperts
+      , directiveDueDiligence
+      , directiveLeaveNoDoubt
+      , directiveRedTape
+      , directiveSeekTheTruth
       , dirtyFighting2
       , discOfItzamna
       , discOfItzamna2
@@ -677,6 +682,7 @@ allPlayerAssetCards =
       , rodOfCarnamagosScepterOfTheMadSeer
       , rodOfCarnamagosScepterOfTheMadSeer2
       , rolands38Special
+      , rolands38SpecialAdvanced
       , runicAxe
       , ruthWestmacottDarkRevelations
       , sacredCovenant2
@@ -8021,6 +8027,48 @@ heirloomOfHyperboreaAdvanced =
       , cdUnique = True
       , cdSlots = [#accessory]
       , cdKeywords = setFromList [Keyword.Advanced]
+      }
+
+directiveDueDiligence :: CardDef
+directiveDueDiligence =
+  signature "90024"
+    $ permanent
+    $ asset "90025" ("Directive" <:> "Due Diligence") 0 Neutral
+
+directiveRedTape :: CardDef
+directiveRedTape =
+  signature "90024"
+    $ permanent
+    $ asset "90026" ("Directive" <:> "Red Tape") 0 Neutral
+
+directiveConsultExperts :: CardDef
+directiveConsultExperts =
+  signature "90024"
+    $ permanent
+    $ asset "90027" ("Directive" <:> "Consult Experts") 0 Neutral
+
+directiveSeekTheTruth :: CardDef
+directiveSeekTheTruth =
+  signature "90024"
+    $ permanent
+    $ asset "90028" ("Directive" <:> "Seek the Truth") 0 Neutral
+
+directiveLeaveNoDoubt :: CardDef
+directiveLeaveNoDoubt =
+  signature "90024"
+    $ permanent
+    $ asset "90029" ("Directive" <:> "Leave No Doubt") 0 Neutral
+
+rolands38SpecialAdvanced :: CardDef
+rolands38SpecialAdvanced =
+  signature "90024"
+    $ (asset "90030" "Roland's .38 Special" 3 Neutral)
+      { cdSkills = [#intellect, #combat, #agility, #wild]
+      , cdCardTraits = setFromList [Item, Weapon, Firearm]
+      , cdUnique = True
+      , cdUses = uses Ammo 4
+      , cdSlots = [#hand]
+      , cdKeywords = singleton Keyword.Advanced
       }
 
 greenManMedallionHourOfTheHuntress :: CardDef

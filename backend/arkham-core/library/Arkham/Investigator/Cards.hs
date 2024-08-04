@@ -86,6 +86,7 @@ allInvestigatorCards =
       , daisyWalkerParallel
       , skidsOTooleParallel
       , agnesBakerParallel
+      , rolandBanksParallel
       ]
 
 allEncounterInvestigatorCards :: Map CardCode CardDef
@@ -593,3 +594,7 @@ skidsOTooleParallel =
 agnesBakerParallel :: CardDef
 agnesBakerParallel =
   investigator "90017" ("Agnes Baker" <:> "The Waitress") Mystic [Sorcerer]
+
+rolandBanksParallel :: CardDef
+rolandBanksParallel =
+  investigator "90024" ("Roland Banks" <:> "The Fed") Guardian [Agency, Detective]

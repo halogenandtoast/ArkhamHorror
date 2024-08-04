@@ -831,14 +831,14 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       canBecomeFast =
         CannotPlay Matcher.FastCard
           `notElem` modifiers
-          && foldr applyModifier False (nub $ cardModifiers <> modifiers)
+          && traceShowId (foldr applyModifier False (traceShowId $ nub $ cardModifiers <> modifiers))
       canBecomeFastWindow =
         guard canBecomeFast
           $> fromMaybe
             (Matcher.DuringTurn Matcher.You)
             (listToMaybe [w | BecomesFast w <- cardModifiers <> modifiers])
       applyModifier (BecomesFast _) _ = True
-      applyModifier (CanBecomeFast cardMatcher) _ = cardMatch c cardMatcher
+      applyModifier (CanBecomeFast cardMatcher) _ = cardMatch c (traceShowId cardMatcher)
       applyModifier (CanBecomeFastOrReduceCostOf cardMatcher _) _ = canAffordCost && cardMatch c cardMatcher
       applyModifier _ val = val
       source' = replaceThisCardSource source

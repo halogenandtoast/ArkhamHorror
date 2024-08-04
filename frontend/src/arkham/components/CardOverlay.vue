@@ -236,16 +236,16 @@ const getPosition = (el: HTMLElement) => {
 };
 
 const getImage = (el: HTMLElement): string | null => {
+  if (el.dataset.imageId) {
+    return imgsrc(`cards/${el.dataset.imageId}.jpg`);
+  }
+
   if (el instanceof HTMLImageElement && el.classList.contains('card') && !el.closest(".revelation")) {
     return el.src;
   }
 
   if (el instanceof HTMLDivElement && el.classList.contains('card')) {
     return el.style.backgroundImage.slice(4, -1).replace(/"/g, "");
-  }
-
-  if (el.dataset.imageId) {
-    return imgsrc(`cards/${el.dataset.imageId}.jpg`);
   }
 
   if (el.dataset.target) {

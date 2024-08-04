@@ -76,6 +76,7 @@ allPlayerTreacheryCards =
       , caughtRedHanded
       , chronophobia
       , coverUp
+      , coverUpAdvanced
       , crisisOfFaith
       , crisisOfIdentity
       , curseOfTheRougarou
@@ -2432,6 +2433,13 @@ chillingPresence =
 hospitalDebtsAdvanced :: CardDef
 hospitalDebtsAdvanced =
   (weakness "90010" "Hospital Debts")
+    { cdCardTraits = setFromList [Task]
+    , cdKeywords = singleton Keyword.Advanced
+    }
+
+coverUpAdvanced :: CardDef
+coverUpAdvanced =
+  (weakness "90031" "Cover Up")
     { cdCardTraits = setFromList [Task]
     , cdKeywords = singleton Keyword.Advanced
     }

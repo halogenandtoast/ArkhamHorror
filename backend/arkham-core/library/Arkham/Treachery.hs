@@ -520,6 +520,8 @@ allTreacheries =
       SomeTreacheryCard hospitalDebtsAdvanced
     , --- By the Book
       SomeTreacheryCard coverUpAdvanced
+    , --- Red Tide Rising
+      SomeTreacheryCard abandonedAndAloneAdvanced
     , -- Promo
       --- The Dirge of Reason
       SomeTreacheryCard theDirgeOfReason

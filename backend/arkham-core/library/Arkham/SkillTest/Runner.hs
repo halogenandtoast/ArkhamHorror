@@ -282,7 +282,16 @@ instance RunMessage SkillTest where
       pure $ s & (setAsideChaosTokensL %~ (<> chaosTokenFaces))
     RevealChaosToken SkillTestSource {} iid token -> do
       pushM $ checkWindows [mkAfter $ Window.RevealChaosToken iid token]
-      pure $ s & revealedChaosTokensL %~ (<> [token]) & toResolveChaosTokensL %~ nub . (<> [token])
+      pure
+        $ s
+        & revealedChaosTokensL
+        %~ (<> [token])
+        & toResolveChaosTokensL
+        %~ nub
+        . (<> [token])
+        & setAsideChaosTokensL
+        %~ nub
+        . (<> [token])
     RevealSkillTestChaosTokens iid -> do
       -- NOTE: this exists here because of Sacred Covenant (2), we want to
       -- cancel the modifiers but retain the effects so the effects are queued,
@@ -306,6 +315,21 @@ instance RunMessage SkillTest where
           | (drawnChaosToken, chaosTokenFace) <- revealedChaosTokenFaces
           ]
           <> [afterResolveMsg]
+      pure $ s & toResolveChaosTokensL .~ mempty & resolvedChaosTokensL <>~ skillTestToResolveChaosTokens
+    RevealSkillTestChaosTokensAgain iid -> do
+      revealedChaosTokenFaces <- flip
+        concatMapM
+        skillTestToResolveChaosTokens
+        \token -> do
+          faces <- getModifiedChaosTokenFaces [token]
+          pure [(token, face) | face <- faces]
+      afterRevealWindow <-
+        checkAfter $ Window.RevealChaosTokensDuringSkillTest iid s skillTestToResolveChaosTokens
+      pushAll
+        $ afterRevealWindow
+        : [ Will (ResolveChaosToken drawnChaosToken chaosTokenFace iid)
+          | (drawnChaosToken, chaosTokenFace) <- revealedChaosTokenFaces
+          ]
       pure $ s & toResolveChaosTokensL .~ mempty & resolvedChaosTokensL <>~ skillTestToResolveChaosTokens
     PassSkillTest -> do
       modifiedSkillValue' <- totalModifiedSkillValue s

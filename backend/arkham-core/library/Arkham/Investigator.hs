@@ -148,6 +148,7 @@ allInvestigators =
       , SomeInvestigatorCard skidsOTooleParallel
       , SomeInvestigatorCard agnesBakerParallel
       , SomeInvestigatorCard rolandBanksParallel
+      , SomeInvestigatorCard wendyAdamsParallel
       ]
 
 becomeYithian :: Investigator -> Investigator

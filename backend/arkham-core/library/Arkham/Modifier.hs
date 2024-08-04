@@ -115,6 +115,7 @@ data ModifierType
   | CanOnlyUseCardsInRole ClassSymbol
   | CanPlayTopOfDeck CardMatcher
   | CanPlayTopmostOfDiscard (Maybe CardType, [Trait])
+  | CanPlayFromDiscard (Maybe CardType, [Trait])
   | CanPlayWithOverride CriteriaOverride
   | CanReduceCostOf CardMatcher Int
   | CanResolveToken ChaosTokenFace Target

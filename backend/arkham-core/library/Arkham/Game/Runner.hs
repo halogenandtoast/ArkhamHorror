@@ -479,14 +479,16 @@ runGameMessage msg g = case msg of
           AdditionalCost c -> Just c
           _ -> Nothing
     let
+      fixEnemy = maybe id replaceThatEnemy $ getThatEnemy windows'
       activeCost =
         ActiveCost
           { activeCostId = acId
           , activeCostCosts =
-              mconcat
-                ( costF (abilityCost ability)
-                    : additionalCosts ++ leaveCosts ++ enterCosts ++ investigateCosts ++ resignCosts
-                )
+              fixEnemy
+                $ mconcat
+                  ( costF (abilityCost ability)
+                      : additionalCosts ++ leaveCosts ++ enterCosts ++ investigateCosts ++ resignCosts
+                  )
           , activeCostPayments = Cost.NoPayment
           , activeCostTarget = ForAbility ability
           , activeCostWindows = windows'
@@ -557,6 +559,7 @@ runGameMessage msg g = case msg of
       . each
       %~ filter (`notElem` cards)
   FocusChaosTokens tokens -> pure $ g & focusedChaosTokensL <>~ tokens
+  Msg.RevealChaosToken SkillTestSource {} _ token -> pure $ g & focusedChaosTokensL %~ filter (/= token)
   UnfocusChaosTokens -> pure $ g & focusedChaosTokensL .~ mempty
   ChooseLeadInvestigator -> do
     iids <- getInvestigatorIds

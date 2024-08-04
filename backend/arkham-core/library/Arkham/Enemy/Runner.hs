@@ -1293,6 +1293,21 @@ instance RunMessage EnemyAttrs where
         then do
           cannotPlaceDoom <- hasModifier a CannotPlaceDoomOnThis
           if cannotPlaceDoom
+            then pure ()
+            else do
+              batchId <- getRandom
+              whenWindow <-
+                checkWindows
+                  [(mkWhen $ Window.WouldPlaceDoom source target n) {Window.windowBatchId = Just batchId}]
+
+              push $ Would batchId [whenWindow, Do msg]
+        else push $ Do msg
+      pure a
+    Do (PlaceTokens source target token n) | isTarget a target -> do
+      if token == #doom
+        then do
+          cannotPlaceDoom <- hasModifier a CannotPlaceDoomOnThis
+          if cannotPlaceDoom
             then pure a
             else do
               when (token == Doom && a.doom == 0) do

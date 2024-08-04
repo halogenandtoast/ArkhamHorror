@@ -258,6 +258,13 @@ getChaosToken = \case
   ((windowType -> Window.ResolvesChaosToken _ token) : _) -> token
   (_ : rest) -> getChaosToken rest
 
+getThatEnemy :: [Window] -> Maybe EnemyId
+getThatEnemy = \case
+  [] -> Nothing
+  ((windowType -> Window.WouldReady (EnemyTarget eid)) : _) -> Just eid
+  ((windowType -> Window.WouldPlaceDoom _ (EnemyTarget eid) _) : _) -> Just eid
+  (_ : rest) -> getThatEnemy rest
+
 getAttackDetails :: HasCallStack => [Window] -> EnemyAttackDetails
 getAttackDetails = \case
   [] -> error "No attack details"

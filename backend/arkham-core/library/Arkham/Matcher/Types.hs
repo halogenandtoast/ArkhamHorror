@@ -328,6 +328,7 @@ data EnemyMatcher
   | EnemyWithToken Token
   | EnemyAt LocationMatcher
   | EnemyCanEnter LocationMatcher
+  | EnemyWithSealedChaosTokens Int ChaosTokenMatcher
   | EnemyWithoutTrait Trait
   | EnemyWithKeyword Keyword
   | EnemyWithClues ValueMatcher
@@ -398,6 +399,8 @@ data EnemyMatcher
   | EnemyWhenLocation LocationMatcher
   | EnemyWhenInvestigator InvestigatorMatcher
   | EnemyWhenOtherEnemy EnemyMatcher
+  | -- | Must be replaced
+    ThatEnemy
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated EnemyMatcher
@@ -1309,6 +1312,7 @@ data TargetMatcher
   | ActTargetMatches ActMatcher
   | AgendaTargetMatches AgendaMatcher
   | AssetTargetMatches AssetMatcher
+  | EnemyTargetMatches EnemyMatcher
   | ScenarioCardTarget
   | TargetWithDoom
   | TargetAtLocation LocationMatcher
@@ -1390,6 +1394,7 @@ data ChaosTokenMatcher
   | IsInfestationToken ChaosTokenMatcher
   | NotChaosToken ChaosTokenMatcher
   | SealedOnAsset AssetMatcher ChaosTokenMatcher
+  | SealedOnEnemy EnemyMatcher ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not ChaosTokenMatcher where

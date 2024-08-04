@@ -1095,6 +1095,7 @@ library
       Arkham.Asset.Cards.ThirtyFiveWinchester
       Arkham.Asset.Cards.ThirtyTwoColt
       Arkham.Asset.Cards.ThirtyTwoColt2
+      Arkham.Asset.Cards.TidalMemento
       Arkham.Asset.Cards.TimewornBrand5
       Arkham.Asset.Cards.TimeWornLocket
       Arkham.Asset.Cards.TokenOfFaith
@@ -1134,6 +1135,7 @@ library
       Arkham.Asset.Cards.WellConnected3
       Arkham.Asset.Cards.WellPrepared2
       Arkham.Asset.Cards.WendysAmulet
+      Arkham.Asset.Cards.WendysAmuletAdvanced
       Arkham.Asset.Cards.WhittonGreene
       Arkham.Asset.Cards.WhittonGreene2
       Arkham.Asset.Cards.WickedAthame
@@ -2090,6 +2092,7 @@ library
       Arkham.Investigator.Cards.ValentinoRivas
       Arkham.Investigator.Cards.VincentLee
       Arkham.Investigator.Cards.WendyAdams
+      Arkham.Investigator.Cards.WendyAdamsParallel
       Arkham.Investigator.Cards.WilliamYorick
       Arkham.Investigator.Cards.WilsonRichards
       Arkham.Investigator.Cards.WinifredHabbamock
@@ -3021,6 +3024,7 @@ library
       Arkham.Treachery
       Arkham.Treachery.Cards
       Arkham.Treachery.Cards.AbandonedAndAlone
+      Arkham.Treachery.Cards.AbandonedAndAloneAdvanced
       Arkham.Treachery.Cards.AbandonedByTheGods
       Arkham.Treachery.Cards.Abduction
       Arkham.Treachery.Cards.AccursedFate

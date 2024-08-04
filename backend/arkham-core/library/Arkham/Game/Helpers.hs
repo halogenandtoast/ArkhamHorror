@@ -148,6 +148,10 @@ getPlayableDiscards attrs@InvestigatorAttrs {..} costStatus windows' = do
      in case allMatches of
           (topmost : _) -> topmost == card
           _ -> False
+  allowsPlayFromDiscard 0 card (CanPlayFromDiscard (mcardType, traits)) =
+    let cardMatcher = maybe Matcher.AnyCard Matcher.CardWithType mcardType <> foldMap Matcher.CardWithTrait traits
+        allMatches = filter (`cardMatch` cardMatcher) investigatorDiscard
+     in card `elem` allMatches
   allowsPlayFromDiscard _ _ _ = False
 
 getAsIfInHandCards :: (HasCallStack, HasGame m) => InvestigatorId -> m [Card]
@@ -191,6 +195,8 @@ getCanPerformAbility !iid !ws !ability = do
 
   abilityModifiers <- getModifiers (AbilityTarget iid ability)
   let
+    mThatEnemy = getThatEnemy ws
+    fixEnemy = maybe id Matcher.replaceThatEnemy mThatEnemy
     actions = case abilityType ability of
       ActionAbilityWithBefore _ beforeAction _ -> [beforeAction]
       _ -> abilityActions ability
@@ -198,7 +204,7 @@ getCanPerformAbility !iid !ws !ability = do
       abilityAdditionalCosts ability <> flip mapMaybe abilityModifiers \case
         AdditionalCost x -> Just x
         _ -> Nothing
-    cost = abilityCost ability
+    cost = fixEnemy $ abilityCost ability
     criteria = foldr setCriteria (abilityCriteria ability) abilityModifiers
     setCriteria :: ModifierType -> Criterion -> Criterion
     setCriteria = \case
@@ -339,11 +345,11 @@ getCanAffordAbility
 getCanAffordAbility iid ability ws = do
   andM
     [ getCanAffordUse iid ability ws
-    , getCanAffordAbilityCost iid ability
+    , getCanAffordAbilityCost iid ability ws
     ]
 
-getCanAffordAbilityCost :: HasGame m => InvestigatorId -> Ability -> m Bool
-getCanAffordAbilityCost iid a@Ability {..} = do
+getCanAffordAbilityCost :: HasGame m => InvestigatorId -> Ability -> [Window] -> m Bool
+getCanAffordAbilityCost iid a@Ability {..} ws = do
   modifiers <- getModifiers (AbilityTarget iid a)
   investigateCosts <-
     if #investigate `elem` abilityActions a
@@ -374,10 +380,12 @@ getCanAffordAbilityCost iid a@Ability {..} = do
             pure [m | AdditionalCostToResign m <- mods]
       else pure []
   let
+    mThatEnemy = getThatEnemy ws
+    fixEnemy = maybe id Matcher.replaceThatEnemy mThatEnemy
     costF =
       case find isSetCost modifiers of
-        Just (SetAbilityCost c) -> fold . (: investigateCosts <> resignCosts) . const c
-        _ -> fold . (: investigateCosts <> resignCosts)
+        Just (SetAbilityCost c) -> fixEnemy . fold . (: investigateCosts <> resignCosts) . const c
+        _ -> fixEnemy . fold . (: investigateCosts <> resignCosts)
     isSetCost = \case
       SetAbilityCost _ -> True
       _ -> False
@@ -388,17 +396,17 @@ getCanAffordAbilityCost iid a@Ability {..} = do
     Haunted -> pure True
     Cosmos -> pure True
     ActionAbility actions cost ->
-      getCanAffordCost iid (toSource a) actions [] (f cost)
+      getCanAffordCost iid (toSource a) actions ws (f cost)
     ActionAbilityWithSkill actions _ cost ->
-      getCanAffordCost iid (toSource a) actions [] (f cost)
+      getCanAffordCost iid (toSource a) actions ws (f cost)
     ActionAbilityWithBefore _ beforeAction cost ->
-      getCanAffordCost iid (toSource a) [beforeAction] [] (f cost)
-    ReactionAbility _ cost -> getCanAffordCost iid (toSource a) [] [] (f cost)
-    CustomizationReaction _ _ cost -> getCanAffordCost iid (toSource a) [] [] (f cost)
-    ConstantReaction _ _ cost -> getCanAffordCost iid (toSource a) [] [] (f cost)
-    FastAbility' cost actions -> getCanAffordCost iid (toSource a) actions [] (f cost)
+      getCanAffordCost iid (toSource a) [beforeAction] ws (f cost)
+    ReactionAbility _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
+    CustomizationReaction _ _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
+    ConstantReaction _ _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
+    FastAbility' cost actions -> getCanAffordCost iid (toSource a) actions ws (f cost)
     ForcedAbilityWithCost _ cost ->
-      getCanAffordCost iid (toSource a) [] [] (f cost)
+      getCanAffordCost iid (toSource a) [] ws (f cost)
     ForcedAbility _ -> pure True
     SilentForcedAbility _ -> pure True
     AbilityEffect _ -> pure True
@@ -831,14 +839,14 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       canBecomeFast =
         CannotPlay Matcher.FastCard
           `notElem` modifiers
-          && traceShowId (foldr applyModifier False (traceShowId $ nub $ cardModifiers <> modifiers))
+          && foldr applyModifier False (nub $ cardModifiers <> modifiers)
       canBecomeFastWindow =
         guard canBecomeFast
           $> fromMaybe
             (Matcher.DuringTurn Matcher.You)
             (listToMaybe [w | BecomesFast w <- cardModifiers <> modifiers])
       applyModifier (BecomesFast _) _ = True
-      applyModifier (CanBecomeFast cardMatcher) _ = cardMatch c (traceShowId cardMatcher)
+      applyModifier (CanBecomeFast cardMatcher) _ = cardMatch c cardMatcher
       applyModifier (CanBecomeFastOrReduceCostOf cardMatcher _) _ = canAffordCost && cardMatch c cardMatcher
       applyModifier _ val = val
       source' = replaceThisCardSource source

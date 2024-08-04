@@ -27,6 +27,7 @@ import Arkham.Cost.FieldCost
 import Arkham.Deck qualified as Deck
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
+import Arkham.Enemy.Types (Field (EnemySealedChaosTokens))
 import {-# SOURCE #-} Arkham.Game (withoutCanModifiers)
 import Arkham.Game.Helpers
 import Arkham.GameValue
@@ -352,18 +353,42 @@ payCost msg c iid skipAdditionalCosts cost = do
       push $ SealChaosToken token
       pure $ c & costPaymentsL <>~ SealChaosTokenPayment token & costSealedChaosTokensL %~ (token :)
     ReleaseChaosTokensCost n matcher -> do
-      let
-        handleSource = \case
-          AbilitySource t _ -> handleSource t
-          AssetSource aid -> do
-            tokens <- filterM (<=~> IncludeSealed matcher) =<< field AssetSealedChaosTokens aid
-            pushAll
-              [ FocusChaosTokens tokens
-              , chooseN player n $ targetLabels tokens $ only . pay . ReleaseChaosTokenCost
-              , UnfocusChaosTokens
-              ]
-          _ -> error "Unhandled source for releasing tokens cost"
-      handleSource source
+      case matcher of
+        SealedOnAsset assetMatcher tokenMatcher' -> do
+          mAsset <- selectOne assetMatcher
+          case mAsset of
+            Nothing -> error "Unhandled asset"
+            Just aid -> do
+              tokens <- filterM (<=~> IncludeSealed tokenMatcher') =<< field AssetSealedChaosTokens aid
+              pushAll
+                [ FocusChaosTokens tokens
+                , chooseN player n $ targetLabels tokens $ only . pay . ReleaseChaosTokenCost
+                , UnfocusChaosTokens
+                ]
+        SealedOnEnemy enemyMatcher tokenMatcher' -> do
+          mEnemy <- selectOne enemyMatcher
+          case mEnemy of
+            Nothing -> error "Unhandled enemy"
+            Just aid -> do
+              tokens <- filterM (<=~> IncludeSealed tokenMatcher') =<< field EnemySealedChaosTokens aid
+              pushAll
+                [ FocusChaosTokens tokens
+                , chooseN player n $ targetLabels tokens $ only . pay . ReleaseChaosTokenCost
+                , UnfocusChaosTokens
+                ]
+        _ -> do
+          let
+            handleSource = \case
+              AbilitySource t _ -> handleSource t
+              AssetSource aid -> do
+                tokens <- filterM (<=~> IncludeSealed matcher) =<< field AssetSealedChaosTokens aid
+                pushAll
+                  [ FocusChaosTokens tokens
+                  , chooseN player n $ targetLabels tokens $ only . pay . ReleaseChaosTokenCost
+                  , UnfocusChaosTokens
+                  ]
+              _ -> error "Unhandled source for releasing tokens cost"
+          handleSource source
       pure c
     ReleaseChaosTokenCost t -> do
       push $ UnsealChaosToken t

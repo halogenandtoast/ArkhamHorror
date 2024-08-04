@@ -2451,10 +2451,10 @@ getVoidEnemy eid =
  where
   missingEnemy = "Unknown out of playenemy: " <> show eid
 
-getEnemyMatching :: HasGame m => EnemyMatcher -> m (Maybe Enemy)
+getEnemyMatching :: (HasCallStack, HasGame m) => EnemyMatcher -> m (Maybe Enemy)
 getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
 
-getEnemiesMatching :: HasGame m => EnemyMatcher -> m [Enemy]
+getEnemiesMatching :: (HasCallStack, HasGame m) => EnemyMatcher -> m [Enemy]
 getEnemiesMatching (DefeatedEnemy matcher) = do
   let
     wrapEnemy (defeatedEnemyAttrs -> a) =
@@ -2472,7 +2472,7 @@ getEnemiesMatching matcher = do
   allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
   filterM (enemyMatcherFilter (matcher <> EnemyWithoutModifier Omnipotent)) allGameEnemies
 
-enemyMatcherFilter :: HasGame m => EnemyMatcher -> Enemy -> m Bool
+enemyMatcherFilter :: (HasCallStack, HasGame m) => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
   AttackingEnemy -> \e -> fieldMap EnemyAttacking isJust (toId e)
   EnemyWithToken tkn -> \e -> fieldMap EnemyTokens (Token.hasToken tkn) (toId e)
@@ -2541,6 +2541,9 @@ enemyMatcherFilter = \case
   IncludeOmnipotent matcher -> enemyMatcherFilter matcher
   OutOfPlayEnemy _ matcher -> enemyMatcherFilter matcher
   EnemyWithCardId cardId -> pure . (== cardId) . toCardId
+  EnemyWithSealedChaosTokens n chaosTokenMatcher -> \enemy -> do
+    (>= n)
+      <$> countM (`chaosTokenMatches` IncludeSealed chaosTokenMatcher) (attr enemySealedChaosTokens enemy)
   EnemyCanEnter locationMatcher -> \enemy -> do
     locations <- select locationMatcher
     flip anyM locations $ \lid -> do
@@ -3028,6 +3031,7 @@ enemyMatcherFilter = \case
       else do
         mloc <- field EnemyLocation (toId $ toAttrs enemy)
         pure $ maybe False (`elem` matches') mloc
+  ThatEnemy -> const (pure False) -- will never match, must be replaced
 
 getAct :: (HasCallStack, HasGame m) => ActId -> m Act
 getAct aid =
@@ -3519,6 +3523,7 @@ instance Query ChaosTokenMatcher where
       IncludeSealed _ -> True
       IncludeTokenPool m -> includeSealed m
       SealedOnAsset _ _ -> True
+      SealedOnEnemy _ _ -> True
       _ -> False
     includeTokenPool = \case
       IncludeSealed m -> includeTokenPool m
@@ -3548,6 +3553,10 @@ instance Query ChaosTokenMatcher where
     go = \case
       InTokenPool m -> go m
       NotChaosToken m -> fmap not . go m
+      SealedOnEnemy enemyMatcher chaosTokenMatcher -> \t -> do
+        sealedTokens <- selectAgg id EnemySealedChaosTokens enemyMatcher
+        isMatch' <- go chaosTokenMatcher t
+        pure $ isMatch' && t `elem` sealedTokens
       SealedOnAsset assetMatcher chaosTokenMatcher -> \t -> do
         sealedTokens <- selectAgg id AssetSealedChaosTokens assetMatcher
         isMatch' <- go chaosTokenMatcher t

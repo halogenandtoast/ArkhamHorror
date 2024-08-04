@@ -95,6 +95,7 @@ allPlayerTreacheryCards =
       , finalRhapsody
       , finePrint
       , greed
+      , hardTimes
       , hastyRepairs
       , haunted
       , hospitalDebts
@@ -2450,6 +2451,13 @@ abandonedAndAloneAdvanced =
   (weakness "90040" "Abandoned and Alone")
     { cdCardTraits = setFromList [Madness]
     , cdKeywords = singleton Keyword.Advanced
+    }
+
+hardTimes :: CardDef
+hardTimes =
+  (weakness "90048" "Hard Times")
+    { cdCardTraits = setFromList [Hardship]
+    , cdKeywords = singleton Keyword.Replacement
     }
 
 theDirgeOfReason :: CardDef

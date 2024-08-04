@@ -522,6 +522,8 @@ allTreacheries =
       SomeTreacheryCard coverUpAdvanced
     , --- Red Tide Rising
       SomeTreacheryCard abandonedAndAloneAdvanced
+    , --- On the Road Again
+      SomeTreacheryCard hardTimes
     , -- Promo
       --- The Dirge of Reason
       SomeTreacheryCard theDirgeOfReason

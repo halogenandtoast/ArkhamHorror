@@ -88,6 +88,7 @@ allInvestigatorCards =
       , agnesBakerParallel
       , rolandBanksParallel
       , wendyAdamsParallel
+      , ashcanPeteParallel
       ]
 
 allEncounterInvestigatorCards :: Map CardCode CardDef
@@ -603,3 +604,7 @@ rolandBanksParallel =
 wendyAdamsParallel :: CardDef
 wendyAdamsParallel =
   investigator "90037" ("Wendy Adams" <:> "The Urchin") Survivor [Drifter, Blessed, Cursed]
+
+ashcanPeteParallel :: CardDef
+ashcanPeteParallel =
+  investigator "90046" ("\"Ashcan\" Pete" <:> "The Drifter") Survivor [Drifter]

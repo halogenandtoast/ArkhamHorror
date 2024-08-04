@@ -895,6 +895,7 @@ library
       Arkham.Asset.Cards.PeterClover
       Arkham.Asset.Cards.PeterSylvestre
       Arkham.Asset.Cards.PeterSylvestre2
+      Arkham.Asset.Cards.PetesGuitar
       Arkham.Asset.Cards.PhysicalTraining
       Arkham.Asset.Cards.PhysicalTraining2
       Arkham.Asset.Cards.PhysicalTraining4
@@ -2035,6 +2036,7 @@ library
       Arkham.Investigator.Cards.AmandaSharpe
       Arkham.Investigator.Cards.AminaZidane
       Arkham.Investigator.Cards.AshcanPete
+      Arkham.Investigator.Cards.AshcanPeteParallel
       Arkham.Investigator.Cards.BobJenkins
       Arkham.Investigator.Cards.BodyOfAYithian
       Arkham.Investigator.Cards.CalvinWright
@@ -3149,6 +3151,7 @@ library
       Arkham.Treachery.Cards.GraveLight
       Arkham.Treachery.Cards.GraveLightSpectral
       Arkham.Treachery.Cards.Greed
+      Arkham.Treachery.Cards.HardTimes
       Arkham.Treachery.Cards.HarvestedBrain
       Arkham.Treachery.Cards.HastyRepairs
       Arkham.Treachery.Cards.Haunted

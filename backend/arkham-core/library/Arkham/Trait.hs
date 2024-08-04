@@ -103,6 +103,7 @@ data Trait
   | Guest
   | Gug
   | Hall
+  | Hardship
   | Hazard
   | Hex
   | HistoricalSociety

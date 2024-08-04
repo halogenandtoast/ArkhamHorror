@@ -2000,6 +2000,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.AssetWouldBeDiscarded timing assetMatcher -> guardTiming timing $ \case
       Window.WouldBeDiscarded (AssetTarget aid) -> elem aid <$> select assetMatcher
       _ -> noMatch
+    Matcher.EventWouldBeDiscarded timing eventMatcher -> guardTiming timing $ \case
+      Window.WouldBeDiscarded (EventTarget aid) -> elem aid <$> select eventMatcher
+      _ -> noMatch
     Matcher.EnemyWouldBeDiscarded timing enemyMatcher -> guardTiming timing $ \case
       Window.WouldBeDiscarded (EnemyTarget eid) -> elem eid <$> select enemyMatcher
       _ -> noMatch

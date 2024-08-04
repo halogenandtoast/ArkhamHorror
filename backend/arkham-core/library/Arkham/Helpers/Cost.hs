@@ -10,6 +10,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Cost
 import Arkham.Cost.FieldCost
+import Arkham.Enemy.Types (Field (EnemySealedChaosTokens))
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Helpers.Calculation
@@ -338,20 +339,35 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
     (>= n) <$> countM (\token -> matchChaosToken iid token tokenMatcher) tokens
   SealChaosTokenCost _ -> pure True
   ReleaseChaosTokensCost n tokenMatcher -> do
-    let
-      handleSource = \case
-        AssetSource aid ->
-          fmap (>= n) . countM (<=~> Matcher.IncludeSealed tokenMatcher) =<< field AssetSealedChaosTokens aid
-        AbilitySource t _ -> handleSource t
-        _ -> error $ "Unhandled release token cost source: " <> show source
-    handleSource source
-  ReleaseChaosTokenCost t -> do
-    let
-      handleSource = \case
-        AssetSource aid -> fieldMap AssetSealedChaosTokens (elem t) aid
-        AbilitySource u _ -> handleSource u
-        _ -> error "Unhandled release token cost source"
-    handleSource source
+    case tokenMatcher of
+      Matcher.SealedOnAsset assetMatcher tokenMatcher' -> do
+        mAsset <- selectOne assetMatcher
+        case mAsset of
+          Nothing -> pure False
+          Just aid ->
+            fmap (>= n) . countM (<=~> Matcher.IncludeSealed tokenMatcher') =<< field AssetSealedChaosTokens aid
+      Matcher.SealedOnEnemy enemyMatcher tokenMatcher' -> do
+        mEnemy <- selectOne enemyMatcher
+        case mEnemy of
+          Nothing -> pure False
+          Just eid ->
+            fmap (>= n) . countM (<=~> Matcher.IncludeSealed tokenMatcher') =<< field EnemySealedChaosTokens eid
+      _ -> do
+        let
+          handleSource = \case
+            AssetSource aid ->
+              fmap (>= n) . countM (<=~> Matcher.IncludeSealed tokenMatcher) =<< field AssetSealedChaosTokens aid
+            AbilitySource t _ -> handleSource t
+            _ -> error $ "Unhandled release token cost source: " <> show source
+        handleSource source
+  ReleaseChaosTokenCost t ->
+    t
+      <=~> Matcher.IncludeSealed
+        ( Matcher.oneOf
+            [ Matcher.SealedOnAsset Matcher.AnyAsset Matcher.AnyChaosToken
+            , Matcher.SealedOnEnemy Matcher.AnyEnemy Matcher.AnyChaosToken
+            ]
+        )
   ReturnChaosTokensToPoolCost n matcher -> do
     (>= n) <$> selectCount matcher
   ReturnChaosTokenToPoolCost _ -> pure True

@@ -697,6 +697,15 @@ instance RunMessage ChaosBag where
           updatedChoice =
             replaceFirstChoice source iid SetAside groupChoice choice'
         pure $ c & choiceL ?~ updatedChoice
+    RevealChaosToken SkillTestSource {} _ token ->
+      pure
+        $ c
+        & setAsideChaosTokensL
+        %~ (nub . (<> [token]))
+        & revealedChaosTokensL
+        %~ (nub . (<> [token]))
+        & chaosTokensL
+        %~ filter (/= token)
     RevealChaosToken _source _iid token ->
       -- TODO: we may need a map of source to tokens here
       pure $ c & revealedChaosTokensL %~ (<> [token])

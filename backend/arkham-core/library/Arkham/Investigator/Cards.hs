@@ -87,6 +87,7 @@ allInvestigatorCards =
       , skidsOTooleParallel
       , agnesBakerParallel
       , rolandBanksParallel
+      , wendyAdamsParallel
       ]
 
 allEncounterInvestigatorCards :: Map CardCode CardDef
@@ -598,3 +599,7 @@ agnesBakerParallel =
 rolandBanksParallel :: CardDef
 rolandBanksParallel =
   investigator "90024" ("Roland Banks" <:> "The Fed") Guardian [Agency, Detective]
+
+wendyAdamsParallel :: CardDef
+wendyAdamsParallel =
+  investigator "90037" ("Wendy Adams" <:> "The Urchin") Survivor [Drifter, Blessed, Cursed]

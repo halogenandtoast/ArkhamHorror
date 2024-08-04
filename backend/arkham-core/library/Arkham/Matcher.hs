@@ -371,6 +371,15 @@ replaceLocationMatcher lid m = over biplate (transform go)
 replaceThatLocation :: Data a => LocationId -> a -> a
 replaceThatLocation lid = replaceLocationMatcher lid ThatLocation
 
+replaceEnemyMatcher :: Data a => EnemyId -> EnemyMatcher -> a -> a
+replaceEnemyMatcher lid m = over biplate (transform go)
+ where
+  go n | m == n = EnemyWithId lid
+  go x = x
+
+replaceThatEnemy :: Data a => EnemyId -> a -> a
+replaceThatEnemy lid = replaceEnemyMatcher lid ThatEnemy
+
 defaultRemoveDoomMatchers :: RemoveDoomMatchers
 defaultRemoveDoomMatchers =
   RemoveDoomMatchers

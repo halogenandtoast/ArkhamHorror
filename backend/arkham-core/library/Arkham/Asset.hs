@@ -1181,6 +1181,9 @@ allAssets =
     , SomeAssetCard directiveRedTape
     , SomeAssetCard directiveSeekTheTruth
     , SomeAssetCard rolands38SpecialAdvanced
+    , --- Red Tide Rising
+      SomeAssetCard tidalMemento
+    , SomeAssetCard wendysAmuletAdvanced
     , -- Promo
       --- Hour of the Huntress
       SomeAssetCard greenManMedallionHourOfTheHuntress

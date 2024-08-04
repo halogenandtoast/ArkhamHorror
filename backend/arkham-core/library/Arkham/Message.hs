@@ -875,6 +875,7 @@ data Message
   | RevealLocation (Maybe InvestigatorId) LocationId
   | UnrevealLocation LocationId
   | RevealSkillTestChaosTokens InvestigatorId
+  | RevealSkillTestChaosTokensAgain InvestigatorId -- meant for when we reveal during resolving
   | RevealChaosToken Source InvestigatorId ChaosToken
   | Revelation InvestigatorId Source
   | RevelationChoice InvestigatorId Source Int

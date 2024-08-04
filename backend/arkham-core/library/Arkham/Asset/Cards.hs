@@ -817,6 +817,7 @@ allPlayerAssetCards =
       , thirtyFiveWinchester
       , thirtyTwoColt
       , thirtyTwoColt2
+      , tidalMemento
       , timewornBrand5
       , tokenOfFaith
       , tokenOfFaith3
@@ -853,6 +854,7 @@ allPlayerAssetCards =
       , wellConnected3
       , wellPrepared2
       , wendysAmulet
+      , wendysAmuletAdvanced
       , whittonGreene
       , whittonGreene2
       , wickedAthame
@@ -8068,6 +8070,26 @@ rolands38SpecialAdvanced =
       , cdUnique = True
       , cdUses = uses Ammo 4
       , cdSlots = [#hand]
+      , cdKeywords = singleton Keyword.Advanced
+      }
+
+tidalMemento :: CardDef
+tidalMemento =
+  signature "90037"
+    $ permanent
+    $ (asset "90038" "Tidal Memento" 0 Neutral)
+      { cdCardTraits = setFromList [Item, Charm]
+      , cdUnique = True
+      }
+
+wendysAmuletAdvanced :: CardDef
+wendysAmuletAdvanced =
+  signature "90037"
+    $ (asset "90039" "Wendy's Amulet" 2 Neutral)
+      { cdSkills = [#willpower, #wild, #wild]
+      , cdCardTraits = setFromList [Item, Relic]
+      , cdUnique = True
+      , cdSlots = [#accessory]
       , cdKeywords = singleton Keyword.Advanced
       }
 

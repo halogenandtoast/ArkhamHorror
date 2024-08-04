@@ -60,6 +60,7 @@ allPlayerTreacheryCards =
     $ concatMap
       toCardCodePairs
       [ abandonedAndAlone
+      , abandonedAndAloneAdvanced
       , accursedFate
       , acrossSpaceAndTime
       , amnesia
@@ -2441,6 +2442,13 @@ coverUpAdvanced :: CardDef
 coverUpAdvanced =
   (weakness "90031" "Cover Up")
     { cdCardTraits = setFromList [Task]
+    , cdKeywords = singleton Keyword.Advanced
+    }
+
+abandonedAndAloneAdvanced :: CardDef
+abandonedAndAloneAdvanced =
+  (weakness "90040" "Abandoned and Alone")
+    { cdCardTraits = setFromList [Madness]
     , cdKeywords = singleton Keyword.Advanced
     }
 

@@ -1186,6 +1186,9 @@ allAssets =
     , SomeAssetCard wendysAmuletAdvanced
     , --- On the Road Again
       SomeAssetCard petesGuitar
+    , --- Laid to Rest
+      SomeAssetCard jimsTrumpetAdvanced
+    , SomeAssetCard theBeyondBleakNetherworld
     , -- Promo
       --- Hour of the Huntress
       SomeAssetCard greenManMedallionHourOfTheHuntress

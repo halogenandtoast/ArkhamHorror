@@ -37,8 +37,11 @@ import Text.Read (read)
 
 type Parser = ParsecT Text () Identity
 
-loadDecklist :: CardGen m => ArkhamDBDecklist -> m (InvestigatorId, [PlayerCard])
-loadDecklist decklist = (decklistInvestigatorId decklist,) <$> loadDecklistCards decklist
+loadDecklist :: CardGen m => ArkhamDBDecklist -> m (InvestigatorId, [PlayerCard], [PlayerCard])
+loadDecklist decklist =
+  (decklistInvestigatorId decklist,,)
+    <$> loadDecklistCards slots decklist
+    <*> loadExtraDeck decklist
 
 decklistInvestigatorId :: ArkhamDBDecklist -> InvestigatorId
 decklistInvestigatorId decklist = case meta decklist of
@@ -50,9 +53,10 @@ decklistInvestigatorId decklist = case meta decklist of
         then investigator_code decklist
         else alternate_front
 
-loadDecklistCards :: CardGen m => ArkhamDBDecklist -> m [PlayerCard]
-loadDecklistCards decklist = do
-  results <- for (Map.toList $ slots decklist) $ \(cardCode, count') ->
+loadDecklistCards
+  :: CardGen m => (ArkhamDBDecklist -> Map CardCode Int) -> ArkhamDBDecklist -> m [PlayerCard]
+loadDecklistCards f decklist = do
+  results <- for (Map.toList $ f decklist) $ \(cardCode, count') ->
     replicateM
       count'
       ( genPlayerCardWith (lookupPlayerCardDef cardCode)
@@ -61,11 +65,26 @@ loadDecklistCards decklist = do
       )
   pure $ fold results
 
+loadExtraDeck :: CardGen m => ArkhamDBDecklist -> m [PlayerCard]
+loadExtraDeck decklist = case meta decklist of
+  Just meta' -> case decode (encodeUtf8 $ fromStrict meta') of
+    Just (Object o) ->
+      case KeyMap.lookup "extra_deck" o of
+        Just (String s) ->
+          let codes = T.splitOn "," s
+              convert =
+                applyCustomizations decklist
+                  . setPlayerCardOwner (normalizeInvestigatorId $ decklistInvestigatorId decklist)
+           in traverse ((`genPlayerCardWith` convert) . lookupPlayerCardDef . CardCode) codes
+        _ -> loadDecklistCards sideSlots decklist
+    _ -> loadDecklistCards sideSlots decklist
+  _ -> loadDecklistCards sideSlots decklist
+
 newtype ArkhamDBDecklistMeta = ArkhamDBDecklistMeta
   { alternate_front :: InvestigatorId
   }
   deriving stock (Generic, Show)
-  deriving anyclass (FromJSON)
+  deriving anyclass FromJSON
 
 -- things we can choose: cards, traits, skills
 applyCustomizations :: ArkhamDBDecklist -> PlayerCard -> PlayerCard

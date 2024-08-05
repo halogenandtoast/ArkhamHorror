@@ -10,7 +10,7 @@ import Arkham.Investigator.Runner
 newtype JimCulver = JimCulver InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 jimCulver :: InvestigatorCard JimCulver
 jimCulver =
@@ -38,8 +38,8 @@ instance RunMessage JimCulver where
       player <- getPlayer iid
       pushWhen (ElderSign `elem` faces)
         $ chooseOne player
-        $ [ Label "Resolve as Elder Sign" []
-          , Label "Resolve as Skull" [chaosTokenEffect attrs token $ ChaosTokenFaceModifier [Skull]]
+        $ [ Label "Resolve as {elderSign}" []
+          , Label "Resolve as {skull}" [chaosTokenEffect attrs token $ ChaosTokenFaceModifier [Skull]]
           ]
       pure i
     _ -> JimCulver <$> runMessage msg attrs

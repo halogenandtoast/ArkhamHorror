@@ -10,6 +10,7 @@ import { MessageType } from '@/arkham/types/Message';
 import EditAsset from '@/arkham/components/EditAsset.vue';
 import Key from '@/arkham/components/Key.vue';
 import Event from '@/arkham/components/Event.vue';
+import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
@@ -39,9 +40,23 @@ const exhausted = computed(() => props.asset.exhausted)
 const cardCode = computed(() => props.asset.cardCode)
 const image = computed(() => {
   if (props.asset.flipped) {
+    console.log(cardCode.value)
+    if (cardCode.value === "c90052") {
+      return imgsrc(`cards/90052b.jpg`)
+    }
     return imgsrc(`player_back.jpg`)
   }
   return imgsrc(`cards/${cardCode.value.replace('c', '')}.jpg`)
+})
+
+const dataImage = computed(() => {
+  if (props.asset.flipped) {
+    console.log(cardCode.value)
+    if (cardCode.value === "c90052") {
+      return "90052b"
+    }
+  }
+  return cardCode.value.replace('c', '')
 })
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
@@ -73,6 +88,8 @@ const cardAction = computed(() => choices.value.findIndex(isCardAction))
 const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
 const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
 const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
+
+const isSpirit = computed(() => props.asset.modifiers.some((m) => m.type.contents === 'IsSpirit'))
 
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== MessageType.ABILITY_LABEL) {
@@ -180,10 +197,18 @@ const assetStory = computed(() => {
           />
           <span class="deck-size">{{asset.marketDeck.length}}</span>
         </div>
+        <div v-if="asset.spiritDeck" class="spirit-deck">
+          <img
+            class="deck card"
+            :src="imgsrc('player_back.jpg')"
+            width="150px"
+          />
+          <span class="deck-size">{{asset.spiritDeck.length}}</span>
+        </div>
         <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract, exhausted}">
           <img
             :data-id="id"
-            :data-image-id="cardCode.replace('c', '')"
+            :data-image-id="dataImage"
             :src="image"
             class="card"
             @click="clicked"
@@ -203,14 +228,14 @@ const assetStory = computed(() => {
             />
           </template>
           <PoolItem
-            v-if="cardCode == 'c07189' || (asset.health !== null || (damage || 0) > 0)"
+            v-if="!isSpirit && (cardCode == 'c07189' || (asset.health !== null || (damage || 0) > 0))"
             type="health"
             :amount="damage || 0"
             :class="{ 'health--can-interact': healthAction !== -1 }"
             @choose="choose(healthAction)"
           />
           <PoolItem
-            v-if="cardCode == 'c07189' || (asset.sanity !== null || (horror || 0) > 0)"
+            v-if="!isSpirit && (cardCode == 'c07189' || (asset.sanity !== null || (horror || 0) > 0))"
             type="sanity"
             :amount="horror || 0"
             :class="{ 'sanity--can-interact': sanityAction !== -1 }"
@@ -257,6 +282,14 @@ const assetStory = computed(() => {
         :game="game"
         :playerId="playerId"
         :key="assetId"
+        @choose="$emit('choose', $event)"
+      />
+      <Enemy
+        v-for="enemyId in asset.enemies"
+        :enemy="game.enemies[enemyId]"
+        :game="game"
+        :playerId="playerId"
+        :key="enemyId"
         @choose="$emit('choose', $event)"
       />
     </div>
@@ -364,6 +397,11 @@ const assetStory = computed(() => {
 }
 
 .market-deck {
+  position: relative;
+  margin-right: 5px;
+}
+
+.spirit-deck {
   position: relative;
   margin-right: 5px;
 }

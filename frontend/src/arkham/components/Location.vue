@@ -142,7 +142,7 @@ const enemies = computed(() => {
   const enemyIds = props.location.enemies;
 
   return enemyIds
-    .filter((e) => props.game.enemies[e].placement.tag === 'OtherPlacement' && props.game.enemies[e].asSelfLocation === null)
+    .filter((e) => props.game.enemies[e].placement.tag === 'OtherPlacement' && props.game.enemies[e].placement.contents !== "AttachedToAsset" && props.game.enemies[e].asSelfLocation === null)
 })
 
 const treacheries = computed(() => {

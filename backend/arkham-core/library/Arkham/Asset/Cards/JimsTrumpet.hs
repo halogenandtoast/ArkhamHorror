@@ -19,7 +19,8 @@ instance HasAbilities JimsTrumpet where
     [ controlledAbility
         x
         1
-        ( exists $ HealableInvestigator (toSource x) #horror $ at_ (oneOf [YourLocation, ConnectedLocation])
+        ( exists (HealableInvestigator (toSource x) #horror $ at_ (oneOf [YourLocation, ConnectedLocation]))
+            <> DuringSkillTest AnySkillTest
         )
         $ ReactionAbility (RevealChaosToken #when Anyone #skull) (exhaust x)
     ]

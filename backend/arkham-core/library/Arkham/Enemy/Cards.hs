@@ -71,6 +71,7 @@ allPlayerEnemyCards =
       , weepingYurei
       , biancaDieKatz
       , tommyMalloy
+      , vengefulShade
       , sacrificialBeast
       , vengefulHound
       ]
@@ -2334,6 +2335,13 @@ vengefulSpecter =
     , cdKeywords = setFromList [Keyword.Patrol "Room 245", Keyword.Retaliate]
     , cdVictoryPoints = Just 2
     , cdUnique = True
+    }
+
+vengefulShade :: CardDef
+vengefulShade =
+  (weakness "90053" "Vengeful Shade")
+    { cdCardTraits = setFromList [Monster, Geist]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 sacrificialBeast :: CardDef

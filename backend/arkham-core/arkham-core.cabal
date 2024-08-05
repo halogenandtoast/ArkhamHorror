@@ -764,6 +764,7 @@ library
       Arkham.Asset.Cards.JessicaHyde1
       Arkham.Asset.Cards.JewelOfAureolus3
       Arkham.Asset.Cards.JimsTrumpet
+      Arkham.Asset.Cards.JimsTrumpetAdvanced
       Arkham.Asset.Cards.JoeyTheRatVigil
       Arkham.Asset.Cards.JoeyTheRatVigil3
       Arkham.Asset.Cards.JordanPerry
@@ -1058,6 +1059,7 @@ library
       Arkham.Asset.Cards.TennesseeSourMashRogue3
       Arkham.Asset.Cards.TennesseeSourMashSurvivor3
       Arkham.Asset.Cards.TetsuoMori
+      Arkham.Asset.Cards.TheBeyondBleakNetherworld
       Arkham.Asset.Cards.TheBlackBook
       Arkham.Asset.Cards.TheBlackCat5
       Arkham.Asset.Cards.TheBlackFan3
@@ -1506,6 +1508,7 @@ library
       Arkham.Enemy.Cards.UnboundBeast
       Arkham.Enemy.Cards.ValentinoRivas
       Arkham.Enemy.Cards.VengefulHound
+      Arkham.Enemy.Cards.VengefulShade
       Arkham.Enemy.Cards.VengefulSpecter
       Arkham.Enemy.Cards.VengefulWitch
       Arkham.Enemy.Cards.VictoriaDevereux
@@ -2059,6 +2062,7 @@ library
       Arkham.Investigator.Cards.JennyBarnes
       Arkham.Investigator.Cards.JeromeDavids
       Arkham.Investigator.Cards.JimCulver
+      Arkham.Investigator.Cards.JimCulverParallel
       Arkham.Investigator.Cards.JoeDiamond
       Arkham.Investigator.Cards.KateWinthrop
       Arkham.Investigator.Cards.KohakuNarukami
@@ -3137,6 +3141,7 @@ library
       Arkham.Treachery.Cards.FateOfAllFools
       Arkham.Treachery.Cards.FinalMistake
       Arkham.Treachery.Cards.FinalRhapsody
+      Arkham.Treachery.Cards.FinalRhapsodyAdvanced
       Arkham.Treachery.Cards.FineDining
       Arkham.Treachery.Cards.FinePrint
       Arkham.Treachery.Cards.ForcedIntoHiding

@@ -66,7 +66,8 @@ function imageFor(tokenFace: string) {
 
 const revealedChaosTokens = computed(() => {
   if (props.game.focusedChaosTokens.length > 0) {
-    return [...props.game.skillTestChaosTokens, ...props.game.focusedChaosTokens]
+    const tokens = [...props.game.skillTestChaosTokens, ...props.game.focusedChaosTokens]
+    return Array.from(new Set(tokens.map(JSON.stringify))).map(JSON.parse);
   }
 
   return props.game.skillTestChaosTokens;

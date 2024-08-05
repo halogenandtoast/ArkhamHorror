@@ -109,6 +109,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorHandSize :: Field Investigator Int
   InvestigatorCardsUnderneath :: Field Investigator [Card]
   InvestigatorDeck :: Field Investigator (Deck PlayerCard)
+  InvestigatorSideDeck :: Field Investigator (Maybe [PlayerCard])
   InvestigatorDecks :: Field Investigator (Map InvestigatorDeckKey [Card])
   InvestigatorDiscard :: Field Investigator [PlayerCard]
   InvestigatorClass :: Field Investigator ClassSymbol
@@ -230,6 +231,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorRemainingActions :: Int
   , investigatorEndedTurn :: Bool
   , investigatorDeck :: Deck PlayerCard
+  , investigatorSideDeck :: Maybe [PlayerCard]
   , investigatorDecks :: Map InvestigatorDeckKey [Card]
   , investigatorDiscard :: [PlayerCard]
   , investigatorHand :: [Card]

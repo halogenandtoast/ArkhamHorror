@@ -324,6 +324,7 @@ investigator f cardDef Stats {..} =
                 , investigatorRemainingActions = 3
                 , investigatorEndedTurn = False
                 , investigatorDeck = mempty
+                , investigatorSideDeck = mempty
                 , investigatorDecks = mempty
                 , investigatorDiscard = mempty
                 , investigatorHand = mempty

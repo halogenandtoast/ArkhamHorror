@@ -77,9 +77,12 @@ instance RunMessage TheCircleUndone where
     StartCampaign | campaignStep attrs `elem` [PrologueStep, DisappearanceAtTheTwilightEstate] -> do
       -- skip picking decks
       lead <- getActivePlayer
-      let step' = if campaignStep attrs == DisappearanceAtTheTwilightEstate then PrologueStep else campaignStep attrs
+      let step' =
+            if campaignStep attrs == DisappearanceAtTheTwilightEstate then PrologueStep else campaignStep attrs
       pushAll
-        $ [Ask lead PickCampaignSettings | campaignStep attrs `notElem` [PrologueStep, DisappearanceAtTheTwilightEstate]]
+        $ [ Ask lead PickCampaignSettings
+          | campaignStep attrs `notElem` [PrologueStep, DisappearanceAtTheTwilightEstate]
+          ]
         <> [CampaignStep step']
       pure c
     CampaignStep PrologueStep -> do
@@ -109,7 +112,7 @@ instance RunMessage TheCircleUndone where
           [ CardLabel
             (cdCardCode card)
             [ LoadDecklist player
-                $ ArkhamDBDecklist mempty (InvestigatorId $ cdCardCode card) (toTitle card) Nothing
+                $ ArkhamDBDecklist mempty mempty (InvestigatorId $ cdCardCode card) (toTitle card) Nothing
             ]
           | card <- availablePrologueInvestigators
           ]

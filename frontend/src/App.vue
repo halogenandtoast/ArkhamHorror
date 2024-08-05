@@ -147,6 +147,34 @@ body {
   }
 }
 
+.skull-icon {
+  &:before {
+    font-family: "ArkhamIcons";
+    content: "\e910";
+  }
+}
+
+.cultist-icon {
+  &:before {
+    font-family: "ArkhamIcons";
+    content: "\e911";
+  }
+}
+
+.tablet-icon {
+  &:before {
+    font-family: "ArkhamIcons";
+    content: "\e912";
+  }
+}
+
+.elder-thing-icon {
+  &:before {
+    font-family: "ArkhamIcons";
+    content: "\e913";
+  }
+}
+
 .curse-icon {
   &:before {
     font-family: "ArkhamIcons";

@@ -181,9 +181,10 @@ runGameMessage msg g = case msg of
     let mOldId = toId <$> find ((== playerId) . attr investigatorPlayerId) (toList $ gameInvestigators g)
         replaceIds = InvestigatorId "00000" : toList mOldId
 
-    (iid', deck) <- loadDecklist decklist
+    (iid', deck, sideDeck) <- loadDecklist decklist
     let investigator = lookupInvestigator iid' playerId
     let iid = toId investigator
+    when (notNull sideDeck) $ push $ LoadSideDeck iid sideDeck
     push $ InitDeck iid (Deck deck)
     let activeInvestigatorF =
           if gameActiveInvestigatorId g `elem` replaceIds then set activeInvestigatorIdL iid else id

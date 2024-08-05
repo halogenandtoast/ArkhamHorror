@@ -218,10 +218,4 @@ const hasPool = computed(() => {
   border-radius: 20px;
   transform: translateX(-50%) translateY(-50%);
 }
-
-.market-deck {
-  position: relative;
-  margin-right: 5px;
-}
-
 </style>

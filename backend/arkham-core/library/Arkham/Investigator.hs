@@ -150,6 +150,7 @@ allInvestigators =
       , SomeInvestigatorCard rolandBanksParallel
       , SomeInvestigatorCard wendyAdamsParallel
       , SomeInvestigatorCard ashcanPeteParallel
+      , SomeInvestigatorCard jimCulverParallel
       ]
 
 becomeYithian :: Investigator -> Investigator

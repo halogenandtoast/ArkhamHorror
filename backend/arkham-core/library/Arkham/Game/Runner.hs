@@ -1060,8 +1060,8 @@ runGameMessage msg g = case msg of
       . (foundCardsL . each %~ filter (/= EncounterCard card))
   ReturnToHand iid (SkillTarget skillId) -> do
     card <- field SkillCard skillId
-    push $ addToHand iid card
-    pure $ g & entitiesL . skillsL %~ deleteMap skillId
+    pushAll [RemoveFromPlay (toSource skillId), addToHand iid card]
+    pure g
   ReturnToHand iid (CardIdTarget cardId) -> do
     -- We need to check skills specifically as they aren't covered by the skill
     -- test runner

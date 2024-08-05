@@ -28,8 +28,8 @@ instance RunMessage SpiresOfCarcosa where
   runMessage msg t@(SpiresOfCarcosa attrs) = runQueueT $ case msg of
     Revelation iid source | isSource attrs source -> do
       withLocationOf iid \lid -> do
-        attachTreachery attrs lid
         placeDoom attrs lid 2
+        attachTreachery attrs lid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom

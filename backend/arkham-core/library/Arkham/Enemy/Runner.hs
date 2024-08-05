@@ -1341,11 +1341,11 @@ instance RunMessage EnemyAttrs where
     Blanked msg' -> runMessage msg' a
     UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do
       sid <- getRandom
-      push $ FightEnemy sid iid (toId a) (toSource iid) Nothing #combat False
+      push $ FightEnemy sid iid (toId a) (a.ability AbilityAttack) Nothing #combat False
       pure a
     UseCardAbility iid (isSource a -> True) AbilityEvade _ _ -> do
       sid <- getRandom
-      push $ EvadeEnemy sid iid (toId a) (toSource iid) Nothing #agility False
+      push $ EvadeEnemy sid iid (toId a) (a.ability AbilityEvade) Nothing #agility False
       pure a
     UseCardAbility iid (isSource a -> True) AbilityEngage _ _ -> do
       push $ EngageEnemy iid (toId a) Nothing False

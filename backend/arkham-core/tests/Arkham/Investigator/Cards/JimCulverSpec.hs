@@ -31,7 +31,7 @@ spec = describe "Jim Culver" $ do
       chooseOptionMatching
         "change to skull"
         ( \case
-            Label "Resolve as Skull" _ -> True
+            Label "Resolve as {skull}" _ -> True
             _ -> False
         )
       chooseOnlyOption "apply results"
@@ -55,7 +55,7 @@ spec = describe "Jim Culver" $ do
       chooseOptionMatching
         "resolve elder sign"
         ( \case
-            Label "Resolve as Elder Sign" _ -> True
+            Label "Resolve as {elderSign}" _ -> True
             _ -> False
         )
       chooseOnlyOption "apply results"

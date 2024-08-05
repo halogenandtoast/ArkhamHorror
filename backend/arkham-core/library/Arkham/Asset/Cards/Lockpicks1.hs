@@ -57,7 +57,7 @@ instance RunMessage Lockpicks1Effect where
           let aid = fromJustNote "must be an asset" attrs.source.asset
           pushAll [SpendUses attrs.source (AssetTarget aid) Supply 1, disable attrs]
       pure e
-    FailedThisSkillTestBy _ _ n | n < 2 -> do
+    FailedThisSkillTest _ _ -> do
       withSkillTest \sid -> do
         when (maybe False (isTarget sid) attrs.metaTarget) $ do
           let aid = fromJustNote "must be an asset" attrs.source.asset

@@ -26,7 +26,7 @@ async function choose(idx: number) {
   emit('choose', idx)
 }
 
-const inSkillTest = computed(() => props.game.skillTestResults !== null)
+const inSkillTest = computed(() => props.game.skillTest !== null)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 const investigator = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId))
@@ -62,6 +62,9 @@ const choicesRequireModal = computed(() => choices.value.some(choiceRequiresModa
 
 const requiresModal = computed(() => {
   if (props.noStory && question.value?.tag === QuestionType.READ) {
+    return false
+  }
+  if (inSkillTest.value) {
     return false
   }
   return (props.game.focusedChaosTokens.length > 0 && !inSkillTest.value) || focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value || choicesRequireModal.value

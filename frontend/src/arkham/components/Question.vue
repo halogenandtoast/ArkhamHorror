@@ -61,7 +61,7 @@ const focusedCards = computed(() => {
 
 
 const showChoices = computed(() => {
-  if (props.game.skillTest) {
+  if (props.game.skillTest && !props.isSkillTest) {
     return false
   }
   if (choices.value.some(choiceRequiresModal)) {

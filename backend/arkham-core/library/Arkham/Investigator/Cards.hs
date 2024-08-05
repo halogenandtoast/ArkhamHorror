@@ -90,6 +90,7 @@ allInvestigatorCards =
       , wendyAdamsParallel
       , ashcanPeteParallel
       , jimCulverParallel
+      , zoeySamarasParallel
       ]
 
 allEncounterInvestigatorCards :: Map CardCode CardDef
@@ -613,3 +614,7 @@ ashcanPeteParallel =
 jimCulverParallel :: CardDef
 jimCulverParallel =
   investigator "90049" ("Jim Culver" <:> "The Musician") Mystic [Performer, Cursed]
+
+zoeySamarasParallel :: CardDef
+zoeySamarasParallel =
+  investigator "90059" ("Zoey Samaras" <:> "The Chef") Guardian [Believer, Hunter]

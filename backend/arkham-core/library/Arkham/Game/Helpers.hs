@@ -3073,6 +3073,8 @@ skillTestMatches iid source st = \case
     s -> s == source
   Matcher.SkillTestSourceMatches sourceMatcher ->
     sourceMatches (skillTestSource st) sourceMatcher
+  Matcher.SkillTestBeforeRevealingChaosTokens ->
+    pure $ null $ skillTestRevealedChaosTokens st
   Matcher.SkillTestWithRevealedChaosToken matcher ->
     anyM (`chaosTokenMatches` Matcher.IncludeSealed matcher)
       $ skillTestRevealedChaosTokens st

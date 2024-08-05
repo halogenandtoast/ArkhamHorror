@@ -870,6 +870,7 @@ allPlayerAssetCards =
       , zeal
       , zebulonWhateley
       , zoeysCross
+      , zoeysCrossAdvanced
       ]
 
 allEncounterAssetCards :: Map CardCode CardDef
@@ -8122,6 +8123,17 @@ theBeyondBleakNetherworld =
     $ permanent
     $ (asset "90052" ("The Beyond" <:> "Bleak Netherworld") 0 Neutral)
       { cdCardTraits = setFromList [Sanctum, Spectral]
+      }
+
+zoeysCrossAdvanced :: CardDef
+zoeysCrossAdvanced =
+  signature "90059"
+    $ (asset "90060" ("Zoey's Cross" <:> "Symbol of Conviction") 1 Neutral)
+      { cdSkills = [#combat, #combat, #wild]
+      , cdCardTraits = setFromList [Item, Charm]
+      , cdUnique = True
+      , cdSlots = [#accessory]
+      , cdKeywords = singleton Keyword.Advanced
       }
 
 greenManMedallionHourOfTheHuntress :: CardDef

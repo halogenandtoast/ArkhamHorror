@@ -1151,6 +1151,7 @@ library
       Arkham.Asset.Cards.Zeal
       Arkham.Asset.Cards.ZebulonWhateley
       Arkham.Asset.Cards.ZoeysCross
+      Arkham.Asset.Cards.ZoeysCrossAdvanced
       Arkham.Asset.Helpers
       Arkham.Asset.Import.Lifted
       Arkham.Asset.Runner
@@ -2103,6 +2104,7 @@ library
       Arkham.Investigator.Cards.WilsonRichards
       Arkham.Investigator.Cards.WinifredHabbamock
       Arkham.Investigator.Cards.ZoeySamaras
+      Arkham.Investigator.Cards.ZoeySamarasParallel
       Arkham.Investigator.DamageAssignment
       Arkham.Investigator.Deck
       Arkham.Investigator.Import.Lifted
@@ -3273,6 +3275,7 @@ library
       Arkham.Treachery.Cards.SirenCall
       Arkham.Treachery.Cards.SlitheringBehindYou
       Arkham.Treachery.Cards.SmiteTheWicked
+      Arkham.Treachery.Cards.SmiteTheWickedAdvanced
       Arkham.Treachery.Cards.SnakeBite
       Arkham.Treachery.Cards.Snakescourge
       Arkham.Treachery.Cards.SomethingInTheDrinks

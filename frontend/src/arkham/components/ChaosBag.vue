@@ -73,15 +73,9 @@ const revealedChaosTokens = computed(() => {
 })
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
-
 const tokenAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.START_SKILL_TEST_BUTTON))
-
 const debug = useDebug()
-
-
 const allTokenFaces = computed(() => props.chaosBag.chaosTokens.map(t => t.face).sort(sortTokenFaces))
-const tokenFaces = computed(() => [...new Set(allTokenFaces.value)])
-
 const tokenOrder = ['PlusOne', 'Zero', 'MinusOne', 'MinusTwo', 'MinusThree', 'MinusFour', 'MinusFive', 'MinusSix', 'MinusSeven', 'MinusEight', 'Skull', 'Cultist', 'Tablet', 'ElderThing', 'AutoFail', 'ElderSign', 'CurseToken', 'BlessToken']
 
 function sortTokenFaces(a: string, b: string) {

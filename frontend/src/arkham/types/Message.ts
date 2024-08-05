@@ -397,6 +397,7 @@ export function choiceRequiresModal(c: Message) {
     case 'AbilityLabel': return c.ability.displayAsAction;
     case 'CardLabel': return true;
     case 'TarotLabel': return true;
+    case 'ChaosTokenGroupChoice': return true;
     default: return false;
   }
 }

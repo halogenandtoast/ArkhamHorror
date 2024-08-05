@@ -184,7 +184,6 @@ import Arkham.Skill.Skills (
   hatchetManEffect,
   momentum1Effect,
   prescientEffect,
-  quickThinkingEffect,
   surprisingFind1Effect,
   theEyeOfTruth5Effect,
  )
@@ -352,7 +351,6 @@ allEffects =
     , ("02150", SomeEffect deduction2Effect)
     , ("02190", SomeEffect defianceEffect)
     , ("02228", SomeEffect exposeWeakness1Effect)
-    , ("02229", SomeEffect quickThinkingEffect)
     , ("02230", SomeEffect luckyDice2Effect)
     , ("02236", SomeEffect undimensionedAndUnseenTabletToken)
     , ("02246", SomeEffect tenAcreMeadow_246Effect)

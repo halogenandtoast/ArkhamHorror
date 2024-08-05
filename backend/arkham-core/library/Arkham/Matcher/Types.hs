@@ -260,6 +260,12 @@ instance Not AssetMatcher where
 instance IsString AssetMatcher where
   fromString = AssetWithTitle . fromString
 
+instance IsLabel "relic" AssetMatcher where
+  fromLabel = AssetWithTrait Relic
+
+instance IsLabel "charm" AssetMatcher where
+  fromLabel = AssetWithTrait Charm
+
 instance IsLabel "ally" AssetMatcher where
   fromLabel = AssetWithTrait Ally
 
@@ -897,6 +903,12 @@ instance IsString CardMatcher where
 
 instance IsLabel "any" CardMatcher where
   fromLabel = AnyCard
+
+instance IsLabel "charm" CardMatcher where
+  fromLabel = CardWithTrait Charm
+
+instance IsLabel "relic" CardMatcher where
+  fromLabel = CardWithTrait Relic
 
 instance IsLabel "blessed" CardMatcher where
   fromLabel = CardWithTrait Blessed

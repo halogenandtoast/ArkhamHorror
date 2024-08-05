@@ -1116,6 +1116,7 @@ library
       Arkham.Asset.Cards.TrueGrit
       Arkham.Asset.Cards.TrueMagickReworkingReality5
       Arkham.Asset.Cards.TrustyBullwhip
+      Arkham.Asset.Cards.TrustyBullwhipAdvanced
       Arkham.Asset.Cards.TryAndTryAgain1
       Arkham.Asset.Cards.TryAndTryAgain3
       Arkham.Asset.Cards.TwentyFiveAutomatic
@@ -2077,6 +2078,7 @@ library
       Arkham.Investigator.Cards.MarkHarrigan
       Arkham.Investigator.Cards.MinhThiPhan
       Arkham.Investigator.Cards.MontereyJack
+      Arkham.Investigator.Cards.MontereyJackParallel
       Arkham.Investigator.Cards.NathanielCho
       Arkham.Investigator.Cards.NormanWithers
       Arkham.Investigator.Cards.PatriceHathaway
@@ -3068,6 +3070,7 @@ library
       Arkham.Treachery.Cards.BurdenOfLeadership
       Arkham.Treachery.Cards.BurdensOfThePast
       Arkham.Treachery.Cards.BuriedSecrets
+      Arkham.Treachery.Cards.BuriedSecretsAdvanced
       Arkham.Treachery.Cards.CalledByTheMists
       Arkham.Treachery.Cards.CallOfTheUnknown
       Arkham.Treachery.Cards.CallToOrder

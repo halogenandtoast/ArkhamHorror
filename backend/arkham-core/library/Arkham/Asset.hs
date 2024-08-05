@@ -1191,6 +1191,8 @@ allAssets =
     , SomeAssetCard theBeyondBleakNetherworld
     , --- Path of the Righteous
       SomeAssetCard zoeysCrossAdvanced
+    , --- Relics of the Past
+      SomeAssetCard trustyBullwhipAdvanced
     , -- Promo
       --- Hour of the Huntress
       SomeAssetCard greenManMedallionHourOfTheHuntress

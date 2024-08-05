@@ -1242,6 +1242,7 @@ data SkillTestMatcher
   | SkillTestWithDifficulty ValueMatcher
   | PerilousSkillTest
   | IfSkillTestMatcher SkillTestMatcher SkillTestMatcher SkillTestMatcher
+  | SkillTestBeforeRevealingChaosTokens
   deriving stock (Show, Eq, Ord, Data, Generic)
 
 instance IsLabel "investigating" SkillTestMatcher where
@@ -1257,6 +1258,9 @@ instance IsLabel "parleying" SkillTestMatcher where
   fromLabel = WhileParleying
 
 instance IsLabel "fighting" SkillTestMatcher where
+  fromLabel = WhileAttackingAnEnemy AnyEnemy
+
+instance IsLabel "attacking" SkillTestMatcher where
   fromLabel = WhileAttackingAnEnemy AnyEnemy
 
 instance IsLabel "evading" SkillTestMatcher where

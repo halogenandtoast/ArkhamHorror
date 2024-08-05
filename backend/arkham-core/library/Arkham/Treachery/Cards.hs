@@ -129,6 +129,7 @@ allPlayerTreacheryCards =
       , shockingDiscovery
       , sirenCall
       , smiteTheWicked
+      , smiteTheWickedAdvanced
       , starsOfHyades
       , stupor
       , terribleSecret
@@ -2465,6 +2466,13 @@ finalRhapsodyAdvanced :: CardDef
 finalRhapsodyAdvanced =
   (weakness "90051" "Final Rhapsody")
     { cdCardTraits = setFromList [Endtimes]
+    , cdKeywords = singleton Keyword.Advanced
+    }
+
+smiteTheWickedAdvanced :: CardDef
+smiteTheWickedAdvanced =
+  (weakness "90061" "Smite the Wicked")
+    { cdCardTraits = setFromList [Task]
     , cdKeywords = singleton Keyword.Advanced
     }
 

@@ -526,6 +526,8 @@ allTreacheries =
       SomeTreacheryCard hardTimes
     , --- Laid to Rest
       SomeTreacheryCard finalRhapsodyAdvanced
+    , --- Path of the Righteous
+      SomeTreacheryCard smiteTheWickedAdvanced
     , -- Promo
       --- The Dirge of Reason
       SomeTreacheryCard theDirgeOfReason

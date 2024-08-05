@@ -1189,6 +1189,8 @@ allAssets =
     , --- Laid to Rest
       SomeAssetCard jimsTrumpetAdvanced
     , SomeAssetCard theBeyondBleakNetherworld
+    , --- Path of the Righteous
+      SomeAssetCard zoeysCrossAdvanced
     , -- Promo
       --- Hour of the Huntress
       SomeAssetCard greenManMedallionHourOfTheHuntress

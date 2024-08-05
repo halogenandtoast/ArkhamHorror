@@ -958,7 +958,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     cannotDamage <- hasModifier iid CannotDealDamage
     unless cannotDamage $ do
       damage <- damageValueFor 1 iid DamageForEnemy
-      push $ EnemyDamage eid $ attack source damage
+      -- if the source was a basic attack, we need to say the investigator did
+      -- the damage to trigger the correct windows
+      let
+        source' =
+          case source of
+            AbilitySource _ 100 -> toSource iid
+            _ -> source
+      push $ EnemyDamage eid $ attack source' damage
     pure a
   ChooseEvadeEnemy choose | choose.investigator == investigatorId -> do
     modifiers <- getModifiers a

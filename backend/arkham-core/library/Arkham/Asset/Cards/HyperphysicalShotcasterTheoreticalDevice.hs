@@ -24,6 +24,7 @@ import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Movement
 import Arkham.SkillType
+import Arkham.Token
 import Arkham.Window (defaultWindows)
 
 newtype Metadata = Metadata {manifest :: Maybe Customization}
@@ -85,11 +86,11 @@ instance HasAbilities HyperphysicalShotcasterTheoreticalDevice where
         then NoRestriction
         else Never
     manifestAbility = \case
-      Railshooter -> fightAction_
-      Telescanner -> investigateAction_
-      Translocator -> evadeAction_
-      Realitycollapser -> actionAbility
-      Matterweaver -> actionAbility
+      Railshooter -> fightAction (assetUseCost x Aether 1)
+      Telescanner -> investigateAction (assetUseCost x Aether 1)
+      Translocator -> evadeAction (assetUseCost x Aether 1)
+      Realitycollapser -> actionAbilityWithCost (assetUseCost x Aether 1)
+      Matterweaver -> actionAbilityWithCost (assetUseCost x Aether 1)
       _ -> error "Invalid manifest ability"
     manifestCriteria = \case
       Railshooter -> NoRestriction

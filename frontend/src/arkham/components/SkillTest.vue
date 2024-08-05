@@ -23,16 +23,10 @@ const props = defineProps<{
 }>()
 
 const skillTestResults = computed(() => props.game.skillTestResults)
-
 const emit = defineEmits(['choose'])
-
 const committedCards = computed(() => props.skillTest.committedCards)
-
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
-const skipTriggersAction = computed(() => {
-  return choices.value
-    .findIndex((c) => c.tag === MessageType.SKIP_TRIGGERS_BUTTON && c.investigatorId === props.skillTest.investigator);
-})
+const skipTriggersAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.SKIP_TRIGGERS_BUTTON))
 const investigatorPortrait = computed(() => {
   const choice = choices.value.find((c): c is StartSkillTestButton => c.tag === MessageType.START_SKILL_TEST_BUTTON)
   if (choice) {
@@ -94,9 +88,6 @@ const card = computed(() => {
   return props.game.cards[props.skillTest.card]
 })
 
-const showChoices = computed(() => choices.value.some((c) => { return c.tag === MessageType.DONE || c.tag === MessageType.LABEL || c.tag === MessageType.SKILL_LABEL || c.tag === MessageType.SKILL_LABEL_WITH_LABEL || c.tag == MessageType.PORTRAIT_LABEL || (c.tag === MessageType.ABILITY_LABEL && c.ability.displayAsAction)}))
-
-
 const applyResultsAction = computed(() => {
   return choices.value.findIndex((c) => c.tag === "SkillTestApplyResultsButton");
 })
@@ -154,52 +145,6 @@ const label = function(body: string) {
           class="portrait"
           :src="investigatorPortrait"
         />
-      </div>
-      <div v-if="showChoices" class="choices">
-        <template v-for="(choice, index) in choices" :key="index">
-          <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
-            <button @click="choose(index)" v-tooltip="choice.tooltip">{{choice.label}}</button>
-          </template>
-          <template v-if="choice.tag === MessageType.ABILITY_LABEL && choice.ability.type.tag === 'ConstantReaction'">
-            <button @click="choose(index)">{{choice.ability.type.label}}</button>
-          </template>
-          <template v-if="choice.tag === 'PortraitLabel'">
-            <img class="portrait card active" :src="portraitLabelImage(choice.investigatorId)" @click="choose(index)" />
-          </template>
-          <button v-if="choice.tag === MessageType.DONE" @click="choose(index)">{{label(choice.label)}}</button>
-          <div v-if="choice.tag === MessageType.LABEL" class="message-label">
-            <button v-if="choice.label == 'Choose {skull}'" @click="choose(index)">
-              Choose <i class="iconSkull"></i>
-            </button>
-            <button v-else-if="choice.label == 'Choose {cultist}'" @click="choose(index)">
-              Choose <i class="iconCultist"></i>
-            </button>
-            <button v-else-if="choice.label == 'Choose {tablet}'" @click="choose(index)">
-              Choose <i class="iconTablet"></i>
-            </button>
-            <button v-else-if="choice.label == 'Choose {elderThing}'" @click="choose(index)">
-              Choose <i class="iconElderThing"></i>
-            </button>
-            <button v-else @click="choose(index)" v-html="label(choice.label)"></button>
-          </div>
-
-          <a
-            v-if="choice.tag === MessageType.SKILL_LABEL"
-            class="button"
-            @click="choose(index)"
-          >
-            Use <i :class="`icon${choice.skillType}`"></i>
-          </a>
-
-          <a
-            v-if="choice.tag === MessageType.SKILL_LABEL_WITH_LABEL"
-            class="button"
-            @click="choose(index)"
-          >
-            Use <i :class="`icon${choice.skillType}`">: {{choice.label}}</i>
-          </a>
-
-        </template>
       </div>
       <ChaosBagView
         :game="game"
@@ -476,9 +421,38 @@ i.iconSkillAgility {
   flex: 1;
 }
 
-.choices {
+.skill-test :deep(.choices) {
   display: flex;
   width: 100%;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  gap: 0;
+  font-size: 0.7em;
+
+  .message-label {
+    flex: 1;
+    margin: 0;
+  }
+
+  button {
+    display: block;
+    border: 0;
+    text-align: left;
+    text-transform: uppercase;
+    transition: all 0.2s ease-in;
+    border: 0;
+    padding: 10px;
+    margin: 0 !important;
+    box-sizing: border-box;
+    border-radius: 0;
+    background-color: darken($select, 30%);
+    &:hover {
+      background-color: darken($select, 20%);
+    }
+    color: #EEE;
+    font: Arial, sans-serif;
+  }
 }
 
 

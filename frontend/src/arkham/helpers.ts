@@ -46,6 +46,7 @@ export function replaceIcons(body: string) {
     replace(/{mystic}/g, '<span class="mystic-icon"></span>').
     replace(/{survivor}/g, '<span class="survivor-icon"></span>').
     replace(/{elderSign}/g, '<span class="elder-sign"></span>').
+    replace(/{skull}/g, '<span class="skull-icon"></span>').
     replace(/{curse}/g, '<span class="curse-icon"></span>').
     replace(/{bless}/g, '<span class="bless-icon"></span>')
 }

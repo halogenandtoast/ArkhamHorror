@@ -664,6 +664,7 @@ data Message
   | InHand InvestigatorId Message
   | InOutOfPlay Message
   | InitDeck InvestigatorId (Deck PlayerCard) -- used to initialize the deck for the campaign
+  | LoadSideDeck InvestigatorId [PlayerCard] -- used to initialize the side deck for the campaign
   | LoadDecklist PlayerId ArkhamDBDecklist
   | UpgradeDeck InvestigatorId (Deck PlayerCard) -- used to upgrade deck during campaign
   | FinishedUpgradingDecks

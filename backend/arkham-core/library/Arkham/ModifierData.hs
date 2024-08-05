@@ -55,6 +55,7 @@ data AssetMetadata = AssetMetadata
   { amEvents :: [EventId]
   , amAssets :: [AssetId]
   , amTreacheries :: [TreacheryId]
+  , amEnemies :: [EnemyId]
   , amModifiers :: [Modifier]
   , amPermanent :: Bool
   }

@@ -1,9 +1,8 @@
 module Arkham.Asset.Cards.LeoDeLuca where
 
-import Arkham.Prelude
-
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Prelude
 
 newtype LeoDeLuca = LeoDeLuca AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
@@ -19,4 +18,8 @@ instance HasModifiersFor LeoDeLuca where
   getModifiersFor _ _ = pure []
 
 instance RunMessage LeoDeLuca where
-  runMessage msg (LeoDeLuca attrs) = LeoDeLuca <$> runMessage msg attrs
+  runMessage msg a@(LeoDeLuca attrs) = case msg of
+    CardEnteredPlay iid card | card.id == attrs.cardId -> do
+      push $ GainActions iid (toSource attrs) 1
+      pure a
+    _ -> LeoDeLuca <$> runMessage msg attrs

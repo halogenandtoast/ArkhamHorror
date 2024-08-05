@@ -524,6 +524,8 @@ allTreacheries =
       SomeTreacheryCard abandonedAndAloneAdvanced
     , --- On the Road Again
       SomeTreacheryCard hardTimes
+    , --- Laid to Rest
+      SomeTreacheryCard finalRhapsodyAdvanced
     , -- Promo
       --- The Dirge of Reason
       SomeTreacheryCard theDirgeOfReason

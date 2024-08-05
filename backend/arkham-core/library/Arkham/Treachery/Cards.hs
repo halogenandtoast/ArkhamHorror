@@ -93,6 +93,7 @@ allPlayerTreacheryCards =
       , falseAwakening
       , falseAwakeningPointOfNoReturn
       , finalRhapsody
+      , finalRhapsodyAdvanced
       , finePrint
       , greed
       , hardTimes
@@ -2458,6 +2459,13 @@ hardTimes =
   (weakness "90048" "Hard Times")
     { cdCardTraits = setFromList [Hardship]
     , cdKeywords = singleton Keyword.Replacement
+    }
+
+finalRhapsodyAdvanced :: CardDef
+finalRhapsodyAdvanced =
+  (weakness "90051" "Final Rhapsody")
+    { cdCardTraits = setFromList [Endtimes]
+    , cdKeywords = singleton Keyword.Advanced
     }
 
 theDirgeOfReason :: CardDef

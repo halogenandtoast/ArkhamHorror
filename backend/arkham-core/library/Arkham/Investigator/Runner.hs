@@ -318,6 +318,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         , investigatorSupplies = investigatorSupplies
         , investigatorUsedAbilities = filter onlyCampaignAbilities investigatorUsedAbilities
         , investigatorLog = investigatorLog
+        , investigatorSideDeck = investigatorSideDeck
         }
   AddDeckBuildingAdjustment iid adjustment | iid == investigatorId -> do
     pure $ a & deckBuildingAdjustmentsL %~ (adjustment :)
@@ -814,7 +815,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         -- N.B. This is explicitly for Empower Self and it's possible we don't want to do this without checking
         _ -> push $ RefillSlots investigatorId
 
-    let shouldDiscard = pcOwner card == Just investigatorId && card `notElem` investigatorDiscard
+    let shouldDiscard =
+          pcOwner card
+            == Just investigatorId
+            && card
+            `notElem` investigatorDiscard
+            && card
+            `notElem` fromMaybe [] investigatorSideDeck
 
     pure $ a & (if shouldDiscard then discardL %~ (card :) else id) & (slotsL %~ removeFromSlots aid)
   -- Discarded _ _ (PlayerCard card) -> do
@@ -846,7 +853,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pushWhen (providedSlot a aid) $ RefillSlots a.id
     pure a
   RemoveFromGame (CardIdTarget cid) -> pure $ a & cardsUnderneathL %~ filter ((/= cid) . toCardId)
-  -- ChooseFightEnemy iid source mTarget skillType enemyMatcher isAction | iid == investigatorId -> do
+  -- Ch1ooseFightEnemy iid source mTarget skillType enemyMatcher isAction | iid == investigatorId -> do
   ChooseFightEnemy choose | choose.investigator == investigatorId -> do
     modifiers <- getModifiers a
     let source = choose.source
@@ -2796,6 +2803,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     shuffled <- shuffleM $ flip map (unDeck deck) $ \card ->
       card {pcOwner = Just iid}
     pure $ a & deckL .~ Deck shuffled
+  LoadSideDeck iid deck | iid == investigatorId -> do
+    pure $ a & sideDeckL ?~ deck
   InvestigatorCommittedCard iid card | iid == investigatorId -> do
     commitedCardWindows <- Helpers.windows [Window.CommittedCard iid card]
     pushAll $ FocusCards [card] : commitedCardWindows <> [UnfocusCards]

@@ -346,79 +346,84 @@ instance RunMessage EnemyAttrs where
           else a <$ push (EnemyCheckEngagement eid)
     After (EndTurn _) | not enemyDefeated -> a <$ push (EnemyCheckEngagement $ toId a)
     EnemyCheckEngagement eid | eid == enemyId && not (isSwarm a) -> do
-      keywords <- getModifiedKeywords a
-      mods <- getModifiers eid
-      let
-        modifiedFilter iid = do
-          if #massive `elem` keywords
-            then pure True
-            else do
-              investigatorMods <- getModifiers iid
-              canEngage <- flip allM investigatorMods $ \case
-                CannotBeEngagedBy matcher -> notElem eid <$> select matcher
-                CannotBeEngaged -> pure False
-                _ -> pure True
-              pure $ canEngage && all (`notElem` mods) [EnemyCannotEngage iid, CannotBeEngaged]
-      investigatorIds' <- filterM modifiedFilter =<< getInvestigatorsAtSameLocation a
-      let valids = oneOf (map InvestigatorWithId investigatorIds')
+      let isAttached = isJust a.placement.attachedTo
 
-      prey <- getPreyMatcher a
-      investigatorIds <- case prey of
-        Prey m -> do
-          preyIds <- select $ Prey $ m <> valids
-          pure $ if null preyIds then investigatorIds' else preyIds
-        OnlyPrey m -> select $ OnlyPrey $ m <> valids
-        other@(BearerOf {}) -> do
-          mBearer <- selectOne other
-          pure $ maybe [] (\bearer -> [bearer | bearer `elem` investigatorIds']) mBearer
-        other@(RestrictedBearerOf {}) -> do
-          mBearer <- selectOne other
-          pure $ maybe [] (\bearer -> [bearer | bearer `elem` investigatorIds']) mBearer
+      unless isAttached do
+        keywords <- getModifiedKeywords a
+        mods <- getModifiers eid
+        let
+          modifiedFilter iid = do
+            if #massive `elem` keywords
+              then pure True
+              else do
+                investigatorMods <- getModifiers iid
+                canEngage <- flip allM investigatorMods $ \case
+                  CannotBeEngagedBy matcher -> notElem eid <$> select matcher
+                  CannotBeEngaged -> pure False
+                  _ -> pure True
+                pure $ canEngage && all (`notElem` mods) [EnemyCannotEngage iid, CannotBeEngaged]
+        investigatorIds' <- filterM modifiedFilter =<< getInvestigatorsAtSameLocation a
+        let valids = oneOf (map InvestigatorWithId investigatorIds')
 
-      lead <- getLeadPlayer
-      unengaged <- selectNone $ investigatorEngagedWith enemyId
-      when (CannotBeEngaged `elem` mods) $ case enemyPlacement of
-        InThreatArea iid -> push $ DisengageEnemy iid enemyId
-        _ -> pure ()
-      when
-        ( none (`elem` keywords) [#aloof, #massive]
-            && unengaged
-            && CannotBeEngaged
-            `notElem` mods
-            && not enemyExhausted
-        )
-        $ if #massive `elem` keywords
-          then
-            pushAll
-              [ EnemyEngageInvestigator eid investigatorId
-              | investigatorId <- investigatorIds
-              ]
-          else case investigatorIds of
-            [] -> pure ()
-            [x] -> push $ EnemyEngageInvestigator eid x
-            xs ->
-              push
-                $ chooseOne lead
-                $ targetLabels xs (only . EnemyEngageInvestigator eid)
+        prey <- getPreyMatcher a
+        investigatorIds <- case prey of
+          Prey m -> do
+            preyIds <- select $ Prey $ m <> valids
+            pure $ if null preyIds then investigatorIds' else preyIds
+          OnlyPrey m -> select $ OnlyPrey $ m <> valids
+          other@(BearerOf {}) -> do
+            mBearer <- selectOne other
+            pure $ maybe [] (\bearer -> [bearer | bearer `elem` investigatorIds']) mBearer
+          other@(RestrictedBearerOf {}) -> do
+            mBearer <- selectOne other
+            pure $ maybe [] (\bearer -> [bearer | bearer `elem` investigatorIds']) mBearer
+
+        lead <- getLeadPlayer
+        unengaged <- selectNone $ investigatorEngagedWith enemyId
+        when (CannotBeEngaged `elem` mods) $ case enemyPlacement of
+          InThreatArea iid -> push $ DisengageEnemy iid enemyId
+          _ -> pure ()
+        when
+          ( none (`elem` keywords) [#aloof, #massive]
+              && unengaged
+              && CannotBeEngaged
+              `notElem` mods
+              && not enemyExhausted
+          )
+          $ if #massive `elem` keywords
+            then
+              pushAll
+                [ EnemyEngageInvestigator eid investigatorId
+                | investigatorId <- investigatorIds
+                ]
+            else case investigatorIds of
+              [] -> pure ()
+              [x] -> push $ EnemyEngageInvestigator eid x
+              xs ->
+                push
+                  $ chooseOne lead
+                  $ targetLabels xs (only . EnemyEngageInvestigator eid)
       pure a
     HuntersMove | not enemyExhausted && not (isSwarm a) -> do
       -- TODO: unengaged or not engaged with only prey
       --
-      unengaged <- selectNone $ investigatorEngagedWith enemyId
-      mods <- getModifiers enemyId
-      when (unengaged && CannotMove `notElem` mods) $ do
-        keywords <- getModifiedKeywords a
-        leadId <- getLeadInvestigatorId
-        when (Keyword.Hunter `elem` keywords) do
-          pushAll
-            [ CheckWindow [leadId] [mkWhen $ Window.MovedFromHunter enemyId]
-            , HunterMove (toId a)
-            ]
-        -- We should never have a case where an enemy has both patrol and
-        -- hunter and should only have one patrol keyword
-        for_ keywords \case
-          Keyword.Patrol lMatcher -> push $ PatrolMove (toId a) lMatcher
-          _ -> pure ()
+      let isAttached = isJust a.placement.attachedTo
+      unless isAttached do
+        unengaged <- selectNone $ investigatorEngagedWith enemyId
+        mods <- getModifiers enemyId
+        when (unengaged && CannotMove `notElem` mods) $ do
+          keywords <- getModifiedKeywords a
+          leadId <- getLeadInvestigatorId
+          when (Keyword.Hunter `elem` keywords) do
+            pushAll
+              [ CheckWindow [leadId] [mkWhen $ Window.MovedFromHunter enemyId]
+              , HunterMove (toId a)
+              ]
+          -- We should never have a case where an enemy has both patrol and
+          -- hunter and should only have one patrol keyword
+          for_ keywords \case
+            Keyword.Patrol lMatcher -> push $ PatrolMove (toId a) lMatcher
+            _ -> pure ()
       pure a
     SwapPlaces (aTarget, _) (_, newLocation) | a `is` aTarget -> do
       push $ EnemyCheckEngagement a.id

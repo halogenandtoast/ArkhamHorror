@@ -430,6 +430,9 @@ allEnemies =
     , SomeEnemyCard cultistOfTheEnclave
     , --- Sins of the Past
       SomeEnemyCard vengefulSpecter
+    , -- Parallel
+      --- Laid to Rest
+      SomeEnemyCard vengefulShade
     , -- Promo
       --- Hour of the Huntress
       SomeEnemyCard sacrificialBeast

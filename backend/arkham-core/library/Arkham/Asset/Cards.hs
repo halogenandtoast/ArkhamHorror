@@ -496,6 +496,7 @@ allPlayerAssetCards =
       , jessicaHyde1
       , jewelOfAureolus3
       , jimsTrumpet
+      , jimsTrumpetAdvanced
       , joeyTheRatVigil
       , joeyTheRatVigil3
       , katana
@@ -781,6 +782,7 @@ allPlayerAssetCards =
       , tennesseeSourMashRogue3
       , tennesseeSourMashSurvivor3
       , tetsuoMori
+      , theBeyondBleakNetherworld
       , theBlackBook
       , theBlackCat5
       , theBlackFan3
@@ -8101,6 +8103,25 @@ petesGuitar =
     $ (asset "90047" ("Pete's Guitar" <:> "Still Holdin' Up") 2 Neutral)
       { cdCardTraits = setFromList [Item, Instrument]
       , cdKeywords = singleton Keyword.Replacement
+      }
+
+jimsTrumpetAdvanced :: CardDef
+jimsTrumpetAdvanced =
+  signature "90049"
+    $ (asset "90050" ("Jim's Trumpet" <:> "The Dead Speak") 2 Neutral)
+      { cdSkills = [#willpower, #willpower, #wild, #wild]
+      , cdCardTraits = setFromList [Item, Instrument, Relic]
+      , cdUnique = True
+      , cdSlots = [#hand]
+      , cdKeywords = singleton Keyword.Advanced
+      }
+
+theBeyondBleakNetherworld :: CardDef
+theBeyondBleakNetherworld =
+  signature "90049"
+    $ permanent
+    $ (asset "90052" ("The Beyond" <:> "Bleak Netherworld") 0 Neutral)
+      { cdCardTraits = setFromList [Sanctum, Spectral]
       }
 
 greenManMedallionHourOfTheHuntress :: CardDef

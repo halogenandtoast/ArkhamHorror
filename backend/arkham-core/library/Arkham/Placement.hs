@@ -50,8 +50,7 @@ placementToAttached = \case
   AtLocation _ -> Nothing
   InPlayArea _ -> Nothing
   InThreatArea _ -> Nothing
-  AttachedToAsset _ (Just p) -> placementToAttached p
-  AttachedToAsset aid Nothing -> Just $ AssetTarget aid
+  AttachedToAsset aid _ -> Just $ AssetTarget aid
   AttachedToAct aid -> Just $ ActTarget aid
   AttachedToAgenda aid -> Just $ AgendaTarget aid
   NextToAgenda -> Nothing

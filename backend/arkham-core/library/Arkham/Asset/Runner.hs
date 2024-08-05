@@ -173,7 +173,14 @@ instance RunMessage AssetAttrs where
               <> show assetPrintedUses
               <> ", but got: "
               <> show tType
-        else pure $ a & tokensL %~ addTokens tType n
+        else do
+          mods <- getModifiers a
+          let mSpirit = listToMaybe [iid | IsSpirit iid <- mods]
+          case mSpirit of
+            Just iid | tType `elem` [#damage, #horror] -> do
+              push $ PlaceTokens source (toTarget iid) tType n
+              pure a
+            _ -> pure $ a & tokensL %~ addTokens tType n
     MoveTokens s source _ tType n | isSource a source -> do
       runMessage (RemoveTokens s (toTarget a) tType n) a
     MoveTokens s _ target tType n | isTarget a target -> do
@@ -552,10 +559,21 @@ instance RunMessage AssetAttrs where
     InvestigatorDrewEncounterCard _ card -> do
       pure $ a & cardsUnderneathL %~ filter (/= toCard card)
     PlaceAsset aid placement | aid == assetId -> do
+      let entersPlay = not (isInPlayPlacement a.placement) && isInPlayPlacement placement
+      when entersPlay do
+        pushM $ checkWindows [mkWindow Timing.After (Window.EnterPlay $ toTarget a)]
+        case placement of
+          InPlayArea iid -> push $ CardEnteredPlay iid (toCard a)
+          AttachedToAsset _ (Just (InPlayArea iid)) -> push $ CardEnteredPlay iid (toCard a)
+          _ -> pure ()
+
       -- we should update control here if need be
       for_ placement.attachedTo \target ->
         pushM $ checkAfter $ Window.AttachCard a.controller (toCard a) target
       checkEntersThreatArea a placement
+
+      when entersPlay do
+        pushM $ checkWindows [mkWindow Timing.When (Window.EnterPlay $ toTarget a)]
       pure $ a & placementL .~ placement
     Blanked msg' -> runMessage msg' a
     RemoveAllAttachments source target -> do

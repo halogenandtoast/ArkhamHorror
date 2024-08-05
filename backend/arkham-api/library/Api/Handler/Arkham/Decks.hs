@@ -48,13 +48,13 @@ data CreateDeckPost = CreateDeckPost
   , deckList :: ArkhamDBDecklist
   }
   deriving stock (Show, Generic)
-  deriving anyclass (FromJSON)
+  deriving anyclass FromJSON
 
 newtype ValidateDeckPost = ValidateDeckPost
   { validateDeckList :: ArkhamDBDecklist
   }
   deriving stock (Show, Generic)
-  deriving anyclass (FromJSON)
+  deriving anyclass FromJSON
 
 data UpgradeDeckPost = UpgradeDeckPost
   { udpInvestigatorId :: InvestigatorId
@@ -120,7 +120,7 @@ putApiV1ArkhamGameDecksR gameId = do
         case edecklist of
           Left err -> error $ show err
           Right decklist -> do
-            cards <- loadDecklistCards decklist
+            cards <- loadDecklistCards slots decklist
             pure $ UpgradeDeck investigatorId (Deck cards)
     push msg
     runMessages Nothing

@@ -328,6 +328,7 @@ data EnemyMatcher
   | EnemyWithTrait Trait
   | EnemyWithToken Token
   | EnemyAt LocationMatcher
+  | EnemyAttachedToAsset AssetMatcher
   | EnemyCanEnter LocationMatcher
   | EnemyCanMove
   | EnemyWithSealedChaosTokens Int ChaosTokenMatcher

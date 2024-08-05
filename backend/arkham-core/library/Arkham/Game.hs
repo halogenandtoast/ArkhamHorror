@@ -353,6 +353,7 @@ withAssetMetadata a = do
   amModifiers <- getModifiers' (toTarget a)
   amEvents <- select (EventAttachedToAsset $ AssetWithId $ toId a)
   amAssets <- select (AssetAttachedToAsset $ AssetWithId $ toId a)
+  amEnemies <- select (EnemyAttachedToAsset $ AssetWithId $ toId a)
   amTreacheries <- select (TreacheryIsAttachedTo $ toTarget a)
   let amPermanent = cdPermanent $ toCardDef a
   pure $ a `with` AssetMetadata {..}
@@ -2039,8 +2040,14 @@ getAssetsMatching matcher = do
       pure $ filter ((== cardId) . toCardId) as
     AssetWithClass role ->
       pure $ filter (member role . cdClassSymbols . toCardDef) as
-    AssetWithHealth -> pure $ filter (isJust . attr assetHealth) as
-    AssetWithSanity -> pure $ filter (isJust . attr assetSanity) as
+    AssetWithHealth -> flip filterM as \a -> do
+      mods <- getModifiers (toId a)
+      let isSpirit = notNull [() | IsSpirit _ <- mods]
+      pure $ if isSpirit then False else isJust (attr assetHealth a)
+    AssetWithSanity -> flip filterM as \a -> do
+      mods <- getModifiers (toId a)
+      let isSpirit = notNull [() | IsSpirit _ <- mods]
+      pure $ if isSpirit then False else isJust (attr assetSanity a)
     AssetWithDamage -> filterM (fieldMap AssetDamage (> 0) . toId) as
     AssetWithDoom valueMatcher ->
       filterM ((`gameValueMatches` valueMatcher) . attr assetDoom) as
@@ -2765,6 +2772,11 @@ enemyMatcherFilter = \case
     (== Just (toId enemy)) . view enemyMovingL <$> getGame
   EvadingEnemy ->
     \enemy -> (== Just (toId enemy)) . view enemyEvadingL <$> getGame
+  EnemyAttachedToAsset assetMatcher -> \enemy -> do
+    placements <- select assetMatcher
+    pure $ case enemyPlacement (toAttrs enemy) of
+      AttachedToAsset placementId _ -> placementId `elem` placements
+      _ -> False
   M.EnemyAt locationMatcher -> \enemy -> do
     enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)
     case enemyLocation of
@@ -3161,21 +3173,23 @@ instance Projection Asset where
       AssetRemainingHealth -> case assetHealth of
         Nothing -> pure Nothing
         Just n -> do
-          modifiers' <- getModifiers (AssetTarget aid)
+          mods <- getModifiers (AssetTarget aid)
+          let isSpirit = notNull [() | IsSpirit _ <- mods]
           let
-            modifiedHealth = foldl' applyHealthModifiers n modifiers'
+            modifiedHealth = foldl' applyHealthModifiers n mods
             applyHealthModifiers h (HealthModifier m) = max 0 (h + m)
             applyHealthModifiers h _ = h
-          pure $ Just $ max 0 (modifiedHealth - assetDamage attrs)
+          pure $ guard (not isSpirit) $> max 0 (modifiedHealth - assetDamage attrs)
       AssetRemainingSanity -> case assetSanity of
         Nothing -> pure Nothing
         Just n -> do
-          modifiers' <- getModifiers (AssetTarget aid)
+          mods <- getModifiers (AssetTarget aid)
+          let isSpirit = notNull [() | IsSpirit _ <- mods]
           let
-            modifiedSanity = foldl' applySanityModifiers n modifiers'
+            modifiedSanity = foldl' applySanityModifiers n mods
             applySanityModifiers s (SanityModifier m) = max 0 (s + m)
             applySanityModifiers s _ = s
-          pure $ Just $ max 0 (modifiedSanity - assetHorror attrs)
+          pure $ guard (not isSpirit) $> max 0 (modifiedSanity - assetHorror attrs)
       AssetDoom -> pure $ assetDoom attrs
       AssetExhausted -> pure assetExhausted
       AssetPlacement -> pure assetPlacement
@@ -3199,17 +3213,29 @@ instance Projection Asset where
       AssetCardId -> pure assetCardId
       AssetSlots -> do
         mods <- getCombinedModifiers [toTarget aid, toTarget assetCardId]
-        let slotsToRemove = concat [replicate n s | TakeUpFewerSlots s n <- mods]
-        pure
-          $ (\\ slotsToRemove)
-          $ filter ((`notElem` mods) . DoNotTakeUpSlot)
-          $ assetSlots
-          <> [s | AdditionalSlot s <- mods]
+        let isSpirit = notNull [() | IsSpirit _ <- mods]
+        if isSpirit
+          then pure []
+          else do
+            let slotsToRemove = concat [replicate n s | TakeUpFewerSlots s n <- mods]
+            pure
+              $ (\\ slotsToRemove)
+              $ filter ((`notElem` mods) . DoNotTakeUpSlot)
+              $ assetSlots
+              <> [s | AdditionalSlot s <- mods]
       AssetSealedChaosTokens -> pure assetSealedChaosTokens
       AssetCardsUnderneath -> pure assetCardsUnderneath
       -- virtual
       AssetClasses -> pure . cdClassSymbols $ toCardDef attrs
-      AssetTraits -> pure . cdCardTraits $ toCardDef attrs
+      AssetTraits -> do
+        mods <- getModifiers (toId attrs)
+        let isSpirit = notNull [() | IsSpirit _ <- mods]
+        let addedTraits = setFromList [t | AddTrait t <- mods]
+        let removedTraits = setFromList [t | RemoveTrait t <- mods]
+        pure
+          $ if isSpirit
+            then singleton Geist
+            else (cdCardTraits (toCardDef attrs) <> addedTraits) `difference` removedTraits
       AssetCardDef -> pure $ toCardDef attrs
       AssetCard -> pure $ toCard a
       AssetAbilities -> pure $ getAbilities a
@@ -3493,6 +3519,7 @@ instance Projection Investigator where
       InvestigatorHandSize -> getHandSize (toAttrs i)
       InvestigatorCardsUnderneath -> pure investigatorCardsUnderneath
       InvestigatorDeck -> pure investigatorDeck
+      InvestigatorSideDeck -> pure investigatorSideDeck
       InvestigatorDecks -> pure investigatorDecks
       InvestigatorDiscard -> pure investigatorDiscard
       InvestigatorClass -> pure investigatorClass

@@ -89,6 +89,7 @@ allInvestigatorCards =
       , rolandBanksParallel
       , wendyAdamsParallel
       , ashcanPeteParallel
+      , jimCulverParallel
       ]
 
 allEncounterInvestigatorCards :: Map CardCode CardDef
@@ -608,3 +609,7 @@ wendyAdamsParallel =
 ashcanPeteParallel :: CardDef
 ashcanPeteParallel =
   investigator "90046" ("\"Ashcan\" Pete" <:> "The Drifter") Survivor [Drifter]
+
+jimCulverParallel :: CardDef
+jimCulverParallel =
+  investigator "90049" ("Jim Culver" <:> "The Musician") Mystic [Performer, Cursed]

@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Ability.Types
 import Arkham.Card
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Cost
 import Arkham.Id
 import Arkham.Window (Window)

@@ -914,6 +914,7 @@ getInvestigatorsMatching matcher = do
     InvestigatorThatMovedDuringTurn -> \i -> do
       history <- getHistory TurnHistory (toId i)
       pure $ historyMoved history
+    InvestigatorWhenCriteria criteria -> \i -> passesCriteria (toId i) Nothing GameSource GameSource [] criteria
     NotInvestigator x -> fmap not . go x
     InvestigatorMatches xs -> \i -> allM (`go` i) xs
     AnyInvestigator xs -> \i -> anyM (`go` i) xs
@@ -3592,6 +3593,13 @@ instance Query ChaosTokenMatcher where
             <> maybeToList (infestationCurrentToken bag)
     go :: HasGame m => ChaosTokenMatcher -> ChaosToken -> m Bool
     go = \case
+      RevealedChaosTokens m -> \t -> do
+        mSkillTest <- getSkillTest
+        case mSkillTest of
+          Nothing -> pure False
+          Just skillTest -> do
+            inner <- select $ IncludeSealed $ IncludeTokenPool m
+            pure $ t `elem` skillTestRevealedChaosTokens skillTest && t `elem` inner
       InTokenPool m -> go m
       NotChaosToken m -> fmap not . go m
       SealedOnEnemy enemyMatcher chaosTokenMatcher -> \t -> do
@@ -3613,7 +3621,7 @@ instance Query ChaosTokenMatcher where
               (ChaosTokenValue _ AutoFailModifier) -> pure True
               (ChaosTokenValue _ other) -> do
                 currentSkillValue <- getCurrentSkillValue skillTest
-                let currentChaosTokenModifier = fromMaybe 0 (chaosTokenModifierToInt other)
+                currentChaosTokenModifier <- fromMaybe 0 <$> chaosTokenModifierToInt other
                 pure $ (currentSkillValue + currentChaosTokenModifier) <= 0
       IsSymbol -> pure . isSymbolChaosToken . chaosTokenFace
       WithNegativeModifier -> \t -> do

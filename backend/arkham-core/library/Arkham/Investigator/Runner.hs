@@ -3512,10 +3512,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & xpL %~ max 0 . subtract amount
   InvestigatorPlaceCluesOnLocation iid source n | iid == investigatorId -> do
     -- so this is a bit complicated, we want to move but trigger windows only once instead of 1 at a time, so we sneak in the number we've placed into the n value later on (called x)
+    mlid <- field InvestigatorLocation iid
+    batchId <- getRandom
+    mWould <- for mlid $ \lid -> do
+      checkWindows
+        [(mkWhen $ Window.WouldPlaceClueOnLocation iid lid source n) {windowBatchId = Just batchId}]
     assets <- select $ assetControlledBy iid <> AssetWithAnyClues
-    if null assets
-      then push $ DoStep 0 msg
-      else push $ DoStep n (InvestigatorPlaceCluesOnLocation iid source 0)
+    let
+      step =
+        if null assets
+          then DoStep 0 msg
+          else DoStep n (InvestigatorPlaceCluesOnLocation iid source 0)
+    case mWould of
+      Nothing -> push step
+      Just would -> push $ Would batchId [would, step]
     pure a
   DoStep 0 msg'@(InvestigatorPlaceCluesOnLocation iid source x) | iid == investigatorId && x > 0 -> do
     mlid <- field InvestigatorLocation iid

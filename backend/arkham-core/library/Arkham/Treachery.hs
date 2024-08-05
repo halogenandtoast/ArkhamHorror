@@ -528,6 +528,8 @@ allTreacheries =
       SomeTreacheryCard finalRhapsodyAdvanced
     , --- Path of the Righteous
       SomeTreacheryCard smiteTheWickedAdvanced
+    , --- Hunting for Answers
+      SomeTreacheryCard rexsCurseAdvanced
     , -- Promo
       --- The Dirge of Reason
       SomeTreacheryCard theDirgeOfReason

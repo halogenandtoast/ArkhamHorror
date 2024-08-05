@@ -29,6 +29,10 @@ import Arkham.Source
 import Arkham.Strategy
 import Arkham.Trait
 
+canParallelRexClues :: InvestigatorMatcher
+canParallelRexClues =
+  InvestigatorIs "90078" <> InvestigatorWhenCriteria (Criteria.HasNRemainingCurseTokens (atLeast 2))
+
 event :: CardCode -> Name -> Int -> ClassSymbol -> CardDef
 event cardCode name cost = baseEvent cardCode name cost . singleton
 
@@ -362,6 +366,7 @@ allPlayerEventCards =
       , scroungeForSupplies
       , sealOfTheElders5
       , searchForTheTruth
+      , searchForTheTruthAdvanced
       , secondWind
       , secondWind2
       , seekingAnswers
@@ -1227,7 +1232,7 @@ forewarned1 =
     { cdSkills = [#willpower]
     , cdCardTraits = singleton Insight
     , cdLevel = Just 1
-    , cdCriteria = Just $ exists (You <> InvestigatorWithAnyClues)
+    , cdCriteria = Just $ exists (You <> oneOf [InvestigatorWithAnyClues, canParallelRexClues])
     , cdFastWindow =
         Just $ DrawCard #when You (CanCancelRevelationEffect $ basic NonWeaknessTreachery) EncounterDeck
     }
@@ -3346,7 +3351,9 @@ bizarreDiagnosis =
   (event "09046" "Bizarre Diagnosis" 0 Seeker)
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = setFromList [Insight, Science]
-    , cdCriteria = Just $ exists (You <> InvestigatorWithAnyClues <> InvestigatorAt Anywhere)
+    , cdCriteria =
+        Just
+          $ exists (You <> oneOf [InvestigatorWithAnyClues <> InvestigatorAt Anywhere, canParallelRexClues])
     }
 
 captivatingDiscovery :: CardDef
@@ -5007,6 +5014,24 @@ darkMemoryAdvanced =
     , cdCardInHandEffects = True
     , cdKeywords = singleton Keyword.Advanced
     }
+
+searchForTheTruthAdvanced :: CardDef
+searchForTheTruthAdvanced =
+  signature "90078"
+    $ (event "90079" "Search for the Truth" 1 Neutral)
+      { cdSkills = [#intellect, #intellect, #wild]
+      , cdCardTraits = setFromList [Insight]
+      , cdCriteria =
+          Just
+            $ exists
+            $ You
+            <> InvestigatorWithAnyClues
+            <> oneOf
+              [ can.draw.cards FromPlayerCardEffect
+              , InvestigatorAt Anywhere
+              ]
+      , cdKeywords = singleton Keyword.Advanced
+      }
 
 mysteriesRemain :: CardDef
 mysteriesRemain =

@@ -4,7 +4,7 @@ module Arkham.Treachery.Types where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.ChaosToken (ChaosToken)
+import Arkham.ChaosToken.Types (ChaosToken)
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor

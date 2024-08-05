@@ -15,8 +15,8 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card.CardCode
 import Arkham.Card.CardType
 import Arkham.Card.Id
-import Arkham.ChaosToken
-import Arkham.ChaosToken qualified as ChaosToken
+import Arkham.ChaosToken.Types
+import Arkham.ChaosToken.Types qualified as ChaosToken
 import Arkham.ClassSymbol
 import Arkham.Cost.Status
 import {-# SOURCE #-} Arkham.Criteria
@@ -64,6 +64,7 @@ pattern MostHorror <- MostToken Horror
 
 data InvestigatorMatcher
   = InvestigatorAt LocationMatcher
+  | InvestigatorWhenCriteria Criterion
   | InvestigatorIs CardCode
   | InvestigatorCanBeAssignedDamageBy InvestigatorId
   | InvestigatorCanBeAssignedHorrorBy InvestigatorId
@@ -1130,6 +1131,8 @@ data WindowMatcher
   | InitiatedSkillTest Timing Who SkillTypeMatcher SkillTestValueMatcher SkillTestMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | SkillTestEnded Timing Who SkillTestMatcher
+  | WouldPlaceClueOnLocation Timing Who Where ValueMatcher
+  | WouldAddChaosTokensToChaosBag Timing ValueMatcher ChaosTokenFace
   | PlacedCounter Timing Who SourceMatcher CounterMatcher ValueMatcher
   | PlacedCounterOnLocation Timing Where SourceMatcher CounterMatcher ValueMatcher
   | PlacedCounterOnEnemy Timing EnemyMatcher SourceMatcher CounterMatcher ValueMatcher
@@ -1416,6 +1419,7 @@ data ChaosTokenMatcher
   | NotChaosToken ChaosTokenMatcher
   | SealedOnAsset AssetMatcher ChaosTokenMatcher
   | SealedOnEnemy EnemyMatcher ChaosTokenMatcher
+  | RevealedChaosTokens ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not ChaosTokenMatcher where

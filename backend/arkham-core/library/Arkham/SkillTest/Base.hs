@@ -7,7 +7,7 @@ import Arkham.Prelude
 import Arkham.Action (Action)
 import Arkham.Calculation
 import Arkham.Card
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Id
 import Arkham.Json
 import Arkham.SkillTest.Type

@@ -11,7 +11,7 @@ import {-# SOURCE #-} Arkham.Calculation
 import {-# SOURCE #-} Arkham.Card (Card, CardCode)
 import Arkham.Card.CardType
 import Arkham.ChaosBag.RevealStrategy
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.ClassSymbol
 import {-# SOURCE #-} Arkham.Cost
 import Arkham.Criteria.Override

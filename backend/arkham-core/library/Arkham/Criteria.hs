@@ -212,6 +212,7 @@ data Criterion
   | HasRemainingBlessTokens
   | HasMoreBlessThanCurseTokens
   | HasRemainingCurseTokens
+  | HasNRemainingCurseTokens ValueMatcher
   | HasMoreCurseThanBlessTokens
   | OnlySources SourceMatcher
   | -- Special Criterion

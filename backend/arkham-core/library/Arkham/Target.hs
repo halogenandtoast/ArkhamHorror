@@ -10,7 +10,7 @@ import {-# SOURCE #-} Arkham.Ability.Types
 import {-# SOURCE #-} Arkham.Card
 import {-# SOURCE #-} Arkham.Card.EncounterCard
 import {-# SOURCE #-} Arkham.Card.PlayerCard
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Phase

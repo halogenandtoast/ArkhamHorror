@@ -5,9 +5,12 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Query (getPlayer)
+import Arkham.Helpers.Window qualified as Msg
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
+import Arkham.Window (Window (..), mkWhen)
+import Arkham.Window qualified as Window
 
 newtype RiteOfEquilibrium5 = RiteOfEquilibrium5 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -33,13 +36,26 @@ instance RunMessage RiteOfEquilibrium5 where
 
       player <- getPlayer iid
 
+      let
+        addCurses x = do
+          batchId <- getRandom
+          would <-
+            Msg.checkWindows
+              [ (mkWhen (Window.WouldAddChaosTokensToChaosBag $ replicate x #curse)) {windowBatchId = Just batchId}
+              ]
+          pure $ Would batchId $ would : replicate x (AddChaosToken #curse)
+
+      choices <- for [1 .. x1] \x -> do
+        curses <- addCurses x
+        pure (x, Run $ curses : replicate x (AddChaosToken #bless))
+
       chooseOrRunOne iid
         $ [ Label
             "Add X {curse} tokens to the chaos bag to add X {bless} tokens to the chaos bag."
             [ Msg.questionLabel "Choose X" player
                 $ DropDown
-                  [ (tshow x, Run (replicate x (AddChaosToken #curse) <> replicate x (AddChaosToken #bless)))
-                  | x <- [1 .. x1]
+                  [ (tshow x, msg')
+                  | (x, msg') <- choices
                   ]
             ]
           | x1 > 0

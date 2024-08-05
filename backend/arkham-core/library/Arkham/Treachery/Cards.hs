@@ -119,6 +119,7 @@ allPlayerTreacheryCards =
       , psychosis
       , rationalThought
       , rexsCurse
+      , rexsCurseAdvanced
       , rookieMistake
       , ruinedFilm
       , searchingForIzzie
@@ -2481,6 +2482,13 @@ buriedSecretsAdvanced :: CardDef
 buriedSecretsAdvanced =
   (weakness "90064" "Buried Secrets")
     { cdCardTraits = setFromList [Mystery]
+    , cdKeywords = singleton Keyword.Advanced
+    }
+
+rexsCurseAdvanced :: CardDef
+rexsCurseAdvanced =
+  (weakness "90080" "Rex's Curse")
+    { cdCardTraits = setFromList [Curse]
     , cdKeywords = singleton Keyword.Advanced
     }
 

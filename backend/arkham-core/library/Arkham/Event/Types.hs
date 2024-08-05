@@ -8,7 +8,7 @@ import Arkham.Ability
 import Arkham.Asset.Uses
 import Arkham.Calculation
 import Arkham.Card
-import Arkham.ChaosToken (ChaosToken)
+import Arkham.ChaosToken.Types (ChaosToken)
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor

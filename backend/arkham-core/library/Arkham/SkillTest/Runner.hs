@@ -93,7 +93,7 @@ getAdditionalChaosTokenValues :: HasGame m => SkillTest -> m Int
 getAdditionalChaosTokenValues s = do
   mods <- getModifiers s
   let vs = [v | AddChaosTokenValue v <- mods]
-  pure $ getSum $ foldMap (Sum . fromMaybe 0 . chaosTokenValue) vs
+  getSum <$> foldMapM (fmap (Sum . fromMaybe 0) . chaosTokenValue) vs
 
 -- per the FAQ the double negative modifier ceases to be active
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
@@ -105,9 +105,7 @@ getModifiedChaosTokenValue s t = do
     <$> foldMapM
       ( \chaosTokenFace -> do
           baseChaosTokenValue <- getChaosTokenValue (skillTestInvestigator s) chaosTokenFace ()
-          let
-            updatedChaosTokenValue =
-              chaosTokenValue $ foldr applyModifier baseChaosTokenValue tokenModifiers'
+          updatedChaosTokenValue <- chaosTokenValue $ foldr applyModifier baseChaosTokenValue tokenModifiers'
           pure . Sum $ fromMaybe 0 updatedChaosTokenValue
       )
       modifiedChaosTokenFaces'

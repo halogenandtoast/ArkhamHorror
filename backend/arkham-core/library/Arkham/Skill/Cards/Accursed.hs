@@ -27,6 +27,6 @@ instance RunMessage Accursed where
         chooseAmount iid "Add up to 3 {curse} tokens to the chaos bag" "{curse} tokens" 0 (min 3 n) attrs
       pure s
     ResolveAmounts _iid (getChoiceAmount "{curse} tokens" -> n) (isTarget attrs -> True) | n > 0 -> do
-      replicateM_ n $ push $ AddChaosToken #curse
+      addCurseTokens n
       pure s
     _ -> Accursed <$> liftRunMessage msg attrs

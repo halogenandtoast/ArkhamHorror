@@ -2,9 +2,10 @@ module Arkham.Helpers.Scenario where
 
 import Arkham.Prelude
 
+import Arkham.Calculation
 import Arkham.Campaign.Types
 import Arkham.Card
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Difficulty
@@ -66,7 +67,7 @@ toChaosTokenValue :: ScenarioAttrs -> ChaosTokenFace -> Int -> Int -> ChaosToken
 toChaosTokenValue attrs t esVal heVal =
   ChaosTokenValue
     t
-    (NegativeModifier $ if isEasyStandard attrs then esVal else heVal)
+    (CalculatedModifier $ Negated $ Fixed $ if isEasyStandard attrs then esVal else heVal)
 
 byDifficulty :: ScenarioAttrs -> a -> a -> a
 byDifficulty attrs a b = if isEasyStandard attrs then a else b

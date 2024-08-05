@@ -8,7 +8,7 @@ import Arkham.Prelude
 
 import {-# SOURCE #-} Arkham.Card
 import {-# SOURCE #-} Arkham.Card.PlayerCard
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Id
 import Arkham.Matcher.Types (
   ActMatcher,
@@ -215,9 +215,9 @@ isProxyAbilitySource a idx (AbilitySource (ProxySource _ b) idx') | idx == idx' 
 isProxyAbilitySource _ _ _ = False
 
 pattern CultistEffect :: Source
-pattern CultistEffect <- ChaosTokenEffectSource Arkham.ChaosToken.Cultist
+pattern CultistEffect <- ChaosTokenEffectSource Arkham.ChaosToken.Types.Cultist
   where
-    CultistEffect = ChaosTokenEffectSource Arkham.ChaosToken.Cultist
+    CultistEffect = ChaosTokenEffectSource Arkham.ChaosToken.Types.Cultist
 
 pattern TabletEffect :: Source
 pattern TabletEffect <- ChaosTokenEffectSource Tablet

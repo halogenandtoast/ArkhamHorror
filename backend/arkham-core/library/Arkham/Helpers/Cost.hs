@@ -78,10 +78,31 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
         pure $ x >= difficulty
   AddCurseTokenCost n -> do
     x <- getRemainingCurseTokens
-    pure $ x >= n
+    -- Are you Parallel Rex?
+    canParallelRex <-
+      iid
+        <=~> ( Matcher.InvestigatorIs "90078"
+                <> Matcher.InvestigatorAt Matcher.Anywhere
+                <> Matcher.InvestigatorWithAnyClues
+             )
+    z <-
+      if canParallelRex
+        then fieldMap InvestigatorClues (* 2) iid
+        else pure 0
+    pure $ (x + z >= n)
   AddCurseTokensCost n _ -> do
     x <- getRemainingCurseTokens
-    pure $ x >= n
+    canParallelRex <-
+      iid
+        <=~> ( Matcher.InvestigatorIs "90078"
+                <> Matcher.InvestigatorAt Matcher.Anywhere
+                <> Matcher.InvestigatorWithAnyClues
+             )
+    z <-
+      if canParallelRex
+        then fieldMap InvestigatorClues (* 2) iid
+        else pure 0
+    pure $ x + z >= n
   SkillTestCost {} -> pure True
   AsIfAtLocationCost lid c -> do
     withModifiers' iid (toModifiers source [AsIfAt lid])
@@ -227,8 +248,13 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
     spendableClues <- getSpendableClueCount [iid]
     pure $ spendableClues >= 1
   PlaceClueOnLocationCost n -> do
+    canParallelRex <- iid <=~> Matcher.InvestigatorIs "90078"
+    z <-
+      if canParallelRex
+        then (`div` 2) <$> getRemainingCurseTokens
+        else pure 0
     spendableClues <- getSpendableClueCount [iid]
-    pure $ spendableClues >= n
+    pure $ (spendableClues + z) >= n
   GroupClueCost n locationMatcher -> do
     cost <- getPlayerCountValue n
     iids <- select $ Matcher.InvestigatorAt locationMatcher

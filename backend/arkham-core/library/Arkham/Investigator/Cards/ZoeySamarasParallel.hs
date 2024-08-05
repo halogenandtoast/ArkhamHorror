@@ -5,7 +5,6 @@ module Arkham.Investigator.Cards.ZoeySamarasParallel (
 where
 
 import Arkham.Ability
-import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher

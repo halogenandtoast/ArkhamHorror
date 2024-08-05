@@ -2,7 +2,7 @@ module Arkham.Classes.HasChaosTokenValue where
 
 import Arkham.Prelude
 
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Classes.HasGame
 import Arkham.Id
 

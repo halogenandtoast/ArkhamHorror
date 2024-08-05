@@ -1076,6 +1076,7 @@ passesCriteria iid mcard source' requestor windows' = \case
     gameValueMatches value valueMatcher
   Criteria.HasRemainingBlessTokens -> (> 0) <$> getRemainingBlessTokens
   Criteria.HasRemainingCurseTokens -> (> 0) <$> getRemainingCurseTokens
+  Criteria.HasNRemainingCurseTokens valueMatcher -> (`gameValueMatches` valueMatcher) =<< getRemainingCurseTokens
   Criteria.HasMoreBlessThanCurseTokens ->
     (>)
       <$> selectCount (Matcher.ChaosTokenFaceIs #bless)
@@ -1666,6 +1667,19 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
   let guardTiming t body = if timing' == t then body wType else noMatch
   let mtchr = Matcher.replaceYouMatcher iid umtchr
   case mtchr of
+    Matcher.WouldPlaceClueOnLocation timing whoMatcher whereMatcher valueMatcher -> guardTiming timing \case
+      Window.WouldPlaceClueOnLocation who where' _ n -> do
+        andM
+          [ matchWho iid who whoMatcher
+          , locationMatches iid source window' where' whereMatcher
+          , gameValueMatches n valueMatcher
+          ]
+      _ -> noMatch
+    Matcher.WouldAddChaosTokensToChaosBag timing valueMatcher face -> guardTiming timing \case
+      Window.WouldAddChaosTokensToChaosBag tokens -> do
+        let matchCount = count (== face) tokens
+        gameValueMatches matchCount valueMatcher
+      _ -> noMatch
     Matcher.RevealChaosTokensDuringSkillTest timing whoMatcher skillTestMatcher chaosTokenMatcher -> guardTiming timing \case
       Window.RevealChaosTokensDuringSkillTest who st chaosTokens -> do
         andM

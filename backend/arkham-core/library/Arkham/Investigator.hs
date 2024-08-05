@@ -153,6 +153,7 @@ allInvestigators =
       , SomeInvestigatorCard jimCulverParallel
       , SomeInvestigatorCard zoeySamarasParallel
       , SomeInvestigatorCard montereyJackParallel
+      , SomeInvestigatorCard rexMurphyParallel
       ]
 
 becomeYithian :: Investigator -> Investigator

@@ -29,6 +29,8 @@ import Arkham.Investigator.Runner as X (
   slotsL,
   startsWith,
   usedAdditionalActionsL,
+  pattern PositiveModifier,
+  pattern ZeroModifier,
  )
 import Arkham.Message as X (
   Message (..),

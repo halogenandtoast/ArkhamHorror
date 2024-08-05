@@ -5,7 +5,7 @@ module Arkham.Skill.Types where
 import Arkham.Prelude
 
 import Arkham.Card
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor

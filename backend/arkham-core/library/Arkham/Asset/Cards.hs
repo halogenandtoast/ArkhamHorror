@@ -10,7 +10,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Card.Cost
-import Arkham.ChaosToken qualified as Token
+import Arkham.ChaosToken.Types qualified as Token
 import Arkham.ClassSymbol
 import Arkham.CommitRestriction
 import Arkham.Cost

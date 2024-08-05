@@ -8,7 +8,6 @@ import Arkham.Helpers.Investigator (canHaveDamageHealed)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified, modified)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
-import Arkham.Investigator.Types (Field (InvestigatorDiscard))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection

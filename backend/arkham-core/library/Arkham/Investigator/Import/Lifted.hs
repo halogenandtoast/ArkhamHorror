@@ -8,6 +8,7 @@ import Arkham.Investigator.Runner as X (
   ChaosTokenFace (ElderSign),
   ChaosTokenModifier (..),
   ChaosTokenValue (..),
+  Field (InvestigatorDiscard),
   InvestigatorAttrs (..),
   InvestigatorCard,
   IsInvestigator,

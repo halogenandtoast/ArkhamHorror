@@ -91,6 +91,7 @@ allInvestigatorCards =
       , ashcanPeteParallel
       , jimCulverParallel
       , zoeySamarasParallel
+      , montereyJackParallel
       ]
 
 allEncounterInvestigatorCards :: Map CardCode CardDef
@@ -618,3 +619,7 @@ jimCulverParallel =
 zoeySamarasParallel :: CardDef
 zoeySamarasParallel =
   investigator "90059" ("Zoey Samaras" <:> "The Chef") Guardian [Believer, Hunter]
+
+montereyJackParallel :: CardDef
+montereyJackParallel =
+  investigator "90062" ("Monterey Jack" <:> "The Archeologist") Rogue [Wayfarer]

@@ -836,6 +836,7 @@ allPlayerAssetCards =
       , trueGrit
       , trueMagickReworkingReality5
       , trustyBullwhip
+      , trustyBullwhipAdvanced
       , tryAndTryAgain1
       , tryAndTryAgain3
       , twentyFiveAutomatic
@@ -8134,6 +8135,16 @@ zoeysCrossAdvanced =
       , cdUnique = True
       , cdSlots = [#accessory]
       , cdKeywords = singleton Keyword.Advanced
+      }
+
+trustyBullwhipAdvanced :: CardDef
+trustyBullwhipAdvanced =
+  signature "90062"
+    . fast
+    $ (asset "90063" "Trusty Bullwhip" 1 Neutral)
+      { cdCardTraits = setFromList [Item, Weapon, Melee]
+      , cdSkills = [#intellect, #agility, #agility, #wild]
+      , cdSlots = [#hand]
       }
 
 greenManMedallionHourOfTheHuntress :: CardDef

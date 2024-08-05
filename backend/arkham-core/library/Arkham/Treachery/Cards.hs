@@ -72,6 +72,7 @@ allPlayerTreacheryCards =
       , burdenOfDestiny
       , burdenOfLeadership
       , buriedSecrets
+      , buriedSecretsAdvanced
       , callOfTheUnknown
       , calledByTheMists
       , caughtRedHanded
@@ -2473,6 +2474,13 @@ smiteTheWickedAdvanced :: CardDef
 smiteTheWickedAdvanced =
   (weakness "90061" "Smite the Wicked")
     { cdCardTraits = setFromList [Task]
+    , cdKeywords = singleton Keyword.Advanced
+    }
+
+buriedSecretsAdvanced :: CardDef
+buriedSecretsAdvanced =
+  (weakness "90064" "Buried Secrets")
+    { cdCardTraits = setFromList [Mystery]
     , cdKeywords = singleton Keyword.Advanced
     }
 

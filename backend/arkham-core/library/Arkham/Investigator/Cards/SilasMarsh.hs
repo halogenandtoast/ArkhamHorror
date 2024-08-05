@@ -1,16 +1,13 @@
-module Arkham.Investigator.Cards.SilasMarsh (
-  silasMarsh,
-  SilasMarsh (..),
-)
-where
+module Arkham.Investigator.Cards.SilasMarsh (silasMarsh, SilasMarsh (..)) where
 
+import Arkham.Ability
 import Arkham.Card
-import Arkham.Helpers.Modifiers
-import Arkham.Helpers.SkillTest
+import Arkham.Helpers.Modifiers qualified as Msg
+import Arkham.Helpers.SkillTest (getIsCommittable, withSkillTest)
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner hiding (RevealChaosToken)
+import Arkham.Investigator.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 import Arkham.Projection
 
 newtype SilasMarsh = SilasMarsh InvestigatorAttrs
@@ -20,17 +17,8 @@ newtype SilasMarsh = SilasMarsh InvestigatorAttrs
 
 silasMarsh :: InvestigatorCard SilasMarsh
 silasMarsh =
-  investigator
-    SilasMarsh
-    Cards.silasMarsh
-    Stats
-      { health = 9
-      , sanity = 5
-      , willpower = 2
-      , intellect = 2
-      , combat = 4
-      , agility = 4
-      }
+  investigator SilasMarsh Cards.silasMarsh
+    $ Stats {health = 9, sanity = 5, willpower = 2, intellect = 2, combat = 4, agility = 4}
 
 instance HasAbilities SilasMarsh where
   getAbilities (SilasMarsh attrs) =
@@ -49,32 +37,25 @@ instance HasChaosTokenValue SilasMarsh where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage SilasMarsh where
-  runMessage msg i@(SilasMarsh attrs) = case msg of
+  runMessage msg i@(SilasMarsh attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      skills <- select (skillControlledBy iid)
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player [targetLabel skill [ReturnToHand iid (toTarget skill)] | skill <- skills]
+      skills <- select $ skillControlledBy iid
+      chooseOrRunOne iid $ targetLabels skills $ only . ReturnToHand iid . toTarget
       pure i
-    ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
+    ElderSignEffect iid | attrs `is` iid -> do
       skills <-
         filterM (getIsCommittable iid)
           . filter (`cardMatch` CardWithType SkillType)
           =<< fieldMap InvestigatorDiscard (map toCard) iid
 
       when (notNull skills) do
-        player <- getPlayer iid
         withSkillTest \sid -> do
-          pushAll
-            [ FocusCards skills
-            , chooseOne player $ Label "Do not commit skills" []
-                : [ targetLabel
-                    (CardIdTarget $ toCardId card)
-                    [ CommitCard iid card
-                    , skillTestModifier @Source sid #elderSign (CardIdTarget $ toCardId card) ReturnToHandAfterTest
-                    ]
-                  | card <- skills
-                  ]
-            ]
+          push $ FocusCards skills
+          chooseOne iid $ Label "Do not commit skills" []
+            : [ targetLabel
+                card
+                [CommitCard iid card, Msg.skillTestModifier @Source sid #elderSign card ReturnToHandAfterTest]
+              | card <- skills
+              ]
       pure i
-    _ -> SilasMarsh <$> runMessage msg attrs
+    _ -> SilasMarsh <$> liftRunMessage msg attrs

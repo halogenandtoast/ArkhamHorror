@@ -41,6 +41,11 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 function canInteract(c: Message): boolean {
   if (c.tag === MessageType.TARGET_LABEL) {
+    if (c.target.tag === 'SkillTarget') {
+      if (props.game.skills[c.target.contents].cardId == id.value) {
+        return true
+      }
+    }
     return c.target.contents === id.value
   }
 

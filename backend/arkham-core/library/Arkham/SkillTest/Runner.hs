@@ -497,6 +497,9 @@ instance RunMessage SkillTest where
              , Msg.SkillTestEnded skillTestId
              ]
       pure s
+    ReturnToHand _ (SkillTarget sid) -> do
+      card <- field Field.SkillCard sid
+      pure $ s & committedCardsL . each %~ filter ((/= card.id) . toCardId)
     ReturnToHand _ (CardIdTarget cardId) -> do
       pure $ s & committedCardsL . each %~ filter ((/= cardId) . toCardId)
     ReturnToHand _ (CardTarget card) -> do

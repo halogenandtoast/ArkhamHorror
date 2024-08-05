@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
+import Token from '@/arkham/components/Token.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message';
 import { imgsrc } from '@/arkham/helpers';
@@ -66,6 +67,12 @@ const abilities = computed(() => {
     }, []);
 })
 
+const hasPool = computed(() => {
+  const { sealedChaosTokens } = props.skill;
+
+  return sealedChaosTokens.length > 0
+})
+
 const choose = (index: number) => emits('choose', index)
 </script>
 
@@ -78,6 +85,9 @@ const choose = (index: number) => emits('choose', index)
       @click="choose(cardAction)"
       :data-customizations="JSON.stringify(skill.customizations)"
     />
+    <div v-if="hasPool" class="pool">
+      <Token v-for="(sealedToken, index) in skill.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
+    </div>
     <AbilityButton
       v-for="ability in abilities"
       :key="ability.index"
@@ -95,13 +105,13 @@ const choose = (index: number) => emits('choose', index)
   border-radius: 5px;
 }
 
-.event {
+.skill {
   display: flex;
   flex-direction: column;
   position: relative;
 }
 
-.event--can-interact {
+.skill--can-interact {
   border: 2px solid $select;
   cursor:pointer;
 }
@@ -128,6 +138,14 @@ const choose = (index: number) => emits('choose', index)
   * {
     transform: scale(0.6);
   }
+  :deep(.token-container) {
+    transform: scale(1);
+    width: unset;
+  }
+  :deep(img) {
+    width: 20px;
+    height: auto;
+  }
   z-index: 1;
   pointer-events: none;
 }
@@ -137,4 +155,5 @@ const choose = (index: number) => emits('choose', index)
   object-position: left bottom;
   height: $card-width*0.6;
 }
+
 </style>

@@ -1,6 +1,6 @@
 module Arkham.Helpers.Matchers where
 
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()

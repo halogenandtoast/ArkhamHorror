@@ -27,7 +27,7 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Choose
 import Arkham.ClassSymbol
 import Arkham.Cost

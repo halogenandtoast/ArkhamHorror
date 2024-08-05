@@ -2,7 +2,7 @@ module Arkham.Query where
 
 import {-# SOURCE #-} Arkham.Ability.Types
 import Arkham.Card
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Id
 import Arkham.Matcher
 import {-# SOURCE #-} Arkham.Target

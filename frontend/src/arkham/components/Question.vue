@@ -499,7 +499,7 @@ const cardPiles = computed(() => {
 
     </template>
   </div>
-  <div v-else-if="question && question.tag === 'QuestionLabel'" class="standalone-label">
+  <div v-else-if="question && question.tag === 'QuestionLabel' && question.question.tag !== 'DropDown'" class="standalone-label">
       {{label(question.label)}}
   </div>
   <div v-if="doneLabel && !inSkillTest">
@@ -741,34 +741,47 @@ h2 {
 
 .dropdown {
   padding: 10px;
-}
+  background: #735e7b;
+  width: 100%;
+  box-sizing: border-box;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
 
-.dropdown :deep(form) {
-  min-width: 30vw;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+  & :deep(button) {
+    background: #4a3d50;
+    display: inline;
+    border: 0;
+    color: white;
+    padding: 0.5em;
+  }
 
-.dropdown form select {
-  font-size: 1.2em;
-  padding: 5px;
-}
+  & :deep(form) {
+    min-width: 30vw;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 
-.dropdown form button {
-  text-align: center;
-  font-size: 1.2em;
-  transition: all 0.3s ease-in;
-  border: 0;
-  padding: 10px;
-  background-color: #532e61;
-  border-radius: 0.6em;
-  color: #EEE;
-  font: Arial, sans-serif;
-}
+    select {
+      font-size: 1.2em;
+      padding: 5px;
+    }
 
-.dropdown form button:hover {
-  background-color: #311b3e;
+    button {
+      text-align: center;
+      font-size: 1.2em;
+      transition: all 0.3s ease-in;
+      border: 0;
+      padding: 10px;
+      background-color: #532e61;
+      border-radius: 0.6em;
+      color: #EEE;
+      font: Arial, sans-serif;
+    }
+
+    button:hover {
+      background-color: #311b3e;
+    }
+  }
 }
 
 .cardPiles {

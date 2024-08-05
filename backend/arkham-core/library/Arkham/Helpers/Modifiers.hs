@@ -7,7 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Ability.Types
 import Arkham.Card
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Classes.HasGame
 import Arkham.Effect.Window
 import Arkham.EffectMetadata

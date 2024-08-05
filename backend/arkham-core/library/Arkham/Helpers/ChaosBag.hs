@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.ChaosBag.Base
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Enemy.Types (Field (..))

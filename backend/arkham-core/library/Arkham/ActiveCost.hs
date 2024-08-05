@@ -565,20 +565,55 @@ payCost msg c iid skipAdditionalCosts cost = do
       withPayment $ ResourcePayment n
     AddCurseTokenCost n -> do
       x <- min n <$> getRemainingCurseTokens
-      pushAll $ replicate x $ AddChaosToken CurseToken
-      withPayment $ AddCurseTokenPayment x
+      if x < n
+        then do
+          -- we need to parallel rex
+          canParallelRex <-
+            iid
+              <=~> ( InvestigatorIs "90078"
+                      <> InvestigatorAt Anywhere
+                      <> InvestigatorWithAnyClues
+                   )
+          if canParallelRex
+            then do
+              batchId <- getRandom
+              push
+                $ Would batchId
+                $ chooseOne
+                  player
+                  [ AbilityLabel
+                      iid
+                      (mkAbility (SourceableWithCardCode @CardCode "90078" iid) 1 $ freeReaction NotAnyWindow)
+                      [Window #when (Window.WouldAddChaosTokensToChaosBag $ replicate n #curse) (Just batchId)]
+                      []
+                      []
+                  ]
+                : replicate n (AddChaosToken #curse)
+              withPayment $ AddCurseTokenPayment x
+            else error "should not be here"
+        else do
+          batchId <- getRandom
+          would <-
+            checkWindows
+              [ (mkWhen $ Window.WouldAddChaosTokensToChaosBag $ replicate x CurseToken)
+                  { windowBatchId = Just batchId
+                  }
+              ]
+          push $ Would batchId $ would : replicate x (AddChaosToken CurseToken)
+          withPayment $ AddCurseTokenPayment x
     AddCurseTokensCost n m -> do
-      maxTokens <- min m <$> getRemainingCurseTokens
-      name <- fieldMap InvestigatorName toTitle iid
-      choiceId <- getRandom
+      canParallelRex <-
+        iid <=~> (InvestigatorIs "90078" <> InvestigatorAt Anywhere <> InvestigatorWithAnyClues)
+      rex <- if canParallelRex then fieldMap InvestigatorClues (* 2) iid else pure 0
+
+      maxTokens <- min m . (+ rex) <$> getRemainingCurseTokens
 
       push
         $ Ask player
-        $ ChoosePaymentAmounts
-          ("Pay " <> displayCostType cost)
-          Nothing
-          [ PaymentAmountChoice choiceId iid n maxTokens name
-              $ pay (AddCurseTokenCost 1)
+        $ QuestionLabel ("Pay " <> displayCostType cost) Nothing
+        $ DropDown
+          [ (tshow x, pay (AddCurseTokenCost x))
+          | x <- [n .. maxTokens]
           ]
       pure c
     AddCurseTokensEqualToShroudCost -> do

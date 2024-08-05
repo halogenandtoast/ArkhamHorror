@@ -3,7 +3,7 @@
 module Arkham.ChaosBag.Base where
 
 import Arkham.ChaosBagStepState
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Json
 import Arkham.Prelude
 import Data.Aeson.TH

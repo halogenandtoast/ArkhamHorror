@@ -4,7 +4,7 @@ module Arkham.Enemy.Types.Attrs where
 
 import Arkham.Attack.Types
 import Arkham.Card
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.DamageEffect
 import Arkham.GameValue
 import Arkham.Id

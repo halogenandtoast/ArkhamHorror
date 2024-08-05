@@ -4,7 +4,7 @@ module Arkham.Classes.Entity where
 
 import Arkham.Prelude hiding (to)
 
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Target
 
 class Entity a where

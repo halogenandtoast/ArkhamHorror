@@ -16,7 +16,7 @@ import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype GuardianAngel = GuardianAngel AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 guardianAngel :: AssetCard GuardianAngel

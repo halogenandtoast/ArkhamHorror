@@ -92,6 +92,7 @@ allInvestigatorCards =
       , jimCulverParallel
       , zoeySamarasParallel
       , montereyJackParallel
+      , rexMurphyParallel
       ]
 
 allEncounterInvestigatorCards :: Map CardCode CardDef
@@ -623,3 +624,7 @@ zoeySamarasParallel =
 montereyJackParallel :: CardDef
 montereyJackParallel =
   investigator "90062" ("Monterey Jack" <:> "The Archeologist") Rogue [Wayfarer]
+
+rexMurphyParallel :: CardDef
+rexMurphyParallel =
+  investigator "90078" ("Rex Murphy" <:> "The Reporter") Seeker [Reporter, Cursed]

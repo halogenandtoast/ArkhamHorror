@@ -13,7 +13,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Attack.Types
 import Arkham.Card
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor

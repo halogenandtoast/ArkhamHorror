@@ -709,6 +709,8 @@ allEvents =
       SomeEventCard onTheLamAdvanced
     , -- Bad Blood
       SomeEventCard darkMemoryAdvanced
+    , -- Hunting for Answers
+      SomeEventCard searchForTheTruthAdvanced
     , -- Promo
       -- The Dirge of Reason
       SomeEventCard mysteriesRemain

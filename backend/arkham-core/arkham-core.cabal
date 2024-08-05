@@ -1221,6 +1221,7 @@ library
       Arkham.ChaosBag.RevealStrategy
       Arkham.ChaosBagStepState
       Arkham.ChaosToken
+      Arkham.ChaosToken.Types
       Arkham.Choose
       Arkham.Classes
       Arkham.Classes.Entity
@@ -1858,6 +1859,7 @@ library
       Arkham.Event.Cards.ScroungeForSupplies
       Arkham.Event.Cards.SealOfTheElders5
       Arkham.Event.Cards.SearchForTheTruth
+      Arkham.Event.Cards.SearchForTheTruthAdvanced
       Arkham.Event.Cards.SecondWind
       Arkham.Event.Cards.SecondWind2
       Arkham.Event.Cards.SeekingAnswers
@@ -2085,6 +2087,7 @@ library
       Arkham.Investigator.Cards.PennyWhite
       Arkham.Investigator.Cards.PrestonFairmont
       Arkham.Investigator.Cards.RexMurphy
+      Arkham.Investigator.Cards.RexMurphyParallel
       Arkham.Investigator.Cards.RitaYoung
       Arkham.Investigator.Cards.RolandBanks
       Arkham.Investigator.Cards.RolandBanksParallel
@@ -3251,6 +3254,7 @@ library
       Arkham.Treachery.Cards.RestlessJourneyHardship
       Arkham.Treachery.Cards.RestlessJourneyLies
       Arkham.Treachery.Cards.RexsCurse
+      Arkham.Treachery.Cards.RexsCurseAdvanced
       Arkham.Treachery.Cards.RipplesOnTheSurface
       Arkham.Treachery.Cards.RitesHowled
       Arkham.Treachery.Cards.RookieMistake

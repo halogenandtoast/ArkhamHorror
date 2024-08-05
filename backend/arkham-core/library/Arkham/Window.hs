@@ -10,7 +10,7 @@ import Arkham.Agenda.AdvancementReason (AgendaAdvancementReason)
 import Arkham.Asset.Uses
 import Arkham.Attack.Types
 import Arkham.Card (Card)
-import Arkham.ChaosToken (ChaosToken)
+import Arkham.ChaosToken.Types (ChaosToken, ChaosTokenFace)
 import Arkham.Damage
 import Arkham.DamageEffect (DamageEffect)
 import Arkham.Deck
@@ -220,6 +220,8 @@ data WindowType
   | LostResources InvestigatorId Source Int
   | LostActions InvestigatorId Source Int
   | WouldPlaceDoom Source Target Int
+  | WouldPlaceClueOnLocation InvestigatorId LocationId Source Int
+  | WouldAddChaosTokensToChaosBag [ChaosTokenFace]
   | DeckWouldRunOutOfCards InvestigatorId
   | DeckRanOutOfCards InvestigatorId
   | WouldSearchDeck InvestigatorId DeckSignifier

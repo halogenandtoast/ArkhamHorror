@@ -9,7 +9,7 @@ import Arkham.Asset.Cards
 import Arkham.Asset.Uses
 import Arkham.Calculation
 import Arkham.Card
-import Arkham.ChaosToken (ChaosToken)
+import Arkham.ChaosToken.Types (ChaosToken)
 import Arkham.ClassSymbol
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities

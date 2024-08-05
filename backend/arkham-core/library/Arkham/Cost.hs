@@ -15,7 +15,7 @@ import Arkham.Asset.Uses
 import Arkham.Calculation
 import Arkham.Campaigns.TheForgottenAge.Supply
 import {-# SOURCE #-} Arkham.Card
-import Arkham.ChaosToken (ChaosToken)
+import Arkham.ChaosToken.Types (ChaosToken)
 import Arkham.Classes.Entity
 import {-# SOURCE #-} Arkham.Cost.FieldCost
 import Arkham.Customization

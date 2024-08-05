@@ -10,7 +10,7 @@ module Arkham.ChaosBagStepState (
 
 import Arkham.Prelude
 
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.Matcher
 import Arkham.Source
 import Data.Aeson.TH

@@ -19,11 +19,13 @@ import Arkham.Token
 import Data.Aeson.TH
 
 data GameCalculation
-  = Fixed Int
+  = Negated GameCalculation
+  | Fixed Int
   | MaxCalculation GameCalculation GameCalculation
   | DividedByCalculation GameCalculation Int
   | SumCalculation [GameCalculation]
   | SubtractCalculation GameCalculation GameCalculation
+  | MultiplyCalculation GameCalculation GameCalculation
   | RecordedCount CampaignLogKey
   | ScenarioCount ScenarioCountKey
   | CountActs ActMatcher

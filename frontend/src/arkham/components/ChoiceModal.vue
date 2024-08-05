@@ -67,7 +67,7 @@ const requiresModal = computed(() => {
   if (inSkillTest.value) {
     return false
   }
-  return (props.game.focusedChaosTokens.length > 0 && !inSkillTest.value) || focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value || choicesRequireModal.value
+  return (props.game.focusedChaosTokens.length > 0 && !inSkillTest.value) || focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value || choicesRequireModal.value || question.value.tag === 'QuestionLabel'
 })
 
 const question = computed(() => props.game.question[props.playerId])

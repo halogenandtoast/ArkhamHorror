@@ -2,12 +2,9 @@ module Arkham.Treachery.Cards.BuriedSecretsAdvanced (buriedSecretsAdvanced, Buri
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.Capability
-import Arkham.Helpers.Message qualified as Msg
 import Arkham.Investigate
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

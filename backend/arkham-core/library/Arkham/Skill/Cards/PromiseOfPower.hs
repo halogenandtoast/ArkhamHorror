@@ -1,16 +1,8 @@
-module Arkham.Skill.Cards.PromiseOfPower (
-  promiseOfPower,
-  PromiseOfPower (..),
-)
-where
+module Arkham.Skill.Cards.PromiseOfPower ( promiseOfPower, PromiseOfPower (..),) where
 
-import Arkham.Prelude
-
-import Arkham.ChaosToken
-import Arkham.Classes
 import Arkham.Helpers.ChaosBag
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype PromiseOfPower = PromiseOfPower SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -21,11 +13,11 @@ promiseOfPower =
   skill PromiseOfPower Cards.promiseOfPower
 
 instance RunMessage PromiseOfPower where
-  runMessage msg (PromiseOfPower attrs) = case msg of
+  runMessage msg (PromiseOfPower attrs) = runQueueT $ case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
       n <- getRemainingCurseTokens
       if n > 0
-        then push $ AddChaosToken CurseToken
-        else push $ assignHorror iid attrs 2
-      PromiseOfPower <$> runMessage msg attrs
-    _ -> PromiseOfPower <$> runMessage msg attrs
+        then addCurseTokens 1
+        else assignHorror iid attrs 2
+      PromiseOfPower <$> liftRunMessage msg attrs
+    _ -> PromiseOfPower <$> liftRunMessage msg attrs

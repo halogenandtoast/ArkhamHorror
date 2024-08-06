@@ -6,11 +6,10 @@ where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.CampaignLogKey
 import Arkham.Helpers.ChaosBag
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype CrypticGrimoireUntranslated = CrypticGrimoireUntranslated AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -29,12 +28,12 @@ instance HasAbilities CrypticGrimoireUntranslated where
     ]
 
 instance RunMessage CrypticGrimoireUntranslated where
-  runMessage msg a@(CrypticGrimoireUntranslated attrs) = case msg of
+  runMessage msg a@(CrypticGrimoireUntranslated attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      push $ AddChaosToken #curse
+      addCurseTokens 1
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       n <- min 5 <$> getRemainingBlessTokens
       pushAll $ Record YouHaveTranslatedTheGrimoire : replicate n (SwapChaosToken #curse #bless)
       pure a
-    _ -> CrypticGrimoireUntranslated <$> runMessage msg attrs
+    _ -> CrypticGrimoireUntranslated <$> liftRunMessage msg attrs

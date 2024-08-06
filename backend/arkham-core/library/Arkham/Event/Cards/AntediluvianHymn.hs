@@ -4,6 +4,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.ChaosBag
+import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.Strategy
 import Arkham.Zone
 
@@ -27,12 +28,13 @@ instance RunMessage AntediluvianHymn where
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       n <- getRemainingCurseTokens
+      addCurse <- evalQueueT $ addCurseTokens 1
       focusCards cards \unfocus -> do
         chooseUpToN
           iid
           n
           "Do not add 1 {curse} token to place a card on the bottom of the encounter deck"
-          [ targetLabel card [AddChaosToken #curse, PutCardOnBottomOfDeck iid Deck.EncounterDeck card]
+          [ targetLabel card $ addCurse <> [PutCardOnBottomOfDeck iid Deck.EncounterDeck card]
           | card <- cards
           ]
         push unfocus

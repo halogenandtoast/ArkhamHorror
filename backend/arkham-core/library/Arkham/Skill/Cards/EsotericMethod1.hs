@@ -15,10 +15,10 @@ instance RunMessage EsotericMethod1 where
   runMessage msg s@(EsotericMethod1 attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ n | n > 0 -> do
       x <- getRemainingCurseTokens
-      replicateM_ (min x n) $ push $ AddChaosToken #curse
+      addCurseTokens (min x n)
       pure s
     FailedSkillTest _ _ _ (isTarget attrs -> True) _ n | n > 0 -> do
       x <- getRemainingCurseTokens
-      replicateM_ (min x n) $ push $ AddChaosToken #curse
+      addCurseTokens (min x n)
       pure s
     _ -> EsotericMethod1 <$> liftRunMessage msg attrs

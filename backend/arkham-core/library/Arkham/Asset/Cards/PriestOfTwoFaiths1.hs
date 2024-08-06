@@ -2,10 +2,10 @@ module Arkham.Asset.Cards.PriestOfTwoFaiths1 (priestOfTwoFaiths1, PriestOfTwoFai
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.ChaosBag
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 
 newtype PriestOfTwoFaiths1 = PriestOfTwoFaiths1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,19 +21,17 @@ instance HasAbilities PriestOfTwoFaiths1 where
     ]
 
 instance RunMessage PriestOfTwoFaiths1 where
-  runMessage msg a@(PriestOfTwoFaiths1 attrs) = case msg of
+  runMessage msg a@(PriestOfTwoFaiths1 attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       n <- min 3 <$> getRemainingBlessTokens
       pushAll $ replicate n (AddChaosToken #bless)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      player <- getPlayer iid
       n <- getRemainingCurseTokens
-      push
-        $ chooseOrRunOne
-          player
-        $ [Label "Add 1 {curse} token to the chaos bag" [AddChaosToken #curse] | n > 0]
-        <> [ Label "Discard Priest of Two Faiths" [toDiscardBy iid (attrs.ability 2) attrs]
-           ]
+      chooseOrRunOneM iid do
+        when (n > 0) do
+          labeled "Add 1 {curse} token to the chaos bag" do
+            addCurseTokens 1
+          labeled "Discard Priest of Two Faiths" $ toDiscardBy iid (attrs.ability 2) attrs
       pure a
-    _ -> PriestOfTwoFaiths1 <$> runMessage msg attrs
+    _ -> PriestOfTwoFaiths1 <$> liftRunMessage msg attrs

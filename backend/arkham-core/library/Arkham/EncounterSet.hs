@@ -136,6 +136,7 @@ data EncounterSet
   | DarkRituals
   | VileExperiments
   | SinsOfThePast
+  | TheBlobThatAteEverythingELSE
   | Test
   deriving stock (Show, Eq, Ord, Bounded, Enum, Data)
 

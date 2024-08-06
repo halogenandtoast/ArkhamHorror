@@ -36,13 +36,13 @@ import Arkham.Scenario.Types hiding (scenario)
 import Arkham.Skill.Types (Skill)
 import Arkham.Story.Types (Story)
 import Arkham.Target
-import Arkham.Treachery.Types (Treachery)
+import Arkham.Treachery.Types (Field (..), Treachery)
 import Arkham.Window (Window)
 import Control.Lens (each)
 import Data.Text qualified as T
 
 newtype MissingEntity = MissingEntity Text
-  deriving stock (Show)
+  deriving stock Show
 
 instance Exception MissingEntity
 
@@ -162,6 +162,7 @@ getPlacementLocation = \case
   StillInDiscard _ -> pure Nothing
   StillInEncounterDiscard -> pure Nothing
   AttachedToEnemy enemy -> field EnemyLocation enemy
+  AttachedToTreachery treachery -> field TreacheryLocation treachery
   AttachedToAsset asset _ -> field AssetLocation asset
   AttachedToAct _ -> pure Nothing
   AttachedToAgenda _ -> pure Nothing

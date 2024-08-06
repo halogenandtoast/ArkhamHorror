@@ -983,6 +983,8 @@ onSameLocation iid = \case
           (field InvestigatorLocation iid)
   AttachedToEnemy eid ->
     liftA2 (==) (field EnemyLocation eid) (field InvestigatorLocation iid)
+  AttachedToTreachery tid ->
+    liftA2 (==) (field TreacheryLocation tid) (field InvestigatorLocation iid)
   AttachedToAsset aid _ -> do
     placement' <- field AssetPlacement aid
     onSameLocation iid placement'

@@ -704,6 +704,9 @@ allEvents =
     , SomeEventCard lookWhatIFound2
     , SomeEventCard dumbLuck2
     , SomeEventCard lucky3
+    , -- Side Stories
+      -- The Blob That Ate Everything ELSE!
+      SomeEventCard regurgitation
     , -- Parallel
       -- All or Nothing
       SomeEventCard onTheLamAdvanced

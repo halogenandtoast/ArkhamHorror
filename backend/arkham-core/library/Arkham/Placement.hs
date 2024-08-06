@@ -28,6 +28,7 @@ data Placement
   | StillInDiscard InvestigatorId
   | StillInEncounterDiscard
   | AttachedToEnemy EnemyId
+  | AttachedToTreachery TreacheryId -- Not used yet?
   | AttachedToAsset AssetId (Maybe Placement) -- Maybe Placement for Dr. Elli Horowitz
   | AttachedToAct ActId
   | AttachedToAgenda AgendaId
@@ -47,6 +48,7 @@ placementToAttached :: Placement -> Maybe Target
 placementToAttached = \case
   AttachedToLocation lid -> Just $ LocationTarget lid
   AttachedToEnemy eid -> Just $ EnemyTarget eid
+  AttachedToTreachery tid -> Just $ TreacheryTarget tid
   AtLocation _ -> Nothing
   InPlayArea _ -> Nothing
   InThreatArea _ -> Nothing
@@ -81,6 +83,7 @@ isInPlayPlacement = \case
   StillInDiscard {} -> False
   StillInEncounterDiscard -> False
   AttachedToEnemy {} -> True
+  AttachedToTreachery {} -> True
   AttachedToAsset {} -> True
   AttachedToAct {} -> True
   AttachedToAgenda {} -> True

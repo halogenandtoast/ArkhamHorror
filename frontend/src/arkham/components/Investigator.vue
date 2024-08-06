@@ -149,8 +149,10 @@ const portraitImage = computed(() => {
 
 const cardsUnderneath = computed(() => props.investigator.cardsUnderneath)
 const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
+const devoured = computed(() => props.investigator.devoured)
 
 const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, "Cards Underneath", false)
+const showDevoured = (e: Event) => emit('showCards', e, devoured, "Devoured", false)
 
 const modifiers = computed(() => props.investigator.modifiers)
 
@@ -268,6 +270,11 @@ const leylines = computed(() => props.investigator.tokens[TokenType.Leyline] || 
           :disabled="endTurnAction == -1"
           @click="$emit('choose', endTurnAction)"
         >End turn</button>
+
+        <button
+          v-if="devoured.length > 0"
+          @click="showDevoured"
+        >Devoured ({{devoured.length}})</button>
 
         <button
           :disabled="skipTriggersAction == -1"

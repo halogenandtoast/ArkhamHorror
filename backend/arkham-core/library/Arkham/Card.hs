@@ -155,6 +155,7 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   CardFromEncounterSet encounterSet ->
     cdEncounterSet (toCardDef a) == Just encounterSet
   IsEncounterCard -> toCardType a `elem` encounterCardTypes
+  IsPlayerCard -> toCardType a `elem` playerCardTypes
   CardIsUnique -> cdUnique $ toCardDef a
   CardWithType cardType' -> toCardType a == cardType'
   CardWithSubType subType' -> cdCardSubType (toCardDef a) == Just subType'
@@ -177,10 +178,11 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   CardWithoutKeyword k -> k `notMember` cdKeywords (toCardDef a)
   CardWithKeyword k -> k `member` cdKeywords (toCardDef a)
   NonWeakness -> isNothing . cdCardSubType $ toCardDef a
-  NonSignature -> not . isSignature $ toCardDef a
+  SignatureCard -> isSignature $ toCardDef a
   BasicWeaknessCard -> (== Just BasicWeakness) . cdCardSubType $ toCardDef a
   WeaknessCard -> isJust . cdCardSubType $ toCardDef a
   NonExceptional -> not . cdExceptional $ toCardDef a
+  PermanentCard -> cdPermanent $ toCardDef a
   NotCard m -> not (cardMatch a m)
   CardWithAction action -> elem action $ cdActions $ toCardDef a
   CardWithoutAction -> null $ cdActions $ toCardDef a

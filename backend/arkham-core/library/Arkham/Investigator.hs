@@ -143,6 +143,7 @@ allInvestigators =
       , SomeInvestigatorCard winifredHabbamock
       , SomeInvestigatorCard stellaClark
       , SomeInvestigatorCard jacquelineFine
+      , SomeInvestigatorCard subject5U21
       , SomeInvestigatorCard gloriaGoldberg
       , SomeInvestigatorCard daisyWalkerParallel
       , SomeInvestigatorCard skidsOTooleParallel

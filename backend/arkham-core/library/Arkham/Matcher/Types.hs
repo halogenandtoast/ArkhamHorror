@@ -330,6 +330,7 @@ instance Monoid AssetMatcher where
 
 data EnemyMatcher
   = EnemyWithTitle Text
+  | EnemyWithVictory
   | EnemyWithFullTitle Text Text
   | EnemyWithId EnemyId
   | EnemyWithTrait Trait
@@ -704,6 +705,7 @@ data TreacheryMatcher
   | TreacheryAttachedToLocation LocationMatcher
   | TreacheryWithCardId CardId
   | TreacheryAt LocationMatcher
+  | TreacheryWithVictory
   | TreacheryOnEnemy EnemyMatcher
   | TreacheryIsNonWeakness
   | TreacheryWithResolvedEffectsBy InvestigatorMatcher
@@ -741,6 +743,7 @@ data ExtendedCardMatcher
   | CardIsAsset AssetMatcher
   | CardWithCopyInHand Who
   | CardIsAttachedToLocation LocationMatcher
+  | CardIsAttachedToEncounterCardAt LocationMatcher
   | NotThisCard
   | IsThisCard
   | ControlledBy Who
@@ -869,13 +872,15 @@ data CardMatcher
   | CardWithPrintedLocationSymbol LocationSymbol
   | NotCard CardMatcher
   | IsEncounterCard
+  | IsPlayerCard
   | CardIsUnique
   | FastCard
   | NonWeakness
-  | NonSignature
+  | SignatureCard
   | WeaknessCard
   | BasicWeaknessCard
   | NonExceptional
+  | PermanentCard
   | AnyCard
   | CardWithVengeance
   | CardFillsSlot SlotType

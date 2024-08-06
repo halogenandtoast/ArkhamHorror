@@ -17,6 +17,7 @@ import Arkham.Enemy.Cards (allPlayerEnemyCards)
 import Arkham.Event.Cards (allPlayerEventCards)
 import Arkham.Name
 import Arkham.Skill.Cards (allPlayerSkillCards)
+import Arkham.Story.Cards (realityAcid)
 import Arkham.Treachery.Cards (allPlayerTreacheryCards)
 
 lookupPlayerCardName :: CardCode -> Name
@@ -39,6 +40,7 @@ allPlayerCards =
     <> allSpecialPlayerAssetCards
     <> allPlayerEventCards
     <> allPlayerSkillCards
+    <> singletonMap "89005" realityAcid
     <> singletonMap "01000" randomWeakness
 
 randomWeakness :: CardDef

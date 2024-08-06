@@ -33,6 +33,7 @@ import Arkham.Scenario.Types (Field (..))
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
+import Arkham.Treachery.Types
 
 isDiscardable :: Card -> Bool
 isDiscardable = not . isWeakness
@@ -61,6 +62,9 @@ extendedCardMatch (toCard -> c) matcher =
 class ConvertToCard a where
   convertToCard :: HasGame m => a -> m Card
 
+instance ConvertToCard TreacheryId where
+  convertToCard = getEntityCard @Treachery
+
 instance ConvertToCard EnemyId where
   convertToCard = getEntityCard @Enemy
 
@@ -82,6 +86,9 @@ class (Projection a, Entity a) => CardEntity a where
 getEntityCard
   :: forall a m. (CardEntity a, HasGame m) => EntityId a -> m Card
 getEntityCard = field (cardField @a)
+
+instance CardEntity Treachery where
+  cardField = TreacheryCard
 
 instance CardEntity Enemy where
   cardField = EnemyCard

@@ -932,10 +932,12 @@ library
       Arkham.Asset.Cards.RandallCho
       Arkham.Asset.Cards.RandolphCarterChainedToTheWakingWorld
       Arkham.Asset.Cards.RandolphCarterExpertDreamer
+      Arkham.Asset.Cards.RavenousControlledHunger
       Arkham.Asset.Cards.RavenousMyconidCarnivorousStrain4
       Arkham.Asset.Cards.RavenousMyconidNurturingStrain4
       Arkham.Asset.Cards.RavenousMyconidSentientStrain4
       Arkham.Asset.Cards.RavenousMyconidUnidentified
+      Arkham.Asset.Cards.RavenousUncontrolledHunger
       Arkham.Asset.Cards.RecallTheFuture2
       Arkham.Asset.Cards.Relentless
       Arkham.Asset.Cards.RelicHunter3
@@ -1847,6 +1849,7 @@ library
       Arkham.Event.Cards.Recharge2
       Arkham.Event.Cards.Recharge4
       Arkham.Event.Cards.Refine
+      Arkham.Event.Cards.Regurgitation
       Arkham.Event.Cards.Reliable1
       Arkham.Event.Cards.Riastrad1
       Arkham.Event.Cards.RighteousHunt1
@@ -2097,6 +2100,7 @@ library
       Arkham.Investigator.Cards.SkidsOToole
       Arkham.Investigator.Cards.SkidsOTooleParallel
       Arkham.Investigator.Cards.StellaClark
+      Arkham.Investigator.Cards.Subject5U21
       Arkham.Investigator.Cards.TommyMuldoon
       Arkham.Investigator.Cards.TonyMorgan
       Arkham.Investigator.Cards.TrishScarborough
@@ -2979,6 +2983,7 @@ library
       Arkham.Story.Cards.MappingTheStreets
       Arkham.Story.Cards.OffTheGalley
       Arkham.Story.Cards.PennysFate
+      Arkham.Story.Cards.RealityAcid
       Arkham.Story.Cards.RollingPits
       Arkham.Story.Cards.ScoutingTheVale
       Arkham.Story.Cards.SickeningReality_65
@@ -3248,6 +3253,7 @@ library
       Arkham.Treachery.Cards.Punishment
       Arkham.Treachery.Cards.PushedIntoTheBeyond
       Arkham.Treachery.Cards.RationalThought
+      Arkham.Treachery.Cards.RealityAcid5U21
       Arkham.Treachery.Cards.RealmOfMadness
       Arkham.Treachery.Cards.RealmOfTorment
       Arkham.Treachery.Cards.RestlessJourneyFallacy

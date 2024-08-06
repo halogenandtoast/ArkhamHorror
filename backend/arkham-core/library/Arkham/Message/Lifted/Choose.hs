@@ -1,5 +1,6 @@
 module Arkham.Message.Lifted.Choose where
 
+import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Id
 import Arkham.Message (Message)
@@ -15,6 +16,9 @@ newtype ChooseT m a = ChooseT {unChooseT :: StateT Bool (WriterT [UI Message] m)
   deriving newtype
     (Functor, Applicative, Monad, MonadWriter [UI Message], MonadState Bool, MonadIO)
 
+instance HasGame m => HasGame (ChooseT m) where
+  getGame = lift getGame
+
 instance MonadTrans ChooseT where
   lift = ChooseT . lift . lift
 
@@ -26,10 +30,25 @@ chooseOneM iid choices = do
   choices' <- runChooseT choices
   unless (null choices') $ chooseOne iid choices'
 
+chooseOneFromEachM :: ReverseQueue m => InvestigatorId -> [ChooseT m a] -> m ()
+chooseOneFromEachM iid choices = do
+  choices' <- traverse runChooseT choices
+  unless (null choices') $ chooseOneFromEach iid choices'
+
 chooseOrRunOneM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOrRunOneM iid choices = do
   choices' <- runChooseT choices
   unless (null choices') $ chooseOrRunOne iid choices'
+
+chooseNM :: ReverseQueue m => InvestigatorId -> Int -> ChooseT m a -> m ()
+chooseNM iid n choices = do
+  choices' <- runChooseT choices
+  unless (null choices') $ chooseN iid n choices'
+
+chooseUpToNM :: ReverseQueue m => InvestigatorId -> Int -> Text -> ChooseT m a -> m ()
+chooseUpToNM iid n done choices = do
+  choices' <- runChooseT choices
+  unless (null choices') $ chooseUpToN iid n done choices'
 
 chooseOneAtATimeM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOneAtATimeM iid choices = do

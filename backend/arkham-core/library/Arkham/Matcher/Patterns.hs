@@ -339,6 +339,11 @@ pattern LocationNotOneOf inner = NotLocation (LocationMatchAny inner)
 
 -- ** Card Patterns **
 
+pattern NonSignature :: CardMatcher
+pattern NonSignature <- NotCard SignatureCard
+  where
+    NonSignature = NotCard SignatureCard
+
 pattern NonWeaknessTreachery :: CardMatcher
 pattern NonWeaknessTreachery =
   CardMatches [NonWeakness, CardWithType TreacheryType]

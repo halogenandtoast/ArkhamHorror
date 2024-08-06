@@ -91,6 +91,7 @@ allStoryCards =
       , stillSurface
       , rollingPits
       , centerOfTheSea
+      , realityAcid
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -303,3 +304,10 @@ rollingPits = story "06264b" "Rolling Pits" PointOfNoReturn
 
 centerOfTheSea :: CardDef
 centerOfTheSea = story "06265b" "Center of the Sea" PointOfNoReturn
+
+realityAcid :: CardDef
+realityAcid =
+  (story "89005" "Reality Acid" TheBlobThatAteEverythingELSE)
+    { cdEncounterSet = Nothing
+    , cdEncounterSetQuantity = Nothing
+    }

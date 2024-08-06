@@ -16,6 +16,7 @@ data EffectWindow
   = EffectPhaseWindow
   | EffectPhaseWindowFor Phase
   | EffectUntilEndOfPhaseWindowFor Phase
+  | EffectUntilEndOfNextPhaseWindowFor Phase
   | EffectCostWindow
   | EffectSkillTestWindow SkillTestId
   | EffectNextSkillTestWindow

@@ -1168,6 +1168,9 @@ allAssets =
       SomeAssetCard sinisterSolution
     , --- Sins of the Past
       SomeAssetCard timeWornLocket
+    , --- The Blob That Ate Everything ELSE!
+      SomeAssetCard ravenousControlledHunger
+    , SomeAssetCard ravenousUncontrolledHunger
     , -- Parallel Investigators
       --- Read or Die
       SomeAssetCard daisysToteBagAdvanced

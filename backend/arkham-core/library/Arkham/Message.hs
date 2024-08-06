@@ -334,6 +334,8 @@ instance AndThen (CardDraw Message) where
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
+  | Devour InvestigatorId
+  | Devoured InvestigatorId Card
   | MoveWithSkillTest Message
   | NextSkillTest SkillTestId
   | AddSubscriber Target
@@ -1101,6 +1103,10 @@ questionLabelWithCard lbl cCode pid q = Ask pid (QuestionLabel lbl (Just cCode) 
 chooseOne :: HasCallStack => PlayerId -> [UI Message] -> Message
 chooseOne _ [] = error "No messages for chooseOne"
 chooseOne pid msgs = Ask pid (ChooseOne msgs)
+
+chooseOneFromEach :: HasCallStack => PlayerId -> [[UI Message]] -> Message
+chooseOneFromEach _ [] = error "No messages for chooseOne"
+chooseOneFromEach pid msgs = Ask pid (ChooseOneFromEach msgs)
 
 chooseOneDropDown :: PlayerId -> [(Text, Message)] -> Message
 chooseOneDropDown _ [] = throw $ InvalidState "No messages for chooseOne"

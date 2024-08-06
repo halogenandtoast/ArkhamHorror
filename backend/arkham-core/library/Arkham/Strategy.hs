@@ -68,6 +68,7 @@ data AfterPlayStrategy
   | ShuffleThisBackIntoDeck
   | ReturnThisToHand
   | AbsoluteRemoveThisFromGame
+  | DevourThis InvestigatorId
   deriving stock (Show, Eq, Ord, Data)
 
 data ChosenCardStrategy

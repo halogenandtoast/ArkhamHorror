@@ -118,6 +118,7 @@ allPlayerTreacheryCards =
       , poisoned
       , psychosis
       , rationalThought
+      , realityAcid5U21
       , rexsCurse
       , rexsCurseAdvanced
       , rookieMistake
@@ -2434,6 +2435,12 @@ chillingPresence :: CardDef
 chillingPresence =
   (treachery "84042" "Chilling Presence" SinsOfThePast 3)
     { cdCardTraits = singleton Terror
+    }
+
+realityAcid5U21 :: CardDef
+realityAcid5U21 =
+  (weakness "89004" "Reality Acid")
+    { cdCardTraits = setFromList [Power]
     }
 
 hospitalDebtsAdvanced :: CardDef

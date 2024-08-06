@@ -459,6 +459,11 @@ chooseOne iid msgs = do
   player <- getPlayer iid
   push $ Msg.chooseOne player msgs
 
+chooseOneFromEach :: (HasCallStack, ReverseQueue m) => InvestigatorId -> [[UI Message]] -> m ()
+chooseOneFromEach iid msgs = do
+  player <- getPlayer iid
+  push $ Msg.chooseOneFromEach player msgs
+
 chooseSome :: ReverseQueue m => InvestigatorId -> Text -> [UI Message] -> m ()
 chooseSome iid done msgs = do
   player <- getPlayer iid
@@ -695,6 +700,15 @@ endOfPhaseModifier
   -> ModifierType
   -> m ()
 endOfPhaseModifier phase source target modifier = push $ Msg.endOfPhaseModifier phase source target modifier
+
+endOfNextPhaseModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => Phase
+  -> source
+  -> target
+  -> ModifierType
+  -> m ()
+endOfNextPhaseModifier phase source target modifier = push $ Msg.endOfNextPhaseModifier phase source target modifier
 
 roundModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()

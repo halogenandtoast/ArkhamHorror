@@ -354,6 +354,7 @@ allPlayerEventCards =
       , recharge2
       , recharge4
       , refine
+      , regurgitation
       , reliable1
       , riastrad1
       , righteousHunt1
@@ -4994,6 +4995,15 @@ lucky3 =
           $ FailureResult AnyValue
     , cdLevel = Just 3
     }
+
+regurgitation :: CardDef
+regurgitation =
+  signature "89001"
+    $ (event "89003" "Regurgitation" 0 Neutral)
+      { cdCardTraits = setFromList [Power]
+      , cdSkills = [#wild]
+      , cdFastWindow = Just $ DuringTurn You
+      }
 
 onTheLamAdvanced :: CardDef
 onTheLamAdvanced =

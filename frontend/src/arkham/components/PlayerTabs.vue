@@ -35,6 +35,7 @@ function tabClass(investigator: Investigator) {
       'tab--active-player': investigator.id === props.activePlayerId,
       'tab--lead-player': investigator.id === props.game.leadInvestigatorId,
       'tab--has-actions': pid !== props.playerId && hasChoices(investigator.playerId),
+      'glow-effect': investigator.id === 'c89001',
     },
     `tab--${investigator.class}`,
   ]
@@ -265,5 +266,9 @@ ul.tabs__header > li.tab--selected {
 
 ul.tabs__header > li.inactive {
   filter: grayscale(100%);
+}
+
+.glow-effect {
+  box-shadow: inset 0 -10px 20px -10px rgba(0, 255, 0, 0.7); /* Inset shadow for glow effect */
 }
 </style>

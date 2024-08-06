@@ -1,10 +1,11 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
 
-export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseSome1 | ChooseN | ChooseOneAtATime | ChooseDeck | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies | DropDown | PickScenarioSettings | PickCampaignSettings;
+export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseSome1 | ChooseN | ChooseOneAtATime | ChooseDeck | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies | DropDown | PickScenarioSettings | PickCampaignSettings | ChooseOneFromEach;
 
 export enum QuestionType {
   CHOOSE_ONE = 'ChooseOne',
+  CHOOSE_ONE_FROM_EACH = 'ChooseOneFromEach',
   CHOOSE_UP_TO_N = 'ChooseUpToN',
   CHOOSE_SOME = 'ChooseSome',
   CHOOSE_SOME_1 = 'ChooseSome1',
@@ -32,6 +33,12 @@ export type PickCampaignSettings = {
 
 export type ChooseOne = {
   tag: QuestionType.CHOOSE_ONE;
+  choices: Message[];
+}
+
+// The backend represents this as a nest list, but we flatten it and pass the flattened index
+export type ChooseOneFromEach = {
+  tag: QuestionType.CHOOSE_ONE_FROM_EACH;
   choices: Message[];
 }
 
@@ -290,6 +297,14 @@ export const chooseOneDecoder = JsonDecoder.object<ChooseOne>(
   'ChooseOne',
 );
 
+export const chooseOneFromEachDecoder = JsonDecoder.object<ChooseOneFromEach>(
+  {
+    tag: JsonDecoder.isExactly(QuestionType.CHOOSE_ONE_FROM_EACH),
+    choices: JsonDecoder.array<Message[]>(JsonDecoder.array<Message>(messageDecoder, 'Message[]'), 'Message[][]').map(xs => xs.flat()),
+  },
+  'ChooseOneFromEach',
+);
+
 export const chooseSomeDecoder = JsonDecoder.object<ChooseSome>(
   {
     tag: JsonDecoder.isExactly(QuestionType.CHOOSE_SOME),
@@ -335,6 +350,7 @@ export const chooseOneAtATimeDecoder = JsonDecoder.object<ChooseOneAtATime>(
 export const questionDecoder = JsonDecoder.oneOf<Question>(
   [
     chooseOneDecoder,
+    chooseOneFromEachDecoder,
     chooseNDecoder,
     chooseSomeDecoder,
     chooseSome1Decoder,

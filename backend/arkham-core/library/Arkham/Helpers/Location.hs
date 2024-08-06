@@ -17,6 +17,7 @@ import Arkham.Matcher hiding (LocationCard)
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Target
+import Arkham.Treachery.Types (Field (..))
 
 toConnections :: HasGame m => LocationId -> m [LocationSymbol]
 toConnections lid =
@@ -56,6 +57,7 @@ placementLocation = \case
   InThreatArea iid -> field InvestigatorLocation iid
   AttachedToInvestigator iid -> field InvestigatorLocation iid
   AttachedToEnemy eid -> field EnemyLocation eid
+  AttachedToTreachery tid -> field TreacheryLocation tid
   AttachedToAsset aid' _ -> field AssetLocation aid'
   AttachedToAct _ -> pure Nothing
   AttachedToAgenda _ -> pure Nothing

@@ -913,8 +913,18 @@ runGameMessage msg g = case msg of
     skillPairs <- for (mapToList skills') $ \(skillId, skill) -> do
       card <- field SkillCard skillId
       mods <- map resultF <$> liftA2 (<>) (getModifiers skillId) (getModifiers $ toCardId card)
+      let
+        modifyAfterPlay cur = \case
+          SetAfterPlay n -> case cur of
+            DevourThis {} -> cur
+            _ -> n
+          _ -> cur
+
+        afterPlay = foldl' modifyAfterPlay (skillAfterPlay $ toAttrs skill) mods
       pure
         $ if
+          | DevourThis iid' <- afterPlay ->
+              (Run [ObtainCard (toCard skill), Devoured iid' (toCard skill)], Nothing)
           | ReturnToHandAfterTest `elem` mods ->
               ( ReturnToHand (skillOwner $ toAttrs skill) (SkillTarget skillId)
               , Nothing
@@ -928,7 +938,7 @@ runGameMessage msg g = case msg of
               )
           | LeaveCardWhereItIs `elem` mods ->
               (Run [], Just skillId)
-          | otherwise -> case skillAfterPlay (toAttrs skill) of
+          | otherwise -> case afterPlay of
               DiscardThis -> case toCard skill of
                 PlayerCard pc ->
                   ( AddToDiscard (skillOwner $ toAttrs skill) pc
@@ -2058,8 +2068,12 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . assetsL . at assetId ?~ asset
   ReplaceInvestigatorAsset iid assetId card -> do
     tokens <- field AssetTokens assetId
+    underneath <- field AssetCardsUnderneath assetId
     replaceCard (toCardId card) card
-    let asset = overAttrs (\attrs -> attrs {assetTokens = tokens}) (createAsset card assetId)
+    let asset =
+          overAttrs
+            (\attrs -> attrs {assetTokens = tokens, assetCardsUnderneath = underneath})
+            (createAsset card assetId)
     push (ReplacedInvestigatorAsset iid assetId)
     pure $ g & entitiesL . assetsL . at assetId ?~ asset
   When (EnemySpawn _ lid eid) -> do

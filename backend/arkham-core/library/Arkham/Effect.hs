@@ -200,6 +200,7 @@ import Arkham.Treachery.Treacheries (
   mesmerizeEffect,
   mysteriesOfTheLodgeEffect,
   pushedIntoTheBeyondEffect,
+  realityAcid5U21Effect,
   restlessJourneyFallacyEffect,
   restlessJourneyHardshipEffect,
   restlessJourneyLiesEffect,
@@ -505,6 +506,7 @@ allEffects =
     , ("82035", SomeEffect mesmerizeEffect)
     , ("84014", SomeEffect restaurantEffect)
     , ("84042", SomeEffect chillingPresenceEffect)
+    , ("89004", SomeEffect realityAcid5U21Effect)
     , ("90002", SomeEffect daisysToteBagAdvancedEffect)
     , ("90009", SomeEffect onTheLamAdvancedEffect)
     , ("wmode", SomeEffect windowModifierEffect)

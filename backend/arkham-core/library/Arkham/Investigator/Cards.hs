@@ -82,6 +82,7 @@ allInvestigatorCards =
       , winifredHabbamock
       , jacquelineFine
       , stellaClark
+      , subject5U21
       , gloriaGoldberg
       , daisyWalkerParallel
       , skidsOTooleParallel
@@ -580,6 +581,14 @@ stellaClark =
     ("Stella Clark" <:> "The Letter Carrier")
     Survivor
     [Chosen, Civic]
+
+subject5U21 :: CardDef
+subject5U21 =
+  investigator
+    "89001"
+    ("Subject 5U-21" <:> "The Anomaly")
+    Neutral
+    [Manifold]
 
 gloriaGoldberg :: CardDef
 gloriaGoldberg =

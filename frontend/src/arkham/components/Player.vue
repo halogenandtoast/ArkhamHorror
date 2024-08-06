@@ -339,6 +339,8 @@ function onLeave(el: Element, done: () => void) {
     duration: 0.3
   })
 }
+
+const realityAcid = ref('89005')
 </script>
 
 <template>
@@ -351,6 +353,14 @@ function onLeave(el: Element, done: () => void) {
             <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }" @click="$emit('choose', tarotCardAbility(tarotCard))"/>
           </div>
         </template>
+
+        <img
+          v-if="investigatorId === 'c89001'"
+          class="card"
+          @click="realityAcid = realityAcid === '89005' ? '89005b' : '89005'"
+          :src="imgsrc(`cards/${realityAcid}.jpg`)"
+        />
+
         <Skill
           v-for="skill in skills"
           :skill="skill"

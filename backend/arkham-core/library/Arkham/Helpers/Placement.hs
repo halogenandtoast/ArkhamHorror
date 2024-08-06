@@ -11,6 +11,7 @@ import Arkham.Placement as X
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Target
+import Arkham.Treachery.Types (Field (..))
 import Arkham.Window qualified as Window
 
 placedInThreatArea :: HasGame m => Placement -> m (Maybe InvestigatorId)
@@ -23,6 +24,7 @@ placedInThreatArea = \case
   StillInDiscard _ -> pure Nothing
   StillInEncounterDiscard -> pure Nothing
   AttachedToEnemy eid -> fieldMapM EnemyPlacement placedInThreatArea eid
+  AttachedToTreachery tid -> fieldMapM TreacheryPlacement placedInThreatArea tid
   AttachedToAsset aid _ -> fieldMapM AssetPlacement placedInThreatArea aid
   AttachedToAct _ -> pure Nothing
   AttachedToAgenda _ -> pure Nothing

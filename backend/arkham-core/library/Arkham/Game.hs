@@ -184,6 +184,7 @@ import Data.Set qualified as Set
 import Data.Tuple.Extra (dupe)
 import Data.Typeable
 import Data.UUID (nil)
+import Debug.Trace (trace)
 import System.Environment (lookupEnv)
 import Text.Pretty.Simple
 
@@ -848,6 +849,13 @@ getInvestigatorsMatching matcher = do
             $ do
               notNull <$> getCanMoveToMatchingLocations (toId i) source locationMatcher
         _ -> notNull <$> getCanMoveToMatchingLocations (toId i) source locationMatcher
+    InvestigatorAt (LocationWithInvestigator (InvestigatorWithId iid)) -> \i -> do
+      if toId i == iid
+        then pure True
+        else do
+          mlid <- field InvestigatorLocation iid
+          mlid2 <- field InvestigatorLocation (toId i)
+          pure $ mlid == mlid2 && isJust mlid
     InvestigatorAt locationMatcher -> \i -> do
       mlid <- field InvestigatorLocation (toId i)
       case mlid of
@@ -1188,6 +1196,7 @@ getTreacheriesMatching matcher = do
     TreacheryWithTrait t -> fmap (member t) . field TreacheryTraits . toId
     TreacheryWithCardId cardId -> pure . (== cardId) . toCardId
     TreacheryIs cardCode -> pure . (== cardCode) . toCardCode
+    TreacheryWithVictory -> getHasVictoryPoints . toId
     TreacheryAt locationMatcher -> \treachery -> do
       targets <- select locationMatcher
       Helpers.placementLocation treachery.placement <&> \case
@@ -1511,6 +1520,9 @@ getLocationsMatching lmatcher = do
         flip filterM ls $ \l -> do
           lmAssets <- select $ AssetAtLocation $ toId l
           pure . notNull $ List.intersect assets lmAssets
+      LocationWithInvestigator (InvestigatorWithId iid) -> do
+        mLocation <- field InvestigatorLocation iid
+        pure $ filter ((`elem` mLocation) . toId) ls
       LocationWithInvestigator whoMatcher -> do
         investigators <- select whoMatcher
         flip filterM ls $ \l -> do
@@ -2773,6 +2785,7 @@ enemyMatcherFilter = \case
     (== Just (toId enemy)) . view enemyMovingL <$> getGame
   EvadingEnemy ->
     \enemy -> (== Just (toId enemy)) . view enemyEvadingL <$> getGame
+  EnemyWithVictory -> getHasVictoryPoints . toId
   EnemyAttachedToAsset assetMatcher -> \enemy -> do
     placements <- select assetMatcher
     pure $ case enemyPlacement (toAttrs enemy) of
@@ -3670,10 +3683,15 @@ instance Query PreyMatcher where
         Just iid -> select $ InvestigatorWithId iid <> restriction
         Nothing -> error "Invalid bearer situation"
 
+-- Helper function to measure time and trace call stack
+showBS :: (HasCallStack, Monad m) => m ()
+showBS = Debug.Trace.trace (prettyCallStack callStack) () `seq` pure ()
+
 instance Query ExtendedCardMatcher where
   select matcher = do
-    g <- getGame
-    filterM (`matches'` matcher) (Map.elems $ gameCards g)
+    game <- getGame
+    let cs = Map.elems $ gameCards game
+    filterM (`matches'` matcher) cs
    where
     matches' :: forall m. HasGame m => Card -> ExtendedCardMatcher -> m Bool
     matches' c = \case
@@ -3911,6 +3929,22 @@ instance Query ExtendedCardMatcher where
         let
           atLocation = \case
             AttachedToLocation lid -> lid <=~> mtch
+            _ -> pure False
+
+        orM
+          [ maybe (pure False) (fieldMapM AssetPlacement atLocation) mAsset
+          , maybe (pure False) (fieldMapM EventPlacement atLocation) mEvent
+          , maybe (pure False) (fieldMapM SkillPlacement atLocation) mSkill
+          ]
+      CardIsAttachedToEncounterCardAt mtch -> do
+        mAsset <- selectOne $ AssetWithCardId c.id
+        mEvent <- selectOne $ EventWithCardId c.id
+        mSkill <- selectOne $ SkillWithCardId c.id
+
+        let
+          atLocation = \case
+            AttachedToEnemy eid -> eid <=~> EnemyAt mtch
+            AttachedToTreachery tid -> tid <=~> TreacheryAt mtch
             _ -> pure False
 
         orM
@@ -4653,7 +4687,7 @@ We only preload modifiers while the scenario is active in order to prevent
 scenario specific modifiers from causing an exception. For instance when we
 need to call `getVengeanceInVictoryDisplay`
 -}
-preloadModifiers :: Monad m => Game -> m Game
+preloadModifiers :: (HasCallStack, Monad m) => Game -> m Game
 preloadModifiers g = case gameMode g of
   This _ -> pure g
   _ -> flip runReaderT g $ do

@@ -150,7 +150,9 @@ runEventMessage msg a@EventAttrs {..} = case msg of
     mods <- liftA2 (<>) (getModifiers eid) (getModifiers $ toCardId $ toCard a)
     let
       modifyAfterPlay cur = \case
-        SetAfterPlay n -> n
+        SetAfterPlay n -> case cur of
+          DevourThis {} -> cur
+          _ -> n
         _ -> cur
 
       afterPlay = foldl' modifyAfterPlay eventAfterPlay mods
@@ -167,6 +169,10 @@ runEventMessage msg a@EventAttrs {..} = case msg of
           AbsoluteRemoveThisFromGame -> push (RemoveEvent $ toId a)
           ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck eventController) (toTarget a))
           ReturnThisToHand -> push (ReturnToHand eventController (toTarget a))
+          DevourThis iid' -> do
+            c <- field EventCard a.id
+            push $ RemovedFromPlay (toSource a)
+            push $ Devoured iid' c
         Limbo -> case afterPlay of
           DiscardThis -> pushAll [after, toDiscardBy eventController GameSource a]
           ExileThis -> pushAll [after, Exile (toTarget a)]
@@ -174,8 +180,16 @@ runEventMessage msg a@EventAttrs {..} = case msg of
           AbsoluteRemoveThisFromGame -> push (RemoveEvent $ toId a)
           ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck eventController) (toTarget a))
           ReturnThisToHand -> push (ReturnToHand eventController (toTarget a))
+          DevourThis iid' -> do
+            c <- field EventCard a.id
+            push $ RemovedFromPlay (toSource a)
+            push $ Devoured iid' c
         _ -> case afterPlay of
           AbsoluteRemoveThisFromGame -> push (RemoveEvent $ toId a)
+          DevourThis iid' -> do
+            c <- field EventCard a.id
+            push $ RemovedFromPlay (toSource a)
+            push $ Devoured iid' c
           _ -> pure ()
     pure a
   After (Revelation _iid (isSource a -> True)) -> do

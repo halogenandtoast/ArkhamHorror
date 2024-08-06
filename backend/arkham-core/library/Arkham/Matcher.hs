@@ -336,6 +336,9 @@ fromSets = oneOf . map CardFromEncounterSet
 inDeckOf :: InvestigatorId -> ExtendedCardMatcher
 inDeckOf = InDeckOf . InvestigatorWithId
 
+inPlayAreaOf :: InvestigatorId -> ExtendedCardMatcher
+inPlayAreaOf = InPlayAreaOf . InvestigatorWithId
+
 inHandOf :: InvestigatorId -> ExtendedCardMatcher
 inHandOf = InHandOf . InvestigatorWithId
 

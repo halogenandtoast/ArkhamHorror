@@ -659,10 +659,12 @@ allPlayerAssetCards =
       , randallCho
       , randolphCarterChainedToTheWakingWorld
       , randolphCarterExpertDreamer
+      , ravenousControlledHunger
       , ravenousMyconidCarnivorousStrain4
       , ravenousMyconidNurturingStrain4
       , ravenousMyconidSentientStrain4
       , ravenousMyconidUnidentified
+      , ravenousUncontrolledHunger
       , recallTheFuture2
       , relentless
       , relicHunter3
@@ -8007,6 +8009,24 @@ timeWornLocket =
     , cdRevelation = IsRevelation
     , cdCardType = EncounterAssetType
     }
+
+ravenousControlledHunger :: CardDef
+ravenousControlledHunger =
+  signature "89001"
+    $ permanent
+    $ (asset "89002" ("Ravenous" <:> "Controlled Hunger") 0 Neutral)
+      { cdCardTraits = setFromList [Talent]
+      , cdOtherSide = Just "89002b"
+      }
+
+ravenousUncontrolledHunger :: CardDef
+ravenousUncontrolledHunger =
+  signature "89001"
+    $ permanent
+    $ (weakness "89002b" ("Ravenous" <:> "Uncontrolled Hunger"))
+      { cdCardTraits = setFromList [Flaw]
+      , cdOtherSide = Just "89002"
+      }
 
 daisysToteBagAdvanced :: CardDef
 daisysToteBagAdvanced =

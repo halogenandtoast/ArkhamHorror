@@ -103,6 +103,7 @@ export type Investigator = {
   keys: ArkhamKey[];
   hunchDeck?: CardContents[];
   revealedHunchCard?: string | null;
+  devoured?: Card[]
   isYithian: boolean;
   slots: Slot[];
   log: LogContents;
@@ -180,6 +181,7 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   decks: JsonDecoder.array<[string, Card[]]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.array<Card>(cardDecoder, 'Card[]')], '[string, Card[]]'), '[string, Card[]][]'),
   hunchDeck: JsonDecoder.optional(JsonDecoder.array<CardContents>(cardContentsDecoder, 'PlayerCardContents[]')),
   revealedHunchCard: JsonDecoder.optional(JsonDecoder.nullable(JsonDecoder.string)),
+  devoured: JsonDecoder.optional(JsonDecoder.array<Card>(cardDecoder, 'Card[]')),
   // traits: HashSet Trait,
   treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
   defeated: JsonDecoder.boolean,

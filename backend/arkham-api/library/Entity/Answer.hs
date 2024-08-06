@@ -294,6 +294,19 @@ handleAnswer Game {..} playerId = \case
     ChooseOne qs -> case qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ ChooseOne qs]
       Just msg -> [uiToRun msg]
+    ChooseOneFromEach qs -> case concat qs !!? qrChoice response of
+      Nothing -> [Ask playerId $ f $ ChooseOneFromEach qs]
+      Just msg ->
+        let
+          removeSublistAtIndex :: Int -> [[a]] -> [[a]]
+          removeSublistAtIndex idx xss = removeSublist idx xss 0
+          removeSublist _ [] _ = []
+          removeSublist n (ys : yss) currentIdx
+            | n < currentIdx + length ys = yss
+            | otherwise = ys : removeSublist n yss (currentIdx + length ys)
+          remaining = removeSublistAtIndex (qrChoice response) qs
+         in
+          uiToRun msg : [Ask playerId $ f $ ChooseOneFromEach remaining | not (null remaining)]
     ChooseN n qs -> do
       let (mm, msgs') = extract (qrChoice response) qs
       case (mm, msgs') of

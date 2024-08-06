@@ -482,10 +482,14 @@ instance RunMessage SkillTest where
       skillTestEndsWindows <- windows [Window.SkillTestEnded s]
       discardMessages <- forMaybeM discards $ \(iid, discard) -> do
         mods <- getModifiers (toCardId discard)
-        pure
-          $ if PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods
-            then Just (PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) (toCard discard))
-            else guard (LeaveCardWhereItIs `notElem` mods) $> AddToDiscard iid discard
+        let mDevourer = listToMaybe [iid' | SetAfterPlay (DevourThis iid') <- mods]
+        case mDevourer of
+          Just iid' -> pure $ Just (Run [ObtainCard $ toCard discard, Devoured iid' $ toCard discard])
+          Nothing ->
+            pure
+              $ if PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods
+                then Just (PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) (toCard discard))
+                else guard (LeaveCardWhereItIs `notElem` mods) $> AddToDiscard iid discard
 
       pushAll
         $ ResetChaosTokens (toSource s)

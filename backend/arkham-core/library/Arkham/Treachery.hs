@@ -515,6 +515,9 @@ allTreacheries =
     , SomeTreacheryCard morbidAwareness
     , --- Sins of the Past
       SomeTreacheryCard chillingPresence
+    , -- Side Stories
+      --- The Blob That Ate Everything ELSE!
+      SomeTreacheryCard realityAcid5U21
     , -- Parallel
       --- All or Nothing
       SomeTreacheryCard hospitalDebtsAdvanced

@@ -128,6 +128,7 @@ data Trait
   | Lodge
   | Lunatic
   | Madness
+  | Manifold
   | Mask
   | Medic
   | Melee

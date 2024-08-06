@@ -215,6 +215,10 @@ endOfPhaseModifier
   :: (Sourceable source, Targetable target) => Phase -> source -> target -> ModifierType -> Message
 endOfPhaseModifier phase source target modifier = createWindowModifierEffect (EffectUntilEndOfPhaseWindowFor phase) source target [modifier]
 
+endOfNextPhaseModifier
+  :: (Sourceable source, Targetable target) => Phase -> source -> target -> ModifierType -> Message
+endOfNextPhaseModifier phase source target modifier = createWindowModifierEffect (EffectUntilEndOfNextPhaseWindowFor phase) source target [modifier]
+
 enemyAttackModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 enemyAttackModifier source target modifier = createWindowModifierEffect EffectAttackWindow source target [modifier]

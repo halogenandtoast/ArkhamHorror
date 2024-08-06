@@ -80,6 +80,7 @@
   { "name": "War of the Outer Gods", "min": 86001, "max": 86055, "playerCards": 0, "code": "wog", "cycle": 70 },
   { "name": "Machinations Through Time", "min": 87001, "max": 87057, "playerCards": 0, "code": "mtt", "cycle": 70 },
   { "name": "Fortune and Folly", "min": 88001, "max": 88053, "playerCards": 0, "code": "faf", "cycle": 70 },
+  { "name": "The Blob That Ate Everything ELSE!", "min": 89001, "max": 89021, "playerCards": 5, "code": "blbe", "cycle": 70 },
 
   { "name": "Hour of the Huntress", "min": 98001, "max": 98003, "playerCards": 3, "code": "hoth", "cycle": 80 },
   { "name": "The Dirge of Reason", "min": 98004, "max": 98006, "playerCards": 3, "code": "tdor", "cycle": 80 },
@@ -99,5 +100,6 @@
   { "name": "Laid to Rest", "min": 90049, "max": 90058, "playerCards": 5, "code": "ltr", "cycle": 90 },
   { "name": "Path to the Righteous", "min": 90059, "max": 90061, "playerCards": 3, "code": "ptr", "cycle": 90 },
   { "name": "Relics of the Past", "min": 90062, "max": 90077, "playerCards": 3, "code": "rop", "cycle": 90 },
-  { "name": "Hunting for Answers", "min": 90078, "max": 90080, "playerCards": 3, "code": "hfa", "cycle": 90 }
+  { "name": "Hunting for Answers", "min": 90078, "max": 90080, "playerCards": 3, "code": "hfa", "cycle": 90 },
+  { "name": "Pistols and Pearls", "min": 90084, "max": 90086, "playerCards": 3, "code": "pap", "cycle": 90 }
 ]

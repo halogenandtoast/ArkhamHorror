@@ -45,7 +45,11 @@ instance RunMessage SparrowMaskTheWanderersCompanion where
             anyM
               ( \w ->
                   windowMatches iid (toSource attrs) w
-                    $ DealtDamageOrHorror #after AnySource You
+                    $ oneOf
+                      [ DealtDamageOrHorror #after AnySource You
+                      , DealtDamage #after AnySource You
+                      , DealtHorror #after AnySource You
+                      ]
               )
               ws
           when replenish $ placeTokens attrs attrs Offering 1

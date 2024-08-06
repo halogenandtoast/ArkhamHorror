@@ -15,6 +15,6 @@ instance RunMessage DreadCurse where
   runMessage msg t@(DreadCurse attrs) = runQueueT $ case msg of
     Revelation _iid (isSource attrs -> True) -> do
       n <- min 5 <$> getRemainingCurseTokens
-      pushAll $ replicate n (AddChaosToken #curse)
+      addCurseTokens n 
       pure t
     _ -> DreadCurse <$> liftRunMessage msg attrs

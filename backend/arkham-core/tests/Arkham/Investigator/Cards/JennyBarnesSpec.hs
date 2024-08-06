@@ -19,4 +19,4 @@ spec = describe "Jenny Barnes" $ do
     it "modifier is number of resources" $ gameTestWith Investigators.jennyBarnes $ \jennyBarnes -> do
       updateInvestigator jennyBarnes (tokensL %~ setTokens Resource 15)
       token <- getChaosTokenValue (toId jennyBarnes) ElderSign (toId jennyBarnes)
-      chaosTokenValue token `shouldBe` Just 15
+      chaosTokenValue token `shouldReturn` Just 15

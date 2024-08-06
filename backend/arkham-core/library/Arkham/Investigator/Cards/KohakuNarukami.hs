@@ -5,6 +5,7 @@ module Arkham.Investigator.Cards.KohakuNarukami (
 where
 
 import Arkham.Ability
+import Arkham.Message.Lifted.Choose
 import Arkham.Helpers.ChaosBag
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
@@ -37,19 +38,20 @@ instance RunMessage KohakuNarukami where
       bOut <- getRemainingBlessTokens
       cOut <- getRemainingCurseTokens
 
-      chooseOrRunOne iid
-        $ [Label "Add 1 {bless} token" [AddChaosToken #bless] | bOut > 0 && length bIn <= length cIn]
-        <> [Label "Add 1 {curse} token" [AddChaosToken #curse] | cOut > 0 && length cIn <= length bIn]
-        <> [ Label
+      chooseOrRunOneM iid do
+        when (bOut > 0 && length bIn <= length cIn) do
+          labeled "Add 1 {bless} token" $ push (AddChaosToken #bless)
+        when (cOut > 0 && length cIn <= length bIn) do
+          labeled "Add 1 {curse} token" $ addCurseTokens 1
+        when (length bIn >= 2 && length cIn >= 2) do
+          labeled
             "Remove 2 {bless} tokens and 2 {curse} tokens from the chaos bag to take an additional action this turn"
-            [ReturnChaosTokens (take 2 bIn <> take 2 cIn), GainActions iid (toSource attrs) 1]
-           | length bIn >= 2 && length cIn >= 2
-           ]
+            $ pushAll [ReturnChaosTokens (take 2 bIn <> take 2 cIn), GainActions iid (toSource attrs) 1]
       pure i
     ElderSignEffect iid | iid == attrs.id -> do
       b <- getRemainingBlessTokens
       c <- getRemainingCurseTokens
       pushWhen (b > 0) $ AddChaosToken #bless
-      pushWhen (c > 0) $ AddChaosToken #curse
+      when (c > 0) $ addCurseTokens 1
       pure i
     _ -> KohakuNarukami <$> liftRunMessage msg attrs

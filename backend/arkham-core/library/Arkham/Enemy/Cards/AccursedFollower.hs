@@ -1,15 +1,9 @@
-module Arkham.Enemy.Cards.AccursedFollower (
-  accursedFollower,
-  AccursedFollower (..),
-)
-where
+module Arkham.Enemy.Cards.AccursedFollower ( accursedFollower, AccursedFollower (..),) where
 
-import Arkham.ChaosToken
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype AccursedFollower = AccursedFollower EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -28,8 +22,8 @@ instance HasAbilities AccursedFollower where
   getAbilities (AccursedFollower a) = extend a [restrictedAbility a 1 HasRemainingCurseTokens $ forced $ PhaseEnds #when #enemy]
 
 instance RunMessage AccursedFollower where
-  runMessage msg e@(AccursedFollower attrs) = case msg of
+  runMessage msg e@(AccursedFollower attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ AddChaosToken CurseToken
+      addCurseTokens 1
       pure e
-    _ -> AccursedFollower <$> runMessage msg attrs
+    _ -> AccursedFollower <$> liftRunMessage msg attrs

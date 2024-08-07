@@ -3,7 +3,6 @@ module Arkham.Asset.Cards.Bandages (bandages, Bandages (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Asset.Types (discardWhenNoUses)
 import Arkham.Asset.Uses
 import Arkham.Matcher
 import Arkham.Window (Window (..))

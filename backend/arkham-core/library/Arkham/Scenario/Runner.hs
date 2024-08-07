@@ -140,8 +140,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     standalone <- getIsStandalone
     if standalone
       then do
+        investigatorClass <- field InvestigatorClass iid
         playerCount <- getPlayerCount
-        (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded playerCount deck
+        (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck
         weaknesses <- traverse (`genPlayerCardWith` setPlayerCardOwner iid) randomWeaknesses
         pid <- getPlayer iid
         purchaseTrauma <- initDeckTrauma deck' iid pid (toTarget a)

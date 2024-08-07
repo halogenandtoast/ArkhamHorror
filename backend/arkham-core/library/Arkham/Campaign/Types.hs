@@ -9,6 +9,7 @@ import Arkham.CampaignLog
 import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.ChaosToken.Types
+import Arkham.ClassSymbol
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
@@ -124,13 +125,18 @@ instance Entity CampaignAttrs where
   overAttrs f = f
 
 addRandomBasicWeaknessIfNeeded
-  :: MonadRandom m => Int -> Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
-addRandomBasicWeaknessIfNeeded playerCount deck = do
+  :: MonadRandom m => ClassSymbol -> Int -> Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
+addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck = do
   let
-    weaknessFilter =
+    multiplayerFilter =
       if playerCount < 2
         then notElem MultiplayerOnly . cdDeckRestrictions
         else const True
+    notForClass = \case
+      OnlyClass c -> c /= investigatorClass
+      _ -> True
+    classOnlyFilter = not . any notForClass . cdDeckRestrictions
+    weaknessFilter = and . sequence [multiplayerFilter, classOnlyFilter]
   runWriterT $ do
     Deck <$> flip
       filterM

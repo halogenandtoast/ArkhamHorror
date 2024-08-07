@@ -6,13 +6,11 @@ import Arkham.Asset.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Fight
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Projection
-import Arkham.Token
 
 newtype JennysTwin45sAdvanced = JennysTwin45sAdvanced AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

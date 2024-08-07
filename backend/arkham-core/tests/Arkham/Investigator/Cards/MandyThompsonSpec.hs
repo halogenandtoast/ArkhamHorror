@@ -121,6 +121,7 @@ spec = describe "Mandy Thompson" $ do
       setChaosTokens [ElderSign]
       sid <- getRandom
       runSkillTest sid self #agility 100
+      skip
       chooseTarget c1
       self.hand `shouldReturn` map toCard [c1]
       (unDeck <$> self.deck) `shouldMatchListM` rest
@@ -133,6 +134,7 @@ spec = describe "Mandy Thompson" $ do
       setChaosTokens [ElderSign]
       sid <- getRandom
       runSkillTest sid self #agility 2
+      skip
       chooseTarget manualDexterity
       chooseOptionMatching "Commit" \case
         Label "Commit to skill test" _ -> True

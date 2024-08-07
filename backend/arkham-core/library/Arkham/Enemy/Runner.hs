@@ -90,6 +90,9 @@ filterOutEnemyMessages eid (Ask pid q) = case q of
   ChooseOne msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
     [] -> Nothing
     x -> Just (Ask pid $ ChooseOne x)
+  ChooseOneFromEach groups -> case filter notNull $ map (mapMaybe (filterOutEnemyUiMessages eid)) groups of
+    [] -> Nothing
+    x -> Just (Ask pid $ ChooseOneFromEach x)
   ChooseN n msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
     [] -> Nothing
     x -> Just (Ask pid $ ChooseN n x)

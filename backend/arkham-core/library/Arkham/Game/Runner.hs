@@ -2229,9 +2229,21 @@ runGameMessage msg g = case msg of
   FoundEncounterCardFrom {} -> pure $ g & (focusedCardsL .~ mempty)
   FoundAndDrewEncounterCard {} -> pure $ g & (focusedCardsL .~ mempty)
   SearchCollectionForRandom iid source matcher -> do
+    investigatorClass <- field Investigator.InvestigatorClass iid
+    playerCount <- getPlayerCount
+    let
+      multiplayerFilter =
+        if playerCount < 2
+          then notElem MultiplayerOnly . cdDeckRestrictions . toCardDef
+          else const True
+      notForClass = \case
+        OnlyClass c -> c /= investigatorClass
+        _ -> True
+      classOnlyFilter = not . any notForClass . cdDeckRestrictions . toCardDef
+      cardFilter = and . sequence [multiplayerFilter, classOnlyFilter, (`cardMatch` matcher)]
     mcard <-
       case filter
-        ((`cardMatch` matcher) . (`lookupPlayerCard` nullCardId))
+        (cardFilter . (`lookupPlayerCard` nullCardId))
         (toList allPlayerCards) of
         [] -> pure Nothing
         (x : xs) -> Just <$> (genPlayerCard =<< sample (x :| xs))

@@ -26,7 +26,9 @@ import Arkham.Helpers
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Query
 import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Name
+import Arkham.Projection
 import Data.Map.Strict qualified as Map
 
 defaultCampaignRunner :: IsCampaign a => Runner a
@@ -73,7 +75,8 @@ defaultCampaignRunner msg a = case msg of
   RemoveAllChaosTokens token -> pure $ updateAttrs a (chaosBagL %~ filter (/= token))
   InitDeck iid deck -> do
     playerCount <- getPlayerCount
-    (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded playerCount deck
+    investigatorClass <- field InvestigatorClass iid
+    (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck
     pid <- getPlayer iid
     purchaseTrauma <- initDeckTrauma deck' iid pid CampaignTarget
     pushAll
@@ -100,7 +103,8 @@ defaultCampaignRunner msg a = case msg of
     -- We remove the random weakness if the upgrade deck still has it listed
     -- since this will have been added at the beginning of the campaign
     playerCount <- getPlayerCount
-    (deck', _) <- addRandomBasicWeaknessIfNeeded playerCount deck
+    investigatorClass <- field InvestigatorClass iid
+    (deck', _) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck
     pushAll purchaseTrauma
     pure $ updateAttrs a $ decksL %~ insertMap iid deck'
   FinishedUpgradingDecks -> case campaignStep (toAttrs a) of

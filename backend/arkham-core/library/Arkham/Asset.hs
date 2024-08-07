@@ -1196,6 +1196,8 @@ allAssets =
       SomeAssetCard zoeysCrossAdvanced
     , --- Relics of the Past
       SomeAssetCard trustyBullwhipAdvanced
+    , --- Pistols and Pearls
+      SomeAssetCard jennysTwin45sAdvanced
     , -- Promo
       --- Hour of the Huntress
       SomeAssetCard greenManMedallionHourOfTheHuntress

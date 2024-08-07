@@ -272,7 +272,7 @@ const leylines = computed(() => props.investigator.tokens[TokenType.Leyline] || 
         >End turn</button>
 
         <button
-          v-if="devoured.length > 0"
+          v-if="devoured && devoured.length > 0"
           @click="showDevoured"
         >Devoured ({{devoured.length}})</button>
 

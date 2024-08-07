@@ -759,6 +759,7 @@ library
       Arkham.Asset.Cards.JakeWilliams
       Arkham.Asset.Cards.JazzMulligan
       Arkham.Asset.Cards.JennysTwin45s
+      Arkham.Asset.Cards.JennysTwin45sAdvanced
       Arkham.Asset.Cards.JeremiahKirbyArcticArchaeologist
       Arkham.Asset.Cards.JeromeDavids
       Arkham.Asset.Cards.JessicaHyde1
@@ -2067,6 +2068,7 @@ library
       Arkham.Investigator.Cards.HarveyWalters
       Arkham.Investigator.Cards.JacquelineFine
       Arkham.Investigator.Cards.JennyBarnes
+      Arkham.Investigator.Cards.JennyBarnesParallel
       Arkham.Investigator.Cards.JeromeDavids
       Arkham.Investigator.Cards.JimCulver
       Arkham.Investigator.Cards.JimCulverParallel
@@ -3269,6 +3271,7 @@ library
       Arkham.Treachery.Cards.RuinAndDestruction
       Arkham.Treachery.Cards.RuinedFilm
       Arkham.Treachery.Cards.SearchingForIzzie
+      Arkham.Treachery.Cards.SearchingForIzzieAdvanced
       Arkham.Treachery.Cards.SecretsInTheAttic
       Arkham.Treachery.Cards.SecretsOfTheBeyond
       Arkham.Treachery.Cards.SelfCentered

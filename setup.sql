@@ -42,7 +42,7 @@ CREATE TABLE public.arkham_decks (
     name text NOT NULL,
     investigator_name text NOT NULL,
     list jsonb NOT NULL,
-    url text NOT NULL
+    url text
 );
 
 
@@ -593,4 +593,3 @@ ALTER TABLE ONLY sqitch.tags
 --
 -- PostgreSQL database dump complete
 --
-

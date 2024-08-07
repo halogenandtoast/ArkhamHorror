@@ -261,6 +261,9 @@ instance Not AssetMatcher where
 instance IsString AssetMatcher where
   fromString = AssetWithTitle . fromString
 
+instance IsLabel "talent" AssetMatcher where
+  fromLabel = AssetWithTrait Talent
+
 instance IsLabel "relic" AssetMatcher where
   fromLabel = AssetWithTrait Relic
 
@@ -817,6 +820,9 @@ instance IsLabel "item" ExtendedCardMatcher where
 instance IsLabel "tome" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #tome
 
+instance IsLabel "talent" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #talent
+
 instance IsLabel "ritual" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #ritual
 
@@ -912,6 +918,9 @@ instance IsLabel "any" CardMatcher where
 
 instance IsLabel "charm" CardMatcher where
   fromLabel = CardWithTrait Charm
+
+instance IsLabel "talent" CardMatcher where
+  fromLabel = CardWithTrait Talent
 
 instance IsLabel "relic" CardMatcher where
   fromLabel = CardWithTrait Relic

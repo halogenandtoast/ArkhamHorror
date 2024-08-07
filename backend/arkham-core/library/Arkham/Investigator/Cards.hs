@@ -94,6 +94,7 @@ allInvestigatorCards =
       , zoeySamarasParallel
       , montereyJackParallel
       , rexMurphyParallel
+      , jennyBarnesParallel
       ]
 
 allEncounterInvestigatorCards :: Map CardCode CardDef
@@ -637,3 +638,7 @@ montereyJackParallel =
 rexMurphyParallel :: CardDef
 rexMurphyParallel =
   investigator "90078" ("Rex Murphy" <:> "The Reporter") Seeker [Reporter, Cursed]
+
+jennyBarnesParallel :: CardDef
+jennyBarnesParallel =
+  investigator "90084" ("Jenny Barnes" <:> "The Dilettante") Rogue [Drifter, Socialite]

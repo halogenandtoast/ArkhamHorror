@@ -533,6 +533,8 @@ allTreacheries =
       SomeTreacheryCard smiteTheWickedAdvanced
     , --- Hunting for Answers
       SomeTreacheryCard rexsCurseAdvanced
+    , --- Pistols and Pearls
+      SomeTreacheryCard searchingForIzzieAdvanced
     , -- Promo
       --- The Dirge of Reason
       SomeTreacheryCard theDirgeOfReason

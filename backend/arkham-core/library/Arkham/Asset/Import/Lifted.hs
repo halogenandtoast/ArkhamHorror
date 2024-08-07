@@ -24,6 +24,7 @@ import Arkham.Asset.Runner as X (
   is,
   modified,
   overMeta,
+  printedUsesL,
   push,
   pushAll,
   pushM,

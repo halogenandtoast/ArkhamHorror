@@ -491,6 +491,7 @@ allPlayerAssetCards =
       , jacobMorrisonCostGuardCaptain3
       , jakeWilliams
       , jennysTwin45s
+      , jennysTwin45sAdvanced
       , jeremiahKirbyArcticArchaeologist
       , jeromeDavids
       , jessicaHyde1
@@ -8165,6 +8166,19 @@ trustyBullwhipAdvanced =
       { cdCardTraits = setFromList [Item, Weapon, Melee]
       , cdSkills = [#intellect, #agility, #agility, #wild]
       , cdSlots = [#hand]
+      }
+
+jennysTwin45sAdvanced :: CardDef
+jennysTwin45sAdvanced =
+  signature "90084"
+    $ (asset "90085" ("Jenny's Twin .45s" <:> "A Perfect Fit") 0 Neutral)
+      { cdSkills = [#agility, #wild, #wild]
+      , cdCardTraits = setFromList [Item, Weapon, Firearm]
+      , cdCost = Just DynamicCost
+      , cdUnique = True
+      , cdSlots = [#hand, #hand]
+      , cdUses = uses Ammo 0
+      , cdKeywords = singleton Keyword.Advanced
       }
 
 greenManMedallionHourOfTheHuntress :: CardDef

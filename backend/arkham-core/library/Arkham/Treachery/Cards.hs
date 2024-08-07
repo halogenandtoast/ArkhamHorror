@@ -124,6 +124,7 @@ allPlayerTreacheryCards =
       , rookieMistake
       , ruinedFilm
       , searchingForIzzie
+      , searchingForIzzieAdvanced
       , selfCentered
       , selfDestructive
       , selflessToAFault
@@ -2496,6 +2497,13 @@ rexsCurseAdvanced :: CardDef
 rexsCurseAdvanced =
   (weakness "90080" "Rex's Curse")
     { cdCardTraits = setFromList [Curse]
+    , cdKeywords = singleton Keyword.Advanced
+    }
+
+searchingForIzzieAdvanced :: CardDef
+searchingForIzzieAdvanced =
+  (weakness "90086" "Searching for Izzie")
+    { cdCardTraits = setFromList [Task]
     , cdKeywords = singleton Keyword.Advanced
     }
 

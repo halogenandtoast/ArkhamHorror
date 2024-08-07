@@ -14,3 +14,4 @@ create_password_resets [users] 2023-04-12T23:42:39Z Matthew Mongeau <halogenandt
 add_action_diff_to_arkham_steps [arkham_steps] 2023-07-30T02:46:23Z Matthew Mongeau <halogen@Matthews-MacBook-Pro.local> # Add Action Diff to Arkham Steps
 add_cascades 2023-07-30T06:45:26Z Matthew Mongeau <halogenandtoast@Mac-Studio.local> # Add cascades
 change_player_id_to_uuid 2023-10-10T02:29:00Z Matthew Mongeau <halogenandtoast@Mac-Studio.local> # Change player id to uuid
+change_deck_url_to_nullable 2024-08-07T14:51:24Z Matthew Mongeau <halogenandtoast@Mac-Studio.local> # Change deck url to nullable

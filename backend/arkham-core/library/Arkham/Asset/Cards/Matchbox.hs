@@ -13,7 +13,7 @@ newtype Matchbox = Matchbox AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 matchbox :: AssetCard Matchbox
-matchbox = asset Matchbox Cards.matchbox
+matchbox = assetWith Matchbox Cards.matchbox discardWhenNoUses
 
 instance HasAbilities Matchbox where
   getAbilities (Matchbox x) =

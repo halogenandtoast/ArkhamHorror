@@ -7,6 +7,7 @@ import Arkham.Id
 import Arkham.Prelude
 import Arkham.Target
 import Arkham.Zone
+import Control.Monad.Fail (fail)
 import Data.Aeson.TH
 
 data DamageStrategy
@@ -92,5 +93,32 @@ $(deriveJSON defaultOptions ''IsDraw)
 $(deriveJSON defaultOptions ''DamageStrategy)
 $(deriveJSON defaultOptions ''ZoneReturnStrategy)
 $(deriveJSON defaultOptions ''FoundCardsStrategy)
-$(deriveJSON defaultOptions ''AfterPlayStrategy)
+$(deriveToJSON defaultOptions ''AfterPlayStrategy)
+
+instance FromJSON AfterPlayStrategy where
+  parseJSON v = case v of
+    String _ -> parseString v
+    Object _ -> parseObject v
+    _ -> fail "invalid AfterPlayStrategy"
+   where
+    parseString = withText "AfterPlayStrategy" \case
+      "DiscardThis" -> pure DiscardThis
+      "ExileThis" -> pure ExileThis
+      "RemoveThisFromGame" -> pure RemoveThisFromGame
+      "ShuffleThisBackIntoDeck" -> pure ShuffleThisBackIntoDeck
+      "ReturnThisToHand" -> pure ReturnThisToHand
+      "AbsoluteRemoveThisFromGame" -> pure AbsoluteRemoveThisFromGame
+      _ -> fail "invalid AfterPlayStrategy"
+    parseObject = withObject "AfterPlayStrategy" \o -> do
+      tag <- o .: "tag"
+      case tag :: Text of
+        "DiscardThis" -> pure DiscardThis
+        "ExileThis" -> pure ExileThis
+        "RemoveThisFromGame" -> pure RemoveThisFromGame
+        "ShuffleThisBackIntoDeck" -> pure ShuffleThisBackIntoDeck
+        "ReturnThisToHand" -> pure ReturnThisToHand
+        "AbsoluteRemoveThisFromGame" -> pure AbsoluteRemoveThisFromGame
+        "DevourThis" -> DevourThis <$> o .: "investigatorId"
+        _ -> fail "invalid AfterPlayStrategy"
+
 $(deriveJSON defaultOptions ''ChosenCardStrategy)

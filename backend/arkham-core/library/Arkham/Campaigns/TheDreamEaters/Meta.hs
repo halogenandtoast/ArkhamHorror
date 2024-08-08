@@ -8,14 +8,14 @@ import Arkham.Prelude
 import GHC.Records
 
 pattern InTheDreamQuest :: Message -> Message
-pattern InTheDreamQuest msg <- (DoStep 1 msg)
+pattern InTheDreamQuest msg <- (DoStep 10001 msg)
   where
-    InTheDreamQuest msg = DoStep 1 msg
+    InTheDreamQuest msg = DoStep 10001 msg
 
 pattern InTheWebOfDreams :: Message -> Message
-pattern InTheWebOfDreams msg <- (DoStep 2 msg)
+pattern InTheWebOfDreams msg <- (DoStep 10002 msg)
   where
-    InTheWebOfDreams msg = DoStep 2 msg
+    InTheWebOfDreams msg = DoStep 10002 msg
 
 data CampaignPart = TheDreamQuest | TheWebOfDreams
   deriving stock (Show, Eq, Generic)

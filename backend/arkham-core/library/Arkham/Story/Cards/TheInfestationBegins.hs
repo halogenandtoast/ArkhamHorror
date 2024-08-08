@@ -46,9 +46,10 @@ instance RunMessage TheInfestationBegins where
               ]
           ]
         <> [DoStep 1 msg | playerCount >= 3]
+      bag <- initInfestationBag
       pure
         $ TheInfestationBegins
-        $ attrs {storyFlipped = True, storyMeta = toJSON initInfestationBag}
+        $ attrs {storyFlipped = True, storyMeta = toJSON bag}
     DoStep _ (ResolveStory _ ResolveIt story') | story' == toId attrs -> do
       locationsWithMostClues <- select $ LocationWithMostClues $ NotLocation InfestedLocation
       lead <- getLeadPlayer
@@ -78,11 +79,12 @@ instance RunMessage TheInfestationBegins where
         $ attrs {storyMeta = toJSON bag'}
     SendMessage (isTarget attrs -> True) (ResolveChaosToken _ _ _) | Just token <- infestationCurrentToken (infestationBag attrs) -> do
       let tokenFace = token.face
+      send $ format (asChaosToken token) <> " drawn during Infestation Test"
       mods <- getModifiers attrs
       let bag =
             (infestationBag attrs)
               { infestationCurrentToken = Nothing
-              , infestationSetAside = infestationSetAside (infestationBag attrs) <> [InfestationToken tokenFace]
+              , infestationSetAside = infestationSetAside (infestationBag attrs) <> [token]
               }
       let
         enabled = \case
@@ -102,8 +104,7 @@ instance RunMessage TheInfestationBegins where
               (toTarget attrs)
               [FromEncounterDeck, FromEncounterDiscard]
               (#enemy <> withTrait Spider)
-        Tablet -> do
-          pure ()
+        Tablet -> pure ()
         Cultist -> do
           infestedLocations <- select InfestedLocation
           adjacentLocations <-
@@ -131,11 +132,12 @@ instance RunMessage TheInfestationBegins where
       lead <- getLeadPlayer
       push $ chooseOne lead [Label "Continue" [UnfocusChaosTokens]]
 
-      if count (== InfestationToken Cultist) (infestationTokens bag) == 2
+      if count ((== Cultist) . infestationTokenFace) (infestationSetAside bag) == 2
         then do
+          bag' <- initInfestationBag
           pure
             $ TheInfestationBegins
-            $ attrs {storyMeta = toJSON initInfestationBag}
+            $ attrs {storyMeta = toJSON bag'}
         else pure $ TheInfestationBegins $ attrs {storyMeta = toJSON bag}
     FoundEncounterCard _iid (isTarget attrs -> True) (toCard -> card) -> do
       investigators <- getInvestigators
@@ -152,7 +154,8 @@ instance RunMessage TheInfestationBegins where
       pure s
     SendMessage (isTarget attrs -> True) (AddChaosToken face) -> do
       let bag = infestationBag attrs
-      let bag' = bag {infestationTokens = InfestationToken face : infestationTokens bag}
+      tokenId <- getRandom
+      let bag' = bag {infestationTokens = InfestationToken tokenId face : infestationTokens bag}
       pure $ TheInfestationBegins $ attrs {storyMeta = toJSON bag'}
     SendMessage (isTarget attrs -> True) (ChaosTokenCanceled _ _ _) -> do
       let bag = infestationBag attrs

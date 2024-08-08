@@ -4,14 +4,14 @@ import Arkham.ChaosToken
 import Arkham.Prelude
 import Arkham.Story.Types
 import Data.Aeson (Result (..))
-import Data.UUID (nil)
 import GHC.Records
 
-newtype InfestationToken = InfestationToken {infestationTokenFace :: ChaosTokenFace}
-  deriving newtype (Show, Eq, ToJSON, FromJSON)
+data InfestationToken = InfestationToken {infestationTokenId :: ChaosTokenId, infestationTokenFace :: ChaosTokenFace}
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 asChaosToken :: InfestationToken -> ChaosToken
-asChaosToken (InfestationToken face) = ChaosToken (ChaosTokenId nil) face Nothing
+asChaosToken (InfestationToken tokenId face) = ChaosToken tokenId face Nothing
 
 instance HasField "face" InfestationToken ChaosTokenFace where
   getField = infestationTokenFace
@@ -24,14 +24,16 @@ data InfestationBag = InfestationBag
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-initInfestationBag :: InfestationBag
-initInfestationBag =
-  InfestationBag
-    { infestationTokens =
-        map InfestationToken [#skull, #tablet, #tablet, #tablet, #tablet, #cultist, #cultist]
-    , infestationSetAside = []
-    , infestationCurrentToken = Nothing
-    }
+initInfestationBag :: MonadRandom m => m InfestationBag
+initInfestationBag = do
+  rs <- getRandoms
+  pure
+    $ InfestationBag
+      { infestationTokens =
+          zipWith InfestationToken rs [#skull, #tablet, #tablet, #tablet, #tablet, #cultist, #cultist]
+      , infestationSetAside = []
+      , infestationCurrentToken = Nothing
+      }
 
 infestationBag :: StoryAttrs -> InfestationBag
 infestationBag attrs = case fromJSON (storyMeta attrs) of

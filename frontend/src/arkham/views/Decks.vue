@@ -4,13 +4,12 @@ import * as Arkham from '@/arkham/types/Deck'
 import Prompt from '@/components/Prompt.vue'
 import { fetchDecks, deleteDeck, syncDeck } from '@/arkham/api'
 import NewDeck from '@/arkham/components/NewDeck.vue';
-import {imgsrc} from '@/arkham/helpers';
+import Deck from '@/arkham/components/Deck.vue';
 import { useToast } from "vue-toastification";
 
 const ready = ref(false)
 const decks = ref<Arkham.Deck[]>([])
 const deleteId = ref<string | null>(null)
-
 const toast = useToast()
 
 async function addDeck(d: Arkham.Deck) {
@@ -37,27 +36,6 @@ async function sync(deck: Arkham.Deck) {
     toast.success("Deck synced successfully", { timeout: 3000 })
   })
 }
-
-const deckUrlToPage = (url: string): string => {
-  // converts https://arkhamdb.com/api/public/decklist/25027
-  // to https://arkhamdb.com/decklist/view/25027
-  // OR
-  // converts https://arkhamdb.com/api/public/deck/25027
-  // to https://arkhamdb.com/deck/view/25027
-  return url.replace("/api/public/decklist", "/decklist/view").replace("/api/public/deck", "/deck/view")
-}
-
-function deckInvestigator(deck: Arkham.Deck) {
-  if (deck.list.meta) {
-    try {
-      const result = JSON.parse(deck.list.meta)
-      if (result && result.alternate_front) {
-        return result.alternate_front
-      }
-    } catch (e) { console.log("No parse") }
-  }
-  return deck.list.investigator_code.replace('c', '')
-}
 </script>
 
 <template>
@@ -69,17 +47,7 @@ function deckInvestigator(deck: Arkham.Deck) {
     <h2>Existing Decks</h2>
     <transition-group name="deck">
       <div v-for="deck in decks" :key="deck.id" class="deck">
-        <img class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator(deck)}.jpg`)" />
-        <span class="deck-title"><router-link :to="{ name: 'Deck', params: { deckId: deck.id }}">{{deck.name}}</router-link></span>
-        <div class="open-deck">
-          <a v-if="deck.url" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>
-        </div>
-        <div v-if="deck.url" class="sync-deck">
-          <a href="#" @click.prevent="sync(deck)"><font-awesome-icon icon="refresh" /></a>
-        </div>
-        <div class="deck-delete">
-          <a href="#delete" @click.prevent="deleteId = deck.id"><font-awesome-icon icon="trash" /></a>
-        </div>
+        <Deck :deck="deck" :markDelete="() => deleteId = deck.id" :sync="() => sync(deck)" />
       </div>
     </transition-group>
 
@@ -176,4 +144,22 @@ h2 {
   position: absolute;
 }
 
+.deck span.taboo-list {
+  font-size: 0.8em;
+  background: rgba(255, 255, 255, 0.2);
+  color: #efefef;
+  display: inline-block;
+  width: fit-content;
+  height: fit-content;
+  padding: 5px;
+  border-radius: 5px;
+  flex: 0;
+  flex-basis: fit-content;
+}
+
+.deck-details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
 </style>

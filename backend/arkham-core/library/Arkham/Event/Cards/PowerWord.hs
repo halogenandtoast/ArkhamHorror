@@ -11,10 +11,12 @@ import Arkham.Enemy.Types (
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Customization
+import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Id
 import Arkham.Matcher hiding (DiscoverClues, EnemyEvaded)
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Taboo
 import Data.Map.Strict qualified as Map
 
 data Command = GoCommand | CowerCommand | BetrayCommand | MercyCommand | ConfessCommand | DistractCommand
@@ -24,6 +26,8 @@ data Command = GoCommand | CowerCommand | BetrayCommand | MercyCommand | Confess
 newtype PowerWord = PowerWord EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+-- The taboo is weird here because Arkham DB isn't going to handle the different xp, it will just have the xp in mercy
 
 commandLabel :: Command -> Text
 commandLabel = \case
@@ -76,7 +80,7 @@ instance HasAbilities PowerWord where
           1
           (handleThriceSpoken $ EnemyWithId eid <> EnemyAt fromLocation <> CanParleyEnemy You)
           parleyAction_
-        | notNull commands
+        | notNull commands || tabooed TabooList21 a -- the taboo'd version will initiate a skill test
         ]
           <> [ restrictedAbility a 2 ControlsThis $ FastAbility Free
              | a `hasCustomization` GreaterControl
@@ -91,16 +95,18 @@ allCommands a =
   ( GoCommand
   , \eid -> EnemyWhenLocation $ ConnectedTo (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
   )
-    : (CowerCommand, \_ -> ReadyEnemy)
-    : [ ( BetrayCommand
-        , \eid ->
-            EnemyWhenOtherEnemy
-              $ EnemyAt (locationWithEnemy eid)
-              <> EnemyCanBeDamagedBySource (a.ability 1)
-              <> EnemyWithMaybeFieldLessThanOrEqualToThis eid EnemyFight
-        )
-      | a `hasCustomization` Betray
+    : [ (CowerCommand, \_ -> ReadyEnemy)
+      | not (tabooed TabooList21 a) || (tabooed TabooList21 a && a `hasCustomization` Mercy)
       ]
+      <> [ ( BetrayCommand
+           , \eid ->
+              EnemyWhenOtherEnemy
+                $ EnemyAt (locationWithEnemy eid)
+                <> EnemyCanBeDamagedBySource (a.ability 1)
+                <> EnemyWithMaybeFieldLessThanOrEqualToThis eid EnemyFight
+           )
+         | a `hasCustomization` Betray
+         ]
       <> [ ( MercyCommand
            , \eid ->
               EnemyWhenInvestigator
@@ -117,7 +123,7 @@ allCommands a =
                       <> EnemyWithNonZeroField EnemySanityDamage
                   ]
            )
-         | a `hasCustomization` Mercy
+         | a `hasCustomization` Mercy && not (tabooed TabooList21 a)
          ]
       <> [ ( ConfessCommand
            , \eid ->
@@ -206,6 +212,16 @@ instance RunMessage PowerWord where
       meta' <- determineMeta attrs
       pure . PowerWord $ attrs & metaL .~ meta'
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      if tabooed TabooList21 attrs
+        then do
+          case attrs.placement of
+            AttachedToEnemy eid -> do
+              sid <- getRandom
+              parley sid iid (attrs.ability 1) eid #willpower (Fixed 3)
+            _ -> error "invalid call"
+        else runAbility iid attrs True
+      pure e
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       runAbility iid attrs True
       pure e
     Do (UseThisAbility iid (isSource attrs -> True) 1) -> do

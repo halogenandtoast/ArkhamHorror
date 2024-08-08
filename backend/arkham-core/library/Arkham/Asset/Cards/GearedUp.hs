@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Matcher
+import Arkham.Taboo
 import Arkham.Window (defaultWindows)
 
 newtype GearedUp = GearedUp AssetAttrs
@@ -32,14 +33,17 @@ instance RunMessage GearedUp where
           $ PlayableCardWithCostReduction NoAction 1 (basic $ #asset <> #item)
           <> inHandOf iid
       when (notNull cards) do
-        chooseOne iid $ Label "Done Playing Items" []
-          : [ targetLabel
-              (toCardId card)
-              [ Msg.reduceCostOf (attrs.ability 1) card 1
-              , PayCardCost iid card (defaultWindows iid)
-              , DoStep 1 msg'
-              ]
-            | card <- cards
+        ( if tabooed TabooList21 attrs
+            then chooseUpToN iid 5 "Done Playing Items"
+            else chooseOne iid . (Label "Done Playing Items" [] :)
+          )
+          [ targetLabel
+            (toCardId card)
+            [ Msg.reduceCostOf (attrs.ability 1) card 1
+            , PayCardCost iid card (defaultWindows iid)
+            , DoStep 1 msg'
             ]
+          | card <- cards
+          ]
       pure a
     _ -> GearedUp <$> liftRunMessage msg attrs

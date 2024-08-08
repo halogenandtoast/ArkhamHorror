@@ -383,6 +383,8 @@ investigator f cardDef Stats {..} =
                 , investigatorLog = mkCampaignLog
                 , investigatorDeckBuildingAdjustments = mempty
                 , investigatorBeganRoundAt = Nothing
+                , investigatorTaboo = Nothing
+                , investigatorMutated = Nothing
                 }
         }
 

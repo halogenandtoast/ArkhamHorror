@@ -8,8 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.SkillType
 
 newtype KeenEye = KeenEye AssetAttrs

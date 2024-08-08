@@ -10,6 +10,7 @@ import Arkham.Asset.Runner
 import Arkham.Fight
 import Arkham.Prelude
 import Arkham.SkillType
+import Arkham.Taboo
 
 newtype StrangeSolutionAcidicIchor4 = StrangeSolutionAcidicIchor4 AssetAttrs
   deriving anyclass IsAsset
@@ -27,7 +28,7 @@ instance HasModifiersFor StrangeSolutionAcidicIchor4 where
     toModifiers a . fromMaybe [] <$> runMaybeT do
       guardM $ isAbilitySource a 1 <$> MaybeT getSkillTestSource
       Action.Fight <- MaybeT getSkillTestAction
-      pure [BaseSkillOf SkillCombat 6, DamageDealt 2]
+      pure [BaseSkillOf SkillCombat 6, DamageDealt $ if tabooed TabooList20 a then 1 else 2]
   getModifiersFor _ _ = pure []
 
 instance RunMessage StrangeSolutionAcidicIchor4 where

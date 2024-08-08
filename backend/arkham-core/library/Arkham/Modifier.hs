@@ -318,6 +318,7 @@ data ModifierType
   | RevealAnotherChaosToken -- TODO: Only ShatteredAeons handles this, if a player card affects this, all scenarios have to be updated, we also use this for Cats of Ulthar directly on the SkillTest
   | RevealChaosTokensBeforeCommittingCards
   | MayIgnoreAttacksOfOpportunity
+  | IgnoreAttacksOfOpportunity
   | SanityModifier Int
   | SearchDepth Int
   | LookAtDepth Int
@@ -355,6 +356,7 @@ data ModifierType
   | SwarmingValue Int
   | AttackDealsEitherDamageOrHorror
   | WillCancelHorror Int
+  | Semaphore
   | -- UI only modifiers
     Ethereal -- from Ethereal Form
   | Explosion -- from Dyanamite Blast

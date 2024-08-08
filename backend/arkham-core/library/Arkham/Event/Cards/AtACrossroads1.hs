@@ -3,6 +3,7 @@ module Arkham.Event.Cards.AtACrossroads1 (atACrossroads1, atACrossroads1Effect, 
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Effect qualified as Msg
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Matcher
 

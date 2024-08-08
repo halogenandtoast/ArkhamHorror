@@ -5,6 +5,7 @@ module Arkham.Treachery where
 import Arkham.Prelude
 
 import Arkham.Card
+import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Id
 import Arkham.Treachery.Runner
@@ -12,7 +13,15 @@ import Arkham.Treachery.Treacheries
 
 createTreachery :: IsCard a => a -> InvestigatorId -> TreacheryId -> Treachery
 createTreachery a iid tid =
-  lookupTreachery (toCardCode a) iid tid (toCardId a)
+  let this = lookupTreachery (toCardCode a) iid tid (toCardId a)
+   in overAttrs (\attrs -> attrs {treacheryTaboo = tabooList, treacheryMutated = mutated}) this
+ where
+  tabooList = case toCard a of
+    PlayerCard pc -> pcTabooList pc
+    _ -> Nothing
+  mutated = case toCard a of
+    PlayerCard pc -> tabooMutated tabooList pc
+    _ -> Nothing
 
 instance RunMessage Treachery where
   runMessage msg t@(Treachery a) = case msg of

@@ -8,6 +8,7 @@ import Arkham.Calculation as X
 import Arkham.Enemy.Helpers as X hiding (EnemyEvade, EnemyFight)
 import Arkham.Enemy.Types as X
 import Arkham.GameValue as X
+import Arkham.Helpers.Effect as X
 import Arkham.Helpers.Enemy as X
 import Arkham.Helpers.Message as X hiding (
   EnemyAttacks,
@@ -40,6 +41,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Placement
+import Arkham.History
 import Arkham.Id
 import Arkham.Keyword (_Swarming)
 import Arkham.Keyword qualified as Keyword
@@ -805,10 +807,12 @@ instance RunMessage EnemyAttrs where
       case attackTarget details of
         InvestigatorTarget iid -> do
           canIgnore <- hasModifier iid MayIgnoreAttacksOfOpportunity
-          if canIgnore && attackType details == AttackOfOpportunity
+          willIgnore <- hasModifier iid IgnoreAttacksOfOpportunity
+          if (canIgnore || willIgnore) && attackType details == AttackOfOpportunity
             then do
               player <- getPlayer iid
-              push $ chooseOne player [Label "Ignore attack of opportunity" [], Label "Do not ignore" [Do msg]]
+              when canIgnore do
+                push $ chooseOne player [Label "Ignore attack of opportunity" [], Label "Do not ignore" [Do msg]]
             else push $ Do msg
         _ -> push $ Do msg
       pure a
@@ -907,6 +911,10 @@ instance RunMessage EnemyAttrs where
       afterAttacksWindow <- checkAfter $ Window.EnemyAttacks updatedDetails
       pushWhen (Keyword.Elusive `elem` keywords) $ HandleElusive a.id
       pushAll $ afterAttacksWindow : attackAfter updatedDetails
+      when (attackType details == AttackOfOpportunity) do
+        case attackTarget details of
+          InvestigatorTarget iid -> push $ UpdateHistory iid (HistoryItem HistoryAttacksOfOpportunity 1)
+          _ -> pure ()
       pure a
     HealDamage (EnemyTarget eid) source n | eid == enemyId -> do
       afterWindow <- checkAfter $ Window.Healed DamageType (toTarget a) source n

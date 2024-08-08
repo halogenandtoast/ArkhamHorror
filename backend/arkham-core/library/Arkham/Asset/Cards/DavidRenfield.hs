@@ -1,16 +1,13 @@
-module Arkham.Asset.Cards.DavidRenfield (
-  davidRenfield,
-  DavidRenfield (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.DavidRenfield (davidRenfield, DavidRenfield (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Prelude
+import Arkham.Taboo
 
 newtype DavidRenfield = DavidRenfield AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 davidRenfield :: AssetCard DavidRenfield
@@ -41,6 +38,7 @@ instance RunMessage DavidRenfield where
           ]
       pure a
     UseCardAbilityChoice iid source 1 _ _ _ | isSource attrs source -> do
-      push $ TakeResources iid (assetDoom attrs) (toAbilitySource attrs 1) False
+      let tabooMax = if tabooed TabooList21 attrs then min 3 else id
+      push $ TakeResources iid (tabooMax $ assetDoom attrs) (toAbilitySource attrs 1) False
       pure a
     _ -> DavidRenfield <$> runMessage msg attrs

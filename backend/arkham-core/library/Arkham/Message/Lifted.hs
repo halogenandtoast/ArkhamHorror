@@ -18,6 +18,7 @@ import Arkham.DamageEffect
 import Arkham.Deck (IsDeck (..))
 import Arkham.Discover as X (IsInvestigate (..))
 import Arkham.Discover qualified as Msg
+import Arkham.Effect.Types (Field (..))
 import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.Enemy.Creation
 import Arkham.Evade
@@ -29,6 +30,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Campaign qualified as Msg
 import Arkham.Helpers.Card (getCardEntityTarget)
+import Arkham.Helpers.Effect qualified as Msg
 import Arkham.Helpers.Enemy qualified as Msg
 import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
 import Arkham.Helpers.Log qualified as Msg
@@ -1351,3 +1353,27 @@ addCurseTokens n = do
           }
       ]
   Msg.push $ Would batchId $ would : replicate n (Msg.AddChaosToken #curse)
+
+whenNotAtMax :: HasGame m => CardDef -> Int -> (Int -> m ()) -> m ()
+whenNotAtMax def n f = do
+  mEffect <-
+    selectOne $ EffectWithCardCode "maxef" <> EffectWithTarget (CardCodeTarget $ toCardCode def)
+  case mEffect of
+    Nothing -> f n
+    Just effect -> do
+      meta <- field EffectMeta effect
+      case meta of
+        Just (Msg.EffectInt x) -> if x >= n then pure () else f (n - x)
+        _ -> error "Invalid meta"
+
+updateMax :: ReverseQueue m => CardDef -> Int -> Msg.EffectWindow -> m ()
+updateMax def n ew = do
+  mEffect <-
+    selectOne $ EffectWithCardCode "maxef" <> EffectWithTarget (CardCodeTarget $ toCardCode def)
+  case mEffect of
+    Nothing -> push $ Msg.createMaxEffect def n ew
+    Just effect -> do
+      meta <- field EffectMeta effect
+      case meta of
+        Just (Msg.EffectInt x) -> push $ UpdateEffectMeta effect (Msg.EffectInt $ x + n)
+        _ -> error "Invalid meta"

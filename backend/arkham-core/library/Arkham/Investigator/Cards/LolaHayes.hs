@@ -1,17 +1,17 @@
 module Arkham.Investigator.Cards.LolaHayes where
 
-import Arkham.Prelude
-
 import Arkham.Classes.HasGame
 import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
+import Arkham.Prelude
+import Arkham.Taboo
 
 newtype LolaHayes = LolaHayes InvestigatorAttrs
-  deriving anyclass (IsInvestigator)
+  deriving anyclass IsInvestigator
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 instance HasModifiersFor LolaHayes where
   getModifiersFor target (LolaHayes attrs) | attrs `is` target = do
@@ -30,9 +30,14 @@ instance HasChaosTokenValue LolaHayes where
 
 instance HasAbilities LolaHayes where
   getAbilities (LolaHayes attrs) =
-    [ restrictedAbility attrs 1 Self $ ForcedAbility $ DrawingStartingHand #after You
+    [ restrictedAbility attrs 1 Self
+        $ (if tabooed TabooList20 attrs then SilentForcedAbility else ForcedAbility)
+        $ DrawingStartingHand #after You
     , playerLimit PerRound $ restrictedAbility attrs 2 Self (FastAbility Free)
     ]
+      <> [ doesNotProvokeAttacksOfOpportunity $ restrictedAbility attrs 2 Self actionAbility
+         | tabooed TabooList20 attrs
+         ]
 
 switchRole :: (HasGame m, HasQueue Message m) => InvestigatorAttrs -> m ()
 switchRole attrs = do
@@ -42,7 +47,7 @@ switchRole attrs = do
 
 instance RunMessage LolaHayes where
   runMessage msg i@(LolaHayes attrs) = case msg of
-    UseThisAbility _ (isSource attrs -> True) n | n `elem` [1, 2] -> do
+    UseThisAbility _ (isSource attrs -> True) n | n `elem` [1, 2, 3] -> do
       switchRole attrs
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do

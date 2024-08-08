@@ -26,6 +26,7 @@ import Arkham.Name
 import Arkham.Placement
 import Arkham.Slot
 import Arkham.Source
+import Arkham.Taboo.Types
 import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Trait (Trait)
@@ -266,6 +267,8 @@ data AssetAttrs = AssetAttrs
   , assetCustomizations :: Customizations
   , assetMeta :: Value
   , assetFlipped :: Bool
+  , assetTaboo :: Maybe TabooList
+  , assetMutated :: Maybe Text -- for art display
   }
   deriving stock (Show, Eq)
 
@@ -278,6 +281,9 @@ instance Is AssetAttrs AssetId where
 
 instance Be AssetAttrs AssetMatcher where
   be = AssetWithId . assetId
+
+instance HasField "taboo" AssetAttrs (Maybe TabooList) where
+  getField = assetTaboo
 
 instance HasField "customizations" AssetAttrs Customizations where
   getField = assetCustomizations
@@ -380,7 +386,14 @@ instance HasCardDef AssetAttrs where
 instance IsCard AssetAttrs where
   toCardId = assetCardId
   toCard a = case lookupCard (assetOriginalCardCode a) (toCardId a) of
-    PlayerCard pc -> PlayerCard $ pc {pcOwner = assetOwner a, pcCustomizations = toCustomizations a}
+    PlayerCard pc ->
+      PlayerCard
+        $ pc
+          { pcOwner = assetOwner a
+          , pcCustomizations = toCustomizations a
+          , pcTabooList = assetTaboo a
+          , pcMutated = assetMutated a
+          }
     ec -> ec
   toCardOwner = assetOwner
   toCustomizations = assetCustomizations
@@ -430,6 +443,8 @@ assetWith f cardDef g =
             , assetCustomizations = mempty
             , assetMeta = Null
             , assetFlipped = False
+            , assetTaboo = Nothing
+            , assetMutated = Nothing
             }
     }
 

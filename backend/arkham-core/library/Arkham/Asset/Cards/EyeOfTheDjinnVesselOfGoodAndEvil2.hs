@@ -8,7 +8,7 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Effect.Runner hiding (createCardEffect)
+import Arkham.Effect.Runner
 import Arkham.Matcher hiding (DuringTurn, RevealChaosToken, SkillTestEnded)
 import Arkham.Modifier
 

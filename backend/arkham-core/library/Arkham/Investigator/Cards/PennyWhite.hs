@@ -14,6 +14,7 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Effect
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner

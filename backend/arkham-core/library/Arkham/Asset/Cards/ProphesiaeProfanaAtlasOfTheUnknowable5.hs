@@ -7,12 +7,15 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.History
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Movement
+import Arkham.Taboo
 
 newtype ProphesiaeProfanaAtlasOfTheUnknowable5 = ProphesiaeProfanaAtlasOfTheUnknowable5 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 prophesiaeProfanaAtlasOfTheUnknowable5 :: AssetCard ProphesiaeProfanaAtlasOfTheUnknowable5
@@ -22,10 +25,20 @@ instance HasModifiersFor ProphesiaeProfanaAtlasOfTheUnknowable5 where
   getModifiersFor (InvestigatorTarget iid) (ProphesiaeProfanaAtlasOfTheUnknowable5 attrs) | iid `controls` attrs = do
     let mlocus = maybeResult attrs.meta
     atLocus <- maybe (pure False) (\lid -> iid <=~> InvestigatorAt (LocationWithId lid)) mlocus
+    mTurnInvestigator <- selectOne TurnInvestigator
+    canTaboo <-
+      maybe
+        (pure False)
+        (\iid' -> (== 0) <$> getHistoryField TurnHistory iid' HistoryAttacksOfOpportunity)
+        mTurnInvestigator
+    let aooModified =
+          if tabooed TabooList20 attrs
+            then [IgnoreAttacksOfOpportunity | canTaboo]
+            else [MayIgnoreAttacksOfOpportunity]
     pure
       $ toModifiers attrs
       $ guard (not atLocus)
-      *> [SkillModifier #intellect 1, SkillModifier #agility 1, MayIgnoreAttacksOfOpportunity]
+      *> ([SkillModifier #intellect 1, SkillModifier #agility 1] <> aooModified)
   getModifiersFor (LocationTarget lid) (ProphesiaeProfanaAtlasOfTheUnknowable5 attrs) = do
     let mlocus = maybeResult attrs.meta
     pure $ toModifiers attrs $ guard (Just lid == mlocus) *> [Locus]

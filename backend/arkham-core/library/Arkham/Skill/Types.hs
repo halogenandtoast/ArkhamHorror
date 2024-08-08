@@ -20,6 +20,7 @@ import Arkham.Projection
 import Arkham.Skill.Cards (allPlayerSkillCards)
 import Arkham.Source
 import Arkham.Strategy
+import Arkham.Taboo.Types
 import Arkham.Target
 import Arkham.Trait
 import Data.Aeson.TH
@@ -67,8 +68,12 @@ data SkillAttrs = SkillAttrs
   , skillSealedChaosTokens :: [ChaosToken]
   , skillMeta :: Value
   , skillCustomizations :: Customizations
+  , skillTaboo :: Maybe TabooList
   }
   deriving stock (Show, Eq)
+
+instance HasField "taboo" SkillAttrs (Maybe TabooList) where
+  getField = skillTaboo
 
 instance HasField "ability" SkillAttrs (Int -> Source) where
   getField this = toAbilitySource this
@@ -179,6 +184,7 @@ skill f cardDef =
             , skillSealedChaosTokens = []
             , skillMeta = Null
             , skillCustomizations = mempty
+            , skillTaboo = Nothing
             }
     }
 

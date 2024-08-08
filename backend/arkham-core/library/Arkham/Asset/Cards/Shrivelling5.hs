@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.EffectMetadata
 import Arkham.Fight
 import Arkham.Prelude
 

@@ -8,6 +8,7 @@ import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
 import Arkham.Helpers.Window (placedTokens)
 import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Message (getChoiceAmount)
+import Arkham.Taboo
 
 newtype ResearchNotes = ResearchNotes AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -43,9 +44,14 @@ instance RunMessage ResearchNotes where
       when (spendable > 0) do
         withLocationOf iid \lid -> do
           whenM (getCanDiscoverClues NotInvestigate iid lid) do
-            chooseAmount iid "Evidence" "Evidence" 0 spendable attrs
+            if tabooed TabooList21 attrs
+              then whenNotAtMax Cards.researchNotes 3 \remaining -> do
+                chooseAmount iid "Evidence" "Evidence" 0 (min remaining spendable) attrs
+              else chooseAmount iid "Evidence" "Evidence" 0 spendable attrs
       pure a
     ResolveAmounts iid (getChoiceAmount "Evidence" -> n) (isTarget attrs -> True) | n > 0 -> do
+      when (tabooed TabooList21 attrs) do
+        updateMax Cards.researchNotes n #round
       push $ SpendUses (attrs.ability 2) (toTarget attrs) Evidence n
       discoverAtYourLocation NotInvestigate iid (attrs.ability 2) n
       pure a

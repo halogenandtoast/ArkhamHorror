@@ -135,7 +135,8 @@ const image = computed(() => {
     return imgsrc("cards/04244.jpg");
   }
 
-  return imgsrc(`cards/${props.investigator.art.replace('c', '')}.jpg`);
+  const mutated = props.investigator.mutated ? `_${props.investigator.mutated}` : ''
+  return imgsrc(`cards/${props.investigator.art.replace('c', '')}${mutated}.jpg`);
 })
 
 const portraitImage = computed(() => {

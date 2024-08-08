@@ -14,6 +14,7 @@ import Arkham.Investigator.Runner hiding (DiscoverClues)
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message qualified as Msg
 import Arkham.Prelude
+import Arkham.Taboo
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -44,11 +45,15 @@ instance HasAbilities TrishScarborough where
           1
           ( Self
               <> oneOf
-                [exists (LocationBeingDiscovered <> LocationWithAnyClues), exists $ CanEvadeEnemy (toSource attrs)]
+                [ exists (LocationBeingDiscovered <> LocationWithAnyClues)
+                , exists $ tabooModifier $ CanEvadeEnemy (toSource attrs)
+                ]
           )
         $ freeReaction
         $ DiscoverClues #after You (LocationWithEnemy AnyEnemy) (atLeast 1)
     ]
+   where
+    tabooModifier = if tabooed TabooList21 attrs then (NonEliteEnemy <>) else id
 
 instance HasChaosTokenValue TrishScarborough where
   getChaosTokenValue iid ElderSign (TrishScarborough attrs) | iid == toId attrs = do

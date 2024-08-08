@@ -9,14 +9,12 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
 newtype StoppingTheRitual = StoppingTheRitual ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stoppingTheRitual :: ActCard StoppingTheRitual

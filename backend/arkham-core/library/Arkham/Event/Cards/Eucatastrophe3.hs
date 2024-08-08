@@ -12,6 +12,7 @@ import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
+import Arkham.Taboo
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -21,7 +22,10 @@ newtype Eucatastrophe3 = Eucatastrophe3 EventAttrs
 
 eucatastrophe3 :: EventCard Eucatastrophe3
 eucatastrophe3 =
-  event Eucatastrophe3 Cards.eucatastrophe3
+  eventWith
+    Eucatastrophe3
+    Cards.eucatastrophe3
+    (\a -> if tabooed TabooList19 a then a {eventAfterPlay = RemoveThisFromGame} else a)
 
 toWindowChaosToken :: [Window] -> ChaosToken
 toWindowChaosToken [] = error "Missing window"

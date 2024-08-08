@@ -1,13 +1,8 @@
-module Arkham.Story.Cards.JosefsPlan (
-  JosefsPlan (..),
-  josefsPlan,
-  josefsPlanEffect,
-) where
+module Arkham.Story.Cards.JosefsPlan (JosefsPlan (..), josefsPlan, josefsPlanEffect) where
 
 import Arkham.Prelude
 
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Import
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import Arkham.Keyword qualified as Keyword

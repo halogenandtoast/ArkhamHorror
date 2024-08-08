@@ -5,9 +5,9 @@ import Arkham.Cost.Status qualified as Cost
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Effect qualified as Msg
 import Arkham.Helpers.Query (selectAssetController)
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
 
 newtype HitAndRun = HitAndRun EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

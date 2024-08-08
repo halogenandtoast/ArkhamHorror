@@ -39,6 +39,7 @@ const id = computed(() => props.asset.id)
 const exhausted = computed(() => props.asset.exhausted)
 const cardCode = computed(() => props.asset.cardCode)
 const image = computed(() => {
+  const mutated = props.asset.mutated ? `_${props.asset.mutated}` : ''
   if (props.asset.flipped) {
     console.log(cardCode.value)
     if (cardCode.value === "c90052") {
@@ -46,17 +47,18 @@ const image = computed(() => {
     }
     return imgsrc(`player_back.jpg`)
   }
-  return imgsrc(`cards/${cardCode.value.replace('c', '')}.jpg`)
+  return imgsrc(`cards/${cardCode.value.replace('c', '')}${mutated}.jpg`)
 })
 
 const dataImage = computed(() => {
+  const mutated = props.asset.mutated ? `_${props.asset.mutated}` : ''
   if (props.asset.flipped) {
     console.log(cardCode.value)
     if (cardCode.value === "c90052") {
       return "90052b"
     }
   }
-  return cardCode.value.replace('c', '')
+  return cardCode.value.replace('c', '') + mutated
 })
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 

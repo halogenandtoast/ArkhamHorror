@@ -3,13 +3,19 @@ module Arkham.Event.Cards.Hallow3 (hallow3, Hallow3 (..)) where
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher
+import Arkham.Strategy
+import Arkham.Taboo
 
 newtype Hallow3 = Hallow3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hallow3 :: EventCard Hallow3
-hallow3 = event Hallow3 Cards.hallow3
+hallow3 =
+  eventWith
+    Hallow3
+    Cards.hallow3
+    (\a -> if tabooed TabooList19 a then a {eventAfterPlay = RemoveThisFromGame} else a)
 
 instance RunMessage Hallow3 where
   runMessage msg e@(Hallow3 attrs) = runQueueT $ case msg of

@@ -40,6 +40,9 @@ data EffectWindow
   | EffectRevelationWindow TreacheryId
   deriving stock (Eq, Show, Data)
 
+instance IsLabel "round" EffectWindow where
+  fromLabel = EffectRoundWindow
+
 instance IsLabel "skillTest" (SkillTestId -> EffectWindow) where
   fromLabel = EffectSkillTestWindow
 

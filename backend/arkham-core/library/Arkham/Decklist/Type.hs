@@ -10,6 +10,7 @@ data ArkhamDBDecklist = ArkhamDBDecklist
   , investigator_code :: InvestigatorId
   , investigator_name :: Text
   , meta :: Maybe Text
+  , taboo_id :: Maybe Int
   }
   deriving stock (Generic, Show, Eq, Data)
   deriving anyclass ToJSON
@@ -21,4 +22,5 @@ instance FromJSON ArkhamDBDecklist where
     investigator_code <- o .: "investigator_code"
     investigator_name <- o .: "investigator_name"
     meta <- o .:? "meta"
+    taboo_id <- o .:? "taboo_id"
     pure $ ArkhamDBDecklist {..}

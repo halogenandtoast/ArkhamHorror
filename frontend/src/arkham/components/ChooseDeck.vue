@@ -5,6 +5,7 @@ import { fetchDecks } from '@/arkham/api'
 import { imgsrc } from '@/arkham/helpers'
 import * as Arkham from '@/arkham/types/Deck'
 import type { Investigator } from '@/arkham/types/Investigator'
+import Question from '@/arkham/components/Question.vue';
 
 const decks = ref<Arkham.Deck[]>([])
 const ready = ref(false)
@@ -16,6 +17,7 @@ const props = defineProps<{
 }>()
 
 const chooseDeck = inject<(deckId: string) => Promise<void>>('chooseDeck')
+const question = computed(() => props.game.question[props.playerId])
 
 const error = computed(() => {
   if(!deckId.value) {
@@ -67,49 +69,86 @@ async function choose() {
   }
 }
 
+type Player = { tag: "EmptyPlayer", id: string } | { tag: "Chosen", contents: Investigator, id: string }
+
+const tabooList = function (investigator: Investigator) {
+  if (investigator.taboo) {
+    switch (investigator.taboo) {
+      case "TabooList15": return "1.5 (Apr 23, 2019)"
+      case "TabooList16": return "1.6 (Sep 27, 2019)"
+      case "TabooList18": return "1.8 (Oct 15, 2020)"
+      case "TabooList19": return "1.9 (Jun 28, 2021)"
+      case "TabooList20": return "2.0 (Aug 26, 2022)"
+      case "TabooList21": return "2.1 (Aug 30, 2023)"
+      case "TabooList22": return "2.2 (Feb 20, 2024)"
+      default: return "Unknown Taboo List"
+    }
+  }
+
+  return null
+}
+
+const players = computed<Player[]>(() => {
+  if (props.game.gameState.tag === 'IsChooseDecks') {
+    return props.game.gameState.contents.map((p) => {
+      const maybeInvestigator = Object.values(investigators.value).find((i) => i.playerId === p)
+      return maybeInvestigator ? { tag: "Chosen", investigator: maybeInvestigator, id: p } : { tag: "EmptyPlayer", id: p }
+    })
+  }
+
+  return []
+})
+
 function portraitImage(investigator: Investigator) {
   return imgsrc(`portraits/${investigator.cardCode.replace('c', '')}.jpg`)
 }
 
 const needsReply = computed(() => {
   const question = props.game.question[props.playerId]
-  return question !== null && question !== undefined
+  return question !== null && question !== undefined && question.tag === 'ChooseDeck'
 })
 
-const showPortraits = computed(() => {
-  return Object.values(investigators.value).length + empties.value.length > 0
-})
 </script>
 
 <template>
   <div class="container">
-    <div v-if="showPortraits" class="investigators">
-      <h2>Chosen Players</h2>
+    <div class="investigators">
+      <h2>Choose your decks</h2>
       <div class="portraits">
-        <img
-          v-for="investigator in investigators"
-          :key="investigator.id"
-          :src="portraitImage(investigator)"
-          class="portrait"
-        />
-        <div class="portrait portrait-empty"
-          v-for="(item,index) in empties"
-          :key="chosenPlayerCount - index">
-          <img
-            :src="imgsrc('slots/ally.png')"
-          />
+        <div class="investigator-row" v-for="player in players" :key="player.id">
+          <template v-if="player.tag === 'Chosen'">
+            <div class="portrait">
+              <img
+                :src="portraitImage(player.investigator)"
+              />
+            </div>
+            <div v-if="question && playerId == player.investigator.playerId" class="question">
+              <Question :game="game" :playerId="playerId" @choose="choose" />
+            </div>
+            <div v-else>
+              <div v-if="tabooList(player.investigator)" class="taboo-list">
+                Taboo List: {{tabooList(player.investigator)}}
+              </div>
+            </div>
+          </template>
+          <template v-else>
+            <div class="portrait portrait-empty">
+              <img
+                :src="imgsrc('slots/ally.png')"
+              />
+            </div>
+            <form id="choose-deck" @submit.prevent="choose" v-if="needsReply && player.id == playerId">
+              <select v-model="deckId">
+                <option disabled :value="null">-- Select a Deck--</option>
+                <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
+              </select>
+              <p class="error" v-if="error">{{error}}</p>
+              <button type="submit" :disabled="disabled">Choose</button>
+            </form>
+          </template>
         </div>
       </div>
     </div>
-    <form id="choose-deck" @submit.prevent="choose" v-if="needsReply">
-      <p>Choose a Deck</p>
-      <select v-model="deckId">
-        <option disabled :value="null">-- Select a Deck--</option>
-        <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
-      </select>
-      <p class="error" v-if="error">{{error}}</p>
-      <button type="submit" :disabled="disabled">Choose</button>
-    </form>
   </div>
 </template>
 
@@ -119,7 +158,6 @@ const showPortraits = computed(() => {
   box-sizing: border-box;
   width: 100%;
   color: #FFF;
-  background-color: #15192C;
   padding: 10px;
   border-radius: 3px;
   max-width: 800px;
@@ -131,6 +169,7 @@ const showPortraits = computed(() => {
     padding: 0;
     text-transform: uppercase;
     color: white;
+    margin-bottom: 10px;
   }
 }
 
@@ -138,6 +177,7 @@ const showPortraits = computed(() => {
   --gap: 10px;
   --columns: 4;
   display: flex;
+  flex-direction: column;
   gap: var(--gap);
 }
 
@@ -298,8 +338,13 @@ form {
 }
 
 .portrait {
-  width: calc((100% / var(--columns)) - var(--gap) + (var(--gap) / var(--columns)));
+  width: 100px;
   border-radius: 5px;
+  flex-shrink: 0;
+  img {
+    width: 100%;
+    border-radius: 5px;
+  }
 }
 
 .portrait-empty {
@@ -313,5 +358,52 @@ form {
   img {
     width: 80%;
   }
+}
+
+.investigator-row {
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  display: flex;
+  gap: 10px;
+  justify-items: flex-start;
+  & :deep(form) {
+    margin: 0px;
+    height: fit-content;
+  }
+  & :deep(#choose-deck) {
+    border-radius: 5px;
+  }
+  .question {
+    flex: 1;
+
+    & :deep(.modal-contents) {
+      border-radius: 15px;
+      form {
+        width: 100%;
+        align-items: flex-start;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        label {
+          text-transform: uppercase;
+          margin-right: 15px;
+        }
+        button {
+          width: 100%;
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+.taboo-list {
+  background: var(--seeker-dark);
+  margin-inline: 10px;
+  padding: 5px;
+  border-radius: 5px;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 </style>

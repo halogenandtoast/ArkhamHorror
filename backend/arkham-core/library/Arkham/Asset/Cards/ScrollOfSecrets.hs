@@ -8,6 +8,7 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
 import Arkham.Prelude
+import Arkham.Taboo
 
 newtype ScrollOfSecrets = ScrollOfSecrets AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -22,7 +23,7 @@ instance HasAbilities ScrollOfSecrets where
         a
         1
         (exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck])
-        $ actionAbilityWithCost
+        $ (if tabooed TabooList18 a then FastAbility else actionAbilityWithCost)
         $ exhaust a
         <> assetUseCost a Secret 1
     ]

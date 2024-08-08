@@ -22,7 +22,7 @@ newtype UndimensionedAndUnseenTabletToken = UndimensionedAndUnseenTabletToken Ef
 undimensionedAndUnseenTabletToken
   :: EffectArgs -> UndimensionedAndUnseenTabletToken
 undimensionedAndUnseenTabletToken =
-  UndimensionedAndUnseenTabletToken . uncurry4 (baseAttrs "02236")
+  UndimensionedAndUnseenTabletToken . uncurry (baseAttrs "02236")
 
 instance HasModifiersFor UndimensionedAndUnseenTabletToken where
   getModifiersFor (ChaosTokenTarget token) (UndimensionedAndUnseenTabletToken attrs) | token.face == #tablet = do

@@ -11,6 +11,7 @@ import Arkham.Investigator
 import Arkham.Name
 import Arkham.PlayerCard
 import Arkham.SkillType
+import Arkham.Taboo.Types
 import Arkham.Trait
 import Data.Aeson
 import Data.Aeson.Key (fromText)
@@ -35,13 +36,21 @@ import Text.Parsec (
  )
 import Text.Read (read)
 
+data Decklist = Decklist
+  { decklistInvestigator :: InvestigatorId
+  , decklistCards :: [PlayerCard]
+  , decklistExtraDeck :: [PlayerCard]
+  , decklistTaboo :: Maybe TabooList
+  }
+
 type Parser = ParsecT Text () Identity
 
-loadDecklist :: CardGen m => ArkhamDBDecklist -> m (InvestigatorId, [PlayerCard], [PlayerCard])
+loadDecklist :: CardGen m => ArkhamDBDecklist -> m Decklist
 loadDecklist decklist =
-  (decklistInvestigatorId decklist,,)
+  Decklist (decklistInvestigatorId decklist)
     <$> loadDecklistCards slots decklist
     <*> loadExtraDeck decklist
+    <*> pure (fromTabooId $ taboo_id decklist)
 
 decklistInvestigatorId :: ArkhamDBDecklist -> InvestigatorId
 decklistInvestigatorId decklist = case meta decklist of
@@ -62,6 +71,7 @@ loadDecklistCards f decklist = do
       ( genPlayerCardWith (lookupPlayerCardDef cardCode)
           $ applyCustomizations decklist
           . setPlayerCardOwner (normalizeInvestigatorId $ decklistInvestigatorId decklist)
+          . Arkham.Card.PlayerCard.setTaboo (fromTabooId $ taboo_id decklist)
       )
   pure $ fold results
 

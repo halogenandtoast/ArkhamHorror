@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Effect.Runner hiding (createCardEffect)
+import Arkham.Effect.Runner
 import Arkham.Modifier
 
 newtype DisciplinePrescienceOfFate = DisciplinePrescienceOfFate AssetAttrs

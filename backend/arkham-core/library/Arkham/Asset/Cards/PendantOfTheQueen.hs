@@ -16,6 +16,7 @@ import Arkham.Helpers.Investigator (searchBonded)
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message qualified as Msg
 import Arkham.Movement
+import Arkham.Taboo
 
 newtype PendantOfTheQueen = PendantOfTheQueen AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -50,12 +51,14 @@ instance HasAbilities PendantOfTheQueen where
 instance RunMessage PendantOfTheQueen where
   runMessage msg a@(PendantOfTheQueen attrs) = case msg of
     SpentAllUses (isTarget attrs -> True) -> do
-      for_ attrs.controller $ \controller -> do
-        segments <- take 3 <$> searchBonded controller Cards.segmentOfOnyx1
-        pushAll
-          [ PlaceInBonded controller (toCard attrs)
-          , ShuffleCardsIntoDeck (Deck.InvestigatorDeck controller) segments
-          ]
+      if tabooed TabooList19 attrs
+        then push $ RemoveFromGame (toTarget attrs)
+        else for_ attrs.controller $ \controller -> do
+          segments <- take 3 <$> searchBonded controller Cards.segmentOfOnyx1
+          pushAll
+            [ PlaceInBonded controller (toCard attrs)
+            , ShuffleCardsIntoDeck (Deck.InvestigatorDeck controller) segments
+            ]
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       canMove <- iid <=~> InvestigatorCanMove

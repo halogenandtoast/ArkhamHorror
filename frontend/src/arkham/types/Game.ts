@@ -20,13 +20,14 @@ import { SkillTest, skillTestDecoder, SkillTestResults, skillTestResultsDecoder 
 import { Card, cardDecoder, } from '@/arkham/types/Card';
 import { TarotCard, tarotCardDecoder, } from '@/arkham/types/TarotCard';
 
-type GameState = { tag: 'IsPending' } | { tag: 'IsActive' } | { tag: 'IsOver' };
+type GameState = { tag: 'IsPending' } | { tag: 'IsActive' } | { tag: 'IsOver' } | { tag: 'IsChooseDecks', contents: string[] };
 
 export const gameStateDecoder = JsonDecoder.oneOf<GameState>(
   [
     JsonDecoder.object({ tag: JsonDecoder.isExactly('IsPending') }, 'IsPending'),
     JsonDecoder.object({ tag: JsonDecoder.isExactly('IsActive') }, 'IsActive'),
     JsonDecoder.object({ tag: JsonDecoder.isExactly('IsOver') }, 'IsOver'),
+    JsonDecoder.object({ tag: JsonDecoder.isExactly('IsChooseDecks'), contents: JsonDecoder.array(JsonDecoder.string, 'string[]') }, 'IsChooseDecks'),
   ],
   'GameState'
 );

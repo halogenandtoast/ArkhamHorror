@@ -20,14 +20,15 @@ instance RunMessage ThreeAces1 where
   runMessage msg (ThreeAces1 attrs) = case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
       withSkillTest \stId -> do
-        n <- selectCount $ skillIs Cards.threeAces1 <> skillControlledBy iid
+        n <- select $ skillIs Cards.threeAces1 <> skillControlledBy iid
         mods <- getModifiers (SkillTestTarget stId)
-        when (n >= 3 && MetaModifier "ThreeAces1" `notElem` mods) $ do
+        when (length n >= 3 && MetaModifier "ThreeAces1" `notElem` mods) $ do
           let drawing = drawCards iid attrs 3
           canDraw <- can.draw.cards iid
           canGainResources <- can.gain.resources iid
           pushAll
-            $ [skillTestModifier stId (toSource attrs) sid (MetaModifier "ThreeAces1"), PassSkillTest]
+            $ map (\copy -> skillTestModifier stId (toSource attrs) copy (SetAfterPlay RemoveThisFromGame)) n
+            <> [skillTestModifier stId (toSource attrs) sid (MetaModifier "ThreeAces1"), PassSkillTest]
             <> [drawing | canDraw]
             <> [takeResources iid (toSource attrs) 3 | canGainResources]
       ThreeAces1 <$> runMessage msg attrs

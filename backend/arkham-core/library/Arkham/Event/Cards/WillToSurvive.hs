@@ -33,7 +33,7 @@ newtype WillToSurviveEffect = WillToSurviveEffect EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 willToSurviveEffect :: EffectArgs -> WillToSurviveEffect
-willToSurviveEffect = WillToSurviveEffect . uncurry4 (baseAttrs "60512")
+willToSurviveEffect = cardEffect WillToSurviveEffect Cards.willToSurvive
 
 instance HasModifiersFor WillToSurviveEffect where
   getModifiersFor target (WillToSurviveEffect a) | target == effectTarget a = do

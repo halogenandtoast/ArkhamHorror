@@ -67,6 +67,7 @@ export type CardContents = {
   tokens: Tokens
   art?: string
   customizations?: Customization[]
+  mutated?: string
 }
 
 export type VengeanceCard = {
@@ -93,6 +94,7 @@ export const cardContentsDecoder = JsonDecoder.object<CardContents>(
     tokens: JsonDecoder.constant({}),
     art: JsonDecoder.optional(JsonDecoder.string),
     customizations: JsonDecoder.optional(customizationsDecoder),
+    mutated: JsonDecoder.optional(JsonDecoder.string),
   },
   'CardContents',
 );

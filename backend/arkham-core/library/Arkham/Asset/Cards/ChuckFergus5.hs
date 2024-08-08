@@ -11,8 +11,6 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Timing qualified as Timing
@@ -21,7 +19,7 @@ import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype ChuckFergus5 = ChuckFergus5 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chuckFergus5 :: AssetCard ChuckFergus5

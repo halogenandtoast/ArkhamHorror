@@ -6,8 +6,9 @@ module Arkham.Investigator.Cards.FatherMateo (
 
 import Arkham.Prelude
 
-import Arkham.Effect.Runner
+import Arkham.Effect.Import
 import Arkham.Game.Helpers
+import Arkham.Helpers.Effect
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher

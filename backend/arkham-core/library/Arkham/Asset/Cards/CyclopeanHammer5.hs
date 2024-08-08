@@ -7,6 +7,7 @@ import Arkham.Fight
 import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Taboo
 
 newtype CyclopeanHammer5 = CyclopeanHammer5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -25,7 +26,23 @@ instance RunMessage CyclopeanHammer5 where
       skillTestModifiers sid (attrs.ability 1) iid [DamageDealt 1, AddSkillValue #willpower]
       pushM $ mkChooseFight sid iid (attrs.ability 1)
       pure a
-    PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      getSkillTestTarget >>= \case
+        Just (EnemyTarget enemy) -> whenM (enemy <=~> NonEliteEnemy) do
+          if tabooed TabooList20 attrs
+            then do
+              when attrs.ready do
+                chooseOne
+                  iid
+                  [ Label
+                      "Exhaust Cyclopean Hammer to instead deal +2 damage and move the enemy up to two locations away from you."
+                      [Exhaust (toTarget attrs), DoStep 1 msg]
+                  , Label "Do not exhaust" []
+                  ]
+            else doStep 1 msg
+        _ -> pure ()
+      pure a
+    DoStep 1 (PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n) -> do
       getSkillTestTarget >>= \case
         Just (EnemyTarget enemy) -> whenM (enemy <=~> NonEliteEnemy) do
           when (n >= 3) do
@@ -40,6 +57,6 @@ instance RunMessage CyclopeanHammer5 where
             questionLabel "Move enemy away" iid
               $ ChooseOne
               $ targetLabels choices (only . EnemyMove enemy)
-        _ -> pure ()
+        _ -> error "Something went wrong"
       pure a
     _ -> CyclopeanHammer5 <$> liftRunMessage msg attrs

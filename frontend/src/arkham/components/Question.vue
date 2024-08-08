@@ -444,10 +444,10 @@ const cardPiles = computed(() => {
       </div>
       <div class="modal-contents amount-contents">
         <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
-          <legend>{{paymentAmountsLabel}}</legend>
+          <legend>{{amountsLabel}}</legend>
           <template v-for="paymentChoice in chooseAmountsChoices" :key="paymentChoice.choiceId">
             <div v-if="paymentChoice.maxBound !== 0">
-              {{paymentChoice.label}} <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" onclick="this.select()" />
+              <label :for="`choice-${paymentChoice.choiceId}`">{{paymentChoice.label}}</label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
             </div>
           </template>
           <button :disabled="unmetAmountRequirements">Submit</button>
@@ -463,7 +463,9 @@ const cardPiles = computed(() => {
         <button @click="choose(index)">{{choice.ability.type.label}}</button>
       </template>
       <template v-if="choice.tag === 'PortraitLabel'">
-        <img class="portrait card active" :src="portraitLabelImage(choice.investigatorId)" @click="choose(index)" />
+        <div class="portrait">
+          <img class="card active" :src="portraitLabelImage(choice.investigatorId)" @click="choose(index)" />
+        </div>
       </template>
       <div v-if="choice.tag === MessageType.LABEL" class="message-label">
         <button v-if="choice.label == 'Choose {skull}'" @click="choose(index)">
@@ -661,13 +663,20 @@ button:hover {
 .portrait {
   border-radius: 3px;
   width: $card-width;
-  margin-right: 2px;
+  margin: 10px;
+
+  .card {
+    border-radius: 5px;
+    width: auto;
+    height: max($card-width * 2);
+  }
+
+  .card.active {
+    border: 1px solid $select;
+    cursor: pointer;
+  }
 }
 
-.portrait.active {
-  border: 1px solid $select;
-  cursor: pointer;
-}
 
 .status-bar:empty {
   display: none;

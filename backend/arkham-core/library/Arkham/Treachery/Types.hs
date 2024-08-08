@@ -18,6 +18,7 @@ import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
+import Arkham.Taboo.Types
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait
@@ -79,6 +80,8 @@ data TreacheryAttrs = TreacheryAttrs
   , treacheryDiscardedBy :: Maybe InvestigatorId
   , treacheryMeta :: Value
   , treacherySealedChaosTokens :: [ChaosToken]
+  , treacheryTaboo :: Maybe TabooList
+  , treacheryMutated :: Maybe Text -- for art
   }
   deriving stock (Show, Eq)
 
@@ -92,6 +95,9 @@ instance AsId TreacheryAttrs where
 
 instance HasField "id" TreacheryAttrs TreacheryId where
   getField = treacheryId
+
+instance HasField "taboo" TreacheryAttrs (Maybe TabooList) where
+  getField = treacheryTaboo
 
 instance HasField "meta" TreacheryAttrs Value where
   getField = treacheryMeta
@@ -267,6 +273,8 @@ treacheryWith f cardDef g =
             , treacheryDiscardedBy = Nothing
             , treacheryMeta = Null
             , treacherySealedChaosTokens = []
+            , treacheryTaboo = Nothing
+            , treacheryMutated = Nothing
             }
     }
 

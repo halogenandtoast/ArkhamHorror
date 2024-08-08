@@ -23,6 +23,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Game.Helpers
 import Arkham.Helpers
+import Arkham.Helpers.Effect
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (ChosenRandomLocation, RevealLocation)
@@ -268,6 +269,7 @@ instance RunMessage UndimensionedAndUnseen where
     ResolveChaosToken drawnToken Tablet _ -> do
       push
         $ CreateEffect
+        $ makeEffectBuilder
           "02236"
           Nothing
           (ChaosTokenSource drawnToken)

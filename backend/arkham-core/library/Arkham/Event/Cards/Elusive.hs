@@ -7,6 +7,7 @@ import Arkham.Game.Helpers
 import Arkham.Matcher
 import Arkham.Movement
 import Arkham.Prelude
+import Arkham.Taboo
 
 newtype Elusive = Elusive EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -19,7 +20,11 @@ instance RunMessage Elusive where
   runMessage msg e@(Elusive attrs) = case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
       enemies <- select $ enemyEngagedWith iid
-      targets <- getCanMoveToMatchingLocations iid attrs $ LocationWithoutEnemies <> RevealedLocation
+      targets <-
+        getCanMoveToMatchingLocations iid attrs
+          $ if tabooed TabooList19 attrs
+            then LocationWithoutEnemies <> AccessibleFrom (locationWithInvestigator iid)
+            else LocationWithoutEnemies <> RevealedLocation
       player <- getPlayer iid
       pushAll
         $ map (DisengageEnemy iid) enemies

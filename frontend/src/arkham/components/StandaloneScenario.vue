@@ -33,7 +33,7 @@ const chooseDeck = computed(() => {
 
   const { tag } = question
 
-  if (tag === 'ChooseDeck') {
+  if (tag === 'ChooseDeck' || props.game.gameState.tag === 'IsChooseDecks') {
     return true
   }
 

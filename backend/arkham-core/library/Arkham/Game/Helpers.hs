@@ -1017,6 +1017,11 @@ passesCriteria
   -> Criterion
   -> m Bool
 passesCriteria iid mcard source' requestor windows' = \case
+  Criteria.TabooCriteria tabooList cIf cElse -> do
+    mtabooList <- field InvestigatorTaboo iid
+    if maybe False (>= tabooList) mtabooList
+      then passesCriteria iid mcard source' requestor windows' cIf
+      else passesCriteria iid mcard source' requestor windows' cElse
   Criteria.IfYouOweBiancaDieKatz -> do
     let
       isValid = \case

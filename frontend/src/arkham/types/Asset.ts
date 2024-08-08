@@ -31,6 +31,7 @@ export type Asset = {
   marketDeck?: Card[]
   spiritDeck?: Card[]
   modifiers?: Modifier[];
+  mutated?: string;
 }
 
 export const assetDecoder = JsonDecoder.object<Asset>({
@@ -55,4 +56,5 @@ export const assetDecoder = JsonDecoder.object<Asset>({
   marketDeck: JsonDecoder.optional(JsonDecoder.array<Card>(cardDecoder, 'Card[]')),
   spiritDeck: JsonDecoder.optional(JsonDecoder.array<Card>(cardDecoder, 'Card[]')),
   modifiers: JsonDecoder.optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
+  mutated: JsonDecoder.optional(JsonDecoder.string),
 }, 'Asset');

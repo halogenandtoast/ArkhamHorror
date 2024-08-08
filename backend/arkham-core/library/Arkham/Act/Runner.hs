@@ -14,6 +14,7 @@ import Arkham.Calculation as X
 import Arkham.Cost as X
 import Arkham.GameValue as X
 import Arkham.Helpers.Act as X
+import Arkham.Helpers.Effect as X
 import Arkham.Helpers.Message as X hiding (
   Discarded,
   EnemyDamage,

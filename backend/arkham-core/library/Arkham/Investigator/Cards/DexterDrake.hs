@@ -11,6 +11,7 @@ import Arkham.Card
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Effect qualified as Msg
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
@@ -23,7 +24,7 @@ import Arkham.Window (defaultWindows)
 newtype DexterDrake = DexterDrake InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 dexterDrake :: InvestigatorCard DexterDrake
 dexterDrake =
@@ -95,7 +96,7 @@ instance RunMessage DexterDrake where
 newtype DexterDrakeEffect = DexterDrakeEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 dexterDrakeEffect :: EffectArgs -> DexterDrakeEffect
 dexterDrakeEffect = cardEffect DexterDrakeEffect Cards.dexterDrake

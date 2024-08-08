@@ -241,22 +241,26 @@ handleAnswer Game {..} playerId = \case
     Just (ChooseAmounts _ _ choices target) -> do
       let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
       let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
+      let question' = Map.delete playerId gameQuestion
       pure
-        [ ResolveAmounts
-            (playerInvestigator gameEntities playerId)
-            (map (first toNamedUUID) $ Map.toList $ arAmounts response)
-            target
-        ]
+        $ [ ResolveAmounts
+              (playerInvestigator gameEntities playerId)
+              (map (first toNamedUUID) $ Map.toList $ arAmounts response)
+              target
+          ]
+        <> [AskMap question' | not (Map.null question')]
     Just (QuestionLabel _ _ (ChooseAmounts _ _ choices target)) -> do
       let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
       let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
 
+      let question' = Map.delete playerId gameQuestion
       pure
-        [ ResolveAmounts
-            (playerInvestigator gameEntities playerId)
-            (map (first toNamedUUID) $ Map.toList $ arAmounts response)
-            target
-        ]
+        $ [ ResolveAmounts
+              (playerInvestigator gameEntities playerId)
+              (map (first toNamedUUID) $ Map.toList $ arAmounts response)
+              target
+          ]
+        <> [AskMap question' | not (Map.null question')]
     _ -> error "Wrong question type"
   PaymentAmountsAnswer response ->
     case Map.lookup playerId gameQuestion of

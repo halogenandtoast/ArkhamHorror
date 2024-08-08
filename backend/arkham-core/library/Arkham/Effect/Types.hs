@@ -47,14 +47,29 @@ data instance Field Effect :: Type -> Type where
   EffectMeta :: Field Effect (Maybe (EffectMetadata Window Message))
 
 cardEffect :: (EffectAttrs -> a) -> CardDef -> EffectArgs -> a
-cardEffect f def = f . uncurry4 (baseAttrs (toCardCode def))
+cardEffect f def = f . uncurry (baseAttrs (toCardCode def))
 
 cardEffectWith :: (EffectAttrs -> a) -> CardDef -> (EffectAttrs -> EffectAttrs) -> EffectArgs -> a
-cardEffectWith f def g = f . g . uncurry4 (baseAttrs (toCardCode def))
+cardEffectWith f def g = f . g . uncurry (baseAttrs (toCardCode def))
 
 instance AsId EffectAttrs where
   type IdOf EffectAttrs = EffectId
   asId = toId
+
+data EffectBuilder = EffectBuilder
+  { effectBuilderCardCode :: CardCode
+  , effectBuilderTarget :: Target
+  , effectBuilderSource :: Source
+  , effectBuilderTraits :: Set Trait
+  , effectBuilderMetadata :: Maybe (EffectMetadata Window Message)
+  , effectBuilderWindow :: Maybe EffectWindow
+  , effectBuilderFinished :: Bool
+  -- ^ Sometimes an effect may cause infinite recursion, this bool can be used
+  -- to track and escape recursion
+  , effectBuilderExtraMetadata :: Value
+  , effectBuilderSkillTest :: Maybe SkillTestId
+  }
+  deriving stock (Show, Eq, Data)
 
 data EffectAttrs = EffectAttrs
   { effectId :: EffectId
@@ -97,6 +112,15 @@ instance HasField "window" Effect (Maybe EffectWindow) where
 instance HasField "skillTest" Effect (Maybe SkillTestId) where
   getField = effectSkillTest . toAttrs
 
+instance HasField "source" Effect Source where
+  getField = effectSource . toAttrs
+
+instance HasField "target" Effect Target where
+  getField = effectTarget . toAttrs
+
+instance HasField "metadata" Effect (Maybe (EffectMetadata Window Message)) where
+  getField = effectMetadata . toAttrs
+
 finishedL :: Lens' EffectAttrs Bool
 finishedL = lens effectFinished $ \m x -> m {effectFinished = x}
 
@@ -131,28 +155,25 @@ instance HasField "metaInt" EffectAttrs (Maybe Int) where
 instance HasField "extra" EffectAttrs Value where
   getField = effectExtraMetadata
 
-type EffectArgs =
-  (EffectId, Maybe (EffectMetadata Window Message), Source, Target)
+type EffectArgs = (EffectId, EffectBuilder)
 
 baseAttrs
   :: CardCode
   -> EffectId
-  -> Maybe (EffectMetadata Window Message)
-  -> Source
-  -> Target
+  -> EffectBuilder
   -> EffectAttrs
-baseAttrs cardCode eid meffectMetadata source target =
+baseAttrs cardCode eid EffectBuilder {..} =
   EffectAttrs
     { effectId = eid
-    , effectSource = source
-    , effectTarget = target
+    , effectSource = effectBuilderSource
+    , effectTarget = effectBuilderTarget
     , effectCardCode = cardCode
-    , effectMetadata = meffectMetadata
-    , effectTraits = mempty
-    , effectWindow = Nothing
-    , effectFinished = False
-    , effectExtraMetadata = Null
-    , effectSkillTest = Nothing
+    , effectMetadata = effectBuilderMetadata
+    , effectTraits = effectBuilderTraits
+    , effectWindow = effectBuilderWindow
+    , effectFinished = effectBuilderFinished
+    , effectExtraMetadata = effectBuilderExtraMetadata
+    , effectSkillTest = effectBuilderSkillTest
     }
 
 targetL :: Lens' EffectAttrs Target
@@ -246,4 +267,25 @@ disable = disableEffect
 setEffectMeta :: ToJSON a => a -> EffectAttrs -> EffectAttrs
 setEffectMeta a = extraL .~ toJSON a
 
+makeEffectBuilder
+  :: (Sourceable source, Targetable target)
+  => CardCode
+  -> Maybe (EffectMetadata Window Message)
+  -> source
+  -> target
+  -> EffectBuilder
+makeEffectBuilder cardCode meffectMetadata (toSource -> source) (toTarget -> target) =
+  EffectBuilder
+    { effectBuilderSource = source
+    , effectBuilderTarget = target
+    , effectBuilderCardCode = cardCode
+    , effectBuilderMetadata = meffectMetadata
+    , effectBuilderTraits = mempty
+    , effectBuilderWindow = Nothing
+    , effectBuilderFinished = False
+    , effectBuilderExtraMetadata = Null
+    , effectBuilderSkillTest = Nothing
+    }
+
+$(deriveJSON (aesonOptions $ Just "effectBuilder") ''EffectBuilder)
 $(deriveJSON (aesonOptions $ Just "effect") ''EffectAttrs)

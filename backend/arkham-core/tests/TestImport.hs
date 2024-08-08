@@ -727,12 +727,12 @@ data ArkhamExport = ArkhamExport
   { campaignPlayers :: [InvestigatorId]
   , campaignData :: ArkhamGameExportData
   }
-  deriving stock (Generic)
-  deriving anyclass (FromJSON)
+  deriving stock Generic
+  deriving anyclass FromJSON
 
 newtype ArkhamGameExportData = ArkhamGameExportData {currentData :: Game}
-  deriving stock (Generic)
-  deriving anyclass (FromJSON)
+  deriving stock Generic
+  deriving anyclass FromJSON
 
 gameTestFromFile :: FilePath -> (Investigator -> TestAppT ()) -> IO ()
 gameTestFromFile fp body = do

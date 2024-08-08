@@ -10,8 +10,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Timing qualified as Timing
@@ -20,7 +18,7 @@ import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype RobesOfEndlessNight = RobesOfEndlessNight AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 robesOfEndlessNight :: AssetCard RobesOfEndlessNight

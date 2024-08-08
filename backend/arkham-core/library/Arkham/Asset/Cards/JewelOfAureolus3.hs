@@ -10,6 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Matcher
+import Arkham.Taboo
 import Arkham.Timing qualified as Timing
 import Arkham.Window qualified as Window
 
@@ -25,7 +26,9 @@ instance HasAbilities JewelOfAureolus3 where
     [ restrictedAbility x 1 ControlsThis
         $ ReactionAbility
           ( RevealChaosToken Timing.When (InvestigatorAt YourLocation)
-              $ ChaosTokenMatchesAny (map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail])
+              $ if tabooed TabooList20 x
+                then IsSymbol
+                else ChaosTokenMatchesAny (map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail])
           )
         $ exhaust x
     ]

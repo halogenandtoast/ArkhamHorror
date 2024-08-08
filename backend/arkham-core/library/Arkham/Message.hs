@@ -40,6 +40,7 @@ import Arkham.Direction
 import Arkham.Discard
 import Arkham.Discover
 import Arkham.Draw.Types
+import {-# SOURCE #-} Arkham.Effect.Types
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.EncounterCard.Source
@@ -236,15 +237,6 @@ pattern CancelRevelation source = CancelEachNext source [RevelationMessage]
 
 pattern PlayThisEvent :: InvestigatorId -> EventId -> Message
 pattern PlayThisEvent iid eid <- InvestigatorPlayEvent iid eid _ _ _
-
-createCardEffect
-  :: (Sourceable source, Targetable target)
-  => CardDef
-  -> Maybe (EffectMetadata Window Message)
-  -> source
-  -> target
-  -> Message
-createCardEffect def mMeta (toSource -> source) (toTarget -> target) = CreateEffect (toCardCode def) mMeta source target
 
 getChoiceAmount :: Text -> [(NamedUUID, Int)] -> Int
 getChoiceAmount key choices =
@@ -510,7 +502,7 @@ data Message
   | CommitCard InvestigatorId Card
   | CommitToSkillTest SkillTest (UI Message)
   | Continue Text
-  | CreateEffect CardCode (Maybe (EffectMetadata Window Message)) Source Target
+  | CreateEffect EffectBuilder
   | ObtainCard Card
   | CreateEnemy (EnemyCreation Message)
   | CreateSkill SkillId Card InvestigatorId Placement
@@ -542,6 +534,7 @@ data Message
   | CreateChaosTokenValueEffect SkillTestId Int Source Target
   | CreateWeaknessInThreatArea Card InvestigatorId
   | CreatedEffect EffectId (Maybe (EffectMetadata Window Message)) Source Target
+  | UpdateEffectMeta EffectId (EffectMetadata Window Message)
   | CrossOutRecord CampaignLogKey
   | SetCampaignLog CampaignLog
   | DeckHasNoCards InvestigatorId (Maybe Target)
@@ -1050,6 +1043,8 @@ data Message
   | ExcessDamage EnemyId [Message]
   | AddDeckBuildingAdjustment InvestigatorId DeckBuildingAdjustment
   | IncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]
+  | ChoosingDecks
+  | DoneChoosingDecks
   | -- Commit
     Do Message
   | DoBatch BatchId Message
@@ -1167,4 +1162,4 @@ chooseUpgradeDeck :: PlayerId -> Message
 chooseUpgradeDeck pid = Ask pid ChooseUpgradeDeck
 
 chooseDecks :: [PlayerId] -> Message
-chooseDecks pids = AskMap $ mapFromList $ map (,ChooseDeck) pids
+chooseDecks pids = Run [ChoosingDecks, AskMap $ mapFromList $ map (,ChooseDeck) pids, DoneChoosingDecks]

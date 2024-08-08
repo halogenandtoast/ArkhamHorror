@@ -1267,6 +1267,7 @@ library
       Arkham.Effect
       Arkham.Effect.Effects
       Arkham.Effect.Effects.ChaosTokenEffect
+      Arkham.Effect.Effects.MaxEffect
       Arkham.Effect.Effects.OnRevealChaosTokenEffect
       Arkham.Effect.Effects.SurgeEffect
       Arkham.Effect.Effects.UndimensionedAndUnseenTabletToken
@@ -3034,6 +3035,8 @@ library
       Arkham.Story.Stories
       Arkham.Story.Types
       Arkham.Strategy
+      Arkham.Taboo
+      Arkham.Taboo.Types
       Arkham.Target
       Arkham.Tarot
       Arkham.Text

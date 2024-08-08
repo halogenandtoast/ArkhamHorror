@@ -16,7 +16,7 @@ newtype SurgeEffect = SurgeEffect EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 surgeEffect :: EffectArgs -> SurgeEffect
-surgeEffect = SurgeEffect . uncurry4 (baseAttrs "surge")
+surgeEffect = SurgeEffect . uncurry (baseAttrs "surge")
 
 instance HasModifiersFor SurgeEffect where
   getModifiersFor target (SurgeEffect EffectAttrs {..}) | target == effectTarget = do

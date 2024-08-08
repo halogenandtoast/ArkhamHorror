@@ -6,6 +6,7 @@ module Arkham.Skill.Runner (
 
 import Arkham.Prelude
 
+import Arkham.Helpers.Effect as X
 import Arkham.Helpers.Message as X hiding (
   InvestigatorDamage,
   InvestigatorEliminated,

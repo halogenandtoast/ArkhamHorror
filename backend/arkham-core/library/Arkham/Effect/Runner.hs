@@ -78,4 +78,6 @@ instance RunMessage EffectAttrs where
     Move _ | isEndOfWindow a EffectMoveWindow -> do
       a <$ push (DisableEffect effectId)
     NextSkillTest sid -> pure $ replaceNextSkillTest sid a
+    UpdateEffectMeta eid meta | eid == effectId -> do
+      pure $ a {effectMetadata = Just meta}
     _ -> pure a

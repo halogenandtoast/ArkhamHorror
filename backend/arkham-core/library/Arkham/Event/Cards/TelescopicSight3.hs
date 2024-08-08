@@ -18,6 +18,7 @@ import Arkham.Helpers.Window
 import Arkham.Keyword (Keyword (Aloof, Retaliate))
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Taboo
 import Arkham.Timing qualified as Timing
 import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
@@ -42,7 +43,7 @@ instance HasModifiersFor TelescopicSight3 where
                 engaged <- selectAny $ enemyEngagedWith iid
                 pure
                   . toModifiers a
-                  $ if engaged
+                  $ if engaged && not (tabooed TabooList19 a)
                     then [EnemyFightActionCriteria $ CriteriaOverride Never]
                     else
                       [ CanModify

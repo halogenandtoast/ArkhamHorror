@@ -17,7 +17,7 @@ newtype ChaosTokenEffect = ChaosTokenEffect EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chaosTokenEffect :: EffectArgs -> ChaosTokenEffect
-chaosTokenEffect = ChaosTokenEffect . uncurry4 (baseAttrs "tokef")
+chaosTokenEffect = ChaosTokenEffect . uncurry (baseAttrs "tokef")
 
 chaosTokenEffect'
   :: EffectId -> EffectMetadata Window Message -> Source -> ChaosToken -> ChaosTokenEffect

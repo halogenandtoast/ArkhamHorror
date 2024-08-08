@@ -11,7 +11,9 @@ import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Effect.Runner
 import Arkham.Fight
+import Arkham.Matcher
 import Arkham.Prelude
+import Arkham.Taboo
 
 newtype ThirtyFiveWinchester = ThirtyFiveWinchester AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -32,7 +34,11 @@ instance RunMessage ThirtyFiveWinchester where
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       pushAll
         [ skillTestModifier sid source iid (SkillModifier #combat 2)
-        , createCardEffect Cards.thirtyFiveWinchester Nothing source sid
+        , createCardEffect
+            Cards.thirtyFiveWinchester
+            (effectInt $ if tabooed TabooList18 attrs then 1 else 0)
+            source
+            sid
         , chooseFight
         ]
       pure a
@@ -47,9 +53,14 @@ thirtyFiveWinchesterEffect = cardEffect ThirtyFiveWinchesterEffect Cards.thirtyF
 
 instance RunMessage ThirtyFiveWinchesterEffect where
   runMessage msg e@(ThirtyFiveWinchesterEffect attrs) = case msg of
-    ResolveChaosToken _ chaosTokenFace iid -> do
+    ResolveChaosToken token _chaosTokenFace iid -> do
       withSkillTest \sid -> do
-        when (isTarget sid attrs.target && chaosTokenFace `elem` [PlusOne, Zero, ElderSign]) do
+        valid <-
+          if maybe False (== 1) attrs.metaInt
+            then token <=~> IncludeTokenPool (IncludeSealed $ not_ WithNegativeModifier)
+            else
+              token <=~> IncludeTokenPool (IncludeSealed $ mapOneOf ChaosTokenFaceIs [PlusOne, Zero, ElderSign])
+        when (isTarget sid attrs.target && valid) do
           pushAll
             [ disable attrs
             , skillTestModifier sid attrs.source iid (DamageDealt 2)

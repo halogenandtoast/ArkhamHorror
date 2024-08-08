@@ -8,8 +8,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (PlayCard)
 import Arkham.Card
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Prelude
@@ -17,7 +15,7 @@ import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype RiteOfSanctification = RiteOfSanctification AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riteOfSanctification :: AssetCard RiteOfSanctification

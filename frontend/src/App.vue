@@ -211,4 +211,31 @@ body {
     margin-right: 5px;
   }
 }
+
+:root {
+  --willpower: #2c7fc0;
+  --intellect: #7c3c85;
+  --combat: #ae4236;
+  --agility: #14854d;
+  --wild: #8a7d5a;
+  --guardian: #5cb4fd;
+  --mystic: #ba81f2;
+  --rogue: #48b14f;
+  --seeker: #efa345;
+  --survivor: #ee4a53;
+  --multiclass: #e4d083;
+  --mythos: #d8dee9;
+  --neutral: #d8dee9;
+  --guardian-dark: #1072c2;
+  --seeker-dark: #db7c07;
+  --rogue-dark: #219428;
+  --mystic-dark: #7554ab;
+  --survivor-dark: #cc3038;
+  --neutral-dark: #434c5e;
+  --multiclass-dark: #a38c46;
+  --mythos-dark: #434c5e;
+  --taboo: #9869f5;
+  --health: #ae4236;
+  --sanity: #2c7fc0;
+}
 </style>

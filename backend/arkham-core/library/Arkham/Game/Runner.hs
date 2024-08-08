@@ -132,6 +132,8 @@ getInvestigatorsInOrder = do
 
 runGameMessage :: Runner Game
 runGameMessage msg g = case msg of
+  ChoosingDecks -> pure $ g & gameStateL .~ IsChooseDecks (g ^. playersL)
+  DoneChoosingDecks -> pure $ g & gameStateL .~ IsActive
   IncreaseCustomization iid cardCode customization choices -> do
     cards <- select $ OwnedBy (InvestigatorWithId iid) <> basic (CardWithCardCode cardCode)
 
@@ -181,8 +183,19 @@ runGameMessage msg g = case msg of
     let mOldId = toId <$> find ((== playerId) . attr investigatorPlayerId) (toList $ gameInvestigators g)
         replaceIds = InvestigatorId "00000" : toList mOldId
 
-    (iid', deck, sideDeck) <- loadDecklist decklist
-    let investigator = lookupInvestigator iid' playerId
+    dl <- loadDecklist decklist
+    let iid' = decklistInvestigator dl
+    let deck = decklistCards dl
+    let sideDeck = decklistExtraDeck dl
+    let investigator =
+          overAttrs
+            ( \ia ->
+                ia
+                  { investigatorTaboo = decklistTaboo dl
+                  , investigatorMutated = tabooMutated' (decklistTaboo dl) (coerce iid')
+                  }
+            )
+            (lookupInvestigator iid' playerId)
     let iid = toId investigator
     when (notNull sideDeck) $ push $ LoadSideDeck iid sideDeck
     push $ InitDeck iid (Deck deck)
@@ -381,9 +394,9 @@ runGameMessage msg g = case msg of
             ]
           <> [Label "Resolve Normally" [whenWindow, msg']]
     pure g
-  CreateEffect cardCode meffectMetadata source target -> do
-    (effectId, effect) <- createEffect cardCode meffectMetadata source target
-    push (CreatedEffect effectId meffectMetadata source target)
+  CreateEffect builder -> do
+    (effectId, effect) <- createEffect builder
+    push (CreatedEffect effectId effect.metadata effect.source effect.target)
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   CreateChaosTokenValueEffect sid n source target -> do
     (effectId, effect) <- createChaosTokenValueEffect sid n source target

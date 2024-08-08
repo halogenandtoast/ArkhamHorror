@@ -37,6 +37,7 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.Slot
 import Arkham.Source
+import Arkham.Taboo.Types
 import Arkham.Target
 import Arkham.Token
 import Arkham.Token qualified as Token
@@ -83,6 +84,7 @@ class
 type InvestigatorCard a = CardBuilder PlayerId a
 
 data instance Field Investigator :: Type -> Type where
+  InvestigatorTaboo :: Field Investigator (Maybe TabooList)
   InvestigatorName :: Field Investigator Name
   InvestigatorRemainingActions :: Field Investigator Int
   InvestigatorAdditionalActions :: Field Investigator [AdditionalAction]
@@ -155,6 +157,7 @@ instance Typeable typ => FromJSON (Field Investigator typ) where
 instance FromJSON (SomeField Investigator) where
   parseJSON = withText "Field Investigator" $ \case
     "InvestigatorName" -> pure $ SomeField InvestigatorName
+    "InvestigatorTaboo" -> pure $ SomeField InvestigatorTaboo
     "InvestigatorRemainingActions" -> pure $ SomeField InvestigatorRemainingActions
     "InvestigatorAdditionalActions" -> pure $ SomeField InvestigatorAdditionalActions
     "InvestigatorHealth" -> pure $ SomeField InvestigatorHealth
@@ -273,6 +276,8 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorDrawing :: Maybe (CardDraw Message)
   , -- deck building
     investigatorDeckBuildingAdjustments :: [DeckBuildingAdjustment]
+  , investigatorTaboo :: Maybe TabooList
+  , investigatorMutated :: Maybe Text -- for art display
   }
   deriving stock (Show, Eq, Data)
 
@@ -361,6 +366,9 @@ instance Sourceable InvestigatorAttrs where
 
 instance HasField "id" InvestigatorAttrs InvestigatorId where
   getField = investigatorId
+
+instance HasField "taboo" InvestigatorAttrs (Maybe TabooList) where
+  getField = investigatorTaboo
 
 instance HasField "meta" InvestigatorAttrs Value where
   getField = investigatorMeta

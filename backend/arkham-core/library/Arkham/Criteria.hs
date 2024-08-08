@@ -21,6 +21,7 @@ import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
+import Arkham.Taboo.Types
 import Arkham.Trait
 import Arkham.Zone
 import Data.Aeson.TH
@@ -204,6 +205,7 @@ data Criterion
   | ChaosTokenCountIs ChaosTokenMatcher ValueMatcher
   | CanMoveThis GridDirection
   | CanMoveTo LocationMatcher
+  | TabooCriteria TabooList Criterion Criterion
   | NotYetRecorded CampaignLogKey
   | HasHistory HistoryType InvestigatorMatcher HistoryMatcher
   | HasScenarioCount ScenarioCountKey ValueMatcher

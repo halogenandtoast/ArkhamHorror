@@ -12,7 +12,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
-import Arkham.EffectMetadata
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
 import Arkham.Matcher

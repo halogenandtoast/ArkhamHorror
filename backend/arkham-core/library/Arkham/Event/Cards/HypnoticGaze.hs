@@ -16,6 +16,7 @@ import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
+import Arkham.Taboo
 import Arkham.Timing qualified as Timing
 import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
@@ -57,10 +58,11 @@ instance RunMessage HypnoticGaze where
       push $ ResetChaosTokens (toSource attrs)
       let
         enemyId = fromMaybe (error "missing enemy id") (selectedEnemy meta)
-        shouldDamageEnemy =
-          any
-            ((`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . chaosTokenFace)
-            faces
+        valid =
+          if tabooed TabooList21 attrs
+            then isSymbolChaosToken
+            else (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
+        shouldDamageEnemy = any (valid . chaosTokenFace) faces
       when shouldDamageEnemy $ do
         healthDamage' <- field EnemyHealthDamage enemyId
         when (healthDamage' > 0)

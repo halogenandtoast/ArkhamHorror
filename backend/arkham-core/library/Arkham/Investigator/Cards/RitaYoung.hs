@@ -11,6 +11,7 @@ import Arkham.DamageEffect
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Game.Helpers
+import Arkham.Helpers.Effect
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
@@ -24,7 +25,7 @@ import Arkham.Window qualified as Window
 newtype RitaYoung = RitaYoung InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 ritaYoung :: InvestigatorCard RitaYoung
 ritaYoung =
@@ -83,7 +84,7 @@ instance RunMessage RitaYoung where
 newtype RitaYoungElderSignEffect = RitaYoungElderSignEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 ritaYoungElderSignEffect :: EffectArgs -> RitaYoungElderSignEffect
 ritaYoungElderSignEffect = cardEffect RitaYoungElderSignEffect Cards.ritaYoung

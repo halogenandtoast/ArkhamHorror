@@ -5,9 +5,10 @@ import Arkham.Cost.Status qualified as Cost
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Effect qualified as Msg
 import Arkham.Helpers.Query (selectAssetController)
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
+import Arkham.Taboo
 
 newtype SleightOfHand = SleightOfHand EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -19,7 +20,13 @@ sleightOfHand = event SleightOfHand Cards.sleightOfHand
 instance RunMessage SleightOfHand where
   runMessage msg e@(SleightOfHand attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      cards <- select $ PlayableCard Cost.PaidCost $ inHandOf iid <> basic #item
+      let
+        tabooMatcher =
+          if tabooed TabooList18 attrs
+            then (CardWithMaxLevel 3 <>)
+            else if tabooed TabooList15 attrs then (CardFillsLessSlots 2 #hand <>) else id
+      cards <-
+        select $ PlayableCard Cost.PaidCost $ inHandOf iid <> basic (tabooMatcher #item)
       chooseOne
         iid
         [ targetLabel

@@ -10,10 +10,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Effect.Import
+import Arkham.Helpers.Effect qualified as Msg
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
 import Arkham.Modifier
 
 newtype GraysAnatomyTheDoctorsBible5 = GraysAnatomyTheDoctorsBible5 AssetAttrs

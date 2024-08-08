@@ -40,6 +40,7 @@ data Target
   | ScenarioDeckTarget
   | AgendaDeckTarget
   | ActDeckTarget
+  | GameTarget
   | AgendaTarget AgendaId
   | ActTarget ActId
   | CardIdTarget CardId

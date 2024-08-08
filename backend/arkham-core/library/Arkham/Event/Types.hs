@@ -23,6 +23,7 @@ import Arkham.Name
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Source
+import Arkham.Taboo.Types
 import Arkham.Target
 import Arkham.Trait
 import Arkham.Window (Window)
@@ -94,6 +95,7 @@ data EventAttrs = EventAttrs
   , eventTokens :: Map UseType Int
   , eventCustomizations :: Customizations
   , eventPrintedUses :: Uses GameCalculation
+  , eventTaboo :: Maybe TabooList
   }
   deriving stock (Show, Eq)
 
@@ -118,6 +120,9 @@ instance HasField "use" EventAttrs (UseType -> Int) where
 
 instance HasField "ready" EventAttrs Bool where
   getField = not . eventExhausted
+
+instance HasField "taboo" EventAttrs (Maybe TabooList) where
+  getField = eventTaboo
 
 instance HasField "customizations" EventAttrs Customizations where
   getField = eventCustomizations
@@ -211,6 +216,7 @@ event f cardDef =
             , eventTokens = mempty
             , eventCustomizations = mempty
             , eventPrintedUses = cdUses cardDef
+            , eventTaboo = Nothing
             }
     }
 

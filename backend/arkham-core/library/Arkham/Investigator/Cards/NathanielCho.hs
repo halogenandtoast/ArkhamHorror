@@ -3,6 +3,7 @@ module Arkham.Investigator.Cards.NathanielCho (NathanielCho, nathanielChoEffect,
 import Arkham.Ability hiding (discardedCards)
 import Arkham.Card
 import Arkham.Effect.Runner
+import Arkham.Helpers.Effect
 import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
@@ -67,7 +68,7 @@ instance HasModifiersFor NathanielChoEffect where
   getModifiersFor _ _ = pure []
 
 isTakeDamage :: EffectAttrs -> Window -> Bool
-isTakeDamage attrs window = case effectTarget attrs of
+isTakeDamage attrs window = case attrs.target of
   EnemyTarget eid -> go eid
   _ -> False
  where
@@ -78,7 +79,7 @@ isTakeDamage attrs window = case effectTarget attrs of
 
 instance RunMessage NathanielChoEffect where
   runMessage msg e@(NathanielChoEffect attrs) = case msg of
-    PassedSkillTest iid _ _ (Initiator {}) _ _ | effectTarget attrs == InvestigatorTarget iid -> do
+    PassedSkillTest iid _ _ (Initiator {}) _ _ | attrs.target == InvestigatorTarget iid -> do
       discardedCards <- field InvestigatorDiscard iid
       let events = filter ((== EventType) . toCardType) discardedCards
       if null events

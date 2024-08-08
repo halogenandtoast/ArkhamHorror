@@ -12,6 +12,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Projection
+import Arkham.Taboo
 import Arkham.Window (defaultWindows)
 
 newtype EonChart4 = EonChart4 AssetAttrs
@@ -60,7 +61,12 @@ getAvailableActionTypes iid attrs canDoActions = do
 instance RunMessage EonChart4 where
   runMessage msg a@(EonChart4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      actions <- getAvailableActionTypes iid attrs [#move, #evade, #investigate]
+      actions <-
+        if tabooed TabooList20 attrs
+          then do
+            (_, abilities) <- getAvailable iid attrs [#move, #evade, #investigate]
+            pure $ nub (concatMap abilityActions abilities)
+          else getAvailableActionTypes iid attrs [#move, #evade, #investigate]
       chooseOrRunOne iid
         $ [Label "Move" [DoStep 0 msg] | #move `elem` actions]
         <> [Label "Evade" [DoStep 1 msg] | #evade `elem` actions]
@@ -79,9 +85,13 @@ instance RunMessage EonChart4 where
       (cards, abilities) <- getAvailable iid attrs [action]
       actions <- if n < 3 then getAvailableActionTypes iid attrs canDoActions else pure []
 
+      let abilities' = if tabooed TabooList20 attrs then filter abilityBasic abilities else abilities
+      let cards' = if tabooed TabooList20 attrs then [] else cards
+      let actions' = if tabooed TabooList20 attrs then nub (concatMap abilityActions abilities') else actions
+
       let decreaseCost = flip applyAbilityModifiers [ActionCostModifier (-1)]
 
-      unless (null abilities && null cards) do
+      unless (null abilities' && null cards') do
         chooseOne iid
           $ [ AbilityLabel
               iid
@@ -89,13 +99,13 @@ instance RunMessage EonChart4 where
               []
               []
               [HandleTargetChoice iid (toSource attrs) (AbilityTarget iid $ decreaseCost ab), DoStep (n - 1) msg']
-            | ab <- abilities
+            | ab <- abilities'
             ]
-          <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- cards]
+          <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- cards']
 
       chooseOrRunOne iid
-        $ [Label "Move" [DoStep 3 msg] | #move `elem` actions]
-        <> [Label "Evade" [DoStep 4 msg] | #evade `elem` actions]
-        <> [Label "Investigate" [DoStep 5 msg] | #investigate `elem` actions]
+        $ [Label "Move" [DoStep 3 msg] | #move `elem` actions']
+        <> [Label "Evade" [DoStep 4 msg] | #evade `elem` actions']
+        <> [Label "Investigate" [DoStep 5 msg] | #investigate `elem` actions']
       pure a
     _ -> EonChart4 <$> liftRunMessage msg attrs

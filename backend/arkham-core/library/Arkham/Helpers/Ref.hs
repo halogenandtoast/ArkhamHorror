@@ -62,7 +62,7 @@ sourceToTarget = \case
   SkillSource sid -> SkillTarget sid
   EmptyDeckSource -> error "not implemented"
   DeckSource -> error "not implemented"
-  GameSource -> error "not implemented"
+  GameSource -> GameTarget
   ActSource aid -> ActTarget aid
   PlayerCardSource _ -> error "not implemented"
   EncounterCardSource _ -> error "not implemented"
@@ -90,6 +90,7 @@ sourceToTarget = \case
 
 targetToSource :: Target -> Source
 targetToSource = \case
+  GameTarget -> GameSource
   ThisTarget -> error "not converted"
   InvestigatorTarget iid -> InvestigatorSource iid
   InvestigatorHandTarget iid -> InvestigatorSource iid

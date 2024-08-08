@@ -13,6 +13,7 @@ import Arkham.Asset.Uses as X
 import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.GameValue as X
+import Arkham.Helpers.Effect as X
 import Arkham.Helpers.Message as X hiding (RevealChaosToken)
 import Arkham.Helpers.SkillTest as X
 import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))

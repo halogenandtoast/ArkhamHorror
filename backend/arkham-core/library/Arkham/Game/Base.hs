@@ -28,8 +28,13 @@ import GHC.Records
 
 type GameMode = These Campaign Scenario
 
-data GameState = IsPending [PlayerId] | IsActive | IsOver
+data GameState = IsPending [PlayerId] | IsChooseDecks [PlayerId] | IsActive | IsOver
   deriving stock (Eq, Show)
+
+isChooseDecks :: GameState -> Bool
+isChooseDecks = \case
+  IsChooseDecks _ -> True
+  _ -> False
 
 data Game = Game
   { gamePhaseHistory :: Map InvestigatorId History

@@ -19,7 +19,7 @@ newtype WindowModifierEffect = WindowModifierEffect EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 windowModifierEffect :: EffectArgs -> WindowModifierEffect
-windowModifierEffect = WindowModifierEffect . uncurry4 (baseAttrs "wmode")
+windowModifierEffect = WindowModifierEffect . uncurry (baseAttrs "wmode")
 
 windowModifierEffect'
   :: EffectId

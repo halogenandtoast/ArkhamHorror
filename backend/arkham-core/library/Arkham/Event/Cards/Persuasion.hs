@@ -13,6 +13,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Projection
 import Arkham.SkillType
+import Arkham.Taboo
 import Arkham.Trait
 
 newtype Persuasion = Persuasion EventAttrs
@@ -28,10 +29,12 @@ instance RunMessage Persuasion where
       mlocation <- field InvestigatorLocation iid
       case mlocation of
         Just location -> do
+          let tabooMatcher = if tabooed TabooList21 attrs then id else (<> EnemyWithTrait Humanoid)
+
           enemies <-
             select
+              $ tabooMatcher
               $ enemyAt location
-              <> EnemyWithTrait Humanoid
               <> NonWeaknessEnemy
               <> canParleyEnemy iid
           player <- getPlayer iid

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers
+import Arkham.Helpers.Effect
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher

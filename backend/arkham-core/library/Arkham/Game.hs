@@ -282,9 +282,12 @@ addPlayer pid = do
     pendingPlayers = case state of
       IsPending xs -> xs
       _ -> []
-    state' = if length players + 1 < playerCount then IsPending (pendingPlayers <> [pid]) else IsActive
+    state' =
+      if length players + 1 < playerCount
+        then IsPending (pendingPlayers <> [pid])
+        else IsChooseDecks players
     game' = game & playersL <>~ [pid] & gameStateL .~ state' & initialSeedL .~ seed & activePlayerF
-  when (state' == IsActive) $ atomicWriteIORef (queueToRef queueRef) [StartCampaign]
+  when (isChooseDecks state') $ atomicWriteIORef (queueToRef queueRef) [StartCampaign]
   putGame game'
 
 -- TODO: Rename this
@@ -3465,6 +3468,7 @@ instance Projection Investigator where
       InvestigatorKeys -> pure investigatorKeys
       InvestigatorPlayerId -> pure investigatorPlayerId
       InvestigatorName -> pure investigatorName
+      InvestigatorTaboo -> pure investigatorTaboo
       InvestigatorRemainingActions -> pure investigatorRemainingActions
       InvestigatorAdditionalActions -> getAdditionalActions attrs
       InvestigatorHealth -> do
@@ -4517,7 +4521,13 @@ runMessages mLogger = do
   debugLevel <- getDebugLevel
   when (debugLevel == 2) $ peekQueue >>= pPrint >> putStrLn "\n"
 
-  unless (g ^. gameStateL /= IsActive) $ do
+  let
+    valid = case gameGameState g of
+      IsActive -> True
+      IsChooseDecks _ -> True
+      _ -> False
+
+  when valid do
     mmsg <- popMessage
     case mmsg of
       Nothing -> case gamePhase g of
@@ -4575,12 +4585,26 @@ runMessages mLogger = do
 
         case msg of
           Ask pid q -> do
-            runWithEnv
-              ( toExternalGame
-                  (g & activePlayerIdL .~ pid)
-                  (singletonMap pid q)
-              )
-              >>= putGame
+            -- if we are choosing decks, we do not want to clobber other ChooseDeck
+            moreChooseDecks <-
+              isJust <$> findFromQueue \case
+                AskMap askMap | not (null askMap) -> any (== ChooseDeck) (Map.elems askMap)
+                _ -> False
+            if isChooseDecks (gameGameState g) && moreChooseDecks
+              then do
+                let
+                  updateChooseDeck = \case
+                    AskMap askMap | not (null askMap) && any (== ChooseDeck) (Map.elems askMap) -> AskMap $ insertMap pid q askMap
+                    other -> other
+                withQueue_ (map updateChooseDeck)
+                runMessages mLogger
+              else
+                runWithEnv
+                  ( toExternalGame
+                      (g & activePlayerIdL .~ pid)
+                      (singletonMap pid q)
+                  )
+                  >>= putGame
           AskMap askMap -> do
             -- Read might have only one player being prompted so we need to find the active player
             let current = g ^. activePlayerIdL

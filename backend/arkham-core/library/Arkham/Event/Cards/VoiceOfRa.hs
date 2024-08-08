@@ -12,6 +12,7 @@ import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.RequestedChaosTokenStrategy
+import Arkham.Taboo
 
 newtype VoiceOfRa = VoiceOfRa EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -28,7 +29,11 @@ instance RunMessage VoiceOfRa where
     RequestedChaosTokens (isSource attrs -> True) (Just iid) (map chaosTokenFace -> tokens) -> do
       send $ format (toCard attrs) <> " drew " <> toSentence (map chaosTokenLabel tokens)
       push $ ResetChaosTokens (toSource attrs)
-      let n = count (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) tokens
+      let valid =
+            if tabooed TabooList21 attrs
+              then isSymbolChaosToken
+              else (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
+      let n = count valid tokens
       push $ TakeResources iid (1 + (2 * n)) (toSource attrs) False
       player <- getPlayer iid
       push $ chooseOne player [Label "Continue" []]

@@ -1,14 +1,14 @@
 module Arkham.Asset.Cards.DrMilanChristopher where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
+import Arkham.Modifier
+import Arkham.Taboo.Types
 
 newtype DrMilanChristopher = DrMilanChristopher AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drMilanChristopher :: AssetCard DrMilanChristopher
@@ -21,11 +21,15 @@ instance HasModifiersFor DrMilanChristopher where
 
 instance HasAbilities DrMilanChristopher where
   getAbilities (DrMilanChristopher x) =
-    [restrictedAbility x 1 ControlsThis $ freeReaction (SuccessfulInvestigation #after You Anywhere)]
+    [ restrictedAbility x 1 ControlsThis
+        $ ReactionAbility
+          (SuccessfulInvestigation #after You Anywhere)
+          (mwhen (maybe False (> TabooList15) x.taboo) (exhaust x))
+    ]
 
 instance RunMessage DrMilanChristopher where
-  runMessage msg a@(DrMilanChristopher attrs) = case msg of
+  runMessage msg a@(DrMilanChristopher attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ TakeResources iid 1 (toAbilitySource attrs 1) False
+      gainResourcesIfCan iid (attrs.ability 1) 1
       pure a
-    _ -> DrMilanChristopher <$> runMessage msg attrs
+    _ -> DrMilanChristopher <$> liftRunMessage msg attrs

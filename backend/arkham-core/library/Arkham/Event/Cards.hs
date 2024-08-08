@@ -27,6 +27,7 @@ import Arkham.SkillType ()
 import Arkham.SlotType
 import Arkham.Source
 import Arkham.Strategy
+import Arkham.Taboo.Types
 import Arkham.Trait
 
 canParallelRexClues :: InvestigatorMatcher
@@ -595,7 +596,16 @@ elusive =
         Just
           $ Criteria.AnyCriterion
             [ exists EnemyEngagedWithYou
-            , Criteria.CanMoveTo $ RevealedLocation <> LocationWithoutEnemies
+            , Criteria.TabooCriteria
+                TabooList19
+                ( Criteria.CanMoveTo
+                    $ AccessibleFrom YourLocation
+                    <> LocationWithoutEnemies
+                )
+                ( Criteria.CanMoveTo
+                    $ RevealedLocation
+                    <> LocationWithoutEnemies
+                )
             ]
     , cdAlternateCardCodes = ["01550"]
     }
@@ -885,7 +895,13 @@ delveTooDeep =
   (event "02111" "Delve Too Deep" 1 Mystic)
     { cdCardTraits = setFromList [Insight]
     , cdVictoryPoints = Just 1
-    , cdCriteria = Just $ exists $ You <> can.target.encounterDeck
+    , cdCriteria =
+        Just
+          $ exists (You <> can.target.encounterDeck)
+          <> Criteria.TabooCriteria
+            TabooList15
+            (Criteria.HasCalculation (VictoryDisplayCountCalculation $ CardWithCardCode "02111") (lessThan 2))
+            Criteria.NoRestriction
     }
 
 -- TODO: Oops might not be playable if 0 damage would be dealt, we might want

@@ -36,6 +36,7 @@ import Arkham.Helpers.Calculation
 import Arkham.Helpers.Card (extendedCardMatch)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Customization
+import Arkham.Helpers.Effect (createCardEffect)
 import Arkham.Helpers.Message
 import Arkham.Helpers.SkillTest (beginSkillTest, getSkillTestDifficulty, getSkillTestTarget)
 import Arkham.Id

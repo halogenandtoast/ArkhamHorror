@@ -209,7 +209,7 @@ import Arkham.Treachery.Treacheries (
  )
 
 noop :: CardCode -> EffectArgs -> NoEffect
-noop cCode = NoEffect . uncurry4 (baseAttrs cCode)
+noop cCode = NoEffect . uncurry (baseAttrs cCode)
 
 newtype NoEffect = NoEffect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
@@ -218,16 +218,10 @@ newtype NoEffect = NoEffect EffectAttrs
 instance RunMessage NoEffect where
   runMessage msg (NoEffect a) = NoEffect <$> runMessage msg a
 
-createEffect
-  :: MonadRandom m
-  => CardCode
-  -> Maybe (EffectMetadata Window Message)
-  -> Source
-  -> Target
-  -> m (EffectId, Effect)
-createEffect cardCode meffectMetadata source target = do
+createEffect :: MonadRandom m => EffectBuilder -> m (EffectId, Effect)
+createEffect builder = do
   eid <- getRandom
-  pure (eid, lookupEffect cardCode eid meffectMetadata source target)
+  pure (eid, lookupEffect eid builder)
 
 createChaosTokenValueEffect
   :: MonadRandom m => SkillTestId -> Int -> Source -> Target -> m (EffectId, Effect)
@@ -280,23 +274,17 @@ createSurgeEffect (toSource -> source) (toTarget -> target) = do
   eid <- getRandom
   pure
     ( eid
-    , Effect $ surgeEffect (eid, Nothing, source, target)
+    , Effect $ surgeEffect (eid, makeEffectBuilder "surge" Nothing source target)
     )
 
 instance RunMessage Effect where
   runMessage msg (Effect a) = Effect <$> runMessage msg a
 
-lookupEffect
-  :: CardCode
-  -> EffectId
-  -> Maybe (EffectMetadata Window Message)
-  -> Source
-  -> Target
-  -> Effect
-lookupEffect cardCode eid mmetadata source target =
-  case lookup cardCode allEffects of
-    Nothing -> error $ "Unknown effect: " <> show cardCode
-    Just (SomeEffect f) -> Effect $ f (eid, mmetadata, source, target)
+lookupEffect :: EffectId -> EffectBuilder -> Effect
+lookupEffect eid builder =
+  case lookup builder.effectBuilderCardCode allEffects of
+    Nothing -> error $ "Unknown effect: " <> show builder.effectBuilderCardCode
+    Just (SomeEffect f) -> Effect $ f (eid, builder)
 
 buildChaosTokenValueEffect :: SkillTestId -> EffectId -> Int -> Source -> Target -> Effect
 buildChaosTokenValueEffect sid eid n source =
@@ -513,4 +501,5 @@ allEffects =
     , ("tokef", SomeEffect chaosTokenEffect)
     , ("ontok", SomeEffect onRevealChaosTokenEffect)
     , ("surge", SomeEffect surgeEffect)
+    , ("maxef", SomeEffect maxEffect)
     ]

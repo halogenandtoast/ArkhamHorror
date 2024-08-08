@@ -12,6 +12,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Window
 import Arkham.Matcher
+import Arkham.Taboo
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
@@ -31,15 +32,12 @@ instance RunMessage DarkProphecy where
             checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
           pushAll
             [ ReplaceCurrentDraw drawSource iid
-                $ ChooseMatch
-                  (toSource attrs)
-                  1
-                  ResolveChoice
-                  (replicate 5 $ Undecided Draw)
-                  []
-                  ( ChaosTokenMatchesAny
-                      $ map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail]
-                  )
+                $ ChooseMatch (toSource attrs) 1 ResolveChoice (replicate 5 $ Undecided Draw) []
+                $ if tabooed TabooList20 attrs
+                  then not_ (ChaosTokenFaceIs ElderSign) <> IsSymbol
+                  else
+                    ChaosTokenMatchesAny
+                      (map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail])
             , ignoreWindow
             ]
           pure e

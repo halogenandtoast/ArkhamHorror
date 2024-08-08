@@ -7,16 +7,26 @@ import Arkham.Prelude
 import Arkham.Asset.Assets
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Card.PlayerCard (tabooMutated)
 import Arkham.Id
 
 createAsset :: IsCard a => a -> AssetId -> Asset
 createAsset a aId =
   let this = lookupAsset (toCardCode a) aId (toCardOwner a) (toCardId a)
-   in overAttrs (\attrs -> attrs {assetCustomizations = customizations}) this
+   in overAttrs
+        ( \attrs -> attrs {assetCustomizations = customizations, assetTaboo = tabooList, assetMutated = mutated}
+        )
+        this
  where
   customizations = case toCard a of
     PlayerCard pc -> pcCustomizations pc
     _ -> mempty
+  tabooList = case toCard a of
+    PlayerCard pc -> pcTabooList pc
+    _ -> Nothing
+  mutated = case toCard a of
+    PlayerCard pc -> tabooMutated tabooList pc
+    _ -> Nothing
 
 lookupAsset :: CardCode -> AssetId -> Maybe InvestigatorId -> CardId -> Asset
 lookupAsset cardCode = case lookup cardCode allAssets of

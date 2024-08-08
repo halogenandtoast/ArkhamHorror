@@ -12,7 +12,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
-import Arkham.EffectMetadata
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 

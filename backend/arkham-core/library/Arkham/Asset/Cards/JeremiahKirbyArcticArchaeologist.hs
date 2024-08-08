@@ -11,9 +11,10 @@ import Arkham.Matcher
 import Arkham.Message (SearchType (..))
 import Arkham.Modifier
 import Arkham.Strategy
+import Arkham.Taboo
 
 newtype JeremiahKirbyArcticArchaeologist = JeremiahKirbyArcticArchaeologist AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jeremiahKirbyArcticArchaeologist :: AssetCard JeremiahKirbyArcticArchaeologist
@@ -26,7 +27,11 @@ instance HasModifiersFor JeremiahKirbyArcticArchaeologist where
 
 instance HasAbilities JeremiahKirbyArcticArchaeologist where
   getAbilities (JeremiahKirbyArcticArchaeologist a) =
-    [restrictedAbility a 1 ControlsThis $ freeReaction $ AssetEntersPlay #when (be a)]
+    [ (if tabooed TabooList21 a then limitedAbility (PlayerLimit PerGame 2) else id)
+        $ restrictedAbility a 1 ControlsThis
+        $ freeReaction
+        $ AssetEntersPlay #when (be a)
+    ]
 
 instance RunMessage JeremiahKirbyArcticArchaeologist where
   runMessage msg a@(JeremiahKirbyArcticArchaeologist attrs) = runQueueT $ case msg of

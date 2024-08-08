@@ -7,6 +7,7 @@ import Arkham.Card
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.Prelude
+import Arkham.Taboo
 
 newtype Metadata = Metadata {chosenCards :: [Card]}
   deriving stock (Show, Eq, Generic)
@@ -21,7 +22,11 @@ mrRook = ally (MrRook . (`with` Metadata [])) Cards.mrRook (2, 2)
 
 instance HasAbilities MrRook where
   getAbilities (MrRook (a `With` _)) =
-    [restrictedAbility a 1 ControlsThis $ FastAbility $ exhaust a <> assetUseCost a Secret 1]
+    [ restrictedAbility a 1 ControlsThis
+        $ (if tabooed TabooList20 a then actionAbilityWithCost else FastAbility)
+        $ exhaust a
+        <> assetUseCost a Secret 1
+    ]
 
 instance RunMessage MrRook where
   runMessage msg a@(MrRook (attrs `With` meta)) = case msg of

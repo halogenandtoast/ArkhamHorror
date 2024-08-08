@@ -30,6 +30,7 @@ import Arkham.Matcher
 import Arkham.Name
 import Arkham.PlayerCard
 import Arkham.SkillType
+import Arkham.Taboo.Types
 import Arkham.Trait
 import Data.Aeson.TH
 import Data.Text qualified as T
@@ -191,6 +192,7 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   CardWithPrintedLocationConnection sym ->
     elem sym . cdLocationRevealedConnections $ toCardDef a
   CardFillsSlot slot -> elem slot $ cdSlots $ toCardDef a
+  CardFillsLessSlots n slot -> count (== slot) (cdSlots $ toCardDef a) < n
   DiscardableCard -> cardMatch a NonWeakness
   CardWithRevelation -> cdRevelation (toCardDef a) /= NoRevelation
   CardOwnedBy iid -> toCardOwner a == Just iid
@@ -224,6 +226,16 @@ setOwner iid card = do
     PlayerCard pc -> PlayerCard (pc {pcOwner = Just iid})
     EncounterCard ec -> EncounterCard (ec {ecOwner = Just iid})
     VengeanceCard vc -> VengeanceCard (go vc)
+
+setTaboo :: CardGen m => Maybe TabooList -> Card -> m Card
+setTaboo mtaboo card = do
+  let result = go card
+  replaceCard (toCardId result) result
+  pure result
+ where
+  go = \case
+    PlayerCard pc -> PlayerCard (pc {pcTabooList = mtaboo, pcMutated = tabooMutated mtaboo pc})
+    other -> other
 
 data Card
   = PlayerCard PlayerCard

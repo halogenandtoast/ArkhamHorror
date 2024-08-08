@@ -5,6 +5,7 @@ import Arkham.Prelude
 import Arkham.Card.CardDef
 import Arkham.Classes.HasQueue
 import Arkham.Event.Types
+import Arkham.Helpers.Effect
 import Arkham.Message
 import Arkham.Source
 import Arkham.Target

@@ -890,6 +890,7 @@ data CardMatcher
   | AnyCard
   | CardWithVengeance
   | CardFillsSlot SlotType
+  | CardFillsLessSlots Int SlotType
   | DiscardableCard
   | CardWithRevelation
   | CardOwnedBy InvestigatorId

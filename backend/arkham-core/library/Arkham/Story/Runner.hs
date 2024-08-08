@@ -9,6 +9,7 @@ import Arkham.Prelude
 
 import Arkham.Calculation as X
 import Arkham.Classes as X
+import Arkham.Helpers.Effect as X
 import Arkham.Helpers.Message as X hiding (story)
 import Arkham.Helpers.Query as X
 import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))

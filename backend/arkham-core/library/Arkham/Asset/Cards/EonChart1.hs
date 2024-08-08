@@ -12,6 +12,7 @@ import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Modifier
 import Arkham.Projection
+import Arkham.Taboo
 import Arkham.Window (defaultWindows)
 
 newtype EonChart1 = EonChart1 AssetAttrs
@@ -44,15 +45,26 @@ instance RunMessage EonChart1 where
       let canDoActions = [#move, #evade, #investigate]
       actions <- getActionsWith iid windows' decreaseCost
       handCards <- field InvestigatorHand iid
-      let cards = filter (any (`elem` canDoActions) . cdActions . toCardDef) handCards
+      let
+        cards =
+          if tabooed TabooList20 attrs
+            then []
+            else filter (any (`elem` canDoActions) . cdActions . toCardDef) handCards
       playableCards <- filterM (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) windows') cards
       player <- getPlayer iid
+      let validAction x = any (abilityIs x) [#move, #evade, #investigate]
+      let
+        valid x =
+          validAction x
+            && if tabooed TabooList20 attrs
+              then abilityBasic x
+              else True
       push
         $ AskPlayer
         $ Msg.chooseOne player
         $ map
           ((\f -> f windows' [] []) . AbilityLabel iid)
-          (filter (\x -> any (abilityIs x) [#move, #evade, #investigate]) actions)
+          (filter valid actions)
         <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- playableCards]
       pure a
     _ -> EonChart1 <$> liftRunMessage msg attrs

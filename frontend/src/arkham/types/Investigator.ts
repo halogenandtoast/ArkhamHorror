@@ -105,6 +105,8 @@ export type Investigator = {
   revealedHunchCard?: string | null;
   devoured?: Card[]
   isYithian: boolean;
+  mutated?: string;
+  taboo?: string;
   slots: Slot[];
   log: LogContents;
   meta: any;
@@ -196,6 +198,8 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
   modifiers: JsonDecoder.optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
   isYithian: JsonDecoder.boolean,
+  mutated: JsonDecoder.optional(JsonDecoder.string),
+  taboo: JsonDecoder.optional(JsonDecoder.string),
   slots: slotsDecoder,
   log: logContentsDecoder,
   meta: JsonDecoder.succeed,

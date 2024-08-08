@@ -319,6 +319,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         , investigatorUsedAbilities = filter onlyCampaignAbilities investigatorUsedAbilities
         , investigatorLog = investigatorLog
         , investigatorSideDeck = investigatorSideDeck
+        , investigatorTaboo = investigatorTaboo
+        , investigatorMutated = investigatorMutated
         }
   AddDeckBuildingAdjustment iid adjustment | iid == investigatorId -> do
     pure $ a & deckBuildingAdjustmentsL %~ (adjustment :)
@@ -376,7 +378,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         Nothing -> error "missing card"
         Just def -> do
           cs <- replicateM n (genCard def)
-          traverse (setOwner iid) cs
+          traverse (Arkham.Card.setTaboo investigatorTaboo <=< setOwner iid) cs
 
     pushAll
       $ startsWithMsgs
@@ -2414,12 +2416,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          ]
     pure
       $ a
-      & deckL
-      .~ deck'
-      & discardL
-      %~ (reverse cs' <>)
-      & bondedCardsL
-      <>~ map toCard essenceOfTheDreams
+      & (deckL .~ deck')
+      & (discardL %~ (reverse cs' <>))
+      & (bondedCardsL <>~ map toCard essenceOfTheDreams)
+      & (foundCardsL . each %~ filter (`notElem` map toCard cs'))
   DiscardUntilFirst iid' source (Deck.InvestigatorDeck iid) matcher | iid == investigatorId -> do
     (discards, remainingDeck) <- breakM (`extendedCardMatch` matcher) (unDeck investigatorDeck)
     let (discards', essenceOfTheDreams) = partition ((/= "06113") . toCardCode) discards
@@ -2697,7 +2697,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (foundCardsL . each %~ cardFilter)
       & (cardsUnderneathL %~ cardFilter)
       & (discardL %~ cardFilter)
-      & (foundCardsL . each %~ cardFilter)
       & (bondedCardsL %~ cardFilter)
   InvestigatorSpendClues iid n | iid == investigatorId -> do
     assetsWithClues <- select $ assetControlledBy iid <> AssetWithAnyClues

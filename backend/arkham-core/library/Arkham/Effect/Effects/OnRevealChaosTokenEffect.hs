@@ -16,7 +16,7 @@ newtype OnRevealChaosTokenEffect = OnRevealChaosTokenEffect EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 onRevealChaosTokenEffect :: EffectArgs -> OnRevealChaosTokenEffect
-onRevealChaosTokenEffect = OnRevealChaosTokenEffect . uncurry4 (baseAttrs "ontok")
+onRevealChaosTokenEffect = OnRevealChaosTokenEffect . uncurry (baseAttrs "ontok")
 
 onRevealChaosTokenEffect'
   :: EffectId

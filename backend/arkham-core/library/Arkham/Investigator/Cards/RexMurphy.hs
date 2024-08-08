@@ -7,11 +7,12 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Prelude
+import Arkham.Taboo
 
 newtype RexMurphy = RexMurphy InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 rexMurphy :: InvestigatorCard RexMurphy
 rexMurphy =
@@ -20,9 +21,10 @@ rexMurphy =
 
 instance HasAbilities RexMurphy where
   getAbilities (RexMurphy x) =
-    [ (restrictedAbility x 1)
-        (OnLocation LocationWithAnyClues <> CanDiscoverCluesAt YourLocation)
-        (freeReaction $ SuccessfulInvestigationResult #after You Anywhere (atLeast 2))
+    [ (if (maybe False (>= TabooList15) x.taboo) then playerLimit PerRound else id)
+        $ (restrictedAbility x 1)
+          (OnLocation LocationWithAnyClues <> CanDiscoverCluesAt YourLocation)
+          (freeReaction $ SuccessfulInvestigationResult #after You Anywhere (atLeast 2))
     ]
 
 instance HasChaosTokenValue RexMurphy where

@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.Prelude
+import Arkham.Taboo
 
 newtype AncientCovenant2 = AncientCovenant2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -17,7 +18,11 @@ instance HasAbilities AncientCovenant2 where
   getAbilities (AncientCovenant2 x) =
     [ controlledAbility x 1 (DuringSkillTest SkillTestAtYourLocation)
         $ ReactionAbility
-          (ResolvesChaosToken #when (affectsOthers $ InvestigatorAt YourLocation) #bless)
+          ( ResolvesChaosToken
+              #when
+              (if tabooed TabooList21 x then You else affectsOthers (InvestigatorAt YourLocation))
+              #bless
+          )
           (exhaust x)
     ]
 

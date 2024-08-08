@@ -95,8 +95,9 @@ const cardBack = computed(() => {
 })
 
 const image = computed(() => {
-  const { cardCode } = cardContents.value;
-  return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
+  const { cardCode, mutated } = cardContents.value;
+  const mutatedSuffix = mutated ? `_${mutated}` : ''
+  return imgsrc(`cards/${cardCode.replace('c', '')}${mutatedSuffix}.jpg`);
 })
 
 /*

@@ -54,7 +54,7 @@ newtype TheStrangerACityAflameEffect = TheStrangerACityAflameEffect EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theStrangerACityAflameEffect :: EffectArgs -> TheStrangerACityAflameEffect
-theStrangerACityAflameEffect = TheStrangerACityAflameEffect . uncurry4 (baseAttrs "03047a")
+theStrangerACityAflameEffect = cardEffect TheStrangerACityAflameEffect Cards.theStrangerACityAflame
 
 instance HasAbilities TheStrangerACityAflameEffect where
   getAbilities (TheStrangerACityAflameEffect attrs) =

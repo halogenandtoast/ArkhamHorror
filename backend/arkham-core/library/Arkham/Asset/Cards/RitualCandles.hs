@@ -6,6 +6,7 @@ import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Matcher
 import Arkham.Prelude
+import Arkham.Taboo
 import Arkham.Window qualified as Window
 
 newtype RitualCandles = RitualCandles AssetAttrs
@@ -20,8 +21,9 @@ instance HasAbilities RitualCandles where
     [ restrictedAbility x 1 ControlsThis
         $ freeReaction
         $ RevealChaosToken #when You
-        $ ChaosTokenMatchesAny
-        $ map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing]
+        $ if tabooed TabooList20 x
+          then IsSymbol
+          else ChaosTokenMatchesAny $ map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing]
     ]
 
 instance RunMessage RitualCandles where

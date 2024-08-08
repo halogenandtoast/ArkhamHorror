@@ -22,6 +22,7 @@ import Arkham.Treachery.Types (Field (..))
 
 targetTraits :: (HasCallStack, HasGame m) => Target -> m (Set Trait)
 targetTraits = \case
+  GameTarget -> pure mempty
   ActDeckTarget -> pure mempty
   ActTarget _ -> pure mempty
   AgendaDeckTarget -> pure mempty

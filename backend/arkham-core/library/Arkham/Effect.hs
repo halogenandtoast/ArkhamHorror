@@ -41,8 +41,6 @@ import Arkham.Asset.Assets (
   azureFlame3Effect,
   azureFlame5Effect,
   azureFlameEffect,
-  baseballBat2Effect,
-  baseballBatEffect,
   charlesRossEsqEffect,
   clairvoyance3Effect,
   clairvoyance5Effect,
@@ -331,7 +329,7 @@ allEffects =
     [ ("01060", SomeEffect shrivellingEffect)
     , ("01066", SomeEffect blindingLightEffect)
     , ("01069", SomeEffect blindingLight2Effect)
-    , ("01074", SomeEffect baseballBatEffect)
+    , ("01074", SomeEffect $ noop "01074")
     , ("02028", SomeEffect riteOfSeekingEffect)
     , ("02031", SomeEffect bindMonster2Effect)
     , ("02100", SomeEffect pushedIntoTheBeyondEffect)
@@ -451,7 +449,7 @@ allEffects =
     , ("09066", SomeEffect hitAndRunEffect)
     , ("09087", SomeEffect explosiveWardEffect)
     , ("09109", SomeEffect atACrossroads1Effect)
-    , ("09113", SomeEffect baseballBat2Effect)
+    , ("09113", SomeEffect $ noop "09113")
     , ("10035", SomeEffect eyesOfValusiaTheMothersCunning4Effect)
     , ("10053", SomeEffect steadyHanded1Effect)
     , ("10056", SomeEffect prismaticSpectaclesLensToTheOtherworld2Effect)

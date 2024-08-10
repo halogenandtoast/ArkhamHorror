@@ -49,14 +49,14 @@ getConnectedMatcher l = do
 isAt :: (HasGame m, Entity a, EntityId a ~ LocationId) => InvestigatorId -> a -> m Bool
 isAt iid (toId -> lid) = fieldMap InvestigatorLocation (== Just lid) iid
 
-placementLocation :: HasGame m => Placement -> m (Maybe LocationId)
+placementLocation :: (HasCallStack, HasGame m) => Placement -> m (Maybe LocationId)
 placementLocation = \case
   AtLocation lid -> pure $ Just lid
   AttachedToLocation lid -> pure $ Just lid
   InPlayArea iid -> field InvestigatorLocation iid
   InThreatArea iid -> field InvestigatorLocation iid
   AttachedToInvestigator iid -> field InvestigatorLocation iid
-  AttachedToEnemy eid -> field EnemyLocation eid
+  AttachedToEnemy eid -> join <$> fieldMay EnemyLocation eid
   AttachedToTreachery tid -> field TreacheryLocation tid
   AttachedToAsset aid' _ -> field AssetLocation aid'
   AttachedToAct _ -> pure Nothing

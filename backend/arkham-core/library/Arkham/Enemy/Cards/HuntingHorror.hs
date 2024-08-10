@@ -29,8 +29,12 @@ instance HasAbilities HuntingHorror where
     extend
       x
       [ mkAbility x 1 $ forced $ PhaseBegins #when #enemy
-      , mkAbility x 2 $ forced $ EnemyLeavesPlay #when (be x)
+      , restrictedAbility x 2 criteria $ forced $ EnemyLeavesPlay #when (be x)
       ]
+   where
+    criteria = case x.placement of
+      OutOfPlay VoidZone -> Never
+      _ -> NoRestriction
 
 instance RunMessage HuntingHorror where
   runMessage msg e@(HuntingHorror attrs@EnemyAttrs {..}) = case msg of

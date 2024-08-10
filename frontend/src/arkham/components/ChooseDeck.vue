@@ -130,6 +130,32 @@ const chosenImage = computed(() => {
   return imgsrc(`portraits/${deck.list.investigator_code.replace('c', '')}.jpg`)
 })
 
+const chosenDeckTabooList = computed(() => {
+  if(!deckId.value) {
+    return null
+  }
+
+  const deck = decks.value.find((d) => d.id === deckId.value)
+  if (!deck) {
+    return null
+  }
+
+  if (deck.list.taboo_id) {
+    switch (deck.list.taboo_id) {
+      case 1: return "1.5 (Apr 23, 2019)"
+      case 2: return "1.6 (Sep 27, 2019)"
+      case 3: return "1.8 (Oct 15, 2020)"
+      case 4: return "1.9 (Jun 28, 2021)"
+      case 5: return "2.0 (Aug 26, 2022)"
+      case 6: return "2.1 (Aug 30, 2023)"
+      case 7: return "2.2 (Feb 20, 2024)"
+      default: return "Unknown Taboo List"
+    }
+  }
+
+  return null
+})
+
 </script>
 
 <template>
@@ -160,14 +186,19 @@ const chosenImage = computed(() => {
             <div v-else class="portrait portrait-empty">
               <img :src="imgsrc('slots/ally.png')" />
             </div>
-            <form id="choose-deck" @submit.prevent="choose" v-if="needsReply && player.id == playerId">
-              <select v-model="deckId">
-                <option disabled :value="null">-- Select a Deck--</option>
-                <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
-              </select>
-              <p class="error" v-if="error">{{error}}</p>
-              <button type="submit" :disabled="disabled">Choose</button>
-            </form>
+            <div v-if="needsReply && player.id == playerId" class="deck-main">
+              <form class="choose-deck" @submit.prevent="choose">
+                <select v-model="deckId">
+                  <option disabled :value="null">-- Select a Deck--</option>
+                  <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
+                </select>
+                <p class="error" v-if="error">{{error}}</p>
+                <button type="submit" :disabled="disabled">Choose</button>
+              </form>
+              <div v-if="chosenDeckTabooList" class="taboo-list">
+                Taboo List: {{chosenDeckTabooList}}
+              </div>
+            </div>
           </template>
         </div>
       </div>
@@ -204,7 +235,14 @@ const chosenImage = computed(() => {
   gap: var(--gap);
 }
 
-#choose-deck {
+.deck-main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.choose-deck {
   box-sizing: border-box;
   width: 100%;
   color: #FFF;
@@ -349,7 +387,7 @@ form {
   margin-top: 20px;
 }
 
-#choose-deck {
+.choose-deck {
   p.error {
     color: white;
     background-color: darkred;
@@ -398,7 +436,7 @@ form {
     margin: 0px;
     height: fit-content;
   }
-  & :deep(#choose-deck) {
+  & :deep(.choose-deck) {
     border-radius: 5px;
   }
   .question {
@@ -426,11 +464,13 @@ form {
 }
 
 .taboo-list {
-  background: var(--seeker-dark);
-  margin-inline: 10px;
-  padding: 5px;
-  border-radius: 5px;
+  color: #A8A749;
+  margin: auto;
+  padding: 5px 10px;
+  border-radius: 3px;
   font-weight: bold;
   text-transform: uppercase;
+  width: 100%;
+  box-sizing: border-box;
 }
 </style>

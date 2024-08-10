@@ -12,7 +12,7 @@ import Arkham.ChaosToken
 import Arkham.Matcher
 
 newtype AdamLynch = AdamLynch AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 adamLynch :: AssetCard AdamLynch
@@ -26,13 +26,14 @@ instance HasAbilities AdamLynch where
     [forcedAbility x 1 $ AssetLeavesPlay #when $ AssetWithId $ toId x]
 
 instance HasModifiersFor AdamLynch where
-  getModifiersFor (InvestigatorTarget iid) (AdamLynch attrs) | controlledBy attrs iid = do
+  getModifiersFor (AbilityTarget iid ab) (AdamLynch attrs) | controlledBy attrs iid = do
     mSecurityOffice <- selectOne (LocationWithTitle "Security Office")
     pure
       $ toModifiers
         attrs
-        [ AbilityModifier (toTarget securityOffice) 1 (ActionCostSetToModifier 1)
+        [ ActionCostSetToModifier 1
         | securityOffice <- toList mSecurityOffice
+        , ab.source.location == Just securityOffice
         ]
   getModifiersFor _ _ = pure []
 

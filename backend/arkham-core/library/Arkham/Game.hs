@@ -349,7 +349,12 @@ withLocationConnectionData inner@(With target _) = do
         [ EventWithPlacement $ AtLocation $ toId target
         , EventWithPlacement $ AttachedToLocation $ toId target
         ]
-  lmTreacheries <- select (treacheryAt $ toId target)
+  lmTreacheries <-
+    select
+      $ oneOf
+        [ TreacheryWithPlacement $ AtLocation $ toId target
+        , TreacheryWithPlacement $ AttachedToLocation $ toId target
+        ]
   pure $ inner `with` LocationMetadata {..}
 
 withAssetMetadata :: HasGame m => Asset -> m (With Asset AssetMetadata)
@@ -1180,6 +1185,7 @@ getTreacheriesMatching matcher = do
     NotTreachery m -> fmap not . matcherFilter m
     HiddenTreachery -> fieldMap TreacheryPlacement isHiddenPlacement . toId
     InPlayTreachery -> fieldMap TreacheryPlacement isInPlayPlacement . toId
+    TreacheryWithPlacement placement -> pure . (== placement) . attr treacheryPlacement
     TreacheryWithResolvedEffectsBy investigatorMatcher -> \t -> do
       iids <- select investigatorMatcher
       pure $ any (`elem` attr treacheryResolved t) iids

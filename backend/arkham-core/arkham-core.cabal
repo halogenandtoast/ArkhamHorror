@@ -1252,6 +1252,7 @@ library
       Arkham.Customization
       Arkham.Damage
       Arkham.DamageEffect
+      Arkham.Debug
       Arkham.Deck
       Arkham.DeckBuilding.Adjustment
       Arkham.Decklist

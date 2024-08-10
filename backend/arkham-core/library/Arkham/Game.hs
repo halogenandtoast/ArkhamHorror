@@ -40,6 +40,7 @@ import Arkham.CommitRestriction
 import Arkham.Cost qualified as Cost
 import Arkham.Customization (CustomizationChoice (..))
 import Arkham.Damage
+import Arkham.Debug
 import Arkham.Difficulty
 import Arkham.Distance
 import Arkham.Effect.Types
@@ -185,7 +186,6 @@ import Data.Tuple.Extra (dupe)
 import Data.Typeable
 import Data.UUID (nil)
 import Debug.Trace (trace)
-import System.Environment (lookupEnv)
 import Text.Pretty.Simple
 
 class HasGameRef a where
@@ -4496,15 +4496,6 @@ getEvadedEnemy :: [Window] -> Maybe EnemyId
 getEvadedEnemy [] = Nothing
 getEvadedEnemy ((windowType -> Window.EnemyEvaded _ eid) : _) = Just eid
 getEvadedEnemy (_ : xs) = getEvadedEnemy xs
-
-class Monad m => HasDebugLevel m where
-  getDebugLevel :: m Int
-
-instance HasDebugLevel m => HasDebugLevel (ReaderT env m) where
-  getDebugLevel = lift getDebugLevel
-
-instance HasDebugLevel IO where
-  getDebugLevel = fromMaybe @Int 0 . (readMay =<<) <$> lookupEnv "DEBUG"
 
 runMessages
   :: ( HasGameRef env

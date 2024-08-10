@@ -851,7 +851,13 @@ instance RunMessage SkillTest where
     RecalculateSkillTestResults -> do
       results <- calculateSkillTestResultsData s
       push $ SkillTestResults results
-      pure s
+      modifiedSkillValue' <- totalModifiedSkillValue s
+      let
+        result =
+          if skillTestResultsSuccess results
+            then SucceededBy NonAutomatic (modifiedSkillValue' - skillTestResultsDifficulty results)
+            else FailedBy NonAutomatic (skillTestResultsDifficulty results - modifiedSkillValue')
+      pure $ s & resultL .~ result
     RunSkillTest _ -> do
       results <- calculateSkillTestResultsData s
       push $ SkillTestResults results

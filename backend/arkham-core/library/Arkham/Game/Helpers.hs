@@ -690,7 +690,7 @@ hasEvadeActions
   -> [Window]
   -> m Bool
 hasEvadeActions iid window windows' =
-  anyM (getCanPerformAbility iid windows')
+  anyM (\a -> getCanPerformAbility iid windows' $ decreaseAbilityActionCost a 1)
     =<< select
       (Matcher.AbilityIsAction Action.Evade <> Matcher.AbilityWindow window)
 

@@ -22,6 +22,7 @@ import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Cost qualified as Cost
 import Arkham.DamageEffect
+import Arkham.Debug
 import Arkham.Deck qualified as Deck
 import Arkham.Decklist
 import Arkham.Effect
@@ -1216,7 +1217,12 @@ runGameMessage msg g = case msg of
     investigator' <- getInvestigator iid
     playableCards <- getPlayableCards (toAttrs investigator') Cost.PaidCost windows'
     case find (== card) playableCards of
-      Nothing -> pure g
+      Nothing -> do
+        debugOut InfoLevel
+          $ "Tried to play "
+          <> tshow card
+          <> " but it is not in the list of playable cards"
+        pure g
       Just _ -> do
         mods <- getModifiers iid
         cardMods <- getModifiers (CardIdTarget $ toCardId card)

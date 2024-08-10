@@ -12,6 +12,7 @@ import Arkham.Card.PlayerCard
 import Arkham.Classes hiding (Entity (..), select)
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
+import Arkham.Debug
 import Arkham.Game
 import Arkham.Id
 import Arkham.Message
@@ -66,8 +67,8 @@ data ApiResponse
   | GameCard {title :: Text, card :: Aeson.Value}
   | GameCardOnly {player :: PlayerId, title :: Text, card :: Aeson.Value}
   | GameTarot Aeson.Value
-  deriving stock (Generic)
-  deriving anyclass (ToJSON)
+  deriving stock Generic
+  deriving anyclass ToJSON
 
 newtype GameAppT a = GameAppT {unGameAppT :: ReaderT GameApp IO a}
   deriving newtype (MonadReader GameApp, Functor, Applicative, Monad, MonadFail, MonadIO, MonadRandom)

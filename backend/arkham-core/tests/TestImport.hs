@@ -13,7 +13,7 @@ import Arkham.Agenda as X
 import Arkham.Asset as X (createAsset, lookupAsset)
 import Arkham.Card as X
 import Arkham.Card.EncounterCard as X
-import Arkham.Card.PlayerCard as X
+import Arkham.Card.PlayerCard as X hiding (setTaboo)
 import Arkham.ChaosBag as X
 import Arkham.ChaosToken as X
 import Arkham.Classes as X hiding (getChaosTokenValue)

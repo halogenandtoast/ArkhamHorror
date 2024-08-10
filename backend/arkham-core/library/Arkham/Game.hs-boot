@@ -18,6 +18,7 @@ import Arkham.Classes.HasDistance
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.Debug
 import Arkham.Effect.Types
 import Arkham.Enemy.Types
 import Arkham.Event.Types
@@ -93,9 +94,6 @@ asIfTurn :: HasGame m => InvestigatorId -> (forall n. HasGame n => n a) -> m a
 
 instance HasDistance Game
 instance HasAbilities Game
-
-class Monad m => HasDebugLevel m where
-  getDebugLevel :: m Int
 
 runMessages
   :: ( HasGameRef env

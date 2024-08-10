@@ -584,7 +584,6 @@ const realityAcid = ref('89005')
 
 .discard {
   width: $card-width;
-  margin-top: 10px;
   button {
     white-space: nowrap;
     text-wrap: pretty;
@@ -653,7 +652,6 @@ const realityAcid = ref('89005')
   box-sizing: border-box;
   gap: 2px;
   margin-left: 2px;
-  align-self: center;
 }
 
 .view-discard-button {
@@ -663,7 +661,6 @@ const realityAcid = ref('89005')
 .deck-container {
   display: flex;
   flex-direction: column;
-  align-self: center;
 }
 
 .top-of-deck {

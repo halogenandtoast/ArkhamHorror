@@ -114,7 +114,7 @@ const cardTraits = (card: Arkham.CardDef) => {
 }
 
 const levelText = (card: Arkham.CardDef) => {
-  if (card.level === 0) return ''
+  if (card.level === 0 || card.level === null) return ''
   return ` (${card.level})`
 }
 
@@ -180,6 +180,22 @@ const deckUrlToPage = (url: string): string => {
   // to https://arkhamdb.com/deck/view/25027
   return url.replace("/api/public/decklist", "/decklist/view").replace("/api/public/deck", "/deck/view")
 }
+
+const deckInvestigator = computed(() => {
+  if (deck.value) {
+    if (deck.value.list.meta) {
+      try {
+        const result = JSON.parse(deck.value.list.meta)
+        if (result && result.alternate_front) {
+          return result.alternate_front
+        }
+      } catch (e) { console.log("No parse") }
+    }
+    return deck.value.list.investigator_code.replace('c', '')
+  }
+
+  return null
+})
 </script>
 
 <template>
@@ -187,7 +203,7 @@ const deckUrlToPage = (url: string): string => {
     <div class="results">
       <header class="deck" v-show="deck" ref="deckRef">
         <template v-if="deck">
-          <img class="portrait--decklist" :src="imgsrc(`cards/${deck.list.investigator_code.replace('c', '')}.jpg`)" />
+          <img v-if="deckInvestigator" class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator}.jpg`)" />
           <div class="deck--details">
             <h1 class="deck-title">{{deck.name}}</h1>
             <div class="deck--actions">
@@ -249,6 +265,8 @@ const deckUrlToPage = (url: string): string => {
 .container {
   display: flex;
   margin-top: 0;
+  min-width: 60vw;
+  margin: auto;
 }
 
 .results {
@@ -259,6 +277,7 @@ const deckUrlToPage = (url: string): string => {
   width: calc(100% - 20px);
   margin: 10px;
   border-radius: 10px;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 
 .cards {
@@ -292,12 +311,33 @@ tr th:nth-child(1){
 }
 
 tbody td {
-  border-top: 1px solid #999;
-  padding: 2px 0;
+  padding: 2px 5px;
+}
+
+thead tr th {
+  background-color: #111;
+  color: #aaa;
+  padding: 5px 5px;
+
+  &:nth-child(1) {
+    border-top-left-radius: 10px;
+  }
+
+  &:last-child {
+    border-top-right-radius: 10px;
+  }
+}
+
+tr {
+  color: #cecece;
+}
+
+tr:nth-child(odd) {
+  background-color: #333;
 }
 
 tr:nth-child(even) {
-  background-color: #f2f2f2;
+  background-color: #222;
 }
 
 .willpower {
@@ -345,18 +385,6 @@ i {
 .pressed {
   background-color: #777;
   color: white;
-}
-
-thead tr th {
-  background-color: #BBB;
-
-  &:nth-child(1) {
-    border-top-left-radius: 10px;
-  }
-
-  &:last-child {
-    border-top-right-radius: 10px;
-  }
 }
 
 /* deck header */

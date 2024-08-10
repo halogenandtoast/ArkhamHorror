@@ -301,14 +301,13 @@ async function start() {
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
 #new-campaign {
   box-sizing: border-box;
   width: 100%;
   color: #FFF;
-  background-color: #15192C;
   padding: 10px;
   border-radius: 3px;
   button {
@@ -373,9 +372,13 @@ async function start() {
 }
 
 h2 {
-  color: #656A84;
+  color: #cecece;
   margin-left: 10px;
   text-transform: uppercase;
+  font-family: Teutonic;
+  font-size: 2em;
+  padding: 0;
+  margin: 0;
 }
 
 .difficulties {

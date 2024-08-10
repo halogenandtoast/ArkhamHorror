@@ -344,6 +344,7 @@ const setSet = (set: CardSet) => {
   display: flex;
   height: calc(100% - 40px);
   max-width: unset;
+  margin: 0;
 }
 
 .results {
@@ -354,6 +355,7 @@ const setSet = (set: CardSet) => {
   width: calc(100% - 20px);
   margin: 10px;
   border-radius: 10px;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 
 .cards {
@@ -392,7 +394,7 @@ tbody td {
 }
 
 tr {
-  color: #ccc;
+  color: #cecece;
 }
 
 tr:nth-child(odd) {
@@ -433,7 +435,7 @@ a {
 }
 
 .cycles {
-  color: #999;
+  color: #CECECE;
   overflow-y: auto;
 }
 
@@ -453,6 +455,7 @@ i {
 thead tr th {
   background-color: #111;
   color: #aaa;
+  padding: 0 5px;
 
   &:nth-child(1) {
     border-top-left-radius: 10px;
@@ -466,7 +469,7 @@ thead tr th {
 header {
   margin-left: 20px;
   margin-right: 20px;
-  background: rgba(0,0,0,0.3);
+  background-color: lighten($background-dark, 5%);
   display: flex;
   align-items: center;
   color: white;

@@ -62,7 +62,7 @@ async function logout() {
 
 <style lang="scss" scoped>
 #nav {
-  background-color: #292C45;
+  background-color: $background-dark;
   color: #f2f2f2;
   height: 40px;
   box-sizing: border-box;
@@ -73,7 +73,7 @@ async function logout() {
 
   a {
     font-weight: bold;
-    color: #5a6e34;
+    color: $spooky-green;
     text-decoration: none;
     &:hover {
       color: #6E8640;

@@ -1052,7 +1052,16 @@ data Message
     ClearUI
   deriving stock (Show, Eq, Data)
 
-$(deriveJSON defaultOptions ''Message)
+$(deriveToJSON defaultOptions ''Message)
+
+instance FromJSON Message where
+  parseJSON = withObject "Message" \o -> do
+    t :: Text <- o .: "tag"
+    case t of
+      "AssetDamageWithCheck" -> do
+        (a, b, c, d, e) <- o .: "contents"
+        pure $ DealAssetDamageWithCheck a b c d e
+      _ -> $(mkParseJSON defaultOptions ''Message) (Object o)
 
 stepMessage :: Int -> Message -> Message
 stepMessage n = \case

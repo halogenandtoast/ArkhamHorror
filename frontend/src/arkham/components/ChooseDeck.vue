@@ -108,12 +108,34 @@ const needsReply = computed(() => {
   return question !== null && question !== undefined && question.tag === 'ChooseDeck'
 })
 
+const chosenImage = computed(() => {
+  if(!deckId.value) {
+    return null
+  }
+
+  const deck = decks.value.find((d) => d.id === deckId.value)
+  if (!deck) {
+    return null
+  }
+  
+  if (deck.list.meta) {
+    try {
+      const result = JSON.parse(deck.list.meta)
+      if (result && result.alternate_front) {
+        return imgsrc(`portraits/${result.alternate_front}.jpg`)
+      }
+    } catch (e) { console.log("No parse") }
+  }
+
+  return imgsrc(`portraits/${deck.list.investigator_code.replace('c', '')}.jpg`)
+})
+
 </script>
 
 <template>
   <div class="container">
     <div class="investigators">
-      <h2>Choose your decks</h2>
+      <h2>Choose your deck{{ players.length > 1 ? 's' : ''}}</h2>
       <div class="portraits">
         <div class="investigator-row" v-for="player in players" :key="player.id">
           <template v-if="player.tag === 'Chosen'">
@@ -132,10 +154,11 @@ const needsReply = computed(() => {
             </div>
           </template>
           <template v-else>
-            <div class="portrait portrait-empty">
-              <img
-                :src="imgsrc('slots/ally.png')"
-              />
+            <div v-if="chosenImage && player.id == playerId" class="portrait">
+              <img :src="chosenImage" />
+            </div>
+            <div v-else class="portrait portrait-empty">
+              <img :src="imgsrc('slots/ally.png')" />
             </div>
             <form id="choose-deck" @submit.prevent="choose" v-if="needsReply && player.id == playerId">
               <select v-model="deckId">
@@ -367,6 +390,10 @@ form {
   display: flex;
   gap: 10px;
   justify-items: flex-start;
+  & :deep(.choices) {
+    margin: 0;
+    padding: 0;
+  }
   & :deep(form) {
     margin: 0px;
     height: fit-content;

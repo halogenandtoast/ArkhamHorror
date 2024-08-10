@@ -95,7 +95,10 @@ const activeSettings = computed(() => {
 
 <template>
   <div class="container">
-    <p>Standalone Settings</p>
+    <h2>Standalone Settings</h2>
+    <div v-if="activeSettings.length == 0">
+      <p>There are currently no standalone settings available for this scenario.</p>
+    </div>
     <div v-for="setting in activeSettings" :key="setting.key">
       <div v-if="setting.type === 'ChooseRecord'" class="options">
         <fieldset>
@@ -174,13 +177,37 @@ const activeSettings = computed(() => {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .container {
   width: 100%;
+  height: fit-content;
   max-width: 800px;
   margin: 0 auto;
   margin-top: 10px;
+  padding: 10px;
+  background-color: #3E485C;
+  border-radius: 5px;
+  font-size: 1.5em;
+  color: #B6B6B6;
+  box-shadow: 1px 1px 6px rgba(15,17,23,0.45)
 }
+
+h2 {
+  padding: 0;
+  margin: 0;
+  text-transform: uppercase;
+  font-family: Teutonic;
+}
+
+button {
+  width: 100%;
+  background-color: $button1;
+  border: 0;
+  text-transform: uppercase;
+  color: white;
+  padding: 10px;
+}
+
 .options {
   display: flex;
   margin-bottom: 10px;

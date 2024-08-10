@@ -79,7 +79,7 @@ const tabooList = computed(() => {
     flex: 1;
   }
   a {
-    color: #365488;
+    color: $cool-text;
     font-weight: bolder;
   }
 }

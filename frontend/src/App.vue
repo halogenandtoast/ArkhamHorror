@@ -64,7 +64,7 @@ body {
 
 
 body {
-  background: #26283D;
+  background: $background;
 }
 
 .guardian-icon {

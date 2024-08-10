@@ -353,6 +353,10 @@ const debug = useDebug()
   flex-direction: row;
   justify-self: flex-start;
   height: 2em;
+  pointer-events: none;
+  & :deep(.poolItem) {
+    pointer-events: none;
+  }
 }
 
 .status-icon {

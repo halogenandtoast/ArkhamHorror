@@ -61,6 +61,7 @@ import Arkham.Agenda.Types
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Types
 import Arkham.Classes.HasGame
+import Arkham.Debug
 import Arkham.Difficulty
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Types

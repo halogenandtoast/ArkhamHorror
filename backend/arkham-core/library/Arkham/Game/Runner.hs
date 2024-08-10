@@ -483,7 +483,7 @@ runGameMessage msg g = case msg of
 
     let
       costF =
-        case find isSetCost (traceShowId modifiers') of
+        case find isSetCost modifiers' of
           Just (SetAbilityCost c) -> const c
           _ -> (`applyCostModifiers` modifiers')
       isSetCost = \case

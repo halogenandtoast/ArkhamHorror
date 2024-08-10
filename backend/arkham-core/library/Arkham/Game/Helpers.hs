@@ -204,7 +204,7 @@ getCanPerformAbility !iid !ws !ability = do
       abilityAdditionalCosts ability <> flip mapMaybe abilityModifiers \case
         AdditionalCost x -> Just x
         _ -> Nothing
-    cost = fixEnemy $ abilityCost ability
+    cost = (`applyCostModifiers` abilityModifiers) $ fixEnemy $ abilityCost ability
     criteria = foldr setCriteria (abilityCriteria ability) abilityModifiers
     setCriteria :: ModifierType -> Criterion -> Criterion
     setCriteria = \case
@@ -389,7 +389,7 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
     isSetCost = \case
       SetAbilityCost _ -> True
       _ -> False
-  go costF abilityType
+  go (costF . (`applyCostModifiers` modifiers)) abilityType
  where
   go f = \case
     ServitorAbility _ -> pure True

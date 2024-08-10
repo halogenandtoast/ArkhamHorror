@@ -1,11 +1,10 @@
-module Arkham.Asset.Cards.BaseballBat (BaseballBat (..), baseballBat, baseballBatEffect) where
+module Arkham.Asset.Cards.BaseballBat (BaseballBat (..), baseballBat) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
-import Arkham.Effect.Import
-import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, withSkillTest)
+import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, getSkillTestSource)
 import Arkham.Modifier
 
 newtype BaseballBat = BaseballBat AssetAttrs
@@ -24,30 +23,15 @@ instance RunMessage BaseballBat where
       let source = attrs.ability 1
       sid <- getRandom
       skillTestModifiers sid source iid [SkillModifier #combat 2, DamageDealt 1]
-      createCardEffect Cards.baseballBat (effectMetaTarget sid) source iid
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
+    SkillTestEnds _ iid _ -> do
+      whenJustM getSkillTestSource \source ->
+        if isAbilitySource attrs 1 source
+          then do
+            tokens <- map (.face) <$> getSkillTestRevealedChaosTokens
+            when (any (`elem` [Skull, AutoFail]) tokens) do
+              afterSkillTest $ toDiscardBy iid (attrs.ability 1) attrs
+          else pure ()
+      pure a
     _ -> BaseballBat <$> liftRunMessage msg attrs
-
-newtype BaseballBatEffect = BaseballBatEffect EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-
-baseballBatEffect :: EffectArgs -> BaseballBatEffect
-baseballBatEffect = cardEffect BaseballBatEffect Cards.baseballBat
-
-instance RunMessage BaseballBatEffect where
-  runMessage msg e@(BaseballBatEffect attrs) = runQueueT $ case msg of
-    SkillTestEnds sid iid _ | maybe False (isTarget sid) attrs.metaTarget -> do
-      when (maybe False (isTarget sid) attrs.metaTarget) $ do
-        tokens <- map (.face) <$> getSkillTestRevealedChaosTokens
-        case attrs.source of
-          AbilitySource (AssetSource assetId) 1 ->
-            when (any (`elem` [Skull, AutoFail]) tokens) do
-              afterSkillTest $ toDiscardBy iid attrs.source assetId
-          AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 ->
-            when (any (`elem` [Skull, AutoFail]) tokens) do
-              afterSkillTest $ toDiscardBy iid attrs.source assetId
-          _ -> error "wrong source"
-      disableReturn e
-    _ -> BaseballBatEffect <$> liftRunMessage msg attrs

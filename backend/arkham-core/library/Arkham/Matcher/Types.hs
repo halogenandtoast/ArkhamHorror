@@ -1812,7 +1812,7 @@ $( do
     enemyAttack <- deriveJSON defaultOptions ''EnemyAttackMatcher
     event <- deriveJSON defaultOptions ''EventMatcher
     explore <- deriveJSON defaultOptions ''ExploreMatcher
-    extendedCard <- deriveJSON defaultOptions ''ExtendedCardMatcher
+    extendedCard <- deriveToJSON defaultOptions ''ExtendedCardMatcher
     history <- deriveJSON defaultOptions ''HistoryMatcher
     investigator <- deriveJSON defaultOptions ''InvestigatorMatcher
     location <- deriveJSON defaultOptions ''LocationMatcher
@@ -1876,6 +1876,14 @@ $( do
         , windowMythosStep
         ]
  )
+
+instance FromJSON ExtendedCardMatcher where
+  parseJSON = withObject "ExtendedCardMatcher" \o -> do
+    t :: Text <- o .: "tag"
+    case t of
+      "AnyCard" -> pure (BasicCardMatch AnyCard)
+      "CardMatches" -> BasicCardMatch . CardMatches <$> o .: "contents"
+      _ -> $(mkParseJSON defaultOptions ''ExtendedCardMatcher) (Object o)
 
 instance FromJSON SkillTestMatcher where
   parseJSON = withObject "SkillTestMatcher" $ \o -> do

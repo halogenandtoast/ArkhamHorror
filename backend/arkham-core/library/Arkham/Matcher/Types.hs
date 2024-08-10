@@ -697,6 +697,7 @@ data TreacheryMatcher
   = TreacheryWithTitle Text
   | TreacheryWithFullTitle Text Text
   | TreacheryWithId TreacheryId
+  | TreacheryWithPlacement Placement
   | TreacheryWithToken Token
   | TreacheryWithDoom ValueMatcher
   | TreacheryWithHorror ValueMatcher

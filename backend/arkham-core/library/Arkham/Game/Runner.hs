@@ -483,9 +483,9 @@ runGameMessage msg g = case msg of
 
     let
       costF =
-        case find isSetCost modifiers' of
+        case find isSetCost (traceShowId modifiers') of
           Just (SetAbilityCost c) -> const c
-          _ -> id
+          _ -> (`applyCostModifiers` modifiers')
       isSetCost = \case
         SetAbilityCost _ -> True
         _ -> False
@@ -1570,11 +1570,7 @@ runGameMessage msg g = case msg of
         RemovedFromPlay (EnemySource eid') -> eid == eid'
         _ -> False
     withQueue_ $ filter (not . isDiscardEnemy)
-    enemy <- getEnemy eid
-    pure
-      $ g
-      & (entitiesL . enemiesL %~ deleteMap eid)
-      & (outOfPlayEntitiesL . at VoidZone . non mempty . enemiesL %~ insertMap eid enemy)
+    pure g
   EnemySpawnFromVoid miid lid eid -> do
     pushAll (resolve $ EnemySpawn miid lid eid)
     case lookup eid (g ^. outOfPlayEntitiesL . at VoidZone . non mempty . enemiesL) of

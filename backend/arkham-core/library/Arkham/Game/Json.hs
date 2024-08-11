@@ -4,7 +4,6 @@
 module Arkham.Game.Json where
 
 import Arkham.Game.Base
-import Arkham.Game.State
 import Arkham.Prelude
 import Data.Aeson.TH
 

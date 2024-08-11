@@ -103,12 +103,11 @@ h2 {
 .new-game {
   text-align: right;
   margin-top: 10px;
-  margin-right: 10px;
   button {
     border-radius: 3px;
     outline: 0;
     padding: 10px 15px;
-    background: #6E8640;
+    background: var(--spooky-green);
     text-transform: uppercase;
     color: white;
     border: 0;

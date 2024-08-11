@@ -261,7 +261,7 @@ const label = function(body: string) {
 }
 
 .portrait {
-  width: $card-width;
+  width: var(--card-width);
   height: auto;
 }
 

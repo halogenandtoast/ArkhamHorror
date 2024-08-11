@@ -299,7 +299,7 @@ watch(abilities, (abilities) => {
 
 <style scoped lang="scss">
 .small-treachery :deep(.card) {
-  height: $card-width * 0.35;
+  height: calc(var(--card-width) * 0.35);
 }
 
 .enemy--can-interact {
@@ -317,8 +317,8 @@ watch(abilities, (abilities) => {
 }
 
 .card {
-  width: $card-width;
-  max-width: $card-width;
+  width: var(--card-width);
+  max-width: var(--card-width);
   border-radius: 5px;
 }
 
@@ -377,7 +377,7 @@ watch(abilities, (abilities) => {
 }
 
 .enemy--swarming {
-  margin-left: calc(($card-width / 1.5) * -1);
+  margin-left: calc((var(--card-width) / 1.5) * -1);
 }
 
 .enemy--outer {

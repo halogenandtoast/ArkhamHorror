@@ -406,7 +406,7 @@ i.action {
 
 .card {
   width: auto;
-  height: $card-width;
+  height: var(--card-width);
 }
 
 .guardianAction {
@@ -478,12 +478,12 @@ i.action {
 .player-card {
   display: flex;
   flex-direction: column;
-  width: $card-width * 1.4;
+  width: calc(var(--card-width) * 1.4);
 }
 
 .portrait {
   border-radius: 3px;
-  width: $card-width * 0.6;
+  width: calc(var(--card-width) * 0.6);
   margin-right: 2px;
 }
 
@@ -607,7 +607,7 @@ i.action {
 
 .card-overlay {
   width: auto;
-  height: $card-width;
+  height: var(--card-width);
   position: absolute;
   top: 0;
   left: 0;

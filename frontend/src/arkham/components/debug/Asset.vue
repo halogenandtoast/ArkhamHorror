@@ -116,8 +116,8 @@ const hasPool = computed(() => {
 
 <style lang="scss" scoped>
 .card-no-overlay {
-  width: $card-width * 5; 
-  max-width: $card-width * 5;
+  width: calc(var(--card-width) * 5); 
+  max-width: calc(var(--card-width) * 5);
   border-radius: 15px;
   transform: rotate(0deg);
   transition: transform 0.2s linear;

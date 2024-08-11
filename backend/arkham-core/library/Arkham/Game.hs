@@ -4696,7 +4696,7 @@ handleAsIfChanges asIfMap g = go (Map.toList asIfMap) g
 getTurnInvestigator :: HasGame m => m (Maybe Investigator)
 getTurnInvestigator =
   getGame
-    >>= maybe (pure Nothing) (fmap Just . getInvestigator)
+    >>= maybe (pure Nothing) getInvestigatorMaybe
     . gameTurnPlayerInvestigatorId
 
 asIfTurn :: HasGame m => InvestigatorId -> (forall n. HasGame n => n a) -> m a

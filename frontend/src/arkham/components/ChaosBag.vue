@@ -132,7 +132,7 @@ const choose = (idx: number) => emit('choose', idx)
 }
 
 .portrait {
-  width: $card-width;
+  width: var(--card-width);
   height: auto;
 }
 

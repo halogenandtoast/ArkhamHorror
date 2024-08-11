@@ -53,7 +53,7 @@ withDefaults(defineProps<{
 }
 
 .card {
-  width: $card-width;
+  width: var(--card-width);
   border-radius: 6px;
   margin: 2px;
 }

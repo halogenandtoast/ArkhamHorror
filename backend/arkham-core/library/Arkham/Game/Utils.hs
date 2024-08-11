@@ -48,12 +48,12 @@ instance Exception MissingEntity
 
 getInvestigator
   :: (HasCallStack, HasGame m) => InvestigatorId -> m Investigator
-getInvestigator iid =
-  fromJustNote missingInvestigator
-    . preview (entitiesL . investigatorsL . ix iid)
-    <$> getGame
+getInvestigator iid = fromJustNote missingInvestigator <$> getInvestigatorMaybe iid
  where
   missingInvestigator = "Unknown investigator: " <> show iid
+
+getInvestigatorMaybe :: HasGame m => InvestigatorId -> m (Maybe Investigator)
+getInvestigatorMaybe iid = preview (entitiesL . investigatorsL . ix iid) <$> getGame
 
 getEvent :: (HasCallStack, HasGame m) => EventId -> m Event
 getEvent eid = fromJustNote missingEvent <$> getEventMaybe eid

@@ -92,7 +92,7 @@ const debug = useDebug()
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 6px;
   margin: 2px;
-  width: $card-width;
+  width: var(--card-width);
 }
 .can-interact {
   border: 3px solid $select;
@@ -122,7 +122,7 @@ const debug = useDebug()
 }
 
 .portrait {
-  width: $card-width * 0.55;
+  width: calc(var(--card-width) * 0.55);
   position: absolute;
   opacity: 0.8;
   border-radius: 5px;

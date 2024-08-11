@@ -402,6 +402,11 @@ const realityAcid = ref('89005')
           @choose="$emit('choose', $event)"
         />
 
+
+        <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot" :data-index="`${slot}${idx}`">
+          <img :src="slotImg(slot)" />
+        </div>
+
         <Enemy
           v-for="enemy in engagedEnemies"
           :key="enemy.id"
@@ -433,10 +438,6 @@ const realityAcid = ref('89005')
           :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
           @choose="$emit('choose', $event)"
         />
-
-        <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot" :data-index="`${slot}${idx}`">
-          <img :src="slotImg(slot)" />
-        </div>
       </transition-group>
     </transition>
 
@@ -578,12 +579,12 @@ const realityAcid = ref('89005')
 }
 
 :deep(.location) {
-  margin-left: $card-width * 0.8;
+  margin-left: calc(var(--card-width) * 0.8);
 }
 
 
 .discard {
-  width: $card-width;
+  width: var(--card-width);
   button {
     white-space: nowrap;
     text-wrap: pretty;
@@ -593,7 +594,7 @@ const realityAcid = ref('89005')
     box-shadow: none;
   }
   &:deep(.card-container) {
-    width: $card-width;
+    width: var(--card-width);
     margin: 0;
     position:relative;
     display: inline-flex;
@@ -617,7 +618,7 @@ const realityAcid = ref('89005')
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 6px;
   margin: 2px;
-  max-width: $card-width;
+  max-width: var(--card-width);
 }
 
 .deck {
@@ -746,10 +747,10 @@ const realityAcid = ref('89005')
 }
 
 .slot {
-  width: $card-width;
+  width: var(--card-width);
   background: rgba(0,0,0,0.5);
   aspect-ratio: 5 / 7;
-  height: calc($card-width * 7 / 5);
+  height: calc(var(--card-width) * 7 / 5);
   border-radius: 6px;
   overflow: hidden;
   display: grid;
@@ -758,7 +759,7 @@ const realityAcid = ref('89005')
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-sizing: border-box;
   img {
-    width: calc($card-width / 2);
+    width: calc(var(--card-width) / 2);
     filter: invert(75%);
   }
 }

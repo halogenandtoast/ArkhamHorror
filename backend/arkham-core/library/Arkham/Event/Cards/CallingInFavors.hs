@@ -38,7 +38,7 @@ callingInFavorsEffect :: EffectArgs -> CallingInFavorsEffect
 callingInFavorsEffect = cardEffect CallingInFavorsEffect Cards.callingInFavors
 
 instance HasModifiersFor CallingInFavorsEffect where
-  getModifiersFor (InvestigatorTarget iid) (CallingInFavorsEffect attrs) | iid `is` attrs.source = do
+  getModifiersFor (InvestigatorTarget iid) (CallingInFavorsEffect attrs) | isTarget iid attrs.target = do
     case attrs.meta of
       Just (EffectInt n) -> modified attrs [ReduceCostOf (#asset <> #ally) n]
       _ -> error "Invalid metadata"

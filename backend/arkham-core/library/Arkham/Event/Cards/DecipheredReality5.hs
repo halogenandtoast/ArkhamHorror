@@ -43,7 +43,7 @@ instance RunMessage DecipheredReality5 where
       -- standard rewards for successfully investigating.
       locationIds <- select RevealedLocation
       pushAll
-        $ Successful (Action.Investigate, actionTarget) iid source target n
+        $ Successful (Action.Investigate, actionTarget) iid source actionTarget n
         : [ Msg.DiscoverClues iid $ discover lid' (toSource attrs) 1
           | lid' <- locationIds
           ]

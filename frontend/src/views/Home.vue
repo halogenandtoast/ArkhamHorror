@@ -94,7 +94,7 @@ const toggleNewGame = () => {
 
 <style lang="scss" scoped>
 h2 {
-  color: #6E8644;
+  color: var(--title);
   font-size: 2em;
   text-transform: uppercase;
   font-family: teutonic, sans-serif;
@@ -120,8 +120,7 @@ h2 {
 }
 
 .home {
-  width: 100%;
-  max-width: 800px;
+  min-width: 60vw;
   margin: 0 auto;
 }
 

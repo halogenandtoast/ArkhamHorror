@@ -188,6 +188,12 @@ const reversed = computed(() => {
   return hoveredElement.value.dataset.victory;
 });
 
+const overlay = computed(() => {
+  if (!hoveredElement.value) return null;
+  console.log(hoveredElement.value.dataset.overlay)
+  return hoveredElement.value.dataset.overlay;
+});
+
 const sideways = computed<boolean>(() => {
   if (!hoveredElement.value) return false;
 
@@ -268,7 +274,14 @@ const getImage = (el: HTMLElement): string | null => {
 
 <template>
   <div class="card-overlay" ref="cardOverlay" :style="{ top: overlayPosition.top + 'px', left: overlayPosition.left + 'px'}" :class="{ sideways }">
-    <img v-if="card" :src="card" :class="{ reversed, Reversed: upsideDown }" />
+    <div class="card-image">
+      <img v-if="card" :src="card" :class="{ reversed, Reversed: upsideDown }" />
+      <img
+        v-if="overlay"
+        class="card-overlay"
+        :src="overlay"
+      />
+    </div>
     <span class="fight" v-if="fight">{{ fight }}</span>
     <span class="health" v-if="health">{{ health }}</span>
     <span class="evade" v-if="evade">{{ evade }}</span>
@@ -360,6 +373,7 @@ const getImage = (el: HTMLElement): string | null => {
   height: fit-content;
   display: flex;
   img {
+    box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.75);
     border-radius: 15px;
     width: 300px;
     height: fit-content;
@@ -1896,6 +1910,19 @@ const getImage = (el: HTMLElement): string | null => {
 
 .Reversed {
   transform: rotateZ(180deg);
+}
+
+.card-image {
+  position: relative;
+}
+
+.card-overlay {
+  width: 100%;
+  height: auto;
+  position: absolute;
+  top: 0;
+  left: 2px;
+  pointer-events: none;
 }
 
 </style>

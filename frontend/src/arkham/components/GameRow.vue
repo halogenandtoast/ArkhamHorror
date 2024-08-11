@@ -26,17 +26,17 @@ const difficulty = computed<Difficulty>(() => {
   return 'Easy'
 })
 
-const box = computed(() => {
-  if (campaign.value) {
-    return `url('${imgsrc(`boxes/${campaign.value.id}.jpg`)}')`
-  }
-
-  if (scenario.value) {
-    return `url('${imgsrc(`boxes/${scenario.value.id.replace(/^c/, '')}.jpg`)}')`
-  }
-
-  return null
-})
+// const box = computed(() => {
+//   if (campaign.value) {
+//     return `url('${imgsrc(`boxes/${campaign.value.id}.jpg`)}')`
+//   }
+// 
+//   if (scenario.value) {
+//     return `url('${imgsrc(`boxes/${scenario.value.id.replace(/^c/, '')}.jpg`)}')`
+//   }
+// 
+//   return null
+// })
 
 const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring(1)
 </script>
@@ -98,7 +98,7 @@ h2 {
 }
 .game {
   display: flex;
-  background-color: #15192C;
+  background-color: var(--background-dark);
   border-left: 10px solid #6e8640;
   color: #f0f0f0;
   border-radius: 3px;
@@ -162,8 +162,13 @@ h2 {
 .title {
   font-family: teutonic, sans-serif;
   font-size: 1.6em;
+  text-decoration: none;
   a {
     text-decoration: none;
+  }
+
+  &:hover {
+    color: #cecece;
   }
 }
 
@@ -222,7 +227,6 @@ h2 {
 .investigators {
   border-radius: 10px;
   display: flex;
-  background: rgba(255,255,255,0.02);
   padding: 10px;
   flex: 1;
 }
@@ -247,7 +251,7 @@ h2 {
     width: 100%;
     height: 100%;
     opacity: 0.1;
-    background-image: v-bind(box);
+    //background-image: v-bind(box);
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;

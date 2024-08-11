@@ -64,12 +64,14 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
 }
 
 .intro-text {
+  color: #333;
   font-size: 1.5em;
   overflow: auto;
   height: 100%;
   background: #001721;
   padding: 20px;
   box-sizing: border-box;
+  max-height: 70vh;
   :deep(h1) {
     font-family: "Teutonic";
     font-weight: 500;

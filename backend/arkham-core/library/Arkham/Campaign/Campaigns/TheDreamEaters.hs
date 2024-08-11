@@ -259,8 +259,9 @@ instance RunMessage TheDreamEaters where
       CampaignStep (PrologueStepPart 11) -> do
         players <- allPlayers
         pushAll
-          $ map (\pid -> Msg.questionLabel "Choose Deck For Part A" pid ChooseDeck) players
-          <> [NextCampaignStep (Just BeyondTheGatesOfSleep)]
+          $ ChoosingDecks
+          : map (\pid -> Msg.questionLabel "Choose Deck For Part A" pid ChooseDeck) players
+            <> [DoneChoosingDecks, NextCampaignStep (Just BeyondTheGatesOfSleep)]
         let difficulty = campaignDifficulty attrs
         pure
           $ TheDreamEaters
@@ -276,8 +277,9 @@ instance RunMessage TheDreamEaters where
       CampaignStep (PrologueStepPart 12) -> do
         players <- allPlayers
         pushAll
-          $ map (\pid -> Msg.questionLabel "Choose Deck For Part B" pid ChooseDeck) players
-          <> [NextCampaignStep (Just WakingNightmare)]
+          $ ChoosingDecks
+          : map (\pid -> Msg.questionLabel "Choose Deck For Part B" pid ChooseDeck) players
+            <> [DoneChoosingDecks, NextCampaignStep (Just WakingNightmare)]
         let difficulty = campaignDifficulty attrs
         pure
           $ TheDreamEaters
@@ -304,7 +306,10 @@ instance RunMessage TheDreamEaters where
                 if s == BeyondTheGatesOfSleep && WakingNightmare `elem` campaignCompletedSteps attrs
                   then do
                     players <- allPlayers
-                    pushAll $ map (\pid -> Msg.questionLabel "Choose Deck For Part A" pid ChooseDeck) players
+                    pushAll
+                      $ ChoosingDecks
+                      : map (\pid -> Msg.questionLabel "Choose Deck For Part A" pid ChooseDeck) players
+                        <> [DoneChoosingDecks]
                   else do
                     for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
                       let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
@@ -337,7 +342,10 @@ instance RunMessage TheDreamEaters where
                 if s == WakingNightmare && BeyondTheGatesOfSleep `elem` campaignCompletedSteps attrs
                   then do
                     players <- allPlayers
-                    pushAll $ map (\pid -> Msg.questionLabel "Choose Deck For Part B" pid ChooseDeck) players
+                    pushAll
+                      $ ChoosingDecks
+                      : map (\pid -> Msg.questionLabel "Choose Deck For Part B" pid ChooseDeck) players
+                        <> [DoneChoosingDecks]
                   else do
                     for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
                       let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid

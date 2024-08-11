@@ -218,7 +218,7 @@ ul.tabs__header > li.tab--selected {
     position: absolute;
     content: "";
     inset: 0;
-    top: -5px;
+    top: -15px;
     margin-inline: auto;
     transform: translateY(-100%);
     width: 25px;

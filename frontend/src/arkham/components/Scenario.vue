@@ -640,11 +640,11 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   align-self: center;
   align-items: flex-start;
   justify-content: center;
+  padding-top: 10px;
   padding-bottom: 10px;
   position: relative;
   width: 100%;
   gap: 2px;
-  background: darken(#282A36, 2%);
   z-index: -2;
 }
 
@@ -679,12 +679,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 .scenario-body {
   display: flex;
   flex-direction: column;
-  background-image: linear-gradient(darken(#E5EAEC, 10), #E5EAEC);
-
-  @media (prefers-color-scheme: dark) {
-    background-image: linear-gradient(#282A36, darken(#282A36, 2));
-  }
-
+  background: var(--background);
   z-index: 1;
   width: 100%;
   height: calc(100vh - 40px);

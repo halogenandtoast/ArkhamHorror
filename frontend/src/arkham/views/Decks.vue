@@ -61,24 +61,6 @@ async function sync(deck: Arkham.Deck) {
 </template>
 
 <style lang="scss" scoped>
-.deck {
-  display: flex;
-  background-color: $background-dark;
-  //box-shadow: 1px 1px 6px rgba(10,11,13,0.45);
-  border: 1px solid darken($background-dark, 1%);
-  color: #f0f0f0;
-  margin: 10px;
-  padding: 10px;
-  border-radius: 3px;
-  span {
-    flex: 1;
-  }
-  a {
-    color: $cool-text;
-    font-weight: bolder;
-  }
-}
-
 h2 {
   color: #cecece;
   margin-left: 10px;

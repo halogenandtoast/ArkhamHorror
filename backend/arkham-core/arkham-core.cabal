@@ -1984,6 +1984,7 @@ library
       Arkham.Game.Json
       Arkham.Game.Runner
       Arkham.Game.Settings
+      Arkham.Game.State
       Arkham.Game.Utils
       Arkham.GameEnv
       Arkham.GameValue

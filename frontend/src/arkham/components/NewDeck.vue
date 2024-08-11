@@ -179,9 +179,10 @@ async function createDeck() {
 .new-deck {
   input {
     outline: 0;
-    border: 1px solid #000;
+    border: 1px solid var(--background);
     padding: 15px;
-    background: #F2F2F2;
+    color: #F2F2F2;
+    background: var(--background-dark);
     width: 100%;
     box-sizing: border-box;
     margin-bottom: 10px;
@@ -225,9 +226,7 @@ async function createDeck() {
   display: flex;
   flex-direction: column;
   color: #FFF;
-  background-color: #15192C;
   margin: 10px;
-  padding: 10px;
   border-radius: 3px;
   a {
     color: #365488;

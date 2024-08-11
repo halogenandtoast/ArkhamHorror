@@ -81,5 +81,6 @@ watch(truncatedGameLog, async () => {
   border-radius: 5px;
   color: white;
   font-weight: 700;
+  font-size: 0.8em;
 }
 </style>

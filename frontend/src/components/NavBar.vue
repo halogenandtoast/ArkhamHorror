@@ -62,7 +62,7 @@ async function logout() {
 
 <style lang="scss" scoped>
 #nav {
-  background-color: $background-dark;
+  background-color: var(--background-dark);
   color: #f2f2f2;
   height: 40px;
   box-sizing: border-box;
@@ -103,7 +103,6 @@ input[type=checkbox]:checked ~ .user-links .user-links--dropdown {
 }
 
 input[type=checkbox]:checked ~ .user-links {
-  background-color: $dark-blue;
   border-radius: 5px 5px 0 0;
 }
 
@@ -114,10 +113,6 @@ input[type=checkbox]:checked ~ .user-links {
   padding-right: 10px;
   border-radius: 5px;
   z-index: 100000;
-
-  &:hover {
-    background-color: $medium-blue;
-  }
 
   label {
     user-select: none;
@@ -134,7 +129,7 @@ input[type=checkbox]:checked ~ .user-links {
   top: 100%;
   width: 100%;
   text-align: right;
-  background: $dark-blue;
+  background: var(--background-dark);
   padding: 10px;
   box-sizing: border-box;
   border-radius: 0 0 5px 5px;

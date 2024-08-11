@@ -178,8 +178,7 @@ async function chooseAbility(ability: AbilityMessage) {
 .card-container {
   --gradient-angle: 0deg;
   margin: 4px;
-  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.23), 0 3px 6px rgba(0, 0, 0, 0.53);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.23), 0 3px 6px rgba(0, 0, 0, 0.53);
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
   position: relative;
   border-radius: 6px;
   height: var(--card-width);

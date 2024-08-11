@@ -151,13 +151,16 @@ h2 {
 .campaign-icon-container {
   display: flex;
   align-items: center;
-  margin-right: 10px;
+  margin-right: 20px;
+  margin-left: 10px;
+  width: 50px;
 }
 
 .campaign-icon {
   //filter: invert(28%) sepia(100%) hue-rotate(-180deg) saturate(3);
   filter: invert(100%) brightness(85%);
   max-height: 50px;
+  width: 100%;
 }
 
 .scenario-icon {

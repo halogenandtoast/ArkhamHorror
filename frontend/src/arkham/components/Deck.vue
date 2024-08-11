@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import {imgsrc} from '@/arkham/helpers';
+import {imgsrc, investigatorClass} from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/Deck'
 
 interface Props {
@@ -32,6 +32,14 @@ const deckInvestigator = computed(() => {
   return props.deck.list.investigator_code.replace('c', '')
 })
 
+const deckClass = computed(() => {
+  if (deckInvestigator.value) {
+    return investigatorClass(deckInvestigator.value)
+  }
+
+  return {};
+})
+
 const tabooList = computed(() => {
   if (props.deck.list.taboo_id) {
     switch (props.deck.list.taboo_id) {
@@ -51,27 +59,27 @@ const tabooList = computed(() => {
 </script>
 
 <template>
-        <img class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator}.jpg`)" />
-        <div class="deck-details">
-          <span class="deck-title"><router-link :to="{ name: 'Deck', params: { deckId: deck.id }}">{{deck.name}}</router-link></span>
-          <span v-if="tabooList" class="taboo-list">Taboo: {{tabooList}}</span>
-        </div>
-        <div class="open-deck">
-          <a v-if="deck.url" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>
-        </div>
-        <div v-if="deck.url && sync" class="sync-deck">
-          <a href="#" @click.prevent="sync"><font-awesome-icon icon="refresh" /></a>
-        </div>
-        <div v-if="markDelete" class="deck-delete">
-          <a href="#delete" @click.prevent="markDelete"><font-awesome-icon icon="trash" /></a>
-        </div>
+  <div class="decklist" :class="deckClass">
+    <img class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator}.jpg`)" />
+    <div class="deck-details">
+      <span class="deck-title"><router-link :to="{ name: 'Deck', params: { deckId: deck.id }}">{{deck.name}}</router-link></span>
+      <span v-if="tabooList" class="taboo-list">Taboo: {{tabooList}}</span>
+    </div>
+    <div class="open-deck">
+      <a v-if="deck.url" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener"><font-awesome-icon alt="View Deck in ArkhamDB" icon="external-link" /></a>
+    </div>
+    <div v-if="deck.url && sync" class="sync-deck">
+      <a href="#" @click.prevent="sync"><font-awesome-icon icon="refresh" /></a>
+    </div>
+    <div v-if="markDelete" class="deck-delete">
+      <a href="#delete" @click.prevent="markDelete"><font-awesome-icon icon="trash" /></a>
+    </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
 .deck {
   display: flex;
-  background-color: #15192C;
-  color: #f0f0f0;
   margin: 10px;
   padding: 10px;
   border-radius: 3px;
@@ -79,8 +87,10 @@ const tabooList = computed(() => {
     flex: 1;
   }
   a {
-    color: $cool-text;
-    font-weight: bolder;
+    color: var(--title);
+    &:hover {
+      color: var(--title);
+    }
   }
 }
 
@@ -88,12 +98,6 @@ h2 {
   color: #656A84;
   margin-left: 10px;
   text-transform: uppercase;
-}
-
-#decks {
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
 }
 
 .open-deck {
@@ -122,16 +126,15 @@ h2 {
 .portrait--decklist {
   width: 100px;
   margin-right: 10px;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 
 .deck-title {
   font-weight: 800;
   font-size: 1.2em;
   a {
+    color: var(--title);
     text-decoration: none;
-    &:hover {
-      color: #336699;
-    }
   }
 }
 
@@ -168,5 +171,48 @@ h2 {
   display: flex;
   flex-direction: column;
   flex: 1;
+}
+
+.decklist {
+  display: flex;
+  background-color: #353b49;
+    //var(--background-dark);
+  border: 1px solid #434c5e;
+  color: #f0f0f0;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  transition: background-color 0.5s; 
+  span {
+    flex: 1;
+  }
+  a {
+    color: var(--title);
+    font-weight: bolder;
+  }
+
+  &.guardian:hover {
+    background-color: var(--guardian-extra-dark);
+  }
+
+  &.seeker:hover {
+    background-color: var(--seeker-extra-dark);
+  }
+
+  &.rogue:hover {
+    background-color: var(--rogue-extra-dark);
+  }
+
+  &.mystic:hover {
+    background-color: var(--mystic-extra-dark);
+  }
+
+  &.survivor:hover {
+    background-color: var(--survivor-extra-dark);
+  }
+
+  &.neutral:hover {
+    background-color: var(--neutral-extra-dark);
+  }
 }
 </style>

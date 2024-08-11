@@ -61,6 +61,7 @@ import Arkham.Game.Helpers qualified as Helpers
 import Arkham.Game.Json ()
 import Arkham.Game.Runner ()
 import Arkham.Game.Settings
+import Arkham.Game.State
 import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue (GameValue (Static))
@@ -285,9 +286,9 @@ addPlayer pid = do
     state' =
       if length players + 1 < playerCount
         then IsPending (pendingPlayers <> [pid])
-        else IsChooseDecks players
+        else IsActive
     game' = game & playersL <>~ [pid] & gameStateL .~ state' & initialSeedL .~ seed & activePlayerF
-  when (isChooseDecks state') $ atomicWriteIORef (queueToRef queueRef) [StartCampaign]
+  when (state' == IsActive) $ atomicWriteIORef (queueToRef queueRef) [StartCampaign]
   putGame game'
 
 -- TODO: Rename this
@@ -559,9 +560,9 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "treacheries" .= emptyArray
         ]
     otherInvestigators = case gameMode of
-      This (Campaign c) -> campaignOtherInvestigators (toJSON c)
+      This c -> campaignOtherInvestigators (toJSON $ attr campaignMeta c)
       That _ -> mempty
-      These (Campaign c) _ -> campaignOtherInvestigators (toJSON c)
+      These c _ -> campaignOtherInvestigators (toJSON $ attr campaignMeta c)
     campaignOtherInvestigators j = case parse (withObject "" (.: "otherCampaignAttrs")) j of
       Error _ -> mempty
       Success attrs ->

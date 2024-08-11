@@ -240,12 +240,14 @@ const leylines = computed(() => props.investigator.tokens[TokenType.Leyline] || 
           <div class="combat combat-icon">{{combat}}</div>
           <div class="agility agility-icon">{{agility}}</div>
         </div>
-        <img
-          :class="{ 'investigator--can-interact': investigatorAction !== -1 }"
-          class="card"
-          :src="image"
-          @click="$emit('choose', investigatorAction)"
-        />
+        <div class="investigator-image">
+          <img
+            :class="{ 'investigator--can-interact': investigatorAction !== -1 }"
+            class="card"
+            :src="image"
+            @click="$emit('choose', investigatorAction)"
+          />
+        </div>
       </div>
 
       <div class="player-buttons">
@@ -396,6 +398,7 @@ i.action {
   border: 2px solid $select;
   cursor: pointer;
   &--portrait {
+    cursor: pointer;
     border: 3px solid $select;
   }
 }
@@ -595,5 +598,23 @@ i.action {
   &:not([disabled]):hover {
     background-color: darken($select, 17%);
   }
+}
+
+.investigator-image {
+  position: relative;
+}
+
+.card-overlay {
+  width: auto;
+  height: $card-width;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.investigator--can-interact ~ .card-overlay {
+  top: 2px;
+  left: 2px;
 }
 </style>

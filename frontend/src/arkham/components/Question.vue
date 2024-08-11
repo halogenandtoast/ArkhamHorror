@@ -580,6 +580,7 @@ section {
 }
 
 .intro-text {
+  color: #222;
   max-width: 50vw;
   text-align: justify;
   background: linear-gradient(#DFDAD8, darken(#DFDAD8, 10%));
@@ -593,6 +594,8 @@ section {
   -moz-font-smoothing: antialiased !important;
   text-rendering: optimizelegibility !important;
   letter-spacing: .03em;
+  max-height: 70vh;
+  overflow: auto;
 }
 
 .intro-text h1 {

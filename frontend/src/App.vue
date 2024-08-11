@@ -28,6 +28,11 @@ onMounted(async () => await store.loadUserFromStorage())
 }
 
 @font-face {
+  font-family: "Noto Sans";
+  src: url("/fonts/NotoSans.ttf");
+}
+
+@font-face {
   font-family: "ArkhamIcons";
   src: url("/fonts/arkhamicons.ttf");
 }
@@ -50,10 +55,11 @@ onMounted(async () => await store.loadUserFromStorage())
 body {
   margin: 0;
   padding: 0;
+  color: #222;
 }
 
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Noto Sans", Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   width: 100%;
@@ -227,15 +233,29 @@ body {
   --mythos: #d8dee9;
   --neutral: #d8dee9;
   --guardian-dark: #1072c2;
+  --guardian-extra-dark: #0c5693;
   --seeker-dark: #db7c07;
+  --seeker-extra-dark: #aa6005;
   --rogue-dark: #219428;
+  --rogue-extra-dark: #186a1d;
   --mystic-dark: #7554ab;
+  --mystic-extra-dark: #5e4389;
   --survivor-dark: #cc3038;
-  --neutral-dark: #434c5e;
+  --survivor-extra-dark: #a3262d;
+  --neutral-dark: #333;
+  --neutral-extra-dark: #222;
   --multiclass-dark: #a38c46;
   --mythos-dark: #434c5e;
   --taboo: #9869f5;
   --health: #ae4236;
   --sanity: #2c7fc0;
+
+
+  --background: #2e3440;
+  --background-dark: #242831;
+
+  --title: #cecece;
+
+  color-scheme: dark;
 }
 </style>

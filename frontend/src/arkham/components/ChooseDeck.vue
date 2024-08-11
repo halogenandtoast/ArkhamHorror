@@ -37,6 +37,14 @@ const error = computed(() => {
     return 'This investigator is already taken'
   }
 
+  const inOtherScenario = Object.values(props.game.otherInvestigators).some((i) => {
+    return i.id === deck.list.investigator_code
+  })
+
+  if (inOtherScenario) {
+    return 'This investigator is already taken in this campaign'
+  }
+
   return null
 })
 
@@ -49,12 +57,6 @@ const disabled = computed(() => {
 })
 
 const investigators = computed(() => props.game.investigators)
-const chosenPlayerCount = computed(() => {
-  return Object.values(investigators.value).length
-})
-const empties = computed(() => {
-  return Array(props.game.playerCount - chosenPlayerCount.value).fill(0)
-})
 
 fetchDecks().then((result) => {
   decks.value = result;
@@ -105,7 +107,11 @@ function portraitImage(investigator: Investigator) {
 
 const needsReply = computed(() => {
   const question = props.game.question[props.playerId]
-  return question !== null && question !== undefined && question.tag === 'ChooseDeck'
+  if (question === null || question === undefined) {
+    return false
+  }
+
+  return question.tag === 'ChooseDeck' || (question.tag === 'QuestionLabel' && question.question.tag === 'ChooseDeck')
 })
 
 const chosenImage = computed(() => {
@@ -281,7 +287,7 @@ const chosenDeckTabooList = computed(() => {
     outline: 0;
     border: 1px solid #000;
     padding: 15px;
-    background: #F2F2F2;
+    background: var(--background-dark);
     width: 100%;
     box-sizing: border-box;
     margin-bottom: 10px;
@@ -374,7 +380,7 @@ select {
 }
 
 .container {
-  background: #1C1D2E;
+  background: var(--background);
   width: 100%;
   max-width: unset;
   height: 100%;

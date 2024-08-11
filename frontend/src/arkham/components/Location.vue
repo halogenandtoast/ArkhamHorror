@@ -307,6 +307,7 @@ const debug = useDebug()
   width: calc($card-width + 4px);
   border-radius: 3px;
   box-sizing: border-box;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 
 .location-column :deep(.enemy) {

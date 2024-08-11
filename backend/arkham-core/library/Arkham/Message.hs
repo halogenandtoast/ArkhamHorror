@@ -50,6 +50,7 @@ import Arkham.Evade.Types
 import Arkham.Exception
 import Arkham.Field
 import Arkham.Fight.Types
+import Arkham.Game.State
 import Arkham.Helpers
 import Arkham.History
 import Arkham.Id
@@ -326,6 +327,7 @@ instance AndThen (CardDraw Message) where
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
+  | SetGameState GameState
   | Devour InvestigatorId
   | Devoured InvestigatorId Card
   | MoveWithSkillTest Message
@@ -1171,4 +1173,10 @@ chooseUpgradeDeck :: PlayerId -> Message
 chooseUpgradeDeck pid = Ask pid ChooseUpgradeDeck
 
 chooseDecks :: [PlayerId] -> Message
-chooseDecks pids = Run [ChoosingDecks, AskMap $ mapFromList $ map (,ChooseDeck) pids, DoneChoosingDecks]
+chooseDecks pids =
+  Run
+    [ SetGameState (IsChooseDecks pids)
+    , ChoosingDecks
+    , AskMap $ mapFromList $ map (,ChooseDeck) pids
+    , DoneChoosingDecks
+    ]

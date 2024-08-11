@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue';
+import { watch, ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { fetchDeck, deleteDeck, fetchCards, syncDeck } from '@/arkham/api';
-import { imgsrc } from '@/arkham/helpers';
+import { imgsrc, investigatorClass } from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/CardDef';
 import type {Deck} from '@/arkham/types/Deck';
 import Prompt from '@/components/Prompt.vue'
@@ -196,12 +196,33 @@ const deckInvestigator = computed(() => {
 
   return null
 })
+
+const deckClass = computed(() => {
+  if (deckInvestigator.value) {
+    return investigatorClass(deckInvestigator.value)
+  }
+
+  return {};
+})
+
+
+watch(deckRef, (el) => {
+  if (el !== null) {
+    const observer = new IntersectionObserver(
+      ([e]) => e.target.classList.toggle("is-pinned", e.intersectionRatio < 1),
+      { threshold: [1] }
+    );
+
+    observer.observe(el);
+  }
+})
+
 </script>
 
 <template>
   <div class="container">
     <div class="results">
-      <header class="deck" v-show="deck" ref="deckRef">
+      <header class="deck" v-show="deck" ref="deckRef" :class="deckClass">
         <template v-if="deck">
           <img v-if="deckInvestigator" class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator}.jpg`)" />
           <div class="deck--details">
@@ -264,9 +285,9 @@ const deckInvestigator = computed(() => {
 <style scoped lang="scss">
 .container {
   display: flex;
-  margin-top: 0;
   min-width: 60vw;
-  margin: auto;
+  margin: 0 auto;
+  margin-top: 20px;
 }
 
 .results {
@@ -383,7 +404,7 @@ i {
 }
 
 .pressed {
-  background-color: #777;
+  background-color: #333;
   color: white;
 }
 
@@ -405,7 +426,7 @@ i {
   justify-self: flex-end;
   align-self: flex-start;
   a {
-    color: #660000;
+    color: var(--title);
     &:hover {
       color: #990000;
     }
@@ -413,9 +434,10 @@ i {
 }
 
 .portrait--decklist {
-  width: 300px;
+  width: 200px;
   margin-right: 10px;
   border-radius: 10px;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 
 .deck-title {
@@ -431,17 +453,65 @@ i {
   color: #f0f0f0;
   margin: 0 20px;
   padding: 20px;
+
+  &.guardian {
+    background-color: var(--guardian-dark);
+    background: linear-gradient(30deg, var(--guardian-extra-dark), var(--guardian-dark));
+  }
+
+  &.seeker {
+    background: linear-gradient(30deg, var(--seeker-extra-dark), var(--seeker-dark));
+  }
+
+  &.rogue {
+    background: linear-gradient(30deg, var(--rogue-extra-dark), var(--rogue-dark));
+  }
+
+  &.mystic {
+    background: linear-gradient(30deg, var(--mystic-extra-dark), var(--mystic-dark));
+  }
+
+  &.survivor {
+    background: linear-gradient(30deg, var(--survivor-extra-dark), var(--survivor-dark));
+  }
+
+  &.neutral {
+    background-color: var(--neutral-dark);
+    background-image: linear-gradient(30deg, var(--neutral-extra-dark), var(--neutral-dark));
+  }
+
+  /*&.survivor::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+    background: #0000000d;
+    mask-position: left top;
+    mask-size: cover;
+    -webkit-mask-image: url(/img/arkham/masks/survivor.svg);
+    mask-image: url(/img/arkham/masks/survivor.svg);
+    z-index: -1;
+  }*/
   a {
-    color: #365488;
+    color: var(--title);
     font-weight: bolder;
+    &:hover {
+      color: rgba(0, 0, 0, 0.4);
+    }
   }
 
   display: flex;
 
   width: calc(100% - 40px);
   box-sizing: border-box;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+  border-radius: 10px;
+  &.is-pinned {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
   background-color: rgba(0,0,0,0.3);
 
   color: white;

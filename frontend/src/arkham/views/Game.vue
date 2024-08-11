@@ -410,6 +410,7 @@ provide('solo', solo)
   flex-direction: column;
   flex: 1;
   position: relative;
+  overflow: hidden;
 }
 
 .game-main {
@@ -445,7 +446,7 @@ provide('solo', solo)
 .sidebar {
   height: 100%;
   width: 25vw;
-  max-width: 500px;
+  max-width: 300px;
   display: flex;
   flex-direction: column;
   background: #d0d9dc;

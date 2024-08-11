@@ -136,7 +136,6 @@ const questionHash = computed(() => {
 }
 
 .game {
-  background-image: linear-gradient(darken(#E5EAEC, 10), #E5EAEC);
   width: 100%;
   z-index: 1;
 }
@@ -187,5 +186,9 @@ const questionHash = computed(() => {
 
 .question-label {
   text-align: center;
+  background-color: var(--background);
+  padding: 0;
+  margin: 0;
+  margin-top: 10px;
 }
 </style>

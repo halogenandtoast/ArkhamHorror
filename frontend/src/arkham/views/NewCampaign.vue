@@ -298,8 +298,7 @@ async function start() {
 
 <style lang="scss" scoped>
 .container {
-  width: 100%;
-  max-width: 800px;
+  min-width: 60vw;
   margin: 0 auto;
   margin-top: 20px;
 }
@@ -331,9 +330,9 @@ async function start() {
   }
   input[type=text] {
     outline: 0;
-    border: 1px solid #000;
+    border: 1px solid var(--background);
     padding: 15px;
-    background: #F2F2F2;
+    background: var(--background-dark);
     width: 100%;
     box-sizing: border-box;
     margin-bottom: 10px;
@@ -477,7 +476,11 @@ header {
   gap: 10px;
   line-height: 0;
 
-  grid-template-columns: repeat(auto-fill, calc((1 / 3 * 100%) - 7px));
+  grid-template-columns: repeat(auto-fill, calc((1 / 6 * 100%) - 9px));
+
+  @media (max-width: 1500px) {
+    grid-template-columns: repeat(auto-fill, calc((1 / 3 * 100%) - 7px));
+  }
 
   img {
     width: 100%;

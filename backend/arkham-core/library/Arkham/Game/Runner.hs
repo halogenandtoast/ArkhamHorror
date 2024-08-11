@@ -44,6 +44,7 @@ import Arkham.Game.Helpers hiding (
   withModifiers,
  )
 import Arkham.Game.Json ()
+import Arkham.Game.State
 import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
@@ -133,7 +134,8 @@ getInvestigatorsInOrder = do
 
 runGameMessage :: Runner Game
 runGameMessage msg g = case msg of
-  ChoosingDecks -> pure $ g & gameStateL .~ IsChooseDecks (g ^. playersL)
+  SetGameState s -> pure $ g & gameStateL .~ s
+  ChoosingDecks -> pure $ g & entitiesL . investigatorsL .~ mempty & gameStateL .~ IsChooseDecks (g ^. playersL)
   DoneChoosingDecks -> pure $ g & gameStateL .~ IsActive
   IncreaseCustomization iid cardCode customization choices -> do
     cards <- select $ OwnedBy (InvestigatorWithId iid) <> basic (CardWithCardCode cardCode)

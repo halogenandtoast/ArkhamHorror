@@ -7,7 +7,7 @@ import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
-import EditAsset from '@/arkham/components/EditAsset.vue';
+import DebugAsset from '@/arkham/components/debug/Asset.vue';
 import Key from '@/arkham/components/Key.vue';
 import Event from '@/arkham/components/Event.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
@@ -26,16 +26,14 @@ const props = defineProps<{
   playerId: string
 }>()
 
-const edit = ref(false)
+const debugging = ref(false)
 
 const emits = defineEmits<{
   choose: [value: number]
   showCards: [e: Event, cards: ComputedRef<Card[]>, title: string, isDiscards: boolean]
 }>()
 
-const investigatorId = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId)?.id)
 const id = computed(() => props.asset.id)
-
 const exhausted = computed(() => props.asset.exhausted)
 const cardCode = computed(() => props.asset.cardCode)
 const image = computed(() => {
@@ -91,7 +89,7 @@ const canInteract = computed(() => abilities.value.length > 0 || cardAction.valu
 const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
 const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
 
-const isSpirit = computed(() => props.asset.modifiers.some((m) => m.type.contents === 'IsSpirit'))
+const isSpirit = computed(() => (props.asset.modifiers ?? []).some((m) => m.type.contents === 'IsSpirit'))
 
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== MessageType.ABILITY_LABEL) {
@@ -276,7 +274,7 @@ const assetStory = computed(() => {
       />
       <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
       <template v-if="debug.active">
-        <button @click="edit = true">Debug</button>
+        <button @click="debugging = true">Debug</button>
       </template>
       <Asset
         v-for="assetId in asset.assets"
@@ -295,7 +293,7 @@ const assetStory = computed(() => {
         @choose="$emit('choose', $event)"
       />
     </div>
-    <EditAsset v-if="edit" :game="game" :asset="asset" :playerId="playerId" @close="edit = false" @choose="$emit('choose', $event)"/>
+    <DebugAsset v-if="debugging" :game="game" :asset="asset" :playerId="playerId" @close="edit = false" @choose="$emit('choose', $event)"/>
   </div>
 </template>
 

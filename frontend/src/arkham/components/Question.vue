@@ -874,7 +874,6 @@ h2 {
 }
 
 .choices {
-  padding-bottom: 20px;
   text-align: center;
 }
 

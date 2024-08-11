@@ -91,7 +91,7 @@ export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>
   JsonDecoder.isExactly('Wish'),
 ], 'Token');
 
-export type Tokens = { [key in Token]?: number };
+export type Tokens = Partial<Record<Token, number>>;
 
 export function isUse(t: Token): boolean {
   return t !== 'Damage' && t !== 'Horror' && t !== 'Clue' && t !== 'Doom';

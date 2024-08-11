@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 
 import Draggable from '@/components/Draggable.vue';
+import PoolItem from '@/arkham/components/PoolItem.vue';
 import { computed } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import type { Game } from '@/arkham/types/Game';
@@ -26,6 +27,10 @@ const image = computed(() => {
 
 const clues = computed(() => props.location.tokens[TokenType.Clue])
 
+const hasPool = computed(() => {
+  return clues.value > 0;
+})
+
 </script>
 
 <template>
@@ -36,6 +41,13 @@ const clues = computed(() => props.location.tokens[TokenType.Clue])
         <div class="card-frame">
           <div class="card-wrapper">
             <img :src="image" class="card-no-overlay" />
+          </div>
+          <div v-if="hasPool" class="pool">
+            <PoolItem
+              v-if="clues > 0"
+              type="clue"
+              :amount="clues"
+            />
           </div>
         </div>
       </div>
@@ -61,6 +73,7 @@ const clues = computed(() => props.location.tokens[TokenType.Clue])
 .location {
   display: flex;
   flex-direction: column;
+  gap: 10px;
 }
 
 .buttons {
@@ -76,6 +89,7 @@ const clues = computed(() => props.location.tokens[TokenType.Clue])
   display: flex;
   flex-direction: row;
   align-items: center;
+  gap: 10px;
 }
 
 .card-frame {
@@ -83,5 +97,23 @@ const clues = computed(() => props.location.tokens[TokenType.Clue])
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.pool {
+  position: absolute;
+  top: 40%;
+  align-items: center;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  :deep(.token-container) {
+    width: unset;
+  }
+  :deep(img) {
+    width: 20px;
+    height: auto;
+  }
+
+  pointer-events: none;
 }
 </style>

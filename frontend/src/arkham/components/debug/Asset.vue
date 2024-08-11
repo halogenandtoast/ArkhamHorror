@@ -19,7 +19,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{ close: [] }>()
 const placeTokens = ref(false);
-const placeTokenType = ref<Token>("Evidence");
+const placeTokenType = ref<Token>(Object.entries(props.asset.tokens).filter(([k, v]) => isUse(k) && v > 0)[0][0] ?? "Evidence");
 
 const isNumber = (value: unknown): value is number => typeof value === 'number';
 const anyTokens = computed(() => Object.values(props.asset.tokens).some(t => isNumber(t) && t > 0))

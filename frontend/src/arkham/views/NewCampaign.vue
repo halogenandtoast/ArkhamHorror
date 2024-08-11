@@ -226,7 +226,7 @@ async function start() {
             <!-- <select v-model="selectedCampaign"> -->
               <div class="campaigns">
                 <div v-for="campaign in campaigns" :key="campaign.id" class="campaign">
-                  <img class="campaign-box" :class="{ 'selected-campaign': selectedCampaign == campaign.id }" :src="imgsrc(`boxes/${campaign.id}.jpg`)" @click="selectCampaign(campaign.id)">
+                  <input type="image" class="campaign-box" :class="{ 'selected-campaign': selectedCampaign == campaign.id }" :src="imgsrc(`boxes/${campaign.id}.jpg`)" @click.prevent="selectCampaign(campaign.id)">
                 </div>
               </div>
             <!-- </select> -->
@@ -431,6 +431,10 @@ input[type=checkbox]:checked + label {
   &.invert {
     background-color: desaturate(#6E8640, 30%);
   }
+}
+
+input[type=image] {
+  width: 100%;
 }
 
 .invert[type=checkbox] + label {

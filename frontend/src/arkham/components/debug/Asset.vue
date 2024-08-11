@@ -138,6 +138,8 @@ const hasPool = computed(() => {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  flex: 1;
+  gap: 5px;
 }
 
 .asset--outer {

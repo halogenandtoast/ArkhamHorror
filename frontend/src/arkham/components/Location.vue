@@ -4,6 +4,7 @@ import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game';
+import DebugLocation from '@/arkham/components/debug/Location.vue';
 import { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
 import Key from '@/arkham/components/Key.vue';
 import Locus from '@/arkham/components/Locus.vue';
@@ -23,6 +24,7 @@ export interface Props {
   playerId: string
 }
 
+const debugging = ref(false)
 const showAbilities = ref<boolean>(false)
 const abilitiesEl = ref<HTMLElement | null>(null)
 
@@ -196,104 +198,105 @@ const debug = useDebug()
 </script>
 
 <template>
-  <div class="location-container">
-    <div class="location-investigator-column">
-      <div
-        v-for="cardCode in location.investigators"
-        :key="cardCode"
-      >
-        <Investigator
-          :game="game"
-          :choices="choices"
-          :playerId="playerId"
-          :portrait="true"
-          :investigator="game.investigators[cardCode]"
-          @choose="$emit('choose', $event)"
-          />
-      </div>
-    </div>
-    <div class="location-column">
-      <div class="card-frame" :class="{ explosion }">
-        <Locus v-if="locus" class="locus" />
-        <font-awesome-icon v-if="blocked" :icon="['fab', 'expeditedssl']" class="status-icon" />
-
-        <img
-          :data-id="id"
-          class="card"
-          :src="image"
-          :class="{ 'location--can-interact': canInteract }"
-          @click="clicked"
-        />
-
-        <div class="pool">
-          <Key v-for="key in keys" :key="key" :name="key" />
-          <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
-          <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
-          <PoolItem v-if="horror && horror > 0" type="horror" :amount="horror" />
-          <PoolItem v-if="damage && damage > 0" type="health" :amount="damage" />
-          <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
-          <PoolItem v-if="leylines && leylines > 0" type="resource" tooltip="Leyline" :amount="leylines" />
-          <PoolItem v-if="depth && depth > 0" type="resource" :amount="depth" />
-          <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
-          <PoolItem v-if="location.brazier && location.brazier === 'Lit'" type="resource" :amount="1" />
-          <PoolItem v-if="location.cardsUnderneath.length > 0" type="card" :amount="location.cardsUnderneath.length" />
+  <div>
+    <div class="location-container">
+      <div class="location-investigator-column">
+        <div
+          v-for="cardCode in location.investigators"
+          :key="cardCode"
+        >
+          <Investigator
+            :game="game"
+            :choices="choices"
+            :playerId="playerId"
+            :portrait="true"
+            :investigator="game.investigators[cardCode]"
+            @choose="$emit('choose', $event)"
+            />
         </div>
       </div>
-      <div v-if="showAbilities" class="abilities" :data-image="image" tabindex="-1" @focus="handleFocus" @focusout="handleFocusOut" ref="abilitiesEl">
-        <AbilityButton
-          v-for="ability in abilities"
-          :key="ability.index"
-          :ability="ability.contents"
-          :show-move="false"
-          @click="chooseAbility(ability.index)"
-          />
-      </div>
+      <div class="location-column">
+        <div class="card-frame" :class="{ explosion }">
+          <Locus v-if="locus" class="locus" />
+          <font-awesome-icon v-if="blocked" :icon="['fab', 'expeditedssl']" class="status-icon" />
 
-      <template v-if="debug.active">
-        <button v-if="!location.revealed" @click="debug.send(game.id, {tag: 'RevealLocation', contents: [null, id]})">Reveal</button>
-        <button v-if="clues && clues > 0" @click="debug.send(game.id, {tag: 'RemoveTokens', contents: [{ tag: 'TestSource', contents: []}, { tag: 'LocationTarget', contents: id }, 'Clue', clues]})">Remove Clues</button>
-        <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{ tag: 'TestSource', contents: []}, { tag: 'LocationTarget', contents: id }, 'Clue', 1]})">Place Clue</button>
-      </template>
+          <img
+            :data-id="id"
+            class="card"
+            :src="image"
+            :class="{ 'location--can-interact': canInteract }"
+            @click="clicked"
+          />
+
+          <div class="pool">
+            <Key v-for="key in keys" :key="key" :name="key" />
+            <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
+            <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
+            <PoolItem v-if="horror && horror > 0" type="horror" :amount="horror" />
+            <PoolItem v-if="damage && damage > 0" type="health" :amount="damage" />
+            <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
+            <PoolItem v-if="leylines && leylines > 0" type="resource" tooltip="Leyline" :amount="leylines" />
+            <PoolItem v-if="depth && depth > 0" type="resource" :amount="depth" />
+            <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
+            <PoolItem v-if="location.brazier && location.brazier === 'Lit'" type="resource" :amount="1" />
+            <PoolItem v-if="location.cardsUnderneath.length > 0" type="card" :amount="location.cardsUnderneath.length" />
+          </div>
+        </div>
+        <div v-if="showAbilities" class="abilities" :data-image="image" tabindex="-1" @focus="handleFocus" @focusout="handleFocusOut" ref="abilitiesEl">
+          <AbilityButton
+            v-for="ability in abilities"
+            :key="ability.index"
+            :ability="ability.contents"
+            :show-move="false"
+            @click="chooseAbility(ability.index)"
+            />
+        </div>
+
+        <template v-if="debug.active">
+          <button @click="debugging = true">Debug</button>
+        </template>
+      </div>
+      <div class="attachments">
+        <Treachery
+          v-for="treacheryId in treacheries"
+          :key="treacheryId"
+          :treachery="game.treacheries[treacheryId]"
+          :game="game"
+          :attached="true"
+          :playerId="playerId"
+          @choose="$emit('choose', $event)"
+        />
+        <Event
+          v-for="eventId in location.events"
+          :event="game.events[eventId]"
+          :game="game"
+          :playerId="playerId"
+          :key="eventId"
+          @choose="$emit('choose', $event)"
+          :attached="true"
+        />
+      </div>
+      <div class="location-asset-column">
+        <Asset
+          v-for="assetId in location.assets"
+          :asset="game.assets[assetId]"
+          :game="game"
+          :playerId="playerId"
+          :key="assetId"
+          @choose="$emit('choose', $event)"
+        />
+        <Enemy
+          v-for="enemyId in enemies"
+          :key="enemyId"
+          :enemy="game.enemies[enemyId]"
+          :game="game"
+          :playerId="playerId"
+          :atLocation="true"
+          @choose="$emit('choose', $event)"
+        />
+      </div>
     </div>
-    <div class="attachments">
-      <Treachery
-        v-for="treacheryId in treacheries"
-        :key="treacheryId"
-        :treachery="game.treacheries[treacheryId]"
-        :game="game"
-        :attached="true"
-        :playerId="playerId"
-        @choose="$emit('choose', $event)"
-      />
-      <Event
-        v-for="eventId in location.events"
-        :event="game.events[eventId]"
-        :game="game"
-        :playerId="playerId"
-        :key="eventId"
-        @choose="$emit('choose', $event)"
-        :attached="true"
-      />
-    </div>
-    <div class="location-asset-column">
-      <Asset
-        v-for="assetId in location.assets"
-        :asset="game.assets[assetId]"
-        :game="game"
-        :playerId="playerId"
-        :key="assetId"
-        @choose="$emit('choose', $event)"
-      />
-      <Enemy
-        v-for="enemyId in enemies"
-        :key="enemyId"
-        :enemy="game.enemies[enemyId]"
-        :game="game"
-        :playerId="playerId"
-        :atLocation="true"
-        @choose="$emit('choose', $event)"
-      />
-    </div>
+    <DebugLocation v-if="debugging" :game="game" :location="location" :playerId="playerId" @close="debugging = false" @choose="$emit('choose', $event)"/>
   </div>
 </template>
 

@@ -293,7 +293,7 @@ const assetStory = computed(() => {
         @choose="$emit('choose', $event)"
       />
     </div>
-    <DebugAsset v-if="debugging" :game="game" :asset="asset" :playerId="playerId" @close="edit = false" @choose="$emit('choose', $event)"/>
+    <DebugAsset v-if="debugging" :game="game" :asset="asset" :playerId="playerId" @close="debugging = false" @choose="$emit('choose', $event)"/>
   </div>
 </template>
 

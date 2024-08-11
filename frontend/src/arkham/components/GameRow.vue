@@ -221,6 +221,7 @@ h2 {
   overflow: hidden;
   border-radius: 5px;
   margin-right: 10px;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 
   &.survivor {
     border: 3px solid $survivor;

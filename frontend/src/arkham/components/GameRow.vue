@@ -67,21 +67,25 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
           <img class="campaign-icon" :src="imgsrc(`sets/${campaign.id}.png`)" />
         </div>
         <div class="campaign-icon-container" v-else-if="scenario">
-          <img class="campaign-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '').slice(0,2)}.png`)" />
+          <img class="campaign-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '')}.png`)" />
         </div>
         <router-link class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
-        <div v-if="scenario" class="scenario-details">
+        <div v-if="campaign && scenario" class="scenario-details">
           <img class="scenario-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '')}.png`)" />
           <span>{{scenario.name.title}}</span>
         </div>
         <div class="game-difficulty">{{difficulty}}</div>
 
         <div class="game-delete">
-          <a v-if="!deleting" href="#delete" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
-          <div class="delete-buttons" v-if="deleting">
-            <button href="#delete" @click.prevent="deleting = false">Cancel</button>
-            <button class="delete-button" href="#delete" @click.prevent="deleteGame">Delete</button>
-          </div>
+            <transition name="slide">
+              <a v-show="!deleting" href="#delete" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
+            </transition>
+            <transition name="slide">
+              <div class="delete-buttons" v-show="deleting">
+                <button href="#delete" @click.prevent="deleting = false">Cancel</button>
+                <button class="delete-button" href="#delete" @click.prevent="deleteGame">Delete</button>
+              </div>
+            </transition>
         </div>
       </div>
       <div class="game-subdetails">
@@ -163,8 +167,11 @@ h2 {
 }
 
 .game-delete {
+  transition: all 0.5s;
   margin: 0 10px;
+  position: relative;
   align-self: center;
+  display: flex;
   a {
     font-size: 1.2em;
     color: #660000;
@@ -371,5 +378,26 @@ h2 {
   .delete-button {
     background-color: #660000;
   }
+}
+
+.slide-leave-active ,
+.slide-enter-active {
+  transition: all 0.3s linear;
+}
+
+.slide-enter-active {
+  transition-delay: 0.2s;
+}
+
+.slide-enter-to,
+.slide-leave-from {
+  max-width: 1000px;
+  opacity: 1;
+}
+
+.slide-enter-from, .slide-leave-to {
+  overflow: hidden;
+  max-width: 0;
+  opacity: 0;
 }
 </style>

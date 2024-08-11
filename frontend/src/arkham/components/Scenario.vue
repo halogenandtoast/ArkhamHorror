@@ -9,7 +9,7 @@ import {
 } from 'vue';
 import { type Game } from '@/arkham/types/Game';
 import { type Scenario } from '@/arkham/types/Scenario';
-import { type Card, toCardContents } from '@/arkham/types/Card';
+import { type Card } from '@/arkham/types/Card';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc, pluralize } from '@/arkham/helpers';
@@ -49,7 +49,7 @@ onMounted(() => {
   }
 });
 
-function waitForImagesToLoad(callback) {
+function waitForImagesToLoad(callback: () => void) {
   const images = document.querySelectorAll('img')
   const totalImages = images.length
   let loadedCount = 0
@@ -88,7 +88,7 @@ const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
 function rotateImages(init) {
   const atlachNacha = document.querySelector('[data-label=atlachNacha]')
   const locationCards = document.querySelector('.location-cards')
-  if (atlachNacha) {
+  if (atlachNacha && locationCards) {
     needsInit.value = false
     const inLocation = locationCards.querySelector('[data-label=atlachNacha]')
 
@@ -189,22 +189,6 @@ const scenarioDecks = computed(() => {
   return Object.entries(props.scenario.decks)
 })
 
-const transpose = (matrix: any[][]) => matrix[0].map((_col, i) => matrix.map(row => row[i]))
-
-// Removed empty rows and columns from the location layout
-const cleanLocationLayout = (locationLayout: string[]) => {
-  const labels = [...locations.value.map((location) => location.label),...enemiesAsLocations.value.map((enemy) => enemy.asSelfLocation), ...unusedLabels.value]
-
-  if(labels.length === 0) return locationLayout
-
-  const rows = locationLayout.map((r) => r.split(/\s+/).filter((c) => c !== ''))
-  const cleanedRows = rows.filter((row) => row.some(cell => labels.some(l => l === cell)))
-  const transposed = transpose(cleanedRows)
-  const cleanedCols = transposed.filter((col) => col.some(cell => labels.some(l => l === cell)))
-
-  return transpose(cleanedCols).map((row) => row.join(' '))
-}
-
 const locationStyles = computed(() => {
   const { locationLayout } = props.scenario
   if (!locationLayout) return null
@@ -223,13 +207,6 @@ const scenarioDeckStyles = computed(() => {
     'grid-template-areas': decksLayout.map((row) => `"${row}"`).join(' '),
     'grid-row-gap': '10px',
   }
-})
-
-const activeCard = computed(() => {
-  if (!props.game.activeCard) return null
-
-  const { cardCode } = toCardContents(props.game.activeCard)
-  return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`)
 })
 
 const players = computed(() => props.game.investigators)
@@ -628,6 +605,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   border-radius: 6px;
   margin: 2px;
   width: var(--card-width);
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 
 .card--sideways {

@@ -145,8 +145,7 @@ const debug = useDebug()
 <style scoped lang="scss">
 .card {
   width: var(--card-width);
-  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.23), 0 3px 6px rgba(0, 0, 0, 0.53);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.23), 0 3px 6px rgba(0, 0, 0, 0.53);
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
   border-radius: 6px;
   margin: 2px;
 }

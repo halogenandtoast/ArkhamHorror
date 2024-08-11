@@ -29,8 +29,8 @@ const difficulty = computed<Difficulty>(() => {
 })
 
 const currentHeading = computed(() => {
-  if (campaign.value.meta?.currentCampaignMode) {
-    return campaign.value.meta.currentCampaignMode === "TheWebOfDreams" ? "The Web of Dreams" : "The Dream-Quest"
+  if (campaign.value?.meta?.currentCampaignMode) {
+    return campaign.value?.meta.currentCampaignMode === "TheWebOfDreams" ? "The Web of Dreams" : "The Dream-Quest"
   }
 
   return null

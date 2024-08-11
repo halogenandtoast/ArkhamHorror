@@ -511,6 +511,7 @@ i {
   &.is-pinned {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+    opacity: 0.98;
   }
   background-color: rgba(0,0,0,0.3);
 

@@ -244,7 +244,6 @@ h2 {
   background: rgba(255,255,255,0.02);
   flex-grow: 1;
   position: relative;
-  gap: 10px;
 
   h2 {
     margin: 0;
@@ -323,25 +322,26 @@ h2 {
 
 .other-subdetails {
   text-transform: uppercase;
-  background: rgba(0, 0, 0, 0.5);
   display: flex;
   flex: 1;
   flex-direction: column;
+  background: var(--box-background);
 
   h2 {
+    background: rgba(255,255,255,0.02);
     color: var(--title);
     font-size: 1em;
     margin: 0;
     padding: 0;
-    background: var(--background-dark);
     padding: 2px 5px;
   }
 }
 
 .other-investigators {
+  background: var(--background-dark);
   display: flex;
   padding: 10px;
-  opacity: 0.5;
+  flex: 1;
 }
 
 .game-difficulty {

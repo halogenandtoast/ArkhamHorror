@@ -376,7 +376,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
             :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }"
             @click="choose(tarotCardAbility(tarotCard))"
           >
-            <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" />
+            <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" :class="tarotCard.facing" class="card tarot-card" />
           </div>
         </div>
         <div v-if="topEnemyInVoid">

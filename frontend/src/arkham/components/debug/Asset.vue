@@ -2,12 +2,12 @@
 import Draggable from '@/components/Draggable.vue';
 import { computed, ref } from 'vue';
 import { useDebug } from '@/arkham/debug';
-import { TokenType } from '@/arkham/types/Token';
+import { TokenType, Token } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
 import type { Game } from '@/arkham/types/Game';
 import Key from '@/arkham/components/Key.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
-import Token from '@/arkham/components/Token.vue';
+import TokenView from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Asset';
 import {isUse} from '@/arkham/types/Token';
 
@@ -19,7 +19,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{ close: [] }>()
 const placeTokens = ref(false);
-const placeTokenType = ref<TokenType>("Evidence");
+const placeTokenType = ref<Token>("Evidence");
 
 const isNumber = (value: unknown): value is number => typeof value === 'number';
 const anyTokens = computed(() => Object.values(props.asset.tokens).some(t => isNumber(t) && t > 0))
@@ -90,7 +90,7 @@ const hasPool = computed(() => {
             />
             <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
             <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
-            <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" />
+            <TokenView v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" />
           </div>
         </div>
       </div>

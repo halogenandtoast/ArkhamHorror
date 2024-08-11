@@ -252,8 +252,6 @@ const chosenDeckTabooList = computed(() => {
   box-sizing: border-box;
   width: 100%;
   color: #FFF;
-  background-color: #15192C;
-  padding: 10px;
   border-radius: 3px;
   button {
     outline: 0;
@@ -411,11 +409,13 @@ form {
   img {
     width: 100%;
     border-radius: 5px;
+    box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
   }
 }
 
 .portrait-empty {
   aspect-ratio: 63/97;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
   background: rgba(100, 100, 100, 0.5);
   display: flex;
   align-items: center;
@@ -430,7 +430,7 @@ form {
 .investigator-row {
   padding: 10px;
   background: rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
+  border-radius: 10px;
   display: flex;
   gap: 10px;
   justify-items: flex-start;

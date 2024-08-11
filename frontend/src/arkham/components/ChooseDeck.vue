@@ -449,7 +449,7 @@ form {
     flex: 1;
 
     & :deep(.modal-contents) {
-      border-radius: 15px;
+      border-radius: 5px;
       form {
         width: 100%;
         align-items: flex-start;

@@ -259,6 +259,9 @@ body {
   --title: #cecece;
   --spooky-green: #879C5A;
 
+  --button-1: #6E8640;
+  --button-1-highlight: #5a6e34;
+
   color-scheme: dark;
 }
 </style>

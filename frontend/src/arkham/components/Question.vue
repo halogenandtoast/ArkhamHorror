@@ -638,9 +638,9 @@ button:hover {
 }
 
 .card {
-  width: min-width($card-width * 2);
+  width: min-width(calc(var(--card-width) * 2));
   margin: 2px;
-  height: max($card-width * 2);
+  height: max(calc(var(--card-width) * 2));
 }
 
 .question-label {
@@ -665,13 +665,13 @@ button:hover {
 
 .portrait {
   border-radius: 3px;
-  width: $card-width;
+  width: var(--card-width);
   margin: 10px;
 
   .card {
     border-radius: 5px;
     width: auto;
-    height: max($card-width * 2);
+    height: max(calc(var(--card-width) * 2));
   }
 
   .card.active {
@@ -819,7 +819,7 @@ h2 {
 }
 
 .card-pile .portrait {
-  width: calc($card-width / 2);
+  width: calc(var(--card-width) / 2);
 }
 
 .modal-contents {

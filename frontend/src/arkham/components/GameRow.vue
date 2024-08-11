@@ -63,29 +63,33 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
   <div class="game" :class="{ 'finished-game': game.gameState.tag == 'IsOver' }">
     <div class="game-details">
       <div class="game-title">
-        <div class="campaign-icon-container" v-if="campaign">
-          <img class="campaign-icon" :src="imgsrc(`sets/${campaign.id}.png`)" />
+        <div class="main-details">
+          <div class="campaign-icon-container" v-if="campaign">
+            <img class="campaign-icon" :src="imgsrc(`sets/${campaign.id}.png`)" />
+          </div>
+          <div class="campaign-icon-container" v-else-if="scenario">
+            <img class="campaign-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '')}.png`)" />
+          </div>
+          <router-link class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
         </div>
-        <div class="campaign-icon-container" v-else-if="scenario">
-          <img class="campaign-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '')}.png`)" />
-        </div>
-        <router-link class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
         <div v-if="campaign && scenario" class="scenario-details">
           <img class="scenario-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '')}.png`)" />
           <span>{{scenario.name.title}}</span>
         </div>
-        <div class="game-difficulty">{{difficulty}}</div>
+        <div class="extra-details">
+          <div class="game-difficulty">{{difficulty}}</div>
 
-        <div class="game-delete">
-            <transition name="slide">
-              <a v-show="!deleting" href="#delete" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
-            </transition>
-            <transition name="slide">
-              <div class="delete-buttons" v-show="deleting">
-                <button href="#delete" @click.prevent="deleting = false">Cancel</button>
-                <button class="delete-button" href="#delete" @click.prevent="deleteGame">Delete</button>
-              </div>
-            </transition>
+          <div class="game-delete">
+              <transition name="slide">
+                <a v-show="!deleting" href="#delete" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
+              </transition>
+              <transition name="slide">
+                <div class="delete-buttons" v-show="deleting">
+                  <button href="#delete" @click.prevent="deleting = false">Cancel</button>
+                  <button class="delete-button" href="#delete" @click.prevent="deleteGame">Delete</button>
+                </div>
+              </transition>
+            </div>
         </div>
       </div>
       <div class="game-subdetails">
@@ -193,6 +197,16 @@ h2 {
   span {
     line-height: 25px;
   }
+
+  @media (max-width: 600px) {
+    margin: 0;
+    padding: 0;
+    justify-content: flex-start;
+    img {
+      margin: 0;
+      margin-right: 10px;
+    }
+  }
 }
 
 .title {
@@ -290,6 +304,17 @@ h2 {
   flex: 1;
 }
 
+
+
+.main-details, .extra-details {
+  display: flex;
+  align-items: center;
+}
+
+.main-details {
+  flex: 1;
+}
+
 .game-title {
   display: flex;
   flex-direction: row;
@@ -298,6 +323,16 @@ h2 {
   box-sizing: border-box;
   position: relative;
   border-bottom: 1px solid var(--box-border);
+
+  @media (max-width: 600px) {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8em;
+    align-items: flex-start;
+    img { width: 20px; height: auto; }
+    gap: 10px;
+  }
+
   * {
     z-index: 1;
   }

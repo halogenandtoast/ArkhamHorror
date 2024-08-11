@@ -66,7 +66,7 @@ function skillId(card: Card) {
 
 .card-row-cards {
   position: relative;
-  height: $card-width * 1.4;
+  height: calc(var(--card-width) * 1.4);
   padding-bottom: 10px;
 }
 
@@ -75,7 +75,7 @@ function skillId(card: Card) {
 }
 
 .card {
-  width: $card-width;
+  width: var(--card-width);
   border-radius: 6px;
   margin: 2px;
 }

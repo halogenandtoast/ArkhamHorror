@@ -444,6 +444,9 @@ provide('solo', solo)
 }
 
 .sidebar {
+  @media (max-width: 800px) {
+    display: none;
+  }
   height: 100%;
   width: 25vw;
   max-width: 300px;

@@ -144,8 +144,8 @@ const abilities = computed(() => {
 }
 
 .card {
-  width: $card-width;
-  max-width: $card-width;
+  width: var(--card-width);
+  max-width: var(--card-width);
   border-radius: 5px;
 }
 </style>

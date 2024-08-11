@@ -304,21 +304,21 @@ const debug = useDebug()
 }
 
 .card {
-  width: calc($card-width + 4px);
+  width: calc(var(--card-width) + 4px);
   border-radius: 3px;
   box-sizing: border-box;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 
 .location-column :deep(.enemy) {
-  width: $card-width * 0.8;
+  width: calc(var(--card-width) * 0.8);
 
 }
 
 .location-column :deep(.treachery) {
   object-fit: cover;
   object-position: 0 -74px;
-  height: $card-width * 0.35;
+  height: calc(var(--card-width) * 0.35);
   margin-top: 2px;
 }
 
@@ -388,10 +388,10 @@ const debug = useDebug()
   position: absolute;
   left: 100%;
   padding: 0 10px;
-  min-width: $card-width * 0.8;
+  min-width: calc(var(--card-width) * 0.8);
   height: fit-content;
   &:deep(.card) {
-    width: $card-width * 0.8 !important;
+    width: calc(var(--card-width) * 0.8) !important;
   }
 
   &:hover {
@@ -481,8 +481,8 @@ const debug = useDebug()
 }
 
 .locus {
-  width: calc($card-width - 20px);
-  height: calc($card-width - 20px);
+  width: calc(var(--card-width) - 20px);
+  height: calc(var(--card-width) - 20px);
   position: absolute;
   pointer-events: none;
   top: 5px;

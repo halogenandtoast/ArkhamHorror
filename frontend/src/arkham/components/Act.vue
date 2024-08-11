@@ -166,7 +166,7 @@ async function chooseAbility(ability: AbilityMessage) {
 
 <style scoped lang="scss">
 .card {
-  width: $card-width;
+  width: var(--card-width);
   border-radius: inherit;
 }
 
@@ -182,7 +182,7 @@ async function chooseAbility(ability: AbilityMessage) {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.23), 0 3px 6px rgba(0, 0, 0, 0.53);
   position: relative;
   border-radius: 6px;
-  height: $card-width;
+  height: var(--card-width);
 }
 
 @property --gradient-angle {
@@ -224,7 +224,7 @@ async function chooseAbility(ability: AbilityMessage) {
 
 .card--sideways {
   width: auto;
-  height: $card-width;
+  height: var(--card-width);
 }
 
 .act--can-progress {

@@ -126,8 +126,8 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
 
 <style lang="scss" scoped>
 .card {
-  width: $card-width;
-  max-width: $card-width;
+  width: var(--card-width);
+  max-width: var(--card-width);
   border-radius: 5px;
 }
 
@@ -145,7 +145,7 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
 .attached .card {
   object-fit: cover;
   object-position: left bottom;
-  height: $card-width*0.6;
+  height: calc(var(--card-width) * 0.6);
 }
 
 .pool {

@@ -627,12 +627,12 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   /*box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);*/
   border-radius: 6px;
   margin: 2px;
-  width: $card-width;
+  width: var(--card-width);
 }
 
 .card--sideways {
   width: auto;
-  height: $card-width * 2;
+  height: calc(var(--card-width) * 2);
 }
 
 .scenario-cards {
@@ -914,7 +914,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 }
 
 .tarot-card {
-  width: $card-width;
+  width: var(--card-width);
   aspect-ratio: 8 / 14;
 
 }

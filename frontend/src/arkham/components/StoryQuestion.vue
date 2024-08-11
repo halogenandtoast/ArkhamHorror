@@ -183,6 +183,6 @@ button {
 }
 
 .card {
-  width: $card-width * 2;
+  width: calc(var(--card-width) * 2);
 }
 </style>

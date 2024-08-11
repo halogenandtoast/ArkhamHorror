@@ -144,8 +144,8 @@ const hasPool = computed(() => {
 <style scoped lang="scss">
 
 .card {
-  width: $card-width;
-  min-width: $card-width;
+  width: var(--card-width);
+  min-width: var(--card-width);
   border-radius: 7px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 6px;

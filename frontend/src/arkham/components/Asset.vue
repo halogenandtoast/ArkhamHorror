@@ -299,8 +299,8 @@ const assetStory = computed(() => {
 
 <style lang="scss" scoped>
 .card {
-  width: $card-width;
-  max-width: $card-width;
+  width: var(--card-width);
+  max-width: var(--card-width);
   border-radius: 5px;
   transform: rotate(0deg);
   transition: transform 0.2s linear;

@@ -262,6 +262,12 @@ body {
   --button-1: #6E8640;
   --button-1-highlight: #5a6e34;
 
+  --card-width: 60px;
+
+  @media (max-width: 800px) {
+    --card-width: 40px;
+  }
+
   color-scheme: dark;
 }
 </style>

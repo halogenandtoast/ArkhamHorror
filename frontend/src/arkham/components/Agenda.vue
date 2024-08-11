@@ -144,7 +144,7 @@ const debug = useDebug()
 
 <style scoped lang="scss">
 .card {
-  width: $card-width;
+  width: var(--card-width);
   -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.23), 0 3px 6px rgba(0, 0, 0, 0.53);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.23), 0 3px 6px rgba(0, 0, 0, 0.53);
   border-radius: 6px;
@@ -153,7 +153,7 @@ const debug = useDebug()
 
 .card--sideways {
   width: auto;
-  height: $card-width;
+  height: var(--card-width);
 }
 
 .agenda-container {

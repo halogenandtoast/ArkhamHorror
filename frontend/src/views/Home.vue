@@ -3,7 +3,6 @@ import { ref, computed, Ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter, useRoute } from 'vue-router';
 import { debugGame, deleteGame, fetchGames } from '@/arkham/api';
-import Prompt from '@/components/Prompt.vue'
 import type { Game } from '@/arkham/types/Game';
 import type { User } from '@/types';
 import GameRow from '@/arkham/components/GameRow.vue';
@@ -62,6 +61,9 @@ const toggleNewGame = () => {
     <transition name="slide">
       <div v-if="!newGame">
         <h2>{{$t('activeGames')}}</h2>
+        <div v-if="activeGames.length === 0" class="box">
+          <p>No active games.</p>
+        </div>
         <GameRow v-for="game in activeGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
 
         <h2 v-if="finishedGames.length > 0">{{$t('finishedGames')}}</h2>
@@ -69,7 +71,8 @@ const toggleNewGame = () => {
 
         <template v-if="currentUser && currentUser.beta === true">
           <h2>{{$t('debugGame')}}</h2>
-          <form enctype="multipart/form-data" method=POST>
+          <form enctype="multipart/form-data" method=POST class="box">
+            <p>Load a game previously exported view the "Debug Export"</p>
             <input type="file" name="debugFile" accept="application/json" class="input-file" ref="debugFile" />
             <button @click="submitDebugUpload">{{$t('debugGame')}}</button>
           </form>
@@ -86,6 +89,9 @@ h2 {
   font-size: 2em;
   text-transform: uppercase;
   font-family: teutonic, sans-serif;
+  @media (max-width: 600px) {
+      text-align: center;
+  }
 }
 
 .new-game {
@@ -107,6 +113,7 @@ h2 {
 }
 
 .home {
+  max-width: 98vw;
   min-width: 60vw;
   margin: 0 auto;
 }
@@ -138,6 +145,30 @@ button.cancel-new-game-button {
   background-color: $survivor;
   &:hover {
     background-color: darken($survivor, 10);
+  }
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
+.box {
+  background-color: var(--box-background);
+  border: 1px solid var(--box-border);
+  color: var(--title);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+form.box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  button {
+    text-transform: uppercase;
+    padding: 10px;
   }
 }
 </style>

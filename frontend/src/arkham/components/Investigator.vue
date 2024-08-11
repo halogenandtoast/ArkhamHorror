@@ -136,7 +136,8 @@ const image = computed(() => {
   }
 
   const mutated = props.investigator.mutated ? `_${props.investigator.mutated}` : ''
-  return imgsrc(`cards/${props.investigator.art.replace('c', '')}${mutated}.jpg`);
+  const classVariant = props.investigator.cardCode === 'c03006' && props.investigator.class !== 'Neutral' ? `_${props.investigator.class}` : ''
+  return imgsrc(`cards/${props.investigator.art.replace('c', '')}${classVariant}${mutated}.jpg`);
 })
 
 const portraitImage = computed(() => {

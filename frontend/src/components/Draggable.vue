@@ -3,8 +3,6 @@ import { ref } from 'vue'
 
 const posX = ref(0)
 const posY = ref(0)
-const width = ref(0)
-const height = ref(0)
 
 function drag(e: MouseEvent) {
   if (e.target instanceof HTMLElement && e.target.tagName === "HEADER") {
@@ -13,8 +11,6 @@ function drag(e: MouseEvent) {
       e.preventDefault()
       posX.value = e.clientX
       posY.value = e.clientY
-      width.value = parent.offsetWidth
-      height.value = parent.offsetHeight
       document.onmouseup = stopDrag
       document.onmousemove = elementDrag(parent)
     }
@@ -62,7 +58,8 @@ function elementDrag(el: HTMLElement) {
 .draggable {
   position: absolute;
   width: fit-content;
-  max-width: 50%;
+  max-width: 70%;
+  min-width: 40%;
   top: 50%;
   left: 50%;
   background: hsl(150.9 13.6% 52.4% / 80%);

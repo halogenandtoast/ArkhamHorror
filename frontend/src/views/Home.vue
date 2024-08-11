@@ -13,7 +13,6 @@ const route = useRoute()
 const router = useRouter()
 const store = useUserStore()
 const currentUser = computed<User | null>(() => store.getCurrentUser)
-const deleteId = ref<string | null>(null)
 const games: Ref<Game[]> = ref([])
 
 const activeGames = computed(() => games.value.filter(g => g.gameState.tag !== 'IsOver'))
@@ -21,14 +20,10 @@ const finishedGames = computed(() => games.value.filter(g => g.gameState.tag ===
 
 fetchGames().then((result) => games.value = result)
 
-async function deleteGameEvent() {
-  const { value } = deleteId
-  if (value) {
-    deleteGame(value).then(() => {
-      games.value = games.value.filter((game) => game.id !== value);
-      deleteId.value = null;
-    });
-  }
+async function deleteGameEvent(game: Game) {
+  deleteGame(game.id).then(() => {
+    games.value = games.value.filter((g) => g.id !== game.id);
+  });
 }
 
 const debugFile = ref<HTMLInputElement | null>(null)
@@ -67,17 +62,10 @@ const toggleNewGame = () => {
     <transition name="slide">
       <div v-if="!newGame">
         <h2>{{$t('activeGames')}}</h2>
-        <GameRow v-for="game in activeGames" :key="game.id" :game="game" @delete="deleteId = game.id" />
+        <GameRow v-for="game in activeGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
 
         <h2 v-if="finishedGames.length > 0">{{$t('finishedGames')}}</h2>
-        <GameRow v-for="game in finishedGames" :key="game.id" :game="game" @delete="deleteId = game.id" />
-
-        <Prompt
-          v-if="deleteId"
-          :prompt="$t('doDeleteGame')"
-          :yes="deleteGameEvent"
-          :no="() => deleteId = null"
-        />
+        <GameRow v-for="game in finishedGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
 
         <template v-if="currentUser && currentUser.beta === true">
           <h2>{{$t('debugGame')}}</h2>

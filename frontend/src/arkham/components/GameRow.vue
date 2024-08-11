@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Difficulty } from '@/arkham/types/Difficulty';
 import type { Campaign } from '@/arkham/types/Campaign';
@@ -8,11 +8,13 @@ import { imgsrc } from '@/arkham/helpers';
 
 export interface Props {
   game: Game
+  deleteGame: () => void
 }
 
 const props = defineProps<Props>()
 const campaign = computed<Campaign | null>(() => props.game.campaign)
 const scenario = computed<Scenario | null>(() => props.game.scenario)
+const deleting = ref(false)
 
 const difficulty = computed<Difficulty>(() => {
   if (campaign.value) {
@@ -75,7 +77,11 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
         <div class="game-difficulty">{{difficulty}}</div>
 
         <div class="game-delete">
-          <a href="#delete" @click.prevent="$emit('delete')"><font-awesome-icon icon="trash" /></a>
+          <a v-if="!deleting" href="#delete" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
+          <div class="delete-buttons" v-if="deleting">
+            <button href="#delete" @click.prevent="deleting = false">Cancel</button>
+            <button class="delete-button" href="#delete" @click.prevent="deleteGame">Delete</button>
+          </div>
         </div>
       </div>
       <div class="game-subdetails">
@@ -350,5 +356,20 @@ h2 {
   border-radius: 10px;
   text-transform: uppercase;
   margin-right: 10px;
+}
+
+.delete-buttons {
+  display: flex;
+  gap: 5px;
+
+  button {
+    border: 0;
+    padding: 5px 10px;
+    border-radius: 3px;
+  }
+
+  .delete-button {
+    background-color: #660000;
+  }
 }
 </style>

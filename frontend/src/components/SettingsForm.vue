@@ -42,12 +42,21 @@ const updateLanguage = (a: Event) => {
 
 <style lang="scss" scoped>
 .settings {
-  width: 75vw;
+  width: 60vw;
   margin: 0 auto;
   margin-top: 20px;
-  background: rgba(255, 255, 255, 0.7);
   padding: 10px;
   border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+fieldset {
+  background-color: var(--box-background);
+  border: 1px solid var(--box-border);
+  color: var(--title);
+  border-radius: 5px;
 }
 
 input[type="radio"] {
@@ -57,5 +66,11 @@ input[type="radio"] {
 h1 {
   margin: 0;
   padding: 0;
+  color: var(--title);
+}
+
+legend {
+ font-size: 1.1em;
+ font-weight: bolder;
 }
 </style>

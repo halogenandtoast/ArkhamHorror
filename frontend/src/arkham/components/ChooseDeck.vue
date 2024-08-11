@@ -189,7 +189,7 @@ const chosenDeckTabooList = computed(() => {
             <div v-if="chosenImage && player.id == playerId" class="portrait">
               <img :src="chosenImage" />
             </div>
-            <div v-else class="portrait portrait-empty">
+            <div v-else class="portrait-empty">
               <img :src="imgsrc('slots/ally.png')" />
             </div>
             <div v-if="needsReply && player.id == playerId" class="deck-main">
@@ -414,6 +414,9 @@ form {
 }
 
 .portrait-empty {
+  width: 100px;
+  border-radius: 5px;
+  flex-shrink: 0;
   aspect-ratio: 63/97;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
   background: rgba(100, 100, 100, 0.5);

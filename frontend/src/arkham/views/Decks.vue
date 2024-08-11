@@ -69,8 +69,7 @@ h2 {
 }
 
 #decks {
-  width: 100%;
-  max-width: 800px;
+  min-width: 60vw;
   margin: 0 auto;
 }
 

@@ -69,6 +69,7 @@ import Arkham.Entities qualified as Entities
 import Arkham.Event.Types
 import Arkham.Game qualified as Game
 import Arkham.Game.Settings
+import Arkham.Game.State
 import Arkham.Git
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types

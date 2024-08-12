@@ -187,6 +187,7 @@ async function start() {
       <div key="new-game">
         <header>
           <h2>{{$t('newGame')}}</h2>
+          <slot name="cancel"></slot>
         </header>
         <form id="new-campaign" @submit.prevent="start">
           <p>Number of Players</p>
@@ -301,7 +302,6 @@ async function start() {
   box-sizing: border-box;
   width: 100%;
   color: #FFF;
-  padding: 10px;
   border-radius: 3px;
   button {
     outline: 0;
@@ -448,6 +448,11 @@ header {
   justify-items: center;
   align-content: center;
   justify-content: center;
+
+  h2 {
+    flex: 1;
+  }
+
 }
 
 .back-link {

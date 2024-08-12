@@ -59,7 +59,7 @@ const tabooList = computed(() => {
 </script>
 
 <template>
-  <div class="decklist" :class="deckClass">
+  <div class="decklist box" :class="deckClass">
     <img class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator}.jpg`)" />
     <div class="deck-details">
       <span class="deck-title"><router-link :to="{ name: 'Deck', params: { deckId: deck.id }}">{{deck.name}}</router-link></span>
@@ -124,8 +124,9 @@ h2 {
 }
 
 .portrait--decklist {
-  width: 100px;
+  width: 150px;
   margin-right: 10px;
+  border-radius: 5px;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 
@@ -175,44 +176,50 @@ h2 {
 
 .decklist {
   display: flex;
-  background-color: #353b49;
-    //var(--background-dark);
-  border: 1px solid #434c5e;
   color: #f0f0f0;
-  margin: 10px;
-  padding: 10px;
-  border-radius: 5px;
-  transition: background-color 0.5s; 
+  transition: all 0.5s; 
+
   span {
     flex: 1;
   }
+
   a {
     color: var(--title);
     font-weight: bolder;
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.4);
+    }
   }
 
   &.guardian:hover {
     background-color: var(--guardian-extra-dark);
+    border-color: var(--guardian-dark);
   }
 
   &.seeker:hover {
     background-color: var(--seeker-extra-dark);
+    border-color: var(--seeker-dark);
   }
 
   &.rogue:hover {
     background-color: var(--rogue-extra-dark);
+    border-color: var(--rogue-dark);
   }
 
   &.mystic:hover {
     background-color: var(--mystic-extra-dark);
+    border-color: var(--mystic-dark);
   }
 
   &.survivor:hover {
     background-color: var(--survivor-extra-dark);
+    border-color: var(--survivor-dark);
   }
 
   &.neutral:hover {
     background-color: var(--neutral-extra-dark);
+    border-color: var(--neutral-dark);
   }
 }
 </style>

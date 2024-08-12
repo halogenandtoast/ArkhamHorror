@@ -332,7 +332,7 @@ instance RunMessage AssetAttrs where
           InThreatArea iid' -> iid == iid'
           AttachedToInvestigator iid' -> iid == iid'
           _ -> a.controller == Just iid
-      pushWhen shouldDiscard $ toDiscard GameSource assetId
+      pushWhen shouldDiscard $ RemoveFromGame (toTarget a)
       pure a
     AddUses source aid useType' n | aid == assetId -> runMessage (PlaceTokens source (toTarget a) useType' n) a
     SpendUses source target useType' n | isTarget a target -> do

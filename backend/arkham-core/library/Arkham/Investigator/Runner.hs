@@ -630,7 +630,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       for_ assets \asset -> do
         assetClues <- field AssetClues asset
         push $ MoveTokens GameSource (AssetSource asset) (toTarget lid) Clue assetClues
-    pure $ a & tokensL %~ (removeAllTokens Clue . removeAllTokens Resource) & keysL .~ mempty
+    pure
+      $ a
+      & (tokensL %~ (removeAllTokens Clue . removeAllTokens Resource))
+      & (keysL .~ mempty)
+      & (handL .~ mempty)
+      & (discardL .~ mempty)
+      & (deckL .~ mempty)
   RemoveAllClues _ (InvestigatorTarget iid) | iid == investigatorId -> do
     pure $ a & tokensL %~ removeAllTokens Clue
   RemoveAllDoom _ (InvestigatorTarget iid) | iid == investigatorId -> do

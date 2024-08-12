@@ -271,6 +271,13 @@ body {
   color-scheme: dark;
 }
 
+h2.title {
+  color: var(--title);
+  font-size: 2em;
+  text-transform: uppercase;
+  font-family: Teutonic;
+}
+
 .box {
   background-color: var(--box-background);
   border: 1px solid var(--box-border);
@@ -278,5 +285,10 @@ body {
   padding: 10px;
   border-radius: 5px;
   box-sizing: border-box;
+}
+
+.page-container {
+  width: 70vw;
+  margin: 0 auto;
 }
 </style>

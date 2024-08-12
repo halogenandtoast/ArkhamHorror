@@ -409,7 +409,6 @@ provide('solo', solo)
 
 #game {
   width: 100vw;
-  height: calc(100vh - 40px);
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -937,7 +936,7 @@ header {
   display: flex;
   margin: 0;
   padding: 0;
-  background: var(--background-light);
+  background: rgba(255,255,255,0.1);
   li {
     display: inline;
     transition: 0.3s;

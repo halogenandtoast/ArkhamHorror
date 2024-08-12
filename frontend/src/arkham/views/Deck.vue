@@ -359,23 +359,33 @@ tr:nth-child(even) {
 }
 
 .willpower {
-  color: $guardian;
+  font-size: 1.5em;
+  margin: 0 2px;
+  color: var(--willpower);
 }
 
 .intellect {
-  color: $mystic;
+  font-size: 1.5em;
+  margin: 0 2px;
+  color: var(--intellect);
 }
 
 .combat {
-  color: $survivor;
+  font-size: 1.5em;
+  margin: 0 2px;
+  color: var(--combat);
 }
 
 .agility {
-  color: $rogue;
+  font-size: 1.5em;
+  margin: 0 2px;
+  color: var(--agility);
 }
 
 .wild {
-  color: $seeker;
+  font-size: 1.5em;
+  margin: 0 2px;
+  color: var(--wild);
 }
 
 a {

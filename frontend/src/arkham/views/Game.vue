@@ -300,6 +300,16 @@ provide('solo', solo)
     <div v-if="socketError" class="socketWarning">
        <p>Your game is out of sync, trying to reconnect...</p>
     </div>
+    <div class="game-bar">
+      <nav>
+        <ul>
+          <li class="game-bar-item"><router-link class="button-link" :to="`/games/${game.id}/log`" v-slot="{href, navigate}"><button :href="href" @click="navigate">View Log</button></router-link></li>
+          <li><button @click="debug.toggle">Toggle Debug</button></li>
+          <li><button @click="debugExport">Debug Export</button></li>
+          <li><button @click="undo">Undo</button></li>
+        </ul>
+      </nav>
+    </div>
     <div v-if="game.gameState.tag === 'IsPending'" class="invite-container">
       <header>
         <h2>Waiting for more players</h2>
@@ -376,12 +386,6 @@ provide('solo', solo)
         />
         <div class="sidebar" v-if="game.scenario !== null && (game.gameState.tag === 'IsActive' || game.gameState.tag === 'IsOver')">
           <GameLog :game="game" :gameLog="gameLog" @undo="undo" />
-          <router-link class="button-link" :to="`/games/${game.id}/log`" v-slot="{href, navigate}"
-  >
-            <button :href="href" @click="navigate">View Log</button>
-          </router-link>
-          <button @click="debug.toggle">Toggle Debug</button>
-          <button @click="debugExport">Debug Export</button>
         </div>
         <div class="game-over" v-if="gameOver">
           <p>Game over</p>
@@ -926,5 +930,29 @@ header {
 .full-width {
   flex: 1;
   padding-bottom: 10px;
+}
+
+.game-bar nav ul {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  background: var(--background-light);
+  li {
+    display: inline;
+    transition: 0.3s;
+    a {
+      display: inline;
+    }
+    button {
+      display: inline;
+    }
+  }
+  justify-content: flex-start;
+}
+
+.game-bar-item.active, .game-bar-item:hover {
+  background: rgba(0, 0, 0, 0.21);
+  color: var(--title);
 }
 </style>

@@ -7,7 +7,6 @@ import * as Arkham from '@/arkham/types/Deck'
 import { fetchDecks, newGame } from '@/arkham/api'
 import { imgsrc } from '@/arkham/helpers'
 import type { Difficulty } from '@/arkham/types/Difficulty'
-import NewDeck from '@/arkham/components/NewDeck.vue'
 
 import campaignJSON from '@/arkham/data/campaigns.json'
 import scenarioJSON from '@/arkham/data/scenarios.json'
@@ -91,11 +90,6 @@ fetchDecks().then((result) => {
   decks.value = result;
   ready.value = true;
 })
-
-async function addDeck(d: Arkham.Deck) {
-  decks.value = [d]
-  deckIds.value[0] = d.id
-}
 
 const selectedCampaignReturnToId = computed(() => {
   const campaign = campaigns.value.find((c) => c.id === selectedCampaign.value);

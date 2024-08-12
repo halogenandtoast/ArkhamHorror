@@ -751,7 +751,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   right: 0px;
   border: 0;
   color: white;
-  background: #a5b5bc;
+  background: var(--background-mid);
   font-size: 1.2em;
   padding: 5px 15px;
 }

@@ -45,6 +45,9 @@ async function sync(deck: Arkham.Deck) {
       <NewDeck @new-deck="addDeck"/>
     </div>
     <h2>Existing Decks</h2>
+    <div v-if="decks.length == 0" class="box">
+      <p>You currently have no decks.</p>
+    </div>
     <transition-group name="deck">
       <div v-for="deck in decks" :key="deck.id" class="deck">
         <Deck :deck="deck" :markDelete="() => deleteId = deck.id" :sync="() => sync(deck)" />
@@ -63,7 +66,6 @@ async function sync(deck: Arkham.Deck) {
 <style lang="scss" scoped>
 h2 {
   color: #cecece;
-  margin-left: 10px;
   text-transform: uppercase;
   font-family: Teutonic;
 }

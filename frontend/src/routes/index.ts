@@ -2,6 +2,7 @@ import Home from '@/views/Home.vue';
 import SignIn from '@/views/SignIn.vue';
 import SignUp from '@/views/SignUp.vue';
 import Settings from '@/views/Settings.vue';
+import About from '@/views/About.vue';
 import PasswordReset from '@/views/PasswordReset.vue';
 import UpdatePassword from '@/views/UpdatePassword.vue';
 
@@ -23,6 +24,12 @@ export default [
     name: 'Settings',
     component: Settings,
     meta: { requiresAuth: true, title: "Arkham Horror: Settings" },
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: About,
+    meta: { requiresAuth: false, title: "Arkham Horror: About" },
   },
   {
     path: '/sign-in',

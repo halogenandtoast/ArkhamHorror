@@ -270,4 +270,13 @@ body {
 
   color-scheme: dark;
 }
+
+.box {
+  background-color: var(--box-background);
+  border: 1px solid var(--box-border);
+  color: var(--title);
+  padding: 10px;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
 </style>

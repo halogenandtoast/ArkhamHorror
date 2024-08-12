@@ -151,6 +151,8 @@ h1 {
   font-family: teutonic, sans-serif;
   margin: 0;
   padding: 0;
+  color: var(--title);
+  margin-bottom: 10px;
 }
 
 .campaign-log {
@@ -158,7 +160,6 @@ h1 {
   width: 80%;
   margin: 0 auto;
   margin-top: 20px;
-  background-color: rgba(255,255,255, 0.5);
   font-size: 1.8em;
 }
 
@@ -169,5 +170,23 @@ h1 {
 .options {
   display: flex;
   justify-content: space-around;
+}
+
+ul {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  display: inline-block;
+  background: var(--box-background);
+  border: 1px solid var(--box-border);
+  border-radius: 5px;
+  padding: 10px;
+  color: var(--title);
+  margin: 0;
 }
 </style>

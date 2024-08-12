@@ -96,7 +96,7 @@ h2 {
 
 .new-game {
   text-align: right;
-  margin-top: 10px;
+  margin-top: 20px;
   button {
     border-radius: 3px;
     outline: 0;

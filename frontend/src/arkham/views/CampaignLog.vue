@@ -33,6 +33,7 @@ h1 {
   font-family: teutonic, sans-serif;
   margin: 0;
   padding: 0;
+  color: var(--title);
 }
 
 .campaign-log {
@@ -40,7 +41,6 @@ h1 {
   width: 80vw;
   margin: 0 auto;
   margin-top: 20px;
-  background-color: rgba(255,255,255, 0.5);
   font-size: 1.8em;
 }
 

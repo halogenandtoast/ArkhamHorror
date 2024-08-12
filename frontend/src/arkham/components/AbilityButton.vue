@@ -228,6 +228,7 @@ const classObject = computed(() => {
 
 <style lang="scss" scoped>
 .button{
+  border: 0;
   margin-top: 2px;
   color: #fff;
   cursor: pointer;

@@ -6,10 +6,15 @@ import { imgsrc } from '@/arkham/helpers'
 import * as Arkham from '@/arkham/types/Deck'
 import type { Investigator } from '@/arkham/types/Investigator'
 import Question from '@/arkham/components/Question.vue';
+import NewDeck from '@/arkham/components/NewDeck.vue'
 
 const decks = ref<Arkham.Deck[]>([])
 const ready = ref(false)
 const deckId = ref<string | null>(null)
+const createdPortrait = ref<string | null>(null)
+
+type DeckType = "UseExistingDeck" | "LoadNewDeck"
+const deckType = ref<DeckType>("UseExistingDeck")
 
 const props = defineProps<{
   game: Game
@@ -18,6 +23,16 @@ const props = defineProps<{
 
 const chooseDeck = inject<(deckId: string) => Promise<void>>('chooseDeck')
 const question = computed(() => props.game.question[props.playerId])
+
+async function setPortrait(src: string) {
+  createdPortrait.value = src
+}
+
+async function addDeck(d: Arkham.Deck) {
+  decks.value = [...decks.value, d]
+  deckId.value = d.id
+  deckType.value = "UseExistingDeck"
+}
 
 const error = computed(() => {
   if(!deckId.value) {
@@ -60,6 +75,9 @@ const investigators = computed(() => props.game.investigators)
 
 fetchDecks().then((result) => {
   decks.value = result;
+  if (result.length == 0) {
+    deckType.value = "LoadNewDeck"
+  }
   ready.value = true;
 })
 
@@ -189,11 +207,22 @@ const chosenDeckTabooList = computed(() => {
             <div v-if="chosenImage && player.id == playerId" class="portrait">
               <img :src="chosenImage" />
             </div>
+            <div v-else-if="createdPortrait &&  deckType == 'LoadNewDeck'" class="portrait">
+              <img :src="createdPortrait" />
+            </div>
             <div v-else class="portrait-empty">
               <img :src="imgsrc('slots/ally.png')" />
             </div>
             <div v-if="needsReply && player.id == playerId" class="deck-main">
-              <form class="choose-deck" @submit.prevent="choose">
+              <div class="buttons">
+                <button @click.prevent="deckType = 'UseExistingDeck'" :class="{ current: deckType == 'UseExistingDeck'}" :disabled="decks.length == 0">
+                  Use Existing Deck
+                </button>
+                <button @click.prevent="deckType = 'LoadNewDeck'" :class="{ current: deckType == 'LoadNewDeck'}">
+                  Load New Deck
+                </button>
+              </div>
+              <form v-if="deckType == 'UseExistingDeck'" class="choose-deck" @submit.prevent="choose">
                 <select v-model="deckId">
                   <option disabled :value="null">-- Select a Deck--</option>
                   <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
@@ -201,6 +230,7 @@ const chosenDeckTabooList = computed(() => {
                 <p class="error" v-if="error">{{error}}</p>
                 <button type="submit" :disabled="disabled">Choose</button>
               </form>
+              <NewDeck v-else @new-deck="addDeck" :no-portrait="true" :set-portrait="setPortrait" />
               <div v-if="chosenDeckTabooList" class="taboo-list">
                 Taboo List: {{chosenDeckTabooList}}
               </div>
@@ -245,7 +275,7 @@ const chosenDeckTabooList = computed(() => {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 10px;
 }
 
 .choose-deck {
@@ -415,9 +445,9 @@ form {
 
 .portrait-empty {
   width: 100px;
+  height: 155px;
   border-radius: 5px;
   flex-shrink: 0;
-  aspect-ratio: 63/97;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
   background: rgba(100, 100, 100, 0.5);
   display: flex;
@@ -481,5 +511,22 @@ form {
   text-transform: uppercase;
   width: 100%;
   box-sizing: border-box;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  button {
+    border: 0;
+    padding: 10px;
+    flex: 1;
+    &:hover {
+      background-color: var(--button-1-highlight);
+    }
+  }
+
+  button.current {
+    background-color: var(--button-1);
+  }
 }
 </style>

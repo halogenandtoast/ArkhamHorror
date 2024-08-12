@@ -37,6 +37,7 @@ async function logout() {
       <router-link to="/" class="home-link">{{$t('home')}}</router-link>{{' '}}
       <router-link v-if="currentUser" to="/decks">{{$t('myDecks')}}</router-link>
       <router-link v-if="currentUser" to="/cards">{{$t('cards')}}</router-link>
+      <router-link v-if="currentUser" to="/about">{{$t('About')}}</router-link>
     </span>
 
     <input type="checkbox" id="dropdown-toggle" ref="toggle" />

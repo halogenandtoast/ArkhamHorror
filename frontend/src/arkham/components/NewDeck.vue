@@ -5,6 +5,15 @@ import { fetchInvestigators, newDeck, validateDeck } from '@/arkham/api'
 import { CardDef } from '@/arkham/types/CardDef';
 import ArkhamDbDeck from '@/arkham/components/ArkhamDbDeck.vue';
 
+type Props = {
+  noPortrait?: boolean
+  setPortrait?: (src: string) => void
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  noPortrait: false
+})
+
 const ready = ref(false)
 const emit = defineEmits(['newDeck'])
 
@@ -70,9 +79,16 @@ function loadDeckFromFile(e: Event) {
       if (investigators.value.map(i => i.art).includes(data.investigator_code)) {
         if(data.meta && data.meta.alternate_front) {
           investigator.value = data.meta.alternate_front
+          if (props.setPortrait) {
+            props.setPortrait(imgsrc(`portraits/${data.meta.alternate_front.replace('c', '')}.jpg`))
+          }
         } else {
           investigator.value = data.investigator_code
+          if (props.setPortrait) {
+            props.setPortrait(imgsrc(`portraits/${data.investigator_code.replace('c', '')}.jpg`))
+          }
         }
+
       } else {
         investigatorError.value = `${data.investigator_name} is not yet implemented, please use a different deck`
       }
@@ -98,8 +114,14 @@ function loadDeck() {
   if (investigators.value.map(i => i.art).includes(deckList.value.investigator_code)) {
     if(deckList.value.meta && deckList.value.meta.alternate_front) {
       investigator.value = deckList.value.meta.alternate_front
+      if (props.setPortrait) {
+        props.setPortrait(imgsrc(`portraits/${deckList.value.meta.alternate_front.replace('c', '')}.jpg`))
+      }
     } else {
       investigator.value = deckList.value.investigator_code
+      if (props.setPortrait) {
+        props.setPortrait(imgsrc(`portraits/${deckList.value.investigator_code.replace('c', '')}.jpg`))
+      }
     }
   } else {
     investigatorError.value = `${deckList.value.investigator_name} is not yet implemented, please use a different deck`
@@ -153,7 +175,7 @@ async function createDeck() {
 <template>
   <div v-if="ready" class="new-deck">
     <div class="form-body">
-      <img v-if="investigator" class="portrait" :src="imgsrc(`portraits/${investigator.replace('c', '')}.jpg`)" />
+      <img v-if="investigator && !noPortrait" class="portrait" :src="imgsrc(`portraits/${investigator.replace('c', '')}.jpg`)" />
       <div class="fields">
         <ArkhamDbDeck type="url" v-model="deckList" />
         <input type="file" @change="loadDeckFromFile" />
@@ -226,7 +248,6 @@ async function createDeck() {
   display: flex;
   flex-direction: column;
   color: #FFF;
-  margin: 10px;
   border-radius: 3px;
   a {
     color: #365488;

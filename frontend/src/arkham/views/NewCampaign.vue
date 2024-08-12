@@ -184,13 +184,7 @@ async function start() {
 <template>
   <div v-if="ready" class="container">
     <transition-group name="slide">
-      <div v-if="decks.length == 0">
-        <header>
-          <h2>No decks, please add one first:</h2>
-        </header>
-        <NewDeck @new-deck="addDeck" />
-      </div>
-      <div v-else>
+      <div key="new-game">
         <header>
           <h2>{{$t('newGame')}}</h2>
         </header>

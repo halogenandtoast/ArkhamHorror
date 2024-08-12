@@ -44,50 +44,72 @@ function elementDrag(el: HTMLElement) {
 </script>
 
 <template>
-  <div class="draggable">
-    <header @mousedown="drag"><slot name="handle"></slot></header>
-    <slot></slot>
-  </div>
+  <Teleport to="#modal">
+    <div class="draggable">
+      <header @mousedown="drag"><slot name="handle"></slot></header>
+      <slot></slot>
+    </div>
+  </Teleport>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .draggable > header {
   background: rgba(0 0 0 / 50%);
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .draggable {
+  animation: fadeIn 0.3s;
   position: absolute;
   width: fit-content;
   max-width: 70%;
-  min-width: 40%;
+  min-width: max-content;
   top: 50%;
   left: 50%;
-  background: hsl(150.9 13.6% 52.4% / 80%);
+  overflow: hidden;
   transform: translateX(-50%) translateY(-50%);
 
-  background: rgba(94,123,115,0.5);
+  background: hsl(0.0 100% 100% / 30%);
   border-radius: 16px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  z-index: 1000000;
-}
+  z-index: 10;
 
-.draggable header {
-  background: rgba(0 0 0 / 50%);
-  border-bottom: 1px solid rgba(255 255 255 / 40%);
-  text-transform: uppercase;
-  border-radius: 16px 16px 0 0;
-  font-size: 0.8em;
-  color: white;
-  text-align: center;
-  padding: 5px;
-  > * {
-    padding: 0;
-    margin: 0;
-    pointer-events: none;
+  &:deep(header) {
+    text-transform: uppercase;
+    border-radius: 16px 16px 0 0;
+    font-size: 1.2em;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    font-family: Teutonic;
+    > * {
+      padding: 0;
+      margin: 0;
+      pointer-events: none;
+    }
+  }
+  &:deep(button) {
+    width: 100%;
+    background: var(--button-2);
+    transition: background-color 0.3s linear;
+    border-radius: 0;
+    margin-bottom: 0;
+    &:hover {
+      background: var(--button-2-highlight);
+    }
   }
 }
+
 
 </style>

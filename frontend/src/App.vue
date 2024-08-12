@@ -269,6 +269,9 @@ body {
   --button-1: #6E8640;
   --button-1-highlight: #5a6e34;
 
+  --button-2: #532e61;
+  --button-2-highlight: #4d2b61;
+
   --card-width: 60px;
 
   @media (max-width: 800px) {

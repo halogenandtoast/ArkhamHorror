@@ -455,6 +455,7 @@ const { menuItems } = useMenu()
   height: calc(100vh - 80px);
   display: flex;
   flex: 1;
+  position: relative;
 }
 
 .socketWarning  {

@@ -98,7 +98,7 @@ input[type=checkbox]:checked ~ .user-links {
   position: relative;
   padding-right: 10px;
   border-radius: 5px;
-  z-index: 100000;
+  z-index: 2;
 
   label {
     user-select: none;

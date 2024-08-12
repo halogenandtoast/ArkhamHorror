@@ -1,7 +1,11 @@
 <template>
   <NavBar/>
   <Suspense>
-    <router-view/>
+    <router-view v-slot="{ Component }">
+      <transition name="fade">
+        <component :is="Component" />
+      </transition>
+    </router-view>
     <template #fallback>
       Loading...
     </template>
@@ -290,5 +294,19 @@ h2.title {
 .page-container {
   width: 70vw;
   margin: 0 auto;
+}
+
+.fade-leave-active,
+.fade-enter-active {
+  transition: opacity 0.3s;
+}
+
+.fade-enter-active {
+  transition-delay: 0.3s;
+}
+
+.fade-leave-to,
+.fade-enter-from {
+  opacity: 0;
 }
 </style>

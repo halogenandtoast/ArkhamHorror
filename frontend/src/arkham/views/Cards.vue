@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { watchEffect, ref, computed } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { fetchCards } from '@/arkham/api';
 import { imgsrc } from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/CardDef';
@@ -7,8 +7,7 @@ import * as Arkham from '@/arkham/types/CardDef';
 import sets from '@/arkham/data/sets.json'
 import cycles from '@/arkham/data/cycles.json'
 
-const allCards = ref<Arkham.CardDef[]>([])
-const ready = ref(false)
+const allCards = ref<Arkham.CardDef[] | null>(null)
 const includeEncounter = ref(false)
 
 interface Filter {
@@ -42,24 +41,20 @@ enum View {
   List = "LIST",
 }
 
-watchEffect(() => {
-  fetchCards(includeEncounter.value).then((response) => {
-    allCards.value = response.sort((a, b) => {
-      if (a.art < b.art) {
-        return -1
-      }
-
-      if (a.art > b.art) {
-        return 1
-      }
-
-      return 0
+onMounted(async () => {
+  if(!allCards.value) {
+    await fetchCards(includeEncounter.value).then(async (response) => {
+      allCards.value = response.sort((a, b) => {
+        if (a.art < b.art) return -1
+        if (a.art > b.art) return 1
+        return 0
+      })
     })
-    ready.value = true
-  })
+  }
 })
 
 const cycleCount = (cycle: CardCycle) => {
+  if (!allCards.value) return 0
   const cycleSets = sets.filter((s) => s.cycle == cycle.cycle)
   return allCards.value.filter((c) => {
     const cSet = cardSet(c)
@@ -68,6 +63,7 @@ const cycleCount = (cycle: CardCycle) => {
 }
 
 const cycleCountText = (cycle: CardCycle) => {
+  if (!allCards.value) return 0
   const implementedCount = cycleCount(cycle)
   const cycleSets = sets.filter((s) => s.cycle == cycle.cycle)
   const total = cycleSets.reduce((acc, set) => acc + (includeEncounter.value ? set.max - set.min + 1 + (set.encounterDuplicates ? set.encounterDuplicates : 0) : set.playerCards), 0)
@@ -80,6 +76,7 @@ const cycleCountText = (cycle: CardCycle) => {
 }
 
 const setCount = (set: CardSet) => {
+  if (!allCards.value) return 0
   return allCards.value.filter((c) => cardSet(c) == set).length
 }
 
@@ -97,10 +94,11 @@ const setCountText = (set: CardSet) => {
 const image = (card: Arkham.CardDef) => imgsrc(`cards/${card.art}.jpg`)
 const view = ref(View.List)
 
-const query = ref("")
-const filter = ref<Filter>({ cardType: null, text: [], level: null, cycle: null, set: null, classes: [], traits: [] })
+const query = ref("e:core")
+const filter = ref<Filter>({ cardType: null, text: [], level: null, cycle: null, set: "core", classes: [], traits: [] })
 
 const cards = computed(() => {
+  if (!allCards.value) return []
   let all = allCards.value
 
   const { classes, traits, cycle, set, text, level, cardType: cardTypeText } = filter.value

@@ -130,15 +130,11 @@ h2 {
 
 .slide-enter-to,
 .slide-leave-from {
-  /*overflow: hidden;
-  max-height: 1000px;*/
   opacity: 1;
 }
 
 .slide-enter-from,
 .slide-leave-to {
-  /*overflow: hidden;
-  max-height: 0;*/
   opacity: 0;
 }
 

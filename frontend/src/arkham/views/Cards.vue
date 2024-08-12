@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref, computed } from 'vue';
+import { watchEffect, ref, computed } from 'vue';
 import { fetchCards } from '@/arkham/api';
 import { imgsrc } from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/CardDef';
@@ -41,16 +41,14 @@ enum View {
   List = "LIST",
 }
 
-onMounted(async () => {
-  if(!allCards.value) {
-    await fetchCards(includeEncounter.value).then(async (response) => {
-      allCards.value = response.sort((a, b) => {
-        if (a.art < b.art) return -1
-        if (a.art > b.art) return 1
-        return 0
-      })
+watchEffect(async () => {
+  await fetchCards(includeEncounter.value).then(async (response) => {
+    allCards.value = response.sort((a, b) => {
+      if (a.art < b.art) return -1
+      if (a.art > b.art) return 1
+      return 0
     })
-  }
+  })
 })
 
 const cycleCount = (cycle: CardCycle) => {

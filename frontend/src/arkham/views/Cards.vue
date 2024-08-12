@@ -18,6 +18,7 @@ interface Filter {
   cycle: number | null
   set: string | null
   classes: string[]
+  traits: string[]
 }
 
 interface CardSet {
@@ -97,12 +98,12 @@ const image = (card: Arkham.CardDef) => imgsrc(`cards/${card.art}.jpg`)
 const view = ref(View.List)
 
 const query = ref("")
-const filter = ref<Filter>({ cardType: null, text: [], level: null, cycle: null, set: null, classes: [] })
+const filter = ref<Filter>({ cardType: null, text: [], level: null, cycle: null, set: null, classes: [], traits: [] })
 
 const cards = computed(() => {
   let all = allCards.value
 
-  const { classes, cycle, set, text, level, cardType: cardTypeText } = filter.value
+  const { classes, traits, cycle, set, text, level, cardType: cardTypeText } = filter.value
 
   if (cycle) {
     const cycleSets = sets.filter((s) => s.cycle == cycle)
@@ -118,6 +119,10 @@ const cards = computed(() => {
 
   if (classes.length > 0) {
     all = all.filter((c) => c.classSymbols.some((cs) => classes.includes(cs.toLowerCase())))
+  }
+
+  if (traits.length > 0) {
+    all = all.filter((c) => c.cardTraits.some((cs) => traits.includes(cs.toLowerCase())))
   }
 
   if (text.length > 0) {
@@ -147,6 +152,7 @@ const setFilter = () => {
   let cycle = null
   let set = null
   let classes : string[] = []
+  let traits : string[] = []
 
   // const matchCardType = queryString.match(/t:("(?:[^"\\]|\\.)*"|[^ ]*)/)
   const matchCardType = queryString.match(/t:([^ ]*)/)
@@ -184,7 +190,15 @@ const setFilter = () => {
     set = matchSet[1]
   }
 
-  filter.value = { classes, cycle, set, cardType, level, text: queryString.trim() !== "" ? queryString.trim().split('|') : []}
+
+  const matchTraits = queryString.match(/k:([^ ]*)/)
+
+  if (matchTraits) {
+    queryString = queryString.replace(/k:([^ ]*)/, '')
+    traits = matchTraits[1].split('|')
+  }
+
+  filter.value = { classes, cycle, set, cardType, level, traits, text: queryString.trim() !== "" ? queryString.trim().split('|') : []}
 }
 
 const cardName = (card: Arkham.CardDef) => {
@@ -274,12 +288,12 @@ const cycleSets = (cycle: CardCycle) => {
 
 const setCycle = (cycle: CardCycle) => {
   query.value = `y:${cycle.cycle}`
-  filter.value = { cardType: null, text: [], level: null, cycle: cycle.cycle, set: null, classes: [] }
+  filter.value = { cardType: null, text: [], level: null, cycle: cycle.cycle, set: null, classes: [], traits: [] }
 }
 
 const setSet = (set: CardSet) => {
   query.value = `e:${set.code}`
-  filter.value = { cardType: null, text: [], level: null, cycle: null, set: set.code, classes: [] }
+  filter.value = { cardType: null, text: [], level: null, cycle: null, set: set.code, classes: [], traits: [] }
 }
 </script>
 

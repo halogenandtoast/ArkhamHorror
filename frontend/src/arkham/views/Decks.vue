@@ -41,10 +41,10 @@ async function sync(deck: Arkham.Deck) {
 <template>
   <div id="decks">
     <div>
-      <h2>New Deck</h2>
+      <h2 class="title">New Deck</h2>
       <NewDeck @new-deck="addDeck"/>
     </div>
-    <h2>Existing Decks</h2>
+    <h2 class="title">Existing Decks</h2>
     <div v-if="decks.length == 0" class="box">
       <p>You currently have no decks.</p>
     </div>
@@ -64,12 +64,6 @@ async function sync(deck: Arkham.Deck) {
 </template>
 
 <style lang="scss" scoped>
-h2 {
-  color: #cecece;
-  text-transform: uppercase;
-  font-family: Teutonic;
-}
-
 #decks {
   min-width: 60vw;
   margin: 0 auto;

@@ -290,6 +290,8 @@ function debugExport () {
 
 const gameOver = computed(() => game.value?.gameState.tag === "IsOver")
 
+const showLog = ref(false);
+
 provide('chooseDeck', chooseDeck)
 provide('choosePaymentAmounts', choosePaymentAmounts)
 provide('chooseAmounts', chooseAmounts)
@@ -306,7 +308,7 @@ provide('solo', solo)
     <div class="game-bar">
       <div class="game-bar-item">
         <div>
-          <router-link class="button-link" :to="`/games/${game.id}/log`" custom v-slot="{href, navigate}"><button :href="href" @click="navigate"><DocumentTextIcon aria-hidden="true" /> View Log</button></router-link>
+          <button @click="showLog = !showLog"><DocumentTextIcon aria-hidden="true" /> {{ showLog ? "Close Log" : "View Log" }}</button>
         </div>
       </div>
       <div>
@@ -339,7 +341,8 @@ provide('solo', solo)
       </GameDetails>
     </div>
     <template v-else>
-      <div class="game-main">
+      <CampaignLog v-if="showLog && game !== null" :game="game" :cards="cards" />
+      <div v-else class="game-main">
         <div v-if="gameCard" class="revelation">
           <div class="revelation-container">
             <h2>{{gameCard.title}}</h2>
@@ -408,11 +411,6 @@ provide('solo', solo)
         </div>
         <div class="sidebar" v-if="game.scenario === null">
           <GameLog :game="game" :gameLog="gameLog" @undo="undo" />
-          <router-link class="button-link" :to="`/games/${game.id}/log`" v-slot="{href, navigate}">
-            <button :href="href" @click="navigate">View Log</button>
-          </router-link>
-          <button @click="debug.toggle">Toggle Debug</button>
-          <button @click="debugExport">Debug Export</button>
         </div>
       </div>
     </template>

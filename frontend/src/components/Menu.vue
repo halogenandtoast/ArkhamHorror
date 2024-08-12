@@ -1,5 +1,5 @@
-<script setup>
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
+<script setup lang="ts">
+import { Menu, MenuButton, MenuItems } from '@headlessui/vue'
 import { ChevronDownIcon } from '@heroicons/vue/20/solid'
 </script>
 
@@ -9,14 +9,7 @@ import { ChevronDownIcon } from '@heroicons/vue/20/solid'
       <slot></slot>
       <ChevronDownIcon aria-hidden="true" />
     </MenuButton>
-    <transition
-            enter-active-class="transition duration-100 ease-out"
-            enter-from-class="transform scale-95 opacity-0"
-            enter-to-class="transform scale-100 opacity-100"
-            leave-active-class="transition duration-75 ease-in"
-            leave-from-class="transform scale-100 opacity-100"
-            leave-to-class="transform scale-95 opacity-0"
-          >
+    <transition name="appear" >
       <MenuItems class="menu-items">
         <slot name="items"></slot>
       </MenuItems>
@@ -49,5 +42,17 @@ button {
 
 svg {
   width: 20px;
+}
+
+.appear-enter-active, .appear-leave-active {
+  transition: opacity 0.2s ease-in-out;
+}
+
+.appear-enter-from, .appear-leave-to {
+  opacity: 0;
+}
+
+.appear-enter-to, .appear-leave-from {
+  opacity: 1;
 }
 </style>

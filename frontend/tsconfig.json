@@ -6,7 +6,7 @@
     "jsx": "preserve",
     "strictNullChecks": true,
     "importHelpers": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "esModuleInterop": true,

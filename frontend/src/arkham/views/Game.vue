@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import GameDetails from '@/arkham/components/GameDetails.vue';
 import { JsonDecoder } from 'ts.data.json';
-import { BugAntIcon, BackwardIcon, DocumentTextIcon, BeakerIcon, DocumentArrowDownIcon } from '@heroicons/vue/20/solid'
+import { ArrowsRightLeftIcon, BugAntIcon, BackwardIcon, DocumentTextIcon, BeakerIcon, DocumentArrowDownIcon } from '@heroicons/vue/20/solid'
 import { useWebSocket, useClipboard } from '@vueuse/core'
 import { reactive, ref, computed, provide, onUnmounted, watch } from 'vue'
 import { useUserStore } from '@/stores/user'
@@ -12,6 +12,7 @@ import GameLog from '@/arkham/components/GameLog.vue'
 import api from '@/api'
 import CardView from '@/arkham/components/Card.vue'
 import Menu from '@/components/Menu.vue'
+import { useMenu } from '@/composeable/menu'
 import { MenuItem } from '@headlessui/vue'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import StandaloneScenario from '@/arkham/components/StandaloneScenario.vue'
@@ -90,6 +91,11 @@ const cards = computed(() => store.cards)
 
 const ready = ref(false)
 const solo = ref(false)
+const showSidebar = ref(JSON.parse(localStorage.getItem("showSidebar")??'true'))
+const toggleSidebar = function () {
+  showSidebar.value = !showSidebar.value
+  localStorage.setItem("showSidebar", JSON.stringify(showSidebar.value))
+}
 const game = ref<Arkham.Game | null>(null)
 const playerId = ref<string | null>(null)
 const gameLog = ref<readonly string[]>(Object.freeze([]))
@@ -292,11 +298,15 @@ const gameOver = computed(() => game.value?.gameState.tag === "IsOver")
 
 const showLog = ref(false);
 
+const additionalMenuItems = ref([]);
+
 provide('chooseDeck', chooseDeck)
 provide('choosePaymentAmounts', choosePaymentAmounts)
 provide('chooseAmounts', chooseAmounts)
 provide('switchInvestigator', switchInvestigator)
 provide('solo', solo)
+provide('additionalMenuItems', additionalMenuItems)
+const { menuItems } = useMenu()
 </script>
 
 <template>
@@ -322,10 +332,21 @@ provide('solo', solo)
                 <MenuItem v-slot="{ active }">
                   <button :class="{ active }" @click="debugExport"><DocumentArrowDownIcon aria-hidden="true" /> Debug Export</button>
                 </MenuItem>
+
+
               </template>
           </Menu>
       </div>
       <div><button @click="undo"><BackwardIcon aria-hidden="true" /> Undo</button></div>
+      <div v-for="item in menuItems" :key="item.id">
+        <button @click="item.action">
+          <component v-if="item.icon" v-bind:is="item.icon"></component>
+          {{item.content}}
+        </button>
+      </div>
+      <div class="right">
+        <button @click="toggleSidebar"><ArrowsRightLeftIcon aria-hidden="true" /> Toggle Sidebar</button>
+      </div>
     </div>
     <div v-if="game.gameState.tag === 'IsPending'" class="invite-container">
       <header>
@@ -402,7 +423,7 @@ provide('solo', solo)
           @choose="choose"
           @update="update"
         />
-        <div class="sidebar" v-if="game.scenario !== null && (game.gameState.tag === 'IsActive' || game.gameState.tag === 'IsOver')">
+        <div class="sidebar" v-if="showSidebar && game.scenario !== null && (game.gameState.tag === 'IsActive' || game.gameState.tag === 'IsOver')">
           <GameLog :game="game" :gameLog="gameLog" @undo="undo" />
         </div>
         <div class="game-over" v-if="gameOver">
@@ -950,6 +971,9 @@ header {
   padding: 0;
   background: var(--background-mid);
   div {
+    &.right {
+        margin-left: auto;
+    }
     display: inline;
     transition: 0.3s;
     height: 100%;

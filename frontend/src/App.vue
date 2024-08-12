@@ -257,6 +257,7 @@ body {
 
   --background: #2e3440;
   --background-dark: #242831;
+  --background-light: #c9ced8;
   --box-background: #353b49;
   --box-border: #434c5e;
 

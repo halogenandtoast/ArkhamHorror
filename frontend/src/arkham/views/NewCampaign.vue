@@ -303,6 +303,7 @@ async function start() {
   width: 100%;
   color: #FFF;
   border-radius: 3px;
+  margin-bottom: 20px;
   button {
     outline: 0;
     padding: 15px;

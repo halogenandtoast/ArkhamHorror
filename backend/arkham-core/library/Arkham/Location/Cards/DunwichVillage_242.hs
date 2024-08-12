@@ -43,9 +43,9 @@ instance RunMessage DunwichVillage_242 where
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       investigatorsWithClues <- locationInvestigatorsWithClues attrs
       investigatorPlayersWithClues <- traverse (traverseToSnd getPlayer) investigatorsWithClues
-      abominations <- locationEnemiesWithTrait attrs Abomination
+      abominations <- select $ EnemyWithTrait Abomination
       when
-        (null investigatorsWithClues || null abominations)
+        (null (traceShowId investigatorsWithClues) || null (traceShowId abominations))
         (throwIO $ InvalidState "should not have been able to use this ability")
       pushAll
         [ chooseOne

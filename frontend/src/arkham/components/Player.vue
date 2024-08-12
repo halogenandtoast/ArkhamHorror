@@ -569,7 +569,7 @@ const realityAcid = ref('89005')
   align-items: flex-start;
   padding: 10px;
   box-sizing: border-box;
-  background: darken(#282A36, 2%);
+  background: var(--background-dark);
 }
 
 .deck--can-draw {
@@ -627,20 +627,13 @@ const realityAcid = ref('89005')
 
 .in-play {
   display: flex;
+  gap: 5px;
   background: #999;
   padding: 10px;
   box-sizing: border-box;
-
-  @media (prefers-color-scheme: dark) {
-    background: #1C1C1C;
-  }
-
-  & :deep(div.asset) {
-    margin-right: 5px;
-  }
-  & :deep(div.enemy) {
-    margin-right: 5px;
-  }
+  background: var(--background-dark);
+  border-bottom: 1px solid var(--background);
+  border-top: 1px solid var(--background);
 }
 
 .player-cards {
@@ -748,14 +741,13 @@ const realityAcid = ref('89005')
 
 .slot {
   width: var(--card-width);
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.2);
   aspect-ratio: 5 / 7;
   height: calc(var(--card-width) * 7 / 5);
   border-radius: 6px;
   overflow: hidden;
   display: grid;
   place-items: center;
-  margin: 2px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-sizing: border-box;
   img {

@@ -51,20 +51,27 @@ const toggleNewGame = () => {
 <template>
   <div class="home">
     <div v-if="currentUser" class="new-game">
-      <button @click="toggleNewGame" :class="{ 'new-game-button': !newGame, 'cancel-new-game-button': newGame }">{{ newGame ? $t('cancel') : `+ ${$t('newGame')}` }}</button>
-
       <transition name="slide">
-        <NewGame v-if="newGame"/>
+        <NewGame v-if="newGame">
+          <template #cancel>
+            <button @click="toggleNewGame" class="cancel-new-game-button">&#10006;</button>
+          </template>
+        </NewGame>
       </transition>
     </div>
 
     <transition name="slide">
       <div v-if="!newGame">
-        <h2>{{$t('activeGames')}}</h2>
-        <div v-if="activeGames.length === 0" class="box">
-          <p>No active games.</p>
-        </div>
-        <GameRow v-for="game in activeGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
+        <section>
+          <header>
+            <h2>{{$t('activeGames')}}</h2>
+            <button @click="toggleNewGame" class="new-game-button">+</button>
+          </header>
+          <div v-if="activeGames.length === 0" class="box">
+            <p>No active games.</p>
+          </div>
+          <GameRow v-for="game in activeGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
+        </section>
 
         <h2 v-if="finishedGames.length > 0">{{$t('finishedGames')}}</h2>
         <GameRow v-for="game in finishedGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
@@ -95,8 +102,6 @@ h2 {
 }
 
 .new-game {
-  text-align: right;
-  margin-top: 20px;
   button {
     border-radius: 3px;
     outline: 0;
@@ -125,15 +130,15 @@ h2 {
 
 .slide-enter-to,
 .slide-leave-from {
-  overflow: hidden;
-  max-height: 1000px;
+  /*overflow: hidden;
+  max-height: 1000px;*/
   opacity: 1;
 }
 
 .slide-enter-from,
 .slide-leave-to {
-  overflow: hidden;
-  max-height: 0;
+  /*overflow: hidden;
+  max-height: 0;*/
   opacity: 0;
 }
 
@@ -142,6 +147,12 @@ button {
 }
 
 button.cancel-new-game-button {
+  height: fit-content;
+  align-self: center;
+  font-size: 1em;
+  font-weight: bolder;
+  flex: 0;
+  width: fit-content;
   background-color: $survivor;
   &:hover {
     background-color: darken($survivor, 10);
@@ -169,6 +180,30 @@ form.box {
   button {
     text-transform: uppercase;
     padding: 10px;
+  }
+}
+
+header {
+  display: flex;
+  h2 {
+    flex: 1;
+  }
+
+  button {
+    height: fit-content;
+    align-self: center;
+    background-color: var(--button-1);
+    border-radius: 3px;
+    outline: 0;
+    padding: 10px 15px;
+    text-transform: uppercase;
+    color: white;
+    border: 0;
+    font-size: 1em;
+    font-weight: bolder;
+    &:hover {
+      background: darken(#6E8640, 7%);
+    }
   }
 }
 </style>

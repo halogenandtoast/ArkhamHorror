@@ -664,8 +664,8 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   background: var(--background);
   z-index: 1;
   width: 100%;
-  height: calc(100vh - 40px);
   flex: 1;
+  inset: 0;
 }
 
 .location-cards {
@@ -835,6 +835,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   display: flex;
   user-select: none;
   width: 100%;
+  height: 100%;
   flex: 1;
 }
 

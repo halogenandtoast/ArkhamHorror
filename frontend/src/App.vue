@@ -255,6 +255,7 @@ body {
   --sanity: #2c7fc0;
 
 
+  --delete: #c13131;
   --background: #2e3440;
   --background-dark: #242831;
   --background-light: #c9ced8;

@@ -181,7 +181,7 @@ h2 {
   display: flex;
   a {
     font-size: 1.2em;
-    color: #660000;
+    color: var(--delete);
     &:hover {
       color: #990000;
     }
@@ -415,7 +415,7 @@ h2 {
   }
 
   .delete-button {
-    background-color: #660000;
+    background-color: var(--delete);
   }
 }
 

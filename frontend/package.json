@@ -13,6 +13,8 @@
     "@fortawesome/free-brands-svg-icons": "^6.1.1",
     "@fortawesome/free-solid-svg-icons": "^6.1.1",
     "@fortawesome/vue-fontawesome": "^3.0.1",
+    "@headlessui/vue": "^1.7.22",
+    "@heroicons/vue": "^2.1.5",
     "@vueuse/components": "^10.11.1",
     "@vueuse/core": "^9.0.2",
     "axios": "^1.6.2",

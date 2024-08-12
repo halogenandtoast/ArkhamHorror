@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { watch, ref } from 'vue'
+import { watch, ref, onMounted } from 'vue'
 import {imgsrc} from '@/arkham/helpers';
 import { fetchInvestigators, newDeck, validateDeck } from '@/arkham/api'
 import { CardDef } from '@/arkham/types/CardDef';
@@ -17,11 +17,13 @@ const props = withDefaults(defineProps<Props>(), {
 const ready = ref(false)
 const emit = defineEmits(['newDeck'])
 
-fetchInvestigators().then(async (response) => {
-  fetch("/cards.json").then(async (cardResponse) => {
-    cards.value = await cardResponse.json()
-    investigators.value = response
-    ready.value = true
+onMounted(async () => {
+  fetchInvestigators().then(async (response) => {
+    fetch("/cards.json").then(async (cardResponse) => {
+      cards.value = await cardResponse.json()
+      investigators.value = response
+      ready.value = true
+    })
   })
 })
 
@@ -76,7 +78,7 @@ function loadDeckFromFile(e: Event) {
       deckList.value = data
       investigator.value = null
       investigatorError.value = null
-      if (investigators.value.map(i => i.art).includes(data.investigator_code)) {
+      if (investigators.value.includes(data.investigator_code)) {
         if(data.meta && data.meta.alternate_front) {
           investigator.value = data.meta.alternate_front
           if (props.setPortrait) {
@@ -111,7 +113,7 @@ function loadDeck() {
 
   investigator.value = null
   investigatorError.value = null
-  if (investigators.value.map(i => i.art).includes(deckList.value.investigator_code)) {
+  if (investigators.value.includes(deckList.value.investigator_code)) {
     if(deckList.value.meta && deckList.value.meta.alternate_front) {
       investigator.value = deckList.value.meta.alternate_front
       if (props.setPortrait) {
@@ -173,7 +175,7 @@ async function createDeck() {
 </script>
 
 <template>
-  <div v-if="ready" class="new-deck">
+  <div class="new-deck">
     <div class="form-body">
       <img v-if="investigator && !noPortrait" class="portrait" :src="imgsrc(`portraits/${investigator.replace('c', '')}.jpg`)" />
       <div class="fields">

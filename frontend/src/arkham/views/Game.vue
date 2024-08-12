@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import GameDetails from '@/arkham/components/GameDetails.vue';
 import { JsonDecoder } from 'ts.data.json';
+import { BugAntIcon, BackwardIcon, DocumentTextIcon, BeakerIcon, DocumentArrowDownIcon } from '@heroicons/vue/20/solid'
 import { useWebSocket, useClipboard } from '@vueuse/core'
 import { reactive, ref, computed, provide, onUnmounted, watch } from 'vue'
 import { useUserStore } from '@/stores/user'
@@ -10,6 +11,8 @@ import { fetchGame, undoChoice } from '@/arkham/api'
 import GameLog from '@/arkham/components/GameLog.vue'
 import api from '@/api'
 import CardView from '@/arkham/components/Card.vue'
+import Menu from '@/components/Menu.vue'
+import { MenuItem } from '@headlessui/vue'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import StandaloneScenario from '@/arkham/components/StandaloneScenario.vue'
 import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
@@ -301,14 +304,26 @@ provide('solo', solo)
        <p>Your game is out of sync, trying to reconnect...</p>
     </div>
     <div class="game-bar">
-      <nav>
-        <ul>
-          <li class="game-bar-item"><router-link class="button-link" :to="`/games/${game.id}/log`" v-slot="{href, navigate}"><button :href="href" @click="navigate">View Log</button></router-link></li>
-          <li><button @click="debug.toggle">Toggle Debug</button></li>
-          <li><button @click="debugExport">Debug Export</button></li>
-          <li><button @click="undo">Undo</button></li>
-        </ul>
-      </nav>
+      <div class="game-bar-item">
+        <div>
+          <router-link class="button-link" :to="`/games/${game.id}/log`" custom v-slot="{href, navigate}"><button :href="href" @click="navigate"><DocumentTextIcon aria-hidden="true" /> View Log</button></router-link>
+        </div>
+      </div>
+      <div>
+          <Menu>
+              <BeakerIcon aria-hidden="true" />
+              Debug
+              <template #items>
+                <MenuItem v-slot="{ active }">
+                  <button :class="{ active }" @click="debug.toggle"><BugAntIcon aria-hidden="true" /> Toggle Debug</button>
+                </MenuItem>
+                <MenuItem v-slot="{ active }">
+                  <button :class="{ active }" @click="debugExport"><DocumentArrowDownIcon aria-hidden="true" /> Debug Export</button>
+                </MenuItem>
+              </template>
+          </Menu>
+      </div>
+      <div><button @click="undo"><BackwardIcon aria-hidden="true" /> Undo</button></div>
     </div>
     <div v-if="game.gameState.tag === 'IsPending'" class="invite-container">
       <header>
@@ -931,20 +946,34 @@ header {
   padding-bottom: 10px;
 }
 
-.game-bar nav ul {
-  list-style: none;
+.game-bar {
   display: flex;
   margin: 0;
   padding: 0;
-  background: rgba(255,255,255,0.1);
-  li {
+  background: var(--background-mid);
+  div {
     display: inline;
     transition: 0.3s;
+    height: 100%;
     a {
       display: inline;
     }
     button {
+      background: none;
+      border: 0;
       display: inline;
+      padding: 5px 10px;
+      display: flex;
+      gap: 5px;
+      height: 100%;
+      align-items: center;
+      svg {
+        width: 15px;
+      }
+      &:hover {
+        background: rgba(0,0,0,0.4);
+      }
+      height: 100%;
     }
   }
   justify-content: flex-start;

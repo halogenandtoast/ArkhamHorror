@@ -7,7 +7,6 @@ import NewDeck from '@/arkham/components/NewDeck.vue';
 import Deck from '@/arkham/components/Deck.vue';
 import { useToast } from "vue-toastification";
 
-const ready = ref(false)
 const decks = ref<Arkham.Deck[]>([])
 const deleteId = ref<string | null>(null)
 const toast = useToast()
@@ -28,7 +27,6 @@ async function deleteDeckEvent() {
 
 fetchDecks().then(async (response) => {
   decks.value = response
-  ready.value = true
 })
 
 async function sync(deck: Arkham.Deck) {

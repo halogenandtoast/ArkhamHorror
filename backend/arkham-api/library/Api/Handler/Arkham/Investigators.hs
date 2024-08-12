@@ -7,5 +7,5 @@ import Import
 import Arkham.Card.CardDef
 import Arkham.Investigator.Cards
 
-getApiV1ArkhamInvestigatorsR :: Handler [CardDef]
-getApiV1ArkhamInvestigatorsR = pure $ toList allInvestigatorCards
+getApiV1ArkhamInvestigatorsR :: Handler [Text]
+getApiV1ArkhamInvestigatorsR = pure $ map cdArt $ toList allInvestigatorCards

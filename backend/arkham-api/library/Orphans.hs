@@ -76,7 +76,7 @@ instance {-# OVERLAPPABLE #-} ToJSON a => ToTypedContent a where
   toTypedContent = TypedContent typeJson . toContent
 
 instance {-# OVERLAPPABLE #-} ToJSON a => ToContent a where
-  toContent = toContent . encode
+  toContent = toContent . toEncoding
 
 instance ToBackendKey SqlBackend a => ToJSONKey (Key a) where
   toJSONKey = toJSONKeyText keyAsText

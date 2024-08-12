@@ -254,7 +254,7 @@ watch(deckRef, (el) => {
       <div class="cards" v-if="view == View.Image">
         <img class="card" v-for="(card, idx) in cards" :key="idx" :src="image(card)" />
       </div>
-      <table class="list" v-if="view == View.List">
+      <table class="box" v-if="view == View.List">
         <thead>
           <tr><th>Name</th><th>Class</th><th>Cost</th><th>Type</th><th>Icons</th><th>Traits</th><th>Set</th></tr>
         </thead>
@@ -309,14 +309,15 @@ watch(deckRef, (el) => {
   box-sizing: border-box;
 }
 
-table {
+table.box {
   width: calc(100% - 40px);
   box-sizing: border-box;
-  padding: 20px 0;
+  padding: 0;
   margin: 20px;
   border-radius: 10px;
-  background-color: rgba(255,255,255,0.9);
-  border-collapse: collapse;
+  border-spacing: 0;
+  background-color: rgba(255,255,255,0.05);
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 
 th {
@@ -332,12 +333,12 @@ tr th:nth-child(1){
 }
 
 tbody td {
-  padding: 2px 5px;
+  padding: 5px;
 }
 
 thead tr th {
-  background-color: #111;
   color: #aaa;
+  background-color: rgba(0, 0, 0, 0.2);
   padding: 5px 5px;
 
   &:nth-child(1) {
@@ -353,12 +354,8 @@ tr {
   color: #cecece;
 }
 
-tr:nth-child(odd) {
-  background-color: #333;
-}
-
 tr:nth-child(even) {
-  background-color: #222;
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .willpower {

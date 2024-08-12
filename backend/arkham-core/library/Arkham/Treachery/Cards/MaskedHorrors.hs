@@ -29,12 +29,12 @@ instance RunMessage MaskedHorrors where
                 clueCount <- field InvestigatorClues iid
                 pure (iid, clueCount)
             )
-      t
-        <$ if null targetInvestigators
-          then
-            pushAll
-              [ InvestigatorAssignDamage iid source DamageAny 0 2
-              | iid <- targetInvestigators
-              ]
-          else push placeDoomOnAgendaAndCheckAdvance
+      if null targetInvestigators
+        then push placeDoomOnAgendaAndCheckAdvance
+        else
+          pushAll
+            [ InvestigatorAssignDamage iid source DamageAny 0 2
+            | iid <- targetInvestigators
+            ]
+      pure t
     _ -> MaskedHorrors <$> runMessage msg attrs

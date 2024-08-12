@@ -78,8 +78,8 @@ runEventMessage msg a@EventAttrs {..} = case msg of
           _ -> error "Cannot attach event to that type"
       _ -> error "Cannot attach event to that type"
     pure a
-  Msg.InvestigatorEliminated iid | eventAttachedTarget a == Just (InvestigatorTarget iid) || iid == a.controller -> do
-    push $ toDiscard GameSource eventId
+  Msg.InvestigatorEliminated iid | eventAttachedTarget a == Just (InvestigatorTarget iid) || (iid == a.controller && isInPlayPlacement a.placement) -> do
+    push $ RemoveFromGame (toTarget a)
     pure a
   Discard _ source (isTarget a -> True) -> do
     windows' <- windows [Window.WouldBeDiscarded (toTarget a)]

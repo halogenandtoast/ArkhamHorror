@@ -147,7 +147,6 @@ const debug = useDebug()
   width: var(--card-width);
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
   border-radius: 6px;
-  margin: 2px;
 }
 
 .card--sideways {

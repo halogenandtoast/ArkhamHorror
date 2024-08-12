@@ -373,16 +373,20 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
         <div class="scenario-encounter-decks">
 
           <div v-if="topOfEncounterDiscard" class="discard" style="grid-area: encounterDiscard">
-            <img
-              :src="topOfEncounterDiscard"
-              class="card"
-            />
+            <div class="discard-card">
+              <img
+                :src="topOfEncounterDiscard"
+                class="card"
+              />
+            </div>
 
 
-            <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
-            <template v-if="debug.active">
-              <button @click="debug.send(game.id, {tag: 'ShuffleEncounterDiscardBackIn'})">Shuffle Back In</button>
-            </template>
+            <div v-if="discards.length > 0" class="buttons">
+              <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
+              <template v-if="debug.active">
+                <button @click="debug.send(game.id, {tag: 'ShuffleEncounterDiscardBackIn'})">Shuffle Back In</button>
+              </template>
+            </div>
           </div>
 
           <EncounterDeck
@@ -622,7 +626,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   padding-bottom: 10px;
   position: relative;
   width: 100%;
-  gap: 2px;
+  gap: 10px;
   z-index: -2;
 }
 
@@ -702,21 +706,33 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
   position: relative;
   display: flex;
   flex-direction: column;
+  gap: 5px;
   &:deep(.card) {
     margin: 0;
     box-shadow: none;
+  }
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+.discard-card {
+  position: relative;
+  width: fit-content;
+  line-height: 0;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+  .card {
+    box-shadow: unset;
   }
   &::after {
     border-radius: 6px;
     pointer-events: none;
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background-color: #FFF;
-    /* background-image: linear-gradient(120deg, #eaee44, #33d0ff); */
     opacity: .85;
     mix-blend-mode: saturation;
   }
@@ -857,12 +873,13 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 }
 
 .scenario-decks {
-  gap: 2px;
+  gap: 5px;
 }
 
 .scenario-encounter-decks {
   display: grid;
   grid-template: "encounterDiscard encounterDeck" "spectralDiscard spectralDeck";
+  gap: 10px;
 }
 
 .empty-grid-position {

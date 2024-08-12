@@ -1,7 +1,7 @@
 <template>
   <NavBar/>
   <Suspense>
-    <router-view v-slot="{ Component }">
+    <router-view v-slot="{ Component }" class="router-container">
       <transition name="fade">
         <component :is="Component" />
       </transition>
@@ -306,10 +306,16 @@ h2.title {
 
 .fade-enter-active {
   transition-delay: 0.3s;
+  position: absolute;
+  inset: 0;
 }
 
 .fade-leave-to,
 .fade-enter-from {
   opacity: 0;
+}
+
+.router-container {
+  position: relative;
 }
 </style>

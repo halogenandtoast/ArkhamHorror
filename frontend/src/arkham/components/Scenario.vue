@@ -1,5 +1,7 @@
 <script lang="ts" setup>
+import { EyeIcon } from '@heroicons/vue/20/solid'
 import {
+  watchEffect,
   onMounted,
   onUpdated,
   computed,
@@ -13,6 +15,7 @@ import { type Card } from '@/arkham/types/Card';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc, pluralize } from '@/arkham/helpers';
+import { useMenu } from '@/composeable/menu';
 import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
@@ -214,6 +217,23 @@ const playerOrder = computed(() => props.game.playerOrder)
 const discards = computed<Card[]>(() => props.scenario.discard.map(c => ({ tag: 'EncounterCard', contents: c })))
 const outOfPlayEnemies = computed(() => Object.values(props.game.outOfPlayEnemies).map(e => ({...props.game.cards[e.cardId], tokens: e.tokens})))
 const outOfPlay = computed(() => (props.scenario?.setAsideCards || []).concat(outOfPlayEnemies.value))
+
+const { addEntry, removeEntry } = useMenu()
+
+watchEffect(() => {
+  const oop = props.scenario?.setAsideCards
+  if (oop.length == 0) {
+    removeEntry("showOutOfPlay")
+  } else {
+    addEntry({
+      id: "showOutOfPlay",
+      icon: EyeIcon,
+      content: "Show Out of Play",
+      action: () => doShowCards(outOfPlay, 'Out of Play', true)
+    })
+  }
+})
+
 const removedFromPlay = computed(() => props.game.removedFromPlay)
 const noCards = computed<Card[]>(() => [])
 
@@ -228,7 +248,6 @@ const doShowCards = (cards: ComputedRef<Card[]>, title: string, isDiscards: bool
   viewingDiscard.value = isDiscards
 }
 
-const showOutOfPlay = () => doShowCards(outOfPlay, 'Out of Play', true)
 const showRemovedFromPlay = () => doShowCards(removedFromPlay, 'Removed from Play', true)
 const showDiscards = () => doShowCards(discards, 'Discards', true)
 const hideCards = () => showCards.ref = noCards
@@ -497,8 +516,6 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
         </SkillTest>
 
         <button v-if="removedFromPlay.length > 0" class="view-removed-from-play-button" @click="showRemovedFromPlay"><font-awesome-icon icon="eye" /> Removed from Play</button>
-
-        <button v-if="outOfPlay.length > 0" class="view-out-of-play-button" @click="showOutOfPlay"><font-awesome-icon icon="eye" /> Out of Play</button>
       </div>
 
       <Connections :game="game" :playerId="playerId" />

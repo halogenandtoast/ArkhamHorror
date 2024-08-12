@@ -481,5 +481,8 @@ applyActionCostModifier _ _ actions (ActionCostOf (IsAction action') m) n
 applyActionCostModifier _ performedActions actions (ActionCostOf (FirstOneOfPerformed as) m) n
   | notNull (actions `List.intersect` as) && all (\a -> all (notElem a) performedActions) as =
       n + m
+applyActionCostModifier _ performedActions actions (AdditionalActionCostOf (FirstOneOfPerformed as) m) n
+  | notNull (actions `List.intersect` as) && all (\a -> all (notElem a) performedActions) as =
+      n + m
 applyActionCostModifier _ _ _ (ActionCostModifier m) n = n + m
 applyActionCostModifier _ _ _ _ n = n

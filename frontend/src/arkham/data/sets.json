@@ -40,7 +40,7 @@
   { "name": "Dark Side of the Moon", "min": 6195, "max": 6233, "playerCards": 11, "code": "dsm", "cycle": 6 },
   { "name": "Point of No Return", "min": 6234, "max": 6275, "playerCards": 13, "code": "pnr", "cycle": 6 },
   { "name": "Where the Gods Dwell", "min": 6276, "max": 6322, "playerCards": 10, "code": "wgd", "cycle": 6 },
-  { "name": "Weaver of the Cosmos", "min": 6323, "max": 6354, "playerCards": 10, "code": "woc", "cycle": 6 },
+  { "name": "Weaver of the Cosmos", "min": 6323, "max": 6354, "playerCards": 10, "code": "woc", "cycle": 6, "encounterDuplicates": 1},
 
   { "name": "The Innsmouth Conspiracy", "min": 7001, "max": 7107, "playerCards": 40, "code": "tic", "cycle": 7 },
   { "name": "In Too Deep", "min": 7108, "max": 7151, "playerCards": 15, "code": "itd", "cycle": 7 },

@@ -573,7 +573,7 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
       <div class="phase" :class="{ 'active-phase': phase == 'MythosPhase' }">
         <div class="subphases">
           <div v-tooltip.left="'Round begins. Mythos phase begins.'" :class="{'current': phaseStep?.contents === 'MythosPhaseBeginsStep' }">1.1</div>
-          <div v-tooltip.left="{content: 'Place 1 doom on the current agenda.', contained: true }" :class="{'current': phaseStep?.contents === 'PlaceDoomOnAgendaStep'}">1.2</div>
+          <div v-tooltip.left="'Place 1 doom on the current agenda.'" :class="{'current': phaseStep?.contents === 'PlaceDoomOnAgendaStep'}">1.2</div>
           <div v-tooltip.left="'Check doom threshold.'" :class="{'current': phaseStep?.contents === 'CheckDoomThresholdStep'}">1.3</div>
           <div v-tooltip.left="'Each investigator draws 1 encounter card.'" :class="{'current': phaseStep?.contents === 'EachInvestigatorDrawsEncounterCardStep'}">1.4</div>
           <div v-tooltip.left="'PLAYER WINDOW'" :class="{'current': phaseStep?.contents === 'MythosPhaseWindow'}"><i class="fast-icon" /></div>

@@ -190,7 +190,6 @@ const reversed = computed(() => {
 
 const overlay = computed(() => {
   if (!hoveredElement.value) return null;
-  console.log(hoveredElement.value.dataset.overlay)
   return hoveredElement.value.dataset.overlay;
 });
 

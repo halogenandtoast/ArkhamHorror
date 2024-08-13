@@ -161,6 +161,7 @@ h2 {
   filter: invert(100%) brightness(85%);
   max-height: 50px;
   width: 100%;
+  object-fit: contain;
 }
 
 .scenario-icon {
@@ -358,17 +359,9 @@ h2 {
 }
 
 .finished-game {
-  border-left: 10px solid #999;
-  background: #222;
-  color: #999;
-
-  a {
-    color: #494949;
-  }
-
-  .campaign-icon {
-    filter: invert(28%) sepia(0%) hue-rotate(-180deg) saturate(3);
-    max-height: 50px;
+  filter: saturate(0);
+  svg:hover {
+    filter: saturate(1);
   }
 }
 

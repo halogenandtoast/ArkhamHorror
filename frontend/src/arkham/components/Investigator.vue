@@ -195,7 +195,6 @@ function calculateSkill(base: number, skillType: string, modifiers: Modifier[]) 
 }
 
 function useEffectAction(action: { contents: string[] }) {
-  console.log(action, choices.value)
   const choice = choices.value.findIndex((c) => c.tag === 'EffectActionButton' && c.effectId == action.contents[1])
   if (choice !== -1) {
     emit('choose', choice)

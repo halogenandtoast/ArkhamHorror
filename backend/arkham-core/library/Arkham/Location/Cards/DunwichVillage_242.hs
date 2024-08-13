@@ -45,7 +45,7 @@ instance RunMessage DunwichVillage_242 where
       investigatorPlayersWithClues <- traverse (traverseToSnd getPlayer) investigatorsWithClues
       abominations <- select $ EnemyWithTrait Abomination
       when
-        (null (traceShowId investigatorsWithClues) || null (traceShowId abominations))
+        (null investigatorsWithClues || null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
       pushAll
         [ chooseOne

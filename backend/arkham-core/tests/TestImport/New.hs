@@ -8,6 +8,7 @@ import TestImport.Lifted as X hiding (
   duringTurn,
   evadedBy,
   evadedEnemy,
+  exhaust,
   fightEnemy,
   investigate,
   loadDeck,
@@ -57,7 +58,7 @@ import Data.Text qualified as T
 import GHC.Records
 import GHC.TypeLits
 import Helpers.Message qualified
-import TestImport.Lifted qualified as Old
+import TestImport.Lifted qualified as Old hiding (exhaust)
 
 discard :: Targetable a => a -> TestAppT ()
 discard = run . toDiscard GameSource
@@ -854,3 +855,6 @@ beginsWithInPlay investigator card = it ("begins with " <> T.unpack (toTitle car
 
 setActive :: Investigator -> TestAppT ()
 setActive player = run $ SetActiveInvestigator (toId player)
+
+exhaust :: Targetable target => target -> TestAppT ()
+exhaust target = run $ Exhaust (toTarget target)

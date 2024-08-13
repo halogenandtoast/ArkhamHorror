@@ -26,6 +26,10 @@ onMounted(async () => await store.loadUserFromStorage())
 </script>
 
 <style lang="scss">
+* {
+  min-width: 0;
+}
+
 @font-face {
   font-family: "Arkham";
   src: url("/fonts/arkham.ttf");

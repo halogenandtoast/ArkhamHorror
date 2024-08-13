@@ -111,6 +111,56 @@ const handleKeyPress = (event: KeyboardEvent) => {
         choose(skipTriggers)
       }
   }
+
+  if (event.key === 'd') {
+    const draw = choices.value.findIndex((c) => {
+      if (c.tag !== Message.MessageType.COMPONENT_LABEL) return false
+      if (c.component.tag !== "InvestigatorDeckComponent") return false
+      if (!playerId.value) return false
+      return game.value?.investigators[c.component.investigatorId]?.playerId === playerId.value
+    })
+    if (draw !== -1) {
+      choose(draw)
+    } else {
+      const drawEncounter = choices.value.findIndex((c) => {
+        if (c.tag !== Message.MessageType.TARGET_LABEL) return false
+        return c.target.tag === "EncounterDeckTarget"
+      })
+
+      if (drawEncounter !== -1) {
+        choose(drawEncounter)
+      }
+    }
+  }
+
+  if (event.key === 'r') {
+    const resource = choices.value.findIndex((c) => {
+      if (c.tag !== Message.MessageType.COMPONENT_LABEL) return false
+      if (c.component.tag !== "InvestigatorComponent") return false
+      if (c.component.tokenType !== "ResourceToken") return false
+      if (!playerId.value) return false
+      return game.value?.investigators[c.component.investigatorId]?.playerId === playerId.value
+    })
+    if (resource !== -1) {
+      choose(resource)
+    }
+  }
+
+  if (event.key === 'e') {
+    const endTurn = choices.value.findIndex((c) => {
+      if (c.tag !== Message.MessageType.END_TURN_BUTTON) return false
+      return game.value?.investigators[c.investigatorId]?.playerId === playerId.value
+    })
+    if (endTurn !== -1) {
+      choose(endTurn)
+    }
+  }
+
+  menuItems.value.forEach((item) => {
+    if (item.shortcut === event.key) {
+      item.action()
+    }
+  })
 }
 
 onMounted(() => {
@@ -335,14 +385,11 @@ const gameOver = computed(() => game.value?.gameState.tag === "IsOver")
 
 const showLog = ref(false);
 
-const additionalMenuItems = ref([]);
-
 provide('chooseDeck', chooseDeck)
 provide('choosePaymentAmounts', choosePaymentAmounts)
 provide('chooseAmounts', chooseAmounts)
 provide('switchInvestigator', switchInvestigator)
 provide('solo', solo)
-provide('additionalMenuItems', additionalMenuItems)
 const { menuItems } = useMenu()
 </script>
 
@@ -356,12 +403,26 @@ const { menuItems } = useMenu()
         </header>
       </template>
       <dl class="shortcuts">
+        <dt> </dt>
+        <dd>(space) Skip Triggers</dd>
         <dt>u</dt>
         <dd>Undo</dd>
         <dt>D</dt>
         <dd>Toggle Debug</dd>
         <dt>?</dt>
         <dd>Show/Hide Shortcuts</dd>
+        <dt>d</dt>
+        <dd>Draw from deck / encounter deck</dd>
+        <dt>r</dt>
+        <dd>Take Resources</dd>
+        <dt>e</dt>
+        <dd>End Turn</dd>
+        <template v-for="item in menuItems" :key="item.id">
+          <template v-if="item.shortcut">
+            <dt>{{item.shortcut}}</dt>
+            <dd>{{item.content}}</dd>
+          </template>
+        </template>
       </dl>
     </Draggable>
     <div v-if="socketError" class="socketWarning">
@@ -379,8 +440,19 @@ const { menuItems } = useMenu()
               View
               <template #items>
                 <MenuItem v-slot="{ active }">
-                  <button :class="{ active }" @click="showShortcuts = !showShortcuts"><BoltIcon aria-hidden="true" /> Shortcuts</button>
+                  <button :class="{ active }" @click="showShortcuts = !showShortcuts">
+                    <BoltIcon aria-hidden="true" /> Shortcuts <span class="shortcut">?</span>
+                  </button>
                 </MenuItem>
+                <template v-for="item in menuItems" :key="item.id">
+                  <MenuItem v-if="item.nested === 'view'" v-slot="{ active }">
+                    <button :class="{ active }" @click="item.action">
+                      <component v-if="item.icon" v-bind:is="item.icon"></component>
+                      {{item.content}}
+                      <span v-if="item.shortcut" class="shortcut">{{item.shortcut}}</span>
+                    </button>
+                  </MenuItem>
+                </template>
               </template>
           </Menu>
       </div>
@@ -390,7 +462,7 @@ const { menuItems } = useMenu()
               Debug
               <template #items>
                 <MenuItem v-slot="{ active }">
-                  <button :class="{ active }" @click="debug.toggle"><BugAntIcon aria-hidden="true" /> Toggle Debug</button>
+                  <button :class="{ active }" @click="debug.toggle"><BugAntIcon aria-hidden="true" /> Toggle Debug <span class="shortcut">D</span></button>
                 </MenuItem>
                 <MenuItem v-slot="{ active }">
                   <button :class="{ active }" @click="debugExport"><DocumentArrowDownIcon aria-hidden="true" /> Debug Export</button>
@@ -402,10 +474,12 @@ const { menuItems } = useMenu()
       </div>
       <div><button @click="undo"><BackwardIcon aria-hidden="true" /> Undo</button></div>
       <div v-for="item in menuItems" :key="item.id">
-        <button @click="item.action">
-          <component v-if="item.icon" v-bind:is="item.icon"></component>
-          {{item.content}}
-        </button>
+        <template v-if="item.nested === null || item.nested === undefined">
+          <button @click="item.action">
+            <component v-if="item.icon" v-bind:is="item.icon"></component>
+            {{item.content}}
+          </button>
+        </template>
       </div>
       <div class="right">
         <button @click="toggleSidebar"><ArrowsRightLeftIcon aria-hidden="true" /> Toggle Sidebar</button>
@@ -1091,5 +1165,17 @@ dl.shortcuts {
     grid-column-start: 2;
     align-self: center;
   }
+}
+
+.shortcut {
+  margin-left: auto;
+  border: 1px solid var(--title);
+  background-color: var(--box-background);
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+button:hover .shortcut {
+  background-color: var(--box-border);
 }
 </style>

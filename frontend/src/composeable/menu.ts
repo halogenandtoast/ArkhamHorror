@@ -4,6 +4,8 @@ export type MenuEntry = {
   id: string;
   icon?: FunctionalComponent<HTMLAttributes & VNodeProps, {}, any, {}>;
   content: string;
+  shortcut?: string;
+  nested?: string;
   action: () => void;
 }
 

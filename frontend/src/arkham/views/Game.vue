@@ -1,13 +1,14 @@
 <script lang="ts" setup>
+import { onMounted, reactive, ref, computed, provide, onUnmounted, watch } from 'vue'
 import GameDetails from '@/arkham/components/GameDetails.vue';
 import { JsonDecoder } from 'ts.data.json';
-import { ArrowsRightLeftIcon, BugAntIcon, BackwardIcon, DocumentTextIcon, BeakerIcon, DocumentArrowDownIcon } from '@heroicons/vue/20/solid'
+import { EyeIcon, ArrowsRightLeftIcon, BugAntIcon, BackwardIcon, DocumentTextIcon, BeakerIcon, BoltIcon, DocumentArrowDownIcon } from '@heroicons/vue/20/solid'
 import { useWebSocket, useClipboard } from '@vueuse/core'
-import { reactive, ref, computed, provide, onUnmounted, watch } from 'vue'
 import { useUserStore } from '@/stores/user'
 import * as Arkham from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers';
 import { fetchGame, undoChoice } from '@/arkham/api'
+import Draggable from '@/components/Draggable.vue'
 import GameLog from '@/arkham/components/GameLog.vue'
 import api from '@/api'
 import CardView from '@/arkham/components/Card.vue'
@@ -74,6 +75,7 @@ const tarotCards = ref<TarotCard[]>([])
 const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`
 const spectatePrefix = props.spectate ? "/spectate" : ""
 
+const showShortcuts = ref(false)
 const userStore = useUserStore()
 const socketError = ref(false)
 const onError = () => socketError.value = true
@@ -83,8 +85,30 @@ const websocketUrl = `${baseURL}/api/v1/arkham/games/${props.gameId}${spectatePr
   replace(/http/, 'ws')
 const { data, send, close } = useWebSocket(websocketUrl, { autoReconnect: true, onError, onConnected })
 
+const handleKeyPress = (event: KeyboardEvent) => {
+  console.log(event.key)
+  if (event.key === 'u') {
+    undo()
+  }
+
+  if (event.key === 'D') {
+    debug.toggle()
+  }
+
+  if (event.key === '?') {
+    showShortcuts.value = !showShortcuts.value
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('keydown', handleKeyPress)
+})
+
 onBeforeRouteLeave(() => close())
-onUnmounted(() => close())
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeyPress)
+  close()
+})
 
 store.fetchCards()
 const cards = computed(() => store.cards)
@@ -312,6 +336,21 @@ const { menuItems } = useMenu()
 <template>
   <div id="game" v-if="ready && game && playerId">
     <CardOverlay />
+    <Draggable v-if="showShortcuts">
+      <template #handle>
+        <header>
+          <h2>Keyboard Shortcuts</h2>
+        </header>
+      </template>
+      <dl class="shortcuts">
+        <dt>u</dt>
+        <dd>Undo</dd>
+        <dt>D</dt>
+        <dd>Toggle Debug</dd>
+        <dt>?</dt>
+        <dd>Show/Hide Shortcuts</dd>
+      </dl>
+    </Draggable>
     <div v-if="socketError" class="socketWarning">
        <p>Your game is out of sync, trying to reconnect...</p>
     </div>
@@ -320,6 +359,17 @@ const { menuItems } = useMenu()
         <div>
           <button @click="showLog = !showLog"><DocumentTextIcon aria-hidden="true" /> {{ showLog ? "Close Log" : "View Log" }}</button>
         </div>
+      </div>
+      <div>
+          <Menu>
+              <EyeIcon aria-hidden="true" />
+              View
+              <template #items>
+                <MenuItem v-slot="{ active }">
+                  <button :class="{ active }" @click="showShortcuts = !showShortcuts"><BoltIcon aria-hidden="true" /> Shortcuts</button>
+                </MenuItem>
+              </template>
+          </Menu>
       </div>
       <div>
           <Menu>
@@ -1005,5 +1055,28 @@ header {
 .game-bar-item.active, .game-bar-item:hover {
   background: rgba(0, 0, 0, 0.21);
   color: var(--title);
+}
+
+dl.shortcuts {
+  display: grid;
+  grid-gap: 4px 16px;
+  grid-template-columns: max-content;
+  padding: 10px;
+  font-size: 1.2em;
+  color: white;
+  dt {
+    font-weight: bold;
+    background-color: var(--box-background);
+    border: 1px solid var(--title);
+    color: white;
+    padding: 5px;
+    text-align: center;
+    aspect-ratio: 1/1;
+  }
+  dd {
+    margin: 0;
+    grid-column-start: 2;
+    align-self: center;
+  }
 }
 </style>

@@ -3772,7 +3772,7 @@ passesLimits iid c = allM go (cdLimits $ toCardDef c)
       _ -> error $ "Not handling card type: " <> show (toCardType c)
     LimitPerTrait t m -> case toCardType c of
       AssetType -> do
-        n <- selectCount (Matcher.AssetWithTrait t)
+        n <- selectCount (Matcher.assetControlledBy iid <> Matcher.AssetWithTrait t)
         pure $ m > n
       _ -> error $ "Not handling card type: " <> show (toCardType c)
     MaxPerAttack m -> case toCardType c of

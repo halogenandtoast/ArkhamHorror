@@ -232,7 +232,7 @@ watch(abilities, (abilities) => {
           </div>
 
           <OnClickOutside @trigger="showAbilities = false">
-            <div v-if="showAbilities" class="abilities">
+          <div v-if="showAbilities" class="abilities" :class="{ right: 'atLocation' }">
               <AbilityButton
                 v-for="ability in abilities"
                 :key="ability.index"
@@ -367,9 +367,14 @@ watch(abilities, (abilities) => {
   border-radius: 10px;
   display: grid;
   gap: 5px;
-  bottom:100%;
+  bottom:50%;
+  transform: translateY(50%);
   left: 0;
   z-index: 20000000000;
+
+  &.right {
+    left: 100%;
+  }
 }
 
 .swarm {

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { OnClickOutside } from '@vueuse/components'
 import { watch, computed, ref } from 'vue'
 import { useDebug } from '@/arkham/debug'
 import { Game } from '@/arkham/types/Game'
@@ -230,14 +231,16 @@ watch(abilities, (abilities) => {
             />
           </div>
 
-          <div v-if="showAbilities" class="abilities">
-            <AbilityButton
-              v-for="ability in abilities"
-              :key="ability.index"
-              :ability="ability.contents"
-              @click="chooseAbility(ability.index)"
-              />
-          </div>
+          <OnClickOutside @trigger="showAbilities = false">
+            <div v-if="showAbilities" class="abilities">
+              <AbilityButton
+                v-for="ability in abilities"
+                :key="ability.index"
+                :ability="ability.contents"
+                @click="chooseAbility(ability.index)"
+                />
+            </div>
+          </OnClickOutside>
         </div>
 
       </template>

@@ -30,6 +30,10 @@ onMounted(async () => await store.loadUserFromStorage())
   min-width: 0;
 }
 
+button {
+  min-width: max-content;
+}
+
 @font-face {
   font-family: "Arkham";
   src: url("/fonts/arkham.ttf");

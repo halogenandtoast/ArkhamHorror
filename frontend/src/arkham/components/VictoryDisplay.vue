@@ -34,13 +34,18 @@ const showVictoryDisplay = () => emit('show', reference, 'Victory Display', true
 .card {
   width: 100px;
   border-radius: 6px;
-  margin: 2px;
+  box-shadow: unset;
 }
 
 .victory-display {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 5px;
+
+  &:deep(.card) {
+    box-shadow: unset;
+    margin: 0;
+  }
 }
 
 .victory-display-card {
@@ -48,9 +53,7 @@ const showVictoryDisplay = () => emit('show', reference, 'Victory Display', true
   width: fit-content;
   line-height: 0;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
-  .card {
-    box-shadow: unset;
-  }
+
   &::after {
     border-radius: 6px;
     pointer-events: none;

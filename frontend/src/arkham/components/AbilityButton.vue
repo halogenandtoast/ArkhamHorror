@@ -235,6 +235,8 @@ const classObject = computed(() => {
   border-radius: 4px;
   background-color: #555;
   z-index: 1000;
+  width: 100%;
+  min-width: max-content;
 }
 
 .objective-button {

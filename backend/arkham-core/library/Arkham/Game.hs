@@ -1215,7 +1215,7 @@ getTreacheriesMatching matcher = do
     TreacheryOnEnemy enemyMatcher -> \treachery -> do
       targets <- selectMap (Just . EnemyTarget) enemyMatcher
       let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
-      pure $ treacheryTarget `elem` targets
+      pure $ traceShowId treacheryTarget `elem` traceShowId targets
     TreacheryAttachedToLocation mtchr -> \treachery -> do
       case treachery.placement of
         AttachedToLocation lid -> lid <=~> mtchr

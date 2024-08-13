@@ -95,6 +95,12 @@ instance RunMessage TreacheryAttrs where
     Discarded target _ _ | target `elem` treacheryAttachedTarget a -> do
       push $ toDiscard GameSource a
       pure a
+    DefeatedAddToVictory target | target `elem` treacheryAttachedTarget a -> do
+      push $ toDiscard GameSource a
+      pure a
+    AddToVictory target | target `elem` treacheryAttachedTarget a -> do
+      push $ toDiscard GameSource a
+      pure a
     After (Revelation iid (isSource a -> True)) -> do
       pushWhen
         (treacheryPlacement == Limbo)

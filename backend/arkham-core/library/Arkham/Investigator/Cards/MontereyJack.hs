@@ -29,7 +29,7 @@ instance HasAbilities MontereyJack where
         attrs
         1
         (Self <> youExist (oneOf [can.draw.cards, can.gain.resources, DistanceFromRoundStart (atLeast 1)]))
-        $ freeReaction (RoundEnds #when)
+        $ freeReaction (TurnEnds #when You)
     ]
 
 instance HasChaosTokenValue MontereyJack where

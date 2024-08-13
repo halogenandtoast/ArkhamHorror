@@ -59,7 +59,7 @@ kymaniJonesEffect = cardEffect KymaniJonesEffect Cards.kymaniJones
 
 instance RunMessage KymaniJonesEffect where
   runMessage msg e@(KymaniJonesEffect attrs) = runQueueT $ case msg of
-    PassedThisSkillTestBy iid source n | source == attrs.source -> do
+    PassedThisSkillTestBy iid _source n -> do
       getSkillTestTarget >>= \case
         Just (EnemyTarget enemy) -> do
           mx <- field EnemyRemainingHealth enemy

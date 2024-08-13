@@ -77,7 +77,8 @@ function elementDrag(el: HTMLElement) {
   overflow: hidden;
   transform: translateX(-50%) translateY(-50%);
 
-  background: hsl(0.0 100% 100% / 30%);
+  //background: hsl(0.0 100% 100% / 30%);
+  background: #5e7b7380;
   border-radius: 16px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(20px);
@@ -91,7 +92,7 @@ function elementDrag(el: HTMLElement) {
     font-size: 1.2em;
     color: white;
     text-align: center;
-    padding: 5px;
+    padding: 5px 10px;
     font-family: Teutonic;
     > * {
       padding: 0;

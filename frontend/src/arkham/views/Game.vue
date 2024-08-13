@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, reactive, ref, computed, provide, onUnmounted, watch } from 'vue'
 import GameDetails from '@/arkham/components/GameDetails.vue';
+import * as ArkhamGame from '@/arkham/types/Game';
 import { JsonDecoder } from 'ts.data.json';
 import { EyeIcon, ArrowsRightLeftIcon, BugAntIcon, BackwardIcon, DocumentTextIcon, BeakerIcon, BoltIcon, DocumentArrowDownIcon } from '@heroicons/vue/20/solid'
 import { useWebSocket, useClipboard } from '@vueuse/core'
@@ -10,6 +11,7 @@ import { imgsrc } from '@/arkham/helpers';
 import { fetchGame, undoChoice } from '@/arkham/api'
 import Draggable from '@/components/Draggable.vue'
 import GameLog from '@/arkham/components/GameLog.vue'
+import * as Message from '@/arkham/types/Message'
 import api from '@/api'
 import CardView from '@/arkham/components/Card.vue'
 import Menu from '@/components/Menu.vue'
@@ -85,8 +87,12 @@ const websocketUrl = `${baseURL}/api/v1/arkham/games/${props.gameId}${spectatePr
   replace(/http/, 'ws')
 const { data, send, close } = useWebSocket(websocketUrl, { autoReconnect: true, onError, onConnected })
 
+const choices = computed(() => {
+  if (!game.value || !playerId.value) return []
+  return ArkhamGame.choices(game.value, playerId.value)
+})
+
 const handleKeyPress = (event: KeyboardEvent) => {
-  console.log(event.key)
   if (event.key === 'u') {
     undo()
   }
@@ -97,6 +103,13 @@ const handleKeyPress = (event: KeyboardEvent) => {
 
   if (event.key === '?') {
     showShortcuts.value = !showShortcuts.value
+  }
+
+  if (event.key === ' ') {
+      const skipTriggers = choices.value.findIndex((c) => c.tag === Message.MessageType.SKIP_TRIGGERS_BUTTON)
+      if (skipTriggers !== -1) {
+        choose(skipTriggers)
+      }
   }
 }
 

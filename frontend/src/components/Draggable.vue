@@ -106,6 +106,7 @@ function elementDrag(el: HTMLElement) {
     transition: background-color 0.3s linear;
     border-radius: 0;
     margin-bottom: 0;
+    border: 0;
     &:hover {
       background: var(--button-2-highlight);
     }

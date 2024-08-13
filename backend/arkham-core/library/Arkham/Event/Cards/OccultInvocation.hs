@@ -22,7 +22,7 @@ instance RunMessage OccultInvocation where
       let n = totalDiscardCardPayments attrs.payment
       sid <- getRandom
       chooseFight <-
-        leftOr <$> aspect iid attrs (#willpower `InsteadOf` #combat) (mkChooseFight sid iid attrs)
+        leftOr <$> aspect iid attrs (#intellect `InsteadOf` #combat) (mkChooseFight sid iid attrs)
       pushAll
         $ skillTestModifiers sid attrs iid [DamageDealt n, SkillModifier #intellect n]
         : chooseFight

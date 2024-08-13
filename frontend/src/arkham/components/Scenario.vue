@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { EyeIcon } from '@heroicons/vue/20/solid'
+import { EyeIcon, QuestionMarkCircleIcon } from '@heroicons/vue/20/solid'
 import {
   watchEffect,
   onMounted,
@@ -17,6 +17,8 @@ import { TokenType } from '@/arkham/types/Token';
 import { imgsrc, pluralize } from '@/arkham/helpers';
 import { useMenu } from '@/composeable/menu';
 import Act from '@/arkham/components/Act.vue';
+import Draggable from '@/components/Draggable.vue';
+import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
@@ -43,6 +45,7 @@ const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const debug = useDebug()
 const needsInit = ref(true)
+const showChaosBag = ref(false)
 
 onMounted(() => {
   if(props.scenario.id === "c06333") {
@@ -220,6 +223,15 @@ const outOfPlay = computed(() => (props.scenario?.setAsideCards || []).concat(ou
 
 const { addEntry, removeEntry } = useMenu()
 
+addEntry({
+  id: "viewChaosBag",
+  icon: QuestionMarkCircleIcon,
+  content: "View Chaos Bag",
+  shortcut: "c",
+  nested: 'view',
+  action: () => showChaosBag.value = !showChaosBag.value
+})
+
 watchEffect(() => {
   const oop = props.scenario?.setAsideCards
   if (oop.length == 0) {
@@ -229,6 +241,7 @@ watchEffect(() => {
       id: "showOutOfPlay",
       icon: EyeIcon,
       content: "Show Out of Play",
+      nested: 'view',
       action: () => doShowCards(outOfPlay, 'Out of Play', true)
     })
   }
@@ -349,10 +362,15 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 <template>
   <div v-if="!gameOver" id="scenario" class="scenario" :data-scenario="scenario.id">
     <div class="scenario-body">
-      <div v-if="debug.active">
-        <button @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'BlessToken'})">Add Bless Token</button>
-        <button @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'CurseToken'})">Add Curse Token</button>
-      </div>
+      <Draggable v-if="showChaosBag">
+        <template #handle><header><h2>Chaos Bag</h2></header></template>
+        <ChaosBag :game="game" :skillTest="null" :chaosBag="scenario.chaosBag" :playerId="playerId" @choose="choose" />
+        <div v-if="debug.active" class="buttons buttons-row">
+          <button class="button blessed" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'BlessToken'})">Add <span class="bless-icon"></span></button>
+          <button class="button cursed" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'CurseToken'})">Add <span class="curse-icon"></span></button>
+        </div>
+        <button class="button" @click="showChaosBag = false">Close</button>
+      </Draggable>
       <CardRow
         v-if="showCards.ref.length > 0"
         :game="game"
@@ -1011,6 +1029,24 @@ const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 // We lower the margin so things line up a bit better.
 [data-scenario='c06333'] .location-cards:deep(.location-container) {
 margin: 20px !important;
+}
+
+.buttons-row {
+  display: flex;
+  flex-direction: row;
+
+  .blessed {
+    background-color: var(--blessed);
+  }
+
+  .cursed {
+    background-color: var(--cursed);
+  }
+}
+
+.button {
+  padding: 5px 10px;
+  font-size: 1em;
 }
 
 </style>

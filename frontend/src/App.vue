@@ -262,6 +262,8 @@ body {
   --health: #ae4236;
   --sanity: #2c7fc0;
 
+  --blessed: #6a5720;
+  --cursed: #270F31;
 
   --delete: #c13131;
   --background: #2e3440;

@@ -112,6 +112,7 @@ const choose = (idx: number) => emit('choose', idx)
         v-for="(tokenFace, idx) in allTokenFaces"
         :key="`${tokenFace}${idx}`"
         class="token"
+        :class="{'token-big': skillTest === null}"
         :src="imageFor(tokenFace)"
       />
     </div>
@@ -161,6 +162,9 @@ const choose = (idx: number) => emit('choose', idx)
   img {
     width: 30px;
     height: auto;
+    &.token-big {
+      width: 50px;
+    }
   }
 }
 

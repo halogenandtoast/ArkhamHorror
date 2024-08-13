@@ -2640,6 +2640,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   $ a
                   & (handL %~ (<> map PlayerCard (filter (`cardMatch` NotCard CardWithRevelation) allDrawn)))
                   & (deckL .~ Deck deck')
+                  & (drawnCardsL .~ mempty)
   InvestigatorDrewPlayerCard iid card | iid == investigatorId -> do
     hasForesight <- hasModifier iid (Foresight $ toTitle card)
     whenDraw <- checkWindows [mkWhen $ Window.DrawCard iid (toCard card) (Deck.InvestigatorDeck iid)]

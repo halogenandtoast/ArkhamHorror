@@ -8,7 +8,7 @@ intro :: FlavorText
 intro =
   FlavorText
     (Just "Part III: The Devourer Below")
-    [ "After a frantic nighttime search throughout Arkham, you have tracker\
+    [ "After a frantic nighttime search throughout Arkham, you have tracked\
       \ down and questioned several members of the cult. Your findings are\
       \ disturbing: they claim to worship a being known as Umôrdhoth, a\
       \ monstrous entity from another realm."

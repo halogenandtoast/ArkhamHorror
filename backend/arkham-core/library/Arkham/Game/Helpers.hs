@@ -2439,8 +2439,8 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
                     if unhandled
                       then
                         andM
-                          [ traceShowId <$> matchWho iid who whoMatcher
-                          , traceShowId <$> gameValueMatches n gameValueMatcher
+                          [ matchWho iid who whoMatcher
+                          , gameValueMatches n gameValueMatcher
                           ]
                       else noMatch
                   _ -> noMatch

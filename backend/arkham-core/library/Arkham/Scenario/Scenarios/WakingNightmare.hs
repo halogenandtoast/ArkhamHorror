@@ -51,8 +51,8 @@ instance HasChaosTokenValue WakingNightmare where
       isEngaged <- selectAny $ EnemyWithTrait Staff <> enemyEngagedWith iid
       pure
         $ if isEngaged
-          then toChaosTokenValue attrs Skull 1 3
-          else toChaosTokenValue attrs Skull 3 5
+          then toChaosTokenValue attrs Skull 3 5
+          else toChaosTokenValue attrs Skull 1 3
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
     ElderThing -> do
       n <- selectCount InfestedLocation

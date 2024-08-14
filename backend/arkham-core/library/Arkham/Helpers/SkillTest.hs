@@ -357,9 +357,7 @@ getModifiedSkillTestDifficulty :: (HasCallStack, HasGame m) => SkillTest -> m In
 getModifiedSkillTestDifficulty s = do
   modifiers' <- getModifiers (SkillTestTarget s.id)
   baseDifficulty <- getBaseSkillTestDifficulty s
-  let
-    preModifiedDifficulty =
-      foldr applyPreModifier baseDifficulty modifiers'
+  let preModifiedDifficulty = foldr applyPreModifier baseDifficulty modifiers'
   foldrM applyModifier preModifiedDifficulty modifiers'
  where
   applyModifier (Difficulty m) n = pure $ max 0 (n + m)

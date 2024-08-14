@@ -4,12 +4,12 @@ module Arkham.Location.Cards.ExperimentalTherapiesWard (
 )
 where
 
-import Arkham.Prelude
-
 import Arkham.GameValue
-import Arkham.Helpers.Modifiers
+import Arkham.Modifier
+import Arkham.Ability
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype ExperimentalTherapiesWard = ExperimentalTherapiesWard LocationAttrs
@@ -21,7 +21,7 @@ experimentalTherapiesWard = location ExperimentalTherapiesWard Cards.experimenta
 
 instance HasAbilities ExperimentalTherapiesWard where
   getAbilities (ExperimentalTherapiesWard attrs) =
-    withRevealedAbilities
+    extendRevealed
       attrs
       [ mkAbility attrs 1
           $ ReactionAbility
@@ -30,9 +30,9 @@ instance HasAbilities ExperimentalTherapiesWard where
       ]
 
 instance RunMessage ExperimentalTherapiesWard where
-  runMessage msg l@(ExperimentalTherapiesWard attrs) = case msg of
+  runMessage msg l@(ExperimentalTherapiesWard attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      sid <- getRandom
-      push $ skillTestModifier sid (toAbilitySource attrs 1) attrs (ShroudModifier (-2))
+      withSkillTest \sid ->
+        skillTestModifier sid (toAbilitySource attrs 1) attrs (ShroudModifier (-2))
       pure l
-    _ -> ExperimentalTherapiesWard <$> runMessage msg attrs
+    _ -> ExperimentalTherapiesWard <$> liftRunMessage msg attrs

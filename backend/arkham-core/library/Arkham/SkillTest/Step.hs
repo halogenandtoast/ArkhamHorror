@@ -6,14 +6,14 @@ import Arkham.Prelude
 import Data.Aeson.TH
 
 data SkillTestStep
-  = DetermineSkillOfTestStep
-  | CommitCardsFromHandToSkillTestStep
-  | RevealChaosTokenStep
-  | ResolveChaosSymbolEffectsStep
-  | DetermineInvestigatorsModifiedSkillValueStep
-  | DetermineSuccessOrFailureOfSkillTestStep
-  | ApplySkillTestResultsStep
-  | SkillTestEndsStep
+  = DetermineSkillOfTestStep -- ST.1
+  | CommitCardsFromHandToSkillTestStep -- ST.2
+  | RevealChaosTokenStep -- ST.3
+  | ResolveChaosSymbolEffectsStep -- ST.4
+  | DetermineInvestigatorsModifiedSkillValueStep -- ST.5
+  | DetermineSuccessOrFailureOfSkillTestStep -- ST.6
+  | ApplySkillTestResultsStep -- ST.7
+  | SkillTestEndsStep -- ST.8
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''SkillTestStep)

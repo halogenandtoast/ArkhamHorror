@@ -123,10 +123,20 @@ const label = function(body: string) {
 
 <template>
   <Teleport to="body">
-    <Draggable class="skill-test">
+    <Draggable>
       <template #handle>
         <h2>Skill Test</h2>
       </template>
+      <div class="steps">
+        <div v-tooltip="'Determine skill of test. Skill test of that type begins.'" class="step" :class="{ active: skillTest.step === 'DetermineSkillOfTestStep' }">ST.1</div>
+        <div v-tooltip="'Commit cards from hand to skill test.'" class="step" :class="{ active: skillTest.step === 'CommitCardsFromHandToSkillTestStep' }">ST.2</div>
+        <div v-tooltip="'Reveal chaos token.'" class="step" :class="{ active: skillTest.step === 'RevealChaosTokenStep' }">ST.3</div>
+        <div v-tooltip="'Resolve chaos symbol effect(s).'" class="step" :class="{ active: skillTest.step === 'ResolveChaosSymbolEffectsStep' }">ST.4</div>
+        <div v-tooltip="'Determine investigator\'s modified skill value.'" class="step" :class="{ active: skillTest.step === 'DetermineInvestigatorsModifiedSkillValueStep' }">ST.5</div>
+        <div v-tooltip="'Determine success/failure of skill test.'" class="step" :class="{ active: skillTest.step === 'DetermineSuccessOrFailureOfSkillTestStep' }">ST.6</div>
+        <div v-tooltip="'Apply skill test results.'" class="step" :class="{ active: skillTest.step === 'ApplySkillTestResultsStep' }">ST.7</div>
+        <div v-tooltip="'Skill test ends.'" class="step" :class="{ active: skillTest.step === 'SkillTestEndsStep' }">ST.8</div>
+      </div>
       <div class="skill-test-contents">
         <Card v-if="card" :game="game" :card="card" :revealed="true" playerId="" />
         <div class="test-status">
@@ -458,5 +468,31 @@ i.iconSkillAgility {
 
 .message-label {
   flex: 1;
+}
+
+.steps {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+
+  .step {
+    flex: 1;
+    text-align: center;
+  }
+
+  .step:nth-child(odd) {
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+  }
+
+  .step:nth-child(even) {
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+  }
+
+  .step.active {
+    background: rgba(255, 0, 255, 0.5);
+  }
+
 }
 </style>

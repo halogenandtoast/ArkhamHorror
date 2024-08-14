@@ -31,7 +31,7 @@ onMounted(async () => await store.loadUserFromStorage())
 }
 
 button {
-  min-width: max-content;
+  min-width: min-content;
 }
 
 @font-face {

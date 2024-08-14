@@ -3,6 +3,16 @@ import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Card, cardDecoder} from '@/arkham/types/Card';
 import { SkillType, skillTypeDecoder} from '@/arkham/types/SkillType';
 
+export type SkillTestStep
+  = "DetermineSkillOfTestStep"
+  | "CommitCardsFromHandToSkillTestStep"
+  | "RevealChaosTokenStep"
+  | "ResolveChaosSymbolEffectsStep"
+  | "DetermineInvestigatorsModifiedSkillValueStep"
+  | "DetermineSuccessOrFailureOfSkillTestStep"
+  | "ApplySkillTestResultsStep"
+  | "SkillTestEndsStep"
+
 export type Source = {
   tag: string;
   contents: any; // eslint-disable-line
@@ -25,6 +35,7 @@ export type SkillTest = {
   modifiedSkillValue: number;
   modifiedDifficulty: number;
   skills: SkillType[];
+  step: SkillTestStep;
 }
 
 export type SkillTestResults = {
@@ -35,6 +46,20 @@ export type SkillTestResults = {
   skillTestResultsResultModifiers: number | null;
   skillTestResultsSuccess: boolean;
 }
+
+const skillTestStepDecoder = JsonDecoder.oneOf<SkillTestStep>(
+  [
+    JsonDecoder.isExactly('DetermineSkillOfTestStep'),
+    JsonDecoder.isExactly('CommitCardsFromHandToSkillTestStep'),
+    JsonDecoder.isExactly('RevealChaosTokenStep'),
+    JsonDecoder.isExactly('ResolveChaosSymbolEffectsStep'),
+    JsonDecoder.isExactly('DetermineInvestigatorsModifiedSkillValueStep'),
+    JsonDecoder.isExactly('DetermineSuccessOrFailureOfSkillTestStep'),
+    JsonDecoder.isExactly('ApplySkillTestResultsStep'),
+    JsonDecoder.isExactly('SkillTestEndsStep'),
+  ],
+  'SkillTestStep',
+);
 
 export const skillTestDecoder = JsonDecoder.object<SkillTest>(
   {
@@ -48,7 +73,8 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     source: sourceDecoder,
     card: JsonDecoder.nullable(JsonDecoder.string),
     modifiedSkillValue: JsonDecoder.number,
-    skills: JsonDecoder.array(skillTypeDecoder, 'SkillType[]')
+    skills: JsonDecoder.array(skillTypeDecoder, 'SkillType[]'),
+    step: JsonDecoder.failover({ tag: "DetermineSkillOfTestStep" }, skillTestStepDecoder),
   },
   'SkillTest',
 );

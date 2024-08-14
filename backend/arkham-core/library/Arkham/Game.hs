@@ -145,7 +145,7 @@ import Arkham.Scenario.Types hiding (scenario)
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.WakingNightmare.InfestationBag
 import Arkham.Skill.Types (Field (..), Skill, SkillAttrs (..))
-import Arkham.SkillTest.Runner
+import Arkham.SkillTest.Runner hiding (stepL)
 import Arkham.SkillTestResult
 import Arkham.Source
 import Arkham.Story

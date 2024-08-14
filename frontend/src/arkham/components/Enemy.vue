@@ -232,7 +232,7 @@ watch(abilities, (abilities) => {
           </div>
 
           <OnClickOutside @trigger="showAbilities = false">
-          <div v-if="showAbilities" class="abilities" :class="{ right: 'atLocation' }">
+          <div v-if="showAbilities" class="abilities" :class="{ right: atLocation }">
               <AbilityButton
                 v-for="ability in abilities"
                 :key="ability.index"
@@ -292,7 +292,7 @@ watch(abilities, (abilities) => {
         :enemy="enemy"
         :game="game"
         :playerId="playerId"
-        :atLocation="true"
+        :atLocation="atLocation"
         @choose="$emit('choose', $event)"
         class="enemy--swarming"
       />
@@ -367,13 +367,14 @@ watch(abilities, (abilities) => {
   border-radius: 10px;
   display: grid;
   gap: 5px;
-  bottom:50%;
-  transform: translateY(50%);
+  bottom:100%;
   left: 0;
   z-index: 20000000000;
 
   &.right {
+    bottom:50%;
     left: 100%;
+    transform: translateY(50%);
   }
 }
 

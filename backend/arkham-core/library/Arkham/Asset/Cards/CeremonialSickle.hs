@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Fight
-import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
@@ -39,8 +38,7 @@ instance RunMessage CeremonialSickle where
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       push $ Exhaust (toTarget attrs)
       placeDoom (attrs.ability 1) attrs 1
-      withSkillTest \sid ->
-        skillTestModifiers sid (attrs.ability 1) iid [AnySkillValue 1, DamageDealt 1]
+      nextSkillTestModifiers (attrs.ability 1) iid [AnySkillValue 1, DamageDealt 1]
       pure a
     DoStep 2 (UseThisAbility _ (isSource attrs -> True) 1) -> do
       pure $ overAttrs (setMetaKey "option2" True) a

@@ -15,8 +15,10 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types
+import Arkham.Helpers.Agenda (getCurrentAgendaStep)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher (
+  cardIs,
   CardMatcher (..),
   EnemyMatcher (..),
   ExtendedCardMatcher (..),
@@ -29,7 +31,7 @@ import Arkham.Scenario.Setup
 import Arkham.Scenarios.TheMidnightMasks.Story
 import Arkham.Token
 import Arkham.Trait qualified as Trait
-import Data.List qualified as List
+import Control.Lens (non)
 
 newtype TheMidnightMasks = TheMidnightMasks ScenarioAttrs
   deriving stock Generic
@@ -136,12 +138,13 @@ instance RunMessage TheMidnightMasks where
       push R1
       pure s
     ScenarioResolution (Resolution n) -> do
-      victoryDisplay <- selectMap toCardCode (VictoryDisplayCardMatch AnyCard)
+      cultistsWeInterrogated <- selectMap toCardCode (VictoryDisplayCardMatch $ CardWithTrait Trait.Cultist <> CardIsUnique)
+      agenda <- getCurrentAgendaStep
+      inPlayCultistsWhoGotAway <- selectField EnemyCardCode (EnemyWithTrait Trait.Cultist <> UniqueEnemy)
       let
         resolution = if n == 1 then resolution1 else resolution2
-        cultistsWeInterrogated = allCultists `List.intersect` victoryDisplay
-        cultistsWhoGotAway = allCultists \\ cultistsWeInterrogated
-        ghoulPriestDefeated = toCardCode Enemies.ghoulPriest `elem` victoryDisplay
+        cultistsWhoGotAway = inPlayCultistsWhoGotAway <> map toCardCode (attrs ^. decksL . at CultistDeck . non []) <> [toCardCode Enemies.theMaskedHunter | agenda == 1]
+      ghoulPriestDefeated <- selectAny (VictoryDisplayCardMatch $ cardIs Enemies.ghoulPriest)
       story resolution
       recordSetInsert CultistsWeInterrogated cultistsWeInterrogated
       recordSetInsert CultistsWhoGotAway cultistsWhoGotAway

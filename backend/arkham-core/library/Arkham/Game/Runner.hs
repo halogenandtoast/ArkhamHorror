@@ -1265,7 +1265,7 @@ runGameMessage msg g = case msg of
           -- asset might have been put into play via revelation
           mAid <- selectOne $ AssetWithCardId cardId
           aid <- maybe getRandom pure mAid
-          asset <-
+          asset <- overAttrs (\attrs -> attrs {assetController = Just iid }) <$>
             runMessage
               (SetOriginalCardCode $ pcOriginalCardCode pc)
               (createAsset card aid)
@@ -1314,7 +1314,7 @@ runGameMessage msg g = case msg of
           -- asset might have been put into play via revelation
           mAid <- selectOne $ AssetWithCardId cardId
           aid <- maybe getRandom pure mAid
-          let asset = createAsset card aid
+          let asset = overAttrs (\attrs -> attrs { assetController = Just iid }) $ createAsset card aid
           pushAll
             [ CardEnteredPlay iid card
             , InvestigatorPlayAsset iid aid

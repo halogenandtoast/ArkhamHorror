@@ -13,7 +13,9 @@ import Arkham.Event.Runner
 import Arkham.Id
 
 newtype FirstWatchMetadata = FirstWatchMetadata {firstWatchPairings :: [(InvestigatorId, EncounterCard)]}
-  deriving newtype (Show, Eq, ToJSON, FromJSON)
+  deriving newtype (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 
 newtype FirstWatch = FirstWatch (EventAttrs `With` FirstWatchMetadata)
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -27,9 +29,9 @@ instance RunMessage FirstWatch where
   runMessage msg e@(FirstWatch (attrs@EventAttrs {..} `With` metadata@FirstWatchMetadata {..})) =
     case msg of
       InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do
-        withQueue_ $ \case
-          (AllDrawEncounterCard : rest) -> rest
-          _ -> error "AllDrawEncounterCard expected"
+        popMessageMatching_ $ \case
+          AllDrawEncounterCard -> True
+          _ -> False
         playerCount <- getPlayerCount
         push $ DrawEncounterCards (EventTarget eventId) playerCount
         pure e
@@ -79,7 +81,8 @@ instance RunMessage FirstWatch where
       RequestedEncounterCards (EventTarget eid) cards | eid == eventId -> do
         player <- getPlayer eventOwner
         pushAll
-          [ chooseOneAtATime
+          [ FocusCards (map toCard cards)
+          , chooseOneAtATime
               player
               [ TargetLabel
                 (CardIdTarget $ toCardId card)
@@ -93,6 +96,7 @@ instance RunMessage FirstWatch where
                 ]
               | card <- cards
               ]
+          , UnfocusCards
           , UseCardAbilityChoice
               eventOwner
               (EventSource eventId)

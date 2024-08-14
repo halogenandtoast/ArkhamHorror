@@ -12,6 +12,7 @@ import Arkham.ChaosToken
 import Arkham.Helpers.SkillTest as X
 import Arkham.Id
 import Arkham.SkillTest.Base as X
+import Arkham.SkillTest.Step
 import Arkham.SkillTest.Type as X
 import Arkham.SkillTestResult
 import Arkham.Target
@@ -45,6 +46,9 @@ resultL = lens skillTestResult $ \m x -> m {skillTestResult = x}
 
 typeL :: Lens' SkillTest SkillTestType
 typeL = lens skillTestType $ \m x -> m {skillTestType = x}
+
+stepL :: Lens' SkillTest SkillTestStep
+stepL = lens skillTestStep $ \m x -> m {skillTestStep = x}
 
 baseValueL :: Lens' SkillTest SkillTestBaseValue
 baseValueL = lens skillTestBaseValue $ \m x -> m {skillTestBaseValue = x}

@@ -71,7 +71,7 @@ function elementDrag(el: HTMLElement) {
   position: absolute;
   width: fit-content;
   max-width: 70%;
-  min-width: max-content;
+  min-width: min-content;
   top: 50%;
   left: 50%;
   overflow: hidden;

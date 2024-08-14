@@ -10,6 +10,7 @@ import Arkham.Card
 import Arkham.ChaosToken.Types
 import Arkham.Id
 import Arkham.Json
+import Arkham.SkillTest.Step
 import Arkham.SkillTest.Type
 import Arkham.SkillTestResult
 import Arkham.SkillType (SkillIcon (..), SkillType)
@@ -49,6 +50,7 @@ data SkillTest = SkillTest
   , skillTestIsRevelation :: Bool
   , skillTestIconValues :: Map SkillIcon Int
   , skillTestCard :: Maybe CardId
+  , skillTestStep :: SkillTestStep
   }
   deriving stock (Show, Eq, Data)
 
@@ -148,6 +150,7 @@ buildSkillTest sid iid (toSource -> source) (toTarget -> target) stType bValue d
     , skillTestIsRevelation = False
     , skillTestIconValues = iconValuesForSkillTestType stType
     , skillTestCard = Nothing
+    , skillTestStep = DetermineSkillOfTestStep
     }
 
 iconValuesForSkillTestType :: SkillTestType -> Map SkillIcon Int
@@ -174,4 +177,28 @@ resetSkillTest sid skillTest =
 
 $(deriveJSON defaultOptions ''SkillTestBaseValue)
 $(deriveJSON defaultOptions ''SkillTestResultsData)
-$(deriveJSON (aesonOptions $ Just "skillTest") ''SkillTest)
+$(deriveToJSON (aesonOptions $ Just "skillTest") ''SkillTest)
+
+instance FromJSON SkillTest where
+  parseJSON = withObject "SkillTest" \o -> do
+    skillTestId <- o .: "id"
+    skillTestInvestigator <- o .: "investigator"
+    skillTestResolveFailureInvestigator <- o .: "resolveFailureInvestigator"
+    skillTestType <- o .: "type"
+    skillTestBaseValue <- o .: "baseValue"
+    skillTestDifficulty <- o .: "difficulty"
+    skillTestSetAsideChaosTokens <- o .: "setAsideChaosTokens"
+    skillTestRevealedChaosTokens <- o .: "revealedChaosTokens"
+    skillTestResolvedChaosTokens <- o .: "resolvedChaosTokens"
+    skillTestToResolveChaosTokens <- o .: "toResolveChaosTokens"
+    skillTestResult <- o .: "result"
+    skillTestCommittedCards <- o .: "committedCards"
+    skillTestSource <- o .: "source"
+    skillTestTarget <- o .: "target"
+    skillTestAction <- o .: "action"
+    skillTestSubscribers <- o .: "subscribers"
+    skillTestIsRevelation <- o .: "isRevelation"
+    skillTestIconValues <- o .: "iconValues"
+    skillTestCard <- o .: "card"
+    skillTestStep <- o .:? "step" .!= DetermineSkillOfTestStep
+    pure SkillTest {..}

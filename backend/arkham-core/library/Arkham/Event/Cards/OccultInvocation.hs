@@ -1,13 +1,11 @@
 module Arkham.Event.Cards.OccultInvocation (occultInvocation, OccultInvocation (..)) where
 
 import Arkham.Aspect
-import Arkham.Classes
 import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Fight
-import Arkham.Helpers.Modifiers
-import Arkham.Prelude
+import Arkham.Modifier
 
 newtype OccultInvocation = OccultInvocation EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -17,14 +15,12 @@ occultInvocation :: EventCard OccultInvocation
 occultInvocation = event OccultInvocation Cards.occultInvocation
 
 instance RunMessage OccultInvocation where
-  runMessage msg e@(OccultInvocation attrs) = case msg of
+  runMessage msg e@(OccultInvocation attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
       let n = totalDiscardCardPayments attrs.payment
       sid <- getRandom
-      chooseFight <-
-        leftOr <$> aspect iid attrs (#intellect `InsteadOf` #combat) (mkChooseFight sid iid attrs)
-      pushAll
-        $ skillTestModifiers sid attrs iid [DamageDealt n, SkillModifier #intellect n]
-        : chooseFight
+      chooseFight <- aspect iid attrs (#intellect `InsteadOf` #combat) (mkChooseFight sid iid attrs)
+      skillTestModifiers sid attrs iid [DamageDealt n, SkillModifier #intellect n]
+      pushAll $ leftOr chooseFight
       pure e
-    _ -> OccultInvocation <$> runMessage msg attrs
+    _ -> OccultInvocation <$> liftRunMessage msg attrs

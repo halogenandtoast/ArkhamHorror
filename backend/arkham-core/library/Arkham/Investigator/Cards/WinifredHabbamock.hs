@@ -5,16 +5,13 @@ module Arkham.Investigator.Cards.WinifredHabbamock (
 )
 where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Import
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Effect
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
+import Arkham.Investigator.Types (Field (InvestigatorCommittedCards))
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.SkillTest.Base
@@ -44,14 +41,14 @@ instance HasChaosTokenValue WinifredHabbamock where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage WinifredHabbamock where
-  runMessage msg i@(WinifredHabbamock attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ drawCards iid (toAbilitySource attrs 1) 1
+  runMessage msg i@(WinifredHabbamock attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      drawCardsIfCan iid (toAbilitySource attrs 1) 1
       pure i
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
-      push $ createCardEffect Cards.winifredHabbamock Nothing attrs attrs
+      createCardEffect Cards.winifredHabbamock Nothing attrs attrs
       pure i
-    _ -> WinifredHabbamock <$> runMessage msg attrs
+    _ -> WinifredHabbamock <$> liftRunMessage msg attrs
 
 newtype WinifredHabbamockEffect = WinifredHabbamockEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -62,21 +59,21 @@ winifredHabbamockEffect :: EffectArgs -> WinifredHabbamockEffect
 winifredHabbamockEffect = cardEffect WinifredHabbamockEffect Cards.winifredHabbamock
 
 instance RunMessage WinifredHabbamockEffect where
-  runMessage msg e@(WinifredHabbamockEffect attrs@EffectAttrs {..}) = case msg of
+  runMessage msg e@(WinifredHabbamockEffect attrs) = runQueueT $ case msg of
     SkillTestEnds _ _ _ -> do
-      push $ DisableEffect (toId e)
-      mSkillTest <- getSkillTest
-      case mSkillTest of
-        Nothing -> error "no skill test"
-        Just st -> case skillTestResult st of
-          SucceededBy _ n -> case effectSource of
-            InvestigatorSource iid -> do
-              cards <- field InvestigatorCommittedCards iid
-              player <- getPlayer iid
-              pushWhen (notNull cards)
-                $ chooseN player (min (n `div` 2) (length cards))
-                $ [targetLabel (toCardId card) [ReturnToHand iid (toTarget $ toCardId card)] | card <- cards]
-            _ -> error "invalid source"
-          _ -> pure ()
-      pure e
-    _ -> WinifredHabbamockEffect <$> runMessage msg attrs
+      getSkillTest >>= traverse_ \st -> case skillTestResult st of
+        SucceededBy _ n -> case attrs.source of
+          InvestigatorSource iid -> do
+            cards <- field InvestigatorCommittedCards iid
+            when (notNull cards) do
+              afterSkillTest do
+                focusCards cards \unfocus -> do
+                  chooseN
+                    iid
+                    (min (n `div` 2) (length cards))
+                    [targetLabel (toCardId card) [ReturnToHand iid (toTarget $ toCardId card)] | card <- cards]
+                  push unfocus
+          _ -> error "invalid source"
+        _ -> pure ()
+      disableReturn e
+    _ -> WinifredHabbamockEffect <$> liftRunMessage msg attrs

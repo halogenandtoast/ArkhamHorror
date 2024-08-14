@@ -166,7 +166,10 @@ instance RunMessage SkillTest where
         ProxySource _ t -> fmap toCardId <$> sourceToMaybeCard t
         AbilitySource src _ -> fmap toCardId <$> sourceToMaybeCard src
         t -> fmap toCardId <$> sourceToMaybeCard t
-      pure $ s & cardL .~ (mAbilityCardId <|> mTargetCardId <|> mSourceCardId)
+      pure
+        $ s
+        & (cardL .~ (mAbilityCardId <|> mTargetCardId <|> mSourceCardId))
+        & (stepL .~ CommitCardsFromHandToSkillTestStep)
     ReplaceSkillTestSkill (FromSkillType fsType) (ToSkillType tsType) -> do
       let
         stType = case skillTestType of
@@ -313,7 +316,11 @@ instance RunMessage SkillTest where
           | (drawnChaosToken, chaosTokenFace) <- revealedChaosTokenFaces
           ]
           <> [afterResolveMsg]
-      pure $ s & toResolveChaosTokensL .~ mempty & resolvedChaosTokensL <>~ skillTestToResolveChaosTokens
+      pure
+        $ s
+        & (toResolveChaosTokensL .~ mempty)
+        & (resolvedChaosTokensL <>~ skillTestToResolveChaosTokens)
+        & (stepL .~ ResolveChaosSymbolEffectsStep)
     RevealSkillTestChaosTokensAgain iid -> do
       revealedChaosTokenFaces <- flip
         concatMapM

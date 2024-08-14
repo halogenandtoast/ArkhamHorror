@@ -33,8 +33,14 @@ checkWhen = checkWindows . pure . mkWhen
 
 checkWindows :: HasGame m => [Window] -> m Message
 checkWindows windows' = do
+  -- We don't want to check eliminated investigators except for the InvestigatorEliminated window
+  let
+    isEliminated = \case
+      (windowType -> Window.InvestigatorEliminated {}) -> True
+      _ -> False
+  let checkEliminated = any isEliminated windows'
   mBatchId <- getCurrentBatchId
-  iids <- select UneliminatedInvestigator
+  iids <- select $ if checkEliminated then Anyone else UneliminatedInvestigator
   let windows'' = map (\w -> w {windowBatchId = windowBatchId w <|> mBatchId}) windows'
   if null iids
     then do

@@ -1,10 +1,6 @@
-module Arkham.Act.Cards.TheDisappearance (
-  TheDisappearance (..),
-  theDisappearance,
-) where
+module Arkham.Act.Cards.TheDisappearance ( TheDisappearance (..), theDisappearance,) where
 
 import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
@@ -13,7 +9,6 @@ import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype TheDisappearance = TheDisappearance ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -24,7 +19,7 @@ theDisappearance = act (1, A) TheDisappearance Cards.theDisappearance Nothing
 
 instance HasAbilities TheDisappearance where
   getAbilities (TheDisappearance a) =
-    [mkAbility a 1 $ ForcedAbility $ InvestigatorEliminated Timing.When You]
+    [mkAbility a 1 $ forced $ InvestigatorEliminated #when You]
 
 instance RunMessage TheDisappearance where
   runMessage msg a@(TheDisappearance attrs) = case msg of
@@ -35,8 +30,8 @@ instance RunMessage TheDisappearance where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       clues <- field InvestigatorClues iid
       pushAll
-        [ RemoveAllClues (toAbilitySource attrs 1) (InvestigatorTarget iid)
-        , PlaceClues (toAbilitySource attrs 1) (toTarget attrs) clues
+        [ RemoveAllClues (attrs.ability 1) (InvestigatorTarget iid)
+        , PlaceClues (attrs.ability 1) (toTarget attrs) clues
         ]
       pure a
     _ -> TheDisappearance <$> runMessage msg attrs

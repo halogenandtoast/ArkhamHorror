@@ -20,7 +20,7 @@ instance HasAbilities StudentUnion where
   getAbilities (StudentUnion attrs) =
     extendRevealed
       attrs
-      [ mkAbility attrs 1 $ forced $ RevealLocation #after Anyone $ be attrs
+      [ restrictedAbility attrs 1 (not_ $ exists $ LocationWithTitle "Dormitories") $ forced $ RevealLocation #after Anyone $ be attrs
       , restrictedAbility
           attrs
           2
@@ -36,8 +36,10 @@ instance HasAbilities StudentUnion where
 
 instance RunMessage StudentUnion where
   runMessage msg l@(StudentUnion attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      l <$ push (PlaceLocationMatching $ CardWithTitle "Dormitories")
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      whenM (selectNone $ LocationWithTitle "Dormitories") do
+        push $ PlaceLocationMatching $ CardWithTitle "Dormitories"
+      pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       let source = attrs.ability 2
       healDamage <- canHaveDamageHealed source iid

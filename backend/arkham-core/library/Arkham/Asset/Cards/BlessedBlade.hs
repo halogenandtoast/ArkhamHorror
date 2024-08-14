@@ -34,12 +34,11 @@ instance RunMessage BlessedBlade where
       s <- fromJustNote "Must be in skillTest" <$> getSkillTestSource
       if isAbilitySource attrs 1 s
         then do
-          let meta = toResult attrs.meta
-          if meta == sid && token.face `elem` [#bless, #eldersign]
-            then do
+          case maybeResult attrs.meta of
+            Just meta | meta == sid && token.face `elem` [#bless, #eldersign] -> do
               push $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
               pure . BlessedBlade $ attrs & setMeta sid
-            else pure a
+            _ -> pure a
         else pure a
     SkillTestEnds sid _ _ | maybe False (== sid) (getAssetMeta attrs) -> do
       pure . BlessedBlade $ attrs & unsetMeta

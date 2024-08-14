@@ -464,7 +464,7 @@ const cardPiles = computed(() => {
       </template>
       <template v-if="choice.tag === 'PortraitLabel'">
         <div class="portrait">
-          <img class="card active" :src="portraitLabelImage(choice.investigatorId)" @click="choose(index)" />
+          <img class="active" :src="portraitLabelImage(choice.investigatorId)" @click="choose(index)" />
         </div>
       </template>
       <div v-if="choice.tag === MessageType.LABEL" class="message-label">
@@ -665,16 +665,15 @@ button:hover {
 
 .portrait {
   border-radius: 3px;
-  width: var(--card-width);
   margin: 10px;
 
-  .card {
+  img {
     border-radius: 5px;
     width: auto;
     height: max(calc(var(--card-width) * 2));
   }
 
-  .card.active {
+  img.active {
     border: 1px solid $select;
     cursor: pointer;
   }

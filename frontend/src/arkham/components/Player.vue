@@ -442,6 +442,7 @@ const realityAcid = ref('89005')
     </transition>
 
     <ChoiceModal
+      v-if="playerId === investigator.playerId"
       :game="game"
       :playerId="playerId"
       @choose="$emit('choose', $event)"

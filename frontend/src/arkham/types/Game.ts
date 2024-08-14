@@ -74,12 +74,12 @@ export type Game = {
   cards: Record<string, Card>;
 }
 
-export function choices(game: Game, investigatorId: string): Message[] {
-  if (!game.question[investigatorId]) {
+export function choices(game: Game, playerId: string): Message[] {
+  if (!game.question[playerId]) {
     return [];
   }
 
-  const question: Question = game.question[investigatorId];
+  const question: Question = game.question[playerId];
 
   const toContents = (q: Question): Message[] => {
     switch (q.tag) {

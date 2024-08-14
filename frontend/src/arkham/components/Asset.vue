@@ -20,11 +20,12 @@ import * as Arkham from '@/arkham/types/Asset';
 import {isUse} from '@/arkham/types/Token';
 import { Card } from '../types/Card';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   game: Game
   asset: Arkham.Asset
   playerId: string
-}>()
+  atLocation?: boolean
+}>(), { atLocation: false })
 
 const debugging = ref(false)
 
@@ -244,7 +245,7 @@ const assetStory = computed(() => {
           <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
         </div>
 
-        <div v-if="showAbilities" class="abilities">
+        <div v-if="showAbilities" class="abilities" :class="{ right: atLocation }">
           <AbilityButton
             v-for="ability in abilities"
             :key="ability.index"
@@ -378,6 +379,12 @@ const assetStory = computed(() => {
   bottom:100%;
   left: 0;
   z-index: 1000;
+
+  &.right {
+    bottom:50%;
+    left: 100%;
+    transform: translateY(50%);
+  }
 }
 
 .deck-size {

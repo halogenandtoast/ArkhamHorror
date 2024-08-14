@@ -81,7 +81,7 @@ instance RunMessage MrRook where
         else push $ DoStep 2 msg'
       pure a
     DoStep 2 (SearchFound iid (isTarget attrs -> True) _ _) -> do
-      push $ AddToHand iid (chosenCards meta)
+      push $ DrawToHand iid (chosenCards meta)
       pure $ MrRook (attrs `with` Metadata [])
     HandleTargetChoice _ (isSource attrs -> True) (CardIdTarget cid) -> do
       card <- getCard cid

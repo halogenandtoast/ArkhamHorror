@@ -296,6 +296,7 @@ data InvestigatorSearch = MkInvestigatorSearch
   , searchingMatcher :: ExtendedCardMatcher
   , searchingFoundCardsStrategy :: FoundCardsStrategy
   , searchingFoundCards :: Map Zone [Card]
+  , searchingDrawnCards :: [Card]
   }
   deriving stock (Show, Eq, Data)
 
@@ -486,8 +487,24 @@ makeLensesWith suffixedFields ''InvestigatorAttrs
 searchingFoundCardsL :: Lens' InvestigatorSearch (Map Zone [Card])
 searchingFoundCardsL = lens searchingFoundCards $ \m x -> m {searchingFoundCards = x}
 
+searchingDrawnCardsL :: Lens' InvestigatorSearch [Card]
+searchingDrawnCardsL = lens searchingDrawnCards $ \m x -> m {searchingDrawnCards = x}
+
 foundCardsL :: Traversal' InvestigatorAttrs (Map Zone [Card])
 foundCardsL = searchL . _Just . searchingFoundCardsL
 
-$(deriveJSON defaultOptions ''InvestigatorSearch)
+$(deriveToJSON defaultOptions ''InvestigatorSearch)
+
+instance FromJSON InvestigatorSearch where
+  parseJSON = withObject "InvestigatorSearch" $ \o -> MkInvestigatorSearch
+    <$> o .: "searchingType"
+    <*> o .: "searchingInvestigator"
+    <*> o .: "searchingSource"
+    <*> o .: "searchingTarget"
+    <*> o .: "searchingZones"
+    <*> o .: "searchingMatcher"
+    <*> o .: "searchingFoundCardsStrategy"
+    <*> o .: "searchingFoundCards"
+    <*> (o .:? "searchingDrawnCards" .!= [])
+
 $(deriveJSON (aesonOptions $ Just "investigator") ''InvestigatorAttrs)

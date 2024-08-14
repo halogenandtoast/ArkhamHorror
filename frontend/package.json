@@ -8,7 +8,7 @@
     "serve": "vite serve",
     "build": "vite build",
     "tc": "vue-tsc --noEmit -p tsconfig.json --composite false",
-    "digest": "node ./scripts/digest.js"
+    "digest": "node ./scripts/digest.cjs"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.1.1",

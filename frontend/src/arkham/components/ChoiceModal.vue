@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { Game } from '@/arkham/types/Game';
-import type { Message } from '@/arkham/types/Message';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { choiceRequiresModal } from '@/arkham/types/Message';
 import { replaceIcons } from '@/arkham/helpers';
@@ -16,10 +15,8 @@ export interface Props {
   noStory?: boolean
 }
 
-
 const props = withDefaults(defineProps<Props>(), { noStory: false })
 const emit = defineEmits(['choose'])
-const hide = ref(false)
 const { t } = useI18n()
 
 async function choose(idx: number) {
@@ -28,9 +25,7 @@ async function choose(idx: number) {
 
 const inSkillTest = computed(() => props.game.skillTest !== null)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
-
 const investigator = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId))
-
 const searchedCards = computed(() => {
   const playerCards = Object.entries(investigator.value?.foundCards ?? [])
 
@@ -117,6 +112,10 @@ const title = computed(() => {
 
   if (amountsLabel.value) {
     return amountsLabel.value
+  }
+
+  if (!question.value) {
+    return null
   }
 
   return "Choose"

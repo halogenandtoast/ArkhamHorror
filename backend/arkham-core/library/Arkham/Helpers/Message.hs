@@ -307,6 +307,9 @@ removeMessageType msgType = withQueue_ $ \queue ->
 addToHand :: IsCard a => InvestigatorId -> a -> Message
 addToHand i (toCard -> c) = AddToHand i [c]
 
+drawToHand :: IsCard a => InvestigatorId -> a -> Message
+drawToHand i (toCard -> c) = DrawToHand i [c]
+
 shuffleIntoDeck :: (IsDeck deck, Targetable target) => deck -> target -> Message
 shuffleIntoDeck (toDeck -> deck) (toTarget -> target) = ShuffleIntoDeck deck target
 

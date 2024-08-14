@@ -98,7 +98,7 @@ import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
-import Control.Lens (each, non, over)
+import Control.Lens (each, non, over, _Just)
 import Data.Data.Lens (biplate)
 import Data.List qualified as List
 import Data.Map.Strict qualified as Map
@@ -3133,6 +3133,24 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (discardL %~ filter ((`notElem` cards) . PlayerCard))
       & (foundCardsL . each %~ filter (`notElem` cards))
       & (bondedCardsL %~ filter (`notElem` cards))
+  DrawToHand iid cards | iid == investigatorId -> do
+    (before, _, after) <- frame $ Window.DrawCards iid $ map toCard cards
+    push before
+    for_ (reverse cards) \case
+      PlayerCard pc -> push $ InvestigatorDrewPlayerCard iid pc
+      EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
+      VengeanceCard {} -> error "Can not add vengeance card to hand"
+    when (isNothing $ a ^. searchL) do
+      push after
+    assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
+    pure
+      $ a
+      & (cardsUnderneathL %~ filter (`notElem` cards))
+      & (slotsL %~ flip (foldr removeFromSlots) assetIds)
+      & (discardL %~ filter ((`notElem` cards) . PlayerCard))
+      & (foundCardsL . each %~ filter (`notElem` cards))
+      & (bondedCardsL %~ filter (`notElem` cards))
+      & (searchL . _Just . searchingDrawnCardsL %~ (<> cards))
   AddToHandQuiet iid cards | iid == investigatorId -> do
     assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
     pure
@@ -3176,6 +3194,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           $ find ((== cardId) . toCardId) (findWithDefault [] cardSource $ a ^. foundCardsL)
       foundCards' = Map.map (filter ((/= cardId) . toCardId)) (a ^. foundCardsL)
     push $ addToHand iid' card
+    pure $ a & foundCardsL .~ foundCards' & (deckL %~ Deck . filter ((/= card) . toCard) . unDeck)
+  DrawFocusedToHand _ (InvestigatorTarget iid') cardSource cardId | iid' == toId a -> do
+    let
+      card =
+        fromJustNote "missing card"
+          $ find ((== cardId) . toCardId) (findWithDefault [] cardSource $ a ^. foundCardsL)
+      foundCards' = Map.map (filter ((/= cardId) . toCardId)) (a ^. foundCardsL)
+    push $ drawToHand iid' card
     pure $ a & foundCardsL .~ foundCards' & (deckL %~ Deck . filter ((/= card) . toCard) . unDeck)
   CommitCard _ card -> do
     pure $ a & foundCardsL . each %~ filter (/= card) & discardL %~ filter ((/= card) . toCard)
@@ -3272,7 +3298,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               Just (PerSearch _) -> False
               _ -> True
         )
-  SearchEnded iid | iid == investigatorId -> pure $ a & searchL .~ Nothing
+  SearchEnded iid | iid == investigatorId -> do
+    case investigatorSearch of
+      Just search' -> do
+        when (notNull $ search' ^. searchingDrawnCardsL) do
+          pushM $ checkWindows [mkAfter $ Window.DrawCards iid $ search' ^. searchingDrawnCardsL]
+      _ -> pure ()
+
+    pure $ a & searchL .~ Nothing
   CancelSearch iid | iid == investigatorId -> pure $ a & searchL .~ Nothing
   Search searchType iid _ (InvestigatorTarget iid') _ _ _ | iid' == toId a -> do
     let deck = Deck.InvestigatorDeck iid'
@@ -3333,11 +3366,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure
         $ a
         & searchL
-        ?~ MkInvestigatorSearch searchType iid source target cardSources cardMatcher foundStrategy foundCards
+        ?~ MkInvestigatorSearch searchType iid source target cardSources cardMatcher foundStrategy foundCards []
   ResolveSearch x | x == investigatorId -> do
     case investigatorSearch of
       Just
-        (MkInvestigatorSearch _ iid source (InvestigatorTarget iid') _ cardMatcher foundStrategy foundCards) -> do
+        (MkInvestigatorSearch _ iid source (InvestigatorTarget iid') _ cardMatcher foundStrategy foundCards _drawnCards) -> do
           mods <- getModifiers iid
           let
             applyMod (AdditionalTargets n) = over biplate (+ n)
@@ -3414,7 +3447,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 choices =
                   [ targetLabel
                     card
-                    [AddFocusedToHand iid (toTarget who) zone (toCardId card)]
+                    [DrawFocusedToHand iid (toTarget who) zone (toCardId card)]
                   | (zone, cards) <- mapToList targetCards
                   , card <- cards
                   ]
@@ -3425,7 +3458,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             DrawFoundUpTo who n -> do
               let
                 choices =
-                  [ targetLabel (toCardId card) [AddFocusedToHand iid (toTarget who) zone (toCardId card)]
+                  [ targetLabel (toCardId card) [DrawFocusedToHand iid (toTarget who) zone (toCardId card)]
                   | (zone, cards) <- mapToList targetCards
                   , card <- cards
                   ]

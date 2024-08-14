@@ -283,6 +283,7 @@ const debug = useDebug()
           :game="game"
           :playerId="playerId"
           :key="assetId"
+          :atLocation="true"
           @choose="$emit('choose', $event)"
         />
         <Enemy

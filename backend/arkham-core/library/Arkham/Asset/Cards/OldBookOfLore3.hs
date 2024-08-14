@@ -59,7 +59,7 @@ instance RunMessage OldBookOfLore3 where
           ]
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
-      push $ AddFocusedToHand iid (toTarget iid) FromDeck cid
+      push $ DrawFocusedToHand iid (toTarget iid) FromDeck cid
       pure a
     DoStep
       1

@@ -6,6 +6,7 @@ import Arkham.Asset.Runner
 import Arkham.Effect.Import
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Prelude
+import Arkham.Matcher
 import Arkham.Projection
 
 newtype WellConnected = WellConnected AssetAttrs
@@ -16,7 +17,7 @@ wellConnected :: AssetCard WellConnected
 wellConnected = asset WellConnected Cards.wellConnected
 
 instance HasAbilities WellConnected where
-  getAbilities (WellConnected a) = [controlledAbility a 1 DuringAnySkillTest $ FastAbility $ exhaust a]
+  getAbilities (WellConnected a) = [controlledAbility a 1 (DuringSkillTest $ YourSkillTest #any) $ FastAbility $ exhaust a]
 
 instance RunMessage WellConnected where
   runMessage msg a@(WellConnected attrs) = case msg of

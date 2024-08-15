@@ -3014,7 +3014,10 @@ blackMarket2 :: CardDef
 blackMarket2 =
   (event "08055" "Black Market" 1 Rogue)
     { cdCardTraits = setFromList [Favor]
-    , cdCriteria = Just $ exists (affectsOthers can.manipulate.deck) <> youExist can.reveal.cards
+    , cdCriteria =
+        Just
+          $ exists (affectsOthers $ can.manipulate.deck <> DeckWith (LengthIs $ atLeast 5))
+          <> youExist can.reveal.cards
     , cdFastWindow = Just $ PhaseBegins #after #investigation
     , cdLevel = Just 2
     }

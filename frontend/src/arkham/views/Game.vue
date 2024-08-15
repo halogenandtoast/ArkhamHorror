@@ -29,19 +29,7 @@ import { useCardStore } from '@/stores/cards'
 import { onBeforeRouteLeave } from 'vue-router'
 import { useDebug } from '@/arkham/debug'
 
-export interface Props {
-  gameId: string
-  spectate?: boolean
-}
-
-const source = ref(`${window.location.href}/join`) // fix-syntax`
-
-const props = withDefaults(defineProps<Props>(), { spectate: false })
-
-const debug = useDebug()
-const store = useCardStore()
-const { copy } = useClipboard({ source })
-
+// Types
 interface GameCard {
   title: string
   card: Card
@@ -53,6 +41,75 @@ interface GameCardOnly {
   card: Card
 }
 
+// TODO: contents should not be string
+type ServerResult =
+  | { tag: "GameError"; contents: string }
+  | { tag: "GameMessage"; contents: string }
+  | { tag: "GameTarot"; contents: string }
+  | { tag: "GameCard"; contents: string }
+  | { tag: "GameCardOnly"; contents: string }
+  | { tag: "GameUpdate"; contents: string }
+
+// Setup
+export interface Props {
+  gameId: string
+  spectate?: boolean
+}
+const props = withDefaults(defineProps<Props>(), { spectate: false })
+
+const debug = useDebug()
+const source = ref(`${window.location.href}/join`) // fix-syntax`
+const store = useCardStore()
+const userStore = useUserStore()
+const { copy } = useClipboard({ source })
+const { menuItems } = useMenu()
+
+store.fetchCards()
+
+// Refs
+const game = ref<Arkham.Game | null>(null)
+const gameCard = ref<GameCard | null>(null)
+const gameLog = ref<readonly string[]>(Object.freeze([]))
+const playerId = ref<string | null>(null)
+const ready = ref(false)
+const resultQueue = ref<any>([])
+const showLog = ref(false);
+const showShortcuts = ref(false)
+const showSidebar = ref(JSON.parse(localStorage.getItem("showSidebar")??'true'))
+const socketError = ref(false)
+const solo = ref(false)
+const tarotCards = ref<TarotCard[]>([])
+const uiLock = ref<boolean>(false)
+
+// Reactive
+const preloaded = reactive<string[]>([])
+
+// Computed
+const cards = computed(() => store.cards)
+const choices = computed(() => {
+  if (!game.value || !playerId.value) return []
+  return ArkhamGame.choices(game.value, playerId.value)
+})
+const gameOver = computed(() => game.value?.gameState.tag === "IsOver")
+const question = computed(() => playerId.value ? game.value?.question[playerId.value] : null)
+const websocketUrl = computed(() => {
+  const spectatePrefix = props.spectate ? "/spectate" : ""
+  return `${baseURL}/api/v1/arkham/games/${props.gameId}${spectatePrefix}?token=${userStore.token}`.
+    replace(/https/, 'wss').
+    replace(/http/, 'ws')
+})
+
+fetchGame(props.gameId, props.spectate).then(({ game: newGame, playerId: newPlayerId, multiplayerMode}) => {
+  loadAllImages(newGame).then(() => {
+    game.value = newGame
+    solo.value = multiplayerMode === "Solo"
+    gameLog.value = Object.freeze(newGame.log)
+    playerId.value = newPlayerId
+    ready.value = true
+  })
+})
+
+// Local Decoders
 const gameCardDecoder = JsonDecoder.object<GameCard>(
   {
     title: JsonDecoder.string,
@@ -70,146 +127,12 @@ const gameCardOnlyDecoder = JsonDecoder.object<GameCardOnly>(
   'GameCard'
 );
 
-
-const gameCard = ref<GameCard | null>(null)
-const tarotCards = ref<TarotCard[]>([])
-
 const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`
-const spectatePrefix = props.spectate ? "/spectate" : ""
 
-const showShortcuts = ref(false)
-const userStore = useUserStore()
-const socketError = ref(false)
+// Socket Handling
 const onError = () => socketError.value = true
 const onConnected = () => socketError.value = false
-const websocketUrl = `${baseURL}/api/v1/arkham/games/${props.gameId}${spectatePrefix}?token=${userStore.token}`.
-  replace(/https/, 'wss').
-  replace(/http/, 'ws')
-const { data, send, close } = useWebSocket(websocketUrl, { autoReconnect: true, onError, onConnected })
-
-const choices = computed(() => {
-  if (!game.value || !playerId.value) return []
-  return ArkhamGame.choices(game.value, playerId.value)
-})
-
-const handleKeyPress = (event: KeyboardEvent) => {
-  if (event.key === 'u') {
-    undo()
-  }
-
-  if (event.key === 'D') {
-    debug.toggle()
-  }
-
-  if (event.key === '?') {
-    showShortcuts.value = !showShortcuts.value
-  }
-
-  if (event.key === ' ') {
-      const skipTriggers = choices.value.findIndex((c) => c.tag === Message.MessageType.SKIP_TRIGGERS_BUTTON)
-      if (skipTriggers !== -1) {
-        choose(skipTriggers)
-      }
-  }
-
-  if (event.key === 'd') {
-    const draw = choices.value.findIndex((c) => {
-      if (c.tag !== Message.MessageType.COMPONENT_LABEL) return false
-      if (c.component.tag !== "InvestigatorDeckComponent") return false
-      if (!playerId.value) return false
-      return game.value?.investigators[c.component.investigatorId]?.playerId === playerId.value
-    })
-    if (draw !== -1) {
-      choose(draw)
-    } else {
-      const drawEncounter = choices.value.findIndex((c) => {
-        if (c.tag !== Message.MessageType.TARGET_LABEL) return false
-        return c.target.tag === "EncounterDeckTarget"
-      })
-
-      if (drawEncounter !== -1) {
-        choose(drawEncounter)
-      }
-    }
-  }
-
-  if (event.key === 'r') {
-    const resource = choices.value.findIndex((c) => {
-      if (c.tag !== Message.MessageType.COMPONENT_LABEL) return false
-      if (c.component.tag !== "InvestigatorComponent") return false
-      if (c.component.tokenType !== "ResourceToken") return false
-      if (!playerId.value) return false
-      return game.value?.investigators[c.component.investigatorId]?.playerId === playerId.value
-    })
-    if (resource !== -1) {
-      choose(resource)
-    }
-  }
-
-  if (event.key === 'e') {
-    const endTurn = choices.value.findIndex((c) => {
-      if (c.tag !== Message.MessageType.END_TURN_BUTTON) return false
-      return game.value?.investigators[c.investigatorId]?.playerId === playerId.value
-    })
-    if (endTurn !== -1) {
-      choose(endTurn)
-    }
-  }
-
-  menuItems.value.forEach((item) => {
-    if (item.shortcut === event.key) {
-      item.action()
-    }
-  })
-}
-
-onMounted(() => {
-  document.addEventListener('keydown', handleKeyPress)
-})
-
-onBeforeRouteLeave(() => close())
-onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeyPress)
-  close()
-})
-
-store.fetchCards()
-const cards = computed(() => store.cards)
-
-const ready = ref(false)
-const solo = ref(false)
-const showSidebar = ref(JSON.parse(localStorage.getItem("showSidebar")??'true'))
-const toggleSidebar = function () {
-  showSidebar.value = !showSidebar.value
-  localStorage.setItem("showSidebar", JSON.stringify(showSidebar.value))
-}
-const game = ref<Arkham.Game | null>(null)
-const playerId = ref<string | null>(null)
-const gameLog = ref<readonly string[]>(Object.freeze([]))
-
-const question = computed(() => playerId.value ? game.value?.question[playerId.value] : null)
-
-async function undo() {
-  resultQueue.value = []
-  gameCard.value = null
-  tarotCards.value = []
-  uiLock.value = false
-  undoChoice(props.gameId)
-}
-
-const uiLock = ref<boolean>(false)
-
-const resultQueue = ref<any>([])
-
-// TODO: contents should not be string
-type ServerResult =
-  | { tag: "GameError"; contents: string }
-  | { tag: "GameMessage"; contents: string }
-  | { tag: "GameTarot"; contents: string }
-  | { tag: "GameCard"; contents: string }
-  | { tag: "GameCardOnly"; contents: string }
-  | { tag: "GameUpdate"; contents: string }
-
+const { data, send, close } = useWebSocket(websocketUrl.value, { autoReconnect: true, onError, onConnected })
 const handleResult = (result: ServerResult) => {
   switch(result.tag) {
     case "GameError":
@@ -279,6 +202,102 @@ const handleResult = (result: ServerResult) => {
       return
   }
 }
+// watchers
+watch(data, async (newData) => {
+  const result = JSON.parse(newData)
+  handleResult(result)
+})
+
+watch(uiLock, async () => {
+  if (uiLock.value) return
+  const r = resultQueue.value.shift()
+  if (r) handleResult(r)
+})
+
+
+// Keyboard Shortcuts
+const handleKeyPress = (event: KeyboardEvent) => {
+  if (event.key === 'u') {
+    undo()
+    return
+  }
+
+  if (event.key === 'D') {
+    debug.toggle()
+    return
+  }
+
+  if (event.key === '?') {
+    showShortcuts.value = !showShortcuts.value
+    return
+  }
+
+  if (event.key === ' ') {
+    const skipTriggers = choices.value.findIndex((c) => c.tag === Message.MessageType.SKIP_TRIGGERS_BUTTON)
+    if (skipTriggers !== -1) choose(skipTriggers)
+    return
+  }
+
+  if (event.key === 'd') {
+    const draw = choices.value.findIndex((c) => {
+      if (c.tag !== Message.MessageType.COMPONENT_LABEL) return false
+      if (c.component.tag !== "InvestigatorDeckComponent") return false
+      if (!playerId.value) return false
+      return game.value?.investigators[c.component.investigatorId]?.playerId === playerId.value
+    })
+    if (draw !== -1) {
+      choose(draw)
+    } else {
+      const drawEncounter = choices.value.findIndex((c) => {
+        if (c.tag !== Message.MessageType.TARGET_LABEL) return false
+        return c.target.tag === "EncounterDeckTarget"
+      })
+
+      if (drawEncounter !== -1) choose(drawEncounter)
+    }
+    return
+  }
+
+  if (event.key === 'r') {
+    const resource = choices.value.findIndex((c) => {
+      if (c.tag !== Message.MessageType.COMPONENT_LABEL) return false
+      if (c.component.tag !== "InvestigatorComponent") return false
+      if (c.component.tokenType !== "ResourceToken") return false
+      if (!playerId.value) return false
+      return game.value?.investigators[c.component.investigatorId]?.playerId === playerId.value
+    })
+    if (resource !== -1) choose(resource)
+    return
+  }
+
+  if (event.key === 'e') {
+    const endTurn = choices.value.findIndex((c) => {
+      if (c.tag !== Message.MessageType.END_TURN_BUTTON) return false
+      return game.value?.investigators[c.investigatorId]?.playerId === playerId.value
+    })
+    if (endTurn !== -1) choose(endTurn)
+    return
+  }
+
+  menuItems.value.forEach((item) => {
+    if (item.shortcut === event.key) item.action()
+  })
+}
+
+// Sidebar
+const toggleSidebar = function () {
+  showSidebar.value = !showSidebar.value
+  localStorage.setItem("showSidebar", JSON.stringify(showSidebar.value))
+}
+
+// Undo
+async function undo() {
+  resultQueue.value = []
+  gameCard.value = null
+  tarotCards.value = []
+  uiLock.value = false
+  undoChoice(props.gameId)
+}
 
 const continueUI = () => {
   gameCard.value = null
@@ -286,22 +305,7 @@ const continueUI = () => {
   uiLock.value = false
 }
 
-watch(data, async (newData) => {
-  const result = JSON.parse(newData)
-  handleResult(result)
-})
-
-watch(uiLock, async () => {
-  if(!uiLock.value) {
-    const r = resultQueue.value.shift()
-    if (r) {
-      handleResult(r)
-    }
-  }
-})
-
-const preloaded = reactive<string[]>([])
-
+// Image Preloading
 function loadAllImages(game: Arkham.Game): Promise<void[]> {
   const images = Object.values(game.cards).map((card) => {
     return new Promise<void>((resolve, reject) => {
@@ -322,16 +326,7 @@ function loadAllImages(game: Arkham.Game): Promise<void[]> {
   return Promise.all(images)
 }
 
-fetchGame(props.gameId, props.spectate).then(({ game: newGame, playerId: newPlayerId, multiplayerMode}) => {
-  loadAllImages(newGame).then(() => {
-    game.value = newGame
-    solo.value = multiplayerMode === "Solo"
-    gameLog.value = Object.freeze(newGame.log)
-    playerId.value = newPlayerId
-    ready.value = true
-  })
-})
-
+// Callbacks
 async function choose(idx: number) {
   if (idx !== -1 && game.value && !props.spectate) {
     send(JSON.stringify({tag: 'Answer', contents: { choice: idx , playerId: playerId.value } }))
@@ -356,11 +351,9 @@ async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
   }
 }
 
-function switchInvestigator (newPlayerId: string) { playerId.value = newPlayerId }
-
 async function update(state: Arkham.Game) { game.value = state }
 
-
+function switchInvestigator (newPlayerId: string) { playerId.value = newPlayerId }
 function debugExport () {
   fetch(new Request(`${api.defaults.baseURL}/arkham/games/${props.gameId}/export`))
   .then(resp => resp.blob())
@@ -381,16 +374,21 @@ function debugExport () {
   })
 }
 
-const gameOver = computed(() => game.value?.gameState.tag === "IsOver")
-
-const showLog = ref(false);
-
+// provides
 provide('chooseDeck', chooseDeck)
 provide('choosePaymentAmounts', choosePaymentAmounts)
 provide('chooseAmounts', chooseAmounts)
 provide('switchInvestigator', switchInvestigator)
 provide('solo', solo)
-const { menuItems } = useMenu()
+
+// callbacks
+onMounted(() => document.addEventListener('keydown', handleKeyPress))
+onBeforeRouteLeave(() => close())
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeyPress)
+  close()
+})
+
 </script>
 
 <template>

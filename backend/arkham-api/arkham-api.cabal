@@ -95,6 +95,7 @@ library
     , crypton-x509-store
     , data-default-class
     , directory
+    , email-validate
     , errors
     , esqueleto
     , fast-logger
@@ -107,6 +108,7 @@ library
     , http-types
     , jwt
     , lens
+    , mailtrap
     , monad-logger
     , path-pieces
     , persistent

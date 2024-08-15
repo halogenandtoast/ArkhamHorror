@@ -15,6 +15,13 @@ packages:
     version: 1.2.0.1
   original:
     url: https://github.com/halogenandtoast/monad-validate/archive/e5f36d4a82875c09c6000fed8f8ced50e21b75ce.tar.gz
+- completed:
+    hackage: mailtrap-0.1.2.1@sha256:fb9e75649e67c99ced2f8bf64d4005f7713328c0981449fcf5d22dfdba4da533,1017
+    pantry-tree:
+      sha256: 9525f3941a153f912a099be29ae7807be06d5c8fa1c40678a0e2539a6f36f528
+      size: 276
+  original:
+    hackage: mailtrap-0.1.2.1
 snapshots:
 - completed:
     sha256: 3a9e2e78fabe2b407da707136d33c9a293b5d78186aea9ab13c552902807e543

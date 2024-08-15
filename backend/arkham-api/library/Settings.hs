@@ -21,6 +21,7 @@ import Data.Yaml (decodeEither')
 import Data.Yaml.Config (applyEnvValue)
 import Database.Persist.Postgresql (PostgresConf(..))
 import Network.Wai.Handler.Warp (HostPreference)
+import Network.Mail.Mailtrap (Token)
 import Relude
 import URI.ByteString
   ( Authority(..)
@@ -85,6 +86,7 @@ data AppSettings = AppSettings
     , appJwtSecret :: Text
     , appRedisConnectionInfo :: Maybe Text
     -- ^ Redis Connection Info
+    , appMailtrapApiToken :: Token
     }
 
 instance FromJSON AppSettings where
@@ -110,6 +112,7 @@ instance FromJSON AppSettings where
         appSkipCombining          <- o .:? "skip-combining"   .!= dev
         appJwtSecret <- o .: "jwt-secret"
         appRedisConnectionInfo <- o .:? "redis-conn"
+        appMailtrapApiToken <- o .: "mailtrap-api-token"
 
         pure AppSettings {..}
 

@@ -39,6 +39,8 @@ library:
         - -fwarn-tabs
         - -O2
   dependencies:
+    - mailtrap
+    - email-validate
     - MonadRandom
     - aeson
     - aeson-casing

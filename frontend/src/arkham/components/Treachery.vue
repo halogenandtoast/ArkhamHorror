@@ -16,6 +16,7 @@ export interface Props {
   treachery: Arkham.Treachery
   playerId: string
   attached?: boolean
+  overlayDelay?: number
 }
 
 const props = withDefaults(defineProps<Props>(), { attached: false })
@@ -84,6 +85,7 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
       class="card"
       :class="{ 'treachery--can-interact': cardAction !== -1 }"
       @click="$emit('choose', cardAction)"
+      :data-delay="overlayDelay"
     />
     <AbilityButton
       v-for="ability in abilities"

@@ -9,7 +9,13 @@ onMounted(() => {
   const handleMouseover = (event: Event) => {
     const target = event.target as HTMLElement;
     if (target && (target.classList.contains('card') || target.dataset.imageId || target.dataset.target || target.dataset.image)) {
-      hoveredElement.value = target;
+      if (target.dataset.delay) {
+        setTimeout(() => {
+          hoveredElement.value = target;
+        }, parseInt(target.dataset.delay));
+      } else {
+        hoveredElement.value = target;
+      }
     } else {
       hoveredElement.value = null;
     }
@@ -1915,6 +1921,15 @@ const getImage = (el: HTMLElement): string | null => {
   position: relative;
 }
 
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .card-overlay {
   width: 100%;
   height: auto;
@@ -1922,6 +1937,7 @@ const getImage = (el: HTMLElement): string | null => {
   top: 0;
   left: 2px;
   pointer-events: none;
+  animation: fadeIn 0.5s;
 }
 
 </style>

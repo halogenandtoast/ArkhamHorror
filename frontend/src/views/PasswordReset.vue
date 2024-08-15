@@ -48,21 +48,15 @@ form {
   max-width: 400px;
 }
 
-section {
-  background-color: #15192C;
-  border-radius: 3px;
-  padding: 10px;
-}
-
 header {
   text-align: center;
 }
 
 input {
   outline: 0;
-  border: 1px solid #000;
+  border: 0;
   padding: 15px;
-  background: #F2F2F2;
+  background: var(--background-dark);
   width: 100%;
   box-sizing: border-box;
   margin-bottom: 10px;

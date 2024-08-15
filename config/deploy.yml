@@ -21,6 +21,7 @@ env:
     - DATABASE_URL
     - ASSET_HOST
     - PORT
+    - MAILTRAP_API_TOKEN
 
 # Configure a custom healthcheck (default is /up on port 3000)
 healthcheck:

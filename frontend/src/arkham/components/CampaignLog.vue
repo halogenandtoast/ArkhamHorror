@@ -89,6 +89,10 @@ const cardCodeToTitle = (cardCode: string): string => {
     return "The Masked Hunter"
   }
 
+  if(cardCode == "c50026b") {
+    return "Narōgath"
+  }
+
   return "unknown"
 }
 

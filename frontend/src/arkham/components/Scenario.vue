@@ -195,6 +195,7 @@ watchEffect(() => {
   const oop = outOfPlay.value.length + outOfPlayEnemies.value.length
   if (oop == 0) {
     removeEntry("showOutOfPlay")
+    showOutOfPlay.value = false
   } else {
     addEntry({
       id: "showOutOfPlay",
@@ -1034,4 +1035,15 @@ margin: 20px !important;
   font-size: 1em;
 }
 
+.card-row-cards {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  gap: 2px;
+  flex-wrap: wrap;
+  .card-row-card {
+    position: relative;
+  }
+}
 </style>

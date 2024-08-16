@@ -30,7 +30,7 @@ getLeadInvestigatorId = do
 getLead :: (HasCallStack, HasGame m) => m InvestigatorId
 getLead = getLeadInvestigatorId
 
-getPlayer :: HasGame m => InvestigatorId -> m PlayerId
+getPlayer :: (HasCallStack, HasGame m) => InvestigatorId -> m PlayerId
 getPlayer = field InvestigatorPlayerId
 
 getActiveInvestigatorId :: (HasCallStack, HasGame m) => m InvestigatorId

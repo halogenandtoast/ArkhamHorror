@@ -2546,11 +2546,15 @@ enemyMatcherFilter = \case
     keywords <- field EnemyKeywords (toId enemy)
     pure $ Blank `notElem` modifiers && any (isJust . preview _Swarming) keywords
   SwarmOf eid -> \enemy -> do
-    let
-      isSwarmOf = \case
-        AsSwarm eid' _ -> eid == eid'
-        _ -> False
-    fieldMap EnemyPlacement isSwarmOf (toId enemy)
+    -- we want to exclude defeated enemies from the swarm
+    if attr enemyDefeated enemy
+      then pure False
+      else do
+        let
+          isSwarmOf = \case
+            AsSwarm eid' _ -> eid == eid'
+            _ -> False
+        fieldMap EnemyPlacement isSwarmOf (toId enemy)
   IsSwarm -> \enemy -> do
     let
       isSwarm = \case

@@ -1124,7 +1124,10 @@ instance RunMessage EnemyAttrs where
         <> discardWindow
         <> defeatMsgs
       pure $ a & keysL .~ mempty
-    After (EnemyDefeated eid _ _ _) | eid == toId a -> do
+    After (EnemyDefeated eid _ source _) | eid == toId a -> do
+      case a.placement of
+        AsSwarm eid' _ -> push $ CheckDefeated source (toTarget eid')
+        _ -> pure ()
       pure $ a & defeatedL .~ True
     Discard miid source target | a `isTarget` target -> do
       windows' <- windows [Window.WouldBeDiscarded (toTarget a)]

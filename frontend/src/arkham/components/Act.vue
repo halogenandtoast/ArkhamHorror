@@ -29,20 +29,8 @@ const showAbilities = ref(false)
 
 const id = computed(() => props.act.id)
 const image = computed(() => {
-  const side = props.act.sequence.side.toLowerCase().replace('a', '')
-  const sidePart = id.value.endsWith(side) ? "" : side
-
   let newId = id.value.replace(/^c/, '')
-
-  if (sidePart == 'd') {
-    newId = newId.replace(/c$/, '')
-  }
-
-  if (sidePart == 'f') {
-    newId = newId.replace(/e$/, '')
-  }
-
-  return imgsrc(`cards/${newId}${sidePart}.jpg`)
+  return imgsrc(`cards/${newId}.jpg`)
 })
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))

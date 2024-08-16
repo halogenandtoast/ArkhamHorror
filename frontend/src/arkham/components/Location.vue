@@ -297,7 +297,7 @@ const debug = useDebug()
         />
       </div>
     </div>
-    <DebugLocation v-if="debugging" :game="game" :location="location" :playerId="playerId" @close="debugging = false" @choose="$emit('choose', $event)"/>
+    <DebugLocation v-if="debugging" :game="game" :location="location" :playerId="playerId" @close="debugging = false" />
   </div>
 </template>
 

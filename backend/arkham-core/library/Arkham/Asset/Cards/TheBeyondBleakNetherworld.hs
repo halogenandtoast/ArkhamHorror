@@ -55,7 +55,7 @@ instance RunMessage TheBeyondBleakNetherworld where
       field InvestigatorSideDeck iid >>= \case
         Nothing -> pure a
         Just sideDeck -> do
-          spiritDeck' <- shuffleM $ map toCard sideDeck
+          spiritDeck' <- shuffleM =<< traverse (setOwner iid . toCard) sideDeck
           pure . TheBeyondBleakNetherworld $ attrs `with` Meta spiritDeck' Nothing
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       case spiritDeck meta of

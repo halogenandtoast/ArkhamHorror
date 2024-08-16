@@ -280,7 +280,7 @@ instance RunMessage EnemyAttrs where
             when (all (`notElem` keywords) [#aloof, #massive] && unengaged) $ do
               push $ chooseOne lead $ targetLabels iids (only . EnemyEngageInvestigator enemyId)
           pure $ a & exhaustedL .~ False
-    ReadyExhausted -> do
+    ReadyExhausted | not enemyDefeated -> do
       mods <- getModifiers a
       -- swarm will be readied by host
       let alternativeSources = [source | AlternativeReady source <- mods]
@@ -409,14 +409,14 @@ instance RunMessage EnemyAttrs where
                   $ chooseOne lead
                   $ targetLabels xs (only . EnemyEngageInvestigator eid)
       pure a
-    HuntersMove | not enemyExhausted && not (isSwarm a) -> do
+    HuntersMove | not enemyExhausted && not (isSwarm a) && not enemyDefeated -> do
       -- TODO: unengaged or not engaged with only prey
       --
       let isAttached = isJust a.placement.attachedTo
       unless isAttached do
-        unengaged <- selectNone $ investigatorEngagedWith enemyId
+        wantsToMove <- selectNone $ InvestigatorAt (locationWithEnemy enemyId)
         mods <- getModifiers enemyId
-        when (unengaged && CannotMove `notElem` mods) $ do
+        when (wantsToMove && CannotMove `notElem` mods) $ do
           keywords <- getModifiedKeywords a
           leadId <- getLeadInvestigatorId
           when (Keyword.Hunter `elem` keywords) do
@@ -600,7 +600,7 @@ instance RunMessage EnemyAttrs where
                   | l <- ls
                   ]
           pure a
-    EnemiesAttack | not enemyExhausted -> do
+    EnemiesAttack | not enemyExhausted && not enemyDefeated -> do
       mods <- getModifiers (EnemyTarget enemyId)
       unless (CannotAttack `elem` mods) do
         iids <- select enemyAttacks

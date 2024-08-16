@@ -18,8 +18,4 @@ instance HasModifiersFor LeoDeLuca where
   getModifiersFor _ _ = pure []
 
 instance RunMessage LeoDeLuca where
-  runMessage msg a@(LeoDeLuca attrs) = case msg of
-    CardEnteredPlay iid card | card.id == attrs.cardId -> do
-      push $ GainActions iid (toSource attrs) 1
-      pure a
-    _ -> LeoDeLuca <$> runMessage msg attrs
+  runMessage msg a@(LeoDeLuca attrs) = LeoDeLuca <$> runMessage msg attrs

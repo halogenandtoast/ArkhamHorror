@@ -6,6 +6,7 @@ import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Prelude
@@ -13,16 +14,11 @@ import Arkham.Projection
 import Arkham.Window
 
 newtype EverVigilant1 = EverVigilant1 EventAttrs
-  deriving anyclass (IsEvent, HasAbilities)
+  deriving anyclass (IsEvent, HasAbilities, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 everVigilant1 :: EventCard EverVigilant1
 everVigilant1 = event EverVigilant1 Cards.everVigilant1
-
-instance HasModifiersFor EverVigilant1 where
-  getModifiersFor (InvestigatorTarget iid) (EverVigilant1 attrs) | iid == attrs.owner = do
-    modified attrs [ReduceCostOf AnyCard 1]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage EverVigilant1 where
   runMessage msg e@(EverVigilant1 attrs) = case msg of
@@ -32,13 +28,20 @@ instance RunMessage EverVigilant1 where
     ResolveEvent iid eid _mtarget windows' | eid == toId attrs -> do
       let windows'' = nub $ windows' <> [mkWhen (DuringTurn iid), mkWhen NonFast]
       cards <- fieldMap InvestigatorHand (filter (`cardMatch` CardWithType AssetType)) iid
-      playableCards <- filterM (getIsPlayable iid GameSource (UnpaidCost NoAction) windows'') cards
+      playableCards <- withModifiers iid (toModifiers attrs [ReduceCostOf AnyCard 1]) $ do
+        filterM (getIsPlayable iid GameSource (UnpaidCost NoAction) windows'') cards
       player <- getPlayer iid
       pushWhen (notNull playableCards)
         $ chooseUpToN
           player
           1
           "Do not play asset"
-          [targetLabel (toCardId c) [PayCardCost iid c windows''] | c <- playableCards]
+          [ targetLabel
+            (toCardId c)
+            [ Msg.costModifier attrs (CardIdTarget $ toCardId c) (ReduceCostOf AnyCard 1)
+            , PayCardCost iid c windows''
+            ]
+          | c <- playableCards
+          ]
       pure e
     _ -> EverVigilant1 <$> runMessage msg attrs

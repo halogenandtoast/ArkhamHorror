@@ -5,22 +5,18 @@ import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Projection
 import Arkham.Window
 
 newtype EverVigilant4 = EverVigilant4 EventAttrs
-  deriving anyclass (IsEvent, HasAbilities)
+  deriving anyclass (IsEvent, HasAbilities, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 everVigilant4 :: EventCard EverVigilant4
 everVigilant4 = event EverVigilant4 Cards.everVigilant4
-
-instance HasModifiersFor EverVigilant4 where
-  getModifiersFor (InvestigatorTarget iid) (EverVigilant4 attrs) | iid == attrs.owner = do
-    modified attrs [ReduceCostOf AnyCard 1]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage EverVigilant4 where
   runMessage msg e@(EverVigilant4 attrs) = runQueueT $ case msg of
@@ -30,8 +26,9 @@ instance RunMessage EverVigilant4 where
     DoStep n msg'@(PlayThisEvent iid eid) | eid == toId attrs && n > 0 -> do
       iids <- select $ affectsOthers $ colocatedWith iid
       hasPlayable <- flip filterM iids \iid' -> do
-        cards <- fieldMap InvestigatorHand (filter (`cardMatch` CardWithType AssetType)) iid'
-        anyM (getIsPlayable iid' GameSource (UnpaidCost NoAction) (defaultWindows iid')) cards
+        withModifiers iid' (toModifiers attrs [ReduceCostOf AnyCard 1]) $ do
+          cards <- fieldMap InvestigatorHand (filter (`cardMatch` CardWithType AssetType)) iid'
+          anyM (getIsPlayable iid' GameSource (UnpaidCost NoAction) (defaultWindows iid')) cards
 
       when (notNull hasPlayable) do
         chooseOne iid $ Label "Do not play asset" []
@@ -41,11 +38,17 @@ instance RunMessage EverVigilant4 where
       pure e
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) -> do
       cards <- fieldMap InvestigatorHand (filter (`cardMatch` CardWithType AssetType)) iid
-      playableCards <-
+      playableCards <- withModifiers iid (toModifiers attrs [ReduceCostOf AnyCard 1]) $ do
         filterM (getIsPlayable iid GameSource (UnpaidCost NoAction) (defaultWindows iid)) cards
       when (notNull playableCards)
         $ chooseOne
           iid
-          [targetLabel (toCardId c) [PayCardCost iid c (defaultWindows iid)] | c <- playableCards]
+          [ targetLabel
+            (toCardId c)
+            [ Msg.costModifier attrs (CardIdTarget $ toCardId c) (ReduceCostOf AnyCard 1)
+            , PayCardCost iid c (defaultWindows iid)
+            ]
+          | c <- playableCards
+          ]
       pure e
     _ -> EverVigilant4 <$> liftRunMessage msg attrs

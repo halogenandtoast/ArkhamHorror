@@ -580,7 +580,25 @@ const realityAcid = ref('89005')
 }
 
 :deep(.location) {
-  margin-left: calc(var(--card-width) * 0.8);
+  .location-container {
+    margin: 0 10px;
+  }
+
+  .location-investigator-column {
+    position: unset;
+  }
+
+  .location-asset-column {
+    position: unset;
+    width: auto;
+    min-width: unset;
+  }
+
+  .location-asset-column .exhausted{
+    margin-left: calc(var(--card-width) - (var(--card-width) * 7 / 9));
+    margin-right: 10px;
+    transform: rotate(90deg) translateX(-10px);
+  }
 }
 
 
@@ -628,6 +646,7 @@ const realityAcid = ref('89005')
 
 .in-play {
   display: flex;
+  flex-wrap: wrap;
   gap: 5px;
   background: #999;
   padding: 10px;

@@ -54,7 +54,7 @@ instance RunMessage HypnoticGaze where
         , ignoreWindow
         ]
       pure $ HypnoticGaze (attrs `with` Metadata (Just enemyId))
-    RequestedChaosTokens source _ faces | isSource attrs source -> do
+    RequestedChaosTokens source (Just iid) faces | isSource attrs source -> do
       push $ ResetChaosTokens (toSource attrs)
       let
         enemyId = fromMaybe (error "missing enemy id") (selectedEnemy meta)
@@ -70,5 +70,8 @@ instance RunMessage HypnoticGaze where
           $ If
             (Window.RevealChaosTokenEventEffect (eventOwner attrs) faces (toId attrs))
             [EnemyDamage enemyId $ nonAttack attrs healthDamage']
+
+      player <- getPlayer iid
+      push $ chooseOne player [Label "Continue" []]
       pure e
     _ -> HypnoticGaze . (`with` meta) <$> runMessage msg attrs

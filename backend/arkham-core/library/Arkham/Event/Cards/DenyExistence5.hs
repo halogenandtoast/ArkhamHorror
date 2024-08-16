@@ -1,13 +1,10 @@
-module Arkham.Event.Cards.DenyExistence5 (
-  denyExistence5,
-  DenyExistence5 (..),
-) where
+module Arkham.Event.Cards.DenyExistence5 (denyExistence5, DenyExistence5 (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Classes.HasQueue (popMessageMatching_, replaceMessageMatching)
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner hiding (Discarded)
+import Arkham.Event.Import.Lifted hiding (Discarded)
+import Arkham.Helpers.Message (drawCards)
+import Arkham.Helpers.Message.Discard (discardCard)
 import Arkham.Window
 
 newtype DenyExistence5 = DenyExistence5 EventAttrs
@@ -26,7 +23,7 @@ denyExistence5 = event DenyExistence5 Cards.denyExistence5
 -- should be queued up, however we need to prequeue which is weird...
 
 instance RunMessage DenyExistence5 where
-  runMessage msg e@(DenyExistence5 attrs) = case msg of
+  runMessage msg e@(DenyExistence5 attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid mTarget windows _ | eid == toId attrs -> do
       let
         go str w = Label str [ResolveEvent iid eid mTarget [w]]
@@ -37,11 +34,10 @@ instance RunMessage DenyExistence5 where
           WouldTakeDamage {} -> Just $ go "take damage" w
           WouldTakeHorror {} -> Just $ go "take horror" w
           _ -> Nothing
-      player <- getPlayer iid
-      push $ chooseOrRunOne player choices
+      chooseOrRunOne iid choices
       pure e
     ResolveEvent _ eid _ [w] | eid == toId attrs -> do
-      case windowType w of
+      lift $ case windowType w of
         Discarded (Just iid) source c -> do
           let drawing = drawCards iid source 1
           replaceMessageMatching (== Do (toMessage $ discardCard iid source c))
@@ -70,5 +66,6 @@ instance RunMessage DenyExistence5 where
           CheckWindow iids ws ->
             [CheckWindow iids $ filter ((/= windowType w) . windowType) ws]
           _ -> error "no match"
+      cancelledOrIgnoredCardOrGameEffect attrs
       pure e
     _ -> DenyExistence5 <$> runMessage msg attrs

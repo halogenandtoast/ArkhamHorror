@@ -1,13 +1,9 @@
-module Arkham.Event.Cards.DenyExistence (
-  denyExistence,
-  DenyExistence (..),
-) where
+module Arkham.Event.Cards.DenyExistence (denyExistence, DenyExistence (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Classes.HasQueue (popMessageMatching_, replaceMessageMatching)
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner hiding (Discarded)
+import Arkham.Event.Import.Lifted hiding (Discarded)
+import Arkham.Helpers.Message.Discard (discardCard)
 import Arkham.Window
 
 newtype DenyExistence = DenyExistence EventAttrs
@@ -26,7 +22,7 @@ denyExistence = event DenyExistence Cards.denyExistence
 -- should be queued up, however we need to prequeue which is weird...
 
 instance RunMessage DenyExistence where
-  runMessage msg e@(DenyExistence attrs) = case msg of
+  runMessage msg e@(DenyExistence attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid mTarget windows _ | eid == toId attrs -> do
       let
         go str w = Label str [ResolveEvent iid eid mTarget [w]]
@@ -37,11 +33,10 @@ instance RunMessage DenyExistence where
           WouldTakeDamage {} -> Just $ go "take damage" w
           WouldTakeHorror {} -> Just $ go "take horror" w
           _ -> Nothing
-      player <- getPlayer iid
-      push $ chooseOrRunOne player choices
+      chooseOrRunOne iid choices
       pure e
     ResolveEvent _ eid _ [w] | eid == toId attrs -> do
-      case windowType w of
+      lift $ case windowType w of
         Discarded (Just iid) source c -> do
           popMessageMatching_ (== Do (toMessage $ discardCard iid source c))
         LostResources iid source n -> do
@@ -64,5 +59,6 @@ instance RunMessage DenyExistence where
           CheckWindow iids ws ->
             [CheckWindow iids $ filter ((/= windowType w) . windowType) ws]
           _ -> error "no match"
+      cancelledOrIgnoredCardOrGameEffect attrs
       pure e
-    _ -> DenyExistence <$> runMessage msg attrs
+    _ -> DenyExistence <$> liftRunMessage msg attrs

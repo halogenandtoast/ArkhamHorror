@@ -3,13 +3,15 @@ module Arkham.Asset.Cards.EyeOfChaos (eyeOfChaos, eyeOfChaosEffect, EyeOfChaos (
 import Arkham.Ability
 import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Discover
-import Arkham.Effect.Runner
+import Arkham.Effect.Import
 import Arkham.Investigate
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Message qualified as Msg
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
+import Arkham.Token
 
 newtype EyeOfChaos = EyeOfChaos AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -20,22 +22,20 @@ eyeOfChaos = asset EyeOfChaos Cards.eyeOfChaos
 
 instance HasAbilities EyeOfChaos where
   getAbilities (EyeOfChaos a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbilityWithSkill [#investigate] #willpower
-        $ ActionCost 1
-        <> assetUseCost a Charge 1
-    ]
+    [restrictedAbility a 1 ControlsThis $ investigateAction $ assetUseCost a Charge 1]
 
 instance RunMessage EyeOfChaos where
-  runMessage msg a@(EyeOfChaos attrs) = case msg of
+  runMessage msg a@(EyeOfChaos attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       sid <- getRandom
+      skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
+      createCardEffect Cards.eyeOfChaos (effectMetaTarget sid) source iid
       investigation <-
         aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
-      pushAll $ createCardEffect Cards.eyeOfChaos (effectMetaTarget sid) source iid : leftOr investigation
+      pushAll $ leftOr investigation
       pure a
-    _ -> EyeOfChaos <$> runMessage msg attrs
+    _ -> EyeOfChaos <$> liftRunMessage msg attrs
 
 newtype EyeOfChaosEffect = EyeOfChaosEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -45,37 +45,31 @@ eyeOfChaosEffect :: EffectArgs -> EyeOfChaosEffect
 eyeOfChaosEffect = cardEffect EyeOfChaosEffect Cards.eyeOfChaos
 
 instance RunMessage EyeOfChaosEffect where
-  runMessage msg e@(EyeOfChaosEffect attrs) = case msg of
+  runMessage msg e@(EyeOfChaosEffect attrs) = runQueueT $ case msg of
     RevealChaosToken (SkillTestSource sid) iid token | InvestigatorTarget iid == attrs.target && maybe False (isTarget sid) attrs.metaTarget -> do
       let
         handleIt assetId = do
           when (token.face == #curse) do
             lids <- select $ ConnectedLocation <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
             stillInPlay <- selectAny $ AssetWithId assetId
-            player <- getPlayer iid
 
-            pushAll
-              $ [ chooseOrRunOne
-                  player
-                  $ [Label "Place 1 Charge on Eye of Chaos" [AddUses attrs.source assetId Charge 1] | stillInPlay]
-                  <> [ Label
-                        "Discover 1 clues at a connecting location"
-                        [ chooseOne
-                            player
-                            [ targetLabel lid' [Msg.DiscoverClues iid $ discover lid' attrs 1]
-                            | lid' <- lids
-                            ]
-                        ]
-                     ]
-                | stillInPlay || notNull lids
-                ]
-              <> [disable attrs]
+            when (stillInPlay || notNull lids) do
+              chooseOrRunOneM iid do
+                when stillInPlay do
+                  labeled "Place 1 Charge on Eye of Chaos" do
+                    push $ AddUses attrs.source assetId Charge 1
+                labeled "Discover 1 clues at a connecting location" do
+                  chooseOne
+                    iid
+                    [ targetLabel lid' [Msg.DiscoverClues iid $ discover lid' attrs 1]
+                    | lid' <- lids
+                    ]
+            disable attrs
       case attrs.source of
         AbilitySource (AssetSource assetId) 1 -> handleIt assetId
         AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
         _ -> error "wrong source"
       pure e
     SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
-      push (disable attrs)
-      pure e
-    _ -> EyeOfChaosEffect <$> runMessage msg attrs
+      disableReturn e
+    _ -> EyeOfChaosEffect <$> liftRunMessage msg attrs

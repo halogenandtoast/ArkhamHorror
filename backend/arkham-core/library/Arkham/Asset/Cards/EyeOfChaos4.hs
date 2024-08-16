@@ -34,7 +34,7 @@ instance RunMessage EyeOfChaos4 where
       investigation <-
         aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
       pushAll
-        $ [ skillTestModifier sid source iid (SkillModifier #intellect 2)
+        $ [ skillTestModifiers sid source iid [SkillModifier #intellect 2, DiscoveredClues 1]
           , createCardEffect Cards.eyeOfChaos4 (effectMetaTarget sid) source iid
           ]
         <> leftOr investigation

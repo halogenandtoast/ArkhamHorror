@@ -28,8 +28,8 @@ instance RunMessage VowOfDrzytelech where
       chooseOrRunOneM iid do
         labeled "Put Vow of Drzytelech into play in your threat area" $ putCardIntoPlay iid attrs
         whenM (lift $ can.shuffle.deck iid) do
-          labeled "Take 1 damage and shuffle it into your deck" do
-            assignDamage iid attrs 1
+          labeled "Take 1 horror and shuffle it into your deck" do
+            assignHorror iid attrs 1
             shuffleIntoDeck iid attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do

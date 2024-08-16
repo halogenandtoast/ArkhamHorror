@@ -1459,7 +1459,7 @@ getLocationsMatching lmatcher = do
           else do
             ls'' <- mapMaybeM (\l -> (l,) <$$> field LocationShroud l.id) ls'
             let lowestShroud = getMin $ foldMap (Min . snd) ls''
-            pure $ map fst $ filter ((< lowestShroud) . snd) ls''
+            pure $ filter (maybe False (< lowestShroud) . attr locationShroud) ls
       LocationWithDiscoverableCluesBy whoMatcher -> do
         ls' <- getLocationsMatching LocationWithAnyClues
         filterM

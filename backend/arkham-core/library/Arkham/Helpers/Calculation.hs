@@ -61,7 +61,7 @@ calculate = go
     EnemyMaybeFieldCalculation eid fld -> fromMaybe 0 . join <$> fieldMay fld eid
     VictoryDisplayCountCalculation mtchr -> selectCount $ VictoryDisplayCardMatch mtchr
     EnemyMaybeGameValueFieldCalculation eid fld -> maybe (error "missing maybe field") getGameValue =<< field fld eid
-    EnemyFieldCalculation eid fld -> field fld eid
+    EnemyFieldCalculation eid fld -> fromMaybe 0 <$> fieldMay fld eid
     EnemyTargetFieldCalculation fld ->
       getSkillTestTarget >>= \case
         Just (EnemyTarget eid) -> field fld eid

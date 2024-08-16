@@ -47,6 +47,6 @@ instance RunMessage StirThePot5 where
       pushAll [DisengageEnemy iid eid | canDisengage, eid <- engaged]
 
       when (notNull locations) do
-        chooseOne iid $ targetLabels locations (only . Move . move attrs iid)
+        chooseOne iid $ Label "Do Not Move" [] : targetLabels locations (only . Move . move attrs iid)
       pure e
     _ -> StirThePot5 <$> liftRunMessage msg attrs

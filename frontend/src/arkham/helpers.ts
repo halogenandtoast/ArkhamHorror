@@ -139,3 +139,30 @@ export function investigatorClass(code: string) {
       default: return {}
     }
 }
+
+export function waitForImagesToLoad(callback: () => void) {
+  const images = document.querySelectorAll('img')
+  const totalImages = images.length
+  let loadedCount = 0
+
+  if (totalImages === 0) {
+    callback()
+    return
+  }
+
+  const checkIfAllLoaded = () => {
+    loadedCount++
+    if (loadedCount === totalImages) {
+      callback()
+    }
+  };
+
+  images.forEach(image => {
+    if (image.complete) {
+      checkIfAllLoaded()
+    } else {
+      image.addEventListener('load', checkIfAllLoaded)
+      image.addEventListener('error', checkIfAllLoaded)
+    }
+  });
+}

@@ -1120,7 +1120,13 @@ runGameMessage msg g = case msg of
     case mOutOfPlayEnemy of
       Just enemy -> do
         case placement of
-          AtLocation lid -> push $ EnemySpawn Nothing lid enemyId
+          AtLocation lid ->
+            pushAll
+              $ [ Will (EnemySpawn Nothing lid enemyId)
+                , When (EnemySpawn Nothing lid enemyId)
+                , EnemySpawn Nothing lid enemyId
+                , After (EnemySpawn Nothing lid enemyId)
+                ]
           _ -> pure ()
         pure
           $ g
@@ -1265,10 +1271,11 @@ runGameMessage msg g = case msg of
           -- asset might have been put into play via revelation
           mAid <- selectOne $ AssetWithCardId cardId
           aid <- maybe getRandom pure mAid
-          asset <- overAttrs (\attrs -> attrs {assetController = Just iid }) <$>
-            runMessage
-              (SetOriginalCardCode $ pcOriginalCardCode pc)
-              (createAsset card aid)
+          asset <-
+            overAttrs (\attrs -> attrs {assetController = Just iid})
+              <$> runMessage
+                (SetOriginalCardCode $ pcOriginalCardCode pc)
+                (createAsset card aid)
           pushAll
             [ CardEnteredPlay iid card
             , PaidForCardCost iid card payment
@@ -1314,7 +1321,7 @@ runGameMessage msg g = case msg of
           -- asset might have been put into play via revelation
           mAid <- selectOne $ AssetWithCardId cardId
           aid <- maybe getRandom pure mAid
-          let asset = overAttrs (\attrs -> attrs { assetController = Just iid }) $ createAsset card aid
+          let asset = overAttrs (\attrs -> attrs {assetController = Just iid}) $ createAsset card aid
           pushAll
             [ CardEnteredPlay iid card
             , InvestigatorPlayAsset iid aid
@@ -2151,10 +2158,11 @@ runGameMessage msg g = case msg of
       SpawnEngagedWith iid -> do
         lid <- getJustLocation iid
         pushAll
-          $ [ Will (EnemySpawn (Just iid) lid enemyId)
-            , When (EnemySpawn (Just iid) lid enemyId)
-            , EnemySpawn (Just iid) lid enemyId
-            ]
+          $ enemyCreationBefore enemyCreation
+          <> [ Will (EnemySpawn (Just iid) lid enemyId)
+             , When (EnemySpawn (Just iid) lid enemyId)
+             , EnemySpawn (Just iid) lid enemyId
+             ]
           <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mTarget]
           <> enemyCreationAfter enemyCreation
           <> [After (EnemySpawn (Just iid) lid enemyId)]
@@ -2162,10 +2170,11 @@ runGameMessage msg g = case msg of
         windows' <- checkWindows [mkWhen (Window.EnemyWouldSpawnAt enemyId lid)]
         pushAll
           $ windows'
-          : [ Will (EnemySpawn Nothing lid enemyId)
-            , When (EnemySpawn Nothing lid enemyId)
-            , EnemySpawn Nothing lid enemyId
-            ]
+          : enemyCreationBefore enemyCreation
+            <> [ Will (EnemySpawn Nothing lid enemyId)
+               , When (EnemySpawn Nothing lid enemyId)
+               , EnemySpawn Nothing lid enemyId
+               ]
             <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mTarget]
             <> enemyCreationAfter enemyCreation
             <> [After (EnemySpawn Nothing lid enemyId)]
@@ -2195,15 +2204,17 @@ runGameMessage msg g = case msg of
               , [After (EnemySpawn Nothing lid enemyId)]
               )
         pushAll
-          $ beforeMessages
+          $ enemyCreationBefore enemyCreation
+          <> beforeMessages
           <> [PlaceEnemy enemyId placement]
           <> enemyCreationAfter enemyCreation
           <> afterMessages
       SpawnEngagedWithPrey ->
         pushAll
-          $ [ Will (EnemySpawnEngagedWithPrey enemyId)
-            , EnemySpawnEngagedWithPrey enemyId
-            ]
+          $ enemyCreationBefore enemyCreation
+          <> [ Will (EnemySpawnEngagedWithPrey enemyId)
+             , EnemySpawnEngagedWithPrey enemyId
+             ]
           <> enemyCreationAfter enemyCreation
       SpawnViaSpawnInstruction -> spawnAt enemyId miid (fromMaybe (error "called without spawn at") $ attr enemySpawnAt enemy)
     pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy

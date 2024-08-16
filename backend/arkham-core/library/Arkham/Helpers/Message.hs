@@ -171,11 +171,30 @@ createEnemy (toCard -> card) (toEnemyCreationMethod -> cMethod) = do
       { enemyCreationCard = card
       , enemyCreationEnemyId = enemyId
       , enemyCreationMethod = cMethod
+      , enemyCreationBefore = []
       , enemyCreationAfter = []
       , enemyCreationExhausted = False
       , enemyCreationTarget = Nothing
       , enemyCreationInvestigator = Nothing
       }
+
+createEnemyWith
+  :: (MonadRandom m, IsCard card, IsEnemyCreationMethod creationMethod)
+  => card
+  -> creationMethod
+  -> (EnemyCreation Message -> EnemyCreation Message)
+  -> m (EnemyId, Message)
+createEnemyWith card creationMethod f = do
+  creation <- f <$> createEnemy card creationMethod
+  pure (enemyCreationEnemyId creation, CreateEnemy creation)
+
+createEnemyWith_
+  :: (MonadRandom m, IsCard card, IsEnemyCreationMethod creationMethod)
+  => card
+  -> creationMethod
+  -> (EnemyCreation Message -> EnemyCreation Message)
+  -> m Message
+createEnemyWith_ card creationMethod f = snd <$> createEnemyWith card creationMethod f
 
 createEnemyWithPlacement :: MonadRandom m => Card -> Placement -> m (EnemyId, Message)
 createEnemyWithPlacement c placement = do

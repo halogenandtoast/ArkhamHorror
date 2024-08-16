@@ -2,6 +2,7 @@
 import { EyeIcon, QuestionMarkCircleIcon } from '@heroicons/vue/20/solid'
 import {
   watchEffect,
+  watch,
   onMounted,
   onUpdated,
   computed,
@@ -14,9 +15,10 @@ import { type Scenario } from '@/arkham/types/Scenario';
 import { type Card } from '@/arkham/types/Card';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import { TokenType } from '@/arkham/types/Token';
-import { imgsrc, pluralize } from '@/arkham/helpers';
+import { waitForImagesToLoad, imgsrc, pluralize } from '@/arkham/helpers';
 import { useMenu } from '@/composeable/menu';
 import Act from '@/arkham/components/Act.vue';
+import CardView from '@/arkham/components/Card.vue';
 import Draggable from '@/components/Draggable.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
@@ -35,18 +37,38 @@ import Location from '@/arkham/components/Location.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { useDebug } from '@/arkham/debug'
 
+// types
+interface RefWrapper<T> {
+  ref: ComputedRef<T>
+}
+
+// Setup
 export interface Props {
   game: Game
   scenario: Scenario
   playerId: string
 }
-
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const debug = useDebug()
+const { addEntry, removeEntry } = useMenu()
+
+// emit helpers
+const choose = async (idx: number) => emit('choose', idx)
+
+//Refs
 const needsInit = ref(true)
 const showChaosBag = ref(false)
+const showOutOfPlay = ref(false)
+const forcedShowOutOfPlay = ref(false)
+const locationMap = ref<Element | null>(null)
+const viewingDiscard = ref(false)
+const cardRowTitle = ref("")
+// Atlach Nacha specific refs
+const previousRotation = ref(0)
+const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
 
+// callbacks
 onMounted(() => {
   if(props.scenario.id === "c06333") {
     waitForImagesToLoad(() => {
@@ -55,43 +77,157 @@ onMounted(() => {
   }
 });
 
-function waitForImagesToLoad(callback: () => void) {
-  const images = document.querySelectorAll('img')
-  const totalImages = images.length
-  let loadedCount = 0
-
-  if (totalImages === 0) {
-    callback()
-    return
-  }
-
-  const checkIfAllLoaded = () => {
-    loadedCount++
-    if (loadedCount === totalImages) {
-      callback()
-    }
-  };
-
-  images.forEach(image => {
-    if (image.complete) {
-      checkIfAllLoaded()
-    } else {
-      image.addEventListener('load', checkIfAllLoaded)
-      image.addEventListener('error', checkIfAllLoaded)
-    }
-  });
-}
-
 onUpdated(() => {
   if(props.scenario.id === "c06333") {
     rotateImages(needsInit.value)
   }
 });
 
-const previousRotation = ref(0)
-const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
+// Menu
+addEntry({
+  id: "viewChaosBag",
+  icon: QuestionMarkCircleIcon,
+  content: "View Chaos Bag",
+  shortcut: "c",
+  nested: 'view',
+  action: () => showChaosBag.value = !showChaosBag.value
+})
 
-function rotateImages(init) {
+// Computed
+const scenarioGuide = computed(() => {
+  const { reference, difficulty } = props.scenario
+  const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert'
+    ? 'b'
+    : ''
+  return imgsrc(`cards/${reference.replace('c', '')}${difficultySuffix}.jpg`)
+})
+const scenarioDecks = computed(() => {
+  if (!props.scenario.decks) return null
+  return Object.entries(props.scenario.decks)
+})
+const locationStyles = computed(() => {
+  const { locationLayout } = props.scenario
+  if (!locationLayout) return null
+  const cleaned = locationLayout
+  return {
+    display: 'grid',
+    'grid-template-areas': cleaned.map((row) => `"${row}"`).join(' '),
+  }
+})
+const scenarioDeckStyles = computed(() => {
+  const { decksLayout } = props.scenario
+  return {
+    display: 'grid',
+    'grid-template-areas': decksLayout.map((row) => `"${row}"`).join(' '),
+    'grid-row-gap': '10px',
+  }
+})
+const players = computed(() => props.game.investigators)
+const playerOrder = computed(() => props.game.playerOrder)
+const discards = computed<Card[]>(() => props.scenario.discard.map(c => ({ tag: 'EncounterCard', contents: c })))
+const outOfPlayEnemies = computed(() => {
+  const inOutOfPlay = Object.values(props.game.outOfPlayEnemies)
+  const other = Object.values(props.game.enemies).filter(e => e.placement.tag === 'OutOfPlay')
+  return [...inOutOfPlay, ...other]
+})
+const outOfPlay = computed(() => props.scenario?.setAsideCards || [])
+const removedFromPlay = computed(() => props.game.removedFromPlay)
+const noCards = computed<Card[]>(() => [])
+const viewUnderScenarioReference = computed(() => `${cardsUnderScenarioReference.value.length} Cards Underneath`)
+const viewDiscardLabel = computed(() => pluralize('Card', discards.value.length))
+const topOfEncounterDiscard = computed(() => {
+  if (!props.scenario.discard[0]) return null
+  const { cardCode } = props.scenario.discard[0]
+  return imgsrc(`/cards/${cardCode.replace('c', '')}.jpg`)
+})
+const spectralEncounterDeck = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[0])
+const spectralDiscard = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[1])
+const topOfSpectralDiscard = computed(() => {
+  if (!spectralDiscard.value || !spectralDiscard.value[0]) return null
+  const { cardCode } = spectralDiscard.value[0]
+  return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`)
+})
+const topEnemyInVoid = computed(() => {
+  const inVoidEnemy = Object.values(props.game.enemies).filter((e) => e.placement.tag === 'OutOfPlay' && e.placement.contents == 'VoidZone')[0]
+  return inVoidEnemy ?? Object.values(props.game.enemiesInVoid)[0]
+})
+const activePlayerId = computed(() => props.game.activeInvestigatorId)
+const pursuit = computed(() => Object.values(props.game.outOfPlayEnemies).filter((enemy) =>
+  enemy.placement.tag === 'OtherPlacement' && enemy.placement.contents === 'Pursuit'
+))
+const globalEnemies = computed(() => Object.values(props.game.enemies).filter((enemy) =>
+  enemy.placement.tag === "OtherPlacement" && enemy.placement.contents === "Global" && enemy.asSelfLocation === null
+))
+const globalStories = computed(() => Object.values(props.game.stories).filter((story) =>
+  story.placement.tag === "OtherPlacement" && story.placement.contents === "Global"
+))
+const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.asSelfLocation !== null))
+const cardsUnderScenarioReference = computed(() => props.scenario.cardsUnderScenarioReference)
+const cardsUnderAgenda = computed(() => props.scenario.cardsUnderAgendaDeck)
+const cardsUnderAct = computed(() => props.scenario.cardsUnderActDeck)
+const cardsNextToAct = computed(() => props.scenario.cardsNextToActDeck)
+const cardsNextToAgenda = computed(() => props.scenario.cardsNextToAgendaDeck)
+const keys = computed(() => props.scenario.setAsideKeys)
+// TODO: not showing cosmos should be more specific, as there could be a cosmos location in the future?
+const locations = computed(() => Object.values(props.game.locations).
+  filter((a) => a.inFrontOf === null && a.label !== "cosmos"))
+const usedLabels = computed(() => locations.value.map((l) => l.label))
+const unusedLabels = computed(() => {
+  const { locationLayout, usesGrid } = props.scenario;
+  if (!locationLayout || !usesGrid) return []
+  return locationLayout.flatMap((row) => row.split(' ')).filter((x) => !usedLabels.value.includes(x) && x !== '.')
+})
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const resources = computed(() => props.scenario.tokens[TokenType.Resource])
+const hasPool = computed(() => resources.value && resources.value > 0)
+const tarotCards = computed(() => props.scenario.tarotCards.filter((c) => c.scope.tag === 'GlobalTarot'))
+const phase = computed(() => props.game.phase)
+const phaseStep = computed(() => props.game.phaseStep)
+const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
+const signOfTheGods = computed(() => props.scenario.counts["SignOfTheGods"])
+const gameOver = computed(() => props.game.gameState.tag === "IsOver")
+
+// Reactive
+const showCards = reactive<RefWrapper<any>>({ ref: noCards })
+
+// Watchers
+watchEffect(() => {
+  const oop = outOfPlay.value.length + outOfPlayEnemies.value.length
+  if (oop == 0) {
+    removeEntry("showOutOfPlay")
+  } else {
+    addEntry({
+      id: "showOutOfPlay",
+      icon: EyeIcon,
+      content: "Show Out of Play",
+      nested: 'view',
+      action: () => showOutOfPlay.value = !showOutOfPlay.value
+    })
+  }
+})
+
+watchEffect(() => {
+  const isOutOfPlaySource = (source) => {
+    switch (source.tag) {
+      case "TreacherySource": {
+       return outOfPlayEnemies.value.some((e) => {
+          return e.treacheries.includes(source.contents)  
+       })
+      }
+      default: return false
+    }
+  }
+  const isOutOfPlayChoice = (c) => {
+    if (c.tag !== "AbilityLabel") return false 
+    return isOutOfPlaySource(c.ability.source)
+  }
+  const needsShowOutOfPlay = choices.value.some(isOutOfPlayChoice)
+  forcedShowOutOfPlay.value = needsShowOutOfPlay
+})
+
+
+// Helpers
+function rotateImages(init: boolean) {
   const atlachNacha = document.querySelector('[data-label=atlachNacha]')
   const locationCards = document.querySelector('.location-cards')
   if (atlachNacha && locationCards) {
@@ -122,9 +258,7 @@ function rotateImages(init) {
     const originX = middleCardImgRect.left + middleCardImgRect.width / 2 - middleCardRect.left
     const originY = middleCardImgRect.top + middleCardImgRect.height / 2 - middleCardRect.top
 
-    if (init) {
-      atlachNacha.style.transformOrigin = `${originX}px ${originY}px`
-    }
+    if (init) atlachNacha.style.transformOrigin = `${originX}px ${originY}px`
     atlachNacha.style.transition = 'none'
     atlachNacha.style.transform = `rotate(${previousRotation.value}deg)`
     const oX = middleCardImgRect.left + middleCardImgRect.width / 2
@@ -169,179 +303,18 @@ function beforeLeave(e: Element) {
   el.style.width = width
   el.style.height = height
 }
-
-async function choose(idx: number) {
-  emit('choose', idx)
-}
-
-interface RefWrapper<T> {
-  ref: ComputedRef<T>
-}
-
-const locationMap = ref<Element | null>(null)
-
-const scenarioGuide = computed(() => {
-  const { reference, difficulty } = props.scenario
-  const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert'
-    ? 'b'
-    : ''
-
-  return imgsrc(`cards/${reference.replace('c', '')}${difficultySuffix}.jpg`)
-})
-
-const scenarioDecks = computed(() => {
-  if (!props.scenario.decks) return null
-
-  return Object.entries(props.scenario.decks)
-})
-
-const locationStyles = computed(() => {
-  const { locationLayout } = props.scenario
-  if (!locationLayout) return null
-
-  const cleaned = locationLayout
-  return {
-    display: 'grid',
-    'grid-template-areas': cleaned.map((row) => `"${row}"`).join(' '),
-  }
-})
-
-const scenarioDeckStyles = computed(() => {
-  const { decksLayout } = props.scenario
-  return {
-    display: 'grid',
-    'grid-template-areas': decksLayout.map((row) => `"${row}"`).join(' '),
-    'grid-row-gap': '10px',
-  }
-})
-
-const players = computed(() => props.game.investigators)
-const playerOrder = computed(() => props.game.playerOrder)
-const discards = computed<Card[]>(() => props.scenario.discard.map(c => ({ tag: 'EncounterCard', contents: c })))
-const outOfPlayEnemies = computed(() => Object.values(props.game.outOfPlayEnemies).map(e => ({...props.game.cards[e.cardId], tokens: e.tokens})))
-const outOfPlay = computed(() => (props.scenario?.setAsideCards || []).concat(outOfPlayEnemies.value))
-
-const { addEntry, removeEntry } = useMenu()
-
-addEntry({
-  id: "viewChaosBag",
-  icon: QuestionMarkCircleIcon,
-  content: "View Chaos Bag",
-  shortcut: "c",
-  nested: 'view',
-  action: () => showChaosBag.value = !showChaosBag.value
-})
-
-watchEffect(() => {
-  const oop = props.scenario?.setAsideCards
-  if (oop.length == 0) {
-    removeEntry("showOutOfPlay")
-  } else {
-    addEntry({
-      id: "showOutOfPlay",
-      icon: EyeIcon,
-      content: "Show Out of Play",
-      nested: 'view',
-      action: () => doShowCards(outOfPlay, 'Out of Play', true)
-    })
-  }
-})
-
-const removedFromPlay = computed(() => props.game.removedFromPlay)
-const noCards = computed<Card[]>(() => [])
-
-// eslint-disable-next-line
-const showCards = reactive<RefWrapper<any>>({ ref: noCards })
-const viewingDiscard = ref(false)
-const cardRowTitle = ref("")
-
 const doShowCards = (cards: ComputedRef<Card[]>, title: string, isDiscards: boolean) => {
   cardRowTitle.value = title
   showCards.ref = cards
   viewingDiscard.value = isDiscards
 }
-
 const showRemovedFromPlay = () => doShowCards(removedFromPlay, 'Removed from Play', true)
 const showDiscards = () => doShowCards(discards, 'Discards', true)
 const hideCards = () => showCards.ref = noCards
-
 const showCardsUnderScenarioReference = () => doShowCards(cardsUnderScenarioReference, 'Cards Under Scenario Reference', false)
-
-const viewUnderScenarioReference = computed(() => `${cardsUnderScenarioReference.value.length} Cards Underneath`)
-
-const viewDiscardLabel = computed(() => pluralize('Card', discards.value.length))
-const topOfEncounterDiscard = computed(() => {
-  if (!props.scenario.discard[0]) return null
-
-  const { cardCode } = props.scenario.discard[0]
-
-  return imgsrc(`/cards/${cardCode.replace('c', '')}.jpg`)
-})
-
-const spectralEncounterDeck = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[0])
-
-const spectralDiscard = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[1])
-
-const topOfSpectralDiscard = computed(() => {
-  if (!spectralDiscard.value || !spectralDiscard.value[0]) return null
-
-  const { cardCode } = spectralDiscard.value[0]
-  return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`)
-})
-
-const topEnemyInVoid = computed(() => {
-  const inVoidEnemy = Object.values(props.game.enemies).filter((e) => e.placement.tag === 'VoidZone')[0]
-  return inVoidEnemy ?? Object.values(props.game.enemiesInVoid)[0]
-})
-const activePlayerId = computed(() => props.game.activeInvestigatorId)
-
-const pursuit = computed(() => Object.values(props.game.outOfPlayEnemies).filter((enemy) =>
-  enemy.placement.tag === 'OtherPlacement' && enemy.placement.contents === 'Pursuit'
-))
-
-const globalEnemies = computed(() => Object.values(props.game.enemies).filter((enemy) =>
-  enemy.placement.tag === "OtherPlacement" && enemy.placement.contents === "Global" && enemy.asSelfLocation === null
-))
-
-const globalStories = computed(() => Object.values(props.game.stories).filter((story) =>
-  story.placement.tag === "OtherPlacement" && story.placement.contents === "Global"
-))
-
-const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.asSelfLocation !== null))
-
-const cardsUnderScenarioReference = computed(() => props.scenario.cardsUnderScenarioReference)
-const cardsUnderAgenda = computed(() => props.scenario.cardsUnderAgendaDeck)
-
-const cardsUnderAct = computed(() => props.scenario.cardsUnderActDeck)
-
-const cardsNextToAct = computed(() => props.scenario.cardsNextToActDeck)
-const cardsNextToAgenda = computed(() => props.scenario.cardsNextToAgendaDeck)
-
-const keys = computed(() => props.scenario.setAsideKeys)
-
-// TODO: not showing cosmos should be more specific, as there could be a cosmos location in the future?
-const locations = computed(() => Object.values(props.game.locations).
-  filter((a) => a.inFrontOf === null && a.label !== "cosmos"))
-
-const usedLabels = computed(() => locations.value.map((l) => l.label))
-const unusedLabels = computed(() => {
-  const { locationLayout, usesGrid } = props.scenario;
-  if (!locationLayout || !usesGrid) return []
-
-  return locationLayout.flatMap((row) => row.split(' ')).filter((x) => !usedLabels.value.includes(x) && x !== '.')
-})
-
-const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
-
 const unusedCanInteract = (u: string) => choices.value.findIndex((c) =>
   c.tag === "GridLabel" && c.gridLabel === u
 )
-
-const resources = computed(() => props.scenario.tokens[TokenType.Resource])
-const hasPool = computed(() => resources.value && resources.value > 0)
-
-const tarotCards = computed(() => props.scenario.tarotCards.filter((c) => c.scope.tag === 'GlobalTarot'))
-
 const tarotCardAbility = (card: TarotCard) => {
   return choices.value.findIndex((c) => {
     if (c.tag === "AbilityLabel") {
@@ -352,16 +325,28 @@ const tarotCardAbility = (card: TarotCard) => {
   })
 }
 
-const phase = computed(() => props.game.phase)
-const phaseStep = computed(() => props.game.phaseStep)
-const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
-const signOfTheGods = computed(() => props.scenario.counts["SignOfTheGods"])
-const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 </script>
 
 <template>
   <div v-if="!gameOver" id="scenario" class="scenario" :data-scenario="scenario.id">
     <div class="scenario-body">
+      <Draggable v-if="showOutOfPlay || forcedShowOutOfPlay">
+        <template #handle><header><h2>Out of Play</h2></header></template>
+        <div class="card-row-cards">
+          <div v-for="card in outOfPlay" :key="card.id" class="card-row-card">
+            <CardView :game="game" :card="card" :playerId="playerId" @choose="$emit('choose', $event)" />
+          </div>
+          <Enemy
+            v-for="enemy in outOfPlayEnemies"
+            :key="enemy.id"
+            :enemy="enemy"
+            :game="game"
+            :playerId="playerId"
+            @choose="choose"
+          />
+        </div>
+        <button v-if="!forcedShowOutOfPlay" class="close" @click="showOutOfPlay = false">Close</button>
+      </Draggable>
       <Draggable v-if="showChaosBag">
         <template #handle><header><h2>Chaos Bag</h2></header></template>
         <ChaosBag :game="game" :skillTest="null" :chaosBag="scenario.chaosBag" :playerId="playerId" @choose="choose" />

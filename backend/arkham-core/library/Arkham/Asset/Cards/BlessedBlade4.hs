@@ -24,7 +24,7 @@ instance RunMessage BlessedBlade4 where
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
       pushAll
-        [ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 2)
+        [ skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #combat 2, DamageDealt 1]
         , skillTestModifier sid (attrs.ability 1) (SkillTestTarget sid) ReturnBlessedToChaosBag
         , chooseFight
         ]

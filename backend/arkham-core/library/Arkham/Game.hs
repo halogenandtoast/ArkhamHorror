@@ -1150,20 +1150,14 @@ getActsMatching matcher = do
 
 getRemainingActsMatching :: HasGame m => RemainingActMatcher -> m [Card]
 getRemainingActsMatching matcher = do
-  acts <-
-    scenarioActs
-      . fromJustNote "scenario has to be set"
-      . modeScenario
-      . view modeL
-      <$> getGame
+  acts <- scenarioActs . fromJustNote "scenario has to be set" . modeScenario . view modeL <$> getGame
   activeActIds <- keys . view (entitiesL . actsL) <$> getGame
   let
     currentActId = case activeActIds of
       [aid] -> aid
       _ -> error "Cannot handle multiple acts"
     remainingActs = case break ((== currentActId) . ActId . toCardCode) acts of
-      (_, _ : a) -> a
-      _ -> error "unhandled"
+      (_, as) -> as
   filterM (matcherFilter $ unRemainingActMatcher matcher) remainingActs
  where
   matcherFilter = \case
@@ -1325,7 +1319,7 @@ abilityMatches a@Ability {..} = \case
   AbilityOnEncounterCard -> abilitySource `sourceMatches` M.EncounterCardSource
   AbilityOnCard cardMatcher -> sourceMatches abilitySource (M.SourceWithCard cardMatcher)
 
-getAbilitiesMatching :: (HasCallStack, HasGame m) => AbilityMatcher -> m [Ability]
+getAbilitiesMatching :: HasGame m => AbilityMatcher -> m [Ability]
 getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
   abilities <- getGameAbilities
   filterM (`abilityMatches` matcher) abilities

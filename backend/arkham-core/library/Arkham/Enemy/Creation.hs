@@ -43,11 +43,24 @@ data EnemyCreation msg = MkEnemyCreation
   , enemyCreationMethod :: EnemyCreationMethod
   , enemyCreationTarget :: Maybe Target
   , enemyCreationExhausted :: Bool
+  , enemyCreationBefore :: [msg]
   , enemyCreationAfter :: [msg]
   , enemyCreationInvestigator :: Maybe InvestigatorId
   }
   deriving stock (Show, Eq, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass ToJSON
+
+instance FromJSON msg => FromJSON (EnemyCreation msg) where
+  parseJSON = withObject "EnemyCreation" \o -> do
+    enemyCreationCard <- o .: "enemyCreationCard"
+    enemyCreationEnemyId <- o .: "enemyCreationEnemyId"
+    enemyCreationMethod <- o .: "enemyCreationMethod"
+    enemyCreationTarget <- o .: "enemyCreationTarget"
+    enemyCreationExhausted <- o .: "enemyCreationExhausted"
+    enemyCreationBefore <- o .:? "enemyCreationBefore" .!= []
+    enemyCreationAfter <- o .: "enemyCreationAfter"
+    enemyCreationInvestigator <- o .: "enemyCreationInvestigator"
+    pure $ MkEnemyCreation {..}
 
 createExhausted :: EnemyCreation msg -> EnemyCreation msg
 createExhausted ec = ec {enemyCreationExhausted = True}

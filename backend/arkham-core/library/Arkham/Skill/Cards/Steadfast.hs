@@ -32,13 +32,8 @@ instance HasModifiersFor Steadfast where
           attrs
           [ AddSkillIcons
             $ if total >= 10
-              then
-                [ SkillIcon SkillWillpower
-                , SkillIcon SkillWillpower
-                , SkillIcon SkillCombat
-                , SkillIcon SkillCombat
-                ]
-              else [SkillIcon SkillWillpower, SkillIcon SkillCombat]
+              then [#willpower, #willpower, #combat, #combat]
+              else [#willpower, #combat]
           | total >= 5
           ]
   getModifiersFor _ _ = pure []

@@ -568,6 +568,18 @@ instance RunMessage AssetAttrs where
           AttachedToAsset _ (Just (InPlayArea iid)) -> push $ CardEnteredPlay iid (toCard a)
           _ -> pure ()
 
+      -- If the card wasn't in play, but moves into a play area we need to
+      -- update the controller
+      --
+      -- See: The Beyond: Bleak Netherworld
+      let
+        mController = case placement of
+          InPlayArea iid -> Just iid
+          AttachedToAsset _ (Just (InPlayArea iid)) -> Just iid
+          _ -> Nothing
+        controllerF = case mController of
+          Just iid | entersPlay -> controllerL ?~ iid
+          _ -> id
       -- we should update control here if need be
       for_ placement.attachedTo \target ->
         pushM $ checkAfter $ Window.AttachCard a.controller (toCard a) target
@@ -575,7 +587,7 @@ instance RunMessage AssetAttrs where
 
       when entersPlay do
         pushM $ checkWindows [mkWindow Timing.When (Window.EnterPlay $ toTarget a)]
-      pure $ a & placementL .~ placement
+      pure $ a & placementL .~ placement & controllerF
     Blanked msg' -> runMessage msg' a
     RemoveAllAttachments source target -> do
       case placementToAttached a.placement of

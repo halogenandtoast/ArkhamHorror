@@ -22,7 +22,6 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Keyword
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher hiding (canEnterLocation)
 import Arkham.Modifier qualified as Modifier
 import Arkham.Placement
@@ -173,8 +172,8 @@ enemyEngagedInvestigators eid = do
   others <- case placement of
     InThreatArea iid -> pure [iid]
     AtLocation lid -> do
-      isMassive <- fieldMap EnemyKeywords (elem Keyword.Massive) eid
-      if isMassive then select (investigatorAt lid) else pure []
+      isEngagedMassive <- eid <=~> (MassiveEnemy <> ReadyEnemy)
+      if isEngagedMassive then select (investigatorAt lid) else pure []
     AsSwarm eid' _ -> enemyEngagedInvestigators eid'
     _ -> pure []
   pure . nub $ asIfEngaged <> others

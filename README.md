@@ -21,12 +21,7 @@ please file a bug.
 
 ### Player Cards
 
-* All player cards until The Feast of Hemloch Vale (in progress)
-* All player cards from the return to boxes
-* All the standalone investigator cards
-* All the promo investigator cards
-* The following parallel investigator cards:
-  - Daisy Walker
+* All player cards (including return to, parallel, promo, and standalone investigator cards)
 
 ### Campaigns
 

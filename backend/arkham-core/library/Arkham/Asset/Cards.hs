@@ -5716,6 +5716,7 @@ runicAxe =
     , cdUses = uses Charge 4
     , cdUnique = True
     , cdKeywords = setFromList [Keyword.Customizable]
+    , cdCardInHandEffects = True
     , cdCustomizations =
         mapFromList
           [ (Heirloom, 1)

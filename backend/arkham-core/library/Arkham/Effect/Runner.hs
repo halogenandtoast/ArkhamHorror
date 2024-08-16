@@ -28,6 +28,8 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     SearchEnded _ | isEndOfWindow a EffectSearchWindow -> do
       a <$ push (DisableEffect effectId)
+    EndSearch {} | isEndOfWindow a EffectSearchWindow -> do
+      a <$ push (DisableEffect effectId)
     CancelSearch {} | isEndOfWindow a EffectSearchWindow -> do
       a <$ push (DisableEffect effectId)
     EndSetup | isEndOfWindow a EffectSetupWindow -> do

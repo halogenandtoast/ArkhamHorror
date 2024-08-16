@@ -180,7 +180,7 @@ getCanAffordCost iid (toSource -> source) actions windows' = \case
   DiscardAssetCost matcher ->
     selectAny $ matcher <> Matcher.DiscardableAsset
   UseCost assetMatcher uType n -> do
-    assets <- select assetMatcher
+    assets <- select (Matcher.replaceYouMatcher iid assetMatcher)
     uses <- flip evalStateT assets $ do
       sum <$> for assets \asset -> do
         mods <- lift $ getModifiers asset

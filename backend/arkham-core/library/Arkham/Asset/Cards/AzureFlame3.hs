@@ -47,20 +47,19 @@ azureFlame3Effect :: EffectArgs -> AzureFlame3Effect
 azureFlame3Effect = cardEffect AzureFlame3Effect Cards.azureFlame3
 
 instance RunMessage AzureFlame3Effect where
-  runMessage msg e@(AzureFlame3Effect attrs@EffectAttrs {..}) = case msg of
-    RevealChaosToken _ iid token | InvestigatorTarget iid == effectTarget -> do
+  runMessage msg e@(AzureFlame3Effect attrs) = case msg of
+    RevealChaosToken (SkillTestSource sid) iid token | isTarget sid attrs.target -> do
       whenJustM getSkillTest \st -> do
-        let triggers =
-              token.face `elem` [ElderSign, PlusOne, Zero] && iid == st.investigator && isTarget st attrs.target
+        let triggers = token.face `elem` [ElderSign, PlusOne, Zero] && iid == st.investigator
         when triggers $ do
           pushAll
             [ If
-                (Window.RevealChaosTokenEffect iid token effectId)
-                [InvestigatorAssignDamage iid effectSource DamageAny 1 0]
-            , DisableEffect effectId
+                (Window.RevealChaosTokenEffect iid token attrs.id)
+                [InvestigatorAssignDamage iid attrs.source DamageAny 1 0]
+            , DisableEffect attrs.id
             ]
       pure e
     SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
-      push $ DisableEffect effectId
+      push $ DisableEffect attrs.id
       pure e
     _ -> AzureFlame3Effect <$> runMessage msg attrs

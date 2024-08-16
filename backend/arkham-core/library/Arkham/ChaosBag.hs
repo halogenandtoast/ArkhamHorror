@@ -313,11 +313,12 @@ resolveFirstChooseUnresolved source iid strategy = \case
 decideFirstUndecided
   :: Source
   -> InvestigatorId
+  -> [InvestigatorId]
   -> RequestedChaosTokenStrategy
   -> (ChaosBagStepState -> ChaosBagStepState)
   -> ChaosBagStepState
   -> (ChaosBagStepState, [Message])
-decideFirstUndecided source iid strategy f = \case
+decideFirstUndecided source iid iids strategy f = \case
   Decided step -> (Decided step, [])
   Resolved tokens' -> (Resolved tokens', [])
   Undecided step -> case step of
@@ -325,7 +326,7 @@ decideFirstUndecided source iid strategy f = \case
       ( f $ Undecided Draw
       ,
         [ CheckWindow
-            [iid]
+            iids
             [mkWhen (Window.WouldRevealChaosToken source iid)]
         , NextChaosBagStep source (Just iid) strategy
         ]
@@ -335,7 +336,7 @@ decideFirstUndecided source iid strategy f = \case
         then
           let
             (steps', msgs) =
-              decideFirstChooseUndecided source iid strategy f steps
+              decideFirstChooseUndecided source iid iids strategy f steps
            in
             (Deciding $ Choose chooseSource n tokenStrategy steps' tokens', msgs)
         else (f $ Deciding (Choose chooseSource n tokenStrategy steps tokens'), [])
@@ -344,7 +345,7 @@ decideFirstUndecided source iid strategy f = \case
         then
           let
             (steps', msgs) =
-              decideFirstChooseUndecided source iid strategy f steps
+              decideFirstChooseUndecided source iid iids strategy f steps
            in
             (Deciding $ ChooseMatch chooseSource n tokenStrategy steps' tokens' matcher, msgs)
         else (f $ Deciding (ChooseMatch chooseSource n tokenStrategy steps tokens' matcher), [])
@@ -353,7 +354,7 @@ decideFirstUndecided source iid strategy f = \case
         then
           let
             (steps', msgs) =
-              decideFirstChooseUndecided source iid strategy f steps
+              decideFirstChooseUndecided source iid iids strategy f steps
            in
             (Deciding $ ChooseMatchChoice steps' tokens' matchers, msgs)
         else (f $ Deciding (ChooseMatchChoice steps tokens' matchers), [])
@@ -364,7 +365,7 @@ decideFirstUndecided source iid strategy f = \case
         then
           let
             (steps', msgs) =
-              decideFirstChooseUndecided source iid strategy f steps
+              decideFirstChooseUndecided source iid iids strategy f steps
            in
             (Deciding $ Choose chooseSource n tokenStrategy steps' tokens', msgs)
         else (f $ Deciding (Choose chooseSource n tokenStrategy steps tokens'), [])
@@ -373,7 +374,7 @@ decideFirstUndecided source iid strategy f = \case
         then
           let
             (steps', msgs) =
-              decideFirstChooseUndecided source iid strategy f steps
+              decideFirstChooseUndecided source iid iids strategy f steps
            in
             (Deciding $ ChooseMatch chooseSource n tokenStrategy steps' tokens' matcher, msgs)
         else (f $ Deciding (ChooseMatch chooseSource n tokenStrategy steps tokens' matcher), [])
@@ -382,7 +383,7 @@ decideFirstUndecided source iid strategy f = \case
         then
           let
             (steps', msgs) =
-              decideFirstChooseUndecided source iid strategy f steps
+              decideFirstChooseUndecided source iid iids strategy f steps
            in
             (Deciding $ ChooseMatchChoice steps' tokens' matchers, msgs)
         else (f $ Deciding (ChooseMatchChoice steps tokens' matchers), [])
@@ -390,28 +391,29 @@ decideFirstUndecided source iid strategy f = \case
 decideFirstChooseUndecided
   :: Source
   -> InvestigatorId
+  -> [InvestigatorId]
   -> RequestedChaosTokenStrategy
   -> (ChaosBagStepState -> ChaosBagStepState)
   -> [ChaosBagStepState]
   -> ([ChaosBagStepState], [Message])
-decideFirstChooseUndecided source iid strategy f = \case
+decideFirstChooseUndecided source iid iids strategy f = \case
   [] -> ([], [])
   (Decided step : rest) ->
-    let (rest', msgs) = decideFirstChooseUndecided source iid strategy f rest
+    let (rest', msgs) = decideFirstChooseUndecided source iid iids strategy f rest
      in (Decided step : rest', msgs)
   (Resolved tokens' : rest) ->
-    let (rest', msgs) = decideFirstChooseUndecided source iid strategy f rest
+    let (rest', msgs) = decideFirstChooseUndecided source iid iids strategy f rest
      in (Resolved tokens' : rest', msgs)
   (Undecided step : rest) ->
     let
       (step', msgs) =
-        decideFirstUndecided source iid strategy f (Undecided step)
+        decideFirstUndecided source iid iids strategy f (Undecided step)
      in
       (step' : rest, msgs)
   (Deciding step : rest) ->
     let
       (step', msgs) =
-        decideFirstUndecided source iid strategy f (Deciding step)
+        decideFirstUndecided source iid iids strategy f (Deciding step)
      in
       (step' : rest, msgs)
 
@@ -594,9 +596,10 @@ instance RunMessage ChaosBag where
         if isUndecided choice'
           then do
             iid <- maybe getLeadInvestigatorId pure miid
+            iids <- getInvestigatorIds
             let
               (choice'', msgs) =
-                decideFirstUndecided source iid strategy toDecided choice'
+                decideFirstUndecided source iid iids strategy toDecided choice'
             push (RunBag source miid strategy)
             pushAll msgs
             pure $ c & choiceL ?~ choice''
@@ -607,9 +610,10 @@ instance RunMessage ChaosBag where
       Nothing -> error "unexpected"
       Just choice' -> do
         iid <- maybe getLeadInvestigatorId pure miid
+        iids <- getInvestigatorIds
         let
           (updatedChoice, messages) =
-            decideFirstUndecided source iid strategy toDecided choice'
+            decideFirstUndecided source iid iids strategy toDecided choice'
         unless (null messages) $ pushAll messages
         pure $ c & choiceL ?~ updatedChoice
     SetChaosBagChoice _ _ step -> case chaosBagChoice of
@@ -635,11 +639,12 @@ instance RunMessage ChaosBag where
           RunWindow _ [Window Timing.When (Window.WouldRevealChaosToken {}) _] -> True
           _ -> False
 
+        iids <- getInvestigatorIds
         -- if we have not decided we can use const to replace
         let
           choice'' = replaceDeciding choice' (Undecided step)
           (updatedChoice, messages) =
-            decideFirstUndecided source iid SetAside toDecided choice''
+            decideFirstUndecided source iid iids SetAside toDecided choice''
         unless (null messages) $ pushAll messages
         pure $ c & choiceL ?~ updatedChoice
     RunDrawFromBag source miid strategy -> case chaosBagChoice of

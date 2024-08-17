@@ -2216,12 +2216,13 @@ combatTraining1 =
 
 scientificTheory1 :: CardDef
 scientificTheory1 =
-  (asset "03109" "Scientific Theory" 1 Seeker)
-    { cdSkills = [#intellect, #combat]
-    , cdCardTraits = setFromList [Talent, Composure]
-    , cdLimits = [LimitPerTrait Composure 1]
-    , cdLevel = Just 1
-    }
+  fast
+    $ (asset "03109" "Scientific Theory" 1 Seeker)
+      { cdSkills = [#intellect, #combat]
+      , cdCardTraits = setFromList [Talent, Composure]
+      , cdLimits = [LimitPerTrait Composure 1]
+      , cdLevel = Just 1
+      }
 
 knuckleduster :: CardDef
 knuckleduster =
@@ -5033,12 +5034,13 @@ medicalTexts2 =
 
 scientificTheory3 :: CardDef
 scientificTheory3 =
-  (asset "08040" "Scientific Theory" 0 Seeker)
-    { cdSkills = [#intellect, #intellect, #combat, #combat]
-    , cdCardTraits = setFromList [Talent, Composure]
-    , cdLimits = [LimitPerTrait Composure 1]
-    , cdLevel = Just 3
-    }
+  fast
+    $ (asset "08040" "Scientific Theory" 0 Seeker)
+      { cdSkills = [#intellect, #intellect, #combat, #combat]
+      , cdCardTraits = setFromList [Talent, Composure]
+      , cdLimits = [LimitPerTrait Composure 1]
+      , cdLevel = Just 3
+      }
 
 archiveOfConduitsGatewayToTindalos4 :: CardDef
 archiveOfConduitsGatewayToTindalos4 =

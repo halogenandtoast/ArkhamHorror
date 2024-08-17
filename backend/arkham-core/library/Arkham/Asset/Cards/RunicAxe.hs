@@ -102,7 +102,10 @@ instance RunMessage RunicAxe where
             <$> (eid <=~> (enemyAtLocationWith iid <> oneOf [AloofEnemy <> enemyEngagedWith iid, not_ AloofEnemy]))
         let imbueAgain = if attrs `hasCustomization` Saga then [Do msg, msg] else [msg]
         if needsHunt && attrs `hasCustomization` InscriptionOfTheHunt
-          then pushAll [SpendUses (attrs.ability 1) (toTarget attrs) Charge 1, DoStep (fromEnum Hunt) msg]
+          then
+            pushAll
+              $ [SpendUses (attrs.ability 1) (toTarget attrs) Charge 1, DoStep (fromEnum Hunt) msg]
+              <> imbueAgain
           else do
             choices <- availableInscriptions iid attrs meta
             chooseOne iid

@@ -160,7 +160,7 @@ hasCustomization_ cardCustomizations customizations n = remaining == Just 0
 remainingCheckMarks_ :: Map Customization Int -> Customizations -> Customization -> Maybe Int
 remainingCheckMarks_ cardCustomizations customizations n = case mCustomizationIndex of
   Nothing -> Nothing
-  Just i -> Just $ requiredXp - valueOf i
+  Just i -> Just $ max 0 (requiredXp - valueOf i)
  where
   valueOf x = fst $ IntMap.findWithDefault (0, []) x customizations
   requiredXp = Map.findWithDefault 100 n cardCustomizations
@@ -168,7 +168,7 @@ remainingCheckMarks_ cardCustomizations customizations n = case mCustomizationIn
 
 getCustomizations_ :: Map Customization Int -> Customizations -> [Customization]
 getCustomizations_ cardCustomizations customizations = flip concatMap (withIndex ks) \(n, k) ->
-  guard (valueOf n == requiredXp k) $> k
+  guard (valueOf n >= requiredXp k) $> k
  where
   valueOf n = fst $ IntMap.findWithDefault (0, []) n customizations
   requiredXp k = Map.findWithDefault 100 k cardCustomizations

@@ -327,6 +327,7 @@ const classObject = computed(() => {
 
 .forced-ability-button {
   background-color: #222;
+  outline: 2px solid var(--select);
   color: #fff;
 }
 

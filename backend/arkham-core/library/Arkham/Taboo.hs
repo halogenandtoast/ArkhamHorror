@@ -2,9 +2,11 @@ module Arkham.Taboo (module Arkham.Taboo, module Arkham.Taboo.Types) where
 
 import Arkham.Card
 import Arkham.CommitRestriction
+import Arkham.Customization
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Taboo.Types
+import Data.Map.Strict qualified as Map
 import GHC.Records
 
 tabooListModify :: TabooList -> CardDef -> CardDef
@@ -55,6 +57,7 @@ tabooList20Modify cdef = case toCardCode cdef of
 tabooList21Modify :: CardDef -> CardDef
 tabooList21Modify cdef = case toCardCode cdef of
   "08076" -> cdef {cdLimits = [MaxPerGame 2]}
+  "09022" -> cdef {cdCustomizations = Map.adjust (+ 1) InscriptionOfTheHunt cdef.customizations}
   _ -> tabooList20Modify cdef
 
 tabooList22Modify :: CardDef -> CardDef

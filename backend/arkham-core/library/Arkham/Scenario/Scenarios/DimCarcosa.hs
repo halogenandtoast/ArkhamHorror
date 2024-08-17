@@ -163,6 +163,19 @@ instance RunMessage DimCarcosa where
           , Enemies.hasturLordOfCarcosa
           , Enemies.hasturTheTatteredKing
           , Enemies.beastOfAldebaran
+          , Locations.shoresOfHali
+          , Locations.bleakPlainsBleakDesolation
+          , Locations.bleakPlainsStarsOfAldebaran
+          , Locations.ruinsOfCarcosaTheCoffin
+          , Locations.ruinsOfCarcosaInhabitantOfCarcosa
+          , Locations.ruinsOfCarcosaAMomentsRest
+          , Locations.dimStreetsMappingTheStreets
+          , Locations.dimStreetsTheArchway
+          , Locations.dimStreetsTheKingsParade
+          , Locations.depthsOfDemheStepsOfThePalace
+          , Locations.depthsOfDemheTheHeightOfTheDepths
+          , Locations.darkSpires
+          , Locations.palaceOfTheKing
           ]
           [ EncounterSet.DimCarcosa
           , EncounterSet.Delusions
@@ -280,6 +293,9 @@ instance RunMessage DimCarcosa where
         when hasturInPlay $ do
           mlid <- field InvestigatorLocation iid
           for_ mlid $ \lid -> push $ PlaceTokens (toSource attrs) (LocationTarget lid) Clue 1
+      pure s
+    ResolveChaosToken _ Cultist iid -> do
+      push $ DrawAnotherChaosToken iid
       pure s
     ResolveChaosToken _ ElderThing iid -> do
       mAction <- getSkillTestAction

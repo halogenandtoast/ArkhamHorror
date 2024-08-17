@@ -493,13 +493,17 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
         let traitMatchingUsedAbilities = filter (elem trait . usedAbilityTraits) usedAbilities
         let usedCount = sum $ map usedTimes traitMatchingUsedAbilities
         pure $ usedCount < n
-      PlayerLimit _ n ->
+      PlayerLimit PerTestOrAbility n ->
         pure
           . (< n)
           . maybe 0 usedTimes
           $ find
             ((== ability) . usedAbility)
             usedAbilities
+      PlayerLimit _ n ->
+        pure
+          $ maybe True (and . sequence [not . usedThisWindow, (< n) . usedTimes])
+          $ find ((== ability) . usedAbility) usedAbilities
       MaxPer cardDef _ n -> do
         let
           abilityCardDef = \case
@@ -511,7 +515,10 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
             =<< concatMapM (field InvestigatorUsedAbilities)
             =<< allInvestigatorIds
 
+        let wasUsedThisWindow = maybe False usedThisWindow $ find ((== ability) . usedAbility) usedAbilities'
+
         pure
+          . (&& not wasUsedThisWindow)
           . (< n)
           . getSum
           . foldMap (Sum . usedTimes)

@@ -8,6 +8,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
 import Arkham.Helpers.SkillTest (getSkillTestSource, getSkillTestTarget)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.SkillTestResult
+import Arkham.Window qualified as Window
 
 newtype Stealth3 = Stealth3 AssetAttrs
   deriving anyclass IsAsset
@@ -42,7 +43,9 @@ instance RunMessage Stealth3 where
         for_ attrs.controller \iid -> do
           canDisengage <- iid <=~> InvestigatorCanDisengage
           isYourTurn <- iid <=~> TurnInvestigator
+          checkWhen $ Window.EnemyEvaded iid eid
           when isYourTurn $ turnModifier iid attrs eid (EnemyCannotEngage iid)
           pushWhen canDisengage $ DisengageEnemy iid eid
+          checkAfter $ Window.EnemyEvaded iid eid
         pure a
     _ -> Stealth3 <$> liftRunMessage msg attrs

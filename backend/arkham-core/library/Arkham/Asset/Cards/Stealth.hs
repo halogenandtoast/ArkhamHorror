@@ -7,6 +7,8 @@ import Arkham.Evade
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.SkillTestResult
+import Arkham.Window (mkAfter, mkWhen)
+import Arkham.Window qualified as Window
 
 newtype Stealth = Stealth AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,8 +23,8 @@ instance HasAbilities Stealth where
 instance RunMessage Stealth where
   runMessage msg a@(Stealth attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      withSkillTest \sid ->
-        pushM $ setTarget attrs <$> mkChooseEvade sid iid (attrs.ability 1)
+      sid <- getRandom
+      pushM $ setTarget attrs <$> mkChooseEvade sid iid (attrs.ability 1)
       pure a
     ChosenEvadeEnemy sid source@(isSource attrs -> True) eid -> do
       push $ skillTestModifier sid source eid (EnemyEvade (-2))
@@ -34,8 +36,12 @@ instance RunMessage Stealth where
         let iid = getController attrs
         canDisengage <- iid <=~> InvestigatorCanDisengage
         isYourTurn <- iid <=~> TurnInvestigator
+        whenWindow <- checkWindows [mkWhen $ Window.EnemyEvaded iid eid]
+        afterWindow <- checkWindows [mkAfter $ Window.EnemyEvaded iid eid]
         pushAll
           $ [turnModifier iid attrs (toTarget eid) (EnemyCannotEngage iid) | isYourTurn]
+          <> [whenWindow]
           <> [DisengageEnemy iid eid | canDisengage]
+          <> [afterWindow]
         pure a
     _ -> Stealth <$> runMessage msg attrs

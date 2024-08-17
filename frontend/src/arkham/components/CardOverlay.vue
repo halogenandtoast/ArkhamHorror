@@ -373,7 +373,6 @@ const getImage = (el: HTMLElement): string | null => {
 .card-overlay {
   position: absolute;
   z-index: 1000;
-  max-width: 420px;
   max-height: 420px;
   height: fit-content;
   display: flex;

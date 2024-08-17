@@ -381,7 +381,7 @@ instance RunMessage ThreadsOfFate where
                   . actSequence
                   . toAttrs
                 )
-                (Act.lookupAct (ActId $ toCardCode actDef) 0 nullCardId)
+                (either throw id $ Act.lookupAct (ActId $ toCardCode actDef) 0 nullCardId)
            in
             (n, c)
         actPairCountMap = IntMap.fromList actPairCount

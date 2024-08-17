@@ -33,6 +33,7 @@ import Arkham.Story
 import Arkham.Target
 import Arkham.Treachery
 import Arkham.Treachery.Types (Treachery)
+import GHC.Records
 
 type EntityMap a = Map (EntityId a) a
 
@@ -50,6 +51,9 @@ data Entities = Entities
   , entitiesStories :: EntityMap Story
   }
   deriving stock (Eq, Show, Generic, Data)
+
+instance HasField "investigators" Entities (Map InvestigatorId Investigator) where
+  getField = entitiesInvestigators
 
 instance ToJSON Entities where
   toJSON = genericToJSON $ aesonOptions $ Just "entities"

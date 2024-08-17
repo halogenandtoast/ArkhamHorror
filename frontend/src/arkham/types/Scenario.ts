@@ -31,6 +31,12 @@ export type ScenarioDeck = {
   deckSize: number;
 }
 
+export type ScenarioDetails = {
+  id: string;
+  difficulty: Difficulty;
+  name: ScenarioName;
+}
+
 export type Scenario = {
   name: ScenarioName;
   id: string;
@@ -62,6 +68,12 @@ export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
   tag: JsonDecoder.string,
   deckSize: JsonDecoder.array<Card>(cardDecoder, 'Card[]').map(cards => cards.length),
 }, 'ScenarioDeck', { deckSize: 'contents' });
+
+export const scenarioDetailsDecoder = JsonDecoder.object<ScenarioDetails>({
+  id: JsonDecoder.string,
+  difficulty: difficultyDecoder,
+  name: scenarioNameDecoder,
+}, 'ScenarioDetails');
 
 export const scenarioDecoder = JsonDecoder.object<Scenario>({
   name: scenarioNameDecoder,

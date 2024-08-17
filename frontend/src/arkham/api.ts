@@ -1,5 +1,5 @@
 import api from '@/api';
-import { Game, gameDecoder } from '@/arkham/types/Game';
+import { Game, GameDetailsEntry, gameDecoder, gameDetailsEntryDecoder } from '@/arkham/types/Game';
 import { Deck, deckDecoder } from '@/arkham/types/Deck';
 import { CardDef, cardDefDecoder } from '@/arkham/types/CardDef';
 import { Difficulty } from '@/arkham/types/Difficulty';
@@ -42,7 +42,7 @@ export const fetchGameReplay = (gameId: string, step: number): Promise<FetchRepl
       .then((gameData) => Promise.resolve({ game: gameData, totalSteps }));
   });
 
-export const fetchGames = (): Promise<Game[]> => api
+export const fetchGames = (): Promise<GameDetailsEntry[]> => api
   .get('arkham/games')
   .then((resp) => {
       const failed = resp.data.filter((g) => g.error !== undefined)
@@ -50,7 +50,7 @@ export const fetchGames = (): Promise<Game[]> => api
         console.log(failed)
       }
 
-      return JsonDecoder.array(gameDecoder, 'ArkhamGame[]').decodeToPromise(resp.data.filter((g: any) => g.error === undefined))
+      return JsonDecoder.array(gameDetailsEntryDecoder, 'GameEntryDetails[]').decodeToPromise(resp.data.filter((g: any) => g.error === undefined))
   });
 
 export const fetchDecks = (): Promise<Deck[]> => api

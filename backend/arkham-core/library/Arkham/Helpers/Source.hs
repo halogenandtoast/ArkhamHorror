@@ -43,7 +43,7 @@ sourceTraits = \case
   ScenarioSource -> pure mempty
   SkillSource sid -> field SkillTraits sid
   SkillTestSource {} -> pure mempty
-  TreacherySource tid -> field TreacheryTraits tid
+  TreacherySource tid -> fromMaybe mempty <$> fieldMay TreacheryTraits tid
   StorySource _ -> pure mempty
   TestSource traits -> pure traits
   ChaosTokenSource _ -> pure mempty

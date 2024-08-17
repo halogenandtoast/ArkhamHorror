@@ -42,6 +42,12 @@ const image = computed(() => {
     newId = newId.replace(/e$/, '')
   }
 
+  // handle threads of fate as hardcoded values because I don't want to deal with it
+  if (parseInt(newId) >= 4117 && parseInt(newId) <= 4140) {
+    const adjustedSidePart = sidePart.replace(/[ace]/, '').replace(/[df]/, 'b')
+    return imgsrc(`cards/${newId}${adjustedSidePart}.jpg`)
+  }
+
   return imgsrc(`cards/${newId}${sidePart}.jpg`)
 })
 

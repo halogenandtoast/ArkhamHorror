@@ -69,14 +69,32 @@ data CampaignAttrs = CampaignAttrs
   }
   deriving stock (Show, Eq, Generic)
 
+instance HasField "id" CampaignAttrs CampaignId where
+  getField = campaignId
+
+instance HasField "decks" CampaignAttrs (Map InvestigatorId (Deck PlayerCard)) where
+  getField = campaignDecks
+
 instance HasField "log" CampaignAttrs CampaignLog where
   getField = campaignLog
+
+instance HasField "difficulty" CampaignAttrs Difficulty where
+  getField = campaignDifficulty
 
 instance HasField "meta" CampaignAttrs Value where
   getField = campaignMeta
 
-instance HasField "difficulty" CampaignAttrs Difficulty where
-  getField = campaignDifficulty
+instance HasField "id" Campaign CampaignId where
+  getField = (.id) . toAttrs
+
+instance HasField "decks" Campaign (Map InvestigatorId (Deck PlayerCard)) where
+  getField = (.decks) . toAttrs
+
+instance HasField "difficulty" Campaign Difficulty where
+  getField = (.difficulty) . toAttrs
+
+instance HasField "meta" Campaign Value where
+  getField = (.meta) . toAttrs
 
 instance HasModifiersFor CampaignAttrs where
   getModifiersFor (InvestigatorTarget iid) attrs =

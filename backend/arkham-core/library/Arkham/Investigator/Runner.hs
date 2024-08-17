@@ -3366,11 +3366,30 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure
         $ a
         & searchL
-        ?~ MkInvestigatorSearch searchType iid source target cardSources cardMatcher foundStrategy foundCards []
+        ?~ MkInvestigatorSearch
+          searchType
+          iid
+          source
+          target
+          cardSources
+          cardMatcher
+          foundStrategy
+          foundCards
+          []
   ResolveSearch x | x == investigatorId -> do
     case investigatorSearch of
       Just
-        (MkInvestigatorSearch _ iid source (InvestigatorTarget iid') _ cardMatcher foundStrategy foundCards _drawnCards) -> do
+        ( MkInvestigatorSearch
+            _
+            iid
+            source
+            (InvestigatorTarget iid')
+            _
+            cardMatcher
+            foundStrategy
+            foundCards
+            _drawnCards
+          ) -> do
           mods <- getModifiers iid
           let
             applyMod (AdditionalTargets n) = over biplate (+ n)
@@ -3882,6 +3901,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     case find ((== ability) . usedAbility) investigatorUsedAbilities of
       Nothing -> do
         depth <- getWindowDepth
+        -- NOTE: if a used ability is missing it's traits for some reason, it's
+        -- likely because it was discarded before this point and we don't know
+        -- anymore (see: Spires of Carcosa)
         traits' <- sourceTraits $ abilitySource ability
         let
           used =

@@ -62,6 +62,11 @@ export const investigatorSearchDecoder = JsonDecoder.object<InvestigatorSearch>(
   searchingFoundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
 }, 'InvestigatorSearch');
 
+export type InvestigatorDetails = {
+  id: string;
+  classSymbol: ClassSymbol;
+}
+
 export type Investigator = {
   deckSize?: number;
   connectedLocations: string[];
@@ -152,6 +157,11 @@ export const slotsDecoder = JsonDecoder.
       arr.flatMap(([key, value]) =>
         value.map((contents) => ({ tag: key , empty: contents.assets.length === 0})
   )))
+
+export const investigatorDetailsDecoder = JsonDecoder.object<InvestigatorDetails>({
+  id: JsonDecoder.string,
+  classSymbol: classSymbolDecoder,
+}, 'InvestigatorDetails');
 
 export const investigatorDecoder = JsonDecoder.object<Investigator>({
   name: nameDecoder,

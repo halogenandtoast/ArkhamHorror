@@ -1,19 +1,19 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
-import type { Game } from '@/arkham/types/Game';
+import type { GameDetails } from '@/arkham/types/Game';
 import type { Difficulty } from '@/arkham/types/Difficulty';
-import type { Campaign } from '@/arkham/types/Campaign';
-import type { Scenario } from '@/arkham/types/Scenario';
+import type { CampaignDetails } from '@/arkham/types/Campaign';
+import type { ScenarioDetails } from '@/arkham/types/Scenario';
 import { imgsrc } from '@/arkham/helpers';
 
 export interface Props {
-  game: Game
+  game: GameDetails
   deleteGame: () => void
 }
 
 const props = defineProps<Props>()
-const campaign = computed<Campaign | null>(() => props.game.campaign)
-const scenario = computed<Scenario | null>(() => props.game.scenario)
+const campaign = computed<CampaignDetails | null>(() => props.game.campaign)
+const scenario = computed<ScenarioDetails | null>(() => props.game.scenario)
 const deleting = ref(false)
 
 const difficulty = computed<Difficulty>(() => {
@@ -29,8 +29,8 @@ const difficulty = computed<Difficulty>(() => {
 })
 
 const currentHeading = computed(() => {
-  if (campaign.value?.meta?.currentCampaignMode) {
-    return campaign.value?.meta.currentCampaignMode === "TheWebOfDreams" ? "The Web of Dreams" : "The Dream-Quest"
+  if (campaign.value?.currentCampaignMode) {
+    return campaign.value?.currentCampaignMode === "TheWebOfDreams" ? "The Web of Dreams" : "The Dream-Quest"
   }
 
   return null
@@ -43,18 +43,6 @@ const otherHeading = computed(() => {
 
   return null
 })
-
-// const box = computed(() => {
-//   if (campaign.value) {
-//     return `url('${imgsrc(`boxes/${campaign.value.id}.jpg`)}')`
-//   }
-// 
-//   if (scenario.value) {
-//     return `url('${imgsrc(`boxes/${scenario.value.id.replace(/^c/, '')}.jpg`)}')`
-//   }
-// 
-//   return null
-// })
 
 const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring(1)
 </script>
@@ -101,7 +89,7 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
               :key="investigator.id"
               class="investigator"
             >
-              <div :class="`investigator-portrait-container ${toCssName(investigator.class)}`">
+              <div :class="`investigator-portrait-container ${toCssName(investigator.classSymbol)}`">
                 <img :src="imgsrc(`cards/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
               </div>
             </div>
@@ -115,7 +103,7 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
               :key="investigator.id"
               class="investigator"
             >
-              <div :class="`investigator-portrait-container ${toCssName(investigator.class)}`">
+              <div :class="`investigator-portrait-container ${toCssName(investigator.classSymbol)}`">
                 <img :src="imgsrc(`cards/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
               </div>
             </div>

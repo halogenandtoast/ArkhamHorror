@@ -20,7 +20,7 @@ spec = describe "Hospital Debts" $ do
       duringRound $ do
         getActionsFrom self hospitalDebts `shouldSatisfyM` ((== 1) . length)
 
-    fit "moves 1 resource to it" . gameTest . debug $ \self -> do
+    it "moves 1 resource to it" . gameTest $ \self -> do
       self `gainResources` 3
       hospitalDebts <- self `putTreacheryIntoPlay` Treacheries.hospitalDebts
       duringRound $ do

@@ -302,8 +302,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           _ -> True
 
     usedAbilities' <- filterM filterAbility investigatorUsedAbilities
-
-    pure $ a & usedAbilitiesL .~ usedAbilities'
+    let usedAbilities'' = map (\u -> if usedDepth u >= depth then u {usedThisWindow = False} else u) usedAbilities'
+    pure $ a & usedAbilitiesL .~ usedAbilities''
   ResetGame ->
     pure
       $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) nullCardId investigatorPlayerId)
@@ -3914,7 +3914,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               , usedTimes = 1
               , usedDepth = depth
               , usedAbilityTraits = traits'
-              , usedThisWindow = True
+              , usedThisWindow = depth > 0
               }
         pure $ a & usedAbilitiesL %~ (used :)
       Just _ -> do
@@ -3936,16 +3936,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTestOrAbility)
         )
       & (usedAbilitiesL %~ map (\u -> u {usedThisWindow = False}))
-  ResolvedAbility {} -> do
-    n <- getWindowDepth
-    pure
-      $ a
-      & ( usedAbilitiesL
-            %~ filter
-              ( \UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTestOrAbility || usedDepth /= n
-              )
-        )
-      & (usedAbilitiesL %~ map (\u -> if usedDepth u > n then u {usedThisWindow = False} else u))
   PickSupply iid s | iid == toId a -> pure $ a & suppliesL %~ (s :)
   UseSupply iid s | iid == toId a -> pure $ a & suppliesL %~ deleteFirst s
   Blanked msg' -> runMessage msg' a

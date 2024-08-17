@@ -47,10 +47,10 @@ getSkillValue st iid = do
   let
     fld =
       case st of
-        SkillWillpower -> InvestigatorWillpower
-        SkillIntellect -> InvestigatorIntellect
-        SkillCombat -> InvestigatorCombat
-        SkillAgility -> InvestigatorAgility
+        SkillWillpower -> InvestigatorBaseWillpower
+        SkillIntellect -> InvestigatorBaseIntellect
+        SkillCombat -> InvestigatorBaseCombat
+        SkillAgility -> InvestigatorBaseAgility
   base <- field fld iid
   let canBeIncreased = SkillCannotBeIncreased st `notElem` mods
   let x = if canBeIncreased then sum [n | SkillModifier st' n <- mods, st' == st] else 0
@@ -58,7 +58,7 @@ getSkillValue st iid = do
 
 skillValueFor
   :: forall m
-   . HasGame m
+   . (HasCallStack, HasGame m)
   => SkillType
   -> Maybe Action
   -> InvestigatorId
@@ -99,7 +99,7 @@ skillValueFor skill maction iid = go 2 skill =<< getModifiers iid
     applyModifier _ n = pure n
 
 baseSkillValueFor
-  :: HasGame m
+  :: (HasCallStack, HasGame m)
   => SkillType
   -> Maybe Action
   -> InvestigatorId

@@ -12,7 +12,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
-import Arkham.SkillType
 
 newtype Steadfast = Steadfast SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)

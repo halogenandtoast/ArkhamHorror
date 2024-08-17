@@ -3180,8 +3180,8 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
       (Just lid1, Just lid2) ->
         pure $ lid1 == lid2 && (canAffectOthers || iid == st.investigator)
       _ -> pure False
-  Matcher.SkillTestAt mtchr -> targetMatches st.target (Matcher.TargetAtLocation mtchr)
-  Matcher.SkillTestOfInvestigator whoMatcher -> (traceShowId st.investigator) <=~> (traceShowId whoMatcher)
+  Matcher.SkillTestAt locationMatcher -> targetMatches st.target (Matcher.TargetAtLocation locationMatcher)
+  Matcher.SkillTestOfInvestigator whoMatcher -> st.investigator <=~> whoMatcher
   Matcher.SkillTestMatches ms -> allM (skillTestMatches iid source st) ms
   Matcher.SkillTestOneOf ms -> anyM (skillTestMatches iid source st) ms
 

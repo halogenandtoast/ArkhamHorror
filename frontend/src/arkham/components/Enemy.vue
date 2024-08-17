@@ -31,9 +31,6 @@ const emits = defineEmits<{
 }>()
 
 const debugging = ref(false)
-
-const investigatorId = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)?.id)
-
 const enemyStory = computed(() => {
   const { stories } = props.game
   return Object.values(stories).find((s) => s.otherSide?.contents === props.enemy.id)
@@ -63,6 +60,8 @@ function isCardAction(c: Message): boolean {
 
 const cardAction = computed(() => choices.value.findIndex(isCardAction))
 const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
+
+const inVoid = computed(() => props.enemy.placement.tag === 'OutOfPlay' && props.enemy.placement.contents === 'VoidZone')
 
 const swarmEnemies = computed(() =>
   Object.values(props.game.enemies).filter((e) => e.placement.tag === 'AsSwarm' && e.placement.swarmHost === props.enemy.id)
@@ -245,7 +244,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
           </div>
 
           <OnClickOutside @trigger="showAbilities = false">
-          <div v-if="showAbilities" class="abilities" :class="{ right: atLocation }">
+          <div v-if="showAbilities" class="abilities" :class="{ right: atLocation, left: inVoid }">
               <AbilityButton
                 v-for="ability in abilities"
                 :key="ability.index"
@@ -387,6 +386,13 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
     bottom:50%;
     left: 100%;
     transform: translateY(50%);
+  }
+
+  &.left {
+    bottom:50%;
+    right: 100%;
+    left: unset;
+    transform: unset;
   }
 }
 

@@ -732,15 +732,18 @@ getIsPlayableWithResources
 getIsPlayableWithResources _ _ _ _ _ (VengeanceCard _) = pure False
 getIsPlayableWithResources _ _ _ _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
 getIsPlayableWithResources iid (toSource -> source) availableResources costStatus windows' c@(PlayerCard _) = do
-  ignoreContexts <- hasModifier iid IgnorePlayableModifierContexts
-  contexts :: [(Matcher.CardMatcher, [ModifierType])] <-
-    concat . mapMaybe (preview _PlayableModifierContexts) <$> getModifiers iid
-  base <- go @m
-  others <-
-    traverse
-      (\(matcher, ctx) -> (cardMatch c matcher &&) <$> withModifiers iid (toModifiers iid ctx) go)
-      (if ignoreContexts then [] else contexts)
-  pure $ or (base : others)
+  if c.kind `elem` [PlayerTreacheryType, PlayerEnemyType]
+    then pure False
+    else do
+      ignoreContexts <- hasModifier iid IgnorePlayableModifierContexts
+      contexts :: [(Matcher.CardMatcher, [ModifierType])] <-
+        concat . mapMaybe (preview _PlayableModifierContexts) <$> getModifiers iid
+      base <- go @m
+      others <-
+        traverse
+          (\(matcher, ctx) -> (cardMatch c matcher &&) <$> withModifiers iid (toModifiers iid ctx) go)
+          (if ignoreContexts then [] else contexts)
+      pure $ or (base : others)
  where
   pcDef = toCardDef c
   prevents (CanOnlyUseCardsInRole role) =

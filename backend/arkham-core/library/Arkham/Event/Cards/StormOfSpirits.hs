@@ -29,7 +29,7 @@ instance RunMessage StormOfSpirits where
         leftOr
           <$> aspect iid attrs (#willpower `InsteadOf` #combat) (setTarget attrs <$> mkChooseFight sid iid attrs)
       pushAll
-        $ createCardEffect Cards.stormOfSpirits Nothing attrs iid
+        $ createCardEffect Cards.stormOfSpirits (effectMetaTarget sid) attrs iid
         : chooseFight
       pure e
     Successful (Action.Fight, EnemyTarget eid) iid _ target _ | isTarget attrs target -> do
@@ -55,7 +55,7 @@ instance RunMessage StormOfSpiritsEffect where
     RevealChaosToken _ iid token | toTarget iid == effectTarget attrs -> do
       let triggers = chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
       when triggers $ do
-        enemy <- fromJustNote "must be enemy" . (preview _EnemyTarget =<<) <$> getSkillTestTarget
+        enemy <- fromJustNote "must be enemy" . ((.enemy) =<<) <$> getSkillTestTarget
         iids <- select $ InvestigatorAt $ locationWithEnemy enemy
         pushAll
           [ If

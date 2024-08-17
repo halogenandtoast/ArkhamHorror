@@ -6246,6 +6246,7 @@ hyperphysicalShotcasterTheoreticalDevice =
     , cdKeywords = setFromList [Keyword.Customizable]
     , cdUses = uses Aether 4
     , cdUnique = True
+    , cdSlots = [#hand]
     , cdCustomizations =
         mapFromList
           [ (Railshooter, 2)

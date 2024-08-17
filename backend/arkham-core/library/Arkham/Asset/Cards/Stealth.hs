@@ -42,6 +42,7 @@ instance RunMessage Stealth where
           $ [turnModifier iid attrs (toTarget eid) (EnemyCannotEngage iid) | isYourTurn]
           <> [whenWindow]
           <> [DisengageEnemy iid eid | canDisengage]
+          <> [EnemyCheckEngagement eid | canDisengage]
           <> [afterWindow]
         pure a
     _ -> Stealth <$> runMessage msg attrs

@@ -45,7 +45,9 @@ instance RunMessage Stealth3 where
           isYourTurn <- iid <=~> TurnInvestigator
           checkWhen $ Window.EnemyEvaded iid eid
           when isYourTurn $ turnModifier iid attrs eid (EnemyCannotEngage iid)
-          pushWhen canDisengage $ DisengageEnemy iid eid
+          when canDisengage do
+            push $ DisengageEnemy iid eid
+            push $ EnemyCheckEngagement eid
           checkAfter $ Window.EnemyEvaded iid eid
         pure a
     _ -> Stealth3 <$> liftRunMessage msg attrs

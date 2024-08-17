@@ -3504,10 +3504,10 @@ instance Projection Investigator where
           $ case investigatorPlacement of
             AtLocation lid -> mAsIfAt <|> Just lid
             _ -> mAsIfAt
-      InvestigatorWillpower -> pure investigatorWillpower
-      InvestigatorIntellect -> pure investigatorIntellect
-      InvestigatorCombat -> pure investigatorCombat
-      InvestigatorAgility -> pure investigatorAgility
+      InvestigatorWillpower -> skillValueFor #willpower Nothing attrs.id
+      InvestigatorIntellect -> skillValueFor #intellect Nothing attrs.id
+      InvestigatorCombat -> skillValueFor #combat Nothing attrs.id
+      InvestigatorAgility -> skillValueFor #agility Nothing attrs.id
       InvestigatorHorror -> pure $ investigatorSanityDamage attrs
       InvestigatorDamage -> pure $ investigatorHealthDamage attrs
       InvestigatorAssignedHorror -> pure investigatorAssignedSanityDamage

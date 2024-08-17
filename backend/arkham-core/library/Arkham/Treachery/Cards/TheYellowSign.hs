@@ -23,6 +23,6 @@ instance RunMessage TheYellowSign where
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       assignHorror iid attrs 2
-      search iid attrs iid [fromDeck] (basic $ withTrait Madness <> BasicWeaknessCard) (DrawFound iid 1)
+      search iid attrs iid [fromDeck] (basic $ withTrait Madness <> WeaknessCard) (DrawFound iid 1)
       pure t
     _ -> TheYellowSign <$> liftRunMessage msg attrs

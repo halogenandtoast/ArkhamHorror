@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
 newtype ScientificTheory3 = ScientificTheory3 AssetAttrs
@@ -32,6 +33,8 @@ instance RunMessage ScientificTheory3 where
   runMessage msg a@(ScientificTheory3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #intellect 1, SkillModifier #combat 1]
+        chooseOneM iid do
+          skillLabeled #intellect $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 1)
+          skillLabeled #combat $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 1)
       pure a
     _ -> ScientificTheory3 <$> liftRunMessage msg attrs

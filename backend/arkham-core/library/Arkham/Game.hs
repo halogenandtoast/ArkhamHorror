@@ -3508,6 +3508,10 @@ instance Projection Investigator where
       InvestigatorIntellect -> skillValueFor #intellect Nothing attrs.id
       InvestigatorCombat -> skillValueFor #combat Nothing attrs.id
       InvestigatorAgility -> skillValueFor #agility Nothing attrs.id
+      InvestigatorBaseWillpower -> pure investigatorWillpower
+      InvestigatorBaseIntellect -> pure investigatorIntellect
+      InvestigatorBaseCombat -> pure investigatorCombat
+      InvestigatorBaseAgility -> pure investigatorAgility
       InvestigatorHorror -> pure $ investigatorSanityDamage attrs
       InvestigatorDamage -> pure $ investigatorHealthDamage attrs
       InvestigatorAssignedHorror -> pure investigatorAssignedSanityDamage

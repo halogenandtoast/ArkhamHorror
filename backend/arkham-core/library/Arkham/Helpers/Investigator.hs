@@ -109,10 +109,10 @@ baseSkillValueFor skill _maction iid = do
   let
     fld =
       case skill of
-        SkillWillpower -> InvestigatorWillpower
-        SkillIntellect -> InvestigatorIntellect
-        SkillCombat -> InvestigatorCombat
-        SkillAgility -> InvestigatorAgility
+        SkillWillpower -> InvestigatorBaseWillpower
+        SkillIntellect -> InvestigatorBaseIntellect
+        SkillCombat -> InvestigatorBaseCombat
+        SkillAgility -> InvestigatorBaseAgility
   baseValue <- field fld iid
   pure $ foldr applyAfterModifier (foldr applyModifier baseValue modifiers) modifiers
  where

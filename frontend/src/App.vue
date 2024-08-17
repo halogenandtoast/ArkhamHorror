@@ -235,6 +235,12 @@ body {
   --intellect: #7c3c85;
   --combat: #ae4236;
   --agility: #14854d;
+
+  --willpower-light: #C5DEF2;
+  --intellect-light: #EAD5EC;
+  --combat-light: #F1D3D0;
+  --agility-light: #8CEEBD;
+
   --wild: #8a7d5a;
   --guardian: #5cb4fd;
   --mystic: #ba81f2;

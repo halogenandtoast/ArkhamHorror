@@ -49,7 +49,8 @@ data SkillTest = SkillTest
   , skillTestSubscribers :: [Target]
   , skillTestIsRevelation :: Bool
   , skillTestIconValues :: Map SkillIcon Int
-  , skillTestCard :: Maybe CardId
+  , skillTestSourceCard :: Maybe CardId
+  , skillTestTargetCard :: Maybe CardId
   , skillTestStep :: SkillTestStep
   }
   deriving stock (Show, Eq, Data)
@@ -149,7 +150,8 @@ buildSkillTest sid iid (toSource -> source) (toTarget -> target) stType bValue d
     , skillTestSubscribers = [toTarget iid]
     , skillTestIsRevelation = False
     , skillTestIconValues = iconValuesForSkillTestType stType
-    , skillTestCard = Nothing
+    , skillTestTargetCard = Nothing
+    , skillTestSourceCard = Nothing
     , skillTestStep = DetermineSkillOfTestStep
     }
 
@@ -199,6 +201,7 @@ instance FromJSON SkillTest where
     skillTestSubscribers <- o .: "subscribers"
     skillTestIsRevelation <- o .: "isRevelation"
     skillTestIconValues <- o .: "iconValues"
-    skillTestCard <- o .: "card"
+    skillTestTargetCard <- o .:? "targetCard"
+    skillTestSourceCard <- o .:? "sourceCard"
     skillTestStep <- o .:? "step" .!= DetermineSkillOfTestStep
     pure SkillTest {..}

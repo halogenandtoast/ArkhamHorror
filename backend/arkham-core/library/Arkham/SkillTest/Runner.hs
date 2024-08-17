@@ -168,7 +168,8 @@ instance RunMessage SkillTest where
         t -> fmap toCardId <$> sourceToMaybeCard t
       pure
         $ s
-        & (cardL .~ (mAbilityCardId <|> mTargetCardId <|> mSourceCardId))
+        & (targetCardL .~ mTargetCardId)
+        & (sourceCardL .~ (mAbilityCardId <|> mSourceCardId))
         & (stepL .~ CommitCardsFromHandToSkillTestStep)
     ReplaceSkillTestSkill (FromSkillType fsType) (ToSkillType tsType) -> do
       let
@@ -689,23 +690,23 @@ instance RunMessage SkillTest where
               )
             <> [ After
                 $ PassedSkillTest
+                  skillTestInvestigator
+                  skillTestAction
+                  skillTestSource
+                  target
+                  skillTestType
+                  n
+               | target <- skillTestSubscribers <> tokenSubscribers
+               ]
+            <> [ After
+                  $ PassedSkillTest
                     skillTestInvestigator
                     skillTestAction
                     skillTestSource
-                    target
+                    (SkillTestInitiatorTarget skillTestTarget)
                     skillTestType
                     n
-                | target <- skillTestSubscribers <> tokenSubscribers
-                ]
-              <> [ After
-                      $ PassedSkillTest
-                          skillTestInvestigator
-                          skillTestAction
-                          skillTestSource
-                          (SkillTestInitiatorTarget skillTestTarget)
-                          skillTestType
-                          n
-                   ]
+               ]
         FailedBy _ n ->
           do
             hauntedAbilities <- case (skillTestTarget, skillTestAction) of
@@ -747,26 +748,25 @@ instance RunMessage SkillTest where
                   <> [ chooseOneAtATime player [AbilityLabel resolver ab [] [] [] | ab <- hauntedAbilities]
                      | notNull hauntedAbilities
                      ]
-
+                  <> [ After
+                      $ FailedSkillTest
+                        resolver
+                        skillTestAction
+                        skillTestSource
+                        target
+                        skillTestType
+                        n
+                     | target <- skillTestSubscribers <> tokenSubscribers
+                     ]
                   <> [ After
                         $ FailedSkillTest
-                            resolver
-                            skillTestAction
-                            skillTestSource
-                            target
-                            skillTestType
-                            n
-                      | target <- skillTestSubscribers <> tokenSubscribers
-                      ]
-                   <> [ After
-                              $ FailedSkillTest
-                                  resolver
-                                  skillTestAction
-                                  skillTestSource
-                                  (SkillTestInitiatorTarget skillTestTarget)
-                                  skillTestType
-                                  n
-                           ]
+                          resolver
+                          skillTestAction
+                          skillTestSource
+                          (SkillTestInitiatorTarget skillTestTarget)
+                          skillTestType
+                          n
+                     ]
 
             if needsChoice
               then do

@@ -7,6 +7,7 @@ import { TokenType } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
+import DebugEnemy from '@/arkham/components/debug/Enemy.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import Key from '@/arkham/components/Key.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
@@ -28,6 +29,8 @@ const props = withDefaults(defineProps<{
 const emits = defineEmits<{
   choose: [value: number]
 }>()
+
+const debugging = ref(false)
 
 const investigatorId = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)?.id)
 
@@ -279,9 +282,7 @@ watch(abilities, (abilities) => {
         @choose="$emit('choose', $event)"
       />
       <template v-if="debug.active">
-        <button @click="debug.send(game.id, {tag: 'DefeatEnemy', contents: [id, investigatorId, {tag: 'InvestigatorSource', contents:investigatorId}]})">Defeat</button>
-        <button @click="debug.send(game.id, {tag: 'EnemyEvaded', contents: [investigatorId, id]})">Evade</button>
-        <button @click="debug.send(game.id, {tag: 'EnemyDamage', contents: [id, {damageAssignmentSource: {tag: 'InvestigatorSource', contents:investigatorId}, damageAssignmentAmount: 1, damageAssignmentDirect: true, damageAssignmentDelayed: false, damageAssignmentDamageEffect: 'NonAttackDamageEffect'}]})">Add Damage</button>
+        <button @click="debugging = true">Debug</button>
       </template>
     </div>
 
@@ -297,6 +298,7 @@ watch(abilities, (abilities) => {
         class="enemy--swarming"
       />
     </div>
+    <DebugEnemy v-if="debugging" :game="game" :enemy="enemy" :playerId="playerId" @close="debugging = false" />
   </div>
 </template>
 

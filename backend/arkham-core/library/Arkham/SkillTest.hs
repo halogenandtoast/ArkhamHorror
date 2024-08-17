@@ -17,8 +17,11 @@ import Arkham.SkillTest.Type as X
 import Arkham.SkillTestResult
 import Arkham.Target
 
-cardL :: Lens' SkillTest (Maybe CardId)
-cardL = lens skillTestCard $ \m x -> m {skillTestCard = x}
+targetCardL :: Lens' SkillTest (Maybe CardId)
+targetCardL = lens skillTestTargetCard $ \m x -> m {skillTestTargetCard = x}
+
+sourceCardL :: Lens' SkillTest (Maybe CardId)
+sourceCardL = lens skillTestSourceCard $ \m x -> m {skillTestSourceCard = x}
 
 difficultyL :: Lens' SkillTest SkillTestDifficulty
 difficultyL = lens skillTestDifficulty $ \m x -> m {skillTestDifficulty = x}

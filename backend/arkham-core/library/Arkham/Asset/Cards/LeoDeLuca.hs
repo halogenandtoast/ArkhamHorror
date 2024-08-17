@@ -18,4 +18,4 @@ instance HasModifiersFor LeoDeLuca where
   getModifiersFor _ _ = pure []
 
 instance RunMessage LeoDeLuca where
-  runMessage msg a@(LeoDeLuca attrs) = LeoDeLuca <$> runMessage msg attrs
+  runMessage msg (LeoDeLuca attrs) = LeoDeLuca <$> runMessage msg attrs

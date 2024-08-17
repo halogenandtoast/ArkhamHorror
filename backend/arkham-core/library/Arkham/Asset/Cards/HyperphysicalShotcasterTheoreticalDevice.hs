@@ -38,9 +38,10 @@ newtype HyperphysicalShotcasterTheoreticalDevice
 
 hyperphysicalShotcasterTheoreticalDevice :: AssetCard HyperphysicalShotcasterTheoreticalDevice
 hyperphysicalShotcasterTheoreticalDevice =
-  asset
+  assetWith
     (HyperphysicalShotcasterTheoreticalDevice . (`with` Metadata Nothing))
     Cards.hyperphysicalShotcasterTheoreticalDevice
+    discardWhenNoUses
 
 instance HasModifiersFor HyperphysicalShotcasterTheoreticalDevice where
   getModifiersFor target (HyperphysicalShotcasterTheoreticalDevice (With attrs _)) | attrs `is` target = do

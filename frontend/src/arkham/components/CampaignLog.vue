@@ -47,8 +47,8 @@ async function loadMissingCards() {
   const missingCardCodes = new Set();
 
   for (const setValue of Object.values(recordedSets.value)) {
-    for (const val of setValue[1]) { // Assuming setValue is an entry [setKey, setValues]
-      const cardCode = val.recordVal.contents; // Assuming this is how you get the card code
+    for (const val of setValue) { // Assuming setValue is an entry [setKey, setValues]
+      const cardCode = val.contents; // Assuming this is how you get the card code
       if (!findCard(cardCode)) {
         missingCardCodes.add(cardCode);
       }

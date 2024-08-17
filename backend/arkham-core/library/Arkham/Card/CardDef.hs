@@ -177,6 +177,9 @@ instance HasField "keywords" CardDef (Set Keyword) where
 instance HasField "printedCost" CardDef Int where
   getField = maybe 0 toPrintedCost . cdCost
 
+instance HasField "customizations" CardDef (Map Customization Int) where
+  getField = cdCustomizations
+
 instance Exists CardDef where
   exists def = case cdCardType def of
     AssetType -> exists $ assetIs def

@@ -290,6 +290,8 @@ body {
 
   --card-width: 60px;
 
+  --select: #ff00ff;
+
   @media (max-width: 800px) {
     --card-width: 40px;
   }

@@ -34,11 +34,18 @@ instance HasAbilities RavenousMyconidSentientStrain4 where
         $ FastAbility Free
     , restrictedAbility a 2 ControlsThis
         $ freeReaction
-        $ DrawCard
-          #when
-          (affectsOthers $ InvestigatorAt $ LocationWithShroud (lessThan $ a.use Growth))
-          (CanCancelRevelationEffect $ basic NonWeaknessTreachery)
-          EncounterDeck
+        $ oneOf
+          [ DrawCard
+              #when
+              (You <> InvestigatorAt (LocationWithShroud $ lessThan $ a.use Growth))
+              (CanCancelRevelationEffect $ basic NonWeaknessTreachery)
+              EncounterDeck
+          , DrawCard
+              #when
+              (affectsOthers $ not_ You <> InvestigatorAt (LocationWithShroud $ lessThan $ a.use Growth))
+              (CanCancelRevelationEffect $ basic $ NonWeaknessTreachery <> NonPeril)
+              EncounterDeck
+          ]
     ]
 
 instance RunMessage RavenousMyconidSentientStrain4 where

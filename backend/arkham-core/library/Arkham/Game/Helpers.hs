@@ -2543,9 +2543,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         _ -> noMatch
     Matcher.EnemyEvaded timing whoMatcher enemyMatcher ->
       guardTiming timing $ \case
-        Window.EnemyEvaded who enemyId ->
+        Window.EnemyEvaded who enemyId -> do
+          -- we need to check defeated because things like Kymani's ability can discard them
           andM
-            [ enemyMatches enemyId enemyMatcher
+            [ orM
+                [ enemyMatches enemyId enemyMatcher
+                , enemyMatches enemyId (Matcher.OutOfPlayEnemy RemovedZone enemyMatcher)
+                ]
             , matchWho iid who whoMatcher
             ]
         _ -> noMatch

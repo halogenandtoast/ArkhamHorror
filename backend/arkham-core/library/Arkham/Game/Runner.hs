@@ -1641,7 +1641,10 @@ runGameMessage msg g = case msg of
     ks <- fieldMap EnemyKeys toList eid
     pushAll $ map handleKey ks
 
-    pure $ g & (entitiesL . enemiesL %~ deleteMap eid)
+    pure
+      $ g
+      & (entitiesL . enemiesL %~ deleteMap eid)
+      & (outOfPlayEntitiesL . at RemovedZone . non mempty . enemiesL %~ insertMap eid enemy)
   AddToDiscard _ pc -> pure $ g & removedFromPlayL %~ filter (/= PlayerCard pc)
   AddToVictory (EnemyTarget eid) -> do
     card <- field EnemyCard eid

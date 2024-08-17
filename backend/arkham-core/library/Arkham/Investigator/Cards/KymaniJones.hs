@@ -60,8 +60,8 @@ kymaniJonesEffect = cardEffect KymaniJonesEffect Cards.kymaniJones
 instance RunMessage KymaniJonesEffect where
   runMessage msg e@(KymaniJonesEffect attrs) = runQueueT $ case msg of
     PassedThisSkillTestBy iid _source n -> do
-      getSkillTestTarget >>= \case
-        Just (EnemyTarget enemy) -> do
+      whenJustM getSkillTestTarget \target -> case target.enemy of
+        Just enemy -> do
           mx <- field EnemyRemainingHealth enemy
           when (maybe False (n >=) mx) $ toDiscardBy iid attrs.source enemy
         _ -> pure ()

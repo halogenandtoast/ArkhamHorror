@@ -11,21 +11,29 @@ import Arkham.Act.Acts
 import Arkham.Act.Types
 import Arkham.Card
 import Arkham.Id
+import Control.Monad.Fail (fail)
 
-lookupAct :: ActId -> Int -> CardId -> Act
+data MissingAct = MissingAct CardCode
+  deriving stock (Show, Eq)
+
+instance Exception MissingAct
+
+lookupAct :: ActId -> Int -> CardId -> Either MissingAct Act
 lookupAct actId = case lookup (unActId actId) allActs of
-  Nothing -> error $ "Unknown act: " <> show actId
-  Just (SomeActCard a) -> \i cardId -> Act $ cbCardBuilder a cardId (i, actId)
+  Nothing -> \_ _ -> Left $ MissingAct (coerce actId)
+  Just (SomeActCard a) -> \i cardId -> Right . Act $ cbCardBuilder a cardId (i, actId)
 
 instance FromJSON Act where
   parseJSON = withObject "Act" $ \o -> do
     cCode <- o .: "id"
-    withActCardCode cCode $ \(_ :: ActCard a) -> Act <$> parseJSON @a (Object o)
+    case withActCardCode cCode (\(_ :: ActCard a) -> Act <$> parseJSON @a (Object o)) of
+      Left (MissingAct c) -> fail $ "Unknown act: " <> show c
+      Right a -> a
 
-withActCardCode :: CardCode -> (forall a. IsAct a => ActCard a -> r) -> r
+withActCardCode :: CardCode -> (forall a. IsAct a => ActCard a -> r) -> Either MissingAct r
 withActCardCode cCode f = case lookup cCode allActs of
-  Nothing -> error $ "Unknown act: " <> show cCode
-  Just (SomeActCard a) -> f a
+  Nothing -> Left $ MissingAct cCode
+  Just (SomeActCard a) -> Right (f a)
 
 allActs :: Map CardCode SomeActCard
 allActs =

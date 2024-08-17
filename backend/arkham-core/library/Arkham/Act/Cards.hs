@@ -432,10 +432,10 @@ escapeTheRuins :: CardDef
 escapeTheRuins = act "04059" "Escape the Ruins" 3 TheDoomOfEztli
 
 theRelicIsMissing :: CardDef
-theRelicIsMissing = act "04117a" "The Relic Is Missing!" 1 ThreadsOfFate
+theRelicIsMissing = act "04117" "The Relic Is Missing!" 1 ThreadsOfFate
 
 harlanIsInDanger :: CardDef
-harlanIsInDanger = act "04118a" "Harlan Is in Danger!" 1 ThreadsOfFate
+harlanIsInDanger = act "04118" "Harlan Is in Danger!" 1 ThreadsOfFate
 
 atTheExhibitTheRelicsLocation :: CardDef
 atTheExhibitTheRelicsLocation = act "04119" "At the Exhibit" 2 ThreadsOfFate
@@ -456,22 +456,22 @@ recoverTheRelic :: CardDef
 recoverTheRelic = act "04124" "Recover the Relic" 3 ThreadsOfFate
 
 searchForAlejandro :: CardDef
-searchForAlejandro = act "04125a" "Search for Alejandro" 1 ThreadsOfFate
+searchForAlejandro = act "04125" "Search for Alejandro" 1 ThreadsOfFate
 
 missingPersons :: CardDef
-missingPersons = act "04126a" "Missing Persons" 1 ThreadsOfFate
+missingPersons = act "04126" "Missing Persons" 1 ThreadsOfFate
 
 atTheStationInShadowedTalons :: CardDef
 atTheStationInShadowedTalons = act "04127" "At the Station" 2 ThreadsOfFate
 
 atTheStationTrainTracks :: CardDef
-atTheStationTrainTracks = act "04128a" "At the Station" 2 ThreadsOfFate
+atTheStationTrainTracks = act "04128" "At the Station" 2 ThreadsOfFate
 
 friendsInHighPlacesHenrysInformation :: CardDef
 friendsInHighPlacesHenrysInformation = act "04129" "Friends in High Places" 2 ThreadsOfFate
 
 friendsInHighPlacesHenryDeveau :: CardDef
-friendsInHighPlacesHenryDeveau = act "04130a" "Friends in High Places" 2 ThreadsOfFate
+friendsInHighPlacesHenryDeveau = act "04130" "Friends in High Places" 2 ThreadsOfFate
 
 alejandrosPrison :: CardDef
 alejandrosPrison = act "04131" "Alejandro's Prison" 3 ThreadsOfFate
@@ -480,10 +480,10 @@ alejandrosPlight :: CardDef
 alejandrosPlight = act "04132" "Alejandro's Plight" 3 ThreadsOfFate
 
 trialOfTheHuntress :: CardDef
-trialOfTheHuntress = act "04133a" "Trial of the Huntress" 1 ThreadsOfFate
+trialOfTheHuntress = act "04133" "Trial of the Huntress" 1 ThreadsOfFate
 
 theGuardiansInquiry :: CardDef
-theGuardiansInquiry = act "04134a" "The Guardian's Inquiry" 1 ThreadsOfFate
+theGuardiansInquiry = act "04134" "The Guardian's Inquiry" 1 ThreadsOfFate
 
 theCaveOfDarknessEmbroiledInBattle :: CardDef
 theCaveOfDarknessEmbroiledInBattle = act "04135" "The Cave of Darkness" 2 ThreadsOfFate
@@ -492,7 +492,7 @@ theCaveOfDarknessTunnelsInTheDark :: CardDef
 theCaveOfDarknessTunnelsInTheDark = act "04136" "The Cave of Darkness" 2 ThreadsOfFate
 
 strangeRelicsMariaDeSilva :: CardDef
-strangeRelicsMariaDeSilva = act "04137a" "Strange Relics" 2 ThreadsOfFate
+strangeRelicsMariaDeSilva = act "04137" "Strange Relics" 2 ThreadsOfFate
 
 strangeRelicsMariasInformation :: CardDef
 strangeRelicsMariasInformation = act "04138" "Strange Relics" 2 ThreadsOfFate

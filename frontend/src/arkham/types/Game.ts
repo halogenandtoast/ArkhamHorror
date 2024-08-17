@@ -1,12 +1,12 @@
 import { JsonDecoder } from 'ts.data.json';
-import { Investigator, investigatorDecoder } from '@/arkham/types/Investigator';
+import { Investigator, InvestigatorDetails, investigatorDecoder, investigatorDetailsDecoder } from '@/arkham/types/Investigator';
 import { Enemy, enemyDecoder } from '@/arkham/types/Enemy';
 import { Story, storyDecoder } from '@/arkham/types/Story';
 import { Location, locationDecoder } from '@/arkham/types/Location';
 import { Message } from '@/arkham/types/Message';
 import { Source } from '@/arkham/types/Source';
-import { Scenario, scenarioDecoder } from '@/arkham/types/Scenario';
-import { Campaign, campaignDecoder } from '@/arkham/types/Campaign';
+import { Scenario, ScenarioDetails, scenarioDecoder, scenarioDetailsDecoder } from '@/arkham/types/Scenario';
+import { Campaign, CampaignDetails, campaignDecoder, campaignDetailsDecoder } from '@/arkham/types/Campaign';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Act, actDecoder } from '@/arkham/types/Act';
 import { Agenda, agendaDecoder } from '@/arkham/types/Agenda';
@@ -31,6 +31,18 @@ export const gameStateDecoder = JsonDecoder.oneOf<GameState>(
   ],
   'GameState'
 );
+
+export type GameDetails = {
+  id: string;
+  scenario: ScenarioDetails | null;
+  campaign: CampaignDetails | null;
+  gameState: GameState;
+  name: string;
+  investigators: InvestigatorDetails[];
+  otherInvestigators: InvestigatorDetails[];
+}
+
+export type GameDetailsEntry = GameDetails | { error: string }
 
 export type Game = {
   id: string;
@@ -137,6 +149,27 @@ export const modeDecoder = JsonDecoder.object<Mode>(
     That: JsonDecoder.optional(scenarioDecoder)
   },
   'Mode'
+);
+
+export const gameDetailsDecoder = JsonDecoder.object<GameDetails>(
+  {
+    id: JsonDecoder.string,
+    scenario: JsonDecoder.nullable(scenarioDetailsDecoder),
+    campaign: JsonDecoder.nullable(campaignDetailsDecoder),
+    gameState: gameStateDecoder,
+    name: JsonDecoder.string,
+    investigators: JsonDecoder.array(investigatorDetailsDecoder, 'InvestigatorDetails[]'),
+    otherInvestigators: JsonDecoder.array(investigatorDetailsDecoder, 'InvestigatorDetails[]'),
+  },
+  'GameDetails',
+);
+
+export const gameDetailsEntryDecoder = JsonDecoder.oneOf<GameDetailsEntry>(
+  [
+    gameDetailsDecoder,
+    JsonDecoder.object({ error: JsonDecoder.string }, 'Error')
+  ],
+  'GameDetailsEntry'
 );
 
 export const gameDecoder = JsonDecoder.object<Game>(

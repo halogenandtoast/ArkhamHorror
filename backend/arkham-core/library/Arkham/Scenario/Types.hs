@@ -127,8 +127,23 @@ data ScenarioAttrs = ScenarioAttrs
   }
   deriving stock (Show, Eq)
 
+instance HasField "id" ScenarioAttrs ScenarioId where
+  getField = scenarioId
+
 instance HasField "difficulty" ScenarioAttrs Difficulty where
   getField = scenarioDifficulty
+
+instance HasField "name" ScenarioAttrs Name where
+  getField = scenarioName
+
+instance HasField "id" Scenario ScenarioId where
+  getField = (.id) . toAttrs
+
+instance HasField "difficulty" Scenario Difficulty where
+  getField = (.difficulty) . toAttrs
+
+instance HasField "name" Scenario Name where
+  getField = (.name) . toAttrs
 
 setStandaloneCampaignLog :: CampaignLog -> ScenarioAttrs -> ScenarioAttrs
 setStandaloneCampaignLog standaloneCampaignLog attrs =

@@ -1,6 +1,8 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE NoFieldSelectors #-}
 
 module Api.Handler.Arkham.Games (
   getApiV1ArkhamGameR,
@@ -14,24 +16,34 @@ module Api.Handler.Arkham.Games (
 
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
+import Arkham.Campaign.Types (CampaignAttrs)
+import Arkham.Campaigns.TheDreamEaters.Meta qualified as TheDreamEaters
+import Arkham.ClassSymbol
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasQueue
 import Arkham.Difficulty
 import Arkham.Game
 import Arkham.Game.Diff
+import Arkham.Game.State
 import Arkham.GameEnv
 import Arkham.Id
+import Arkham.Investigator (lookupInvestigator)
+import Arkham.Investigator.Types (Investigator)
 import Arkham.Message
+import Arkham.Name
 import Conduit
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
 import Control.Monad.Random.Class (getRandom)
+import Data.Aeson.Types (parse)
 import Data.ByteString.Lazy qualified as BSL
 import Data.Coerce
 import Data.Map.Strict qualified as Map
 import Data.String.Conversions.Monomorphic (toStrictByteString)
 import Data.Text qualified as T
+import Data.These
 import Data.Time.Clock
+import Data.UUID (nil)
 import Database.Esqueleto.Experimental hiding (update)
 import Database.Redis (publish, runRedis)
 import Entity.Answer
@@ -84,7 +96,7 @@ data GetGameJson = GetGameJson
   , game :: PublicGame ArkhamGameId
   }
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON)
+  deriving anyclass ToJSON
 
 getApiV1ArkhamGameR :: HasCallStack => ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameR gameId = do
@@ -117,7 +129,50 @@ getApiV1ArkhamGameSpectateR gameId = do
       (arkhamGameMultiplayerVariant ge)
       (PublicGame gameId (arkhamGameName ge) (gameLogToLogEntries gameLog) (arkhamGameCurrentData ge))
 
-getApiV1ArkhamGamesR :: Handler [PublicGame ArkhamGameId]
+data InvestigatorDetails = InvestigatorDetails
+  { id :: InvestigatorId
+  , classSymbol :: ClassSymbol
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass ToJSON
+
+data ScenarioDetails = ScenarioDetails
+  { id :: ScenarioId
+  , difficulty :: Difficulty
+  , name :: Name
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass ToJSON
+
+data CampaignDetails = CampaignDetails
+  { id :: CampaignId
+  , difficulty :: Difficulty
+  , currentCampaignMode :: Maybe TheDreamEaters.CampaignPart
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass ToJSON
+
+data GameDetails = GameDetails
+  { id :: ArkhamGameId
+  , scenario :: Maybe ScenarioDetails
+  , campaign :: Maybe CampaignDetails
+  , gameState :: GameState
+  , name :: Text
+  , investigators :: [InvestigatorDetails]
+  , otherInvestigators :: [InvestigatorDetails]
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass ToJSON
+
+data GameDetailsEntry = FailedGameDetails Text | SuccessGameDetails GameDetails
+  deriving stock (Show, Generic)
+
+instance ToJSON GameDetailsEntry where
+  toJSON = \case
+    FailedGameDetails t -> object ["error" .= t]
+    SuccessGameDetails gd -> toJSON gd
+
+getApiV1ArkhamGamesR :: Handler [GameDetailsEntry]
 getApiV1ArkhamGamesR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   games <- runDB $ select $ do
@@ -131,22 +186,40 @@ getApiV1ArkhamGamesR = do
     orderBy [desc $ games.updatedAt]
     pure games
 
+  let
+    campaignOtherInvestigators j = case parse (withObject "" (.: "otherCampaignAttrs")) j of
+      Error _ -> mempty
+      Success (attrs :: CampaignAttrs) -> map (\iid -> lookupInvestigator iid (PlayerId nil)) $ Map.keys attrs.decks
+
   pure $ flip map games \(Entity gameId game) -> do
-    case fromJSON (arkhamGameRawCurrentData game) of
+    case fromJSON @Game (arkhamGameRawCurrentData game) of
       Success a ->
-        toPublicGame
-          ( Entity (coerce gameId)
-              $ ArkhamGame
-                { arkhamGameName = arkhamGameRawName game
-                , arkhamGameCurrentData = a
-                , arkhamGameStep = arkhamGameRawStep game
-                , arkhamGameMultiplayerVariant = arkhamGameRawMultiplayerVariant game
-                , arkhamGameCreatedAt = arkhamGameRawCreatedAt game
-                , arkhamGameUpdatedAt = arkhamGameRawUpdatedAt game
-                }
-          )
-          mempty
-      Error e -> FailedToLoadGame ("Failed to load " <> tshow gameId <> ": " <> T.pack e)
+        SuccessGameDetails
+          $ GameDetails
+            { id = coerce gameId
+            , scenario = case a.gameMode of
+                This _ -> Nothing
+                That s -> Just $ ScenarioDetails s.id s.difficulty s.name
+                These _ s -> Just $ ScenarioDetails s.id s.difficulty s.name
+            , campaign = case a.gameMode of
+                This c -> Just $ CampaignDetails c.id c.difficulty c.currentCampaignMode
+                That _ -> Nothing
+                These c _ -> Just $ CampaignDetails c.id c.difficulty c.currentCampaignMode
+            , gameState = a.gameGameState
+            , name = arkhamGameRawName game
+            , investigators =
+                map (\(i :: Investigator) -> InvestigatorDetails i.id i.classSymbol)
+                  $ toList a.gameEntities.investigators
+            , otherInvestigators =
+                let
+                  ins = case a.gameMode of
+                    This c -> campaignOtherInvestigators (toJSON c.meta)
+                    That _ -> mempty
+                    These c _ -> campaignOtherInvestigators (toJSON c.meta)
+                 in
+                  map (\i -> InvestigatorDetails i.id i.classSymbol) ins
+            }
+      Error e -> FailedGameDetails ("Failed to load " <> tshow gameId <> ": " <> T.pack e)
 
 data CreateGamePost = CreateGamePost
   { deckIds :: [Maybe ArkhamDeckId]
@@ -159,7 +232,7 @@ data CreateGamePost = CreateGamePost
   , includeTarotReadings :: Bool
   }
   deriving stock (Show, Generic)
-  deriving anyclass (FromJSON)
+  deriving anyclass FromJSON
 
 -- | New Game
 postApiV1ArkhamGamesR :: Handler (PublicGame ArkhamGameId)
@@ -271,7 +344,7 @@ newtype RawGameJsonPut = RawGameJsonPut
   { gameMessage :: Message
   }
   deriving stock (Show, Generic)
-  deriving anyclass (FromJSON)
+  deriving anyclass FromJSON
 
 handleMessageLog
   :: MonadIO m => IORef [Text] -> TChan BSL.ByteString -> ClientMessage -> m ()
@@ -297,9 +370,9 @@ handleMessageLog logRef writeChannel msg = liftIO $ do
 putApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameRawR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
-  response <- requireCheckJsonBody
+  response <- requireCheckJsonBody @_ @RawGameJsonPut
   writeChannel <- (.channel) <$> getRoom gameId
-  updateGame (Raw $ gameMessage response) gameId userId writeChannel
+  updateGame (Raw response.gameMessage) gameId userId writeChannel
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 deleteApiV1ArkhamGameR gameId = do

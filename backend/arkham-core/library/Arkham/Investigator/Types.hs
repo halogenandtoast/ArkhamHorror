@@ -401,6 +401,9 @@ instance HasField "ability" InvestigatorAttrs (Int -> Source) where
 instance HasField "doom" InvestigatorAttrs Int where
   getField = countTokens Doom . investigatorTokens
 
+instance HasField "classSymbol" InvestigatorAttrs ClassSymbol where
+  getField = investigatorClass
+
 data Investigator = forall a. IsInvestigator a => Investigator a
 
 instance AsId Investigator where
@@ -412,6 +415,9 @@ instance HasField "placement" Investigator Placement where
 
 instance HasField "id" Investigator InvestigatorId where
   getField (Investigator a) = attr investigatorId a
+
+instance HasField "classSymbol" Investigator ClassSymbol where
+  getField = (.classSymbol) . toAttrs
 
 instance Named Investigator where
   toName (Investigator a) = toName (toAttrs a)
@@ -496,15 +502,24 @@ foundCardsL = searchL . _Just . searchingFoundCardsL
 $(deriveToJSON defaultOptions ''InvestigatorSearch)
 
 instance FromJSON InvestigatorSearch where
-  parseJSON = withObject "InvestigatorSearch" $ \o -> MkInvestigatorSearch
-    <$> o .: "searchingType"
-    <*> o .: "searchingInvestigator"
-    <*> o .: "searchingSource"
-    <*> o .: "searchingTarget"
-    <*> o .: "searchingZones"
-    <*> o .: "searchingMatcher"
-    <*> o .: "searchingFoundCardsStrategy"
-    <*> o .: "searchingFoundCards"
-    <*> (o .:? "searchingDrawnCards" .!= [])
+  parseJSON = withObject "InvestigatorSearch" $ \o ->
+    MkInvestigatorSearch
+      <$> o
+      .: "searchingType"
+      <*> o
+      .: "searchingInvestigator"
+      <*> o
+      .: "searchingSource"
+      <*> o
+      .: "searchingTarget"
+      <*> o
+      .: "searchingZones"
+      <*> o
+      .: "searchingMatcher"
+      <*> o
+      .: "searchingFoundCardsStrategy"
+      <*> o
+      .: "searchingFoundCards"
+      <*> (o .:? "searchingDrawnCards" .!= [])
 
 $(deriveJSON (aesonOptions $ Just "investigator") ''InvestigatorAttrs)

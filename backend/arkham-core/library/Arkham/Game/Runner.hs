@@ -865,13 +865,13 @@ runGameMessage msg g = case msg of
   ReplaceAct aid1 card -> do
     actDeckId <- field ActDeckId aid1
     let newActId = ActId (toCardCode card)
-    let newAct = lookupAct newActId actDeckId (toCardId card)
+    let newAct = either throw id $ lookupAct newActId actDeckId (toCardId card)
     pure
       $ g
       & (entitiesL . actsL %~ insertMap newActId newAct . deleteMap aid1)
   AddAct deckNum card -> do
     let aid = ActId $ toCardCode card
-    pure $ g & entitiesL . actsL . at aid ?~ lookupAct aid deckNum (toCardId card)
+    pure $ g & entitiesL . actsL . at aid ?~ either throw id (lookupAct aid deckNum $ toCardId card)
   AddAgenda agendaDeckNum card -> do
     let aid = AgendaId $ toCardCode card
     pure $ g & entitiesL . agendasL . at aid ?~ lookupAgenda aid agendaDeckNum (toCardId card)

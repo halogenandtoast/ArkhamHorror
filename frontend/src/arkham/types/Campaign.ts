@@ -84,6 +84,12 @@ export const campaignStepDecoder = JsonDecoder.oneOf<CampaignStep>(
   'Question',
 );
 
+export type CampaignDetails = {
+  id: string;
+  difficulty: Difficulty;
+  currentCampaignMode?: string;
+}
+
 export type Campaign = {
   name: string;
   id: string;
@@ -93,6 +99,11 @@ export type Campaign = {
   meta: any;
 }
 
+export const campaignDetailsDecoder = JsonDecoder.object<CampaignDetails>({
+  id: JsonDecoder.string,
+  difficulty: difficultyDecoder,
+  currentCampaignMode: JsonDecoder.optional(JsonDecoder.string),
+}, 'CampaignDetails');
 
 export const campaignDecoder = JsonDecoder.object<Campaign>({
   name: JsonDecoder.string,

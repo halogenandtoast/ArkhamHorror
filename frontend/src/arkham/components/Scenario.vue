@@ -202,6 +202,7 @@ watchEffect(() => {
       icon: EyeIcon,
       content: "Show Out of Play",
       nested: 'view',
+      shortcut: 'o',
       action: () => showOutOfPlay.value = !showOutOfPlay.value
     })
   }

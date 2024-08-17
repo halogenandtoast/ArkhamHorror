@@ -12,7 +12,9 @@ import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message qualified
 import Arkham.Projection
+import Arkham.Window qualified as Window
 
 newtype BlackMarket2 = BlackMarket2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -21,7 +23,11 @@ newtype BlackMarket2 = BlackMarket2 EventAttrs
 blackMarket2 :: EventCard BlackMarket2
 blackMarket2 = event BlackMarket2 Cards.blackMarket2
 
--- One at a time, reveal cards from the top of any investigator deck(s) until exactly 5 cards have been revealed. Set those cards aside, out of play. While set aside, any investigator may play any of those cards as if they were in their hand. At the start of the next investigation phase, shuffle each of those cards still set aside into its owner's deck.
+-- One at a time, reveal cards from the top of any investigator deck(s) until
+-- exactly 5 cards have been revealed. Set those cards aside, out of play.
+-- While set aside, any investigator may play any of those cards as if they
+-- were in their hand. At the start of the next investigation phase, shuffle
+-- each of those cards still set aside into its owner's deck.
 
 instance RunMessage BlackMarket2 where
   runMessage msg e@(BlackMarket2 attrs) = runQueueT $ case msg of
@@ -71,13 +77,20 @@ instance RunMessage BlackMarket2Effect where
           CardIdTarget cardId -> do
             card <- getCard cardId
             let owner = fromJustNote ("missing owner: " <> show card) card.owner
+            obtainCard card
             push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck owner) [card]
           _ -> error "incorrect target"
         disable attrs
       pure e
-    InitiatePlayCard iid card _ _ _ _ | attrs.target == CardIdTarget card.id -> do
-      disable attrs
-      addToHand iid [card]
-      push msg
+    InitiatePlayCard iid card mtarget payment windows' asAction | attrs.target == CardIdTarget card.id -> do
+      if cdSkipPlayWindows (toCardDef card)
+        then push $ Arkham.Message.PlayCard iid card mtarget payment windows' asAction
+        else do
+          checkWindows [Window.mkWhen (Window.PlayCard iid card)]
+          push $ Arkham.Message.PlayCard iid card mtarget payment windows' asAction
+          checkWindows [Window.mkAfter (Window.PlayCard iid card)]
+          push $ ResolvedPlayCard iid card
       pure e
+    CardEnteredPlay _ card | attrs.target == CardIdTarget card.id -> do
+      disableReturn e
     _ -> BlackMarket2Effect <$> liftRunMessage msg attrs

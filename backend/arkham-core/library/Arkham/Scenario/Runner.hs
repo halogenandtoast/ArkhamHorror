@@ -64,7 +64,7 @@ import Arkham.Window (mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone (Zone)
 import Arkham.Zone qualified as Zone
-import Control.Lens (each, non, over, _1)
+import Control.Lens (each, non, over, _1, _2)
 import Data.Data.Lens (biplate)
 import Data.IntMap.Strict qualified as IntMap
 import Data.List.NonEmpty qualified as NE
@@ -565,6 +565,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           (PlacedUnderneath ActDeckTarget card)
           [Window.PlaceUnderneath ActDeckTarget card]
     pure a
+  CardEnteredPlay _ card -> runMessage (ObtainCard card) a
   ObtainCard card -> do
     let
       removeCard :: IsCard c => [c] -> [c]
@@ -611,6 +612,29 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & (setAsideCardsL %~ filterOutCards)
       & (victoryDisplayL %~ filterOutCards)
       & (encounterDeckLensFromKey deckKey .~ deck')
+  ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey deckKey) cards -> do
+    let filterOutCards = filter (`notElem` cards)
+    deck' <- shuffleM $ cards <> maybe [] filterOutCards (view (decksL . at deckKey) a)
+    pure
+      $ a
+      & (decksL . at deckKey ?~ deck')
+      & (discardL %~ filter ((`notElem` cards) . EncounterCard))
+      & (victoryDisplayL %~ filterOutCards)
+  ShuffleCardsIntoDeck _ cards -> do
+    let
+      encounterCards = mapMaybe (preview _EncounterCard) cards
+      filterOutCards = filter (`notElem` cards)
+    pure
+      $ a
+      & (cardsUnderAgendaDeckL %~ filterOutCards)
+      & (cardsUnderActDeckL %~ filterOutCards)
+      & (cardsNextToActDeckL %~ filterOutCards)
+      & (cardsNextToAgendaDeckL %~ filterOutCards)
+      & (cardsUnderScenarioReferenceL %~ filterOutCards)
+      & (setAsideCardsL %~ filterOutCards)
+      & (victoryDisplayL %~ filterOutCards)
+      & (encounterDecksL . each . _2 %~ filter (`notElem` encounterCards))
+      & (encounterDecksL . each . _1 %~ withDeck (filter (`notElem` encounterCards)))
   RequestSetAsideCard target cardCode -> do
     let
       (before, rest) = break ((== cardCode) . toCardCode) scenarioSetAsideCards
@@ -1132,19 +1156,6 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   ShuffleDeck (Deck.ScenarioDeckByKey deckKey) -> do
     deck' <- shuffleM $ fromMaybe [] (view (decksL . at deckKey) a)
     pure $ a & decksL . at deckKey ?~ deck'
-  ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey deckKey) cards -> do
-    let
-      filterOutCards = filter (`notElem` cards)
-    deck' <- shuffleM $ cards <> maybe [] filterOutCards (view (decksL . at deckKey) a)
-    pure
-      $ a
-      & decksL
-      . at deckKey
-      ?~ deck'
-      & discardL
-      %~ filter
-        ((`notElem` cards) . EncounterCard)
-      & (victoryDisplayL %~ filterOutCards)
   RemoveLocation lid -> do
     investigatorIds <-
       select $ Matcher.InvestigatorAt $ Matcher.LocationWithId lid

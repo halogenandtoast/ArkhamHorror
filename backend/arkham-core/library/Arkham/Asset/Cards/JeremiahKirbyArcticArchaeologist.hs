@@ -7,6 +7,7 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Card
 import Arkham.Matcher
 import Arkham.Message (SearchType (..))
 import Arkham.Modifier
@@ -27,7 +28,10 @@ instance HasModifiersFor JeremiahKirbyArcticArchaeologist where
 
 instance HasAbilities JeremiahKirbyArcticArchaeologist where
   getAbilities (JeremiahKirbyArcticArchaeologist a) =
-    [ (if tabooed TabooList21 a then limitedAbility (PlayerLimit PerGame 2) else id)
+    [ ( if tabooed TabooList21 a
+          then limitedAbility (MaxPer Cards.jeremiahKirbyArcticArchaeologist PerGame 2)
+          else id
+      )
         $ restrictedAbility a 1 ControlsThis
         $ freeReaction
         $ AssetEntersPlay #when (be a)

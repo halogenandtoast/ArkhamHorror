@@ -3914,6 +3914,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               , usedTimes = 1
               , usedDepth = depth
               , usedAbilityTraits = traits'
+              , usedThisWindow = True
               }
         pure $ a & usedAbilitiesL %~ (used :)
       Just _ -> do
@@ -3931,8 +3932,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   SkillTestEnds _ _ _ -> do
     pure
       $ a
-      & usedAbilitiesL
-      %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTestOrAbility)
+      & ( usedAbilitiesL
+            %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTestOrAbility)
+        )
+      & (usedAbilitiesL %~ map (\u -> u {usedThisWindow = False}))
+  ResolvedAbility {} -> do
+    n <- getWindowDepth
+    pure
+      $ a
+      & ( usedAbilitiesL
+            %~ filter
+              ( \UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTestOrAbility || usedDepth /= n
+              )
+        )
+      & (usedAbilitiesL %~ map (\u -> if usedDepth u > n then u {usedThisWindow = False} else u))
   PickSupply iid s | iid == toId a -> pure $ a & suppliesL %~ (s :)
   UseSupply iid s | iid == toId a -> pure $ a & suppliesL %~ deleteFirst s
   Blanked msg' -> runMessage msg' a

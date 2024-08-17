@@ -97,6 +97,10 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorIntellect :: Field Investigator Int
   InvestigatorCombat :: Field Investigator Int
   InvestigatorAgility :: Field Investigator Int
+  InvestigatorBaseWillpower :: Field Investigator Int
+  InvestigatorBaseIntellect :: Field Investigator Int
+  InvestigatorBaseCombat :: Field Investigator Int
+  InvestigatorBaseAgility :: Field Investigator Int
   InvestigatorHorror :: Field Investigator Int
   InvestigatorAssignedHorror :: Field Investigator Int
   InvestigatorAssignedHealHorror :: Field Investigator (Map Source Int)
@@ -169,6 +173,10 @@ instance FromJSON (SomeField Investigator) where
     "InvestigatorIntellect" -> pure $ SomeField InvestigatorIntellect
     "InvestigatorCombat" -> pure $ SomeField InvestigatorCombat
     "InvestigatorAgility" -> pure $ SomeField InvestigatorAgility
+    "InvestigatorBaseWillpower" -> pure $ SomeField InvestigatorBaseWillpower
+    "InvestigatorBaseIntellect" -> pure $ SomeField InvestigatorBaseIntellect
+    "InvestigatorBaseCombat" -> pure $ SomeField InvestigatorBaseCombat
+    "InvestigatorBaseAgility" -> pure $ SomeField InvestigatorBaseAgility
     "InvestigatorHorror" -> pure $ SomeField InvestigatorHorror
     "InvestigatorAssignedHorror" -> pure $ SomeField InvestigatorAssignedHorror
     "InvestigatorAssignedHealHorror" -> pure $ SomeField InvestigatorAssignedHealHorror

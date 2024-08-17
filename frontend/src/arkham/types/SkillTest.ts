@@ -23,6 +23,22 @@ export const sourceDecoder = JsonDecoder.object<Source>({
   contents: JsonDecoder.succeed,
 }, 'Source');
 
+type SkillTestBaseValue
+  = { tag: 'SkillBaseValue' }
+  | { tag: 'AndSkillBaseValue' }
+  | { tag: 'HalfResourcesOf' }
+  | { tag: 'FixedBaseValue' }
+
+const baseValueDecoder = JsonDecoder.oneOf<SkillTestBaseValue>(
+  [
+    JsonDecoder.object({ tag: JsonDecoder.isExactly('SkillBaseValue') }, 'SkillBaseValue'),
+    JsonDecoder.object({ tag: JsonDecoder.isExactly('AndSkillBaseValue') }, 'AndSkillBaseValue'),
+    JsonDecoder.object({ tag: JsonDecoder.isExactly('HalfResourcesOf') }, 'HalfResourcesOf'),
+    JsonDecoder.object({ tag: JsonDecoder.isExactly('FixedBaseValue') }, 'FixedBaseValue'),
+  ],
+  'SkillTestBaseValue',
+);
+
 export type SkillTest = {
   investigator: string;
   setAsideChaosTokens: ChaosToken[];
@@ -31,11 +47,13 @@ export type SkillTest = {
   committedCards: Card[]
   source: Source;
   action: string | null;
-  card: string | null;
+  targetCard?: string | null;
+  sourceCard?: string | null;
   modifiedSkillValue: number;
   modifiedDifficulty: number;
   skills: SkillType[];
   step: SkillTestStep;
+  baseValue: SkillTestBaseValue;
 }
 
 export type SkillTestResults = {
@@ -71,10 +89,12 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     // result: skillTestResultDecoder,
     committedCards: JsonDecoder.dictionary(JsonDecoder.array(cardDecoder, 'Card[]'), 'Record<string, Card[]>').map((record) => Object.values(record).flat()),
     source: sourceDecoder,
-    card: JsonDecoder.nullable(JsonDecoder.string),
+    targetCard: JsonDecoder.optional(JsonDecoder.string),
+    sourceCard: JsonDecoder.optional(JsonDecoder.string),
     modifiedSkillValue: JsonDecoder.number,
     skills: JsonDecoder.array(skillTypeDecoder, 'SkillType[]'),
     step: JsonDecoder.failover({ tag: "DetermineSkillOfTestStep" }, skillTestStepDecoder),
+    baseValue: baseValueDecoder,
   },
   'SkillTest',
 );

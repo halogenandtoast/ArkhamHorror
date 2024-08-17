@@ -115,7 +115,7 @@ const title = computed(() => {
   }
 
   if (!question.value) {
-    return null
+    return ""
   }
 
   return "Choose"

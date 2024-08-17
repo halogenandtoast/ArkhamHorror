@@ -152,6 +152,7 @@ const hasPool = computed(() => {
   display: flex;
   flex-direction: row;
   align-items: center;
+  gap: 10px;
 }
 
 .pool {

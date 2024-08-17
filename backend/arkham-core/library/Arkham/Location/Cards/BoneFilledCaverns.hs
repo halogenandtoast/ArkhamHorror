@@ -31,7 +31,7 @@ boneFilledCaverns :: LocationCard BoneFilledCaverns
 boneFilledCaverns =
   locationWith (BoneFilledCaverns . (`with` Metadata Nothing)) Cards.boneFilledCaverns 3 (PerPlayer 2)
     $ (connectsToL .~ adjacentLocations)
-    . (costToEnterUnrevealedL .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation])
+    . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasModifiersFor BoneFilledCaverns where
   getModifiersFor (InvestigatorTarget iid) (BoneFilledCaverns (attrs `With` metadata)) = do

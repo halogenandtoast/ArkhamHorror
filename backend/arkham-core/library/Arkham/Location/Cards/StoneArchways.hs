@@ -14,14 +14,14 @@ import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThePallidMask.Helpers
 
 newtype StoneArchways = StoneArchways LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stoneArchways :: LocationCard StoneArchways
 stoneArchways =
   locationWith StoneArchways Cards.stoneArchways 2 (Static 0)
     $ (connectsToL .~ adjacentLocations)
-    . (costToEnterUnrevealedL .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation])
+    . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasModifiersFor StoneArchways where
   getModifiersFor (LocationTarget lid) (StoneArchways attrs) = do

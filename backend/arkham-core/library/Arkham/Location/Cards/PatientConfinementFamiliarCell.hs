@@ -23,7 +23,7 @@ patientConfinementFamiliarCell =
     Cards.patientConfinementFamiliarCell
     2
     (Static 1)
-    (costToEnterUnrevealedL .~ Costs [ActionCost 1, ClueCost (Static 1)])
+    (costToEnterUnrevealedL .~ ClueCost (Static 1))
 
 instance HasAbilities PatientConfinementFamiliarCell where
   getAbilities (PatientConfinementFamiliarCell attrs) =

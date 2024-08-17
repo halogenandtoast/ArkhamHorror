@@ -22,16 +22,9 @@ newtype BlockedPassage = BlockedPassage LocationAttrs
 
 blockedPassage :: LocationCard BlockedPassage
 blockedPassage =
-  locationWith
-    BlockedPassage
-    Cards.blockedPassage
-    7
-    (Static 0)
-    ( (connectsToL .~ adjacentLocations)
-        . ( costToEnterUnrevealedL
-              .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
-          )
-    )
+  locationWith BlockedPassage Cards.blockedPassage 7 (Static 0)
+    $ (connectsToL .~ adjacentLocations)
+    . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasAbilities BlockedPassage where
   getAbilities (BlockedPassage attrs) =

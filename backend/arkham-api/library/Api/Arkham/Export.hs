@@ -12,7 +12,7 @@ data ArkhamExport = ArkhamExport
   { aeCampaignPlayers :: [Text]
   , aeCampaignData :: ArkhamGameExportData
   }
-  deriving stock (Generic)
+  deriving stock Generic
 
 instance ToJSON ArkhamExport where
   toJSON = genericToJSON $ aesonOptions $ Just "ae"
@@ -28,7 +28,7 @@ data ArkhamGameExportData = ArkhamGameExportData
   , agedLog :: [ArkhamLogEntry]
   , agedMultiplayerVariant :: MultiplayerVariant
   }
-  deriving stock (Generic)
+  deriving stock Generic
 
 instance ToJSON ArkhamGameExportData where
   toJSON = genericToJSON $ aesonOptions $ Just "aged"
@@ -37,12 +37,12 @@ instance FromJSON ArkhamGameExportData where
   parseJSON = genericParseJSON $ aesonOptions $ Just "aged"
 
 arkhamGameToExportData :: ArkhamGame -> [ArkhamStep] -> [ArkhamLogEntry] -> ArkhamGameExportData
-arkhamGameToExportData ArkhamGame {..} steps gameLog =
+arkhamGameToExportData ArkhamGame {..} steps _gameLog =
   ArkhamGameExportData
     { agedName = arkhamGameName
     , agedCurrentData = arkhamGameCurrentData
     , agedStep = arkhamGameStep
     , agedSteps = steps
-    , agedLog = gameLog
+    , agedLog = []
     , agedMultiplayerVariant = arkhamGameMultiplayerVariant
     }

@@ -183,6 +183,14 @@ watch(abilities, (abilities) => {
   }
 })
 
+function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = 'move'
+    event.dataTransfer.effectAllowed = 'move'
+    event.dataTransfer.setData('text/plain', JSON.stringify({ "tag": "EnemyTarget", "contents": enemy.id }))
+  }
+}
+
 </script>
 
 <template>
@@ -205,6 +213,8 @@ watch(abilities, (abilities) => {
               @click="clicked"
             />
             <img v-else
+              :draggable="debug.active"
+              @dragstart="startDrag($event, enemy)"
               :src="image"
               class="card enemy"
               :data-id="id"

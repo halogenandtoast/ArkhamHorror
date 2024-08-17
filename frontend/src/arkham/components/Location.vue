@@ -195,6 +195,19 @@ const horror = computed(() => props.location.tokens[TokenType.Horror])
 const damage = computed(() => props.location.tokens[TokenType.Damage])
 
 const debug = useDebug()
+
+function onDrop(event: DragEvent) {
+  event.preventDefault()
+  if (event.dataTransfer) {
+    const data = event.dataTransfer.getData('text/plain')
+    console.log(data);
+    const json = JSON.parse(data)
+    if (json.tag === "EnemyTarget") {
+      debug.send(props.game.id, {tag: 'EnemyMove', contents: [json.contents, id.value]})
+    }
+
+  }
+}
 </script>
 
 <template>
@@ -225,6 +238,9 @@ const debug = useDebug()
             class="card"
             :src="image"
             :class="{ 'location--can-interact': canInteract }"
+            @drop="onDrop($event)"
+            @dragover.prevent
+            @dragenter.prevent
             @click="clicked"
           />
 

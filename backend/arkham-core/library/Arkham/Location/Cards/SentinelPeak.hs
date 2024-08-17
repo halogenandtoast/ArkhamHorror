@@ -20,7 +20,7 @@ sentinelPeak :: LocationCard SentinelPeak
 sentinelPeak =
   locationWith SentinelPeak Cards.sentinelPeak 4 (PerPlayer 2)
     $ costToEnterUnrevealedL
-    .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 2) Anywhere]
+    .~ GroupClueCost (PerPlayer 2) Anywhere
 
 instance RunMessage SentinelPeak where
   runMessage msg l@(SentinelPeak attrs) = case msg of

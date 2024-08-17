@@ -21,7 +21,7 @@ theGateToHell :: LocationCard TheGateToHell
 theGateToHell =
   locationWith TheGateToHell Cards.theGateToHell 1 (PerPlayer 2)
     $ (connectsToL .~ adjacentLocations)
-    . (costToEnterUnrevealedL .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation])
+    . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasAbilities TheGateToHell where
   getAbilities (TheGateToHell attrs) =

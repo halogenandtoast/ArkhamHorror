@@ -23,9 +23,7 @@ shiveringPools :: LocationCard ShiveringPools
 shiveringPools =
   locationWith ShiveringPools Cards.shiveringPools 5 (PerPlayer 1)
     $ (connectsToL .~ adjacentLocations)
-    . ( costToEnterUnrevealedL
-          .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
-      )
+    . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasAbilities ShiveringPools where
   getAbilities (ShiveringPools attrs) =

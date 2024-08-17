@@ -24,7 +24,7 @@ narrowShaft :: LocationCard NarrowShaft
 narrowShaft =
   locationWith NarrowShaft Cards.narrowShaft 2 (PerPlayer 1)
     $ (connectsToL .~ adjacentLocations)
-    . (costToEnterUnrevealedL .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation])
+    . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasAbilities NarrowShaft where
   getAbilities (NarrowShaft attrs) =

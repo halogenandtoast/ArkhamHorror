@@ -21,7 +21,7 @@ wellOfSouls :: LocationCard WellOfSouls
 wellOfSouls =
   locationWith WellOfSouls Cards.wellOfSouls 4 (PerPlayer 1)
     $ (connectsToL .~ adjacentLocations)
-    . (costToEnterUnrevealedL .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation])
+    . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasAbilities WellOfSouls where
   getAbilities (WellOfSouls attrs) =

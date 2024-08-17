@@ -21,9 +21,7 @@ candlelitTunnels :: LocationCard CandlelitTunnels
 candlelitTunnels =
   locationWith CandlelitTunnels Cards.candlelitTunnels 3 (PerPlayer 2)
     $ (connectsToL .~ adjacentLocations)
-    . ( costToEnterUnrevealedL
-          .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
-      )
+    . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasAbilities CandlelitTunnels where
   getAbilities (CandlelitTunnels attrs) =

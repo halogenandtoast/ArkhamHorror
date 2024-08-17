@@ -24,7 +24,7 @@ patientConfinementOccupiedCell =
     Cards.patientConfinementOccupiedCell
     5
     (Static 1)
-    (costToEnterUnrevealedL .~ Costs [ActionCost 1, ClueCost (Static 1)])
+    (costToEnterUnrevealedL .~ ClueCost (Static 1))
 
 instance HasAbilities PatientConfinementOccupiedCell where
   getAbilities (PatientConfinementOccupiedCell attrs) =

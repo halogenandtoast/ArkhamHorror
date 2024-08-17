@@ -1254,14 +1254,15 @@ runGameMessage msg g = case msg of
           let isPermanent = cdPermanent $ toCardDef treachery
           if isPermanent
             then do
-              push $ PlaceTreachery tid (Placement.InThreatArea iid)
+              pushAll [CardEnteredPlay iid card, PlaceTreachery tid (Placement.InThreatArea iid)]
               pure $ g & (entitiesL . treacheriesL %~ insertMap tid treachery)
             else do
               modifiers' <- getCombinedModifiers [TreacheryTarget tid, CardIdTarget cardId]
               let ignoreRevelation = IgnoreRevelation `elem` modifiers'
               pushAll
-                $ (guard (not ignoreRevelation) *> resolve (Revelation iid (TreacherySource tid)))
-                <> [UnsetActiveCard]
+                $ CardEnteredPlay iid card
+                : (guard (not ignoreRevelation) *> resolve (Revelation iid (TreacherySource tid)))
+                  <> [UnsetActiveCard]
               pure
                 $ g
                 & (entitiesL . treacheriesL %~ insertMap tid treachery)
@@ -1314,7 +1315,7 @@ runGameMessage msg g = case msg of
         TreacheryType -> do
           tid <- getRandom
           let treachery = createTreachery card iid tid
-          push $ PlaceTreachery tid (InThreatArea iid)
+          pushAll [CardEnteredPlay iid card, PlaceTreachery tid (InThreatArea iid)]
           pure $ g & (entitiesL . treacheriesL %~ insertMap tid treachery)
         EncounterAssetType -> do
           -- asset might have been put into play via revelation

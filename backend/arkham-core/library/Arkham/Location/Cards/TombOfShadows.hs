@@ -16,21 +16,14 @@ import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
 newtype TombOfShadows = TombOfShadows LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tombOfShadows :: LocationCard TombOfShadows
 tombOfShadows =
-  locationWith
-    TombOfShadows
-    Cards.tombOfShadows
-    4
-    (PerPlayer 2)
-    ( (connectsToL .~ adjacentLocations)
-        . ( costToEnterUnrevealedL
-              .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
-          )
-    )
+  locationWith TombOfShadows Cards.tombOfShadows 4 (PerPlayer 2)
+    $ (connectsToL .~ adjacentLocations)
+    . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasModifiersFor TombOfShadows where
   getModifiersFor (EnemyTarget eid) (TombOfShadows attrs) = do

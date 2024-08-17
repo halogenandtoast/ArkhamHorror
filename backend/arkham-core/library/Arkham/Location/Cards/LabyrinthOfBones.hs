@@ -22,7 +22,7 @@ labyrinthOfBones =
   locationWith LabyrinthOfBones Cards.labyrinthOfBones 2 (PerPlayer 2)
     $ (connectsToL .~ adjacentLocations)
     . ( costToEnterUnrevealedL
-          .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) YourLocation]
+          .~ GroupClueCost (PerPlayer 1) YourLocation
       )
 
 instance HasAbilities LabyrinthOfBones where

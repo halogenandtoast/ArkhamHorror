@@ -15,7 +15,7 @@ walterGilmansRoom :: LocationCard WalterGilmansRoom
 walterGilmansRoom =
   locationWith WalterGilmansRoom Cards.walterGilmansRoom 4 (PerPlayer 1)
     $ costToEnterUnrevealedL
-    .~ Costs [ActionCost 1, GroupClueCost (PerPlayer 1) (locationIs Locations.moldyHalls)]
+    .~ GroupClueCost (PerPlayer 1) (locationIs Locations.moldyHalls)
 
 instance HasAbilities WalterGilmansRoom where
   getAbilities (WalterGilmansRoom a) =

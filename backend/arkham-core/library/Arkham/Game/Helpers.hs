@@ -3080,7 +3080,7 @@ skillTestMatches
   -> SkillTest
   -> Matcher.SkillTestMatcher
   -> m Bool
-skillTestMatches iid source st = \case
+skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr of
   Matcher.PerilousSkillTest -> getIsPerilous st
   Matcher.IfSkillTestMatcher p thenMatcher elseMatcher -> do
     p' <- skillTestMatches iid source st p
@@ -3181,7 +3181,7 @@ skillTestMatches iid source st = \case
         pure $ lid1 == lid2 && (canAffectOthers || iid == st.investigator)
       _ -> pure False
   Matcher.SkillTestAt mtchr -> targetMatches st.target (Matcher.TargetAtLocation mtchr)
-  Matcher.SkillTestOfInvestigator whoMatcher -> st.investigator <=~> whoMatcher
+  Matcher.SkillTestOfInvestigator whoMatcher -> (traceShowId st.investigator) <=~> (traceShowId whoMatcher)
   Matcher.SkillTestMatches ms -> allM (skillTestMatches iid source st) ms
   Matcher.SkillTestOneOf ms -> anyM (skillTestMatches iid source st) ms
 

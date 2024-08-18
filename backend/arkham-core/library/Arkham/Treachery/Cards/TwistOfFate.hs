@@ -24,41 +24,28 @@ instance RunMessage TwistOfFate where
       faces <- getModifiedChaosTokenFaces tokens
       let
         source = toSource attrs
-        msgs =
-          mapMaybe
-            ( \case
-                ElderSign -> Nothing
-                PlusOne -> Nothing
-                Zero -> Just (InvestigatorAssignDamage iid source DamageAny 1 0)
-                MinusOne ->
-                  Just (InvestigatorAssignDamage iid source DamageAny 1 0)
-                MinusTwo ->
-                  Just (InvestigatorAssignDamage iid source DamageAny 1 0)
-                MinusThree ->
-                  Just (InvestigatorAssignDamage iid source DamageAny 1 0)
-                MinusFour ->
-                  Just (InvestigatorAssignDamage iid source DamageAny 1 0)
-                MinusFive ->
-                  Just (InvestigatorAssignDamage iid source DamageAny 1 0)
-                MinusSix ->
-                  Just (InvestigatorAssignDamage iid source DamageAny 1 0)
-                MinusSeven ->
-                  Just (InvestigatorAssignDamage iid source DamageAny 1 0)
-                MinusEight ->
-                  Just (InvestigatorAssignDamage iid source DamageAny 1 0)
-                Skull -> Just (InvestigatorAssignDamage iid source DamageAny 0 2)
-                Cultist ->
-                  Just (InvestigatorAssignDamage iid source DamageAny 0 2)
-                Tablet ->
-                  Just (InvestigatorAssignDamage iid source DamageAny 0 2)
-                ElderThing ->
-                  Just (InvestigatorAssignDamage iid source DamageAny 0 2)
-                AutoFail ->
-                  Just (InvestigatorAssignDamage iid source DamageAny 0 2)
-                CurseToken -> Nothing
-                BlessToken -> Nothing
-            )
-            faces
-      pushAll (msgs <> [ResetChaosTokens source])
+        (damage, horror) = bimap getSum getSum $ flip foldMap faces \case
+          ElderSign -> (Sum 0, Sum 0)
+          PlusOne -> (Sum 0, Sum 0)
+          Zero -> (Sum 1, Sum 0)
+          MinusOne -> (Sum 1, Sum 0)
+          MinusTwo -> (Sum 1, Sum 0)
+          MinusThree -> (Sum 1, Sum 0)
+          MinusFour -> (Sum 1, Sum 0)
+          MinusFive -> (Sum 1, Sum 0)
+          MinusSix -> (Sum 1, Sum 0)
+          MinusSeven -> (Sum 1, Sum 0)
+          MinusEight -> (Sum 1, Sum 0)
+          Skull -> (Sum 0, Sum 2)
+          Cultist -> (Sum 0, Sum 2)
+          Tablet -> (Sum 0, Sum 2)
+          ElderThing -> (Sum 0, Sum 2)
+          AutoFail -> (Sum 0, Sum 2)
+          CurseToken -> (Sum 0, Sum 0)
+          BlessToken -> (Sum 0, Sum 0)
+
+      pushAll
+        $ [InvestigatorAssignDamage iid source DamageAny damage horror | damage > 0 || horror > 0]
+        <> [ResetChaosTokens source]
       pure t
     _ -> TwistOfFate <$> runMessage msg attrs

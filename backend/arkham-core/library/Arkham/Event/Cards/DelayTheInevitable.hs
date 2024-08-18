@@ -1,16 +1,12 @@
-module Arkham.Event.Cards.DelayTheInevitable (
-  delayTheInevitable,
-  DelayTheInevitable (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.DelayTheInevitable (delayTheInevitable, DelayTheInevitable (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Window (Window (..))
@@ -25,8 +21,8 @@ delayTheInevitable = event DelayTheInevitable Cards.delayTheInevitable
 
 instance HasAbilities DelayTheInevitable where
   getAbilities (DelayTheInevitable a) =
-    [ restrictedAbility a 1 ControlsThis $ ReactionAbility (DealtDamageOrHorror #when AnySource You) Free
-    , restrictedAbility a 2 ControlsThis $ ForcedAbility $ PhaseEnds #when #mythos
+    [ restrictedAbility a 1 ControlsThis $ freeReaction (DealtDamageOrHorror #when AnySource You)
+    , restrictedAbility a 2 ControlsThis $ forced $ PhaseEnds #when #mythos
     ]
 
 getDamageAndHorror :: [Window] -> (Int, Int)
@@ -36,40 +32,29 @@ getDamageAndHorror ((windowType -> Window.WouldTakeDamageOrHorror _ _ damage hor
 getDamageAndHorror (_ : xs) = getDamageAndHorror xs
 
 instance RunMessage DelayTheInevitable where
-  runMessage msg e@(DelayTheInevitable attrs) = case msg of
+  runMessage msg e@(DelayTheInevitable attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       iids <- select $ affectsOthers $ colocatedWith iid
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [ targetLabel iid [PlaceEvent iid eid $ InPlayArea investigator]
-          | investigator <- iids
-          ]
-      pure e
-    UseCardAbility iid (isSource attrs -> True) 1 (getDamageAndHorror -> (damage, horror)) _ -> do
-      player <- getPlayer iid
-      pushAll
-        [ toDiscardBy iid (toAbilitySource attrs 1) attrs
-        , chooseOrRunOne player
-            $ [Label "Cancel Damage" [CancelDamage iid damage] | damage > 0]
-            <> [Label "Cancel Horror" [CancelHorror iid horror] | horror > 0]
-            <> [ Label
-                "Cancel Horror and Damage"
-                [CancelDamage iid damage, CancelHorror iid horror]
-               | damage > 0 && horror > 0
-               ]
+      chooseOrRunOne
+        iid
+        [ targetLabel iid [PlaceEvent iid eid $ InPlayArea investigator]
+        | investigator <- iids
         ]
       pure e
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      canAfford <- fieldMap InvestigatorResources (> 2) iid
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ [Label "Spend 2 Resources" [SpendResources iid 2] | canAfford]
-        <> [ Label
-              "Discard Delay the Invevitabe"
-              [toDiscardBy iid (toAbilitySource attrs 2) attrs]
-           ]
+    UseCardAbility iid (isSource attrs -> True) 1 (getDamageAndHorror -> (damage, horror)) _ -> do
+      toDiscardBy iid (attrs.ability 1) attrs
+      chooseOrRunOneM iid do
+        when (damage > 0) $ labeled "Cancel Damage" $ push $ CancelDamage iid damage
+        when (horror > 0) $ labeled "Cancel Horror" $ push $ CancelHorror iid horror
+        when (damage > 0 && horror > 0) do
+          labeled "Cancel Horror and Damage" $ pushAll [CancelDamage iid damage, CancelHorror iid horror]
+      cancelledOrIgnoredCardOrGameEffect (attrs.ability 1)
       pure e
-    _ -> DelayTheInevitable <$> runMessage msg attrs
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      canAfford <- fieldMap InvestigatorResources (> 2) iid
+      chooseOrRunOneM iid do
+        when canAfford do
+          labeled "Spend 2 Resources" $ push $ SpendResources iid 2
+          labeled "Discard Delay the Inevitable" $ toDiscardBy iid (attrs.ability 2) attrs
+      pure e
+    _ -> DelayTheInevitable <$> liftRunMessage msg attrs

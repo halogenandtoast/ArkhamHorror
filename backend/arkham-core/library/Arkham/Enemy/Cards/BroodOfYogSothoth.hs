@@ -9,7 +9,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Prelude
 
 newtype BroodOfYogSothoth = BroodOfYogSothoth EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 broodOfYogSothoth :: EnemyCard BroodOfYogSothoth
@@ -18,7 +18,7 @@ broodOfYogSothoth = enemy BroodOfYogSothoth Cards.broodOfYogSothoth (6, Static 1
 instance HasModifiersFor BroodOfYogSothoth where
   getModifiersFor target (BroodOfYogSothoth a) | isTarget a target = do
     healthModifier <- perPlayer 1
-    modified a [HealthModifier healthModifier, CanOnlyBeAttackedByAbilityOn (singleton "02219")]
+    modified a [HealthModifier healthModifier, CanOnlyBeAttackedByAbilityOn (singleton "02254")]
   getModifiersFor _ _ = pure []
 
 instance RunMessage BroodOfYogSothoth where

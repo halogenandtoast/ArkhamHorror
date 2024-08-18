@@ -138,5 +138,6 @@ instance RunMessage LukeRobinson where
     HandleTargetChoice _ (isSource attrs -> True) (isTarget attrs -> True) -> do
       pure $ LukeRobinson (attrs `with` Meta False)
     EndTurn _ -> do
-      pure $ LukeRobinson (attrs `with` Meta True)
+      attrs' <- runMessage msg attrs
+      pure $ LukeRobinson (attrs' `with` Meta True)
     _ -> LukeRobinson . (`with` meta) <$> runMessage msg attrs

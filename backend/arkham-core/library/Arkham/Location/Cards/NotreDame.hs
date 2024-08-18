@@ -1,17 +1,13 @@
-module Arkham.Location.Cards.NotreDame (
-  notreDame,
-  NotreDame (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.NotreDame (notreDame, NotreDame (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Runner (enemyAtLocation)
 import Arkham.Matcher
+import Arkham.Message (pattern RemoveDoom)
 import Arkham.SkillType
 
 newtype NotreDame = NotreDame LocationAttrs
@@ -22,41 +18,30 @@ notreDame :: LocationCard NotreDame
 notreDame = location NotreDame Cards.notreDame 3 (PerPlayer 1)
 
 instance HasModifiersFor NotreDame where
-  getModifiersFor (EnemyTarget eid) (NotreDame attrs) | locationRevealed attrs = do
+  getModifiersFor (EnemyTarget eid) (NotreDame attrs) | attrs.revealed = do
     atLocation <- enemyAtLocation eid attrs
     pure $ toModifiers attrs $ guard atLocation *> [EnemyFight (-1), EnemyEvade 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities NotreDame where
   getAbilities (NotreDame attrs) =
-    withRevealedAbilities
+    extendRevealed
       attrs
-      [ skillTestAbility
-          $ limitedAbility (GroupLimit PerGame 1)
-          $ restrictedAbility attrs 1 Here
-          $ ActionAbility []
-          $ ActionCost 1
-      ]
+      [skillTestAbility $ groupLimit PerGame $ restrictedAbility attrs 1 Here actionAbility]
 
 instance RunMessage NotreDame where
-  runMessage msg l@(NotreDame attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg l@(NotreDame attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (attrs.ability 1) attrs SkillWillpower (Fixed 6)
+      beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 6)
       pure l
-    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isAbilitySource attrs 1 source -> do
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       agenda <- selectJust AnyAgenda
       hasDoom <- agendaMatches agenda AgendaWithAnyDoom
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ Label
-          "Place 1 doom on current agenda"
-          [PlaceDoom (toAbilitySource attrs 1) (toTarget agenda) 1]
-        : [ Label
-            "Remove 1 doom on current agenda"
-            [RemoveDoom (toAbilitySource attrs 1) (toTarget agenda) 1]
+      chooseOrRunOne iid
+        $ Label "Place 1 doom on current agenda" [PlaceDoom (attrs.ability 1) (toTarget agenda) 1]
+        : [ Label "Remove 1 doom on current agenda" [RemoveDoom (attrs.ability 1) (toTarget agenda) 1]
           | hasDoom
           ]
       pure l
-    _ -> NotreDame <$> runMessage msg attrs
+    _ -> NotreDame <$> liftRunMessage msg attrs

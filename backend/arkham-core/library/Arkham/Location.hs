@@ -24,6 +24,9 @@ lookupLocation cCode = case lookup cCode allLocations of
   Just (SomeLocationCard a) -> \lid cid -> Location $ cbCardBuilder a cid lid
 
 instance RunMessage Location where
+  runMessage (Reset target) x | isTarget (toAttrs x) target = do
+    let a = toAttrs x
+    pure $ lookupLocation (toCardCode a) a.id (toCardId a)
   runMessage msg x@(Location l) = do
     modifiers' <- getModifiers (toTarget x)
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg

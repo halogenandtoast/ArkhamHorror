@@ -100,7 +100,7 @@ const debug = useDebug()
         @click="$emit('choose', interactAction)"
         :src="image"
       />
-      <div class="pool">
+      <div class="pool" v-if="!agenda.flipped">
         <PoolItem
           type="doom"
           :amount="agenda.doom"

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Types (ActAttrs (actDeckId))
 import Arkham.Action (Action)
 import Arkham.Agenda.Types (AgendaAttrs (agendaDeckId))
+import Arkham.Asset.Types (AssetAttrs)
 import Arkham.Attack.Types
 import Arkham.Calculation
 import Arkham.CampaignLogKey
@@ -1377,3 +1378,16 @@ updateMax def n ew = do
       case meta of
         Just (Msg.EffectInt x) -> push $ UpdateEffectMeta effect (Msg.EffectInt $ x + n)
         _ -> error "Invalid meta"
+
+takeControlOfAsset
+  :: (ReverseQueue m, AsId asset, IdOf asset ~ AssetId) => InvestigatorId -> asset -> m ()
+takeControlOfAsset iid asset = push $ Msg.TakeControlOfAsset iid (asId asset)
+
+class Attachable a where
+  toAttach :: Targetable target => a -> target -> Message
+
+instance Attachable AssetAttrs where
+  toAttach attrs target = AttachAsset (asId attrs) (toTarget target)
+
+attach :: (HasQueue Message m, Attachable a, Targetable target) => a -> target -> m ()
+attach a = push . toAttach a

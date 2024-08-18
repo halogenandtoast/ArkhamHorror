@@ -860,6 +860,7 @@ data Message
   | ResetInvestigators
   | ResetGame
   | ResetChaosTokens Source
+  | Reset Target
   | ReturnChaosTokensToPool [ChaosToken]
   | Resign InvestigatorId
   | ResignWith Target

@@ -446,7 +446,7 @@ inWindow self body = do
   run $ CheckWindow [toId self] (defaultWindows $ toId self)
   body
 
-assertNone :: (Query a, Show a, Show (QueryElement a)) => a -> TestAppT ()
+assertNone :: (HasCallStack, Query a, Show a, Show (QueryElement a)) => a -> TestAppT ()
 assertNone a = do
   res <- select a
   when (notNull res)

@@ -29,6 +29,7 @@ changeEncounterCardDrawer cardId iid = do
 
   for_ mTreachery \tid -> do
     withQueue_ $ map $ \case
+      ResolveTreachery _ tid' | tid == tid' -> ResolveTreachery iid tid'
       AfterRevelation _ tid' | tid == tid' -> AfterRevelation iid tid'
       other -> baseReplace tid other
 

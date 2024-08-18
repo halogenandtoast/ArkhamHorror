@@ -4,8 +4,13 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
+import Arkham.Game.Helpers (getPlayableCards)
+import Arkham.Helpers.Modifiers (withModifiers)
 import Arkham.Helpers.Modifiers qualified as Msg
+import Arkham.Investigator.Types (Investigator)
 import Arkham.Matcher
+import Arkham.Modifier
+import Arkham.Projection
 import Arkham.Taboo
 import Arkham.Window (defaultWindows)
 
@@ -28,10 +33,10 @@ instance RunMessage GearedUp where
       push $ DoStep 1 msg
       pure a
     DoStep _ msg'@(UseThisAbility iid (isSource attrs -> True) 1) -> do
-      cards <-
-        select
-          $ PlayableCardWithCostReduction NoAction 1 (basic $ #asset <> #item)
-          <> inHandOf iid
+      iattrs <- getAttrs @Investigator iid
+      cards <- withModifiers iid (toModifiers attrs [ReduceCostOf AnyCard 1]) $ do
+        filter (`cardMatch` card_ (#asset <> #item))
+          <$> getPlayableCards iattrs (UnpaidCost NoAction) (defaultWindows iid)
       when (notNull cards) do
         ( if tabooed TabooList21 attrs
             then chooseUpToN iid 5 "Done Playing Items"

@@ -277,7 +277,11 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
 canDoAction :: HasGame m => InvestigatorId -> Ability -> Action -> m Bool
 canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
   Action.Fight -> case abilitySource of
-    EnemySource _ -> pure True
+    EnemySource eid -> do
+      mods <- getModifiers eid
+      mCardCode <- toCardCode <$$> sourceToMaybeCard (abilityRequestor ab)
+      let restrictions = concat [rs | CanOnlyBeAttackedByAbilityOn rs <- mods]
+      pure $ null restrictions || maybe False (`elem` restrictions) mCardCode
     _ -> do
       modifiers <- getModifiers (AbilityTarget iid ab)
       let
@@ -364,11 +368,16 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
             pure [OrCost costs | Free `notElem` costs]
           _ -> do
             mLocation <- field InvestigatorLocation iid
+
+            let
+              hasBeforeInvestigate = case a.kind of
+                ActionAbilityWithBefore as _ _ -> #investigate `elem` as
+                _ -> False
             case mLocation of
-              Nothing -> pure []
-              Just lid -> do
+              Just lid | not hasBeforeInvestigate -> do
                 mods <- getModifiers lid
                 pure [m | AdditionalCostToInvestigate m <- mods]
+              _ -> pure []
       else pure []
   resignCosts <-
     if #resign `elem` abilityActions a

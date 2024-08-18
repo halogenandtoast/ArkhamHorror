@@ -146,7 +146,7 @@ tabooMutated20 = \case
   "02269" -> Just "Mutated20"
   "03006" -> Just "Mutated20"
   "03019" -> Just "Mutated20"
-  "04023" -> Just "Mutated20"
+  "04032" -> Just "Mutated20"
   "04110" -> Just "Mutated20"
   "05153" -> Just "Mutated20"
   "06002" -> Just "Mutated20"

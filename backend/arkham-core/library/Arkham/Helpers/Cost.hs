@@ -53,7 +53,7 @@ getCanAffordCost
   -> [Window]
   -> Cost
   -> m Bool
-getCanAffordCost iid (toSource -> source) actions windows' = \case
+getCanAffordCost iid !(toSource -> source) actions windows' = \case
   UnpayableCost -> pure False
   ChooseEnemyCost mtcr -> selectAny mtcr
   ChooseExtendedCardCost mtcr -> selectAny mtcr

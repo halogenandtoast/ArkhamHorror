@@ -9,7 +9,6 @@ import {-# SOURCE #-} Arkham.Asset (createAsset)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Types (Asset)
-import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Game.Helpers (getCanPerformAbility)
 import {-# SOURCE #-} Arkham.GameEnv
@@ -43,7 +42,8 @@ instance HasAbilities TrueMagickReworkingReality5 where
 
 instance RunMessage TrueMagickReworkingReality5 where
   runMessage msg (TrueMagickReworkingReality5 (With attrs meta)) = runQueueT $ case msg of
-    Do BeginRound -> pure . TrueMagickReworkingReality5 . (`with` meta) $ attrs & tokensL . ix Charge %~ max 1
+    Do BeginRound -> do
+      pure . TrueMagickReworkingReality5 . (`with` meta) $ attrs & tokensL %~ replenish #charge 1
     UseCardAbility iid (isSource attrs -> True) 1 ws _ -> do
       hand <- fieldMap InvestigatorHand (filterCards @CardMatcher (#asset <> #spell)) iid
       let adjustCost = overCost (over biplate (const attrs.id))

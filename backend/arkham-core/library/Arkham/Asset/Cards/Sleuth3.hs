@@ -3,7 +3,6 @@ module Arkham.Asset.Cards.Sleuth3 (sleuth3, Sleuth3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Asset.Uses
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
@@ -23,7 +22,7 @@ instance HasModifiersFor Sleuth3 where
         attrs
         [ CanSpendUsesAsResourceOnCardFromInvestigator
           (toId attrs)
-          Resource
+          #resource
           (InvestigatorWithId iid)
           (oneOf [CardWithTrait t | t <- [Charm, Tactic, Tome]])
         | attrs `controlledBy` iid
@@ -36,14 +35,13 @@ instance HasAbilities Sleuth3 where
         a
         1
         (DuringSkillTest $ oneOf [SkillTestOnCardWithTrait t | t <- [Charm, Tactic, Tome]])
-        $ FastAbility (assetUseCost a Resource 1)
+        $ FastAbility (assetUseCost a #resource 1)
     ]
 
 instance RunMessage Sleuth3 where
   runMessage msg a@(Sleuth3 attrs) = runQueueT $ case msg of
-    Do BeginRound -> pure . Sleuth3 $ attrs & tokensL . ix Resource %~ max 2
+    Do BeginRound -> pure . Sleuth3 $ attrs & tokensL %~ replenish #resource 2
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      withSkillTest \sid ->
-        skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
+      withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
       pure a
     _ -> Sleuth3 <$> liftRunMessage msg attrs

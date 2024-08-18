@@ -51,6 +51,16 @@ instance ToJSON EnemyMetadata where
   toJSON = genericToJSON $ aesonOptions $ Just "em"
   toEncoding = genericToEncoding $ aesonOptions $ Just "em"
 
+data TreacheryMetadata = TreacheryMetadata
+  { tmPeril :: Bool
+  , tmModifiers :: [Modifier]
+  }
+  deriving stock (Show, Eq, Generic)
+
+instance ToJSON TreacheryMetadata where
+  toJSON = genericToJSON $ aesonOptions $ Just "tm"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "tm"
+
 data AssetMetadata = AssetMetadata
   { amEvents :: [EventId]
   , amAssets :: [AssetId]

@@ -212,22 +212,30 @@ instance RunMessage EnemyAttrs where
           if all (`notElem` keywords) [#aloof, #massive] && not enemyExhausted
             then do
               prey <- getPreyMatcher a
-              preyIds <- select (preyWith prey $ investigatorAt lid)
-              investigatorIds <- if null preyIds then select $ investigatorAt lid else pure []
-              lead <- getLeadPlayer
-              let allIds = preyIds <> investigatorIds
               let
-                validInvestigatorIds =
-                  case miid of
-                    Nothing -> allIds
-                    Just iid -> if iid `elem` allIds then [iid] else allIds
-              case validInvestigatorIds of
-                [] -> push $ EnemyEntered eid lid
-                [iid] -> pushAll $ EnemyEntered eid lid : [EnemyEngageInvestigator eid iid]
-                iids ->
-                  push
-                    $ chooseOne lead
-                    $ [targetLabel iid [EnemyEntered eid lid, EnemyEngageInvestigator eid iid] | iid <- iids]
+                onlyPrey = case prey of
+                  Prey {} -> False
+                  _ -> True
+              preyIds <- select (preyWith prey $ investigatorAt lid)
+              case miid of
+                Just iid | not onlyPrey || iid `elem` preyIds -> do
+                  pushAll $ EnemyEntered eid lid : [EnemyEngageInvestigator eid iid]
+                _ -> do
+                  investigatorIds <- if null preyIds then select $ investigatorAt lid else pure []
+                  lead <- getLeadPlayer
+                  let allIds = preyIds <> investigatorIds
+                  let
+                    validInvestigatorIds =
+                      case miid of
+                        Nothing -> allIds
+                        Just iid -> if iid `elem` allIds then [iid] else allIds
+                  case validInvestigatorIds of
+                    [] -> push $ EnemyEntered eid lid
+                    [iid] -> pushAll $ EnemyEntered eid lid : [EnemyEngageInvestigator eid iid]
+                    iids ->
+                      push
+                        $ chooseOne lead
+                        $ [targetLabel iid [EnemyEntered eid lid, EnemyEngageInvestigator eid iid] | iid <- iids]
             else pushWhen (#massive `notElem` keywords) $ EnemyEntered eid lid
 
           when (#massive `elem` keywords) do

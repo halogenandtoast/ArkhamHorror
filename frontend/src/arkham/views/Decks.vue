@@ -37,7 +37,7 @@ async function sync(deck: Arkham.Deck) {
 </script>
 
 <template>
-  <div id="decks">
+  <div id="decks" class="page-container">
     <div>
       <h2 class="title">New Deck</h2>
       <NewDeck @new-deck="addDeck"/>

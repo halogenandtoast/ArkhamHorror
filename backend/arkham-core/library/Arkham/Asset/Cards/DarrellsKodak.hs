@@ -55,14 +55,15 @@ instance RunMessage DarrellsKodak where
       enemies <- selectTargets $ EnemyWithToken Evidence <> oneOf [enemyAt lid, not_ (EnemyAt Anywhere)]
       treacheries <-
         selectTargets $ TreacheryWithToken Evidence <> oneOf [treacheryAt lid, not_ (TreacheryAt Anywhere)]
-      chooseOne
-        iid
-        [ targetLabel
-          target
-          [ MoveTokens (attrs.ability 2) (targetToSource target) (toTarget attrs) Evidence 1
-          , DoStep (n - 1) msg'
+      when (notNull enemies || notNull treacheries) do
+        chooseOrRunOne
+          iid
+          [ targetLabel
+            target
+            [ MoveTokens (attrs.ability 2) (targetToSource target) (toTarget attrs) Evidence 1
+            , DoStep (n - 1) msg'
+            ]
+          | target <- enemies <> treacheries
           ]
-        | target <- enemies <> treacheries
-        ]
       pure a
     _ -> DarrellsKodak <$> liftRunMessage msg attrs

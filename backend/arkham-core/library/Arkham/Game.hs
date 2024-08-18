@@ -313,6 +313,16 @@ withModifiers a = do
   modifiers' <- getModifiers' (toTarget a)
   pure $ a `with` ModifierData modifiers'
 
+withTreacheryMetadata :: HasGame m => Treachery -> m (With Treachery TreacheryMetadata)
+withTreacheryMetadata a = do
+  card <- field TreacheryCard (toId a)
+  let
+    tmPeril = case card of
+      EncounterCard ec -> Keyword.Peril `member` card.keywords || ecAddedPeril ec
+      _ -> Keyword.Peril `member` card.keywords
+  tmModifiers <- getModifiers' (toTarget a)
+  pure $ a `with` TreacheryMetadata {..}
+
 withEnemyMetadata :: HasGame m => Enemy -> m (With Enemy EnemyMetadata)
 withEnemyMetadata a = do
   emModifiers <- getModifiers' (toTarget a)
@@ -514,7 +524,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       , "acts" .= toJSON (runReader (traverse withActMetadata (gameActs g)) g)
       , "agendas" .= toJSON (runReader (traverse withAgendaMetadata (gameAgendas g)) g)
       , "treacheries"
-          .= toJSON (runReader (traverse withModifiers (gameTreacheries g)) g)
+          .= toJSON (runReader (traverse withTreacheryMetadata (gameTreacheries g)) g)
       , "events" .= toJSON (runReader (traverse withModifiers (gameEvents g)) g)
       , "skills" .= toJSON (gameSkills g) -- no need for modifiers... yet
       , "stories" .= toJSON (entitiesStories gameEntities)

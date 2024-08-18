@@ -66,7 +66,9 @@ const assets = computed(() => {
 })
 
 const currentTreacheries = computed(() => {
-  return Object.values(props.game.treacheries).filter((t) => t.placement.tag === 'Limbo' && t.drawnBy === investigatorId.value)
+  return Object.
+    values(props.game.treacheries).
+    filter((t) => t.placement.tag === 'Limbo' && t.drawnBy === investigatorId.value && (props.playerId === props.investigator.playerId || !t.peril))
 })
 
 const stories = computed(() =>

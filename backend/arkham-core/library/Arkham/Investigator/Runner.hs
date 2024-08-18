@@ -415,15 +415,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     card <- getCard cardId
     pushAll [ObtainCard card, AddToHand iid [card]]
     pure a
-  CheckAdditionalActionCosts iid _ action msgs | iid == investigatorId -> do
-    modifiers' <- getModifiers (toTarget a)
+  CheckAdditionalActionCosts iid target action msgs | iid == investigatorId -> do
+    mods <- getModifiers a
+    targetMods <- getModifiers target
     let
       additionalCosts =
         mapMaybe
           \case
             AdditionalActionCostOf (IsAction action') n | action == action' -> Just (ActionCost n)
             _ -> Nothing
-          modifiers'
+          mods
+          <> mapMaybe
+            \case
+              AdditionalCostToInvestigate c | action == #investigate -> Just c
+              _ -> Nothing
+            targetMods
     if null additionalCosts
       then pushAll msgs
       else do

@@ -51,6 +51,9 @@ setRequestor source ab = ab {abilityRequestor = toSource source}
 instance HasCost Ability where
   overCost f ab = ab {Arkham.Ability.Types.abilityType = overCost f (abilityType ab)}
 
+instance HasField "kind" Ability AbilityType where
+  getField = abilityType
+
 instance HasField "requestor" Ability Source where
   getField = abilityRequestor
 

@@ -497,11 +497,14 @@ testAgenda cardCode f = do
   runReaderT (overGame (entitiesL . Entities.agendasL %~ insertEntity agenda')) env
   pure agenda'
 
+defaultTestLocation :: CardDef
+defaultTestLocation = Cards.study
+
 testLocation :: TestAppT Location
-testLocation = testLocationWithDef Cards.study id
+testLocation = testLocationWithDef defaultTestLocation id
 
 testLocationWith :: (LocationAttrs -> LocationAttrs) -> TestAppT Location
-testLocationWith = testLocationWithDef Cards.study
+testLocationWith = testLocationWithDef defaultTestLocation
 
 testLocationWithDef
   :: CardDef

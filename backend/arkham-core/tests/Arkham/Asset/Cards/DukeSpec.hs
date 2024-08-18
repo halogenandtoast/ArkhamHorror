@@ -1,86 +1,76 @@
-module Arkham.Asset.Cards.DukeSpec (
-  spec,
-) where
-
-import TestImport hiding (EnemyDamage)
+module Arkham.Asset.Cards.DukeSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Types (Field (..))
-import Arkham.Enemy.Types (Field (..))
-import Arkham.Enemy.Types qualified as Enemy
-import Arkham.Location.Types (LocationAttrs (..))
-import Arkham.Matcher (assetIs)
-import Arkham.Projection
-import Arkham.Token
+import Arkham.Location.Cards qualified as Locations
+import TestImport.New hiding (EnemyDamage)
 
 spec :: Spec
 spec = describe "Duke" $ do
   context "fight action" $ do
-    it "uses a base combat skill of 4 and does +1 damage"
-      $ gameTest
-      $ \investigator -> do
-        enemy <- testEnemyWith ((Enemy.healthL ?~ Static 3) . (Enemy.fightL ?~ 4))
-        updateInvestigator investigator
-          $ \attrs -> attrs {investigatorCombat = 1}
-        putCardIntoPlay investigator Assets.duke
-        duke <- selectJust $ assetIs Assets.duke
-        location <- testLocationWith id
-        pushAndRun $ SetChaosTokens [Zero]
-        pushAndRun $ spawnAt enemy location
-        pushAndRun $ moveTo investigator location
-        [doFight, _] <- field AssetAbilities duke
-        pushAndRun $ UseAbility (toId investigator) doFight []
-        chooseOnlyOption "Fight enemy"
-        chooseOnlyOption "Start skill test"
-        chooseOnlyOption "Apply Results"
-        fieldAssert EnemyDamage (== 2) enemy
+    it "uses a base combat skill of 4 and does +1 damage" . gameTest $ \self -> do
+      withProp @"combat" 1 self
+      enemy <- testEnemy & prop @"health" 3 & prop @"fight" 4
+      duke <- self `putAssetIntoPlay` Assets.duke
+      location <- testLocation
+      setChaosTokens [Zero]
+      enemy `spawnAt` location
+      self `moveTo` location
+      [doFight, _] <- self `getActionsFrom` duke
+      self `useAbility` doFight
+      click "Fight enemy"
+      click "Start skill test"
+      click "Apply Results"
+      enemy.damage `shouldReturn` 2
 
   context "investigate action" $ do
-    it "uses a base intellect skill of 4"
-      $ gameTest
-      $ \investigator -> do
-        updateInvestigator investigator
-          $ \attrs -> attrs {investigatorIntellect = 1}
-        putCardIntoPlay investigator Assets.duke
-        duke <- selectJust $ assetIs Assets.duke
-        location <-
-          testLocationWith
-            (\attrs -> attrs {locationShroud = Just 4, locationTokens = setTokens Clue 1 mempty})
-        pushAndRun $ SetChaosTokens [Zero]
-        pushAndRun $ moveTo investigator location
-        [_, investigateAction] <- field AssetAbilities duke
-        pushAndRun
-          $ UseAbility
-            (toId investigator)
-            investigateAction
-            [duringTurn $ toId investigator]
-        chooseOnlyOption "Investigate current location"
-        chooseOnlyOption "Start skill test"
-        chooseOnlyOption "Apply results"
-        fieldAssert InvestigatorClues (== 1) investigator
+    it "uses a base intellect skill of 4" . gameTest $ \self -> do
+      withProp @"intellect" 1 self
+      duke <- self `putAssetIntoPlay` Assets.duke
+      location <- testLocation & prop @"shroud" 4 & prop @"clues" 1
+      setChaosTokens [Zero]
+      self `moveTo` location
+      duringTurn self do
+        [investigateAction] <- self `getActionsFrom` duke
+        self `useAbility` investigateAction
+        click "Investigate current location"
+        click "Start skill test"
+        click "Apply results"
+      self.clues `shouldReturn` 1
 
-    it "you may move to a connecting location immediately before investigating"
-      $ gameTest
-      $ \investigator -> do
-        updateInvestigator investigator
-          $ \attrs -> attrs {investigatorIntellect = 1}
-        putCardIntoPlay investigator Assets.duke
-        duke <- selectJust $ assetIs Assets.duke
-        (location1, location2) <- testConnectedLocations id
-          $ \attrs -> attrs {locationShroud = Just 4, locationTokens = setTokens Clue 1 mempty}
-        pushAndRun $ placedLocation location1
-        pushAndRun $ placedLocation location2
-        pushAndRun $ SetChaosTokens [Zero]
-        pushAndRun $ moveTo investigator location1
-        [_, investigateAction] <- field AssetAbilities duke
-        pushAndRun $ moveTo investigator location1
-        pushAndRun $ UseAbility (toId investigator) investigateAction []
-        chooseOptionMatching
-          "move first"
-          ( \case
-              TargetLabel {} -> True
-              _ -> False
-          )
-        chooseOnlyOption "Start skill test"
-        chooseOnlyOption "Apply results"
-        fieldAssert InvestigatorClues (== 1) investigator
+    it "you may move to a connecting location immediately before investigating" . gameTest $ \self -> do
+      withProp @"intellect" 1 self
+      duke <- self `putAssetIntoPlay` Assets.duke
+      (location1, location2) <- testConnectedLocations id id
+      updateProp @"shroud" 4 location2
+      updateProp @"clues" 1 location2
+      setChaosTokens [Zero]
+      self `moveTo` location1
+      [investigateAction] <- self `getActionsFrom` duke
+      self `useAbility` investigateAction
+      chooseTarget location2
+      click "Start skill test"
+      click "Apply results"
+      self.clues `shouldReturn` 1
+
+  context "Additional investigate costs" do
+    it "must be paid them when the investigate portion happens" . gameTest $ \self -> do
+      withProp @"remainingActions" 3 self
+      duke <- self `putAssetIntoPlay` Assets.duke
+      (currentLocation, orneLibrary) <-
+        testConnectedLocationsWithDef (defaultTestLocation, id) (Locations.orneLibrary, id)
+      self `moveTo` currentLocation
+      [investigateAction] <- self `getActionsFrom` duke
+      self `useAbility` investigateAction
+      chooseTarget orneLibrary
+      self.remainingActions `shouldReturn` 1
+
+    it "will not be paid before moving" . gameTest $ \self -> do
+      withProp @"remainingActions" 3 self
+      duke <- self `putAssetIntoPlay` Assets.duke
+      (destination, orneLibrary) <-
+        testConnectedLocationsWithDef (defaultTestLocation, id) (Locations.orneLibrary, id)
+      self `moveTo` orneLibrary
+      [investigateAction] <- self `getActionsFrom` duke
+      self `useAbility` investigateAction
+      chooseTarget destination
+      self.remainingActions `shouldReturn` 2

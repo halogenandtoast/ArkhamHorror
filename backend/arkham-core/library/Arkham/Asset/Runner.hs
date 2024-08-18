@@ -390,6 +390,7 @@ instance RunMessage AssetAttrs where
             _ -> False
           CardSource c -> insertAfterMatching [afterLast] \case
             ResolvedPlayCard _ c' -> c.id == c'.id
+            ResolvedAbility _ -> True
             _ -> False
           EventSource e -> do
             mAbility <- findFromQueue \case

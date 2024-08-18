@@ -440,6 +440,9 @@ runGameMessage msg g = case msg of
     let
       isMovement = abilityIs ability #move
       isInvestigate = abilityIs ability #investigate
+      hasBeforeInvestigate = case ability.kind of
+        ActionAbilityWithBefore as _ _ -> #investigate `elem` as
+        _ -> False
       isResign = abilityIs ability #resign
 
     leaveCosts <-
@@ -464,7 +467,7 @@ runGameMessage msg g = case msg of
         else pure []
 
     investigateCosts <-
-      if isInvestigate && not (abilityDelayAdditionalCosts ability)
+      if isInvestigate && not (abilityDelayAdditionalCosts ability) && not hasBeforeInvestigate
         then do
           getMaybeLocation iid >>= \case
             Just lid -> do

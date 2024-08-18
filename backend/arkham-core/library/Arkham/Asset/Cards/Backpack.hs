@@ -8,7 +8,7 @@ import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Strategy
 
 newtype Backpack = Backpack AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 backpack :: AssetCard Backpack
@@ -30,6 +30,9 @@ instance RunMessage Backpack where
       let matcher = basic $ NonWeakness <> oneOf [#item, #supply]
       search iid source iid [fromTopOfDeck 6] matcher (defer attrs IsNotDraw)
       pure a
+    SearchFound iid (isTarget attrs -> True) _ [] -> do
+      chooseOne iid [Label "No Cards Found" []]
+      pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       additionalTargets <- getAdditionalSearchTargets iid
       chooseUpToN
@@ -47,4 +50,8 @@ instance RunMessage Backpack where
       addToHand iid [card]
       push msg
       pure $ Backpack $ attrs & cardsUnderneathL .~ remaining
-    _ -> Backpack <$> liftRunMessage msg attrs
+    _ -> do
+      let hadCards = notNull $ attrs.cardsUnderneath
+      result <- liftRunMessage msg attrs
+      when (hadCards && null result.cardsUnderneath) $ toDiscard attrs attrs
+      pure $ Backpack result

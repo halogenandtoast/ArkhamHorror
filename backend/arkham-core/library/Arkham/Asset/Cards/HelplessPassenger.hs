@@ -1,19 +1,11 @@
-module Arkham.Asset.Cards.HelplessPassenger (
-  helplessPassenger,
-  HelplessPassenger (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.HelplessPassenger (helplessPassenger, HelplessPassenger (..)) where
 
 import Arkham.Ability
-import Arkham.Action
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Direction
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Matcher
-import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype HelplessPassenger = HelplessPassenger AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,46 +13,26 @@ newtype HelplessPassenger = HelplessPassenger AssetAttrs
 
 helplessPassenger :: AssetCard HelplessPassenger
 helplessPassenger =
-  allyWith
-    HelplessPassenger
-    Cards.helplessPassenger
-    (1, 1)
-    ((isStoryL .~ True) . (slotsL .~ mempty))
+  allyWith HelplessPassenger Cards.helplessPassenger (1, 1)
+    $ (isStoryL .~ True)
+    . (slotsL .~ mempty)
 
 instance HasAbilities HelplessPassenger where
   getAbilities (HelplessPassenger x) =
-    [ restrictedAbility
-        x
-        1
-        (Uncontrolled <> OnSameLocation)
-        (ActionAbility [Parley] $ ActionCost 1)
-    , mkAbility x 2
-        $ ForcedAbility
-        $ AssetLeavesPlay Timing.When
-        $ AssetWithId
-        $ toId x
+    [ restrictedAbility x 1 (Uncontrolled <> OnSameLocation) parleyAction_
+    , mkAbility x 2 $ forced $ AssetLeavesPlay #when (be x)
     ]
 
 instance RunMessage HelplessPassenger where
-  runMessage msg a@(HelplessPassenger attrs@AssetAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      lid <-
-        fieldMap
-          InvestigatorLocation
-          (fromJustNote "must be at a location")
-          iid
-      spawnAt <-
-        fromMaybe lid
-          <$> selectOne (LocationInDirection LeftOf (LocationWithId lid))
-      a <$ push (AttachAsset assetId (LocationTarget spawnAt))
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a <$ push (TakeControlOfAsset iid assetId)
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      investigatorIds <- select UneliminatedInvestigator
-      a
-        <$ pushAll
-          [ InvestigatorAssignDamage iid' source DamageAny 0 1
-          | iid' <- investigatorIds
-          ]
-    _ -> HelplessPassenger <$> runMessage msg attrs
+  runMessage msg a@(HelplessPassenger attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      withLocationOf iid \lid -> do
+        attach attrs =<< selectOrDefault lid (LocationInDirection LeftOf $ LocationWithId lid)
+      pure a
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      takeControlOfAsset iid attrs
+      pure a
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      eachInvestigator \iid -> assignHorror iid (attrs.ability 2) 1
+      pure a
+    _ -> HelplessPassenger <$> liftRunMessage msg attrs

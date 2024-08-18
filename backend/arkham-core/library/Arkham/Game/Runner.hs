@@ -806,6 +806,7 @@ runGameMessage msg g = case msg of
     pushM $ checkWindows [mkWhen (Window.LeavePlay $ toTarget lid)]
     pure g
   RemovedLocation lid -> do
+    push $ Do msg
     treacheries <- select $ TreacheryAt $ LocationWithId lid
     pushAll $ concatMap (resolve . toDiscard GameSource) treacheries
     enemies <- select $ enemyAt lid
@@ -818,11 +819,9 @@ runGameMessage msg g = case msg of
     -- since we handle the would be defeated window in the previous message we
     -- skip directly to the is defeated message even though we would normally
     -- not want to do this
-    pushAll
-      $ concatMap
-        (resolve . Msg.InvestigatorIsDefeated (toSource lid))
-        investigators
-    pure $ g & entitiesL . locationsL %~ deleteMap lid
+    pushAll $ concatMap (resolve . Msg.InvestigatorIsDefeated (toSource lid)) investigators
+    pure g
+  Do (RemovedLocation lid) -> pure $ g & entitiesL . locationsL %~ deleteMap lid
   SpendClues 0 _ -> pure g
   SpendClues n iids -> do
     investigatorsWithClues <-

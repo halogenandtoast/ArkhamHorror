@@ -581,7 +581,6 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   flex: 1;
-  position: relative;
   overflow: hidden;
 }
 
@@ -590,7 +589,6 @@ onUnmounted(() => {
   height: calc(100vh - 80px);
   display: flex;
   flex: 1;
-  position: relative;
 }
 
 .socketWarning  {

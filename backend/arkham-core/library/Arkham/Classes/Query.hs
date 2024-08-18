@@ -249,6 +249,9 @@ selectOne matcher = do
     [] -> Nothing
     x : _ -> Just x
 
+selectOrDefault :: (HasCallStack, Query a, HasGame m) => QueryElement a -> a -> m (QueryElement a)
+selectOrDefault def matcher = selectMaybe def id matcher
+
 selectMaybe
   :: (HasCallStack, Query a, HasGame m)
   => b

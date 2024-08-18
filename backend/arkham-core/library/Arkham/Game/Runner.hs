@@ -1584,15 +1584,13 @@ runGameMessage msg g = case msg of
     pure g
   EnemySpawnFromVoid miid lid eid -> do
     pushAll (resolve $ EnemySpawn miid lid eid)
-    case lookup eid (g ^. outOfPlayEntitiesL . at VoidZone . non mempty . enemiesL) of
-      Just enemy ->
-        pure
-          $ g
-          & (activeCardL .~ Nothing)
-          & (focusedCardsL .~ mempty)
-          & (outOfPlayEntitiesL . ix VoidZone . enemiesL %~ deleteMap eid)
-          & (entitiesL . enemiesL %~ insertMap eid enemy)
-      Nothing -> error "enemy was not in void"
+    enemy <- getEnemy eid
+    pure
+      $ g
+      & (activeCardL .~ Nothing)
+      & (focusedCardsL .~ mempty)
+      & (outOfPlayEntitiesL . ix VoidZone . enemiesL %~ deleteMap eid)
+      & (entitiesL . enemiesL %~ insertMap eid enemy)
   Discard _ _ (SearchedCardTarget cardId) -> do
     investigator' <- getActiveInvestigator
     let

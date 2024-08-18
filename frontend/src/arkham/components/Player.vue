@@ -65,6 +65,10 @@ const assets = computed(() => {
   return xs
 })
 
+const currentTreacheries = computed(() => {
+  return Object.values(props.game.treacheries).filter((t) => t.placement.tag === 'Limbo' && t.drawnBy === investigatorId.value)
+})
+
 const stories = computed(() =>
   Object.
     values(props.game.stories).
@@ -359,6 +363,16 @@ const realityAcid = ref('89005')
           class="card"
           @click="realityAcid = realityAcid === '89005' ? '89005b' : '89005'"
           :src="imgsrc(`cards/${realityAcid}.jpg`)"
+        />
+
+        <Treachery
+          v-for="treachery in currentTreacheries"
+          :key="treachery.id"
+          :treachery="treachery"
+          :game="game"
+          :data-index="treachery.cardId"
+          :playerId="playerId"
+          @choose="$emit('choose', $event)"
         />
 
         <Skill

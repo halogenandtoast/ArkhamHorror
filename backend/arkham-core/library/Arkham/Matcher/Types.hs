@@ -399,6 +399,7 @@ data EnemyMatcher
   | EnemyCanBeDamagedBySource Source
   | OutOfPlayEnemy OutOfPlayZone EnemyMatcher
   | IncludeOmnipotent EnemyMatcher
+  | IncludeOutOfPlayEnemy EnemyMatcher
   | EnemyWithPlacement Placement
   | EnemyWithBounty -- Tony Morgan
   | PatrolEnemy

@@ -3066,17 +3066,24 @@ enemyMatcherFilter = \case
       CannotParleyWith matcher -> notElem enemy.id <$> select matcher
       _ -> pure True
   NearestEnemy matcher' -> \enemy -> do
-    matchingEnemyIds <- map toId <$> getEnemiesMatching matcher'
-    matches' <- guardYourLocation $ \start -> do
-      getShortestPath
-        start
-        (fmap (any (`elem` matchingEnemyIds)) . select . enemyAt)
-        mempty
-    if null matches'
-      then pure $ toId enemy `elem` matchingEnemyIds
+    closestAtYourLocation <- getEnemiesMatching (EnemyAt YourLocation <> matcher')
+    if notNull closestAtYourLocation
+      then pure $ elem enemy.id $ map toId closestAtYourLocation
       else do
-        mloc <- field EnemyLocation (toId $ toAttrs enemy)
-        pure $ maybe False (`elem` matches') mloc
+        matchingEnemyIds <- map toId <$> getEnemiesMatching matcher'
+        if enemy.id `elem` matchingEnemyIds
+          then do
+            matches' <- guardYourLocation $ \start -> do
+              getShortestPath
+                start
+                (fmap (any (`elem` matchingEnemyIds)) . select . enemyAt)
+                mempty
+            if null matches'
+              then pure $ toId enemy `elem` matchingEnemyIds
+              else do
+                mloc <- field EnemyLocation (toId $ toAttrs enemy)
+                pure $ maybe False (`elem` matches') mloc
+          else pure False
   ThatEnemy -> const (pure False) -- will never match, must be replaced
 
 getAct :: (HasCallStack, HasGame m) => ActId -> m Act

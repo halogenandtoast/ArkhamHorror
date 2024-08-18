@@ -27,7 +27,7 @@ instance HasAbilities CryptographicCipher where
         $ FastAbility' (assetUseCost x Secret 1 <> exhaust x) [#investigate]
     , withTooltip
         "Exhaust Cryptographic Cipher and spend 1 secret: Investigate. Your location gets -2 shroud for this investigation."
-        $ investigateAbility x 1 (assetUseCost x Secret 1 <> exhaust x) ControlsThis
+        $ investigateAbility x 2 (assetUseCost x Secret 1 <> exhaust x) ControlsThis
     ]
 
 instance RunMessage CryptographicCipher where
@@ -41,7 +41,7 @@ instance RunMessage CryptographicCipher where
         , toMessage investigation
         ]
       pure a
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       lid <- getJustLocation iid
       sid <- getRandom
       investigation <- mkInvestigate sid iid (toAbilitySource attrs 1)

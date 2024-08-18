@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.BeginnersLuck (
-  BeginnersLuck (..),
-  beginnersLuck,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.BeginnersLuck (BeginnersLuck (..), beginnersLuck) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -15,8 +10,8 @@ import Arkham.Deck qualified as Deck
 import Arkham.Helpers.ChaosBag
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.ScenarioLogKey
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
 import Arkham.Window qualified as Window
 
@@ -30,19 +25,13 @@ beginnersLuck = act (1, A) BeginnersLuck Cards.beginnersLuck Nothing
 
 instance HasAbilities BeginnersLuck where
   getAbilities (BeginnersLuck x) =
-    withBaseAbilities x
+    extend x
       $ if onSide A x
         then
-          [ limitedAbility (GroupLimit PerRound 1)
-              $ mkAbility
-                x
-                1
-                (ReactionAbility (RevealChaosToken Timing.When Anyone AnyChaosToken) Free)
+          [ groupLimit PerRound $ mkAbility x 1 $ freeReaction (RevealChaosToken #when Anyone AnyChaosToken)
           , mkAbility x 2
               $ Objective
-              $ ForcedAbilityWithCost
-                AnyWindow
-                (GroupClueCost (PerPlayer 4) Anywhere)
+              $ ForcedAbilityWithCost AnyWindow (GroupClueCost (PerPlayer 4) Anywhere)
           ]
         else []
 
@@ -79,11 +68,8 @@ instance RunMessage BeginnersLuck where
       lead <- getLead
       pushAll
         [ placeDarkenedHall
-        , DiscardUntilFirst
-            lead
-            (toSource attrs)
-            Deck.EncounterDeck
-            (BasicCardMatch $ CardWithType EnemyType <> CardWithTrait Criminal)
+        , DiscardUntilFirst lead (toSource attrs) Deck.EncounterDeck
+            $ basic (#enemy <> CardWithTrait Criminal)
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
       pure a

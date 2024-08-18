@@ -1,13 +1,9 @@
-module Arkham.Treachery.Cards.TwistOfFate (
-  TwistOfFate (..),
-  twistOfFate,
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.TwistOfFate (TwistOfFate (..), twistOfFate) where
 
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Prelude
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -21,10 +17,13 @@ twistOfFate = treachery TwistOfFate Cards.twistOfFate
 
 instance RunMessage TwistOfFate where
   runMessage msg t@(TwistOfFate attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      t <$ push (RequestChaosTokens source (Just iid) (Reveal 1) SetAside)
-    RequestedChaosTokens source (Just iid) tokens | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
+      push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
+      pure t
+    RequestedChaosTokens (isSource attrs -> True) (Just iid) tokens -> do
+      faces <- getModifiedChaosTokenFaces tokens
       let
+        source = toSource attrs
         msgs =
           mapMaybe
             ( \case
@@ -58,8 +57,8 @@ instance RunMessage TwistOfFate where
                   Just (InvestigatorAssignDamage iid source DamageAny 0 2)
                 CurseToken -> Nothing
                 BlessToken -> Nothing
-                . chaosTokenFace
             )
-            tokens
-      t <$ pushAll (msgs <> [ResetChaosTokens source])
+            faces
+      pushAll (msgs <> [ResetChaosTokens source])
+      pure t
     _ -> TwistOfFate <$> runMessage msg attrs

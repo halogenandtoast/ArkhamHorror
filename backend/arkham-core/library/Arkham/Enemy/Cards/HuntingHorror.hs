@@ -1,9 +1,4 @@
-module Arkham.Enemy.Cards.HuntingHorror (
-  huntingHorror,
-  HuntingHorror (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.HuntingHorror (huntingHorror, HuntingHorror (..)) where
 
 import Arkham.Ability
 import Arkham.ChaosBag.RevealStrategy
@@ -13,6 +8,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Token
 import Arkham.Token qualified as Token
@@ -28,7 +24,7 @@ instance HasAbilities HuntingHorror where
   getAbilities (HuntingHorror x) =
     extend
       x
-      [ mkAbility x 1 $ forced $ PhaseBegins #when #enemy
+      [ restrictedAbility x 1 criteria $ forced $ PhaseBegins #when #enemy
       , restrictedAbility x 2 criteria $ forced $ EnemyLeavesPlay #when (be x)
       ]
    where

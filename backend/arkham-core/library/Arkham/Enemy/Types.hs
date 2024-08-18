@@ -280,6 +280,9 @@ instance AsId Enemy where
 instance HasField "id" Enemy EnemyId where
   getField (Enemy e) = attr enemyId e
 
+instance HasField "placement" Enemy Placement where
+  getField = (.placement) . toAttrs
+
 instance Data Enemy where
   gunfold _ _ _ = error "gunfold(Enemy)"
   toConstr _ = error "toConstr(Enemy)"

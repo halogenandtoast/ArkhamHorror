@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.RestrictedAccess (
-  RestrictedAccess (..),
-  restrictedAccess,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.RestrictedAccess (RestrictedAccess (..), restrictedAccess) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -13,7 +8,7 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype RestrictedAccess = RestrictedAccess AgendaAttrs
@@ -21,17 +16,11 @@ newtype RestrictedAccess = RestrictedAccess AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 restrictedAccess :: AgendaCard RestrictedAccess
-restrictedAccess =
-  agenda (1, A) RestrictedAccess Cards.restrictedAccess (Static 5)
+restrictedAccess = agenda (1, A) RestrictedAccess Cards.restrictedAccess (Static 5)
 
 instance HasAbilities RestrictedAccess where
   getAbilities (RestrictedAccess x) =
-    [ mkAbility x 1
-      $ ForcedAbility
-      $ EnemySpawns Timing.When Anywhere
-      $ enemyIs Enemies.huntingHorror
-    | onSide A x
-    ]
+    [mkAbility x 1 $ forced $ EnemySpawns #when Anywhere $ enemyIs Enemies.huntingHorror | onSide A x]
 
 instance RunMessage RestrictedAccess where
   runMessage msg a@(RestrictedAccess attrs) = case msg of

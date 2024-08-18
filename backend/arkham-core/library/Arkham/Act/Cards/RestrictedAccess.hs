@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.RestrictedAccess (
-  RestrictedAccess (..),
-  restrictedAccess,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.RestrictedAccess (RestrictedAccess (..), restrictedAccess) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -11,6 +6,7 @@ import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.ScenarioLogKey
 
 newtype RestrictedAccess = RestrictedAccess ActAttrs
@@ -35,8 +31,7 @@ instance HasAbilities RestrictedAccess where
           , Remembered ActivatedTheDevice
           ]
       )
-      $ Objective
-      $ ForcedAbility AnyWindow
+      $ Objective Anytime
     | onSide A a
     ]
 

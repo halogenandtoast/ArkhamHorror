@@ -107,6 +107,9 @@ table statements and run them manually, you will want to specifically run the
 
 ## Copyright Disclaimer
 
-The Card Game, both literal and graphical, is copyrighted by Fantasy Flight Games. This application and the corresponding website is not produced, endorsed, supported, or affiliated with Fantasy Flight Games.
+The information presented in this app about [Arkham Horror: The Card Game™][arkham], both textual and graphical, is © Fantasy Flight Games 2024. This app is a fan project and is not produced, endorsed, or supported by, or affiliated with Fantasy Flight Games.
 
+All artwork and illustrations are the intellectual property of their respective creators. All Arkham Horror: The Card Game™ images and graphics are copyrighted by Fantasy Flight Games.
+
+[arkham]: https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/
 [docker]: https://www.docker.com/

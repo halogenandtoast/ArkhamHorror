@@ -1,5 +1,4 @@
 import { JsonDecoder } from 'ts.data.json';
-import { Target, targetDecoder } from '@/arkham/types/Target';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';

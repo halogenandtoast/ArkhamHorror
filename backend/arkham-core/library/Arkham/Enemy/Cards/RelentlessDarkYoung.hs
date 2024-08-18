@@ -1,16 +1,11 @@
-module Arkham.Enemy.Cards.RelentlessDarkYoung (
-  relentlessDarkYoung,
-  RelentlessDarkYoung (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.RelentlessDarkYoung (relentlessDarkYoung, RelentlessDarkYoung (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype RelentlessDarkYoung = RelentlessDarkYoung EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -18,17 +13,13 @@ newtype RelentlessDarkYoung = RelentlessDarkYoung EnemyAttrs
 
 relentlessDarkYoung :: EnemyCard RelentlessDarkYoung
 relentlessDarkYoung =
-  enemyWith
-    RelentlessDarkYoung
-    Cards.relentlessDarkYoung
-    (4, Static 5, 2)
-    (2, 1)
-    (preyL .~ Prey (InvestigatorWithLowestSkill #agility))
+  enemyWith RelentlessDarkYoung Cards.relentlessDarkYoung (4, Static 5, 2) (2, 1)
+    $ preyL
+    .~ Prey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
 
 instance HasAbilities RelentlessDarkYoung where
   getAbilities (RelentlessDarkYoung attrs) =
-    withBaseAbilities attrs
-      $ [mkAbility attrs 1 $ ForcedAbility $ RoundEnds Timing.When]
+    extend attrs [mkAbility attrs 1 $ forced $ RoundEnds #when]
 
 instance RunMessage RelentlessDarkYoung where
   runMessage msg e@(RelentlessDarkYoung attrs) = case msg of

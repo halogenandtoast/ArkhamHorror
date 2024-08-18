@@ -89,7 +89,7 @@ instance RunMessage PlanningTheEscape where
     RequestedEncounterCard source _ mcard | isSource attrs source -> do
       lead <- getLeadPlayer
       for_ mcard $ \card -> do
-        investigators <- select (InvestigatorWithLowestSkill SkillWillpower)
+        investigators <- select (InvestigatorWithLowestSkill #willpower UneliminatedInvestigator)
         case investigators of
           [] -> error "Should have at least one investigator"
           xs ->

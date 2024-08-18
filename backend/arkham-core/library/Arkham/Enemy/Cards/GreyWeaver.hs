@@ -7,17 +7,14 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype GreyWeaver = GreyWeaver EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 greyWeaver :: EnemyCard GreyWeaver
 greyWeaver =
-  enemyWith
-    GreyWeaver
-    Cards.greyWeaver
-    (4, Static 5, 3)
-    (1, 2)
-    (preyL .~ Prey (InvestigatorWithLowestSkill #agility))
+  enemyWith GreyWeaver Cards.greyWeaver (4, Static 5, 3) (1, 2)
+    $ preyL
+    .~ Prey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
 
 instance HasModifiersFor GreyWeaver where
   getModifiersFor (InvestigatorTarget iid) (GreyWeaver attrs) = do
@@ -27,5 +24,4 @@ instance HasModifiersFor GreyWeaver where
   getModifiersFor _ _ = pure []
 
 instance RunMessage GreyWeaver where
-  runMessage msg (GreyWeaver attrs) =
-    GreyWeaver <$> runMessage msg attrs
+  runMessage msg (GreyWeaver attrs) = GreyWeaver <$> runMessage msg attrs

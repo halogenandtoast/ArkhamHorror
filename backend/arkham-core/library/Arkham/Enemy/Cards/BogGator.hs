@@ -9,14 +9,14 @@ import Arkham.Prelude
 import Arkham.Trait
 
 newtype BogGator = BogGator EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 bogGator :: EnemyCard BogGator
 bogGator =
   enemyWith BogGator Cards.bogGator (2, Static 2, 2) (1, 1)
     $ preyL
-    .~ Prey (InvestigatorWithLowestSkill #agility)
+    .~ Prey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
 
 instance HasModifiersFor BogGator where
   getModifiersFor target (BogGator a) | spawned a && a `is` target = do

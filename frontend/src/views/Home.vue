@@ -49,7 +49,7 @@ const toggleNewGame = () => {
 </script>
 
 <template>
-  <div class="home">
+  <div class="home page-container">
     <div v-if="currentUser" class="new-game">
       <transition name="slide">
         <NewGame v-if="newGame">

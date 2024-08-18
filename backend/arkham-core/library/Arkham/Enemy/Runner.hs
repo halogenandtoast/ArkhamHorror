@@ -1268,7 +1268,7 @@ instance RunMessage EnemyAttrs where
                         $ replaceYouMatcher iid (SpawnAt $ not_ changeSpawnMatchers <> changedSpawnMatchers)
                     else noSpawn a (Just iid)
             Nothing -> noSpawn a (Just iid)
-        Just matcher -> spawnAt enemyId (Just iid) (applyMatcherExclusions mods $ replaceYouMatcher iid matcher)
+        Just matcher -> spawnAt enemyId Nothing (applyMatcherExclusions mods $ replaceYouMatcher iid matcher)
       pure a
     EnemySpawnAtLocationMatching miid locationMatcher eid | eid == enemyId -> do
       activeInvestigatorId <- getActiveInvestigatorId
@@ -1277,8 +1277,8 @@ instance RunMessage EnemyAttrs where
         [] -> noSpawn a miid
         [lid] -> do
           windows' <- checkWindows [mkWhen $ Window.EnemyWouldSpawnAt eid lid]
-          pushAll $ windows' : resolve (EnemySpawn miid lid eid)
-        xs -> spawnAtOneOf miid eid xs
+          pushAll $ windows' : resolve (EnemySpawn Nothing lid eid)
+        xs -> spawnAtOneOf Nothing eid xs
       pure a
     InvestigatorEliminated iid -> case enemyPlacement of
       InThreatArea iid' | iid == iid' -> do

@@ -1,14 +1,12 @@
 module Arkham.Enemy.Cards.DanielChesterfield (danielChesterfield, DanielChesterfield (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.SkillType
 
 newtype DanielChesterfield = DanielChesterfield EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

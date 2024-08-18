@@ -49,6 +49,7 @@ import Arkham.Movement
 import Arkham.Name
 import Arkham.Phase
 import Arkham.Projection
+import Arkham.Query
 import Arkham.SkillTest.Runner
 import Arkham.SkillTestResult
 import Arkham.Token qualified as Token
@@ -445,10 +446,15 @@ inWindow self body = do
   run $ CheckWindow [toId self] (defaultWindows $ toId self)
   body
 
-assertNone :: (Query a, Show a) => a -> TestAppT ()
+assertNone :: (Query a, Show a, Show (QueryElement a)) => a -> TestAppT ()
 assertNone a = do
   res <- select a
-  when (notNull res) $ expectationFailure $ "expected " <> show a <> " to produce no results"
+  when (notNull res)
+    $ expectationFailure
+    $ "expected "
+    <> show a
+    <> " to produce no results, but got "
+    <> show res
 
 chooseTarget :: (HasCallStack, Targetable target) => target -> TestAppT ()
 chooseTarget (toTarget -> target) =

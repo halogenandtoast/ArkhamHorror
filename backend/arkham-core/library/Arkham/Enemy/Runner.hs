@@ -1395,6 +1395,23 @@ instance RunMessage EnemyAttrs where
     PlaceUnderneath _ cards -> do
       when (toCard a `elem` cards) $ push $ RemoveEnemy (toId a)
       pure a
+    PlaceInBonded _iid card -> do
+      when (toCard a == card) do
+        removeAllMessagesMatching \case
+          Discarded (EnemyTarget aid) _ _ -> aid == a.id
+          CheckWindow _ ws -> flip any ws \case
+            (Window.windowType -> Window.Discarded _ _ c) -> toCard a == c
+            _ -> False
+          _ -> False
+        push $ RemoveFromGame (toTarget a)
+      pure a
+    RemoveFromGame target | a `isTarget` target -> do
+      a <$ push (RemoveFromPlay $ toSource a)
+    RemoveFromPlay source | isSource a source -> do
+      windowMsg <-
+        checkWindows $ (`Window.mkWindow` Window.LeavePlay (toTarget a)) <$> [#when, #at, #after]
+      pushAll [windowMsg, RemovedFromPlay source]
+      pure a
     DoBatch _ msg' -> do
       -- generic DoBatch handler
       runMessage (Do msg') a

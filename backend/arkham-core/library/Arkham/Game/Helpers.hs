@@ -1615,6 +1615,9 @@ passesEnemyCriteria iid source windows' criterion = do
           Just _ -> error "Event must be attached to a location"
           Nothing -> error "Event must be attached to a location"
       _ -> error $ "Does not handle source: " <> show source
+    Criteria.ThisEnemy (Matcher.IncludeOutOfPlayEnemy enemyMatcher) -> case source of
+      EnemySource eid -> pure $ Matcher.IncludeOutOfPlayEnemy $ Matcher.EnemyWithId eid <> enemyMatcher
+      _ -> error "Invalid source for ThisEnemy"
     Criteria.ThisEnemy enemyMatcher -> case source of
       EnemySource eid -> pure $ Matcher.EnemyWithId eid <> enemyMatcher
       _ -> error "Invalid source for ThisEnemy"

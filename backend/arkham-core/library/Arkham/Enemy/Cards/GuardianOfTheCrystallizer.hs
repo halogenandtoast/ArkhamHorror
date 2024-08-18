@@ -4,8 +4,6 @@ module Arkham.Enemy.Cards.GuardianOfTheCrystallizer (
 )
 where
 
-import Arkham.Prelude
-
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
@@ -13,6 +11,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 
 newtype GuardianOfTheCrystallizer = GuardianOfTheCrystallizer EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -20,17 +19,13 @@ newtype GuardianOfTheCrystallizer = GuardianOfTheCrystallizer EnemyAttrs
 
 guardianOfTheCrystallizer :: EnemyCard GuardianOfTheCrystallizer
 guardianOfTheCrystallizer =
-  enemyWith
-    GuardianOfTheCrystallizer
-    Cards.guardianOfTheCrystallizer
-    (3, Static 3, 3)
-    (1, 1)
+  enemyWith GuardianOfTheCrystallizer Cards.guardianOfTheCrystallizer (3, Static 3, 3) (1, 1)
     $ (exhaustedL .~ True)
     . (preyL .~ OnlyPrey (HasMatchingAsset $ assetIs Assets.crystallizerOfDreams))
 
 instance HasAbilities GuardianOfTheCrystallizer where
   getAbilities (GuardianOfTheCrystallizer x) =
-    withBaseAbilities
+    extend
       x
       [ groupLimit PerTestOrAbility
           $ restrictedAbility

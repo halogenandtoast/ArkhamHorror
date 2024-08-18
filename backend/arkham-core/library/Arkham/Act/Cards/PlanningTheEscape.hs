@@ -14,7 +14,6 @@ import Arkham.Deck qualified as Deck
 import Arkham.Matcher
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
-import Arkham.SkillType
 import Arkham.Trait
 
 newtype PlanningTheEscape = PlanningTheEscape ActAttrs

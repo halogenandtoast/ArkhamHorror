@@ -42,51 +42,54 @@ sourceToCard = targetToCard . sourceToTarget
 sourceToMaybeCard :: (HasCallStack, HasGame m) => Source -> m (Maybe Card)
 sourceToMaybeCard = targetToMaybeCard . sourceToTarget
 
-sourceToTarget :: Source -> Target
-sourceToTarget = \case
-  YouSource -> YouTarget
-  AssetSource aid -> AssetTarget aid
-  EnemySource eid -> EnemyTarget eid
-  CardSource c -> CardTarget c
-  CardIdSource c -> CardIdTarget c
-  ScenarioSource -> ScenarioTarget
-  InvestigatorSource iid -> InvestigatorTarget iid
-  CardCodeSource cid -> CardCodeTarget cid
-  ChaosTokenSource t -> ChaosTokenTarget t
-  ChaosTokenEffectSource _ -> error "not implemented"
-  AgendaSource aid -> AgendaTarget aid
-  LocationSource lid -> LocationTarget lid
-  SkillTestSource sid -> SkillTestTarget sid
-  TreacherySource tid -> TreacheryTarget tid
-  EventSource eid -> EventTarget eid
-  SkillSource sid -> SkillTarget sid
-  EmptyDeckSource -> error "not implemented"
-  DeckSource -> error "not implemented"
-  GameSource -> GameTarget
-  ActSource aid -> ActTarget aid
-  PlayerCardSource _ -> error "not implemented"
-  EncounterCardSource _ -> error "not implemented"
-  TestSource {} -> TestTarget
-  ProxySource _ source -> sourceToTarget source
-  EffectSource eid -> EffectTarget eid
-  ResourceSource iid -> ResourceTarget iid
-  AbilitySource s _ -> sourceToTarget s
-  ActDeckSource -> ActDeckTarget
-  AgendaDeckSource -> AgendaDeckTarget
-  ActMatcherSource {} -> error "not converted"
-  AgendaMatcherSource {} -> error "not converted"
-  AssetMatcherSource {} -> error "not converted"
-  LocationMatcherSource {} -> error "not converted"
-  EnemyMatcherSource {} -> error "not converted"
-  EnemyAttackSource a -> EnemyTarget a
-  StorySource code -> StoryTarget code
-  CampaignSource -> CampaignTarget
-  TarotSource arcana -> TarotTarget arcana
-  ThisCard -> error "not converted"
-  CardCostSource _ -> error "not converted"
-  BothSource s1 s2 -> BothTarget (sourceToTarget s1) (sourceToTarget s2)
-  BatchSource bId -> BatchTarget bId
-  ActiveCostSource acId -> ActiveCostTarget acId
+sourceToTarget :: HasCallStack => Source -> Target
+sourceToTarget = fromJustNote "not implemented" . sourceToMaybeTarget
+
+sourceToMaybeTarget :: Source -> Maybe Target
+sourceToMaybeTarget = \case
+  YouSource -> Just YouTarget
+  AssetSource aid -> Just $ AssetTarget aid
+  EnemySource eid -> Just $ EnemyTarget eid
+  CardSource c -> Just $ CardTarget c
+  CardIdSource c -> Just $ CardIdTarget c
+  ScenarioSource -> Just $ ScenarioTarget
+  InvestigatorSource iid -> Just $ InvestigatorTarget iid
+  CardCodeSource cid -> Just $ CardCodeTarget cid
+  ChaosTokenSource t -> Just $ ChaosTokenTarget t
+  ChaosTokenEffectSource _ -> Nothing
+  AgendaSource aid -> Just $ AgendaTarget aid
+  LocationSource lid -> Just $ LocationTarget lid
+  SkillTestSource sid -> Just $ SkillTestTarget sid
+  TreacherySource tid -> Just $ TreacheryTarget tid
+  EventSource eid -> Just $ EventTarget eid
+  SkillSource sid -> Just $ SkillTarget sid
+  EmptyDeckSource -> Nothing
+  DeckSource -> Nothing
+  GameSource -> Just $ GameTarget
+  ActSource aid -> Just $ ActTarget aid
+  PlayerCardSource _ -> Nothing
+  EncounterCardSource _ -> Nothing
+  TestSource {} -> Just $ TestTarget
+  ProxySource _ source -> sourceToMaybeTarget source
+  EffectSource eid -> Just $ EffectTarget eid
+  ResourceSource iid -> Just $ ResourceTarget iid
+  AbilitySource s _ -> sourceToMaybeTarget s
+  ActDeckSource -> Just $ ActDeckTarget
+  AgendaDeckSource -> Just $ AgendaDeckTarget
+  ActMatcherSource {} -> Nothing
+  AgendaMatcherSource {} -> Nothing
+  AssetMatcherSource {} -> Nothing
+  LocationMatcherSource {} -> Nothing
+  EnemyMatcherSource {} -> Nothing
+  EnemyAttackSource a -> Just $ EnemyTarget a
+  StorySource code -> Just $ StoryTarget code
+  CampaignSource -> Just $ CampaignTarget
+  TarotSource arcana -> Just $ TarotTarget arcana
+  ThisCard -> Nothing
+  CardCostSource _ -> Nothing
+  BothSource s1 s2 -> BothTarget <$> sourceToMaybeTarget s1 <*> sourceToMaybeTarget s2
+  BatchSource bId -> Just $ BatchTarget bId
+  ActiveCostSource acId -> Just $ ActiveCostTarget acId
 
 targetToSource :: Target -> Source
 targetToSource = \case

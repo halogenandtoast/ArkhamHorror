@@ -3441,7 +3441,7 @@ sourceMatches s = \case
   Matcher.SourceIsCancelable sm -> case s of
     CardCostSource _ -> pure False
     other -> do
-      modifiers' <- getModifiers (sourceToTarget other)
+      modifiers' <- maybe (pure []) getModifiers (sourceToMaybeTarget other)
       andM [sourceMatches s sm, pure $ EffectsCannotBeCanceled `notElem` modifiers']
   Matcher.SourceIs s' -> pure $ s == s'
   Matcher.NotSource matcher -> not <$> sourceMatches s matcher

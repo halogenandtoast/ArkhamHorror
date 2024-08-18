@@ -50,7 +50,7 @@ hereticModifiers target (toAttrs -> a) | isTarget a target = do
   pure
     $ toModifiers a
     $ HealthModifier n
-    : ( guard atSpectralLocation
+    : ( guard (not atSpectralLocation)
           *> [AddKeyword Aloof, CannotBeDamaged, CannotBeEngaged]
       )
 hereticModifiers _ _ = pure []

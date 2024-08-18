@@ -35,7 +35,7 @@ instance HasAbilities WatcherFromAnotherDimension where
           a
           AbilityAttack
           ( exists (You <> InvestigatorWithId iid)
-              <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
+              <> EnemyCriteria (ThisEnemy $ IncludeOutOfPlayEnemy $ EnemyWithoutModifier CannotBeAttacked)
               <> CanAttack
           )
           $ ActionAbility [#fight] (ActionCost 1)

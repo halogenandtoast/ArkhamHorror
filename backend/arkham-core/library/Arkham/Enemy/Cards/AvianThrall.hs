@@ -10,14 +10,14 @@ import Arkham.Prelude
 import Arkham.Trait
 
 newtype AvianThrall = AvianThrall EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 avianThrall :: EnemyCard AvianThrall
 avianThrall =
   enemyWith AvianThrall Cards.avianThrall (5, Static 4, 3) (1, 1)
     $ preyL
-    .~ Prey (InvestigatorWithLowestSkill #intellect)
+    .~ Prey (InvestigatorWithLowestSkill #intellect UneliminatedInvestigator)
 
 instance HasModifiersFor AvianThrall where
   getModifiersFor target (AvianThrall attrs) | attrs `is` target = do

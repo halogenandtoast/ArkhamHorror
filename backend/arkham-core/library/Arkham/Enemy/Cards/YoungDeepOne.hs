@@ -13,7 +13,7 @@ youngDeepOne :: EnemyCard YoungDeepOne
 youngDeepOne =
   enemyWith YoungDeepOne Cards.youngDeepOne (3, Static 3, 3) (1, 1)
     $ preyL
-    .~ Prey (InvestigatorWithLowestSkill #combat)
+    .~ Prey (InvestigatorWithLowestSkill #combat UneliminatedInvestigator)
 
 instance HasAbilities YoungDeepOne where
   getAbilities (YoungDeepOne a) = extend a [forcedAbility a 1 $ EnemyEngaged #after You (be a)]

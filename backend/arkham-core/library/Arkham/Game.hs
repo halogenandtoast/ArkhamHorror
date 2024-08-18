@@ -875,16 +875,10 @@ getInvestigatorsMatching matcher = do
             else elem lid <$> select locationMatcher
     InvestigatorWithId iid -> pure . (== iid) . toId
     InvestigatorIs cardCode -> pure . (== cardCode) . toCardCode
-    InvestigatorWithLowestSkill skillType -> \i ->
-      isLowestAmongst
-        (toId i)
-        UneliminatedInvestigator
-        (getSkillValue skillType)
-    InvestigatorWithHighestSkill skillType -> \i ->
-      isHighestAmongst
-        (toId i)
-        UneliminatedInvestigator
-        (getSkillValue skillType)
+    InvestigatorWithLowestSkill skillType inner -> \i ->
+      isLowestAmongst (toId i) inner (getSkillValue skillType)
+    InvestigatorWithHighestSkill skillType inner -> \i ->
+      isHighestAmongst (toId i) inner (getSkillValue skillType)
     InvestigatorWithClues gameValueMatcher -> \i -> do
       clues <- field InvestigatorClues (toId i)
       gameValueMatches clues gameValueMatcher

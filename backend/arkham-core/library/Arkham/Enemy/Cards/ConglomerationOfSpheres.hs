@@ -3,15 +3,12 @@ module Arkham.Enemy.Cards.ConglomerationOfSpheres (
   ConglomerationOfSpheres (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -22,23 +19,13 @@ newtype ConglomerationOfSpheres = ConglomerationOfSpheres EnemyAttrs
 
 conglomerationOfSpheres :: EnemyCard ConglomerationOfSpheres
 conglomerationOfSpheres =
-  enemyWith
-    ConglomerationOfSpheres
-    Cards.conglomerationOfSpheres
-    (1, Static 6, 4)
-    (1, 1)
-    (preyL .~ Prey (InvestigatorWithLowestSkill SkillWillpower))
+  enemyWith ConglomerationOfSpheres Cards.conglomerationOfSpheres (1, Static 6, 4) (1, 1)
+    $ preyL
+    .~ Prey (InvestigatorWithLowestSkill #willpower UneliminatedInvestigator)
 
 instance HasAbilities ConglomerationOfSpheres where
   getAbilities (ConglomerationOfSpheres x) =
-    withBaseAbilities
-      x
-      [ mkAbility x 1
-          $ ForcedAbility
-          $ EnemyAttacked Timing.After You (SourceWithTrait Melee)
-          $ EnemyWithId
-          $ toId x
-      ]
+    extend x [mkAbility x 1 $ forced $ EnemyAttacked #after You (SourceWithTrait Melee) (be x)]
 
 instance RunMessage ConglomerationOfSpheres where
   runMessage msg e@(ConglomerationOfSpheres attrs) = case msg of
@@ -48,6 +35,6 @@ instance RunMessage ConglomerationOfSpheres where
       1
       [windowType -> Window.EnemyAttacked _ attackSource _]
       _ -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 1) (sourceToTarget attackSource)
-      pure e
+        push $ toDiscardBy iid (attrs.ability 1) (sourceToTarget attackSource)
+        pure e
     _ -> ConglomerationOfSpheres <$> runMessage msg attrs

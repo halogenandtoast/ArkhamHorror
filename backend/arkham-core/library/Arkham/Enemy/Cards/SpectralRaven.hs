@@ -1,10 +1,4 @@
-module Arkham.Enemy.Cards.SpectralRaven (
-  spectralRaven,
-  SpectralRaven (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.SpectralRaven (spectralRaven, SpectralRaven (..)) where
 
 import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Classes
@@ -14,6 +8,7 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Modifier qualified as Mod
 import Arkham.Phase
+import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
@@ -23,18 +18,13 @@ newtype SpectralRaven = SpectralRaven EnemyAttrs
 
 spectralRaven :: EnemyCard SpectralRaven
 spectralRaven =
-  enemyWith
-    SpectralRaven
-    Cards.spectralRaven
-    (2, Static 2, 2)
-    (1, 1)
-    (preyL .~ Prey (InvestigatorWithLowestSkill SkillIntellect))
+  enemyWith SpectralRaven Cards.spectralRaven (2, Static 2, 2) (1, 1)
+    $ preyL
+    .~ Prey (InvestigatorWithLowestSkill #intellect UneliminatedInvestigator)
 
 instance HasAbilities SpectralRaven where
   getAbilities (SpectralRaven a) =
-    withBaseAbilities
-      a
-      [mkAbility a 1 $ ForcedAbility $ EnemyEngaged Timing.After You $ EnemyWithId $ toId a]
+    extend a [mkAbility a 1 $ forced $ EnemyEngaged #after You (be a)]
 
 instance RunMessage SpectralRaven where
   runMessage msg e@(SpectralRaven attrs) = case msg of

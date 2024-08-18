@@ -121,8 +121,8 @@ data InvestigatorMatcher
   | InvestigatorWithTreacheryInHand TreacheryMatcher
   | InvestigatorWithTitle Text
   | InvestigatorMatches [InvestigatorMatcher]
-  | InvestigatorWithLowestSkill SkillType
-  | InvestigatorWithHighestSkill SkillType
+  | InvestigatorWithLowestSkill SkillType InvestigatorMatcher
+  | InvestigatorWithHighestSkill SkillType InvestigatorMatcher
   | AnyInvestigator [InvestigatorMatcher]
   | TurnInvestigator
   | ActiveInvestigator
@@ -1814,7 +1814,7 @@ $( do
     explore <- deriveJSON defaultOptions ''ExploreMatcher
     extendedCard <- deriveToJSON defaultOptions ''ExtendedCardMatcher
     history <- deriveJSON defaultOptions ''HistoryMatcher
-    investigator <- deriveJSON defaultOptions ''InvestigatorMatcher
+    investigator <- deriveToJSON defaultOptions ''InvestigatorMatcher
     location <- deriveJSON defaultOptions ''LocationMatcher
     phase <- deriveJSON defaultOptions ''PhaseMatcher
     phaseStep <- deriveJSON defaultOptions ''PhaseStepMatcher
@@ -1876,6 +1876,18 @@ $( do
         , windowMythosStep
         ]
  )
+
+instance FromJSON InvestigatorMatcher where
+  parseJSON = withObject "InvestigatorMatcher" \o -> do
+    t :: Text <- o .: "tag"
+    case t of
+      "InvestigatorWithHighestSkill" ->
+        (uncurry InvestigatorWithHighestSkill <$> o .: "contents")
+          <|> (InvestigatorWithHighestSkill <$> o .: "contents" <*> pure UneliminatedInvestigator)
+      "InvestigatorWithLowestSkill" ->
+        (uncurry InvestigatorWithLowestSkill <$> o .: "contents")
+          <|> (InvestigatorWithLowestSkill <$> o .: "contents" <*> pure UneliminatedInvestigator)
+      _ -> $(mkParseJSON defaultOptions ''InvestigatorMatcher) (Object o)
 
 instance FromJSON ExtendedCardMatcher where
   parseJSON = withObject "ExtendedCardMatcher" \o -> do

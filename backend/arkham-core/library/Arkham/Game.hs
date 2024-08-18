@@ -3061,11 +3061,9 @@ enemyMatcherFilter = \case
                 ]
           )
           (getAbilities enemy)
-  CanParleyEnemy iMatcher -> \enemy -> do
-    iid <- selectJust iMatcher
-    modifiers' <- getModifiers (InvestigatorTarget iid)
-    flip allM modifiers' $ \case
-      CannotParleyWith matcher -> notElem (toId enemy) <$> select matcher
+  CanParleyEnemy iMatcher -> \enemy -> selectMaybeM False iMatcher \iid -> do
+    getModifiers iid >>= allM \case
+      CannotParleyWith matcher -> notElem enemy.id <$> select matcher
       _ -> pure True
   NearestEnemy matcher' -> \enemy -> do
     matchingEnemyIds <- map toId <$> getEnemiesMatching matcher'

@@ -29,7 +29,7 @@ instance RunMessage RestrictedAccess where
       case mShadowSpawnedId of
         Just tid -> push $ PlaceResources (toAbilitySource attrs 1) (toTarget tid) 1
         Nothing -> do
-          huntingHorror <- selectJust $ enemyIs Enemies.huntingHorror
+          huntingHorror <- selectJust $ IncludeOutOfPlayEnemy $ enemyIs Enemies.huntingHorror
           shadowSpawned <- getSetAsideCard Treacheries.shadowSpawned
           tid <- getRandom
           push $ AttachStoryTreacheryTo tid shadowSpawned (toTarget huntingHorror)

@@ -2487,7 +2487,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       guardTiming timing $ \case
         Window.EnemySpawns enemyId locationId ->
           andM
-            [ enemyMatches enemyId enemyMatcher
+            [ enemyMatches enemyId $ Matcher.IncludeOutOfPlayEnemy enemyMatcher
             , locationMatches iid source window' locationId whereMatcher
             ]
         _ -> noMatch

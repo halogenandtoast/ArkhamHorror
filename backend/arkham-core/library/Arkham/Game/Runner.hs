@@ -2444,7 +2444,7 @@ runGameMessage msg g = case msg of
           & (activeCardL ?~ toCard card)
       TreacheryType -> do
         -- handles draw windows
-        push $ DrewTreachery iid (Just Deck.EncounterDeck) (toCard card)
+        pushAll [DrewTreachery iid (Just Deck.EncounterDeck) (toCard card)]
         pure g'
       EncounterAssetType -> do
         assetId <- getRandom
@@ -2488,9 +2488,10 @@ runGameMessage msg g = case msg of
 
     modifiers' <- getModifiers (toTarget treachery)
 
+    afterDraw <- checkWindows [mkAfter (Window.DrawCard iid (toCard card) Deck.EncounterDeck)]
     pushAll
       $ [GainSurge GameSource (toTarget treachery) | AddKeyword Keyword.Surge `elem` modifiers']
-      <> [ResolveTreachery iid treacheryId]
+      <> [afterDraw, ResolveTreachery iid treacheryId]
 
     pure
       $ g

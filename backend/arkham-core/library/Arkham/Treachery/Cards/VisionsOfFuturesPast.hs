@@ -11,8 +11,7 @@ newtype VisionsOfFuturesPast = VisionsOfFuturesPast TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 visionsOfFuturesPast :: TreacheryCard VisionsOfFuturesPast
-visionsOfFuturesPast =
-  treachery VisionsOfFuturesPast Cards.visionsOfFuturesPast
+visionsOfFuturesPast = treachery VisionsOfFuturesPast Cards.visionsOfFuturesPast
 
 instance RunMessage VisionsOfFuturesPast where
   runMessage msg t@(VisionsOfFuturesPast attrs) = case msg of

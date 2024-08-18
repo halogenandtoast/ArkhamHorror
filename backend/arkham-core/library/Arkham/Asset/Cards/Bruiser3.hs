@@ -3,7 +3,6 @@ module Arkham.Asset.Cards.Bruiser3 (bruiser3, Bruiser3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Asset.Uses
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
@@ -23,7 +22,7 @@ instance HasModifiersFor Bruiser3 where
         attrs
         [ CanSpendUsesAsResourceOnCardFromInvestigator
           (toId attrs)
-          Resource
+          #resource
           (InvestigatorWithId iid)
           (oneOf [CardWithTrait t | t <- [Armor, Firearm, Melee]])
         | attrs `controlledBy` iid
@@ -36,12 +35,12 @@ instance HasAbilities Bruiser3 where
         a
         1
         (DuringSkillTest $ oneOf [SkillTestOnCardWithTrait t | t <- [Armor, Firearm, Melee]])
-        $ FastAbility (assetUseCost a Resource 1)
+        $ FastAbility (assetUseCost a #resource 1)
     ]
 
 instance RunMessage Bruiser3 where
   runMessage msg a@(Bruiser3 attrs) = runQueueT $ case msg of
-    Do BeginRound -> pure . Bruiser3 $ attrs & tokensL . ix Resource %~ max 2
+    Do BeginRound -> pure . Bruiser3 $ attrs & tokensL %~ replenish #resource 2
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
         skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)

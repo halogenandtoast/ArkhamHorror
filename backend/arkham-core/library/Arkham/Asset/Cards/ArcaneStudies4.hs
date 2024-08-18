@@ -2,9 +2,11 @@ module Arkham.Asset.Cards.ArcaneStudies4 (arcaneStudies4, ArcaneStudies4 (..)) w
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 
 newtype ArcaneStudies4 = ArcaneStudies4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -17,20 +19,18 @@ instance HasAbilities ArcaneStudies4 where
   getAbilities (ArcaneStudies4 a) =
     [ controlledAbility a 1 (DuringSkillTest AnySkillTest)
         $ FastAbility
-        $ OrCost [ResourceCost 1, assetUseCost a Resource 1]
+        $ OrCost [ResourceCost 1, assetUseCost a #resource 1]
     ]
 
 instance RunMessage ArcaneStudies4 where
-  runMessage msg a@(ArcaneStudies4 attrs) = case msg of
-    Do BeginRound -> pure . ArcaneStudies4 $ attrs & tokensL . ix Resource %~ max 2
+  runMessage msg a@(ArcaneStudies4 attrs) = runQueueT $ case msg of
+    Do BeginRound -> pure . ArcaneStudies4 $ attrs & tokensL %~ replenish #resource 2
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid -> do
-        player <- getPlayer iid
-        push
-          $ chooseOne
-            player
-            [ Label "Choose Willpower" [skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 1)]
-            , Label "Choose Intellect" [skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 1)]
-            ]
+        chooseOneM iid do
+          labeled "Choose Willpower"
+            $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 1)
+          labeled "Choose Intellect"
+            $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 1)
       pure a
-    _ -> ArcaneStudies4 <$> runMessage msg attrs
+    _ -> ArcaneStudies4 <$> liftRunMessage msg attrs

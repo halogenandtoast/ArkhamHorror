@@ -3,9 +3,9 @@ module Arkham.Asset.Cards.PhysicalTraining4 (physicalTraining4, PhysicalTraining
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
 newtype PhysicalTraining4 = PhysicalTraining4 AssetAttrs
@@ -24,15 +24,12 @@ instance HasAbilities PhysicalTraining4 where
 
 instance RunMessage PhysicalTraining4 where
   runMessage msg a@(PhysicalTraining4 attrs) = runQueueT $ case msg of
-    Do BeginRound -> pure . PhysicalTraining4 $ attrs & tokensL . ix #resource %~ max 2
+    Do BeginRound -> pure . PhysicalTraining4 $ attrs & tokensL %~ replenish #resource 2
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      withSkillTest \sid ->
-        chooseOne
-          iid
-          [ Label
-              "Choose Willpower"
-              [Msg.skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 1)]
-          , Label "Choose Combat" [Msg.skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 1)]
-          ]
+      withSkillTest \sid -> do
+        let source = attrs.ability 1
+        chooseOneM iid do
+          labeled "Choose Willpower" $ skillTestModifier sid source iid (SkillModifier #willpower 1)
+          labeled "Choose Combat" $ skillTestModifier sid source iid (SkillModifier #combat 1)
       pure a
     _ -> PhysicalTraining4 <$> liftRunMessage msg attrs

@@ -7147,6 +7147,7 @@ occultLexicon3 =
     , cdCardTraits = setFromList [Item, Tome, Occult]
     , cdSlots = [#hand]
     , cdLevel = Just 3
+    , cdBondedWith = [(3, "05317")]
     }
 
 knightOfSwords3 :: CardDef

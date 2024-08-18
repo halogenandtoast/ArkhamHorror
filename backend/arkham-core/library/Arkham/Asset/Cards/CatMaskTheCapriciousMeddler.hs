@@ -41,13 +41,13 @@ instance RunMessage CatMaskTheCapriciousMeddler where
     CheckWindow iids ws | maybe False (`elem` iids) attrs.controller -> do
       when (attrs.use Offering < 2) do
         for_ attrs.controller \iid -> do
-          replenish <-
+          shouldReplenish <-
             anyM
               ( \w ->
                   windowMatches iid (toSource attrs) w
                     $ PlacedDoomCounterOnTargetWithNoDoom #after AnySource AnyTarget
               )
               ws
-          when replenish $ placeTokens attrs attrs Offering (2 - attrs.use Offering)
+          when shouldReplenish $ placeTokens attrs attrs Offering (2 - attrs.use Offering)
       pure a
     _ -> CatMaskTheCapriciousMeddler <$> liftRunMessage msg attrs

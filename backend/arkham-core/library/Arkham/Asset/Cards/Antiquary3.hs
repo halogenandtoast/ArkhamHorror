@@ -3,7 +3,6 @@ module Arkham.Asset.Cards.Antiquary3 (antiquary3, Antiquary3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Asset.Uses
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
@@ -23,7 +22,7 @@ instance HasModifiersFor Antiquary3 where
         attrs
         [ CanSpendUsesAsResourceOnCardFromInvestigator
           (toId attrs)
-          Resource
+          #resource
           (InvestigatorWithId iid)
           (oneOf [CardWithTrait t | t <- [Favor, Relic, Ritual]])
         | attrs `controlledBy` iid
@@ -36,12 +35,12 @@ instance HasAbilities Antiquary3 where
         a
         1
         (DuringSkillTest $ oneOf [SkillTestOnCardWithTrait t | t <- [Favor, Relic, Ritual]])
-        $ FastAbility (assetUseCost a Resource 1)
+        $ FastAbility (assetUseCost a #resource 1)
     ]
 
 instance RunMessage Antiquary3 where
   runMessage msg a@(Antiquary3 attrs) = runQueueT $ case msg of
-    Do BeginRound -> pure . Antiquary3 $ attrs & tokensL . ix Resource %~ max 2
+    Do BeginRound -> pure . Antiquary3 $ attrs & tokensL %~ replenish #resource 2
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
         skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)

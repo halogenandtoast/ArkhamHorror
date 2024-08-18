@@ -1,4 +1,4 @@
-module Arkham.Asset.Import.Lifted (module X, healAssetDamage, healAssetHorror)
+module Arkham.Asset.Import.Lifted (module X, module Arkham.Asset.Import.Lifted)
 where
 
 import Arkham.Asset.Runner as X (
@@ -60,8 +60,17 @@ import Arkham.Question as X
 import Arkham.Source as X
 import Arkham.Target as X
 
+import Arkham.Token
+import Control.Lens (non)
+
 healAssetDamage :: Sourceable source => AssetAttrs -> source -> Int -> UI Message
 healAssetDamage attrs source n = AssetDamageLabel attrs.id [HealDamage (toTarget attrs) (toSource source) n]
 
 healAssetHorror :: Sourceable source => AssetAttrs -> source -> Int -> UI Message
 healAssetHorror attrs source n = AssetHorrorLabel attrs.id [HealHorror (toTarget attrs) (toSource source) n]
+
+replenish :: Token -> Int -> Tokens -> Tokens
+replenish token n tokens = tokens & at token . non 0 %~ max n
+
+replenishN :: Token -> Int -> Int -> Tokens -> Tokens
+replenishN token tokenMax n tokens = tokens & at token . non 0 %~ min tokenMax . (+ n)

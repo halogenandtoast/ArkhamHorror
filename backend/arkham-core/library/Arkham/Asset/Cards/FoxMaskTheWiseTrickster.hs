@@ -41,13 +41,13 @@ instance RunMessage FoxMaskTheWiseTrickster where
     CheckWindow iids ws | maybe False (`elem` iids) attrs.controller -> do
       when (attrs.use Offering < 2) do
         for_ attrs.controller \iid -> do
-          replenish <-
+          shouldReplenish <-
             anyM
               ( \w ->
                   windowMatches iid (toSource attrs) w
                     $ Moves #after You AnySource (LocationWithEnemy AnyEnemy) Anywhere
               )
               ws
-          when replenish $ placeTokens attrs attrs Offering 1
+          when shouldReplenish $ placeTokens attrs attrs Offering 1
       pure a
     _ -> FoxMaskTheWiseTrickster <$> liftRunMessage msg attrs

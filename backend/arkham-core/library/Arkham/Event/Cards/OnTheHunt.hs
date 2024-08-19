@@ -32,13 +32,16 @@ instance RunMessage OnTheHunt where
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       additionalTargets <- getAdditionalSearchTargets iid
       let enemyCards = filter (`cardMatch` EnemyType) $ onlyEncounterCards cards
-      chooseN iid (min (length enemyCards) (1 + additionalTargets))
-        $ [ targetLabel
-            card
-            [ Msg.searchModifier attrs card (ForceSpawn (SpawnEngagedWith $ InvestigatorWithId iid))
-            , InvestigatorDrewEncounterCard iid card
-            ]
-          | card <- enemyCards
-          ]
+      if (notNull enemyCards)
+        then
+          chooseN iid (min (length enemyCards) (1 + additionalTargets))
+            $ [ targetLabel
+                card
+                [ Msg.searchModifier attrs card (ForceSpawn (SpawnEngagedWith $ InvestigatorWithId iid))
+                , InvestigatorDrewEncounterCard iid card
+                ]
+              | card <- enemyCards
+              ]
+        else drawEncounterCard iid attrs
       pure e
     _ -> OnTheHunt <$> liftRunMessage msg attrs

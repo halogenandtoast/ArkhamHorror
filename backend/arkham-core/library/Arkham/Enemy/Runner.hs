@@ -120,6 +120,8 @@ filterOutEnemyMessages eid msg = case msg of
   InitiateEnemyAttack details | eid == attackEnemy details -> Nothing
   EnemyAttack details | eid == attackEnemy details -> Nothing
   Discarded (EnemyTarget eid') _ _ | eid == eid' -> Nothing
+  Do (Discarded (EnemyTarget eid') _ _) | eid == eid' -> Nothing
+  PlaceEnemy eid' _ | eid' == eid -> Nothing
   m -> Just m
 
 filterOutEnemyUiMessages :: EnemyId -> UI Message -> Maybe (UI Message)

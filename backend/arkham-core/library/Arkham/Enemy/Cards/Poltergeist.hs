@@ -1,9 +1,4 @@
-module Arkham.Enemy.Cards.Poltergeist (
-  poltergeist,
-  Poltergeist (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.Poltergeist (poltergeist, Poltergeist (..)) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -13,6 +8,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message qualified as Msg
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype Poltergeist = Poltergeist EnemyAttrs
@@ -24,35 +20,23 @@ poltergeist = enemy Poltergeist Cards.poltergeist (3, Static 2, 4) (0, 2)
 
 instance HasAbilities Poltergeist where
   getAbilities (Poltergeist a) =
-    withBaseAbilities
-      a
-      [ skillTestAbility
-          $ restrictedAbility a 1 OnSameLocation
-          $ ActionAbility [Action.Parley]
-          $ ActionCost 1
-      ]
+    withBaseAbilities a [skillTestAbility $ restrictedAbility a 1 OnSameLocation parleyAction_]
 
 instance HasModifiersFor Poltergeist where
-  getModifiersFor (EnemyTarget eid) (Poltergeist a)
-    | toId a == eid =
-        pure
-          $ toModifiers
-            a
-            [ CannotBeDamagedByPlayerSourcesExcept
-                $ SourceMatchesAny
-                $ map
-                  SourceWithTrait
-                  [Spell, Relic]
-            ]
+  getModifiersFor (EnemyTarget eid) (Poltergeist a) | toId a == eid = do
+    pure
+      $ toModifiers
+        a
+        [CannotBeDamagedByPlayerSourcesExcept $ SourceMatchesAny $ map SourceWithTrait [Spell, Relic]]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Poltergeist where
   runMessage msg e@(Poltergeist attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ parley sid iid source attrs #intellect (Fixed 3)
+      push $ parley sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
       pure e
-    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
-      push (Msg.EnemyDamage (toId attrs) $ nonAttack source 1)
+    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
+      push $ Msg.EnemyDamage (toId attrs) $ nonAttack (attrs.ability 1) 1
       pure e
     _ -> Poltergeist <$> runMessage msg attrs

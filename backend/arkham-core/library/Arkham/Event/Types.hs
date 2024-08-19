@@ -96,6 +96,7 @@ data EventAttrs = EventAttrs
   , eventCustomizations :: Customizations
   , eventPrintedUses :: Uses GameCalculation
   , eventTaboo :: Maybe TabooList
+  , eventMutated :: Maybe Text -- for art display
   }
   deriving stock (Show, Eq)
 
@@ -217,6 +218,7 @@ event f cardDef =
             , eventCustomizations = mempty
             , eventPrintedUses = cdUses cardDef
             , eventTaboo = Nothing
+            , eventMutated = Nothing
             }
     }
 
@@ -299,7 +301,14 @@ instance Sourceable Event where
 instance IsCard Event where
   toCardId = toCardId . toAttrs
   toCard e = case lookupCard (eventOriginalCardCode . toAttrs $ e) (toCardId e) of
-    PlayerCard pc -> PlayerCard $ pc {pcCustomizations = toCustomizations e, pcOwner = toCardOwner e}
+    PlayerCard pc ->
+      PlayerCard
+        $ pc
+          { pcCustomizations = toCustomizations e
+          , pcOwner = toCardOwner e
+          , pcTabooList = attr eventTaboo e
+          , pcMutated = attr eventMutated e
+          }
     ec -> ec
   toCardOwner = toCardOwner . toAttrs
   toCustomizations = toCustomizations . toAttrs

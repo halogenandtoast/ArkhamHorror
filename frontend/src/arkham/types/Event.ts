@@ -17,6 +17,7 @@ export type Event = {
   cardsUnderneath: Card[];
   tokens: Tokens;
   customizations: [number, number][];
+  mutated?: string;
 }
 
 export const eventDecoder = JsonDecoder.object<Event>({
@@ -29,4 +30,5 @@ export const eventDecoder = JsonDecoder.object<Event>({
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
   tokens: tokensDecoder,
   customizations: customizationsDecoder,
+  mutated: JsonDecoder.optional(JsonDecoder.string),
 }, 'Event');

@@ -496,6 +496,14 @@ instance RunMessage AssetAttrs where
       pure $ a & placementL .~ Unplaced
     ShuffleCardsIntoDeck _ cards ->
       pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
+    ShuffleIntoDeck _ (isTarget a -> True) -> do
+      removeAllMessagesMatching \case
+        When (AssetDefeated _ aid) -> aid == assetId
+        AssetDefeated _ aid -> aid == assetId
+        Discard _ _ (AssetTarget aid) -> aid == assetId
+        _ -> False
+
+      pure a
     CardEnteredPlay _ card ->
       pure $ a & cardsUnderneathL %~ filter (/= card)
     Exhaust target | a `isTarget` target -> do

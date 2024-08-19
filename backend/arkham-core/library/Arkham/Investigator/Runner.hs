@@ -801,6 +801,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     deck' <- shuffleM (card : unDeck investigatorDeck)
     pushWhen (providedSlot a aid) $ RefillSlots a.id
     push $ After msg
+    push $ RemoveFromPlay (AssetSource aid)
     pure $ a & (deckL .~ Deck deck') & (slotsL %~ removeFromSlots aid)
   ShuffleIntoDeck (Deck.InvestigatorDeck iid) (EventTarget eid) | iid == investigatorId -> do
     card <- fromJustNote "missing card" . preview _PlayerCard <$> field EventCard eid

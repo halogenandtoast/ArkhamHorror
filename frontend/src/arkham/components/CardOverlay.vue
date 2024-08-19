@@ -54,7 +54,7 @@ const mutated = computed(() => {
       return match[1];
     }
   }
-  return null;
+  return "";
 });
 
 const customizationsCard = computed(() => {

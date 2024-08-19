@@ -5,6 +5,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
+import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
@@ -14,7 +15,7 @@ import Arkham.Source
 changeEncounterCardDrawer :: (HasQueue Message m, HasGame m) => CardId -> InvestigatorId -> m ()
 changeEncounterCardDrawer cardId iid = do
   mTreachery <- selectOne $ TreacheryWithCardId cardId
-  mEnemy <- selectOne $ EnemyWithCardId cardId
+  mEnemy <- selectOne $ IncludeOutOfPlayEnemy $ EnemyWithCardId cardId
   mLocation <- selectOne $ LocationWithCardId cardId
   mAsset <- selectOne $ AssetWithCardId cardId
   mEvent <- selectOne $ EventWithCardId cardId
@@ -42,5 +43,6 @@ changeEncounterCardDrawer cardId iid = do
   for_ mAsset \aid -> withQueue_ $ map (baseReplace aid)
   for_ mEvent \aid -> withQueue_ $ map (baseReplace aid)
 
-  when (isNothing $ (mTreachery $> ()) <|> (mEnemy $> ()) <|> (mLocation $> ()) <|> (mAsset $> ()))
-    $ error "Unhandled card type"
+  when (isNothing $ (mTreachery $> ()) <|> (mEnemy $> ()) <|> (mLocation $> ()) <|> (mAsset $> ())) do
+    card <- getCard cardId
+    error $ "Unhandled card type: " <> show card

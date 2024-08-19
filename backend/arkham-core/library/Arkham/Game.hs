@@ -2590,6 +2590,7 @@ enemyMatcherFilter = \case
       (Just x', Just y') -> y' <= x'
       _ -> False
   IncludeOmnipotent matcher -> enemyMatcherFilter matcher
+  IncludeOutOfPlayEnemy matcher -> enemyMatcherFilter matcher
   OutOfPlayEnemy _ matcher -> enemyMatcherFilter matcher
   EnemyWithCardId cardId -> pure . (== cardId) . toCardId
   EnemyWithSealedChaosTokens n chaosTokenMatcher -> \enemy -> do

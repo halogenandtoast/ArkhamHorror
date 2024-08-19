@@ -253,28 +253,24 @@ postApiV1ArkhamGamesR = do
         Nothing -> error "missing either a campign id or a scenario id"
   let ag = ArkhamGame campaignName game 0 multiplayerVariant now now
   let repeatCount = if multiplayerVariant == WithFriends then 1 else playerCount
-  (key, pids) <- runDB $ do
+  runDB $ do
     gameId <- insert ag
     pids <- insertMany $ replicate repeatCount $ ArkhamPlayer userId gameId "00000"
-    pure (gameId, pids)
 
-  gameRef <- newIORef game
+    gameRef <- liftIO $ newIORef game
 
-  runGameApp (GameApp gameRef queueRef genRef (pure . const ())) $ do
-    for_ pids $ \pid -> addPlayer (PlayerId $ coerce pid)
-    runMessages Nothing
+    runGameApp (GameApp gameRef queueRef genRef (pure . const ())) $ do
+      for_ pids $ \pid -> addPlayer (PlayerId $ coerce pid)
+      runMessages Nothing
 
-  updatedQueue <- readIORef (queueToRef queueRef)
-  updatedGame <- readIORef gameRef
+    updatedQueue <- liftIO $ readIORef (queueToRef queueRef)
+    updatedGame <- liftIO $ readIORef gameRef
 
-  let ag' = ag {arkhamGameCurrentData = updatedGame}
+    let ag' = ag {arkhamGameCurrentData = updatedGame}
 
-  -- let diffDown = diff ge game
-
-  runDB $ do
-    replace key ag'
-    insert_ $ ArkhamStep key (Choice mempty updatedQueue) 0 (ActionDiff [])
-  pure $ toPublicGame (Entity key ag') mempty
+    replace gameId ag'
+    insert_ $ ArkhamStep gameId (Choice mempty updatedQueue) 0 (ActionDiff [])
+    pure $ toPublicGame (Entity gameId ag') mempty
 
 putApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameR gameId = do
@@ -319,6 +315,11 @@ updateGame response gameId userId writeChannel = do
 
   now <- liftIO getCurrentTime
   runDB $ do
+    void $ select do
+      game <- from $ table @ArkhamGame
+      where_ $ game.id ==. val gameId
+      locking ForUpdate
+      pure ()
     replace gameId
       $ ArkhamGame
         arkhamGameName

@@ -1,10 +1,8 @@
 module Arkham.Asset.Cards.DiscOfItzamna where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.DamageEffect
 import Arkham.Matcher hiding (EnemyEvaded, NonAttackDamageEffect)
 import Arkham.Window (Window (..))
@@ -20,12 +18,19 @@ discOfItzamna = asset DiscOfItzamna Cards.discOfItzamna
 instance HasAbilities DiscOfItzamna where
   getAbilities (DiscOfItzamna a) =
     [ restrictedAbility a 1 ControlsThis
-        $ freeReaction (EnemySpawns #when YourLocation NonEliteEnemy)
+        $ ReactionAbility (EnemySpawns #when YourLocation NonEliteEnemy) (discardCost a)
     ]
 
 instance RunMessage DiscOfItzamna where
-  runMessage msg a@(DiscOfItzamna attrs) = case msg of
+  runMessage msg a@(DiscOfItzamna attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (map windowType -> [Window.EnemySpawns eid _]) _ -> do
-      pushAll [EnemyEvaded iid eid, EnemyDamage eid $ nonAttack attrs 2]
+      canDamage <- eid <=~> EnemyCanBeDamagedBySource (attrs.ability 1)
+      canEvade <- eid <=~> EnemyCanBeEvadedBy (attrs.ability 1)
+      when (canDamage || canEvade) do
+        chooseOrRunOne
+          iid
+          [ Label "Evade enemy" [EnemyEvaded iid eid]
+          , Label "Deal 2 damage" [EnemyDamage eid $ nonAttack attrs 2]
+          ]
       pure a
-    _ -> DiscOfItzamna <$> runMessage msg attrs
+    _ -> DiscOfItzamna <$> liftRunMessage msg attrs

@@ -60,6 +60,11 @@ putApiV1ArkhamGameUndoR gameId = do
                 $ GameUpdate
                 $ PublicGame gameId arkhamGameName gameLog ge
               runDB $ do
+                void $ select do
+                  game <- from $ table @ArkhamGame
+                  where_ $ game.id ==. val gameId
+                  locking ForUpdate
+                  pure ()
                 replace gameId
                   $ ArkhamGame
                     arkhamGameName

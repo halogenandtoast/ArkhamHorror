@@ -39,6 +39,9 @@ instance RunMessage OnTheHunt3 where
     SearchNoneFound iid (isTarget attrs -> True) -> do
       drawEncounterCard iid attrs
       pure e
+    SearchFound iid (isTarget attrs -> True) _ [] -> do
+      drawEncounterCard iid attrs
+      pure e
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       additionalTargets <- getAdditionalSearchTargets iid
       let enemyCards = filter (`cardMatch` EnemyType) $ onlyEncounterCards cards

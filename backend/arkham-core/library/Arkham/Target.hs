@@ -45,6 +45,7 @@ data Target
   | ActTarget ActId
   | CardIdTarget CardId
   | CardTarget Card
+  | CardCostTarget CardId
   | CardCodeTarget CardCode
   | SearchedCardTarget CardId
   | EventTarget EventId

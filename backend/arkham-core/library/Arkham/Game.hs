@@ -327,7 +327,7 @@ withEnemyMetadata :: HasGame m => Enemy -> m (With Enemy EnemyMetadata)
 withEnemyMetadata a = do
   emModifiers <- getModifiers' (toTarget a)
   emEngagedInvestigators <- select $ investigatorEngagedWith (toId a)
-  emTreacheries <- select $ TreacheryOnEnemy $ IncludeOutOfPlayEnemy $ EnemyWithId (toId a)
+  emTreacheries <- select $ TreacheryOnEnemy $ EnemyWithId (toId a)
   emAssets <- select $ EnemyAsset (toId a)
   emEvents <- select $ EnemyEvent (toId a)
   emSkills <- select $ EnemySkill (toId a)
@@ -2501,50 +2501,23 @@ getVoidEnemy eid =
 getEnemyMatching :: (HasCallStack, HasGame m) => EnemyMatcher -> m (Maybe Enemy)
 getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
 
-data EnemyFilter = EnemyFilter
-  { includeOmnipotent :: Bool
-  , includeOutOfPlay :: Bool
-  , includeDefeated :: Bool
-  , onlyOutOfPlayZone :: Maybe OutOfPlayZone
-  }
-
-getEnemyFilter :: EnemyMatcher -> EnemyFilter
-getEnemyFilter = go (EnemyFilter False False False Nothing)
- where
-  go f (IncludeOutOfPlayEnemy inner) = go (f {includeOutOfPlay = True}) inner
-  go f (IncludeOmnipotent inner) = go (f {includeOmnipotent = True}) inner
-  go f (DefeatedEnemy inner) = go (f {includeDefeated = True}) inner
-  go f (OutOfPlayEnemy zone inner) = go (f {onlyOutOfPlayZone = Just zone}) inner
-  go f _ = f
-
-getFilteredEnemies :: (HasCallStack, HasGame m) => EnemyFilter -> EnemyMatcher -> m [Enemy]
-getFilteredEnemies f mtchr = do
-  if includeDefeated f
-    then do
-      let
-        wrapEnemy (defeatedEnemyAttrs -> a) =
-          overAttrs (const a) $ lookupEnemy (toCardCode a) (toId a) (toCardId a)
-      allDefeatedEnemies <- map wrapEnemy . toList <$> scenarioField ScenarioDefeatedEnemies
-      filterM (enemyMatcherFilter mtchr) allDefeatedEnemies
-    else do
-      let mtch' = if includeOmnipotent f then mtchr else mtchr <> EnemyWithoutModifier Omnipotent
-      let
-        isCorrectOutOfPlay outOfPlayZone e = case e.placement of
-          OutOfPlay zone -> zone == outOfPlayZone
-          _ -> False
-        outOfPlayFilter =
-          if includeOutOfPlay f
-            then const True
-            else maybe (isInPlayPlacement . attr enemyPlacement) isCorrectOutOfPlay (onlyOutOfPlayZone f)
-      includedOutOfPlay <- case onlyOutOfPlayZone f of
-        Just outOfPlayZone -> toList . view (outOfPlayEntitiesL . at outOfPlayZone . non mempty . enemiesL) <$> getGame
-        Nothing -> pure []
-
-      allGameEnemies <- filter outOfPlayFilter . toList . view (entitiesL . enemiesL) <$> getGame
-      filterM (enemyMatcherFilter mtch') (allGameEnemies <> includedOutOfPlay)
-
 getEnemiesMatching :: (HasCallStack, HasGame m) => EnemyMatcher -> m [Enemy]
-getEnemiesMatching mtch = getFilteredEnemies (getEnemyFilter mtch) mtch
+getEnemiesMatching (DefeatedEnemy matcher) = do
+  let
+    wrapEnemy (defeatedEnemyAttrs -> a) =
+      overAttrs (const a) $ lookupEnemy (toCardCode a) (toId a) (toCardId a)
+  allDefeatedEnemies <- map wrapEnemy . toList <$> scenarioField ScenarioDefeatedEnemies
+  filterM (enemyMatcherFilter matcher) allDefeatedEnemies
+getEnemiesMatching (IncludeOmnipotent matcher) = do
+  allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
+  filterM (enemyMatcherFilter matcher) allGameEnemies
+getEnemiesMatching (OutOfPlayEnemy outOfPlayZone matcher) = do
+  allGameEnemies <-
+    toList . view (outOfPlayEntitiesL . at outOfPlayZone . non mempty . enemiesL) <$> getGame
+  filterM (enemyMatcherFilter (matcher <> EnemyWithoutModifier Omnipotent)) allGameEnemies
+getEnemiesMatching matcher = do
+  allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
+  filterM (enemyMatcherFilter (matcher <> EnemyWithoutModifier Omnipotent)) allGameEnemies
 
 enemyMatcherFilter :: (HasCallStack, HasGame m) => EnemyMatcher -> Enemy -> m Bool
 enemyMatcherFilter = \case
@@ -2617,7 +2590,6 @@ enemyMatcherFilter = \case
       (Just x', Just y') -> y' <= x'
       _ -> False
   IncludeOmnipotent matcher -> enemyMatcherFilter matcher
-  IncludeOutOfPlayEnemy matcher -> enemyMatcherFilter matcher
   OutOfPlayEnemy _ matcher -> enemyMatcherFilter matcher
   EnemyWithCardId cardId -> pure . (== cardId) . toCardId
   EnemyWithSealedChaosTokens n chaosTokenMatcher -> \enemy -> do

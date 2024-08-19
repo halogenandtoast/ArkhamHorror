@@ -23,7 +23,6 @@ spec = describe "Watcher from Another Dimension" do
       withProp @"deck" (Deck [flashlight]) self
       self `drawsCard` Enemies.watcherFromAnotherDimension
       assertAny
-        $ IncludeOutOfPlayEnemy
         $ EnemyWithPlacement (StillInHand $ toId self)
         <> enemyIs Enemies.watcherFromAnotherDimension
 
@@ -36,7 +35,7 @@ spec = describe "Watcher from Another Dimension" do
         withProp @"agility" 5 self
         setChaosTokens [Zero]
         self `drawsCard` Enemies.watcherFromAnotherDimension
-        watcher <- selectJust $ IncludeOutOfPlayEnemy $ enemyIs Enemies.watcherFromAnotherDimension
+        watcher <- selectJust $ enemyIs Enemies.watcherFromAnotherDimension
         [fightAction, evadeAction] <- self `getActionsFrom` watcher
         if action == #fight
           then self `useAbility` fightAction
@@ -55,7 +54,7 @@ spec = describe "Watcher from Another Dimension" do
         withProp @"agility" 0 self
         setChaosTokens [Zero]
         self `drawsCard` Enemies.watcherFromAnotherDimension
-        watcher <- selectJust $ IncludeOutOfPlayEnemy $ enemyIs Enemies.watcherFromAnotherDimension
+        watcher <- selectJust $ enemyIs Enemies.watcherFromAnotherDimension
         [fightAction, evadeAction] <- self `getActionsFrom` watcher
         if action == #fight
           then self `useAbility` fightAction

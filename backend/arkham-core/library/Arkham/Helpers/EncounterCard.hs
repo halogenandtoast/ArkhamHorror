@@ -15,7 +15,7 @@ import Arkham.Source
 changeEncounterCardDrawer :: (HasQueue Message m, HasGame m) => CardId -> InvestigatorId -> m ()
 changeEncounterCardDrawer cardId iid = do
   mTreachery <- selectOne $ TreacheryWithCardId cardId
-  mEnemy <- selectOne $ IncludeOutOfPlayEnemy $ EnemyWithCardId cardId
+  mEnemy <- selectOne $ EnemyWithCardId cardId
   mLocation <- selectOne $ LocationWithCardId cardId
   mAsset <- selectOne $ AssetWithCardId cardId
   mEvent <- selectOne $ EventWithCardId cardId

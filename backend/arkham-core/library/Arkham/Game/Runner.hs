@@ -598,7 +598,7 @@ runGameMessage msg g = case msg of
   ChoosePlayer iid SetLeadInvestigator -> do
     players <- getInvestigatorIds
     push $ ChoosePlayerOrder iid (filter (/= iid) players) [iid]
-    pure $ g & leadInvestigatorIdL .~ iid
+    pure $ g & leadInvestigatorIdL .~ iid & activeInvestigatorIdL .~ iid
   ChoosePlayer iid SetTurnPlayer -> do
     pushAll [BeginTurn iid, After (BeginTurn iid)]
     pure $ g & activeInvestigatorIdL .~ iid & turnPlayerInvestigatorIdL ?~ iid

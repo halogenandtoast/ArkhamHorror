@@ -18,7 +18,7 @@ import Arkham.Projection
 newtype PatriceHathaway = PatriceHathaway InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 patriceHathaway :: InvestigatorCard PatriceHathaway
 patriceHathaway =
@@ -38,7 +38,7 @@ instance HasChaosTokenValue PatriceHathaway where
 instance RunMessage PatriceHathaway where
   runMessage msg i@(PatriceHathaway attrs) = case msg of
     SendMessage (isTarget attrs -> True) AllDrawCardAndResource | not (attrs ^. defeatedL || attrs ^. resignedL) -> do
-      attrs' <- takeUpkeepResources attrs
+      push $ ForTarget (toTarget attrs) (DoStep 2 AllDrawCardAndResource)
       hand <- field InvestigatorHand (toId attrs)
       let nonWeaknessCards = filter (`cardMatch` NonWeakness) hand
       player <- getPlayer (toId attrs)
@@ -47,7 +47,7 @@ instance RunMessage PatriceHathaway where
             $ targetLabels nonWeaknessCards (only . DiscardCard (toId attrs) (toSource attrs) . toCardId)
         , DoStep 1 msg
         ]
-      pure $ PatriceHathaway attrs'
+      pure i
     DoStep 1 (SendMessage (isTarget attrs -> True) AllDrawCardAndResource) | not (attrs ^. defeatedL || attrs ^. resignedL) -> do
       cards <- field InvestigatorHand (toId attrs)
       let numberToDraw = max 0 (5 - length cards)

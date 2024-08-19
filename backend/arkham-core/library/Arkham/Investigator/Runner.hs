@@ -2830,6 +2830,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       $ ShuffleDiscardBackIn iid
     pure a
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do
+    push $ ForTarget (toTarget a) (DoStep 2 AllDrawCardAndResource)
     unlessM (hasModifier a CannotDrawCards) $ do
       mods <- getModifiers a
       let alternateUpkeepDraws = [target | AlternateUpkeepDraw target <- mods]
@@ -2841,6 +2842,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               pid
               [targetLabel target [SendMessage target AllDrawCardAndResource] | target <- alternateUpkeepDraws]
         else push $ drawCards investigatorId ScenarioSource 1
+    pure a
+  ForTarget (isTarget a -> True) (DoStep 2 AllDrawCardAndResource) | not (a ^. defeatedL || a ^. resignedL) -> do
     takeUpkeepResources a
   LoadDeck iid deck | iid == investigatorId -> do
     shuffled <- shuffleM $ flip map (unDeck deck) $ \card ->

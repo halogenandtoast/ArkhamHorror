@@ -9,7 +9,7 @@ import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed)
 import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
-import Arkham.Investigator.Runner (takeUpkeepResources, pattern PlayThisEvent)
+import Arkham.Investigator.Runner (pattern PlayThisEvent)
 import Arkham.Investigator.Types (Field (..), defeatedL, resignedL)
 import Arkham.Matcher hiding (AssetCard, PlaceUnderneath)
 import Arkham.Message.Lifted.Choose
@@ -56,7 +56,8 @@ instance RunMessage Subject5U21 where
       unlessM (hasModifier attrs CannotDrawCards) $ do
         push $ DrawCards attrs.id $ newCardDraw ScenarioSource attrs.id 2
         push $ Devour attrs.id
-      Subject5U21 . (`with` meta) <$> takeUpkeepResources attrs
+      push $ ForTarget (toTarget attrs) (DoStep 2 AllDrawCardAndResource)
+      pure i
     ElderSignEffect (is attrs -> True) -> do
       afterSkillTest $ push (Do msg)
       pure i

@@ -8,7 +8,6 @@ import Arkham.Location.Import.Lifted
 import Arkham.Location.Runner (enemyAtLocation)
 import Arkham.Matcher
 import Arkham.Message (pattern RemoveDoom)
-import Arkham.SkillType
 
 newtype NotreDame = NotreDame LocationAttrs
   deriving anyclass IsLocation

@@ -1279,8 +1279,7 @@ runGameMessage msg g = case msg of
                 (SetOriginalCardCode $ pcOriginalCardCode pc)
                 (createAsset card aid)
           pushAll
-            [ CardEnteredPlay iid card
-            , PaidForCardCost iid card payment
+            [ PaidForCardCost iid card payment
             , InvestigatorPlayAsset iid aid
             , ResolvedCard iid card
             ]
@@ -1325,8 +1324,7 @@ runGameMessage msg g = case msg of
           aid <- maybe getRandom pure mAid
           let asset = overAttrs (\attrs -> attrs {assetController = Just iid}) $ createAsset card aid
           pushAll
-            [ CardEnteredPlay iid card
-            , InvestigatorPlayAsset iid aid
+            [ InvestigatorPlayAsset iid aid
             , ResolvedCard iid card
             ]
           pure $ g & entitiesL . assetsL %~ insertMap aid asset

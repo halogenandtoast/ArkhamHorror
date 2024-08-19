@@ -37,7 +37,18 @@ const allCustomizations = ["09021", "09022", "09023", "09040", "09041", "09042",
 
 const cardCode = computed(() => {
   if (card.value) {
-    const pattern = /cards\/(\d+)\.jpg/;
+    const pattern = /cards\/(\d+)(_.*)?\.jpg/;
+    const match = card.value.match(pattern);
+    if (match) {
+      return match[1];
+    }
+  }
+  return null;
+});
+
+const mutated = computed(() => {
+  if (card.value) {
+    const pattern = /cards\/\d+(_Mutated\d+)\.jpg/;
     const match = card.value.match(pattern);
     if (match) {
       return match[1];
@@ -49,7 +60,7 @@ const cardCode = computed(() => {
 const customizationsCard = computed(() => {
   if (cardCode.value) {
     if (allCustomizations.includes(cardCode.value)) {
-      return imgsrc(`customizations/${cardCode.value}.jpg`);
+      return imgsrc(`customizations/${cardCode.value}${mutated.value}.jpg`);
     }
   }
   return null;
@@ -298,7 +309,7 @@ const getImage = (el: HTMLElement): string | null => {
     <img class="horror horror-1" v-if="horror && horror >= 1" :src="imgsrc('horror-overlay.png')"/>
     <img class="horror horror-2" v-if="horror && horror >= 2" :src="imgsrc('horror-overlay.png')"/>
     <img class="horror horror-3" v-if="horror && horror >= 3" :src="imgsrc('horror-overlay.png')"/>
-    <div v-if="customizationsCard" class="customizations-wrapper">
+    <div v-if="customizationsCard" class="customizations-wrapper" :class="{mutated}">
       <img :src="customizationsCard" />
       <div v-for="label in customizationLabels" :key="label[0]" :class="`label label-${cardCode} ${label[0]}`">
         <svg xmlns="http://www.w3.org/2000/svg" width="100" height="20" viewBox="0 0 100 20">
@@ -1478,6 +1489,21 @@ const getImage = (el: HTMLElement): string | null => {
   --top-5: 63.4%;
   --top-6: 72.9%;
   --top-7: 79.5%;
+  --left-1: 8.4%;
+  --left-2: 11.2%;
+  --left-3: 14.2%;
+}
+
+// Power Word (Mutated)
+.mutated .tick-09081 {
+  --top-0: 18.8%;
+  --top-1: 28.4%;
+  --top-2: 34.9%;
+  --top-3: 44.4%;
+  --top-4: 54.0%;
+  --top-5: 60.7%;
+  --top-6: 70.1%;
+  --top-7: 76.7%;
   --left-1: 8.4%;
   --left-2: 11.2%;
   --left-3: 14.2%;

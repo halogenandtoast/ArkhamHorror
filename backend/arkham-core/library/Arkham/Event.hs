@@ -5,6 +5,7 @@ module Arkham.Event where
 import Arkham.Prelude
 
 import Arkham.Card
+import Arkham.Card.PlayerCard (tabooMutated)
 import Arkham.Classes
 import Arkham.Event.Events
 import Arkham.Event.Runner
@@ -13,11 +14,20 @@ import Arkham.Id
 createEvent :: IsCard a => a -> InvestigatorId -> EventId -> Event
 createEvent a iid eid =
   let this = lookupEvent (toCardCode a) iid eid (toCardId a)
-   in overAttrs (\attrs -> attrs {eventCustomizations = customizations}) this
+   in overAttrs
+        ( \attrs -> attrs {eventCustomizations = customizations, eventTaboo = tabooList, eventMutated = mutated}
+        )
+        this
  where
   customizations = case toCard a of
     PlayerCard pc -> pcCustomizations pc
     _ -> mempty
+  tabooList = case toCard a of
+    PlayerCard pc -> pcTabooList pc
+    _ -> Nothing
+  mutated = case toCard a of
+    PlayerCard pc -> tabooMutated tabooList pc
+    _ -> Nothing
 
 instance RunMessage Event where
   runMessage msg (Event a) = Event <$> runMessage msg a

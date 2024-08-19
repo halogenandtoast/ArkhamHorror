@@ -316,6 +316,13 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
   height: calc(var(--card-width) * 0.35);
 }
 
+:deep(.event) img {
+  object-fit: cover;
+  object-position: bottom;
+  height: calc(var(--card-width) * 0.6);
+  margin-top: 2px;
+}
+
 .enemy--can-interact {
   border: 3px solid $select;
   border-radius: 5px;

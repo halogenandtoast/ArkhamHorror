@@ -1615,9 +1615,6 @@ passesEnemyCriteria iid source windows' criterion = do
           Just _ -> error "Event must be attached to a location"
           Nothing -> error "Event must be attached to a location"
       _ -> error $ "Does not handle source: " <> show source
-    Criteria.ThisEnemy (Matcher.IncludeOutOfPlayEnemy enemyMatcher) -> case source of
-      EnemySource eid -> pure $ Matcher.IncludeOutOfPlayEnemy $ Matcher.EnemyWithId eid <> enemyMatcher
-      _ -> error "Invalid source for ThisEnemy"
     Criteria.ThisEnemy enemyMatcher -> case source of
       EnemySource eid -> pure $ Matcher.EnemyWithId eid <> enemyMatcher
       _ -> error "Invalid source for ThisEnemy"
@@ -2490,7 +2487,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       guardTiming timing $ \case
         Window.EnemySpawns enemyId locationId ->
           andM
-            [ enemyMatches enemyId $ Matcher.IncludeOutOfPlayEnemy enemyMatcher
+            [ enemyMatches enemyId enemyMatcher
             , locationMatches iid source window' locationId whereMatcher
             ]
         _ -> noMatch

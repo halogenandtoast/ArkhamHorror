@@ -481,7 +481,7 @@ getIsCommittable a c = do
                   $ and
                     [ or
                         [ any (`member` skillIcons) icons
-                        , and [null icons, toCardType card == SkillType]
+                        , and [null icons, cdCanCommitWhenNoIcons (toCardDef card)]
                         ]
                     , not prevented
                     , affordable

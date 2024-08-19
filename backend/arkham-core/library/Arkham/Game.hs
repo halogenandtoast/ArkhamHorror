@@ -3559,7 +3559,8 @@ instance Projection Investigator where
           selectMapM
             (fmap toCard . getEnemy)
             (EnemyWithPlacement (StillInHand iid))
-        pure $ investigatorHand <> ts <> es
+        committed <- field InvestigatorCommittedCards attrs.id
+        pure $ filter (`notElem` committed) $ investigatorHand <> ts <> es
       InvestigatorHandSize -> getHandSize (toAttrs i)
       InvestigatorCardsUnderneath -> pure investigatorCardsUnderneath
       InvestigatorDeck -> pure investigatorDeck
@@ -3577,8 +3578,7 @@ instance Projection Investigator where
         mskillTest <- getSkillTest
         pure $ case mskillTest of
           Nothing -> []
-          Just skillTest ->
-            findWithDefault [] (toId i) (skillTestCommittedCards skillTest)
+          Just skillTest -> findWithDefault [] (toId i) (skillTestCommittedCards skillTest)
       InvestigatorDefeated -> pure investigatorDefeated
       InvestigatorResigned -> pure investigatorResigned
       InvestigatorXp -> pure investigatorXp

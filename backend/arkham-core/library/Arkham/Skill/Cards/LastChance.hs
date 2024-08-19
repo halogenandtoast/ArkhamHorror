@@ -1,17 +1,11 @@
-module Arkham.Skill.Cards.LastChance (
-  lastChance,
-  LastChance (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.LastChance (lastChance, LastChance (..)) where
 
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 import Arkham.SkillType
 
 newtype LastChance = LastChance SkillAttrs
@@ -22,9 +16,10 @@ lastChance :: SkillCard LastChance
 lastChance = skill LastChance Cards.lastChance
 
 instance HasModifiersFor LastChance where
-  getModifiersFor (CardIdTarget cid) (LastChance a) | toCardId a == cid = do
-    n <- fieldMap InvestigatorHand length (skillOwner a)
-    pure $ toModifiers a [RemoveSkillIcons $ replicate n WildIcon]
+  getModifiersFor (CardIdTarget cid) (LastChance a) | a.cardId == cid = do
+    hand <- field InvestigatorHand a.owner
+    let n = max 0 $ length hand - (if any ((== cid) . toCardId) hand then 1 else 0)
+    modified a $ guard (n > 0) *> [RemoveSkillIcons $ replicate n WildIcon]
   getModifiersFor _ _ = pure []
 
 instance RunMessage LastChance where

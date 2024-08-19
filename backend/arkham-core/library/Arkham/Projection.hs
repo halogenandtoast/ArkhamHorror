@@ -90,3 +90,6 @@ fieldSome fld = fieldP fld (> 0)
 
 fieldNone :: (HasGame m, Projection a) => Field a Int -> EntityId a -> m Bool
 fieldNone fld = fieldP fld (== 0)
+
+fieldLength :: (HasGame m, Projection a) => Field a [b] -> EntityId a -> m Int
+fieldLength fld = fieldMap fld length

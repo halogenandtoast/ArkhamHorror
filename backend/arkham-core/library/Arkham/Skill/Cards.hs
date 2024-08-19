@@ -20,6 +20,7 @@ skill cardCode name icons classSymbol =
   (emptyCardDef cardCode name SkillType)
     { cdClassSymbols = singleton classSymbol
     , cdSkills = icons
+    , cdCanCommitWhenNoIcons = null icons
     }
 
 signature :: InvestigatorId -> CardDef -> CardDef
@@ -404,6 +405,7 @@ lastChance =
   (skill "04036" "Last Chance" [#wild, #wild, #wild, #wild, #wild] Survivor)
     { cdCardTraits = singleton Gambit
     , cdCommitRestrictions = [OnlyCardCommittedToTest]
+    , cdCardInHandEffects = True
     }
 
 stunningBlow :: CardDef

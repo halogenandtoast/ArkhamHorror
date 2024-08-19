@@ -66,6 +66,12 @@ pattern InvestigatorWithAnyClues <-
   where
     InvestigatorWithAnyClues = InvestigatorWithClues (GreaterThan (Static 0))
 
+pattern InvestigatorWithAnyCluesInPool :: InvestigatorMatcher
+pattern InvestigatorWithAnyCluesInPool <-
+  InvestigatorWithCluesInPool (GreaterThan (Static 0))
+  where
+    InvestigatorWithAnyCluesInPool = InvestigatorWithCluesInPool (GreaterThan (Static 0))
+
 pattern InvestigatorWithoutAnyClues :: InvestigatorMatcher
 pattern InvestigatorWithoutAnyClues <-
   InvestigatorWithClues (EqualTo (Static 0))

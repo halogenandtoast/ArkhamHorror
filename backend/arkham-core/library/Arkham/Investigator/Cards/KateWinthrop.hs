@@ -25,7 +25,7 @@ instance HasAbilities KateWinthrop where
         a
         1
         ( Self
-            <> youExist InvestigatorWithAnyClues
+            <> youExist InvestigatorWithAnyCluesInPool
             <> exists (oneOf [#science, #tool] <> AssetControlledBy You <> not_ AssetWithAnyClues)
         )
         $ FastAbility Free

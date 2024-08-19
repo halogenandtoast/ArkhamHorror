@@ -108,6 +108,7 @@ data InvestigatorMatcher
   | InvestigatorEngagedWith EnemyMatcher
   | InvestigatorWithActionsRemaining ValueMatcher
   | InvestigatorWithClues ValueMatcher
+  | InvestigatorWithCluesInPool ValueMatcher
   | InvestigatorWithDamage ValueMatcher
   | InvestigatorHasCardWithDamage
   | InvestigatorHasCardWithHorror

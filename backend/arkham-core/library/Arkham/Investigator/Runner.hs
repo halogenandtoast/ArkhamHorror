@@ -2199,7 +2199,31 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       then pure a
       else pure $ a & assignedSanityHealL %~ insertWith (+) source n
   MoveTokens s _ (isTarget a -> True) tType amount -> runMessage (PlaceTokens s (toTarget a) tType amount) a
-  MoveTokens s (isSource a -> True) _ tType amount -> runMessage (RemoveTokens s (toTarget a) tType amount) a
+  MoveTokens s source@(isSource a -> True) target tType amount | amount > 0 -> do
+    case tType of
+      Clue -> do
+        assetsWithClues <- selectWithField AssetClues (assetControlledBy a.id <> AssetWithAnyClues)
+        let total = sum (map snd assetsWithClues) + investigatorClues a
+        if total == amount
+          then do
+            for_ assetsWithClues \(aid, n) -> do
+              push $ RemoveTokens s (AssetTarget aid) tType n
+            if investigatorClues a > 0
+              then runMessage (RemoveTokens s (toTarget a) tType (investigatorClues a)) a
+              else pure a
+          else do
+            player <- getPlayer a.id
+            push
+              $ chooseOne player
+              $ [ ClueLabel a.id [RemoveTokens s (toTarget a) tType 1, MoveTokens s source target tType (amount - 1)]
+                ]
+              <> [ targetLabel
+                  aid
+                  [RemoveTokens s (toTarget aid) tType 1, MoveTokens s source target tType (amount - 1)]
+                 | (aid, _) <- assetsWithClues
+                 ]
+            pure a
+      _ -> runMessage (RemoveTokens s (toTarget a) tType amount) a
   MoveTokensNoDefeated s _ target tType n | isTarget a target -> do
     runMessage (PlaceTokens s (toTarget a) tType n) a
   MoveTokensNoDefeated s source _ tType n | isSource a source -> do

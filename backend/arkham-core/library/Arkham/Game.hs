@@ -890,6 +890,9 @@ getInvestigatorsMatching matcher = do
       isLowestAmongst (toId i) inner (getSkillValue skillType)
     InvestigatorWithHighestSkill skillType inner -> \i ->
       isHighestAmongst (toId i) inner (getSkillValue skillType)
+    InvestigatorWithCluesInPool gameValueMatcher -> \i -> do
+      clues <- field InvestigatorCluesInPool (toId i)
+      gameValueMatches clues gameValueMatcher
     InvestigatorWithClues gameValueMatcher -> \i -> do
       clues <- field InvestigatorClues (toId i)
       gameValueMatches clues gameValueMatcher
@@ -3570,6 +3573,7 @@ instance Projection Investigator where
       InvestigatorClues -> do
         controlledAssetClues <- getSum <$> selectAgg Sum AssetClues (assetControlledBy attrs.id)
         pure $ investigatorClues attrs + controlledAssetClues
+      InvestigatorCluesInPool -> pure $ investigatorClues attrs
       InvestigatorTokens -> pure $ investigatorTokens
       InvestigatorSearch -> pure $ investigatorSearch
       InvestigatorHand -> do

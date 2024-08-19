@@ -175,6 +175,7 @@ import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (emptyArray, parse, parseMaybe)
+import Data.Foldable (foldrM)
 import Data.List qualified as List
 import Data.List.Extra (groupOn)
 import Data.Map.Monoidal.Strict (getMonoidalMap)
@@ -3723,27 +3724,25 @@ showBS = Debug.Trace.trace (prettyCallStack callStack) () `seq` pure ()
 instance Query ExtendedCardMatcher where
   select matcher = do
     game <- getGame
-    let cs = Map.elems $ gameCards game
-    filterM (`matches'` matcher) cs
+    go (Map.elems $ gameCards game) matcher
    where
-    matches' :: forall m. HasGame m => Card -> ExtendedCardMatcher -> m Bool
-    matches' c = \case
+    go cs = \case
       CardWithSharedTraitToAttackingEnemy -> do
         mEnemy <- selectOne AttackingEnemy
         case mEnemy of
-          Nothing -> pure False
+          Nothing -> pure []
           Just eid -> do
             traits <- fieldMap EnemyTraits toList eid
-            pure $ c `cardMatch` oneOf (CardWithTrait <$> traits)
+            pure $ filterCards (mapOneOf CardWithTrait traits) cs
       ChosenViaCustomization inner -> do
-        selectOne inner >>= \case
-          Just (PlayerCard pc) -> do
+        go cs inner <&> filter \case
+          c@(PlayerCard pc) ->
             let titles = [t | ChosenCard t <- concatMap snd (toList pc.customizations)]
-            pure $ c `cardMatch` oneOf (CardWithTitle <$> titles)
-          _ -> pure False
+             in c `cardMatch` mapOneOf CardWithTitle titles
+          _ -> False
       OwnedBy who -> do
         iids <- select who
-        pure $ maybe False (`elem` iids) c.owner
+        pure $ filter (maybe False (`elem` iids) . (.owner)) cs
       ControlledBy who -> do
         cards <-
           concat
@@ -3752,24 +3751,25 @@ instance Query ExtendedCardMatcher where
               , selectFields EventCard (EventControlledBy who)
               , selectFields SkillCard (SkillControlledBy who)
               ]
-        pure $ c `elem` cards
+        pure $ filter (`elem` cards) cs
       NotThisCard -> error "must be replaced"
       IsThisCard -> error "must be replaced"
       CanCancelRevelationEffect matcher' -> do
-        cardIsMatch <- matches' c matcher'
-        modifiers <- getModifiers (toCardId c)
-        let cannotBeCanceled = cdRevelation (toCardDef c) == CannotBeCanceledRevelation
-        pure $ cardIsMatch && EffectsCannotBeCanceled `notElem` modifiers && not cannotBeCanceled
+        go cs matcher' >>= filterM \c -> do
+          modifiers <- getModifiers c.id
+          let cannotBeCanceled = cdRevelation (toCardDef c) == CannotBeCanceledRevelation
+          pure $ EffectsCannotBeCanceled `notElem` modifiers && not cannotBeCanceled
       CardIsCommittedBy investigatorMatcher -> do
         committed <- selectAgg id InvestigatorCommittedCards investigatorMatcher
-        pure $ c `elem` committed
+        pure $ filter (`elem` committed) cs
       CanCancelAllEffects matcher' -> do
-        cardIsMatch <- matches' c matcher'
-        modifiers <- getModifiers (toCardId c)
-        pure $ cardIsMatch && EffectsCannotBeCanceled `notElem` modifiers
+        go cs matcher' >>= filterM \c -> do
+          modifiers <- getModifiers c.id
+          pure $ EffectsCannotBeCanceled `notElem` modifiers
       CardWithoutModifier modifier -> do
-        modifiers <- getModifiers (toCardId c)
-        pure $ modifier `notElem` modifiers
+        flip filterM cs \c -> do
+          modifiers <- getModifiers (toCardId c)
+          pure $ modifier `notElem` modifiers
       CardWithPerformableAbility abilityMatcher modifiers' -> do
         iid <- view activeInvestigatorIdL <$> getGame
         let
@@ -3777,37 +3777,36 @@ instance Query ExtendedCardMatcher where
           setAssetPlacement a = case eqT @a @Asset of
             Just Refl -> overAttrs (\attrs -> attrs {assetPlacement = StillInHand iid, assetController = Just iid}) a
             Nothing -> a
-        let extraEntities = addCardEntityWith iid setAssetPlacement defaultEntities c
-
-        let abilities = getAbilities extraEntities
-        abilities' <- filterM (`abilityMatches` abilityMatcher) abilities
         g <- getGame
-        flip runReaderT (g {gameEntities = gameEntities g <> extraEntities}) $ do
-          flip anyM abilities' $ \ab -> do
-            let adjustedAbility = applyAbilityModifiers ab modifiers'
-            getCanPerformAbility iid (Window.defaultWindows iid) adjustedAbility
-      HandCardWithDifferentTitleFromAtLeastOneAsset who assetMatcher cardMatcher ->
-        do
-          iids <- select who
-          handCards <-
-            concatMapM
-              (fieldMap InvestigatorHand (filter (`cardMatch` (CardWithType AssetType <> cardMatcher))))
-              iids
-          assets <- select assetMatcher
-          cards <- case assets of
-            [x] -> do
-              assetName <- fieldMap AssetCard (cdName . toCardDef) x
-              pure $ filter ((/= assetName) . cdName . toCardDef) handCards
-            _ -> pure handCards
-          pure $ c `elem` cards
+        flip filterM cs \c -> do
+          let extraEntities = addCardEntityWith iid setAssetPlacement defaultEntities c
+
+          abilities <- filterM (`abilityMatches` abilityMatcher) (getAbilities extraEntities)
+          flip runReaderT (g {gameEntities = gameEntities g <> extraEntities}) $ do
+            flip anyM abilities $ \ab -> do
+              let adjustedAbility = applyAbilityModifiers ab modifiers'
+              getCanPerformAbility iid (Window.defaultWindows iid) adjustedAbility
+      HandCardWithDifferentTitleFromAtLeastOneAsset who assetMatcher cardMatcher -> do
+        iids <- select who
+        handCards <-
+          concatMapM
+            (fieldMap InvestigatorHand (filter (`cardMatch` (CardWithType AssetType <> cardMatcher))))
+            iids
+        assets <- select assetMatcher
+        cards <- case assets of
+          [x] -> do
+            assetName <- fieldMap AssetCard (cdName . toCardDef) x
+            pure $ filter ((/= assetName) . cdName . toCardDef) handCards
+          _ -> pure handCards
+        pure $ filter (`elem` cards) cs
       SetAsideCardMatch matcher' -> do
         cards <- scenarioField ScenarioSetAsideCards
-        pure $ c `elem` filter (`cardMatch` matcher') cards
+        pure $ filter (`elem` filter (`cardMatch` matcher') cards) cs
       PassesCommitRestrictions inner -> do
         let
           passesCommitRestriction card = \case
             CommittableTreachery -> error "unhandled"
-            AnyCommitRestriction cs -> anyM (passesCommitRestriction card) cs
+            AnyCommitRestriction crs -> anyM (passesCommitRestriction card) crs
             OnlyFightAgainst ematcher ->
               getSkillTestTarget >>= \case
                 Just (EnemyTarget eid) -> andM [(== Just #fight) <$> getSkillTestAction, eid <=~> ematcher]
@@ -3863,41 +3862,37 @@ instance Query ExtendedCardMatcher where
                       x <- getSkillTestDifficultyDifferenceFromBaseValue a st
                       pure $ x >= n
 
-        andM [allM (passesCommitRestriction c) (cdCommitRestrictions $ toCardDef c), c <=~> inner]
+        cs' <- go cs inner
+        filterM (\c -> allM (passesCommitRestriction c) (cdCommitRestrictions $ toCardDef c)) cs'
       UnderScenarioReferenceMatch matcher' -> do
         cards <- scenarioField ScenarioCardsUnderScenarioReference
-        pure $ c `elem` filter (`cardMatch` matcher') cards
+        pure $ filter (`elem` filter (`cardMatch` matcher') cards) cs
       VictoryDisplayCardMatch matcher' -> do
         cards <- scenarioField ScenarioVictoryDisplay
-        pure $ c `elem` filter (`cardMatch` matcher') cards
+        pure $ filter (`elem` filter (`cardMatch` matcher') cards) cs
       PlayableCardWithCostReduction actionStatus n matcher' -> do
-        mTurnInvestigator <- selectOne TurnInvestigator
-        case mTurnInvestigator of
-          Nothing -> pure False
+        selectOne TurnInvestigator >>= \case
+          Nothing -> pure []
           Just iid -> do
             let windows' = Window.defaultWindows iid
-            results <- select matcher'
+            cs' <- go cs matcher'
             availableResources <- getSpendableResources iid
-            playable <-
-              filterM
-                ( getIsPlayableWithResources
-                    iid
-                    GameSource
-                    (availableResources + n)
-                    (Cost.UnpaidCost actionStatus)
-                    windows'
-                )
-                results
-            pure $ c `elem` playable
+            filterM
+              ( getIsPlayableWithResources
+                  iid
+                  GameSource
+                  (availableResources + n)
+                  (Cost.UnpaidCost actionStatus)
+                  windows'
+              )
+              cs'
       PlayableCardWithNoCost actionStatus matcher' -> do
-        mTurnInvestigator <- selectOne TurnInvestigator
-        case mTurnInvestigator of
-          Nothing -> pure False
+        selectOne TurnInvestigator >>= \case
+          Nothing -> pure []
           Just iid -> do
             let windows' = Window.defaultWindows iid
-            results <- select matcher'
-            playable <-
-              filterM
+            go cs matcher'
+              >>= filterM
                 ( getIsPlayableWithResources
                     iid
                     GameSource
@@ -3905,47 +3900,37 @@ instance Query ExtendedCardMatcher where
                     (Cost.UnpaidCost actionStatus)
                     windows'
                 )
-                results
-            pure $ c `elem` playable
       PlayableCard costStatus matcher' -> do
-        mTurnInvestigator <- selectOne TurnInvestigator
-        case mTurnInvestigator of
-          Nothing -> pure False
+        selectOne TurnInvestigator >>= \case
+          Nothing -> pure []
           Just iid -> do
             let windows' = Window.defaultWindows iid
-            results <- select matcher'
-            playable <- filterM (getIsPlayable iid GameSource costStatus windows') results
-            pure $ c `elem` playable
+            go cs matcher' >>= filterM (getIsPlayable iid GameSource costStatus windows')
       PlayableCardWithCriteria actionStatus override matcher' -> do
         mTurnInvestigator <- selectOne TurnInvestigator
         activeInvestigator <- selectJust ActiveInvestigator
         let iid = fromMaybe activeInvestigator mTurnInvestigator
         let windows' = Window.defaultWindows iid
-        results <- select matcher'
-        playable <-
-          filterM
+        go cs matcher'
+          >>= filterM
             ( \r -> Helpers.withModifiers
                 (CardIdTarget $ toCardId r)
                 [toModifier GameSource $ CanPlayWithOverride override]
                 $ do
                   getIsPlayable iid GameSource (UnpaidCost actionStatus) windows' r
             )
-            results
-        pure $ c `elem` playable
       CommittableCard imatch matcher' -> do
-        iid <- selectJust imatch
-        cards <- getCommittableCards iid
-        matchInitial <- c `matches'` matcher'
-        pure $ matchInitial && c `elem` cards
-      BasicCardMatch cm -> pure $ c `cardMatch` cm
+        cards <- getCommittableCards =<< selectJust imatch
+        filter (`elem` cards) <$> go cs matcher'
+      BasicCardMatch cm -> pure $ filter (`cardMatch` cm) cs
       InHandOf who -> do
         iids <- select who
         cards <- concatMapM (field InvestigatorHand) iids
-        pure $ c `elem` cards
+        pure $ filter (`elem` cards) cs
       InDeckOf who -> do
         iids <- select who
         cards <- concatMapM (fieldMap InvestigatorDeck (map PlayerCard . unDeck)) iids
-        pure $ c `elem` cards
+        pure $ filter (`elem` cards) cs
       TopOfDeckOf who -> do
         iids <- select who
         cards <-
@@ -3953,51 +3938,57 @@ instance Query ExtendedCardMatcher where
             <$> traverse
               (fieldMap InvestigatorDeck (map PlayerCard . unDeck))
               iids
-        pure $ c `elem` cards
+        pure $ filter (`elem` cards) cs
       CardIsAttachedToLocation mtch -> do
-        mAsset <- selectOne $ AssetWithCardId c.id
-        mEvent <- selectOne $ EventWithCardId c.id
-        mSkill <- selectOne $ SkillWithCardId c.id
+        flip filterM cs \c -> do
+          mAsset <- selectOne $ AssetWithCardId c.id
+          mEvent <- selectOne $ EventWithCardId c.id
+          mSkill <- selectOne $ SkillWithCardId c.id
 
-        let
-          atLocation = \case
-            AttachedToLocation lid -> lid <=~> mtch
-            _ -> pure False
+          let
+            atLocation = \case
+              AttachedToLocation lid -> lid <=~> mtch
+              _ -> pure False
 
-        orM
-          [ maybe (pure False) (fieldMapM AssetPlacement atLocation) mAsset
-          , maybe (pure False) (fieldMapM EventPlacement atLocation) mEvent
-          , maybe (pure False) (fieldMapM SkillPlacement atLocation) mSkill
-          ]
+          orM
+            [ maybe (pure False) (fieldMapM AssetPlacement atLocation) mAsset
+            , maybe (pure False) (fieldMapM EventPlacement atLocation) mEvent
+            , maybe (pure False) (fieldMapM SkillPlacement atLocation) mSkill
+            ]
       CardIsAttachedToEncounterCardAt mtch -> do
-        mAsset <- selectOne $ AssetWithCardId c.id
-        mEvent <- selectOne $ EventWithCardId c.id
-        mSkill <- selectOne $ SkillWithCardId c.id
+        flip filterM cs \c -> do
+          mAsset <- selectOne $ AssetWithCardId c.id
+          mEvent <- selectOne $ EventWithCardId c.id
+          mSkill <- selectOne $ SkillWithCardId c.id
 
-        let
-          atLocation = \case
-            AttachedToEnemy eid -> eid <=~> EnemyAt mtch
-            AttachedToTreachery tid -> tid <=~> TreacheryAt mtch
-            _ -> pure False
+          let
+            atLocation = \case
+              AttachedToEnemy eid -> eid <=~> EnemyAt mtch
+              AttachedToTreachery tid -> tid <=~> TreacheryAt mtch
+              _ -> pure False
 
-        orM
-          [ maybe (pure False) (fieldMapM AssetPlacement atLocation) mAsset
-          , maybe (pure False) (fieldMapM EventPlacement atLocation) mEvent
-          , maybe (pure False) (fieldMapM SkillPlacement atLocation) mSkill
-          ]
+          orM
+            [ maybe (pure False) (fieldMapM AssetPlacement atLocation) mAsset
+            , maybe (pure False) (fieldMapM EventPlacement atLocation) mEvent
+            , maybe (pure False) (fieldMapM SkillPlacement atLocation) mSkill
+            ]
       EligibleForCurrentSkillTest -> do
         skillIcons <- getSkillTestMatchingSkillIcons
-        pure $ any (`member` skillIcons) c.skills || (null c.skills && toCardType c == SkillType)
+        pure
+          $ filter
+            ( \c -> any (`member` skillIcons) c.skills || (null c.skills && cdCanCommitWhenNoIcons (toCardDef c))
+            )
+            cs
       CardWithCopyInHand who -> do
-        let name = toName c
-        iids <- select who
-        names <- concatMapM (fieldMap InvestigatorHand (map toName)) iids
-        pure $ count (== name) names > 1
+        flip filterM cs \c -> do
+          let name = toName c
+          iids <- select who
+          names <- concatMapM (fieldMap InvestigatorHand (map toName)) iids
+          pure $ count (== name) names > 1
       InDiscardOf who -> do
         iids <- select who
-        discards <-
-          concatMapM (fieldMap InvestigatorDiscard (map PlayerCard)) iids
-        pure $ c `elem` discards
+        discards <- concatMapM (fieldMap InvestigatorDiscard (map PlayerCard)) iids
+        pure $ filter (`elem` discards) cs
       InPlayAreaOf who -> do
         iids <- select who
         cards <- concatForM iids $ \i -> do
@@ -4005,29 +3996,35 @@ instance Query ExtendedCardMatcher where
           events <- selectFields EventCard (EventWithPlacement $ InPlayArea i)
           skills <- selectFields SkillCard (SkillWithPlacement $ InPlayArea i)
           pure $ assets <> events <> skills
-        pure $ c `elem` cards
+        pure $ filter (`elem` cards) cs
       WillGoIntoSlot s -> do
-        mods <- getModifiers c
-        let slotsToRemove = concat [replicate x sl | TakeUpFewerSlots sl x <- mods]
-        let slots =
-              (\\ slotsToRemove)
-                . filter ((`notElem` mods) . DoNotTakeUpSlot)
-                $ cdSlots (toCardDef c)
-                <> [t | AdditionalSlot t <- mods]
-        pure $ s `elem` slots
+        flip filterM cs \c -> do
+          mods <- getModifiers c
+          let slotsToRemove = concat [replicate x sl | TakeUpFewerSlots sl x <- mods]
+          let slots =
+                (\\ slotsToRemove)
+                  . filter ((`notElem` mods) . DoNotTakeUpSlot)
+                  $ cdSlots (toCardDef c)
+                  <> [t | AdditionalSlot t <- mods]
+          pure $ s `elem` slots
       CardIsBeneathInvestigator who -> do
         iids <- select who
         cards <- concatMapM (field InvestigatorCardsUnderneath) iids
-        pure $ c `elem` cards
+        pure $ filter (`elem` cards) cs
       CardIsBeneathAsset assetMatcher -> do
         assets <- select assetMatcher
         cards <- concatMapM (field AssetCardsUnderneath) assets
-        pure $ c `elem` cards
+        pure $ filter (`elem` cards) cs
       CardIsAsset assetMatcher -> do
         cards <- selectFields AssetCard assetMatcher
-        pure $ c `elem` cards
-      ExtendedCardWithOneOf ms -> anyM (matches' c) ms
-      ExtendedCardMatches ms -> allM (matches' c) ms
+        pure $ filter (`elem` cards) cs
+      ExtendedCardWithOneOf ms -> do
+        as <- traverse (go cs) ms
+        pure $ nub $ concat as
+      ExtendedCardMatches ms -> foldrM (flip go) cs ms
+
+-- anyM (matches' c) ms
+--       ExtendedCardMatches ms -> allM (matches' c) ms
 
 instance HasChaosTokenValue () where
   getChaosTokenValue iid token _ = do

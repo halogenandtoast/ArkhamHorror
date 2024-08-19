@@ -306,6 +306,8 @@ runGameMessage msg g = case msg of
       & (activeCardL .~ Nothing)
       & (activeAbilitiesL .~ mempty)
       & (playerOrderL .~ (g ^. entitiesL . investigatorsL . to keys))
+      & (actionRemovedEntitiesL .~ mempty)
+      & (activeAbilitiesL .~ mempty)
   StartScenario sid -> do
     -- NOTE: The campaign log needs to be copied over for standalones because
     -- we effectively reset it here when we `setScenario`.
@@ -1719,7 +1721,13 @@ runGameMessage msg g = case msg of
   BeginTurn x -> do
     player <- getPlayer x
     pushM $ checkWindows [mkWhen (Window.TurnBegins x), mkAfter (Window.TurnBegins x)]
-    pure $ g & activeInvestigatorIdL .~ x & activePlayerIdL .~ player & turnPlayerInvestigatorIdL ?~ x
+    pure
+      $ g
+      & (activeInvestigatorIdL .~ x)
+      & (activePlayerIdL .~ player)
+      & (turnPlayerInvestigatorIdL ?~ x)
+      & (activeAbilitiesL .~ mempty)
+      & (actionRemovedEntitiesL .~ mempty)
   ChoosePlayerOrder _ [x] [] -> do
     pure $ g & playerOrderL .~ [x]
   ChoosePlayerOrder _ [] (x : xs) -> do

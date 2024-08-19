@@ -701,7 +701,7 @@ hasFightActions iid requestor window windows' =
     =<< select (Matcher.AbilityIsAction #fight <> Matcher.AbilityWindow window)
 
 hasEvadeActions
-  :: HasGame m
+  :: (HasCallStack, HasGame m)
   => InvestigatorId
   -> Matcher.WindowMatcher
   -> [Window]
@@ -981,26 +981,24 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       && passesSlots
       && canAffordAdditionalCosts
 
-onSameLocation :: HasGame m => InvestigatorId -> Placement -> m Bool
+onSameLocation :: (HasCallStack, HasGame m) => InvestigatorId -> Placement -> m Bool
 onSameLocation iid = \case
   AttachedToLocation lid -> fieldMap InvestigatorLocation (== Just lid) iid
   AtLocation lid -> fieldMap InvestigatorLocation (== Just lid) iid
   InPlayArea iid' ->
     if iid == iid'
       then pure True
-      else
-        liftA2
-          (==)
-          (field InvestigatorLocation iid')
-          (field InvestigatorLocation iid)
+      else do
+        l1 <- join <$> fieldMay InvestigatorLocation iid
+        l2 <- join <$> fieldMay InvestigatorLocation iid'
+        pure $ isJust l1 && l1 == l2
   InThreatArea iid' ->
     if iid == iid'
       then pure True
-      else
-        liftA2
-          (==)
-          (field InvestigatorLocation iid')
-          (field InvestigatorLocation iid)
+      else do
+        l1 <- join <$> fieldMay InvestigatorLocation iid
+        l2 <- join <$> fieldMay InvestigatorLocation iid'
+        pure $ isJust l1 && l1 == l2
   AttachedToEnemy eid ->
     liftA2 (==) (field EnemyLocation eid) (field InvestigatorLocation iid)
   AttachedToTreachery tid ->

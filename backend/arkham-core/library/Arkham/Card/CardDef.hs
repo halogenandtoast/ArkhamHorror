@@ -156,6 +156,7 @@ data CardDef = CardDef
   , cdCustomizations :: Map Customization Int
   , cdOtherSide :: Maybe CardCode
   , cdWhenDiscarded :: DiscardType
+  , cdCanCommitWhenNoIcons :: Bool
   }
   deriving stock (Show, Eq, Ord, Data)
 
@@ -253,6 +254,7 @@ emptyCardDef cCode name cType =
     , cdCustomizations = mempty
     , cdOtherSide = Nothing
     , cdWhenDiscarded = ToDiscard
+    , cdCanCommitWhenNoIcons = False
     }
 
 instance IsCardMatcher CardDef where
@@ -330,4 +332,63 @@ instance Has InvestigatorMatcher CardDef where
     InvestigatorType -> error "invalid matcher"
     ScenarioType -> error "invalid matcher"
 
-$(deriveJSON (aesonOptions $ Just "cd") ''CardDef)
+$(deriveToJSON (aesonOptions $ Just "cd") ''CardDef)
+
+instance FromJSON CardDef where
+  parseJSON = withObject "CardDef" \o -> do
+    cdCardCode <- o .: "cardCode"
+    cdName <- o .: "name"
+    cdRevealedName <- o .:? "revealedName"
+    cdCost <- o .:? "cost"
+    cdAdditionalCost <- o .:? "additionalCost"
+    cdLevel <- o .:? "level"
+    cdCardType <- o .: "cardType"
+    cdCardSubType <- o .:? "cardSubType"
+    cdClassSymbols <- o .: "classSymbols"
+    cdSkills <- o .: "skills"
+    cdCardTraits <- o .: "cardTraits"
+    cdRevealedCardTraits <- o .: "revealedCardTraits"
+    cdKeywords <- o .: "keywords"
+    cdFastWindow <- o .:? "fastWindow"
+    cdActions <- o .: "actions"
+    cdRevelation <- o .: "revelation"
+    cdVictoryPoints <- o .:? "victoryPoints"
+    cdVengeancePoints <- o .:? "vengeancePoints"
+    cdCriteria <- o .:? "criteria"
+    cdOverrideActionPlayableIfCriteriaMet <- o .: "overrideActionPlayableIfCriteriaMet"
+    cdCommitRestrictions <- o .: "commitRestrictions"
+    cdAttackOfOpportunityModifiers <- o .: "attackOfOpportunityModifiers"
+    cdPermanent <- o .: "permanent"
+    cdEncounterSet <- o .:? "encounterSet"
+    cdEncounterSetQuantity <- o .:? "encounterSetQuantity"
+    cdUnique <- o .: "unique"
+    cdDoubleSided <- o .: "doubleSided"
+    cdLimits <- o .: "limits"
+    cdExceptional <- o .: "exceptional"
+    cdUses <- o .: "uses"
+    cdPlayableFromDiscard <- o .: "playableFromDiscard"
+    cdStage <- o .:? "stage"
+    cdSlots <- o .: "slots"
+    cdCardInHandEffects <- o .: "cardInHandEffects"
+    cdCardInDiscardEffects <- o .: "cardInDiscardEffects"
+    cdCardInSearchEffects <- o .: "cardInSearchEffects"
+    cdAlternateCardCodes <- o .: "alternateCardCodes"
+    cdArt <- o .: "art"
+    cdLocationSymbol <- o .:? "locationSymbol"
+    cdLocationRevealedSymbol <- o .:? "locationRevealedSymbol"
+    cdLocationConnections <- o .: "locationConnections"
+    cdLocationRevealedConnections <- o .: "locationRevealedConnections"
+    cdPurchaseTrauma <- o .: "purchaseTrauma"
+    cdGrantedXp <- o .:? "grantedXp"
+    cdCanReplace <- o .: "canReplace"
+    cdDeckRestrictions <- o .: "deckRestrictions"
+    cdBondedWith <- o .: "bondedWith"
+    cdSkipPlayWindows <- o .: "skipPlayWindows"
+    cdBeforeEffect <- o .: "beforeEffect"
+    cdCustomizations <- o .: "customizations"
+    cdOtherSide <- o .:? "otherSide"
+    cdWhenDiscarded <- o .: "whenDiscarded"
+    cdCanCommitWhenNoIcons <-
+      o .:? "canCommitWhenNoIcons" .!= (cdSkills == [] && cdCardType == SkillType)
+
+    pure CardDef {..}

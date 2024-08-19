@@ -43,7 +43,9 @@ sourceToMaybeCard :: (HasCallStack, HasGame m) => Source -> m (Maybe Card)
 sourceToMaybeCard = targetToMaybeCard . sourceToTarget
 
 sourceToTarget :: HasCallStack => Source -> Target
-sourceToTarget = fromJustNote "not implemented" . sourceToMaybeTarget
+sourceToTarget s =
+  fromJustNote ("trying to convert source " <> show s <> " but can't")
+    $ sourceToMaybeTarget s
 
 sourceToMaybeTarget :: Source -> Maybe Target
 sourceToMaybeTarget = \case
@@ -86,7 +88,7 @@ sourceToMaybeTarget = \case
   CampaignSource -> Just $ CampaignTarget
   TarotSource arcana -> Just $ TarotTarget arcana
   ThisCard -> Nothing
-  CardCostSource _ -> Nothing
+  CardCostSource a -> Just $ CardCostTarget a
   BothSource s1 s2 -> BothTarget <$> sourceToMaybeTarget s1 <*> sourceToMaybeTarget s2
   BatchSource bId -> Just $ BatchTarget bId
   ActiveCostSource acId -> Just $ ActiveCostTarget acId
@@ -111,8 +113,9 @@ targetToSource = \case
   ScenarioDeckTarget -> error "can not covert"
   AgendaTarget aid -> AgendaSource aid
   ActTarget aid -> ActSource aid
-  CardIdTarget _ -> error "can not convert"
-  CardCodeTarget _ -> error "can not convert"
+  CardIdTarget cid -> CardIdSource cid
+  CardCostTarget cid -> CardCostSource cid
+  CardCodeTarget ccode -> CardCodeSource ccode
   SearchedCardTarget _ -> error "can not convert"
   EventTarget eid -> EventSource eid
   SkillTarget sid -> SkillSource sid

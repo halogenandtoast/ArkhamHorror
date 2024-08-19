@@ -30,6 +30,7 @@ targetTraits = \case
   AssetTarget aid -> field AssetTraits aid
   CardCodeTarget _ -> pure mempty
   CardIdTarget _ -> pure mempty
+  CardCostTarget _ -> pure mempty
   EffectTarget _ -> pure mempty
   EnemyTarget eid -> field EnemyTraits eid
   EventTarget eid -> field EventTraits eid

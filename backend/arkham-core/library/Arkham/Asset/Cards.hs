@@ -7129,6 +7129,7 @@ hallowedMirror3 =
     , cdCardTraits = setFromList [Item, Relic, Occult, Blessed]
     , cdSlots = [#accessory]
     , cdLevel = Just 3
+    , cdBondedWith = [(3, "05314")]
     }
 
 theWorldXxi3 :: CardDef

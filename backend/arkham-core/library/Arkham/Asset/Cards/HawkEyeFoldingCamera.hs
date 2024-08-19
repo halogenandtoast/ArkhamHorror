@@ -1,17 +1,11 @@
-module Arkham.Asset.Cards.HawkEyeFoldingCamera (
-  hawkEyeFoldingCamera,
-  HawkEyeFoldingCamera (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.HawkEyeFoldingCamera (hawkEyeFoldingCamera, HawkEyeFoldingCamera (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -20,7 +14,7 @@ newtype Metadata = Metadata {locations :: [LocationId]}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype HawkEyeFoldingCamera = HawkEyeFoldingCamera (AssetAttrs `With` Metadata)
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hawkEyeFoldingCamera :: AssetCard HawkEyeFoldingCamera
@@ -32,17 +26,15 @@ instance HasModifiersFor HawkEyeFoldingCamera where
     | controlledBy a iid = do
         pure
           $ toModifiers a
-          $ [SkillModifier SkillWillpower 1 | assetResources a >= 1]
-          <> [SkillModifier SkillIntellect 1 | assetResources a >= 2]
-          <> [SanityModifier 1 | assetResources a >= 3]
+          $ [SkillModifier #willpower 1 | a.use Evidence >= 1]
+          <> [SkillModifier #intellect 1 | a.use Evidence >= 2]
+          <> [SanityModifier 1 | a.use Evidence >= 3]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HawkEyeFoldingCamera where
   getAbilities (HawkEyeFoldingCamera (a `With` meta)) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
-          (DiscoveringLastClue Timing.After You locationMatcher)
-          Free
+        $ freeReaction (DiscoveringLastClue #after You locationMatcher)
     ]
    where
     locationMatcher =
@@ -58,6 +50,6 @@ toLocation (_ : xs) = toLocation xs
 instance RunMessage HawkEyeFoldingCamera where
   runMessage msg (HawkEyeFoldingCamera (attrs `With` meta)) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (toLocation -> lid) _ -> do
-      push $ PlaceResources (toAbilitySource attrs 1) (toTarget attrs) 1
+      push $ PlaceTokens (toAbilitySource attrs 1) (toTarget attrs) Evidence 1
       pure $ HawkEyeFoldingCamera (attrs `with` Metadata (lid : locations meta))
     _ -> HawkEyeFoldingCamera . (`with` meta) <$> runMessage msg attrs

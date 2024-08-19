@@ -6696,6 +6696,7 @@ peltShipment =
   (asset "10109" "Pelt Shipment" 0 Survivor)
     { cdCardTraits = setFromList [Item, Trait.Supply]
     , cdCost = Nothing
+    , cdCriteria = Just Criteria.Never
     , cdCardInHandEffects = True
     }
 

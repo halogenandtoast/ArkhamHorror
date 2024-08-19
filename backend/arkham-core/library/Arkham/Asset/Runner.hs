@@ -24,6 +24,7 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.HasGame
 import Arkham.Damage
+import Arkham.DamageEffect
 import Arkham.DefeatedBy
 import Arkham.Event.Types (Field (EventUses))
 import Arkham.Helpers.Calculation (calculate)
@@ -126,7 +127,33 @@ instance RunMessage AssetAttrs where
                 <> [horrorInvestigator iid' | horror > 0, iid' <- damageHank]
               pure a
     Msg.DealAssetDirectDamage aid source damage horror | aid == assetId -> do
-      runMessage (Msg.AssignAssetDamageWithCheck aid source damage horror True) a
+      mods <- getModifiers a
+      let n = sum [x | DamageTaken x <- mods]
+      let
+        damageEffect = case source of
+          EnemyAttackSource _ -> AttackDamageEffect
+          _ -> NonAttackDamageEffect
+      iids <- getInvestigatorIds
+      pushAll
+        $ [PlaceDamage source (toTarget a) (damage + n) | damage > 0]
+        <> [PlaceHorror source (toTarget a) horror | horror > 0]
+        <> [ CheckWindow iids
+              $ [ mkWhen (Window.DealtDamage source damageEffect (toTarget a) damage)
+                | damage > 0
+                ]
+              <> [ mkWhen (Window.DealtHorror source (toTarget a) horror)
+                 | horror > 0
+                 ]
+           , checkDefeated source aid
+           , CheckWindow iids
+              $ [ mkAfter (Window.DealtDamage source damageEffect (toTarget a) damage)
+                | damage > 0
+                ]
+              <> [ mkAfter (Window.DealtHorror source (toTarget a) horror)
+                 | horror > 0
+                 ]
+           ]
+      pure a
     Msg.AssignAssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do
       mods <- getModifiers a
       let n = sum [x | DamageTaken x <- mods]

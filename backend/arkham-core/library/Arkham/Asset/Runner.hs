@@ -38,7 +38,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
-import Arkham.Window (mkAfter, mkWindow)
+import Arkham.Window (mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (non)
 import Data.IntMap.Strict qualified as IntMap
@@ -478,41 +478,7 @@ instance RunMessage AssetAttrs where
       push afterWindow
       pure $ a & tokensL %~ removeAllTokens Token.Horror
     InvestigatorPlayedAsset iid aid | aid == assetId -> do
-      -- we specifically use the investigator source here because the
-      -- asset has no knowledge of being owned yet, and this will allow
-      -- us to bring the investigator's id into scope
-      modifiers <- getCombinedModifiers [toTarget a, CardIdTarget (toCardId a)]
-      let printedUses = cdUses (toCardDef a)
-      startingUses <- toModifiedStartingUses a printedUses
-      let startingDoom = sum [n | EntersPlayWithDoom n <- modifiers]
-      whenEnterMsg <-
-        checkWindows
-          [mkWindow Timing.When (Window.EnterPlay $ toTarget a)]
-      afterEnterMsg <-
-        checkWindows
-          [mkWindow Timing.After (Window.EnterPlay $ toTarget a)]
-
-      pushAll
-        $ [ActionCannotBeUndone | not assetCanLeavePlayByNormalMeans]
-        <> [whenEnterMsg]
-        <> [PlaceDoom GameSource (toTarget a) startingDoom | startingDoom > 0]
-        <> [afterEnterMsg]
-
-      let placementF = case assetPlacement of
-            Unplaced -> placementL .~ InPlayArea iid
-            _ -> id
-          controllerF = case assetController of
-            Nothing -> controllerL ?~ iid
-            Just _ -> id
-          currentUses = Map.filterWithKey (\k _ -> tokenIsUse k) assetTokens
-
-      let uses = if currentUses == mempty then startingUses else mempty
-
-      pure
-        $ a
-        & placementF
-        & controllerF
-        & (tokensL %~ Map.unionWith (+) uses . coerce)
+      runMessage (PlaceAsset aid (InPlayArea iid)) a
     TakeControlOfAsset iid aid | aid == assetId -> do
       push
         =<< checkWindows
@@ -564,12 +530,10 @@ instance RunMessage AssetAttrs where
       pure $ a & cardsUnderneathL %~ filter (/= toCard card)
     PlaceAsset aid placement | aid == assetId -> do
       let entersPlay = not (isInPlayPlacement a.placement) && isInPlayPlacement placement
-      when entersPlay do
-        pushM $ checkWindows [mkWindow Timing.After (Window.EnterPlay $ toTarget a)]
-        case placement of
-          InPlayArea iid -> push $ CardEnteredPlay iid (toCard a)
-          AttachedToAsset _ (Just (InPlayArea iid)) -> push $ CardEnteredPlay iid (toCard a)
-          _ -> pure ()
+      modifiers <- getCombinedModifiers [toTarget a, CardIdTarget (toCardId a)]
+      let currentUses = Map.filterWithKey (\k _ -> tokenIsUse k) assetTokens
+      startingUses <- toModifiedStartingUses a (cdUses $ toCardDef a)
+      let uses = if currentUses == mempty && entersPlay then startingUses else mempty
 
       -- If the card wasn't in play, but moves into a play area we need to
       -- update the controller
@@ -589,8 +553,23 @@ instance RunMessage AssetAttrs where
       checkEntersThreatArea a placement
 
       when entersPlay do
-        pushM $ checkWindows [mkWindow Timing.When (Window.EnterPlay $ toTarget a)]
-      pure $ a & placementL .~ placement & controllerF
+        whenEnterMsg <- checkWindows [mkWhen (Window.EnterPlay $ toTarget a)]
+        afterEnterMsg <- checkWindows [mkAfter (Window.EnterPlay $ toTarget a)]
+        let startingDoom = sum [n | EntersPlayWithDoom n <- modifiers]
+
+        let
+          mEnterPlayMsg = case placement of
+            InPlayArea iid -> Just $ CardEnteredPlay iid (toCard a)
+            AttachedToAsset _ (Just (InPlayArea iid)) -> Just $ CardEnteredPlay iid (toCard a)
+            _ -> Nothing
+
+        pushAll
+          $ [ActionCannotBeUndone | not assetCanLeavePlayByNormalMeans]
+          <> [whenEnterMsg]
+          <> maybeToList mEnterPlayMsg
+          <> [PlaceDoom GameSource (toTarget a) startingDoom | startingDoom > 0]
+          <> [afterEnterMsg]
+      pure $ a & placementL .~ placement & controllerF & (tokensL %~ Map.unionWith (+) uses . coerce)
     Blanked msg' -> runMessage msg' a
     RemoveAllAttachments source target -> do
       case placementToAttached a.placement of

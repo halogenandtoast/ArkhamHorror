@@ -3726,6 +3726,7 @@ instance Query ExtendedCardMatcher where
     game <- getGame
     go (Map.elems $ gameCards game) matcher
    where
+    go [] = const (pure []) -- if we have no cards remaining, just stop
     go cs = \case
       CardWithSharedTraitToAttackingEnemy -> do
         mEnemy <- selectOne AttackingEnemy

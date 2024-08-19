@@ -2658,17 +2658,18 @@ enemyMatcherFilter = \case
         enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)
         case (milid, enemyLocation) of
           (Just ilid, Just elid) -> do
-            mdistance <- getDistance ilid elid
-            distances :: [Distance] <-
-              catMaybes <$> for
-                eids
-                \eid -> do
-                  melid' <- field EnemyLocation eid
-                  case melid' of
-                    Nothing -> pure Nothing
-                    Just elid' -> getDistance ilid elid'
-            let minDistance = getMin $ foldMap Min distances
-            pure $ mdistance == Just minDistance
+            if ilid == elid
+              then pure True
+              else do
+                mdistance <- getDistance ilid elid
+                distances :: [Distance] <-
+                  catMaybes <$> for eids \eid -> do
+                    melid' <- field EnemyLocation eid
+                    case melid' of
+                      Nothing -> pure Nothing
+                      Just elid' -> getDistance ilid elid'
+                let minDistance = getMin $ foldMap Min distances
+                pure $ mdistance == Just minDistance
           _ -> pure False
       else pure False
   NearestEnemyToLocation ilid enemyMatcher -> \enemy -> do
@@ -2677,6 +2678,7 @@ enemyMatcherFilter = \case
       then do
         enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)
         case enemyLocation of
+          Just elid | elid == ilid -> pure True
           Just elid -> do
             mdistance <- getDistance ilid elid
             distances :: [Distance] <-

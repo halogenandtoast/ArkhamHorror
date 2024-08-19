@@ -145,7 +145,7 @@ data EmpiricalHypothesisEffectMetadata = EmpiricalHypothesisEffectMetadata
   deriving anyclass (ToJSON, FromJSON)
 
 newtype EmpiricalHypothesisEffect = EmpiricalHypothesisEffect EffectAttrs
-  deriving anyclass (IsEffect)
+  deriving anyclass IsEffect
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 empiricalHypothesisEffect :: EffectArgs -> EmpiricalHypothesisEffect
@@ -200,7 +200,7 @@ instance HasAbilities EmpiricalHypothesisEffect where
           [ EnemyDiscarded #when AnySource (EnemyDiscardedBy You)
           , TreacheryDiscarded #when AnySource (InPlayTreachery <> TreacheryDiscardedBy You)
           ]
-      Just (EffectInt 6) -> Enters #when matcher $ LocationWithShroud $ atLeast 3
+      Just (EffectInt 6) -> Enters #after matcher $ LocationWithShroud $ atLeast 3 -- NB. We use after so the location is revealed
       _ -> error $ "invalid effect: " <> show attrs.meta
   getAbilities _ = []
 

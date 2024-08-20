@@ -2509,7 +2509,7 @@ runGameMessage msg g = case msg of
     treachery <- getTreachery treacheryId
 
     modifiers' <- getCombinedModifiers [TreacheryTarget treacheryId, CardIdTarget $ toCardId treachery]
-    let ignoreRevelation = IgnoreRevelation `elem` modifiers'
+    let ignoreRevelation = IgnoreRevelation `elem` (traceShowId modifiers')
 
     pushAll
       $ if ignoreRevelation

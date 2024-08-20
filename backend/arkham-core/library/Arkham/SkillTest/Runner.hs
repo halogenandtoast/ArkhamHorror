@@ -171,13 +171,13 @@ instance RunMessage SkillTest where
 
       updatedSkillTestType <- case skillTestType of
         SkillSkillTest stype -> SkillSkillTest <$> getAlternateSkill s stype
-        AndSkillTest sks -> AndSkillTest . nub <$> traverse (getAlternateSkill s) sks
+        AndSkillTest sks -> AndSkillTest <$> traverse (getAlternateSkill s) sks
         x@BaseValueSkillTest {} -> pure x
         x@ResourceSkillTest -> pure x
 
       updatedBaseValue <- case skillTestBaseValue of
         SkillBaseValue stype -> SkillBaseValue <$> getAlternateSkill s stype
-        AndSkillBaseValue sks -> AndSkillBaseValue . nub <$> traverse (getAlternateSkill s) sks
+        AndSkillBaseValue sks -> AndSkillBaseValue <$> traverse (getAlternateSkill s) sks
         x@HalfResourcesOf {} -> pure x
         x@FixedBaseValue {} -> pure x
 

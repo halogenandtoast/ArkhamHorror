@@ -1,7 +1,6 @@
 module Arkham.Enemy.Cards.Poltergeist (poltergeist, Poltergeist (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards

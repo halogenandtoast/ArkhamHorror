@@ -1,10 +1,4 @@
-module Arkham.Asset.Cards.PendantOfTheQueen (
-  pendantOfTheQueen,
-  PendantOfTheQueen (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.PendantOfTheQueen (pendantOfTheQueen, PendantOfTheQueen (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -16,6 +10,7 @@ import Arkham.Helpers.Investigator (searchBonded)
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message qualified as Msg
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Taboo
 
 newtype PendantOfTheQueen = PendantOfTheQueen AssetAttrs
@@ -32,8 +27,8 @@ instance HasAbilities PendantOfTheQueen where
     [ controlledAbility
         attrs
         1
-        ( AnyCriterion
-            [ exists (You <> InvestigatorCanMove) <> exists (RevealedLocation <> Unblocked <> NotYourLocation)
+        ( oneOf
+            [ youExist InvestigatorCanMove <> exists (RevealedLocation <> Unblocked <> NotYourLocation)
             , exists
                 ( RevealedLocation
                     <> oneOf
@@ -43,9 +38,7 @@ instance HasAbilities PendantOfTheQueen where
                 )
             ]
         )
-        $ FastAbility
-        $ exhaust attrs
-        <> assetUseCost attrs Charge 1
+        $ FastAbility (exhaust attrs <> assetUseCost attrs Charge 1)
     ]
 
 instance RunMessage PendantOfTheQueen where
@@ -68,7 +61,7 @@ instance RunMessage PendantOfTheQueen where
           <> oneOf
             ( LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
                 : LocationWithEnemy (EnemyWithEvade <> EnemyWithoutModifier CannotBeEvaded)
-                : [NotLocation (locationWithInvestigator iid) <> Unblocked | canMove]
+                : [not_ (locationWithInvestigator iid) <> Unblocked | canMove]
             )
       player <- getPlayer iid
       push

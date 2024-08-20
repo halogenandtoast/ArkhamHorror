@@ -1391,3 +1391,6 @@ instance Attachable AssetAttrs where
 
 attach :: (HasQueue Message m, Attachable a, Targetable target) => a -> target -> m ()
 attach a = push . toAttach a
+
+enemyCheckEngagement :: ReverseQueue m => EnemyId -> m ()
+enemyCheckEngagement = push . EnemyCheckEngagement

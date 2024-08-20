@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Game (
   module Arkham.Game,
@@ -175,7 +175,6 @@ import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (emptyArray, parse, parseMaybe)
-import Data.Foldable (foldrM)
 import Data.List qualified as List
 import Data.List.Extra (groupOn)
 import Data.Map.Monoidal.Strict (getMonoidalMap)
@@ -954,7 +953,7 @@ getInvestigatorsMatching matcher = do
     NotInvestigator x -> do
       as' <- go as x
       pure $ filter (`notElem` as') as
-    InvestigatorMatches xs -> foldrM (flip go) as xs
+    InvestigatorMatches xs -> foldM go as xs
     AnyInvestigator xs -> do
       as' <- traverse (go as) xs
       pure $ nub $ concat as'
@@ -1505,7 +1504,7 @@ getLocationsMatching lmatcher = do
               (b <>)
                 . First
                 . (\s -> if null s then Nothing else Just s)
-                <$> getLocationsMatching a
+                <$> go ls a
           )
           (First Nothing)
           xs
@@ -1556,8 +1555,7 @@ getLocationsMatching lmatcher = do
       flip filterM ls $ \l -> do
         lmInvestigators <- select $ investigatorAt $ toId l
         pure . notNull $ List.intersect investigators lmInvestigators
-    RevealedLocation ->
-      filter isRevealed . toList . view (entitiesL . locationsL) <$> getGame
+    RevealedLocation -> pure $ filter isRevealed ls
     UnrevealedLocation -> pure $ filter (not . isRevealed) ls
     LocationWithClues gameValueMatcher -> do
       filterM
@@ -1589,7 +1587,7 @@ getLocationsMatching lmatcher = do
             )
             ls
     LocationWithMostClues locationMatcher -> do
-      matches' <- getLocationsMatching locationMatcher
+      matches' <- go ls locationMatcher
       maxes <$> forToSnd matches' (pure . attr locationClues)
     LocationCanBeEnteredBy enemyId -> do
       emods <- getModifiers enemyId
@@ -1893,7 +1891,7 @@ getLocationsMatching lmatcher = do
       go ls (AccessibleFrom $ LocationWithId yourLocation)
     ConnectedLocation -> guardYourLocation $ \yourLocation -> do
       go ls (ConnectedFrom $ LocationWithId yourLocation)
-    YourLocation -> guardYourLocation $ fmap pure . getLocation
+    YourLocation -> guardYourLocation $ fmap (\l -> [l | elem l ls]) . getLocation
     NotYourLocation -> guardYourLocation
       $ \yourLocation -> pure $ filter ((/= yourLocation) . toId) ls
     LocationWithTrait trait -> do
@@ -1902,7 +1900,7 @@ getLocationsMatching lmatcher = do
     LocationWithoutTrait trait -> do
       let missingTrait = fieldP LocationTraits (trait `notMember`) . toId
       filterM missingTrait ls
-    LocationMatchAll ms -> foldrM (flip go) ls ms
+    LocationMatchAll ms -> foldM go ls ms
     LocationMatchAny ms -> do
       as <- traverse (go ls) ms
       pure $ nub $ concat as
@@ -1931,7 +1929,8 @@ getLocationsMatching lmatcher = do
           valid <- l <=~> isValid
           if valid then getLocationsMatching connectedTo else pure []
       matcherSupreme <- foldMapM (fmap AnyLocationMatcher . getConnectedMatcher) starts
-      (<> others) <$> getLocationsMatching (getAnyLocationMatcher matcherSupreme)
+      allOptions <- (<> others) <$> getLocationsMatching (getAnyLocationMatcher matcherSupreme)
+      pure $ filter (`elem` allOptions) ls
     LocationWhenCriteria criteria -> do
       iid <- getLead
       passes <- passesCriteria iid Nothing GameSource GameSource [] criteria
@@ -4024,7 +4023,7 @@ instance Query ExtendedCardMatcher where
       ExtendedCardWithOneOf ms -> do
         as <- traverse (go cs) ms
         pure $ nub $ concat as
-      ExtendedCardMatches ms -> foldrM (flip go) cs ms
+      ExtendedCardMatches ms -> foldM go cs ms
 
 -- anyM (matches' c) ms
 --       ExtendedCardMatches ms -> allM (matches' c) ms

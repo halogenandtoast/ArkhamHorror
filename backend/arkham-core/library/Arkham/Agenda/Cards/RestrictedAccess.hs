@@ -36,7 +36,8 @@ instance RunMessage RestrictedAccess where
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      mHuntingHorrorId <- selectOne $ enemyIs Enemies.huntingHorror
+      mHuntingHorrorId <-
+        selectOne $ enemyIs Enemies.huntingHorror <> not_ (OutOfPlayEnemy VoidZone AnyEnemy)
       case mHuntingHorrorId of
         Just eid ->
           pushAll

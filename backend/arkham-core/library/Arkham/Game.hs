@@ -2582,7 +2582,14 @@ getEnemiesMatching (IncludeOmnipotent matcher) = do
 getEnemiesMatching (OutOfPlayEnemy outOfPlayZone matcher) = do
   allGameEnemies <-
     toList . view (outOfPlayEntitiesL . at outOfPlayZone . non mempty . enemiesL) <$> getGame
-  filterM (enemyMatcherFilter (matcher <> EnemyWithoutModifier Omnipotent)) allGameEnemies
+  newStyleOutOfPlayEnemies <-
+    filter (isOutOfPlayPlacement . (attr enemyPlacement))
+      . toList
+      . view (entitiesL . enemiesL)
+      <$> getGame
+  filterM
+    (enemyMatcherFilter (matcher <> EnemyWithoutModifier Omnipotent))
+    (allGameEnemies <> newStyleOutOfPlayEnemies)
 getEnemiesMatching matcher = do
   allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
   filterM (enemyMatcherFilter (matcher <> EnemyWithoutModifier Omnipotent)) allGameEnemies

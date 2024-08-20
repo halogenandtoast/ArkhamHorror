@@ -54,6 +54,9 @@ async function authenticate() {
         <button>{{$t('logIn')}}</button>
       </div>
     </section>
+    <section>
+      <router-link to="/password-reset">{{$t('forgotPassword')}}</router-link>
+    </section>
   </form>
 </template>
 

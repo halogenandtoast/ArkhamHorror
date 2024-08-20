@@ -15,7 +15,14 @@ import Arkham.SkillTest.Base as X
 import Arkham.SkillTest.Step
 import Arkham.SkillTest.Type as X
 import Arkham.SkillTestResult
+import Arkham.SkillType
 import Arkham.Target
+
+iconValuesL :: Lens' SkillTest (Map SkillIcon Int)
+iconValuesL = lens skillTestIconValues $ \m x -> m {skillTestIconValues = x}
+
+skillTestTypeL :: Lens' SkillTest SkillTestType
+skillTestTypeL = lens skillTestType $ \m x -> m {skillTestType = x}
 
 targetCardL :: Lens' SkillTest (Maybe CardId)
 targetCardL = lens skillTestTargetCard $ \m x -> m {skillTestTargetCard = x}

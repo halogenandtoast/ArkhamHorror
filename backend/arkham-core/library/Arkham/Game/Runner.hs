@@ -1533,6 +1533,7 @@ runGameMessage msg g = case msg of
         push $ chooseOneAtATime player $ map toUI as
     pure g
   Flipped (AssetSource aid) card | toCardType card /= AssetType -> do
+    replaceCard card.id card
     runMessage (RemoveAsset aid) g
   QuietlyRemoveFromGame target -> do
     case target of

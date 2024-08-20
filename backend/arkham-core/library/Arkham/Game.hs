@@ -399,12 +399,15 @@ withInvestigatorConnectionData inner@(With target _) = case target of
     skills <- select (SkillWithPlacement $ InPlayArea $ toId investigator')
     events <-
       select
-        $ eventControlledBy (toId investigator')
-        <> oneOf
-          ( map
+        $ oneOf
+          [ eventControlledBy (toId investigator') <> mapOneOf EventWithPlacement [Limbo, Unplaced]
+          , mapOneOf
               EventWithPlacement
-              [Limbo, Unplaced, InPlayArea (toId investigator'), InThreatArea (toId investigator')]
-          )
+              [ AttachedToInvestigator $ toId investigator'
+              , InPlayArea (toId investigator')
+              , InThreatArea (toId investigator')
+              ]
+          ]
     treacheries <- select (treacheryInThreatAreaOf $ toId investigator')
     mLocation <- field InvestigatorLocation (toId investigator')
     let
@@ -2451,7 +2454,7 @@ getEventsMatching matcher = do
     ActiveEvent -> pure $ filter ((== Limbo) . attr eventPlacement) as
     EventControlledBy investigatorMatcher -> do
       iids <- select investigatorMatcher
-      pure $ filter ((`elem` iids) . ownerOfEvent) as
+      pure $ filter ((`elem` iids) . attr eventController) as
     EventOwnedBy investigatorMatcher -> do
       iids <- select investigatorMatcher
       pure $ filter ((`elem` iids) . ownerOfEvent) as

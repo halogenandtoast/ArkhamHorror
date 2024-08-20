@@ -143,6 +143,7 @@ tabooMutated19 = \case
 tabooMutated20 :: CardCode -> Maybe Text
 tabooMutated20 = \case
   "02029" -> Just "Mutated20"
+  "02263" -> Just "Mutated20"
   "02269" -> Just "Mutated20"
   "03006" -> Just "Mutated20"
   "03019" -> Just "Mutated20"
@@ -150,38 +151,39 @@ tabooMutated20 = \case
   "04110" -> Just "Mutated20"
   "05153" -> Just "Mutated20"
   "06002" -> Just "Mutated20"
+  "07268" -> Just "Mutated20"
+  "08045" -> Just "Mutated20"
   "08055" -> Just "Mutated20"
   "08093" -> Just "Mutated20"
   "08098" -> Just "Mutated20"
   "08100" -> Just "Mutated20"
-  "07268" -> Just "Mutated20"
   "60405" -> Just "Mutated20"
   "60416" -> Just "Mutated20"
   "60417" -> Just "Mutated20"
-  "60423" -> Just "Mutated20"
   pc -> tabooMutated19 pc
 
 tabooMutated21 :: CardCode -> Maybe Text
 tabooMutated21 = \case
+  "02153" -> Just "Mutated21"
   "03112" -> Just "Mutated21"
   "04105" -> Just "Mutated21"
   "05020" -> Just "Mutated21"
   "05113" -> Just "Mutated21"
   "07003" -> Just "Mutated21"
+  "07122" -> Just "Mutated21"
   "08019" -> Just "Mutated21"
   "08032" -> Just "Mutated21"
   "08076" -> Just "Mutated21"
   "09045" -> Just "Mutated21"
   "09081" -> Just "Mutated21"
   "60318" -> Just "Mutated21"
+  "60414" -> Just "Mutated21"
   pc -> tabooMutated20 pc
 
 tabooMutated22 :: CardCode -> Maybe Text
 tabooMutated22 = \case
-  "02153" -> Just "Mutated22"
   "04233" -> Just "Mutated22"
-  "07122" -> Just "Mutated22"
-  "60414" -> Just "Mutated22"
+  "60423" -> Just "Mutated22"
   pc -> tabooMutated21 pc
 
 $(deriveJSON (aesonOptions $ Just "pc") ''PlayerCard)

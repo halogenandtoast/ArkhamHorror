@@ -626,7 +626,7 @@ getInvestigatorsMatching matcher = do
     if includeEliminated matcher
       then pure investigators
       else filterM (fmap not . isEliminated . toId) investigators
-  results <- filterM (go matcher) investigators'
+  results <- go investigators' matcher
   -- We now need to handle the odd iteraction for Rational Thought, which we will treat like an investigator
   case matcher of
     ThatInvestigator -> error "ThatInvestigator must be resolved in criteria"
@@ -659,12 +659,13 @@ getInvestigatorsMatching matcher = do
   includeEliminated (AnyInvestigator xs) = any includeEliminated xs
   includeEliminated (IncludeEliminated _) = True
   includeEliminated _ = False
-  go = \case
+  go [] = const (pure [])
+  go as = \case
     ThatInvestigator -> error "ThatInvestigator must be resolved in criteria"
-    InvestigatorWithAnyFailedSkillTestsThisTurn -> \i -> do
+    InvestigatorWithAnyFailedSkillTestsThisTurn -> flip filterM as \i -> do
       x <- getHistoryField TurnHistory (toId i) HistorySkillTestsPerformed
       pure $ any (isFailedResult . snd) x
-    InvestigatorCanBeAssignedDamageBy iid -> \i -> do
+    InvestigatorCanBeAssignedDamageBy iid -> flip filterM as \i -> do
       mods <- getModifiers iid
       let
         damageable = flip any mods $ \case
@@ -672,7 +673,7 @@ getInvestigatorsMatching matcher = do
           _ -> False
       isHealthDamageable <- fieldP InvestigatorRemainingHealth (> 0) (toId i)
       pure $ damageable && isHealthDamageable
-    InvestigatorCanBeAssignedHorrorBy iid -> \i -> do
+    InvestigatorCanBeAssignedHorrorBy iid -> flip filterM as \i -> do
       mods <- getModifiers iid
       let
         damageable = flip any mods $ \case
@@ -680,21 +681,21 @@ getInvestigatorsMatching matcher = do
           _ -> False
       isSanityDamageable <- fieldP InvestigatorRemainingSanity (> 0) (toId i)
       pure $ damageable && isSanityDamageable
-    OwnsAsset matcher' -> selectAny . (<> matcher') . AssetOwnedBy . InvestigatorWithId . toId
-    InvestigatorHasCardWithDamage -> \i -> do
+    OwnsAsset matcher' -> flip filterM as $ selectAny . (<> matcher') . AssetOwnedBy . InvestigatorWithId . toId
+    InvestigatorHasCardWithDamage -> flip filterM as $ \i -> do
       orM
         [ selectAny (AssetControlledBy (InvestigatorWithId $ toId i) <> AssetWithDamage)
         , pure $ (toAttrs i).healthDamage > (0 :: Int)
         ]
-    InvestigatorHasCardWithHorror -> \i -> do
+    InvestigatorHasCardWithHorror -> flip filterM as $ \i -> do
       orM
         [ selectAny (AssetControlledBy (InvestigatorWithId $ toId i) <> AssetWithHorror)
         , pure $ (toAttrs i).sanityDamage > (0 :: Int)
         ]
-    IncludeEliminated m -> go m
-    NoOne -> pure . const False
-    DeckIsEmpty -> fieldP InvestigatorDeck null . toId
-    InvestigatorCanDiscoverCluesAtOneOf matcher' -> \i -> do
+    IncludeEliminated m -> go as m
+    NoOne -> pure []
+    DeckIsEmpty -> flip filterM as $ fieldP InvestigatorDeck null . toId
+    InvestigatorCanDiscoverCluesAtOneOf matcher' -> flip filterM as $ \i -> do
       let
         getInvalid acc (CannotDiscoverCluesAt x) = AnyLocationMatcher x <> acc
         getInvalid acc (CannotDiscoverCluesExceptAsResultOfInvestigation x) = AnyLocationMatcher x <> acc
@@ -709,39 +710,39 @@ getInvestigatorsMatching matcher = do
             modifiers'
       locations <- guardYourLocation $ \_ -> select matcher'
       pure $ any (`notElem` invalidLocations) locations
-    InvestigatorWithSupply s -> fieldP InvestigatorSupplies (elem s) . toId
-    AliveInvestigator -> \i -> do
+    InvestigatorWithSupply s -> flip filterM as $ fieldP InvestigatorSupplies (elem s) . toId
+    AliveInvestigator -> flip filterM as $ \i -> do
       let attrs = toAttrs i
       pure $ not $ investigatorKilled attrs || investigatorDrivenInsane attrs
-    FewestCardsInHand -> \i ->
+    FewestCardsInHand -> flip filterM as $ \i ->
       isLowestAmongst
         (toId i)
         UneliminatedInvestigator
         (fieldMap InvestigatorHand length)
-    MostDamage -> \i -> isHighestAmongst (toId i) UneliminatedInvestigator (field InvestigatorDamage)
-    MostCardsInHand -> \i ->
+    MostDamage -> flip filterM as $ \i -> isHighestAmongst (toId i) UneliminatedInvestigator (field InvestigatorDamage)
+    MostCardsInHand -> flip filterM as $ \i ->
       isHighestAmongst
         (toId i)
         UneliminatedInvestigator
         (fieldMap InvestigatorHand length)
-    LowestRemainingHealth -> \i -> do
+    LowestRemainingHealth -> flip filterM as $ \i -> do
       h <- field InvestigatorRemainingHealth (toId i)
       lowestRemainingHealth <-
         getMin
           <$> selectAgg Min InvestigatorRemainingHealth UneliminatedInvestigator
       pure $ lowestRemainingHealth == h
-    LowestRemainingSanity -> \i -> do
+    LowestRemainingSanity -> flip filterM as $ \i -> do
       remainingSanity <- field InvestigatorRemainingSanity (toId i)
       lowestRemainingSanity <-
         getMin
           <$> selectAgg Min InvestigatorRemainingSanity UneliminatedInvestigator
       pure $ lowestRemainingSanity == remainingSanity
-    MostRemainingSanity -> \i -> do
+    MostRemainingSanity -> flip filterM as $ \i -> do
       remainingSanity <- field InvestigatorRemainingSanity (toId i)
       mostRemainingSanity <-
         fieldMax InvestigatorRemainingSanity UneliminatedInvestigator
       pure $ mostRemainingSanity == remainingSanity
-    NearestToLocation locationMatcher -> \i -> do
+    NearestToLocation locationMatcher -> flip filterM as $ \i -> do
       let
         getLocationDistance start =
           Distance
@@ -767,7 +768,7 @@ getInvestigatorsMatching matcher = do
               (toId i)
               mappingsMap
       pure $ investigatorDistance == minDistance
-    NearestToEnemy enemyMatcher -> \i -> do
+    NearestToEnemy enemyMatcher -> flip filterM as $ \i -> do
       let
         hasMatchingEnemy lid =
           selectAny $ enemyAt lid <> enemyMatcher
@@ -795,7 +796,7 @@ getInvestigatorsMatching matcher = do
               (toId i)
               mappingsMap
       pure $ investigatorDistance == minDistance
-    HasMostMatchingAsset assetMatcher -> \i -> do
+    HasMostMatchingAsset assetMatcher -> flip filterM as $ \i -> do
       selfCount <-
         length
           <$> select
@@ -809,52 +810,52 @@ getInvestigatorsMatching matcher = do
           )
           =<< getInvestigatorIds
       pure $ selfCount == maximum (ncons selfCount allCounts)
-    HasMatchingAsset assetMatcher -> \i ->
+    HasMatchingAsset assetMatcher -> flip filterM as $ \i ->
       selectAny
         (assetMatcher <> AssetControlledBy (InvestigatorWithId $ toId i))
-    HasMatchingTreachery treacheryMatcher -> \i ->
+    HasMatchingTreachery treacheryMatcher -> flip filterM as $ \i ->
       selectAny
         ( treacheryMatcher <> TreacheryInThreatAreaOf (InvestigatorWithId $ toId i)
         )
-    InvestigatorWithTreacheryInHand treacheryMatcher -> \i ->
+    InvestigatorWithTreacheryInHand treacheryMatcher -> flip filterM as $ \i ->
       selectAny
         (treacheryMatcher <> TreacheryInHandOf (InvestigatorWithId $ toId i))
-    HasMatchingEvent eventMatcher -> \i ->
+    HasMatchingEvent eventMatcher -> flip filterM as $ \i ->
       selectAny
         (eventMatcher <> EventControlledBy (InvestigatorWithId $ toId i))
-    HasMatchingSkill skillMatcher -> \i ->
+    HasMatchingSkill skillMatcher -> flip filterM as $ \i ->
       selectAny
         (skillMatcher <> SkillControlledBy (InvestigatorWithId $ toId i))
-    MostToken tkn -> \i -> do
+    MostToken tkn -> flip filterM as $ \i -> do
       mostCount <-
         fieldMaxBy InvestigatorTokens (Token.countTokens tkn) UneliminatedInvestigator
       pure $ mostCount == Token.countTokens tkn (attr investigatorTokens i)
-    HasTokens tkn valueMatcher -> \i -> do
+    HasTokens tkn valueMatcher -> flip filterM as $ \i -> do
       let n = Token.countTokens tkn (attr investigatorTokens i)
       gameValueMatches n valueMatcher
-    MostKeys -> \i -> do
+    MostKeys -> flip filterM as $ \i -> do
       mostKeyCount <- getMax0 <$> selectAgg (Max0 . Set.size) InvestigatorKeys UneliminatedInvestigator
       pure $ mostKeyCount == Set.size (investigatorKeys $ toAttrs i)
-    You -> \i -> do
+    You -> flip filterM as $ \i -> do
       you <- getInvestigator . view activeInvestigatorIdL =<< getGame
       pure $ you == i
-    NotYou -> \i -> do
+    NotYou -> flip filterM as $ \i -> do
       you <- getInvestigator . view activeInvestigatorIdL =<< getGame
       pure $ you /= i
-    Anyone -> pure . const True
-    TurnInvestigator -> \i -> (== Just i) <$> getTurnInvestigator
-    ActiveInvestigator ->
-      \i -> (== toId i) . gameActiveInvestigatorId <$> getGame
-    YetToTakeTurn -> \i ->
+    Anyone -> pure as
+    TurnInvestigator -> flip filterM as $ \i -> (== Just i) <$> getTurnInvestigator
+    ActiveInvestigator -> flip filterM as
+      $ \i -> (== toId i) . gameActiveInvestigatorId <$> getGame
+    YetToTakeTurn -> flip filterM as $ \i ->
       andM
         [ (/= i) <$> getActiveInvestigator
         , pure $ not $ investigatorEndedTurn $ toAttrs i
         ]
-    LeadInvestigator -> \i -> (== toId i) . gameLeadInvestigatorId <$> getGame
-    InvestigatorWithTitle title -> pure . (`hasTitle` title)
-    DefeatedInvestigator -> pure . attr investigatorDefeated
-    InvestigatorWithToken tkn -> \i -> fieldMap InvestigatorTokens (Token.hasToken tkn) (toId i)
-    InvestigatorCanMoveTo source locationMatcher -> \i -> do
+    LeadInvestigator -> flip filterM as $ \i -> (== toId i) . gameLeadInvestigatorId <$> getGame
+    InvestigatorWithTitle title -> flip filterM as $ pure . (`hasTitle` title)
+    DefeatedInvestigator -> flip filterM as $ pure . attr investigatorDefeated
+    InvestigatorWithToken tkn -> flip filterM as $ \i -> fieldMap InvestigatorTokens (Token.hasToken tkn) (toId i)
+    InvestigatorCanMoveTo source locationMatcher -> flip filterM as $ \i -> do
       case source of
         CardCostSource cardId -> do
           -- we need to remove the card from hand
@@ -870,14 +871,14 @@ getInvestigatorsMatching matcher = do
             $ do
               notNull <$> getCanMoveToMatchingLocations (toId i) source locationMatcher
         _ -> notNull <$> getCanMoveToMatchingLocations (toId i) source locationMatcher
-    InvestigatorAt (LocationWithInvestigator (InvestigatorWithId iid)) -> \i -> do
+    InvestigatorAt (LocationWithInvestigator (InvestigatorWithId iid)) -> flip filterM as $ \i -> do
       if toId i == iid
         then pure True
         else do
           mlid <- field InvestigatorLocation iid
           mlid2 <- field InvestigatorLocation (toId i)
           pure $ mlid == mlid2 && isJust mlid
-    InvestigatorAt locationMatcher -> \i -> do
+    InvestigatorAt locationMatcher -> flip filterM as $ \i -> do
       mlid <- field InvestigatorLocation (toId i)
       case mlid of
         Nothing -> pure False
@@ -885,32 +886,40 @@ getInvestigatorsMatching matcher = do
           if lid == LocationId nil
             then pure False
             else elem lid <$> select locationMatcher
-    InvestigatorWithId iid -> pure . (== iid) . toId
-    InvestigatorIs cardCode -> pure . (== cardCode) . toCardCode
-    InvestigatorWithLowestSkill skillType inner -> \i ->
+    InvestigatorWithId iid -> flip filterM as $ pure . (== iid) . toId
+    InvestigatorIs cardCode -> flip filterM as $ pure . (== cardCode) . toCardCode
+    InvestigatorWithLowestSkill skillType inner -> flip filterM as $ \i ->
       isLowestAmongst (toId i) inner (getSkillValue skillType)
-    InvestigatorWithHighestSkill skillType inner -> \i ->
+    InvestigatorWithHighestSkill skillType inner -> flip filterM as $ \i ->
       isHighestAmongst (toId i) inner (getSkillValue skillType)
-    InvestigatorWithCluesInPool gameValueMatcher -> \i -> do
+    InvestigatorWithCluesInPool gameValueMatcher -> flip filterM as $ \i -> do
       clues <- field InvestigatorCluesInPool (toId i)
       gameValueMatches clues gameValueMatcher
-    InvestigatorWithClues gameValueMatcher -> \i -> do
+    InvestigatorWithClues gameValueMatcher -> flip filterM as $ \i -> do
       clues <- field InvestigatorClues (toId i)
       gameValueMatches clues gameValueMatcher
     InvestigatorWithResources gameValueMatcher ->
-      (`gameValueMatches` gameValueMatcher) . attr investigatorResources
+      flip filterM as
+        $ (`gameValueMatches` gameValueMatcher)
+        . attr investigatorResources
     InvestigatorWithSpendableResources gameValueMatcher ->
-      (`gameValueMatches` gameValueMatcher) <=< getSpendableResources . toId
+      flip filterM as
+        $ (`gameValueMatches` gameValueMatcher)
+        <=< getSpendableResources
+        . toId
     InvestigatorWithActionsRemaining gameValueMatcher ->
-      field InvestigatorRemainingActions
+      flip filterM as
+        $ field InvestigatorRemainingActions
         . toId
         >=> (`gameValueMatches` gameValueMatcher)
     InvestigatorWithDoom gameValueMatcher ->
-      (`gameValueMatches` gameValueMatcher) . attr investigatorDoom
-    InvestigatorWithDamage gameValueMatcher -> \i -> do
+      flip filterM as
+        $ (`gameValueMatches` gameValueMatcher)
+        . attr investigatorDoom
+    InvestigatorWithDamage gameValueMatcher -> flip filterM as $ \i -> do
       t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfDamage
       gameValueMatches (attr investigatorHealthDamage i + t) gameValueMatcher
-    InvestigatorWithHealableHorror -> \i -> do
+    InvestigatorWithHealableHorror -> flip filterM as $ \i -> do
       t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfHorror
       mods <- getModifiers i.id
       let onSelf = (attr investigatorSanityDamage i + t) > 0 || CanHealAtFull #horror `elem` mods
@@ -922,7 +931,7 @@ getInvestigatorsMatching matcher = do
       foolishness <-
         maybe (pure False) (fieldMap AssetHorror (> 0)) mFoolishness
       pure $ onSelf || foolishness
-    InvestigatorWithHorror gameValueMatcher -> \i -> do
+    InvestigatorWithHorror gameValueMatcher -> flip filterM as $ \i -> do
       t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfHorror
       onSelf <- (attr investigatorSanityDamage i + t) `gameValueMatches` gameValueMatcher
       mFoolishness <-
@@ -934,38 +943,45 @@ getInvestigatorsMatching matcher = do
         maybe (pure False) (fieldMapM AssetHorror (`gameValueMatches` gameValueMatcher)) mFoolishness
       pure $ onSelf || foolishness
     InvestigatorWithRemainingSanity gameValueMatcher ->
-      field InvestigatorRemainingSanity
+      flip filterM as
+        $ field InvestigatorRemainingSanity
         . toId
         >=> (`gameValueMatches` gameValueMatcher)
-    InvestigatorThatMovedDuringTurn -> \i -> do
+    InvestigatorThatMovedDuringTurn -> flip filterM as $ \i -> do
       history <- getHistory TurnHistory (toId i)
       pure $ historyMoved history
-    InvestigatorWhenCriteria criteria -> \i -> passesCriteria (toId i) Nothing GameSource GameSource [] criteria
-    NotInvestigator x -> fmap not . go x
-    InvestigatorMatches xs -> \i -> allM (`go` i) xs
-    AnyInvestigator xs -> \i -> anyM (`go` i) xs
-    HandWith cardListMatcher -> (`cardListMatches` cardListMatcher) <=< field InvestigatorHand . toId
+    InvestigatorWhenCriteria criteria -> flip filterM as $ \i -> passesCriteria (toId i) Nothing GameSource GameSource [] criteria
+    NotInvestigator x -> do
+      as' <- go as x
+      pure $ filter (`notElem` as') as
+    InvestigatorMatches xs -> foldrM (flip go) as xs
+    AnyInvestigator xs -> do
+      as' <- traverse (go as) xs
+      pure $ nub $ concat as'
+    HandWith cardListMatcher -> flip filterM as $ (`cardListMatches` cardListMatcher) <=< field InvestigatorHand . toId
     DiscardWith cardListMatcher ->
-      (`cardListMatches` cardListMatcher)
+      flip filterM as
+        $ (`cardListMatches` cardListMatcher)
         . map PlayerCard
         . attr investigatorDiscard
     DeckWith cardListMatcher ->
-      (`cardListMatches` cardListMatcher)
+      flip filterM as
+        $ (`cardListMatches` cardListMatcher)
         . map PlayerCard
         . unDeck
         . attr investigatorDeck
-    InvestigatorWithTrait t -> fieldMap InvestigatorTraits (member t) . toId
-    InvestigatorWithClass t -> fieldMap InvestigatorClass (== t) . toId
-    InvestigatorWithoutModifier modifierType -> \i -> do
+    InvestigatorWithTrait t -> flip filterM as $ fieldMap InvestigatorTraits (member t) . toId
+    InvestigatorWithClass t -> flip filterM as $ fieldMap InvestigatorClass (== t) . toId
+    InvestigatorWithoutModifier modifierType -> flip filterM as $ \i -> do
       modifiers' <- getModifiers (toTarget i)
       pure $ modifierType `notElem` modifiers'
-    InvestigatorWithModifier modifierType -> \i -> do
+    InvestigatorWithModifier modifierType -> flip filterM as $ \i -> do
       modifiers' <- getModifiers (toTarget i)
       pure $ modifierType `elem` modifiers'
     UneliminatedInvestigator ->
-      pure . not . or . sequence [attr investigatorDefeated, attr investigatorResigned]
-    ResignedInvestigator -> pure . attr investigatorResigned
-    InvestigatorEngagedWith enemyMatcher -> \i -> do
+      flip filterM as $ pure . not . or . sequence [attr investigatorDefeated, attr investigatorResigned]
+    ResignedInvestigator -> flip filterM as $ pure . attr investigatorResigned
+    InvestigatorEngagedWith enemyMatcher -> flip filterM as $ \i -> do
       mods <- getModifiers i
       let
         asIfEngagedWith = flip mapMaybe mods $ \case
@@ -975,24 +991,24 @@ getInvestigatorsMatching matcher = do
       selectAny
         ( enemyMatcher <> EnemyOneOf [enemyEngagedWith (toId i), EnemyOneOf $ map EnemyWithId asIfEngagedWith]
         )
-    TopCardOfDeckIs cardMatcher -> \i ->
+    TopCardOfDeckIs cardMatcher -> flip filterM as $ \i ->
       pure $ case unDeck . investigatorDeck $ toAttrs i of
         [] -> False
         x : _ -> cardMatch (PlayerCard x) cardMatcher
-    UnengagedInvestigator -> selectNone . enemyEngagedWith . toId
-    NoDamageDealtThisTurn -> \i -> do
+    UnengagedInvestigator -> flip filterM as $ selectNone . enemyEngagedWith . toId
+    NoDamageDealtThisTurn -> flip filterM as $ \i -> do
       history <- getHistory TurnHistory (toId i)
       pure $ null (historyDealtDamageTo history)
-    NoSuccessfulExploreThisTurn -> \i -> do
+    NoSuccessfulExploreThisTurn -> flip filterM as $ \i -> do
       history <- getHistory TurnHistory (toId i)
       pure $ not (historySuccessfulExplore history)
-    InvestigatorWithCommittableCard -> \i -> do
+    InvestigatorWithCommittableCard -> flip filterM as $ \i -> do
       selectAny $ CommittableCard (InvestigatorWithId $ toId i) (basic AnyCard)
-    InvestigatorWithUnhealedHorror -> fieldMap InvestigatorUnhealedHorrorThisRound (> 0) . toId
-    InvestigatorWithFilledSlot sType -> \i -> do
+    InvestigatorWithUnhealedHorror -> flip filterM as $ fieldMap InvestigatorUnhealedHorrorThisRound (> 0) . toId
+    InvestigatorWithFilledSlot sType -> flip filterM as $ \i -> do
       slots <- fieldMap InvestigatorSlots (findWithDefault [] sType) (toId i)
       pure $ count (not . isEmptySlot) slots > 0
-    InvestigatorWithMetaKey k -> \i -> do
+    InvestigatorWithMetaKey k -> flip filterM as $ \i -> do
       meta <- field InvestigatorMeta (toId i)
       case meta of
         Object o ->
@@ -1000,7 +1016,7 @@ getInvestigatorsMatching matcher = do
             Just (Bool b) -> pure b
             _ -> pure False
         _ -> pure False
-    ContributedMatchingIcons valueMatcher -> \i -> do
+    ContributedMatchingIcons valueMatcher -> flip filterM as $ \i -> do
       mSkillTest <- getSkillTest
       case mSkillTest of
         Nothing -> pure False
@@ -1010,7 +1026,7 @@ getInvestigatorsMatching matcher = do
             cards = findWithDefault [] (toId i) $ skillTestCommittedCards st
           skillTestCount <- count (`elem` skillIcons) <$> concatMapM iconsForCard cards
           gameValueMatches skillTestCount valueMatcher
-    HealableInvestigator _source damageType matcher' -> \i -> do
+    HealableInvestigator _source damageType matcher' -> flip filterM as $ \i -> do
       mods <- getActiveInvestigatorModifiers
       case damageType of
         DamageType -> do
@@ -1039,36 +1055,36 @@ getInvestigatorsMatching matcher = do
               elem (toId i)
                 <$> select
                   (matcher' <> oneOf [InvestigatorWithAnyHorror, InvestigatorWithModifier (CanHealAtFull damageType)])
-    InvestigatorWithMostCardsInPlayArea -> \i ->
+    InvestigatorWithMostCardsInPlayArea -> flip filterM as $ \i ->
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
-    InvestigatorWithKey key -> \i ->
+    InvestigatorWithKey key -> flip filterM as $ \i ->
       pure $ key `elem` investigatorKeys (toAttrs i)
-    DistanceFromRoundStart valueMatcher -> \i -> do
+    DistanceFromRoundStart valueMatcher -> flip filterM as $ \i -> do
       fromMaybe False <$> runMaybeT do
         startLocation <- hoistMaybe $ attr investigatorBeganRoundAt i
         current <- MaybeT $ getMaybeLocation i.id
         Distance distance <- MaybeT $ getDistance startLocation current
         lift $ gameValueMatches distance valueMatcher
-    CanBeHuntedBy eid -> \i -> do
+    CanBeHuntedBy eid -> flip filterM as $ \i -> do
       mods <- getModifiers i
       flip noneM mods $ \case
         CannotBeHuntedBy matcher' -> eid <=~> matcher'
         _ -> pure False
-    InvestigatorWithRecord r -> \i -> do
+    InvestigatorWithRecord r -> flip filterM as $ \i -> do
       ilog <- field InvestigatorLog (toId i)
       pure
         $ or
           [ r `member` ilog.recorded
           , r `member` ilog.recordedCounts
           ]
-    InvestigatorWithBondedCard cardMatcher -> \i -> do
+    InvestigatorWithBondedCard cardMatcher -> flip filterM as $ \i -> do
       bondedCards <- field InvestigatorBondedCards (toId i)
       pure $ any (`cardMatch` cardMatcher) bondedCards
-    InvestigatorIfThen m1 m2 m3 -> \i -> do
+    InvestigatorIfThen m1 m2 m3 -> flip filterM as $ \i -> do
       you <- view activeInvestigatorIdL <$> getGame
       youMatch <- you <=~> m1
       toId i <=~> (if youMatch then m2 else m3)
-    InvestigatorCanTarget t -> \_i -> do
+    InvestigatorCanTarget t -> flip filterM as $ \_i -> do
       case t of
         EncounterDeckTarget -> scenarioField ScenarioHasEncounterDeck
         _ -> pure True
@@ -1430,608 +1446,593 @@ getLocationsMatching lmatcher = do
       _ -> (allowEmpty, lmatcher, if allowEmpty then const True else (/= "xempty") . toCardCode)
 
   ls <- filter isEmptySpaceFilter . toList . view (entitiesL . locationsL) <$> getGame
-  flip runReaderT (g {gameAllowEmptySpaces = doAllowEmpty}) $ do
-    case lmatcher' of
-      ThatLocation -> error "ThatLocation must be resolved in criteria"
-      IncludeEmptySpace _ -> error "should be unwrapped above"
-      LocationWithCardId cardId ->
-        pure $ filter ((== cardId) . toCardId) ls
-      LocationIsInFrontOf investigatorMatcher -> do
-        investigators <- select investigatorMatcher
-        filterM
-          ( fmap (maybe False (`elem` investigators))
-              . field LocationInFrontOf
-              . toId
+  flip runReaderT (g {gameAllowEmptySpaces = doAllowEmpty}) $ go ls lmatcher'
+ where
+  go [] = const (pure [])
+  go ls = \case
+    ThatLocation -> error "ThatLocation must be resolved in criteria"
+    IncludeEmptySpace _ -> error "should be unwrapped above"
+    LocationWithCardId cardId -> pure $ filter ((== cardId) . toCardId) ls
+    LocationIsInFrontOf investigatorMatcher -> do
+      investigators <- select investigatorMatcher
+      filterM
+        ( fmap (maybe False (`elem` investigators))
+            . field LocationInFrontOf
+            . toId
+        )
+        ls
+    HighestShroud matcher' -> do
+      ls' <- go ls matcher'
+      if null ls'
+        then pure []
+        else do
+          ls'' <- mapMaybeM (\l -> (l,) <$$> field LocationShroud l.id) ls'
+          let highestShroud = getMax0 $ foldMap (Max0 . snd) ls''
+          pure $ map fst $ filter ((== highestShroud) . snd) ls''
+    IsIchtacasDestination -> do
+      allKeys <- toList <$> scenarioField ScenarioRemembered
+      let
+        destinations = flip mapMaybe allKeys $ \case
+          IchtacasDestination (Labeled _ lid) -> Just lid
+          _ -> Nothing
+      pure $ filter ((`elem` destinations) . toId) ls
+    LocationWithLowerPrintedShroudThan higherShroudMatcher -> do
+      ls' <- go ls higherShroudMatcher
+      if null ls'
+        then pure []
+        else do
+          ls'' <- mapMaybeM (\l -> (l,) <$$> field LocationShroud l.id) ls'
+          let lowestShroud = getMin $ foldMap (Min . snd) ls''
+          pure $ filter (maybe False (< lowestShroud) . attr locationShroud) ls
+    LocationWithDiscoverableCluesBy whoMatcher -> do
+      ls' <- go ls LocationWithAnyClues
+      filterM
+        ( selectAny
+            . (<> whoMatcher)
+            . InvestigatorCanDiscoverCluesAt
+            . LocationWithId
+            . toId
+        )
+        ls'
+    SingleSidedLocation ->
+      filterM (fieldP LocationCard (not . cdDoubleSided . toCardDef) . toId) ls
+    FirstLocation [] -> pure []
+    FirstLocation xs ->
+      fromMaybe []
+        . getFirst
+        <$> foldM
+          ( \b a ->
+              (b <>)
+                . First
+                . (\s -> if null s then Nothing else Just s)
+                <$> getLocationsMatching a
           )
-          ls
-      HighestShroud matcher' -> do
-        ls' <-
-          filter (`elem` ls)
-            <$> getLocationsMatching (RevealedLocation <> matcher')
-        if null ls'
-          then pure []
-          else do
-            ls'' <- mapMaybeM (\l -> (l,) <$$> field LocationShroud l.id) ls'
-            let highestShroud = getMax0 $ foldMap (Max0 . snd) ls''
-            pure $ map fst $ filter ((== highestShroud) . snd) ls''
-      IsIchtacasDestination -> do
-        allKeys <- toList <$> scenarioField ScenarioRemembered
-        let
-          destinations = flip mapMaybe allKeys $ \case
-            IchtacasDestination (Labeled _ lid) -> Just lid
-            _ -> Nothing
-        pure $ filter ((`elem` destinations) . toId) ls
-      LocationWithLowerPrintedShroudThan higherShroudMatcher -> do
-        ls' <- getLocationsMatching higherShroudMatcher
-        if null ls'
-          then pure []
-          else do
-            ls'' <- mapMaybeM (\l -> (l,) <$$> field LocationShroud l.id) ls'
-            let lowestShroud = getMin $ foldMap (Min . snd) ls''
-            pure $ filter (maybe False (< lowestShroud) . attr locationShroud) ls
-      LocationWithDiscoverableCluesBy whoMatcher -> do
-        ls' <- getLocationsMatching LocationWithAnyClues
-        filterM
-          ( selectAny
-              . (<> whoMatcher)
-              . InvestigatorCanDiscoverCluesAt
-              . LocationWithId
-              . toId
-          )
-          (ls `List.intersect` ls')
-      SingleSidedLocation ->
-        filterM (fieldP LocationCard (not . cdDoubleSided . toCardDef) . toId) ls
-      FirstLocation [] -> pure []
-      FirstLocation xs ->
-        fromMaybe []
-          . getFirst
-          <$> foldM
-            ( \b a ->
-                (b <>)
-                  . First
-                  . (\s -> if null s then Nothing else Just s)
-                  <$> getLocationsMatching a
+          (First Nothing)
+          xs
+    LocationWithLabel label -> pure $ filter ((== label) . toLocationLabel) ls
+    LocationWithTitle title ->
+      pure $ filter (`hasTitle` title) ls
+    LocationWithFullTitle title subtitle ->
+      pure $ filter ((== (title <:> subtitle)) . toName) ls
+    LocationWithUnrevealedTitle title ->
+      pure $ filter ((`hasTitle` title) . Unrevealed) ls
+    LocationWithId locationId -> pure $ filter ((== locationId) . toId) ls
+    LocationWithSymbol locationSymbol ->
+      pure $ filter ((== locationSymbol) . toLocationSymbol) ls
+    LocationNotInPlay -> pure [] -- TODO: Should this check out of play locations
+    Anywhere -> pure ls
+    LocationIs cardCode -> pure $ filter ((== cardCode) . toCardCode) ls
+    EmptyLocation ->
+      filterM (andM . sequence [selectNone . investigatorAt . toId, selectNone . enemyAt . toId]) ls
+    LocationWithToken tkn -> filterM (fieldMap LocationTokens (Token.hasToken tkn) . toId) ls
+    HauntedLocation ->
+      filterM
+        ( \l ->
+            selectAny
+              (HauntedAbility <> AbilityOnLocation (LocationWithId $ toId l))
+        )
+        ls
+    LocationWithoutInvestigators -> filterM (selectNone . investigatorAt . toId) ls
+    LocationWithoutEnemies -> filterM (selectNone . enemyAt . toId) ls
+    LocationWithoutModifier modifier' ->
+      filterM (\l -> notElem modifier' <$> getModifiers (toTarget l)) ls
+    LocationWithModifier modifier' ->
+      filterM (\l -> elem modifier' <$> getModifiers (toTarget l)) ls
+    LocationWithEnemy enemyMatcher -> do
+      enemies <- select enemyMatcher
+      filterM
+        (fmap (notNull . List.intersect enemies) . select . enemyAt . toId)
+        ls
+    LocationWithAsset assetMatcher -> do
+      assets <- select assetMatcher
+      flip filterM ls $ \l -> do
+        lmAssets <- select $ AssetAtLocation $ toId l
+        pure . notNull $ List.intersect assets lmAssets
+    LocationWithInvestigator (InvestigatorWithId iid) -> do
+      mLocation <- field InvestigatorLocation iid
+      pure $ filter ((`elem` mLocation) . toId) ls
+    LocationWithInvestigator whoMatcher -> do
+      investigators <- select whoMatcher
+      flip filterM ls $ \l -> do
+        lmInvestigators <- select $ investigatorAt $ toId l
+        pure . notNull $ List.intersect investigators lmInvestigators
+    RevealedLocation ->
+      filter isRevealed . toList . view (entitiesL . locationsL) <$> getGame
+    UnrevealedLocation -> pure $ filter (not . isRevealed) ls
+    LocationWithClues gameValueMatcher -> do
+      filterM
+        (field LocationClues . toId >=> (`gameValueMatches` gameValueMatcher))
+        ls
+    LocationWithDoom gameValueMatcher -> do
+      filterM
+        (field LocationDoom . toId >=> (`gameValueMatches` gameValueMatcher))
+        ls
+    LocationWithDamage gameValueMatcher -> do
+      filterM
+        (field LocationDamage . toId >=> (`gameValueMatches` gameValueMatcher))
+        ls
+    LocationWithHorror gameValueMatcher -> do
+      filterM
+        (field LocationHorror . toId >=> (`gameValueMatches` gameValueMatcher))
+        ls
+    LocationWithShroud gameValueMatcher -> do
+      filterM
+        (field LocationShroud . toId >=> maybe (pure False) (`gameValueMatches` gameValueMatcher))
+        ls
+    LocationWithShroudLessThanOrEqualToLessThanEnemyMaybeField eid fld -> do
+      mval <- field fld eid
+      case mval of
+        Nothing -> pure []
+        Just v ->
+          filterM
+            ( field LocationShroud . toId >=> maybe (pure False) (`gameValueMatches` LessThanOrEqualTo (Static v))
             )
-            (First Nothing)
-            xs
-      LocationWithLabel label -> pure $ filter ((== label) . toLocationLabel) ls
-      LocationWithTitle title ->
-        pure $ filter (`hasTitle` title) ls
-      LocationWithFullTitle title subtitle ->
-        pure $ filter ((== (title <:> subtitle)) . toName) ls
-      LocationWithUnrevealedTitle title ->
-        pure $ filter ((`hasTitle` title) . Unrevealed) ls
-      LocationWithId locationId -> pure $ filter ((== locationId) . toId) ls
-      LocationWithSymbol locationSymbol ->
-        pure $ filter ((== locationSymbol) . toLocationSymbol) ls
-      LocationNotInPlay -> pure [] -- TODO: Should this check out of play locations
-      Anywhere -> pure ls
-      LocationIs cardCode -> pure $ filter ((== cardCode) . toCardCode) ls
-      EmptyLocation ->
-        filterM (andM . sequence [selectNone . investigatorAt . toId, selectNone . enemyAt . toId]) ls
-      LocationWithToken tkn -> filterM (fieldMap LocationTokens (Token.hasToken tkn) . toId) ls
-      HauntedLocation ->
-        filterM
-          ( \l ->
-              selectAny
-                (HauntedAbility <> AbilityOnLocation (LocationWithId $ toId l))
-          )
-          ls
-      LocationWithoutInvestigators -> filterM (selectNone . investigatorAt . toId) ls
-      LocationWithoutEnemies -> filterM (selectNone . enemyAt . toId) ls
-      LocationWithoutModifier modifier' ->
-        filterM (\l -> notElem modifier' <$> getModifiers (toTarget l)) ls
-      LocationWithModifier modifier' ->
-        filterM (\l -> elem modifier' <$> getModifiers (toTarget l)) ls
-      LocationWithEnemy enemyMatcher -> do
-        enemies <- select enemyMatcher
-        filterM
-          (fmap (notNull . List.intersect enemies) . select . enemyAt . toId)
-          ls
-      LocationWithAsset assetMatcher -> do
-        assets <- select assetMatcher
-        flip filterM ls $ \l -> do
-          lmAssets <- select $ AssetAtLocation $ toId l
-          pure . notNull $ List.intersect assets lmAssets
-      LocationWithInvestigator (InvestigatorWithId iid) -> do
-        mLocation <- field InvestigatorLocation iid
-        pure $ filter ((`elem` mLocation) . toId) ls
-      LocationWithInvestigator whoMatcher -> do
-        investigators <- select whoMatcher
-        flip filterM ls $ \l -> do
-          lmInvestigators <- select $ investigatorAt $ toId l
-          pure . notNull $ List.intersect investigators lmInvestigators
-      RevealedLocation ->
-        filter isRevealed . toList . view (entitiesL . locationsL) <$> getGame
-      UnrevealedLocation -> pure $ filter (not . isRevealed) ls
-      LocationWithClues gameValueMatcher -> do
-        filterM
-          (field LocationClues . toId >=> (`gameValueMatches` gameValueMatcher))
-          ls
-      LocationWithDoom gameValueMatcher -> do
-        filterM
-          (field LocationDoom . toId >=> (`gameValueMatches` gameValueMatcher))
-          ls
-      LocationWithDamage gameValueMatcher -> do
-        filterM
-          (field LocationDamage . toId >=> (`gameValueMatches` gameValueMatcher))
-          ls
-      LocationWithHorror gameValueMatcher -> do
-        filterM
-          (field LocationHorror . toId >=> (`gameValueMatches` gameValueMatcher))
-          ls
-      LocationWithShroud gameValueMatcher -> do
-        filterM
-          (field LocationShroud . toId >=> maybe (pure False) (`gameValueMatches` gameValueMatcher))
-          ls
-      LocationWithShroudLessThanOrEqualToLessThanEnemyMaybeField eid fld -> do
-        mval <- field fld eid
-        case mval of
-          Nothing -> pure []
-          Just v ->
-            filterM
-              ( field LocationShroud . toId >=> maybe (pure False) (`gameValueMatches` LessThanOrEqualTo (Static v))
-              )
-              ls
-      LocationWithMostClues locationMatcher -> do
-        matches' <- getLocationsMatching locationMatcher
-        maxes <$> forToSnd matches' (pure . attr locationClues)
-      LocationCanBeEnteredBy enemyId -> do
-        emods <- getModifiers enemyId
-        flip filterM ls $ \l -> do
-          mods <- getModifiers l
-          andM
-            [ flip noneM mods $ \case
-                CannotBeEnteredBy matcher -> enemyId <=~> matcher
-                _ -> pure False
-            , flip noneM emods $ \case
-                CannotEnter lid -> pure $ lid == toId l
-                _ -> pure False
-            ]
-      LocationWithoutTreachery matcher -> flip filterM ls $ \l -> do
-        selectNone $ treacheryAt (toId l) <> matcher
-      LocationWithTreachery matcher -> flip filterM ls $ \l -> do
-        selectAny $ treacheryAt (toId l) <> matcher
-      LocationInDirection direction matcher -> do
-        starts <- getLocationsMatching matcher
-        let
-          matches' =
-            mapMaybe (lookup direction . attr locationDirections) starts
-        pure $ filter ((`elem` matches') . toId) ls
-      FarthestLocationFromInvestigator investigatorMatcher matcher -> do
-        miid <- selectOne investigatorMatcher
-        mstart <- join <$> for miid (field InvestigatorLocation)
-        case mstart of
-          Nothing -> pure []
-          Just start -> do
-            matchingLocationIds <- map toId <$> getLocationsMatching matcher
-            matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
-            pure $ filter ((`elem` matches') . toId) ls
-      FarthestLocationFromLocation start matcher -> do
-        matchingLocationIds <- map toId <$> getLocationsMatching matcher
-        matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
-        pure $ filter ((`elem` matches') . toId) ls
-      LocationFartherFrom pivot matcher -> do
-        selectOne matcher >>= \case
-          Nothing -> pure []
-          Just start ->
-            if start == pivot
-              then pure $ filter ((/= start) . toId) ls
-              else
-                getDistance start pivot >>= \case
-                  Nothing -> pure []
-                  Just n -> filterM (fmap (maybe False (> n)) . getDistance start . toId) ls
-      CanEnterLocation investigatorMatcher -> do
-        iid <- selectJust investigatorMatcher
-        blocked <- getLocationsMatching BlockedLocation
-        cannotEnter <- (<> map toId blocked) . mapMaybe (preview _CannotEnter) <$> getModifiers iid
-        pure $ filter ((`notElem` cannotEnter) . toId) ls
-      CanMoveToLocation investigatorMatcher source matcher -> do
-        iid <- selectJust investigatorMatcher
-        inner <- select (matcher <> not_ BlockedLocation)
-        filterM (andM . sequence [pure . (`elem` inner), getCanMoveTo iid source] . toId) ls
-      NearestLocationToLocation start matcher -> do
-        matchingLocationIds <- map toId <$> getLocationsMatching matcher
-        matches' <-
-          getShortestPath
-            start
-            (pure . (`elem` matchingLocationIds))
-            mempty
-        pure $ filter ((`elem` matches') . toId) ls
-      LocationWithDistanceFrom distance matcher -> do
-        iids <- getInvestigatorIds
-        candidates <- map toId <$> getLocationsMatching matcher
-        distances <- for iids $ \iid -> do
-          start <- getJustLocation iid
-          distanceSingletons
-            <$> evalStateT
-              (markDistances start (pure . (`elem` candidates)) mempty)
-              (LPState (pure start) (singleton start) mempty)
-        let
-          matches' =
-            Map.findWithDefault
-              []
-              distance
-              (foldr (unionWith (<>) . distanceAggregates) mempty distances)
-        pure $ filter ((`elem` matches') . toId) ls
-      LocationWithDistanceFromAtLeast distance startMatcher matcher -> do
-        mstart <- selectOne startMatcher
-        case mstart of
-          Just start -> do
-            candidates <- map toId <$> getLocationsMatching matcher
-            distances <-
-              distanceSingletons
-                <$> evalStateT
-                  (markDistances start (pure . (`elem` candidates)) mempty)
-                  (LPState (pure start) (singleton start) mempty)
-            let matches' = Map.keys $ Map.filter (>= distance) distances
-            pure $ filter ((`elem` matches') . toId) ls
-          Nothing -> pure []
-      LocationWithAccessiblePath source distance investigatorMatcher destinationMatcher -> do
-        -- we want to get all possible paths within the distance, we need to
-        -- make sure the investigator can enter the location (the location is
-        -- not blocked, and no modifier prevents them), and we need to make
-        -- sure the entire cost for entering and leaving are covered (so the
-        -- first location in the path is only the leave cost, the last is only
-        -- the enter, and everything in between is both).
+            ls
+    LocationWithMostClues locationMatcher -> do
+      matches' <- getLocationsMatching locationMatcher
+      maxes <$> forToSnd matches' (pure . attr locationClues)
+    LocationCanBeEnteredBy enemyId -> do
+      emods <- getModifiers enemyId
+      flip filterM ls $ \l -> do
+        mods <- getModifiers l
+        andM
+          [ flip noneM mods $ \case
+              CannotBeEnteredBy matcher -> enemyId <=~> matcher
+              _ -> pure False
+          , flip noneM emods $ \case
+              CannotEnter lid -> pure $ lid == toId l
+              _ -> pure False
+          ]
+    LocationWithoutTreachery matcher -> flip filterM ls $ \l -> do
+      selectNone $ treacheryAt (toId l) <> matcher
+    LocationWithTreachery matcher -> flip filterM ls $ \l -> do
+      selectAny $ treacheryAt (toId l) <> matcher
+    LocationInDirection direction matcher -> do
+      starts <- getLocationsMatching matcher
+      let
+        matches' =
+          mapMaybe (lookup direction . attr locationDirections) starts
+      pure $ filter ((`elem` matches') . toId) ls
+    FarthestLocationFromInvestigator investigatorMatcher matcher -> do
+      miid <- selectOne investigatorMatcher
+      mstart <- join <$> for miid (field InvestigatorLocation)
+      case mstart of
+        Nothing -> pure []
+        Just start -> do
+          matchingLocationIds <- map toId <$> getLocationsMatching matcher
+          matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
+          pure $ filter ((`elem` matches') . toId) ls
+    FarthestLocationFromLocation start matcher -> do
+      matchingLocationIds <- map toId <$> getLocationsMatching matcher
+      matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
+      pure $ filter ((`elem` matches') . toId) ls
+    LocationFartherFrom pivot matcher -> do
+      selectOne matcher >>= \case
+        Nothing -> pure []
+        Just start ->
+          if start == pivot
+            then pure $ filter ((/= start) . toId) ls
+            else
+              getDistance start pivot >>= \case
+                Nothing -> pure []
+                Just n -> filterM (fmap (maybe False (> n)) . getDistance start . toId) ls
+    CanEnterLocation investigatorMatcher -> do
+      iid <- selectJust investigatorMatcher
+      blocked <- go ls BlockedLocation
+      cannotEnter <- (<> map toId blocked) . mapMaybe (preview _CannotEnter) <$> getModifiers iid
+      pure $ filter ((`notElem` cannotEnter) . toId) ls
+    CanMoveToLocation investigatorMatcher source matcher -> do
+      iid <- selectJust investigatorMatcher
+      inner <- select (matcher <> not_ BlockedLocation)
+      filterM (andM . sequence [pure . (`elem` inner), getCanMoveTo iid source] . toId) ls
+    NearestLocationToLocation start matcher -> do
+      matchingLocationIds <- map toId <$> getLocationsMatching matcher
+      matches' <-
+        getShortestPath
+          start
+          (pure . (`elem` matchingLocationIds))
+          mempty
+      pure $ filter ((`elem` matches') . toId) ls
+    LocationWithDistanceFrom distance matcher -> do
+      iids <- getInvestigatorIds
+      candidates <- map toId <$> getLocationsMatching matcher
+      distances <- for iids $ \iid -> do
+        start <- getJustLocation iid
+        distanceSingletons
+          <$> evalStateT
+            (markDistances start (pure . (`elem` candidates)) mempty)
+            (LPState (pure start) (singleton start) mempty)
+      let
+        matches' =
+          Map.findWithDefault
+            []
+            distance
+            (foldr (unionWith (<>) . distanceAggregates) mempty distances)
+      pure $ filter ((`elem` matches') . toId) ls
+    LocationWithDistanceFromAtLeast distance startMatcher matcher -> do
+      mstart <- selectOne startMatcher
+      case mstart of
+        Just start -> do
+          candidates <- map toId <$> getLocationsMatching matcher
+          distances <-
+            distanceSingletons
+              <$> evalStateT
+                (markDistances start (pure . (`elem` candidates)) mempty)
+                (LPState (pure start) (singleton start) mempty)
+          let matches' = Map.keys $ Map.filter (>= distance) distances
+          pure $ filter ((`elem` matches') . toId) ls
+        Nothing -> pure []
+    LocationWithAccessiblePath source distance investigatorMatcher destinationMatcher -> do
+      -- we want to get all possible paths within the distance, we need to
+      -- make sure the investigator can enter the location (the location is
+      -- not blocked, and no modifier prevents them), and we need to make
+      -- sure the entire cost for entering and leaving are covered (so the
+      -- first location in the path is only the leave cost, the last is only
+      -- the enter, and everything in between is both).
 
-        investigator <- selectJust investigatorMatcher
-        mstart <- field InvestigatorLocation investigator
-        case mstart of
-          Just start -> do
-            let
-              go :: Int -> LocationId -> Seq LocationId -> StateT PathState (ReaderT Game m) ()
-              go 0 _ _ = pure ()
-              go n loc path = do
-                doesMatch <- lift $ loc <=~> destinationMatcher
-                ps@PathState {..} <- get
-                put
-                  $ ps
-                    { _psVisitedLocations = insertSet loc _psVisitedLocations
-                    , _psPaths = if doesMatch then Map.insertWith (<>) loc [path] _psPaths else _psPaths
-                    }
-                connections <-
-                  lift $ select $ AccessibleFrom (LocationWithId loc) <> CanEnterLocation investigatorMatcher
-                for_ connections \conn -> do
-                  unless (conn `elem` _psVisitedLocations) do
-                    go (n - 1) conn (path |> loc)
-            PathState {_psPaths} <-
-              execStateT (go (distance + 1) start mempty) (PathState (singleton start) mempty)
-
-            let
-              getEnterCost loc = do
-                mods <- getModifiers loc
-                pure $ mconcat [c | AdditionalCostToEnter c <- mods]
-              getLeaveCost loc = do
-                mods <- getModifiers loc
-                pure $ mconcat [c | AdditionalCostToLeave c <- mods]
-
-            valids <- forMaybeM (mapToList _psPaths) \(loc, paths) -> do
-              valid <- flip anyM paths \case
-                Empty -> pure False
-                (_ :<| Empty) -> do
-                  leaveCost <- getLeaveCost start
-                  enterCost <- getEnterCost loc
-                  getCanAffordCost investigator source [] [] (leaveCost <> enterCost)
-                (_ :<| mids) -> do
-                  startCost <- getLeaveCost start
-                  lastCost <- case mids of
-                    (_ :|> lastMid) -> AsIfAtLocationCost lastMid <$> getEnterCost loc
-
-                  midCosts <-
-                    foldMapM
-                      ( \(mid, prevLoc) ->
-                          liftA2
-                            (<>)
-                            (AsIfAtLocationCost prevLoc <$> getEnterCost mid)
-                            (AsIfAtLocationCost mid <$> getLeaveCost mid)
-                      )
-                      (zip (toList mids) (start : toList mids))
-
-                  getCanAffordCost investigator source [] [] (startCost <> lastCost <> midCosts)
-              pure $ guard valid $> loc
-
-            pure $ filter ((`elem` valids) . toId) ls
-          Nothing -> pure []
-      CanMoveCloserToLocation source investigatorMatcher destinationMatcher -> do
-        -- Logic is similar to LocationWithAccessiblePath with a few
-        -- exceptions, we don't care if the entire path is traversable, only if
-        -- a path exists and the investigator can take a single step. So we
-        -- exclude checking if the investigator can enter until we verify the
-        -- paths and we only need to look at the first step of the path. We
-        -- also have no specific distance to check
-
-        investigator <- selectJust investigatorMatcher
-        mstart <- field InvestigatorLocation investigator
-        case mstart of
-          Just start -> do
-            let
-              go :: LocationId -> Seq LocationId -> StateT PathState (ReaderT Game m) ()
-              go loc path = do
-                doesMatch <- lift $ loc <=~> destinationMatcher
-                ps@PathState {..} <- get
-                put
-                  $ ps
-                    { _psVisitedLocations = insertSet loc _psVisitedLocations
-                    , _psPaths = if doesMatch then Map.insertWith (<>) loc [path] _psPaths else _psPaths
-                    }
-                connections <-
-                  lift $ select $ ConnectedFrom (LocationWithId loc)
-                for_ connections \conn -> do
-                  unless (conn `elem` _psVisitedLocations) do
-                    go conn (path |> loc)
-            PathState {_psPaths} <-
-              execStateT (go start mempty) (PathState (singleton start) mempty)
-
-            let
-              getEnterCost loc = do
-                mods <- getModifiers loc
-                pure $ mconcat [c | AdditionalCostToEnter c <- mods]
-              getLeaveCost loc = do
-                mods <- getModifiers loc
-                pure $ mconcat [c | AdditionalCostToLeave c <- mods]
-
-            valids <- forMaybeM (mapToList _psPaths) \(loc, paths) -> do
-              valid <- flip anyM paths \case
-                Empty -> pure False
-                (_ :<| Empty) -> do
-                  -- single step
-                  canEnter <- getCanMoveTo investigator source loc
-                  if canEnter
-                    then do
-                      leaveCost <- getLeaveCost start
-                      enterCost <- getEnterCost loc
-                      getCanAffordCost investigator source [] [] (leaveCost <> enterCost)
-                    else pure False
-                (_ :<| (step :<| _)) -> do
-                  canEnter <- getCanMoveTo investigator source step
-                  if canEnter
-                    then do
-                      leaveCost <- getLeaveCost start
-                      enterCost <- getEnterCost step
-                      getCanAffordCost investigator source [] [] (leaveCost <> enterCost)
-                    else pure False
-              pure $ guard valid $> loc
-
-            pure $ filter ((`elem` valids) . toId) ls
-          Nothing -> pure []
-      LocationBetween startMatcher endMatcher destinationMatcher -> do
-        starts <- select startMatcher
-        destinations <- select destinationMatcher
-        valids <- concatForM starts \start -> do
+      investigator <- selectJust investigatorMatcher
+      mstart <- field InvestigatorLocation investigator
+      case mstart of
+        Just start -> do
           let
-            go :: LocationId -> Seq LocationId -> StateT PathState (ReaderT Game m) ()
-            go loc path = do
-              doesMatch <- lift $ loc <=~> endMatcher
+            go1 :: Int -> LocationId -> Seq LocationId -> StateT PathState (ReaderT Game m) ()
+            go1 0 _ _ = pure ()
+            go1 n loc path = do
+              doesMatch <- lift $ loc <=~> destinationMatcher
               ps@PathState {..} <- get
               put
                 $ ps
                   { _psVisitedLocations = insertSet loc _psVisitedLocations
                   , _psPaths = if doesMatch then Map.insertWith (<>) loc [path] _psPaths else _psPaths
                   }
-              connections <- lift $ select $ ConnectedFrom (LocationWithId loc)
-              for_ connections \conn -> unless (conn `elem` _psVisitedLocations) (go conn $ path |> loc)
-          PathState {_psPaths} <- execStateT (go start mempty) (PathState (singleton start) mempty)
+              connections <-
+                lift $ select $ AccessibleFrom (LocationWithId loc) <> CanEnterLocation investigatorMatcher
+              for_ connections \conn -> do
+                unless (conn `elem` _psVisitedLocations) do
+                  go1 (n - 1) conn (path |> loc)
+          PathState {_psPaths} <-
+            execStateT (go1 (distance + 1) start mempty) (PathState (singleton start) mempty)
 
-          pure $ flip concatMap (mapToList _psPaths) \(_, paths) ->
-            flip mapMaybe paths \case
-              (_ :<| (step :<| _)) | step `elem` destinations -> Just step
-              _ -> Nothing
+          let
+            getEnterCost loc = do
+              mods <- getModifiers loc
+              pure $ mconcat [c | AdditionalCostToEnter c <- mods]
+            getLeaveCost loc = do
+              mods <- getModifiers loc
+              pure $ mconcat [c | AdditionalCostToLeave c <- mods]
 
-        pure $ filter ((`elem` valids) . toId) ls
-      LocationWithDistanceFromAtMost distance startMatcher matcher -> do
-        mstart <- selectOne startMatcher
-        case mstart of
-          Just start -> do
-            candidates <- map toId <$> getLocationsMatching matcher
-            distances <-
-              distanceSingletons
-                <$> evalStateT
-                  (markDistances start (pure . (`elem` candidates)) mempty)
-                  (LPState (pure start) (singleton start) mempty)
-            let matches' = Map.keys $ Map.filter (<= distance) distances
-            pure $ filter (and . sequence [(`elem` matches'), (`elem` candidates)] . toId) ls
-          Nothing -> pure []
-      FarthestLocationFromAll matcher -> do
-        iids <- getInvestigatorIds
-        candidates <- map toId <$> getLocationsMatching matcher
-        distances <- for iids $ \iid -> do
-          start <- getJustLocation iid
-          distanceSingletons
-            <$> evalStateT
-              (markDistances start (pure . (`elem` candidates)) mempty)
-              (LPState (pure start) (singleton start) mempty)
+          valids <- forMaybeM (mapToList _psPaths) \(loc, paths) -> do
+            valid <- flip anyM paths \case
+              Empty -> pure False
+              (_ :<| Empty) -> do
+                leaveCost <- getLeaveCost start
+                enterCost <- getEnterCost loc
+                getCanAffordCost investigator source [] [] (leaveCost <> enterCost)
+              (_ :<| mids) -> do
+                startCost <- getLeaveCost start
+                lastCost <- case mids of
+                  (_ :|> lastMid) -> AsIfAtLocationCost lastMid <$> getEnterCost loc
+
+                midCosts <-
+                  foldMapM
+                    ( \(mid, prevLoc) ->
+                        liftA2
+                          (<>)
+                          (AsIfAtLocationCost prevLoc <$> getEnterCost mid)
+                          (AsIfAtLocationCost mid <$> getLeaveCost mid)
+                    )
+                    (zip (toList mids) (start : toList mids))
+
+                getCanAffordCost investigator source [] [] (startCost <> lastCost <> midCosts)
+            pure $ guard valid $> loc
+
+          pure $ filter ((`elem` valids) . toId) ls
+        Nothing -> pure []
+    CanMoveCloserToLocation source investigatorMatcher destinationMatcher -> do
+      -- Logic is similar to LocationWithAccessiblePath with a few
+      -- exceptions, we don't care if the entire path is traversable, only if
+      -- a path exists and the investigator can take a single step. So we
+      -- exclude checking if the investigator can enter until we verify the
+      -- paths and we only need to look at the first step of the path. We
+      -- also have no specific distance to check
+
+      investigator <- selectJust investigatorMatcher
+      mstart <- field InvestigatorLocation investigator
+      case mstart of
+        Just start -> do
+          let
+            go1 :: LocationId -> Seq LocationId -> StateT PathState (ReaderT Game m) ()
+            go1 loc path = do
+              doesMatch <- lift $ loc <=~> destinationMatcher
+              ps@PathState {..} <- get
+              put
+                $ ps
+                  { _psVisitedLocations = insertSet loc _psVisitedLocations
+                  , _psPaths = if doesMatch then Map.insertWith (<>) loc [path] _psPaths else _psPaths
+                  }
+              connections <-
+                lift $ select $ ConnectedFrom (LocationWithId loc)
+              for_ connections \conn -> do
+                unless (conn `elem` _psVisitedLocations) do
+                  go1 conn (path |> loc)
+          PathState {_psPaths} <-
+            execStateT (go1 start mempty) (PathState (singleton start) mempty)
+
+          let
+            getEnterCost loc = do
+              mods <- getModifiers loc
+              pure $ mconcat [c | AdditionalCostToEnter c <- mods]
+            getLeaveCost loc = do
+              mods <- getModifiers loc
+              pure $ mconcat [c | AdditionalCostToLeave c <- mods]
+
+          valids <- forMaybeM (mapToList _psPaths) \(loc, paths) -> do
+            valid <- flip anyM paths \case
+              Empty -> pure False
+              (_ :<| Empty) -> do
+                -- single step
+                canEnter <- getCanMoveTo investigator source loc
+                if canEnter
+                  then do
+                    leaveCost <- getLeaveCost start
+                    enterCost <- getEnterCost loc
+                    getCanAffordCost investigator source [] [] (leaveCost <> enterCost)
+                  else pure False
+              (_ :<| (step :<| _)) -> do
+                canEnter <- getCanMoveTo investigator source step
+                if canEnter
+                  then do
+                    leaveCost <- getLeaveCost start
+                    enterCost <- getEnterCost step
+                    getCanAffordCost investigator source [] [] (leaveCost <> enterCost)
+                  else pure False
+            pure $ guard valid $> loc
+
+          pure $ filter ((`elem` valids) . toId) ls
+        Nothing -> pure []
+    LocationBetween startMatcher endMatcher destinationMatcher -> do
+      starts <- select startMatcher
+      destinations <- select destinationMatcher
+      valids <- concatForM starts \start -> do
         let
-          overallDistances =
-            distanceAggregates $ foldr (unionWith min) mempty distances
-          resultIds =
-            maybe [] coerce
+          go1 :: LocationId -> Seq LocationId -> StateT PathState (ReaderT Game m) ()
+          go1 loc path = do
+            doesMatch <- lift $ loc <=~> endMatcher
+            ps@PathState {..} <- get
+            put
+              $ ps
+                { _psVisitedLocations = insertSet loc _psVisitedLocations
+                , _psPaths = if doesMatch then Map.insertWith (<>) loc [path] _psPaths else _psPaths
+                }
+            connections <- lift $ select $ ConnectedFrom (LocationWithId loc)
+            for_ connections \conn -> unless (conn `elem` _psVisitedLocations) (go1 conn $ path |> loc)
+        PathState {_psPaths} <- execStateT (go1 start mempty) (PathState (singleton start) mempty)
+
+        pure $ flip concatMap (mapToList _psPaths) \(_, paths) ->
+          flip mapMaybe paths \case
+            (_ :<| (step :<| _)) | step `elem` destinations -> Just step
+            _ -> Nothing
+
+      pure $ filter ((`elem` valids) . toId) ls
+    LocationWithDistanceFromAtMost distance startMatcher matcher -> do
+      mstart <- selectOne startMatcher
+      case mstart of
+        Just start -> do
+          candidates <- map toId <$> getLocationsMatching matcher
+          distances <-
+            distanceSingletons
+              <$> evalStateT
+                (markDistances start (pure . (`elem` candidates)) mempty)
+                (LPState (pure start) (singleton start) mempty)
+          let matches' = Map.keys $ Map.filter (<= distance) distances
+          pure $ filter (and . sequence [(`elem` matches'), (`elem` candidates)] . toId) ls
+        Nothing -> pure []
+    FarthestLocationFromAll matcher -> do
+      iids <- getInvestigatorIds
+      candidates <- map toId <$> getLocationsMatching matcher
+      distances <- for iids $ \iid -> do
+        start <- getJustLocation iid
+        distanceSingletons
+          <$> evalStateT
+            (markDistances start (pure . (`elem` candidates)) mempty)
+            (LPState (pure start) (singleton start) mempty)
+      let
+        overallDistances =
+          distanceAggregates $ foldr (unionWith min) mempty distances
+        resultIds =
+          maybe [] coerce
+            . headMay
+            . map snd
+            . sortOn (Down . fst)
+            . mapToList
+            $ overallDistances
+      pure $ filter ((`elem` resultIds) . toId) ls
+    NearestLocationToYou matcher -> guardYourLocation $ \start -> do
+      currentMatch <- start <=~> matcher
+      matches' <-
+        if currentMatch
+          then pure [start]
+          else do
+            matchingLocationIds <- map toId <$> getLocationsMatching matcher
+            getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
+      pure $ filter ((`elem` matches') . toId) ls
+    NearestLocationTo iid matcher -> do
+      mStart <- field InvestigatorLocation iid
+      case mStart of
+        Nothing -> pure []
+        Just start -> do
+          currentMatch <- start <=~> matcher
+          matches' <-
+            if currentMatch
+              then pure [start]
+              else do
+                matchingLocationIds <- map toId <$> getLocationsMatching matcher
+                getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
+          pure $ filter ((`elem` matches') . toId) ls
+    AccessibleLocation -> guardYourLocation $ \yourLocation -> do
+      go ls (AccessibleFrom $ LocationWithId yourLocation)
+    ConnectedLocation -> guardYourLocation $ \yourLocation -> do
+      go ls (ConnectedFrom $ LocationWithId yourLocation)
+    YourLocation -> guardYourLocation $ fmap pure . getLocation
+    NotYourLocation -> guardYourLocation
+      $ \yourLocation -> pure $ filter ((/= yourLocation) . toId) ls
+    LocationWithTrait trait -> do
+      let hasMatchingTrait = fieldP LocationTraits (trait `member`) . toId
+      filterM hasMatchingTrait ls
+    LocationWithoutTrait trait -> do
+      let missingTrait = fieldP LocationTraits (trait `notMember`) . toId
+      filterM missingTrait ls
+    LocationMatchAll ms -> foldrM (flip go) ls ms
+    LocationMatchAny ms -> do
+      as <- traverse (go ls) ms
+      pure $ nub $ concat as
+    InvestigatableLocation -> do
+      flip filterM ls
+        $ \l ->
+          andM
+            [ fieldMap LocationShroud isJust l.id
+            , notElem CannotInvestigate <$> getModifiers (toTarget l)
+            ]
+    ConnectedTo matcher -> do
+      -- locations with connections to locations that match
+      -- so we filter each location by generating it's connections
+      -- querying those locations and seeing if they match the matcher
+      flip filterM ls $ \l -> do
+        matchAny <- getConnectedMatcher l
+        selectAny $ NotLocation (LocationWithId $ toId l) <> matcher <> matchAny
+    ConnectedFrom matcher -> do
+      -- we need to add the (ConnectedToWhen)
+      startIds <- select matcher
+      let starts = filter ((`elem` startIds) . toId) ls
+      others :: [Location] <- concatForM startIds \l -> do
+        mods <- getModifiers l
+        let checks = [(isValid, connectedTo) | ConnectedToWhen isValid connectedTo <- mods]
+        concatForM checks $ \(isValid, connectedTo) -> do
+          valid <- l <=~> isValid
+          if valid then getLocationsMatching connectedTo else pure []
+      matcherSupreme <- foldMapM (fmap AnyLocationMatcher . getConnectedMatcher) starts
+      (<> others) <$> getLocationsMatching (getAnyLocationMatcher matcherSupreme)
+    LocationWhenCriteria criteria -> do
+      iid <- getLead
+      passes <- passesCriteria iid Nothing GameSource GameSource [] criteria
+      pure $ if passes then ls else []
+    AccessibleFrom matcher -> do
+      go ls (Unblocked <> ConnectedFrom matcher)
+    AccessibleTo matcher ->
+      go ls (ConnectedTo (Unblocked <> matcher))
+    LocationWithResources valueMatcher ->
+      filterM
+        ((`gameValueMatches` valueMatcher) . attr locationResources)
+        ls
+    Nowhere -> pure []
+    LocationCanBeFlipped -> do
+      flippable <- select $ LocationWithoutModifier CannotBeFlipped
+      pure
+        $ filter
+          ( and
+              . sequence
+                [attr locationCanBeFlipped, (`elem` flippable) . toId]
+          )
+          ls
+    NotLocation matcher -> do
+      excludes <- go ls matcher
+      pure $ filter (`notElem` excludes) ls
+    ClosestPathLocation start destination -> do
+      -- logic is to get each adjacent location and determine which is closest to
+      -- the destination
+      let extraConnectionsMap = mempty
+
+      connectedLocationIds <- select $ ConnectedFrom $ LocationWithId start
+      matches' <-
+        if start == destination || destination `elem` connectedLocationIds
+          then pure $ singleton destination
+          else do
+            candidates :: [(LocationId, Int)] <-
+              mapMaybeM
+                ( \initialLocation -> do
+                    let
+                      !state' =
+                        LPState
+                          (pure initialLocation)
+                          (singleton initialLocation)
+                          mempty
+                    result <-
+                      evalStateT
+                        ( markDistances
+                            initialLocation
+                            (pure . (== destination))
+                            extraConnectionsMap
+                        )
+                        state'
+                    let
+                      mdistance :: Maybe Int =
+                        headMay . drop 1 . map fst . sortOn fst . mapToList $ result
+                    pure $ (initialLocation,) <$> mdistance
+                )
+                connectedLocationIds
+            pure
+              $ setFromList @(Set LocationId)
+              . maybe [] (coerce . map fst)
               . headMay
-              . map snd
-              . sortOn (Down . fst)
-              . mapToList
-              $ overallDistances
-        pure $ filter ((`elem` resultIds) . toId) ls
-      NearestLocationToYou matcher -> guardYourLocation $ \start -> do
-        currentMatch <- start <=~> matcher
-        matches' <-
-          if currentMatch
-            then pure [start]
-            else do
-              matchingLocationIds <- map toId <$> getLocationsMatching matcher
-              getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
-        pure $ filter ((`elem` matches') . toId) ls
-      NearestLocationTo iid matcher -> do
-        mStart <- field InvestigatorLocation iid
-        case mStart of
-          Nothing -> pure []
-          Just start -> do
-            currentMatch <- start <=~> matcher
-            matches' <-
-              if currentMatch
-                then pure [start]
-                else do
-                  matchingLocationIds <- map toId <$> getLocationsMatching matcher
-                  getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
-            pure $ filter ((`elem` matches') . toId) ls
-      AccessibleLocation -> guardYourLocation $ \yourLocation -> do
-        getLocationsMatching (AccessibleFrom $ LocationWithId yourLocation)
-      ConnectedLocation -> guardYourLocation $ \yourLocation -> do
-        getLocationsMatching (ConnectedFrom $ LocationWithId yourLocation)
-      YourLocation -> guardYourLocation $ fmap pure . getLocation
-      NotYourLocation -> guardYourLocation
-        $ \yourLocation -> pure $ filter ((/= yourLocation) . toId) ls
-      LocationWithTrait trait -> do
-        let hasMatchingTrait = fieldP LocationTraits (trait `member`) . toId
-        filterM hasMatchingTrait ls
-      LocationWithoutTrait trait -> do
-        let missingTrait = fieldP LocationTraits (trait `notMember`) . toId
-        filterM missingTrait ls
-      LocationMatchAll [] -> pure []
-      LocationMatchAll (x : xs) -> do
-        matches' :: Set LocationId <-
-          foldl' intersection
-            . setFromList
-            . map toId
-            <$> getLocationsMatching x
-            <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
-        pure $ filter ((`member` matches') . toId) ls
-      LocationMatchAny [] -> pure []
-      LocationMatchAny (x : xs) -> do
-        matches' :: Set LocationId <-
-          foldl' union
-            . setFromList
-            . map toId
-            <$> getLocationsMatching x
-            <*> traverse (fmap (setFromList . map toId) . getLocationsMatching) xs
-        pure $ filter ((`member` matches') . toId) ls
-      InvestigatableLocation -> do
-        flip filterM ls
-          $ \l ->
-            andM
-              [ fieldMap LocationShroud isJust l.id
-              , notElem CannotInvestigate <$> getModifiers (toTarget l)
-              ]
-      ConnectedTo matcher -> do
-        -- locations with connections to locations that match
-        -- so we filter each location by generating it's connections
-        -- querying those locations and seeing if they match the matcher
-        flip filterM ls $ \l -> do
-          matchAny <- getConnectedMatcher l
-          selectAny $ NotLocation (LocationWithId $ toId l) <> matcher <> matchAny
-      ConnectedFrom matcher -> do
-        -- we need to add the (ConnectedToWhen)
-        startIds <- select matcher
-        let starts = filter ((`elem` startIds) . toId) ls
-        others :: [Location] <- concatForM startIds \l -> do
-          mods <- getModifiers l
-          let checks = [(isValid, connectedTo) | ConnectedToWhen isValid connectedTo <- mods]
-          concatForM checks $ \(isValid, connectedTo) -> do
-            valid <- l <=~> isValid
-            if valid then getLocationsMatching connectedTo else pure []
-        matcherSupreme <- foldMapM (fmap AnyLocationMatcher . getConnectedMatcher) starts
-        (<> others) <$> getLocationsMatching (getAnyLocationMatcher matcherSupreme)
-      LocationWhenCriteria criteria -> do
-        iid <- getLead
-        passes <- passesCriteria iid Nothing GameSource GameSource [] criteria
-        pure $ if passes then ls else []
-      AccessibleFrom matcher -> do
-        getLocationsMatching (Unblocked <> ConnectedFrom matcher)
-      AccessibleTo matcher ->
-        getLocationsMatching (ConnectedTo (Unblocked <> matcher))
-      LocationWithResources valueMatcher ->
-        filterM
-          ((`gameValueMatches` valueMatcher) . attr locationResources)
-          ls
-      Nowhere -> pure []
-      LocationCanBeFlipped -> do
-        flippable <- select $ LocationWithoutModifier CannotBeFlipped
-        pure
-          $ filter
-            ( and
-                . sequence
-                  [attr locationCanBeFlipped, (`elem` flippable) . toId]
-            )
-            ls
-      NotLocation matcher -> do
-        excludes <- getLocationsMatching matcher
-        pure $ filter (`notElem` excludes) ls
-      ClosestPathLocation start destination -> do
-        -- logic is to get each adjacent location and determine which is closest to
-        -- the destination
-        let extraConnectionsMap = mempty
-
-        connectedLocationIds <- select $ ConnectedFrom $ LocationWithId start
-        matches' <-
-          if start == destination || destination `elem` connectedLocationIds
-            then pure $ singleton destination
-            else do
-              candidates :: [(LocationId, Int)] <-
-                mapMaybeM
-                  ( \initialLocation -> do
-                      let
-                        !state' =
-                          LPState
-                            (pure initialLocation)
-                            (singleton initialLocation)
-                            mempty
-                      result <-
-                        evalStateT
-                          ( markDistances
-                              initialLocation
-                              (pure . (== destination))
-                              extraConnectionsMap
-                          )
-                          state'
-                      let
-                        mdistance :: Maybe Int =
-                          headMay . drop 1 . map fst . sortOn fst . mapToList $ result
-                      pure $ (initialLocation,) <$> mdistance
-                  )
-                  connectedLocationIds
-              pure
-                $ setFromList @(Set LocationId)
-                . maybe [] (coerce . map fst)
-                . headMay
-                . groupOn snd
-                $ sortOn snd candidates
-        pure $ filter ((`member` matches') . toId) ls
-      BlockedLocation -> flip filterM ls $ \l -> l `hasModifier` Blocked
-      LocationWithoutClues -> pure $ filter (attr locationWithoutClues) ls
-      LocationWithDefeatedEnemyThisRound -> do
-        iids <- allInvestigatorIds
-        enemiesDefeated <-
-          historyEnemiesDefeated <$> foldMapM (getHistory RoundHistory) iids
-        let
-          validLids = flip mapMaybe enemiesDefeated $ \e ->
-            case enemyPlacement (defeatedEnemyAttrs e) of
-              AtLocation x -> Just x
-              _ -> Nothing
-        pure $ filter ((`elem` validLids) . toId) ls
-      LocationWithBrazier brazier -> do
-        pure $ filter ((== Just brazier) . attr locationBrazier) ls
-      LocationWithBreaches valueMatcher -> do
-        filterM
-          ((`gameValueMatches` valueMatcher) . maybe 0 Breach.countBreaches . attr locationBreaches)
-          ls
-      FewestBreaches -> do
-        fewestBreaches <-
-          getMin <$> foldMapM (fieldMap LocationBreaches (Min . maybe 0 Breach.countBreaches) . toId) ls
-        filterM (fieldMap LocationBreaches ((== fewestBreaches) . maybe 0 Breach.countBreaches) . toId) ls
-      MostBreaches matcher' -> do
-        ls' <- filter (`elem` ls) <$> getLocationsMatching matcher'
-        maxes <$> forToSnd ls' (fieldMap LocationBreaches (maybe 0 Breach.countBreaches) . toId)
-      LocationWithVictory -> filterM (getHasVictoryPoints . toId) ls
-      LocationBeingDiscovered -> do
-        maybeToList <$> runMaybeT do
-          LocationTarget lid <- MaybeT getSkillTestTarget
-          Action.Investigate <- MaybeT getSkillTestAction
-          hoistMaybe $ find ((== lid) . toId) ls
-      -- these can not be queried
-      LocationWithIncursion -> pure $ filter (maybe False Breach.isIncursion . attr locationBreaches) ls
-      LocationLeavingPlay -> pure []
-      SameLocation -> pure []
-      ThisLocation -> pure []
+              . groupOn snd
+              $ sortOn snd candidates
+      pure $ filter ((`member` matches') . toId) ls
+    BlockedLocation -> flip filterM ls $ \l -> l `hasModifier` Blocked
+    LocationWithoutClues -> pure $ filter (attr locationWithoutClues) ls
+    LocationWithDefeatedEnemyThisRound -> do
+      iids <- allInvestigatorIds
+      enemiesDefeated <-
+        historyEnemiesDefeated <$> foldMapM (getHistory RoundHistory) iids
+      let
+        validLids = flip mapMaybe enemiesDefeated $ \e ->
+          case enemyPlacement (defeatedEnemyAttrs e) of
+            AtLocation x -> Just x
+            _ -> Nothing
+      pure $ filter ((`elem` validLids) . toId) ls
+    LocationWithBrazier brazier -> do
+      pure $ filter ((== Just brazier) . attr locationBrazier) ls
+    LocationWithBreaches valueMatcher -> do
+      filterM
+        ((`gameValueMatches` valueMatcher) . maybe 0 Breach.countBreaches . attr locationBreaches)
+        ls
+    FewestBreaches -> do
+      fewestBreaches <-
+        getMin <$> foldMapM (fieldMap LocationBreaches (Min . maybe 0 Breach.countBreaches) . toId) ls
+      filterM (fieldMap LocationBreaches ((== fewestBreaches) . maybe 0 Breach.countBreaches) . toId) ls
+    MostBreaches matcher' -> do
+      ls' <- go ls matcher'
+      maxes <$> forToSnd ls' (fieldMap LocationBreaches (maybe 0 Breach.countBreaches) . toId)
+    LocationWithVictory -> filterM (getHasVictoryPoints . toId) ls
+    LocationBeingDiscovered -> do
+      maybeToList <$> runMaybeT do
+        LocationTarget lid <- MaybeT getSkillTestTarget
+        Action.Investigate <- MaybeT getSkillTestAction
+        hoistMaybe $ find ((== lid) . toId) ls
+    -- these can not be queried
+    LocationWithIncursion -> pure $ filter (maybe False Breach.isIncursion . attr locationBreaches) ls
+    LocationLeavingPlay -> pure []
+    SameLocation -> pure []
+    ThisLocation -> pure []
 
 guardYourLocation :: HasGame m => (LocationId -> m [a]) -> m [a]
 guardYourLocation body = do
@@ -2051,10 +2052,11 @@ getAssetsMatching matcher = do
         [ attr assetCanLeavePlayByNormalMeans
         , not . cdPermanent . toCardDef
         ]
+  filterMatcher [] = const (pure [])
   filterMatcher as = \case
     PermanentAsset -> pure $ filter (cdPermanent . toCardDef) as
     NotAsset matcher' -> do
-      matches' <- getAssetsMatching matcher'
+      matches' <- filterMatcher as matcher'
       pure $ filter (`notElem` matches') as
     AnyAsset -> pure as
     AssetWithTitle title ->
@@ -2202,7 +2204,7 @@ getAssetsMatching matcher = do
         (fieldMapM AssetUses ((`gameValueMatches` valueMatcher) . findWithDefault 0 uType) . toId)
         as
     AssetWithFewestClues assetMatcher -> do
-      matches' <- getAssetsMatching assetMatcher
+      matches' <- filterMatcher as assetMatcher
       mins <$> forToSnd matches' (field AssetClues . toId)
     AssetWithUses uType ->
       filterM
@@ -2267,7 +2269,7 @@ getAssetsMatching matcher = do
         )
         as
     AssetWithHighestPrintedCost matcher' -> do
-      matches' <- getAssetsMatching matcher'
+      matches' <- filterMatcher as matcher'
       maxes <$> forToSnd matches' (field AssetCost . toId)
     AssetWithDifferentTitleFromAtLeastOneCardInHand who extendedCardMatcher assetMatcher ->
       do
@@ -4762,9 +4764,7 @@ preloadModifiers g = case gameMode g of
               <> map ActiveCostTarget (keys $ gameActiveCost g)
               <> map PhaseTarget [minBound ..]
           )
-    allModifiers
-      `seq` pure
-      $ g {gameModifiers = Map.filter notNull $ Map.map (filter modifierFilter) allModifiers}
+    pure $ g {gameModifiers = Map.filter notNull $ Map.map (filter modifierFilter) allModifiers}
  where
   entities = overEntities (: []) (gameEntities g)
   inHandEntities =

@@ -54,17 +54,16 @@ putApiV1ArkhamGameUndoR gameId = do
                   where_ $ entries.step <. val (arkhamGameStep - 1)
                   orderBy [desc entries.createdAt]
                   pure $ entries.body
-              atomically
-                $ writeTChan writeChannel
-                $ encode
-                $ GameUpdate
-                $ PublicGame gameId arkhamGameName gameLog ge
               runDB $ do
                 void $ select do
                   game <- from $ table @ArkhamGame
                   where_ $ game.id ==. val gameId
                   locking ForUpdate
                   pure ()
+                -- ensure previous step exists
+                maybe (error $ "can not go back, at step: " <> tshow arkhamGameStep) (\_ -> pure ())
+                  =<< getBy (UniqueStep gameId (arkhamGameStep - 1))
+
                 replace gameId
                   $ ArkhamGame
                     arkhamGameName
@@ -88,4 +87,9 @@ putApiV1ArkhamGameUndoR gameId = do
                               (view activeInvestigatorIdL ge)
                         }
                   WithFriends -> pure ()
+              atomically
+                $ writeTChan writeChannel
+                $ encode
+                $ GameUpdate
+                $ PublicGame gameId arkhamGameName gameLog ge
         else error "Can't undo"

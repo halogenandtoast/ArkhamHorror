@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.InEveryShadow (
-  InEveryShadow (..),
-  inEveryShadow,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.InEveryShadow (InEveryShadow (..), inEveryShadow) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -13,7 +8,7 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -27,12 +22,7 @@ inEveryShadow = agenda (3, A) InEveryShadow Cards.inEveryShadow (Static 7)
 
 instance HasAbilities InEveryShadow where
   getAbilities (InEveryShadow x) =
-    [ mkAbility x 1
-        $ ForcedAbility
-        $ EnemySpawns Timing.When Anywhere
-        $ enemyIs
-          Cards.huntingHorror
-    ]
+    [mkAbility x 1 $ forced $ EnemySpawns #when Anywhere $ enemyIs Cards.huntingHorror]
 
 instance RunMessage InEveryShadow where
   runMessage msg a@(InEveryShadow attrs) = case msg of

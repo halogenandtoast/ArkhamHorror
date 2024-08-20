@@ -137,8 +137,6 @@ const makeLine = function(div1: HTMLElement, div2: HTMLElement) {
 }
 
 function handleConnections() {
-  //document.querySelectorAll<HTMLElement>(".line:not(.original").forEach((node) => node.parentNode?.removeChild(node))
-
   for(const location of locations.value) {
     const { id, connectedLocations } = location
     const connections = typeof connectedLocations == "object"

@@ -13,8 +13,8 @@ wardOfProtection = event WardOfProtection Cards.wardOfProtection
 
 instance RunMessage WardOfProtection where
   runMessage msg e@(WardOfProtection attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | attrs `is` eid -> do
+    PlayThisEvent iid (is attrs -> True) -> do
       cancelRevelation attrs (cardDrawn attrs.windows)
-      assignHorror iid eid 1
+      assignHorror iid attrs 1
       pure e
     _ -> WardOfProtection <$> liftRunMessage msg attrs

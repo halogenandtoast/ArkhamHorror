@@ -1,9 +1,4 @@
-module Arkham.Treachery.Cards.SlitheringBehindYou (
-  SlitheringBehindYou (..),
-  slitheringBehindYou,
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.SlitheringBehindYou (SlitheringBehindYou (..), slitheringBehindYou) where
 
 import Arkham.Card
 import Arkham.Classes
@@ -11,7 +6,9 @@ import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 import Arkham.Zone
@@ -26,7 +23,7 @@ slitheringBehindYou = treachery SlitheringBehindYou Cards.slitheringBehindYou
 instance RunMessage SlitheringBehindYou where
   runMessage msg t@(SlitheringBehindYou attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      mHuntingHorrorId <- selectOne $ enemyIs Enemies.huntingHorror
+      mHuntingHorrorId <- getInPlayHuntingHorror
       case mHuntingHorrorId of
         Just eid ->
           pushAll

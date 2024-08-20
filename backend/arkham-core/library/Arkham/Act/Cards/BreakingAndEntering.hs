@@ -16,7 +16,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
-import Arkham.Timing qualified as Timing
 
 newtype BreakingAndEntering = BreakingAndEntering ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

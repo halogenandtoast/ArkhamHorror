@@ -1346,7 +1346,73 @@ abilityMatches a@Ability {..} = \case
 getAbilitiesMatching :: HasGame m => AbilityMatcher -> m [Ability]
 getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
   abilities <- getGameAbilities
-  filterM (`abilityMatches` matcher) abilities
+  go abilities matcher
+ where
+  go :: HasGame m => [Ability] -> AbilityMatcher -> m [Ability]
+  go [] = const (pure [])
+  go as = \case
+    PerformableAbility modifiers' -> do
+      flip filterM as \a -> withDepthGuard 3 False do
+        let ab = applyAbilityModifiers a modifiers'
+        iid <- view activeInvestigatorIdL <$> getGame
+        getCanPerformAbility iid (Window.defaultWindows iid) ab
+    PerformableAbilityBy investigatorMatcher modifiers' -> do
+      flip filterM as \a -> withDepthGuard 3 False do
+        let ab = applyAbilityModifiers a modifiers'
+        iids <- select investigatorMatcher
+        anyM (\iid -> getCanPerformAbility iid (Window.defaultWindows iid) ab) iids
+    NotAbility inner -> do
+      excludes <- go as inner
+      pure $ filter (`notElem` excludes) as
+    AnyAbility -> pure as
+    BasicAbility -> pure $ filter abilityBasic as
+    HauntedAbility -> pure $ filter ((== Haunted) . abilityType) as
+    AssetAbility assetMatcher -> do
+      abilities <- concatMap getAbilities <$> (traverse getAsset =<< select assetMatcher)
+      pure $ filter (`elem` abilities) as
+    TriggeredAbility -> pure $ filter isTriggeredAbility as
+    ActiveAbility -> do
+      active <- view activeAbilitiesL <$> getGame
+      pure $ filter (`elem` active) as
+    AbilityIsSkillTest -> pure $ filter abilityTriggersSkillTest as
+    AbilityOnCardControlledBy iid -> do
+      let
+        sourceMatch = \case
+          AssetSource aid -> elem aid <$> select (assetControlledBy iid)
+          EventSource eid -> elem eid <$> select (eventControlledBy iid)
+          InvestigatorSource iid' -> pure $ iid == iid'
+          AbilitySource s _ -> sourceMatch s
+          ProxySource s _ -> sourceMatch s
+          _ -> pure False
+      filterM (sourceMatch . abilitySource) as
+    AbilityOnLocation locationMatcher -> flip filterM as \a -> case a.source of
+      LocationSource lid' -> elem lid' <$> select locationMatcher
+      ProxySource (LocationSource lid') _ -> elem lid' <$> select locationMatcher
+      _ -> pure False
+    AbilityOnStory storyMatcher -> flip filterM as \a -> case a.source of
+      StorySource sid' -> elem sid' <$> select storyMatcher
+      ProxySource (StorySource sid') _ -> elem sid' <$> select storyMatcher
+      _ -> pure False
+    AbilityOnAsset assetMatcher -> flip filterM as \a -> case a.source.asset of
+      Just aid -> elem aid <$> select assetMatcher
+      _ -> pure False
+    AbilityOnEnemy enemyMatcher -> flip filterM as \a -> case a.source.enemy of
+      Just eid -> elem eid <$> select enemyMatcher
+      _ -> pure False
+    AbilityIsAction Action.Activate -> pure $ filter abilityIsActivate as
+    AbilityIsAction action -> pure $ filter (elem action . abilityActions) as
+    AbilityIsActionAbility ->
+      pure
+        $ filter (\a -> abilityIsActionAbility a && not (a.index >= 100 && a.index <= 102)) as
+    AbilityIsFastAbility -> pure $ filter abilityIsFastAbility as
+    AbilityIsForcedAbility -> pure $ filter abilityIsForcedAbility as
+    AbilityIsReactionAbility -> pure $ filter abilityIsReactionAbility as
+    AbilityIs source idx -> pure $ filter (\a -> a.source == source && a.index == idx) as
+    AbilityWindow windowMatcher -> pure $ filter ((== windowMatcher) . abilityWindow) as
+    AbilityMatches xs -> foldM go as xs
+    AbilityOneOf xs -> nub . concat <$> traverse (go as) xs
+    AbilityOnEncounterCard -> filterM (\a -> a.source `sourceMatches` M.EncounterCardSource) as
+    AbilityOnCard cardMatcher -> filterM (\a -> a.source `sourceMatches` M.SourceWithCard cardMatcher) as
 
 getGameAbilities :: HasGame m => m [Ability]
 getGameAbilities = do
@@ -4653,10 +4719,20 @@ runMessages mLogger = do
 
             asIfLocations <- runWithEnv getAsIfLocationMap
 
+            let
+              shouldPreloadModifiers = \case
+                CheckWindow {} -> False
+                RunWindow {} -> False
+                Would {} -> False
+                _ -> True
+
             runWithEnv
               ( getGame
                   >>= runMessage msg
-                  >>= preloadModifiers
+                  >>= ( if shouldPreloadModifiers msg
+                          then preloadModifiers
+                          else pure
+                      )
                   >>= handleAsIfChanges asIfLocations
                   >>= handleTraitRestrictedModifiers
                   >>= handleBlanked

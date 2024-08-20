@@ -166,11 +166,29 @@ instance RunMessage SkillTest where
         ProxySource _ t -> fmap toCardId <$> sourceToMaybeCard t
         AbilitySource src _ -> fmap toCardId <$> sourceToMaybeCard src
         t -> fmap toCardId <$> sourceToMaybeCard t
+
+      -- getAlternateSkill :: HasGame m => SkillTest -> SkillType -> m SkillType
+
+      updatedSkillTestType <- case skillTestType of
+        SkillSkillTest stype -> SkillSkillTest <$> getAlternateSkill s stype
+        AndSkillTest sks -> AndSkillTest . nub <$> traverse (getAlternateSkill s) sks
+        x@BaseValueSkillTest {} -> pure x
+        x@ResourceSkillTest -> pure x
+
+      updatedBaseValue <- case skillTestBaseValue of
+        SkillBaseValue stype -> SkillBaseValue <$> getAlternateSkill s stype
+        AndSkillBaseValue sks -> AndSkillBaseValue . nub <$> traverse (getAlternateSkill s) sks
+        x@HalfResourcesOf {} -> pure x
+        x@FixedBaseValue {} -> pure x
+
       pure
         $ s
         & (targetCardL .~ mTargetCardId)
         & (sourceCardL .~ (mAbilityCardId <|> mSourceCardId))
         & (stepL .~ CommitCardsFromHandToSkillTestStep)
+        & (skillTestTypeL .~ updatedSkillTestType)
+        & (iconValuesL .~ iconValuesForSkillTestType updatedSkillTestType)
+        & (baseValueL .~ updatedBaseValue)
     ReplaceSkillTestSkill (FromSkillType fsType) (ToSkillType tsType) -> do
       let
         stType = case skillTestType of

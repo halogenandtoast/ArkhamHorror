@@ -40,13 +40,7 @@ spec = describe "Mind over Matter" $ do
       duringTurn self $ do
         self `playEvent` Events.mindOverMatter
         sid <- getRandom
-        circleTest
-          sid
-          (toId self)
-          (TestSource mempty)
-          TestTarget
-          [#intellect, #combat]
-          (Fixed 2)
+        circleTest sid (toId self) (TestSource mempty) TestTarget [#intellect, #combat] (Fixed 2)
         runMessages
 
         chooseOptionMatching "use intellect instead of combat" \case

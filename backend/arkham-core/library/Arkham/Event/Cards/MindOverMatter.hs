@@ -1,14 +1,8 @@
-module Arkham.Event.Cards.MindOverMatter (
-  MindOverMatter,
-  mindOverMatter,
-) where
+module Arkham.Event.Cards.MindOverMatter (MindOverMatter, mindOverMatter) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Event.Import.Lifted
+import Arkham.Modifier
 
 newtype MindOverMatter = MindOverMatter EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -18,9 +12,8 @@ mindOverMatter :: EventCard MindOverMatter
 mindOverMatter = event MindOverMatter Cards.mindOverMatter
 
 instance RunMessage MindOverMatter where
-  runMessage msg e@(MindOverMatter attrs) = case msg of
-    PlayThisEvent iid eid | attrs `is` eid -> do
-      push
-        $ roundModifiers eid iid [UseSkillInPlaceOf #combat #intellect, UseSkillInPlaceOf #agility #intellect]
+  runMessage msg e@(MindOverMatter attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      roundModifiers attrs iid [UseSkillInPlaceOf sType #intellect | sType <- [#combat, #agility]]
       pure e
-    _ -> MindOverMatter <$> runMessage msg attrs
+    _ -> MindOverMatter <$> liftRunMessage msg attrs

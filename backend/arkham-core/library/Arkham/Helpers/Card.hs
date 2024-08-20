@@ -57,7 +57,7 @@ getCardPayments c = do
 extendedCardMatch
   :: (HasGame m, IsCard c) => c -> ExtendedCardMatcher -> m Bool
 extendedCardMatch (toCard -> c) matcher =
-  selectAny (BasicCardMatch (CardWithId (toCardId c)) <> matcher)
+  selectAny (basic (CardWithId c.id) <> matcher)
 
 class ConvertToCard a where
   convertToCard :: HasGame m => a -> m Card

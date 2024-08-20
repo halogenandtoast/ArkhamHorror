@@ -21,9 +21,7 @@ instance RunMessage Daredevil where
       push
         $ DiscardUntilFirst iid (toSource attrs) (InvestigatorDeck iid)
         $ CommittableCard (InvestigatorWithId iid)
-        $ BasicCardMatch
-        $ CardWithClass Rogue
-        <> CardWithType SkillType
+        $ basic (#rogue <> #skill)
       Daredevil <$> liftRunMessage msg attrs
     RequestedPlayerCard iid (isSource attrs -> True) mcard discards -> do
       let weaknesses = filter (`cardMatch` WeaknessCard) discards

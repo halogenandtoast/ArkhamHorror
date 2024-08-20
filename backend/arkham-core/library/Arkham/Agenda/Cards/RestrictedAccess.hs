@@ -9,6 +9,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Prelude
+import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype RestrictedAccess = RestrictedAccess AgendaAttrs
@@ -36,8 +37,7 @@ instance RunMessage RestrictedAccess where
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      mHuntingHorrorId <-
-        selectOne $ enemyIs Enemies.huntingHorror <> not_ (OutOfPlayEnemy VoidZone AnyEnemy)
+      mHuntingHorrorId <- getInPlayHuntingHorror
       case mHuntingHorrorId of
         Just eid ->
           pushAll

@@ -22,7 +22,7 @@ stalkedInTheDark = treachery StalkedInTheDark Cards.stalkedInTheDark
 instance RunMessage StalkedInTheDark where
   runMessage msg t@(StalkedInTheDark attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      mHuntingHorrorId <- getHuntingHorror
+      mHuntingHorrorId <- getInPlayHuntingHorror
       case mHuntingHorrorId of
         Just eid -> do
           iids <- select $ colocatedWith iid

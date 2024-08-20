@@ -28,11 +28,7 @@ breakingAndEntering =
 
 instance HasAbilities BreakingAndEntering where
   getAbilities (BreakingAndEntering x) =
-    [ mkAbility x 1
-        $ ForcedAbility
-        $ Enters Timing.When You
-        $ locationIs Cards.exhibitHallRestrictedHall
-    ]
+    [mkAbility x 1 $ forced $ Enters #when You $ locationIs Cards.exhibitHallRestrictedHall]
 
 instance RunMessage BreakingAndEntering where
   runMessage msg a@(BreakingAndEntering attrs) = case msg of

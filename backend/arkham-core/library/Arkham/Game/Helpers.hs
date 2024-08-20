@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Game.Helpers (
   module Arkham.Game.Helpers,
   module X,
@@ -3731,7 +3733,7 @@ getCanMoveToMatchingLocations
   -> m [LocationId]
 getCanMoveToMatchingLocations iid source matcher = do
   ls <- getCanMoveToLocations iid source
-  filterM (<=~> matcher) ls
+  filter (`elem` ls) <$> select matcher
 
 getConnectedMoveLocations
   :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]

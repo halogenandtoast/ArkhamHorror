@@ -78,9 +78,12 @@ runEventMessage msg a@EventAttrs {..} = case msg of
           _ -> error "Cannot attach event to that type"
       _ -> error "Cannot attach event to that type"
     pure a
-  Msg.InvestigatorEliminated iid | eventAttachedTarget a == Just (InvestigatorTarget iid) || (iid == a.controller && isInPlayPlacement a.placement) -> do
-    push $ RemoveFromGame (toTarget a)
-    pure a
+  Msg.InvestigatorEliminated iid
+    | eventAttachedTarget a
+        == Just (InvestigatorTarget iid)
+        || (iid == a.controller && isInPlayPlacement a.placement) -> do
+        push $ RemoveFromGame (toTarget a)
+        pure a
   Discard _ source (isTarget a -> True) -> do
     windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
     pushAll
@@ -134,6 +137,12 @@ runEventMessage msg a@EventAttrs {..} = case msg of
   UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
   RemoveAllChaosTokens face -> pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
   PlaceEvent iid eid placement | eid == eventId -> do
+    let
+      controller =
+        case placement of
+          AttachedToInvestigator iid' -> iid'
+          InPlayArea iid' -> iid'
+          _ -> iid
     for_ placement.attachedTo \target ->
       pushM $ checkAfter $ Window.AttachCard (Just iid) (toCard a) target
     case placement of
@@ -146,7 +155,7 @@ runEventMessage msg a@EventAttrs {..} = case msg of
             pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid' (toCard a)]
           _ -> pure ()
       _ -> pure ()
-    pure $ a & placementL .~ placement
+    pure $ a & placementL .~ placement & controllerL .~ traceShowId controller
   FinishedEvent eid | eid == eventId -> do
     mods <- liftA2 (<>) (getModifiers eid) (getModifiers $ toCardId $ toCard a)
     let

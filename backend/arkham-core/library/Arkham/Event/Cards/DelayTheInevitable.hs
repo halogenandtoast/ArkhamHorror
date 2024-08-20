@@ -37,7 +37,7 @@ instance RunMessage DelayTheInevitable where
       iids <- select $ affectsOthers $ colocatedWith iid
       chooseOrRunOne
         iid
-        [ targetLabel iid [PlaceEvent iid eid $ InPlayArea investigator]
+        [ targetLabel investigator [PlaceEvent iid eid $ InPlayArea investigator]
         | investigator <- iids
         ]
       pure e
@@ -55,6 +55,6 @@ instance RunMessage DelayTheInevitable where
       chooseOrRunOneM iid do
         when canAfford do
           labeled "Spend 2 Resources" $ push $ SpendResources iid 2
-          labeled "Discard Delay the Inevitable" $ toDiscardBy iid (attrs.ability 2) attrs
+        labeled "Discard Delay the Inevitable" $ toDiscardBy iid (attrs.ability 2) attrs
       pure e
     _ -> DelayTheInevitable <$> liftRunMessage msg attrs

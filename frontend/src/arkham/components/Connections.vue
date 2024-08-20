@@ -86,23 +86,16 @@ const makeLine = function(div1: HTMLElement, div2: HTMLElement) {
   const y2 = (rightDivTop - bodyTop)
   const existingNode = document.querySelector(`[data-connection="${connection}"]`)
 
-  if (existingNode) {
-    const ex1 = existingNode.getAttribute("x1") || "-1"
-    const ey1 = existingNode.getAttribute("y1") || "-1"
-    const ex2 = existingNode.getAttribute("x2") || "-1"
-    const ey2 = existingNode.getAttribute("y2") || "-1"
+  const isNodeClose = (node: Element) => {
+    const ex1 = node.getAttribute("x1") || "-1"
+    const ey1 = node.getAttribute("y1") || "-1"
+    const ex2 = node.getAttribute("x2") || "-1"
+    const ey2 = node.getAttribute("y2") || "-1"
 
-    if (closeEnough(ex1, x1) && closeEnough(ey1, y1) && closeEnough(ex2, x2) && closeEnough(ey2, y2)) {
-      return
-    }
-
-    parentNode.removeChild(existingNode);
+    return closeEnough(ex1, x1) && closeEnough(ey1, y1) && closeEnough(ex2, x2) && closeEnough(ey2, y2)
   }
 
-  const node = line.cloneNode(true) as HTMLElement
-  node.dataset.connection = connection
-  node.classList.remove("original")
-
+  const close = existingNode ? isNodeClose(existingNode) : false
   const investigator = Object.values(props.game.investigators).find(i => i.playerId == props.playerId)
   if (!investigator) return
   const { connectedLocations } = investigator
@@ -110,20 +103,41 @@ const makeLine = function(div1: HTMLElement, div2: HTMLElement) {
   const atRight = rightDivId == investigator.location && connectedLocations.includes(leftDivId)
   const activeLine = atLeft || atRight
 
-  if (activeLine) node.classList.add("active")
+  if (close) {
+    if (activeLine) {
+      existingNode?.classList.add("active")
+    }
+  } else {
+    if (existingNode && !close) {
+      const ex1 = existingNode.getAttribute("x1") || "-1"
+      const ey1 = existingNode.getAttribute("y1") || "-1"
+      const ex2 = existingNode.getAttribute("x2") || "-1"
+      const ey2 = existingNode.getAttribute("y2") || "-1"
 
-  parentNode.insertBefore(node, line.nextSibling)
+      if (closeEnough(ex1, x1) && closeEnough(ey1, y1) && closeEnough(ex2, x2) && closeEnough(ey2, y2)) {
+        return
+      }
 
-  node.setAttribute('x1',x1.toString())
-  node.setAttribute('y1',y1.toString())
-  node.setAttribute('x2',x2.toString())
-  node.setAttribute('y2',y2.toString())
+      parentNode.removeChild(existingNode);
+    }
+
+    const node = line.cloneNode(true) as HTMLElement
+    node.dataset.connection = connection
+    node.classList.remove("original")
+
+    if (activeLine) node.classList.add("active")
+
+    parentNode.insertBefore(node, line.nextSibling)
+
+    node.setAttribute('x1',x1.toString())
+    node.setAttribute('y1',y1.toString())
+    node.setAttribute('x2',x2.toString())
+    node.setAttribute('y2',y2.toString())
+  }
 }
 
 function handleConnections() {
-  let allConnections: string[] = []
-
-  document.querySelectorAll<HTMLElement>(".line:not(.original").forEach((node) => node.parentNode?.removeChild(node))
+  //document.querySelectorAll<HTMLElement>(".line:not(.original").forEach((node) => node.parentNode?.removeChild(node))
 
   for(const location of locations.value) {
     const { id, connectedLocations } = location
@@ -138,7 +152,6 @@ function handleConnections() {
 
       const conn = toConnection(start, end)
       if (!conn) return
-      allConnections.push(conn)
       makeLine(start, end)
     })
   }

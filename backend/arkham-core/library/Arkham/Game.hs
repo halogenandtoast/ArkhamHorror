@@ -3995,8 +3995,8 @@ instance Query ExtendedCardMatcher where
                   getIsPlayable iid GameSource (UnpaidCost actionStatus) windows' r
             )
       CommittableCard imatch matcher' -> do
-        cards <- getCommittableCards =<< selectJust imatch
-        filter (`elem` cards) <$> go cs matcher'
+        iid <- selectJust imatch
+        filterM (getIsCommittable iid) =<< go cs matcher'
       BasicCardMatch cm -> pure $ filter (`cardMatch` cm) cs
       InHandOf who -> do
         iids <- select who

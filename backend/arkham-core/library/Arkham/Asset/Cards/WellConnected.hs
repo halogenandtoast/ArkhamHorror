@@ -17,14 +17,7 @@ wellConnected :: AssetCard WellConnected
 wellConnected = asset WellConnected Cards.wellConnected
 
 instance HasAbilities WellConnected where
-  getAbilities (WellConnected a) =
-    [ controlledAbility
-        a
-        1
-        (DuringSkillTest (YourSkillTest #any) <> youExist (InvestigatorWithResources (atLeast 5)))
-        $ FastAbility
-        $ exhaust a
-    ]
+  getAbilities (WellConnected a) = [controlledAbility a 1 (DuringSkillTest $ YourSkillTest #any) $ FastAbility $ exhaust a]
 
 instance RunMessage WellConnected where
   runMessage msg a@(WellConnected attrs) = case msg of

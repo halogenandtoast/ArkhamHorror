@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, onBeforeUnmount, computed, ref } from 'vue';
+import { watch, onMounted, onBeforeUnmount, computed, ref } from 'vue';
 import { type Game } from '@/arkham/types/Game';
 
 export interface Props {
@@ -180,6 +180,8 @@ const drawHandler = () => {
 
 onBeforeUnmount(() => { if (requestId.value) window.cancelAnimationFrame(requestId.value) })
 onMounted(() => requestId.value = window.requestAnimationFrame(drawHandler))
+
+watch(locations, () => drawHandler())
 </script>
 
 <template>

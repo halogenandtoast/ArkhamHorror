@@ -1,19 +1,16 @@
 module Arkham.Investigator.Cards.RolandBanks (RolandBanks (..), rolandBanks) where
 
-import Arkham.Discover
+import Arkham.Ability
+import Arkham.Calculation
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Location.Types
 import Arkham.Matcher
-import Arkham.Matcher qualified as Matcher
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
-import Arkham.Projection
 
 newtype RolandBanks = RolandBanks InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 rolandBanks :: InvestigatorCard RolandBanks
 rolandBanks =
@@ -23,20 +20,18 @@ rolandBanks =
 instance HasAbilities RolandBanks where
   getAbilities (RolandBanks attrs) =
     [ playerLimit PerRound
-        $ restrictedAbility attrs 1 (Self <> AbleToDiscoverCluesAt YourLocation)
-        $ freeReaction (Matcher.EnemyDefeated #after You ByAny AnyEnemy)
+        $ selfAbility attrs 1 (AbleToDiscoverCluesAt YourLocation)
+        $ freeReaction (EnemyDefeated #after You ByAny AnyEnemy)
     ]
 
 instance HasChaosTokenValue RolandBanks where
   getChaosTokenValue iid ElderSign (RolandBanks attrs) | attrs `is` iid = do
-    mLocation <- field InvestigatorLocation iid
-    clues <- maybe (pure 0) (field LocationClues) mLocation
-    pure $ ChaosTokenValue ElderSign (PositiveModifier clues)
+    pure $ elderSignValue $ InvestigatorLocationFieldCalculation iid LocationClues
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage RolandBanks where
-  runMessage msg i@(RolandBanks attrs) = case msg of
+  runMessage msg i@(RolandBanks attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (attrs.ability 1) 1
+      discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
       pure i
-    _ -> RolandBanks <$> runMessage msg attrs
+    _ -> RolandBanks <$> liftRunMessage msg attrs

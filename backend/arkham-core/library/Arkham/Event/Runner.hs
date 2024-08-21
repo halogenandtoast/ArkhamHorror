@@ -155,7 +155,7 @@ runEventMessage msg a@EventAttrs {..} = case msg of
             pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid' (toCard a)]
           _ -> pure ()
       _ -> pure ()
-    pure $ a & placementL .~ placement & controllerL .~ traceShowId controller
+    pure $ a & placementL .~ placement & controllerL .~ controller
   FinishedEvent eid | eid == eventId -> do
     mods <- liftA2 (<>) (getModifiers eid) (getModifiers $ toCardId $ toCard a)
     let

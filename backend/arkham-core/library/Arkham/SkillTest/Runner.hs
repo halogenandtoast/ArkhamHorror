@@ -156,7 +156,7 @@ instance RunMessage SkillTest where
     BeginSkillTestAfterFast -> do
       windowMsg <- checkWindows [mkWindow #when Window.FastPlayerWindow]
       pushAll [windowMsg, BeforeSkillTest s, EndSkillTestWindow]
-      mAbilityCardId <- case traceShowId skillTestSource of
+      mAbilityCardId <- case skillTestSource of
         AbilitySource src _ -> fmap toCardId <$> sourceToMaybeCard src
         t -> fmap toCardId <$> sourceToMaybeCard t
       mTargetCardId <- case skillTestTarget of

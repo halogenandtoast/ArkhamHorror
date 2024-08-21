@@ -331,7 +331,7 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
     LocationSource _ -> pure True
     _ -> selectAny (Matcher.canParleyEnemy iid)
   Action.Investigate -> case abilitySource of
-    LocationSource _ -> pure True
+    LocationSource lid -> withoutModifier iid (CannotInvestigateLocation lid)
     _ -> notNull <$> select Matcher.InvestigatableLocation
   -- The below actions may not be handled correctly yet
   Action.Activate -> pure True

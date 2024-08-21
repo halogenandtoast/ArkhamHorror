@@ -116,48 +116,50 @@ const emptyLog = computed(() => {
 </script>
 
 <template>
-  <div class="campaign-log">
-    <h1>Campaign Log: {{game.name}}</h1>
-    <div v-if="emptyLog" class="box">
-      No entries yet.
-    </div>
-    <div class="log-categories">
-      <div v-if="logTitles" class="options">
-        <template v-for="title in logTitles" :key="title">
-          <input
-            type="radio"
-            v-model="campaignLog"
-            :value="title === logTitle ? mainLog : otherLog"
-            :checked="title === logTitle"
-            :id="`log${title}`"
-          />
-          <label :for="`log${title}`">{{title}}</label>
-        </template>
+  <div class="content">
+    <div class="campaign-log">
+      <h1>Campaign Log: {{game.name}}</h1>
+      <div v-if="emptyLog" class="box">
+        No entries yet.
       </div>
-      <div v-if="hasSupplies">
-        <h2>Supplies</h2>
-        <Supplies v-for="i in game.investigators" :key="i.id" :player="i">
-          <template #heading>
-            <h3>{{i.name.title}}</h3>
+      <div class="log-categories">
+        <div v-if="logTitles" class="options">
+          <template v-for="title in logTitles" :key="title">
+            <input
+              type="radio"
+              v-model="campaignLog"
+              :value="title === logTitle ? mainLog : otherLog"
+              :checked="title === logTitle"
+              :id="`log${title}`"
+            />
+            <label :for="`log${title}`">{{title}}</label>
           </template>
-        </Supplies>
+        </div>
+        <div v-if="hasSupplies">
+          <h2>Supplies</h2>
+          <Supplies v-for="i in game.investigators" :key="i.id" :player="i">
+            <template #heading>
+              <h3>{{i.name.title}}</h3>
+            </template>
+          </Supplies>
+        </div>
+        <ul>
+          <li v-for="record in recorded" :key="record">{{toCapitalizedWords(record)}}.</li>
+          <template v-for="i in game.investigators" :key="i.id">
+            <li v-for="record in i.log.recorded" :key="`${i.id}${record}`">{{fullName(i.name)}} {{toCapitalizedWords(record).toLowerCase()}}.</li>
+          </template>
+        </ul>
+        <ul>
+          <li v-for="[setKey, setValues] in Object.entries(recordedSets)" :key="setKey">{{toCapitalizedWords(setKey)}}
+            <ul>
+              <li v-for="setValue in setValues" :key="setValue" :class="{ 'crossed-out': setValue.tag === 'CrossedOut' }">{{displayRecordValue(setKey, setValue)}}</li>
+            </ul>
+          </li>
+        </ul>
+        <ul>
+          <li v-for="[key, value] in recordedCounts" :key="key">{{toCapitalizedWords(key)}}: {{value}}.</li>
+        </ul>
       </div>
-      <ul>
-        <li v-for="record in recorded" :key="record">{{toCapitalizedWords(record)}}.</li>
-        <template v-for="i in game.investigators" :key="i.id">
-          <li v-for="record in i.log.recorded" :key="`${i.id}${record}`">{{fullName(i.name)}} {{toCapitalizedWords(record).toLowerCase()}}.</li>
-        </template>
-      </ul>
-      <ul>
-        <li v-for="[setKey, setValues] in Object.entries(recordedSets)" :key="setKey">{{toCapitalizedWords(setKey)}}
-          <ul>
-            <li v-for="setValue in setValues" :key="setValue" :class="{ 'crossed-out': setValue.tag === 'CrossedOut' }">{{displayRecordValue(setKey, setValue)}}</li>
-          </ul>
-        </li>
-      </ul>
-      <ul>
-        <li v-for="[key, value] in recordedCounts" :key="key">{{toCapitalizedWords(key)}}: {{value}}.</li>
-      </ul>
     </div>
   </div>
 </template>
@@ -218,5 +220,9 @@ li {
   & ul li {
     background: rgba(255, 255, 255, 0.1);
   }
+}
+
+.content {
+  overflow: auto;
 }
 </style>

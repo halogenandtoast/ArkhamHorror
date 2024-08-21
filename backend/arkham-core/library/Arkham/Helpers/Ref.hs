@@ -40,7 +40,7 @@ sourceToCard :: (HasCallStack, HasGame m) => Source -> m Card
 sourceToCard = targetToCard . sourceToTarget
 
 sourceToMaybeCard :: (HasCallStack, HasGame m) => Source -> m (Maybe Card)
-sourceToMaybeCard = targetToMaybeCard . sourceToTarget
+sourceToMaybeCard = maybe (pure Nothing) targetToMaybeCard . sourceToMaybeTarget
 
 sourceToTarget :: HasCallStack => Source -> Target
 sourceToTarget s =

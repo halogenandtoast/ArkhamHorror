@@ -103,6 +103,9 @@ groupLimit lType = limitedAbility (GroupLimit lType 1)
 withTooltip :: Text -> Ability -> Ability
 withTooltip t a = a & abilityTooltipL ?~ t
 
+selfAbility :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
+selfAbility a n c = restrictedAbility a n (Self <> c)
+
 restrictedAbility
   :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
 restrictedAbility entity idx restriction type' =

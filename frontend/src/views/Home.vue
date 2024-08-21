@@ -49,43 +49,45 @@ const toggleNewGame = () => {
 </script>
 
 <template>
-  <div class="home page-container">
-    <div v-if="currentUser" class="new-game">
+  <div class="page-container">
+    <div class="home page-content">
+      <div v-if="currentUser" class="new-game">
+        <transition name="slide">
+          <NewGame v-if="newGame">
+            <template #cancel>
+              <button @click="toggleNewGame" class="cancel-new-game-button">&#10006;</button>
+            </template>
+          </NewGame>
+        </transition>
+      </div>
+
       <transition name="slide">
-        <NewGame v-if="newGame">
-          <template #cancel>
-            <button @click="toggleNewGame" class="cancel-new-game-button">&#10006;</button>
+        <div v-if="!newGame">
+          <section>
+            <header>
+              <h2>{{$t('activeGames')}}</h2>
+              <button @click="toggleNewGame" class="new-game-button">+</button>
+            </header>
+            <div v-if="activeGames.length === 0" class="box">
+              <p>No active games.</p>
+            </div>
+            <GameRow v-for="game in activeGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
+          </section>
+
+          <h2 v-if="finishedGames.length > 0">{{$t('finishedGames')}}</h2>
+          <GameRow v-for="game in finishedGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
+
+          <template v-if="currentUser && currentUser.beta === true">
+            <h2>{{$t('debugGame')}}</h2>
+            <form enctype="multipart/form-data" method=POST class="box">
+              <p>Load a game previously exported view the "Debug Export"</p>
+              <input type="file" name="debugFile" accept="application/json" class="input-file" ref="debugFile" />
+              <button @click="submitDebugUpload">{{$t('debugGame')}}</button>
+            </form>
           </template>
-        </NewGame>
+        </div>
       </transition>
     </div>
-
-    <transition name="slide">
-      <div v-if="!newGame">
-        <section>
-          <header>
-            <h2>{{$t('activeGames')}}</h2>
-            <button @click="toggleNewGame" class="new-game-button">+</button>
-          </header>
-          <div v-if="activeGames.length === 0" class="box">
-            <p>No active games.</p>
-          </div>
-          <GameRow v-for="game in activeGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
-        </section>
-
-        <h2 v-if="finishedGames.length > 0">{{$t('finishedGames')}}</h2>
-        <GameRow v-for="game in finishedGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
-
-        <template v-if="currentUser && currentUser.beta === true">
-          <h2>{{$t('debugGame')}}</h2>
-          <form enctype="multipart/form-data" method=POST class="box">
-            <p>Load a game previously exported view the "Debug Export"</p>
-            <input type="file" name="debugFile" accept="application/json" class="input-file" ref="debugFile" />
-            <button @click="submitDebugUpload">{{$t('debugGame')}}</button>
-          </form>
-        </template>
-      </div>
-    </transition>
   </div>
 
 </template>

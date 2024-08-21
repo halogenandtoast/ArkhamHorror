@@ -37,27 +37,29 @@ async function sync(deck: Arkham.Deck) {
 </script>
 
 <template>
-  <div id="decks" class="page-container">
-    <div>
-      <h2 class="title">New Deck</h2>
-      <NewDeck @new-deck="addDeck"/>
-    </div>
-    <h2 class="title">Existing Decks</h2>
-    <div v-if="decks.length == 0" class="box">
-      <p>You currently have no decks.</p>
-    </div>
-    <transition-group name="deck">
-      <div v-for="deck in decks" :key="deck.id" class="deck">
-        <Deck :deck="deck" :markDelete="() => deleteId = deck.id" :sync="() => sync(deck)" />
+  <div class="page-container">
+    <div id="decks" class="page-content">
+      <div>
+        <h2 class="title">New Deck</h2>
+        <NewDeck @new-deck="addDeck"/>
       </div>
-    </transition-group>
+      <h2 class="title">Existing Decks</h2>
+      <div v-if="decks.length == 0" class="box">
+        <p>You currently have no decks.</p>
+      </div>
+      <transition-group name="deck">
+        <div v-for="deck in decks" :key="deck.id" class="deck">
+          <Deck :deck="deck" :markDelete="() => deleteId = deck.id" :sync="() => sync(deck)" />
+        </div>
+      </transition-group>
 
-    <Prompt
-      v-if="deleteId"
-      prompt="Are you sure you want to delete this deck?"
-      :yes="deleteDeckEvent"
-      :no="() => deleteId = null"
-    />
+      <Prompt
+        v-if="deleteId"
+        prompt="Are you sure you want to delete this deck?"
+        :yes="deleteDeckEvent"
+        :no="() => deleteId = null"
+      />
+    </div>
   </div>
 </template>
 

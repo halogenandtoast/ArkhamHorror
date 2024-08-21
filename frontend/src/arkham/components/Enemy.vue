@@ -198,9 +198,10 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
       <Story v-if="enemyStory" :story="enemyStory" :game="game" :playerId="playerId" @choose="choose"/>
       <template v-else>
         <div class="card-frame">
-          <div class="card-wrapper" :class="{ 'enemy--can-interact': canInteract, exhausted: isExhausted}">
+          <div class="card-wrapper" :class="{ 'enemy--can-interact': canInteract}">
             <img v-if="isTrueForm" :src="image"
               class="card enemy"
+              :class="{ exhausted: isExhausted }"
               :data-id="id"
               :data-fight="enemy.fight"
               :data-evade="enemy.evade"
@@ -216,6 +217,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
               @dragstart="startDrag($event, enemy)"
               :src="image"
               class="card enemy"
+              :class="{ exhausted: isExhausted }"
               :data-id="id"
               @click="clicked"
             />
@@ -358,11 +360,9 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
 }
 
 .exhausted {
+  transition: transform 0.2s linear;
   transform: rotate(90deg);
-  margin-left: 2px;
-  margin-bottom: -10px;
-  height: fit-content;
-  width: auto;
+  margin: 0 30px;
 }
 
 :deep(.token) {

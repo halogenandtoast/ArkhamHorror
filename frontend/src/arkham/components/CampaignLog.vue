@@ -7,6 +7,7 @@ import type { CardDef } from '@/arkham/types/CardDef'
 import type { Name } from '@/arkham/types/Name'
 import Supplies from '@/arkham/components/Supplies.vue';
 import { toCapitalizedWords } from '@/arkham/helpers';
+import { useI18n } from 'vue-i18n';
 
 export interface Props {
   game: Arkham.Game
@@ -15,6 +16,7 @@ export interface Props {
 
 const props = defineProps<Props>()
 
+const { t } = useI18n()
 const mainLog = props.game.campaign?.log || props.game.scenario?.standaloneCampaignLog || { recorded: [], recordedSets: [], recordedCounts: [] }
 
 const otherLog = ref<LogContents | null>(null)
@@ -144,7 +146,7 @@ const emptyLog = computed(() => {
           </Supplies>
         </div>
         <ul>
-          <li v-for="record in recorded" :key="record">{{toCapitalizedWords(record)}}.</li>
+          <li v-for="record in recorded" :key="record">{{t(record)}}.</li>
           <template v-for="i in game.investigators" :key="i.id">
             <li v-for="record in i.log.recorded" :key="`${i.id}${record}`">{{fullName(i.name)}} {{toCapitalizedWords(record).toLowerCase()}}.</li>
           </template>

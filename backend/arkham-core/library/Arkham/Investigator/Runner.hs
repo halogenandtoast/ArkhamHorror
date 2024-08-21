@@ -321,6 +321,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         , investigatorSideDeck = investigatorSideDeck
         , investigatorTaboo = investigatorTaboo
         , investigatorMutated = investigatorMutated
+        , investigatorSlots = defaultSlots a.id
         }
   AddDeckBuildingAdjustment iid adjustment | iid == investigatorId -> do
     pure $ a & deckBuildingAdjustmentsL %~ (adjustment :)
@@ -2377,21 +2378,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       fill :: HasGame m => [(AssetId, Card, SlotType)] -> Map SlotType [Slot] -> m (Map SlotType [Slot])
       fill [] slots = pure slots
       fill ((aid, card, slotType) : rs) slots = do
-        (availableSlots1, unused1) <- partitionM (canPutIntoSlot card) (slots ^. at slotType . non [])
+        (availableSlots1, _unused1) <- partitionM (canPutIntoSlot card) (slots ^. at slotType . non [])
         case nonEmptySlotsFirst (sort availableSlots1) of
           [] -> case findWithDefault [] slotType canHoldMap of
             [] -> error "can't be filled 1"
             [other] -> do
-              (availableSlots2, unused2) <- partitionM (canPutIntoSlot card) (slots ^. at other . non [])
+              (availableSlots2, _unused2) <- partitionM (canPutIntoSlot card) (slots ^. at other . non [])
               case nonEmptySlotsFirst (sort availableSlots2) of
                 [] -> error "can't be filled 2"
                 _ -> do
                   slots' <- placeInAvailableSlot aid card (slots ^. at other . non [])
-                  fill rs (slots & ix other .~ slots' <> unused2)
+                  fill rs (slots & at other . non [] .~ slots')
             _ -> error "not designed to work with more than one yet"
           _ -> do
             slots' <- placeInAvailableSlot aid card (slots ^. at slotType . non [])
-            fill rs (slots & ix slotType .~ slots' <> unused1)
+            fill rs (slots & at slotType . non [] .~ slots')
 
     failedSlotTypes <- nub <$> go requirements allSlots
 
@@ -2406,7 +2407,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
     if null failedAssetIds
       then do
-        slots' <- fill requirements (Map.map (map emptySlot) (a ^. slotsL))
+        slots' <- fill requirements (Map.map (map emptySlot) $ a ^. slotsL)
         pure $ a & slotsL .~ slots'
       else do
         player <- getPlayer iid

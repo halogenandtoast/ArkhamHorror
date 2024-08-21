@@ -333,27 +333,7 @@ investigator f cardDef Stats {..} =
                 , investigatorDrivenInsane = False
                 , investigatorDefeated = False
                 , investigatorResigned = False
-                , investigatorSlots =
-                    mapFromList
-                      [ (AccessorySlot, [Slot (InvestigatorSource iid) []])
-                      , (BodySlot, [Slot (InvestigatorSource iid) []])
-                      , (AllySlot, [Slot (InvestigatorSource iid) []])
-                      ,
-                        ( HandSlot
-                        ,
-                          [ Slot (InvestigatorSource iid) []
-                          , Slot (InvestigatorSource iid) []
-                          ]
-                        )
-                      ,
-                        ( ArcaneSlot
-                        ,
-                          [ Slot (InvestigatorSource iid) []
-                          , Slot (InvestigatorSource iid) []
-                          ]
-                        )
-                      , (TarotSlot, [Slot (InvestigatorSource iid) []])
-                      ]
+                , investigatorSlots = defaultSlots iid
                 , investigatorXp = 0
                 , investigatorPhysicalTrauma = 0
                 , investigatorMentalTrauma = 0
@@ -387,6 +367,29 @@ investigator f cardDef Stats {..} =
                 , investigatorMutated = Nothing
                 }
         }
+
+defaultSlots :: InvestigatorId -> Map SlotType [Slot]
+defaultSlots iid =
+  mapFromList
+    [ (AccessorySlot, [Slot (InvestigatorSource iid) []])
+    , (BodySlot, [Slot (InvestigatorSource iid) []])
+    , (AllySlot, [Slot (InvestigatorSource iid) []])
+    ,
+      ( HandSlot
+      ,
+        [ Slot (InvestigatorSource iid) []
+        , Slot (InvestigatorSource iid) []
+        ]
+      )
+    ,
+      ( ArcaneSlot
+      ,
+        [ Slot (InvestigatorSource iid) []
+        , Slot (InvestigatorSource iid) []
+        ]
+      )
+    , (TarotSlot, [Slot (InvestigatorSource iid) []])
+    ]
 
 matchTarget :: InvestigatorAttrs -> ActionTarget -> Action -> Bool
 matchTarget attrs (AnyActionTarget as) action = any (\atarget -> matchTarget attrs atarget action) as

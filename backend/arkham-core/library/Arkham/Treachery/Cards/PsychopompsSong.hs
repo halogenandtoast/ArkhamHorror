@@ -16,9 +16,11 @@ psychopompsSong :: TreacheryCard PsychopompsSong
 psychopompsSong = treachery PsychopompsSong Cards.psychopompsSong
 
 instance HasAbilities PsychopompsSong where
-  getAbilities (PsychopompsSong attrs) = case attrs.inThreatAreaOf of
-    Just iid -> [mkAbility attrs 1 $ forced $ DealtDamage #when AnySource $ InvestigatorWithId iid]
-    _ -> []
+  getAbilities (PsychopompsSong attrs) =
+    [ restrictedAbility attrs 1 (InThreatAreaOf You)
+        $ forced
+        $ InvestigatorWouldTakeDamage #when You AnySource AnyDamageType
+    ]
 
 instance RunMessage PsychopompsSong where
   runMessage msg t@(PsychopompsSong attrs) = runQueueT $ case msg of

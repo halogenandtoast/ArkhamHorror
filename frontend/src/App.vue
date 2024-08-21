@@ -29,6 +29,7 @@ onMounted(async () => await store.loadUserFromStorage())
 <style lang="scss">
 * {
   min-width: 0;
+  box-sizing: border-box;
 }
 
 button {
@@ -317,9 +318,16 @@ h2.title {
 }
 
 .page-container {
+  padding-bottom: 10px;
+  height: 100%;
+  overflow: auto;
+  width: 100%;
+}
+
+.page-content {
   width: 70vw;
   margin: 0 auto;
-  height: 100%;
+  padding-bottom: 10px;
 }
 
 .fade-leave-active,

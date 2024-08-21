@@ -20,7 +20,7 @@ spec = describe "Wendy Adams" $ do
 
   context "elder sign" $ do
     it "gives +0" . gameTestWith wendyAdams $ \self -> do
-      self.elderSignModifier `shouldReturn` PositiveModifier 0
+      self.elderSignModifier `shouldReturn` 0
 
     it "automatically succeeds if Wendy's Amulet is in play" . gameTestWith wendyAdams $ \self -> do
       -- N.B: We must run the skill test to resolve the effect of the Elder Sign

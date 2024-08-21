@@ -19,4 +19,4 @@ spec = describe "Agnes Baker" $ do
   context "elder sign" $ do
     it "gives +1 for each horror on Agnes" . gameTestWith agnesBaker $ \self -> do
       self `addHorror` 2
-      self.elderSignModifier `shouldReturn` PositiveModifier 2
+      self.elderSignModifier `shouldReturn` 2

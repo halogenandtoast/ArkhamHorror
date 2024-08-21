@@ -22,7 +22,7 @@ spec = describe "Tommy Muldoon" $ do
 
   context "elder sign" $ do
     it "is +2" . gameTestWith tommyMuldoon $ \self ->
-      self.elderSignModifier `shouldReturn` PositiveModifier 2
+      self.elderSignModifier `shouldReturn` 2
 
     it "You may move up to 2 damage and/or horror from Tommy Muldoon to an asset you control" . gameTestWith tommyMuldoon $ \self -> do
       withProp @"damage" 1 self

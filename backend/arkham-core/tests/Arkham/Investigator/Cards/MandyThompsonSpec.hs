@@ -113,7 +113,7 @@ spec = describe "Mandy Thompson" $ do
       assertAny $ enemyIs Cards.swarmOfRats
 
   context "elder sign" $ do
-    it "is +0" . gameTestWith mandyThompson $ \self -> self.elderSignModifier `shouldReturn` PositiveModifier 0
+    it "is +0" . gameTestWith mandyThompson $ \self -> self.elderSignModifier `shouldReturn` 0
 
     it "search the top 3 cards of your deck for a card and either draw it" . gameTestWith mandyThompson $ \self -> do
       cards@(c1 : rest) <- testPlayerCards 3

@@ -49,4 +49,4 @@ spec = describe "Roland Banks" $ do
       location <- testLocation & prop @"clues" 4
       setChaosTokens [ElderSign]
       self `moveTo` location
-      self.elderSignModifier `shouldReturn` PositiveModifier 4
+      self.elderSignModifier `shouldReturn` 4

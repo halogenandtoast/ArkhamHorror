@@ -18,13 +18,13 @@ instance HasAbilities SpiritOfHumanity2 where
   getAbilities (SpiritOfHumanity2 x) =
     let
       criteria = exists $ oneOf $ map healable [#horror, #damage]
-      healable hType = HealableInvestigator (toAbilitySource x 1) hType You
+      healable hType = HealableInvestigator (x.ability 1) hType You
      in
       [ controlledAbility x 1 HasRemainingBlessTokens
           $ FastAbility
           $ exhaust x
-          <> HorrorCost (toAbilitySource x 1) YouTarget 1
-          <> DamageCost (toAbilitySource x 1) YouTarget 1
+          <> HorrorCost (x.ability 1) YouTarget 1
+          <> DamageCost (x.ability 1) YouTarget 1
       , controlledAbility x 2 (HasRemainingCurseTokens <> criteria)
           $ FastAbility
           $ exhaust x

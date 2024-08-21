@@ -1,5 +1,6 @@
 module Arkham.Investigator.Import.Lifted (
   module X,
+  module Arkham.Investigator.Import.Lifted,
 )
 where
 
@@ -48,3 +49,8 @@ import Arkham.Prelude as X
 import Arkham.Question as X
 import Arkham.Source as X
 import Arkham.Target as X
+
+import Arkham.Calculation
+
+elderSignValue :: GameCalculation -> ChaosTokenValue
+elderSignValue = ChaosTokenValue ElderSign . CalculatedModifier

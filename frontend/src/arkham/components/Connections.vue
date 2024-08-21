@@ -12,7 +12,7 @@ const props = defineProps<Props>()
 const locations = computed(() => Object.values(props.game.locations).
   filter((a) => a.inFrontOf === null && a.label !== "cosmos"))
 
-const toConnection = (div1: HTMLElement, div2: HTMLElement) => {
+const toConnection = (div1: HTMLElement, div2: HTMLElement): string | undefined => {
   const [leftDiv, rightDiv] = [div1, div2].sort((a, b) => {
     const { id: div1Id } = a.dataset
     const { id: div2Id } = b.dataset
@@ -137,6 +137,7 @@ const makeLine = function(div1: HTMLElement, div2: HTMLElement) {
 }
 
 function handleConnections() {
+  let activeConnections = [] as string[]
   for(const location of locations.value) {
     const { id, connectedLocations } = location
     const connections = typeof connectedLocations == "object"
@@ -150,8 +151,22 @@ function handleConnections() {
 
       const conn = toConnection(start, end)
       if (!conn) return
+
+      activeConnections.push(conn)
       makeLine(start, end)
     })
+  }
+
+  const rendered = document.querySelectorAll(".line")
+
+  for(const node of rendered) {
+    const connection = (node as HTMLElement).dataset.id
+    if (!connection) continue
+
+    if (!activeConnections.includes(connection)) {
+      console.log("REMOVING");
+      node.parentNode?.removeChild(node)
+    }
   }
 
 }

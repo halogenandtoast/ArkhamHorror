@@ -35,7 +35,7 @@ spec = describe "Luke Robinson" do
 
   context "Elder Sign" do
     it "+1" . gameTestWith lukeRobinson $ \self -> do
-      self.elderSignModifier `shouldReturn` PositiveModifier 1
+      self.elderSignModifier `shouldReturn` 1
 
     it "places 1 charge on gate box" . gameTestWith lukeRobinson $ \self -> do
       gateBox <- self `putAssetIntoPlay` Assets.gateBox

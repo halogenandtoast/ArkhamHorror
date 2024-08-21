@@ -27,7 +27,7 @@ spec = describe "Tony Morgan" do
 
   context "elder sign" do
     it "+2" . gameTestWith tonyMorgan $ \self -> do
-      self.elderSignModifier `shouldReturn` PositiveModifier 2
+      self.elderSignModifier `shouldReturn` 2
 
     it "place 1 bounty on Bounty Contracts" . gameTestWith tonyMorgan $ \self -> do
       bountyContracts <- self `putAssetIntoPlay` Assets.bountyContracts

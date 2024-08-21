@@ -25,7 +25,7 @@ spec = describe "Patrice Hathaway" do
 
   context "Elder Sign Effect" do
     it "gives +1" . gameTestWith patriceHathaway $ \self -> do
-      self.elderSignModifier `shouldReturn` PositiveModifier 1
+      self.elderSignModifier `shouldReturn` 1
 
     it "After this test ends, you may shuffle all but 1 card from your discard pile into your deck." . gameTestWith patriceHathaway $ \self -> do
       knife <- genPlayerCard Assets.knife

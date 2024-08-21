@@ -37,6 +37,7 @@ import Arkham.Enemy.Types qualified as Field
 import Arkham.Entities qualified as Entities
 import Arkham.Game.Settings
 import Arkham.GameEnv
+import Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.Investigator qualified as Helpers
 import Arkham.Helpers.Message qualified as Helpers
 import Arkham.Helpers.Use (asStartingUses)
@@ -245,10 +246,13 @@ instance HasField "slots" Investigator (TestAppT (Map SlotType [Slot])) where
 instance HasField "mentalTrauma" Investigator (TestAppT Int) where
   getField = field InvestigatorMentalTrauma . toEntityId
 
-instance HasField "elderSignModifier" Investigator (TestAppT ChaosTokenModifier) where
+instance HasField "elderSignModifier" Investigator (TestAppT Int) where
   getField i =
-    fmap (\(ChaosTokenValue _ ctm) -> ctm)
-      . getChaosTokenValue (toId i) ElderSign
+    ( \(ChaosTokenValue _ ctm) -> case ctm of
+        CalculatedModifier c -> calculate c
+        _ -> pure (-10000)
+    )
+      =<< getChaosTokenValue (toId i) ElderSign
       =<< getInvestigator (toId i)
 
 instance HasField "location" Investigator (TestAppT (Maybe LocationId)) where

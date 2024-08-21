@@ -69,6 +69,12 @@ instance HasField "meta" EnemyAttrs Value where
 instance HasField "placement" EnemyAttrs Placement where
   getField = enemyPlacement
 
+instance HasField "ready" EnemyAttrs Bool where
+  getField = not . enemyExhausted
+
+instance HasField "exhausted" EnemyAttrs Bool where
+  getField = enemyExhausted
+
 enemyDamage :: EnemyAttrs -> Int
 enemyDamage = countTokens Damage . enemyTokens
 

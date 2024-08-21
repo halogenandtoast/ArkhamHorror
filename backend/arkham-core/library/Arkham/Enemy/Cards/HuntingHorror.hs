@@ -24,10 +24,11 @@ instance HasAbilities HuntingHorror where
   getAbilities (HuntingHorror x) =
     extend
       x
-      [ restrictedAbility x 1 criteria $ forced $ PhaseBegins #when #enemy
+      [ restrictedAbility x 1 (criteria <> exhaustedCriteria) $ forced $ PhaseBegins #when #enemy
       , restrictedAbility x 2 criteria $ forced $ EnemyLeavesPlay #when (be x)
       ]
    where
+    exhaustedCriteria = if x.ready then Never else NoRestriction
     criteria = case x.placement of
       OutOfPlay VoidZone -> Never
       _ -> NoRestriction
@@ -51,4 +52,5 @@ instance RunMessage HuntingHorror where
         $ attrs
         & (tokensL %~ removeAllTokens Doom . removeAllTokens Clue . removeAllTokens Token.Damage)
         & (placementL .~ OutOfPlay VoidZone)
+        & (defeatedL .~ False)
     _ -> HuntingHorror <$> runMessage msg attrs

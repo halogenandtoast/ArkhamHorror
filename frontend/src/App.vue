@@ -27,9 +27,20 @@ onMounted(async () => await store.loadUserFromStorage())
 </script>
 
 <style lang="scss">
+html {
+  color-scheme: dark;
+}
 * {
-  min-width: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+}
+*, *::before, *::after{
   box-sizing: border-box;
+}
+
+img, svg {
+  max-width: 100%;
 }
 
 button {
@@ -70,6 +81,7 @@ body {
   margin: 0;
   padding: 0;
   color: #222;
+  min-height: 100vh;
 }
 
 #app {
@@ -300,8 +312,6 @@ body {
   @media (max-width: 800px) {
     --card-width: 40px;
   }
-
-  color-scheme: dark;
 }
 
 h2.title {

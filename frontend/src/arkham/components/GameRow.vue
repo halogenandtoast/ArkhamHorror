@@ -90,7 +90,7 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
               class="investigator"
             >
               <div :class="`investigator-portrait-container ${toCssName(investigator.classSymbol)}`">
-                <img :src="imgsrc(`cards/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
+                <img :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
               </div>
             </div>
           </div>
@@ -104,7 +104,7 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
               class="investigator"
             >
               <div :class="`investigator-portrait-container ${toCssName(investigator.classSymbol)}`">
-                <img :src="imgsrc(`cards/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
+                <img :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
               </div>
             </div>
           </div>
@@ -256,7 +256,6 @@ h2 {
 
 .investigator-portrait {
   width: 150px;
-  margin: -18px;
 }
 
 .game-subdetails {

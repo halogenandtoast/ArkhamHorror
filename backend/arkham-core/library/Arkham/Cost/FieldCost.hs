@@ -133,7 +133,16 @@ instance FromJSON MaybeFieldCost where
                 mtchr :: EnemyMatcher <- v .: "matcher"
                 pure $ MaybeFieldCost mtchr fld
               _ -> error "Must be a Maybe Int"
-      _ -> error "Unhandled"
+      "Location" -> do
+        sfld :: SomeField Location <- v .: "field"
+        case sfld of
+          SomeField (fld :: Field Location typ) ->
+            case eqT @typ @(Maybe Int) of
+              Just Refl -> do
+                mtchr :: LocationMatcher <- v .: "matcher"
+                pure $ MaybeFieldCost mtchr fld
+              _ -> error "Must be a Maybe Int"
+      _ -> error $ "Unhandled MaybeFieldCost parse: " <> show entityType
 
 -- we do not care about this instance really
 instance Ord MaybeFieldCost where

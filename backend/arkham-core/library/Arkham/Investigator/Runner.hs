@@ -1268,13 +1268,24 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         else do
           let horrorToCancel = if CannotCancelHorror `elem` mods then 0 else sum [n | WillCancelHorror n <- mods]
           let horror' = max 0 (horror - horrorToCancel)
+          let
+            damageEffect = case source of
+              EnemyAttackSource _ -> AttackDamageEffect
+              _ -> NonAttackDamageEffect
+          iids <- getInvestigatorIds
+
           pushAll
-            $ [ CheckWindow [iid]
+            $ [ CheckWindow iids
                 $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror')
                 : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage strategy) | damage > 0]
                   <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror') | horror' > 0]
               | damage > 0 || horror' > 0
               ]
+            <> [ CheckWindow iids
+                  $ [ mkWhen (Window.DealtDamage source damageEffect (toTarget a) damage)
+                    ]
+                  <> [mkWhen (Window.DealtHorror source (toTarget a) horror)]
+               ]
             <> [ InvestigatorDoAssignDamage iid source strategy AnyAsset damage horror' [] []
                , checkDefeated source iid
                ]
@@ -1296,20 +1307,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       checkAssets = nub $ keys horrorMap <> keys damageMap
     whenPlacedWindowMsg <- checkWindows $ map mkWhen placedWindows
     afterPlacedWindowMsg <- checkWindows $ map mkAfter placedWindows
+    whenAssignedWindowMsg <- checkWhen $ Window.AssignedHorror source iid horrorTargets
     pushAll
       $ [ whenPlacedWindowMsg
         , afterPlacedWindowMsg
-        , CheckWindow [iid]
-            $ [ mkWhen (Window.DealtDamage source damageEffect target damage)
-              | target <- nub damageTargets
-              , let damage = count (== target) damageTargets
-              ]
-            <> [ mkWhen (Window.DealtHorror source target horror)
-               | target <- nub horrorTargets
-               , let horror = count (== target) horrorTargets
-               ]
-            <> [mkWhen (Window.AssignedHorror source iid horrorTargets) | notNull horrorTargets]
         ]
+      <> [whenAssignedWindowMsg | notNull horrorTargets]
       <> [CheckDefeated source (toTarget aid) | aid <- checkAssets]
       <> [ CheckWindow [iid]
             $ [ mkAfter (Window.DealtDamage source damageEffect target damage)

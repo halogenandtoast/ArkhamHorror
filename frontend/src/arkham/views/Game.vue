@@ -831,16 +831,19 @@ header {
 
 @keyframes glow {
   0% {
+    will-change: filter; 
     filter: drop-shadow(0 0 3vmin Indigo) drop-shadow(0 5vmin 4vmin Orchid)
       drop-shadow(2vmin -2vmin 15vmin MediumSlateBlue)
       drop-shadow(0 0 7vmin MediumOrchid);
   }
   50% {
+    will-change: filter; 
     filter: drop-shadow(0 0 3vmin Indigo) drop-shadow(0 5vmin 4vmin Orchid)
       drop-shadow(2vmin -2vmin 15vmin MediumSlateBlue)
       drop-shadow(0 0 7vmin Black);
   }
   100% {
+    will-change: filter; 
     filter: drop-shadow(0 0 3vmin Indigo) drop-shadow(0 5vmin 4vmin Orchid)
       drop-shadow(2vmin -2vmin 15vmin MediumSlateBlue)
       drop-shadow(0 0 7vmin MediumOrchid);
@@ -848,38 +851,22 @@ header {
 }
 
 .revelation {
-  //--clr-1: Indigo;
-  //--clr-2: MediumOrchid;
-  //--clr-3: DarkOrchid;
-  //background: conic-gradient(
-  //  from var(--gradient-angle),
-  //  var(--clr-1),
-  //  var(--clr-2),
-  //  var(--clr-3),
-  //  var(--clr-2),
-  //  var(--clr-1));
   padding: 30px;
   position: absolute;
-  //background: Black;
   transform: all 0.5s;
   z-index: 1000;
-  display: flex;
-  flex-direction: column;
   color: white;
   text-align:center;
   margin: auto;
   inset: 0;
   width: fit-content;
   height: fit-content;
-  animation: revelation 0.3s ease-in-out, glow 4s cubic-bezier(0.550, 0.085, 0.680, 0.530) infinite;
-
-  //animation: revelation 0.3s ease-in-out, anim 30s infinite, rotation 30s linear infinite;
-
   display: grid;
   // glow effect
   filter: drop-shadow(0 0 3vmin Indigo) drop-shadow(0 5vmin 4vmin Orchid)
 		drop-shadow(2vmin -2vmin 15vmin MediumSlateBlue)
 		drop-shadow(0 0 7vmin MediumOrchid);
+  animation: revelation 0.3s ease-in-out, glow 4s cubic-bezier(0.550, 0.085, 0.680, 0.530) infinite;
 
   button {
     width: 100%;
@@ -897,6 +884,10 @@ header {
   i {
     font-style: normal;
   }
+
+  .card {
+    border-radius: 15px;
+  }
 }
 
 
@@ -911,13 +902,16 @@ header {
   :deep(.card) {
     animation: revelation 0.6s ease-in-out;
     width: 300px !important;
+    aspect-ratio: var(--card-ratio);
     overflow: hidden;
+    border-radius: 15px;
   }
 }
 
 .revelation-container {
   display: flex;
   flex-direction: column;
+  gap: 10px;
   align-items: center;
   align-self: center;
   align-content: center;
@@ -973,6 +967,7 @@ header {
   flex-direction: column;
   width: fit-content;
   height: fit-content;
+  gap: 10px;
 
   .tarot-cards {
     gap: 15px;
@@ -980,13 +975,15 @@ header {
     flex-direction: row;
     width: fit-content;
     height: fit-content;
+    &:deep(img) {
+      border-radius: 10px;
+    }
   }
 
   .revelation-card {
     position: relative;
     width: 300px;
-    padding-bottom: 15px;
-    aspect-ratio: 5/7;
+    aspect-ratio: var(--card-aspect);
     perspective: 1000px;
     &:nth-child(1) {
       animation-delay: 0.3s;
@@ -1008,7 +1005,6 @@ header {
       left: 0;
       backface-visibility: hidden;
       animation: flip-front 0.3s linear;
-      //animation-delay: 0.3s;
       animation-fill-mode: forwards;
       animation-delay: inherit;
     }

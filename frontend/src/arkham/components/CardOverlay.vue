@@ -212,10 +212,16 @@ const overlay = computed(() => {
 
 const sideways = computed<boolean>(() => {
   if (!hoveredElement.value) return false;
+  if (hoveredElement.value?.classList.contains('exhausted')) return false;
 
   const rect = hoveredElement.value.getBoundingClientRect();
 
   return rect.width > rect.height;
+})
+
+const tarot = computed<boolean>(() => {
+  if (!hoveredElement.value) return false;
+  return hoveredElement.value?.classList.contains('tarot-card')
 })
 
 const getRotated = (el: HTMLElement) => {
@@ -289,7 +295,7 @@ const getImage = (el: HTMLElement): string | null => {
 </script>
 
 <template>
-  <div class="card-overlay" ref="cardOverlay" :style="{ top: overlayPosition.top + 'px', left: overlayPosition.left + 'px'}" :class="{ sideways }">
+  <div class="card-overlay" ref="cardOverlay" :style="{ top: overlayPosition.top + 'px', left: overlayPosition.left + 'px'}" :class="{ sideways, tarot }">
     <div class="card-image">
       <img v-if="card" :src="card" :class="{ reversed, Reversed: upsideDown }" />
       <img
@@ -385,6 +391,7 @@ const getImage = (el: HTMLElement): string | null => {
   position: absolute;
   z-index: 1000;
   max-height: 420px;
+  max-width: 300px;
   height: fit-content;
   display: flex;
   img {
@@ -392,6 +399,7 @@ const getImage = (el: HTMLElement): string | null => {
     border-radius: 15px;
     width: 300px;
     height: fit-content;
+    aspect-ratio: var(--card-aspect);
   }
   img.damage {
     width: auto;
@@ -432,8 +440,19 @@ const getImage = (el: HTMLElement): string | null => {
     height: 300px !important;
     width: fit-content !important;
     img {
+      aspect-ratio: var(--card-sideways-aspect);
       border-radius: 15px;
       height: 300px;
+      width: fit-content;
+    }
+  }
+  &.tarot {
+    height: 500px !important;
+    width: fit-content !important;
+    img {
+      aspect-ratio: var(--card-tarot-aspect);
+      border-radius: 15px;
+      height: 500px;
       width: fit-content;
     }
   }

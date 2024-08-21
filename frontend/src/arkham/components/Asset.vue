@@ -204,12 +204,13 @@ const assetStory = computed(() => {
           />
           <span class="deck-size">{{asset.spiritDeck.length}}</span>
         </div>
-        <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract, exhausted}">
+        <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract}">
           <img
             :data-id="id"
             :data-image-id="dataImage"
             :src="image"
             class="card"
+            :class="{ exhausted }"
             @click="clicked"
             :data-customizations="JSON.stringify(asset.customizations)"
           />
@@ -313,7 +314,7 @@ const assetStory = computed(() => {
 .exhausted {
   transition: transform 0.2s linear;
   transform: rotate(90deg);
-  padding: 0 30px;
+  margin: 0 30px;
 }
 
 .asset--can-interact {

@@ -25,7 +25,7 @@ instance HasAbilities SpiritOfHumanity2 where
           $ exhaust x
           <> HorrorCost (toAbilitySource x 1) YouTarget 1
           <> DamageCost (toAbilitySource x 1) YouTarget 1
-      , controlledAbility x 1 (HasRemainingCurseTokens <> criteria)
+      , controlledAbility x 2 (HasRemainingCurseTokens <> criteria)
           $ FastAbility
           $ exhaust x
           <> AddCurseTokenCost 2

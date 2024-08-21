@@ -57,7 +57,6 @@ watch(truncatedGameLog, async () => {
   margin: 10px;
   height: calc(100vh - 60px);
   padding: 10px 10px;
-  box-sizing: border-box;
   flex: 1 1 50%;
   overflow-x: hidden;
   ul {

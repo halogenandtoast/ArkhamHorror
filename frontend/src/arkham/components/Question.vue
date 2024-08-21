@@ -587,7 +587,6 @@ section {
   padding: 10px;
   margin: 10px 10px 0 10px;
   border-radius: 5px;
-  box-sizing: border-box;
   font-size: 1.1em;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased !important;
@@ -754,7 +753,6 @@ h2 {
   padding: 10px;
   background: #735e7b;
   width: 100%;
-  box-sizing: border-box;
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
 
@@ -836,7 +834,6 @@ h2 {
 .amount-contents {
   background: #735e7b;
   padding: 10px;
-  box-sizing: border-box;
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
 }
@@ -932,7 +929,6 @@ h2 {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  box-sizing: border-box;
   padding: 10px;
   gap: 10px;
 }

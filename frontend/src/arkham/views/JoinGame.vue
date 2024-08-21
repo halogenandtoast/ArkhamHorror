@@ -76,7 +76,6 @@ async function join() {
     padding: 15px;
     background: #F2F2F2;
     width: 100%;
-    box-sizing: border-box;
     margin-bottom: 10px;
   }
   select {
@@ -85,7 +84,6 @@ async function join() {
     padding: 15px;
     background: #F2F2F2;
     width: 100%;
-    box-sizing: border-box;
     margin-bottom: 10px;
     background-image:
       linear-gradient(45deg, transparent 50%, gray 50%),

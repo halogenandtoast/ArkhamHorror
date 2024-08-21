@@ -245,7 +245,6 @@ const chosenDeckTabooList = computed(() => {
 
 <style lang="scss" scoped>
 .investigators {
-  box-sizing: border-box;
   width: 100%;
   color: #FFF;
   padding: 10px;
@@ -279,7 +278,6 @@ const chosenDeckTabooList = computed(() => {
 }
 
 .choose-deck {
-  box-sizing: border-box;
   width: 100%;
   color: #FFF;
   border-radius: 3px;
@@ -308,7 +306,6 @@ const chosenDeckTabooList = computed(() => {
     padding: 15px;
     background: #F2F2F2;
     width: 100%;
-    box-sizing: border-box;
     margin-bottom: 10px;
   }
   select {
@@ -317,7 +314,6 @@ const chosenDeckTabooList = computed(() => {
     padding: 15px;
     background: var(--background-dark);
     width: 100%;
-    box-sizing: border-box;
     margin-bottom: 10px;
     background-image:
       linear-gradient(45deg, transparent 50%, gray 50%),
@@ -510,7 +506,6 @@ form {
   font-weight: bold;
   text-transform: uppercase;
   width: 100%;
-  box-sizing: border-box;
 }
 
 .buttons {

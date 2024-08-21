@@ -87,7 +87,6 @@ button {
   width: calc(100% - 20px);
   margin: 0 auto;
   margin-top: 20px;
-  box-sizing: border-box;
   p {
     margin: 0;
     padding: 0;
@@ -100,7 +99,6 @@ button {
   border: 0;
   text-align: center;
   padding: 10px;
-  box-sizing: border-box;
   text-transform: uppercase;
   border-radius: 0;
   background-color: #532e61;

@@ -113,6 +113,5 @@ watch(step, currentStep => {
   display: flex;
   flex-direction: column;
   background: #d0d9dc;
-  box-sizing: border-box;
 }
 </style>

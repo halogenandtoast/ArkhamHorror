@@ -627,16 +627,17 @@ const tarotCardAbility = (card: TarotCard) => {
 
 <style scoped lang="scss">
 .card {
-  /*box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);*/
-  border-radius: 6px;
-  margin: 2px;
+  border-radius: 5px;
   width: var(--card-width);
+  height: auto;
+  aspect-ratio: var(--card-aspect);
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 
 .card--sideways {
   width: auto;
   height: calc(var(--card-width) * 2);
+  aspect-ratio: var(--card-sideways-ratio);
 }
 
 .scenario-cards {
@@ -644,18 +645,11 @@ const tarotCardAbility = (card: TarotCard) => {
   align-self: center;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding: 10px 0;
   position: relative;
   width: 100%;
   gap: 10px;
   z-index: -2;
-}
-
-.clue--can-investigate {
-  border: 3px solid #ff00ff;
-  border-radius: 100px;
-  cursor: pointer;
 }
 
 .clue {
@@ -838,7 +832,6 @@ const tarotCardAbility = (card: TarotCard) => {
   > div {
     width: 100%;
     padding: 0 5px;
-    box-sizing: border-box;
     display: flex;
     justify-content: center;
     flex: 1;
@@ -913,9 +906,8 @@ const tarotCardAbility = (card: TarotCard) => {
 }
 
 .can-interact {
-  aspect-ratio: 5 / 7;
   background: rgba(0, 0, 0, 0.5);
-  border: 2px solid $select;
+  outline: 2px solid $select;
   cursor: pointer;
 }
 
@@ -935,8 +927,8 @@ const tarotCardAbility = (card: TarotCard) => {
 
 .tarot-card {
   width: var(--card-width);
-  aspect-ratio: 8 / 14;
-
+  aspect-ratio: var(--card-tarot-aspect);
+  margin: 0;
 }
 
 .tarot-card-choices {
@@ -954,29 +946,11 @@ const tarotCardAbility = (card: TarotCard) => {
   padding: 10px;
 }
 
-.tarot-card {
-  margin: 0;
-}
-
 .tarot-card-container {
   transition: transform 0.5s ease-in-out;
   display:flex;
   position: relative;
-  &:before {
-    z-index: -1;
-    background: black;
-    filter: blur(3px);
-    position: absolute;
-    inset: 10px 5px;
-    content: "";
-    transform: translate(0, 12px);
-    transition: inherit;
-  }
-
-  .can-interact {
-    aspect-ratio: 8 / 14;
-    box-sizing: border-box;
-  }
+  border-radius: 5px;
 
   &.Reversed {
     transform: rotateZ(180deg);

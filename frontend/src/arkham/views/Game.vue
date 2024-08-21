@@ -628,8 +628,6 @@ onUnmounted(() => {
   @media (prefers-color-scheme: dark) {
     background: #1C1C1C;
   }
-
-  box-sizing: border-box;
 }
 
 #invite {

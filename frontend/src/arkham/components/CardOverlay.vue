@@ -495,7 +495,6 @@ const getImage = (el: HTMLElement): string | null => {
   aspect-ratio: 1/1;
   border-radius: 50%;
   border: 1px solid #222;
-  box-sizing: border-box;
   background-color: rgba(0,0,0,0.4);
 }
 
@@ -506,7 +505,6 @@ const getImage = (el: HTMLElement): string | null => {
   aspect-ratio: 1/1;
   border-radius: 50%;
   border: 1px solid #222;
-  box-sizing: border-box;
   background-color: rgba(0,0,0,0.4);
 }
 

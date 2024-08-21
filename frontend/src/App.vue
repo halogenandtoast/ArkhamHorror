@@ -317,7 +317,6 @@ h2.title {
   color: var(--title);
   padding: 10px;
   border-radius: 5px;
-  box-sizing: border-box;
 }
 
 .page-container {

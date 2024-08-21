@@ -51,7 +51,6 @@ async function logout() {
   background-color: var(--background-dark);
   color: #f2f2f2;
   height: 40px;
-  box-sizing: border-box;
   display: flex;
   align-items: center;
   padding-right: 10px;
@@ -116,7 +115,6 @@ input[type=checkbox]:checked ~ .user-links {
   text-align: right;
   background: var(--background-dark);
   padding: 10px;
-  box-sizing: border-box;
   border-radius: 0 0 5px 5px;
 }
 

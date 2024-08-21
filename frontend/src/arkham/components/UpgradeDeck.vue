@@ -146,7 +146,6 @@ input {
     color: #F2F2F2;
     background: var(--background-dark);
     width: 100%;
-    box-sizing: border-box;
     margin-bottom: 10px;
 }
 

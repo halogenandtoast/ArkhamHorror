@@ -293,7 +293,6 @@ async function start() {
 }
 
 #new-campaign {
-  box-sizing: border-box;
   width: 100%;
   color: #FFF;
   border-radius: 3px;
@@ -323,7 +322,6 @@ async function start() {
     padding: 15px;
     background: var(--background-dark);
     width: 100%;
-    box-sizing: border-box;
     margin-bottom: 10px;
   }
   select {
@@ -332,7 +330,6 @@ async function start() {
     padding: 15px;
     background: #F2F2F2;
     width: 100%;
-    box-sizing: border-box;
     margin-bottom: 10px;
     background-image:
       linear-gradient(45deg, transparent 50%, gray 50%),

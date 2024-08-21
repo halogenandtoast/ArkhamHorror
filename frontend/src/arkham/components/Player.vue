@@ -574,7 +574,6 @@ const realityAcid = ref('89005')
   align-self: center;
   align-items: flex-start;
   padding: 10px;
-  box-sizing: border-box;
   background: var(--background-dark);
 }
 
@@ -655,20 +654,14 @@ const realityAcid = ref('89005')
   gap: 5px;
   background: #999;
   padding: 10px;
-  box-sizing: border-box;
   background: var(--background-dark);
   border-bottom: 1px solid var(--background);
   border-top: 1px solid var(--background);
 }
 
-.player-cards {
-  box-sizing: border-box;
-}
-
 .hand {
   flex-grow: 1;
   display: flex;
-  box-sizing: border-box;
   gap: 2px;
   margin-left: 2px;
 }
@@ -774,7 +767,6 @@ const realityAcid = ref('89005')
   display: grid;
   place-items: center;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  box-sizing: border-box;
   img {
     width: calc(var(--card-width) / 2);
     filter: invert(75%);

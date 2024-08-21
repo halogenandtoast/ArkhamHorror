@@ -312,7 +312,6 @@ h2 {
   flex-direction: row;
   align-items: center;
   padding: 10px;
-  box-sizing: border-box;
   position: relative;
   border-bottom: 1px solid var(--box-border);
 

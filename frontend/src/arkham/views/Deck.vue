@@ -306,12 +306,10 @@ watch(deckRef, (el) => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   padding: 10px;
-  box-sizing: border-box;
 }
 
 table.box {
   width: calc(100% - 40px);
-  box-sizing: border-box;
   padding: 0;
   margin: 20px;
   border-radius: 10px;
@@ -512,7 +510,6 @@ i {
   display: flex;
 
   width: calc(100% - 40px);
-  box-sizing: border-box;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
   border-radius: 10px;
   &.is-pinned {

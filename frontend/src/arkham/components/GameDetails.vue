@@ -207,7 +207,6 @@ h2 {
   flex-direction: row;
   align-items: center;
   padding: 10px;
-  box-sizing: border-box;
   position: relative;
   * {
     z-index: 1;

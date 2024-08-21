@@ -208,7 +208,6 @@ async function createDeck() {
     color: #F2F2F2;
     background: var(--background-dark);
     width: 100%;
-    box-sizing: border-box;
     margin-bottom: 10px;
   }
   .portrait {
@@ -226,7 +225,6 @@ async function createDeck() {
     width: 100%;
     margin-top: 10px;
     padding: 15px;
-    box-sizing: border-box;
   }
   button {
     outline: 0;

@@ -373,7 +373,6 @@ const setSet = (set: CardSet) => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   padding: 10px;
-  box-sizing: border-box;
 }
 
 .willpower {
@@ -439,7 +438,6 @@ header {
   width: 100%;
   top: -1px;
   background: color-mix(in srgb, var(--background) 90%, transparent);
-  box-sizing: border-box;
   display: flex;
   align-items: center;
   color: white;
@@ -466,7 +464,6 @@ header {
   form button {
     border: 0;
     height: 100%;
-    box-sizing: content-box;
     padding: 5px;
   }
 
@@ -476,7 +473,6 @@ header {
     border: 0;
     height: 100%;
     margin: 0;
-    box-sizing: content-box;
   }
 }
 
@@ -486,7 +482,6 @@ header {
 
 table.box {
   width: calc(100% - 40px);
-  box-sizing: border-box;
   padding: 0;
   margin: 20px;
   margin-top: 0;

@@ -470,7 +470,6 @@ i.iconSkillAgility {
   width: 100%;
   padding: 0;
   margin: 0;
-  box-sizing: border-box;
   gap: 0;
   font-size: 0.7em;
 
@@ -488,7 +487,6 @@ i.iconSkillAgility {
     border: 0;
     padding: 10px;
     margin: 0 !important;
-    box-sizing: border-box;
     border-radius: 0;
     background-color: darken($select, 30%);
     &:hover {

@@ -232,7 +232,6 @@ async function chooseAbility(ability: AbilityMessage) {
 }
 
 .act--can-progress {
-  box-sizing: border-box;
   border: 2px solid #ff00ff;
   border-radius: 8px;
   cursor: pointer;

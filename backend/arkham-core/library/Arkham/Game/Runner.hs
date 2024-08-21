@@ -2524,6 +2524,10 @@ runGameMessage msg g = case msg of
           , UnsetActiveCard
           ]
     pure $ g & (if ignoreRevelation then activeCardL .~ Nothing else id)
+  MoveWithSkillTest msg' -> do
+    -- No skill test showed up so just run this
+    push msg'
+    pure g
   DrewTreachery iid _ (PlayerCard card) -> do
     pid <- getPlayer iid
     sendRevelation pid (toJSON $ toCard card)

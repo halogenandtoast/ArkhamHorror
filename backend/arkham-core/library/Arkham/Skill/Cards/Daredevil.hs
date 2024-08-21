@@ -1,7 +1,6 @@
 module Arkham.Skill.Cards.Daredevil (daredevil, Daredevil (..)) where
 
 import Arkham.Card
-import Arkham.ClassSymbol
 import Arkham.Deck
 import Arkham.Matcher
 import Arkham.Skill.Cards qualified as Cards

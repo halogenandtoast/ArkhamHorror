@@ -1263,9 +1263,11 @@ runGameMessage msg g = case msg of
             else do
               modifiers' <- getCombinedModifiers [TreacheryTarget tid, CardIdTarget cardId]
               let ignoreRevelation = IgnoreRevelation `elem` modifiers'
+              let revelation = Revelation iid (TreacherySource tid)
               pushAll
                 $ CardEnteredPlay iid card
-                : (guard (not ignoreRevelation) *> resolve (Revelation iid (TreacherySource tid)))
+                : ( guard (not ignoreRevelation) *> [When revelation, revelation, MoveWithSkillTest (After revelation)]
+                  )
                   <> [UnsetActiveCard]
               pure
                 $ g
@@ -2510,13 +2512,17 @@ runGameMessage msg g = case msg of
 
     modifiers' <- getCombinedModifiers [TreacheryTarget treacheryId, CardIdTarget $ toCardId treachery]
     let ignoreRevelation = IgnoreRevelation `elem` modifiers'
+    let revelation = Revelation iid (TreacherySource treacheryId)
 
     pushAll
       $ if ignoreRevelation
         then [toDiscardBy iid GameSource (TreacheryTarget treacheryId)]
         else
-          resolve (Revelation iid (TreacherySource treacheryId))
-            <> [AfterRevelation iid treacheryId, UnsetActiveCard]
+          [ When revelation
+          , revelation
+          , MoveWithSkillTest $ Run [After revelation, AfterRevelation iid treacheryId]
+          , UnsetActiveCard
+          ]
     pure $ g & (if ignoreRevelation then activeCardL .~ Nothing else id)
   DrewTreachery iid _ (PlayerCard card) -> do
     pid <- getPlayer iid

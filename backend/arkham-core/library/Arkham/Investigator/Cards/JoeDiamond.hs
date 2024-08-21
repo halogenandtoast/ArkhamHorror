@@ -15,7 +15,7 @@ import Arkham.Phase
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Insight))
-import Arkham.Window (Window (..), mkWindow)
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Data.Map.Strict qualified as Map
 
@@ -39,7 +39,7 @@ hunchDeck = Map.findWithDefault [] HunchDeck . investigatorDecks
 instance HasModifiersFor JoeDiamond where
   getModifiersFor target (JoeDiamond (a `With` Metadata (Just cid))) | a `is` target = do
     case hunchDeck a of
-      x : _ | x.id == cid -> modified a [ReduceCostOf (CardWithId $ toCardId x) 2, AsIfInHand x]
+      x : _ | x.id == cid -> modified a [ReduceCostOf (CardWithId x.id) 2, AsIfInHand x]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
@@ -63,7 +63,7 @@ instance RunMessage JoeDiamond where
       let insights = filter (`cardMatch` (CardWithTrait Insight <> #event)) (unDeck attrs.deck)
       if length insights == 11
         then do
-          hunchDeck' <- shuffleM (map toCard insights)
+          hunchDeck' <- shuffleM $ map toCard insights
           pure
             $ JoeDiamond
             . (`with` Metadata (revealedHunchCard meta))
@@ -80,9 +80,7 @@ instance RunMessage JoeDiamond where
             push $ ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard unsolvedCase]
             questionLabel "Choose 10 more cards for hunch deck" iid
               $ ChooseN 10
-              $ [ targetLabel
-                  (toCardId insight)
-                  [ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard insight]]
+              $ [ targetLabel insight.id [ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard insight]]
                 | insight <- remainingInsights
                 ]
             push unfocus
@@ -98,13 +96,13 @@ instance RunMessage JoeDiamond where
     RunWindow iid [Window Timing.When (Window.PhaseEnds InvestigationPhase) _] | attrs `is` iid -> do
       case hunchDeck attrs of
         x : _ | Just x.id == revealedHunchCard meta -> do
-          checkWindows [mkWindow #when (Window.WouldBeShuffledIntoDeck (Deck.HunchDeck iid) x)]
+          checkWhen $ Window.WouldBeShuffledIntoDeck (Deck.HunchDeck iid) x
           push $ ShuffleCardsIntoDeck (Deck.HunchDeck iid) [x]
         _ -> pure ()
       pure i
     InitiatePlayCard iid card mTarget payment windows' asAction | attrs `is` iid && Just card.id == revealedHunchCard meta -> do
       addToHand iid [card]
-      costModifier iid iid (ReduceCostOf (CardWithId $ toCardId card) 2)
+      costModifier iid iid (ReduceCostOf (CardWithId card.id) 2)
       push $ InitiatePlayCard iid card mTarget payment windows' asAction
       let hunchDeck' = filter (/= card) (hunchDeck attrs)
       pure $ JoeDiamond . (`with` Metadata Nothing) $ attrs & decksL . at HunchDeck ?~ hunchDeck'
@@ -116,9 +114,7 @@ instance RunMessage JoeDiamond where
       when (notNull insights) do
         chooseOne iid
           $ Label "Do not move an insight" []
-          : [ targetLabel
-              (toCardId insight)
-              [PutCardOnBottomOfDeck iid (Deck.HunchDeck iid) $ PlayerCard insight]
+          : [ targetLabel insight.id [PutCardOnBottomOfDeck iid (Deck.HunchDeck iid) $ PlayerCard insight]
             | insight <- insights
             ]
       pure i

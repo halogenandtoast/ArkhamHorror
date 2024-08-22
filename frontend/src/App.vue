@@ -34,6 +34,7 @@ html {
   padding: 0;
   margin: 0;
   font: inherit;
+  min-width: 0;
 }
 *, *::before, *::after{
   box-sizing: border-box;
@@ -44,7 +45,8 @@ img, svg {
 }
 
 button {
-  min-width: min-content;
+  font-family: Arial;
+  font-size: 13.3px;
 }
 
 @font-face {
@@ -307,6 +309,8 @@ body {
   --card-sideways-aspect: 1.41844;
   --card-tarot-aspect: 0.571429;
 
+  --card-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+
   --select: #ff00ff;
 
   @media (max-width: 800px) {
@@ -330,10 +334,10 @@ h2.title {
 }
 
 .page-container {
-  padding-bottom: 10px;
   height: 100%;
   overflow: auto;
   width: 100%;
+  margin-block: 10px;
 }
 
 .page-content {
@@ -371,5 +375,21 @@ footer {
   width: 100%;
   text-align: center;
   z-index: 100;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.card {
+  box-shadow: var(--card-shadow);
 }
 </style>

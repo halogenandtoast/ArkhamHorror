@@ -38,20 +38,24 @@ async function sync(deck: Arkham.Deck) {
 
 <template>
   <div class="page-container">
-    <div id="decks" class="page-content">
-      <div>
-        <h2 class="title">New Deck</h2>
+    <div id="decks" class="page-content column">
+      <section>
+        <header><h2 class="title">New Deck</h2></header>
         <NewDeck @new-deck="addDeck"/>
-      </div>
-      <h2 class="title">Existing Decks</h2>
-      <div v-if="decks.length == 0" class="box">
-        <p>You currently have no decks.</p>
-      </div>
-      <transition-group name="deck">
-        <div v-for="deck in decks" :key="deck.id" class="deck">
-          <Deck :deck="deck" :markDelete="() => deleteId = deck.id" :sync="() => sync(deck)" />
+      </section>
+      <section>
+        <h2 class="title">Existing Decks</h2>
+        <div v-if="decks.length == 0" class="box">
+          <p>You currently have no decks.</p>
         </div>
-      </transition-group>
+        <div v-else class="decks column">
+          <transition-group name="deck">
+            <div v-for="deck in decks" :key="deck.id" class="deck">
+              <Deck :deck="deck" :markDelete="() => deleteId = deck.id" :sync="() => sync(deck)" />
+            </div>
+          </transition-group>
+        </div>
+      </section>
 
       <Prompt
         v-if="deleteId"

@@ -829,19 +829,16 @@ header {
 
 @keyframes glow {
   0% {
-    will-change: filter; 
     filter: drop-shadow(0 0 3vmin Indigo) drop-shadow(0 5vmin 4vmin Orchid)
       drop-shadow(2vmin -2vmin 15vmin MediumSlateBlue)
       drop-shadow(0 0 7vmin MediumOrchid);
   }
   50% {
-    will-change: filter; 
     filter: drop-shadow(0 0 3vmin Indigo) drop-shadow(0 5vmin 4vmin Orchid)
       drop-shadow(2vmin -2vmin 15vmin MediumSlateBlue)
       drop-shadow(0 0 7vmin Black);
   }
   100% {
-    will-change: filter; 
     filter: drop-shadow(0 0 3vmin Indigo) drop-shadow(0 5vmin 4vmin Orchid)
       drop-shadow(2vmin -2vmin 15vmin MediumSlateBlue)
       drop-shadow(0 0 7vmin MediumOrchid);
@@ -849,7 +846,6 @@ header {
 }
 
 .revelation {
-  padding: 30px;
   position: absolute;
   transform: all 0.5s;
   z-index: 1000;

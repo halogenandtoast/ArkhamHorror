@@ -439,11 +439,15 @@ const getImage = (el: HTMLElement): string | null => {
   &.sideways {
     height: 300px !important;
     width: fit-content !important;
+    height: 300px;
+    aspect-ratio: var(--card-sideways-aspect);
+    width: auto;
     img {
       aspect-ratio: var(--card-sideways-aspect);
       border-radius: 15px;
       height: 300px;
-      width: fit-content;
+      width: auto;
+      max-width: unset;
     }
   }
   &.tarot {

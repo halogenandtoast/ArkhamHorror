@@ -84,10 +84,7 @@ const abilities = computed(() => {
 })
 
 const classObject = computed(() => {
-  return {
-    'card--can-interact': cardAction.value !== -1,
-    // 'card--committed': uncommitCardAction.value !== -1,
-  }
+  return { 'card--can-interact': cardAction.value !== -1 }
 })
 
 const cardBack = computed(() => {
@@ -246,23 +243,14 @@ function oilPaintEffect(canvas, radius, intensity) {
 </template>
 
 <style scoped lang="scss">
-
 .card {
   width: var(--card-width);
   min-width: var(--card-width);
-  border-radius: 7px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 6px;
-  display: flex;
-  border: 2px solid rgba(0, 0, 0, 0);
 
   &--can-interact {
-    border: 2px solid $select;
+    border: 2px solid var(--select);
     cursor: pointer;
-  }
-
-  &--committed {
-    margin-top: -10px;
   }
 }
 </style>

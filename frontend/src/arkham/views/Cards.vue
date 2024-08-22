@@ -365,7 +365,6 @@ const setSet = (set: CardSet) => {
   width: calc(100% - 20px);
   margin: 10px;
   border-radius: 10px;
-  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 
 .cards {
@@ -417,6 +416,10 @@ a {
 .cycles {
   color: #CECECE;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-block: 10px;
 }
 
 button {
@@ -527,5 +530,13 @@ tr {
 
 tr:nth-child(even) {
   background-color: rgba(0, 0, 0, 0.1);
+}
+
+ol {
+  list-style-position: inside;
+  margin-left: 10px;
+  > li ol {
+    margin-left: 40px;
+  }
 }
 </style>

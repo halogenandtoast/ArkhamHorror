@@ -513,46 +513,48 @@ const realityAcid = ref('89005')
           <button @click="debug.send(game.id, {tag: 'Search', contents: ['Looking', investigatorId, {tag: 'GameSource', contents: []}, { tag: 'InvestigatorTarget', contents: investigatorId }, [[{tag: 'FromDeck', contents: []}, 'ShuffleBackIn']], {tag: 'BasicCardMatch', contents: {tag: 'AnyCard', contents: []}}, { tag: 'DrawFound', contents: [investigatorId, 1]}]})">Select Draw</button>
         </template>
       </div>
-      <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
-        <HandCard
-          v-for="card in playerHand"
-          :card="card"
-          :game="game"
-          :playerId="playerId"
-          :ownerId="investigator.id"
-          :key="toCardContents(card).id"
-          @choose="$emit('choose', $event)"
-        />
-
-        <template v-for="enemy in inHandEnemies" :key="enemy.id">
-          <Enemy
-            v-if="solo || (playerId == investigator.playerId)"
-            :enemy="enemy"
+      <div class="hand">
+        <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
+          <HandCard
+            v-for="card in playerHand"
+            :card="card"
             :game="game"
-            :data-index="enemy.cardId"
             :playerId="playerId"
+            :ownerId="investigator.id"
+            :key="toCardContents(card).id"
             @choose="$emit('choose', $event)"
           />
-          <div class="card-container" v-else>
-            <img class="card" :src="encounterBack" />
-          </div>
-        </template>
 
-        <template v-for="treacheryId in inHandTreacheries" :key="treacheryId">
-          <Treachery
-            v-if="solo || (playerId == investigator.playerId)"
-            :treachery="game.treacheries[treacheryId]"
-            :game="game"
-            :data-index="treacheryId"
-            :playerId="playerId"
-            @choose="$emit('choose', $event)"
-          />
-          <div class="card-container" v-else>
-            <img class="card" :src="encounterBack" />
-          </div>
-        </template>
+          <template v-for="enemy in inHandEnemies" :key="enemy.id">
+            <Enemy
+              v-if="solo || (playerId == investigator.playerId)"
+              :enemy="enemy"
+              :game="game"
+              :data-index="enemy.cardId"
+              :playerId="playerId"
+              @choose="$emit('choose', $event)"
+            />
+            <div class="card-container" v-else>
+              <img class="card" :src="encounterBack" />
+            </div>
+          </template>
 
-      </transition-group>
+          <template v-for="treacheryId in inHandTreacheries" :key="treacheryId">
+            <Treachery
+              v-if="solo || (playerId == investigator.playerId)"
+              :treachery="game.treacheries[treacheryId]"
+              :game="game"
+              :data-index="treacheryId"
+              :playerId="playerId"
+              @choose="$emit('choose', $event)"
+            />
+            <div class="card-container" v-else>
+              <img class="card" :src="encounterBack" />
+            </div>
+          </template>
+
+        </transition-group>
+      </div>
     </div>
 
     <CardRow
@@ -571,6 +573,7 @@ const realityAcid = ref('89005')
 <style scoped lang="scss">
 .player {
   display: flex;
+  gap: 5px;
   align-self: center;
   align-items: flex-start;
   padding: 10px;
@@ -578,7 +581,7 @@ const realityAcid = ref('89005')
 }
 
 .deck--can-draw {
-  border: 3px solid $select;
+  border: 2px solid var(--select);
   border-radius: 10px;
   cursor: pointer;
 }
@@ -612,10 +615,12 @@ const realityAcid = ref('89005')
     white-space: nowrap;
     text-wrap: pretty;
   }
+
   &:deep(.card) {
     margin: 0;
     box-shadow: none;
   }
+
   &:deep(.card-container) {
     width: var(--card-width);
     margin: 0;
@@ -638,14 +643,13 @@ const realityAcid = ref('89005')
 }
 
 .deck, .card {
-  box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 6px;
-  margin: 2px;
   max-width: var(--card-width);
 }
 
 .deck {
   width: auto;
+  box-shadow: var(--card-shadow);
 }
 
 .in-play {
@@ -662,8 +666,7 @@ const realityAcid = ref('89005')
 .hand {
   flex-grow: 1;
   display: flex;
-  gap: 2px;
-  margin-left: 2px;
+  gap: 5px;
 }
 
 .view-discard-button {
@@ -687,13 +690,14 @@ const realityAcid = ref('89005')
   position: absolute;
   font-weight: bold;
   font-size: 1.2em;
-  color: rgba(255, 255, 255, 0.6);
-  left: 50%;
-  top: 40%;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 10px;
-  border-radius: 20px;
-  transform: translateX(-50%) translateY(-50%);
+  color: var(--title);
+  inset: 0;
+  width: fit-content;
+  height: fit-content;
+  aspect-ratio: 1;
+  line-height: 1;
+  margin: auto;
+  transform: translateY(-32.5%);
 }
 
 .hand-move,
@@ -777,5 +781,10 @@ const realityAcid = ref('89005')
   &.can-interact {
     border: 2px solid $select;
   }
+}
+
+.hand {
+  display: flex;
+  gap: 5px;
 }
 </style>

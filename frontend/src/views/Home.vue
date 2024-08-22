@@ -62,7 +62,7 @@ const toggleNewGame = () => {
       </div>
 
       <transition name="slide">
-        <div v-if="!newGame">
+        <div v-if="!newGame" class="games">
           <section>
             <header>
               <h2>{{$t('activeGames')}}</h2>
@@ -74,17 +74,19 @@ const toggleNewGame = () => {
             <GameRow v-for="game in activeGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
           </section>
 
-          <h2 v-if="finishedGames.length > 0">{{$t('finishedGames')}}</h2>
-          <GameRow v-for="game in finishedGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
+          <section>
+            <header><h2 v-if="finishedGames.length > 0">{{$t('finishedGames')}}</h2></header>
+            <GameRow v-for="game in finishedGames" :key="game.id" :game="game" :deleteGame="() => deleteGameEvent(game)" />
 
-          <template v-if="currentUser && currentUser.beta === true">
-            <h2>{{$t('debugGame')}}</h2>
+          </section>
+          <section v-if="currentUser && currentUser.beta === true">
+            <header><h2>{{$t('debugGame')}}</h2></header>
             <form enctype="multipart/form-data" method=POST class="box">
               <p>Load a game previously exported view the "Debug Export"</p>
               <input type="file" name="debugFile" accept="application/json" class="input-file" ref="debugFile" />
               <button @click="submitDebugUpload">{{$t('debugGame')}}</button>
             </form>
-          </template>
+          </section>
         </div>
       </transition>
     </div>
@@ -183,6 +185,8 @@ form.box {
 
 header {
   display: flex;
+  margin-bottom: 10px;
+  align-items: center;
   h2 {
     flex: 1;
   }
@@ -203,5 +207,11 @@ header {
       background: darken(#6E8640, 7%);
     }
   }
+}
+
+.games {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 </style>

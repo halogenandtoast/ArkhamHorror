@@ -396,9 +396,13 @@ function onDrop(event: DragEvent) {
 
 .location-investigator-column {
   position: absolute;
-  right: 100%;
+  right: calc(100% + 5px);
   &:deep(.portrait) {
     height: 25%;
+  }
+
+  &:deep(img) {
+    max-width: unset;
   }
 }
 

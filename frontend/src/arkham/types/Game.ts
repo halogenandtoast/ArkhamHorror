@@ -42,7 +42,7 @@ export type GameDetails = {
   otherInvestigators: InvestigatorDetails[];
 }
 
-export type GameDetailsEntry = GameDetails | { error: string }
+export type GameDetailsEntry = GameDetails & { tag: "game" }| { error: string, tag: "error" }
 
 export type Game = {
   id: string;
@@ -166,8 +166,8 @@ export const gameDetailsDecoder = JsonDecoder.object<GameDetails>(
 
 export const gameDetailsEntryDecoder = JsonDecoder.oneOf<GameDetailsEntry>(
   [
-    gameDetailsDecoder,
-    JsonDecoder.object({ error: JsonDecoder.string }, 'Error')
+    gameDetailsDecoder.map(details => ({ ...details, tag: 'game' })),
+    JsonDecoder.object({ error: JsonDecoder.string }, 'Error').map(error => ({ ...error, tag: 'error' }))
   ],
   'GameDetailsEntry'
 );

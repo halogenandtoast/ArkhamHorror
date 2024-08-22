@@ -135,7 +135,7 @@ const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value |
 
 const abilityLabel = computed(() => {
   // don't use isButtonText
-  if (isButtonText.value) {
+  if (isButtonText.value && tooltip.value) {
     return tooltip.value.content
   }
 
@@ -165,15 +165,15 @@ const abilityLabel = computed(() => {
     return "Objective"
   }
 
-  if (ability.value.type.tag === "CustomizationReaction") {
+  if (ability.value && ability.value.type.tag === "CustomizationReaction") {
     return ability.value.type.label
   }
 
-  if (ability.value.type.tag === "ConstantReaction") {
+  if (ability.value && ability.value.type.tag === "ConstantReaction") {
     return ability.value.type.label
   }
 
-  if (ability.value.type.tag === "ServitorAbility") {
+  if (ability.value && ability.value.type.tag === "ServitorAbility") {
     return ability.value.type.action
   }
 

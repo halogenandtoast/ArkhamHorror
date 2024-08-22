@@ -6,12 +6,10 @@ import type { CampaignDetails } from '@/arkham/types/Campaign';
 import type { ScenarioDetails } from '@/arkham/types/Scenario';
 import { imgsrc } from '@/arkham/helpers';
 
-export interface Props {
+const props = defineProps<{
   game: GameDetails
   deleteGame: () => void
-}
-
-const props = defineProps<Props>()
+}>()
 const campaign = computed<CampaignDetails | null>(() => props.game.campaign)
 const scenario = computed<ScenarioDetails | null>(() => props.game.scenario)
 const deleting = ref(false)

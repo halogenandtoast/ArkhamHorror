@@ -1,237 +1,235 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { imgsrc } from '@/arkham/helpers'
 
-const cardOverlay = ref<HTMLElement | null>(null);
-const hoveredElement = ref<HTMLElement | null>(null);
+const cardOverlay = ref<HTMLElement | null>(null)
+const hoveredElement = ref<HTMLElement | null>(null)
 
 onMounted(() => {
   const handleMouseover = (event: Event) => {
-    const target = event.target as HTMLElement;
+    const target = event.target as HTMLElement
     if (target && (target.classList.contains('card') || target.dataset.imageId || target.dataset.target || target.dataset.image)) {
       if (target.dataset.delay) {
         setTimeout(() => {
-          hoveredElement.value = target;
-        }, parseInt(target.dataset.delay));
+          hoveredElement.value = target
+        }, parseInt(target.dataset.delay))
       } else {
-        hoveredElement.value = target;
+        hoveredElement.value = target
       }
     } else {
-      hoveredElement.value = null;
+      hoveredElement.value = null
     }
-  };
+  }
 
-  document.addEventListener('mouseover', handleMouseover);
+  document.addEventListener('mouseover', handleMouseover)
 
   onUnmounted(() => {
-    document.removeEventListener('mouseover', handleMouseover);
-  });
-});
+    document.removeEventListener('mouseover', handleMouseover)
+  })
+})
 
 const card = computed(() => {
-  if (!hoveredElement.value) return null;
-  return getImage(hoveredElement.value);
-});
+  if (!hoveredElement.value) return null
+  return getImage(hoveredElement.value)
+})
 
 const allCustomizations = ["09021", "09022", "09023", "09040", "09041", "09042", "09059", "09060", "09061", "09079", "09080", "09081", "09099", "09100", "09101", "09119"]
 
 const cardCode = computed(() => {
   if (card.value) {
-    const pattern = /cards\/(\d+)(_.*)?\.jpg/;
-    const match = card.value.match(pattern);
-    if (match) {
-      return match[1];
-    }
+    const pattern = /cards\/(\d+)(_.*)?\.jpg/
+    const match = card.value.match(pattern)
+    if (match) return match[1]
   }
-  return null;
-});
+  return null
+})
 
 const mutated = computed(() => {
   if (card.value) {
-    const pattern = /cards\/\d+(_Mutated\d+)\.jpg/;
-    const match = card.value.match(pattern);
+    const pattern = /cards\/\d+(_Mutated\d+)\.jpg/
+    const match = card.value.match(pattern)
     if (match) {
-      return match[1];
+      return match[1]
     }
   }
-  return "";
-});
+  return ""
+})
 
 const customizationsCard = computed(() => {
   if (cardCode.value) {
     if (allCustomizations.includes(cardCode.value)) {
-      return imgsrc(`customizations/${cardCode.value}${mutated.value}.jpg`);
+      return imgsrc(`customizations/${cardCode.value}${mutated.value}.jpg`)
     }
   }
-  return null;
-});
+  return null
+})
 
 const customizationTicks = computed(() => {
   if (cardCode.value && customizations.value) {
-    const customizationObject: string[] = [];
+    const customizationObject: string[] = []
 
     customizations.value.forEach((customization: [number, [number, string[]]]) => {
-        const firstValue = customization[0];
-        const secondValue = customization[1][0];
+        const firstValue = customization[0]
+        const secondValue = customization[1][0]
         for (let i = 1; i <= secondValue; i++) {
-          const key = `customization-${cardCode.value}-${firstValue}-${i}`;
-          customizationObject.push(key);
+          const key = `customization-${cardCode.value}-${firstValue}-${i}`
+          customizationObject.push(key)
         }
-    });
+    })
 
-    return customizationObject;
+    return customizationObject
   }
 
-  return [];
-});
+  return []
+})
 
 const customizationLabels = computed(() => {
   if (cardCode.value && customizations.value) {
-    const customizationObject: [string, string][] = [];
+    const customizationObject: [string, string][] = []
 
     customizations.value.forEach((customization: [number, [number, string[]]]) => {
-      const firstValue = customization[0];
-      const thirdValue = customization[1][1];
+      const firstValue = customization[0]
+      const thirdValue = customization[1][1]
       for (let j = 0; j < thirdValue.length; j++) {
         if (thirdValue[j].tag === "ChosenCard" || thirdValue[j].tag === "ChosenTrait") {
-          const key = `label-${cardCode.value}-${firstValue}-${j}`;
-          customizationObject.push([key, thirdValue[j].contents]);
+          const key = `label-${cardCode.value}-${firstValue}-${j}`
+          customizationObject.push([key, thirdValue[j].contents])
         }
       }
-    });
+    })
 
-    return customizationObject;
+    return customizationObject
   }
 
-  return [];
-});
+  return []
+})
 
 const customizationSkills = computed(() => {
   if (cardCode.value && customizations.value) {
-    const customizationObject: string[] = [];
+    const customizationObject: string[] = []
 
     customizations.value.forEach((customization: [number, [number, string[]]]) => {
-      const thirdValue = customization[1][1];
+      const thirdValue = customization[1][1]
       for (let j = 0; j < thirdValue.length; j++) {
         if (thirdValue[j].tag === "ChosenSkill") {
-          customizationObject.push(`skill-${cardCode.value}-${thirdValue[j].contents}`);
+          customizationObject.push(`skill-${cardCode.value}-${thirdValue[j].contents}`)
         }
       }
-    });
+    })
 
-    return customizationObject;
+    return customizationObject
   }
 
-  return [];
-});
+  return []
+})
 
 const customizationIndexes = computed(() => {
   if (cardCode.value && customizations.value) {
-    const customizationObject: string[] = [];
+    const customizationObject: string[] = []
 
     customizations.value.forEach((customization: [number, [number, string[]]]) => {
-      const firstValue = customization[0];
-      const thirdValue = customization[1][1];
+      const firstValue = customization[0]
+      const thirdValue = customization[1][1]
       for (let j = 0; j < thirdValue.length; j++) {
         if (thirdValue[j].tag === "ChosenIndex") {
-          customizationObject.push(`index-${cardCode.value}-${firstValue}-${thirdValue[j].contents}`);
+          customizationObject.push(`index-${cardCode.value}-${firstValue}-${thirdValue[j].contents}`)
         }
       }
-    });
+    })
 
-    return customizationObject;
+    return customizationObject
   }
 
-  return [];
-});
+  return []
+})
 
 const customizations = computed(() => {
-  if (!hoveredElement.value) return null;
+  if (!hoveredElement.value) return null
   const str = hoveredElement.value.dataset.customizations
 
-  if (!str) return null;
+  if (!str) return null
 
   let customizations
-  try { customizations = JSON.parse(str) } catch (e) { console.log(str); customizations = [] } ;
-  return customizations.length === 0 ? null : customizations;
-});
+  try { customizations = JSON.parse(str) } catch (e) { console.log(str); customizations = [] }
+  return customizations.length === 0 ? null : customizations
+})
 
 const fight = computed(() => {
-  if (!hoveredElement.value) return null;
-  return hoveredElement.value.dataset.fight;
-});
+  if (!hoveredElement.value) return null
+  return hoveredElement.value.dataset.fight
+})
 
 const health = computed(() => {
-  if (!hoveredElement.value) return null;
-  return hoveredElement.value.dataset.health;
-});
+  if (!hoveredElement.value) return null
+  return hoveredElement.value.dataset.health
+})
 
 const damage = computed(() => {
-  if (!hoveredElement.value) return null;
-  return hoveredElement.value.dataset.damage;
-});
+  if (!hoveredElement.value) return null
+  return hoveredElement.value.dataset.damage
+})
 
 const horror = computed(() => {
-  if (!hoveredElement.value) return null;
-  return hoveredElement.value.dataset.horror;
-});
+  if (!hoveredElement.value) return null
+  return hoveredElement.value.dataset.horror
+})
 
 const victory = computed(() => {
-  if (!hoveredElement.value) return null;
-  return hoveredElement.value.dataset.victory;
-});
+  if (!hoveredElement.value) return null
+  return hoveredElement.value.dataset.victory
+})
 
 const keywords = computed(() => {
-  if (!hoveredElement.value) return null;
-  return hoveredElement.value.dataset.keywords;
-});
+  if (!hoveredElement.value) return null
+  return hoveredElement.value.dataset.keywords
+})
 
 const evade = computed(() => {
-  if (!hoveredElement.value) return null;
-  return hoveredElement.value.dataset.evade;
-});
+  if (!hoveredElement.value) return null
+  return hoveredElement.value.dataset.evade
+})
 
 const upsideDown = computed(() => {
-  return hoveredElement.value?.classList.contains('Reversed') ?? false;
-});
+  return hoveredElement.value?.classList.contains('Reversed') ?? false
+})
 
 const overlayPosition = computed(() => {
-  if (!hoveredElement.value) return { top: 0, left: 0 };
-  return getPosition(hoveredElement.value);
-});
+  if (!hoveredElement.value) return { top: 0, left: 0 }
+  return getPosition(hoveredElement.value)
+})
 
 const reversed = computed(() => {
-  if (!hoveredElement.value) return null;
-  return hoveredElement.value.dataset.victory;
-});
+  if (!hoveredElement.value) return null
+  return hoveredElement.value.dataset.victory
+})
 
 const overlay = computed(() => {
-  if (!hoveredElement.value) return null;
-  return hoveredElement.value.dataset.overlay;
-});
+  if (!hoveredElement.value) return null
+  return hoveredElement.value.dataset.overlay
+})
 
 const sideways = computed<boolean>(() => {
-  if (!hoveredElement.value) return false;
-  if (hoveredElement.value?.classList.contains('exhausted')) return false;
+  if (!hoveredElement.value) return false
+  if (hoveredElement.value?.classList.contains('exhausted')) return false
 
-  const rect = hoveredElement.value.getBoundingClientRect();
+  const rect = hoveredElement.value.getBoundingClientRect()
 
-  return rect.width > rect.height;
+  return rect.width > rect.height
 })
 
 const tarot = computed<boolean>(() => {
-  if (!hoveredElement.value) return false;
+  if (!hoveredElement.value) return false
   return hoveredElement.value?.classList.contains('tarot-card')
 })
 
 const getRotated = (el: HTMLElement) => {
-  const elementsToCheck = [el, el.parentElement];
+  const elementsToCheck = [el, el.parentElement]
 
   for (let i = 0; i < elementsToCheck.length; i++) {
     if (elementsToCheck[i]) {
-      const style = window.getComputedStyle(elementsToCheck[i] as Element);
-      const matrix = new WebKitCSSMatrix(style.transform);
-      const angle = Math.round(Math.atan2(matrix.m21, matrix.m11) * (180 / Math.PI));
+      const style = window.getComputedStyle(elementsToCheck[i] as Element)
+      const matrix = new WebKitCSSMatrix(style.transform)
+      const angle = Math.round(Math.atan2(matrix.m21, matrix.m11) * (180 / Math.PI))
 
       if (Math.abs(angle) === 90 || Math.abs(angle) === -270) {
           return true
@@ -242,56 +240,56 @@ const getRotated = (el: HTMLElement) => {
   return false
 }
 const getPosition = (el: HTMLElement) => {
-  const rect = el.getBoundingClientRect();
-  const overlayWidth = 300; // Adjust this value if the overlay width changes
+  const rect = el.getBoundingClientRect()
+  const overlayWidth = 300 // Adjust this value if the overlay width changes
 
   // Calculate the ratio based on the orientation of the card
-  const rotated = getRotated(el);
-  const ratio = rotated ? rect.height / rect.width : rect.width / rect.height;
+  const rotated = getRotated(el)
+  const ratio = rotated ? rect.height / rect.width : rect.width / rect.height
 
   // Calculate the height of the overlay based on the ratio
   const width = sideways.value ? (overlayWidth / ratio) : 300
-  const height = sideways.value ? 300 : overlayWidth / ratio;
+  const height = sideways.value ? 300 : overlayWidth / ratio
 
   // Calculate the top position, ensuring it doesn't go off the screen
-  const top = rect.top + window.scrollY - 40;
-  const bottom = top + height;
-  const newTop = Math.max(0, bottom > window.innerHeight ? rect.bottom - height + window.scrollY - 40 : top);
+  const top = rect.top + window.scrollY - 40
+  const bottom = top + height
+  const newTop = Math.max(0, bottom > window.innerHeight ? rect.bottom - height + window.scrollY - 40 : top)
 
   // Calculate the left position, adjusting for rotated cards
-  const left = rect.left + window.scrollX + rect.width + 10;
+  const left = rect.left + window.scrollX + rect.width + 10
 
   if (left + width >= window.innerWidth) {
-    return { top: newTop, left: rect.left - overlayWidth - 10 };
+    return { top: newTop, left: rect.left - overlayWidth - 10 }
   } else {
-    return { top: newTop, left: left };
+    return { top: newTop, left: left }
   }
-};
+}
 
 const getImage = (el: HTMLElement): string | null => {
   if (el.dataset.imageId) {
-    return imgsrc(`cards/${el.dataset.imageId}.jpg`);
+    return imgsrc(`cards/${el.dataset.imageId}.jpg`)
   }
 
   if (el instanceof HTMLImageElement && el.classList.contains('card') && !el.closest(".revelation")) {
-    return el.src;
+    return el.src
   }
 
   if (el instanceof HTMLDivElement && el.classList.contains('card')) {
-    return el.style.backgroundImage.slice(4, -1).replace(/"/g, "");
+    return el.style.backgroundImage.slice(4, -1).replace(/"/g, "")
   }
 
   if (el.dataset.target) {
-    const target = document.querySelector(`[data-id="${el.dataset.target}"]`) as HTMLElement;
-    return target ? getImage(target) : null;
+    const target = document.querySelector(`[data-id="${el.dataset.target}"]`) as HTMLElement
+    return target ? getImage(target) : null
   }
 
   if (el.dataset.image) {
-    return el.dataset.image;
+    return el.dataset.image
   }
 
-  return null;
-};
+  return null
+}
 </script>
 
 <template>

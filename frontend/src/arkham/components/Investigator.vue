@@ -483,7 +483,6 @@ i.action {
 .portrait {
   border-radius: 3px;
   width: calc(var(--card-width) * 0.6);
-  margin-right: 2px;
 }
 
 .supplies {

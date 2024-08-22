@@ -3,7 +3,7 @@ import { ref, computed, Ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter, useRoute } from 'vue-router';
 import { debugGame, deleteGame, fetchGames } from '@/arkham/api';
-import type { Game } from '@/arkham/types/Game';
+import type { GameDetails } from '@/arkham/types/Game';
 import type { User } from '@/types';
 import GameRow from '@/arkham/components/GameRow.vue';
 import NewGame from '@/arkham/views/NewCampaign.vue';
@@ -12,14 +12,14 @@ const route = useRoute()
 const router = useRouter()
 const store = useUserStore()
 const currentUser = computed<User | null>(() => store.getCurrentUser)
-const games: Ref<Game[]> = ref([])
+const games: Ref<GameDetails[]> = ref([])
 
 const activeGames = computed(() => games.value.filter(g => g.gameState.tag !== 'IsOver'))
 const finishedGames = computed(() => games.value.filter(g => g.gameState.tag === 'IsOver'))
 
-fetchGames().then((result) => games.value = result)
+fetchGames().then((result) => games.value = result.filter((g) => g.tag === 'game') as GameDetails[])
 
-async function deleteGameEvent(game: Game) {
+async function deleteGameEvent(game: GameDetails) {
   deleteGame(game.id).then(() => {
     games.value = games.value.filter((g) => g.id !== game.id);
   });

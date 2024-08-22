@@ -45,7 +45,7 @@ export const fetchGameReplay = (gameId: string, step: number): Promise<FetchRepl
 export const fetchGames = (): Promise<GameDetailsEntry[]> => api
   .get('arkham/games')
   .then((resp) => {
-      const failed = resp.data.filter((g) => g.error !== undefined)
+      const failed = resp.data.filter((g: any) => g.error !== undefined)
       if (failed.length > 0) {
         console.log(failed)
       }

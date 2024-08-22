@@ -1,14 +1,13 @@
 <script lang="ts" setup>
-import { ref, defineModel } from 'vue'
+import { ref } from 'vue'
 
 const model = defineModel()
-
 const deck = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
 
 function loadDeck() {
   model.value = null
-  const matches = deck.value.match(/\/(deck(list)?)(\/view)?\/([^/]+)/)
+  const matches = deck.value?.match(/\/(deck(list)?)(\/view)?\/([^/]+)/)
   if (matches) {
     deckUrl.value = `https://arkhamdb.com/api/public/${matches[1]}/${matches[4]}`
     fetch(deckUrl.value)

@@ -124,6 +124,7 @@ const makeLine = function(div1: HTMLElement, div2: HTMLElement) {
     const node = line.cloneNode(true) as HTMLElement
     node.dataset.connection = connection
     node.classList.remove("original")
+    node.classList.add("connection")
 
     if (activeLine) node.classList.add("active")
 
@@ -157,14 +158,13 @@ function handleConnections() {
     })
   }
 
-  const rendered = document.querySelectorAll(".line")
+  const rendered = document.querySelectorAll(".connection")
 
   for(const node of rendered) {
-    const connection = (node as HTMLElement).dataset.id
-    if (!connection) continue
+    const connection = (node as HTMLElement).dataset.connection
+    if (!connection) node.parentNode?.removeChild(node)
 
-    if (!activeConnections.includes(connection)) {
-      console.log("REMOVING");
+    if (connection && !activeConnections.includes(connection)) {
       node.parentNode?.removeChild(node)
     }
   }

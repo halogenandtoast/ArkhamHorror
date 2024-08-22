@@ -899,6 +899,8 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         else
           hasFightActions iid (CardSource c) (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
 
+    canInvestigate <- isJust <$> field InvestigatorLocation iid
+
     passesLimits' <- passesLimits iid c
     let
       additionalCosts = flip mapMaybe cardModifiers $ \case
@@ -977,6 +979,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
             || canFight
             || cdOverrideActionPlayableIfCriteriaMet pcDef
          )
+      && ( (#investigate `notElem` cdActions pcDef) || canInvestigate)
       && passesCriterias
       && passesLimits'
       && passesUnique

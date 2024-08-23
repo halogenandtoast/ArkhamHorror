@@ -33,7 +33,7 @@ deploy:
 
 ## Sync local images to s3 bucket
 sync-images:
-	cd frontend/public && aws s3 sync . s3://arkham-horror-assets --acl public-read
+	cd frontend/public && aws s3 sync . s3://arkham-horror-assets --acl public-read --exclude ".DS_Store"
 .PHONY: sync-images
 
 ## Count lines of code

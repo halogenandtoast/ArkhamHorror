@@ -42,6 +42,7 @@ instance RunMessage Divination1 where
       pushWhen (n == 0) $ chooseAndDiscardCard iid (attrs.ability 1)
       pure a
     ResolveAmounts iid (getChoiceAmount "Charges" -> n) (isTarget attrs -> True) -> do
+      push $ SpendUses (attrs.ability 1) (toTarget attrs) Charge n
       discoverAtYourLocation NotInvestigate iid (attrs.ability 1) n
       pure a
     _ -> Divination1 <$> liftRunMessage msg attrs

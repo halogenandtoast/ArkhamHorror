@@ -703,13 +703,7 @@ getInvestigatorsMatching matcher = do
         getInvalid acc (CannotDiscoverCluesExceptAsResultOfInvestigation x) = AnyLocationMatcher x <> acc
         getInvalid acc _ = acc
       modifiers' <- getModifiers (toTarget i)
-      invalidLocations <-
-        select
-          $ getAnyLocationMatcher
-          $ foldl'
-            getInvalid
-            mempty
-            modifiers'
+      invalidLocations <- select $ getAnyLocationMatcher $ foldl' getInvalid mempty modifiers'
       locations <- guardYourLocation $ \_ -> select matcher'
       pure $ any (`notElem` invalidLocations) locations
     InvestigatorWithSupply s -> flip filterM as $ fieldP InvestigatorSupplies (elem s) . toId
@@ -1553,15 +1547,8 @@ getLocationsMatching lmatcher = do
           let lowestShroud = getMin $ foldMap (Min . snd) ls''
           pure $ filter (maybe False (< lowestShroud) . attr locationShroud) ls
     LocationWithDiscoverableCluesBy whoMatcher -> do
-      ls' <- go ls LocationWithAnyClues
-      filterM
-        ( selectAny
-            . (<> whoMatcher)
-            . InvestigatorCanDiscoverCluesAt
-            . LocationWithId
-            . toId
-        )
-        ls'
+      go ls LocationWithAnyClues >>= filterM \l -> do
+        selectAny $ whoMatcher <> InvestigatorCanDiscoverCluesAt (LocationWithId l.id)
     SingleSidedLocation ->
       filterM (fieldP LocationCard (not . cdDoubleSided . toCardDef) . toId) ls
     FirstLocation [] -> pure []

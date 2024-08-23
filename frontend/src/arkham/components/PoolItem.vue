@@ -24,7 +24,7 @@ const image = computed(() => {
 <style scoped lang="scss">
 
 .poolItem {
-  pointer-events: all;
+  pointer-events: inherit;
 }
 
 .poolItem.poolItem-resource {

@@ -869,12 +869,14 @@ const tarotCardAbility = (card: TarotCard) => {
     position: absolute;
     bottom: 0;
     right: 0;
+    pointer-events: none;
   }
 
   .signOfTheGods {
     position: absolute;
     bottom: 0;
     right: 0;
+    pointer-events: none;
   }
 }
 

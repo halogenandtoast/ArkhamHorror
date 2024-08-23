@@ -68,14 +68,13 @@ beyondTheGatesOfSleep difficulty =
     "06039"
     "Beyond the Gates of Sleep"
     difficulty
-    [ ".               .               .               seventySteps     .                ."
-    , ".               .               .               .                theCavernOfFlame ."
-    , ".               .               .               .                .                sevenHundredSteps"
-    , ".               .               .               .                baseOfTheSteps   ."
-    , ".               .               .               theEnchantedPath .                ."
-    , ".               enchantedWoods1 .               .                .                enchantedWoods2"
-    , ".               enchantedWoods3 .               .                .                enchantedWoods4"
-    , ".               .               enchantedWoods5 .                enchantedWoods6  ."
+    [ ".               seventySteps      ."
+    , ".               .                 theCavernOfFlame"
+    , ".               sevenHundredSteps ."
+    , ".               .                baseOfTheSteps"
+    , "enchantedWoods1 theEnchantedPath enchantedWoods2"
+    , "enchantedWoods3 .                enchantedWoods4"
+    , "enchantedWoods5 .                enchantedWoods6"
     ]
     $ (metaL .~ toJSON ([] :: [Dream]))
     . (hasEncounterDeckL .~ False)

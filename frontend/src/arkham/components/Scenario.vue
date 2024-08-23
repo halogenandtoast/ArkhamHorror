@@ -14,6 +14,8 @@ import { type Scenario } from '@/arkham/types/Scenario';
 import { type Card } from '@/arkham/types/Card';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import { TokenType } from '@/arkham/types/Token';
+import { Source } from '@/arkham/types/Source';
+import { Message } from '@/arkham/types/Message';
 import { waitForImagesToLoad, imgsrc, pluralize } from '@/arkham/helpers';
 import { useMenu } from '@/composeable/menu';
 import Act from '@/arkham/components/Act.vue';
@@ -208,17 +210,18 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  const isOutOfPlaySource = (source) => {
+  const isOutOfPlaySource = (source: Source) => {
     switch (source.tag) {
       case "TreacherySource": {
        return outOfPlayEnemies.value.some((e) => {
-          return e.treacheries.includes(source.contents)  
+          if (source.contents) return e.treacheries.includes(source.contents)  
+          return false
        })
       }
       default: return false
     }
   }
-  const isOutOfPlayChoice = (c) => {
+  const isOutOfPlayChoice = (c: Message) => {
     if (c.tag !== "AbilityLabel") return false 
     return isOutOfPlaySource(c.ability.source)
   }

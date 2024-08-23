@@ -7,6 +7,7 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
+import Arkham.Helpers.Agenda
 import Arkham.Helpers.ChaosBag
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -26,14 +27,12 @@ beginnersLuck = act (1, A) BeginnersLuck Cards.beginnersLuck Nothing
 instance HasAbilities BeginnersLuck where
   getAbilities (BeginnersLuck x) =
     extend x
-      $ if onSide A x
-        then
-          [ groupLimit PerRound $ mkAbility x 1 $ freeReaction (RevealChaosToken #when Anyone AnyChaosToken)
-          , mkAbility x 2
-              $ Objective
-              $ ForcedAbilityWithCost AnyWindow (GroupClueCost (PerPlayer 4) Anywhere)
-          ]
-        else []
+      $ guard (onSide A x)
+      *> [ groupLimit PerRound $ mkAbility x 1 $ freeReaction (RevealChaosToken #when Anyone AnyChaosToken)
+         , mkAbility x 2
+            $ Objective
+            $ ForcedAbilityWithCost AnyWindow (GroupClueCost (PerPlayer 4) Anywhere)
+         ]
 
 instance RunMessage BeginnersLuck where
   runMessage msg a@(BeginnersLuck attrs) = case msg of
@@ -66,12 +65,14 @@ instance RunMessage BeginnersLuck where
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       placeDarkenedHall <- placeSetAsideLocation_ Locations.darkenedHall
       lead <- getLead
+      isAgenda1 <- (== 1) <$> getCurrentAgendaStep
       pushAll
-        [ placeDarkenedHall
-        , DiscardUntilFirst lead (toSource attrs) Deck.EncounterDeck
+        $ placeDarkenedHall
+        : [ DiscardUntilFirst lead (toSource attrs) Deck.EncounterDeck
             $ basic (#enemy <> CardWithTrait Criminal)
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-        ]
+          | isAgenda1
+          ]
+          <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
       pure a
     RequestedEncounterCard source _ (Just ec) | isSource attrs source -> do
       darkenedHallId <- selectJust $ LocationWithTitle "Darkened Hall"

@@ -24,7 +24,7 @@ minhThiPhan =
 
 instance HasAbilities MinhThiPhan where
   getAbilities (MinhThiPhan attrs) =
-    [ playerLimit PerRound
+    [ limitedAbility (PerInvestigatorLimit PerRound 1)
         $ restrictedAbility attrs 1 Self
         $ freeReaction
         $ CommittedCard #after (affectsOthers $ InvestigatorAt YourLocation) AnyCard

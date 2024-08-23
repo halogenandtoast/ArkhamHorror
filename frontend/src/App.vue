@@ -45,6 +45,7 @@ img, svg {
 }
 
 button {
+  padding: 0px 5px;
   font-family: Arial;
   font-size: 13.3px;
 }

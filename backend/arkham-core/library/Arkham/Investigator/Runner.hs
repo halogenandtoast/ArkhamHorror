@@ -58,6 +58,7 @@ import Arkham.Helpers.Card (drawThisCard, extendedCardMatch)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
 import Arkham.Helpers.SkillTest
+import Arkham.History
 import Arkham.Id
 import Arkham.Investigate.Types
 import Arkham.Investigator.Types qualified as Attrs
@@ -1736,7 +1737,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             : [mkAfter (Window.DiscoveringLastClue iid lid) | lastClue]
 
         pushAll
-          $ [ locationWindows
+          $ [ UpdateHistory iid (HistoryItem HistoryCluesDiscovered $ singletonMap lid clueCount)
+            , locationWindows
             , RemoveClues d.source (LocationTarget lid) clueCount
             , After $ GainClues iid d.source clueCount
             ]

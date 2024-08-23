@@ -11,7 +11,7 @@ import Arkham.Treachery.Import.Lifted
 import Data.Map.Strict qualified as Map
 
 newtype DeepDark = DeepDark TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deepDark :: TreacheryCard DeepDark

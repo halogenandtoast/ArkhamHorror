@@ -142,6 +142,7 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
   display: flex;
   flex-direction: column;
   position: relative;
+  width: fit-content;
 }
 
 .attached .card {

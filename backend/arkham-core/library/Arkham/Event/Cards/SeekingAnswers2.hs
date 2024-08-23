@@ -1,7 +1,4 @@
-module Arkham.Event.Cards.SeekingAnswers2 (
-  seekingAnswers2,
-  SeekingAnswers2 (..),
-) where
+module Arkham.Event.Cards.SeekingAnswers2 (seekingAnswers2, SeekingAnswers2 (..)) where
 
 import Arkham.Action qualified as Action
 import Arkham.Classes

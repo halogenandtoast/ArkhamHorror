@@ -686,10 +686,13 @@ const realityAcid = ref('89005')
 }
 
 .deck-size {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 5px;
+  border-radius: 20px;
   pointer-events: none;
   position: absolute;
   font-weight: bold;
-  font-size: 1.2em;
+  font-size: 1.2rem;
   color: var(--title);
   inset: 0;
   width: fit-content;
@@ -697,7 +700,7 @@ const realityAcid = ref('89005')
   aspect-ratio: 1;
   line-height: 1;
   margin: auto;
-  transform: translateY(-32.5%);
+  transform: translateY(-28.0%);
 }
 
 .hand-move,

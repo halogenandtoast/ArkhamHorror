@@ -2,7 +2,6 @@
 import { EyeIcon, QuestionMarkCircleIcon } from '@heroicons/vue/20/solid'
 import {
   watchEffect,
-  watch,
   onMounted,
   onUpdated,
   computed,

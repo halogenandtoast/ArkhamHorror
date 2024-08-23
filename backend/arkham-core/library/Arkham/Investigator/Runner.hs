@@ -1300,11 +1300,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     whenPlacedWindowMsg <- checkWindows $ map mkWhen placedWindows
     afterPlacedWindowMsg <- checkWindows $ map mkAfter placedWindows
     whenAssignedWindowMsg <- checkWhen $ Window.AssignedHorror source iid horrorTargets
+    iids <- getInvestigatorIds
     pushAll
       $ [ whenPlacedWindowMsg
         , afterPlacedWindowMsg
         ]
-      <> [ CheckWindow [iid]
+      <> [ CheckWindow iids
             $ [ mkWhen (Window.DealtDamage source damageEffect target damage)
               | target <- nub damageTargets
               , let damage = count (== target) damageTargets
@@ -1317,7 +1318,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          ]
       <> [whenAssignedWindowMsg | notNull horrorTargets]
       <> [CheckDefeated source (toTarget aid) | aid <- checkAssets]
-      <> [ CheckWindow [iid]
+      <> [ CheckWindow iids
             $ [ mkAfter (Window.DealtDamage source damageEffect target damage)
               | target <- nub damageTargets
               , let damage = count (== target) damageTargets

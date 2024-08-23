@@ -979,7 +979,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
             || canFight
             || cdOverrideActionPlayableIfCriteriaMet pcDef
          )
-      && ( (#investigate `notElem` cdActions pcDef) || canInvestigate)
+      && ((#investigate `notElem` cdActions pcDef) || canInvestigate)
       && passesCriterias
       && passesLimits'
       && passesUnique

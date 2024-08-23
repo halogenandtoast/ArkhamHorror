@@ -33,18 +33,19 @@ dexterDrake =
 
 instance HasAbilities DexterDrake where
   getAbilities (DexterDrake a) =
-    [ restrictedAbility
-        a
-        1
-        ( Self
-            <> DuringTurn You
-            <> oneOf
-              [ PlayableCardExistsWithCostReduction
-                  (Reduce 1)
-                  (HandCardWithDifferentTitleFromAtLeastOneAsset You AnyAsset AnyCard)
-              , ExtendedCardExists (InHandOf You <> basic (cardIs Assets.occultScraps))
-              ]
-        )
+    [ playerLimit PerRound
+        $ restrictedAbility
+          a
+          1
+          ( Self
+              <> DuringTurn You
+              <> oneOf
+                [ PlayableCardExistsWithCostReduction
+                    (Reduce 1)
+                    (HandCardWithDifferentTitleFromAtLeastOneAsset You AnyAsset AnyCard)
+                , ExtendedCardExists (InHandOf You <> basic (cardIs Assets.occultScraps))
+                ]
+          )
         $ FastAbility
         $ DiscardAssetCost
         $ AssetWithDifferentTitleFromAtLeastOneCardInHand

@@ -7,6 +7,7 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (PlayCard)
@@ -61,11 +62,12 @@ instance RunMessage LeoAnderson where
               [duringTurnWindow iid]
           )
           results
-      let choose c = UseCardAbilityChoiceTarget iid (toSource attrs) 1 (CardTarget c) windows' payment
+      let choose c = UseCardAbilityChoiceTarget iid (toSource attrs) 1 (toTarget c) windows' payment
       player <- getPlayer iid
       push $ chooseOne player [targetLabel (toCardId c) [choose c] | c <- cards]
       pure i
-    UseCardAbilityChoiceTarget iid (isSource attrs -> True) 1 (CardTarget card) _ _ -> do
+    UseCardAbilityChoiceTarget iid (isSource attrs -> True) 1 (CardIdTarget cid) _ _ -> do
+      card <- getCard cid
       pushAll [PayCardCost iid card [duringTurnWindow iid], ResetMetadata (toTarget attrs)]
       pure . LeoAnderson $ attrs `with` Meta (Just card)
     ResetMetadata (isTarget attrs -> True) ->

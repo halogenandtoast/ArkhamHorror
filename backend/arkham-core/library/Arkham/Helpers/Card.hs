@@ -170,10 +170,10 @@ drawThisPlayerCard iid card = case toCardType card of
     ]
   PlayerEnemyType -> do
     if hasRevelation card
-      then [Revelation iid $ PlayerCardSource card, ResolvedCard iid (PlayerCard card)]
+      then [Revelation iid $ CardIdSource card.id, ResolvedCard iid (PlayerCard card)]
       else [DrewPlayerEnemy iid (PlayerCard card), ResolvedCard iid (PlayerCard card)]
   other | hasRevelation card && other `notElem` [PlayerTreacheryType, PlayerEnemyType] -> do
-    [Revelation iid (PlayerCardSource card), ResolvedCard iid (PlayerCard card)]
+    [Revelation iid (CardIdSource card.id), ResolvedCard iid (PlayerCard card)]
   _ -> []
 
 playIsValidAfterSeal :: HasGame m => InvestigatorId -> Card -> m Bool

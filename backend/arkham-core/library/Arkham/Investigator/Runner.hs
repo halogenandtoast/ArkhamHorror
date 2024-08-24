@@ -157,10 +157,8 @@ getAllAbilitiesSkippable attrs windows = allM (getWindowSkippable attrs windows)
 
 getWindowSkippable :: HasGame m => InvestigatorAttrs -> [Window] -> Window -> m Bool
 getWindowSkippable attrs ws (windowType -> Window.PlayCard iid card@(PlayerCard pc)) | iid == toId attrs = do
-  modifiers' <- getModifiers (toCardId card)
-  modifiers'' <- getModifiers (CardTarget card)
+  allModifiers <- getModifiers card
   cost <- getModifiedCardCost iid card
-  let allModifiers = modifiers' <> modifiers''
   let isFast = isJust $ cdFastWindow (toCardDef card) <|> listToMaybe [w | BecomesFast w <- allModifiers]
   andM
     [ withAlteredGame withoutCanModifiers
@@ -183,10 +181,8 @@ getWindowSkippable _ _ w@(windowType -> Window.ActivateAbility iid _ ab) = do
         $ passesCriteria iid Nothing ab.source ab.requestor [w] (abilityCriteria ab)
     ]
 getWindowSkippable attrs ws (windowType -> Window.WouldPayCardCost iid _ _ card@(PlayerCard pc)) | iid == toId attrs = do
-  modifiers' <- getModifiers (toCardId card)
-  modifiers'' <- getModifiers (CardTarget card)
+  allModifiers <- getModifiers card
   cost <- getModifiedCardCost iid card
-  let allModifiers = modifiers' <> modifiers''
   let isFast = isJust $ cdFastWindow (toCardDef card) <|> listToMaybe [w | BecomesFast w <- allModifiers]
   andM
     [ withAlteredGame withoutCanModifiers
@@ -400,19 +396,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ReturnToHand iid (EventTarget aid) | iid == investigatorId -> do
     pushWhen (providedSlot a aid) $ RefillSlots a.id
     pure a
-  ReturnToHand iid (CardTarget card) | iid == investigatorId -> do
-    -- Card is assumed to be in your discard
-    -- but since find card can also return cards in your hand
-    -- we filter again just in case
-    let
-      discardFilter = case preview _PlayerCard card of
-        Just pc -> filter (/= pc)
-        Nothing -> id
-    pure
-      $ a
-      & (discardL %~ discardFilter)
-      & (handL %~ filter (/= card))
-      & (handL %~ (card :))
   ReturnToHand iid (CardIdTarget cardId) | iid == investigatorId -> do
     card <- getCard cardId
     pushAll [ObtainCard card, AddToHand iid [card]]
@@ -565,7 +548,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             then
               if toCardType card' == PlayerTreacheryType
                 then Just (card, DrewTreachery iid Nothing card)
-                else Just (card, Revelation iid $ PlayerCardSource card')
+                else Just (card, Revelation iid $ CardIdSource card'.id)
             else
               if toCardType card' == PlayerEnemyType
                 then Just (card, DrewPlayerEnemy iid card)
@@ -757,9 +740,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & discardingL ?~ handDiscard
   Discard _ source (CardIdTarget cardId) | isJust (find ((== cardId) . toCardId) investigatorHand) -> do
     push (DiscardCard investigatorId source cardId)
-    pure a
-  Discard _ source (CardTarget card) | card `elem` investigatorHand -> do
-    push $ DiscardCard investigatorId source (toCardId card)
     pure a
   Discard _ _ (SearchedCardTarget cardId) -> do
     pure $ a & foundCardsL . each %~ filter ((/= cardId) . toCardId)
@@ -2729,7 +2709,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       then
         if toCardType card == PlayerTreacheryType
           then pushAll [DrewTreachery iid Nothing (toCard card), afterDraw]
-          else pushAll [Revelation iid $ PlayerCardSource card, afterDraw]
+          else pushAll [Revelation iid $ CardIdSource card.id, afterDraw]
       else
         if toCardType card == PlayerEnemyType
           then pushAll [DrewPlayerEnemy iid (toCard card), afterDraw]

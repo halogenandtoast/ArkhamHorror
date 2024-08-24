@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Game.Helpers (getIsPlayableWithResources, getSpendableResources, toModifiers)
+import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher hiding (AssetCard)
@@ -67,10 +68,11 @@ instance RunMessage JennyBarnesParallel where
               [duringTurnWindow iid]
           )
           results
-      let choose' c = UseCardAbilityChoiceTarget iid (toSource attrs) 1 (CardTarget c) windows' payment
+      let choose' c = UseCardAbilityChoiceTarget iid (toSource attrs) 1 (toTarget c) windows' payment
       chooseOne iid [targetLabel (toCardId c) [choose' c] | c <- cards]
       pure i
-    UseCardAbilityChoiceTarget iid (isSource attrs -> True) 1 (CardTarget card) _ _ -> do
+    UseCardAbilityChoiceTarget iid (isSource attrs -> True) 1 (CardIdTarget cid) _ _ -> do
+      card <- getCard cid
       pushAll [PayCardCost iid card [duringTurnWindow iid], ResetMetadata (toTarget attrs)]
       pure . JennyBarnesParallel $ attrs `with` Meta (Just card) (resourcesGained meta)
     ResetMetadata (isTarget attrs -> True) ->

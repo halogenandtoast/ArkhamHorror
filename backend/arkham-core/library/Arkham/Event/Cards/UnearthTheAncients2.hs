@@ -5,13 +5,14 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Modifiers
 import Arkham.Investigate
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Trait
 
-newtype Metadata = Metadata {chosenCards :: [Card]}
+newtype Metadata = Metadata {chosenCards :: [CardId]}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -33,26 +34,28 @@ instance RunMessage UnearthTheAncients2 where
       player <- getPlayer iid
       pushAll
         [ chooseUpToN player 2 "Do not choose any more assets"
-            $ [ targetLabel (toCardId asset) [HandleTargetChoice iid (toSource attrs) (CardTarget asset)]
+            $ [ targetLabel asset [HandleTargetChoice iid (toSource attrs) (toTarget asset)]
               | asset <- assets
               ]
         , ResolveEvent iid eid Nothing windows'
         ]
       pure e
-    HandleTargetChoice _ (isSource attrs -> True) (CardTarget card) -> do
-      pure $ UnearthTheAncients2 $ attrs `with` Metadata (card : chosenCards metadata)
+    HandleTargetChoice _ (isSource attrs -> True) (CardIdTarget cid) -> do
+      pure $ UnearthTheAncients2 $ attrs `with` Metadata (cid : chosenCards metadata)
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
       sid <- getRandom
       investigation <- mkInvestigate sid iid attrs
+      cards <- traverse getCard (chosenCards metadata)
       pushAll
-        [ skillTestModifier sid attrs sid (SetDifficulty $ sum $ map getCost $ chosenCards metadata)
+        [ skillTestModifier sid attrs sid (SetDifficulty $ sum $ map getCost cards)
         , toMessage investigation
         ]
       pure e
     Successful (Action.Investigate, _) iid (isSource attrs -> True) _ _ -> do
-      let chosen = map (\card -> (card, drawCards iid attrs 1)) (chosenCards metadata)
+      cards <- traverse getCard (chosenCards metadata)
+      let chosen = map (\card -> (card, drawCards iid attrs 1)) cards
       pushAll
-        $ [putCardIntoPlay iid card | card <- chosenCards metadata]
+        $ [putCardIntoPlay iid card | card <- cards]
         <> [drawing | (card, drawing) <- chosen, Relic `member` toTraits card]
       pure e
     _ -> UnearthTheAncients2 . (`with` metadata) <$> runMessage msg attrs

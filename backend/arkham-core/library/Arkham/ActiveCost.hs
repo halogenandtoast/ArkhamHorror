@@ -30,6 +30,7 @@ import Arkham.EffectMetadata
 import Arkham.Enemy.Types (Field (EnemySealedChaosTokens))
 import {-# SOURCE #-} Arkham.Game (withoutCanModifiers)
 import Arkham.Game.Helpers
+import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Calculation
@@ -79,8 +80,8 @@ addActiveCostCost cost ac = ac & costsL <>~ cost
 activeCostSource :: ActiveCost -> Source
 activeCostSource ac = case activeCostTarget ac of
   ForAbility a -> toSource a
-  ForCard _ c -> CardSource c
-  ForCost c -> CardSource c
+  ForCard _ c -> CardIdSource c.id
+  ForCost c -> CardIdSource c.id
   ForAdditionalCost c -> BatchSource c
 
 instance HasField "source" ActiveCost Source where
@@ -197,9 +198,12 @@ payCost msg c iid skipAdditionalCosts cost = do
     ChosenEnemyCost eid -> withPayment $ ChosenEnemyPayment eid
     CostIfCustomization customization cost1 cost2 -> do
       case source of
-        (CardSource (PlayerCard pc)) ->
-          payCost msg c iid skipAdditionalCosts
-            $ if pc `hasCustomization` customization then cost1 else cost2
+        (CardIdSource cid) -> do
+          getCard cid >>= \case
+            PlayerCard pc ->
+              payCost msg c iid skipAdditionalCosts
+                $ if pc `hasCustomization` customization then cost1 else cost2
+            _ -> error "Not implemented"
         _ -> error "Not implemented"
     CostIfEnemy mtchr cost1 cost2 -> do
       hasEnemy <- selectAny mtchr
@@ -963,7 +967,7 @@ payCost msg c iid skipAdditionalCosts cost = do
         $ chooseN
           player
           x
-          [ targetLabel (toCardId card) [pay (DiscardCost zone' $ CardTarget card)]
+          [ targetLabel (toCardId card) [pay (DiscardCost zone' $ toTarget card)]
           | (zone', card) <- cards
           ]
       pure c
@@ -1062,7 +1066,7 @@ instance RunMessage ActiveCost where
                 *> [ createCardEffect
                       cardDef
                       (Just $ EffectCost acId)
-                      (BothSource (InvestigatorSource iid) (CardSource card))
+                      (BothSource (InvestigatorSource iid) (CardIdSource card.id))
                       (toCardId card)
                    , CheckAdditionalCosts acId
                    ]

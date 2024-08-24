@@ -85,6 +85,7 @@ body {
   padding: 0;
   color: #222;
   min-height: 100vh;
+  background: var(--background);
 }
 
 #app {
@@ -95,11 +96,6 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
-}
-
-
-body {
-  background: $background;
 }
 
 .guardian-icon {

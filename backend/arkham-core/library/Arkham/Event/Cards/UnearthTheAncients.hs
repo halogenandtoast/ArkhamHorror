@@ -5,13 +5,14 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Modifiers
 import Arkham.Investigate
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Trait
 
-newtype Metadata = Metadata {chosenCard :: Maybe Card}
+newtype Metadata = Metadata {chosenCard :: Maybe CardId}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -29,25 +30,27 @@ unearthTheAncients = event (UnearthTheAncients . (`with` Metadata Nothing)) Card
 instance RunMessage UnearthTheAncients where
   runMessage msg e@(UnearthTheAncients (attrs `With` metadata)) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      assets <- select $ InHandOf (InvestigatorWithId iid) <> BasicCardMatch (#seeker <> #asset)
+      assets <- select $ inHandOf iid <> basic (#seeker <> #asset)
       player <- getPlayer iid
       push
         $ chooseOne player
-        $ [ targetLabel (toCardId asset) [ResolveEvent iid eid (Just $ CardTarget asset) windows']
+        $ [ targetLabel asset [ResolveEvent iid eid (Just $ toTarget asset) windows']
           | asset <- assets
           ]
       pure e
-    ResolveEvent iid eid (Just (CardTarget card)) _ | eid == toId attrs -> do
+    ResolveEvent iid eid (Just (CardIdTarget cid)) _ | eid == toId attrs -> do
       sid <- getRandom
       investigation <- mkInvestigate sid iid attrs <&> setTarget attrs
+      card <- getCard cid
       pushAll
         [ skillTestModifier sid attrs sid (SetDifficulty $ getCost card)
         , toMessage investigation
         ]
-      pure $ UnearthTheAncients $ attrs `with` Metadata (Just card)
+      pure $ UnearthTheAncients $ attrs `with` Metadata (Just cid)
     Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target -> do
       case chosenCard metadata of
-        Just card -> do
+        Just cid -> do
+          card <- getCard cid
           let drawing = drawCards iid attrs 1
           pushAll $ putCardIntoPlay iid card : [drawing | Relic `member` toTraits card]
         Nothing -> error "this should not happen"

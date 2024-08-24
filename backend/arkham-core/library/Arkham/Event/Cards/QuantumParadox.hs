@@ -20,6 +20,6 @@ instance RunMessage QuantumParadox where
   runMessage msg e@(QuantumParadox attrs) = runQueueT $ case msg of
     InHand iid' (UseThisAbility iid (isSource attrs -> True) 1) | iid' == iid -> do
       push $ RevealCard $ toCardId attrs
-      assignHorror iid (CardSource $ toCard attrs) 1
+      assignHorror iid (CardIdSource $ toCardId attrs) 1
       pure e
     _ -> QuantumParadox <$> liftRunMessage msg attrs

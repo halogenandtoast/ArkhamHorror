@@ -1201,8 +1201,7 @@ runGameMessage msg g = case msg of
     allModifiers <-
       mconcat
         <$> sequence
-          [ getModifiers (toCardId card)
-          , getModifiers (CardTarget card)
+          [ getModifiers card
           , getModifiers iid
           ]
     let
@@ -2335,44 +2334,46 @@ runGameMessage msg g = case msg of
           }
     pushAll [BeginSkillTest skillTest, UnsetActiveCard]
     pure $ g & (activeCardL ?~ card)
-  Revelation iid (PlayerCardSource card) -> case toCardType card of
-    AssetType -> do
-      pid <- getPlayer iid
-      sendRevelation pid (toJSON $ toCard card)
-      assetId <- getRandom
-      let asset = createAsset card assetId
-      -- Asset is assumed to have a revelation ability if drawn from encounter deck
-      pushAll $ resolve $ Revelation iid (AssetSource assetId)
-      pure $ g & (entitiesL . assetsL . at assetId ?~ asset)
-    EventType -> do
-      pid <- getPlayer iid
-      sendRevelation pid (toJSON $ toCard card)
-      eventId <- getRandom
-      pushAll $ resolve $ Revelation iid (EventSource eventId)
-      let
-        recordLimit g'' = \case
-          MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
-          MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
-          MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
-          _ -> g''
-      pure
-        $ foldl'
-          recordLimit
-          (g & entitiesL . eventsL . at eventId ?~ createEvent card iid eventId)
-          (cdLimits $ toCardDef card)
-    PlayerEnemyType -> do
-      enemyId <- getRandom
-      let enemy = createEnemy card enemyId
-      -- Asset is assumed to have a revelation ability if drawn from encounter deck
-      pushAll
-        $ [ SetBearer (toTarget enemy) iid
-          , RemoveCardFromHand iid (toCardId card)
-          , InvestigatorDrawEnemy iid enemyId
-          ]
-        <> resolve (Revelation iid (EnemySource enemyId))
-      pure $ g & (entitiesL . enemiesL . at enemyId ?~ enemy)
-    other ->
-      error $ "Currently not handling Revelations from type " <> show other
+  Revelation iid (CardIdSource cid) -> do
+    card <- getCard cid
+    case toCardType card of
+      AssetType -> do
+        pid <- getPlayer iid
+        sendRevelation pid (toJSON $ toCard card)
+        assetId <- getRandom
+        let asset = createAsset card assetId
+        -- Asset is assumed to have a revelation ability if drawn from encounter deck
+        pushAll $ resolve $ Revelation iid (AssetSource assetId)
+        pure $ g & (entitiesL . assetsL . at assetId ?~ asset)
+      EventType -> do
+        pid <- getPlayer iid
+        sendRevelation pid (toJSON $ toCard card)
+        eventId <- getRandom
+        pushAll $ resolve $ Revelation iid (EventSource eventId)
+        let
+          recordLimit g'' = \case
+            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
+            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
+            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
+            _ -> g''
+        pure
+          $ foldl'
+            recordLimit
+            (g & entitiesL . eventsL . at eventId ?~ createEvent card iid eventId)
+            (cdLimits $ toCardDef card)
+      PlayerEnemyType -> do
+        enemyId <- getRandom
+        let enemy = createEnemy card enemyId
+        -- Asset is assumed to have a revelation ability if drawn from encounter deck
+        pushAll
+          $ [ SetBearer (toTarget enemy) iid
+            , RemoveCardFromHand iid (toCardId card)
+            , InvestigatorDrawEnemy iid enemyId
+            ]
+          <> resolve (Revelation iid (EnemySource enemyId))
+        pure $ g & (entitiesL . enemiesL . at enemyId ?~ enemy)
+      other ->
+        error $ "Currently not handling Revelations from type " <> show other
   ResolvedCard iid card | Just card == gameResolvingCard g -> do
     modifiers' <- getModifiers (toCardId card)
     push $ After msg

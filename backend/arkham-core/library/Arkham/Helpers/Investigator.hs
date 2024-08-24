@@ -156,7 +156,7 @@ getInHandCount attrs = do
       HandSizeCardCount m -> m
       _ -> n
     getCardHandSize c = do
-      modifiers <- getModifiers (CardTarget c)
+      modifiers <- getModifiers c
       pure $ foldl' applyModifier 1 modifiers
   sum <$> traverse getCardHandSize cards
 
@@ -533,8 +533,7 @@ additionalActionCovers
   :: HasGame m => Source -> [Action] -> AdditionalAction -> m Bool
 additionalActionCovers source actions (AdditionalAction _ _ aType) = case aType of
   PlayCardRestrictedAdditionalAction matcher -> case source of
-    CardSource c -> elem c <$> select matcher
-    PlayerCardSource pc -> elem (toCard pc) <$> select matcher
+    CardIdSource cid -> elem cid . map toCardId <$> select matcher
     _ -> pure False
   TraitRestrictedAdditionalAction t actionRestriction -> case actionRestriction of
     NoRestriction -> member t <$> sourceTraits source

@@ -3,6 +3,7 @@ module Arkham.Event.Cards.ATestOfWill (aTestOfWill, ATestOfWill (..)) where
 import Arkham.Capability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.SkillTest.Target (getSkillTestTarget)
 import Arkham.Matcher hiding (DrawCard)
 import Arkham.Window
@@ -15,7 +16,7 @@ aTestOfWill :: EventCard ATestOfWill
 aTestOfWill = event ATestOfWill Cards.aTestOfWill
 
 getDetails :: [Window] -> Target
-getDetails ((windowType -> DrawCard who card _) : _) = BothTarget (toTarget who) (CardTarget card)
+getDetails ((windowType -> DrawCard who card _) : _) = BothTarget (toTarget who) (CardIdTarget card.id)
 getDetails (_ : rest) = getDetails rest
 getDetails [] = error "missing targets"
 
@@ -27,7 +28,8 @@ instance RunMessage ATestOfWill where
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       getSkillTestTarget >>= \case
-        Just (BothTarget (InvestigatorTarget iid') (CardTarget c)) -> do
+        Just (BothTarget (InvestigatorTarget iid') (CardIdTarget cid)) -> do
+          c <- getCard cid
           canAffect <- (iid == iid' ||) <$> can.affect.otherPlayers iid
           canCancel <- c <=~> CanCancelRevelationEffect (basic AnyCard)
           when (canAffect && canCancel) $ cancelRevelation attrs c

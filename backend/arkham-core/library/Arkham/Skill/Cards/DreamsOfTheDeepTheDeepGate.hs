@@ -14,7 +14,7 @@ import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 
 newtype DreamsOfTheDeepTheDeepGate = DreamsOfTheDeepTheDeepGate SkillAttrs
-  deriving anyclass (IsSkill)
+  deriving anyclass IsSkill
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor DreamsOfTheDeepTheDeepGate where
@@ -34,7 +34,7 @@ instance RunMessage DreamsOfTheDeepTheDeepGate where
     InHand iid' (UseThisAbility iid (isSource attrs -> True) 1) | iid' == iid -> do
       pushAll
         [ RevealCard $ toCardId attrs
-        , assignDamage iid (CardSource $ toCard attrs) 2
+        , assignDamage iid (CardIdSource attrs.cardId) 2
         ]
       pure s
     _ -> DreamsOfTheDeepTheDeepGate <$> runMessage msg attrs

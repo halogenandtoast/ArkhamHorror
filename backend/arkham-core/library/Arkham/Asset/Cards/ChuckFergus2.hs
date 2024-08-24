@@ -56,9 +56,9 @@ instance RunMessage ChuckFergus2 where
       cost <- getModifiedCardCost iid card
       player <- getPlayer iid
       canAffordCost <-
-        getCanAffordCost iid (PlayerCardSource pc) [Action.Play] ws (ResourceCost cost)
+        getCanAffordCost iid (CardIdSource pc.id) [Action.Play] ws (ResourceCost cost)
       canAffordActionCost <-
-        getCanAffordCost iid (PlayerCardSource pc) [Action.Play] ws (ActionCost 1)
+        getCanAffordCost iid (CardIdSource pc.id) [Action.Play] ws (ActionCost 1)
       -- can something else reduce the cost enough?
       when (canAffordCost && canAffordActionCost) $ do
         push

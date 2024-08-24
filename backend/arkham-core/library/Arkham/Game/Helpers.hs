@@ -875,7 +875,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
     passesCriterias <-
       maybe
         (pure True)
-        (passesCriteria iid (Just (c, costStatus)) source' (CardSource c) windows')
+        (passesCriteria iid (Just (c, costStatus)) source' (CardIdSource c.id) windows')
         (foldl' handleCriteriaReplacement (replaceThisCardSource $ cdCriteria pcDef) cardModifiers)
 
     inFastWindow <-
@@ -895,9 +895,17 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       if inFastWindow
         then
           asIfTurn iid
-            $ hasFightActions iid (CardSource c) (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
+            $ hasFightActions
+              iid
+              (CardIdSource c.id)
+              (Matcher.DuringTurn Matcher.You)
+              (defaultWindows iid <> windows')
         else
-          hasFightActions iid (CardSource c) (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
+          hasFightActions
+            iid
+            (CardIdSource c.id)
+            (Matcher.DuringTurn Matcher.You)
+            (defaultWindows iid <> windows')
 
     canInvestigate <- isJust <$> field InvestigatorLocation iid
 
@@ -947,7 +955,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
     -- PlayableCardWithCostReduction matcher currently only used by Dexter
     -- Drake and De Vermis Mysteriis (2) which are non-action situations
     canAffordAdditionalCosts <-
-      getCanAffordCost iid (CardSource c) c.actions windows'
+      getCanAffordCost iid (CardIdSource c.id) c.actions windows'
         $ fold
         $ [ ActionCost actionCost
           | actionCost > 0 && source /= GameSource && not inFastWindow
@@ -1674,7 +1682,7 @@ cardInFastWindows iid source card windows' matcher =
   anyM (\window -> windowMatches iid source' window matcher) windows'
  where
   source' = case card of
-    PlayerCard pc -> BothSource source (PlayerCardSource pc)
+    PlayerCard pc -> BothSource source (CardIdSource pc.id)
     _ -> source
 
 windowMatches
@@ -1686,11 +1694,12 @@ windowMatches
   -> m Bool
 windowMatches _ _ (windowType -> Window.DoNotCheckWindow) _ = pure True
 windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wType)) umtchr = do
-  let
-    (source, mcard) =
-      case rawSource of
-        BothSource s (PlayerCardSource pc) -> (s, Just (PlayerCard pc, UnpaidCost NeedsAction))
-        _ -> (rawSource, Nothing)
+  (source, mcard) <-
+    case rawSource of
+      BothSource s (CardIdSource cid) -> do
+        card <- getCard cid
+        pure (s, Just (card, UnpaidCost NeedsAction))
+      _ -> pure (rawSource, Nothing)
 
   let noMatch = pure False
   let isMatch = pure True
@@ -3514,9 +3523,11 @@ sourceMatches s = \case
             Just controllerId -> elem controllerId <$> select whoMatcher
             Nothing -> pure False
         InvestigatorSource iid -> elem iid <$> select whoMatcher
-        CardSource c -> case toCardOwner c of
-          Nothing -> pure False
-          Just iid -> elem iid <$> select whoMatcher
+        CardIdSource cid -> do
+          c <- getCard cid
+          case toCardOwner c of
+            Nothing -> pure False
+            Just iid -> elem iid <$> select whoMatcher
         _ -> pure False
      in
       checkSource s
@@ -3536,7 +3547,6 @@ sourceMatches s = \case
         ActMatcherSource {} -> True
         AssetSource {} -> True
         CardCodeSource {} -> False
-        CardSource {} -> False
         CardIdSource {} -> False
         DeckSource {} -> False
         EffectSource {} -> True
@@ -3550,7 +3560,6 @@ sourceMatches s = \case
         LocationMatcherSource {} -> True
         EnemyMatcherSource {} -> True
         LocationSource {} -> True
-        PlayerCardSource {} -> False
         ProxySource (CardIdSource _) s' -> go s'
         ProxySource s' _ -> go s'
         ResourceSource {} -> False
@@ -3568,67 +3577,97 @@ sourceMatches s = \case
         TarotSource {} -> True
         BatchSource {} -> False
     pure $ go s
-  Matcher.SourceIsType t -> pure $ case t of
+  Matcher.SourceIsType t -> case t of
     AssetType -> case s of
-      AssetSource _ -> True
-      CardSource c -> c.kind == AssetType
-      _ -> False
+      AssetSource _ -> pure True
+      CardIdSource cid -> do
+        c <- getCard cid
+        pure $ c.kind == AssetType
+      _ -> pure False
     EventType -> case s of
-      EventSource _ -> True
-      CardSource c -> c.kind == EventType
-      _ -> False
+      EventSource _ -> pure True
+      CardIdSource cid -> do
+        c <- getCard cid
+        pure $ c.kind == EventType
+      _ -> pure False
     SkillType -> case s of
-      SkillSource _ -> True
-      CardSource c -> c.kind == SkillType
-      _ -> False
+      SkillSource _ -> pure True
+      CardIdSource cid -> do
+        c <- getCard cid
+        pure $ c.kind == SkillType
+      _ -> pure False
     PlayerTreacheryType -> case s of
-      TreacherySource _ -> True
-      CardSource c -> c.kind == PlayerTreacheryType
-      _ -> False
+      TreacherySource _ -> pure True
+      CardIdSource cid -> do
+        c <- getCard cid
+        pure $ c.kind == PlayerTreacheryType
+      _ -> pure False
     PlayerEnemyType -> case s of
-      EnemySource _ -> True
-      CardSource c -> c.kind == PlayerEnemyType
-      _ -> False
+      EnemySource _ -> pure True
+      CardIdSource cid -> do
+        c <- getCard cid
+        pure $ c.kind == PlayerEnemyType
+      _ -> pure False
     TreacheryType -> case s of
-      TreacherySource _ -> True
-      CardSource c -> c.kind == TreacheryType
-      _ -> False
+      TreacherySource _ -> pure True
+      CardIdSource cid -> do
+        c <- getCard cid
+        pure $ c.kind == TreacheryType
+      _ -> pure False
     EnemyType -> case s of
-      EnemySource _ -> True
-      CardSource c -> c.kind == EnemyType
-      _ -> False
+      EnemySource _ -> pure True
+      CardIdSource cid -> do
+        c <- getCard cid
+        pure $ c.kind == EnemyType
+      _ -> pure False
     LocationType -> case s of
-      LocationSource _ -> True
-      CardSource c -> c.kind == LocationType
-      _ -> False
+      LocationSource _ -> pure True
+      CardIdSource cid -> do
+        c <- getCard cid
+        pure $ c.kind == LocationType
+      _ -> pure False
     EncounterAssetType -> case s of
-      AssetSource _ -> True
-      CardSource c -> c.kind == EncounterAssetType
-      _ -> False
+      AssetSource _ -> pure True
+      CardIdSource cid -> do
+        c <- getCard cid
+        pure $ c.kind == EncounterAssetType
+      _ -> pure False
     EncounterEventType -> case s of
-      EventSource _ -> True
-      CardSource c -> c.kind == EncounterEventType
-      _ -> False
+      EventSource _ -> pure True
+      CardIdSource cid -> do
+        c <- getCard cid
+        pure $ c.kind == EncounterEventType
+      _ -> pure False
     ActType -> case s of
-      ActSource _ -> True
-      CardSource c -> c.kind == ActType
-      _ -> False
+      ActSource _ -> pure True
+      CardIdSource cid -> do
+        c <- getCard cid
+        pure $ c.kind == ActType
+      _ -> pure False
     AgendaType -> case s of
-      AgendaSource _ -> True
-      CardSource c -> c.kind == AgendaType
-      _ -> False
+      AgendaSource _ -> pure True
+      CardIdSource cid -> do
+        c <- getCard cid
+        pure $ c.kind == AgendaType
+      _ -> pure False
     StoryType -> case s of
-      StorySource _ -> True
-      CardSource c -> c.kind == StoryType
-      _ -> False
+      StorySource _ -> pure True
+      CardIdSource cid -> do
+        c <- getCard cid
+        pure $ c.kind == StoryType
+      _ -> pure False
     InvestigatorType -> case s of
-      InvestigatorSource _ -> True
-      CardSource c -> c.kind == InvestigatorType
-      _ -> False
+      InvestigatorSource _ -> pure True
+      CardIdSource cid -> do
+        c <- getCard cid
+        pure $ c.kind == InvestigatorType
+      _ -> pure False
     ScenarioType -> case s of
-      ScenarioSource -> True
-      CardSource c -> c.kind == ScenarioType
-      _ -> False
+      ScenarioSource -> pure True
+      CardIdSource cid -> do
+        c <- getCard cid
+        pure $ c.kind == ScenarioType
+      _ -> pure False
   Matcher.EncounterCardSource ->
     let
       check = \case
@@ -3668,7 +3707,7 @@ sourceMatches s = \case
         LocationSource lid -> fieldMay LocationCard lid
         StorySource sid -> fieldMay StoryCard sid
         InvestigatorSource _ -> pure Nothing
-        CardSource c -> pure $ Just c
+        CardIdSource cid -> Just <$> getCard cid
         _ -> pure Nothing
     mCard <- getCardSource s
     pure $ case mCard of

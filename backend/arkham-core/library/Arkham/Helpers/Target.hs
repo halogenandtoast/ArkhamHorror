@@ -54,7 +54,6 @@ targetTraits = \case
   SetAsideLocationsTarget _ -> pure mempty
   EncounterDeckTarget -> pure mempty
   ScenarioDeckTarget -> pure mempty
-  CardTarget c -> pure $ toTraits c
   SearchedCardTarget _ -> pure mempty
   SkillTestInitiatorTarget _ -> pure mempty
   PhaseTarget _ -> pure mempty

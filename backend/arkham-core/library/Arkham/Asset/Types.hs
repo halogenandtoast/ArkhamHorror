@@ -282,6 +282,9 @@ instance Is AssetAttrs AssetId where
 instance Be AssetAttrs AssetMatcher where
   be = AssetWithId . assetId
 
+instance HasField "owner" Asset (Maybe InvestigatorId) where
+  getField = (.owner) . toAttrs
+
 instance HasField "taboo" AssetAttrs (Maybe TabooList) where
   getField = assetTaboo
 

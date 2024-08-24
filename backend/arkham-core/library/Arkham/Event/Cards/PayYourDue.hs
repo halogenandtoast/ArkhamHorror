@@ -29,6 +29,6 @@ instance RunMessage PayYourDue where
   runMessage msg e@(PayYourDue attrs) = runQueueT $ case msg of
     InHand iid' (UseThisAbility iid (isSource attrs -> True) 1) | iid' == iid -> do
       push $ RevealCard $ toCardId attrs
-      assignDamage iid (CardSource $ toCard attrs) 1
+      assignDamage iid (CardIdSource $ toCardId attrs) 1
       pure e
     _ -> PayYourDue <$> liftRunMessage msg attrs

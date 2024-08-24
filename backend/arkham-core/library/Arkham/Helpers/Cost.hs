@@ -121,9 +121,13 @@ getCanAffordCost iid !(toSource -> source) actions windows' = \case
     getCanAffordCost iid source actions windows' $ if hasEnemy then c1 else c2
   CostIfCustomization customization c1 c2 -> do
     case source of
-      (CardSource (PlayerCard pc)) ->
-        getCanAffordCost iid source actions windows'
-          $ if pc `hasCustomization` customization then c1 else c2
+      (CardIdSource cid) -> do
+        card <- getCard cid
+        case card of
+          PlayerCard pc ->
+            getCanAffordCost iid source actions windows'
+              $ if pc `hasCustomization` customization then c1 else c2
+          _ -> error "Not implemented"
       _ -> error "Not implemented"
   ArchiveOfConduitsUnidentifiedCost -> do
     n <- selectCount Matcher.Anywhere
@@ -282,10 +286,9 @@ getCanAffordCost iid !(toSource -> source) actions windows' = \case
     let
       getCards = \case
         FromHandOf whoMatcher -> do
-          let
-            excludeCards = case source of
-              CardSource c -> [c]
-              _ -> mempty
+          excludeCards <- case source of
+            CardIdSource cid -> (: []) <$> getCard cid
+            _ -> pure mempty
           fmap (filter (`cardMatch` cardMatcher) . filter (`notElem` excludeCards) . concat)
             . traverse (field InvestigatorHand)
             =<< select whoMatcher
@@ -340,18 +343,16 @@ getCanAffordCost iid !(toSource -> source) actions windows' = \case
         iid
     pure $ length discards >= n
   HandDiscardCost n extendedCardMatcher -> do
-    let
-      excludeCards = case source of
-        CardSource c -> [c]
-        _ -> mempty
+    excludeCards <- case source of
+      CardIdSource cid -> (: []) <$> getCard cid
+      _ -> pure mempty
     cards <-
       mapMaybe (preview _PlayerCard) . filter (`notElem` excludeCards) <$> field InvestigatorHand iid
     (>= n) <$> countM (`extendedCardMatch` extendedCardMatcher) cards
   HandDiscardAnyNumberCost extendedCardMatcher -> do
-    let
-      excludeCards = case source of
-        CardSource c -> [c]
-        _ -> mempty
+    excludeCards <- case source of
+      CardIdSource cid -> (: []) <$> getCard cid
+      _ -> pure mempty
     cards <-
       mapMaybe (preview _PlayerCard) . filter (`notElem` excludeCards) <$> field InvestigatorHand iid
     (> 0) <$> countM (`extendedCardMatch` extendedCardMatcher) cards

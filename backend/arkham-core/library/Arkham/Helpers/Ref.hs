@@ -27,7 +27,6 @@ targetToMaybeCard = \case
   EnemyTarget aid -> Just <$> field EnemyCard aid
   TreacheryTarget aid -> Just <$> field TreacheryCard aid
   LocationTarget aid -> Just <$> field LocationCard aid
-  CardTarget c -> pure $ Just c
   SearchedCardTarget cId -> Just <$> getCard cId
   CardIdTarget cId -> Just <$> getCard cId
   BothTarget a b -> do
@@ -52,7 +51,6 @@ sourceToMaybeTarget = \case
   YouSource -> Just YouTarget
   AssetSource aid -> Just $ AssetTarget aid
   EnemySource eid -> Just $ EnemyTarget eid
-  CardSource c -> Just $ CardTarget c
   CardIdSource c -> Just $ CardIdTarget c
   ScenarioSource -> Just $ ScenarioTarget
   InvestigatorSource iid -> Just $ InvestigatorTarget iid
@@ -69,7 +67,6 @@ sourceToMaybeTarget = \case
   DeckSource -> Nothing
   GameSource -> Just $ GameTarget
   ActSource aid -> Just $ ActTarget aid
-  PlayerCardSource _ -> Nothing
   EncounterCardSource _ -> Nothing
   TestSource {} -> Just $ TestTarget
   ProxySource _ source -> sourceToMaybeTarget source
@@ -129,7 +126,6 @@ targetToSource = \case
   InvestigationTarget {} -> error "not converted"
   YouTarget -> YouSource
   ProxyTarget {} -> error "can not convert"
-  CardTarget {} -> error "can not convert"
   StoryTarget code -> StorySource code
   AgendaMatcherTarget _ -> error "can not convert"
   CampaignTarget -> CampaignSource

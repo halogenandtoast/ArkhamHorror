@@ -9,6 +9,7 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Event.Cards qualified as Events
 import Arkham.Event.Types (Field (..))
+import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
@@ -19,9 +20,9 @@ import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype DianaStanley = DianaStanley InvestigatorAttrs
-  deriving anyclass (IsInvestigator)
+  deriving anyclass IsInvestigator
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 dianaStanley :: InvestigatorCard DianaStanley
 dianaStanley =
@@ -75,7 +76,9 @@ instance RunMessage DianaStanley where
           SkillSource sid -> (RemoveFromPlay (toSource sid),) <$> field SkillCard sid
           EventSource eid -> (RemoveFromPlay (toSource eid),) <$> field EventCard eid
           AbilitySource abilitySource _ -> getSource abilitySource
-          CardSource card -> pure (RemovePlayerCardFromGame False card, card)
+          CardIdSource cid -> do
+            card <- getCard cid
+            pure (RemovePlayerCardFromGame False card, card)
           _ -> error $ "Unhandled source for Diana Stanley: " <> show source
       (removeMsg, card) <- getSource source
       canLeavePlay <- case source of

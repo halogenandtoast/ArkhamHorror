@@ -25,7 +25,6 @@ sourceTraits = \case
   ActMatcherSource _ -> pure mempty
   AssetSource aid -> field AssetTraits aid
   CardCodeSource _ -> pure mempty
-  CardSource c -> pure (toTraits c)
   CardIdSource c -> toTraits <$> getCard c
   DeckSource -> pure mempty
   EffectSource _ -> pure mempty
@@ -37,7 +36,6 @@ sourceTraits = \case
   GameSource -> pure mempty
   InvestigatorSource iid -> field InvestigatorTraits iid
   LocationSource lid -> field LocationTraits lid
-  PlayerCardSource _ -> pure mempty
   ProxySource s _ -> sourceTraits s
   ResourceSource _ -> pure mempty
   ScenarioSource -> pure mempty

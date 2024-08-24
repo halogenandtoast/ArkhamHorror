@@ -90,7 +90,7 @@ instance RunMessage NathanielChoEffect where
             [ FocusCards (map toCard events)
             , questionLabel "{elderSign}: return an event from your discard pile to your hand." player
                 $ ChooseOne
-                  [ targetLabel (toCardId event) [UnfocusCards, ReturnToHand iid (CardTarget $ PlayerCard event)]
+                  [ targetLabel event [UnfocusCards, ReturnToHand iid (toTarget event)]
                   | event <- events
                   ]
             , disable attrs

@@ -10,6 +10,7 @@ import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.Customization
 import Arkham.Id
 import Arkham.Trait
+import GHC.Records
 
 data Card
   = PlayerCard PlayerCard
@@ -22,6 +23,7 @@ instance Eq Card
 instance Ord Card
 instance ToJSON Card
 instance FromJSON Card
+instance HasField "id" Card CardId
 
 class MonadRandom m => CardGen m where
   genEncounterCard :: HasCardDef a => a -> m EncounterCard

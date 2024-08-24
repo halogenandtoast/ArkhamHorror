@@ -861,7 +861,7 @@ instance RunMessage EnemyAttrs where
       cardsThatCanceled <- foldM applyModifiers [] modifiers
 
       ignoreWindows <- for cardsThatCanceled \card ->
-        checkWindows [mkAfter $ Window.CancelledOrIgnoredCardOrGameEffect $ CardSource card]
+        checkWindows [mkAfter $ Window.CancelledOrIgnoredCardOrGameEffect $ CardIdSource card.id]
 
       let
         allowAttack =

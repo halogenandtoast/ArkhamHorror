@@ -183,11 +183,9 @@ createActiveCostForAdditionalCardCosts
   -> m (Maybe ActiveCost)
 createActiveCostForAdditionalCardCosts iid card = do
   acId <- getRandom
-  modifiers' <- getModifiers (CardIdTarget $ toCardId card)
-  modifiers'' <- getModifiers (CardTarget card)
-  let allModifiers = modifiers' <> modifiers''
+  mods <- getModifiers (CardIdTarget $ toCardId card)
   let
-    additionalCosts = flip mapMaybe allModifiers $ \case
+    additionalCosts = flip mapMaybe mods $ \case
       AdditionalCost c -> Just c
       _ -> Nothing
     sealChaosTokenCosts =
@@ -266,8 +264,7 @@ createActiveCostForCard iid card isPlayAction windows' = do
   allModifiers <-
     mconcat
       <$> sequence
-        [ getModifiers (toCardId card)
-        , getModifiers (CardTarget card)
+        [ getModifiers card
         , getModifiers iid
         ]
   resources <- getModifiedCardCost iid card

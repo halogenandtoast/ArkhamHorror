@@ -52,9 +52,9 @@ instance RunMessage ChuckFergus5 where
     UseCardAbility iid (isSource attrs -> True) 1 ws@(getWindowCard -> card@(PlayerCard pc)) _ -> do
       cost <- getModifiedCardCost iid card
       canAffordCost <-
-        getCanAffordCost iid (PlayerCardSource pc) [Action.Play] ws (ResourceCost cost)
+        getCanAffordCost iid (CardIdSource pc.id) [Action.Play] ws (ResourceCost cost)
       canAffordActionCost <-
-        getCanAffordCost iid (PlayerCardSource pc) [Action.Play] ws (ActionCost 1)
+        getCanAffordCost iid (CardIdSource pc.id) [Action.Play] ws (ActionCost 1)
       -- can something else reduce the cost enough?
       let n = if canAffordCost then 2 else 1
           n' = if canAffordActionCost then n else n - 1

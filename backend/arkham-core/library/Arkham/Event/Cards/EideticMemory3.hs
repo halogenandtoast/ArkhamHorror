@@ -41,7 +41,7 @@ instance RunMessage EideticMemory3 where
           [ createCardEffect
               Cards.eideticMemory3
               Nothing
-              (CardSource $ toCard attrs)
+              (CardIdSource $ toCardId attrs)
               (CardIdTarget $ toCardId attrs)
           ]
           (if canAffectOthers then RemoveChosenCardFromGame else LeaveChosenCard)

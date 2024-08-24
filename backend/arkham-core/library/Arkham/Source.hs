@@ -37,7 +37,6 @@ data Source
   | ActMatcherSource ActMatcher
   | AssetSource AssetId
   | CardCodeSource CardCode
-  | CardSource Card
   | CardIdSource CardId
   | DeckSource
   | EffectSource EffectId
@@ -51,7 +50,6 @@ data Source
   | LocationMatcherSource LocationMatcher
   | EnemyMatcherSource EnemyMatcher
   | LocationSource LocationId
-  | PlayerCardSource PlayerCard
   | ProxySource {source :: Source, originalSource :: Source}
   | ResourceSource InvestigatorId
   | ScenarioSource
@@ -122,6 +120,9 @@ instance FromJSON Source where
   parseJSON = withObject "Source" $ \o -> do
     tag :: Text <- o .: "tag"
     case tag of
+      "CardSource" -> do
+        c :: Card <- o .: "contents"
+        pure $ CardIdSource c.id
       "SkillTestSource" -> do
         eSkillTestId <- (Left <$> o .: "contents") <|> (Right <$> pure ())
         pure $ either SkillTestSource (\_ -> SkillTestSource (SkillTestId nil)) eSkillTestId
@@ -190,7 +191,7 @@ instance Sourceable ChaosTokenFace where
   toSource = ChaosTokenEffectSource
 
 instance Sourceable PlayerCard where
-  toSource = PlayerCardSource
+  toSource = CardIdSource . toCardId
 
 instance Sourceable AssetMatcher where
   toSource = AssetMatcherSource

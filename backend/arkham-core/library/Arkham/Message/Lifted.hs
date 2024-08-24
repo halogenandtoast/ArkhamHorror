@@ -1257,7 +1257,7 @@ quietCancelCardDraw card = do
     InvestigatorDrewPlayerCard _ c -> c.id == card.id
     DrewTreachery _ _ c -> c.id == card.id
     DrewPlayerEnemy _ c -> c.id == card.id
-    Revelation _ (PlayerCardSource c) -> c.id == card.id
+    Revelation _ (CardIdSource cid) -> cid == card.id
     When (Revelation _ s) -> Just (sourceToTarget s) == mtarget
     Revelation _ s -> Just (sourceToTarget s) == mtarget
     After (Revelation _ s) -> Just (sourceToTarget s) == mtarget

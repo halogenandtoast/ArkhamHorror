@@ -24,7 +24,7 @@ instance RunMessage Reckless where
     InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _) | iid' == iid -> do
       pushAll
         [ RevealCard $ toCardId attrs
-        , LoseResources iid (CardSource $ toCard attrs) 2
+        , LoseResources iid (CardIdSource attrs.cardId) 2
         ]
       pure s
     FailedSkillTest _ _ _ SkillTestInitiatorTarget {} _ _ -> do

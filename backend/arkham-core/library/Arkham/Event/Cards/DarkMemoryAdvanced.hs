@@ -24,7 +24,7 @@ instance RunMessage DarkMemoryAdvanced where
     InHand iid' (UseThisAbility iid (isSource attrs -> True) 1) | iid' == iid -> do
       pushAll
         [ RevealCard $ toCardId attrs
-        , assignHorror iid (CardSource $ toCard attrs) 2
+        , assignHorror iid (CardIdSource $ toCardId attrs) 2
         ]
       pure e
     PlayThisEvent _ eid | attrs `is` eid -> do

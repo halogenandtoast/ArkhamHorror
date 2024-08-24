@@ -11,6 +11,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Effect.Import
+import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Card
 import Arkham.Matcher
 import Arkham.SkillType
@@ -33,10 +34,10 @@ instance HasAbilities GrislyTotemSurvivor3 where
           (ExhaustCost $ toTarget a)
     ]
 
-getCard :: [Window] -> Card
-getCard [] = error "missing card"
-getCard ((windowType -> Window.CommittedCard _ c) : _) = c
-getCard (_ : ws) = getCard ws
+getCommittedCard :: [Window] -> Card
+getCommittedCard [] = error "missing card"
+getCommittedCard ((windowType -> Window.CommittedCard _ c) : _) = c
+getCommittedCard (_ : ws) = getCommittedCard ws
 
 toSkillLabel :: SkillIcon -> Text
 toSkillLabel WildMinusIcon = "Choose Minus {wild}"
@@ -49,7 +50,7 @@ toSkillLabel (SkillIcon sType) = case sType of
 
 instance RunMessage GrislyTotemSurvivor3 where
   runMessage msg a@(GrislyTotemSurvivor3 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (getCard -> card) _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 (getCommittedCard -> card) _ -> do
       withSkillTest \sid -> do
         icons <- setFromList @(Set SkillIcon) <$> iconsForCard card
         player <- getPlayer iid
@@ -59,7 +60,7 @@ instance RunMessage GrislyTotemSurvivor3 where
             [ Label
               (toSkillLabel icon)
               [ skillTestModifier sid attrs (toCardId card) (AddSkillIcons [icon])
-              , createCardEffect Cards.grislyTotemSurvivor3 (effectMetaTarget sid) attrs (CardTarget card)
+              , createCardEffect Cards.grislyTotemSurvivor3 (effectMetaTarget sid) attrs (CardIdTarget card.id)
               ]
             | icon <- setToList icons
             ]
@@ -80,8 +81,10 @@ instance RunMessage GrislyTotemSurvivor3Effect where
         withSkillTest \sid -> do
           when (attrs.metaTarget == Just (SkillTestTarget sid)) $ do
             case attrs.target of
-              CardTarget card -> for_ (toCardOwner card) $ \iid ->
-                push $ ReturnToHand iid (toTarget $ toCardId card)
+              CardIdTarget cid -> do
+                card <- getCard cid
+                for_ (toCardOwner card) $ \iid ->
+                  push $ ReturnToHand iid (toTarget $ toCardId card)
               _ -> pure ()
         pure e
       SkillTestEnds sid _ _ | attrs.metaTarget == Just (SkillTestTarget sid) -> do

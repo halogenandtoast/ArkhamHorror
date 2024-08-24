@@ -44,7 +44,7 @@ instance RunMessage ThePaintedWorld where
           [ createCardEffect
               Cards.thePaintedWorld
               Nothing
-              (CardSource $ toCard attrs)
+              (CardIdSource $ toCardId attrs)
               (CardIdTarget $ toCardId attrs)
           ]
           LeaveChosenCard

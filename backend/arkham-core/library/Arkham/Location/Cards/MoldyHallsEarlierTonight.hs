@@ -71,7 +71,7 @@ instance RunMessage MoldyHallsEarlierTonight where
               [ FocusCards discards
               , chooseOne
                   player
-                  [targetLabel (toCardId card) [ReturnToHand iid (CardTarget card)] | card <- discards]
+                  [targetLabel card [ReturnToHand iid (toTarget card)] | card <- discards]
               , UnfocusCards
               , Remember $ MeddledWithThePast $ labeled name iid
               ]

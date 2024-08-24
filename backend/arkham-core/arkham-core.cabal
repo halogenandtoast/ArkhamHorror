@@ -3419,7 +3419,6 @@ library
       OverloadedStrings
       PatternSynonyms
       RecordWildCards
-      StrictData
       TypeFamilies
       TypeFamilyDependencies
       TypeOperators
@@ -3449,6 +3448,7 @@ library
     , text
     , these
     , these-lens
+    , time
     , transformers
     , uuid
   default-language: GHC2021
@@ -3644,7 +3644,6 @@ test-suite spec
       OverloadedStrings
       PatternSynonyms
       RecordWildCards
-      StrictData
       TypeFamilies
       TypeFamilyDependencies
       TypeOperators

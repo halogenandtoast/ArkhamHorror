@@ -4827,7 +4827,6 @@ preloadModifiers g = case gameMode g of
               <> map ChaosTokenTarget tokens
               <> map ChaosTokenFaceTarget [minBound .. maxBound]
               <> map toTarget entities
-              <> map CardTarget (toList $ gameCards g)
               <> map CardIdTarget (keys $ gameCards g)
               <> map
                 (InvestigatorHandTarget . toId)

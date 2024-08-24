@@ -415,8 +415,8 @@ instance RunMessage AssetAttrs where
           AbilitySource s i -> insertAfterMatching [afterLast] \case
             ResolvedAbility ab -> ab.source == s && ab.index == i
             _ -> False
-          CardSource c -> insertAfterMatching [afterLast] \case
-            ResolvedPlayCard _ c' -> c.id == c'.id
+          CardIdSource cid -> insertAfterMatching [afterLast] \case
+            ResolvedPlayCard _ c' -> cid == c'.id
             ResolvedAbility _ -> True
             _ -> False
           EventSource e -> do
@@ -459,8 +459,6 @@ instance RunMessage AssetAttrs where
         <> [RemoveFromPlay $ toSource a, discardMsg, afterWindows]
       for_ a.cardsUnderneath $ push . DiscardedCard . toCardId
       pure a
-    Discard mInvestigator source (CardTarget c) | c.id == toCardId a -> do
-      runMessage (Discard mInvestigator source (toTarget a)) a
     Exile target | a `isTarget` target -> do
       pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]
       pure $ a & exiledL .~ True

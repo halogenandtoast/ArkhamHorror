@@ -22,7 +22,6 @@ default-extensions:
 - OverloadedStrings
 - PatternSynonyms
 - RecordWildCards
-- StrictData
 - TypeFamilies
 - TypeFamilyDependencies
 - TypeOperators
@@ -35,6 +34,7 @@ build-tools:
 library:
   source-dirs: library
   dependencies:
+    - time
     - MonadRandom
     - aeson
     - aeson-casing

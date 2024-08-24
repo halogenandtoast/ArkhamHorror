@@ -532,8 +532,6 @@ instance RunMessage SkillTest where
       pure $ s & committedCardsL . each %~ filter ((/= card.id) . toCardId)
     ReturnToHand _ (CardIdTarget cardId) -> do
       pure $ s & committedCardsL . each %~ filter ((/= cardId) . toCardId)
-    ReturnToHand _ (CardTarget card) -> do
-      pure $ s & committedCardsL . each %~ filter (/= card)
     SkillTestResults {} -> do
       modifiers' <- getModifiers (toTarget s)
       -- We may be recalculating so we want to remove all windows an buttons to apply

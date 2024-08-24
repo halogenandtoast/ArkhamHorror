@@ -133,7 +133,6 @@ instance RunMessage AssetAttrs where
         damageEffect = case source of
           EnemyAttackSource _ -> AttackDamageEffect
           _ -> NonAttackDamageEffect
-      iids <- getInvestigatorIds
       pushAll
         $ [PlaceDamage source (toTarget a) (damage + n) | damage > 0]
         <> [PlaceHorror source (toTarget a) horror | horror > 0]

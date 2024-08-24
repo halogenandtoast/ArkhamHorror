@@ -447,7 +447,7 @@ applyResults = chooseOptionMatching "apply skill test results" \case
 
 inWindow :: Investigator -> TestAppT () -> TestAppT ()
 inWindow self body = do
-  run $ CheckWindow [toId self] (defaultWindows $ toId self)
+  run $ CheckWindows (defaultWindows $ toId self)
   body
 
 assertNone :: (HasCallStack, Query a, Show a, Show (QueryElement a)) => a -> TestAppT ()

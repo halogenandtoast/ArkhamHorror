@@ -975,8 +975,14 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       && ((costStatus == PaidCost) || (canAffordCost || canAffordAlternateResourceCost))
       && (none prevents modifiers)
       && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow || isBobJenkins)
-      && (canEvade || (cdOverrideActionPlayableIfCriteriaMet pcDef && #evade `elem` cdActions pcDef))
-      && (canFight || (cdOverrideActionPlayableIfCriteriaMet pcDef && #fight `elem` cdActions pcDef))
+      && ( (#evade `notElem` cdActions pcDef)
+            || canEvade
+            || (cdOverrideActionPlayableIfCriteriaMet pcDef && #evade `elem` cdActions pcDef)
+         )
+      && ( (#fight `notElem` cdActions pcDef)
+            || canFight
+            || (cdOverrideActionPlayableIfCriteriaMet pcDef && #fight `elem` cdActions pcDef)
+         )
       && ((#investigate `notElem` cdActions pcDef) || canInvestigate)
       && passesCriterias
       && passesLimits'

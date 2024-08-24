@@ -28,7 +28,7 @@ spec = describe "\"Ashcan\" Pete" $ do
         , drawCards ashcanPete.id ashcanPete 1
         , playAsset ashcanPete asset
         , Exhaust (toTarget asset)
-        , CheckWindow [toId ashcanPete] [fastPlayerWindow]
+        , CheckWindows [fastPlayerWindow]
         ]
       chooseOptionMatching
         "activate ability"

@@ -81,8 +81,7 @@ pushBatch batchId msg = push $ Would batchId [msg]
 pushBatched :: HasQueue Message m => BatchId -> [Message] -> m ()
 pushBatched batchId msgs = push $ Would batchId msgs
 
-wouldDo
-  :: (MonadRandom m, HasGame m, HasQueue Message m) => Message -> WindowType -> WindowType -> m ()
+wouldDo :: (MonadRandom m, HasQueue Message m) => Message -> WindowType -> WindowType -> m ()
 wouldDo msg wouldWindow window = do
   (batchId, wouldWindowsMsgs) <- wouldWindows wouldWindow
   let framed = doBatch batchId msg window
@@ -92,7 +91,7 @@ wouldDo msg wouldWindow window = do
 windows to add a single one at a time
 -}
 wouldDoEach
-  :: (MonadRandom m, HasGame m, HasQueue Message m)
+  :: (MonadRandom m, HasQueue Message m)
   => Int
   -> Message
   -> WindowType -- outer would window

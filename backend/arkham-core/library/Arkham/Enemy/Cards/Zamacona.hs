@@ -24,10 +24,12 @@ instance HasModifiersFor Zamacona where
 
 instance HasAbilities Zamacona where
   getAbilities (Zamacona (attrs `With` meta)) =
-    [ restrictedAbility attrs 1 (youExist (investigatorIs Investigators.alessandraZorzi) <> criteria)
-        $ forced
-        $ FirstTimeParleyingThisRound #when (investigatorIs Investigators.alessandraZorzi)
-    ]
+    extend
+      attrs
+      [ restrictedAbility attrs 1 (youExist (investigatorIs Investigators.alessandraZorzi) <> criteria)
+          $ forced
+          $ FirstTimeParleyingThisRound #when (investigatorIs Investigators.alessandraZorzi)
+      ]
    where
     criteria = if punishParley meta then NoRestriction else Never
 

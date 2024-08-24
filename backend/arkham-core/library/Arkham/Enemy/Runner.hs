@@ -428,7 +428,6 @@ instance RunMessage EnemyAttrs where
         mods <- getModifiers enemyId
         when (wantsToMove && CannotMove `notElem` mods) $ do
           keywords <- getModifiedKeywords a
-          leadId <- getLeadInvestigatorId
           when (Keyword.Hunter `elem` keywords) do
             pushAll
               [ CheckWindows [mkWhen $ Window.MovedFromHunter enemyId]
@@ -544,7 +543,7 @@ instance RunMessage EnemyAttrs where
                 then matchingClosestLocationIds
                 else filteredClosestLocationIds
 
-          (leadId, lead) <- getLeadInvestigatorPlayer
+          lead <- getLeadPlayer
           pathIds <-
             concatForM
               destinationLocationIds
@@ -582,7 +581,7 @@ instance RunMessage EnemyAttrs where
           destinationLocationIds <-
             select $ NearestLocationToLocation loc (locationMatcherModifier lMatcher)
 
-          (leadId, lead) <- getLeadInvestigatorPlayer
+          lead <- getLeadPlayer
           pathIds <-
             concatForM destinationLocationIds (select . locationMatcherModifier . ClosestPathLocation loc)
           case pathIds of

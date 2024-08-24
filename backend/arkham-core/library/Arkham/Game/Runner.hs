@@ -1,5 +1,5 @@
 {-# LANGUAGE MultiWayIf #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Game.Runner where
 

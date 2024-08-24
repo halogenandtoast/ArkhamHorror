@@ -56,7 +56,7 @@ spec = describe "The Necronomicon" $ do
             DealtHorror {} -> True
             _ -> False
         ref <- createMessageChecker \case
-          CheckWindow _ ws -> any (dealtHorrorWindow . windowType) ws
+          CheckWindows ws -> any (dealtHorrorWindow . windowType) ws
           _ -> False
         theNecronomicon <- selectJust $ assetIs Cards.theNecronomicon
         [action] <- theNecronomicon.abilities

@@ -12,7 +12,6 @@ import Arkham.Ability as X hiding (PaidCost)
 import Arkham.ChaosToken as X
 import Arkham.ClassSymbol as X
 import Arkham.Classes as X
-import Arkham.Debug
 import Arkham.Helpers.Investigator as X
 import Arkham.Helpers.Message as X hiding (
   InvestigatorDamage,

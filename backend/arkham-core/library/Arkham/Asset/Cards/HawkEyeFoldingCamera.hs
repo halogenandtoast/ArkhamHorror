@@ -39,8 +39,8 @@ instance HasAbilities HawkEyeFoldingCamera where
    where
     locationMatcher =
       if null (locations meta)
-        then Anywhere
-        else NotLocation (LocationMatchAny $ map LocationWithId $ locations meta)
+        then YourLocation
+        else YourLocation <> NotLocation (LocationMatchAny $ map LocationWithId $ locations meta)
 
 toLocation :: [Window] -> LocationId
 toLocation [] = error "invalid call"

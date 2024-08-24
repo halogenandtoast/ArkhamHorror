@@ -46,7 +46,7 @@ instance RunMessage StrongArmed1 where
       whenJustM getSkillTestInvestigator \iid' -> do
         cancelChaosToken token
         pushAll
-          [ CancelEachNext (toSource attrs) [RunWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
+          [ CancelEachNext (toSource attrs) [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
           , ReturnChaosTokens [token]
           , UnfocusChaosTokens
           , DrawAnotherChaosToken iid'

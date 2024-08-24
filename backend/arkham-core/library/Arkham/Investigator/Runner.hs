@@ -12,6 +12,7 @@ import Arkham.Ability as X hiding (PaidCost)
 import Arkham.ChaosToken as X
 import Arkham.ClassSymbol as X
 import Arkham.Classes as X
+import Arkham.Debug
 import Arkham.Helpers.Investigator as X
 import Arkham.Helpers.Message as X hiding (
   InvestigatorDamage,
@@ -262,7 +263,7 @@ runWindow attrs windows actions playableCards = do
         pushAll
           $ toForcedAbilities silent
           <> [chooseOne player (toUseAbilities normal) | notNull normal]
-          <> [RunWindow iid windows]
+          <> [CheckWindows windows]
       else do
         actionsWithMatchingWindows <-
           for actions $ \ability@Ability {..} ->
@@ -272,11 +273,11 @@ runWindow attrs windows actions playableCards = do
           $ chooseOne player
           $ [ targetLabel
               (toCardId c)
-              [InitiatePlayCard iid c Nothing NoPayment windows True, RunWindow iid windows]
+              [InitiatePlayCard iid c Nothing NoPayment windows True, CheckWindows windows]
             | c <- playableCards
             ]
           <> map
-            (\(ability, windows') -> AbilityLabel iid ability windows' [] [RunWindow iid windows])
+            (\(ability, windows') -> AbilityLabel iid ability windows' [] [CheckWindows windows])
             actionsWithMatchingWindows
           <> [SkipTriggersButton iid | skippable]
 
@@ -1224,7 +1225,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       let horrorToCancel = if CannotCancelHorror `elem` mods then 0 else sum [n | WillCancelHorror n <- mods]
       let horror' = max 0 (horror - horrorToCancel)
       pushAll
-        $ [ CheckWindow [iid]
+        $ [ CheckWindows
             $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror')
             : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage DamageDirect) | damage > 0]
               <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror') | horror' > 0]
@@ -1250,10 +1251,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         else do
           let horrorToCancel = if CannotCancelHorror `elem` mods then 0 else sum [n | WillCancelHorror n <- mods]
           let horror' = max 0 (horror - horrorToCancel)
-          iids <- getInvestigatorIds
-
           pushAll
-            $ [ CheckWindow iids
+            $ [ CheckWindows
                 $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror')
                 : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage strategy) | damage > 0]
                   <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror') | horror' > 0]
@@ -1281,12 +1280,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     whenPlacedWindowMsg <- checkWindows $ map mkWhen placedWindows
     afterPlacedWindowMsg <- checkWindows $ map mkAfter placedWindows
     whenAssignedWindowMsg <- checkWhen $ Window.AssignedHorror source iid horrorTargets
-    iids <- getInvestigatorIds
     pushAll
       $ [ whenPlacedWindowMsg
         , afterPlacedWindowMsg
         ]
-      <> [ CheckWindow iids
+      <> [ CheckWindows
             $ [ mkWhen (Window.DealtDamage source damageEffect target damage)
               | target <- nub damageTargets
               , let damage = count (== target) damageTargets
@@ -1299,7 +1297,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          ]
       <> [whenAssignedWindowMsg | notNull horrorTargets]
       <> [CheckDefeated source (toTarget aid) | aid <- checkAssets]
-      <> [ CheckWindow iids
+      <> [ CheckWindows
             $ [ mkAfter (Window.DealtDamage source damageEffect target damage)
               | target <- nub damageTargets
               , let damage = count (== target) damageTargets
@@ -1629,7 +1627,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   Investigate investigation | investigation.investigator == investigatorId && investigation.isAction -> do
     handleSkillTestNesting_ investigation.skillTest msg do
-      (beforeWindowMsg, _, afterWindowMsg) <- frame (Window.PerformAction investigatorId #investigate)
+      let (beforeWindowMsg, _, afterWindowMsg) = frame (Window.PerformAction investigatorId #investigate)
       modifiers <- getModifiers @LocationId investigation.location
       modifiers' <- getModifiers a
       let
@@ -1777,7 +1775,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         then push $ PlayCard iid card mtarget payment windows' asAction
         else
           pushAll
-            [ CheckWindow [iid] [mkWhen (Window.PlayCard iid card)]
+            [ CheckWindows [mkWhen (Window.PlayCard iid card)]
             , PlayCard iid card mtarget payment windows' asAction
             , afterPlayCard
             , ResolvedPlayCard iid card
@@ -2602,7 +2600,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   allDrawn = investigatorDrawnCards <> drawn
                   shuffleBackInEachWeakness = ShuffleBackInEachWeakness `elem` cardDrawRules cardDraw
                   handleCardDraw c = do
-                    (before, _, after) <- frame $ Window.DrawCard iid (toCard c) cardDraw.deck
+                    let (before, _, after) = frame $ Window.DrawCard iid (toCard c) cardDraw.deck
                     pure $ [before] <> drawThisCard iid c <> [after]
                 msgs <- if (not shuffleBackInEachWeakness) then concatMapM handleCardDraw allDrawn else pure []
                 player <- getPlayer iid
@@ -2624,7 +2622,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   if null deck'
                     then pure <$> checkWindows ((`mkWindow` Window.DeckHasNoCards iid) <$> [#when, #after])
                     else pure []
-                (before, _, after) <- frame $ Window.DrawCards iid $ map toCard allDrawn
+                let (before, _, after) = frame $ Window.DrawCards iid $ map toCard allDrawn
                 checkHandSize <- hasModifier iid CheckHandSizeAfterDraw
 
                 -- Cards with revelations won't be in hand afte they resolve, so exclude them from the discard
@@ -2842,7 +2840,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   LoadSideDeck iid deck | iid == investigatorId -> do
     pure $ a & sideDeckL ?~ deck
   InvestigatorCommittedCard iid card | iid == investigatorId -> do
-    commitedCardWindows <- Helpers.windows [Window.CommittedCard iid card]
+    let commitedCardWindows = Helpers.windows [Window.CommittedCard iid card]
     pushAll $ FocusCards [card] : commitedCardWindows <> [UnfocusCards]
     pure
       $ a
@@ -2959,15 +2957,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          | card <- uncommittableCards
          ]
     pure a
-  CheckWindow iids windows | investigatorId `elem` iids -> do
-    a <$ push (RunWindow investigatorId windows)
-  RunWindow iid windows
-    | iid == toId a
-    , not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows -> do
-        actions <- getActions iid windows
-        playableCards <- getPlayableCards a (UnpaidCost NeedsAction) windows
-        runWindow a windows actions playableCards
-        pure a
+  CheckWindows windows | not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows -> do
+    actions <- getActions a.id windows
+    playableCards <- getPlayableCards a (UnpaidCost NeedsAction) windows
+    runWindow a windows actions playableCards
+    pure a
   SpendActions iid _ _ 0 | iid == investigatorId -> do
     pure a
   SpendActions iid source mAction n | iid == investigatorId -> do
@@ -3157,7 +3151,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (foundCardsL . each %~ filter (`notElem` cards))
       & (bondedCardsL %~ filter (`notElem` cards))
   DrawToHand iid cards | iid == investigatorId -> do
-    (before, _, after) <- frame $ Window.DrawCards iid $ map toCard cards
+    let (before, _, after) = frame $ Window.DrawCards iid $ map toCard cards
     push before
     for_ (reverse cards) \case
       PlayerCard pc -> push $ InvestigatorDrewPlayerCard iid pc
@@ -3384,7 +3378,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
       when (searchType == Searching) $ do
         pushBatch batchId
-          $ CheckWindow [iid] [Window #when (Window.AmongSearchedCards batchId iid) (Just batchId)]
+          $ CheckWindows [Window #when (Window.AmongSearchedCards batchId iid) (Just batchId)]
 
       pure
         $ a

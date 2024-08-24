@@ -117,7 +117,7 @@ instance RunMessage CustomModifications where
       let source = toAbilitySource attrs 1
       cancelChaosToken token
       pushAll
-        [ CancelEachNext source [RunWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
+        [ CancelEachNext source [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
         , ReturnChaosTokens [token]
         , UnfocusChaosTokens
         , DrawAnotherChaosToken iid

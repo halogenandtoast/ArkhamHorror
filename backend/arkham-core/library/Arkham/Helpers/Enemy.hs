@@ -45,9 +45,8 @@ spawnAt
   :: (HasGame m, HasQueue Message m, MonadRandom m) => EnemyId -> Maybe InvestigatorId -> SpawnAt -> m ()
 spawnAt _ _ NoSpawn = pure ()
 spawnAt eid miid (SpawnAt locationMatcher) = do
-  windows' <- windows [Window.EnemyAttemptsToSpawnAt eid locationMatcher]
   pushAll
-    $ windows'
+    $ windows [Window.EnemyAttemptsToSpawnAt eid locationMatcher]
     <> resolve
       (EnemySpawnAtLocationMatching miid locationMatcher eid)
 spawnAt eid _ (SpawnEngagedWith investigatorMatcher) = do
@@ -66,20 +65,17 @@ spawnAt eid miid SpawnAtRandomSetAsideLocation = do
   cards <- getSetAsideCardsMatching (CardWithType LocationType)
   case nonEmpty cards of
     Nothing -> do
-      windows' <- windows [Window.EnemyAttemptsToSpawnAt eid Nowhere]
       pushAll
-        $ windows'
+        $ windows [Window.EnemyAttemptsToSpawnAt eid Nowhere]
         <> resolve
           (EnemySpawnAtLocationMatching miid Nowhere eid)
     Just locations -> do
       x <- sample locations
       (locationId, locationPlacement) <- placeLocation x
-      windows' <-
-        windows
-          [Window.EnemyAttemptsToSpawnAt eid $ LocationWithId locationId]
       pushAll
         $ locationPlacement
-        : windows'
+        : windows
+          [Window.EnemyAttemptsToSpawnAt eid $ LocationWithId locationId]
           <> resolve
             (EnemySpawnAtLocationMatching miid (LocationWithId locationId) eid)
 

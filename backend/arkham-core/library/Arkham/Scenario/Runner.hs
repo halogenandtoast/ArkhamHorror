@@ -434,8 +434,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       Nothing -> error "no locations?"
       Just lids -> do
         randomLocationId <- sample lids
-        msgs <- windows [Window.ChosenRandomLocation randomLocationId]
-        a <$ pushAll (msgs <> [ChosenRandomLocation target randomLocationId])
+        pushAll
+          $ windows [Window.ChosenRandomLocation randomLocationId]
+          <> [ChosenRandomLocation target randomLocationId]
+    pure a
   SetCardAside card -> pure $ a & setAsideCardsL %~ (card :)
   PlaceLocation _ card -> pure $ a & setAsideCardsL %~ delete card
   ReplaceLocation _ card _ -> pure $ a & setAsideCardsL %~ delete card
@@ -561,7 +563,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   PlaceUnderneath ActDeckTarget cards -> do
     for_ cards $ \card ->
       pushAll
-        =<< splitWithWindows
+        $ splitWithWindows
           (PlacedUnderneath ActDeckTarget card)
           [Window.PlaceUnderneath ActDeckTarget card]
     pure a

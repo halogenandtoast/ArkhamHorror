@@ -27,7 +27,7 @@ instance RunMessage QuickGetaway where
       moveWithSkillTest \case
         PerformEnemyAttack eid -> eid == details.enemy
         After (PerformEnemyAttack eid) -> eid == details.enemy
-        CheckWindow _ ws -> any (isEnemyAttackWindow . windowType) ws
+        CheckWindows ws -> any (isEnemyAttackWindow . windowType) ws
         _ -> False
 
       sid <- getRandom

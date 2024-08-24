@@ -265,12 +265,10 @@ instance RunMessage SkillTest where
       withQueue_ $ filter $ \case
         Will FailedSkillTest {} -> False
         Will PassedSkillTest {} -> False
-        CheckWindow _ [Window Timing.When (Window.WouldFailSkillTest _) _] ->
+        CheckWindows [Window Timing.When (Window.WouldFailSkillTest _) _] ->
           False
-        CheckWindow _ [Window Timing.When (Window.WouldPassSkillTest _) _] ->
+        CheckWindows [Window Timing.When (Window.WouldPassSkillTest _) _] ->
           False
-        RunWindow _ [Window Timing.When (Window.WouldPassSkillTest _) _] -> False
-        RunWindow _ [Window Timing.When (Window.WouldFailSkillTest _) _] -> False
         Ask player' (ChooseOne [SkillTestApplyResultsButton])
           | player == player' -> False
         _ -> True
@@ -297,7 +295,7 @@ instance RunMessage SkillTest where
           revealMsg = RevealChaosToken (SkillTestSource sid) iid chaosTokenFace
         pushAll
           [ When revealMsg
-          , CheckWindow [iid] [mkWindow Timing.AtIf (Window.RevealChaosToken iid chaosTokenFace)]
+          , CheckWindows [mkWindow Timing.AtIf (Window.RevealChaosToken iid chaosTokenFace)]
           , revealMsg
           , After revealMsg
           ]
@@ -507,7 +505,6 @@ instance RunMessage SkillTest where
             )
             (s ^. committedCardsL . to mapToList)
 
-      skillTestEndsWindows <- windows [Window.SkillTestEnded s]
       discardMessages <- forMaybeM discards $ \(iid, discard) -> do
         mods <- getModifiers (toCardId discard)
         let mDevourer = listToMaybe [iid' | SetAfterPlay (DevourThis iid') <- mods]
@@ -522,7 +519,7 @@ instance RunMessage SkillTest where
       pushAll
         $ ResetChaosTokens (toSource s)
         : discardMessages
-          <> skillTestEndsWindows
+          <> windows [Window.SkillTestEnded s]
           <> [ AfterSkillTestEnds skillTestSource skillTestTarget skillTestResult
              , Msg.SkillTestEnded skillTestId
              ]
@@ -811,13 +808,9 @@ instance RunMessage SkillTest where
         withQueue_ $ filter $ \case
           Will FailedSkillTest {} -> False
           Will PassedSkillTest {} -> False
-          CheckWindow _ [Window Timing.When (Window.WouldFailSkillTest _) _] ->
+          CheckWindows [Window Timing.When (Window.WouldFailSkillTest _) _] ->
             False
-          CheckWindow _ [Window Timing.When (Window.WouldPassSkillTest _) _] ->
-            False
-          RunWindow _ [Window Timing.When (Window.WouldPassSkillTest _) _] ->
-            False
-          RunWindow _ [Window Timing.When (Window.WouldFailSkillTest _) _] ->
+          CheckWindows [Window Timing.When (Window.WouldPassSkillTest _) _] ->
             False
           Ask player' (ChooseOne [SkillTestApplyResultsButton])
             | player == player' -> False

@@ -17,6 +17,6 @@ readStory
   -> CardDef
   -> m ()
 readStory iid (asId -> lid) storyDef = do
-  (whenWindowMsg, _, afterWindowMsg) <- frame (Window.FlipLocation iid lid)
+  let (whenWindowMsg, _, afterWindowMsg) = frame (Window.FlipLocation iid lid)
   storyCard <- genCard storyDef
   pushAll [whenWindowMsg, afterWindowMsg, ReadStory iid storyCard ResolveIt Nothing]

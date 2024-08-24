@@ -96,7 +96,7 @@ instance RunMessage NathanielChoEffect where
             , disable attrs
             ]
       pure e
-    CheckWindow _ windows' | any (isTakeDamage attrs) windows' -> do
+    CheckWindows windows' | any (isTakeDamage attrs) windows' -> do
       push $ disable attrs
       pure e
     SkillTestEnds _ _ _ -> do

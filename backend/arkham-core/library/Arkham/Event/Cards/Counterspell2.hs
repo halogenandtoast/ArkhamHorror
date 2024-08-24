@@ -18,6 +18,6 @@ instance RunMessage Counterspell2 where
     InvestigatorPlayEvent _ (is attrs -> True) _ (getChaosToken -> token) _ -> do
       cancelChaosToken token
       push
-        $ CancelEachNext (toSource attrs) [RunWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
+        $ CancelEachNext (toSource attrs) [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
       pure e
     _ -> Counterspell2 <$> liftRunMessage msg attrs

@@ -67,7 +67,6 @@ import Arkham.Helpers.SkillTest (getIsPerilous, getSkillTestDifficulty)
 import Arkham.Helpers.Tarot
 import Arkham.History
 import Arkham.Id
-import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (Field (..), Investigator, InvestigatorAttrs (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Types hiding (location)
@@ -772,24 +771,22 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
   go :: forall n. HasGame n => n Bool
   go = withDepthGuard 3 False $ do
     attrs <- getAttrs @Investigator iid
-    isBobJenkins <-
-      case source of
-        AbilitySource (InvestigatorSource iid') 1 -> do
-          case toCardOwner c of
-            Just owner ->
-              andM
-                [ iid' <=~> Matcher.investigatorIs Investigators.bobJenkins
-                , owner <=~> Matcher.affectsOthers (Matcher.colocatedWith iid')
-                , pure $ c `cardMatch` (Matcher.CardWithType AssetType <> #item)
-                , pure
-                    $ BobJenkinsAction
-                    `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)
-                ]
-            Nothing -> pure False
-        _ -> pure False
+    isBobJenkins <- case source of
+      AbilitySource (InvestigatorSource "08016") 1 -> do
+        case toCardOwner c of
+          Just owner ->
+            andM
+              [ pure $ c `cardMatch` card_ (#asset <> #item)
+              , pure
+                  $ BobJenkinsAction
+                  `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)
+              , owner <=~> Matcher.affectsOthers (Matcher.colocatedWith "08016")
+              ]
+          Nothing -> pure False
+      _ -> pure False
     iids <- filter (/= iid) <$> getInvestigatorIds
     iidsWithModifiers <- for iids $ \iid' -> (iid',) <$> getModifiers iid'
-    canHelpPay <- flip filterM iidsWithModifiers $ \(iid', modifiers') -> do
+    canHelpPay <- flip filterM iidsWithModifiers \(iid', modifiers') -> do
       bobJenkinsPermitted <-
         if isBobJenkins
           then do
@@ -798,12 +795,9 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
               _ -> pure False
           else pure False
       modifierPermitted <- flip anyM modifiers' $ \case
-        CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher ->
-          andM
-            [ iid <=~> iMatcher
-            , pure $ cardMatch c cMatcher
-            , withoutModifier iid' CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
-            ]
+        CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher
+          | cardMatch c cMatcher && CannotAffectOtherPlayersWithPlayerEffectsExceptDamage `notElem` modifiers' ->
+              iid <=~> iMatcher
         _ -> pure False
       pure $ bobJenkinsPermitted || modifierPermitted
 
@@ -811,13 +805,9 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
     resourcesFromAssets <-
       sum <$> for ((iid, modifiers) : iidsWithModifiers) \(iid', modifiers') -> do
         sum <$> for modifiers' \case
-          CanSpendUsesAsResourceOnCardFromInvestigator assetId uType iMatcher cMatcher -> do
-            canContribute <-
-              andM
-                [ iid <=~> iMatcher
-                , pure $ cardMatch c cMatcher
-                , (iid == iid' ||) <$> withoutModifier iid' CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
-                ]
+          CanSpendUsesAsResourceOnCardFromInvestigator assetId uType iMatcher cMatcher | cardMatch c cMatcher -> do
+            let canAffect = iid == iid' || CannotAffectOtherPlayersWithPlayerEffectsExceptDamage `notElem` modifiers'
+            canContribute <- (canAffect &&) <$> iid <=~> iMatcher
             if canContribute
               then fieldMap AssetUses (findWithDefault 0 uType) assetId
               else pure 0
@@ -827,7 +817,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       (resourcesFromAssets +)
         . sum
         <$> traverse (field InvestigatorResources . fst) canHelpPay
-    cardModifiers <- getModifiers (toCardId c)
+    cardModifiers <- getModifiers c
     let title = nameTitle (cdName pcDef)
     passesUnique <- case (cdUnique pcDef, cdCardType pcDef) of
       (True, AssetType) ->
@@ -885,29 +875,36 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         (cdFastWindow pcDef <|> canBecomeFastWindow)
 
     canEvade <-
-      if inFastWindow
+      if (#evade `elem` cdActions pcDef)
         then
-          asIfTurn iid
-            $ hasEvadeActions iid (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
-        else hasEvadeActions iid (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
+          if inFastWindow
+            then
+              asIfTurn iid
+                $ hasEvadeActions iid (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
+            else hasEvadeActions iid (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
+        else pure False
 
     canFight <-
-      if inFastWindow
+      if (#fight `elem` cdActions pcDef)
         then
-          asIfTurn iid
-            $ hasFightActions
-              iid
-              (CardIdSource c.id)
-              (Matcher.DuringTurn Matcher.You)
-              (defaultWindows iid <> windows')
-        else
-          hasFightActions
-            iid
-            (CardIdSource c.id)
-            (Matcher.DuringTurn Matcher.You)
-            (defaultWindows iid <> windows')
+          if inFastWindow
+            then
+              asIfTurn iid
+                $ hasFightActions
+                  iid
+                  (CardIdSource c.id)
+                  (Matcher.DuringTurn Matcher.You)
+                  (defaultWindows iid <> windows')
+            else
+              hasFightActions
+                iid
+                (CardIdSource c.id)
+                (Matcher.DuringTurn Matcher.You)
+                (defaultWindows iid <> windows')
+        else pure False
 
-    canInvestigate <- isJust <$> field InvestigatorLocation iid
+    canInvestigate <-
+      ((#investigate `elem` cdActions pcDef) &&) <$> (isJust <$> field InvestigatorLocation iid)
 
     passesLimits' <- passesLimits iid c
     let
@@ -978,15 +975,8 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       && ((costStatus == PaidCost) || (canAffordCost || canAffordAlternateResourceCost))
       && (none prevents modifiers)
       && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow || isBobJenkins)
-      && ( #evade
-            `notElem` cdActions pcDef
-            || canEvade
-            || cdOverrideActionPlayableIfCriteriaMet pcDef
-         )
-      && ( (#fight `notElem` cdActions pcDef)
-            || canFight
-            || cdOverrideActionPlayableIfCriteriaMet pcDef
-         )
+      && (canEvade || (cdOverrideActionPlayableIfCriteriaMet pcDef && #evade `elem` cdActions pcDef))
+      && (canFight || (cdOverrideActionPlayableIfCriteriaMet pcDef && #fight `elem` cdActions pcDef))
       && ((#investigate `notElem` cdActions pcDef) || canInvestigate)
       && passesCriterias
       && passesLimits'
@@ -1738,11 +1728,11 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.AttachCard timing mWhoMatcher cardMatcher targetMatcher -> guardTiming timing \case
       Window.AttachCard mWho card target -> do
         andM
-          [ maybe
+          [ pure $ card `cardMatch` cardMatcher
+          , maybe
               (pure True)
               (\matcher -> maybe (pure False) (\who -> matchWho iid who matcher) mWho)
               mWhoMatcher
-          , pure $ card `cardMatch` cardMatcher
           , target `targetMatches` targetMatcher
           ]
       _ -> noMatch
@@ -1764,23 +1754,23 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.PlacedToken timing sourceMatcher targetMatcher token -> guardTiming timing \case
       Window.PlacedToken source' target' token' _ ->
         andM
-          [ targetMatches target' targetMatcher
+          [ pure $ token == token'
+          , targetMatches target' targetMatcher
           , sourceMatches source' sourceMatcher
-          , pure $ token == token'
           ]
       _ -> noMatch
     Matcher.EntersThreatArea timing whoMatcher cardMatcher -> guardTiming timing \case
       Window.EntersThreatArea who card -> do
         andM
-          [ matchWho iid who whoMatcher
-          , pure $ card `cardMatch` cardMatcher
+          [ pure $ card `cardMatch` cardMatcher
+          , matchWho iid who whoMatcher
           ]
       _ -> noMatch
     Matcher.WouldPayCardCost timing whomatcher cardMatcher -> guardTiming timing \case
       Window.WouldPayCardCost who _ _ card -> do
         andM
-          [ matchWho iid who whomatcher
-          , pure $ card `cardMatch` cardMatcher
+          [ pure $ card `cardMatch` cardMatcher
+          , matchWho iid who whomatcher
           ]
       _ -> noMatch
     Matcher.AttackOrEffectSpentLastUse timing sourceMatcher targetMatcher uType -> guardTiming timing $ \case
@@ -1839,23 +1829,23 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.RevealChaosTokenEffect who token effectId -> do
           cardCode <- field EffectCardCode effectId
           andM
-            [ matchWho iid who whoMatcher
-            , pure $ chaosTokenFace token `elem` tokens
+            [ pure $ chaosTokenFace token `elem` tokens
             , pure $ lookupCard cardCode nullCardId `cardMatch` cardMatcher
+            , matchWho iid who whoMatcher
             ]
         Window.RevealChaosTokenEventEffect who tokens' eventId -> do
           card <- field EventCard eventId
           andM
-            [ matchWho iid who whoMatcher
-            , pure $ any ((`elem` tokens) . chaosTokenFace) tokens'
+            [ pure $ any ((`elem` tokens) . chaosTokenFace) tokens'
             , pure $ card `cardMatch` cardMatcher
+            , matchWho iid who whoMatcher
             ]
         Window.RevealChaosTokenAssetAbilityEffect who tokens' assetId -> do
           card <- field AssetCard assetId
           andM
-            [ matchWho iid who whoMatcher
-            , pure $ any ((`elem` tokens) . chaosTokenFace) tokens'
+            [ pure $ any ((`elem` tokens) . chaosTokenFace) tokens'
             , pure $ card `cardMatch` cardMatcher
+            , matchWho iid who whoMatcher
             ]
         _ -> noMatch
     Matcher.GameBegins timing -> guardTiming timing $ pure . (== Window.GameBegins)
@@ -1876,40 +1866,40 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       guardTiming timing $ \case
         Window.TakeHorror source' (InvestigatorTarget who) ->
           andM
-            [ sourceMatches source' sourceMatcher
-            , matchWho iid who whoMatcher
+            [ matchWho iid who whoMatcher
+            , sourceMatches source' sourceMatcher
             ]
         Window.DealtHorror source' (InvestigatorTarget who) _ ->
           andM
-            [ sourceMatches source' sourceMatcher
-            , matchWho iid who whoMatcher
+            [ matchWho iid who whoMatcher
+            , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch
     Matcher.InvestigatorWouldTakeDamage timing whoMatcher sourceMatcher damageTypeMatcher ->
       guardTiming timing $ \case
         Window.WouldTakeDamage source' (InvestigatorTarget who) _ strategy ->
           andM
-            [ sourceMatches source' sourceMatcher
+            [ pure $ damageTypeMatches strategy damageTypeMatcher
             , matchWho iid who whoMatcher
-            , pure $ damageTypeMatches strategy damageTypeMatcher
+            , sourceMatches source' sourceMatcher
             ]
         Window.WouldTakeDamageOrHorror source' (InvestigatorTarget who) n _ | n > 0 -> do
           andM
-            [ sourceMatches source' sourceMatcher
-            , matchWho iid who whoMatcher
+            [ matchWho iid who whoMatcher
+            , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch
     Matcher.InvestigatorWouldTakeHorror timing whoMatcher sourceMatcher ->
       guardTiming timing $ \case
         Window.WouldTakeHorror source' (InvestigatorTarget who) _ ->
           andM
-            [ sourceMatches source' sourceMatcher
-            , matchWho iid who whoMatcher
+            [ matchWho iid who whoMatcher
+            , sourceMatches source' sourceMatcher
             ]
         Window.WouldTakeDamageOrHorror source' (InvestigatorTarget who) _ n | n > 0 -> do
           andM
-            [ sourceMatches source' sourceMatcher
-            , matchWho iid who whoMatcher
+            [ matchWho iid who whoMatcher
+            , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch
     Matcher.SuccessfullyInvestigatedWithNoClues timing whoMatcher whereMatcher -> guardTiming timing $ \case
@@ -1922,15 +1912,15 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.LostActions timing whoMatcher sourceMatcher -> guardTiming timing $ \case
       Window.LostActions who source' _ ->
         andM
-          [ sourceMatches source' sourceMatcher
-          , matchWho iid who whoMatcher
+          [ matchWho iid who whoMatcher
+          , sourceMatches source' sourceMatcher
           ]
       _ -> noMatch
     Matcher.LostResources timing whoMatcher sourceMatcher -> guardTiming timing $ \case
       Window.LostResources who source' _ ->
         andM
-          [ sourceMatches source' sourceMatcher
-          , matchWho iid who whoMatcher
+          [ matchWho iid who whoMatcher
+          , sourceMatches source' sourceMatcher
           ]
       _ -> noMatch
     Matcher.CancelledOrIgnoredCardOrGameEffect sourceMatcher ->
@@ -1939,8 +1929,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           sourceMatches source' sourceMatcher
         _ -> noMatch
     Matcher.WouldBeShuffledIntoDeck deckMatcher cardMatcher -> case wType of
-      Window.WouldBeShuffledIntoDeck deck card ->
-        andM [deckMatch iid deck deckMatcher, pure $ cardMatch card cardMatcher]
+      Window.WouldBeShuffledIntoDeck deck card
+        | cardMatch card cardMatcher ->
+            deckMatch iid deck deckMatcher
       _ -> noMatch
     Matcher.AddingToCurrentDepth -> case wType of
       Window.AddingToCurrentDepth -> isMatch
@@ -1959,8 +1950,8 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.PlaceUnderneath timing targetMatcher cardMatcher -> guardTiming timing $ \case
       Window.PlaceUnderneath target' card ->
         andM
-          [ targetMatches target' targetMatcher
-          , pure $ cardMatch card cardMatcher
+          [ pure $ cardMatch card cardMatcher
+          , targetMatches target' targetMatcher
           ]
       _ -> noMatch
     Matcher.ActivateAbility timing whoMatcher abilityMatcher -> guardTiming timing $ \case
@@ -1973,8 +1964,8 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.CommittedCard timing whoMatcher cardMatcher -> guardTiming timing $ \case
       Window.CommittedCard who card ->
         andM
-          [ matchWho iid who whoMatcher
-          , pure $ cardMatch card cardMatcher
+          [ pure $ cardMatch card cardMatcher
+          , matchWho iid who whoMatcher
           ]
       _ -> noMatch
     Matcher.CommittedCards timing whoMatcher cardListMatcher -> guardTiming timing $ \case
@@ -2042,12 +2033,12 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       guardTiming timing $ \case
         Window.Discarded mWho source' card ->
           andM
-            [ extendedCardMatch card cardMatcher
-            , maybe
+            [ maybe
                 (pure True)
                 (\matcher -> maybe (pure False) (\who -> matchWho iid who matcher) mWho)
                 mWhoMatcher
             , sourceMatches source' sourceMatcher
+            , extendedCardMatch card cardMatcher
             ]
         _ -> noMatch
     Matcher.AssetWouldBeDiscarded timing assetMatcher -> guardTiming timing $ \case
@@ -2549,8 +2540,8 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       guardTiming timing $ \case
         Window.SuccessfulAttackEnemy who source' enemyId _ -> do
           andM
-            [ enemyMatches enemyId enemyMatcher
-            , matchWho iid who whoMatcher
+            [ matchWho iid who whoMatcher
+            , enemyMatches enemyId enemyMatcher
             , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch
@@ -2558,8 +2549,8 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       guardTiming timing $ \case
         Window.AttemptToEvadeEnemy who enemyId ->
           andM
-            [ enemyMatches enemyId enemyMatcher
-            , matchWho iid who whoMatcher
+            [ matchWho iid who whoMatcher
+            , enemyMatches enemyId enemyMatcher
             ]
         _ -> noMatch
     Matcher.EnemyEvaded timing whoMatcher enemyMatcher ->
@@ -2567,19 +2558,19 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.EnemyEvaded who enemyId -> do
           -- we need to check defeated because things like Kymani's ability can discard them
           andM
-            [ orM
+            [ matchWho iid who whoMatcher
+            , orM
                 [ enemyMatches enemyId enemyMatcher
                 , enemyMatches enemyId (Matcher.OutOfPlayEnemy RemovedZone enemyMatcher)
                 ]
-            , matchWho iid who whoMatcher
             ]
         _ -> noMatch
     Matcher.EnemyEngaged timing whoMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyEngaged who enemyId ->
           andM
-            [ enemyMatches enemyId enemyMatcher
-            , matchWho iid who whoMatcher
+            [ matchWho iid who whoMatcher
+            , enemyMatches enemyId enemyMatcher
             ]
         _ -> noMatch
     Matcher.MythosStep mythosStepMatcher -> guardTiming #when $ \case
@@ -2627,8 +2618,8 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       guardTiming timing $ \case
         Window.EnemyDefeated (Just who) defeatedBy enemyId ->
           andM
-            [ enemyMatches enemyId enemyMatcher
-            , matchWho iid who (Matcher.replaceYouMatcher iid whoMatcher)
+            [ matchWho iid who whoMatcher
+            , enemyMatches enemyId enemyMatcher
             , defeatedByMatches defeatedBy defeatedByMatcher
             ]
         Window.EnemyDefeated Nothing defeatedBy enemyId | whoMatcher == Matcher.You -> do
@@ -3330,9 +3321,9 @@ enemyAttackMatches youId details@EnemyAttackDetails {..} = \case
     modifiers' <- getModifiers (sourceToTarget attackSource)
     enemyModifiers <- getModifiers attackEnemy
     andM
-      [ enemyAttackMatches youId details matcher
-      , pure $ EffectsCannotBeCanceled `notElem` modifiers'
+      [ pure $ EffectsCannotBeCanceled `notElem` modifiers'
       , pure $ AttacksCannotBeCancelled `notElem` enemyModifiers
+      , enemyAttackMatches youId details matcher
       ]
 
 damageEffectMatches
@@ -3463,7 +3454,7 @@ sourceMatches s = \case
     CardCostSource _ -> pure False
     other -> do
       modifiers' <- maybe (pure []) getModifiers (sourceToMaybeTarget other)
-      andM [sourceMatches s sm, pure $ EffectsCannotBeCanceled `notElem` modifiers']
+      andM [pure $ EffectsCannotBeCanceled `notElem` modifiers', sourceMatches s sm]
   Matcher.SourceIs s' -> pure $ s == s'
   Matcher.NotSource matcher -> not <$> sourceMatches s matcher
   Matcher.SourceMatchesAny ms -> anyM (sourceMatches s) ms

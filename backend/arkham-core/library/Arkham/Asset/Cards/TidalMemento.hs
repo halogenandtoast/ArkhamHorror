@@ -59,7 +59,7 @@ instance RunMessage TidalMemento where
       (ChaosTokenTarget token)
       (HandleTargetChoice iid (isAbilitySource attrs 2 -> True) _) -> do
         pushAll
-          [ CancelNext (attrs.ability 2) RunWindowMessage
+          [ CancelNext (attrs.ability 2) CheckWindowMessage
           , UnsealChaosToken token
           , ReplaceCurrentDraw (toSource attrs) iid
               $ Choose (toSource attrs) 1 ResolveChoice [Resolved [token]] []

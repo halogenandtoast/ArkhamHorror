@@ -93,7 +93,7 @@ instance RunMessage TheCityOfArchives where
     StandaloneSetup -> do
       push $ SetChaosTokens standaloneChaosTokens
       pure s
-    CheckWindow _ [Window Timing.When (Window.DrawingStartingHand iid) _] -> do
+    CheckWindows [Window Timing.When (Window.DrawingStartingHand iid) _] -> do
       uniqueItemAssetCards <-
         select
           $ InDeckOf (InvestigatorWithId iid)

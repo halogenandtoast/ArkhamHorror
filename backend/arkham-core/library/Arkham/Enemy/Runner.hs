@@ -355,8 +355,8 @@ instance RunMessage EnemyAttrs where
         if willMove
           then do
             enemyLocation <- field EnemyLocation enemyId
-            leaveWindows <- for enemyLocation \oldId -> windows [Window.EnemyLeaves eid oldId]
-            pushAll $ fromMaybe [] leaveWindows <> [EnemyEntered eid lid, EnemyCheckEngagement eid]
+            let leaveWindows = join $ map (\oldId -> windows [Window.EnemyLeaves eid oldId]) (maybeToList enemyLocation)
+            pushAll $ leaveWindows <> [EnemyEntered eid lid, EnemyCheckEngagement eid]
             pure $ a & placementL .~ AtLocation lid
           else a <$ push (EnemyCheckEngagement eid)
     After (EndTurn _) | not enemyDefeated -> a <$ push (EnemyCheckEngagement $ toId a)
@@ -431,7 +431,7 @@ instance RunMessage EnemyAttrs where
           leadId <- getLeadInvestigatorId
           when (Keyword.Hunter `elem` keywords) do
             pushAll
-              [ CheckWindow [leadId] [mkWhen $ Window.MovedFromHunter enemyId]
+              [ CheckWindows [mkWhen $ Window.MovedFromHunter enemyId]
               , HunterMove (toId a)
               ]
           -- We should never have a case where an enemy has both patrol and
@@ -554,8 +554,8 @@ instance RunMessage EnemyAttrs where
             [lid] -> do
               pushAll
                 [ EnemyMove enemyId lid
-                , CheckWindow [leadId] [mkAfter $ Window.MovedFromHunter enemyId]
-                , CheckWindow [leadId] [mkAfter $ Window.EnemyMovesTo lid MovedViaHunter enemyId]
+                , CheckWindows [mkAfter $ Window.MovedFromHunter enemyId]
+                , CheckWindows [mkAfter $ Window.EnemyMovesTo lid MovedViaHunter enemyId]
                 ]
               pure $ a & movedFromHunterKeywordL .~ True
             ls -> do
@@ -565,8 +565,8 @@ instance RunMessage EnemyAttrs where
                   [ targetLabel
                     l
                     [ EnemyMove enemyId l
-                    , CheckWindow [leadId] [mkAfter $ Window.MovedFromHunter enemyId]
-                    , CheckWindow [leadId] [mkAfter $ Window.EnemyMovesTo l MovedViaHunter enemyId]
+                    , CheckWindows [mkAfter $ Window.MovedFromHunter enemyId]
+                    , CheckWindows [mkAfter $ Window.EnemyMovesTo l MovedViaHunter enemyId]
                     ]
                   | l <- ls
                   ]
@@ -593,7 +593,7 @@ instance RunMessage EnemyAttrs where
                 , -- , CheckWindow
                   --     [leadInvestigatorId]
                   --     [mkWindow Timing.After (Window.MovedFromHunter enemyId)]
-                  CheckWindow [leadId] [mkAfter $ Window.EnemyMovesTo lid MovedViaOther enemyId]
+                  CheckWindows [mkAfter $ Window.EnemyMovesTo lid MovedViaOther enemyId]
                 ]
             ls -> do
               push
@@ -605,7 +605,7 @@ instance RunMessage EnemyAttrs where
                     , -- , CheckWindow
                       --     [leadInvestigatorId]
                       --     [mkWindow Timing.After (Window.MovedFromHunter enemyId)]
-                      CheckWindow [leadId] [mkAfter $ Window.EnemyMovesTo l MovedViaOther enemyId]
+                      CheckWindows [mkAfter $ Window.EnemyMovesTo l MovedViaOther enemyId]
                     ]
                   | l <- ls
                   ]
@@ -679,8 +679,8 @@ instance RunMessage EnemyAttrs where
     FailedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isTarget a target -> do
       pushAll
         [ FailedAttackEnemy iid enemyId
-        , CheckWindow [iid] [mkAfter $ Window.FailAttackEnemy iid enemyId n]
-        , CheckWindow [iid] [mkAfter $ Window.EnemyAttacked iid source enemyId]
+        , CheckWindows [mkAfter $ Window.FailAttackEnemy iid enemyId n]
+        , CheckWindows [mkAfter $ Window.EnemyAttacked iid source enemyId]
         , Failed (Action.Fight, toProxyTarget target) iid source (toActionTarget target) n
         ]
       pure a
@@ -1125,13 +1125,12 @@ instance RunMessage EnemyAttrs where
             else [Discard miid GameSource $ toTarget a]
 
       withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
-      discardWindow <- windows [Window.EntityDiscarded source (toTarget a)]
 
       pushAll
         $ [whenMsg, When msg, After msg]
         <> victoryMsgs
         <> [afterMsg]
-        <> discardWindow
+        <> windows [Window.EntityDiscarded source (toTarget a)]
         <> defeatMsgs
       pure $ a & keysL .~ mempty
     After (EnemyDefeated eid _ source _) | eid == toId a -> do
@@ -1140,17 +1139,15 @@ instance RunMessage EnemyAttrs where
         _ -> pure ()
       pure $ a & defeatedL .~ True
     Discard miid source target | a `isTarget` target -> do
-      windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       whenLeavePlay <- checkWindows [mkWhen $ Window.LeavePlay (toTarget a)]
       afterLeavePlay <- checkWindows [mkWhen $ Window.LeavePlay (toTarget a)]
-      windows'' <- windows [Window.EntityDiscarded source (toTarget a)]
       let
         card = case enemyPlacement of
           AsSwarm _ c -> c
           _ -> toCard a
       pushAll
-        $ windows'
-        <> windows''
+        $ windows [Window.WouldBeDiscarded (toTarget a)]
+        <> windows [Window.EntityDiscarded source (toTarget a)]
         <> [ whenLeavePlay
            , RemovedFromPlay $ toSource a
            , afterLeavePlay
@@ -1341,11 +1338,11 @@ instance RunMessage EnemyAttrs where
             else do
               when (token == Doom && a.doom == 0) do
                 pushM $ checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source target n
-              pushAllM $ windows [Window.PlacedDoom source (toTarget a) n]
+              pushAll $ windows [Window.PlacedDoom source (toTarget a) n]
               pure $ a & tokensL %~ addTokens Doom n
         else do
           case token of
-            Clue -> pushAllM $ windows [Window.PlacedClues source (toTarget a) n]
+            Clue -> pushAll $ windows [Window.PlacedClues source (toTarget a) n]
             _ -> pure ()
           pure $ a & tokensL %~ addTokens token n
     PlaceKey (isTarget a -> True) k -> do
@@ -1401,7 +1398,7 @@ instance RunMessage EnemyAttrs where
       when (toCard a == card) do
         removeAllMessagesMatching \case
           Discarded (EnemyTarget aid) _ _ -> aid == a.id
-          CheckWindow _ ws -> flip any ws \case
+          CheckWindows ws -> flip any ws \case
             (Window.windowType -> Window.Discarded _ _ c) -> toCard a == c
             _ -> False
           _ -> False

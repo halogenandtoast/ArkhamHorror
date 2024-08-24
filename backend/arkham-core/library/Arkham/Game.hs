@@ -4695,8 +4695,7 @@ runMessages mLogger = do
             let activePids = mapMaybe whenBeingQuestioned $ mapToList askMap
             let activePid = fromMaybe current $ find (`elem` activePids) (current : keys askMap)
             runWithEnv (toExternalGame (g & activePlayerIdL .~ activePid) askMap) >>= putGame
-          RunWindow {} | not (gameRunWindows g) -> runMessages mLogger
-          CheckWindow {} | not (gameRunWindows g) -> runMessages mLogger
+          CheckWindows {} | not (gameRunWindows g) -> runMessages mLogger
           _ -> do
             -- Hidden Library handling
             -- > While an enemy is moving, Hidden Library gains the Passageway trait.
@@ -4704,9 +4703,7 @@ runMessages mLogger = do
             case msg of
               HunterMove eid -> overGame $ enemyMovingL ?~ eid
               WillMoveEnemy eid _ -> overGame $ enemyMovingL ?~ eid
-              CheckWindow _ (getEvadedEnemy -> Just eid) ->
-                overGame $ enemyEvadingL ?~ eid
-              RunWindow _ (getEvadedEnemy -> Just eid) ->
+              CheckWindows (getEvadedEnemy -> Just eid) ->
                 overGame $ enemyEvadingL ?~ eid
               _ -> pure ()
 
@@ -4718,35 +4715,37 @@ runMessages mLogger = do
 
             let
               shouldPreloadModifiers = \case
-                CheckWindow {} -> False
-                RunWindow {} -> False
-                Would {} -> False
-                Run {} -> False
-                UseAbility {} -> False
+                Ask {} -> False
+                BeginAction {} -> False
+                CheckAttackOfOpportunity {} -> False
+                CheckEnemyEngagement {} -> False
+                CheckWindows {} -> False
+                ClearUI {} -> False
                 CreatedCost {} -> False
                 EndCheckWindow {} -> False
-                PayCosts {} -> False
-                PayCost {} -> False
-                CheckAttackOfOpportunity {} -> False
                 PaidAllCosts {} -> False
+                PayForAbility {} -> False
+                PayCost {} -> False
+                PayCosts {} -> False
+                Run {} -> False
+                UseAbility {} -> False
                 When {} -> False
                 WhenCanMove {} -> False
-                CheckEnemyEngagement {} -> False
-                Ask {} -> False
+                Would {} -> False
                 _ -> True
 
-            runWithEnv
-              ( getGame
-                  >>= runMessage msg
-                  >>= ( if shouldPreloadModifiers msg
-                          then preloadModifiers
-                          else pure
-                      )
-                  >>= handleAsIfChanges asIfLocations
-                  >>= (if shouldPreloadModifiers msg then handleTraitRestrictedModifiers else pure)
-                  >>= handleBlanked
-              )
-              >>= putGame
+            g' <-
+              runWithEnv
+                $ getGame
+                >>= runMessage msg
+                >>= if shouldPreloadModifiers msg
+                  then
+                    preloadModifiers
+                      >=> handleAsIfChanges asIfLocations
+                      >=> handleTraitRestrictedModifiers
+                      >=> handleBlanked
+                  else pure
+            putGame g'
             runMessages mLogger
 
 getAsIfLocationMap :: HasGame m => m (Map InvestigatorId LocationId)

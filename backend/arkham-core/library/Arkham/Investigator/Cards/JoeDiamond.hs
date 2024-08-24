@@ -93,11 +93,11 @@ instance RunMessage JoeDiamond where
         $ attrs
         & (deckL %~ filter ((/= insight) . toCard))
         & (decksL . at HunchDeck ?~ hunchDeck')
-    RunWindow iid [Window Timing.When (Window.PhaseEnds InvestigationPhase) _] | attrs `is` iid -> do
+    CheckWindows [Window Timing.When (Window.PhaseEnds InvestigationPhase) _] -> do
       case hunchDeck attrs of
         x : _ | Just x.id == revealedHunchCard meta -> do
-          checkWhen $ Window.WouldBeShuffledIntoDeck (Deck.HunchDeck iid) x
-          push $ ShuffleCardsIntoDeck (Deck.HunchDeck iid) [x]
+          checkWhen $ Window.WouldBeShuffledIntoDeck (Deck.HunchDeck attrs.id) x
+          push $ ShuffleCardsIntoDeck (Deck.HunchDeck attrs.id) [x]
         _ -> pure ()
       pure i
     InitiatePlayCard iid card mTarget payment windows' asAction | attrs `is` iid && Just card.id == revealedHunchCard meta -> do

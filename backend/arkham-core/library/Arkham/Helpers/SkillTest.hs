@@ -512,7 +512,7 @@ cancelTokenDraw = do
       Window.WouldRevealChaosToken {} -> True
       _ -> False
   popMessageMatching_ $ \case
-    RunWindow _ windows' -> any removeWindow windows'
+    CheckWindows windows' -> any removeWindow windows'
     _ -> False
   popMessageMatching_ $ \case
     NextChaosBagStep {} -> True

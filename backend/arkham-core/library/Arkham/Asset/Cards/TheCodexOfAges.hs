@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window qualified as Window
 
 newtype TheCodexOfAges = TheCodexOfAges AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theCodexOfAges :: AssetCard TheCodexOfAges
@@ -52,7 +52,7 @@ instance RunMessage TheCodexOfAges where
               Window.WouldRevealChaosToken {} -> True
               _ -> False
           popMessageMatching_ $ \case
-            RunWindow _ windows' -> any removeWindow windows'
+            CheckWindows windows' -> any removeWindow windows'
             _ -> False
           popMessageMatching_ $ \case
             EndCheckWindow -> True

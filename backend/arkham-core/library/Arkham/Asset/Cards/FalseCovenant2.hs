@@ -28,7 +28,7 @@ instance RunMessage FalseCovenant2 where
       iid <- fromJustNote "missing investigator" <$> getSkillTestInvestigator
       cancelChaosToken token
       pushAll
-        [ CancelEachNext source [RunWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
+        [ CancelEachNext source [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
         , ReturnChaosTokens [token]
         , UnfocusChaosTokens
         , DrawAnotherChaosToken iid

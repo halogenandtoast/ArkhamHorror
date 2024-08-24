@@ -7,7 +7,6 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
-import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
@@ -33,45 +32,27 @@ checkWhen = checkWindows . pure . mkWhen
 
 checkWindows :: HasGame m => [Window] -> m Message
 checkWindows windows' = do
-  -- We don't want to check eliminated investigators except for the InvestigatorEliminated window
-  let
-    isEliminated = \case
-      (windowType -> Window.InvestigatorEliminated {}) -> True
-      _ -> False
-  let checkEliminated = any isEliminated windows'
+  -- TODO: We don't want to check eliminated investigators except for the InvestigatorEliminated window
   mBatchId <- getCurrentBatchId
-  iids <- select $ if checkEliminated then Anyone else UneliminatedInvestigator
-  let windows'' = map (\w -> w {windowBatchId = windowBatchId w <|> mBatchId}) windows'
-  if null iids
-    then do
-      iids' <- select Anyone
-      pure $ CheckWindow iids' windows''
-    else pure $ CheckWindow iids windows''
+  pure $ CheckWindows $ map (\w -> w {windowBatchId = windowBatchId w <|> mBatchId}) windows'
 
-windows :: HasGame m => [WindowType] -> m [Message]
-windows windows' = do
-  iids <- select UneliminatedInvestigator
-  pure $ do
-    timing <- [Timing.When, Timing.AtIf, Timing.After]
-    [CheckWindow iids $ map (mkWindow timing) windows']
+windows :: [WindowType] -> [Message]
+windows windows' = [CheckWindows $ map (mkWindow timing) windows' | timing <- [#when, #at, #after]]
 
-wouldWindows :: (MonadRandom m, HasGame m) => WindowType -> m (BatchId, [Message])
+wouldWindows :: MonadRandom m => WindowType -> m (BatchId, [Message])
 wouldWindows window = do
   batchId <- getRandom
-  iids <- select UneliminatedInvestigator
   pure
     ( batchId
-    , [ CheckWindow iids [Window timing window (Just batchId)]
+    , [ CheckWindows [Window timing window (Just batchId)]
       | timing <- [Timing.When, Timing.AtIf, Timing.After]
       ]
     )
 
-frame :: HasGame m => WindowType -> m (Message, Message, Message)
-frame window = do
-  iids <- select UneliminatedInvestigator
+frame :: WindowType -> (Message, Message, Message)
+frame window =
   let (whenWindow, atIfWindow, afterWindow) = timings window
-  pure
-    (CheckWindow iids [whenWindow], CheckWindow iids [atIfWindow], CheckWindow iids [afterWindow])
+   in (CheckWindows [whenWindow], CheckWindows [atIfWindow], CheckWindows [afterWindow])
 
 timings :: WindowType -> (Window, Window, Window)
 timings wType = (mkWhen wType, mkAtIf wType, mkAfter wType)
@@ -84,15 +65,15 @@ batchedTimings batchId wType = case timings wType of
     , afterWindow {windowBatchId = Just batchId}
     )
 
-doFrame :: HasGame m => Message -> WindowType -> m [Message]
-doFrame msg window = do
-  (before, atIf, after) <- frame window
-  pure [before, atIf, Do msg, after]
+doFrame :: Message -> WindowType -> [Message]
+doFrame msg window =
+  let (before, atIf, after) = frame window
+   in [before, atIf, Do msg, after]
 
-doBatch :: HasGame m => BatchId -> Message -> WindowType -> m [Message]
-doBatch batchId msg window = do
-  (before, atIf, after) <- frame window
-  pure [before, atIf, DoBatch batchId msg, after]
+doBatch :: BatchId -> Message -> WindowType -> [Message]
+doBatch batchId msg window =
+  let (before, atIf, after) = frame window
+   in [before, atIf, DoBatch batchId msg, after]
 
 pushBatch :: HasQueue Message m => BatchId -> Message -> m ()
 pushBatch batchId msg = push $ Would batchId [msg]
@@ -104,7 +85,7 @@ wouldDo
   :: (MonadRandom m, HasGame m, HasQueue Message m) => Message -> WindowType -> WindowType -> m ()
 wouldDo msg wouldWindow window = do
   (batchId, wouldWindowsMsgs) <- wouldWindows wouldWindow
-  framed <- doBatch batchId msg window
+  let framed = doBatch batchId msg window
   push $ Would batchId $ wouldWindowsMsgs <> framed
 
 {- | Take a message which would operate on some value n and instead expand the
@@ -121,10 +102,10 @@ wouldDoEach
   -> m ()
 wouldDoEach n msg outerWouldWindow wouldWindow outerWindow window = do
   (outerBatchId, outerWouldWindowsMsgs) <- wouldWindows outerWouldWindow
-  (outerBefore, outerAtIf, outerAfter) <- frame outerWindow
+  let (outerBefore, outerAtIf, outerAfter) = frame outerWindow
   frames <- replicateM n do
     (innerBatchId, innerWouldWindowsMsgs) <- wouldWindows wouldWindow
-    framed <- doFrame msg window
+    let framed = doFrame msg window
     pure $ Would innerBatchId $ innerWouldWindowsMsgs <> framed
 
   push
@@ -134,13 +115,8 @@ wouldDoEach n msg outerWouldWindow wouldWindow outerWindow window = do
     <> frames
     <> [outerAfter]
 
-splitWithWindows :: HasGame m => Message -> [WindowType] -> m [Message]
-splitWithWindows msg windows' = do
-  iids <- select UneliminatedInvestigator
-  pure
-    $ [CheckWindow iids $ map (mkWindow Timing.When) windows']
-    <> [msg]
-    <> [CheckWindow iids $ map (mkWindow Timing.After) windows']
+splitWithWindows :: Message -> [WindowType] -> [Message]
+splitWithWindows msg ws = [CheckWindows $ map mkWhen ws] <> [msg] <> [CheckWindows $ map mkAfter ws]
 
 discoveredClues :: HasCallStack => [Window] -> Int
 discoveredClues =
@@ -317,10 +293,10 @@ replaceWindow
 replaceWindow f wf = do
   replaceMessageMatching
     \case
-      CheckWindow _ ws -> any f ws
+      CheckWindows ws -> any f ws
       _ -> False
     \case
-      CheckWindow iids ws -> [CheckWindow iids $ map (\w -> if f w then wf w else w) ws]
+      CheckWindows ws -> [CheckWindows $ map (\w -> if f w then wf w else w) ws]
       _ -> error "impossible"
 
 replaceWindowMany
@@ -328,18 +304,11 @@ replaceWindowMany
 replaceWindowMany f wf = do
   replaceAllMessagesMatching
     \case
-      CheckWindow _ ws -> any (f . windowType) ws
-      RunWindow _ ws -> any (f . windowType) ws
+      CheckWindows ws -> any (f . windowType) ws
       _ -> False
     \case
-      CheckWindow iids ws ->
-        [ CheckWindow iids
-            $ concatMap
-              (\w -> if f w.kind then map (`replaceWindowType` w) (wf w.kind) else [w])
-              ws
-        ]
-      RunWindow iid ws ->
-        [ RunWindow iid
+      CheckWindows ws ->
+        [ CheckWindows
             $ concatMap
               (\w -> if f w.kind then map (`replaceWindowType` w) (wf w.kind) else [w])
               ws

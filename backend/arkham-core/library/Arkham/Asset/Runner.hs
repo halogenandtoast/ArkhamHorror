@@ -137,7 +137,7 @@ instance RunMessage AssetAttrs where
       pushAll
         $ [PlaceDamage source (toTarget a) (damage + n) | damage > 0]
         <> [PlaceHorror source (toTarget a) horror | horror > 0]
-        <> [ CheckWindow iids
+        <> [ CheckWindows
               $ [ mkWhen (Window.DealtDamage source damageEffect (toTarget a) damage)
                 | damage > 0
                 ]
@@ -145,7 +145,7 @@ instance RunMessage AssetAttrs where
                  | horror > 0
                  ]
            , checkDefeated source aid
-           , CheckWindow iids
+           , CheckWindows
               $ [ mkAfter (Window.DealtDamage source damageEffect (toTarget a) damage)
                 | damage > 0
                 ]
@@ -220,10 +220,8 @@ instance RunMessage AssetAttrs where
     MoveTokensNoDefeated s source _ tType n | isSource a source -> do
       runMessage (RemoveTokens s (toTarget a) tType n) a
     ClearTokens target | isTarget a target -> do
-      when (assetClues a > 0)
-        $ pushAll
-        =<< windows
-          [Window.LastClueRemovedFromAsset (toId a)]
+      when (assetClues a > 0) do
+        pushAll $ windows [Window.LastClueRemovedFromAsset (toId a)]
       for_ assetWhenNoUses \case
         DiscardWhenNoUses -> push $ Discard assetController GameSource (toTarget a)
         ReturnToHandWhenNoUses ->
@@ -232,10 +230,8 @@ instance RunMessage AssetAttrs where
         NotifySelfOfNoUses -> push $ SpentAllUses (toTarget a)
       pure $ a & tokensL .~ mempty
     RemoveTokens _ target tType n | isTarget a target -> do
-      when (tType == Clue && assetClues a - n <= 0)
-        $ pushAll
-        =<< windows
-          [Window.LastClueRemovedFromAsset (toId a)]
+      when (tType == Clue && assetClues a - n <= 0) do
+        pushAll $ windows [Window.LastClueRemovedFromAsset (toId a)]
       when (tokenIsUse tType) do
         case assetPrintedUses of
           NoUses -> pure ()
@@ -262,7 +258,7 @@ instance RunMessage AssetAttrs where
     CheckDefeated source (isTarget a -> True) -> do
       mDefeated <- defeated a source
       for_ mDefeated \defeatedBy -> do
-        (before, _, after) <- frame (Window.AssetDefeated (toId a) defeatedBy)
+        let (before, _, after) = frame (Window.AssetDefeated (toId a) defeatedBy)
         pushAll $ [before] <> resolve (AssetDefeated source assetId) <> [after]
       -- TODO: Investigator uses AssignDamage target
       pure
@@ -430,12 +426,12 @@ instance RunMessage AssetAttrs where
               Just msg' -> insertAfterMatching [afterLast] (== msg')
           _ -> pure ()
       runQueueT do
-        (before, _, after) <- frame $ Window.SpentToken source (toTarget a) useType' n
+        let (before, _, after) = frame $ Window.SpentToken source (toTarget a) useType' n
         -- window should be independent of other sources since they are spent from this asset
         push before
         for_ assetController $ \controller ->
           when (tokenIsUse useType') do
-            (before1, _, after1) <- frame $ Window.SpentUses controller source (toId a) useType' n
+            let (before1, _, after1) = frame $ Window.SpentUses controller source (toId a) useType' n
             push before1
             push after1
         push after
@@ -451,11 +447,10 @@ instance RunMessage AssetAttrs where
       a <$ push (RemoveFromPlay $ toSource a)
     Discard mInvestigator source target | a `isTarget` target -> do
       removeFromGame <- a `hasModifier` RemoveFromGameInsteadOfDiscard
-      windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       afterWindows <- checkAfter $ Window.Discarded mInvestigator source (toCard a)
       let discardMsg = if removeFromGame then RemoveFromGame (toTarget a) else Discarded (toTarget a) source (toCard a)
       pushAll
-        $ windows'
+        $ windows [Window.WouldBeDiscarded (toTarget a)]
         <> [RemoveFromPlay $ toSource a, discardMsg, afterWindows]
       for_ a.cardsUnderneath $ push . DiscardedCard . toCardId
       pure a
@@ -479,7 +474,7 @@ instance RunMessage AssetAttrs where
       when (toCard a == card) do
         removeAllMessagesMatching \case
           Discarded (AssetTarget aid) _ _ -> aid == a.id
-          CheckWindow _ ws -> flip any ws \case
+          CheckWindows ws -> flip any ws \case
             (Window.windowType -> Window.Discarded _ _ c) -> toCard a == c
             _ -> False
           _ -> False
@@ -532,8 +527,7 @@ instance RunMessage AssetAttrs where
     CardEnteredPlay _ card ->
       pure $ a & cardsUnderneathL %~ filter (/= card)
     Exhaust target | a `isTarget` target -> do
-      msgs <- doFrame (Exhaust target) (Window.Exhausts (toTarget a))
-      pushAll msgs
+      pushAll $ doFrame (Exhaust target) (Window.Exhausts (toTarget a))
       pure a
     Do (Exhaust target) | a `isTarget` target -> do
       pure $ a & exhaustedL .~ True

@@ -906,7 +906,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           ForCost card' -> (/= card')
       cards <-
         filterM
-          (andM . sequence [(`extendedCardMatch` extendedCardMatcher), pure . notCostCard . PlayerCard])
+          (andM . sequence [pure . notCostCard . PlayerCard, (`extendedCardMatch` extendedCardMatcher)])
           handCards
       push
         $ chooseN
@@ -928,7 +928,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           ForCost card' -> (/= card')
       cards <-
         filterM
-          (andM . sequence [(`extendedCardMatch` extendedCardMatcher), pure . notCostCard . PlayerCard])
+          (andM . sequence [pure . notCostCard . PlayerCard, (`extendedCardMatch` extendedCardMatcher)])
           handCards
       name <- fieldMap InvestigatorName toTitle iid
       choiceId <- getRandom
@@ -1120,14 +1120,14 @@ instance RunMessage ActiveCost where
             sum <$> for modifiers \case
               CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher -> do
                 canGive <-
-                  andM [elem iid <$> select iMatcher, pure $ cardMatch card cMatcher, pure $ iid /= iid']
+                  andM [pure $ cardMatch card cMatcher, pure $ iid /= iid', elem iid <$> select iMatcher]
                 if canGive then getSpendableResources iid' else pure 0
               CanSpendUsesAsResourceOnCardFromInvestigator assetId uType iMatcher cMatcher -> do
                 canContribute <-
                   andM
-                    [ iid <=~> iMatcher
-                    , pure $ cardMatch card cMatcher
+                    [ pure $ cardMatch card cMatcher
                     , pure $ iid == iid' || CannotAffectOtherPlayersWithPlayerEffectsExceptDamage `notElem` modifiers
+                    , iid <=~> iMatcher
                     ]
                 if canContribute
                   then fieldMap AssetUses (findWithDefault 0 uType) assetId

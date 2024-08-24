@@ -8,7 +8,7 @@ data MessageType
   | DrawChaosTokenMessage
   | RevealChaosTokenMessage
   | ResolveChaosTokenMessage
-  | RunWindowMessage
+  | CheckWindowMessage
   | EnemySpawnMessage
   | DrawEnemyMessage
   | EnemyDefeatedMessage

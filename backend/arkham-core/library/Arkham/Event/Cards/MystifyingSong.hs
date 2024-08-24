@@ -35,7 +35,7 @@ instance RunMessage MystifyingSong where
         Do AdvanceAgendaIfThresholdSatisfied -> True
         _ -> False
       popMessageMatching_ $ \case
-        CheckWindow _ ws -> any isAfterAgendaWouldAdvanceWindow ws
+        CheckWindows ws -> any isAfterAgendaWouldAdvanceWindow ws
         _ -> False
       push $ createCardEffect Cards.mystifyingSong Nothing (toSource attrs) (InvestigatorTarget iid)
       pure e

@@ -1,9 +1,11 @@
 module Arkham.Debug where
 
 import Arkham.Prelude
+import Data.Text qualified as T
 import Data.Text.IO qualified as T
 import Data.Time.Clock (diffUTCTime)
 import System.Environment (lookupEnv)
+import System.IO.Unsafe (unsafePerformIO)
 
 pattern InfoLevel :: Int
 pattern InfoLevel = 1
@@ -22,11 +24,11 @@ debugOut n txt = liftIO do
   debugLevel <- getDebugLevel
   when (n <= debugLevel) $ T.putStrLn txt
 
-timeIt :: MonadIO m => Text -> m a -> m a
+timeIt :: Monad m => Text -> m a -> m a
 timeIt label body = do
-  start <- liftIO getCurrentTime
-  result <- body
-  end <- liftIO getCurrentTime
+  let start = unsafePerformIO getCurrentTime
+  result <- start `seq` body
+  let end = unsafePerformIO getCurrentTime
   let diff = diffUTCTime end start
-  liftIO $ putStrLn $ label <> ": " <> tshow diff
-  pure result
+  let r = traceShow (T.unpack $ label <> ": " <> tshow diff) result
+  r `seq` pure r

@@ -372,7 +372,7 @@ runGameMessage msg g = case msg of
            ]
     pure $ g & (phaseL .~ InvestigationPhase)
   BeginGame -> do
-    (before, _, after) <- frame Window.GameBegins
+    let (before, _, after) = frame Window.GameBegins
     iids <- getInvestigatorsInOrder
     pushAll $ before : map (`ForInvestigator` BeginGame) iids <> [after]
     pure g
@@ -861,7 +861,7 @@ runGameMessage msg g = case msg of
       newAgendaId = AgendaId (toCardCode card)
       newAgenda = lookupAgenda newAgendaId agendaDeckId (toCardId card)
 
-    (before, _, after) <- frame (Window.EnterPlay $ toTarget newAgenda)
+    let (before, _, after) = frame (Window.EnterPlay $ toTarget newAgenda)
     pushAll [before, after]
     pure
       $ g
@@ -1354,14 +1354,12 @@ runGameMessage msg g = case msg of
   CancelBatch bId -> do
     withQueue_ $ \q ->
       flip map q $ \case
-        CheckWindow x ws -> CheckWindow x (filter ((/= Just bId) . windowBatchId) ws)
-        RunWindow x ws -> RunWindow x (filter ((/= Just bId) . windowBatchId) ws)
+        CheckWindows ws -> CheckWindows (filter ((/= Just bId) . windowBatchId) ws)
         other -> other
     removeAllMessagesMatching $ \case
       Would bId' _ -> bId == bId'
       DoBatch bId' _ -> bId == bId'
-      CheckWindow _ [] -> True
-      RunWindow _ [] -> True
+      CheckWindows [] -> True
       _ -> False
     pure g
   IgnoreBatch bId -> do
@@ -1399,7 +1397,7 @@ runGameMessage msg g = case msg of
               When whenMsg -> pure $ removedMsg == whenMsg
               AfterRevelation iid'' tid ->
                 pure $ iid' == iid'' && TreacherySource tid == source'
-              RunWindow _ wins -> do
+              CheckWindows wins -> do
                 let
                   isRevelationDrawCard = \case
                     (windowType -> Window.DrawCard _ c _) -> (== c) <$> sourceToCard source'
@@ -1419,7 +1417,7 @@ runGameMessage msg g = case msg of
     push =<< checkWindows [mkAfter (Window.EnemyEngaged iid eid)]
     pure g
   EnemyEngageInvestigator eid iid -> do
-    (before, _, after) <- frame (Window.EnemyEngaged iid eid)
+    let (before, _, after) = frame (Window.EnemyEngaged iid eid)
     pushAll [before, after]
     pure g
   SkillTestAsk (Ask iid1 (ChooseOne c1)) -> do
@@ -1650,41 +1648,34 @@ runGameMessage msg g = case msg of
   AddToDiscard _ pc -> pure $ g & removedFromPlayL %~ filter (/= PlayerCard pc)
   AddToVictory (EnemyTarget eid) -> do
     card <- field EnemyCard eid
-    windowMsgs <-
-      windows
-        [Window.LeavePlay (EnemyTarget eid), Window.AddedToVictory card]
-    pushAll $ windowMsgs <> [RemoveEnemy eid]
+    pushAll
+      $ windows [Window.LeavePlay (EnemyTarget eid), Window.AddedToVictory card]
+      <> [RemoveEnemy eid]
     pure g
   DefeatedAddToVictory (EnemyTarget eid) -> do
     -- when defeated, removal is handled by the defeat effect
     card <- field EnemyCard eid
-    windowMsgs <- windows [Window.AddedToVictory card]
-    pushAll windowMsgs
+    pushAll $ windows [Window.AddedToVictory card]
     pure g
   AddToVictory (SkillTarget sid) -> do
     card <- field SkillCard sid
-    windowMsgs <- windows [Window.AddedToVictory card]
-    pushAll windowMsgs
+    pushAll $ windows [Window.AddedToVictory card]
     pure $ g & (entitiesL . skillsL %~ deleteMap sid) -- we might not want to remove here?
   AddToVictory (EventTarget eid) -> do
     card <- field EventCard eid
-    windowMsgs <- windows [Window.AddedToVictory card]
-    pushAll windowMsgs
+    pushAll $ windows [Window.AddedToVictory card]
     pure $ g & (entitiesL . eventsL %~ deleteMap eid) -- we might not want to remove here?
   AddToVictory (StoryTarget sid) -> do
     card <- field StoryCard sid
-    windowMsgs <- windows [Window.AddedToVictory card]
-    pushAll windowMsgs
+    pushAll $ windows [Window.AddedToVictory card]
     pure $ g & (entitiesL . storiesL %~ deleteMap sid)
   AddToVictory (TreacheryTarget tid) -> do
     card <- field TreacheryCard tid
-    windowMsgs <- windows [Window.AddedToVictory card]
-    pushAll $ RemoveTreachery tid : windowMsgs
+    pushAll $ RemoveTreachery tid : windows [Window.AddedToVictory card]
     pure g
   AddToVictory (LocationTarget lid) -> do
     card <- field LocationCard lid
-    windowMsgs <- windows [Window.AddedToVictory card]
-    pushAll $ RemoveLocation lid : windowMsgs
+    pushAll $ RemoveLocation lid : windows [Window.AddedToVictory card]
     pure g
   PlayerWindow iid _ _ -> pure $ g & activeInvestigatorIdL .~ iid
   Begin InvestigationPhase -> do
@@ -1936,7 +1927,7 @@ runGameMessage msg g = case msg of
   BeginSkillTestWithPreMessages' pre skillTest -> do
     handleSkillTestNesting skillTest.id msg g do
       let iid = skillTest.investigator
-      windows' <- windows [Window.InitiatedSkillTest skillTest]
+      let windows' = windows [Window.InitiatedSkillTest skillTest]
       let defaultCase = windows' <> [BeginSkillTestAfterFast]
 
       performRevelationSkillTestWindow <-
@@ -2190,7 +2181,6 @@ runGameMessage msg g = case msg of
             <> enemyCreationAfter enemyCreation
             <> [After (EnemySpawn Nothing lid enemyId)]
       SpawnAtLocationMatching locationMatcher -> do
-        windows' <- windows [Window.EnemyAttemptsToSpawnAt enemyId locationMatcher]
         matches' <- select locationMatcher
         case matches' of
           [] -> push (toDiscard GameSource (toTarget enemyId))
@@ -2198,7 +2188,7 @@ runGameMessage msg g = case msg of
             lead <- getLead
             player <- getPlayer $ fromMaybe lead miid
             pushAll
-              $ windows'
+              $ windows [Window.EnemyAttemptsToSpawnAt enemyId locationMatcher]
               <> [ chooseOrRunOne
                     player
                     [ targetLabel lid [CreateEnemy $ enemyCreation {enemyCreationMethod = SpawnAtLocation lid}]
@@ -2630,7 +2620,7 @@ runGameMessage msg g = case msg of
   Discard miid source (TreacheryTarget tid) -> do
     card <- field TreacheryCard tid
     iid <- maybe getActiveInvestigatorId pure miid
-    windows'' <- windows [Window.EntityDiscarded source (toTarget tid)]
+    let windows'' = windows [Window.EntityDiscarded source (toTarget tid)]
     wouldDo
       (Run $ windows'' <> [Discarded (TreacheryTarget tid) source card])
       (Window.WouldBeDiscarded (TreacheryTarget tid))
@@ -2751,7 +2741,7 @@ instance RunMessage Game where
 
 runPreGameMessage :: Runner Game
 runPreGameMessage msg g = case msg of
-  CheckWindow _ ws -> do
+  CheckWindows ws -> do
     push EndCheckWindow
     pure $ g & windowDepthL +~ 1 & windowStackL %~ Just . maybe [ws] (ws :)
   -- We want to empty the queue for triggering a resolution

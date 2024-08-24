@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window qualified as Window
 
 newtype MindlessDancer = MindlessDancer EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mindlessDancer :: EnemyCard MindlessDancer
@@ -46,10 +46,8 @@ instance HasModifiersFor MindlessDancer where
 instance RunMessage MindlessDancer where
   runMessage msg e@(MindlessDancer attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      lead <- getLead
       pushAll
-        $ [ CheckWindow
-              [lead]
+        $ [ CheckWindows
               [ Window.mkWindow
                   Timing.When
                   (Window.MovedFromHunter $ toId attrs)

@@ -39,7 +39,7 @@ instance RunMessage MouseMaskTheMeekWatcher where
           labeled "Get +2 {intellect}"
             $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 2)
       pure a
-    CheckWindow iids ws | maybe False (`elem` iids) attrs.controller -> do
+    CheckWindows ws -> do
       when (attrs.use Offering < 2) do
         for_ attrs.controller \iid -> do
           shouldReplenish <-

@@ -28,7 +28,9 @@ instance RunMessage HeavyFurs where
     UseCardAbility iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
       cancelChaosToken token
       pushAll
-        [ CancelEachNext (attrs.ability 1) [RunWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
+        [ CancelEachNext
+            (attrs.ability 1)
+            [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
         , ReturnChaosTokens [token]
         , UnfocusChaosTokens
         , DrawAnotherChaosToken iid

@@ -1292,7 +1292,7 @@ cancelEndTurn iid = lift $ Msg.removeAllMessagesMatching \case
   When (EndTurn iid') -> iid == iid'
   EndTurn iid' -> iid == iid'
   After (EndTurn iid') -> iid == iid'
-  CheckWindow _ ws -> any isEndTurnWindow ws
+  CheckWindows ws -> any isEndTurnWindow ws
   _ -> False
  where
   isEndTurnWindow w = case w.kind of

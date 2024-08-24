@@ -98,7 +98,7 @@ messageType InvestigatorDamage {} = Just DamageMessage
 messageType InvestigatorDoAssignDamage {} = Just DamageMessage
 messageType InvestigatorDrewEncounterCard {} = Just DrawEncounterCardMessage
 messageType InvestigatorDefeated {} = Just InvestigatorDefeatedMessage
-messageType RunWindow {} = Just RunWindowMessage
+messageType CheckWindows {} = Just CheckWindowMessage
 messageType Explore {} = Just ExploreMessage
 messageType (Do msg) = messageType msg
 messageType _ = Nothing
@@ -484,9 +484,8 @@ data Message
   | AssignedDamage Target
   | AssignedHealing Target
   | CheckHandSize InvestigatorId
-  | CheckWindow [InvestigatorId] [Window]
+  | CheckWindows [Window]
   | ChooseOneRewardByEachPlayer [CardDef] [InvestigatorId]
-  | RunWindow InvestigatorId [Window]
   | ChooseAndDiscardAsset InvestigatorId Source AssetMatcher
   | DiscardFromHand (HandDiscard Message)
   | DoneDiscarding InvestigatorId
@@ -1063,6 +1062,12 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "RunWindow" -> do
+        (_a :: Value, b) <- o .: "contents"
+        pure $ CheckWindows b
+      "CheckWindow" -> do
+        (_a :: Value, b) <- o .: "contents"
+        pure $ CheckWindows b
       "AssetDamageWithCheck" -> do
         (a, b, c, d, e) <- o .: "contents"
         pure $ DealAssetDamageWithCheck a b c d e

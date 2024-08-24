@@ -72,7 +72,7 @@ instance RunMessage EldritchInspiration1 where
           _ -> False
 
         popMessageMatching_ \case
-          RunWindow _ [Window AtIf wType _] -> case wType of
+          CheckWindows [Window AtIf wType _] -> case wType of
             Window.RevealChaosTokenEffect {} -> True
             Window.RevealChaosTokenEventEffect {} -> True
             Window.RevealChaosTokenAssetAbilityEffect {} -> True

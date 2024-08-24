@@ -42,26 +42,22 @@ instance RunMessage HisDomain where
   runMessage msg a@(HisDomain attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       investigatorIds <- select UneliminatedInvestigator
-      a
-        <$ pushAll
-          ( SetNoRemainingInvestigatorsHandler (toTarget attrs)
-              : map (InvestigatorDefeated (toSource attrs)) investigatorIds
-          )
-    UseCardAbility _ source 1 [(windowType -> Window.PlaceUnderneath _ card)] _
-      | isSource attrs source -> do
-          removeAllMessagesMatching \case
-            PlacedUnderneath ActDeckTarget card' -> card == card'
-            CheckWindow _ [(windowType -> Window.PlaceUnderneath ActDeckTarget card')] ->
-              card == card'
-            _ -> False
-          push $ ShuffleCardsIntoDeck Deck.EncounterDeck [card]
-          pure a
+      pushAll
+        $ SetNoRemainingInvestigatorsHandler (toTarget attrs)
+        : map (InvestigatorDefeated (toSource attrs)) investigatorIds
+      pure a
+    UseCardAbility _ (isSource attrs -> True) 1 [(windowType -> Window.PlaceUnderneath _ card)] _ -> do
+      removeAllMessagesMatching \case
+        PlacedUnderneath ActDeckTarget card' -> card == card'
+        CheckWindows [(windowType -> Window.PlaceUnderneath ActDeckTarget card')] ->
+          card == card'
+        _ -> False
+      push $ ShuffleCardsIntoDeck Deck.EncounterDeck [card]
+      pure a
     HandleNoRemainingInvestigators target | isTarget attrs target -> do
       anyResigned <- selectAny ResignedInvestigator
       if anyResigned
-        then
-          a
-            <$ push
-              (AdvanceToAct 1 Acts.noAsylum ActSequence.B (toSource attrs))
-        else a <$ push (ScenarioResolution NoResolution)
+        then push $ AdvanceToAct 1 Acts.noAsylum ActSequence.B (toSource attrs)
+        else push (ScenarioResolution NoResolution)
+      pure a
     _ -> HisDomain <$> runMessage msg attrs

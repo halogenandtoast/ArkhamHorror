@@ -26,7 +26,7 @@ import Arkham.Investigator.Types
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (InvestigatorDefeated, InvestigatorResigned)
 import Arkham.Message (
-  Message (HealDamageDirectly, HealHorrorDirectly, InvestigatorMulligan, RunWindow),
+  Message (CheckWindows, HealDamageDirectly, HealHorrorDirectly, InvestigatorMulligan),
  )
 import Arkham.Name
 import Arkham.Placement
@@ -638,17 +638,14 @@ healAdditional (toSource -> source) dType ws' additional = do
     getHealedTarget = \case
       (windowType -> Healed dType' t _ _) | dType == dType' -> Just t
       _ -> Nothing
-    healedTarget =
-      fromJustNote "wrong call"
-        $ getFirst
-        $ foldMap (First . getHealedTarget) ws'
+    healedTarget = fromJustNote "wrong call" $ getFirst $ foldMap (First . getHealedTarget) ws'
 
   replaceMessageMatching
     \case
-      RunWindow _ ws -> ws == ws'
+      CheckWindows ws -> ws == ws'
       _ -> False
     \case
-      RunWindow iid' ws -> [RunWindow iid' $ map updateHealed ws]
+      CheckWindows ws -> [CheckWindows $ map updateHealed ws]
       _ -> error "invalid window"
   case dType of
     HorrorType -> push $ HealHorrorDirectly healedTarget source 1

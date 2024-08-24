@@ -82,17 +82,15 @@ instance RunMessage LukeRobinson where
             . (`with` meta)
             <$> runMessage (PlayerWindow iid (additionalActions <> asIfActions) isAdditional) attrs
         else LukeRobinson . (`with` meta) <$> runMessage msg attrs
-    RunWindow iid windows'
-      | iid == toId attrs
-      , active meta
+    CheckWindows windows'
+      | active meta
       , not (investigatorDefeated attrs || investigatorResigned attrs)
-          || Window.hasEliminatedWindow windows' ->
-          do
-            lukePlayable <- concatMap snd <$> getLukePlayable attrs windows'
-            actions <- getActions iid windows'
-            playableCards <- getPlayableCards attrs (UnpaidCost NeedsAction) windows'
-            runWindow attrs windows' actions (nub $ playableCards <> lukePlayable)
-            pure i
+          || Window.hasEliminatedWindow windows' -> do
+          lukePlayable <- concatMap snd <$> getLukePlayable attrs windows'
+          actions <- getActions attrs.id windows'
+          playableCards <- getPlayableCards attrs (UnpaidCost NeedsAction) windows'
+          runWindow attrs windows' actions (nub $ playableCards <> lukePlayable)
+          pure i
     InitiatePlayCard iid card mtarget payment windows' asAction | iid == toId attrs && active meta -> do
       let a = attrs
       mods <- getModifiers (toTarget a)
@@ -106,7 +104,7 @@ instance RunMessage LukeRobinson where
       afterPlayCard <- checkWindows [mkAfter (Window.PlayCard iid card)]
       let playCard =
             guard (not shouldSkip)
-              *> [ CheckWindow [iid] [mkWhen (Window.PlayCard iid card)]
+              *> [ CheckWindows [mkWhen (Window.PlayCard iid card)]
                  , PlayCard iid card mtarget payment windows' asAction
                  , afterPlayCard
                  ]

@@ -325,8 +325,7 @@ decideFirstUndecided source iid iids strategy f = \case
     Draw ->
       ( f $ Undecided Draw
       ,
-        [ CheckWindow
-            iids
+        [ CheckWindows
             [mkWhen (Window.WouldRevealChaosToken source iid)]
         , NextChaosBagStep source (Just iid) strategy
         ]
@@ -623,7 +622,7 @@ instance RunMessage ChaosBag where
         -- token message as it will still be on the stack even though that
         -- token draw is gone
         removeAllMessagesMatching $ \case
-          RunWindow _ [Window Timing.When (Window.WouldRevealChaosToken {}) _] -> True
+          CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _] -> True
           _ -> False
 
         let
@@ -636,7 +635,7 @@ instance RunMessage ChaosBag where
         -- token message as it will still be on the stack even though that
         -- token draw is gone
         removeAllMessagesMatching $ \case
-          RunWindow _ [Window Timing.When (Window.WouldRevealChaosToken {}) _] -> True
+          CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _] -> True
           _ -> False
 
         iids <- getInvestigatorIds

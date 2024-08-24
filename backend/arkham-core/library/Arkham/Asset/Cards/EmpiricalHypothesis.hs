@@ -227,7 +227,7 @@ instance RunMessage EmpiricalHypothesisEffect where
     CardEnteredPlay iid _ | isNothing attrs.meta -> do
       pushWhen (toTarget iid == attrs.target) (disable attrs)
       pure e
-    RunWindow {} | isJust attrs.meta -> do
+    CheckWindows {} | isJust attrs.meta -> do
       attrs' <- runMessage msg attrs
       case attrs.target of
         InvestigatorTarget iid -> do

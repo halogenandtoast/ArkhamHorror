@@ -14,7 +14,7 @@ import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 
 newtype DayanaEsperence3 = DayanaEsperence3 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dayanaEsperence3 :: AssetCard DayanaEsperence3
@@ -67,7 +67,7 @@ instance RunMessage DayanaEsperence3 where
         then push $ PlayCard iid card mTarget payment windows' asAction
         else
           pushAll
-            [ CheckWindow [iid] [mkWhen (Window.PlayCard iid card)]
+            [ CheckWindows [mkWhen (Window.PlayCard iid card)]
             , PlayCard iid card mTarget payment windows' asAction
             , afterPlayCard
             ]

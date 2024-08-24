@@ -57,15 +57,18 @@ instance RunMessage DowsingRod where
       pure a
     DoStep 3 (UseThisAbility _ (isSource attrs -> True) 1) -> do
       pure $ overAttrs (setMetaKey "option2" True) a
-    RunWindow iid windows | attrs `controlledBy` iid && getMetaKey "option2" attrs -> do
-      let discoveredLastClue = flip any (map windowType windows) \case
-            DiscoveringLastClue iid' _ -> iid == iid'
-            _ -> False
-      if discoveredLastClue && attrs.doom > 0
-        then do
-          removeDoom (attrs.ability 1) attrs 1
-          pure $ overAttrs (unsetMetaKey "option2") a
-        else pure a
+    CheckWindows windows | getMetaKey "option2" attrs -> do
+      case attrs.controller of
+        Nothing -> pure a
+        Just iid -> do
+          let discoveredLastClue = flip any (map windowType windows) \case
+                DiscoveringLastClue iid' _ -> iid == iid'
+                _ -> False
+          if discoveredLastClue && attrs.doom > 0
+            then do
+              removeDoom (attrs.ability 1) attrs 1
+              pure $ overAttrs (unsetMetaKey "option2") a
+            else pure a
     SkillTestEnds _ _ (isSource attrs -> True) -> do
       pure $ overAttrs (unsetMetaKey "option2") a
     _ -> DowsingRod <$> liftRunMessage msg attrs

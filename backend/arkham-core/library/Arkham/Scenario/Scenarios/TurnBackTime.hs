@@ -69,7 +69,7 @@ instance HasChaosTokenValue TurnBackTime where
 
 instance RunMessage TurnBackTime where
   runMessage msg s@(TurnBackTime attrs) = case msg of
-    CheckWindow _ [Window Timing.When (Window.DrawingStartingHand iid) _] -> do
+    CheckWindows [Window Timing.When (Window.DrawingStartingHand iid) _] -> do
       mRepossessThePast <-
         selectOne
           $ InDeckOf (InvestigatorWithId iid)

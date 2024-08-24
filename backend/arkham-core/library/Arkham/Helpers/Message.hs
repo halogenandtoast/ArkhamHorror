@@ -492,14 +492,14 @@ cancelDoom :: HasQueue Message m => Target -> Int -> m ()
 cancelDoom target n = do
   replaceMessageMatching
     \case
-      RunWindow _ [window] -> case windowType window of
+      CheckWindows [window] -> case windowType window of
         Window.WouldPlaceDoom _ target' _ -> target == target'
         _ -> False
       _ -> False
     \case
-      RunWindow iid [window] -> case windowType window of
+      CheckWindows [window] -> case windowType window of
         Window.WouldPlaceDoom source' target' n' ->
-          [RunWindow iid [window {windowType = Window.WouldPlaceDoom source' target' (n' - n)}] | n' - n > 0]
+          [CheckWindows [window {windowType = Window.WouldPlaceDoom source' target' (n' - n)}] | n' - n > 0]
         _ -> error "mismatched"
       _ -> error "mismatched"
 
@@ -517,7 +517,7 @@ cancelDoom target n = do
       Window {windowTiming, windowBatchId, windowType = replaceWindowTypeDoomAmount m windowType}
 
     replaceDoomAmount m = \case
-      CheckWindow xs ws -> CheckWindow xs (map (replaceWindowDoomAmount m) ws)
+      CheckWindows ws -> CheckWindows (map (replaceWindowDoomAmount m) ws)
       Do (PlaceTokens source' target' Token.Doom _) | target == target' -> Do (PlaceTokens source' target' Token.Doom m)
       other -> other
 

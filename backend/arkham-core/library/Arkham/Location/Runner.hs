@@ -98,17 +98,12 @@ instance RunMessage LocationAttrs where
       when allowed $ do
         let target = maybe (toTarget a) (ProxyTarget (toTarget a)) investigation.target
         push
-          $ investigate
-            investigation.skillTest
-            iid
-            investigation.source
-            target
-            investigation.skillType
-            (LocationMaybeFieldCalculation a.id LocationShroud)
+          $ investigate investigation.skillTest iid investigation.source target investigation.skillType
+          $ LocationMaybeFieldCalculation a.id LocationShroud
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
       let clues = locationClues a
-      (before, _, after) <- frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
+      let (before, _, after) = frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
       pushAll
         $ [before | clues == 0]
         <> [Successful (Action.Investigate, toTarget a) iid source (toTarget a) n]
@@ -116,7 +111,7 @@ instance RunMessage LocationAttrs where
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (InitiatorProxy target actual) _ n | isTarget a target -> do
       let clues = locationClues a
-      (before, _, after) <- frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
+      let (before, _, after) = frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
       pushAll
         $ [before | clues == 0]
         <> [Successful (Action.Investigate, toTarget a) iid source actual n]
@@ -125,7 +120,7 @@ instance RunMessage LocationAttrs where
     Successful (Action.Investigate, _) iid source target n | isTarget a target -> do
       let lid = toId a
       modifiers' <- getModifiers (LocationTarget lid)
-      (before, _, after) <- frame (Window.SuccessfulInvestigation iid lid)
+      let (before, _, after) = frame (Window.SuccessfulInvestigation iid lid)
       let alternateSuccessfullInvestigation = mapMaybe (preview _AlternateSuccessfullInvestigation) modifiers'
       when (null alternateSuccessfullInvestigation)
         $ pushAll
@@ -164,9 +159,8 @@ instance RunMessage LocationAttrs where
     PutLocationInCenter lid | lid == locationId -> do
       pure $ a & inFrontOfL .~ Nothing
     Discard _ source target | isTarget a target -> do
-      windows' <- windows [Window.WouldBeDiscarded (toTarget a)]
       pushAll
-        $ windows'
+        $ windows [Window.WouldBeDiscarded (toTarget a)]
         <> [Discarded (toTarget a) source (toCard a)]
         <> [RemovedFromPlay $ toSource a]
         <> resolve (RemoveLocation $ toId a)
@@ -240,8 +234,8 @@ instance RunMessage LocationAttrs where
       if tType == Clue
         then do
           modifiers' <- getModifiers a
-          placedCluesWindows <- windows [Window.PlacedClues source (toTarget a) n]
-          placedTokensWindows <- windows [Window.PlacedToken source (toTarget a) tType n]
+          let placedCluesWindows = windows [Window.PlacedClues source (toTarget a) n]
+          let placedTokensWindows = windows [Window.PlacedToken source (toTarget a) tType n]
           if CannotPlaceClues `elem` modifiers'
             then pure a
             else do
@@ -253,11 +247,9 @@ instance RunMessage LocationAttrs where
           when (tType == Doom && a.doom == 0) do
             pushM $ checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source target n
           when (tType == Damage) do
-            windows' <- windows [Window.PlacedDamage source (toTarget a) n]
-            pushAll windows'
+            pushAll $ windows [Window.PlacedDamage source (toTarget a) n]
           when (tType == Resource) do
-            windows' <- windows [Window.PlacedResources source (toTarget a) n]
-            pushAll windows'
+            pushAll $ windows [Window.PlacedResources source (toTarget a) n]
           pure $ a & tokensL %~ addTokens tType n
     MoveTokens s source _ tType n | isSource a source -> runMessage (RemoveTokens s (toTarget a) tType n) a
     MoveTokens s _ target tType n | isTarget a target -> runMessage (PlaceTokens s target tType n) a

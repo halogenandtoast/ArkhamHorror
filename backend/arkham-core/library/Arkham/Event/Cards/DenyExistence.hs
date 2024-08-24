@@ -49,15 +49,15 @@ instance RunMessage DenyExistence where
           push $ CancelHorror iid n
         _ -> error "Invalid window"
       popMessageMatching_ $ \case
-        CheckWindow _ [w'] -> windowType w == windowType w'
+        CheckWindows [w'] -> windowType w == windowType w'
         _ -> False
       replaceMessageMatching
         \case
-          CheckWindow _ ws -> any ((== windowType w) . windowType) ws
+          CheckWindows ws -> any ((== windowType w) . windowType) ws
           _ -> False
         \case
-          CheckWindow iids ws ->
-            [CheckWindow iids $ filter ((/= windowType w) . windowType) ws]
+          CheckWindows ws ->
+            [CheckWindows $ filter ((/= windowType w) . windowType) ws]
           _ -> error "no match"
       cancelledOrIgnoredCardOrGameEffect attrs
       pure e

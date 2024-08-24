@@ -183,7 +183,16 @@ _EnemyTarget :: Traversal' Target EnemyId
 _EnemyTarget f (EnemyTarget enemy) = EnemyTarget <$> f enemy
 _EnemyTarget _ other = pure other
 
-$(deriveJSON defaultOptions ''Target)
+$(deriveToJSON defaultOptions ''Target)
+
+instance FromJSON Target where
+  parseJSON = withObject "Target" \o -> do
+    tag :: Text <- o .: "tag"
+    case tag of
+      "CardTarget" -> do
+        card :: Card <- o .: "contents"
+        pure $ CardIdTarget card.id
+      _ -> $(mkParseJSON defaultOptions ''Target) (Object o)
 
 instance FromJSONKey Target
 instance ToJSONKey Target

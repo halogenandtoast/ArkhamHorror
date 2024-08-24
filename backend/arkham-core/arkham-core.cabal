@@ -3419,6 +3419,7 @@ library
       OverloadedStrings
       PatternSynonyms
       RecordWildCards
+      StrictData
       TypeFamilies
       TypeFamilyDependencies
       TypeOperators
@@ -3644,6 +3645,7 @@ test-suite spec
       OverloadedStrings
       PatternSynonyms
       RecordWildCards
+      StrictData
       TypeFamilies
       TypeFamilyDependencies
       TypeOperators

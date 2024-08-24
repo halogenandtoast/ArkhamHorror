@@ -151,7 +151,6 @@ button.cancel-new-game-button {
   align-self: center;
   font-size: 1em;
   font-weight: bolder;
-  flex: 0;
   width: fit-content;
   background-color: $survivor;
   &:hover {

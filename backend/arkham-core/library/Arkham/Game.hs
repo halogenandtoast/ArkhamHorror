@@ -515,13 +515,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
             )
       , "outOfPlayEnemies"
           .= toJSON
-            ( runReader
-                ( traverse
-                    withEnemyMetadata
-                    (entitiesEnemies $ findWithDefault mempty SetAsideZone gameOutOfPlayEntities)
-                )
-                g
-            )
+            (runReader (traverse withEnemyMetadata $ g ^. outOfPlayEntitiesL . each . enemiesL) g)
       , "assets"
           .= toJSON (runReader (traverse withAssetMetadata (gameAssets g)) g)
       , "acts" .= toJSON (runReader (traverse withActMetadata (gameActs g)) g)

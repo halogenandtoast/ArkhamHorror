@@ -154,7 +154,7 @@ const topEnemyInVoid = computed(() => {
 })
 const activePlayerId = computed(() => props.game.activeInvestigatorId)
 const pursuit = computed(() => Object.values(props.game.outOfPlayEnemies).filter((enemy) =>
-  enemy.placement.tag === 'OtherPlacement' && enemy.placement.contents === 'Pursuit'
+  enemy.placement.tag === 'OutOfPlay' && enemy.placement.contents === 'PursuitZone'
 ))
 const globalEnemies = computed(() => Object.values(props.game.enemies).filter((enemy) =>
   enemy.placement.tag === "OtherPlacement" && enemy.placement.contents === "Global" && enemy.asSelfLocation === null

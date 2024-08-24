@@ -39,7 +39,7 @@ instance RunMessage Divination4 where
         1 -> do
           charges <- namedUUID "Charges"
           push $ ResolveAmounts iid [(charges, 1)] (toTarget attrs)
-        _ -> chooseAmounts iid "Amount of Charges to Spend" (MaxAmountTarget 3) [("Charges", (1, 3))] attrs
+        (min 3 -> x) -> chooseAmounts iid "Amount of Charges to Spend" (MaxAmountTarget x) [("Charges", (1, x))] attrs
       pushWhen (n == 0) $ discardFromHand iid (attrs.ability 1) DiscardChoose 2
       pure a
     ResolveAmounts iid (getChoiceAmount "Charges" -> n) (isTarget attrs -> True) -> do

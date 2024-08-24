@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Enemy.Cards.WatcherFromAnotherDimensionSpec (spec) where
 
 import Arkham.Action (Action)

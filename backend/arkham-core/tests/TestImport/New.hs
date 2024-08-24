@@ -69,7 +69,7 @@ click :: HasCallStack => String -> TestAppT ()
 click = chooseOnlyOption
 
 loadDeck :: Investigator -> [CardDef] -> TestAppT ()
-loadDeck i cs = run . LoadDeck (toId i) . Deck =<< traverse genPlayerCard cs
+loadDeck i cs = run . LoadDeck (toId i) . Deck =<< traverse (`genPlayerCardWith` setPlayerCardOwner i.id) cs
 
 loadDeckCards :: Investigator -> [PlayerCard] -> TestAppT ()
 loadDeckCards i = run . LoadDeck (toId i) . Deck

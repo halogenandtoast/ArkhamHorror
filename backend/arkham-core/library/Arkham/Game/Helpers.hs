@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Game.Helpers (
   module Arkham.Game.Helpers,
   module X,

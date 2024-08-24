@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Event.Cards.Elusive where
 
 import Arkham.Classes

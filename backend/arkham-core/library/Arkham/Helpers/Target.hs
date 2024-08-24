@@ -17,7 +17,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Skill.Types (Field (..))
 import Arkham.Target
-import Arkham.Trait (HasTraits (..), Trait)
+import Arkham.Trait (Trait)
 import Arkham.Treachery.Types (Field (..))
 
 targetTraits :: (HasCallStack, HasGame m) => Target -> m (Set Trait)

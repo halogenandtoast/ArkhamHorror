@@ -4721,6 +4721,18 @@ runMessages mLogger = do
                 CheckWindow {} -> False
                 RunWindow {} -> False
                 Would {} -> False
+                Run {} -> False
+                UseAbility {} -> False
+                CreatedCost {} -> False
+                EndCheckWindow {} -> False
+                PayCosts {} -> False
+                PayCost {} -> False
+                CheckAttackOfOpportunity {} -> False
+                PaidAllCosts {} -> False
+                When {} -> False
+                WhenCanMove {} -> False
+                CheckEnemyEngagement {} -> False
+                Ask {} -> False
                 _ -> True
 
             runWithEnv
@@ -4731,7 +4743,7 @@ runMessages mLogger = do
                           else pure
                       )
                   >>= handleAsIfChanges asIfLocations
-                  >>= handleTraitRestrictedModifiers
+                  >>= (if shouldPreloadModifiers msg then handleTraitRestrictedModifiers else pure)
                   >>= handleBlanked
               )
               >>= putGame
@@ -4852,28 +4864,18 @@ preloadModifiers g = case gameMode g of
   toTargetModifiers target =
     foldMapM (fmap (MonoidalMap.singleton target) . getModifiersFor target)
 
-handleTraitRestrictedModifiers :: MonadUnliftIO m => Game -> m Game
+handleTraitRestrictedModifiers :: Monad m => Game -> m Game
 handleTraitRestrictedModifiers g = do
   modifiers' <- flip execStateT (gameModifiers g) $ do
     modifiers'' <- get
     for_ (mapToList modifiers'') $ \(target, targetModifiers) -> do
-      for_ targetModifiers $ \case
+      for_ targetModifiers \case
         Modifier source (TraitRestrictedModifier t mt) isSetup -> do
           traits <- runReaderT (targetTraits target) g
-          when (t `member` traits)
-            $ modify
-            $ insertWith
-              (<>)
-              target
-              [Modifier source mt isSetup]
+          when (t `member` traits) $ modify $ insertWith (<>) target [Modifier source mt isSetup]
         Modifier source (NonTraitRestrictedModifier t mt) isSetup -> do
           traits <- runReaderT (targetTraits target) g
-          when (t `notMember` traits)
-            $ modify
-            $ insertWith
-              (<>)
-              target
-              [Modifier source mt isSetup]
+          when (t `notMember` traits) $ modify $ insertWith (<>) target [Modifier source mt isSetup]
         _ -> pure ()
   pure $ g {gameModifiers = modifiers'}
 

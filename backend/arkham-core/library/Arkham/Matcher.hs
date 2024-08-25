@@ -136,8 +136,9 @@ investigatorIs = InvestigatorIs . toCardCode
 notInvestigator :: InvestigatorId -> InvestigatorMatcher
 notInvestigator = NotInvestigator . InvestigatorWithId
 
-colocatedWith :: InvestigatorId -> InvestigatorMatcher
-colocatedWith = InvestigatorAt . LocationWithInvestigator . InvestigatorWithId
+colocatedWith
+  :: (AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> InvestigatorMatcher
+colocatedWith = InvestigatorAt . LocationWithInvestigator . InvestigatorWithId . asId
 
 investigatorEngagedWith :: (AsId enemy, IdOf enemy ~ EnemyId) => enemy -> InvestigatorMatcher
 investigatorEngagedWith = InvestigatorEngagedWith . EnemyWithId . asId

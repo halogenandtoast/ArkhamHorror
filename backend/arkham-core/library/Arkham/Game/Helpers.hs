@@ -270,7 +270,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
     ForcedAbility _ -> pure True
     SilentForcedAbility _ -> pure True
     ForcedAbilityWithCost _ _ -> pure True
-    AbilityEffect _ -> pure True
+    AbilityEffect {} -> pure True
     ServitorAbility _ -> pure True
 
 canDoAction :: HasGame m => InvestigatorId -> Ability -> Action -> m Bool
@@ -418,7 +418,8 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
       getCanAffordCost iid (toSource a) [] ws (f cost)
     ForcedAbility _ -> pure True
     SilentForcedAbility _ -> pure True
-    AbilityEffect _ -> pure True
+    AbilityEffect actions cost ->
+      getCanAffordCost iid (toSource a) actions ws (f cost)
     Objective {} -> pure True
     ForcedWhen _ aType -> go f aType
 
@@ -491,7 +492,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
             ActionAbilityWithBefore {} -> pure True
             ActionAbilityWithSkill {} -> pure True
             FastAbility' {} -> pure True
-            AbilityEffect _ -> pure True
+            AbilityEffect {} -> pure True
             Objective {} -> pure True
             Haunted -> pure True
             Cosmos -> pure True
@@ -778,7 +779,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
               , pure
                   $ BobJenkinsAction
                   `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)
-              , owner <=~> Matcher.affectsOthers (Matcher.colocatedWith "08016")
+              , owner <=~> Matcher.affectsOthers (Matcher.colocatedWith @InvestigatorId "08016")
               ]
           Nothing -> pure False
       _ -> pure False

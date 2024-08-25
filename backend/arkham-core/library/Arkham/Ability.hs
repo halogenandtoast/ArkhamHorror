@@ -182,8 +182,8 @@ reaction a n c cost wm = restrictedAbility a n c (ReactionAbility wm cost)
 uncancellable :: Ability -> Ability
 uncancellable ab = ab {abilityCanBeCancelled = False}
 
-abilityEffect :: (HasCardCode a, Sourceable a) => a -> Cost -> Ability
-abilityEffect a cost = mkAbility a (-1) (AbilityEffect cost)
+abilityEffect :: (HasCardCode a, Sourceable a) => a -> [Action] -> Cost -> Ability
+abilityEffect a actions cost = mkAbility a (-1) (AbilityEffect actions cost)
 
 basicAbility :: Ability -> Ability
 basicAbility ab = ab {abilityBasic = True}
@@ -254,7 +254,7 @@ abilityTypeActions = \case
   ForcedAbility _ -> []
   SilentForcedAbility _ -> []
   ForcedAbilityWithCost _ _ -> []
-  AbilityEffect _ -> []
+  AbilityEffect actions _ -> actions
   Haunted -> []
   ServitorAbility action -> [action]
   Cosmos -> []
@@ -273,7 +273,7 @@ abilityTypeCost = \case
   SilentForcedAbility _ -> Free
   ForcedAbility _ -> Free
   ForcedAbilityWithCost _ cost -> cost
-  AbilityEffect cost -> cost
+  AbilityEffect _ cost -> cost
   Haunted -> Free
   Cosmos -> Free
   ServitorAbility _ -> Free
@@ -300,7 +300,7 @@ modifyCost f = \case
   SilentForcedAbility window -> SilentForcedAbility window
   ForcedAbilityWithCost window cost ->
     ForcedAbilityWithCost window $ f cost
-  AbilityEffect cost -> AbilityEffect cost -- modifiers don't yet apply here
+  AbilityEffect as cost -> AbilityEffect as cost -- modifiers don't yet apply here
   Haunted -> Haunted
   ServitorAbility action -> ServitorAbility action
   Cosmos -> Cosmos
@@ -360,7 +360,7 @@ defaultAbilityWindow = \case
   ReactionAbility window _ -> window
   CustomizationReaction _ window _ -> window
   ConstantReaction _ window _ -> window
-  AbilityEffect _ -> AnyWindow
+  AbilityEffect {} -> AnyWindow
   Haunted -> AnyWindow
   ServitorAbility _ -> Matcher.DuringTurn You
   Cosmos -> AnyWindow
@@ -446,7 +446,7 @@ defaultAbilityLimit = \case
   ActionAbility _ _ -> NoLimit
   ActionAbilityWithBefore {} -> NoLimit
   ActionAbilityWithSkill {} -> NoLimit
-  AbilityEffect _ -> NoLimit
+  AbilityEffect {} -> NoLimit
   Objective aType -> defaultAbilityLimit aType
   Haunted -> NoLimit
   ServitorAbility _ -> NoLimit

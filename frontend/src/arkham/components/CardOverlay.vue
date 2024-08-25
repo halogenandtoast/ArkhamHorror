@@ -211,6 +211,7 @@ const overlay = computed(() => {
 const sideways = computed<boolean>(() => {
   if (!hoveredElement.value) return false
   if (hoveredElement.value?.classList.contains('exhausted')) return false
+  if (hoveredElement.value?.classList.contains('attached')) return false
 
   const rect = hoveredElement.value.getBoundingClientRect()
 

@@ -79,11 +79,11 @@ const evidence = computed(() => props.treachery.tokens[TokenType.Evidence])
 const cardAction = computed(() => choices.value.findIndex(canInteract))
 </script>
 <template>
-  <div class="treachery" :class="{ attached: attached }">
+  <div class="treachery" :class="{ attached }">
     <img
       :src="image"
       class="card"
-      :class="{ 'treachery--can-interact': cardAction !== -1 }"
+      :class="{ 'treachery--can-interact': cardAction !== -1, attached }"
       @click="$emit('choose', cardAction)"
       :data-delay="overlayDelay"
     />

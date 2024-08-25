@@ -578,6 +578,7 @@ function onDrop(event: DragEvent) {
 }
 
 .location-container {
+  min-height: calc(var(--card-width) / var(--card-aspect) + 40px);
   display: grid;
   grid-template-areas:
     "investigators location    assetsAndEnemies"

@@ -746,7 +746,7 @@ header {
   p {
     text-transform: uppercase;
     background: rgba(0, 0, 0, 0.5);
-    width: 80%;
+    width: 100%;
     padding: 10px 20px;
     color: white;
     text-align: center;

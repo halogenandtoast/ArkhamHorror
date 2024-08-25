@@ -1705,11 +1705,13 @@ getLocationsMatching lmatcher = do
       iids <- getInvestigatorIds
       candidates <- map toId <$> getLocationsMatching matcher
       distances <- for iids $ \iid -> do
-        start <- getJustLocation iid
-        distanceSingletons
-          <$> evalStateT
-            (markDistances start (pure . (`elem` candidates)) mempty)
-            (LPState (pure start) (singleton start) mempty)
+        getMaybeLocation iid >>= \case
+          Just start ->
+            distanceSingletons
+              <$> evalStateT
+                (markDistances start (pure . (`elem` candidates)) mempty)
+                (LPState (pure start) (singleton start) mempty)
+          Nothing -> pure mempty
       let
         matches' =
           Map.findWithDefault

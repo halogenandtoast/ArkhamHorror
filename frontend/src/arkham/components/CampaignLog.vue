@@ -226,5 +226,6 @@ li {
 
 .content {
   overflow: auto;
+  width: 100%;
 }
 </style>

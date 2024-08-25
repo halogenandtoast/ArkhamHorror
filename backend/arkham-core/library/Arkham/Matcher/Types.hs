@@ -262,6 +262,9 @@ instance Not AssetMatcher where
 instance IsString AssetMatcher where
   fromString = AssetWithTitle . fromString
 
+instance IsLabel "ready" AssetMatcher where
+  fromLabel = AssetReady
+
 instance IsLabel "talent" AssetMatcher where
   fromLabel = AssetWithTrait Talent
 
@@ -606,7 +609,7 @@ instance IsMatcher AssetMatcher
 instance IsMatcher EventMatcher
 instance IsMatcher InvestigatorMatcher
 instance IsMatcher TreacheryMatcher
-class IsMatcher b => Be a b where
+class IsMatcher b => Be a b | a -> b where
   be :: a -> b
 
 instance Be InvestigatorMatcher InvestigatorMatcher where

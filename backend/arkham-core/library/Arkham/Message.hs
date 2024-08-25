@@ -431,6 +431,7 @@ data Message
   | -- Asks
     AskPlayer Message
   | Ask PlayerId (Question Message)
+  | WindowAsk [Window] PlayerId (Question Message)
   | AskMap (Map PlayerId (Question Message))
   | After Message -- TODO: REMOVE
   | AfterEvadeEnemy InvestigatorId EnemyId
@@ -1113,6 +1114,10 @@ questionLabel lbl pid q = Ask pid (QuestionLabel lbl Nothing q)
 
 questionLabelWithCard :: Text -> CardCode -> PlayerId -> Question Message -> Message
 questionLabelWithCard lbl cCode pid q = Ask pid (QuestionLabel lbl (Just cCode) q)
+
+asWindowChoose :: HasCallStack => [Window] -> Message -> Message
+asWindowChoose ws (Ask pid q) = WindowAsk ws pid q
+asWindowChoose _ _ = error "asWindowChoose: expected Ask"
 
 chooseOne :: HasCallStack => PlayerId -> [UI Message] -> Message
 chooseOne _ [] = error "No messages for chooseOne"

@@ -1198,12 +1198,7 @@ runGameMessage msg g = case msg of
     push $ ShuffleCardsIntoDeck deck [card]
     pure $ g & entitiesL . locationsL %~ deleteMap locationId
   PlayCard iid card _mtarget _payment windows' True -> do
-    allModifiers <-
-      mconcat
-        <$> sequence
-          [ getModifiers card
-          , getModifiers iid
-          ]
+    allModifiers <- mconcat <$> sequence [getModifiers card, getModifiers iid]
     let
       isFast = case card of
         PlayerCard _ ->
@@ -1223,6 +1218,17 @@ runGameMessage msg g = case msg of
       %~ insertMap (activeCostId activeCost) activeCost
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & setTurnHistory
+  WindowAsk ws pid q -> do
+    -- get all other asks for these windows and combine into an AskMap
+    others <- popMessagesMatching \case
+      WindowAsk ws' _ _ -> ws == ws'
+      _ -> False
+
+    push
+      $ if notNull others
+        then AskMap $ Map.fromList $ (pid, q) : [(pid', q') | WindowAsk _ pid' q' <- others]
+        else Ask pid q
+    pure g
   PlayCard iid card mtarget payment windows' False -> do
     investigator' <- getInvestigator iid
     playableCards <- getPlayableCards (toAttrs investigator') Cost.PaidCost windows'

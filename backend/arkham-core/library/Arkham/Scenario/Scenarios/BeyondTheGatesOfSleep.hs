@@ -206,8 +206,8 @@ instance HasChaosTokenValue BeyondTheGatesOfSleep where
       cards <- fieldMap InvestigatorHand length iid
       pure $ toChaosTokenValue attrs Skull (ceiling @Double $ fromIntegral cards / 2.0) cards
     Cultist -> do
-      easyStandard <- selectCount $ LocationWithTitle "Enchanted Woods"
-      hardExpert <- selectCount $ LocationWithTrait Woods
+      easyStandard <- selectCount $ RevealedLocation <> LocationWithTitle "Enchanted Woods"
+      hardExpert <- selectCount $ RevealedLocation <> LocationWithTrait Woods
       pure $ toChaosTokenValue attrs Cultist easyStandard hardExpert
     Tablet -> pure $ ChaosTokenValue Tablet (NegativeModifier 2)
     otherFace -> getChaosTokenValue iid otherFace attrs

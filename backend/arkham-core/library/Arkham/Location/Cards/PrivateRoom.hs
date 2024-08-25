@@ -44,7 +44,7 @@ instance RunMessage PrivateRoom where
                 player
                 [ Label
                     "Pay 1{perPlayer} clues"
-                    [ PayForAbility (abilityEffect attrs cost) []
+                    [ PayForAbility (abilityEffect attrs [] cost) []
                     , chooseOrRunOne
                         player
                         [targetLabel iid' [TakeControlOfSetAsideAsset iid' randolph] | iid' <- investigators]

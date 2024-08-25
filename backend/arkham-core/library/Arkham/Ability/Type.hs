@@ -82,7 +82,7 @@ data AbilityType
   | SilentForcedAbility {window :: WindowMatcher}
   | ForcedAbility {window :: WindowMatcher}
   | ForcedAbilityWithCost {window :: WindowMatcher, cost :: Cost}
-  | AbilityEffect {cost :: Cost}
+  | AbilityEffect {actions :: [Action], cost :: Cost}
   | Objective {abilityType :: AbilityType}
   | Haunted
   | Cosmos
@@ -104,7 +104,7 @@ instance HasCost AbilityType where
     SilentForcedAbility window -> SilentForcedAbility window
     ForcedAbility window -> ForcedAbility window
     ForcedAbilityWithCost window cost -> ForcedAbilityWithCost window (f cost)
-    AbilityEffect cost -> AbilityEffect (f cost)
+    AbilityEffect as cost -> AbilityEffect as (f cost)
     Objective abilityType -> Objective (overCost f abilityType)
     Haunted -> Haunted
     Cosmos -> Cosmos
@@ -129,7 +129,7 @@ abilityTypeCostL f = \case
   SilentForcedAbility window -> SilentForcedAbility window <$ f mempty
   ForcedAbility window -> ForcedAbility window <$ f mempty
   ForcedAbilityWithCost window cost -> ForcedAbilityWithCost window <$> f cost
-  AbilityEffect cost -> AbilityEffect <$> f cost
+  AbilityEffect as cost -> AbilityEffect as <$> f cost
   Objective abilityType -> Objective <$> abilityTypeCostL f abilityType
   ServitorAbility action -> pure $ ServitorAbility action
   Haunted -> pure Haunted

@@ -418,10 +418,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       then pushAll msgs
       else do
         canPay <- getCanAffordCost iid a [] [mkWhen Window.NonFast] (mconcat additionalCosts)
-        when canPay
-          $ pushAll
-          $ [PayForAbility (abilityEffect a $ mconcat additionalCosts) []]
-          <> msgs
+        when canPay do
+          -- we pass an empty list of actions here because we already have
+          -- moved the costs to the pay for ability's additional costs
+          pushAll $ [PayForAbility (abilityEffect a [] $ mconcat additionalCosts) []] <> msgs
     pure a
   TakeStartingResources iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
@@ -2769,8 +2769,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #resource)]
     afterWindowMsg <- checkWindows [mkAfter (Window.PerformAction iid #resource)]
     canGain <- can.gain.resources (sourceToFromSource source) iid
-    when canGain
-      $ pushAll
+
+    when canGain do
+      pushAll
         [ BeginAction
         , beforeWindowMsg
         , TakeActions iid [#resource] (ActionCost 1)
@@ -3053,7 +3054,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & usedAdditionalActionsL %~ (n :)
   TakeActions iid actions cost | iid == investigatorId -> do
     pushAll
-      $ [PayForAbility (abilityEffect a cost) []]
+      $ [PayForAbility (abilityEffect a actions cost) []]
       <> [TakenActions iid actions | notNull actions]
     pure a
   TakenActions iid actions | iid == investigatorId -> do
@@ -3775,9 +3776,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           $ chooseOne player
           $ nub
           $ additionalActions
-          <> [ ComponentLabel
-              (InvestigatorComponent iid ResourceToken)
-              [TakeResources iid 1 (toSource a) usesAction]
+          <> [ ResourceLabel iid [TakeResources iid 1 (toSource a) usesAction]
              | canAffordTakeResources && canTakeResource
              ]
           <> [ ComponentLabel (InvestigatorDeckComponent iid) [drawing]
@@ -3803,81 +3802,54 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         usesAction = not isAdditional
         choices =
           additionalActions
-            <> [ targetLabel (toCardId c) [InitiatePlayCard investigatorId c Nothing NoPayment windows usesAction]
+            <> [ targetLabel c [InitiatePlayCard investigatorId c Nothing NoPayment windows usesAction]
                | c <- playableCards
                ]
             <> map
               ((\f -> f windows [] []) . AbilityLabel investigatorId)
               (filter (not . isActionAbility) actions)
       player <- getPlayer investigatorId
-      unless (null choices)
-        $ push
-        $ AskPlayer
-        $ chooseOne player choices
+      unless (null choices) $ push $ AskPlayer $ chooseOne player choices
     pure a
   EndInvestigation -> do
     pure
       $ a
       & usedAbilitiesL
-      %~ filter
-        ( \UsedAbility {..} ->
-            abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
-        )
+      %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerPhase)
   EndEnemy -> do
     pure
       $ a
       & usedAbilitiesL
-      %~ filter
-        ( \UsedAbility {..} ->
-            abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
-        )
+      %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerPhase)
   ScenarioCountIncrementBy CurrentDepth n | n > 0 -> do
     pure
       $ a
       & usedAbilitiesL
-      %~ filter
-        ( \UsedAbility {..} ->
-            abilityLimitType (abilityLimit usedAbility) /= Just PerDepthLevel
-        )
+      %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerDepthLevel)
   EndUpkeep -> do
     pure
       $ a
       & usedAbilitiesL
-      %~ filter
-        ( \UsedAbility {..} ->
-            abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
-        )
+      %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerPhase)
   EndMythos -> do
     pure
       $ a
       & usedAbilitiesL
-      %~ filter
-        ( \UsedAbility {..} ->
-            abilityLimitType (abilityLimit usedAbility) /= Just PerPhase
-        )
+      %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerPhase)
   EndRound -> do
     pure
       $ a
       & usedAbilitiesL
-      %~ filter
-        ( \UsedAbility {..} ->
-            abilityLimitType (abilityLimit usedAbility) /= Just PerRound
-        )
-      & usedAdditionalActionsL
-      .~ mempty
+      %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerRound)
+      & (usedAdditionalActionsL .~ mempty)
   EndTurn iid | iid == toId a -> do
     pure
       $ a
-      & endedTurnL
-      .~ True
+      & (endedTurnL .~ True)
       & usedAbilitiesL
-      %~ filter
-        ( \UsedAbility {..} ->
-            abilityLimitType (abilityLimit usedAbility) /= Just PerTurn
-        )
+      %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTurn)
   UseCardAbility iid (isSource a -> True) 500 _ _ -> do
-    otherInvestigators <-
-      select $ colocatedWith investigatorId <> NotInvestigator (InvestigatorWithId investigatorId)
+    otherInvestigators <- select $ colocatedWith a <> not_ (InvestigatorWithId investigatorId)
     case nonEmpty otherInvestigators of
       Nothing -> error "No other investigators"
       Just (x :| xs) -> do

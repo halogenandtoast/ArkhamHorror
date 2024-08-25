@@ -460,7 +460,7 @@ instance RunMessage SkillTest where
             $ pushAll
             $ [SetActiveInvestigator iid | iid /= iid']
             <> [ PayForAbility
-                  (abilityEffect (SourceableWithCardCode (CardCode "skilltest") s) $ mconcat additionalCosts)
+                  (abilityEffect (SourceableWithCardCode (CardCode "skilltest") s) [] $ mconcat additionalCosts)
                   []
                ]
             <> [SetActiveInvestigator iid' | iid /= iid']

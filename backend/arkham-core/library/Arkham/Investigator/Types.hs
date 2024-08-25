@@ -290,6 +290,10 @@ data InvestigatorAttrs = InvestigatorAttrs
   }
   deriving stock (Show, Eq, Data)
 
+instance AsId InvestigatorAttrs where
+  type IdOf InvestigatorAttrs = InvestigatorId
+  asId = investigatorId
+
 instance HasCardCode InvestigatorAttrs where
   toCardCode = investigatorCardCode
 

@@ -19,7 +19,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window
 
 newtype PassengerCar_171 = PassengerCar_171 LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 passengerCar_171 :: LocationCard PassengerCar_171
@@ -67,7 +67,7 @@ instance RunMessage PassengerCar_171 where
                   [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1]
               , Label
                   "Discard cards with at least 1 {wild} icons"
-                  [PayForAbility (abilityEffect attrs cost) []]
+                  [PayForAbility (abilityEffect attrs [] cost) []]
               ]
         else push (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1)
       pure l

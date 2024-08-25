@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.PrismaticCascade (
-  prismaticCascade,
-  PrismaticCascade (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.PrismaticCascade (prismaticCascade, PrismaticCascade (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
@@ -14,6 +9,7 @@ import Arkham.Location.Cards qualified as Cards (prismaticCascade)
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 import Control.Monad.Extra (findM)
 
@@ -22,8 +18,7 @@ newtype PrismaticCascade = PrismaticCascade LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 prismaticCascade :: LocationCard PrismaticCascade
-prismaticCascade =
-  location PrismaticCascade Cards.prismaticCascade 2 (Static 3)
+prismaticCascade = location PrismaticCascade Cards.prismaticCascade 2 (Static 3)
 
 instance HasAbilities PrismaticCascade where
   getAbilities (PrismaticCascade attrs) =

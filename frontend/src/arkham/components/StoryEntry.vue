@@ -69,7 +69,6 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
   overflow: auto;
   height: 100%;
   padding: 20px;
-  max-height: 70vh;
   :deep(h1) {
     font-family: "Teutonic";
     font-weight: 500;

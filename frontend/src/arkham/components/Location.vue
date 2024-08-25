@@ -351,7 +351,6 @@ function onDrop(event: DragEvent) {
 
 .location-container {
   display: flex;
-  margin: 60px;
   position: relative;
 }
 
@@ -367,6 +366,7 @@ function onDrop(event: DragEvent) {
   display: flex;
   flex-direction: column;
   position: relative;
+  grid-area: location;
 }
 
 .pool {
@@ -394,11 +394,14 @@ function onDrop(event: DragEvent) {
   border-radius: 5px;
 }
 
+
 .location-investigator-column {
-  position: absolute;
-  right: calc(100% + 5px);
+  grid-area: investigators;
+  justify-self: end;
+
   &:deep(.portrait) {
     height: 25%;
+    box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
   }
 
   &:deep(img) {
@@ -407,11 +410,10 @@ function onDrop(event: DragEvent) {
 }
 
 .location-asset-column {
+  grid-area: assetsAndEnemies;
+  justify-self: start;
   display: flex;
   flex-direction: column-reverse;
-  position: absolute;
-  left: 100%;
-  padding: 0 10px;
   min-width: calc(var(--card-width) * 0.8);
   height: fit-content;
   &:deep(.card) {
@@ -496,8 +498,7 @@ function onDrop(event: DragEvent) {
 }
 
 .attachments {
-  position: absolute;
-  top: 100%;
+  grid-area: attachments;
 }
 
 .location:has(.abilities) {
@@ -568,4 +569,12 @@ function onDrop(event: DragEvent) {
   }
 }
 
+.location-container {
+  display: grid;
+  grid-template-areas:
+    "investigators location    assetsAndEnemies"
+    "investigators attachments assetsAndEnemies";
+  grid-template-columns: 60px 1fr 60px;
+  grid-column-gap: 10px;
+}
 </style>

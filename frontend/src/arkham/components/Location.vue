@@ -32,6 +32,13 @@ const handleFocus = () => {
   showAbilities.value = true
 }
 
+const dragover = (e: DragEvent) => {
+  e.preventDefault()
+  if (e.dataTransfer) {
+    e.dataTransfer.dropEffect = 'move'
+  }
+}
+
 const handleFocusOut = (e: FocusEvent) => {
   const target = e.target as HTMLElement
   if (target && target.classList.contains('abilities')) {
@@ -200,9 +207,9 @@ function onDrop(event: DragEvent) {
   event.preventDefault()
   if (event.dataTransfer) {
     const data = event.dataTransfer.getData('text/plain')
-    console.log(data);
     const json = JSON.parse(data)
     if (json.tag === "EnemyTarget") {
+      if (enemies.value.some(e => e === json.contents)) return false
       debug.send(props.game.id, {tag: 'EnemyMove', contents: [json.contents, id.value]})
     }
 
@@ -238,8 +245,9 @@ function onDrop(event: DragEvent) {
             class="card"
             :src="image"
             :class="{ 'location--can-interact': canInteract }"
+            draggable="false"
             @drop="onDrop($event)"
-            @dragover.prevent
+            @dragover.prevent="dragover($event)"
             @dragenter.prevent
             @click="clicked"
           />

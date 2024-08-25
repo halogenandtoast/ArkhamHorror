@@ -173,5 +173,6 @@ const choose = (idx: number) => emit('choose', idx)
   background: rgba(0,0,0,0.5);
   display: flex;
   flex-direction: column;
+  gap: 10px;
 }
 </style>

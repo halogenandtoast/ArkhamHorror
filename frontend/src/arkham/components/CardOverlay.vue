@@ -8,6 +8,10 @@ const hoveredElement = ref<HTMLElement | null>(null)
 onMounted(() => {
   const handleMouseover = (event: Event) => {
     const target = event.target as HTMLElement
+    if (target.classList.contains('dragging')) {
+      hoveredElement.value = null
+      return
+    }
     if (target && (target.classList.contains('card') || target.dataset.imageId || target.dataset.target || target.dataset.image)) {
       if (target.dataset.delay) {
         setTimeout(() => {

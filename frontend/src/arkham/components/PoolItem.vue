@@ -9,13 +9,15 @@ export interface Props {
 }
 const props = defineProps<Props>()
 
+const emit = defineEmits<{ choose: [] }>()
+
 const image = computed(() => {
   return imgsrc(`${props.type}.png`)
 })
 </script>
 
 <template>
-  <div class="poolItem" :class="`poolItem-${type}`" @click="$emit('choose')" v-tooltip="tooltip">
+  <div class="poolItem" :class="`poolItem-${type}`" @click="emit('choose')" v-tooltip="tooltip">
     <img :src="image" />
     <span>{{amount}}</span>
   </div>

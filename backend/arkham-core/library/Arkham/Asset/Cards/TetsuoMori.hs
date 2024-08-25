@@ -1,10 +1,4 @@
-module Arkham.Asset.Cards.TetsuoMori (
-  tetsuoMori,
-  TetsuoMori (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.TetsuoMori (tetsuoMori, TetsuoMori (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -14,11 +8,12 @@ import Arkham.Card
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Trait (Trait (Item))
 
 newtype TetsuoMori = TetsuoMori AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tetsuoMori :: AssetCard TetsuoMori
@@ -67,8 +62,7 @@ instance RunMessage TetsuoMori where
         $ chooseOrRunOne player
         $ targetLabels iids
         $ only
-        . HandleTargetChoice iid (toAbilitySource attrs 1)
-        . toTarget
+        . handleTargetChoice iid (attrs.ability 1)
       pure a
     HandleTargetChoice _ source@(isAbilitySource attrs 1 -> True) (InvestigatorTarget iid') -> do
       discardWithItem <- fieldP InvestigatorDiscard (any (`cardMatch` CardWithTrait Item)) iid'

@@ -1,16 +1,11 @@
-module Arkham.Location.Cards.SevenHundredSteps (
-  sevenHundredSteps,
-  SevenHundredSteps (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.SevenHundredSteps (sevenHundredSteps, SevenHundredSteps (..)) where
 
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype SevenHundredSteps = SevenHundredSteps LocationAttrs
@@ -22,22 +17,19 @@ sevenHundredSteps = location SevenHundredSteps Cards.sevenHundredSteps 2 (PerPla
 
 instance HasAbilities SevenHundredSteps where
   getAbilities (SevenHundredSteps attrs) =
-    withRevealedAbilities attrs
-      $ [ mkAbility attrs 1
-            $ ForcedAbility
-            $ Leaves #after (You <> HandWith (LengthIs $ atLeast 4))
-            $ LocationWithId
-            $ toId attrs
-        , restrictedAbility attrs 2 Here $ FastAbility Free
-        ]
+    extendRevealed
+      attrs
+      [ mkAbility attrs 1 $ forced $ Leaves #when (You <> HandWith (LengthIs $ atLeast 4)) (be attrs)
+      , restrictedAbility attrs 2 Here $ FastAbility Free
+      ]
 
 instance RunMessage SevenHundredSteps where
   runMessage msg l@(SevenHundredSteps attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       handSize <- fieldMap InvestigatorHand length iid
-      pushWhen (handSize > 3) $ assignHorror iid (toAbilitySource attrs 1) (handSize - 3)
+      pushWhen (handSize > 3) $ assignHorror iid (attrs.ability 1) (handSize - 3)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ chooseAndDiscardCard iid (toAbilitySource attrs 2)
+      push $ chooseAndDiscardCard iid (attrs.ability 2)
       pure l
     _ -> SevenHundredSteps <$> runMessage msg attrs

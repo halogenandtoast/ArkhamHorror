@@ -19,4 +19,9 @@ instance RunMessage LongShot where
         EnemyTarget eid -> nonAttackEnemyDamage attrs 1 eid
         _ -> error "invalid target"
       pure s
+    PassedSkillTest _iid (Just Evade) _ (isTarget attrs -> True) _ _ -> do
+      whenJustM getSkillTestTarget \case
+        EnemyTarget eid -> nonAttackEnemyDamage attrs 1 eid
+        _ -> error "invalid target"
+      pure s
     _ -> LongShot <$> liftRunMessage msg attrs

@@ -393,10 +393,12 @@ const getImage = (el: HTMLElement): string | null => {
 .card-overlay {
   position: absolute;
   z-index: 1000;
-  max-height: 420px;
-  max-width: 300px;
-  height: fit-content;
   display: flex;
+  .card-image {
+    max-height: 420px;
+    max-width: 300px;
+    height: fit-content;
+  }
   img {
     box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.75);
     border-radius: 15px;

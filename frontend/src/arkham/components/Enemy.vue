@@ -31,6 +31,7 @@ const emits = defineEmits<{
 }>()
 
 const debugging = ref(false)
+const dragging = ref(false)
 const enemyStory = computed(() => {
   const { stories } = props.game
   return Object.values(stories).find((s) => s.otherSide?.contents === props.enemy.id)
@@ -183,8 +184,8 @@ watch(abilities, (abilities) => {
 })
 
 function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
+  dragging.value = true
   if (event.dataTransfer) {
-    event.dataTransfer.dropEffect = 'move'
     event.dataTransfer.effectAllowed = 'move'
     event.dataTransfer.setData('text/plain', JSON.stringify({ "tag": "EnemyTarget", "contents": enemy.id }))
   }
@@ -201,7 +202,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
           <div class="card-wrapper">
             <img v-if="isTrueForm" :src="image"
               class="card enemy"
-              :class="{ exhausted: isExhausted, 'enemy--can-interact': canInteract }"
+              :class="{ dragging, exhausted: isExhausted, 'enemy--can-interact': canInteract }"
               :data-id="id"
               :data-fight="enemy.fight"
               :data-evade="enemy.evade"

@@ -112,6 +112,7 @@ const locationStyles = computed(() => {
   const cleaned = locationLayout
   return {
     display: 'grid',
+    gap: '20px',
     'grid-template-areas': cleaned.map((row) => `"${row}"`).join(' '),
   }
 })
@@ -1023,6 +1024,12 @@ margin: 20px !important;
   flex-wrap: wrap;
   .card-row-card {
     position: relative;
+  }
+}
+
+.location {
+  &:hover {
+    z-index: 100;
   }
 }
 </style>

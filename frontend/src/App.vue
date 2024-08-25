@@ -389,4 +389,24 @@ footer {
 .card {
   box-shadow: var(--card-shadow);
 }
+
+:nth-child(1) {
+  --index: 1;
+}
+:nth-child(2) {
+  --index: 2;
+}
+:nth-child(3) {
+  --index: 3;
+}
+:nth-child(4) {
+  --index: 4;
+}
+
+:nth-last-child(1) {
+  --rev-index: 1;
+}
+:nth-last-child(2) {
+  --rev-index: 2;
+}
 </style>

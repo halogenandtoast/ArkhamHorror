@@ -301,10 +301,8 @@ createActiveCostForCard iid card isPlayAction windows' = do
       AdditionalActionCostOf match n -> do
         performedActions <- field InvestigatorActionsPerformed iid
         takenActions <- field InvestigatorActionsTaken iid
-        pure
-          $ if any (matchTarget takenActions performedActions match) (cdActions $ toCardDef card)
-            then Just n
-            else Nothing
+        let cardActions = if isPlayAction == IsPlayAction then #play : card.actions else card.actions
+        pure $ guard (any (matchTarget takenActions performedActions match) cardActions) $> n
       _ -> pure Nothing
 
   actionCost <-

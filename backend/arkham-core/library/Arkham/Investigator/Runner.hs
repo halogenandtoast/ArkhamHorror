@@ -260,7 +260,7 @@ runWindow attrs windows actions playableCards = do
         -- Silent forced abilities should trigger automatically
         pushAll
           $ toForcedAbilities silent
-          <> [chooseOne player (toUseAbilities normal) | notNull normal]
+          <> [asWindowChoose windows $ chooseOne player (toUseAbilities normal) | notNull normal]
           <> [CheckWindows windows]
       else do
         actionsWithMatchingWindows <-
@@ -268,9 +268,10 @@ runWindow attrs windows actions playableCards = do
             (ability,) <$> filterM (\w -> windowMatches iid abilitySource w abilityWindow) windows
         skippable <- getAllAbilitiesSkippable attrs windows
         push
+          $ asWindowChoose windows
           $ chooseOne player
           $ [ targetLabel
-              (toCardId c)
+              c
               [InitiatePlayCard iid c Nothing NoPayment windows True, CheckWindows windows]
             | c <- playableCards
             ]

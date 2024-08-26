@@ -227,34 +227,16 @@ const tarot = computed<boolean>(() => {
   return hoveredElement.value?.classList.contains('tarot-card')
 })
 
-const getRotated = (el: HTMLElement) => {
-  const elementsToCheck = [el, el.parentElement]
-
-  for (let i = 0; i < elementsToCheck.length; i++) {
-    if (elementsToCheck[i]) {
-      const style = window.getComputedStyle(elementsToCheck[i] as Element)
-      const matrix = new WebKitCSSMatrix(style.transform)
-      const angle = Math.round(Math.atan2(matrix.m21, matrix.m11) * (180 / Math.PI))
-
-      if (Math.abs(angle) === 90 || Math.abs(angle) === -270) {
-          return true
-      }
-    }
-  }
-
-  return false
-}
 const getPosition = (el: HTMLElement) => {
   const rect = el.getBoundingClientRect()
   const overlayWidth = 300 // Adjust this value if the overlay width changes
 
   // Calculate the ratio based on the orientation of the card
-  const rotated = getRotated(el)
-  const ratio = rotated ? 1.41843972 / rect.width : 0.705;
+  const ratio = 0.705;
 
   // Calculate the height of the overlay based on the ratio
   const width = sideways.value ? (overlayWidth / ratio) : 300
-  const height = sideways.value ? 300 : overlayWidth / ratio
+  const height = width / ratio
 
   // Calculate the top position, ensuring it doesn't go off the screen
   const top = rect.top + window.scrollY - 40

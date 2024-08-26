@@ -6,7 +6,6 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Cost
 import Arkham.Helpers.SkillTest
-import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Modifier
 
 newtype BlessedBlade4 = BlessedBlade4 AssetAttrs
@@ -17,7 +16,7 @@ blessedBlade4 :: AssetCard BlessedBlade4
 blessedBlade4 = asset BlessedBlade4 Cards.blessedBlade4
 
 instance HasAbilities BlessedBlade4 where
-  getAbilities (BlessedBlade4 attrs) = [controlledAbility attrs 1 (exists $ be attrs <> #ready) fightAction_]
+  getAbilities (BlessedBlade4 attrs) = [restrictedAbility attrs 1 ControlsThis fightAction_]
 
 instance RunMessage BlessedBlade4 where
   runMessage msg a@(BlessedBlade4 attrs) = runQueueT $ case msg of

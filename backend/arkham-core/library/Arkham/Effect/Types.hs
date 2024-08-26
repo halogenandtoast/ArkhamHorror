@@ -284,8 +284,14 @@ makeEffectBuilder cardCode meffectMetadata (toSource -> source) (toTarget -> tar
     , effectBuilderWindow = Nothing
     , effectBuilderFinished = False
     , effectBuilderExtraMetadata = Null
-    , effectBuilderSkillTest = Nothing
+    , effectBuilderSkillTest = mSkillTest
     }
+ where
+  mSkillTest = case (meffectMetadata, source, target, effectWindow) of
+    (Just (EffectMetaTarget (SkillTestTarget sid)), _, _, _) -> Just sid
+    (_, SkillTestSource sid, _, _) -> Just sid
+    (_, _, SkillTestTarget sid, _) -> Just sid
+    _ -> Nothing
 
 $(deriveJSON (aesonOptions $ Just "effectBuilder") ''EffectBuilder)
 $(deriveJSON (aesonOptions $ Just "effect") ''EffectAttrs)

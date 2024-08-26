@@ -540,7 +540,7 @@ instance RunMessage SkillTest where
       player <- getPlayer skillTestInvestigator
       push (chooseOne player [SkillTestApplyResultsButton])
       let
-        modifiedSkillTestResult =
+        modifiedSkillTestResult = 
           foldl' modifySkillTestResult skillTestResult modifiers'
         modifySkillTestResult r (SkillTestResultValueModifier n) = case r of
           Unrun -> Unrun

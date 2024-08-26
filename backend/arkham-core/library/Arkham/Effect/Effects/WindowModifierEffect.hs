@@ -43,10 +43,11 @@ windowModifierEffect' eid metadata effectWindow source target =
       , effectSkillTest = mSkillTest
       }
  where
-  mSkillTest = case (metadata, source, target) of
-    (EffectMetaTarget (SkillTestTarget sid), _, _) -> Just sid
-    (_, SkillTestSource sid, _) -> Just sid
-    (_, _, SkillTestTarget sid) -> Just sid
+  mSkillTest = case (metadata, source, target, effectWindow) of
+    (EffectMetaTarget (SkillTestTarget sid), _, _, _) -> Just sid
+    (_, SkillTestSource sid, _, _) -> Just sid
+    (_, _, SkillTestTarget sid, _) -> Just sid
+    (_, _, _, EffectSkillTestWindow sid) -> Just sid
     _ -> Nothing
 
 instance HasModifiersFor WindowModifierEffect where

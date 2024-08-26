@@ -250,7 +250,7 @@ const getPosition = (el: HTMLElement) => {
 
   // Calculate the ratio based on the orientation of the card
   const rotated = getRotated(el)
-  const ratio = rotated ? rect.height / rect.width : rect.width / rect.height
+  const ratio = rotated ? 1.41843972 / rect.width : 0.705;
 
   // Calculate the height of the overlay based on the ratio
   const width = sideways.value ? (overlayWidth / ratio) : 300

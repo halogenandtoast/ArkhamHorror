@@ -577,6 +577,10 @@ function onDrop(event: DragEvent) {
   }
 }
 
+.location {
+  min-width: calc(var(--card-width) + 120px);
+}
+
 .location-container {
   min-height: calc(var(--card-width) / var(--card-aspect) + 40px);
   display: grid;

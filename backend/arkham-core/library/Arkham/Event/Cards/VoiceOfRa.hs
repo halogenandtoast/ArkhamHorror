@@ -1,9 +1,4 @@
-module Arkham.Event.Cards.VoiceOfRa (
-  voiceOfRa,
-  VoiceOfRa (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.VoiceOfRa (voiceOfRa, VoiceOfRa (..)) where
 
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
@@ -11,6 +6,7 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.Prelude
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Taboo
 
@@ -30,7 +26,7 @@ instance RunMessage VoiceOfRa where
       send $ format (toCard attrs) <> " drew " <> toSentence (map chaosTokenLabel tokens)
       push $ ResetChaosTokens (toSource attrs)
       let valid =
-            if tabooed TabooList21 attrs
+            if tabooed TabooList20 attrs
               then isSymbolChaosToken
               else (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
       let n = count valid tokens

@@ -261,6 +261,7 @@ const assetStory = computed(() => {
         :game="game"
         :playerId="playerId"
         :key="eventId"
+        :attached="true"
         @choose="$emit('choose', $event)"
       />
       <Treachery
@@ -357,7 +358,7 @@ const assetStory = computed(() => {
 
 :deep(.event img) {
   object-fit: cover;
-  object-position: 0 -72px;
+  object-position: bottom;
   height: 36px;
   margin-top: 2px;
 }

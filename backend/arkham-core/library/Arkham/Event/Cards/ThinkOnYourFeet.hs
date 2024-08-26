@@ -1,13 +1,7 @@
-module Arkham.Event.Cards.ThinkOnYourFeet (
-  thinkOnYourFeet,
-  ThinkOnYourFeet (..),
-) where
+module Arkham.Event.Cards.ThinkOnYourFeet (thinkOnYourFeet, ThinkOnYourFeet (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers
 import Arkham.Movement
 
@@ -19,12 +13,10 @@ thinkOnYourFeet :: EventCard ThinkOnYourFeet
 thinkOnYourFeet = event ThinkOnYourFeet Cards.thinkOnYourFeet
 
 instance RunMessage ThinkOnYourFeet where
-  runMessage msg e@(ThinkOnYourFeet attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
+  runMessage msg e@(ThinkOnYourFeet attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       connectedLocations <- getAccessibleLocations iid attrs
-      player <- getPlayer iid
-      pushWhen (notNull connectedLocations)
-        $ chooseOrRunOne player
-        $ targetLabels connectedLocations (only . Move . move attrs iid)
+      when (notNull connectedLocations) do
+        chooseOrRunOne iid $ targetLabels connectedLocations (only . Move . move attrs iid)
       pure e
-    _ -> ThinkOnYourFeet <$> runMessage msg attrs
+    _ -> ThinkOnYourFeet <$> liftRunMessage msg attrs

@@ -1972,15 +1972,15 @@ getLocationsMatching lmatcher = do
         selectAny $ NotLocation (LocationWithId $ toId l) <> matcher <> matchAny
     ConnectedFrom matcher -> do
       -- we need to add the (ConnectedToWhen)
-      startIds <- select matcher
-      let starts = filter ((`elem` startIds) . toId) ls
-      others :: [Location] <- concatForM startIds \l -> do
+      -- NOTE: We need to not filter the starts
+      starts <- select matcher
+      others :: [Location] <- concatForM starts \l -> do
         mods <- getModifiers l
         let checks = [(isValid, connectedTo) | ConnectedToWhen isValid connectedTo <- mods]
         concatForM checks $ \(isValid, connectedTo) -> do
           valid <- l <=~> isValid
           if valid then getLocationsMatching connectedTo else pure []
-      matcherSupreme <- foldMapM (fmap AnyLocationMatcher . getConnectedMatcher) starts
+      matcherSupreme <- foldMapM (fmap AnyLocationMatcher . Helpers.getConnectedMatcher) starts
       allOptions <- (<> others) <$> getLocationsMatching (getAnyLocationMatcher matcherSupreme)
       pure $ filter (`elem` allOptions) ls
     LocationWhenCriteria criteria -> do

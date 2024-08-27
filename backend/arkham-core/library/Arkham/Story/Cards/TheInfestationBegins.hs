@@ -114,7 +114,7 @@ instance RunMessage TheInfestationBegins where
                 infestedLocations
                 ( \location ->
                     select
-                      $ NotLocation (oneOf [InfestedLocation, LocationWithHorror $ atLeast 1])
+                      $ not_ (oneOf [InfestedLocation, LocationWithHorror $ atLeast 1])
                       <> ConnectedFrom (LocationWithId location)
                 )
           when (notNull adjacentLocations) $ do

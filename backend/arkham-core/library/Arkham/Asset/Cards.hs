@@ -4970,12 +4970,13 @@ butterflySwords2 =
 
 combatTraining3 :: CardDef
 combatTraining3 =
-  (asset "08027" "Combat Training" 0 Guardian)
-    { cdSkills = [#combat, #combat, #agility, #agility]
-    , cdCardTraits = setFromList [Talent, Composure]
-    , cdLimits = [LimitPerTrait Composure 1]
-    , cdLevel = Just 3
-    }
+  fast
+    $ (asset "08027" "Combat Training" 0 Guardian)
+      { cdSkills = [#combat, #combat, #agility, #agility]
+      , cdCardTraits = setFromList [Talent, Composure]
+      , cdLimits = [LimitPerTrait Composure 1]
+      , cdLevel = Just 3
+      }
 
 butterflySwords5 :: CardDef
 butterflySwords5 =
@@ -5122,12 +5123,13 @@ theRedClockBrokenButReliable2 =
 
 moxie3 :: CardDef
 moxie3 =
-  (asset "08056" "Moxie" 0 Rogue)
-    { cdSkills = [#willpower, #willpower, #agility, #agility]
-    , cdCardTraits = setFromList [Talent, Composure]
-    , cdLimits = [LimitPerTrait Composure 1]
-    , cdLevel = Just 3
-    }
+  fast
+    $ (asset "08056" "Moxie" 0 Rogue)
+      { cdSkills = [#willpower, #willpower, #agility, #agility]
+      , cdCardTraits = setFromList [Talent, Composure]
+      , cdLimits = [LimitPerTrait Composure 1]
+      , cdLevel = Just 3
+      }
 
 theBlackFan3 :: CardDef
 theBlackFan3 =
@@ -5199,12 +5201,13 @@ healingWords3 =
 
 grounded3 :: CardDef
 grounded3 =
-  (asset "08069" "Grounded" 0 Mystic)
-    { cdSkills = [#wild, #wild]
-    , cdCardTraits = setFromList [Talent, Composure]
-    , cdLimits = [LimitPerTrait Composure 1]
-    , cdLevel = Just 3
-    }
+  fast
+    $ (asset "08069" "Grounded" 0 Mystic)
+      { cdSkills = [#wild, #wild]
+      , cdCardTraits = setFromList [Talent, Composure]
+      , cdLimits = [LimitPerTrait Composure 1]
+      , cdLevel = Just 3
+      }
 
 trueMagickReworkingReality5 :: CardDef
 trueMagickReworkingReality5 =
@@ -5262,12 +5265,13 @@ fireExtinguisher3 =
 
 plucky3 :: CardDef
 plucky3 =
-  (asset "08081" "Plucky" 0 Survivor)
-    { cdSkills = [#willpower, #willpower, #intellect, #intellect]
-    , cdCardTraits = setFromList [Talent, Composure]
-    , cdLimits = [LimitPerTrait Composure 1]
-    , cdLevel = Just 3
-    }
+  fast
+    $ (asset "08081" "Plucky" 0 Survivor)
+      { cdSkills = [#willpower, #willpower, #intellect, #intellect]
+      , cdCardTraits = setFromList [Talent, Composure]
+      , cdLimits = [LimitPerTrait Composure 1]
+      , cdLevel = Just 3
+      }
 
 medicalStudent :: CardDef
 medicalStudent =

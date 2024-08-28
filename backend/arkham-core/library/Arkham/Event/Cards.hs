@@ -1975,7 +1975,7 @@ denyExistence =
     , cdFastWindow =
         Just
           $ OrWindowMatcher
-            [ Discarded #when (Just You) source (basic AnyCard)
+            [ WouldDiscardFromHand #when You source
             , LostResources #when You source
             , LostActions #when You source
             , InvestigatorWouldTakeDamage #when You source AnyDamageType
@@ -2189,7 +2189,7 @@ denyExistence5 =
     , cdFastWindow =
         Just
           $ OrWindowMatcher
-            [ Discarded #when (Just You) source (basic AnyCard)
+            [ WouldDiscardFromHand #when You source
             , LostResources #when You source
             , LostActions #when You source
             , InvestigatorWouldTakeDamage #when You source AnyDamageType

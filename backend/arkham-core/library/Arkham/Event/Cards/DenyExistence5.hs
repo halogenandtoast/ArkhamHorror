@@ -4,7 +4,6 @@ import Arkham.Classes.HasQueue (popMessageMatching_, replaceMessageMatching)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (Discarded)
 import Arkham.Helpers.Message (drawCards)
-import Arkham.Helpers.Message.Discard (discardCard)
 import Arkham.Window
 
 newtype DenyExistence5 = DenyExistence5 EventAttrs
@@ -28,7 +27,7 @@ instance RunMessage DenyExistence5 where
       let
         go str w = Label str [ResolveEvent iid eid mTarget [w]]
         choices = flip mapMaybe windows $ \w -> case windowType w of
-          Discarded {} -> Just $ go "discard cards" w
+          WouldDiscardFromHand {} -> Just $ go "discard cards" w
           LostResources {} -> Just $ go "lose resources" w
           LostActions {} -> Just $ go "lose actions" w
           WouldTakeDamage {} -> Just $ go "take damage" w
@@ -38,10 +37,15 @@ instance RunMessage DenyExistence5 where
       pure e
     ResolveEvent _ eid _ [w] | eid == toId attrs -> do
       lift $ case windowType w of
-        Discarded (Just iid) source c -> do
-          let drawing = drawCards iid source 1
-          replaceMessageMatching (== Do (toMessage $ discardCard iid source c))
-            $ \_ -> [drawing]
+        WouldDiscardFromHand iid source -> do
+          let drawing = drawCards iid source
+          replaceMessageMatching
+            \case
+              Do (DiscardFromHand handDiscard) -> handDiscard.investigator == iid && handDiscard.source == toSource source
+              _ -> False
+            \case
+              Do (DiscardFromHand handDiscard) -> [drawing $ traceShowId handDiscard.amount]
+              _ -> []
         LostResources iid source n -> do
           replaceMessageMatching (== Do (LoseResources iid source n))
             $ \_ -> [TakeResources iid n source False]

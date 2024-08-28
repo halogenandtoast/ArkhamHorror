@@ -275,6 +275,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
         :asset="game.assets[assetId]"
         :game="game"
         :playerId="playerId"
+        :attached="true"
         @choose="$emit('choose', $event)"
       />
       <Event
@@ -283,6 +284,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
         :event="game.events[eventId]"
         :game="game"
         :playerId="playerId"
+        :attached="true"
         @choose="$emit('choose', $event)"
       />
       <Skill
@@ -291,6 +293,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
         :skill="game.skills[skillId]"
         :game="game"
         :playerId="playerId"
+        :attached="true"
         @choose="$emit('choose', $event)"
       />
       <template v-if="debug.active">

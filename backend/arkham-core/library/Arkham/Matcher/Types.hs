@@ -1140,6 +1140,7 @@ data WindowMatcher
   | IgnoreChaosToken Timing Who ChaosTokenMatcher
   | WouldRevealChaosToken Timing Who
   | Discarded Timing (Maybe Who) SourceMatcher ExtendedCardMatcher
+  | WouldDiscardFromHand Timing Who SourceMatcher
   | AssetHealed Timing DamageType AssetMatcher SourceMatcher
   | InvestigatorHealed Timing DamageType InvestigatorMatcher SourceMatcher
   | AssetWouldBeDiscarded Timing AssetMatcher

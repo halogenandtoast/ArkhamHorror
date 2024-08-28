@@ -559,6 +559,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       player <- getPlayer iid
       push $ chooseOrRunOneAtATime player [targetLabel (toCardId card) [msg'] | (card, msg') <- choices]
     pure a
+  ShuffleDeck (Deck.InvestigatorDeck iid) | iid == investigatorId -> do
+    deck' <- shuffleM (unDeck investigatorDeck)
+    pure $ a & deckL .~ Deck deck' & foundCardsL . at Zone.FromDeck .~ mempty
   ShuffleDiscardBackIn iid | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)
     if null investigatorDiscard || CardsCannotLeaveYourDiscardPile `elem` modifiers'
@@ -709,34 +712,35 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (deckL %~ Deck . filter (/= pc) . unDeck)
       & discardF
       & (foundCardsL . each %~ filter (/= PlayerCard pc))
-  DiscardFromHand handDiscard | discardInvestigator handDiscard == investigatorId -> do
-    push $ DoneDiscarding investigatorId
-    case discardStrategy handDiscard of
-      DiscardChoose -> case discardableCards a of
-        [] -> pure ()
-        cs -> do
-          player <- getPlayer investigatorId
-          pushAll
-            $ replicate (discardAmount handDiscard)
-            $ chooseOrRunOne player
-            $ [ targetLabel (toCardId c) [DiscardCard investigatorId (discardSource handDiscard) (toCardId c)]
-              | c <- filter (`cardMatch` discardFilter handDiscard) cs
+  DiscardFromHand handDiscard | handDiscard.investigator == investigatorId -> runQueueT do
+    wouldDiscard <- checkWhen $ Window.WouldDiscardFromHand investigatorId handDiscard.source
+    pushAll [wouldDiscard, Do msg]
+    pure a
+  Do (DiscardFromHand handDiscard) | handDiscard.investigator == investigatorId -> runQueueT do
+    player <- getPlayer investigatorId
+    case discardableCards a of
+      [] | handDiscard.strategy /= DiscardRandom -> pure ()
+      cs -> case discardStrategy handDiscard of
+        DiscardChoose -> do
+          let n = discardAmount handDiscard - (length investigatorHand - length cs)
+          push
+            $ chooseN player n
+            $ [ targetLabel c [DiscardCard investigatorId handDiscard.source c.id]
+              | c <- filterCards handDiscard.filter cs
               ]
-      DiscardAll -> case discardableCards a of
-        [] -> pure ()
-        cs -> do
-          player <- getPlayer investigatorId
+        DiscardAll -> do
           push
             $ chooseOneAtATime player
-            $ [ targetLabel (toCardId c) [DiscardCard investigatorId (discardSource handDiscard) (toCardId c)]
-              | c <- filter (`cardMatch` discardFilter handDiscard) cs
+            $ [ targetLabel c [DiscardCard investigatorId handDiscard.source c.id]
+              | c <- filterCards handDiscard.filter cs
               ]
-      DiscardRandom -> do
-        -- only cards actually in hand
-        let filtered = filter (`cardMatch` discardFilter handDiscard) investigatorHand
-        for_ (nonEmpty filtered) $ \targets -> do
-          cards <- sampleN (discardAmount handDiscard) targets
-          pushAll $ map (DiscardCard investigatorId (discardSource handDiscard) . toCardId) cards
+        DiscardRandom -> do
+          -- only cards actually in hand
+          let filtered = filterCards handDiscard.filter investigatorHand
+          for_ (nonEmpty filtered) $ \targets -> do
+            cards <- sampleN handDiscard.amount targets
+            pushAll $ map (DiscardCard investigatorId handDiscard.source . toCardId) cards
+    push $ DoneDiscarding investigatorId
     pure $ a & discardingL ?~ handDiscard
   Discard _ source (CardIdTarget cardId) | isJust (find ((== cardId) . toCardId) investigatorHand) -> do
     push (DiscardCard investigatorId source cardId)
@@ -2658,6 +2662,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   & (handL %~ (<> map PlayerCard (filter (`cardMatch` NotCard CardWithRevelation) allDrawn)))
                   & (deckL .~ Deck deck')
                   & (drawnCardsL .~ mempty)
+                  & (foundCardsL . each %~ filter (`notElem` map toCard allDrawn))
   InvestigatorDrewPlayerCard iid card | iid == investigatorId -> do
     hasForesight <- hasModifier iid (Foresight $ toTitle card)
     whenDraw <- checkWindows [mkWhen $ Window.DrawCard iid (toCard card) (Deck.InvestigatorDeck iid)]
@@ -3288,10 +3293,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
       ShuffleBackIn -> do
         when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck: Investigator<ShuffleBackIn>")
-        pushWhen (notNull $ a ^. foundCardsL)
-          $ ShuffleCardsIntoDeck
-            (Deck.InvestigatorDeck iid)
-            (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
+        push $ ShuffleDeck (Deck.InvestigatorDeck a.id)
       PutBack -> pure () -- Nothing moves while searching
       RemoveRestFromGame -> do
         -- Try to obtain, then don't add back

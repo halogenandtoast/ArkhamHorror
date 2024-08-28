@@ -2034,6 +2034,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.AmongSearchedCards whoMatcher -> case wType of
       Window.AmongSearchedCards _ who -> matchWho iid who whoMatcher
       _ -> noMatch
+    Matcher.WouldDiscardFromHand timing whoMatcher sourceMatcher ->
+      guardTiming timing $ \case
+        Window.WouldDiscardFromHand who source' ->
+          andM
+            [ matchWho iid who whoMatcher
+            , sourceMatches source' sourceMatcher
+            ]
+        _ -> noMatch
     Matcher.Discarded timing mWhoMatcher sourceMatcher cardMatcher ->
       guardTiming timing $ \case
         Window.Discarded mWho source' card ->

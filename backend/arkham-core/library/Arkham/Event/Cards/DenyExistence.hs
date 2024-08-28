@@ -27,7 +27,7 @@ instance RunMessage DenyExistence where
       let
         go str w = Label str [ResolveEvent iid eid mTarget [w]]
         choices = flip mapMaybe windows $ \w -> case windowType w of
-          Discarded {} -> Just $ go "discard cards" w
+          WouldDiscardFromHand {} -> Just $ go "discard cards" w
           LostResources {} -> Just $ go "lose resources" w
           LostActions {} -> Just $ go "lose actions" w
           WouldTakeDamage {} -> Just $ go "take damage" w
@@ -37,8 +37,10 @@ instance RunMessage DenyExistence where
       pure e
     ResolveEvent _ eid _ [w] | eid == toId attrs -> do
       lift $ case windowType w of
-        Discarded (Just iid) source c -> do
-          popMessageMatching_ (== Do (toMessage $ discardCard iid source c))
+        WouldDiscardFromHand iid source -> do
+          popMessageMatching_ \case
+            Do (DiscardFromHand handDiscard) -> handDiscard.investigator == iid && handDiscard.source == toSource source
+            _ -> False
         LostResources iid source n -> do
           popMessageMatching_ (== Do (LoseResources iid source n))
         LostActions iid source n -> do

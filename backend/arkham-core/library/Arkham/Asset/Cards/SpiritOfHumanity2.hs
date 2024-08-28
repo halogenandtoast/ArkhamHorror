@@ -37,7 +37,7 @@ instance RunMessage SpiritOfHumanity2 where
       n <- min 2 <$> getRemainingBlessTokens
       replicateM_ n $ addChaosToken #bless
       pure a
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 1
       canHealDamage <- canHaveDamageHealed source iid
       canHealHorror <- canHaveHorrorHealed source iid

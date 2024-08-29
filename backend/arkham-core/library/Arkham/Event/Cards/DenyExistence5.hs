@@ -44,7 +44,7 @@ instance RunMessage DenyExistence5 where
               Do (DiscardFromHand handDiscard) -> handDiscard.investigator == iid && handDiscard.source == toSource source
               _ -> False
             \case
-              Do (DiscardFromHand handDiscard) -> [drawing $ traceShowId handDiscard.amount]
+              Do (DiscardFromHand handDiscard) -> [drawing handDiscard.amount]
               _ -> []
         LostResources iid source n -> do
           replaceMessageMatching (== Do (LoseResources iid source n))

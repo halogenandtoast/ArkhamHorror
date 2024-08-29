@@ -187,7 +187,7 @@ instance RunMessage TheMiskatonicMuseum where
           msg
           ( attrs
               & (decksL . at ExhibitDeck ?~ exhibitDeck)
-              & (setAsideCardsL .~ setAsideCards)
+              & (setAsideCardsL <>~ setAsideCards)
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )

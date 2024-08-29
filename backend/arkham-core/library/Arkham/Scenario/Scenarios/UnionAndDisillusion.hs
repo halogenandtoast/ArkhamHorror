@@ -223,7 +223,7 @@ instance RunMessage UnionAndDisillusion where
           msg
           ( attrs
               & ( setAsideCardsL
-                    .~ filter
+                    <>~ filter
                       (`cardMatch` NotCard (cardIs Enemies.theSpectralWatcher))
                       setAsideCards
                 )

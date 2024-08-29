@@ -216,10 +216,9 @@ const sideways = computed<boolean>(() => {
   if (!hoveredElement.value) return false
   if (hoveredElement.value?.classList.contains('exhausted')) return false
   if (hoveredElement.value?.classList.contains('attached')) return false
+  if (hoveredElement.value?.classList.contains('card--sideways')) return true
 
-  const rect = hoveredElement.value.getBoundingClientRect()
-
-  return rect.width > rect.height
+  return false
 })
 
 const tarot = computed<boolean>(() => {
@@ -235,8 +234,8 @@ const getPosition = (el: HTMLElement) => {
   const ratio = 0.705;
 
   // Calculate the height of the overlay based on the ratio
-  const width = sideways.value ? (overlayWidth / ratio) : 300
-  const height = width / ratio
+  const width = sideways.value ? (overlayWidth / ratio) : overlayWidth
+  const height = sideways.value ? overlayWidth : width / ratio
 
   // Calculate the top position, ensuring it doesn't go off the screen
   const top = rect.top + window.scrollY - 40

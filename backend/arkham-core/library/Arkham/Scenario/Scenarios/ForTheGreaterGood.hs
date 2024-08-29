@@ -196,7 +196,7 @@ instance RunMessage ForTheGreaterGood where
         <$> runMessage
           msg
           ( attrs
-              & (setAsideCardsL .~ setAsideCards)
+              & (setAsideCardsL <>~ setAsideCards)
               & (agendaStackL . at 1 ?~ agendas)
               & (actStackL . at 1 ?~ acts)
               & (setAsideKeysL .~ setFromList [SkullKey, CultistKey, TabletKey, ElderThingKey])

@@ -178,7 +178,7 @@ instance RunMessage TheLastKing where
         <$> runMessage
           msg
           ( attrs
-              & (setAsideCardsL .~ setAsideEncounterCards)
+              & (setAsideCardsL <>~ setAsideEncounterCards)
               & (cardsUnderScenarioReferenceL .~ storyCards)
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)

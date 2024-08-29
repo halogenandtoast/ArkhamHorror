@@ -252,7 +252,7 @@ instance RunMessage BloodOnTheAltar where
           <$> runMessage
             msg
             ( attrs
-                & (setAsideCardsL .~ setAsideCards)
+                & (setAsideCardsL <>~ setAsideCards)
                 & (decksL . at PotentialSacrifices ?~ potentialSacrifices)
                 & (actStackL . at 1 ?~ acts)
                 & (agendaStackL . at 1 ?~ agendas)

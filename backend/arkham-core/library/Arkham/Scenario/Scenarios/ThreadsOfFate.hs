@@ -274,7 +274,7 @@ instance RunMessage ThreadsOfFate where
               & (agendaStackL . at 1 ?~ agendas)
               & (actStackL . at 1 ?~ act1Deck)
               & (actStackL . at 3 ?~ act3Deck)
-              & (setAsideCardsL .~ setAsideCards)
+              & (setAsideCardsL <>~ setAsideCards)
           )
     SetupStep target n | isTarget attrs target -> do
       gaveCustodyToHarlan <-

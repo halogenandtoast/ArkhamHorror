@@ -170,7 +170,7 @@ instance RunMessage TheUntamedWilds where
           msg
           ( attrs
               & (decksL . at ExplorationDeck ?~ explorationDeck)
-              & (setAsideCardsL .~ setAsideCards)
+              & (setAsideCardsL <>~ setAsideCards)
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )

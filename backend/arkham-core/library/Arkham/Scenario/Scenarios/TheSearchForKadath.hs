@@ -230,7 +230,7 @@ instance RunMessage TheSearchForKadath where
         <$> runMessage
           msg
           ( attrs
-              & (setAsideCardsL .~ setAside)
+              & (setAsideCardsL <>~ setAside)
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )

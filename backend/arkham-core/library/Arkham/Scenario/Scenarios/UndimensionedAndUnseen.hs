@@ -259,7 +259,7 @@ instance RunMessage UndimensionedAndUnseen where
         <$> runMessage
           msg
           ( attrs
-              & (setAsideCardsL .~ setAsideBroodOfYogSothoth <> setAsideCards)
+              & (setAsideCardsL <>~ setAsideBroodOfYogSothoth <> setAsideCards)
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )

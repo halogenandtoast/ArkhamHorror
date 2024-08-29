@@ -255,7 +255,7 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
             msg
             ( attrs
                 & (decksL . at ExplorationDeck ?~ explorationDeck)
-                & (setAsideCardsL .~ setAsideCards)
+                & (setAsideCardsL <>~ setAsideCards)
                 & (agendaStackL . at 1 ?~ agendas)
                 & (actStackL . at 1 ?~ acts)
             )
@@ -370,7 +370,7 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         ( attrs
             & (locationLayoutL .~ part2Locations)
             & (decksL . at ExplorationDeck ?~ explorationDeck)
-            & (setAsideCardsL .~ setAsideCards)
+            & (setAsideCardsL <>~ setAsideCards)
             & (victoryDisplayL .~ theJungleWatchesCards)
             & (agendaStackL . at 1 ?~ agendas)
             & (actStackL . at 1 ?~ acts)

@@ -51,6 +51,7 @@ instance RunMessage FriendsInLowPlaces where
         (defer attrs IsNotDraw)
       pure e
     SearchFound iid (isTarget attrs -> True) x cards -> do
+      when (null cards) $ chooseOne iid [Label "No Cards Founds" []]
       when (notNull cards) do
         n <- getSpendableResources iid
         let traits = [t | ChosenTrait t <- concatMap snd (toList attrs.customizations)]

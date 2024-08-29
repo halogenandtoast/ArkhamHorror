@@ -193,7 +193,7 @@ instance RunMessage InTheClutchesOfChaos where
           ( attrs
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
-              & (setAsideCardsL .~ setAsideCards)
+              & (setAsideCardsL <>~ setAsideCards)
           )
     SetupStep (isTarget attrs -> True) 1 -> do
       playerCount <- getPlayerCount

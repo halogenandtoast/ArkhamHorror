@@ -273,7 +273,7 @@ instance RunMessage TheUnspeakableOath where
         <$> runMessage
           msg
           ( attrs
-              & (setAsideCardsL .~ setAsideCards)
+              & (setAsideCardsL <>~ setAsideCards)
               & (decksL . at LunaticsDeck ?~ map EncounterCard lunatics)
               & (decksL . at MonstersDeck ?~ map EncounterCard monsters)
               & (actStackL . at 1 ?~ acts)

@@ -274,7 +274,7 @@ instance RunMessage ShatteredAeons where
               & (decksL . at ExplorationDeck ?~ explorationDeck)
               & (agendaStackL . at 1 ?~ agendas)
               & (actStackL . at 1 ?~ acts)
-              & (setAsideCardsL .~ setAsideCards)
+              & (setAsideCardsL <>~ setAsideCards)
               & (victoryDisplayL .~ map VengeanceCard cardsToAddToVictory)
           )
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n | n < 1 -> do

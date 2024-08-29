@@ -234,7 +234,7 @@ instance RunMessage TheCityOfArchives where
         . TheCityOfArchives
         $ attrs
         & victoryDisplayUpdate
-        & (setAsideCardsL %~ (<> setAsideCards))
+        & (setAsideCardsL <>~ setAsideCards)
         & (agendaStackL . at 1 ?~ agendas)
         & (actStackL . at 1 ?~ acts)
     ResolveChaosToken _ chaosTokenFace iid | isHardExpert attrs && chaosTokenFace `elem` [Cultist, ElderThing] -> do

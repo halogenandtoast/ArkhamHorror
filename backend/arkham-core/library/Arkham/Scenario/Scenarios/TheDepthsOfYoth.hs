@@ -233,7 +233,7 @@ instance RunMessage TheDepthsOfYoth where
               & (decksL . at ExplorationDeck ?~ explorationDeck)
               & (agendaStackL . at 1 ?~ agendas)
               & (actStackL . at 1 ?~ acts)
-              & (setAsideCardsL .~ setAsideCards <> setAsideLocations)
+              & (setAsideCardsL <>~ setAsideCards <> setAsideLocations)
               & (metaL .~ toMeta startLocationId)
               & (countsL .~ mapFromList [(CurrentDepth, 1)])
           )

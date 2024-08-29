@@ -130,7 +130,7 @@ instance RunMessage MurderAtTheExcelsiorHotel where
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
               & (decksL . at LeadsDeck ?~ leadsDeck)
-              & (setAsideCardsL .~ setAsideCards)
+              & (setAsideCardsL <>~ setAsideCards)
           )
     StandaloneSetup -> do
       let

@@ -99,7 +99,7 @@ const websocketUrl = computed(() => {
     replace(/http/, 'ws')
 })
 
-fetchGame(props.gameId, props.spectate).then(({ game: newGame, playerId: newPlayerId, multiplayerMode}) => {
+await fetchGame(props.gameId, props.spectate).then(({ game: newGame, playerId: newPlayerId, multiplayerMode}) => {
   loadAllImages(newGame).then(() => {
     game.value = newGame
     solo.value = multiplayerMode === "Solo"

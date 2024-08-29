@@ -211,7 +211,7 @@ instance RunMessage BeforeTheBlackThrone where
               & (agendaStackL . at 1 ?~ agendas)
               & (metaL .~ toJSON cosmos)
               & (usesGridL .~ True)
-              & (setAsideCardsL .~ setAsideCards)
+              & (setAsideCardsL <>~ setAsideCards)
               & (tokensL %~ addTokens Token.Resource pathWindsBeforeYouCount)
           )
     SetScenarioMeta meta -> do

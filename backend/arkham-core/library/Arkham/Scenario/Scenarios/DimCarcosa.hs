@@ -268,7 +268,7 @@ instance RunMessage DimCarcosa where
           msg
           ( attrs
               & ( setAsideCardsL
-                    .~ PlayerCard theManInThePallidMask
+                    <>~ PlayerCard theManInThePallidMask
                     : ( setAsideCards
                           <> setAsideBleakPlains
                           <> setAsideRuinsOfCarcosa

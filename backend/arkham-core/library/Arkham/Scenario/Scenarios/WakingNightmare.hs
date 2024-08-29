@@ -136,7 +136,7 @@ instance RunMessage WakingNightmare where
           ( attrs
               & (agendaStackL . at 1 ?~ agendas)
               & (actStackL . at 1 ?~ acts)
-              & (setAsideCardsL .~ setAsideCards)
+              & (setAsideCardsL <>~ setAsideCards)
           )
     ScenarioResolution r -> do
       players <- allPlayers

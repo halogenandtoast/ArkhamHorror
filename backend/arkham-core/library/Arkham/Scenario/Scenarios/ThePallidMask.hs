@@ -240,7 +240,7 @@ instance RunMessage ThePallidMask where
           msg
           ( attrs
               & (decksL . at CatacombsDeck ?~ catacombsDeck)
-              & (setAsideCardsL .~ [PlayerCard theManInThePallidMask])
+              & (setAsideCardsL <>~ [PlayerCard theManInThePallidMask])
               & (actStackL . at 1 ?~ acts)
               & (agendaStackL . at 1 ?~ agendas)
           )

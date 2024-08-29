@@ -243,7 +243,7 @@ const leylines = computed(() => props.investigator.tokens[TokenType.Leyline] || 
         <div class="investigator-image">
           <img
             :class="{ 'investigator--can-interact': investigatorAction !== -1 }"
-            class="card"
+            class="card card--sideways"
             :src="image"
             @click="$emit('choose', investigatorAction)"
           />

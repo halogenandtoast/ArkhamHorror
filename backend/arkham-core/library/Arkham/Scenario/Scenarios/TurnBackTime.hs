@@ -169,7 +169,7 @@ instance RunMessage TurnBackTime where
           msg
           ( attrs
               & (decksL . at ExplorationDeck ?~ explorationDeck)
-              & (setAsideCardsL .~ setAsideCards)
+              & (setAsideCardsL <>~ setAsideCards)
               & (agendaStackL . at 1 ?~ agendas)
               & (actStackL . at 1 ?~ acts)
           )

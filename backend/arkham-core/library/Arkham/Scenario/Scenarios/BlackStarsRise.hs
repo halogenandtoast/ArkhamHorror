@@ -236,7 +236,7 @@ instance RunMessage BlackStarsRise where
         <$> runMessage
           msg
           ( attrs
-              & (setAsideCardsL .~ setAsideCards)
+              & (setAsideCardsL <>~ setAsideCards)
               & (agendaStackL . at 1 ?~ agendas1)
               & (agendaStackL . at 2 ?~ agendas2)
           )

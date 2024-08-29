@@ -249,6 +249,20 @@ instance HasField "keywords" Card (Set Keyword) where
 instance HasField "isRevelation" Card Bool where
   getField = isRevelation . cdRevelation . toCardDef
 
+instance HasField "mutated" Card (Maybe Text) where
+  getField = \case
+    PlayerCard pc -> pcMutated pc
+    EncounterCard ec -> Nothing
+    VengeanceCard vc -> Nothing
+  {-# INLINE getField #-}
+
+instance HasField "customizations" Card Customizations where
+  getField = \case
+    PlayerCard pc -> pcCustomizations pc
+    EncounterCard ec -> mempty
+    VengeanceCard vc -> mempty
+  {-# INLINE getField #-}
+
 instance HasField "id" Card CardId where
   getField = \case
     PlayerCard pc -> pc.id

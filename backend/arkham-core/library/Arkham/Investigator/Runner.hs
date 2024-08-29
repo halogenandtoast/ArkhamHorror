@@ -1755,6 +1755,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       choiceAsCard =
         (lookupPlayerCard choiceDef $ toCardId card)
           { pcOriginalCardCode = toCardCode card
+          , pcCustomizations = choice.customizations
+          , pcMutated = choice.mutated
           }
       chosenCardMsgs = case chosenCardStrategy of
         LeaveChosenCard -> []

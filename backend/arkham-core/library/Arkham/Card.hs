@@ -252,15 +252,15 @@ instance HasField "isRevelation" Card Bool where
 instance HasField "mutated" Card (Maybe Text) where
   getField = \case
     PlayerCard pc -> pcMutated pc
-    EncounterCard ec -> Nothing
-    VengeanceCard vc -> Nothing
+    EncounterCard _ -> Nothing
+    VengeanceCard _ -> Nothing
   {-# INLINE getField #-}
 
 instance HasField "customizations" Card Customizations where
   getField = \case
     PlayerCard pc -> pcCustomizations pc
-    EncounterCard ec -> mempty
-    VengeanceCard vc -> mempty
+    EncounterCard _ -> mempty
+    VengeanceCard _ -> mempty
   {-# INLINE getField #-}
 
 instance HasField "id" Card CardId where

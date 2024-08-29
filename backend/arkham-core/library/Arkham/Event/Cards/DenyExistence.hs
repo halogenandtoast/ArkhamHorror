@@ -3,7 +3,6 @@ module Arkham.Event.Cards.DenyExistence (denyExistence, DenyExistence (..)) wher
 import Arkham.Classes.HasQueue (popMessageMatching_, replaceMessageMatching)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (Discarded)
-import Arkham.Helpers.Message.Discard (discardCard)
 import Arkham.Window
 
 newtype DenyExistence = DenyExistence EventAttrs

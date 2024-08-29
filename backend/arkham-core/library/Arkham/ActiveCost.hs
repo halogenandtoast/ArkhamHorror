@@ -913,7 +913,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           player
           x
           [ targetLabel
-            (toCardId card)
+            card
             [pay (DiscardCardCost $ PlayerCard card)]
           | card <- cards
           ]

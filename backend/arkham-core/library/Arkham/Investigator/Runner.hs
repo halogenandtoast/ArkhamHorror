@@ -723,11 +723,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       cs -> case discardStrategy handDiscard of
         DiscardChoose -> do
           let n = discardAmount handDiscard - (length investigatorHand - length cs)
-          push
-            $ chooseN player n
-            $ [ targetLabel c [DiscardCard investigatorId handDiscard.source c.id]
-              | c <- filterCards handDiscard.filter cs
-              ]
+          case handDiscard.filter of
+            CardWithId _ ->
+              pushAll
+                [DiscardCard investigatorId handDiscard.source c.id | c <- filterCards handDiscard.filter cs]
+            _ ->
+              push
+                $ chooseN player n
+                $ [ targetLabel c [DiscardCard investigatorId handDiscard.source c.id]
+                  | c <- filterCards handDiscard.filter cs
+                  ]
         DiscardAll -> do
           push
             $ chooseOneAtATime player

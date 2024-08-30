@@ -12,6 +12,7 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Movement
 import Arkham.Projection
+import Arkham.Window (defaultWindows)
 
 newtype Duke = Duke AssetAttrs
   deriving anyclass IsAsset
@@ -52,7 +53,7 @@ instance RunMessage Duke where
       investigateAbilities <-
         field LocationAbilities lid >>= filterM \ab ->
           (abilityIs ab #investigate &&)
-            <$> getCanPerformAbility iid windows' (decreaseAbilityActionCost ab 1)
+            <$> getCanPerformAbility iid (defaultWindows iid) (decreaseAbilityActionCost ab 1)
       let
         investigateActions =
           map
@@ -73,17 +74,17 @@ instance RunMessage Duke where
            | lid' <- accessibleLocationIds
            ]
       pure a
-    DoStep 1 (UseCardAbility iid (isSource attrs -> True) 2 ws _) -> do
+    DoStep 1 (UseThisAbility iid (isSource attrs -> True) 2) -> do
       lid <- getJustLocation iid
       selectOne (AbilityIs (LocationSource lid) 101) >>= traverse_ \ab ->
-        whenM (getCanPerformAbility iid ws $ decreaseAbilityActionCost ab 1) do
+        whenM (getCanPerformAbility iid (defaultWindows iid) (decreaseAbilityActionCost ab 1)) do
           sid <- getRandom
           investigate' <- mkInvestigateLocation sid iid attrs lid
           push $ CheckAdditionalActionCosts iid (toTarget lid) #investigate [toMessage investigate']
       pure a
-    UseCardAbility iid (ProxySource (LocationSource lid) (isAbilitySource attrs 2 -> True)) 101 ws _ -> do
+    UseThisAbility iid (ProxySource (LocationSource lid) (isAbilitySource attrs 2 -> True)) 101 -> do
       selectOne (AbilityIs (LocationSource lid) 101) >>= traverse_ \ab ->
-        whenM (getCanPerformAbility iid ws $ decreaseAbilityActionCost ab 1) do
+        whenM (getCanPerformAbility iid (defaultWindows iid) $ decreaseAbilityActionCost ab 1) do
           sid <- getRandom
           pushM $ mkInvestigateLocation sid iid attrs lid
       pure a

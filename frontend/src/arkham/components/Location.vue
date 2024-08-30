@@ -207,12 +207,18 @@ function onDrop(event: DragEvent) {
   event.preventDefault()
   if (event.dataTransfer) {
     const data = event.dataTransfer.getData('text/plain')
-    const json = JSON.parse(data)
-    if (json.tag === "EnemyTarget") {
-      if (enemies.value.some(e => e === json.contents)) return false
-      debug.send(props.game.id, {tag: 'EnemyMove', contents: [json.contents, id.value]})
-    }
+    if (data) {
+      const json = JSON.parse(data)
+      if (json.tag === "EnemyTarget") {
+        if (enemies.value.some(e => e === json.contents)) return false
+        debug.send(props.game.id, {tag: 'EnemyMove', contents: [json.contents, id.value]})
+      }
 
+      if (json.tag === "InvestigatorTarget") {
+        if (enemies.value.some(e => e === json.contents)) return false
+        debug.send(props.game.id, {tag: 'Move', contents: {moveSource: {tag:"GameSource"}, moveTarget: json, moveDestination: {tag:"ToLocation", contents: id.value}, moveMeans: "Direct", moveCancelable: false, movePayAdditionalCosts: false, moveAfter: []}})
+      }
+    }
   }
 }
 </script>

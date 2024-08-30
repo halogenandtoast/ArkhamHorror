@@ -1683,8 +1683,14 @@ persuasion =
     , cdCardTraits = setFromList [Insight, Trick]
     , cdCriteria =
         Just
-          $ exists (NonWeaknessEnemy <> EnemyWithTrait Humanoid <> EnemyAt YourLocation <> CanParleyEnemy You)
-          <> exists (You <> can.target.encounterDeck)
+          $ Criteria.TabooCriteria
+            TabooList21
+            ( exists (NonWeaknessEnemy <> EnemyAt YourLocation <> CanParleyEnemy You)
+                <> exists (You <> can.target.encounterDeck)
+            )
+            ( exists (NonWeaknessEnemy <> EnemyWithTrait Humanoid <> EnemyAt YourLocation <> CanParleyEnemy You)
+                <> exists (You <> can.target.encounterDeck)
+            )
     , cdActions = [#parley]
     }
 

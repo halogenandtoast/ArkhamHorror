@@ -74,7 +74,6 @@ addAction a = ActionAbilityBuilder $ \ab ->
       case abilityType ab of
         ActionAbility as c -> ActionAbility (as <> [a]) c
         ActionAbilityWithSkill as st c -> ActionAbilityWithSkill (as <> [a]) st c
-        ActionAbilityWithBefore as acb c -> ActionAbilityWithBefore (as <> [a]) acb c
         x -> x
    in
     ((), ab {Arkham.Ability.Types.abilityType = abilityType'})

@@ -442,13 +442,16 @@ runGameMessage msg g = case msg of
     let
       isMovement = abilityIs ability #move
       isInvestigate = abilityIs ability #investigate
-      hasBeforeInvestigate = case ability.kind of
-        ActionAbilityWithBefore as _ _ -> #investigate `elem` as
-        _ -> False
       isResign = abilityIs ability #resign
 
+    doDelayAdditionalCosts <- case abilityDelayAdditionalCosts ability of
+      Nothing -> pure False
+      Just delay -> case delay of
+        DelayAdditionalCosts -> pure True
+        DelayAdditionalCostsWhen c -> passesCriteria iid Nothing ability.source ability.source [] c
+
     leaveCosts <-
-      if isMovement
+      if isMovement && not doDelayAdditionalCosts
         then do
           mlocation <- getMaybeLocation iid
           case mlocation of
@@ -460,7 +463,7 @@ runGameMessage msg g = case msg of
 
     -- TODO: we might care about other sources here
     enterCosts <-
-      if isMovement
+      if isMovement && not doDelayAdditionalCosts
         then case abilitySource ability of
           LocationSource lid -> do
             mods' <- getModifiers lid
@@ -469,7 +472,7 @@ runGameMessage msg g = case msg of
         else pure []
 
     investigateCosts <-
-      if isInvestigate && not (abilityDelayAdditionalCosts ability) && not hasBeforeInvestigate
+      if isInvestigate && not doDelayAdditionalCosts
         then do
           getMaybeLocation iid >>= \case
             Just lid -> do
@@ -479,7 +482,7 @@ runGameMessage msg g = case msg of
         else pure []
 
     resignCosts <-
-      if isResign && not (abilityDelayAdditionalCosts ability)
+      if isResign && not doDelayAdditionalCosts
         then do
           getMaybeLocation iid >>= \case
             Just lid -> do
@@ -497,9 +500,12 @@ runGameMessage msg g = case msg of
         SetAbilityCost _ -> True
         _ -> False
       additionalCosts =
-        abilityAdditionalCosts ability <> flip mapMaybe modifiers' \case
-          AdditionalCost c -> Just c
-          _ -> Nothing
+        if doDelayAdditionalCosts
+          then []
+          else
+            abilityAdditionalCosts ability <> flip mapMaybe modifiers' \case
+              AdditionalCost c -> Just c
+              _ -> Nothing
     let
       fixEnemy = maybe id replaceThatEnemy $ getThatEnemy windows'
       activeCost =

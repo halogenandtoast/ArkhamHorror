@@ -196,9 +196,7 @@ getCanPerformAbility !iid !ws !ability = do
   let
     mThatEnemy = getThatEnemy ws
     fixEnemy = maybe id Matcher.replaceThatEnemy mThatEnemy
-    actions = case abilityType ability of
-      ActionAbilityWithBefore _ beforeAction _ -> [beforeAction]
-      _ -> abilityActions ability
+    actions = abilityActions ability
     additionalCosts =
       abilityAdditionalCosts ability <> flip mapMaybe abilityModifiers \case
         AdditionalCost x -> Just x
@@ -253,8 +251,6 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
     Cosmos -> pure False
     Objective aType -> go aType
     ForcedWhen _ aType -> go aType
-    ActionAbilityWithBefore _ beforeAction cost ->
-      go $ ActionAbility [beforeAction] cost
     ActionAbilityWithSkill actions _ cost -> go $ ActionAbility actions cost
     ActionAbility [] _ -> matchWho iid iid Matcher.TurnInvestigator
     ActionAbility actions _ -> do
@@ -355,6 +351,11 @@ getCanAffordAbility iid ability ws = do
 getCanAffordAbilityCost :: HasGame m => InvestigatorId -> Ability -> [Window] -> m Bool
 getCanAffordAbilityCost iid a@Ability {..} ws = do
   modifiers <- getModifiers (AbilityTarget iid a)
+  doDelayAdditionalCosts <- case abilityDelayAdditionalCosts of
+    Nothing -> pure False
+    Just delay -> case delay of
+      DelayAdditionalCosts -> pure True
+      DelayAdditionalCostsWhen c -> passesCriteria iid Nothing abilitySource abilitySource [] c
   investigateCosts <-
     if #investigate `elem` abilityActions a
       then do
@@ -363,19 +364,13 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
             ls <- select (matcher <> Matcher.InvestigatableLocation)
             costs <- for ls $ \lid -> do
               mods <- getModifiers lid
-              pure $ fold [m | AdditionalCostToInvestigate m <- mods]
+              pure $ fold [m | not doDelayAdditionalCosts, AdditionalCostToInvestigate m <- mods]
             pure [OrCost costs | Free `notElem` costs]
           _ -> do
-            mLocation <- field InvestigatorLocation iid
-
-            let
-              hasBeforeInvestigate = case a.kind of
-                ActionAbilityWithBefore as _ _ -> #investigate `elem` as
-                _ -> False
-            case mLocation of
-              Just lid | not hasBeforeInvestigate -> do
+            field InvestigatorLocation iid >>= \case
+              Just lid -> do
                 mods <- getModifiers lid
-                pure [m | AdditionalCostToInvestigate m <- mods]
+                pure [m | not doDelayAdditionalCosts, AdditionalCostToInvestigate m <- mods]
               _ -> pure []
       else pure []
   resignCosts <-
@@ -408,8 +403,6 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
       getCanAffordCost iid (toSource a) actions ws (f cost)
     ActionAbilityWithSkill actions _ cost ->
       getCanAffordCost iid (toSource a) actions ws (f cost)
-    ActionAbilityWithBefore _ beforeAction cost ->
-      getCanAffordCost iid (toSource a) [beforeAction] ws (f cost)
     ReactionAbility _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
     CustomizationReaction _ _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
     ConstantReaction _ _ cost -> getCanAffordCost iid (toSource a) [] ws (f cost)
@@ -489,7 +482,6 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
             ForcedAbilityWithCost _ _ ->
               pure $ notElem ability (map usedAbility usedAbilities)
             ActionAbility _ _ -> pure True
-            ActionAbilityWithBefore {} -> pure True
             ActionAbilityWithSkill {} -> pure True
             FastAbility' {} -> pure True
             AbilityEffect {} -> pure True
@@ -3453,7 +3445,6 @@ isForcedAbilityType iid source = \case
   ConstantReaction {} -> pure False
   ActionAbility {} -> pure False
   ActionAbilityWithSkill {} -> pure False
-  ActionAbilityWithBefore {} -> pure False
   AbilityEffect {} -> pure False
   ServitorAbility {} -> pure False
   Haunted {} -> pure True -- Maybe? we wanted this to basically never be valid but still take forced precedence

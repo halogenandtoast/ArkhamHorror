@@ -87,6 +87,7 @@ data InvestigatorMatcher
   | HasMostMatchingAsset AssetMatcher
   | HasMatchingAsset AssetMatcher
   | OwnsAsset AssetMatcher
+  | ControlsAsset AssetMatcher
   | HasMatchingEvent EventMatcher
   | HasMatchingSkill SkillMatcher
   | HasMatchingTreachery TreacheryMatcher

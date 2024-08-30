@@ -78,7 +78,6 @@ data AbilityType
   | ActionAbility {actions :: [Action], cost :: Cost}
   | ServitorAbility {action :: Action}
   | ActionAbilityWithSkill {actions :: [Action], skillType :: SkillType, cost :: Cost}
-  | ActionAbilityWithBefore {actions :: [Action], actionBefore :: Action, cost :: Cost} -- Action is first type, before is second
   | SilentForcedAbility {window :: WindowMatcher}
   | ForcedAbility {window :: WindowMatcher}
   | ForcedAbilityWithCost {window :: WindowMatcher, cost :: Cost}
@@ -99,8 +98,6 @@ instance HasCost AbilityType where
     ServitorAbility action -> ServitorAbility action
     ActionAbilityWithSkill actions skillType cost ->
       ActionAbilityWithSkill actions skillType (f cost)
-    ActionAbilityWithBefore actions actionBefore cost ->
-      ActionAbilityWithBefore actions actionBefore (f cost)
     SilentForcedAbility window -> SilentForcedAbility window
     ForcedAbility window -> ForcedAbility window
     ForcedAbilityWithCost window cost -> ForcedAbilityWithCost window (f cost)
@@ -124,8 +121,6 @@ abilityTypeCostL f = \case
   ActionAbility action cost -> ActionAbility action <$> f cost
   ActionAbilityWithSkill action skillType cost ->
     ActionAbilityWithSkill action skillType <$> f cost
-  ActionAbilityWithBefore action actionBefore cost ->
-    ActionAbilityWithBefore action actionBefore <$> f cost
   SilentForcedAbility window -> SilentForcedAbility window <$ f mempty
   ForcedAbility window -> ForcedAbility window <$ f mempty
   ForcedAbilityWithCost window cost -> ForcedAbilityWithCost window <$> f cost

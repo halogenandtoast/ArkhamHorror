@@ -4,12 +4,11 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message (MessageType (CheckWindowMessage), pattern CancelNext)
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.RequestedChaosTokenStrategy
 
 newtype Premonition = Premonition EventAttrs
@@ -26,7 +25,7 @@ instance HasAbilities Premonition where
     ]
 
 instance RunMessage Premonition where
-  runMessage msg e@(Premonition attrs) = case msg of
+  runMessage msg e@(Premonition attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       pushAll
         [ PlaceEvent iid eid (InPlayArea iid)
@@ -38,14 +37,15 @@ instance RunMessage Premonition where
         $ concatMap (\t -> [SealChaosToken t, SealedChaosToken t (toCard attrs)]) ts
         <> [ResetChaosTokens (toSource attrs)]
       pure e
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       let ts = eventSealedChaosTokens attrs
       pushAll
         $ CancelNext (toSource attrs) CheckWindowMessage
         : map UnsealChaosToken ts
+          <> map ObtainChaosToken ts
           <> [ ReplaceCurrentDraw (toSource attrs) iid
                 $ Choose (toSource attrs) 1 ResolveChoice [Resolved ts] []
              ]
-          <> [toDiscardBy iid (attrs.ability 1) attrs]
+      toDiscardBy iid (attrs.ability 1) attrs
       pure e
-    _ -> Premonition <$> runMessage msg attrs
+    _ -> Premonition <$> liftRunMessage msg attrs

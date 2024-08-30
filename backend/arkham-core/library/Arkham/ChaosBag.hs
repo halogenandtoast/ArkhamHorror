@@ -628,6 +628,12 @@ instance RunMessage ChaosBag where
         let
           choice'' = replaceChooseMatchChoice choice' (Decided step)
         pure $ c & choiceL ?~ choice''
+    ObtainChaosToken token -> do
+      pure
+        $ c
+        & (setAsideChaosTokensL %~ filter (/= token))
+        & (revealedChaosTokensL %~ filter (/= token))
+        & (chaosTokensL %~ filter (/= token))
     ReplaceCurrentDraw source iid step -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> do

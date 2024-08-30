@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useDebug } from '@/arkham/debug'
 import type { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
@@ -221,6 +221,15 @@ const horror = computed(() => (props.investigator.tokens[TokenType.Horror] || 0)
 const damage = computed(() => (props.investigator.tokens[TokenType.Damage] || 0) + props.investigator.assignedHealthDamage)
 const alarmLevel = computed(() => props.investigator.tokens[TokenType.AlarmLevel] || 0)
 const leylines = computed(() => props.investigator.tokens[TokenType.Leyline] || 0)
+
+const dragging = ref(false)
+function startDrag(event: DragEvent) {
+  dragging.value = true
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move'
+    event.dataTransfer.setData('text/plain', JSON.stringify({ "tag": "InvestigatorTarget", "contents": id.value }))
+  }
+}
 </script>
 
 <template>
@@ -228,8 +237,9 @@ const leylines = computed(() => props.investigator.tokens[TokenType.Leyline] || 
     v-if="portrait"
     :src="portraitImage"
     class="portrait"
-    :class="{ 'investigator--can-interact--portrait': investigatorAction !== -1, ethereal }"
+    :class="{ 'investigator--can-interact--portrait': investigatorAction !== -1, ethereal, dragging }"
     @click="$emit('choose', investigatorAction)"
+    @dragstart="startDrag($event)"
   />
   <div v-else>
     <div class="player-area">

@@ -20,4 +20,16 @@ data SpawnAt
 instance IsString SpawnAt where
   fromString = SpawnAt . fromString
 
+class IsSpawnAt a where
+  toSpawnAt :: a -> SpawnAt
+
+instance IsSpawnAt LocationMatcher where
+  toSpawnAt = SpawnAt
+
+instance IsSpawnAt Placement where
+  toSpawnAt = SpawnPlaced
+
+instance IsSpawnAt InvestigatorMatcher where
+  toSpawnAt = SpawnEngagedWith
+
 $(deriveJSON defaultOptions ''SpawnAt)

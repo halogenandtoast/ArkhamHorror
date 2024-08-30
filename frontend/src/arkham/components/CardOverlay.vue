@@ -217,6 +217,7 @@ const sideways = computed<boolean>(() => {
   if (hoveredElement.value?.classList.contains('exhausted')) return false
   if (hoveredElement.value?.classList.contains('attached')) return false
   if (hoveredElement.value?.classList.contains('card--sideways')) return true
+  if (hoveredElement.value?.classList.contains('sideways')) return true
 
   return false
 })

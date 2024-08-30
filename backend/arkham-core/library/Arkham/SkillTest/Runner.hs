@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiWayIf #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.SkillTest.Runner (module X, totalModifiedSkillValue) where
@@ -505,16 +506,26 @@ instance RunMessage SkillTest where
             )
             (s ^. committedCardsL . to mapToList)
 
+        resultF =
+          case skillTestResult of
+            SucceededBy {} -> \case
+              IfSuccessfulModifier m -> m
+              other -> other
+            FailedBy {} -> \case
+              IfFailureModifier m -> m
+              other -> other
+            _ -> id
+
       discardMessages <- forMaybeM discards $ \(iid, discard) -> do
-        mods <- getModifiers (toCardId discard)
+        mods <- map resultF <$> getModifiers (toCardId discard)
         let mDevourer = listToMaybe [iid' | SetAfterPlay (DevourThis iid') <- mods]
-        case mDevourer of
-          Just iid' -> pure $ Just (Run [ObtainCard $ toCard discard, Devoured iid' $ toCard discard])
-          Nothing ->
-            pure
-              $ if PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods
-                then Just (PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) (toCard discard))
-                else guard (LeaveCardWhereItIs `notElem` mods) $> AddToDiscard iid discard
+        pure
+          $ if
+            | Just iid' <- mDevourer -> Just (Run [ObtainCard $ toCard discard, Devoured iid' $ toCard discard])
+            | PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods ->
+                Just (PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) (toCard discard))
+            | ReturnToHandAfterTest `elem` mods -> Just $ AddToHand iid [toCard discard]
+            | otherwise -> guard (LeaveCardWhereItIs `notElem` mods) $> AddToDiscard iid discard
 
       pushAll
         $ ResetChaosTokens (toSource s)
@@ -540,7 +551,7 @@ instance RunMessage SkillTest where
       player <- getPlayer skillTestInvestigator
       push (chooseOne player [SkillTestApplyResultsButton])
       let
-        modifiedSkillTestResult = 
+        modifiedSkillTestResult =
           foldl' modifySkillTestResult skillTestResult modifiers'
         modifySkillTestResult r (SkillTestResultValueModifier n) = case r of
           Unrun -> Unrun

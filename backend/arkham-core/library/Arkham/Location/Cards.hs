@@ -4219,7 +4219,7 @@ hauntedFieldsSpectral =
       "Haunted Fields"
       [Spectral]
       Circle
-      [Squiggle, Plus, Diamond, Square]
+      [Squiggle, Plus, Triangle, Square]
       TheWagesOfSin
 
 abandonedChapel :: CardDef

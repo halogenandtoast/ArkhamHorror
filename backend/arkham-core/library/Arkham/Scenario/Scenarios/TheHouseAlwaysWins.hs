@@ -217,6 +217,7 @@ instance RunMessage TheHouseAlwaysWins where
       pure s
     ScenarioResolution (Resolution 4) -> do
       players <- allPlayers
+      investigatorIds <- allInvestigatorIds
       xp <- getXp
       pushAll
         $ [ story players resolution4
@@ -224,6 +225,7 @@ instance RunMessage TheHouseAlwaysWins where
           , Record DrFrancisMorganWasKidnapped
           , Record InvestigatorsWereUnconsciousForSeveralHours
           ]
+        <> [SufferTrauma iid 1 0 | iid <- investigatorIds]
         <> [AddChaosToken ElderThing | Cheated `member` scenarioLog attrs]
         <> [GainXP iid (toSource attrs) (n + 1) | (iid, n) <- xp]
         <> [EndOfGame Nothing]

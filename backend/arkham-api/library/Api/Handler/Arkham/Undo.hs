@@ -27,8 +27,6 @@ putApiV1ArkhamGameUndoR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
   Entity pid arkhamPlayer <- runDB $ getBy404 (UniquePlayer userId gameId)
-  now <- liftIO getCurrentTime
-
   mstep <- runDB $ getBy (UniqueStep gameId arkhamGameStep)
 
   case mstep of
@@ -54,6 +52,8 @@ putApiV1ArkhamGameUndoR gameId = do
                   where_ $ entries.step <. val (arkhamGameStep - 1)
                   orderBy [desc entries.createdAt]
                   pure $ entries.body
+
+              now <- liftIO getCurrentTime
               runDB $ do
                 void $ select do
                   game <- from $ table @ArkhamGame
@@ -82,9 +82,7 @@ putApiV1ArkhamGameUndoR gameId = do
                   Solo ->
                     replace pid
                       $ arkhamPlayer
-                        { arkhamPlayerInvestigatorId =
-                            coerce
-                              (view activeInvestigatorIdL ge)
+                        { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
                         }
                   WithFriends -> pure ()
               atomically

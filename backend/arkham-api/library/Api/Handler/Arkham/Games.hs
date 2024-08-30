@@ -44,7 +44,7 @@ import Data.Text qualified as T
 import Data.These
 import Data.Time.Clock
 import Data.UUID (nil)
-import Database.Esqueleto.Experimental hiding (update)
+import Database.Esqueleto.Experimental hiding (update, (=.))
 import Database.Redis (publish, runRedis)
 import Entity.Answer
 import Entity.Arkham.GameRaw
@@ -330,12 +330,18 @@ updateGame response gameId userId writeChannel = do
         now
     insertMany_ $ map (newLogEntry gameId arkhamGameStep now) updatedLog
     deleteWhere [ArkhamStepArkhamGameId P.==. gameId, ArkhamStepStep P.>. arkhamGameStep]
-    insert_
-      $ ArkhamStep
-        gameId
-        (Choice diffDown updatedQueue)
-        (arkhamGameStep + 1)
-        (ActionDiff $ view actionDiffL ge)
+    void
+      $ upsertBy
+        (UniqueStep gameId (arkhamGameStep + 1))
+        ( ArkhamStep
+            gameId
+            (Choice diffDown updatedQueue)
+            (arkhamGameStep + 1)
+            (ActionDiff $ view actionDiffL ge)
+        )
+        [ ArkhamStepChoice =. Choice diffDown updatedQueue
+        , ArkhamStepActionDiff =. ActionDiff (view actionDiffL ge)
+        ]
 
   publishToRoom gameId
     $ GameUpdate

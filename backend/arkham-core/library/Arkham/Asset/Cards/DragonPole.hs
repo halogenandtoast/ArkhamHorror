@@ -21,8 +21,7 @@ instance HasAbilities DragonPole where
 
 instance HasModifiersFor DragonPole where
   getModifiersFor (InvestigatorTarget iid) (DragonPole attrs) | attrs `controlledBy` iid = do
-    mSource <- getSkillTestSource
-    case mSource of
+    getSkillTestSource >>= \case
       Just (isAbilitySource attrs 1 -> True) -> do
         slots <- count (not . isEmptySlot) . findWithDefault [] #arcane <$> field InvestigatorSlots iid
         pure $ toModifiers attrs (SkillModifier #combat slots : [DamageDealt 1 | slots >= 2])

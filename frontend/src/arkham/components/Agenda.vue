@@ -130,6 +130,7 @@ const debug = useDebug()
       :key="ability.index"
       :ability="ability.contents"
       :data-image="image"
+      class="sideways"
       @click="$emit('choose', ability.index)"
       />
     <div v-if="groupedTreacheries.length > 0" class="treacheries">

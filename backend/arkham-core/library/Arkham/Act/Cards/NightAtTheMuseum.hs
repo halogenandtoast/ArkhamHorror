@@ -3,14 +3,14 @@ module Arkham.Act.Cards.NightAtTheMuseum (NightAtTheMuseum (..), nightAtTheMuseu
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Enemy (spawnAt)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
+import Arkham.Spawn
 
 newtype NightAtTheMuseum = NightAtTheMuseum ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -24,7 +24,7 @@ instance HasAbilities NightAtTheMuseum where
     [mkAbility x 1 $ forced $ Enters #after You $ locationIs Cards.exhibitHallRestrictedHall]
 
 instance RunMessage NightAtTheMuseum where
-  runMessage msg a@(NightAtTheMuseum attrs) = case msg of
+  runMessage msg a@(NightAtTheMuseum attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       push $ advancedWithOther attrs
       pure a
@@ -33,12 +33,8 @@ instance RunMessage NightAtTheMuseum where
       mHuntingHorror <- getHuntingHorror
       case mHuntingHorror of
         Just eid -> do
-          lid <- getRestrictedHall
-          pushAll
-            [ EnemySpawn Nothing lid eid
-            , Ready (EnemyTarget eid)
-            , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-            ]
+          spawnAt eid Nothing (SpawnAt $ LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
+          push $ Ready (EnemyTarget eid)
         Nothing ->
           push
             $ FindEncounterCard
@@ -46,19 +42,14 @@ instance RunMessage NightAtTheMuseum where
               (toTarget attrs)
               [FromEncounterDeck, FromEncounterDiscard, FromVoid]
               (cardIs Enemies.huntingHorror)
+      advanceActDeck attrs
       pure a
-    FoundEnemyInVoid _ target eid | isTarget attrs target -> do
+    FoundEnemyInVoid _ (isTarget attrs -> True) eid -> do
       lid <- getRestrictedHall
-      pushAll
-        [ EnemySpawnFromVoid Nothing lid eid
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-        ]
+      pushAll [EnemySpawnFromVoid Nothing lid eid]
       pure a
-    FoundEncounterCard _ target ec | isTarget attrs target -> do
+    FoundEncounterCard _ (isTarget attrs -> True) ec -> do
       lid <- getRestrictedHall
-      pushAll
-        [ SpawnEnemyAt (EncounterCard ec) lid
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-        ]
+      pushAll [SpawnEnemyAt (EncounterCard ec) lid]
       pure a
-    _ -> NightAtTheMuseum <$> runMessage msg attrs
+    _ -> NightAtTheMuseum <$> liftRunMessage msg attrs

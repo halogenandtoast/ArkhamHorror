@@ -1,7 +1,7 @@
 module Arkham.Asset.Cards.ShardsOfTheVoid3 (shardsOfTheVoid3, ShardsOfTheVoid3 (..)) where
 
 import Arkham.Ability
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
@@ -39,8 +39,7 @@ instance RunMessage ShardsOfTheVoid3 where
               (CountChaosTokens $ SealedOnAsset (be attrs) (ChaosTokenFaceIs Zero))
               [SkillModifier #willpower 2]
           ]
-      chooseFight <- aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
-      pushAll $ leftOr chooseFight
+      aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
       pure a
     Msg.RevealChaosToken (SkillTestSource sid) _ token | chaosTokenFace token == Zero -> do
       mSource <- getSkillTestSource

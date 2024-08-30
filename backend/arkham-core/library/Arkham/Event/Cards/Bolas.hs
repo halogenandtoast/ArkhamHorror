@@ -1,7 +1,7 @@
 module Arkham.Event.Cards.Bolas (bolas, Bolas (..)) where
 
 import Arkham.Ability
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -32,7 +32,7 @@ instance RunMessage Bolas where
   runMessage msg e@(Bolas attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
-      pushAllM $ leftOr <$> aspect iid attrs (#combat `InsteadOf` #agility) (mkChooseEvade sid iid attrs)
+      aspect iid attrs (#combat `InsteadOf` #agility) (mkChooseEvade sid iid attrs)
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       getSkillTestTarget >>= traverse_ \case

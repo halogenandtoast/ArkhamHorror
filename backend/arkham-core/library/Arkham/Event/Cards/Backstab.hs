@@ -1,6 +1,6 @@
 module Arkham.Event.Cards.Backstab where
 
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Fight
@@ -18,6 +18,6 @@ instance RunMessage Backstab where
     PlayThisEvent iid eid | attrs `is` eid -> do
       sid <- getRandom
       skillTestModifier sid attrs iid (DamageDealt 2)
-      pushAllM $ leftOr <$> aspect iid attrs (#agility `InsteadOf` #combat) (mkChooseFight sid iid attrs)
+      aspect iid attrs (#agility `InsteadOf` #combat) (mkChooseFight sid iid attrs)
       pure e
     _ -> Backstab <$> liftRunMessage msg attrs

@@ -1,7 +1,7 @@
 module Arkham.Asset.Cards.TrustyBullwhip (trustyBullwhip, TrustyBullwhip (..)) where
 
 import Arkham.Ability
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Fight
@@ -26,8 +26,7 @@ instance RunMessage TrustyBullwhip where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       sid <- getRandom
-      chooseFight <- aspect iid source (#agility `InsteadOf` #combat) (mkChooseFight sid iid source)
-      pushAll $ leftOr chooseFight
+      aspect iid source (#agility `InsteadOf` #combat) (mkChooseFight sid iid source)
       pure a
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       withSkillTest \sid -> do

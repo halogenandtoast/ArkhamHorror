@@ -2,7 +2,7 @@ module Arkham.Event.Cards.BindMonster2 (bindMonster2, bindMonster2Effect, BindMo
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Classes.HasQueue (withQueue_)
 import Arkham.Effect.Import
 import Arkham.Evade
@@ -33,9 +33,7 @@ instance RunMessage BindMonster2 where
     PlayThisEvent iid eid | eid == attrs.id -> do
       sid <- getRandom
       createCardEffect Cards.bindMonster2 Nothing attrs sid
-      pushAllM
-        $ leftOr
-        <$> aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvade sid iid attrs)
+      aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvade sid iid attrs)
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom

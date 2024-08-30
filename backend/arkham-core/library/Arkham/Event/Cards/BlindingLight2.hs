@@ -1,7 +1,7 @@
 module Arkham.Event.Cards.BlindingLight2 (blindingLight2, blindingLight2Effect, BlindingLight2 (..)) where
 
 import Arkham.Action qualified as Action
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.ChaosToken
 import Arkham.Effect.Import
 import Arkham.Evade
@@ -23,9 +23,7 @@ instance RunMessage BlindingLight2 where
       sid <- getRandom
       createCardEffect Cards.blindingLight2 Nothing attrs iid
       createCardEffect Cards.blindingLight2 Nothing attrs sid
-      pushAllM
-        $ leftOr
-        <$> aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvade sid iid attrs)
+      aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvade sid iid attrs)
       pure e
     _ -> BlindingLight2 <$> liftRunMessage msg attrs
 

@@ -1,6 +1,6 @@
 module Arkham.Event.Cards.Banish1 (banish1, Banish1 (..)) where
 
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.ChaosToken
 import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards
@@ -21,9 +21,7 @@ instance RunMessage Banish1 where
   runMessage msg e@(Banish1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       sid <- getRandom
-      pushAllM
-        $ leftOr
-        <$> aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvadeMatch sid iid attrs NonEliteEnemy)
+      aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvadeMatch sid iid attrs NonEliteEnemy)
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       getSkillTestTarget >>= \case

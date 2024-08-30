@@ -1,6 +1,6 @@
 module Arkham.Event.Cards.IveGotAPlan (iveGotAPlan, IveGotAPlan (..)) where
 
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Fight
@@ -22,8 +22,6 @@ instance RunMessage IveGotAPlan where
         $ ForEach
           (MaxCalculation (Fixed 3) (InvestigatorFieldCalculation iid InvestigatorClues))
           [DamageDealt 1]
-      chooseFight <-
-        leftOr <$> aspect iid attrs (#intellect `InsteadOf` #combat) (mkChooseFight sid iid attrs)
-      pushAll chooseFight
+      aspect iid attrs (#intellect `InsteadOf` #combat) (mkChooseFight sid iid attrs)
       pure e
     _ -> IveGotAPlan <$> liftRunMessage msg attrs

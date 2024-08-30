@@ -1,15 +1,13 @@
-module Arkham.Asset.Cards.Clairvoyance3 (clairvoyance3, clairvoyance3Effect, Clairvoyance3 (..)) where
+module Arkham.Asset.Cards.Clairvoyance3 (clairvoyance3, Clairvoyance3 (..)) where
 
 import Arkham.Ability
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.ChaosToken
-import Arkham.Effect.Runner
-import Arkham.Helpers.Investigator
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.Investigate
-import Arkham.Prelude
-import Arkham.Window qualified as Window
+import Arkham.Matcher
+import Arkham.Modifier
 
 newtype Clairvoyance3 = Clairvoyance3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -22,37 +20,13 @@ instance HasAbilities Clairvoyance3 where
   getAbilities (Clairvoyance3 a) = [investigateAbility a 1 (assetUseCost a Charge 1) ControlsThis]
 
 instance RunMessage Clairvoyance3 where
-  runMessage msg a@(Clairvoyance3 attrs) = case msg of
+  runMessage msg a@(Clairvoyance3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = toAbilitySource attrs 1
-      lid <- getJustLocation iid
+      let source = attrs.ability 1
       sid <- getRandom
-      investigation <-
-        aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
-
-      pushAll
-        $ [ createCardEffect Cards.clairvoyance3 (effectMetaTarget sid) source (InvestigationTarget iid lid)
-          , skillTestModifiers sid attrs iid [DiscoveredClues 1, SkillModifier #willpower 2]
-          ]
-        <> leftOr investigation
+      skillTestModifiers sid attrs iid [DiscoveredClues 1, SkillModifier #willpower 2]
+      onRevealChaosTokenEffect sid (oneOf [#eldersign, #plusone, #zero]) attrs attrs do
+        assignHorror iid source 1
+      aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
       pure a
-    _ -> Clairvoyance3 <$> runMessage msg attrs
-
-newtype Clairvoyance3Effect = Clairvoyance3Effect EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-
-clairvoyance3Effect :: EffectArgs -> Clairvoyance3Effect
-clairvoyance3Effect = cardEffect Clairvoyance3Effect Cards.clairvoyance3
-
-instance RunMessage Clairvoyance3Effect where
-  runMessage msg e@(Clairvoyance3Effect attrs@EffectAttrs {..}) = case msg of
-    RevealChaosToken (SkillTestSource sid) iid token | InvestigatorTarget iid == effectTarget && maybe False (isTarget sid) attrs.metaTarget -> do
-      when (chaosTokenFace token `elem` [ElderSign, PlusOne, Zero])
-        $ pushAll
-          [ If (Window.RevealChaosTokenEffect iid token effectId) [assignHorror iid effectSource 1]
-          , DisableEffect effectId
-          ]
-      pure e
-    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> e <$ push (DisableEffect effectId)
-    _ -> Clairvoyance3Effect <$> runMessage msg attrs
+    _ -> Clairvoyance3 <$> liftRunMessage msg attrs

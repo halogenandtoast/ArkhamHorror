@@ -4,6 +4,8 @@ import Arkham.Ability
 import Arkham.Act.Types (ActAttrs (actDeckId))
 import Arkham.Action (Action)
 import Arkham.Agenda.Types (AgendaAttrs (agendaDeckId))
+import Arkham.Aspect (IsAspect (..))
+import Arkham.Aspect qualified as Msg
 import Arkham.Asset.Types (AssetAttrs)
 import Arkham.Attack.Types
 import Arkham.Calculation
@@ -448,6 +450,15 @@ chooseOrRunOne iid msgs = do
 
 continue :: ReverseQueue m => InvestigatorId -> [Message] -> m ()
 continue iid msgs = Arkham.Message.Lifted.chooseOne iid [Label "Continue" msgs]
+
+aspect
+  :: (ReverseQueue m, IsAspect a b, IsMessage b, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> a
+  -> m b
+  -> m ()
+aspect iid source a action = Msg.aspect iid source a action >>= pushAll . Msg.leftOr
 
 choose :: ReverseQueue m => InvestigatorId -> UI Message -> m ()
 choose iid msg = Arkham.Message.Lifted.chooseOne iid [msg]

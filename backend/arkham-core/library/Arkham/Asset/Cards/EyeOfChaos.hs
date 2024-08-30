@@ -1,7 +1,7 @@
 module Arkham.Asset.Cards.EyeOfChaos (eyeOfChaos, eyeOfChaosEffect, EyeOfChaos (..)) where
 
 import Arkham.Ability
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Discover
@@ -31,9 +31,7 @@ instance RunMessage EyeOfChaos where
       sid <- getRandom
       skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
       createCardEffect Cards.eyeOfChaos (effectMetaTarget sid) source iid
-      investigation <-
-        aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
-      pushAll $ leftOr investigation
+      aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
       pure a
     _ -> EyeOfChaos <$> liftRunMessage msg attrs
 

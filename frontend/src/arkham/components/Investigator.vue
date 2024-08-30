@@ -26,6 +26,7 @@ const emit = defineEmits(['showCards', 'choose'])
 
 const id = computed(() => props.investigator.id)
 const debug = useDebug()
+const debugging = ref(false)
 
 function canActivateAbility(c: Message): boolean {
   if (c.tag  === MessageType.ABILITY_LABEL) {
@@ -233,14 +234,16 @@ function startDrag(event: DragEvent) {
 </script>
 
 <template>
-  <img
-    v-if="portrait"
-    :src="portraitImage"
-    class="portrait"
-    :class="{ 'investigator--can-interact--portrait': investigatorAction !== -1, ethereal, dragging }"
-    @click="$emit('choose', investigatorAction)"
-    @dragstart="startDrag($event)"
-  />
+  <div v-if="portrait">
+    <img
+      :src="portraitImage"
+      class="portrait"
+      :class="{ 'investigator--can-interact--portrait': investigatorAction !== -1, ethereal, dragging }"
+      :draggable="debug.active"
+      @click="$emit('choose', investigatorAction)"
+      @dragstart="startDrag($event)"
+    />
+  </div>
   <div v-else>
     <div class="player-area">
       <div class="player-card">

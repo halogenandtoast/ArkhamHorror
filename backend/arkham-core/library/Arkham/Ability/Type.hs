@@ -132,4 +132,14 @@ abilityTypeCostL f = \case
   ForcedWhen criteria abilityType ->
     ForcedWhen criteria <$> abilityTypeCostL f abilityType
 
-$(deriveJSON defaultOptions ''AbilityType)
+$(deriveToJSON defaultOptions ''AbilityType)
+
+instance FromJSON AbilityType where
+  parseJSON = withObject "AbilityType" $ \o -> do
+    tag :: Text <- o .: "tag"
+    case tag of
+      "ActionAbilityWithBefore" -> do
+        a <- o .: "actions"
+        c <- o .: "cost"
+        pure $ ActionAbility {actions = a, cost = c}
+      _ -> $(mkParseJSON defaultOptions ''AbilityType) (Object o)

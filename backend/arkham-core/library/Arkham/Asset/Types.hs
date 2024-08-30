@@ -507,6 +507,9 @@ getOwner = fromJustNote "asset must be owned" . view ownerL
 getController :: HasCallStack => AssetAttrs -> InvestigatorId
 getController = fromJustNote "asset must be controlled" . view controllerL
 
+noSlots :: AssetAttrs -> AssetAttrs
+noSlots = slotsL .~ mempty
+
 ally
   :: (AssetAttrs -> a)
   -> CardDef

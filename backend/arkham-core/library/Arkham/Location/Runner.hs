@@ -392,8 +392,8 @@ getModifiedShroudValueFor attrs = do
   applyPostModifier _ n = n
 
 getInvestigateAllowed :: HasGame m => InvestigatorId -> LocationAttrs -> m Bool
-getInvestigateAllowed _iid attrs = do
-  modifiers' <- getModifiers (toTarget attrs)
+getInvestigateAllowed iid attrs = do
+  modifiers' <- getCombinedModifiers [toTarget attrs, toTarget iid]
   pure $ none isCannotInvestigate modifiers' && isJust (locationShroud attrs)
  where
   isCannotInvestigate CannotInvestigate {} = True

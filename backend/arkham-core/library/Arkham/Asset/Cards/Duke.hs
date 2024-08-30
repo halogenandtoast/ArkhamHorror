@@ -18,7 +18,7 @@ newtype Duke = Duke AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 duke :: AssetCard Duke
-duke = allyWith Duke Cards.duke (2, 3) (slotsL .~ mempty)
+duke = allyWith Duke Cards.duke (2, 3) noSlots
 
 instance HasModifiersFor Duke where
   getModifiersFor (InvestigatorTarget iid) (Duke a) | controlledBy a iid = do
@@ -26,9 +26,9 @@ instance HasModifiersFor Duke where
     mAction <- getSkillTestAction
     case (mAction, mSource) of
       (Just Action.Fight, Just source) | isSource a source -> do
-        pure $ toModifiers a [BaseSkillOf #combat 4, DamageDealt 1]
+        modified a [BaseSkillOf #combat 4, DamageDealt 1]
       (Just Action.Investigate, Just source) | isSource a source -> do
-        pure $ toModifiers a [BaseSkillOf #intellect 4]
+        modified a [BaseSkillOf #intellect 4]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
@@ -52,7 +52,7 @@ instance RunMessage Duke where
       investigateAbilities <-
         field LocationAbilities lid >>= filterM \ab ->
           (abilityIs ab #investigate &&)
-            <$> getCanAffordAbility iid (applyAbilityModifiers ab [ActionCostModifier (-1)]) windows'
+            <$> getCanPerformAbility iid windows' (decreaseAbilityActionCost ab 1)
       let
         investigateActions =
           map
@@ -61,10 +61,10 @@ instance RunMessage Duke where
                 . ( \a' ->
                       a'
                         { abilityDoesNotProvokeAttacksOfOpportunity = True
-                        , abilitySource = ProxySource (abilitySource a') source
+                        , abilitySource = ProxySource a'.source source
                         }
                   )
-                . (`applyAbilityModifiers` [ActionCostModifier (-1)])
+                . (`decreaseAbilityActionCost` 1)
             )
             investigateAbilities
       chooseOne iid
@@ -73,14 +73,18 @@ instance RunMessage Duke where
            | lid' <- accessibleLocationIds
            ]
       pure a
-    DoStep 1 (UseCardAbility iid (isSource attrs -> True) 2 _ _) -> do
+    DoStep 1 (UseCardAbility iid (isSource attrs -> True) 2 ws _) -> do
       lid <- getJustLocation iid
-      sid <- getRandom
-      investigate' <- mkInvestigateLocation sid iid attrs lid
-      push $ CheckAdditionalActionCosts iid (toTarget lid) #investigate [toMessage investigate']
+      selectOne (AbilityIs (LocationSource lid) 101) >>= traverse_ \ab ->
+        whenM (getCanPerformAbility iid ws $ decreaseAbilityActionCost ab 1) do
+          sid <- getRandom
+          investigate' <- mkInvestigateLocation sid iid attrs lid
+          push $ CheckAdditionalActionCosts iid (toTarget lid) #investigate [toMessage investigate']
       pure a
-    UseCardAbility iid (ProxySource (LocationSource lid) (isAbilitySource attrs 2 -> True)) 101 _ _ -> do
-      sid <- getRandom
-      pushM $ mkInvestigateLocation sid iid attrs lid
+    UseCardAbility iid (ProxySource (LocationSource lid) (isAbilitySource attrs 2 -> True)) 101 ws _ -> do
+      selectOne (AbilityIs (LocationSource lid) 101) >>= traverse_ \ab ->
+        whenM (getCanPerformAbility iid ws $ decreaseAbilityActionCost ab 1) do
+          sid <- getRandom
+          pushM $ mkInvestigateLocation sid iid attrs lid
       pure a
     _ -> Duke <$> liftRunMessage msg attrs

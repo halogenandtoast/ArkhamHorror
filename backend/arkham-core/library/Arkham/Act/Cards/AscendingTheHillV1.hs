@@ -9,16 +9,15 @@ import Arkham.Prelude
 import Arkham.Trait
 
 newtype AscendingTheHillV1 = AscendingTheHillV1 ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ascendingTheHillV1 :: ActCard AscendingTheHillV1
 ascendingTheHillV1 = act (2, A) AscendingTheHillV1 Cards.ascendingTheHillV1 Nothing
 
 instance HasModifiersFor AscendingTheHillV1 where
-  getModifiersFor (LocationTarget lid) (AscendingTheHillV1 attrs) = do
-    isAltered <- lid <=~> LocationWithTrait Altered
-    pure $ toModifiers attrs [CannotPlaceClues | not isAltered]
+  getModifiersFor (LocationTarget _) (AscendingTheHillV1 attrs) = do
+    pure $ toModifiers attrs [NonTraitRestrictedModifier Altered CannotPlaceClues]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AscendingTheHillV1 where

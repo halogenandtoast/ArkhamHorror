@@ -1,6 +1,6 @@
 module Arkham.Event.Cards.OccultInvocation (occultInvocation, OccultInvocation (..)) where
 
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -19,8 +19,7 @@ instance RunMessage OccultInvocation where
     PlayThisEvent iid eid | attrs `is` eid -> do
       let n = totalDiscardCardPayments attrs.payment
       sid <- getRandom
-      chooseFight <- aspect iid attrs (#intellect `InsteadOf` #combat) (mkChooseFight sid iid attrs)
       skillTestModifiers sid attrs iid [DamageDealt n, SkillModifier #intellect n]
-      pushAll $ leftOr chooseFight
+      aspect iid attrs (#intellect `InsteadOf` #combat) (mkChooseFight sid iid attrs)
       pure e
     _ -> OccultInvocation <$> liftRunMessage msg attrs

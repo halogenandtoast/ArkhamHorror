@@ -1,6 +1,6 @@
 module Arkham.Event.Cards.BloodEclipse3 (bloodEclipse3, BloodEclipse3 (..)) where
 
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Fight
@@ -19,8 +19,6 @@ instance RunMessage BloodEclipse3 where
       let n = attrs.payment.investigatorDamage
       sid <- getRandom
       skillTestModifiers sid attrs iid [DamageDealt n, SkillModifier #willpower n]
-      pushAllM
-        $ leftOr
-        <$> aspect iid attrs (#willpower `InsteadOf` #combat) (mkChooseFight sid iid attrs)
+      aspect iid attrs (#willpower `InsteadOf` #combat) (mkChooseFight sid iid attrs)
       pure e
     _ -> BloodEclipse3 <$> liftRunMessage msg attrs

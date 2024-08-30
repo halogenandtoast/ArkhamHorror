@@ -1,12 +1,13 @@
 module Arkham.Asset.Cards.EnchantedBow2 (enchantedBow2, EnchantedBow2 (..)) where
 
 import Arkham.Ability
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Fight
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
 newtype EnchantedBow2 = EnchantedBow2 AssetAttrs
@@ -69,12 +70,11 @@ instance RunMessage EnchantedBow2 where
         $ [AnySkillValue 1, DamageDealt 1]
         <> (guard (n > 0) *> [IgnoreAloof, IgnoreRetaliate])
 
-      fightWillpower <- leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) fight
-      fightAgility <- leftOr <$> aspect iid source (#agility `InsteadOf` #combat) fight
-
-      chooseOne
-        iid
-        [Label "Use {willpower}" fightWillpower, Label "Use {agility}" fightAgility]
+      chooseOneM iid do
+        labeled "Use {willpower}" do
+          aspect iid source (#willpower `InsteadOf` #combat) fight
+        labeled "Use {agility}" do
+          aspect iid source (#agility `InsteadOf` #combat) fight
       pure . EnchantedBow2 $ setMeta (n > 0) attrs
     ResolvedAbility ab | isSource attrs ab.source -> do
       pure . EnchantedBow2 $ setMeta True attrs

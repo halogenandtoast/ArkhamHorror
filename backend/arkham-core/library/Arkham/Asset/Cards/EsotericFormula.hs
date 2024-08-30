@@ -1,7 +1,7 @@
 module Arkham.Asset.Cards.EsotericFormula (esotericFormula, EsotericFormula (..)) where
 
 import Arkham.Ability
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Enemy.Types (Field (..))
@@ -31,9 +31,7 @@ instance RunMessage EsotericFormula where
       sid <- getRandom
       skillTestModifier sid source iid
         $ ForEach (EnemyTargetFieldCalculation EnemyClues) [SkillModifier #willpower 2]
-      chooseFight <-
-        aspect iid source (#willpower `InsteadOf` #combat)
-          $ mkChooseFightMatch sid iid source (EnemyWithTrait Abomination)
-      pushAll $ leftOr chooseFight
+      aspect iid source (#willpower `InsteadOf` #combat)
+        $ mkChooseFightMatch sid iid source (EnemyWithTrait Abomination)
       pure a
     _ -> EsotericFormula <$> liftRunMessage msg attrs

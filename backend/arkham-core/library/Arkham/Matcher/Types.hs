@@ -1475,6 +1475,12 @@ instance IsLabel "bless" ChaosTokenMatcher where
 instance IsLabel "curse" ChaosTokenMatcher where
   fromLabel = ChaosTokenFaceIs CurseToken
 
+instance IsLabel "plusone" ChaosTokenMatcher where
+  fromLabel = ChaosTokenFaceIs PlusOne
+
+instance IsLabel "zero" ChaosTokenMatcher where
+  fromLabel = ChaosTokenFaceIs Zero
+
 instance Semigroup ChaosTokenMatcher where
   AnyChaosToken <> x = x
   x <> AnyChaosToken = x

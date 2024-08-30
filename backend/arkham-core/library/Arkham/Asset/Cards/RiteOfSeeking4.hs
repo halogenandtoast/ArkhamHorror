@@ -1,7 +1,7 @@
 module Arkham.Asset.Cards.RiteOfSeeking4 (riteOfSeeking4, RiteOfSeeking4 (..)) where
 
 import Arkham.Ability
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
@@ -26,12 +26,10 @@ instance RunMessage RiteOfSeeking4 where
       let source = toAbilitySource attrs 1
       lid <- getJustLocation iid
       sid <- getRandom
-      investigation <-
-        aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
 
       -- same effect as base
       createCardEffect Cards.riteOfSeeking (effectMetaTarget sid) source (InvestigationTarget iid lid)
       skillTestModifiers sid source iid [SkillModifier #willpower 2, DiscoveredClues 2]
-      pushAll $ leftOr investigation
+      aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
       pure a
     _ -> RiteOfSeeking4 <$> liftRunMessage msg attrs

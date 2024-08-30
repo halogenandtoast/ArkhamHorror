@@ -42,9 +42,6 @@ import Arkham.Asset.Assets (
   azureFlame5Effect,
   azureFlameEffect,
   charlesRossEsqEffect,
-  clairvoyance3Effect,
-  clairvoyance5Effect,
-  clairvoyanceEffect,
   crystalPendulumEffect,
   daisysToteBagAdvancedEffect,
   disciplinePrescienceOfFateEffect,
@@ -476,15 +473,15 @@ allEffects =
     , ("60330", SomeEffect copycat3Effect)
     , ("60402", SomeEffect arbiterOfFatesEffect)
     , ("60407", SomeEffect azureFlameEffect)
-    , ("60408", SomeEffect clairvoyanceEffect)
+    , ("60408", SomeEffect $ noop "60408")
     , ("60409", SomeEffect ineffableTruthEffect)
     , ("60411", SomeEffect crystalPendulumEffect)
     , ("60419", SomeEffect prescientEffect)
     , ("60425", SomeEffect azureFlame3Effect)
-    , ("60426", SomeEffect clairvoyance3Effect)
+    , ("60426", SomeEffect $ noop "60426")
     , ("60427", SomeEffect ineffableTruth3Effect)
     , ("60430", SomeEffect azureFlame5Effect)
-    , ("60431", SomeEffect clairvoyance5Effect)
+    , ("60431", SomeEffect $ noop "60431")
     , ("60432", SomeEffect ineffableTruth5Effect)
     , ("60512", SomeEffect willToSurviveEffect)
     , ("81007", SomeEffect cursedShoresEffect)

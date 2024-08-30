@@ -508,6 +508,7 @@ data Message
   | Continue Text
   | CreateEffect EffectBuilder
   | ObtainCard Card
+  | ObtainChaosToken ChaosToken
   | CreateEnemy (EnemyCreation Message)
   | CreateSkill SkillId Card InvestigatorId Placement
   | CreatedEnemyAt EnemyId LocationId Target

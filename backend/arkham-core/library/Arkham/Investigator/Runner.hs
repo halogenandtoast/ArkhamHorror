@@ -2729,7 +2729,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       cardFilter = filter ((/= card.id) . toCardId)
     pure
       $ a
-      & (handL %~ (toCard card :))
+      & (handL %~ nub . (toCard card :))
+      & (deckL %~ filter ((/= card.id) . toCardId))
       & (foundCardsL . each %~ cardFilter)
       & (cardsUnderneathL %~ cardFilter)
       & (discardL %~ cardFilter)
@@ -3115,10 +3116,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure
         $ a
         & (deckL %~ Deck . filter (/= pc) . unDeck)
-        & handL
-        %~ filter (/= card)
-        & discardL
-        %~ filter (/= pc)
+        & (handL %~ filter (/= card))
+        & (discardL %~ filter (/= pc))
         & (foundCardsL . each %~ filter (/= PlayerCard pc))
     EncounterCard _ -> pure $ a & handL %~ filter (/= card)
     VengeanceCard vcard -> pure $ a & handL %~ filter (/= vcard)
@@ -3127,11 +3126,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       PlayerCard pc ->
         pure
           $ a
-          & (deckL %~ Deck . (<> [pc]) . unDeck)
-          & handL
-          %~ filter (/= card)
-          & discardL
-          %~ filter (/= pc)
+          & (deckL %~ Deck . (<> [pc]) . filter (/= pc) . unDeck)
+          & (handL %~ filter (/= card))
+          & (discardL %~ filter ((/= pc.id) . toCardId))
           & (foundCardsL . each %~ filter (/= PlayerCard pc))
       EncounterCard _ ->
         error "Can not put encounter card on bottom of investigator deck"
@@ -3142,10 +3139,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       pure
         $ a
         & (deckL %~ Deck . filter (/= pc) . unDeck)
-        & handL
-        %~ filter (/= card)
-        & discardL
-        %~ filter (/= pc)
+        & (handL %~ filter (/= card))
+        & (discardL %~ filter (/= pc))
         & (foundCardsL . each %~ filter (/= PlayerCard pc))
     EncounterCard _ -> pure a
     VengeanceCard _ -> pure a
@@ -3162,6 +3157,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (discardL %~ filter ((`notElem` cards) . PlayerCard))
       & (foundCardsL . each %~ filter (`notElem` cards))
       & (bondedCardsL %~ filter (`notElem` cards))
+      & (deckL %~ Deck . filter ((`notElem` cards) . PlayerCard) . unDeck)
   DrawToHand iid cards | iid == investigatorId -> do
     let (before, _, after) = frame $ Window.DrawCards iid $ map toCard cards
     push before
@@ -3300,7 +3296,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
       ShuffleBackIn -> do
         when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck: Investigator<ShuffleBackIn>")
-        push $ ShuffleDeck (Deck.InvestigatorDeck a.id)
+        for_ investigatorSearch \MkInvestigatorSearch {searchingType} ->
+          pushWhen (searchingType == Searching) $ ShuffleDeck (Deck.InvestigatorDeck a.id)
       PutBack -> pure () -- Nothing moves while searching
       RemoveRestFromGame -> do
         -- Try to obtain, then don't add back

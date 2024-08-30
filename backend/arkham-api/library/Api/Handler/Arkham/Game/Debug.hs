@@ -98,12 +98,15 @@ postApiV1ArkhamGamesImportR = do
             $ ArkhamGame agedName agedCurrentData agedStep Solo now now
         insertMany_ $ map (\e -> e {arkhamLogEntryArkhamGameId = gameId}) agedLog
         traverse_ (insert_ . ArkhamPlayer userId gameId) investigatorIds
+        rawExecute "ALTER TABLE arkham_steps DISABLE TRIGGER enforce_step_order_per_game;" []
         traverse_
           ( \s ->
               insert_
                 $ ArkhamStep gameId (arkhamStepChoice s) (arkhamStepStep s) (arkhamStepActionDiff s)
           )
           agedSteps
+
+        rawExecute "ALTER TABLE arkham_steps ENABLE TRIGGER enforce_step_order_per_game;" []
         pure gameId
       pure
         $ toPublicGame

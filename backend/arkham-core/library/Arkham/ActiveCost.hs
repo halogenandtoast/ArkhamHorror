@@ -154,7 +154,6 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     CustomizationReaction {} -> push (PayCosts activeCostId)
     ConstantReaction {} -> push (PayCosts activeCostId)
     ReactionAbility {} -> push (PayCosts activeCostId)
-    ActionAbilityWithBefore actions' _ _ -> handleActions (Action.Activate : actions')
     ActionAbilityWithSkill actions' _ _ -> handleActions $ Action.Activate : actions'
     ActionAbility actions' _ -> handleActions $ Action.Activate : actions'
  where

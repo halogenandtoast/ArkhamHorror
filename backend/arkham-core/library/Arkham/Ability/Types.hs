@@ -18,6 +18,9 @@ import Arkham.Target
 import Data.Aeson.TH
 import GHC.Records
 
+data AdditionalCostDelay = DelayAdditionalCosts | DelayAdditionalCostsWhen Criterion
+  deriving stock (Show, Eq, Ord, Data)
+
 data Ability = Ability
   { abilitySource :: Source
   , abilityCardCode :: CardCode
@@ -31,7 +34,7 @@ data Ability = Ability
   , abilityTooltip :: Maybe Text
   , abilityCanBeCancelled :: Bool
   , abilityDisplayAsAction :: Bool
-  , abilityDelayAdditionalCosts :: Bool
+  , abilityDelayAdditionalCosts :: Maybe AdditionalCostDelay
   , abilityBasic :: Bool
   , abilityAdditionalCosts :: [Cost]
   , abilityRequestor :: Source
@@ -112,9 +115,16 @@ abilityDoesNotProvokeAttacksOfOpportunityL =
 abilityDisplayAsActionL :: Lens' Ability Bool
 abilityDisplayAsActionL = lens abilityDisplayAsAction $ \m x -> m {abilityDisplayAsAction = x}
 
-abilityDelayAdditionalCostsL :: Lens' Ability Bool
+abilityDelayAdditionalCostsL :: Lens' Ability (Maybe AdditionalCostDelay)
 abilityDelayAdditionalCostsL = lens abilityDelayAdditionalCosts $ \m x -> m {abilityDelayAdditionalCosts = x}
 
+delayAdditionalCosts :: Ability -> Ability
+delayAdditionalCosts = abilityDelayAdditionalCostsL ?~ DelayAdditionalCosts
+
+delayAdditionalCostsWhen :: Criterion -> Ability -> Ability
+delayAdditionalCostsWhen c = abilityDelayAdditionalCostsL ?~ DelayAdditionalCostsWhen c
+
+$(deriveJSON defaultOptions ''AdditionalCostDelay)
 $(deriveJSON defaultOptions ''AbilityMetadata)
 $(deriveToJSON (aesonOptions $ Just "ability") ''Ability)
 
@@ -132,7 +142,10 @@ instance FromJSON Ability where
     abilityTooltip <- o .:? "tooltip"
     abilityCanBeCancelled <- o .: "canBeCancelled"
     abilityDisplayAsAction <- o .: "displayAsAction"
-    abilityDelayAdditionalCosts <- o .: "delayAdditionalCosts"
+    abilityDelayAdditionalCosts <-
+      (o .: "delayAdditionalCosts" <&> \x -> if x then Just DelayAdditionalCosts else Nothing)
+        <|> o
+        .: "delayAdditionalCosts"
     abilityBasic <- o .: "basic"
     abilityAdditionalCosts <- o .: "additionalCosts"
     abilityRequestor <- o .:? "requestor" .!= abilitySource

@@ -678,6 +678,7 @@ getInvestigatorsMatching matcher = do
       isSanityDamageable <- fieldP InvestigatorRemainingSanity (> 0) (toId i)
       pure $ damageable && isSanityDamageable
     OwnsAsset matcher' -> flip filterM as $ selectAny . (<> matcher') . AssetOwnedBy . InvestigatorWithId . toId
+    ControlsAsset matcher' -> flip filterM as $ selectAny . (<> matcher') . AssetControlledBy . InvestigatorWithId . toId
     InvestigatorHasCardWithDamage -> flip filterM as $ \i -> do
       orM
         [ selectAny (AssetControlledBy (InvestigatorWithId $ toId i) <> AssetWithDamage)

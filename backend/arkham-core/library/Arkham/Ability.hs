@@ -62,7 +62,6 @@ abilityIsActionAbility :: Ability -> Bool
 abilityIsActionAbility a = case abilityType a of
   ActionAbility {} -> True
   ActionAbilityWithSkill {} -> True
-  ActionAbilityWithBefore {} -> True
   _ -> False
 
 abilityIsActivate :: Ability -> Bool
@@ -205,7 +204,7 @@ mkAbility entity idx type' =
     , abilityTooltip = Nothing
     , abilityCanBeCancelled = True
     , abilityDisplayAsAction = False
-    , abilityDelayAdditionalCosts = False
+    , abilityDelayAdditionalCosts = Nothing
     , abilityBasic = False
     , abilityAdditionalCosts = []
     }
@@ -250,7 +249,6 @@ abilityTypeActions = \case
   ConstantReaction {} -> []
   ActionAbility actions _ -> #activate : actions
   ActionAbilityWithSkill actions _ _ -> #activate : actions
-  ActionAbilityWithBefore actions _ _ -> #activate : actions
   ForcedAbility _ -> []
   SilentForcedAbility _ -> []
   ForcedAbilityWithCost _ _ -> []
@@ -269,7 +267,6 @@ abilityTypeCost = \case
   ConstantReaction _ _ cost -> cost
   ActionAbility _ cost -> cost
   ActionAbilityWithSkill _ _ cost -> cost
-  ActionAbilityWithBefore _ _ cost -> cost
   SilentForcedAbility _ -> Free
   ForcedAbility _ -> Free
   ForcedAbilityWithCost _ cost -> cost
@@ -293,9 +290,6 @@ modifyCost f = \case
     ActionAbility mAction $ f cost
   ActionAbilityWithSkill mAction skill cost ->
     ActionAbilityWithSkill mAction skill $ f cost
-  ActionAbilityWithBefore mAction mBeforeAction cost ->
-    ActionAbilityWithBefore mAction mBeforeAction
-      $ f cost
   ForcedAbility window -> ForcedAbility window
   SilentForcedAbility window -> SilentForcedAbility window
   ForcedAbilityWithCost window cost ->
@@ -352,7 +346,6 @@ defaultAbilityWindow :: AbilityType -> WindowMatcher
 defaultAbilityWindow = \case
   FastAbility' {} -> FastPlayerWindow
   ActionAbility {} -> Matcher.DuringTurn You
-  ActionAbilityWithBefore {} -> Matcher.DuringTurn You
   ActionAbilityWithSkill {} -> Matcher.DuringTurn You
   ForcedAbility window -> window
   SilentForcedAbility window -> window
@@ -379,7 +372,6 @@ isFastAbilityType = \case
   ConstantReaction {} -> False
   ActionAbility {} -> False
   ActionAbilityWithSkill {} -> False
-  ActionAbilityWithBefore {} -> False
   AbilityEffect {} -> False
   Haunted {} -> False
   ServitorAbility {} -> False
@@ -398,7 +390,6 @@ isReactionAbilityType = \case
   ConstantReaction {} -> True
   ActionAbility {} -> False
   ActionAbilityWithSkill {} -> False
-  ActionAbilityWithBefore {} -> False
   AbilityEffect {} -> False
   Haunted {} -> False
   ServitorAbility {} -> False
@@ -417,7 +408,6 @@ isSilentForcedAbilityType = \case
   ConstantReaction {} -> False
   ActionAbility {} -> False
   ActionAbilityWithSkill {} -> False
-  ActionAbilityWithBefore {} -> False
   AbilityEffect {} -> False
   Haunted {} -> False
   ServitorAbility {} -> False
@@ -444,7 +434,6 @@ defaultAbilityLimit = \case
   ConstantReaction {} -> PlayerLimit PerWindow 1
   FastAbility' {} -> NoLimit
   ActionAbility _ _ -> NoLimit
-  ActionAbilityWithBefore {} -> NoLimit
   ActionAbilityWithSkill {} -> NoLimit
   AbilityEffect {} -> NoLimit
   Objective aType -> defaultAbilityLimit aType

@@ -22,6 +22,71 @@ packages:
       size: 276
   original:
     hackage: mailtrap-0.1.2.1
+- completed:
+    name: amazonka
+    pantry-tree:
+      sha256: fc1bb41150c88a2920d12a058578ad11d827fa43b16274391015260b2fe8c56d
+      size: 1528
+    sha256: 2383a31782b75b13f52b2032b53a03d0e969eb4f075649868d48817a0765915f
+    size: 34732929
+    subdir: lib/amazonka
+    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+    version: '2.0'
+  original:
+    subdir: lib/amazonka
+    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+- completed:
+    name: amazonka-core
+    pantry-tree:
+      sha256: e560d220c73068da280e8532d27f4cee341c2c05efd2f5d5b1b0336cb24ccb1b
+      size: 3222
+    sha256: 2383a31782b75b13f52b2032b53a03d0e969eb4f075649868d48817a0765915f
+    size: 34732929
+    subdir: lib/amazonka-core
+    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+    version: '2.0'
+  original:
+    subdir: lib/amazonka-core
+    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+- completed:
+    name: amazonka-sso
+    pantry-tree:
+      sha256: f8897d82072d662605f60dc3d18e921c04bbb337b5d7caaeaece36fc8aee7fb9
+      size: 1817
+    sha256: 2383a31782b75b13f52b2032b53a03d0e969eb4f075649868d48817a0765915f
+    size: 34732929
+    subdir: lib/services/amazonka-sso
+    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+    version: '2.0'
+  original:
+    subdir: lib/services/amazonka-sso
+    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+- completed:
+    name: amazonka-sts
+    pantry-tree:
+      sha256: b2a18c0a04c999f9f32e114ad94bf76a89e463dbb16063ebf0899ee28808f898
+      size: 2880
+    sha256: 2383a31782b75b13f52b2032b53a03d0e969eb4f075649868d48817a0765915f
+    size: 34732929
+    subdir: lib/services/amazonka-sts
+    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+    version: '2.0'
+  original:
+    subdir: lib/services/amazonka-sts
+    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+- completed:
+    name: amazonka-s3
+    pantry-tree:
+      sha256: 50bb47db3771d94ee26711bad9d91b1dc32e6466a9a580e9333af434728052b1
+      size: 38690
+    sha256: 2383a31782b75b13f52b2032b53a03d0e969eb4f075649868d48817a0765915f
+    size: 34732929
+    subdir: lib/services/amazonka-s3
+    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+    version: '2.0'
+  original:
+    subdir: lib/services/amazonka-s3
+    url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
 snapshots:
 - completed:
     sha256: 3a9e2e78fabe2b407da707136d33c9a293b5d78186aea9ab13c552902807e543

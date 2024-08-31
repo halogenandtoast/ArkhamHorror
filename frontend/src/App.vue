@@ -421,4 +421,10 @@ footer {
 :nth-last-child(2) {
   --rev-index: 2;
 }
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
 </style>

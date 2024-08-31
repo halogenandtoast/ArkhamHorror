@@ -45,12 +45,16 @@ library:
     - aeson
     - aeson-casing
     - aeson-diff
+    - amazonka-s3
+    - amazonka
     - arkham-core
     - bcrypt
     - bytestring
     - case-insensitive
     - conduit
     - containers
+    - cryptohash-sha256
+    - base16-bytestring
     - directory
     - errors
     - esqueleto

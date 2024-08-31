@@ -44,4 +44,11 @@ extra-deps:
 - github: halogenandtoast/monad-validate
   commit: e5f36d4a82875c09c6000fed8f8ced50e21b75ce
 - mailtrap-0.1.2.1
-
+- github: brendanhay/amazonka
+  commit: 4873cc451113147d071721c97704ac648d71e9ee
+  subdirs:
+    - lib/amazonka
+    - lib/amazonka-core
+    - lib/services/amazonka-sso
+    - lib/services/amazonka-sts
+    - lib/services/amazonka-s3

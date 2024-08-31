@@ -474,6 +474,7 @@ steadfast :: CardDef
 steadfast =
   (skill "05022" "Steadfast" [#willpower, #combat] Guardian)
     { cdCardTraits = singleton Innate
+    , cdCardInHandEffects = True
     }
 
 curiosity :: CardDef

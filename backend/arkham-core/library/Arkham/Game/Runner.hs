@@ -1423,14 +1423,6 @@ runGameMessage msg g = case msg of
                   [toDiscardBy iid' GameSource (TreacheryTarget tid), UnsetActiveCard]
               _ -> pure ()
           _ -> pure ()
-
-    pure g
-  EngageEnemy iid eid _ False -> do
-    push =<< checkWindows [mkAfter (Window.EnemyEngaged iid eid)]
-    pure g
-  EnemyEngageInvestigator eid iid -> do
-    let (before, _, after) = frame (Window.EnemyEngaged iid eid)
-    pushAll [before, after]
     pure g
   SkillTestAsk (Ask iid1 (ChooseOne c1)) -> do
     mNextMessage <- peekMessage

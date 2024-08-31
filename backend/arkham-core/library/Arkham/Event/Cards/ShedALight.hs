@@ -2,7 +2,7 @@ module Arkham.Event.Cards.ShedALight (shedALight, ShedALight (..)) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
 

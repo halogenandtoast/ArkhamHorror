@@ -137,13 +137,15 @@ const emptyLog = computed(() => {
             <label :for="`log${title}`">{{title}}</label>
           </template>
         </div>
-        <div v-if="hasSupplies">
+        <div v-if="hasSupplies" class="supplies-container">
           <h2>Supplies</h2>
-          <Supplies v-for="i in game.investigators" :key="i.id" :player="i">
-            <template #heading>
-              <h3>{{i.name.title}}</h3>
-            </template>
-          </Supplies>
+          <div class="supplies-content">
+            <Supplies v-for="i in game.investigators" :key="i.id" :player="i">
+              <template #heading>
+                <h3>{{i.name.title}}</h3>
+              </template>
+            </Supplies>
+          </div>
         </div>
         <ul>
           <li v-for="record in recorded" :key="record">{{t(record)}}.</li>
@@ -227,5 +229,18 @@ li {
 .content {
   overflow: auto;
   width: 100%;
+}
+
+.supplies-container {
+  display: flex;
+  flex-direction: column;
+  color: var(--title);
+}
+
+.supplies-content {
+  color: var(--title);
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }
 </style>

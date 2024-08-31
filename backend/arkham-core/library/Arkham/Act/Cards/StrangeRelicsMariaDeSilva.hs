@@ -32,11 +32,7 @@ instance HasAbilities StrangeRelicsMariaDeSilva where
     [ restrictedAbility
       a
       1
-      ( AssetExists
-          $ assetIs Assets.mariaDeSilva
-          <> AssetWithClues
-            (AtLeast $ PerPlayer 1)
-      )
+      (exists $ assetIs Assets.mariaDeSilva <> AssetWithClues (AtLeast $ PerPlayer 1))
       $ Objective
       $ ForcedAbility AnyWindow
     | onSide E a
@@ -65,7 +61,7 @@ instance RunMessage StrangeRelicsMariaDeSilva where
         , AdvanceToAct (actDeckId attrs) Acts.theBrotherhoodIsRevealed E (toSource attrs)
         ]
       pure a
-    NextAdvanceActStep aid 1 | aid == actId attrs && onSide B attrs -> do
+    NextAdvanceActStep aid 1 | traceShowId (aid == actId attrs) && traceShowId (onSide F $ traceShowId attrs) -> do
       maria <- selectJust $ enemyIs Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn
       pushAll
         [Remember $ IchtacasPrey (Labeled (toName Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn) maria)]

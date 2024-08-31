@@ -2,9 +2,10 @@
 import { watch, ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { fetchDeck, deleteDeck, fetchCards, syncDeck } from '@/arkham/api';
-import { imgsrc, investigatorClass } from '@/arkham/helpers';
+import { imgsrc } from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/CardDef';
 import type {Deck} from '@/arkham/types/Deck';
+import * as DeckHelpers from '@/arkham/types/Deck';
 import Prompt from '@/components/Prompt.vue'
 import { useToast } from "vue-toastification";
 
@@ -198,11 +199,8 @@ const deckInvestigator = computed(() => {
 })
 
 const deckClass = computed(() => {
-  if (deckInvestigator.value) {
-    return investigatorClass(deckInvestigator.value)
-  }
-
-  return {};
+  if (deck.value) return DeckHelpers.deckClass(deck.value)
+  return {}
 })
 
 

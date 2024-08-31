@@ -1,20 +1,11 @@
-module Arkham.Asset.Cards.GuardDog2 (
-  GuardDog2 (..),
-  guardDog2,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.GuardDog2 (GuardDog2 (..), guardDog2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Attack
-import Arkham.DamageEffect
-import Arkham.Id
+import Arkham.Helpers.Window
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype GuardDog2 = GuardDog2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -25,52 +16,25 @@ guardDog2 = ally GuardDog2 Cards.guardDog2 (4, 2)
 
 instance HasAbilities GuardDog2 where
   getAbilities (GuardDog2 x) =
-    [ restrictedAbility
-        x
-        1
-        ( ControlsThis
-            <> EnemyCriteria
-              (EnemyExists $ EnemyAt YourLocation <> CanEngageEnemy (toSource x))
-        )
-        $ FastAbility
-        $ ExhaustCost
-        $ toTarget x
-    , restrictedAbility x 2 (ControlsThis <> CanDealDamage)
-        $ ReactionAbility
-          ( AssetDealtDamage
-              Timing.When
-              (SourceIsEnemyAttack AnyEnemy)
-              (AssetWithId (toId x))
-          )
-          Free
+    [ controlledAbility x 1 (exists (at_ YourLocation <> CanEngageEnemy (x.ability 1)))
+        $ FastAbility (exhaust x)
+    , controlledAbility x 2 CanDealDamage
+        $ freeReaction
+        $ AssetDealtDamageOrHorror #when (SourceIsEnemyAttack AnyEnemy) (be x)
     ]
 
-toEnemyId :: [Window] -> EnemyId
-toEnemyId [] = error "invalid"
-toEnemyId ((windowType -> Window.DealtDamage source _ _ _) : ws) = case source of
-  EnemySource eid -> eid
-  EnemyAttackSource eid -> eid
-  _ -> toEnemyId ws
-toEnemyId (_ : ws) = toEnemyId ws
-
 instance RunMessage GuardDog2 where
-  runMessage msg a@(GuardDog2 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      enemies <-
-        select $ EnemyAt (locationWithInvestigator iid) <> CanEngageEnemy (toSource attrs)
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [ targetLabel
-            enemy
-            [ EngageEnemy iid enemy Nothing False
-            , InitiateEnemyAttack $ enemyAttack enemy attrs iid
-            ]
-          | enemy <- enemies
-          ]
+  runMessage msg a@(GuardDog2 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      selectOrRunOneToHandle iid (attrs.ability 1)
+        $ at_ (locationWithInvestigator iid)
+        <> CanEngageEnemy (toSource attrs)
       pure a
-    UseCardAbility _ source 2 (toEnemyId -> eid) _ | isSource attrs source -> do
-      push $ EnemyDamage eid $ nonAttack source 1
+    HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget enemy) -> do
+      push $ EngageEnemy iid enemy Nothing False
+      push $ InitiateEnemyAttack $ enemyAttack enemy attrs iid
+      pure a
+    UseCardAbility _ (isSource attrs -> True) 2 (getDamageOrHorrorSource -> (.enemy) -> Just eid) _ -> do
+      nonAttackEnemyDamage (attrs.ability 2) 1 eid
       pure a
     _ -> GuardDog2 <$> runMessage msg attrs

@@ -3,12 +3,13 @@ import { onMounted, reactive, ref, computed, provide, onUnmounted, watch } from 
 import GameDetails from '@/arkham/components/GameDetails.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { JsonDecoder } from 'ts.data.json';
-import { EyeIcon, ArrowsRightLeftIcon, BugAntIcon, BackwardIcon, DocumentTextIcon, BeakerIcon, BoltIcon, DocumentArrowDownIcon } from '@heroicons/vue/20/solid'
+import { EyeIcon, ArrowsRightLeftIcon, BugAntIcon, ExclamationTriangleIcon, BackwardIcon, DocumentTextIcon, BeakerIcon, BoltIcon, DocumentArrowDownIcon } from '@heroicons/vue/20/solid'
 import { useWebSocket, useClipboard } from '@vueuse/core'
 import { useUserStore } from '@/stores/user'
 import * as Arkham from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers';
 import { fetchGame, undoChoice } from '@/arkham/api'
+import * as Api from '@/arkham/api'
 import Draggable from '@/components/Draggable.vue'
 import GameLog from '@/arkham/components/GameLog.vue'
 import * as Message from '@/arkham/types/Message'
@@ -214,9 +215,9 @@ watch(uiLock, async () => {
   if (r) handleResult(r)
 })
 
-
 // Keyboard Shortcuts
 const handleKeyPress = (event: KeyboardEvent) => {
+  if (filingBug.value) return
   if (event.key === 'u') {
     undo()
     return
@@ -297,6 +298,25 @@ async function undo() {
   tarotCards.value = []
   uiLock.value = false
   undoChoice(props.gameId)
+}
+
+const filingBug = ref(false)
+const submittingBug = ref(false)
+const bugTitle = ref("")
+const bugDescription = ref("")
+
+async function fileBug() {
+  submittingBug.value = true
+  filingBug.value = false
+  Api.fileBug(props.gameId).then((response) => {
+    const title = encodeURIComponent(bugTitle.value)
+    const body = encodeURIComponent(`${bugDescription.value}\n\nfile: ${response.data}`)
+    window.open(`https://github.com/halogenandtoast/ArkhamHorror/issues/new?labels=bug&title=${title}&body=${body}&assignee=halogenandtoast&projects=halogenandtoast/2`, '_blank')
+    submittingBug.value = false
+  }).catch(() => {
+    alert('Unable to file bug')
+    submittingBug.value = false
+  })
 }
 
 const continueUI = () => {
@@ -392,7 +412,15 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div id="game" v-if="ready && game && playerId">
+  <div v-if="submittingBug" class="column page-container">
+    <div class="page-content column">
+      <h2 class="title">Submitting bug, this may take several minutes, please wait...</h2>
+      <section class="box">
+        When this process is done, it will open GitHub in a new window and you will be able to resume your game.
+      </section>
+    </div>
+  </div>
+  <div id="game" v-else-if="ready && game && playerId">
     <CardOverlay />
     <Draggable v-if="showShortcuts">
       <template #handle>
@@ -422,6 +450,23 @@ onUnmounted(() => {
           </template>
         </template>
       </dl>
+    </Draggable>
+    <Draggable v-if="filingBug">
+      <template #handle>
+        <header clas="file-a-bug-header">
+          <h2>File a Bug</h2>
+        </header>
+      </template>
+     <form @submit.prevent="fileBug" class="column bug-form box">
+       <p>This will store the current game state, and fill in a GitHub issue. You will need a GitHub account in order to proceed.</p>
+       <p class="warning">Please note that it will take some time to submit the bug and you can not resume playing until it is done.</p>
+       <input required type="text" v-model="bugTitle" placeholder="A brief title for the bug" />
+       <textarea required v-model="bugDescription" placeholder="A description of what happened"></textarea>
+       <div class="buttons">
+         <button type="submit">Submit</button>
+         <button @click="filingBug = false">Cancel</button>
+       </div>
+     </form>
     </Draggable>
     <div v-if="socketError" class="socketWarning">
        <p>Your game is out of sync, trying to reconnect...</p>
@@ -471,6 +516,7 @@ onUnmounted(() => {
           </Menu>
       </div>
       <div><button @click="undo"><BackwardIcon aria-hidden="true" /> Undo</button></div>
+      <div><button @click="filingBug = true"><ExclamationTriangleIcon aria-hidden="true" /> File Bug</button></div>
       <div v-for="item in menuItems" :key="item.id">
         <template v-if="item.nested === null || item.nested === undefined">
           <button @click="item.action">
@@ -1163,5 +1209,15 @@ dl.shortcuts {
 
 button:hover .shortcut {
   background-color: var(--box-border);
+}
+
+.bug-form {
+  padding: 10px;
+  font-size: 1.2em;
+  input, textarea, button {
+    font-size: 1.2em;
+    padding: 5px 10px;
+  }
+
 }
 </style>

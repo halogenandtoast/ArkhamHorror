@@ -104,6 +104,9 @@ export const syncDeck = (deckId: string): Promise<Deck> => api
   .post(`arkham/decks/${deckId}/sync`)
   .then((resp) => deckDecoder.decodeToPromise(resp.data));
 
+export const fileBug = (gameId: string): Promise<void> => api
+  .post(`arkham/games/${gameId}/file-bug`)
+
 export const updateGame = (gameId: string, choice: number, investigatorId: string | null): Promise<void> => api
   .put(`arkham/games/${gameId}`,  {tag: 'Answer', contents: { choice, investigatorId }})
 

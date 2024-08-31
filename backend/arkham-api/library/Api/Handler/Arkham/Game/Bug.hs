@@ -5,12 +5,9 @@ module Api.Handler.Arkham.Game.Bug (
 import Amazonka
 import Amazonka.S3
 import Api.Arkham.Export
-import Api.Arkham.Helpers
 import Crypto.Hash.SHA256 qualified as SHA256
 import Data.Aeson (encode)
 import Data.ByteString.Base16 qualified as B16
-import Database.Esqueleto.Experimental hiding (update)
-import Entity.Arkham.Step
 import Import hiding ((==.))
 import Safe (fromJustNote)
 import UnliftIO.Exception (catch)
@@ -43,23 +40,4 @@ uploadJsonToS3 jsonData = do
 postApiV1ArkhamGameBugR :: ArkhamGameId -> Handler Text
 postApiV1ArkhamGameBugR gameId = do
   _ <- fromJustNote "Not authenticated" <$> getRequestUserId
-  (ge, players, steps, entries) <- runDB $ do
-    ge <- get404 gameId
-    players <- select $ do
-      players <- from $ table @ArkhamPlayer
-      where_ (players ^. ArkhamPlayerArkhamGameId ==. val gameId)
-      pure players
-    steps <- select $ do
-      steps <- from $ table @ArkhamStep
-      where_ $ steps ^. ArkhamStepArkhamGameId ==. val gameId
-      orderBy [desc $ steps ^. ArkhamStepStep]
-      pure steps
-
-    entries <- getGameLogEntries gameId
-    pure (ge, players, steps, entries)
-
-  uploadJsonToS3
-    $ ArkhamExport
-      { aeCampaignPlayers = map (arkhamPlayerInvestigatorId . entityVal) players
-      , aeCampaignData = arkhamGameToExportData ge (map entityVal steps) entries
-      }
+  uploadJsonToS3 =<< generateExport gameId

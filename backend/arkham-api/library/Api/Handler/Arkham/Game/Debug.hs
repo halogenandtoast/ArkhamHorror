@@ -26,25 +26,7 @@ import UnliftIO.Exception (catch, try)
 getApiV1ArkhamGameExportR :: ArkhamGameId -> Handler ArkhamExport
 getApiV1ArkhamGameExportR gameId = do
   _ <- fromJustNote "Not authenticated" <$> getRequestUserId
-  runDB $ do
-    ge <- get404 gameId
-    players <- select $ do
-      players <- from $ table @ArkhamPlayer
-      where_ (players ^. ArkhamPlayerArkhamGameId ==. val gameId)
-      pure players
-    steps <- select $ do
-      steps <- from $ table @ArkhamStep
-      where_ $ steps ^. ArkhamStepArkhamGameId ==. val gameId
-      orderBy [desc $ steps ^. ArkhamStepStep]
-      pure steps
-
-    entries <- getGameLogEntries gameId
-
-    pure
-      $ ArkhamExport
-        { aeCampaignPlayers = map (arkhamPlayerInvestigatorId . entityVal) players
-        , aeCampaignData = arkhamGameToExportData ge (map entityVal steps) entries
-        }
+  generateExport gameId
 
 postApiV1ArkhamGamesFixR :: Handler ()
 postApiV1ArkhamGamesFixR = do

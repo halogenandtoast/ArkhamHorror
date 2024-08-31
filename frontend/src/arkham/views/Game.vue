@@ -478,42 +478,40 @@ onUnmounted(() => {
         </div>
       </div>
       <div>
-          <Menu>
-              <EyeIcon aria-hidden="true" />
-              View
-              <template #items>
-                <MenuItem v-slot="{ active }">
-                  <button :class="{ active }" @click="showShortcuts = !showShortcuts">
-                    <BoltIcon aria-hidden="true" /> Shortcuts <span class="shortcut">?</span>
-                  </button>
-                </MenuItem>
-                <template v-for="item in menuItems" :key="item.id">
-                  <MenuItem v-if="item.nested === 'view'" v-slot="{ active }">
-                    <button :class="{ active }" @click="item.action">
-                      <component v-if="item.icon" v-bind:is="item.icon"></component>
-                      {{item.content}}
-                      <span v-if="item.shortcut" class="shortcut">{{item.shortcut}}</span>
-                    </button>
-                  </MenuItem>
-                </template>
-              </template>
-          </Menu>
+        <Menu>
+          <EyeIcon aria-hidden="true" />
+          View
+          <template #items>
+            <MenuItem v-slot="{ active }">
+              <button :class="{ active }" @click="showShortcuts = !showShortcuts">
+                <BoltIcon aria-hidden="true" /> Shortcuts <span class="shortcut">?</span>
+              </button>
+            </MenuItem>
+            <template v-for="item in menuItems" :key="item.id">
+              <MenuItem v-if="item.nested === 'view'" v-slot="{ active }">
+                <button :class="{ active }" @click="item.action">
+                  <component v-if="item.icon" v-bind:is="item.icon"></component>
+                  {{item.content}}
+                  <span v-if="item.shortcut" class="shortcut">{{item.shortcut}}</span>
+                </button>
+              </MenuItem>
+            </template>
+          </template>
+        </Menu>
       </div>
       <div>
-          <Menu>
-              <BeakerIcon aria-hidden="true" />
-              Debug
-              <template #items>
-                <MenuItem v-slot="{ active }">
-                  <button :class="{ active }" @click="debug.toggle"><BugAntIcon aria-hidden="true" /> Toggle Debug <span class="shortcut">D</span></button>
-                </MenuItem>
-                <MenuItem v-slot="{ active }">
-                  <button :class="{ active }" @click="debugExport"><DocumentArrowDownIcon aria-hidden="true" /> Debug Export</button>
-                </MenuItem>
-
-
-              </template>
-          </Menu>
+        <Menu>
+          <BeakerIcon aria-hidden="true" />
+          Debug
+          <template #items>
+            <MenuItem v-slot="{ active }">
+              <button :class="{ active }" @click="debug.toggle"><BugAntIcon aria-hidden="true" /> Toggle Debug <span class="shortcut">D</span></button>
+            </MenuItem>
+            <MenuItem v-slot="{ active }">
+              <button :class="{ active }" @click="debugExport"><DocumentArrowDownIcon aria-hidden="true" /> Debug Export</button>
+            </MenuItem>
+          </template>
+        </Menu>
       </div>
       <div><button @click="undo"><BackwardIcon aria-hidden="true" /> Undo</button></div>
       <div><button @click="filingBug = true"><ExclamationTriangleIcon aria-hidden="true" /> File Bug</button></div>

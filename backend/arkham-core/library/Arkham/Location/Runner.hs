@@ -220,8 +220,9 @@ instance RunMessage LocationAttrs where
                   ]
       pure a
     MoveAllCluesTo source target | not (isTarget a target) -> do
-      when (locationClues a > 0) (push $ PlaceClues source (toTarget a) (locationClues a))
-      pure $ a & tokensL %~ removeAllTokens Clue & withoutCluesL .~ True
+      when (locationClues a > 0) do
+        push $ MoveTokens source (toSource a) target Clue (locationClues a)
+      pure a
     PlaceCluesUpToClueValue lid source n | lid == locationId -> do
       clueValue <- getPlayerCountValue locationRevealClues
       let n' = min n (clueValue - locationClues a)

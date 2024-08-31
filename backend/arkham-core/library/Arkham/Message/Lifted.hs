@@ -1405,3 +1405,7 @@ attach a = push . toAttach a
 
 enemyCheckEngagement :: ReverseQueue m => EnemyId -> m ()
 enemyCheckEngagement = push . EnemyCheckEngagement
+
+advancedWithOther
+  :: (ReverseQueue m, Sourceable source, AsId source, IdOf source ~ ActId) => source -> m ()
+advancedWithOther source = push $ AdvanceAct (asId source) (toSource source) #other

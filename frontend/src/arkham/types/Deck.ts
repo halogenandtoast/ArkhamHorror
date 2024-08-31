@@ -1,4 +1,26 @@
 import { JsonDecoder } from 'ts.data.json';
+import { investigatorClass } from '@/arkham/helpers';
+
+export function deckInvestigator(deck: Deck) {
+  if (deck.list.meta) {
+    try {
+      const result = JSON.parse(deck.list.meta)
+      if (result && result.alternate_front) {
+        return result.alternate_front
+      }
+    } catch (e) { console.log("No parse") }
+  }
+  return deck.list.investigator_code.replace('c', '')
+}
+
+export function deckClass(deck: Deck) {
+  const investigator = deckInvestigator(deck)
+  if (investigator) {
+    return investigatorClass(investigator)
+  }
+
+  return {}
+}
 
 export type DeckList = {
   investigator_code: string;

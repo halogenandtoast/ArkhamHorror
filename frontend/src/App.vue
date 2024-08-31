@@ -66,6 +66,11 @@ button {
 }
 
 @font-face {
+  font-family: "ArkhamSlim";
+  src: url("/fonts/arkhamslim.ttf");
+}
+
+@font-face {
   font-family: "Teutonic";
   src: url("/fonts/teutonic.ttf");
 }
@@ -96,6 +101,13 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.neutral-icon {
+  &:before {
+    font-family: "ArkhamSlim";
+    content: "\0046";
+  }
 }
 
 .guardian-icon {

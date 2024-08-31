@@ -28,7 +28,8 @@ const emits = defineEmits<{
 const showAbilities = ref(false)
 
 const id = computed(() => props.act.id)
-const image = computed(() => {
+
+const cardCode = computed(() => {
   const side = props.act.sequence.side.toLowerCase().replace('a', '')
   const sidePart = id.value.endsWith(side) ? "" : side
 
@@ -45,10 +46,14 @@ const image = computed(() => {
   // handle threads of fate as hardcoded values because I don't want to deal with it
   if (parseInt(newId) >= 4117 && parseInt(newId) <= 4140) {
     const adjustedSidePart = sidePart.replace(/[ace]/, '').replace(/[df]/, 'b')
-    return imgsrc(`cards/${newId}${adjustedSidePart}.jpg`)
+    return `${newId}${adjustedSidePart}`
   }
 
-  return imgsrc(`cards/${newId}${sidePart}.jpg`)
+  return `${newId}${sidePart}`
+})
+
+const image = computed(() => {
+  return imgsrc(`cards/${cardCode.value}.jpg`)
 })
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
@@ -117,18 +122,23 @@ async function chooseAbility(ability: AbilityMessage) {
   emits('choose', ability.index)
 }
 
+const isOtherEncounterCard = computed(() => {
+  return ["04134b", "04137b"].includes(cardCode.value)
+})
+
 </script>
 
 <template>
   <div class="act-container">
     <div class="card-container" :class="{ 'act--objective': hasObjective }">
       <img
-        :class="{ 'act--can-progress': interactAction !== -1, 'act--can-interact': canInteract }"
-        class="card card--sideways"
+        :class="{ 'act--can-progress': interactAction !== -1, 'act--can-interact': canInteract, 'card--sideways': !isOtherEncounterCard}"
+        class="card"
         @click="clicked"
         :src="image"
       />
 
+      </div>
       <div class="abilities" v-if="showAbilities">
         <AbilityButton
           v-for="ability in abilities"
@@ -143,7 +153,6 @@ async function chooseAbility(ability: AbilityMessage) {
         </template>
 
         <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="showCardsUnderAct">{{viewUnderLabel}}</button>
-      </div>
     </div>
     <img
       v-for="(card, idx) in cardsNextTo"
@@ -254,12 +263,12 @@ async function chooseAbility(ability: AbilityMessage) {
 }
 
 .abilities {
-  position: absolute;
-  top:100%;
   padding: 10px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
-  z-index: 10000;
+  button {
+    padding: 4px;
+  }
 }
 
 

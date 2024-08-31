@@ -58,6 +58,10 @@ data ActAttrs = ActAttrs
   }
   deriving stock (Show, Eq, Generic)
 
+instance AsId ActAttrs where
+  type IdOf ActAttrs = ActId
+  asId = actId
+
 instance HasField "id" ActAttrs ActId where
   getField = actId
 

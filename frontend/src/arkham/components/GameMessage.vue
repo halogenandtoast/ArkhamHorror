@@ -70,6 +70,22 @@ export default defineComponent({
             return name ? h('span', { 'data-image-id': investigatorId }, name.replace(/\\"/g, "\"")) : split
           }
         }
+      } else if (/{enemy:"((?:[^"]|\\.)+)":(.+)}/.test(split)) {
+        const found = split.match(/{enemy:"((?:[^"]|\\.)+)":(.+)}/)
+        if (found) {
+          const [, name, enemyId ] = found
+          if (enemyId) {
+            return name ? h('span', { 'data-image-id': enemyId }, name.replace(/\\"/g, "\"")) : split
+          }
+        }
+      } else if (/{location:"((?:[^"]|\\.)+)":(.+)}/.test(split)) {
+        const found = split.match(/{location:"((?:[^"]|\\.)+)":(.+)}/)
+        if (found) {
+          const [, name, locationId ] = found
+          if (locationId) {
+            return name ? h('span', { 'data-image-id': locationId }, name.replace(/\\"/g, "\"")) : split
+          }
+        }
       } else if (/{token:"([^"]+)"}/.test(split)) {
         const found = split.match(/{token:"([^"]+)"}/)
         if (found) {

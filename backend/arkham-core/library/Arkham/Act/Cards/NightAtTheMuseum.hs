@@ -2,7 +2,7 @@ module Arkham.Act.Cards.NightAtTheMuseum (NightAtTheMuseum (..), nightAtTheMuseu
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
+import Arkham.Act.Helpers hiding (advancedWithOther)
 import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
@@ -26,7 +26,7 @@ instance HasAbilities NightAtTheMuseum where
 instance RunMessage NightAtTheMuseum where
   runMessage msg a@(NightAtTheMuseum attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ advancedWithOther attrs
+      advancedWithOther attrs
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

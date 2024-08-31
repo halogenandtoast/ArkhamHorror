@@ -3,16 +3,13 @@ module Arkham.Act.Cards.StrangeRelicsMariaDeSilva (
   strangeRelicsMariaDeSilva,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Name
@@ -39,31 +36,23 @@ instance HasAbilities StrangeRelicsMariaDeSilva where
     ]
 
 instance RunMessage StrangeRelicsMariaDeSilva where
-  runMessage msg a@(StrangeRelicsMariaDeSilva attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+  runMessage msg a@(StrangeRelicsMariaDeSilva attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
       maria <- selectJust $ assetIs Assets.mariaDeSilva
       mariasLocation <- selectJust $ LocationWithAsset $ AssetWithId maria
-      cardId <- field AssetCardId maria
-      let
-        mariaDeSilvaKnowsMoreThanSheLetsOn =
-          lookupCard
-            Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn
-            cardId
-
-      createMariaDeSilva <- createEnemyAt_ mariaDeSilvaKnowsMoreThanSheLetsOn mariasLocation Nothing
+      enemyMaria <- lookupCard Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn <$> field AssetCardId maria
+      createEnemyAt_ enemyMaria mariasLocation
       pushAll
-        [ createMariaDeSilva
-        , Flipped (toSource maria) mariaDeSilvaKnowsMoreThanSheLetsOn
+        [ Flipped (toSource maria) enemyMaria
         , NextAdvanceActStep aid 1
         , AdvanceToAct (actDeckId attrs) Acts.theBrotherhoodIsRevealed E (toSource attrs)
         ]
       pure a
-    NextAdvanceActStep aid 1 | traceShowId (aid == actId attrs) && traceShowId (onSide F $ traceShowId attrs) -> do
+    NextAdvanceActStep (isSide F attrs -> True) 1 -> do
       maria <- selectJust $ enemyIs Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn
-      pushAll
-        [Remember $ IchtacasPrey (Labeled (toName Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn) maria)]
+      remember $ IchtacasPrey (Labeled (toName Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn) maria)
       pure a
-    _ -> StrangeRelicsMariaDeSilva <$> runMessage msg attrs
+    _ -> StrangeRelicsMariaDeSilva <$> liftRunMessage msg attrs

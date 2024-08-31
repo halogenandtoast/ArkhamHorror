@@ -7,6 +7,9 @@ servers:
       - 159.89.182.110
 
 builder:
+  arch:
+    - arm64
+    - amd64
   cache:
     type: registry
 

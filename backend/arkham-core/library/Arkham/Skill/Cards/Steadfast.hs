@@ -1,17 +1,11 @@
-module Arkham.Skill.Cards.Steadfast (
-  steadfast,
-  Steadfast (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.Steadfast (steadfast, Steadfast (..)) where
 
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype Steadfast = Steadfast SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
@@ -23,18 +17,17 @@ steadfast = skill Steadfast Cards.steadfast
 instance HasModifiersFor Steadfast where
   getModifiersFor (CardIdTarget cid) (Steadfast attrs) | toCardId attrs == cid =
     do
-      remainingHealth <- field InvestigatorRemainingHealth (skillOwner attrs)
-      remainingSanity <- field InvestigatorRemainingSanity (skillOwner attrs)
+      remainingHealth <- field InvestigatorRemainingHealth attrs.owner
+      remainingSanity <- field InvestigatorRemainingSanity attrs.owner
       let total = remainingHealth + remainingSanity
-      pure
-        $ toModifiers
-          attrs
-          [ AddSkillIcons
-            $ if total >= 10
-              then [#willpower, #willpower, #combat, #combat]
-              else [#willpower, #combat]
-          | total >= 5
-          ]
+      modified
+        attrs
+        [ AddSkillIcons
+          $ if total >= 10
+            then [#willpower, #willpower, #combat, #combat]
+            else [#willpower, #combat]
+        | total >= 5
+        ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Steadfast where

@@ -104,6 +104,7 @@ instance HasField "enemy" Source (Maybe EnemyId) where
     ProxySource (CardIdSource _) s -> s.enemy
     ProxySource s _ -> s.enemy
     AbilitySource s _ -> s.enemy
+    EnemyAttackSource eid -> Just eid
     _ -> Nothing
 
 instance HasField "treachery" Source (Maybe TreacheryId) where

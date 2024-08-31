@@ -24,7 +24,9 @@ moveTheManInThePalidMaskToLobbyInsteadOfDiscarding = do
     \case
       Discarded (EnemyTarget eid) _ _ -> eid == theManInThePallidMask
       _ -> False
-    (const [EnemyMove theManInThePallidMask lobbyId])
+    ( const
+        [HealAllDamage (toTarget theManInThePallidMask) GameSource, EnemyMove theManInThePallidMask lobbyId]
+    )
 
 getTheManInThePallidMask :: HasGame m => m EnemyId
 getTheManInThePallidMask =

@@ -16,13 +16,9 @@ shedALight = event ShedALight Cards.shedALight
 instance RunMessage ShedALight where
   runMessage msg e@(ShedALight attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      getSkillTestTarget >>= traverse_ \case
-        LocationTarget lid -> do
-          otherLocations <-
-            select $ not_ (LocationWithId lid) <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
-          when (notNull otherLocations) $ chooseOneToHandle iid attrs otherLocations
-          doStep 1 msg
-        _ -> error "Wrong target type"
+      otherLocations <- select $ LocationWithDiscoverableCluesBy (be iid)
+      when (notNull otherLocations) $ chooseOneToHandle iid attrs otherLocations
+      doStep 1 msg
       pure e
     DoStep 1 (PlayThisEvent iid (is attrs -> True)) -> do
       withSkillTest \sid -> do
@@ -30,7 +26,6 @@ instance RunMessage ShedALight where
         push PassSkillTest
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do
-      withSkillTest \sid -> do
-        skillTestModifier sid attrs iid (DiscoveredCluesAt lid 1)
+      withSkillTest \sid -> skillTestModifier sid attrs iid (DiscoveredCluesAt lid 1)
       pure e
     _ -> ShedALight <$> liftRunMessage msg attrs

@@ -1164,7 +1164,7 @@ instance RunMessage ActiveCost where
       case c.target of
         ForAbility ability -> do
           let
-            isAction = isActionAbility ability
+            isAction = isActionAbility ability && ability.index > 0
             actions = Action.Activate : ability.actions
             iid = c.investigator
           whenActivateAbilityWindow <- checkWindows [mkWhen (Window.ActivateAbility iid c.windows ability)]

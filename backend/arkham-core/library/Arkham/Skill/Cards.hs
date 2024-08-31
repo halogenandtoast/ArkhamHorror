@@ -419,6 +419,7 @@ takeTheInitiative =
   (skill "04150" "Take the Initiative" [#wild, #wild, #wild] Guardian)
     { cdCardTraits = setFromList [Practiced, Bold]
     , cdCommitRestrictions = [OnlyYourTest]
+    , cdCardInHandEffects = True
     }
 
 trueUnderstanding :: CardDef

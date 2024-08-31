@@ -1,17 +1,11 @@
-module Arkham.Skill.Cards.TakeTheInitiative (
-  takeTheInitiative,
-  TakeTheInitiative (..),
-) where
+module Arkham.Skill.Cards.TakeTheInitiative (takeTheInitiative, TakeTheInitiative (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.History
 import Arkham.Matcher
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 import Arkham.SkillType
 
 newtype TakeTheInitiative = TakeTheInitiative SkillAttrs
@@ -24,13 +18,9 @@ takeTheInitiative = skill TakeTheInitiative Cards.takeTheInitiative
 instance HasModifiersFor TakeTheInitiative where
   getModifiersFor target (TakeTheInitiative a) | isTarget a target = do
     -- we want to include investigators that were eliminated
-    iids <- select Anyone
-    histories <- traverse (getHistory PhaseHistory) iids
+    histories <- traverse (getHistory PhaseHistory) =<< select Anyone
     let total = sum $ map historyActionsCompleted histories
-    pure
-      $ toModifiers
-        a
-        [RemoveSkillIcons $ replicate (min 3 total) WildIcon | total > 0]
+    modified a [RemoveSkillIcons $ replicate (min 3 total) WildIcon | total > 0]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TakeTheInitiative where

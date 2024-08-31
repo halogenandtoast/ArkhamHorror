@@ -1172,7 +1172,7 @@ instance RunMessage EnemyAttrs where
         <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
-      runMessage (EngageEnemy iid eid Nothing False)
+      runMessage (EngageEnemy iid eid Nothing False) a
     EngageEnemy iid eid mTarget False | eid == enemyId -> do
       let (before, _, after) = frame (Window.EnemyEngaged iid eid)
       case enemyPlacement of

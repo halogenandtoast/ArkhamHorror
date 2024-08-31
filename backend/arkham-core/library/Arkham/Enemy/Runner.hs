@@ -1172,23 +1172,25 @@ instance RunMessage EnemyAttrs where
         <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
-      case enemyPlacement of
-        AsSwarm eid' _ -> do
-          push $ EnemyEngageInvestigator eid' iid
-        _ -> do
-          lid <- getJustLocation iid
-          enemyLocation <- field EnemyLocation eid
-          when (Just lid /= enemyLocation) $ push $ EnemyEntered eid lid
-          massive <- eid <=~> MassiveEnemy
-          pushWhen (not massive) $ PlaceEnemy eid (InThreatArea iid)
-      pure a
+      runMessage (EngageEnemy iid eid Nothing False)
     EngageEnemy iid eid mTarget False | eid == enemyId -> do
+      let (before, _, after) = frame (Window.EnemyEngaged iid eid)
       case enemyPlacement of
         AsSwarm eid' _ -> do
-          push $ EngageEnemy iid eid' mTarget False
+          pushAll
+            [ before
+            , EngageEnemy iid eid' mTarget False
+            , after
+            ]
         _ -> do
           massive <- eid <=~> MassiveEnemy
-          pushWhen (not massive) $ PlaceEnemy eid (InThreatArea iid)
+          mlid <- getMaybeLocation iid
+          enemyLocation <- field EnemyLocation eid
+          when (not massive) do
+            pushAll
+              $ [before, PlaceEnemy eid (InThreatArea iid)]
+              <> [EnemyEntered eid lid | lid <- maybeToList mlid, Just lid /= enemyLocation]
+              <> [after]
       pure a
     WhenWillEnterLocation iid lid -> do
       case enemyPlacement of

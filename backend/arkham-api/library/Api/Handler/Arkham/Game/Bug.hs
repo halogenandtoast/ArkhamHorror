@@ -15,7 +15,7 @@ import UnliftIO.Exception (catch)
 uploadJsonToS3 :: ToJSON a => a -> Handler Text
 uploadJsonToS3 jsonData = do
   let jsonBody = encode jsonData
-  let filename = decodeUtf8 (B16.encode $ SHA256.hashlazy jsonBody)
+  let filename = decodeUtf8 (B16.encode $ SHA256.hashlazy jsonBody) <> ".json"
 
   -- Set S3 parameters
   let bucket = BucketName "arkham-horror-bugs"

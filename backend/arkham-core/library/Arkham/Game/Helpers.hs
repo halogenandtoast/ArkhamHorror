@@ -464,7 +464,12 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
       . sequence [(IgnoreLimit `elem`), (CanIgnoreLimit `elem`)]
       <$> getModifiers (AbilityTarget iid ability)
   if ignoreLimit && canIgnoreAbilityLimit == CanIgnoreAbilityLimit
-    then pure True
+    then do
+      case abilityType ability of
+        ReactionAbility {} ->
+          -- even if we are ignoring the limit we want to make sure that we've only used it once during this specific window
+          pure $ notElem ability (map usedAbility $ filter usedThisWindow usedAbilities)
+        _ -> pure True
     else case limit of
       NoLimit -> do
         let

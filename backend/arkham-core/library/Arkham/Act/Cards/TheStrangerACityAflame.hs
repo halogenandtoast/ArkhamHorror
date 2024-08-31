@@ -70,11 +70,11 @@ instance HasAbilities TheStrangerACityAflameEffect where
 
 instance RunMessage TheStrangerACityAflameEffect where
   runMessage msg e@(TheStrangerACityAflameEffect attrs) = case msg of
-    UseCardAbility iid p@(ProxySource _ source) 1 _ _ | isSource attrs source -> do
+    UseThisAbility iid p@(isProxySource attrs -> True) 1 -> do
       sid <- getRandom
       push $ beginSkillTest sid iid (AbilitySource p 1) attrs #agility (Fixed 3)
       pure e
-    FailedSkillTest _ _ source (Initiator (InvestigatorTarget iid)) _ _ | isProxyAbilitySource attrs 1 source -> do
-      push $ assignDamage iid source 1
+    FailedThisSkillTest iid (isProxyAbilitySource attrs 1 -> True) -> do
+      push $ assignDamage iid attrs.source 1
       pure e
     _ -> TheStrangerACityAflameEffect <$> runMessage msg attrs

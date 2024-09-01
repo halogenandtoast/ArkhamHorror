@@ -56,7 +56,7 @@ instance RunMessage Microscope where
             attrs
       pure a
     ResolveAmounts iid (getChoiceAmount "Evidence" -> n) (isTarget attrs -> True) -> do
-      push $ SpendUses (attrs.ability 2) (toTarget attrs) Evidence n
+      spendUses (attrs.ability 2) attrs Evidence n
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 2) iid (DiscoveredClues n)
       pure a
     _ -> Microscope <$> liftRunMessage msg attrs

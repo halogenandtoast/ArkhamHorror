@@ -42,7 +42,6 @@ instance RunMessage DeVermisMysteriis2 where
           costModifier attrs card $ ReduceCostOf (CardWithId card.id) 1
           eventModifier attrs card RemoveFromGameInsteadOfDiscard
           playCardPayingCostWithWindows iid card windows''
-          obtainCard card
-          push $ RemovedFromGame card
+          removeCardFromGame card
       pure a
     _ -> DeVermisMysteriis2 <$> liftRunMessage msg attrs

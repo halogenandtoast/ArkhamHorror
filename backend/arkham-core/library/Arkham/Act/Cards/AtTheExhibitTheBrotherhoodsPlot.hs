@@ -17,7 +17,10 @@ newtype AtTheExhibitTheBrotherhoodsPlot = AtTheExhibitTheBrotherhoodsPlot ActAtt
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 atTheExhibitTheBrotherhoodsPlot :: ActCard AtTheExhibitTheBrotherhoodsPlot
-atTheExhibitTheBrotherhoodsPlot = act (2, A) AtTheExhibitTheBrotherhoodsPlot Cards.atTheExhibitTheBrotherhoodsPlot Nothing
+atTheExhibitTheBrotherhoodsPlot =
+  act (2, A) AtTheExhibitTheBrotherhoodsPlot Cards.atTheExhibitTheBrotherhoodsPlot
+    $ Just
+    $ GroupClueCost (PerPlayer 2) "Eztli Exhibit"
 
 instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
   runMessage msg a@(AtTheExhibitTheBrotherhoodsPlot attrs) = case msg of

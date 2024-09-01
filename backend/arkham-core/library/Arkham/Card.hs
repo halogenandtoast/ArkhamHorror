@@ -243,6 +243,9 @@ data Card
   | VengeanceCard Card
   deriving stock (Show, Ord, Data)
 
+instance HasField "cardCode" Card CardCode where
+  getField = toCardCode
+
 instance HasField "keywords" Card (Set Keyword) where
   getField = cdKeywords . toCardDef
 

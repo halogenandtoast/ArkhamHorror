@@ -67,15 +67,15 @@ export default defineComponent({
         if (found) {
           const [, name, investigatorId ] = found
           if (investigatorId) {
-            return name ? h('span', { 'data-image-id': investigatorId }, name.replace(/\\"/g, "\"")) : split
+            return name ? h('span', { 'data-image-id': investigatorId, 'class': 'card--sideways' }, name.replace(/\\"/g, "\"")) : split
           }
         }
       } else if (/{enemy:"((?:[^"]|\\.)+)":(.+)}/.test(split)) {
-        const found = split.match(/{enemy:"((?:[^"]|\\.)+)":(.+)}/)
+        const found = split.match(/{enemy:"((?:[^"]|\\.)+)":(.+):"([^"]+)"}/)
         if (found) {
-          const [, name, enemyId ] = found
-          if (enemyId) {
-            return name ? h('span', { 'data-image-id': enemyId }, name.replace(/\\"/g, "\"")) : split
+          const [, name, , cardCode ] = found
+          if (cardCode) {
+            return name ? h('span', { 'data-image-id': cardCode }, name.replace(/\\"/g, "\"")) : split
           }
         }
       } else if (/{location:"((?:[^"]|\\.)+)":(.+)}/.test(split)) {

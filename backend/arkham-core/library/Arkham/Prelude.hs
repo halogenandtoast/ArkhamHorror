@@ -74,8 +74,11 @@ import Safe as X (fromJustNote)
 import System.Random.Shuffle as X
 
 import Control.Monad.Trans.Class
+import Data.Aeson.Key qualified as Key
 import Data.Foldable (Foldable (foldMap), foldlM)
 import Data.List.NonEmpty qualified as NE
+import Data.Proxy
+import GHC.TypeLits
 
 class Not a where
   not_ :: a -> a
@@ -217,8 +220,23 @@ deleteFirstMatch _ [] = []
 deleteFirstMatch f (a' : as) | f a' = as
 deleteFirstMatch f (b' : as) = b' : deleteFirstMatch f as
 
+data Envelope (sym :: Symbol) a = Envelope a
+  deriving stock (Eq, Show, Functor, Foldable, Traversable, Data, Generic)
+
+instance (ToJSON a, KnownSymbol sym) => ToJSON (Envelope sym a) where
+  toJSON (Envelope a) = object [Key.fromString (symbolVal (Proxy @sym)) .= a]
+
+instance (FromJSON a, KnownSymbol sym) => FromJSON (Envelope sym a) where
+  parseJSON = withObject "Envelope" $ \o -> Envelope <$> o .: Key.fromString (symbolVal (Proxy @sym))
+
+instance Ord a => Ord (Envelope sym a) where
+  compare (Envelope a1) (Envelope a2) = compare a1 a2
+
 data With a b = With a b
   deriving stock Data
+
+instance (Ord a, Ord b) => Ord (With a b) where
+  With a1 b1 `compare` With a2 b2 = (a1, b1) `compare` (a2, b2)
 
 instance (Eq a, Eq b) => Eq (With a b) where
   With a1 b1 == With a2 b2 = a1 == a2 && b1 == b2

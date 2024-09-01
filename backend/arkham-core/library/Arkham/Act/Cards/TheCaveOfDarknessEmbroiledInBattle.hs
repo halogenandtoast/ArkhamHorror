@@ -3,19 +3,15 @@ module Arkham.Act.Cards.TheCaveOfDarknessEmbroiledInBattle (
   theCaveOfDarknessEmbroiledInBattle,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Deck qualified as Deck
+import Arkham.Helpers.Query (getLead)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Name
-import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Trait
 
@@ -28,27 +24,19 @@ instance HasAbilities TheCaveOfDarknessEmbroiledInBattle where
     [ restrictedAbility
         attrs
         999
-        ( LocationExists
-            $ LocationWithTitle "Black Cave"
-            <> LocationWithoutClues
-        )
+        (exists $ "Black Cave" <> LocationWithoutClues)
         $ Objective
         $ FastAbility
-        $ GroupClueCost (PerPlayer 2)
-        $ LocationWithTitle "Black Cave"
+        $ GroupClueCost (PerPlayer 2) "Black Cave"
     ]
 
 theCaveOfDarknessEmbroiledInBattle
   :: ActCard TheCaveOfDarknessEmbroiledInBattle
 theCaveOfDarknessEmbroiledInBattle =
-  act
-    (2, E)
-    TheCaveOfDarknessEmbroiledInBattle
-    Cards.theCaveOfDarknessEmbroiledInBattle
-    Nothing
+  act (2, E) TheCaveOfDarknessEmbroiledInBattle Cards.theCaveOfDarknessEmbroiledInBattle Nothing
 
 instance RunMessage TheCaveOfDarknessEmbroiledInBattle where
-  runMessage msg a@(TheCaveOfDarknessEmbroiledInBattle attrs) = case msg of
+  runMessage msg a@(TheCaveOfDarknessEmbroiledInBattle attrs) = runQueueT $ case msg of
     AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
       deckCount <- getActDecksInPlayCount
       lead <- getLead
@@ -59,19 +47,11 @@ instance RunMessage TheCaveOfDarknessEmbroiledInBattle where
         <> [ DiscardUntilFirst lead (toSource attrs) Deck.EncounterDeck $ BasicCardMatch $ CardWithTrait Cultist
            | deckCount <= 2
            ]
-        <> [ AdvanceToAct
-              (actDeckId attrs)
-              Acts.theBrotherhoodIsRevealed
-              E
-              (toSource attrs)
-           ]
+        <> [AdvanceToAct (actDeckId attrs) Acts.theBrotherhoodIsRevealed E (toSource attrs)]
       pure a
-    RequestedEncounterCard source _ (Just ec) | isSource attrs source -> do
+    RequestedEncounterCard (isSource attrs -> True) _ (Just ec) -> do
       blackCave <- selectJust $ locationIs Locations.blackCave
-      (enemyId, enemyCreation) <- createEnemyAt (EncounterCard ec) blackCave Nothing
-      pushAll
-        [ enemyCreation
-        , Remember $ IchtacasPrey $ labeled ec enemyId
-        ]
+      enemyId <- createEnemyAt (EncounterCard ec) blackCave
+      rememberIchtacasPrey enemyId
       pure a
-    _ -> TheCaveOfDarknessEmbroiledInBattle <$> runMessage msg attrs
+    _ -> TheCaveOfDarknessEmbroiledInBattle <$> liftRunMessage msg attrs

@@ -178,6 +178,9 @@ instance HasField "keywords" CardDef (Set Keyword) where
 instance HasField "printedCost" CardDef Int where
   getField = maybe 0 toPrintedCost . cdCost
 
+instance HasField "cardCode" CardDef CardCode where
+  getField = cdCardCode
+
 instance HasField "customizations" CardDef (Map Customization Int) where
   getField = cdCustomizations
 

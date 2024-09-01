@@ -32,7 +32,7 @@ instance RunMessage UnderSurveillance1 where
   runMessage msg e@(UnderSurveillance1 attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       lid <- getJustLocation iid
-      push $ PlaceEvent iid eid (AttachedToLocation lid)
+      push $ PlaceEvent eid (AttachedToLocation lid)
       pure e
     UseCardAbility iid (isSource attrs -> True) 1 [windowType -> Window.EnemyEnters enemyId _] _ -> do
       case attrs.placement of

@@ -49,7 +49,7 @@ instance RunMessage FoolMeOnce1 where
       pushAll
         [ RemoveTreachery treachery
         , IgnoreBatch batchId
-        , PlaceEvent iid eid (InPlayArea iid)
+        , PlaceEvent eid (InPlayArea iid)
         , PlaceUnderneath (toTarget attrs) [card]
         ]
       pure e

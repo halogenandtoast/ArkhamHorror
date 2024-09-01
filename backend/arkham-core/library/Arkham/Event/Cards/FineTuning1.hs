@@ -33,8 +33,8 @@ instance RunMessage FineTuning1 where
         <> oneOf [#tool, #science]
         <> not_ (AssetWithAttachedEvent $ eventIs Cards.tinker)
       pure e
-    HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
-      push $ PlaceEvent iid attrs.id $ AttachedToAsset aid Nothing
+    HandleTargetChoice _iid (isSource attrs -> True) (AssetTarget aid) -> do
+      push $ PlaceEvent attrs.id $ AttachedToAsset aid Nothing
       pure e
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       case attrs.placement of

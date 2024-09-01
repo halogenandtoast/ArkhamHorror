@@ -19,7 +19,7 @@ instance RunMessage Elusive where
   runMessage msg e@(Elusive attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
       enemies <- select $ enemyEngagedWith iid
-      targets <-
+      ts <-
         getCanMoveToMatchingLocations
           iid
           attrs
@@ -28,8 +28,8 @@ instance RunMessage Elusive where
             then AccessibleFrom (locationWithInvestigator iid)
             else RevealedLocation
       for_ enemies $ disengageEnemy iid
-      when (notNull targets) do
-        chooseOrRunOne iid $ targetLabels targets (only . MoveTo . move attrs iid)
+      when (notNull ts) do
+        chooseOrRunOne iid $ targetLabels ts (only . MoveTo . move attrs iid)
       for_ enemies enemyCheckEngagement
       pure e
     _ -> Elusive <$> liftRunMessage msg attrs

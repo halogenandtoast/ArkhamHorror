@@ -2064,11 +2064,11 @@ runGameMessage msg g = case msg of
     mCost <- createActiveCostForAdditionalCardCosts iid card
     case mCost of
       Nothing -> do
-        push $ PlaceEvent iid eventId placement
+        push $ PlaceEvent eventId placement
         pure $ g & entitiesL . eventsL . at eventId ?~ event'
       Just cost -> do
         pushAll
-          [CreatedCost (activeCostId cost), PlaceEvent iid eventId placement]
+          [CreatedCost (activeCostId cost), PlaceEvent eventId placement]
         pure
           $ g
           & (entitiesL . eventsL . at eventId ?~ event')

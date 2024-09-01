@@ -12,9 +12,7 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding (AssetCard)
-import Arkham.Name
 import Arkham.Projection
-import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype StrangeRelicsMariaDeSilva = StrangeRelicsMariaDeSilva ActAttrs

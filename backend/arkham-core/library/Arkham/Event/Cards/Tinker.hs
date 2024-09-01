@@ -36,7 +36,7 @@ instance RunMessage Tinker where
         <> not_ (AssetWithAttachedEvent $ eventIs Cards.tinker)
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
-      push $ PlaceEvent iid attrs.id $ AttachedToAsset aid Nothing
+      push $ PlaceEvent attrs.id $ AttachedToAsset aid Nothing
       slots <- field AssetSlots aid
       case (#hand `elem` slots, #accessory `elem` slots) of
         (True, False) -> doStep 1 msg

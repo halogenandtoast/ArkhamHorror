@@ -8,7 +8,6 @@ import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 import Arkham.Window (defaultWindows)
 
 newtype Meta = Meta {chosenEnemy :: Maybe EnemyId}

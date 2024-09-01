@@ -28,7 +28,7 @@ instance RunMessage Premonition where
   runMessage msg e@(Premonition attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       pushAll
-        [ PlaceEvent iid eid (InPlayArea iid)
+        [ PlaceEvent eid (InPlayArea iid)
         , RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) RemoveChaosTokens
         ]
       pure e

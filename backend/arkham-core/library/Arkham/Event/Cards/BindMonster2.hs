@@ -60,10 +60,10 @@ bindMonster2Effect = cardEffect BindMonster2Effect Cards.bindMonster2
 
 instance RunMessage BindMonster2Effect where
   runMessage msg e@(BindMonster2Effect attrs) = runQueueT $ case msg of
-    PassedSkillTest iid (Just Action.Evade) _ (Initiator (EnemyTarget eid)) _ _ -> do
+    PassedSkillTest _iid (Just Action.Evade) _ (Initiator (EnemyTarget eid)) _ _ -> do
       case attrs.source of
         EventSource evid -> whenM (eid <=~> NonEliteEnemy) do
-          push $ PlaceEvent iid evid (AttachedToEnemy eid)
+          push $ PlaceEvent evid (AttachedToEnemy eid)
           disable attrs
         _ -> pure ()
       pure e

@@ -34,10 +34,10 @@ instance RunMessage Bolas where
       sid <- getRandom
       aspect iid attrs (#combat `InsteadOf` #agility) (mkChooseEvade sid iid attrs)
       pure e
-    PassedThisSkillTest iid (isSource attrs -> True) -> do
+    PassedThisSkillTest _iid (isSource attrs -> True) -> do
       getSkillTestTarget >>= traverse_ \case
         EnemyTarget eid -> do
-          whenM (eid <=~> NonEliteEnemy) $ push $ PlaceEvent iid attrs.id (AttachedToEnemy eid)
+          whenM (eid <=~> NonEliteEnemy) $ push $ PlaceEvent attrs.id (AttachedToEnemy eid)
         _ -> pure ()
       pure e
     UseThisAbility _iid (isSource attrs -> True) 1 -> do

@@ -3500,8 +3500,8 @@ illTakeThat =
     , cdFastWindow =
         Just
           $ oneOf
-            [ SkillTestResult #after You (WhileInvestigating Anywhere) #success
-            , SkillTestResult #after You (WhileEvadingAnEnemy $ EnemyWithTrait Humanoid) #success
+            [ SkillTestResult #when You (WhileInvestigating Anywhere) #success
+            , SkillTestResult #when You (WhileEvadingAnEnemy $ EnemyWithTrait Humanoid) #success
             ]
     , cdCriteria =
         Just

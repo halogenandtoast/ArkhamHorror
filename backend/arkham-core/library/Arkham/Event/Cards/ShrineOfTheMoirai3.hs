@@ -29,7 +29,7 @@ instance RunMessage ShrineOfTheMoirai3 where
   runMessage msg e@(ShrineOfTheMoirai3 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       location <- getJustLocation iid
-      push $ PlaceEvent iid eid $ AtLocation location
+      push $ PlaceEvent eid $ AtLocation location
       pure . ShrineOfTheMoirai3 $ attrs & tokensL . at Offering .~ Just 3
     UseThisAbility _iid (isProxySource attrs -> True) 1 -> do
       push $ DoStep 5 msg

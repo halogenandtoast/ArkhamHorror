@@ -19,7 +19,7 @@ import Arkham.Window qualified as Window
 import Data.Map.Strict qualified as Map
 
 newtype MakeshiftTrap = MakeshiftTrap EventAttrs
-  deriving anyclass (IsEvent)
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 makeshiftTrap :: EventCard MakeshiftTrap
@@ -72,8 +72,8 @@ instance RunMessage MakeshiftTrap where
             connected <- select $ ConnectedFrom (LocationWithId lid) <> RevealedLocation
             chooseOrRunOne
               iid
-              [targetLabel lid' [PlaceEvent iid attrs.id (AttachedToLocation lid')] | lid' <- lid : connected]
-          else push $ PlaceEvent iid attrs.id (AttachedToLocation lid)
+              [targetLabel lid' [PlaceEvent attrs.id (AttachedToLocation lid')] | lid' <- lid : connected]
+          else push $ PlaceEvent attrs.id (AttachedToLocation lid)
       pure e
     MoveTokens s source _ tType n | isSource attrs source -> runMessage (RemoveTokens s (toTarget attrs) tType n) e
     RemoveTokens _ target tType n | isTarget attrs target -> do

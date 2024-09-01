@@ -6,7 +6,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Window (Window (..))
@@ -37,7 +36,7 @@ instance RunMessage DelayTheInevitable where
       iids <- select $ affectsOthers $ colocatedWith iid
       chooseOrRunOne
         iid
-        [ targetLabel investigator [PlaceEvent iid eid $ InPlayArea investigator]
+        [ targetLabel investigator [PlaceEvent eid $ InPlayArea investigator]
         | investigator <- iids
         ]
       pure e

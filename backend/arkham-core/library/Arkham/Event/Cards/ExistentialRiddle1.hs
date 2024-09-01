@@ -38,7 +38,7 @@ instance RunMessage ExistentialRiddle1 where
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       getSkillTestTarget >>= traverse_ \case
-        EnemyTarget eid -> pushAll [EnemyEvaded iid eid, PlaceEvent iid attrs.id $ AttachedToEnemy eid]
+        EnemyTarget eid -> pushAll [EnemyEvaded iid eid, PlaceEvent attrs.id $ AttachedToEnemy eid]
         _ -> pure ()
       pure e
     _ -> ExistentialRiddle1 <$> liftRunMessage msg attrs

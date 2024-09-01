@@ -47,8 +47,8 @@ instance RunMessage Beguile where
     PlayThisEvent iid (is attrs -> True) -> do
       selectOneToHandle iid attrs $ NonEliteEnemy <> enemyAtLocationWith iid
       pure e
-    HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
-      push $ PlaceEvent iid attrs.id $ AttachedToEnemy eid
+    HandleTargetChoice _iid (isSource attrs -> True) (EnemyTarget eid) -> do
+      push $ PlaceEvent attrs.id $ AttachedToEnemy eid
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       case attrs.placement.attachedTo of

@@ -34,6 +34,6 @@ instance RunMessage FendOff3 where
     DoStep 1 (PlayThisEvent iid (is attrs -> True)) -> do
       let enemy = spawnedEnemy attrs.windows
       push $ EnemyEvaded iid enemy
-      push $ PlaceEvent iid attrs.id (AttachedToEnemy enemy)
+      push $ PlaceEvent attrs.id (AttachedToEnemy enemy)
       pure e
     _ -> FendOff3 <$> liftRunMessage msg attrs

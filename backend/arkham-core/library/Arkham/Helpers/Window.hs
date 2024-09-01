@@ -270,6 +270,7 @@ getPassedBy :: [Window] -> Int
 getPassedBy = \case
   [] -> 0
   ((windowType -> Window.PassInvestigationSkillTest _ _ n) : _) -> n
+  ((windowType -> Window.SuccessfulEvadeEnemy _ _ n) : _) -> n
   (_ : rest) -> getPassedBy rest
 
 getDamageSource :: HasCallStack => [Window] -> Source

@@ -51,6 +51,7 @@ import Arkham.Investigate qualified as Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message hiding (story)
+import Arkham.Message.Lifted.Queue as X
 import Arkham.Modifier
 import Arkham.Movement
 import Arkham.Phase (Phase)
@@ -66,9 +67,6 @@ import Arkham.Token
 import Arkham.Window (Window, WindowType, defaultWindows)
 import Arkham.Window qualified as Window
 import Control.Monad.Trans.Class
-
-class (CardGen m, HasGame m, HasQueue Message m) => ReverseQueue m
-instance (CardGen m, MonadIO m, HasGame m) => ReverseQueue (QueueT Message m)
 
 setChaosTokens :: ReverseQueue m => [ChaosTokenFace] -> m ()
 setChaosTokens = push . SetChaosTokens
@@ -1430,3 +1428,7 @@ initiateEnemyAttack
   -> target
   -> m ()
 initiateEnemyAttack enemy source target = push $ InitiateEnemyAttack $ enemyAttack enemy source target
+
+handleTarget
+  :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
+handleTarget iid source target = push $ Msg.handleTargetChoice iid source target

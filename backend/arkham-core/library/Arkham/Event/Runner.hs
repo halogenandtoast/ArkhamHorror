@@ -64,17 +64,17 @@ runEventMessage msg a@EventAttrs {..} = case msg of
   SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
   AttachEvent eid target | eid == eventId -> do
     case target of
-      LocationTarget lid -> push $ PlaceEvent eventOwner eid (AttachedToLocation lid)
-      EnemyTarget enid -> push $ PlaceEvent eventOwner eid (AttachedToEnemy enid)
+      LocationTarget lid -> push $ PlaceEvent eid (AttachedToLocation lid)
+      EnemyTarget enid -> push $ PlaceEvent eid (AttachedToEnemy enid)
       CardIdTarget cid -> do
         card <- getCard cid
         case card.kind of
           EnemyType -> do
             enemy <- selectJust $ EnemyWithCardId cid
-            push $ PlaceEvent eventOwner eid (AttachedToEnemy enemy)
+            push $ PlaceEvent eid (AttachedToEnemy enemy)
           PlayerEnemyType -> do
             enemy <- selectJust $ EnemyWithCardId cid
-            push $ PlaceEvent eventOwner eid (AttachedToEnemy enemy)
+            push $ PlaceEvent eid (AttachedToEnemy enemy)
           _ -> error "Cannot attach event to that type"
       _ -> error "Cannot attach event to that type"
     pure a
@@ -133,15 +133,15 @@ runEventMessage msg a@EventAttrs {..} = case msg of
   ReturnChaosTokens tokens -> pure $ a & sealedChaosTokensL %~ filter (`notElem` tokens)
   UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
   RemoveAllChaosTokens face -> pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
-  PlaceEvent iid eid placement | eid == eventId -> do
+  PlaceEvent eid placement | eid == eventId -> do
     let
       controller =
         case placement of
           AttachedToInvestigator iid' -> iid'
           InPlayArea iid' -> iid'
-          _ -> iid
+          _ -> a.controller
     for_ placement.attachedTo \target ->
-      pushM $ checkAfter $ Window.AttachCard (Just iid) (toCard a) target
+      pushM $ checkAfter $ Window.AttachCard (Just a.controller) (toCard a) target
     case placement of
       InThreatArea iid' -> do
         pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid' (toCard a)]

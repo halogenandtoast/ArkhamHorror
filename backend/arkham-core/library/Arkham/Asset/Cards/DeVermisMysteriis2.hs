@@ -41,8 +41,8 @@ instance RunMessage DeVermisMysteriis2 where
         targets cards \card -> do
           costModifier attrs card $ ReduceCostOf (CardWithId card.id) 1
           eventModifier attrs card RemoveFromGameInsteadOfDiscard
-          push $ AddToHand iid [card]
-          push $ PayCardCost iid card windows''
-          push $ ObtainCard card
+          playCardPayingCostWithWindows iid card windows''
+          obtainCard card
+          push $ RemovedFromGame card
       pure a
     _ -> DeVermisMysteriis2 <$> liftRunMessage msg attrs

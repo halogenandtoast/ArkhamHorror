@@ -1321,6 +1321,14 @@ playCardPayingCost iid card = do
 payCardCost :: ReverseQueue m => InvestigatorId -> Card -> m ()
 payCardCost iid card = push $ Msg.PayCardCost iid card (defaultWindows iid)
 
+playCardPayingCostWithWindows :: ReverseQueue m => InvestigatorId -> Card -> [Window] -> m ()
+playCardPayingCostWithWindows iid card ws = do
+  addToHand iid [card]
+  payCardCostWithWindows iid card ws
+
+payCardCostWithWindows :: ReverseQueue m => InvestigatorId -> Card -> [Window] -> m ()
+payCardCostWithWindows iid card ws = push $ Msg.PayCardCost iid card ws
+
 removeFromGame :: (ReverseQueue m, Targetable target) => target -> m ()
 removeFromGame = push . Msg.RemoveFromGame . toTarget
 

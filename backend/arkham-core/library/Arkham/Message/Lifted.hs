@@ -7,6 +7,7 @@ import Arkham.Agenda.Types (AgendaAttrs (agendaDeckId))
 import Arkham.Aspect (IsAspect (..))
 import Arkham.Aspect qualified as Msg
 import Arkham.Asset.Types (AssetAttrs)
+import Arkham.Asset.Uses (UseType)
 import Arkham.Attack
 import Arkham.Calculation
 import Arkham.CampaignLogKey
@@ -1432,3 +1433,6 @@ initiateEnemyAttack enemy source target = push $ InitiateEnemyAttack $ enemyAtta
 handleTarget
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 handleTarget iid source target = push $ Msg.handleTargetChoice iid source target
+
+spendUses :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> UseType -> Int -> m ()
+spendUses source target tType n = push $ SpendUses (toSource source) (toTarget target) tType n

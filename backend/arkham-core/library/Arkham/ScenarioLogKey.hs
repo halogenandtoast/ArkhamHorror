@@ -4,6 +4,7 @@ module Arkham.ScenarioLogKey where
 
 import Arkham.Prelude hiding (toLower)
 
+import Arkham.Card.CardCode
 import Arkham.Classes.GameLogger
 import Arkham.Id
 import Arkham.Name
@@ -47,7 +48,7 @@ data ScenarioLogKey
     YouFoughtWithIchtaca
   | YouListenedToIchtacasTale
   | IchtacaLeftWithoutYou
-  | IchtacasPrey (Labeled EnemyId)
+  | IchtacasPrey (Labeled EnemyId `With` Envelope "cardCode" CardCode)
   | -- | Threads of Fate
     IchtacasDestination (Labeled LocationId)
   | FoundTheProcess
@@ -97,7 +98,8 @@ instance ToGameLoggerFormat ScenarioLogKey where
         <> "} owes Bianca "
         <> tshow n
         <> " resources"
-    IchtacasPrey (Labeled name eid) -> "{enemy:\"" <> display name <> "\":" <> tshow eid <> "} is Ichtaca's Prey"
+    IchtacasPrey (Labeled name eid `With` Envelope cardCode) ->
+      "{enemy:\"" <> display name <> "\":" <> tshow eid <> ":" <> tshow cardCode <> "} is Ichtaca's Prey"
     IchtacasDestination (Labeled name lid) -> "{location:\"" <> display name <> "\":" <> tshow lid <> "} is Ichtaca's Destination"
     HadADrink (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} had a drink"
     MeddledWithThePast (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} meddled with the past"

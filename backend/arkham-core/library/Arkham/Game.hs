@@ -2863,7 +2863,7 @@ enemyMatcherFilter = \case
   IsIchtacasPrey -> \enemy -> do
     allKeys <- toList <$> scenarioField ScenarioRemembered
     pure $ flip any allKeys $ \case
-      IchtacasPrey (Labeled _ eid) -> eid == toId enemy
+      IchtacasPrey (Labeled _ eid `With` _) -> eid == toId enemy
       _ -> False
   MovingEnemy -> \enemy -> do
     (== Just (toId enemy)) . view enemyMovingL <$> getGame

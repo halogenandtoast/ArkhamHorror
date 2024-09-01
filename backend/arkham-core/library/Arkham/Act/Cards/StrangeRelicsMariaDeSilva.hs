@@ -15,6 +15,7 @@ import Arkham.Matcher hiding (AssetCard)
 import Arkham.Name
 import Arkham.Projection
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype StrangeRelicsMariaDeSilva = StrangeRelicsMariaDeSilva ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -52,7 +53,6 @@ instance RunMessage StrangeRelicsMariaDeSilva where
         ]
       pure a
     NextAdvanceActStep (isSide F attrs -> True) 1 -> do
-      maria <- selectJust $ enemyIs Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn
-      remember $ IchtacasPrey (Labeled (toName Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn) maria)
+      rememberIchtacasPrey =<< selectJust (enemyIs Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn)
       pure a
     _ -> StrangeRelicsMariaDeSilva <$> liftRunMessage msg attrs

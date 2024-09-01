@@ -1313,6 +1313,11 @@ cancelEndTurn iid = lift $ Msg.removeAllMessagesMatching \case
 obtainCard :: (IsCard a, ReverseQueue m) => a -> m ()
 obtainCard = push . ObtainCard . toCard
 
+removeCardFromGame :: (ReverseQueue m, IsCard card) => card -> m ()
+removeCardFromGame card = do
+  obtainCard card
+  push $ RemovedFromGame (toCard card)
+
 playCardPayingCost :: ReverseQueue m => InvestigatorId -> Card -> m ()
 playCardPayingCost iid card = do
   addToHand iid [card]

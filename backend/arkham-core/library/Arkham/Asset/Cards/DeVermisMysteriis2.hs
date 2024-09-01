@@ -3,14 +3,12 @@ module Arkham.Asset.Cards.DeVermisMysteriis2 (
   DeVermisMysteriis2 (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Card
+import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
-import Arkham.Trait (Trait (Insight, Spell))
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Window (mkWhen)
 import Arkham.Window qualified as Window
 
@@ -31,26 +29,20 @@ cardMatcher :: InvestigatorMatcher -> ExtendedCardMatcher
 cardMatcher who =
   PlayableCardWithCostReduction NoAction 1
     $ InDiscardOf who
-    <> BasicCardMatch (#event <> CardWithOneOf [CardWithTrait Spell, CardWithTrait Insight])
+    <> basic (#event <> oneOf [#spell, #insight])
 
 instance RunMessage DeVermisMysteriis2 where
-  runMessage msg a@(DeVermisMysteriis2 attrs) = case msg of
+  runMessage msg a@(DeVermisMysteriis2 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' _ -> do
       let windows'' = nub $ windows' <> [mkWhen (Window.DuringTurn iid), mkWhen Window.FastPlayerWindow]
       cards <- select $ cardMatcher (InvestigatorWithId iid)
 
-      player <- getPlayer iid
-      push
-        $ chooseOne player
-        $ [ targetLabel
-            (toCardId card)
-            [ costModifier attrs (toCardId card) (ReduceCostOf (CardWithId $ toCardId card) 1)
-            , eventModifier attrs (toCardId card) RemoveFromGameInsteadOfDiscard
-            , AddToHand iid [card]
-            , PayCardCost iid card windows''
-            , RemoveFromGame (CardIdTarget $ toCardId card)
-            ]
-          | card <- cards
-          ]
+      chooseOneM iid do
+        targets cards \card -> do
+          costModifier attrs card $ ReduceCostOf (CardWithId card.id) 1
+          eventModifier attrs card RemoveFromGameInsteadOfDiscard
+          push $ AddToHand iid [card]
+          push $ PayCardCost iid card windows''
+          push $ ObtainCard card
       pure a
-    _ -> DeVermisMysteriis2 <$> runMessage msg attrs
+    _ -> DeVermisMysteriis2 <$> liftRunMessage msg attrs

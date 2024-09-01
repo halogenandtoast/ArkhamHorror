@@ -17,7 +17,7 @@ import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
 newtype Lure1 = Lure1 EventAttrs
-  deriving anyclass (IsEvent)
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lure1 :: EventCard Lure1
@@ -40,7 +40,7 @@ instance RunMessage Lure1 where
   runMessage msg e@(Lure1 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- fieldJust InvestigatorLocation iid
-      push $ PlaceEvent iid eid $ AttachedToLocation lid
+      push $ PlaceEvent eid $ AttachedToLocation lid
       pure e
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ toDiscardBy iid (toAbilitySource attrs 1) attrs

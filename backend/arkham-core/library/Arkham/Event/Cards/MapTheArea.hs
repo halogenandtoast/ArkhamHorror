@@ -36,8 +36,8 @@ instance RunMessage MapTheArea where
         labeled "Add your {agility}" $ skillTestModifier sid attrs iid (AddSkillValue #agility)
       pushM $ setTarget attrs <$> mkInvestigate sid iid attrs
       pure e
-    Successful (Action.Investigate, LocationTarget lid) iid _ (isTarget attrs -> True) _ -> do
+    Successful (Action.Investigate, LocationTarget lid) _iid _ (isTarget attrs -> True) _ -> do
       whenM (selectNone $ EventAt $ LocationWithId lid) do
-        push $ PlaceEvent iid attrs.id (AttachedToLocation lid)
+        push $ PlaceEvent attrs.id (AttachedToLocation lid)
       pure e
     _ -> MapTheArea <$> liftRunMessage msg attrs

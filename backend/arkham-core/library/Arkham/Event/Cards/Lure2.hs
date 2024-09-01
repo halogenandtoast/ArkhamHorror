@@ -15,7 +15,7 @@ import Arkham.Placement
 import Arkham.Timing qualified as Timing
 
 newtype Lure2 = Lure2 EventAttrs
-  deriving anyclass (IsEvent)
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lure2 :: EventCard Lure2
@@ -40,7 +40,7 @@ instance RunMessage Lure2 where
       lids <- select $ LocationMatchAny [locationWithInvestigator iid, ConnectedLocation]
       player <- getPlayer iid
       push
-        $ chooseOne player [targetLabel lid [PlaceEvent iid eid $ AttachedToLocation lid] | lid <- lids]
+        $ chooseOne player [targetLabel lid [PlaceEvent eid $ AttachedToLocation lid] | lid <- lids]
       pure e
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       push $ toDiscardBy iid (toAbilitySource attrs 1) attrs

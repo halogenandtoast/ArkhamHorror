@@ -30,7 +30,7 @@ instance RunMessage JuryRig where
   runMessage msg e@(JuryRig attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       assets <- select $ #item <> AssetControlledBy (affectsOthers $ colocatedWith iid)
-      chooseOne iid [targetLabel a [PlaceEvent iid eid $ AttachedToAsset a Nothing] | a <- assets]
+      chooseOne iid [targetLabel a [PlaceEvent eid $ AttachedToAsset a Nothing] | a <- assets]
       pure . JuryRig $ attrs & tokensL . at Durability .~ Just 3
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->

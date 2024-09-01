@@ -51,8 +51,8 @@ instance RunMessage GraysAnatomyTheDoctorsBible5 where
     DoStep n msg'@(PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) _) | n > 0 -> do
       let cardCode = toCardCode attrs
       let
-        handleTarget :: forall m a. (Targetable a, ReverseQueue m) => a -> m ()
-        handleTarget tid = do
+        handleIt :: forall m a. (Targetable a, ReverseQueue m) => a -> m ()
+        handleIt tid = do
           healX <-
             selectCount $ EffectWithTarget (toTarget tid) <> EffectWithCardCode cardCode <> EffectWithMetaInt 1
           damageX <-
@@ -74,9 +74,9 @@ instance RunMessage GraysAnatomyTheDoctorsBible5 where
                 <> [DoStep (n - 1) msg']
             ]
       withSkillTestTarget \case
-        AssetTarget aid -> handleTarget aid
-        EnemyTarget eid -> handleTarget eid
-        InvestigatorTarget iid' -> handleTarget iid'
+        AssetTarget aid -> handleIt aid
+        EnemyTarget eid -> handleIt eid
+        InvestigatorTarget iid' -> handleIt iid'
         _ -> error "Unhandled"
       pure a
     _ -> GraysAnatomyTheDoctorsBible5 <$> liftRunMessage msg attrs

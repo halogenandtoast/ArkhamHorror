@@ -20,8 +20,8 @@ motivationalSpeech = event MotivationalSpeech Cards.motivationalSpeech
 instance RunMessage MotivationalSpeech where
   runMessage msg e@(MotivationalSpeech attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      targets <- select $ affectsOthers $ colocatedWith iid
-      chooseOrRunOne iid $ targetLabels targets $ only . handleTargetChoice iid attrs
+      ts <- select $ affectsOthers $ colocatedWith iid
+      chooseOrRunOne iid $ targetLabels ts $ only . handleTargetChoice iid attrs
       pure e
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) -> do
       allies <-

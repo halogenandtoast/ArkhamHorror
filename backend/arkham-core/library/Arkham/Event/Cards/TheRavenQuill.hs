@@ -19,7 +19,7 @@ import Arkham.Strategy
 import Arkham.Window (defaultWindows)
 
 newtype TheRavenQuill = TheRavenQuill EventAttrs
-  deriving anyclass (IsEvent)
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theRavenQuill :: EventCard TheRavenQuill
@@ -76,7 +76,7 @@ instance RunMessage TheRavenQuill where
           $ when (notNull assets)
           $ chooseOne
             iid
-            [ targetLabel asset [PlaceEvent iid attrs.id (AttachedToAsset asset Nothing), RefillSlots iid]
+            [ targetLabel asset [PlaceEvent attrs.id (AttachedToAsset asset Nothing), RefillSlots iid]
             | asset <- assets
             ]
 
@@ -110,9 +110,9 @@ instance RunMessage TheRavenQuill where
       for_ xs \x -> cardResolutionModifiers attrs attrs x $ DoNotTakeUpSlot <$> [minBound ..]
       chooseOne iid $ targetLabels xs \x -> [Msg.addToHand iid x, PayCardCost iid x ws, handleTargetChoice iid attrs x]
       pure e
-    HandleTargetChoice iid (isSource attrs -> True) (CardIdTarget cid) -> do
+    HandleTargetChoice _iid (isSource attrs -> True) (CardIdTarget cid) -> do
       selectOne (AssetWithCardId cid)
-        >>= traverse_ (push . PlaceEvent iid attrs.id . (`AttachedToAsset` Nothing))
+        >>= traverse_ (push . PlaceEvent attrs.id . (`AttachedToAsset` Nothing))
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       -- [DECKBUILDING]

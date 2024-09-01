@@ -36,7 +36,7 @@ instance RunMessage Shortcut2 where
   runMessage msg e@(Shortcut2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       lid <- selectJust $ locationWithInvestigator iid
-      push $ PlaceEvent iid eid (AttachedToLocation lid)
+      push $ PlaceEvent eid (AttachedToLocation lid)
       pure e
     UseThisAbility iid (ProxySource _ (isSource attrs -> True)) 1 -> do
       connectingLocations <- getAccessibleLocations iid attrs

@@ -51,7 +51,7 @@ instance RunMessage CustomAmmunition3 where
           player
           [ targetLabel
             asset
-            [ PlaceEvent iid eid (AttachedToAsset asset Nothing)
+            [ PlaceEvent eid (AttachedToAsset asset Nothing)
             , AddUses (toSource attrs) asset Ammo 2
             ]
           | asset <- assets

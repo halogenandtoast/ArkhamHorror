@@ -40,6 +40,8 @@ import Arkham.Message as X (
   pattern UseThisAbility,
  )
 import Arkham.Message.Lifted as X
+import Arkham.Message.Lifted.Choose as X
+import Arkham.Message.Lifted.Placement as X
 import Arkham.Prelude as X
 import Arkham.Question as X
 import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))

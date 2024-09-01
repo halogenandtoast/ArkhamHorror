@@ -86,7 +86,7 @@ instance RunMessage TelescopicSight3 where
       push
         $ chooseOne
           player
-          [ targetLabel asset [PlaceEvent iid eid $ AttachedToAsset asset Nothing]
+          [ targetLabel asset [PlaceEvent eid $ AttachedToAsset asset Nothing]
           | asset <- assets
           ]
       pure e

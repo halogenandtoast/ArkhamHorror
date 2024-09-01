@@ -7,7 +7,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers (getIsPlayable)
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 import Arkham.Window (defaultWindows)
 
 newtype Salvage2 = Salvage2 EventAttrs

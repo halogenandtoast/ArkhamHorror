@@ -35,9 +35,9 @@ instance HasModifiersFor FriendsInLowPlaces where
 instance RunMessage FriendsInLowPlaces where
   runMessage msg e@(FriendsInLowPlaces (With attrs meta)) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      targets <- select $ affectsOthers $ colocatedWith iid
-      if notNull targets && attrs `hasCustomization` Helpful
-        then chooseOrRunOne iid $ targetLabels targets $ only . handleTargetChoice iid attrs
+      ts <- select $ affectsOthers $ colocatedWith iid
+      if notNull ts && attrs `hasCustomization` Helpful
+        then chooseOrRunOne iid $ targetLabels ts $ only . handleTargetChoice iid attrs
         else push $ HandleTargetChoice iid (toSource attrs) (toTarget iid)
       pure e
     HandleTargetChoice _iid (isSource attrs -> True) (InvestigatorTarget iid') -> do

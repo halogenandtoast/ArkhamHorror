@@ -31,7 +31,7 @@ instance HasAbilities CursedLuck where
   getAbilities (CursedLuck x) =
     [ restrictedAbility x 1 (InThreatAreaOf You)
         $ forced
-        $ SkillTestResult #when You AnySkillTest (SuccessResult $ atLeast 1)
+        $ SkillTestResult #after You AnySkillTest (SuccessResult $ atLeast 1)
     ]
 
 instance RunMessage CursedLuck where

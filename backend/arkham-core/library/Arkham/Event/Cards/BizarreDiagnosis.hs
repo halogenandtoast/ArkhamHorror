@@ -3,7 +3,6 @@ module Arkham.Event.Cards.BizarreDiagnosis (bizarreDiagnosis, BizarreDiagnosis (
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 
 newtype BizarreDiagnosis = BizarreDiagnosis EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

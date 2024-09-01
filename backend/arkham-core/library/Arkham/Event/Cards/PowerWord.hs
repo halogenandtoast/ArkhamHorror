@@ -208,7 +208,7 @@ instance RunMessage PowerWord where
       enemies <- select $ enemyAtLocationWith iid <> NonEliteEnemy
       chooseOne
         iid
-        [targetLabel enemy [PlaceEvent iid attrs.id $ AttachedToEnemy enemy] | enemy <- enemies]
+        [targetLabel enemy [PlaceEvent attrs.id $ AttachedToEnemy enemy] | enemy <- enemies]
       meta' <- determineMeta attrs
       pure . PowerWord $ attrs & metaL .~ meta'
     UseThisAbility iid (isSource attrs -> True) 1 -> do

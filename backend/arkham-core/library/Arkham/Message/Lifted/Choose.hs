@@ -107,5 +107,13 @@ targets
   :: (ReverseQueue m, Targetable target) => [target] -> (target -> QueueT Message m ()) -> ChooseT m ()
 targets ts action = unterminated $ for_ ts \t -> targeting t (action t)
 
+chooseTargetM
+  :: (ReverseQueue m, Targetable target)
+  => InvestigatorId
+  -> [target]
+  -> (target -> QueueT Message m ())
+  -> m ()
+chooseTargetM iid ts action = chooseOneM iid $ unterminated $ for_ ts \t -> targeting t (action t)
+
 nothing :: Monad m => QueueT Message m ()
 nothing = pure ()

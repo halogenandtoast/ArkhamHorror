@@ -15,7 +15,7 @@ import Arkham.Matcher
 import Arkham.Placement
 
 newtype HidingSpot = HidingSpot EventAttrs
-  deriving anyclass (IsEvent)
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hidingSpot :: EventCard HidingSpot
@@ -42,7 +42,7 @@ instance RunMessage HidingSpot where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       locations <- select Anywhere
       player <- getPlayer iid
-      push $ chooseOne player $ targetLabels locations (only . PlaceEvent iid eid . AttachedToLocation)
+      push $ chooseOne player $ targetLabels locations (only . PlaceEvent eid . AttachedToLocation)
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ toDiscardBy iid (toAbilitySource attrs 1) attrs

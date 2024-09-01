@@ -109,7 +109,7 @@ instance RunMessage CustomModifications where
           <> not_ (AssetWithAttachedEvent $ eventIs Cards.customModifications)
       chooseOne
         iid
-        [ targetLabel asset [PlaceEvent iid attrs.id (AttachedToAsset asset Nothing)]
+        [ targetLabel asset [PlaceEvent attrs.id (AttachedToAsset asset Nothing)]
         | asset <- assets
         ]
       pure e

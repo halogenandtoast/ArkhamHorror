@@ -29,9 +29,9 @@ instance HasAbilities GrievousWound where
 
 instance RunMessage GrievousWound where
   runMessage msg e@(GrievousWound attrs) = runQueueT $ case msg of
-    PlayThisEvent iid (is attrs -> True) -> do
+    PlayThisEvent _iid (is attrs -> True) -> do
       let enemy = attackedEnemy attrs.windows
-      push $ PlaceEvent iid attrs.id (AttachedToEnemy enemy)
+      push $ PlaceEvent attrs.id (AttachedToEnemy enemy)
       pure e
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       for_ attrs.attachedTo \case

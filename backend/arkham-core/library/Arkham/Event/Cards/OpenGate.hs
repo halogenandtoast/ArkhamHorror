@@ -34,6 +34,6 @@ instance RunMessage OpenGate where
   runMessage msg e@(OpenGate attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       lid <- getJustLocation iid
-      push $ PlaceEvent iid eid (AttachedToLocation lid)
+      push $ PlaceEvent eid (AttachedToLocation lid)
       pure e
     _ -> OpenGate <$> runMessage msg attrs

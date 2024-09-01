@@ -531,7 +531,7 @@ data Message
   | CreateAssetAt AssetId Card Placement
   | CreateEventAt InvestigatorId Card Placement
   | PlaceAsset AssetId Placement
-  | PlaceEvent InvestigatorId EventId Placement
+  | PlaceEvent EventId Placement
   | PlaceTreachery TreacheryId Placement
   | PlaceSkill SkillId Placement
   | PlaceKey Target ArkhamKey

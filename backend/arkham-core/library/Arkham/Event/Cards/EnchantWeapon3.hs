@@ -47,7 +47,7 @@ instance RunMessage EnchantWeapon3 where
       push
         $ chooseOne
           player
-          [ targetLabel asset [PlaceEvent iid eid $ AttachedToAsset asset Nothing, RefillSlots owner]
+          [ targetLabel asset [PlaceEvent eid $ AttachedToAsset asset Nothing, RefillSlots owner]
           | (asset, Just owner) <- assets
           ]
 

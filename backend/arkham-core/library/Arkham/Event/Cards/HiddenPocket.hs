@@ -21,7 +21,7 @@ instance RunMessage HiddenPocket where
         $ chooseOneToHandle iid attrs
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
-      push $ PlaceEvent iid attrs.id (AttachedToAsset aid Nothing)
+      push $ PlaceEvent attrs.id (AttachedToAsset aid Nothing)
       let addSlot sType =
             AddSlot iid sType
               $ AdjustableSlot (bothSource aid attrs) (Just $ CardWithTrait Illicit) [#hand, #accessory] []

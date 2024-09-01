@@ -30,7 +30,7 @@ instance RunMessage Ambush1 where
   runMessage msg e@(Ambush1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       lid <- fieldJust InvestigatorLocation iid
-      push $ PlaceEvent iid eid (AttachedToLocation lid)
+      push $ PlaceEvent eid (AttachedToLocation lid)
       pure e
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       toDiscardBy attrs.owner (attrs.ability 1) attrs

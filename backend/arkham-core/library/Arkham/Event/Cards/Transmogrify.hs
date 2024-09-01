@@ -45,11 +45,11 @@ instance RunMessage Transmogrify where
       sid <- getRandom
       chooseEvadeEnemyWithSkillChoice sid iid attrs [#intellect, #agility]
       pure e
-    PassedThisSkillTest iid (isSource attrs -> True) -> do
+    PassedThisSkillTest _iid (isSource attrs -> True) -> do
       getSkillTestTarget >>= \case
         Just (EnemyTarget eid) -> do
           whenM (eid <=~> NonEliteEnemy) do
-            push $ PlaceEvent iid attrs.id $ AttachedToEnemy eid
+            push $ PlaceEvent attrs.id $ AttachedToEnemy eid
         _ -> pure ()
       pure e
     UseThisAbility iid (isProxySource attrs -> True) 1 -> do

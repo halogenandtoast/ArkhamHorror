@@ -27,7 +27,7 @@ instance RunMessage BreachTheDoor where
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n -> do
       withLocationOf iid \lid -> do
-        push $ PlaceEvent iid attrs.id (AttachedToLocation lid)
+        push $ PlaceEvent attrs.id (AttachedToLocation lid)
         placeTokens attrs attrs Lead n
       pure e
     _ -> BreachTheDoor <$> liftRunMessage msg attrs

@@ -38,8 +38,8 @@ instance RunMessage AdHoc where
     PlayThisEvent iid (is attrs -> True) -> do
       selectOneToHandle iid attrs $ assetControlledBy iid <> oneOf [#tool, #weapon]
       pure e
-    HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
-      push $ PlaceEvent iid attrs.id (AttachedToAsset aid Nothing)
+    HandleTargetChoice _iid (isSource attrs -> True) (AssetTarget aid) -> do
+      push $ PlaceEvent attrs.id (AttachedToAsset aid Nothing)
       pure e
     UseCardAbility _iid (isSource attrs -> True) 1 _ (discardedCards -> [card]) -> do
       push $ AddCardEntity card

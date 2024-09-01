@@ -10,7 +10,7 @@ import Arkham.Placement
 import Arkham.Projection
 
 newtype Barricade = Barricade EventAttrs
-  deriving anyclass (IsEvent)
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 barricade :: EventCard Barricade
@@ -29,7 +29,7 @@ instance RunMessage Barricade where
   runMessage msg e@(Barricade attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
       lid <- fieldJust InvestigatorLocation iid
-      push $ PlaceEvent iid eid (AttachedToLocation lid)
+      push $ PlaceEvent eid (AttachedToLocation lid)
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       toDiscardBy iid (attrs.ability 1) attrs

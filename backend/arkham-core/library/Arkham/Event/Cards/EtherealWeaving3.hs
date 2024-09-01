@@ -9,7 +9,6 @@ import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Helpers.Modifiers (ModifierType (..), toModifier, withModifiers)
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 import Arkham.Window (defaultWindows)
 
 newtype Meta = Meta {chosenEvents :: [CardId]}

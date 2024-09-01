@@ -23,8 +23,7 @@ atTheExhibitTheRelicsLocation :: ActCard AtTheExhibitTheRelicsLocation
 atTheExhibitTheRelicsLocation =
   act (2, A) AtTheExhibitTheRelicsLocation Cards.atTheExhibitTheRelicsLocation
     $ Just
-    $ GroupClueCost (PerPlayer 2)
-    $ LocationWithTitle "Eztli Exhibit"
+    $ GroupClueCost (PerPlayer 2) "Eztli Exhibit"
 
 instance RunMessage AtTheExhibitTheRelicsLocation where
   runMessage msg a@(AtTheExhibitTheRelicsLocation attrs) = case msg of

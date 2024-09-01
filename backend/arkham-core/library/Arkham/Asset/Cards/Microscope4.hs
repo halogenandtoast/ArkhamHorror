@@ -23,13 +23,12 @@ microscope4 = asset Microscope4 Cards.microscope4
 instance HasAbilities Microscope4 where
   getAbilities (Microscope4 x) =
     [ restrictedAbility x 1 ControlsThis
-        $ ReactionAbility
+        $ freeReaction
           ( oneOf
               [ EnemyDefeated #after Anyone ByAny $ EnemyAt YourLocation
               , EnemyEvaded #after Anyone $ EnemyAt YourLocation
               ]
           )
-          (exhaust x)
     , restrictedAbility x 2 ControlsThis $ ActionAbility [#investigate] (ActionCost 2)
     ]
 
@@ -41,11 +40,8 @@ instance RunMessage Microscope4 where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
       when (attrs.use Evidence > 0) $ do
-        skillTestModifier
-          sid
-          (attrs.ability 2)
-          iid
-          (SkillModifier #intellect $ min 6 $ attrs.use Evidence * 2)
+        skillTestModifier sid (attrs.ability 2) iid
+          $ SkillModifier #intellect (min 6 $ attrs.use Evidence * 2)
       pushM $ mkInvestigate sid iid (attrs.ability 2)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do

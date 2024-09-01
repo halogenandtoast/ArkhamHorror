@@ -7,7 +7,7 @@ import Arkham.Agenda.Types (AgendaAttrs (agendaDeckId))
 import Arkham.Aspect (IsAspect (..))
 import Arkham.Aspect qualified as Msg
 import Arkham.Asset.Types (AssetAttrs)
-import Arkham.Attack.Types
+import Arkham.Attack
 import Arkham.Calculation
 import Arkham.CampaignLogKey
 import Arkham.Card
@@ -1422,3 +1422,11 @@ enemyCheckEngagement = push . EnemyCheckEngagement
 advancedWithOther
   :: (ReverseQueue m, Sourceable source, AsId source, IdOf source ~ ActId) => source -> m ()
 advancedWithOther source = push $ AdvanceAct (asId source) (toSource source) #other
+
+initiateEnemyAttack
+  :: (Targetable target, Sourceable source, IdOf enemy ~ EnemyId, AsId enemy, ReverseQueue m)
+  => enemy
+  -> source
+  -> target
+  -> m ()
+initiateEnemyAttack enemy source target = push $ InitiateEnemyAttack $ enemyAttack enemy source target

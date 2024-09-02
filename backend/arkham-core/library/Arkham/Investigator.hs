@@ -37,9 +37,6 @@ normalizeInvestigatorId iid = findWithDefault iid iid promoInvestigators
 Some investigators have book versions that are just alternative art
 with some replacement cards. Since these investigators are functionally
 the same, we proxy the lookup to their non-promo version.
-
-Parallel investigators will need to be handled differently since they
-are not functionally the same.
 -}
 promoInvestigators :: Map InvestigatorId InvestigatorId
 promoInvestigators =
@@ -47,6 +44,8 @@ promoInvestigators =
     [ ("98001", "02003") -- Jenny Barnes
     , ("98004", "01001") -- Roland Banks
     , ("98007", "08004") -- Norman Withers
+    , ("98010", "05001") -- Carolyn Fern
+    , ("98013", "07005") -- Silas Marsh
     , ("98016", "07004") -- Dexter Drake
     , ("99001", "05006") -- Marie Lambeau
     ]

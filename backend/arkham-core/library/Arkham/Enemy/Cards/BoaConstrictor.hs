@@ -48,5 +48,5 @@ instance HasModifiersFor BoaConstrictorEffect where
 
 instance RunMessage BoaConstrictorEffect where
   runMessage msg e@(BoaConstrictorEffect attrs) = runQueueT $ case msg of
-    EndUpkeep -> traceShow "HERE" (disableReturn e)
+    EndUpkeep -> disableReturn e
     _ -> BoaConstrictorEffect <$> liftRunMessage msg attrs

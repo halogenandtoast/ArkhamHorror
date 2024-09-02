@@ -25,6 +25,7 @@ import Arkham.Game.Helpers hiding (
 import Arkham.Helpers.Calculation
 import Arkham.Helpers.Investigator (getActionCost)
 import Arkham.Id
+import Arkham.Investigator (promoInvestigators)
 import Arkham.Investigator.Types (Field (..), Investigator, investigatorResources)
 import Arkham.Keyword (Sealing (..))
 import Arkham.Keyword qualified as Keyword
@@ -48,7 +49,12 @@ instance Exception MissingEntity
 
 getInvestigator
   :: (HasCallStack, HasGame m) => InvestigatorId -> m Investigator
-getInvestigator iid = fromJustNote missingInvestigator <$> getInvestigatorMaybe iid
+getInvestigator iid =
+  getInvestigatorMaybe iid >>= \case
+    Nothing -> case lookup iid promoInvestigators of
+      Just iid' -> fromJustNote missingInvestigator <$> getInvestigatorMaybe iid'
+      Nothing -> throw $ MissingEntity $ T.pack missingInvestigator
+    Just i -> pure i
  where
   missingInvestigator = "Unknown investigator: " <> show iid
 

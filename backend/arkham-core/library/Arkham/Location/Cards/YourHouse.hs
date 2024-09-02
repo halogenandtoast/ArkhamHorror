@@ -1,17 +1,16 @@
 module Arkham.Location.Cards.YourHouse (YourHouse (..), yourHouse) where
 
 import Arkham.Ability
-import Arkham.Classes
+import Arkham.Capability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype YourHouse = YourHouse LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yourHouse :: LocationCard YourHouse
@@ -30,13 +29,14 @@ instance HasAbilities YourHouse where
     extendRevealed
       x
       [ forcedAbility x 1 $ EnemySpawns #when Anywhere $ enemyIs Cards.ghoulPriest
-      , playerLimit PerTurn $ restrictedAbility x 2 Here actionAbility
+      , playerLimit PerTurn
+          $ restrictedAbility x 2 (Here <> youExist (oneOf [can.draw.cards, can.gain.resources])) actionAbility
       ]
 
 instance RunMessage YourHouse where
-  runMessage msg l@(YourHouse attrs) = case msg of
+  runMessage msg l@(YourHouse attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      let drawing = drawCards iid (attrs.ability 2) 1
-      pushAll [drawing, TakeResources iid 1 (attrs.ability 2) False]
+      drawCardsIfCan iid (attrs.ability 2) 1
+      gainResourcesIfCan iid (attrs.ability 2) 1
       pure l
-    _ -> YourHouse <$> runMessage msg attrs
+    _ -> YourHouse <$> liftRunMessage msg attrs

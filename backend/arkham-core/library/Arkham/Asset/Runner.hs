@@ -174,13 +174,13 @@ instance RunMessage AssetAttrs where
     ReturnChaosTokensToPool tokens -> pure $ a & sealedChaosTokensL %~ filter (`notElem` tokens)
     RemoveAllChaosTokens face -> do
       pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
-    ReadyExhausted -> case assetPlacement of
-      InPlayArea iid -> do
-        modifiers <- getModifiers (InvestigatorTarget iid)
-        if ControlledAssetsCannotReady `elem` modifiers
-          then pure a
-          else a <$ push (Ready $ toTarget a)
-      _ -> a <$ push (Ready $ toTarget a)
+    ReadyExhausted -> do
+      case a.controller of
+        Just iid -> do
+          modifiers <- getModifiers iid
+          pushWhen (ControlledAssetsCannotReady `notElem` modifiers) (Ready $ toTarget a)
+        _ -> push (Ready $ toTarget a)
+      pure a
     RemoveAllDoom _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Doom
     PlaceTokens source target tType n | isTarget a target -> do
       pushM $ checkAfter $ Window.PlacedToken source target tType n

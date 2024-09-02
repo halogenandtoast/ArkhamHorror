@@ -5,18 +5,14 @@ module Arkham.Enemy.Cards.BoaConstrictor (
   BoaConstrictorEffect (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Import
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Modifiers (ModifierType (..), modified)
 import Arkham.Matcher
 import Arkham.Phase
-import Arkham.Timing qualified as Timing
 
 newtype BoaConstrictor = BoaConstrictor EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -28,21 +24,14 @@ boaConstrictor =
 
 instance HasAbilities BoaConstrictor where
   getAbilities (BoaConstrictor a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ EnemyAttacks Timing.After You AnyEnemyAttack
-          $ EnemyWithId
-          $ toId a
-      ]
+    extend a [mkAbility a 1 $ forced $ EnemyAttacks #after You AnyEnemyAttack (be a)]
 
 instance RunMessage BoaConstrictor where
-  runMessage msg e@(BoaConstrictor attrs) = case msg of
+  runMessage msg e@(BoaConstrictor attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ createCardEffect Cards.boaConstrictor Nothing (toAbilitySource attrs 1) iid
+      createCardEffect Cards.boaConstrictor Nothing (attrs.ability 1) iid
       pure e
-    _ -> BoaConstrictor <$> runMessage msg attrs
+    _ -> BoaConstrictor <$> liftRunMessage msg attrs
 
 newtype BoaConstrictorEffect = BoaConstrictorEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -52,14 +41,12 @@ boaConstrictorEffect :: EffectArgs -> BoaConstrictorEffect
 boaConstrictorEffect = cardEffect BoaConstrictorEffect Cards.boaConstrictor
 
 instance HasModifiersFor BoaConstrictorEffect where
-  getModifiersFor target (BoaConstrictorEffect a) | effectTarget a == target = do
+  getModifiersFor target (BoaConstrictorEffect a) | a.target == target = do
     phase <- getPhase
-    pure $ toModifiers a [ControlledAssetsCannotReady | phase == UpkeepPhase]
+    modified a [ControlledAssetsCannotReady | phase == UpkeepPhase]
   getModifiersFor _ _ = pure []
 
 instance RunMessage BoaConstrictorEffect where
-  runMessage msg e@(BoaConstrictorEffect attrs) = case msg of
-    EndUpkeep -> do
-      push (DisableEffect $ toId attrs)
-      pure e
-    _ -> BoaConstrictorEffect <$> runMessage msg attrs
+  runMessage msg e@(BoaConstrictorEffect attrs) = runQueueT $ case msg of
+    EndUpkeep -> traceShow "HERE" (disableReturn e)
+    _ -> BoaConstrictorEffect <$> liftRunMessage msg attrs

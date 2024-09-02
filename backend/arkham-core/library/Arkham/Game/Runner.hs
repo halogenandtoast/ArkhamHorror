@@ -1835,10 +1835,10 @@ runGameMessage msg g = case msg of
       , phaseStep ReadyExhaustedStep [ReadyExhausted]
       , phaseStep DrawCardAndGainResourceStep [AllDrawCardAndResource]
       , phaseStep CheckHandSizeStep [AllCheckHandSize]
-      , phaseStep UpkeepPhaseEndsStep [EndUpkeep]
+      , phaseStep UpkeepPhaseEndsStep [EndUpkeep, Do EndUpkeep]
       ]
     pure $ g & phaseL .~ UpkeepPhase
-  EndUpkeep -> do
+  Do EndUpkeep -> do
     pushAll
       . (: [EndPhase, After EndPhase])
       =<< checkWindows
@@ -2412,10 +2412,10 @@ runGameMessage msg g = case msg of
                 ]
             pure $ g & focusedCardsL .~ [toCard card]
           else do
-            pushAll [whenDraw, Do msg]
+            pushAll [FocusCards [toCard card], whenDraw, Do msg]
             pure g
       else do
-        pushAll [whenDraw, Do msg]
+        pushAll [FocusCards [toCard card], whenDraw, Do msg]
         pure g
   Do (InvestigatorDrewEncounterCard iid card) -> do
     push $ ResolvedCard iid (toCard card)

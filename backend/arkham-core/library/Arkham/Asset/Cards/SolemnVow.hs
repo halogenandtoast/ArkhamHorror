@@ -1,16 +1,11 @@
-module Arkham.Asset.Cards.SolemnVow (
-  solemnVow,
-  SolemnVow (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.SolemnVow (solemnVow, SolemnVow (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype SolemnVow = SolemnVow AssetAttrs
@@ -22,7 +17,7 @@ solemnVow = asset SolemnVow Cards.solemnVow
 
 instance HasAbilities SolemnVow where
   getAbilities (SolemnVow attrs) =
-    [ restrictedAbility attrs 1 ControlsThis (FastAbility Free)
+    [ restrictedAbility attrs 1 ControlsThis (FastAbility $ exhaust attrs)
         `withCriteria` exists (You <> oneOf [InvestigatorHasCardWithDamage, InvestigatorHasCardWithHorror])
         `withCriteria` exists (affectsOthers $ InvestigatorAt YourLocation <> OwnsAsset (be attrs))
     ]

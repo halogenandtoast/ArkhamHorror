@@ -5,11 +5,11 @@ module Arkham.Investigator.Cards.KohakuNarukami (
 where
 
 import Arkham.Ability
-import Arkham.Message.Lifted.Choose
 import Arkham.Helpers.ChaosBag
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype KohakuNarukami = KohakuNarukami InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -46,7 +46,7 @@ instance RunMessage KohakuNarukami where
         when (length bIn >= 2 && length cIn >= 2) do
           labeled
             "Remove 2 {bless} tokens and 2 {curse} tokens from the chaos bag to take an additional action this turn"
-            $ pushAll [ReturnChaosTokens (take 2 bIn <> take 2 cIn), GainActions iid (toSource attrs) 1]
+            $ pushAll [ReturnChaosTokensToPool (take 2 bIn <> take 2 cIn), GainActions iid (toSource attrs) 1]
       pure i
     ElderSignEffect iid | iid == attrs.id -> do
       b <- getRemainingBlessTokens

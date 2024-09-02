@@ -734,7 +734,7 @@ instance RunMessage ChaosBag where
     ReturnChaosTokens tokens' ->
       pure
         $ c
-        & (chaosTokensL %~ (<> tokens'))
+        & (chaosTokensL %~ (<> tokens') . filter (`notElem` tokens'))
         & (setAsideChaosTokensL %~ (\\ tokens'))
         & (choiceL .~ Nothing)
         & (tokenPoolL %~ (\\ tokens'))

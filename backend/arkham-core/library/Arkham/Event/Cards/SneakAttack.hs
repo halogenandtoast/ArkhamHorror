@@ -1,10 +1,7 @@
 module Arkham.Event.Cards.SneakAttack where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 
@@ -16,10 +13,9 @@ sneakAttack :: EventCard SneakAttack
 sneakAttack = event SneakAttack Cards.sneakAttack
 
 instance RunMessage SneakAttack where
-  runMessage msg e@(SneakAttack attrs) = case msg of
-    PlayThisEvent you eid | attrs `is` eid -> do
+  runMessage msg e@(SneakAttack attrs) = runQueueT $ case msg of
+    PlayThisEvent you (is attrs -> True) -> do
       enemies <- select $ ExhaustedEnemy <> enemiesColocatedWith you
-      player <- getPlayer you
-      push $ chooseOne player $ targetLabels enemies $ only . nonAttackEnemyDamage attrs 2
+      chooseTargetM you enemies $ nonAttackEnemyDamage attrs 2
       pure e
-    _ -> SneakAttack <$> runMessage msg attrs
+    _ -> SneakAttack <$> liftRunMessage msg attrs

@@ -3434,6 +3434,7 @@ defeatedByMatches defeatedBy = \case
   Matcher.BySource sourceMatcher -> sourceMatches (defeatedBySource defeatedBy) sourceMatcher
   Matcher.ByAny -> pure True
   Matcher.DefeatedByMatches xs -> allM (defeatedByMatches defeatedBy) xs
+  Matcher.NotBy x -> not <$> defeatedByMatches defeatedBy x
 
 isForcedAbility :: HasGame m => InvestigatorId -> Ability -> m Bool
 isForcedAbility iid Ability {abilitySource, abilityType} = isForcedAbilityType iid abilitySource abilityType

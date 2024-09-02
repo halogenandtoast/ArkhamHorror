@@ -1277,8 +1277,11 @@ quietCancelCardDraw card = do
     _ -> False
   for_ mtarget $ push . QuietlyRemoveFromGame
 
-cancelAttack :: ReverseQueue m => Sourceable source => source -> EnemyAttackDetails -> m ()
+cancelAttack :: (ReverseQueue m, Sourceable source) => source -> EnemyAttackDetails -> m ()
 cancelAttack source _ = push $ CancelNext (toSource source) AttackMessage
+
+cancelEnemyDefeat :: (ReverseQueue m, Sourceable source) => source -> m ()
+cancelEnemyDefeat source = push $ CancelNext (toSource source) EnemyDefeatedMessage
 
 moveWithSkillTest :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
 moveWithSkillTest f = lift $ Arkham.Classes.HasQueue.mapQueue \msg -> if f msg then MoveWithSkillTest msg else msg

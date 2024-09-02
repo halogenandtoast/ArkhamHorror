@@ -13,12 +13,9 @@ import Arkham.Card
 import Arkham.Effect.Import
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Card
-import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype GrislyTotemSurvivor3 = GrislyTotemSurvivor3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

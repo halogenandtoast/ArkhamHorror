@@ -6,7 +6,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers (getCanMoveToMatchingLocations)
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Movement
 

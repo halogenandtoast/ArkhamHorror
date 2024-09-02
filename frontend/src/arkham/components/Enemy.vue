@@ -24,7 +24,8 @@ const props = withDefaults(defineProps<{
   enemy: Arkham.Enemy
   playerId: string
   atLocation?: boolean
-}>(), { atLocation: false })
+  attached?: boolean
+}>(), { atLocation: false, attached: false })
 
 const emits = defineEmits<{
   choose: [value: number]
@@ -202,7 +203,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
           <div class="card-wrapper">
             <img v-if="isTrueForm" :src="image"
               class="card enemy"
-              :class="{ dragging, exhausted: isExhausted, 'enemy--can-interact': canInteract }"
+              :class="{ dragging, exhausted: isExhausted, 'enemy--can-interact': canInteract, attached }"
               :data-id="id"
               :data-fight="enemy.fight"
               :data-evade="enemy.evade"
@@ -218,7 +219,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
               @dragstart="startDrag($event, enemy)"
               :src="image"
               class="card enemy"
-              :class="{ exhausted: isExhausted, 'enemy--can-interact': canInteract}"
+              :class="{ exhausted: isExhausted, 'enemy--can-interact': canInteract, attached}"
               :data-id="id"
               @click="clicked"
             />
@@ -228,7 +229,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
             <div class="keys" v-if="keys.length > 0">
               <Key v-for="key in keys" :key="key" :name="key" />
             </div>
-            <PoolItem v-if="!omnipotent" type="health" :amount="enemyDamage" />
+            <PoolItem v-if="!omnipotent && !attached" type="health" :amount="enemyDamage" />
             <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
             <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
             <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
@@ -422,5 +423,11 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
   isolation: isolate;
   display: flex;
   justify-content: space-evenly;
+}
+
+.attached.card {
+  object-fit: cover;
+  object-position: left bottom;
+  height: calc(var(--card-width)*0.6);
 }
 </style>

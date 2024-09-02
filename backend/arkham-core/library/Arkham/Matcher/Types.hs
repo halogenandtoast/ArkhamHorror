@@ -1234,7 +1234,11 @@ data DefeatedByMatcher
   | BySource SourceMatcher
   | ByAnyOf [DefeatedByMatcher]
   | DefeatedByMatches [DefeatedByMatcher]
+  | NotBy DefeatedByMatcher
   deriving stock (Show, Eq, Ord, Data)
+
+instance Not DefeatedByMatcher where
+  not_ = NotBy
 
 instance Monoid DefeatedByMatcher where
   mempty = ByAny
@@ -1330,6 +1334,12 @@ data SourceMatcher
   | SourceWithCard CardMatcher
   | SourceIsCardEffect
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "spell" SourceMatcher where
+  fromLabel = SourceWithTrait Spell
+
+instance IsLabel "relic" SourceMatcher where
+  fromLabel = SourceWithTrait Relic
 
 pattern AnyCancellableSource :: SourceMatcher
 pattern AnyCancellableSource <- SourceIsCancelable AnySource

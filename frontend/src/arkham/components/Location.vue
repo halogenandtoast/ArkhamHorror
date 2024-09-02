@@ -154,6 +154,13 @@ const enemies = computed(() => {
     .filter((e) => props.game.enemies[e].placement.tag === 'AtLocation' && props.game.enemies[e].placement.contents !== "AttachedToAsset" && props.game.enemies[e].asSelfLocation === null)
 })
 
+const attachedEnemies = computed(() => {
+  const enemyIds = props.location.enemies;
+
+  return enemyIds
+    .filter((e) => props.game.enemies[e].placement.tag === 'AttachedToLocation' && props.game.enemies[e].placement.contents === id.value) 
+})
+
 const treacheries = computed(() => {
   const treacheryIds = props.location.treacheries;
 
@@ -302,6 +309,15 @@ function onDrop(event: DragEvent) {
           :game="game"
           :playerId="playerId"
           :key="eventId"
+          @choose="$emit('choose', $event)"
+          :attached="true"
+        />
+        <Enemy
+          v-for="enemyId in attachedEnemies"
+          :enemy="game.enemies[enemyId]"
+          :game="game"
+          :playerId="playerId"
+          :key="enemyId"
           @choose="$emit('choose', $event)"
           :attached="true"
         />

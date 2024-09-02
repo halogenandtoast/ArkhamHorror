@@ -934,8 +934,8 @@ drawEncounterCard :: (ReverseQueue m, Sourceable source) => InvestigatorId -> so
 drawEncounterCard i source = push $ Msg.drawEncounterCards i source 1
 
 drawCardsIfCan
-  :: (ReverseQueue m, Sourceable source)
-  => InvestigatorId
+  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
   -> source
   -> Int
   -> m ()
@@ -1434,5 +1434,6 @@ handleTarget
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 handleTarget iid source target = push $ Msg.handleTargetChoice iid source target
 
-spendUses :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> UseType -> Int -> m ()
+spendUses
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> UseType -> Int -> m ()
 spendUses source target tType n = push $ SpendUses (toSource source) (toTarget target) tType n

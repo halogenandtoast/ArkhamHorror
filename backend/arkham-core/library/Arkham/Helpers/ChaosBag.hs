@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.ChaosBag.Base
+import Arkham.ChaosBagStepState
 import Arkham.ChaosToken.Types
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
@@ -39,3 +40,9 @@ getSealedChaosTokens =
 
 getAllChaosTokens :: HasGame m => m [ChaosToken]
 getAllChaosTokens = concat <$> sequence [getBagChaosTokens, getSealedChaosTokens]
+
+getChaosBagChoice :: HasGame m => m (Maybe ChaosBagStepState)
+getChaosBagChoice = scenarioFieldMap ScenarioChaosBag chaosBagChoice
+
+getChaosBag :: HasGame m => m ChaosBag
+getChaosBag = scenarioField ScenarioChaosBag

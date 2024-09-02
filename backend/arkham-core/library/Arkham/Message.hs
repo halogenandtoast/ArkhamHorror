@@ -849,6 +849,7 @@ data Message
   | RemoveFromPlay Source
   | RemovedFromPlay Source
   | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep
+  | ReplaceEntireDraw Source InvestigatorId ChaosBagStep
   | SetChaosBagChoice Source InvestigatorId ChaosBagStep -- internal
   | RequestSetAsideCard Source CardCode
   | RequestChaosTokens Source (Maybe InvestigatorId) RevealStrategy RequestedChaosTokenStrategy

@@ -1,23 +1,18 @@
-module Arkham.Investigator.Cards.JacquelineFine (
-  jacquelineFine,
-  JacquelineFine (..),
-)
-where
+module Arkham.Investigator.Cards.JacquelineFine (jacquelineFine, JacquelineFine (..)) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.ChaosBagStepState
-import Arkham.Helpers.Window
+import Arkham.Helpers.ChaosBag
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
-import Arkham.Window (Window (..), mkWindow)
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype JacquelineFine = JacquelineFine InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 jacquelineFine :: InvestigatorCard JacquelineFine
 jacquelineFine =
@@ -28,7 +23,7 @@ instance HasAbilities JacquelineFine where
   getAbilities (JacquelineFine a) =
     [ playerLimit PerRound
         $ restrictedAbility a 1 Self
-        $ freeReaction (WouldRevealChaosToken #when $ affectsOthers $ InvestigatorAt YourLocation)
+        $ freeReaction (WouldRevealChaosToken #when $ affectsOthers $ at_ YourLocation)
     ]
 
 instance HasChaosTokenValue JacquelineFine where
@@ -41,42 +36,53 @@ getDrawSource [] = error "No draw source"
 getDrawSource ((windowType -> Window.WouldRevealChaosToken drawSource _) : _) = drawSource
 getDrawSource (_ : rest) = getDrawSource rest
 
+getSteps :: ChaosBagStepState -> [ChaosBagStepState]
+getSteps = \case
+  Resolved {} -> []
+  Decided {} -> []
+  Undecided s -> go s
+  Deciding s -> go s
+ where
+  go = \case
+    Draw -> [Undecided Draw]
+    Choose {..} -> steps
+    ChooseMatch {..} -> steps
+    ChooseMatchChoice {..} -> steps
+
 -- TODO: ChooseTokenMatch should have matchers that check the token results
 -- and then prompt the user to choose an option rather than having the bag
 -- handle the logic, this should work without changing behavior too much
 instance RunMessage JacquelineFine where
-  runMessage msg i@(JacquelineFine attrs) = case msg of
+  runMessage msg i@(JacquelineFine attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getDrawSource -> drawSource) _ -> do
-      ignoreWindow <-
-        checkWindows [mkWindow #after (Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs))]
-      pushAll
-        [ ReplaceCurrentDraw drawSource iid
-            $ ChooseMatchChoice
-              [Undecided Draw, Undecided Draw, Undecided Draw]
-              []
-              [
-                ( ChaosTokenFaceIs AutoFail
-                ,
-                  ( "Cancel 1 {autofail} token"
-                  , ChooseMatch (toAbilitySource attrs 1) 1 CancelChoice [] [] (ChaosTokenFaceIs AutoFail)
-                  )
-                )
-              ,
-                ( ChaosTokenFaceIsNot AutoFail
-                ,
-                  ( "Cancel 2 non-{autofail} tokens"
-                  , ChooseMatch (toAbilitySource attrs 1) 2 CancelChoice [] [] (ChaosTokenFaceIsNot AutoFail)
-                  )
-                )
-              ]
-        , -- \$ Choose 1 [Undecided Draw, Undecided Draw, Undecided Draw] []
-          ignoreWindow
-        ]
+      steps <- maybe [] getSteps <$> getChaosBagChoice
+
+      push
+        $ ReplaceEntireDraw drawSource iid
+        $ ChooseMatchChoice
+          (steps <> [Undecided Draw, Undecided Draw])
+          []
+          [
+            ( ChaosTokenFaceIs #autofail
+            ,
+              ( "Cancel 1 {autofail} token"
+              , ChooseMatch (attrs.ability 1) 1 CancelChoice [] [] #autofail
+              )
+            )
+          ,
+            ( ChaosTokenFaceIsNot #autofail
+            ,
+              ( "Cancel 2 non-{autofail} tokens"
+              , ChooseMatch (attrs.ability 1) 2 CancelChoice [] [] (ChaosTokenFaceIsNot #autofail)
+              )
+            )
+          ]
+      cancelledOrIgnoredCardOrGameEffect attrs
       pure i
-    ChaosTokenCanceled iid _ (chaosTokenFace -> ElderSign) | attrs `is` iid -> do
-      push $ drawCards (toId attrs) (toAbilitySource attrs 1) 1
-      JacquelineFine <$> runMessage msg attrs
-    ChaosTokenIgnored iid _ (chaosTokenFace -> ElderSign) | attrs `is` iid -> do
-      push $ drawCards (toId attrs) (toAbilitySource attrs 1) 1
-      JacquelineFine <$> runMessage msg attrs
-    _ -> JacquelineFine <$> runMessage msg attrs
+    ChaosTokenCanceled (is attrs -> True) _ ((.face) -> ElderSign) -> do
+      drawCardsIfCan attrs (attrs.ability 1) 1
+      JacquelineFine <$> liftRunMessage msg attrs
+    ChaosTokenIgnored (is attrs -> True) _ ((.face) -> ElderSign) -> do
+      drawCardsIfCan attrs (attrs.ability 1) 1
+      JacquelineFine <$> liftRunMessage msg attrs
+    _ -> JacquelineFine <$> liftRunMessage msg attrs

@@ -353,7 +353,12 @@ withLocationConnectionData inner@(With target _) = do
   matcher <- getConnectedMatcher target
   lmConnectedLocations <- select matcher
   lmInvestigators <- select $ investigatorAt $ toId target
-  lmEnemies <- select $ EnemyAt $ IncludeEmptySpace $ LocationWithId $ toId target
+  lmEnemies <-
+    select
+      $ oneOf
+        [ EnemyAt $ IncludeEmptySpace $ LocationWithId $ toId target
+        , EnemyWithPlacement $ AttachedToLocation $ toId target
+        ]
   lmAssets <- select $ AssetAtLocation $ toId target
   lmEvents <-
     select

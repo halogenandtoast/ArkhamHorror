@@ -5,7 +5,6 @@ import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
 newtype SearchForTheTruthAdvanced = SearchForTheTruthAdvanced EventAttrs

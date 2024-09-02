@@ -320,3 +320,8 @@ windowSkillTest = \case
   [] -> Nothing
   ((windowType -> Window.InitiatedSkillTest st) : _) -> Just st
   (_ : rest) -> windowSkillTest rest
+
+getCommittedCard :: [Window] -> Card
+getCommittedCard [] = error "missing card"
+getCommittedCard ((windowType -> Window.CommittedCard _ c) : _) = c
+getCommittedCard (_ : ws) = getCommittedCard ws

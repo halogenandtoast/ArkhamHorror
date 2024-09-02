@@ -13,6 +13,7 @@ import Arkham.Card
 import Arkham.Effect.Import
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Card
+import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
@@ -33,11 +34,6 @@ instance HasAbilities GrislyTotemSurvivor3 where
           (CommittedCard Timing.After You AnyCard)
           (ExhaustCost $ toTarget a)
     ]
-
-getCommittedCard :: [Window] -> Card
-getCommittedCard [] = error "missing card"
-getCommittedCard ((windowType -> Window.CommittedCard _ c) : _) = c
-getCommittedCard (_ : ws) = getCommittedCard ws
 
 toSkillLabel :: SkillIcon -> Text
 toSkillLabel WildMinusIcon = "Choose Minus {wild}"

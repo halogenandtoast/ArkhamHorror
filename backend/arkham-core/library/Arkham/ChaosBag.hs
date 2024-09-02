@@ -634,6 +634,18 @@ instance RunMessage ChaosBag where
         & (setAsideChaosTokensL %~ filter (/= token))
         & (revealedChaosTokensL %~ filter (/= token))
         & (chaosTokensL %~ filter (/= token))
+    ReplaceEntireDraw source iid step -> do
+      removeAllMessagesMatching $ \case
+        CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _] -> True
+        _ -> False
+
+      iids <- getInvestigatorIds
+      -- if we have not decided we can use const to replace
+      let
+        choice'' = Undecided step
+        (updatedChoice, messages) = decideFirstUndecided source iid iids SetAside toDecided choice''
+      unless (null messages) $ pushAll messages
+      pure $ c & choiceL ?~ updatedChoice
     ReplaceCurrentDraw source iid step -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> do

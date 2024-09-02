@@ -43,14 +43,14 @@ drawEncounterCards :: Sourceable source => InvestigatorId -> source -> Int -> Me
 drawEncounterCards i source n = DrawCards i $ newCardDraw source Deck.EncounterDeck n
 
 drawCardsIfCan
-  :: (MonadRandom m, Sourceable source, HasGame m)
-  => InvestigatorId
+  :: (MonadRandom m, Sourceable source, HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
   -> source
   -> Int
   -> m (Maybe Message)
 drawCardsIfCan i source n = do
-  canDraw <- can.draw.cards (sourceToFromSource source) i
-  pure $ guard canDraw $> drawCards i source n
+  canDraw <- can.draw.cards (sourceToFromSource source) (asId i)
+  pure $ guard canDraw $> drawCards (asId i) source n
 
 sourceToFromSource :: Sourceable source => source -> FromSource
 sourceToFromSource (toSource -> source) = case source of

@@ -22,7 +22,10 @@ data ChaosBagStepState
   | Deciding {step :: ChaosBagStep}
   deriving stock (Show, Eq, Ord, Data)
 
-data ChaosTokenStrategy = ResolveChoice | CancelChoice | IgnoreChoice
+data ChaosTokenStrategy
+  = ResolveChoice
+  | CancelChoice
+  | IgnoreChoice
   deriving stock (Show, Eq, Ord, Data)
 
 data ChaosBagStep

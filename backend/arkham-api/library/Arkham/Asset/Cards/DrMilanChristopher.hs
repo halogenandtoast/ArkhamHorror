@@ -21,7 +21,8 @@ instance HasModifiersFor DrMilanChristopher where
 
 instance HasAbilities DrMilanChristopher where
   getAbilities (DrMilanChristopher x) =
-    [ restrictedAbility x 1 ControlsThis
+    [ playerLimit PerTestOrAbility
+        $ restrictedAbility x 1 ControlsThis
         $ ReactionAbility
           (SuccessfulInvestigation #after You Anywhere)
           (mwhen (maybe False (> TabooList15) x.taboo) (exhaust x))

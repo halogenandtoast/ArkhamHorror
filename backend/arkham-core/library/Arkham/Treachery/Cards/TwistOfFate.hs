@@ -2,11 +2,11 @@ module Arkham.Treachery.Cards.TwistOfFate (TwistOfFate (..), twistOfFate) where
 
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Prelude
+import Arkham.Game.Helpers (getModifiedChaosTokenFaces)
 import Arkham.RequestedChaosTokenStrategy
+import Arkham.Strategy
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype TwistOfFate = TwistOfFate TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -16,7 +16,7 @@ twistOfFate :: TreacheryCard TwistOfFate
 twistOfFate = treachery TwistOfFate Cards.twistOfFate
 
 instance RunMessage TwistOfFate where
-  runMessage msg t@(TwistOfFate attrs) = case msg of
+  runMessage msg t@(TwistOfFate attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
       pure t
@@ -44,8 +44,8 @@ instance RunMessage TwistOfFate where
           CurseToken -> (Sum 0, Sum 0)
           BlessToken -> (Sum 0, Sum 0)
 
-      pushAll
+      continue iid
         $ [InvestigatorAssignDamage iid source DamageAny damage horror | damage > 0 || horror > 0]
         <> [ResetChaosTokens source]
       pure t
-    _ -> TwistOfFate <$> runMessage msg attrs
+    _ -> TwistOfFate <$> liftRunMessage msg attrs

@@ -1559,6 +1559,9 @@ instance Monoid ActionMatcher where
 instance IsLabel "activate" ActionMatcher where
   fromLabel = ActionIs #activate
 
+instance IsLabel "explore" ActionMatcher where
+  fromLabel = ActionIs #explore
+
 instance IsLabel "engage" ActionMatcher where
   fromLabel = ActionIs #engage
 

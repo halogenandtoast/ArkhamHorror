@@ -62,6 +62,9 @@ freeReaction window = ReactionAbility window Free
 forced :: WindowMatcher -> AbilityType
 forced = ForcedAbility
 
+silent :: WindowMatcher -> AbilityType
+silent = SilentForcedAbility
+
 class HasCost c where
   overCost :: (Cost -> Cost) -> c -> c
 

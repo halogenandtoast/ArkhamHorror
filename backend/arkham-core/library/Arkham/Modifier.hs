@@ -100,7 +100,7 @@ data ModifierType
   | CanBeAssignedDirectDamage
   | CanBeFoughtAsIfAtYourLocation
   | CanBecomeFast CardMatcher
-  | CanBecomeFastOrReduceCostOf CardMatcher Int -- Used by Chuck Fergus (2), check for notes
+  | ChuckFergus2Modifier CardMatcher Int -- Used by Chuck Fergus (2), check for notes
   | CanCommitToSkillTestPerformedByAnInvestigatorAt LocationMatcher
   | CanCommitToSkillTestsAsIfInHand Card
   | CanEnterEmptySpace
@@ -476,9 +476,20 @@ instance IsLabel "resign" ActionTarget where
 setActiveDuringSetup :: Modifier -> Modifier
 setActiveDuringSetup m = m {modifierActiveDuringSetup = True}
 
-$(deriveJSON defaultOptions ''ActionTarget)
 $( do
-    deriveModifierType <- deriveJSON defaultOptions ''ModifierType
+    actionTarget <- deriveJSON defaultOptions ''ActionTarget
+    deriveModifierTypeToJSON <- deriveToJSON defaultOptions ''ModifierType
+    fromJSONInstance <-
+      [d|
+        instance FromJSON ModifierType where
+          parseJSON = withObject "ModifierType" \v -> do
+            tag :: Text <- v .: "tag"
+            case tag of
+              "CanBecomeFastOrReduceCostOf" -> do
+                contents <- v .: "contents"
+                pure $ uncurry ChuckFergus2Modifier contents
+              _ -> $(mkParseJSON defaultOptions ''ModifierType) (Object v)
+        |]
     deriveModifier <- deriveJSON (aesonOptions $ Just "modifier") ''Modifier
-    pure $ deriveModifierType ++ deriveModifier
+    pure $ actionTarget <> deriveModifierTypeToJSON <> fromJSONInstance <> deriveModifier
  )

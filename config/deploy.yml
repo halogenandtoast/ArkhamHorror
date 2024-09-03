@@ -9,6 +9,7 @@ servers:
 builder:
   arch:
     - arm64
+    - amd64
   cache:
     type: registry
 

@@ -33,7 +33,7 @@ default-extensions:
 dependencies:
   - base
   - classy-prelude
-  - arkham-core
+  - arkham-api
   - aeson
   - directory
   - text

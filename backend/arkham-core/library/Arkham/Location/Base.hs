@@ -93,4 +93,12 @@ makeLensesWith suffixedFields ''LocationAttrs
 setMeta :: ToJSON a => a -> LocationAttrs -> LocationAttrs
 setMeta a = metaL .~ toJSON a
 
+getLocationMeta :: FromJSON a => LocationAttrs -> Maybe a
+getLocationMeta attrs = case fromJSON attrs.meta of
+  Error _ -> Nothing
+  Success v' -> Just v'
+
+getLocationMetaDefault :: FromJSON a => a -> LocationAttrs -> a
+getLocationMetaDefault def = fromMaybe def . getLocationMeta
+
 $(deriveJSON (aesonOptions $ Just "location") ''LocationAttrs)

@@ -13,6 +13,7 @@ import Arkham.Location.Runner as X (
   connectsToL,
   extendRevealed,
   getLeadPlayer,
+  getLocationMetaDefault,
   getSetAsideCard,
   is,
   location,

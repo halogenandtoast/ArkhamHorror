@@ -98,6 +98,7 @@ messageType InvestigatorDamage {} = Just DamageMessage
 messageType InvestigatorDoAssignDamage {} = Just DamageMessage
 messageType InvestigatorDrewEncounterCard {} = Just DrawEncounterCardMessage
 messageType InvestigatorDefeated {} = Just InvestigatorDefeatedMessage
+messageType InvestigatorIsDefeated {} = Just InvestigatorDefeatedMessage
 messageType CheckWindows {} = Just CheckWindowMessage
 messageType Explore {} = Just ExploreMessage
 messageType (Do msg) = messageType msg

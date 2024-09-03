@@ -34,7 +34,6 @@ ghc-options:
 
 packages:
   - cards-discover
-  - arkham-core
   - arkham-api
   - validate
 

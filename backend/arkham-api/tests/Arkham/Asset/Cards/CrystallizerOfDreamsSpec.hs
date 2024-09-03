@@ -39,15 +39,14 @@ spec = describe "Crystallizer of Dreams" do
         self.discard `shouldReturn` []
         asDefs crystallizerOfDreams.cardsUnderneath `shouldReturn` [Events.emergencyCache]
 
-    it "(to a maximum of 5 attached events)." . gameTest $ \self ->
-      do
-        crystallizerOfDreams <- self `putAssetIntoPlay` Assets.crystallizerOfDreams
-        replicateM_ 5 do
-          self `playEvent` Events.emergencyCache
-          useReaction
+    it "(to a maximum of 5 attached events)." . gameTest $ \self -> do
+      crystallizerOfDreams <- self `putAssetIntoPlay` Assets.crystallizerOfDreams
+      replicateM_ 5 do
         self `playEvent` Events.emergencyCache
-        asDefs self.discard `shouldReturn` [Events.emergencyCache]
-        asDefs crystallizerOfDreams.cardsUnderneath `shouldReturn` replicate 5 Events.emergencyCache
+        useReaction
+      self `playEvent` Events.emergencyCache
+      asDefs self.discard `shouldReturn` [Events.emergencyCache]
+      asDefs crystallizerOfDreams.cardsUnderneath `shouldReturn` replicate 5 Events.emergencyCache
 
     it "Attached events may be committed to skill tests as if they were in your hand." . gameTest $ \self -> do
       location <- testLocation & prop @"clues" 1

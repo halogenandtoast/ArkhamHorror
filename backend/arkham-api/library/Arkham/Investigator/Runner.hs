@@ -289,21 +289,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & (logL . recordedL %~ insertSet key) . (logL . orderedKeysL %~ (<> [key]))
   EndCheckWindow -> do
     depth <- getWindowDepth
-    -- NOTE: the below added the = to correctly handle Milan triggering twice
-    -- during the same window This seems like the correct thing, but if we find
-    -- an ability not be accessible because of this, we'll need to find another
-    -- way to handle that case instead of updating these
+    -- NOTE: Milan triggers twice for some reason but we don't want to change these as EndCheckWindow should be a depth 1 window lower
     let
       filterAbility UsedAbility {..} = do
         limit <- getAbilityLimit (toId a) usedAbility
         pure $ case limit of
           NoLimit -> False
-          PlayerLimit PerWindow _ -> depth >= usedDepth
-          GroupLimit PerWindow _ -> depth >= usedDepth
+          PlayerLimit PerWindow _ -> depth > usedDepth
+          GroupLimit PerWindow _ -> depth > usedDepth
           _ -> True
 
     usedAbilities' <- filterM filterAbility investigatorUsedAbilities
-    let usedAbilities'' = map (\u -> if usedDepth u >= depth then u {usedThisWindow = False} else u) usedAbilities'
+    let usedAbilities'' =
+          map (\u -> if usedDepth u >= depth then u {usedThisWindow = False} else u) usedAbilities'
     pure $ a & usedAbilitiesL .~ usedAbilities''
   ResetGame ->
     pure

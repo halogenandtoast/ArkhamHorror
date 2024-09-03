@@ -6,19 +6,32 @@ extra-source-files:
 - digital-ocean.crt
 
 default-extensions:
-  - BlockArguments
-  - DataKinds
-  - DeriveAnyClass
-  - DerivingStrategies
-  - DerivingVia
-  - GADTs
-  - LambdaCase
-  - NoImplicitPrelude
-  - NoMonomorphismRestriction
-  - OverloadedStrings
-  - OverloadedRecordDot
-  - RecordWildCards
-  - TypeFamilies
+- AllowAmbiguousTypes
+- BlockArguments
+- DataKinds
+- DeriveAnyClass
+- DerivingStrategies
+- DerivingVia
+- ExtendedDefaultRules
+- FunctionalDependencies
+- GADTs
+- LambdaCase
+- NoImplicitPrelude
+- NoMonomorphismRestriction
+- OverloadedLabels
+- OverloadedRecordDot
+- OverloadedStrings
+- PatternSynonyms
+- RecordWildCards
+- StrictData
+- TypeFamilies
+- TypeFamilyDependencies
+- TypeOperators
+- UndecidableInstances
+- ViewPatterns
+
+build-tools:
+- cards-discover
 
 dependencies:
   - base
@@ -39,25 +52,27 @@ library:
         - -fwarn-tabs
         - -O2
   dependencies:
-    - mailtrap
-    - email-validate
     - MonadRandom
     - aeson
     - aeson-casing
     - aeson-diff
-    - amazonka-s3
     - amazonka
-    - arkham-core
+    - amazonka-s3
+    - base16-bytestring
     - bcrypt
     - bytestring
     - case-insensitive
+    - classy-prelude
     - conduit
     - containers
     - cryptohash-sha256
-    - base16-bytestring
+    - crypton-x509-store
+    - data-default-class
     - directory
+    - email-validate
     - errors
     - esqueleto
+    - extra
     - fast-logger
     - file-embed
     - hashable
@@ -68,24 +83,32 @@ library:
     - http-types
     - jwt
     - lens
+    - mailtrap
     - monad-logger
+    - monoidal-containers
+    - mtl >= 2.3.1
+    - parsec
     - path-pieces
     - persistent
     - persistent-postgresql
+    - pretty-simple
+    - process
+    - random-shuffle
     - regex-posix
     - relude
     - safe
+    - semialign
     - stm
     - string-conversions
     - template-haskell
     - text
     - these
+    - these-lens
     - time
     - tls
-    - data-default-class
+    - transformers
     - unix
     - unliftio
-    - crypton-x509-store
     - uri-bytestring
     - uuid
     - wai
@@ -111,7 +134,6 @@ executables:
       - foreign-store
       - warp
       - arkham-api
-      - arkham-core
     when:
       - condition: flag(library-only)
         buildable: false
@@ -125,3 +147,19 @@ flags:
     description: Turn on development settings, like auto-reload templates.
     manual: false
     default: false
+
+tests:
+  spec:
+    main: Spec.hs
+    source-dirs: tests
+    ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
+    dependencies:
+      - arkham-api
+      - hspec
+      - hspec-expectations-lifted
+      - lens
+      - uuid
+      - mtl
+      - random
+      - containers
+      - text

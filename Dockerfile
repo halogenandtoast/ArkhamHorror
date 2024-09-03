@@ -77,21 +77,17 @@ FROM base as dependencies
 RUN mkdir -p \
   /opt/arkham/bin \
   /opt/arkham/src/backend/arkham-api \
-  /opt/arkham/src/backend/arkham-core \
   /opt/arkham/src/backend/validate \
   /opt/arkham/src/backend/cards-discover
 
 WORKDIR /opt/arkham/src/backend
 COPY ./backend/stack.yaml /opt/arkham/src/backend/stack.yaml
 COPY ./backend/arkham-api/package.yaml /opt/arkham/src/backend/arkham-api/package.yaml
-COPY ./backend/arkham-core/package.yaml /opt/arkham/src/backend/arkham-core/package.yaml
 COPY ./backend/validate/package.yaml /opt/arkham/src/backend/validate/package.yaml
 COPY ./backend/cards-discover/package.yaml /opt/arkham/src/backend/cards-discover/package.yaml
 RUN --mount=type=cache,id=stack-root-${CACHE_ID},target=/opt/arkham/src/backend/.stack-work \
     --mount=type=cache,id=stack-api-${CACHE_ID},target=/opt/arkham/src/backend/arkham-api/.stack-work \
     --mount=type=cache,id=stack-api-hie-${CACHE_ID},target=/opt/arkham/src/backend/arkham-api/.hie \
-    --mount=type=cache,id=stack-core-${CACHE_ID},target=/opt/arkham/src/backend/arkham-core/.stack-work \
-    --mount=type=cache,id=stack-core-hie-${CACHE_ID},target=/opt/arkham/src/backend/arkham-core/.hie \
     --mount=type=cache,id=stack-validate-hie-${CACHE_ID},target=/opt/arkham/src/backend/arkham-validate/.hie \
     --mount=type=cache,id=stack-discover-hie-${CACHE_ID},target=/opt/arkham/src/backend/cards-discover/.hie \
     stack build --system-ghc --dependencies-only --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS'
@@ -112,8 +108,6 @@ WORKDIR /opt/arkham/src/backend/arkham-api
 RUN --mount=type=cache,id=stack-root-${CACHE_ID},target=/opt/arkham/src/backend/.stack-work \
     --mount=type=cache,id=stack-api-${CACHE_ID},target=/opt/arkham/src/backend/arkham-api/.stack-work \
     --mount=type=cache,id=stack-api-hie-${CACHE_ID},target=/opt/arkham/src/backend/arkham-api/.hie \
-    --mount=type=cache,id=stack-core-${CACHE_ID},target=/opt/arkham/src/backend/arkham-core/.stack-work \
-    --mount=type=cache,id=stack-core-hie-${CACHE_ID},target=/opt/arkham/src/backend/arkham-core/.hie \
     --mount=type=cache,id=stack-validate-hie-${CACHE_ID},target=/opt/arkham/src/backend/arkham-validate/.hie \
     --mount=type=cache,id=stack-discover-hie-${CACHE_ID},target=/opt/arkham/src/backend/cards-discover/.hie \
   stack build --no-terminal --system-ghc --ghc-options '-j4 +RTS -A128m -n2m -RTS' && \

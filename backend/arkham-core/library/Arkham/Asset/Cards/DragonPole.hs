@@ -30,7 +30,7 @@ instance HasModifiersFor DragonPole where
 
 instance RunMessage DragonPole where
   runMessage msg a@(DragonPole attrs) = case msg of
-    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
+    CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       push $ AddSlot iid ArcaneSlot (Slot (toSource attrs) [])
       DragonPole <$> runMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do

@@ -791,6 +791,7 @@ data Message
   | LocationMoved LocationId
   | PlayCard InvestigatorId Card (Maybe Target) Payment [Window] Bool
   | CardEnteredPlay InvestigatorId Card
+  | CardIsEnteringPlay InvestigatorId Card
   | ResolvedCard InvestigatorId Card
   | ResolvedPlayCard InvestigatorId Card
   | PlayerWindow InvestigatorId [UI Message] Bool

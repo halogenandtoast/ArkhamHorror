@@ -31,7 +31,7 @@ instance RunMessage AnnaKaslow4 where
     InHand _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
       putCardIntoPlay iid attrs
       pure a
-    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
+    CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       pushAll $ replicate 2 (AddSlot iid TarotSlot (slot attrs))
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

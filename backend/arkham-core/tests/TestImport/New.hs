@@ -243,6 +243,9 @@ instance HasField "resources" Investigator (TestAppT Int) where
 instance HasField "slots" Investigator (TestAppT (Map SlotType [Slot])) where
   getField = field InvestigatorSlots . toEntityId
 
+instance HasField "ally" (TestAppT (Map SlotType [Slot])) (TestAppT [Slot]) where
+  getField action = findWithDefault [] #ally <$> action
+
 instance HasField "mentalTrauma" Investigator (TestAppT Int) where
   getField = field InvestigatorMentalTrauma . toEntityId
 

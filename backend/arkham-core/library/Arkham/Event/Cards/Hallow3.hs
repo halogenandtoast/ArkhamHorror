@@ -20,7 +20,7 @@ hallow3 =
 instance RunMessage Hallow3 where
   runMessage msg e@(Hallow3 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      targets <-
+      ts <-
         foldAllM
           [ selectTargets $ AssetWithDoom (atLeast 1)
           , selectTargets $ InvestigatorWithDoom (atLeast 1)
@@ -30,7 +30,7 @@ instance RunMessage Hallow3 where
           , selectTargets $ TreacheryWithDoom (atLeast 1)
           , selectTargets $ AgendaWithDoom (atLeast 1)
           ]
-      chooseOrRunOne iid [targetLabel target [RemoveDoom (toSource attrs) target 1] | target <- targets]
+      chooseOrRunOne iid [targetLabel target [RemoveDoom (toSource attrs) target 1] | target <- ts]
 
       pure e
     _ -> Hallow3 <$> liftRunMessage msg attrs

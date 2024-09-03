@@ -1,7 +1,4 @@
-module Arkham.Asset.Cards.MitchBrown (
-  mitchBrown,
-  MitchBrown (..),
-) where
+module Arkham.Asset.Cards.MitchBrown (mitchBrown, MitchBrown (..)) where
 
 import Arkham.Prelude
 
@@ -23,7 +20,7 @@ slot attrs = RestrictedSlot (toSource attrs) (NotCard CardIsUnique) []
 instance RunMessage MitchBrown where
   runMessage msg (MitchBrown attrs) = case msg of
     -- Slots need to be added before the asset is played so we hook into played card
-    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
+    CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       pushAll $ replicate 2 (AddSlot iid AllySlot (slot attrs))
       MitchBrown <$> runMessage msg attrs
     _ -> MitchBrown <$> runMessage msg attrs

@@ -7,7 +7,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
 

@@ -35,14 +35,14 @@ instance RunMessage ShrineOfTheMoirai3 where
       push $ DoStep 5 msg
       pure e
     DoStep n msg'@(UseThisAbility iid (isProxySource attrs -> True) 1) -> do
-      targets <- select $ InDiscardOf (InvestigatorWithId iid) <> basic (CardWithMaxLevel n)
-      when (notNull targets) do
+      ts <- select $ InDiscardOf (InvestigatorWithId iid) <> basic (CardWithMaxLevel n)
+      when (notNull ts) do
         chooseOne
           iid
           [ TargetLabel
             (CardIdTarget $ toCardId target)
             [Msg.addToHand iid target, DoStep (n - fromJustNote "missing level" target.level) msg']
-          | target <- targets
+          | target <- ts
           ]
       pure e
     _ -> ShrineOfTheMoirai3 <$> liftRunMessage msg attrs

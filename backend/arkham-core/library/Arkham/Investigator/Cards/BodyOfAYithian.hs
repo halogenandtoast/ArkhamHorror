@@ -41,7 +41,7 @@ instance RunMessage BodyOfAYithian where
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
       drawCardsIfCan iid ElderSign 1
       pure i
-    UseCardAbility iid (isSource attrs -> True) 1 (getCommittedCard -> card) _ -> do
+    UseCardAbility _iid (isSource attrs -> True) 1 (getCommittedCard -> card) _ -> do
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) card DoubleSkillIcons
       pure i
     _ -> BodyOfAYithian . (`with` meta) <$> liftRunMessage msg attrs

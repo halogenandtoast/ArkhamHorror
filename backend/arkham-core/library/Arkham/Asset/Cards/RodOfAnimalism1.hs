@@ -11,7 +11,7 @@ import Arkham.Slot
 import Arkham.Trait (Trait (Creature))
 
 newtype RodOfAnimalism1 = RodOfAnimalism1 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rodOfAnimalism1 :: AssetCard RodOfAnimalism1
@@ -34,7 +34,7 @@ instance HasAbilities RodOfAnimalism1 where
 
 instance RunMessage RodOfAnimalism1 where
   runMessage msg a@(RodOfAnimalism1 attrs) = runQueueT $ case msg of
-    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
+    CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       pushAll $ replicate 2 (AddSlot iid #ally (slot attrs))
       RodOfAnimalism1 <$> runMessage msg attrs
     UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do

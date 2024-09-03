@@ -12,7 +12,7 @@ import Arkham.Projection
 import Arkham.Trait (Trait (Tarot))
 
 newtype MoonPendant2 = MoonPendant2 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 moonPendant2 :: AssetCard MoonPendant2
@@ -39,7 +39,7 @@ instance RunMessage MoonPendant2 where
     InHand _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
       push $ putCardIntoPlay iid attrs
       pure a
-    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
+    CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       push $ AddSlot iid TarotSlot (Slot (toSource attrs) [])
       MoonPendant2 <$> runMessage msg attrs
     _ -> MoonPendant2 <$> runMessage msg attrs

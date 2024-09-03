@@ -6,7 +6,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modified)
 import Arkham.Helpers.Window (getPassedBy)
 import Arkham.Matcher
-import Arkham.Placement
 import Arkham.Trait (Trait (Illicit))
 
 newtype IllTakeThat = IllTakeThat EventAttrs

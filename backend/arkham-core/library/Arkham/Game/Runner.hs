@@ -1290,13 +1290,13 @@ runGameMessage msg g = case msg of
           aid <- maybe getRandom pure mAid
           -- We need to start the placement as in play area so that CardEnteredPlay triggers only once
           asset <-
-            overAttrs (\attrs -> attrs {assetController = Just iid, assetPlacement = InPlayArea iid})
+            overAttrs (\attrs -> attrs {assetController = Just iid})
               <$> runMessage
                 (SetOriginalCardCode $ pcOriginalCardCode pc)
                 (createAsset card aid)
           pushAll
             [ PaidForCardCost iid card payment
-            , CardEnteredPlay iid card
+            , CardIsEnteringPlay iid card
             , InvestigatorPlayAsset iid aid
             , ResolvedCard iid card
             ]

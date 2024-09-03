@@ -22,7 +22,7 @@ slot attrs = Slot (toSource attrs) []
 instance RunMessage RelicHunter3 where
   runMessage msg (RelicHunter3 attrs) = case msg of
     -- Slots need to be added before the asset is played so we hook into played card
-    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
+    CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       push $ AddSlot iid AccessorySlot (slot attrs)
       RelicHunter3 <$> runMessage msg attrs
     _ -> RelicHunter3 <$> runMessage msg attrs

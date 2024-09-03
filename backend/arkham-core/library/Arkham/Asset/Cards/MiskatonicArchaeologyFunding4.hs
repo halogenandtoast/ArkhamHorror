@@ -34,7 +34,7 @@ slot attrs = TraitRestrictedSlot (toSource attrs) Miskatonic []
 
 instance RunMessage MiskatonicArchaeologyFunding4 where
   runMessage msg a@(MiskatonicArchaeologyFunding4 attrs) = case msg of
-    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
+    CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       pushAll $ replicate 2 (AddSlot iid AllySlot (slot attrs))
       MiskatonicArchaeologyFunding4 <$> runMessage msg attrs
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do

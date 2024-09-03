@@ -4,7 +4,6 @@ import Arkham.Capability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 
 newtype StandTogether = StandTogether EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

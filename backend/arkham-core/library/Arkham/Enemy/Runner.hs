@@ -1281,9 +1281,10 @@ instance RunMessage EnemyAttrs where
           pushAll $ windows' : resolve (EnemySpawn Nothing lid eid)
         xs -> spawnAtOneOf Nothing eid xs
       pure a
-    InvestigatorEliminated iid -> case enemyPlacement of
+    After (InvestigatorEliminated iid) -> case enemyPlacement of
       InThreatArea iid' | iid == iid' -> do
         lid <- getJustLocation iid
+        push $ EnemyCheckEngagement a.id
         pure $ a & placementL .~ AtLocation lid
       _ -> pure a
     DisengageEnemy iid eid | eid == enemyId -> case enemyPlacement of

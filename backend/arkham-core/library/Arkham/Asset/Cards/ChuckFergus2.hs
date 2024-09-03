@@ -35,7 +35,7 @@ instance HasModifiersFor ChuckFergus2 where
   getModifiersFor (InvestigatorTarget iid) (ChuckFergus2 a)
     | controlledBy a iid && not (assetExhausted a) =
         pure
-          $ toModifiers a [CanBecomeFastOrReduceCostOf cardMatcher 2]
+          $ toModifiers a [ChuckFergus2Modifier cardMatcher 2]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ChuckFergus2 where

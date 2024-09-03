@@ -822,8 +822,9 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
           Just subtitle -> selectAny (Matcher.AssetWithFullTitle title subtitle)
       _ -> pure True
 
-    modifiedCardCost <-
-      getPotentiallyModifiedCardCost iid c =<< getModifiedCardCost iid c
+    baseModifiedCardCost <- getModifiedCardCost iid c
+    modifiedCardCost <- getPotentiallyModifiedCardCost iid c True baseModifiedCardCost
+    modifiedCardCostWithChuckFergus <- getPotentiallyModifiedCardCost iid c False baseModifiedCardCost
 
     let
       alternateResourceCost = \case
@@ -839,7 +840,12 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
     let
       replaceThisCardSource :: Data a => a -> a
       replaceThisCardSource = over biplate (replaceThisCard c)
-      canAffordCost = modifiedCardCost <= (availableResources + additionalResources)
+      canAffordCost' = modifiedCardCost <= (availableResources + additionalResources)
+      canAffordCost =
+        if canAffordCost'
+          then canAffordCost'
+          else modifiedCardCostWithChuckFergus <= (availableResources + additionalResources)
+      needsChuckFergus = not canAffordCost' && canAffordCost
       handleCriteriaReplacement _ (CanPlayWithOverride (Criteria.CriteriaOverride cOverride)) = Just cOverride
       handleCriteriaReplacement m _ = m
       duringTurnWindow = mkWhen (Window.DuringTurn iid)
@@ -855,7 +861,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
             (listToMaybe [w | BecomesFast w <- cardModifiers <> modifiers])
       applyModifier (BecomesFast _) _ = True
       applyModifier (CanBecomeFast cardMatcher) _ = cardMatch c cardMatcher
-      applyModifier (CanBecomeFastOrReduceCostOf cardMatcher _) _ = canAffordCost && cardMatch c cardMatcher
+      applyModifier (ChuckFergus2Modifier cardMatcher _) _ = not needsChuckFergus && cardMatch c cardMatcher
       applyModifier _ val = val
       source' = replaceThisCardSource source
     passesCriterias <-
@@ -1633,20 +1639,20 @@ passesEnemyCriteria iid source windows' criterion = do
           xs -> pure $ Matcher.NotEnemy (concatMap Matcher.EnemyWithId xs)
 
 getPotentiallyModifiedCardCost
-  :: HasGame m => InvestigatorId -> Card -> Int -> m Int
-getPotentiallyModifiedCardCost iid c@(PlayerCard _) startingCost = do
+  :: HasGame m => InvestigatorId -> Card -> Bool -> Int -> m Int
+getPotentiallyModifiedCardCost iid c@(PlayerCard _) excludeChuckFergus startingCost = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
   foldM applyModifier startingCost (modifiers <> cardModifiers)
  where
   applyModifier n (CanReduceCostOf cardMatcher m) = do
     pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
-  applyModifier n (CanBecomeFastOrReduceCostOf cardMatcher m) = do
+  applyModifier n (ChuckFergus2Modifier cardMatcher m) | not excludeChuckFergus = do
     -- get is playable will check if this has to be used, will likely break if
     -- anything else aside from Chuck Fergus (2) interacts with this
     pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
   applyModifier n _ = pure n
-getPotentiallyModifiedCardCost iid c@(EncounterCard _) _ = do
+getPotentiallyModifiedCardCost iid c@(EncounterCard _) excludeChuckFergus _ = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   foldM
     applyModifier
@@ -1655,11 +1661,11 @@ getPotentiallyModifiedCardCost iid c@(EncounterCard _) _ = do
  where
   applyModifier n (CanReduceCostOf cardMatcher m) = do
     pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
-  applyModifier n (CanBecomeFastOrReduceCostOf cardMatcher m) = do
+  applyModifier n (ChuckFergus2Modifier cardMatcher m) | not excludeChuckFergus = do
     -- get is playable will check if this has to be used
     pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
   applyModifier n _ = pure n
-getPotentiallyModifiedCardCost _ (VengeanceCard _) _ =
+getPotentiallyModifiedCardCost _ (VengeanceCard _) _ _ =
   error "should not check vengeance card"
 
 cardInFastWindows

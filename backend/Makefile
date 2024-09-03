@@ -8,6 +8,16 @@ api.watch:
 		$(EXTRA_STACK_FLAGS) \
 	  --exec "bash -c \"pkill arkham-api; DEVELOPMENT=true stack exec arkham-api &\"" \
 
+.PHONY: api.watch.test
+api.watch.test:
+	cd arkham-api && \
+	stack build --test --fast arkham-api \
+	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
+	  --interleaved-output \
+	  --file-watch \
+		$(EXTRA_STACK_FLAGS) \
+	  --exec "bash -c \"pkill arkham-api; DEVELOPMENT=true stack exec arkham-api &\"" \
+
 .PHONY: api.prof
 api.prof:
 	cd cards-discover && \

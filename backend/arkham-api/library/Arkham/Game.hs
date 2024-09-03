@@ -807,8 +807,7 @@ getInvestigatorsMatching matcher = do
           =<< getInvestigatorIds
       pure $ selfCount == maximum (ncons selfCount allCounts)
     HasMatchingAsset assetMatcher -> flip filterM as $ \i ->
-      selectAny
-        (assetMatcher <> AssetControlledBy (InvestigatorWithId $ toId i))
+      selectAny $ assetMatcher <> assetControlledBy (toId i)
     HasMatchingTreachery treacheryMatcher -> flip filterM as $ \i ->
       selectAny
         ( treacheryMatcher <> TreacheryInThreatAreaOf (InvestigatorWithId $ toId i)
@@ -4542,6 +4541,7 @@ instance Projection Treachery where
       TreacheryCard -> pure $ lookupCard treacheryCardCode treacheryCardId
 
 instance HasDistance Game where
+  getDistance' _ start fin | start == fin = pure $ Just 0
   getDistance' _ start fin = do
     let !state' = LPState (pure start) (singleton start) mempty
     result <- evalStateT (markDistances start (pure . (== fin)) mempty) state'

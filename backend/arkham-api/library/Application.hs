@@ -3,6 +3,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE NoStrictData #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Application (

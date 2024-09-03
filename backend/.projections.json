@@ -1,7 +1,7 @@
 {
-  "arkham-core/library/Arkham/Effect/Effects/*.hs": {
+  "arkham-api/library/Arkham/Effect/Effects/*.hs": {
     "type": "effect",
-    "alternate": "arkham-core/tests/Arkham/Effect/Cards/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Effect/Cards/{}Spec.hs",
     "template": [
       "module Arkham.Effect.Effects.{dot}",
       "  ( {dot}(..)",
@@ -27,9 +27,9 @@
       "    {dot} <$> runMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Act/Cards/*.hs": {
+  "arkham-api/library/Arkham/Act/Cards/*.hs": {
     "type": "act",
-    "alternate": "arkham-core/tests/Arkham/Act/Cards/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Act/Cards/{}Spec.hs",
     "template": [
        "module Arkham.Act.Cards.{dot}",
        "  ( {dot}(..)",
@@ -54,9 +54,9 @@
        "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Scenario/Scenarios/*.hs": {
+  "arkham-api/library/Arkham/Scenario/Scenarios/*.hs": {
     "type": "scenario",
-    "alternate": "arkham-core/tests/Arkham/Scenario/Scenarios/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Scenario/Scenarios/{}Spec.hs",
     "template": [
       "module Arkham.Scenario.Scenarios.{dot}",
       "  ( {dot}(..)",
@@ -96,9 +96,9 @@
       "    {dot} <$> runMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Campaign/Campaigns/*.hs": {
+  "arkham-api/library/Arkham/Campaign/Campaigns/*.hs": {
     "type": "campaign",
-    "alternate": "arkham-core/tests/Arkham/Campaign/Campaigns/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Campaign/Campaigns/{}Spec.hs",
     "template": [
        "module Arkham.Campaign.Campaigns.{dot}",
        "  ( {dot}(..)",
@@ -143,9 +143,9 @@
        "  runMessage msg c@({dot} _attrs) = defaultCampaignRunner msg c"
     ]
   },
-  "arkham-core/library/Arkham/Agenda/Cards/*.hs": {
+  "arkham-api/library/Arkham/Agenda/Cards/*.hs": {
     "type": "agenda",
-    "alternate": "arkham-core/tests/Arkham/Agenda/Cards/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Agenda/Cards/{}Spec.hs",
     "template": [
       "module Arkham.Agenda.Cards.{dot}",
       "  ( {dot}(..)",
@@ -170,9 +170,9 @@
       "    _ -> {dot} <$> runMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Treachery/Cards/*.hs": {
+  "arkham-api/library/Arkham/Treachery/Cards/*.hs": {
     "type": "treachery",
-    "alternate": "arkham-core/tests/Arkham/Treachery/Cards/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Treachery/Cards/{}Spec.hs",
     "template": [
       "module Arkham.Treachery.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
@@ -196,9 +196,9 @@
       "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Investigator/Cards/*.hs": {
+  "arkham-api/library/Arkham/Investigator/Cards/*.hs": {
     "type": "investigator",
-    "alternate": "arkham-core/tests/Arkham/Investigator/Cards/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Investigator/Cards/{}Spec.hs",
     "template": [
       "module Arkham.Investigator.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
@@ -231,9 +231,9 @@
       "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Enemy/Cards/*.hs": {
+  "arkham-api/library/Arkham/Enemy/Cards/*.hs": {
     "type": "enemy",
-    "alternate": "arkham-core/tests/Arkham/Enemy/Cards/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Enemy/Cards/{}Spec.hs",
     "template": [
       "module Arkham.Enemy.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
@@ -259,9 +259,9 @@
       "    {dot} <$> runMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Asset/Cards/*.hs": {
+  "arkham-api/library/Arkham/Asset/Cards/*.hs": {
     "type": "asset",
-    "alternate": "arkham-core/tests/Arkham/Asset/Cards/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Asset/Cards/{}Spec.hs",
     "template": [
       "module Arkham.Asset.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
@@ -284,9 +284,9 @@
       "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Event/Cards/*.hs": {
+  "arkham-api/library/Arkham/Event/Cards/*.hs": {
     "type": "event",
-    "alternate": "arkham-core/tests/Arkham/Event/Cards/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Event/Cards/{}Spec.hs",
     "template": [
       "module Arkham.Event.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
@@ -311,9 +311,9 @@
       "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Location/Cards/*.hs": {
+  "arkham-api/library/Arkham/Location/Cards/*.hs": {
     "type": "location",
-    "alternate": "arkham-core/tests/Arkham/Location/Cards/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Location/Cards/{}Spec.hs",
     "template": [
       "module Arkham.Location.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
@@ -340,9 +340,9 @@
       "    _ -> {dot} <$> liftRunMessage msg attrs"
       ]
   },
-  "arkham-core/library/Arkham/Skill/Cards/*.hs": {
+  "arkham-api/library/Arkham/Skill/Cards/*.hs": {
     "type": "skill",
-    "alternate": "arkham-core/tests/Arkham/Skill/Cards/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Skill/Cards/{}Spec.hs",
     "template": [
       "module Arkham.Skill.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
@@ -365,9 +365,9 @@
       "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/Story/Cards/*.hs": {
+  "arkham-api/library/Arkham/Story/Cards/*.hs": {
     "type": "story",
-    "alternate": "arkham-core/tests/Arkham/Story/Cards/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Story/Cards/{}Spec.hs",
     "template": [
        "module Arkham.Story.Cards.{dot}",
        "  ( {dot}(..)",
@@ -391,9 +391,9 @@
        "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]
   },
-  "arkham-core/library/Arkham/*.hs": {
+  "arkham-api/library/Arkham/*.hs": {
     "type": "core",
-    "alternate": "arkham-core/tests/Arkham/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/{}Spec.hs",
     "template": [
       "module Arkham.{dot}",
       "  ( undefined",
@@ -403,8 +403,8 @@
       "import Arkham.Prelude"
     ]
   },
-  "arkham-core/tests/Arkham/*Spec.hs": {
-    "alternate": "arkham-core/library/Arkham/{}.hs",
+  "arkham-api/tests/Arkham/*Spec.hs": {
+    "alternate": "arkham-api/library/Arkham/{}.hs",
     "template": [
       "module Arkham.{dot}Spec",
       "  ( spec",

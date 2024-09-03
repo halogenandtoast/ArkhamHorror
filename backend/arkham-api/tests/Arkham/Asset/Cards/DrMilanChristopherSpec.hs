@@ -17,3 +17,15 @@ spec = describe "Dr. Milan Christopher" $ do
       applyResults
       useReaction
       self.resources `shouldReturn` 1
+
+    it "Should only be triggerable once per successful investigation" . gameTest $ \self -> do
+      location <- testLocation & prop @"shroud" 0
+      withProp @"resources" 0 self
+      self `putCardIntoPlay` Assets.drMilanChristopher
+      self `moveTo` location
+      self `investigate` location
+      startSkillTest
+      applyResults
+      useReaction
+      self.resources `shouldReturn` 1
+      peekQueue `shouldReturn` []

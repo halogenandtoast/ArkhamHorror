@@ -158,14 +158,14 @@ const attachedEnemies = computed(() => {
   const enemyIds = props.location.enemies;
 
   return enemyIds
-    .filter((e) => props.game.enemies[e].placement.tag === 'AttachedToLocation' && props.game.enemies[e].placement.contents === id.value) 
+    .filter((e) => props.game.enemies[e].placement.tag === 'AttachedToLocation') 
 })
 
 const treacheries = computed(() => {
   const treacheryIds = props.location.treacheries;
 
   return treacheryIds
-    .filter((e) => props.game.treacheries[e].placement.tag === 'OtherPlacement')
+    .filter((e) => props.game.treacheries[e].placement.tag === 'AttachedToLocation')
 })
 
 const blocked = computed(() => {

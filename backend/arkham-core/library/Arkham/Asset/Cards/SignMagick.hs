@@ -22,7 +22,7 @@ signMagick =
 
 instance RunMessage SignMagick where
   runMessage msg (SignMagick attrs) = case msg of
-    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
+    CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       push
         $ AddSlot iid ArcaneSlot
         $ RestrictedSlot (toSource attrs) (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual]) []

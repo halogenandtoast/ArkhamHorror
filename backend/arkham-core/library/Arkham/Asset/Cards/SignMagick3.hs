@@ -54,7 +54,7 @@ toOriginalAsset (_ : xs) = toOriginalAsset xs
 
 instance RunMessage SignMagick3 where
   runMessage msg a@(SignMagick3 attrs) = case msg of
-    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
+    CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       push
         $ AddSlot iid ArcaneSlot
         $ RestrictedSlot (toSource attrs) (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual]) []

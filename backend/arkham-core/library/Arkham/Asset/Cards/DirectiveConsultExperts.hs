@@ -34,7 +34,7 @@ instance HasModifiersFor DirectiveConsultExperts where
 
 instance RunMessage DirectiveConsultExperts where
   runMessage msg (DirectiveConsultExperts attrs) = runQueueT $ case msg of
-    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
+    CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       push $ AddSlot iid AllySlot $ Slot (toSource attrs) []
       DirectiveConsultExperts <$> runMessage msg attrs
     Flip _ _ (isTarget attrs -> True) -> do

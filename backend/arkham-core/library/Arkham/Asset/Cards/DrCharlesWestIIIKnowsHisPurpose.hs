@@ -34,7 +34,7 @@ slot attrs = TraitRestrictedSlot (toSource attrs) Tool []
 
 instance RunMessage DrCharlesWestIIIKnowsHisPurpose where
   runMessage msg a@(DrCharlesWestIIIKnowsHisPurpose attrs) = runQueueT $ case msg of
-    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
+    CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       push $ AddSlot iid #hand (slot attrs)
       DrCharlesWestIIIKnowsHisPurpose <$> runMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do

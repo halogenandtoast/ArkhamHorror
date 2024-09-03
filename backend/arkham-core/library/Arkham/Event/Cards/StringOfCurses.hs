@@ -4,7 +4,6 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
 

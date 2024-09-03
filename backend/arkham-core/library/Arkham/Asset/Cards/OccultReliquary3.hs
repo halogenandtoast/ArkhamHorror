@@ -15,7 +15,7 @@ occultReliquary3 = asset OccultReliquary3 Cards.occultReliquary3
 
 instance RunMessage OccultReliquary3 where
   runMessage msg (OccultReliquary3 attrs) = runQueueT $ case msg of
-    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
+    CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       let addSlot sType =
             AddSlot iid sType
               $ AdjustableSlot (toSource attrs) (Just $ oneOf [#blessed, #cursed]) [#hand, #accessory, #arcane] []

@@ -8,7 +8,6 @@ import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
 import Arkham.Investigate
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 
 newtype MapTheArea = MapTheArea EventAttrs

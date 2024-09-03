@@ -3,7 +3,6 @@ module Arkham.Event.Cards.FickleFortune3 (fickleFortune3, FickleFortune3 (..)) w
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 
 newtype FickleFortune3 = FickleFortune3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

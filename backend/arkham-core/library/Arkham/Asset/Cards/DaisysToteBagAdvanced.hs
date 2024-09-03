@@ -18,7 +18,7 @@ import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype DaisysToteBagAdvanced = DaisysToteBagAdvanced AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 daisysToteBagAdvanced :: AssetCard DaisysToteBagAdvanced
@@ -42,7 +42,7 @@ slot attrs = TraitRestrictedSlot (toSource attrs) Tome []
 instance RunMessage DaisysToteBagAdvanced where
   runMessage msg a@(DaisysToteBagAdvanced attrs) = case msg of
     -- Slots need to be added before the asset is played so we hook into played card
-    CardEnteredPlay iid card | toCardId card == toCardId attrs -> do
+    CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       pushAll $ replicate 2 (AddSlot iid HandSlot (slot attrs))
       DaisysToteBagAdvanced <$> runMessage msg attrs
     UseCardAbility _ (isSource attrs -> True) 1 [Window Timing.When (Window.PlayCard _ card) _] _ -> do

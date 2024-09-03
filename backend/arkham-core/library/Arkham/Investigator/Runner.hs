@@ -254,12 +254,12 @@ runWindow attrs windows actions playableCards = do
     if anyForced
       then do
         let
-          (silent, normal) = partition isSilentForcedAbility actions
+          (isSilent, normal) = partition isSilentForcedAbility actions
           toForcedAbilities = map (($ windows) . UseAbility iid)
           toUseAbilities = map ((\f -> f windows [] []) . AbilityLabel iid)
         -- Silent forced abilities should trigger automatically
         pushAll
-          $ toForcedAbilities silent
+          $ toForcedAbilities isSilent
           <> [asWindowChoose windows $ chooseOne player (toUseAbilities normal) | notNull normal]
           <> [CheckWindows windows]
       else do
@@ -289,13 +289,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & (logL . recordedL %~ insertSet key) . (logL . orderedKeysL %~ (<> [key]))
   EndCheckWindow -> do
     depth <- getWindowDepth
+    -- NOTE: the below added the = to correctly handle Milan triggering twice
+    -- during the same window This seems like the correct thing, but if we find
+    -- an ability not be accessible because of this, we'll need to find another
+    -- way to handle that case instead of updating these
     let
       filterAbility UsedAbility {..} = do
         limit <- getAbilityLimit (toId a) usedAbility
         pure $ case limit of
           NoLimit -> False
-          PlayerLimit PerWindow _ -> depth > usedDepth
-          GroupLimit PerWindow _ -> depth > usedDepth
+          PlayerLimit PerWindow _ -> depth >= usedDepth
+          GroupLimit PerWindow _ -> depth >= usedDepth
           _ -> True
 
     usedAbilities' <- filterM filterAbility investigatorUsedAbilities
@@ -3745,12 +3749,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       then do
         -- Silent forced abilities should trigger automatically
         let
-          (silent, normal) = partition isSilentForcedAbility actions
+          (isSilent, normal) = partition isSilentForcedAbility actions
           toForcedAbilities = map (($ windows) . UseAbility iid)
           toUseAbilities = map ((\f -> f windows [] []) . AbilityLabel iid)
         player <- getPlayer iid
         pushAll
-          $ toForcedAbilities silent
+          $ toForcedAbilities isSilent
           <> [chooseOne player (toUseAbilities normal) | notNull normal]
           <> [PlayerWindow iid additionalActions isAdditional]
       else do

@@ -15,8 +15,8 @@ drMilanChristopher :: AssetCard DrMilanChristopher
 drMilanChristopher = ally DrMilanChristopher Cards.drMilanChristopher (1, 2)
 
 instance HasModifiersFor DrMilanChristopher where
-  getModifiersFor (InvestigatorTarget iid) (DrMilanChristopher a) | controlledBy a iid = do
-    pure $ toModifiers a [SkillModifier #intellect 1]
+  getModifiersFor (InvestigatorTarget iid) (DrMilanChristopher a) = do
+    modified a [SkillModifier #intellect 1 | a `controlledBy` iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DrMilanChristopher where

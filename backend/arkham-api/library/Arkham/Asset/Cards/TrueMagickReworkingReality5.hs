@@ -8,7 +8,7 @@ import Arkham.Ability
 import {-# SOURCE #-} Arkham.Asset (createAsset)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Asset.Types (Asset)
+import Arkham.Asset.Types (Asset (..))
 import Arkham.Card
 import Arkham.Game.Helpers (getCanPerformAbility)
 import {-# SOURCE #-} Arkham.GameEnv
@@ -47,12 +47,13 @@ instance RunMessage TrueMagickReworkingReality5 where
     UseCardAbility iid (isSource attrs -> True) 1 ws _ -> do
       hand <- fieldMap InvestigatorHand (filterCards @CardMatcher (#asset <> #spell)) iid
       let adjustCost = overCost (over biplate (const attrs.id))
+      let setUses otherAttrs = otherAttrs {assetTokens = attrs.tokens}
       choices <- forMaybeM hand \card -> do
         tmpAbilities <-
           filterM
             (getCanPerformAbility iid ws)
             [ adjustCost $ ab {abilitySource = proxy (unsafeMakeCardId $ unAssetId aid) attrs}
-            | ab <- getAbilities (createAsset card $ unsafeFromCardId card.id)
+            | ab <- getAbilities (overAttrs setUses $ createAsset card $ unsafeFromCardId card.id)
             , aid <- maybeToList (preview _AssetSource ab.source)
             ]
         pure $ guard (notNull tmpAbilities) $> (card.id, tmpAbilities)
@@ -67,12 +68,15 @@ instance RunMessage TrueMagickReworkingReality5 where
       pure $ TrueMagickReworkingReality5 $ With attrs meta
     UseCardAbility iid (ProxySource (CardIdSource cid) (isSource attrs -> True)) n ws p -> do
       card <- getCard cid
-      let iasset = overAttrs (const attrs) (createAsset card attrs.id)
+      let iasset = overAttrs (const (attrs {assetCardCode = card.cardCode})) (createAsset card attrs.id)
       iasset' <- lift $ runMessage (UseCardAbility iid (toSource attrs) n ws p) iasset
       pure $ TrueMagickReworkingReality5 $ With (toAttrs iasset') (Metadata $ Just iasset')
     ResolvedAbility ab -> do
       case ab.source of
-        ProxySource _ (isSource attrs -> True) -> pure $ TrueMagickReworkingReality5 $ With attrs (Metadata Nothing)
+        ProxySource _ (isSource attrs -> True) ->
+          pure
+            $ TrueMagickReworkingReality5
+            $ With (attrs {assetCardCode = Cards.trueMagickReworkingReality5.cardCode}) (Metadata Nothing)
         _ -> case currentAsset meta of
           Just iasset -> do
             iasset' <- lift $ runMessage msg iasset

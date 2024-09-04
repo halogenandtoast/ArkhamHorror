@@ -243,6 +243,9 @@ data Card
   | VengeanceCard Card
   deriving stock (Show, Ord, Data)
 
+instance HasField "title" Card Text where
+  getField = toTitle
+
 instance HasField "cardCode" Card CardCode where
   getField = toCardCode
 

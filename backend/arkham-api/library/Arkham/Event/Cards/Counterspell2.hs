@@ -2,9 +2,7 @@ module Arkham.Event.Cards.Counterspell2 (counterspell2, Counterspell2 (..)) wher
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers (cancelChaosToken)
 import Arkham.Helpers.Window (getChaosToken)
-import Arkham.Message.Type (MessageType (..))
 
 newtype Counterspell2 = Counterspell2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -17,7 +15,5 @@ instance RunMessage Counterspell2 where
   runMessage msg e@(Counterspell2 attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent _ (is attrs -> True) _ (getChaosToken -> token) _ -> do
       cancelChaosToken token
-      push
-        $ CancelEachNext (toSource attrs) [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
       pure e
     _ -> Counterspell2 <$> liftRunMessage msg attrs

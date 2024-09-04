@@ -18,10 +18,10 @@ import Arkham.Enemy.Types
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher (
-  cardIs,
   CardMatcher (..),
   EnemyMatcher (..),
   ExtendedCardMatcher (..),
+  cardIs,
  )
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Resolution
@@ -131,19 +131,23 @@ instance RunMessage TheMidnightMasks where
       push
         $ byDifficulty
           attrs
-          (InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Tablet) 2)
+          (InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Tablet) 1)
           (InvestigatorPlaceAllCluesOnLocation iid (ChaosTokenEffectSource Tablet))
       pure s
     ScenarioResolution NoResolution -> do
       push R1
       pure s
     ScenarioResolution (Resolution n) -> do
-      cultistsWeInterrogated <- selectMap toCardCode (VictoryDisplayCardMatch $ CardWithTrait Trait.Cultist <> CardIsUnique)
+      cultistsWeInterrogated <-
+        selectMap toCardCode (VictoryDisplayCardMatch $ CardWithTrait Trait.Cultist <> CardIsUnique)
       agenda <- getCurrentAgendaStep
       inPlayCultistsWhoGotAway <- selectField EnemyCardCode (EnemyWithTrait Trait.Cultist <> UniqueEnemy)
       let
         resolution = if n == 1 then resolution1 else resolution2
-        cultistsWhoGotAway = inPlayCultistsWhoGotAway <> map toCardCode (attrs ^. decksL . at CultistDeck . non []) <> [toCardCode Enemies.theMaskedHunter | agenda == 1]
+        cultistsWhoGotAway =
+          inPlayCultistsWhoGotAway
+            <> map toCardCode (attrs ^. decksL . at CultistDeck . non [])
+            <> [toCardCode Enemies.theMaskedHunter | agenda == 1]
       ghoulPriestDefeated <- selectAny (VictoryDisplayCardMatch $ cardIs Enemies.ghoulPriest)
       story resolution
       recordSetInsert CultistsWeInterrogated cultistsWeInterrogated

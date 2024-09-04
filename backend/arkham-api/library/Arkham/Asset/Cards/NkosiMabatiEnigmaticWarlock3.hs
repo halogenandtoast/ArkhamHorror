@@ -8,7 +8,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
 import Arkham.ChaosToken
-import Arkham.Game.Helpers (cancelChaosToken)
 import Arkham.Helpers.Window (getChaosToken)
 import Arkham.Matcher
 import Arkham.Message (MessageType (..))
@@ -50,7 +49,7 @@ instance RunMessage NkosiMabatiEnigmaticWarlock3 where
     UseCardAbility iid (isSource attrs -> True) 2 (getChaosToken -> token) _ -> do
       for_ (toResult @(Maybe ChaosTokenFace) attrs.meta) $ \face -> do
         let source = toAbilitySource attrs 2
-        cancelChaosToken token
+        cancelChaosToken source token
         pushAll
           [ CancelEachNext source [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
           , ReturnChaosTokens [token]

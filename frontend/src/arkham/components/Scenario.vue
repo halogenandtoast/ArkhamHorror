@@ -697,6 +697,7 @@ const tarotCardAbility = (card: TarotCard) => {
 .location-cards-container {
   display: flex;
   flex: 1;
+  scrollbar-gutter: stable both-edges;
   overflow-y: auto;
   padding-top: 32px;
   padding-bottom: 32px;

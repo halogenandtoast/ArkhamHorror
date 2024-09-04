@@ -20,7 +20,7 @@ instance RunMessage GuidedByFaith where
       sid <- getRandom
       onRevealChaosTokenEffect sid (oneOf [#bless, #eldersign]) attrs attrs do
         skillTestModifier sid attrs iid (DiscoveredClues 1)
-      investigateWithSkillChoice sid iid attrs [#combat, #intellect]
+      investigateWithSkillChoice sid iid attrs [#willpower, #intellect]
       pure e
     BeforeRevealChaosTokens -> do
       n <- getRemainingBlessTokens

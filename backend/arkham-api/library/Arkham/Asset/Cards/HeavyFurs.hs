@@ -3,7 +3,6 @@ module Arkham.Asset.Cards.HeavyFurs (heavyFurs, HeavyFurs (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
-import Arkham.Game.Helpers (cancelChaosToken)
 import Arkham.Helpers.Window (getChaosToken)
 import Arkham.Matcher
 import Arkham.Message (MessageType (..))
@@ -26,12 +25,9 @@ instance HasAbilities HeavyFurs where
 instance RunMessage HeavyFurs where
   runMessage msg a@(HeavyFurs attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
-      cancelChaosToken token
+      cancelChaosToken (attrs.ability 1) token
       pushAll
-        [ CancelEachNext
-            (attrs.ability 1)
-            [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
-        , ReturnChaosTokens [token]
+        [ ReturnChaosTokens [token]
         , UnfocusChaosTokens
         , DrawAnotherChaosToken iid
         ]

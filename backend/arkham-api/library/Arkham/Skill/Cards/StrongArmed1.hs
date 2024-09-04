@@ -1,12 +1,10 @@
 module Arkham.Skill.Cards.StrongArmed1 (strongArmed1, StrongArmed1 (..)) where
 
 import Arkham.Ability
-import Arkham.Game.Helpers (cancelChaosToken)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, getSkillTestSource)
 import Arkham.Helpers.Window (getChaosToken)
 import Arkham.Matcher
-import Arkham.Message (MessageType (..))
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Strategy
@@ -44,10 +42,9 @@ instance RunMessage StrongArmed1 where
   runMessage msg s@(StrongArmed1 attrs) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
       whenJustM getSkillTestInvestigator \iid' -> do
-        cancelChaosToken token
+        cancelChaosToken (attrs.ability 1) token
         pushAll
-          [ CancelEachNext (toSource attrs) [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
-          , ReturnChaosTokens [token]
+          [ ReturnChaosTokens [token]
           , UnfocusChaosTokens
           , DrawAnotherChaosToken iid'
           , RerunSkillTest

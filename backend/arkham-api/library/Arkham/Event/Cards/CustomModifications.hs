@@ -6,7 +6,7 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (RevealChaosToken)
-import Arkham.Game.Helpers (cancelChaosToken, targetToSource)
+import Arkham.Game.Helpers (targetToSource)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Modifiers (ModifierType (..), modified)
 import Arkham.Helpers.SkillTest (
@@ -17,13 +17,9 @@ import Arkham.Helpers.SkillTest (
   withSkillTest,
  )
 import Arkham.Matcher
-import Arkham.Message.Type
 import Arkham.Placement
 import Arkham.Trait (Trait (Upgrade))
 import Arkham.Window (revealedChaosTokens)
-
--- □□□□ Quicksilver Bullets. If you succeed by 3 or more while attacking with
--- attached asset, this attack deals +1 damage.
 
 newtype CustomModifications = CustomModifications EventAttrs
   deriving anyclass IsEvent
@@ -115,10 +111,9 @@ instance RunMessage CustomModifications where
       pure e
     UseCardAbility iid (isSource attrs -> True) 1 (revealedChaosTokens -> [token]) _ -> do
       let source = toAbilitySource attrs 1
-      cancelChaosToken token
+      cancelChaosToken source token
       pushAll
-        [ CancelEachNext source [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
-        , ReturnChaosTokens [token]
+        [ ReturnChaosTokens [token]
         , UnfocusChaosTokens
         , DrawAnotherChaosToken iid
         ]

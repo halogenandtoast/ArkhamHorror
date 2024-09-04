@@ -29,7 +29,6 @@ import Arkham.Action (Action)
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional (AdditionalActionType (BobJenkinsAction), additionalActionType)
 import {-# SOURCE #-} Arkham.Asset (createAsset)
-import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Asset, AssetAttrs (assetCardCode), Field (..))
 import Arkham.Attack
 import Arkham.Capability
@@ -1083,30 +1082,32 @@ passesCriteria iid mcard source' requestor windows' = \case
             <> Matcher.InPlayAreaOf (Matcher.InvestigatorWithId iid)
         _ -> error $ "Unhandled source: " <> show source' <> " " <> show mcard
   Criteria.HasTrueMagick -> do
-    trueMagick <- selectJust $ Matcher.assetIs Assets.trueMagickReworkingReality5
-    attrs <- getAttrs @Asset trueMagick
-    hand <-
-      fieldMap
-        InvestigatorHand
-        (filter (`cardMatch` (Matcher.CardWithType AssetType <> Matcher.CardWithTrait Spell)))
-        iid
-    let
-      replaceAssetId = const attrs.id
-      replaceAssetIds = over biplate replaceAssetId
-    let handEntities =
-          map
-            (overAttrs (\attrs' -> attrs {assetCardCode = assetCardCode attrs'}) . (`createAsset` attrs.id))
-            hand
-    let handAbilities =
-          map
-            ( \ab -> case ab.source of
-                AssetSource aid ->
-                  overCost replaceAssetIds
-                    $ ab {abilitySource = proxy attrs (CardIdSource $ unsafeMakeCardId $ unAssetId aid)}
-                _ -> error "wrong source"
-            )
-            (concatMap getAbilities handEntities)
-    anyM (getCanPerformAbility iid windows') handAbilities
+    case source' of
+      AssetSource trueMagick -> do
+        attrs <- getAttrs @Asset trueMagick
+        hand <-
+          fieldMap
+            InvestigatorHand
+            (filter (`cardMatch` (Matcher.CardWithType AssetType <> Matcher.CardWithTrait Spell)))
+            iid
+        let
+          replaceAssetId = const attrs.id
+          replaceAssetIds = over biplate replaceAssetId
+        let handEntities =
+              map
+                (overAttrs (\attrs' -> attrs {assetCardCode = assetCardCode attrs'}) . (`createAsset` attrs.id))
+                hand
+        let handAbilities =
+              map
+                ( \ab -> case ab.source of
+                    AssetSource aid ->
+                      overCost replaceAssetIds
+                        $ ab {abilitySource = proxy attrs (CardIdSource $ unsafeMakeCardId $ unAssetId aid)}
+                    _ -> error "wrong source"
+                )
+                (concatMap getAbilities handEntities)
+        anyM (getCanPerformAbility iid windows') handAbilities
+      _ -> error "wrong source"
   Criteria.HasCalculation c valueMatcher -> do
     value <- calculate c
     gameValueMatches value valueMatcher

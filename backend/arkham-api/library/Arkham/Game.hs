@@ -4668,6 +4668,10 @@ runMessages mLogger = do
         for_ mLogger $ liftIO . ($ msg)
 
         case msg of
+          Run msgs -> do
+            pushAll msgs
+            runMessages mLogger
+          ClearUI -> runMessages mLogger
           Ask pid q -> do
             -- if we are choosing decks, we do not want to clobber other ChooseDeck
             moreChooseDecks <-

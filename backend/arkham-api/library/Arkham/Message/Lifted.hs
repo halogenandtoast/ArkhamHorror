@@ -30,6 +30,7 @@ import Arkham.Evade qualified as Evade
 import Arkham.Fight
 import Arkham.Fight qualified as Fight
 import Arkham.Game.Helpers (getActionsWith, getIsPlayable)
+import Arkham.Game.Helpers qualified as Msg
 import Arkham.Helpers
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Campaign qualified as Msg
@@ -37,14 +38,11 @@ import Arkham.Helpers.Card (getCardEntityTarget)
 import Arkham.Helpers.Effect qualified as Msg
 import Arkham.Helpers.Enemy qualified as Msg
 import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
-import Arkham.Helpers.Log qualified as Msg
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers (getMetaMaybe)
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Helpers.SkillTest qualified as Msg
-import Arkham.Helpers.Window qualified as Msg
 import Arkham.Helpers.Xp
 import Arkham.Id
 import Arkham.Investigate
@@ -1244,6 +1242,19 @@ disengageEnemy iid eid = push $ Msg.DisengageEnemy iid eid
 
 cancelledOrIgnoredCardOrGameEffect :: (ReverseQueue m, Sourceable source) => source -> m ()
 cancelledOrIgnoredCardOrGameEffect source = checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource source)
+
+cancelChaosToken
+  :: (ReverseQueue (t m), HasQueue Message m, MonadTrans t, Sourceable source)
+  => source
+  -> ChaosToken
+  -> t m ()
+cancelChaosToken source token = do
+  lift $ Msg.cancelChaosToken token
+  push
+    $ CancelEachNext
+      (toSource source)
+      [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
+  cancelledOrIgnoredCardOrGameEffect source
 
 cancelCardDraw
   :: (Sourceable source, ReverseQueue (t m), HasQueue Message m, MonadTrans t)

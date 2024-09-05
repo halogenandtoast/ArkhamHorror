@@ -39,7 +39,7 @@ newtype CarnevaleOfHorrors = CarnevaleOfHorrors ScenarioAttrs
 
 carnevaleOfHorrors :: Difficulty -> CarnevaleOfHorrors
 carnevaleOfHorrors difficulty =
-  scenario
+  sideStory
     CarnevaleOfHorrors
     "82001"
     "Carnevale of Horrors"

@@ -40,7 +40,7 @@ newtype MurderAtTheExcelsiorHotel = MurderAtTheExcelsiorHotel ScenarioAttrs
 
 murderAtTheExcelsiorHotel :: Difficulty -> MurderAtTheExcelsiorHotel
 murderAtTheExcelsiorHotel difficulty =
-  scenario
+  sideStory
     MurderAtTheExcelsiorHotel
     "84001"
     "Murder at the Excelsior Hotel"

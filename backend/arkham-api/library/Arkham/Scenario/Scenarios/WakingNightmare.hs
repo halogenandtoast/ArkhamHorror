@@ -13,6 +13,7 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Agenda
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
@@ -138,6 +139,18 @@ instance RunMessage WakingNightmare where
               & (actStackL . at 1 ?~ acts)
               & (setAsideCardsL <>~ setAsideCards)
           )
+    ResolveChaosToken _ Cultist iid -> do
+      n <- getCurrentAgendaStep
+      when (isHardExpert attrs && n >= 2) $ pushM makeInfestationTest
+      push $ DrawAnotherChaosToken iid
+      pure s
+    FailedSkillTest _iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Cultist | isEasyStandard attrs -> do
+          n <- getCurrentAgendaStep
+          when (n >= 2) $ pushM makeInfestationTest
+        _ -> pure ()
+      pure s
     ScenarioResolution r -> do
       players <- allPlayers
       lead <- getLeadPlayer

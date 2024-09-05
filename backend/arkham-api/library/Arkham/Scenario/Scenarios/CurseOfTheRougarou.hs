@@ -31,7 +31,7 @@ newtype CurseOfTheRougarou = CurseOfTheRougarou ScenarioAttrs
 
 curseOfTheRougarou :: Difficulty -> CurseOfTheRougarou
 curseOfTheRougarou difficulty =
-  scenario
+  sideStory
     CurseOfTheRougarou
     "81001"
     "Curse of the Rougarou"

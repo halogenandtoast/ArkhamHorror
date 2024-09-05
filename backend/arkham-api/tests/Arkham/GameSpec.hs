@@ -8,4 +8,6 @@ spec :: Spec
 spec = describe "ToJSON" $ do
   it "is reversable" $ gameTest $ \_ -> do
     game <- getGame
-    liftIO $ decode (encode game) == Just game `shouldBe` True
+    liftIO
+      $ either (\err -> fail $ "Could not roundtrip: " <> err) (`shouldBe` game)
+      $ eitherDecode' (encode game)

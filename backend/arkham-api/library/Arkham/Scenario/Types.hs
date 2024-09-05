@@ -121,6 +121,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioTurn :: Int
   , scenarioTimesPlayed :: Int
   , scenarioDefeatedEnemies :: Map EnemyId DefeatedEnemyAttrs
+  , scenarioIsSideStory :: Bool
   , -- for standalone
     scenarioStoryCards :: Map InvestigatorId [PlayerCard]
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
@@ -161,6 +162,18 @@ scenarioWith
   -> a
 scenarioWith f cardCode name difficulty layout g =
   scenario (f . g) cardCode name difficulty layout
+
+sideStory
+  :: (ScenarioAttrs -> a)
+  -> CardCode
+  -> Name
+  -> Difficulty
+  -> [GridTemplateRow]
+  -> a
+sideStory f cardCode name difficulty layout =
+  scenario (f . setSideStory) cardCode name difficulty layout
+ where
+  setSideStory attrs = attrs {scenarioIsSideStory = True}
 
 scenario
   :: (ScenarioAttrs -> a)
@@ -214,6 +227,7 @@ scenario f cardCode name difficulty layout =
       , scenarioTurn = 0
       , scenarioTimesPlayed = 0
       , scenarioDefeatedEnemies = mempty
+      , scenarioIsSideStory = False
       }
 
 instance Entity ScenarioAttrs where
@@ -269,4 +283,51 @@ scenarioActs s = case mapToList $ scenarioActStack (toAttrs s) of
   _ -> error "Not able to handle multiple act stacks yet"
 
 makeLensesWith suffixedFields ''ScenarioAttrs
-$(deriveJSON (aesonOptions $ Just "scenario") ''ScenarioAttrs)
+$(deriveToJSON (aesonOptions $ Just "scenario") ''ScenarioAttrs)
+
+instance FromJSON ScenarioAttrs where
+  parseJSON = withObject "ScenarioAttrs" \o -> do
+    scenarioName <- o .: "name"
+    scenarioId <- o .: "id"
+    scenarioReference <- o .: "reference"
+    scenarioDifficulty <- o .: "difficulty"
+    scenarioCardsUnderScenarioReference <- o .: "cardsUnderScenarioReference"
+    scenarioCardsUnderAgendaDeck <- o .: "cardsUnderAgendaDeck"
+    scenarioCardsUnderActDeck <- o .: "cardsUnderActDeck"
+    scenarioCardsNextToActDeck <- o .: "cardsNextToActDeck"
+    scenarioCardsNextToAgendaDeck <- o .: "cardsNextToAgendaDeck"
+    scenarioActStack <- o .: "actStack"
+    scenarioAgendaStack <- o .: "agendaStack"
+    scenarioCompletedAgendaStack <- o .: "completedAgendaStack"
+    scenarioCompletedActStack <- o .: "completedActStack"
+    scenarioLocationLayout <- o .: "locationLayout"
+    scenarioDecks <- o .: "decks"
+    scenarioLog <- o .: "log"
+    scenarioCounts <- o .: "counts"
+    scenarioStandaloneCampaignLog <- o .: "standaloneCampaignLog"
+    scenarioSetAsideCards <- o .: "setAsideCards"
+    scenarioInResolution <- o .: "inResolution"
+    scenarioNoRemainingInvestigatorsHandler <- o .: "noRemainingInvestigatorsHandler"
+    scenarioVictoryDisplay <- o .: "victoryDisplay"
+    scenarioChaosBag <- o .: "chaosBag"
+    scenarioEncounterDeck <- o .: "encounterDeck"
+    scenarioHasEncounterDeck <- o .: "hasEncounterDeck"
+    scenarioDiscard <- o .: "discard"
+    scenarioEncounterDecks <- o .: "encounterDecks"
+    scenarioActiveEncounterDeck <- o .: "activeEncounterDeck"
+    scenarioResignedCardCodes <- o .: "resignedCardCodes"
+    scenarioResolvedStories <- o .: "resolvedStories"
+    scenarioDecksLayout <- o .: "decksLayout"
+    scenarioSetAsideKeys <- o .: "setAsideKeys"
+    scenarioMeta <- o .: "meta"
+    scenarioUsesGrid <- o .: "usesGrid"
+    scenarioTokens <- o .: "tokens"
+    scenarioTarotCards <- o .: "tarotCards"
+    scenarioTarotDeck <- o .: "tarotDeck"
+    scenarioTurn <- o .: "turn"
+    scenarioTimesPlayed <- o .: "timesPlayed"
+    scenarioDefeatedEnemies <- o .: "defeatedEnemies"
+    scenarioIsSideStory <- o .:? "isSideStory" .!= False
+    scenarioStoryCards <- o .: "storyCards"
+    scenarioPlayerDecks <- o .: "playerDecks"
+    pure ScenarioAttrs {..}

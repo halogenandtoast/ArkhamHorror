@@ -59,7 +59,7 @@ import Arkham.Game.Helpers hiding (
  )
 import Arkham.Game.Helpers qualified as Helpers
 import Arkham.Game.Json ()
-import Arkham.Game.Runner ()
+import Arkham.Game.Runner (preloadEntities)
 import Arkham.Game.Settings
 import Arkham.Game.State
 import Arkham.Game.Utils
@@ -4740,18 +4740,17 @@ runMessages mLogger = do
                 Would {} -> False
                 _ -> True
 
-            g' <-
-              runWithEnv
-                $ getGame
-                >>= runMessage msg
-                >>= if shouldPreloadModifiers msg
+            runWithEnv do
+              overGameM preloadEntities
+              overGameM
+                $ runMessage msg
+                >=> if shouldPreloadModifiers msg
                   then
                     preloadModifiers
                       >=> handleAsIfChanges asIfLocations
                       >=> handleTraitRestrictedModifiers
                       >=> handleBlanked
                   else pure
-            putGame g'
             runMessages mLogger
 
 getAsIfLocationMap :: HasGame m => m (Map InvestigatorId LocationId)

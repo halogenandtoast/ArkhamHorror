@@ -2725,7 +2725,8 @@ preloadEntities g = do
 -- too late.
 instance RunMessage Game where
   runMessage msg g = do
-    ( runPreGameMessage msg g
+    ( -- preloadEntities g
+      runPreGameMessage msg g
         >>= (modeL . here) (runMessage msg)
         >>= (modeL . there) (runMessage msg)
         >>= entitiesL (runMessage msg)
@@ -2743,7 +2744,7 @@ instance RunMessage Game where
         >>= (skillTestL . traverse) (runMessage msg)
         >>= (activeCostL . traverse) (runMessage msg)
         >>= runGameMessage msg
-        >>= preloadEntities
+        -- >>= preloadEntities
       )
       <&> handleActionDiff g
       . set enemyMovingL Nothing

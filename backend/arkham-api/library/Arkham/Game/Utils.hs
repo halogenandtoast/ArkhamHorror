@@ -56,7 +56,7 @@ getInvestigator iid =
       Nothing -> throw $ MissingEntity $ T.pack missingInvestigator
     Just i -> pure i
  where
-  missingInvestigator = "Unknown investigator: " <> show iid
+  missingInvestigator = "Unknown investigator: " <> show iid <> "\n\n" <> prettyCallStack callStack
 
 getInvestigatorMaybe :: HasGame m => InvestigatorId -> m (Maybe Investigator)
 getInvestigatorMaybe iid = preview (entitiesL . investigatorsL . ix iid) <$> getGame

@@ -1336,8 +1336,8 @@ playCardPayingCost iid card = do
   addToHand iid [card]
   payCardCost iid card
 
-payCardCost :: ReverseQueue m => InvestigatorId -> Card -> m ()
-payCardCost iid card = push $ Msg.PayCardCost iid card (defaultWindows iid)
+payCardCost :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
+payCardCost iid card = push $ Msg.PayCardCost iid (toCard card) (defaultWindows iid)
 
 playCardPayingCostWithWindows :: ReverseQueue m => InvestigatorId -> Card -> [Window] -> m ()
 playCardPayingCostWithWindows iid card ws = do

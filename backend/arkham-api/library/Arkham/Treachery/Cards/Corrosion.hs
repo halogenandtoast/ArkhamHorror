@@ -1,20 +1,16 @@
-module Arkham.Treachery.Cards.Corrosion (
-  corrosion,
-  Corrosion (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Corrosion (corrosion, Corrosion (..)) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
-import Arkham.Classes
+import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Corrosion = Corrosion TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -24,48 +20,31 @@ corrosion :: TreacheryCard Corrosion
 corrosion = treachery Corrosion Cards.corrosion
 
 handMatcher :: CardMatcher
-handMatcher = CardWithTrait Item <> CardWithType AssetType <> NonWeakness
+handMatcher = #item <> #asset <> NonWeakness
 
-assetMatcher :: AssetMatcher
-assetMatcher = DiscardableAsset <> AssetWithTrait Item <> AssetControlledBy You
+assetMatcher :: InvestigatorId -> AssetMatcher
+assetMatcher iid = DiscardableAsset <> #item <> assetControlledBy iid
 
 instance RunMessage Corrosion where
-  runMessage msg t@(Corrosion attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      shroud <- maybe (pure 0) (fieldJust LocationShroud) =<< field InvestigatorLocation iid
-      hasAssets <- selectAny assetMatcher
-      hasHandAssets <-
-        fieldP
-          InvestigatorHand
-          (any (`cardMatch` handMatcher))
-          iid
-      push
-        $ if shroud > 0 && (hasAssets || hasHandAssets)
-          then RevelationChoice iid source shroud
+  runMessage msg t@(Corrosion attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      withLocationOf iid \lid -> do
+        shroud <- fieldWithDefault 0 LocationShroud lid
+        hasAssets <- selectAny $ assetMatcher iid
+        hasHandAssets <- fieldAny InvestigatorHand (`cardMatch` handMatcher) iid
+        if shroud > 0 && (hasAssets || hasHandAssets)
+          then doStep shroud msg
           else gainSurge attrs
       pure t
-    RevelationChoice iid source n | n > 0 -> do
-      assets <- selectWithField AssetCost assetMatcher
-      handAssets <- fieldMap InvestigatorHand (filter (`cardMatch` handMatcher)) iid
-      let
-        discardAsset (asset, cost) =
-          targetLabel
-            asset
-            [toDiscardBy iid attrs asset, RevelationChoice iid source (n - cost)]
-        discardHandAsset card =
-          TargetLabel
-            (CardIdTarget $ toCardId card)
-            [ toDiscardBy iid attrs (toCardId card)
-            , RevelationChoice
-                iid
-                source
-                (n - maybe 0 toPrintedCost (cdCost $ toCardDef card))
-            ]
-      player <- getPlayer iid
-      unless (null assets && null handAssets)
-        $ push
-        $ chooseOne player
-        $ map discardAsset assets
-        <> map discardHandAsset handAssets
+    DoStep n msg'@(Revelation iid (isSource attrs -> True)) | n > 0 -> do
+      assets <- selectWithField AssetCost $ assetMatcher iid
+      handAssets <- fieldMap InvestigatorHand (filterCards handMatcher) iid
+      chooseOneM iid do
+        for_ assets \(asset, cost) -> targeting asset do
+          toDiscardBy iid attrs asset
+          doStep (n - cost) msg'
+        targets handAssets \card -> do
+          toDiscardBy iid attrs card.id
+          doStep (n - card.printedCost) msg'
       pure t
-    _ -> Corrosion <$> runMessage msg attrs
+    _ -> Corrosion <$> liftRunMessage msg attrs

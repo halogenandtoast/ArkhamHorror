@@ -20,6 +20,14 @@ fieldMay fld eid = do
   hasEntity <- isJust <$> project @a eid
   if hasEntity then fieldMap fld Just eid else pure Nothing
 
+fieldWithDefault
+  :: (Projection a, HasGame m, AsId b, IdOf b ~ EntityId a)
+  => typ
+  -> Field a (Maybe typ)
+  -> b
+  -> m typ
+fieldWithDefault def fld (asId -> entityId) = fromMaybe def <$> field fld entityId
+
 fieldJust
   :: (HasCallStack, Projection a, HasGame m, Show (Field a (Maybe typ)), AsId b, IdOf b ~ EntityId a)
   => Field a (Maybe typ)
@@ -93,3 +101,6 @@ fieldNone fld = fieldP fld (== 0)
 
 fieldLength :: (HasGame m, Projection a) => Field a [b] -> EntityId a -> m Int
 fieldLength fld = fieldMap fld length
+
+fieldAny :: (HasGame m, Projection a) => Field a [b] -> (b -> Bool) -> EntityId a -> m Bool
+fieldAny fld f eid = fieldP fld (any f) eid

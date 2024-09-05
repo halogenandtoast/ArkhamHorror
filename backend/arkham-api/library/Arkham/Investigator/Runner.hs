@@ -1396,8 +1396,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       onlyAssets = any (`elem` mustBeDamagedFirstBeforeInvestigator) sanityDamageableAssets
       allowedDamage =
         findFewestOccurrences
-          damageTargets
-          ( map toTarget sanityDamageableAssets
+          (traceShowId horrorTargets)
+          ( traceShowId $ map toTarget sanityDamageableAssets
               <> [InvestigatorTarget iid | not onlyAssets]
               <> (if not onlyAssets then map toTarget sanityDamageableInvestigators else [])
           )

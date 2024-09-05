@@ -1,20 +1,12 @@
-module Arkham.Act.Cards.TheWayOut (
-  TheWayOut (..),
-  theWayOut,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheWayOut (TheWayOut (..), theWayOut) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Movement
-import Arkham.Resolution
-import Arkham.Timing qualified as Timing
+import Arkham.Message.Lifted.Choose
 
 newtype TheWayOut = TheWayOut ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -26,73 +18,37 @@ theWayOut = act (3, A) TheWayOut Cards.theWayOut Nothing
 instance HasAbilities TheWayOut where
   getAbilities (TheWayOut a)
     | onSide A a =
-        [ restrictedAbility
-            a
-            1
-            (LocationExists $ locationIs Locations.theGateToHell)
-            $ ForcedAbility
-            $ RoundEnds Timing.When
-        , restrictedAbility
-            a
-            2
-            ( EachUndefeatedInvestigator
-                $ InvestigatorAt
-                $ locationIs
-                  Locations.theGateToHell
-            )
+        [ restrictedAbility a 1 (exists $ locationIs Locations.theGateToHell) $ forced $ RoundEnds #when
+        , restrictedAbility a 2 (EachUndefeatedInvestigator $ at_ $ locationIs Locations.theGateToHell)
             $ Objective
             $ ForcedAbility AnyWindow
         ]
   getAbilities _ = []
 
 instance RunMessage TheWayOut where
-  runMessage msg a@(TheWayOut attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      lead <- getLeadPlayer
+  runMessage msg a@(TheWayOut attrs) = runQueueT $ case msg of
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      lead <- getLead
       theGateToHell <- selectJust $ locationIs $ Locations.theGateToHell
-      locations <-
-        select
-          $ FarthestLocationFromLocation theGateToHell Anywhere
-      locationsWithInvestigatorsAndEnemiesAndConnectedLocations <-
-        for locations $ \location -> do
-          investigators <- select $ InvestigatorAt $ LocationWithId location
-          enemies <- select $ EnemyAt $ LocationWithId location
-          connectedLocations <-
-            select
-              $ AccessibleFrom
-              $ LocationWithId
-                location
-          pure (location, investigators, enemies, connectedLocations)
-      push
-        $ chooseOrRunOne
-          lead
-          [ targetLabel
-            location
-            [ chooseOrRunOne
-                lead
-                [ targetLabel
-                  connected
-                  [ chooseOneAtATime lead
-                      $ [ targetLabel
-                          investigator
-                          [MoveTo $ move (toSource attrs) investigator connected]
-                        | investigator <- investigators
-                        ]
-                      <> [ targetLabel enemy [EnemyMove enemy connected]
-                         | enemy <- enemies
-                         ]
-                  ]
-                | connected <- connectedLocations
-                ]
-            ]
-          | (location, investigators, enemies, connectedLocations) <-
-              locationsWithInvestigatorsAndEnemiesAndConnectedLocations
-          ]
+      selectOrRunOneToHandle lead (attrs.ability 1) $ FarthestLocationFromLocation theGateToHell Anywhere
       pure a
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      push $ ScenarioResolution $ Resolution 1
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      push R1
       pure a
-    _ -> TheWayOut <$> runMessage msg attrs
+    HandleTargetChoice _iid (isSource attrs -> True) (LocationTarget lid) -> do
+      investigators <- select $ investigatorAt lid
+      enemies <- select $ enemyAt lid
+      when (notNull investigators || notNull enemies) do
+        lead <- getLead
+        connectedLocations <- select $ accessibleFrom lid
+        chooseOrRunOneM lead do
+          targets connectedLocations \connected -> do
+            chooseOneAtATimeM lead do
+              targets investigators \investigator -> moveTo attrs investigator connected
+              targets enemies \enemy -> push $ EnemyMove enemy connected
+      toDiscard (attrs.ability 1) lid
+      pure a
+    _ -> TheWayOut <$> liftRunMessage msg attrs

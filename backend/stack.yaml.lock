@@ -87,9 +87,44 @@ packages:
   original:
     subdir: lib/services/amazonka-s3
     url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
+- completed:
+    hackage: jwt-0.11.0@sha256:0602735ee4093c6c5bc918461855bcd55499099363bad34eb7a227aeef3cde29,4265
+    pantry-tree:
+      sha256: 0b3155d79cc7d44285762b2012debe8ec70ac377163a8e5f29581bacaf50179e
+      size: 1029
+  original:
+    hackage: jwt-0.11.0@sha256:0602735ee4093c6c5bc918461855bcd55499099363bad34eb7a227aeef3cde29,4265
+- completed:
+    hackage: cryptostore-0.3.1.0@sha256:ce4762361b509d1719b5d500604a5a1f2d75c2c53f4fe75f7c4ef2faec4f8352,4219
+    pantry-tree:
+      sha256: afc133eaba1d8645e8df28fd28beddc8dffa7e182ac91f43da8922b8507c93d1
+      size: 8529
+  original:
+    hackage: cryptostore-0.3.1.0@sha256:ce4762361b509d1719b5d500604a5a1f2d75c2c53f4fe75f7c4ef2faec4f8352,4219
+- completed:
+    hackage: x509-1.7.7@sha256:90eef2d745a654146fc1c325e035eaddac531e4d2145d4bc1dcf4b8fad439d34,2276
+    pantry-tree:
+      sha256: d81ffd09633c0417bcedbfc29f870cc843ec0750edd2f73c8fd60a5e5df278d2
+      size: 1124
+  original:
+    hackage: x509-1.7.7@sha256:90eef2d745a654146fc1c325e035eaddac531e4d2145d4bc1dcf4b8fad439d34,2276
+- completed:
+    hackage: x509-store-1.6.9@sha256:1f1abeab5bacf1407b920d0f34f4c35a5ad450ff0d8121cd3dc76460f81e711d,1716
+    pantry-tree:
+      sha256: 9fc5a6a997af3569c79d5062534cc9836721b39df86bef56308f209164ab500d
+      size: 398
+  original:
+    hackage: x509-store-1.6.9@sha256:1f1abeab5bacf1407b920d0f34f4c35a5ad450ff0d8121cd3dc76460f81e711d,1716
+- completed:
+    hackage: x509-validation-1.6.12@sha256:4f4af20ec77f02c042ecd4726c195bb0e0b694b336de81e7bd4515b2917bd9bc,2169
+    pantry-tree:
+      sha256: f95c21aa9671b10f9384b89c018874246f68220b63266172b47a747b62695e23
+      size: 631
+  original:
+    hackage: x509-validation-1.6.12@sha256:4f4af20ec77f02c042ecd4726c195bb0e0b694b336de81e7bd4515b2917bd9bc,2169
 snapshots:
 - completed:
-    sha256: 3a9e2e78fabe2b407da707136d33c9a293b5d78186aea9ab13c552902807e543
-    size: 640466
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2024/5/20.yaml
-  original: nightly-2024-05-20
+    sha256: bcc0956a06c62db5a7bd6c16dc3f85444453414b46d8ad118c5e9a4e8a51f57f
+    size: 660738
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2024/9/4.yaml
+  original: nightly-2024-09-04

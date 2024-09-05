@@ -416,7 +416,10 @@ countOccurrences = foldr (\x acc -> Map.insertWith (+) x 1 acc) Map.empty
 
 -- Function to find all elements of the first list that appear the fewest number of times in the second list.
 findFewestOccurrences :: Ord a => [a] -> [a] -> [a]
-findFewestOccurrences uniqueTargets as = filter (\t -> Map.findWithDefault 0 t targetCounts == minOccurrence) uniqueTargets
+findFewestOccurrences uniqueTargets as
+  | notInTargets /= [] = notInTargets
+  | otherwise = filter (\t -> Map.findWithDefault 0 t targetCounts == minOccurrence) uniqueTargets
  where
   targetCounts = countOccurrences as
+  notInTargets = filter (`notElem` uniqueTargets) as
   minOccurrence = maybe 0 snd (Map.lookupMin (Map.fromListWith min (Map.toList targetCounts)))

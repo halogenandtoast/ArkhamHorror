@@ -3,7 +3,7 @@ require-stack-version: ">= 3.1.1"
 concurrent-tests: false
 system-ghc: true
 install-ghc: false
-resolver: nightly-2024-05-20
+resolver: nightly-2024-09-04
 compiler: ghc-9.8.2
 
 ghc-options:
@@ -51,3 +51,8 @@ extra-deps:
     - lib/services/amazonka-sso
     - lib/services/amazonka-sts
     - lib/services/amazonka-s3
+- jwt-0.11.0@sha256:0602735ee4093c6c5bc918461855bcd55499099363bad34eb7a227aeef3cde29,4265
+- cryptostore-0.3.1.0@sha256:ce4762361b509d1719b5d500604a5a1f2d75c2c53f4fe75f7c4ef2faec4f8352,4219
+- x509-1.7.7@sha256:90eef2d745a654146fc1c325e035eaddac531e4d2145d4bc1dcf4b8fad439d34,2276
+- x509-store-1.6.9@sha256:1f1abeab5bacf1407b920d0f34f4c35a5ad450ff0d8121cd3dc76460f81e711d,1716
+- x509-validation-1.6.12@sha256:4f4af20ec77f02c042ecd4726c195bb0e0b694b336de81e7bd4515b2917bd9bc,2169

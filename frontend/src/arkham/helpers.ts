@@ -48,7 +48,8 @@ export function replaceIcons(body: string) {
     replace(/{elderSign}/g, '<span class="elder-sign"></span>').
     replace(/{skull}/g, '<span class="skull-icon"></span>').
     replace(/{curse}/g, '<span class="curse-icon"></span>').
-    replace(/{bless}/g, '<span class="bless-icon"></span>')
+    replace(/{bless}/g, '<span class="bless-icon"></span>').
+    replace(/{perPlayer}/g, '<span class="per-player"></span>')
 }
 
 export function investigatorClass(code: string) {

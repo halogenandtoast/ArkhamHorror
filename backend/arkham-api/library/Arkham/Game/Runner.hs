@@ -2719,10 +2719,13 @@ preloadEntities g = do
       , gameInDiscardEntities = discardEntities
       }
 
+-- NOTE: We need preloadEntities to be a the end because the game state is not
+-- "saved" between steps here. For example if we discard a card with in discard
+-- effects (See Moonstone) it won't be loaded in the environment until 1 step
+-- too late.
 instance RunMessage Game where
   runMessage msg g = do
-    ( preloadEntities g
-        >>= runPreGameMessage msg
+    ( runPreGameMessage msg g
         >>= (modeL . here) (runMessage msg)
         >>= (modeL . there) (runMessage msg)
         >>= entitiesL (runMessage msg)
@@ -2740,6 +2743,7 @@ instance RunMessage Game where
         >>= (skillTestL . traverse) (runMessage msg)
         >>= (activeCostL . traverse) (runMessage msg)
         >>= runGameMessage msg
+        >>= preloadEntities
       )
       <&> handleActionDiff g
       . set enemyMovingL Nothing

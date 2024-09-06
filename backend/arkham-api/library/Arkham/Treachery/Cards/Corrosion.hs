@@ -4,8 +4,8 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Id
-import Arkham.Investigator.Projection
-import Arkham.Location.Types (Field (..))
+import Arkham.Investigator.Projection ()
+import Arkham.Location.Projection ()
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
@@ -29,16 +29,16 @@ instance RunMessage Corrosion where
   runMessage msg t@(Corrosion attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       withLocationOf iid \lid -> do
-        shroud <- fieldWithDefault 0 LocationShroud lid
+        shroud <- fromMaybe 0 <$> lid.shroud
         hasAssets <- selectAny $ assetMatcher iid
-        hasHandAssets <- fieldAny InvestigatorHand (`cardMatch` handMatcher) iid
+        hasHandAssets <- any (`cardMatch` handMatcher) <$> iid.hand
         if shroud > 0 && (hasAssets || hasHandAssets)
           then doStep shroud msg
           else gainSurge attrs
       pure t
     DoStep n msg'@(Revelation iid (isSource attrs -> True)) | n > 0 -> do
       assets <- selectWithField AssetCost $ assetMatcher iid
-      handAssets <- filterCards handMatcher <$> iid.hand
+      handAssets <- iid.hand.filter handMatcher
       chooseOneM iid do
         for_ assets \(asset, cost) -> targeting asset do
           toDiscardBy iid attrs asset

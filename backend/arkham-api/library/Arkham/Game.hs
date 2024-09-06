@@ -3256,7 +3256,7 @@ instance Projection Location where
       LocationCardDef -> pure $ toCardDef attrs
       LocationCard -> do
         let card = lookupCard locationCardCode locationCardId
-        pure $ if locationRevealed then flipCard card else card
+        pure $ if locationRevealed && not card.singleSided then flipCard card else card
       LocationAbilities -> pure $ getAbilities l
       LocationPrintedSymbol -> pure locationSymbol
       LocationVengeance -> pure $ cdVengeancePoints $ toCardDef attrs

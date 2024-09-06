@@ -37,4 +37,4 @@ instance RunMessage GuardDog2 where
     UseCardAbility _ (isSource attrs -> True) 2 (getDamageOrHorrorSource -> (.enemy) -> Just eid) _ -> do
       nonAttackEnemyDamage (attrs.ability 2) 1 eid
       pure a
-    _ -> GuardDog2 <$> runMessage msg attrs
+    _ -> GuardDog2 <$> liftRunMessage msg attrs

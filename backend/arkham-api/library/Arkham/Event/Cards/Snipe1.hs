@@ -47,4 +47,4 @@ instance RunMessage Snipe1Effect where
         mAction <- getSkillTestAction
         when (mAction == Just #fight) (disable attrs)
       pure e
-    _ -> Snipe1Effect <$> runMessage msg attrs
+    _ -> Snipe1Effect <$> liftRunMessage msg attrs

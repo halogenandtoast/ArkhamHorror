@@ -1,23 +1,15 @@
 module Arkham.Classes.RunMessage.Internal where
 
-import Arkham.Prelude
-
-import Arkham.Card
-import Arkham.Classes.GameLogger
-import Arkham.Classes.HasGame
-import Arkham.Classes.HasQueue
+import Arkham.GameT
 import Arkham.Message
+import Arkham.Prelude
 import Control.Monad.Trans
 
-class (HasGame m, HasQueue Message m, HasGameLogger m, MonadRandom m, CardGen m) => CanRun m
-
-type Runner a = (forall m. (HasCallStack, CanRun m) => Message -> a -> m a)
-type Runnable a = (forall m. (HasCallStack, CanRun m) => m a)
+type Runner a = HasCallStack => Message -> a -> GameT a
+type Runnable a = HasCallStack => GameT a
 
 class RunMessage a where
-  runMessage :: (HasCallStack, CanRun m) => Message -> a -> m a
+  runMessage :: HasCallStack => Message -> a -> GameT a
 
-liftRunMessage :: (HasCallStack, CanRun m, MonadTrans t, RunMessage a) => Message -> a -> t m a
+liftRunMessage :: (HasCallStack, MonadTrans t, RunMessage a) => Message -> a -> t GameT a
 liftRunMessage msg = lift . runMessage msg
-
-instance CanRun m => CanRun (QueueT Message m)

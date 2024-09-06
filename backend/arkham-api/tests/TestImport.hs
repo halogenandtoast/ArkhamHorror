@@ -81,6 +81,8 @@ import Arkham.Matcher hiding (DuringTurn, FastPlayerWindow)
 import Arkham.Name
 import Arkham.Phase
 import Arkham.Projection
+import Arkham.Queue
+import Arkham.Random
 import Arkham.Scenario.Scenarios.TheGathering (TheGathering (..))
 import Arkham.Scenario.Types
 import Arkham.SkillTest.Type

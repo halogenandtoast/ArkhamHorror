@@ -43,7 +43,7 @@ instance RunMessage TalismanOfProtection where
       when (Just iid == owner) $ do
         iids <- select $ affectsOthers $ colocatedWith iid
         chooseOrRunOne iid $ targetLabels iids $ only . (`TakeControlOfAsset` (toId attrs))
-      TalismanOfProtection <$> runMessage msg attrs
+      TalismanOfProtection <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       replaceMessageMatching
         \case

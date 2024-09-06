@@ -26,5 +26,5 @@ instance RunMessage OccultReliquary3 where
           , Label "Start as accessory slot" [addSlot #accessory]
           , Label "Start as arcane slot" [addSlot #arcane]
           ]
-      OccultReliquary3 <$> runMessage msg attrs
+      OccultReliquary3 <$> liftRunMessage msg attrs
     _ -> OccultReliquary3 <$> liftRunMessage msg attrs

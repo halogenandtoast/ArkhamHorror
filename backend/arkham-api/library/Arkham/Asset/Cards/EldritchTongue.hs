@@ -76,4 +76,4 @@ instance RunMessage EldritchTongueEffect where
       pure e
     RemovedFromPlay source | isSource source attrs.source -> do
       disableReturn e
-    _ -> EldritchTongueEffect <$> runMessage msg attrs
+    _ -> EldritchTongueEffect <$> liftRunMessage msg attrs

@@ -34,7 +34,7 @@ instance RunMessage SpectralMist where
       targets <-
         selectTargets $ withTrait Bayou <> not_ (LocationWithTreachery $ treacheryIs Cards.spectralMist)
       when (notNull targets) $ chooseOne iid $ targetLabels targets $ only . Msg.attachTreachery attrs
-      SpectralMist <$> runMessage msg attrs
+      SpectralMist <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed 2)

@@ -6,7 +6,6 @@ module Arkham.Scenario.Setup where
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
-import Arkham.Classes.RunMessage
 import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers
 import Arkham.Helpers.Deck
@@ -63,12 +62,12 @@ instance HasGame m => HasGame (ScenarioBuilderT m) where
 instance ReverseQueue m => ReverseQueue (ScenarioBuilderT m)
 
 runScenarioSetup
-  :: CanRun m
+  :: MonadRandom m
   => (ScenarioAttrs -> b)
   -> ScenarioAttrs
   -> ScenarioBuilderT m ()
   -> m b
-runScenarioSetup f attrs body = do
+runScenarioSetup f attrs body =
   f <$> execStateT (body.unScenarioBuilderT >> shuffleEncounterDeck) attrs
 
 shuffleEncounterDeck :: (MonadRandom m, MonadState ScenarioAttrs m) => m ()

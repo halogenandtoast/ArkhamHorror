@@ -2012,6 +2012,7 @@ library
       Arkham.Game.State
       Arkham.Game.Utils
       Arkham.GameEnv
+      Arkham.GameT
       Arkham.GameValue
       Arkham.GHCI
       Arkham.Git
@@ -2149,6 +2150,7 @@ library
       Arkham.Investigator.Import.Lifted
       Arkham.Investigator.Investigators
       Arkham.Investigator.Meta.RolandBanksParallel
+      Arkham.Investigator.Projection
       Arkham.Investigator.Runner
       Arkham.Investigator.Types
       Arkham.Json
@@ -2728,6 +2730,8 @@ library
       Arkham.Projection
       Arkham.Query
       Arkham.Question
+      Arkham.Queue
+      Arkham.Random
       Arkham.RequestedChaosTokenStrategy
       Arkham.Resolution
       Arkham.Scenario

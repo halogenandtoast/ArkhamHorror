@@ -31,6 +31,7 @@ import Arkham.Investigator (lookupInvestigator)
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Message
 import Arkham.Name
+import Arkham.Queue
 import Conduit
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)

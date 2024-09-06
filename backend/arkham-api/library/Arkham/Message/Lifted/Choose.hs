@@ -7,6 +7,7 @@ import Arkham.Message (Message)
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Question
+import Arkham.Queue
 import Arkham.SkillType
 import Arkham.Target
 import Control.Monad.State.Strict

@@ -11,6 +11,7 @@ import Api.Arkham.Helpers
 import Arkham.Classes.HasQueue
 import Arkham.Game
 import Arkham.Id
+import Arkham.Queue
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
 import Data.Aeson

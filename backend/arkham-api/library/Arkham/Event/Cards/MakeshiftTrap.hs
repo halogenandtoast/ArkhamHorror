@@ -75,7 +75,8 @@ instance RunMessage MakeshiftTrap where
               [targetLabel lid' [PlaceEvent attrs.id (AttachedToLocation lid')] | lid' <- lid : connected]
           else push $ PlaceEvent attrs.id (AttachedToLocation lid)
       pure e
-    MoveTokens s source _ tType n | isSource attrs source -> runMessage (RemoveTokens s (toTarget attrs) tType n) e
+    MoveTokens s source _ tType n | isSource attrs source -> do
+      liftRunMessage (RemoveTokens s (toTarget attrs) tType n) e
     RemoveTokens _ target tType n | isTarget attrs target -> do
       let m = findWithDefault 0 tType attrs.tokens
       let remainingUses = max 0 (m - n)
@@ -104,7 +105,7 @@ instance RunMessage MakeshiftTrap where
       MakeshiftTrap <$> liftRunMessage msg attrs
     Do (SpendUses source target useType' n) | isTarget attrs target -> do
       checkAfter $ Window.SpentToken source (toTarget attrs) useType' n
-      runMessage (RemoveTokens source target useType' n) e
+      liftRunMessage (RemoveTokens source target useType' n) e
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       push $ RemoveTokens (attrs.ability 1) (toTarget attrs) Time 1
       pure e

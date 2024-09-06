@@ -36,7 +36,7 @@ instance RunMessage DrCharlesWestIIIKnowsHisPurpose where
   runMessage msg a@(DrCharlesWestIIIKnowsHisPurpose attrs) = runQueueT $ case msg of
     CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       push $ AddSlot iid #hand (slot attrs)
-      DrCharlesWestIIIKnowsHisPurpose <$> runMessage msg attrs
+      DrCharlesWestIIIKnowsHisPurpose <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       selectOneToHandle iid (attrs.ability 1)
         $ enemyAtLocationWith iid

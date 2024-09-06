@@ -32,7 +32,7 @@ instance RunMessage SoulSanctification3 where
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 2)
       pure a
     ExcessHealDamage iid n | attrs `controlledBy` iid -> do
-      runMessage (PlaceTokens (toSource attrs) (toTarget attrs) Offering n) a
+      liftRunMessage (PlaceTokens (toSource attrs) (toTarget attrs) Offering n) a
     ExcessHealHorror iid n | attrs `controlledBy` iid -> do
-      runMessage (PlaceTokens (toSource attrs) (toTarget attrs) Offering n) a
+      liftRunMessage (PlaceTokens (toSource attrs) (toTarget attrs) Offering n) a
     _ -> SoulSanctification3 <$> liftRunMessage msg attrs

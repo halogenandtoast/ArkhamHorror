@@ -36,7 +36,7 @@ instance RunMessage DirectiveConsultExperts where
   runMessage msg (DirectiveConsultExperts attrs) = runQueueT $ case msg of
     CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       push $ AddSlot iid AllySlot $ Slot (toSource attrs) []
-      DirectiveConsultExperts <$> runMessage msg attrs
+      DirectiveConsultExperts <$> liftRunMessage msg attrs
     Flip _ _ (isTarget attrs -> True) -> do
       pure . DirectiveConsultExperts $ attrs & flippedL .~ True
     _ -> DirectiveConsultExperts <$> liftRunMessage msg attrs

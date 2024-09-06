@@ -1,4 +1,4 @@
-module Arkham.Event.Cards.TemptFate ( temptFate, TemptFate (..),) where
+module Arkham.Event.Cards.TemptFate (temptFate, TemptFate (..)) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -20,4 +20,4 @@ instance RunMessage TemptFate where
       addCurseTokens c
       drawCardsIfCan iid attrs 1
       pure e
-    _ -> TemptFate <$> runMessage msg attrs
+    _ -> TemptFate <$> liftRunMessage msg attrs

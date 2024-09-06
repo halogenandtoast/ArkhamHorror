@@ -20,7 +20,7 @@ instance HasAbilities VoiceOfTheJungle where
         (InThreatAreaOf You <> youExist NoSuccessfulExploreThisTurn)
         $ forced
         $ TurnEnds #at You
-    , skillTestAbility $ restrictedAbility x 2 (InThreatAreaOf You) actionAbility
+    , skillTestAbility $ restrictedAbility x 2 OnSameLocation actionAbility
     ]
 
 instance RunMessage VoiceOfTheJungle where

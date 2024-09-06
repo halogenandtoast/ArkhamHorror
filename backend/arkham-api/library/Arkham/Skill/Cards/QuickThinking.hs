@@ -26,8 +26,8 @@ instance RunMessage QuickThinking where
           , Label "Pass on additional action" []
           ]
       pure s
-    DoStep 1 (PassedSkillTest iid _ _ (isTarget attrs -> True) _ _) -> do
+    DoStep 1 (PassedSkillTest _ _ _ (isTarget attrs -> True) _ _) -> do
       afterSkillTest do
-        pushAll [GainActions iid (toSource attrs) 1, PlayerWindow iid [] False]
+        pushAll [GainActions attrs.controller (toSource attrs) 1, PlayerWindow attrs.controller [] False]
       pure s
     _ -> QuickThinking <$> liftRunMessage msg attrs

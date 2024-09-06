@@ -2707,6 +2707,7 @@ library
       Arkham.Location.Import.Lifted
       Arkham.Location.Label
       Arkham.Location.Locations
+      Arkham.Location.Projection
       Arkham.Location.Runner
       Arkham.Location.Types
       Arkham.LocationSymbol

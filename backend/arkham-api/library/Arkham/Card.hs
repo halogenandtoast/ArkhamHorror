@@ -312,12 +312,17 @@ instance HasField "kind" Card CardType where
 instance HasField "owner" Card (Maybe InvestigatorId) where
   getField = toCardOwner
 
+instance HasField "singleSided" Card Bool where
+  getField = not . cdDoubleSided . toCardDef
+
 instance Eq Card where
   a == b = toCardId a == toCardId b
 
 flipCard :: Card -> Card
 flipCard (EncounterCard ec) =
-  EncounterCard $ ec {ecIsFlipped = not <$> ecIsFlipped ec}
+  if cdDoubleSided (toCardDef ec)
+    then EncounterCard $ ec {ecIsFlipped = not <$> ecIsFlipped ec}
+    else EncounterCard ec {ecIsFlipped = Just False}
 flipCard (PlayerCard pc) = case cdOtherSide (toCardDef pc) of
   Just otherSide -> PlayerCard $ pc {pcCardCode = otherSide}
   Nothing -> PlayerCard pc

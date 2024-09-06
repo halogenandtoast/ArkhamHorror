@@ -30,17 +30,14 @@ import Arkham.Matcher
 import {-# SOURCE #-} Arkham.Message
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Random
 import Arkham.Scenario.Types
 import Arkham.Skill.Types
 import Arkham.Story.Types
 import Arkham.Treachery.Types
-import Control.Monad.Random
 
 class HasGameRef a where
   gameRefL :: Lens' a (IORef Game)
-
-class HasStdGen a where
-  genL :: Lens' a (IORef StdGen)
 
 instance Query AbilityMatcher
 instance Query ActMatcher

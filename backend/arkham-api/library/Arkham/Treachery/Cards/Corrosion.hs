@@ -4,7 +4,7 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Id
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Investigator.Projection
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -38,7 +38,7 @@ instance RunMessage Corrosion where
       pure t
     DoStep n msg'@(Revelation iid (isSource attrs -> True)) | n > 0 -> do
       assets <- selectWithField AssetCost $ assetMatcher iid
-      handAssets <- fieldMap InvestigatorHand (filterCards handMatcher) iid
+      handAssets <- filterCards handMatcher <$> iid.hand
       chooseOneM iid do
         for_ assets \(asset, cost) -> targeting asset do
           toDiscardBy iid attrs asset

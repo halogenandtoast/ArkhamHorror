@@ -174,7 +174,7 @@ instance RunMessage CurseOfTheRougarou where
       when (token.face == Tablet) (roundModifier TabletEffect iid CannotMove)
       pure s
     ScenarioResolution NoResolution ->
-      runMessage (ScenarioResolution $ Resolution 1) s
+      liftRunMessage (ScenarioResolution $ Resolution 1) s
     ScenarioResolution (Resolution 1) -> do
       story resolution1
       record TheRougarouContinuesToHauntTheBayou

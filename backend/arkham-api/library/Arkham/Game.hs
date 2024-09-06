@@ -64,6 +64,7 @@ import Arkham.Game.Settings
 import Arkham.Game.State
 import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameT
 import Arkham.GameValue (GameValue (Static))
 import Arkham.Git (gitHash)
 import Arkham.Helpers
@@ -140,6 +141,8 @@ import Arkham.Phase
 import Arkham.Placement
 import Arkham.Placement qualified as Placement
 import Arkham.Projection
+import Arkham.Queue
+import Arkham.Random
 import Arkham.Scenario
 import Arkham.Scenario.Types hiding (scenario)
 import Arkham.ScenarioLogKey
@@ -167,7 +170,6 @@ import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (each, non, over, set)
 import Control.Monad (mfilter)
-import Control.Monad.Random (StdGen)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (state)
 import Data.Aeson (Result (..))
@@ -192,9 +194,6 @@ import Text.Pretty.Simple
 
 class HasGameRef a where
   gameRefL :: Lens' a (IORef Game)
-
-class HasStdGen a where
-  genL :: Lens' a (IORef StdGen)
 
 newCampaign :: CampaignId -> Maybe ScenarioId -> Int -> Int -> Difficulty -> Bool -> Game
 newCampaign cid msid = newGame (maybe (This cid) (These cid) msid)

@@ -29,6 +29,7 @@ import Arkham.Keyword (Keyword (Peril))
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.PlayerCard
+import Arkham.Queue
 import Arkham.SkillType
 import Arkham.Taboo.Types
 import Arkham.Trait
@@ -93,6 +94,12 @@ class MonadRandom m => CardGen m where
   genPlayerCard :: HasCardDef a => a -> m PlayerCard
   replaceCard :: CardId -> Card -> m ()
   clearCardCache :: m ()
+
+instance CardGen m => CardGen (QueueT msg m) where
+  genEncounterCard = lift . genEncounterCard
+  genPlayerCard = lift . genPlayerCard
+  replaceCard cardId card = lift $ replaceCard cardId card
+  clearCardCache = lift clearCardCache
 
 genPlayerCardWith :: (HasCardDef a, CardGen m) => a -> (PlayerCard -> PlayerCard) -> m PlayerCard
 genPlayerCardWith a f = do

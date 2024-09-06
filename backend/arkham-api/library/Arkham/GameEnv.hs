@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 module Arkham.GameEnv where
 
 import Arkham.Prelude
@@ -21,25 +23,23 @@ import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasDistance
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
-import Arkham.Classes.RunMessage.Internal
 import Arkham.Distance
 import {-# SOURCE #-} Arkham.Game
 import Arkham.Game.Settings
+import Arkham.GameT
 import Arkham.History
 import Arkham.Id
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Phase
+import Arkham.Random
 import Arkham.SkillTest.Base
 import Arkham.Target
 import Arkham.Window
 import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
 import Data.Map.Strict qualified as Map
 
-instance CanRun GameT
-
-newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
-  deriving newtype (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO, MonadUnliftIO)
+-- Some ORPHANS we may want to move
 
 instance CardGen GameT where
   genEncounterCard a = do
@@ -64,6 +64,9 @@ instance CardGen GameT where
     ref <- asks gameEnvGame
     atomicModifyIORef' ref $ \g -> (g {gameCards = filterMap (not . isEncounterCard) (gameCards g)}, ())
 
+instance HasGameRef GameEnv where
+  gameRefL = lens gameEnvGame $ \m x -> m {gameEnvGame = x}
+
 getCard :: HasGame m => CardId -> m Card
 getCard cardId = do
   g <- getGame
@@ -79,30 +82,6 @@ findCard cardPred = find cardPred . toList . gameCards <$> getGame
 
 runGameEnvT :: MonadIO m => GameEnv -> GameT a -> m a
 runGameEnvT gameEnv = liftIO . flip runReaderT gameEnv . unGameT
-
-data GameEnv = GameEnv
-  { gameEnvGame :: IORef Game
-  , gameEnvQueue :: Queue Message
-  , gameRandomGen :: IORef StdGen
-  , gameLogger :: ClientMessage -> IO ()
-  }
-
-instance HasGameRef GameEnv where
-  gameRefL = lens gameEnvGame $ \m x -> m {gameEnvGame = x}
-
-instance HasStdGen GameEnv where
-  genL = lens gameRandomGen $ \m x -> m {gameRandomGen = x}
-
-instance HasGame GameT where
-  getGame = asks gameEnvGame >>= readIORef
-
-instance HasQueue Message GameT where
-  messageQueue = asks gameEnvQueue
-
-instance HasGameLogger GameT where
-  getLogger = do
-    logger <- asks gameLogger
-    pure $ \msg -> liftIO $ logger msg
 
 toGameEnv
   :: ( HasGameRef env

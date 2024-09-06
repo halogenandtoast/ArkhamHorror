@@ -40,7 +40,7 @@ instance HasAbilities EvanescentAscensionTheMorningStar where
 instance RunMessage EvanescentAscensionTheMorningStar where
   runMessage msg a@(EvanescentAscensionTheMorningStar attrs) = runQueueT $ case msg of
     ResolvedCard _ card | toCardId card == toCardId attrs -> do
-      EvanescentAscensionTheMorningStar <$> runMessage msg (setMeta True attrs)
+      EvanescentAscensionTheMorningStar <$> liftRunMessage msg (setMeta True attrs)
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       whenJustM getSkillTestInvestigator \iid' -> do
         withSkillTest \sid -> do

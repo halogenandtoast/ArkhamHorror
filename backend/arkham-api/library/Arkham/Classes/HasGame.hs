@@ -1,8 +1,8 @@
 module Arkham.Classes.HasGame where
 
-import Arkham.Classes.HasQueue
 import {-# SOURCE #-} Arkham.Game.Base
 import Arkham.Prelude
+import Arkham.Queue
 
 class Monad m => HasGame m where
   getGame :: m Game

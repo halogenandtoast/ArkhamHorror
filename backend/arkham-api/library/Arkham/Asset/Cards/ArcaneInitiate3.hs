@@ -35,4 +35,4 @@ instance RunMessage ArcaneInitiate3 where
         iid
         [targetLabel iid [Msg.search iid source iid [fromTopOfDeck 3] #spell $ DrawFound iid 1]]
       pure a
-    _ -> ArcaneInitiate3 <$> runMessage msg attrs
+    _ -> ArcaneInitiate3 <$> liftRunMessage msg attrs

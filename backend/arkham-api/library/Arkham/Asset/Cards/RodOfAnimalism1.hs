@@ -36,7 +36,7 @@ instance RunMessage RodOfAnimalism1 where
   runMessage msg a@(RodOfAnimalism1 attrs) = runQueueT $ case msg of
     CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       pushAll $ replicate 2 (AddSlot iid #ally (slot attrs))
-      RodOfAnimalism1 <$> runMessage msg attrs
+      RodOfAnimalism1 <$> liftRunMessage msg attrs
     UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
       let source = toAbilitySource attrs 1
       costModifier source iid (ReduceCostOf (CardWithId $ toCardId card) 1)

@@ -57,6 +57,7 @@ import Arkham.Phase (Phase)
 import Arkham.Prelude hiding (pred)
 import Arkham.Projection
 import Arkham.Query
+import Arkham.Queue
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.SkillType qualified as SkillType

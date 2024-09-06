@@ -72,4 +72,4 @@ instance RunMessage DenyExistence5 where
           _ -> error "no match"
       cancelledOrIgnoredCardOrGameEffect attrs
       pure e
-    _ -> DenyExistence5 <$> runMessage msg attrs
+    _ -> DenyExistence5 <$> liftRunMessage msg attrs

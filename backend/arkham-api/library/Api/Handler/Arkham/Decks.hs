@@ -20,6 +20,7 @@ import Arkham.Helpers
 import Arkham.Id
 import Arkham.Message
 import Arkham.PlayerCard
+import Arkham.Queue
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
 import Data.Map.Strict qualified as Map

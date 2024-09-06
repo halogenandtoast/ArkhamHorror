@@ -59,7 +59,7 @@ import Arkham.Game.Helpers hiding (
  )
 import Arkham.Game.Helpers qualified as Helpers
 import Arkham.Game.Json ()
-import Arkham.Game.Runner (preloadEntities)
+import Arkham.Game.Runner (preloadEntities, runPreGameMessage)
 import Arkham.Game.Settings
 import Arkham.Game.State
 import Arkham.Game.Utils
@@ -4741,6 +4741,7 @@ runMessages mLogger = do
 
             runWithEnv do
               overGameM preloadEntities
+              overGameM $ runPreGameMessage msg
               overGameM
                 $ runMessage msg
                 >=> if shouldPreloadModifiers msg

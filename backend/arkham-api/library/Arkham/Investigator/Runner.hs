@@ -295,8 +295,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         limit <- getAbilityLimit (toId a) usedAbility
         pure $ case limit of
           NoLimit -> False
-          PlayerLimit PerWindow _ -> depth > usedDepth
-          GroupLimit PerWindow _ -> depth > usedDepth
+          PlayerLimit PerWindow _ -> depth >= usedDepth
+          GroupLimit PerWindow _ -> depth >= usedDepth
           _ -> True
 
     usedAbilities' <- filterM filterAbility investigatorUsedAbilities

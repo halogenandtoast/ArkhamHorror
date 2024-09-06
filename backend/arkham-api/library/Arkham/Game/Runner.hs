@@ -2725,9 +2725,7 @@ preloadEntities g = do
 -- too late.
 instance RunMessage Game where
   runMessage msg g = do
-    ( -- preloadEntities g
-      runPreGameMessage msg g
-        >>= (modeL . here) (runMessage msg)
+    ( (modeL . here) (runMessage msg) g
         >>= (modeL . there) (runMessage msg)
         >>= entitiesL (runMessage msg)
         >>= actionRemovedEntitiesL (runMessage msg)
@@ -2744,7 +2742,6 @@ instance RunMessage Game where
         >>= (skillTestL . traverse) (runMessage msg)
         >>= (activeCostL . traverse) (runMessage msg)
         >>= runGameMessage msg
-        -- >>= preloadEntities
       )
       <&> handleActionDiff g
       . set enemyMovingL Nothing
@@ -2754,10 +2751,20 @@ runPreGameMessage :: Runner Game
 runPreGameMessage msg g = case msg of
   CheckWindows ws -> do
     push EndCheckWindow
-    pure $ g & windowDepthL +~ 1 & windowStackL %~ Just . maybe [ws] (ws :)
-  -- We want to empty the queue for triggering a resolution
-  EndCheckWindow -> pure $ g & windowDepthL -~ 1 & windowStackL %~ fmap (drop 1)
+    pure $ g & windowDepthL +~ 1 & (windowStackL %~ Just . maybe [ws] (ws :))
+  EndCheckWindow -> do
+    let
+      windowStack =
+        case fmap (drop 1) (gameWindowStack g) of
+          Nothing -> Nothing
+          Just [] -> Nothing
+          Just ([] : xs) -> case xs of
+            [] -> Nothing
+            _ -> Just xs
+          Just (x : xs) -> Just (x : xs)
+    pure $ g & windowDepthL -~ 1 & windowStackL .~ windowStack
   ScenarioResolution _ -> do
+    -- We want to empty the queue for triggering a resolution
     clearQueue
     pure $ g & (skillTestL .~ Nothing) & (skillTestResultsL .~ Nothing)
   ResetInvestigators ->

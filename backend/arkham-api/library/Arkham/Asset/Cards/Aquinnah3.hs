@@ -1,19 +1,15 @@
-module Arkham.Asset.Cards.Aquinnah3 (
-  Aquinnah3 (..),
-  aquinnah3,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Aquinnah3 (Aquinnah3 (..), aquinnah3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.DamageEffect
-import Arkham.Enemy.Types (Field (EnemyHealthDamage, EnemySanityDamage))
+import Arkham.Asset.Import.Lifted
+import Arkham.Attack.Types
+import Arkham.Enemy.Types (Field (EnemyHealthDamage))
+import Arkham.Helpers.Window
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Matcher qualified as Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype Aquinnah3 = Aquinnah3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -22,50 +18,20 @@ newtype Aquinnah3 = Aquinnah3 AssetAttrs
 aquinnah3 :: AssetCard Aquinnah3
 aquinnah3 = ally Aquinnah3 Cards.aquinnah3 (1, 4)
 
-dropUntilAttack :: [Message] -> [Message]
-dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
-
 instance HasAbilities Aquinnah3 where
   getAbilities (Aquinnah3 a) =
-    [ restrictedAbility
-        a
-        1
-        (ControlsThis <> CanDealDamage <> exists (EnemyAt YourLocation))
+    [ controlledAbility a 1 (CanDealDamage <> exists (EnemyAt YourLocation))
         $ ReactionAbility
-          (Matcher.EnemyAttacks Timing.When You AnyEnemyAttack AnyEnemy)
-        $ Costs
-          [ExhaustCost (toTarget a), HorrorCost (toSource a) (toTarget a) 1]
+          (Matcher.EnemyAttacks #when You AnyEnemyAttack AnyEnemy)
+          (exhaust a <> horrorCost a 1)
     ]
 
 instance RunMessage Aquinnah3 where
-  runMessage msg a@(Aquinnah3 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      enemyId <- withQueue $ \queue -> case dropUntilAttack queue of
-        PerformEnemyAttack eid : queue' -> (queue', eid)
-        _ -> error "unhandled"
-      healthDamage' <- field EnemyHealthDamage enemyId
-      sanityDamage' <- field EnemySanityDamage enemyId
-      enemyIds <-
-        select
-          $ EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
-
-      when (null enemyIds) (error "enemies have to be present")
-
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel
-            eid
-            [ EnemyDamage eid $ nonAttack source healthDamage'
-            , InvestigatorAssignDamage
-                iid
-                (EnemySource enemyId)
-                DamageAny
-                0
-                sanityDamage'
-            ]
-          | eid <- enemyIds
-          ]
+  runMessage msg a@(Aquinnah3 attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 (getAttackDetails -> attack) _ -> do
+      changeAttackDetails attack.enemy attack {attackDealDamage = False}
+      healthDamage' <- field EnemyHealthDamage attack.enemy
+      enemyIds <- select $ EnemyAt $ locationWithInvestigator iid
+      chooseOneM iid $ targets enemyIds $ nonAttackEnemyDamage (attrs.ability 1) healthDamage'
       pure a
-    _ -> Aquinnah3 <$> runMessage msg attrs
+    _ -> Aquinnah3 <$> liftRunMessage msg attrs

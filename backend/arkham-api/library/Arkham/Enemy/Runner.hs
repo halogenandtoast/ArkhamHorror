@@ -870,7 +870,10 @@ instance RunMessage EnemyAttrs where
             , EffectsCannotBeCanceled `notElem` sourceModifiers || not (attackCanBeCanceled details)
             ]
 
-      healthDamage <- field EnemyHealthDamage (toId a)
+      healthDamage <-
+        if attackDealDamage details
+          then field EnemyHealthDamage (toId a)
+          else pure 0
       sanityDamage <- field EnemySanityDamage (toId a)
 
       case attackTarget details of
@@ -1229,6 +1232,7 @@ instance RunMessage EnemyAttrs where
             , attackCanBeCanceled = True
             , attackAfter = []
             , attackDamaged = mempty
+            , attackDealDamage = True
             }
       pure a
     InvestigatorDrawEnemy iid eid | eid == enemyId -> do

@@ -25,6 +25,7 @@ data EnemyAttackDetails = EnemyAttackDetails
   , attackCanBeCanceled :: Bool
   , attackAfter :: [Message]
   , attackDamaged :: Map Target (Int, Int)
+  , attackDealDamage :: Bool
   }
   deriving stock (Show, Eq, Data)
 
@@ -47,4 +48,19 @@ damagedL :: Lens' EnemyAttackDetails (Map Target (Int, Int))
 damagedL = lens attackDamaged $ \m x -> m {attackDamaged = x}
 
 $(deriveJSON defaultOptions ''EnemyAttackType)
-$(deriveJSON defaultOptions ''EnemyAttackDetails)
+$(deriveToJSON defaultOptions ''EnemyAttackDetails)
+
+instance FromJSON EnemyAttackDetails where
+  parseJSON = withObject "EnemyAttackDetails" $ \o -> do
+    attackTarget <- o .: "attackTarget"
+    attackOriginalTarget <- o .: "attackOriginalTarget"
+    attackEnemy <- o .: "attackEnemy"
+    attackType <- o .: "attackType"
+    attackDamageStrategy <- o .: "attackDamageStrategy"
+    attackExhaustsEnemy <- o .: "attackExhaustsEnemy"
+    attackSource <- o .: "attackSource"
+    attackCanBeCanceled <- o .: "attackCanBeCanceled"
+    attackAfter <- o .: "attackAfter"
+    attackDamaged <- o .: "attackDamaged"
+    attackDealDamage <- o .:? "attackDealDamage" .!= True
+    pure $ EnemyAttackDetails {..}

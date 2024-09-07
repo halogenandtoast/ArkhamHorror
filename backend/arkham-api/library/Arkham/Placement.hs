@@ -4,6 +4,7 @@ module Arkham.Placement (
   Placement (..),
   placementToAttached,
   isOutOfPlayPlacement,
+  isOutOfPlayZonePlacement,
   isInPlayPlacement,
   isHiddenPlacement,
   isInPlayArea,
@@ -69,10 +70,13 @@ placementToAttached = \case
   HiddenInHand _ -> Nothing
   OnTopOfDeck _ -> Nothing
 
-isOutOfPlayPlacement :: Placement -> Bool
-isOutOfPlayPlacement = \case
+isOutOfPlayZonePlacement :: Placement -> Bool
+isOutOfPlayZonePlacement = \case
   OutOfPlay _ -> True
   _ -> False
+
+isOutOfPlayPlacement :: Placement -> Bool
+isOutOfPlayPlacement = not . isInPlayPlacement
 
 isInPlayPlacement :: Placement -> Bool
 isInPlayPlacement = \case

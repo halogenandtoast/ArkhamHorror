@@ -1123,7 +1123,7 @@ runGameMessage msg g = case msg of
   PlaceEnemy enemyId (OutOfPlay outOfPlayZone) -> do
     push $ SetOutOfPlay outOfPlayZone (EnemyTarget enemyId)
     pure g
-  PlaceEnemy enemyId placement | not (isOutOfPlayPlacement placement) -> do
+  PlaceEnemy enemyId placement | not (isOutOfPlayZonePlacement placement) -> do
     mOutOfPlayEnemy <-
       asum . preview (outOfPlayEntitiesL . each . enemiesL . at enemyId) <$> getGame
     case mOutOfPlayEnemy of

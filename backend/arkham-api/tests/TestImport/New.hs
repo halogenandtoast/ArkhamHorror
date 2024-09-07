@@ -791,6 +791,9 @@ assertChanges action a b body = do
   body
   action `shouldReturn` b
 
+resolveAmount :: Investigator -> Text -> Int -> TestAppT ()
+resolveAmount self lbl amt = resolveAmounts self [(lbl, amt)]
+
 -- While this function primarily exists to resolve the amounts which you could
 -- call directly, it also does a bunch of verification on the test import to
 -- make sure it coincides with the actual amounts and limit

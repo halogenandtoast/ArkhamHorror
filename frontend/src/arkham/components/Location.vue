@@ -529,6 +529,11 @@ function onDrop(event: DragEvent) {
 
 .attachments {
   grid-area: attachments;
+
+  &:deep(.exhausted) {
+    padding: 0;
+  }
+
 }
 
 .location:has(.abilities) {

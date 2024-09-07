@@ -1,13 +1,9 @@
-module Arkham.Treachery.Cards.LostInTime (
-  lostInTime,
-  LostInTime (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.LostInTime (lostInTime, LostInTime (..)) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -22,7 +18,7 @@ lostInTime = treachery LostInTime Cards.lostInTime
 instance RunMessage LostInTime where
   runMessage msg t@(LostInTime attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      assets <- select $ assetControlledBy iid <> AssetNonStory
+      assets <- select $ assetControlledBy iid <> AssetNonStory <> AssetCanLeavePlayByNormalMeans
       assetsWithDamageAndHorror <- for assets $ \asset -> do
         damage <- field AssetDamage asset
         horror <- field AssetHorror asset

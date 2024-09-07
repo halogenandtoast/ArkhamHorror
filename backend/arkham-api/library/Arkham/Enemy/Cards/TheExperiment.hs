@@ -1,9 +1,4 @@
-module Arkham.Enemy.Cards.TheExperiment (
-  TheExperiment (..),
-  theExperiment,
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.TheExperiment (TheExperiment (..), theExperiment) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
@@ -12,6 +7,7 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype TheExperiment = TheExperiment EnemyAttrs
   deriving anyclass IsEnemy
@@ -22,10 +18,11 @@ theExperiment = enemy TheExperiment Cards.theExperiment (4, Static 7, 2) (2, 2)
 
 instance HasAbilities TheExperiment where
   getAbilities (TheExperiment x) =
-    withBaseAbilities x
-      $ [ mkAbility x 1 $ ForcedAbility $ PhaseBegins #when #enemy
-        , mkAbility x 2 $ Objective $ forced $ EnemyDefeated #when You ByAny (be x)
-        ]
+    extend
+      x
+      [ restrictedAbility x 1 (thisIs x #exhausted) $ forced $ PhaseBegins #when #enemy
+      , mkAbility x 2 $ Objective $ forced $ EnemyDefeated #when You ByAny (be x)
+      ]
 
 instance HasModifiersFor TheExperiment where
   getModifiersFor target (TheExperiment attrs) | isTarget attrs target = do

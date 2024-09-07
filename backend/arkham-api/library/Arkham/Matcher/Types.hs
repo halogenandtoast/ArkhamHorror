@@ -425,6 +425,9 @@ data EnemyMatcher
 
 instance Plated EnemyMatcher
 
+instance IsLabel "exhausted" EnemyMatcher where
+  fromLabel = ExhaustedEnemy
+
 instance Semigroup EnemyMatcher where
   AnyEnemy <> x = x
   x <> AnyEnemy = x

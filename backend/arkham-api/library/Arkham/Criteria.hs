@@ -256,6 +256,9 @@ atYourLocation matcher = exists (AtYourLocation <> matcher)
 class Exists a where
   exists :: a -> Criterion
 
+thisIs :: (Exists matcher, Be a matcher, Semigroup matcher) => a -> matcher -> Criterion
+thisIs a matcher = exists (be a <> matcher)
+
 any_ :: (Exists a, OneOf a) => [a] -> Criterion
 any_ = exists . oneOf
 

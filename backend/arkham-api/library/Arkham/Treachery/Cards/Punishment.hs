@@ -17,12 +17,17 @@ punishment :: TreacheryCard Punishment
 punishment = treachery Punishment Cards.punishment
 
 instance HasModifiersFor Punishment where
-  getModifiersFor (InvestigatorTarget iid) (Punishment attrs) = do
+  getModifiersFor (SkillTestTarget _) (Punishment attrs) = do
     maybeModified attrs do
       source <- MaybeT getSkillTestSource
       investigator <- MaybeT getSkillTestInvestigator
-      guard $ isSource attrs source && iid == investigator
-      guardM . lift . selectAny $ ExhaustedEnemy <> EnemyWithTrait Witch <> enemyAtLocationWith iid
+      guard $ isSource attrs source && treacheryInThreatArea investigator attrs
+      guardM
+        . lift
+        . selectAny
+        $ ExhaustedEnemy
+        <> EnemyWithTrait Witch
+        <> enemyAtLocationWith investigator
       pure [SkillTestAutomaticallySucceeds]
   getModifiersFor _ _ = pure []
 

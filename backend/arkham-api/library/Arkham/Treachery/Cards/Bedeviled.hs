@@ -18,16 +18,20 @@ bedeviled = treachery Bedeviled Cards.bedeviled
 
 instance HasModifiersFor Bedeviled where
   getModifiersFor (InvestigatorTarget iid) (Bedeviled attrs) | treacheryInThreatArea iid attrs = do
-    skillTestModifiers' <- runMaybeT $ do
-      source <- MaybeT getSkillTestSource
-      investigator <- MaybeT getSkillTestInvestigator
-      guard $ isSource attrs source && iid == investigator
-      guardM $ lift $ selectAny $ ExhaustedEnemy <> EnemyWithTrait Witch <> enemyAtLocationWith iid
-      pure SkillTestAutomaticallySucceeds
-    modified attrs
-      $ CannotTriggerAbilityMatching
-        (AbilityIsActionAbility <> AbilityOnCardControlledBy iid)
-      : maybeToList skillTestModifiers'
+    modified
+      attrs
+      [CannotTriggerAbilityMatching (AbilityIsActionAbility <> AbilityOnCardControlledBy iid)]
+  getModifiersFor (SkillTestTarget _) (Bedeviled attrs) = maybeModified attrs do
+    source <- MaybeT getSkillTestSource
+    investigator <- MaybeT getSkillTestInvestigator
+    guard $ isSource attrs source && treacheryInThreatArea investigator attrs
+    guardM
+      $ lift
+      $ selectAny
+      $ ExhaustedEnemy
+      <> EnemyWithTrait Witch
+      <> enemyAtLocationWith investigator
+    pure [SkillTestAutomaticallySucceeds]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Bedeviled where

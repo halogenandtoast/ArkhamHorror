@@ -21,8 +21,11 @@ oneTwoPunch5 :: EventCard OneTwoPunch5
 oneTwoPunch5 = event (OneTwoPunch5 . (`with` Metadata True)) Cards.oneTwoPunch5
 
 instance HasModifiersFor OneTwoPunch5 where
-  getModifiersFor (InvestigatorTarget iid) (OneTwoPunch5 (a `With` meta)) | a.owner == iid && isFirst meta = do
-    pure $ toModifiers a [SkillTestAutomaticallySucceeds]
+  getModifiersFor (SkillTestTarget _) (OneTwoPunch5 (a `With` meta)) = maybeModified a do
+    guard $ isFirst meta
+    iid <- MaybeT getSkillTestInvestigator
+    guard $ a.owner == iid
+    pure [SkillTestAutomaticallySucceeds]
   getModifiersFor _ _ = pure []
 
 instance RunMessage OneTwoPunch5 where

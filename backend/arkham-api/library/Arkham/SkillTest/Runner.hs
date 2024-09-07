@@ -246,7 +246,7 @@ instance RunMessage SkillTest where
                 pushAll
                   $ resolve (RevealChaosToken (toSource s) iid (ChaosToken t chaosTokenFace (Just iid)))
         else
-          if SkillTestAutomaticallySucceeds `elem` modifiers'
+          if SkillTestAutomaticallySucceeds `elem` modifiers''
             then pushAll [PassSkillTest, UnsetActiveCard]
             else do
               let

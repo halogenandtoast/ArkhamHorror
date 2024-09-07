@@ -49,7 +49,7 @@ instance RunMessage Augur where
       investigation <- mkInvestigate sid iid source
       pushAll
         $ [skillTestModifier sid source iid (BaseSkillOf #intellect 5)]
-        <> [skillTestModifier sid source iid SkillTestAutomaticallySucceeds | discarded]
+        <> [skillTestModifier sid source sid SkillTestAutomaticallySucceeds | discarded]
         <> [toMessage investigation]
         <> [ questionLabel "Put into play from discard" player
             $ ChooseOne

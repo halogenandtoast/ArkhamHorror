@@ -2573,7 +2573,7 @@ getEnemiesMatching (OutOfPlayEnemy outOfPlayZone matcher) = do
   allGameEnemies <-
     toList . view (outOfPlayEntitiesL . at outOfPlayZone . non mempty . enemiesL) <$> getGame
   newStyleOutOfPlayEnemies <-
-    filter (isOutOfPlayPlacement . (attr enemyPlacement))
+    filter (isOutOfPlayZonePlacement . (attr enemyPlacement))
       . toList
       . view (entitiesL . enemiesL)
       <$> getGame

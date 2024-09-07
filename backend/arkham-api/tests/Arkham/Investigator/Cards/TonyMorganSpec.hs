@@ -19,7 +19,7 @@ spec = describe "Tony Morgan" do
       enemy <- testEnemy
       enemy `spawnAt` location
       useReaction -- place bounty
-      resolveAmounts self [("Bounties", 1)]
+      resolveAmount self "Bounties" 1
       duringTurn self $ do
         [bountyAction] <- self `getActionsFrom` self
         self `useAbility` bountyAction

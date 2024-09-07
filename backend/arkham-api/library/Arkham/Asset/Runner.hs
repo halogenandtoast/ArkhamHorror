@@ -497,13 +497,10 @@ instance RunMessage AssetAttrs where
       push afterWindow
       pure $ a & tokensL %~ removeAllTokens Token.Horror
     InvestigatorPlayedAsset iid aid | aid == assetId -> do
-      runMessage (PlaceAsset aid (InPlayArea iid)) a
+      let placement = if isInPlayPlacement a.placement then a.placement else InPlayArea iid
+      runMessage (PlaceAsset aid placement) a
     TakeControlOfAsset iid aid | aid == assetId -> do
-      push
-        =<< checkWindows
-          ( (`mkWindow` Window.TookControlOfAsset iid aid)
-              <$> [Timing.When, Timing.After]
-          )
+      pushM $ checkWindows $ (`mkWindow` Window.TookControlOfAsset iid aid) <$> [#when, #after]
       pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
     LoseControlOfAsset aid | aid == assetId -> do
       pure $ a & controllerL .~ Nothing
@@ -533,13 +530,13 @@ instance RunMessage AssetAttrs where
     ExhaustThen target msgs | a `isTarget` target -> do
       unless assetExhausted $ pushAll msgs
       pure $ a & exhaustedL .~ True
-    Ready target | a `isTarget` target -> case assetPlacement of
-      InPlayArea iid -> do
+    Ready target | a `isTarget` target -> case a.controller of
+      Just iid -> do
         modifiers <- getModifiers (InvestigatorTarget iid)
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
           else pure $ a & exhaustedL .~ False
-      _ -> pure $ a & exhaustedL .~ False
+      Nothing -> pure $ a & exhaustedL .~ False
     PlaceUnderneath (isTarget a -> True) cards -> do
       pure $ a & cardsUnderneathL <>~ cards
     AddToDiscard _ c -> do

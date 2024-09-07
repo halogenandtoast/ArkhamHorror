@@ -70,11 +70,13 @@ runEventMessage msg a@EventAttrs {..} = case msg of
         card <- getCard cid
         case card.kind of
           EnemyType -> do
-            enemy <- selectJust $ EnemyWithCardId cid
-            push $ PlaceEvent eid (AttachedToEnemy enemy)
+            menemy <- selectOne $ EnemyWithCardId cid
+            for_ menemy \enemy ->
+              push $ PlaceEvent eid (AttachedToEnemy enemy)
           PlayerEnemyType -> do
-            enemy <- selectJust $ EnemyWithCardId cid
-            push $ PlaceEvent eid (AttachedToEnemy enemy)
+            menemy <- selectOne $ EnemyWithCardId cid
+            for_ menemy \enemy ->
+              push $ PlaceEvent eid (AttachedToEnemy enemy)
           _ -> error "Cannot attach event to that type"
       _ -> error "Cannot attach event to that type"
     pure a

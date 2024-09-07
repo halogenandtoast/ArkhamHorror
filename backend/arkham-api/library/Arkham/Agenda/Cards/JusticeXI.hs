@@ -1,123 +1,80 @@
-module Arkham.Agenda.Cards.JusticeXI (
-  JusticeXI (..),
-  justiceXI,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.JusticeXI (JusticeXI (..), justiceXI) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
+import Arkham.Agenda.Import.Lifted
 import Arkham.CampaignLogKey
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.GameValue
+import Arkham.Helpers.Cost (getSpendableClueCount)
+import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Log (getRecordedCardCodes)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Query (getInvestigatorIds, getLead, getSetAsideCard)
+import Arkham.Helpers.Window
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher
 import Arkham.Scenarios.AtDeathsDoorstep.Story
-import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Monster, SilverTwilight))
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype JusticeXI = JusticeXI AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 justiceXI :: AgendaCard JusticeXI
 justiceXI = agenda (1, A) JusticeXI Cards.justiceXI (Static 8)
 
 instance HasModifiersFor JusticeXI where
-  getModifiersFor (EnemyTarget eid) (JusticeXI attrs) = do
-    isSilverTwilight <- eid <=~> EnemyWithTrait SilverTwilight
-    pure $ toModifiers attrs $ do
-      guard isSilverTwilight
-      [CannotBeDamaged, CannotBeDefeated]
+  getModifiersFor (EnemyTarget eid) (JusticeXI attrs) = maybeModified attrs do
+    liftGuardM $ eid <=~> EnemyWithTrait SilverTwilight
+    pure [CannotBeDamaged, CannotBeDefeated]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities JusticeXI where
   getAbilities (JusticeXI a) =
-    [ mkAbility a 1
-        $ ForcedAbility
-        $ DrawCard
-          Timing.When
-          Anyone
-          (BasicCardMatch $ CardWithTrait Monster)
-          EncounterDeck
-    ]
-
-toDrawnCard :: [Window] -> Card
-toDrawnCard [] = error "Missing DrawCard window"
-toDrawnCard ((windowType -> Window.DrawCard _ card _) : _) = card
-toDrawnCard (_ : xs) = toDrawnCard xs
+    [mkAbility a 1 $ forced $ DrawCard #when Anyone (basic $ CardWithTrait Monster) EncounterDeck]
 
 instance RunMessage JusticeXI where
-  runMessage msg a@(JusticeXI attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+  runMessage msg a@(JusticeXI attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
       iids <- getInvestigatorIds
       n <- getSpendableClueCount iids
       targetAmount <- perPlayer 3
       actId <- selectJust AnyAct
       allLocations <- select LocationWithAnyClues
       missingPersons <- getRecordedCardCodes MissingPersons
-      noCluesOnEntryHall <-
-        (== 0)
-          <$> selectJustField LocationClues (LocationWithTitle "Entry Hall")
-      noCluesOnOffice <-
-        (== 0)
-          <$> selectJustField LocationClues (LocationWithTitle "Office")
-      noCluesOnBalcony <-
-        (== 0)
-          <$> selectJustField LocationClues (LocationWithTitle "Balcony")
-      noCluesOnBilliardsRoom <-
-        (== 0)
-          <$> selectJustField LocationClues (LocationWithTitle "BillardsRoom")
-      msgs <-
-        if n < targetAmount
-          then pure $ map (RemoveAllClues (toSource attrs) . toTarget) iids
-          else do
-            lead <- getLeadPlayer
-            lids <- select $ FarthestLocationFromAll (NotLocation "Entry Hall")
-            josefMeiger <- getSetAsideCard Enemies.josefMeiger
-            pure
-              [ SpendClues targetAmount iids
-              , chooseOne
-                  lead
-                  [targetLabel lid [SpawnEnemyAt josefMeiger lid] | lid <- lids]
-              ]
-
-      players <- allPlayers
-
-      pushAll
-        $ msgs
-        <> map (RemoveAllClues (toSource attrs) . toTarget) allLocations
-        <> ( if toCardCode Investigators.gavriellaMizrah `elem` missingPersons && noCluesOnEntryHall
-              then [story players interlude1Gavriella, Record TheInvestigatorsAreOnGavriella'sTrail]
-              else []
-           )
-        <> ( if toCardCode Investigators.jeromeDavids `elem` missingPersons && noCluesOnOffice
-              then [story players interlude1Jerome, Record TheInvestigatorsAreOnJerome'sTrail]
-              else []
-           )
-        <> ( if toCardCode Investigators.pennyWhite `elem` missingPersons && noCluesOnBalcony
-              then [story players interlude1Penny, Record TheInvestigatorsAreOnPenny'sTrail]
-              else []
-           )
-        <> ( if toCardCode Investigators.valentinoRivas `elem` missingPersons && noCluesOnBilliardsRoom
-              then [story players interlude1Valentino, Record TheInvestigatorsAreOnValentino'sTrail]
-              else []
-           )
-        <> [ AdvanceAct actId (toSource attrs) AdvancedWithOther
-           , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-           ]
+      let hasNoClues name = (== 0) <$> selectJustField LocationClues (LocationWithTitle name)
+      noCluesOnEntryHall <- hasNoClues "Entry Hall"
+      noCluesOnOffice <- hasNoClues "Office"
+      noCluesOnBalcony <- hasNoClues "Balcony"
+      noCluesOnBilliardsRoom <- hasNoClues "BillardsRoom"
+      if n < targetAmount
+        then pushAll $ map (RemoveAllClues (toSource attrs) . toTarget) iids
+        else do
+          lead <- getLead
+          lids <- select $ FarthestLocationFromAll (NotLocation "Entry Hall")
+          josefMeiger <- getSetAsideCard Enemies.josefMeiger
+          push $ SpendClues targetAmount iids
+          chooseOne lead $ targetLabels lids (only . SpawnEnemyAt josefMeiger)
+      pushAll $ map (RemoveAllClues (toSource attrs) . toTarget) allLocations
+      when (Investigators.gavriellaMizrah.cardCode `elem` missingPersons && noCluesOnEntryHall) do
+        story interlude1Gavriella
+        record TheInvestigatorsAreOnGavriella'sTrail
+      when (Investigators.jeromeDavids.cardCode `elem` missingPersons && noCluesOnOffice) do
+        story interlude1Jerome
+        record TheInvestigatorsAreOnJerome'sTrail
+      when (Investigators.pennyWhite.cardCode `elem` missingPersons && noCluesOnBalcony) do
+        story interlude1Penny
+        record TheInvestigatorsAreOnPenny'sTrail
+      when (Investigators.valentinoRivas.cardCode `elem` missingPersons && noCluesOnBilliardsRoom) do
+        story interlude1Valentino
+        record TheInvestigatorsAreOnValentino'sTrail
+      push $ AdvanceAct actId (toSource attrs) #other
+      advanceAgendaDeck attrs
       pure a
-    UseCardAbility _ (isSource attrs -> True) 1 (toDrawnCard -> card) _ -> do
-      removeMessageType DrawEnemyMessage
-      pushAll
-        [ SetCardAside card
-        , placeDoomOnAgendaAndCheckAdvance
-        ]
+    UseCardAbility _ (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
+      quietCancelCardDraw card
+      pushAll [UnfocusCards, SetCardAside card]
+      placeDoomOnAgendaAndCheckAdvance 1
       pure a
-    _ -> JusticeXI <$> runMessage msg attrs
+    _ -> JusticeXI <$> liftRunMessage msg attrs

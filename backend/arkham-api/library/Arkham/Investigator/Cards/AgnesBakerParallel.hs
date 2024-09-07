@@ -66,16 +66,15 @@ instance RunMessage AgnesBakerParallel where
           ]
       pure i
     PayCost _ iid _ (InvestigatorDamageCost (isSource attrs -> True) _ _ _) -> do
-      cs <- getActiveCosts
-      case cs of
-        [c] -> case c.target of
-          ForCard _ card -> do
-            chooseOneM iid do
-              labeled "Shuffle event back in instead of discard?" do
-                cardResolutionModifier card attrs card (SetAfterPlay ShuffleThisBackIntoDeck)
-              labeled "Resolve normally" nothing
-            pure ()
-          _ -> error "Do not know how to handle non-card cost"
-        _ -> error "do not know how to handle multiple active costs"
+      let go [] = error "No ForCard cost found"
+          go (c : rest) = case c.target of
+            ForCard _ card -> do
+              chooseOneM iid do
+                labeled "Shuffle event back in instead of discard?" do
+                  cardResolutionModifier card attrs card (SetAfterPlay ShuffleThisBackIntoDeck)
+                labeled "Resolve normally" nothing
+              pure ()
+            _ -> go rest
+      go =<< getActiveCosts
       pure i
     _ -> AgnesBakerParallel <$> liftRunMessage msg attrs

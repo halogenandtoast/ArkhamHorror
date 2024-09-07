@@ -33,12 +33,12 @@ instance RunMessage EtherealWeaving3 where
           "Done revealing cards"
           [targetLabel card [handleTargetChoice iid attrs card] | card <- cards]
         push unfocus
-      doStep 1 msg
+      doStep 2 msg
       pure e
     HandleTargetChoice _iid (isSource attrs -> True) (CardIdTarget cid) -> do
       push $ RevealCard cid
       pure . EtherealWeaving3 $ attrs `with` Meta (cid : chosenEvents meta)
-    DoStep 1 (PlayThisEvent iid (is attrs -> True)) -> do
+    DoStep n msg'@(PlayThisEvent iid (is attrs -> True)) | n > 0 -> do
       cards <- traverse getCard (chosenEvents meta)
       playable <-
         withModifiers
@@ -52,5 +52,6 @@ instance RunMessage EtherealWeaving3 where
               eventModifier attrs iid (AnySkillValue 2)
               costModifier attrs iid (ReduceCostOf (CardWithId card.id) 1)
               push $ PayCardCost iid card (defaultWindows iid)
+              doStep (n - 1) msg'
       pure e
     _ -> EtherealWeaving3 . (`with` meta) <$> liftRunMessage msg attrs

@@ -18,6 +18,9 @@ class Placeable a where
 instance IsPlacement Placement where
   toPlacement = id
 
+instance IsPlacement LocationId where
+  toPlacement = AtLocation
+
 instance IsPlacement AssetId where
   toPlacement = (`AttachedToAsset` Nothing)
 

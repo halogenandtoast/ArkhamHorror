@@ -48,7 +48,7 @@ instance RunMessage Zeal where
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       pushAll
         $ [skillTestModifier sid source iid (BaseSkillOf #combat 5)]
-        <> [skillTestModifier sid source iid SkillTestAutomaticallySucceeds | discarded]
+        <> [skillTestModifier sid source sid SkillTestAutomaticallySucceeds | discarded]
         <> [chooseFight]
         <> [ questionLabel "Put into play from discard" player
             $ ChooseOne

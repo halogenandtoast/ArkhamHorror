@@ -49,7 +49,7 @@ instance RunMessage Hope where
       chooseEvade <- toMessage <$> mkChooseEvade sid iid source
       pushAll
         $ [skillTestModifier sid source iid (BaseSkillOf #agility 5)]
-        <> [skillTestModifier sid source iid SkillTestAutomaticallySucceeds | discarded]
+        <> [skillTestModifier sid source sid SkillTestAutomaticallySucceeds | discarded]
         <> [chooseEvade]
         <> [ questionLabel "Put into play from discard" player
             $ ChooseOne

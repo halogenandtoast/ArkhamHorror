@@ -1,6 +1,7 @@
 module Arkham.Helpers.SkillTest.Lifted (module Arkham.Helpers.SkillTest.Lifted, module X) where
 
 import Arkham.Calculation
+import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Id
 import Arkham.Message (Message (..))
@@ -19,6 +20,8 @@ import Arkham.Helpers.SkillTest as X hiding (
   exploreTest,
   fight,
   investigate,
+  isSkillTestInvestigator,
+  isSkillTestSource,
   parley,
   pushAfterSkillTest,
   revelationSkillTest,
@@ -125,3 +128,13 @@ cancelTokenDraw = lift $ do
   popMessageMatching_ $ \case
     RunSkillTest {} -> True
     _ -> False
+
+isSkillTestSource
+  :: (Sourceable source, HasGame m, Alternative (t m), MonadTrans t) => source -> t m ()
+isSkillTestSource = liftGuardM . Msg.isSkillTestSource
+
+isSkillTestInvestigator
+  :: (AsId investigator, IdOf investigator ~ InvestigatorId, HasGame m, Alternative (t m), MonadTrans t)
+  => investigator
+  -> t m ()
+isSkillTestInvestigator = liftGuardM . Msg.isSkillTestInvestigator . asId

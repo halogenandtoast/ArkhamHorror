@@ -29,7 +29,8 @@ instance RunMessage ToeToToe where
       sid <- getRandom
       enemy <- fromJustNote "enemy should be set" <$> getMeta (toCardId attrs) "chosenEnemy"
       pushAll
-        [ skillTestModifiers sid attrs iid [DamageDealt 1, SkillTestAutomaticallySucceeds]
+        [ skillTestModifier sid attrs iid (DamageDealt 1)
+        , skillTestModifier sid attrs sid SkillTestAutomaticallySucceeds
         , FightEnemy sid iid enemy (toSource attrs) Nothing #combat False
         ]
       pure e

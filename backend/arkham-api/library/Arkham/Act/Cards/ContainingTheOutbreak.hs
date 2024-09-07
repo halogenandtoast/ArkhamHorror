@@ -3,16 +3,14 @@ module Arkham.Act.Cards.ContainingTheOutbreak (
   containingTheOutbreak,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
-import Arkham.Classes
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Scenarios.WakingNightmare.Helpers
 
 newtype ContainingTheOutbreak = ContainingTheOutbreak ActAttrs
@@ -32,7 +30,7 @@ instance HasAbilities ContainingTheOutbreak where
           1
           Here
         $ ActionAbility [] (ActionCost 1 <> OptionalCost (GroupClueCost (PerPlayer 1) YourLocation))
-    , restrictedAbility attrs 2 (Negate $ LocationExists InfestedLocation)
+    , restrictedAbility attrs 2 (not_ $ exists InfestedLocation)
         $ Objective
         $ ForcedAbility AnyWindow
     ]
@@ -43,7 +41,7 @@ getPaidClues (Payments ps) = any getPaidClues ps
 getPaidClues _ = False
 
 instance RunMessage ContainingTheOutbreak where
-  runMessage msg a@(ContainingTheOutbreak attrs) = case msg of
+  runMessage msg a@(ContainingTheOutbreak attrs) = runQueueT $ case msg of
     UseCardAbility
       iid
       source@(ProxySource (LocationSource lid) (isSource attrs -> True))
@@ -51,24 +49,17 @@ instance RunMessage ContainingTheOutbreak where
       _
       (getPaidClues -> paidClues) -> do
         sid <- getRandom
-        pushAll
-          $ [skillTestModifier sid source (SkillTestTarget sid) SkillTestAutomaticallySucceeds | paidClues]
-          <> [ beginSkillTest
-                sid
-                iid
-                (toAbilitySource source 1)
-                iid
-                #willpower
-                (LocationMaybeFieldCalculation lid LocationShroud)
-             ]
+        when paidClues $ skillTestModifier sid source sid SkillTestAutomaticallySucceeds
+        beginSkillTest sid iid (toAbilitySource source 1) iid #willpower
+          $ LocationMaybeFieldCalculation lid LocationShroud
         pure a
     PassedThisSkillTest
       _
       source@(AbilitySource (ProxySource (LocationSource lid) (isSource attrs -> True)) 1) -> do
         pushAll [RemoveTokens source (toTarget lid) #damage 1, PlaceTokens source (toTarget lid) #horror 1]
         pure a
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      push $ advanceVia #other attrs attrs
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      advancedWithOther attrs
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       joinedTheInvestigators <- getHasRecord DrMaheswaranJoinedTheInvestigation
@@ -80,4 +71,4 @@ instance RunMessage ContainingTheOutbreak where
           push R3
 
       pure a
-    _ -> ContainingTheOutbreak <$> runMessage msg attrs
+    _ -> ContainingTheOutbreak <$> liftRunMessage msg attrs

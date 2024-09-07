@@ -1090,6 +1090,9 @@ insteadOfMatching pred f = do
 don't :: (MonadTrans t, HasQueue Message m) => Message -> t m ()
 don't msg = lift $ popMessageMatching_ (== msg)
 
+fromQueue :: (MonadTrans t, HasQueue Message m) => ([Message] -> r) -> t m r
+fromQueue f = lift $ Arkham.Classes.HasQueue.fromQueue f
+
 matchingDon't :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
 matchingDon't f = lift $ popMessageMatching_ f
 

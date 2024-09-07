@@ -6,7 +6,6 @@ module Arkham.Event.Cards.EldritchInspiration1 (
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Classes.HasQueue (fromQueue, popMessageMatching_)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Event.Types qualified as Field
@@ -27,7 +26,7 @@ eldritchInspiration1 = event EldritchInspiration1 Cards.eldritchInspiration1
 instance RunMessage EldritchInspiration1 where
   runMessage msg e@(EldritchInspiration1 attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      mmsg <- lift $ fromQueue $ find \case
+      mmsg <- fromQueue $ find \case
         Do (If wType _) -> case wType of
           Window.RevealChaosTokenEffect {} -> True
           Window.RevealChaosTokenEventEffect {} -> True
@@ -62,22 +61,21 @@ instance RunMessage EldritchInspiration1 where
 
       pure e
     ResolveEvent _ eid _ _ | eid == toId attrs -> do
-      lift do
-        popMessageMatching_ \case
-          Do (If wType _) -> case wType of
-            Window.RevealChaosTokenEffect {} -> True
-            Window.RevealChaosTokenEventEffect {} -> True
-            Window.RevealChaosTokenAssetAbilityEffect {} -> True
-            _ -> False
+      matchingDon't \case
+        Do (If wType _) -> case wType of
+          Window.RevealChaosTokenEffect {} -> True
+          Window.RevealChaosTokenEventEffect {} -> True
+          Window.RevealChaosTokenAssetAbilityEffect {} -> True
           _ -> False
+        _ -> False
 
-        popMessageMatching_ \case
-          CheckWindows [Window AtIf wType _] -> case wType of
-            Window.RevealChaosTokenEffect {} -> True
-            Window.RevealChaosTokenEventEffect {} -> True
-            Window.RevealChaosTokenAssetAbilityEffect {} -> True
-            _ -> False
+      matchingDon't \case
+        CheckWindows [Window AtIf wType _] -> case wType of
+          Window.RevealChaosTokenEffect {} -> True
+          Window.RevealChaosTokenEventEffect {} -> True
+          Window.RevealChaosTokenAssetAbilityEffect {} -> True
           _ -> False
+        _ -> False
       cancelledOrIgnoredCardOrGameEffect attrs
       pure e
     _ -> EldritchInspiration1 <$> liftRunMessage msg attrs

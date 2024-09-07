@@ -565,7 +565,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   PlaceUnderneath ActDeckTarget cards -> do
     for_ cards $ \card ->
       pushAll
-        $ splitWithWindows
+        $ ObtainCard card
+        : splitWithWindows
           (PlacedUnderneath ActDeckTarget card)
           [Window.PlaceUnderneath ActDeckTarget card]
     pure a

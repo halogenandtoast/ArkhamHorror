@@ -35,6 +35,7 @@ import Arkham.Scenario.Runner
 import Arkham.Scenarios.TheUnspeakableOath.Story
 import Arkham.Trait hiding (Cultist, Expert)
 import Arkham.Window qualified as Window
+import Control.Lens (non)
 
 newtype TheUnspeakableOath = TheUnspeakableOath ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -284,8 +285,7 @@ instance RunMessage TheUnspeakableOath where
       pure s
     ResolveChaosToken _ ElderThing iid -> do
       player <- getPlayer iid
-      monsters <- getSetAsideCardsMatching (CardWithType EnemyType <> CardWithTrait Monster)
-      case monsters of
+      case attrs ^. decksL . at MonstersDeck . non [] of
         [] -> push FailSkillTest
         (x : xs) -> do
           monster <- sample (x :| xs)

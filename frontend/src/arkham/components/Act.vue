@@ -138,22 +138,22 @@ const isOtherEncounterCard = computed(() => {
         :src="image"
       />
 
-      </div>
-      <div class="abilities" v-if="showAbilities">
-        <AbilityButton
-          v-for="ability in abilities"
-          :key="ability.index"
-          :ability="ability.contents"
-          :data-image="image"
-          @click="chooseAbility(ability)"
-          />
-
-        <template v-if="debug.active">
-          <button @click="debug.send(game.id, {tag: 'AdvanceAct', contents: [id, {tag: 'TestSource', contents:[]}]})">Advance</button>
-        </template>
-
-        <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="showCardsUnderAct">{{viewUnderLabel}}</button>
     </div>
+    <div class="abilities" v-if="showAbilities">
+      <AbilityButton
+        v-for="ability in abilities"
+        :key="ability.index"
+        :ability="ability.contents"
+        :data-image="image"
+        @click="chooseAbility(ability)"
+        />
+
+      <template v-if="debug.active">
+        <button @click="debug.send(game.id, {tag: 'AdvanceAct', contents: [id, {tag: 'TestSource', contents:[]}]})">Advance</button>
+      </template>
+
+    </div>
+    <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="showCardsUnderAct">{{viewUnderLabel}}</button>
     <img
       v-for="(card, idx) in cardsNextTo"
       class="card card--sideways"
@@ -196,6 +196,7 @@ const isOtherEncounterCard = computed(() => {
   position: relative;
   border-radius: 6px;
   height: var(--card-width);
+  width: fit-content;
 }
 
 @property --gradient-angle {
@@ -233,6 +234,7 @@ const isOtherEncounterCard = computed(() => {
 .act-container {
   display: flex;
   flex-direction: column;
+  gap: 5px;
 }
 
 .card--sideways {

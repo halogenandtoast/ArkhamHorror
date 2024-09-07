@@ -26,8 +26,7 @@ const emit = defineEmits<{
     </template>
     <div class="card-row-cards">
       <div v-for="card in cards" :key="card.id" class="card-row-card" :class="{ discard: isDiscards }">
-        <Card v-if="card.isFlipped" :game="game" :card="card" :playerId="playerId" @choose="emit('choose', $event)" />
-        <img v-else :src="imgsrc('encounter_back.jpg')" class="card" />
+        <Card :game="game" :card="card" :playerId="playerId" @choose="emit('choose', $event)" />
       </div>
     </div>
     <button class="close" @click="emit('close')">Close</button>

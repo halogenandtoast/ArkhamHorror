@@ -24,13 +24,13 @@ instance HasModifiersFor AgnesBakerParallel where
   getModifiersFor (CardIdTarget cardId) (AgnesBakerParallel attrs) = do
     maybeModified attrs do
       card <- lift $ getCard cardId
+      guard $ card.owner == Just attrs.id
       guard $ cardMatch card (card_ $ #spell <> #event)
-      let pcDef = toCardDef card
-      startingCost <- case cdCost pcDef of
+      startingCost <- case card.cost of
         Just (StaticCost n) -> pure n
         Just DynamicCost -> pure 0
         Just (MaxDynamicCost _) -> pure 0
-        Just DiscardAmountCost -> lift $ fieldMap InvestigatorDiscard (count ((== toCardCode card) . toCardCode)) attrs.id
+        Just DiscardAmountCost -> lift $ fieldMap InvestigatorDiscard (count ((== card.cardCode) . toCardCode)) attrs.id
         Nothing -> pure 0
       pure
         [ AdditionalCost

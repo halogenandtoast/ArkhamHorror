@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { Game } from '@/arkham/types/Game';
 import type { CardContents } from '@/arkham/types/Card';
+import { imgsrc } from '@/arkham/helpers';
 import Card from '@/arkham/components/Card.vue';
 import Draggable from '@/components/Draggable.vue';
 
@@ -25,7 +26,8 @@ const emit = defineEmits<{
     </template>
     <div class="card-row-cards">
       <div v-for="card in cards" :key="card.id" class="card-row-card" :class="{ discard: isDiscards }">
-        <Card :game="game" :card="card" :playerId="playerId" @choose="emit('choose', $event)" />
+        <Card v-if="card.isFlipped" :game="game" :card="card" :playerId="playerId" @choose="emit('choose', $event)" />
+        <img v-else :src="imgsrc('encounter_back.jpg')" class="card" />
       </div>
     </div>
     <button class="close" @click="emit('close')">Close</button>

@@ -27,7 +27,7 @@ const cardContents = computed<CardContents>(() => props.card.tag === "CardConten
 
 const image = computed(() => {
   if (props.card.tag === 'VengeanceCard') {
-    const back = props.card.contents.tag === 'PlayerCard' ? 'player_back' : 'encounter/back'
+    const back = props.card.contents.tag === 'PlayerCard' ? 'player_back' : 'encounter_back'
     return imgsrc(`${back}.jpg`);
   }
 

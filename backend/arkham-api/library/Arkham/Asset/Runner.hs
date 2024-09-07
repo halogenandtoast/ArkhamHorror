@@ -555,7 +555,7 @@ instance RunMessage AssetAttrs where
       let entersPlay = not (isInPlayPlacement a.placement) && isInPlayPlacement placement
       modifiers <- getCombinedModifiers [toTarget a, CardIdTarget (toCardId a)]
       let currentUses = Map.filterWithKey (\k _ -> tokenIsUse k) assetTokens
-      startingUses <- toModifiedStartingUses a (cdUses $ toCardDef a)
+      startingUses <- toModifiedStartingUses a assetPrintedUses
       let uses = if currentUses == mempty && entersPlay then startingUses else mempty
 
       -- If the card wasn't in play, but moves into a play area we need to

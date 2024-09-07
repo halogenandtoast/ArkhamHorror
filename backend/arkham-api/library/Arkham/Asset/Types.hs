@@ -20,6 +20,7 @@ import Arkham.Field
 import Arkham.Id
 import Arkham.Json
 import Arkham.Key
+import Arkham.Matcher (replaceThisCard)
 import Arkham.Matcher.Types (AssetMatcher (AssetWithId), Be (..))
 import Arkham.Message
 import Arkham.Name
@@ -429,7 +430,7 @@ assetWith f cardDef g =
             , assetSlots = cdSlots cardDef
             , assetHealth = Nothing
             , assetSanity = Nothing
-            , assetPrintedUses = cdUses cardDef
+            , assetPrintedUses = replaceThisCard cardId (cdUses cardDef)
             , assetExhausted = False
             , assetExiled = False
             , assetTokens = mempty

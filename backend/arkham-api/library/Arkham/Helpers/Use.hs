@@ -15,7 +15,10 @@ getAssetUses :: HasGame m => UseType -> AssetId -> m Int
 getAssetUses k = fieldMap AssetUses (findWithDefault 0 k)
 
 toModifiedStartingUses
-  :: (HasGame m, IsCard a, Targetable a) => a -> Uses GameCalculation -> m (Map UseType Int)
+  :: (HasCallStack, HasGame m, IsCard a, Targetable a)
+  => a
+  -> Uses GameCalculation
+  -> m (Map UseType Int)
 toModifiedStartingUses a startingUses = do
   modifiers <- getCombinedModifiers [toTarget a, CardIdTarget (toCardId a)]
   sUses <- toStartingUses startingUses
@@ -29,7 +32,7 @@ toModifiedStartingUses a startingUses = do
     _ -> pure usesMap
   applyModifier m _ = pure m
 
-toStartingUses :: HasGame m => Uses GameCalculation -> m (Map UseType Int)
+toStartingUses :: (HasCallStack, HasGame m) => Uses GameCalculation -> m (Map UseType Int)
 toStartingUses = fmap toMap . asStartingUses
  where
   toMap = \case
@@ -37,13 +40,13 @@ toStartingUses = fmap toMap . asStartingUses
     UsesWithLimit uType value _ -> singletonMap uType value
     NoUses -> mempty
 
-asStartingUses :: HasGame m => Uses GameCalculation -> m (Uses Int)
+asStartingUses :: (HasCallStack, HasGame m) => Uses GameCalculation -> m (Uses Int)
 asStartingUses (Uses uType gameValue) = Uses uType <$> calculate gameValue
 asStartingUses (UsesWithLimit uType gameValue limitValue) =
   UsesWithLimit uType <$> calculate gameValue <*> calculate limitValue
 asStartingUses NoUses = pure NoUses
 
-startingUseCountFor :: HasGame m => UseType -> Uses GameCalculation -> m Int
+startingUseCountFor :: (HasCallStack, HasGame m) => UseType -> Uses GameCalculation -> m Int
 startingUseCountFor uType = fmap (findWithDefault 0 uType) . toStartingUses
 
 hasUsesFor :: UseType -> Uses GameCalculation -> Bool

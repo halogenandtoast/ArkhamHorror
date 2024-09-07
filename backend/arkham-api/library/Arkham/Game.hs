@@ -3300,7 +3300,7 @@ instance Projection Asset where
       AssetExhausted -> pure assetExhausted
       AssetPlacement -> pure assetPlacement
       AssetUses -> pure $ Map.filterWithKey (\k _ -> Token.tokenIsUse k) (coerce assetTokens)
-      AssetStartingUses -> pure . cdUses $ toCardDef attrs
+      AssetStartingUses -> pure assetPrintedUses
       AssetController -> do
         modifiers' <- getModifiers (AssetTarget aid)
         let

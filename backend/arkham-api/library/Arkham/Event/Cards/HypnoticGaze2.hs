@@ -1,23 +1,18 @@
-module Arkham.Event.Cards.HypnoticGaze2 (
-  hypnoticGaze2,
-  HypnoticGaze2 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.HypnoticGaze2 (hypnoticGaze2, HypnoticGaze2 (..)) where
 
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
-import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Enemy.Types hiding (EnemyDamage)
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Query (getPlayer)
 import Arkham.Helpers.Window
 import Arkham.Id
+import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Taboo
-import Arkham.Window (mkAfter)
 import Arkham.Window qualified as Window
 
 newtype Metadata = Metadata {selectedEnemy :: Maybe EnemyId}
@@ -29,53 +24,37 @@ newtype HypnoticGaze2 = HypnoticGaze2 (EventAttrs `With` Metadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hypnoticGaze2 :: EventCard HypnoticGaze2
-hypnoticGaze2 =
-  event (HypnoticGaze2 . (`with` Metadata Nothing)) Cards.hypnoticGaze2
-
-dropUntilAttack :: [Message] -> [Message]
-dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
+hypnoticGaze2 = event (HypnoticGaze2 . (`with` Metadata Nothing)) Cards.hypnoticGaze2
 
 instance RunMessage HypnoticGaze2 where
-  runMessage msg e@(HypnoticGaze2 (attrs `With` meta)) = case msg of
-    InvestigatorPlayEvent iid eventId _ _ _ | eventId == toId attrs -> do
-      enemyId <- fromQueue $ \queue -> case dropUntilAttack queue of
-        PerformEnemyAttack eid : _ -> eid
-        _ -> error "unhandled"
-      ignoreWindow <-
-        checkWindows [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
-      pushAll
-        [ CancelNext (toSource attrs) AttackMessage
-        , RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
-        , ignoreWindow
-        ]
-      pure $ HypnoticGaze2 (attrs `with` Metadata (Just enemyId))
-    RequestedChaosTokens source (Just iid) faces | isSource attrs source -> do
-      push $ ResetChaosTokens (toSource attrs)
-      let
-        enemyId = fromMaybe (error "missing enemy id") (selectedEnemy meta)
-        valid =
-          if tabooed TabooList22 attrs
-            then isSymbolChaosToken
-            else (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        shouldDamageEnemy = any (valid . chaosTokenFace) faces
-      when shouldDamageEnemy $ do
+  runMessage msg e@(HypnoticGaze2 (attrs `With` meta)) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      let currentAttack = getAttackDetails attrs.windows
+      cancelAttack attrs currentAttack
+      push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
+      cancelledOrIgnoredCardOrGameEffect attrs
+      pure $ HypnoticGaze2 (attrs `with` Metadata (Just currentAttack.enemy))
+    RequestedChaosTokens (isSource attrs -> True) (Just iid) faces -> do
+      let enemyId = fromMaybe (error "missing enemy id") (selectedEnemy meta)
+      let valid =
+            if tabooed TabooList22 attrs
+              then isSymbolChaosToken
+              else (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
+      when (any (valid . chaosTokenFace) faces) do
         healthDamage' <- field EnemyHealthDamage enemyId
         sanityDamage' <- field EnemySanityDamage enemyId
         player <- getPlayer iid
         pushWhen (healthDamage' > 0 || sanityDamage' > 0)
           $ If
-            (Window.RevealChaosTokenEventEffect (eventOwner attrs) faces (toId attrs))
-            [ chooseOrRunOne player
-                $ [ Label
-                    "Deal health damage"
-                    [EnemyDamage enemyId $ nonAttack attrs healthDamage']
+            (Window.RevealChaosTokenEventEffect attrs.owner faces attrs.id)
+            [ Msg.chooseOrRunOne player
+                $ [ Label "Deal health damage" [EnemyDamage enemyId $ nonAttack attrs healthDamage']
                   | healthDamage' > 0
                   ]
-                <> [ Label
-                    "Deal sanity damage"
-                    [EnemyDamage enemyId $ nonAttack attrs sanityDamage']
+                <> [ Label "Deal sanity damage" [EnemyDamage enemyId $ nonAttack attrs sanityDamage']
                    | sanityDamage' > 0
                    ]
             ]
+      push $ ResetChaosTokens (toSource attrs)
       pure e
-    _ -> HypnoticGaze2 . (`with` meta) <$> runMessage msg attrs
+    _ -> HypnoticGaze2 . (`with` meta) <$> liftRunMessage msg attrs

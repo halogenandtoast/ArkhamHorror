@@ -1,24 +1,16 @@
-module Arkham.Event.Cards.HypnoticGaze (
-  hypnoticGaze,
-  HypnoticGaze (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.HypnoticGaze (hypnoticGaze, HypnoticGaze (..)) where
 
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
-import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Enemy.Types hiding (EnemyDamage)
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Taboo
-import Arkham.Timing qualified as Timing
-import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype Metadata = Metadata {selectedEnemy :: Maybe EnemyId}
@@ -30,48 +22,29 @@ newtype HypnoticGaze = HypnoticGaze (EventAttrs `With` Metadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hypnoticGaze :: EventCard HypnoticGaze
-hypnoticGaze =
-  event (HypnoticGaze . (`with` Metadata Nothing)) Cards.hypnoticGaze
-
-dropUntilAttack :: [Message] -> [Message]
-dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
+hypnoticGaze = event (HypnoticGaze . (`with` Metadata Nothing)) Cards.hypnoticGaze
 
 instance RunMessage HypnoticGaze where
-  runMessage msg e@(HypnoticGaze (attrs `With` meta)) = case msg of
-    InvestigatorPlayEvent iid eventId _ _ _ | eventId == toId attrs -> do
-      enemyId <- fromQueue $ \queue -> case dropUntilAttack queue of
-        PerformEnemyAttack eid : _ -> eid
-        _ -> error "unhandled"
-      ignoreWindow <-
-        checkWindows
-          [ mkWindow
-              Timing.After
-              (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)
-          ]
-      pushAll
-        [ CancelNext (toSource attrs) AttackMessage
-        , RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
-        , ignoreWindow
-        ]
-      pure $ HypnoticGaze (attrs `with` Metadata (Just enemyId))
-    RequestedChaosTokens source (Just iid) faces | isSource attrs source -> do
+  runMessage msg e@(HypnoticGaze (attrs `With` meta)) = runQueueT case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      let currentAttack = getAttackDetails attrs.windows
+      cancelAttack attrs currentAttack
+      push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
+      cancelledOrIgnoredCardOrGameEffect attrs
+      pure $ HypnoticGaze (attrs `with` Metadata (Just currentAttack.enemy))
+    RequestedChaosTokens (isSource attrs -> True) (Just iid) faces -> do
+      continue iid []
+      let enemyId = fromMaybe (error "missing enemy id") (selectedEnemy meta)
+      let valid =
+            if tabooed TabooList21 attrs
+              then isSymbolChaosToken
+              else (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
+      let shouldDamageEnemy = any (valid . chaosTokenFace) faces
+      healthDamage' <- field EnemyHealthDamage enemyId
+      pushWhen (shouldDamageEnemy && healthDamage' > 0) do
+        If
+          (Window.RevealChaosTokenEventEffect attrs.owner faces attrs.id)
+          [EnemyDamage enemyId $ nonAttack attrs healthDamage']
       push $ ResetChaosTokens (toSource attrs)
-      let
-        enemyId = fromMaybe (error "missing enemy id") (selectedEnemy meta)
-        valid =
-          if tabooed TabooList21 attrs
-            then isSymbolChaosToken
-            else (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-        shouldDamageEnemy = any (valid . chaosTokenFace) faces
-      when shouldDamageEnemy $ do
-        healthDamage' <- field EnemyHealthDamage enemyId
-        when (healthDamage' > 0)
-          $ push
-          $ If
-            (Window.RevealChaosTokenEventEffect (eventOwner attrs) faces (toId attrs))
-            [EnemyDamage enemyId $ nonAttack attrs healthDamage']
-
-      player <- getPlayer iid
-      push $ chooseOne player [Label "Continue" []]
       pure e
-    _ -> HypnoticGaze . (`with` meta) <$> runMessage msg attrs
+    _ -> HypnoticGaze . (`with` meta) <$> liftRunMessage msg attrs

@@ -1,11 +1,10 @@
 module Arkham.Event.Cards.HandOfFate (handOfFate, HandOfFate (..)) where
 
-import Arkham.Classes
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.ChaosBag
-import Arkham.Prelude
+import Arkham.Helpers.Window
 import Arkham.Projection
 
 newtype HandOfFate = HandOfFate EventAttrs
@@ -15,20 +14,14 @@ newtype HandOfFate = HandOfFate EventAttrs
 handOfFate :: EventCard HandOfFate
 handOfFate = event HandOfFate Cards.handOfFate
 
-dropUntilAttack :: [Message] -> [Message]
-dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
-
 instance RunMessage HandOfFate where
-  runMessage msg e@(HandOfFate attrs) = case msg of
-    PlayThisEvent _iid eid | eid == toId attrs -> do
-      enemyId <- fromQueue $ \queue -> case dropUntilAttack queue of
-        PerformEnemyAttack x : _ -> x
-        _ -> error "unhandled"
-      damage <- field EnemyHealthDamage enemyId
-      horror <- field EnemySanityDamage enemyId
+  runMessage msg e@(HandOfFate attrs) = runQueueT $ case msg of
+    PlayThisEvent _iid (is attrs -> True) -> do
+      let currentAttack = getAttackDetails attrs.windows
+      damage <- field EnemyHealthDamage currentAttack.enemy
+      horror <- field EnemySanityDamage currentAttack.enemy
       n <- max (damage + horror) <$> getRemainingBlessTokens
-      pushAll
-        $ CancelNext (toSource attrs) AttackMessage
-        : replicate n (AddChaosToken #bless)
+      cancelAttack attrs currentAttack
+      replicateM_ n $ addChaosToken #bless
       pure e
-    _ -> HandOfFate <$> runMessage msg attrs
+    _ -> HandOfFate <$> liftRunMessage msg attrs

@@ -2480,18 +2480,70 @@ runGameMessage msg g = case msg of
           <> show (toCardType card)
           <> ": "
           <> show card
+  ResolveRevelation iid card -> do
+    getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))
+    let
+      removeCard = filter (/= card)
+      g' =
+        g
+          & (resolvingCardL ?~ toCard card)
+          & (focusedCardsL %~ removeCard)
+          & (foundCardsL %~ Map.map removeCard)
+    modifiers' <- getModifiers card
+    let ignoreRevelation = IgnoreRevelation `elem` modifiers'
+    case toCardType card of
+      EnemyType -> do
+        enemyId <- getRandom
+        let enemy = createEnemy card enemyId
+        pushAll
+          $ [Revelation iid (EnemySource enemyId) | hasRevelation card && not ignoreRevelation]
+          <> [UnsetActiveCard]
+        pure
+          $ g'
+          & (entitiesL . enemiesL . at enemyId ?~ enemy)
+          & (activeCardL ?~ toCard card)
+      TreacheryType -> do
+        -- handles draw windows
+        treacheryId <- getRandom
+        let treachery = createTreachery card iid treacheryId
+        -- Asset is assumed to have a revelation ability if drawn from encounter deck
+        pushAll $ guard (not ignoreRevelation) *> resolve (Revelation iid $ TreacherySource treacheryId)
+        pure $ g' & (entitiesL . treacheriesL . at treacheryId ?~ treachery)
+      EncounterAssetType -> do
+        assetId <- getRandom
+        let asset = createAsset card assetId
+        -- Asset is assumed to have a revelation ability if drawn from encounter deck
+        pushAll $ guard (not ignoreRevelation) *> resolve (Revelation iid $ AssetSource assetId)
+        pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
+      EncounterEventType -> do
+        eventId <- getRandom
+        let owner = fromMaybe iid (toCardOwner card)
+        let event' = createEvent card owner eventId
+        pushAll $ guard (not ignoreRevelation) *> resolve (Revelation iid $ EventSource eventId)
+        pure $ g' & (entitiesL . eventsL . at eventId ?~ event')
+      LocationType -> do
+        locationId <- getRandom
+        let location = createLocation card locationId
+
+        pushAll
+          $ PlacedLocation (toName location) (toCardCode card) locationId
+          : (guard (not ignoreRevelation) *> resolve (Revelation iid (LocationSource locationId)))
+        pure $ g' & (entitiesL . locationsL . at locationId ?~ location)
+      _ ->
+        error
+          $ "Unhandled card type: "
+          <> show (toCardType card)
+          <> ": "
+          <> show card
   DrewTreachery iid mdeck (EncounterCard card) -> do
     treacheryId <- getRandom
     let
-      treachery =
-        overAttrs (drawnFromL .~ mdeck) $ createTreachery card iid treacheryId
+      treachery = overAttrs (drawnFromL .~ mdeck) $ createTreachery card iid treacheryId
       historyItem = HistoryItem HistoryTreacheriesDrawn [toCardCode treachery]
       turn = isJust $ view turnPlayerInvestigatorIdL g
-      setTurnHistory =
-        if turn then turnHistoryL %~ insertHistory iid historyItem else id
+      setTurnHistory = if turn then turnHistoryL %~ insertHistory iid historyItem else id
 
     modifiers' <- getModifiers (toTarget treachery)
-
     afterDraw <- checkWindows [mkAfter (Window.DrawCard iid (toCard card) Deck.EncounterDeck)]
     pushAll
       $ [GainSurge GameSource (toTarget treachery) | AddKeyword Keyword.Surge `elem` modifiers']

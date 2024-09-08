@@ -885,6 +885,7 @@ data Message
   | Revelation InvestigatorId Source
   | RevelationChoice InvestigatorId Source Int
   | RevelationSkillTest SkillTestId InvestigatorId Source SkillType SkillTestDifficulty
+  | ResolveRevelation InvestigatorId Card
   | Run [Message]
   | RunBag Source (Maybe InvestigatorId) RequestedChaosTokenStrategy
   | RunDrawFromBag Source (Maybe InvestigatorId) RequestedChaosTokenStrategy

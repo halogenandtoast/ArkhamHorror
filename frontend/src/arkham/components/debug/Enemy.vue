@@ -54,7 +54,7 @@ const id = computed(() => props.enemy.id)
 
 const cardCode = computed(() => props.enemy.cardCode)
 const image = computed(() => {
-  return imgsrc(`cards/${cardCode.value.replace('c', '')}.jpg`)
+  return imgsrc(`cards/${cardCode.value.replace('c', '')}.avif`)
 })
 
 const debug = useDebug()

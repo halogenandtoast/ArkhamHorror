@@ -60,7 +60,7 @@ const tabooList = computed(() => {
 
 <template>
   <div class="decklist box" :class="deckClass">
-    <img class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator}.jpg`)" />
+    <img class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator}.avif`)" />
     <div class="deck-details">
       <span class="deck-title"><router-link :to="{ name: 'Deck', params: { deckId: deck.id }}">{{deck.name}}</router-link></span>
       <span v-if="tabooList" class="taboo-list">Taboo: {{tabooList}}</span>

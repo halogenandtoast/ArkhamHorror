@@ -100,7 +100,7 @@ const scenarioGuide = computed(() => {
   const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert'
     ? 'b'
     : ''
-  return imgsrc(`cards/${reference.replace('c', '')}${difficultySuffix}.jpg`)
+  return imgsrc(`cards/${reference.replace('c', '')}${difficultySuffix}.avif`)
 })
 const scenarioDecks = computed(() => {
   if (!props.scenario.decks) return null
@@ -140,14 +140,14 @@ const viewDiscardLabel = computed(() => pluralize('Card', discards.value.length)
 const topOfEncounterDiscard = computed(() => {
   if (!props.scenario.discard[0]) return null
   const { cardCode } = props.scenario.discard[0]
-  return imgsrc(`/cards/${cardCode.replace('c', '')}.jpg`)
+  return imgsrc(`cards/${cardCode.replace('c', '')}.avif`)
 })
 const spectralEncounterDeck = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[0])
 const spectralDiscard = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[1])
 const topOfSpectralDiscard = computed(() => {
   if (!spectralDiscard.value || !spectralDiscard.value[0]) return null
   const { cardCode } = spectralDiscard.value[0]
-  return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`)
+  return imgsrc(`cards/${cardCode.replace('c', '')}.avif`)
 })
 const topEnemyInVoid = computed(() => {
   const inVoidEnemy = Object.values(props.game.enemies).filter((e) => e.placement.tag === 'OutOfPlay' && e.placement.contents == 'VoidZone')[0]

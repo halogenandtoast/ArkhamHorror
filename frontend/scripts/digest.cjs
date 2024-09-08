@@ -7,7 +7,7 @@ const path = require('path');
 const dir = path.join(__dirname, '../public/img/arkham/ita/cards');
 const digest = path.join(__dirname, '../src/digests/ita.json');
 
-const files = fs.readdirSync(dir).filter(f => f.endsWith('.jpg'));
+const files = fs.readdirSync(dir).filter(f => f.endsWith('.avif'));
 
 const digests = files.map(f => `cards/${f}`);
 

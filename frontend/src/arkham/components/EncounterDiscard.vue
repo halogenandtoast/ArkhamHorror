@@ -10,7 +10,7 @@ defineProps<{
 
 const image = (card: CardContents) => {
   const { cardCode } = card;
-  return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
+  return imgsrc(`cards/${cardCode.replace('c', '')}.avif`);
 }
 </script>
 

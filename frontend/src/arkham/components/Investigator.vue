@@ -133,12 +133,12 @@ const skipTriggersAction = computed(() => {
 
 const image = computed(() => {
   if (props.investigator.isYithian) {
-    return imgsrc("cards/04244.jpg");
+    return imgsrc("cards/04244.avif");
   }
 
   const mutated = props.investigator.mutated ? `_${props.investigator.mutated}` : ''
   const classVariant = props.investigator.cardCode === 'c03006' && props.investigator.class !== 'Neutral' ? `_${props.investigator.class}` : ''
-  return imgsrc(`cards/${props.investigator.art.replace('c', '')}${classVariant}${mutated}.jpg`);
+  return imgsrc(`cards/${props.investigator.art.replace('c', '')}${classVariant}${mutated}.avif`);
 })
 
 const portraitImage = computed(() => {

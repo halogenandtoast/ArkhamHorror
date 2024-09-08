@@ -12,13 +12,13 @@ const props = defineProps<Props>()
 const deckImage = computed(() => {
   switch(props.deck[0]) {
     case 'UnknownPlacesDeck':
-      return imgsrc("cards/05134b.jpg");
+      return imgsrc("cards/05134b.avif");
     case 'ExhibitDeck':
-      return imgsrc("cards/02132b.jpg");
+      return imgsrc("cards/02132b.avif");
     case 'CosmosDeck':
-      return imgsrc("cards/05333b.jpg");
+      return imgsrc("cards/05333b.avif");
     case 'CatacombsDeck':
-      return imgsrc("cards/03247b.jpg");
+      return imgsrc("cards/03247b.avif");
     default:
       return imgsrc("back.png");
   }

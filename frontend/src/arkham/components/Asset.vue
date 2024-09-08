@@ -41,11 +41,11 @@ const image = computed(() => {
   const mutated = props.asset.mutated ? `_${props.asset.mutated}` : ''
   if (props.asset.flipped) {
     if (cardCode.value === "c90052") {
-      return imgsrc(`cards/90052b.jpg`)
+      return imgsrc(`cards/90052b.avif`)
     }
     return imgsrc(`player_back.jpg`)
   }
-  return imgsrc(`cards/${cardCode.value.replace('c', '')}${mutated}.jpg`)
+  return imgsrc(`cards/${cardCode.value.replace('c', '')}${mutated}.avif`)
 })
 
 const dataImage = computed(() => {

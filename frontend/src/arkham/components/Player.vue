@@ -98,7 +98,7 @@ const topOfDeckRevealed = computed(() =>
 const topOfDeck = computed(() => {
   const topCard = props.investigator.deck[0]
   if  (topOfDeckRevealed.value && topCard) {
-    return imgsrc(`cards/${topCard.cardCode.replace(/^c/, '')}.jpg`)
+    return imgsrc(`cards/${topCard.cardCode.replace(/^c/, '')}.avif`)
   }
   return imgsrc("player_back.jpg")
 })
@@ -353,7 +353,7 @@ const realityAcid = ref('89005')
           v-if="investigatorId === 'c89001'"
           class="card"
           @click="realityAcid = realityAcid === '89005' ? '89005b' : '89005'"
-          :src="imgsrc(`cards/${realityAcid}.jpg`)"
+          :src="imgsrc(`cards/${realityAcid}.avif`)"
         />
 
         <Treachery

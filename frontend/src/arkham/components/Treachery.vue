@@ -27,7 +27,7 @@ const choose = (idx: number) => emits('choose', idx)
 
 const debug = useDebug()
 const image = computed(() => {
-  return imgsrc(`cards/${props.treachery.cardCode.replace('c', '')}.jpg`)
+  return imgsrc(`cards/${props.treachery.cardCode.replace('c', '')}.avif`)
 })
 const id = computed(() => props.treachery.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))

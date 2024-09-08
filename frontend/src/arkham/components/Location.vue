@@ -54,7 +54,7 @@ const image = computed(() => {
   const { cardCode, revealed } = props.location
   const suffix = revealed ? '' : 'b'
 
-  return imgsrc(`cards/${cardCode.replace('c', '')}${suffix}.jpg`)
+  return imgsrc(`cards/${cardCode.replace('c', '')}${suffix}.avif`)
 })
 
 const id = computed(() => props.location.id)

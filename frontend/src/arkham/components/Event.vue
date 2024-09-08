@@ -36,7 +36,7 @@ const hasPool = computed(() => {
 const cardCode = computed(() => props.event.cardCode)
 const image = computed(() => {
   const mutated = props.event.mutated ? `_${props.event.mutated}` : ''
-  return imgsrc(`cards/${cardCode.value.replace('c', '')}${mutated}.jpg`)
+  return imgsrc(`cards/${cardCode.value.replace('c', '')}${mutated}.avif`)
 })
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 

@@ -153,6 +153,17 @@ setStandaloneCampaignLog standaloneCampaignLog attrs =
     then attrs {scenarioStandaloneCampaignLog = standaloneCampaignLog}
     else attrs
 
+returnTo
+  :: (Entity base, EntityAttrs base ~ ScenarioAttrs)
+  => (base -> a)
+  -> CardCode
+  -> Name
+  -> (Difficulty -> base)
+  -> Difficulty
+  -> a
+returnTo f cardCode name base difficulty =
+  f $ overAttrs (\a -> a {scenarioId = ScenarioId cardCode, scenarioName = name}) (base difficulty)
+
 scenarioWith
   :: (ScenarioAttrs -> a)
   -> CardCode

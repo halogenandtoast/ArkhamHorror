@@ -2,6 +2,7 @@
   { "id": "01", "name": "The Night of the Zealot", "returnToId": "50" },
   {
     "id": "02",
+    "returnToId": "51",
     "name": "The Dunwich Legacy",
     "settings": [
       {

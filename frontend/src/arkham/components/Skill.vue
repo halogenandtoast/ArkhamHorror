@@ -25,7 +25,7 @@ const id = computed(() => props.skill.id)
 
 const cardCode = computed(() => props.skill.cardCode)
 const image = computed(() => {
-  return imgsrc(`cards/${cardCode.value.replace('c', '')}.jpg`)
+  return imgsrc(`cards/${cardCode.value.replace('c', '')}.avif`)
 })
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 

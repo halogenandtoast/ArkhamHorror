@@ -89,7 +89,7 @@ const setCountText = (set: CardSet) => {
   return ` (${implementedCount}/${total})`
 }
 
-const image = (card: Arkham.CardDef) => imgsrc(`cards/${card.art}.jpg`)
+const image = (card: Arkham.CardDef) => imgsrc(`cards/${card.art}.avif`)
 const view = ref(View.List)
 
 const query = ref("e:core")

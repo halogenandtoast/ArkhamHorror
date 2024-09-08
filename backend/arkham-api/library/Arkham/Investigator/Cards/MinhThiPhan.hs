@@ -1,13 +1,12 @@
 module Arkham.Investigator.Cards.MinhThiPhan (minhThiPhan, MinhThiPhan (..)) where
 
 import Arkham.Ability
-import Arkham.Card
-import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Skill.Types qualified as Field
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -36,20 +35,17 @@ instance HasChaosTokenValue MinhThiPhan where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage MinhThiPhan where
-  runMessage msg i@(MinhThiPhan attrs) = case msg of
+  runMessage msg i@(MinhThiPhan attrs) = runQueueT $ case msg of
     UseCardAbility _ (isSource attrs -> True) 1 [(windowType -> Window.CommittedCard _ card)] _ -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid (toAbilitySource attrs 1) (toCardId card) (AddSkillIcons [#wild])
+        skillTestModifier sid (attrs.ability 1) card (AddSkillIcons [#wild])
       pure i
-    ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
+    ElderSignEffect iid | iid == toId attrs -> do
       withSkillTest \sid -> do
         skills <- selectWithField Field.SkillCard AnySkill
-        player <- getPlayer iid
-        pushWhen (notNull skills)
-          $ chooseOne player
-          $ Label "Do not choose a skill to return to your hand" []
-          : [ targetLabel c [skillTestModifier sid (toSource ElderSign) s ReturnToHandAfterTest]
-            | (s, c) <- skills
-            ]
+        chooseOrRunOneM iid do
+          labeled "Do not choose a skill to return to your hand" nothing
+          for_ skills \(s, c) ->
+            targeting c $ skillTestModifier sid (toSource ElderSign) s ReturnToHandAfterTest
       pure i
-    _ -> MinhThiPhan <$> runMessage msg attrs
+    _ -> MinhThiPhan <$> liftRunMessage msg attrs

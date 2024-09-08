@@ -34,7 +34,7 @@ const image = computed(() => {
   const { cardCode, isFlipped, mutated } = cardContents.value
   const suffix = !props.revealed && isFlipped ? 'b' : ''
   const mutatedSuffix = mutated ? `_${mutated}` : ''
-  return imgsrc(`cards/${cardCode.replace(/^c/, '')}${suffix}${mutatedSuffix}.jpg`)
+  return imgsrc(`cards/${cardCode.replace(/^c/, '')}${suffix}${mutatedSuffix}.avif`)
 })
 
 const id = computed(() => props.card.tag === 'VengeanceCard' ? props.card.contents.contents.id : cardContents.value.id)

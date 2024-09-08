@@ -35,7 +35,7 @@ const id = computed(() => props.asset.id)
 const exhausted = computed(() => props.asset.exhausted)
 const cardCode = computed(() => props.asset.cardCode)
 const image = computed(() => {
-  return imgsrc(`cards/${cardCode.value.replace('c', '')}.jpg`)
+  return imgsrc(`cards/${cardCode.value.replace('c', '')}.avif`)
 })
 
 const keys = computed(() => props.asset.keys)

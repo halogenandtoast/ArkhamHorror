@@ -28,9 +28,9 @@ const emit = defineEmits<{
 const id = computed(() => props.agenda.id)
 const image = computed(() => {
   if (props.agenda.flipped) {
-    return imgsrc(`cards/${id.value.replace('c', '').replace(/a$/, '')}b.jpg`);
+    return imgsrc(`cards/${id.value.replace('c', '').replace(/a$/, '')}b.avif`);
   }
-  return imgsrc(`cards/${id.value.replace('c', '')}.jpg`);
+  return imgsrc(`cards/${id.value.replace('c', '')}.avif`);
 })
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))

@@ -23,7 +23,7 @@ const emit = defineEmits<{
 const image = computed(() => {
   const { id, flipped } = props.story
   const suffix = flipped ? 'b' : ''
-  return imgsrc(`cards/${id.replace('c', '')}${suffix}.jpg`);
+  return imgsrc(`cards/${id.replace('c', '')}${suffix}.avif`);
 })
 
 const id = computed(() => props.story.id)

@@ -59,7 +59,7 @@ fetchCards(true).then((response) => {
   })
 })
 
-const image = (card: Arkham.CardDef) => imgsrc(`cards/${card.art}.jpg`)
+const image = (card: Arkham.CardDef) => imgsrc(`cards/${card.art}.avif`)
 const view = ref(View.List)
 
 const cards = computed(() => {
@@ -222,7 +222,7 @@ watch(deckRef, (el) => {
     <div class="results">
       <header class="deck" v-show="deck" ref="deckRef" :class="deckClass">
         <template v-if="deck">
-          <img v-if="deckInvestigator" class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator}.jpg`)" />
+          <img v-if="deckInvestigator" class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator}.avif`)" />
           <div class="deck--details">
             <h1 class="deck-title">{{deck.name}}</h1>
             <div class="deck--actions">

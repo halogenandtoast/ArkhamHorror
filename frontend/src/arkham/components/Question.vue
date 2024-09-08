@@ -288,7 +288,7 @@ const submitAmounts = async () => {
 }
 
 const cardLabelImage = (cardCode: string) => {
-  return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
+  return imgsrc(`cards/${cardCode.replace('c', '')}.avif`);
 }
 
 const cardIdImage = (cardId: string) => {

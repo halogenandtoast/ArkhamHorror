@@ -41,7 +41,7 @@ const allCustomizations = ["09021", "09022", "09023", "09040", "09041", "09042",
 
 const cardCode = computed(() => {
   if (card.value) {
-    const pattern = /cards\/(\d+)(_.*)?\.jpg/
+    const pattern = /cards\/(\d+)(_.*)?\.avif/
     const match = card.value.match(pattern)
     if (match) return match[1]
   }
@@ -50,7 +50,7 @@ const cardCode = computed(() => {
 
 const mutated = computed(() => {
   if (card.value) {
-    const pattern = /cards\/\d+(_Mutated\d+)\.jpg/
+    const pattern = /cards\/\d+(_Mutated\d+)\.avif/
     const match = card.value.match(pattern)
     if (match) {
       return match[1]
@@ -255,7 +255,7 @@ const getPosition = (el: HTMLElement) => {
 
 const getImage = (el: HTMLElement): string | null => {
   if (el.dataset.imageId) {
-    return imgsrc(`cards/${el.dataset.imageId}.jpg`)
+    return imgsrc(`cards/${el.dataset.imageId}.avif`)
   }
 
   if (el instanceof HTMLImageElement && el.classList.contains('card') && !el.closest(".revelation")) {

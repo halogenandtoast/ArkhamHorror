@@ -53,7 +53,7 @@ const cardCode = computed(() => {
 })
 
 const image = computed(() => {
-  return imgsrc(`cards/${cardCode.value}.jpg`)
+  return imgsrc(`cards/${cardCode.value}.avif`)
 })
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))

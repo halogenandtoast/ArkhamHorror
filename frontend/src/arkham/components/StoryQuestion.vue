@@ -19,7 +19,7 @@ const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const question = computed(() => props.game.question[props.playerId])
 const cardLabelImage = (cardCode: string) => {
-  return imgsrc(`cards/${cardCode.replace('c', '')}.jpg`);
+  return imgsrc(`cards/${cardCode.replace('c', '')}.avif`);
 }
 
 const portraitLabelImage = (investigatorId: string) => {

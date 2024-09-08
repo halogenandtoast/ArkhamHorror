@@ -59,6 +59,7 @@ data Source
   | TestSource (Set Trait)
   | ChaosTokenSource ChaosToken
   | ChaosTokenEffectSource ChaosTokenFace
+  | ElderSignEffectSource InvestigatorId
   | TreacherySource TreacheryId
   | YouSource
   | CampaignSource

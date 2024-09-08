@@ -4,7 +4,6 @@ module Arkham.Location.Projection (
   module X,
 ) where
 
-import Arkham.Card
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.GameT
 import Arkham.Id

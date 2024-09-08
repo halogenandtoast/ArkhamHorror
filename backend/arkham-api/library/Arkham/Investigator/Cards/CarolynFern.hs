@@ -1,15 +1,10 @@
-module Arkham.Investigator.Cards.CarolynFern (
-  carolynFern,
-  CarolynFern (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.CarolynFern (carolynFern, CarolynFern (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -19,7 +14,7 @@ import Arkham.Window qualified as Window
 newtype CarolynFern = CarolynFern InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 carolynFern :: InvestigatorCard CarolynFern
 carolynFern =
@@ -28,10 +23,7 @@ carolynFern =
 
 instance HasAbilities CarolynFern where
   getAbilities (CarolynFern a) =
-    [ restrictedAbility
-        a
-        1
-        (Self <> Negate (TreacheryExists $ treacheryIs Treacheries.rationalThought))
+    [ restrictedAbility a 1 (Self <> not_ (exists $ treacheryIs Treacheries.rationalThought))
         $ freeReaction
         $ OrWindowMatcher
           [ AssetHealed #after #horror (#ally <> AssetControlledBy (affectsOthers Anyone)) (SourceOwnedBy You)
@@ -49,29 +41,27 @@ getHealed ((windowType -> Window.Healed _ (InvestigatorTarget investigatorId) _ 
 getHealed (_ : xs) = getHealed xs
 
 instance HasChaosTokenValue CarolynFern where
-  getChaosTokenValue iid ElderSign (CarolynFern attrs) | iid == toId attrs = do
+  getChaosTokenValue iid ElderSign (CarolynFern attrs) | iid == attrs.id = do
     pure $ ChaosTokenValue ElderSign NoModifier
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage CarolynFern where
-  runMessage msg i@(CarolynFern attrs) = case msg of
+  runMessage msg i@(CarolynFern attrs) = runQueueT $ case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (getHealed -> healedThing) _ -> do
       healedController <- case healedThing of
         HealedInvestigator iid' -> pure iid'
         HealedAsset aid -> fieldJust AssetController aid
       canGainResources <- selectNone $ treacheryIs Treacheries.rationalThought
-      pushWhen (healedController /= toId attrs || canGainResources)
-        $ TakeResources healedController 1 (toAbilitySource attrs 1) False
+      when (healedController /= attrs.id || canGainResources) do
+        gainResourcesIfCan healedController (attrs.ability 1) 1
       pure i
-    ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
+    ElderSignEffect iid | iid == attrs.id -> do
       investigators <- selectTargets $ HealableInvestigator (toSource attrs) #horror $ colocatedWith iid
       assetsWithHorror <- selectTargets $ HealableAsset (toSource attrs) #horror (assetAtLocationWith iid)
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
+      chooseOrRunOne iid
         $ Label "Do not heal anything" []
         : targetLabels
           (assetsWithHorror <> investigators)
-          (\target -> only $ HealHorror target (toSource ElderSign) 1)
+          (\target -> only $ HealHorror target (ElderSignEffectSource iid) 1)
       pure i
-    _ -> CarolynFern <$> runMessage msg attrs
+    _ -> CarolynFern <$> liftRunMessage msg attrs

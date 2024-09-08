@@ -1,66 +1,37 @@
-module Arkham.Act.Cards.OutOfThisWorld (
-  OutOfThisWorld (..),
-  outOfThisWorld,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.OutOfThisWorld (OutOfThisWorld (..), outOfThisWorld) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Card
-import Arkham.Classes
+import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype OutOfThisWorld = OutOfThisWorld ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 outOfThisWorld :: ActCard OutOfThisWorld
-outOfThisWorld =
-  act
-    (1, A)
-    OutOfThisWorld
-    Cards.outOfThisWorld
-    (Just $ GroupClueCost (PerPlayer 2) Anywhere)
+outOfThisWorld = act (1, A) OutOfThisWorld Cards.outOfThisWorld (groupClueCost (PerPlayer 2))
 
 instance HasAbilities OutOfThisWorld where
-  getAbilities (OutOfThisWorld x) =
-    withBaseAbilities x [mkAbility x 1 $ ActionAbility [] $ ActionCost 1]
+  getAbilities (OutOfThisWorld x) = extend x [mkAbility x 1 actionAbility]
 
 instance RunMessage OutOfThisWorld where
-  runMessage msg a@(OutOfThisWorld attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
-      placeTheEdgeOfTheUniverse <- placeSetAsideLocation_ Locations.theEdgeOfTheUniverse
-      pushAll
-        [ placeTheEdgeOfTheUniverse
-        , AdvanceActDeck actDeckId (toSource attrs)
-        ]
+  runMessage msg a@(OutOfThisWorld attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      placeSetAsideLocation_ Locations.theEdgeOfTheUniverse
+      advanceActDeck attrs
       pure a
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push
-        $ DiscardTopOfEncounterDeck
-          iid
-          3
-          (toSource attrs)
-          (Just $ toTarget attrs)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ DiscardTopOfEncounterDeck iid 3 (toSource attrs) (Just $ toTarget attrs)
       pure a
-    DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
+    DiscardedTopOfEncounterDeck iid cards _ (isTarget attrs -> True) -> do
       let locationCards = filterLocations cards
-      player <- getPlayer iid
-      unless (null locationCards)
-        $ pushAll
-          [ FocusCards (map EncounterCard locationCards)
-          , chooseOne
-              player
-              [ targetLabel
-                (toCardId location)
-                [ InvestigatorDrewEncounterCard iid location
-                ]
-              | location <- locationCards
-              ]
-          , UnfocusCards
-          ]
+      unless (null locationCards) do
+        focusCards (map EncounterCard locationCards) \unfocus -> do
+          chooseOneM iid $ targets locationCards $ push . ResolveRevelation iid . toCard
+          push unfocus
       pure a
-    _ -> OutOfThisWorld <$> runMessage msg attrs
+    _ -> OutOfThisWorld <$> liftRunMessage msg attrs

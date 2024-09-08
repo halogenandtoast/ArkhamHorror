@@ -109,7 +109,7 @@ const hasPool = computed(() => {
       <div v-else class="buttons">
         <button @click="placeTokens = true">Place Tokens</button>
         <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'ClearTokens', contents: { tag: 'AssetTarget', contents: id}})">Remove All Tokens</button>
-        <button v-if="!asset.owner" @click="debug.send(game.id, {tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">Take control</button>
+        <button v-if="asset.owner !== investigatorId" @click="debug.send(game.id, {tag: 'TakeControlOfAsset', contents: [investigatorId, id]})">Take control</button>
         <button v-if="exhausted" @click="debug.send(game.id, {tag: 'Ready', contents: { tag: 'AssetTarget', contents: id}})">Ready</button>
         <button v-else @click="debug.send(game.id, {tag: 'Exhaust', contents: { tag: 'AssetTarget', contents: id}})">Exhaust</button>
         <button v-if="asset.owner" @click="debug.send(game.id, {tag: 'Discard', contents: [null, { tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}]})">Discard</button>

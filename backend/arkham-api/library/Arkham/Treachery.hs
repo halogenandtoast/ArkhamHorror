@@ -540,6 +540,8 @@ allTreacheries =
       SomeTreacheryCard finalRhapsodyAdvanced
     , --- Path of the Righteous
       SomeTreacheryCard smiteTheWickedAdvanced
+    , --- Relics of the Past
+      SomeTreacheryCard buriedSecretsAdvanced
     , --- Hunting for Answers
       SomeTreacheryCard rexsCurseAdvanced
     , --- Pistols and Pearls

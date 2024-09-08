@@ -155,4 +155,8 @@ const hasPool = computed(() => {
   align-items: center;
   justify-content: center;
 }
+
+.card {
+  width: 300px;
+}
 </style>

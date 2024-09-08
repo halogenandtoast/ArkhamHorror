@@ -1358,13 +1358,6 @@ instance RunMessage EnemyAttrs where
       pure $ a & keysL %~ deleteSet k
     FlipClues target n | isTarget a target -> do
       pure $ a & tokensL %~ flipClues n
-    PlaceEnemyInVoid eid | eid == enemyId -> do
-      withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
-      pure
-        $ a
-        & (placementL .~ OutOfPlay VoidZone)
-        & (exhaustedL .~ False)
-        & (tokensL %~ removeAllTokens Doom . removeAllTokens Clue . removeAllTokens Token.Damage)
     PlaceEnemy eid placement | eid == enemyId -> do
       case placement of
         AtLocation _ -> push $ EnemyCheckEngagement eid

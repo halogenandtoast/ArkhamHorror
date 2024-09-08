@@ -203,6 +203,9 @@ instance RunMessage LostInTimeAndSpace where
           for_ mYogSothothId $ \eid -> push (EnemyAttack $ enemyAttack eid attrs iid)
         _ -> pure ()
       pure s
+    ResolveChaosToken _ Cultist iid -> do
+      push $ DrawAnotherChaosToken iid
+      pure s
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just card) ->
       do
         (locationId, placement) <- placeLocation (EncounterCard card)

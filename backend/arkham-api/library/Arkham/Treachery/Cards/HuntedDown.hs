@@ -17,19 +17,16 @@ huntedDown = treachery HuntedDown Cards.huntedDown
 instance RunMessage HuntedDown where
   runMessage msg t@(HuntedDown attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      enemiesToMove <- select $ UnengagedEnemy <> EnemyWithTrait Criminal
-      if null enemiesToMove
-        then gainSurge attrs
-        else withLocationOf iid \destinationId -> do
-          chooseOneAtATimeM iid do
-            for_ enemiesToMove $ \eid ->
-              selectOne (locationWithEnemy eid) >>= traverse_ \locationId ->
-                select (ClosestPathLocation locationId destinationId) >>= \case
-                  [] -> pure ()
-                  xs ->
-                    targeting eid do
-                      chooseOneM iid do
-                        sequence_ [targeting x (push $ EnemyMove eid x) | x <- xs, x /= locationId]
-                      push $ EnemyAttackIfEngaged eid (Just iid)
+      select (UnengagedEnemy <> EnemyWithTrait Criminal) >>= \case
+        [] -> gainSurge attrs
+        enemiesToMove -> withLocationOf iid \destinationId -> do
+          chooseOneAtATimeM iid $ for_ enemiesToMove $ \eid ->
+            selectOne (locationWithEnemy eid) >>= traverse_ \locationId ->
+              select (ClosestPathLocation locationId destinationId) >>= \case
+                [] -> pure ()
+                xs -> targeting eid do
+                  chooseOneM iid do
+                    sequence_ [targeting x (push $ EnemyMove eid x) | x <- xs, x /= locationId]
+                  push $ EnemyAttackIfEngaged eid (Just iid)
       pure t
     _ -> HuntedDown <$> liftRunMessage msg attrs

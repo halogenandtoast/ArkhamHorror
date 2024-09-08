@@ -3510,14 +3510,12 @@ sourceMatches s = \case
     let
       checkSource = \case
         AbilitySource source' _ -> checkSource source'
-        AssetSource aid -> do
-          mControllerId <- selectAssetController aid
-          case mControllerId of
+        AssetSource aid ->
+          selectAssetController aid >>= \case
             Just iid' -> elem iid' <$> select whoMatcher
             _ -> pure False
         EventSource eid -> do
-          mControllerId <- selectEventController eid
-          case mControllerId of
+          selectEventController eid >>= \case
             Just controllerId -> elem controllerId <$> select whoMatcher
             Nothing -> do
               -- event may have been discarded already
@@ -3526,11 +3524,11 @@ sourceMatches s = \case
                 Just owner -> elem owner <$> select whoMatcher
                 Nothing -> pure False
         SkillSource sid -> do
-          mControllerId <- selectSkillController sid
-          case mControllerId of
+          selectSkillController sid >>= \case
             Just controllerId -> elem controllerId <$> select whoMatcher
             Nothing -> pure False
         InvestigatorSource iid -> elem iid <$> select whoMatcher
+        ElderSignEffectSource iid -> elem iid <$> select whoMatcher
         CardIdSource cid -> do
           c <- getCard cid
           case toCardOwner c of
@@ -3544,6 +3542,7 @@ sourceMatches s = \case
       go = \case
         ChaosTokenSource {} -> True
         ChaosTokenEffectSource {} -> True
+        ElderSignEffectSource {} -> True
         ActiveCostSource {} -> False
         AbilitySource {} -> True
         ActSource {} -> True

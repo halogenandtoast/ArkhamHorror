@@ -57,6 +57,7 @@ sourceToMaybeTarget = \case
   CardCodeSource cid -> Just $ CardCodeTarget cid
   ChaosTokenSource t -> Just $ ChaosTokenTarget t
   ChaosTokenEffectSource _ -> Nothing
+  ElderSignEffectSource _ -> Nothing
   AgendaSource aid -> Just $ AgendaTarget aid
   LocationSource lid -> Just $ LocationTarget lid
   SkillTestSource sid -> Just $ SkillTestTarget sid

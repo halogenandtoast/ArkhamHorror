@@ -127,6 +127,13 @@ data EncounterSet
   | GhoulsOfUmordhoth
   | TheDevourersCult
   | ReturnCultOfUmordhoth
+  | ReturnToExtracurricularActivity
+  | BeyondTheThreshold
+  | ResurgentEvils
+  | SecretDoors
+  | CreepingCold
+  | ErraticFear
+  | YogSothothsEmissaries
   | TheBayou
   | CurseOfTheRougarou
   | CarnevaleOfHorrors

@@ -1372,6 +1372,7 @@ library
       Arkham.Enemy.Cards.EctoplasmicHorror
       Arkham.Enemy.Cards.ElisabettaMagro
       Arkham.Enemy.Cards.EmergentMonstrosity
+      Arkham.Enemy.Cards.EnthralledSecurityGuard
       Arkham.Enemy.Cards.EztliGuardian
       Arkham.Enemy.Cards.Fanatic
       Arkham.Enemy.Cards.FangOfYig
@@ -2687,6 +2688,7 @@ library
       Arkham.Location.Cards.VipArea
       Arkham.Location.Cards.WaitingRoom
       Arkham.Location.Cards.WalterGilmansRoom
+      Arkham.Location.Cards.WarrenObservatory
       Arkham.Location.Cards.WellOfSouls
       Arkham.Location.Cards.WhateleyRuins_250
       Arkham.Location.Cards.WhateleyRuins_251

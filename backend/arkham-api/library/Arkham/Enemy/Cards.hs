@@ -138,6 +138,7 @@ allEncounterEnemyCards =
       , eaterOfTheDepths
       , elisabettaMagro
       , emergentMonstrosity
+      , enthralledSecurityGuard
       , eztliGuardian
       , fanatic
       , fangOfYig
@@ -2123,6 +2124,12 @@ almaHill =
       { cdCardTraits = setFromList [Humanoid, Cultist]
       , cdVictoryPoints = Just 1
       }
+
+enthralledSecurityGuard :: CardDef
+enthralledSecurityGuard =
+  (enemy "51014" "Enthralled Security Guard" ReturnToExtracurricularActivity 2)
+    { cdCardTraits = setFromList [Humanoid, Abomination]
+    }
 
 tommyMalloy :: CardDef
 tommyMalloy =

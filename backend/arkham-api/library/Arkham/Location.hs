@@ -615,6 +615,8 @@ allLocations =
     , SomeLocationCard arkhamWoodsLakeside
     , SomeLocationCard arkhamWoodsCorpseRiddenClearing
     , SomeLocationCard arkhamWoodsWoodenBridge
+    , -- Return to the Dunwich Legacy
+      SomeLocationCard warrenObservatory
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

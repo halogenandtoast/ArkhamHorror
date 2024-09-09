@@ -396,6 +396,8 @@ allEnemies =
       SomeEnemyCard jeremiahPierce
     , SomeEnemyCard billyCooper
     , SomeEnemyCard almaHill
+    , -- Return to Extracurricular Activity
+      SomeEnemyCard enthralledSecurityGuard
     , -- Nathanial Cho
       SomeEnemyCard tommyMalloy
     , -- Curse of the Rougarou

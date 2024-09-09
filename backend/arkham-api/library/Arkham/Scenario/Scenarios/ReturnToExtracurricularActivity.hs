@@ -3,10 +3,15 @@ module Arkham.Scenario.Scenarios.ReturnToExtracurricularActivity (
   returnToExtracurricularActivity,
 ) where
 
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
+import Arkham.EncounterSet qualified as Set
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Campaign
 import Arkham.Helpers.Scenario
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Prelude
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios.ExtracurricularActivity
@@ -33,7 +38,38 @@ instance HasChaosTokenValue ReturnToExtracurricularActivity where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage ReturnToExtracurricularActivity where
-  runMessage msg (ReturnToExtracurricularActivity base@(ExtracurricularActivity attrs)) = case msg of
+  runMessage msg (ReturnToExtracurricularActivity base@(ExtracurricularActivity attrs)) = runQueueT $ case msg of
     Setup -> runScenarioSetup (ReturnToExtracurricularActivity . ExtracurricularActivity) attrs do
-      pure ()
-    _ -> ReturnToExtracurricularActivity <$> runMessage msg base
+      gather Set.ReturnToExtracurricularActivity
+      gather Set.ExtracurricularActivity
+      gather Set.Sorcery
+      gather Set.BeyondTheThreshold
+      gather Set.BishopsThralls
+      gather Set.Whippoorwills
+      gather Set.ResurgentEvils
+      gather Set.SecretDoors
+      gather Set.YogSothothsEmissaries
+
+      completedTheHouseAlwaysWins <- elem "51015" <$> getCompletedScenarios
+      setAside
+        [ if completedTheHouseAlwaysWins
+            then Locations.facultyOfficesTheHourIsLate
+            else Locations.facultyOfficesTheNightIsStillYoung
+        , Assets.jazzMulligan
+        , Assets.alchemicalConcoction
+        , Enemies.theExperiment
+        , Locations.dormitories
+        , Locations.alchemyLabs
+        , Assets.professorWarrenRice
+        ]
+
+      startAt =<< place Locations.miskatonicQuad
+      randomLocation <- traceShowId <$> sample (Locations.orneLibrary :| [Locations.warrenObservatory])
+      placeAll
+        [ Locations.humanitiesBuilding
+        , randomLocation
+        , Locations.studentUnion
+        , Locations.scienceBuilding
+        , Locations.administrationBuilding
+        ]
+    _ -> ReturnToExtracurricularActivity <$> liftRunMessage msg base

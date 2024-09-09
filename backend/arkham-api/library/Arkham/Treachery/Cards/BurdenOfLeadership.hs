@@ -24,6 +24,8 @@ instance RunMessage BurdenOfLeadership where
                 "Deal 1 direct damage and 1 direct horror"
                 [DealAssetDirectDamage ally (toSource attrs) 1 1]
              ]
-      chooseOneAtATime iid $ map (uncurry targetLabel) choices
+      if null choices
+        then shuffleIntoDeck iid attrs
+        else chooseOneAtATime iid $ map (uncurry targetLabel) choices
       pure t
     _ -> BurdenOfLeadership <$> liftRunMessage msg attrs

@@ -472,6 +472,10 @@ allTreacheries =
       SomeTreacheryCard maskOfUmordhoth
     , -- Return to the Dunwich Legacy
       SomeTreacheryCard throughTheGates
+    , --- Beyond the Threshold
+      SomeTreacheryCard hauntingRecollections
+    , SomeTreacheryCard aBalefulWelcome
+    , SomeTreacheryCard infiniteDoorway
     , -- Return to the Path to Carcosa
       SomeTreacheryCard unspeakableOathBloodthirst
     , SomeTreacheryCard unspeakableOathCuriosity

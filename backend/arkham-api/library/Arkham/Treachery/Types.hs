@@ -105,6 +105,9 @@ instance HasField "meta" TreacheryAttrs Value where
 instance HasField "resources" TreacheryAttrs Int where
   getField = treacheryResources
 
+instance HasField "cardCode" TreacheryAttrs CardCode where
+  getField = treacheryCardCode
+
 instance HasField "owner" TreacheryAttrs (Maybe InvestigatorId) where
   getField = treacheryOwner
 

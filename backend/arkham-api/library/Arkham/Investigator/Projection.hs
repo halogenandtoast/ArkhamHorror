@@ -28,5 +28,8 @@ getSlots sType iid = fieldMap InvestigatorSlots (findWithDefault [] sType) iid
 instance HasField "slots" InvestigatorId (SlotType -> QueueT Message GameT [Slot]) where
   getField iid sType = getSlots sType iid
 
+instance HasField "discard" InvestigatorId (QueueT Message GameT [Card]) where
+  getField = fieldMap InvestigatorDiscard (map toCard)
+
 instance HasField "filter" (QueueT Message GameT [Card]) (CardMatcher -> QueueT Message GameT [Card]) where
   getField x f = filterCards f <$> x

@@ -469,6 +469,9 @@ instance IsLabel "move" ActionTarget where
 instance IsLabel "evade" ActionTarget where
   fromLabel = IsAction #evade
 
+instance IsLabel "fight" ActionTarget where
+  fromLabel = IsAction #fight
+
 instance IsLabel "investigate" ActionTarget where
   fromLabel = IsAction #investigate
 

@@ -1473,3 +1473,6 @@ handleTarget iid source target = push $ Msg.handleTargetChoice iid source target
 spendUses
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> UseType -> Int -> m ()
 spendUses source target tType n = push $ SpendUses (toSource source) (toTarget target) tType n
+
+drawCard :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
+drawCard iid card = push $ Msg.drawToHand iid card

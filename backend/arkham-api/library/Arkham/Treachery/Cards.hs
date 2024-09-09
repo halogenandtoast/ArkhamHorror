@@ -161,7 +161,8 @@ allEncounterTreacheryCards =
   mapFromList
     $ map
       (toCardCode &&& id)
-      [ aTearInTime
+      [ aBalefulWelcome
+      , aTearInTime
       , aWorldInDarkness
       , abandonedByTheGods
       , abduction
@@ -251,6 +252,7 @@ allEncounterTreacheryCards =
       , graspingHands
       , graveLight
       , graveLightSpectral
+      , hauntingRecollections
       , harvestedBrain
       , huntedByByakhee
       , huntedByCorsairs
@@ -259,6 +261,7 @@ allEncounterTreacheryCards =
       , illOmen
       , incriminatingEvidence
       , indescribableApparition
+      , infiniteDoorway
       , insatiableBloodlust
       , kidnapped
       , lawOfYgirothChaos
@@ -2199,6 +2202,25 @@ maskOfUmordhoth =
 throughTheGates :: CardDef
 throughTheGates =
   (basicWeakness "51011" "Through the Gates") {cdCardTraits = setFromList [Pact, Mystery]}
+
+hauntingRecollections :: CardDef
+hauntingRecollections =
+  (treachery "51061" "Haunting Recollections" BeyondTheThreshold 2)
+    { cdCardTraits = setFromList [Hex]
+    }
+
+aBalefulWelcome :: CardDef
+aBalefulWelcome =
+  (treachery "51062" "A Baleful Welcome" BeyondTheThreshold 2)
+    { cdCardTraits = singleton Hex
+    , cdKeywords = singleton Keyword.Peril
+    }
+
+infiniteDoorway :: CardDef
+infiniteDoorway =
+  (treachery "51063" "Infinite Doorway" BeyondTheThreshold 2)
+    { cdCardTraits = singleton Hex
+    }
 
 unspeakableOathBloodthirst :: CardDef
 unspeakableOathBloodthirst =

@@ -8,6 +8,7 @@ import Arkham.Message
 import Arkham.Message.Lifted.Queue
 import Arkham.Placement
 import Arkham.Prelude
+import Arkham.Treachery.Types
 
 class IsPlacement a where
   toPlacement :: a -> Placement
@@ -23,6 +24,9 @@ instance IsPlacement LocationId where
 
 instance IsPlacement AssetId where
   toPlacement = (`AttachedToAsset` Nothing)
+
+instance Placeable TreacheryAttrs where
+  place attrs placement = push $ PlaceTreachery attrs.id (toPlacement placement)
 
 instance Placeable EventAttrs where
   place attrs placement = push $ PlaceEvent attrs.id (toPlacement placement)

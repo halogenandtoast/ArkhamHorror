@@ -20,7 +20,7 @@ instance HasAbilities SplitTheAngleIreOfTheVoid where
   getAbilities (SplitTheAngleIreOfTheVoid x) =
     [ controlledAbility x 1 (youExist $ can.reveal.cards <> can.target.encounterDeck) actionAbility
     , controlledAbility x 2 (youExist $ can.manipulate.deck <> can.target.encounterDeck)
-        $ FastAbility (exhaust x <> DiscardTopOfDeckCost 1)
+        $ FastAbility (exhaust x <> DiscardTopOfDeckCost 1 Nothing)
     ]
 
 instance RunMessage SplitTheAngleIreOfTheVoid where

@@ -40,6 +40,9 @@ instance HasField "customizations" PlayerCard Customizations where
 instance HasField "owner" PlayerCard (Maybe InvestigatorId) where
   getField = pcOwner
 
+instance HasField "title" PlayerCard Text where
+  getField = toTitle
+
 instance Eq PlayerCard where
   pc1 == pc2 = pcId pc1 == pcId pc2
 

@@ -27,7 +27,7 @@ instance HasAbilities MerchantDistrict_300 where
       [ restrictedAbility attrs 1 Here
           $ ActionAbility []
           $ ActionCost 1
-          <> OrCost [DiscardTopOfDeckCost n | n <- [5, 10, 15]]
+          <> OrCost [DiscardTopOfDeckCost n Nothing | n <- [5, 10, 15]]
       ]
 
 getCardCount :: Payment -> [Card]

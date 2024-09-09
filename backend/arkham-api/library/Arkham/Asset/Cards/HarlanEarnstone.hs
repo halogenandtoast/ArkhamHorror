@@ -13,7 +13,11 @@ harlanEarnstone :: AssetCard HarlanEarnstone
 harlanEarnstone = asset HarlanEarnstone Cards.harlanEarnstone
 
 instance HasAbilities HarlanEarnstone where
-  getAbilities (HarlanEarnstone a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation $ parleyAction (DiscardTopOfDeckCost 3)]
+  getAbilities (HarlanEarnstone a) =
+    [ skillTestAbility
+        $ restrictedAbility a 1 OnSameLocation
+        $ parleyAction (DiscardTopOfDeckCost 3 Nothing)
+    ]
 
 instance RunMessage HarlanEarnstone where
   runMessage msg a@(HarlanEarnstone attrs) = case msg of

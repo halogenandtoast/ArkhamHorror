@@ -220,7 +220,7 @@ data Cost
   | DamageCost Source Target Int
   | DirectDamageCost Source InvestigatorMatcher Int
   | InvestigatorDamageCost Source InvestigatorMatcher DamageStrategy Int
-  | DiscardTopOfDeckCost Int
+  | DiscardTopOfDeckCost Int (Maybe Target)
   | DiscardCost Zone Target
   | DiscardCardCost Card
   | DiscardUnderneathCardCost AssetId ExtendedCardMatcher
@@ -341,7 +341,7 @@ displayCostType = \case
     Nothing -> error "impossible"
   ResolveEachHauntedAbility _ -> "Resolve each haunted ability on this location"
   ActionCost n -> pluralize n "Action"
-  DiscardTopOfDeckCost n -> pluralize n "Card" <> " from the top of your deck"
+  DiscardTopOfDeckCost n _ -> pluralize n "Card" <> " from the top of your deck"
   DiscardAssetCost _ -> "Discard matching asset"
   DiscardCombinedCost n ->
     "Discard cards with a total combined cost of at least " <> tshow n

@@ -2041,6 +2041,7 @@ library
       Arkham.Helpers.Enemy
       Arkham.Helpers.Event
       Arkham.Helpers.GameValue
+      Arkham.Helpers.History
       Arkham.Helpers.Investigator
       Arkham.Helpers.Location
       Arkham.Helpers.Log
@@ -3086,6 +3087,7 @@ library
       Arkham.Trait
       Arkham.Treachery
       Arkham.Treachery.Cards
+      Arkham.Treachery.Cards.ABalefulWelcome
       Arkham.Treachery.Cards.AbandonedAndAlone
       Arkham.Treachery.Cards.AbandonedAndAloneAdvanced
       Arkham.Treachery.Cards.AbandonedByTheGods
@@ -3218,6 +3220,7 @@ library
       Arkham.Treachery.Cards.HarvestedBrain
       Arkham.Treachery.Cards.HastyRepairs
       Arkham.Treachery.Cards.Haunted
+      Arkham.Treachery.Cards.HauntingRecollections
       Arkham.Treachery.Cards.HospitalDebts
       Arkham.Treachery.Cards.HospitalDebtsAdvanced
       Arkham.Treachery.Cards.HuntedByByakhee
@@ -3229,6 +3232,7 @@ library
       Arkham.Treachery.Cards.IncriminatingEvidence
       Arkham.Treachery.Cards.Indebted
       Arkham.Treachery.Cards.IndescribableApparition
+      Arkham.Treachery.Cards.InfiniteDoorway
       Arkham.Treachery.Cards.InsatiableBloodlust
       Arkham.Treachery.Cards.InternalInjury
       Arkham.Treachery.Cards.Kidnapped

@@ -312,9 +312,9 @@ payCost msg c iid skipAdditionalCosts cost = do
               Nothing
               [PaymentAmountChoice choiceId iid 0 maxUpTo name $ pay cost']
           pure c
-    DiscardTopOfDeckCost n -> do
+    DiscardTopOfDeckCost n mTarget -> do
       cards <- fieldMap InvestigatorDeck (map PlayerCard . take n . unDeck) iid
-      push $ DiscardTopOfDeck iid n source Nothing
+      push $ DiscardTopOfDeck iid n source mTarget
       withPayment $ DiscardCardPayment cards
     IncreaseCostOfThis cardId n -> do
       push

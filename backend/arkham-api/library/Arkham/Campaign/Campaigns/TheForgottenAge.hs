@@ -253,8 +253,8 @@ instance RunMessage TheForgottenAge where
                 [ CardLabel
                   (unInvestigatorId iid)
                   ( if hasBinoculars
-                      then [story [player] shapesInTheTrees, GainXP iid CampaignSource 2]
-                      else [story [player] eyesInTheDark, SufferTrauma iid 0 1]
+                      then [story [player] eyesInTheDark, SufferTrauma iid 0 1]
+                      else [story [player] shapesInTheTrees, GainXP iid CampaignSource 2]
                   )
                 | (iid, player, hasBinoculars) <- investigatorsWithBinocularsPairs
                 ]

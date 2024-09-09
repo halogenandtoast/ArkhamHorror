@@ -45,7 +45,7 @@ instance RunMessage TalismanOfProtection where
         chooseOrRunOne iid $ targetLabels iids $ only . (`TakeControlOfAsset` (toId attrs))
       TalismanOfProtection <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      replaceMessageMatching
+      lift $ replaceMessageMatching
         \case
           InvestigatorWhenDefeated _ iid' -> iid == iid'
           _ -> False

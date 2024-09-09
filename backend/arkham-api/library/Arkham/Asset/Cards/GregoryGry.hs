@@ -2,10 +2,10 @@ module Arkham.Asset.Cards.GregoryGry (gregoryGry, gregoryGryEffect, GregoryGry (
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Effect.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
+import Arkham.Effect.Import
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype GregoryGry = GregoryGry AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -19,7 +19,7 @@ instance HasAbilities GregoryGry where
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
           (InitiatedSkillTest #when You AnySkillType AnySkillTestValue #any)
-          (UseCostUpTo (AssetWithId $ toId a) Resource 1 3)
+          (UseCostUpTo (be a) Resource 1 3)
     ]
 
 totalUses :: Payment -> Int
@@ -28,11 +28,11 @@ totalUses (UsesPayment n) = n
 totalUses _ = 0
 
 instance RunMessage GregoryGry where
-  runMessage msg a@(GregoryGry attrs) = case msg of
+  runMessage msg a@(GregoryGry attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (totalUses -> uses) -> do
-      push $ createCardEffect Cards.gregoryGry (Just $ EffectInt uses) (toAbilitySource attrs 1) iid
+      createCardEffect Cards.gregoryGry (effectInt uses) (attrs.ability 1) iid
       pure a
-    _ -> GregoryGry <$> runMessage msg attrs
+    _ -> GregoryGry <$> liftRunMessage msg attrs
 
 newtype GregoryGryEffect = GregoryGryEffect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
@@ -42,16 +42,15 @@ gregoryGryEffect :: EffectArgs -> GregoryGryEffect
 gregoryGryEffect = cardEffect GregoryGryEffect Cards.gregoryGry
 
 instance RunMessage GregoryGryEffect where
-  runMessage msg e@(GregoryGryEffect attrs) = case msg of
-    PassedSkillTest {} -> do
-      case effectMetadata attrs of
-        Just (EffectInt n) -> do
-          let
-            iid = fromJustNote "Wrong Type" $ preview _InvestigatorTarget (effectTarget attrs)
-          pushAll [disable attrs, takeResources iid attrs.source n]
+  runMessage msg e@(GregoryGryEffect attrs) = runQueueT $ case msg of
+    PassedSkillTest _ _ _ _ _ x -> do
+      case attrs.metaInt of
+        Just n -> do
+          when (x >= n) do
+            let iid = fromJustNote "Wrong Type" $ preview _InvestigatorTarget attrs.target
+            gainResourcesIfCan iid attrs.source n
+          disable attrs
         _ -> error "Wrong metadata"
       pure e
-    SkillTestEnds _ _ _ -> do
-      push $ disable attrs
-      pure e
-    _ -> GregoryGryEffect <$> runMessage msg attrs
+    SkillTestEnds _ _ _ -> disableReturn e
+    _ -> GregoryGryEffect <$> liftRunMessage msg attrs

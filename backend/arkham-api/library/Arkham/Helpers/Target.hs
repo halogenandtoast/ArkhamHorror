@@ -2,17 +2,20 @@ module Arkham.Helpers.Target where
 
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Types (Field (..))
+import Arkham.Card (toCardOwner)
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.Game ()
+import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Location
+import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
-import Arkham.Matcher
+import Arkham.Matcher hiding (EventCard)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Skill.Types (Field (..))
@@ -71,6 +74,36 @@ targetTraits = \case
 
 targetMatches :: forall m. HasGame m => Target -> TargetMatcher -> m Bool
 targetMatches s = \case
+  TargetControlledBy whoMatcher ->
+    let
+      checkTarget = \case
+        AbilityTarget iid' _ -> elem iid' <$> select whoMatcher
+        AssetTarget aid ->
+          selectAssetController aid >>= \case
+            Just iid' -> elem iid' <$> select whoMatcher
+            _ -> pure False
+        EventTarget eid -> do
+          selectEventController eid >>= \case
+            Just controllerId -> elem controllerId <$> select whoMatcher
+            Nothing -> do
+              -- event may have been discarded already
+              mOwner <- join . fmap toCardOwner <$> fieldMay EventCard eid
+              case mOwner of
+                Just owner -> elem owner <$> select whoMatcher
+                Nothing -> pure False
+        SkillTarget sid -> do
+          selectSkillController sid >>= \case
+            Just controllerId -> elem controllerId <$> select whoMatcher
+            Nothing -> pure False
+        InvestigatorTarget iid -> elem iid <$> select whoMatcher
+        CardIdTarget cid -> do
+          c <- getCard cid
+          case toCardOwner c of
+            Nothing -> pure False
+            Just iid -> elem iid <$> select whoMatcher
+        _ -> pure False
+     in
+      checkTarget s
   NotTarget inner -> not <$> targetMatches s inner
   TargetWithTrait t -> (t `member`) <$> targetTraits s
   TargetMatchesAny ms -> anyM (targetMatches s) ms

@@ -1,19 +1,15 @@
-module Arkham.Investigator.Cards.MarkHarrigan (
-  markHarrigan,
-  MarkHarrigan (..),
-) where
+module Arkham.Investigator.Cards.MarkHarrigan (markHarrigan, MarkHarrigan (..)) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
 
 newtype MarkHarrigan = MarkHarrigan InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 markHarrigan :: InvestigatorCard MarkHarrigan
 markHarrigan =
@@ -26,10 +22,7 @@ instance HasAbilities MarkHarrigan where
     [ playerLimit PerPhase
         $ restrictedAbility attrs 1 Self
         $ freeReaction
-        $ OrWindowMatcher
-          [ DealtDamage #when AnySource You
-          , AssetDealtDamage #when AnySource (AssetControlledBy You)
-          ]
+        $ PlacedToken #after AnySource (TargetControlledBy You) #damage
     ]
 
 instance HasChaosTokenValue MarkHarrigan where
@@ -38,8 +31,8 @@ instance HasChaosTokenValue MarkHarrigan where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage MarkHarrigan where
-  runMessage msg i@(MarkHarrigan attrs) = case msg of
+  runMessage msg i@(MarkHarrigan attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ drawCards iid (attrs.ability 1) 1
+      drawCardsIfCan iid (attrs.ability 1) 1
       pure i
-    _ -> MarkHarrigan <$> runMessage msg attrs
+    _ -> MarkHarrigan <$> liftRunMessage msg attrs

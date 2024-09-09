@@ -1378,6 +1378,7 @@ data TargetMatcher
   | TargetAtLocation LocationMatcher
   | NotTarget TargetMatcher
   | TargetWithTrait Trait
+  | TargetControlledBy InvestigatorMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not TargetMatcher where

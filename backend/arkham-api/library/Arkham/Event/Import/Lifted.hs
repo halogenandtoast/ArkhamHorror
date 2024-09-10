@@ -5,6 +5,7 @@ import Arkham.Classes as X
 import Arkham.Event.Runner as X (
   EventAttrs (..),
   EventCard,
+  Field (EventOwner),
   IsEvent,
   afterPlayL,
   event,

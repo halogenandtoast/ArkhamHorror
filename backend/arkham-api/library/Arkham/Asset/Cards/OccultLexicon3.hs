@@ -54,10 +54,10 @@ instance RunMessage OccultLexicon3 where
           player
           [ Label
               "Change each \"2\" to a \"3\""
-              [eventModifier (toAbilitySource attrs 1) (toCardId card) (MetaModifier $ object ["use3" .= True])]
+              [eventModifier (attrs.ability 1) card (MetaModifier $ object ["use3" .= True])]
           , Label
               "Shuffle it into your deck instead of discarding it"
-              [eventModifier (toAbilitySource attrs 1) (toCardId card) (SetAfterPlay ShuffleThisBackIntoDeck)]
+              [eventModifier (attrs.ability 1) card (SetAfterPlay ShuffleThisBackIntoDeck)]
           ]
       pure a
     _ -> OccultLexicon3 <$> runMessage msg attrs

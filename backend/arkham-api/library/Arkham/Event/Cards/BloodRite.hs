@@ -21,7 +21,9 @@ bloodRite :: EventCard BloodRite
 bloodRite = event BloodRite Cards.bloodRite
 
 bloodRiteLimit :: HasGame m => EventAttrs -> m Int
-bloodRiteLimit attrs = getMetaMaybe 2 (bothTarget attrs.cardId attrs) "use3"
+bloodRiteLimit attrs = do
+  use3 <- getMetaMaybe False attrs.cardId "use3"
+  pure $ if use3 then 3 else 2
 
 instance RunMessage BloodRite where
   runMessage msg e@(BloodRite attrs) = runQueueT $ case msg of

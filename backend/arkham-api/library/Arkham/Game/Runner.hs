@@ -1776,6 +1776,7 @@ runGameMessage msg g = case msg of
     pure
       $ g
       & (phaseHistoryL .~ mempty)
+      & (roundHistoryL %~ (<> view phaseHistoryL g))
       & (turnPlayerInvestigatorIdL .~ Nothing)
   Begin EnemyPhase -> do
     phaseBeginsWindow <-
@@ -1819,7 +1820,10 @@ runGameMessage msg g = case msg of
       . (: [EndPhase, After EndPhase])
       =<< checkWindows
         [mkWhen (Window.PhaseEnds EnemyPhase)]
-    pure $ g & (phaseHistoryL .~ mempty)
+    pure
+      $ g
+      & (roundHistoryL %~ (<> view phaseHistoryL g))
+      & (phaseHistoryL .~ mempty)
   Begin UpkeepPhase -> do
     let phaseStep step msgs = Msg.PhaseStep (UpkeepPhaseStep step) msgs
     phaseBeginsWindow <-
@@ -1845,7 +1849,10 @@ runGameMessage msg g = case msg of
       . (: [EndPhase, After EndPhase])
       =<< checkWindows
         [mkWhen (Window.PhaseEnds UpkeepPhase)]
-    pure $ g & (phaseHistoryL .~ mempty)
+    pure
+      $ g
+      & (roundHistoryL %~ (<> view phaseHistoryL g))
+      & (phaseHistoryL .~ mempty)
   EndRoundWindow -> do
     windows' <-
       traverse
@@ -1928,7 +1935,10 @@ runGameMessage msg g = case msg of
     pushAll
       . (: [EndPhase, After EndPhase])
       =<< checkWindows [mkWhen (Window.PhaseEnds MythosPhase)]
-    pure $ g & (phaseHistoryL .~ mempty)
+    pure
+      $ g
+      & (roundHistoryL %~ (<> view phaseHistoryL g))
+      & (phaseHistoryL .~ mempty)
   BeginSkillTestWithPreMessages _ pre skillTest -> runMessage (BeginSkillTestWithPreMessages' pre skillTest) g
   BeginSkillTestWithPreMessages' pre skillTest -> do
     handleSkillTestNesting skillTest.id msg g do

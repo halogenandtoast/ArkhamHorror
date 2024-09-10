@@ -363,6 +363,10 @@ const assetStory = computed(() => {
   margin-top: 2px;
 }
 
+:deep(.event .exhausted) {
+  padding: 0px;
+}
+
 .card-frame {
   position: relative;
   display: flex;

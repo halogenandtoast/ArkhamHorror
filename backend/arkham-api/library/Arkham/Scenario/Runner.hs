@@ -725,16 +725,27 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     handler <- getEncounterDeckHandler iid
     case unDeck (a ^. deckLens handler) of
       [] -> do
+        -- This case should not happen but this safeguards against it
         when (notNull (a ^. discardLens handler)) $ do
           pushAll [ShuffleEncounterDiscardBackIn, Do (DrawCards iid drawing)]
         pure a
-      -- This case should not happen but this safeguards against it
       xs -> do
         let (drew, rest) = splitAt drawing.amount xs
-        push $ DrewCards iid $ finalizeDraw drawing $ map toCard drew
-        when (null rest) $ do
-          windows' <- checkWindows [mkWhen Window.EncounterDeckRunsOutOfCards]
-          pushAll [windows', ShuffleEncounterDiscardBackIn]
+        if length drew == drawing.amount
+          then do
+            push $ DrewCards iid $ finalizeDraw drawing $ drawing.alreadyDrawn <> map toCard drew
+            when (null rest) $ do
+              windows' <- checkWindows [mkWhen Window.EncounterDeckRunsOutOfCards]
+              pushAll [windows', ShuffleEncounterDiscardBackIn]
+          else do
+            push
+              $ Do
+                ( DrawCards iid
+                    $ drawing {cardDrawAlreadyDrawn = map toCard drew, cardDrawAmount = drawing.amount - length drew}
+                )
+            when (null rest) $ do
+              windows' <- checkWindows [mkWhen Window.EncounterDeckRunsOutOfCards]
+              pushAll [windows', ShuffleEncounterDiscardBackIn]
         pure $ a & (deckLens handler .~ Deck rest)
   Search searchType iid _ EncounterDeckTarget _ _ _ -> do
     case searchType of

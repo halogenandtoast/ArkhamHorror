@@ -1,10 +1,9 @@
 module Arkham.Treachery.Cards.SerpentsCall (serpentsCall, SerpentsCall (..)) where
 
 import Arkham.Campaigns.TheForgottenAge.Helpers
-import Arkham.Classes
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype SerpentsCall = SerpentsCall TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -14,22 +13,16 @@ serpentsCall :: TreacheryCard SerpentsCall
 serpentsCall = treachery SerpentsCall Cards.serpentsCall
 
 instance RunMessage SerpentsCall where
-  runMessage msg t@(SerpentsCall attrs) = case msg of
+  runMessage msg t@(SerpentsCall attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      let draw = drawEncounterCards iid attrs 2
-      isPoisoned <- getIsPoisoned iid
-      if isPoisoned
-        then push draw
-        else do
+      getIsPoisoned iid >>= \case
+        True -> drawEncounterCards iid attrs 2
+        False -> do
           poisoned <- getSetAsidePoisoned
-          player <- getPlayer iid
-          push
-            $ chooseOne
-              player
-              [ Label
-                  "Put a set-aside Poisoned weakness into play in your threat area"
-                  [CreateWeaknessInThreatArea poisoned iid]
-              , Label "Draw the top 2 cards of the encounter deck" [draw]
-              ]
+          chooseOneM iid do
+            labeled "Put a set-aside Poisoned weakness into play in your threat area" do
+              push $ CreateWeaknessInThreatArea poisoned iid
+            labeled "Draw the top 2 cards of the encounter deck" do
+              drawEncounterCards iid attrs 2
       pure t
-    _ -> SerpentsCall <$> runMessage msg attrs
+    _ -> SerpentsCall <$> liftRunMessage msg attrs

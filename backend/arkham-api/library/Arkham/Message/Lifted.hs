@@ -932,6 +932,9 @@ gainResourcesIfCan iid source n = do
 drawEncounterCard :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 drawEncounterCard i source = push $ Msg.drawEncounterCards i source 1
 
+drawEncounterCards :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
+drawEncounterCards i source n = push $ Msg.drawEncounterCards i source n
+
 drawCardsIfCan
   :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
   => investigator

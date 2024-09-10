@@ -1,13 +1,10 @@
 module Arkham.Event.Cards.SoothingMelody (soothingMelody, SoothingMelody (..)) where
 
 import Arkham.Card
-import Arkham.Classes
-import Arkham.Damage
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 import Data.Aeson
 import Data.Aeson.KeyMap qualified as KeyMap
 
@@ -19,10 +16,10 @@ soothingMelody :: EventCard SoothingMelody
 soothingMelody = event SoothingMelody Cards.soothingMelody
 
 instance RunMessage SoothingMelody where
-  runMessage msg e@(SoothingMelody attrs) = case msg of
+  runMessage msg e@(SoothingMelody attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      drawing <- drawCardsIfCan iid attrs 1
-      pushAll $ ResolveEventChoice iid eid 1 Nothing [] : toList drawing
+      push $ ResolveEventChoice iid eid 1 Nothing []
+      drawCardsIfCan iid attrs 1
       pure e
     ResolveEventChoice iid eid n _ _ | eid == toId attrs -> do
       modifiers' <- liftA2 (<>) (getModifiers (toCardId attrs)) (getModifiers attrs)
@@ -35,27 +32,25 @@ instance RunMessage SoothingMelody where
         updateLimit x _ = x
 
       let limit = foldl' updateLimit 2 modifiers'
-      damageInvestigators <-
-        select $ HealableInvestigator (toSource attrs) DamageType $ InvestigatorAt YourLocation
-      horrorInvestigators <-
-        select $ HealableInvestigator (toSource attrs) HorrorType $ InvestigatorAt YourLocation
+      let location = locationWithInvestigator iid
+      damageInvestigators <- select $ HealableInvestigator (toSource attrs) #damage $ at_ location
+      horrorInvestigators <- select $ HealableInvestigator (toSource attrs) #horror $ at_ location
       damageAssets <-
-        selectMap AssetTarget
-          $ HealableAsset (toSource attrs) DamageType
-          $ AssetAt YourLocation
-          <> AllyAsset
+        selectTargets
+          $ HealableAsset (toSource attrs) #damage
+          $ at_ location
+          <> #ally
           <> AssetControlledBy (affectsOthers Anyone)
       horrorAssets <-
-        selectMap AssetTarget
-          $ HealableAsset (toSource attrs) HorrorType
-          $ AssetAt YourLocation
-          <> AllyAsset
+        selectTargets
+          $ HealableAsset (toSource attrs) #horror
+          $ at_ location
+          <> #ally
           <> AssetControlledBy (affectsOthers Anyone)
 
       let
         componentLabel component target = case target of
-          InvestigatorTarget iid' ->
-            ComponentLabel (InvestigatorComponent iid' component)
+          InvestigatorTarget iid' -> ComponentLabel (InvestigatorComponent iid' component)
           AssetTarget aid -> ComponentLabel (AssetComponent aid component)
           _ -> error "unhandled target"
         investigatorDamageChoices =
@@ -84,7 +79,6 @@ instance RunMessage SoothingMelody where
       let choices =
             investigatorDamageChoices <> investigatorHorrorChoices <> damageAssetChoices <> horrorAssetChoices
 
-      player <- getPlayer iid
-      unless (null choices) $ push $ chooseOne player choices
+      unless (null choices) $ chooseOne iid choices
       pure e
-    _ -> SoothingMelody <$> runMessage msg attrs
+    _ -> SoothingMelody <$> liftRunMessage msg attrs

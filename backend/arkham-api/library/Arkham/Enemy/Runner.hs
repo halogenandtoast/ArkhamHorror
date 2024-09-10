@@ -1287,9 +1287,13 @@ instance RunMessage EnemyAttrs where
       pure a
     After (InvestigatorEliminated iid) -> case enemyPlacement of
       InThreatArea iid' | iid == iid' -> do
-        lid <- getJustLocation iid
-        push $ EnemyCheckEngagement a.id
-        pure $ a & placementL .~ AtLocation lid
+        getMaybeLocation iid >>= \case
+          Just lid -> do
+            push $ EnemyCheckEngagement a.id
+            pure $ a & placementL .~ AtLocation lid
+          Nothing -> do
+            push $ Discard Nothing GameSource (toTarget a)
+            pure a
       _ -> pure a
     DisengageEnemy iid eid | eid == enemyId -> case enemyPlacement of
       InThreatArea iid' | iid == iid' -> do

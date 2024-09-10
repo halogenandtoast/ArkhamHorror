@@ -35,8 +35,12 @@ data CardDraw msg = CardDraw
   , cardDrawKind :: CardDrawKind
   , cardDrawRules :: Set CardDrawRules
   , cardDrawAndThen :: Maybe msg
+  , cardDrawAlreadyDrawn :: [Card]
   }
   deriving stock (Show, Eq, Ord, Data)
+
+instance HasField "alreadyDrawn" (CardDraw msg) [Card] where
+  getField = cardDrawAlreadyDrawn
 
 instance HasField "kind" (CardDraw msg) CardDrawKind where
   getField = cardDrawKind
@@ -115,6 +119,7 @@ newCardDraw source deck n = do
     , cardDrawTarget = Nothing
     , cardDrawKind = StandardCardDraw
     , cardDrawAndThen = Nothing
+    , cardDrawAlreadyDrawn = []
     }
 
 targetCardDraw
@@ -145,5 +150,20 @@ withCardDrawRule r c = c {cardDrawRules = insertSet r (cardDrawRules c)}
 $(deriveJSON defaultOptions ''CardDrawKind)
 $(deriveJSON defaultOptions ''CardDrawRules)
 $(deriveJSON defaultOptions ''CardDrawState)
-$(deriveJSON defaultOptions ''CardDraw)
+$(deriveToJSON defaultOptions ''CardDraw)
+
+instance FromJSON msg => FromJSON (CardDraw msg) where
+  parseJSON = withObject "CardDraw" \o -> do
+    cardDrawSource <- o .: "cardDrawSource"
+    cardDrawDeck <- o .: "cardDrawDeck"
+    cardDrawAmount <- o .: "cardDrawAmount"
+    cardDrawState <- o .: "cardDrawState"
+    cardDrawTarget <- o .: "cardDrawTarget"
+    cardDrawAction <- o .: "cardDrawAction"
+    cardDrawKind <- o .: "cardDrawKind"
+    cardDrawRules <- o .: "cardDrawRules"
+    cardDrawAndThen <- o .: "cardDrawAndThen"
+    cardDrawAlreadyDrawn <- o .:? "cardDrawAlreadyDrawn" .!= []
+    pure CardDraw {..}
+
 $(deriveJSON defaultOptions ''CardDrew)

@@ -99,7 +99,7 @@ instance RunMessage RunicAxe where
         needsHunt <-
           not
             <$> (eid <=~> (enemyAtLocationWith iid <> oneOf [AloofEnemy <> enemyEngagedWith iid, not_ AloofEnemy]))
-        let imbueAgain = if attrs `hasCustomization` Saga then [Do msg, msg] else [msg]
+        let imbueAgain = if attrs `hasCustomization` Scriptweaver then [Do msg, msg] else [msg]
         if needsHunt && attrs `hasCustomization` InscriptionOfTheHunt
           then
             pushAll
@@ -118,7 +118,7 @@ instance RunMessage RunicAxe where
     Do msg'@(ChoseEnemy _sid iid (isAbilitySource attrs 1 -> True) _) -> do
       choices <- availableInscriptions iid attrs meta
       chooseOne iid
-        $ Label "Do not use additional imbue from Saga " []
+        $ Label "Do not use additional imbue from Scriptweaver " []
         : [ Label (tshow i) [DoStep (fromEnum i) msg']
           | i <- choices
           ]

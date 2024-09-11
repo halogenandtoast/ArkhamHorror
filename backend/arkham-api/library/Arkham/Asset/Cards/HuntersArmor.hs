@@ -9,9 +9,10 @@ import Arkham.Helpers.Customization
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window (getDamageOrHorrorSource)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype HuntersArmor = HuntersArmor AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor HuntersArmor where
@@ -35,11 +36,11 @@ huntersArmor = assetWith HuntersArmor Cards.huntersArmor $ (healthL ?~ 2) . (san
 
 instance HasAbilities HuntersArmor where
   getAbilities (HuntersArmor a) =
-    [ restrictedAbility a 1 (ControlsThis <> can.draw.cards You)
+    [ restrictedAbility a 1 (ControlsThis <> can.draw.cards You <> thisIs a AssetReady)
       $ CustomizationReaction
         "Hexdrinker"
         (AssetDealtDamageOrHorror #after (SourceIsTreacheryEffect AnyTreachery) (be a))
-        (exhaust a)
+        Free
     | a `hasCustomization` Hexdrinker
     ]
       <> [ restrictedAbility a 2 ControlsThis
@@ -57,7 +58,11 @@ instance HasAbilities HuntersArmor where
 instance RunMessage HuntersArmor where
   runMessage msg a@(HuntersArmor attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      drawCardsIfCan iid (attrs.ability 1) 1
+      chooseOneM iid do
+        labeled "Exhaust Hunter's Armor to draw 1 card" do
+          push $ Exhaust (toTarget attrs)
+          drawCardsIfCan iid (attrs.ability 1) 1
+        labeled "Do no exhaust" nothing
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 (getDamageOrHorrorSource -> EnemyAttackSource enemy) _ -> do
       nonAttackEnemyDamage (attrs.ability 2) 1 enemy

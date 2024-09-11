@@ -7466,6 +7466,7 @@ theNecronomiconPetrusDeDaciaTranslation5 =
   (asset "60233" ("The Necronomicon" <:> "Petrus de Dacia Translation") 3 Seeker)
     { cdCardTraits = setFromList [Item, Tome]
     , cdUses = uses Secret 6
+    , cdSlots = [#hand]
     , cdLevel = Just 5
     , cdSkills = [#intellect, #intellect, #intellect, #intellect, #intellect]
     }

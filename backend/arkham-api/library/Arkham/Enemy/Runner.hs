@@ -234,11 +234,17 @@ instance RunMessage EnemyAttrs where
                         Just iid -> if iid `elem` allIds then [iid] else allIds
                   case validInvestigatorIds of
                     [] -> push $ EnemyEntered eid lid
-                    [iid] -> pushAll $ EnemyEntered eid lid : [EnemyEngageInvestigator eid iid]
-                    iids ->
-                      push
-                        $ chooseOne lead
-                        $ [targetLabel iid [EnemyEntered eid lid, EnemyEngageInvestigator eid iid] | iid <- iids]
+                    [iid] -> do
+                      pushAll $ EnemyEntered eid lid
+                        : [EnemyEngageInvestigator eid iid | not onlyPrey || iid `elem` preyIds]
+                    iids -> do
+                      let scoped = if not onlyPrey then iids else filter (`elem` preyIds) iids
+                      case scoped of
+                        [] -> push $ EnemyEntered eid lid
+                        choices ->
+                          push
+                            $ chooseOne lead
+                            $ [targetLabel iid [EnemyEntered eid lid, EnemyEngageInvestigator eid iid] | iid <- choices]
             else pushWhen (#massive `notElem` keywords) $ EnemyEntered eid lid
 
           when (#massive `elem` keywords) do

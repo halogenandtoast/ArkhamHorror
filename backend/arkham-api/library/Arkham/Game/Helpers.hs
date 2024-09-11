@@ -3178,18 +3178,18 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
     Just aid -> elem aid <$> select assetMatcher
     _ -> pure False
   Matcher.WhileAttackingAnEnemy enemyMatcher -> case skillTestAction st of
-    Just Action.Fight -> case skillTestTarget st of
-      EnemyTarget eid -> elem eid <$> select enemyMatcher
+    Just Action.Fight -> case st.target.enemy of
+      Just eid -> elem eid <$> select enemyMatcher
       _ -> pure False
     _ -> pure False
   Matcher.WhileEvadingAnEnemy enemyMatcher -> case skillTestAction st of
-    Just Action.Evade -> case skillTestTarget st of
-      EnemyTarget eid -> elem eid <$> select enemyMatcher
+    Just Action.Evade -> case st.target.enemy of
+      Just eid -> elem eid <$> select enemyMatcher
       _ -> pure False
     _ -> pure False
   Matcher.WhileParleyingWithAnEnemy enemyMatcher -> case skillTestAction st of
-    Just Action.Parley -> case skillTestTarget st of
-      EnemyTarget eid -> elem eid <$> select enemyMatcher
+    Just Action.Parley -> case st.target.enemy of
+      Just eid -> elem eid <$> select enemyMatcher
       _ -> pure False
     _ -> pure False
   Matcher.WhileParleying -> case skillTestAction st of

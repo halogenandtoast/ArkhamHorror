@@ -17,8 +17,7 @@ spec = describe "Dynamite Blast" $ do
     investigator2 `moveTo` location
     self `putCardIntoPlay` Events.dynamiteBlast
     click "choose your location"
-    replicateM_ 3 $ click "assign Damage"
-    replicateM_ 3 $ click "assign Damage"
+    applyAllDamage
     enemy1.damage `shouldReturn` 3
     enemy2.damage `shouldReturn` 3
     self.damage `shouldReturn` 3
@@ -38,7 +37,7 @@ spec = describe "Dynamite Blast" $ do
       investigator2 `moveTo` location2
       self `putCardIntoPlay` Events.dynamiteBlast
       chooseTarget location2
-      replicateM_ 3 $ click "assign Damage"
+      applyAllDamage
       enemy1.damage `shouldReturn` 0
       enemy2.damage `shouldReturn` 3
       self.damage `shouldReturn` 0

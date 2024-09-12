@@ -20,8 +20,8 @@ instance HasModifiersFor CalculatedRisk where
   getModifiersFor _ _ = pure []
 
 instance RunMessage CalculatedRisk where
-  runMessage msg s@(CalculatedRisk attrs) = runQueueT $ case msg of
+  runMessage msg (CalculatedRisk attrs) = runQueueT $ case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
       afterSkillTest $ push $ ChooseEndTurn iid
-      pure s
+      CalculatedRisk <$> liftRunMessage msg attrs
     _ -> CalculatedRisk <$> liftRunMessage msg attrs

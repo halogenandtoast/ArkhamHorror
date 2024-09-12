@@ -16,8 +16,7 @@ eztliGuardian :: EnemyCard EztliGuardian
 eztliGuardian =
   enemyWith EztliGuardian Cards.eztliGuardian (4, Static 2, 2) (1, 0)
     $ spawnAtL
-    ?~ SpawnAt
-      (FirstLocation [EmptyLocation <> LocationWithTrait Ancient, EmptyLocation])
+    ?~ SpawnAt (FirstLocation [EmptyLocation <> LocationWithTrait Ancient, EmptyLocation])
 
 atConnected :: EnemyId -> InvestigatorMatcher
 atConnected eid = InvestigatorAt $ ConnectedFrom $ locationWithEnemy eid
@@ -27,7 +26,7 @@ instance HasAbilities EztliGuardian where
     extend
       a
       [ groupLimit PerPhase
-          $ restrictedAbility a 1 (exists (atConnected a.id) <> exists (be a <> ReadyEnemy <> UnengagedEnemy))
+          $ restrictedAbility a 1 (exists $ be a <> #ready <> #unengaged <> EnemyCanAttack (atConnected a.id))
           $ forced
           $ PhaseStep #when EnemiesAttackStep
       ]

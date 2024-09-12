@@ -1379,12 +1379,21 @@ changeDrawnBy drawer newDrawer =
       Revelation me _ -> me == drawer
       Do (InvestigatorDrewEncounterCard me _) -> me == drawer
       InvestigatorDrawEnemy me _ -> me == drawer
+      CheckWindows ws -> any (isDrawCard . Window.windowType) ws
       _ -> False
     \case
       Revelation _ source' -> [Revelation newDrawer source']
       InvestigatorDrawEnemy _ eid -> [InvestigatorDrawEnemy newDrawer eid]
       Do (InvestigatorDrewEncounterCard _ c) -> [Do (InvestigatorDrewEncounterCard newDrawer c)]
+      CheckWindows ws -> [CheckWindows $ map changeWindow ws]
       _ -> error "wrong message found"
+ where
+  isDrawCard = \case
+    Window.DrawCard who _ _ -> who == drawer
+    _ -> False
+  changeWindow = \case
+    Window.Window t (Window.DrawCard who c f) batchId | who == drawer -> Window.Window t (Window.DrawCard newDrawer c f) batchId
+    other -> other
 
 chaosTokenEffect
   :: (ReverseQueue m, Sourceable source) => source -> ChaosToken -> ModifierType -> m ()

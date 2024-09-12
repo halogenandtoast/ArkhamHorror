@@ -428,6 +428,12 @@ instance Plated EnemyMatcher
 instance IsLabel "exhausted" EnemyMatcher where
   fromLabel = ExhaustedEnemy
 
+instance IsLabel "ready" EnemyMatcher where
+  fromLabel = ReadyEnemy
+
+instance IsLabel "unengaged" EnemyMatcher where
+  fromLabel = UnengagedEnemy
+
 instance Semigroup EnemyMatcher where
   AnyEnemy <> x = x
   x <> AnyEnemy = x

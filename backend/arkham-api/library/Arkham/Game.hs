@@ -2840,15 +2840,19 @@ enemyMatcherFilter = \case
         Nothing -> error "AttackedYouSinceTheEndOfYourLastTurn: key missing"
       _ -> error "AttackedYouSinceTheEndOfYourLastTurn: InvestigatorMeta is not an Object"
   EnemyCanAttack investigatorMatcher -> \enemy -> do
-    iids <- select investigatorMatcher
-    let
-      canBeAttacked iid = do
-        mods <- getModifiers iid
-        flip noneM mods \case
-          CannotBeAttackedBy eMatcher -> toId enemy <=~> eMatcher
-          CannotBeAttacked -> pure True
-          _ -> pure False
-    anyM canBeAttacked iids
+    canAttack <- withoutModifier enemy CannotAttack
+    if not canAttack
+      then pure False
+      else do
+        iids <- select investigatorMatcher
+        let
+          canBeAttacked iid = do
+            mods <- getModifiers iid
+            flip noneM mods \case
+              CannotBeAttackedBy eMatcher -> toId enemy <=~> eMatcher
+              CannotBeAttacked -> pure True
+              _ -> pure False
+        anyM canBeAttacked iids
   EnemyWithRemainingHealth valueMatcher -> do
     let hasRemainingHealth = \case
           Nothing -> pure False

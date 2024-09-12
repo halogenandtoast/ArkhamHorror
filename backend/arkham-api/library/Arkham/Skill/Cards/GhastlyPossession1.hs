@@ -42,7 +42,7 @@ instance RunMessage GhastlyPossession1 where
                 labeled
                   "If this test is successful, either remove 1 doom from that asset, or replenish half of its uses (rounded down)"
                   $ doStep 1 msg
-      pure s
+      GhastlyPossession1 <$> liftRunMessage msg attrs
     DoStep 1 (InvestigatorCommittedSkill _iid sid) | sid == toId attrs -> do
       pure . GhastlyPossession1 $ attrs & setMeta True
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do

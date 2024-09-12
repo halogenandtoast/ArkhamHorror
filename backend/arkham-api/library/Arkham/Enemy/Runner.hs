@@ -53,10 +53,12 @@ import Arkham.Matcher (
   LocationMatcher (..),
   MovesVia (..),
   PreyMatcher (..),
+  be,
   investigatorAt,
   investigatorEngagedWith,
   locationWithEnemy,
   locationWithInvestigator,
+  mapOneOf,
   oneOf,
   preyWith,
   replaceYouMatcher,
@@ -160,6 +162,41 @@ isSwarm attrs = case enemyPlacement attrs of
   AsSwarm {} -> True
   _ -> False
 
+getCanReady :: HasGame m => EnemyAttrs -> m Bool
+getCanReady a = do
+  mods <- getModifiers a
+  phase <- getPhase
+  pure $ CannotReady `notElem` mods && (DoesNotReadyDuringUpkeep `notElem` mods || phase /= #upkeep)
+
+getCanEngage :: HasGame m => EnemyAttrs -> m Bool
+getCanEngage a = do
+  keywords <- getModifiedKeywords a
+  unengaged <- selectNone $ investigatorEngagedWith a.id
+  pure $ all (`notElem` keywords) [#aloof, #massive] && unengaged
+
+getAvailablePrey :: HasGame m => EnemyAttrs -> m [InvestigatorId]
+getAvailablePrey a = do
+  enemyLocation <- field EnemyLocation a.id
+  iids <- fromMaybe [] <$> traverse (select . investigatorAt) enemyLocation
+  if null iids
+    then pure []
+    else do
+      getCanEngage a >>= \case
+        False -> pure []
+        True -> do
+          let valids = mapOneOf InvestigatorWithId iids
+          getPreyMatcher a >>= \case
+            Prey m -> do
+              preyIds <- select $ Prey $ m <> valids
+              pure $ if null preyIds then iids else preyIds
+            OnlyPrey m -> select $ OnlyPrey $ m <> valids
+            other@(BearerOf {}) -> do
+              mBearer <- selectOne other
+              pure $ maybe [] (\bearer -> [bearer | bearer `elem` iids]) mBearer
+            other@(RestrictedBearerOf {}) -> do
+              mBearer <- selectOne other
+              pure $ maybe [] (\bearer -> [bearer | bearer `elem` iids]) mBearer
+
 instance RunMessage EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = case msg of
     UpdateEnemy eid upd | eid == enemyId -> do
@@ -167,13 +204,12 @@ instance RunMessage EnemyAttrs where
       pure $ updateEnemy [upd] a
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     EndPhase -> pure $ a & movedFromHunterKeywordL .~ False
-    SealedChaosToken token card | toCardId card == toCardId a -> do
+    SealedChaosToken token card | card.id == a.cardId -> do
       pure $ a & sealedChaosTokensL %~ (token :)
     UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
     RemoveAllChaosTokens face -> pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
-      prey <- getPreyMatcher a
-      preyIds <- select prey
+      preyIds <- select =<< getPreyMatcher a
       runMessage (EnemySpawnEngagedWith eid $ oneOf $ map InvestigatorWithId preyIds) a
     EnemySpawnEngagedWith eid investigatorMatcher | eid == enemyId -> do
       preyIds <- select investigatorMatcher
@@ -189,17 +225,17 @@ instance RunMessage EnemyAttrs where
     PlacedSwarmCard eid card | eid == enemyId -> do
       case toCard a of
         EncounterCard ec ->
-          pushM $ createEnemyWithPlacement_ (EncounterCard $ ec {ecId = toCardId card}) (AsSwarm eid card)
+          pushM $ createEnemyWithPlacement_ (EncounterCard $ ec {ecId = card.id}) (AsSwarm eid card)
         PlayerCard pc ->
-          pushM $ createEnemyWithPlacement_ (PlayerCard $ pc {pcId = toCardId card}) (AsSwarm eid card)
+          pushM $ createEnemyWithPlacement_ (PlayerCard $ pc {pcId = card.id}) (AsSwarm eid card)
         VengeanceCard _ -> error "not valid"
       pure a
     EnemySpawn miid lid eid | eid == enemyId -> do
       locations' <- select $ IncludeEmptySpace Anywhere
-      keywords <- getModifiedKeywords a
       if lid `notElem` locations'
         then push (toDiscard GameSource eid)
         else do
+          keywords <- getModifiedKeywords a
           canSwarm <- withoutModifier a NoInitialSwarm
           let swarms = guard canSwarm *> mapMaybe (preview _Swarming) (toList keywords)
 
@@ -266,36 +302,25 @@ instance RunMessage EnemyAttrs where
             InThreatArea {} -> pure a
             _ -> pure $ a & placementL .~ AtLocation lid
     Ready (isTarget a -> True) -> do
-      mods <- getModifiers a
-      phase <- getPhase
-      if CannotReady `elem` mods || (DoesNotReadyDuringUpkeep `elem` mods && phase == #upkeep)
-        then pure ()
-        else do
-          wouldDo msg (Window.WouldReady $ toTarget a) (Window.Readies $ toTarget a)
+      whenM (getCanReady a) do
+        wouldDo msg (Window.WouldReady $ toTarget a) (Window.Readies $ toTarget a)
       pure a
     Do (Ready (isTarget a -> True)) -> do
-      mods <- getModifiers a
-      phase <- getPhase
-      if CannotReady `elem` mods || (DoesNotReadyDuringUpkeep `elem` mods && phase == #upkeep)
-        then pure a
-        else do
-          lead <- getLeadPlayer
-          enemyLocation <- field EnemyLocation enemyId
-          iids <- fromMaybe [] <$> traverse (select . investigatorAt) enemyLocation
-          keywords <- getModifiedKeywords a
-
+      getCanReady a >>= \case
+        False -> pure a
+        True -> do
           case enemyPlacement of
             AsSwarm eid' _ -> do
-              others <- select $ SwarmOf eid' <> not_ (EnemyWithId $ toId a) <> ExhaustedEnemy
+              others <- select $ SwarmOf eid' <> not_ (be a) <> ExhaustedEnemy
               pushAll $ map (Ready . toTarget) others
             _ -> do
-              others <- select $ SwarmOf (toId a) <> ExhaustedEnemy
+              others <- select $ SwarmOf a.id <> ExhaustedEnemy
               pushAll $ map (Ready . toTarget) others
 
-          unless (null iids) $ do
-            unengaged <- selectNone $ investigatorEngagedWith enemyId
-            when (all (`notElem` keywords) [#aloof, #massive] && unengaged) $ do
-              push $ chooseOne lead $ targetLabels iids (only . EnemyEngageInvestigator enemyId)
+          preyIds <- getAvailablePrey a
+          unless (null preyIds) $ do
+            lead <- getLeadPlayer
+            push $ chooseOrRunOne lead $ targetLabels preyIds (only . EnemyEngageInvestigator enemyId)
           pure $ a & exhaustedL .~ False
     ReadyExhausted | not enemyDefeated -> do
       mods <- getModifiers a

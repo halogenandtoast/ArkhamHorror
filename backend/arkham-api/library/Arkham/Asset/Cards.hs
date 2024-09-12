@@ -5690,6 +5690,7 @@ bonnieWalshLoyalAssistant =
     $ (asset "09019" ("Bonnie Walsh" <:> "Loyal Assistant") 3 Neutral)
       { cdCardTraits = setFromList [Ally, Civic, Assistant]
       , cdSkills = [#wild, #wild]
+      , cdSlots = [#ally]
       , cdUnique = True
       }
 

@@ -29,3 +29,6 @@ instance Placeable EventAttrs where
 
 instance Placeable AssetAttrs where
   place attrs placement = push $ PlaceAsset attrs.id (toPlacement placement)
+
+instance Placeable InvestigatorId where
+  place iid placement = push $ PlaceInvestigator iid (toPlacement placement)

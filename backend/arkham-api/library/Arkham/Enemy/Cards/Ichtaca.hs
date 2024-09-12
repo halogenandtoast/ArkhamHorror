@@ -1,17 +1,9 @@
-module Arkham.Enemy.Cards.Ichtaca (
-  ichtaca,
-  Ichtaca (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.Ichtaca (ichtaca, Ichtaca (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
-import Arkham.Attack
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
-import Arkham.SkillType
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.SkillTest.Lifted
 
 newtype Ichtaca = Ichtaca EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -22,24 +14,18 @@ ichtaca = enemy Ichtaca Cards.ichtaca (5, Static 4, 4) (2, 0)
 
 instance HasAbilities Ichtaca where
   getAbilities (Ichtaca a) =
-    withBaseAbilities
-      a
-      [ skillTestAbility
-          $ restrictedAbility a 1 OnSameLocation
-          $ ActionAbility [Action.Parley]
-          $ ActionCost 1
-      ]
+    extend a [skillTestAbility $ restrictedAbility a 1 OnSameLocation $ parleyAction_]
 
 instance RunMessage Ichtaca where
-  runMessage msg e@(Ichtaca attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg e@(Ichtaca attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ parley sid iid source attrs SkillIntellect (Fixed 4)
+      parley sid iid (attrs.ability 1) attrs #intellect (Fixed 4)
       pure e
-    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
-      push $ PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1
+    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
+      placeClues (attrs.ability 1) attrs 1
       pure e
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source && enemyReady attrs -> do
-      push $ InitiateEnemyAttack $ enemyAttack (toId attrs) attrs iid
+    FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      when attrs.ready $ initiateEnemyAttack attrs (attrs.ability 1) iid
       pure e
-    _ -> Ichtaca <$> runMessage msg attrs
+    _ -> Ichtaca <$> liftRunMessage msg attrs

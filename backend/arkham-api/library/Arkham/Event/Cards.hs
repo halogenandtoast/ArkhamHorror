@@ -2060,6 +2060,7 @@ wellMaintained1 =
     { cdSkills = [#agility]
     , cdCardTraits = singleton Upgrade
     , cdLevel = Just 1
+    , cdFastWindow = Just $ DuringTurn You
     , cdCriteria =
         Just
           $ exists

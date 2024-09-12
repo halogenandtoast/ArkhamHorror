@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { OnClickOutside } from '@vueuse/components'
-import { watch, computed, ref } from 'vue'
+import { watch, computed, ref, useId } from 'vue'
 import { useDebug } from '@/arkham/debug'
 import { Game } from '@/arkham/types/Game'
 import { TokenType } from '@/arkham/types/Token';
@@ -31,6 +31,8 @@ const emits = defineEmits<{
   choose: [value: number]
 }>()
 
+
+const abilitiesId = useId()
 const debugging = ref(false)
 const dragging = ref(false)
 const enemyStory = computed(() => {
@@ -64,6 +66,7 @@ const cardAction = computed(() => choices.value.findIndex(isCardAction))
 const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
 
 const inVoid = computed(() => props.enemy.placement.tag === 'OutOfPlay' && props.enemy.placement.contents === 'VoidZone')
+const global = computed(() => props.enemy.placement.tag === 'OtherPlacement' && props.enemy.placement.contents === 'Global')
 
 const swarmEnemies = computed(() =>
   Object.values(props.game.enemies).filter((e) => e.placement.tag === 'AsSwarm' && e.placement.swarmHost === props.enemy.id)
@@ -248,7 +251,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
           </div>
 
           <OnClickOutside @trigger="showAbilities = false">
-          <div v-if="showAbilities" class="abilities" :class="{ right: atLocation, left: inVoid }">
+            <div :id="abilitiesId" v-if="showAbilities" class="abilities" :class="{ right: atLocation, left: inVoid || global }">
               <AbilityButton
                 v-for="ability in abilities"
                 :key="ability.index"
@@ -397,11 +400,13 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
   &.right {
     bottom:50%;
     left: 100%;
-    transform: translateY(50%);
+    transform: translateY(50%) translateZ(0);
+    z-index: 20000000000;
+    //z-index: 0;
   }
 
   &.left {
-    bottom:50%;
+    bottom:0%;
     right: 100%;
     left: unset;
     transform: unset;

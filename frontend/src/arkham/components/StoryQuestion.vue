@@ -49,7 +49,7 @@ const labelChoices = computed(() => {
     return []
   }
 
-  if (question.value.question.tag !== 'ChooseOne' && question.value.question.tag !== 'ChooseUpToN') {
+  if (!['ChooseOne', 'ChooseUpToN', 'ChooseN'].includes(question.value.question.tag)) {
     return []
   }
 
@@ -102,11 +102,13 @@ const choose = (idx: number) => emit('choose', idx)
     </div>
 
     <div class="label-choices" v-if="labelChoices.length > 0">
-      <div class="card-labels" v-for="[choice, index] in labelChoices" :key="index">
-        <template v-if="choice.tag === MessageType.CARD_LABEL">
-          <a href='#' @click.prevent="choose(index)">
-            <img class="card no-overlay" :src="cardLabelImage(choice.cardCode)"/>
-          </a>
+      <div class="card-labels" v-if="labelChoices.some(([choice, _]) => choice.tag === MessageType.CARD_LABEL)">
+        <template v-for="[choice, index] in labelChoices" :key="index">
+          <template v-if="choice.tag === MessageType.CARD_LABEL">
+            <a href='#' @click.prevent="choose(index)">
+              <img class="card no-overlay" :src="cardLabelImage(choice.cardCode)"/>
+            </a>
+          </template>
         </template>
       </div>
       <div class="other-labels" v-for="[choice, index] in labelChoices" :key="index">

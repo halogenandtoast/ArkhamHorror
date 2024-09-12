@@ -1,15 +1,11 @@
-module Arkham.Location.Cards.TrophyRoom (
-  trophyRoom,
-  TrophyRoom (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.TrophyRoom (trophyRoom, TrophyRoom (..)) where
 
 import Arkham.Ability
+import Arkham.Capability
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype TrophyRoom = TrophyRoom LocationAttrs
@@ -21,39 +17,27 @@ trophyRoom = location TrophyRoom Cards.trophyRoom 2 (Static 0)
 
 instance HasAbilities TrophyRoom where
   getAbilities (TrophyRoom a) =
-    withBaseAbilities
+    extendRevealed
       a
-      [ restrictedAbility
-          a
-          1
-          ( Here
-              <> InvestigatorExists
-                ( You
-                    <> AnyInvestigator
-                      [InvestigatorCanGainResources, investigatorWithSpendableResources 2]
-                )
-          )
-          $ ActionAbility []
-          $ ActionCost 1
+      [ playerLimit PerRound
+          $ restrictedAbility
+            a
+            1
+            (Here <> youExist (oneOf [can.gain.resources, investigatorWithSpendableResources 2]))
+            actionAbility
       ]
 
 instance RunMessage TrophyRoom where
-  runMessage msg l@(TrophyRoom attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      canGainResources <- iid <=~> InvestigatorCanGainResources
-      hasTwoResources <- (> 2) <$> getSpendableResources iid
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ [ Label
-            "Gain 2 Resources"
-            [TakeResources iid 2 (toAbilitySource attrs 1) False]
+  runMessage msg l@(TrophyRoom attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      canGainResources <- can.gain.resources iid
+      hasTwoResources <- (>= 2) <$> getSpendableResources iid
+      chooseOrRunOne iid
+        $ [ Label "Gain 2 Resources" [TakeResources iid 2 (attrs.ability 1) False]
           | canGainResources
           ]
-        <> [ Label
-            "Spend 2 Resources to gain 1 clue"
-            [SpendResources iid 2, GainClues iid (toAbilitySource attrs 1) 1]
+        <> [ Label "Spend 2 Resources to gain 1 clue" [SpendResources iid 2, GainClues iid (attrs.ability 1) 1]
            | hasTwoResources
            ]
       pure l
-    _ -> TrophyRoom <$> runMessage msg attrs
+    _ -> TrophyRoom <$> liftRunMessage msg attrs

@@ -220,11 +220,12 @@ instance RunMessage TheForgottenAge where
         <> concatMap
           ( \(iid, player) ->
               [ story [player] tossingAndTurning
-              , chooseOne
-                  player
-                  [ Label "Suffer physical trauma" [SufferTrauma iid 1 0]
-                  , Label "Suffer mental trauma" [SufferTrauma iid 0 1]
-                  ]
+              , Ask player
+                  $ QuestionLabel "Choose trauma" (Just $ coerce iid)
+                  $ ChooseOne
+                    [ Label "Suffer physical trauma" [SufferTrauma iid 1 0]
+                    , Label "Suffer mental trauma" [SufferTrauma iid 0 1]
+                    ]
               ]
           )
           withoutBlanket
@@ -371,25 +372,28 @@ instance RunMessage TheForgottenAge where
         resupplyMap = mapFromList $ map (,totalResupplyPoints) investigatorIds
 
       pushAll
-        $ [ chooseOne
-            player
-            [ Label
-                "Spend 3 xp to visit St. Mary's Hospital and remove a poisoned weakness"
-                [ SpendXP iid 3
-                , RemoveCampaignCardFromDeck iid Treacheries.poisoned
-                ]
-            , Label "Do not remove poisoned weakness" []
-            ]
+        $ [ Ask player
+            $ QuestionLabel "Visit St. Mary's?" (Just $ coerce iid)
+            $ ChooseOne
+              [ Label
+                  "Spend 3 xp to visit St. Mary's Hospital and remove a poisoned weakness"
+                  [ SpendXP iid 3
+                  , RemoveCampaignCardFromDeck iid Treacheries.poisoned
+                  ]
+              , Label "Do not remove poisoned weakness" []
+              ]
           | (iid, player) <- poisonedInvestigatorsWith3Xp
           ]
-        <> [ chooseOne player
+        <> [ Ask player
+            $ QuestionLabel "Visit St. Mary's" (Just $ coerce iid)
+            $ ChooseOne
             $ [ Label
                 "Spend 5 xp to visit St. Mary's Hospital and remove a physical trauma"
                 [SpendXP iid 5, HealTrauma iid 1 0]
               | hasPhysical
               ]
             <> [ Label
-                "Spend 5 xp to visit St. Mary's Hospital and remove a physical trauma"
+                "Spend 5 xp to visit St. Mary's Hospital and remove a mental trauma"
                 [SpendXP iid 5, HealTrauma iid 0 1]
                | hasMental
                ]
@@ -745,11 +749,12 @@ instance RunMessage TheForgottenAge where
         <> concatMap
           ( \(iid, player) ->
               [ story [player] tossingAndTurningInterlude4
-              , chooseOne
-                  player
-                  [ Label "Suffer physical trauma" [SufferTrauma iid 1 0]
-                  , Label "Suffer mental trauma" [SufferTrauma iid 0 1]
-                  ]
+              , Ask player
+                  $ QuestionLabel "Choose trauma" (Just $ coerce iid)
+                  $ ChooseOne
+                    [ Label "Suffer physical trauma" [SufferTrauma iid 1 0]
+                    , Label "Suffer mental trauma" [SufferTrauma iid 0 1]
+                    ]
               ]
           )
           withoutBlanketPlayers

@@ -1,9 +1,8 @@
 module Arkham.Classes.HasModifiersFor where
 
-import Arkham.Prelude
-
 import Arkham.Classes.HasGame
 import Arkham.Modifier
+import Arkham.Prelude
 import Arkham.Target
 
 class HasModifiersFor a where

@@ -1,12 +1,10 @@
 module Arkham.Location.Cards.Cloister (cloister, Cloister (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
-import Arkham.Location.Runner
-import Arkham.Prelude
+import Arkham.Location.Import.Lifted
 import Arkham.ScenarioLogKey
 
 newtype Cloister = Cloister LocationAttrs
@@ -18,14 +16,15 @@ cloister = location Cloister Cards.cloister 2 (PerPlayer 1)
 
 instance HasAbilities Cloister where
   getAbilities (Cloister a) =
-    withBaseAbilities a [skillTestAbility $ restrictedAbility a 1 (Here <> NoCluesOnThis) parleyAction_]
+    extendRevealed a [skillTestAbility $ restrictedAbility a 1 (Here <> NoCluesOnThis) parleyAction_]
 
 instance RunMessage Cloister where
-  runMessage msg l@(Cloister attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg l@(Cloister attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ parley sid iid source iid #willpower (Fixed 3)
+      parley sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure l
-    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isSource attrs source -> l <$ push (Remember FoundAGuide)
-    _ -> Cloister <$> runMessage msg attrs
+    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
+      remember FoundAGuide
+      pure l
+    _ -> Cloister <$> liftRunMessage msg attrs

@@ -3946,6 +3946,7 @@ handEyeCoordination1 =
   (event "10030" "Fine Tuning" 1 Guardian)
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = setFromList [Insight]
+    , cdFastWindow = Just $ DuringTurn You
     , cdCriteria =
         Just
           ( exists

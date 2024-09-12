@@ -2025,6 +2025,7 @@ library
       Arkham.Helpers.Campaign
       Arkham.Helpers.Card
       Arkham.Helpers.ChaosBag
+      Arkham.Helpers.ChaosBag.Lifted
       Arkham.Helpers.Choose
       Arkham.Helpers.Cost
       Arkham.Helpers.Customization

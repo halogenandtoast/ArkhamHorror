@@ -272,10 +272,15 @@ canDoAction :: HasGame m => InvestigatorId -> Ability -> Action -> m Bool
 canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
   Action.Fight -> case abilitySource of
     EnemySource eid -> do
-      mods <- getModifiers eid
-      mCardCode <- toCardCode <$$> sourceToMaybeCard (abilityRequestor ab)
-      let restrictions = concat [rs | CanOnlyBeAttackedByAbilityOn rs <- mods]
-      pure $ null restrictions || maybe False (`elem` restrictions) mCardCode
+      modifiers' <- getModifiers iid
+      let valid = maybe True (== eid) $ listToMaybe [x | MustFight x <- modifiers']
+      if not valid
+        then pure False
+        else do
+          mods <- getModifiers eid
+          mCardCode <- toCardCode <$$> sourceToMaybeCard (abilityRequestor ab)
+          let restrictions = concat [rs | CanOnlyBeAttackedByAbilityOn rs <- mods]
+          pure $ null restrictions || maybe False (`elem` restrictions) mCardCode
     _ -> do
       modifiers <- getModifiers (AbilityTarget iid ab)
       let

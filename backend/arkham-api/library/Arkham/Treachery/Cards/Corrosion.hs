@@ -8,7 +8,6 @@ import Arkham.Investigator.Projection ()
 import Arkham.Location.Projection ()
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

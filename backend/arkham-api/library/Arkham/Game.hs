@@ -2886,56 +2886,62 @@ enemyMatcherFilter = \case
   CanFightEnemy source -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers iid
-    enemyModifiers <- getModifiers enemy.id
-    sourceModifiers <- case source of
-      AbilitySource abSource idx -> do
-        abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-        foldMapM (getModifiers . AbilityTarget iid) abilities
-      _ -> pure []
-    let
-      isOverride = \case
-        EnemyFightActionCriteria override -> Just override
-        CanModify (EnemyFightActionCriteria override) -> Just override
-        _ -> Nothing
-      overrides = mapMaybe isOverride (enemyModifiers <> sourceModifiers)
-      enemyFilters =
-        mapMaybe
-          ( \case
-              CannotFight m -> Just m
-              _ -> Nothing
-          )
-          modifiers'
-      window = mkWindow #when Window.NonFast
-      overrideFunc = case overrides of
-        [] -> id
-        [o] -> overrideAbilityCriteria o
-        _ -> error "multiple overrides found"
-    excluded <-
-      elem (toId enemy)
-        <$> select (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
-    sourceIsExcluded <- flip anyM enemyModifiers \case
-      CanOnlyBeAttackedByAbilityOn cardCodes -> case source of
-        AssetSource aid -> (`notMember` cardCodes) <$> field AssetCardCode aid
-        AbilitySource (AssetSource aid) _ -> (`notMember` cardCodes) <$> field AssetCardCode aid
-        _ -> pure True
-      CannotBeAttackedByPlayerSourcesExcept sourceMatcher ->
-        not <$> sourceMatches source sourceMatcher
-      _ -> pure False
-    if excluded || sourceIsExcluded
-      then pure False
-      else
-        anyM
-          ( andM
-              . sequence
-                [ pure . (`abilityIs` Action.Fight)
-                , -- Because ChooseFightEnemy happens after taking a fight action we
-                  -- need to decrement the action cost
-                  getCanPerformAbility iid [window]
-                    . (`applyAbilityModifiers` [ActionCostModifier (-1)])
-                    . overrideFunc
-                ]
-          )
-          (map (setRequestor source) $ getAbilities enemy)
+    case listToMaybe [x | MustFight x <- modifiers'] of
+      Just eid -> do
+        -- Dirty Fighting has to fight the evaded enemy, we are saying this is
+        -- the one that must be fought
+        pure $ eid == enemy.id
+      Nothing -> do
+        enemyModifiers <- getModifiers enemy.id
+        sourceModifiers <- case source of
+          AbilitySource abSource idx -> do
+            abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+            foldMapM (getModifiers . AbilityTarget iid) abilities
+          _ -> pure []
+        let
+          isOverride = \case
+            EnemyFightActionCriteria override -> Just override
+            CanModify (EnemyFightActionCriteria override) -> Just override
+            _ -> Nothing
+          overrides = mapMaybe isOverride (enemyModifiers <> sourceModifiers)
+          enemyFilters =
+            mapMaybe
+              ( \case
+                  CannotFight m -> Just m
+                  _ -> Nothing
+              )
+              modifiers'
+          window = mkWindow #when Window.NonFast
+          overrideFunc = case overrides of
+            [] -> id
+            [o] -> overrideAbilityCriteria o
+            _ -> error "multiple overrides found"
+        excluded <-
+          elem (toId enemy)
+            <$> select (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
+        sourceIsExcluded <- flip anyM enemyModifiers \case
+          CanOnlyBeAttackedByAbilityOn cardCodes -> case source of
+            AssetSource aid -> (`notMember` cardCodes) <$> field AssetCardCode aid
+            AbilitySource (AssetSource aid) _ -> (`notMember` cardCodes) <$> field AssetCardCode aid
+            _ -> pure True
+          CannotBeAttackedByPlayerSourcesExcept sourceMatcher ->
+            not <$> sourceMatches source sourceMatcher
+          _ -> pure False
+        if excluded || sourceIsExcluded
+          then pure False
+          else
+            anyM
+              ( andM
+                  . sequence
+                    [ pure . (`abilityIs` Action.Fight)
+                    , -- Because ChooseFightEnemy happens after taking a fight action we
+                      -- need to decrement the action cost
+                      getCanPerformAbility iid [window]
+                        . (`applyAbilityModifiers` [ActionCostModifier (-1)])
+                        . overrideFunc
+                    ]
+              )
+              (map (setRequestor source) $ getAbilities enemy)
   CanFightEnemyWithOverride override -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers (EnemyTarget $ toId enemy)

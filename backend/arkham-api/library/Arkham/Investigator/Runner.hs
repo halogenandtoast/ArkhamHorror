@@ -715,8 +715,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & discardF
       & (foundCardsL . each %~ filter (/= PlayerCard pc))
   DiscardFromHand handDiscard | handDiscard.investigator == investigatorId -> runQueueT do
-    wouldDiscard <- checkWhen $ Window.WouldDiscardFromHand investigatorId handDiscard.source
-    pushAll [wouldDiscard, Do msg]
+    when (handDiscard.amount > 0) do
+      wouldDiscard <- checkWhen $ Window.WouldDiscardFromHand investigatorId handDiscard.source
+      pushAll [wouldDiscard, Do msg]
     pure a
   Do (DiscardFromHand handDiscard) | handDiscard.investigator == investigatorId -> runQueueT do
     player <- getPlayer investigatorId

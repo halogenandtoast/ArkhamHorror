@@ -128,6 +128,7 @@ data ModifierType
   | CancelSkills
   | CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
   | CannotAttack
+  | MustFight EnemyId
   | CannotBeAdvancedByDoomThreshold
   | CannotBeAttacked
   | CannotBeAttackedBy EnemyMatcher

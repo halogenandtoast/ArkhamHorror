@@ -106,7 +106,7 @@ getModifiedChaosTokenValue s t = do
     <$> foldMapM
       ( \chaosTokenFace -> do
           baseChaosTokenValue <- getChaosTokenValue (skillTestInvestigator s) chaosTokenFace ()
-          updatedChaosTokenValue <- chaosTokenValue $ foldr applyModifier baseChaosTokenValue tokenModifiers'
+          updatedChaosTokenValue <- chaosTokenValue (foldr applyModifier baseChaosTokenValue tokenModifiers')
           pure . Sum $ fromMaybe 0 updatedChaosTokenValue
       )
       modifiedChaosTokenFaces'

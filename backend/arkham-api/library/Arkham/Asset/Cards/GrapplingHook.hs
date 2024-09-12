@@ -23,16 +23,14 @@ instance HasAbilities GrapplingHook where
   getAbilities (GrapplingHook (With x _)) =
     [ doesNotProvokeAttacksOfOpportunity
         $ restrictedAbility x 1 ControlsThis
-        $ ActionAbility []
-        $ exhaust x
-        <> ActionCost 2
+        $ ActionAbility [] (exhaust x <> ActionCost 2)
     ]
 
 instance RunMessage GrapplingHook where
   runMessage msg a@(GrapplingHook (With attrs meta)) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       createCardEffect Cards.grapplingHook Nothing (attrs.ability 1) iid
-      push $ DoStep 3 msg
+      doStep 3 msg
       pure a
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
       abilities' <-
@@ -64,7 +62,7 @@ grapplingHookEffect = cardEffect GrapplingHookEffect Cards.grapplingHook
 instance HasModifiersFor GrapplingHookEffect where
   getModifiersFor target (GrapplingHookEffect a) | isTarget a.target target = do
     valid <- (== Just #investigate) <$> getSkillTestAction
-    modified a [UseSkillInsteadOf #agility #intellect | valid]
+    modified a [UseSkillInsteadOf #intellect #agility | valid]
   getModifiersFor _ _ = pure []
 
 instance RunMessage GrapplingHookEffect where

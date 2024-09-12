@@ -444,10 +444,10 @@ const cardPiles = computed(() => {
       </div>
       <div class="modal-contents amount-contents">
         <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
-          <legend>{{amountsLabel}}</legend>
+          <legend v-html="amountsLabel"></legend>
           <template v-for="paymentChoice in chooseAmountsChoices" :key="paymentChoice.choiceId">
             <div v-if="paymentChoice.maxBound !== 0">
-              <label :for="`choice-${paymentChoice.choiceId}`">{{paymentChoice.label}}</label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
+              <label :for="`choice-${paymentChoice.choiceId}`" v-html="replaceIcons(paymentChoice.label)"></label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
             </div>
           </template>
           <button :disabled="unmetAmountRequirements">Submit</button>
@@ -836,6 +836,10 @@ h2 {
   padding: 10px;
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
+  width: 100%;
+  form {
+    flex: 1;
+  }
 }
 
 .amount-contents div {

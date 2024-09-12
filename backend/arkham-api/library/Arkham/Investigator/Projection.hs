@@ -14,10 +14,14 @@ import Arkham.Message
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Queue
+import Arkham.Slot
 import GHC.Records
 
 instance HasField "hand" InvestigatorId (QueueT Message GameT [Card]) where
   getField = field InvestigatorHand
+
+instance HasField "slots" InvestigatorId (SlotType -> QueueT Message GameT [Slot]) where
+  getField iid sType = fieldMap InvestigatorSlots (findWithDefault [] sType) iid
 
 instance HasField "filter" (QueueT Message GameT [Card]) (CardMatcher -> QueueT Message GameT [Card]) where
   getField x f = filterCards f <$> x

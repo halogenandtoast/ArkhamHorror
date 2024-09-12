@@ -16,6 +16,7 @@ import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Location.Types
 import Arkham.Matcher
+import Arkham.Message.Lifted.Queue
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.Scenario.Deck
@@ -83,7 +84,7 @@ getSetAsidePoisoned =
     <$> scenarioField ScenarioSetAsideCards
 
 data ExploreRule = PlaceExplored | ReplaceExplored
-  deriving stock (Eq)
+  deriving stock Eq
 
 explore
   :: (HasQueue Message m, HasGame m, MonadRandom m)
@@ -238,3 +239,6 @@ exploreAction cost = ActionAbility [#explore] (ActionCost 1 <> cost)
 
 exploreAction_ :: AbilityType
 exploreAction_ = exploreAction mempty
+
+cancelExplore :: ReverseQueue m => Sourceable source => source -> m ()
+cancelExplore source = push $ CancelNext (toSource source) ExploreMessage

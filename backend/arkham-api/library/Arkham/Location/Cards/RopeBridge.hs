@@ -1,23 +1,13 @@
-module Arkham.Location.Cards.RopeBridge (
-  ropeBridge,
-  RopeBridge (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.RopeBridge (ropeBridge, RopeBridge (..)) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
-import Arkham.Card
-import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Movement
+import Arkham.Message.Lifted.Placement
 import Arkham.Name
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype RopeBridge = RopeBridge LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -28,36 +18,23 @@ ropeBridge = location RopeBridge Cards.ropeBridge 2 (PerPlayer 1)
 
 instance HasAbilities RopeBridge where
   getAbilities (RopeBridge attrs) =
-    withBaseAbilities
+    extendRevealed
       attrs
-      [ skillTestAbility
-          $ restrictedAbility attrs 1 Here
-          $ ForcedAbility
-          $ AttemptExplore
-            Timing.When
-            You
-      ]
+      [skillTestAbility $ restrictedAbility attrs 1 Here $ forced $ AttemptExplore #when You]
 
 instance RunMessage RopeBridge where
-  runMessage msg l@(RopeBridge attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg l@(RopeBridge attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (attrs.ability 1) (toTarget attrs) SkillAgility (Fixed 2)
+      beginSkillTest sid iid (attrs.ability 1) attrs #agility (Fixed 2)
       pure l
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isAbilitySource attrs 1 source -> do
-      mRiverCanyon <-
-        find ((== "River Canyon") . nameTitle . cdName . toCardDef)
-          <$> getExplorationDeck
-      (riverCanyonId, mPlacement) <- case mRiverCanyon of
-        Just riverCanyon -> second Just <$> placeLocation riverCanyon
-        Nothing -> (,Nothing) <$> selectJust (LocationWithTitle "River Canyon")
-      pushAll
-        $ [ CancelNext (toSource attrs) ExploreMessage
-          , InvestigatorAssignDamage iid source DamageAny 2 0
-          , SetActions iid source 0
-          , ChooseEndTurn iid
-          ]
-        <> maybeToList mPlacement
-        <> [MoveTo $ move source iid riverCanyonId]
+    FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      let source = attrs.ability 1
+      cancelExplore source
+      assignDamage iid source 2
+      push $ SetActions iid source 0
+      endYourTurn iid
+      mRiverCanyon <- find ((== "River Canyon") . toTitle) <$> getExplorationDeck
+      place iid =<< maybe (selectJust $ location_ "River Canyon") placeLocation mRiverCanyon
       pure l
-    _ -> RopeBridge <$> runMessage msg attrs
+    _ -> RopeBridge <$> liftRunMessage msg attrs

@@ -583,6 +583,9 @@ data LocationMatcher
     ThatLocation
   deriving stock (Show, Eq, Ord, Data)
 
+location_ :: LocationMatcher -> LocationMatcher
+location_ = id
+
 newtype LocationFilter = LocationFilter {getLocationFilter :: LocationMatcher}
 
 -- LocationFilter has the same semigroup and monoid instances as LocationMatcher except that the monoid instance is Nowhere and the Semigroup instance needs to swap the behavior for Anywhere and Nowhere

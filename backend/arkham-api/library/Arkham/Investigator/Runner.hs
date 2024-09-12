@@ -3994,6 +3994,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     -- needs to look at the "real" location not as if
     pure $ a & placementL .~ Unplaced
   PlaceInvestigator iid placement | iid == toId a -> do
+    case placement of
+      AtLocation lid -> do
+        pushAll
+          [ WhenWillEnterLocation iid lid
+          , Do (WhenWillEnterLocation iid lid)
+          , EnterLocation iid lid
+          ]
+        pure a
+      _ -> runMessage (Do msg) a
+  Do (PlaceInvestigator iid placement) | iid == toId a -> do
     when (placement == Unplaced) do
       enemies <- select $ enemyEngagedWith iid
       case investigatorLocation a of

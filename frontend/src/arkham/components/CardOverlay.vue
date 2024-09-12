@@ -34,6 +34,7 @@ onMounted(() => {
 
 const card = computed(() => {
   if (!hoveredElement.value) return null
+  if (hoveredElement.value.classList.contains('no-overlay')) return null
   return getImage(hoveredElement.value)
 })
 

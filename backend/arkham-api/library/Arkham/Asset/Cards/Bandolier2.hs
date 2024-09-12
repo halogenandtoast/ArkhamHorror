@@ -1,16 +1,11 @@
-module Arkham.Asset.Cards.Bandolier2 (
-  Bandolier2 (..),
-  bandolier2,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Cards.Bandolier2 (Bandolier2 (..), bandolier2) where
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Card
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Projection
-import Arkham.SkillType
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.Slot
+import Arkham.Investigator.Projection (getSlots)
+import Arkham.Matcher
 import Arkham.Trait
 
 newtype Bandolier2 = Bandolier2 AssetAttrs
@@ -25,15 +20,14 @@ slot attrs = TraitRestrictedSlot (toSource attrs) Weapon []
 
 instance HasModifiersFor Bandolier2 where
   getModifiersFor (InvestigatorTarget iid) (Bandolier2 a) | controlledBy a iid = do
-    n <-
-      fieldMap InvestigatorSlots (length . filter (not . isEmptySlot) . findWithDefault [] HandSlot) iid
-    pure $ toModifiers a [SkillModifier SkillWillpower 1 | n >= 2]
+    n <- countM (anyM (<=~> asset_ #weapon) . slotItems) =<< getSlots #hand iid
+    modified a [SkillModifier #willpower 1 | n >= 2]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Bandolier2 where
-  runMessage msg (Bandolier2 attrs) = case msg of
+  runMessage msg (Bandolier2 attrs) = runQueueT $ case msg of
     -- Slots need to be added before the asset is played so we hook into played card
-    CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
-      pushAll [AddSlot iid HandSlot (slot attrs), AddSlot iid HandSlot (slot attrs)]
-      Bandolier2 <$> runMessage msg attrs
-    _ -> Bandolier2 <$> runMessage msg attrs
+    CardIsEnteringPlay iid card | card.id == attrs.cardId -> do
+      pushAll [AddSlot iid #hand (slot attrs), AddSlot iid #hand (slot attrs)]
+      Bandolier2 <$> liftRunMessage msg attrs
+    _ -> Bandolier2 <$> liftRunMessage msg attrs

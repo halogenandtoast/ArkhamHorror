@@ -103,14 +103,13 @@ replaceThisCard c = \case
 
 cancelChaosToken :: HasQueue Message m => ChaosToken -> m ()
 cancelChaosToken token = withQueue_ $ \queue ->
-  filter
+  mapMaybe
     ( \case
-        When (RevealChaosToken _ _ token') | token == token' -> False
-        RevealChaosToken _ _ token' | token == token' -> False
-        After (RevealChaosToken _ _ token') | token == token' -> False
-        RequestedChaosTokens _ _ [token'] | token == token' -> False
-        RequestedChaosTokens {} -> error "not setup for multiple tokens"
-        _ -> True
+        When (RevealChaosToken _ _ token') | token == token' -> Nothing
+        RevealChaosToken _ _ token' | token == token' -> Nothing
+        After (RevealChaosToken _ _ token') | token == token' -> Nothing
+        RequestedChaosTokens s miid ts -> Just $ RequestedChaosTokens s miid (filter (/= token) ts)
+        msg -> Just msg
     )
     queue
 

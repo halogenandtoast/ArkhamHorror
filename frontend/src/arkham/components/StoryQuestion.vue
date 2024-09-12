@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import { QuestionType } from '@/arkham/types/Question';
-import { CardLabel, Label, MessageType, PortraitLabel, TooltipLabel } from '@/arkham/types/Message';
+import { Done, CardLabel, Label, MessageType, PortraitLabel, TooltipLabel } from '@/arkham/types/Message';
 import { imgsrc } from '@/arkham/helpers';
 import StoryEntry from '@/arkham/components/StoryEntry.vue';
 import PickSupplies from '@/arkham/components/PickSupplies.vue';
@@ -49,12 +49,12 @@ const labelChoices = computed(() => {
     return []
   }
 
-  if (question.value.question.tag !== 'ChooseOne') {
+  if (question.value.question.tag !== 'ChooseOne' && question.value.question.tag !== 'ChooseUpToN') {
     return []
   }
 
-  return question.value.question.choices.flatMap<[Label | TooltipLabel | CardLabel, number]>((c, idx) => {
-    if (c.tag === MessageType.LABEL || c.tag === MessageType.TOOLTIP_LABEL || c.tag === MessageType.CARD_LABEL) {
+  return question.value.question.choices.flatMap<[Label | TooltipLabel | CardLabel | Done, number]>((c, idx) => {
+    if (c.tag === MessageType.LABEL || c.tag === MessageType.TOOLTIP_LABEL || c.tag === MessageType.CARD_LABEL || c.tag === MessageType.DONE) {
       return [[c, idx]]
     } else {
       return []
@@ -102,19 +102,24 @@ const choose = (idx: number) => emit('choose', idx)
     </div>
 
     <div class="label-choices" v-if="labelChoices.length > 0">
-      <template v-for="[choice, index] in labelChoices" :key="index">
+      <div class="card-labels" v-for="[choice, index] in labelChoices" :key="index">
+        <template v-if="choice.tag === MessageType.CARD_LABEL">
+          <a href='#' @click.prevent="choose(index)">
+            <img class="card no-overlay" :src="cardLabelImage(choice.cardCode)"/>
+          </a>
+        </template>
+      </div>
+      <div class="other-labels" v-for="[choice, index] in labelChoices" :key="index">
         <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
           <button @click="choose(index)" v-tooltip="choice.tooltip">{{choice.label}}</button>
         </template>
         <template v-if="choice.tag === MessageType.LABEL">
           <button @click="choose(index)">{{$t(choice.label)}}</button>
         </template>
-        <template v-if="choice.tag === MessageType.CARD_LABEL">
-          <a href='#' @click.prevent="choose(index)">
-            <img class="card" :src="cardLabelImage(choice.cardCode)"/>
-          </a>
+        <template v-if="choice.tag === MessageType.DONE">
+          <button @click="choose(index)">{{$t(choice.label)}}</button>
         </template>
-      </template>
+      </div>
     </div>
   </div>
 
@@ -179,6 +184,21 @@ button {
 .label-choices {
   display: flex;
   flex-wrap: wrap;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-labels {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.other-labels {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
   gap: 10px;
 }
 

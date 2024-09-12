@@ -63,6 +63,9 @@ data EnemyAttrs = EnemyAttrs
 instance HasField "id" EnemyAttrs EnemyId where
   getField = enemyId
 
+instance HasField "cardId" EnemyAttrs CardId where
+  getField = enemyCardId
+
 instance HasField "meta" EnemyAttrs Value where
   getField = enemyMeta
 

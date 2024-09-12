@@ -11,7 +11,6 @@ spec = describe "Abandoned and Alone" $ do
       withPropM @"discard" (genPlayerCards [Assets.flashlight, Assets.flashlight]) self
       self `putCardIntoPlay` Assets.elderSignAmulet3
       self `drawsCard` Treacheries.abandonedAndAlone
-      click "apply horror" -- since direct, no other choice than to apply to self
-      click "apply horror"
+      applyAllHorror -- since direct, no other choice than to apply to self
       self.horror `shouldReturn` 2
       asDefs self.discard `shouldReturn` [Treacheries.abandonedAndAlone]

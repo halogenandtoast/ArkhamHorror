@@ -363,7 +363,7 @@ instance HasField "damage" Investigator (TestAppT Int) where
 addHorror :: Investigator -> Int -> TestAppT ()
 addHorror i n = do
   run $ InvestigatorDirectDamage (toId i) (TestSource mempty) 0 n
-  replicateM_ n $ click "apply horror"
+  applyAllHorror
 
 assertPassedSkillTest :: TestAppT ()
 assertPassedSkillTest = do

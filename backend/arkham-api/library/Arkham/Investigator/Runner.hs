@@ -1251,7 +1251,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               horror'
               []
               []
-           , checkDefeated source iid
            ]
     pure a
   InvestigatorAssignDamage iid source strategy damage horror | iid == toId a -> do
@@ -1269,9 +1268,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                   <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror') | horror' > 0]
               | damage > 0 || horror' > 0
               ]
-            <> [ InvestigatorDoAssignDamage iid source strategy AnyAsset damage horror' [] []
-               , checkDefeated source iid
-               ]
+            <> [InvestigatorDoAssignDamage iid source strategy AnyAsset damage horror' [] []]
     pure a
   InvestigatorDoAssignDamage iid source damageStrategy _ 0 0 damageTargets horrorTargets | iid == toId a -> do
     let
@@ -1520,7 +1517,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             damageAsset aid applyAll =
               AssetDamageLabel
                 aid
-                [ Msg.AssignAssetDamageWithCheck aid source 1 0 False
+                [ Msg.AssignAssetDamageWithCheck aid source (if applyAll then health else 1) 0 False
                 , assignRestOfHealthDamage
                     (if applyAll then 0 else health - 1)
                     (AssetTarget aid : damageTargets)
@@ -1529,7 +1526,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             damageInvestigator iid' applyAll =
               DamageLabel
                 iid'
-                [ Msg.InvestigatorDamage iid' source 1 0
+                [ Msg.InvestigatorDamage iid' source (if applyAll then health else 1) 0
                 , assignRestOfHealthDamage
                     (if applyAll then 0 else health - 1)
                     (toTarget iid' : damageTargets)

@@ -15,8 +15,7 @@ spec = do
       chooseOptionMatching "have to choose horror option to avoid discard" \case
         Label "The lead investigator takes 2 horror" _ -> True
         _ -> False
-      click "assign first horror"
-      click "assign second horror"
+      applyAllHorror
       assert $ Events.darkMemory `isInDiscardOf` self
       didAdvanceAgenda `refShouldBe` True
 
@@ -26,7 +25,6 @@ spec = do
       self `addToHand` darkMemory
       run $ chooseEndTurn self
       click "trigger dark memory"
-      click "assign first horror"
-      click "assign second horror"
+      applyAllHorror
       self.horror `shouldReturn` 2
       didReveal `refShouldBe` True

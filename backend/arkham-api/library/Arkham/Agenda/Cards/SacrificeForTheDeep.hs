@@ -5,7 +5,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 
 newtype SacrificeForTheDeep = SacrificeForTheDeep AgendaAttrs
-  deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sacrificeForTheDeep :: AgendaCard SacrificeForTheDeep
@@ -17,7 +17,7 @@ instance HasAbilities SacrificeForTheDeep where
 instance RunMessage SacrificeForTheDeep where
   runMessage msg a@(SacrificeForTheDeep attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      selectEach UneliminatedInvestigator \iid -> do
+      eachInvestigator \iid -> do
         sufferPhysicalTrauma iid 1
         investigatorDefeated attrs iid
       pure a

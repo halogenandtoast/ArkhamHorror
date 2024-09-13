@@ -13,6 +13,7 @@ import Arkham.Helpers.EncounterSet
 import Arkham.Id
 import Arkham.Key
 import Arkham.Layout
+import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message.Lifted
@@ -128,6 +129,11 @@ setAside as = do
   setAsideCardsL %= (<> cards)
   encounterDecksL . each . _1 %= flip removeEachFromDeck (map toCardDef cards)
 
+-- setAside :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
+-- setAside defs = do
+--   setAsideCards defs
+--   encounterDeckL %= flip removeEachFromDeck defs
+
 -- does not handle other encounter decks
 removeEvery :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
 removeEvery defs = encounterDeckL %= flip removeEveryFromDeck defs
@@ -168,6 +174,11 @@ placeLabeled lbl def = do
   lid <- placeLocationCard def
   push $ SetLocationLabel lid lbl
   pure lid
+
+placeInGrid :: ReverseQueue m => Pos -> CardDef -> ScenarioBuilderT m LocationId
+placeInGrid pos def = do
+  encounterDeckL %= flip removeEachFromDeck [def]
+  placeLocationCardInGrid pos def
 
 place_ :: ReverseQueue m => CardDef -> ScenarioBuilderT m ()
 place_ = void . place

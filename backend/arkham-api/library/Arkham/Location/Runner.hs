@@ -45,6 +45,7 @@ import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Location.BreachStatus qualified as Breach
+import Arkham.Location.FloodLevel
 import Arkham.Location.Helpers
 import Arkham.Matcher (
   Be (..),
@@ -64,6 +65,7 @@ import Arkham.Token
 import Arkham.Trait
 import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
+import Control.Lens (non)
 
 pattern AfterFailedInvestigate :: InvestigatorId -> Target -> Message
 pattern AfterFailedInvestigate iid target <-
@@ -309,6 +311,12 @@ instance RunMessage LocationAttrs where
       pure $ a & keysL %~ insertSet k
     PlaceKey (isTarget a -> False) k -> do
       pure $ a & keysL %~ deleteSet k
+    IncreaseFloodLevel lid | lid == locationId -> do
+      pure $ a & floodLevelL . non Unflooded %~ increaseFloodLevel
+    DecreaseFloodLevel lid | lid == locationId -> do
+      pure $ a & floodLevelL . non Unflooded %~ decreaseFloodLevel
+    SetFloodLevel lid level | lid == locationId -> do
+      pure $ a & floodLevelL ?~ level
     PlaceBreaches (isTarget a -> True) n -> do
       wouldDoEach
         n

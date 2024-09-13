@@ -100,6 +100,7 @@ import Arkham.Keyword (_Swarming)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location
 import Arkham.Location.BreachStatus qualified as Breach
+import Arkham.Location.FloodLevel
 import Arkham.Location.Runner (getModifiedShroudValueFor)
 import Arkham.Location.Types (
   Field (..),
@@ -1918,6 +1919,10 @@ getLocationsMatching lmatcher = do
       filterM
         ((`gameValueMatches` valueMatcher) . maybe 0 Breach.countBreaches . attr locationBreaches)
         ls
+    FloodedLocation ->
+      filterM (fieldMap LocationFloodLevel (`elem` [Just FullyFlooded, Just PartiallyFlooded]) . toId) ls
+    FullyFloodedLocation ->
+      filterM (fieldMap LocationFloodLevel (== Just FullyFlooded) . toId) ls
     FewestBreaches -> do
       fewestBreaches <-
         getMin <$> foldMapM (fieldMap LocationBreaches (Min . maybe 0 Breach.countBreaches) . toId) ls
@@ -2986,6 +2991,7 @@ instance Projection Location where
           else pure Nothing
       LocationJustShroud -> getModifiedShroudValueFor attrs
       LocationBrazier -> pure locationBrazier
+      LocationFloodLevel -> pure locationFloodLevel
       LocationBreaches -> pure locationBreaches
       LocationTraits -> do
         modifiers <- withDepthGuard 3 [] $ getModifiers (toTarget attrs)
@@ -4146,6 +4152,7 @@ instance Projection Scenario where
     let ScenarioAttrs {..} = toAttrs s
     case fld of
       ScenarioCardsUnderActDeck -> pure scenarioCardsUnderActDeck
+      ScenarioCardsNextToActDeck -> pure scenarioCardsNextToActDeck
       ScenarioCardsUnderAgendaDeck -> pure scenarioCardsUnderAgendaDeck
       ScenarioDiscard -> pure scenarioDiscard
       ScenarioEncounterDeck -> pure scenarioEncounterDeck

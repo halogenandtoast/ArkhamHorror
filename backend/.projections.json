@@ -167,7 +167,7 @@
       "    AdvanceAgenda (isSide B attrs -> True) -> do",
       "      advanceAgendaDeck attrs",
       "      pure a",
-      "    _ -> {dot} <$> runMessage msg attrs"
+      "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]
   },
   "arkham-api/library/Arkham/Treachery/Cards/*.hs": {

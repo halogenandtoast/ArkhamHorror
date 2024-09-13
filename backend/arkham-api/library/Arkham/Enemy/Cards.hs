@@ -129,6 +129,7 @@ allEncounterEnemyCards =
       , cultistOfTheEnclave
       , danielChesterfield
       , darkYoungHost
+      , deepOneBull
       , devoteeOfTheKey
       , dholeOfTheWastes
       , dianneDevine
@@ -201,6 +202,7 @@ allEncounterEnemyCards =
       , lodgeNeophyte
       , lumberingGug
       , lupineThrall
+      , lurkingDeepOne
       , madPatient
       , malevolentSpirit
       , maniac
@@ -276,6 +278,7 @@ allEncounterEnemyCards =
       , swiftByakhee
       , temporalDevourer
       , tenebrousNightgaunt
+      , theAmalgam
       , theCrawlingMist
       , theExperiment
       , theMaskedHunter
@@ -1985,6 +1988,29 @@ accursedFollower =
   (basicWeakness "07038" "Accursed Follower")
     { cdCardTraits = setFromList [Humanoid, Cultist, Cursed]
     , cdKeywords = singleton Keyword.Aloof
+    }
+
+theAmalgam :: CardDef
+theAmalgam =
+  unique
+    $ ( enemy "07053" "The Amalgam" ThePitOfDespair 1
+      )
+      { cdCardTraits = setFromList [Monster, Abomination, DeepOne, Elite]
+      , cdKeywords = singleton Keyword.Hunter
+      }
+
+deepOneBull :: CardDef
+deepOneBull =
+  ( enemy "07088" "Deep One Bull" ThePitOfDespair 1
+  )
+    { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
+    }
+
+lurkingDeepOne :: CardDef
+lurkingDeepOne =
+  ( enemy "07089" "Lurking Deep One" ThePitOfDespair 3
+  )
+    { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     }
 
 mobGoons :: CardDef

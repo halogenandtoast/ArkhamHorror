@@ -141,6 +141,7 @@ watch(abilities, (abilities) => {
     abilitiesEl.value?.focus()
   }
 
+  console.log(id.value, abilities.length)
   if (abilities.length === 0) {
     showAbilities.value = false
     abilitiesEl.value?.blur()
@@ -207,6 +208,15 @@ const breaches = computed(() => {
 })
 const horror = computed(() => props.location.tokens[TokenType.Horror])
 const damage = computed(() => props.location.tokens[TokenType.Damage])
+const floodLevel = computed(() => {
+  if (!props.location.floodLevel) return
+  switch (props.location.floodLevel) {
+    case "Unflooded": return null
+    case "PartiallyFlooded": return imgsrc('partially-flooded.png')
+    case "FullyFlooded": return imgsrc('fully-flooded.png')
+    default: return null
+  }
+})
 
 const debug = useDebug()
 
@@ -253,6 +263,7 @@ function onDrop(event: DragEvent) {
           <Locus v-if="locus" class="locus" />
           <font-awesome-icon v-if="blocked" :icon="['fab', 'expeditedssl']" class="status-icon" />
 
+          <div class="wave" :class="{ [location.floodLevel]: true }"></div>
           <img
             :data-id="id"
             class="card"
@@ -265,9 +276,13 @@ function onDrop(event: DragEvent) {
             @click="clicked"
           />
 
+          <div class="clues pool">
+            <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
+            <img v-if="floodLevel" :src="floodLevel" class="flood-level" />
+          </div>
+
           <div class="pool">
             <Key v-for="key in keys" :key="key" :name="key" />
-            <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
             <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
             <PoolItem v-if="horror && horror > 0" type="horror" :amount="horror" />
             <PoolItem v-if="damage && damage > 0" type="health" :amount="damage" />
@@ -475,8 +490,16 @@ function onDrop(event: DragEvent) {
   display: flex;
   align-self: flex-start;
   align-items: flex-end;
-  * {
-    transform: scale(0.6);
+  gap: 2px;
+  &.clues {
+    top: 10%;
+  }
+  &:deep(.poolItem img) {
+    width: 25px !important;
+  }
+
+  &:deep(.poolItem) {
+    width: 25px !important;
   }
 
   pointer-events: none;
@@ -487,6 +510,9 @@ function onDrop(event: DragEvent) {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  border-radius: 5px;
+  min-width: fit-content;
 }
 
 @keyframes explosion {
@@ -616,5 +642,47 @@ function onDrop(event: DragEvent) {
     "investigators attachments assetsAndEnemies";
   grid-template-columns: 60px 1fr 60px;
   grid-column-gap: 10px;
+}
+
+.flood-level {
+  width: 25px;
+}
+
+.wave {
+  pointer-events: none;
+  background-color: #3f68c5;
+  opacity: 0.4;
+  position: absolute;
+  border-radius: 38%;
+  top: 120%;
+  height: 200%;
+  width: 200%;
+  left: -50%;
+  transition: top 10s linear, height 10s linear, border-radius 10s linear;
+  animation: wave 30s linear infinite;
+  border-radius: 15px;
+}
+
+.Unflooded {
+  top: 120%;
+  height: 200%;
+  border-radius: 38%;
+}
+
+.FullyFlooded {
+  top: -40%;
+  height: 200%;
+  border-radius: 38%;
+}
+
+.PartiallyFlooded {
+  top: 50%;
+  height: 150%;
+  border-radius: 28%;
+}
+
+@keyframes wave {
+  from { transform: rotate(0deg)}
+  to { transform: rotate(360deg)}
 }
 </style>

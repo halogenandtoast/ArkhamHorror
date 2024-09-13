@@ -66,10 +66,10 @@ instance RunMessage BreakingAndEntering where
                 (cardIs Enemies.huntingHorror)
             ]
       pure a
-    FoundEnemyInVoid _ target eid | isTarget attrs target -> do
+    FoundEnemyInOutOfPlay VoidZone _ target eid | isTarget attrs target -> do
       lid <- getRestrictedHall
       pushAll
-        [ EnemySpawnFromVoid Nothing lid eid
+        [ EnemySpawnFromOutOfPlay VoidZone Nothing lid eid
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)
         ]
       pure a

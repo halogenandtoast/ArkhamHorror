@@ -163,9 +163,9 @@ instance RunMessage TheMiskatonicMuseum where
       lid <- getJustLocation iid
       push (SpawnEnemyAt (EncounterCard ec) lid)
       pure s
-    FoundEnemyInVoid iid target eid | isTarget attrs target -> do
+    FoundEnemyInOutOfPlay VoidZone iid target eid | isTarget attrs target -> do
       lid <- getJustLocation iid
-      push (EnemySpawnFromVoid Nothing lid eid)
+      push (EnemySpawnFromOutOfPlay VoidZone Nothing lid eid)
       pure s
     ScenarioResolution NoResolution -> do
       story noResolution

@@ -11,6 +11,7 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
+import Arkham.Zone
 
 newtype ShadowSpawned = ShadowSpawned TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
@@ -33,6 +34,6 @@ instance HasModifiersFor ShadowSpawned where
 
 instance RunMessage ShadowSpawned where
   runMessage msg t@(ShadowSpawned attrs) = case msg of
-    PlaceEnemyInVoid eid
+    PlaceEnemyOutOfPlay VoidZone eid
       | EnemyTarget eid `elem` treacheryAttachedTarget attrs -> pure t
     _ -> ShadowSpawned <$> runMessage msg attrs

@@ -4,7 +4,6 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
 import Arkham.Matcher
-import Arkham.Resolution
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype SearchForTheRuins = SearchForTheRuins ActAttrs

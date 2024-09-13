@@ -4151,6 +4151,7 @@ instance Projection Scenario where
     s <- fromJustNote ("should be impossible, was looking for field: " <> show fld) <$> getScenario
     let ScenarioAttrs {..} = toAttrs s
     case fld of
+      ScenarioGrid -> pure scenarioGrid
       ScenarioCardsUnderActDeck -> pure scenarioCardsUnderActDeck
       ScenarioCardsNextToActDeck -> pure scenarioCardsNextToActDeck
       ScenarioCardsUnderAgendaDeck -> pure scenarioCardsUnderAgendaDeck

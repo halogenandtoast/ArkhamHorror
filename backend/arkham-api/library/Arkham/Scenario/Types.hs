@@ -79,6 +79,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioTarotCards :: Field Scenario (Map TarotCardScope [TarotCard])
   ScenarioTurn :: Field Scenario Int
   ScenarioDefeatedEnemies :: Field Scenario (Map EnemyId DefeatedEnemyAttrs)
+  ScenarioGrid :: Field Scenario Grid
 
 deriving stock instance Show (Field Scenario typ)
 

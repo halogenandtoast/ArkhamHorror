@@ -89,7 +89,7 @@ instance RunMessage TreacheryAttrs where
     MoveTokens s _ target tType n | isTarget a target -> runMessage (PlaceTokens s (toTarget a) tType n) a
     RemoveAllDoom _ (isTarget a -> True) -> do
       pure $ a & tokensL %~ removeAllTokens Doom
-    PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget a -> do
+    PlaceEnemyOutOfPlay _ eid | EnemyTarget eid `elem` treacheryAttachedTarget a -> do
       push $ toDiscard GameSource a
       pure a
     Discard miid _ (TreacheryTarget tid) | tid == treacheryId -> do

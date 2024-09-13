@@ -44,9 +44,9 @@ instance RunMessage NightAtTheMuseum where
               (cardIs Enemies.huntingHorror)
       advanceActDeck attrs
       pure a
-    FoundEnemyInVoid _ (isTarget attrs -> True) eid -> do
+    FoundEnemyInOutOfPlay VoidZone _ (isTarget attrs -> True) eid -> do
       lid <- getRestrictedHall
-      pushAll [EnemySpawnFromVoid Nothing lid eid]
+      pushAll [EnemySpawnFromOutOfPlay VoidZone Nothing lid eid]
       pure a
     FoundEncounterCard _ (isTarget attrs -> True) ec -> do
       lid <- getRestrictedHall

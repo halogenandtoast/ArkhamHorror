@@ -162,6 +162,7 @@ allActCards =
       , theDoomThatCameBefore
       , theDreamEaters
       , theEndlessStairs
+      , theEscape
       , theFinalDescent
       , theFourKeys
       , theGateOpens
@@ -177,6 +178,7 @@ allActCards =
       , thePath
       , thePathIsBarred
       , thePathToTheHill
+      , thePit
       , theReallyBadOnesV1
       , theReallyBadOnesV2
       , theRelicIsMissing
@@ -748,6 +750,12 @@ theWeaverOfTheCosmos = act "06338" "The Weaver of the Cosmos" 2 WeaverOfTheCosmo
 
 theSchemesDemise :: CardDef
 theSchemesDemise = act "06339" "The Scheme's Demise" 3 WeaverOfTheCosmos
+
+thePit :: CardDef
+thePit = act "07045" "The Pit" 1 ThePitOfDespair
+
+theEscape :: CardDef
+theEscape = act "07046" "The Escape" 2 ThePitOfDespair
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

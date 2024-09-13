@@ -430,12 +430,25 @@ allTreacheries =
     , SomeTreacheryCard caughtInAWeb
     , SomeTreacheryCard endlessWeaving
     , -- The Innsmouth Conspiracy
-      -- signature
+      --- signature [tic]
       SomeTreacheryCard crisisOfFaith
     , SomeTreacheryCard sirenCall
-    , -- basic weakness
+    , --- basic weakness [tic]
       SomeTreacheryCard dreadCurse
     , SomeTreacheryCard dayOfReckoning
+    , --- The Pit of Despair [tic]
+      SomeTreacheryCard blindsense
+    , SomeTreacheryCard fromTheDepths
+    , --- Creatures of the Deep [tic]
+      SomeTreacheryCard deepOneAssault
+    , --- Rising Tide [tic]
+      SomeTreacheryCard undertow
+    , SomeTreacheryCard risingTides
+    , SomeTreacheryCard riptide
+    , --- Shattered Memories [tic]
+      SomeTreacheryCard macabreMemento
+    , SomeTreacheryCard fracturedConsciousness
+    , SomeTreacheryCard memoryOfOblivion
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

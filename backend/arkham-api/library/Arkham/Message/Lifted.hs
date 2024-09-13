@@ -48,6 +48,8 @@ import Arkham.Id
 import Arkham.Investigate
 import Arkham.Investigate qualified as Investigate
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Key
+import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message hiding (story)
 import Arkham.Message.Lifted.Queue as X
@@ -93,6 +95,13 @@ placeLocationCard
   :: ReverseQueue m => CardDef -> m LocationId
 placeLocationCard def = do
   (lid, placement) <- Msg.placeLocationCard def
+  push placement
+  pure lid
+
+placeLocationCardInGrid
+  :: ReverseQueue m => Pos -> CardDef -> m LocationId
+placeLocationCardInGrid pos def = do
+  (lid, placement) <- Msg.placeLocationCardInGrid pos def
   push placement
   pure lid
 
@@ -1473,3 +1482,6 @@ handleTarget iid source target = push $ Msg.handleTargetChoice iid source target
 spendUses
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> UseType -> Int -> m ()
 spendUses source target tType n = push $ SpendUses (toSource source) (toTarget target) tType n
+
+placeKey :: (ReverseQueue m, Targetable target) => target -> ArkhamKey -> m ()
+placeKey target key = push $ Msg.PlaceKey (toTarget target) key

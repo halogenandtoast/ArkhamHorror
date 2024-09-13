@@ -1,6 +1,5 @@
 module Arkham.Treachery.Cards.FinalRhapsodySpec (spec) where
 
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Treachery.Cards qualified as Cards
 import TestImport.New hiding (InvestigatorDamage)
 

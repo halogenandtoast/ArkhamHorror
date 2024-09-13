@@ -13,6 +13,7 @@ import Arkham.Json
 import Arkham.Key
 import Arkham.Location.Brazier
 import Arkham.Location.BreachStatus
+import Arkham.Location.FloodLevel
 import Arkham.LocationSymbol
 import Arkham.Matcher (IsLocationMatcher (..), LocationMatcher (..))
 import Arkham.SkillType
@@ -41,6 +42,7 @@ data LocationAttrs = LocationAttrs
   , locationInvestigateSkill :: SkillType
   , locationInFrontOf :: Maybe InvestigatorId
   , locationKeys :: Set ArkhamKey
+  , locationFloodLevel :: Maybe FloodLevel
   , locationBrazier :: Maybe Brazier
   , locationBreaches :: Maybe BreachStatus
   , -- We need to track if a location has no clues because timings will interact

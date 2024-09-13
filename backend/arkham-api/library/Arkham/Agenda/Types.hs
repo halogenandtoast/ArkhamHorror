@@ -209,6 +209,11 @@ instance HasCardCode Agenda where
 instance HasCardCode AgendaAttrs where
   toCardCode = unAgendaId . toId
 
+instance IsCard AgendaAttrs where
+  toCard = defaultToCard
+  toCardId = agendaCardId
+  toCardOwner = const Nothing
+
 instance IsCard Agenda where
   toCard = defaultToCard
   toCardId = agendaCardId . toAttrs

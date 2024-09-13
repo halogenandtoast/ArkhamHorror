@@ -674,6 +674,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
           then pure a
           else pure $ a & (slotsL %~ removeFromSlots aid)
       _ -> pure $ a & (slotsL %~ removeFromSlots aid)
+  PlaceKey (isTarget a -> True) (UnrevealedKey k) -> pure $ a & keysL %~ insertSet k
   PlaceKey (isTarget a -> True) k -> pure $ a & keysL %~ insertSet k
   PlaceKey (isTarget a -> False) k -> pure $ a & keysL %~ deleteSet k
   AllCheckHandSize | not (a ^. defeatedL || a ^. resignedL) -> do

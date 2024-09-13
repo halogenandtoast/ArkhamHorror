@@ -121,6 +121,11 @@ data EncounterSet
   | TerrorOfTheVale
   | WhereTheGodsDwell
   | WeaverOfTheCosmos
+  | ThePitOfDespair
+  | CreaturesOfTheDeep
+  | RisingTide
+  | ShatteredMemories
+  | FloodedCaverns
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

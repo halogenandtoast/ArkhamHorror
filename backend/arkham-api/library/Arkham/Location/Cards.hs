@@ -82,6 +82,7 @@ allLocationCards =
       , administrationOffice_130
       , administrationOffice_131
       , alchemyLabs
+      , altarToDagon
       , ancientHall
       , anotherDimension
       , arkhamPoliceStation
@@ -129,6 +130,7 @@ allLocationCards =
       , bleakPlainsStarsOfAldebaran
       , blockedPassage
       , boneFilledCaverns
+      , boneRiddenPit
       , boxOffice
       , brackishWaters
       , bridgeOfSighs
@@ -258,6 +260,7 @@ allLocationCards =
       , facultyOfficesTheNightIsStillYoung
       , farAboveYourHouse
       , faubourgMarigny
+      , fishGraveyard
       , flightIntoOblivion
       , floodedSquare
       , forbiddenLands
@@ -324,6 +327,7 @@ allLocationCards =
       , houseInTheReeds_210
       , houseInTheReeds_211
       , humanitiesBuilding
+      , idolChamber
       , ilekVad
       , infinityOfDarkness
       , infirmary
@@ -477,6 +481,7 @@ allLocationCards =
       , seaOfPitch_263
       , seaOfPitch_264
       , seaOfPitch_265
+      , sealedExit
       , secondFloorHall
       , secretPassage
       , securityOffice_128
@@ -548,6 +553,7 @@ allLocationCards =
       , theOnyxCastle
       , theWhiteShip
       , theatre
+      , tidalPool
       , timeWrackedWoods
       , tombOfShadows
       , towerOfKoth
@@ -561,7 +567,10 @@ allLocationCards =
       , twilightAbyss
       , twistedUnderbrush
       , ulthar
+      , undergroundRiver
       , undergroundRuins
+      , underwaterCavern
+      , unfamiliarChamber
       , unmarkedTomb
       , unvisitedIsleDecayedWillow
       , unvisitedIsleForsakenWoods
@@ -6041,6 +6050,132 @@ theGreatWebWebWovenIsland =
       NoSymbol
       []
       WeaverOfTheCosmos
+
+unfamiliarChamber :: CardDef
+unfamiliarChamber =
+  location
+    "07047"
+    "Unfamiliar Chamber"
+    [Cave]
+    NoSymbol
+    []
+    ThePitOfDespair
+
+boneRiddenPit :: CardDef
+boneRiddenPit =
+  locationWithUnrevealed
+    "07048"
+    "Tidal Tunnel"
+    [Cave]
+    NoSymbol
+    []
+    "Bone-Ridden Pit"
+    [Cave]
+    NoSymbol
+    []
+    ThePitOfDespair
+
+fishGraveyard :: CardDef
+fishGraveyard =
+  locationWithUnrevealed
+    "07049"
+    "Tidal Tunnel"
+    [Cave]
+    NoSymbol
+    []
+    "Fish Graveyard"
+    [Cave]
+    NoSymbol
+    []
+    ThePitOfDespair
+
+altarToDagon :: CardDef
+altarToDagon =
+  locationWithUnrevealed
+    "07050"
+    "Tidal Tunnel"
+    [Cave]
+    NoSymbol
+    []
+    "Altar to Dagon"
+    [Cave]
+    NoSymbol
+    []
+    ThePitOfDespair
+
+idolChamber :: CardDef
+idolChamber =
+  locationWithUnrevealed
+    "07051"
+    "Tidal Tunnel"
+    [Cave]
+    NoSymbol
+    []
+    "Idol Chamber"
+    [Cave]
+    NoSymbol
+    []
+    ThePitOfDespair
+
+sealedExit :: CardDef
+sealedExit =
+  locationWithUnrevealed
+    "07052"
+    "Tidal Tunnel"
+    [Cave]
+    NoSymbol
+    []
+    "Sealed Exit"
+    [Cave]
+    NoSymbol
+    []
+    ThePitOfDespair
+
+underwaterCavern :: CardDef
+underwaterCavern =
+  quantity 2
+    $ locationWithUnrevealed
+      "07102"
+      "Tidal Tunnel"
+      [Cave]
+      NoSymbol
+      []
+      "Underwater Cavern"
+      [Cave]
+      NoSymbol
+      []
+      FloodedCaverns
+
+tidalPool :: CardDef
+tidalPool =
+  quantity 2
+    $ locationWithUnrevealed
+      "07103"
+      "Tidal Tunnel"
+      [Cave]
+      NoSymbol
+      []
+      "Tidal Pool"
+      [Cave]
+      NoSymbol
+      []
+      FloodedCaverns
+
+undergroundRiver :: CardDef
+undergroundRiver =
+  victory 1
+    $ quantity 2
+    $ locationWithUnrevealed
+      "07104"
+      "Tidal Tunnel"
+      [Cave]
+      NoSymbol
+      []
+      "Underground River"
+      [Cave]
+      NoSymbol
+      []
+      FloodedCaverns
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

@@ -30,6 +30,7 @@ import Arkham.Classes.RunMessage
 import Arkham.Collection
 import Arkham.Deck qualified as Deck
 import Arkham.DefeatedBy
+import Arkham.Direction
 import Arkham.Draw.Types
 import Arkham.EncounterCard.Source
 import Arkham.Enemy.Creation
@@ -47,6 +48,8 @@ import Arkham.Helpers.Window
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Label (mkLabel)
+import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
 import Arkham.Phase
@@ -1001,24 +1004,16 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       )
       $ push
       $ chooseOne player
-      $ [ TargetLabel
-          (CardIdTarget $ toCardId card)
-          [FoundEncounterCardFrom iid target FromDiscard card]
+      $ [ targetLabel card [FoundEncounterCardFrom iid target FromDiscard card]
         | card <- matchingDiscards
         ]
-      <> [ TargetLabel
-          (CardIdTarget $ toCardId card)
-          [FoundEncounterCardFrom iid target FromEncounterDeck card]
+      <> [ targetLabel card [FoundEncounterCardFrom iid target FromEncounterDeck card]
          | card <- matchingDeckCards
          ]
-      <> [ TargetLabel
-          (CardIdTarget $ toCardId card)
-          [FoundEncounterCardFrom iid target FromVictoryDisplay card]
+      <> [ targetLabel card [FoundEncounterCardFrom iid target FromVictoryDisplay card]
          | card <- matchingVictoryDisplay
          ]
-      <> [ TargetLabel
-          (CardIdTarget $ toCardId card)
-          [FoundEnemyInVoid iid target eid]
+      <> [ targetLabel card [FoundEnemyInOutOfPlay Zone.VoidZone iid target eid]
          | (eid, card) <- voidEnemiesWithCards
          ]
 
@@ -1287,5 +1282,25 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
             | iid <- xs
             ]
       [] -> pure ()
+    pure a
+  PlaceGrid gloc@(GridLocation pos lid) -> do
+    let grid = insertGrid gloc scenarioGrid
+    mTopLocation <-
+      selectOne $ Matcher.LocationWithLabel (mkLabel $ gridLabel $ updatePosition pos GridUp)
+    mBottomLocation <-
+      selectOne $ Matcher.LocationWithLabel (mkLabel $ gridLabel $ updatePosition pos GridDown)
+    mLeftLocation <-
+      selectOne $ Matcher.LocationWithLabel (mkLabel $ gridLabel $ updatePosition pos GridLeft)
+    mRightLocation <-
+      selectOne $ Matcher.LocationWithLabel (mkLabel $ gridLabel $ updatePosition pos GridRight)
+    pushAll
+      $ [ LocationMoved lid
+        , SetLocationLabel lid (gridLabel pos)
+        , SetLayout (gridToTemplate grid)
+        ]
+      <> [PlacedLocationDirection lid Below topLocation | topLocation <- maybeToList mTopLocation]
+      <> [PlacedLocationDirection lid Above bottomLocation | bottomLocation <- maybeToList mBottomLocation]
+      <> [PlacedLocationDirection lid LeftOf rightLocation | rightLocation <- maybeToList mRightLocation]
+      <> [PlacedLocationDirection lid RightOf leftLocation | leftLocation <- maybeToList mLeftLocation]
     pure a
   _ -> pure a

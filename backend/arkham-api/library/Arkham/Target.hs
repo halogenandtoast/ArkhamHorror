@@ -77,6 +77,18 @@ instance HasField "enemy" Target (Maybe EnemyId) where
     ProxyTarget t _ -> t.enemy
     _ -> Nothing
 
+instance HasField "investigator" Target (Maybe InvestigatorId) where
+  getField = \case
+    InvestigatorTarget aid -> Just aid
+    InvestigatorHandTarget aid -> Just aid
+    InvestigatorDiscardTarget aid -> Just aid
+    ResourceTarget aid -> Just aid
+    InvestigationTarget aid _ -> Just aid
+    AbilityTarget aid _ -> Just aid
+    ProxyTarget (CardIdTarget _) t -> t.investigator
+    ProxyTarget t _ -> t.investigator
+    _ -> Nothing
+
 bothTarget :: (Targetable a, Targetable b) => a -> b -> Target
 bothTarget a b = BothTarget (toTarget a) (toTarget b)
 

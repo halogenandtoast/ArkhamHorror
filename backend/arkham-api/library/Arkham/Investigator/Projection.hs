@@ -11,6 +11,7 @@ import {-# SOURCE #-} Arkham.Game ()
 import Arkham.GameT
 import Arkham.Id
 import Arkham.Investigator.Types as X (Field (..))
+import Arkham.Key
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Prelude
@@ -30,3 +31,6 @@ instance HasField "slots" InvestigatorId (SlotType -> QueueT Message GameT [Slot
 
 instance HasField "filter" (QueueT Message GameT [Card]) (CardMatcher -> QueueT Message GameT [Card]) where
   getField x f = filterCards f <$> x
+
+instance HasField "keys" InvestigatorId (QueueT Message GameT (Set ArkhamKey)) where
+  getField = field InvestigatorKeys

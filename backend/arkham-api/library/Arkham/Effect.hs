@@ -30,7 +30,13 @@ import Arkham.Act.Acts (
   theStrangerTheShoresOfHaliEffect,
   theYithianRelicEffect,
  )
-import Arkham.Agenda.Agendas (lostMemoriesEffect, theLoversVIEffect, theRedDepthsEffect)
+import Arkham.Agenda.Agendas (
+  awakeningEffect,
+  lostMemoriesEffect,
+  theLoversVIEffect,
+  theRedDepthsEffect,
+  theWaterRisesEffect,
+ )
 import Arkham.Asset.Assets (
   aceOfRods1Effect,
   alchemicalTransmutation2Effect,
@@ -94,6 +100,7 @@ import Arkham.Asset.Assets (
   witherEffect,
   yaotl1Effect,
  )
+import Arkham.Campaigns.TheInnsmouthConspiracy.Effects.NoAir (noAirEffect)
 import Arkham.Enemy.Enemies (
   alejandroVelaEffect,
   boaConstrictorEffect,
@@ -422,6 +429,8 @@ allEffects =
     , ("07004", SomeEffect dexterDrakeEffect)
     , ("07012", SomeEffect showmanshipEffect)
     , ("07030", SomeEffect tidesOfFateEffect)
+    , ("07042", SomeEffect awakeningEffect)
+    , ("07043", SomeEffect theWaterRisesEffect)
     , ("07117", SomeEffect armageddonEffect)
     , ("07118", SomeEffect eyeOfChaosEffect)
     , ("07119", SomeEffect shroudOfShadowsEffect)
@@ -497,4 +506,5 @@ allEffects =
     , ("ontok", SomeEffect onRevealChaosTokenEffect)
     , ("surge", SomeEffect surgeEffect)
     , ("maxef", SomeEffect maxEffect)
+    , ("noair", SomeEffect noAirEffect)
     ]

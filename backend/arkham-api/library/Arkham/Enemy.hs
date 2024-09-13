@@ -361,10 +361,15 @@ allEnemies =
     , SomeEnemyCard legsOfAtlachNacha_350
     , SomeEnemyCard webSpinner
     , -- The Innsmouth Conspiracy
-      -- signature
+      --- signature [tic]
       SomeEnemyCard shadowAgents
-    , -- basic weakness
+    , --- basic weakness [tic]
       SomeEnemyCard accursedFollower
+    , --- The Pit of Despair [tic]
+      SomeEnemyCard theAmalgam
+    , --- Creatures of the Deep [tic]
+      SomeEnemyCard deepOneBull
+    , SomeEnemyCard lurkingDeepOne
     , -- Edge of the Earth
       -- signature
       SomeEnemyCard mobGoons

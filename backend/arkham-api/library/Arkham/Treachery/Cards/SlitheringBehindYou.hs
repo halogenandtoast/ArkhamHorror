@@ -41,8 +41,8 @@ instance RunMessage SlitheringBehindYou where
       for_ mlid
         $ \lid -> push (SpawnEnemyAtEngagedWith (EncounterCard ec) lid iid)
       pure t
-    FoundEnemyInVoid iid target eid | isTarget attrs target -> do
+    FoundEnemyInOutOfPlay VoidZone iid target eid | isTarget attrs target -> do
       mlid <- field InvestigatorLocation iid
-      for_ mlid $ \lid -> push (EnemySpawnFromVoid (Just iid) lid eid)
+      for_ mlid $ \lid -> push (EnemySpawnFromOutOfPlay VoidZone (Just iid) lid eid)
       pure t
     _ -> SlitheringBehindYou <$> runMessage msg attrs

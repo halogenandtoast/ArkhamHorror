@@ -190,7 +190,6 @@ const debug = useDebug()
 }
 
 .pool {
-  pointer-events: none;
   display: flex;
   flex-direction: row;
   height: 2em;
@@ -255,7 +254,6 @@ const debug = useDebug()
   z-index: 100;
   position: relative;
   .pool {
-    pointer-events: none;
     z-index: 101;
     position: absolute;
     left: 0;

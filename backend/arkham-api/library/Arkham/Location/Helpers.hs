@@ -10,6 +10,7 @@ import Arkham.Action qualified as Action
 import Arkham.Card.CardCode
 import Arkham.Direction
 import Arkham.Game.Helpers as X
+import Arkham.Location.Base
 import Arkham.Matcher
 import Arkham.Source
 
@@ -28,3 +29,6 @@ drawCardUnderneathAction a =
 
 adjacentLocations :: Set Direction
 adjacentLocations = setFromList [minBound .. maxBound]
+
+connectsToAdjacent :: LocationAttrs -> LocationAttrs
+connectsToAdjacent = connectsToL .~ adjacentLocations

@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Campaign.Runner
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheInnsmouthConspiracy.Import
-import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Id
@@ -28,10 +27,14 @@ theInnsmouthConspiracy difficulty =
 
 instance IsCampaign TheInnsmouthConspiracy where
   nextStep a = case campaignStep (toAttrs a) of
-    PrologueStep -> Nothing
+    PrologueStep -> Just ThePitOfDespair
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
 
 instance RunMessage TheInnsmouthConspiracy where
-  runMessage msg c@(TheInnsmouthConspiracy _attrs) = defaultCampaignRunner msg c
+  runMessage msg c@(TheInnsmouthConspiracy _attrs) = case msg of
+    CampaignStep PrologueStep -> do
+      push $ NextCampaignStep Nothing
+      pure c
+    _ -> defaultCampaignRunner msg c

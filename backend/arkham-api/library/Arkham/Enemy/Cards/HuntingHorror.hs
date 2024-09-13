@@ -44,16 +44,16 @@ instance RunMessage HuntingHorror where
         $ Ready (toTarget attrs)
       pure e
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ PlaceEnemyInVoid enemyId
+      push $ PlaceEnemyOutOfPlay VoidZone enemyId
       pure e
-    EnemySpawnFromVoid _miid _lid eid | eid == enemyId -> do
+    EnemySpawnFromOutOfPlay VoidZone _miid _lid eid | eid == enemyId -> do
       pure
         . HuntingHorror
         $ attrs
         & (tokensL %~ removeAllTokens Doom . removeAllTokens Clue . removeAllTokens Token.Damage)
         & (defeatedL .~ False)
         & (exhaustedL .~ False)
-    PlaceEnemyInVoid eid | eid == enemyId -> do
+    PlaceEnemyOutOfPlay VoidZone eid | eid == enemyId -> do
       withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
       pure
         . HuntingHorror

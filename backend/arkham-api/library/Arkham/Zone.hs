@@ -13,6 +13,7 @@ data OutOfPlayZone
   | SetAsideZone
   | VictoryDisplayZone
   | RemovedZone
+  | TheDepths
   deriving stock (Show, Eq, Ord, Enum, Bounded, Data)
 
 data Zone
@@ -63,6 +64,7 @@ instance ToJSONKey Zone where
         SetAsideZone -> "FromSetAside"
         VictoryDisplayZone -> "FromVictoryDisplay"
         RemovedZone -> "RemovedZone"
+        TheDepths -> "TheDepths"
       other -> tshow other
 
 instance FromJSONKey Zone where

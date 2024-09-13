@@ -23,6 +23,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Label (mkLabel)
+import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Resolution
@@ -233,6 +234,11 @@ placeLocation c = do
   locationId <- getRandom
   pure (locationId, PlaceLocation locationId c)
 
+placeLocationInGrid :: MonadRandom m => Pos -> Card -> m (LocationId, Message)
+placeLocationInGrid pos c = do
+  locationId <- getRandom
+  pure (locationId, Run [PlaceLocation locationId c, PlaceGrid (GridLocation pos locationId)])
+
 placeLocation_ :: MonadRandom m => Card -> m Message
 placeLocation_ = fmap snd . placeLocation
 
@@ -247,6 +253,9 @@ placeSetAsideLocations = traverse placeSetAsideLocation_
 
 placeLocationCard :: (CardGen m, HasGame m) => CardDef -> m (LocationId, Message)
 placeLocationCard = placeLocation <=< genCard
+
+placeLocationCardInGrid :: (CardGen m, HasGame m) => Pos -> CardDef -> m (LocationId, Message)
+placeLocationCardInGrid pos = placeLocationInGrid pos <=< genCard
 
 placeLocationCard_ :: (HasGame m, CardGen m) => CardDef -> m Message
 placeLocationCard_ = placeLocation_ <=< genCard

@@ -49,6 +49,8 @@ import Arkham.Id
 import Arkham.Investigate
 import Arkham.Investigate qualified as Investigate
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Key
+import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message hiding (story)
 import Arkham.Message.Lifted.Queue as X
@@ -106,6 +108,13 @@ placeLocationCard
   :: ReverseQueue m => CardDef -> m LocationId
 placeLocationCard def = do
   (lid, placement) <- Msg.placeLocationCard def
+  push placement
+  pure lid
+
+placeLocationCardInGrid
+  :: ReverseQueue m => Pos -> CardDef -> m LocationId
+placeLocationCardInGrid pos def = do
+  (lid, placement) <- Msg.placeLocationCardInGrid pos def
   push placement
   pure lid
 
@@ -1635,3 +1644,6 @@ crossOutRecordSetEntries k xs = push $ Msg.crossOutRecordSetEntries k xs
 
 healAllDamage :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
 healAllDamage source target = push $ Msg.HealAllDamage (toTarget target) (toSource source)
+
+placeKey :: (ReverseQueue m, Targetable target) => target -> ArkhamKey -> m ()
+placeKey target key = push $ Msg.PlaceKey (toTarget target) key

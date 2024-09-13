@@ -8,6 +8,7 @@ import Arkham.Campaign.Option
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.Memento
+import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Decklist
@@ -88,6 +89,9 @@ makeStandaloneCampaignLog = foldl' applySetting mkCampaignLog
        in setCampaignLogRecorded k entries cl
     (SomeRecordableType RecordableMemento) ->
       let entries = mapMaybe (toEntry @Memento) vs
+       in setCampaignLogRecorded k entries cl
+    (SomeRecordableType RecordableMemory) ->
+      let entries = mapMaybe (toEntry @Memory) vs
        in setCampaignLogRecorded k entries cl
   toEntry :: forall a. Recordable a => SetRecordedEntry -> Maybe SomeRecorded
   toEntry (SetAsRecorded e) = case fromJSON @a e of
@@ -194,6 +198,7 @@ makeCampaignLog settings =
     case rt of
       (SomeRecordableType RecordableCardCode) -> map (toEntry @CardCode) entries
       (SomeRecordableType RecordableMemento) -> map (toEntry @Memento) entries
+      (SomeRecordableType RecordableMemory) -> map (toEntry @Memory) entries
   toEntry :: forall a. Recordable a => CampaignRecordedEntry -> SomeRecorded
   toEntry (CampaignEntryRecorded e) = case fromJSON @a e of
     Success a -> recorded a

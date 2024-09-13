@@ -43,6 +43,9 @@ instance HasChaosTokenValue ThePitOfDespair where
 
 instance RunMessage ThePitOfDespair where
   runMessage msg s@(ThePitOfDespair attrs) = runQueueT $ case msg of
+    PreScenarioSetup -> do
+      story $ i18nWithTitle "theInnsmouthConspiracy.thePitOfDespair.intro"
+      pure s
     Setup -> runScenarioSetup ThePitOfDespair attrs do
       gather Set.ThePitOfDespair
       gather Set.CreaturesOfTheDeep

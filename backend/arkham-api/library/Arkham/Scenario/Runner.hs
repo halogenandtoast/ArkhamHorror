@@ -1302,5 +1302,5 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       <> [PlacedLocationDirection lid Above bottomLocation | bottomLocation <- maybeToList mBottomLocation]
       <> [PlacedLocationDirection lid LeftOf rightLocation | rightLocation <- maybeToList mRightLocation]
       <> [PlacedLocationDirection lid RightOf leftLocation | leftLocation <- maybeToList mLeftLocation]
-    pure a
+    pure $ a & gridL .~ grid
   _ -> pure a

@@ -3,6 +3,7 @@
 module Arkham.CampaignLogKey where
 
 import Arkham.Campaigns.TheCircleUndone.Memento
+import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Card.CardCode
 import Arkham.Classes.GameLogger
 import Arkham.Prelude hiding (toLower)
@@ -264,6 +265,8 @@ data CampaignLogKey
   | TheInvestigatorsReturnedToReality
   | TheInvestigatorsNeverEscaped
   | TheInvestigatorsAreStillInTheDreamlands
+  | -- | The Dream-Eaters
+    MemoriesRecovered
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
@@ -343,6 +346,9 @@ instance Recordable CardCode where
 instance Recordable Memento where
   recordableType = RecordableMemento
 
+instance Recordable Memory where
+  recordableType = RecordableMemory
+
 recorded :: forall a. Recordable a => a -> SomeRecorded
 recorded a = SomeRecorded (recordableType @a) (Recorded a)
 
@@ -352,6 +358,7 @@ crossedOut a = SomeRecorded (recordableType @a) (CrossedOut a)
 data RecordableType a where
   RecordableCardCode :: RecordableType CardCode
   RecordableMemento :: RecordableType Memento
+  RecordableMemory :: RecordableType Memory
 
 data SomeRecordableType where
   SomeRecordableType :: RecordableType a -> SomeRecordableType
@@ -368,6 +375,7 @@ instance FromJSON SomeRecordableType where
   parseJSON = withText "RecordableType" $ \case
     "RecordableCardCode" -> pure $ SomeRecordableType RecordableCardCode
     "RecordableMemento" -> pure $ SomeRecordableType RecordableMemento
+    "RecordableMemory" -> pure $ SomeRecordableType RecordableMemory
     other -> fail $ "No such recordable type: " <> unpack other
 
 data SomeRecorded where
@@ -398,3 +406,6 @@ instance FromJSON SomeRecorded where
       SomeRecordableType RecordableMemento -> do
         rVal <- o .: "recordVal"
         pure $ SomeRecorded RecordableMemento rVal
+      SomeRecordableType RecordableMemory -> do
+        rVal <- o .: "recordVal"
+        pure $ SomeRecorded RecordableMemory rVal

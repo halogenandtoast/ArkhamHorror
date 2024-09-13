@@ -20,6 +20,7 @@ import Arkham.Classes.HasQueue as X (runQueueT)
 import Arkham.Classes.Query
 import Arkham.DamageEffect
 import Arkham.Deck (IsDeck (..))
+import Arkham.Deck qualified as Deck
 import Arkham.Discover as X (IsInvestigate (..))
 import Arkham.Discover qualified as Msg
 import Arkham.Effect.Types (Field (..))
@@ -102,6 +103,13 @@ placeLocationCardInGrid
   :: ReverseQueue m => Pos -> CardDef -> m LocationId
 placeLocationCardInGrid pos def = do
   (lid, placement) <- Msg.placeLocationCardInGrid pos def
+  push placement
+  pure lid
+
+placeLocationInGrid
+  :: ReverseQueue m => Pos -> Card -> m LocationId
+placeLocationInGrid pos card = do
+  (lid, placement) <- Msg.placeLocationInGrid pos card
   push placement
   pure lid
 
@@ -1488,3 +1496,8 @@ placeKey target key = push $ Msg.PlaceKey (toTarget target) key
 
 investigatorDefeated :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> m ()
 investigatorDefeated source iid = push $ Msg.InvestigatorDefeated (toSource source) iid
+
+shuffleSetAsideIntoEncounterDeck :: ReverseQueue m => CardMatcher -> m ()
+shuffleSetAsideIntoEncounterDeck matcher = do
+  cards <- getSetAsideCardsMatching matcher
+  push $ ShuffleCardsIntoDeck Deck.EncounterDeck cards

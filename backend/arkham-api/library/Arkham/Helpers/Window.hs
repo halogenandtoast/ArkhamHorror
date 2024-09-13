@@ -237,6 +237,12 @@ getRevealedChaosTokens = \case
   ((windowType -> Window.RevealChaosTokensDuringSkillTest _ _ ts) : _) -> ts
   (_ : rest) -> getRevealedChaosTokens rest
 
+getRevealedLocation :: [Window] -> LocationId
+getRevealedLocation = \case
+  [] -> error "No location revealed"
+  ((windowType -> Window.RevealLocation _ lid) : _) -> lid
+  (_ : rest) -> getRevealedLocation rest
+
 getChaosToken :: HasCallStack => [Window] -> ChaosToken
 getChaosToken = \case
   [] -> error "No chaos token drawn"

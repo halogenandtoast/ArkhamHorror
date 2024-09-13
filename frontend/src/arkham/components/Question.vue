@@ -615,6 +615,9 @@ section {
 
 .intro-text p {
   margin: 10px;
+  &:deep(p) {
+    margin: 10px;
+  }
 }
 
 .status-bar {

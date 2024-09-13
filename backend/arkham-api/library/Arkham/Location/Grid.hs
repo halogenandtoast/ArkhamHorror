@@ -211,9 +211,8 @@ clearGrid (Pos x y) (Grid above center below) =
       Grid (Seq.adjust (setGridRow x Nothing) (Seq.length above - y) above) center below
     EQ -> Grid above (setGridRow x Nothing center) below
 
-isEmpty :: Maybe GridLocation -> Bool
-isEmpty Nothing = True
-isEmpty (Just (GridLocation _ _)) = False
+isEmpty :: Pos -> Grid -> Bool
+isEmpty pos grid = isNothing $ viewGrid pos grid
 
 updatePosition :: Pos -> GridDirection -> Pos
 updatePosition (Pos x y) dir = case dir of
@@ -227,6 +226,9 @@ adjacentPositions pos = map (updatePosition pos) [GridLeft, GridRight, GridUp, G
 
 positionsInDirections :: Pos -> [GridDirection] -> [Pos]
 positionsInDirections pos dirs = map (updatePosition pos) dirs
+
+emptyPositionsInDirections :: Grid -> Pos -> [GridDirection] -> [Pos]
+emptyPositionsInDirections grid pos dirs = filter (`isEmpty` grid) $ positionsInDirections pos dirs
 
 gridLabel :: Pos -> Text
 gridLabel (Pos x y) =

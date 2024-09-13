@@ -19,6 +19,8 @@ const deckImage = computed(() => {
       return imgsrc("cards/05333b.avif");
     case 'CatacombsDeck':
       return imgsrc("cards/03247b.avif");
+    case 'TidalTunnelDeck':
+      return imgsrc("cards/07048b.avif");
     default:
       return imgsrc("back.png");
   }

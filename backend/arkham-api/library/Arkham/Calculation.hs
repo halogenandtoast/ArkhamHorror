@@ -40,6 +40,7 @@ data GameCalculation
   | CurrentAgendaStepCalculation GameCalculation
   | AssetFieldCalculation AssetId (Field Asset Int)
   | InvestigatorFieldCalculation InvestigatorId (Field Investigator Int)
+  | InvestigatorKeyCountCalculation InvestigatorMatcher
   | InvestigatorHandLengthCalculation InvestigatorId
   | EnemyMaybeFieldCalculation EnemyId (Field Enemy (Maybe Int))
   | EnemyMaybeGameValueFieldCalculation EnemyId (Field Enemy (Maybe GameValue))

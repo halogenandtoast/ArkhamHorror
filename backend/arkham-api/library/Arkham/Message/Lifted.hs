@@ -1647,3 +1647,6 @@ healAllDamage source target = push $ Msg.HealAllDamage (toTarget target) (toSour
 
 placeKey :: (ReverseQueue m, Targetable target) => target -> ArkhamKey -> m ()
 placeKey target key = push $ Msg.PlaceKey (toTarget target) key
+
+investigatorDefeated :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> m ()
+investigatorDefeated source iid = push $ Msg.InvestigatorDefeated (toSource source) iid

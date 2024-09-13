@@ -65,6 +65,7 @@ import Arkham.Helpers.Tarot
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..), Investigator, InvestigatorAttrs (..))
+import Arkham.Key
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Types hiding (location)
 import Arkham.Matcher qualified as Matcher
@@ -1056,6 +1057,13 @@ passesCriteria
   -> Criterion
   -> m Bool
 passesCriteria iid mcard source' requestor windows' = \case
+  Criteria.KeyIsSetAside key -> (elem key) <$> scenarioField ScenarioSetAsideKeys
+  Criteria.UnrevealedKeyIsSetAside -> do
+    let
+      unrevealedKey = \case
+        UnrevealedKey _ -> True
+        _ -> False
+    any unrevealedKey . setToList <$> scenarioField ScenarioSetAsideKeys
   Criteria.TabooCriteria tabooList cIf cElse -> do
     mtabooList <- field InvestigatorTaboo iid
     if maybe False (>= tabooList) mtabooList

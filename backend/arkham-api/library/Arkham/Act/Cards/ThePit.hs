@@ -4,12 +4,13 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
+import Arkham.Direction
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Grid
 import Arkham.Matcher
-import Arkham.Scenario.Types (Field (..))
+import Arkham.Scenario.Deck
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype ThePit = ThePit ActAttrs
@@ -28,15 +29,15 @@ instance RunMessage ThePit where
         $ oneOf [cardIs Treacheries.blindsense, cardIs Treacheries.fromTheDepths]
 
       tidalTunnelDeck <- shuffleM =<< getSetAsideCardsMatching "Tidal Tunnel"
-      revealedLocations <- select RevealedLocation
-      grid <- scenarioField ScenarioGrid
+      setScenarioDeck TidalTunnelDeck tidalTunnelDeck
+      grid <- getGrid
 
       let
         locationPositions lid = case findInGrid lid grid of
           Nothing -> []
-          Just (Pos x y) -> filter (\pos -> isNothing $ viewGrid pos grid) [Pos x (y - 1), Pos (x - 1) y, Pos (x + 1) y]
+          Just pos -> emptyPositionsInDirections grid pos [GridDown, GridLeft, GridRight]
 
-      let positions = nub $ concatMap locationPositions revealedLocations
+      positions <- nub . concatMap locationPositions <$> select RevealedLocation
       for_ (zip positions tidalTunnelDeck) (uncurry placeLocationInGrid)
 
       story $ i18nWithTitle "theInnsmouthConspiracy.thePitOfDespair.flashback1"

@@ -61,6 +61,7 @@ import Arkham.Prelude hiding (pred)
 import Arkham.Projection
 import Arkham.Query
 import Arkham.Queue
+import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.SkillType qualified as SkillType
@@ -1522,3 +1523,9 @@ shuffleSetAsideIntoEncounterDeck :: ReverseQueue m => CardMatcher -> m ()
 shuffleSetAsideIntoEncounterDeck matcher = do
   cards <- getSetAsideCardsMatching matcher
   push $ ShuffleCardsIntoDeck Deck.EncounterDeck cards
+
+setScenarioDeck :: ReverseQueue m => ScenarioDeckKey -> [Card] -> m ()
+setScenarioDeck key cards = push $ Msg.SetScenarioDeck key cards
+
+removeChaosToken :: ReverseQueue m => ChaosTokenFace -> m ()
+removeChaosToken token = push $ Msg.RemoveChaosToken token

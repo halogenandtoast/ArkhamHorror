@@ -974,6 +974,8 @@ getInvestigatorsMatching matcher = do
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
     InvestigatorWithKey key -> flip filterM as $ \i ->
       pure $ key `elem` investigatorKeys (toAttrs i)
+    InvestigatorWithAnyKey -> flip filterM as $ \i ->
+      pure $ notNull $ investigatorKeys (toAttrs i)
     DistanceFromRoundStart valueMatcher -> flip filterM as $ \i -> do
       fromMaybe False <$> runMaybeT do
         startLocation <- hoistMaybe $ attr investigatorBeganRoundAt i

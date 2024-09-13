@@ -15,6 +15,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.PlayerCard
 import Arkham.Projection
@@ -161,3 +162,6 @@ toEncounterDeckModifier _ = Nothing
 encounterDeckLensFromKey :: ScenarioEncounterDeckKey -> Lens' ScenarioAttrs (Deck EncounterCard)
 encounterDeckLensFromKey RegularEncounterDeck = encounterDeckL
 encounterDeckLensFromKey k = encounterDecksL . at k . non (Deck [], []) . _1
+
+getGrid :: HasGame m => m Grid
+getGrid = scenarioField ScenarioGrid

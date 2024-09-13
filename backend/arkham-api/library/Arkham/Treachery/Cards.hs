@@ -182,6 +182,7 @@ allEncounterTreacheryCards =
       , betweenWorlds
       , beyondTheVeil
       , blackStarsRise
+      , blindsense
       , bloodOnYourHands
       , brokenRails
       , burdensOfThePast
@@ -213,6 +214,7 @@ allEncounterTreacheryCards =
       , deathApproaches
       , deceptiveMemories
       , deepDark
+      , deepOneAssault
       , deeperSlumber
       , descentIntoMadness
       , dholeTunnel
@@ -241,6 +243,8 @@ allEncounterTreacheryCards =
       , finalMistake
       , fineDining
       , forcedIntoHiding
+      , fracturedConsciousness
+      , fromTheDepths
       , frozenInFear
       , frozenInFearAPhantomOfTruth
       , giftOfMadnessMisery
@@ -276,6 +280,7 @@ allEncounterTreacheryCards =
       , lostInVenice
       , lowOnSupplies
       , lunarPatrol
+      , macabreMemento
       , markOfTheOrder
       , markedByTheSign
       , markedForDeath
@@ -283,6 +288,7 @@ allEncounterTreacheryCards =
       , maskedHorrors
       , massHysteria
       , meddlesomeFamiliar
+      , memoryOfOblivion
       , mesmerize
       , morbidAwareness
       , myriadForms
@@ -319,6 +325,8 @@ allEncounterTreacheryCards =
       , restlessJourneyHardship
       , restlessJourneyLies
       , ripplesOnTheSurface
+      , riptide
+      , risingTides
       , ritesHowled
       , rottingRemains
       , rottingRemainsBloodOnTheAltar
@@ -376,6 +384,7 @@ allEncounterTreacheryCards =
       , ultimateChaos
       , umordhothsHunger
       , umordhothsWrath
+      , undertow
       , unexpectedAmbush
       , unhallowedCountry
       , vastExpanse
@@ -2068,6 +2077,60 @@ dayOfReckoning :: CardDef
 dayOfReckoning =
   (basicWeakness "07040" "Day of Reckoning")
     { cdCardTraits = singleton Endtimes
+    }
+
+blindsense :: CardDef
+blindsense =
+  (treachery "07054" "Blindsense" ThePitOfDespair 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+fromTheDepths :: CardDef
+fromTheDepths =
+  (treachery "07055" "From the Depths" ThePitOfDespair 3)
+    { cdCardTraits = singleton Scheme
+    }
+
+deepOneAssault :: CardDef
+deepOneAssault =
+  (treachery "07090" "Deep One Assault" CreaturesOfTheDeep 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+undertow :: CardDef
+undertow =
+  (treachery "07091" "Undertow" RisingTide 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+risingTides :: CardDef
+risingTides =
+  (treachery "07092" "Rising Tides" RisingTide 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+riptide :: CardDef
+riptide =
+  (treachery "07093" "Riptide" RisingTide 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+macabreMemento :: CardDef
+macabreMemento =
+  (treachery "07096" "Macabre Memento" ShatteredMemories 2)
+    { cdCardTraits = singleton Terror
+    }
+
+fracturedConsciousness :: CardDef
+fracturedConsciousness =
+  (treachery "07097" "Fractured Consciousness" ShatteredMemories 2)
+    { cdCardTraits = singleton Terror
+    }
+
+memoryOfOblivion :: CardDef
+memoryOfOblivion =
+  (treachery "07098" "Memory of Oblivion" ShatteredMemories 2)
+    { cdCardTraits = singleton Terror
     }
 
 theHarbinger :: CardDef

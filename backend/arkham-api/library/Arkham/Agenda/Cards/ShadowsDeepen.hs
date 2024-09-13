@@ -53,10 +53,10 @@ instance RunMessage ShadowsDeepen where
               [FromEncounterDeck, FromEncounterDiscard, FromVoid]
               (cardIs Enemies.huntingHorror)
       pure a
-    FoundEnemyInVoid _ target eid | isTarget attrs target -> do
+    FoundEnemyInOutOfPlay VoidZone _ target eid | isTarget attrs target -> do
       lid <- selectJust $ LocationWithTitle "Museum Halls"
       pushAll
-        [ EnemySpawnFromVoid Nothing lid eid
+        [ EnemySpawnFromOutOfPlay VoidZone Nothing lid eid
         , advanceAgendaDeck attrs
         ]
       pure a

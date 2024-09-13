@@ -267,6 +267,10 @@ allActs =
       SomeActCard journeyAcrossTheBridge
     , SomeActCard theWeaverOfTheCosmos
     , SomeActCard theSchemesDemise
+    , -- The Innsmouth Conspiracy
+      --- The Pit of Despair
+      SomeActCard thePit
+    , SomeActCard theEscape
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

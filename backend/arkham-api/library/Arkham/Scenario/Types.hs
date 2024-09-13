@@ -22,6 +22,7 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Key
 import Arkham.Layout
+import Arkham.Location.Grid
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Scenario.Deck as X
@@ -51,6 +52,7 @@ class
 
 data instance Field Scenario :: Type -> Type where
   ScenarioCardsUnderActDeck :: Field Scenario [Card]
+  ScenarioCardsNextToActDeck :: Field Scenario [Card]
   ScenarioCardsUnderAgendaDeck :: Field Scenario [Card]
   ScenarioCardsUnderScenarioReference :: Field Scenario [Card]
   ScenarioDiscard :: Field Scenario [EncounterCard]
@@ -95,6 +97,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioCompletedAgendaStack :: IntMap [Card]
   , scenarioCompletedActStack :: IntMap [Card]
   , scenarioLocationLayout :: [GridTemplateRow]
+  , scenarioGrid :: Grid
   , scenarioDecks :: Map ScenarioDeckKey [Card]
   , scenarioLog :: Set ScenarioLogKey
   , scenarioCounts :: Map ScenarioCountKey Int
@@ -199,6 +202,7 @@ scenario f cardCode name difficulty layout =
       , scenarioCardsNextToActDeck = mempty
       , scenarioCardsNextToAgendaDeck = mempty
       , scenarioLocationLayout = layout
+      , scenarioGrid = initGrid
       , scenarioDecks = mempty
       , scenarioLog = mempty
       , scenarioCounts = mempty
@@ -303,6 +307,7 @@ instance FromJSON ScenarioAttrs where
     scenarioCompletedAgendaStack <- o .: "completedAgendaStack"
     scenarioCompletedActStack <- o .: "completedActStack"
     scenarioLocationLayout <- o .: "locationLayout"
+    scenarioGrid <- o .:? "grid" .!= initGrid
     scenarioDecks <- o .: "decks"
     scenarioLog <- o .: "log"
     scenarioCounts <- o .: "counts"

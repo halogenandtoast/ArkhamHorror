@@ -58,6 +58,8 @@ import Arkham.Investigate.Types
 import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Key
 import Arkham.Layout
+import Arkham.Location.FloodLevel
+import Arkham.Location.Grid
 import {-# SOURCE #-} Arkham.Location.Types
 import Arkham.Matcher hiding (EnemyDefeated, InvestigatorDefeated, RevealChaosToken)
 import Arkham.Movement
@@ -329,6 +331,9 @@ instance AndThen (CardDraw Message) where
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | SetGameState GameState
+  | IncreaseFloodLevel LocationId
+  | DecreaseFloodLevel LocationId
+  | SetFloodLevel LocationId FloodLevel
   | Devour InvestigatorId
   | Devoured InvestigatorId Card
   | MoveWithSkillTest Message
@@ -614,7 +619,7 @@ data Message
   | EnemySpawnAtLocationMatching (Maybe InvestigatorId) LocationMatcher EnemyId
   | EnemySpawnEngagedWithPrey EnemyId
   | EnemySpawnEngagedWith EnemyId InvestigatorMatcher
-  | EnemySpawnFromVoid (Maybe InvestigatorId) LocationId EnemyId
+  | EnemySpawnFromOutOfPlay OutOfPlayZone (Maybe InvestigatorId) LocationId EnemyId
   | EngageEnemy InvestigatorId EnemyId (Maybe Target) Bool
   | EvadeEnemy SkillTestId InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
   | Exhaust Target
@@ -633,7 +638,7 @@ data Message
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
   | FoundEncounterCard InvestigatorId Target EncounterCard
   | FoundEncounterCardFrom InvestigatorId Target EncounterCardSource EncounterCard
-  | FoundEnemyInVoid InvestigatorId Target EnemyId
+  | FoundEnemyInOutOfPlay OutOfPlayZone InvestigatorId Target EnemyId
   | GainActions InvestigatorId Source Int
   | LoseAdditionalAction InvestigatorId AdditionalAction
   | UseEffectAction InvestigatorId EffectId [Window]
@@ -775,7 +780,7 @@ data Message
   | FlipDoom Target Int
   | PlaceAdditionalDamage Target Source Int Int
   | PlaceDoomOnAgenda Int CanAdvance
-  | PlaceEnemyInVoid EnemyId
+  | PlaceEnemyOutOfPlay OutOfPlayZone EnemyId
   | PlaceEnemy EnemyId Placement
   | PlaceLocation LocationId Card
   | PlaceLocationMatching CardMatcher
@@ -1034,6 +1039,7 @@ data Message
   | RemoveBreaches Target Int
   | RunCosmos InvestigatorId LocationId [Message]
   | PlaceCosmos InvestigatorId LocationId (CosmosLocation Card LocationId)
+  | PlaceGrid GridLocation
   | LoadTarotDeck
   | PerformTarotReading
   | PerformReading TarotReading

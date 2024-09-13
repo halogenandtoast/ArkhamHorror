@@ -69,6 +69,8 @@ const cardRowTitle = ref("")
 const previousRotation = ref(0)
 const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
 
+const locationsZoom = ref(1);
+
 // callbacks
 onMounted(() => {
   if(props.scenario.id === "c06333") {
@@ -114,6 +116,7 @@ const locationStyles = computed(() => {
     display: 'grid',
     gap: '20px',
     'grid-template-areas': cleaned.map((row) => `"${row}"`).join(' '),
+    zoom: locationsZoom.value
   }
 })
 const scenarioDeckStyles = computed(() => {
@@ -529,6 +532,7 @@ const tarotCardAbility = (card: TarotCard) => {
       <Connections :game="game" :playerId="playerId" />
 
       <div class="location-cards-container">
+        <input v-model="locationsZoom" type="range" min="1" max="3" step="0.5" class="zoomer" />
         <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">
           <Location
             v-for="location in locations"
@@ -701,6 +705,7 @@ const tarotCardAbility = (card: TarotCard) => {
   overflow-y: auto;
   padding-top: 32px;
   padding-bottom: 32px;
+  position: relative;
 }
 
 .portrait {
@@ -1032,5 +1037,17 @@ margin: 20px !important;
   &:hover {
     z-index: 100;
   }
+}
+
+.keys {
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+}
+
+.zoomer {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
 }
 </style>

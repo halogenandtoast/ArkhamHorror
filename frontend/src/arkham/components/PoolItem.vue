@@ -41,9 +41,6 @@ const image = computed(() => {
   img {
     width: 30px;
   }
-  height: 35px;
-  width: 35px;
-  border-radius: 35px;
 }
 
 .poolItem {
@@ -54,6 +51,9 @@ const image = computed(() => {
   color: black;
   font-weight: 900;
   font-size: 1.7em;
+  img {
+    filter: drop-shadow(1px 1px 2px rgb(0, 0, 0));
+  }
   & > * {
     grid-column: 1 / -1;
     grid-row: 1 / -1;
@@ -67,11 +67,9 @@ const image = computed(() => {
     font-family: "Arkham";
     display: flex;
     position: relative;
-    background: rgba(255,255,255,0.5);
-    border-radius: 20px;
+    color: #F0F0F0;
+    text-shadow: 1px 0 0 rgba(0, 0, 0, 0.8), 0 -1px 0 rgba(0, 0, 0, 0.8), 0 1px 0 rgba(0, 0, 0, 0.8), -1px 0 0 rgba(0, 0, 0, 0.8);
     font-size: 0.8em;
-    width: 1.05em;
-    height: 1.05em;
     align-items: center;
     justify-content: center;
   }

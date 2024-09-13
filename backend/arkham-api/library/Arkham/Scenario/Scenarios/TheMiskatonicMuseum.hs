@@ -220,9 +220,9 @@ instance RunMessage TheMiskatonicMuseum where
     FoundEncounterCard iid target ec | isTarget attrs target -> do
       lid <- getJustLocation iid
       s <$ push (SpawnEnemyAt (EncounterCard ec) lid)
-    FoundEnemyInVoid iid target eid | isTarget attrs target -> do
+    FoundEnemyInOutOfPlay VoidZone iid target eid | isTarget attrs target -> do
       lid <- getJustLocation iid
-      s <$ push (EnemySpawnFromVoid Nothing lid eid)
+      s <$ push (EnemySpawnFromOutOfPlay VoidZone Nothing lid eid)
     ScenarioResolution NoResolution -> do
       players <- allPlayers
       xp <- getXp

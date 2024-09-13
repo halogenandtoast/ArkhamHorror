@@ -18,6 +18,14 @@ export const breachStatusDecoder: JsonDecoder.Decoder<BreachStatus> = JsonDecode
   JsonDecoder.object<BreachStatus>({ tag: JsonDecoder.isExactly("Incursion"), contents: JsonDecoder.number }, 'Incursion'),
 ], 'BreachStatus');
 
+export type FloodLevel = "Unflooded" | "PartiallyFlooded" | "FullyFlooded"
+
+export const floodLevelDecoder: JsonDecoder.Decoder<FloodLevel> = JsonDecoder.oneOf<FloodLevel>([
+  JsonDecoder.isExactly('Unflooded'),
+  JsonDecoder.isExactly('PartiallyFlooded'),
+  JsonDecoder.isExactly('FullyFlooded'),
+], 'FloodLevel');
+
 export type Location = {
   cardCode: string;
   label: string;
@@ -37,6 +45,7 @@ export type Location = {
   inFrontOf: string | null;
   brazier: Brazier | null;
   breaches: BreachStatus | null;
+  floodLevel: FloodLevel | null;
   keys: ArkhamKey[];
 }
 
@@ -60,6 +69,7 @@ export const locationDecoder = JsonDecoder.object<Location>(
     inFrontOf: JsonDecoder.nullable(JsonDecoder.string),
     brazier: JsonDecoder.nullable(brazierDecoder),
     breaches: JsonDecoder.nullable(breachStatusDecoder),
+    floodLevel: JsonDecoder.nullable(floodLevelDecoder),
     keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
   },
   'Location',

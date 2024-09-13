@@ -594,6 +594,18 @@ allLocations =
     , SomeLocationCard theGreatWebPrisonOfCocoons
     , SomeLocationCard theGreatWebVastWeb
     , SomeLocationCard theGreatWebWebWovenIsland
+    , -- The Innsmouth Conspiracy
+      --- The Pit of Despair
+      SomeLocationCard unfamiliarChamber
+    , SomeLocationCard boneRiddenPit
+    , SomeLocationCard fishGraveyard
+    , SomeLocationCard altarToDagon
+    , SomeLocationCard idolChamber
+    , SomeLocationCard sealedExit
+    , --- Flooded Caverns
+      SomeLocationCard underwaterCavern
+    , SomeLocationCard tidalPool
+    , SomeLocationCard undergroundRiver
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

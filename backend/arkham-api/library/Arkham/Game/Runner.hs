@@ -1563,7 +1563,7 @@ runGameMessage msg g = case msg of
       & (entitiesL . eventsL %~ deleteMap eid)
       & (removedFromPlayL %~ (card :))
   RemovedFromGame card -> pure $ g & removedFromPlayL %~ (card :)
-  PlaceEnemyInVoid eid -> do
+  PlaceEnemyOutOfPlay _oZone eid -> do
     let
       isDiscardEnemy = \case
         Discard _ _ (EnemyTarget eid') -> eid == eid'
@@ -1571,14 +1571,14 @@ runGameMessage msg g = case msg of
         _ -> False
     withQueue_ $ filter (not . isDiscardEnemy)
     pure g
-  EnemySpawnFromVoid miid lid eid -> do
+  EnemySpawnFromOutOfPlay oZone miid lid eid -> do
     pushAll (resolve $ EnemySpawn miid lid eid)
     enemy <- getEnemy eid
     pure
       $ g
       & (activeCardL .~ Nothing)
       & (focusedCardsL .~ mempty)
-      & (outOfPlayEntitiesL . ix VoidZone . enemiesL %~ deleteMap eid)
+      & (outOfPlayEntitiesL . ix oZone . enemiesL %~ deleteMap eid)
       & (entitiesL . enemiesL %~ insertMap eid enemy)
   Discard _ _ (SearchedCardTarget cardId) -> do
     investigator' <- getActiveInvestigator

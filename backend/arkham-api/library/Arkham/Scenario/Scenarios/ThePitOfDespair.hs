@@ -1,0 +1,109 @@
+module Arkham.Scenario.Scenarios.ThePitOfDespair (ThePitOfDespair (..), thePitOfDespair) where
+
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.ChaosToken
+import Arkham.Difficulty
+import Arkham.EncounterSet qualified as Set
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Investigator
+import Arkham.Helpers.Scenario
+import Arkham.Investigator.Projection ()
+import Arkham.Key
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.FloodLevel
+import Arkham.Location.Grid
+import Arkham.Location.Types (Field (..))
+import Arkham.Matcher
+import Arkham.Projection
+import Arkham.Scenario.Import.Lifted
+import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Zone
+
+newtype ThePitOfDespair = ThePitOfDespair ScenarioAttrs
+  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+thePitOfDespair :: Difficulty -> ThePitOfDespair
+thePitOfDespair difficulty = scenario ThePitOfDespair "07041" "The Pit of Despair" difficulty []
+
+instance HasChaosTokenValue ThePitOfDespair where
+  getChaosTokenValue iid tokenFace (ThePitOfDespair attrs) = case tokenFace of
+    Skull -> do
+      floodLevel <-
+        maybe (pure Unflooded) (fieldWithDefault Unflooded LocationFloodLevel) =<< getMaybeLocation iid
+      pure $ case floodLevel of
+        FullyFlooded -> toChaosTokenValue attrs Skull 3 4
+        PartiallyFlooded -> toChaosTokenValue attrs Skull 2 3
+        _ -> toChaosTokenValue attrs Skull 1 2
+    Cultist -> pure $ ChaosTokenValue Cultist (NegativeModifier 2)
+    Tablet -> pure $ ChaosTokenValue Tablet (NegativeModifier 2)
+    ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 3)
+    otherFace -> getChaosTokenValue iid otherFace attrs
+
+instance RunMessage ThePitOfDespair where
+  runMessage msg s@(ThePitOfDespair attrs) = runQueueT $ case msg of
+    Setup -> runScenarioSetup ThePitOfDespair attrs do
+      gather Set.ThePitOfDespair
+      gather Set.CreaturesOfTheDeep
+      gather Set.FloodedCaverns
+      gather Set.RisingTide
+      gather Set.ShatteredMemories
+      gather Set.AgentsOfCthulhu
+      gather Set.Rats
+
+      setAgendaDeck [Agendas.awakening, Agendas.theWaterRises, Agendas.sacrificeForTheDeep]
+      setActDeck [Acts.thePit, Acts.theEscape]
+
+      startAt =<< placeInGrid (Pos 0 0) Locations.unfamiliarChamber
+      setAside [Locations.idolChamber, Locations.altarToDagon, Locations.sealedExit]
+
+      randomizedKeys <- shuffleM $ map UnrevealedKey [RedKey, YellowKey, PurpleKey]
+      setAsideKeys $ BlueKey : GreenKey : randomizedKeys
+
+      (inPlayTidalTunnels, setAsideTidalTunnels) <-
+        splitAt 3
+          <$> shuffleM
+            [ Locations.boneRiddenPit
+            , Locations.fishGraveyard
+            , Locations.underwaterCavern
+            , Locations.underwaterCavern
+            , Locations.tidalPool
+            , Locations.tidalPool
+            , Locations.undergroundRiver
+            , Locations.undergroundRiver
+            ]
+      setAside setAsideTidalTunnels
+      for_ (zip [Pos (-1) 0, Pos 1 0, Pos 0 (-1)] inPlayTidalTunnels) (uncurry placeInGrid)
+
+      setAside
+        [ Enemies.theAmalgam
+        , Treacheries.blindsense
+        , Treacheries.blindsense
+        , Treacheries.fromTheDepths
+        , Treacheries.fromTheDepths
+        , Treacheries.fromTheDepths
+        ]
+    ResolveChaosToken _ face iid -> do
+      when (isHardExpert attrs) do
+        case face of
+          Cultist -> whenAny (locationWithInvestigator iid <> FloodedLocation) do
+            assignDamage iid Cultist 1
+          Tablet -> whenM (notNull <$> iid.keys) $ assignHorror iid Cultist 1
+          ElderThing ->
+            selectOne (OutOfPlayEnemy TheDepths $ enemyIs Enemies.theAmalgam) >>= traverse_ \eid -> do
+              withLocationOf iid \lid -> push $ EnemySpawnFromOutOfPlay TheDepths (Just iid) lid eid
+          _ -> pure ()
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      when (isEasyStandard attrs) do
+        case token.face of
+          Cultist -> whenAny (locationWithInvestigator iid <> FloodedLocation) do
+            assignDamage iid Cultist 1
+          Tablet -> whenM (notNull <$> iid.keys) $ assignHorror iid Cultist 1
+          ElderThing ->
+            selectOne (OutOfPlayEnemy TheDepths $ enemyIs Enemies.theAmalgam) >>= traverse_ \eid -> do
+              withLocationOf iid \lid -> push $ EnemySpawnFromOutOfPlay TheDepths (Just iid) lid eid
+          _ -> pure ()
+      pure s
+    _ -> ThePitOfDespair <$> liftRunMessage msg attrs

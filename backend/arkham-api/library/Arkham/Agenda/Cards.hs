@@ -29,6 +29,7 @@ allAgendaCards =
       , aTrailOfTwists
       , agentsOfTheOuterGods
       , allIsOne
+      , awakening
       , beckoningForPower
       , behindTheCurtain
       , besetByMonsters
@@ -89,6 +90,7 @@ allAgendaCards =
       , returnToPredatorOrPrey
       , riseOfTheGhouls
       , rollingBackwards
+      , sacrificeForTheDeep
       , secretsBetterLeftHidden
       , settingSun
       , silentStirring
@@ -155,6 +157,7 @@ allAgendaCards =
       , theTrueCulpritV8
       , theTrueCulpritV9
       , theTruthIsHidden
+      , theWaterRises
       , theWitchLight
       , theyAreUponYou
       , theyreGettingOut
@@ -554,6 +557,15 @@ aTrailOfTwists = agenda "06335" "A Trail of Twists" 2 WeaverOfTheCosmos
 
 realitiesInterwoven :: CardDef
 realitiesInterwoven = agenda "06336" "Realities Interwoven" 3 WeaverOfTheCosmos
+
+awakening :: CardDef
+awakening = agenda "07042" "Awakening" 1 ThePitOfDespair
+
+theWaterRises :: CardDef
+theWaterRises = agenda "07043" "The Water Rises" 2 ThePitOfDespair
+
+sacrificeForTheDeep :: CardDef
+sacrificeForTheDeep = agenda "07044" "Sacrifice for the Deep" 3 ThePitOfDespair
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

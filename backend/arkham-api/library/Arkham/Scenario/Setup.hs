@@ -11,6 +11,8 @@ import Arkham.Helpers
 import Arkham.Helpers.Deck
 import Arkham.Helpers.EncounterSet
 import Arkham.Id
+import Arkham.Key
+import Arkham.Location.Grid
 import Arkham.Message
 import Arkham.Message.Lifted
 import Arkham.Prelude hiding ((.=))
@@ -90,6 +92,10 @@ gatherOneOf
   :: (SampleOneOf as, Sampled as ~ Set.EncounterSet, CardGen m) => as -> ScenarioBuilderT m ()
 gatherOneOf = sampleOneOf >=> gather
 
+setAsideKeys :: ReverseQueue m => [ArkhamKey] -> ScenarioBuilderT m ()
+setAsideKeys ks = do
+  setAsideKeysL .= setFromList ks
+
 setAside :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
 setAside defs = do
   setAsideCards defs
@@ -99,6 +105,11 @@ place :: ReverseQueue m => CardDef -> ScenarioBuilderT m LocationId
 place def = do
   encounterDeckL %= flip removeEachFromDeck [def]
   placeLocationCard def
+
+placeInGrid :: ReverseQueue m => Pos -> CardDef -> ScenarioBuilderT m LocationId
+placeInGrid pos def = do
+  encounterDeckL %= flip removeEachFromDeck [def]
+  placeLocationCardInGrid pos def
 
 place_ :: ReverseQueue m => CardDef -> ScenarioBuilderT m ()
 place_ = void . place

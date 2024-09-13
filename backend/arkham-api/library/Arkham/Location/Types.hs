@@ -25,6 +25,7 @@ import Arkham.Location.Base as X
 import Arkham.Location.Brazier
 import Arkham.Location.BreachStatus
 import Arkham.Location.Cards
+import Arkham.Location.FloodLevel
 import Arkham.LocationSymbol
 import Arkham.Matcher (LocationMatcher (..))
 import Arkham.Message
@@ -73,6 +74,7 @@ data instance Field Location :: Type -> Type where
   LocationConnectsTo :: Field Location (Set Direction)
   LocationDamage :: Field Location Int
   LocationDoom :: Field Location Int
+  LocationFloodLevel :: Field Location (Maybe FloodLevel)
   LocationHorror :: Field Location Int
   LocationInFrontOf :: Field Location (Maybe InvestigatorId)
   LocationInvestigateSkill :: Field Location SkillType
@@ -114,6 +116,7 @@ fieldLens = \case
   LocationInFrontOf -> inFrontOfL
   LocationCardId -> cardIdL
   LocationBrazier -> brazierL
+  LocationFloodLevel -> floodLevelL
   LocationBreaches -> breachesL
   LocationLabel -> labelL
   LocationTraits -> virtual
@@ -164,6 +167,7 @@ instance FromJSON (SomeField Location) where
     "LocationConnectsTo" -> pure $ SomeField LocationConnectsTo
     "LocationDamage" -> pure $ SomeField LocationDamage
     "LocationDoom" -> pure $ SomeField LocationDoom
+    "LocationFloodLevel" -> pure $ SomeField LocationFloodLevel
     "LocationHorror" -> pure $ SomeField LocationHorror
     "LocationInFrontOf" -> pure $ SomeField LocationInFrontOf
     "LocationInvestigateSkill" -> pure $ SomeField LocationInvestigateSkill
@@ -284,6 +288,7 @@ locationWith f def shroud' revealClues g =
             , locationKeys = mempty
             , locationBrazier = Nothing
             , locationBreaches = Nothing
+            , locationFloodLevel = Nothing
             }
     }
 

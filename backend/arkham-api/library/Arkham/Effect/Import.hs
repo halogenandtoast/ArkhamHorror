@@ -15,10 +15,11 @@ import Arkham.EffectMetadata as X
 import Arkham.Classes.Entity (Entity, EntityAttrs, toAttrs)
 import Arkham.Classes.HasQueue (push)
 import Arkham.Effect.Types qualified as Msg
+import Arkham.Id
 import Arkham.Message.Lifted (ReverseQueue)
 import Arkham.Prelude
 
-disable :: ReverseQueue m => EffectAttrs -> m ()
+disable :: (ReverseQueue m, AsId a, IdOf a ~ EffectId) => a -> m ()
 disable = push . Msg.disable
 
 disableReturn :: (ReverseQueue m, Entity a, EntityAttrs a ~ EffectAttrs) => a -> m a

@@ -17,6 +17,7 @@ import Arkham.Customization
 import Arkham.Direction (GridDirection)
 import Arkham.GameValue (GameValue (Static))
 import Arkham.History.Types (HistoryType)
+import Arkham.Key
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Scenario.Deck
@@ -217,6 +218,8 @@ data Criterion
   | HasNRemainingCurseTokens ValueMatcher
   | HasMoreCurseThanBlessTokens
   | OnlySources SourceMatcher
+  | KeyIsSetAside ArkhamKey
+  | UnrevealedKeyIsSetAside
   | -- Special Criterion
     AtLeastNCriteriaMet Int [Criterion]
   | Criteria [Criterion]

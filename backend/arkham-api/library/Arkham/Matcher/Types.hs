@@ -144,6 +144,7 @@ data InvestigatorMatcher
   | InvestigatorWithMostCardsInPlayArea
   | InvestigatorWithClass ClassSymbol
   | InvestigatorWithKey ArkhamKey
+  | InvestigatorWithAnyKey
   | InvestigatorWithBondedCard CardMatcher
   | InvestigatorIfThen InvestigatorMatcher InvestigatorMatcher InvestigatorMatcher
   | InvestigatorCanTarget Target

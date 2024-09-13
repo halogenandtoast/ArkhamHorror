@@ -17,7 +17,10 @@ unfamiliarChamber = locationWith UnfamiliarChamber Cards.unfamiliarChamber 3 (Pe
 
 instance HasAbilities UnfamiliarChamber where
   getAbilities (UnfamiliarChamber attrs) =
-    extendRevealed attrs [mkAbility attrs 1 $ forced $ RevealLocation #after Anyone (be attrs)]
+    extendRevealed
+      attrs
+      [ restrictedAbility attrs 1 UnrevealedKeyIsSetAside $ forced $ RevealLocation #after Anyone (be attrs)
+      ]
 
 instance RunMessage UnfamiliarChamber where
   runMessage msg l@(UnfamiliarChamber attrs) = runQueueT $ case msg of

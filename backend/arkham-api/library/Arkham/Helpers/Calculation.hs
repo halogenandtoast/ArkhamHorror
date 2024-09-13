@@ -58,6 +58,7 @@ calculate = go
     AssetFieldCalculation aid fld -> field fld aid
     InvestigatorFieldCalculation iid fld -> field fld iid
     InvestigatorHandLengthCalculation iid -> fieldMap InvestigatorHand length iid
+    InvestigatorKeyCountCalculation matcher -> length <$> selectAgg id InvestigatorKeys matcher
     EnemyMaybeFieldCalculation eid fld -> fromMaybe 0 . join <$> fieldMay fld eid
     VictoryDisplayCountCalculation mtchr -> selectCount $ VictoryDisplayCardMatch mtchr
     EnemyMaybeGameValueFieldCalculation eid fld -> maybe (error "missing maybe field") getGameValue =<< field fld eid

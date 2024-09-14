@@ -1385,6 +1385,7 @@ instance RunMessage EnemyAttrs where
         else do
           case token of
             Clue -> pushAll $ windows [Window.PlacedClues source (toTarget a) n]
+            Damage -> push $ CheckDefeated source (toTarget a)
             _ -> pure ()
           pure $ a & tokensL %~ addTokens token n
     PlaceKey (isTarget a -> True) k -> do
@@ -1395,6 +1396,8 @@ instance RunMessage EnemyAttrs where
       pure $ a & tokensL %~ flipClues n
     FlipDoom target n | isTarget a target -> do
       pure $ a & tokensL %~ flipDoom n
+    ClearTokens target | isTarget a target -> do
+      pure $ a & tokensL .~ mempty
     PlaceEnemy eid placement | eid == enemyId -> do
       case placement of
         AtLocation _ -> push $ EnemyCheckEngagement eid

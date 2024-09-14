@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import Draggable from '@/components/Draggable.vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useDebug } from '@/arkham/debug';
-import { TokenType } from '@/arkham/types/Token';
+import { TokenType, Token } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
 import type { Game } from '@/arkham/types/Game';
 import PoolItem from '@/arkham/components/PoolItem.vue';
@@ -15,7 +15,12 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{ close: [] }>()
+const placeTokens = ref(false);
+const placeTokenType = ref<Token>("Damage");
+const tokenTypes = Object.values(TokenType);
 
+const isNumber = (value: unknown): value is number => typeof value === 'number';
+const anyTokens = computed(() => Object.values(props.enemy.tokens).some(t => isNumber(t) && t > 0))
 const isTrueForm = computed(() => {
   const { cardCode } = props.enemy
   return cardCode === 'cxnyarlathotep'
@@ -99,10 +104,19 @@ const hasPool = computed(() => {
           </div>
         </div>
       </div>
-      <div class="buttons">
+      <div v-if="placeTokens" class="buttons">
+        <select v-model="placeTokenType">
+          <option v-for="token in tokenTypes" :key="token" :value="token">{{ token }}</option>
+        </select>
+        <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{ tag: 'GameSource' }, { tag: 'EnemyTarget', contents: id}, placeTokenType, 1]})">Place</button>
+        <button @click="placeTokens = false">Back</button>
+      </div>
+      <div v-else class="buttons">
         <button @click="debug.send(game.id, {tag: 'DefeatEnemy', contents: [id, investigatorId, {tag: 'InvestigatorSource', contents:investigatorId}]})">Defeat</button>
         <button @click="debug.send(game.id, {tag: 'EnemyEvaded', contents: [investigatorId, id]})">Evade</button>
         <button @click="debug.send(game.id, {tag: 'EnemyDamage', contents: [id, {damageAssignmentSource: {tag: 'InvestigatorSource', contents:investigatorId}, damageAssignmentAmount: 1, damageAssignmentDirect: true, damageAssignmentDelayed: false, damageAssignmentDamageEffect: 'NonAttackDamageEffect'}]})">Add Damage</button>
+        <button @click="placeTokens = true">Place Tokens</button>
+        <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'ClearTokens', contents: { tag: 'EnemyTarget', contents: id}})">Remove All Tokens</button>
         <button @click="emit('close')">Close</button>
       </div>
     </div>

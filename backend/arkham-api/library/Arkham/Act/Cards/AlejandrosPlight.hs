@@ -10,7 +10,7 @@ import Arkham.Prelude
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype AlejandrosPlight = AlejandrosPlight ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alejandrosPlight :: ActCard AlejandrosPlight
@@ -19,7 +19,8 @@ alejandrosPlight = act (3, C) AlejandrosPlight Cards.alejandrosPlight Nothing
 instance HasModifiersFor AlejandrosPlight where
   getModifiersFor (EnemyTarget eid) (AlejandrosPlight a) = do
     isModified <- eid <=~> EnemyWithAsset (assetIs Assets.alejandroVela)
-    pure $ toModifiers a [HealthModifier 2 | isModified]
+    n <- perPlayer 2
+    pure $ toModifiers a [HealthModifier n | isModified]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AlejandrosPlight where

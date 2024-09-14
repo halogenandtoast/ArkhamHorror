@@ -332,6 +332,9 @@ drawToHand i (toCard -> c) = DrawToHand i [c]
 shuffleIntoDeck :: (IsDeck deck, Targetable target) => deck -> target -> Message
 shuffleIntoDeck (toDeck -> deck) (toTarget -> target) = ShuffleIntoDeck deck target
 
+shuffleCardsIntoDeck :: IsDeck deck => deck -> [Card] -> Message
+shuffleCardsIntoDeck (toDeck -> deck) = ShuffleCardsIntoDeck deck
+
 findEncounterCard
   :: (Targetable target, IsCardMatcher cardMatcher)
   => InvestigatorId

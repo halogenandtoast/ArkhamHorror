@@ -309,25 +309,19 @@ runGameMessage msg g = case msg of
       & (actionRemovedEntitiesL .~ mempty)
       & (activeAbilitiesL .~ mempty)
   StartScenario sid -> do
-    -- NOTE: The campaign log needs to be copied over for standalones because
-    -- we effectively reset it here when we `setScenario`.
+    -- NOTE: The campaign log and player decks need to be copied over for
+    -- standalones because we effectively reset it here when we `setScenario`.
     let
-      difficulty =
-        these
-          difficultyOf
-          difficultyOfScenario
-          (const . difficultyOf)
-          (g ^. modeL)
+      difficulty = these difficultyOf difficultyOfScenario (const . difficultyOf) (g ^. modeL)
       mCampaignLog =
-        these
-          (const Nothing)
-          (Just . attr scenarioStandaloneCampaignLog)
-          (\_ _ -> Nothing)
-          (g ^. modeL)
+        these (const Nothing) (Just . attr scenarioStandaloneCampaignLog) (\_ _ -> Nothing) (g ^. modeL)
+      playerDecks = these (const mempty) (attr scenarioPlayerDecks) (\_ _ -> mempty) (g ^. modeL)
       setCampaignLog = case mCampaignLog of
         Nothing -> id
         Just cl -> overAttrs (standaloneCampaignLogL .~ cl)
+
       standalone = isNothing $ modeCampaign $ g ^. modeL
+      setPlayerDecks = overAttrs (playerDecksL .~ playerDecks)
 
     clearCardCache
 
@@ -345,7 +339,7 @@ runGameMessage msg g = case msg of
            ]
     pure
       $ g
-      & (modeL %~ setScenario (setCampaignLog $ lookupScenario sid difficulty))
+      & (modeL %~ setScenario (setPlayerDecks $ setCampaignLog $ lookupScenario sid difficulty))
       & (phaseL .~ InvestigationPhase)
       & (cardsL %~ filterMap (not . isEncounterCard))
   PerformTarotReading -> do

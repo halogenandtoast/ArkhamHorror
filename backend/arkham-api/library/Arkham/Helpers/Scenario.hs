@@ -119,7 +119,7 @@ getOriginalDeck iid = do
 getKnownRemainingOriginalDeckCards
   :: HasGame m => InvestigatorId -> m [PlayerCard]
 getKnownRemainingOriginalDeckCards iid = do
-  cards <- unDeck <$> getOriginalDeck iid
+  cards <- traceShowId . unDeck <$> getOriginalDeck iid
   inDiscard <- field InvestigatorDiscard iid
   inHand <- fieldMap InvestigatorHand onlyPlayerCards iid
   inVictory <- scenarioFieldMap ScenarioVictoryDisplay onlyPlayerCards

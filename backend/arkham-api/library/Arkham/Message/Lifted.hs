@@ -1002,6 +1002,9 @@ revealing iid (toSource -> source) (toTarget -> target) zone = Msg.push $ Msg.re
 shuffleIntoDeck :: (ReverseQueue m, IsDeck deck, Targetable target) => deck -> target -> m ()
 shuffleIntoDeck deck target = push $ Msg.shuffleIntoDeck deck target
 
+shuffleCardsIntoDeck :: (ReverseQueue m, IsDeck deck) => deck -> [Card] -> m ()
+shuffleCardsIntoDeck deck cards = push $ Msg.shuffleCardsIntoDeck deck cards
+
 reduceCostOf :: (Sourceable source, IsCard card, ReverseQueue m) => source -> card -> Int -> m ()
 reduceCostOf source card n = push $ Msg.reduceCostOf source card n
 

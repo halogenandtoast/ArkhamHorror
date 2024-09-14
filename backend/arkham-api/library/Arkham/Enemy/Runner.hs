@@ -1393,6 +1393,8 @@ instance RunMessage EnemyAttrs where
       pure $ a & keysL %~ deleteSet k
     FlipClues target n | isTarget a target -> do
       pure $ a & tokensL %~ flipClues n
+    FlipDoom target n | isTarget a target -> do
+      pure $ a & tokensL %~ flipDoom n
     PlaceEnemy eid placement | eid == enemyId -> do
       case placement of
         AtLocation _ -> push $ EnemyCheckEngagement eid

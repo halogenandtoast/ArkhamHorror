@@ -156,25 +156,28 @@ getCardEntityTarget card = case toCardType card of
   EncounterAssetType -> toTarget <$$> selectOne (AssetWithCardId $ toCardId card)
   other -> error $ "Unhandled type: " <> show other
 
+-- NOTE: this used to call drawThisPlayerCard but we changed that because we
+-- weren't triggering Foresight (1). If we have to revert this, remember to
+-- check foresight (1).
 drawThisCard :: IsCard card => InvestigatorId -> card -> [Message]
 drawThisCard iid card = case toCard card of
-  PlayerCard pc -> drawThisPlayerCard iid pc
+  c@(PlayerCard pc) -> [InvestigatorDrewPlayerCard iid pc, ResolvedCard iid c]
   EncounterCard _ -> error "Not yet implemented"
   VengeanceCard c -> drawThisCard iid c
 
-drawThisPlayerCard :: InvestigatorId -> PlayerCard -> [Message]
-drawThisPlayerCard iid card = case toCardType card of
-  PlayerTreacheryType ->
-    [ DrewTreachery iid (Just $ Deck.InvestigatorDeck iid) (PlayerCard card)
-    , ResolvedCard iid (PlayerCard card)
-    ]
-  PlayerEnemyType -> do
-    if hasRevelation card
-      then [Revelation iid $ CardIdSource card.id, ResolvedCard iid (PlayerCard card)]
-      else [DrewPlayerEnemy iid (PlayerCard card), ResolvedCard iid (PlayerCard card)]
-  other | hasRevelation card && other `notElem` [PlayerTreacheryType, PlayerEnemyType] -> do
-    [Revelation iid (CardIdSource card.id), ResolvedCard iid (PlayerCard card)]
-  _ -> []
+-- drawThisPlayerCard :: InvestigatorId -> PlayerCard -> [Message]
+-- drawThisPlayerCard iid card = case toCardType card of
+--   PlayerTreacheryType ->
+--     [ DrewTreachery iid (Just $ Deck.InvestigatorDeck iid) (PlayerCard card)
+--     , ResolvedCard iid (PlayerCard card)
+--     ]
+--   PlayerEnemyType -> do
+--     if hasRevelation card
+--       then [Revelation iid $ CardIdSource card.id, ResolvedCard iid (PlayerCard card)]
+--       else [DrewPlayerEnemy iid (PlayerCard card), ResolvedCard iid (PlayerCard card)]
+--   other | hasRevelation card && other `notElem` [PlayerTreacheryType, PlayerEnemyType] -> do
+--     [Revelation iid (CardIdSource card.id), ResolvedCard iid (PlayerCard card)]
+--   _ -> []
 
 playIsValidAfterSeal :: HasGame m => InvestigatorId -> Card -> m Bool
 playIsValidAfterSeal iid c = do

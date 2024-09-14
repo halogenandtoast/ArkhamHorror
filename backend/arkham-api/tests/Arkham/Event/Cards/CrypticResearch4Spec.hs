@@ -7,7 +7,7 @@ import TestImport.New
 spec :: Spec
 spec = do
   describe "Cryptic Research 4" $ do
-    it "causes the selected investigator to draw 3 cards" $ gameTest $ \self -> do
+    it "causes the selected investigator to draw 3 cards" . gameTest $ \self -> do
       cards <- testPlayerCards 3
       location <- testLocation
       withProp @"deck" (Deck cards) self
@@ -15,7 +15,7 @@ spec = do
       self `putCardIntoPlay` Events.crypticResearch4
       click "choose self"
       assert $ Events.crypticResearch4 `isInDiscardOf` self
-      self.hand `shouldReturn` map PlayerCard cards
+      self.hand `shouldMatchListM` map PlayerCard cards
 
     it "can select any investigator at the same location" $ gameTest $ \self -> do
       investigator2 <- addInvestigator Investigators.rolandBanks
@@ -26,4 +26,4 @@ spec = do
       self `putCardIntoPlay` Events.crypticResearch4
       chooseTarget investigator2
       assert $ Events.crypticResearch4 `isInDiscardOf` self
-      investigator2.hand `shouldReturn` map PlayerCard cards
+      investigator2.hand `shouldMatchListM` map PlayerCard cards

@@ -1,14 +1,8 @@
-module Arkham.Event.Cards.EmergencyCache3 (
-  emergencyCache3,
-  EmergencyCache3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.EmergencyCache3 (emergencyCache3, EmergencyCache3 (..)) where
 
 import Arkham.Asset.Uses
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher
 
 newtype EmergencyCache3 = EmergencyCache3 EventAttrs
@@ -19,30 +13,20 @@ emergencyCache3 :: EventCard EmergencyCache3
 emergencyCache3 = event EmergencyCache3 Cards.emergencyCache3
 
 instance RunMessage EmergencyCache3 where
-  runMessage msg e@(EmergencyCache3 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+  runMessage msg e@(EmergencyCache3 attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       supplyAssets <-
         select
           $ AssetControlledBy (affectsOthers $ colocatedWith iid)
-          <> AssetWithUses Supply
+          <> AssetCanHaveUses Supply
           <> AssetNotAtUseLimit
-      player <- getPlayer iid
       if null supplyAssets
         then pushAll [TakeResources iid 4 (toSource attrs) False]
-        else do
-          pushAll
-            $ replicate 4
-            $ chooseOne
-              player
-              [ Label "Take Resource" [TakeResources iid 1 (toSource attrs) False]
-              , Label
-                  "Add Supply"
-                  [ chooseOrRunOne
-                      player
-                      [ targetLabel asset [AddUses (toSource attrs) asset Supply 1]
-                      | asset <- supplyAssets
-                      ]
-                  ]
-              ]
+        else replicateM_ 4 do
+          chooseOneM iid do
+            labeled "Take Resource" $ gainResourcesIfCan iid attrs 1
+            labeled "Add Supply" do
+              chooseTargetM iid supplyAssets \asset ->
+                push $ AddUses (toSource attrs) asset Supply 1
       pure e
-    _ -> EmergencyCache3 <$> runMessage msg attrs
+    _ -> EmergencyCache3 <$> liftRunMessage msg attrs

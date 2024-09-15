@@ -115,7 +115,7 @@ instance RunMessage TheDevourerBelow where
           ]
     ResolveChaosToken _ Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2
-      closestEnemyIds <- select $ NearestEnemy AnyEnemy
+      closestEnemyIds <- select $ NearestEnemyTo iid AnyEnemy
       when (notNull closestEnemyIds) do
         chooseOrRunOne iid
           $ [ targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom doom]

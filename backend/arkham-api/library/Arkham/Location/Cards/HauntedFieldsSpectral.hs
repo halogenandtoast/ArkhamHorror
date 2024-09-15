@@ -16,7 +16,7 @@ import Arkham.Matcher
 import Arkham.Trait (Trait (Spectral))
 
 newtype HauntedFieldsSpectral = HauntedFieldsSpectral LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hauntedFieldsSpectral :: LocationCard HauntedFieldsSpectral
@@ -37,7 +37,7 @@ instance HasAbilities HauntedFieldsSpectral where
 instance RunMessage HauntedFieldsSpectral where
   runMessage msg l@(HauntedFieldsSpectral attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      enemies <- select $ NearestEnemy $ EnemyWithTrait Spectral
+      enemies <- select $ NearestEnemyTo iid $ EnemyWithTrait Spectral
       unless (null enemies) $ do
         player <- getPlayer iid
         push

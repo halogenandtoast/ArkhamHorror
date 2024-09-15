@@ -282,7 +282,7 @@ instance RunMessage ShatteredAeons where
         if isEasyStandard attrs
           then do
             player <- getPlayer iid
-            cultists <- select $ NearestEnemy $ EnemyWithTrait Trait.Cultist
+            cultists <- select $ NearestEnemyTo iid $ EnemyWithTrait Trait.Cultist
             unless (null cultists)
               $ push
               $ chooseOne
@@ -299,7 +299,7 @@ instance RunMessage ShatteredAeons where
       when (chaosTokenFace token == Cultist) $ do
         if isEasyStandard attrs
           then do
-            cultists <- select $ NearestEnemy $ EnemyWithTrait Trait.Cultist
+            cultists <- select $ NearestEnemyTo iid $ EnemyWithTrait Trait.Cultist
             unless (null cultists) $ do
               player <- getPlayer iid
               push

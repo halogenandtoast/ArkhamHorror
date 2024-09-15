@@ -47,7 +47,7 @@ instance RunMessage JusticeXI where
       noCluesOnEntryHall <- hasNoClues "Entry Hall"
       noCluesOnOffice <- hasNoClues "Office"
       noCluesOnBalcony <- hasNoClues "Balcony"
-      noCluesOnBilliardsRoom <- hasNoClues "BillardsRoom"
+      noCluesOnBilliardsRoom <- hasNoClues "Billiards Room"
       if n < targetAmount
         then pushAll $ map (RemoveAllClues (toSource attrs) . toTarget) iids
         else do

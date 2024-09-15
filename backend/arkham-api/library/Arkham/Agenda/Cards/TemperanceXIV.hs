@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.TemperanceXIV (
-  TemperanceXIV (..),
-  temperanceXIV,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TemperanceXIV (TemperanceXIV (..), temperanceXIV) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
@@ -12,6 +7,7 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Trait (Trait (Witch))
 
@@ -26,14 +22,10 @@ instance RunMessage TemperanceXIV where
   runMessage msg a@(TemperanceXIV attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       encounterDeck <- scenarioFieldMap ScenarioEncounterDeck unDeck
-      let discardAmount = max (length encounterDeck) (length encounterDeck - 5)
+      let discardAmount = max 0 (length encounterDeck - 5)
       lead <- getLead
       pushAll
-        [ DiscardTopOfEncounterDeck
-            lead
-            discardAmount
-            (toSource attrs)
-            (Just $ toTarget attrs)
+        [ DiscardTopOfEncounterDeck lead discardAmount (toSource attrs) (Just $ toTarget attrs)
         , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
         ]
       pure a
@@ -46,9 +38,7 @@ instance RunMessage TemperanceXIV where
         push
           $ chooseOrRunOne
             lead
-            [ targetLabel
-              investigator
-              [InvestigatorDrewEncounterCard investigator witch]
+            [ targetLabel investigator [InvestigatorDrewEncounterCard investigator witch]
             | investigator <- investigators
             ]
       pure a

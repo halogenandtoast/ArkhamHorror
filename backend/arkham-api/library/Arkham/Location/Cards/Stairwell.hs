@@ -19,13 +19,13 @@ stairwell = location Stairwell Cards.stairwell 3 (PerPlayer 1)
 
 instance HasAbilities Stairwell where
   getAbilities (Stairwell attrs) =
-    withRevealedAbilities
+    extendRevealed
       attrs
       [ skillTestAbility
           $ mkAbility attrs 1
           $ freeReaction
           $ moves #after You (not_ $ LocationWithTrait Basement) attrs
-      , mkAbility attrs 2 $ ForcedAbility $ BecomesInfested #after $ LocationWithId $ toId attrs
+      , groupLimit PerTestOrAbility $ mkAbility attrs 2 $ forced $ BecomesInfested #after (be attrs)
       ]
 
 instance RunMessage Stairwell where

@@ -14,7 +14,6 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
-import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types
 import {-# SOURCE #-} Arkham.Entities
 import {-# SOURCE #-} Arkham.GameEnv
@@ -31,7 +30,6 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.SkillType
-import Arkham.Source
 import Arkham.Target
 import Arkham.Treachery.Types
 

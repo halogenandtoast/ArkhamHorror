@@ -26,7 +26,7 @@ violentOutburst = treachery ViolentOutburst Cards.violentOutburst
 instance RunMessage ViolentOutburst where
   runMessage msg t@(ViolentOutburst attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      humanoids <- select $ NearestEnemy $ EnemyWithTrait Humanoid
+      humanoids <- select $ NearestEnemyTo iid $ EnemyWithTrait Humanoid
       if null humanoids
         then push $ findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Humanoid
         else do

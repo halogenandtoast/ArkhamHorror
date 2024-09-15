@@ -212,7 +212,7 @@ instance RunMessage ForTheGreaterGood where
       if isEasyStandard attrs
         then do
           player <- getPlayer iid
-          closestCultists <- select $ NearestEnemy $ EnemyWithTrait Trait.Cultist
+          closestCultists <- select $ NearestEnemyTo iid $ EnemyWithTrait Trait.Cultist
           unless (null closestCultists)
             $ push
             $ chooseOrRunOne
@@ -229,7 +229,7 @@ instance RunMessage ForTheGreaterGood where
       if isEasyStandard attrs
         then do
           player <- getPlayer iid
-          closestCultists <- select $ NearestEnemy (EnemyWithTrait Trait.Cultist) <> EnemyWithAnyDoom
+          closestCultists <- select $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist) <> EnemyWithAnyDoom
           unless (null closestCultists)
             $ push
             $ chooseOne

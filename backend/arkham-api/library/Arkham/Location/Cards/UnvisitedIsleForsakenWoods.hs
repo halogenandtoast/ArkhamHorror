@@ -58,7 +58,7 @@ instance RunMessage UnvisitedIsleForsakenWoods where
       circleTest sid iid attrs attrs [#willpower, #combat] (Fixed 11)
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      whippoorwills <- select $ NearestEnemy $ enemyIs Enemies.whippoorwill
+      whippoorwills <- select $ NearestEnemyTo iid $ enemyIs Enemies.whippoorwill
       player <- getPlayer iid
       push
         $ chooseOrRunOne player

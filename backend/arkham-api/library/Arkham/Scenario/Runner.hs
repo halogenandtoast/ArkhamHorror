@@ -734,7 +734,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         if length drew == drawing.amount
           then do
             push $ DrewCards iid $ finalizeDraw drawing $ drawing.alreadyDrawn <> map toCard drew
-            when (null rest) $ do
+            when (null rest && not scenarioInShuffle) $ do
               windows' <- checkWindows [mkWhen Window.EncounterDeckRunsOutOfCards]
               pushAll [windows', ShuffleEncounterDiscardBackIn]
           else do
@@ -743,10 +743,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
                 ( DrawCards iid
                     $ drawing {cardDrawAlreadyDrawn = map toCard drew, cardDrawAmount = drawing.amount - length drew}
                 )
-            when (null rest) $ do
+            when (null rest && not scenarioInShuffle) $ do
               windows' <- checkWindows [mkWhen Window.EncounterDeckRunsOutOfCards]
               pushAll [windows', ShuffleEncounterDiscardBackIn]
-        pure $ a & (deckLens handler .~ Deck rest)
+        pure $ a & (deckLens handler .~ Deck rest) & (inShuffleL .~ null rest)
   Search searchType iid _ EncounterDeckTarget _ _ _ -> do
     case searchType of
       Searching ->
@@ -1063,48 +1063,32 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     push (RequestedEncounterCards target cards)
     pure $ a & encounterDeckL .~ encounterDeck
   DiscardTopOfEncounterDeck iid n source mtarget -> do
-    push
-      $ DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget []
+    push $ DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget []
     pure a
   DiscardTopOfEncounterDeckWithDiscardedCards iid 0 source mtarget cards -> do
-    windows' <-
-      checkWindows
-        [mkWindow Timing.When Window.EncounterDeckRunsOutOfCards]
+    windows' <- checkWindows [mkWhen Window.EncounterDeckRunsOutOfCards]
     pushAll
-      $ [ DiscardedTopOfEncounterDeck iid cards source target
-        | target <- maybeToList mtarget
-        ]
-      <> ( guard (null scenarioEncounterDeck)
+      $ ( guard (null scenarioEncounterDeck && not scenarioInShuffle)
             *> [windows', ShuffleEncounterDiscardBackIn]
-         )
-    pure a
+        )
+      <> [ DiscardedTopOfEncounterDeck iid cards source target
+         | target <- maybeToList mtarget
+         ]
+    pure $ a & inShuffleL .~ null scenarioEncounterDeck
   DiscardTopOfEncounterDeckWithDiscardedCards iid n source mtarget discardedCards -> do
     handler <- getEncounterDeckHandler iid
     case unDeck (a ^. deckLens handler) of
       [] -> do
-        push
-          $ DiscardTopOfEncounterDeckWithDiscardedCards
-            iid
-            0
-            source
-            mtarget
-            discardedCards
+        push $ DiscardTopOfEncounterDeckWithDiscardedCards iid 0 source mtarget discardedCards
         pure a
       (card : cards) -> do
-        beforeWindow <-
-          checkWindows [mkWindow Timing.When (Window.Discarded (Just iid) source (EncounterCard card))]
-        afterWindow <-
-          checkWindows [mkWindow Timing.After (Window.Discarded (Just iid) source (EncounterCard card))]
+        beforeWindow <- checkWindows [mkWhen (Window.Discarded (Just iid) source (EncounterCard card))]
+        afterWindow <- checkWindows [mkAfter (Window.Discarded (Just iid) source (EncounterCard card))]
         pushAll
           [ beforeWindow
           , Discarded (CardIdTarget $ toCardId card) source (EncounterCard card)
           , afterWindow
-          , DiscardTopOfEncounterDeckWithDiscardedCards
-              iid
-              (n - 1)
-              source
-              mtarget
-              (card : discardedCards)
+          , DiscardTopOfEncounterDeckWithDiscardedCards iid (n - 1) source mtarget (card : discardedCards)
           ]
         pure $ a & deckLens handler .~ Deck cards & discardLens handler %~ (card :)
   SpawnEnemyAt card@(EncounterCard ec) _ -> do
@@ -1123,27 +1107,17 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   RemoveAllCopiesOfCardFromGame _ cCode ->
     pure
       $ a
-      & setAsideCardsL
-      %~ filter ((/= cCode) . toCardCode)
-      & encounterDeckL
-      %~ filter ((/= cCode) . toCardCode)
-      & discardL
-      %~ filter ((/= cCode) . toCardCode)
-      & decksL
-      . each
-      %~ filter ((/= cCode) . toCardCode)
+      & (setAsideCardsL %~ filter ((/= cCode) . toCardCode))
+      & (encounterDeckL %~ filter ((/= cCode) . toCardCode))
+      & (discardL %~ filter ((/= cCode) . toCardCode))
+      & (decksL . each %~ filter ((/= cCode) . toCardCode))
   RemoveAllCopiesOfEncounterCardFromGame cardMatcher ->
     pure
       $ a
-      & setAsideCardsL
-      %~ filter (not . (`cardMatch` cardMatcher))
-      & encounterDeckL
-      %~ filter (not . (`cardMatch` cardMatcher))
-      & discardL
-      %~ filter (not . (`cardMatch` cardMatcher))
-      & decksL
-      . each
-      %~ filter (not . (`cardMatch` cardMatcher))
+      & (setAsideCardsL %~ filter (not . (`cardMatch` cardMatcher)))
+      & (encounterDeckL %~ filter (not . (`cardMatch` cardMatcher)))
+      & (discardL %~ filter (not . (`cardMatch` cardMatcher)))
+      & (decksL . each %~ filter (not . (`cardMatch` cardMatcher)))
   SetCampaignLog newLog -> do
     isStandalone <- getIsStandalone
     if isStandalone

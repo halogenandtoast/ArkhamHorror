@@ -122,6 +122,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioTimesPlayed :: Int
   , scenarioDefeatedEnemies :: Map EnemyId DefeatedEnemyAttrs
   , scenarioIsSideStory :: Bool
+  , scenarioInShuffle :: Bool
   , -- for standalone
     scenarioStoryCards :: Map InvestigatorId [PlayerCard]
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
@@ -228,6 +229,7 @@ scenario f cardCode name difficulty layout =
       , scenarioTimesPlayed = 0
       , scenarioDefeatedEnemies = mempty
       , scenarioIsSideStory = False
+      , scenarioInShuffle = False
       }
 
 instance Entity ScenarioAttrs where
@@ -328,6 +330,7 @@ instance FromJSON ScenarioAttrs where
     scenarioTimesPlayed <- o .: "timesPlayed"
     scenarioDefeatedEnemies <- o .: "defeatedEnemies"
     scenarioIsSideStory <- o .:? "isSideStory" .!= False
+    scenarioInShuffle <- o .:? "inShuffle" .!= False
     scenarioStoryCards <- o .: "storyCards"
     scenarioPlayerDecks <- o .: "playerDecks"
     pure ScenarioAttrs {..}

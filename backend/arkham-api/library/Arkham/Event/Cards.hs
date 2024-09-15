@@ -2327,6 +2327,7 @@ astoundingRevelation =
     , cdCost = Nothing
     , cdCardInSearchEffects = True
     , cdKeywords = singleton Keyword.Myriad
+    , cdCriteria = Just Criteria.Never
     }
 
 easyMark1 :: CardDef

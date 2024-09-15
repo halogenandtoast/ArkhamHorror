@@ -37,18 +37,9 @@ api.prof:
 tags:
 	stack exec -- fast-tags --qualified -Rv --nomerge .
 
-.PHONY: core
-core:
-	cd arkham-core && \
-	stack build --pedantic --fast arkham-core \
-	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
-	  --interleaved-output \
-	  --file-watch \
-		$(EXTRA_STACK_FLAGS)
-
-.PHONY: core.ghci
-core.ghci:
-	stack ghci --test --no-run-tests arkham-core:lib \
+.PHONY: ghci
+ghci:
+	stack ghci arkham-api:exe:arkham-api --test --no-run-tests \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
 		$(EXTRA_STACK_FLAGS)
@@ -73,8 +64,8 @@ validate.watch:
 
 .PHONY: revalidate
 revalidate:
-	cd arkham-core && \
-	stack build --pedantic --fast arkham-core \
+	cd arkham-api && \
+	stack build --pedantic --fast arkham-api \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
 		$(EXTRA_STACK_FLAGS)
@@ -82,8 +73,8 @@ revalidate:
 
 .PHONY: test
 test:
-	cd arkham-core && \
-	stack build --pedantic --test --fast arkham-core \
+	cd arkham-api && \
+	stack build --pedantic --test --fast arkham-api \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
 	  --file-watch \

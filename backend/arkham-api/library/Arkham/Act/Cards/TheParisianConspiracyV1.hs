@@ -25,24 +25,27 @@ instance HasAbilities TheParisianConspiracyV1 where
   getAbilities (TheParisianConspiracyV1 a) =
     [ restrictedAbility a 1 (DoomCountIs $ AtLeast $ Static 3)
         $ Objective
-        $ ForcedAbility
+        $ forced
         $ RoundEnds #when
     ]
 
 instance RunMessage TheParisianConspiracyV1 where
   runMessage msg a@(TheParisianConspiracyV1 attrs) = case msg of
-    AdvanceAct aid _ advanceMode | aid == actId attrs && onSide B attrs -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+      pure a
+    AdvanceAct (isSide B attrs -> True) _ advanceMode -> do
       theOrganist <-
         fromJustNote "The Organist was not set aside"
           . listToMaybe
-          <$> getSetAsideCardsMatching (CardWithTitle "The Organist")
+          <$> getSetAsideCardsMatching "The Organist"
       case advanceMode of
         AdvancedWithClues -> do
           locationId <- selectJust LeadInvestigatorLocation
           createTheOrganist <- createEnemyAt_ theOrganist locationId Nothing
           pushAll
             [ createTheOrganist
-            , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+            , advanceActDeck attrs
             ]
         _ -> do
           investigatorIds <- getInvestigatorIds
@@ -58,7 +61,7 @@ instance RunMessage TheParisianConspiracyV1 where
               | iid <- investigatorIds
               ]
             <> [ chooseOrRunOne lead choices
-               , AdvanceActDeck (actDeckId attrs) (toSource attrs)
+               , advanceActDeck attrs
                ]
       pure a
     _ -> TheParisianConspiracyV1 <$> runMessage msg attrs

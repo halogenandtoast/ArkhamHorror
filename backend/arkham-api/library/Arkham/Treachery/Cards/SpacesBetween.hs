@@ -1,14 +1,10 @@
-module Arkham.Treachery.Cards.SpacesBetween (
-  spacesBetween,
-  SpacesBetween (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.SpacesBetween (spacesBetween, SpacesBetween (..)) where
 
 import Arkham.Classes
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
@@ -31,10 +27,7 @@ instance RunMessage SpacesBetween where
         enemyIds <- select $ EnemyAt locationMatcher <> UnengagedEnemy
         destination <-
           fromJustNote "must be connected to a sentinel location"
-            <$> selectOne
-              ( AccessibleFrom locationMatcher
-                  <> LocationWithTrait SentinelHill
-              )
+            <$> selectOne (ConnectedTo locationMatcher <> LocationWithTrait SentinelHill)
 
         pure
           $ [MoveTo $ move source iid destination | iid <- investigatorIds]
@@ -43,22 +36,18 @@ instance RunMessage SpacesBetween where
 
       alteredPaths <-
         shuffleM
-          =<< filterM
-            (fieldP LocationUnrevealedName (== "Altered Path"))
-            nonSentinelHillLocations
+          =<< filterM (fieldP LocationUnrevealedName (== "Altered Path")) nonSentinelHillLocations
       divergingPaths <-
         shuffleM
-          =<< filterM
-            (fieldP LocationUnrevealedName (== "Diverging Path"))
-            nonSentinelHillLocations
+          =<< filterM (fieldP LocationUnrevealedName (== "Diverging Path")) nonSentinelHillLocations
 
       pushAll
         $ msgs
         <> [ SetLocationLabel locationId $ "alteredPath" <> tshow idx
-           | (idx, locationId) <- zip [1 :: Int ..] alteredPaths
+           | (idx, locationId) <- withIndex1 alteredPaths
            ]
         <> [ SetLocationLabel locationId $ "divergingPath" <> tshow idx
-           | (idx, locationId) <- zip [1 :: Int ..] divergingPaths
+           | (idx, locationId) <- withIndex1 divergingPaths
            ]
       pure t
     _ -> SpacesBetween <$> runMessage msg attrs

@@ -10,7 +10,7 @@ import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
 
 newtype MoonBeastGalley = MoonBeastGalley LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor MoonBeastGalley where
@@ -23,11 +23,18 @@ moonBeastGalley = location MoonBeastGalley Cards.moonBeastGalley 3 (Static 1)
 
 instance HasAbilities MoonBeastGalley where
   getAbilities (MoonBeastGalley attrs) =
-    extendRevealed attrs [restrictedAbility attrs 1 (Here <> CluesOnThis (static 0)) $ FastAbility Free]
+    extendRevealed
+      attrs
+      [ restrictedAbility attrs 1 (Here <> CluesOnThis (static 0)) $ FastAbility Free
+      , restrictedAbility attrs 2 (DoomCountIs $ atLeast 3) $ forced $ RoundEnds #when
+      ]
 
 instance RunMessage MoonBeastGalley where
   runMessage msg l@(MoonBeastGalley attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ Flip iid (toSource attrs) (toTarget attrs)
+      pure l
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ Flip iid (toSource attrs) (toTarget attrs)
       pure l
     Flip iid _ (isTarget attrs -> True) -> do

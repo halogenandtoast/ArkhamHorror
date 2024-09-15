@@ -1465,7 +1465,7 @@ passesCriteria iid mcard source' requestor windows' = \case
     let filteredDiscards = filter (`cardMatch` cardMatcher) discards
     pure $ notNull filteredDiscards
   Criteria.ClueOnLocation ->
-    maybe (pure False) (fieldP LocationClues (> 0))
+    maybe (pure False) (fmap (maybe False (> 0)) . fieldMay LocationClues)
       =<< field InvestigatorLocation iid
   Criteria.EnemyCriteria enemyCriteria ->
     passesEnemyCriteria iid source windows' enemyCriteria

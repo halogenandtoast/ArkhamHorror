@@ -28,10 +28,12 @@ instance RunMessage OffTheGalley where
       enemies <- select $ enemyAt moonBeastGalley <> oneOf [UnengagedEnemy, MassiveEnemy]
       if clues == 0
         then do
-          for_ investigators $ \iid -> push $ Move $ move attrs iid moonForest
+          for_ investigators $ \iid ->
+            push $ Move $ (move attrs iid moonForest) {movePayAdditionalCosts = False, moveCancelable = False}
         else do
           eachInvestigator (raiseAlarmLevel attrs)
-          eachInvestigator $ \iid -> push $ Move $ move attrs iid moonForest
+          eachInvestigator $ \iid ->
+            push $ Move $ (move attrs iid moonForest) {movePayAdditionalCosts = False, moveCancelable = False}
           for_ enemies $ \eid -> push $ Move $ move attrs eid moonForest
 
       push $ RemoveFromGame (toTarget moonBeastGalley)

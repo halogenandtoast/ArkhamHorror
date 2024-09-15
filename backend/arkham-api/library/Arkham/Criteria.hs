@@ -259,6 +259,10 @@ class Exists a where
 thisIs :: (Exists matcher, Be a matcher, Semigroup matcher) => a -> matcher -> Criterion
 thisIs a matcher = exists (be a <> matcher)
 
+thisIsNot
+  :: (Exists matcher, Be a matcher, Semigroup matcher, Not matcher) => a -> matcher -> Criterion
+thisIsNot a matcher = thisIs a (not_ matcher)
+
 any_ :: (Exists a, OneOf a) => [a] -> Criterion
 any_ = exists . oneOf
 

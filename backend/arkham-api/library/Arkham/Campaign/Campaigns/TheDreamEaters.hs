@@ -767,7 +767,7 @@ instance RunMessage TheDreamEaters where
         pure c
       InTheDreamQuest msg' -> do
         case currentCampaignMode meta of
-          Nothing -> error "called with no campaign mode"
+          Nothing -> lift (defaultCampaignRunner msg' c)
           Just TheDreamQuest -> lift (defaultCampaignRunner msg' c)
           Just TheWebOfDreams -> case otherCampaignAttrs meta of
             Nothing -> error "called with no other campaign attrs"
@@ -778,7 +778,7 @@ instance RunMessage TheDreamEaters where
                 $ attrs {campaignMeta = toJSON $ meta {otherCampaignAttrs = Just otherAttrs'}}
       InTheWebOfDreams msg' -> do
         case currentCampaignMode meta of
-          Nothing -> error "called with no campaign mode"
+          Nothing -> lift (defaultCampaignRunner msg' c)
           Just TheWebOfDreams -> lift (defaultCampaignRunner msg' c)
           Just TheDreamQuest -> case otherCampaignAttrs meta of
             Nothing -> error "called with no other campaign attrs"

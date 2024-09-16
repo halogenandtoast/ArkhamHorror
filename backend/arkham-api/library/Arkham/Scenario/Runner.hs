@@ -441,7 +441,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           <> [ChosenRandomLocation target randomLocationId]
     pure a
   SetCardAside card -> pure $ a & setAsideCardsL %~ (card :)
-  PlaceLocation _ card -> pure $ a & setAsideCardsL %~ delete card
+  PlaceLocation _ card -> pure $ a & setAsideCardsL %~ delete card & decksL . each %~ delete card
   ReplaceLocation _ card _ -> pure $ a & setAsideCardsL %~ delete card
   CreateWeaknessInThreatArea card _ -> pure $ a & setAsideCardsL %~ delete card
   ShuffleCardsIntoTopOfDeck Deck.EncounterDeck n (onlyEncounterCards -> cards) -> do

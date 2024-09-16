@@ -6,14 +6,12 @@ import Arkham.Act.Sequence qualified as Act
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
-import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Name
-import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 

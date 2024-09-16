@@ -1000,7 +1000,7 @@ instance RunMessage EnemyAttrs where
       canDamage <- sourceCanDamageEnemy eid source
       if canDamage
         then do
-          amount' <- getModifiedDamageAmount a direct amount
+          amount' <- getModifiedDamageAmount a damageAssignment
           let
             damageAssignment' = damageAssignment {damageAssignmentAmount = amount'}
             combine l r =

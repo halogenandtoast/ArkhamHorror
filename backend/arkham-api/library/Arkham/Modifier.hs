@@ -210,6 +210,7 @@ data ModifierType
   | HorrorDealt Int
   | DamageDealtToInvestigator Int
   | DamageTaken Int
+  | DamageTakenFrom DamageEffectMatcher Int
   | HealingTaken Int
   | Difficulty Int
   | CalculatedDifficulty GameCalculation

@@ -423,6 +423,9 @@ data EnemyMatcher
     ThatEnemy
   deriving stock (Show, Eq, Ord, Data)
 
+enemy_ :: EnemyMatcher -> EnemyMatcher
+enemy_ = id
+
 instance Plated EnemyMatcher
 
 instance IsLabel "exhausted" EnemyMatcher where
@@ -572,6 +575,7 @@ data LocationMatcher
   | HighestShroud LocationMatcher
   | FloodedLocation
   | FullyFloodedLocation
+  | CanHaveFloodLevelIncreased
   | -- | start destination / end destination
     LocationWithLowerPrintedShroudThan LocationMatcher
   | BlockedLocation

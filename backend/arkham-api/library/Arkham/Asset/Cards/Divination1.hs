@@ -5,7 +5,7 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Helpers.Message.Discard (chooseAndDiscardCard)
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Investigate
 import Arkham.Message (getChoiceAmount)
 import Arkham.Modifier
@@ -39,7 +39,7 @@ instance RunMessage Divination1 where
           charges <- namedUUID "Charges"
           push $ ResolveAmounts iid [(charges, 1)] (toTarget attrs)
         _ -> chooseAmounts iid "Amount of Charges to Spend" (MaxAmountTarget 2) [("Charges", (1, 2))] attrs
-      pushWhen (n == 0) $ chooseAndDiscardCard iid (attrs.ability 1)
+      when (n == 0) $ chooseAndDiscardCard iid (attrs.ability 1)
       pure a
     ResolveAmounts iid (getChoiceAmount "Charges" -> n) (isTarget attrs -> True) -> do
       push $ SpendUses (attrs.ability 1) (toTarget attrs) Charge n

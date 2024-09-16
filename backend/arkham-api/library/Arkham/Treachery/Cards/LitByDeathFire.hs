@@ -1,6 +1,6 @@
 module Arkham.Treachery.Cards.LitByDeathFire (litByDeathFire, LitByDeathFire (..)) where
 
-import Arkham.Helpers.Message.Discard
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Matcher
 import Arkham.Trait (Trait (Depths, Vale))
 import Arkham.Treachery.Cards qualified as Cards
@@ -18,7 +18,7 @@ instance RunMessage LitByDeathFire where
     Revelation _iid (isSource attrs -> True) -> do
       eachInvestigator \iid -> push $ LoseResources iid (toSource attrs) 1
       selectEach (InvestigatorAt $ oneOf [LocationWithTrait Depths, LocationWithTrait Vale]) \iid -> do
-        push $ toMessage $ chooseAndDiscardCard iid (toSource attrs)
+        chooseAndDiscardCard iid (toSource attrs)
       selectEach (InvestigatorAt $ LocationWithTrait Depths) \iid -> do
         push $ LoseActions iid (toSource attrs) 1
 

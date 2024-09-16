@@ -93,7 +93,7 @@ supplyLabel s = case s of
       "Medicine"
       "(2 supply points each): To stave off disease, infection, or venom."
   Gasoline ->
-    go "Gasoline" "(2 supply points each): Enough for a long journey by car."
+    go "Gasoline" "(1 supply points each): Enough for a long journey by car."
   Rope ->
     go
       "Rope"

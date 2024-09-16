@@ -36,7 +36,7 @@ withModifiers
 withModifiers = withModifiers'
 
 getCombinedModifiers :: forall m. HasGame m => [Target] -> m [ModifierType]
-getCombinedModifiers targets = map modifierType . nub . concat <$> traverse getFullModifiers targets
+getCombinedModifiers targets = map modifierType . nub . concat . traceShowId <$> traverse getFullModifiers targets
 
 getModifiers :: forall a m. (HasGame m, Targetable a) => a -> m [ModifierType]
 getModifiers (toTarget -> target) = do

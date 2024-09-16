@@ -3091,7 +3091,9 @@ instance Projection Asset where
       AssetCardCode -> pure assetCardCode
       AssetCardId -> pure assetCardId
       AssetSlots -> do
-        mods <- getCombinedModifiers [toTarget aid, toTarget assetCardId]
+        -- TODO: if you go back to adding in the card target we have an issue
+        -- with Hunter's Armor duplicating its slots
+        mods <- getModifiers aid
         let isSpirit = notNull [() | IsSpirit _ <- mods]
         if isSpirit
           then pure []

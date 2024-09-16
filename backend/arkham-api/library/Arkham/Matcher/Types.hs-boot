@@ -113,3 +113,12 @@ instance FromJSON ExtendedCardMatcher
 instance Show ExtendedCardMatcher
 instance Eq ExtendedCardMatcher
 instance Ord ExtendedCardMatcher
+
+data DamageEffectMatcher
+
+instance Data DamageEffectMatcher
+instance ToJSON DamageEffectMatcher
+instance FromJSON DamageEffectMatcher
+instance Show DamageEffectMatcher
+instance Eq DamageEffectMatcher
+instance Ord DamageEffectMatcher

@@ -7,8 +7,9 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.DamageEffect
 import Arkham.Enemy.Types
-import Arkham.Game.Helpers (sourceMatches)
+import Arkham.Game.Helpers (damageEffectMatches, sourceMatches)
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
@@ -31,6 +32,7 @@ import Arkham.Spawn
 import Arkham.Target
 import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
+import Data.Foldable (foldrM)
 
 spawned :: EnemyAttrs -> Bool
 spawned EnemyAttrs {enemyPlacement} = enemyPlacement /= Unplaced
@@ -79,14 +81,20 @@ spawnAt eid miid SpawnAtRandomSetAsideLocation = do
           <> resolve
             (EnemySpawnAtLocationMatching miid (LocationWithId locationId) eid)
 
-getModifiedDamageAmount :: HasGame m => EnemyAttrs -> Bool -> Int -> m Int
-getModifiedDamageAmount EnemyAttrs {..} direct baseAmount = do
+getModifiedDamageAmount :: HasGame m => EnemyAttrs -> DamageAssignment -> m Int
+getModifiedDamageAmount EnemyAttrs {..} damageAssignment = do
   modifiers' <- getModifiers (EnemyTarget enemyId)
-  let updatedAmount = foldr applyModifier baseAmount modifiers'
+  updatedAmount <- foldrM applyModifier amount modifiers'
   pure $ foldr applyModifierCaps updatedAmount modifiers'
  where
-  applyModifier (Modifier.DamageTaken m) n | not direct = max 0 (n + m)
-  applyModifier _ n = n
+  direct = damageAssignmentDirect damageAssignment
+  amount = damageAssignmentAmount damageAssignment
+  damageEffect = damageAssignmentDamageEffect damageAssignment
+  applyModifier (Modifier.DamageTakenFrom effect m) n | not direct = do
+    match <- damageEffectMatches damageEffect effect
+    pure $ if match then max 0 (n + m) else n
+  applyModifier (Modifier.DamageTaken m) n | not direct = pure $ max 0 (n + m)
+  applyModifier _ n = pure n
   applyModifierCaps (Modifier.MaxDamageTaken m) n = min m n
   applyModifierCaps _ n = n
 

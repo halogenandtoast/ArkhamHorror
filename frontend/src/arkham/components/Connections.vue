@@ -69,21 +69,25 @@ const makeLine = function(div1: HTMLElement, div2: HTMLElement) {
 
   if (!leftDivId || !rightDivId) return
 
+  const thisEl = document.getElementById("svg")
+  if(!thisEl) return
   const line = document.querySelector<HTMLElement>(".line")
   const parentNode = line?.parentNode
 
   if (!line || !parentNode) return
 
   const connection = leftDivId + ":" + rightDivId
-  const {left: bodyLeft, top: bodyTop} = document.body.getBoundingClientRect()
-  const {left: leftDivLeft, top: leftDivTop, right: leftDivRight } = leftDiv.getBoundingClientRect();
-  const {left: rightDivLeft, top: rightDivTop, right: rightDivRight } = rightDiv.getBoundingClientRect();
+  const {left: bodyLeft, top: bodyTop} = thisEl.getBoundingClientRect()
+  const {left: leftDivLeft, top: leftDivTop, right: leftDivRight, bottom: leftDivBottom } = leftDiv.getBoundingClientRect();
+  const {left: rightDivLeft, top: rightDivTop, right: rightDivRight, bottom: rightDivBottom } = rightDiv.getBoundingClientRect();
   const leftDivWidth = leftDivRight - leftDivLeft;
   const rightDivWidth = rightDivRight - rightDivLeft;
+  const leftDivHeight = leftDivTop - leftDivBottom;
+  const rightDivHeight = rightDivTop - rightDivBottom;
   const x1 = (leftDivLeft - bodyLeft) + (leftDivWidth/2)
-  const y1 = (leftDivTop - bodyTop)
+  const y1 = (leftDivTop - bodyTop) - (leftDivHeight/2)
   const x2 = (rightDivLeft - bodyLeft) + (rightDivWidth/2)
-  const y2 = (rightDivTop - bodyTop)
+  const y2 = (rightDivTop - bodyTop) - (rightDivHeight/2)
   const existingNode = document.querySelector(`[data-connection="${connection}"]`)
 
   const isNodeClose = (node: Element) => {

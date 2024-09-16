@@ -254,7 +254,7 @@ instance RunMessage TheForgottenAge where
                   ]
              ]
           <> [ questionLabel
-              "Choose an investigator to removed poisoned by using a medicine"
+              "Choose an investigator to remove Poisoned by using a medicine"
               lead
               $ ChooseUpToN (min (length withMedicine) (length withPoisoned))
               $ Done "Do not use medicine"
@@ -502,7 +502,7 @@ instance RunMessage TheForgottenAge where
                | lowOnRationsCount > 0
                ]
             <> [ questionLabel
-                "Choose an investigator to removed poisoned by using a medicine"
+                "Choose an investigator to remove Poisoned by using a medicine"
                 lead
                 $ ChooseUpToN (min (length withMedicine) (length withPoisoned))
                 $ Done "Do not use medicine"
@@ -696,7 +696,7 @@ instance RunMessage TheForgottenAge where
                   else Nothing
         pushAll
           $ [ questionLabel
-              "Choose an investigator to removed poisoned by using a medicine"
+              "Choose an investigator to remove Poisoned by using a medicine"
               lead
               $ ChooseUpToN (min (length withMedicine) (length withPoisoned))
               $ Done "Do not use medicine"

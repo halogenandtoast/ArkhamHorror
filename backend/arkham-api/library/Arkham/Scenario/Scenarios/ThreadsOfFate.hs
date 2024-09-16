@@ -1,14 +1,7 @@
-module Arkham.Scenario.Scenarios.ThreadsOfFate (
-  ThreadsOfFate (..),
-  threadsOfFate,
-) where
+module Arkham.Scenario.Scenarios.ThreadsOfFate (ThreadsOfFate (..), threadsOfFate) where
 
-import Arkham.Prelude
-
-import Arkham.Act qualified as Act
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence qualified as Act
-import Arkham.Act.Types (ActAttrs (actSequence))
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
@@ -23,10 +16,10 @@ import Arkham.Helpers.Card
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
-import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Prelude
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner
 import Arkham.ScenarioLogKey
@@ -371,20 +364,15 @@ instance RunMessage ThreadsOfFate where
       -- resolution and would not be counted so we need to determine that as
       -- well
 
+      let counted x = if x then 1 else 0
+      actPairCountMap <-
+        IntMap.fromList
+          <$> sequence
+            [ (1,) . counted <$> selectAny (ActWithSide Act.B)
+            , (2,) . counted <$> selectAny (ActWithSide Act.D)
+            , (3,) . counted <$> selectAny (ActWithSide Act.F)
+            ]
       let
-        actPairs = mapToList (scenarioActStack attrs)
-        actPairCount = flip map actPairs $ \(n, acts) ->
-          let
-            c = flip count acts $ \actDef -> do
-              ( (`elem` [Act.B, Act.D, Act.F])
-                  . Act.actSide
-                  . actSequence
-                  . toAttrs
-                )
-                (either throw id $ Act.lookupAct (ActId $ toCardCode actDef) 0 nullCardId)
-           in
-            (n, c)
-        actPairCountMap = IntMap.fromList actPairCount
         completedStack n =
           (== 3)
             . (+ findWithDefault 0 n actPairCountMap)

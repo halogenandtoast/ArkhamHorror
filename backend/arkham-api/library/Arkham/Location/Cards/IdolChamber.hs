@@ -22,10 +22,11 @@ instance HasAbilities IdolChamber where
     extendRevealed
       attrs
       [ restrictedAbility attrs 1 (KeyIsSetAside BlueKey) $ forced $ RevealLocation #after Anyone (be attrs)
-      , restrictedAbility
-          attrs
-          2
-          (Here <> thisIs attrs LocationWithoutClues <> youExist (InvestigatorWithKey PurpleKey))
+      , groupLimit PerGame
+          $ restrictedAbility
+            attrs
+            2
+            (Here <> thisIs attrs LocationWithoutClues <> youExist (InvestigatorWithKey PurpleKey))
           $ FastAbility Free
       ]
 

@@ -46,9 +46,10 @@ const loadedCards = ref<CardDef[]>([]);
 
 // Function to load missing cards
 async function loadMissingCards() {
+  const nonCardKeys = ['MementosDiscovered'];
   const missingCardCodes = new Set();
-
-  for (const setValue of Object.values(recordedSets.value)) {
+  for (const [key, setValue] of Object.entries(recordedSets.value)) {
+    if (nonCardKeys.includes(key)) continue;
     for (const val of setValue) { // Assuming setValue is an entry [setKey, setValues]
       const cardCode = val.contents; // Assuming this is how you get the card code
       if (!findCard(cardCode)) {
@@ -73,7 +74,8 @@ const findCard = (cardCode: string): CardDef | undefined => {
 
 const displayRecordValue = (key: string, value: SomeRecordable): string => {
   if (key === 'MementosDiscovered') {
-    return toCapitalizedWords(value.recordVal.contents)
+    const contents = value.contents || value.recordVal?.contents
+    return toCapitalizedWords(contents)
   }
 
   const code = value.contents || value.recordVal?.contents

@@ -36,14 +36,14 @@ instance IsCampaign TheCircleUndone where
     DisappearanceAtTheTwilightEstate -> Just TheWitchingHour
     TheWitchingHour -> Just (UpgradeDeckStep AtDeathsDoorstep)
     AtDeathsDoorstep -> Just (UpgradeDeckStep TheSecretName)
-    InterludeStep 2 _ -> Just TheSecretName
+    InterludeStep 2 _ -> Just (UpgradeDeckStep TheSecretName)
     TheSecretName -> Just (UpgradeDeckStep TheWagesOfSin)
     TheWagesOfSin -> Just (UpgradeDeckStep ForTheGreaterGood)
-    ForTheGreaterGood -> Just UnionAndDisillusion
-    InterludeStep 3 _ -> Just UnionAndDisillusion
+    ForTheGreaterGood -> Just (UpgradeDeckStep UnionAndDisillusion)
+    InterludeStep 3 _ -> Just (UpgradeDeckStep UnionAndDisillusion)
     UnionAndDisillusion -> Just (UpgradeDeckStep InTheClutchesOfChaos)
     InTheClutchesOfChaos -> Just (UpgradeDeckStep $ InterludeStep 4 Nothing)
-    InterludeStep 4 _ -> Just BeforeTheBlackThrone
+    InterludeStep 4 _ -> Just (UpgradeDeckStep BeforeTheBlackThrone)
     BeforeTheBlackThrone -> Nothing
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'

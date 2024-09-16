@@ -127,7 +127,7 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
           $ ChooseOne [Label (tshow n) [RecordCount PathsAreKnownToYou n] | n <- [0 .. 5]]
       ]
     pure s
-  Setup -> do
+  PreScenarioSetup -> do
     players <- allPlayers
     lead <- getLeadPlayer
 
@@ -135,39 +135,39 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
     mAlejandroInvestigator <- getOwner Assets.alejandroVela
     mExpeditionJournalInvestigator <- getOwner Assets.expeditionJournal
 
-    let
-      introMessages =
-        [ story players intro1
-        , chooseOrRunOne lead
-            $ [ Label
-                "Let’s consult with Ichtaca."
-                [ story players intro2
-                , PutCampaignCardIntoPlay iid Assets.ichtacaTheForgottenGuardian
-                ]
-              | iid <- maybeToList mIchtacaInvestigator
+    pushAll
+      [ story players intro1
+      , chooseOrRunOne lead
+          $ [ Label
+              "Let’s consult with Ichtaca."
+              [ story players intro2
+              , PutCampaignCardIntoPlay iid Assets.ichtacaTheForgottenGuardian
               ]
-            <> [ Label
-                "Let’s consult with Alejandro."
-                [ story players intro3
-                , PutCampaignCardIntoPlay iid Assets.alejandroVela
-                ]
-               | iid <- maybeToList mAlejandroInvestigator
-               ]
-            <> [ Label
-                "Let’s consult the expedition journal."
-                [ story players intro4
-                , PutCampaignCardIntoPlay iid Assets.expeditionJournal
-                ]
-               | iid <- maybeToList mExpeditionJournalInvestigator
-               ]
-            <> [Label "I wish we knew more about this..." []]
-        ]
-
+            | iid <- maybeToList mIchtacaInvestigator
+            ]
+          <> [ Label
+              "Let’s consult with Alejandro."
+              [ story players intro3
+              , PutCampaignCardIntoPlay iid Assets.alejandroVela
+              ]
+             | iid <- maybeToList mAlejandroInvestigator
+             ]
+          <> [ Label
+              "Let’s consult the expedition journal."
+              [ story players intro4
+              , PutCampaignCardIntoPlay iid Assets.expeditionJournal
+              ]
+             | iid <- maybeToList mExpeditionJournalInvestigator
+             ]
+          <> [Label "I wish we knew more about this..." []]
+      ]
+    pure s
+  Setup -> do
     pathsKnown <- getRecordCount PathsAreKnownToYou
 
     if pathsKnown == 6
       then do
-        pushAll $ introMessages <> [ScenarioResolution $ Resolution 1]
+        pushAll [ScenarioResolution $ Resolution 1]
         pure s
       else do
         let
@@ -231,18 +231,17 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
             Nothing
 
         pushAll
-          $ introMessages
-          <> [ SetEncounterDeck encounterDeck
-             , SetAgendaDeck
-             , SetActDeck
-             , placeMouthOfKnYanTheCavernsMaw
-             , MoveAllTo (toSource attrs) mouthOfKnYanTheCavernsMawId
-             , PlaceTokens
+          $ [ SetEncounterDeck encounterDeck
+            , SetAgendaDeck
+            , SetActDeck
+            , placeMouthOfKnYanTheCavernsMaw
+            , MoveAllTo (toSource attrs) mouthOfKnYanTheCavernsMawId
+            , PlaceTokens
                 (toSource attrs)
                 (LocationTarget mouthOfKnYanTheCavernsMawId)
                 Resource
                 pathsKnown
-             ]
+            ]
           <> [createTheWingedSerpent | reachedAct2 metadata]
           <> [placeRuinsLocation | mappedOutTheWayForward]
 

@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.FracturedConsciousness
-  ( fracturedConsciousness
-  , FracturedConsciousness(..)
-  )
+module Arkham.Treachery.Cards.FracturedConsciousness (
+  fracturedConsciousness,
+  FracturedConsciousness (..),
+)
 where
 
 import Arkham.Treachery.Cards qualified as Cards
@@ -16,5 +16,12 @@ fracturedConsciousness = treachery FracturedConsciousness Cards.fracturedConscio
 
 instance RunMessage FracturedConsciousness where
   runMessage msg t@(FracturedConsciousness attrs) = runQueueT $ case msg of
-    Revelation _iid (isSource attrs -> True) -> pure t
+    Revelation iid (isSource attrs -> True) -> do
+      sid <- getRandom
+      onRevealChaosTokenEffect sid #tablet attrs attrs failSkillTest
+      revelationSkillTest sid iid attrs #intellect (Fixed 3)
+      pure t
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      assignDamage iid attrs 2
+      pure t
     _ -> FracturedConsciousness <$> liftRunMessage msg attrs

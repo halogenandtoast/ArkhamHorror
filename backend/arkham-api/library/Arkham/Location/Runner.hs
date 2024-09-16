@@ -280,9 +280,13 @@ instance RunMessage LocationAttrs where
           pure $ a & withoutCluesL .~ (locationClueCount + currentClues == 0)
         else pure a
     RevealLocation miid lid | lid == locationId -> do
-      modifiers' <- getModifiers (toTarget a)
+      mods <- getModifiers (toTarget a)
+      let maxFloodLevel =
+            if CannotBeFlooded `elem` mods
+              then Unflooded
+              else if CannotBeFullyFlooded `elem` mods then PartiallyFlooded else FullyFlooded
       locationClueCount <-
-        if CannotPlaceClues `elem` modifiers'
+        if CannotPlaceClues `elem` mods
           then pure 0
           else getPlayerCountValue locationRevealClues
       revealer <- maybe getLeadInvestigatorId pure miid
@@ -300,7 +304,11 @@ instance RunMessage LocationAttrs where
         $ [whenWindowMsg]
         <> [PlaceClues (toSource a) (toTarget a) locationClueCount | locationClueCount > 0]
         <> [afterWindowMsg]
-      pure $ a & revealedL .~ True & withoutCluesL .~ (locationClueCount + currentClues == 0)
+      pure
+        $ a
+        & (revealedL .~ True)
+        & (withoutCluesL .~ (locationClueCount + currentClues == 0))
+        & (floodLevelL %~ maybe Nothing (Just . min maxFloodLevel))
     LookAtRevealed iid source target | isTarget a target -> do
       player <- getPlayer iid
       push $ chooseOne player [Label "Continue" [After (LookAtRevealed iid source $ toTarget a)]]
@@ -312,11 +320,21 @@ instance RunMessage LocationAttrs where
     PlaceKey (isTarget a -> False) k -> do
       pure $ a & keysL %~ deleteSet k
     IncreaseFloodLevel lid | lid == locationId -> do
-      pure $ a & floodLevelL . non Unflooded %~ increaseFloodLevel
+      mods <- getModifiers a
+      let maxFloodLevel =
+            if CannotBeFlooded `elem` mods
+              then Unflooded
+              else if CannotBeFullyFlooded `elem` mods then PartiallyFlooded else FullyFlooded
+      pure $ a & floodLevelL . non Unflooded %~ min maxFloodLevel . increaseFloodLevel
     DecreaseFloodLevel lid | lid == locationId -> do
       pure $ a & floodLevelL . non Unflooded %~ decreaseFloodLevel
     SetFloodLevel lid level | lid == locationId -> do
-      pure $ a & floodLevelL ?~ level
+      mods <- getModifiers a
+      let maxFloodLevel =
+            if CannotBeFlooded `elem` mods
+              then Unflooded
+              else if CannotBeFullyFlooded `elem` mods then PartiallyFlooded else FullyFlooded
+      pure $ a & floodLevelL ?~ min maxFloodLevel level
     PlaceBreaches (isTarget a -> True) n -> do
       wouldDoEach
         n

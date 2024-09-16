@@ -1925,6 +1925,18 @@ getLocationsMatching lmatcher = do
       filterM (fieldMap LocationFloodLevel (`elem` [Just FullyFlooded, Just PartiallyFlooded]) . toId) ls
     FullyFloodedLocation ->
       filterM (fieldMap LocationFloodLevel (== Just FullyFlooded) . toId) ls
+    CanHaveFloodLevelIncreased -> do
+      let
+        maxFloodLevel l = do
+          mods <- getModifiers l
+          pure
+            if CannotBeFlooded `elem` mods
+              then Unflooded
+              else if CannotBeFullyFlooded `elem` mods then PartiallyFlooded else FullyFlooded
+
+      flip filterM ls \l -> do
+        mfl <- maxFloodLevel l
+        fieldMap LocationFloodLevel ((/= mfl) . fromMaybe Unflooded) l.id
     FewestBreaches -> do
       fewestBreaches <-
         getMin <$> foldMapM (fieldMap LocationBreaches (Min . maybe 0 Breach.countBreaches) . toId) ls

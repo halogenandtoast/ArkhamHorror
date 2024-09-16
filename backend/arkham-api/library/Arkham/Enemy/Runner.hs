@@ -993,10 +993,7 @@ instance RunMessage EnemyAttrs where
           ]
       pure a
     EnemyDamaged eid damageAssignment | eid == enemyId -> do
-      let
-        direct = damageAssignmentDirect damageAssignment
-        source = damageAssignmentSource damageAssignment
-        amount = damageAssignmentAmount damageAssignment
+      let source = damageAssignmentSource damageAssignment
       canDamage <- sourceCanDamageEnemy eid source
       if canDamage
         then do
@@ -1150,6 +1147,7 @@ instance RunMessage EnemyAttrs where
       whenMsg <- checkWindows [mkWhen $ Window.EnemyDefeated miid defeatedBy eid]
       afterMsg <- checkWindows [mkAfter $ Window.EnemyDefeated miid defeatedBy eid]
       victory <- getVictoryPoints eid
+      mloc <- field EnemyLocation a.id
       vengeance <- getVengeancePoints eid
       let
         victoryMsgs = [DefeatedAddToVictory $ toTarget a | isJust (victory <|> vengeance)]
@@ -1162,6 +1160,12 @@ instance RunMessage EnemyAttrs where
 
       pushAll
         $ [whenMsg, When msg, After msg]
+        <> ( case miid of
+              Just iid -> [PlaceKey (toTarget iid) ekey | ekey <- toList enemyKeys]
+              Nothing -> case mloc of
+                Just lid -> [PlaceKey (toTarget lid) ekey | ekey <- toList enemyKeys]
+                _ -> []
+           )
         <> victoryMsgs
         <> [afterMsg]
         <> windows [Window.EntityDiscarded source (toTarget a)]

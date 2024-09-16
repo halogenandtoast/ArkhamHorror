@@ -583,20 +583,6 @@ runGameMessage msg g = case msg of
   FocusChaosTokens tokens -> pure $ g & focusedChaosTokensL <>~ tokens
   Msg.RevealChaosToken SkillTestSource {} _ token -> pure $ g & focusedChaosTokensL %~ filter (/= token)
   UnfocusChaosTokens -> pure $ g & focusedChaosTokensL .~ mempty
-  ChooseLeadInvestigator -> do
-    iids <- getInvestigatorIds
-    case iids of
-      [x] -> push $ ChoosePlayer x SetLeadInvestigator
-      xs@(x : _) -> do
-        player <- getPlayer x
-        push
-          $ questionLabel "Choose lead investigator" player
-          $ ChooseOne
-            [ PortraitLabel iid [ChoosePlayer iid SetLeadInvestigator]
-            | iid <- xs
-            ]
-      [] -> pure ()
-    pure g
   ChoosePlayer iid SetLeadInvestigator -> do
     players <- getInvestigatorIds
     push $ ChoosePlayerOrder iid (filter (/= iid) players) [iid]

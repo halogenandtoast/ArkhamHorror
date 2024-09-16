@@ -1227,6 +1227,7 @@ library
       Arkham.Campaigns.TheForgottenAge.FlavorText
       Arkham.Campaigns.TheForgottenAge.Helpers
       Arkham.Campaigns.TheForgottenAge.Import
+      Arkham.Campaigns.TheForgottenAge.Meta
       Arkham.Campaigns.TheForgottenAge.Supply
       Arkham.Campaigns.ThePathToCarcosa.CampaignSteps
       Arkham.Campaigns.ThePathToCarcosa.ChaosBag

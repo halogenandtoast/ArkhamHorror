@@ -1274,4 +1274,18 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & setAsideCardsL <>~ cards
   SetLayout layout -> do
     pure $ a & locationLayoutL .~ layout
+  ChooseLeadInvestigator -> do
+    iids <- getInvestigatorIds
+    case iids of
+      [x] -> push $ ChoosePlayer x SetLeadInvestigator
+      xs@(x : _) -> do
+        player <- getPlayer x
+        push
+          $ questionLabel "Choose lead investigator" player
+          $ ChooseOne
+            [ PortraitLabel iid [ChoosePlayer iid SetLeadInvestigator]
+            | iid <- xs
+            ]
+      [] -> pure ()
+    pure a
   _ -> pure a

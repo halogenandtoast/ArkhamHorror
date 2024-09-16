@@ -1020,6 +1020,7 @@ data Message
   | Explore InvestigatorId Source CardMatcher
   | BecomeYithian InvestigatorId
   | SetScenarioMeta Value
+  | SetCampaignMeta Value
   | DoStep Int Message
   | ForInvestigator InvestigatorId Message
   | ForTarget Target Message

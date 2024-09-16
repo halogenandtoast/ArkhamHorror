@@ -323,12 +323,12 @@ instance RunMessage AtDeathsDoorstep where
           2 ->
             ( resolution2
             , TheInvestigatorsLearnedNothingOfTheLodge'sSchemes
-            , TheSecretName
+            , UpgradeDeckStep TheSecretName
             )
           3 ->
             ( resolution3
             , TheInvestigatorsAreNeverSeenOrHeardFromAgain
-            , TheSecretName
+            , UpgradeDeckStep TheSecretName
             )
           _ -> error "Invalid resolution"
 

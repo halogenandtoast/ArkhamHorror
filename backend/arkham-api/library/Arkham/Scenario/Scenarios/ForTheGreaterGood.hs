@@ -276,7 +276,7 @@ instance RunMessage ForTheGreaterGood where
               , addCampaignCardToDeckChoice lead iids Assets.puzzleBox
               ]
             <> xp
-            <> [EndOfGame (Just $ UpgradeDeckStep $ InterludeStep 3 Nothing)]
+            <> [EndOfGame (Just $ InterludeStep 3 Nothing)]
         Resolution 2 ->
           pushAll
             $ [ story players resolution2

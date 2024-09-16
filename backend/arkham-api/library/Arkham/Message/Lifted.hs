@@ -56,6 +56,7 @@ import Arkham.Message hiding (story)
 import Arkham.Message.Lifted.Queue as X
 import Arkham.Modifier
 import Arkham.Movement
+import Arkham.Movement qualified as Msg
 import Arkham.Phase (Phase)
 import Arkham.Prelude hiding (pred)
 import Arkham.Projection
@@ -1514,3 +1515,11 @@ removeChaosToken token = push $ Msg.RemoveChaosToken token
 
 ready :: (ReverseQueue m, Targetable target) => target -> m ()
 ready target = push $ Msg.Ready (toTarget target)
+
+moveTowardsMatching
+  :: (Targetable target, Sourceable source, ReverseQueue m)
+  => source
+  -> target
+  -> LocationMatcher
+  -> m ()
+moveTowardsMatching source target matcher = push $ Move $ Msg.moveTowardsMatching source target matcher

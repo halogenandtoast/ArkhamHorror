@@ -5,7 +5,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Matcher
-import Arkham.Movement
+import Arkham.Movement (move)
 
 newtype PredatorOrPrey = PredatorOrPrey EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -27,18 +27,10 @@ instance RunMessage PredatorOrPrey where
           chooseOneM iid do
             when (notNull unengagedEnemies) do
               labeled "Each unengaged enemy moves once toward the nearest investigator." do
-                chooseOneAtATime
-                  iid
-                  [ targetLabel
-                    enemy
-                    [ Move
-                        $ moveTowardsMatching attrs enemy
-                        $ NearestLocationToLocation loc
-                        $ LocationWithInvestigator Anyone
-                    ]
-                  | (enemy, loc) <- unengagedEnemies
-                  ]
-
+                chooseOneAtATimeM iid do
+                  for_ unengagedEnemies \(enemy, loc) ->
+                    targeting enemy do
+                      moveTowardsMatching attrs enemy $ NearestLocationToLocation loc $ LocationWithInvestigator Anyone
             labeled
               "Each investigator disengages from each enemy engaged with them and moves once away from the nearest enemy."
               $ handleOneAtATime iid attrs investigators

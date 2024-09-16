@@ -104,7 +104,7 @@ instance RunMessage TheDevourerBelow where
            , Locations.arkhamWoodsQuietGlade
            ]
 
-      cultistsWhoGotAway <- getRecordSet CultistsWhoGotAway
+      cultistsWhoGotAway <- getRecordedCardCodes CultistsWhoGotAway
       let placeDoomAmount = (length cultistsWhoGotAway + 1) `div` 2
       pushWhen (placeDoomAmount > 0) $ PlaceDoomOnAgenda placeDoomAmount CanNotAdvance
 

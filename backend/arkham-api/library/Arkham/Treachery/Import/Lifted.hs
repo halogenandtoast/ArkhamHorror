@@ -96,3 +96,6 @@ placeTreachery t = push . Msg.PlaceTreachery (asId t)
 
 gainSurge :: (ReverseQueue m, Sourceable a, Targetable a) => a -> m ()
 gainSurge = push . Msg.gainSurge
+
+guardInThreatArea :: Monad m => InvestigatorId -> TreacheryAttrs -> MaybeT m ()
+guardInThreatArea iid attrs = guard $ treacheryInThreatArea iid attrs

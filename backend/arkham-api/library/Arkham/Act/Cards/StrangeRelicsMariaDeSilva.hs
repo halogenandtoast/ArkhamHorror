@@ -11,6 +11,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Projection
 import Arkham.Scenarios.ThreadsOfFate.Helpers
@@ -51,6 +52,8 @@ instance RunMessage StrangeRelicsMariaDeSilva where
         ]
       pure a
     NextAdvanceActStep (isSide F attrs -> True) 1 -> do
-      rememberIchtacasPrey =<< selectJust (enemyIs Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn)
+      maria <- selectJust (enemyIs Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn)
+      card <- field EnemyCard maria
+      rememberIchtacasPrey maria card
       pure a
     _ -> StrangeRelicsMariaDeSilva <$> liftRunMessage msg attrs

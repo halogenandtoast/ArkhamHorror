@@ -20,13 +20,14 @@ wracked = treachery Wracked Cards.wracked
 
 instance HasModifiersFor Wracked where
   getModifiersFor (InvestigatorTarget iid) (Wracked attrs) = maybeModified attrs do
+    guardInThreatArea iid attrs
     isSkillTestInvestigator iid
     liftGuardM $ null . historySkillTestsPerformed <$> getHistory RoundHistory iid
     pure [AnySkillValue (-1)]
   getModifiersFor (SkillTestTarget _) (Wracked attrs) = maybeModified attrs do
     isSkillTestSource attrs
     investigator <- MaybeT getSkillTestInvestigator
-    guard $ treacheryInThreatArea investigator attrs
+    guardInThreatArea investigator attrs
     liftGuardM $ selectAny $ ExhaustedEnemy <> EnemyWithTrait Witch <> enemyAtLocationWith investigator
     pure [SkillTestAutomaticallySucceeds]
   getModifiersFor _ _ = pure []

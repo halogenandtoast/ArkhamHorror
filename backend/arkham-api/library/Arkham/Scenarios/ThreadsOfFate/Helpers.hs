@@ -3,6 +3,7 @@ module Arkham.Scenarios.ThreadsOfFate.Helpers where
 import Arkham.Prelude
 
 import Arkham.Act.Sequence qualified as Act
+import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Enemy.Types (Field (..))
@@ -33,7 +34,5 @@ isIchtacasDestination lid = scenarioFieldMap ScenarioRemembered $ any $ \case
   IchtacasDestination (Labeled _ lid') -> lid == lid'
   _ -> False
 
-rememberIchtacasPrey :: ReverseQueue m => EnemyId -> m ()
-rememberIchtacasPrey eid = do
-  card <- field EnemyCard eid
-  remember $ IchtacasPrey $ Labeled (toName card) eid `With` Envelope @"cardCode" card.cardCode
+rememberIchtacasPrey :: ReverseQueue m => EnemyId -> Card -> m ()
+rememberIchtacasPrey eid card = remember $ IchtacasPrey $ Labeled (toName card) eid `With` Envelope @"cardCode" card.cardCode

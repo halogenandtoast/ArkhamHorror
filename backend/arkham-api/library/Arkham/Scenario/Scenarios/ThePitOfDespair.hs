@@ -6,6 +6,7 @@ import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Exception
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Projection ()
@@ -16,6 +17,7 @@ import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Zone
@@ -108,5 +110,15 @@ instance RunMessage ThePitOfDespair where
             selectOne (OutOfPlayEnemy TheDepths $ enemyIs Enemies.theAmalgam) >>= traverse_ \eid -> do
               withLocationOf iid \lid -> push $ EnemySpawnFromOutOfPlay TheDepths (Just iid) lid eid
           _ -> pure ()
+      pure s
+    ScenarioResolution resolution -> do
+      case resolution of
+        NoResolution -> do
+          story $ i18n "theInnsmouthConspiracy.thePitOfDespair.resolutions.noResolution"
+        Resolution 1 -> do
+          story $ i18n "theInnsmouthConspiracy.thePitOfDespair.resolutions.resolution1"
+        other -> throwIO $ UnknownResolution other
+      allGainXp attrs
+      endOfScenario
       pure s
     _ -> ThePitOfDespair <$> liftRunMessage msg attrs

@@ -108,10 +108,17 @@ cancelChaosToken token = withQueue_ $ \queue ->
         When (RevealChaosToken _ _ token') | token == token' -> Nothing
         RevealChaosToken _ _ token' | token == token' -> Nothing
         After (RevealChaosToken _ _ token') | token == token' -> Nothing
+        CheckWindows ws -> case filter (not . isRevealChaosToken) ws of
+          [] -> Nothing
+          ws' -> Just $ CheckWindows ws'
         RequestedChaosTokens s miid ts -> Just $ RequestedChaosTokens s miid (filter (/= token) ts)
         msg -> Just msg
     )
     queue
+ where
+  isRevealChaosToken w = case windowType w of
+    Window.RevealChaosToken _ token' -> token == token'
+    _ -> False
 
 getPlayableCards
   :: (HasCallStack, HasGame m) => InvestigatorAttrs -> CostStatus -> [Window] -> m [Card]

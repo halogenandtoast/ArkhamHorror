@@ -1,14 +1,9 @@
-module Arkham.Investigator.Cards.WendyAdams (
-  WendyAdams (..),
-  wendyAdams,
-) where
+module Arkham.Investigator.Cards.WendyAdams (WendyAdams (..), wendyAdams) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Game.Helpers
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Window qualified as Window
@@ -37,19 +32,14 @@ instance HasAbilities WendyAdams where
     ]
 
 instance RunMessage WendyAdams where
-  runMessage msg i@(WendyAdams attrs) = case msg of
+  runMessage msg i@(WendyAdams attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> [token]) _ -> do
-      let source = toAbilitySource attrs 1
-      cancelChaosToken token
-      pushAll
-        [ CancelEachNext source [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
-        , ReturnChaosTokens [token]
-        , UnfocusChaosTokens
-        , DrawAnotherChaosToken iid
-        ]
+      cancelChaosToken (attrs.ability 1) token
+      pushAll [ReturnChaosTokens [token], UnfocusChaosTokens]
+      drawAnotherChaosToken iid
       pure i
     ElderSignEffect (is attrs -> True) -> do
       maid <- selectOne $ assetIs Assets.wendysAmulet
       pushWhen (isJust maid) PassSkillTest
       pure i
-    _ -> WendyAdams <$> runMessage msg attrs
+    _ -> WendyAdams <$> liftRunMessage msg attrs

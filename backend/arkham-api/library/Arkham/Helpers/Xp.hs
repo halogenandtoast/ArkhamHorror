@@ -23,9 +23,7 @@ getXp = getXpWithBonus 0
 getXpWithBonus :: forall m. (HasCallStack, HasGame m) => Int -> m [(InvestigatorId, Int)]
 getXpWithBonus bonus = do
   victoryPileVictory <- toVictory =<< scenarioField ScenarioVictoryDisplay
-  locationVictory <-
-    toVictory
-      =<< select (RevealedLocation <> LocationWithoutClues)
+  locationVictory <- toVictory =<< select (RevealedLocation <> LocationWithoutClues)
   let initialAmount = bonus + getSum (victoryPileVictory <> locationVictory)
   investigatorIds <- allInvestigatorIds
   for investigatorIds $ \iid -> do

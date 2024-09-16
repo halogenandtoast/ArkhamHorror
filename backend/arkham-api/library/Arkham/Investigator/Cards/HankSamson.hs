@@ -3,6 +3,7 @@ module Arkham.Investigator.Cards.HankSamson (hankSamson, HankSamson (..)) where
 import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
 import Arkham.Capability
+import Arkham.Card
 import Arkham.Classes.HasQueue (replaceMessageMatching)
 import Arkham.Game.Helpers (onSameLocation)
 import Arkham.Helpers.Investigator
@@ -34,11 +35,13 @@ instance HasModifiersFor HankSamson where
       liftGuardM $ aid <=~> AllyAsset
       pure [CanAssignDamageToInvestigator (toId a), CanAssignHorrorToInvestigator (toId a)]
   getModifiersFor target (HankSamson a) | isTarget a target = do
-    if investigatorArt a == "10015" then pure [] else modified a [CannotHealHorror, CannotHealDamage]
+    if unCardCode (investigatorArt a) == "10015"
+      then pure []
+      else modified a [CannotHealHorror, CannotHealDamage]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HankSamson where
-  getAbilities (HankSamson a) = case investigatorArt a of
+  getAbilities (HankSamson a) = case unCardCode (investigatorArt a) of
     "10015" -> [restrictedAbility a 1 Self $ freeReaction $ InvestigatorWouldBeDefeated #when ByAny You]
     "10016a" ->
       [ restrictedAbility a 1 (Self <> can.draw.cards You)
@@ -106,7 +109,7 @@ instance RunMessage HankSamson where
       gainResourcesIfCan iid attrs 2
       pure i
     ElderSignEffect iid | iid == attrs.id -> do
-      case investigatorArt attrs of
+      case unCardCode (investigatorArt attrs) of
         "10016a" -> do
           canHorrorAssets <- select $ assetControlledBy iid <> AssetWithAnyRemainingSanity
           unless (null canHorrorAssets) do

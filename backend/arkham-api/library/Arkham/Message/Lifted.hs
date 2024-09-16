@@ -360,6 +360,13 @@ createEnemyWith_
   -> m ()
 createEnemyWith_ card creation f = void $ createEnemyWith card creation f
 
+createEnemy_
+  :: (ReverseQueue m, IsCard card, IsEnemyCreationMethod creation)
+  => card
+  -> creation
+  -> m ()
+createEnemy_ card creation = void $ createEnemyWith card creation id
+
 setAsideCards :: ReverseQueue m => [CardDef] -> m ()
 setAsideCards = genCards >=> push . Msg.SetAsideCards
 

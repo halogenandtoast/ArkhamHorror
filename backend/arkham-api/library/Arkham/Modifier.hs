@@ -37,6 +37,8 @@ import GHC.OverloadedLabels
 
 data ModifierType
   = ForEach GameCalculation [ModifierType]
+  | CannotBeFullyFlooded
+  | CannotBeFlooded
   | AbilityModifier Target Int ModifierType
   | ActionCostModifier Int
   | IgnoreActionCost

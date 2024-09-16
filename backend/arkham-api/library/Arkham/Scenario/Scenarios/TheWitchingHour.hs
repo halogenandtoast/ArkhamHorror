@@ -242,13 +242,11 @@ instance RunMessage TheWitchingHour where
           gainXpNoBonus <- toGainXp attrs getXp
           pushAll
             $ [story players resolution3, Record TheWitches'SpellWasCast]
-            <> if step == ActStep 3
-              then
-                recordSetInsert MementosDiscovered [MesmerizingFlute]
-                  : gainXp
-              else
-                gainXpNoBonus
-                  <> [EndOfGame Nothing]
+            <> ( if step == ActStep 3
+                  then recordSetInsert MementosDiscovered [MesmerizingFlute] : gainXp
+                  else gainXpNoBonus
+               )
+            <> [EndOfGame Nothing]
         Resolution 4 -> do
           pushAll
             $ [ story players resolution4

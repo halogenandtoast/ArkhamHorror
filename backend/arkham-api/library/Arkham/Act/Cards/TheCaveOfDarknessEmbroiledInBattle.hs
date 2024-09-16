@@ -52,6 +52,6 @@ instance RunMessage TheCaveOfDarknessEmbroiledInBattle where
     RequestedEncounterCard (isSource attrs -> True) _ (Just ec) -> do
       blackCave <- selectJust $ locationIs Locations.blackCave
       enemyId <- createEnemyAt (EncounterCard ec) blackCave
-      rememberIchtacasPrey enemyId
+      rememberIchtacasPrey enemyId (EncounterCard ec)
       pure a
     _ -> TheCaveOfDarknessEmbroiledInBattle <$> liftRunMessage msg attrs

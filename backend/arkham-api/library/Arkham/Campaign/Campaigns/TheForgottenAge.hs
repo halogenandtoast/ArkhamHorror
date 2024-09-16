@@ -1,9 +1,4 @@
-module Arkham.Campaign.Campaigns.TheForgottenAge (
-  TheForgottenAge (..),
-  theForgottenAge,
-) where
-
-import Arkham.Prelude
+module Arkham.Campaign.Campaigns.TheForgottenAge (TheForgottenAge (..), theForgottenAge) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Runner
@@ -20,24 +15,14 @@ import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Campaign
 import Arkham.Id
+import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Treacheries
+import Data.Aeson (Result (..))
 import Data.Monoid (Endo (..))
-
-data Metadata = Metadata
-  { supplyPoints :: Map InvestigatorId Int
-  , yithians :: Set InvestigatorId
-  }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-instance Semigroup Metadata where
-  Metadata a1 b1 <> Metadata a2 b2 = Metadata (a1 <> a2) (b1 <> b2)
-
-instance Monoid Metadata where
-  mempty = Metadata mempty mempty
 
 newtype TheForgottenAge = TheForgottenAge (CampaignAttrs `With` Metadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
@@ -149,22 +134,31 @@ instance RunMessage TheForgottenAge where
       investigatorIds <- allInvestigatorIds
       players <- allPlayers
       totalSupplyPoints <- initialSupplyPoints
+      lead <- getLeadPlayer
+      expeditionLeaders <-
+        select
+          $ mapOneOf
+            investigatorIs
+            [Investigators.ursulaDowns, Investigators.leoAnderson, Investigators.montereyJack]
       let supplyMap = mapFromList $ map (,totalSupplyPoints) investigatorIds
       pushAll
         $ [story players prologue]
-        <> [ CampaignStep (InvestigatorCampaignStep iid PrologueStep)
-           | iid <- investigatorIds
+        <> [ Ask lead
+            $ QuestionLabel "Choose an expedition leader" Nothing
+            $ ChooseOne
+              [ CardLabel (coerce target) [SetCampaignMeta $ toJSON (metadata {expeditionLeader = Just target})]
+              | target <- expeditionLeaders
+              ]
+           | notNull expeditionLeaders
            ]
+        <> [CampaignStep (InvestigatorCampaignStep iid PrologueStep) | iid <- investigatorIds]
         <> [NextCampaignStep Nothing]
       pure
         . TheForgottenAge
         $ attrs
-        `with` Metadata
-          supplyMap
-          (yithians metadata)
+        `with` Metadata supplyMap (yithians metadata) (expeditionLeader metadata)
     CampaignStep (InvestigatorCampaignStep investigatorId PrologueStep) -> do
-      let
-        remaining = findWithDefault 0 investigatorId (supplyPoints metadata)
+      let remaining = findWithDefault 0 investigatorId (supplyPoints metadata)
       investigatorSupplies <- field InvestigatorSupplies investigatorId
       player <- getPlayer investigatorId
 
@@ -238,10 +232,7 @@ instance RunMessage TheForgottenAge where
               [ CardLabel
                 (unInvestigatorId iid)
                 [ story [player] lowOnRations
-                , HandleTargetChoice
-                    iid
-                    CampaignSource
-                    (InvestigatorTarget iid)
+                , HandleTargetChoice iid CampaignSource (InvestigatorTarget iid)
                 ]
               | (iid, player) <- investigatorPlayers
               ]
@@ -368,8 +359,7 @@ instance RunMessage TheForgottenAge where
             then pure $ Just (iid, player, hasPhysicalTrauma, hasMentalTrauma)
             else pure Nothing
 
-      let
-        resupplyMap = mapFromList $ map (,totalResupplyPoints) investigatorIds
+      let resupplyMap = mapFromList $ map (,totalResupplyPoints) investigatorIds
 
       pushAll
         $ [ Ask player
@@ -407,9 +397,7 @@ instance RunMessage TheForgottenAge where
       pure
         . TheForgottenAge
         $ attrs
-        `with` Metadata
-          resupplyMap
-          (yithians metadata)
+        `with` Metadata resupplyMap (yithians metadata) (expeditionLeader metadata)
     CampaignStep (InvestigatorCampaignStep investigatorId ResupplyPoint) -> do
       let remaining = findWithDefault 0 investigatorId (supplyPoints metadata)
       investigatorSupplies <- field InvestigatorSupplies investigatorId
@@ -620,7 +608,7 @@ instance RunMessage TheForgottenAge where
           pure
             . TheForgottenAge
             $ attrs
-            `With` Metadata (supplyPoints metadata) yithians
+            `With` Metadata (supplyPoints metadata) yithians (expeditionLeader metadata)
         else pure c
     CampaignStep (InterludeStepPart 4 mkey 2) -> do
       players <- allPlayers
@@ -815,10 +803,9 @@ instance RunMessage TheForgottenAge where
       players <- allPlayers
       hasTorches <- getAnyHasSupply Torches
       pushAll
-        $ [ story players $ if hasTorches then torchlight else theAbyss
-          , Record
-              $ if hasTorches then TheBraziersAreLit else TheBraziersRemainUnlit
-          ]
+        [ story players $ if hasTorches then torchlight else theAbyss
+        , Record $ if hasTorches then TheBraziersAreLit else TheBraziersRemainUnlit
+        ]
       pure c
     CampaignStep (InterludeStepPart 5 _ 3) -> do
       theBraziersAreLit <- getHasRecord TheBraziersAreLit
@@ -845,29 +832,22 @@ instance RunMessage TheForgottenAge where
         . TheForgottenAge
         . (`with` metadata)
         $ attrs
-        & ( modifiersL
-              %~ insertWith
-                (<>)
-                iid
-                [toModifier CampaignSource $ StartingResources (-3)]
-          )
+        & (modifiersL %~ insertWith (<>) iid [toModifier CampaignSource $ StartingResources (-3)])
     EndOfScenario _ -> do
       pure . TheForgottenAge . (`with` metadata) $ attrs & modifiersL .~ mempty
     PickSupply investigatorId supply -> do
       let
         cost = supplyCost supply
-        supplyMap =
-          adjustMap
-            (max 0 . subtract cost)
-            investigatorId
-            (supplyPoints metadata)
+        supplyMap = adjustMap (max 0 . subtract cost) investigatorId (supplyPoints metadata)
       pure
         . TheForgottenAge
         $ attrs
-        `with` Metadata
-          supplyMap
-          (yithians metadata)
+        `with` Metadata supplyMap (yithians metadata) (expeditionLeader metadata)
     PreScenarioSetup -> do
       pushAll $ map BecomeYithian $ toList $ yithians metadata
       pure c
+    SetCampaignMeta value -> do
+      case fromJSON value of
+        Success meta' -> pure . TheForgottenAge $ attrs `with` meta'
+        _ -> error "Invalid meta!"
     _ -> defaultCampaignRunner msg c

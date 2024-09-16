@@ -1,9 +1,4 @@
-module Arkham.Scenario.Scenarios.TheDoomOfEztli (
-  TheDoomOfEztli (..),
-  theDoomOfEztli,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.TheDoomOfEztli (TheDoomOfEztli (..), theDoomOfEztli) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -11,6 +6,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
+import Arkham.Campaigns.TheForgottenAge.Meta qualified as CampaignMeta
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -29,6 +25,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message hiding (EnemyDamage)
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
@@ -242,9 +239,7 @@ instance RunMessage TheDoomOfEztli where
            ]
         <> [MoveAllTo (toSource attrs) entrywayId]
 
-      acts <-
-        genCards
-          [Acts.intoTheRuins, Acts.magicAndScience, Acts.escapeTheRuins]
+      acts <- genCards [Acts.intoTheRuins, Acts.magicAndScience, Acts.escapeTheRuins]
       agendas <- genCards [Agendas.somethingStirs, Agendas.theTempleWarden]
 
       TheDoomOfEztli
@@ -356,11 +351,7 @@ instance RunMessage TheDoomOfEztli where
                , EndSetup
                ]
           let resetAttrs = toAttrs $ theDoomOfEztli (scenarioDifficulty attrs)
-          pure
-            . TheDoomOfEztli
-            $ resetAttrs
-            `with` Metadata
-              (resolution4Count metadata + 1)
+          pure . TheDoomOfEztli $ resetAttrs `with` Metadata (resolution4Count metadata + 1)
         Resolution 5 -> do
           pushAll
             $ [ story players resolution5
@@ -372,4 +363,12 @@ instance RunMessage TheDoomOfEztli where
             <> [EndOfGame Nothing]
           pure s
         _ -> error "Unknown Resolution"
+    ChooseLeadInvestigator -> do
+      standalone <- getIsStandalone
+      leader <- if standalone then pure Nothing else CampaignMeta.expeditionLeader <$> getCampaignMeta
+      case leader of
+        Just iid -> do
+          push $ ChoosePlayer iid SetLeadInvestigator
+          pure s
+        Nothing -> TheDoomOfEztli . (`with` metadata) <$> runMessage msg attrs
     _ -> TheDoomOfEztli . (`with` metadata) <$> runMessage msg attrs

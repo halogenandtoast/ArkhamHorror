@@ -1,9 +1,4 @@
-module Arkham.Scenario.Scenarios.TheUntamedWilds (
-  TheUntamedWilds (..),
-  theUntamedWilds,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.TheUntamedWilds (TheUntamedWilds (..), theUntamedWilds) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence qualified as AS
@@ -13,6 +8,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.ChaosBag
 import Arkham.Campaigns.TheForgottenAge.Helpers
+import Arkham.Campaigns.TheForgottenAge.Meta
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -24,6 +20,7 @@ import Arkham.Helpers.Deck
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
@@ -253,4 +250,12 @@ instance RunMessage TheUntamedWilds where
             <> [EndOfGame Nothing]
         _ -> error "invalid resolution"
       pure s
+    ChooseLeadInvestigator -> do
+      standalone <- getIsStandalone
+      leader <- if standalone then pure Nothing else expeditionLeader <$> getCampaignMeta
+      case leader of
+        Just iid -> do
+          push $ ChoosePlayer iid SetLeadInvestigator
+          pure s
+        Nothing -> TheUntamedWilds <$> runMessage msg attrs
     _ -> TheUntamedWilds <$> runMessage msg attrs

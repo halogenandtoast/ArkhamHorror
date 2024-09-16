@@ -529,9 +529,9 @@ const tarotCardAbility = (card: TarotCard) => {
         <button v-if="removedFromPlay.length > 0" class="view-removed-from-play-button" @click="showRemovedFromPlay"><font-awesome-icon icon="eye" /> Removed from Play</button>
       </div>
 
-      <Connections :game="game" :playerId="playerId" />
 
       <div class="location-cards-container">
+        <Connections :game="game" :playerId="playerId" />
         <input v-model="locationsZoom" type="range" min="1" max="3" step="0.5" class="zoomer" />
         <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">
           <Location
@@ -693,16 +693,17 @@ const tarotCardAbility = (card: TarotCard) => {
 
 .location-cards {
   display: flex;
-  width: fit-content;
-  height: fit-content;
+  width: 100%;
+  height: 100%;
   margin: auto;
+  overflow: auto;
+  scrollbar-gutter: stable both-edges;
 }
 
 .location-cards-container {
   display: flex;
+  overflow: hidden;
   flex: 1;
-  scrollbar-gutter: stable both-edges;
-  overflow-y: auto;
   padding-top: 32px;
   padding-bottom: 32px;
   position: relative;

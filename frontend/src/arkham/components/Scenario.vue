@@ -153,7 +153,7 @@ const topOfSpectralDiscard = computed(() => {
   return imgsrc(`cards/${cardCode.replace('c', '')}.avif`)
 })
 const topEnemyInVoid = computed(() => {
-  const inVoidEnemy = Object.values(props.game.enemies).filter((e) => e.placement.tag === 'OutOfPlay' && e.placement.contents == 'VoidZone')[0]
+  const inVoidEnemy = Object.values(props.game.enemies).filter((e) => e.placement.tag === 'OutOfPlay' && (['VoidZone', 'TheDepths'] as string[]).includes(e.placement.contents))[0]
   return inVoidEnemy ?? Object.values(props.game.enemiesInVoid)[0]
 })
 const activePlayerId = computed(() => props.game.activeInvestigatorId)

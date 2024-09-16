@@ -1473,6 +1473,9 @@ attach a = push . toAttach a
 enemyCheckEngagement :: ReverseQueue m => EnemyId -> m ()
 enemyCheckEngagement = push . EnemyCheckEngagement
 
+enemyEngageInvestigator :: ReverseQueue m => EnemyId -> InvestigatorId -> m ()
+enemyEngageInvestigator eid iid = push $ EnemyEngageInvestigator eid iid
+
 advancedWithOther
   :: (ReverseQueue m, Sourceable source, AsId source, IdOf source ~ ActId) => source -> m ()
 advancedWithOther source = push $ AdvanceAct (asId source) (toSource source) #other
@@ -1529,3 +1532,6 @@ setScenarioDeck key cards = push $ Msg.SetScenarioDeck key cards
 
 removeChaosToken :: ReverseQueue m => ChaosTokenFace -> m ()
 removeChaosToken token = push $ Msg.RemoveChaosToken token
+
+ready :: (ReverseQueue m, Targetable target) => target -> m ()
+ready target = push $ Msg.Ready (toTarget target)

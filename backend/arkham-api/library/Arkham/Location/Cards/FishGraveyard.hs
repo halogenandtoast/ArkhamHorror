@@ -24,10 +24,11 @@ instance HasAbilities FishGraveyard where
       [ restrictedAbility attrs 1 (Here <> youExist (not_ InvestigatorWithAnyKey))
           $ forced
           $ TurnEnds #after You
-      , restrictedAbility
-          attrs
-          2
-          (Here <> thisIs attrs LocationWithoutClues <> youExist (InvestigatorWithKey RedKey))
+      , groupLimit PerGame
+          $ restrictedAbility
+            attrs
+            2
+            (Here <> thisIs attrs LocationWithoutClues <> youExist (InvestigatorWithKey RedKey))
           $ FastAbility Free
       ]
 

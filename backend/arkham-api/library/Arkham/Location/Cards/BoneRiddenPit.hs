@@ -29,10 +29,11 @@ instance HasAbilities BoneRiddenPit where
   getAbilities (BoneRiddenPit x) =
     extendRevealed
       x
-      [ restrictedAbility
-          x
-          1
-          (Here <> thisIs x LocationWithoutClues <> youExist (InvestigatorWithKey YellowKey))
+      [ groupLimit PerGame
+          $ restrictedAbility
+            x
+            1
+            (Here <> thisIs x LocationWithoutClues <> youExist (InvestigatorWithKey YellowKey))
           $ FastAbility Free
       ]
 

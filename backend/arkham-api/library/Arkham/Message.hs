@@ -347,6 +347,7 @@ data Message
   | ReadStoryWithPlacement InvestigatorId Card StoryMode (Maybe Target) Placement
   | ResolveStory InvestigatorId StoryMode StoryId
   | ResolvedStory StoryMode StoryId
+  | PlaceStory Card Placement
   | -- | ResolveStoryStep InvestigatorId StoryId Int
     RemoveStory StoryId
   | -- Handle discard costs

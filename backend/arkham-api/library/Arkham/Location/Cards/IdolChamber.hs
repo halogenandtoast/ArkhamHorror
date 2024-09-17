@@ -37,7 +37,7 @@ instance RunMessage IdolChamber where
       pure l
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       story $ i18nWithTitle "theInnsmouthConspiracy.thePitOfDespair.flashback4"
-      recordSetInsert MemoriesRecovered [EncounterWithASecretCult]
+      recordSetInsert MemoriesRecovered [AnEncounterWithASecretCult]
       removeChaosToken #elderthing
       pure l
     _ -> IdolChamber <$> liftRunMessage msg attrs

@@ -105,7 +105,7 @@ instance RunMessage ThePitOfDespair where
         case token.face of
           Cultist -> whenAny (locationWithInvestigator iid <> FloodedLocation) do
             assignDamage iid Cultist 1
-          Tablet -> whenM (notNull <$> iid.keys) $ assignHorror iid Cultist 1
+          Tablet -> whenM (notNull <$> iid.keys) $ assignHorror iid Tablet 1
           ElderThing ->
             selectOne (OutOfPlayEnemy TheDepths $ enemyIs Enemies.theAmalgam) >>= traverse_ \eid -> do
               withLocationOf iid \lid -> push $ EnemySpawnFromOutOfPlay TheDepths (Just iid) lid eid

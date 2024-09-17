@@ -122,10 +122,17 @@ data EncounterSet
   | WhereTheGodsDwell
   | WeaverOfTheCosmos
   | ThePitOfDespair
+  | TheVanishingOfElinaHarper
+  | AgentsOfDagon
+  | AgentsOfHydra
   | CreaturesOfTheDeep
   | RisingTide
+  | FogOverInnsmouth
   | ShatteredMemories
+  | Malfunction
+  | Syzygy
   | FloodedCaverns
+  | TheLocals
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

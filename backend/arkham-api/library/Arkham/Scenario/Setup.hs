@@ -13,6 +13,7 @@ import Arkham.Helpers.EncounterSet
 import Arkham.Id
 import Arkham.Key
 import Arkham.Location.Grid
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message.Lifted
 import Arkham.Prelude hiding ((.=))
@@ -81,6 +82,15 @@ shuffleEncounterDeck = do
 gather :: CardGen m => Set.EncounterSet -> ScenarioBuilderT m ()
 gather encounterSet = do
   cards <- excludeBSides . excludeDoubleSided <$> gatherEncounterSet encounterSet
+  encounterDeckL %= (Deck cards <>)
+
+gatherJust :: CardGen m => Set.EncounterSet -> [CardDef] -> ScenarioBuilderT m ()
+gatherJust encounterSet defs = do
+  cards <-
+    filter ((`cardMatch` mapOneOf cardIs defs) . toCard)
+      . excludeBSides
+      . excludeDoubleSided
+      <$> gatherEncounterSet encounterSet
   encounterDeckL %= (Deck cards <>)
 
 gatherAndSetAside :: ReverseQueue m => Set.EncounterSet -> ScenarioBuilderT m ()

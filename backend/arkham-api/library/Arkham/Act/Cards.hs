@@ -182,8 +182,10 @@ allActCards =
       , theReallyBadOnesV1
       , theReallyBadOnesV2
       , theRelicIsMissing
+      , theRescue
       , theReturnTrip
       , theSchemesDemise
+      , theSearchForAgentHarper
       , theSpectralRealm
       , theStrangerACityAflame
       , theStrangerThePathIsMine
@@ -756,6 +758,12 @@ thePit = act "07045" "The Pit" 1 ThePitOfDespair
 
 theEscape :: CardDef
 theEscape = act "07046" "The Escape" 2 ThePitOfDespair
+
+theSearchForAgentHarper :: CardDef
+theSearchForAgentHarper = act "07060" "The Search for Agent Harper" 1 TheVanishingOfElinaHarper
+
+theRescue :: CardDef
+theRescue = act "07061" "The Rescue" 2 TheVanishingOfElinaHarper
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

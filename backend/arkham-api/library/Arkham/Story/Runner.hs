@@ -43,4 +43,6 @@ instance RunMessage StoryAttrs where
       player <- getPlayer iid
       push $ chooseOne player [targetLabel (toTarget attrs) []]
       pure attrs
+    PlaceUnderneath target cards | isTarget attrs target -> do
+      pure $ attrs & cardsUnderneathL <>~ cards
     _ -> pure attrs

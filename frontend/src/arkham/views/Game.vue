@@ -339,7 +339,10 @@ function loadAllImages(game: Arkham.Game): Promise<void[]> {
         preloaded.push(url)
         resolve()
       }
-      img.onerror = reject
+      img.onerror = (e) => {
+        console.log(card)
+        reject(e)
+        }
       })
   })
 

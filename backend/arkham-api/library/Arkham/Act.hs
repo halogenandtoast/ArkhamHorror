@@ -271,6 +271,9 @@ allActs =
       --- The Pit of Despair
       SomeActCard thePit
     , SomeActCard theEscape
+    , --- The Vanishing of Elina Harper
+      SomeActCard theSearchForAgentHarper
+    , SomeActCard theRescue
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

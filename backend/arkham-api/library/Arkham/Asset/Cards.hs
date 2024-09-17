@@ -335,6 +335,7 @@ allPlayerAssetCards =
       , elderSignAmulet3
       , eldritchSophist
       , eldritchTongue
+      , elinaHarperKnowsTooMuch
       , elleRubashPurifyingPurpose2
       , embezzeledTreasure
       , empiricalHypothesis
@@ -823,6 +824,7 @@ allPlayerAssetCards =
       , thirtyFiveWinchester
       , thirtyTwoColt
       , thirtyTwoColt2
+      , thomasDawsonSoldierInANewWar
       , tidalMemento
       , timewornBrand5
       , tokenOfFaith
@@ -4408,6 +4410,24 @@ tokenOfFaith =
     { cdCardTraits = setFromList [Item, Charm]
     , cdSkills = [#intellect]
     , cdSlots = [#accessory]
+    }
+
+thomasDawsonSoldierInANewWar :: CardDef
+thomasDawsonSoldierInANewWar =
+  (storyAsset "07082" ("Thomas Dawson" <:> "Soldier in a New War") 4 TheVanishingOfElinaHarper)
+    { cdSkills = [#willpower, #combat, #wild]
+    , cdCardTraits = setFromList [Ally, Agency, Veteran]
+    , cdUnique = True
+    , cdSlots = [#ally]
+    }
+
+elinaHarperKnowsTooMuch :: CardDef
+elinaHarperKnowsTooMuch =
+  (storyAsset "07083" ("Elina Harper" <:> "Knows Too Much") 4 TheVanishingOfElinaHarper)
+    { cdSkills = [#intellect, #agility, #wild]
+    , cdCardTraits = setFromList [Ally, Agency, Detective]
+    , cdUnique = True
+    , cdSlots = [#ally]
     }
 
 riotWhistle :: CardDef

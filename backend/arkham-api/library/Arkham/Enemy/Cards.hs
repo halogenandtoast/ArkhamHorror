@@ -97,12 +97,14 @@ allEncounterEnemyCards =
       , avianThrall
       , azathoth
       , balefulReveler
+      , barnabasMarshTheChangeIsUponHim
       , basilisk
       , beastOfAldebaran
       , beingsOfIb
       , billyCooper
       , boaConstrictor
       , bogGator
+      , brianBurnhamWantsOut
       , broodOfYig
       , broodOfYogSothoth
       , brotherhoodCultist
@@ -180,12 +182,15 @@ allEncounterEnemyCards =
       , ichtacaScionOfYig
       , icyGhoul
       , inconspicuousZoog
+      , initiateOfDagon
+      , innsmouthTroublemaker
       , interstellarTraveler
       , ishimaruHaruko
       , jeremiahPierce
       , jeromeDavids
       , jordanPerry
       , josefMeiger
+      , joyceLittleBookshopOwner
       , kamanThah
       , keeperOfSecrets
       , keeperOfTheGreatLibrary
@@ -227,6 +232,7 @@ allEncounterEnemyCards =
       , nyarlathotepTheCrawlingChaos
       , nyarlathotepTheFacelessWhisperer
       , oBannionsThug
+      , otheraGilmanProprietessOfTheHotel
       , otherworldlyMeddler
       , packOfVooniths
       , padmaAmrita
@@ -240,11 +246,13 @@ allEncounterEnemyCards =
       , poltergeist
       , possessedOathspeaker
       , priestOfAThousandMasks
+      , priestOfDagon
       , priestessOfTheCoven
       , ravenousGhoul
       , relentlessDarkYoung
       , riftSeeker
       , roachSwarm
+      , robertFriendlyDisgruntledDockworker
       , royalEmissary
       , ruthTurner
       , salvatoreNeri
@@ -299,6 +307,7 @@ allEncounterEnemyCards =
       , whippoorwill
       , whippoorwillUnionAndDisillusion
       , wingedOne
+      , wingedOneFogOverInnsmouth
       , witnessOfChaos
       , wizardOfTheOrder
       , wizardOfYogSothoth
@@ -311,6 +320,7 @@ allEncounterEnemyCards =
       , yogSothoth
       , youngDeepOne
       , youngPsychopath
+      , zadokAllenDrunkAndDisorderly
       ]
 
 allSpecialEnemyCards :: Map CardCode CardDef
@@ -1999,6 +2009,80 @@ theAmalgam =
       , cdKeywords = singleton Keyword.Hunter
       }
 
+robertFriendlyDisgruntledDockworker :: CardDef
+robertFriendlyDisgruntledDockworker =
+  unique
+    $ ( enemy "07076" ("Robert Friendly" <:> "Disgruntled Dockerworker") TheVanishingOfElinaHarper 1
+      )
+      { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
+      , cdKeywords = singleton Keyword.Aloof
+      , cdVictoryPoints = Just 0
+      }
+
+zadokAllenDrunkAndDisorderly :: CardDef
+zadokAllenDrunkAndDisorderly =
+  unique
+    $ ( enemy "07077" ("Zadok Allen" <:> "Drunk and Disorderly") TheVanishingOfElinaHarper 1
+      )
+      { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
+      , cdKeywords = singleton Keyword.Aloof
+      , cdVictoryPoints = Just 0
+      }
+
+brianBurnhamWantsOut :: CardDef
+brianBurnhamWantsOut =
+  unique
+    $ ( enemy "07078" ("Brian Burnham" <:> "Wants Out") TheVanishingOfElinaHarper 1
+      )
+      { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
+      , cdKeywords = singleton Keyword.Aloof
+      , cdVictoryPoints = Just 0
+      }
+
+barnabasMarshTheChangeIsUponHim :: CardDef
+barnabasMarshTheChangeIsUponHim =
+  unique
+    $ ( enemy "07079" ("Barnabas Marsh" <:> "The Change Is upon Him") TheVanishingOfElinaHarper 1
+      )
+      { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
+      , cdKeywords = singleton Keyword.Aloof
+      , cdVictoryPoints = Just 0
+      }
+
+joyceLittleBookshopOwner :: CardDef
+joyceLittleBookshopOwner =
+  unique
+    $ ( enemy "07080" ("Joyce Little" <:> "Bookshop Owner") TheVanishingOfElinaHarper 1
+      )
+      { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
+      , cdKeywords = singleton Keyword.Aloof
+      , cdVictoryPoints = Just 0
+      }
+
+otheraGilmanProprietessOfTheHotel :: CardDef
+otheraGilmanProprietessOfTheHotel =
+  unique
+    $ ( enemy "07081" ("Othera Gilman" <:> "Proprietess of the Hotel") TheVanishingOfElinaHarper 1
+      )
+      { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
+      , cdKeywords = singleton Keyword.Aloof
+      , cdVictoryPoints = Just 0
+      }
+
+priestOfDagon :: CardDef
+priestOfDagon =
+  ( enemy "07084" "Priest of Dagon" AgentsOfDagon 1
+  )
+    { cdCardTraits = setFromList [Humanoid, Cultist]
+    }
+
+initiateOfDagon :: CardDef
+initiateOfDagon =
+  ( enemy "07085" "Initiate of Dagon" AgentsOfDagon 3
+  )
+    { cdCardTraits = setFromList [Humanoid, Hybrid, Cultist]
+    }
+
 deepOneBull :: CardDef
 deepOneBull =
   ( enemy "07088" "Deep One Bull" ThePitOfDespair 1
@@ -2011,6 +2095,22 @@ lurkingDeepOne =
   ( enemy "07089" "Lurking Deep One" ThePitOfDespair 3
   )
     { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
+    }
+
+wingedOneFogOverInnsmouth :: CardDef
+wingedOneFogOverInnsmouth =
+  ( enemy "07094" "Winged One" FogOverInnsmouth 1
+  )
+    { cdCardTraits = setFromList [Creature, Monster]
+    , cdKeywords = singleton Keyword.Hunter
+    }
+
+innsmouthTroublemaker :: CardDef
+innsmouthTroublemaker =
+  ( enemy "07105" "Innsmouth Troublemaker" TheLocals 2
+  )
+    { cdCardTraits = setFromList [Humanoid, Hybrid, Criminal]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 mobGoons :: CardDef

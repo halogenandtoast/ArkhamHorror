@@ -141,7 +141,6 @@ watch(abilities, (abilities) => {
     abilitiesEl.value?.focus()
   }
 
-  console.log(id.value, abilities.length)
   if (abilities.length === 0) {
     showAbilities.value = false
     abilitiesEl.value?.blur()

@@ -602,6 +602,20 @@ allLocations =
     , SomeLocationCard altarToDagon
     , SomeLocationCard idolChamber
     , SomeLocationCard sealedExit
+    , --- The Vanishing of Elina Harper
+      SomeLocationCard marshRefinery
+    , SomeLocationCard gilmanHouse
+    , SomeLocationCard innsmouthSquare
+    , SomeLocationCard innsmouthHarbour
+    , SomeLocationCard firstNationalGrocery
+    , SomeLocationCard fishStreetBridge
+    , SomeLocationCard theLittleBookshop
+    , SomeLocationCard esotericOrderOfDagon
+    , SomeLocationCard sawboneAlley
+    , SomeLocationCard shorewardSlums
+    , SomeLocationCard theHouseOnWaterStreet
+    , SomeLocationCard innsmouthJail
+    , SomeLocationCard newChurchGreen
     , --- Flooded Caverns
       SomeLocationCard underwaterCavern
     , SomeLocationCard tidalPool

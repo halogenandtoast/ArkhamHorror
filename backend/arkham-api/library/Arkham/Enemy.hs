@@ -367,9 +367,23 @@ allEnemies =
       SomeEnemyCard accursedFollower
     , --- The Pit of Despair [tic]
       SomeEnemyCard theAmalgam
+    , --- The Vanishing of Elina Harper [tic]
+      SomeEnemyCard robertFriendlyDisgruntledDockworker
+    , SomeEnemyCard zadokAllenDrunkAndDisorderly
+    , SomeEnemyCard brianBurnhamWantsOut
+    , SomeEnemyCard barnabasMarshTheChangeIsUponHim
+    , SomeEnemyCard joyceLittleBookshopOwner
+    , SomeEnemyCard otheraGilmanProprietessOfTheHotel
+    , --- Agents of Dagon [tic]
+      SomeEnemyCard priestOfDagon
+    , SomeEnemyCard initiateOfDagon
     , --- Creatures of the Deep [tic]
       SomeEnemyCard deepOneBull
     , SomeEnemyCard lurkingDeepOne
+    , --- Fog Over Innsmouth [tic]
+      SomeEnemyCard wingedOneFogOverInnsmouth
+    , --- The Locals [tic]
+      SomeEnemyCard innsmouthTroublemaker
     , -- Edge of the Earth
       -- signature
       SomeEnemyCard mobGoons

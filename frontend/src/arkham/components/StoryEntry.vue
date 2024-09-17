@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import type { Read } from '@/arkham/types/Question';
 import Token from '@/arkham/components/Token.vue';
+import { useI18n } from 'vue-i18n';
 
 export interface Props {
   game: Game
@@ -13,9 +14,14 @@ export interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const choose = (idx: number) => emit('choose', idx)
+const { t} = useI18n()
 
 const format = function(body: string) {
   return body.replace(/_([^_]*)_/g, '<b>$1</b>').replace(/\*([^*]*)\*/g, '<i>$1</i>')
+}
+
+const maybeFormat = function(body: string) {
+  return body.startsWith("$") ? t(tformat(body)) : body
 }
 
 const readChoices = props.question.readChoices.reduce<{ label: string, index: number}[]>((acc, v, i) => {
@@ -36,11 +42,11 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
 </script>
 <template>
   <div class="intro-text">
-    <div class="entry" v-if="formatted" v-html="$t(formatted)"></div>
-    <div v-else class="entry">
-      <h1 v-if="question.flavorText.title">{{question.flavorText.title}}</h1>
+    <div class="entry">
+      <h1 v-if="question.flavorText.title">{{maybeFormat(question.flavorText.title)}}</h1>
       <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="() => {}" />
-      <p
+      <div v-if="formatted" v-html="$t(formatted)"></div>
+      <p v-else
         v-for="(paragraph, index) in question.flavorText.body"
         :key="index"
         v-html="format(paragraph)"

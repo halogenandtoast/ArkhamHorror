@@ -78,6 +78,7 @@ const showLog = ref(false);
 const showShortcuts = ref(false)
 const showSidebar = ref(JSON.parse(localStorage.getItem("showSidebar")??'true'))
 const socketError = ref(false)
+const error = ref<string | null>(null)
 const solo = ref(false)
 const tarotCards = ref<TarotCard[]>([])
 const uiLock = ref<boolean>(false)
@@ -137,7 +138,7 @@ const { data, send, close } = useWebSocket(websocketUrl.value, { autoReconnect: 
 const handleResult = (result: ServerResult) => {
   switch(result.tag) {
     case "GameError":
-      alert(result.contents)
+      error.value = result.contents
       return
     case "GameMessage":
       gameLog.value = Object.freeze([...gameLog.value, result.contents])
@@ -426,6 +427,15 @@ onUnmounted(() => {
     </div>
   </div>
   <div id="game" v-else-if="ready && game && playerId">
+    <dialog v-if="error" class="error-dialog">
+      <h2>Error</h2>
+      <p>{{error}}</p>
+      <p>This is most likely a bug, please file a bug report.</p>
+      <div class="buttons">
+        <button @click="bugDescription = error ?? ''; error = null; filingBug = true"><ExclamationTriangleIcon aria-hidden="true" /> File Bug</button>
+        <button @click="error = null">Close</button>
+      </div>
+    </dialog>
     <CardOverlay />
     <Draggable v-if="showShortcuts">
       <template #handle>
@@ -1222,5 +1232,52 @@ button:hover .shortcut {
     padding: 5px 10px;
   }
 
+}
+
+.error-dialog {
+  backdrop-filter: blur(3px);
+  background-color: rgba(0,0,0,0.8);
+  position: absolute;
+  width: 50%;
+  inset: 0;
+  display: flex;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border: 0;
+  border-radius: 10px;
+
+  p {
+    padding: 10px;
+  }
+
+  h2 {
+    font-family: Teutonic;
+    font-size: 2em;
+  }
+
+  button {
+    background: none;
+    border: 0;
+    display: inline;
+    padding: 5px 10px;
+    display: flex;
+    gap: 5px;
+    height: 100%;
+    align-items: center;
+    svg {
+      width: 15px;
+    }
+    &:hover {
+      background: rgba(0,0,0,0.4);
+    }
+      height: 100%;
+  }
+
+  justify-content: center;
+  align-items: center;
+  justify-self: center;
+  align-self: center;
 }
 </style>

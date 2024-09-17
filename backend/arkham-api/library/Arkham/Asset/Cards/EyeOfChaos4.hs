@@ -63,13 +63,14 @@ instance RunMessage EyeOfChaos4Effect where
                   player
                   $ [Label "Place 1 Charge on Eye of Chaos (4)" [AddUses attrs.source assetId Charge 1] | stillInPlay]
                   <> [ Label
-                        "Discover 1 clues at a connecting location"
-                        [ chooseOne
-                            player
-                            [ targetLabel lid' [Msg.DiscoverClues iid $ discover lid' attrs 1]
-                            | lid' <- lids
-                            ]
-                        ]
+                      "Discover 1 clues at a connecting location"
+                      [ chooseOne
+                          player
+                          [ targetLabel lid' [Msg.DiscoverClues iid $ discover lid' attrs 1]
+                          | lid' <- lids
+                          ]
+                      ]
+                     | notNull lids
                      ]
                 | stillInPlay || notNull lids
                 ]

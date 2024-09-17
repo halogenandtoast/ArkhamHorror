@@ -575,7 +575,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pushM $ checkWhen $ Window.InvestigatorResigned iid
     pushAll $ resolve (Msg.InvestigatorResigned iid)
     pure $ a & endedTurnL .~ True
-  Msg.InvestigatorDefeated source iid -> do
+  Msg.InvestigatorDefeated source iid | iid == investigatorId -> do
     -- a card effect defeats an investigator directly
     windowMsg <-
       checkWindows [mkWhen $ Window.InvestigatorWouldBeDefeated (DefeatedByOther source) (toId a)]
@@ -1861,10 +1861,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (deckL %~ Deck . filter ((/= card) . toCard) . unDeck)
       & (cardsUnderneathL %~ filter ((/= card) . toCard))
       & (foundCardsL . each %~ filter (/= card))
-  PutCampaignCardIntoPlay iid cardDef -> do
+  PutCampaignCardIntoPlay iid cardDef | iid == investigatorId -> do
     let mcard = find ((== cardDef) . toCardDef) (unDeck investigatorDeck)
     case mcard of
-      Nothing -> error "did not have campaign card"
+      Nothing ->
+        sendError $ "The game expected to find "
+          <> toTitle cardDef
+          <> " in the deck of "
+          <> toTitle a
+          <> ", but was unable to find it."
       Just card -> push $ PutCardIntoPlay iid (PlayerCard card) Nothing NoPayment []
     pure a
   InvestigatorPlayAsset iid aid | iid == investigatorId -> do
@@ -2076,8 +2081,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let health = if cannotHealDamage then 0 else findWithDefault 0 source investigatorAssignedHealthHeal
     let sanity = if cannotHealHorror then 0 else findWithDefault 0 source investigatorAssignedSanityHeal
 
-    push $ Do msg
     when (health > 0 || sanity > 0) do
+      push $ Do msg
       pushM
         $ checkWindows
         $ [mkWhen (Window.Healed DamageType (toTarget a) source health) | health > 0]
@@ -3713,8 +3718,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     if pcOwner card == Just investigatorId
       then pure $ a & (discardL %~ filter (/= card)) & (deckL %~ Deck . filter (/= card) . unDeck)
       else pure a
-  RemovePlayerCardFromGame addToRemovedFromGame card -> do
-    when addToRemovedFromGame $ push $ RemovedFromGame card
+  RemovePlayerCardFromGame _addToRemovedFromGame card -> do
     case preview _PlayerCard card of
       Just pc ->
         pure

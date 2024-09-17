@@ -134,6 +134,9 @@ getInvestigatorsInOrder = do
 
 runGameMessage :: Runner Game
 runGameMessage msg g = case msg of
+  RemovePlayerCardFromGame addToRemovedFromGame card -> do
+    when addToRemovedFromGame $ push $ RemovedFromGame card
+    pure g
   SetGameState s -> pure $ g & gameStateL .~ s
   ChoosingDecks -> pure $ g & entitiesL . investigatorsL .~ mempty & gameStateL .~ IsChooseDecks (g ^. playersL)
   DoneChoosingDecks -> pure $ g & gameStateL .~ IsActive

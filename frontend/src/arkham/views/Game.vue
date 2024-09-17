@@ -107,7 +107,7 @@ await fetchGame(props.gameId, props.spectate).then(({ game: newGame, playerId: n
     gameLog.value = Object.freeze(newGame.log)
     playerId.value = newPlayerId
     ready.value = true
-  })
+  }).catch(error => console.log(error))
 })
 
 // Local Decoders
@@ -339,7 +339,10 @@ function loadAllImages(game: Arkham.Game): Promise<void[]> {
         preloaded.push(url)
         resolve()
       }
-      img.onerror = reject
+      img.onerror = (e) => {
+        console.log(card)
+        reject(e)
+        }
       })
   })
 

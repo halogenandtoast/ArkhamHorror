@@ -42,6 +42,7 @@ data instance Field Story :: Type -> Type where
   StoryCard :: Field Story Card
   StoryPlacement :: Field Story Placement
   StoryOtherSide :: Field Story (Maybe Target)
+  StoryCardsUnderneath :: Field Story [Card]
 
 data StoryAttrs = StoryAttrs
   { storyId :: StoryId
@@ -51,6 +52,7 @@ data StoryAttrs = StoryAttrs
   , storyFlipped :: Bool
   , storyMeta :: Value
   , storyRemoveAfterResolution :: Bool
+  , storyCardsUnderneath :: [Card]
   }
   deriving stock (Show, Eq)
 
@@ -76,6 +78,7 @@ storyWith f cardDef g =
             , storyFlipped = False
             , storyMeta = Null
             , storyRemoveAfterResolution = True
+            , storyCardsUnderneath = []
             }
     }
 
@@ -174,4 +177,16 @@ someStoryCardCode = liftSomeStoryCard cbCardCode
 
 makeLensesWith suffixedFields ''StoryAttrs
 
-$(deriveJSON (aesonOptions $ Just "story") ''StoryAttrs)
+$(deriveToJSON (aesonOptions $ Just "story") ''StoryAttrs)
+
+instance FromJSON StoryAttrs where
+  parseJSON = withObject "StoryAttrs" \o -> do
+    storyId <- o .: "id"
+    storyCardId <- o .: "cardId"
+    storyPlacement <- o .: "placement"
+    storyOtherSide <- o .: "otherSide"
+    storyFlipped <- o .: "flipped"
+    storyMeta <- o .: "meta"
+    storyRemoveAfterResolution <- o .: "removeAfterResolution"
+    storyCardsUnderneath <- o .:? "cardsUnderneath" .!= []
+    pure StoryAttrs {..}

@@ -220,6 +220,10 @@ allAgendas =
       SomeAgendaCard awakening
     , SomeAgendaCard theWaterRises
     , SomeAgendaCard sacrificeForTheDeep
+    , --- The Vanishing of Elina Harper
+      SomeAgendaCard decrepitDecay
+    , SomeAgendaCard growingSuspicion
+    , SomeAgendaCard franticPursuit
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

@@ -2023,6 +2023,10 @@ runGameMessage msg g = case msg of
             [ targetLabel (toTarget storyId) [ResolveStory iid storyMode storyId, ResolvedStory storyMode storyId]
             ]
     pure $ g & entitiesL . storiesL . at storyId ?~ story'
+  PlaceStory card placement -> do
+    let storyId = StoryId $ toCardCode card
+    let story' = overAttrs (Story.placementL .~ placement) (createStory card Nothing storyId)
+    pure $ g & entitiesL . storiesL . at storyId ?~ story'
   ResolveStory _ _ sid -> do
     card <- field StoryCard sid
     pure $ g & focusedCardsL %~ filter (/= card)

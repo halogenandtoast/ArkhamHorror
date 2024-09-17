@@ -1,7 +1,8 @@
 import ita from '@/digests/ita.json'
 
 export function toCapitalizedWords(name: string) {
-  const words = name.match(/[A-Z]+[a-z']+/g) || [];
+  // const words = name.match(/[A-Z]+[a-z']+/g) || [];
+  const words = name.match(/[A-Z]?[a-z']+|[A-Z]/g) || [];
   return capitalize(words.map(lowercase).join(" "));
 }
 

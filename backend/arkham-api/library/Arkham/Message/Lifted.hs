@@ -1530,3 +1530,12 @@ moveTowardsMatching
   -> LocationMatcher
   -> m ()
 moveTowardsMatching source target matcher = push $ Move $ Msg.moveTowardsMatching source target matcher
+
+chooseUpgradeDeck :: ReverseQueue m => InvestigatorId -> m ()
+chooseUpgradeDeck iid = do
+  pid <- getPlayer iid
+  push $ Ask pid ChooseUpgradeDeck
+
+placeCluesOnLocation
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
+placeCluesOnLocation iid source n = push $ InvestigatorPlaceCluesOnLocation iid (toSource source) n

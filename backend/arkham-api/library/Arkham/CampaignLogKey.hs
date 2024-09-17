@@ -265,7 +265,7 @@ data CampaignLogKey
   | TheInvestigatorsReturnedToReality
   | TheInvestigatorsNeverEscaped
   | TheInvestigatorsAreStillInTheDreamlands
-  | -- | The Dream-Eaters
+  | -- | The Innsmouth Conspiracy
     MemoriesRecovered
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou

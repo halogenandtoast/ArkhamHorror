@@ -106,15 +106,18 @@ data Trait
   | Hardship
   | Hazard
   | Hex
+  | Hideout
   | HistoricalSociety
   | Human
   | Humanoid
   | Hunter
+  | Hybrid
   | Illicit
   | Improvised
   | Injury
   | Innate
   | Innocent
+  | Innsmouth
   | Insect
   | Insight
   | Instrument
@@ -200,6 +203,7 @@ data Trait
   | Summon
   | Supply
   | Surface
+  | Suspect
   | Syndicate
   | Synergy
   | Tactic

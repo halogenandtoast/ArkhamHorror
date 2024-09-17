@@ -17,7 +17,7 @@ data ScenarioDeckKey
   | UnknownPlacesDeck -- The Secret Name
   | CosmosDeck -- Before the Black Throne
   | TidalTunnelDeck -- The Pit of Dispair
-  | LeadsDeck -- Murder at the Excelsior Hotel
+  | LeadsDeck -- The Vanishing of Elina Harper, Murder at the Excelsior Hotel
   deriving stock (Show, Ord, Eq, Data)
 
 $(deriveJSON defaultOptions ''ScenarioDeckKey)

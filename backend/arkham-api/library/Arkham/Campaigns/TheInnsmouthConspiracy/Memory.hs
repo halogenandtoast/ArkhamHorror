@@ -6,6 +6,6 @@ data Memory
   = AMeetingWithThomasDawson
   | ABattleWithAHorrifyingDevil
   | ADecisionToStickTogether
-  | EncounterWithASecretCult
+  | AnEncounterWithASecretCult
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

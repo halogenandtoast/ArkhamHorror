@@ -10,7 +10,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Runner (pattern PlayThisEvent)
-import Arkham.Investigator.Types (Field (..), defeatedL, resignedL)
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (AssetCard, PlaceUnderneath)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection

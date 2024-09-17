@@ -15,6 +15,8 @@ import Arkham.Investigator.Runner as X (
   IsInvestigator,
   Stats (..),
   deckL,
+  resignedL,
+  defeatedL,
   decksL,
   deleteMetaKey,
   insertMetaKey,

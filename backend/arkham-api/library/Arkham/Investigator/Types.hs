@@ -381,6 +381,9 @@ instance Sourceable InvestigatorAttrs where
 instance HasField "id" InvestigatorAttrs InvestigatorId where
   getField = investigatorId
 
+instance HasField "inGame" InvestigatorAttrs Bool where
+  getField attrs = not (investigatorDefeated attrs || investigatorResigned attrs)
+
 instance HasField "taboo" InvestigatorAttrs (Maybe TabooList) where
   getField = investigatorTaboo
 

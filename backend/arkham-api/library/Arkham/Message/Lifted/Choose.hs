@@ -13,9 +13,14 @@ import Arkham.Target
 import Control.Monad.State.Strict
 import Control.Monad.Writer.Strict
 
-newtype ChooseT m a = ChooseT {unChooseT :: StateT Bool (WriterT [UI Message] m) a}
+data ChooseState = ChooseState
+  { terminated :: Bool
+  , label :: Maybe Text
+  }
+
+newtype ChooseT m a = ChooseT {unChooseT :: StateT ChooseState (WriterT [UI Message] m) a}
   deriving newtype
-    (Functor, Applicative, Monad, MonadWriter [UI Message], MonadState Bool, MonadIO)
+    (Functor, Applicative, Monad, MonadWriter [UI Message], MonadState ChooseState, MonadIO)
 
 instance HasGame m => HasGame (ChooseT m) where
   getGame = lift getGame
@@ -23,37 +28,40 @@ instance HasGame m => HasGame (ChooseT m) where
 instance MonadTrans ChooseT where
   lift = ChooseT . lift . lift
 
-runChooseT :: ReverseQueue m => ChooseT m a -> m [UI Message]
-runChooseT = execWriterT . (`evalStateT` False) . unChooseT
+runChooseT :: ChooseT m a -> m ((a, ChooseState), [UI Message])
+runChooseT = runWriterT . (`runStateT` ChooseState False Nothing) . unChooseT
 
 chooseOneM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOneM iid choices = do
-  choices' <- runChooseT choices
-  unless (null choices') $ chooseOne iid choices'
+  ((_, ChooseState { label }), choices') <- runChooseT choices
+  unless (null choices') do
+    case label of
+      Nothing -> chooseOne iid choices'
+      Just l -> questionLabel l iid $ ChooseOne choices'
 
 chooseOneFromEachM :: ReverseQueue m => InvestigatorId -> [ChooseT m a] -> m ()
 chooseOneFromEachM iid choices = do
   choices' <- traverse runChooseT choices
-  unless (null choices') $ chooseOneFromEach iid choices'
+  unless (null choices') $ chooseOneFromEach iid $ map snd choices'
 
 chooseOrRunOneM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOrRunOneM iid choices = do
-  choices' <- runChooseT choices
+  (_, choices') <- runChooseT choices
   unless (null choices') $ chooseOrRunOne iid choices'
 
 chooseNM :: ReverseQueue m => InvestigatorId -> Int -> ChooseT m a -> m ()
 chooseNM iid n choices = do
-  choices' <- runChooseT choices
+  (_, choices') <- runChooseT choices
   unless (null choices') $ chooseN iid n choices'
 
 chooseUpToNM :: ReverseQueue m => InvestigatorId -> Int -> Text -> ChooseT m a -> m ()
 chooseUpToNM iid n done choices = do
-  choices' <- runChooseT choices
+  (_, choices') <- runChooseT choices
   unless (null choices') $ chooseUpToN iid n done choices'
 
 chooseOneAtATimeM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOneAtATimeM iid choices = do
-  choices' <- runChooseT choices
+  (_, choices') <- runChooseT choices
   unless (null choices') $ chooseOneAtATime iid choices'
 
 forcedWhen :: Monad m => Bool -> ChooseT m () -> ChooseT m ()
@@ -61,13 +69,13 @@ forcedWhen b action =
   if b
     then do
       censor id action
-      put True
+      modify $ \s -> s { terminated = True }
     else action
 
 unterminated :: ReverseQueue m => ChooseT m () -> ChooseT m ()
 unterminated action = do
-  b <- get
-  unless b action
+  ChooseState { terminated } <- get
+  unless terminated action
 
 labeled :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
 labeled label action = unterminated do
@@ -118,3 +126,6 @@ chooseTargetM iid ts action = chooseOneM iid $ unterminated $ for_ ts \t -> targ
 
 nothing :: Monad m => QueueT Message m ()
 nothing = pure ()
+
+questionLabeled :: ReverseQueue m => Text -> ChooseT m ()
+questionLabeled label = modify $ \s -> s { Arkham.Message.Lifted.Choose.label = Just label }

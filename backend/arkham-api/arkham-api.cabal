@@ -2778,6 +2778,7 @@ library
       Arkham.Message.Lifted.Choose
       Arkham.Message.Lifted.Placement
       Arkham.Message.Lifted.Queue
+      Arkham.Message.Lifted.SkillTest
       Arkham.Message.Type
       Arkham.Modifier
       Arkham.ModifierData

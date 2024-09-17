@@ -942,8 +942,9 @@ drawCardsIfCan
   -> Int
   -> m ()
 drawCardsIfCan iid source n = do
-  mmsg <- Msg.drawCardsIfCan iid source n
-  for_ mmsg push
+  when (n > 0) do
+    mmsg <- Msg.drawCardsIfCan iid source n
+    for_ mmsg push
 
 focusChaosTokens :: ReverseQueue m => [ChaosToken] -> (Message -> m ()) -> m ()
 focusChaosTokens tokens f = do
@@ -1473,3 +1474,23 @@ handleTarget iid source target = push $ Msg.handleTargetChoice iid source target
 spendUses
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> UseType -> Int -> m ()
 spendUses source target tType n = push $ SpendUses (toSource source) (toTarget target) tType n
+
+discardCard
+  :: ( ReverseQueue m
+     , Sourceable source
+     , IsCard card
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     )
+  => investigator
+  -> source
+  -> card
+  -> m ()
+discardCard investigator source card = push $ DiscardCard (asId investigator) (toSource source) (toCardId card)
+
+forTarget :: (ReverseQueue m, Targetable target) => target -> QueueT Message m () -> m ()
+forTarget target f =
+  evalQueueT f >>= \case
+    [] -> pure ()
+    [msg] -> push $ ForTarget (toTarget target) msg
+    msgs -> push $ ForTarget (toTarget target) (Run msgs)

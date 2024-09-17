@@ -1,19 +1,13 @@
-module Arkham.Investigator.Cards.PatriceHathaway (
-  patriceHathaway,
-  PatriceHathaway (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.PatriceHathaway (patriceHathaway, PatriceHathaway (..)) where
 
 import Arkham.Capability
 import Arkham.Card
-import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
+import Arkham.Investigator.Projection ()
 import Arkham.Matcher
-import Arkham.Projection
+import Arkham.Message.Lifted.Choose
 
 newtype PatriceHathaway = PatriceHathaway InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
@@ -36,47 +30,35 @@ instance HasChaosTokenValue PatriceHathaway where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage PatriceHathaway where
-  runMessage msg i@(PatriceHathaway attrs) = case msg of
-    SendMessage (isTarget attrs -> True) AllDrawCardAndResource | not (attrs ^. defeatedL || attrs ^. resignedL) -> do
-      push $ ForTarget (toTarget attrs) (DoStep 2 AllDrawCardAndResource)
-      hand <- field InvestigatorHand (toId attrs)
-      let nonWeaknessCards = filter (`cardMatch` NonWeakness) hand
-      player <- getPlayer (toId attrs)
-      pushAll
-        [ chooseOneAtATime player
-            $ targetLabels nonWeaknessCards (only . DiscardCard (toId attrs) (toSource attrs) . toCardId)
-        , DoStep 1 msg
-        ]
+  runMessage msg i@(PatriceHathaway attrs) = runQueueT $ case msg of
+    SendMessage (isTarget attrs -> True) AllDrawCardAndResource | attrs.inGame -> do
+      discards <- filterCards NonWeakness <$> attrs.hand
+      chooseOneAtATimeM attrs.id $ targets discards $ discardCard attrs attrs
+      doStep 1 msg
+      forTarget attrs $ doStep 2 AllDrawCardAndResource
       pure i
-    DoStep 1 (SendMessage (isTarget attrs -> True) AllDrawCardAndResource) | not (attrs ^. defeatedL || attrs ^. resignedL) -> do
-      cards <- field InvestigatorHand (toId attrs)
-      let numberToDraw = max 0 (5 - length cards)
-      pushWhen (numberToDraw > 0) $ drawCards (toId attrs) ScenarioSource numberToDraw
+    DoStep 1 (SendMessage (isTarget attrs -> True) AllDrawCardAndResource) | attrs.inGame -> do
+      drawCardsIfCan attrs ScenarioSource . (`subtract` 5) . length =<< attrs.hand
       pure i
-    ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
-      insertAfterMatching [DoStep 1 msg] (== EndSkillTestWindow)
+    ElderSignEffect (is attrs -> True) -> do
+      afterSkillTest $ doStep 1 msg
       pure i
-    DoStep 1 msg'@(ResolveChaosToken _ ElderSign iid) | attrs `is` iid -> do
-      canModifyDeck <- check attrs can.manipulate.deck
-      canHaveCardsLeaveDiscard <- check attrs can.have.cards.leaveDiscard
-      player <- getPlayer iid
-      pushWhen (canModifyDeck && canHaveCardsLeaveDiscard && length attrs.discard > 1)
-        $ chooseOrRunOne player
-        $ [ Label "Shuffle all but 1 card from your discard pile into your deck" [DoStep 2 msg']
-          , Label "Skip" []
-          ]
+    DoStep 1 msg'@(ElderSignEffect (is attrs -> True)) -> do
+      canModifyDeck <- can.manipulate.deck attrs.id
+      canHaveCardsLeaveDiscard <- can.have.cards.leaveDiscard attrs.id
+      when (canModifyDeck && canHaveCardsLeaveDiscard && length attrs.discard > 1) do
+        chooseOrRunOneM attrs.id do
+          labeled "Shuffle all but 1 card from your discard pile into your deck" $ doStep 2 msg'
+          labeled "Skip" nothing
       pure i
-    DoStep 2 (ResolveChaosToken _ ElderSign iid) | attrs `is` iid -> do
+    DoStep 2 (ElderSignEffect (is attrs -> True)) -> do
       let discards = map toCard attrs.discard
-      player <- getPlayer (toId attrs)
-      pushAll
-        [ FocusCards discards
-        , questionLabel "Choose 1 card to leave in discard" player
-            $ ChooseOne
-              [ targetLabel card [UnfocusCards, ShuffleCardsIntoDeck (Deck.InvestigatorDeck (toId attrs)) rest]
-              | (card, rest) <- eachWithRest discards
-              ]
-        ]
-
+      focusCards discards \unfocus -> do
+        chooseOneM attrs.id do
+          questionLabeled "Choose 1 card to leave in discard"
+          for_ (eachWithRest discards) \(card, rest) -> do
+            targeting card do
+              push unfocus
+              shuffleCardsIntoDeck attrs.id rest
       pure i
-    _ -> PatriceHathaway <$> runMessage msg attrs
+    _ -> PatriceHathaway <$> liftRunMessage msg attrs

@@ -7,10 +7,12 @@ module Arkham.Investigator.Projection (
 
 import Arkham.Card
 import Arkham.Classes.HasGame
+import Arkham.Classes.Entity
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.GameT
 import Arkham.Id
 import Arkham.Investigator.Types as X (Field (..))
+import Arkham.Investigator.Types (InvestigatorAttrs)
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Prelude
@@ -21,6 +23,9 @@ import GHC.Records
 
 instance HasField "hand" InvestigatorId (QueueT Message GameT [Card]) where
   getField = field InvestigatorHand
+
+instance HasField "hand" InvestigatorAttrs (QueueT Message GameT [Card]) where
+  getField = field InvestigatorHand . toId
 
 getSlots :: HasGame m => SlotType -> InvestigatorId -> m [Slot]
 getSlots sType iid = fieldMap InvestigatorSlots (findWithDefault [] sType) iid

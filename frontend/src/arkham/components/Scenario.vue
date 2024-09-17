@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
 import { EyeIcon, QuestionMarkCircleIcon } from '@heroicons/vue/20/solid'
 import {
   watchEffect,
@@ -53,6 +54,8 @@ const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const debug = useDebug()
 const { addEntry, removeEntry } = useMenu()
+
+const upgradeDeck = computed(() => Object.values(props.game.question).some((q) => q.tag === 'ChooseUpgradeDeck'))
 
 // emit helpers
 const choose = async (idx: number) => emit('choose', idx)
@@ -336,7 +339,10 @@ const tarotCardAbility = (card: TarotCard) => {
 </script>
 
 <template>
-  <div v-if="!gameOver" id="scenario" class="scenario" :data-scenario="scenario.id">
+  <div v-if="upgradeDeck" id="game" class="game">
+    <UpgradeDeck :game="game" :key="playerId" :playerId="playerId" />
+  </div>
+  <div v-else-if="!gameOver" id="scenario" class="scenario" :data-scenario="scenario.id">
     <div class="scenario-body">
       <Draggable v-if="showOutOfPlay || forcedShowOutOfPlay">
         <template #handle><header><h2>Out of Play</h2></header></template>
@@ -532,7 +538,7 @@ const tarotCardAbility = (card: TarotCard) => {
 
       <div class="location-cards-container">
         <Connections :game="game" :playerId="playerId" />
-        <input v-model="locationsZoom" type="range" min="1" max="3" step="0.5" class="zoomer" />
+        <input v-model="locationsZoom" type="range" min="1" max="3" step="0.25" class="zoomer" />
         <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">
           <Location
             v-for="location in locations"

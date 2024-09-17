@@ -44,6 +44,7 @@ allAgendaCards =
       , crossroadsOfFate
       , deadOfNight
       , deathsApproach
+      , decrepitDecay
       , drawnIn
       , empireOfTheDead
       , empireOfTheUndead
@@ -54,7 +55,9 @@ allAgendaCards =
       , eyesInTheDark
       , fashionablyLate
       , feedTheBeast
+      , franticPursuit
       , furyThatShakesTheEarth
+      , growingSuspicion
       , hallsOfStMarys
       , hiddenEntanglements
       , hisDomain
@@ -566,6 +569,15 @@ theWaterRises = agenda "07043" "The Water Rises" 2 ThePitOfDespair
 
 sacrificeForTheDeep :: CardDef
 sacrificeForTheDeep = agenda "07044" "Sacrifice for the Deep" 3 ThePitOfDespair
+
+decrepitDecay :: CardDef
+decrepitDecay = agenda "07057" "Decrepit Decay" 1 TheVanishingOfElinaHarper
+
+growingSuspicion :: CardDef
+growingSuspicion = agenda "07058" "Growing Suspicion" 2 TheVanishingOfElinaHarper
+
+franticPursuit :: CardDef
+franticPursuit = agenda "07059" "Frantic Pursuit" 3 TheVanishingOfElinaHarper
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

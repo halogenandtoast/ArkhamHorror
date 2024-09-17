@@ -49,7 +49,7 @@ const loadedCards = ref<CardDef[]>([]);
 
 // Function to load missing cards
 async function loadMissingCards() {
-  const nonCardKeys = ['MementosDiscovered'];
+  const nonCardKeys = ['MementosDiscovered', 'MemoriesRecovered'];
   const missingCardCodes = new Set();
   for (const [key, setValue] of Object.entries(recordedSets.value)) {
     if (nonCardKeys.includes(key)) continue;
@@ -79,6 +79,12 @@ const displayRecordValue = (key: string, value: SomeRecordable): string => {
   if (key === 'MementosDiscovered') {
     const contents = value.contents || value.recordVal?.contents
     return toCapitalizedWords(contents)
+  }
+
+  if (key === 'MemoriesRecovered') {
+    const contents = value.contents || value.recordVal?.contents
+    const memory = contents.charAt(0).toLowerCase() + contents.slice(1)
+    return t(`theInnsmouthConspiracy.memoriesRecovered.${memory}`)
   }
 
   const code = value.contents || value.recordVal?.contents

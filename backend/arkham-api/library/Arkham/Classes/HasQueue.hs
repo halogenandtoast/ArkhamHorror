@@ -4,6 +4,7 @@ module Arkham.Classes.HasQueue (
 
 import Arkham.Prelude
 import Arkham.Queue
+import Control.Monad.State
 import Data.Tuple.Extra (dupe)
 import Text.Pretty.Simple
 
@@ -37,6 +38,10 @@ class MonadIO m => HasQueue msg m | m -> msg where
   messageQueue :: m (Queue msg)
   pushAll :: [msg] -> m ()
   pushAll = withQueue_ . (<>)
+
+instance HasQueue msg m => HasQueue msg (StateT s m) where
+  messageQueue = lift messageQueue
+  pushAll = lift . pushAll
 
 dumpQueue :: (HasQueue msg m, Show msg) => m ()
 dumpQueue = pPrint =<< readIORef . queueToRef =<< messageQueue

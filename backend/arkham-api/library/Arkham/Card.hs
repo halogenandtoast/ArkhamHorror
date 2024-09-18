@@ -33,6 +33,7 @@ import Arkham.Queue
 import Arkham.SkillType
 import Arkham.Taboo.Types
 import Arkham.Trait
+import Control.Monad.State
 import Data.Aeson.TH
 import Data.Text qualified as T
 import GHC.Records
@@ -94,6 +95,12 @@ class MonadRandom m => CardGen m where
   genPlayerCard :: HasCardDef a => a -> m PlayerCard
   replaceCard :: CardId -> Card -> m ()
   clearCardCache :: m ()
+
+instance CardGen m => CardGen (StateT s m) where
+  genEncounterCard = lift . genEncounterCard
+  genPlayerCard = lift . genPlayerCard
+  replaceCard cardId card = lift $ replaceCard cardId card
+  clearCardCache = lift clearCardCache
 
 instance CardGen m => CardGen (QueueT msg m) where
   genEncounterCard = lift . genEncounterCard

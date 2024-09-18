@@ -1,5 +1,3 @@
-{-# LANGUAGE ImplicitParams #-}
-
 module Arkham.Treachery.Cards.MacabreMemento (macabreMemento, MacabreMemento (..)) where
 
 import Arkham.Script
@@ -15,6 +13,6 @@ macabreMemento = treachery MacabreMemento Cards.macabreMemento
 
 instance RunMessage MacabreMemento where
   runMessage = script do
-    revelation $ skillTest #willpower (Fixed 3) do
+    revelation $ test #willpower 3 do
       failOnReveal #cultist
       onFail $ you `takeHorror` 2

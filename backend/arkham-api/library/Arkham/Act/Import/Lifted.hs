@@ -16,6 +16,7 @@ import Arkham.Act.Runner as X (
   getLeadPlayer,
   getSetAsideCard,
   isSide,
+  metaL,
   onSide,
   push,
   pushAll,
@@ -36,6 +37,7 @@ import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.Cost as X
 import Arkham.GameValue as X
+import Arkham.Helpers.Ability as X (extend, extend1)
 import Arkham.Helpers.Log as X (getHasRecord)
 import Arkham.Message.Lifted as X
 import Arkham.Prelude as X

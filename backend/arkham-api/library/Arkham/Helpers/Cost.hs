@@ -251,6 +251,10 @@ getCanAffordCost iid !(toSource -> source) actions windows' = \case
   ClueCostX -> do
     spendableClues <- getSpendableClueCount [iid]
     pure $ spendableClues >= 1
+  GroupClueCostX -> do
+    spendableClues <- getSpendableClueCount =<< select Matcher.UneliminatedInvestigator
+    n <- perPlayer 1
+    pure $ spendableClues >= n
   PlaceClueOnLocationCost n -> do
     canParallelRex <- iid <=~> Matcher.InvestigatorIs "90078"
     z <-

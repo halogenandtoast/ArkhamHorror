@@ -20,6 +20,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -112,30 +113,10 @@ instance RunMessage TheVanishingOfElinaHarper where
         , Locations.theLittleBookshop
         ]
 
-      (hideout, hideouts) <-
-        sampleWithRest
-          =<< genCards
-            ( Locations.esotericOrderOfDagon
-                :| [ Locations.sawboneAlley
-                   , Locations.shorewardSlums
-                   , Locations.theHouseOnWaterStreet
-                   , Locations.innsmouthJail
-                   , Locations.newChurchGreen
-                   ]
-            )
-      (suspect, suspects) <-
-        sampleWithRest
-          =<< genCards
-            ( Enemies.robertFriendlyDisgruntledDockworker
-                :| [ Enemies.zadokAllenDrunkAndDisorderly
-                   , Enemies.brianBurnhamWantsOut
-                   , Enemies.barnabasMarshTheChangeIsUponHim
-                   , Enemies.joyceLittleBookshopOwner
-                   , Enemies.otheraGilmanProprietessOfTheHotel
-                   ]
-            )
+      (hideout, remainingHideouts) <- sampleWithRest =<< genCards hideouts
+      (kidnapper, remainingSuspects) <- sampleWithRest =<< genCards suspects
 
-      addExtraDeck LeadsDeck =<< shuffleM (hideouts <> suspects)
+      addExtraDeck LeadsDeck =<< shuffleM (remainingHideouts <> remainingSuspects)
 
       setAside
         [ Agendas.franticPursuit
@@ -149,7 +130,8 @@ instance RunMessage TheVanishingOfElinaHarper where
       findingAgentHarper <- genCard Stories.findingAgentHarper
       push $ PlaceStory findingAgentHarper Global
       let target = StoryTarget $ StoryId $ coerce $ toCardCode findingAgentHarper
-      placeUnderneath target [suspect, hideout]
+      placeUnderneath target [kidnapper, hideout]
+      setScenarioMeta $ Meta {kidnapper, hideout}
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       let amount = if isEasyStandard attrs then 1 else 2
       case token.face of

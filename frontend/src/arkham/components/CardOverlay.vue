@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { imgsrc } from '@/arkham/helpers'
+import { imgsrc, toCamelCase } from '@/arkham/helpers'
 
 const cardOverlay = ref<HTMLElement | null>(null)
 const hoveredElement = ref<HTMLElement | null>(null)
@@ -159,6 +159,16 @@ const customizations = computed(() => {
   return customizations.length === 0 ? null : customizations
 })
 
+const crossedOff = computed(() => {
+  if (!hoveredElement.value) return null
+  const str = hoveredElement.value.dataset.crossedOff
+  if (!str) return null
+
+  let crossedOff
+  try { crossedOff = JSON.parse(str) } catch (e) { console.log(str); crossedOff = [] }
+  return crossedOff.length === 0 ? null : crossedOff
+})
+
 const fight = computed(() => {
   if (!hoveredElement.value) return null
   return hoveredElement.value.dataset.fight
@@ -301,6 +311,7 @@ const getImage = (el: HTMLElement): string | null => {
     <img class="horror horror-1" v-if="horror && horror >= 1" :src="imgsrc('horror-overlay.png')"/>
     <img class="horror horror-2" v-if="horror && horror >= 2" :src="imgsrc('horror-overlay.png')"/>
     <img class="horror horror-3" v-if="horror && horror >= 3" :src="imgsrc('horror-overlay.png')"/>
+    <div v-for="entry in crossedOff" :key="entry" class="crossed-off" :class="{ [toCamelCase(entry)]: true }"></div>
     <div v-if="customizationsCard" class="customizations-wrapper" :class="{mutated}">
       <img :src="customizationsCard" />
       <div v-for="label in customizationLabels" :key="label[0]" :class="`label label-${cardCode} ${label[0]}`">
@@ -318,6 +329,7 @@ const getImage = (el: HTMLElement): string | null => {
       <div v-for="tick in customizationTicks" :key="tick" :class="`tick tick-${cardCode} ${tick}`">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg>
       </div>
+
     </div>
   </div>
 </template>
@@ -1972,6 +1984,65 @@ const getImage = (el: HTMLElement): string | null => {
   left: 2px;
   pointer-events: none;
   animation: fadeIn 0.5s;
+}
+
+.crossed-off {
+  position: absolute;
+  left: 7%;
+  border-top: 2px solid red;
+  width: 7%;
+}
+
+.brianBurnham {
+  top: 32.4%;
+}
+
+.otheraGilman {
+  top: 36.4%;
+}
+
+.joyceLittle {
+  top: 41%;
+}
+
+.barnabasMarsh {
+  top: 45.4%;
+}
+
+.zadokAllen {
+  top: 49.5%;
+}
+
+.robertFriendly {
+  top: 54%;
+}
+
+.innsmouthJail {
+  top: 67%;
+}
+
+.shorewardSlums {
+  top: 71.4%;
+}
+
+.sawboneAlley {
+  top: 75.6%;
+}
+
+.theHouseOnWaterStreet {
+  top: 80%;
+  width: 11%;
+  left: 5%;
+}
+
+.esotericOrderOfDagon {
+  top: 84.2%;
+  width: 11%;
+  left: 5%;
+}
+
+.newChurchGreen {
+  top: 88.7%;
 }
 
 </style>

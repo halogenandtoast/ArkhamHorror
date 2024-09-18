@@ -1340,6 +1340,7 @@ library
       Arkham.Enemy.Cards.AncientZoog
       Arkham.Enemy.Cards.AnetteMason
       Arkham.Enemy.Cards.AnetteMasonReincarnatedEvil
+      Arkham.Enemy.Cards.AngryMob
       Arkham.Enemy.Cards.ApexStrangleweed
       Arkham.Enemy.Cards.ArkhamOfficer
       Arkham.Enemy.Cards.AshleighClarke
@@ -2906,6 +2907,7 @@ library
       Arkham.Scenarios.TheSecretName.Story
       Arkham.Scenarios.TheUnspeakableOath.Story
       Arkham.Scenarios.TheUntamedWilds.Story
+      Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
       Arkham.Scenarios.TheWagesOfSin.Helpers
       Arkham.Scenarios.TheWagesOfSin.Story
       Arkham.Scenarios.TheWitchingHour.Story

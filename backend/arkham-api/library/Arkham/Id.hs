@@ -14,6 +14,9 @@ data NamedUUID = NamedUUID
 namedUUID :: MonadRandom m => Text -> m NamedUUID
 namedUUID name = NamedUUID name <$> getRandom
 
+getId :: (MonadRandom m, Random a) => m a
+getId = getRandom
+
 newtype MovementId = MovementId UUID
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)

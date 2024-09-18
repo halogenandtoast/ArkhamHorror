@@ -42,6 +42,12 @@ function canInteract(c: Message): boolean {
 
 const cardAction = computed(() => choices.value.findIndex(canInteract))
 
+const crossedOff = computed(() => {
+  const entries = props.story.meta?.crossedOff
+  if (!entries) return null
+  return JSON.stringify(entries)
+})
+
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== MessageType.ABILITY_LABEL) {
     return false
@@ -76,11 +82,14 @@ const abilities = computed(() => {
 <template>
   <div class="story">
     <div class="story-card">
-      <img :src="image"
-        :class="{'story--can-interact': cardAction !== -1 }"
-        class="card story"
-        @click="$emit('choose', cardAction)"
-      />
+      <div class="image-container">
+        <img :src="image"
+          :class="{'story--can-interact': cardAction !== -1 }"
+          :data-crossed-off="crossedOff"
+          class="card story"
+          @click="$emit('choose', cardAction)"
+        />
+      </div>
       <AbilityButton
         v-for="ability in abilities"
         :key="ability.index"

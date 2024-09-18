@@ -17,6 +17,7 @@ export const infestationAsChaosToken = (infestationToken: InfestationToken): Cha
 
 type StoryMeta = {
   infestationSetAside?: InfestationToken[]
+  crossedOff?: string[]
 }
 
 export const infestationTokenDecoder = JsonDecoder.object<InfestationToken>({
@@ -25,7 +26,8 @@ export const infestationTokenDecoder = JsonDecoder.object<InfestationToken>({
 }, 'InfestationToken');
 
 export const storyMetaDecoder = JsonDecoder.object<StoryMeta>({
-  infestationSetAside: JsonDecoder.optional(JsonDecoder.array<InfestationToken>(infestationTokenDecoder, 'InfestationToken[]'))
+  infestationSetAside: JsonDecoder.optional(JsonDecoder.array<InfestationToken>(infestationTokenDecoder, 'InfestationToken[]')),
+  crossedOff: JsonDecoder.optional(JsonDecoder.array<string>(JsonDecoder.string, 'string[]'))
 }, 'StoryMeta');
 
 export type Story = {

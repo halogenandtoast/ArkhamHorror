@@ -180,6 +180,9 @@ instance Sourceable SkillId where
 instance Sourceable AgendaId where
   toSource = AgendaSource
 
+instance Sourceable StoryId where
+  toSource = StorySource
+
 instance Sourceable EnemyId where
   toSource = EnemySource
 

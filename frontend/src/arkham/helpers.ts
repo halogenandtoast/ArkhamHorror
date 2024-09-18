@@ -15,6 +15,13 @@ export function toCapitalizedWords(name: string) {
   return capitalize(words.map(lowercase).join(" "));
 }
 
+export function toCamelCase(str : string) {
+  return str
+    .toLowerCase()
+    .replace(/\s+(\w)/g, (_, letter) => letter.toUpperCase())
+    .replace(/\s+/g, '');
+}
+
 export function capitalize(word: string) {
   return word.charAt(0).toUpperCase() + word.substring(1);
 }

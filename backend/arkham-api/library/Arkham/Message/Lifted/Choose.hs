@@ -109,6 +109,11 @@ damageLabeled iid action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [DamageLabel iid msgs]
 
+cardLabeled :: (ReverseQueue m, HasCardCode a) => a -> QueueT Message m () -> ChooseT m ()
+cardLabeled a action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [CardLabel (toCardCode a) msgs]
+
 horrorLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
 horrorLabeled iid action = unterminated do
   msgs <- lift $ evalQueueT action
@@ -155,6 +160,12 @@ chooseSelectM
 chooseSelectM iid query action = do
   ts <- select query
   chooseOneM iid $ unterminated $ for_ ts \t -> targeting t (action t)
+
+chooseFromM
+  :: (ReverseQueue m, Query query, Targetable (QueryElement query))
+chooseFromM iid matcher action = do
+  choices <- runChooseT $ traverse_ (\t -> targeting t (action t)) =<< select matcher
+  unless (null choices) $ chooseOne iid choices
 
 nothing :: Monad m => QueueT Message m ()
 nothing = pure ()

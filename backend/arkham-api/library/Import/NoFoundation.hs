@@ -7,6 +7,7 @@ module Import.NoFoundation (
 
 import Control.Concurrent.STM.TChan as Import
 import Database.Persist as Import hiding (get)
+import Database.Persist qualified as P
 import Model as Import
 import Relude as Import
 import Settings as Import
@@ -22,3 +23,13 @@ tshow = T.pack . show
 headMay :: [a] -> Maybe a
 headMay [] = Nothing
 headMay (x : _) = Just x
+
+get400
+  :: (MonadHandler m, PersistStoreRead backend, PersistRecordBackend val backend)
+  => Text
+  -> Key val
+  -> ReaderT backend m val
+get400 msg key =
+  P.get key >>= \case
+    Nothing -> invalidArgs [msg]
+    Just res -> pure res

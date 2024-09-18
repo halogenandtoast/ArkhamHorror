@@ -2,7 +2,7 @@
 
 module Entity.Answer where
 
-import Import.NoFoundation
+import Import.NoFoundation hiding (get)
 
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
@@ -221,7 +221,7 @@ handleAnswer :: (CanRunDB m, MonadHandler m) => Game -> PlayerId -> Answer -> m 
 handleAnswer Game {..} playerId = \case
   DeckAnswer deckId _ -> do
     deck <- runDB $ get404 deckId
-    player <- runDB $ get404 (coerce playerId)
+    player <- runDB $ get400 ("Player not found: " <> tshow playerId) (coerce playerId)
     when (arkhamDeckUserId deck /= arkhamPlayerUserId player) notFound
     let investigatorId = investigator_code $ arkhamDeckList deck
     runDB $ update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce investigatorId]

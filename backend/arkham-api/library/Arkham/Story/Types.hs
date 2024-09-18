@@ -59,6 +59,9 @@ data StoryAttrs = StoryAttrs
 instance HasField "ability" StoryAttrs (Int -> Source) where
   getField = toAbilitySource
 
+instance HasField "meta" StoryAttrs Value where
+  getField = storyMeta
+
 storyWith
   :: (StoryAttrs -> a)
   -> CardDef

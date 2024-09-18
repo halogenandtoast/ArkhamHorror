@@ -675,6 +675,9 @@ allAssets =
       SomeAssetCard swordCane
     , --- survivor [tic]
       SomeAssetCard tokenOfFaith
+    , --- The Vanishing of Elina Harper [tic]
+      SomeAssetCard thomasDawsonSoldierInANewWar
+    , SomeAssetCard elinaHarperKnowsTooMuch
     , -- In Too Deep
       --- guardian [itp]
       SomeAssetCard riotWhistle

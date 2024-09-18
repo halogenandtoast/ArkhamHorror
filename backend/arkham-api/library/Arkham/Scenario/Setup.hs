@@ -321,6 +321,7 @@ setAgendaDeck defs = do
   agendaStackL %= insertMap 1 cards
   push SetAgendaDeck
 
+<<<<<<< HEAD
 setAgendaDeckN :: ReverseQueue m => Int -> [CardDef] -> ScenarioBuilderT m ()
 setAgendaDeckN n defs = do
   cards <- genCards defs
@@ -403,3 +404,7 @@ pickN n (def : defs) = do
 
 placeTokensOnScenarioReference :: ReverseQueue m => Token -> Int -> ScenarioBuilderT m ()
 placeTokensOnScenarioReference tokenType n = tokensL %= addTokens tokenType n
+=======
+setScenarioMeta :: (ToJSON a, ReverseQueue m) => a -> ScenarioBuilderT m ()
+setScenarioMeta = push . SetScenarioMeta . toJSON
+>>>>>>> 1b8ba9295 (More Vanishing)

@@ -848,6 +848,19 @@ payCost msg c iid skipAdditionalCosts cost = do
               | n <- [1 .. mVal]
               ]
       pure c
+    GroupClueCostX -> do
+      mVal <- getSpendableClueCount =<< select UneliminatedInvestigator
+      x <- perPlayer 1
+      if mVal == x
+        then push $ pay (GroupClueCost (PerPlayer 1) Anywhere)
+        else
+          push
+            $ questionLabel ("Spend 1-" <> tshow mVal <> " {perPlayer} clues, as a group") player
+            $ DropDown
+              [ (tshow n, pay (GroupClueCost (PerPlayer n) Anywhere))
+              | n <- [1 .. (mVal `div` x)]
+              ]
+      pure c
     PlaceClueOnLocationCost x -> do
       push $ InvestigatorPlaceCluesOnLocation iid source x
       withPayment $ CluePayment iid x

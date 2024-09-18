@@ -368,7 +368,8 @@ allEnemies =
     , --- The Pit of Despair [tic]
       SomeEnemyCard theAmalgam
     , --- The Vanishing of Elina Harper [tic]
-      SomeEnemyCard robertFriendlyDisgruntledDockworker
+      SomeEnemyCard angryMob
+    , SomeEnemyCard robertFriendlyDisgruntledDockworker
     , SomeEnemyCard zadokAllenDrunkAndDisorderly
     , SomeEnemyCard brianBurnhamWantsOut
     , SomeEnemyCard barnabasMarshTheChangeIsUponHim

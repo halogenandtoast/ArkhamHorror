@@ -262,9 +262,15 @@ emptyCardDef cCode name cType =
 
 instance IsCardMatcher CardDef where
   toCardMatcher = cardIs
+  {-# INLINE toCardMatcher #-}
+
+instance IsCardMatcher [CardDef] where
+  toCardMatcher = mapOneOf cardIs
+  {-# INLINE toCardMatcher #-}
 
 instance IsLocationMatcher CardDef where
   toLocationMatcher = locationIs
+  {-# INLINE toLocationMatcher #-}
 
 isSignature :: HasCardDef a => a -> Bool
 isSignature = any isSignatureDeckRestriction . cdDeckRestrictions . toCardDef

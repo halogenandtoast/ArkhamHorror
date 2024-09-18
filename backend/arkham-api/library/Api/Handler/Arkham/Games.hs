@@ -256,8 +256,7 @@ postApiV1ArkhamGamesR = do
   let repeatCount = if multiplayerVariant == WithFriends then 1 else playerCount
   runDB $ do
     gameId <- insert ag
-    pids <- insertMany $ replicate repeatCount $ ArkhamPlayer userId gameId "00000"
-
+    pids <- replicateM repeatCount $ insert $ ArkhamPlayer userId gameId "00000"
     gameRef <- liftIO $ newIORef game
 
     runGameApp (GameApp gameRef queueRef genRef (pure . const ())) $ do

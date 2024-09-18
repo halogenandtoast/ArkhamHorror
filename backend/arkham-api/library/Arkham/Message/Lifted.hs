@@ -1055,7 +1055,12 @@ onRevealChaosTokenEffect sid matchr source target f = do
   msgs <- evalQueueT f
   push $ Msg.onRevealChaosTokenEffect sid matchr source target msgs
 
-failOnReveal :: (ReverseQueue m, Sourceable attrs, Targetable attrs) => ChaosTokenMatcher -> SkillTestId -> attrs -> m ()
+failOnReveal
+  :: (ReverseQueue m, Sourceable attrs, Targetable attrs)
+  => ChaosTokenMatcher
+  -> SkillTestId
+  -> attrs
+  -> m ()
 failOnReveal matchr sid attrs = onRevealChaosTokenEffect sid matchr attrs attrs failSkillTest
 
 eventModifier

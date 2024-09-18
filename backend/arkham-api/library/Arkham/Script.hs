@@ -109,7 +109,7 @@ you :: (?you :: You 'Known) => InvestigatorId
 you = case ?you of
   YouKnown iid -> iid
 
-knownYou :: (?you :: You kind) => ((?you :: You 'Known) => ScriptT x ()) -> ScriptT x ()
+knownYou :: (?you :: You kind) => ((?you :: You 'Known) => ScriptT x a) -> ScriptT x a
 knownYou body = case ?you of
   YouKnown _ -> body
   YouUnknown -> error "No investigator in scope"
@@ -157,3 +157,21 @@ ability :: (?msg :: Message, ?this :: a, Entity a, b ~ EntityAttrs a, Sourceable
 ability n body = case ?msg of
   UseThisAbility iid (isSource attrs -> True) m | m == n -> resume $ handle $ let { ?you = YouKnown iid; ?source = toAbilitySource attrs m } in body
   _ -> pure ()
+
+class ChoiceGen x a b where
+  runGen :: a -> ScriptT x [b]
+
+chooseOne :: (?you :: You kind, ChoiceGen x gen a) => gen -> ScriptT x (a -> UI Message) -> ScriptT x ()
+chooseOne gen body = do
+  withChoice <- body
+  case ?you of
+    YouKnown iid -> do
+      choices <- traverse (\x -> knownYou (pure $ withChoice x)) =<< runGen gen
+      unterminated $ Msg.chooseOne iid choices
+    YouUnknown -> pure ()
+
+onChoose :: (?msg :: Message, ?this :: a, Entity a, b ~ EntityAttrs a, Sourceable b) => ((?you :: You 'Known) => ScriptT x ()) -> ScriptT x ()
+onChoose body = do
+  case ?msg of
+    HandleTargetChoice iid (isSource attrs -> True) target -> resume $ handle $ let { ?you = YouKnown iid; ?target = target } in body
+    _ -> pure ()

@@ -2921,6 +2921,7 @@ library
       Arkham.Scenarios.WakingNightmare.InfestationBag
       Arkham.Scenarios.WhereDoomAwaits.Story
       Arkham.Scenarios.WhereTheGodsDwell.Helpers
+      Arkham.Script
       Arkham.Skill
       Arkham.Skill.Cards
       Arkham.Skill.Cards.AbleBodied

@@ -33,3 +33,19 @@ instance HasGameLogger GameT where
   getLogger = do
     logger <- asks gameLogger
     pure $ \msg -> liftIO $ logger msg
+
+instance MonadRandom GameT where
+  getRandomR lohi = do
+    ref <- view genL
+    atomicModifyIORef' ref (swap . randomR lohi)
+  getRandom = do
+    ref <- view genL
+    atomicModifyIORef' ref (swap . random)
+  getRandomRs lohi = do
+    ref <- view genL
+    gen <- atomicModifyIORef' ref split
+    pure $ randomRs lohi gen
+  getRandoms = do
+    ref <- view genL
+    gen <- atomicModifyIORef' ref split
+    pure $ randoms gen

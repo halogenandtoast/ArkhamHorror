@@ -110,22 +110,6 @@ runWithEnv body = do
   gameEnv <- toGameEnv
   runGameEnvT gameEnv body
 
-instance MonadRandom GameT where
-  getRandomR lohi = do
-    ref <- view genL
-    atomicModifyIORef' ref (swap . randomR lohi)
-  getRandom = do
-    ref <- view genL
-    atomicModifyIORef' ref (swap . random)
-  getRandomRs lohi = do
-    ref <- view genL
-    gen <- atomicModifyIORef' ref split
-    pure $ randomRs lohi gen
-  getRandoms = do
-    ref <- view genL
-    gen <- atomicModifyIORef' ref split
-    pure $ randoms gen
-
 getSkillTest :: HasGame m => m (Maybe SkillTest)
 getSkillTest = gameSkillTest <$> getGame
 

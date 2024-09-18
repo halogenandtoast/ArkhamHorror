@@ -26,6 +26,7 @@ import Arkham.Discover qualified as Msg
 import Arkham.Effect.Types (Field (..))
 import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.Enemy.Creation
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Evade
 import Arkham.Evade qualified as Evade
 import Arkham.Fight
@@ -58,6 +59,7 @@ import Arkham.Modifier
 import Arkham.Movement
 import Arkham.Movement qualified as Msg
 import Arkham.Phase (Phase)
+import Arkham.Placement
 import Arkham.Prelude hiding (pred)
 import Arkham.Projection
 import Arkham.Query
@@ -303,6 +305,12 @@ forceAddCampaignCardToDeckChoice choices cardDef = do
 defeatEnemy :: (ReverseQueue m, Sourceable source) => EnemyId -> InvestigatorId -> source -> m ()
 defeatEnemy enemyId investigatorId = Msg.defeatEnemy enemyId investigatorId >=> pushAll
 
+createAsset :: (ReverseQueue m, IsCard card) => card -> m AssetId
+createAsset card = do
+  assetId <- getId
+  push $ CreateAssetAt assetId (toCard card) Unplaced
+  pure assetId
+
 createEnemyEngagedWithPrey :: ReverseQueue m => Card -> m EnemyId
 createEnemyEngagedWithPrey c = do
   creation <- Msg.createEnemy c SpawnEngagedWithPrey
@@ -408,6 +416,28 @@ moveTokens
   -> Int
   -> m ()
 moveTokens source from destination token n = push $ Msg.MoveTokens (toSource source) (toSource from) (toTarget destination) token n
+
+sourceTokens :: (ReverseQueue m, Sourceable source) => source -> m Tokens
+sourceTokens source = case toSource source of
+  EnemySource eid -> field EnemyTokens eid
+  _ ->
+    error
+      "This bug is because I need to lookup the tokens for a source, but I was too lazy to impelement them all"
+
+moveAllTokens
+  :: ( ReverseQueue m
+     , Sourceable source
+     , Sourceable from
+     , Targetable destination
+     )
+  => source
+  -> from
+  -> destination
+  -> Token
+  -> m ()
+moveAllTokens source from destination token = do
+  m <- findWithDefault 0 token <$> sourceTokens from
+  push $ Msg.MoveTokens (toSource source) (toSource from) (toTarget destination) token m
 
 moveTokensNoDefeated
   :: (ReverseQueue m, Sourceable source, Sourceable from, Targetable destination)
@@ -1056,7 +1086,12 @@ onRevealChaosTokenEffect sid matchr source target f = do
   msgs <- evalQueueT f
   push $ Msg.onRevealChaosTokenEffect sid matchr source target msgs
 
-failOnReveal :: (ReverseQueue m, Sourceable attrs, Targetable attrs) => ChaosTokenMatcher -> SkillTestId -> attrs -> m ()
+failOnReveal
+  :: (ReverseQueue m, Sourceable attrs, Targetable attrs)
+  => ChaosTokenMatcher
+  -> SkillTestId
+  -> attrs
+  -> m ()
 failOnReveal matchr sid attrs = onRevealChaosTokenEffect sid matchr attrs attrs failSkillTest
 
 eventModifier
@@ -1147,7 +1182,7 @@ abilityModifier ab source target modifier = push $ Msg.abilityModifier ab source
 
 batched :: ReverseQueue m => (BatchId -> QueueT Message m ()) -> m ()
 batched f = do
-  batchId <- getRandom
+  batchId <- getId
   msgs <- evalQueueT (f batchId)
   push $ Would batchId msgs
 
@@ -1435,7 +1470,7 @@ chaosTokenEffect (toSource -> source) token modifier =
 
 addCurseTokens :: ReverseQueue m => Int -> m ()
 addCurseTokens n = do
-  batchId <- getRandom
+  batchId <- getId
   would <-
     Msg.checkWindows
       [ (Window.mkWhen $ Window.WouldAddChaosTokensToChaosBag $ replicate n #curse)
@@ -1471,6 +1506,9 @@ updateMax def n ew = do
 takeControlOfAsset
   :: (ReverseQueue m, AsId asset, IdOf asset ~ AssetId) => InvestigatorId -> asset -> m ()
 takeControlOfAsset iid asset = push $ Msg.TakeControlOfAsset iid (asId asset)
+
+takeControlOfSetAsideAsset :: ReverseQueue m => InvestigatorId -> Card -> m ()
+takeControlOfSetAsideAsset iid card = push $ Msg.TakeControlOfSetAsideAsset iid card
 
 class Attachable a where
   toAttach :: Targetable target => a -> target -> Message
@@ -1533,9 +1571,9 @@ placeKey target key = push $ Msg.PlaceKey (toTarget target) key
 investigatorDefeated :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> m ()
 investigatorDefeated source iid = push $ Msg.InvestigatorDefeated (toSource source) iid
 
-shuffleSetAsideIntoEncounterDeck :: ReverseQueue m => CardMatcher -> m ()
+shuffleSetAsideIntoEncounterDeck :: (ReverseQueue m, IsCardMatcher matcher) => matcher -> m ()
 shuffleSetAsideIntoEncounterDeck matcher = do
-  cards <- getSetAsideCardsMatching matcher
+  cards <- getSetAsideCardsMatching (toCardMatcher matcher)
   push $ ShuffleCardsIntoDeck Deck.EncounterDeck cards
 
 setScenarioDeck :: ReverseQueue m => ScenarioDeckKey -> [Card] -> m ()
@@ -1563,3 +1601,12 @@ chooseUpgradeDeck iid = do
 placeCluesOnLocation
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 placeCluesOnLocation iid source n = push $ InvestigatorPlaceCluesOnLocation iid (toSource source) n
+
+drawCard :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
+drawCard iid card = case toCard card of
+  EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
+  PlayerCard pc -> push $ InvestigatorDrewPlayerCard iid pc
+  VengeanceCard vc -> Arkham.Message.Lifted.drawCard iid vc
+
+resign :: ReverseQueue m => InvestigatorId -> m ()
+resign iid = push $ Resign iid

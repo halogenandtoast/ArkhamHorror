@@ -7,7 +7,7 @@ where
 import Arkham.Ability
 import {-# SOURCE #-} Arkham.Asset (createAsset)
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Import.Lifted hiding (createAsset)
 import Arkham.Asset.Types (Asset (..))
 import Arkham.Card
 import Arkham.Game.Helpers (getCanPerformAbility)

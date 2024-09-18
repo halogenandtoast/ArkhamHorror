@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted hiding (RevealLocation)
 import Arkham.Direction
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Window
 import Arkham.Location.Grid

@@ -40,6 +40,9 @@ scenarioFieldMapM fld f = selectJust TheScenario >>= fieldMapM fld f
 getIsStandalone :: HasGame m => m Bool
 getIsStandalone = isNothing <$> selectOne TheCampaign
 
+getEncounterDeck :: HasGame m => m (Deck EncounterCard)
+getEncounterDeck = scenarioField ScenarioEncounterDeck
+
 whenStandalone :: HasGame m => m () -> m ()
 whenStandalone = whenM getIsStandalone
 
@@ -90,6 +93,9 @@ isHardExpert ScenarioAttrs {scenarioDifficulty} =
 getScenarioDeck :: HasGame m => ScenarioDeckKey -> m [Card]
 getScenarioDeck k =
   scenarioFieldMap ScenarioDecks (Map.findWithDefault [] k)
+
+getScenarioMeta :: (HasCallStack, HasGame m, FromJSON a) => m a
+getScenarioMeta = scenarioFieldMap ScenarioMeta toResult
 
 getEncounterDiscard :: HasGame m => ScenarioEncounterDeckKey -> m [EncounterCard]
 getEncounterDiscard RegularEncounterDeck = scenarioField ScenarioDiscard

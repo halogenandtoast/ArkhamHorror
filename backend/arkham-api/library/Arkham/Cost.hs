@@ -27,7 +27,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
-import Control.Lens (Plated (..), Prism', cosmos, prism', sumOf, toListOf)
+import Control.Lens (Plated (..), Prism', cosmos, prism', sumOf, toListOf, _2)
 import Data.Aeson.TH
 import Data.Data.Lens (uniplate)
 import Data.Text qualified as T
@@ -45,6 +45,9 @@ totalResourceCost _ = 0
 
 totalResourcePayment :: Payment -> Int
 totalResourcePayment = sumOf (cosmos . _ResourcePayment)
+
+totalCluePayment :: Payment -> Int
+totalCluePayment = sumOf (cosmos . _CluePayment . _2)
 
 totalUsesPayment :: Payment -> Int
 totalUsesPayment = sumOf (cosmos . _UsesPayment)
@@ -183,6 +186,11 @@ _ResourcePayment = prism' ResourcePayment $ \case
   ResourcePayment x -> Just x
   _ -> Nothing
 
+_CluePayment :: Prism' Payment (InvestigatorId, Int)
+_CluePayment = prism' (uncurry CluePayment) $ \case
+  CluePayment iid x -> Just (iid, x)
+  _ -> Nothing
+
 _UsesPayment :: Prism' Payment Int
 _UsesPayment = prism' UsesPayment $ \case
   UsesPayment x -> Just x
@@ -202,6 +210,7 @@ data Cost
   | AssetClueCost Text AssetMatcher GameValue
   | ClueCost GameValue
   | ClueCostX
+  | GroupClueCostX
   | GroupClueCost GameValue LocationMatcher
   | GroupClueCostRange (Int, Int) LocationMatcher
   | PlaceClueOnLocationCost Int
@@ -307,6 +316,7 @@ data DynamicUseCostValue = DrawnCardsValue
 
 displayCostType :: Cost -> Text
 displayCostType = \case
+  GroupClueCostX -> "X {perPlayer} clues as a group"
   ChooseEnemyCost _ -> "Choose an enemy"
   ChooseExtendedCardCost _ -> "Choose a card that matches"
   ChosenEnemyCost _ -> "Choose an enemy"

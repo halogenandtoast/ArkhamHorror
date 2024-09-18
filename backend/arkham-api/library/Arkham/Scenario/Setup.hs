@@ -168,6 +168,7 @@ enemyAt def lid = do
 
 addExtraDeck :: (ReverseQueue m, IsCard card) => ScenarioDeckKey -> [card] -> ScenarioBuilderT m ()
 addExtraDeck k cards = do
+  encounterDeckL %= flip removeEachFromDeck (map (toCardDef . toCard) cards)
   cards' <- shuffleM $ map toCard cards
   decksL %= (at k ?~ cards')
 
@@ -182,3 +183,6 @@ setAgendaDeck defs = do
   cards <- genCards defs
   agendaStackL %= insertMap 1 cards
   push SetAgendaDeck
+
+setScenarioMeta :: (ToJSON a, ReverseQueue m) => a -> ScenarioBuilderT m ()
+setScenarioMeta = push . SetScenarioMeta . toJSON

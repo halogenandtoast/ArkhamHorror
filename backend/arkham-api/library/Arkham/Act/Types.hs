@@ -65,6 +65,9 @@ instance AsId ActAttrs where
 instance HasField "id" ActAttrs ActId where
   getField = actId
 
+instance HasField "meta" ActAttrs Value where
+  getField = actMeta
+
 instance HasField "ability" ActAttrs (Int -> Source) where
   getField = toAbilitySource
 

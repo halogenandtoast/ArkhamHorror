@@ -622,9 +622,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & (encounterDeckLensFromKey deckKey .~ deck')
   ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey deckKey) cards -> do
     let filterOutCards = filter (`notElem` cards)
+    let encounterCards = mapMaybe (preview _EncounterCard) cards
     deck' <- shuffleM $ cards <> maybe [] filterOutCards (view (decksL . at deckKey) a)
     pure
       $ a
+      & (encounterDeckL %~ filter (`notElem` encounterCards))
+      & (encounterDecksL . each . _2 %~ filter (`notElem` encounterCards))
+      & (encounterDecksL . each . _1 %~ withDeck (filter (`notElem` encounterCards)))
       & (decksL . at deckKey ?~ deck')
       & (discardL %~ filter ((`notElem` cards) . EncounterCard))
       & (victoryDisplayL %~ filterOutCards)
@@ -641,6 +645,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & (cardsUnderScenarioReferenceL %~ filterOutCards)
       & (setAsideCardsL %~ filterOutCards)
       & (victoryDisplayL %~ filterOutCards)
+      & (encounterDeckL %~ filter (`notElem` encounterCards))
       & (encounterDecksL . each . _2 %~ filter (`notElem` encounterCards))
       & (encounterDecksL . each . _1 %~ withDeck (filter (`notElem` encounterCards)))
   RequestSetAsideCard target cardCode -> do
@@ -1093,7 +1098,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   SpawnEnemyAtEngagedWith (EncounterCard ec) _ _ -> do
     pure $ a & discardL %~ filter (/= ec)
   InvestigatorDrewEncounterCard _ ec -> do
-    pure $ a & discardL %~ filter (/= ec) & encounterDeckL %~ withDeck (filter (/= ec))
+    pure
+      $ a
+      & (discardL %~ filter (/= ec))
+      & (encounterDeckL %~ withDeck (filter (/= ec)))
+      & (decksL . each %~ filter (/= (toCard ec)))
   When (EnemySpawn _ _ enemyId) -> do
     card <- field EnemyCard enemyId
     pure $ a & (victoryDisplayL %~ delete card)

@@ -331,6 +331,7 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
   Action.Parley -> case abilitySource of
     EnemySource eid -> eid <=~> Matcher.canParleyEnemy iid
     AssetSource _ -> pure True
+    ActSource _ -> pure True
     ProxySource (AssetSource _) _ -> pure True
     LocationSource _ -> pure True
     _ -> selectAny (Matcher.canParleyEnemy iid)

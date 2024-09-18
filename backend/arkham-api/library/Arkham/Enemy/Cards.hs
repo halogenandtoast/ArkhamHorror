@@ -89,6 +89,7 @@ allEncounterEnemyCards =
       , ancientZoog
       , anetteMason
       , anetteMasonReincarnatedEvil
+      , angryMob
       , apexStrangleweed
       , arkhamOfficer
       , ashleighClarke
@@ -2008,6 +2009,15 @@ theAmalgam =
       { cdCardTraits = setFromList [Monster, Abomination, DeepOne, Elite]
       , cdKeywords = singleton Keyword.Hunter
       }
+
+angryMob :: CardDef
+angryMob =
+  (enemy "07062b" "Angry Mob" TheVanishingOfElinaHarper 1)
+    { cdCardTraits = setFromList [Humanoid, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]
+    , cdVictoryPoints = Just 0
+    , cdDoubleSided = True
+    }
 
 robertFriendlyDisgruntledDockworker :: CardDef
 robertFriendlyDisgruntledDockworker =

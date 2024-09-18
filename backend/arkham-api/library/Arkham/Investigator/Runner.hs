@@ -1932,10 +1932,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         case slotItems slot of
           [] -> pure slot
           assets -> do
-            ignored <- flip filterM assets \aid ->
+            ignored <- flip filterM assets \aid -> do
+              cardId <- field AssetCardId aid
               orM
                 [ fieldMap AssetSlots (notElem slotType) aid
                 , hasModifier (AssetTarget aid) (DoNotTakeUpSlot slotType)
+                , hasModifier (CardIdTarget cardId) (DoNotTakeUpSlot slotType)
                 ]
             assetsToRemove :: [[AssetId]] <-
               forMaybeM assets \aid -> runMaybeT do

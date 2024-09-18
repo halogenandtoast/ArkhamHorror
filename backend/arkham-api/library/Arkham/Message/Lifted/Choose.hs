@@ -1,11 +1,14 @@
 module Arkham.Message.Lifted.Choose where
 
+import Arkham.Card.CardCode
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
+import Arkham.Classes.Query
 import Arkham.Id
 import Arkham.Message (Message)
 import Arkham.Message.Lifted
 import Arkham.Prelude
+import Arkham.Query
 import Arkham.Question
 import Arkham.Queue
 import Arkham.SkillType
@@ -87,6 +90,11 @@ damageLabeled iid action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [DamageLabel iid msgs]
 
+cardLabeled :: (ReverseQueue m, HasCardCode a) => a -> QueueT Message m () -> ChooseT m ()
+cardLabeled a action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [CardLabel (toCardCode a) msgs]
+
 horrorLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
 horrorLabeled iid action = unterminated do
   msgs <- lift $ evalQueueT action
@@ -123,6 +131,16 @@ chooseTargetM
   -> (target -> QueueT Message m ())
   -> m ()
 chooseTargetM iid ts action = chooseOneM iid $ unterminated $ for_ ts \t -> targeting t (action t)
+
+chooseFromM
+  :: (ReverseQueue m, Query query, Targetable (QueryElement query))
+  => InvestigatorId
+  -> query
+  -> (QueryElement query -> QueueT Message m ())
+  -> m ()
+chooseFromM iid matcher action = do
+  choices <- runChooseT $ traverse_ (\t -> targeting t (action t)) =<< select matcher
+  unless (null choices) $ chooseOne iid choices
 
 nothing :: Monad m => QueueT Message m ()
 nothing = pure ()

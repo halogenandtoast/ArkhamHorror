@@ -267,6 +267,7 @@ data CampaignLogKey
   | TheInvestigatorsAreStillInTheDreamlands
   | -- | The Innsmouth Conspiracy
     MemoriesRecovered
+  | OutForBlood
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

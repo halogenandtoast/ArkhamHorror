@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted.Choose
 

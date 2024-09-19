@@ -40,6 +40,7 @@ import Arkham.Direction
 import Arkham.Discover
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
@@ -470,7 +471,9 @@ instance HasAbilities LocationAttrs where
           )
         $ ActionAbility [#move] moveCost
     ]
-      <> [ withTooltip ("Take " <> keyName k <> " key")
+      <> [ withI18n
+          $ withVar "key" (String $ keyName k)
+          $ withI18nTooltip "takeControlOfKey"
           $ restrictedAbility l (500 + idx) (onLocation l)
           $ FastAbility Free
          | l.revealed

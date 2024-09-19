@@ -1,4 +1,3 @@
-{-# LANGUAGE ImplicitParams #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Ability (

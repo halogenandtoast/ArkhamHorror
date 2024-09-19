@@ -6,6 +6,7 @@ import type { Ability } from '@/arkham/types/Ability';
 import type { Action } from '@/arkham/types/Action';
 import { MessageType } from '@/arkham/types/Message';
 import { replaceIcons } from '@/arkham/helpers';
+import { handleI18n } from '@/arkham/i18n';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n()
@@ -78,12 +79,10 @@ const isSingleActionAbility = computed(() => {
   return totalActionCost(cost) === 1
 })
 
-const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
-
 const tooltip = computed(() => {
   var body = ability.value && ability.value.tooltip
   if (body) {
-    body = body.startsWith("$") ? t(tformat(body)) : body
+    body = body.startsWith("$") ? handleI18n(body, t) : body
     const content = replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>')
     return { content, html: true }
   }

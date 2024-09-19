@@ -8,6 +8,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (HasQueue, push)
 import Arkham.Effect.Types (makeEffectBuilder)
 import Arkham.Helpers.Log hiding (recordSetInsert)
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message (Message (CreateEffect))
@@ -28,3 +29,6 @@ whenRecoveredMemory memory action = do
 
 recoverMemory :: ReverseQueue m => Memory -> m ()
 recoverMemory memory = recordSetInsert MemoriesRecovered [memory]
+
+campaignI18n :: (HasI18n => a) -> a
+campaignI18n a = withI18n $ scope "theInnsmouthConspiracy" a

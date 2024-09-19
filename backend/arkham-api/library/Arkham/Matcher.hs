@@ -285,6 +285,10 @@ whileInvestigating :: (AsId a, IdOf a ~ LocationId) => a -> SkillTestMatcher
 whileInvestigating = WhileInvestigating . LocationWithId . asId
 {-# INLINE whileInvestigating #-}
 
+whileEvading :: (AsId a, IdOf a ~ EnemyId) => a -> SkillTestMatcher
+whileEvading = WhileEvadingAnEnemy . EnemyWithId . asId
+{-# INLINE whileEvading #-}
+
 -- ** Treachery Helpers **
 
 treacheryIs :: HasCardCode a => a -> TreacheryMatcher

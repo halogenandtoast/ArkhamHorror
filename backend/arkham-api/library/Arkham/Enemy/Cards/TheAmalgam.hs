@@ -5,11 +5,13 @@ import Arkham.Classes.HasQueue (withQueue_)
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Enemy.Runner (filterOutEnemyMessages)
+import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Key
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
+import Arkham.Scenarios.ThePitOfDespair.Helpers
 
 newtype TheAmalgam = TheAmalgam EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -22,11 +24,11 @@ instance HasAbilities TheAmalgam where
   getAbilities (TheAmalgam x) =
     extend
       x
-      [ restrictedAbility x 1 restriction
+      [ restricted x 1 restriction
           $ freeReaction
-          $ SkillTestResult #after You (WhileEvadingAnEnemy $ be x) (SuccessResult $ atLeast 2)
-      , mkAbility x 2 $ forced $ EnemyEngaged #after (You <> InvestigatorWithAnyKey) (be x)
-      , restrictedAbility x 3 depthsCriteria $ forced $ EnemyDefeated #when Anyone ByAny (be x)
+          $ SkillTestResult #after You (whileEvading x) (SuccessResult $ atLeast 2)
+      , forcedAbility x 2 $ EnemyEngaged #after (You <> InvestigatorWithAnyKey) (be x)
+      , restricted x 3 depthsCriteria $ forced $ EnemyDefeated #when Anyone ByAny (be x)
       ]
    where
     restriction = if null (enemyKeys x) then Never else NoRestriction
@@ -36,13 +38,20 @@ instance RunMessage TheAmalgam where
   runMessage msg e@(TheAmalgam attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid do
-        for_ (enemyKeys attrs) \key -> labeled ("Take control of " <> keyName key <> " key") $ placeKey iid key
+        for_ (enemyKeys attrs) \key ->
+          withI18n
+            $ withVar "key" (String $ keyName key)
+            $ labeledI18n "takeControlOfKey"
+            $ placeKey iid key
       pure e
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> scenarioI18n do
       ikeys <- iid.keys
       chooseOneM iid do
-        for_ ikeys \key -> labeled ("Place " <> keyName key <> " key on the Amalgam") $ placeKey attrs key
-        labeled "The Amalgam attacks you" $ initiateEnemyAttack attrs (attrs.ability 2) iid
+        for_ ikeys \key ->
+          withVar "key" (String $ keyName key)
+            $ labeledI18n "placeKeyOnTheAmalgam"
+            $ placeKey attrs key
+        labeledI18n "theAmalgamAttacksYou" $ initiateEnemyAttack attrs (attrs.ability 2) iid
       pure e
     UseThisAbility _ (isSource attrs -> True) 3 -> do
       push $ PlaceEnemyOutOfPlay TheDepths attrs.id

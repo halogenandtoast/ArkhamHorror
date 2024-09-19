@@ -29,13 +29,11 @@
       "body": "<p>You point to the strange, crimson horizon behind Agent Harper and note aloud the alignment of the sun and the moon. “That began just after you and Agent Dawson entered the Order’s headquarters,” she explains. “That was almost three days ago. I have no idea what it means, but I can’t imagine it is anything good. All of Innsmouth’s been locked tight lately. Not a soul in sight. You’re lucky I figured out where to look for you.”</p><p>Your mind reels. The last thing you remember before waking up in that dank pit was enjoying a pleasant late-summer’s eve in Arkham. Now you’re in another town altogether, and your memory is filled with gaping holes. You wonder aloud what the date is, and Agent Harper replies: “It’s the twenty-fourth of September. I don’t know when exactly you arrived in Innsmouth or how much of your memory is missing. Isn’t there anything else you remember? Anything at all?”</p><p>The water sloshes against your feet as you struggle to remember. In minutes, the tide has risen several inches, and there’s no sign of it slowing down. You fix your gaze on the woman who stands before you—her weary eyes, her disheveled clothes, the red marks on her wrists—and something triggers in your recollection.</p><p>“Wake up. We’re almost there.” The memory lurks at the precipice of your consciousness, threatening to draw you into the darkness. “Hey. Wake up, I said.” You clutch your forehead as searing pain bounces throughout your skull. “Wake up, dammit!”</p><p>Darkness pulls at the edges of your vision. More memories come flooding back…</p>"
     }
   },
+  "theVanishingOfElinaHarper": ,
   "memoriesRecovered": {
     "aMeetingWithThomasDawson": "A Meeting with Thomas Dawson",
     "aBattleWithAHorrifyingDevil": "A Battle with a Horrifying Devil",
     "aDecisionToStickTogether": "A Decision to Stick Together",
     "anEncounterWithASecretCult": "An Encounter with a Secret Cult"
-  },
-  "labels": {
-    "shuffleThatCardIntoLeadsDeck": "Shuffle that card into the Leads deck"
   }
 }

@@ -27,8 +27,11 @@ instance RunMessage EverVigilant4 where
       iids <- select $ affectsOthers $ colocatedWith iid
       hasPlayable <- flip filterM iids \iid' -> do
         withModifiers iid' (toModifiers attrs [ReduceCostOf AnyCard 1]) $ do
-          cards <- fieldMap InvestigatorHand (filter (`cardMatch` CardWithType AssetType)) iid'
-          anyM (getIsPlayable iid' GameSource (UnpaidCost NoAction) (defaultWindows iid')) cards
+          cards <- fieldMap InvestigatorHand (filterCards $ card_ #asset) iid'
+          asIfCards <- filterCards (card_ #asset) <$> getAsIfInHandCards iid
+          anyM
+            (getIsPlayable iid' GameSource (UnpaidCost NoAction) (defaultWindows iid'))
+            (cards <> asIfCards)
 
       when (notNull hasPlayable) do
         chooseOne iid $ Label "Do not play asset" []
@@ -37,9 +40,12 @@ instance RunMessage EverVigilant4 where
             ]
       pure e
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) -> do
-      cards <- fieldMap InvestigatorHand (filter (`cardMatch` CardWithType AssetType)) iid
+      cards <- fieldMap InvestigatorHand (filterCards (card_ #asset)) iid
+      asIfCards <- filterCards (card_ #asset) <$> getAsIfInHandCards iid
       playableCards <- withModifiers iid (toModifiers attrs [ReduceCostOf AnyCard 1]) $ do
-        filterM (getIsPlayable iid GameSource (UnpaidCost NoAction) (defaultWindows iid)) cards
+        filterM
+          (getIsPlayable iid GameSource (UnpaidCost NoAction) (defaultWindows iid))
+          (cards <> asIfCards)
       when (notNull playableCards)
         $ chooseOne
           iid

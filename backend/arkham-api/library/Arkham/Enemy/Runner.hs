@@ -86,11 +86,11 @@ When an enemy is defeated we need to remove related messages from choices
 and if not more choices exist, remove the message entirely
 -}
 filterOutEnemyMessages :: EnemyId -> Message -> Maybe Message
-filterOutEnemyMessages eid (Ask pid q) = case q of
-  QuestionLabel {} -> error "currently unhandled"
-  Read {} -> error "currently unhandled"
-  DropDown {} -> error "currently unhandled"
-  PickSupplies {} -> error "currently unhandled"
+filterOutEnemyMessages eid ask'@(Ask pid q) = case q of
+  QuestionLabel {} -> Just ask'
+  Read {} -> Just ask'
+  DropDown {} -> Just ask'
+  PickSupplies {} -> Just ask'
   ChooseOne msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
     [] -> Nothing
     x -> Just (Ask pid $ ChooseOne x)
@@ -113,9 +113,9 @@ filterOutEnemyMessages eid (Ask pid q) = case q of
     [] -> Nothing
     x -> Just (Ask pid $ ChooseOneAtATime x)
   ChooseUpgradeDeck -> Just (Ask pid ChooseUpgradeDeck)
-  ChooseDeck -> Just (Ask pid ChooseDeck)
-  choose@ChoosePaymentAmounts {} -> Just (Ask pid choose)
-  choose@ChooseAmounts {} -> Just (Ask pid choose)
+  ChooseDeck -> Just ask'
+  ChoosePaymentAmounts {} -> Just ask'
+  ChooseAmounts {} -> Just ask'
   PickScenarioSettings -> Just (Ask pid PickScenarioSettings)
   PickCampaignSettings -> Just (Ask pid PickCampaignSettings)
 filterOutEnemyMessages eid msg = case msg of
@@ -993,10 +993,7 @@ instance RunMessage EnemyAttrs where
           ]
       pure a
     EnemyDamaged eid damageAssignment | eid == enemyId -> do
-      let
-        direct = damageAssignmentDirect damageAssignment
-        source = damageAssignmentSource damageAssignment
-        amount = damageAssignmentAmount damageAssignment
+      let source = damageAssignmentSource damageAssignment
       canDamage <- sourceCanDamageEnemy eid source
       if canDamage
         then do

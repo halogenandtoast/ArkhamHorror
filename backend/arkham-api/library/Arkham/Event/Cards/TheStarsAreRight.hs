@@ -1,10 +1,4 @@
-module Arkham.Event.Cards.TheStarsAreRight (
-  theStarsAreRight,
-  TheStarsAreRight (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Event.Cards.TheStarsAreRight (theStarsAreRight, TheStarsAreRight (..)) where
 
 import Arkham.Action.Additional
 import Arkham.Capability
@@ -13,6 +7,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype TheStarsAreRight = TheStarsAreRight EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -24,11 +19,10 @@ theStarsAreRight =
 
 instance RunMessage TheStarsAreRight where
   runMessage msg e@(TheStarsAreRight attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid (isSource attrs -> True) -> do
       player <- getPlayer iid
       investigators <- select $ affectsOthers UneliminatedInvestigator
       iid' <- getActiveInvestigatorId
-      turn <- selectJust TurnInvestigator
       investigatorsWithChoice <- for investigators $ \investigator -> do
         canDraw <- can.draw.cards investigator
         canGainResources <- can.gain.resources investigator
@@ -38,7 +32,7 @@ instance RunMessage TheStarsAreRight where
           , [drawing | canDraw]
               <> [takeResources investigator (toSource attrs) 1 | canGainResources]
               <> [SetActiveInvestigator iid | iid /= iid']
-              <> [ turnModifier turn attrs iid
+              <> [ turnModifier investigator attrs iid
                     $ GiveAdditionalAction
                     $ AdditionalAction "The Stars Are Right" (toSource attrs) #any
                  , PlayerWindow iid [] False

@@ -93,6 +93,7 @@ import Arkham.Skill.Types (Field (..))
 import Arkham.SkillTest
 import Arkham.Token
 import Arkham.Token qualified as Token
+import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
@@ -155,7 +156,7 @@ getAllAbilitiesSkippable :: HasGame m => InvestigatorAttrs -> [Window] -> m Bool
 getAllAbilitiesSkippable attrs windows = allM (getWindowSkippable attrs windows) windows
 
 getWindowSkippable :: HasGame m => InvestigatorAttrs -> [Window] -> Window -> m Bool
-getWindowSkippable attrs ws (windowType -> Window.PlayCard iid card@(PlayerCard pc)) | iid == toId attrs = do
+getWindowSkippable attrs ws (windowTiming &&& windowType -> (Timing.When, Window.PlayCard iid card@(PlayerCard pc))) | iid == toId attrs = do
   allModifiers <- getModifiers card
   cost <- getModifiedCardCost iid card
   let isFast = isJust $ cdFastWindow (toCardDef card) <|> listToMaybe [w | BecomesFast w <- allModifiers]
@@ -2891,7 +2892,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure a
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do
     push $ ForTarget (toTarget a) (DoStep 2 AllDrawCardAndResource)
-    unlessM (hasModifier a CannotDrawCards) $ do
+    whenM (can.draw.cards a.id) $ do
       mods <- getModifiers a
       let alternateUpkeepDraws = [target | AlternateUpkeepDraw target <- mods]
       if notNull alternateUpkeepDraws

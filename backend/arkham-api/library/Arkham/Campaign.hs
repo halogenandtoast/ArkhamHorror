@@ -10,6 +10,7 @@ import Arkham.Campaigns.TheDreamEaters.Meta qualified as TheDreamEaters
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Id
+import Control.Monad.Fail
 import GHC.Records
 
 instance RunMessage Campaign where
@@ -32,7 +33,7 @@ instance FromJSON Campaign where
   parseJSON = withObject "Campaign" $ \o -> do
     cCode <- o .: "id"
     case lookup cCode allCampaigns of
-      Nothing -> error $ "Unknown campaign: " <> show cCode
+      Nothing -> fail $ "Unknown campaign: " <> show cCode
       Just (SomeCampaign (_ :: Difficulty -> a)) ->
         Campaign <$> parseJSON @a (Object o)
 

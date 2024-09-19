@@ -1,16 +1,12 @@
-module Arkham.Enemy.Cards.CatacombsDocent (
-  catacombsDocent,
-  CatacombsDocent (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.CatacombsDocent (catacombsDocent, CatacombsDocent (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype CatacombsDocent = CatacombsDocent EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -18,36 +14,24 @@ newtype CatacombsDocent = CatacombsDocent EnemyAttrs
 
 catacombsDocent :: EnemyCard CatacombsDocent
 catacombsDocent =
-  enemyWith
-    CatacombsDocent
-    Cards.catacombsDocent
-    (3, Static 2, 2)
-    (0, 1)
-    (spawnAtL ?~ SpawnAt (NearestLocationToYou UnrevealedLocation))
+  enemyWith CatacombsDocent Cards.catacombsDocent (3, Static 2, 2) (0, 1)
+    $ spawnAtL
+    ?~ SpawnAt (NearestLocationToYou UnrevealedLocation)
 
 instance HasAbilities CatacombsDocent where
   getAbilities (CatacombsDocent a) =
-    withBaseAbilities
+    extend
       a
-      [ skillTestAbility
-          $ restrictedAbility a 1 (OnSameLocation <> LocationExists UnrevealedLocation)
-          $ ActionAbility [Action.Parley] (ActionCost 1)
-      ]
+      [skillTestAbility $ restricted a 1 (OnSameLocation <> exists UnrevealedLocation) parleyAction_]
 
 instance RunMessage CatacombsDocent where
-  runMessage msg e@(CatacombsDocent attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg e@(CatacombsDocent attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ parley sid iid attrs attrs #intellect (Fixed 4)
+      parley sid iid (attrs.ability 1) attrs #intellect (Fixed 4)
       pure e
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       unrevealedLocations <- select UnrevealedLocation
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel location [LookAtRevealed iid (toSource attrs) (LocationTarget location)]
-          | location <- unrevealedLocations
-          ]
+      chooseTargetM iid unrevealedLocations $ push . LookAtRevealed iid (toSource attrs) . toTarget
       pure e
-    _ -> CatacombsDocent <$> runMessage msg attrs
+    _ -> CatacombsDocent <$> liftRunMessage msg attrs

@@ -23,5 +23,8 @@
   "settings": "Settings",
   "updatePassword": "Update Password",
   "username": "Username",
-  "usernameOrEmailAlreadyTaken": "Username or Email already taken"
+  "usernameOrEmailAlreadyTaken": "Username or Email already taken",
+  "labels": {
+    "drawTopCardOfEncounterDeck": "Draw the top card of the encounter deck"
+  }
 }

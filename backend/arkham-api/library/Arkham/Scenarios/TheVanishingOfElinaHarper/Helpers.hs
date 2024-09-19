@@ -1,5 +1,6 @@
 module Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers where
 
+import Arkham.Ability
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes.HasGame
@@ -13,13 +14,24 @@ import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (Message (..))
-import Arkham.Message.Lifted (ReverseQueue, recordSetInsert)
+import Arkham.Message.Lifted (ReverseQueue, recordSetInsert, shuffleCardsIntoDeck, shuffleDeck)
 import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Scenario.Deck
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Target
 import Arkham.Trait (Trait (Suspect))
+
+getLeadsDeck :: HasGame m => m [Card]
+getLeadsDeck = getScenarioDeck LeadsDeck
+
+shuffleLeadsDeck :: ReverseQueue m => m ()
+shuffleLeadsDeck = shuffleDeck LeadsDeck
+
+shuffleIntoLeadsDeck
+  :: (IsCard (Element cards), ReverseQueue m, MonoFoldable cards) => cards -> m ()
+shuffleIntoLeadsDeck cs = shuffleCardsIntoDeck LeadsDeck $ map toCard $ toList cs
 
 notKidnapper :: EnemyMatcher
 notKidnapper = not_ (EnemyWithModifier $ ScenarioModifier "kidnapper") <> withTrait Suspect
@@ -81,3 +93,6 @@ getPossibleHideouts =
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = withI18n $ scope "theInnsmouthConspiracy" $ scope "theVanishingOfElinaHarper" a
+
+scenarioTooltip :: Text -> Ability -> Ability
+scenarioTooltip t ab = scenarioI18n $ withI18nTooltip t ab

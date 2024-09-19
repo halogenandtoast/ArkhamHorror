@@ -31,6 +31,9 @@ data PlayerCard = MkPlayerCard
   }
   deriving stock (Show, Ord, Data)
 
+instance HasField "victoryPoints" PlayerCard (Maybe Int) where
+  getField = (.victoryPoints) . toCardDef
+
 instance HasField "id" PlayerCard CardId where
   getField = pcId
 

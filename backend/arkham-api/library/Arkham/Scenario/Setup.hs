@@ -232,12 +232,20 @@ addToEncounterDeck (toList -> defs) = do
   cards <- traverse genEncounterCard defs
   encounterDeckL %= withDeck (<> cards)
 
+
 assetAt :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m ()
 assetAt def lid = do
   encounterDeckL %= flip removeEachFromDeck [def]
   encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
   card <- genCard def
   createAssetAt_ card (AtLocation lid)
+
+excludeFromEncounterDeck
+  :: (ReverseQueue m, MonoFoldable defs, Element defs ~ card, HasCardDef card)
+  => defs
+  -> ScenarioBuilderT m ()
+excludeFromEncounterDeck (toList -> cards) = do
+  encounterDeckL %= flip removeEachFromDeck (map toCardDef cards)
 
 enemyAt_ :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m ()
 enemyAt_ def lid = do
@@ -321,7 +329,6 @@ setAgendaDeck defs = do
   agendaStackL %= insertMap 1 cards
   push SetAgendaDeck
 
-<<<<<<< HEAD
 setAgendaDeckN :: ReverseQueue m => Int -> [CardDef] -> ScenarioBuilderT m ()
 setAgendaDeckN n defs = do
   cards <- genCards defs

@@ -937,4 +937,12 @@ h2 {
   gap: 10px;
 }
 
+.cardLabels {
+  margin: 10px;
+  img {
+    border: 1px solid var(--select);
+    border-radius: 5px;
+  }
+}
+
 </style>

@@ -137,106 +137,106 @@ const label = function(body: string) {
 </script>
 
 <template>
-  <Teleport to="body">
-    <Draggable>
-      <template #handle>
-        <h2>Skill Test</h2>
-      </template>
-      <div class="skill-test">
-        <div class="steps">
-          <div v-tooltip="'Determine skill of test. Skill test of that type begins.'" class="step" :class="{ active: skillTest.step === 'DetermineSkillOfTestStep' }">ST.1</div>
-          <div v-tooltip="'Commit cards from hand to skill test.'" class="step" :class="{ active: skillTest.step === 'CommitCardsFromHandToSkillTestStep' }">ST.2</div>
-          <div v-tooltip="'Reveal chaos token.'" class="step" :class="{ active: skillTest.step === 'RevealChaosTokenStep' }">ST.3</div>
-          <div v-tooltip="'Resolve chaos symbol effect(s).'" class="step" :class="{ active: skillTest.step === 'ResolveChaosSymbolEffectsStep' }">ST.4</div>
-          <div v-tooltip="'Determine investigator\'s modified skill value.'" class="step" :class="{ active: skillTest.step === 'DetermineInvestigatorsModifiedSkillValueStep' }">ST.5</div>
-          <div v-tooltip="'Determine success/failure of skill test.'" class="step" :class="{ active: skillTest.step === 'DetermineSuccessOrFailureOfSkillTestStep' }">ST.6</div>
-          <div v-tooltip="'Apply skill test results.'" class="step" :class="{ active: skillTest.step === 'ApplySkillTestResultsStep' }">ST.7</div>
-          <div v-tooltip="'Skill test ends.'" class="step" :class="{ active: skillTest.step === 'SkillTestEndsStep' }">ST.8</div>
-        </div>
-        <div class="skill-test-contents">
-          <Card v-if="targetCard" :game="game" :card="targetCard" class="target-card" :revealed="true" playerId="" />
-          <div class="test-status">
-            <div class="test-difficulty">
-              <span class="difficulty">{{skillTest.modifiedDifficulty}}</span>
-            </div>
-            <div class="vs">
-              <div v-if="skills.length > 0" class="skills">
-                <div v-for="(skill, idx) in skills" :key="idx" :class="`${skill}-icon ${skill}-skill`">
-                  <span>{{skill}}</span>
-                </div>
-              </div>
-              <div v-else-if="skillTest.baseValue.tag === 'HalfResourcesOf'" class="half-resources">
-                <img :src="imgsrc(`resource.png`)" /> / 2
-              </div>
-              <span>VS</span>
-            </div>
-            <div class="modified-skill">
-              <span class="skill">{{skillValue}}</span>
-            </div>
-          </div>
-          <img
-            v-if="investigatorPortrait"
-            class="portrait"
-            :src="investigatorPortrait"
-          />
-          <Card v-if="sourceCard" :game="game" :card="sourceCard" :revealed="true" playerId="" />
-        </div>
-        <ChaosBagView
-          :game="game"
-          :chaosBag="chaosBag"
-          :skillTest="skillTest"
-          :playerId="playerId"
-          @choose="choose"
-        />
-        <div v-if="committedCards.length > 0" class="committed-skills" key="committed-skills">
-          <div class="skills-container">
-            <CommittedSkills
-              :game="game"
-              :cards="committedCards"
-              :playerId="playerId"
-              @choose="$emit('choose', $event)"
-            />
-          </div>
-          <h2>Committed Skills</h2>
-        </div>
-
-        <AbilityButton
-          v-for="ability in abilities"
-          :key="ability.index"
-          :ability="ability.contents"
-          :tooltipIsButtonText="true"
-          @click="choose(ability.index)"
-          />
-
-        <div v-if="skillTestResults" class="skill-test-results" :class="{ success: skillTestResults.skillTestResultsSuccess, failure: !skillTestResults.skillTestResultsSuccess}">
-          <span v-if="skillTestResults.skillTestResultsSuccess">
-            Succeeded by {{(testResult ?? 0) + (skillTestResults.skillTestResultsResultModifiers || 0)}}
-          </span>
-          <span v-else-if="testResult !== null">
-            Failed by {{testResult - (skillTestResults.skillTestResultsResultModifiers || 0)}}
-          </span>
-        </div>
-
-        <div v-if="skillTestResults" class="skill-test-results-break"></div>
-        <button
-          v-if="skipTriggersAction !== -1"
-          @click="$emit('choose', skipTriggersAction)"
-          class="skip-triggers-button"
-        >Skip Triggers</button>
-        <Question :game="game" :playerId="playerId" @choose="choose" :isSkillTest="true" />
-        <button
-          class="apply-results"
-          v-if="applyResultsAction !== -1"
-          @click="choose(applyResultsAction)"
-        >Apply Results</button>
+  <Draggable>
+    <template #handle>
+      <h2>Skill Test</h2>
+    </template>
+    <div class="skill-test">
+      <div class="steps">
+        <div v-tooltip="'Determine skill of test. Skill test of that type begins.'" class="step" :class="{ active: skillTest.step === 'DetermineSkillOfTestStep' }">ST.1</div>
+        <div v-tooltip="'Commit cards from hand to skill test.'" class="step" :class="{ active: skillTest.step === 'CommitCardsFromHandToSkillTestStep' }">ST.2</div>
+        <div v-tooltip="'Reveal chaos token.'" class="step" :class="{ active: skillTest.step === 'RevealChaosTokenStep' }">ST.3</div>
+        <div v-tooltip="'Resolve chaos symbol effect(s).'" class="step" :class="{ active: skillTest.step === 'ResolveChaosSymbolEffectsStep' }">ST.4</div>
+        <div v-tooltip="'Determine investigator\'s modified skill value.'" class="step" :class="{ active: skillTest.step === 'DetermineInvestigatorsModifiedSkillValueStep' }">ST.5</div>
+        <div v-tooltip="'Determine success/failure of skill test.'" class="step" :class="{ active: skillTest.step === 'DetermineSuccessOrFailureOfSkillTestStep' }">ST.6</div>
+        <div v-tooltip="'Apply skill test results.'" class="step" :class="{ active: skillTest.step === 'ApplySkillTestResultsStep' }">ST.7</div>
+        <div v-tooltip="'Skill test ends.'" class="step" :class="{ active: skillTest.step === 'SkillTestEndsStep' }">ST.8</div>
       </div>
-    </Draggable>
-  </Teleport>
+      <div class="skill-test-contents">
+        <Card v-if="targetCard" :game="game" :card="targetCard" class="target-card" :revealed="true" playerId="" />
+        <div class="test-status">
+          <div class="test-difficulty">
+            <span class="difficulty">{{skillTest.modifiedDifficulty}}</span>
+          </div>
+          <div class="vs">
+            <div v-if="skills.length > 0" class="skills">
+              <div v-for="(skill, idx) in skills" :key="idx" :class="`${skill}-icon ${skill}-skill`">
+                <span>{{skill}}</span>
+              </div>
+            </div>
+            <div v-else-if="skillTest.baseValue.tag === 'HalfResourcesOf'" class="half-resources">
+              <img :src="imgsrc(`resource.png`)" /> / 2
+            </div>
+            <span>VS</span>
+          </div>
+          <div class="modified-skill">
+            <span class="skill">{{skillValue}}</span>
+          </div>
+        </div>
+        <img
+          v-if="investigatorPortrait"
+          class="portrait"
+          :src="investigatorPortrait"
+        />
+        <Card v-if="sourceCard" :game="game" :card="sourceCard" :revealed="true" playerId="" />
+      </div>
+      <ChaosBagView
+        :game="game"
+        :chaosBag="chaosBag"
+        :skillTest="skillTest"
+        :playerId="playerId"
+        @choose="choose"
+      />
+      <div v-if="committedCards.length > 0" class="committed-skills" key="committed-skills">
+        <div class="skills-container">
+          <CommittedSkills
+            :game="game"
+            :cards="committedCards"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+        </div>
+        <h2>Committed Skills</h2>
+      </div>
+
+      <AbilityButton
+        v-for="ability in abilities"
+        :key="ability.index"
+        :ability="ability.contents"
+        :tooltipIsButtonText="true"
+        @click="choose(ability.index)"
+        />
+
+      <div v-if="skillTestResults" class="skill-test-results" :class="{ success: skillTestResults.skillTestResultsSuccess, failure: !skillTestResults.skillTestResultsSuccess}">
+        <span v-if="skillTestResults.skillTestResultsSuccess">
+          Succeeded by {{(testResult ?? 0) + (skillTestResults.skillTestResultsResultModifiers || 0)}}
+        </span>
+        <span v-else-if="testResult !== null">
+          Failed by {{testResult - (skillTestResults.skillTestResultsResultModifiers || 0)}}
+        </span>
+      </div>
+
+      <div v-if="skillTestResults" class="skill-test-results-break"></div>
+      <button
+        v-if="skipTriggersAction !== -1"
+        @click="$emit('choose', skipTriggersAction)"
+        class="skip-triggers-button"
+      >Skip Triggers</button>
+      <Question :game="game" :playerId="playerId" @choose="choose" :isSkillTest="true" />
+      <button
+        class="apply-results"
+        v-if="applyResultsAction !== -1"
+        @click="choose(applyResultsAction)"
+      >Apply Results</button>
+    </div>
+  </Draggable>
 </template>
 
 <style scoped lang="scss">
 .skill-test {
-  background: #759686;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px); /* Safari support */
+  background: #75968600;
   width: fit-content;
   text-align: center;
   z-index: 10;
@@ -249,6 +249,8 @@ const label = function(body: string) {
   gap: 5px;
   color: white;
   background-color: rgb(0, 0, 0, 0.6);
+  backdrop-filter: blur(80px);
+  -webkit-backdrop-filter: blur(80px); /* Safari support */
 }
 
 .test-status {
@@ -312,7 +314,7 @@ const label = function(body: string) {
 }
 
 .committed-skills {
-  background: #333;
+  background: rgba(0, 0, 0, 0.6);
 
   h2 {
     background: #111;

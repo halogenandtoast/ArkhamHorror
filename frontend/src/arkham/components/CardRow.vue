@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import type { Game } from '@/arkham/types/Game';
 import type { CardContents } from '@/arkham/types/Card';
-import { imgsrc } from '@/arkham/helpers';
 import Card from '@/arkham/components/Card.vue';
 import Draggable from '@/components/Draggable.vue';
 
@@ -24,12 +23,14 @@ const emit = defineEmits<{
     <template #handle>
       <h2>{{title}}</h2>
     </template>
-    <div class="card-row-cards">
-      <div v-for="card in cards" :key="card.id" class="card-row-card" :class="{ discard: isDiscards }">
-        <Card :game="game" :card="card" :playerId="playerId" @choose="emit('choose', $event)" />
+    <div class="card-row-container">
+      <div class="card-row-cards">
+        <div v-for="card in cards" :key="card.id" class="card-row-card" :class="{ discard: isDiscards }">
+          <Card :game="game" :card="card" :playerId="playerId" @choose="emit('choose', $event)" />
+        </div>
       </div>
+      <button class="close" @click="emit('close')">Close</button>
     </div>
-    <button class="close" @click="emit('close')">Close</button>
   </Draggable>
 </template>
 
@@ -71,12 +72,14 @@ button {
   background-color: #532e61;
   font-weight: bold;
   border-radius: 0.6em;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
   color: #EEE;
   font: Arial, sans-serif;
+  width: 100%;
   &:hover {
     background-color: #4d2b61;
   }
-  margin-bottom: 10px;
 }
 
 .card-row {

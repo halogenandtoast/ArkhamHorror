@@ -112,8 +112,8 @@ function minimize() {
     el.classList.add('minimized')
     el.style.left = 'calc(100% - 100px - 20px)' // Adjust as needed
     el.style.top = 'calc(100% - 50px - 20px)'   // Adjust as needed
-    el.style.width = '100px'                    // Adjust as needed
-    el.style.height = '50px'                    // Adjust as needed
+    el.style.width = 'fit-content'                    // Adjust as needed
+    el.style.height = 'fit-content'                    // Adjust as needed
   } else {
     // Restoring
     isMinimized.value = false
@@ -192,6 +192,7 @@ onMounted(() => {
   transition: all 0.3s ease; /* Animate all properties */
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px); /* Safari support */
+  transition-behavior: allow-discrete;
 
   &.minimized {
     header .header-title {
@@ -234,7 +235,6 @@ onMounted(() => {
       justify-content: center;
       cursor: pointer;
       pointer-events: auto;
-      margin-left: 10px;
       background: #3C4F5A; /* Updated button background color */
       /* ... */
       &:hover {

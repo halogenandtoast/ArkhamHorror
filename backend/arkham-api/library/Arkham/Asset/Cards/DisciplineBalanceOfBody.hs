@@ -29,9 +29,7 @@ instance HasModifiersFor DisciplineBalanceOfBody where
 
 instance HasAbilities DisciplineBalanceOfBody where
   getAbilities (DisciplineBalanceOfBody (With x _)) =
-    [ doesNotProvokeAttacksOfOpportunity
-        $ restrictedAbility x 1 ControlsThis actionAbility
-    ]
+    [doesNotProvokeAttacksOfOpportunity $ restricted x 1 ControlsThis actionAbility]
 
 instance RunMessage DisciplineBalanceOfBody where
   runMessage msg a@(DisciplineBalanceOfBody (With attrs meta)) = runQueueT $ case msg of
@@ -47,7 +45,7 @@ instance RunMessage DisciplineBalanceOfBody where
       chooseOrRunOne iid $ Label "Take no more actions" []
         : [ AbilityLabel
             iid
-            ab
+            (overCost (`decreaseActionCost` 1) ab)
             []
             []
             [HandleTargetChoice iid (toSource attrs) (AbilityTarget iid ab), DoStep (n - 1) msg']

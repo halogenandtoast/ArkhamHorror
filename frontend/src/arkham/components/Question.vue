@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n';
+import { handleI18n } from '@/arkham/i18n';
 import { choiceRequiresModal, MessageType } from '@/arkham/types/Message';
 import { computed, inject, ref, watch, onMounted } from 'vue';
 import { imgsrc, replaceIcons } from '@/arkham/helpers';
@@ -72,7 +73,7 @@ const showChoices = computed(() => {
 
 const label = function(body: string) {
   if (body.startsWith("$")) {
-    return t(body.slice(1))
+    return handleI18n(body.slice(1), t)
   }
   return replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>').replace(/\*([^*]*)\*/g, '<i>$1</i>')
 }

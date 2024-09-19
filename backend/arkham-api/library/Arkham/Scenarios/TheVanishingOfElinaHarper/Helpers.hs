@@ -2,6 +2,7 @@ module Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers where
 
 import Arkham.Ability
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
@@ -92,7 +93,7 @@ getPossibleHideouts =
     (toList hideouts)
 
 scenarioI18n :: (HasI18n => a) -> a
-scenarioI18n a = withI18n $ scope "theInnsmouthConspiracy" $ scope "theVanishingOfElinaHarper" a
+scenarioI18n a = campaignI18n $ scope "theVanishingOfElinaHarper" a
 
 scenarioTooltip :: Text -> Ability -> Ability
 scenarioTooltip t ab = scenarioI18n $ withI18nTooltip t ab

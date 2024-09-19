@@ -7,6 +7,7 @@ import Arkham.Classes.Query
 import Arkham.Classes.RunMessage.Internal (RunMessage (..), liftRunMessage)
 import Arkham.Effect.Import
 import Arkham.Effect.Types qualified as Effect
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message (Message (..))
 import Arkham.Message.Lifted
@@ -25,7 +26,9 @@ instance RunMessage NoAirEffect where
   runMessage msg e@(NoAirEffect attrs) = runQueueT $ case msg of
     EndTurn iid | isTarget iid attrs.target -> do
       chooseOneM iid
-        $ labeled "You did not find air, Take 5 direct damage"
+        $ withI18n
+        $ scope "theInnsmouthConspiracy"
+        $ labeledI18n "noAir"
         $ directDamage iid attrs.source 5
       disableReturn e
     DisableEffect _ -> NoAirEffect <$> liftRunMessage msg attrs

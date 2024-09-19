@@ -180,7 +180,8 @@ const isOtherEncounterCard = computed(() => {
 </template>
 
 <style scoped lang="scss">
-.card {
+.act-container :deep(.card) {
+  flex: 0;
   width: var(--card-width);
   border-radius: inherit;
 }
@@ -237,9 +238,10 @@ const isOtherEncounterCard = computed(() => {
   gap: 5px;
 }
 
-.card--sideways {
+.act-container :deep(.card--sideways) {
   width: auto;
   height: var(--card-width);
+  aspect-ratio: var(--card-sideways-aspect);
 }
 
 .act--can-progress {

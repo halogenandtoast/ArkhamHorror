@@ -78,15 +78,25 @@ const abilities = computed(() => {
 const cardsUnder = computed(() => props.cardsUnder)
 const showCardsUnderAgenda = () => emit('show', cardsUnder, 'Cards Under Agenda', false)
 
-const imageForCard = (card: Card) => {
-  return imgsrc(cardImage(card))
-}
-
 const nextToTreacheries = computed(() => Object.values(props.game.treacheries).
   filter((t) => t.placement.tag === "NextToAgenda").
   map((t) => t.id))
 
-const groupedTreacheries = computed(() => Object.entries(Object.groupBy(props.agenda.treacheries, (t) => props.game.treacheries[t].cardCode)))
+function groupBy<T, K extends string | number | symbol>(
+  array: T[],
+  getKey: (item: T) => K
+): Record<K, T[]> {
+  return array.reduce((result, item) => {
+    const key = getKey(item);
+    if (!result[key]) {
+      result[key] = [];
+    }
+    result[key].push(item);
+    return result;
+  }, {} as Record<K, T[]>);
+}
+
+const groupedTreacheries = computed(() => Object.entries(groupBy(props.agenda.treacheries, (t) => props.game.treacheries[t].cardCode)))
 
 const debug = useDebug()
 </script>
@@ -253,5 +263,9 @@ const debug = useDebug()
   }
 }
 
-
+.agenda-container :deep(.card--sideways) {
+  width: auto;
+  height: var(--card-width);
+  aspect-ratio: var(--card-sideways-aspect);
+}
 </style>

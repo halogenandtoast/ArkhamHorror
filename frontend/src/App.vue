@@ -80,6 +80,17 @@ button {
 }
 
 @font-face {
+  font-family: "AboutDead";
+  src: url("/fonts/AboutDead.ttf");
+}
+
+.about-dead {
+  font-family: "AboutDead";
+  text-align: center;
+  font-size: 1.5em;
+}
+
+@font-face {
   font-family: "Noto Sans";
   src: url("/fonts/NotoSans.ttf");
 }
@@ -338,6 +349,7 @@ body {
 
   --title: #cecece;
   --spooky-green: #879C5A;
+  --spooky-green-dark: #3A5144;
 
   --button-1: #6E8640;
   --button-1-highlight: #5a6e34;

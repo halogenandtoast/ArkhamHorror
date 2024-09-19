@@ -9,16 +9,13 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
-import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Types
 import Arkham.ScenarioLogKey
-import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Ruins))
 
 newtype HuntressOfTheEztli = HuntressOfTheEztli ActAttrs
@@ -32,20 +29,11 @@ huntressOfTheEztli =
 instance HasAbilities HuntressOfTheEztli where
   getAbilities (HuntressOfTheEztli x)
     | onSide A x =
-        [ mkAbility x 1
-            $ Objective
-            $ ForcedAbility
-            $ EnemyDefeated Timing.After Anyone ByAny
-            $ EnemyWithTitle "Ichtaca"
+        [ mkAbility x 1 $ Objective $ forced $ EnemyDefeated #after Anyone ByAny $ EnemyWithTitle "Ichtaca"
         , restrictedAbility
             x
             2
-            ( EnemyCriteria
-                $ EnemyExists
-                $ EnemyWithTitle "Ichtaca"
-                <> EnemyWithClues
-                  (AtLeast $ PerPlayer 1)
-            )
+            (exists $ EnemyWithTitle "Ichtaca" <> EnemyWithClues (AtLeast $ PerPlayer 1))
             $ Objective
             $ ForcedAbility AnyWindow
         ]
@@ -58,9 +46,7 @@ instance RunMessage HuntressOfTheEztli where
     UseCardAbility iid source 2 _ _ | isSource attrs source -> do
       a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
-      ichtacaDefeated <-
-        any (`cardMatch` CardWithTitle "Ichtaca")
-          <$> scenarioField ScenarioVictoryDisplay
+      ichtacaDefeated <- inVictoryDisplay "Ichtaca"
       ruins <- getSetAsideCardsMatching $ CardWithTrait Ruins
       if ichtacaDefeated
         then do

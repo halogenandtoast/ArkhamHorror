@@ -27,7 +27,7 @@ instance RunMessage TheThirdAct where
         selectJust
           $ ExtendedCardWithOneOf
             [ SetAsideCardMatch $ cardIs Cards.royalEmissary
-            , VictoryDisplayCardMatch $ cardIs Cards.royalEmissary
+            , VictoryDisplayCardMatch $ basic $ cardIs Cards.royalEmissary
             ]
 
       createRoyalEmissary <-

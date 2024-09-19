@@ -36,7 +36,7 @@ instance RunMessage ACircleUnbroken where
       push $ advanceVia #other attrs attrs
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      defeatedAnette <- selectAny $ VictoryDisplayCardMatch $ cardIs Enemies.anetteMason
+      defeatedAnette <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Enemies.anetteMason
       push $ if defeatedAnette then R1 else R2
       pure a
     _ -> ACircleUnbroken <$> runMessage msg attrs

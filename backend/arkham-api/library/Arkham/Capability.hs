@@ -9,6 +9,7 @@ import Arkham.Matcher.Patterns
 import Arkham.Matcher.Types
 import Arkham.Modifier
 import Arkham.Prelude
+import Arkham.Source
 import Arkham.Target
 
 class Capable a where
@@ -50,6 +51,14 @@ instance Capable InvestigatorMatcher where
       , move = InvestigatorWithoutModifier CannotMove
       , target = TargetCapabilities {encounterDeck = InvestigatorCanTarget EncounterDeckTarget}
       , reveal = RevealCapabilities {cards = InvestigatorWithoutModifier CannotRevealCards}
+      , heal =
+          HealCapabilities
+            { damage = \source -> HealableInvestigator source #damage Anyone
+            , horror = \source -> HealableInvestigator source #horror Anyone
+            , any =
+                \source ->
+                  AnyInvestigator [HealableInvestigator source kind Anyone | kind <- [#horror, #damage]]
+            }
       }
 
 instance Capable (InvestigatorMatcher -> InvestigatorMatcher) where
@@ -101,6 +110,7 @@ data Capabilities a = Capabilities
   , target :: TargetCapabilities a
   , move :: a
   , reveal :: RevealCapabilities a
+  , heal :: HealCapabilities a
   }
   deriving stock Functor
 
@@ -126,6 +136,13 @@ data DrawCapabilities a = DrawCapabilities
 
 data RevealCapabilities a = RevealCapabilities
   { cards :: a
+  }
+  deriving stock Functor
+
+data HealCapabilities a = HealCapabilities
+  { damage :: Source -> a
+  , horror :: Source -> a
+  , any :: Source -> a
   }
   deriving stock Functor
 

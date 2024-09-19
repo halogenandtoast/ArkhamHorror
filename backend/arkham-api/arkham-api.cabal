@@ -2073,6 +2073,7 @@ library
       Arkham.Helpers.Enemy
       Arkham.Helpers.Event
       Arkham.Helpers.GameValue
+      Arkham.Helpers.Healing
       Arkham.Helpers.Investigator
       Arkham.Helpers.Location
       Arkham.Helpers.Log
@@ -2100,6 +2101,7 @@ library
       Arkham.Helpers.Xp
       Arkham.History
       Arkham.History.Types
+      Arkham.I18n
       Arkham.Id
       Arkham.Investigate
       Arkham.Investigate.Types
@@ -2902,6 +2904,7 @@ library
       Arkham.Scenarios.TheMiskatonicMuseum.Story
       Arkham.Scenarios.ThePallidMask.Helpers
       Arkham.Scenarios.ThePallidMask.Story
+      Arkham.Scenarios.ThePitOfDespair.Helpers
       Arkham.Scenarios.TheSearchForKadath.FlavorText
       Arkham.Scenarios.TheSearchForKadath.Helpers
       Arkham.Scenarios.TheSecretName.Story

@@ -254,7 +254,7 @@ instance RunMessage APhantomOfTruth where
         Resolution 3 -> ElderThing
         _ -> error "Invalid resolution"
 
-      selectForMaybeM (VictoryDisplayCardMatch $ cardIs Enemies.jordanPerry) \jordan ->
+      selectForMaybeM (VictoryDisplayCardMatch $ basic $ cardIs Enemies.jordanPerry) \jordan ->
         recordSetInsert VIPsSlain [toCardCode jordan]
       allGainXpWithBonus attrs $ if res == Resolution 2 then 2 else 0
       endOfScenario

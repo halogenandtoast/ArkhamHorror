@@ -540,6 +540,7 @@ data LocationMatcher
   | LocationWithEnemy EnemyMatcher
   | LocationCanBeEnteredBy EnemyId
   | LocationWithAsset AssetMatcher
+  | LocationWithCardsUnderneath CardListMatcher
   | LocationWithInvestigator InvestigatorMatcher
   | CanEnterLocation InvestigatorMatcher
   | CanMoveToLocation InvestigatorMatcher Source LocationMatcher
@@ -784,7 +785,7 @@ data ExtendedCardMatcher
   | EligibleForCurrentSkillTest
   | SetAsideCardMatch CardMatcher
   | UnderScenarioReferenceMatch CardMatcher
-  | VictoryDisplayCardMatch CardMatcher
+  | VictoryDisplayCardMatch ExtendedCardMatcher
   | HandCardWithDifferentTitleFromAtLeastOneAsset InvestigatorMatcher AssetMatcher CardMatcher
   | ExtendedCardWithOneOf [ExtendedCardMatcher]
   | ExtendedCardMatches [ExtendedCardMatcher]
@@ -801,6 +802,7 @@ data ExtendedCardMatcher
   | ChosenViaCustomization ExtendedCardMatcher
   | PassesCommitRestrictions ExtendedCardMatcher
   | CardWithSharedTraitToAttackingEnemy
+  | CardIdentifiedByScenarioMetaKey Key
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated ExtendedCardMatcher

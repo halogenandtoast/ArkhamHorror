@@ -107,7 +107,7 @@ calculate = go
         isVengeanceCard = \case
           VengeanceCard _ -> True
           _ -> False
-        inVictoryDisplay =
+        inVictoryDisplay' =
           sum $ map (fromMaybe 0 . cdVengeancePoints . toCardDef) victoryDisplay
         vengeanceCards = count isVengeanceCard victoryDisplay
       locationsWithModifier <-
@@ -116,7 +116,7 @@ calculate = go
             (Sum . fromMaybe 0)
             LocationVengeance
             (LocationWithModifier InVictoryDisplayForCountingVengeance)
-      pure $ inVictoryDisplay + locationsWithModifier + vengeanceCards
+      pure $ inVictoryDisplay' + locationsWithModifier + vengeanceCards
     EmptySlotsCalculation investigatorMatcher slotType -> do
       investigators <- select investigatorMatcher
       slots <- concatMapM (fieldMap InvestigatorSlots (findWithDefault [] slotType)) investigators

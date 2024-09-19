@@ -8,6 +8,7 @@ import Arkham.Classes.Query
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -64,13 +65,19 @@ crossOutLead lead =
 getPossibleSuspects :: (HasCallStack, HasGame m) => m [CardDef]
 getPossibleSuspects =
   filterM
-    ( \suspect -> andM [selectNone $ enemyIs suspect, selectNone $ VictoryDisplayCardMatch (cardIs suspect)]
+    ( \suspect ->
+        andM [selectNone $ enemyIs suspect, selectNone $ VictoryDisplayCardMatch (basic $ cardIs suspect)]
     )
     (toList suspects)
 
 getPossibleHideouts :: (HasCallStack, HasGame m) => m [CardDef]
 getPossibleHideouts =
   filterM
-    ( \hideout -> andM [selectNone $ locationIs hideout, selectNone $ VictoryDisplayCardMatch (cardIs hideout)]
+    ( \hideout ->
+        andM
+          [selectNone $ locationIs hideout, selectNone $ VictoryDisplayCardMatch (basic $ cardIs hideout)]
     )
     (toList hideouts)
+
+scenarioI18n :: (HasI18n => a) -> a
+scenarioI18n a = withI18n $ scope "theInnsmouthConspiracy" $ scope "theVanishingOfElinaHarper" a

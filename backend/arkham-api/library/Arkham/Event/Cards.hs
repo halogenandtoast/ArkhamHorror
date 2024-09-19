@@ -900,7 +900,10 @@ delveTooDeep =
           $ exists (You <> can.target.encounterDeck)
           <> Criteria.TabooCriteria
             TabooList15
-            (Criteria.HasCalculation (VictoryDisplayCountCalculation $ CardWithCardCode "02111") (lessThan 2))
+            ( Criteria.HasCalculation
+                (VictoryDisplayCountCalculation $ basic $ CardWithCardCode "02111")
+                (lessThan 2)
+            )
             Criteria.NoRestriction
     }
 

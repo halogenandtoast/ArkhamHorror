@@ -83,6 +83,9 @@ withRevealedAbilities attrs other = withBaseAbilities attrs $ guard (locationRev
 extendRevealed :: LocationAttrs -> [Ability] -> [Ability]
 extendRevealed = withRevealedAbilities
 
+extendRevealed1 :: LocationAttrs -> Ability -> [Ability]
+extendRevealed1 attrs ability = extendRevealed attrs [ability]
+
 instance RunMessage LocationAttrs where
   runMessage msg a@LocationAttrs {..} = case msg of
     UpdateLocation lid upd | lid == locationId -> do

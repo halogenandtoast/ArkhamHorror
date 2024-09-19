@@ -145,6 +145,7 @@ data Criterion
   | InYourHand
   | InYourDiscard
   | DoomCountIs ValueMatcher
+  | PlayerCountIs Int
   | OnAct Int
   | CardExists CardMatcher
   | CardInDiscard DiscardSignifier CardMatcher

@@ -1,14 +1,13 @@
 module Arkham.Location.Cards.IdolChamber (idolChamber, IdolChamber (..)) where
 
 import Arkham.Ability
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers (connectsToAdjacent)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Text
+import Arkham.Scenarios.ThePitOfDespair.Helpers
 
 newtype IdolChamber = IdolChamber LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -18,15 +17,12 @@ idolChamber :: LocationCard IdolChamber
 idolChamber = locationWith IdolChamber Cards.idolChamber 4 (PerPlayer 1) connectsToAdjacent
 
 instance HasAbilities IdolChamber where
-  getAbilities (IdolChamber attrs) =
+  getAbilities (IdolChamber a) =
     extendRevealed
-      attrs
-      [ restrictedAbility attrs 1 (KeyIsSetAside BlueKey) $ forced $ RevealLocation #after Anyone (be attrs)
+      a
+      [ restricted a 1 (KeyIsSetAside BlueKey) $ forced $ RevealLocation #after Anyone (be a)
       , groupLimit PerGame
-          $ restrictedAbility
-            attrs
-            2
-            (Here <> thisIs attrs LocationWithoutClues <> youExist (InvestigatorWithKey PurpleKey))
+          $ restricted a 2 (Here <> thisIs a LocationWithoutClues <> youExist (InvestigatorWithKey PurpleKey))
           $ FastAbility Free
       ]
 
@@ -36,8 +32,8 @@ instance RunMessage IdolChamber where
       placeKey attrs BlueKey
       pure l
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
-      story $ i18nWithTitle "theInnsmouthConspiracy.thePitOfDespair.flashback4"
-      recordSetInsert MemoriesRecovered [AnEncounterWithASecretCult]
+      flashback Flashback4
+      recoverMemory AnEncounterWithASecretCult
       removeChaosToken #elderthing
       pure l
     _ -> IdolChamber <$> liftRunMessage msg attrs

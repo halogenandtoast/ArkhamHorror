@@ -189,7 +189,6 @@ instance RunMessage EchoesOfThePast where
       pure s
     ScenarioResolution (Resolution n) -> do
       investigators <- allInvestigators
-
       case n of
         1 -> do
           story resolution1
@@ -213,7 +212,7 @@ instance RunMessage EchoesOfThePast where
         _ -> error "Invalid resolution"
 
       allGainXpWithBonus attrs $ if n == 4 then 1 else 0
-      sebastienSlain <- selectOne (VictoryDisplayCardMatch $ cardIs Enemies.sebastienMoreau)
+      sebastienSlain <- selectOne (VictoryDisplayCardMatch $ basic $ cardIs Enemies.sebastienMoreau)
       for_ sebastienSlain $ \sebastien ->
         recordSetInsert VIPsSlain [toCardCode sebastien]
 

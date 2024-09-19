@@ -61,7 +61,7 @@ instance HasModifiersFor TheEyeOfTruth5Effect where
         if inPlay
           then do
             card <- toTitle <$> getCard cardId
-            inVictory <- selectAny $ VictoryDisplayCardMatch $ CardWithId cardId
+            inVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ CardWithId cardId
             treacheryCard <- fieldMap TreacheryCard toTitle tid
             pure
               $ toModifiers a

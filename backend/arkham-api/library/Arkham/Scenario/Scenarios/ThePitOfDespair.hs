@@ -9,6 +9,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
@@ -19,6 +20,7 @@ import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenarios.ThePitOfDespair.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Zone
 
@@ -44,9 +46,9 @@ instance HasChaosTokenValue ThePitOfDespair where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage ThePitOfDespair where
-  runMessage msg s@(ThePitOfDespair attrs) = runQueueT $ case msg of
+  runMessage msg s@(ThePitOfDespair attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "theInnsmouthConspiracy.thePitOfDespair.intro"
+      story $ i18nWithTitle "intro"
       pure s
     Setup -> runScenarioSetup ThePitOfDespair attrs do
       gather Set.ThePitOfDespair
@@ -111,12 +113,10 @@ instance RunMessage ThePitOfDespair where
               withLocationOf iid \lid -> push $ EnemySpawnFromOutOfPlay TheDepths (Just iid) lid eid
           _ -> pure ()
       pure s
-    ScenarioResolution resolution -> do
+    ScenarioResolution resolution -> scope "resolutions" do
       case resolution of
-        NoResolution -> do
-          story $ i18n "theInnsmouthConspiracy.thePitOfDespair.resolutions.noResolution"
-        Resolution 1 -> do
-          story $ i18n "theInnsmouthConspiracy.thePitOfDespair.resolutions.resolution1"
+        NoResolution -> story $ i18n "noResolution"
+        Resolution 1 -> story $ i18n "resolution1"
         other -> throwIO $ UnknownResolution other
       allGainXp attrs
       endOfScenario

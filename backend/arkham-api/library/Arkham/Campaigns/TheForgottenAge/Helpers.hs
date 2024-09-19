@@ -47,12 +47,12 @@ getInvestigatorsWithoutSupply s =
 
 getVengeanceInVictoryDisplay :: (HasCallStack, HasGame m) => m Int
 getVengeanceInVictoryDisplay = do
-  victoryDisplay <- scenarioField ScenarioVictoryDisplay
+  victoryDisplay <- getVictoryDisplay
   let
     isVengeanceCard = \case
       VengeanceCard _ -> True
       _ -> False
-    inVictoryDisplay =
+    inVictoryDisplay' =
       sum $ map (fromMaybe 0 . cdVengeancePoints . toCardDef) victoryDisplay
     vengeanceCards = count isVengeanceCard victoryDisplay
   locationsWithModifier <-
@@ -61,7 +61,7 @@ getVengeanceInVictoryDisplay = do
         (Sum . fromMaybe 0)
         LocationVengeance
         (LocationWithModifier InVictoryDisplayForCountingVengeance)
-  pure $ inVictoryDisplay + locationsWithModifier + vengeanceCards
+  pure $ inVictoryDisplay' + locationsWithModifier + vengeanceCards
 
 getExplorationDeck :: HasGame m => m [Card]
 getExplorationDeck = scenarioFieldMap ScenarioDecks (findWithDefault [] ExplorationDeck)

@@ -12,6 +12,7 @@ import Arkham.Location.Runner as X (
   canBeFlippedL,
   connectsToL,
   extendRevealed,
+  extendRevealed1,
   floodLevelL,
   getLeadPlayer,
   getLocationMetaDefault,

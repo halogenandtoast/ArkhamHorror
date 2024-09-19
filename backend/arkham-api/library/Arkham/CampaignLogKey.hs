@@ -268,6 +268,8 @@ data CampaignLogKey
   | -- | The Innsmouth Conspiracy
     MemoriesRecovered
   | OutForBlood
+  | TheMissionFailed
+  | TheMissionWasSuccessful
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

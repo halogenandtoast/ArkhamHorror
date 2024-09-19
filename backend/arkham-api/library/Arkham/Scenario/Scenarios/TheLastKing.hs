@@ -187,7 +187,7 @@ instance RunMessage TheLastKing where
       when (notNull interviewed) $ recordSetInsert VIPsInterviewed interviewed
       when (n == 3) $ crossOutRecordSetEntries VIPsInterviewed interviewed
 
-      vipsSlain <- selectMap toCardCode $ VictoryDisplayCardMatch $ CardWithTrait Trait.Lunatic
+      vipsSlain <- selectMap toCardCode $ VictoryDisplayCardMatch $ basic $ CardWithTrait Trait.Lunatic
       when (notNull vipsSlain) $ recordSetInsert VIPsSlain vipsSlain
 
       -- Resolution handles XP in a special way, we must divvy up between investigators

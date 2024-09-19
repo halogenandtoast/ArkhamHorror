@@ -12,6 +12,7 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
@@ -54,7 +55,7 @@ theGatheringAgendaDeck :: [CardDef]
 theGatheringAgendaDeck = [Agendas.whatsGoingOn, Agendas.riseOfTheGhouls, Agendas.theyreGettingOut]
 
 instance RunMessage TheGathering where
-  runMessage msg s@(TheGathering attrs) = runQueueT $ case msg of
+  runMessage msg s@(TheGathering attrs) = runQueueT $ withI18n $ case msg of
     StandaloneSetup -> do
       push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
       pure s

@@ -252,7 +252,7 @@ instance RunMessage TheBoundaryBeyond where
       yigsFury <- getRecordCount YigsFury
       recordCount YigsFury (yigsFury + vengeance)
 
-      inVictory <- selectAny $ VictoryDisplayCardMatch $ cardIs Enemies.harbingerOfValusia
+      inVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Enemies.harbingerOfValusia
       if inVictory
         then crossOut TheHarbingerIsStillAlive
         else do
@@ -264,7 +264,7 @@ instance RunMessage TheBoundaryBeyond where
       endOfScenario
       pure s
     ScenarioResolutionStep 1 resolution -> do
-      n <- selectCount $ VictoryDisplayCardMatch $ CardWithTrait Trait.Tenochtitlan
+      n <- selectCount $ VictoryDisplayCardMatch $ basic $ CardWithTrait Trait.Tenochtitlan
       recordCount PathsAreKnownToYou n
       recordWhen (n >= 3 && resolution == Resolution 1) IchtacaHasConfidenceInYou
       allGainXpWithBonus attrs n

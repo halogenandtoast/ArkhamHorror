@@ -36,6 +36,6 @@ instance RunMessage FindingAgentHarper where
       let angryMob = lookupCard Enemies.angryMob (toCardId attrs)
       push $ RemoveStory (toId attrs)
       innsmouthSquare <- selectJust $ location_ "Innsmouth Square"
-      createEnemyAt angryMob innsmouthSquare
+      createEnemyAt_ angryMob innsmouthSquare
       pure s
     _ -> FindingAgentHarper <$> liftRunMessage msg attrs

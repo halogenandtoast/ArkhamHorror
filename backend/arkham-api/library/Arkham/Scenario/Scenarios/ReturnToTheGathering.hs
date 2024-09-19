@@ -6,6 +6,7 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Prelude
@@ -14,7 +15,7 @@ import Arkham.Scenario.Scenarios.TheGathering
 import Arkham.Scenario.Setup
 
 newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasChaosTokenValue)
 
@@ -34,7 +35,7 @@ returnToTheGathering difficulty =
     (referenceL .~ "01104")
 
 instance RunMessage ReturnToTheGathering where
-  runMessage msg s@(ReturnToTheGathering theGathering'@(TheGathering attrs)) = runQueueT $ case msg of
+  runMessage msg s@(ReturnToTheGathering theGathering'@(TheGathering attrs)) = runQueueT $ withI18n $ case msg of
     PreScenarioSetup -> do
       story $ i18nWithTitle "nightOfTheZealot.theGathering.intro"
       pure s

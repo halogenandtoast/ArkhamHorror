@@ -59,7 +59,7 @@ instance RunMessage FollowingLeads where
       didn'tCoverAnythingUp <- noneM remembered [CleanedUpTheBlood, HidTheBody, TidiedUpTheRoom]
       coveredUpYourInvolvement <- allM remembered [CleanedUpTheBlood, HidTheBody, TidiedUpTheRoom]
       evidence <- selectCount $ AssetWithTrait Lead <> AssetWithClues (atLeast 2)
-      noInnocents <- selectNone $ VictoryDisplayCardMatch $ CardWithTrait Innocent
+      noInnocents <- selectNone $ VictoryDisplayCardMatch $ basic $ CardWithTrait Innocent
       mSergeantMonroe <- selectOne $ assetIs Assets.sergeantMonroe
       let believableTruth = didn'tCoverAnythingUp && evidence == 2 && noInnocents
       let believableLie = coveredUpYourInvolvement && noInnocents
@@ -203,7 +203,7 @@ instance RunMessage FollowingLeads where
               basement <- getJustLocationByName "Basement"
               card <- genCard Enemies.dimensionalShambler
               placeDimensionalShambler <- createEnemyAt_ card basement Nothing
-              guests <- select $ VictoryDisplayCardMatch $ CardWithTrait Guest
+              guests <- select $ VictoryDisplayCardMatch $ basic $ CardWithTrait Guest
               x <- perPlayer 1
               pushAll
                 [ SetCurrentAgendaDeck 1 [agenda]
@@ -216,7 +216,7 @@ instance RunMessage FollowingLeads where
                 ]
             (_, _, Just _sinisterSolution, Just _managersKey, _) -> do
               agenda <- genCard Agendas.theTrueCulpritV8
-              staff <- select $ VictoryDisplayCardMatch $ CardWithTrait Staff
+              staff <- select $ VictoryDisplayCardMatch $ basic $ CardWithTrait Staff
               room212 <- getJustLocationByName "Room 212"
               harvestedBrain <- getSetAsideCard Treacheries.harvestedBrain
               x <- getPlayerCount
@@ -252,7 +252,7 @@ instance RunMessage FollowingLeads where
               basement <- getJustLocationByName "Basement"
               card <- genCard Enemies.dimensionalShambler
               placeDimensionalShambler <- createEnemyAt_ card basement Nothing
-              guests <- select $ VictoryDisplayCardMatch $ CardWithTrait Guest
+              guests <- select $ VictoryDisplayCardMatch $ basic $ CardWithTrait Guest
               x <- perPlayer 2
               pushAll
                 [ SetCurrentAgendaDeck 1 [agenda]

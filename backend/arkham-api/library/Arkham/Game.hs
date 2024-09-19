@@ -1487,6 +1487,10 @@ getLocationsMatching lmatcher = do
     LocationWithEnemy enemyMatcher -> do
       enemies <- select enemyMatcher
       filterM (fmap (notNull . List.intersect enemies) . select . enemyAt . toId) ls
+    LocationWithCardsUnderneath cardListMatcher ->
+      flip filterM ls
+        $ fieldMapM LocationCardsUnderneath (`cardListMatches` cardListMatcher)
+        . toId
     LocationWithAsset assetMatcher -> do
       assets <- select assetMatcher
       flip filterM ls $ \l -> do
@@ -3565,6 +3569,15 @@ instance Query ExtendedCardMatcher where
    where
     go [] = const (pure []) -- if we have no cards remaining, just stop
     go cs = \case
+      CardIdentifiedByScenarioMetaKey key -> do
+        meta <- getScenarioMeta
+        pure $ case meta of
+          Object o -> case KeyMap.lookup key o of
+            Just v -> case fromJSON v of
+              Success c -> filter (== c) cs
+              _ -> []
+            Nothing -> []
+          _ -> []
       CardWithSharedTraitToAttackingEnemy -> do
         mEnemy <- selectOne AttackingEnemy
         case mEnemy of
@@ -3706,24 +3719,16 @@ instance Query ExtendedCardMatcher where
         cards <- scenarioField ScenarioCardsUnderScenarioReference
         pure $ filter (`elem` filter (`cardMatch` matcher') cards) cs
       VictoryDisplayCardMatch matcher' -> do
-        cards <- scenarioField ScenarioVictoryDisplay
-        pure $ filter (`elem` filter (`cardMatch` matcher') cards) cs
+        cards <- filter (`elem` cs) <$> getVictoryDisplay
+        go cards matcher'
       PlayableCardWithCostReduction actionStatus n matcher' -> do
         selectOne TurnInvestigator >>= \case
           Nothing -> pure []
           Just iid -> do
-            let windows' = Window.defaultWindows iid
-            cs' <- go cs matcher'
-            availableResources <- getSpendableResources iid
-            filterM
-              ( getIsPlayableWithResources
-                  iid
-                  GameSource
-                  (availableResources + n)
-                  (Cost.UnpaidCost actionStatus)
-                  windows'
-              )
-              cs'
+            let ws = Window.defaultWindows iid
+            resources <- (+ n) <$> getSpendableResources iid
+            filterM (getIsPlayableWithResources iid GameSource resources (Cost.UnpaidCost actionStatus) ws)
+              =<< go cs matcher'
       PlayableCardWithNoCost actionStatus matcher' -> do
         selectOne TurnInvestigator >>= \case
           Nothing -> pure []
@@ -4188,8 +4193,7 @@ instance Projection Scenario where
       ScenarioTokens -> pure scenarioTokens
       ScenarioTurn -> pure scenarioTurn
       ScenarioStoryCards -> pure scenarioStoryCards
-      ScenarioCardsUnderScenarioReference ->
-        pure scenarioCardsUnderScenarioReference
+      ScenarioCardsUnderScenarioReference -> pure scenarioCardsUnderScenarioReference
       ScenarioPlayerDecks -> pure scenarioPlayerDecks
       ScenarioTarotCards -> pure scenarioTarotCards
       ScenarioHasEncounterDeck -> pure scenarioHasEncounterDeck

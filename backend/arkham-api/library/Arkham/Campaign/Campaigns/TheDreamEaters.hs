@@ -17,6 +17,7 @@ import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
 import Arkham.Helpers.Log hiding (getHasRecord)
 import Arkham.Helpers.Log qualified as Lift
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator (Investigator, lookupInvestigator)
 import Arkham.Matcher
@@ -198,7 +199,7 @@ theWebOfDreamsSteps :: [CampaignStep]
 theWebOfDreamsSteps = [WakingNightmare, AThousandShapesOfHorror, PointOfNoReturn, WeaverOfTheCosmos]
 
 instance RunMessage TheDreamEaters where
-  runMessage msg c@(TheDreamEaters attrs) = runQueueT do
+  runMessage msg c@(TheDreamEaters attrs) = runQueueT $ withI18n $ do
     let
       meta = case fromJSON (campaignMeta attrs) of
         Success a -> a

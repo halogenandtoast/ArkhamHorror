@@ -193,7 +193,7 @@ instance RunMessage BlackStarsRise where
       pure s
     ScenarioResolution res -> do
       let
-        updateSlain = selectForMaybeM (VictoryDisplayCardMatch $ cardIs Enemies.ashleighClarke) \ashleigh ->
+        updateSlain = selectForMaybeM (VictoryDisplayCardMatch $ basic $ cardIs Enemies.ashleighClarke) \ashleigh ->
           recordSetInsert VIPsSlain [toCardCode ashleigh]
       case res of
         NoResolution -> push R3

@@ -251,7 +251,7 @@ instance RunMessage ThePallidMask where
         chasingTheStrangerTallies <- getRecordCount ChasingTheStranger
         recordCount ChasingTheStranger (chasingTheStrangerTallies + 2)
 
-      selectForMaybeM (VictoryDisplayCardMatch $ cardIs Enemies.ishimaruHaruko) \haruko ->
+      selectForMaybeM (VictoryDisplayCardMatch $ basic $ cardIs Enemies.ishimaruHaruko) \haruko ->
         recordSetInsert VIPsSlain [toCardCode haruko]
       doStep 1 msg
       pure s

@@ -211,7 +211,7 @@ instance RunMessage TheUnspeakableOath where
       push R1
       pure s
     ScenarioResolution (Resolution n) -> do
-      constanceSlain <- selectOne (VictoryDisplayCardMatch $ cardIs Enemies.constanceDumaine)
+      constanceSlain <- selectOne (VictoryDisplayCardMatch $ basic $ cardIs Enemies.constanceDumaine)
       let danielWasAlly = toCardCode Assets.danielChesterfield `elem` attrs.resignedCardCodes
       danielWasEnemy <- selectAny (enemyIs Enemies.danielChesterfield)
 

@@ -236,7 +236,7 @@ instance RunMessage TheDepthsOfYoth where
                 push $ ScenarioResolutionStep 1 (Resolution 1)
               _ -> pure ()
 
-          inVictory <- selectAny $ VictoryDisplayCardMatch $ cardIs Enemies.harbingerOfValusia
+          inVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Enemies.harbingerOfValusia
           if inVictory
             then crossOut TheHarbingerIsStillAlive
             else do

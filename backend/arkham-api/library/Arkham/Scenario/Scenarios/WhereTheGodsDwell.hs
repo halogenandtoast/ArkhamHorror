@@ -11,6 +11,7 @@ import Arkham.Exception
 import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
 import Arkham.Helpers.Query (getLead)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
@@ -67,7 +68,7 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage WhereTheGodsDwell where
-  runMessage msg s@(WhereTheGodsDwell attrs) = runQueueT $ case msg of
+  runMessage msg s@(WhereTheGodsDwell attrs) = runQueueT $ withI18n $ case msg of
     PreScenarioSetup -> do
       carried <- getHasRecord TheInvestigatorsWereCarriedToTheColdWastes
       story

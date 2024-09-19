@@ -46,9 +46,9 @@ instance RunMessage TimeWrackedWoods where
         mapMaybe (preview _EncounterCard)
           <$> select
             ( VictoryDisplayCardMatch
+                $ basic
                 $ CardWithVengeance
-                <> NotCard
-                  (CardWithTrait Elite)
+                <> NotCard (CardWithTrait Elite)
             )
       player <- getPlayer iid
       pushAll

@@ -45,8 +45,8 @@ instance RunMessage PendulousThreads where
       mVictory <-
         selectOne
           $ VictoryDisplayCardMatch
-          $ cardIs
-            Enemies.formlessSpawn
+          $ basic
+          $ cardIs Enemies.formlessSpawn
       nexus <- selectJust $ locationIs Locations.nexusOfNKai
       pushAll
         $ [ShuffleEncounterDiscardBackIn]

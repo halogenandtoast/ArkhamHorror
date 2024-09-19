@@ -44,7 +44,7 @@ instance RunMessage TruthAndLies where
 
       if knowsTheTruth && possessTheSilverKey
         then do
-          nyarlathoteps <- selectForEach (VictoryDisplayCardMatch $ CardWithTitle "Nyarlathotep") $ \card -> do
+          nyarlathoteps <- selectForEach (VictoryDisplayCardMatch $ basic $ CardWithTitle "Nyarlathotep") $ \card -> do
             eid <- getRandom
             pure (card, toAttrs $ lookupEnemy (toCardCode card) eid (toCardId card))
 

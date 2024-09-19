@@ -18,6 +18,7 @@ import Arkham.Helpers.Log
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest (getSkillTestAction)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
@@ -77,7 +78,7 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage PointOfNoReturn where
-  runMessage msg s@(PointOfNoReturn attrs) = runQueueT $ case msg of
+  runMessage msg s@(PointOfNoReturn attrs) = runQueueT $ withI18n $ case msg of
     PreScenarioSetup -> do
       randolphDidNotSurvive <- getHasRecord RandolphDidNotSurviveTheDescent
       if randolphDidNotSurvive

@@ -299,6 +299,7 @@ const getImage = (el: HTMLElement): string | null => {
         class="card-overlay"
         :src="overlay"
       />
+      <div v-for="entry in crossedOff" :key="entry" class="crossed-off" :class="{ [toCamelCase(entry)]: true }"></div>
     </div>
     <span class="fight" v-if="fight">{{ fight }}</span>
     <span class="health" v-if="health">{{ health }}</span>
@@ -311,7 +312,6 @@ const getImage = (el: HTMLElement): string | null => {
     <img class="horror horror-1" v-if="horror && horror >= 1" :src="imgsrc('horror-overlay.png')"/>
     <img class="horror horror-2" v-if="horror && horror >= 2" :src="imgsrc('horror-overlay.png')"/>
     <img class="horror horror-3" v-if="horror && horror >= 3" :src="imgsrc('horror-overlay.png')"/>
-    <div v-for="entry in crossedOff" :key="entry" class="crossed-off" :class="{ [toCamelCase(entry)]: true }"></div>
     <div v-if="customizationsCard" class="customizations-wrapper" :class="{mutated}">
       <img :src="customizationsCard" />
       <div v-for="label in customizationLabels" :key="label[0]" :class="`label label-${cardCode} ${label[0]}`">
@@ -1988,61 +1988,23 @@ const getImage = (el: HTMLElement): string | null => {
 
 .crossed-off {
   position: absolute;
-  left: 7%;
+  margin-inline: auto;
+  inset-inline: 0;
   border-top: 2px solid red;
-  width: 7%;
+  width: 33%;
 }
 
-.brianBurnham {
-  top: 32.4%;
-}
-
-.otheraGilman {
-  top: 36.4%;
-}
-
-.joyceLittle {
-  top: 41%;
-}
-
-.barnabasMarsh {
-  top: 45.4%;
-}
-
-.zadokAllen {
-  top: 49.5%;
-}
-
-.robertFriendly {
-  top: 54%;
-}
-
-.innsmouthJail {
-  top: 67%;
-}
-
-.shorewardSlums {
-  top: 71.4%;
-}
-
-.sawboneAlley {
-  top: 75.6%;
-}
-
-.theHouseOnWaterStreet {
-  top: 80%;
-  width: 11%;
-  left: 5%;
-}
-
-.esotericOrderOfDagon {
-  top: 84.2%;
-  width: 11%;
-  left: 5%;
-}
-
-.newChurchGreen {
-  top: 88.7%;
-}
+.brianBurnham { top: 32.4%; }
+.otheraGilman { top: 36.4%; }
+.joyceLittle { top: 41%; }
+.barnabasMarsh { top: 45.4%; }
+.zadokAllen { top: 49.5%; }
+.robertFriendly { top: 54%; }
+.innsmouthJail { top: 67%; }
+.shorewardSlums { top: 71.4%; }
+.sawboneAlley { top: 75.6%; }
+.theHouseOnWaterStreet { top: 80%; width: 50%; }
+.esotericOrderOfDagon { top: 84.2%; width: 50%; }
+.newChurchGreen { top: 88.7%; }
 
 </style>

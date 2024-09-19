@@ -94,7 +94,7 @@ instance RunMessage TheSearchForAgentHarper where
             targeting lead do
               push unfocus
               drawCard iid lead
-              shuffleCardsIntoDeck LeadsDeck $ map toCard topOfEncounterDeck <> rest'
+              shuffleIntoLeadsDeck $ map toCard topOfEncounterDeck <> rest'
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       advancedWithOther attrs

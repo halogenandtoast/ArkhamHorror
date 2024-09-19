@@ -18,12 +18,11 @@ innsmouthSquare = location InnsmouthSquare Cards.innsmouthSquare 4 (PerPlayer 1)
 
 instance HasAbilities InnsmouthSquare where
   getAbilities (InnsmouthSquare a) =
-    scenarioI18n
-      $ extendRevealed
-        a
-        [ withI18nTooltip "innsmouthSquare.resign" $ resignAction a
-        , withI18nTooltip "innsmouthSquare.ability2" $ restricted a 2 Here (FastAbility $ ResourceCost 2)
-        ]
+    extendRevealed
+      a
+      [ scenarioTooltip "innsmouthSquare.resign" $ resignAction a
+      , scenarioTooltip "innsmouthSquare.ability2" $ restricted a 2 Here (FastAbility $ ResourceCost 2)
+      ]
 
 instance RunMessage InnsmouthSquare where
   runMessage msg l@(InnsmouthSquare attrs) = runQueueT $ case msg of

@@ -30,6 +30,9 @@ instance HasField "id" EncounterCard CardId where
   getField = ecId
   {-# INLINE getField #-}
 
+instance HasField "victoryPoints" EncounterCard (Maybe Int) where
+  getField = (.victoryPoints) . toCardDef
+
 instance HasCardCode EncounterCard where
   toCardCode = ecCardCode
 

@@ -4,6 +4,7 @@ import Arkham.Card.CardCode
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Message (Message)
 import Arkham.Message.Lifted
@@ -84,6 +85,11 @@ labeled :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
 labeled label action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [Label label msgs]
+
+labeledI18n :: (HasI18n, ReverseQueue m) => Text -> QueueT Message m () -> ChooseT m ()
+labeledI18n label action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [Label ("$" <> scope "labels" (ikey label)) msgs]
 
 damageLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
 damageLabeled iid action = unterminated do

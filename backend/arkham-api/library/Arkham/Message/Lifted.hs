@@ -1062,6 +1062,9 @@ shuffleIntoDeck deck target = push $ Msg.shuffleIntoDeck deck target
 shuffleCardsIntoDeck :: (ReverseQueue m, IsDeck deck) => deck -> [Card] -> m ()
 shuffleCardsIntoDeck deck cards = push $ Msg.shuffleCardsIntoDeck deck cards
 
+shuffleDeck :: (ReverseQueue m, IsDeck deck) => deck -> m ()
+shuffleDeck deck = shuffleCardsIntoDeck deck []
+
 reduceCostOf :: (Sourceable source, IsCard card, ReverseQueue m) => source -> card -> Int -> m ()
 reduceCostOf source card n = push $ Msg.reduceCostOf source card n
 
@@ -1616,3 +1619,6 @@ drawCard iid card = case toCard card of
 
 resign :: ReverseQueue m => InvestigatorId -> m ()
 resign iid = push $ Resign iid
+
+discard :: (IsCard card, ReverseQueue m) => card -> m ()
+discard card = push $ DiscardedCard (toCardId card)

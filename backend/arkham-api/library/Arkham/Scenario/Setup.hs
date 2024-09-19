@@ -160,6 +160,13 @@ addToEncounterDeck (toList -> defs) = do
   cards <- traverse genEncounterCard defs
   encounterDeckL %= withDeck (<> cards)
 
+excludeFromEncounterDeck
+  :: (ReverseQueue m, MonoFoldable defs, Element defs ~ card, HasCardDef card)
+  => defs
+  -> ScenarioBuilderT m ()
+excludeFromEncounterDeck (toList -> cards) = do
+  encounterDeckL %= flip removeEachFromDeck (map toCardDef cards)
+
 enemyAt :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m ()
 enemyAt def lid = do
   encounterDeckL %= flip removeEachFromDeck [def]

@@ -250,6 +250,9 @@ data Card
   | VengeanceCard Card
   deriving stock (Show, Ord, Data)
 
+instance HasField "victoryPoints" Card (Maybe Int) where
+  getField = (.victoryPoints) . toCardDef
+
 instance HasField "title" Card Text where
   getField = toTitle
 

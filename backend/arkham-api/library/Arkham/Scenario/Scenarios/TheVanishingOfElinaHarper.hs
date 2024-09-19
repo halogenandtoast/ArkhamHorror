@@ -119,6 +119,7 @@ instance RunMessage TheVanishingOfElinaHarper where
       (hideout, remainingHideouts) <- sampleWithRest =<< genCards hideouts
       (kidnapper, remainingSuspects) <- sampleWithRest =<< genCards suspects
 
+      excludeFromEncounterDeck [hideout, kidnapper]
       addExtraDeck LeadsDeck =<< shuffleM (remainingHideouts <> remainingSuspects)
 
       setAside

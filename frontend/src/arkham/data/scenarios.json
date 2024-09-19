@@ -245,5 +245,17 @@
     "name": "Weaver of the Cosmos",
     "campaign": "06",
     "settings": []
+  },
+  {
+    "id": "07041",
+    "name": "The Pit of Despair",
+    "campaign": "07",
+    "settings": []
+  },
+  {
+    "id": "07056",
+    "name": "The Vanishing of Elina Harper",
+    "campaign": "07",
+    "settings": []
   }
 ]

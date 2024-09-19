@@ -37,20 +37,15 @@ instance HasAbilities TheAmalgam where
 instance RunMessage TheAmalgam where
   runMessage msg e@(TheAmalgam attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseOneM iid do
-        for_ (enemyKeys attrs) \key ->
-          withI18n
-            $ withVar "key" (String $ keyName key)
-            $ labeledI18n "takeControlOfKey"
-            $ placeKey iid key
+      chooseOneM iid $ withI18n do
+        for_ (enemyKeys attrs) \key -> withVar "key" (String $ keyName key) do
+          labeledI18n "takeControlOfKey" $ placeKey iid key
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> scenarioI18n do
       ikeys <- iid.keys
       chooseOneM iid do
-        for_ ikeys \key ->
-          withVar "key" (String $ keyName key)
-            $ labeledI18n "placeKeyOnTheAmalgam"
-            $ placeKey attrs key
+        for_ ikeys \key -> withVar "key" (String $ keyName key) do
+          labeledI18n "placeKeyOnTheAmalgam" $ placeKey attrs key
         labeledI18n "theAmalgamAttacksYou" $ initiateEnemyAttack attrs (attrs.ability 2) iid
       pure e
     UseThisAbility _ (isSource attrs -> True) 3 -> do

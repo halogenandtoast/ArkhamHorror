@@ -63,7 +63,7 @@ theWagesOfSin difficulty =
 instance HasChaosTokenValue TheWagesOfSin where
   getChaosTokenValue iid chaosTokenFace (TheWagesOfSin attrs) = case chaosTokenFace of
     Skull -> do
-      n <- selectCount $ VictoryDisplayCardMatch $ CardWithTitle "Unfinished Business"
+      n <- selectCount $ VictoryDisplayCardMatch $ basic $ CardWithTitle "Unfinished Business"
       pure $ toChaosTokenValue attrs Skull (n + 1) n
     Cultist -> pure $ toChaosTokenValue attrs Cultist 3 4
     Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4

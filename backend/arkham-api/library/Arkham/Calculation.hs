@@ -45,7 +45,7 @@ data GameCalculation
   | EnemyMaybeFieldCalculation EnemyId (Field Enemy (Maybe Int))
   | EnemyMaybeGameValueFieldCalculation EnemyId (Field Enemy (Maybe GameValue))
   | EnemyFieldCalculation EnemyId (Field Enemy Int)
-  | VictoryDisplayCountCalculation CardMatcher
+  | VictoryDisplayCountCalculation ExtendedCardMatcher
   | LocationFieldCalculation LocationId (Field Location Int)
   | LocationMaybeFieldCalculation LocationId (Field Location (Maybe Int))
   | InvestigatorLocationFieldCalculation InvestigatorId (Field Location Int)

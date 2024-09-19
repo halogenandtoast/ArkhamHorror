@@ -597,7 +597,25 @@ section {
   overflow: auto;
 }
 
-.intro-text h1 {
+.intro-text :deep(ul) {
+  list-style-type: "\0059";
+  li {
+    padding-left: 10px;
+    margin-left: 10px;
+  }
+
+  li::marker {
+    font-family: "ArkhamSlim";
+    color: var(--spooky-green-dark);
+  }
+}
+
+.intro-text :deep(strong) {
+  font-weight: bolder;
+  font-style: normal;
+}
+
+.intro-text :deep(h1) {
   font-family: "Teutonic";
   font-weight: 500;
   color: #38615F;
@@ -606,14 +624,23 @@ section {
   border-bottom: 1px solid #38615f;
 }
 
-.intro-text h1::after {
+.intro-text :deep(header) {
+  font-family: "Teutonic";
+  font-weight: 500;
+  font-size: 1.5em;
+  color: #222;
+  margin: 0 0 10px 0;
+  padding-bottom: 2px;
+}
+
+.intro-text :deep(h1::after) {
   display: block;
   content: " ";
   margin-top: 2px;
   border-bottom: 1px solid #38615f;
 }
 
-.intro-text p {
+.intro-text :deep(p) {
   margin: 10px;
   &:deep(p) {
     margin: 10px;

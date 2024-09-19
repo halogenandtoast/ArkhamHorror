@@ -326,7 +326,7 @@ instance RunMessage TheUnspeakableOath where
       gainXp <- toGainXp attrs getXp
       constanceSlain <-
         selectOne
-          (VictoryDisplayCardMatch $ cardIs Enemies.constanceDumaine)
+          (VictoryDisplayCardMatch $ basic $ cardIs Enemies.constanceDumaine)
       let danielWasAlly = toCardCode Assets.danielChesterfield `elem` scenarioResignedCardCodes attrs
       danielWasEnemy <- selectAny (enemyIs Enemies.danielChesterfield)
 

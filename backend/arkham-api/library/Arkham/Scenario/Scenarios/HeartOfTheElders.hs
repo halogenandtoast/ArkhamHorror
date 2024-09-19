@@ -281,9 +281,7 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
                 }
           )
     Resolution 1 -> do
-      vengeanceCards <-
-        filter (isJust . cdVengeancePoints . toCardDef)
-          <$> scenarioField ScenarioVictoryDisplay
+      vengeanceCards <- filter (isJust . cdVengeancePoints . toCardDef) <$> getVictoryDisplay
       gainXP <- toGainXp attrs getXp
       pushAll
         $ recordSetInsert TheJungleWatches (map toCardCode vengeanceCards)
@@ -381,8 +379,8 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
     inVictory <-
       selectAny
         $ VictoryDisplayCardMatch
-        $ cardIs
-          Enemies.harbingerOfValusia
+        $ basic
+        $ cardIs Enemies.harbingerOfValusia
     inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
     damage <- case inPlayHarbinger of
       Just eid -> field EnemyDamage eid

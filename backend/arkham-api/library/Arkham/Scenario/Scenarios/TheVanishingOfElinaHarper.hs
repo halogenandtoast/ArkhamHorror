@@ -11,13 +11,16 @@ import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Exception
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
 import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
+import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
@@ -78,11 +81,11 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage TheVanishingOfElinaHarper where
-  runMessage msg s@(TheVanishingOfElinaHarper attrs) = runQueueT $ case msg of
+  runMessage msg s@(TheVanishingOfElinaHarper attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "theInnsmouthConspiracy.theVanishingOfElinaHarper.intro1"
-      story $ i18n "theInnsmouthConspiracy.theVanishingOfElinaHarper.townInfo"
-      story $ i18nWithTitle "theInnsmouthConspiracy.theVanishingOfElinaHarper.intro2"
+      story $ i18nWithTitle "intro1"
+      story $ i18n "townInfo"
+      story $ i18nWithTitle "intro2"
       standalone <- getIsStandalone
       unless standalone $ eachInvestigator chooseUpgradeDeck
       pure s
@@ -154,5 +157,26 @@ instance RunMessage TheVanishingOfElinaHarper where
           Tablet -> assignHorror iid Tablet 1
           ElderThing -> placeCluesOnLocation iid ElderThing 1
           _ -> pure ()
+      pure s
+    ScenarioResolution resolution -> scope "resolutions" do
+      case resolution of
+        NoResolution -> do
+          story $ i18n "noResolution"
+          push R1
+        Resolution n -> do
+          story $ i18n $ case n of
+            1 -> "resolution1"
+            2 -> "resolution2"
+            3 -> "resolution3"
+            4 -> "resolution4"
+            5 -> "resolution5"
+            6 -> "resolution6"
+            7 -> "resolution7"
+            _ -> throw $ UnknownResolution resolution
+          case n of
+            1 -> record TheMissionFailed
+            _ -> record TheMissionWasSuccessful
+          allGainXp attrs
+          endOfScenario
       pure s
     _ -> TheVanishingOfElinaHarper <$> liftRunMessage msg attrs

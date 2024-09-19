@@ -1312,6 +1312,12 @@ discoverAt isInvestigate iid s lid n = do
 doStep :: ReverseQueue m => Int -> Message -> m ()
 doStep n msg = push $ Msg.DoStep n msg
 
+twice :: ReverseQueue m => m () -> m ()
+twice = repeated 2
+
+repeated :: ReverseQueue m => Int -> m () -> m ()
+repeated n = replicateM_ n
+
 disengageEnemy :: ReverseQueue m => InvestigatorId -> EnemyId -> m ()
 disengageEnemy iid eid = push $ Msg.DisengageEnemy iid eid
 

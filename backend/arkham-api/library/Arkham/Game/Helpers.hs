@@ -1180,6 +1180,7 @@ passesCriteria iid mcard source' requestor windows' = \case
   Criteria.DoomCountIs valueMatcher -> do
     doomCount <- getDoomCount
     gameValueMatches doomCount valueMatcher
+  Criteria.PlayerCountIs n -> (== n) <$> getPlayerCount
   Criteria.Negate restriction ->
     not <$> passesCriteria iid mcard source requestor windows' restriction
   Criteria.AllUndefeatedInvestigatorsResigned ->
@@ -1574,9 +1575,7 @@ passesCriteria iid mcard source' requestor windows' = \case
   Criteria.InvestigatorIsAlone ->
     (== 1) <$> selectCount (Matcher.colocatedWith iid)
   Criteria.InVictoryDisplay cardMatcher valueMatcher -> do
-    vCards <-
-      filter (`cardMatch` cardMatcher)
-        <$> scenarioField ScenarioVictoryDisplay
+    vCards <- filter (`cardMatch` cardMatcher) <$> getVictoryDisplay
     gameValueMatches (length vCards) valueMatcher
   Criteria.OwnCardWithDoom -> do
     anyAssetsHaveDoom <-
@@ -3004,6 +3003,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationWithTreachery treacheryMatcher -> do selectAny $ Matcher.treacheryAt locationId <> treacheryMatcher
 
     -- normal cases
+    Matcher.LocationWithCardsUnderneath {} -> locationId <=~> matcher
     Matcher.FloodedLocation {} -> locationId <=~> matcher
     Matcher.FullyFloodedLocation {} -> locationId <=~> matcher
     Matcher.CanHaveFloodLevelIncreased {} -> locationId <=~> matcher

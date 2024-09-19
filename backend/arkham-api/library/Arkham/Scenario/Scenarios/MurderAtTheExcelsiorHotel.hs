@@ -173,7 +173,7 @@ instance RunMessage MurderAtTheExcelsiorHotel where
       push $ SetChaosTokens tokens
       pure s
     ResolveChaosToken _ Cultist iid -> do
-      innocentInVictory <- selectAny $ VictoryDisplayCardMatch $ #enemy <> withTrait Innocent
+      innocentInVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ #enemy <> withTrait Innocent
       pushWhen innocentInVictory $ DrawAnotherChaosToken iid
       pure s
     ResolveChaosToken token Tablet iid -> do
@@ -201,7 +201,7 @@ instance RunMessage MurderAtTheExcelsiorHotel where
 
       pure s
     ResolveChaosToken _ ElderThing iid -> do
-      innocentInVictory <- selectAny $ VictoryDisplayCardMatch $ #enemy <> withTrait Innocent
+      innocentInVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ #enemy <> withTrait Innocent
       pushWhen innocentInVictory $ assignHorror iid (ChaosTokenEffectSource Tablet) 1
       pure s
     ScenarioResolution r -> do
@@ -220,7 +220,7 @@ instance RunMessage MurderAtTheExcelsiorHotel where
           lead <- getLead
           investigators <- allInvestigators
           policeOnYourSide <- remembered ThePoliceAreOnYourSide
-          policeInVictory <- selectAny $ VictoryDisplayCardMatch $ #enemy <> withTrait Police
+          policeInVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ #enemy <> withTrait Police
 
           let cards =
                 filter

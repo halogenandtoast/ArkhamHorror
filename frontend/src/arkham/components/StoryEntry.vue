@@ -14,7 +14,7 @@ export interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const choose = (idx: number) => emit('choose', idx)
-const { t} = useI18n()
+const { t } = useI18n()
 
 const format = function(body: string) {
   return body.replace(/_([^_]*)_/g, '<b>$1</b>').replace(/\*([^*]*)\*/g, '<i>$1</i>')

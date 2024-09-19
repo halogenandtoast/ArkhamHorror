@@ -368,8 +368,8 @@ instance RunMessage TheBoundaryBeyond where
       inVictory <-
         selectAny
           $ VictoryDisplayCardMatch
-          $ cardIs
-            Enemies.harbingerOfValusia
+          $ basic
+          $ cardIs Enemies.harbingerOfValusia
       inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
       damage <- case inPlayHarbinger of
         Just eid -> field EnemyDamage eid
@@ -406,8 +406,8 @@ instance RunMessage TheBoundaryBeyond where
       n <-
         selectCount
           $ VictoryDisplayCardMatch
-          $ CardWithTrait
-            Trait.Tenochtitlan
+          $ basic
+          $ CardWithTrait Trait.Tenochtitlan
       gainXp <- toGainXp attrs $ getXpWithBonus n
       pushAll
         $ RecordCount PathsAreKnownToYou n

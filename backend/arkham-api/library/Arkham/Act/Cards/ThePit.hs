@@ -2,7 +2,6 @@ module Arkham.Act.Cards.ThePit (ThePit (..), thePit) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Direction
 import Arkham.Enemy.Cards qualified as Enemies
@@ -11,6 +10,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Scenario.Deck
+import Arkham.Scenarios.ThePitOfDespair.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype ThePit = ThePit ActAttrs
@@ -40,8 +40,8 @@ instance RunMessage ThePit where
       positions <- nub . concatMap locationPositions <$> select RevealedLocation
       for_ (zip positions tidalTunnelDeck) (uncurry placeLocationInGrid)
 
-      story $ i18nWithTitle "theInnsmouthConspiracy.thePitOfDespair.flashback1"
-      recordSetInsert MemoriesRecovered [AMeetingWithThomasDawson]
+      flashback Flashback1
+      recoverMemory AMeetingWithThomasDawson
 
       advanceActDeck attrs
       pure a

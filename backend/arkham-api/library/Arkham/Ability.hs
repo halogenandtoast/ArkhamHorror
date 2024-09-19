@@ -1,3 +1,4 @@
+{-# LANGUAGE ImplicitParams #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Ability (
@@ -17,10 +18,12 @@ import Arkham.Criteria as X
 import Arkham.Ability.Types qualified
 import Arkham.Action
 import Arkham.Card.CardCode
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
 import Arkham.Source
+import Arkham.Text (toI18n)
 import Control.Lens (over, set, transform)
 import Data.Data.Lens (biplate)
 import GHC.Records
@@ -101,6 +104,9 @@ groupLimit lType = limitedAbility (GroupLimit lType 1)
 
 withTooltip :: Text -> Ability -> Ability
 withTooltip t a = a & abilityTooltipL ?~ t
+
+withI18nTooltip :: HasI18n => Text -> Ability -> Ability
+withI18nTooltip t a = a & abilityTooltipL ?~ scope "tooltips" (toI18n t)
 
 selfAbility :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
 selfAbility a n c = restrictedAbility a n (Self <> c)

@@ -21,7 +21,7 @@ newtype Metadata = Metadata {usedLocationIds :: [LocationId]}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype InPursuitOfTheLiving = InPursuitOfTheLiving (ActAttrs `With` Metadata)
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 inPursuitOfTheLiving :: ActCard InPursuitOfTheLiving
@@ -48,7 +48,7 @@ instance HasAbilities InPursuitOfTheLiving where
         , restrictedAbility
             a
             2
-            (ExtendedCardCount 4 $ VictoryDisplayCardMatch $ CardWithTitle "Unfinished Business")
+            (ExtendedCardCount 4 $ VictoryDisplayCardMatch $ basic $ CardWithTitle "Unfinished Business")
             $ Objective
             $ ForcedAbility AnyWindow
         ]

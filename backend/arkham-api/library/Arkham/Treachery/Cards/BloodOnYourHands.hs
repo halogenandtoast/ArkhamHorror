@@ -21,7 +21,7 @@ instance RunMessage BloodOnYourHands where
       sid <- getRandom
       push
         $ revelationSkillTest sid iid attrs #willpower
-        $ SumCalculation [Fixed 2, VictoryDisplayCountCalculation $ CardWithTrait Innocent]
+        $ SumCalculation [Fixed 2, VictoryDisplayCountCalculation $ basic $ CardWithTrait Innocent]
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       atCrimeScene <- iid <=~> InvestigatorAt (LocationWithTrait CrimeScene)

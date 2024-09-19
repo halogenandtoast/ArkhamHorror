@@ -262,7 +262,7 @@ instance RunMessage TheDepthsOfYoth where
       gainXp <- toGainXp attrs $ getXpWithBonus depth
       vengeance <- getVengeanceInVictoryDisplay
       yigsFury <- getRecordCount YigsFury
-      inVictory <- selectAny $ VictoryDisplayCardMatch $ cardIs Enemies.harbingerOfValusia
+      inVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Enemies.harbingerOfValusia
       inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
       damage <- case inPlayHarbinger of
         Just eid -> field EnemyDamage eid

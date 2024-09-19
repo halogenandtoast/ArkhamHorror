@@ -20,6 +20,7 @@ import Arkham.Exception
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -83,7 +84,7 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage AThousandShapesOfHorror where
-  runMessage msg s@(AThousandShapesOfHorror attrs) = runQueueT $ case msg of
+  runMessage msg s@(AThousandShapesOfHorror attrs) = runQueueT $ withI18n $ case msg of
     PreScenarioSetup -> do
       story $ i18nWithTitle "dreamEaters.aThousandShapesOfHorror.intro1"
       atYourSide <- getHasRecord TheBlackCatIsAtYourSide

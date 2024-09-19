@@ -50,6 +50,9 @@ investigateAction_ = investigateAction mempty
 actionAbility :: AbilityType
 actionAbility = ActionAbility [] (ActionCost 1)
 
+doubleActionAbility :: AbilityType
+doubleActionAbility = ActionAbility [] (ActionCost 2)
+
 instance IsLabel "action" AbilityType where
   fromLabel = actionAbility
 

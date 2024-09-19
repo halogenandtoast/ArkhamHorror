@@ -267,7 +267,7 @@ instance RunMessage BlackStarsRise where
           <> CardWithTrait Trait.Byakhee
       pure s
     ScenarioResolution res -> do
-      ashleighSlain <- selectOne $ VictoryDisplayCardMatch $ cardIs Enemies.ashleighClarke
+      ashleighSlain <- selectOne $ VictoryDisplayCardMatch $ basic $ cardIs Enemies.ashleighClarke
       gainXp <- toGainXp attrs $ getXp
       iids <- allInvestigatorIds
       players <- allPlayers

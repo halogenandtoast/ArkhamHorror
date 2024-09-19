@@ -9,13 +9,14 @@ import Arkham.Matcher.Patterns
 import Arkham.Matcher.Types
 import Arkham.Modifier
 import Arkham.Prelude
+import Arkham.Source
 import Arkham.Target
 
 class Capable a where
   can :: Capabilities a
 
 data FromSource = FromPlayerCardEffect | FromOtherSource
-  deriving stock (Eq)
+  deriving stock Eq
 
 instance Capable InvestigatorMatcher where
   can =
@@ -49,6 +50,14 @@ instance Capable InvestigatorMatcher where
       , move = InvestigatorWithoutModifier CannotMove
       , target = TargetCapabilities {encounterDeck = InvestigatorCanTarget EncounterDeckTarget}
       , reveal = RevealCapabilities {cards = InvestigatorWithoutModifier CannotRevealCards}
+      , heal =
+          HealCapabilities
+            { damage = \source -> HealableInvestigator source #damage Anyone
+            , horror = \source -> HealableInvestigator source #horror Anyone
+            , any =
+                \source ->
+                  AnyInvestigator [HealableInvestigator source kind Anyone | kind <- [#horror, #damage]]
+            }
       }
 
 instance Capable (InvestigatorMatcher -> InvestigatorMatcher) where
@@ -100,55 +109,63 @@ data Capabilities a = Capabilities
   , target :: TargetCapabilities a
   , move :: a
   , reveal :: RevealCapabilities a
+  , heal :: HealCapabilities a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data AffectCapabilities a = AffectCapabilities
   { otherPlayers :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data ManipulateCapabilities a = ManipulateCapabilities
   { deck :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data SearchCapabilities a = SearchCapabilities
   { deck :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data DrawCapabilities a = DrawCapabilities
   { cards :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data RevealCapabilities a = RevealCapabilities
   { cards :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor
+
+data HealCapabilities a = HealCapabilities
+  { damage :: Source -> a
+  , horror :: Source -> a
+  , any :: Source -> a
+  }
+  deriving stock Functor
 
 data GainCapabilities a = GainCapabilities
   { resources :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data SpendCapabilities a = SpendCapabilities
   { resources :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data HaveCapabilities a = HaveCapabilities
   { cards :: HaveCardsCapabilities a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data HaveCardsCapabilities a = HaveCardsCapabilities
   { leaveDiscard :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data TargetCapabilities a = TargetCapabilities
   { encounterDeck :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor

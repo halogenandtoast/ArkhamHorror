@@ -21,6 +21,7 @@ import Arkham.Matcher (
   CardMatcher (..),
   EnemyMatcher (..),
   ExtendedCardMatcher (..),
+  basic,
   cardIs,
  )
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
@@ -103,10 +104,9 @@ instance RunMessage TheMidnightMasks where
 
       addExtraDeck CultistDeck =<< gatherEncounterSet EncounterSet.CultOfUmordhoth
 
-      houseBurnedDown <- getHasRecord YourHouseHasBurnedToTheGround
-      if houseBurnedDown
-        then startAt rivertown
-        else startAt =<< place Locations.yourHouse
+      getHasRecord YourHouseHasBurnedToTheGround >>= \case
+        True -> startAt rivertown
+        False -> startAt =<< place Locations.yourHouse
 
       count' <- getPlayerCount
       let acolytes = replicate (count' - 1) Enemies.acolyte
@@ -139,7 +139,7 @@ instance RunMessage TheMidnightMasks where
       pure s
     ScenarioResolution (Resolution n) -> do
       cultistsWeInterrogated <-
-        selectMap toCardCode (VictoryDisplayCardMatch $ CardWithTrait Trait.Cultist <> CardIsUnique)
+        selectMap toCardCode (VictoryDisplayCardMatch $ basic $ CardWithTrait Trait.Cultist <> CardIsUnique)
       agenda <- getCurrentAgendaStep
       inPlayCultistsWhoGotAway <- selectField EnemyCardCode (EnemyWithTrait Trait.Cultist <> UniqueEnemy)
       let
@@ -148,7 +148,7 @@ instance RunMessage TheMidnightMasks where
           inPlayCultistsWhoGotAway
             <> map toCardCode (attrs ^. decksL . at CultistDeck . non [])
             <> [toCardCode Enemies.theMaskedHunter | agenda == 1]
-      ghoulPriestDefeated <- selectAny (VictoryDisplayCardMatch $ cardIs Enemies.ghoulPriest)
+      ghoulPriestDefeated <- selectAny (VictoryDisplayCardMatch $ basic $ cardIs Enemies.ghoulPriest)
       story resolution
       recordSetInsert CultistsWeInterrogated cultistsWeInterrogated
       recordSetInsert CultistsWhoGotAway cultistsWhoGotAway

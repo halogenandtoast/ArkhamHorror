@@ -300,7 +300,7 @@ instance RunMessage EchoesOfThePast where
       gainXp <- toGainXp attrs $ getXpWithBonus (if n == 4 then 1 else 0)
       sebastienSlain <-
         selectOne
-          (VictoryDisplayCardMatch $ cardIs Enemies.sebastienMoreau)
+          (VictoryDisplayCardMatch $ basic $ cardIs Enemies.sebastienMoreau)
       conviction <- getRecordCount Conviction
       doubt <- getRecordCount Doubt
 

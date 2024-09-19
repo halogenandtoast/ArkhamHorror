@@ -21,6 +21,7 @@ import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Log (getRecordCount)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTarget)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
@@ -80,7 +81,7 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage WeaverOfTheCosmos where
-  runMessage msg s@(WeaverOfTheCosmos attrs) = runQueueT $ case msg of
+  runMessage msg s@(WeaverOfTheCosmos attrs) = runQueueT $ withI18n $ case msg of
     PreScenarioSetup -> do
       story $ i18nWithTitle "dreamEaters.weaverOfTheCosmos.intro"
       pure s

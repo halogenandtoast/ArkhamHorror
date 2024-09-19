@@ -238,8 +238,8 @@ instance RunMessage TheLastKing where
       vipsSlain <-
         selectMap toCardCode
           $ VictoryDisplayCardMatch
-          $ CardWithTrait
-            Trait.Lunatic
+          $ basic
+          $ CardWithTrait Trait.Lunatic
       let
         interviewed =
           mapMaybe interviewedToCardCode (setToList $ scenarioLog attrs)

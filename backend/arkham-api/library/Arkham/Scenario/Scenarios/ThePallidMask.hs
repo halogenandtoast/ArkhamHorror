@@ -317,9 +317,7 @@ instance RunMessage ThePallidMask where
       investigatorIds <- allInvestigatorIds
       players <- allPlayers
       lead <- getLeadPlayer
-      harukoSlain <-
-        selectOne
-          (VictoryDisplayCardMatch $ cardIs Enemies.ishimaruHaruko)
+      harukoSlain <- selectOne (VictoryDisplayCardMatch $ basic $ cardIs Enemies.ishimaruHaruko)
       chasingTheStrangerTallies <- getRecordCount ChasingTheStranger
       let
         updateSlain =

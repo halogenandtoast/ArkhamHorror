@@ -10,6 +10,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers (perPlayer)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -36,7 +37,7 @@ instance HasAbilities BeyondDreams where
     ]
 
 instance RunMessage BeyondDreams where
-  runMessage msg a@(BeyondDreams attrs) = runQueueT $ case msg of
+  runMessage msg a@(BeyondDreams attrs) = runQueueT $ withI18n $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       eachInvestigator \iid -> do
         push $ InvestigatorDiscardAllClues (toSource attrs) iid

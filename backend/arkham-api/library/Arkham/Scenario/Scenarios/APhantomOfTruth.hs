@@ -319,7 +319,7 @@ instance RunMessage APhantomOfTruth where
       players <- allPlayers
       jordanSlain <-
         selectOne
-          (VictoryDisplayCardMatch $ cardIs Enemies.jordanPerry)
+          (VictoryDisplayCardMatch $ basic $ cardIs Enemies.jordanPerry)
       gainXp <-
         toGainXp attrs
           $ getXpWithBonus (if res == Resolution 2 then 2 else 0)

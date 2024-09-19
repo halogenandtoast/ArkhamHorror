@@ -43,6 +43,12 @@ getIsStandalone = isNothing <$> selectOne TheCampaign
 getEncounterDeck :: HasGame m => m (Deck EncounterCard)
 getEncounterDeck = scenarioField ScenarioEncounterDeck
 
+getVictoryDisplay :: HasGame m => m [Card]
+getVictoryDisplay = scenarioField ScenarioVictoryDisplay
+
+inVictoryDisplay :: HasGame m => CardMatcher -> m Bool
+inVictoryDisplay matcher = any (`cardMatch` matcher) <$> getVictoryDisplay
+
 whenStandalone :: HasGame m => m () -> m ()
 whenStandalone = whenM getIsStandalone
 

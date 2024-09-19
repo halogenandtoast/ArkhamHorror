@@ -15,6 +15,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Message (createEnemy)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message (toMessage)
 import Arkham.Placement
@@ -39,7 +40,7 @@ instance HasAbilities JourneyAcrossTheBridge where
     ]
 
 instance RunMessage JourneyAcrossTheBridge where
-  runMessage msg a@(JourneyAcrossTheBridge attrs) = runQueueT $ case msg of
+  runMessage msg a@(JourneyAcrossTheBridge attrs) = runQueueT $ withI18n $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       story $ i18n "theDreamEaters.weaverOfTheCosmos.theSpiderQueen1"
       survived <- getHasRecord RandolphSurvivedTheDescent

@@ -18,6 +18,7 @@ import Arkham.Helpers.Log (whenHasRecord)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
@@ -78,7 +79,7 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage DarkSideOfTheMoon where
-  runMessage msg s@(DarkSideOfTheMoon attrs) = runQueueT $ case msg of
+  runMessage msg s@(DarkSideOfTheMoon attrs) = runQueueT $ withI18n $ case msg of
     StandaloneSetup -> do
       push $ SetChaosTokens standaloneChaosTokens
       pure s

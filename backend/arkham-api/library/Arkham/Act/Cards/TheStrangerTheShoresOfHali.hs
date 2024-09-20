@@ -41,7 +41,6 @@ instance RunMessage TheStrangerTheShoresOfHali where
       push $ advancedWithOther attrs
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
       privateLocations <- selectTargets $ LocationWithTrait Private
       card <- flipCard <$> genCard (toCardDef attrs)
       pushAll
@@ -51,6 +50,7 @@ instance RunMessage TheStrangerTheShoresOfHali where
            , PlaceNextTo ActDeckTarget [card]
            , advanceActDeck attrs
            ]
+      moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
       pure a
     _ -> TheStrangerTheShoresOfHali <$> runMessage msg attrs
 

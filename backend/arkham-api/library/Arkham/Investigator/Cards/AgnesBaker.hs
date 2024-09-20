@@ -1,19 +1,17 @@
-module Arkham.Investigator.Cards.AgnesBaker (
-  AgnesBaker (..),
-  agnesBaker,
-) where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.AgnesBaker (AgnesBaker (..), agnesBaker) where
 
 import Arkham.Ability
+import Arkham.Calculation
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Message.Lifted.Choose
 
 newtype AgnesBaker = AgnesBaker InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 agnesBaker :: InvestigatorCard AgnesBaker
 agnesBaker =
@@ -23,21 +21,20 @@ agnesBaker =
 instance HasAbilities AgnesBaker where
   getAbilities (AgnesBaker x) =
     [ playerLimit PerPhase
-        $ restrictedAbility x 1 (Self <> CanDealDamage <> enemyExists (EnemyAt YourLocation))
-        $ freeReaction (PlacedCounter #when You AnySource HorrorCounter $ atLeast 1)
+        $ restricted x 1 (Self <> CanDealDamage <> exists (EnemyAt YourLocation))
+        $ freeReaction (PlacedCounter #when You AnySource #horror $ atLeast 1)
     ]
 
 instance HasChaosTokenValue AgnesBaker where
   getChaosTokenValue iid ElderSign (AgnesBaker attrs) | attrs `is` iid = do
-    pure $ ChaosTokenValue ElderSign $ PositiveModifier attrs.sanityDamage
+    pure $ elderSignValue $ InvestigatorFieldCalculation attrs.id InvestigatorHorror
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage AgnesBaker where
-  runMessage msg i@(AgnesBaker attrs) = case msg of
+  runMessage msg i@(AgnesBaker attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = toAbilitySource attrs 1
-      targets <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource source
-      player <- getPlayer iid
-      push $ chooseOne player $ targetLabels targets (only . nonAttackEnemyDamage source 1)
+      let source = attrs.ability 1
+      enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource source
+      chooseTargetM iid enemies $ nonAttackEnemyDamage source 1
       pure i
-    _ -> AgnesBaker <$> runMessage msg attrs
+    _ -> AgnesBaker <$> liftRunMessage msg attrs

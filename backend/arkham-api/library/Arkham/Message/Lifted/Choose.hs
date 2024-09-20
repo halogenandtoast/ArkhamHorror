@@ -2,10 +2,12 @@ module Arkham.Message.Lifted.Choose where
 
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
+import Arkham.Classes.Query
 import Arkham.Id
 import Arkham.Message (Message)
 import Arkham.Message.Lifted
 import Arkham.Prelude
+import Arkham.Query
 import Arkham.Question
 import Arkham.Queue
 import Arkham.SkillType
@@ -33,7 +35,7 @@ runChooseT = runWriterT . (`runStateT` ChooseState False Nothing) . unChooseT
 
 chooseOneM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOneM iid choices = do
-  ((_, ChooseState { label }), choices') <- runChooseT choices
+  ((_, ChooseState {label}), choices') <- runChooseT choices
   unless (null choices') do
     case label of
       Nothing -> chooseOne iid choices'
@@ -69,12 +71,12 @@ forcedWhen b action =
   if b
     then do
       censor id action
-      modify $ \s -> s { terminated = True }
+      modify $ \s -> s {terminated = True}
     else action
 
 unterminated :: ReverseQueue m => ChooseT m () -> ChooseT m ()
 unterminated action = do
-  ChooseState { terminated } <- get
+  ChooseState {terminated} <- get
   unless terminated action
 
 labeled :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
@@ -124,8 +126,18 @@ chooseTargetM
   -> m ()
 chooseTargetM iid ts action = chooseOneM iid $ unterminated $ for_ ts \t -> targeting t (action t)
 
+chooseSelectM
+  :: (ReverseQueue m, Targetable (QueryElement query), Query query)
+  => InvestigatorId
+  -> query
+  -> (QueryElement query -> QueueT Message m ())
+  -> m ()
+chooseSelectM iid query action = do
+  ts <- select query
+  chooseOneM iid $ unterminated $ for_ ts \t -> targeting t (action t)
+
 nothing :: Monad m => QueueT Message m ()
 nothing = pure ()
 
 questionLabeled :: ReverseQueue m => Text -> ChooseT m ()
-questionLabeled label = modify $ \s -> s { Arkham.Message.Lifted.Choose.label = Just label }
+questionLabeled label = modify $ \s -> s {Arkham.Message.Lifted.Choose.label = Just label}

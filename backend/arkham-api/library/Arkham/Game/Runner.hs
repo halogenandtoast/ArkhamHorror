@@ -292,7 +292,7 @@ runGameMessage msg g = case msg of
           & (entitiesL . agendasL .~ mempty)
           & (entitiesL . treacheriesL .~ mempty)
           & (entitiesL . eventsL .~ mempty)
-          & (entitiesL . effectsL %~ filterMap (or . sequence [effectIsForResolution, effectIsForNextGame])
+          & (entitiesL . effectsL %~ filterMap (or . sequence [effectIsForResolution, effectIsForNextGame]))
           & (entitiesL . skillsL .~ mempty)
           & (entitiesL . storiesL .~ mempty)
           & (encounterDiscardEntitiesL .~ defaultEntities)

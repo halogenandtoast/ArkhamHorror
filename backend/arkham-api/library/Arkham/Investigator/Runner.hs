@@ -3975,7 +3975,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       Just _ -> do
         let
           updateUsed used
-            | usedAbility used == ability = used {usedTimes = usedTimes used + 1}
+            | usedAbility used == ability =
+                used {usedTimes = usedTimes used + 1, usedAbilityWindows = usedAbilityWindows used <> windows}
             | otherwise = used
         pure $ a & usedAbilitiesL %~ map updateUsed
   DoNotCountUseTowardsAbilityLimit iid ability | iid == investigatorId -> do

@@ -43,6 +43,7 @@ export type SkillTest = {
   investigator: string;
   setAsideChaosTokens: ChaosToken[];
   revealedChaosTokens: ChaosToken[];
+  resolvedChaosTokens: ChaosToken[];
   // result: SkillTestResult;
   committedCards: Card[]
   source: Source;
@@ -86,6 +87,7 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     modifiedDifficulty: JsonDecoder.number,
     setAsideChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     revealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
+    resolvedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     // result: skillTestResultDecoder,
     committedCards: JsonDecoder.dictionary(JsonDecoder.array(cardDecoder, 'Card[]'), 'Record<string, Card[]>').map((record) => Object.values(record).flat()),
     source: sourceDecoder,

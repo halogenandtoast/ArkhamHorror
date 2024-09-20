@@ -31,8 +31,8 @@ import 'floating-vue/dist/style.css'
 
 const store = useUserStore()
 onMounted(async () => {
-  avifSupported.value = await checkAvifSupport();
   await store.loadUserFromStorage()
+  avifSupported.value = await checkAvifSupport();
 })
 const avifSupported = ref(true);
 const checkAvifSupport = (): Promise<boolean> => {
@@ -58,6 +58,10 @@ html {
 }
 *, *::before, *::after{
   box-sizing: border-box;
+}
+
+b, strong {
+  font-weight: bold;
 }
 
 img, svg {
@@ -186,6 +190,7 @@ body {
   &:before {
     font-family: "Arkham";
     content: "\0041";
+    color: inherit;
   }
 }
 

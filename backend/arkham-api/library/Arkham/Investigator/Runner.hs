@@ -91,9 +91,9 @@ import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.Skill.Types (Field (..))
 import Arkham.SkillTest
+import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
@@ -304,6 +304,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     let usedAbilities'' =
           map (\u -> if usedDepth u >= depth then u {usedThisWindow = False} else u) usedAbilities'
     pure $ a & usedAbilitiesL .~ usedAbilities''
+  EndOfScenario {} -> do
+    pure $ a & handL .~ mempty
   ResetGame ->
     pure
       $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) nullCardId investigatorPlayerId)

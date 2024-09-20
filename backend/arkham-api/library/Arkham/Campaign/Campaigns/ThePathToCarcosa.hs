@@ -153,7 +153,7 @@ instance RunMessage ThePathToCarcosa where
       players <- traverse getPlayer investigatorIds
       pushAll
         $ [story players epilogue | notNull players]
-        <> [EndOfGame Nothing]
+        <> [GameOver]
       pure c
     EnemyDefeated _ cardId _ _ -> do
       card <- getCard cardId

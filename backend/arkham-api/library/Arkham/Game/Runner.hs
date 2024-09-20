@@ -281,9 +281,36 @@ runGameMessage msg g = case msg of
     push window
     pushEnd $ EndOfScenario mNextCampaignStep
     pure g
-  EndOfScenario _ -> case gameMode g of
-    These c _ -> pure $ g & modeL .~ This c
-    _ -> pure g
+  EndOfScenario _ -> do
+    let
+      update g' =
+        g'
+          & (entitiesL . assetsL .~ mempty)
+          & (entitiesL . locationsL .~ mempty)
+          & (entitiesL . enemiesL .~ mempty)
+          & (entitiesL . actsL .~ mempty)
+          & (entitiesL . agendasL .~ mempty)
+          & (entitiesL . treacheriesL .~ mempty)
+          & (entitiesL . eventsL .~ mempty)
+          & (entitiesL . effectsL %~ filterMap effectIsForNextGame)
+          & (entitiesL . skillsL .~ mempty)
+          & (entitiesL . storiesL .~ mempty)
+          & (encounterDiscardEntitiesL .~ defaultEntities)
+          & (outOfPlayEntitiesL .~ mempty)
+          & (skillTestL .~ Nothing)
+          & (skillTestResultsL .~ Nothing)
+          & (inDiscardEntitiesL .~ mempty)
+          & (inHandEntitiesL .~ mempty)
+          & (inSearchEntitiesL .~ mempty)
+          & (focusedCardsL .~ mempty)
+          & (focusedChaosTokensL .~ mempty)
+          & (activeCardL .~ Nothing)
+          & (activeAbilitiesL .~ mempty)
+          & (actionRemovedEntitiesL .~ mempty)
+          & (activeAbilitiesL .~ mempty)
+    case gameMode g of
+      These c _ -> pure $ update $ g & (modeL .~ This c)
+      _ -> pure $ update g
   ResetGame ->
     pure
       $ g
@@ -302,6 +329,7 @@ runGameMessage msg g = case msg of
       & (entitiesL . skillsL .~ mempty)
       & (entitiesL . storiesL .~ mempty)
       & (inDiscardEntitiesL .~ mempty)
+      & (inHandEntitiesL .~ mempty)
       & (gameStateL .~ IsActive)
       & (turnPlayerInvestigatorIdL .~ Nothing)
       & (focusedCardsL .~ mempty)

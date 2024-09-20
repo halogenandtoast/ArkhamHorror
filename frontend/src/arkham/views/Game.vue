@@ -101,14 +101,13 @@ const websocketUrl = computed(() => {
     replace(/http/, 'ws')
 })
 
-await fetchGame(props.gameId, props.spectate).then(({ game: newGame, playerId: newPlayerId, multiplayerMode}) => {
-  loadAllImages(newGame).then(() => {
+await fetchGame(props.gameId, props.spectate).then(async ({ game: newGame, playerId: newPlayerId, multiplayerMode}) => {
+    try { await loadAllImages(newGame) } catch (e) { console.error(e) }
     game.value = newGame
     solo.value = multiplayerMode === "Solo"
     gameLog.value = Object.freeze(newGame.log)
     playerId.value = newPlayerId
     ready.value = true
-  })
 })
 
 // Local Decoders

@@ -24,9 +24,9 @@ minhThiPhan =
 instance HasAbilities MinhThiPhan where
   getAbilities (MinhThiPhan attrs) =
     [ limitedAbility (PerInvestigatorLimit PerRound 1)
-        $ restrictedAbility attrs 1 Self
+        $ restricted attrs 1 Self
         $ freeReaction
-        $ CommittedCard #after (affectsOthers $ InvestigatorAt YourLocation) AnyCard
+        $ CommittedCard #after (affectsOthers $ at_ YourLocation) AnyCard
     ]
 
 instance HasChaosTokenValue MinhThiPhan where
@@ -37,8 +37,7 @@ instance HasChaosTokenValue MinhThiPhan where
 instance RunMessage MinhThiPhan where
   runMessage msg i@(MinhThiPhan attrs) = runQueueT $ case msg of
     UseCardAbility _ (isSource attrs -> True) 1 [(windowType -> Window.CommittedCard _ card)] _ -> do
-      withSkillTest \sid ->
-        skillTestModifier sid (attrs.ability 1) card (AddSkillIcons [#wild])
+      withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) card (AddSkillIcons [#wild])
       pure i
     ElderSignEffect iid | iid == toId attrs -> do
       withSkillTest \sid -> do

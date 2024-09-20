@@ -26,7 +26,7 @@ instance HasChaosTokenValue WendyAdams where
 instance HasAbilities WendyAdams where
   getAbilities (WendyAdams attrs) =
     [ playerLimit PerTestOrAbility
-        $ restrictedAbility attrs 1 Self
+        $ restricted attrs 1 Self
         $ ReactionAbility (Matcher.RevealChaosToken #when You AnyChaosToken)
         $ HandDiscardCost 1 #any
     ]
@@ -39,7 +39,6 @@ instance RunMessage WendyAdams where
       drawAnotherChaosToken iid
       pure i
     ElderSignEffect (is attrs -> True) -> do
-      maid <- selectOne $ assetIs Assets.wendysAmulet
-      pushWhen (isJust maid) PassSkillTest
+      whenAny (assetIs Assets.wendysAmulet) passSkillTest
       pure i
     _ -> WendyAdams <$> liftRunMessage msg attrs

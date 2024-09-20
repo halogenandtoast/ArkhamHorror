@@ -3,7 +3,6 @@ module Arkham.Asset.Cards.TimewornBrand5 (timewornBrand5, TimewornBrand5 (..)) w
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Modifier
 import Arkham.Trait (Trait (Elite))
 

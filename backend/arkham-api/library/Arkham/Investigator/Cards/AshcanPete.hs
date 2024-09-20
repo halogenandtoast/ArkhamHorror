@@ -1,15 +1,12 @@
-module Arkham.Investigator.Cards.AshcanPete (
-  AshcanPete (..),
-  ashcanPete,
-) where
+module Arkham.Investigator.Cards.AshcanPete (AshcanPete (..), ashcanPete) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Capability
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
-import Arkham.Matcher hiding (FastPlayerWindow)
-import Arkham.Modifier
+import Arkham.Investigator.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype AshcanPete = AshcanPete InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -25,10 +22,8 @@ ashcanPete =
 instance HasAbilities AshcanPete where
   getAbilities (AshcanPete x) =
     [ playerLimit PerRound
-        $ withCriteria (mkAbility x 1 (FastAbility $ HandDiscardCost 1 #any))
-        $ Self
-        <> exists (AssetControlledBy You <> AssetExhausted)
-        <> Negate (SelfHasModifier ControlledAssetsCannotReady)
+        $ selfAbility x 1 (exists (AssetControlledBy You <> #exhausted) <> can.have.assets.ready You)
+        $ FastAbility (HandDiscardCost 1 #any)
     ]
 
 instance HasChaosTokenValue AshcanPete where
@@ -37,14 +32,11 @@ instance HasChaosTokenValue AshcanPete where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage AshcanPete where
-  runMessage msg i@(AshcanPete attrs) = case msg of
-    ResolveChaosToken _drawnToken ElderSign iid | attrs `is` iid -> do
-      mduke <- selectOne $ assetIs Assets.duke
-      for_ mduke $ push . ready
+  runMessage msg i@(AshcanPete attrs) = runQueueT $ case msg of
+    ElderSignEffect (is attrs -> True) -> do
+      whenM (can.have.assets.ready attrs.id) $ selectEach (assetIs Assets.duke) ready
       pure i
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      targets <- select $ assetControlledBy iid <> AssetExhausted
-      player <- getPlayer iid
-      push $ chooseOne player $ targetLabels targets (only . ready)
+      chooseSelectM iid (assetControlledBy iid <> #exhausted) ready
       pure i
-    _ -> AshcanPete <$> runMessage msg attrs
+    _ -> AshcanPete <$> liftRunMessage msg attrs

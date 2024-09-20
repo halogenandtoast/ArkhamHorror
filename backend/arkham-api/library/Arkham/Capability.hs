@@ -15,7 +15,7 @@ class Capable a where
   can :: Capabilities a
 
 data FromSource = FromPlayerCardEffect | FromOtherSource
-  deriving stock (Eq)
+  deriving stock Eq
 
 instance Capable InvestigatorMatcher where
   can =
@@ -41,6 +41,7 @@ instance Capable InvestigatorMatcher where
           HaveCapabilities
             { cards =
                 HaveCardsCapabilities {leaveDiscard = InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile}
+            , assets = HaveAssetsCapabilities {ready = InvestigatorWithoutModifier ControlledAssetsCannotReady}
             }
       , affect =
           AffectCapabilities
@@ -101,54 +102,60 @@ data Capabilities a = Capabilities
   , move :: a
   , reveal :: RevealCapabilities a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data AffectCapabilities a = AffectCapabilities
   { otherPlayers :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data ManipulateCapabilities a = ManipulateCapabilities
   { deck :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data SearchCapabilities a = SearchCapabilities
   { deck :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data DrawCapabilities a = DrawCapabilities
   { cards :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data RevealCapabilities a = RevealCapabilities
   { cards :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data GainCapabilities a = GainCapabilities
   { resources :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data SpendCapabilities a = SpendCapabilities
   { resources :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data HaveCapabilities a = HaveCapabilities
   { cards :: HaveCardsCapabilities a
+  , assets :: HaveAssetsCapabilities a
   }
-  deriving stock (Functor)
+  deriving stock Functor
 
 data HaveCardsCapabilities a = HaveCardsCapabilities
   { leaveDiscard :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor
+
+data HaveAssetsCapabilities a = HaveAssetsCapabilities
+  { ready :: a
+  }
+  deriving stock Functor
 
 data TargetCapabilities a = TargetCapabilities
   { encounterDeck :: a
   }
-  deriving stock (Functor)
+  deriving stock Functor

@@ -32,7 +32,7 @@ instance HasChaosTokenValue PatriceHathaway where
 instance RunMessage PatriceHathaway where
   runMessage msg i@(PatriceHathaway attrs) = runQueueT $ case msg of
     SendMessage (isTarget attrs -> True) AllDrawCardAndResource | attrs.inGame -> do
-      discards <- filterCards NonWeakness <$> attrs.hand
+      discards <- filterCards DiscardableCard <$> attrs.hand
       chooseOneAtATimeM attrs.id $ targets discards $ discardCard attrs attrs
       doStep 1 msg
       forTarget attrs $ doStep 2 AllDrawCardAndResource

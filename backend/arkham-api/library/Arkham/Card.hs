@@ -25,7 +25,7 @@ import Arkham.Customization
 import Arkham.EncounterCard
 import Arkham.Enemy.Cards (allSpecialEnemyCards)
 import Arkham.Id
-import Arkham.Keyword (Keyword (Peril))
+import Arkham.Keyword (Keyword (Hidden, Peril))
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.PlayerCard
@@ -200,7 +200,7 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
     elem sym . cdLocationRevealedConnections $ toCardDef a
   CardFillsSlot slot -> elem slot $ cdSlots $ toCardDef a
   CardFillsLessSlots n slot -> count (== slot) (cdSlots $ toCardDef a) < n
-  DiscardableCard -> cardMatch a NonWeakness
+  DiscardableCard -> cardMatch a (NonWeakness <> CardWithoutKeyword Hidden)
   CardWithRevelation -> cdRevelation (toCardDef a) /= NoRevelation
   CardOwnedBy iid -> toCardOwner a == Just iid
 

@@ -45,6 +45,8 @@ const emit = defineEmits(['choose'])
 const shouldRender = (mod: ModifierType) => {
   if (!('tag' in mod)) return false
   if (mod.tag === 'DiscoveredClues') return true
+  if (mod.tag === 'DamageDealt') return true
+  if (mod.tag === 'AnySkillValue') return true
   if (mod.tag === 'AddSkillValue') return true
   if (mod.tag === 'OtherModifier' && mod.contents === 'MayIgnoreLocationEffectsAndKeywords') return true
   return false
@@ -212,12 +214,19 @@ const tokenEffects = computed(() => {
             <span>+{{modifier.contents}}</span>
             <img :src="imgsrc(`clue.png`)" />
           </template>
+          <template v-if="modifier.tag === 'DamageDealt'">
+            <span>+{{modifier.contents}}</span>
+            <img :src="imgsrc(`damage.png`)" />
+          </template>
           <template v-if="modifier.tag === 'AddSkillValue'">
             <span>+</span>
             <i
                :class="`${normalizeSkill(modifier.contents)}-icon`"
                :style="{ color: `var(--${normalizeSkill(modifier.contents)})` }"
             ></i>
+          </template>
+          <template v-if="modifier.tag === 'AnySkillValue'">
+            <span>+ {{modifier.contents}}</span>
           </template>
           <template v-if="modifier.tag === 'OtherModifier' && modifier.contents === 'MayIgnoreLocationEffectsAndKeywords'">
             <span class="text">Ignore Location Effects</span>

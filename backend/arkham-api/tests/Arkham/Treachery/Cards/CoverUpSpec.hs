@@ -30,14 +30,14 @@ spec = describe "Cover Up" $ do
     click "trigger cover up"
     self.mentalTrauma `shouldReturn` 1
 
-  it "does not cause trauma when the game ends if there are no clues on it" $ gameTest $ \self -> do
+  it "does not cause trauma when the game ends if there are no clues on it" . gameTest $ \self -> do
     location <- testLocation & prop @"clues" 3
     self `loadDeck` [Cards.coverUp]
     self `moveTo` location
     self `drawCards` 1
     self `discoverClues` 3
     useReaction
-    run $ EndOfGame Nothing
     coverUp <- selectJust $ treacheryIs Cards.coverUp
     coverUp.clues `shouldReturn` 0
+    run $ EndOfGame Nothing
     self.mentalTrauma `shouldReturn` 0

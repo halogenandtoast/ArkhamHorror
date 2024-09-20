@@ -312,6 +312,9 @@ buildOnRevealChaosTokenEffect eid sid matchr source token msgs =
 effectIsForNextGame :: Effect -> Bool
 effectIsForNextGame e = e.window == Just EffectSetupWindow
 
+effectIsForResolution :: Effect -> Bool
+effectIsForResolution e = e.window == Just EffectResolutionWindow
+
 instance FromJSON Effect where
   parseJSON = withObject "Effect" $ \o -> do
     cCode <- o .: "cardCode"

@@ -47,13 +47,10 @@ const image = computed(() => {
   width: 30px;
   display: grid;
   place-items: center;
-  isolation: isolate;
   color: black;
   font-weight: 900;
   font-size: 1.7em;
-  img {
-    filter: drop-shadow(1px 1px 2px rgb(0, 0, 0));
-  }
+  img { filter: drop-shadow(1px 1px 2px rgb(0, 0, 0)); }
   & > * {
     grid-column: 1 / -1;
     grid-row: 1 / -1;
@@ -72,6 +69,10 @@ const image = computed(() => {
     font-size: 0.8em;
     align-items: center;
     justify-content: center;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    width: 1.2em;
+    height: auto;
   }
 }
 
@@ -79,7 +80,8 @@ const image = computed(() => {
   pointer-events: auto;
   padding: 0px;
   cursor: pointer;
-  background-color: $select;
+  background-color: var(--select);
+  img { filter: unset; }
 }
 
 .health--can-interact, .sanity--can-interact {
@@ -87,7 +89,7 @@ const image = computed(() => {
   > span {
     padding: 0px;
     cursor: pointer;
-    border: 2px solid $select;
+    border: 2px solid var(--select);
   }
 }
 </style>

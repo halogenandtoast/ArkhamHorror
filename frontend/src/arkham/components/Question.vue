@@ -373,7 +373,7 @@ const cardPiles = computed(() => {
     <DropDown @choose="choose" :options="question.question.options" />
   </div>
 
-  <div v-if="!isSkillTest && !inSkillTest" class="tokens">
+  <div v-if="!isSkillTest && !inSkillTest && focusedChaosTokens.length > 0" class="tokens">
     <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="choose" />
   </div>
 
@@ -727,6 +727,7 @@ button:hover {
   flex-direction: column;
   gap: 10px;
   margin-inline: 10px;
+  margin-block: 10px;
 }
 
 .choices button {
@@ -762,10 +763,6 @@ p :deep(i) {
 
 p :deep(i):last-child {
   padding-bottom: 1.3em;
-}
-
-.message-label {
-  margin: 10px 0;
 }
 
 h2 {

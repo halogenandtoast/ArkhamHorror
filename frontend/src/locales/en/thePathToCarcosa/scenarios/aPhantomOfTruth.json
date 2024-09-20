@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the amount of doom in play (max 5).",
+      "cultist": "-2. If you fail, move each unengaged _Byakhee_ in play once toward the nearest investigator.",
+      "tablet": "-3. Cancel the effects and icons of each skill card committed to this test.",
+      "elderThing": "-2. If you fail, lose 1 resource for each point you failed by."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the amount of doom in play.",
+      "cultist": "-2. Move each unengaged _Byakhee_ in play once toward the nearest investigator.",
+      "tablet": "-4. Cancel the effects and icons of each skill card committed to this test.",
+      "elderThing": "-3. If you fail, lose 1 resource for each point you failed by."
+    }
+  }
+}

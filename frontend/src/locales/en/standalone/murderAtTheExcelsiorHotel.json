@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of _Guest_ enemies in play.",
+      "cultist": "-1. If there is an _Innocent_ enemy in the victory display, reveal another chaos token.",
+      "tablet": "-3. You may place one of your clues on your location to treat this as a -1 instead.",
+      "elderThing": "-3. If you fail and there is an _Innocent_ enemy in the victory display, take 1 horror."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of _Innocent_ enemies in play.",
+      "cultist": "-2. If there is an _Innocent_ enemy in the victory display, reveal another chaos token.",
+      "tablet": "-5. You may place one of your clues on your location to treat this as a -2 instead.",
+      "elderThing": "-3. If you fail, take 1 horror for each Innocent enemy in the victory display."
+    }
+  }
+}

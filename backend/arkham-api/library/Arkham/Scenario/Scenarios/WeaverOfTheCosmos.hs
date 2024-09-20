@@ -82,7 +82,7 @@ standaloneChaosTokens =
 instance RunMessage WeaverOfTheCosmos where
   runMessage msg s@(WeaverOfTheCosmos attrs) = runQueueT $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "dreamEaters.weaverOfTheCosmos.intro"
+      story $ i18nWithTitle "theDreamEaters.weaverOfTheCosmos.intro"
       pure s
     StandaloneSetup -> do
       record RandolphDidNotSurviveTheDescent
@@ -178,13 +178,13 @@ instance RunMessage WeaverOfTheCosmos where
     ScenarioResolution r -> do
       case r of
         NoResolution -> do
-          story $ i18nWithTitle "dreamEaters.weaverOfTheCosmos.noResolution"
+          story $ i18nWithTitle "theDreamEaters.weaverOfTheCosmos.noResolution"
           record TheBridgeWasCompleted
           eachInvestigator $ kill attrs
           whenM getIsTheWebOfDreams $ push GameOver
           endOfScenario
         Resolution 1 -> do
-          story $ i18n "dreamEaters.weaverOfTheCosmos.resolution1"
+          story $ i18n "theDreamEaters.weaverOfTheCosmos.resolution1"
           record TheBridgeWasDestroyed
           allGainXpWithBonus attrs 5
           foundAWayOut <- getHasRecord TheInvestigatorsFoundAWayOutOfTheUnderworld
@@ -194,25 +194,25 @@ instance RunMessage WeaverOfTheCosmos where
             | trapped -> push R4
             | otherwise -> push R5
         Resolution 2 -> do
-          story $ i18n "dreamEaters.weaverOfTheCosmos.resolution2"
+          story $ i18n "theDreamEaters.weaverOfTheCosmos.resolution2"
           record TheBridgeWasCompleted
           eachInvestigator $ push . DrivenInsane
           whenM getIsTheWebOfDreams $ push GameOver
           endOfScenario
         Resolution 3 -> do
-          story $ i18n "dreamEaters.weaverOfTheCosmos.resolution3"
+          story $ i18n "theDreamEaters.weaverOfTheCosmos.resolution3"
           record TheInvestigatorsReturnedToReality
           eachInvestigator (`sufferPhysicalTrauma` 2)
           whenM getIsTheDreamQuest $ push GameOver
           endOfScenario
         Resolution 4 -> do
-          story $ i18n "dreamEaters.weaverOfTheCosmos.resolution4"
+          story $ i18n "theDreamEaters.weaverOfTheCosmos.resolution4"
           record TheInvestigatorsNeverEscaped
           eachInvestigator $ push . DrivenInsane
           whenM getIsTheDreamQuest $ push GameOver
           endOfScenario
         Resolution 5 -> do
-          story $ i18n "dreamEaters.weaverOfTheCosmos.resolution5"
+          story $ i18n "theDreamEaters.weaverOfTheCosmos.resolution5"
           record TheInvestigatorsAreStillInTheDreamlands
           eachInvestigator (`sufferPhysicalTrauma` 2)
           whenM getIsTheDreamQuest $ push GameOver

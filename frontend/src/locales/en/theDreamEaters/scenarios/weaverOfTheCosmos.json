@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the highest amount of doom on a location in play.",
+      "cultist": "Reveal another token. If you fail, and there is an _Ancient One_ enemy at your location, it attacks you.",
+      "tablet": "0. The black cat tears at the web with its claws. If you succeed by 2 or more, remove 1 doom from your location.",
+      "elderThing": "-3. If this skill test fails during an attack against a _Spider_ enemy, place 1 doom on that enemy's location."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the amount of doom on locations in play.",
+      "cultist": "Reveal another token. If you fail, and there is an _Ancient One_ enemy at your location, it attacks you.",
+      "tablet": "-1. The black cat tears at the web with its claws. If you succeed by 2 or more, remove 1 doom from your location.",
+      "elderThing": "-4. If this skill test fails during an attack against a _Spider_ enemy, place 1 doom on that enemy's location."
+    }
+  }
+}

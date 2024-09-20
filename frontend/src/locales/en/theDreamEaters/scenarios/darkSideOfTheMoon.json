@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is half your alarm level (rounded up).",
+      "cultist": "Reveal another token. If you fail and your alarm level is higher than your modified skill value, after this skill test ends, draw the top card of the encounter deck.",
+      "tablet": "-1. If you fail, raise your alarm level by 1.",
+      "elderThing": "+1. The black cat summons several other cats to help. If this token is revealed during an evasion attempt and you succeed, deal 2 damage to the evaded enemy."
+    },
+    "hardExpert": {
+      "skull": "-X. X is your alarm level.",
+      "cultist": "Reveal another token. If you fail and your alarm level is higher than your modified skill value, after this skill test ends, draw the top card of the encounter deck.",
+      "tablet": "-2. If you fail, raise your alarm level by 1.",
+      "elderThing": "0. The black cat summons several other cats to help. If this token is revealed during an evasion attempt and you succeed, deal 2 damage to the evaded enemy."
+    }
+  }
+}

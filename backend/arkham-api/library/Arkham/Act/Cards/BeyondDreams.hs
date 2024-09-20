@@ -41,7 +41,7 @@ instance RunMessage BeyondDreams where
       eachInvestigator \iid -> do
         push $ InvestigatorDiscardAllClues (toSource attrs) iid
 
-      story $ i18n "dreamEaters.whereTheGodsDwell.grandDesign1"
+      story $ i18n "theDreamEaters.whereTheGodsDwell.grandDesign1"
 
       theOnyxCastle <- selectJust $ locationIs Locations.theOnyxCastle
       reveal theOnyxCastle
@@ -54,16 +54,16 @@ instance RunMessage BeyondDreams where
 
       if survivedTheVoyage
         then do
-          story $ i18n "dreamEaters.whereTheGodsDwell.grandDesign2"
+          story $ i18n "theDreamEaters.whereTheGodsDwell.grandDesign2"
           removeCampaignCard Assets.randolphCarterExpertDreamer
         else do
-          story $ i18n "dreamEaters.whereTheGodsDwell.grandDesign3"
+          story $ i18n "theDreamEaters.whereTheGodsDwell.grandDesign3"
 
       atYourSide <- getHasRecord TheBlackCatIsAtYourSide
       when atYourSide do
-        story $ i18n "dreamEaters.whereTheGodsDwell.grandDesign4"
+        story $ i18n "theDreamEaters.whereTheGodsDwell.grandDesign4"
 
-      story $ i18n "dreamEaters.whereTheGodsDwell.grandDesign5"
+      story $ i18n "theDreamEaters.whereTheGodsDwell.grandDesign5"
 
       n <- perPlayer 1
 

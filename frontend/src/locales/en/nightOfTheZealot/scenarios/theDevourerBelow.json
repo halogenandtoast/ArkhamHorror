@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of _Monster_ enemies in play.",
+      "cultist": "-2. Place 1 doom on the nearest enemy.",
+      "tablet": "-3. If there is a _Monster_ enemy at your location, take 1 damage.",
+      "elderThing": "-5. If there is an _Ancient One_ enemy in play, reveal another token."
+    },
+    "hardExpert": {
+      "skull": "-3. If you fail, after this skill test, search the encounter deck and discard pile for a _Monster_ enemy, and draw it. Shuffle the encounter deck.",
+      "cultist": "-4. Place 2 doom on the nearest enemy.",
+      "tablet": "-5. If there is a _Monster_ enemy at your location, take 1 damage and 1 horror.",
+      "elderThing": "-7. If there is an _Ancient One_ enemy in play, reveal another token."
+    }
+  }
+}

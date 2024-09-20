@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 for each Brood of Yog-Sothoth in play.",
+      "cultist": "Reveal another token. If you fail this test, take 1 horror.",
+      "tablet": "0. You must either remove all clue tokens from a Brood of Yog-Sothoth in play, or this token's modifier is -4 instead.",
+      "elderThing": "-3. If this token is revealed during an attack or evasion attempt against a Brood of Yog-Sothoth, it immediately attacks you."
+    },
+    "hardExpert": {
+      "skull": "-2 for each Brood of Yog-Sothoth in play.",
+      "cultist": "Reveal another token. If you fail this test, take 1 horror and 1 damage.",
+      "tablet": "0. You must either remove all clue tokens from a Brood of Yog-Sothoth in play, or this test automatically fails.",
+      "elderThing": "-5. If this token is revealed during an attack or evasion attempt against a Brood of Yog-Sothoth, it immediately attacks you."
+    }
+  }
+}

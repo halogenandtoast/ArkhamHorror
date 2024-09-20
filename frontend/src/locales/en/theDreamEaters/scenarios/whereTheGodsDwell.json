@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of the current act.",
+      "cultist": "Reveal another token. If you fail, place 1 doom on the current agenda.",
+      "tablet": "-4. If you fail, choose and reveal a copy of Nyarlathotep in your hand. It attacks you and is shuffled into the encounter deck.",
+      "elderThing": "0. The black cat reminds you that it's all a dream."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of the current act plus the number of the current agenda.",
+      "cultist": "Reveal another token. If you fail, place 1 doom on the current agenda. This effect may cause the current agenda to advance.",
+      "tablet": "-6. If you fail, choose and reveal a copy of Nyarlathotep in your hand. It attacks you and is shuffled into the encounter deck.",
+      "elderThing": "-1. The black cat reminds you that it's all a dream."
+    }
+  }
+}

@@ -29,9 +29,10 @@ instance RunMessage OutOfThisWorld where
       pure a
     DiscardedTopOfEncounterDeck iid cards _ (isTarget attrs -> True) -> do
       let locationCards = filterLocations cards
-      unless (null locationCards) do
-        focusCards (map EncounterCard locationCards) \unfocus -> do
-          chooseOneM iid $ targets locationCards $ push . ResolveRevelation iid . toCard
-          push unfocus
+      focusCards (map toCard cards) \unfocus -> do
+        if null locationCards
+          then continue "No locations found" [unfocus]
+          else chooseOneM iid $ targets locationCards \location ->
+            pushAll [unfocus, ResolveRevelation iid (toCard location)]
       pure a
     _ -> OutOfThisWorld <$> liftRunMessage msg attrs

@@ -36,6 +36,6 @@ instance RunMessage HospitalDebts where
       pushAll [SpendResources iid 1, PlaceResources (attrs.ability 1) (toTarget attrs) 1]
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ gameModifier (attrs.ability 2) iid (XPModifier (-2))
+      push $ resolutionModifier (attrs.ability 2) iid (XPModifier (-2))
       pure t
     _ -> HospitalDebts <$> runMessage msg attrs

@@ -207,6 +207,10 @@ gameModifier
   :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
 gameModifier source target modifier = createWindowModifierEffect EffectGameWindow source target [modifier]
 
+resolutionModifier
+  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+resolutionModifier source target modifier = createWindowModifierEffect EffectResolutionWindow source target [modifier]
+
 nextPhaseModifier
   :: (Sourceable source, Targetable target) => Phase -> source -> target -> ModifierType -> Message
 nextPhaseModifier phase source target modifier = createWindowModifierEffect (EffectPhaseWindowFor phase) source target [modifier]

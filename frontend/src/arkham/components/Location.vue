@@ -262,7 +262,7 @@ function onDrop(event: DragEvent) {
           <Locus v-if="locus" class="locus" />
           <font-awesome-icon v-if="blocked" :icon="['fab', 'expeditedssl']" class="status-icon" />
 
-          <div class="wave" :class="{ [location.floodLevel]: true }"></div>
+          <div class="wave" v-if="location.floodLevel" :class="{ [location.floodLevel]: true }"></div>
           <img
             :data-id="id"
             class="card"
@@ -363,7 +363,7 @@ function onDrop(event: DragEvent) {
 
 <style scoped lang="scss">
 .location--can-interact {
-  border: 2px solid $select;
+  border: 2px solid var(--select);
   cursor: pointer;
 }
 
@@ -648,36 +648,46 @@ function onDrop(event: DragEvent) {
 }
 
 .wave {
-  pointer-events: none;
-  background-color: #3f68c5;
-  opacity: 0.4;
-  position: absolute;
-  border-radius: 38%;
-  top: 120%;
-  height: 200%;
-  width: 200%;
-  left: -50%;
-  transition: top 10s linear, height 10s linear, border-radius 10s linear;
   animation: wave 30s linear infinite;
-  border-radius: 15px;
+  background-color: #3f68c5;
+  border-radius: 38%;
+  height: 200%;
+  left: -50%;
+  opacity: 0.4;
+  pointer-events: none;
+  position: absolute;
+  top: 120%;
+  transition: top 10s linear, height 10s linear, border-radius 10s linear;
+  width: 200%;
 }
 
 .Unflooded {
-  top: 120%;
-  height: 200%;
-  border-radius: 38%;
+  display: none;
 }
 
 .FullyFlooded {
   top: -40%;
   height: 200%;
   border-radius: 38%;
+  animation-fill-mode: forwards;
+
+  @starting-style {
+    top: 120%;
+    height: 200%;
+    border-radius: 38%;
+  }
 }
 
 .PartiallyFlooded {
   top: 50%;
   height: 150%;
   border-radius: 28%;
+
+  @starting-style {
+    top: 120%;
+    height: 200%;
+    border-radius: 15px;
+  }
 }
 
 @keyframes wave {

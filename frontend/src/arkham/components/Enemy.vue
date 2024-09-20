@@ -360,8 +360,9 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
   display: flex;
   align-self: flex-start;
   align-items: flex-end;
-  * {
-    transform: scale(0.6);
+  :deep(img) {
+    width: 20px;
+    height: auto;
   }
 
   pointer-events: none;

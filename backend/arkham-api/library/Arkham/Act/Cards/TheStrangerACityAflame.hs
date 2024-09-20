@@ -35,7 +35,6 @@ instance RunMessage TheStrangerACityAflame where
       push $ AdvanceAct (toId attrs) (attrs.ability 1) AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
       theatre <- selectJust (LocationWithTitle "Theatre")
       card <- flipCard <$> genCard (toCardDef attrs)
       pushAll
@@ -46,6 +45,7 @@ instance RunMessage TheStrangerACityAflame where
         , createCardEffect Cards.theStrangerACityAflame Nothing attrs attrs
         , advanceActDeck attrs
         ]
+      moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
       pure a
     _ -> TheStrangerACityAflame <$> runMessage msg attrs
 

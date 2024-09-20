@@ -41,7 +41,6 @@ instance RunMessage TheStrangerThePathIsMine where
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       theManInThePallidMask <- getTheManInThePallidMask
-      moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
       mlid <- selectOne $ LocationWithEnemy $ EnemyWithId theManInThePallidMask
       card <- flipCard <$> genCard (toCardDef attrs)
       for_ mlid $ \lid ->
@@ -53,6 +52,7 @@ instance RunMessage TheStrangerThePathIsMine where
           , createCardEffect Cards.theStrangerThePathIsMine Nothing attrs attrs
           , advanceActDeck attrs
           ]
+      moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
       pure a
     _ -> TheStrangerThePathIsMine <$> runMessage msg attrs
 

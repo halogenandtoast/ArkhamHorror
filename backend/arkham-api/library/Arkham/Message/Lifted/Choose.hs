@@ -170,8 +170,12 @@ chooseSelectM iid query action = do
 chooseFromM
   :: (ReverseQueue m, Query query, Targetable (QueryElement query))
 chooseFromM iid matcher action = do
-  choices <- runChooseT $ traverse_ (\t -> targeting t (action t)) =<< select matcher
-  unless (null choices) $ chooseOne iid choices
+  ((_, ChooseState {label}), choices') <-
+    runChooseT $ traverse_ (\t -> targeting t (action t)) =<< select matcher
+  unless (null choices')
+    $ case label of
+      Nothing -> chooseOne iid choices'
+      Just l -> questionLabel l iid $ ChooseOne choices'
 
 nothing :: Monad m => QueueT Message m ()
 nothing = pure ()

@@ -35,11 +35,15 @@ const scenarios = computed(() => scenarioJSON.filter((s) =>
 
 const sideStories = computed(() => sideStoriesJSON)
 
-const campaigns = computed(() => campaignJSON.filter((c) =>
-  c.beta
+const dev = import.meta.env.PROD ? false : true
+
+const campaigns = computed(() => campaignJSON.filter((c) => {
+  if (c.dev && !dev) return false
+
+  return c.beta
     ? currentUser.value && currentUser.value.beta
     : true
-))
+}))
 
 const difficulties = computed<Difficulty[]>(() => {
   if(gameMode.value === 'SideStory') {

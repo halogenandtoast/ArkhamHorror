@@ -1,14 +1,5 @@
 import ita from '@/digests/ita.json'
 
-export function toCamelCase(str: string) {
-  return str
-    .toLowerCase()
-    .replace(/(?:^\w|[A-Z]|\b\w|\s+|[_-])/g, (match, index) =>
-      index === 0 ? match.toLowerCase() : match.toUpperCase()
-    )
-    .replace(/[\s_-]+/g, '')
-}
-
 export function toCapitalizedWords(name: string) {
   // const words = name.match(/[A-Z]+[a-z']+/g) || [];
   const words = name.match(/[A-Z]?[a-z']+|[A-Z]/g) || [];

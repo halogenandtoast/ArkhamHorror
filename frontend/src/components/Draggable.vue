@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 
 const draggable = ref<HTMLElement | null>(null)
 const isMinimized = ref(false)
@@ -84,7 +84,7 @@ function stopDrag() {
   document.removeEventListener('mouseup', stopDrag)
 }
 
-function minimize() {
+async function minimize() {
   const el = draggable.value
   if (!el) return
 
@@ -110,10 +110,15 @@ function minimize() {
 
     // Apply minimized styles
     el.classList.add('minimized')
-    el.style.left = 'calc(100% - 100px - 20px)' // Adjust as needed
-    el.style.top = 'calc(100% - 50px - 20px)'   // Adjust as needed
     el.style.width = 'fit-content'                    // Adjust as needed
     el.style.height = 'fit-content'                    // Adjust as needed
+
+    await nextTick()
+
+    const minimizedRect = el.getBoundingClientRect()
+
+    el.style.left = `calc(100% - ${minimizedRect.width}px - 20px)` // Adjust as needed
+    el.style.top = `calc(100% - ${minimizedRect.height}px - 20px)`   // Adjust as needed
   } else {
     // Restoring
     isMinimized.value = false

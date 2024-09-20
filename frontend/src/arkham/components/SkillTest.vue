@@ -3,7 +3,10 @@ import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Question from '@/arkham/components/Question.vue';
 import { computed } from 'vue';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
+import { chaosTokenImage } from '@/arkham/types/ChaosToken';
+import { scenarioToI18n } from '@/arkham/types/Scenario';
 import { Game } from '@/arkham/types/Game';
+import { ModifierType } from '@/arkham/types/Modifier';
 import { SkillTest } from '@/arkham/types/SkillTest';
 import { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import Draggable from '@/components/Draggable.vue';
@@ -11,10 +14,11 @@ import Card from '@/arkham/components/Card.vue'
 import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
 import { MessageType, StartSkillTestButton } from '@/arkham/types/Message';
 import * as ArkhamGame from '@/arkham/types/Game';
-import { imgsrc, replaceIcons } from '@/arkham/helpers';
+import { imgsrc, toCamelCase, formatContent } from '@/arkham/helpers';
 import ChaosBagView from '@/arkham/components/ChaosBag.vue';
-// has a slot for content
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n()
 const props = defineProps<{
   game: Game
   skillTest: SkillTest
@@ -22,21 +26,30 @@ const props = defineProps<{
   playerId: string
 }>()
 
+const normalizeSkill = (skill: string) => {
+  switch (skill) {
+    case 'SkillWillpower': return 'willpower'
+    case 'SkillIntellect': return 'intellect'
+    case 'SkillCombat': return 'combat'
+    case 'SkillAgility': return 'agility'
+    default: return skill
+  }
+}
+
 const skills = computed(() => {
   const { skillTest } = props
-  const normalizeSkill = (skill: string) => {
-    switch (skill) {
-      case 'SkillWillpower': return 'willpower'
-      case 'SkillIntellect': return 'intellect'
-      case 'SkillCombat': return 'combat'
-      case 'SkillAgility': return 'agility'
-      default: return skill
-    }
-  }
   return skillTest.skills.map(normalizeSkill)
 })
 const skillTestResults = computed(() => props.game.skillTestResults)
 const emit = defineEmits(['choose'])
+const shouldRender = (mod: ModifierType) => {
+  if (!('tag' in mod)) return false
+  if (mod.tag === 'DiscoveredClues') return true
+  if (mod.tag === 'AddSkillValue') return true
+  if (mod.tag === 'OtherModifier' && mod.contents === 'MayIgnoreLocationEffectsAndKeywords') return true
+  return false
+}
+const modifiers = computed(() => (props.game.investigators[props.skillTest.investigator]?.modifiers ?? []).map((m) => m.type).filter(shouldRender))
 const committedCards = computed(() => props.skillTest.committedCards)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const skipTriggersAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.SKIP_TRIGGERS_BUTTON))
@@ -127,13 +140,19 @@ const testResult = computed(() => {
   }
 })
 
-const label = function(body: string) {
-  if (body.startsWith("$")) {
-    return t(body.slice(1))
-  }
-  return replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>').replace(/\*([^*]*)\*/g, '<i>$1</i>')
-}
+const tokenEffects = computed(() => {
+  const scenario = props.game.scenario
+  if(!scenario) return []
+  const tokens = props.skillTest.resolvedChaosTokens.length > 0 ? props.skillTest.resolvedChaosTokens : props.skillTest.revealedChaosTokens
+  const faces = tokens.map((t) => t.face)
 
+  const difficulty = ['Easy', 'Standard'].includes(scenario.difficulty) ? 'easyStandard' : 'hardExpert'
+
+  return ["Skull", "Cultist", "Tablet", "ElderThing"].filter((face) => faces.includes(face)).map((face) => 
+    `<img src='${chaosTokenImage(face)}' width=23 /><span>`
+          + formatContent(t(`${scenarioToI18n(scenario)}.tokens.${difficulty}.${face.toLowerCase()}`)) + `</span>`
+          )
+})
 </script>
 
 <template>
@@ -187,6 +206,27 @@ const label = function(body: string) {
         :playerId="playerId"
         @choose="choose"
       />
+      <div v-if="modifiers.length > 0" class="modifiers">
+        <div v-for="(modifier, idx) in modifiers" :key="idx" class="modifier">
+          <template v-if="modifier.tag === 'DiscoveredClues'">
+            <span>+{{modifier.contents}}</span>
+            <img :src="imgsrc(`clue.png`)" />
+          </template>
+          <template v-if="modifier.tag === 'AddSkillValue'">
+            <span>+</span>
+            <i
+               :class="`${normalizeSkill(modifier.contents)}-icon`"
+               :style="{ color: `var(--${normalizeSkill(modifier.contents)})` }"
+            ></i>
+          </template>
+          <template v-if="modifier.tag === 'OtherModifier' && modifier.contents === 'MayIgnoreLocationEffectsAndKeywords'">
+            <span class="text">Ignore Location Effects</span>
+          </template>
+        </div>
+      </div>
+      <div v-if="tokenEffects.length > 0" class="token-effects">
+        <div class="token-effect" v-for="effect in tokenEffects" :key="effect" v-html="effect"></div>
+      </div>
       <div v-if="committedCards.length > 0" class="committed-skills" key="committed-skills">
         <div class="skills-container">
           <CommittedSkills
@@ -585,5 +625,57 @@ i.iconSkillAgility {
   align-items: center;
   display: flex;
   gap: 5px;
+}
+
+.modifier {
+  align-items: center;
+  background: #000;
+  border-radius: 100px;
+  border: none;
+  color: var(--title);
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+  padding: 2px 10px;
+  pointer-events: none;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-family: sans-serif;
+
+  img {
+    height: 15px;
+  }
+
+  i {
+    align-self: flex-end;
+  }
+
+  .text {
+    font-size: 0.8em;
+  }
+}
+
+.modifiers {
+  align-self: flex-start;
+  display: flex;
+  background: rgba(0, 0, 0, 0.5);
+  padding-inline: 10px;
+  gap: 5px;
+  font-size: 1em;
+}
+
+.token-effects {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.token-effect {
+  background: transparent;
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  align-items: center;
+  color: var(--title);
+  justify-content: center;
 }
 </style>

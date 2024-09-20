@@ -1,5 +1,14 @@
 import ita from '@/digests/ita.json'
 
+export function toCamelCase(str: string) {
+  return str
+    .toLowerCase()
+    .replace(/(?:^\w|[A-Z]|\b\w|\s+|[_-])/g, (match, index) =>
+      index === 0 ? match.toLowerCase() : match.toUpperCase()
+    )
+    .replace(/[\s_-]+/g, '')
+}
+
 export function toCapitalizedWords(name: string) {
   const words = name.match(/[A-Z]+[a-z']+/g) || [];
   return capitalize(words.map(lowercase).join(" "));
@@ -29,6 +38,10 @@ export function imgsrc(src: string) {
 
 export function pluralize(w: string, n: number) {
   return `${n} ${w}${n == 1 ? '' : 's'}`
+}
+
+export function formatContent(body:string) {
+  return replaceIcons(body).replace(/_([^_]*)_/g, '<strong>$1</strong>')
 }
 
 export function replaceIcons(body: string) {

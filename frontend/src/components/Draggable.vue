@@ -193,6 +193,7 @@ onMounted(() => {
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px); /* Safari support */
   transition-behavior: allow-discrete;
+  max-width: 50%;
 
   &.minimized {
     header .header-title {

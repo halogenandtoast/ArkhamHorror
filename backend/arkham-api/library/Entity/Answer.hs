@@ -192,8 +192,8 @@ makeCampaignLog settings =
   toSomeRecorded :: CampaignRecorded -> [SomeRecorded]
   toSomeRecorded (CampaignRecorded rt entries) =
     case rt of
-      (SomeRecordableType RecordableCardCode) -> map (toEntry @CardCode) entries
-      (SomeRecordableType RecordableMemento) -> map (toEntry @Memento) entries
+      SomeRecordableType RecordableCardCode -> map (toEntry @CardCode) entries
+      SomeRecordableType RecordableMemento -> map (toEntry @Memento) entries
   toEntry :: forall a. Recordable a => CampaignRecordedEntry -> SomeRecorded
   toEntry (CampaignEntryRecorded e) = case fromJSON @a e of
     Success a -> recorded a
@@ -221,16 +221,10 @@ handleAnswer :: (CanRunDB m, MonadHandler m) => Game -> PlayerId -> Answer -> m 
 handleAnswer Game {..} playerId = \case
   DeckAnswer deckId _ -> do
     deck <- runDB $ get404 deckId
-    player <- runDB $ get400 ("Player not found: " <> tshow playerId) (coerce playerId)
-    when (arkhamDeckUserId deck /= arkhamPlayerUserId player) notFound
     let investigatorId = investigator_code $ arkhamDeckList deck
     runDB $ update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce investigatorId]
-
     let question' = Map.delete playerId gameQuestion
-
-    pure
-      $ [LoadDecklist playerId (arkhamDeckList deck)]
-      <> [AskMap question' | not (Map.null question')]
+    pure $ LoadDecklist playerId (arkhamDeckList deck) : [AskMap question' | not (Map.null question')]
   StandaloneSettingsAnswer settings' -> do
     let standaloneCampaignLog = makeStandaloneCampaignLog settings'
     pure [SetCampaignLog standaloneCampaignLog]
@@ -242,47 +236,30 @@ handleAnswer Game {..} playerId = \case
       let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
       let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
       let question' = Map.delete playerId gameQuestion
+      let amounts = map (first toNamedUUID) $ Map.toList $ arAmounts response
       pure
-        $ [ ResolveAmounts
-              (playerInvestigator gameEntities playerId)
-              (map (first toNamedUUID) $ Map.toList $ arAmounts response)
-              target
-          ]
-        <> [AskMap question' | not (Map.null question')]
+        $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
+        : [AskMap question' | not (Map.null question')]
     Just (QuestionLabel _ _ (ChooseAmounts _ _ choices target)) -> do
       let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
       let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
-
       let question' = Map.delete playerId gameQuestion
+      let amounts = map (first toNamedUUID) $ Map.toList $ arAmounts response
       pure
-        $ [ ResolveAmounts
-              (playerInvestigator gameEntities playerId)
-              (map (first toNamedUUID) $ Map.toList $ arAmounts response)
-              target
-          ]
-        <> [AskMap question' | not (Map.null question')]
+        $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
+        : [AskMap question' | not (Map.null question')]
     _ -> error "Wrong question type"
   PaymentAmountsAnswer response ->
     case Map.lookup playerId gameQuestion of
       Just (ChoosePaymentAmounts _ _ info) -> do
-        let
-          costMap =
-            Map.fromList
-              $ map (\(PaymentAmountChoice cId _ _ _ _ cost) -> (cId, cost)) info
+        let costMap = Map.fromList $ map (\(PaymentAmountChoice cId _ _ _ _ cost) -> (cId, cost)) info
         pure
-          $ concatMap
-            ( \(cId, n) ->
-                replicate n (Map.findWithDefault Noop cId costMap)
-            )
+          $ concatMap (\(cId, n) -> replicate n (Map.findWithDefault Noop cId costMap))
           $ Map.toList (parAmounts response)
       _ -> error "Wrong question type"
   Raw message -> pure [message]
   Answer response -> do
-    let
-      q =
-        fromJustNote
-          "Invalid question type"
-          (Map.lookup playerId gameQuestion)
+    let q = fromJustNote "Invalid question type" (Map.lookup playerId gameQuestion)
     pure $ go id q response
  where
   go
@@ -369,5 +346,4 @@ handleAnswer Game {..} playerId = \case
     _ -> error "Wrong question type"
 
 extract :: Int -> [a] -> (Maybe a, [a])
-extract n xs =
-  let a = xs !!? n in (a, [x | (i, x) <- zip [0 ..] xs, i /= n])
+extract n xs = let a = xs !!? n in (a, [x | (i, x) <- zip [0 ..] xs, i /= n])

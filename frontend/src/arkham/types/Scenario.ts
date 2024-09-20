@@ -186,6 +186,8 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c06247": return "theDreamEaters.pointOfNoReturn"
     case "c06286": return "theDreamEaters.whereTheGodsDwell"
     case "c06333": return "theDreamEaters.weaverOfTheCosmos"
+    case "c07041": return "theInnsmouthConspiracy.thePitOfDespair"
+    case "c07056": return "theInnsmouthConspiracy.theVanishingOfElinaHarper"
     case "c81001": return "standalone.curseOfTheRougarou"
     case "c82001": return "standalone.carnevaleOfHorrors"
     case "c84001": return "standalone.murderAtTheExcelsiorHotel"

@@ -553,7 +553,8 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
                     matchingPerInvestigatorCount =
                       flip count usedAbilities $ \usedAbility' ->
                         flip any (usedAbilityWindows usedAbility') $ \case
-                          (windowType -> Window.CommittedCard iid'' _) -> usedAbility usedAbility' == ability && iid' == iid''
+                          (windowType -> Window.CommittedCard iid'' _) ->
+                            usedAbility usedAbility' == ability && iid' == iid''
                           _ -> False
                   pure $ matchingPerInvestigatorCount < n
                 _ -> pure False

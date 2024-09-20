@@ -85,8 +85,8 @@ instance RunMessage DarkSideOfTheMoon where
     PreScenarioSetup -> do
       notCaptured <- selectAny $ not_ (InvestigatorWithRecord WasCaptured)
       captured <- selectAny $ InvestigatorWithRecord WasCaptured
-      when captured $ story $ i18nWithTitle "dreamEaters.darkSideOfTheMoon.intro1"
-      when notCaptured $ story $ i18nWithTitle "dreamEaters.darkSideOfTheMoon.intro2"
+      when captured $ story $ i18nWithTitle "theDreamEaters.darkSideOfTheMoon.intro1"
+      when notCaptured $ story $ i18nWithTitle "theDreamEaters.darkSideOfTheMoon.intro2"
       pure s
     Setup -> runScenarioSetup DarkSideOfTheMoon attrs do
       gather Set.DarkSideOfTheMoon
@@ -158,7 +158,7 @@ instance RunMessage DarkSideOfTheMoon where
       case r of
         NoResolution -> do
           lead <- getLead
-          story $ i18n "dreamEaters.darkSideOfTheMoon.noResolution"
+          story $ i18n "theDreamEaters.darkSideOfTheMoon.noResolution"
           record TheInvestigatorsWereCarriedToTheColdWastes
           record RandolphCarterDidNotSurviveTheVoyage
           removeCampaignCard Assets.randolphCarterExpertDreamer
@@ -166,7 +166,7 @@ instance RunMessage DarkSideOfTheMoon where
           allGainXp attrs
           endOfScenario
         Resolution 1 -> do
-          story $ i18n "dreamEaters.darkSideOfTheMoon.resolution1"
+          story $ i18n "theDreamEaters.darkSideOfTheMoon.resolution1"
           record TheInvestigatorsTraveledToTheColdWastes
           record RandolphSurvivedTheVoyage
           allGainXp attrs

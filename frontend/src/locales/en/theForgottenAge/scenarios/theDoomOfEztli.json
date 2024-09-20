@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 (-3 instead if there is doom on your location).",
+      "cultist": "-X. X is the number of locations with doom on them.",
+      "tablet": "@:theForgottenAge.theDoomOfEztli.tokens.easyStandard.tablet",
+      "elderThing": "Reveal another chaos token. If you fail, place 1 doom on your location."
+    },
+    "hardExpert": {
+      "skull": "-2 (-4 instead if there is doom on your location).",
+      "cultist": "-X. X is the total amount of doom on locations in play.",
+      "tablet": "@:theForgottenAge.theDoomOfEztli.tokens.hardExpert.tablet",
+      "elderThing": "Reveal another chaos token. Place 1 doom on your location."
+    }
+  }
+}

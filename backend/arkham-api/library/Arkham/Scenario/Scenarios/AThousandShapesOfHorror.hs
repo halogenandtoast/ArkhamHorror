@@ -85,14 +85,14 @@ standaloneChaosTokens =
 instance RunMessage AThousandShapesOfHorror where
   runMessage msg s@(AThousandShapesOfHorror attrs) = runQueueT $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "dreamEaters.aThousandShapesOfHorror.intro1"
+      story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.intro1"
       atYourSide <- getHasRecord TheBlackCatIsAtYourSide
       story
         $ i18nWithTitle
         $ if atYourSide
-          then "dreamEaters.aThousandShapesOfHorror.intro2"
-          else "dreamEaters.aThousandShapesOfHorror.intro3"
-      story $ i18nWithTitle "dreamEaters.aThousandShapesOfHorror.intro4"
+          then "theDreamEaters.aThousandShapesOfHorror.intro2"
+          else "theDreamEaters.aThousandShapesOfHorror.intro3"
+      story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.intro4"
       pure s
     StandaloneSetup -> do
       push $ SetChaosTokens standaloneChaosTokens
@@ -174,7 +174,7 @@ instance RunMessage AThousandShapesOfHorror where
         NoResolution -> push R2
         Resolution 1 -> do
           investigators <- allInvestigators
-          story $ i18nWithTitle "dreamEaters.aThousandShapesOfHorror.resolution1"
+          story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.resolution1"
           record RandolphSurvivedTheDescent
           record TheInvestigatorsPossessTheSilverKey
           addCampaignCardToDeckChoice investigators Assets.theSilverKey
@@ -183,16 +183,16 @@ instance RunMessage AThousandShapesOfHorror where
           endOfScenario
         Resolution 2 -> do
           recoveredAStrangeKey <- remembered RecoveredAStrangeKey
-          story $ i18nWithTitle "dreamEaters.aThousandShapesOfHorror.resolution2"
+          story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.resolution2"
           push $ if recoveredAStrangeKey then R3 else R4
         Resolution 3 -> do
-          story $ i18nWithTitle "dreamEaters.aThousandShapesOfHorror.resolution3"
+          story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.resolution3"
           record RandolphSurvivedTheDescent
           allGainXp attrs
           addChaosToken Skull
           endOfScenario
         Resolution 4 -> do
-          story $ i18nWithTitle "dreamEaters.aThousandShapesOfHorror.resolution4"
+          story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.resolution4"
           record RandolphDidNotSurviveTheDescent
           removeCampaignCard Assets.randolphCarterChainedToTheWakingWorld
           allGainXp attrs

@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the highest number of doom on a _Cultist_ enemy in play.",
+      "cultist": "-2. Reveal another token.",
+      "tablet": "-3. If you fail, place 1 doom on the nearest _Cultist_ enemy.",
+      "elderThing": "-3. If you fail, move 1 doom from the nearest _Cultist_ enemy to the current agenda."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the total number of doom among _Cultist_ enemies in play.",
+      "cultist": "-2. Reveal another token.",
+      "tablet": "-3. If you fail, place 1 doom on each _Cultist_ enemy in play. If there are no _Cultist_ enemies in play, reveal another token.",
+      "elderThing": "-3. If you fail, move all doom from the _Cultist_ enemy with the most doom on it to the current agenda. If no _Cultist_ enemies in play have doom on them, reveal another token."
+    }
+  }
+}

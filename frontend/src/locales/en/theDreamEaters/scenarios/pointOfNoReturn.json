@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the amount of damage on this card.",
+      "cultist": "Reveal another token. If you fail, after this skill test ends, draw the top card of the encounter deck.",
+      "tablet": "+1. The black cat helps you navigate through the death-fire. If this token is revealed during an investigation and you succeed, draw 1 card.",
+      "elderThing": "-3. If you fail by 2 or more, choose a ready enemy at your location or a connecting location. That enemy moves to your location, engages you, and makes an immediate attack."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the amount of damage on this card.",
+      "cultist": "Reveal another token. If you fail, after this skill test ends, draw the top card of the encounter deck.",
+      "tablet": "0. The black cat helps you navigate through the death-fire. If this token is revealed during an investigation and you succeed, draw 1 card.",
+      "elderThing": "-4. If you fail by 2 or more, choose a ready enemy at your location or a connecting location. That enemy moves to your location, engages you, and makes an immediate attack."
+    }
+  }
+}

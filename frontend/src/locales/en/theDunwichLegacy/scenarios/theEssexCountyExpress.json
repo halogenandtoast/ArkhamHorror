@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the current Agenda #.",
+      "cultist": "-1. If you fail and it is your turn, lose all remaining actions and end your turn immediately.",
+      "tablet": "-2. Add 1 doom token to the nearest Cultist enemy.",
+      "elderThing": "-3. If you fail, choose and discard a card from your hand."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the current Agenda #.",
+      "cultist": "Reveal another token. If you fail and it is your turn, lose all remaining actions and end your turn immediately.",
+      "tablet": "-4. Add 1 doom token to each Cultist enemy in play.",
+      "elderThing": "-3. If you fail, choose and discard a card from your hand for each point you failed by."
+    }
+  }
+}

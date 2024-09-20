@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the highest amount of doom on an agenda in play.",
+      "cultist": "Reveal another token. If this token is revealed during an attack or evasion attempt against an enemy with doom on it, this skill test automatically fails instead.",
+      "tablet": "Reveal another token. If you fail, place 1 doom on each agenda.",
+      "elderThing": "-2. If you fail, search the encounter deck and discard pile for a _Byakhee_ enemy and draw it."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the total amount of doom on agendas in play.",
+      "cultist": "Reveal another token. If there is an enemy with 1 or more doom on it at your location, this test automatically fails instead.",
+      "tablet": "Reveal another token. If you do not succeed by at least 1, place 1 doom on each agenda.",
+      "elderThing": "-3. If you fail, search the encounter deck and discard pile for a _Byakhee_ enemy and draw it."
+    }
+  }
+}

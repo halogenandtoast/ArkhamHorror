@@ -81,8 +81,8 @@ instance RunMessage PointOfNoReturn where
     PreScenarioSetup -> do
       randolphDidNotSurvive <- getHasRecord RandolphDidNotSurviveTheDescent
       if randolphDidNotSurvive
-        then story $ i18nWithTitle "dreamEaters.pointOfNoReturn.intro1"
-        else story $ i18nWithTitle "dreamEaters.pointOfNoReturn.intro2"
+        then story $ i18nWithTitle "theDreamEaters.pointOfNoReturn.intro1"
+        else story $ i18nWithTitle "theDreamEaters.pointOfNoReturn.intro2"
       pure s
     StandaloneSetup -> do
       record RandolphDidNotSurviveTheDescent
@@ -164,13 +164,13 @@ instance RunMessage PointOfNoReturn where
       case r of
         NoResolution -> push R2
         Resolution 1 -> do
-          story $ i18nWithTitle "dreamEaters.pointOfNoReturn.resolution1"
+          story $ i18nWithTitle "theDreamEaters.pointOfNoReturn.resolution1"
           n <- scenarioCount Distortion
           incrementRecordCount StepsOfTheBridge n
           allGainXp attrs
           endOfScenario
         Resolution 2 -> do
-          story $ i18nWithTitle "dreamEaters.pointOfNoReturn.resolution2"
+          story $ i18nWithTitle "theDreamEaters.pointOfNoReturn.resolution2"
           lead <- getLead
           forceAddCampaignCardToDeckChoice [lead] Treacheries.falseAwakening
           n <- scenarioCount Distortion

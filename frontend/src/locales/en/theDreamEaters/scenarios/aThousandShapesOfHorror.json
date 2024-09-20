@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 (-3 instead if you are at a _Graveyard_ location).",
+      "cultist": "Reveal another token. If you fail and The Unnamable is in play, it attacks you (regardless of its current location).",
+      "tablet": "+2. The black cat causes a distraction. If this test is successful, choose and evade an enemy at any location with a fight value of X or lower, where X is the amount you succeeded by.",
+      "elderThing": "-2. If you fail, you must either place 1 of your clues on your location or take 1 damage."
+    },
+    "hardExpert": {
+      "skull": "-2 (-4 instead if you are at a _Graveyard_ location).",
+      "cultist": "Reveal another token. If you fail and The Unnamable is in play, it attacks you (regardless of its current location).",
+      "tablet": "+1. The black cat causes a distraction. If this test is successful, choose and evade an enemy at any location with a fight value of X or lower, where X is the amount you succeeded by.",
+      "elderThing": "-3. If you fail, you must either place 1 of your clues on your location or take 1 damage."
+    }
+  }
+}

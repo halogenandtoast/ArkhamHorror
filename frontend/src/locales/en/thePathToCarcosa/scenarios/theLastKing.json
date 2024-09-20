@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "Reveal another token. If you fail, place 1 doom on a _Possessed_ enemy in play.",
+      "cultist": "-2. If you fail, place 1 of your clues on your location.",
+      "tablet": "-4. If you fail, take 1 horror.",
+      "elderThing": "-X. X is the shroud value of your location."
+    },
+    "hardExpert": {
+      "skull": "Reveal another token. If you fail, place 1 doom on the _Possessed_ enemy in play with the most remaining health.",
+      "cultist": "-3. Place 1 of your clues on your location.",
+      "tablet": "-4. Take 1 horror.",
+      "elderThing": "-X. X is the shroud value of your location. If you fail, take 1 damage."
+    }
+  }
+}

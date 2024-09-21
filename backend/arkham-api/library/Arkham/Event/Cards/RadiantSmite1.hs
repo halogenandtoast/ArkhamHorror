@@ -2,14 +2,12 @@ module Arkham.Event.Cards.RadiantSmite1 (radiantSmite1, RadiantSmite1 (..)) wher
 
 import Arkham.Aspect
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Fight
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Prelude
 
 newtype RadiantSmite1 = RadiantSmite1 EventAttrs
   deriving anyclass (IsEvent, HasAbilities)
@@ -25,29 +23,28 @@ instance HasModifiersFor RadiantSmite1 where
   getModifiersFor _ _ = pure []
 
 instance RunMessage RadiantSmite1 where
-  runMessage msg e@(RadiantSmite1 attrs) = case msg of
+  runMessage msg e@(RadiantSmite1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      blessedTokens <- min 3 <$> selectCount (ChaosTokenFaceIs #bless)
-      sid <- getRandom
-      chooseFight <-
-        leftOr <$> aspect iid attrs (#willpower `InsteadOf` #combat) (mkChooseFight sid iid attrs)
-      player <- getPlayer iid
-      chooseMsg <-
+      n <- min 3 <$> selectCount (ChaosTokenFaceIs #bless)
+      when (n > 0) do
         chooseAmounts
-          player
+          iid
           "Number of Bless tokens to seal"
-          (MaxAmountTarget blessedTokens)
-          [("Bless Tokens", (0, blessedTokens))]
+          (MaxAmountTarget n)
+          [("Bless Tokens", (0, n))]
           attrs
 
-      pushAll $ [chooseMsg | blessedTokens > 0] <> chooseFight
+      sid <- getRandom
+      fight <- mkChooseFight sid iid attrs
+      chooseOneM iid do
+        labeled "Use {willpower}" $ push $ withSkillType #willpower fight
+        labeled "Use {combat}" $ push fight
       pure e
     ResolveAmounts _iid (getChoiceAmount "Bless Tokens" -> n) (isTarget attrs -> True) -> do
       blessedTokens <- take n <$> select (ChaosTokenFaceIs #bless)
       for_ blessedTokens $ \blessedToken -> do
         pushAll [SealChaosToken blessedToken, SealedChaosToken blessedToken (toCard attrs)]
-
       pure e
     Msg.EnemyDefeated _ _ (isSource attrs -> True) _ -> do
       pure $ RadiantSmite1 $ attrs & sealedChaosTokensL %~ filter ((/= #bless) . (.face))
-    _ -> RadiantSmite1 <$> runMessage msg attrs
+    _ -> RadiantSmite1 <$> liftRunMessage msg attrs

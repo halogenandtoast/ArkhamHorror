@@ -227,9 +227,10 @@ const tokenEffects = computed(() => {
           </template>
           <template v-if="modifier.tag === 'AnySkillValue'">
             <span>+ {{modifier.contents}}</span>
+            <span class="text">Skill Value</span>
           </template>
           <template v-if="modifier.tag === 'OtherModifier' && modifier.contents === 'MayIgnoreLocationEffectsAndKeywords'">
-            <span class="text">Ignore Location Effects</span>
+            <span class="text">May Ignore Location Effects</span>
           </template>
         </div>
       </div>

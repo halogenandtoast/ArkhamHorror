@@ -23,6 +23,7 @@ import Arkham.Event.Runner as X (
   pushM,
   pushWhen,
   pushWhenM,
+  sealedChaosTokensL,
   setMeta,
   setMetaKey,
   tokensL,

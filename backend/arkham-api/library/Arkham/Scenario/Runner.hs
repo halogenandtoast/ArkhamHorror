@@ -561,7 +561,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & (encounterDeckL %~ withDeck (filter ((/= card) . EncounterCard)))
       & (discardL %~ filter ((/= card) . EncounterCard))
   PlaceUnderneath AgendaDeckTarget cards -> do
-    pure $ a & cardsUnderAgendaDeckL <>~ cards
+    for_ cards $ \card ->
+      pushAll
+        $ ObtainCard card
+        : splitWithWindows
+          (PlacedUnderneath AgendaDeckTarget card)
+          [Window.PlaceUnderneath AgendaDeckTarget card]
+    pure a
   PlaceUnderneath ActDeckTarget cards -> do
     for_ cards $ \card ->
       pushAll
@@ -590,6 +596,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & (encounterDecksL . each %~ bimap (withDeck removeCard) removeCard)
   PlacedUnderneath ActDeckTarget card -> do
     pure $ a & cardsUnderActDeckL %~ (card :)
+  PlacedUnderneath AgendaDeckTarget card -> do
+    pure $ a & cardsUnderAgendaDeckL %~ (card :)
   PlaceNextTo ActDeckTarget cards -> do
     pure $ a & cardsNextToActDeckL <>~ cards
   PlaceNextTo AgendaDeckTarget cards -> do

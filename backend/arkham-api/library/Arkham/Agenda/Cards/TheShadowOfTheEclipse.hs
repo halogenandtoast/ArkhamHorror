@@ -1,43 +1,36 @@
-module Arkham.Agenda.Cards.TheShadowOfTheEclipse (
-  TheShadowOfTheEclipse (..),
-  theShadowOfTheEclipse,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheShadowOfTheEclipse (TheShadowOfTheEclipse (..), theShadowOfTheEclipse) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
-import Arkham.Agenda.Runner
-import Arkham.Classes
-import Arkham.GameValue
-import Arkham.Matcher
+import Arkham.Agenda.Import.Lifted
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types (Field (..))
+import Arkham.Matcher hiding (AssetCard, PlaceUnderneath)
+import Arkham.Message.Lifted.Choose
 
 newtype TheShadowOfTheEclipse = TheShadowOfTheEclipse AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theShadowOfTheEclipse :: AgendaCard TheShadowOfTheEclipse
-theShadowOfTheEclipse =
-  agenda (2, A) TheShadowOfTheEclipse Cards.theShadowOfTheEclipse (Static 3)
+theShadowOfTheEclipse = agenda (2, A) TheShadowOfTheEclipse Cards.theShadowOfTheEclipse (Static 3)
 
 instance RunMessage TheShadowOfTheEclipse where
-  runMessage msg a@(TheShadowOfTheEclipse attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      maskedCarnevaleGoers <-
-        select
-          (AssetWithTitle "Masked Carnevale-Goer")
-      lead <- getLeadPlayer
-      leadInvestigator <- getLead
-      case maskedCarnevaleGoers of
-        [] -> push $ AdvanceAgendaDeck agendaDeckId (toSource attrs)
-        xs ->
-          pushAll
-            [ chooseOne
-                lead
-                [ targetLabel x [Flip leadInvestigator (toSource leadInvestigator) (toTarget x)]
-                | x <- xs
-                ]
-            , RevertAgenda aid
-            ]
+  runMessage msg a@(TheShadowOfTheEclipse attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      maskedCarnevaleGoers <- selectWithField AssetCard (AssetWithTitle "Masked Carnevale-Goer")
+      lead <- getLead
+      chooseOneM lead do
+        for_ maskedCarnevaleGoers \(x, card) -> do
+          let isInnocent = card.cardCode == Assets.maskedCarnevaleGoer_21.cardCode
+          targeting x do
+            flipOverBy lead lead x
+            when isInnocent $ placeUnderneath AgendaDeckTarget [card]
+      doStep 1 msg
       pure a
-    _ -> TheShadowOfTheEclipse <$> runMessage msg attrs
+    Do (AdvanceAgenda (isSide B attrs -> True)) -> do
+      selectAny (AssetWithTitle "Masked Carnevale-Goer") >>= \case
+        True -> revertAgenda attrs
+        False -> advanceAgendaDeck attrs
+      pure a
+    _ -> TheShadowOfTheEclipse <$> liftRunMessage msg attrs

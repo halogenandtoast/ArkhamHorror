@@ -1,6 +1,5 @@
 module Arkham.Event.Cards.RadiantSmite1 (radiantSmite1, RadiantSmite1 (..)) where
 
-import Arkham.Aspect
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted

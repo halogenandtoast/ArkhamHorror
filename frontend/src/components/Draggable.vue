@@ -220,7 +220,7 @@ onMounted(() => {
       flex: 1;
       text-align: center;
       margin: 0;
-      margin-inline: 12px;
+      margin-inline: 18px;
       pointer-events: none;
       transform: translateX(12px);
     }

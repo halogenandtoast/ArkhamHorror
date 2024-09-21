@@ -3,14 +3,21 @@ module Arkham.Card.CardCode where
 import Arkham.Prelude
 import Data.Aeson.Types
 import Data.Text qualified as T
+import GHC.Records
 
 newtype CardCode = CardCode {unCardCode :: Text}
-  deriving stock (Data)
+  deriving stock Data
   deriving newtype (Show, Ord, Read, Hashable, IsString)
 
 -- these card codes get a `b` added after the normal designator
 exceptionCardCodes :: [Text]
 exceptionCardCodes = ["03047a", "03047b", "03047c", "03279a", "03279b"]
+
+flippedCardCode :: CardCode -> CardCode
+flippedCardCode (CardCode a) = CardCode (a <> "b")
+
+instance HasField "flipped" CardCode CardCode where
+  getField = flippedCardCode
 
 -- We special case the stranger since ADB calls them a b c
 instance Eq CardCode where
@@ -34,6 +41,10 @@ instance Eq CardCode where
 
 cardCodeExactEq :: CardCode -> CardCode -> Bool
 cardCodeExactEq (CardCode a) (CardCode b) = a == b
+
+(===) :: CardCode -> CardCode -> Bool
+(===) = cardCodeExactEq
+infix 4 ===
 
 instance ToJSON CardCode where
   toJSON = toJSON . T.cons 'c' . unCardCode

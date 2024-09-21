@@ -539,6 +539,9 @@ instance RunMessage AssetAttrs where
       Nothing -> pure $ a & exhaustedL .~ False
     PlaceUnderneath (isTarget a -> True) cards -> do
       pure $ a & cardsUnderneathL <>~ cards
+    PlaceUnderneath _ cards | toCard a `elem` cards -> do
+      push $ RemoveFromPlay (toSource a)
+      pure a
     AddToDiscard _ c -> do
       pure $ a & cardsUnderneathL %~ filter (/= toCard c)
     AddToEncounterDiscard c -> do

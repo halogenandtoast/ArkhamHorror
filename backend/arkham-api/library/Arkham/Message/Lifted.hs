@@ -678,6 +678,11 @@ chooseN iid n msgs = do
   player <- getPlayer iid
   push $ Msg.chooseN player n msgs
 
+chooseOrRunN :: ReverseQueue m => InvestigatorId -> Int -> [UI Message] -> m ()
+chooseOrRunN iid n msgs = do
+  player <- getPlayer iid
+  push $ Msg.chooseOrRunN player n msgs
+
 addToHand :: (IsCard a, ReverseQueue m) => InvestigatorId -> [a] -> m ()
 addToHand iid cards = do
   for_ cards obtainCard

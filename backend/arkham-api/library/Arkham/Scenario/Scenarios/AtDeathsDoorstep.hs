@@ -1,12 +1,6 @@
-module Arkham.Scenario.Scenarios.AtDeathsDoorstep (
-  AtDeathsDoorstep (..),
-  atDeathsDoorstep,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.AtDeathsDoorstep (AtDeathsDoorstep (..), atDeathsDoorstep) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
@@ -14,10 +8,7 @@ import Arkham.CampaignStep
 import Arkham.Campaigns.TheCircleUndone.CampaignSteps (pattern TheSecretName)
 import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Card
-import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Act
 import Arkham.Helpers.SkillTest
@@ -25,11 +16,12 @@ import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
 import Arkham.Scenarios.AtDeathsDoorstep.Story
 import Arkham.Token
 import Arkham.Trait (Trait (SilverTwilight, Spectral))
@@ -56,9 +48,7 @@ instance HasChaosTokenValue AtDeathsDoorstep where
       isHaunted <- selectAny $ locationWithInvestigator iid <> HauntedLocation
       pure
         . uncurry (toChaosTokenValue attrs Skull)
-        $ if isHaunted
-          then (1, 2)
-          else (3, 4)
+        $ if isHaunted then (1, 2) else (3, 4)
     Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 4
     otherFace -> getChaosTokenValue iid otherFace attrs
@@ -102,95 +92,74 @@ standaloneCampaignLog =
     }
 
 instance RunMessage AtDeathsDoorstep where
-  runMessage msg s@(AtDeathsDoorstep attrs) = case msg of
+  runMessage msg s@(AtDeathsDoorstep attrs) = runQueueT $ case msg of
     PreScenarioSetup -> do
-      players <- allPlayers
-      pushAll
-        [ story players introPart1
-        , story players introPart2
-        , story players introPart3
-        , story players introPart4
-        ]
+      story introPart1
+      story introPart2
+      story introPart3
+      story introPart4
       pure s
     StandaloneSetup -> do
-      push $ SetChaosTokens standaloneChaosTokens
+      setChaosTokens standaloneChaosTokens
       pure $ overAttrs (standaloneCampaignLogL .~ standaloneCampaignLog) s
-    Setup -> do
-      encounterDeck <-
-        buildEncounterDeckExcluding
-          [Enemies.josefMeiger]
-          [ EncounterSet.AtDeathsDoorstep
-          , EncounterSet.SilverTwilightLodge
-          , EncounterSet.SpectralPredators
-          , EncounterSet.TrappedSpirits
-          , EncounterSet.InexorableFate
-          , EncounterSet.ChillingCold
-          ]
+    Setup -> runScenarioSetup AtDeathsDoorstep attrs do
+      gather Set.AtDeathsDoorstep
+      gather Set.SilverTwilightLodge
+      gather Set.SpectralPredators
+      gather Set.TrappedSpirits
+      gather Set.InexorableFate
+      gather Set.ChillingCold
 
-      realmOfDeath <-
-        map EncounterCard
-          <$> gatherEncounterSet EncounterSet.RealmOfDeath
-      theWatcher <-
-        map EncounterCard
-          <$> gatherEncounterSet EncounterSet.TheWatcher
+      gatherAndSetAside Set.RealmOfDeath
+      gatherAndSetAside Set.TheWatcher
 
-      setAsideCards <-
-        (<> realmOfDeath <> theWatcher)
-          <$> genCards
-            [ Enemies.josefMeiger
-            , Locations.entryHallSpectral
-            , Locations.victorianHallsSpectral
-            , Locations.trophyRoomSpectral
-            , Locations.billiardsRoomSpectral
-            , Locations.masterBedroomSpectral
-            , Locations.balconySpectral
-            , Locations.officeSpectral
-            ]
+      setAside
+        [ Enemies.josefMeiger
+        , Locations.entryHallSpectral
+        , Locations.victorianHallsSpectral
+        , Locations.trophyRoomSpectral
+        , Locations.billiardsRoomSpectral
+        , Locations.masterBedroomSpectral
+        , Locations.balconySpectral
+        , Locations.officeSpectral
+        ]
 
-      agendas <- genCards [Agendas.justiceXI, Agendas.overTheThreshold]
-      acts <-
-        genCards
-          [Acts.hiddenAgendas, Acts.theSpectralRealm, Acts.escapeTheCage]
+      setAgendaDeck [Agendas.justiceXI, Agendas.overTheThreshold]
+      setActDeck [Acts.hiddenAgendas, Acts.theSpectralRealm, Acts.escapeTheCage]
 
-      (entryHallId, placeEntryHall) <-
-        placeLocationCard
-          Locations.entryHallAtDeathsDoorstep
-      (officeId, placeOffice) <- placeLocationCard Locations.office
-      (billiardsRoomId, placeBilliardsRoom) <-
-        placeLocationCard
-          Locations.billiardsRoom
-      (balconyId, placeBalcony) <-
-        placeLocationCard
-          Locations.balconyAtDeathsDoorstep
-      otherPlacements <-
-        traverse
-          placeLocationCard_
-          [ Locations.victorianHalls
-          , Locations.trophyRoom
-          , Locations.masterBedroom
-          ]
+      entryHall <- place Locations.entryHallAtDeathsDoorstep
+      startAt entryHall
+      office <- place Locations.office
+      billiardsRoom <- place Locations.billiardsRoom
+      balcony <- place Locations.balconyAtDeathsDoorstep
+      placeAll
+        [ Locations.victorianHalls
+        , Locations.trophyRoom
+        , Locations.masterBedroom
+        ]
 
       missingPersons <- getRecordedCardCodes MissingPersons
       evidenceLeftBehind <- getRecordCount PiecesOfEvidenceWereLeftBehind
-      lead <- getLeadPlayer
+
+      let gavriellaMissing = Investigators.gavriellaMizrah.cardCode `elem` missingPersons
+      let jeromeMissing = Investigators.jeromeDavids.cardCode `elem` missingPersons
+      let valentinoMissing = Investigators.valentinoRivas.cardCode `elem` missingPersons
+      let pennyMissing = Investigators.pennyWhite.cardCode `elem` missingPersons
 
       -- We want to distribute the removal of clues evenly. The logic here
       -- tries to batch a groups corresponding to the number of locations we
       -- placed clues on
+      when gavriellaMissing $ placeTokens attrs entryHall Clue 6
+      when jeromeMissing $ placeTokens attrs office Clue 6
+      when valentinoMissing $ placeTokens attrs billiardsRoom Clue 6
+      when pennyMissing $ placeTokens attrs balcony Clue 6
+
       let
         locations =
-          [ entryHallId
-          | toCardCode Investigators.gavriellaMizrah `elem` missingPersons
-          ]
-            <> [ officeId
-               | toCardCode Investigators.jeromeDavids `elem` missingPersons
-               ]
-            <> [ billiardsRoomId
-               | toCardCode Investigators.valentinoRivas `elem` missingPersons
-               ]
-            <> [ balconyId
-               | toCardCode Investigators.pennyWhite `elem` missingPersons
-               ]
+          [entryHall | gavriellaMissing]
+            <> [office | jeromeMissing]
+            <> [billiardsRoom | valentinoMissing]
+            <> [balcony | pennyMissing]
         noTimes =
           ceiling
             ( fromIntegral @_ @Double evidenceLeftBehind
@@ -199,93 +168,37 @@ instance RunMessage AtDeathsDoorstep where
         doSplit n | n <= 0 = []
         doSplit n | n <= length locations = [n]
         doSplit n = length locations : doSplit (n - length locations)
-        removeClues =
-          if null locations
-            then []
-            else
-              map
-                ( \n ->
-                    chooseOrRunN
-                      lead
-                      n
-                      [targetLabel l [RemoveClues (toSource attrs) (toTarget l) 1] | l <- locations]
-                )
-                (doSplit noTimes)
-
-      pushAll
-        $ [ SetEncounterDeck encounterDeck
-          , SetAgendaDeck
-          , SetActDeck
-          , placeEntryHall
-          , placeOffice
-          , placeBilliardsRoom
-          , placeBalcony
-          , MoveAllTo (toSource attrs) entryHallId
-          ]
-        <> otherPlacements
-        <> [ PlaceTokens (toSource attrs) (toTarget entryHallId) Clue 6
-           | toCardCode Investigators.gavriellaMizrah `elem` missingPersons
-           ]
-        <> [ PlaceTokens (toSource attrs) (toTarget officeId) Clue 6
-           | toCardCode Investigators.jeromeDavids `elem` missingPersons
-           ]
-        <> [ PlaceTokens (toSource attrs) (toTarget billiardsRoomId) Clue 6
-           | toCardCode Investigators.valentinoRivas `elem` missingPersons
-           ]
-        <> [ PlaceTokens (toSource attrs) (toTarget balconyId) Clue 6
-           | toCardCode Investigators.pennyWhite `elem` missingPersons
-           ]
-        <> removeClues
-
-      AtDeathsDoorstep
-        <$> runMessage
-          msg
-          ( attrs
-              & (setAsideCardsL <>~ setAsideCards)
-              & (agendaStackL . at 1 ?~ agendas)
-              & (actStackL . at 1 ?~ acts)
-          )
+      when (notNull locations) do
+        lead <- getLead
+        for_ (doSplit noTimes) \n -> chooseOrRunNM lead n do
+          targets locations \l -> removeTokens attrs l Clue 1
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of
         Tablet | isEasyStandard attrs -> do
           mAction <- getSkillTestAction
           for_ mAction $ \action ->
-            when (action `elem` [Action.Fight, Action.Evade])
-              $ runHauntedAbilities iid
+            when (action `elem` [#fight, #evade]) $ runHauntedAbilities iid
         _ -> pure ()
       pure s
     ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
       mAction <- getSkillTestAction
-      for_ mAction $ \action ->
-        when (action `elem` [Action.Fight, Action.Evade])
-          $ runHauntedAbilities iid
+      for_ mAction \action ->
+        when (action `elem` [#fight, #evade]) $ runHauntedAbilities iid
       pure s
     ResolveChaosToken _ ElderThing iid -> do
-      isSpectralEnemy <-
-        selectAny
-          $ EnemyAt (locationWithInvestigator iid)
-          <> EnemyWithTrait Spectral
-      when isSpectralEnemy
-        $ push
-        $ InvestigatorAssignDamage
-          iid
-          (ChaosTokenEffectSource ElderThing)
-          DamageAny
-          1
-          (if isHardExpert attrs then 1 else 0)
+      isSpectralEnemy <- selectAny $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Spectral
+      when isSpectralEnemy do
+        assignDamageAndHorror iid ElderThing 1 (if isHardExpert attrs then 1 else 0)
       pure s
     ScenarioResolution NoResolution -> do
-      step <- getCurrentActStep
-      case step of
-        1 -> push $ scenarioResolution 2
-        2 -> push $ scenarioResolution 3
-        3 -> push $ scenarioResolution 1
+      getCurrentActStep >>= \case
+        1 -> push R2
+        2 -> push R3
+        3 -> push R1
         _ -> error "Invalid act step"
       pure s
     ScenarioResolution (Resolution n) -> do
       entryHall <- selectJust $ LocationWithTitle "Entry Hall"
-      players <- allPlayers
-      gainXp <- toGainXp (toSource attrs) getXp
       inVictory <- isInVictoryDisplay Enemies.josefMeiger
       underEntryHall <-
         fieldMap
@@ -304,37 +217,28 @@ instance RunMessage AtDeathsDoorstep where
 
       let
         interludeKey
-          | inVictory =
-              ThePriceOfProgress4
-          | underEntryHall =
-              ThePriceOfProgress5
-          | silverTwilightInVictory >= silverTwilightUnderEntryHall =
-              ThePriceOfProgress4
-          | otherwise =
-              ThePriceOfProgress6
+          | inVictory = ThePriceOfProgress4
+          | underEntryHall = ThePriceOfProgress5
+          | silverTwilightInVictory >= silverTwilightUnderEntryHall = ThePriceOfProgress4
+          | otherwise = ThePriceOfProgress6
 
-      let
-        (storyText, key, nextStep) = case n of
-          1 ->
-            ( resolution1
-            , TheInvestigatorsEscapedTheSpectralRealm
-            , InterludeStep 2 (Just interludeKey)
-            )
-          2 ->
-            ( resolution2
-            , TheInvestigatorsLearnedNothingOfTheLodge'sSchemes
-            , UpgradeDeckStep TheSecretName
-            )
-          3 ->
-            ( resolution3
-            , TheInvestigatorsAreNeverSeenOrHeardFromAgain
-            , UpgradeDeckStep TheSecretName
-            )
-          _ -> error "Invalid resolution"
+      case n of
+        1 -> do
+          story resolution1
+          record TheInvestigatorsEscapedTheSpectralRealm
+          allGainXp attrs
+          endOfScenarioThen $ InterludeStep 2 (Just interludeKey)
+        2 -> do
+          story resolution2
+          record TheInvestigatorsLearnedNothingOfTheLodge'sSchemes
+          allGainXp attrs
+          endOfScenarioThen $ UpgradeDeckStep TheSecretName
+        3 -> do
+          story resolution3
+          record TheInvestigatorsAreNeverSeenOrHeardFromAgain
+          allGainXp attrs
+          endOfScenarioThen $ UpgradeDeckStep TheSecretName
+        _ -> error "Invalid resolution"
 
-      pushAll
-        $ [story players storyText, Record key]
-        <> gainXp
-        <> [EndOfGame (Just nextStep)]
       pure s
-    _ -> AtDeathsDoorstep <$> runMessage msg attrs
+    _ -> AtDeathsDoorstep <$> liftRunMessage msg attrs

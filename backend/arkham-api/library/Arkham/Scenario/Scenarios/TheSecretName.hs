@@ -1,7 +1,4 @@
-module Arkham.Scenario.Scenarios.TheSecretName (
-  TheSecretName (..),
-  theSecretName,
-) where
+module Arkham.Scenario.Scenarios.TheSecretName (TheSecretName (..), theSecretName) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -10,23 +7,19 @@ import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
-import Arkham.ChaosToken
 import Arkham.ClassSymbol
-import Arkham.Classes
-import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Act
-import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (EnemyDefeated, RevealLocation)
-import Arkham.Message
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Deck
+import Arkham.Scenario.Helpers hiding (recordSetInsert)
+import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheSecretName.Story
 import Arkham.Trait (Trait (Extradimensional))
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -87,61 +80,70 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage TheSecretName where
-  runMessage msg s@(TheSecretName (attrs `With` meta)) = case msg of
+  runMessage msg s@(TheSecretName (attrs `With` meta)) = runQueueT $ case msg of
     PreScenarioSetup -> do
-      players <- allPlayers
-      lead <- getLeadPlayer
       anyMystic <- selectAny $ InvestigatorWithClass Mystic
-      membersOfTheLodge <- getHasRecord TheInvestigatorsAreMembersOfTheLodge
-      enemiesOfTheLodge <- getHasRecord TheInvestigatorsAreEnemiesOfTheLodge
-      learnedNothing <-
-        getHasRecord
-          TheInvestigatorsLearnedNothingOfTheLodge'sSchemes
-      neverSeenOrHeardFromAgain <-
-        getHasRecord
-          TheInvestigatorsAreNeverSeenOrHeardFromAgain
-      pushAll
-        $ [ storyWithChooseOne
-            lead
-            players
-            intro1
-            [ Label
-                "Tell the Lodge of the witches in the woods."
-                [ story players intro2
-                , Record TheInvestigatorsToldTheLodgeAboutTheCoven
-                , AddChaosToken Cultist
-                ]
-            , Label
-                "Tell him you know of no possible connection. (You are lying.)"
-                [ story
-                    players
-                    $ intro3
-                    <> (if anyMystic then intro3Mystic else mempty)
-                    <> intro3Part2
-                , Record TheInvestigatorsHidTheirKnowledgeOfTheCoven
-                ]
-            ]
-          | membersOfTheLodge
-          ]
-        <> [story players intro4 | enemiesOfTheLodge]
-        <> [story players intro5 | learnedNothing]
-        <> [story players intro6 | neverSeenOrHeardFromAgain]
+      whenHasRecord TheInvestigatorsAreMembersOfTheLodge do
+        storyWithChooseOneM intro1 do
+          labeled "Tell the Lodge of the witches in the woods." do
+            story intro2
+            record TheInvestigatorsToldTheLodgeAboutTheCoven
+            addChaosToken Cultist
+          labeled "Tell him you know of no possible connection. (You are lying.)" do
+            story
+              $ intro3
+              <> (if anyMystic then intro3Mystic else mempty)
+              <> intro3Part2
+            record TheInvestigatorsHidTheirKnowledgeOfTheCoven
+      whenHasRecord TheInvestigatorsAreEnemiesOfTheLodge $ story intro4
+      whenHasRecord TheInvestigatorsLearnedNothingOfTheLodge'sSchemes $ story intro5
+      whenHasRecord TheInvestigatorsAreNeverSeenOrHeardFromAgain $ story intro6
       pure s
     StandaloneSetup -> do
-      push (SetChaosTokens standaloneChaosTokens)
+      setChaosTokens standaloneChaosTokens
       pure s
-    Setup -> do
-      encounterDeck <-
-        buildEncounterDeckExcluding
-          [Enemies.nahab, Treacheries.ghostlyPresence, Locations.strangeGeometry]
-          [ EncounterSet.TheSecretName
-          , EncounterSet.CityOfSins
-          , EncounterSet.InexorableFate
-          , EncounterSet.RealmOfDeath
-          , EncounterSet.Witchcraft
-          , EncounterSet.Rats
-          ]
+    Setup -> runScenarioSetup (TheSecretName . (`with` meta)) attrs do
+      gather Set.TheSecretName
+      gather Set.CityOfSins
+      gather Set.InexorableFate
+      gather Set.RealmOfDeath
+      gather Set.Witchcraft
+      gather Set.Rats
 
+      startAt =<< place Locations.moldyHalls
+      place_ Locations.walterGilmansRoom
+
+      placeGroup
+        "decrepitDoor"
+        [ Locations.landlordsQuarters
+        , Locations.joeMazurewiczsRoom
+        , Locations.frankElwoodsRoom
+        ]
+
+      setAside
+        [ Enemies.nahab
+        , Locations.siteOfTheSacrifice
+        , Locations.keziahsRoom
+        , Assets.theBlackBook
+        , Locations.strangeGeometry
+        , Locations.strangeGeometry
+        , Treacheries.ghostlyPresence
+        , Treacheries.ghostlyPresence
+        ]
+
+      setAgendaDeck
+        [ Agendas.theHermitIX
+        , Agendas.theFamiliar
+        , Agendas.theWitchLight
+        , Agendas.markedForSacrifice
+        ]
+      setActDeck
+        [ Acts.investigatingTheWitchHouse
+        , Acts.beyondTheWitchHouse
+        , Acts.stoppingTheRitual
+        ]
+
+      -- Unknown Places Deck
       unknownPlaces <-
         shuffleM
           =<< genCards
@@ -153,76 +155,12 @@ instance RunMessage TheSecretName where
             , Locations.courtOfTheGreatOldOnesANotTooDistantFuture
             ]
 
-      (moldyHallsId, placeMoldyHalls) <- placeLocationCard Locations.moldyHalls
-      placeWalterGilmansRoom <- placeLocationCard_ Locations.walterGilmansRoom
-
-      decrepitDoors <-
-        withIndex
-          <$> shuffleM
-            [ Locations.landlordsQuarters
-            , Locations.joeMazurewiczsRoom
-            , Locations.frankElwoodsRoom
-            ]
-
-      decrepitDoorPlacements <- for decrepitDoors \(idx, decrepitDoor) -> do
-        (locationId, placement) <- placeLocationCard decrepitDoor
-        pure
-          [placement, SetLocationLabel locationId $ "decrepitDoor" <> tshow (idx + 1)]
-
-      -- Unknown Places Deck
       let (bottom, top) = splitAt 3 unknownPlaces
       witchHouseRuins <- genCard Locations.witchHouseRuins
       bottom' <- shuffleM $ witchHouseRuins : bottom
       let unknownPlacesDeck = top <> bottom'
 
-      pushAll
-        $ [ SetEncounterDeck encounterDeck
-          , SetAgendaDeck
-          , SetActDeck
-          , placeMoldyHalls
-          , placeWalterGilmansRoom
-          ]
-        <> concat decrepitDoorPlacements
-        <> [ RevealLocation Nothing moldyHallsId
-           , MoveAllTo (toSource attrs) moldyHallsId
-           ]
-
-      setAsideCards <-
-        genCards
-          [ Enemies.nahab
-          , Locations.siteOfTheSacrifice
-          , Locations.keziahsRoom
-          , Assets.theBlackBook
-          , Locations.strangeGeometry
-          , Locations.strangeGeometry
-          , Treacheries.ghostlyPresence
-          , Treacheries.ghostlyPresence
-          ]
-
-      agendas <-
-        genCards
-          [ Agendas.theHermitIX
-          , Agendas.theFamiliar
-          , Agendas.theWitchLight
-          , Agendas.markedForSacrifice
-          ]
-      acts <-
-        genCards
-          [ Acts.investigatingTheWitchHouse
-          , Acts.beyondTheWitchHouse
-          , Acts.stoppingTheRitual
-          ]
-
-      TheSecretName
-        . (`with` meta)
-        <$> runMessage
-          msg
-          ( attrs
-              & (decksL . at UnknownPlacesDeck ?~ unknownPlacesDeck)
-              & (setAsideCardsL <>~ setAsideCards)
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
-          )
+      addExtraDeck UnknownPlacesDeck unknownPlacesDeck
     ResolveChaosToken _ Cultist iid -> do
       push $ DrawAnotherChaosToken iid
       pure s
@@ -260,48 +198,35 @@ instance RunMessage TheSecretName where
           , nahabDefeated = nahabDefeated meta || isNahab
           }
     ScenarioResolution resolution -> do
-      iids <- allInvestigatorIds
-      players <- allPlayers
+      iids <- allInvestigators
       step <- getCurrentActStep
-      lead <- getLeadPlayer
+      lead <- getLead
       let
         brownJenkinBonus = if brownJenkinDefeated meta then 1 else 0
         nahabBonus = if nahabDefeated meta then 1 else 0
         addTheBlackBook =
-          chooseOne lead
-            $ Label "Do not add The Black Book" []
-            : [ targetLabel
-                iid
-                [ AddCampaignCardToDeck iid Assets.theBlackBook
-                , AddChaosToken Skull
-                ]
-              | iid <- iids
-              ]
+          chooseOneM lead do
+            labeled "Do not add The Black Book" nothing
+            targets iids \iid -> do
+              addCampaignCardToDeck iid Assets.theBlackBook
+              addChaosToken Skull
       case resolution of
-        NoResolution -> pushAll [story players noResolution, scenarioResolution 1]
+        NoResolution -> do
+          story noResolution
+          push R1
         Resolution 1 -> do
-          gainXp <- toGainXp attrs $ getXpWithBonus (brownJenkinBonus + nahabBonus)
-          pushAll
-            $ story players resolution1
-            : gainXp
-              <> [recordSetInsert MementosDiscovered [Gilman'sJournal] | step == 2]
-              <> [recordSetInsert MementosDiscovered [Keziah'sFormulae] | step == 3]
-              <> [addTheBlackBook | step >= 2]
-              <> [EndOfGame Nothing]
+          story resolution1
+          allGainXpWithBonus attrs (brownJenkinBonus + nahabBonus)
+          when (step == 2) $ recordSetInsert MementosDiscovered [Gilman'sJournal]
+          when (step == 3) $ recordSetInsert MementosDiscovered [Keziah'sFormulae]
+          when (step >= 2) addTheBlackBook
+          endOfScenario
         Resolution 2 -> do
-          gainXp <- toGainXp attrs $ getXpWithBonus 2
-          pushAll
-            $ story players resolution2
-            : gainXp
-              <> [ recordSetInsert
-                    MementosDiscovered
-                    [ Gilman'sJournal
-                    , Keziah'sFormulae
-                    , WornCrucifix
-                    ]
-                 , addTheBlackBook
-                 , EndOfGame Nothing
-                 ]
+          story resolution2
+          allGainXpWithBonus attrs 2
+          recordSetInsert MementosDiscovered [Gilman'sJournal, Keziah'sFormulae, WornCrucifix]
+          addTheBlackBook
+          endOfScenario
         _ -> error "invalid resolution"
       pure s
-    _ -> TheSecretName . (`with` meta) <$> runMessage msg attrs
+    _ -> TheSecretName . (`with` meta) <$> liftRunMessage msg attrs

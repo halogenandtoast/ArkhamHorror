@@ -12,6 +12,7 @@ import Arkham.Question
 import Arkham.Queue
 import Arkham.SkillType
 import Arkham.Target
+import Arkham.Text (FlavorText)
 import Control.Monad.State.Strict
 import Control.Monad.Writer.Strict
 
@@ -146,3 +147,8 @@ nothing = pure ()
 
 questionLabeled :: ReverseQueue m => Text -> ChooseT m ()
 questionLabeled label = modify $ \s -> s {Arkham.Message.Lifted.Choose.label = Just label}
+
+storyWithChooseOneM :: ReverseQueue m => FlavorText -> ChooseT m a -> m ()
+storyWithChooseOneM flavor choices = do
+  (_, choices') <- runChooseT choices
+  storyWithChooseOne flavor choices'

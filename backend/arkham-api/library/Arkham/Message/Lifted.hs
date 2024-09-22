@@ -66,6 +66,7 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Window (Window, WindowType, defaultWindows)
 import Arkham.Window qualified as Window
+import Arkham.Xp
 import Control.Monad.Trans.Class
 
 setChaosTokens :: ReverseQueue m => [ChaosTokenFace] -> m ()
@@ -153,6 +154,9 @@ moveTo (toSource -> source) iid lid = push $ MoveTo $ move source iid lid
 record :: ReverseQueue m => CampaignLogKey -> m ()
 record = push . Record
 
+recordCount :: ReverseQueue m => CampaignLogKey -> Int -> m ()
+recordCount k = push . RecordCount k
+
 remember :: ReverseQueue m => ScenarioLogKey -> m ()
 remember = push . Remember
 
@@ -172,6 +176,12 @@ incrementRecordCount key = push . IncrementRecordCount key
 story :: ReverseQueue m => FlavorText -> m ()
 story flavor = do
   players <- allPlayers
+  push $ Msg.story players flavor
+
+storyOnly :: ReverseQueue m => [InvestigatorId] -> FlavorText -> m ()
+storyOnly [] _ = pure ()
+storyOnly iids flavor = do
+  players <- traverse getPlayer iids
   push $ Msg.story players flavor
 
 storyWithChooseOne :: ReverseQueue m => FlavorText -> [UI Message] -> m ()
@@ -194,12 +204,29 @@ gainXp
 gainXp iid (toSource -> source) xp = push $ GainXP iid source xp
 
 allGainXpWithBonus
-  :: (ReverseQueue m, Sourceable source) => source -> Int -> m ()
-allGainXpWithBonus (toSource -> source) xp = pushAll =<< toGainXp source (getXpWithBonus xp)
+  :: (ReverseQueue m, Sourceable source, AsId source, IdOf source ~ ScenarioId) => source -> Int -> m ()
+allGainXpWithBonus source xp = do
+  push . ReportXp (asId source) =<< generateXpReport xp
+  pushAll =<< toGainXp source (getXpWithBonus xp)
 
 allGainXp
-  :: (ReverseQueue m, Sourceable source) => source -> m ()
-allGainXp (toSource -> source) = pushAll =<< toGainXp source getXp
+  :: (ReverseQueue m, Sourceable source, AsId source, IdOf source ~ ScenarioId) => source -> m ()
+allGainXp source = do
+  push . ReportXp (asId source) =<< generateXpReport 0
+  pushAll =<< toGainXp source getXp
+
+allGainXpWith
+  :: (ReverseQueue m, Sourceable source, AsId source, IdOf source ~ ScenarioId)
+  => source
+  -> (InvestigatorId -> [XpEntry])
+  -> m ()
+allGainXpWith source f = do
+  (pairs', additionalEntries) <-
+    foldMap
+      (\(iid, n) -> let entries = f iid in ([(iid, n + sum (map (.amount) entries))], entries))
+      <$> getXp
+  push . ReportXp (asId source) . (<> XpBreakdown additionalEntries) =<< generateXpReport 0
+  pushAll =<< toGainXp source (pure pairs')
 
 endOfScenario :: ReverseQueue m => m ()
 endOfScenario = push $ EndOfGame Nothing
@@ -253,10 +280,16 @@ beginSkillTest
 beginSkillTest sid iid source target sType n = push $ Msg.beginSkillTest sid iid source target sType n
 
 gameOverIf :: ReverseQueue m => Bool -> m ()
-gameOverIf t = when t (push GameOver)
+gameOverIf t = when t gameOver
+
+gameOver :: ReverseQueue m => m ()
+gameOver = push GameOver
 
 kill :: (Sourceable source, ReverseQueue m) => source -> InvestigatorId -> m ()
 kill (toSource -> source) = push . InvestigatorKilled source
+
+drivenInsane :: ReverseQueue m => InvestigatorId -> m ()
+drivenInsane = push . DrivenInsane
 
 killRemaining
   :: (Sourceable source, ReverseQueue m) => source -> m [InvestigatorId]
@@ -1003,7 +1036,11 @@ revealing iid (toSource -> source) (toTarget -> target) zone = Msg.push $ Msg.re
 shuffleIntoDeck :: (ReverseQueue m, IsDeck deck, Targetable target) => deck -> target -> m ()
 shuffleIntoDeck deck target = push $ Msg.shuffleIntoDeck deck target
 
-shuffleCardsIntoDeck :: (ReverseQueue m, IsDeck deck) => deck -> [Card] -> m ()
+shuffleCardsIntoDeck
+  :: (ReverseQueue m, IsDeck deck, MonoFoldable cards, Element cards ~ card, IsCard card)
+  => deck
+  -> cards
+  -> m ()
 shuffleCardsIntoDeck deck cards = push $ Msg.shuffleCardsIntoDeck deck cards
 
 reduceCostOf :: (Sourceable source, IsCard card, ReverseQueue m) => source -> card -> Int -> m ()
@@ -1500,3 +1537,18 @@ forTarget target f =
     [] -> pure ()
     [msg] -> push $ ForTarget (toTarget target) msg
     msgs -> push $ ForTarget (toTarget target) (Run msgs)
+
+searchCollectionForRandom
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> CardMatcher -> m ()
+searchCollectionForRandom iid source matcher = do
+  push $ SearchCollectionForRandom iid (toSource source) matcher
+
+discardUntilFirst
+  :: (ReverseQueue m, Sourceable source, IsDeck deck)
+  => InvestigatorId
+  -> source
+  -> deck
+  -> ExtendedCardMatcher
+  -> m ()
+discardUntilFirst iid source deck matcher = do
+  push $ DiscardUntilFirst iid (toSource source) (toDeck deck) matcher

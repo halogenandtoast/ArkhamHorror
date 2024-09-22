@@ -30,6 +30,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Tarot
 import Arkham.Token
+import Arkham.Xp
 import Data.Aeson.TH
 import Data.Typeable
 import GHC.Records
@@ -126,14 +127,28 @@ data ScenarioAttrs = ScenarioAttrs
   , -- for standalone
     scenarioStoryCards :: Map InvestigatorId [PlayerCard]
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
+  , scenarioXpBreakdown :: Maybe XpBreakdown
   }
   deriving stock (Show, Eq)
+
+instance AsId ScenarioAttrs where
+  type IdOf ScenarioAttrs = ScenarioId
+  asId = scenarioId
 
 instance HasField "id" ScenarioAttrs ScenarioId where
   getField = scenarioId
 
 instance HasField "difficulty" ScenarioAttrs Difficulty where
   getField = scenarioDifficulty
+
+instance HasField "setAside" ScenarioAttrs [Card] where
+  getField = scenarioSetAsideCards
+
+instance HasField "decks" ScenarioAttrs (Map ScenarioDeckKey [Card]) where
+  getField = scenarioDecks
+
+instance HasField "log" ScenarioAttrs (Set ScenarioLogKey) where
+  getField = scenarioLog
 
 instance HasField "name" ScenarioAttrs Name where
   getField = scenarioName
@@ -230,6 +245,7 @@ scenario f cardCode name difficulty layout =
       , scenarioDefeatedEnemies = mempty
       , scenarioIsSideStory = False
       , scenarioInShuffle = False
+      , scenarioXpBreakdown = Nothing
       }
 
 instance Entity ScenarioAttrs where
@@ -333,4 +349,5 @@ instance FromJSON ScenarioAttrs where
     scenarioInShuffle <- o .:? "inShuffle" .!= False
     scenarioStoryCards <- o .: "storyCards"
     scenarioPlayerDecks <- o .: "playerDecks"
+    scenarioXpBreakdown <- o .:? "xpBreakdown" .!= Nothing
     pure ScenarioAttrs {..}

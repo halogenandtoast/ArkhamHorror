@@ -6,6 +6,7 @@ import { fetchCard } from '@/arkham/api';
 import type { CardDef } from '@/arkham/types/CardDef'
 import type { Name } from '@/arkham/types/Name'
 import Supplies from '@/arkham/components/Supplies.vue';
+import XpBreakdown from '@/arkham/components/XpBreakdown.vue';
 import { toCapitalizedWords } from '@/arkham/helpers';
 import { useI18n } from 'vue-i18n';
 
@@ -24,6 +25,8 @@ const otherLog = ref<LogContents | null>(null)
 if (props.game.campaign?.meta?.otherCampaignAttrs?.log) {
   logContentsDecoder.decodeToPromise(props.game.campaign?.meta?.otherCampaignAttrs?.log).then(res => otherLog.value = res)
 }
+
+const xpBreakdown = props.game.campaign?.xpBreakdown || (props.game.scenario && props.game.scenario.xpBreakdown ? { [props.game.scenario.id]: props.game.scenario.xpBreakdown } : undefined) || {}
 
 const logTitle = props.game.campaign?.meta?.currentCampaignMode ?
   (props.game.campaign.meta.currentCampaignMode === 'TheDreamQuest' ? "The Dream-Quest" : "The Web of Dreams") : null
@@ -167,6 +170,10 @@ const emptyLog = computed(() => {
         </ul>
       </div>
     </div>
+
+    <div v-for="[scenario, breakdown] in Object.entries(xpBreakdown)" :key="scenario" class="breakdowns">
+      <XpBreakdown :game="game" :scenario="scenario" :breakdown="breakdown" />
+    </div>
   </div>
 </template>
 
@@ -180,11 +187,15 @@ h1 {
 }
 
 .campaign-log {
-  padding: 20px;
   width: 80%;
   margin: 0 auto;
   margin-top: 20px;
   font-size: 1.8em;
+}
+
+.breakdowns {
+  width: 80%;
+  margin: 0 auto;
 }
 
 .crossed-out {

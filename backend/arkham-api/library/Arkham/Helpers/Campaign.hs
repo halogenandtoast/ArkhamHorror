@@ -39,6 +39,12 @@ getCompletedScenarios = do
 getOwner :: HasGame m => CardDef -> m (Maybe InvestigatorId)
 getOwner cardDef = findKey (any ((== cardDef) . toCardDef)) <$> getCampaignStoryCards
 
+withOwner :: HasGame m => CardDef -> (InvestigatorId -> m ()) -> m ()
+withOwner cardDef f =
+  getOwner cardDef >>= \case
+    Nothing -> pure ()
+    Just iid -> f iid
+
 getCampaignStoryCards :: HasGame m => m (Map InvestigatorId [PlayerCard])
 getCampaignStoryCards = do
   mCampaignId <- selectOne TheCampaign

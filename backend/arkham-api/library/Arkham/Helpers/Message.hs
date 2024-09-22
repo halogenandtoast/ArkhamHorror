@@ -332,8 +332,9 @@ drawToHand i (toCard -> c) = DrawToHand i [c]
 shuffleIntoDeck :: (IsDeck deck, Targetable target) => deck -> target -> Message
 shuffleIntoDeck (toDeck -> deck) (toTarget -> target) = ShuffleIntoDeck deck target
 
-shuffleCardsIntoDeck :: IsDeck deck => deck -> [Card] -> Message
-shuffleCardsIntoDeck (toDeck -> deck) = ShuffleCardsIntoDeck deck
+shuffleCardsIntoDeck
+  :: (IsDeck deck, MonoFoldable cards, Element cards ~ card, IsCard card) => deck -> cards -> Message
+shuffleCardsIntoDeck (toDeck -> deck) = ShuffleCardsIntoDeck deck . map toCard . toList
 
 findEncounterCard
   :: (Targetable target, IsCardMatcher cardMatcher)

@@ -80,6 +80,7 @@ import Arkham.Tarot
 import Arkham.Token qualified as Token
 import Arkham.Trait
 import Arkham.Window (Window, WindowType)
+import Arkham.Xp
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 
@@ -645,6 +646,7 @@ data Message
   | ApplyHealing Source
   | HealAllDamage Target Source
   | HealAllHorror Target Source
+  | ReportXp ScenarioId XpBreakdown
   | HealAllDamageAndHorror Target Source
   | ExcessHealDamage InvestigatorId Int
   | ExcessHealHorror InvestigatorId Int

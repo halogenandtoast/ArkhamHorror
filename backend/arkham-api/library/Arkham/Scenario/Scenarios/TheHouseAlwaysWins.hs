@@ -1,9 +1,4 @@
-module Arkham.Scenario.Scenarios.TheHouseAlwaysWins (
-  TheHouseAlwaysWins (..),
-  theHouseAlwaysWins,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.TheHouseAlwaysWins (TheHouseAlwaysWins (..), theHouseAlwaysWins) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -11,17 +6,14 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheDunwichLegacy.ChaosBag
 import Arkham.Card
-import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Message
+import Arkham.Message.Lifted.Choose
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
+import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheHouseAlwaysWins.Story
 
@@ -53,181 +45,102 @@ instance HasChaosTokenValue TheHouseAlwaysWins where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage TheHouseAlwaysWins where
-  runMessage msg s@(TheHouseAlwaysWins attrs) = case msg of
-    StandaloneSetup -> do
-      push $ SetChaosTokens $ chaosBagContents attrs.difficulty
+  runMessage msg s@(TheHouseAlwaysWins attrs) = runQueueT $ case msg of
+    PreScenarioSetup -> do
+      story intro
       pure s
-    Setup -> do
-      players <- allPlayers
-
-      encounterDeck <-
-        buildEncounterDeckExcluding
-          [Assets.peterClover, Enemies.cloverClubPitBoss]
-          [ EncounterSet.TheHouseAlwaysWins
-          , EncounterSet.BadLuck
-          , EncounterSet.NaomisCrew
-          , EncounterSet.Rats
-          ]
+    StandaloneSetup -> do
+      setChaosTokens $ chaosBagContents attrs.difficulty
+      pure s
+    Setup -> runScenarioSetup TheHouseAlwaysWins attrs do
+      gather Set.TheHouseAlwaysWins
+      gather Set.BadLuck
+      gather Set.NaomisCrew
+      gather Set.Rats
 
       cloverClubPitBoss <- genCard Enemies.cloverClubPitBoss
-      (laBellaLunaId, placeLaBellaLuna) <-
-        placeLocationCard
-          Locations.laBellaLuna
-      (cloverClubLoungeId, placeCloverClubLounge) <-
-        placeLocationCard
-          Locations.cloverClubLounge
-      placeCloverClubBar <- placeLocationCard_ Locations.cloverClubBar
-      placeCloverClubCardroom <- placeLocationCard_ Locations.cloverClubCardroom
-      createCloverClubPitBoss <-
-        createEnemyAt_
-          cloverClubPitBoss
-          cloverClubLoungeId
-          Nothing
+      startAt =<< place Locations.laBellaLuna
+      cloverClubLounge <- place Locations.cloverClubLounge
+      placeAll [Locations.cloverClubBar, Locations.cloverClubCardroom]
+      createEnemyAt_ cloverClubPitBoss cloverClubLounge
 
-      pushAll
-        [ SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        , placeLaBellaLuna
-        , placeCloverClubLounge
-        , placeCloverClubBar
-        , placeCloverClubCardroom
-        , RevealLocation Nothing laBellaLunaId
-        , MoveAllTo (toSource attrs) laBellaLunaId
-        , createCloverClubPitBoss
-        , story players intro
+      setAside
+        [ Locations.darkenedHall
+        , Assets.peterClover
+        , Assets.drFrancisMorgan
+        , Locations.artGallery
+        , Locations.vipArea
+        , Locations.backAlley
         ]
 
-      setAsideCards <-
-        genCards
-          [ Locations.darkenedHall
-          , Assets.peterClover
-          , Assets.drFrancisMorgan
-          , Locations.artGallery
-          , Locations.vipArea
-          , Locations.backAlley
-          ]
-
-      acts <-
-        genCards
-          [Acts.beginnersLuck, Acts.skinGame, Acts.allIn, Acts.fold]
-      agendas <-
-        genCards
-          [ Agendas.theCloverClub
-          , Agendas.undergroundMuscle
-          , Agendas.chaosInTheCloverClub
-          ]
-
-      TheHouseAlwaysWins
-        <$> runMessage
-          msg
-          ( attrs
-              & (setAsideCardsL <>~ setAsideCards)
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
-          )
+      setActDeck [Acts.beginnersLuck, Acts.skinGame, Acts.allIn, Acts.fold]
+      setAgendaDeck [Agendas.theCloverClub, Agendas.undergroundMuscle, Agendas.chaosInTheCloverClub]
     ResolveChaosToken _ Tablet iid -> s <$ push (SpendResources iid 3)
     ResolveChaosToken drawnToken Skull iid -> do
       let requiredResources = if isEasyStandard attrs then 2 else 3
       resourceCount <- getSpendableResources iid
-      player <- getPlayer iid
       withSkillTest \sid -> do
-        pushWhen (resourceCount >= requiredResources)
-          $ chooseOne
-            player
-            [ Label
-                ( "Spend "
-                    <> tshow requiredResources
-                    <> " resources to treat this token as a 0"
-                )
+        when (resourceCount >= requiredResources) do
+          chooseOneM iid do
+            labeled ("Spend " <> tshow requiredResources <> " resources to treat this token as a 0")
+              $ pushAll
                 [ SpendResources iid requiredResources
                 , CreateChaosTokenValueEffect
                     sid
-                    (if isEasyStandard attrs then 2 else 3)
+                    0
                     (ChaosTokenSource drawnToken)
                     (ChaosTokenTarget drawnToken)
                 ]
-            , Label "Do not spend resources" []
-            ]
+            labeled "Do not spend resources" nothing
       pure s
-    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ ->
-      s <$ case chaosTokenFace token of
-        Cultist
-          | isEasyStandard attrs ->
-              push $ TakeResources iid 3 (ChaosTokenEffectSource Cultist) False
+    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Cultist | isEasyStandard attrs -> gainResourcesIfCan iid Cultist 3
         _ -> pure ()
-    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ ->
-      s <$ case chaosTokenFace token of
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
         Cultist | isHardExpert attrs -> push $ SpendResources iid 3
         Tablet | isEasyStandard attrs -> push $ SpendResources iid 3
         _ -> pure ()
-    ScenarioResolution NoResolution ->
-      s <$ push (ScenarioResolution $ Resolution 1)
+      pure s
+    ScenarioResolution NoResolution -> do
+      push R1
+      pure s
     ScenarioResolution (Resolution 1) -> do
-      players <- allPlayers
-      xp <- getXp
-      pushAll
-        $ [ story players resolution1
-          , Record OBannionGangHasABoneToPickWithTheInvestigators
-          , Record DrFrancisMorganWasKidnapped
-          ]
-        <> [AddChaosToken ElderThing | Cheated `member` scenarioLog attrs]
-        <> [GainXP iid (toSource attrs) (n + 1) | (iid, n) <- xp]
-        <> [EndOfGame Nothing]
+      story resolution1
+      record OBannionGangHasABoneToPickWithTheInvestigators
+      record DrFrancisMorganWasKidnapped
+      when (Cheated `member` attrs.log) $ addChaosToken ElderThing
+      allGainXpWithBonus attrs 1
+      endOfScenario
       pure s
     ScenarioResolution (Resolution 2) -> do
-      lead <- getLeadPlayer
-      players <- allPlayers
       investigatorIds <- allInvestigatorIds
-      xp <- getXp
-      pushAll
-        $ [ story players resolution2
-          , Record OBannionGangHasABoneToPickWithTheInvestigators
-          , Record TheInvestigatorsRescuedDrFrancisMorgan
-          , chooseOne
-              lead
-              [ Label
-                  "Add Dr. Francis Morgan to a deck"
-                  [ chooseOne
-                      lead
-                      [ targetLabel
-                        iid
-                        [AddCampaignCardToDeck iid Assets.drFrancisMorgan]
-                      | iid <- investigatorIds
-                      ]
-                  ]
-              , Label "Do not add Dr. Francis Morgan to any deck" []
-              ]
-          ]
-        <> [AddChaosToken ElderThing | Cheated `member` scenarioLog attrs]
-        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-        <> [EndOfGame Nothing]
+      story resolution2
+      record OBannionGangHasABoneToPickWithTheInvestigators
+      record TheInvestigatorsRescuedDrFrancisMorgan
+      addCampaignCardToDeckChoice investigatorIds Assets.drFrancisMorgan
+      when (Cheated `member` attrs.log) $ addChaosToken ElderThing
+      allGainXp attrs
+      endOfScenario
       pure s
     ScenarioResolution (Resolution 3) -> do
-      players <- allPlayers
-      xp <- getXp
-      pushAll
-        $ [ story players resolution3
-          , Record NaomiHasTheInvestigatorsBacks
-          , Record DrFrancisMorganWasKidnapped
-          ]
-        <> [AddChaosToken ElderThing | Cheated `member` scenarioLog attrs]
-        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-        <> [EndOfGame Nothing]
+      story resolution3
+      record NaomiHasTheInvestigatorsBacks
+      record DrFrancisMorganWasKidnapped
+      when (Cheated `member` attrs.log) $ addChaosToken ElderThing
+      allGainXp attrs
+      endOfScenario
       pure s
     ScenarioResolution (Resolution 4) -> do
-      players <- allPlayers
-      investigatorIds <- allInvestigatorIds
-      xp <- getXp
-      pushAll
-        $ [ story players resolution4
-          , Record OBannionGangHasABoneToPickWithTheInvestigators
-          , Record DrFrancisMorganWasKidnapped
-          , Record InvestigatorsWereUnconsciousForSeveralHours
-          ]
-        <> [SufferTrauma iid 1 0 | iid <- investigatorIds]
-        <> [AddChaosToken ElderThing | Cheated `member` scenarioLog attrs]
-        <> [GainXP iid (toSource attrs) (n + 1) | (iid, n) <- xp]
-        <> [EndOfGame Nothing]
+      story resolution4
+      record OBannionGangHasABoneToPickWithTheInvestigators
+      record DrFrancisMorganWasKidnapped
+      record InvestigatorsWereUnconsciousForSeveralHours
+      eachInvestigator (`sufferPhysicalTrauma` 1)
+      when (Cheated `member` attrs.log) $ addChaosToken ElderThing
+      allGainXpWithBonus attrs 1
+      endOfScenario
       pure s
-    _ -> TheHouseAlwaysWins <$> runMessage msg attrs
+    _ -> TheHouseAlwaysWins <$> liftRunMessage msg attrs

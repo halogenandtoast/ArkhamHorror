@@ -20,7 +20,15 @@ import Arkham.Message as X (Message (..))
 import Arkham.Message.Lifted as X hiding (setActDeck, setAgendaDeck)
 import Arkham.Prelude as X
 import Arkham.Question as X
-import Arkham.Scenario.Runner as X (IsScenario, ScenarioAttrs, push, pushAll, scenario)
+import Arkham.Scenario.Runner as X (
+  IsScenario,
+  ScenarioAttrs,
+  push,
+  pushAll,
+  pushWhen,
+  scenario,
+  standaloneCampaignLogL,
+ )
 import Arkham.Scenario.Setup as X
 import Arkham.Source as X
 import Arkham.Target as X

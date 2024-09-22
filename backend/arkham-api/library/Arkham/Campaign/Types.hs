@@ -24,6 +24,7 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Source
 import Arkham.Target
+import Arkham.Xp
 import Control.Monad.Writer hiding (filterM)
 import Data.Aeson.TH
 import Data.List.NonEmpty qualified as NE
@@ -64,6 +65,7 @@ data CampaignAttrs = CampaignAttrs
   , campaignStep :: CampaignStep
   , campaignCompletedSteps :: [CampaignStep]
   , campaignResolutions :: Map ScenarioId Resolution
+  , campaignXpBreakdown :: Map ScenarioId XpBreakdown
   , campaignModifiers :: Map InvestigatorId [Modifier]
   , campaignMeta :: Value
   }
@@ -128,6 +130,9 @@ metaL = lens campaignMeta $ \m x -> m {campaignMeta = x}
 
 resolutionsL :: Lens' CampaignAttrs (Map ScenarioId Resolution)
 resolutionsL = lens campaignResolutions $ \m x -> m {campaignResolutions = x}
+
+xpBreakdownL :: Lens' CampaignAttrs (Map ScenarioId XpBreakdown)
+xpBreakdownL = lens campaignXpBreakdown $ \m x -> m {campaignXpBreakdown = x}
 
 completeStep :: CampaignStep -> [CampaignStep] -> [CampaignStep]
 completeStep step' steps = step' : steps
@@ -197,6 +202,7 @@ campaign f campaignId' name difficulty chaosBagContents =
       , campaignResolutions = mempty
       , campaignModifiers = mempty
       , campaignMeta = Null
+      , campaignXpBreakdown = mempty
       }
 
 instance Entity Campaign where
@@ -234,4 +240,22 @@ difficultyOf = campaignDifficulty . toAttrs
 chaosBagOf :: Campaign -> [ChaosTokenFace]
 chaosBagOf = campaignChaosBag . toAttrs
 
-$(deriveJSON (aesonOptions $ Just "campaign") ''CampaignAttrs)
+$(deriveToJSON (aesonOptions $ Just "campaign") ''CampaignAttrs)
+
+instance FromJSON CampaignAttrs where
+  parseJSON = withObject "CampaignAttrs" $ \o -> do
+    campaignId <- o .: "id"
+    campaignName <- o .: "name"
+    campaignDecks <- o .: "decks"
+    campaignStoryCards <- o .: "storyCards"
+    campaignDifficulty <- o .: "difficulty"
+    campaignChaosBag <- o .: "chaosBag"
+    campaignLog <- o .: "log"
+    campaignStep <- o .: "step"
+    campaignCompletedSteps <- o .: "completedSteps"
+    campaignResolutions <- o .: "resolutions"
+    campaignXpBreakdown <- o .:? "xpBreakdown" .!= mempty
+    campaignModifiers <- o .: "modifiers"
+    campaignMeta <- o .: "meta"
+
+    pure CampaignAttrs {..}

@@ -1,6 +1,7 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Difficulty, difficultyDecoder } from '@/arkham/types/Difficulty';
 import { LogContents, logContentsDecoder } from '@/arkham/types/Log';
+import { XpBreakdown, xpBreakdownDecoder} from '@/arkham/types/Xp';
 
 export type CampaignStep = PrologueStep | ScenarioStep | InterludeStep | UpgradeDeckStep | EpilogueStep | ResupplyPoint
 
@@ -97,6 +98,7 @@ export type Campaign = {
   step: CampaignStep | null;
   difficulty: Difficulty;
   meta: any;
+  xpBreakdown: XpBreakdown;
 }
 
 export const campaignDetailsDecoder = JsonDecoder.object<CampaignDetails>({
@@ -111,5 +113,6 @@ export const campaignDecoder = JsonDecoder.object<Campaign>({
   difficulty: difficultyDecoder,
   log: logContentsDecoder,
   step: JsonDecoder.nullable(campaignStepDecoder),
-  meta: JsonDecoder.succeed
+  meta: JsonDecoder.succeed,
+  xpBreakdown: xpBreakdownDecoder
 }, 'Campaign');

@@ -1,33 +1,23 @@
-module Arkham.Scenario.Scenarios.BloodOnTheAltar (
-  BloodOnTheAltar (..),
-  bloodOnTheAltar,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.BloodOnTheAltar (BloodOnTheAltar (..), bloodOnTheAltar) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
-import Arkham.ChaosToken
-import Arkham.Classes hiding (matches)
-import Arkham.Classes.HasGame
-import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (PlaceUnderneath, RevealLocation)
-import Arkham.Message
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Deck
+import Arkham.Scenario.Helpers hiding (recordSetInsert)
+import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.BloodOnTheAltar.Story
 import Arkham.Token
 
@@ -56,9 +46,7 @@ instance HasChaosTokenValue BloodOnTheAltar where
   getChaosTokenValue iid chaosTokenFace (BloodOnTheAltar (attrs `With` _)) =
     case chaosTokenFace of
       Skull -> do
-        numLocations <-
-          countM (fieldMap LocationCardsUnderneath null)
-            =<< select Anywhere
+        numLocations <- countM (fieldMap LocationCardsUnderneath null) =<< select Anywhere
         pure $ toChaosTokenValue attrs Skull (min 4 numLocations) numLocations
       Cultist -> pure $ toChaosTokenValue attrs Cultist 2 4
       Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
@@ -87,112 +75,61 @@ standaloneChaosTokens =
   , ElderSign
   ]
 
-getRemoveNecronomicon :: HasGame m => m [Message]
-getRemoveNecronomicon = do
+removeNecronomicon :: ReverseQueue m => m ()
+removeNecronomicon = do
   defeatedInvestigatorIds <- select DefeatedInvestigator
-  mNecronomiconOwner <- getOwner Assets.theNecronomiconOlausWormiusTranslation
-  pure
-    [ RemoveCampaignCard Assets.theNecronomiconOlausWormiusTranslation
-    | owner <- maybeToList mNecronomiconOwner
-    , owner `elem` defeatedInvestigatorIds
-    ]
+  withOwner Assets.theNecronomiconOlausWormiusTranslation \owner -> do
+    when (owner `elem` defeatedInvestigatorIds) do
+      removeCampaignCard Assets.theNecronomiconOlausWormiusTranslation
 
 instance RunMessage BloodOnTheAltar where
-  runMessage msg s@(BloodOnTheAltar (attrs@ScenarioAttrs {..} `With` metadata@(BloodOnTheAltarMetadata sacrificed))) =
-    case msg of
-      StandaloneSetup -> do
-        push $ SetChaosTokens standaloneChaosTokens
+  runMessage msg s@(BloodOnTheAltar (attrs `With` metadata@(BloodOnTheAltarMetadata sacrificed))) = runQueueT
+    $ case msg of
+      PreScenarioSetup -> do
+        story intro
         pure s
-      Setup -> do
-        players <- allPlayers
-        bishopsBrook <-
-          genCard
-            =<< sample
-              (Locations.bishopsBrook_202 :| [Locations.bishopsBrook_203])
-        burnedRuins <-
-          genCard
-            =<< sample
-              (Locations.burnedRuins_204 :| [Locations.burnedRuins_205])
-        osbornsGeneralStore <-
-          genCard
-            =<< sample
-              ( Locations.osbornsGeneralStore_206
-                  :| [Locations.osbornsGeneralStore_207]
-              )
+      StandaloneSetup -> do
+        setChaosTokens standaloneChaosTokens
+        pure s
+      Setup -> runScenarioSetup (BloodOnTheAltar . (`with` metadata)) attrs do
+        bishopsBrook <- sample2 Locations.bishopsBrook_202 Locations.bishopsBrook_203
+        burnedRuins <- sample2 Locations.burnedRuins_204 Locations.burnedRuins_205
+        osbornsGeneralStore <- sample2 Locations.osbornsGeneralStore_206 Locations.osbornsGeneralStore_207
         congregationalChurch <-
-          genCard
-            =<< sample
-              ( Locations.congregationalChurch_208
-                  :| [Locations.congregationalChurch_209]
-              )
-        houseInTheReeds <-
-          genCard
-            =<< sample
-              (Locations.houseInTheReeds_210 :| [Locations.houseInTheReeds_211])
-        schoolhouse <-
-          genCard
-            =<< sample
-              (Locations.schoolhouse_212 :| [Locations.schoolhouse_213])
+          sample2 Locations.congregationalChurch_208 Locations.congregationalChurch_209
+        houseInTheReeds <- sample2 Locations.houseInTheReeds_210 Locations.houseInTheReeds_211
+        schoolhouse <- sample2 Locations.schoolhouse_212 Locations.schoolhouse_213
 
         oBannionGangHasABoneToPick <-
           getHasRecordOrStandalone
             OBannionGangHasABoneToPickWithTheInvestigators
             False
 
-        (encounterCardsToPutUnderneath, encounterDeck) <-
-          draw 3
-            <$> buildEncounterDeckExcluding
-              [ Enemies.silasBishop
-              , Locations.theHiddenChamber
-              , Assets.keyToTheChamber
-              ]
-              ( [ EncounterSet.BloodOnTheAltar
-                , EncounterSet.Dunwich
-                , EncounterSet.Whippoorwills
-                , EncounterSet.Nightgaunts
-                , EncounterSet.AncientEvils
-                ]
-                  <> [EncounterSet.NaomisCrew | oBannionGangHasABoneToPick]
-              )
+        gather Set.BloodOnTheAltar
+        gather Set.Dunwich
+        gather Set.Whippoorwills
+        gather Set.Nightgaunts
+        gather Set.AncientEvils
+        when oBannionGangHasABoneToPick $ gather Set.NaomisCrew
 
-        theHiddenChamber <- genCard Locations.theHiddenChamber
-        keyToTheChamber <- genCard Assets.keyToTheChamber
+        -- we set aside the Hidden Chamber and Key to the Chamber to avoid them being duplicated when we sample below
+        setAside
+          [Enemies.silasBishop, Assets.powderOfIbnGhazi, Locations.theHiddenChamber, Assets.keyToTheChamber]
+
+        encounterCardsToPutUnderneath <- map toCard <$> sampleEncounterDeck 3
+
+        theHiddenChamber <- fromSetAside Locations.theHiddenChamber
+        keyToTheChamber <- fromSetAside Assets.keyToTheChamber
 
         cardsToPutUnderneath <-
-          shuffleM
-            $ keyToTheChamber
-            : theHiddenChamber
-            : map EncounterCard encounterCardsToPutUnderneath
-
-        professorWarrenRiceKidnapped <-
-          getHasRecordOrStandalone
-            ProfessorWarrenRiceWasKidnapped
-            True
-        drFrancisMorganKidnapped <-
-          getHasRecordOrStandalone
-            DrFrancisMorganWasKidnapped
-            True
-        drHenryArmitageKidnapped <-
-          getHasRecordOrStandalone
-            DrHenryArmitageWasKidnapped
-            True
-
-        professorWarrenRice <- runMaybeT $ do
-          guard professorWarrenRiceKidnapped
-          lift $ genCard Assets.professorWarrenRice
-        drFrancisMorgan <- runMaybeT $ do
-          guard drFrancisMorganKidnapped
-          lift $ genCard Assets.drFrancisMorgan
-        drHenryArmitage <- runMaybeT $ do
-          guard drHenryArmitageKidnapped
-          lift $ genCard Assets.drHenryArmitage
-        zebulonWhateley <- genCard Assets.zebulonWhateley
-        earlSawyer <- genCard Assets.earlSawyer
+          shuffleM $ keyToTheChamber : theHiddenChamber : encounterCardsToPutUnderneath
 
         delayedOnTheirWayToDunwich <-
           getHasRecordOrStandalone
             TheInvestigatorsWereDelayedOnTheirWayToDunwich
             False
+
+        startAt =<< place Locations.villageCommons
 
         locations <-
           drop 1
@@ -204,132 +141,90 @@ instance RunMessage BloodOnTheAltar where
               , houseInTheReeds
               , schoolhouse
               ]
+        for_ (zip locations cardsToPutUnderneath) $ \(location, card) -> do
+          l <- place location
+          placeUnderneath l [toCard card]
 
-        villageCommons <- genCard Locations.villageCommons
+        when delayedOnTheirWayToDunwich (placeDoomOnAgenda 1)
 
-        let
-          potentialSacrifices =
-            [zebulonWhateley, earlSawyer]
-              <> catMaybes
-                [professorWarrenRice, drFrancisMorgan, drHenryArmitage]
+        setAgendaDeck [Agendas.strangeDisappearances, Agendas.theOldOnesHunger, Agendas.feedTheBeast]
+        setActDeck [Acts.searchingForAnswers, Acts.theChamberOfTheBeast]
 
-        (villageCommonsId, placeVillageCommons) <- placeLocation villageCommons
+        professorWarrenRiceKidnapped <- getHasRecordOrStandalone ProfessorWarrenRiceWasKidnapped True
+        drFrancisMorganKidnapped <- getHasRecordOrStandalone DrFrancisMorganWasKidnapped True
+        drHenryArmitageKidnapped <- getHasRecordOrStandalone DrHenryArmitageWasKidnapped True
 
-        otherPlacements <-
-          for (zip locations cardsToPutUnderneath) $ \(location, card) -> do
-            (locationId, placement) <- placeLocation location
-            pure [placement, PlaceUnderneath (LocationTarget locationId) [card]]
-
-        pushAll
-          $ [ story players intro
-            , SetEncounterDeck encounterDeck
-            , SetAgendaDeck
-            ]
-          <> [placeDoomOnAgenda | delayedOnTheirWayToDunwich]
-          <> [SetActDeck]
-          <> (placeVillageCommons : concat otherPlacements)
-          <> [ RevealLocation Nothing villageCommonsId
-             , MoveAllTo (toSource attrs) villageCommonsId
-             ]
-
-        setAsideCards <-
-          genCards
-            [ Enemies.silasBishop
-            , Locations.theHiddenChamber
-            , Assets.keyToTheChamber
-            , Assets.powderOfIbnGhazi
-            ]
-        agendas <-
-          genCards
-            [ Agendas.strangeDisappearances
-            , Agendas.theOldOnesHunger
-            , Agendas.feedTheBeast
-            ]
-        acts <- genCards [Acts.searchingForAnswers, Acts.theChamberOfTheBeast]
-
-        BloodOnTheAltar
-          . (`with` metadata)
-          <$> runMessage
-            msg
-            ( attrs
-                & (setAsideCardsL <>~ setAsideCards)
-                & (decksL . at PotentialSacrifices ?~ potentialSacrifices)
-                & (actStackL . at 1 ?~ acts)
-                & (agendaStackL . at 1 ?~ agendas)
-            )
+        professorWarrenRice <- runMaybeT $ do
+          guard professorWarrenRiceKidnapped
+          genCard Assets.professorWarrenRice
+        drFrancisMorgan <- runMaybeT $ do
+          guard drFrancisMorganKidnapped
+          genCard Assets.drFrancisMorgan
+        drHenryArmitage <- runMaybeT $ do
+          guard drHenryArmitageKidnapped
+          genCard Assets.drHenryArmitage
+        zebulonWhateley <- genCard Assets.zebulonWhateley
+        earlSawyer <- genCard Assets.earlSawyer
+        addExtraDeck PotentialSacrifices
+          $ [zebulonWhateley, earlSawyer]
+          <> catMaybes [professorWarrenRice, drFrancisMorgan, drHenryArmitage]
       ResolveChaosToken _ Tablet iid -> do
         lid <- getJustLocation iid
-        matches <- (== "Hidden Chamber") . nameTitle <$> field LocationName lid
+        isHiddenChamber <- (== "Hidden Chamber") . nameTitle <$> field LocationName lid
         when
-          (isHardExpert attrs || (isEasyStandard attrs && matches))
-          (push $ DrawAnotherChaosToken iid)
+          (isHardExpert attrs || (isEasyStandard attrs && isHiddenChamber))
+          (drawAnotherChaosToken iid)
         pure s
       ResolveChaosToken _ ElderThing _ | isHardExpert attrs -> do
         agendaId <- selectJust AnyAgenda
-        push $ PlaceTokens (toSource attrs) (toTarget agendaId) Doom 1
+        placeDoom attrs agendaId 1
         pure s
-      FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ ->
-        s <$ case chaosTokenFace token of
-          Cultist -> do
-            lid <- getJustLocation iid
+      FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+        case chaosTokenFace token of
+          Cultist -> withLocationOf iid \lid ->
             push $ PlaceTokens (toSource attrs) (toTarget lid) Clue 1
           ElderThing | isEasyStandard attrs -> do
             agendaId <- selectJust AnyAgenda
-            push $ PlaceTokens (toSource attrs) (toTarget agendaId) Doom 1
+            placeDoom attrs agendaId 1
           _ -> pure ()
+        pure s
       ScenarioResolution NoResolution -> do
-        players <- allPlayers
-        agendaId <- selectJust AnyAgenda
-        xp <- getXp
+        story noResolution
+        record TheRitualWasCompleted
         let
           potentialSacrifices =
-            case lookup PotentialSacrifices scenarioDecks of
+            case lookup PotentialSacrifices attrs.decks of
               Just xs -> xs
               _ -> error "missing deck"
-          sacrificedToYogSothoth = potentialSacrifices <> sacrificed
-        removeNecronomicon <- getRemoveNecronomicon
-        pushAll
-          $ [ story players noResolution
-            , Record TheRitualWasCompleted
-            , PlaceUnderneath (toTarget agendaId) potentialSacrifices
-            ]
-          <> map (RemoveCampaignCard . toCardDef) sacrificedToYogSothoth
-          <> removeNecronomicon
-          <> [GainXP iid (toSource attrs) (n + 2) | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+        agendaId <- selectJust AnyAgenda
+        placeUnderneath agendaId potentialSacrifices
+        for_ (potentialSacrifices <> sacrificed) removeCampaignCard
+        removeNecronomicon
+        allGainXpWithBonus attrs 2
+        endOfScenario
         pure s
       ScenarioResolution (Resolution 1) -> do
-        players <- allPlayers
-        xp <- getXp
-        removeNecronomicon <- getRemoveNecronomicon
-        pushAll
-          $ [ story players resolution1
-            , Record TheInvestigatorsPutSilasBishopOutOfHisMisery
-            ]
-          <> map (RemoveCampaignCard . toCardDef) sacrificed
-          <> removeNecronomicon
-          <> [GainXP iid (toSource attrs) (n + 2) | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+        story resolution1
+        record TheInvestigatorsPutSilasBishopOutOfHisMisery
+        for_ sacrificed removeCampaignCard
+        removeNecronomicon
+        allGainXpWithBonus attrs 2
+        endOfScenario
         pure s
       ScenarioResolution (Resolution 2) -> do
-        players <- allPlayers
-        xp <- getXp
-        pushAll
-          $ [story players resolution2, Record TheInvestigatorsRestoredSilasBishop]
-          <> map (RemoveCampaignCard . toCardDef) sacrificed
-          <> [GainXP iid (toSource attrs) (n + 2) | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+        story resolution2
+        record TheInvestigatorsRestoredSilasBishop
+        for_ sacrificed removeCampaignCard
+        allGainXpWithBonus attrs 2
+        endOfScenario
         pure s
       ScenarioResolution (Resolution 3) -> do
-        players <- allPlayers
-        xp <- getXp
-        removeNecronomicon <- getRemoveNecronomicon
-        pushAll
-          $ [story players resolution3, Record TheInvestigatorsBanishedSilasBishop]
-          <> map (RemoveCampaignCard . toCardDef) sacrificed
-          <> [recordSetInsert SacrificedToYogSothoth $ map toCardCode sacrificed]
-          <> removeNecronomicon
-          <> [GainXP iid (toSource attrs) (n + 2) | (iid, n) <- xp]
-          <> [EndOfGame Nothing]
+        story resolution3
+        record TheInvestigatorsBanishedSilasBishop
+        for_ sacrificed removeCampaignCard
+        recordSetInsert SacrificedToYogSothoth $ map toCardCode sacrificed
+        removeNecronomicon
+        allGainXpWithBonus attrs 2
+        endOfScenario
         pure s
-      _ -> BloodOnTheAltar . (`with` metadata) <$> runMessage msg attrs
+      _ -> BloodOnTheAltar . (`with` metadata) <$> liftRunMessage msg attrs

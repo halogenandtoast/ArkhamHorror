@@ -144,6 +144,9 @@ instance HasField "difficulty" ScenarioAttrs Difficulty where
 instance HasField "setAside" ScenarioAttrs [Card] where
   getField = scenarioSetAsideCards
 
+instance HasField "resignedCardCodes" ScenarioAttrs [CardCode] where
+  getField = scenarioResignedCardCodes
+
 instance HasField "decks" ScenarioAttrs (Map ScenarioDeckKey [Card]) where
   getField = scenarioDecks
 

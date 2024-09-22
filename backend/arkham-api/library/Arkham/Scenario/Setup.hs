@@ -11,6 +11,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Deck
 import Arkham.Helpers.EncounterSet
 import Arkham.Id
+import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message.Lifted
 import Arkham.Prelude hiding ((.=))
@@ -86,6 +87,15 @@ gather encounterSet = do
   cards <- excludeBSides . excludeDoubleSided <$> gatherEncounterSet encounterSet
   encounterDeckL %= (Deck cards <>)
 
+gatherJust :: CardGen m => Set.EncounterSet -> [CardDef] -> ScenarioBuilderT m ()
+gatherJust encounterSet defs = do
+  cards <-
+    filter ((`cardMatch` mapOneOf cardIs defs) . toCard)
+      . excludeBSides
+      . excludeDoubleSided
+      <$> gatherEncounterSet encounterSet
+  encounterDeckL %= (Deck cards <>)
+
 gatherAndSetAside :: ReverseQueue m => Set.EncounterSet -> ScenarioBuilderT m ()
 gatherAndSetAside encounterSet = do
   cards <- map toCard <$> gatherEncounterSet encounterSet
@@ -110,10 +120,23 @@ fromSetAside def = do
       pure card
     Nothing -> error $ "Card " <> show def <> " not found in set aside cards"
 
+amongGathered :: (HasCallStack, ReverseQueue m) => CardMatcher -> ScenarioBuilderT m [Card]
+amongGathered matcher = filterCards matcher . map toCard . unDeck <$> use encounterDeckL
+
 place :: ReverseQueue m => CardDef -> ScenarioBuilderT m LocationId
 place def = do
   encounterDeckL %= flip removeEachFromDeck [def]
   placeLocationCard def
+
+placeLabeled_ :: ReverseQueue m => Text -> CardDef -> ScenarioBuilderT m ()
+placeLabeled_ lbl def = void $ placeLabeled lbl def
+
+placeLabeled :: ReverseQueue m => Text -> CardDef -> ScenarioBuilderT m LocationId
+placeLabeled lbl def = do
+  encounterDeckL %= flip removeEachFromDeck [def]
+  lid <- placeLocationCard def
+  push $ SetLocationLabel lid lbl
+  pure lid
 
 place_ :: ReverseQueue m => CardDef -> ScenarioBuilderT m ()
 place_ = void . place
@@ -122,6 +145,9 @@ placeAll :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
 placeAll defs = do
   encounterDeckL %= flip removeEachFromDeck defs
   placeLocationCards defs
+
+placeAllCapture :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m [LocationId]
+placeAllCapture defs = traverse place defs
 
 placeOneOf
   :: (SampleOneOf as, Sampled as ~ CardDef, ReverseQueue m) => as -> ScenarioBuilderT m LocationId
@@ -160,6 +186,12 @@ enemyAt def lid = do
   card <- genCard def
   createEnemyAt_ card lid
 
+enemyAtMatching :: ReverseQueue m => CardDef -> LocationMatcher -> ScenarioBuilderT m ()
+enemyAtMatching def matcher = do
+  encounterDeckL %= flip removeEachFromDeck [def]
+  card <- genCard def
+  createEnemyAtLocationMatching_ card matcher
+
 sampleEncounterDeck :: (HasCallStack, MonadRandom m) => Int -> ScenarioBuilderT m [EncounterCard]
 sampleEncounterDeck n = do
   deck <- use encounterDeckL
@@ -173,6 +205,7 @@ sampleEncounterDeck n = do
 addExtraDeck :: (ReverseQueue m, IsCard card) => ScenarioDeckKey -> [card] -> ScenarioBuilderT m ()
 addExtraDeck k cards = do
   cards' <- shuffleM $ map toCard cards
+  encounterDeckL %= withDeck (filter ((`notElem` cards') . toCard))
   decksL %= (at k ?~ cards')
 
 setActDeck :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
@@ -186,3 +219,8 @@ setAgendaDeck defs = do
   cards <- genCards defs
   agendaStackL %= insertMap 1 cards
   push SetAgendaDeck
+
+placeUnderScenarioReference :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
+placeUnderScenarioReference defs = do
+  cards <- genCards defs
+  cardsUnderScenarioReferenceL %= (<> cards)

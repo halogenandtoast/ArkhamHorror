@@ -1,19 +1,13 @@
-module Arkham.Agenda.Cards.TheTideRises (
-  TheTideRises (..),
-  theTideRises,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheTideRises (TheTideRises (..), theTideRises) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
-import Arkham.Agenda.Runner
+import Arkham.Agenda.Import.Lifted
 import Arkham.Agenda.Sequence qualified as AS
+import Arkham.Agenda.Types (Field (AgendaDoom))
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
-import Arkham.Classes
 import Arkham.Deck qualified as Deck
-import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Projection
 
@@ -26,34 +20,22 @@ theTideRises = agenda (1, A) TheTideRises Cards.theTideRises (Static 5)
 
 instance HasAbilities TheTideRises where
   getAbilities (TheTideRises a) =
-    [ limitedAbility (GroupLimit PerRound 1)
-        $ mkAbility a 1
-        $ FastAbility
-        $ GroupClueCost (PerPlayer 1) Anywhere
-    ]
+    [groupLimit PerRound $ mkAbility a 1 $ FastAbility $ GroupClueCost (PerPlayer 1) Anywhere]
 
 instance RunMessage TheTideRises where
-  runMessage msg a@(TheTideRises attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      tidalTerrors <- getSetAsideCardsMatching (CardWithTitle "Tidal Terror")
+  runMessage msg a@(TheTideRises attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      shuffleEncounterDiscardBackIn
+      shuffleCardsIntoDeck Deck.EncounterDeck =<< getSetAsideCardsMatching (CardWithTitle "Tidal Terror")
       mAgenda1C <- selectOne $ AgendaWithSequence $ AS.Sequence 1 C
-      markDoubtOrConviction <- case mAgenda1C of
-        Nothing -> pure []
-        Just a1cId -> do
-          a1cDoom <- field AgendaDoom a1cId
-          markMsg <- if a1cDoom > 3 then markDoubt else markConviction
-          pure [markMsg]
-      pushAll
-        $ [ ShuffleEncounterDiscardBackIn
-          , ShuffleCardsIntoDeck Deck.EncounterDeck tidalTerrors
-          ]
-        <> markDoubtOrConviction
-        <> [advanceAgendaDeck attrs]
+      for_ mAgenda1C \a1cId -> do
+        a1cDoom <- field AgendaDoom a1cId
+        if a1cDoom > 3 then markDoubt else markConviction
+      advanceAgendaDeck attrs
       pure a
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      investigatorIds <- getInvestigatorIds
-      pushAll
-        $ [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
-        <> [TakeResources iid 2 (toAbilitySource attrs 1) False | iid <- investigatorIds]
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeDoom (attrs.ability 1) attrs 1
+      push AdvanceAgendaIfThresholdSatisfied
+      eachInvestigator \iid -> gainResourcesIfCan iid (attrs.ability 1) 2
       pure a
-    _ -> TheTideRises <$> runMessage msg attrs
+    _ -> TheTideRises <$> liftRunMessage msg attrs

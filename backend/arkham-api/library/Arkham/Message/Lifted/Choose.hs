@@ -51,6 +51,11 @@ chooseOrRunOneM iid choices = do
   (_, choices') <- runChooseT choices
   unless (null choices') $ chooseOrRunOne iid choices'
 
+chooseOrRunNM :: ReverseQueue m => InvestigatorId -> Int -> ChooseT m a -> m ()
+chooseOrRunNM iid n choices = do
+  (_, choices') <- runChooseT choices
+  unless (null choices') $ chooseOrRunN iid n choices'
+
 chooseNM :: ReverseQueue m => InvestigatorId -> Int -> ChooseT m a -> m ()
 chooseNM iid n choices = do
   (_, choices') <- runChooseT choices

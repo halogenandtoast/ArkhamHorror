@@ -11,6 +11,7 @@ import Arkham.Asset.Uses (UseType)
 import Arkham.Attack
 import Arkham.Calculation
 import Arkham.CampaignLogKey
+import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.GameLogger
@@ -54,6 +55,7 @@ import Arkham.Message.Lifted.Queue as X
 import Arkham.Modifier
 import Arkham.Movement
 import Arkham.Phase (Phase)
+import Arkham.Placement
 import Arkham.Prelude hiding (pred)
 import Arkham.Projection
 import Arkham.Query
@@ -231,6 +233,9 @@ allGainXpWith source f = do
 endOfScenario :: ReverseQueue m => m ()
 endOfScenario = push $ EndOfGame Nothing
 
+endOfScenarioThen :: ReverseQueue m => CampaignStep -> m ()
+endOfScenarioThen = push . EndOfGame . Just
+
 assignDamage
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 assignDamage iid (toSource -> source) damage = push $ Msg.assignDamage iid source damage
@@ -379,6 +384,9 @@ setAsideCards = genCards >=> push . Msg.SetAsideCards
 
 addChaosToken :: ReverseQueue m => ChaosTokenFace -> m ()
 addChaosToken = push . AddChaosToken
+
+removeAllChaosTokens :: ReverseQueue m => ChaosTokenFace -> m ()
+removeAllChaosTokens = push . RemoveAllChaosTokens
 
 removeCampaignCard :: (HasCardDef a, ReverseQueue m) => a -> m ()
 removeCampaignCard (toCardDef -> def) = do
@@ -694,6 +702,10 @@ phaseModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 phaseModifier source target modifier = push $ Msg.phaseModifier source target modifier
 
+resolutionModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
+resolutionModifier source target modifier = push $ Msg.resolutionModifier source target modifier
+
 gameModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 gameModifier source target modifier = push $ Msg.gameModifier source target modifier
@@ -978,6 +990,14 @@ drawCardsIfCan iid source n = do
   when (n > 0) do
     mmsg <- Msg.drawCardsIfCan iid source n
     for_ mmsg push
+
+forcedDrawCards
+  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
+  -> source
+  -> Int
+  -> m ()
+forcedDrawCards iid source n = when (n > 0) $ push $ Msg.drawCards (asId iid) source n
 
 focusChaosTokens :: ReverseQueue m => [ChaosToken] -> (Message -> m ()) -> m ()
 focusChaosTokens tokens f = do
@@ -1552,3 +1572,17 @@ discardUntilFirst
   -> m ()
 discardUntilFirst iid source deck matcher = do
   push $ DiscardUntilFirst iid (toSource source) (toDeck deck) matcher
+
+createAssetAt_
+  :: (ReverseQueue m, IsCard card) => card -> Placement -> m ()
+createAssetAt_ c placement = push =<< Msg.createAssetAt_ (toCard c) placement
+
+createAssetAt
+  :: (ReverseQueue m, IsCard card) => card -> Placement -> m AssetId
+createAssetAt c placement = do
+  (assetId, msg) <- Msg.createAssetAt (toCard c) placement
+  push msg
+  pure assetId
+
+crossOutRecordSetEntries :: (Recordable a, ReverseQueue m) => CampaignLogKey -> [a] -> m ()
+crossOutRecordSetEntries k xs = push $ Msg.crossOutRecordSetEntries k xs

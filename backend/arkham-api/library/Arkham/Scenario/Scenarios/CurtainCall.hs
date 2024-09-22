@@ -1,19 +1,11 @@
-module Arkham.Scenario.Scenarios.CurtainCall (
-  CurtainCall (..),
-  curtainCall,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.CurtainCall (CurtainCall (..), curtainCall) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.ThePathToCarcosa.ChaosBag
-import Arkham.Card
-import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.Campaigns.ThePathToCarcosa.Helpers
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
@@ -21,12 +13,9 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
-import Arkham.Movement
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.CurtainCall.Story
 import Arkham.Token
@@ -60,135 +49,83 @@ instance HasChaosTokenValue CurtainCall where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage CurtainCall where
-  runMessage msg s@(CurtainCall attrs) = case msg of
-    StandaloneSetup -> do
-      push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
+  runMessage msg s@(CurtainCall attrs) = runQueueT $ case msg of
+    PreScenarioSetup -> do
+      story intro
       pure s
-    Setup -> do
-      encounterDeck <-
-        buildEncounterDeckExcluding
-          [Enemies.royalEmissary]
-          [ EncounterSet.CurtainCall
-          , EncounterSet.EvilPortents
-          , EncounterSet.Delusions
-          , EncounterSet.Hauntings
-          , EncounterSet.CultOfTheYellowSign
-          , EncounterSet.StrikingFear
-          , EncounterSet.Rats
-          ]
+    StandaloneSetup -> do
+      setChaosTokens $ chaosBagContents attrs.difficulty
+      pure s
+    Setup -> runScenarioSetup CurtainCall attrs do
+      gather Set.CurtainCall
+      gather Set.EvilPortents
+      gather Set.Delusions
+      gather Set.Hauntings
+      gather Set.CultOfTheYellowSign
+      gather Set.StrikingFear
+      gather Set.Rats
 
-      (theatreId, placeTheater) <- placeLocationCard Locations.theatre
-      (backstageId, placeBackstage) <- placeLocationCard Locations.backstage
-      placeRest <-
-        traverse
-          placeLocationCard_
-          [Locations.lobby, Locations.balcony]
+      theatre <- place Locations.theatre
+      backstage <- place Locations.backstage
+      placeAll [Locations.lobby, Locations.balcony]
 
-      players <- allPlayers
-      investigatorIds <- allInvestigatorIds
-      mLolaId <- selectOne $ InvestigatorWithTitle "Lola Hayes"
-      let
-        theatreInvestigatorIds =
-          maybe investigatorIds (`deleteFirst` investigatorIds) mLolaId
-        theatreMoveTo =
-          map (\iid -> MoveTo $ move attrs iid theatreId) theatreInvestigatorIds
-        backstageMoveTo =
-          [ MoveTo $ move attrs lolaId backstageId
-          | lolaId <- maybeToList mLolaId
-          ]
+      investigators <- allInvestigatorIds
+      mLola <- selectOne $ InvestigatorWithTitle "Lola Hayes"
+      for_ mLola \lola -> do
+        reveal backstage
+        moveTo attrs lola backstage
 
-      pushAll
-        $ [ story players intro
-          , SetEncounterDeck encounterDeck
-          , SetAgendaDeck
-          , SetActDeck
-          , placeTheater
-          , placeBackstage
-          ]
-        <> placeRest
-        <> theatreMoveTo
-        <> backstageMoveTo
+      let theatreInvestigators = maybe investigators (`deleteFirst` investigators) mLola
 
-      setAsideCards <-
-        genCards
-          [ Enemies.royalEmissary
-          , Enemies.theManInThePallidMask
-          , Locations.lightingBox
-          , Locations.boxOffice
-          , Locations.greenRoom
-          , Locations.dressingRoom
-          , Locations.rehearsalRoom
-          , Locations.trapRoom
-          ]
-      agendas <- genCards [Agendas.theThirdAct, Agendas.encore]
-      acts <-
-        genCards
-          [ Acts.awakening
-          , Acts.theStrangerACityAflame
-          , Acts.theStrangerThePathIsMine
-          , Acts.theStrangerTheShoresOfHali
-          , Acts.curtainCall
-          ]
+      unless (null theatreInvestigators) do
+        reveal theatre
+        for_ theatreInvestigators \iid -> moveTo attrs iid theatre
 
-      CurtainCall
-        <$> runMessage
-          msg
-          ( attrs
-              & (setAsideCardsL <>~ setAsideCards)
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
-          )
+      setAside
+        [ Enemies.royalEmissary
+        , Enemies.theManInThePallidMask
+        , Locations.lightingBox
+        , Locations.boxOffice
+        , Locations.greenRoom
+        , Locations.dressingRoom
+        , Locations.rehearsalRoom
+        , Locations.trapRoom
+        ]
+      setAgendaDeck [Agendas.theThirdAct, Agendas.encore]
+      setActDeck
+        [ Acts.awakening
+        , Acts.theStrangerACityAflame
+        , Acts.theStrangerThePathIsMine
+        , Acts.theStrangerTheShoresOfHali
+        , Acts.curtainCall
+        ]
     ScenarioResolution resolution -> do
-      lead <- getLead
-      players <- allPlayers
-      gainXP <- toGainXp attrs getXp
-      conviction <- getRecordCount Conviction
-      doubt <- getRecordCount Doubt
-      let
-        stoleFromTheBoxOffice =
-          member StoleFromTheBoxOffice (scenarioLog attrs)
-      let
-        theStrangerIsOnToYou =
-          [ Record TheStrangerIsOnToYou
-          , AddCampaignCardToDeck lead Enemies.theManInThePallidMask
-          ]
-      s <$ case resolution of
-        NoResolution ->
-          pushAll
-            $ story players noResolution
-            : theStrangerIsOnToYou
-              <> gainXP
-              <> [EndOfGame Nothing]
-        Resolution 1 ->
-          pushAll
-            ( [ story players resolution1
-              , Record YouTriedToWarnThePolice
-              , RecordCount Conviction (conviction + 1)
-              ]
-                <> [Record ThePoliceAreSuspiciousOfYou | stoleFromTheBoxOffice]
-                <> theStrangerIsOnToYou
-                <> gainXP
-                <> [EndOfGame Nothing]
-            )
-        Resolution 2 ->
-          pushAll
-            ( [ story players resolution2
-              , Record YouChoseNotToGoToThePolice
-              , RecordCount Doubt (doubt + 1)
-              ]
-                <> [Record ThePoliceAreSuspiciousOfYou | stoleFromTheBoxOffice]
-                <> theStrangerIsOnToYou
-                <> gainXP
-                <> [EndOfGame Nothing]
-            )
+      let stoleFromTheBoxOffice = member StoleFromTheBoxOffice attrs.log
+      case resolution of
+        NoResolution -> story noResolution
+        Resolution 1 -> do
+          story resolution1
+          record YouTriedToWarnThePolice
+          markConviction
+          when stoleFromTheBoxOffice $ record ThePoliceAreSuspiciousOfYou
+        Resolution 2 -> do
+          story resolution2
+          record YouChoseNotToGoToThePolice
+          markDoubt
+          when stoleFromTheBoxOffice $ record ThePoliceAreSuspiciousOfYou
         _ -> error "Invalid resolution"
-    ResolveChaosToken _ chaosTokenFace iid
-      | chaosTokenFace `elem` [Cultist, Tablet, ElderThing] -> do
-          lid <- getJustLocation iid
-          horrorCount <- field LocationHorror lid
-          push
-            $ if horrorCount > 0
-              then InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
-              else PlaceTokens (ChaosTokenEffectSource chaosTokenFace) (LocationTarget lid) Horror 1
-          pure s
-    _ -> CurtainCall <$> runMessage msg attrs
+
+      record TheStrangerIsOnToYou
+      lead <- getLead
+      addCampaignCardToDeck lead Enemies.theManInThePallidMask
+      allGainXp attrs
+      endOfScenario
+      pure s
+    ResolveChaosToken _ chaosTokenFace iid | chaosTokenFace `elem` [Cultist, Tablet, ElderThing] -> do
+      withLocationOf iid \lid -> do
+        horrorCount <- field LocationHorror lid
+        if horrorCount > 0
+          then assignHorror iid attrs 1
+          else placeTokens chaosTokenFace lid Horror 1
+      pure s
+    _ -> CurtainCall <$> liftRunMessage msg attrs

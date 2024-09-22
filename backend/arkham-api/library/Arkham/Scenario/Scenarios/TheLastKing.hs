@@ -1,9 +1,4 @@
-module Arkham.Scenario.Scenarios.TheLastKing (
-  TheLastKing (..),
-  theLastKing,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.TheLastKing (TheLastKing (..), theLastKing) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Types (Field (..))
@@ -12,27 +7,26 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
-import Arkham.ChaosToken
 import Arkham.Classes
-import Arkham.Difficulty
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Helpers.Investigator
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Name
+import Arkham.Name hiding (labeled)
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Helpers hiding (
+  crossOutRecordSetEntries,
+  recordSetInsert,
+  resolutionModifier,
+ )
+import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheLastKing.Story
 import Arkham.Story.Cards qualified as Story
@@ -61,8 +55,7 @@ instance HasChaosTokenValue TheLastKing where
     Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
     Tablet -> pure $ ChaosTokenValue Tablet (NegativeModifier 4)
     ElderThing -> do
-      lid <- getJustLocation iid
-      shroud <- fieldJust LocationShroud lid
+      shroud <- maybe (pure 0) (fieldWithDefault 0 LocationShroud) =<< field InvestigatorLocation iid
       pure $ ChaosTokenValue ElderThing (NegativeModifier shroud)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
@@ -95,30 +88,26 @@ interviewedToCardCode = \case
   _ -> Nothing
 
 instance RunMessage TheLastKing where
-  runMessage msg s@(TheLastKing attrs) = case msg of
-    StandaloneSetup -> do
-      lead <- getLead
-      randomToken <- sample (Cultist :| [Tablet, ElderThing])
-      pushAll
-        [ SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
-        , AddCampaignCardToDeck lead Enemies.theManInThePallidMask
-        ]
+  runMessage msg s@(TheLastKing attrs) = runQueueT $ case msg of
+    PreScenarioSetup -> do
+      story intro
       pure s
-    Setup -> do
-      encounterDeck <-
-        buildEncounterDeckExcluding
-          [Enemies.dianneDevine]
-          [ EncounterSet.TheLastKing
-          , EncounterSet.HastursGift
-          , EncounterSet.DecayAndFilth
-          , EncounterSet.TheStranger
-          , EncounterSet.AncientEvils
-          ]
+    StandaloneSetup -> do
+      randomToken <- sample (Cultist :| [Tablet, ElderThing])
+      setChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
+      lead <- getLead
+      addCampaignCardToDeck lead Enemies.theManInThePallidMask
+      pure s
+    Setup -> runScenarioSetup TheLastKing attrs do
+      gather Set.TheLastKing
+      gather Set.HastursGift
+      gather Set.DecayAndFilth
+      gather Set.TheStranger
+      gather Set.AncientEvils
 
-      (foyerId, placeFoyer) <- placeLocationCard Locations.foyer
-      otherPlacements <-
-        traverse
-          placeLocationCard
+      startAt =<< place Locations.foyer
+      otherLocations <-
+        placeAllCapture
           [ Locations.courtyard
           , Locations.livingRoom
           , Locations.ballroom
@@ -127,10 +116,8 @@ instance RunMessage TheLastKing where
           ]
 
       totalClues <- getPlayerCountValue (StaticWithPerPlayer 1 1)
-
       bystanders <-
-        traverse (\c -> (c,) <$> getRandom)
-          =<< shuffleM
+        shuffleM
           =<< genCards
             [ Assets.constanceDumaine
             , Assets.jordanPerry
@@ -138,163 +125,102 @@ instance RunMessage TheLastKing where
             , Assets.sebastienMoreau
             , Assets.ashleighClarke
             ]
+      destinations <- shuffleM otherLocations
+      for_ (zip bystanders (map AtLocation destinations)) \(bystander, placement) -> do
+        assetId <- createAssetAt bystander placement
+        placeTokens attrs assetId Clue totalClues
 
-      destinations <- shuffleM $ map fst otherPlacements
-      players <- allPlayers
+      setAside [Enemies.dianneDevine]
 
-      pushAll
-        $ [ story players intro
-          , SetEncounterDeck encounterDeck
-          , SetAgendaDeck
-          , SetActDeck
-          , placeFoyer
-          ]
-        <> map snd otherPlacements
-        <> [MoveAllTo (toSource attrs) foyerId]
-        <> zipWith
-          ( \(bystander, assetId) placement ->
-              CreateAssetAt assetId bystander placement
-          )
-          bystanders
-          (map AtLocation destinations)
-        <> [ PlaceTokens (toSource attrs) (toTarget assetId) Clue totalClues
-           | (_, assetId) <- bystanders
-           ]
-
-      setAsideEncounterCards <- genCards [Enemies.dianneDevine]
-
-      storyCards <-
-        genCards
-          [ Story.sickeningReality_65
-          , Story.sickeningReality_66
-          , Story.sickeningReality_67
-          , Story.sickeningReality_68
-          , Story.sickeningReality_69
-          ]
-      agendas <- genCards [Agendas.fashionablyLate, Agendas.theTerrifyingTruth]
-      acts <- genCards [Acts.discoveringTheTruth]
-
-      TheLastKing
-        <$> runMessage
-          msg
-          ( attrs
-              & (setAsideCardsL <>~ setAsideEncounterCards)
-              & (cardsUnderScenarioReferenceL .~ storyCards)
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
-          )
+      placeUnderScenarioReference
+        [ Story.sickeningReality_65
+        , Story.sickeningReality_66
+        , Story.sickeningReality_67
+        , Story.sickeningReality_68
+        , Story.sickeningReality_69
+        ]
+      setAgendaDeck [Agendas.fashionablyLate, Agendas.theTerrifyingTruth]
+      setActDeck [Acts.discoveringTheTruth]
     ResolveChaosToken _ token iid | token `elem` [Skull, Cultist, Tablet] -> do
       case token of
-        Skull -> push $ DrawAnotherChaosToken iid
+        Skull -> drawAnotherChaosToken iid
         Cultist | isHardExpert attrs -> do
           clueCount <- field InvestigatorClues iid
-          when
-            (clueCount > 0)
-            (push $ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Cultist) 1)
-        Tablet | isHardExpert attrs -> do
-          push $ InvestigatorAssignDamage iid (ChaosTokenEffectSource token) DamageAny 0 1
+          when (clueCount > 0) do
+            push $ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Cultist) 1
+        Tablet | isHardExpert attrs -> assignHorror iid token 1
         _ -> pure ()
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of
         Skull -> do
-          targets <-
-            selectMap EnemyTarget
+          ts <-
+            selectTargets
               $ if isEasyStandard attrs
                 then EnemyWithTrait Trait.Lunatic
                 else EnemyWithMostRemainingHealth $ EnemyWithTrait Trait.Lunatic
-          player <- getPlayer iid
-          when (notNull targets) $ do
-            push
-              $ chooseOrRunOne
-                player
-                [targetLabel target [PlaceTokens (ChaosTokenEffectSource Skull) target Doom 1] | target <- targets]
+          when (notNull ts) $ do
+            chooseOrRunOne
+              iid
+              [targetLabel target [PlaceTokens (ChaosTokenEffectSource Skull) target Doom 1] | target <- ts]
         Cultist | isEasyStandard attrs -> do
           clueCount <- field InvestigatorClues iid
           when
             (clueCount > 0)
             (push $ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Cultist) 1)
-        Tablet | isEasyStandard attrs -> do
-          push $ InvestigatorAssignDamage iid (ChaosTokenSource token) DamageAny 0 1
-        ElderThing | isHardExpert attrs -> do
-          push $ InvestigatorAssignDamage iid (ChaosTokenSource token) DamageAny 1 0
+        Tablet | isEasyStandard attrs -> assignHorror iid (ChaosTokenSource token) 1
+        ElderThing | isHardExpert attrs -> assignDamage iid (ChaosTokenSource token) 1
         _ -> pure ()
       pure s
     ScenarioResolution NoResolution -> do
       anyResigned <- notNull <$> select ResignedInvestigator
-      s <$ push (ScenarioResolution $ Resolution $ if anyResigned then 1 else 2)
+      push $ if anyResigned then R1 else R2
+      pure s
     ScenarioResolution (Resolution n) -> do
+      story $ case n of
+        1 -> resolution1
+        2 -> resolution2
+        3 -> resolution3
+        _ -> error "Invalid resolution"
+
+      let interviewed = mapMaybe interviewedToCardCode (setToList attrs.log)
+      when (notNull interviewed) $ recordSetInsert VIPsInterviewed interviewed
+      when (n == 3) $ crossOutRecordSetEntries VIPsInterviewed interviewed
+
+      vipsSlain <- selectMap toCardCode $ VictoryDisplayCardMatch $ CardWithTrait Trait.Lunatic
+      when (notNull vipsSlain) $ recordSetInsert VIPsSlain vipsSlain
+
       -- Resolution handles XP in a special way, we must divvy up between investigators
       -- evenly and apply, this will have a weird interaction with Hospital Debts so we
       -- want to handle `getXp` in two phases. The first phase will essentially evenly
       -- add XP modifiers to the players in order to have `getXp` resolve "normally"
-      investigatorIds <- allInvestigatorIds
-      investigatorIdsWithNames <-
-        forToSnd
-          investigatorIds
-          (field InvestigatorName)
-      lead <- getLeadPlayer
       clueCounts <- traverse (field ActClues) =<< select AnyAct
-      vipsSlain <-
-        selectMap toCardCode
-          $ VictoryDisplayCardMatch
-          $ CardWithTrait
-            Trait.Lunatic
+      investigators <- allInvestigatorIds
       let
-        interviewed =
-          mapMaybe interviewedToCardCode (setToList $ scenarioLog attrs)
         extraXp = ceiling @Double (fromIntegral (sum clueCounts) / 2)
-        (assignedXp, remainingXp) = quotRem extraXp (length investigatorIds)
-        assignXp amount iid =
-          CreateWindowModifierEffect
-            EffectGameWindow
-            (EffectModifiers $ toModifiers (toSource attrs) [XPModifier amount])
-            (toSource attrs)
-            (InvestigatorTarget iid)
-      pushAll
-        $ [assignXp assignedXp iid | iid <- investigatorIds]
-        <> [ chooseN
-              lead
-              remainingXp
-              [ Label ("Choose " <> display name <> " to gain 1 additional XP") [assignXp 1 iid]
-              | (iid, name) <- investigatorIdsWithNames
-              ]
-           ]
-        <> [recordSetInsert VIPsInterviewed interviewed | notNull interviewed]
-        <> [recordSetInsert VIPsSlain vipsSlain | notNull vipsSlain]
-        <> ( if n == 2 || n == 3
-              then
-                [ RemoveAllChaosTokens Cultist
-                , RemoveAllChaosTokens Tablet
-                , RemoveAllChaosTokens ElderThing
-                , AddChaosToken Cultist
-                , AddChaosToken Tablet
-                , AddChaosToken ElderThing
-                ]
-              else []
-           )
-        <> [crossOutRecordSetEntries VIPsInterviewed interviewed | n == 3]
-        <> [ScenarioResolutionStep 1 (Resolution n)]
+        (assignedXp, remainingXp) = quotRem extraXp (length investigators)
+        assignXp amount iid = resolutionModifier attrs iid (XPModifier amount)
+      eachInvestigator (assignXp assignedXp)
+
+      lead <- getLead
+      chooseNM lead remainingXp do
+        for_ investigators \iid -> do
+          name <- field InvestigatorName iid
+          labeled ("Choose " <> display name <> " to gain 1 additional XP") $ lift $ assignXp 1 iid
+
+      -- Assign XP now that the modifiers exist
+      doStep 1 msg
+
+      when (n == 2 || n == 3) do
+        removeAllChaosTokens Cultist
+        removeAllChaosTokens Tablet
+        removeAllChaosTokens ElderThing
+        addChaosToken Cultist
+        addChaosToken Tablet
+        addChaosToken ElderThing
+      if n == 1 then endOfScenarioThen $ InterludeStep 1 Nothing else endOfScenario
       pure s
-    ScenarioResolutionStep 1 (Resolution n) -> do
-      players <- allPlayers
-      gainXp <- toGainXp attrs getXp
-      case n of
-        1 ->
-          pushAll
-            $ [story players resolution1]
-            <> gainXp
-            <> [EndOfGame (Just $ InterludeStep 1 Nothing)]
-        2 ->
-          pushAll
-            $ [story players resolution2]
-            <> gainXp
-            <> [EndOfGame Nothing]
-        3 ->
-          pushAll
-            $ [story players resolution3]
-            <> gainXp
-            <> [EndOfGame Nothing]
-        _ -> error "Invalid resolution"
+    DoStep 1 (ScenarioResolution _) -> do
+      allGainXp attrs
       pure s
-    _ -> TheLastKing <$> runMessage msg attrs
+    _ -> TheLastKing <$> liftRunMessage msg attrs

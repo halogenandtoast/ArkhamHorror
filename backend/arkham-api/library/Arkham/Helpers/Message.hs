@@ -572,3 +572,11 @@ handleSkillTestNesting sid msg a action = do
 
 handleSkillTestNesting_ :: HasQueue Message m => SkillTestId -> Message -> m () -> m ()
 handleSkillTestNesting_ sid msg action = handleSkillTestNesting sid msg () action
+
+createAssetAt :: MonadRandom m => Card -> Placement -> m (AssetId, Message)
+createAssetAt c placement = do
+  assetId <- getRandom
+  pure (assetId, CreateAssetAt assetId c placement)
+
+createAssetAt_ :: MonadRandom m => Card -> Placement -> m Message
+createAssetAt_ c placement = snd <$> createAssetAt c placement

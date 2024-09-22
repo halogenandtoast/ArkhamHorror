@@ -1,37 +1,33 @@
-module Arkham.Scenario.Scenarios.EchoesOfThePast (
-  EchoesOfThePast (..),
-  echoesOfThePast,
-) where
-
-import Arkham.Prelude hiding (replicate)
+module Arkham.Scenario.Scenarios.EchoesOfThePast (EchoesOfThePast (..), echoesOfThePast) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
-import Arkham.ChaosToken
 import Arkham.Classes hiding (matches)
-import Arkham.Difficulty
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Helpers
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher
-import Arkham.Message
+import Arkham.Matcher hiding (enemyAt)
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Helpers hiding (
+  addCampaignCardToDeckChoice,
+  forceAddCampaignCardToDeckChoice,
+  recordSetInsert,
+  roundModifier,
+ )
+import Arkham.Scenario.Import.Lifted hiding (replicate)
 import Arkham.Scenarios.EchoesOfThePast.Story
 import Arkham.Token
 import Arkham.Trait (Trait (SecondFloor, ThirdFloor))
-import Arkham.Treachery.Cards qualified as Cards
-import Data.List (replicate)
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype EchoesOfThePast = EchoesOfThePast ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -60,25 +56,15 @@ instance HasChaosTokenValue EchoesOfThePast where
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-gatherTheMidnightMasks :: CardGen m => m [EncounterCard]
-gatherTheMidnightMasks =
-  traverse
-    genEncounterCard
-    [ Cards.falseLead
-    , Cards.falseLead
-    , Cards.huntingShadow
-    , Cards.huntingShadow
-    , Cards.huntingShadow
-    ]
-
-placeAndLabelLocations :: MonadRandom m => Text -> [Card] -> m [(LocationId, [Message])]
+placeAndLabelLocations :: ReverseQueue m => Text -> [CardDef] -> ScenarioBuilderT m [LocationId]
 placeAndLabelLocations prefix locations =
   for (withIndex1 locations) $ \(idx, location) -> do
-    (locationId, placement) <- placeLocation location
-    pure
-      $ ( locationId
-        , [placement, SetLocationLabel locationId (prefix <> tshow idx)]
-        )
+    l <- place location
+    push $ SetLocationLabel l (prefix <> tshow idx)
+    pure l
+
+placeAndLabelLocations_ :: ReverseQueue m => Text -> [CardDef] -> ScenarioBuilderT m ()
+placeAndLabelLocations_ prefix locations = void $ placeAndLabelLocations prefix locations
 
 standaloneChaosTokens :: [ChaosTokenFace]
 standaloneChaosTokens =
@@ -100,278 +86,146 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage EchoesOfThePast where
-  runMessage msg s@(EchoesOfThePast attrs) = case msg of
+  runMessage msg s@(EchoesOfThePast attrs) = runQueueT $ case msg of
+    PreScenarioSetup -> do
+      story intro
+      whenInterviewed Assets.sebastienMoreau $ story sebastiensInformation
+      pure s
     StandaloneSetup -> do
       randomToken <- sample (Cultist :| [Tablet, ElderThing])
-      push (SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken])
+      setChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
       pure s
-    Setup -> do
-      investigatorIds <- allInvestigatorIds
-      players <- allPlayers
-
-      -- generate without seekerOfCarcosa as we add based on player count
-      partialEncounterDeck <-
-        buildEncounterDeckExcluding
-          [ Enemies.possessedOathspeaker
-          , Enemies.seekerOfCarcosa
-          , Assets.mrPeabody
-          ]
-          [ EncounterSet.EchoesOfThePast
-          , EncounterSet.CultOfTheYellowSign
-          , EncounterSet.Delusions
-          , EncounterSet.LockedDoors
-          , EncounterSet.DarkCult
-          ]
-      midnightMasks <- gatherTheMidnightMasks
-      (seekersToSpawn, seekersToShuffle) <-
-        splitAt (length investigatorIds - 1)
-          <$> traverse genEncounterCard (replicate 3 Enemies.seekerOfCarcosa)
-      encounterDeck <-
-        Deck
-          <$> shuffleM
-            (unDeck partialEncounterDeck <> midnightMasks <> seekersToShuffle)
+    Setup -> runScenarioSetup EchoesOfThePast attrs do
+      gather Set.EchoesOfThePast
+      gather Set.CultOfTheYellowSign
+      gather Set.Delusions
+      gather Set.LockedDoors
+      gather Set.DarkCult
+      gatherJust Set.TheMidnightMasks [Treacheries.falseLead, Treacheries.huntingShadow]
 
       groundFloor <-
-        genCards
-          . drop 1
-          =<< shuffleM
-            [ Locations.historicalSocietyMeetingRoom
-            , Locations.historicalSocietyRecordOffice_129
-            , Locations.historicalSocietyHistoricalMuseum_130
-            ]
+        sampleN 2
+          $ Locations.historicalSocietyMeetingRoom
+          :| [ Locations.historicalSocietyRecordOffice_129
+             , Locations.historicalSocietyHistoricalMuseum_130
+             ]
 
       secondFloor <-
-        genCards
-          . drop 1
-          =<< shuffleM
-            [ Locations.historicalSocietyHistoricalMuseum_132
-            , Locations.historicalSocietyHistoricalLibrary_133
-            , Locations.historicalSocietyReadingRoom
-            ]
+        sampleN 2
+          $ Locations.historicalSocietyHistoricalMuseum_132
+          :| [ Locations.historicalSocietyHistoricalLibrary_133
+             , Locations.historicalSocietyReadingRoom
+             ]
 
       thirdFloor <-
-        genCards
-          . drop 1
-          =<< shuffleM
-            [ Locations.historicalSocietyHistoricalLibrary_136
-            , Locations.historicalSocietyPeabodysOffice
-            , Locations.historicalSocietyRecordOffice_138
-            ]
+        sampleN 2
+          $ Locations.historicalSocietyHistoricalLibrary_136
+          :| [ Locations.historicalSocietyPeabodysOffice
+             , Locations.historicalSocietyRecordOffice_138
+             ]
 
-      (entryHallId, placeEntryHall) <- placeLocationCard Locations.entryHall
-      (quietHalls1Id, placeQuietHalls1) <- placeLocationCard Locations.quietHalls_131
-      (quietHalls2Id, placeQuietHalls2) <- placeLocationCard Locations.quietHalls_135
+      entryHall <- place Locations.entryHall
+      startAt entryHall
+      placeLabeled_ "quietHalls1" Locations.quietHalls_131
+      placeLabeled_ "quietHalls2" Locations.quietHalls_135
 
-      groundFloorPlacements <-
-        shuffleM =<< placeAndLabelLocations "groundFloor" groundFloor
-      secondFloorPlacements <-
-        shuffleM =<< placeAndLabelLocations "secondFloor" secondFloor
-      thirdFloorPlacements <-
-        shuffleM =<< placeAndLabelLocations "thirdFloor" thirdFloor
+      placeAndLabelLocations_ "groundFloor" groundFloor
+      secondFloorPlacements <- shuffleM =<< placeAndLabelLocations "secondFloor" secondFloor
+      thirdFloorPlacements <- shuffleM =<< placeAndLabelLocations "thirdFloor" thirdFloor
 
-      spawnMessages <- case length seekersToSpawn of
-        n | n == 3 -> for seekersToSpawn $ \seeker ->
-          -- with 3 we can spawn at either 2nd or 3rd floor so we use
-          -- location matching
-          createEnemyAtLocationMatching_
-            (EncounterCard seeker)
-            ( EmptyLocation
-                <> LocationMatchAny
-                  [LocationWithTrait SecondFloor, LocationWithTrait ThirdFloor]
-            )
-        _ ->
-          for (zip thirdFloorPlacements seekersToSpawn)
-            $ \((locationId, _), card) ->
-              createEnemyAt_ (EncounterCard card) locationId Nothing
+      whenInterviewed Assets.sebastienMoreau $ placeTokens attrs entryHall Clue 1
 
-      sebastienInterviewed <-
-        elem (recorded $ toCardCode Assets.sebastienMoreau)
-          <$> getRecordSet VIPsInterviewed
+      getPlayerCount >>= \case
+        1 -> pure ()
+        2 ->
+          enemyAtMatching Enemies.seekerOfCarcosa
+            $ EmptyLocation
+            <> LocationWithTrait ThirdFloor
+            <> mapOneOf LocationWithId thirdFloorPlacements
+        3 -> for_ thirdFloorPlacements $ enemyAt Enemies.seekerOfCarcosa
+        4 ->
+          replicateM_ 3
+            $ enemyAtMatching Enemies.seekerOfCarcosa
+            $ EmptyLocation
+            <> oneOf [LocationWithTrait SecondFloor, LocationWithTrait ThirdFloor]
+            <> mapOneOf LocationWithId (secondFloorPlacements <> thirdFloorPlacements)
+        _ -> error "Invalid player count"
 
-      fledTheDinnerParty <- getHasRecord YouFledTheDinnerParty
+      whenHasRecord YouFledTheDinnerParty do
+        eachInvestigator $ \iid -> do
+          roundModifier attrs iid $ AdditionalActions "Fleeing the dinner party" (toSource attrs) 1
 
-      pushAll
-        $ [story players intro]
-        <> [ story players sebastiensInformation
-           | sebastienInterviewed
-           ]
-        <> [ SetEncounterDeck encounterDeck
-           , SetAgendaDeck
-           , SetActDeck
-           , placeEntryHall
-           ]
-        <> [ PlaceTokens (toSource attrs) (LocationTarget entryHallId) Clue 1
-           | sebastienInterviewed
-           ]
-        <> [ placeQuietHalls1
-           , SetLocationLabel quietHalls1Id "quietHalls1"
-           , placeQuietHalls2
-           , SetLocationLabel quietHalls2Id "quietHalls2"
-           ]
-        <> concatMap snd groundFloorPlacements
-        <> concatMap snd secondFloorPlacements
-        <> concatMap snd thirdFloorPlacements
-        <> spawnMessages
-        <> [MoveAllTo (toSource attrs) entryHallId]
-        <> ( if fledTheDinnerParty
-              then
-                [ CreateWindowModifierEffect
-                  EffectRoundWindow
-                  ( EffectModifiers
-                      $ toModifiers attrs [AdditionalActions "Fleeing the dinner party" (toSource attrs) 1]
-                  )
-                  (toSource attrs)
-                  (InvestigatorTarget iid)
-                | iid <- investigatorIds
-                ]
-              else []
-           )
-
-      setAsideCards <-
-        genCards
-          [ Locations.hiddenLibrary
-          , Enemies.possessedOathspeaker
-          , Assets.mrPeabody
-          , Assets.theTatteredCloak
-          , Assets.claspOfBlackOnyx
-          ]
-      agendas <-
-        genCards
-          [ Agendas.theTruthIsHidden
-          , Agendas.ransackingTheManor
-          , Agendas.secretsBetterLeftHidden
-          ]
-      acts <-
-        genCards
-          [Acts.raceForAnswers, Acts.mistakesOfThePast, Acts.theOath]
-
-      EchoesOfThePast
-        <$> runMessage
-          msg
-          ( attrs
-              & (setAsideCardsL <>~ setAsideCards)
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
-          )
+      setAside
+        [ Locations.hiddenLibrary
+        , Enemies.possessedOathspeaker
+        , Assets.mrPeabody
+        , Assets.theTatteredCloak
+        , Assets.claspOfBlackOnyx
+        ]
+      setAgendaDeck
+        [Agendas.theTruthIsHidden, Agendas.ransackingTheManor, Agendas.secretsBetterLeftHidden]
+      setActDeck [Acts.raceForAnswers, Acts.mistakesOfThePast, Acts.theOath]
     ResolveChaosToken _ token iid | isHardExpert attrs -> do
       case token of
         Cultist -> do
-          matches <- selectMap EnemyTarget (NearestEnemyTo iid AnyEnemy)
-          player <- getPlayer iid
-          push
-            $ chooseOne
-              player
-              [ targetLabel target [PlaceTokens (ChaosTokenEffectSource Cultist) target Doom 1] | target <- matches
-              ]
-        Tablet ->
-          push $ toMessage $ randomDiscard iid (ChaosTokenEffectSource Tablet)
-        ElderThing -> do
-          triggers <- notNull <$> select (EnemyAt YourLocation)
-          when triggers $ do
-            push $ InvestigatorAssignDamage iid (ChaosTokenEffectSource token) DamageAny 0 1
+          es <- select $ NearestEnemyTo iid AnyEnemy
+          chooseTargetM iid es \target -> placeDoom Cultist target 1
+        Tablet -> randomDiscard iid Tablet
+        ElderThing -> whenAny (EnemyAt YourLocation) $ assignHorror iid ElderThing 1
         _ -> pure ()
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ | isEasyStandard attrs -> do
       case chaosTokenFace token of
         Cultist -> do
-          matches <- selectMap EnemyTarget (NearestEnemyTo iid AnyEnemy)
-          player <- getPlayer iid
-          push
-            $ chooseOne
-              player
-              [ targetLabel target [PlaceTokens (ChaosTokenEffectSource Cultist) target Doom 1] | target <- matches
-              ]
-        Tablet ->
-          push $ toMessage $ randomDiscard iid (ChaosTokenEffectSource Tablet)
-        ElderThing -> do
-          triggers <- notNull <$> select (EnemyAt YourLocation)
-          when triggers $ do
-            push $ InvestigatorAssignDamage iid (ChaosTokenEffectSource $ chaosTokenFace token) DamageAny 0 1
+          es <- select $ NearestEnemyTo iid AnyEnemy
+          chooseTargetM iid es \target -> placeDoom Cultist target 1
+        Tablet -> randomDiscard iid Tablet
+        ElderThing -> whenAny (EnemyAt YourLocation) $ assignHorror iid ElderThing 1
         _ -> pure ()
       pure s
     ScenarioResolution NoResolution -> do
-      players <- allPlayers
-      pushAll [story players noResolution, R4]
+      story noResolution
+      push R4
       pure s
     ScenarioResolution (Resolution n) -> do
-      lead <- getLeadPlayer
-      investigatorIds <- allInvestigatorIds
-      players <- allPlayers
-      gainXp <- toGainXp attrs $ getXpWithBonus (if n == 4 then 1 else 0)
-      sebastienSlain <-
-        selectOne
-          (VictoryDisplayCardMatch $ cardIs Enemies.sebastienMoreau)
-      conviction <- getRecordCount Conviction
-      doubt <- getRecordCount Doubt
-
-      let
-        updateSlain =
-          [ recordSetInsert VIPsSlain [toCardCode sebastien]
-          | sebastien <- maybeToList sebastienSlain
-          ]
-        removeTokens =
-          [ RemoveAllChaosTokens Cultist
-          , RemoveAllChaosTokens Tablet
-          , RemoveAllChaosTokens ElderThing
-          ]
+      investigators <- allInvestigators
 
       case n of
-        1 ->
-          pushAll
-            $ [ story players resolution1
-              , Record YouTookTheOnyxClasp
-              , RecordCount Conviction (conviction + 1)
-              , chooseOne
-                  lead
-                  [ TargetLabel
-                    (InvestigatorTarget iid)
-                    [AddCampaignCardToDeck iid Assets.claspOfBlackOnyx]
-                  | iid <- investigatorIds
-                  ]
-              ]
-            <> gainXp
-            <> updateSlain
-            <> removeTokens
-            <> [AddChaosToken Cultist, AddChaosToken Cultist]
-            <> [EndOfGame Nothing]
-        2 ->
-          pushAll
-            $ [ story players resolution2
-              , Record YouLeftTheOnyxClaspBehind
-              , RecordCount Doubt (doubt + 1)
-              ]
-            <> gainXp
-            <> updateSlain
-            <> removeTokens
-            <> [AddChaosToken Tablet, AddChaosToken Tablet]
-            <> [EndOfGame Nothing]
-        3 ->
-          pushAll
-            $ [ story players resolution3
-              , Record YouDestroyedTheOathspeaker
-              , chooseOne
-                  lead
-                  [ TargetLabel
-                    (InvestigatorTarget iid)
-                    [AddCampaignCardToDeck iid Assets.theTatteredCloak]
-                  | iid <- investigatorIds
-                  ]
-              ]
-            <> gainXp
-            <> updateSlain
-            <> removeTokens
-            <> [AddChaosToken Tablet, AddChaosToken Tablet]
-            <> [EndOfGame Nothing]
-        4 ->
-          pushAll
-            $ [ story players resolution4
-              , Record TheFollowersOfTheSignHaveFoundTheWayForward
-              ]
-            <> gainXp
-            <> updateSlain
-            <> removeTokens
-            <> [AddChaosToken ElderThing, AddChaosToken ElderThing]
-            <> [EndOfGame Nothing]
+        1 -> do
+          story resolution1
+          record YouTookTheOnyxClasp
+          markConviction
+          forceAddCampaignCardToDeckChoice investigators Assets.claspOfBlackOnyx
+        2 -> do
+          story resolution2
+          record YouLeftTheOnyxClaspBehind
+          markDoubt
+          allGainXpWithBonus attrs $ if n == 4 then 1 else 0
+        3 -> do
+          story resolution3
+          record YouDestroyedTheOathspeaker
+          addCampaignCardToDeckChoice investigators Assets.theTatteredCloak
+          allGainXpWithBonus attrs $ if n == 4 then 1 else 0
+        4 -> do
+          story resolution4
+          record TheFollowersOfTheSignHaveFoundTheWayForward
+          allGainXpWithBonus attrs $ if n == 4 then 1 else 0
         _ -> error "Invalid resolution"
+
+      allGainXpWithBonus attrs $ if n == 4 then 1 else 0
+      sebastienSlain <- selectOne (VictoryDisplayCardMatch $ cardIs Enemies.sebastienMoreau)
+      for_ sebastienSlain $ \sebastien ->
+        recordSetInsert VIPsSlain [toCardCode sebastien]
+
+      removeAllChaosTokens Cultist
+      removeAllChaosTokens Tablet
+      removeAllChaosTokens ElderThing
+      replicateM_ 2 $ addChaosToken $ case n of
+        1 -> Cultist
+        2 -> Tablet
+        3 -> Tablet
+        4 -> ElderThing
+        _ -> error "Invalid resolution"
+      endOfScenario
       pure s
-    _ -> EchoesOfThePast <$> runMessage msg attrs
+    _ -> EchoesOfThePast <$> liftRunMessage msg attrs

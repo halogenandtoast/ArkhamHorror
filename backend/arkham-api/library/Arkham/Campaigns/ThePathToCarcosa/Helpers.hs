@@ -1,13 +1,13 @@
 module Arkham.Campaigns.ThePathToCarcosa.Helpers where
 
-import Arkham.Prelude
-
 import Arkham.CampaignLogKey
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Log
-import Arkham.Message
+import Arkham.Message.Lifted (recordCount)
+import Arkham.Message.Lifted.Queue
+import Arkham.Prelude
 
 getConviction :: HasGame m => m Int
 getConviction = getRecordCount Conviction
@@ -18,19 +18,22 @@ getDoubt = getRecordCount Doubt
 getMoreConvictionThanDoubt :: HasGame m => m Bool
 getMoreConvictionThanDoubt = liftA2 (>) getConviction getDoubt
 
-markConviction :: HasGame m => m Message
+markConviction :: ReverseQueue m => m ()
 markConviction = do
   n <- getConviction
-  pure $ RecordCount Conviction (n + 1)
+  recordCount Conviction (n + 1)
 
-markDoubt :: HasGame m => m Message
+markDoubt :: ReverseQueue m => m ()
 markDoubt = do
   n <- getDoubt
-  pure $ RecordCount Doubt (n + 1)
+  recordCount Doubt (n + 1)
 
 interviewed :: HasGame m => CardDef -> m Bool
 interviewed assetDef =
   elem (recorded $ toCardCode assetDef) <$> getRecordSet VIPsInterviewed
+
+whenInterviewed :: HasGame m => CardDef -> m () -> m ()
+whenInterviewed assetDef = whenM (interviewed assetDef)
 
 slain :: (HasGame m, HasCardCode cardCode) => cardCode -> m Bool
 slain (toCardCode -> cardCode) =

@@ -75,7 +75,7 @@ allCultists =
 instance RunMessage TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs) = runQueueT $ case msg of
     StandaloneSetup -> do
-      push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
+      setChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
       pure s
     PreScenarioSetup -> do
       forcedToFindOthers <- getHasRecord LitaWasForcedToFindOthersToHelpHerCause

@@ -32,6 +32,11 @@ instance SampleOneOf (a, a) where
   sampleOneOf (a, b) = sample2 a b
   sampledFrom (a, b) = [a, b]
 
+instance SampleOneOf (a, a, a) where
+  type Sampled (a, a, a) = a
+  sampleOneOf (a, b, c) = sample (a :| [b, c])
+  sampledFrom (a, b, c) = [a, b, c]
+
 instance SampleOneOf (NonEmpty a) where
   type Sampled (NonEmpty a) = a
   sampleOneOf = sample
@@ -92,8 +97,18 @@ gatherOneOf = sampleOneOf >=> gather
 
 setAside :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
 setAside defs = do
-  setAsideCards defs
+  cards <- genCards defs
+  setAsideCardsL %= (<> cards)
   encounterDeckL %= flip removeEachFromDeck defs
+
+fromSetAside :: (HasCallStack, ReverseQueue m) => CardDef -> ScenarioBuilderT m Card
+fromSetAside def = do
+  cards <- use setAsideCardsL
+  case find ((== def) . toCardDef) cards of
+    Just card -> do
+      setAsideCardsL %= filter (/= card)
+      pure card
+    Nothing -> error $ "Card " <> show def <> " not found in set aside cards"
 
 place :: ReverseQueue m => CardDef -> ScenarioBuilderT m LocationId
 place def = do
@@ -144,6 +159,16 @@ enemyAt def lid = do
   encounterDeckL %= flip removeEachFromDeck [def]
   card <- genCard def
   createEnemyAt_ card lid
+
+sampleEncounterDeck :: (HasCallStack, MonadRandom m) => Int -> ScenarioBuilderT m [EncounterCard]
+sampleEncounterDeck n = do
+  deck <- use encounterDeckL
+  case nonEmpty (unDeck deck) of
+    Nothing -> error "expected the encounter deck not to be empty"
+    Just ne -> do
+      cards <- sampleN n ne
+      encounterDeckL %= withDeck (filter (`notElem` cards))
+      pure cards
 
 addExtraDeck :: (ReverseQueue m, IsCard card) => ScenarioDeckKey -> [card] -> ScenarioBuilderT m ()
 addExtraDeck k cards = do

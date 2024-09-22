@@ -1,35 +1,23 @@
-module Arkham.Scenario.Scenarios.LostInTimeAndSpace (
-  LostInTimeAndSpace (..),
-  lostInTimeAndSpace,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.LostInTimeAndSpace (LostInTimeAndSpace (..), lostInTimeAndSpace) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence qualified as AS
 import Arkham.Act.Types (Field (..))
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
-import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Game.Helpers
+import Arkham.Game.Helpers hiding (defeated)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message
-import Arkham.Movement
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.LostInTimeAndSpace.FlavorText
 import Arkham.Trait hiding (Cultist)
 
@@ -63,18 +51,13 @@ instance HasChaosTokenValue LostInTimeAndSpace where
     Skull -> do
       extradimensionalCount <- selectCount $ LocationWithTrait Extradimensional
       pure
-        $ ChaosTokenValue
-          Skull
-          ( NegativeModifier
-              $ if isEasyStandard attrs
-                then min extradimensionalCount 5
-                else extradimensionalCount
-          )
+        $ ChaosTokenValue Skull
+        $ NegativeModifier
+        $ if isEasyStandard attrs then min extradimensionalCount 5 else extradimensionalCount
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
     Tablet -> pure $ toChaosTokenValue attrs Tablet 3 5
     ElderThing -> do
-      mlid <- field InvestigatorLocation iid
-      shroud <- maybe (pure 0) (fieldJust LocationShroud) mlid
+      shroud <- maybe (pure 0) (fieldWithDefault 0 LocationShroud) =<< field InvestigatorLocation iid
       pure $ toChaosTokenValue attrs ElderThing shroud (shroud * 2)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
@@ -101,164 +84,98 @@ standaloneChaosTokens =
   , ElderSign
   ]
 
-readInvestigatorDefeat :: HasGame m => ScenarioAttrs -> m [Message]
+readInvestigatorDefeat :: ReverseQueue m => ScenarioAttrs -> m ()
 readInvestigatorDefeat a = do
-  defeatedInvestigatorIds <- select DefeatedInvestigator
-  if null defeatedInvestigatorIds
-    then pure []
-    else do
-      defeatedPlayers <- traverse getPlayer defeatedInvestigatorIds
-      pure
-        $ [story defeatedPlayers investigatorDefeat]
-        <> [ InvestigatorKilled (toSource a) iid
-           | iid <- defeatedInvestigatorIds
-           ]
+  defeated <- select DefeatedInvestigator
+  unless (null defeated) do
+    storyOnly defeated investigatorDefeat
+    for_ defeated (kill a)
 
 instance RunMessage LostInTimeAndSpace where
-  runMessage msg s@(LostInTimeAndSpace attrs) = case msg of
-    StandaloneSetup -> do
-      push (SetChaosTokens standaloneChaosTokens)
+  runMessage msg s@(LostInTimeAndSpace attrs) = runQueueT $ case msg of
+    PreScenarioSetup -> do
+      story intro
       pure s
-    Setup -> do
-      players <- allPlayers
-      encounterDeck <-
-        buildEncounterDeckExcluding
-          [Enemies.yogSothoth]
-          [ EncounterSet.LostInTimeAndSpace
-          , EncounterSet.Sorcery
-          , EncounterSet.TheBeyond
-          , EncounterSet.HideousAbominations
-          , EncounterSet.AgentsOfYogSothoth
-          ]
+    StandaloneSetup -> do
+      setChaosTokens standaloneChaosTokens
+      pure s
+    Setup -> runScenarioSetup LostInTimeAndSpace attrs do
+      gather Set.LostInTimeAndSpace
+      gather Set.Sorcery
+      gather Set.TheBeyond
+      gather Set.HideousAbominations
+      gather Set.AgentsOfYogSothoth
 
-      (anotherDimensionId, placeAnotherDimension) <-
-        placeLocationCard
-          Locations.anotherDimension
+      startAt =<< place Locations.anotherDimension
 
-      pushAll
-        [ story players intro
-        , SetEncounterDeck encounterDeck
-        , SetAgendaDeck
-        , SetActDeck
-        , placeAnotherDimension
-        , RevealLocation Nothing anotherDimensionId
-        , MoveAllTo (toSource attrs) anotherDimensionId
+      setAside
+        [ Locations.theEdgeOfTheUniverse
+        , Locations.tearThroughTime
+        , Enemies.yogSothoth
         ]
-
-      setAsideCards <-
-        genCards
-          [ Locations.theEdgeOfTheUniverse
-          , Locations.tearThroughTime
-          , Enemies.yogSothoth
-          ]
-      acts <-
-        genCards
-          [ Acts.outOfThisWorld
-          , Acts.intoTheBeyond
-          , Acts.closeTheRift
-          , Acts.findingANewWay
-          ]
-      agendas <-
-        genCards
-          [ Agendas.allIsOne
-          , Agendas.pastPresentAndFuture
-          , Agendas.breakingThrough
-          , Agendas.theEndOfAllThings
-          ]
-
-      LostInTimeAndSpace
-        <$> runMessage
-          msg
-          ( attrs
-              & (setAsideCardsL <>~ setAsideCards)
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
-          )
+      setActDeck
+        [ Acts.outOfThisWorld
+        , Acts.intoTheBeyond
+        , Acts.closeTheRift
+        , Acts.findingANewWay
+        ]
+      setAgendaDeck
+        [ Agendas.allIsOne
+        , Agendas.pastPresentAndFuture
+        , Agendas.breakingThrough
+        , Agendas.theEndOfAllThings
+        ]
     After (PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _) -> do
       case (isHardExpert attrs, chaosTokenFace token) of
-        (True, Cultist) ->
-          push
-            ( DiscardUntilFirst
-                iid
-                (ChaosTokenEffectSource Cultist)
-                Deck.EncounterDeck
-                (BasicCardMatch $ CardWithType LocationType)
-            )
+        (True, Cultist) -> discardUntilFirst iid Cultist Deck.EncounterDeck (basic #location)
         (_, Tablet) -> do
           mYogSothothId <- selectOne (EnemyWithTitle "Yog-Sothoth")
-          for_ mYogSothothId $ \eid -> push (EnemyAttack $ enemyAttack eid attrs iid)
+          for_ mYogSothothId $ \eid -> initiateEnemyAttack eid attrs iid
         _ -> pure ()
       pure s
     After (FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) -> do
-      case chaosTokenFace token of
-        Cultist ->
-          push
-            $ DiscardUntilFirst
-              iid
-              (ChaosTokenEffectSource Cultist)
-              Deck.EncounterDeck
-              (BasicCardMatch $ CardWithType LocationType)
+      case token.face of
+        Cultist -> discardUntilFirst iid Cultist Deck.EncounterDeck (basic #location)
         Tablet -> do
           mYogSothothId <- selectOne (EnemyWithTitle "Yog-Sothoth")
-          for_ mYogSothothId $ \eid -> push (EnemyAttack $ enemyAttack eid attrs iid)
+          for_ mYogSothothId $ \eid -> initiateEnemyAttack eid attrs iid
         _ -> pure ()
       pure s
     ResolveChaosToken _ Cultist iid -> do
-      push $ DrawAnotherChaosToken iid
+      drawAnotherChaosToken iid
       pure s
-    RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just card) ->
-      do
-        (locationId, placement) <- placeLocation (EncounterCard card)
-        pushAll [placement, MoveTo $ move attrs iid locationId]
-        pure s
+    RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just card) -> do
+      moveTo attrs iid =<< placeLocation (EncounterCard card)
+      pure s
     ScenarioResolution NoResolution -> do
-      actId <- selectJust AnyAct
-      step <- fieldMap ActSequence (AS.unActStep . AS.actStep) actId
-      push (ScenarioResolution . Resolution $ if step == 4 then 2 else 4)
-      pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
+      step <- fieldMap ActSequence (AS.unActStep . AS.actStep) =<< selectJust AnyAct
+      push $ if step == 4 then R2 else R4
+      pure s
     ScenarioResolution (Resolution 1) -> do
-      msgs <- readInvestigatorDefeat attrs
-      investigatorIds <- allInvestigatorIds
-      players <- allPlayers
-      xp <- getXp
-      pushAll
-        $ msgs
-        <> [ story players resolution1
-           , Record TheInvestigatorsClosedTheTearInReality
-           ]
-        <> [SufferTrauma iid 2 2 | iid <- investigatorIds]
-        <> [GainXP iid (toSource attrs) (n + 5) | (iid, n) <- xp]
-        <> [EndOfGame Nothing]
-      pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
+      readInvestigatorDefeat attrs
+      story resolution1
+      record TheInvestigatorsClosedTheTearInReality
+      eachInvestigator \iid -> sufferTrauma iid 2 2
+      allGainXpWithBonus attrs 5
+      endOfScenario
+      pure s
     ScenarioResolution (Resolution 2) -> do
-      msgs <- readInvestigatorDefeat attrs
-      players <- allPlayers
-      pushAll $ msgs <> [story players resolution2, EndOfGame Nothing]
-
-      pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
+      readInvestigatorDefeat attrs
+      story resolution2
+      endOfScenario
+      pure s
     ScenarioResolution (Resolution 3) -> do
-      msgs <- readInvestigatorDefeat attrs
-      investigatorIds <- allInvestigatorIds
-      players <- allPlayers
-      pushAll
-        $ msgs
-        <> [ story players resolution3
-           , Record YogSothothHasFledToAnotherDimension
-           ]
-        <> [InvestigatorKilled (toSource attrs) iid | iid <- investigatorIds]
-        <> [EndOfGame Nothing]
-      pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
+      readInvestigatorDefeat attrs
+      story resolution3
+      record YogSothothHasFledToAnotherDimension
+      eachInvestigator (kill attrs)
+      endOfScenario
+      pure s
     ScenarioResolution (Resolution 4) -> do
-      msgs <- readInvestigatorDefeat attrs
-      investigatorIds <- allInvestigatorIds
-      players <- allPlayers
-      pushAll
-        $ msgs
-        <> [ story players resolution4
-           , Record
-              YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
-           ]
-        <> [DrivenInsane iid | iid <- investigatorIds]
-        <> [EndOfGame Nothing]
-      pure . LostInTimeAndSpace $ attrs & inResolutionL .~ True
-    _ -> LostInTimeAndSpace <$> runMessage msg attrs
+      readInvestigatorDefeat attrs
+      story resolution4
+      record YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
+      eachInvestigator drivenInsane
+      endOfScenario
+      pure s
+    _ -> LostInTimeAndSpace <$> liftRunMessage msg attrs

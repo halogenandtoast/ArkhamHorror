@@ -42,6 +42,9 @@ getIsStandalone = isNothing <$> selectOne TheCampaign
 whenStandalone :: HasGame m => m () -> m ()
 whenStandalone = whenM getIsStandalone
 
+unlessStandalone :: HasGame m => m () -> m ()
+unlessStandalone = unlessM getIsStandalone
+
 addRandomBasicWeaknessIfNeeded
   :: MonadRandom m => ClassSymbol -> Int -> Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
 addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck = do

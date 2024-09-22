@@ -1296,4 +1296,6 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
             ]
       [] -> pure ()
     pure a
+  ReportXp _ breakdown -> do
+    pure $ a & xpBreakdownL ?~ breakdown
   _ -> pure a

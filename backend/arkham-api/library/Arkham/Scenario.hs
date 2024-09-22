@@ -581,6 +581,7 @@ instance RunMessage Scenario where
       if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
         then pure x
         else go
+    ScenarioResolution _ -> overAttrs (\a -> a & inResolutionL .~ True) <$> go
     SetupInvestigators -> do
       result <- go
       let isTowerXVI = (== TheTowerXVI) . toTarotArcana

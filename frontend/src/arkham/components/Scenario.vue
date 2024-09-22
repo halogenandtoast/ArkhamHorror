@@ -350,7 +350,7 @@ const tarotCardAbility = (card: TarotCard) => {
             @choose="choose"
           />
         </div>
-        <button v-if="!forcedShowOutOfPlay" class="close" @click="showOutOfPlay = false">Close</button>
+        <button v-if="!forcedShowOutOfPlay" class="close button" @click="showOutOfPlay = false">Close</button>
       </Draggable>
       <Draggable v-if="showChaosBag">
         <template #handle><header><h2>Chaos Bag</h2></header></template>
@@ -1032,5 +1032,17 @@ margin: 20px !important;
   &:hover {
     z-index: 100;
   }
+}
+
+.button{
+  border: 0;
+  margin-top: 2px;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+  background-color: #555;
+  z-index: 1000;
+  width: 100%;
+  min-width: max-content;
 }
 </style>

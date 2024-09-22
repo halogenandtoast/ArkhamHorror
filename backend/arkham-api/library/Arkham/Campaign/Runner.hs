@@ -220,4 +220,6 @@ defaultCampaignRunner msg a = case msg of
   SetCampaignLog newLog -> do
     pushAll $ map HandleOption (toList $ campaignLogOptions newLog)
     pure $ updateAttrs a $ logL .~ newLog
+  ReportXp sid report -> do
+    pure $ updateAttrs a $ xpBreakdownL %~ insertMap sid report
   _ -> pure a

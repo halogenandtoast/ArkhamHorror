@@ -3,38 +3,30 @@ module Arkham.Scenario.Scenarios.TheEssexCountyExpress (
   theEssexCountyExpress,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
-import Arkham.Card
 import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Classes.HasGame
-import Arkham.Difficulty
 import Arkham.Direction
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.Card
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message
 import Arkham.Modifier
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheEssexCountyExpress.Story
 import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Xp
 
 newtype TheEssexCountyExpress = TheEssexCountyExpress ScenarioAttrs
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
 
@@ -79,204 +71,146 @@ standaloneChaosTokens =
   , ElderSign
   ]
 
-readInvestigatorDefeat :: HasGame m => m [Message]
+readInvestigatorDefeat :: ReverseQueue m => m ()
 readInvestigatorDefeat = do
-  defeatedInvestigatorIds <- select DefeatedInvestigator
-  mNecronomiconOwner <- getOwner Assets.theNecronomiconOlausWormiusTranslation
-  mDrHenryArmitageOwner <- getOwner Assets.drHenryArmitage
-  mProfessorWarrenRiceOwner <- getOwner Assets.professorWarrenRice
-  mDrFrancisMorganOwner <- getOwner Assets.drFrancisMorgan
-  if null defeatedInvestigatorIds
-    then pure []
-    else do
-      defeatedPlayers <- traverse getPlayer defeatedInvestigatorIds
-      pure
-        $ [story defeatedPlayers investigatorDefeat]
-        <> [Record TheNecronomiconWasStolen | isJust mNecronomiconOwner]
-        <> [RemoveCampaignCard Assets.theNecronomiconOlausWormiusTranslation]
-        <> [Record DrHenryArmitageWasKidnapped | isJust mDrHenryArmitageOwner]
-        <> [RemoveCampaignCard Assets.drHenryArmitage]
-        <> [ Record ProfessorWarrenRiceWasKidnapped
-           | isJust mProfessorWarrenRiceOwner
-           ]
-        <> [RemoveCampaignCard Assets.professorWarrenRice]
-        <> [Record DrFrancisMorganWasKidnapped | isJust mDrFrancisMorganOwner]
-        <> [RemoveCampaignCard Assets.drFrancisMorgan]
-        <> [ AddCampaignCardToDeck iid Treacheries.acrossSpaceAndTime
-           | iid <- defeatedInvestigatorIds
-           ]
+  defeated <- select DefeatedInvestigator
+  storyOnly defeated investigatorDefeat
+  withOwner Assets.theNecronomiconOlausWormiusTranslation \owner ->
+    when (owner `elem` defeated) do
+      record TheNecronomiconWasStolen
+      removeCampaignCard Assets.theNecronomiconOlausWormiusTranslation
+  withOwner Assets.drHenryArmitage \owner ->
+    when (owner `elem` defeated) do
+      record DrHenryArmitageWasKidnapped
+      removeCampaignCard Assets.drHenryArmitage
+  withOwner Assets.professorWarrenRice \owner ->
+    when (owner `elem` defeated) do
+      record ProfessorWarrenRiceWasKidnapped
+      removeCampaignCard Assets.professorWarrenRice
+  withOwner Assets.drFrancisMorgan \owner ->
+    when (owner `elem` defeated) do
+      record DrFrancisMorganWasKidnapped
+      removeCampaignCard Assets.drFrancisMorgan
+  for_ defeated \iid -> addCampaignCardToDeck iid Treacheries.acrossSpaceAndTime
 
 instance RunMessage TheEssexCountyExpress where
-  runMessage msg s@(TheEssexCountyExpress attrs@ScenarioAttrs {..}) =
-    case msg of
-      StandaloneSetup -> do
-        push $ SetChaosTokens standaloneChaosTokens
-        pure s
-      Setup -> do
-        players <- allPlayers
-
-        engineCar <-
-          sample
-            ( Locations.engineCar_175
-                :| [Locations.engineCar_176, Locations.engineCar_177]
-            )
-
-        trainCars <-
-          take 6
-            <$> shuffleM
-              [ Locations.passengerCar_167
-              , Locations.passengerCar_168
-              , Locations.passengerCar_169
-              , Locations.passengerCar_170
-              , Locations.passengerCar_171
-              , Locations.sleepingCar
-              , Locations.diningCar
-              , Locations.parlorCar
-              ]
-
-        encounterDeck <-
-          buildEncounterDeck
-            [ EncounterSet.TheEssexCountyExpress
-            , EncounterSet.TheBeyond
-            , EncounterSet.StrikingFear
-            , EncounterSet.AncientEvils
-            , EncounterSet.DarkCult
-            ]
-
-        (engineCarId, placeEngineCar) <- placeLocationCard engineCar
-        placeTrainCars <- for (zip [6, 5 ..] trainCars) $ \(idx, car) -> do
-          (locationId, placement) <- placeLocationCard car
-          pure
-            ( locationId
-            ,
-              [ placement
-              , SetLocationLabel locationId ("trainCar" <> tshow @Int idx)
-              ]
-            )
-
-        let
-          start = fst . fromJustNote "No train cars?" $ headMay placeTrainCars
-          end =
-            fst
-              . fromJustNote "No train cars?"
-              $ headMay
-                (reverse placeTrainCars)
-          allCars = map fst placeTrainCars <> [engineCarId]
-          token = case scenarioDifficulty of
-            Easy -> MinusTwo
-            Standard -> MinusThree
-            Hard -> MinusFour
-            Expert -> MinusFive
-
-        pushAll
-          $ [ story players intro
-            , AddChaosToken token
-            , SetEncounterDeck encounterDeck
-            , SetAgendaDeck
-            , SetActDeck
-            ]
-          <> concatMap snd placeTrainCars
-          <> [ PlacedLocationDirection l1 LeftOf l2
-             | (l1, l2) <- zip allCars (drop 1 allCars)
-             ]
-          <> [ placeEngineCar
-             , PlacedLocationDirection engineCarId RightOf end
-             , CreateWindowModifierEffect
-                EffectSetupWindow
-                (EffectModifiers [Modifier ScenarioSource Blank False])
-                ScenarioSource
-                (LocationTarget start)
-             , RevealLocation Nothing start
-             , MoveAllTo (toSource attrs) start
+  runMessage msg s@(TheEssexCountyExpress attrs) = runQueueT $ case msg of
+    PreScenarioSetup -> do
+      story intro
+      pure s
+    StandaloneSetup -> do
+      setChaosTokens standaloneChaosTokens
+      pure s
+    Setup -> runScenarioSetup TheEssexCountyExpress attrs do
+      trainCars <-
+        sampleN 6
+          $ Locations.passengerCar_167
+          :| [ Locations.passengerCar_168
+             , Locations.passengerCar_169
+             , Locations.passengerCar_170
+             , Locations.passengerCar_171
+             , Locations.sleepingCar
+             , Locations.diningCar
+             , Locations.parlorCar
              ]
 
-        setAsideCards <-
-          genCards
-            [ Treacheries.acrossSpaceAndTime
-            , Treacheries.acrossSpaceAndTime
-            , Treacheries.acrossSpaceAndTime
-            , Treacheries.acrossSpaceAndTime
-            ]
-        agendas <-
-          genCards
-            [ Agendas.aTearInReality
-            , Agendas.theMawWidens
-            , Agendas.rollingBackwards
-            , Agendas.drawnIn
-            , Agendas.outOfTime
-            ]
-        acts <- genCards [Acts.run, Acts.getTheEngineRunning]
+      gather Set.TheEssexCountyExpress
+      gather Set.TheBeyond
+      gather Set.StrikingFear
+      gather Set.AncientEvils
+      gather Set.DarkCult
 
-        TheEssexCountyExpress
-          <$> runMessage
-            msg
-            ( attrs
-                & (setAsideCardsL <>~ setAsideCards)
-                & (actStackL . at 1 ?~ acts)
-                & (agendaStackL . at 1 ?~ agendas)
-            )
-      ResolveChaosToken _ Tablet iid | isEasyStandard attrs -> do
-        closestCultists <-
-          select
-            $ NearestEnemyTo iid
-            $ EnemyWithTrait
-              Trait.Cultist
-        player <- getPlayer iid
-        s <$ case closestCultists of
-          [] -> pure ()
-          [x] -> push $ PlaceTokens (toSource attrs) (EnemyTarget x) Doom 1
-          xs ->
-            push
-              $ chooseOne
-                player
-                [targetLabel x [PlaceTokens (toSource attrs) (EnemyTarget x) Doom 1] | x <- xs]
-      ResolveChaosToken _ Tablet _ | isHardExpert attrs -> do
-        cultists <- select $ EnemyWithTrait Trait.Cultist
-        pushAll [PlaceTokens (toSource attrs) (EnemyTarget eid) Doom 1 | eid <- cultists]
-        pure s
-      FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
-        case chaosTokenFace token of
-          Cultist -> pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
-          ElderThing | isEasyStandard attrs -> do
-            push $ toMessage $ chooseAndDiscardCard iid (ChaosTokenEffectSource ElderThing)
-          ElderThing | isHardExpert attrs -> do
-            pushAll $ replicate n $ toMessage $ chooseAndDiscardCard iid $ ChaosTokenEffectSource ElderThing
-          _ -> pure ()
-        pure s
-      ScenarioResolution NoResolution ->
-        s <$ pushAll [ScenarioResolution $ Resolution 2]
-      ScenarioResolution (Resolution 1) -> do
-        msgs <- readInvestigatorDefeat
-        players <- allPlayers
-        defeatedInvestigatorIds <- select DefeatedInvestigator
-        xp <- getXp
-        pushAll
-          $ msgs
-          <> [story players resolution1]
-          <> [ GainXP
-              iid
-              (toSource attrs)
-              (n + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
-             | (iid, n) <- xp
+      engineCar <-
+        place =<< sampleOneOf (Locations.engineCar_175, Locations.engineCar_176, Locations.engineCar_177)
+
+      placedCars <- for (zip [6, 5 ..] trainCars) $ \(idx, trainCarCard) -> do
+        car <- place trainCarCard
+        push $ SetLocationLabel car ("trainCar" <> tshow @Int idx)
+        pure car
+
+      let
+        start = fromJustNote "No train cars?" $ headMay placedCars
+        end = fromJustNote "No train cars?" $ headMay (reverse placedCars)
+        allCars = placedCars <> [engineCar]
+        token = case attrs.difficulty of
+          Easy -> MinusTwo
+          Standard -> MinusThree
+          Hard -> MinusFour
+          Expert -> MinusFive
+
+      addChaosToken token
+      pushAll
+        [ PlacedLocationDirection l1 LeftOf l2
+        | (l1, l2) <- zip allCars (drop 1 allCars)
+        ]
+
+      push $ PlacedLocationDirection engineCar RightOf end
+      setupModifier ScenarioSource (LocationTarget start) Blank
+      startAt start
+
+      setAside
+        [ Treacheries.acrossSpaceAndTime
+        , Treacheries.acrossSpaceAndTime
+        , Treacheries.acrossSpaceAndTime
+        , Treacheries.acrossSpaceAndTime
+        ]
+      setAgendaDeck
+        [ Agendas.aTearInReality
+        , Agendas.theMawWidens
+        , Agendas.rollingBackwards
+        , Agendas.drawnIn
+        , Agendas.outOfTime
+        ]
+      setActDeck [Acts.run, Acts.getTheEngineRunning]
+    ResolveChaosToken _ Tablet iid | isEasyStandard attrs -> do
+      closestCultists <- select $ NearestEnemyTo iid $ EnemyWithTrait Trait.Cultist
+      case closestCultists of
+        [] -> pure ()
+        [x] -> push $ PlaceTokens (toSource attrs) (EnemyTarget x) Doom 1
+        xs ->
+          chooseOne
+            iid
+            [targetLabel x [PlaceTokens (toSource attrs) (EnemyTarget x) Doom 1] | x <- xs]
+      pure s
+    ResolveChaosToken _ Tablet _ | isHardExpert attrs -> do
+      cultists <- select $ EnemyWithTrait Trait.Cultist
+      pushAll [PlaceTokens (toSource attrs) (EnemyTarget eid) Doom 1 | eid <- cultists]
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
+      case chaosTokenFace token of
+        Cultist -> pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
+        ElderThing | isEasyStandard attrs -> do
+          chooseAndDiscardCard iid (ChaosTokenEffectSource ElderThing)
+        ElderThing | isHardExpert attrs -> do
+          replicateM_ n $ chooseAndDiscardCard iid $ ChaosTokenEffectSource ElderThing
+        _ -> pure ()
+      pure s
+    ScenarioResolution NoResolution -> do
+      push R2
+      pure s
+    ScenarioResolution (Resolution 1) -> do
+      readInvestigatorDefeat
+      story resolution1
+      defeatedInvestigatorIds <- select DefeatedInvestigator
+      allGainXpWith attrs \iid ->
+        guard (iid `elem` defeatedInvestigatorIds)
+          *> [ InvestigatorGainXp
+                iid
+                (XpDetail XpBonus "His or her experience beyond the gate grants them insight into the cosmos" 1)
              ]
-          <> [EndOfGame Nothing]
-        pure s
-      ScenarioResolution (Resolution 2) -> do
-        msgs <- readInvestigatorDefeat
-        players <- allPlayers
-        defeatedInvestigatorIds <- select DefeatedInvestigator
-        xp <- getXp
-        pushAll
-          $ msgs
-          <> [ story players resolution2
-             , Record TheInvestigatorsWereDelayedOnTheirWayToDunwich
+      endOfScenario
+      pure s
+    ScenarioResolution (Resolution 2) -> do
+      readInvestigatorDefeat
+      story resolution2
+      record TheInvestigatorsWereDelayedOnTheirWayToDunwich
+      defeatedInvestigatorIds <- select DefeatedInvestigator
+      allGainXpWith attrs \iid ->
+        guard (iid `elem` defeatedInvestigatorIds)
+          *> [ InvestigatorGainXp
+                iid
+                (XpDetail XpBonus "His or her experience beyond the gate grants them insight into the cosmos" 1)
              ]
-          <> [ GainXP
-              iid
-              (toSource attrs)
-              (n + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
-             | (iid, n) <- xp
-             ]
-          <> [EndOfGame Nothing]
-        pure s
-      _ -> TheEssexCountyExpress <$> runMessage msg attrs
+      endOfScenario
+      pure s
+    _ -> TheEssexCountyExpress <$> liftRunMessage msg attrs

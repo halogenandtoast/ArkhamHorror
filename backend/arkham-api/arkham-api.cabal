@@ -3431,6 +3431,7 @@ library
       Arkham.Treachery.Treacheries
       Arkham.Treachery.Types
       Arkham.Window
+      Arkham.Xp
       Arkham.Zone
       Auth.JWT
       Base.Api.Handler.Authentication

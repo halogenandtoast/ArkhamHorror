@@ -95,6 +95,12 @@ class MonadRandom m => CardGen m where
   replaceCard :: CardId -> Card -> m ()
   clearCardCache :: m ()
 
+instance CardGen m => CardGen (MaybeT m) where
+  genEncounterCard = lift . genEncounterCard
+  genPlayerCard = lift . genPlayerCard
+  replaceCard cardId card = lift $ replaceCard cardId card
+  clearCardCache = lift clearCardCache
+
 instance CardGen m => CardGen (QueueT msg m) where
   genEncounterCard = lift . genEncounterCard
   genPlayerCard = lift . genPlayerCard
@@ -209,6 +215,13 @@ isNonWeakness = (`cardMatch` NonWeakness)
 
 filterCards :: IsCardMatcher a => a -> [Card] -> [Card]
 filterCards matcher = filter (`cardMatch` matcher)
+
+findCardMatch
+  :: (IsCardMatcher a, IsCard card, Element cards ~ card, MonoFoldable cards)
+  => a
+  -> cards
+  -> (Maybe card)
+findCardMatch matcher = find ((`cardMatch` matcher) . toCard) . toList
 
 card_ :: CardMatcher -> CardMatcher
 card_ = id

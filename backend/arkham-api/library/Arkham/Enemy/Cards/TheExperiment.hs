@@ -21,7 +21,7 @@ instance HasAbilities TheExperiment where
     extend
       x
       [ restrictedAbility x 1 (thisIs x #exhausted) $ forced $ PhaseBegins #when #enemy
-      , mkAbility x 2 $ Objective $ forced $ EnemyDefeated #when You ByAny (be x)
+      , mkAbility x 2 $ Objective $ forced $ EnemyDefeated #after You ByAny (be x)
       ]
 
 instance HasModifiersFor TheExperiment where

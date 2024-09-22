@@ -1,9 +1,4 @@
-module Arkham.Scenario.Scenarios.WhereDoomAwaits (
-  WhereDoomAwaits (..),
-  whereDoomAwaits,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.WhereDoomAwaits (WhereDoomAwaits (..), whereDoomAwaits) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -12,26 +7,18 @@ import Arkham.Agenda.Types (Field (..))
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card
-import Arkham.ChaosToken
-import Arkham.Classes
 import Arkham.Deck qualified as Deck
-import Arkham.Difficulty
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Game.Helpers
+import Arkham.Game.Helpers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.WhereDoomAwaits.Story
 import Arkham.Trait hiding (Cultist, Expert)
-import Data.Maybe (fromJust)
 
 newtype WhereDoomAwaits = WhereDoomAwaits ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -81,56 +68,84 @@ standaloneCampaignLog =
 instance HasChaosTokenValue WhereDoomAwaits where
   getChaosTokenValue iid chaosTokenFace (WhereDoomAwaits attrs) = case chaosTokenFace of
     Skull -> do
-      isAltered <-
-        selectAny
-          $ LocationWithInvestigator (InvestigatorWithId iid)
-          <> LocationWithTrait Altered
+      isAltered <- selectAny $ locationWithInvestigator iid <> LocationWithTrait Altered
       if isAltered
         then pure $ toChaosTokenValue attrs Skull 3 5
         else pure $ toChaosTokenValue attrs Skull 1 2
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
     Tablet -> do
       agendaId <- selectJust AnyAgenda
-      agendaStep <-
-        fieldMap
-          AgendaSequence
-          (AS.unAgendaStep . AS.agendaStep)
-          agendaId
+      agendaStep <- fieldMap AgendaSequence (AS.unAgendaStep . AS.agendaStep) agendaId
       pure
-        $ ChaosTokenValue
-          Tablet
-          ( if isEasyStandard attrs
-              then NegativeModifier (if agendaStep == 2 then 4 else 2)
-              else if agendaStep == 2 then AutoFailModifier else NegativeModifier 3
-          )
+        $ ChaosTokenValue Tablet
+        $ if isEasyStandard attrs
+          then NegativeModifier (if agendaStep == 2 then 4 else 2)
+          else if agendaStep == 2 then AutoFailModifier else NegativeModifier 3
     ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 0) -- determined by an effect
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage WhereDoomAwaits where
-  runMessage msg s@(WhereDoomAwaits attrs) = case msg of
+  runMessage msg s@(WhereDoomAwaits attrs) = runQueueT $ case msg of
+    PreScenarioSetup -> do
+      story intro
+      whenHasRecord NaomiHasTheInvestigatorsBacks $ story introPart1
+      pure s
     StandaloneSetup -> do
-      push (SetChaosTokens standaloneChaosTokens)
-      pure
-        . WhereDoomAwaits
-        $ attrs
-        & standaloneCampaignLogL
-        .~ standaloneCampaignLog
-    Setup -> do
-      players <- allPlayers
+      setChaosTokens standaloneChaosTokens
+      pure . WhereDoomAwaits $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
+    Setup -> runScenarioSetup WhereDoomAwaits attrs do
+      gather Set.WhereDoomAwaits
+      gather Set.Whippoorwills
+      gather Set.BeastThralls
+      gather Set.Dunwich
+      gather Set.Sorcery
+      gather Set.BishopsThralls
+      gather Set.StrikingFear
+      gather Set.AncientEvils
+      gather Set.ChillingCold
+
+      noBroodEscaped <- getHasRecord NoBroodEscapedIntoTheWild
+      broodEscapedCount <- if noBroodEscaped then pure 0 else getRecordCount BroodEscapedIntoTheWild
+      silasBishopPutOutOfMisery <- getHasRecord TheInvestigatorsPutSilasBishopOutOfHisMisery
+
+      startAt =<< place Locations.baseOfTheHill
+      ascendingPath <- place Locations.ascendingPath
+      place_ Locations.sentinelPeak
+
+      when silasBishopPutOutOfMisery do
+        (conglomerationOfSpheres, rest) <- splitAt 1 <$> gatherEncounterSet Set.HideousAbominations
+        for_ conglomerationOfSpheres (`createEnemyAt_` ascendingPath)
+        shuffleCardsIntoDeck Deck.EncounterDeck rest
+
+      divergingPaths <-
+        sampleN 3
+          $ Locations.slaughteredWoods
+          :| [ Locations.eerieGlade
+             , Locations.destroyedPath
+             , Locations.frozenSpring
+             ]
+
+      alteredPaths <-
+        sampleN 3
+          $ Locations.dimensionalGap
+          :| [ Locations.aTearInThePath
+             , Locations.uprootedWoods
+             , Locations.lostMemories
+             ]
+
+      addChaosToken $ case attrs.difficulty of
+        Easy -> MinusThree
+        Standard -> MinusFive
+        Hard -> MinusSix
+        Expert -> MinusSeven
+
+      when (broodEscapedCount > 0) $ placeDoomOnAgenda broodEscapedCount
+
       lead <- getLead
-      encounterDeck <-
-        buildEncounterDeckExcluding
-          [Enemies.sethBishop]
-          [ EncounterSet.WhereDoomAwaits
-          , EncounterSet.Whippoorwills
-          , EncounterSet.BeastThralls
-          , EncounterSet.Dunwich
-          , EncounterSet.Sorcery
-          , EncounterSet.BishopsThralls
-          , EncounterSet.StrikingFear
-          , EncounterSet.AncientEvils
-          , EncounterSet.ChillingCold
-          ]
+      whenHasRecord NaomiHasTheInvestigatorsBacks $ push $ GainClues lead (toSource attrs) 1
+
+      setAside $ Enemies.silasBishop : divergingPaths <> alteredPaths
+      setAgendaDeck [Agendas.callingForthTheOldOnes, Agendas.beckoningForPower]
 
       useV1 <- getHasRecord TheInvestigatorsRestoredSilasBishop
       useV2 <-
@@ -138,123 +153,17 @@ instance RunMessage WhereDoomAwaits where
           (||)
           (getHasRecord TheInvestigatorsFailedToRecoverTheNecronomicon)
           (getHasRecord TheNecronomiconWasStolen)
-
       let
         ascendingTheHill = case (useV1, useV2) of
           (True, _) -> Acts.ascendingTheHillV1
           (False, True) -> Acts.ascendingTheHillV2
           (False, False) -> Acts.ascendingTheHillV3
-
-      naomiHasTheInvestigatorsBacks <-
-        getHasRecord
-          NaomiHasTheInvestigatorsBacks
-      noBroodEscaped <- getHasRecord NoBroodEscapedIntoTheWild
-      broodEscapedCount <-
-        if noBroodEscaped
-          then pure 0
-          else getRecordCount BroodEscapedIntoTheWild
-      silasBishopPutOutOfMisery <-
-        getHasRecord
-          TheInvestigatorsPutSilasBishopOutOfHisMisery
-
-      (baseOfTheHillId, placeBaseOfTheHill) <-
-        placeLocationCard
-          Locations.baseOfTheHill
-      (ascendingPathId, placeAscendingPath) <-
-        placeLocationCard
-          Locations.ascendingPath
-      placeSentinelPeak <- placeLocationCard_ Locations.sentinelPeak
-
-      silasMsgs <-
-        if silasBishopPutOutOfMisery
-          then do
-            result <- gatherEncounterSet EncounterSet.HideousAbominations
-            let
-              conglomerationOfSpheres = fromJust . headMay $ result
-              rest = drop 1 result
-            pure
-              [ SpawnEnemyAt
-                  (EncounterCard conglomerationOfSpheres)
-                  ascendingPathId
-              , ShuffleCardsIntoDeck Deck.EncounterDeck $ map EncounterCard rest
-              ]
-          else pure []
-
-      divergingPaths <-
-        genCards
-          . take 3
-          =<< shuffleM
-            [ Locations.slaughteredWoods
-            , Locations.eerieGlade
-            , Locations.destroyedPath
-            , Locations.frozenSpring
-            ]
-
-      alteredPaths <-
-        genCards
-          . take 3
-          =<< shuffleM
-            [ Locations.dimensionalGap
-            , Locations.aTearInThePath
-            , Locations.uprootedWoods
-            , Locations.lostMemories
-            ]
-
-      let
-        token = case scenarioDifficulty attrs of
-          Easy -> MinusThree
-          Standard -> MinusFive
-          Hard -> MinusSix
-          Expert -> MinusSeven
-
-      pushAll
-        $ story players intro
-        : [story players introPart1 | naomiHasTheInvestigatorsBacks]
-          <> [GainClues lead (toSource attrs) 1 | naomiHasTheInvestigatorsBacks]
-          <> [ AddChaosToken token
-             , SetEncounterDeck encounterDeck
-             , SetAgendaDeck
-             , SetActDeck
-             , PlaceDoomOnAgenda broodEscapedCount CanNotAdvance
-             , placeBaseOfTheHill
-             , placeAscendingPath
-             , placeSentinelPeak
-             ]
-          <> silasMsgs
-          <> [ RevealLocation Nothing baseOfTheHillId
-             , MoveAllTo (toSource attrs) baseOfTheHillId
-             ]
-
-      setAsideCards <- genCards [Enemies.silasBishop]
-
-      agendas <-
-        genCards
-          [Agendas.callingForthTheOldOnes, Agendas.beckoningForPower]
-      acts <-
-        genCards
-          [Acts.thePathToTheHill, ascendingTheHill, Acts.theGateOpens]
-
-      WhereDoomAwaits
-        <$> runMessage
-          msg
-          ( attrs
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
-              & ( setAsideCardsL
-                    <>~ (divergingPaths <> alteredPaths <> setAsideCards)
-                )
-          )
+      setActDeck [Acts.thePathToTheHill, ascendingTheHill, Acts.theGateOpens]
     ResolveChaosToken drawnToken Cultist iid -> do
-      withSkillTest \sid ->
-        pushAll
-          [ CreateWindowModifierEffect
-              (EffectSkillTestWindow sid)
-              (EffectModifiers $ toModifiers attrs [CancelSkills])
-              (ChaosTokenSource drawnToken)
-              (SkillTestTarget sid)
-          , CancelSkillEffects
-          , DrawAnotherChaosToken iid
-          ]
+      withSkillTest \sid -> do
+        skillTestModifier sid drawnToken.face sid CancelSkills
+        push CancelSkillEffects
+        drawAnotherChaosToken iid
       pure s
     ResolveChaosToken drawnToken ElderThing iid -> do
       push
@@ -266,31 +175,22 @@ instance RunMessage WhereDoomAwaits where
       pure s
     DiscardedTopOfDeck _iid cards _ target@(ChaosTokenTarget (chaosTokenFace -> ElderThing)) -> do
       let n = sum $ map (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef) cards
-      withSkillTest \sid ->
-        push $ CreateChaosTokenValueEffect sid (-n) (toSource attrs) target
+      withSkillTest \sid -> push $ CreateChaosTokenValueEffect sid (-n) (toSource attrs) target
       pure s
-    ScenarioResolution NoResolution ->
-      s <$ push (ScenarioResolution $ Resolution 2)
+    ScenarioResolution NoResolution -> do
+      push R2
+      pure s
     ScenarioResolution (Resolution 1) -> do
-      xp <- getXp
-      players <- allPlayers
-      pushAll
-        $ [ story players resolution1
-          , Record TheInvestigatorsEnteredTheGate
-          ]
-        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-        <> [EndOfGame Nothing]
+      story resolution1
+      record TheInvestigatorsEnteredTheGate
+      allGainXp attrs
+      endOfScenario
       pure s
     ScenarioResolution (Resolution 2) -> do
-      investigatorIds <- allInvestigatorIds
-      players <- allPlayers
-      pushAll
-        $ [ story players resolution2
-          , Record
-              YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
-          ]
-        <> [DrivenInsane iid | iid <- investigatorIds]
-        <> [GameOver]
+      story resolution2
+      record YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
+      eachInvestigator drivenInsane
+      gameOver
       pure s
     PlacedLocation name _ lid -> do
       when (name == "Altered Path") $ do
@@ -300,4 +200,4 @@ instance RunMessage WhereDoomAwaits where
         woodsCount <- selectCount $ LocationWithTrait Woods
         push (SetLocationLabel lid $ "divergingPath" <> tshow woodsCount)
       pure s
-    _ -> WhereDoomAwaits <$> runMessage msg attrs
+    _ -> WhereDoomAwaits <$> liftRunMessage msg attrs

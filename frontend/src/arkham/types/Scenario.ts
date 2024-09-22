@@ -12,6 +12,7 @@ import type { LogContents } from '@/arkham/types/Campaign';
 import { Difficulty, difficultyDecoder } from '@/arkham/types/Difficulty';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { TarotCard, tarotCardDecoder, tarotScopeDecoder } from '@/arkham/types/TarotCard';
+import { XpEntry, xpEntryDecoder} from '@/arkham/types/Xp';
 
 export type ScenarioName = {
   title: string;
@@ -62,6 +63,7 @@ export type Scenario = {
   encounterDecks: Record<string, [CardContents[], CardContents[]]>;
   hasEncounterDeck: boolean;
   tarotCards: TarotCard[];
+  xpBreakdown?: XpEntry[];
 }
 
 export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
@@ -94,6 +96,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   chaosBag: chaosBagDecoder,
   discard: JsonDecoder.array<CardContents>(cardContentsDecoder, 'EncounterCardContents[]'),
   victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
+  xpBreakdown: JsonDecoder.optional(JsonDecoder.array<XpEntry>(xpEntryDecoder, 'XpEntry[]')),
   standaloneCampaignLog: logContentsDecoder,
   tokens: tokensDecoder,
   hasEncounterDeck: JsonDecoder.boolean,

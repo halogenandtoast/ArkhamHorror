@@ -4,6 +4,7 @@ import { upgradeDeck } from '@/arkham/api';
 import { imgsrc } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
 import Prompt from '@/components/Prompt.vue';
+import XpBreakdown from '@/arkham/components/XpBreakdown.vue';
 
 // TODO should we pass in the investigator
 export interface Props {
@@ -74,9 +75,9 @@ async function skip() {
 </script>
 
 <template>
-  <div id="upgrade-deck">
-    <div>
-      <h2>Upgrade Deck ({{xp}} xp)</h2>
+  <div id="upgrade-deck" class="column">
+    <div class="column">
+      <h2 class="title">Upgrade Deck ({{xp}} TOTAL xp)</h2>
       <div v-if="!waiting" class="upgrade-deck">
         <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
         <div class="fields">
@@ -98,7 +99,12 @@ async function skip() {
         Waiting for other players to upgrade deck.
       </div>
     </div>
+
+    <div v-for="[scenario, breakdown] in Object.entries(game.campaign.xpBreakdown)" :key="scenario" class="breakdowns">
+      <XpBreakdown :game="game" :scenario="scenario" :breakdown="breakdown" :playerId="playerId" />
+    </div>
   </div>
+
 
   <Prompt
     v-if="skipping"
@@ -116,6 +122,11 @@ async function skip() {
   min-width: 70vw;
   color: var(--title);
   font-size: 1.2em;
+  margin-inline: 10px;
+  margin-top: 20px;
+  > :deep(.column) {
+    width: 100%;
+  }
 }
 
 .upgrade-deck {
@@ -128,6 +139,10 @@ async function skip() {
   align-items: flex-start;
   gap: 10px;
   min-width: 70vw;
+}
+
+.breakdowns {
+  min-width: 100%;
 }
 
 h2 {
@@ -168,6 +183,7 @@ input {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex: 1;
 }
 
 .portrait {

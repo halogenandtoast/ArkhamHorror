@@ -29,7 +29,7 @@ const emit = defineEmits<{
           <Card :game="game" :card="card" :playerId="playerId" @choose="emit('choose', $event)" />
         </div>
       </div>
-      <button class="close" @click="emit('close')">Close</button>
+      <button class="button close" @click="emit('close')">Close</button>
     </div>
   </Draggable>
 </template>
@@ -99,4 +99,5 @@ button {
   border: 1px solid rgba(255, 255, 255, 0.3);
   z-index: 1000000;
 }
+
 </style>

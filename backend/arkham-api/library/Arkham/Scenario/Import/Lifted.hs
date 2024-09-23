@@ -17,16 +17,18 @@ import Arkham.Helpers.Message as X (
  )
 import Arkham.Helpers.Scenario as X
 import Arkham.Message as X (Message (..))
-import Arkham.Message.Lifted as X hiding (setActDeck, setAgendaDeck)
+import Arkham.Message.Lifted as X hiding (setActDeck, setAgendaDeck, setAgendaDeckN)
 import Arkham.Prelude as X
 import Arkham.Question as X
 import Arkham.Scenario.Runner as X (
   IsScenario,
   ScenarioAttrs,
+  decksLayoutL,
   push,
   pushAll,
   pushWhen,
   scenario,
+  scenarioWith,
   standaloneCampaignLogL,
  )
 import Arkham.Scenario.Setup as X

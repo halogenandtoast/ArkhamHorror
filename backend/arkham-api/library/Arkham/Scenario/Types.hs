@@ -138,6 +138,12 @@ instance AsId ScenarioAttrs where
 instance HasField "id" ScenarioAttrs ScenarioId where
   getField = scenarioId
 
+instance HasField "completedActStack" ScenarioAttrs (IntMap [Card]) where
+  getField = scenarioCompletedActStack
+
+instance HasField "completedAgendaStack" ScenarioAttrs (IntMap [Card]) where
+  getField = scenarioCompletedAgendaStack
+
 instance HasField "difficulty" ScenarioAttrs Difficulty where
   getField = scenarioDifficulty
 

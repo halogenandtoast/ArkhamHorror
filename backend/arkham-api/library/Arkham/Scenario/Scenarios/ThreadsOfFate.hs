@@ -6,22 +6,18 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
-import Arkham.ChaosToken
 import Arkham.Classes
-import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Helpers
-import Arkham.Helpers.Card
+import Arkham.Helpers.Card hiding (addCampaignCardToDeckChoice)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
-import Arkham.Prelude
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
+import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThreadsOfFate.Story
 import Arkham.Trait qualified as Trait
@@ -76,110 +72,105 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage ThreadsOfFate where
-  runMessage msg s@(ThreadsOfFate attrs) = case msg of
+  runMessage msg s@(ThreadsOfFate attrs) = runQueueT $ case msg of
+    PreScenarioSetup -> do
+      gaveCustodyToHarlan <- getHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
+      story intro1
+      story $ if gaveCustodyToHarlan then intro3 else intro2
+      lead <- getLead
+      chooseOneM lead do
+        labeled "“You’re not going anywhere until you tell me what is going on.” - Skip to Intro 4."
+          $ doStep 4 msg
+        labeled "“Have it your way.” - Skip to Intro 5." $ doStep 5 msg
+      pure s
+    DoStep 4 PreScenarioSetup -> do
+      remember YouListenedToIchtacasTale
+      unlessStandalone $ addChaosToken Cultist
+      pure s
+    DoStep 5 PreScenarioSetup -> do
+      remember IchtacaLeftWithoutYou
+      whenHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone $ doStep 6 PreScenarioSetup
+      pure s
+    DoStep 6 PreScenarioSetup -> do
+      lead <- getLead
+      chooseOneM lead do
+        labeled "“We should be wary of them.”" do
+          record YouAreForgingYourOwnWay
+          unlessStandalone do
+            removeAllChaosTokens Cultist
+            removeAllChaosTokens Tablet
+            addChaosToken ElderThing
+        labeled "“Maybe I should listen to them after all...”" nothing
+      pure s
     StandaloneSetup -> do
-      lead <- getLeadPlayer
-      pushAll
-        [ SetChaosTokens standaloneChaosTokens
-        , chooseOne
-            lead
-            [ Label
-                "The investigators gave custody of the relic to Alejandro."
-                [Record TheInvestigatorsGaveCustodyOfTheRelicToAlejandro]
-            , Label
-                "The investigators gave custody of the relic to Harlan Earnstone."
-                [Record TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone]
-            ]
-        ]
+      lead <- getLead
+      setChaosTokens standaloneChaosTokens
+      chooseOneM lead do
+        labeled
+          "The investigators gave custody of the relic to Alejandro."
+          $ record TheInvestigatorsGaveCustodyOfTheRelicToAlejandro
+        labeled
+          "The investigators gave custody of the relic to Harlan Earnstone."
+          $ record TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
       pure s
-    Setup -> do
-      players <- allPlayers
-      lead <- getLeadPlayer
-      gaveCustodyToHarlan <-
-        getHasRecord
-          TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
-      let intro2or3 = if gaveCustodyToHarlan then intro3 else intro2
-      pushAll
-        [ story players intro1
-        , story players intro2or3
-        , chooseOne
-            lead
-            [ Label
-                "“You’re not going anywhere until you tell me what is going on.” - Skip to Intro 4."
-                [SetupStep (toTarget attrs) 4]
-            , Label
-                "“Have it your way.” - Skip to Intro 5."
-                [SetupStep (toTarget attrs) 5]
-            ]
+    Setup -> runScenarioSetup ThreadsOfFate attrs do
+      gather Set.ThreadsOfFate
+      gather Set.PnakoticBrotherhood
+      gather Set.LockedDoors
+      gather Set.Nightgaunts
+      gather Set.DarkCult
+      gatherJust Set.TheMidnightMasks [Treacheries.huntingShadow, Treacheries.falseLead]
+
+      startAt =<< place Locations.rivertown
+      placeAll
+        [ Locations.northside
+        , Locations.downtownFirstBankOfArkham
+        , Locations.easttown
+        , Locations.miskatonicUniversity
+        , Locations.velmasDiner
+        , Locations.curiositieShoppe
         ]
-      pure s
-    SetupStep target 7 | isTarget attrs target -> do
-      -- Setup step 7 doesn't actually exist, but it is how
-      gatheredCards <-
-        buildEncounterDeck
-          [ EncounterSet.ThreadsOfFate
-          , EncounterSet.PnakoticBrotherhood
-          , EncounterSet.LockedDoors
-          , EncounterSet.Nightgaunts
-          , EncounterSet.DarkCult
-          ]
-      midnightMasks <-
-        traverse
-          genEncounterCard
-          [ Treacheries.huntingShadow
-          , Treacheries.huntingShadow
-          , Treacheries.huntingShadow
-          , Treacheries.falseLead
-          , Treacheries.falseLead
-          ]
-      encounterDeck <- Deck <$> shuffleM (unDeck gatheredCards <> midnightMasks)
 
-      (rivertownId, placeRivertown) <- placeLocationCard Locations.rivertown
-      placeOtherLocations <-
-        traverse
-          placeLocationCard_
-          [ Locations.northside
-          , Locations.downtownFirstBankOfArkham
-          , Locations.easttown
-          , Locations.miskatonicUniversity
-          , Locations.velmasDiner
-          , Locations.curiositieShoppe
-          ]
-
-      gaveCustodyToHarlan <-
-        getHasRecord
-          TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
-
-      act1Deck <-
+      gaveCustodyToHarlan <- getHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
+      setActDeckN 1 =<< do
         if gaveCustodyToHarlan
           then do
-            harlansCurse <-
-              sample
-                $ Acts.harlansCurseSafekeeping
-                :| [Acts.harlansCurseHarlanEarnstone]
-            genCards
+            harlansCurse <- sample2 Acts.harlansCurseSafekeeping Acts.harlansCurseHarlanEarnstone
+            pure
               [ Acts.harlanIsInDanger
               , harlansCurse
               , Acts.findTheRelic
               , Acts.recoverTheRelic
               ]
           else do
-            atTheExhibit <-
-              sample
-                $ Acts.atTheExhibitTheRelicsLocation
-                :| [Acts.atTheExhibitTheBrotherhoodsPlot]
-            genCards
+            atTheExhibit <- sample2 Acts.atTheExhibitTheRelicsLocation Acts.atTheExhibitTheBrotherhoodsPlot
+            pure
               [ Acts.theRelicIsMissing
               , atTheExhibit
               , Acts.findTheRelic
               , Acts.recoverTheRelic
               ]
 
+      setAside
+        [ Locations.townHall
+        , Assets.ichtacaTheForgottenGuardian
+        , Assets.expeditionJournal
+        , Assets.relicOfAgesADeviceOfSomeSort
+        , Assets.alejandroVela
+        ]
+
+      setAgendaDeck
+        [ Agendas.threeFates
+        , Agendas.behindTheCurtain
+        , Agendas.hiddenEntanglements
+        ]
+
+      removeCampaignCard Assets.relicOfAgesADeviceOfSomeSort
+      removeCampaignCard Assets.alejandroVela
+
+      lead <- getLead
       act2Deck1 <- do
-        atTheStation <-
-          sample
-            $ Acts.atTheStationInShadowedTalons
-            :| [Acts.atTheStationTrainTracks]
+        atTheStation <- sample2 Acts.atTheStationInShadowedTalons Acts.atTheStationTrainTracks
         genCards
           [ Acts.missingPersons
           , atTheStation
@@ -188,25 +179,25 @@ instance RunMessage ThreadsOfFate where
           ]
       act2Deck2 <- do
         friendsInHighPlaces <-
-          sample
-            $ Acts.friendsInHighPlacesHenrysInformation
-            :| [Acts.friendsInHighPlacesHenryDeveau]
+          sample2 Acts.friendsInHighPlacesHenrysInformation Acts.friendsInHighPlacesHenryDeveau
         genCards
           [ Acts.searchForAlejandro
           , friendsInHighPlaces
           , Acts.alejandrosPrison
           , Acts.alejandrosPlight
           ]
+      chooseOneM lead do
+        labeled "Go to the police to inform them of Alejandro's disappearance"
+          $ push
+          $ SetActDeckCards 2 act2Deck1
+        labeled "Look for Alejandro on your own" $ push $ SetActDeckCards 2 act2Deck2
 
       listenedToIchtacasTale <- remembered YouListenedToIchtacasTale
-      act3Deck <-
-        if listenedToIchtacasTale
+      setActDeckN 3
+        =<< if listenedToIchtacasTale
           then do
-            strangeRelics <-
-              sample
-                $ Acts.strangeRelicsMariaDeSilva
-                :| [Acts.strangeRelicsMariasInformation]
-            genCards
+            strangeRelics <- sample2 Acts.strangeRelicsMariaDeSilva Acts.strangeRelicsMariasInformation
+            pure
               [ Acts.theGuardiansInquiry
               , strangeRelics
               , Acts.strangeOccurences
@@ -214,149 +205,38 @@ instance RunMessage ThreadsOfFate where
               ]
           else do
             theCaveOfDarkness <-
-              sample
-                $ Acts.theCaveOfDarknessEmbroiledInBattle
-                :| [Acts.theCaveOfDarknessTunnelsInTheDark]
-            genCards
+              sample2 Acts.theCaveOfDarknessEmbroiledInBattle Acts.theCaveOfDarknessTunnelsInTheDark
+            pure
               [ Acts.trialOfTheHuntress
               , theCaveOfDarkness
               , Acts.strangeOccurences
               , Acts.theBrotherhoodIsRevealed
               ]
-      lead <- getLeadPlayer
-      setAsideCards <-
-        genCards
-          [ Locations.townHall
-          , Assets.ichtacaTheForgottenGuardian
-          , Assets.expeditionJournal
-          , Assets.relicOfAgesADeviceOfSomeSort
-          , Assets.alejandroVela
-          ]
-
-      pushAll
-        $ [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
-          , RemoveCampaignCard Assets.alejandroVela
-          , SetEncounterDeck encounterDeck
-          , chooseOne
-              lead
-              [ Label
-                  "Go to the police to inform them of Alejandro's disappearance"
-                  [SetActDeckCards 2 act2Deck1]
-              , Label
-                  "Look for Alejandro on your own"
-                  [SetActDeckCards 2 act2Deck2]
-              ]
-          , SetAgendaDeck
-          , SetActDeck
-          , placeRivertown
-          ]
-        <> placeOtherLocations
-        <> [MoveAllTo (toSource attrs) rivertownId]
-
-      agendas <-
-        genCards
-          [ Agendas.threeFates
-          , Agendas.behindTheCurtain
-          , Agendas.hiddenEntanglements
-          ]
-
-      ThreadsOfFate
-        <$> runMessage
-          Setup
-          ( attrs
-              & (agendaStackL . at 1 ?~ agendas)
-              & (actStackL . at 1 ?~ act1Deck)
-              & (actStackL . at 3 ?~ act3Deck)
-              & (setAsideCardsL <>~ setAsideCards)
-          )
-    SetupStep target n | isTarget attrs target -> do
-      gaveCustodyToHarlan <-
-        getHasRecord
-          TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
-      standalone <- getIsStandalone
-      lead <- getLeadPlayer
-      (msgs, nextStep) <- case n of
-        4 ->
-          pure
-            ( Remember YouListenedToIchtacasTale
-                : [AddChaosToken Cultist | standalone]
-            , 7
-            )
-        5 -> do
-          pure
-            ( [Remember IchtacaLeftWithoutYou]
-            , if gaveCustodyToHarlan then 6 else 7
-            )
-        6 ->
-          pure
-            (
-              [ chooseOne
-                  lead
-                  [ Label
-                      "“We should be wary of them.”"
-                      ( if standalone
-                          then [Record YouAreForgingYourOwnWay]
-                          else
-                            [ RemoveAllChaosTokens Cultist
-                            , RemoveAllChaosTokens Tablet
-                            , AddChaosToken ElderThing
-                            , Record YouAreForgingYourOwnWay
-                            ]
-                      )
-                  , Label "“Maybe I should listen to them after all...”" []
-                  ]
-              ]
-            , 7
-            )
-        _ -> error "Invalid step"
-      pushAll $ msgs <> [SetupStep (toTarget attrs) nextStep]
-      pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       case chaosTokenFace token of
-        Cultist | isEasyStandard attrs && n < 1 -> do
-          push $ InvestigatorAssignDamage iid (ChaosTokenSource token) DamageAny 1 0
-        Cultist | isHardExpert attrs && n < 2 -> do
-          push $ InvestigatorDirectDamage iid (ChaosTokenSource token) 1 0
+        Cultist | isEasyStandard attrs && n < 1 -> assignDamage iid Cultist 1
+        Cultist | isHardExpert attrs && n < 2 -> directDamage iid Cultist 1
         Tablet | isEasyStandard attrs && n < 1 -> do
-          targets <-
-            selectMap EnemyTarget
-              $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
-          player <- getPlayer iid
-          unless (null targets) $ do
-            push
-              $ chooseOrRunOne
-                player
-                [TargetLabel target [PlaceDoom (ChaosTokenEffectSource Tablet) target 1] | target <- targets]
+          es <- selectTargets $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
+          chooseOrRunOneM iid do
+            targets es \target -> placeDoom Tablet target 1
         Tablet | isHardExpert attrs && n < 2 -> do
-          targets <-
-            selectMap EnemyTarget
-              $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
-          pushAll [PlaceDoom (ChaosTokenEffectSource Tablet) target 1 | target <- targets]
+          es <- selectTargets $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
+          for_ es \target -> placeDoom Tablet target 1
         _ -> pure ()
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of
-        Cultist | isEasyStandard attrs -> do
-          push $ InvestigatorAssignDamage iid (ChaosTokenSource token) DamageAny 1 0
-        Cultist | isHardExpert attrs -> do
-          push $ InvestigatorDirectDamage iid (ChaosTokenSource token) 1 0
+        Cultist | isEasyStandard attrs -> assignDamage iid Cultist 1
+        Cultist | isHardExpert attrs -> directDamage iid Cultist 1
         Tablet | isEasyStandard attrs -> do
-          targets <-
-            selectMap EnemyTarget
-              $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
-          unless (null targets) $ do
-            player <- getPlayer iid
-            push
-              $ chooseOrRunOne
-                player
-                [TargetLabel target [PlaceDoom (ChaosTokenEffectSource Tablet) target 1] | target <- targets]
+          es <- selectTargets $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
+          chooseOrRunOneM iid do
+            targets es \target -> placeDoom Tablet target 1
         Tablet | isHardExpert attrs -> do
-          targets <-
-            selectMap EnemyTarget
-              $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
-          pushAll [PlaceDoom (ChaosTokenEffectSource Tablet) target 1 | target <- targets]
-        ElderThing -> do
-          push $ RemoveClues (ChaosTokenEffectSource ElderThing) (InvestigatorTarget iid) 1
+          es <- selectTargets $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
+          for_ es \target -> placeDoom Tablet target 1
+        ElderThing -> removeTokens ElderThing iid #clue 1
         _ -> pure ()
       pure s
     ScenarioResolution _ -> do
@@ -378,64 +258,43 @@ instance RunMessage ThreadsOfFate where
             . (+ findWithDefault 0 n actPairCountMap)
             . length
             . fromMaybe []
-            $ lookup n (scenarioCompletedActStack attrs)
+            $ lookup n attrs.completedActStack
 
         act3bCompleted = completedStack 1
         act3dCompleted = completedStack 2
         act3fCompleted = completedStack 3
-        act1sCompleted = length $ keys (scenarioCompletedActStack attrs)
+        act1sCompleted = length $ keys attrs.completedActStack
 
-      iids <- allInvestigatorIds
-      players <- allPlayers
-      lead <- getLeadPlayer
-      leadId <- getLeadInvestigatorId
-      gainXp <- toGainXp attrs $ getXpWithBonus act1sCompleted
+      iids <- allInvestigators
+      lead <- getLead
+
+      story resolution1
+
+      record $ if act3bCompleted then TheInvestigatorsFoundTheMissingRelic else TheRelicIsMissing
+
       relicOwned <- getIsAlreadyOwned Assets.relicOfAgesADeviceOfSomeSort
-      alejandroOwned <- getIsAlreadyOwned Assets.alejandroVela
+      when (act3bCompleted && not relicOwned) do
+        addCampaignCardToDeckChoice iids Assets.relicOfAgesADeviceOfSomeSort
 
-      pushAll
-        $ [story players resolution1]
-        <> [ Record
-              if act3bCompleted
-                then TheInvestigatorsFoundTheMissingRelic
-                else TheRelicIsMissing
-           ]
-        <> [ addCampaignCardToDeckChoice
-            lead
-            iids
-            Assets.relicOfAgesADeviceOfSomeSort
-           | act3bCompleted && not relicOwned
-           ]
-        <> [ RemoveCampaignCard Assets.relicOfAgesADeviceOfSomeSort
-           | not act3bCompleted
-           ]
-        <> [ Record
-              if act3dCompleted
-                then TheInvestigatorsRescuedAlejandro
-                else AlejandroIsMissing
-           ]
-        <> [ addCampaignCardToDeckChoice
-            lead
-            iids
-            Assets.alejandroVela
-           | act3dCompleted && not alejandroOwned
-           ]
-        <> [RemoveCampaignCard Assets.alejandroVela | not act3dCompleted]
-        <> [ Record
-              if act3fCompleted
-                then TheInvestigatorsForgedABondWithIchtaca
-                else IchtacaIsInTheDark
-           ]
-        <> [addCampaignCardToDeckChoice lead iids Assets.ichtacaTheForgottenGuardian | act3fCompleted]
-        <> [ chooseOne
-              lead
-              [ Label
-                  "Add Expedition Journal to your deck"
-                  [AddCampaignCardToDeck leadId Assets.expeditionJournal]
-              , Label "Do not add Expedition Journal to your deck" []
-              ]
-           ]
-        <> gainXp
-        <> [EndOfGame Nothing]
+      unless act3bCompleted do
+        removeCampaignCard Assets.relicOfAgesADeviceOfSomeSort
+
+      record $ if act3dCompleted then TheInvestigatorsRescuedAlejandro else AlejandroIsMissing
+
+      alejandroOwned <- getIsAlreadyOwned Assets.alejandroVela
+      when (act3dCompleted && not alejandroOwned) do
+        addCampaignCardToDeckChoice iids Assets.alejandroVela
+
+      unless act3dCompleted do
+        removeCampaignCard Assets.alejandroVela
+
+      record $ if act3fCompleted then TheInvestigatorsForgedABondWithIchtaca else IchtacaIsInTheDark
+
+      when act3fCompleted do
+        addCampaignCardToDeckChoice iids Assets.ichtacaTheForgottenGuardian
+
+      addCampaignCardToDeckChoice [lead] Assets.expeditionJournal
+      allGainXpWithBonus attrs act1sCompleted
+      endOfScenario
       pure s
-    _ -> ThreadsOfFate <$> runMessage msg attrs
+    _ -> ThreadsOfFate <$> liftRunMessage msg attrs

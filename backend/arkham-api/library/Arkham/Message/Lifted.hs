@@ -86,6 +86,9 @@ setAgendaDeckN n = genCards >=> push . SetAgendaDeckCards n
 setActDeck :: ReverseQueue m => [CardDef] -> m ()
 setActDeck = genCards >=> push . SetActDeckCards 1
 
+setActDeckN :: ReverseQueue m => Int -> [CardDef] -> m ()
+setActDeckN n = genCards >=> push . SetActDeckCards n
+
 placeSetAsideLocation :: ReverseQueue m => CardDef -> m LocationId
 placeSetAsideLocation card = do
   (lid, msg) <- Msg.placeSetAsideLocation card

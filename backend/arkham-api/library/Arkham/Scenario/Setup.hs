@@ -229,6 +229,12 @@ setAgendaDeckN n defs = do
   agendaStackL %= insertMap n cards
   push SetAgendaDeck
 
+setActDeckN :: ReverseQueue m => Int -> [CardDef] -> ScenarioBuilderT m ()
+setActDeckN n defs = do
+  cards <- genCards defs
+  actStackL %= insertMap n cards
+  push SetActDeck
+
 placeUnderScenarioReference :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
 placeUnderScenarioReference defs = do
   cards <- genCards defs

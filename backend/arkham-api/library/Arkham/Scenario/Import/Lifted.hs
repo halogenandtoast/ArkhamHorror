@@ -28,7 +28,9 @@ import Arkham.Scenario.Runner as X (
   pushAll,
   pushWhen,
   scenario,
+  scenarioTimesPlayed,
   scenarioWith,
+  sideStory,
   standaloneCampaignLogL,
  )
 import Arkham.Scenario.Setup as X

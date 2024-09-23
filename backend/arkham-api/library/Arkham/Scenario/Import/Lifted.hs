@@ -17,7 +17,7 @@ import Arkham.Helpers.Message as X (
  )
 import Arkham.Helpers.Scenario as X
 import Arkham.Message as X (Message (..))
-import Arkham.Message.Lifted as X hiding (setActDeck, setAgendaDeck, setAgendaDeckN)
+import Arkham.Message.Lifted as X hiding (setActDeck, setActDeckN, setAgendaDeck, setAgendaDeckN)
 import Arkham.Prelude as X
 import Arkham.Question as X
 import Arkham.Scenario.Runner as X (

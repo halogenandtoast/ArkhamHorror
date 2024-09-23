@@ -160,17 +160,14 @@ instance RunMessage AtDeathsDoorstep where
             <> [office | jeromeMissing]
             <> [billiardsRoom | valentinoMissing]
             <> [balcony | pennyMissing]
-        noTimes =
-          ceiling
-            ( fromIntegral @_ @Double evidenceLeftBehind
-                / fromIntegral (length locations)
-            )
-        doSplit n | n <= 0 = []
-        doSplit n | n <= length locations = [n]
-        doSplit n = length locations : doSplit (n - length locations)
+        doSplit 0 = []
+        doSplit n =
+          if n >= length locations
+            then length locations : doSplit (n - length locations)
+            else [n]
       when (notNull locations) do
         lead <- getLead
-        for_ (doSplit noTimes) \n -> chooseOrRunNM lead n do
+        for_ (doSplit evidenceLeftBehind) \n -> chooseOrRunNM lead n do
           targets locations \l -> removeTokens attrs l Clue 1
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of

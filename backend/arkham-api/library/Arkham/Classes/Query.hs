@@ -268,6 +268,13 @@ selectMaybeM
   -> m b
 selectMaybeM def matcher f = maybe (pure def) f =<< selectOne matcher
 
+selectForMaybeM
+  :: (HasCallStack, Query a, HasGame m)
+  => a
+  -> (QueryElement a -> m ())
+  -> m ()
+selectForMaybeM = selectMaybeM ()
+
 selectOnlyOne
   :: forall a m
    . (HasCallStack, Show a, Query a, HasGame m, Typeable (QueryElement a))

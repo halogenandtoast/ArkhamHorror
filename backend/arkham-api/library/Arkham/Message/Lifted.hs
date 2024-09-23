@@ -26,12 +26,12 @@ import Arkham.Discover qualified as Msg
 import Arkham.Effect.Types (Field (..))
 import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.Enemy.Creation
+import Arkham.Enemy.Helpers qualified as Msg
 import Arkham.Evade
 import Arkham.Evade qualified as Evade
 import Arkham.Fight
 import Arkham.Fight qualified as Fight
 import Arkham.Game.Helpers (getActionsWith, getIsPlayable)
-import Arkham.Game.Helpers qualified as Msg
 import Arkham.Helpers
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Campaign qualified as Msg
@@ -1253,6 +1253,9 @@ passSkillTest = push Msg.PassSkillTest
 ready :: (ReverseQueue m, Targetable target) => target -> m ()
 ready = push . Msg.ready
 
+exhaustThis :: (ReverseQueue m, Targetable target) => target -> m ()
+exhaustThis = push . Msg.Exhaust . toTarget
+
 uiEffect
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 uiEffect s t m = push $ Msg.uiEffect s t m
@@ -1373,8 +1376,11 @@ cancelAttack source _ = push $ CancelNext (toSource source) AttackMessage
 changeAttackDetails :: (ReverseQueue m, AsId a, IdOf a ~ EnemyId) => a -> EnemyAttackDetails -> m ()
 changeAttackDetails eid details = push $ ChangeEnemyAttackDetails (asId eid) details
 
-cancelEnemyDefeat :: (ReverseQueue m, Sourceable source) => source -> m ()
-cancelEnemyDefeat source = push $ CancelNext (toSource source) EnemyDefeatedMessage
+cancelEnemyDefeat
+  :: (MonadTrans t, HasQueue Message m, AsId enemy, IdOf enemy ~ EnemyId)
+  => enemy
+  -> t m ()
+cancelEnemyDefeat enemy = lift $ Msg.cancelEnemyDefeat (asId enemy)
 
 moveWithSkillTest :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
 moveWithSkillTest f = lift $ Arkham.Classes.HasQueue.mapQueue \msg -> if f msg then MoveWithSkillTest msg else msg
@@ -1591,3 +1597,6 @@ createAssetAt c placement = do
 
 crossOutRecordSetEntries :: (Recordable a, ReverseQueue m) => CampaignLogKey -> [a] -> m ()
 crossOutRecordSetEntries k xs = push $ Msg.crossOutRecordSetEntries k xs
+
+healAllDamage :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
+healAllDamage source target = push $ Msg.HealAllDamage (toTarget target) (toSource source)

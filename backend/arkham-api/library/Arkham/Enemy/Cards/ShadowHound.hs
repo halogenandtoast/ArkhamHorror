@@ -20,7 +20,7 @@ shadowHound =
 
 instance HasAbilities ShadowHound where
   getAbilities (ShadowHound a) =
-    extend a [mkAbility a 1 $ forced $ EnemyAttacks #when You AnyEnemyAttack (be a)]
+    extend a [mkAbility a 1 $ forced $ EnemyAttacks #after You AnyEnemyAttack (be a)]
 
 instance RunMessage ShadowHound where
   runMessage msg e@(ShadowHound attrs) = case msg of

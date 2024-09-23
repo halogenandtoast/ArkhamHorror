@@ -1,16 +1,10 @@
-module Arkham.Enemy.Cards.TheSpectralWatcher (
-  theSpectralWatcher,
-  TheSpectralWatcher (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.TheSpectralWatcher (theSpectralWatcher, TheSpectralWatcher (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Token
 
 newtype TheSpectralWatcher = TheSpectralWatcher EnemyAttrs
@@ -18,31 +12,23 @@ newtype TheSpectralWatcher = TheSpectralWatcher EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theSpectralWatcher :: EnemyCard TheSpectralWatcher
-theSpectralWatcher =
-  enemy TheSpectralWatcher Cards.theSpectralWatcher (3, Static 5, 3) (1, 1)
+theSpectralWatcher = enemy TheSpectralWatcher Cards.theSpectralWatcher (3, Static 5, 3) (1, 1)
 
 instance HasAbilities TheSpectralWatcher where
   getAbilities (TheSpectralWatcher a) =
-    withBaseAbilities
+    extend
       a
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ EnemyDefeated Timing.When Anyone ByAny
-          $ EnemyWithId
-          $ toId a
-      ]
+      [groupLimit PerTestOrAbility $ mkAbility a 1 $ forced $ EnemyDefeated #when Anyone ByAny (be a)]
 
 instance RunMessage TheSpectralWatcher where
-  runMessage msg e@(TheSpectralWatcher attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      pushAll
-        [ CancelNext (toSource attrs) EnemyDefeatedMessage
-        , HealAllDamage (toTarget attrs) (toSource attrs)
-        , DisengageEnemyFromAll (toId attrs)
-        , Exhaust (toTarget attrs)
-        , roundModifier attrs attrs DoesNotReadyDuringUpkeep
-        ]
+  runMessage msg e@(TheSpectralWatcher attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      insteadOfDiscarding attrs $ do
+        healAllDamage (attrs.ability 1) attrs
+        disengageEnemyFromAll attrs
+        exhaustThis attrs
+        doesNotReadyDuringUpkeep (attrs.ability 1) attrs
       pure e
     InOutOfPlay outOfPlayMsg@(PlaceTokens _ (isTarget attrs -> True) LostSoul _) -> do
-      TheSpectralWatcher <$> runMessage outOfPlayMsg attrs
-    _ -> TheSpectralWatcher <$> runMessage msg attrs
+      TheSpectralWatcher <$> liftRunMessage outOfPlayMsg attrs
+    _ -> TheSpectralWatcher <$> liftRunMessage msg attrs

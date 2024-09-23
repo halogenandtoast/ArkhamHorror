@@ -1,7 +1,6 @@
 module Arkham.Scenario.Scenarios.DimCarcosa (DimCarcosa (..), dimCarcosa) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
@@ -59,12 +58,7 @@ instance HasChaosTokenValue DimCarcosa where
     Skull -> do
       remainingSanity <- field InvestigatorRemainingSanity iid
       horror <- field InvestigatorHorror iid
-      pure
-        $ toChaosTokenValue
-          attrs
-          Skull
-          (if remainingSanity == 0 then 4 else 2)
-          horror
+      pure $ toChaosTokenValue attrs Skull (if remainingSanity == 0 then 4 else 2) horror
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
     Tablet -> pure $ toChaosTokenValue attrs Tablet 3 5
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 5
@@ -100,16 +94,17 @@ instance RunMessage DimCarcosa where
       story $ if openedThePathBelow then intro1 else intro2
       pure s
     StandaloneSetup -> do
-      lead <- getLead
-      pathOpened <- sample2 YouOpenedThePathBelow YouOpenedThePathAbove
-
       setChaosTokens standaloneChaosTokens
+
+      lead <- getLead
       chooseOne
         lead
         [ Label "Conviction" [RecordCount Conviction 8]
         , Label "Doubt" [RecordCount Doubt 8]
         , Label "Neither" []
         ]
+
+      pathOpened <- sample2 YouOpenedThePathBelow YouOpenedThePathAbove
       record pathOpened
 
       let token = if pathOpened == YouOpenedThePathBelow then Tablet else ElderThing
@@ -215,9 +210,8 @@ instance RunMessage DimCarcosa where
       mTarget <- getSkillTestTarget
       case (mAction, mTarget) of
         (Just action, Just (EnemyTarget eid))
-          | action `elem` [Action.Fight, Action.Evade] -> do
-              isMonsterOrAncientOne <-
-                elem eid <$> select (EnemyOneOf $ map EnemyWithTrait [Monster, AncientOne])
+          | action `elem` [#fight, #evade] -> do
+              isMonsterOrAncientOne <- elem eid <$> select (mapOneOf EnemyWithTrait [Monster, AncientOne])
               pushWhen isMonsterOrAncientOne
                 $ LoseActions iid (ChaosTokenEffectSource ElderThing) 1
         _ -> pure ()

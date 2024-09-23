@@ -159,6 +159,10 @@ moveTo (toSource -> source) iid lid = push $ MoveTo $ move source iid lid
 record :: ReverseQueue m => CampaignLogKey -> m ()
 record = push . Record
 
+recordWhen :: ReverseQueue m => Bool -> CampaignLogKey -> m ()
+recordWhen True = push . Record
+recordWhen False = pure . const ()
+
 recordCount :: ReverseQueue m => CampaignLogKey -> Int -> m ()
 recordCount k = push . RecordCount k
 

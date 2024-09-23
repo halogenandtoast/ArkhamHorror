@@ -239,3 +239,9 @@ placeUnderScenarioReference :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m
 placeUnderScenarioReference defs = do
   cards <- genCards defs
   cardsUnderScenarioReferenceL %= (<> cards)
+
+beginWithStoryAsset :: ReverseQueue m => InvestigatorId -> CardDef -> ScenarioBuilderT m ()
+beginWithStoryAsset iid def = do
+  bloodstainedDagger <- genCard def
+  encounterDeckL %= flip removeEachFromDeck [def]
+  push $ TakeControlOfSetAsideAsset iid bloodstainedDagger

@@ -3,32 +3,31 @@ module Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel (
   murderAtTheExcelsiorHotel,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
-import Arkham.Card.PlayerCard
-import Arkham.ChaosToken
 import Arkham.Classes
-import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Movement
-import Arkham.PlayerCard
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Deck
+import Arkham.Scenario.Helpers hiding (
+  addCampaignCardToDeckChoice,
+  forceAddCampaignCardToDeckChoice,
+  skillTestModifier,
+ )
+import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.MurderAtTheExcelsiorHotel.FlavorText
 import Arkham.Trait (Trait (Detective, Guest, Innocent, Madness, Police))
@@ -67,71 +66,46 @@ instance HasChaosTokenValue MurderAtTheExcelsiorHotel where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage MurderAtTheExcelsiorHotel where
-  runMessage msg s@(MurderAtTheExcelsiorHotel attrs) = case msg of
+  runMessage msg s@(MurderAtTheExcelsiorHotel attrs) = runQueueT $ case msg of
     PreScenarioSetup -> do
-      players <- allPlayers
-      pushAll
-        [ story players intro1
-        , story players (if length players == 1 then intro2 else intro3)
-        , story players intro4
-        ]
+      n <- getPlayerCount
+      story intro1
+      story $ if n == 1 then intro2 else intro3
+      story intro4
       pure s
-    Setup -> do
+    Setup -> runScenarioSetup MurderAtTheExcelsiorHotel attrs do
       lead <- getLead
       otherPlayers <- deleteFirst lead <$> allInvestigators
-      encounterDeck <-
-        buildEncounterDeckExcluding [Enemies.arkhamOfficer] [EncounterSet.MurderAtTheExcelsiorHotel]
+      gather Set.MurderAtTheExcelsiorHotel
 
-      (room225, placeRoom225) <- placeLocationCard Locations.room225
-      (foyer, placeFoyer) <- placeLocationCard Locations.foyerMurderAtTheExcelsiorHotel
+      room225 <- place Locations.room225
+      foyer <- place Locations.foyerMurderAtTheExcelsiorHotel
 
-      otherPlacements <-
-        placeLocationCards_ [Locations.suiteBalcony, Locations.secondFloorHall, Locations.restaurant]
+      placeAll [Locations.suiteBalcony, Locations.secondFloorHall, Locations.restaurant]
 
-      bloodstainedDagger <- genCard Assets.bloodstainedDagger
-      pushAll
-        $ [ SetEncounterDeck encounterDeck
-          , SetActDeck
-          , SetAgendaDeck
-          , placeRoom225
-          , placeFoyer
-          , MoveTo $ move (toSource attrs) lead room225
-          , TakeControlOfSetAsideAsset lead bloodstainedDagger
+      moveTo attrs lead room225
+      beginWithStoryAsset lead Assets.bloodstainedDagger
+      for_ otherPlayers \p -> moveTo attrs p foyer
+
+      setAside
+        [ Assets.sergeantMonroe
+        , Treacheries.whatHaveYouDone
+        , Enemies.arkhamOfficer
+        , Enemies.arkhamOfficer
+        , Enemies.arkhamOfficer
+        ]
+
+      setAgendaDeck [Agendas.theMurder, Agendas.specialInvestigation]
+      setActDeck [Acts.whatHappened, Acts.followingLeads]
+
+      addExtraDeck LeadsDeck
+        =<< genCards
+          [ Assets.alienDevice
+          , Assets.managersKey
+          , Assets.tomeOfRituals
+          , Assets.sinisterSolution
+          , Assets.timeWornLocket
           ]
-        <> [MoveTo $ move (toSource attrs) other foyer | other <- otherPlayers]
-        <> otherPlacements
-
-      setAsideCards <-
-        genCards
-          [ Assets.sergeantMonroe
-          , Treacheries.whatHaveYouDone
-          , Enemies.arkhamOfficer
-          , Enemies.arkhamOfficer
-          , Enemies.arkhamOfficer
-          ]
-
-      agendas <- genCards [Agendas.theMurder, Agendas.specialInvestigation]
-      acts <- genCards [Acts.whatHappened, Acts.followingLeads]
-
-      leadsDeck <-
-        shuffleM
-          =<< genCards
-            [ Assets.alienDevice
-            , Assets.managersKey
-            , Assets.tomeOfRituals
-            , Assets.sinisterSolution
-            , Assets.timeWornLocket
-            ]
-
-      MurderAtTheExcelsiorHotel
-        <$> runMessage
-          msg
-          ( attrs
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
-              & (decksL . at LeadsDeck ?~ leadsDeck)
-              & (setAsideCardsL <>~ setAsideCards)
-          )
     StandaloneSetup -> do
       let
         tokens =
@@ -170,7 +144,7 @@ instance RunMessage MurderAtTheExcelsiorHotel where
               , AutoFail
               , ElderSign
               ]
-      push $ SetChaosTokens tokens
+      setChaosTokens tokens
       pure s
     ResolveChaosToken _ Cultist iid -> do
       innocentInVictory <- selectAny $ VictoryDisplayCardMatch $ #enemy <> withTrait Innocent
@@ -181,127 +155,97 @@ instance RunMessage MurderAtTheExcelsiorHotel where
       mLocation <- field InvestigatorLocation iid
       for_ mLocation \_ ->
         when (clues > 0) do
-          player <- getPlayer iid
           let n = if isEasyStandard attrs then 1 else 2
           withSkillTest \sid ->
-            push
-              $ chooseOne
-                player
-                [ Label
-                    ("Place one of your clues on your location to treat this as a -" <> tshow n)
-                    [ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Tablet) 1
-                    , skillTestModifier
-                        sid
-                        (ChaosTokenEffectSource Tablet)
-                        token
-                        (ChangeChaosTokenModifier (NegativeModifier n))
-                    ]
-                , Label "Skip" []
-                ]
-
+            chooseOneM iid do
+              labeled ("Place one of your clues on your location to treat this as a -" <> tshow n) do
+                push $ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Tablet) 1
+                skillTestModifier sid Tablet token (ChangeChaosTokenModifier (NegativeModifier n))
+              labeled "Skip" nothing
       pure s
     ResolveChaosToken _ ElderThing iid -> do
       innocentInVictory <- selectAny $ VictoryDisplayCardMatch $ #enemy <> withTrait Innocent
-      pushWhen innocentInVictory $ assignHorror iid (ChaosTokenEffectSource Tablet) 1
+      when innocentInVictory $ assignHorror iid (ChaosTokenEffectSource Tablet) 1
       pure s
     ScenarioResolution r -> do
-      players <- allPlayers
-      gainXP <- toGainXp attrs getXp
-      leadPlayer <- getLeadPlayer
+      lead <- getLead
       case r of
         NoResolution -> do
           anyResigned <- selectAny ResignedInvestigator
           if anyResigned
             then do
-              pushAll [story players noResolutionResigned, Record TheInvestigatorsFledTheSceneOfTheCrime, R3]
+              story noResolutionResigned
+              record TheInvestigatorsFledTheSceneOfTheCrime
+              push R3
             else do
-              pushAll [story players noResolution, Record TheExcelsiorClaimsAnotherVictim, R2]
+              story noResolution
+              record TheExcelsiorClaimsAnotherVictim
+              push R2
         Resolution 1 -> do
-          lead <- getLead
           investigators <- allInvestigators
+
+          story resolution1
+          record TheExcelsiorIsQuietForNow
+          forceAddCampaignCardToDeckChoice [lead] Treacheries.whatHaveYouDone
+          addCampaignCardToDeckChoice [lead] Assets.bloodstainedDagger
+
           policeOnYourSide <- remembered ThePoliceAreOnYourSide
+          when policeOnYourSide do
+            addCampaignCardToDeckChoice investigators Assets.sergeantMonroe
+
           policeInVictory <- selectAny $ VictoryDisplayCardMatch $ #enemy <> withTrait Police
-
-          let cards =
-                filter
-                  ( (`cardMatch` CardWithOneOf [CardWithTrait Detective, CardWithTrait Madness])
-                      . (`lookupPlayerCard` nullCardId)
-                  )
-                  (toList allPlayerCards)
-
-          let addWeakness = not policeOnYourSide && policeInVictory
-
-          pushAll
-            $ [ story players resolution1
-              , Record TheExcelsiorIsQuietForNow
-              , AddCampaignCardToDeck lead Treacheries.whatHaveYouDone
-              , addCampaignCardToDeckChoice leadPlayer [lead] Assets.bloodstainedDagger
-              ]
-            <> [ addCampaignCardToDeckChoice leadPlayer investigators Assets.sergeantMonroe
-               | policeOnYourSide
-               ]
-            <> [ chooseOne leadPlayer [CardLabel (toCardCode card) [AddCampaignCardToDeck lead card] | card <- cards]
-               | addWeakness
-               ]
-            <> gainXP
-            <> [EndOfGame Nothing]
+          when (not policeOnYourSide && policeInVictory) do
+            searchCollectionForRandom
+              lead
+              attrs
+              (mapOneOf CardWithTrait [Detective, Madness] <> BasicWeaknessCard)
+          allGainXp attrs
+          endOfScenario
         Resolution 2 -> do
           if scenarioTimesPlayed attrs == 0
-            then
-              pushAll
-                [ story players resolution2
-                , chooseOne
-                    leadPlayer
-                    [ Label "Play again" [ScenarioResolutionStep 10 (Resolution 2)]
-                    , Label "Leave things alone" [ScenarioResolutionStep 2 (Resolution 2)]
-                    ]
+            then do
+              story resolution2
+              chooseOne
+                lead
+                [ Label "Play again" [ScenarioResolutionStep 10 (Resolution 2)]
+                , Label "Leave things alone" [ScenarioResolutionStep 2 (Resolution 2)]
                 ]
-            else pushAll [story players resolution2, ScenarioResolutionStep 2 (Resolution 2)]
+            else do
+              story resolution2
+              push $ ScenarioResolutionStep 2 (Resolution 2)
         Resolution 3 -> do
           if scenarioTimesPlayed attrs == 0
-            then
-              pushAll
-                [ story players resolution3
-                , chooseOne
-                    leadPlayer
-                    [ Label "Play again" [ScenarioResolutionStep 10 (Resolution 3)]
-                    , Label "Leave things alone" [ScenarioResolutionStep 2 (Resolution 3)]
-                    ]
+            then do
+              story resolution3
+              chooseOne
+                lead
+                [ Label "Play again" [ScenarioResolutionStep 10 (Resolution 3)]
+                , Label "Leave things alone" [ScenarioResolutionStep 2 (Resolution 3)]
                 ]
-            else pushAll [story players resolution3, ScenarioResolutionStep 2 (Resolution 3)]
+            else do
+              story resolution3
+              push $ ScenarioResolutionStep 2 (Resolution 3)
         _ -> error "Invalid Resolution"
       pure s
     ScenarioResolutionStep 2 (Resolution 2) -> do
-      gainXP <- toGainXp attrs getXp
+      record TheMurdersContinueUnsolved
+      allGainXp attrs
       lead <- getLead
-      leadPlayer <- getLeadPlayer
-      pushAll
-        $ [ Record TheMurdersContinueUnsolved
-          , AddCampaignCardToDeck lead Treacheries.whatHaveYouDone
-          , addCampaignCardToDeckChoice leadPlayer [lead] Assets.bloodstainedDagger
-          ]
-        <> gainXP
-        <> [EndOfGame Nothing]
+      forceAddCampaignCardToDeckChoice [lead] Treacheries.whatHaveYouDone
+      addCampaignCardToDeckChoice [lead] Assets.bloodstainedDagger
+      endOfScenario
       pure s
     ScenarioResolutionStep 2 (Resolution 3) -> do
-      gainXP <- toGainXp attrs getXp
+      record TheMurdersContinueUnsolved
+      allGainXp attrs
       lead <- getLead
-      leadPlayer <- getLeadPlayer
-
-      let cards =
-            filter
-              ( (`cardMatch` CardWithOneOf [CardWithTrait Detective, CardWithTrait Madness])
-                  . (`lookupPlayerCard` nullCardId)
-              )
-              (toList allPlayerCards)
-      pushAll
-        $ [ Record TheMurdersContinueUnsolved
-          , AddCampaignCardToDeck lead Treacheries.whatHaveYouDone
-          , addCampaignCardToDeckChoice leadPlayer [lead] Assets.bloodstainedDagger
-          , chooseOne leadPlayer [CardLabel (toCardCode card) [AddCampaignCardToDeck lead card] | card <- cards]
-          ]
-        <> gainXP
-        <> [EndOfGame Nothing]
+      forceAddCampaignCardToDeckChoice [lead] Treacheries.whatHaveYouDone
+      addCampaignCardToDeckChoice [lead] Assets.bloodstainedDagger
+      searchCollectionForRandom
+        lead
+        attrs
+        (mapOneOf CardWithTrait [Detective, Madness] <> BasicWeaknessCard)
+      endOfScenario
       pure s
     ScenarioResolutionStep 10 _ -> do
       standalone <- getIsStandalone
@@ -314,8 +258,8 @@ instance RunMessage MurderAtTheExcelsiorHotel where
            , Setup
            , EndSetup
            ]
-      let resetAttrs = toAttrs $ murderAtTheExcelsiorHotel (scenarioDifficulty attrs)
+      let resetAttrs = toAttrs $ murderAtTheExcelsiorHotel attrs.difficulty
       pure
         . MurderAtTheExcelsiorHotel
         $ resetAttrs {scenarioTimesPlayed = scenarioTimesPlayed attrs + 1}
-    _ -> MurderAtTheExcelsiorHotel <$> runMessage msg attrs
+    _ -> MurderAtTheExcelsiorHotel <$> liftRunMessage msg attrs

@@ -111,6 +111,9 @@ setAside defs = do
   setAsideCardsL %= (<> cards)
   encounterDeckL %= flip removeEachFromDeck defs
 
+removeEvery :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
+removeEvery defs = encounterDeckL %= flip removeEveryFromDeck defs
+
 fromSetAside :: (HasCallStack, ReverseQueue m) => CardDef -> ScenarioBuilderT m Card
 fromSetAside def = do
   cards <- use setAsideCardsL

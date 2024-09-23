@@ -325,8 +325,7 @@ instance RunMessage EnemyAttrs where
     ReadyExhausted | not enemyDefeated -> do
       mods <- getModifiers a
       -- swarm will be readied by host
-      let alternativeSources = [source | AlternativeReady source <- mods]
-      case alternativeSources of
+      case [source | AlternativeReady source <- mods] of
         [] ->
           when (enemyExhausted && DoesNotReadyDuringUpkeep `notElem` mods && not (isSwarm a))
             $ pushAll (resolve $ Ready $ toTarget a)
@@ -968,7 +967,7 @@ instance RunMessage EnemyAttrs where
       afterWindow <-
         checkWindows [mkAfter $ Window.Healed DamageType (toTarget a) source (enemyDamage a)]
       push afterWindow
-      pure $ a & tokensL %~ removeAllTokens Token.Damage
+      pure $ a & tokensL %~ removeAllTokens Token.Damage & defeatedL .~ False
     Msg.EnemyDamage eid damageAssignment | eid == enemyId -> do
       let
         source = damageAssignmentSource damageAssignment
@@ -1114,8 +1113,7 @@ instance RunMessage EnemyAttrs where
                            )
 
               pushAll $ [whenExcessMsg, afterExcessMsg, whenMsg, afterMsg] <> defeatMsgs
-          a' <- if amount' > 0 then runMessage (PlaceTokens source (toTarget a) #damage amount') a else pure a
-          pure $ a' & assignedDamageL .~ mempty
+          pure $ a & assignedDamageL .~ mempty & tokensL . at #damage . non 0 +~ amount'
     DefeatEnemy eid _ source | eid == enemyId -> do
       canBeDefeated <- withoutModifier a CannotBeDefeated
       modifiedHealth <- fieldJust EnemyHealth (toId a)

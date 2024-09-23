@@ -12,6 +12,7 @@ export interface Props {
   playerId: string
 }
 
+const model = defineModel()
 const props = defineProps<Props>()
 const waiting = ref(false)
 const deck = ref<string | null>(null)
@@ -27,21 +28,24 @@ const xp = computed(() => investigator.value?.xp)
 const skipping = ref(false)
 
 function loadDeck() {
-  if (!deck.value) {
-    return;
-  }
+  if (!deck.value) return
+  model.value = null
 
-  const matches = deck.value.match(/\/(deck(list)?)(\/view)?\/([^/]+)/);
-
-  if (matches) {
+  const arkhamDbRegex = /https:\/\/arkhamdb\.com\/(deck(list)?)(\/view)?\/([^/]+)/
+  const arkhamBuildRegex = /https:\/\/arkham\.build\/(?:deck\/view|share)\/([^/]+)/
+  
+  let matches
+  if ((matches = deck.value.match(arkhamDbRegex))) {
     deckUrl.value = `https://arkhamdb.com/api/public/${matches[1]}/${matches[4]}`
-    fetch(deckUrl.value)
-      .then((response) => response.json(), () => {
-        deckUrl.value = null;
-      })
+  } else if ((matches = deck.value.match(arkhamBuildRegex))) {
+    deckUrl.value = `https://api.arkham.build/v1/public/share/${matches[1]}`
   } else {
-    deckUrl.value = null;
+    return
   }
+
+  fetch(deckUrl.value)
+    .then((response) => response.json(), () => model.value = null)
+    .then((data) => model.value = {...data, url: deckUrl.value}, () => model.value = null)
 }
 
 function pasteDeck(evt: ClipboardEvent) {
@@ -87,7 +91,7 @@ async function skip() {
             v-model="deck"
             @change="loadDeck"
             @paste.prevent="pasteDeck($event)"
-            placeholder="ArkhamDB deck url"
+            placeholder="ArkhamDB or arkham.build deck url"
           />
           <div class="buttons">
             <button @click.prevent="upgrade">Upgrade</button>

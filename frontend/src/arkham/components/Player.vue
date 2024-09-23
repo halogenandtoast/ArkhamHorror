@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import gsap from 'gsap';
-import { computed, inject, Ref, ref, ComputedRef, reactive } from 'vue';
+import { computed, inject, Ref, ref, ComputedRef, reactive, watch } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { toCardContents } from '@/arkham/types/Card';
@@ -198,6 +198,14 @@ const doShowCards = (event: Event, cards: ComputedRef<ArkhamCard.Card[]>, title:
 }
 
 const showDiscards = (e: Event) => doShowCards(e, discards, 'Discards', true)
+
+watch(choices, async (newChoices) => {
+  const shouldShow = newChoices.some((c) => c.tag === "AbilityLabel" && discards.value.map((d) => toCardContents(d).id).includes(c.ability.source.contents))
+  if (shouldShow) {
+    showDiscards(new CustomEvent("showDiscards"))
+  }
+})
+
 const hideCards = () => {
   showCards.ref = noCards
   viewingDiscard.value = false

@@ -158,9 +158,8 @@ instance RunMessage TheSecretName where
       let (bottom, top) = splitAt 3 unknownPlaces
       witchHouseRuins <- genCard Locations.witchHouseRuins
       bottom' <- shuffleM $ witchHouseRuins : bottom
-      let unknownPlacesDeck = top <> bottom'
 
-      addExtraDeck UnknownPlacesDeck unknownPlacesDeck
+      addExtraDeck UnknownPlacesDeck (top <> bottom')
     ResolveChaosToken _ Cultist iid -> do
       push $ DrawAnotherChaosToken iid
       pure s
@@ -168,7 +167,7 @@ instance RunMessage TheSecretName where
       push HuntersMove
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
-      case chaosTokenFace token of
+      case token.face of
         Cultist ->
           push
             $ DiscardTopOfEncounterDeck
@@ -177,8 +176,7 @@ instance RunMessage TheSecretName where
               (toSource attrs)
               Nothing
         Tablet -> do
-          mNahab <- selectOne $ enemyIs Enemies.nahab
-          for_ mNahab $ \nahab -> do
+          selectForMaybeM (enemyIs Enemies.nahab) \nahab -> do
             if isEasyStandard attrs
               then do
                 atYourLocation <- nahab <=~> EnemyAt (locationWithInvestigator iid)
@@ -204,12 +202,11 @@ instance RunMessage TheSecretName where
       let
         brownJenkinBonus = if brownJenkinDefeated meta then 1 else 0
         nahabBonus = if nahabDefeated meta then 1 else 0
-        addTheBlackBook =
-          chooseOneM lead do
-            labeled "Do not add The Black Book" nothing
-            targets iids \iid -> do
-              addCampaignCardToDeck iid Assets.theBlackBook
-              addChaosToken Skull
+        addTheBlackBook = chooseOneM lead do
+          labeled "Do not add The Black Book" nothing
+          targets iids \iid -> do
+            addCampaignCardToDeck iid Assets.theBlackBook
+            addChaosToken Skull
       case resolution of
         NoResolution -> do
           story noResolution

@@ -150,9 +150,13 @@ const tokenEffects = computed(() => {
 
   const difficulty = ['Easy', 'Standard'].includes(scenario.difficulty) ? 'easyStandard' : 'hardExpert'
 
+  // lowercase the first letter
+  const lowerFirst = (str: string) => str.charAt(0).toLowerCase() + str.slice(1)
+
+
   return ["Skull", "Cultist", "Tablet", "ElderThing"].filter((face) => faces.includes(face)).map((face) => 
     `<img src='${chaosTokenImage(face)}' width=23 /><span>`
-          + formatContent(t(`${scenarioToI18n(scenario)}.tokens.${difficulty}.${face.toLowerCase()}`)) + `</span>`
+          + formatContent(t(`${scenarioToI18n(scenario)}.tokens.${difficulty}.${lowerFirst(face)}`)) + `</span>`
           )
 })
 </script>

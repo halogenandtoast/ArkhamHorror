@@ -1,23 +1,15 @@
-module Arkham.Scenario.Scenarios.DimCarcosa (
-  DimCarcosa (..),
-  dimCarcosa,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.DimCarcosa (DimCarcosa (..), dimCarcosa) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
-import Arkham.Card
-import Arkham.ChaosToken
 import Arkham.Classes
-import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Card
-import Arkham.Helpers.Log
+import Arkham.Helpers.Log hiding (recordSetInsert)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
@@ -25,11 +17,10 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Helpers hiding (recordSetInsert)
+import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.DimCarcosa.Story
 import Arkham.Token
@@ -103,196 +94,118 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage DimCarcosa where
-  runMessage msg s@(DimCarcosa attrs) = case msg of
-    StandaloneSetup -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      lead <- getLeadPlayer
-      pathOpened <- sample (YouOpenedThePathBelow :| [YouOpenedThePathAbove])
-      let
-        token =
-          if pathOpened == YouOpenedThePathBelow then Tablet else ElderThing
-
-      pushAll
-        [ SetChaosTokens standaloneChaosTokens
-        , chooseOne
-            lead
-            [ Label "Conviction" [RecordCount Conviction 8]
-            , Label "Doubt" [RecordCount Doubt 8]
-            , Label "Neither" []
-            ]
-        , Record pathOpened
-        , AddChaosToken token
-        , AddChaosToken token
-        , AddCampaignCardToDeck leadInvestigatorId Enemies.theManInThePallidMask
-        ]
+  runMessage msg s@(DimCarcosa attrs) = runQueueT $ case msg of
+    PreScenarioSetup -> do
+      openedThePathBelow <- getHasRecord YouOpenedThePathBelow
+      story $ if openedThePathBelow then intro1 else intro2
       pure s
-    Setup -> do
+    StandaloneSetup -> do
+      lead <- getLead
+      pathOpened <- sample2 YouOpenedThePathBelow YouOpenedThePathAbove
+
+      setChaosTokens standaloneChaosTokens
+      chooseOne
+        lead
+        [ Label "Conviction" [RecordCount Conviction 8]
+        , Label "Doubt" [RecordCount Doubt 8]
+        , Label "Neither" []
+        ]
+      record pathOpened
+
+      let token = if pathOpened == YouOpenedThePathBelow then Tablet else ElderThing
+      addChaosToken token
+      addChaosToken token
+      addCampaignCardToDeck lead Enemies.theManInThePallidMask
+      pure s
+    Setup -> runScenarioSetup DimCarcosa attrs do
       doubt <- getDoubt
       conviction <- getConviction
-      lead <- getLeadPlayer
+      lead <- getLead
 
-      push
-        $ if doubt + conviction <= 5
-          then SetupStep (toTarget attrs) 1
-          else case compare doubt conviction of
-            GT -> SetupStep (toTarget attrs) 2
-            LT -> SetupStep (toTarget attrs) 3
-            EQ ->
-              chooseOne
-                lead
-                [ Label
-                    "Use Search For the Stranger (v. II)"
-                    [SetupStep (toTarget attrs) 2]
-                , Label
-                    "Use Search For the Stranger (v. III)"
-                    [SetupStep (toTarget attrs) 3]
-                ]
-      pure s
-    SetupStep (isTarget attrs -> True) n -> do
+      if doubt + conviction <= 5
+        then push $ SetupStep (toTarget attrs) 1
+        else case compare doubt conviction of
+          GT -> push $ SetupStep (toTarget attrs) 2
+          LT -> push $ SetupStep (toTarget attrs) 3
+          EQ ->
+            chooseOne
+              lead
+              [ Label "Use Search For the Stranger (v. II)" [SetupStep (toTarget attrs) 2]
+              , Label "Use Search For the Stranger (v. III)" [SetupStep (toTarget attrs) 3]
+              ]
+    SetupStep (isTarget attrs -> True) n -> runScenarioSetup DimCarcosa attrs do
+      gather Set.DimCarcosa
+      gather Set.Delusions
+      gather Set.CultOfTheYellowSign
+      gather Set.InhabitantsOfCarcosa
+      gather Set.AgentsOfHastur
+      gather Set.StrikingFear
+
+      shoresOfHali <- place Locations.shoresOfHali
+      darkSpires <- place Locations.darkSpires
+
+      (bleakPlains, setAsideBleakPlains) <-
+        sampleWithRest $ Locations.bleakPlainsBleakDesolation :| [Locations.bleakPlainsStarsOfAldebaran]
+      (ruinsOfCarcosa, setAsideRuinsOfCarcosa) <-
+        sampleWithRest
+          $ Locations.ruinsOfCarcosaTheCoffin
+          :| [ Locations.ruinsOfCarcosaInhabitantOfCarcosa
+             , Locations.ruinsOfCarcosaAMomentsRest
+             ]
+      (dimStreets, setAsideDimStreets) <-
+        sampleWithRest
+          $ Locations.dimStreetsMappingTheStreets
+          :| [ Locations.dimStreetsTheArchway
+             , Locations.dimStreetsTheKingsParade
+             ]
+      (depthsOfDemhe, setAsideDepthsOfDemhe) <-
+        sampleWithRest
+          $ Locations.depthsOfDemheStepsOfThePalace
+          :| [Locations.depthsOfDemheTheHeightOfTheDepths]
+
+      placeAll
+        [ bleakPlains
+        , ruinsOfCarcosa
+        , dimStreets
+        , depthsOfDemhe
+        , Locations.palaceOfTheKing
+        ]
+
+      openedThePathBelow <- getHasRecord YouOpenedThePathBelow
+      startAt $ if openedThePathBelow then shoresOfHali else darkSpires
+
+      theManInThePallidMask <- getCampaignStoryCard Enemies.theManInThePallidMask
+      push $ RemoveFromBearersDeckOrDiscard theManInThePallidMask
+
+      setAside
+        $ Enemies.theManInThePallidMask
+        : [ Enemies.hasturTheKingInYellow
+          , Enemies.hasturLordOfCarcosa
+          , Enemies.hasturTheTatteredKing
+          , Enemies.beastOfAldebaran
+          ]
+          <> setAsideBleakPlains
+          <> setAsideRuinsOfCarcosa
+          <> setAsideDimStreets
+          <> setAsideDepthsOfDemhe
+
+      setAgendaDeck [Agendas.madnessCoils, Agendas.madnessDrowns, Agendas.madnessDies]
+
       let
         act2 = case n of
           1 -> Acts.searchForTheStrangerV1
           2 -> Acts.searchForTheStrangerV2
           3 -> Acts.searchForTheStrangerV3
           _ -> error $ "Invalid setup step, got: " <> show n
-
-      players <- allPlayers
-      encounterDeck <-
-        buildEncounterDeckExcluding
-          [ Enemies.hasturTheKingInYellow
-          , Enemies.hasturLordOfCarcosa
-          , Enemies.hasturTheTatteredKing
-          , Enemies.beastOfAldebaran
-          , Locations.shoresOfHali
-          , Locations.bleakPlainsBleakDesolation
-          , Locations.bleakPlainsStarsOfAldebaran
-          , Locations.ruinsOfCarcosaTheCoffin
-          , Locations.ruinsOfCarcosaInhabitantOfCarcosa
-          , Locations.ruinsOfCarcosaAMomentsRest
-          , Locations.dimStreetsMappingTheStreets
-          , Locations.dimStreetsTheArchway
-          , Locations.dimStreetsTheKingsParade
-          , Locations.depthsOfDemheStepsOfThePalace
-          , Locations.depthsOfDemheTheHeightOfTheDepths
-          , Locations.darkSpires
-          , Locations.palaceOfTheKing
-          ]
-          [ EncounterSet.DimCarcosa
-          , EncounterSet.Delusions
-          , EncounterSet.CultOfTheYellowSign
-          , EncounterSet.InhabitantsOfCarcosa
-          , EncounterSet.AgentsOfHastur
-          , EncounterSet.StrikingFear
-          ]
-
-      (shoresOfHaliId, placeShoresOfHali) <-
-        placeLocationCard
-          Locations.shoresOfHali
-      (darkSpiresId, placeDarkSpires) <- placeLocationCard Locations.darkSpires
-      palaceOfTheKing <- genCard Locations.palaceOfTheKing
-
-      (bleakPlains, setAsideBleakPlains) <-
-        sampleWithRest
-          =<< genCards
-            ( Locations.bleakPlainsBleakDesolation
-                :| [Locations.bleakPlainsStarsOfAldebaran]
-            )
-      (ruinsOfCarcosa, setAsideRuinsOfCarcosa) <-
-        sampleWithRest
-          =<< genCards
-            ( Locations.ruinsOfCarcosaTheCoffin
-                :| [ Locations.ruinsOfCarcosaInhabitantOfCarcosa
-                   , Locations.ruinsOfCarcosaAMomentsRest
-                   ]
-            )
-      (dimStreets, setAsideDimStreets) <-
-        sampleWithRest
-          =<< genCards
-            ( Locations.dimStreetsMappingTheStreets
-                :| [ Locations.dimStreetsTheArchway
-                   , Locations.dimStreetsTheKingsParade
-                   ]
-            )
-      (depthsOfDemhe, setAsideDepthsOfDemhe) <-
-        sampleWithRest
-          =<< genCards
-            ( Locations.depthsOfDemheStepsOfThePalace
-                :| [Locations.depthsOfDemheTheHeightOfTheDepths]
-            )
-
-      placeRest <-
-        traverse
-          placeLocation_
-          [ bleakPlains
-          , ruinsOfCarcosa
-          , dimStreets
-          , depthsOfDemhe
-          , palaceOfTheKing
-          ]
-
-      openedThePathBelow <- getHasRecord YouOpenedThePathBelow
-      let
-        (intro, startingLocation) =
-          if openedThePathBelow
-            then (intro1, shoresOfHaliId)
-            else (intro2, darkSpiresId)
-
-      theManInThePallidMask <-
-        getCampaignStoryCard
-          Enemies.theManInThePallidMask
-
-      setAsideCards <-
-        genCards
-          [ Enemies.hasturTheKingInYellow
-          , Enemies.hasturLordOfCarcosa
-          , Enemies.hasturTheTatteredKing
-          , Enemies.beastOfAldebaran
-          ]
-
-      pushAll
-        $ [ story players intro
-          , SetEncounterDeck encounterDeck
-          , SetAgendaDeck
-          , SetActDeck
-          ]
-        <> (placeDarkSpires : placeShoresOfHali : placeRest)
-        <> [ MoveAllTo (toSource attrs) startingLocation
-           , RemoveFromBearersDeckOrDiscard theManInThePallidMask
-           ]
-      agendas <-
-        genCards
-          [Agendas.madnessCoils, Agendas.madnessDrowns, Agendas.madnessDies]
-      acts <- genCards [Acts.inLostCarcosa, act2, Acts.theKingInTatters]
-      DimCarcosa
-        <$> runMessage
-          msg
-          ( attrs
-              & ( setAsideCardsL
-                    <>~ PlayerCard theManInThePallidMask
-                    : ( setAsideCards
-                          <> setAsideBleakPlains
-                          <> setAsideRuinsOfCarcosa
-                          <> setAsideDimStreets
-                          <> setAsideDepthsOfDemhe
-                      )
-                )
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
-          )
+      setActDeck [Acts.inLostCarcosa, act2, Acts.theKingInTatters]
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
-      when (chaosTokenFace token == Cultist)
-        $ push
-        $ InvestigatorAssignDamage
-          iid
-          (ChaosTokenEffectSource Cultist)
-          DamageAny
-          0
-          (if isEasyStandard attrs then 1 else 2)
-      when (chaosTokenFace token == Tablet) $ do
+      when (token.face == Cultist) do
+        assignHorror iid Cultist $ if isEasyStandard attrs then 1 else 2
+      when (token.face == Tablet) $ do
         hasturInPlay <- selectAny $ EnemyWithTitle "Hastur"
         when hasturInPlay $ do
           mlid <- field InvestigatorLocation iid
-          for_ mlid $ \lid -> push $ PlaceTokens (toSource attrs) (LocationTarget lid) Clue 1
+          for_ mlid $ \lid -> placeTokens attrs lid Clue 1
       pure s
     ResolveChaosToken _ Cultist iid -> do
       push $ DrawAnotherChaosToken iid
@@ -310,16 +223,12 @@ instance RunMessage DimCarcosa where
         _ -> pure ()
       pure s
     ScenarioResolution res -> do
-      players <- allPlayers
-      investigatorIds <- allInvestigatorIds
       conviction <- getConviction
       doubt <- getDoubt
-      gainXp <- toGainXp attrs $ getXpWithBonus 5
       possessed <-
         select
           $ InvestigatorWithTreacheryInHand
-          $ TreacheryOneOf
-          $ map
+          $ mapOneOf
             treacheryIs
             [ Treacheries.possessionMurderous
             , Treacheries.possessionTraitorous
@@ -328,40 +237,37 @@ instance RunMessage DimCarcosa where
       let recordPossessed = recordSetInsert Possessed (map unInvestigatorId possessed)
       case res of
         NoResolution -> case compare conviction doubt of
-          GT -> push $ scenarioResolution 4
-          EQ -> push $ scenarioResolution 4
-          LT -> push $ scenarioResolution 5
+          GT -> push R4
+          EQ -> push R4
+          LT -> push R5
         Resolution 1 -> do
-          pushAll
-            $ [story players resolution1]
-            <> [SufferTrauma iid 2 2 | iid <- investigatorIds]
-            <> gainXp
-            <> [recordPossessed, EndOfGame Nothing]
+          story resolution1
+          eachInvestigator \iid -> sufferTrauma iid 2 2
+          allGainXpWithBonus attrs 5
+          recordPossessed
+          endOfScenario
         Resolution 2 -> do
-          pushAll
-            $ [story players resolution2]
-            <> [SufferTrauma iid 0 2 | iid <- investigatorIds]
-            <> gainXp
-            <> [recordPossessed, EndOfGame Nothing]
+          story resolution2
+          eachInvestigator (`sufferMentalTrauma` 2)
+          allGainXpWithBonus attrs 5
+          recordPossessed
+          endOfScenario
         Resolution 3 -> do
-          pushAll
-            $ [story players resolution3]
-            <> [SufferTrauma iid 2 0 | iid <- investigatorIds]
-            <> gainXp
-            <> [recordPossessed, EndOfGame Nothing]
+          story resolution3
+          eachInvestigator (`sufferPhysicalTrauma` 2)
+          allGainXpWithBonus attrs 5
+          recordPossessed
+          endOfScenario
         Resolution 4 -> do
-          pushAll
-            $ [ story players resolution4
-              , Record
-                  TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
-              ]
-            <> map DrivenInsane investigatorIds
-            <> [GameOver]
+          story resolution4
+          record TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
+          eachInvestigator drivenInsane
+          gameOver
         Resolution 5 -> do
-          pushAll
-            $ [story players resolution5, Record HasturHasYouInHisGrasp]
-            <> map DrivenInsane investigatorIds
-            <> [GameOver]
+          story resolution5
+          record HasturHasYouInHisGrasp
+          eachInvestigator drivenInsane
+          gameOver
         _ -> error "Unhandled resolution"
       pure s
-    _ -> DimCarcosa <$> runMessage msg attrs
+    _ -> DimCarcosa <$> liftRunMessage msg attrs

@@ -80,6 +80,9 @@ setEncounterDeck = push . SetEncounterDeck
 setAgendaDeck :: ReverseQueue m => [CardDef] -> m ()
 setAgendaDeck = genCards >=> push . SetAgendaDeckCards 1
 
+setAgendaDeckN :: ReverseQueue m => Int -> [CardDef] -> m ()
+setAgendaDeckN n = genCards >=> push . SetAgendaDeckCards n
+
 setActDeck :: ReverseQueue m => [CardDef] -> m ()
 setActDeck = genCards >=> push . SetActDeckCards 1
 

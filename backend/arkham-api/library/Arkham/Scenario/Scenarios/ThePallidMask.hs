@@ -139,11 +139,7 @@ instance RunMessage ThePallidMask where
       randomToken <- sample (Cultist :| [Tablet, ElderThing])
       setChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
       addCampaignCardToDeck lead Enemies.theManInThePallidMask
-      pure
-        . ThePallidMask
-        $ attrs
-        & standaloneCampaignLogL
-        .~ standaloneCampaignLog
+      pure . ThePallidMask $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
     Setup -> runScenarioSetup ThePallidMask attrs do
       gather Set.ThePallidMask
       gather Set.Ghouls
@@ -168,7 +164,6 @@ instance RunMessage ThePallidMask where
       didNotEscapeGazeOfThePhantom <- getHasRecord YouDidNotEscapeTheGazeOfThePhantom
       unableToFindNigel <- getHasRecord YouWereUnableToFindNigel
       let awokeInsideTheCatacombs = didNotEscapeGazeOfThePhantom || unableToFindNigel
-      -- (startingLocation, remainingCatacombs) <-
       let startLabel = unLabel $ positionToLabel startPosition
       (start, remainingCatacombs) <-
         if awokeInsideTheCatacombs

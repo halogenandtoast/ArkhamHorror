@@ -27,6 +27,10 @@ removeEachFromDeck :: HasCardDef a => Deck a -> [CardDef] -> Deck a
 removeEachFromDeck deck removals = flip withDeck deck $ \cards ->
   foldl' (\cs m -> deleteFirstMatch ((== m) . toCardDef) cs) cards removals
 
+removeEveryFromDeck :: HasCardDef a => Deck a -> [CardDef] -> Deck a
+removeEveryFromDeck deck removals = flip withDeck deck $ \cards ->
+  foldl' (\cs m -> filter ((/= m) . toCardDef) cs) cards removals
+
 getDeck :: HasGame m => Deck.DeckSignifier -> m [Card]
 getDeck = \case
   Deck.InvestigatorDeck iid -> fieldMap InvestigatorDeck (map PlayerCard . unDeck) iid

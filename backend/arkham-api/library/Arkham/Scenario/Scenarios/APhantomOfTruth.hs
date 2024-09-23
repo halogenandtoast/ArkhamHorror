@@ -5,25 +5,16 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Card
-import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Classes.HasGame
-import Arkham.Deck
-import Arkham.Difficulty
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Game.Helpers
-import Arkham.Helpers
+import Arkham.Game.Helpers hiding (recordSetInsert, setupModifier, skillTestModifier)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
+import Arkham.Message.Lifted.Choose
 import Arkham.Prelude
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 import Arkham.Scenarios.APhantomOfTruth.Story
 import Arkham.Trait (Trait (Byakhee))
@@ -80,58 +71,38 @@ standaloneChaosTokens =
   , ElderSign
   ]
 
-gatherTheMidnightMasks :: CardGen m => Int -> Int -> m [EncounterCard]
-gatherTheMidnightMasks conviction doubt = do
-  traverse genEncounterCard
-    $ if conviction > doubt
-      then replicate 3 Treacheries.huntingShadow
-      else replicate 2 Treacheries.falseLead
-
-cultistEffect :: (HasGame m, HasQueue Message m) => m ()
+cultistEffect :: ReverseQueue m => m ()
 cultistEffect = do
-  lead <- getLeadPlayer
+  lead <- getLead
   byakhee <- select $ EnemyWithTrait Byakhee <> UnengagedEnemy
   byakheePairs <- forToSnd byakhee (select . NearestToEnemy . EnemyWithId)
-  push
-    $ chooseOneAtATime
-      lead
-      [ targetLabel eid (moveTowardMessages lead eid hset)
-      | (eid, hset) <- byakheePairs
-      ]
+  chooseOneAtATimeM lead do
+    for_ byakheePairs \(eid, hset) -> do
+      when (notNull hset) $ targeting eid (moveTowardMessages lead eid hset)
  where
   moveTowardMessages lead eid hset = case hset of
-    [] -> []
-    [x] -> [moveToward eid x]
-    xs -> [chooseOne lead [targetLabel x [moveToward eid x] | x <- xs]]
-  moveToward eid x = MoveToward (toTarget eid) (locationWithInvestigator x)
+    [] -> nothing
+    [x] -> moveToward eid x
+    xs -> chooseOneM lead do
+      for_ xs \x -> targeting x $ moveToward eid x
+  moveToward eid x = push $ MoveToward (toTarget eid) (locationWithInvestigator x)
 
 instance RunMessage APhantomOfTruth where
-  runMessage msg s@(APhantomOfTruth attrs) = case msg of
+  runMessage msg s@(APhantomOfTruth attrs) = runQueueT $ case msg of
     StandaloneSetup -> do
-      lead <- getLeadPlayer
-      leadId <- getLeadInvestigatorId
+      lead <- getLead
       theManInThePallidMask <- genCard Enemies.theManInThePallidMask
       randomToken <- sample (Cultist :| [Tablet, ElderThing])
-      pushAll
-        [ SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
-        , chooseOne
-            lead
-            [ Label "Conviction" [RecordCount Conviction 1]
-            , Label "Doubt" [RecordCount Doubt 1]
-            ]
-        , ShuffleCardsIntoDeck (InvestigatorDeck leadId) [theManInThePallidMask]
-        ]
+      setChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
+      chooseOneM lead do
+        labeled "Conviction" markConviction
+        labeled "Doubt" markDoubt
+      shuffleCardsIntoDeck lead [theManInThePallidMask]
       pure s
     PreScenarioSetup -> do
-      investigatorIds <- allInvestigatorIds
-      lead <- getLeadPlayer
-      players <- allPlayers
-
       theKingClaimedItsVictims <- getHasRecord TheKingClaimedItsVictims
       youIntrudedOnASecretMeeting <- getHasRecord YouIntrudedOnASecretMeeting
-      youSlayedTheMonstersAtTheDinnerParty <-
-        getHasRecord
-          YouSlayedTheMonstersAtTheDinnerParty
+      youSlayedTheMonstersAtTheDinnerParty <- getHasRecord YouSlayedTheMonstersAtTheDinnerParty
       thePoliceAreSuspiciousOfYou <- getHasRecord ThePoliceAreSuspiciousOfYou
       chasingTheStranger <- getRecordCount ChasingTheStranger
 
@@ -144,7 +115,6 @@ instance RunMessage APhantomOfTruth where
           not theKingClaimedItsVictims && thePoliceAreSuspiciousOfYou
 
       let
-        intro = if theKingClaimedItsVictims then intro1 else intro2
         dreamPath =
           catMaybes
             [ Just dream1
@@ -158,198 +128,135 @@ instance RunMessage APhantomOfTruth where
             , dream10 <$ guard (chasingTheStranger > 3)
             ]
 
-      paranoia <- genCard Treacheries.paranoia
-      lostSouls <- replicateM 4 (genCard Treacheries.lostSoul)
-      standalone <- getIsStandalone
+      story $ if theKingClaimedItsVictims then intro1 else intro2
+      traverse_ story dreamPath
 
-      pushAll
-        $ story players intro
-        : map (story players) dreamPath
-          <> [ ShuffleCardsIntoDeck (InvestigatorDeck iid) [lostSoul]
-             | not standalone
-             , (iid, lostSoul) <- zip investigatorIds lostSouls
-             ]
-          <> [ chooseOne
-              lead
-              [ targetLabel
-                iid
-                [ShuffleCardsIntoDeck (InvestigatorDeck iid) [paranoia]]
-              | iid <- investigatorIds
-              ]
-             | showDream4
-             ]
-          <> [SufferTrauma iid 0 1 | showDream7, iid <- investigatorIds]
-          <> [ chooseOne
-              lead
-              [ Label
-                  "“How could any of this be beautiful to you?”"
-                  [DoStep 11 PreScenarioSetup]
-              , Label
-                  "“What exactly am I looking at?”"
-                  [DoStep 12 PreScenarioSetup]
-              ]
-             | chasingTheStranger > 3
-             ]
-          <> [DoStep 13 PreScenarioSetup | chasingTheStranger <= 3]
+      investigators <- allInvestigators
+      lead <- getLead
+
+      unlessStandalone do
+        lostSouls <- replicateM 4 (genCard Treacheries.lostSoul)
+        for_ (zip investigators lostSouls) \(iid, lostSoul) ->
+          shuffleCardsIntoDeck iid [lostSoul]
+
+      when showDream4 do
+        paranoia <- genCard Treacheries.paranoia
+        chooseTargetM lead investigators (`shuffleCardsIntoDeck` [paranoia])
+
+      when showDream7 do
+        eachInvestigator (`sufferMentalTrauma` 1)
+
+      when (chasingTheStranger > 3) do
+        chooseOneM lead do
+          labeled "“How could any of this be beautiful to you?”" $ doStep 11 PreScenarioSetup
+          labeled "“What exactly am I looking at?”" $ doStep 12 PreScenarioSetup
+      when (chasingTheStranger <= 3) $ doStep 13 PreScenarioSetup
       pure s
     DoStep n PreScenarioSetup -> do
-      doubt <- getRecordCount Doubt
+      when (n == 11) $ story dream11
+      when (n == 12) do
+        story dream12
+        markDoubt
+      story dream13
+      story awakening
 
-      jordanInterviewed <- interviewed Assets.jordanPerry
-      investigatorIds <- allInvestigatorIds
-      players <- allPlayers
-
-      pushAll
-        $ [story players dream11 | n == 11]
-        <> [story players dream12 | n == 12]
-        <> [RecordCount Doubt (doubt + 1) | n == 12]
-        <> [story players dream13, story players awakening]
-        <> [story players jordansInformation | jordanInterviewed]
-        <> [setupModifier attrs iid (StartingResources 3) | jordanInterviewed, iid <- investigatorIds]
+      whenInterviewed Assets.jordanPerry do
+        story jordansInformation
+        eachInvestigator \iid -> setupModifier attrs iid (StartingResources 3)
       pure s
-    Setup -> do
+    Setup -> runScenarioSetup APhantomOfTruth attrs do
+      gather Set.APhantomOfTruth
+      gather Set.EvilPortents
+      gather Set.Byakhee
+      gather Set.TheStranger
+      gather Set.AgentsOfHastur
+
       conviction <- getRecordCount Conviction
       doubt <- getRecordCount Doubt
 
-      let
-        act1 =
-          if conviction > doubt
-            then Acts.theParisianConspiracyV2
-            else Acts.theParisianConspiracyV1
-        act2 =
-          if conviction > doubt
-            then Acts.stalkedByShadows
-            else Acts.pursuingShadows
-        excludes =
-          if conviction > doubt
-            then [Treacheries.blackStarsRise]
-            else [Treacheries.twinSuns]
-        theOrganist =
-          if conviction > doubt
-            then Enemies.theOrganistHopelessIDefiedHim
-            else Enemies.theOrganistDrapedInMystery
+      if conviction > doubt
+        then do
+          gatherJust Set.TheMidnightMasks [Treacheries.huntingShadow]
+          removeEvery [Treacheries.blackStarsRise]
+          setAside [Enemies.theOrganistHopelessIDefiedHim]
+        else do
+          gatherJust Set.TheMidnightMasks [Treacheries.falseLead]
+          removeEvery [Treacheries.twinSuns]
+          setAside [Enemies.theOrganistDrapedInMystery]
 
-      gatheredCards <-
-        buildEncounterDeckExcluding
-          excludes
-          [ EncounterSet.APhantomOfTruth
-          , EncounterSet.EvilPortents
-          , EncounterSet.Byakhee
-          , EncounterSet.TheStranger
-          , EncounterSet.AgentsOfHastur
-          ]
-      midnightMasks <- gatherTheMidnightMasks conviction doubt
-      encounterDeck <- Deck <$> shuffleM (unDeck gatheredCards <> midnightMasks)
-
-      setAsideCards <- genCards [theOrganist]
-
-      montmartre <- genCard =<< sample2 Locations.montmartre209 Locations.montmartre210
-      operaGarnier <- genCard =<< sample2 Locations.operaGarnier212 Locations.operaGarnier213
-      leMarais <- genCard =<< sample2 Locations.leMarais217 Locations.leMarais218
-
-      montparnasse <- genCard Locations.montparnasse
-      grandGuignol <- genCard Locations.grandGuignol
-      gareDOrsay <- genCard Locations.gareDOrsay
-      pereLachaiseCemetery <- genCard Locations.pereLachaiseCemetery
-      canalSaintMartin <- genCard Locations.canalSaintMartin
-      notreDame <- genCard Locations.notreDame
-      gardensOfLuxembourg <- genCard Locations.gardensOfLuxembourg
+      montparnasse <- place Locations.montparnasse
+      gareDOrsay <- place Locations.gareDOrsay
 
       jordanInterviewed <- interviewed Assets.jordanPerry
+      startAt $ if jordanInterviewed then montparnasse else gareDOrsay
 
-      (montparnasseId, placeMontparnasse) <- placeLocation montparnasse
-      (gareDOrsayId, placeGareDOrsay) <- placeLocation gareDOrsay
+      placeOneOf_ (Locations.montmartre209, Locations.montmartre210)
+      placeOneOf_ (Locations.operaGarnier212, Locations.operaGarnier213)
+      placeOneOf_ (Locations.leMarais217, Locations.leMarais218)
 
-      let
-        startingLocation =
-          if jordanInterviewed then montparnasseId else gareDOrsayId
+      placeAll
+        [ Locations.grandGuignol
+        , Locations.canalSaintMartin
+        , Locations.pereLachaiseCemetery
+        , Locations.notreDame
+        , Locations.gardensOfLuxembourg
+        ]
 
-      otherPlacements <-
-        traverse
-          placeLocation_
-          [ montmartre
-          , operaGarnier
-          , leMarais
-          , grandGuignol
-          , canalSaintMartin
-          , pereLachaiseCemetery
-          , notreDame
-          , gardensOfLuxembourg
-          ]
+      setActDeck
+        $ if conviction > doubt
+          then [Acts.theParisianConspiracyV2, Acts.stalkedByShadows]
+          else [Acts.theParisianConspiracyV1, Acts.pursuingShadows]
 
-      pushAll
-        $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
-        <> (placeMontparnasse : placeGareDOrsay : otherPlacements)
-        <> [MoveAllTo (toSource attrs) startingLocation]
-
-      acts <- genCards [act1, act2]
-      agendas <-
-        genCards
-          [Agendas.theFirstNight, Agendas.theSecondNight, Agendas.theThirdNight]
-
-      APhantomOfTruth
-        <$> runMessage
-          msg
-          ( attrs
-              & (setAsideCardsL <>~ setAsideCards)
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
-          )
-    ResolveChaosToken _ Cultist _ -> do
-      when (isHardExpert attrs) cultistEffect
+      setAgendaDeck [Agendas.theFirstNight, Agendas.theSecondNight, Agendas.theThirdNight]
+    ResolveChaosToken _ Cultist _ | isHardExpert attrs -> do
+      cultistEffect
       pure s
     ResolveChaosToken _ Tablet _ -> do
-      withSkillTest \sid ->
-        pushAll
-          [ CreateWindowModifierEffect
-              (EffectSkillTestWindow sid)
-              (EffectModifiers $ toModifiers attrs [CancelSkills])
-              (ChaosTokenEffectSource Tablet)
-              (SkillTestTarget sid)
-          , CancelSkillEffects
-          ]
+      withSkillTest \sid -> do
+        skillTestModifier sid Tablet sid CancelSkills
+        push CancelSkillEffects
       pure s
-    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> case chaosTokenFace token of
-      Cultist | isEasyStandard attrs -> s <$ cultistEffect
-      ElderThing ->
-        s <$ push (LoseResources iid (ChaosTokenEffectSource ElderThing) n)
-      _ -> pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
+      case token.face of
+        Cultist | isEasyStandard attrs -> cultistEffect
+        ElderThing -> push $ LoseResources iid (ChaosTokenEffectSource ElderThing) n
+        _ -> pure ()
+      pure s
     ScenarioResolution res -> do
-      investigatorIds <- allInvestigatorIds
-      players <- allPlayers
-      jordanSlain <-
-        selectOne
-          (VictoryDisplayCardMatch $ cardIs Enemies.jordanPerry)
-      gainXp <-
-        toGainXp attrs
-          $ getXpWithBonus (if res == Resolution 2 then 2 else 0)
       let
-        updateSlain =
-          [ recordSetInsert VIPsSlain [toCardCode jordan]
-          | jordan <- maybeToList jordanSlain
-          ]
-        sufferTrauma =
-          if res == Resolution 2
-            then [SufferTrauma iid 0 1 | iid <- investigatorIds]
-            else []
-        (storyText, record, token) = case res of
-          NoResolution ->
-            (noResolution, YouDidNotEscapeTheGazeOfThePhantom, ElderThing)
-          Resolution 1 -> (resolution1, YouFoundNigelsHome, Cultist)
-          Resolution 2 -> (resolution2, YouFoundNigelEngram, Tablet)
-          Resolution 3 -> (resolution3, YouWereUnableToFindNigel, ElderThing)
-          _ -> error "Invalid resolution"
-      pushAll
-        $ [story players storyText, Record record]
-        <> sufferTrauma
-        <> [ RemoveAllChaosTokens Cultist
-           , RemoveAllChaosTokens Tablet
-           , RemoveAllChaosTokens ElderThing
-           , AddChaosToken token
-           , AddChaosToken token
-           ]
-        <> updateSlain
-        <> gainXp
-        <> [EndOfGame Nothing]
+        replaceSymbolTokens token = do
+          removeAllChaosTokens Cultist
+          removeAllChaosTokens Tablet
+          removeAllChaosTokens ElderThing
+          addChaosToken token
+          addChaosToken token
+      case res of
+        NoResolution -> do
+          story noResolution
+          record YouDidNotEscapeTheGazeOfThePhantom
+        Resolution 1 -> do
+          story resolution1
+          record YouFoundNigelsHome
+        Resolution 2 -> do
+          story resolution2
+          record YouFoundNigelEngram
+        Resolution 3 -> do
+          story resolution3
+          record YouWereUnableToFindNigel
+        _ -> error "Invalid resolution"
+
+      when (res == Resolution 2) $ eachInvestigator (`sufferMentalTrauma` 1)
+
+      replaceSymbolTokens $ case res of
+        NoResolution -> ElderThing
+        Resolution 1 -> Cultist
+        Resolution 2 -> Tablet
+        Resolution 3 -> ElderThing
+        _ -> error "Invalid resolution"
+
+      selectForMaybeM (VictoryDisplayCardMatch $ cardIs Enemies.jordanPerry) \jordan ->
+        recordSetInsert VIPsSlain [toCardCode jordan]
+      allGainXpWithBonus attrs $ if res == Resolution 2 then 2 else 0
+      endOfScenario
       pure s
-    _ -> APhantomOfTruth <$> runMessage msg attrs
+    _ -> APhantomOfTruth <$> liftRunMessage msg attrs

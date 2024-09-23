@@ -42,6 +42,14 @@ chooseOneM iid choices = do
       Nothing -> chooseOne iid choices'
       Just l -> questionLabel l iid $ ChooseOne choices'
 
+chooseSomeM :: ReverseQueue m => InvestigatorId -> Text -> ChooseT m a -> m ()
+chooseSomeM iid txt choices = do
+  ((_, ChooseState {label}), choices') <- runChooseT choices
+  unless (null choices') do
+    case label of
+      Nothing -> chooseSome iid txt choices'
+      Just l -> questionLabel l iid $ ChooseSome choices'
+
 chooseOneFromEachM :: ReverseQueue m => InvestigatorId -> [ChooseT m a] -> m ()
 chooseOneFromEachM iid choices = do
   choices' <- traverse runChooseT choices

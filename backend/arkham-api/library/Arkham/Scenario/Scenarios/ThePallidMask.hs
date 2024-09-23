@@ -1,27 +1,18 @@
-module Arkham.Scenario.Scenarios.ThePallidMask (
-  ThePallidMask (..),
-  thePallidMask,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.ThePallidMask (ThePallidMask (..), thePallidMask) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Attack
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
-import Arkham.ChaosToken
 import Arkham.Classes
-import Arkham.Difficulty
 import Arkham.Distance
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Game.Helpers
+import Arkham.Game.Helpers hiding (recordSetInsert, skillTestModifier)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Id
@@ -29,11 +20,11 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Label (unLabel)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Deck
+import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThePallidMask.Helpers
 import Arkham.Scenarios.ThePallidMask.Story
@@ -133,49 +124,34 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage ThePallidMask where
-  runMessage msg s@(ThePallidMask attrs) = case msg of
+  runMessage msg s@(ThePallidMask attrs) = runQueueT $ case msg of
+    PreScenarioSetup -> do
+      didNotEscapeGazeOfThePhantom <- getHasRecord YouDidNotEscapeTheGazeOfThePhantom
+      unableToFindNigel <- getHasRecord YouWereUnableToFindNigel
+      let awokeInsideTheCatacombs = didNotEscapeGazeOfThePhantom || unableToFindNigel
+      story $ if awokeInsideTheCatacombs then intro1 else intro2
+      whenInterviewed Assets.ishimaruHaruko do
+        story harukosInformation
+        remember YouOpenedASecretPassageway
+      pure s
     StandaloneSetup -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      lead <- getLead
       randomToken <- sample (Cultist :| [Tablet, ElderThing])
-      pushAll
-        [ SetChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
-        , AddCampaignCardToDeck leadInvestigatorId Enemies.theManInThePallidMask
-        ]
+      setChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
+      addCampaignCardToDeck lead Enemies.theManInThePallidMask
       pure
         . ThePallidMask
         $ attrs
         & standaloneCampaignLogL
         .~ standaloneCampaignLog
-    Setup -> do
-      players <- allPlayers
-      didNotEscapeGazeOfThePhantom <-
-        getHasRecord
-          YouDidNotEscapeTheGazeOfThePhantom
-      unableToFindNigel <- getHasRecord YouWereUnableToFindNigel
+    Setup -> runScenarioSetup ThePallidMask attrs do
+      gather Set.ThePallidMask
+      gather Set.Ghouls
+      gather Set.Hauntings
+      gather Set.ChillingCold
 
       let
-        awokeInsideTheCatacombs =
-          didNotEscapeGazeOfThePhantom || unableToFindNigel
-        intro = if awokeInsideTheCatacombs then intro1 else intro2
-
-      harukoInterviewed <-
-        elem (recorded $ toCardCode Assets.ishimaruHaruko)
-          <$> getRecordSet VIPsInterviewed
-
-      encounterDeck <-
-        buildEncounterDeck
-          [ EncounterSet.ThePallidMask
-          , EncounterSet.Ghouls
-          , EncounterSet.Hauntings
-          , EncounterSet.ChillingCold
-          ]
-
-      theGateToHell <- genCard Locations.theGateToHell
-      blockedPassage <- genCard Locations.blockedPassage
-      tombOfShadows <- genCard Locations.tombOfShadows
-
-      otherCatacombs <-
-        genCards
+        otherCatacombs =
           [ Locations.stoneArchways
           , Locations.stoneArchways
           , Locations.cryptOfTheSepulchralLamp
@@ -189,183 +165,106 @@ instance RunMessage ThePallidMask where
           , Locations.shiveringPools
           ]
 
-      (startingLocation, remainingCatacombs) <-
+      didNotEscapeGazeOfThePhantom <- getHasRecord YouDidNotEscapeTheGazeOfThePhantom
+      unableToFindNigel <- getHasRecord YouWereUnableToFindNigel
+      let awokeInsideTheCatacombs = didNotEscapeGazeOfThePhantom || unableToFindNigel
+      -- (startingLocation, remainingCatacombs) <-
+      let startLabel = unLabel $ positionToLabel startPosition
+      (start, remainingCatacombs) <-
         if awokeInsideTheCatacombs
           then do
-            shuffled <- shuffleM (theGateToHell : otherCatacombs)
+            shuffled <- shuffleM (Locations.theGateToHell : otherCatacombs)
             case shuffled of
-              (x : xs) -> pure (x, xs)
+              (x : xs) -> (,xs) <$> placeLabeled startLabel x
               _ -> error "invalid setup"
-          else (theGateToHell,) <$> shuffleM otherCatacombs
+          else (,) <$> placeLabeled startLabel Locations.theGateToHell <*> shuffleM otherCatacombs
 
-      (startingLocationId, placeStartingLocation) <-
-        placeLocation
-          startingLocation
+      startAt start
+      placeTokens attrs start Resource 1
 
-      theManInThePallidMask <-
-        getCampaignStoryCard
-          Enemies.theManInThePallidMask
+      theManInThePallidMask <- getCampaignStoryCard Enemies.theManInThePallidMask
+      push $ RemoveFromBearersDeckOrDiscard theManInThePallidMask
+      setAside [Enemies.theManInThePallidMask]
 
       let (bottom3, rest) = splitAt 3 remainingCatacombs
-      bottom <- shuffleM ([tombOfShadows, blockedPassage] <> bottom3)
-      let catacombsDeck = rest <> bottom
+      bottom <- shuffleM ([Locations.tombOfShadows, Locations.blockedPassage] <> bottom3)
+      addExtraDeck CatacombsDeck =<< genCards (rest <> bottom)
 
-      pushAll
-        $ [story players intro]
-        <> [story players harukosInformation | harukoInterviewed]
-        <> [Remember YouOpenedASecretPassageway | harukoInterviewed]
-        <> [ SetEncounterDeck encounterDeck
-           , SetAgendaDeck
-           , SetActDeck
-           , placeStartingLocation
-           , SetLocationLabel
-              startingLocationId
-              (unLabel $ positionToLabel startPosition)
-           , PlaceTokens (toSource attrs) (toTarget startingLocationId) Resource 1
-           , MoveAllTo (toSource attrs) startingLocationId
-           , SetupStep (toTarget attrs) 1
-           , RemoveFromBearersDeckOrDiscard theManInThePallidMask
-           ]
-      agendas <- genCards [Agendas.empireOfTheDead, Agendas.empireOfTheUndead]
-      acts <-
-        genCards
-          [ Acts.throughTheCatacombs
-          , Acts.thePathIsBarred
-          , Acts.theWayOut
-          , Acts.leadingTheWay
-          ]
-
-      ThePallidMask
-        <$> runMessage
-          msg
-          ( attrs
-              & (decksL . at CatacombsDeck ?~ catacombsDeck)
-              & (setAsideCardsL <>~ [PlayerCard theManInThePallidMask])
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
-          )
+      push $ SetupStep (toTarget attrs) 1
+      setAgendaDeck [Agendas.empireOfTheDead, Agendas.empireOfTheUndead]
+      setActDeck
+        [ Acts.throughTheCatacombs
+        , Acts.thePathIsBarred
+        , Acts.theWayOut
+        , Acts.leadingTheWay
+        ]
     SetupStep (isTarget attrs -> True) 1 -> do
-      lead <- getLeadPlayer
-      leadId <- getLeadInvestigatorId
+      lead <- getLead
       catacombs <- select UnrevealedLocation
       youOpenedASecretPassageway <- remembered YouOpenedASecretPassageway
-      pushWhen youOpenedASecretPassageway
-        $ chooseOne lead
-        $ [ targetLabel catacomb [RevealLocation (Just leadId) catacomb]
-          | catacomb <- catacombs
-          ]
+      when youOpenedASecretPassageway do
+        chooseTargetM lead catacombs $ push . RevealLocation (Just lead)
       pure s
-    ResolveChaosToken t Cultist iid -> do
-      mAction <- getSkillTestAction
-      case mAction of
+    ResolveChaosToken _ Cultist iid -> do
+      getSkillTestAction >>= \case
         Just Action.Fight ->
           withSkillTest \sid ->
-            push
-              $ CreateWindowModifierEffect
-                (EffectSkillTestWindow sid)
-                ( EffectModifiers
-                    $ toModifiers
-                      attrs
-                      [ if isEasyStandard attrs
-                          then DamageDealt (-1)
-                          else NoDamageDealt
-                      ]
-                )
-                (ChaosTokenSource t)
-                (InvestigatorTarget iid)
+            skillTestModifier sid Cultist iid $ if isEasyStandard attrs then DamageDealt (-1) else NoDamageDealt
         _ -> pure ()
       pure s
     ResolveChaosToken _ Tablet iid -> do
-      player <- getPlayer iid
       if isEasyStandard attrs
         then do
-          enemies <-
-            select
-              (ReadyEnemy <> EnemyOneOf (map EnemyWithTrait [Ghoul, Geist]))
-          unless (null enemies)
-            $ push
-            $ chooseOne
-              player
-              [ targetLabel enemy [InitiateEnemyAttack $ enemyAttack enemy attrs iid]
-              | enemy <- enemies
-              ]
+          enemies <- select $ ReadyEnemy <> mapOneOf EnemyWithTrait [Ghoul, Geist]
+          chooseTargetM iid enemies \enemy -> initiateEnemyAttack enemy attrs iid
         else do
-          enemies <-
-            select
-              (ReadyEnemy <> EnemyOneOf (map EnemyWithTrait [Ghoul, Geist]))
-          unless (null enemies)
-            $ push
-            $ chooseOne
-              player
-              [ targetLabel
-                enemy
-                [ Ready (EnemyTarget enemy)
-                , InitiateEnemyAttack $ enemyAttack enemy attrs iid
-                ]
-              | enemy <- enemies
-              ]
+          enemies <- select $ mapOneOf EnemyWithTrait [Ghoul, Geist]
+          chooseTargetM iid enemies \enemy -> do
+            ready enemy
+            initiateEnemyAttack enemy attrs iid
       pure s
-    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> case chaosTokenFace token of
-      ElderThing -> do
-        push
-          $ findAndDrawEncounterCard iid
-          $ CardWithType EnemyType
-          <> CardWithOneOf (map CardWithTrait [Ghoul, Geist])
-        pure s
-      _ -> pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        ElderThing -> findAndDrawEncounterCard iid $ #enemy <> mapOneOf CardWithTrait [Ghoul, Geist]
+        _ -> pure ()
+      pure s
     ScenarioResolution res -> do
-      investigatorIds <- allInvestigatorIds
-      players <- allPlayers
-      lead <- getLeadPlayer
-      harukoSlain <-
-        selectOne
-          (VictoryDisplayCardMatch $ cardIs Enemies.ishimaruHaruko)
-      chasingTheStrangerTallies <- getRecordCount ChasingTheStranger
+      investigators <- allInvestigators
+      lead <- getLead
       let
-        updateSlain =
-          [ recordSetInsert VIPsSlain [toCardCode haruko]
-          | haruko <- maybeToList harukoSlain
-          ]
         (token, story') = case res of
           NoResolution -> (ElderThing, noResolution)
           Resolution 1 -> (Cultist, resolution1)
           Resolution 2 -> (Tablet, resolution2)
           _ -> error "Invalid resolution"
-      pushAll
-        $ [story players story', Record YouKnowTheSiteOfTheGate]
-        <> [ chooseSome
-              lead
-              "Done having investigators read Act II"
-              [ targetLabel
-                iid
-                [ recordSetInsert ReadActII [unInvestigatorId iid]
-                , SearchCollectionForRandom
-                    iid
-                    (toSource attrs)
-                    ( BasicWeaknessCard
-                        <> CardWithOneOf (map CardWithTrait [Madness, Pact])
-                    )
-                ]
-              | iid <- investigatorIds
-              ]
-           ]
-        <> [ RemoveAllChaosTokens Cultist
-           , RemoveAllChaosTokens Tablet
-           , RemoveAllChaosTokens ElderThing
-           , AddChaosToken token
-           , AddChaosToken token
-           ]
-        <> [ RecordCount ChasingTheStranger (chasingTheStrangerTallies + 2)
-           | res == Resolution 2
-           ]
-        <> updateSlain
-        <> [ScenarioResolutionStep 1 res]
+      story story'
+      record YouKnowTheSiteOfTheGate
+
+      chooseSomeM lead "Done having investigators read Act II" do
+        targets investigators \iid -> do
+          recordSetInsert ReadActII [unInvestigatorId iid]
+          searchCollectionForRandom iid attrs
+            $ BasicWeaknessCard
+            <> mapOneOf CardWithTrait [Madness, Pact]
+      removeAllChaosTokens Cultist
+      removeAllChaosTokens Tablet
+      removeAllChaosTokens ElderThing
+      addChaosToken token
+      addChaosToken token
+
+      when (res == Resolution 2) $ do
+        chasingTheStrangerTallies <- getRecordCount ChasingTheStranger
+        recordCount ChasingTheStranger (chasingTheStrangerTallies + 2)
+
+      selectForMaybeM (VictoryDisplayCardMatch $ cardIs Enemies.ishimaruHaruko) \haruko ->
+        recordSetInsert VIPsSlain [toCardCode haruko]
+      doStep 1 msg
       pure s
-    ScenarioResolutionStep 1 _ -> do
-      gainXp <- toGainXp attrs getXp
-      pushAll $ gainXp <> [EndOfGame Nothing]
+    DoStep 1 (ScenarioResolution _) -> do
+      allGainXp attrs
+      endOfScenario
       pure s
     RequestedPlayerCard iid source mcard _ | isSource attrs source -> do
       for_ mcard $ push . AddCardToDeckForCampaign iid
       pure s
-    _ -> ThePallidMask <$> runMessage msg attrs
+    _ -> ThePallidMask <$> liftRunMessage msg attrs

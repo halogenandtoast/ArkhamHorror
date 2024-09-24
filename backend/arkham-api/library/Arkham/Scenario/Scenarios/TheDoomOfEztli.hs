@@ -7,7 +7,6 @@ import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Meta qualified as CampaignMeta
-import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types
@@ -153,19 +152,19 @@ instance RunMessage TheDoomOfEztli where
       setActDeck [Acts.intoTheRuins, Acts.magicAndScience, Acts.escapeTheRuins]
       setAgendaDeck [Agendas.somethingStirs, Agendas.theTempleWarden]
 
-      addExtraDeck ExplorationDeck
-        =<< genCards
-          [ Locations.ancientHall
-          , Locations.grandChamber
-          , Locations.burialPit
-          , Locations.undergroundRuins
-          , Locations.secretPassage
-          , Treacheries.illOmen
-          , Treacheries.deepDark
-          , Treacheries.finalMistake
-          , Treacheries.entombed
-          , Treacheries.cryptChill
-          ]
+      addExtraDeck
+        ExplorationDeck
+        [ Locations.ancientHall
+        , Locations.grandChamber
+        , Locations.burialPit
+        , Locations.undergroundRuins
+        , Locations.secretPassage
+        , Treacheries.illOmen
+        , Treacheries.deepDark
+        , Treacheries.finalMistake
+        , Treacheries.entombed
+        , Treacheries.cryptChill
+        ]
     Explore iid _ _ -> do
       checkWhen $ Window.AttemptExplore iid
       push $ Do msg

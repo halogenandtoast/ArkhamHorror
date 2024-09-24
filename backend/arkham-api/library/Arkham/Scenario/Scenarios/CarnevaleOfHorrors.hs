@@ -1,9 +1,4 @@
-module Arkham.Scenario.Scenarios.CarnevaleOfHorrors (
-  CarnevaleOfHorrors (..),
-  carnevaleOfHorrors,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.CarnevaleOfHorrors (CarnevaleOfHorrors (..), carnevaleOfHorrors) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -11,24 +6,21 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.Card
-import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Classes.HasGame
-import Arkham.Difficulty
 import Arkham.Direction
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator
-import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message
-import Arkham.Placement
+import Arkham.Matcher hiding (RevealLocation, assetAt)
+import Arkham.Message (pattern DealAssetDamage)
+import Arkham.Message.Lifted.Choose
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
+import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Types (cardsUnderActDeckL, cardsUnderAgendaDeckL)
 import Arkham.Scenarios.CarnevaleOfHorrors.FlavorText qualified as Flavor
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
+import Arkham.Strategy
 import Arkham.Trait hiding (Cultist)
 import Data.List.NonEmpty qualified as NE
 
@@ -59,11 +51,8 @@ instance HasChaosTokenValue CarnevaleOfHorrors where
       let
         countInnocentRevelers = count ((== Assets.innocentReveler) . toCardDef)
         innocentRevelerCount =
-          countInnocentRevelers (scenarioCardsUnderAgendaDeck attrs)
-            + ( if isEasyStandard attrs
-                  then 0
-                  else countInnocentRevelers (scenarioCardsUnderActDeck attrs)
-              )
+          countInnocentRevelers attrs.cardsUnderAgendaDeck
+            + if isEasyStandard attrs then 0 else countInnocentRevelers attrs.cardsUnderActDeck
       pure $ ChaosTokenValue Skull (NegativeModifier $ 2 + innocentRevelerCount)
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
     Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
@@ -71,73 +60,35 @@ instance HasChaosTokenValue CarnevaleOfHorrors where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 masks :: [CardDef]
-masks =
-  [Assets.pantalone, Assets.medicoDellaPeste, Assets.bauta, Assets.gildedVolto]
+masks = [Assets.pantalone, Assets.medicoDellaPeste, Assets.bauta, Assets.gildedVolto]
 
-sacrificesMade :: [(InvestigatorId, PlayerId)] -> ScenarioAttrs -> [Message]
-sacrificesMade (unzip -> (investigatorIds, players)) s =
-  story players Flavor.sacrificesMade
-    : [ SearchCollectionForRandom
-        iid
-        (toSource s)
-        ( BasicWeaknessCard
-            <> CardWithOneOf (map CardWithTrait [Madness, Injury, Monster])
-        )
-      | iid <- investigatorIds
-      ]
-
-abbessSatisfied :: PlayerId -> [(InvestigatorId, PlayerId)] -> [Message]
-abbessSatisfied lead (unzip -> (investigatorIds, players)) =
-  story players Flavor.abbessSatisfied
-    : [ addCampaignCardToDeckChoice
-          lead
-          investigatorIds
-          Assets.abbessAllegriaDiBiase
-      ]
-
-additionalRewards :: HasGame m => ScenarioAttrs -> m [Message]
+additionalRewards :: ReverseQueue m => ScenarioAttrs -> m ()
 additionalRewards s = do
-  lead <- getLeadPlayer
-  investigatorPlayers <- allInvestigatorPlayers
-  let
-    proceedToSacrificesMade =
-      if null (scenarioCardsUnderActDeck s)
-        && notNull (scenarioCardsUnderAgendaDeck s)
-        then sacrificesMade investigatorPlayers s
-        else []
-    proceedToAbbessSatisfied =
-      if null (scenarioCardsUnderAgendaDeck s)
-        && length (scenarioCardsUnderAgendaDeck s)
-        == 3
-        then abbessSatisfied lead investigatorPlayers
-        else []
-  pure
-    $ [ChooseOneRewardByEachPlayer masks $ map fst investigatorPlayers]
-    <> proceedToSacrificesMade
-    <> proceedToAbbessSatisfied
+  investigators <- allInvestigators
+  push $ ChooseOneRewardByEachPlayer masks investigators
+
+  when (null s.cardsUnderActDeck && notNull s.cardsUnderAgendaDeck) do
+    story Flavor.sacrificesMade
+    for_ investigators \iid -> searchCollectionForRandomBasicWeakness iid s [Madness, Injury, Monster]
+  when (null s.cardsUnderAgendaDeck && length s.cardsUnderActDeck == 3) do
+    story Flavor.abbessSatisfied
+    addCampaignCardToDeckChoice investigators Assets.abbessAllegriaDiBiase
 
 instance RunMessage CarnevaleOfHorrors where
-  runMessage msg s@(CarnevaleOfHorrors attrs) = case msg of
-    Setup -> do
-      players <- allPlayers
+  runMessage msg s@(CarnevaleOfHorrors attrs) = runQueueT $ case msg of
+    PreScenarioSetup -> do
+      story Flavor.intro
+      pure s
+    Setup -> runScenarioSetup CarnevaleOfHorrors attrs do
+      gather Set.CarnevaleOfHorrors
 
-      -- Encounter Deck
-      encounterDeck <-
-        buildEncounterDeckExcluding
-          [ Enemies.donLagorio
-          , Enemies.elisabettaMagro
-          , Enemies.salvatoreNeri
-          , Enemies.savioCorvi
-          , Enemies.cnidathqua
-          ]
-          [EncounterSet.CarnevaleOfHorrors]
+      sanMarcoBasilica <- place Locations.sanMarcoBasilica
+      startAt sanMarcoBasilica
 
-      -- Locations
-      let locationLabels = ["location" <> tshow @Int n | n <- [1 .. 8]]
-      randomLocations <-
-        traverse placeLocationCard
-          . drop 1
-          =<< shuffleM
+      otherLocations <-
+        placeAllCapture
+          =<< shuffleIn Locations.canalSide
+          =<< removeRandom
             [ Locations.streetsOfVenice
             , Locations.rialtoBridge
             , Locations.venetianGarden
@@ -146,288 +97,157 @@ instance RunMessage CarnevaleOfHorrors where
             , Locations.accademiaBridge
             , Locations.theGuardian
             ]
-      canalSide <- placeLocationCard Locations.canalSide
-      sanMarcoBasilica@(sanMarcoBasilicaId, _) <-
-        placeLocationCard
-          Locations.sanMarcoBasilica
 
-      let
-        unshuffled = canalSide : randomLocations
-        nonSanMarcoBasilicaLocationIds = map fst unshuffled
+      let locations = sanMarcoBasilica : otherLocations
 
-      locationIdsWithMaskedCarnevaleGoers <-
-        zip nonSanMarcoBasilicaLocationIds
-          <$> ( traverse (\c -> (c,) <$> getRandom)
-                  =<< shuffleM
-                  =<< genCards
-                    [ Assets.maskedCarnevaleGoer_17
-                    , Assets.maskedCarnevaleGoer_18
-                    , Assets.maskedCarnevaleGoer_19
-                    , Assets.maskedCarnevaleGoer_20
-                    , Assets.maskedCarnevaleGoer_21
-                    , Assets.maskedCarnevaleGoer_21
-                    , Assets.maskedCarnevaleGoer_21
-                    ]
-              )
-      locations <- (sanMarcoBasilica :|) <$> shuffleM unshuffled
+      let locationLabels = ["location" <> tshow @Int n | n <- [1 .. 8]]
+      for_ (zip locationLabels locations) \(label, location) ->
+        push $ SetLocationLabel location label
 
-      -- Assets
-      abbess <- genCard Assets.abbessAllegriaDiBiase
-      abbessId <- getRandom
+      for_ (zip locations $ drop 1 locations) \(l1, l2) ->
+        push $ PlacedLocationDirection l2 RightOf l1
 
-      let
-        placeLocations =
-          flip map (zip locationLabels (toList locations))
-            $ \(label, (locationId, placement)) ->
-              (locationId, [placement, SetLocationLabel locationId label])
-        locationIds =
-          fromJustNote "was empty" . nonEmpty $ map fst $ toList locations
+      push
+        $ PlacedLocationDirection sanMarcoBasilica RightOf (NE.last $ sanMarcoBasilica :| otherLocations)
 
-      pushAll
-        $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
-        <> concatMap snd placeLocations
-        <> [ PlacedLocationDirection l2 RightOf l1
-           | (l1, l2) <- zip (toList locationIds) (drop 1 $ toList locationIds)
-           ]
-        <> [ PlacedLocationDirection
-              (NE.head locationIds)
-              RightOf
-              (NE.last locationIds)
-           ]
-        <> [ CreateAssetAt assetId asset (AtLocation locationId)
-           | (locationId, (asset, assetId)) <-
-              locationIdsWithMaskedCarnevaleGoers
-           ]
-        <> [ CreateAssetAt abbessId abbess (AtLocation sanMarcoBasilicaId)
-           , RevealLocation Nothing sanMarcoBasilicaId
-           , MoveAllTo (toSource attrs) sanMarcoBasilicaId
-           , story players Flavor.intro
-           ]
-
-      setAsideCards <-
-        genCards
-          [ Enemies.cnidathqua
-          , Assets.pantalone
-          , Assets.medicoDellaPeste
-          , Assets.bauta
-          , Assets.gildedVolto
+      maskedCarnevaleGoers <-
+        shuffleM
+          [ Assets.maskedCarnevaleGoer_17
+          , Assets.maskedCarnevaleGoer_18
+          , Assets.maskedCarnevaleGoer_19
+          , Assets.maskedCarnevaleGoer_20
+          , Assets.maskedCarnevaleGoer_21
+          , Assets.maskedCarnevaleGoer_21
+          , Assets.maskedCarnevaleGoer_21
           ]
 
-      agendas <-
-        genCards
-          [ Agendas.theFestivitiesBegin
-          , Agendas.theShadowOfTheEclipse
-          , Agendas.chaosAtTheCarnevale
-          ]
-      acts <-
-        genCards
-          [Acts.theCarnevaleConspiracy, Acts.getToTheBoats, Acts.row]
+      for_ (zip maskedCarnevaleGoers otherLocations) (uncurry assetAt)
+      assetAt Assets.abbessAllegriaDiBiase sanMarcoBasilica
 
-      CarnevaleOfHorrors
-        <$> runMessage
-          msg
-          ( attrs
-              & (setAsideCardsL <>~ setAsideCards)
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
-          )
+      setAside
+        [ Enemies.cnidathqua
+        , Assets.pantalone
+        , Assets.medicoDellaPeste
+        , Assets.bauta
+        , Assets.gildedVolto
+        ]
+
+      setAgendaDeck
+        [ Agendas.theFestivitiesBegin
+        , Agendas.theShadowOfTheEclipse
+        , Agendas.chaosAtTheCarnevale
+        ]
+      setActDeck [Acts.theCarnevaleConspiracy, Acts.getToTheBoats, Acts.row]
     SetChaosTokensForScenario -> do
-      let
-        tokens =
-          if isEasyStandard attrs
-            then
-              [ PlusOne
-              , Zero
-              , Zero
-              , Zero
-              , MinusOne
-              , MinusOne
-              , MinusOne
-              , MinusTwo
-              , MinusThree
-              , MinusFour
-              , MinusSix
-              , Skull
-              , Skull
-              , Skull
-              , Cultist
-              , Tablet
-              , ElderThing
-              , AutoFail
-              , ElderSign
-              ]
-            else
-              [ PlusOne
-              , Zero
-              , Zero
-              , Zero
-              , MinusOne
-              , MinusOne
-              , MinusThree
-              , MinusFour
-              , MinusFive
-              , MinusSix
-              , MinusSeven
-              , Skull
-              , Skull
-              , Skull
-              , Cultist
-              , Tablet
-              , ElderThing
-              , AutoFail
-              , ElderSign
-              ]
-      s <$ push (SetChaosTokens tokens)
-    ResolveChaosToken _ Cultist iid -> s <$ push (DrawAnotherChaosToken iid)
+      setChaosTokens
+        $ if isEasyStandard attrs
+          then
+            [ PlusOne
+            , Zero
+            , Zero
+            , Zero
+            , MinusOne
+            , MinusOne
+            , MinusOne
+            , MinusTwo
+            , MinusThree
+            , MinusFour
+            , MinusSix
+            , Skull
+            , Skull
+            , Skull
+            , Cultist
+            , Tablet
+            , ElderThing
+            , AutoFail
+            , ElderSign
+            ]
+          else
+            [ PlusOne
+            , Zero
+            , Zero
+            , Zero
+            , MinusOne
+            , MinusOne
+            , MinusThree
+            , MinusFour
+            , MinusFive
+            , MinusSix
+            , MinusSeven
+            , Skull
+            , Skull
+            , Skull
+            , Cultist
+            , Tablet
+            , ElderThing
+            , AutoFail
+            , ElderSign
+            ]
+      pure s
+    ResolveChaosToken _ Cultist iid -> do
+      drawAnotherChaosToken iid
+      pure s
     ResolveChaosToken token Tablet iid | isHardExpert attrs -> do
-      lid <- getJustLocation iid
-      closestInnocentRevelers <-
-        select
-          $ ClosestAsset lid
-          $ assetIs
-            Assets.innocentReveler
-      player <- getPlayer iid
-      case closestInnocentRevelers of
-        [] -> pure ()
-        [x] ->
-          push
-            $ chooseOne
-              player
-              [ ComponentLabel
-                  (AssetComponent x DamageToken)
-                  [DealAssetDamage x (ChaosTokenSource token) 1 0]
-              , ComponentLabel
-                  (AssetComponent x HorrorToken)
-                  [DealAssetDamage x (ChaosTokenSource token) 0 1]
-              ]
-        xs ->
-          push
-            $ chooseOne
-              player
-              [ targetLabel
-                x
-                [ chooseOne
-                    player
-                    [ ComponentLabel
-                        (AssetComponent x DamageToken)
-                        [DealAssetDamage x (ChaosTokenSource token) 1 0]
-                    , ComponentLabel
-                        (AssetComponent x HorrorToken)
-                        [DealAssetDamage x (ChaosTokenSource token) 0 1]
-                    ]
-                ]
-              | x <- xs
-              ]
+      withLocationOf iid \lid -> do
+        closestInnocentRevelers <- select $ ClosestAsset lid $ assetIs Assets.innocentReveler
+        chooseTargetM iid closestInnocentRevelers \x ->
+          chooseOne
+            iid
+            [ AssetDamageLabel x [DealAssetDamage x (ChaosTokenSource token) 1 0]
+            , AssetHorrorLabel x [DealAssetDamage x (ChaosTokenSource token) 0 1]
+            ]
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
-      case chaosTokenFace token of
-        Cultist -> push $ drawEncounterCard iid Cultist
+      case token.face of
+        Cultist -> drawEncounterCard iid Cultist
         Tablet -> do
-          player <- getPlayer iid
-          lid <- getJustLocation iid
-          closestInnocentRevelers <-
-            select
-              $ ClosestAsset lid
-              $ assetIs
-                Assets.innocentReveler
-          case closestInnocentRevelers of
-            [] -> pure ()
-            [x] ->
-              push
-                $ chooseOne
-                  player
-                  [ ComponentLabel
-                      (AssetComponent x DamageToken)
-                      [DealAssetDamage x (ChaosTokenSource token) 1 0]
-                  , ComponentLabel
-                      (AssetComponent x HorrorToken)
-                      [DealAssetDamage x (ChaosTokenSource token) 0 1]
-                  ]
-            xs ->
-              push
-                $ chooseOne
-                  player
-                  [ targetLabel
-                    x
-                    [ chooseOne
-                        player
-                        [ ComponentLabel
-                            (AssetComponent x DamageToken)
-                            [DealAssetDamage x (ChaosTokenSource token) 1 0]
-                        , ComponentLabel
-                            (AssetComponent x HorrorToken)
-                            [DealAssetDamage x (ChaosTokenSource token) 0 1]
-                        ]
-                    ]
-                  | x <- xs
-                  ]
+          withLocationOf iid \lid -> do
+            closestInnocentRevelers <- select $ ClosestAsset lid $ assetIs Assets.innocentReveler
+            chooseTargetM iid closestInnocentRevelers \x ->
+              chooseOne
+                iid
+                [ AssetDamageLabel x [DealAssetDamage x (ChaosTokenSource token) 1 0]
+                , AssetHorrorLabel x [DealAssetDamage x (ChaosTokenSource token) 0 1]
+                ]
         ElderThing -> do
-          mCnidathquaId <- getCnidathqua
-          case mCnidathquaId of
-            Just cnidathquaId ->
-              push
-                $ EnemyAttack
-                $ (enemyAttack cnidathquaId attrs iid)
-                  { attackDamageStrategy = DamageFirst Assets.innocentReveler
-                  }
-            Nothing -> pure ()
+          getCnidathqua >>= traverse_ \cnidathqua -> do
+            push
+              $ EnemyAttack
+              $ (enemyAttack cnidathqua attrs iid)
+                { attackDamageStrategy = DamageFirst Assets.innocentReveler
+                }
         _ -> pure ()
       pure s
     ScenarioResolution NoResolution -> do
-      players <- allPlayers
-      xp <- getXp
-      additionalRewardsMsg <-
-        additionalRewards
-          ( attrs
-              & (cardsUnderActDeckL %~ drop 1)
-              & (cardsUnderAgendaDeckL <>~ take 1 (scenarioCardsUnderActDeck attrs))
-          )
-      pushAll
-        $ [ story players Flavor.noResolution
-          , Record ManyWereSacrificedToCnidathquaDuringTheCarnivale
-          ]
-        <> additionalRewardsMsg
-        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-        <> [EndOfGame Nothing]
+      story Flavor.noResolution
+      record ManyWereSacrificedToCnidathquaDuringTheCarnivale
+      additionalRewards
+        $ attrs
+        & (cardsUnderActDeckL %~ drop 1)
+        & (cardsUnderAgendaDeckL <>~ take 1 attrs.cardsUnderActDeck)
+      allGainXp attrs
+      endOfScenario
       pure s
     ScenarioResolution (Resolution 1) -> do
-      players <- allPlayers
-      xp <- getXp
-      additionalRewardsMsg <- additionalRewards attrs
-      pushAll
-        $ [ story players Flavor.resolution1
-          , Record TheSunBanishedCnidathquaIntoTheDepths
-          ]
-        <> additionalRewardsMsg
-        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-        <> [EndOfGame Nothing]
+      story Flavor.resolution1
+      record TheSunBanishedCnidathquaIntoTheDepths
+      additionalRewards attrs
+      allGainXp attrs
+      endOfScenario
       pure s
     ScenarioResolution (Resolution 2) -> do
-      players <- allPlayers
-      xp <- getXp
-      additionalRewardsMsg <- additionalRewards attrs
-      pushAll
-        $ [ story players Flavor.resolution2
-          , Record CnidathquaRetreatedToNurseItsWounds
-          ]
-        <> additionalRewardsMsg
-        <> [GainXP iid (toSource attrs) n | (iid, n) <- xp]
-        <> [EndOfGame Nothing]
+      story Flavor.resolution2
+      record CnidathquaRetreatedToNurseItsWounds
+      additionalRewards attrs
+      allGainXp attrs
+      endOfScenario
       pure s
     ChooseOneRewardByEachPlayer rewards@(_ : _) (currentInvestigatorId : rest) -> do
-      player <- getPlayer currentInvestigatorId
-      push
-        $ chooseOne player
-        $ Label "Do not add a mask" [ChooseOneRewardByEachPlayer rewards rest]
-        : [ CardLabel
-            (toCardCode reward)
-            [ AddCampaignCardToDeck currentInvestigatorId reward
-            , ChooseOneRewardByEachPlayer (delete reward rewards) rest
-            ]
-          | reward <- rewards
-          ]
+      chooseOneM currentInvestigatorId do
+        labeled "Do not add a mask" $ push $ ChooseOneRewardByEachPlayer rewards rest
+        for_ rewards \reward -> do
+          cardLabeled reward do
+            addCampaignCardToDeck currentInvestigatorId reward
+            push $ ChooseOneRewardByEachPlayer (delete reward rewards) rest
       pure s
-    RequestedPlayerCard iid source mcard _ | isSource attrs source -> do
-      for_ mcard $ push . AddCardToDeckForCampaign iid
-      pure s
-    _ -> CarnevaleOfHorrors <$> runMessage msg attrs
+    _ -> CarnevaleOfHorrors <$> liftRunMessage msg attrs

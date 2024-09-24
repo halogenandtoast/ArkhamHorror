@@ -7906,6 +7906,8 @@ innocentReveler =
   (storyAssetWithMany "82021" "Innocent Reveler" 0 CarnevaleOfHorrors 3)
     { cdCardTraits = setFromList [Ally, Bystander, Carnevale]
     , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "82021b"
     }
 
 maskedCarnevaleGoer_21 :: CardDef
@@ -7913,6 +7915,8 @@ maskedCarnevaleGoer_21 =
   (storyAsset "82021b" "Masked Carnevale-Goer" 0 CarnevaleOfHorrors)
     { cdCardTraits = singleton Carnevale
     , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "82021"
     }
 
 abbessAllegriaDiBiase :: CardDef

@@ -1,9 +1,4 @@
-module Arkham.Scenario.Scenarios.HeartOfTheElders (
-  HeartOfTheElders (..),
-  heartOfTheElders,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.HeartOfTheElders (HeartOfTheElders (..), heartOfTheElders) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -11,32 +6,30 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
-import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
+import Arkham.GameT (GameT)
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
-import Arkham.Helpers.Deck
-import Arkham.Helpers.Log
+import Arkham.Helpers.Log hiding (recordSetInsert)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
-import Arkham.Matcher
+import Arkham.Matcher hiding (enemyAt)
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Queue (QueueT)
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Deck
+import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
+import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
 import Arkham.Scenarios.HeartOfTheElders.Story
-import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait (Trait (Cave))
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 data ScenarioStep = One | Two
@@ -115,149 +108,86 @@ instance HasChaosTokenValue HeartOfTheElders where
       ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
       otherFace -> getChaosTokenValue iid otherFace attrs
 
-runAMessage :: Runner HeartOfTheElders
+runAMessage :: Message -> HeartOfTheElders -> QueueT Message GameT HeartOfTheElders
 runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
   StandaloneSetup -> do
-    lead <- getLeadPlayer
-    pushAll
-      [ SetChaosTokens standaloneChaosTokens
-      , questionLabel
-          "The investigators may choose how many paths are known to you (choose a number between 0 and 5). The more paths are known to you, the quicker and easier the scenario will be."
-          lead
-          $ ChooseOne [Label (tshow n) [RecordCount PathsAreKnownToYou n] | n <- [0 .. 5]]
-      ]
+    lead <- getLead
+    setChaosTokens standaloneChaosTokens
+
+    chooseOneM lead do
+      questionLabeled
+        "The investigators may choose how many paths are known to you (choose a number between 0 and 5). The more paths are known to you, the quicker and easier the scenario will be."
+      for_ [0 .. 5] \n -> do
+        labeled (tshow n) $ recordCount PathsAreKnownToYou n
     pure s
   PreScenarioSetup -> do
-    players <- allPlayers
-    lead <- getLeadPlayer
+    story intro1
 
-    mIchtacaInvestigator <- getOwner Assets.ichtacaTheForgottenGuardian
-    mAlejandroInvestigator <- getOwner Assets.alejandroVela
-    mExpeditionJournalInvestigator <- getOwner Assets.expeditionJournal
+    lead <- getLead
+    chooseOneM lead do
+      withOwner Assets.ichtacaTheForgottenGuardian \iid -> do
+        labeled "Let’s consult with Ichtaca." do
+          story intro2
+          putCampaignCardIntoPlay iid Assets.ichtacaTheForgottenGuardian
 
-    pushAll
-      [ story players intro1
-      , chooseOrRunOne lead
-          $ [ Label
-              "Let’s consult with Ichtaca."
-              [ story players intro2
-              , PutCampaignCardIntoPlay iid Assets.ichtacaTheForgottenGuardian
-              ]
-            | iid <- maybeToList mIchtacaInvestigator
-            ]
-          <> [ Label
-              "Let’s consult with Alejandro."
-              [ story players intro3
-              , PutCampaignCardIntoPlay iid Assets.alejandroVela
-              ]
-             | iid <- maybeToList mAlejandroInvestigator
-             ]
-          <> [ Label
-              "Let’s consult the expedition journal."
-              [ story players intro4
-              , PutCampaignCardIntoPlay iid Assets.expeditionJournal
-              ]
-             | iid <- maybeToList mExpeditionJournalInvestigator
-             ]
-          <> [Label "I wish we knew more about this..." []]
-      ]
+      withOwner Assets.alejandroVela \iid -> do
+        labeled "Let’s consult with Alejandro." do
+          story intro3
+          putCampaignCardIntoPlay iid Assets.alejandroVela
+
+      withOwner Assets.expeditionJournal \iid -> do
+        labeled "Let’s consult the expedition journal." do
+          story intro4
+          putCampaignCardIntoPlay iid Assets.expeditionJournal
+      labeled "I wish we knew more about this..." nothing
     pure s
-  Setup -> do
+  Setup -> runScenarioSetup (HeartOfTheElders . (`with` metadata)) attrs do
     pathsKnown <- getRecordCount PathsAreKnownToYou
 
     if pathsKnown == 6
-      then do
-        pushAll [ScenarioResolution $ Resolution 1]
-        pure s
+      then push R1
       else do
-        let
-          explorationDeckLocations =
-            [ Locations.timeWrackedWoods
-            , Locations.pathOfThorns
-            , Locations.riverCanyon
-            , Locations.ropeBridge
-            , Locations.serpentsHaven
-            , Locations.circuitousTrail
-            ]
-          ruinsLocations =
-            Locations.overgrownRuins
-              :| [Locations.templeOfTheFang, Locations.stoneAltar]
-          explorationDeckTreacheries =
-            [ Treacheries.pitfall
-            , Treacheries.ants
-            , Treacheries.lostInTheWilds
-            , Treacheries.lowOnSupplies
-            ]
-        encounterDeck' <-
-          buildEncounterDeckExcluding
-            (explorationDeckLocations <> toList ruinsLocations)
-            $ [ EncounterSet.PillarsOfJudgement
-              , EncounterSet.HeartOfTheElders
-              , EncounterSet.Rainforest
-              , EncounterSet.Serpents
-              , EncounterSet.Expedition
-              , EncounterSet.Poison
-              ]
+        gather Set.PillarsOfJudgement
+        gather Set.HeartOfTheElders
+        gather Set.Rainforest
+        gather Set.Serpents
+        gather Set.Expedition
+        gather Set.Poison
 
-        let
-          encounterDeck =
-            removeEachFromDeck encounterDeck' explorationDeckTreacheries
+        mouthOfKnYanTheCavernsMaw <- place Locations.mouthOfKnYanTheCavernsMaw
+        startAt mouthOfKnYanTheCavernsMaw
+        placeTokens attrs mouthOfKnYanTheCavernsMaw Resource pathsKnown
 
-        (mouthOfKnYanTheCavernsMawId, placeMouthOfKnYanTheCavernsMaw) <-
-          placeLocationCard Locations.mouthOfKnYanTheCavernsMaw
-        theWingedSerpent <- genCard Enemies.theWingedSerpent
-        ruinsLocation <- genCard =<< sample ruinsLocations
-        placeRuinsLocation <- placeLocation_ ruinsLocation
-        mappedOutTheWayForward <-
-          getHasRecord
-            TheInvestigatorsMappedOutTheWayForward
+        (ruinsLocation, toRemove) <-
+          sampleWithRest $ Locations.overgrownRuins :| [Locations.templeOfTheFang, Locations.stoneAltar]
 
-        explorationDeck <-
-          shuffleM
-            . (<> [ruinsLocation | not mappedOutTheWayForward])
-            =<< genCards
-              (explorationDeckLocations <> explorationDeckTreacheries)
+        removeEvery toRemove
+
+        mappedOutTheWayForward <- getHasRecord TheInvestigatorsMappedOutTheWayForward
+        when mappedOutTheWayForward $ place_ ruinsLocation
+
+        addExtraDeck ExplorationDeck
+          $ [ruinsLocation | not mappedOutTheWayForward]
+          <> [ Locations.timeWrackedWoods
+             , Locations.pathOfThorns
+             , Locations.riverCanyon
+             , Locations.ropeBridge
+             , Locations.serpentsHaven
+             , Locations.circuitousTrail
+             , Treacheries.pitfall
+             , Treacheries.ants
+             , Treacheries.lostInTheWilds
+             , Treacheries.lowOnSupplies
+             ]
 
         setAsidePoisonedCount <- getSetAsidePoisonedCount
+        setAside $ replicate setAsidePoisonedCount Treacheries.poisoned
 
-        setAsideCards <-
-          genCards
-            (replicate setAsidePoisonedCount Treacheries.poisoned)
+        when (reachedAct2 metadata) do
+          enemyAt Enemies.theWingedSerpent mouthOfKnYanTheCavernsMaw
 
-        createTheWingedSerpent <-
-          createEnemyAt_
-            theWingedSerpent
-            mouthOfKnYanTheCavernsMawId
-            Nothing
-
-        pushAll
-          $ [ SetEncounterDeck encounterDeck
-            , SetAgendaDeck
-            , SetActDeck
-            , placeMouthOfKnYanTheCavernsMaw
-            , MoveAllTo (toSource attrs) mouthOfKnYanTheCavernsMawId
-            , PlaceTokens
-                (toSource attrs)
-                (LocationTarget mouthOfKnYanTheCavernsMawId)
-                Resource
-                pathsKnown
-            ]
-          <> [createTheWingedSerpent | reachedAct2 metadata]
-          <> [placeRuinsLocation | mappedOutTheWayForward]
-
-        acts <- genCards [Acts.searchForThePattern, Acts.openingTheMaw]
-        agendas <- genCards [Agendas.theJunglesHeart, Agendas.settingSun]
-
-        HeartOfTheElders
-          . (`with` metadata)
-          <$> runMessage
-            msg
-            ( attrs
-                & (decksL . at ExplorationDeck ?~ explorationDeck)
-                & (setAsideCardsL <>~ setAsideCards)
-                & (agendaStackL . at 1 ?~ agendas)
-                & (actStackL . at 1 ?~ acts)
-            )
+        setActDeck [Acts.searchForThePattern, Acts.openingTheMaw]
+        setAgendaDeck [Agendas.theJunglesHeart, Agendas.settingSun]
   ScenarioResolution r -> case r of
     NoResolution -> do
       pathsKnown <- getRecordCount PathsAreKnownToYou
@@ -268,11 +198,9 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
             LocationResources
             (locationIs Locations.mouthOfKnYanTheCavernsMaw)
       actStep <- getCurrentActStep
-      pushAll
-        $ [ RecordCount PathsAreKnownToYou pillarTokens
-          | pillarTokens > pathsKnown
-          ]
-        <> [RestartScenario]
+      when (pillarTokens > pathsKnown) do
+        recordCount PathsAreKnownToYou pillarTokens
+      push RestartScenario
       pure
         $ HeartOfTheElders
           ( attrs
@@ -284,136 +212,87 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
       vengeanceCards <-
         filter (isJust . cdVengeancePoints . toCardDef)
           <$> scenarioField ScenarioVictoryDisplay
-      gainXP <- toGainXp attrs getXp
-      pushAll
-        $ recordSetInsert TheJungleWatches (map toCardCode vengeanceCards)
-        : gainXP
-          <> [RestartScenario]
+      recordSetInsert TheJungleWatches (map toCardCode vengeanceCards)
+      allGainXp attrs
+      push RestartScenario
       pure $ HeartOfTheElders (attrs `With` metadata {scenarioStep = Two})
     _ -> pure s
-  _ -> HeartOfTheElders . (`with` metadata) <$> runMessage msg attrs
+  _ -> HeartOfTheElders . (`with` metadata) <$> liftRunMessage msg attrs
 
-runBMessage :: Runner HeartOfTheElders
+runBMessage :: Message -> HeartOfTheElders -> QueueT Message GameT HeartOfTheElders
 runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
-  Setup -> do
-    let
-      explorationDeckLocations =
-        [ Locations.vastPassages
-        , Locations.hallOfIdolatry
-        , Locations.darkHollow
-        , Locations.perilousGulch
-        , Locations.crystalPillars
-        ]
-
-      explorationDeckTreacheries =
-        [ Treacheries.pitfall
-        , Treacheries.noTurningBack
-        , Treacheries.deepDark
-        , Treacheries.finalMistake
-        ]
+  Setup -> runScenarioSetup (HeartOfTheElders . (`with` metadata)) attrs do
+    gather Set.KnYan
+    gather Set.HeartOfTheElders
+    gather Set.AgentsOfYig
+    gather Set.YigsVenom
+    gather Set.ForgottenRuins
+    gather Set.DeadlyTraps
+    gather Set.Poison
 
     theJungleWatches <- recordedCardCodes <$> getRecordSet TheJungleWatches
     let theJungleWatchesCardDefs = mapMaybe (lookupCardDef) theJungleWatches
-    theJungleWatchesCards <- genCards theJungleWatchesCardDefs
 
-    encounterDeck' <-
-      buildEncounterDeckExcluding
-        explorationDeckLocations
-        [ EncounterSet.KnYan
-        , EncounterSet.HeartOfTheElders
-        , EncounterSet.AgentsOfYig
-        , EncounterSet.YigsVenom
-        , EncounterSet.ForgottenRuins
-        , EncounterSet.DeadlyTraps
-        , EncounterSet.Poison
-        ]
+    when (notNull theJungleWatchesCardDefs) do
+      placeInVictory theJungleWatchesCardDefs
 
-    let
-      encounterDeck =
-        removeEachFromDeck
-          encounterDeck'
-          (explorationDeckTreacheries <> theJungleWatchesCardDefs)
+    startAt =<< place Locations.mouthOfKnYanTheDepthsBelow
 
-    (mouthOfKnYanTheDepthsBelowId, placeMouthOfKnYanTheDepthsBelow) <-
-      placeLocationCard Locations.mouthOfKnYanTheDepthsBelow
     setAsidePoisonedCount <- getSetAsidePoisonedCount
-    setAsideCards <-
-      genCards
-        ( Locations.descentToYoth
-            : replicate setAsidePoisonedCount Treacheries.poisoned
-        )
+    setAside $ Locations.descentToYoth : replicate setAsidePoisonedCount Treacheries.poisoned
 
-    explorationDeck <-
-      genCards
-        (explorationDeckLocations <> explorationDeckTreacheries)
-
-    pushAll
-      [ SetEncounterDeck encounterDeck
-      , SetAgendaDeck
-      , SetActDeck
-      , placeMouthOfKnYanTheDepthsBelow
-      , MoveAllTo (toSource attrs) mouthOfKnYanTheDepthsBelowId
+    addExtraDeck
+      ExplorationDeck
+      [ Locations.vastPassages
+      , Locations.hallOfIdolatry
+      , Locations.darkHollow
+      , Locations.perilousGulch
+      , Locations.crystalPillars
+      , Treacheries.pitfall
+      , Treacheries.noTurningBack
+      , Treacheries.deepDark
+      , Treacheries.finalMistake
       ]
 
-    acts <-
-      genCards
-        [Acts.cavernOfTheForgottenAge, Acts.descentIntoDark]
-    agendas <-
-      genCards
-        [Agendas.theLonelyCaverns, Agendas.eyesInTheDark]
+    setActDeck [Acts.cavernOfTheForgottenAge, Acts.descentIntoDark]
+    setAgendaDeck [Agendas.theLonelyCaverns, Agendas.eyesInTheDark]
 
-    HeartOfTheElders
-      . (`with` metadata)
-      <$> runMessage
-        msg
-        ( attrs
-            & (locationLayoutL .~ part2Locations)
-            & (decksL . at ExplorationDeck ?~ explorationDeck)
-            & (setAsideCardsL <>~ setAsideCards)
-            & (victoryDisplayL .~ theJungleWatchesCards)
-            & (agendaStackL . at 1 ?~ agendas)
-            & (actStackL . at 1 ?~ acts)
-        )
+    setLayout part2Locations
   ScenarioResolution r -> do
-    players <- allPlayers
-    vengeance <- getVengeanceInVictoryDisplay
-    yigsFury <- getRecordCount YigsFury
-    inVictory <-
-      selectAny
-        $ VictoryDisplayCardMatch
-        $ cardIs
-          Enemies.harbingerOfValusia
-    inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
-    damage <- case inPlayHarbinger of
-      Just eid -> field EnemyDamage eid
-      Nothing -> getRecordCount TheHarbingerIsStillAlive
     case r of
       NoResolution -> do
+        story noResolutionB
         rescuedAlejandro <- getHasRecord TheInvestigatorsRescuedAlejandro
-        let n = if rescuedAlejandro then 1 else 2
-        pushAll [story players noResolutionB, ScenarioResolution (Resolution n)]
+        push $ if rescuedAlejandro then R1 else R2
       Resolution n -> do
-        let
-          resolutionStory = case n of
-            1 -> resolution1B
-            2 -> resolution2B
-            _ -> error "invalid resolution"
-        gainXp <- toGainXp attrs getXp
-        pushAll
-          $ story players resolutionStory
-          : RecordCount YigsFury (yigsFury + vengeance)
-          : [CrossOutRecord TheHarbingerIsStillAlive | inVictory]
-            <> [RecordCount TheHarbingerIsStillAlive damage | not inVictory]
-            <> gainXp
-            <> [EndOfGame Nothing]
+        story $ case n of
+          1 -> resolution1B
+          2 -> resolution2B
+          _ -> error "invalid resolution"
+
+        vengeance <- getVengeanceInVictoryDisplay
+        yigsFury <- getRecordCount YigsFury
+        recordCount YigsFury (yigsFury + vengeance)
+
+        inVictory <- selectAny $ VictoryDisplayCardMatch $ cardIs Enemies.harbingerOfValusia
+        if inVictory
+          then crossOut TheHarbingerIsStillAlive
+          else do
+            damage <-
+              selectOne (enemyIs Enemies.harbingerOfValusia) >>= \case
+                Just eid -> field EnemyDamage eid
+                Nothing -> getRecordCount TheHarbingerIsStillAlive
+            recordCount TheHarbingerIsStillAlive damage
+        allGainXp attrs
+        endOfScenario
     pure s
-  _ -> HeartOfTheElders . (`with` metadata) <$> runMessage msg attrs
+  _ -> HeartOfTheElders . (`with` metadata) <$> liftRunMessage msg attrs
 
 instance RunMessage HeartOfTheElders where
-  runMessage msg s@(HeartOfTheElders (_ `With` metadata)) = case msg of
+  runMessage msg s@(HeartOfTheElders (_ `With` metadata)) = runQueueT $ case msg of
     Explore iid _ _ -> do
-      windowMsg <- checkWindows [mkWindow Timing.When $ Window.AttemptExplore iid]
-      pushAll [windowMsg, Do msg]
+      checkWhen $ Window.AttemptExplore iid
+      push $ Do msg
       pure s
     Do (Explore iid source locationMatcher) -> do
       explore iid source locationMatcher PlaceExplored 1

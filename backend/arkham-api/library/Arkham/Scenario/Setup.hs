@@ -11,9 +11,11 @@ import Arkham.Helpers
 import Arkham.Helpers.Deck
 import Arkham.Helpers.EncounterSet
 import Arkham.Id
+import Arkham.Layout
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message.Lifted
+import Arkham.Placement
 import Arkham.Prelude hiding ((.=))
 import Arkham.Scenario.Helpers (excludeBSides, excludeDoubleSided)
 import Arkham.Scenario.Runner ()
@@ -183,6 +185,12 @@ addToEncounterDeck (toList -> defs) = do
   cards <- traverse genEncounterCard defs
   encounterDeckL %= withDeck (<> cards)
 
+assetAt :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m ()
+assetAt def lid = do
+  encounterDeckL %= flip removeEachFromDeck [def]
+  card <- genCard def
+  createAssetAt_ card (AtLocation lid)
+
 enemyAt :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m ()
 enemyAt def lid = do
   encounterDeckL %= flip removeEachFromDeck [def]
@@ -205,10 +213,34 @@ sampleEncounterDeck n = do
       encounterDeckL %= withDeck (filter (`notElem` cards))
       pure cards
 
-addExtraDeck :: (ReverseQueue m, IsCard card) => ScenarioDeckKey -> [card] -> ScenarioBuilderT m ()
-addExtraDeck k cards = do
-  cards' <- shuffleM $ map toCard cards
-  encounterDeckL %= withDeck (filter ((`notElem` cards') . toCard))
+class FindInEncounterDeck a where
+  findInDeck :: a -> Deck EncounterCard -> Maybe EncounterCard
+  notFoundInDeck :: ReverseQueue m => a -> m Card
+
+instance FindInEncounterDeck CardDef where
+  findInDeck def deck = find ((== def) . toCardDef) (unDeck deck)
+  notFoundInDeck = genCard
+
+instance FindInEncounterDeck Card where
+  findInDeck card deck = find ((== card) . toCard) (unDeck deck)
+  notFoundInDeck = pure
+
+instance FindInEncounterDeck EncounterCard where
+  findInDeck card deck = find (== card) (unDeck deck)
+  notFoundInDeck = pure . toCard
+
+addExtraDeck
+  :: (FindInEncounterDeck defs, ReverseQueue m) => ScenarioDeckKey -> [defs] -> ScenarioBuilderT m ()
+addExtraDeck k defs = do
+  deck <- use encounterDeckL
+  cards <- for defs \def -> do
+    case findInDeck def deck of
+      Just card -> do
+        encounterDeckL %= filter (/= card)
+        pure $ toCard card
+      Nothing -> notFoundInDeck def
+
+  cards' <- shuffle cards
   decksL %= (at k ?~ cards')
 
 setActDeck :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
@@ -242,6 +274,15 @@ placeUnderScenarioReference defs = do
 
 beginWithStoryAsset :: ReverseQueue m => InvestigatorId -> CardDef -> ScenarioBuilderT m ()
 beginWithStoryAsset iid def = do
-  bloodstainedDagger <- genCard def
+  a <- genCard def
   encounterDeckL %= flip removeEachFromDeck [def]
-  push $ TakeControlOfSetAsideAsset iid bloodstainedDagger
+  push $ TakeControlOfSetAsideAsset iid a
+
+placeInVictory :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
+placeInVictory defs = do
+  cards <- genCards defs
+  encounterDeckL %= flip removeEachFromDeck defs
+  victoryDisplayL %= (<> cards)
+
+setLayout :: ReverseQueue m => [GridTemplateRow] -> ScenarioBuilderT m ()
+setLayout = (locationLayoutL .=)

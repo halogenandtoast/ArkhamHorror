@@ -1,22 +1,12 @@
-module Arkham.Scenario.Scenarios.BeforeTheBlackThrone (
-  BeforeTheBlackThrone (..),
-  beforeTheBlackThrone,
-) where
-
-import Arkham.Prelude hiding ((<|))
+module Arkham.Scenario.Scenarios.BeforeTheBlackThrone (BeforeTheBlackThrone (..), beforeTheBlackThrone) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.Attack
 import Arkham.CampaignLogKey
 import Arkham.Card
-import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
-import Arkham.Difficulty
 import Arkham.Direction
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers
@@ -28,16 +18,17 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Label (mkLabel)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
+import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Deck
+import Arkham.Scenario.Helpers hiding (defeated)
+import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Types (locationLayoutL, metaL)
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Arkham.Scenarios.BeforeTheBlackThrone.Story
-import Arkham.Token (addTokens)
 import Arkham.Token qualified as Token
 import Arkham.Trait qualified as Trait
 import Data.Aeson (Result (..))
@@ -69,16 +60,12 @@ instance HasChaosTokenValue BeforeTheBlackThrone where
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 6
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-readInvestigatorDefeat :: HasGame m => m [Message]
+readInvestigatorDefeat :: ReverseQueue m => m ()
 readInvestigatorDefeat = do
-  defeatedInvestigatorIds <- select DefeatedInvestigator
-  if null defeatedInvestigatorIds
-    then pure []
-    else do
-      players <- traverse getPlayer defeatedInvestigatorIds
-      pure
-        $ [story players investigatorDefeat]
-        <> map DrivenInsane defeatedInvestigatorIds
+  defeated <- select DefeatedInvestigator
+  unless (null defeated) do
+    storyOnly defeated investigatorDefeat
+    for_ defeated drivenInsane
 
 standaloneChaosTokens :: [ChaosTokenFace]
 standaloneChaosTokens =
@@ -101,43 +88,39 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage BeforeTheBlackThrone where
-  runMessage msg s@(BeforeTheBlackThrone attrs) = case msg of
+  runMessage msg s@(BeforeTheBlackThrone attrs) = runQueueT $ case msg of
     StandaloneSetup -> do
-      push $ SetChaosTokens standaloneChaosTokens
+      setChaosTokens standaloneChaosTokens
       pure s
     PreScenarioSetup -> do
-      players <- allPlayers
-      pushAll [story players intro]
+      story intro
       pure s
-    Setup -> do
+    Setup -> runScenarioSetup BeforeTheBlackThrone attrs do
       pathWindsBeforeYouCount <- getRecordCount ThePathWindsBeforeYou
-      encounterDeck <-
-        buildEncounterDeckExcluding
-          [Enemies.piperOfAzathoth, Enemies.azathoth]
-          [ EncounterSet.BeforeTheBlackThrone
-          , EncounterSet.AgentsOfAzathoth
-          , EncounterSet.InexorableFate
-          , EncounterSet.AncientEvils
-          , EncounterSet.DarkCult
-          ]
-      (cosmicIngress, placeCosmicIngress) <- placeLocationCard Locations.cosmicIngress
+      gather Set.BeforeTheBlackThrone
+      gather Set.AgentsOfAzathoth
+      gather Set.InexorableFate
+      gather Set.AncientEvils
+      gather Set.DarkCult
+
+      cosmicIngress <- place Locations.cosmicIngress
+      startAt cosmicIngress
 
       cosmosCards' <-
         shuffleM
-          =<< genCards
-            [ Locations.infinityOfDarkness
-            , Locations.infinityOfDarkness
-            , Locations.infinityOfDarkness
-            , Locations.cosmicGate
-            , Locations.pathwayIntoVoid
-            , Locations.pathwayIntoVoid
-            , Locations.dancersMist
-            , Locations.dancersMist
-            , Locations.dancersMist
-            , Locations.flightIntoOblivion
-            , Locations.flightIntoOblivion
-            , Locations.flightIntoOblivion
-            ]
+          [ Locations.infinityOfDarkness
+          , Locations.infinityOfDarkness
+          , Locations.infinityOfDarkness
+          , Locations.cosmicGate
+          , Locations.pathwayIntoVoid
+          , Locations.pathwayIntoVoid
+          , Locations.dancersMist
+          , Locations.dancersMist
+          , Locations.dancersMist
+          , Locations.flightIntoOblivion
+          , Locations.flightIntoOblivion
+          , Locations.flightIntoOblivion
+          ]
 
       let
         (topCosmosCard, cosmosCards) =
@@ -145,75 +128,42 @@ instance RunMessage BeforeTheBlackThrone where
             (x : xs) -> (x, xs)
             _ -> error "did not have enough cards"
 
-      hideousPalace <- genCard Locations.hideousPalace
-
       (firstCosmosCard, secondCosmosCard) <-
-        shuffleM [topCosmosCard, hideousPalace] <&> \case
+        shuffleM [topCosmosCard, Locations.hideousPalace] <&> \case
           [x, y] -> (x, y)
           _ -> error "did not have enough cards"
 
+      firstCosmos <- place firstCosmosCard
+      secondCosmos <- place secondCosmosCard
+
       lead <- getLead
       (map toCard -> cards, _) <- fieldMap InvestigatorDeck (draw 6) lead
-
-      (firstCosmos, placeFirstCosmos) <- placeLocation firstCosmosCard
-      (secondCosmos, placeSecondCosmos) <- placeLocation secondCosmosCard
-
       let
-        emptySpaceLocations =
-          [ Pos 0 1
-          , Pos 0 (-1)
-          , Pos 1 1
-          , Pos 1 0
-          , Pos 1 (-1)
-          , Pos 2 0
-          ]
+        emptySpaceLocations = [Pos 0 1, Pos 0 (-1), Pos 1 1, Pos 1 0, Pos 1 (-1), Pos 2 0]
         emptySpaces = zip emptySpaceLocations cards
 
       let cosmos = initCosmos @Card @LocationId
 
-      placeEmptySpaces <- concatForM emptySpaces $ \(pos, card) -> do
-        (emptySpace', placeEmptySpace) <- placeLocationCard Locations.emptySpace
-        pure [placeEmptySpace, PlaceCosmos lead emptySpace' (EmptySpace pos card)]
-
-      azathoth <- genCard Enemies.azathoth
-      createAzathoth <- toMessage <$> createEnemy azathoth Global
+      placeEnemy Enemies.azathoth Global
 
       pushAll
-        $ [ SetEncounterDeck encounterDeck
-          , SetActDeck
-          , SetAgendaDeck
-          , placeCosmicIngress
-          , PlaceCosmos lead cosmicIngress (CosmosLocation (Pos 0 0) cosmicIngress)
-          , placeFirstCosmos
+        $ [ PlaceCosmos lead cosmicIngress (CosmosLocation (Pos 0 0) cosmicIngress)
           , PlaceCosmos lead firstCosmos (CosmosLocation (Pos 2 1) firstCosmos)
-          , placeSecondCosmos
           , PlaceCosmos lead secondCosmos (CosmosLocation (Pos 2 (-1)) secondCosmos)
-          , MoveAllTo (toSource attrs) cosmicIngress
-          , createAzathoth
           ]
         <> map (ObtainCard . toCard) cards
-        <> placeEmptySpaces
 
-      setAsideCards <-
-        genCards [Locations.courtOfTheGreatOldOnes, Locations.theBlackThrone, Enemies.piperOfAzathoth]
+      for_ emptySpaces $ \(pos, card) -> do
+        emptySpace' <- placeLocationCard Locations.emptySpace
+        push $ PlaceCosmos lead emptySpace' (EmptySpace pos card)
 
-      agendas <- genCards [Agendas.wheelOfFortuneX, Agendas.itAwaits, Agendas.theFinalCountdown]
-      acts <- genCards [Acts.theCosmosBeckons, Acts.inAzathothsDomain, Acts.whatMustBeDone]
-
-      BeforeTheBlackThrone
-        <$> runMessage
-          msg
-          ( attrs
-              & (decksL . at CosmosDeck ?~ cosmosCards)
-              & locationLayoutL
-              .~ cosmosToGrid cosmos
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
-              & (metaL .~ toJSON cosmos)
-              & (usesGridL .~ True)
-              & (setAsideCardsL <>~ setAsideCards)
-              & (tokensL %~ addTokens Token.Resource pathWindsBeforeYouCount)
-          )
+      setAside [Locations.courtOfTheGreatOldOnes, Locations.theBlackThrone, Enemies.piperOfAzathoth]
+      setAgendaDeck [Agendas.wheelOfFortuneX, Agendas.itAwaits, Agendas.theFinalCountdown]
+      setActDeck [Acts.theCosmosBeckons, Acts.inAzathothsDomain, Acts.whatMustBeDone]
+      setLayout $ cosmosToGrid cosmos
+      addExtraDeck CosmosDeck cosmosCards
+      setMeta cosmos
+      placeTokensOnScenarioReference Token.Resource pathWindsBeforeYouCount
     SetScenarioMeta meta -> do
       case fromJSON @(Cosmos Card LocationId) meta of
         Error err -> error err
@@ -261,75 +211,55 @@ instance RunMessage BeforeTheBlackThrone where
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of
-        Cultist -> push $ findAndDrawEncounterCard iid (CardWithTrait Trait.Cultist)
+        Cultist -> findAndDrawEncounterCard iid (CardWithTrait Trait.Cultist)
         Tablet -> do
           azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
-          push $ EnemyAttack $ enemyAttack azathoth (ChaosTokenEffectSource Tablet) iid
+          initiateEnemyAttack azathoth Tablet iid
         _ -> pure ()
       pure s
     ResolveChaosToken _ ElderThing _ -> do
       v <- getSkillTestModifiedSkillValue
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
-      pushWhen (v == 0) $ PlaceDoom (ChaosTokenEffectSource ElderThing) (toTarget azathoth) 1
+      when (v == 0) $ placeDoom ElderThing azathoth 1
       pure s
     ScenarioResolution n -> do
-      investigators <- getInvestigators
-      players <- allPlayers
       case n of
         NoResolution -> push R1
         Resolution x | x == 1 || x == 11 -> do
-          msgs <- if x == 1 then readInvestigatorDefeat else pure []
-          pushAll
-            $ msgs
-            <> [story players resolution1, Record AzathothDevouredTheUniverse]
-            <> map (InvestigatorKilled (toSource attrs)) investigators
-            <> [GameOver]
+          when (x == 1) readInvestigatorDefeat
+          story resolution1
+          record AzathothDevouredTheUniverse
+          eachInvestigator (kill attrs)
+          gameOver
         Resolution 2 -> do
-          lead <- getLead
-          msgs <- readInvestigatorDefeat
-          gainXp <- toGainXp (toSource attrs) (getXpWithBonus 5)
-          pushAll
-            $ msgs
-            <> [ story players resolution2
-               , Record TheLeadInvestigatorHasJoinedThePipersOfAzathoth
-               , Record AzathothSlumbersForNow
-               , DrivenInsane lead
-               ]
-            <> gainXp
-            <> [SufferTrauma investigator 0 2 | investigator <- investigators]
-            <> [EndOfGame Nothing]
+          readInvestigatorDefeat
+          story resolution2
+          record TheLeadInvestigatorHasJoinedThePipersOfAzathoth
+          record AzathothSlumbersForNow
+          drivenInsane =<< getLead
+          allGainXpWithBonus attrs 5
+          eachInvestigator (`sufferMentalTrauma` 2)
+          endOfScenario
         Resolution 3 -> do
-          msgs <- readInvestigatorDefeat
-          gainXp <- toGainXp (toSource attrs) (getXpWithBonus 5)
-          pushAll
-            $ msgs
-            <> [ story players resolution3
-               , Record AzathothSlumbersForNow
-               ]
-            <> gainXp
-            <> [SufferTrauma investigator 2 0 | investigator <- investigators]
-            <> [EndOfGame Nothing]
+          readInvestigatorDefeat
+          story resolution3
+          record AzathothSlumbersForNow
+          allGainXpWithBonus attrs 5
+          eachInvestigator (`sufferPhysicalTrauma` 2)
+          endOfScenario
         Resolution 4 -> do
-          msgs <- readInvestigatorDefeat
-          lead <- getLeadPlayer
-          pushAll
-            $ msgs
-            <> [ storyWithChooseOne
-                  lead
-                  players
-                  resolution4
-                  [Label "It must be done." [R5], Label "I refuse" [ScenarioResolution (Resolution 11)]]
-               ]
+          readInvestigatorDefeat
+          storyWithChooseOneM resolution4 do
+            labeled "It must be done." $ push R5
+            labeled "I refuse" $ push $ ScenarioResolution (Resolution 11) -- actually 1
         Resolution 5 -> do
-          gainXp <- toGainXp (toSource attrs) (getXpWithBonus 10)
-          pushAll
-            $ [ story players resolution5
-              , Record AzathothSlumbersForNow
-              , Record TheInvestigatorsSignedTheBlackBookOfAzathoth
-              ]
-            <> gainXp
-            <> [SufferTrauma investigator 2 2 | investigator <- investigators]
-            <> [EndOfGame Nothing]
+          readInvestigatorDefeat
+          story resolution5
+          record AzathothSlumbersForNow
+          record TheInvestigatorsSignedTheBlackBookOfAzathoth
+          allGainXpWithBonus attrs 10
+          eachInvestigator \iid -> sufferTrauma iid 2 2
+          endOfScenario
         _ -> error "unknown resolution"
       pure s
-    _ -> BeforeTheBlackThrone <$> runMessage msg attrs
+    _ -> BeforeTheBlackThrone <$> liftRunMessage msg attrs

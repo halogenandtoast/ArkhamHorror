@@ -1153,7 +1153,7 @@ shuffleCardsIntoDeck
 shuffleCardsIntoDeck deck cards = push $ Msg.shuffleCardsIntoDeck deck cards
 
 shuffleDeck :: (ReverseQueue m, IsDeck deck) => deck -> m ()
-shuffleDeck deck = shuffleCardsIntoDeck deck []
+shuffleDeck deck = shuffleCardsIntoDeck deck ([] :: [Card])
 
 reduceCostOf :: (Sourceable source, IsCard card, ReverseQueue m) => source -> card -> Int -> m ()
 reduceCostOf source card n = push $ Msg.reduceCostOf source card n
@@ -1730,9 +1730,6 @@ setScenarioDeck key cards = push $ Msg.SetScenarioDeck key cards
 
 removeChaosToken :: ReverseQueue m => ChaosTokenFace -> m ()
 removeChaosToken token = push $ Msg.RemoveChaosToken token
-
-ready :: (ReverseQueue m, Targetable target) => target -> m ()
-ready target = push $ Msg.Ready (toTarget target)
 
 moveTowardsMatching
   :: (Targetable target, Sourceable source, ReverseQueue m)

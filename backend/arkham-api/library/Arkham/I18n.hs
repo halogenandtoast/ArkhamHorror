@@ -18,7 +18,7 @@ scope t a = let ?scope = ?scope <> [t] in a
 ikey :: HasI18n => Scope -> Text
 ikey t = intercalate "." (?scope <> [t]) <> varStr
  where
-  varStr = case map toVarPair (mapToList $ traceShowId ?scopeVars) of
+  varStr = case map toVarPair (mapToList ?scopeVars) of
     [] -> ""
     vs -> " " <> intercalate " " vs
   toVarPair (k, v) = k <> "=" <> toVar v

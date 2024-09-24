@@ -1,14 +1,9 @@
-module Arkham.Act.Cards.LookingForAnswers (
-  LookingForAnswers (..),
-  lookingForAnswers,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.LookingForAnswers (LookingForAnswers (..), lookingForAnswers) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Agenda
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenarios.WakingNightmare.Helpers
@@ -21,20 +16,18 @@ lookingForAnswers :: ActCard LookingForAnswers
 lookingForAnswers = act (1, A) LookingForAnswers Cards.lookingForAnswers (groupClueCost $ PerPlayer 4)
 
 instance RunMessage LookingForAnswers where
-  runMessage msg a@(LookingForAnswers attrs) = case msg of
+  runMessage msg a@(LookingForAnswers attrs) = runQueueT $ case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       step <- getCurrentAgendaStep
-      placeStairwell <- placeSetAsideLocation_ Locations.stairwell
-      placeBasementDoors <-
-        placeLabeledLocations_ "basementDoor"
-          =<< shuffleM
-          =<< getSetAsideCardsMatching (CardWithTitle "Basement Door")
+      placeSetAsideLocation_ Locations.stairwell
+      placeLabeledLocations_ "basementDoor"
+        =<< shuffleM
+        =<< getSetAsideCardsMatching (CardWithTitle "Basement Door")
       agenda <- selectJust AnyAgenda
-      agendaMsg <- case step of
-        1 -> pure $ AdvanceAgenda agenda
+      case step of
+        1 -> push $ AdvanceAgendaBy agenda #doom
         _ -> makeInfestationTest
 
-      pushAll $ placeStairwell : placeBasementDoors <> [agendaMsg, advanceActDeck attrs]
-
+      advanceActDeck attrs
       pure a
-    _ -> LookingForAnswers <$> runMessage msg attrs
+    _ -> LookingForAnswers <$> liftRunMessage msg attrs

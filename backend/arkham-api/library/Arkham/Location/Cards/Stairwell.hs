@@ -1,12 +1,12 @@
 module Arkham.Location.Cards.Stairwell (stairwell, Stairwell (..)) where
 
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Window
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.WakingNightmare.Helpers
 import Arkham.Trait (Trait (Basement))
 
@@ -29,27 +29,18 @@ instance HasAbilities Stairwell where
       ]
 
 instance RunMessage Stairwell where
-  runMessage msg l@(Stairwell attrs) =
-    case msg of
-      UseThisAbility iid (isSource attrs -> True) 1 -> do
-        basementLocations <- select $ LocationWithTrait Basement
-        player <- getPlayer iid
-        sid <- getRandom
-        push
-          $ chooseOne
-            player
-            [ targetLabel
-              basementLocation
-              [ toMessage $ move (attrs.ability 1) iid basementLocation
-              , beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 4)
-              ]
-            | basementLocation <- basementLocations
-            ]
-        pure l
-      FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-        push $ assignDamage iid (attrs.ability 1) 2
-        pure l
-      UseThisAbility _iid (isSource attrs -> True) 2 -> do
-        pushM makeInfestationTest
-        pure l
-      _ -> Stairwell <$> runMessage msg attrs
+  runMessage msg l@(Stairwell attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      basementLocations <- select $ LocationWithTrait Basement
+      sid <- getRandom
+      chooseTargetM iid basementLocations \basementLocation -> do
+        moveTo (attrs.ability 1) iid basementLocation
+        beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 4)
+      pure l
+    FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      assignDamage iid (attrs.ability 1) 2
+      pure l
+    UseThisAbility _iid (isSource attrs -> True) 2 -> do
+      makeInfestationTest
+      pure l
+    _ -> Stairwell <$> liftRunMessage msg attrs

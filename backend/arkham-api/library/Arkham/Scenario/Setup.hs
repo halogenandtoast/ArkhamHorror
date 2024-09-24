@@ -115,12 +115,18 @@ setAsideKeys :: ReverseQueue m => [ArkhamKey] -> ScenarioBuilderT m ()
 setAsideKeys ks = do
   setAsideKeysL .= setFromList ks
 
-setAside :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
-setAside defs = do
-  cards <- genCards defs
+setAside :: (ReverseQueue m, FindInEncounterDeck a) => [a] -> ScenarioBuilderT m ()
+setAside as = do
+  deck <- use encounterDeckL
+  cards <- for as \a -> do
+    case (findInDeck a deck) of
+      Just card -> do
+        encounterDeckL %= filter (/= card)
+        pure $ toCard card
+      Nothing -> notFoundInDeck a
+
   setAsideCardsL %= (<> cards)
-  encounterDeckL %= flip removeEachFromDeck defs
-  encounterDecksL . each . _1 %= flip removeEachFromDeck defs
+  encounterDecksL . each . _1 %= flip removeEachFromDeck (map toCardDef cards)
 
 -- does not handle other encounter decks
 removeEvery :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()

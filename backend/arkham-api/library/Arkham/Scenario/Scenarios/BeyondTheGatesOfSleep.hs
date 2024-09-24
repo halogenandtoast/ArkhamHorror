@@ -11,15 +11,11 @@ import Arkham.Campaigns.TheDreamEaters.ChaosBag
 import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.Card
 import Arkham.ClassSymbol
-import Arkham.Classes.HasGame
-import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
 import Arkham.Helpers.Modifiers hiding (setupModifier)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
-import Arkham.Helpers.Xp
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
@@ -128,7 +124,6 @@ dreamEffect iid = \case
   HunterDream -> search iid GameSource iid [fromDeck] (basic $ withTrait Weapon) (PlayFound iid 1)
   MedicOrAssistantDream -> do
     otherInvestigators <- select $ NotInvestigator $ InvestigatorWithId iid
-    player <- getPlayer iid
     chooseTargetM iid otherInvestigators \investigator -> do
       gainResourcesIfCan investigator ScenarioSource 2
       setupModifier ScenarioSource investigator $ StartingHand 1

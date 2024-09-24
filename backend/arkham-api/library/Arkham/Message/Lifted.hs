@@ -99,6 +99,9 @@ placeSetAsideLocation card = do
 placeSetAsideLocation_ :: ReverseQueue m => CardDef -> m ()
 placeSetAsideLocation_ = push <=< Msg.placeSetAsideLocation_
 
+placeSetAsideLocations_ :: ReverseQueue m => [CardDef] -> m ()
+placeSetAsideLocations_ = pushAll <=< Msg.placeSetAsideLocations
+
 placeLocationCard
   :: ReverseQueue m => CardDef -> m LocationId
 placeLocationCard def = do

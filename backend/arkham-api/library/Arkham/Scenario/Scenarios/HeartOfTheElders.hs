@@ -161,7 +161,7 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         (ruinsLocation, toRemove) <-
           sampleWithRest $ Locations.overgrownRuins :| [Locations.templeOfTheFang, Locations.stoneAltar]
 
-        removeEvery toRemove
+        removeOneOfEach toRemove
 
         mappedOutTheWayForward <- getHasRecord TheInvestigatorsMappedOutTheWayForward
         when mappedOutTheWayForward $ place_ ruinsLocation
@@ -184,7 +184,7 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         setAside $ replicate setAsidePoisonedCount Treacheries.poisoned
 
         when (reachedAct2 metadata) do
-          enemyAt Enemies.theWingedSerpent mouthOfKnYanTheCavernsMaw
+          enemyAt_ Enemies.theWingedSerpent mouthOfKnYanTheCavernsMaw
 
         setActDeck [Acts.searchForThePattern, Acts.openingTheMaw]
         setAgendaDeck [Agendas.theJunglesHeart, Agendas.settingSun]

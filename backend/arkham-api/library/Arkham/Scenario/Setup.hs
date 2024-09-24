@@ -15,6 +15,7 @@ import Arkham.Layout
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message.Lifted
+import Arkham.Message.Lifted.Placement (IsPlacement (..))
 import Arkham.Placement
 import Arkham.Prelude hiding ((.=))
 import Arkham.Scenario.Helpers (excludeBSides, excludeDoubleSided)
@@ -117,6 +118,12 @@ setAside defs = do
 removeEvery :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
 removeEvery defs = encounterDeckL %= flip removeEveryFromDeck defs
 
+removeOneOf :: ReverseQueue m => CardDef -> ScenarioBuilderT m ()
+removeOneOf def = removeOneOfEach [def]
+
+removeOneOfEach :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
+removeOneOfEach defs = encounterDeckL %= flip removeEachFromDeck defs
+
 fromSetAside :: (HasCallStack, ReverseQueue m) => CardDef -> ScenarioBuilderT m Card
 fromSetAside def = do
   cards <- use setAsideCardsL
@@ -192,17 +199,24 @@ assetAt def lid = do
   card <- genCard def
   createAssetAt_ card (AtLocation lid)
 
-enemyAt :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m ()
-enemyAt def lid = do
+enemyAt_ :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m ()
+enemyAt_ def lid = do
   encounterDeckL %= flip removeEachFromDeck [def]
   card <- genCard def
   createEnemyAt_ card lid
 
-placeEnemy :: ReverseQueue m => CardDef -> Placement -> ScenarioBuilderT m ()
+enemyAt :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m EnemyId
+enemyAt def lid = do
+  encounterDeckL %= flip removeEachFromDeck [def]
+  card <- genCard def
+  createEnemyAt card lid
+
+placeEnemy
+  :: (ReverseQueue m, IsPlacement placement) => CardDef -> placement -> ScenarioBuilderT m ()
 placeEnemy def placement = do
   encounterDeckL %= flip removeEachFromDeck [def]
   card <- genCard def
-  pushM $ createEnemyWithPlacement_ card placement
+  pushM $ createEnemyWithPlacement_ card (toPlacement placement)
 
 enemyAtMatching :: ReverseQueue m => CardDef -> LocationMatcher -> ScenarioBuilderT m ()
 enemyAtMatching def matcher = do

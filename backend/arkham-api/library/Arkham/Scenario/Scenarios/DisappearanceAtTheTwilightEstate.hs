@@ -3,31 +3,23 @@ module Arkham.Scenario.Scenarios.DisappearanceAtTheTwilightEstate (
   disappearanceAtTheTwilightEstate,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Types (Field (..))
-import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.ChaosBag
 import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Card
-import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.DamageEffect
-import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Deck
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher
-import Arkham.Message
-import Arkham.Movement
+import Arkham.Matcher hiding (enemyAt)
+import Arkham.Message (chooseDecks)
+import Arkham.Placement
 import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Story
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -55,167 +47,84 @@ instance HasChaosTokenValue DisappearanceAtTheTwilightEstate where
       otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage DisappearanceAtTheTwilightEstate where
-  runMessage msg s@(DisappearanceAtTheTwilightEstate attrs) = case msg of
+  runMessage msg s@(DisappearanceAtTheTwilightEstate attrs) = runQueueT $ case msg of
     StandaloneSetup -> do
-      push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
+      setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
-    Setup -> do
+    Setup -> runScenarioSetup DisappearanceAtTheTwilightEstate attrs do
       -- At Death's Doorstep is only locations so we will manually gather
-      encounterDeck <-
-        buildEncounterDeckExcluding
-          [Enemies.theSpectralWatcher]
-          [ EncounterSet.DisappearanceAtTheTwilightEstate
-          , EncounterSet.InexorableFate
-          , EncounterSet.RealmOfDeath
-          , EncounterSet.SpectralPredators
-          , EncounterSet.TrappedSpirits
-          , EncounterSet.TheWatcher
-          , EncounterSet.ChillingCold
-          ]
+      gather Set.DisappearanceAtTheTwilightEstate
+      gather Set.InexorableFate
+      gather Set.RealmOfDeath
+      gather Set.SpectralPredators
+      gather Set.TrappedSpirits
+      gather Set.TheWatcher
+      gather Set.ChillingCold
 
-      (officeId, placeOffice) <- placeLocationCard Locations.officeSpectral
-      (billiardsRoomId, placeBilliardsRoom) <-
-        placeLocationCard
-          Locations.billiardsRoomSpectral
-      placeTrophyRoom <- placeLocationCard_ Locations.trophyRoomSpectral
-      (victorianHallsId, placeVictorianHalls) <-
-        placeLocationCard
-          Locations.victorianHallsSpectral
-      placeMasterBedroom <- placeLocationCard_ Locations.masterBedroomSpectral
-      (balconyId, placeBalcony) <- placeLocationCard Locations.balconySpectral
-      (entryHallId, placeEntryHall) <-
-        placeLocationCard
-          Locations.entryHallSpectral
+      setActDeck [Acts.theDisappearance]
+      setAgendaDeck [Agendas.judgementXX]
 
-      theSpectralWatcher <- genCard Enemies.theSpectralWatcher
-      netherMist <- genCard Enemies.netherMist
-      obscuringFog <- genCard Treacheries.obscuringFog
-      shadowHound <- genCard Enemies.shadowHound
-      wraith <- genCard Enemies.wraith
+      office <- place Locations.officeSpectral
+      billiardsRoom <- place Locations.billiardsRoomSpectral
+      victorianHalls <- place Locations.victorianHallsSpectral
+      balcony <- place Locations.balconySpectral
+      entryHall <- place Locations.entryHallSpectral
 
-      mGavriellaMizrah <-
-        selectOne
-          $ investigatorIs Investigators.gavriellaMizrah
-      mJeromeDavids <- selectOne $ investigatorIs Investigators.jeromeDavids
-      mValentinoRivas <- selectOne $ investigatorIs Investigators.valentinoRivas
-      mPennyWhite <- selectOne $ investigatorIs Investigators.pennyWhite
+      placeAll [Locations.trophyRoomSpectral, Locations.masterBedroomSpectral]
 
-      let
-        victorianHallsMoveTo =
-          [ MoveTo $ move attrs gavriellaId victorianHallsId
-          | gavriellaId <- maybeToList mGavriellaMizrah
-          ]
-        officeMoveTo =
-          [ MoveTo $ move attrs jeromeId officeId
-          | jeromeId <- maybeToList mJeromeDavids
-          ]
-        billiardsRoomMoveTo =
-          [ MoveTo $ move attrs valentinoId billiardsRoomId
-          | valentinoId <- maybeToList mValentinoRivas
-          ]
-        balconyMoveTo =
-          [ MoveTo $ move attrs pennyId balconyId
-          | pennyId <- maybeToList mPennyWhite
-          ]
+      enemyAt_ Enemies.theSpectralWatcher entryHall
 
-      createNetherMist <- createEnemyAt_ netherMist officeId Nothing
-      createTheSpectralWatcher <-
-        createEnemyAt_
-          theSpectralWatcher
-          entryHallId
-          Nothing
+      selectForMaybeM (investigatorIs Investigators.gavriellaMizrah) \gavriella -> do
+        moveTo attrs gavriella victorianHalls
+        removeOneOf Treacheries.fateOfAllFools
 
-      tid1 <- getRandom
+      selectForMaybeM (investigatorIs Investigators.jeromeDavids) \jerome -> do
+        moveTo attrs jerome office
+        tid1 <- getRandom
+        obscuringFog <- genCard Treacheries.obscuringFog
+        push $ AttachStoryTreacheryTo tid1 obscuringFog (toTarget office)
+        enemyAt_ Enemies.netherMist office
 
-      pushAll
-        $ [ SetEncounterDeck
-              $ removeEachFromDeck encounterDeck
-              $ [Treacheries.fateOfAllFools | isJust mGavriellaMizrah]
-              <> [Enemies.netherMist | isJust mJeromeDavids]
-              <> [Treacheries.obscuringFog | isJust mJeromeDavids]
-              <> [Enemies.shadowHound | isJust mValentinoRivas]
-              <> [Treacheries.terrorInTheNight | isJust mValentinoRivas]
-              <> [Enemies.wraith | isJust mPennyWhite]
-              <> [Treacheries.whispersInTheDark | isJust mPennyWhite]
-          , SetAgendaDeck
-          , SetActDeck
-          , placeOffice
-          , placeBilliardsRoom
-          , placeTrophyRoom
-          , placeVictorianHalls
-          , placeMasterBedroom
-          , placeBalcony
-          , placeEntryHall
-          , createTheSpectralWatcher
-          ]
-        <> victorianHallsMoveTo
-        <> officeMoveTo
-        <> billiardsRoomMoveTo
-        <> balconyMoveTo
-        <> [ AttachStoryTreacheryTo tid1 obscuringFog (toTarget officeId)
-           | isJust mJeromeDavids
-           ]
-        <> [createNetherMist | isJust mJeromeDavids]
-        <> [ SpawnEnemyAtEngagedWith shadowHound billiardsRoomId valentinoId
-           | valentinoId <- maybeToList mValentinoRivas
-           ]
-        <> [ SpawnEnemyAtEngagedWith wraith balconyId pennyId
-           | pennyId <- maybeToList mPennyWhite
-           ]
-        <> [SetupStep (toTarget attrs) 2]
+      selectForMaybeM (investigatorIs Investigators.valentinoRivas) \valentino -> do
+        moveTo attrs valentino billiardsRoom
+        placeEnemy Enemies.shadowHound (InThreatArea valentino)
+        removeOneOf Treacheries.terrorInTheNight
 
-      acts <- genCards [Acts.theDisappearance]
-      agendas <- genCards [Agendas.judgementXX]
+      selectForMaybeM (investigatorIs Investigators.pennyWhite) \penny -> do
+        moveTo attrs penny balcony
+        placeEnemy Enemies.wraith (InThreatArea penny)
+        removeOneOf Treacheries.whispersInTheDark
 
-      DisappearanceAtTheTwilightEstate
-        <$> runMessage
-          msg
-          (attrs & (actStackL . at 1 ?~ acts) & (agendaStackL . at 1 ?~ agendas))
+      push $ SetupStep (toTarget attrs) 2
     SetupStep (isTarget attrs -> True) 2 -> do
-      gavriellaChosen <-
-        selectAny
-          $ investigatorIs Investigators.gavriellaMizrah
-      valentinoChosen <- selectAny $ investigatorIs Investigators.valentinoRivas
-      pennyChosen <- selectAny $ investigatorIs Investigators.pennyWhite
-
       agendaId <- selectJust AnyAgenda
-      theSpectralWatcher <- selectJust $ enemyIs Enemies.theSpectralWatcher
 
-      terrorInTheNight <- genCard Treacheries.terrorInTheNight
-      whispersInTheDark <- genCard Treacheries.whispersInTheDark
+      whenAny (investigatorIs Investigators.gavriellaMizrah) do
+        theSpectralWatcher <- selectJust $ enemyIs Enemies.theSpectralWatcher
+        nonAttackEnemyDamage attrs 1 theSpectralWatcher
 
-      tid1 <- getRandom
-      tid2 <- getRandom
+      whenAny (investigatorIs Investigators.valentinoRivas) do
+        terrorInTheNight <- genCard Treacheries.terrorInTheNight
+        tid1 <- getRandom
+        push $ AttachStoryTreacheryTo tid1 terrorInTheNight (toTarget agendaId)
 
-      pushAll
-        $ [ EnemyDamage theSpectralWatcher $ nonAttack attrs 1
-          | gavriellaChosen
-          ]
-        <> [ AttachStoryTreacheryTo tid1 terrorInTheNight (toTarget agendaId)
-           | valentinoChosen
-           ]
-        <> [ AttachStoryTreacheryTo tid2 whispersInTheDark (toTarget agendaId)
-           | pennyChosen
-           ]
+      whenAny (investigatorIs Investigators.pennyWhite) do
+        whispersInTheDark <- genCard Treacheries.whispersInTheDark
+        tid2 <- getRandom
+        push $ AttachStoryTreacheryTo tid2 whispersInTheDark (toTarget agendaId)
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
-      case chaosTokenFace token of
-        Skull -> do
-          mAction <- getSkillTestAction
-          for_ mAction $ \action ->
-            when (action `elem` [Action.Fight, Action.Evade])
-              $ runHauntedAbilities iid
+      case token.face of
+        Skull ->
+          getSkillTestAction >>= traverse_ \action ->
+            when (action `elem` [#fight, #evade]) $ runHauntedAbilities iid
         _ -> pure ()
       pure s
     ScenarioResolution _ -> do
+      story noResolution
+      recordCount PiecesOfEvidenceWereLeftBehind =<< selectSum ActClues AnyAct
       players <- allPlayers
-      clues <- selectSum ActClues AnyAct
-      pushAll
-        $ [ story players noResolution
-          , RecordCount PiecesOfEvidenceWereLeftBehind clues
-          ]
-        <> [ chooseDecks players
-           , EndOfGame Nothing
-           ]
+      push $ chooseDecks players
+      endOfScenario
       pure s
-    _ -> DisappearanceAtTheTwilightEstate <$> runMessage msg attrs
+    _ -> DisappearanceAtTheTwilightEstate <$> liftRunMessage msg attrs

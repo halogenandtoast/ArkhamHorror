@@ -331,7 +331,8 @@ function loadAllImages(game: Arkham.Game): Promise<void[]> {
     return new Promise<void>((resolve, reject) => {
       const { cardCode, isFlipped } = toCardContents(card)
       const suffix = isFlipped ? 'b' : ''
-      const url = imgsrc(`cards/${cardCode.replace(/^c/, '')}${suffix}.avif`)
+      const actualCardCode = `${cardCode.replace(/^c/, '')}${suffix}`
+      const url = imgsrc(`cards/${actualCardCode}.avif`)
       if (preloaded.includes(url)) return resolve()
       const img = new Image()
       img.src = url
@@ -339,7 +340,7 @@ function loadAllImages(game: Arkham.Game): Promise<void[]> {
         preloaded.push(url)
         resolve()
       }
-      img.onerror = reject
+      img.onerror = () => reject(`Could not load card ${actualCardCode}`)
       })
   })
 

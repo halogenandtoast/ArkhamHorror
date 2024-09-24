@@ -1,9 +1,4 @@
-module Arkham.Scenario.Scenarios.TheWitchingHour (
-  TheWitchingHour (..),
-  theWitchingHour,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.TheWitchingHour (TheWitchingHour (..), theWitchingHour) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence (ActStep (..), actStep)
@@ -14,22 +9,17 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.ChaosBag
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
-import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
-import Arkham.Movement
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheWitchingHour.Story
 import Data.Map.Monoidal qualified as MonoidalMap
 import Data.Map.Strict qualified as Map
@@ -60,47 +50,54 @@ instance HasChaosTokenValue TheWitchingHour where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage TheWitchingHour where
-  runMessage msg s@(TheWitchingHour attrs) = case msg of
+  runMessage msg s@(TheWitchingHour attrs) = runQueueT $ case msg of
     StandaloneSetup -> do
-      push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
+      setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
     PreScenarioSetup -> do
-      players <- allPlayers
-      lead <- getLeadPlayer
+      story intro1
 
-      pushAll
-        [ story players intro1
-        , chooseOne
-            lead
-            [ Label
-                "“What can I do to avoid this fate?”"
-                [SetupStep (toTarget attrs) 2]
-            , Label "“This is bullshit.”" [SetupStep (toTarget attrs) 3]
-            ]
-        , story players intro4
-        ]
+      lead <- getLead
+      chooseOneM lead do
+        labeled "“What can I do to avoid this fate?”" $ doStep 2 PreScenarioSetup
+        labeled "“This is bullshit.”" $ doStep 3 PreScenarioSetup
       pure s
-    Setup -> do
-      iids <- getInvestigatorIds
-
+    DoStep 2 PreScenarioSetup -> do
+      story intro2
+      record YouHaveAcceptedYourFate
+      addChaosToken Tablet
+      addChaosToken Tablet
+      -- collection is infinite so we only care if the lead already has either card in their deck
+      lead <- getLead
+      addCards <-
+        fieldMap
+          InvestigatorDeck
+          (not . any ((`elem` [Assets.theTowerXVI, Assets.aceOfRods1]) . toCardDef))
+          lead
+      when addCards do
+        addCampaignCardToDeck lead Assets.theTowerXVI
+        addCampaignCardToDeck lead Assets.aceOfRods1
+      pure s
+    DoStep 3 PreScenarioSetup -> do
+      story intro3
+      record YouHaveRejectedYourFate
+      addChaosToken ElderThing
+      addChaosToken ElderThing
+      pure s
+    DoStep 4 PreScenarioSetup -> do
+      story intro4
+      pure s
+    Setup -> runScenarioSetup TheWitchingHour attrs do
       -- The Devourer Below is only locations
-      encounterDeck <-
-        buildEncounterDeckExcluding
-          [Enemies.anetteMason]
-          [ EncounterSet.TheWitchingHour
-          , EncounterSet.AnettesCoven
-          , EncounterSet.CityOfSins
-          , EncounterSet.Witchcraft
-          , EncounterSet.AncientEvils
-          , EncounterSet.StrikingFear
-          ]
+      gather Set.TheWitchingHour
+      gather Set.AnettesCoven
+      gather Set.CityOfSins
+      gather Set.Witchcraft
+      gather Set.AncientEvils
+      gather Set.StrikingFear
 
-      agentsOfShubNiggurath <-
-        map EncounterCard
-          <$> gatherEncounterSet EncounterSet.AgentsOfShubNiggurath
-      agentsOfAzathoth <-
-        map EncounterCard
-          <$> gatherEncounterSet EncounterSet.AgentsOfAzathoth
+      gatherAndSetAside Set.AgentsOfShubNiggurath
+      gatherAndSetAside Set.AgentsOfAzathoth
 
       witchHauntedWoods <-
         sampleN 5
@@ -113,25 +110,22 @@ instance RunMessage TheWitchingHour where
              , Locations.witchHauntedWoodsOvergrownBarn
              ]
 
-      setAsideCards <-
-        (<> agentsOfShubNiggurath <> agentsOfAzathoth)
-          <$> genCards
-            [ Enemies.anetteMason
-            , Locations.arkhamWoodsUnhallowedGround
-            , Locations.arkhamWoodsTwistingPaths
-            , Locations.arkhamWoodsOldHouse
-            , Locations.arkhamWoodsCliffside
-            , Locations.arkhamWoodsTangledThicket
-            , Locations.arkhamWoodsQuietGlade
-            ]
+      setAside
+        [ Enemies.anetteMason
+        , Locations.arkhamWoodsUnhallowedGround
+        , Locations.arkhamWoodsTwistingPaths
+        , Locations.arkhamWoodsOldHouse
+        , Locations.arkhamWoodsCliffside
+        , Locations.arkhamWoodsTangledThicket
+        , Locations.arkhamWoodsQuietGlade
+        ]
 
+      iids <- getInvestigatorIds
       let
         woodsWithInvestigators = zip (cycleN 5 iids) witchHauntedWoods
         locationMap =
           foldMap
-            ( \(investigator, location) ->
-                MonoidalMap.singleton investigator (location :| [])
-            )
+            (\(investigator, location) -> MonoidalMap.singleton investigator (location :| []))
             woodsWithInvestigators
       startingLocations <-
         Map.fromList
@@ -139,122 +133,48 @@ instance RunMessage TheWitchingHour where
             (\(k, v) -> (k,) <$> sample v)
             (MonoidalMap.toList locationMap)
 
-      locationPlacements <-
-        concatForM woodsWithInvestigators $ \(investigator, location) -> do
-          (lid, placement) <- placeLocationCard location
-          let
-            mMoveTo = do
-              startingLocation <- lookup investigator startingLocations
-              guard $ location == startingLocation
-              pure $ MoveTo $ move attrs investigator lid
+      for_ woodsWithInvestigators $ \(investigator, location) -> do
+        lid <- place location
+        push $ PutLocationInFrontOf investigator lid
+        runMaybeT do
+          startingLocation <- hoistMaybe $ lookup investigator startingLocations
+          guard $ location == startingLocation
+          lift $ moveTo attrs investigator lid
 
-          pure
-            $ placement
-            : PutLocationInFrontOf investigator lid
-            : maybeToList mMoveTo
-
-      pushAll
-        $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck]
-        <> locationPlacements
-
-      agendas <- genCards [Agendas.temperanceXIV, Agendas.theNightHowls]
-      acts <-
-        genCards
-          [ Acts.lostInTheWoods
-          , Acts.witchHauntings
-          , Acts.pathsIntoTwilight
-          , Acts.aCircleUnbroken
-          ]
-
-      TheWitchingHour
-        <$> runMessage
-          msg
-          ( attrs
-              & (setAsideCardsL <>~ setAsideCards)
-              & (agendaStackL . at 1 ?~ agendas)
-              & (actStackL . at 1 ?~ acts)
-          )
-    SetupStep (isTarget attrs -> True) 2 -> do
-      players <- allPlayers
-      lead <- getLead
-      -- collection is infinite so we only care if the lead already has either card in their deck
-      addCards <-
-        fieldMap
-          InvestigatorDeck
-          ( not
-              . any ((`elem` [Assets.theTowerXVI, Assets.aceOfRods1]) . toCardDef)
-          )
-          lead
-      pushAll
-        $ [ story players intro2
-          , Record YouHaveAcceptedYourFate
-          , AddChaosToken Tablet
-          , AddChaosToken Tablet
-          ]
-        <> ( guard addCards
-              *> [ AddCampaignCardToDeck lead Assets.theTowerXVI
-                 , AddCampaignCardToDeck lead Assets.aceOfRods1
-                 ]
-           )
-      pure s
-    SetupStep (isTarget attrs -> True) 3 -> do
-      players <- allPlayers
-      pushAll
-        [ story players intro3
-        , Record YouHaveRejectedYourFate
-        , AddChaosToken ElderThing
-        , AddChaosToken ElderThing
-        ]
-      pure s
+      setAgendaDeck [Agendas.temperanceXIV, Agendas.theNightHowls]
+      setActDeck
+        [Acts.lostInTheWoods, Acts.witchHauntings, Acts.pathsIntoTwilight, Acts.aCircleUnbroken]
     ScenarioResolution resolution -> do
-      players <- allPlayers
-      gainXp <- toGainXp attrs $ getXpWithBonus 1
       step <- actStep <$> selectJustField ActSequence AnyAct
       case resolution of
-        NoResolution -> do
-          push
-            $ ScenarioResolution
-            $ Resolution
-            $ if step == ActStep 4
-              then 4
-              else 3
+        NoResolution -> push $ if step == ActStep 4 then R4 else R3
         Resolution 1 -> do
-          pushAll
-            $ [ story players resolution1
-              , Record TheWitches'SpellWasBroken
-              , recordSetInsert
-                  MementosDiscovered
-                  [MesmerizingFlute, RitualComponents]
-              ]
-            <> gainXp
-            <> [EndOfGame Nothing]
+          story resolution1
+          record TheWitches'SpellWasBroken
+          recordSetInsert MementosDiscovered [MesmerizingFlute, RitualComponents]
+          allGainXpWithBonus attrs 1
+          endOfScenario
         Resolution 2 -> do
-          pushAll
-            $ [ story players resolution2
-              , Record TheWitches'SpellWasBroken
-              , recordSetInsert
-                  MementosDiscovered
-                  [MesmerizingFlute, ScrapOfTornShadow]
-              ]
-            <> gainXp
-            <> [EndOfGame Nothing]
+          story resolution2
+          record TheWitches'SpellWasBroken
+          recordSetInsert MementosDiscovered [MesmerizingFlute, ScrapOfTornShadow]
+          allGainXpWithBonus attrs 1
+          endOfScenario
         Resolution 3 -> do
-          gainXpNoBonus <- toGainXp attrs getXp
-          pushAll
-            $ [story players resolution3, Record TheWitches'SpellWasCast]
-            <> ( if step == ActStep 3
-                  then recordSetInsert MementosDiscovered [MesmerizingFlute] : gainXp
-                  else gainXpNoBonus
-               )
-            <> [EndOfGame Nothing]
+          story resolution3
+          record TheWitches'SpellWasCast
+          if step == ActStep 3
+            then do
+              recordSetInsert MementosDiscovered [MesmerizingFlute]
+              allGainXpWithBonus attrs 1
+            else allGainXp attrs
+          endOfScenario
         Resolution 4 -> do
-          pushAll
-            $ [ story players resolution4
-              , Record TheWitches'SpellWasCast
-              , recordSetInsert MementosDiscovered [MesmerizingFlute]
-              ]
-            <> gainXp
-            <> [EndOfGame Nothing]
+          story resolution4
+          record TheWitches'SpellWasCast
+          recordSetInsert MementosDiscovered [MesmerizingFlute]
+          allGainXpWithBonus attrs 1
+          endOfScenario
         _ -> error "invalid resolution"
       pure s
-    _ -> TheWitchingHour <$> runMessage msg attrs
+    _ -> TheWitchingHour <$> liftRunMessage msg attrs

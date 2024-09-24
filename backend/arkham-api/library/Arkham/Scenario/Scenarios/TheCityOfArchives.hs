@@ -132,7 +132,7 @@ instance RunMessage TheCityOfArchives where
         then do
           interviewRoom <- placeLabeled "interviewRoom1" Locations.interviewRoomArrivalChamber
           startAt interviewRoom
-          enemyAt Enemies.yithianObserver interviewRoom
+          enemyAt_ Enemies.yithianObserver interviewRoom
         else do
           startAt =<< placeLabeled "interviewRoom1" Locations.interviewRoomRestrainingChamber
           placeInVictory [Enemies.yithianObserver]

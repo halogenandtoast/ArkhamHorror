@@ -11,6 +11,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Deck
 import Arkham.Helpers.EncounterSet
 import Arkham.Id
+import Arkham.Key
 import Arkham.Layout
 import Arkham.Matcher
 import Arkham.Message
@@ -22,6 +23,7 @@ import Arkham.Scenario.Helpers (excludeBSides, excludeDoubleSided)
 import Arkham.Scenario.Runner (createEnemyWithPlacement_, pushM)
 import Arkham.Scenario.Types
 import Arkham.ScenarioLogKey
+import Arkham.Token (Token, addTokens)
 import Control.Lens
 import Control.Monad.Random (MonadRandom (..))
 import Control.Monad.State
@@ -109,6 +111,10 @@ gatherOneOf
   :: (SampleOneOf as, Sampled as ~ Set.EncounterSet, CardGen m) => as -> ScenarioBuilderT m ()
 gatherOneOf = sampleOneOf >=> gather
 
+setAsideKeys :: ReverseQueue m => [ArkhamKey] -> ScenarioBuilderT m ()
+setAsideKeys ks = do
+  setAsideKeysL .= setFromList ks
+
 setAside :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
 setAside defs = do
   cards <- genCards defs
@@ -186,6 +192,12 @@ placeGroup groupName defs = do
   encounterDeckL %= flip removeEachFromDeck defs
   encounterDecksL . each . _1 %= flip removeEachFromDeck defs
   placeRandomLocationGroupCards groupName defs
+
+placeGroupCapture :: ReverseQueue m => Text -> [CardDef] -> ScenarioBuilderT m [LocationId]
+placeGroupCapture groupName defs = do
+  encounterDeckL %= flip removeEachFromDeck defs
+  encounterDecksL . each . _1 %= flip removeEachFromDeck defs
+  placeRandomLocationGroupCardsCapture groupName defs
 
 placeGroupChooseN :: ReverseQueue m => Int -> Text -> NonEmpty CardDef -> ScenarioBuilderT m ()
 placeGroupChooseN n groupName = sampleN n >=> placeGroup groupName
@@ -340,8 +352,8 @@ placeInVictory as = do
 setLayout :: ReverseQueue m => [GridTemplateRow] -> ScenarioBuilderT m ()
 setLayout = (locationLayoutL .=)
 
-setMeta :: ReverseQueue m => Value -> ScenarioBuilderT m ()
-setMeta = (metaL .=)
+setMeta :: (ReverseQueue m, ToJSON a) => a -> ScenarioBuilderT m ()
+setMeta = (metaL .=) . toJSON
 
 setCount :: ReverseQueue m => ScenarioCountKey -> Int -> ScenarioBuilderT m ()
 setCount k n = countsL . at k . non 0 .= n
@@ -368,3 +380,6 @@ pickN _ [] = pure []
 pickN n (def : defs) = do
   (x, rest) <- sampleWithRest (def :| defs)
   (x :) <$> pickN (n - 1) rest
+
+placeTokensOnScenarioReference :: ReverseQueue m => Token -> Int -> ScenarioBuilderT m ()
+placeTokensOnScenarioReference tokenType n = tokensL %= addTokens tokenType n

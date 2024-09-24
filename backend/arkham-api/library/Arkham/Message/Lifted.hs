@@ -120,12 +120,24 @@ placeRandomLocationGroupCards
   :: ReverseQueue m => Text -> [CardDef] -> m ()
 placeRandomLocationGroupCards groupName = genCards >=> placeRandomLocationGroup groupName
 
+placeRandomLocationGroupCardsCapture
+  :: ReverseQueue m => Text -> [CardDef] -> m [LocationId]
+placeRandomLocationGroupCardsCapture groupName = genCards >=> placeRandomLocationGroupCapture groupName
+
 placeRandomLocationGroup
   :: ReverseQueue m => Text -> [Card] -> m ()
 placeRandomLocationGroup groupName cards = do
   shuffled <- shuffleM cards
   msgs <- Msg.placeLabeledLocations_ groupName shuffled
   pushAll msgs
+
+placeRandomLocationGroupCapture
+  :: ReverseQueue m => Text -> [Card] -> m [LocationId]
+placeRandomLocationGroupCapture groupName cards = do
+  shuffled <- shuffleM cards
+  (lids, msgs) <- Msg.placeLabeledLocations groupName shuffled
+  pushAll msgs
+  pure lids
 
 placeLabeledLocations_ :: ReverseQueue m => Text -> [Card] -> m ()
 placeLabeledLocations_ lbl cards = Msg.pushAllM $ Msg.placeLabeledLocations_ lbl cards

@@ -1,17 +1,11 @@
-module Arkham.Treachery.Cards.Outbreak (
-  outbreak,
-  Outbreak (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Outbreak (outbreak, Outbreak (..)) where
 
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Message
 import Arkham.Scenarios.WakingNightmare.Helpers
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Outbreak = Outbreak TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
@@ -26,8 +20,8 @@ instance HasModifiersFor Outbreak where
   getModifiersFor _ _ = pure []
 
 instance RunMessage Outbreak where
-  runMessage msg t@(Outbreak attrs) = case msg of
+  runMessage msg t@(Outbreak attrs) = runQueueT $ case msg of
     Revelation _iid (isSource attrs -> True) -> do
-      pushM makeInfestationTest
+      makeInfestationTest
       pure t
-    _ -> Outbreak <$> runMessage msg attrs
+    _ -> Outbreak <$> liftRunMessage msg attrs

@@ -8,29 +8,32 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
-import Arkham.Card
-import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
-import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyCardCode))
 import Arkham.Exception
-import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Modifiers hiding (roundModifier, skillTestModifier)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
+import Arkham.Message.Lifted.Choose
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Helpers hiding (
+  defeated,
+  forceAddCampaignCardToDeckChoice,
+  roundModifier,
+  skillTestModifier,
+ )
+import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Types (metaL)
 import Arkham.Scenarios.TheSearchForKadath.FlavorText
 import Arkham.Scenarios.TheSearchForKadath.Helpers
+import Arkham.Strategy
 import Arkham.Trait (Trait (City))
 
 newtype TheSearchForKadath = TheSearchForKadath ScenarioAttrs
@@ -87,178 +90,150 @@ standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog =
   mkCampaignLog {campaignLogRecorded = setFromList [TheInvestigatorsWereSavedByRandolphCarder]}
 
-readInvestigatorDefeat :: HasGame m => m [Message]
+readInvestigatorDefeat :: ReverseQueue m => m ()
 readInvestigatorDefeat = do
-  defeatedInvestigatorIds <- select DefeatedInvestigator
-  if null defeatedInvestigatorIds
-    then pure []
-    else do
-      resigned <- select ResignedInvestigator
-      defeatedPlayers <- traverse getPlayer defeatedInvestigatorIds
-      mRandolphCarterOwner <- getOwner Assets.randolphCarterExpertDreamer
-      lead <- getLeadPlayer
-
-      let
-        randolphMessages = case mRandolphCarterOwner of
-          Just owner
-            | owner `elem` defeatedInvestigatorIds
-            , notNull resigned ->
-                [ RemoveCampaignCard Assets.randolphCarterExpertDreamer
-                , forceAddCampaignCardToDeckChoice lead resigned Assets.randolphCarterExpertDreamer
-                ]
-          _ -> []
-      pure
-        $ [story defeatedPlayers investigatorDefeat]
-        <> [RecordForInvestigator iid WasCaptured | iid <- defeatedInvestigatorIds]
-        <> randolphMessages
+  defeated <- select DefeatedInvestigator
+  unless (null defeated) do
+    resigned <- select ResignedInvestigator
+    storyOnly defeated investigatorDefeat
+    for_ defeated $ \iid -> push $ RecordForInvestigator iid WasCaptured
+    withOwner Assets.randolphCarterExpertDreamer $ \owner -> do
+      when ((owner `elem` defeated) && notNull resigned) do
+        removeCampaignCard Assets.randolphCarterExpertDreamer
+        forceAddCampaignCardToDeckChoice resigned Assets.randolphCarterExpertDreamer
 
 instance RunMessage TheSearchForKadath where
-  runMessage msg s@(TheSearchForKadath attrs) = case msg of
+  runMessage msg s@(TheSearchForKadath attrs) = runQueueT $ case msg of
     StandaloneSetup -> do
-      push $ SetChaosTokens standaloneChaosTokens
-      pure
-        . TheSearchForKadath
-        $ attrs
-        & standaloneCampaignLogL
-        <>~ standaloneCampaignLog
+      setChaosTokens standaloneChaosTokens
+      pure . TheSearchForKadath $ attrs & standaloneCampaignLogL <>~ standaloneCampaignLog
     PreScenarioSetup -> do
-      players <- allPlayers
+      story intro1
       blackCatAtYourSide <- getHasRecord TheBlackCatIsAtYourSide
-      parleyed <- getHasRecord TheInvestigatorsParleyedWithTheZoogs
-      saved <- getHasRecord TheInvestigatorsWereSavedByRandolphCarder
+      if blackCatAtYourSide
+        then doStep 2 PreScenarioSetup
+        else do
+          withLuke <- selectAny $ InvestigatorWithTitle "Luke Robinson"
+          doStep (if withLuke then 3 else 4) PreScenarioSetup
+      pure s
+    DoStep 2 PreScenarioSetup -> do
+      story intro2
       withLuke <- selectAny $ InvestigatorWithTitle "Luke Robinson"
-      pushAll $ story players intro1 -- 1
-        : (guard blackCatAtYourSide *> [story players intro2]) -- 2
-          <> (guard withLuke *> [story players intro3]) -- 3
-          <> (guard (not withLuke) *> [story players intro4]) -- 4
-          <> [DoStep (if parleyed || saved then 5 else 6) PreScenarioSetup] -- 5 || 6
+      doStep (if withLuke then 3 else 4) PreScenarioSetup
+      pure s
+    DoStep 3 PreScenarioSetup -> do
+      story intro3
+      parleyed <- getHasRecord TheInvestigatorsParleyedWithTheZoogs
+      doStep (if parleyed then 5 else 6) PreScenarioSetup
+      pure s
+    DoStep 4 PreScenarioSetup -> do
+      story intro4
+      parleyed <- getHasRecord TheInvestigatorsParleyedWithTheZoogs
+      doStep (if parleyed then 5 else 6) PreScenarioSetup
       pure s
     DoStep 5 PreScenarioSetup -> do
-      lead <- getLeadPlayer
-      players <- allPlayers
-      push
-        $ storyWithChooseOne
-          lead
-          players
-          intro5
-          [ Label "Leave empty-handed" [story players intro7]
-          , Label
-              "Force your way into the temple."
-              [story players intro8, Record TheInvestigatorsForcedTheirWayIntoTheTemple]
-          ]
+      storyWithChooseOneM intro5 do
+        labeled "Leave empty-handed" $ doStep 7 PreScenarioSetup
+        labeled "Force your way into the temple." $ doStep 8 PreScenarioSetup
       pure s
     DoStep 6 PreScenarioSetup -> do
-      players <- allPlayers
-      investigators <- allInvestigators
-      parleyed <- getHasRecord TheInvestigatorsParleyedWithTheZoogs
-      pushAll
-        $ [story players intro6, story players intro9, IncrementRecordCount EvidenceOfKadath 1]
-        <> ( guard parleyed
-              *> ( [story players intro10, IncrementRecordCount EvidenceOfKadath 1]
-                    <> map (\iid -> GainXP iid (toSource attrs) 2) investigators
-                 )
-           )
-        <> (guard (not parleyed) *> [story players intro11])
+      story intro6
+      doStep 9 PreScenarioSetup
       pure s
-    Setup -> do
-      let
-        setAsideCards =
-          [ Enemies.catsOfUlthar
-          , Enemies.stalkingManticore
-          , Enemies.theCrawlingMist
-          , Enemies.hordeOfNight
-          , Enemies.beingsOfIb
-          , Enemies.tenebrousNightgaunt
-          , Enemies.tenebrousNightgaunt
-          , Enemies.corsairOfLeng
-          , Enemies.corsairOfLeng
-          , Enemies.priestOfAThousandMasks
-          , Enemies.priestOfAThousandMasks
-          , Enemies.priestOfAThousandMasks
-          , Locations.baharna
-          , Locations.namelessRuins
-          , Locations.mtNgranek
-          , Locations.sarnath
-          , Locations.kadatheron
-          , Locations.ruinsOfIb
-          , Locations.zulanThek
-          , Locations.forbiddenLands
-          , Locations.ilekVad
-          , Locations.serannian
-          , Locations.celephais
-          , Locations.hazuthKleg
-          , Locations.cityWhichAppearsOnNoMap
-          , Locations.templeOfUnattainableDesires
-          ]
-      let excludes = setAsideCards <> [Locations.dylathLeen, Locations.skaiRiver, Locations.ulthar]
+    DoStep 7 PreScenarioSetup -> do
+      story intro7
+      pure s
+    DoStep 8 PreScenarioSetup -> do
+      story intro8
+      record TheInvestigatorsForcedTheirWayIntoTheTemple
+      doStep 9 PreScenarioSetup
+      pure s
+    DoStep 9 PreScenarioSetup -> do
+      parleyed <- getHasRecord TheInvestigatorsParleyedWithTheZoogs
+      story intro9
+      push $ IncrementRecordCount EvidenceOfKadath 1
+      doStep (if parleyed then 10 else 11) PreScenarioSetup
+      pure s
+    DoStep 10 PreScenarioSetup -> do
+      story intro10
+      push $ IncrementRecordCount EvidenceOfKadath 1
+      eachInvestigator \iid -> push $ GainXP iid (toSource attrs) 2
+      pure s
+    DoStep 11 PreScenarioSetup -> do
+      story intro11
+      pure s
+    Setup -> runScenarioSetup TheSearchForKadath attrs do
+      gather Set.TheSearchForKadath
+      gather Set.AgentsOfNyarlathotep
+      gather Set.Corsairs
+      gather Set.Dreamlands
+      gather Set.WhispersOfHypnos
+      gather Set.Zoogs
 
-      encounterDeck <-
-        buildEncounterDeckExcluding
-          excludes
-          [ EncounterSet.TheSearchForKadath
-          , EncounterSet.AgentsOfNyarlathotep
-          , EncounterSet.Corsairs
-          , EncounterSet.Dreamlands
-          , EncounterSet.WhispersOfHypnos
-          , EncounterSet.Zoogs
-          ]
+      setAside
+        [ Enemies.catsOfUlthar
+        , Enemies.stalkingManticore
+        , Enemies.theCrawlingMist
+        , Enemies.hordeOfNight
+        , Enemies.beingsOfIb
+        , Enemies.tenebrousNightgaunt
+        , Enemies.tenebrousNightgaunt
+        , Enemies.corsairOfLeng
+        , Enemies.corsairOfLeng
+        , Enemies.priestOfAThousandMasks
+        , Enemies.priestOfAThousandMasks
+        , Enemies.priestOfAThousandMasks
+        , Locations.baharna
+        , Locations.namelessRuins
+        , Locations.mtNgranek
+        , Locations.sarnath
+        , Locations.kadatheron
+        , Locations.ruinsOfIb
+        , Locations.zulanThek
+        , Locations.forbiddenLands
+        , Locations.ilekVad
+        , Locations.serannian
+        , Locations.celephais
+        , Locations.hazuthKleg
+        , Locations.cityWhichAppearsOnNoMap
+        , Locations.templeOfUnattainableDesires
+        ]
 
-      setAside <- genCards setAsideCards
+      startAt =<< place Locations.ulthar
 
-      (ulthar, placeUlthar) <- placeLocationCard Locations.ulthar
-      otherPlacements <- placeLocationCards_ [Locations.skaiRiver, Locations.dylathLeen]
+      placeAll [Locations.skaiRiver, Locations.dylathLeen]
 
-      agendas <- genCards [Agendas.journeyAcrossTheDreamlands, Agendas.agentsOfTheOuterGods]
-      acts <-
-        genCards
-          [ Acts.kingdomOfTheSkai
-          , Acts.theIsleOfOriab
-          , Acts.theDoomThatCameBefore
-          , Acts.seekOutTheNight
-          , Acts.theKingsDecree
-          ]
+      setAgendaDeck [Agendas.journeyAcrossTheDreamlands, Agendas.agentsOfTheOuterGods]
+      setActDeck
+        [ Acts.kingdomOfTheSkai
+        , Acts.theIsleOfOriab
+        , Acts.theDoomThatCameBefore
+        , Acts.seekOutTheNight
+        , Acts.theKingsDecree
+        ]
       lead <- getLead
-      virgil <- genCard Assets.virgilGray
-
-      pushAll
-        $ [SetEncounterDeck encounterDeck, SetAgendaDeck, SetActDeck, placeUlthar]
-        <> otherPlacements
-        <> [MoveAllTo (toSource attrs) ulthar]
-        <> [TakeControlOfSetAsideAsset lead virgil]
-
-      TheSearchForKadath
-        <$> runMessage
-          msg
-          ( attrs
-              & (setAsideCardsL <>~ setAside)
-              & (actStackL . at 1 ?~ acts)
-              & (agendaStackL . at 1 ?~ agendas)
-          )
+      beginWithStoryAsset lead Assets.virgilGray
     ResolveChaosToken _ Cultist iid -> do
-      push $ DrawAnotherChaosToken iid
+      drawAnotherChaosToken iid
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of
         Cultist -> void $ runMaybeT $ do
           Action.Investigate <- MaybeT getSkillTestAction
           LocationTarget lid <- MaybeT getSkillTestTarget
-          lift $ push $ roundModifier Cultist lid (ShroudModifier $ if isEasyStandard attrs then 1 else 2)
+          lift $ roundModifier Cultist lid (ShroudModifier $ if isEasyStandard attrs then 1 else 2)
         Tablet -> do
-          player <- getPlayer iid
-          push
-            $ chooseOne
-              player
-              [ Label "Take 1 damage and 1 horror" [assignDamageAndHorror iid Tablet 1 1]
-              , Label "Place 1 doom on the current agenda" [placeDoomOnAgenda]
-              ]
+          chooseOneM iid do
+            labeled "Take 1 damage and 1 horror" $ assignDamageAndHorror iid Tablet 1 1
+            labeled "Place 1 doom on the current agenda" $ placeDoomOnAgenda 1
         _ -> pure ()
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       withSkillTest \sid ->
-        case chaosTokenFace token of
+        case token.face of
           ElderThing -> void $ runMaybeT $ do
             Action.Investigate <- MaybeT getSkillTestAction
-            lift $ push $ skillTestModifier sid ElderThing iid (DiscoveredClues 1)
+            lift $ skillTestModifier sid ElderThing iid (DiscoveredClues 1)
           _ -> pure ()
       pure s
     DoStep 1 (SetScenarioMeta _) -> do
@@ -278,7 +253,7 @@ instance RunMessage TheSearchForKadath where
       pure s
     SetScenarioMeta value -> do
       let region = toResult value
-      let meta = toResult (scenarioMeta attrs)
+      let meta = toResult attrs.meta
       let meta' = meta {regions = regions meta <> [region]}
 
       leadId <- getLead
@@ -288,84 +263,77 @@ instance RunMessage TheSearchForKadath where
 
       tenebrousNightgaunts <- selectWithField EnemyCardCode $ enemyIs Enemies.tenebrousNightgaunt
 
-      player <- getPlayer leadId
       let
         nightgauntMessages =
-          guard (notNull tenebrousNightgaunts)
-            *> [ chooseOneAtATime
-                  player
-                  [ AbilityLabel leadId (mkAbility (SourceableWithCardCode cc t) 1 $ forced NotAnyWindow) [] [] []
-                  | (t, cc) <- tenebrousNightgaunts
-                  ]
-               ]
+          when (notNull tenebrousNightgaunts) do
+            chooseOneAtATime
+              leadId
+              [ AbilityLabel leadId (mkAbility (SourceableWithCardCode cc t) 1 $ forced NotAnyWindow) [] [] []
+              | (t, cc) <- tenebrousNightgaunts
+              ]
 
       case region of
         Oriab -> do
-          (baharna, placeBaharna) <- placeSetAsideLocation Locations.baharna
-          placeOriabRest <- placeSetAsideLocations [Locations.mtNgranek, Locations.namelessRuins]
+          baharna <- placeSetAsideLocation Locations.baharna
+          placeSetAsideLocations_ [Locations.mtNgranek, Locations.namelessRuins]
 
+          pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
+          nightgauntMessages
+          moveAllTo (toSource attrs) baharna
           pushAll
-            $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
-            <> nightgauntMessages
-            <> [placeBaharna, MoveAllTo (toSource attrs) baharna]
-            <> placeOriabRest
-            <> map (AddToVictory . toTarget) victoryLocations
+            $ map (AddToVictory . toTarget) victoryLocations
             <> map RemoveLocation locations
-            <> [ search leadId attrs EncounterDeckTarget [fromDeck] (basicCardIs Enemies.nightriders)
-                  $ defer attrs IsNotDraw
-               , AdvanceToAct 1 Acts.theIsleOfOriab A (toSource attrs)
-               , DoStep 1 msg
-               ]
+          search leadId attrs EncounterDeckTarget [fromDeck] (basicCardIs Enemies.nightriders)
+            $ defer attrs IsNotDraw
+          push $ AdvanceToAct 1 Acts.theIsleOfOriab A (toSource attrs)
+          doStep 1 msg
         Mnar -> do
-          (kadatheron, placeKadatheron) <- placeSetAsideLocation Locations.kadatheron
-          (ruinsOfIb, placeRuinsOfIb) <- placeSetAsideLocation Locations.ruinsOfIb
-          placeSarnath <- placeSetAsideLocation_ Locations.sarnath
+          kadatheron <- placeSetAsideLocation Locations.kadatheron
+          ruinsOfIb <- placeSetAsideLocation Locations.ruinsOfIb
+          placeSetAsideLocation_ Locations.sarnath
           beingsOfIb <- getSetAsideCard Enemies.beingsOfIb
-          createBeingsOfIb <- createEnemyAt_ beingsOfIb ruinsOfIb Nothing
+          createEnemyAt_ beingsOfIb ruinsOfIb
 
+          pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
+          nightgauntMessages
+          moveAllTo (toSource attrs) kadatheron
           pushAll
-            $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
-            <> nightgauntMessages
-            <> [placeKadatheron, MoveAllTo (toSource attrs) kadatheron]
-            <> [placeRuinsOfIb, placeSarnath, createBeingsOfIb]
-            <> map (AddToVictory . toTarget) victoryLocations
+            $ map (AddToVictory . toTarget) victoryLocations
             <> map RemoveLocation locations
             <> [AdvanceToAct 1 Acts.theDoomThatCameBefore A (toSource attrs), DoStep 1 msg]
         ForbiddenLands -> do
-          (ilekVad, placeIlekVad) <- placeSetAsideLocation Locations.ilekVad
-          (forbiddenLands, placeForbiddenLands) <- placeSetAsideLocation Locations.forbiddenLands
-          (zulanThek, placeZulanThek) <- placeSetAsideLocation Locations.zulanThek
+          ilekVad <- placeSetAsideLocation Locations.ilekVad
+          forbiddenLands <- placeSetAsideLocation Locations.forbiddenLands
+          zulanThek <- placeSetAsideLocation Locations.zulanThek
           stalkingManticore <- getSetAsideCard Enemies.stalkingManticore
           hordeOfNight <- getSetAsideCard Enemies.hordeOfNight
-          createStalkingManticore <- createEnemyAt_ stalkingManticore forbiddenLands Nothing
-          createHordeOfNight <- createEnemyAt_ hordeOfNight zulanThek Nothing
+          createEnemyAt_ stalkingManticore forbiddenLands
+          createEnemyAt_ hordeOfNight zulanThek
 
+          pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
+          nightgauntMessages
+          moveAllTo (toSource attrs) ilekVad
           pushAll
-            $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
-            <> nightgauntMessages
-            <> [placeIlekVad, MoveAllTo (toSource attrs) ilekVad]
-            <> [placeForbiddenLands, placeZulanThek, createStalkingManticore, createHordeOfNight]
-            <> map (AddToVictory . toTarget) victoryLocations
+            $ map (AddToVictory . toTarget) victoryLocations
             <> map RemoveLocation locations
             <> [AdvanceToAct 1 Acts.seekOutTheNight A (toSource attrs), DoStep 1 msg]
         TimelessRealm -> do
-          (celephais, placeCelephais) <- placeSetAsideLocation Locations.celephais
-          placeTimlessRealmRest <- placeSetAsideLocations [Locations.serannian, Locations.hazuthKleg]
+          celephais <- placeSetAsideLocation Locations.celephais
+          placeSetAsideLocations_ [Locations.serannian, Locations.hazuthKleg]
           theCrawlingMist <- getSetAsideCard Enemies.theCrawlingMist
 
+          pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
+          nightgauntMessages
+          moveAllTo (toSource attrs) celephais
           pushAll
-            $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
-            <> nightgauntMessages
-            <> [placeCelephais, MoveAllTo (toSource attrs) celephais]
-            <> placeTimlessRealmRest
-            <> map (AddToVictory . toTarget) victoryLocations
+            $ map (AddToVictory . toTarget) victoryLocations
             <> map RemoveLocation locations
-            <> [ ShuffleCardsIntoDeck Deck.EncounterDeck [theCrawlingMist]
-               , search leadId attrs EncounterDeckTarget [fromDeck] (basicCardIs Enemies.priestOfAThousandMasks)
-                  $ defer attrs IsNotDraw
-               , AdvanceToAct 1 Acts.theKingsDecree A (toSource attrs)
-               , DoStep 1 msg
-               ]
+
+          shuffleCardsIntoDeck Deck.EncounterDeck [theCrawlingMist]
+          search leadId attrs EncounterDeckTarget [fromDeck] (basicCardIs Enemies.priestOfAThousandMasks)
+            $ defer attrs IsNotDraw
+          push $ AdvanceToAct 1 Acts.theKingsDecree A (toSource attrs)
+          doStep 1 msg
       pure $ TheSearchForKadath $ attrs & metaL .~ toJSON meta'
     ScenarioResolution r -> do
       case r of
@@ -378,18 +346,13 @@ instance RunMessage TheSearchForKadath where
               1 -> (resolution1, RandolphEludedCapture)
               2 -> (resolution2, RandolphWasCaptured)
               other -> throw $ UnknownResolution $ Resolution other
-          msgs <- readInvestigatorDefeat
-          players <- allPlayers
-          gainXp <- toGainXp attrs getXp
+          readInvestigatorDefeat
           evidence <- getSignsOfTheGods
-          pushAll
-            $ msgs
-            <> [story players resolutionText]
-            <> gainXp
-            <> [ IncrementRecordCount EvidenceOfKadath evidence
-               , Record VirgilWasCaptured
-               , Record randolphStatus
-               , EndOfGame Nothing
-               ]
+          story resolutionText
+          allGainXp attrs
+          push $ IncrementRecordCount EvidenceOfKadath evidence
+          record VirgilWasCaptured
+          record randolphStatus
+          endOfScenario
       pure s
-    _ -> TheSearchForKadath <$> runMessage msg attrs
+    _ -> TheSearchForKadath <$> liftRunMessage msg attrs

@@ -3,10 +3,12 @@ module Arkham.Scenarios.WakingNightmare.Helpers where
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Prelude
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Source
@@ -25,10 +27,10 @@ pattern BecomesInfested t lmatcher <-
   where
     BecomesInfested t lmatcher = PlacedCounterOnLocation t lmatcher AnySource DamageCounter (GreaterThan (Static 0))
 
-makeInfestationTest :: (HasGame m, Query StoryMatcher) => m Message
+makeInfestationTest :: (ReverseQueue m, Query StoryMatcher) => m ()
 makeInfestationTest = do
   theInfestationBegins <- selectJust $ storyIs Stories.theInfestationBegins
-  pure
+  push
     $ SendMessage
       (StoryTarget theInfestationBegins)
       (RequestChaosTokens (StorySource theInfestationBegins) Nothing (Reveal 1) SetAside)

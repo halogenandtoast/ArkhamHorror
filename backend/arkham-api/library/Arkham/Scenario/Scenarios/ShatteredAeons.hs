@@ -205,7 +205,7 @@ instance RunMessage ShatteredAeons where
 
       yigsFury <- getRecordCount YigsFury
       leadDeck <- fieldMap InvestigatorDeck unDeck =<< getLead
-      let cardsToAddToVictory = map PlayerCard . take (yigsFury `div` 10) leadDeck
+      let cardsToAddToVictory = map PlayerCard $ take (yigsFury `div` 10) leadDeck
       pushAll $ map (RemovePlayerCardFromGame False) cardsToAddToVictory
       placeInVictory $ map VengeanceCard cardsToAddToVictory
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n | n < 1 -> do

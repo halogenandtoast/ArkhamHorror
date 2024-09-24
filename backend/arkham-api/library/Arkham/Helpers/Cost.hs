@@ -319,12 +319,8 @@ getCanAffordCost iid !(toSource -> source) actions windows' = \case
   EnemyDoomCost _ enemyMatcher -> selectAny enemyMatcher
   SkillIconCost n skillTypes -> do
     handCards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
-    let
-      total =
-        sum
-          $ map
-            (count (`member` insertSet WildIcon skillTypes) . cdSkills . toCardDef)
-            handCards
+    let countF = if null skillTypes then const True else (`member` insertSet WildIcon skillTypes)
+    let total = sum $ map (count countF . cdSkills . toCardDef) handCards
     pure $ total >= n
   SameSkillIconCost n -> do
     handCards <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid

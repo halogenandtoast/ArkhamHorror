@@ -985,10 +985,11 @@ payCost msg c iid skipAdditionalCosts cost = do
       pure c
     SkillIconCost x skillTypes -> do
       handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
+      let countF = if null skillTypes then const True else (`member` insertSet WildIcon skillTypes)
       let
         cards =
           filter ((> 0) . fst)
-            $ map (toFst (count (`member` insertSet WildIcon skillTypes) . cdSkills . toCardDef)) handCards
+            $ map (toFst (count countF . cdSkills . toCardDef)) handCards
         cardMsgs =
           map
             ( \(n, card) ->

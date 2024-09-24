@@ -2,6 +2,7 @@ module Arkham.Message.Lifted.Placement where
 
 import Arkham.Asset.Types
 import Arkham.Classes.HasQueue
+import Arkham.Enemy.Types
 import Arkham.Event.Types
 import Arkham.Id
 import Arkham.Message
@@ -29,6 +30,9 @@ instance Placeable EventAttrs where
 
 instance Placeable AssetAttrs where
   place attrs placement = push $ PlaceAsset attrs.id (toPlacement placement)
+
+instance Placeable EnemyAttrs where
+  place attrs placement = push $ PlaceEnemy attrs.id (toPlacement placement)
 
 instance Placeable InvestigatorId where
   place iid placement = push $ PlaceInvestigator iid (toPlacement placement)

@@ -100,11 +100,6 @@ labeled label action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [Label label msgs]
 
-cardLabeled :: (ReverseQueue m, HasCardCode a) => a -> QueueT Message m () -> ChooseT m ()
-cardLabeled a action = unterminated do
-  msgs <- lift $ evalQueueT action
-  tell [CardLabel (toCardCode a) msgs]
-
 labeledI18n :: (HasI18n, ReverseQueue m) => Text -> QueueT Message m () -> ChooseT m ()
 labeledI18n label action = unterminated do
   msgs <- lift $ evalQueueT action
@@ -169,6 +164,10 @@ chooseSelectM iid query action = do
 
 chooseFromM
   :: (ReverseQueue m, Query query, Targetable (QueryElement query))
+  => InvestigatorId
+  -> query
+  -> (QueryElement query -> QueueT Message m ())
+  -> m ()
 chooseFromM iid matcher action = do
   ((_, ChooseState {label}), choices') <-
     runChooseT $ traverse_ (\t -> targeting t (action t)) =<< select matcher

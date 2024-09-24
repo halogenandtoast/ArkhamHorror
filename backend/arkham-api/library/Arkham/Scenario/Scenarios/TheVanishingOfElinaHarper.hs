@@ -135,7 +135,7 @@ instance RunMessage TheVanishingOfElinaHarper where
       push $ PlaceStory findingAgentHarper Global
       let target = StoryTarget $ StoryId $ coerce $ toCardCode findingAgentHarper
       placeUnderneath target [kidnapper, hideout]
-      setScenarioMeta $ Meta {kidnapper, hideout}
+      setMeta $ Meta {kidnapper, hideout}
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       let amount = if isEasyStandard attrs then 1 else 2
       case token.face of

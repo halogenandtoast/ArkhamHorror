@@ -232,7 +232,6 @@ addToEncounterDeck (toList -> defs) = do
   cards <- traverse genEncounterCard defs
   encounterDeckL %= withDeck (<> cards)
 
-
 assetAt :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m ()
 assetAt def lid = do
   encounterDeckL %= flip removeEachFromDeck [def]
@@ -411,7 +410,3 @@ pickN n (def : defs) = do
 
 placeTokensOnScenarioReference :: ReverseQueue m => Token -> Int -> ScenarioBuilderT m ()
 placeTokensOnScenarioReference tokenType n = tokensL %= addTokens tokenType n
-=======
-setScenarioMeta :: (ToJSON a, ReverseQueue m) => a -> ScenarioBuilderT m ()
-setScenarioMeta = push . SetScenarioMeta . toJSON
->>>>>>> 1b8ba9295 (More Vanishing)

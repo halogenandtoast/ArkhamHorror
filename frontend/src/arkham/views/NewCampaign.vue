@@ -22,7 +22,7 @@ const gameMode = ref<GameMode>('Campaign')
 const includeTarotReadings = ref(false)
 
 const scenarios = computed(() => scenarioJSON.filter((s) =>
-  s.beta
+  s.beta || s.alpha
     ? currentUser.value && currentUser.value.beta
     : true
 ))
@@ -40,7 +40,7 @@ const dev = import.meta.env.PROD ? false : true
 const campaigns = computed(() => campaignJSON.filter((c) => {
   if (c.dev && !dev) return false
 
-  return c.beta
+  return c.beta || c.alpha
     ? currentUser.value && currentUser.value.beta
     : true
 }))
@@ -218,10 +218,13 @@ async function start() {
           <template v-else>
             <!-- <select v-model="selectedCampaign"> -->
               <div class="campaigns">
-                <div v-for="campaign in campaigns" :key="campaign.id" class="campaign">
+                <div v-for="campaign in campaigns" :key="campaign.id" class="campaign" :class="{ beta: campaign.beta, alpha: campaign.alpha }">
                   <input type="image" class="campaign-box" :class="{ 'selected-campaign': selectedCampaign == campaign.id }" :src="imgsrc(`boxes/${campaign.id}.jpg`)" @click.prevent="selectCampaign(campaign.id)">
                 </div>
               </div>
+
+              <div class="alpha-warning" v-if="campaign && campaign.alpha">This campaign is currently being worked on. It likely doesn't work yet and you should not file bugs against it.</div>
+              <div class="beta-warning" v-if="campaign && campaign.beta">This campaign is ready for testing but expect your games to break frequently.</div>
             <!-- </select> -->
           </template>
 
@@ -531,5 +534,69 @@ header {
   overflow: hidden;
   max-height: 0;
   opacity: 0;
+}
+
+.campaign {
+  position: relative;
+  overflow: hidden;
+  &.beta:after{
+    content: "beta";
+    position: absolute;
+    z-index: 1070;
+    width: 80px;
+    height: 25px;
+    background: darkgoldenrod;
+    top: 7px;
+    left: -20px;
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 1px;
+    font-family: sans-serif;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: white;
+    line-height: 27px;
+    -ms-transform:rotate(-45deg);
+    -webkit-transform:rotate(-45deg);
+    transform:rotate(-45deg);
+  }
+
+  &.alpha:after{
+    content: "alpha";
+    position: absolute;
+    z-index: 1070;
+    width: 80px;
+    height: 25px;
+    background: darkred;
+    top: 7px;
+    left: -20px;
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 1px;
+    font-family: sans-serif;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: white;
+    line-height: 27px;
+    -ms-transform:rotate(-45deg);
+    -webkit-transform:rotate(-45deg);
+    transform:rotate(-45deg);
+  }
+}
+
+.beta-warning {
+  font-size: 1.2em;
+  text-transform: uppercase;
+  padding: 10px;
+  background: darkgoldenrod;
+  margin-block: 10px;
+}
+
+.alpha-warning {
+  font-size: 1.2em;
+  text-transform: uppercase;
+  padding: 10px;
+  background: darkred;
+  margin-block: 10px;
 }
 </style>

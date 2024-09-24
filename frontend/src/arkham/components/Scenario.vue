@@ -704,7 +704,7 @@ const tarotCardAbility = (card: TarotCard) => {
   margin: auto;
   overflow: auto;
   scrollbar-gutter: stable both-edges;
-  place-content: center;
+  justify-content: center;
 }
 
 .location-cards-container {

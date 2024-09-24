@@ -352,6 +352,9 @@ placeInVictory as = do
 setLayout :: ReverseQueue m => [GridTemplateRow] -> ScenarioBuilderT m ()
 setLayout = (locationLayoutL .=)
 
+setUsesGrid :: ReverseQueue m => ScenarioBuilderT m ()
+setUsesGrid = usesGridL .= True
+
 setMeta :: (ReverseQueue m, ToJSON a) => a -> ScenarioBuilderT m ()
 setMeta = (metaL .=) . toJSON
 

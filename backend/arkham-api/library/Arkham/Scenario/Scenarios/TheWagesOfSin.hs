@@ -1,9 +1,4 @@
-module Arkham.Scenario.Scenarios.TheWagesOfSin (
-  TheWagesOfSin (..),
-  theWagesOfSin,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.TheWagesOfSin (TheWagesOfSin (..), theWagesOfSin) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
@@ -13,27 +8,21 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
-import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers
 import Arkham.Helpers.Act
-import Arkham.Helpers.Log
-import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
 import Arkham.Placement
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Deck
+import Arkham.Scenario.Helpers hiding (recordSetInsert, roundModifiers)
+import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheWagesOfSin.Story
-import Arkham.Trait (Trait (Spectral), toTraits)
+import Arkham.Trait (Trait (Spectral))
 
 newtype TheWagesOfSin = TheWagesOfSin ScenarioAttrs
   deriving anyclass IsScenario
@@ -91,100 +80,60 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage TheWagesOfSin where
-  runMessage msg s@(TheWagesOfSin attrs) = case msg of
+  runMessage msg s@(TheWagesOfSin attrs) = runQueueT $ case msg of
     PreScenarioSetup -> do
-      players <- allPlayers
-      push $ story players intro
+      story intro
       pure s
     StandaloneSetup -> do
-      push (SetChaosTokens standaloneChaosTokens)
+      setChaosTokens standaloneChaosTokens
       pure s
-    Setup -> do
+    Setup -> runScenarioSetup TheWagesOfSin attrs do
       -- The locations are all "single-sided" because we need to handle the
       -- spectral state separately and therefor have no "unrevealed". So we
       -- need to exclude them here
-      gatheredCards <-
-        buildEncounterDeckExcludingMatching
-          (CardWithOneOf [CardWithType LocationType, CardWithTitle "Heretic"])
-          [ EncounterSet.TheWagesOfSin
-          , EncounterSet.AnettesCoven
-          , EncounterSet.CityOfSins
-          , EncounterSet.InexorableFate
-          , EncounterSet.RealmOfDeath
-          , EncounterSet.TrappedSpirits
-          , EncounterSet.Witchcraft
-          ]
-      let (spectralEncounterDeck, encounterDeck) = partition (elem Spectral . toTraits) (unDeck gatheredCards)
-      theWatcher <-
-        map EncounterCard
-          <$> gatherEncounterSet EncounterSet.TheWatcher
-      spectralWebs <- genCards (replicate 4 Assets.spectralWeb)
+      gather Set.TheWagesOfSin
+      gather Set.AnettesCoven
+      gather Set.CityOfSins
+      gather Set.InexorableFate
+      gather Set.RealmOfDeath
+      gather Set.TrappedSpirits
+      gather Set.Witchcraft
+      gatherAndSetAside Set.TheWatcher
+
+      setAgendaDeck [Agendas.theHangedManXII, Agendas.deathsApproach]
+      setActDeck [Acts.inPursuitOfTheDead, Acts.inPursuitOfTheLiving]
+
+      setExtraEncounterDeck SpectralEncounterDeck =<< amongGathered (CardWithTrait Spectral)
+
       heretics <-
-        genCards
-          =<< sampleN
-            4
-            ( Enemies.heretic_A
-                :| [ Enemies.heretic_C
-                   , Enemies.heretic_E
-                   , Enemies.heretic_G
-                   , Enemies.heretic_I
-                   , Enemies.heretic_K
-                   ]
-            )
-      let setAsideCards = theWatcher <> spectralWebs <> heretics
-
-      theGallows <-
-        sample (Locations.theGallows_169 :| [Locations.theGallows_170])
-
-      hereticsGraves <-
-        sample (Locations.hereticsGraves_171 :| [Locations.hereticsGraves_172])
-
-      chapelAttic <-
-        sample (Locations.chapelAttic_175 :| [Locations.chapelAttic_176])
-
-      chapelCrypt <-
-        sample (Locations.chapelCrypt_173 :| [Locations.chapelCrypt_174])
-
-      (hangmansBrookId, placeHangmansBrook) <- placeLocationCard Locations.hangmansBrook
-
-      placements <-
-        traverse
-          placeLocationCard_
-          [ theGallows
-          , hereticsGraves
-          , chapelAttic
-          , chapelCrypt
-          , Locations.hauntedFields
-          , Locations.abandonedChapel
+        pickN
+          4
+          [ Enemies.heretic_A
+          , Enemies.heretic_C
+          , Enemies.heretic_E
+          , Enemies.heretic_G
+          , Enemies.heretic_I
+          , Enemies.heretic_K
           ]
 
-      pushAll
-        $ [ SetEncounterDeck $ Deck encounterDeck
-          , SetAgendaDeck
-          , SetActDeck
-          ]
-        <> placements
-        <> [placeHangmansBrook, MoveAllTo (toSource attrs) hangmansBrookId]
+      setAside $ replicate 4 Assets.spectralWeb <> heretics
 
-      agendas <- genCards [Agendas.theHangedManXII, Agendas.deathsApproach]
-      acts <- genCards [Acts.inPursuitOfTheDead, Acts.inPursuitOfTheLiving]
+      startAt =<< place Locations.hangmansBrook
 
-      TheWagesOfSin
-        <$> runMessage
-          msg
-          ( attrs
-              & (setAsideCardsL <>~ setAsideCards)
-              & (agendaStackL . at 1 ?~ agendas)
-              & (actStackL . at 1 ?~ acts)
-              & (encounterDecksL . at SpectralEncounterDeck ?~ (Deck spectralEncounterDeck, mempty))
-          )
+      placeOneOf_ (Locations.theGallows_169, Locations.theGallows_170)
+      placeOneOf_ (Locations.hereticsGraves_171, Locations.hereticsGraves_172)
+      placeOneOf_ (Locations.chapelAttic_175, Locations.chapelAttic_176)
+      placeOneOf_ (Locations.chapelCrypt_173, Locations.chapelCrypt_174)
+      placeAll
+        [ Locations.hauntedFields
+        , Locations.abandonedChapel
+        ]
     ResolveChaosToken _ Skull iid -> do
-      pushWhen (isHardExpert attrs) $ DrawAnotherChaosToken iid
+      when (isHardExpert attrs) $ drawAnotherChaosToken iid
       pure s
     ResolveChaosToken _ Tablet _ -> do
       heretics <- select $ EnemyWithTitle "Heretic"
-      for_ heretics $ \heretic -> do
-        push $ roundModifiers (ChaosTokenEffectSource Tablet) heretic [EnemyFight 1, EnemyEvade 1]
+      for_ heretics $ \heretic -> roundModifiers Tablet heretic [EnemyFight 1, EnemyEvade 1]
       pure s
     ResolveChaosToken _ ElderThing iid -> do
       when (isHardExpert attrs) do
@@ -200,12 +149,10 @@ instance RunMessage TheWagesOfSin where
               $ AbilityOnStory (StoryWithTitle "Unfinished Business" <> StoryWithPlacement (InThreatArea iid))
               <> AbilityIsForcedAbility
           unless (null abilities) $ do
-            player <- getPlayer iid
-            push $ chooseOne player [AbilityLabel iid ability [] [] [] | ability <- abilities]
+            chooseOne iid [AbilityLabel iid ability [] [] [] | ability <- abilities]
         ElderThing | isEasyStandard attrs -> do
           mAction <- getSkillTestAction
-          when (maybe False (`elem` [Action.Fight, Action.Evade]) mAction) $ do
-            runHauntedAbilities iid
+          when (maybe False (`elem` [#fight, #evade]) mAction) $ runHauntedAbilities iid
         _ -> pure ()
       pure s
     ScenarioResolution resolution -> do
@@ -214,16 +161,14 @@ instance RunMessage TheWagesOfSin where
           anyResigned <- selectAny ResignedInvestigator
           push $ if anyResigned then R1 else R2
         Resolution res | res `elem` [1, 2] -> do
-          players <- allPlayers
           step <- getCurrentActStep
+          story $ if res == 1 then resolution1 else resolution2
+          recordWhen (res == 2) TheInvestigatorsSurvivedTheWatchersEmbrace
+
           n <- if step == 1 then pure 4 else selectCount $ EnemyWithTitle "Heretic"
-          xp <- toGainXp attrs getXp
-          pushAll
-            $ story players (if res == 1 then resolution1 else resolution2)
-            : [Record TheInvestigatorsSurvivedTheWatchersEmbrace | res == 2]
-              <> [RecordCount HereticsWereUnleashedUntoArkham n]
-              <> [recordSetInsert MementosDiscovered [WispOfSpectralMist] | n <= 3]
-              <> xp
+          recordCount HereticsWereUnleashedUntoArkham n
+          when (n <= 3) $ recordSetInsert MementosDiscovered [WispOfSpectralMist]
+          allGainXp attrs
         _ -> error "invalid resolution"
       pure s
-    _ -> TheWagesOfSin <$> runMessage msg attrs
+    _ -> TheWagesOfSin <$> liftRunMessage msg attrs

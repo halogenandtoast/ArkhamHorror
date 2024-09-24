@@ -163,6 +163,7 @@ instance RunMessage BeforeTheBlackThrone where
       setLayout $ cosmosToGrid cosmos
       addExtraDeck CosmosDeck cosmosCards
       setMeta cosmos
+      setUsesGrid
       placeTokensOnScenarioReference Token.Resource pathWindsBeforeYouCount
     SetScenarioMeta meta -> do
       case fromJSON @(Cosmos Card LocationId) meta of

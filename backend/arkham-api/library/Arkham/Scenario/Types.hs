@@ -115,6 +115,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioDecksLayout :: [GridTemplateRow]
   , scenarioSetAsideKeys :: Set ArkhamKey
   , scenarioMeta :: Value
+  , scenarioUsesGrid :: Bool
   , scenarioTokens :: Tokens
   , scenarioTarotCards :: Map TarotCardScope [TarotCard]
   , scenarioTarotDeck :: [TarotCardArcana]
@@ -169,6 +170,9 @@ instance HasField "log" ScenarioAttrs (Set ScenarioLogKey) where
 
 instance HasField "name" ScenarioAttrs Name where
   getField = scenarioName
+
+instance HasField "meta" ScenarioAttrs Value where
+  getField = scenarioMeta
 
 instance HasField "id" Scenario ScenarioId where
   getField = (.id) . toAttrs
@@ -251,6 +255,7 @@ scenario f cardCode name difficulty layout =
       , scenarioDecksLayout = ["agenda1 act1"]
       , scenarioSetAsideKeys = mempty
       , scenarioMeta = Null
+      , scenarioUsesGrid = False
       , scenarioTokens = mempty
       , scenarioStoryCards = mempty
       , scenarioPlayerDecks = mempty
@@ -354,6 +359,7 @@ instance FromJSON ScenarioAttrs where
     scenarioDecksLayout <- o .: "decksLayout"
     scenarioSetAsideKeys <- o .: "setAsideKeys"
     scenarioMeta <- o .: "meta"
+    scenarioUsesGrid <- o .: "usesGrid"
     scenarioTokens <- o .: "tokens"
     scenarioTarotCards <- o .: "tarotCards"
     scenarioTarotDeck <- o .: "tarotDeck"

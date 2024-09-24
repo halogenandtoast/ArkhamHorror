@@ -66,6 +66,7 @@ import Arkham.SkillType qualified as SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
+import Arkham.Trait (Trait)
 import Arkham.Window (Window, WindowType, defaultWindows)
 import Arkham.Window qualified as Window
 import Arkham.Xp
@@ -984,6 +985,9 @@ toDiscard source target = push $ Msg.toDiscard source target
 putCardIntoPlay :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 putCardIntoPlay iid card = push $ Msg.putCardIntoPlay iid card
 
+putCampaignCardIntoPlay :: (ReverseQueue m, HasCardDef def) => InvestigatorId -> def -> m ()
+putCampaignCardIntoPlay iid def = push $ PutCampaignCardIntoPlay iid (toCardDef def)
+
 gainResourcesIfCan :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 gainResourcesIfCan iid source n = do
   mmsg <- Msg.gainResourcesIfCan iid source n
@@ -1583,6 +1587,12 @@ searchCollectionForRandom
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> CardMatcher -> m ()
 searchCollectionForRandom iid source matcher = do
   push $ SearchCollectionForRandom iid (toSource source) matcher
+
+searchCollectionForRandomBasicWeakness
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> [Trait] -> m ()
+searchCollectionForRandomBasicWeakness iid source traits = do
+  push
+    $ SearchCollectionForRandom iid (toSource source) (BasicWeaknessCard <> mapOneOf withTrait traits)
 
 discardUntilFirst
   :: (ReverseQueue m, Sourceable source, IsDeck deck)

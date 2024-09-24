@@ -1,32 +1,24 @@
-module Arkham.Scenario.Scenarios.TheCityOfArchives (
-  TheCityOfArchives (..),
-  theCityOfArchives,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.TheCityOfArchives (TheCityOfArchives (..), theCityOfArchives) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
-import Arkham.Card
-import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Deck
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher
-import Arkham.Message
+import Arkham.Matcher hiding (enemyAt)
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Types (setAsideCardsL)
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheCityOfArchives.Story
 import Arkham.Timing qualified as Timing
@@ -89,16 +81,12 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage TheCityOfArchives where
-  runMessage msg s@(TheCityOfArchives attrs) = case msg of
+  runMessage msg s@(TheCityOfArchives attrs) = runQueueT $ case msg of
     StandaloneSetup -> do
-      push $ SetChaosTokens standaloneChaosTokens
+      setChaosTokens standaloneChaosTokens
       pure s
     CheckWindows [Window Timing.When (Window.DrawingStartingHand iid) _] -> do
-      uniqueItemAssetCards <-
-        select
-          $ InDeckOf (InvestigatorWithId iid)
-          <> BasicCardMatch
-            (CardWithTrait Item <> CardIsUnique)
+      uniqueItemAssetCards <- select $ InDeckOf (InvestigatorWithId iid) <> basic (#item <> CardIsUnique)
       uniqueItemAssets <- select $ AssetWithTrait Item <> UniqueAsset
 
       mAlejandro <-
@@ -116,155 +104,81 @@ instance RunMessage TheCityOfArchives where
            ]
         <> map (RemoveFromGame . AssetTarget) uniqueItemAssets
       pure . TheCityOfArchives $ attrs & setAsideUpdate
-    Setup -> do
-      players <- allPlayers
-      iids <- getInvestigatorIds
-      lead <- getLeadPlayer
-      pushAll
-        $ map BecomeYithian iids
-        <> [ story players intro1
-           , chooseOne
-              lead
-              [ Label
-                  "Cooperate and tell the creatures everything you know."
-                  [ story players intro2
-                  , Record TheInvestigatorsCooperatedWithTheYithians
-                  ]
-              , Label
-                  "Refuse and resist captivity."
-                  [story players intro3, Record TheInvestigatorsResistedCaptivity]
-              ]
-           , SetupStep (toTarget attrs) 1
-           ]
-      TheCityOfArchives <$> runMessage msg attrs
-    SetupStep (isTarget attrs -> True) 1 -> do
-      cooperatedWithTheYithians <-
-        getHasRecord
-          TheInvestigatorsCooperatedWithTheYithians
-      interviewRoom <-
-        genCard
-          $ if cooperatedWithTheYithians
-            then Locations.interviewRoomArrivalChamber
-            else Locations.interviewRoomRestrainingChamber
+    PreScenarioSetup -> do
+      eachInvestigator $ push . BecomeYithian
+
+      story intro1
+      lead <- getLead
+      chooseOneM lead do
+        labeled "Cooperate and tell the creatures everything you know." do
+          story intro2
+          record TheInvestigatorsCooperatedWithTheYithians
+        labeled "Refuse and resist captivity." do
+          story intro3
+          record TheInvestigatorsResistedCaptivity
+      pure s
+    Setup -> runScenarioSetup TheCityOfArchives attrs do
+      gather Set.TheCityOfArchives
+      gather Set.AgentsOfYogSothoth
+      gather Set.LockedDoors
+      gather Set.ChillingCold
+      gather Set.StrikingFear
+
+      setActDeck [Acts.exploringPnakotus, Acts.restrictedAccess, Acts.repossession]
+      setAgendaDeck [Agendas.cityOfTheGreatRace, Agendas.lostMemories, Agendas.humanityFading]
+
+      cooperatedWithTheYithians <- getHasRecord TheInvestigatorsCooperatedWithTheYithians
+      if cooperatedWithTheYithians
+        then do
+          interviewRoom <- placeLabeled "interviewRoom1" Locations.interviewRoomArrivalChamber
+          startAt interviewRoom
+          enemyAt Enemies.yithianObserver interviewRoom
+        else do
+          startAt =<< placeLabeled "interviewRoom1" Locations.interviewRoomRestrainingChamber
+          placeInVictory [Enemies.yithianObserver]
+
       otherRooms <-
-        traverse genCard
-          =<< shuffleM
-            [ Locations.interviewRoomIchorFilledChamber
-            , if cooperatedWithTheYithians
-                then Locations.interviewRoomRestrainingChamber
-                else Locations.interviewRoomArrivalChamber
-            ]
-
-      encounterDeck' <-
-        buildEncounterDeck
-          [ EncounterSet.TheCityOfArchives
-          , EncounterSet.AgentsOfYogSothoth
-          , EncounterSet.LockedDoors
-          , EncounterSet.ChillingCold
-          , EncounterSet.StrikingFear
+        shuffleM
+          [ Locations.interviewRoomIchorFilledChamber
+          , if cooperatedWithTheYithians
+              then Locations.interviewRoomRestrainingChamber
+              else Locations.interviewRoomArrivalChamber
           ]
 
-      yithianObserver <- genCard Enemies.yithianObserver
-      placeRemainingLocations <-
-        traverse
-          placeLocationCard_
-          [ Locations.hallsOfPnakotusNorthernCorridors
-          , Locations.hallsOfPnakotusEasternCorridors
-          , Locations.hallsOfPnakotusWesternCorridors
-          ]
+      for_ (zip [2 ..] otherRooms) $ \(idx, location) -> do
+        placeLabeled_ ("interviewRoom" <> tshow @Int idx) location
 
-      setAsideCards <-
-        traverse
-          genCard
-          [ Locations.greatLibrary
-          , Locations.yithianOrrery
-          , Locations.laboratoryOfTheGreatRace
-          , Locations.deconstructionRoom
-          , Locations.towersOfPnakotus
-          , Assets.theCustodian
-          ]
+      placeAll
+        [ Locations.hallsOfPnakotusNorthernCorridors
+        , Locations.hallsOfPnakotusEasternCorridors
+        , Locations.hallsOfPnakotusWesternCorridors
+        ]
 
-      let
-        encounterDeck =
-          removeEachFromDeck encounterDeck' [Enemies.yithianObserver]
-        victoryDisplayUpdate =
-          if cooperatedWithTheYithians
-            then id
-            else victoryDisplayL %~ (yithianObserver :)
-
-      (interviewRoomId, placeInterviewRoom) <- placeLocation interviewRoom
-      placeOtherRooms <- for (zip [2 ..] otherRooms) $ \(idx, location) -> do
-        (locationId, placement) <- placeLocation location
-        pure
-          [ placement
-          , SetLocationLabel locationId ("interviewRoom" <> tshow @Int idx)
-          ]
-
-      createYithianObserver <-
-        createEnemyAt_
-          yithianObserver
-          interviewRoomId
-          Nothing
-
-      pushAll
-        $ [ SetEncounterDeck encounterDeck
-          , SetAgendaDeck
-          , SetActDeck
-          , placeInterviewRoom
-          , SetLocationLabel interviewRoomId "interviewRoom1"
-          , MoveAllTo (toSource attrs) interviewRoomId
-          ]
-        <> concat placeOtherRooms
-        <> [createYithianObserver | cooperatedWithTheYithians]
-        <> placeRemainingLocations
-
-      acts <-
-        genCards
-          [ Acts.exploringPnakotus
-          , Acts.restrictedAccess
-          , Acts.repossession
-          ]
-      agendas <-
-        genCards
-          [ Agendas.cityOfTheGreatRace
-          , Agendas.lostMemories
-          , Agendas.humanityFading
-          ]
-      pure
-        . TheCityOfArchives
-        $ attrs
-        & victoryDisplayUpdate
-        & (setAsideCardsL <>~ setAsideCards)
-        & (agendaStackL . at 1 ?~ agendas)
-        & (actStackL . at 1 ?~ acts)
+      setAside
+        [ Locations.greatLibrary
+        , Locations.yithianOrrery
+        , Locations.laboratoryOfTheGreatRace
+        , Locations.deconstructionRoom
+        , Locations.towersOfPnakotus
+        , Assets.theCustodian
+        ]
     ResolveChaosToken _ chaosTokenFace iid | isHardExpert attrs && chaosTokenFace `elem` [Cultist, ElderThing] -> do
       push $ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource chaosTokenFace) 1
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
-      case chaosTokenFace token of
+      case token.face of
         face | face `elem` [Cultist, ElderThing] -> do
           push $ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource face) 1
-        Tablet -> do
-          let discardCount = if isEasyStandard attrs then 1 else n
-          pushAll
-            $ replicate discardCount
-            $ toMessage
-            $ randomDiscard
-              iid
-              (ChaosTokenEffectSource Tablet)
+        Tablet -> randomDiscardN iid Tablet $ if isEasyStandard attrs then 1 else n
         _ -> pure ()
       pure s
     ScenarioResolution r -> do
-      iids <- allInvestigatorIds
-      players <- allPlayers
       case r of
-        NoResolution ->
-          pushAll
-            $ [ story players noResolution
-              , Record TheInvestigatorsHadTheirMemoriesExpunged
-              ]
-            <> map DrivenInsane iids
-            <> [GameOver]
+        NoResolution -> do
+          story noResolution
+          record TheInvestigatorsHadTheirMemoriesExpunged
+          eachInvestigator drivenInsane
+          gameOver
         Resolution 1 -> do
           rememberedTasks <-
             countM
@@ -278,13 +192,11 @@ instance RunMessage TheCityOfArchives where
           resignedWithTheCustodian <-
             orM
               [ resignedWith Assets.theCustodian
-              , selectAny
-                  (AssetControlledBy Anyone <> assetIs Assets.theCustodian)
+              , selectAny (AssetControlledBy Anyone <> assetIs Assets.theCustodian)
               ]
 
           let
-            totalTasks =
-              rememberedTasks + if resignedWithTheCustodian then 1 else 0
+            totalTasks = rememberedTasks + if resignedWithTheCustodian then 1 else 0
             (logEntry, bonusXp) = case totalTasks of
               n | n == 6 -> (TheProcessWasPerfected, 4)
               n | n == 5 -> (TheProcessWasSuccessful, 2)
@@ -292,19 +204,10 @@ instance RunMessage TheCityOfArchives where
               n | n == 3 -> (TheProcessBackfiredSpectacularly, 0)
               _ -> error "Invalid number of tasks"
 
-          gainXp <- toGainXp attrs $ getXpWithBonus bonusXp
-
-          let
-            interludeResult =
-              if resignedWithTheCustodian
-                then Just TheCustodianWasUnderControl
-                else Nothing
-
-          pushAll
-            $ story players resolution1
-            : Record logEntry
-            : gainXp
-              <> [EndOfGame (Just $ InterludeStep 4 interludeResult)]
+          story resolution1
+          record logEntry
+          allGainXpWithBonus attrs bonusXp
+          endOfScenarioThen $ InterludeStep 4 (guard resignedWithTheCustodian $> TheCustodianWasUnderControl)
         _ -> error "Invalid resolution"
       pure s
-    _ -> TheCityOfArchives <$> runMessage msg attrs
+    _ -> TheCityOfArchives <$> liftRunMessage msg attrs

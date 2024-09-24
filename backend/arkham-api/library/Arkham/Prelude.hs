@@ -71,7 +71,7 @@ import Data.UUID as X (UUID)
 import GHC.Stack as X
 import Language.Haskell.TH hiding (location)
 import Safe as X (fromJustNote)
-import System.Random.Shuffle as X
+import System.Random.Shuffle as X hiding (shuffle)
 
 import Control.Monad.Trans.Class
 import Data.Aeson.Key qualified as Key
@@ -423,3 +423,13 @@ findFewestOccurrences uniqueTargets as
   targetCounts = countOccurrences as
   notInTargets = filter (`notElem` uniqueTargets) as
   minOccurrence = maybe 0 snd (Map.lookupMin (Map.fromListWith min (Map.toList targetCounts)))
+
+shuffle :: MonadRandom m => [a] -> m [a]
+shuffle = shuffleM
+
+shuffleIn :: MonadRandom m => a -> [a] -> m [a]
+shuffleIn x xs = shuffleM (x : xs)
+
+removeRandom :: (MonadRandom m, Eq a) => [a] -> m [a]
+removeRandom [] = pure []
+removeRandom (x : xs) = snd <$> sampleWithRest (x :| xs)

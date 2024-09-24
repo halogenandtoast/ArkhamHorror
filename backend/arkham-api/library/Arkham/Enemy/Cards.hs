@@ -2190,6 +2190,8 @@ donLagorio =
       { cdCardTraits = setFromList [Humanoid, Servitor, Elite]
       , cdKeywords = setFromList [Keyword.Hunter]
       , cdVictoryPoints = Just 1
+      , cdDoubleSided = True
+      , cdOtherSide = Just "82017b"
       }
 
 elisabettaMagro :: CardDef
@@ -2204,6 +2206,8 @@ elisabettaMagro =
       { cdCardTraits = setFromList [Humanoid, Lodge, Elite]
       , cdKeywords = setFromList [Keyword.Aloof]
       , cdVictoryPoints = Just 1
+      , cdDoubleSided = True
+      , cdOtherSide = Just "82018b"
       }
 
 salvatoreNeri :: CardDef
@@ -2218,6 +2222,8 @@ salvatoreNeri =
       { cdCardTraits = setFromList [Humanoid, Sorcerer, Elite]
       , cdKeywords = setFromList [Keyword.Retaliate]
       , cdVictoryPoints = Just 1
+      , cdDoubleSided = True
+      , cdOtherSide = Just "82019b"
       }
 
 savioCorvi :: CardDef
@@ -2227,6 +2233,8 @@ savioCorvi =
       { cdCardTraits = setFromList [Humanoid, Cultist, Elite]
       , cdKeywords = setFromList [Keyword.Hunter]
       , cdVictoryPoints = Just 1
+      , cdDoubleSided = True
+      , cdOtherSide = Just "82020b"
       }
 
 cnidathqua :: CardDef

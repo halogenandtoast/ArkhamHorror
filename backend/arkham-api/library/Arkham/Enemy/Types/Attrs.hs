@@ -81,6 +81,12 @@ instance HasField "ready" EnemyAttrs Bool where
 instance HasField "exhausted" EnemyAttrs Bool where
   getField = enemyExhausted
 
+instance HasField "tokens" EnemyAttrs Tokens where
+  getField = enemyTokens
+
+instance HasField "token" EnemyAttrs (Token -> Int) where
+  getField a tType = countTokens tType a.tokens
+
 enemyDamage :: EnemyAttrs -> Int
 enemyDamage = countTokens Damage . enemyTokens
 

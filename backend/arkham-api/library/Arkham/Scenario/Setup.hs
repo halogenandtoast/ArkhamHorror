@@ -18,8 +18,9 @@ import Arkham.Message.Lifted
 import Arkham.Placement
 import Arkham.Prelude hiding ((.=))
 import Arkham.Scenario.Helpers (excludeBSides, excludeDoubleSided)
-import Arkham.Scenario.Runner ()
+import Arkham.Scenario.Runner (createEnemyWithPlacement_, pushM)
 import Arkham.Scenario.Types
+import Arkham.ScenarioLogKey
 import Control.Lens
 import Control.Monad.Random (MonadRandom (..))
 import Control.Monad.State
@@ -197,6 +198,12 @@ enemyAt def lid = do
   card <- genCard def
   createEnemyAt_ card lid
 
+placeEnemy :: ReverseQueue m => CardDef -> Placement -> ScenarioBuilderT m ()
+placeEnemy def placement = do
+  encounterDeckL %= flip removeEachFromDeck [def]
+  card <- genCard def
+  pushM $ createEnemyWithPlacement_ card placement
+
 enemyAtMatching :: ReverseQueue m => CardDef -> LocationMatcher -> ScenarioBuilderT m ()
 enemyAtMatching def matcher = do
   encounterDeckL %= flip removeEachFromDeck [def]
@@ -278,11 +285,29 @@ beginWithStoryAsset iid def = do
   encounterDeckL %= flip removeEachFromDeck [def]
   push $ TakeControlOfSetAsideAsset iid a
 
-placeInVictory :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
-placeInVictory defs = do
-  cards <- genCards defs
-  encounterDeckL %= flip removeEachFromDeck defs
+class VictoryPlaceable a where
+  toVictoryCard :: ReverseQueue m => a -> ScenarioBuilderT m Card
+
+instance VictoryPlaceable CardDef where
+  toVictoryCard = genCard
+
+instance VictoryPlaceable Card where
+  toVictoryCard = pure
+
+placeInVictory
+  :: (ReverseQueue m, VictoryPlaceable a, FindInEncounterDeck a) => [a] -> ScenarioBuilderT m ()
+placeInVictory as = do
+  cards <- traverse toVictoryCard as
+  deck <- use encounterDeckL
+  for_ as \a -> do
+    for_ (findInDeck a deck) \card -> encounterDeckL %= filter (/= card)
   victoryDisplayL %= (<> cards)
 
 setLayout :: ReverseQueue m => [GridTemplateRow] -> ScenarioBuilderT m ()
 setLayout = (locationLayoutL .=)
+
+setMeta :: ReverseQueue m => Value -> ScenarioBuilderT m ()
+setMeta = (metaL .=)
+
+setCount :: ReverseQueue m => ScenarioCountKey -> Int -> ScenarioBuilderT m ()
+setCount k n = countsL . at k . non 0 .= n

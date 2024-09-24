@@ -1,9 +1,4 @@
-module Arkham.Scenario.Scenarios.ShatteredAeons (
-  ShatteredAeons (..),
-  shatteredAeons,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Scenarios.ShatteredAeons (ShatteredAeons (..), shatteredAeons) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -14,33 +9,27 @@ import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
-import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Deck qualified as Deck
-import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.ChaosBag
-import Arkham.Helpers.Deck
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner
+import Arkham.Scenario.Deck
+import Arkham.Scenario.Helpers hiding (checkWhen, setupModifier)
+import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Types (victoryDisplayL)
 import Arkham.Scenarios.ShatteredAeons.Story
-import Arkham.Timing qualified as Timing
-import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 
 newtype ShatteredAeons = ShatteredAeons ScenarioAttrs
@@ -111,301 +100,202 @@ standaloneCampaignLog =
     }
 
 instance RunMessage ShatteredAeons where
-  runMessage msg s@(ShatteredAeons attrs) = case msg of
+  runMessage msg s@(ShatteredAeons attrs) = runQueueT case msg of
+    PreScenarioSetup -> do
+      braziersLit <- getHasRecord TheBraziersAreLit
+      doStep (if braziersLit then 1 else 2) PreScenarioSetup
+      pure s
+    DoStep 1 PreScenarioSetup -> do
+      story intro1
+      doStep 3 PreScenarioSetup
+      pure s
+    DoStep 2 PreScenarioSetup -> do
+      story intro2
+      eachInvestigator \iid -> setupModifier attrs iid (StartingHand (-2))
+      doStep 3 PreScenarioSetup
+      pure s
+    DoStep 3 PreScenarioSetup -> do
+      story intro3
+      foundTheMissingRelic <- getHasRecord TheInvestigatorsFoundTheMissingRelic
+      doStep (if foundTheMissingRelic then 4 else 5) PreScenarioSetup
+      pure s
+    DoStep 4 PreScenarioSetup -> do
+      story intro4
+      pure s
+    DoStep 5 PreScenarioSetup -> do
+      story intro5
+      pure s
     StandaloneSetup -> do
-      lead <- getLeadPlayer
-      pushAll
-        [ SetChaosTokens standaloneChaosTokens
-        , chooseOne
-            lead
-            [ Label
-                "Ichtaca is set against you. Add 3 {tablet} tokens to the chaos bag."
-                [ Record IchtacaIsSetAgainstYou
-                , AddChaosToken Tablet
-                , AddChaosToken Tablet
-                , AddChaosToken Tablet
-                ]
-            , Label
-                "Alejandro is set against you. Add 3 {cultist} tokens to the chaos bag."
-                [ Record AlejandroIsSetAgainstYou
-                , AddChaosToken Cultist
-                , AddChaosToken Cultist
-                , AddChaosToken Cultist
-                ]
-            , Label
-                " Ichtaca is set against you. Alejandro is set against you. Add2 {elderThing} tokens to the chaos bag. Choose this option for the ultimate challenge."
-                [ Record IchtacaIsSetAgainstYou
-                , Record AlejandroIsSetAgainstYou
-                , AddChaosToken ElderThing
-                , AddChaosToken ElderThing
-                ]
-            ]
+      setChaosTokens standaloneChaosTokens
+      lead <- getLead
+      chooseOneM lead do
+        labeled "Ichtaca is set against you. Add 3 {tablet} tokens to the chaos bag." do
+          record IchtacaIsSetAgainstYou
+          addChaosToken Tablet
+          addChaosToken Tablet
+          addChaosToken Tablet
+        labeled "Alejandro is set against you. Add 3 {cultist} tokens to the chaos bag." do
+          record AlejandroIsSetAgainstYou
+          addChaosToken Cultist
+          addChaosToken Cultist
+          addChaosToken Cultist
+        labeled
+          "Ichtaca is set against you. Alejandro is set against you. Add 2 {elderThing} tokens to the chaos bag. Choose this option for the ultimate challenge."
+          do
+            record IchtacaIsSetAgainstYou
+            record AlejandroIsSetAgainstYou
+            addChaosToken ElderThing
+            addChaosToken ElderThing
+      pure . ShatteredAeons $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
+    Setup -> runScenarioSetup ShatteredAeons attrs do
+      gather Set.ShatteredAeons
+      gather Set.PnakoticBrotherhood
+      gather Set.TemporalFlux
+      gather Set.AncientEvils
+
+      tokens <- getBagChaosTokens
+      let tokenCount face = count ((== face) . (.face)) tokens
+      case compare (tokenCount Cultist) (tokenCount Tablet) of
+        GT -> gather Set.DarkCult
+        LT -> gather Set.AgentsOfYig
+        EQ -> do
+          gather Set.DarkCult
+          gather Set.AgentsOfYig
+
+      setActDeck
+        [ Acts.worldsBeyond
+        , Acts.searchForTheBrotherhood
+        , Acts.theYithianRelic
+        , Acts.mendTheShatter
         ]
 
-      pure
-        . ShatteredAeons
-        $ attrs
-        & standaloneCampaignLogL
-        .~ standaloneCampaignLog
-    Setup -> do
-      braziersLit <- getHasRecord TheBraziersAreLit
-      foundTheMissingRelic <- getHasRecord TheInvestigatorsFoundTheMissingRelic
+      setAgendaDeck
+        [ Agendas.threadsOfTime
+        , Agendas.pendulousThreads
+        , Agendas.snappedThreads
+        ]
+
+      startAt =<< place Locations.nexusOfNKai
+
+      setAside
+        [ Assets.relicOfAgesUnleashTheTimestream
+        , Enemies.ichtacaScionOfYig
+        , Enemies.alejandroVela
+        , Enemies.formlessSpawn
+        , Locations.aPocketInTime
+        , Locations.ruinsOfNewYork
+        , Locations.mu
+        , Locations.atlantis
+        , Locations.pnakotus
+        , Locations.valusia
+        , Locations.plateauOfLeng
+        , Acts.paradiseLost
+        , Acts.timelock
+        ]
+
+      addExtraDeck
+        ExplorationDeck
+        [ Locations.yuggoth
+        , Locations.shoresOfRlyeh
+        , Locations.cityOfTheUnseen
+        , Treacheries.wrackedByTime
+        , Treacheries.betweenWorlds
+        , Treacheries.ancientEvils
+        ]
+
       yigsFury <- getRecordCount YigsFury
-
-      let
-        showIntro1 = braziersLit
-        showIntro2 = not braziersLit
-        showIntro4 = foundTheMissingRelic
-        showIntro5 = not foundTheMissingRelic
-
-      lead <- getLead
-      players <- allPlayers
-      tokens <- getBagChaosTokens
-
-      leadDeck <- fieldMap InvestigatorDeck unDeck lead
-
-      let
-        cultistCount = count ((== Cultist) . chaosTokenFace) tokens
-        tabletCount = count ((== Tablet) . chaosTokenFace) tokens
-        additionalSets = case compare cultistCount tabletCount of
-          GT -> [EncounterSet.DarkCult]
-          LT -> [EncounterSet.AgentsOfYig]
-          EQ -> [EncounterSet.DarkCult, EncounterSet.AgentsOfYig]
-        cardsToAddToVictory =
-          map PlayerCard $ take (yigsFury `div` 10) leadDeck
-
-      encounterDeck <-
-        buildEncounterDeckExcluding
-          [ Enemies.ichtacaScionOfYig
-          , Enemies.alejandroVela
-          , Enemies.formlessSpawn
-          , Locations.yuggoth
-          , Locations.shoresOfRlyeh
-          , Locations.cityOfTheUnseen
-          , Locations.aPocketInTime
-          , Locations.ruinsOfNewYork
-          , Locations.mu
-          , Locations.atlantis
-          , Locations.pnakotus
-          , Locations.valusia
-          , Locations.plateauOfLeng
-          ]
-          $ [ EncounterSet.ShatteredAeons
-            , EncounterSet.PnakoticBrotherhood
-            , EncounterSet.TemporalFlux
-            , EncounterSet.AncientEvils
-            ]
-          <> additionalSets
-
-      (nexusOfNKaiId, placeNexusOfNKai) <-
-        placeLocationCard
-          Locations.nexusOfNKai
-
-      let
-        encounterDeck' =
-          removeEachFromDeck
-            encounterDeck
-            [ Treacheries.wrackedByTime
-            , Treacheries.betweenWorlds
-            , Treacheries.ancientEvils
-            ]
-
-      explorationDeck <-
-        shuffleM
-          =<< genCards
-            [ Locations.yuggoth
-            , Locations.shoresOfRlyeh
-            , Locations.cityOfTheUnseen
-            , Treacheries.wrackedByTime
-            , Treacheries.betweenWorlds
-            , Treacheries.ancientEvils
-            ]
-
-      setAsideCards <-
-        genCards
-          [ Assets.relicOfAgesUnleashTheTimestream
-          , Enemies.ichtacaScionOfYig
-          , Enemies.alejandroVela
-          , Enemies.formlessSpawn
-          , Locations.aPocketInTime
-          , Locations.ruinsOfNewYork
-          , Locations.mu
-          , Locations.atlantis
-          , Locations.pnakotus
-          , Locations.valusia
-          , Locations.plateauOfLeng
-          , Acts.paradiseLost
-          , Acts.timelock
-          ]
-
-      pushAll
-        $ [story players intro1 | showIntro1]
-        <> [story players intro2 | showIntro2]
-        <> [story players intro3]
-        <> [story players intro4 | showIntro4]
-        <> [story players intro5 | showIntro5]
-        <> [ SetEncounterDeck encounterDeck'
-           , SetAgendaDeck
-           , SetActDeck
-           , placeNexusOfNKai
-           , MoveAllTo (toSource attrs) nexusOfNKaiId
-           ]
-        <> map (RemovePlayerCardFromGame False) cardsToAddToVictory
-
-      acts <-
-        genCards
-          [ Acts.worldsBeyond
-          , Acts.searchForTheBrotherhood
-          , Acts.theYithianRelic
-          , Acts.mendTheShatter
-          ]
-
-      agendas <-
-        genCards
-          [ Agendas.threadsOfTime
-          , Agendas.pendulousThreads
-          , Agendas.snappedThreads
-          ]
-
-      ShatteredAeons
-        <$> runMessage
-          msg
-          ( attrs
-              & (decksL . at ExplorationDeck ?~ explorationDeck)
-              & (agendaStackL . at 1 ?~ agendas)
-              & (actStackL . at 1 ?~ acts)
-              & (setAsideCardsL <>~ setAsideCards)
-              & (victoryDisplayL .~ map VengeanceCard cardsToAddToVictory)
-          )
+      leadDeck <- fieldMap InvestigatorDeck unDeck =<< getLead
+      let cardsToAddToVictory = map PlayerCard . take (yigsFury `div` 10) leadDeck
+      pushAll $ map (RemovePlayerCardFromGame False) cardsToAddToVictory
+      placeInVictory $ map VengeanceCard cardsToAddToVictory
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n | n < 1 -> do
       when (chaosTokenFace token == Cultist) $ do
         if isEasyStandard attrs
           then do
-            player <- getPlayer iid
             cultists <- select $ NearestEnemyTo iid $ EnemyWithTrait Trait.Cultist
-            unless (null cultists)
-              $ push
-              $ chooseOne
-                player
-                [ targetLabel cultist [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget cultist) Doom 1]
-                | cultist <- cultists
-                ]
+            chooseTargetM iid cultists \cultist -> placeDoom Cultist cultist 1
           else do
             cultists <- select $ EnemyWithTrait Trait.Cultist
-            pushAll
-              $ [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget cultist) Doom 1 | cultist <- cultists]
+            for_ cultists \cultist -> placeDoom Cultist cultist 1
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
-      when (chaosTokenFace token == Cultist) $ do
+      when (token.face == Cultist) $ do
         if isEasyStandard attrs
           then do
             cultists <- select $ NearestEnemyTo iid $ EnemyWithTrait Trait.Cultist
-            unless (null cultists) $ do
-              player <- getPlayer iid
-              push
-                $ chooseOne
-                  player
-                  [ targetLabel cultist [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget cultist) Doom 1]
-                  | cultist <- cultists
-                  ]
+            chooseTargetM iid cultists \cultist -> placeDoom Cultist cultist 1
           else do
             cultists <- select $ EnemyWithTrait Trait.Cultist
-            pushAll
-              $ [PlaceTokens (ChaosTokenEffectSource Cultist) (EnemyTarget cultist) Doom 1 | cultist <- cultists]
-      when (chaosTokenFace token == Tablet && isHardExpert attrs) $ do
+            for_ cultists \cultist -> placeDoom Cultist cultist 1
+      when (token.face == Tablet && isHardExpert attrs) $ do
         isPoisoned <- getIsPoisoned iid
         unless isPoisoned $ do
           poisoned <- getSetAsidePoisoned
           push $ CreateWeaknessInThreatArea poisoned iid
-      when (chaosTokenFace token == ElderThing) $ do
-        let
-          mHex =
-            find (`cardMatch` CardWithTrait Trait.Hex) (scenarioDiscard attrs)
-        for_ mHex $ \hex -> do
-          push
-            $ ShuffleCardsIntoDeck
-              (Deck.ScenarioDeckByKey ExplorationDeck)
-              [EncounterCard hex]
+      when (token.face == ElderThing) $ do
+        let mHex = find (`cardMatch` CardWithTrait Trait.Hex) attrs.discard
+        for_ mHex $ \hex -> shuffleCardsIntoDeck ExplorationDeck [EncounterCard hex]
       pure s
     ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
-      let
-        mHex =
-          find (`cardMatch` CardWithTrait Trait.Hex) (scenarioDiscard attrs)
+      let mHex = find (`cardMatch` CardWithTrait Trait.Hex) attrs.discard
       modifiers <- getModifiers (ChaosTokenFaceTarget ElderThing)
-      when (RevealAnotherChaosToken `elem` modifiers) $ push $ DrawAnotherChaosToken iid
-      for_ mHex $ \hex -> do
-        push
-          $ ShuffleCardsIntoDeck
-            (Deck.ScenarioDeckByKey ExplorationDeck)
-            [EncounterCard hex]
+      when (RevealAnotherChaosToken `elem` modifiers) $ drawAnotherChaosToken iid
+      for_ mHex $ \hex -> shuffleCardsIntoDeck ExplorationDeck [EncounterCard hex]
       pure s
     ResolveChaosToken _ face iid -> do
       modifiers <- getModifiers (ChaosTokenFaceTarget face)
-      when (RevealAnotherChaosToken `elem` modifiers) $ push $ DrawAnotherChaosToken iid
-      ShatteredAeons <$> runMessage msg attrs
+      when (RevealAnotherChaosToken `elem` modifiers) $ drawAnotherChaosToken iid
+      ShatteredAeons <$> liftRunMessage msg attrs
     Explore iid _ _ -> do
-      windowMsg <- checkWindows [mkWindow Timing.When $ Window.AttemptExplore iid]
-      pushAll [windowMsg, Do msg]
+      checkWhen $ Window.AttemptExplore iid
+      push $ Do msg
       pure s
     Do (Explore iid source locationMatcher) -> do
       explore iid source locationMatcher PlaceExplored 1
       pure s
     ScenarioResolution resolution -> do
-      players <- allPlayers
-      iids <- allInvestigatorIds
       case resolution of
         NoResolution -> do
-          push $ ScenarioResolution $ Resolution 4
+          push R4
           pure s
         Resolution 1 -> do
           mrelic <- selectOne $ AssetWithTitle "Relic of Ages"
           locations <- case mrelic of
             Nothing -> pure []
-            Just relic ->
-              fieldMapM AssetCardsUnderneath (filterM getHasVictoryPoints) relic
+            Just relic -> fieldMapM AssetCardsUnderneath (filterM getHasVictoryPoints) relic
           bonus <- sum . catMaybes <$> traverse getVictoryPoints locations
-          xp <- toGainXp attrs $ getXpWithBonus (5 + bonus)
-          pushAll
-            $ story players resolution1
-            : Record TheInvestigatorsMendedTheTearInTheFabricOfTime
-            : [SufferTrauma iid 2 2 | iid <- iids]
-              <> xp
-              <> [EndOfGame Nothing]
+          story resolution1
+          record TheInvestigatorsMendedTheTearInTheFabricOfTime
+          eachInvestigator \iid -> sufferTrauma iid 2 2
+          allGainXpWithBonus attrs (5 + bonus)
+          endOfScenario
           pure . ShatteredAeons $ attrs & victoryDisplayL %~ (locations <>)
         Resolution 2 -> do
-          pushAll
-            [ story players resolution2
-            , Record TheInvestigatorsSavedTheCivilizationOfTheSerpents
-            , EndOfGame Nothing
-            ]
+          story resolution2
+          record TheInvestigatorsSavedTheCivilizationOfTheSerpents
+          endOfScenario
           pure s
         Resolution 3 -> do
-          pushAll
-            [ story players resolution3
-            , Record TheInvestigatorsSavedTheCivilizationOfTheYithians
-            , EndOfGame Nothing
-            ]
+          story resolution3
+          record TheInvestigatorsSavedTheCivilizationOfTheYithians
+          endOfScenario
           pure s
         Resolution 4 -> do
-          pushAll
-            $ story players resolution4
-            : Record TheFabricOfTimeIsUnwoven
-            : map DrivenInsane iids
-              <> [GameOver]
+          story resolution4
+          record TheFabricOfTimeIsUnwoven
+          eachInvestigator drivenInsane
+          gameOver
           pure s
         Resolution 5 -> do
           mrelic <- selectOne $ AssetWithTitle "Relic of Ages"
           locations <- case mrelic of
             Nothing -> pure []
-            Just relic ->
-              fieldMapM AssetCardsUnderneath (filterM getHasVictoryPoints) relic
+            Just relic -> fieldMapM AssetCardsUnderneath (filterM getHasVictoryPoints) relic
           bonus <- sum . catMaybes <$> traverse getVictoryPoints locations
-          xp <- toGainXp attrs $ getXpWithBonus bonus
-          pushAll
-            $ story players resolution5
-            : Record TheInvestigatorsTurnedBackTime
-            : xp
-              <> [EndOfGame $ Just EpilogueStep]
+          story resolution5
+          record TheInvestigatorsTurnedBackTime
+          allGainXpWithBonus attrs bonus
+          endOfScenarioThen EpilogueStep
           pure s
         _ -> error "invalid resolution"
-    _ -> ShatteredAeons <$> runMessage msg attrs
+    _ -> ShatteredAeons <$> liftRunMessage msg attrs
